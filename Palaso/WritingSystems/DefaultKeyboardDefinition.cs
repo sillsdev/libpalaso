@@ -141,13 +141,21 @@ namespace Palaso.WritingSystems
 		}
 
 		/// <summary>
-		/// Note that to be consistent with Equals, any other implementation of this interface should use the same
-		/// definition of GetHashCode as this.
+		/// Note that to be consistent with Equals, any other implementation of IKeyboardDefinition
+		/// should use the same definition of GetHashCode as this.
+		/// Currently all implementations inherit from this class and therefore do.
 		/// </summary>
 		/// <returns></returns>
 		public override int GetHashCode()
 		{
+			// Don't crash if either Layout or Locale somehow end up being null.
+			if (Layout != null && Locale != null)
 			return Layout.GetHashCode() ^ Locale.GetHashCode();
+			if (Layout != null)
+				return Layout.GetHashCode();
+			if (Locale != null)
+				return Locale.GetHashCode();
+			return 0;
 		}
 	}
 }
