@@ -255,5 +255,20 @@ namespace Palaso.Xml
 			}
 			return false;
 		}
+
+		/// <summary>
+		/// Finds and reads the EndElement with the specified name
+		/// </summary>
+		/// <param name="reader"></param>
+		/// <param name="name"></param>
+		/// <param name="comparison"></param>
+		public static void ReadEndElement(XmlReader reader, string name, Comparison<string> comparison)
+		{
+			while (reader.NodeType != XmlNodeType.EndElement || comparison(name, reader.Name) > 0)
+			{
+				reader.Read();
+			}
+			reader.ReadEndElement();
+		}
 	}
 }
