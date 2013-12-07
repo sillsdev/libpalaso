@@ -264,7 +264,7 @@ namespace Palaso.Xml
 		/// <param name="comparison"></param>
 		public static void ReadEndElement(XmlReader reader, string name, Comparison<string> comparison)
 		{
-			while (reader.NodeType != XmlNodeType.EndElement || comparison(name, reader.Name) > 0)
+			while (!reader.EOF && (reader.NodeType != XmlNodeType.EndElement || comparison(name, reader.Name) > 0))
 			{
 				reader.Read();
 			}
