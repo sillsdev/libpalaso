@@ -268,7 +268,10 @@ namespace Palaso.Xml
 			{
 				reader.Read();
 			}
-			reader.ReadEndElement();
+			if (!reader.EOF)
+			{
+				reader.ReadEndElement();
+			}
 		}
 	}
 }
