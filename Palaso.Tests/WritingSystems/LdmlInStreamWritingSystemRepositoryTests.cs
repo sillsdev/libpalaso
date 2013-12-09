@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
-
+using System.Xml.Linq;
 using NUnit.Framework;
 
 using Palaso.WritingSystems;
@@ -114,15 +114,13 @@ namespace Palaso.Tests.WritingSystems
 			xmlWriter.WriteEndDocument();
 			xmlWriter.Close();
 
-			XmlReader xmlReader = new XmlTextReader(new StreamReader(_testFilePath));
-			xmlReader.ReadToFollowing("writingsystems");
+			var wsDoc = XDocument.Load(_testFilePath);
+			var writingsystemsElement = wsDoc.Root.Element("writingsystems");
 
 			LdmlInXmlWritingSystemRepository testRepository = new LdmlInXmlWritingSystemRepository();
 			Assert.AreEqual(0, testRepository.Count);
-			testRepository.LoadAllDefinitions(xmlReader);
+			testRepository.LoadAllDefinitions(writingsystemsElement);
 			Assert.AreEqual(2, testRepository.Count);
-			xmlReader.Close();
-
 		}
 
 #if false

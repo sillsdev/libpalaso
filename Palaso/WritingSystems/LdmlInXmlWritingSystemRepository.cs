@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.XPath;
-
+using Palaso.Code;
 using Palaso.WritingSystems;
 
 namespace Palaso.WritingSystems
@@ -35,34 +36,24 @@ namespace Palaso.WritingSystems
 
 		public void LoadAllDefinitions(string filePath)
 		{
-			XPathDocument xpDoc = new XPathDocument(new StreamReader(filePath));
-			XPathNavigator xpNav = xpDoc.CreateNavigator();
-			XPathNodeIterator nodes = xpNav.Select("//writingsystems/ldml");
-			LdmlDataMapper adaptor = CreateLdmlAdaptor();
-			foreach (XPathNavigator nav in nodes)
-			{
-				var ws = (WritingSystemDefinition)CreateNew();
-				XmlReader xmlReader = nav.ReadSubtree();
-				adaptor.Read(xmlReader, ws);
-				ws.StoreID = ws.Bcp47Tag;
-				Set(ws);
-			}
+			Guard.AgainstNullOrEmptyString(filePath, "filePath");
+
+			LoadAllDefinitions(XDocument.Load(filePath).Root.Element("writingsystems"));
 		}
 
-		public void LoadAllDefinitions(XmlReader xmlReader)
+		public void LoadAllDefinitions(XElement writingsystemsElement)
 		{
-			LdmlDataMapper adaptor = CreateLdmlAdaptor();
 			// Check the current node, it should be 'writingsystems'
-			if ("writingsystems" == xmlReader.Name)
-			{
-				while (xmlReader.ReadToFollowing("ldml"))
-				{
-					var ws = (WritingSystemDefinition)CreateNew();
-					adaptor.Read(xmlReader.ReadSubtree(), ws);
-					ws.StoreID = ws.Bcp47Tag;
-					Set(ws);
-				}
+			if (writingsystemsElement.Name != "writingsystems")
+				return;
 
+			var adaptor = CreateLdmlAdaptor();
+			foreach (var ldmlElement in writingsystemsElement.Elements("ldml"))
+			{
+				var ws = (WritingSystemDefinition)CreateNew();
+				adaptor.Read(ldmlElement, ws);
+				ws.StoreID = ws.Bcp47Tag;
+				Set(ws);
 			}
 		}
 
