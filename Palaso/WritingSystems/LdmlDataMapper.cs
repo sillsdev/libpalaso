@@ -212,7 +212,7 @@ namespace Palaso.WritingSystems
 		/// <param name="reader"></param>
 		protected static void ReadSpecialEndElement(XmlReader reader)
 		{
-			XmlHelpers.ReadEndElement(reader, "special", LdmlNodeComparer.CompareElementNames);
+			XmlHelpers.ReadEndElement(reader, "special");
 		}
 
 		private string GetLcid(XmlReader reader)
