@@ -50,7 +50,7 @@ namespace SIL.Archiving
 			Text = string.Format(Text, model.AppName, model.ArchiveType);
 			_progressBar.Visible = false;
 			_buttonLaunchRamp.Text = string.Format(_buttonLaunchRamp.Text, model.NameOfProgramToLaunch);
-			_buttonLaunchRamp.Enabled = !string.IsNullOrEmpty(model.PathToProgramToLaunch);
+			_buttonLaunchRamp.Enabled = false; //!string.IsNullOrEmpty(model.PathToProgramToLaunch);
 
 			_linkOverview.Text = model.InformativeText;
 			_linkOverview.Links.Clear();

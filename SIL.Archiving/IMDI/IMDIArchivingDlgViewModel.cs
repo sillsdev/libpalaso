@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -22,7 +23,6 @@ namespace SIL.Archiving.IMDI
 		private bool _workerException;
 
 		#region Properties
-		/// ------------------------------------------------------------------------------------
 		internal override string ArchiveType
 		{
 			get
@@ -33,13 +33,21 @@ namespace SIL.Archiving.IMDI
 			}
 		}
 
-		/// ------------------------------------------------------------------------------------
 		public override string NameOfProgramToLaunch
 		{
 			get
 			{
 				if (string.IsNullOrEmpty(PathToProgramToLaunch))
 					return null;
+
+				if (IsMono)
+				{
+					if (PathToProgramToLaunch.ToLower().Contains("arbil")) return "Arbil";
+
+					return null;
+				}
+
+				// this is Windows, not Linux
 				string exe = Path.GetFileNameWithoutExtension(PathToProgramToLaunch);
 				string dir = Path.GetDirectoryName(PathToProgramToLaunch);
 				if (!string.IsNullOrEmpty(dir))
@@ -116,7 +124,7 @@ namespace SIL.Archiving.IMDI
 		{
 			_outputFolder = outputFolder;
 
-			PackagePath = Path.Combine(_outputFolder, NormalizeDirectoryName(title));
+			PackagePath = Path.Combine(_outputFolder, CorpusDirectoryName);
 
 			_imdiData = new IMDIPackage(corpus, PackagePath)
 			{
@@ -190,10 +198,35 @@ namespace SIL.Archiving.IMDI
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>Launch Arbil or Lamus or whatever</summary>
+		/// <remarks>need custom launcher here because Arbil is a java program, with no executable on linux</remarks>
 		/// ------------------------------------------------------------------------------------
 		internal override void LaunchArchivingProgram()
 		{
-			LaunchArchivingProgram(null);
+			if (string.IsNullOrEmpty(PathToProgramToLaunch) || !File.Exists(PathToProgramToLaunch))
+				return;
+
+			// if it is a .jar file, open with java
+			var exePath = (PathToProgramToLaunch.EndsWith(".jar")) ? "java" : PathToProgramToLaunch;
+			var args = string.Empty;
+			if (exePath == "java")
+			{
+				// are there additional command line parameters for this program?
+				if (PathToProgramToLaunch.ToLower().Contains("arbil"))
+					args = string.Format(ArchivingPrograms.ArbilCommandLineArgs, PathToProgramToLaunch);
+				else
+					args = PathToProgramToLaunch;
+			}
+
+			try
+			{
+				var prs = new Process { StartInfo = { FileName = exePath, Arguments = args } };
+				prs.Start();
+			}
+			catch (Exception e)
+			{
+				ReportError(e, string.Format(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.StartingIMDIErrorMsg",
+					"There was an error attempting to open the archive package in {0}."), PathToProgramToLaunch));
+			}
 		}
 
 #region Create IMDI package in worker thread
@@ -426,12 +459,13 @@ namespace SIL.Archiving.IMDI
 
 				if (string.IsNullOrEmpty(_corpusDirectoryName))
 				{
-					var test = NormalizeDirectoryName(_id);
+					var baseName = NormalizeDirectoryName(_titles[_id] + " " + DateTime.Today.ToString("yyyy-MM-dd"));
+					var test = baseName;
 					var i = 1;
 
 					while (Directory.Exists(Path.Combine(_outputFolder, test)))
 					{
-						test = NormalizeDirectoryName(_id) + "_" + i.ToString("000");
+						test = NormalizeDirectoryName(baseName + " " + i.ToString("000"));
 						i++;
 					}
 					_corpusDirectoryName = test;

@@ -18,6 +18,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private LanguageInfo _incomingLanguageInfo;
 		public event EventHandler ReadinessChanged;
 
+		/// <summary>Force the dialog to return 3 letter iso codes even if a 2 letter code is available</summary>
+		public bool Force3LetterCodes
+		{
+			get { return _model.Force3LetterCodes; }
+			set { _model.Force3LetterCodes = value; }
+		}
+
 		public void UpdateReadiness()
 		{
 			EventHandler handler = ReadinessChanged;
