@@ -366,7 +366,7 @@
 			this._copyrightHolderLabel.Name = "_copyrightHolderLabel";
 			this._copyrightHolderLabel.Size = new System.Drawing.Size(86, 51);
 			this._copyrightHolderLabel.TabIndex = 28;
-			this._copyrightHolderLabel.Text = "By";
+			this._copyrightHolderLabel.Text = "Copyright Holder";
 			//
 			// tableLayoutPanel1
 			//
