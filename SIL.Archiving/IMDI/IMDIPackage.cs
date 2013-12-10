@@ -28,8 +28,7 @@ namespace SIL.Archiving.IMDI
 		{
 			_corpus = corpus;
 			_packagePath = packagePath;
-			//BaseImdiFile = new MetaTranscript(corpus ? MetatranscriptValueType.CORPUS :
-			//    MetatranscriptValueType.SESSION);
+
 			BaseImdiFile = new MetaTranscript(MetatranscriptValueType.CORPUS);
 
 			Sessions = new List<IArchivingSession>();
@@ -96,7 +95,7 @@ namespace SIL.Archiving.IMDI
 				catalogue.SubjectLanguages.Language.Add(LanguageList.Find(new ArchivingLanguage(iso3Id)).ToSubjectLanguageType());
 
 			var catImdi = new MetaTranscript { Items = new object[] { catalogue }, Type = MetatranscriptValueType.CATALOGUE };
-			corpus.CatalogueLink = catImdi.WriteImdiFile(_packagePath, Name).Replace("\\","/");
+			corpus.CatalogueLink = catImdi.WriteImdiFile(_packagePath, Name).Replace("\\", "/");
 
 			//  Create the corpus imdi file
 			BaseImdiFile.WriteImdiFile(_packagePath, Name);

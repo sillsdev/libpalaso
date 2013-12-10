@@ -83,6 +83,7 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="ArchivingPrograms.cs" />
 	<Compile Include="Generic\AccessProtocol\IAccessProtocol.cs" />
 	<Compile Include="Generic\AccessProtocol\FURCSAccessProtocol.cs" />
 	<Compile Include="Generic\AccessProtocol\AILLAAccessProtocol.cs" />

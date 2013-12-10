@@ -1471,20 +1471,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public static string GetExeFileLocation()
 		{
-			string exeFile;
-			const string rampFileExtension = ".ramp";
-
-			if (IsMono)
-				exeFile = FileLocator.LocateInProgramFiles("RAMP", true);
-			else
-				exeFile = FileLocator.GetFromRegistryProgramThatOpensFileType(rampFileExtension) ??
-					FileLocator.LocateInProgramFiles("ramp.exe", true, "ramp");
-
-			// make sure the file exists
-			if (!File.Exists(exeFile))
-				return null;
-
-			return new FileInfo(exeFile).FullName;
+			return ArchivingPrograms.GetRampExeFileLocation();
 		}
 
 		#region Methods for creating mets file.

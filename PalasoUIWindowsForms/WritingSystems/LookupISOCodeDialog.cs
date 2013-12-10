@@ -13,6 +13,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			ShowDesiredLanguageNameField = true;
 		}
 
+		/// <summary>Force the dialog to return 3 letter iso codes even if a 2 letter code is available</summary>
+		public bool Force3LetterCodes
+		{
+			get { return _lookupISOControl.Force3LetterCodes; }
+			set { _lookupISOControl.Force3LetterCodes = value; }
+		}
+
 		/// <summary>
 		/// If you wouldn't be paying attention to their requested name, and are only going to look at the code, then
 		/// set this to default so that they aren't fooled into thinking they can modify the name they'll see in your application.

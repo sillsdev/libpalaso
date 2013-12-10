@@ -183,8 +183,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			// _L10NSharpExtender
 			//
-			this._L10NSharpExtender.LocalizationManagerId = null;
-			this._L10NSharpExtender.PrefixForNewItems = null;
+			this._L10NSharpExtender.LocalizationManagerId = "Palaso";
+			this._L10NSharpExtender.PrefixForNewItems = "LanguageLookup";
 			//
 			// LookupISOControl
 			//
