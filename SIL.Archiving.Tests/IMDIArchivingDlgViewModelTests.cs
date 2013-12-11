@@ -54,7 +54,9 @@ namespace SIL.Archiving.Tests
 		public void CorpusDirectoryName_ValidNameForNewDirectory()
 		{
 			var dirName = _model.CorpusDirectoryName;
-			Assert.AreEqual("T_st_Corpus_N_me", dirName);
+
+			Assert.AreEqual(21, dirName.Length);
+			Assert.AreEqual("T_st_Title_", dirName.Substring(0, 11));
 		}
 		#endregion
 
