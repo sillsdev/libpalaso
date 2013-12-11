@@ -239,8 +239,10 @@ namespace Palaso.Xml
 						break;
 				}
 			}
-			int result = comparison(name, reader.Name);
-			return !reader.EOF && reader.NodeType == XmlNodeType.Element && name == reader.Name;
+
+			// Element name comparison returns the order of elements.  It is possible that we passed where the element would have been without
+			// finding it.  So, use string comparison to determine whether we found it or not.
+			return !reader.EOF && reader.NodeType == XmlNodeType.Element && name.Equals(reader.Name);
 		}
 
 		public static bool FindNextElementInSequence(XmlReader reader, string name, string nameSpace, Comparison<string> comparison)
@@ -261,10 +263,11 @@ namespace Palaso.Xml
 		/// </summary>
 		/// <param name="reader"></param>
 		/// <param name="name"></param>
-		/// <param name="comparison"></param>
-		public static void ReadEndElement(XmlReader reader, string name, Comparison<string> comparison)
+		/// REVIEW Hasso 2013.12: This method--and all of our XmlReader code, really--is fragile.  Since we don't expect LDML files to be unwieldily
+		/// large, we could afford to refactor all this using XElement, which would pay off in the long run.
+		public static void ReadEndElement(XmlReader reader, string name)
 		{
-			while (!reader.EOF && (reader.NodeType != XmlNodeType.EndElement || comparison(name, reader.Name) > 0))
+			while (!reader.EOF && (reader.NodeType != XmlNodeType.EndElement || !name.Equals(reader.Name)))
 			{
 				reader.Read();
 			}

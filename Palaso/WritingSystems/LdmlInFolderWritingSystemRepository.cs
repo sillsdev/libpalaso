@@ -227,11 +227,6 @@ namespace Palaso.WritingSystems
 				}
 		}
 
-//        /// <summary>
-//        /// useful for unit tests
-//        /// </summary>
-//        public bool DontAddDefaultDefinitions { get; set; }
-//
 		/// <summary>
 		/// Provides writing systems from a repository that comes, for example, with the OS
 		/// </summary>
@@ -364,8 +359,9 @@ namespace Palaso.WritingSystems
 			}
 			foreach (var ws in allDefs)
 			{
+				var modified = ws.Modified; // cache before saving local, because Modified is always false after saving
 				SaveDefinition(ws);
-				if (!ws.Modified)
+				if (modified)
 				{
 					OnChangeNotifySharedStore(ws);
 				}
