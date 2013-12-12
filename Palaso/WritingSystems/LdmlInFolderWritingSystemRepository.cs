@@ -349,22 +349,11 @@ namespace Palaso.WritingSystems
 			// make a copy and then go through that list - SaveDefinition calls Set which
 			// may delete and then insert the same writing system - which would change WritingSystemDefinitions
 			// and not be allowed in a foreach loop
-			var allDefs = new List<IWritingSystemDefinition>();
-			foreach (var ws in AllWritingSystems)
-			{
-				if (CanSet(ws))
-				{
-					allDefs.Add(ws);
-				}
-			}
+			var allDefs = AllWritingSystems.Where(CanSet).ToList();
 			foreach (var ws in allDefs)
 			{
-				var modified = ws.Modified; // cache before saving local, because Modified is always false after saving
 				SaveDefinition(ws);
-				if (modified)
-				{
-					OnChangeNotifySharedStore(ws);
-				}
+				OnChangeNotifySharedStore(ws);
 			}
 
 
