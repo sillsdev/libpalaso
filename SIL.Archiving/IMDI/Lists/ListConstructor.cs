@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Xml;
+using SIL.Archiving.Generic;
 
 namespace SIL.Archiving.IMDI.Lists
 {
@@ -85,7 +85,7 @@ namespace SIL.Archiving.IMDI.Lists
 			{
 				if (!string.IsNullOrEmpty(_listPath)) return _listPath;
 
-				var thisPath = CheckFolder(Path.Combine(IMDIDataFolder, "lists"));
+				var thisPath = ArchivingFileSystem.SilCommonIMDIDataFolder;
 
 				// check if path exists
 				if (!Directory.Exists(thisPath))
@@ -97,21 +97,7 @@ namespace SIL.Archiving.IMDI.Lists
 			}
 		}
 
-		private static string SilCommonDataFolder
-		{
-			get { return CheckFolder(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "SIL")); }
-		}
 
-		private static string IMDIDataFolder
-		{
-			get { return CheckFolder(Path.Combine(SilCommonDataFolder, "IMDI")); }
-		}
-
-		private static string CheckFolder(string folderName)
-		{
-			if (!Directory.Exists(folderName)) Directory.CreateDirectory(folderName);
-			return folderName;
-		}
 
 		private static string CheckFile(string listName)
 		{

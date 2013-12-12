@@ -160,10 +160,8 @@ namespace SIL.Archiving.IMDI
 			if (resource.Description.Count == 0)
 				resource.Description.Add(new LanguageString());
 
-			if (AccessProtocol != null)
-			{
-				resource.Access = new AccessType {Availability = AccessProtocol.GetAccessCode()};
-			}
+			if (AccessCode != null)
+				resource.Access = new AccessType {Availability = AccessCode};
 		}
 	}
 }

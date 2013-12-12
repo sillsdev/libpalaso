@@ -44,7 +44,7 @@ namespace SIL.Archiving.Generic
 		}
 
 		/// <summary></summary>
-		public IAccessProtocol AccessProtocol { get; set; }
+		public ArchiveAccessProtocol AccessProtocol { get; set; }
 
 		/// <summary></summary>
 		public string AccessCode { get; set; }

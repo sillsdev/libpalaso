@@ -1760,7 +1760,7 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks>Not used yet</remarks>
 		[XmlIgnore]
-		public IAccessProtocol AccessProtocol { get; set; }
+		public ArchiveAccessProtocol AccessProtocol { get; set; }
 
 		/// <remarks>The access level code for this object, applied to resource files and actors</remarks>
 		[XmlIgnore]
