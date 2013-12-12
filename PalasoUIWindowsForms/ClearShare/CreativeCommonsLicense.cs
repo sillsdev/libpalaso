@@ -58,7 +58,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			}
 		}
 
-		public string kDefaultVersion = "3.0";
+		public const string kDefaultVersion = "3.0";
 
 		/// <summary>
 		/// at the moment, we only use the license url, but in future we could add other custom provisions, like "ok to crop" (if they're allowed by cc?)
@@ -69,6 +69,21 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				throw new ApplicationException("A license property is required in order to make a Creative Commons License from metadata.");
 
 			return FromLicenseUrl(metadataProperties["license"]);
+		}
+
+		/// <summary>
+		/// Create a CCL from a string produced by the Abbreviation method of a CCL.
+		/// It will have the current default Version.
+		/// Other values are not guaranteed to work, though at present they will.
+		/// Enhance: Possibly we should try to verify that the abbreviation is a valid CCL one?
+		/// </summary>
+		/// <param name="abbr"></param>
+		/// <returns></returns>
+		public static LicenseInfo FromAbbreviation(string abbr)
+		{
+			var result = new CreativeCommonsLicense();
+			result.Url = AssembleUrl(abbr, kDefaultVersion);
+			return result;
 		}
 
 
@@ -100,13 +115,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		{
 			get
 			{
-				var url = Abbreviation;
-
-				url += "/";
-
-				if(!string.IsNullOrEmpty(Version))
-					url+=Version+"/";
-				return "http://creativecommons.org/licenses/" + url;
+				return AssembleUrl(Abbreviation, Version);
 			}
 			set
 			{
@@ -136,7 +145,16 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		}
 
-		private string Abbreviation
+		private static string AssembleUrl(string abbreviation, string version)
+		{
+			var url = abbreviation + "/";
+
+			if (!string.IsNullOrEmpty(version))
+				url += version + "/";
+			return "http://creativecommons.org/licenses/" + url;
+		}
+
+		public override string Abbreviation
 		{
 			get
 			{

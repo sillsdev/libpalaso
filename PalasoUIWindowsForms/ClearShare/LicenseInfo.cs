@@ -24,6 +24,22 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		public abstract string GetDescription(string iso639_3LanguageCode);
 
+		/// <summary>
+		/// A string that is a good short indication of the license type, and can be used in FromAbbreviation.
+		/// </summary>
+		public abstract string Abbreviation { get; }
+
+		public static LicenseInfo FromAbbreviation(string abbr)
+		{
+			switch (abbr)
+			{
+				case "ask": return new NullLicense();
+				case "custom": return new CustomLicense();
+				default:
+					return CreativeCommonsLicense.FromAbbreviation(abbr);
+			}
+		}
+
 		virtual public Image GetImage()
 		{
 			return null;
@@ -52,6 +68,11 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		public override string GetDescription(string iso639_3LanguageCode)
 		{
 			return "For permission to reuse, contact the copyright holder.";
+		}
+
+		public override string Abbreviation
+		{
+			get { return "ask"; }
 		}
 
 		public override string ToString()
@@ -84,6 +105,11 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			if (string.IsNullOrEmpty(RightsStatement))
 				return "For permission to reuse, contact the copyright holder.";
 			return "";
+		}
+
+		public override string Abbreviation
+		{
+			get { return "custom"; }
 		}
 
 		public override Image GetImage()
