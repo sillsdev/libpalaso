@@ -1,5 +1,4 @@
-﻿using System;
-using SIL.Archiving.Generic.AccessProtocol;
+﻿using SIL.Archiving.Generic.AccessProtocol;
 
 namespace SIL.Archiving.Generic
 {
@@ -16,7 +15,7 @@ namespace SIL.Archiving.Generic
 		void AddDescription(LanguageString description);
 
 		/// <summary>Who has access, and how do you get access. Different archives use this differently</summary>
-		IAccessProtocol AccessProtocol { get; set; }
+		ArchiveAccessProtocol AccessProtocol { get; set; }
 
 		/// <summary>The access level code for this object</summary>
 		string AccessCode { get; set; }

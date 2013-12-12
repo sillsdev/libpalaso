@@ -61,6 +61,22 @@ namespace SIL.Archiving.Properties {
 		}
 
 		/// <summary>
+		///   Looks up a localized string similar to [
+		///{&quot;protocol&quot;:&quot;FURCS&quot;,&quot;documentation&quot;:&quot;fucrs.html&quot;,&quot;choices&quot;:[
+		///	{&quot;label&quot;:&quot;F&quot;,&quot;description&quot;:&quot;access is Free to all&quot;},
+		///	{&quot;label&quot;:&quot;U&quot;,&quot;description&quot;:&quot;all Users can access (requires registration)&quot;},
+		///	{&quot;label&quot;:&quot;RC&quot;,&quot;description&quot;:&quot;Researchers and Community members are allowed access&quot;},
+		///	{&quot;label&quot;:&quot;C&quot;,&quot;description&quot;:&quot;only Community members are allowed access (normally requires application to Depositor)&quot;},
+		///	{&quot;label&quot;:&quot;S&quot;,&quot;description&quot;:&quot;only Subscribers are allowed access (requires application to Depositor)&quot;},
+		///	{ [rest of string was truncated]&quot;;.
+		/// </summary>
+		internal static string AccessProtocols {
+			get {
+				return ResourceManager.GetString("AccessProtocols", resourceCulture);
+			}
+		}
+
+		/// <summary>
 		///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;&lt;mets ID=&quot;sort-mets_mets&quot; OBJID=&quot;sword-mets&quot; LABEL=&quot;DSpace SWORD Item&quot; PROFILE=&quot;DSpace SIL SIP Profile 1.0&quot; xmlns=&quot;http://www.loc.gov/METS/&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/mets.xsd&quot;&gt;
 		///  &lt;metsHdr/&gt;
 		///  &lt;dmdSec ID=&quot;ramp-mets-dmd-2&quot; GROUPID=&quot;ramp-mets-dmd-2_group-1&quot;&gt;

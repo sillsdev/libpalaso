@@ -11,7 +11,7 @@ namespace SIL.Archiving.Generic
 		protected string _fileSize; // in KB
 		protected string _mimeType;
 		protected LanguageStringCollection _descriptions;
-		protected IAccessProtocol _accessProtocol;
+		protected ArchiveAccessProtocol _accessProtocol;
 
 		/// <summary>If this file contains information about another file, put the name of the other file here</summary>
 		public string DescribesAnotherFile;
@@ -83,11 +83,14 @@ namespace SIL.Archiving.Generic
 		}
 
 		/// <summary />
-		public IAccessProtocol AccessProtocol
+		public ArchiveAccessProtocol AccessProtocol
 		{
 			get { return _accessProtocol; }
 			set { _accessProtocol = value; }
 		}
+
+		/// <summary />
+		public string AccessCode { get; set; }
 
 		/// <summary>Return type strings consistent with the requirements of the archiving format</summary>
 		public virtual string GetTypeDescription()

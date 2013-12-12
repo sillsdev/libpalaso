@@ -75,6 +75,7 @@
 	<Reference Include="System.configuration" />
 	<Reference Include="System.Core" />
 	<Reference Include="System.Drawing" />
+	<Reference Include="System.Runtime.Serialization" />
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml.Linq" />
 	<Reference Include="System.Data.DataSetExtensions" />
@@ -84,13 +85,12 @@
   </ItemGroup>
   <ItemGroup>
 	<Compile Include="ArchivingPrograms.cs" />
-	<Compile Include="Generic\AccessProtocol\IAccessProtocol.cs" />
-	<Compile Include="Generic\AccessProtocol\FURCSAccessProtocol.cs" />
-	<Compile Include="Generic\AccessProtocol\AILLAAccessProtocol.cs" />
+	<Compile Include="Generic\AccessProtocol\AccessProtocolList.cs" />
 	<Compile Include="Generic\ArchivingActor.cs" />
 	<Compile Include="Generic\ArchivingContact.cs" />
 	<Compile Include="Generic\ArchivingFile.cs" />
 	<Compile Include="ArchivingLanguage.cs" />
+	<Compile Include="Generic\ArchivingFileSystem.cs" />
 	<Compile Include="Generic\ArchivingPackage.cs" />
 	<Compile Include="ArchivingDlg.cs">
 	  <SubType>Form</SubType>
@@ -120,7 +120,6 @@
 	<Compile Include="IMDI\Schema\IMDIInterfaces.cs" />
 	<Compile Include="IMDI\Schema\IMDI_3_0.cs" />
 	<Compile Include="IMDI\Schema\IMDISchemaHelper.cs" />
-	<Compile Include="Generic\AccessProtocol\TLAAccessProtocol.cs" />
 	<Compile Include="IMDI\Schema\IMDI_3_0_NotUsed.cs" />
 	<Compile Include="RampArchivingDlgViewModel.cs" />
 	<Compile Include="JSONUtils.cs" />
@@ -165,6 +164,7 @@
 	  <Generator>SettingsSingleFileGenerator</Generator>
 	  <LastGenOutput>Settings.Designer.cs</LastGenOutput>
 	</None>
+	<None Include="Resources\AccessProtocols.json" />
 	<None Include="Resources\EmptyMets.xml" />
   </ItemGroup>
   <ItemGroup>

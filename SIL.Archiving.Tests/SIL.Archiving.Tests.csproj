@@ -86,6 +86,7 @@
 	<Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="AccessProtocolListTests.cs" />
 	<Compile Include="IMDIArchivingDlgViewModelTests.cs" />
 	<Compile Include="IMDI30Tests.cs" />
 	<Compile Include="RampArchivingDlgViewModelTests.cs" />
