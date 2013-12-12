@@ -198,5 +198,30 @@ namespace Palaso.Extensions
 			text = text.Replace("&", string.Empty);
 			return text.Replace(kObjReplacementChar.ToString(CultureInfo.InvariantCulture), "&");
 		}
+
+		/// <summary>
+		/// Trims the string, and returns null if the result is zero length
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="trimChars"></param>
+		/// <returns></returns>
+		public static string NullTrim(this string value, char[] trimChars)
+		{
+			if (string.IsNullOrEmpty(value))
+				return null;
+
+			value = value.Trim(trimChars);
+			return string.IsNullOrEmpty(value) ? null : value;
+		}
+
+		/// <summary>
+		/// Trims the string, and returns null if the result is zero length
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public static string NullTrim(this string value)
+		{
+			return value.NullTrim(null);
+		}
 	}
 }
