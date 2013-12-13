@@ -307,7 +307,8 @@ namespace Palaso.UI.WindowsForms.i18n
 			{
 
 #if DEBUG
-				throw new InvalidOperationException("Disposed not explicitly called on " + GetType().FullName + ".  Parent container name was '"+     _nameOfParentContainer+"'.\r\n"+this._constructionStackTrace.ToString());
+				throw new InvalidOperationException("Disposed not explicitly called on " + GetType().FullName +
+					".  Parent container name was '" + _nameOfParentContainer + "'." + Environment.NewLine + _constructionStackTrace);
 #else
 				;
 #endif

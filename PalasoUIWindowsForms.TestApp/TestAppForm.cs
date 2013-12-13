@@ -45,22 +45,25 @@ namespace PalasoUIWindowsForms.TestApp
 
 		private void OnFolderBrowserControlClicked(object sender, EventArgs e)
 		{
-			var form = new Form();
-			var browser = new Palaso.UI.WindowsForms.FolderBrowserControl.FolderBrowserControl();
-			browser.Location = new Point(0, 0);
-			browser.Width = form.ClientSize.Width;
-			browser.Height = form.ClientSize.Height;
-			browser.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-			browser.ShowOnlyMappedDrives = false;
-			browser.ShowAddressbar = true;
-			form.Controls.Add(browser);
-			form.ShowDialog();
+			using (var form = new Form())
+			{
+				var browser = new Palaso.UI.WindowsForms.FolderBrowserControl.FolderBrowserControl();
+				browser.Location = new Point(0, 0);
+				browser.Width = form.ClientSize.Width;
+				browser.Height = form.ClientSize.Height;
+				browser.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left |
+								AnchorStyles.Right;
+				browser.ShowOnlyMappedDrives = false;
+				browser.ShowAddressbar = true;
+				form.Controls.Add(browser);
+				form.ShowDialog();
+			}
 		}
 
 		private void OnLookupISOCodeDialogClicked(object sender, EventArgs e)
 		{
-			var dialog = new LookupISOCodeDialog();
-			dialog.ShowDialog();
+			using (var dialog = new LookupISOCodeDialog())
+				dialog.ShowDialog();
 		}
 
 		private void OnWritingSystemSetupDialogClicked(object sender, EventArgs e)
@@ -71,11 +74,13 @@ namespace PalasoUIWindowsForms.TestApp
 			try
 			{
 				var wsRepo = LdmlInFolderWritingSystemRepository.Initialize(tempPath, onMigration, onLoadProblem);
-				var dialog = new WritingSystemSetupDialog(wsRepo);
-				dialog.WritingSystems.LocalKeyboardSettings = Settings.Default.LocalKeyboards;
-				dialog.ShowDialog();
-				Settings.Default.LocalKeyboards = dialog.WritingSystems.LocalKeyboardSettings;
-				Settings.Default.Save();
+				using (var dialog = new WritingSystemSetupDialog(wsRepo))
+				{
+					dialog.WritingSystems.LocalKeyboardSettings = Settings.Default.LocalKeyboards;
+					dialog.ShowDialog();
+					Settings.Default.LocalKeyboards = dialog.WritingSystems.LocalKeyboardSettings;
+					Settings.Default.Save();
+				}
 			}
 			catch (Exception)
 			{
@@ -89,7 +94,8 @@ namespace PalasoUIWindowsForms.TestApp
 
 		private void OnArtOfReadingClicked(object sender, EventArgs e)
 		{
-			new ArtOfReadingTestForm().ShowDialog();
+			using (var dlg = new ArtOfReadingTestForm())
+				dlg.ShowDialog();
 		}
 
 		private static void onMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
