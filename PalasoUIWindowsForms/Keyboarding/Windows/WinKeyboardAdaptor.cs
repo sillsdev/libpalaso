@@ -57,7 +57,15 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 
 		public WinKeyboardAdaptor()
 		{
-			ProcessorProfiles = new TfInputProcessorProfilesClass();
+			try
+			{
+				ProcessorProfiles = new TfInputProcessorProfilesClass();
+			}
+			catch (InvalidCastException)
+			{
+				ProcessorProfiles = null;
+				return;
+			}
 
 			// ProfileMgr will be null on Windows XP - the interface got introduced in Vista
 			ProfileMgr = ProcessorProfiles as ITfInputProcessorProfileMgr;
@@ -67,10 +75,16 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 		{
 			get
 			{
+				if (ProcessorProfiles == null)
+					return new short[0];
+
 				var ptr = IntPtr.Zero;
 				try
 				{
 					var count = ProcessorProfiles.GetLanguageList(out ptr);
+					if (count <= 0)
+						return new short[0];
+
 					var langIds = new short[count];
 					Marshal.Copy(ptr, langIds, 0, count);
 					return langIds;
@@ -302,7 +316,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 
 		private bool UseWindowsApiForKeyboardSwitching(WinKeyboardDescription winKeyboard)
 		{
-			return ProfileMgr == null && winKeyboard.InputProcessorProfile.Hkl == IntPtr.Zero;
+			return ProcessorProfiles == null ||
+				(ProfileMgr == null && winKeyboard.InputProcessorProfile.Hkl == IntPtr.Zero);
 		}
 
 		private void SwitchKeyboard(WinKeyboardDescription winKeyboard)
@@ -342,7 +357,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 		{
 			try
 			{
-				var profile = winKeyboard.InputProcessorProfile;
 				if (UseWindowsApiForKeyboardSwitching(winKeyboard))
 				{
 					// Win XP with regular keyboard, or TSF disabled
@@ -350,6 +364,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 					return winKeyboard;
 				}
 
+				var profile = winKeyboard.InputProcessorProfile;
 				ProcessorProfiles.ChangeCurrentLanguage(profile.LangId);
 				if (ProfileMgr == null)
 				{

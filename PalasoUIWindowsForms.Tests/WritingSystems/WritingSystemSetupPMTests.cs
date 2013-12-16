@@ -119,12 +119,6 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		}
 
 		[Test]
-		public void KeyboardNames_FirstKeyboardIsDefault()
-		{
-			Assert.That(WritingSystemSetupModel.PossibleKeyboardsToChoose.First().Name, Is.EqualTo("(default)"));
-		}
-
-		[Test]
 		public void FontFamilies_HasAtLeastOneFont()
 		{
 			IEnumerable<FontFamily> font = WritingSystemSetupModel.FontFamilies;
