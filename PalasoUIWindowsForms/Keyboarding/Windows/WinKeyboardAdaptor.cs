@@ -1,11 +1,5 @@
-// --------------------------------------------------------------------------------------------
-// <copyright from='2011' to='2011' company='SIL International'>
-// 	Copyright (c) 2011, SIL International. All Rights Reserved.
-//
-// 	Distributable under the terms of either the Common Public License or the
-// 	GNU Lesser General Public License, as specified in the LICENSING.txt file.
-// </copyright>
-// --------------------------------------------------------------------------------------------
+// Copyright (c) 2013 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 #if !__MonoCS__
 using System;
 using System.Collections.Generic;
@@ -14,7 +8,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Forms;
+using Microsoft.Unmanaged.TSF;
 using Microsoft.Win32;
 using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
 using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
@@ -30,54 +26,120 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 		Justification = "m_Timer gets disposed in Close() which gets called from KeyboardControllerImpl.Dispose")]
 	internal class WinKeyboardAdaptor: IKeyboardAdaptor
 	{
+		internal class LayoutName
+		{
+			public LayoutName()
+			{
+				Name = string.Empty;
+				LocalizedName = string.Empty;
+			}
+
+			public LayoutName(string layout): this(layout, layout)
+			{
+			}
+
+			public LayoutName(string layout, string localizedLayout)
+			{
+				Name = layout;
+				LocalizedName = localizedLayout;
+			}
+
+			public string Name;
+			public string LocalizedName;
+		}
+
 		private List<IKeyboardErrorDescription> m_BadLocales;
 		private Timer m_Timer;
-		private InputLanguage m_ExpectedInputLanguage;
 		private WinKeyboardDescription m_ExpectedKeyboard;
 		private bool m_fSwitchedLanguages;
+		internal ITfInputProcessorProfiles ProcessorProfiles { get; private set; }
+		internal ITfInputProcessorProfileMgr ProfileMgr { get; private set; }
 
-		private void GetLocales()
+		public WinKeyboardAdaptor()
 		{
-			m_BadLocales = new List<IKeyboardErrorDescription>();
-			// ENHANCE: For "Chinese (Simplified, PRC)" we always get back
-			// "Chinese (Simplified) - US Keyboard" no matter what IME the
-			// user added in the system settings. And it's reported only once
-			// even when the user adds multiple IMEs.
-			// I think there must be a way to retrieve the available TSF services.
-			foreach (InputLanguage lang in InputLanguage.InstalledInputLanguages)
+			ProcessorProfiles = new TfInputProcessorProfilesClass();
+
+			// ProfileMgr will be null on Windows XP - the interface got introduced in Vista
+			ProfileMgr = ProcessorProfiles as ITfInputProcessorProfileMgr;
+		}
+
+		protected short[] Languages
+		{
+			get
 			{
-				// NOTE: InputLanguage.LayoutName has a bug in that it always returns the name
-				// of the first layout even when a culture has multiple layouts assigned.
-				// Therefore we use GetLayoutNameEx to retrieve the information from the registry.
-				var layoutName = GetLayoutNameEx(lang.Handle);
-				//var cultureId = string.Format("{0:X4}", (int)(lang.Handle) & 0xFFFF);
-				string displayName;
-				string locale;
+				var ptr = IntPtr.Zero;
 				try
 				{
-					displayName = lang.Culture.DisplayName;
-					locale = lang.Culture.Name;
+					var count = ProcessorProfiles.GetLanguageList(out ptr);
+					var langIds = new short[count];
+					Marshal.Copy(ptr, langIds, 0, count);
+					return langIds;
 				}
-				catch (CultureNotFoundException)
+				finally
 				{
-					// we get an exception for non-supported cultures, probably because of a
-					// badly applied .NET patch.
-					// http://www.ironspeed.com/Designer/3.2.4/WebHelp/Part_VI/Culture_ID__XXX__is_not_a_supported_culture.htm and others
-					displayName = "[Unknown Language]";
-					locale = "en-US";
+					if (ptr != IntPtr.Zero)
+						Marshal.FreeCoTaskMem(ptr);
 				}
-				KeyboardController.Manager.RegisterKeyboard(new WinKeyboardDescription(
-					GetDisplayName(displayName, layoutName), layoutName, locale, lang.Interface(),
-					this));
 			}
 		}
 
-		private static string GetDisplayName(string cultureName, string layoutName)
+		private void GetInputMethodsThroughTsf(short[] languages)
 		{
-			return string.Format("{1} - {0}", cultureName, layoutName);
+			foreach (var langId in languages)
+			{
+				var profilesEnumerator = ProfileMgr.EnumProfiles(langId);
+				TfInputProcessorProfile profile;
+				while (profilesEnumerator.Next(1, out profile) == 1)
+				{
+					// We only deal with keyboards; skip other input methods
+					if (profile.CatId != Guids.TfcatTipKeyboard)
+						continue;
+
+					if (profile.ProfileType == TfProfileType.KeyboardLayout || (profile.Flags & TfIppFlags.Enabled) != 0)
+					{
+						KeyboardController.Manager.RegisterKeyboard(new WinKeyboardDescription(profile, this));
+					}
+				}
+			}
 		}
 
-		private static string GetLayoutNameEx(IntPtr handle)
+		private void GetInputMethodsThroughWinApi()
+		{
+			var countKeyboardLayouts = Win32.GetKeyboardLayoutList(0, IntPtr.Zero);
+			if (countKeyboardLayouts == 0)
+				return;
+
+			var keyboardLayouts = Marshal.AllocCoTaskMem(countKeyboardLayouts * IntPtr.Size);
+			try
+			{
+				Win32.GetKeyboardLayoutList(countKeyboardLayouts, keyboardLayouts);
+
+				var current = keyboardLayouts;
+				var elemSize = (ulong)IntPtr.Size;
+				for (int i = 0; i < countKeyboardLayouts; i++)
+				{
+					var hkl = (IntPtr)Marshal.ReadInt32(current);
+					KeyboardController.Manager.RegisterKeyboard(new WinKeyboardDescription(hkl, this));
+					current = (IntPtr)((ulong)current + elemSize);
+				}
+			}
+			finally
+			{
+				Marshal.FreeCoTaskMem(keyboardLayouts);
+			}
+		}
+
+		private void GetInputMethods()
+		{
+			if (ProfileMgr != null)
+				// Windows >= Vista
+				GetInputMethodsThroughTsf(Languages);
+			else
+				// Windows XP
+				GetInputMethodsThroughWinApi();
+		}
+
+		internal static LayoutName GetLayoutNameEx(IntPtr handle)
 		{
 			// InputLanguage.LayoutName is not to be trusted, especially where there are mutiple
 			// layouts (input methods) associated with a language. This function also provides
@@ -91,41 +153,70 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			// This function determines an HKL's LayoutName based on the following order of
 			// precedence:
 			// - Look up HKL in HKCU\\Software\\InKey\\SubstituteLayoutNames
+			// - Look up extended layout in HKLM\\SYSTEM\\CurrentControlSet\\Control\\Keyboard Layouts
 			// - Look up basic (non-extended) layout in HKLM\\SYSTEM\\CurrentControlSet\\Control\\Keyboard Layouts
 			// -Scan for ID of extended layout in HKLM\\SYSTEM\\CurrentControlSet\\Control\\Keyboard Layouts
 			var hkl = string.Format("{0:X8}", (int)handle);
-			var layoutName = (string)Registry.GetValue(@"HKEY_CURRENT_USER\Software\InKey\SubstituteLayoutNames", hkl, null);
-			if (!string.IsNullOrEmpty(layoutName))
+
+			// Get substitute first
+			hkl = (string)Registry.GetValue(@"HKEY_CURRENT_USER\Keyboard Layout\Substitutes", hkl, hkl);
+
+			// Check InKey
+			var substituteLayoutName = (string)Registry.GetValue(@"HKEY_CURRENT_USER\Software\InKey\SubstituteLayoutNames", hkl, null);
+			if (!string.IsNullOrEmpty(substituteLayoutName))
+				return new LayoutName(substituteLayoutName);
+
+			var layoutName = GetLayoutNameFromKey(string.Concat(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Keyboard Layouts\", hkl));
+			if (layoutName != null)
 				return layoutName;
 
-			layoutName = (string)Registry.GetValue(string.Concat(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Keyboard Layouts\0000",
-				hkl.Substring(0, 4)), "Layout Text", null);
-
-			if (!string.IsNullOrEmpty(layoutName))
+			layoutName = GetLayoutNameFromKey(string.Concat(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Keyboard Layouts\0000",
+				hkl.Substring(0, 4)));
+			if (layoutName != null)
 				return layoutName;
 
 			using (var regKey = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Keyboard Layouts"))
 			{
-				if (regKey != null)
+				if (regKey == null)
+					return new LayoutName();
+
+				string layoutId = "0" + hkl.Substring(1, 3);
+				foreach (string subKeyName in regKey.GetSubKeyNames().Reverse())
+					// Scan in reverse order for efficiency, as the extended layouts are at the end.
 				{
-					string layoutId = "0" + hkl.Substring(1, 3);
-					foreach (string subKeyName in regKey.GetSubKeyNames().Reverse())
-						// Scan in reverse order for efficiency, as the extended layouts are at the end.
+					using (var klid = regKey.OpenSubKey(subKeyName))
 					{
-						using (var klid = regKey.OpenSubKey(subKeyName))
+						if (klid == null)
+							continue;
+
+						var layoutIdSk = ((string) klid.GetValue("Layout ID"));
+						if (layoutIdSk != null &&
+							layoutIdSk.Equals(layoutId, StringComparison.InvariantCultureIgnoreCase))
 						{
-							if (klid != null)
-							{
-								var layoutIdSk = ((string) klid.GetValue("Layout ID"));
-								if (layoutIdSk != null && layoutIdSk.Equals(layoutId, StringComparison.InvariantCultureIgnoreCase))
-									return (string) klid.GetValue("Layout Text");
-							}
+							return GetLayoutNameFromKey(klid.Name);
 						}
 					}
 				}
 			}
 
-			return null;
+			return new LayoutName();
+		}
+
+		private static LayoutName GetLayoutNameFromKey(string key)
+		{
+			var layoutText = (string)Registry.GetValue(key, "Layout Text", null);
+			var displayName = (string)Registry.GetValue(key, "Layout Display Name", null);
+			if (string.IsNullOrEmpty(layoutText) && string.IsNullOrEmpty(displayName))
+				return null;
+			else if (string.IsNullOrEmpty(displayName))
+				return new LayoutName(layoutText);
+			else
+			{
+				var bldr = new StringBuilder(100);
+				Win32.SHLoadIndirectString(displayName, bldr, 100, IntPtr.Zero);
+				return string.IsNullOrEmpty(layoutText) ? new LayoutName(bldr.ToString()) :
+					new LayoutName(layoutText, bldr.ToString());
+			}
 		}
 
 		/// <summary>
@@ -140,7 +231,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 				// TODO: write some tests
 				try
 				{
-					if (GetLayoutNameEx(lang.Handle) == keyboardDescription.Name)
+					if (GetLayoutNameEx(lang.Handle).Name == keyboardDescription.Name)
 					{
 						if (keyboardDescription.Locale == lang.Culture.Name)
 							return lang;
@@ -168,11 +259,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			KeyboardDescription sameLayout = null;
 			KeyboardDescription sameCulture = null;
 			// TODO: write some tests
+			var requestedLayout = GetLayoutNameEx(inputLanguage.Handle).Name;
 			foreach (KeyboardDescription keyboardDescription in Keyboard.Controller.AllAvailableKeyboards)
 			{
 				try
 				{
-					if (GetLayoutNameEx(inputLanguage.Handle) == keyboardDescription.Layout)
+					if (requestedLayout == keyboardDescription.Layout)
 					{
 						if (keyboardDescription.Locale == inputLanguage.Culture.Name)
 							return keyboardDescription;
@@ -194,40 +286,28 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 
 		private void OnTimerTick(object sender, EventArgs eventArgs)
 		{
-			if (m_ExpectedInputLanguage == null || m_ExpectedKeyboard == null)
+			if (m_ExpectedKeyboard == null || !m_fSwitchedLanguages)
 				return;
 
-			if (!m_fSwitchedLanguages)
+			if (InputLanguage.CurrentInputLanguage.Culture.KeyboardLayoutId == m_ExpectedKeyboard.InputLanguage.Culture.KeyboardLayoutId)
 			{
+				m_ExpectedKeyboard = null;
+				m_fSwitchedLanguages = false;
 				m_Timer.Enabled = false;
 				return;
 			}
 
-			if (InputLanguage.CurrentInputLanguage.Handle == m_ExpectedInputLanguage.Handle)
-			{
-				m_ExpectedInputLanguage = null;
-				m_ExpectedKeyboard = null;
-				m_fSwitchedLanguages = false;
-				return;
-			}
-
-			SwitchKeyboard(m_ExpectedKeyboard, m_ExpectedInputLanguage);
+			SwitchKeyboard(m_ExpectedKeyboard);
 		}
 
-		private void SwitchKeyboard(WinKeyboardDescription winKeyboard, InputLanguage inputLanguage)
+		private bool UseWindowsApiForKeyboardSwitching(WinKeyboardDescription winKeyboard)
 		{
-			m_ExpectedKeyboard = winKeyboard;
-			m_ExpectedInputLanguage = inputLanguage;
-			try
-			{
-				InputLanguage.CurrentInputLanguage = inputLanguage;
-			}
-			catch (ArgumentException)
-			{
-				// throws exception for non-supported culture, though seems to set it OK.
-			}
+			return ProfileMgr == null && winKeyboard.InputProcessorProfile.Hkl == IntPtr.Zero;
+		}
 
-			((IKeyboardControllerImpl)Keyboard.Controller).ActiveKeyboard = winKeyboard;
+		private void SwitchKeyboard(WinKeyboardDescription winKeyboard)
+		{
+			((IKeyboardControllerImpl)Keyboard.Controller).ActiveKeyboard = ActivateKeyboard(winKeyboard);
 			if (Form.ActiveForm != null)
 			{
 				// If we activate a keyboard while a particular Form is active, we want to know about
@@ -237,8 +317,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 				Form.ActiveForm.InputLanguageChanged += ActiveFormOnInputLanguageChanged;
 			}
 
+			// If we have a TIP (TSF Input Processor) we don't have a handle. But we do the
+			// keyboard switching through TSF so we don't need the workaround below.
+			if (!UseWindowsApiForKeyboardSwitching(winKeyboard))
+				return;
 
-			// The following two lines help to work around a Windows bug (happens at least on
+			m_ExpectedKeyboard = winKeyboard;
+			// The following lines help to work around a Windows bug (happens at least on
 			// XP-SP3): When you set the current input language (by any method), if there is more
 			// than one loaded input language associated with that same culture, Windows may
 			// initially go along with your request, and even respond to an immediate query of
@@ -251,6 +336,40 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			// stop timer first so that the 0.5s interval restarts.
 			m_Timer.Stop();
 			m_Timer.Start();
+		}
+
+		private WinKeyboardDescription ActivateKeyboard(WinKeyboardDescription winKeyboard)
+		{
+			try
+			{
+				var profile = winKeyboard.InputProcessorProfile;
+				if (UseWindowsApiForKeyboardSwitching(winKeyboard))
+				{
+					// Win XP with regular keyboard, or TSF disabled
+					Win32.ActivateKeyboardLayout(new HandleRef(this, winKeyboard.InputLanguage.Handle), 0);
+					return winKeyboard;
+				}
+
+				ProcessorProfiles.ChangeCurrentLanguage(profile.LangId);
+				if (ProfileMgr == null)
+				{
+					// Win XP with TIP (TSF Input Processor)
+					ProcessorProfiles.ActivateLanguageProfile(ref profile.ClsId, profile.LangId,
+						ref profile.GuidProfile);
+				}
+				else
+				{
+					// Windows >= Vista with either TIP or regular keyboard
+					ProfileMgr.ActivateProfile(profile.ProfileType, profile.LangId,
+						ref profile.ClsId, ref profile.GuidProfile, profile.Hkl,
+						TfIppMf.DontCareCurrentInputLanguage);
+				}
+			}
+			catch (ArgumentException)
+			{
+				// throws exception for non-supported culture, though seems to set it OK.
+			}
+			return winKeyboard;
 		}
 
 		/// <summary>
@@ -293,10 +412,18 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			// Chinese (LT-7487 et al).
 			var windowPtr = winKeyboard.WindowHandle != IntPtr.Zero ? winKeyboard.WindowHandle : Win32.GetFocus();
 			var windowHandle = new HandleRef(this, windowPtr);
+
+			// NOTE: Windows uses the same context for all windows of the current thread, so it
+			// doesn't really matter which window handle we pass.
 			var contextPtr = Win32.ImmGetContext(windowHandle);
 			if (contextPtr == IntPtr.Zero)
 				return;
 
+			// NOTE: Chinese Pinyin IME allows to switch between Chinese and Western punctuation.
+			// This can be selected in both Native and Alphanumeric conversion mode. However,
+			// when setting the value the punctuation setting doesn't get restored in Alphanumeric
+			// conversion mode, not matter what I try. I guess that is because Chinese punctuation
+			// doesn't really make sense with Latin characters.
 			var contextHandle = new HandleRef(this, contextPtr);
 			Win32.ImmSetConversionStatus(contextHandle, winKeyboard.ConversionMode, winKeyboard.SentenceMode);
 			Win32.ImmReleaseContext(windowHandle, contextHandle);
@@ -317,7 +444,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			m_Timer = new Timer { Interval = 500 };
 			m_Timer.Tick += OnTimerTick;
 
-			GetLocales();
+			GetInputMethods();
 
 			// Form.ActiveForm can be null when running unit tests
 			if (Form.ActiveForm != null)
@@ -326,7 +453,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 
 		public void UpdateAvailableKeyboards()
 		{
-			GetLocales();
+			GetInputMethods();
 		}
 
 		public void Close()
@@ -345,7 +472,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 
 		public bool ActivateKeyboard(IKeyboardDefinition keyboard)
 		{
-			SwitchKeyboard(keyboard as WinKeyboardDescription, GetInputLanguage(keyboard));
+			SwitchKeyboard(keyboard as WinKeyboardDescription);
 			return true;
 		}
 
@@ -378,8 +505,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 		/// </summary>
 		public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
 		{
-			return new WinKeyboardDescription(GetDisplayName(locale, layout), layout, locale,
-					new InputLanguageWrapper(new CultureInfo(locale), IntPtr.Zero, layout), this) {IsAvailable = false};
+			return new WinKeyboardDescription(locale, layout, this) {IsAvailable = false};
 		}
 
 		/// <summary>

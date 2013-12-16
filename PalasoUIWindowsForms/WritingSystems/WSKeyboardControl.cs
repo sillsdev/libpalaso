@@ -14,11 +14,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	public partial class WSKeyboardControl : UserControl
 	{
 
-		private class KeyboardAdapter
+		private class KeyboardDefinitionAdapter
 		{
 			private IKeyboardDefinition _descriptor;
 
-			public KeyboardAdapter(IKeyboardDefinition descriptor)
+			public KeyboardDefinitionAdapter(IKeyboardDefinition descriptor)
 			{
 				_descriptor = descriptor;
 			}
@@ -40,12 +40,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 			public override string ToString()
 			{
-				return _descriptor.Name;
+				return _descriptor.LocalizedName;
 			}
 		}
 
 		private WritingSystemSetupModel _model;
-		private IKeyboardDefinition _defaultKeyboard;
 		private string _defaultFontName;
 		private float _defaultFontSize;
 
@@ -158,7 +157,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			var unavailableFont = new Font(_possibleKeyboardsList.Font, FontStyle.Italic);
 			foreach (var keyboard in _model.KnownKeyboards)
 			{
-				var adapter = new KeyboardAdapter(keyboard);
+				var adapter = new KeyboardDefinitionAdapter(keyboard);
 				var item = new ListViewItem(adapter.ToString());
 				item.Tag = adapter;
 				if (!keyboard.IsAvailable)
@@ -175,7 +174,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				LocalizationManager.GetString("WSKeyboardControl.KeyboardsAvailable", "Available keyboards")));
 			foreach (var keyboard in _model.OtherAvailableKeyboards)
 			{
-				var adapter = new KeyboardAdapter(keyboard);
+				var adapter = new KeyboardDefinitionAdapter(keyboard);
 				var item = new ListViewItem(adapter.ToString());
 				item.Tag = adapter;
 				item.ToolTipText = adapter.ToString();
@@ -212,17 +211,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			if (_selectKeyboardPattern == null)
 				_selectKeyboardPattern = _selectKeyboardLabel.Text;
 			_selectKeyboardLabel.Text = string.Format(_selectKeyboardPattern, _model.CurrentDefinition.ListLabel);
-			KeyboardAdapter currentKeyboard = null;
+			KeyboardDefinitionAdapter currentKeyboardDefinition = null;
 			if (_possibleKeyboardsList.SelectedItems.Count > 0)
-				currentKeyboard = _possibleKeyboardsList.SelectedItems[0].Tag as KeyboardAdapter;
+				currentKeyboardDefinition = _possibleKeyboardsList.SelectedItems[0].Tag as KeyboardDefinitionAdapter;
 
 			if (_model.CurrentKeyboard != null &&
-				(currentKeyboard == null || _model.CurrentKeyboard.Layout != currentKeyboard.Layout
-				|| _model.CurrentKeyboard.Locale != currentKeyboard.Locale))
+				(currentKeyboardDefinition == null || _model.CurrentKeyboard.Layout != currentKeyboardDefinition.Layout
+				|| _model.CurrentKeyboard.Locale != currentKeyboardDefinition.Locale))
 			{
 				foreach (ListViewItem item in _possibleKeyboardsList.Items)
 				{
-					var keyboard = item.Tag as KeyboardAdapter;
+					var keyboard = item.Tag as KeyboardDefinitionAdapter;
 					if (keyboard != null && keyboard.Layout == _model.CurrentKeyboard.Layout
 						&& keyboard.Locale == _model.CurrentKeyboard.Locale)
 					{
@@ -287,7 +286,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			if (_possibleKeyboardsList.SelectedItems.Count != 0)
 			{
-				var currentKeyboard = _possibleKeyboardsList.SelectedItems[0].Tag as KeyboardAdapter;
+				var currentKeyboard = _possibleKeyboardsList.SelectedItems[0].Tag as KeyboardDefinitionAdapter;
 				if (_model.CurrentKeyboard.Layout != currentKeyboard.Layout ||
 					_model.CurrentKeyboard.Locale != currentKeyboard.Locale)
 				{
@@ -304,7 +303,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				return;
 			}
-			_defaultKeyboard = Keyboard.Controller.ActiveKeyboard;
 			_model.ActivateCurrentKeyboard();
 			SetTestAreaFont();
 		}
@@ -315,7 +313,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				return;
 			}
-			_defaultKeyboard.Activate();
+			Keyboard.Controller.ActivateDefaultKeyboard();
 		}
 
 		private void _windowsKeyboardSettingsLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

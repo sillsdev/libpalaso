@@ -44,10 +44,10 @@ namespace TestAppKeyboard
 			this.keyboardsC = new System.Windows.Forms.ComboBox();
 			this.testAreaC = new System.Windows.Forms.TextBox();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.currentKeyboard = new System.Windows.Forms.ComboBox();
-			this.label7 = new System.Windows.Forms.Label();
-			this.cbOnEnter = new System.Windows.Forms.CheckBox();
 			this.cbOnActivate = new System.Windows.Forms.CheckBox();
+			this.cbOnEnter = new System.Windows.Forms.CheckBox();
+			this.label7 = new System.Windows.Forms.Label();
+			this.currentKeyboard = new System.Windows.Forms.ComboBox();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			//
@@ -73,7 +73,7 @@ namespace TestAppKeyboard
 			this.keyboardsA.Location = new System.Drawing.Point(191, 33);
 			this.keyboardsA.Name = "keyboardsA";
 			this.keyboardsA.Size = new System.Drawing.Size(174, 21);
-			this.keyboardsA.TabIndex = 2;
+			this.keyboardsA.TabIndex = 4;
 			//
 			// keyboardsB
 			//
@@ -81,7 +81,7 @@ namespace TestAppKeyboard
 			this.keyboardsB.Location = new System.Drawing.Point(191, 87);
 			this.keyboardsB.Name = "keyboardsB";
 			this.keyboardsB.Size = new System.Drawing.Size(174, 21);
-			this.keyboardsB.TabIndex = 3;
+			this.keyboardsB.TabIndex = 5;
 			//
 			// label1
 			//
@@ -143,14 +143,14 @@ namespace TestAppKeyboard
 			this.keyboardsC.Location = new System.Drawing.Point(191, 142);
 			this.keyboardsC.Name = "keyboardsC";
 			this.keyboardsC.Size = new System.Drawing.Size(174, 21);
-			this.keyboardsC.TabIndex = 9;
+			this.keyboardsC.TabIndex = 6;
 			//
 			// testAreaC
 			//
 			this.testAreaC.Location = new System.Drawing.Point(12, 142);
 			this.testAreaC.Name = "testAreaC";
 			this.testAreaC.Size = new System.Drawing.Size(173, 20);
-			this.testAreaC.TabIndex = 8;
+			this.testAreaC.TabIndex = 2;
 			this.testAreaC.Enter += new System.EventHandler(this.testAreaC_Enter);
 			//
 			// groupBox1
@@ -162,7 +162,7 @@ namespace TestAppKeyboard
 			this.groupBox1.Location = new System.Drawing.Point(12, 174);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(353, 99);
-			this.groupBox1.TabIndex = 12;
+			this.groupBox1.TabIndex = 3;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Controls";
 			//
@@ -190,7 +190,7 @@ namespace TestAppKeyboard
 			this.cbOnEnter.Location = new System.Drawing.Point(61, 46);
 			this.cbOnEnter.Name = "cbOnEnter";
 			this.cbOnEnter.Size = new System.Drawing.Size(131, 17);
-			this.cbOnEnter.TabIndex = 2;
+			this.cbOnEnter.TabIndex = 1;
 			this.cbOnEnter.Text = "Set keyboard on enter";
 			this.cbOnEnter.UseVisualStyleBackColor = true;
 			//
@@ -201,7 +201,7 @@ namespace TestAppKeyboard
 			this.cbOnActivate.Location = new System.Drawing.Point(47, 69);
 			this.cbOnActivate.Name = "cbOnActivate";
 			this.cbOnActivate.Size = new System.Drawing.Size(145, 17);
-			this.cbOnActivate.TabIndex = 3;
+			this.cbOnActivate.TabIndex = 2;
 			this.cbOnActivate.Text = "Set keyboard on activate";
 			this.cbOnActivate.UseVisualStyleBackColor = true;
 			//

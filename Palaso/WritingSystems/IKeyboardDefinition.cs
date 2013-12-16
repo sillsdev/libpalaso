@@ -33,9 +33,14 @@ namespace Palaso.WritingSystems
 		KeyboardType Type { get; }
 
 		/// <summary>
-		/// Gets a human-readable name of the input language.
+		/// Gets a human-readable (unlocalized) name of the input language.
 		/// </summary>
 		string Name { get; }
+
+		/// <summary>
+		/// Gets a localized human-readable name of the input language.
+		/// </summary>
+		string LocalizedName { get; }
 
 		/// <summary>
 		/// The Locale of the keyboard. This is mainly significant on Windows, which distinguishes (for example)

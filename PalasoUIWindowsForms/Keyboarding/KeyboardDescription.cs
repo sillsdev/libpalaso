@@ -1,16 +1,8 @@
-// --------------------------------------------------------------------------------------------
-// <copyright from='2011' to='2011' company='SIL International'>
-// 	Copyright (c) 2011, SIL International. All Rights Reserved.
-//
-// 	Distributable under the terms of either the Common Public License or the
-// 	GNU Lesser General Public License, as specified in the LICENSING.txt file.
-// </copyright>
-// --------------------------------------------------------------------------------------------
+// Copyright (c) 2011-2013 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Diagnostics;
-using Palaso.Code;
 using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
-using Palaso.UI.WindowsForms.Keyboarding.Types;
 using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.Keyboarding
@@ -54,6 +46,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			IsAvailable = true;
 			OperatingSystem = Environment.OSVersion.Platform;
 			InputLanguage = language;
+		}
+
+		internal KeyboardDescription(IKeyboardAdaptor engine, KeyboardType type)
+		{
+			Engine = engine;
+			Type = type;
+			IsAvailable = true;
+			OperatingSystem = Environment.OSVersion.Platform;
 		}
 
 		internal KeyboardDescription(KeyboardDescription other)
@@ -111,12 +111,22 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		internal IInputLanguage InputLanguage { get; private set; }
 
-		private string InternalName { get; set; }
+		protected string InternalName { get; set; }
+
+		protected void SetInputLanguage(IInputLanguage inputLanguage)
+		{
+			InputLanguage = inputLanguage;
+		}
+
+		protected static string GetDisplayName(string cultureName, string layoutName)
+		{
+			return string.Format("{1} - {0}", cultureName, layoutName);
+		}
 
 		#region IKeyboardDefinition Members
 
 		/// <summary>
-		/// Gets a human-readable name of the language.
+		/// Gets a human-readable name of the input method/language combination.
 		/// </summary>
 		public override string Name { get { return InternalName; } }
 
@@ -132,20 +142,21 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			var activeKeyboard = oldActiveKeyboard as KeyboardDescription;
 			if (activeKeyboard != null)
 				activeKeyboard.Deactivate();
-			Keyboard.Controller.ActiveKeyboard = KeyboardDescription.Zero;
-			if (Engine != null)
-			{
-				// Some engines may not always be able to activate a keyboard.
-				// In particular the Ibus one can currently only do so if the application gives it a context.
-				// At this time only FieldWorks views knows how to do this.
-				// If we have NOT successfully set the keyboard we do not want to record it as active,
-				// because that can suppress a subsequent attempt to set the same one after the context
-				// is established when it would work. For example, we might try to set it when creating a
-				// selection before the control is focused, and fail, but try again when the control gets
-				// focus (at which time we first create the context) and succeed.
-				if (Engine.ActivateKeyboard(this))
-					Keyboard.Controller.ActiveKeyboard = this;
-			}
+
+			Keyboard.Controller.ActiveKeyboard = Zero;
+			if (Engine == null)
+				return;
+
+			// Some engines may not always be able to activate a keyboard.
+			// In particular the Ibus one can currently only do so if the application gives it a context.
+			// At this time only FieldWorks views knows how to do this.
+			// If we have NOT successfully set the keyboard we do not want to record it as active,
+			// because that can suppress a subsequent attempt to set the same one after the context
+			// is established when it would work. For example, we might try to set it when creating a
+			// selection before the control is focused, and fail, but try again when the control gets
+			// focus (at which time we first create the context) and succeed.
+			if (Engine.ActivateKeyboard(this))
+				Keyboard.Controller.ActiveKeyboard = this;
 		}
 		#endregion
 	}

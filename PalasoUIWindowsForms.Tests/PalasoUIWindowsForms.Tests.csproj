@@ -183,6 +183,7 @@
 	<Compile Include="Progress\LogBox\LogBoxTests.cs" />
 	<Compile Include="Keyboarding\IbusDefaultEventHandlerTests.cs" />
 	<Compile Include="Keyboarding\IbusKeyboardAdaptorTests.cs" />
+	<Compile Include="Keyboarding\WinKeyboardAdaptorTests.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso.Tests\Palaso.Tests.csproj">

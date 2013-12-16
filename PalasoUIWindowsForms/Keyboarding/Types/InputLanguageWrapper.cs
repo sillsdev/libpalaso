@@ -1,13 +1,5 @@
-// ---------------------------------------------------------------------------------------------
-#region // Copyright (c) 2013, SIL International. All Rights Reserved.
-// <copyright from='2013' to='2013' company='SIL International'>
-//		Copyright (c) 2013, SIL International. All Rights Reserved.
-//
-//		Distributable under the terms of either the Common Public License or the
-//		GNU Lesser General Public License, as specified in the LICENSING.txt file.
-// </copyright>
-#endregion
-// ---------------------------------------------------------------------------------------------
+// Copyright (c) 2013 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Globalization;
 using System.Windows.Forms;
