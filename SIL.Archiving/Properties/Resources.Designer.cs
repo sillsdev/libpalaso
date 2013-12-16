@@ -63,12 +63,12 @@ namespace SIL.Archiving.Properties {
 		/// <summary>
 		///   Looks up a localized string similar to [
 		///{&quot;protocol&quot;:&quot;FURCS&quot;,&quot;documentation&quot;:&quot;fucrs.html&quot;,&quot;choices&quot;:[
+		///    {&quot;label&quot;:&quot;&quot;,&quot;description&quot;:&quot;only the Depositor and delegate can access&quot;},
 		///	{&quot;label&quot;:&quot;F&quot;,&quot;description&quot;:&quot;access is Free to all&quot;},
 		///	{&quot;label&quot;:&quot;U&quot;,&quot;description&quot;:&quot;all Users can access (requires registration)&quot;},
 		///	{&quot;label&quot;:&quot;RC&quot;,&quot;description&quot;:&quot;Researchers and Community members are allowed access&quot;},
 		///	{&quot;label&quot;:&quot;C&quot;,&quot;description&quot;:&quot;only Community members are allowed access (normally requires application to Depositor)&quot;},
-		///	{&quot;label&quot;:&quot;S&quot;,&quot;description&quot;:&quot;only Subscribers are allowed access (requires application to Depositor)&quot;},
-		///	{ [rest of string was truncated]&quot;;.
+		///	{&quot;label&quot;:&quot;S&quot;,&quot;description&quot;:&quot; [rest of string was truncated]&quot;;.
 		/// </summary>
 		internal static string AccessProtocols {
 			get {
