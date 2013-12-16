@@ -6,10 +6,12 @@
 		<DownloadDir>$(MSBuildThisFileDirectory)/../Download</DownloadDir>
 		<!-- bt196 is the output from L10NSharp continuous (Windows) build. This is also used on Linux. -->
 		<L10NSharpUrl>http://build.palaso.org/guestAuth/repository/download/bt196/.lastSuccessful</L10NSharpUrl>
-		<!-- bt144 is the output from icucil-precise32-default continuous build -->
-		<IcuCilUrl Condition="'$(OS)'=='Unix'">http://build.palaso.org/guestAuth/repository/download/bt144/.lastSuccessful</IcuCilUrl>
+		<!-- bt281 is the output from icucil-precise64-default continuous build -->
+		<!--<IcuCilUrl Condition="'$(OS)'=='Unix'">http://build.palaso.org/guestAuth/repository/download/bt281/.lastSuccessful</IcuCilUrl>-->
+		<IcuCilUrl Condition="'$(OS)'=='Unix'">http://build.palaso.org/guestAuth/repository/download/bt281/0.1.44.e6db4679b030</IcuCilUrl>
 		<!-- bt14 is the output from icucil-win32-default continuous build -->
-		<IcuCilUrl Condition="'$(OS)'!='Unix'">http://build.palaso.org/guestAuth/repository/download/bt14/.lastSuccessful</IcuCilUrl>
+		<!--<IcuCilUrl Condition="'$(OS)'!='Unix'">http://build.palaso.org/guestAuth/repository/download/bt14/.lastSuccessful</IcuCilUrl>-->
+		<IcuCilUrl Condition="'$(OS)'!='Unix'">http://build.palaso.org/guestAuth/repository/download/bt14/*.*.53</IcuCilUrl>
 	</PropertyGroup>
 
 	<ItemGroup>
