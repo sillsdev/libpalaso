@@ -11,6 +11,8 @@ namespace SIL.Archiving.Generic.AccessProtocol
 	[CollectionDataContract(ItemName = "AccessProtocol")]
 	public class AccessProtocols : List<ArchiveAccessProtocol>
 	{
+		private static AccessProtocols _instance;
+
 		/// <summary />
 		public AccessProtocols() { }
 
@@ -24,6 +26,9 @@ namespace SIL.Archiving.Generic.AccessProtocol
 		/// <summary />
 		public static AccessProtocols Load()
 		{
+			if (_instance != null)
+				return _instance;
+
 			var dataDirectory = ArchivingFileSystem.SilCommonArchivingDataFolder;
 
 			if (!Directory.Exists(dataDirectory))
@@ -40,11 +45,11 @@ namespace SIL.Archiving.Generic.AccessProtocol
 			using (FileStream stream = new FileStream(fileName, FileMode.Open))
 			{
 				DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(AccessProtocols));
-				return (AccessProtocols) ser.ReadObject(stream);
+				_instance = (AccessProtocols) ser.ReadObject(stream);
 			}
 
+			return _instance;
 		}
-
 	}
 
 	/// <summary>Information for each access protocol in the JSON file</summary>
