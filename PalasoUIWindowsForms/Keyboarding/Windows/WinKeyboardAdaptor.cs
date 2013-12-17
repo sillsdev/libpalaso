@@ -89,6 +89,17 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 					Marshal.Copy(ptr, langIds, 0, count);
 					return langIds;
 				}
+				catch (InvalidCastException)
+				{
+					// For strange reasons tests on TeamCity failed with InvalidCastException: Unable
+					// to cast COM object of type TfInputProcessorProfilesClass to interface type
+					// ITfInputProcessorProfiles when trying to call GetLanguageList. Don't know why
+					// it wouldn't fail when we create the object. Since it's theoretically possible
+					// that this also happens on a users machine we catch the exception here - maybe
+					// TSF is not enabled?
+					ProcessorProfiles = null;
+					return new short[0];
+				}
 				finally
 				{
 					if (ptr != IntPtr.Zero)
