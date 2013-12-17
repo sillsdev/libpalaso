@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
+using System.Text;
 using SIL.Archiving.Properties;
 
 namespace SIL.Archiving.Generic.AccessProtocol
@@ -12,6 +13,9 @@ namespace SIL.Archiving.Generic.AccessProtocol
 	public class AccessProtocols : List<ArchiveAccessProtocol>
 	{
 		private static AccessProtocols _instance;
+		private static AccessProtocols _customInstance;
+		private const string kProtocolFileName = "AccessProtocols.json";
+		private const string kCustomProtocolFileName = "CustomAccessProtocols.json";
 
 		/// <summary />
 		public AccessProtocols() { }
@@ -26,29 +30,73 @@ namespace SIL.Archiving.Generic.AccessProtocol
 		/// <summary />
 		public static AccessProtocols Load()
 		{
-			if (_instance != null)
-				return _instance;
+			return _instance ?? (_instance = LoadFromFile(kProtocolFileName, Resources.AccessProtocols));
+		}
 
+		/// <summary />
+		public static AccessProtocols LoadCustom()
+		{
+			return _customInstance ??
+				   (_customInstance = LoadFromFile(kCustomProtocolFileName, Resources.CustomAccessProtocols));
+		}
+
+		private static AccessProtocols LoadFromFile(string protocolFileName, string resourceName)
+		{
 			var dataDirectory = ArchivingFileSystem.SilCommonArchivingDataFolder;
 
 			if (!Directory.Exists(dataDirectory))
 				throw new DirectoryNotFoundException(dataDirectory);
 
-			var fileName = Path.Combine(dataDirectory, "AccessProtocols.json");
+			var fileName = Path.Combine(dataDirectory, protocolFileName);
 
 			if (!File.Exists(fileName))
 			{
-				var jsonData = Resources.AccessProtocols;
+				var jsonData = resourceName;
 				File.WriteAllText(fileName, jsonData);
 			}
 
 			using (FileStream stream = new FileStream(fileName, FileMode.Open))
 			{
-				DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(AccessProtocols));
-				_instance = (AccessProtocols) ser.ReadObject(stream);
+				DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof (AccessProtocols));
+				return (AccessProtocols) ser.ReadObject(stream);
 			}
+		}
 
-			return _instance;
+		/// <summary />
+		public static AccessProtocols LoadStandardAndCustom()
+		{
+			if (_instance == null)
+				Load();
+
+			if (_customInstance == null)
+				LoadCustom();
+
+			AccessProtocols all = new AccessProtocols();
+
+			if (_instance != null)
+				all.AddRange(_instance);
+
+			if (_customInstance != null)
+				all.AddRange(_customInstance);
+
+			return all;
+		}
+
+		/// <summary />
+		public static void SaveCustom(AccessProtocols customProtocols)
+		{
+			var dataDirectory = ArchivingFileSystem.SilCommonArchivingDataFolder;
+
+			if (!Directory.Exists(dataDirectory))
+				throw new DirectoryNotFoundException(dataDirectory);
+
+			var fileName = Path.Combine(dataDirectory, kCustomProtocolFileName);
+
+			using (FileStream stream = new FileStream(fileName, FileMode.Create))
+			{
+				DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(AccessProtocols));
+				ser.WriteObject(stream, customProtocols);
+			}
 		}
 	}
 
@@ -71,6 +119,27 @@ namespace SIL.Archiving.Generic.AccessProtocol
 		public override string ToString()
 		{
 			return ProtocolName;
+		}
+
+		/// <summary />
+		public string ChoicesToCsv()
+		{
+			StringBuilder sb = new StringBuilder();
+
+			foreach (var option in Choices)
+				sb.AppendDelimiter(option.OptionName, ",");
+
+			return sb.ToString();
+		}
+
+		/// <summary />
+		public void SetChoicesFromCsv(string choicesCsv)
+		{
+			var choices = choicesCsv.Split(',');
+			Choices = new List<AccessOption>();
+
+			foreach (var choice in choices)
+				Choices.Add(new AccessOption { OptionName = choice.Trim() });
 		}
 	}
 
