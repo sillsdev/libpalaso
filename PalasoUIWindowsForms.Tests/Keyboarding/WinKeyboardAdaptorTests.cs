@@ -20,6 +20,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		[Test]
+		[Category("SkipOnTeamCity")] // TeamCity build agents don't have TSF enabled
 		public void Languages()
 		{
 			var adaptor = new WinKeyboardAdaptorDouble();
