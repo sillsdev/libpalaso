@@ -86,6 +86,21 @@ namespace SIL.Archiving
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
+		/// Appends with a delimiter
+		/// </summary>
+		/// <param name="sb"></param>
+		/// <param name="value"></param>
+		/// <param name="delimiter"></param>
+		/// ------------------------------------------------------------------------------------
+		public static void AppendDelimiter(this StringBuilder sb, string value, string delimiter)
+		{
+			if (delimiter == null) delimiter = Environment.NewLine;
+			if (sb.Length != 0) sb.Append(delimiter);
+			sb.Append(value);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
 		/// Removes non-Latin characters from a string
 		/// </summary>
 		/// <param name="s"></param>

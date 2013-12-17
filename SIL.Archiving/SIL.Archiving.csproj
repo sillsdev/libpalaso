@@ -165,6 +165,7 @@
 	  <LastGenOutput>Settings.Designer.cs</LastGenOutput>
 	</None>
 	<None Include="Resources\AccessProtocols.json" />
+	<None Include="Resources\CustomAccessProtocols.json" />
 	<None Include="Resources\EmptyMets.xml" />
   </ItemGroup>
   <ItemGroup>
