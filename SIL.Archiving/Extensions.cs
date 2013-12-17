@@ -68,7 +68,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Combines the functionality fo StringBuilder.AppendFormat and
-		/// StringBuilder.AppendLine. Also allows for the delimiter to be specified.  If the
+		/// StringBuilder.AppendLine.  Also allows for the delimiter to be specified.  If the
 		/// delimiter is null, Environment.NewLine will be used.
 		/// </summary>
 		/// <param name="sb"></param>

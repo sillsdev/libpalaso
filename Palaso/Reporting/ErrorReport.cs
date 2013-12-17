@@ -398,17 +398,17 @@ namespace Palaso.Reporting
 			}
 			else
 			{
-				var list = new List<Version>();
-				list.Add(new Version(System.PlatformID.Win32NT, 0,5, "Windows 2000"));
-				list.Add(new Version(System.PlatformID.Win32NT, 1, 5, "Windows XP"));
-				list.Add(new Version(System.PlatformID.Win32NT, 0, 6, "Vista"));
-				list.Add(new Version(System.PlatformID.Win32NT, 1, 6, "Windows 7"));
-				list.Add(new Version(System.PlatformID.Win32NT, 2, 6, "Windows 8"));
-				foreach (var version in list)
-				{
-					if(version.Match(System.Environment.OSVersion))
-						return version.Label + " " + Environment.OSVersion.ServicePack;
-				}
+			var list = new List<Version>();
+			list.Add(new Version(System.PlatformID.Win32NT,0,5, "Windows 2000"));
+			list.Add(new Version(System.PlatformID.Win32NT, 1, 5, "Windows XP"));
+			list.Add(new Version(System.PlatformID.Win32NT, 0, 6, "Vista"));
+			list.Add(new Version(System.PlatformID.Win32NT, 1, 6, "Windows 7"));
+			list.Add(new Version(System.PlatformID.Win32NT, 2, 6, "Windows 8"));
+			foreach (var version in list)
+			{
+				if(version.Match(System.Environment.OSVersion))
+					return version.Label + " " + Environment.OSVersion.ServicePack;
+			}
 			}
 			return System.Environment.OSVersion.VersionString;
 		}
