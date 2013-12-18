@@ -539,5 +539,8 @@ namespace SIL.Archiving
 		/// <summary></summary>
 		/// <param name="sessionId"></param>
 		public abstract IArchivingSession AddSession(string sessionId);
+
+		/// <summary></summary>
+		public abstract IArchivingPackage ArchivingPackage { get; }
 	}
 }

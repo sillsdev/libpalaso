@@ -176,14 +176,14 @@ namespace SIL.Archiving.Tests
 		{
 			IMDIPackage proj = new IMDIPackage(false, string.Empty);
 
-			proj.ContentIso3LanguageIds.Add("fra");
-			proj.ContentIso3LanguageIds.Add("spa");
-			proj.ContentIso3LanguageIds.Add("spa");
-			proj.ContentIso3LanguageIds.Add("fra");
+			proj.ContentIso3Languages.Add(new ArchivingLanguage("fra"));
+			proj.ContentIso3Languages.Add(new ArchivingLanguage("spa"));
+			proj.ContentIso3Languages.Add(new ArchivingLanguage("spa"));
+			proj.ContentIso3Languages.Add(new ArchivingLanguage("fra"));
 
-			Assert.AreEqual(2, proj.ContentIso3LanguageIds.Count);
-			Assert.IsTrue(proj.ContentIso3LanguageIds.Contains("fra"));
-			Assert.IsTrue(proj.ContentIso3LanguageIds.Contains("spa"));
+			Assert.AreEqual(2, proj.ContentIso3Languages.Count);
+			Assert.IsTrue(proj.ContentIso3Languages.Contains(new ArchivingLanguage("fra")));
+			Assert.IsTrue(proj.ContentIso3Languages.Contains(new ArchivingLanguage("spa")));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -192,14 +192,14 @@ namespace SIL.Archiving.Tests
 		{
 			IMDIPackage proj = new IMDIPackage(false, string.Empty);
 
-			proj.MetadataIso3LanguageIds.Add("fra");
-			proj.MetadataIso3LanguageIds.Add("spa");
-			proj.MetadataIso3LanguageIds.Add("spa");
-			proj.MetadataIso3LanguageIds.Add("fra");
+			proj.MetadataIso3Languages.Add(new ArchivingLanguage("fra"));
+			proj.MetadataIso3Languages.Add(new ArchivingLanguage("spa"));
+			proj.MetadataIso3Languages.Add(new ArchivingLanguage("spa"));
+			proj.MetadataIso3Languages.Add(new ArchivingLanguage("fra"));
 
-			Assert.AreEqual(2, proj.MetadataIso3LanguageIds.Count);
-			Assert.IsTrue(proj.MetadataIso3LanguageIds.Contains("fra"));
-			Assert.IsTrue(proj.MetadataIso3LanguageIds.Contains("spa"));
+			Assert.AreEqual(2, proj.MetadataIso3Languages.Count);
+			Assert.IsTrue(proj.MetadataIso3Languages.Contains(new ArchivingLanguage("fra")));
+			Assert.IsTrue(proj.MetadataIso3Languages.Contains(new ArchivingLanguage("spa")));
 		}
 
 		/// ------------------------------------------------------------------------------------

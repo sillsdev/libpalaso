@@ -4,52 +4,109 @@ using SIL.Archiving.Generic.AccessProtocol;
 
 namespace SIL.Archiving.Generic
 {
-	/// <summary>Collects the data needed to produce an archive package to upload</summary>
-	public abstract class ArchivingPackage : IArchivingGenericObject
+	/// <summary />
+	public interface IArchivingPackage : IArchivingGenericObject
 	{
 		/// <summary>This is the languages for descriptions, a language of wider communication</summary>
-		public HashSet<string> MetadataIso3LanguageIds;
+		ArchivingLanguageCollection MetadataIso3Languages { get; set; }
 
 		/// <summary>This is the languages for content, the language being researched</summary>
-		public HashSet<string> ContentIso3LanguageIds;
+		ArchivingLanguageCollection ContentIso3Languages { get; set; }
 
 		/// <summary>Sessions to include in this package</summary>
-		public List<IArchivingSession> Sessions;
+		List<IArchivingSession> Sessions { get; set; }
 
 		/// <summary>Information about the funding for this project</summary>
-		public ArchivingProject FundingProject;
+		ArchivingProject FundingProject { get; set; }
 
 		/// <summary>Information about the contact for this project</summary>
-		public ArchivingContactCollection Contacts;
+		ArchivingContactCollection Contacts { get; set; }
+
+		/// <summary>Content Type for this project</summary>
+		string ContentType { get; set; }
+
+		/// <summary>Applicationse for this project</summary>
+		string Applications { get; set; }
+
+		/// <summary></summary>
+		void AddKeyValuePair(string key, string value);
+
+		/// <summary />
+		string Author { get; set; }
+
+		/// <summary />
+		string Publisher { get; set; }
+
+		/// <summary />
+		string Owner { get; set; }
+
+		/// <summary />
+		ArchivingAccess Access { get; set; }
+	}
+
+	/// <summary>Collects the data needed to produce an archive package to upload</summary>
+	public abstract class ArchivingPackage : IArchivingPackage
+	{
+		protected readonly List<KeyValuePair<string, string>> _keys;
+
+		public ArchivingLanguageCollection MetadataIso3Languages { get; set; }
+
+		public ArchivingLanguageCollection ContentIso3Languages { get; set; }
+
+		public List<IArchivingSession> Sessions { get; set; }
+
+		public ArchivingProject FundingProject { get; set; }
+
+		public ArchivingContactCollection Contacts { get; set; }
 
 		/// <summary />
 		protected ArchivingPackage()
 		{
-			MetadataIso3LanguageIds = new HashSet<string>();
-			ContentIso3LanguageIds = new HashSet<string>();
+			MetadataIso3Languages = new ArchivingLanguageCollection();
+			ContentIso3Languages = new ArchivingLanguageCollection();
 			Sessions = new List<IArchivingSession>();
 			Contacts = new ArchivingContactCollection();
+			_keys = new List<KeyValuePair<string, string>>();
+			Access = new ArchivingAccess();
+
 		}
 
-		/// <summary></summary>
+		/// <summary />
 		public string Title { get; set; }
 
-		/// <summary></summary>
+		/// <summary />
 		public string Name { get; set; }
 
-		/// <summary></summary>
+		/// <summary />
 		public void AddDescription(LanguageString description)
 		{
 			throw new NotImplementedException();
 		}
 
-		/// <summary></summary>
+		/// <summary />
 		public ArchiveAccessProtocol AccessProtocol { get; set; }
 
-		/// <summary></summary>
+		/// <summary />
 		public string AccessCode { get; set; }
 
-		/// <summary></summary>
+		/// <summary />
 		public ArchivingLocation Location { get; set; }
+
+		public string ContentType { get; set; }
+
+		public string Applications { get; set; }
+
+		public void AddKeyValuePair(string key, string value)
+		{
+			_keys.Add(new KeyValuePair<string, string>(key, value));
+		}
+
+		public string Author { get; set; }
+
+		public string Publisher { get; set; }
+
+		public string Owner { get; set; }
+
+		public ArchivingAccess Access { get; set; }
 	}
 }

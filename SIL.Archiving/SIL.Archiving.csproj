@@ -86,6 +86,7 @@
   <ItemGroup>
 	<Compile Include="ArchivingPrograms.cs" />
 	<Compile Include="Generic\AccessProtocol\AccessProtocolList.cs" />
+	<Compile Include="Generic\ArchivingAccess.cs" />
 	<Compile Include="Generic\ArchivingActor.cs" />
 	<Compile Include="Generic\ArchivingContact.cs" />
 	<Compile Include="Generic\ArchivingFile.cs" />

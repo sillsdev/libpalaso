@@ -1901,6 +1901,11 @@ namespace SIL.Archiving
 			throw new NotImplementedException();
 		}
 
+		public override IArchivingPackage ArchivingPackage
+		{
+			get { throw new NotImplementedException(); }
+		}
+
 		#region Clean-up methods
 		/// ------------------------------------------------------------------------------------
 		public void CleanUp()
