@@ -66,6 +66,7 @@ namespace SIL.Archiving.IMDI
 			List<string> sessionFiles = new List<string>();
 
 			// create the session directories
+// ReSharper disable once LoopCanBeConvertedToQuery
 			foreach (var session in Sessions)
 			{
 				var sessImdi = new MetaTranscript { Items = new object[] { session }, Type = MetatranscriptValueType.SESSION };
@@ -80,6 +81,17 @@ namespace SIL.Archiving.IMDI
 			foreach (var fileName in sessionFiles)
 				corpus.CorpusLink.Add(new CorpusLinkType { Value = fileName.Replace("\\", "/"), Name = string.Empty });
 
+			// crate the catalogue
+			corpus.CatalogueLink = CreateCorpusCatalogue();
+
+			//  Create the corpus imdi file
+			BaseImdiFile.WriteImdiFile(_packagePath, Name);
+
+			return true;
+		}
+
+		private string CreateCorpusCatalogue()
+		{
 			// Create the package catalogue imdi file
 			var catalogue = new Catalogue
 			{
@@ -88,19 +100,59 @@ namespace SIL.Archiving.IMDI
 				Date = DateTime.Today.ToISO8601DateOnlyString(),
 			};
 
-			foreach (var iso3Id in MetadataIso3LanguageIds)
-				catalogue.DocumentLanguages.Language.Add(LanguageList.Find(new ArchivingLanguage(iso3Id)).ToSimpleLanguageType());
+			foreach (var language in MetadataIso3Languages)
+			{
+				var imdiLanguage = LanguageList.Find(language).ToSimpleLanguageType();
+				if (imdiLanguage != null)
+					catalogue.DocumentLanguages.Language.Add(imdiLanguage);
+			}
 
-			foreach (var iso3Id in ContentIso3LanguageIds)
-				catalogue.SubjectLanguages.Language.Add(LanguageList.Find(new ArchivingLanguage(iso3Id)).ToSubjectLanguageType());
 
+			foreach (var language in ContentIso3Languages)
+			{
+				var imdiLanguage = LanguageList.Find(language).ToSubjectLanguageType();
+				if (imdiLanguage != null)
+					catalogue.SubjectLanguages.Language.Add(imdiLanguage);
+			}
+
+			// funding project
+			if (FundingProject != null)
+				catalogue.Project.Add(new Project(FundingProject));
+
+			// location
+			if (Location != null)
+				catalogue.Location.Add(new LocationType(Location));
+
+			// content type
+			if (!string.IsNullOrEmpty(ContentType))
+				catalogue.ContentType.Add(ContentType);
+
+			// applications
+			if (!string.IsNullOrEmpty(Applications))
+				catalogue.Applications = Applications;
+
+			// author
+			if (!string.IsNullOrEmpty(Author))
+				catalogue.Author.Add(new CommaSeparatedStringType { Value = Author });
+
+			// publisher
+			if (!string.IsNullOrEmpty(Publisher))
+				catalogue.Publisher.Add(Publisher);
+
+			// keys
+			foreach (var kvp in _keys)
+				catalogue.Keys.Key.Add(new KeyType { Name = kvp.Key, Value = kvp.Value });
+
+			// access
+			if (!string.IsNullOrEmpty(Access.DateAvailable))
+				catalogue.Access.Date = Access.DateAvailable;
+
+			if (!string.IsNullOrEmpty(Access.Owner))
+				catalogue.Access.Owner = Access.Owner;
+
+			// write the xml file
 			var catImdi = new MetaTranscript { Items = new object[] { catalogue }, Type = MetatranscriptValueType.CATALOGUE };
-			corpus.CatalogueLink = catImdi.WriteImdiFile(_packagePath, Name).Replace("\\", "/");
-
-			//  Create the corpus imdi file
-			BaseImdiFile.WriteImdiFile(_packagePath, Name);
-
-			return true;
+			return catImdi.WriteImdiFile(_packagePath, Name).Replace("\\", "/");
 		}
 
 		/// <summary>Add a description of the package/corpus</summary>

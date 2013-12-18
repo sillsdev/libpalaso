@@ -665,6 +665,22 @@ namespace SIL.Archiving.IMDI.Schema
 		}
 
 		/// <remarks/>
+		public LocationType(ArchivingLocation location) : this()
+		{
+			if (!string.IsNullOrEmpty(location.Address))
+				Address = location.Address;
+
+			if (!string.IsNullOrEmpty(location.Region))
+				Region.Add(location.Region);
+
+			if (!string.IsNullOrEmpty(location.Country))
+				Country.Value = location.Country;
+
+			if (!string.IsNullOrEmpty(location.Continent))
+				Continent.Value = location.Continent;
+		}
+
+		/// <remarks/>
 		public VocabularyType Continent { get; set; }
 
 		/// <remarks>Closed vocabulary</remarks>
@@ -761,6 +777,18 @@ namespace SIL.Archiving.IMDI.Schema
 			Id = new List<string> {string.Empty};
 			Description = new DescriptionTypeCollection();
 			Contact = new ContactType();
+		}
+
+		/// <remarks/>
+		public Project(ArchivingProject project)
+		{
+			Name = project.Name;
+			Title = project.Title;
+			Id = new List<string> { project.Name };
+			Description = new DescriptionTypeCollection();
+			Contact = new ContactType();
+			if (!string.IsNullOrEmpty(project.Author))
+				Contact.Name = project.Author;
 		}
 
 		/// <summary>Name of object</summary>
@@ -1739,7 +1767,6 @@ namespace SIL.Archiving.IMDI.Schema
 
 				loc.Address = value.Address;
 			}
-
 		}
 
 		/// <remarks/>

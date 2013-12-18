@@ -490,18 +490,7 @@ namespace SIL.Archiving.IMDI
 			return session;
 		}
 
-		/// <summary></summary>
-		/// <param name="iso3LanguageId"></param>
-		public void AddDocumentLanguage(string iso3LanguageId)
-		{
-			_imdiData.MetadataIso3LanguageIds.Add(iso3LanguageId);
-		}
+		public override IArchivingPackage ArchivingPackage { get { return _imdiData; } }
 
-		/// <summary></summary>
-		/// <param name="iso3LanguageId"></param>
-		public void AddSubjectLanguage(string iso3LanguageId)
-		{
-			_imdiData.ContentIso3LanguageIds.Add(iso3LanguageId);
-		}
 	}
 }
