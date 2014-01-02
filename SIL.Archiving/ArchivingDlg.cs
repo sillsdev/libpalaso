@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using L10NSharp;
 using Palaso.UI.WindowsForms;
 using Palaso.UI.WindowsForms.Miscellaneous;
 using Palaso.UI.WindowsForms.PortableSettingsProvider;
-using Palaso.UI.WindowsForms.Progress;
-using SIL.Archiving.Properties;
 
 namespace SIL.Archiving
 {
@@ -15,7 +11,8 @@ namespace SIL.Archiving
 	public partial class ArchivingDlg : Form
 	{
 		private readonly FormSettings _settings;
-		private readonly ArchivingDlgViewModel _viewModel;
+		protected readonly ArchivingDlgViewModel _viewModel;
+		protected readonly string _launchButtonTextFormat;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>Caller can use this to retrieve and persist form settings (typicvally
@@ -49,7 +46,11 @@ namespace SIL.Archiving
 
 			Text = string.Format(Text, model.AppName, model.ArchiveType);
 			_progressBar.Visible = false;
-			_buttonLaunchRamp.Text = string.Format(_buttonLaunchRamp.Text, model.NameOfProgramToLaunch);
+
+			// remember this because we will need it later in a derived class
+			_launchButtonTextFormat = _buttonLaunchRamp.Text;
+
+			_buttonLaunchRamp.Text = string.Format(_launchButtonTextFormat, model.NameOfProgramToLaunch);
 			_buttonLaunchRamp.Enabled = false; //!string.IsNullOrEmpty(model.PathToProgramToLaunch);
 
 			_linkOverview.Text = model.InformativeText;
@@ -127,13 +128,13 @@ namespace SIL.Archiving
 					_logBox.WriteMessage(msg);
 					break;
 				case ArchivingDlgViewModel.MessageType.Indented:
-					_logBox.WriteMessage(Environment.NewLine + "    " + msg);
+					_logBox.WriteMessage(Environment.NewLine + "	" + msg);
 					break;
 				case ArchivingDlgViewModel.MessageType.Detail:
 					_logBox.WriteMessageWithFontStyle(FontStyle.Regular, "\t" + msg);
 					break;
 				case ArchivingDlgViewModel.MessageType.Bullet:
-					_logBox.WriteMessageWithFontStyle(FontStyle.Regular, "          \u00B7 {0}", msg);
+					_logBox.WriteMessageWithFontStyle(FontStyle.Regular, "		  \u00B7 {0}", msg);
 					break;
 				case ArchivingDlgViewModel.MessageType.Progress:
 					_logBox.WriteMessage(Environment.NewLine + msg);
@@ -173,7 +174,7 @@ namespace SIL.Archiving
 			_settings.InitializeForm(this);
 			base.OnLoad(e);
 		}
-
+		
 		/// ------------------------------------------------------------------------------------
 		protected override void OnShown(EventArgs e)
 		{
