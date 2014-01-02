@@ -18,7 +18,6 @@ namespace SIL.Archiving.IMDI
 	public class IMDIArchivingDlgViewModel : ArchivingDlgViewModel
 	{
 		private readonly IMDIPackage _imdiData;
-		private readonly string _outputFolder;
 		private string _corpusDirectoryName;
 		private bool _workerException;
 		private string _programPreset;
@@ -122,9 +121,9 @@ namespace SIL.Archiving.IMDI
 			Action<ArchivingDlgViewModel> setFilesToArchive, string outputFolder)
 			: base(appName, title, id, appSpecificArchivalProcessInfo, setFilesToArchive)
 		{
-			_outputFolder = outputFolder;
+			OutputFolder = outputFolder;
 
-			PackagePath = Path.Combine(_outputFolder, CorpusDirectoryName);
+			PackagePath = Path.Combine(OutputFolder, CorpusDirectoryName);
 
 			_imdiData = new IMDIPackage(corpus, PackagePath)
 			{
@@ -449,21 +448,27 @@ namespace SIL.Archiving.IMDI
 			// delete temp files, etc
 		}
 
-		/// <summary>Returns the normalized name to use for the output corpus folder. A sub-directory of <c>_outputFolder</c></summary>
+		/// <summary>Returns the normalized name to use for the output corpus folder. A sub-directory of <c>OutputFolder</c></summary>
 		public string CorpusDirectoryName
 		{
 			get
 			{
-				if (!Directory.Exists(_outputFolder))
-					throw new DirectoryNotFoundException(string.Format("The path {0} was not found.", _outputFolder));
+				// create the output base directory if it doesn't already exist
+				if (!Directory.Exists(OutputFolder))
+				{
+					Directory.CreateDirectory(OutputFolder);
 
+					if (!Directory.Exists(OutputFolder))
+						throw new DirectoryNotFoundException(string.Format("The path {0} was not found.", OutputFolder));
+				}
+				
 				if (string.IsNullOrEmpty(_corpusDirectoryName))
 				{
 					var baseName = NormalizeDirectoryName(_titles[_id] + " " + DateTime.Today.ToString("yyyy-MM-dd"));
 					var test = baseName;
 					var i = 1;
 
-					while (Directory.Exists(Path.Combine(_outputFolder, test)))
+					while (Directory.Exists(Path.Combine(OutputFolder, test)))
 					{
 						test = NormalizeDirectoryName(baseName + " " + i.ToString("000"));
 						i++;
@@ -585,11 +590,14 @@ namespace SIL.Archiving.IMDI
 		{
 			List<string> lines = new List<string>
 			{
-				"ProgramPreset=" +ProgramPreset,
+				"ProgramPreset=" + ProgramPreset,
 				"OtherProgramPath=" + OtherProgramPath
 			};
 
 			File.WriteAllLines(_configFileName, lines);
 		}
+
+		/// <summary />
+		public string OutputFolder { get; set; }
 	}
 }

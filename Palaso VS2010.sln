@@ -52,8 +52,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Archiving", "SIL.Archiv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Archiving.Tests", "SIL.Archiving.Tests\SIL.Archiving.Tests.csproj", "{892C7F20-FBBB-4AB3-BAC2-E40A135567B6}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NewFolder1", "NewFolder1", "{158CBB9F-BD9E-4BFD-A2AB-A9984F957C13}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

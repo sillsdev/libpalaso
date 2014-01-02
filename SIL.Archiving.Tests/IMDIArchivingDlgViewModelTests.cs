@@ -71,16 +71,6 @@ namespace SIL.Archiving.Tests
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void GetNameOfProgramToLaunch_PathNotSet_ReturnsNull()
-		{
-			_model.PathToProgramToLaunch = null;
-			Assert.IsNull(_model.NameOfProgramToLaunch);
-			_model.PathToProgramToLaunch = string.Empty;
-			Assert.IsNull(_model.NameOfProgramToLaunch);
-		}
-
-		/// ------------------------------------------------------------------------------------
-		[Test]
 		public void GetNameOfProgramToLaunch_ExeNameContainsFolderName_ReturnsFolderName()
 		{
 			_model.PathToProgramToLaunch = @"c:\Program Files\Arbil\arbil-stable.exe";

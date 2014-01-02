@@ -50,7 +50,7 @@ namespace SIL.Archiving
 			// remember this because we will need it later in a derived class
 			_launchButtonTextFormat = _buttonLaunchRamp.Text;
 
-			_buttonLaunchRamp.Text = string.Format(_launchButtonTextFormat, model.NameOfProgramToLaunch);
+			UpdateLaunchButtonText();
 			_buttonLaunchRamp.Enabled = false; //!string.IsNullOrEmpty(model.PathToProgramToLaunch);
 
 			_linkOverview.Text = model.InformativeText;
@@ -112,6 +112,18 @@ namespace SIL.Archiving
 				_progressBar.Visible = false;
 				WaitCursor.Hide();
 			};
+		}
+
+		/// ------------------------------------------------------------------------------------
+		protected void UpdateLaunchButtonText()
+		{
+			_buttonLaunchRamp.Text = string.Format(_launchButtonTextFormat, _viewModel.NameOfProgramToLaunch);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		protected void UpdateOverviewText()
+		{
+			_linkOverview.Text = _viewModel.InformativeText;
 		}
 
 		/// ------------------------------------------------------------------------------------

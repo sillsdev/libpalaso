@@ -1,0 +1,6 @@
+obj/
+output/
+bin/
+.nuget/
+*.user
+*.suo
