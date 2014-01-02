@@ -184,7 +184,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			var hkl = string.Format("{0:X8}", (int)handle);
 
 			// Get substitute first
-			hkl = (string)Registry.GetValue(@"HKEY_CURRENT_USER\Keyboard Layout\Substitutes", hkl, hkl);
+			var substituteHkl = (string)Registry.GetValue(@"HKEY_CURRENT_USER\Keyboard Layout\Substitutes", hkl, null);
+			if (!string.IsNullOrEmpty(substituteHkl))
+				hkl = substituteHkl;
 
 			// Check InKey
 			var substituteLayoutName = (string)Registry.GetValue(@"HKEY_CURRENT_USER\Software\InKey\SubstituteLayoutNames", hkl, null);
