@@ -65,7 +65,8 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void GetNameOfProgramToLaunch_ShortExeName_ReturnsExeNameWithoutExtension()
 		{
-			_model.PathToProgramToLaunch = @"c:\Program Files\Arbil\Arbil.exe";
+			_model.ProgramPreset = "Arbil";
+			//_model.PathToProgramToLaunch = @"c:\Program Files\Arbil\Arbil.exe";
 			Assert.AreEqual("Arbil", _model.NameOfProgramToLaunch);
 		}
 
@@ -73,7 +74,8 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void GetNameOfProgramToLaunch_ExeNameContainsFolderName_ReturnsFolderName()
 		{
-			_model.PathToProgramToLaunch = @"c:\Program Files\Arbil\arbil-stable.exe";
+			_model.ProgramPreset = "Arbil";
+			//_model.PathToProgramToLaunch = @"c:\Program Files\Arbil\arbil-stable.exe";
 			Assert.AreEqual("Arbil", _model.NameOfProgramToLaunch);
 		}
 		#endregion
