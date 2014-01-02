@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
 using Palaso.BuildTasks.MakePot;
@@ -33,7 +35,7 @@ namespace Palaso.BuildTask.Tests
 
 				var pot = new MakePot();
 				pot.OutputFile = System.IO.Path.Combine(Path, "output.pot");
-				pot.CSharpFiles = EnvironmentForTest.CreateTaskItemsForFilePath(csharpFilePath);
+				pot.CSharpFiles = CreateTaskItemsForFilePath(csharpFilePath);
 				pot.Execute();
 
 				return File.ReadAllText(pot.OutputFile);
@@ -193,42 +195,45 @@ somevar.MyLocalizableFunction('~ThirdLocalizableString', 'ThirdNotes');
 
 ".Replace("'", "\"");
 
-			string expected =
-@"msgid ''
-msgstr ''
-'Project-Id-Version: \n'
-'POT-Creation-Date: .*
-'PO-Revision-Date: \n'
-'Last-Translator: \n'
-'Language-Team: \n'
-'Plural-Forms: \n'
-'MIME-Version: 1.0\n'
-'Content-Type: text/plain; charset=UTF-8\n'
-'Content-Transfer-Encoding: 8bit\n'
+			var expectedSb = new StringBuilder();
+			expectedSb.AppendLine("msgid ''");
+			expectedSb.AppendLine("msgstr ''");
+			expectedSb.AppendLine("'Project-Id-Version: \\n'");
+			expectedSb.AppendLine("'POT-Creation-Date: .*");
+			expectedSb.AppendLine("'PO-Revision-Date: \\n'");
+			expectedSb.AppendLine("'Last-Translator: \\n'");
+			expectedSb.AppendLine("'Language-Team: \\n'");
+			expectedSb.AppendLine("'Plural-Forms: \\n'");
+			expectedSb.AppendLine("'MIME-Version: 1.0\\n'");
+			expectedSb.AppendLine("'Content-Type: text/plain; charset=UTF-8\\n'");
+			expectedSb.AppendLine("'Content-Transfer-Encoding: 8bit\\n'");
+			expectedSb.AppendLine("");
+			expectedSb.AppendLine("# Project-Id-Version: ");
+			expectedSb.AppendLine("# Report-Msgid-Bugs-To: ");
+			expectedSb.AppendLine("# POT-Creation-Date: .*");
+			expectedSb.AppendLine("# Content-Type: text/plain; charset=UTF-8");
+			expectedSb.AppendLine("");
+			expectedSb.AppendLine("");
+			expectedSb.AppendLine("#: .*");
+			expectedSb.AppendLine("msgid 'FirstLocalizableString'");
+			expectedSb.AppendLine("msgstr ''");
+			expectedSb.AppendLine("");
+			expectedSb.AppendLine("#: .*");
+			expectedSb.AppendLine("#. SecondNotes");
+			expectedSb.AppendLine("msgid 'SecondLocalizableString'");
+			expectedSb.AppendLine("msgstr ''");
+			expectedSb.AppendLine("");
+			expectedSb.AppendLine("#: .*");
+			expectedSb.AppendLine("#. ThirdNotes");
+			expectedSb.AppendLine("msgid 'ThirdLocalizableString'");
+			expectedSb.AppendLine("msgstr ''");
+			expectedSb.AppendLine("");
+			expectedSb.AppendLine("");
 
-# Project-Id-Version:
-# Report-Msgid-Bugs-To:
-# POT-Creation-Date: .*
-# Content-Type: text/plain; charset=UTF-8
-
-
-#: .*
-msgid 'FirstLocalizableString'
-msgstr ''
-
-#: .*
-#. SecondNotes
-msgid 'SecondLocalizableString'
-msgstr ''
-
-#: .*
-#. ThirdNotes
-msgid 'ThirdLocalizableString'
-msgstr ''
-".Replace("'", "\"");
-
+			string expected = expectedSb.ToString().Replace("'", "\"");
 			using (var e = new EnvironmentForTest())
 			{
+				Console.Out.WriteLine(expected);
 				Assert.That(e.MakePotFile(contents), ConstrainStringByLine.Matches(expected));
 			}
 
@@ -242,29 +247,30 @@ msgstr ''
 somevar.Text = 'Backing Up...';
 ".Replace("'", "\"");
 
-			string expected =
-@"msgid ''
-msgstr ''
-'Project-Id-Version: \n'
-'POT-Creation-Date: .*
-'PO-Revision-Date: \n'
-'Last-Translator: \n'
-'Language-Team: \n'
-'Plural-Forms: \n'
-'MIME-Version: 1.0\n'
-'Content-Type: text/plain; charset=UTF-8\n'
-'Content-Transfer-Encoding: 8bit\n'
+			var expectedSb = new StringBuilder();
+			expectedSb.AppendLine("msgid ''");
+			expectedSb.AppendLine("msgstr ''");
+			expectedSb.AppendLine("'Project-Id-Version: \\n'");
+			expectedSb.AppendLine("'POT-Creation-Date: .*");
+			expectedSb.AppendLine("'PO-Revision-Date: \\n'");
+			expectedSb.AppendLine("'Last-Translator: \\n'");
+			expectedSb.AppendLine("'Language-Team: \\n'");
+			expectedSb.AppendLine("'Plural-Forms: \\n'");
+			expectedSb.AppendLine("'MIME-Version: 1.0\\n'");
+			expectedSb.AppendLine("'Content-Type: text/plain; charset=UTF-8\\n'");
+			expectedSb.AppendLine("'Content-Transfer-Encoding: 8bit\\n'");
+			expectedSb.AppendLine("");
+			expectedSb.AppendLine("# Project-Id-Version: ");
+			expectedSb.AppendLine("# Report-Msgid-Bugs-To: ");
+			expectedSb.AppendLine("# POT-Creation-Date: .*");
+			expectedSb.AppendLine("# Content-Type: text/plain; charset=UTF-8");
+			expectedSb.AppendLine("");
+			expectedSb.AppendLine("");
+			expectedSb.AppendLine("#: .*csharp.cs");
+			expectedSb.AppendLine("msgid 'Backing Up...'");
+			expectedSb.AppendLine("msgstr ''");
 
-# Project-Id-Version:
-# Report-Msgid-Bugs-To:
-# POT-Creation-Date: .*
-# Content-Type: text/plain; charset=UTF-8
-
-
-#: .*csharp.cs
-msgid 'Backing Up...'
-msgstr ''
-".Replace("'", "\"");
+			string expected = expectedSb.ToString().Replace("'", "\"");
 
 			using (var e = new EnvironmentForTest())
 			{
@@ -281,30 +287,31 @@ somevar.Text = 'Backing Up...';
 somevar.Text = 'Backing Up...';
 ".Replace("'", "\"");
 
-			string expected =
-@"msgid ''
-msgstr ''
-'Project-Id-Version: \n'
-'POT-Creation-Date: .*
-'PO-Revision-Date: \n'
-'Last-Translator: \n'
-'Language-Team: \n'
-'Plural-Forms: \n'
-'MIME-Version: 1.0\n'
-'Content-Type: text/plain; charset=UTF-8\n'
-'Content-Transfer-Encoding: 8bit\n'
+			var expectedSb = new StringBuilder();
+			expectedSb.AppendLine("msgid ''");
+			expectedSb.AppendLine("msgstr ''");
+			expectedSb.AppendLine("'Project-Id-Version: \\n'");
+			expectedSb.AppendLine("'POT-Creation-Date: .*");
+			expectedSb.AppendLine("'PO-Revision-Date: \\n'");
+			expectedSb.AppendLine("'Last-Translator: \\n'");
+			expectedSb.AppendLine("'Language-Team: \\n'");
+			expectedSb.AppendLine("'Plural-Forms: \\n'");
+			expectedSb.AppendLine("'MIME-Version: 1.0\\n'");
+			expectedSb.AppendLine("'Content-Type: text/plain; charset=UTF-8\\n'");
+			expectedSb.AppendLine("'Content-Transfer-Encoding: 8bit\\n'");
+			expectedSb.AppendLine("");
+			expectedSb.AppendLine("# Project-Id-Version: ");
+			expectedSb.AppendLine("# Report-Msgid-Bugs-To: ");
+			expectedSb.AppendLine("# POT-Creation-Date: .*");
+			expectedSb.AppendLine("# Content-Type: text/plain; charset=UTF-8");
+			expectedSb.AppendLine("");
+			expectedSb.AppendLine("");
+			expectedSb.AppendLine("#: .*csharp.cs");
+			expectedSb.AppendLine("#: .*csharp.cs");
+			expectedSb.AppendLine("msgid 'Backing Up...'");
+			expectedSb.AppendLine("msgstr ''");
 
-# Project-Id-Version:
-# Report-Msgid-Bugs-To:
-# POT-Creation-Date: .*
-# Content-Type: text/plain; charset=UTF-8
-
-
-#: .*csharp.cs
-#: .*csharp.cs
-msgid 'Backing Up...'
-msgstr ''
-".Replace("'", "\"");
+			string expected = expectedSb.ToString().Replace("'", "\"");
 
 			using (var e = new EnvironmentForTest())
 			{
@@ -319,25 +326,26 @@ msgstr ''
 somevar.Text = '';
 ".Replace("'", "\"");
 
-			string expected =
-@"msgid ''
-msgstr ''
-'Project-Id-Version: \n'
-'POT-Creation-Date: .*
-'PO-Revision-Date: \n'
-'Last-Translator: \n'
-'Language-Team: \n'
-'Plural-Forms: \n'
-'MIME-Version: 1.0\n'
-'Content-Type: text/plain; charset=UTF-8\n'
-'Content-Transfer-Encoding: 8bit\n'
+			var expectedSb = new StringBuilder();
+			expectedSb.AppendLine("msgid ''");
+			expectedSb.AppendLine("msgstr ''");
+			expectedSb.AppendLine("'Project-Id-Version: \\n'");
+			expectedSb.AppendLine("'POT-Creation-Date: .*");
+			expectedSb.AppendLine("'PO-Revision-Date: \\n'");
+			expectedSb.AppendLine("'Last-Translator: \\n'");
+			expectedSb.AppendLine("'Language-Team: \\n'");
+			expectedSb.AppendLine("'Plural-Forms: \\n'");
+			expectedSb.AppendLine("'MIME-Version: 1.0\\n'");
+			expectedSb.AppendLine("'Content-Type: text/plain; charset=UTF-8\\n'");
+			expectedSb.AppendLine("'Content-Transfer-Encoding: 8bit\\n'");
+			expectedSb.AppendLine("");
+			expectedSb.AppendLine("# Project-Id-Version: ");
+			expectedSb.AppendLine("# Report-Msgid-Bugs-To: ");
+			expectedSb.AppendLine("# POT-Creation-Date: .*");
+			expectedSb.AppendLine("# Content-Type: text/plain; charset=UTF-8");
+			expectedSb.AppendLine("");
 
-# Project-Id-Version:
-# Report-Msgid-Bugs-To:
-# POT-Creation-Date: .*
-# Content-Type: text/plain; charset=UTF-8
-
-".Replace("'", "\"");
+			string expected = expectedSb.ToString().Replace("'", "\"");
 
 			using (var e = new EnvironmentForTest())
 			{
