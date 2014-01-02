@@ -21,6 +21,9 @@ namespace SIL.Archiving.IMDI
 		private readonly string _outputFolder;
 		private string _corpusDirectoryName;
 		private bool _workerException;
+		private string _programPreset;
+		private string _otherProgramPath;
+		private readonly string _configFileName = Path.Combine(ArchivingFileSystem.SilCommonArchivingDataFolder, "IMDIProgram.config");
 
 		#region Properties
 		internal override string ArchiveType
@@ -40,14 +43,11 @@ namespace SIL.Archiving.IMDI
 				if (string.IsNullOrEmpty(PathToProgramToLaunch))
 					return null;
 
-				if (IsMono)
-				{
-					if (PathToProgramToLaunch.ToLower().Contains("arbil")) return "Arbil";
+				// Arbil
+				if (PathToProgramToLaunch.ToLower().Contains("arbil")) return "Arbil";
 
-					return null;
-				}
 
-				// this is Windows, not Linux
+				// if not one of the presets, just return the exe name
 				string exe = Path.GetFileNameWithoutExtension(PathToProgramToLaunch);
 				string dir = Path.GetDirectoryName(PathToProgramToLaunch);
 				if (!string.IsNullOrEmpty(dir))
@@ -517,5 +517,104 @@ namespace SIL.Archiving.IMDI
 
 		public override IArchivingPackage ArchivingPackage { get { return _imdiData; } }
 
+		/// <summary></summary>
+		public new string PathToProgramToLaunch
+		{
+			get
+			{
+				switch (ProgramPreset)
+				{
+					case "Arbil":
+						return ArchivingPrograms.GetArbilExeFileLocation();
+
+					default:
+						return OtherProgramPath;
+				}
+			}
+			set
+			{
+				// this is just for compatibility
+				_otherProgramPath = value;
+			}
+		}
+
+		/// <summary></summary>
+		public string ProgramPreset
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(_programPreset))
+					GetSavedValues();
+
+				return _programPreset;
+			}
+			set
+			{
+				_programPreset = value;
+				SaveProgramValues();
+			}
+		}
+
+		/// <summary></summary>
+		public string OtherProgramPath
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(_programPreset))
+					GetSavedValues();
+
+				return _otherProgramPath;
+			}
+			set
+			{
+				_otherProgramPath = value;
+				SaveProgramValues();
+			}
+		}
+
+		private void GetSavedValues()
+		{
+
+			if (File.Exists(_configFileName))
+			{
+				var lines = File.ReadAllLines(_configFileName);
+
+				foreach (var line in lines)
+				{
+					var kvp = line.Split(new[] { '=' }, 2);
+					if (kvp.Length == 2)
+					{
+						switch (kvp[0])
+						{
+							case "ProgramPreset":
+								_programPreset = kvp[1];
+								break;
+
+							case "OtherProgramPath":
+								_otherProgramPath = kvp[1];
+								break;
+						}
+					}
+				}
+			}
+
+			// default to Arbil
+			if (string.IsNullOrEmpty(_programPreset))
+				_programPreset = "Arbil";
+
+			if (_otherProgramPath == null)
+				_otherProgramPath = string.Empty;
+		}
+
+		private void SaveProgramValues()
+		{
+			List<string> lines = new List<string>
+			{
+				"ProgramPreset=" +ProgramPreset,
+				"OtherProgramPath=" + OtherProgramPath
+			};
+
+			File.WriteAllLines(_configFileName, lines);
+		}
 	}
 }

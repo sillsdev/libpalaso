@@ -107,6 +107,9 @@
 	<Compile Include="Generic\FileMimeType.cs" />
 	<Compile Include="Generic\LanguageString.cs" />
 	<Compile Include="Generic\SimpleObjects.cs" />
+	<Compile Include="IMDI\IMDIArchivingDlg.cs">
+	  <SubType>Form</SubType>
+	</Compile>
 	<Compile Include="IMDI\IMDIArchivingDlgViewModel.cs" />
 	<Compile Include="IMDI\IMDIContributor.cs" />
 	<Compile Include="IMDI\IMDIPackage.cs" />
