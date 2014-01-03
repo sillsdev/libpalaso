@@ -1565,7 +1565,8 @@ namespace SIL.Archiving
 			if (_modes == null)
 				ExtractInformationFromFiles();
 
-			if (IsMetadataPropertySet(MetadataProperties.DatasetExtent) && !_modes.Contains(kModeDataset))
+			if ((_modes == null) ||
+				(IsMetadataPropertySet(MetadataProperties.DatasetExtent) && !_modes.Contains(kModeDataset)))
 				throw new InvalidOperationException("Cannot set dataset extent for a resource which does not contain any \"dataset\" files.");
 
 			return JSONUtils.MakeBracketedListFromValues(kFileTypeModeList, _modes);
@@ -1813,11 +1814,11 @@ namespace SIL.Archiving
 		{
 			var exeFile = GetExeFileLocation();
 			if (exeFile == null)
-				return null;
+				throw new DirectoryNotFoundException("The RAMP directory was not found.");
 
 			var dir = Path.GetDirectoryName(exeFile);
 			if (dir == null)
-				return null;
+				throw new DirectoryNotFoundException("The RAMP directory was not found.");
 
 			// on Linux the exe and data directory are not in the same directory
 			if (!Directory.Exists(Path.Combine(dir, "data")))
@@ -1827,14 +1828,22 @@ namespace SIL.Archiving
 					dir = Path.Combine(dir, "share");
 			}
 
-			// get the data/options directory
-			dir = Path.Combine(dir, "data", "options");
+			// get the data directory
+			dir = Path.Combine(dir, "data");
 			if (!Directory.Exists(dir))
-				return null;
+				throw new DirectoryNotFoundException(string.Format("The path {0} is not valid.", dir));
+
+			// get the options directory
+			dir = Path.Combine(dir, "options");
+			if (!Directory.Exists(dir))
+				throw new DirectoryNotFoundException(string.Format("The path {0} is not valid.", dir));
 
 			// get the languages.yaml file
 			var langFile = Path.Combine(dir, "languages.yaml");
-			return !File.Exists(langFile) ? null : langFile;
+			if (!File.Exists(langFile))
+				throw new FileNotFoundException(string.Format("The file {0} was not found.", langFile));
+
+			return langFile;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1851,19 +1860,15 @@ namespace SIL.Archiving
 				_languageList = new Dictionary<string, string>();
 				var langFile = GetLanguageFileLocation();
 
-				if (langFile != null)
+				foreach (var fileLine in File.ReadLines(langFile).Where(l => l.StartsWith("  code: \"")))
 				{
 					const int start = 9;
-
-					foreach (var fileLine in File.ReadLines(langFile).Where(l => l.StartsWith("  code: \"")))
+					var end = fileLine.IndexOf('"', start);
+					if (end > start)
 					{
-						var end = fileLine.IndexOf('"', start);
-						if (end > start)
-						{
-							var parts = fileLine.Substring(start, end - start).Split(':');
-							if (parts.Length == 2)
-								_languageList[parts[0]] = parts[1];
-						}
+						var parts = fileLine.Substring(start, end - start).Split(':');
+						if (parts.Length == 2)
+							_languageList[parts[0]] = parts[1];
 					}
 				}
 			}
@@ -1880,8 +1885,11 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public string GetLanguageName(string iso3Code)
 		{
-			// LT-15003: prevent crash while looking up language name if RAMP not installed
 			var langs = GetLanguageList();
+
+			if (langs == null)
+				throw new Exception("The language list for RAMP was not retrieved.");
+
 			return langs.ContainsKey(iso3Code) ? langs[iso3Code] : null;
 		}
 		#endregion

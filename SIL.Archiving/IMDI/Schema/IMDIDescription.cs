@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using SIL.Archiving.Generic;
 
 namespace SIL.Archiving.IMDI.Schema
 {
@@ -15,6 +16,12 @@ namespace SIL.Archiving.IMDI.Schema
 		{
 			get { return _descriptionField ?? (_descriptionField = new DescriptionTypeCollection()); }
 			set { _descriptionField = value; }
+		}
+
+		/// <summary>Adds a description (in a particular language)</summary>
+		public void AddDescription(LanguageString description)
+		{
+			Description.Add(description.ToIMDIDescriptionType());
 		}
 	}
 

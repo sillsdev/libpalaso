@@ -351,22 +351,23 @@ namespace SIL.Archiving.IMDI
 					_worker.ReportProgress(1 /* actual value ignored, progress just increments */,
 						session.Name);
 
-					// list.Key is the session name, if missing assume it is a Contributor file
-					var sessionDirName = NormalizeDirectoryName(session.Name);
-
-					// create sub directory
-					var fullSessionDirName = Path.Combine(outputDirectory, sessionDirName);
-					Directory.CreateDirectory(fullSessionDirName);
-
 					// get files to copy
 					foreach (var file in session.Resources.MediaFile)
 					{
+						// create sub directory
+						var fullSessionDirName = Path.Combine(outputDirectory, NormalizeDirectoryName(file.OutputDirectory));
+						Directory.CreateDirectory(fullSessionDirName);
+
 						var newFileName = NormalizeFilename(string.Empty, Path.GetFileName(file.FullPathAndFileName));
 						filesToCopy[file.FullPathAndFileName] = Path.Combine(fullSessionDirName, newFileName);
 					}
 
 					foreach (var file in session.Resources.WrittenResource)
 					{
+						// create sub directory
+						var fullSessionDirName = Path.Combine(outputDirectory, NormalizeDirectoryName(file.OutputDirectory));
+						Directory.CreateDirectory(fullSessionDirName);
+
 						var newFileName = NormalizeFilename(string.Empty, Path.GetFileName(file.FullPathAndFileName));
 						filesToCopy[file.FullPathAndFileName] = Path.Combine(fullSessionDirName, newFileName);
 					}
@@ -378,33 +379,7 @@ namespace SIL.Archiving.IMDI
 				_worker.ReportProgress(0, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CopyingFilesMsg",
 					"Copying files"));
 
-
-				// ****************************************************************************************************
-				//foreach (var list in _fileLists)
-				//{
-				//    _worker.ReportProgress(1 /* actual value ignored, progress just increments */,
-				//        string.IsNullOrEmpty(list.Key) ? _id : list.Key);
-
-				//    // list.Key is the session name, if missing assume it is a Contributor file
-				//    var sessionDirName = NormalizeDirectoryName(string.IsNullOrEmpty(list.Key) ? "Contributors" : list.Key);
-
-				//    // create sub directory
-				//    var fullSessionDirName = Path.Combine(outputDirectory, sessionDirName);
-				//    Directory.CreateDirectory(fullSessionDirName);
-
-				//    // copy the files
-				//    foreach (var file in list.Value.Item1)
-				//    {
-				//        var newFileName = NormalizeFilename(string.Empty, Path.GetFileName(file));
-				//        filesToCopy[file] = Path.Combine(fullSessionDirName, newFileName);
-				//    }
-				//    if (_cancelProcess)
-				//        return;
-				//}
-
-				//_worker.ReportProgress(0, LocalizationManager.GetString("DialogBoxes.ArchivingDlg.CopyingFilesMsg",
-				//    "Copying files"));
-
+				// copy the files now
 				foreach (var fileToCopy in filesToCopy)
 				{
 					if (_cancelProcess)
