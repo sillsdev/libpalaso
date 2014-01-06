@@ -29,3 +29,4 @@ L10NSharp.*
 *.ncrunchsolution
 .nuget/NuGet.exe
 *.cache
+Download

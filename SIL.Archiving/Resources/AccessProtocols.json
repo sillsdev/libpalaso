@@ -1,5 +1,5 @@
 [
-{"protocol":"FURCS","documentation":"fucrs.html","choices":[
+{"protocol":"FURCS","documentation":"furcs.html","choices":[
 	{"label":"","description":"only the Depositor and delegate can access"},
 	{"label":"F","description":"access is Free to all"},
 	{"label":"U","description":"all Users can access (requires registration)"},

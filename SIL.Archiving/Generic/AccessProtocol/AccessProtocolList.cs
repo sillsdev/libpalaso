@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
@@ -140,6 +141,35 @@ namespace SIL.Archiving.Generic.AccessProtocol
 
 			foreach (var choice in choices)
 				Choices.Add(new AccessOption { OptionName = choice.Trim() });
+		}
+
+		/// <summary />
+		public string GetDocumentaionUri()
+		{
+			if (string.IsNullOrEmpty(DocumentationFile))
+				return string.Empty;
+
+			var dataDirectory = ArchivingFileSystem.SilCommonArchivingDataFolder;
+
+			if (!Directory.Exists(dataDirectory))
+				throw new DirectoryNotFoundException(dataDirectory);
+
+			var fileName = Path.Combine(dataDirectory, DocumentationFile);
+
+			// try to create the file if it is not there
+			if (!File.Exists(fileName))
+			{
+				var pos = DocumentationFile.LastIndexOf('.');
+				var resourceName = (pos > -1) ? DocumentationFile.Substring(0, pos) : DocumentationFile;
+				var resourceString = Resources.ResourceManager.GetString(resourceName);
+				if (!string.IsNullOrEmpty(resourceString))
+					File.WriteAllText(fileName, resourceString);
+			}
+
+			if (!File.Exists(fileName))
+				throw new FileNotFoundException(fileName);
+
+			return new Uri(fileName, UriKind.Absolute).AbsoluteUri;
 		}
 	}
 
