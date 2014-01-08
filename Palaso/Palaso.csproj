@@ -72,36 +72,90 @@
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' ">
-	<None Include="..\lib\$(Configuration)\icudt40.dll">
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+   <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\Debug\icu.net.dll</HintPath>
+	</Reference>
+	<None Include="..\lib\Debug\icudt40.dll">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-	<None Include="..\lib\$(Configuration)\icuin40.dll">
+	<None Include="..\lib\Debug\icuin40.dll">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-	<None Include="..\lib\$(Configuration)\icuuc40.dll">
+	<None Include="..\lib\Debug\icuuc40.dll">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Include="..\lib\Debug\icu.net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
    <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\common\icu.net.dll</HintPath>
+	  <HintPath>..\lib\Release\icu.net.dll</HintPath>
 	</Reference>
-	<None Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="..\lib\common\icu.net.dll.config">
+	<None Include="..\lib\Release\icudt40.dll">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-	<Reference Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099, processorArchitecture=MSIL">
+	<None Include="..\lib\Release\icuin40.dll">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Include="..\lib\Release\icuuc40.dll">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Include="..\lib\Release\icu.net.dll.config">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'DebugMono'">
+   <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\DebugMono\icu.net.dll</HintPath>
+	</Reference>
+	<None Include="..\lib\DebugMono\icudt40.dll">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Include="..\lib\DebugMono\icuin40.dll">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Include="..\lib\DebugMono\icuuc40.dll">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Include="..\lib\DebugMono\icu.net.dll.config">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'ReleaseMono'">
+   <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\ReleaseMono\icu.net.dll</HintPath>
+	</Reference>
+	<None Include="..\lib\ReleaseMono\icudt40.dll">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Include="..\lib\ReleaseMono\icuin40.dll">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Include="..\lib\ReleaseMono\icuuc40.dll">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Include="..\lib\ReleaseMono\icu.net.dll.config">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' ">
+	<Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099, processorArchitecture=MSIL">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\commonMono\NDesk.DBus.dll</HintPath>
 	</Reference>
-	<None Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="..\lib\commonMono\NDesk.DBus.dll.config">
+	<None Include="..\lib\commonMono\NDesk.DBus.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-	<Reference Include="System.Configuration" />
-	<Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+	<Reference Include="System.Configuration" />
+	<Reference Include="System.Xml.Linq" />
 	<Reference Include="System" />
 	<Reference Include="System.Core">
 	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
