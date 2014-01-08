@@ -113,15 +113,6 @@
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\DebugMono\icu.net.dll</HintPath>
 	</Reference>
-	<None Include="..\lib\DebugMono\icudt40.dll">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
-	<None Include="..\lib\DebugMono\icuin40.dll">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
-	<None Include="..\lib\DebugMono\icuuc40.dll">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
 	<None Include="..\lib\DebugMono\icu.net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
@@ -131,15 +122,6 @@
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\ReleaseMono\icu.net.dll</HintPath>
 	</Reference>
-	<None Include="..\lib\ReleaseMono\icudt40.dll">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
-	<None Include="..\lib\ReleaseMono\icuin40.dll">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
-	<None Include="..\lib\ReleaseMono\icuuc40.dll">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
 	<None Include="..\lib\ReleaseMono\icu.net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
