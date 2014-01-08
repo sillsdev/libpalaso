@@ -171,11 +171,11 @@
     <None Include="Resources\AccessProtocols.json" />
     <None Include="Resources\CustomAccessProtocols.json" />
     <None Include="Resources\EmptyMets.xml" />
+    <None Include="Resources\reap.html" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="IMDI\Schema\IMDI_3_0_Fix.py" />
-    <Content Include="Resources\furcs.html" />
-    <None Include="Resources\reap.html" />
+    <None Include="Resources\furcs.html" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

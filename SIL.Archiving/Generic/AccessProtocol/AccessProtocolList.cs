@@ -19,39 +19,52 @@ namespace SIL.Archiving.Generic.AccessProtocol
 		private const string kCustomProtocolFileName = "CustomAccessProtocols.json";
 
 		/// <summary />
-		public AccessProtocols() { }
+		protected AccessProtocols() { }
 
 		/// <summary />
-		public AccessProtocols(IEnumerable<ArchiveAccessProtocol> items)
+		protected AccessProtocols(IEnumerable<ArchiveAccessProtocol> items)
 		{
 			foreach (var item in items)
 				Add(item);
 		}
 
 		/// <summary />
-		public static AccessProtocols Load()
+		public static AccessProtocols Load() { return Load(null); }
+
+		/// <summary />
+		public static AccessProtocols Load(string programDirectory)
 		{
-			return _instance ?? (_instance = LoadFromFile(kProtocolFileName, Resources.AccessProtocols));
+			return _instance ?? (_instance = LoadFromFile(kProtocolFileName, Resources.AccessProtocols, programDirectory));
 		}
 
 		/// <summary />
 		public static AccessProtocols LoadCustom()
 		{
 			return _customInstance ??
-				   (_customInstance = LoadFromFile(kCustomProtocolFileName, Resources.CustomAccessProtocols));
+				   (_customInstance = LoadFromFile(kCustomProtocolFileName, Resources.CustomAccessProtocols, null));
 		}
 
-		private static AccessProtocols LoadFromFile(string protocolFileName, string resourceName)
+		private static AccessProtocols LoadFromFile(string protocolFileName, string resourceName, string programDirectory)
 		{
-			var dataDirectory = ArchivingFileSystem.SilCommonArchivingDataFolder;
+			var useDefault = string.IsNullOrEmpty(programDirectory);
+
+			var dataDirectory = useDefault ? ArchivingFileSystem.SilCommonArchivingDataFolder : programDirectory;
 
 			if (!Directory.Exists(dataDirectory))
 				throw new DirectoryNotFoundException(dataDirectory);
 
 			var fileName = Path.Combine(dataDirectory, protocolFileName);
 
+			// if not in the programDirectory, look in the archiving folder
+			if (!File.Exists(fileName) && !useDefault)
+			{
+				dataDirectory = ArchivingFileSystem.SilCommonArchivingDataFolder;
+				fileName = Path.Combine(dataDirectory, protocolFileName);
+			}
+
 			if (!File.Exists(fileName))
 			{
+				// create file if not found yet
 				var jsonData = resourceName;
 				File.WriteAllText(fileName, jsonData);
 			}
@@ -64,10 +77,13 @@ namespace SIL.Archiving.Generic.AccessProtocol
 		}
 
 		/// <summary />
-		public static AccessProtocols LoadStandardAndCustom()
+		public static AccessProtocols LoadStandardAndCustom() { return LoadStandardAndCustom(null); }
+
+		/// <summary />
+		public static AccessProtocols LoadStandardAndCustom(string programDirectory)
 		{
 			if (_instance == null)
-				Load();
+				Load(programDirectory);
 
 			if (_customInstance == null)
 				LoadCustom();
@@ -84,9 +100,12 @@ namespace SIL.Archiving.Generic.AccessProtocol
 		}
 
 		/// <summary />
-		public static void SaveCustom(AccessProtocols customProtocols)
+		public static void SaveCustom(AccessProtocols customProtocols) { SaveCustom(customProtocols, null); }
+
+		/// <summary />
+		public static void SaveCustom(AccessProtocols customProtocols, string programDirectory)
 		{
-			var dataDirectory = ArchivingFileSystem.SilCommonArchivingDataFolder;
+			var dataDirectory = string.IsNullOrEmpty(programDirectory) ? ArchivingFileSystem.SilCommonArchivingDataFolder : programDirectory;
 
 			if (!Directory.Exists(dataDirectory))
 				throw new DirectoryNotFoundException(dataDirectory);
@@ -144,17 +163,28 @@ namespace SIL.Archiving.Generic.AccessProtocol
 		}
 
 		/// <summary />
-		public string GetDocumentaionUri()
+		public string GetDocumentaionUri() { return GetDocumentaionUri(null); }
+
+		/// <summary />
+		public string GetDocumentaionUri(string programDirectory)
 		{
 			if (string.IsNullOrEmpty(DocumentationFile))
 				return string.Empty;
 
-			var dataDirectory = ArchivingFileSystem.SilCommonArchivingDataFolder;
+			var useDefault = string.IsNullOrEmpty(programDirectory);
+			var dataDirectory = string.IsNullOrEmpty(programDirectory) ? ArchivingFileSystem.SilCommonArchivingDataFolder : programDirectory;
 
 			if (!Directory.Exists(dataDirectory))
 				throw new DirectoryNotFoundException(dataDirectory);
 
 			var fileName = Path.Combine(dataDirectory, DocumentationFile);
+
+			// if not in the programDirectory, look in the archiving folder
+			if (!File.Exists(fileName) && !useDefault)
+			{
+				dataDirectory = ArchivingFileSystem.SilCommonArchivingDataFolder;
+				fileName = Path.Combine(dataDirectory, DocumentationFile);
+			}
 
 			// try to create the file if it is not there
 			if (!File.Exists(fileName))
