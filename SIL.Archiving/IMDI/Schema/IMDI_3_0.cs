@@ -1843,6 +1843,84 @@ namespace SIL.Archiving.IMDI.Schema
 				MDGroup.Content.Genre = value.ToVocabularyType(false, ListType.Link(ListType.ContentGenre));
 			}
 		}
+
+		[XmlIgnore]
+		public string SubGenre
+		{
+			get
+			{
+				return MDGroup.Content.SubGenre == null ? null : MDGroup.Content.SubGenre.Value;
+			}
+			set
+			{
+				MDGroup.Content.SubGenre = value.ToVocabularyType(false, ListType.Link(ListType.ContentSubGenre));
+			}
+		}
+
+		[XmlIgnore]
+		public string Interactivity
+		{
+			get
+			{
+				return MDGroup.Content.CommunicationContext.Interactivity == null ? null : MDGroup.Content.CommunicationContext.Interactivity.Value;
+			}
+			set
+			{
+				MDGroup.Content.SetInteractivity(value);
+			}
+		}
+
+		[XmlIgnore]
+		public string Involvement
+		{
+			get
+			{
+				return MDGroup.Content.CommunicationContext.Involvement == null ? null : MDGroup.Content.CommunicationContext.Involvement.Value;
+			}
+			set
+			{
+				MDGroup.Content.SetInvolvement(value);
+			}
+		}
+
+		[XmlIgnore]
+		public string PlanningType
+		{
+			get
+			{
+				return MDGroup.Content.CommunicationContext.PlanningType == null ? null : MDGroup.Content.CommunicationContext.PlanningType.Value;
+			}
+			set
+			{
+				MDGroup.Content.SetPlanningType(value);
+			}
+		}
+
+		[XmlIgnore]
+		public string SocialContext
+		{
+			get
+			{
+				return MDGroup.Content.CommunicationContext.SocialContext == null ? null : MDGroup.Content.CommunicationContext.SocialContext.Value;
+			}
+			set
+			{
+				MDGroup.Content.SetSocialContext(value);
+			}
+		}
+
+		[XmlIgnore]
+		public string Task
+		{
+			get
+			{
+				return MDGroup.Content.Task == null ? null : MDGroup.Content.Task.Value;
+			}
+			set
+			{
+				MDGroup.Content.SubGenre = value.ToVocabularyType(false, ListType.Link(ListType.ContentSubGenre));
+			}
+		}
 	}
 
 	/// <remarks/>

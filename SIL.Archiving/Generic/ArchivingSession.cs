@@ -29,5 +29,23 @@ namespace SIL.Archiving.Generic
 
 		/// <summary></summary>
 		string Genre { get; set; }
+
+		/// <summary></summary>
+		string SubGenre { get; set; }
+
+		/// <summary></summary>
+		string Interactivity { get; set; }
+
+		/// <summary></summary>
+		string Involvement { get; set; }
+
+		/// <summary></summary>
+		string PlanningType { get; set; }
+
+		/// <summary></summary>
+		string SocialContext { get; set; }
+
+		/// <summary></summary>
+		string Task { get; set; }
 	}
 }

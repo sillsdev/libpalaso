@@ -69,7 +69,7 @@ namespace SIL.Archiving.Generic.AccessProtocol
 				File.WriteAllText(fileName, jsonData);
 			}
 
-			using (FileStream stream = new FileStream(fileName, FileMode.Open))
+			using (FileStream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
 			{
 				DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof (AccessProtocols));
 				return (AccessProtocols) ser.ReadObject(stream);
