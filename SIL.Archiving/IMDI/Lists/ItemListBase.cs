@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using Palaso.Extensions;
 using SIL.Archiving.IMDI.Schema;
 
 namespace SIL.Archiving.IMDI.Lists
@@ -72,6 +73,21 @@ namespace SIL.Archiving.IMDI.Lists
 		public IMDIItemList(XmlNodeList nodes)
 		{
 			PopulateList(nodes);
+		}
+
+		/// <summary>Constructor for derived classes to use</summary>
+		public void UpperCaseFirstCharacters()
+		{
+			// _genre.Text.First().ToString(CultureInfo.InvariantCulture).ToUpper() + String.Join("", _genre.Text.Skip(1));
+			foreach (var itm in this)
+			{
+				var itmText = itm.Text;
+				if (!string.IsNullOrEmpty(itmText)
+					&& (itmText.Substring(0, 1) != itmText.Substring(0, 1).ToUpper()))
+				{
+					itm.Text = itmText.ToUpperFirstLetter();
+				}
+			}
 		}
 
 		/// ---------------------------------------------------------------------------------------
