@@ -128,6 +128,13 @@ namespace SIL.Archiving.IMDI.Lists
 			var itm = this.FirstOrDefault(i => String.Equals(i.Text, text, StringComparison.CurrentCultureIgnoreCase));
 			return itm;
 		}
+
+		/// <summary />
+		public ClosedIMDIItemList ToClosedList()
+		{
+			var list = this as ClosedIMDIItemList;
+			return list ?? new ClosedIMDIItemList(this);
+		}
 	}
 
 	/// <summary>Must select one of the items in the list</summary>
@@ -138,6 +145,11 @@ namespace SIL.Archiving.IMDI.Lists
 		public ClosedIMDIItemList(XmlNodeList nodes) : base(nodes)
 		{
 			PopulateList(nodes);
+		}
+
+		internal ClosedIMDIItemList(IEnumerable<IMDIListItem> items)
+		{
+			InsertRange(0, items);
 		}
 
 		/// <summary>Returns the first item found with the selected Value, or null if not found</summary>

@@ -41,7 +41,8 @@ namespace SIL.Archiving.IMDI.Lists
 			if (!_loadedLists.ContainsKey(listName))
 				_loadedLists.Add(listName, new ClosedIMDIItemList(GetNodeList(listName)));
 
-			return (ClosedIMDIItemList) _loadedLists[listName];
+			// make sure this is a closed list
+			return _loadedLists[listName].ToClosedList();
 		}
 
 		/// <summary>Gets a list of the Entry nodes from the selected XML file.</summary>
