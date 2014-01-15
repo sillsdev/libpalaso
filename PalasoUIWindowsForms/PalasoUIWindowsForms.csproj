@@ -80,15 +80,79 @@
 	<TargetFrameworkProfile>
 	</TargetFrameworkProfile>
   </PropertyGroup>
-  <ItemGroup>
-	<Reference Include="icu.net">
-	  <HintPath>..\lib\common\icu.net.dll</HintPath>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+   <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\Debug\icu.net.dll</HintPath>
 	</Reference>
+	<None Include="..\lib\Debug\icudt40.dll">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Include="..\lib\Debug\icuin40.dll">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Include="..\lib\Debug\icuuc40.dll">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Include="..\lib\Debug\icu.net.dll.config">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<Reference Include="..\lib\Debug\L10NSharp.dll">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\Debug\L10NSharp.dll</HintPath>
+	</Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+   <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\Release\icu.net.dll</HintPath>
+	</Reference>
+	<None Include="..\lib\Release\icudt40.dll">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Include="..\lib\Release\icuin40.dll">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Include="..\lib\Release\icuuc40.dll">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<None Include="..\lib\Release\icu.net.dll.config">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<Reference Include="..\lib\Release\L10NSharp.dll">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\Release\L10NSharp.dll</HintPath>
+	</Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'DebugMono'">
+   <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\DebugMono\icu.net.dll</HintPath>
+	</Reference>
+	<None Include="..\lib\DebugMono\icu.net.dll.config">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<Reference Include="..\lib\DebugMono\L10NSharp.dll">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\DebugMono\L10NSharp.dll</HintPath>
+	</Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'ReleaseMono'">
+   <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\ReleaseMono\icu.net.dll</HintPath>
+	</Reference>
+	<None Include="..\lib\ReleaseMono\icu.net.dll.config">
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	</None>
+	<Reference Include="..\lib\ReleaseMono\L10NSharp.dll">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\ReleaseMono\L10NSharp.dll</HintPath>
+	</Reference>
+  </ItemGroup>
+  <ItemGroup>
 	<Reference Include="Enchant.Net">
 	  <HintPath>..\lib\common\Enchant.Net.dll</HintPath>
-	</Reference>
-	<Reference Include="L10NSharp">
-	  <HintPath>..\packages\L10NSharp.1.1.3\lib\net40-Client\L10NSharp.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
@@ -694,6 +758,7 @@
 	<Compile Include="Keyboarding\Linux\IbusKeyboardDescription.cs" />
 	<Compile Include="Keyboarding\Linux\X11KeyConverter.cs" />
 	<Compile Include="Keyboarding\InternalInterfaces\IXklEngine.cs" />
+	<Compile Include="Keyboarding\Windows\MsTsfInterfaces.cs" />
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="ClearShare\ClearShareResources.resx">

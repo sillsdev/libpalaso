@@ -68,7 +68,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			//NB: we're loosing non-ascii somewhere... the copyright symbol is just the most obvious
 			if (!string.IsNullOrEmpty(m.CopyrightNotice))
 			{
-				m.CopyrightNotice = m.CopyrightNotice.Replace("Copyright ?", "Copyright ©");
+                m.CopyrightNotice = m.CopyrightNotice.Replace("Copyright �", "Copyright ©");
 			}
 
 			//clear out the change-setting we just caused, because as of right now, we are clean with respect to what is on disk, no need to save.

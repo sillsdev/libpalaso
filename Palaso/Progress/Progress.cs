@@ -709,3 +709,4 @@ public class StringBuilderProgress : GenericProgress
 
 	}
 }
+

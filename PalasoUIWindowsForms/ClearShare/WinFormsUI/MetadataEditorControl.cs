@@ -50,6 +50,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 					_derivatives.Checked = cc.DerivativeRule == CreativeCommonsLicense.DerivativeRules.Derivatives;
 					_commercial.Checked = cc.CommercialUseAllowed;
 					_nonCommercial.Checked = !cc.CommercialUseAllowed;
+					_customLicenseDescription.Text = _metadata.License.RightsStatement;
 				}
 				else if(_metadata.License is CustomLicense)
 				{
@@ -113,7 +114,18 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		{
 			panel1.Enabled = panel2.Enabled = _creativeCommons.Checked;
 			_licenseImage.Visible = _creativeCommons.Checked;
-			_customLicenseDescription.Enabled = _customLicense.Checked;
+			_customLicenseDescription.Enabled = _customLicense.Checked || _creativeCommons.Checked;
+			_linkToRefinedCreativeCommonsWarning.Visible = _creativeCommons.Checked && !string.IsNullOrWhiteSpace(_customLicenseDescription.Text) ;
+			_additionalRequestsLabel.Visible = _creativeCommons.Checked;
+			if (_creativeCommons.Checked)
+			{
+				_customLicenseDescription.Top = _additionalRequestsLabel.Bottom+10;
+				_customLicenseDescription.Left = _creativeCommons.Left;
+			}
+			else {
+				_customLicenseDescription.Top = _additionalRequestsLabel.Top;
+				_customLicenseDescription.Left = _licenseImage.Left;
+			}
 		}
 
 //        public bool IsMinimallyComplete
@@ -139,9 +151,20 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 
 		private void _customLicenseDescription_TextChanged(object sender, EventArgs e)
 		{
-			var customLicense = _metadata.License as CustomLicense;
-			if(customLicense!=null)
-				customLicense.RightsStatement = _customLicenseDescription.Text;
+			if (_customLicense.Checked)
+			{
+				var customLicense = _metadata.License as CustomLicense;
+
+				if (customLicense != null)
+					customLicense.RightsStatement = _customLicenseDescription.Text;
+			}
+			if (_creativeCommons.Checked)
+			{
+				var l = _metadata.License as CreativeCommonsLicense;
+
+				l.RightsStatement = _customLicenseDescription.Text;
+			}
+			UpdateDisplay();
 		}
 
 		private void _copyrightBy_TextChanged(object sender, EventArgs e)
@@ -149,6 +172,11 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			if (_settingUp)
 				return;
 			_metadata.SetCopyrightNotice(_copyrightYear.Text, _copyrightBy.Text);
+		}
+
+		private void label2_Click(object sender, EventArgs e)
+		{
+
 		}
 
 

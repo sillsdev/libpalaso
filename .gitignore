@@ -1,5 +1,3 @@
-
-
 output/
 Thumbs.db
 .bzr/
@@ -20,6 +18,7 @@ config/
 $(Configuration)
 nant.resx.bak
 lib/DebugMono/icu*40.dll
+lib/*/icu.net.dll.config
 *.lnk
 CopyTo*.bat
 *.orig
@@ -29,3 +28,4 @@ L10NSharp.*
 *.ncrunchsolution
 .nuget/NuGet.exe
 *.cache
+Download/

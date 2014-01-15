@@ -170,15 +170,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		#region Properties
 		/// <summary>
-		/// Provides a list of all possible installed keyboards, preceded by the 'default' option which does nothing.
+		/// Provides a list of all possible installed keyboards, or 'default' (which does nothing)
+		/// if there are none.
 		/// This is typically used to populate a list of keyboards that could be chosen.
 		/// </summary>
 		public static IEnumerable<IKeyboardDefinition> PossibleKeyboardsToChoose
 		{
 			get
 			{
-				// Returns default keyboard as first item
-				yield return KeyboardDescription.Zero;
+				// Returns default keyboard if there are no keyboards
+				if (!Keyboard.Controller.AllAvailableKeyboards.Any())
+					yield return KeyboardDescription.Zero;
 
 				foreach (var keyboard in Keyboard.Controller.AllAvailableKeyboards)
 				{

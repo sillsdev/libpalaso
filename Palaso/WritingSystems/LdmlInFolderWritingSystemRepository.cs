@@ -227,11 +227,6 @@ namespace Palaso.WritingSystems
 				}
 		}
 
-//        /// <summary>
-//        /// useful for unit tests
-//        /// </summary>
-//        public bool DontAddDefaultDefinitions { get; set; }
-//
 		/// <summary>
 		/// Provides writing systems from a repository that comes, for example, with the OS
 		/// </summary>
@@ -354,21 +349,11 @@ namespace Palaso.WritingSystems
 			// make a copy and then go through that list - SaveDefinition calls Set which
 			// may delete and then insert the same writing system - which would change WritingSystemDefinitions
 			// and not be allowed in a foreach loop
-			var allDefs = new List<IWritingSystemDefinition>();
-			foreach (var ws in AllWritingSystems)
-			{
-				if (CanSet(ws))
-				{
-					allDefs.Add(ws);
-				}
-			}
+			var allDefs = AllWritingSystems.Where(CanSet).ToList();
 			foreach (var ws in allDefs)
 			{
 				SaveDefinition(ws);
-				if (!ws.Modified)
-				{
-					OnChangeNotifySharedStore(ws);
-				}
+				OnChangeNotifySharedStore(ws);
 			}
 
 

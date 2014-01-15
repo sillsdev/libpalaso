@@ -17,6 +17,8 @@ namespace Palaso.WritingSystems
 		public DefaultKeyboardDefinition()
 		{
 			Type = KeyboardType.System;
+			Layout = string.Empty;
+			Locale = string.Empty;
 		}
 		public DefaultKeyboardDefinition(DefaultKeyboardDefinition kd)
 		{
@@ -56,6 +58,14 @@ namespace Palaso.WritingSystems
 		}
 
 		/// <summary>
+		/// Gets a localized human-readable name of the input language.
+		/// </summary>
+		public virtual string LocalizedName
+		{
+			get { return Name; }
+		}
+
+		/// <summary>
 		/// The Locale of the keyboard in the format languagecode2-country/regioncode2.
 		/// Review JohnT: Possibly the alternate format languagecode2-country-region might be better?
 		/// http://msdn.microsoft.com/en-us/library/windows/desktop/dd373814%28v=vs.85%29.aspx says that is the standard if region is included.
@@ -90,6 +100,9 @@ namespace Palaso.WritingSystems
 		{
 		}
 
+		/// <summary>
+		/// Clone this keyboard definition
+		/// </summary>
 		public virtual IKeyboardDefinition Clone()
 		{
 			return new DefaultKeyboardDefinition(this);
@@ -118,8 +131,6 @@ namespace Palaso.WritingSystems
 		/// expectations like a.Equals(b) iff b.Equals(a) may be violated. Similarly other implementations
 		/// should use the same definition of GetHashCode().
 		/// </summary>
-		/// <param name="other"></param>
-		/// <returns></returns>
 		public bool Equals(IKeyboardDefinition other)
 		{
 			if (ReferenceEquals(null, other)) return false;
@@ -141,13 +152,21 @@ namespace Palaso.WritingSystems
 		}
 
 		/// <summary>
-		/// Note that to be consistent with Equals, any other implementation of this interface should use the same
-		/// definition of GetHashCode as this.
+		/// Note that to be consistent with Equals, any other implementation of IKeyboardDefinition
+		/// should use the same definition of GetHashCode as this.
+		/// Currently all implementations inherit from this class and therefore do.
 		/// </summary>
 		/// <returns></returns>
 		public override int GetHashCode()
 		{
+			// Don't crash if either Layout or Locale somehow end up being null.
+			if (Layout != null && Locale != null)
 			return Layout.GetHashCode() ^ Locale.GetHashCode();
+			if (Layout != null)
+				return Layout.GetHashCode();
+			if (Locale != null)
+				return Locale.GetHashCode();
+			return 0;
 		}
 	}
 }

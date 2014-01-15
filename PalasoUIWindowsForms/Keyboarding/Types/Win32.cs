@@ -1,16 +1,9 @@
-// ---------------------------------------------------------------------------------------------
-#region // Copyright (c) 2013, SIL International. All Rights Reserved.
-// <copyright from='2013' to='2013' company='SIL International'>
-//		Copyright (c) 2013, SIL International. All Rights Reserved.
-//
-//		Distributable under the terms of either the Common Public License or the
-//		GNU Lesser General Public License, as specified in the LICENSING.txt file.
-// </copyright>
-#endregion
-// ---------------------------------------------------------------------------------------------
+// Copyright (c) 2013 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Palaso.UI.WindowsForms.Keyboarding.Types
 {
@@ -118,6 +111,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Types
 		[return: MarshalAs(UnmanagedType.Bool)]
 		public static extern bool ImmSetConversionStatus(HandleRef context, int conversionMode,
 			int sentenceMode);
+
+		[DllImport("imm32.dll", CharSet = CharSet.Unicode)]
+		public static extern int ImmGetDescription(HandleRef hkl, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder description, uint bufLen);
+
+		[DllImport("imm32.dll", CharSet = CharSet.Unicode)]
+		public static extern int ImmGetDescription(IntPtr hkl, [MarshalAs(UnmanagedType.LPTStr)] StringBuilder description, uint bufLen);
 		#endregion
 
 		#region user32.dll
@@ -137,9 +136,22 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Types
 
 		}
 #endif
+
+		[DllImport("user32.dll")]
+		public static extern IntPtr ActivateKeyboardLayout(HandleRef hkl, UInt32 flags);
+		public const int KLF_SETFORPROCESS = 256;
+
+		[DllImport("user32.dll")]
+		public static extern int GetKeyboardLayoutList(int nBuff, [Out] IntPtr lpList);
 		#endregion
 
-		#if __MonoCS__
+		#region shlwapi.dll
+		[DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
+		public static extern void SHLoadIndirectString(string pszSource, StringBuilder pszOutBuf, int cchOutBuf, IntPtr ppvReserved);
+		#endregion
+
+
+#if __MonoCS__
 		private static Assembly s_monoWinFormsAssembly;
 		private static Assembly MonoWinFormsAssembly
 		{
@@ -166,6 +178,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Types
 				return s_xplatUIType;
 			}
 		}
-		#endif
+#endif
 	}
 }

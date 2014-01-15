@@ -187,36 +187,32 @@ namespace Palaso.WritingSystems
 														   ));
 					}
 				}
-
-				while (reader.NodeType != XmlNodeType.EndElement)
-				{
-					reader.Read();
-				}
-				reader.ReadEndElement();
+				ReadSpecialEndElement(reader);
 			}
 			else if (reader.GetAttribute("xmlns:palaso2") != null)
 			{
 				reader.ReadStartElement("special");
 				GetKnownKeyboards(reader, ws);
-				while (reader.NodeType != XmlNodeType.EndElement)
-				{
-					reader.Read();
-				}
-				reader.ReadEndElement();
+				ReadSpecialEndElement(reader);
 			}
 			else if (reader.GetAttribute("xmlns:fw") != null)
 			{
 				ws.WindowsLcid = GetLcid(reader);
-				while (reader.NodeType != XmlNodeType.EndElement)
-				{
-					reader.Read();
-				}
-				reader.ReadEndElement();
+				ReadSpecialEndElement(reader);
 			}
 			else
 			{
 				reader.Skip();
 			}
+		}
+
+		/// <summary>
+		/// Finds and reads the EndElement "&lt;/special&gt;"
+		/// </summary>
+		/// <param name="reader"></param>
+		protected static void ReadSpecialEndElement(XmlReader reader)
+		{
+			XmlHelpers.ReadEndElement(reader, "special");
 		}
 
 		private string GetLcid(XmlReader reader)
@@ -695,14 +691,14 @@ namespace Palaso.WritingSystems
 			return GetSpecialValue(reader, ns, field, _nameSpaceManager.LookupNamespace(ns));
 		}
 
-		  protected string GetSpecialValue(XmlReader reader, string ns, string field, string nameSpaceUri)
-		  {
-			  if(!XmlHelpers.FindNextElementInSequence(reader, ns + ":" + field, nameSpaceUri, string.Compare))
-			  {
-				  return string.Empty;
-			  }
-			  return reader.GetAttribute("value") ?? string.Empty;
-		  }
+		protected string GetSpecialValue(XmlReader reader, string ns, string field, string nameSpaceUri)
+		{
+			if(!XmlHelpers.FindNextElementInSequence(reader, ns + ":" + field, nameSpaceUri, string.Compare))
+			{
+				return string.Empty;
+			}
+			return reader.GetAttribute("value") ?? string.Empty;
+		}
 
 		private string GetSubNodeAttributeValue(XmlReader reader, string elementName, string attributeName)
 		{

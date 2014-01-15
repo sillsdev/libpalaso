@@ -31,6 +31,14 @@ namespace Palaso.Settings
 		{
 			UserRoamingLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), GetFullSettingsPath());
 			UserLocalLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), GetFullSettingsPath());
+			// When running multiple builds in parallel we have to use separate directories for
+			// each build, otherwise some unit tests might fail.
+			var buildagentSubdir = Environment.GetEnvironmentVariable("BUILDAGENT_SUBKEY");
+			if (!string.IsNullOrEmpty(buildagentSubdir))
+			{
+				UserRoamingLocation = Path.Combine(UserRoamingLocation, buildagentSubdir);
+				UserLocalLocation = Path.Combine(UserLocalLocation, buildagentSubdir);
+			}
 		}
 
 		public override void Initialize(string name, System.Collections.Specialized.NameValueCollection config)

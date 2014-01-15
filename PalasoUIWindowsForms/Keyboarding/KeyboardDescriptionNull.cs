@@ -46,6 +46,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		}
 
 		/// <summary>
+		/// Gets a localized human-readable name of the input language.
+		/// </summary>
+		public string LocalizedName { get { return DefaultKeyboardName; } }
+
+		/// <summary>
 		/// Gets the layout name of the keyboard
 		/// </summary>
 		public string Layout
