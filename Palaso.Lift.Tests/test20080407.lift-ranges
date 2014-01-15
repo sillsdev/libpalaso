@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lift-ranges>
   <range id="grammatical-info">
-	<range-element guid="c528ee72-31a5-423d-833d-0c8454f345d3" id="Adverb">
-	  <label><form lang="en"><text>Adverb</text></form></label>
-	  <abbrev><form lang="en"><text>adv</text></form></abbrev>
-	  <description><form lang="en"><text>modify verbs</text></form></description>
-	</range-element>
-	<range-element guid="0fae9a91-36c0-429f-9a31-fbef1292da6a" id="Noun">
-	  <label><form lang="en"><text>Noun</text></form></label>
-	  <abbrev><form lang="en"><text>n</text></form></abbrev>
-	  <description><form lang="en"><text>substantives and nominals</text></form></description>
-	</range-element>
-	<range-element guid="4812abf3-31e5-450c-a15f-a830dfc7f223" id="Verb">
-	  <label><form lang="en"><text>Verb</text></form></label>
-	  <abbrev><form lang="en"><text>v</text></form></abbrev>
-	  <description><form lang="en"><text>signal events and actions</text></form></description>
-	</range-element>
+    <range-element guid="c528ee72-31a5-423d-833d-0c8454f345d3" id="Adverb">
+      <label><form lang="en"><text>Adverb</text></form></label>
+      <abbrev><form lang="en"><text>adv</text></form></abbrev>
+      <description><form lang="en"><text>modify verbs</text></form></description>
+    </range-element>
+    <range-element guid="0fae9a91-36c0-429f-9a31-fbef1292da6a" id="Noun">
+      <label><form lang="en"><text>Noun</text></form></label>
+      <abbrev><form lang="en"><text>n</text></form></abbrev>
+      <description><form lang="en"><text>substantives and nominals</text></form></description>
+    </range-element>
+    <range-element guid="4812abf3-31e5-450c-a15f-a830dfc7f223" id="Verb">
+      <label><form lang="en"><text>Verb</text></form></label>
+      <abbrev><form lang="en"><text>v</text></form></abbrev>
+      <description><form lang="en"><text>signal events and actions</text></form></description>
+    </range-element>
   </range>
 </lift-ranges>
