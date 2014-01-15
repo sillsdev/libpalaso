@@ -1,6 +1,6 @@
 output/
 Thumbs.db
-.bzr
+.bzr/
 obj/
 bin/
 test-results/
