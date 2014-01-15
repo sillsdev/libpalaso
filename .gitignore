@@ -1,15 +1,15 @@
 
 
-output
+output/
 Thumbs.db
-.bzr
-obj
-bin
+.bzr/
+obj/
+bin/
 *.suo
 *.resharper
 *.user
 _ReSharper.*
-config
+config/
 *.pidb
 *.userprefs
 *.nunit
