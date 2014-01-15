@@ -1,50 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lift producer="hand crafted" version="0.13">
   <header>
-	<ranges>
-	  <range id="etymology">
-		<range-element id="borrowed">
-		  <label>
-			<form lang="en"><text>borrowed</text></form>
-		  </label>
-		  <description>
-			<form lang="en"><text>The word is borrowed from another language</text></form>
-		  </description>
-		</range-element>
-		<range-element id="proto">
-		  <label>
-			<form lang="en"><text>proto</text></form>
-		  </label>
-		  <description>
-			<form lang="en"><text>The proto form of the word in another language</text></form>
-		  </description>
-		</range-element>
-	  </range>
-	  <range href="file://test20080407.lift-ranges" id="grammatical-info">
-	  </range>
-	</ranges>
-	<fields>
-	  <field tag="cv-pattern">
-		<form lang="en"><text>the syllable pattern for a pronunciation</text></form>
-	  </field>
-	  <field tag="tone">
-		<form lang="en"><text>the tone information for a pronunciation</text></form>
-	  </field>
-	  <field tag="import-residue">
-		<form lang="en"><text>residue left over from importing</text></form>
-	  </field>
-	  <field tag="literal-meaning">
-		<form lang="en"><text>literal meaning of an entry</text></form>
-	  </field>
-	</fields>
+    <ranges>
+      <range id="etymology">
+        <range-element id="borrowed">
+          <label>
+            <form lang="en"><text>borrowed</text></form>
+          </label>
+          <description>
+            <form lang="en"><text>The word is borrowed from another language</text></form>
+          </description>
+        </range-element>
+        <range-element id="proto">
+          <label>
+            <form lang="en"><text>proto</text></form>
+          </label>
+          <description>
+            <form lang="en"><text>The proto form of the word in another language</text></form>
+          </description>
+        </range-element>
+      </range>
+      <range href="file://test20080407.lift-ranges" id="grammatical-info">
+      </range>
+    </ranges>
+    <fields>
+      <field tag="cv-pattern">
+        <form lang="en"><text>the syllable pattern for a pronunciation</text></form>
+      </field>
+      <field tag="tone">
+        <form lang="en"><text>the tone information for a pronunciation</text></form>
+      </field>
+      <field tag="import-residue">
+        <form lang="en"><text>residue left over from importing</text></form>
+      </field>
+      <field tag="literal-meaning">
+        <form lang="en"><text>literal meaning of an entry</text></form>
+      </field>
+    </fields>
   </header>
   <entry dateCreated="2008-03-31T03:04:09-05:00" dateModified="2008-03-31T03:04:09-05:00" guid="6db30a98-530e-4614-86d4-237f6984db71" id="bird_6db30a98-530e-4614-86d4-237f6984db71">
-	<lexical-unit><form lang="x-rtl"><text>bird</text></form></lexical-unit>
-	<trait name="morph-type" value="stem"/>
-	<trait name="entry-type" value="Main Entry"/>
-	<sense id="bird_70ebf9a6-269f-4de3-854d-e983ad5b3c21">
-	  <grammatical-info value="Noun"/>
-	  <gloss lang="en"><text>bird</text></gloss>
-	</sense>
+    <lexical-unit><form lang="x-rtl"><text>bird</text></form></lexical-unit>
+    <trait name="morph-type" value="stem"/>
+    <trait name="entry-type" value="Main Entry"/>
+    <sense id="bird_70ebf9a6-269f-4de3-854d-e983ad5b3c21">
+      <grammatical-info value="Noun"/>
+      <gloss lang="en"><text>bird</text></gloss>
+    </sense>
   </entry>
 </lift>
