@@ -15,7 +15,7 @@ namespace SIL.Archiving.Generic.AccessProtocol
 	{
 		private static AccessProtocols _instance;
 		private static AccessProtocols _customInstance;
-		private const string kProtocolFileName = "AccessProtocols.json";
+		public const string kProtocolFileName = "AccessProtocols.json";
 		private const string kCustomProtocolFileName = "CustomAccessProtocols.json";
 
 		/// <summary />
