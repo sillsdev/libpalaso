@@ -141,6 +141,11 @@
 		<name>Interviewer</name>
 		<definition>The participant conducted an interview that forms part of the resource.</definition>
 	  </term>
+      <term>
+        <code>oral_translation_speaker</code>
+        <name>Oral Translation Speaker</name>
+        <definition>A general translator who was helping when the session was recorded.</definition>
+      </term>
 	  <term>
 		<code>participant</code>
 		<name>Participant</name>

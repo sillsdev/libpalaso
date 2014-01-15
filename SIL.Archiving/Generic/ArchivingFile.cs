@@ -8,6 +8,7 @@ namespace SIL.Archiving.Generic
 	public class ArchivingFile
 	{
 		protected readonly string _fullName;
+		protected string _fileName;
 		protected string _fileSize; // in KB
 		protected string _mimeType;
 		protected LanguageStringCollection _descriptions;
@@ -107,7 +108,21 @@ namespace SIL.Archiving.Generic
 		/// <summary>Just the file name</summary>
 		public string FileName
 		{
-			get { return (new FileInfo(_fullName)).Name; }
+			get
+			{
+				if (string.IsNullOrEmpty(_fileName))
+					_fileName = (new FileInfo(_fullName)).Name;
+
+				return _fileName;
+			}
+			set
+			{
+				// make sure the extension is the same
+				var extension = (new FileInfo(_fullName)).Extension;
+				_fileName = value;
+				if (!_fileName.EndsWith(extension))
+					_fileName += extension;
+			}
 		}
 	}
 }

@@ -1270,6 +1270,10 @@ namespace SIL.Archiving.IMDI.Schema
 			// Occupation
 			if (!string.IsNullOrEmpty(actor.Occupation))
 				Keys.Key.Add(new KeyType { Name = "Occupation", Value = actor.Occupation });
+
+			// Anonymize
+			if (actor.Anonymize)
+				Anonymized = new BooleanType { Value = BooleanEnum.@true };
 		}
 
 		/// <remarks/>
@@ -1695,6 +1699,8 @@ namespace SIL.Archiving.IMDI.Schema
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public class Session : IIMDIMajorObject, IArchivingSession
 	{
+		private static int _anonymizedCounter = 1;
+
 		/// <remarks/>
 		public Session()
 		{
@@ -1778,11 +1784,25 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public void AddActor(ArchivingActor actor)
 		{
+			if (actor.Anonymize)
+			{
+				var nameToUse = string.IsNullOrEmpty(actor.Gender) ? "U" : actor.Gender.Substring(0, 1).ToUpper();
+				var suffix = "000" + _anonymizedCounter;
+				suffix = suffix.Substring(suffix.Length - 3);
+				nameToUse += suffix;
+				actor.Name = nameToUse;
+				actor.FullName = nameToUse;
+				_anonymizedCounter++;
+			}
+
 			MDGroup.Actors.Actor.Add(new ActorType(actor));
 
-			// actor files
-			foreach (var file in actor.Files)
-				AddFile(new IMDIFile(file), "Contributors");
+			// actor files, only if not anonymized
+			if (!actor.Anonymize)
+			{
+				foreach (var file in actor.Files)
+					AddFile(new IMDIFile(file), "Contributors");
+			}
 		}
 
 		/// <remarks>Not used yet</remarks>
@@ -1844,6 +1864,7 @@ namespace SIL.Archiving.IMDI.Schema
 			}
 		}
 
+		/// <remarks/>
 		[XmlIgnore]
 		public string SubGenre
 		{
@@ -1857,6 +1878,7 @@ namespace SIL.Archiving.IMDI.Schema
 			}
 		}
 
+		/// <remarks/>
 		[XmlIgnore]
 		public string Interactivity
 		{
@@ -1870,6 +1892,7 @@ namespace SIL.Archiving.IMDI.Schema
 			}
 		}
 
+		/// <remarks/>
 		[XmlIgnore]
 		public string Involvement
 		{
@@ -1883,6 +1906,7 @@ namespace SIL.Archiving.IMDI.Schema
 			}
 		}
 
+		/// <remarks/>
 		[XmlIgnore]
 		public string PlanningType
 		{
@@ -1896,6 +1920,7 @@ namespace SIL.Archiving.IMDI.Schema
 			}
 		}
 
+		/// <remarks/>
 		[XmlIgnore]
 		public string SocialContext
 		{
@@ -1909,6 +1934,7 @@ namespace SIL.Archiving.IMDI.Schema
 			}
 		}
 
+		/// <remarks/>
 		[XmlIgnore]
 		public string Task
 		{

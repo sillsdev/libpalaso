@@ -208,5 +208,43 @@ namespace SIL.Archiving.Tests
 		{
 			Assert.Throws<ArgumentException>(() => LanguageList.FindByISO3Code("qqq"));
 		}
+
+		[Test]
+		public void SessionAddActor_Anonymized_ReturnsAnonymizedNames()
+		{
+			ArchivingActor actor = new ArchivingActor
+			{
+				Name = "Actor Name",
+				FullName = "Actor Full Name",
+				Anonymize = true
+			};
+
+			Session session = new Session();
+			session.AddActor(actor);
+
+			var imdiActor = session.MDGroup.Actors.Actor[0];
+
+			Assert.AreNotEqual("Actor Name", imdiActor.Name[0]);
+			Assert.AreNotEqual("Actor Full Name", imdiActor.FullName);
+		}
+
+		[Test]
+		public void SessionAddActor_Anonymized_RemovesActorFiles()
+		{
+			ArchivingActor actor = new ArchivingActor
+			{
+				Name = "Actor Name",
+				FullName = "Actor Full Name",
+				Anonymize = true
+			};
+
+			actor.Files.Add(new ArchivingFile(System.Reflection.Assembly.GetExecutingAssembly().Location));
+
+			Session session = new Session();
+			session.AddActor(actor);
+
+			Assert.AreEqual(0, session.Resources.MediaFile.Count);
+			Assert.AreEqual(0, session.Resources.WrittenResource.Count);
+		}
 	}
 }

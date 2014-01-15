@@ -18,7 +18,7 @@ namespace SIL.Archiving.Generic
 		/// <summary>If needed but not given, Name will be used</summary>
 		public string FullName;
 
-		/// <summary></summary>
+		/// <summary />
 		public string Age;
 
 		/// <summary>Languages this actor knows</summary>
@@ -51,6 +51,9 @@ namespace SIL.Archiving.Generic
 
 		/// <summary></summary>
 		public List<KeyValuePair<string, string>> Keys;
+
+		/// <summary />
+		public bool Anonymize = false;
 
 		/// <summary>Default constructor</summary>
 		public ArchivingActor()
