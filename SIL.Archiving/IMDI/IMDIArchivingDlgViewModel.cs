@@ -39,23 +39,26 @@ namespace SIL.Archiving.IMDI
 		{
 			get
 			{
-				if (string.IsNullOrEmpty(PathToProgramToLaunch))
-					return null;
+				// DO NOT SHOW THE LAUNCH OPTION AT THIS TIME
+				return null;
 
-				// Arbil
-				if (PathToProgramToLaunch.ToLower().Contains("arbil")) return "Arbil";
+				//if (string.IsNullOrEmpty(PathToProgramToLaunch))
+				//    return null;
+
+				//// Arbil
+				//if (PathToProgramToLaunch.ToLower().Contains("arbil")) return "Arbil";
 
 
-				// if not one of the presets, just return the exe name
-				string exe = Path.GetFileNameWithoutExtension(PathToProgramToLaunch);
-				string dir = Path.GetDirectoryName(PathToProgramToLaunch);
-				if (!string.IsNullOrEmpty(dir))
-				{
-					dir = Path.GetFileNameWithoutExtension(dir);
-					if (dir.Length > 0 && exe.ToLowerInvariant().Contains(dir.ToLowerInvariant()))
-						return dir;
-				}
-				return exe;
+				//// if not one of the presets, just return the exe name
+				//string exe = Path.GetFileNameWithoutExtension(PathToProgramToLaunch);
+				//string dir = Path.GetDirectoryName(PathToProgramToLaunch);
+				//if (!string.IsNullOrEmpty(dir))
+				//{
+				//    dir = Path.GetFileNameWithoutExtension(dir);
+				//    if (dir.Length > 0 && exe.ToLowerInvariant().Contains(dir.ToLowerInvariant()))
+				//        return dir;
+				//}
+				//return exe;
 			}
 		}
 

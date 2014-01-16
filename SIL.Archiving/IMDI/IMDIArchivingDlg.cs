@@ -23,6 +23,9 @@ namespace SIL.Archiving.IMDI
 		public IMDIArchivingDlg(ArchivingDlgViewModel model, string localizationManagerId, Font programDialogFont, FormSettings settings) 
 			: base(model, localizationManagerId, programDialogFont, settings)
 		{
+			// DO NOT SHOW THE LAUNCH OPTION AT THIS TIME
+			model.PathToProgramToLaunch = null;
+
 			InitializeNewControls();
 
 			// get the saved IMDI program value
@@ -140,7 +143,8 @@ namespace SIL.Archiving.IMDI
 			_browseIMDIProgram.Click += SelectIMDIProgramOnClick;
 			_imdiProgramTable.Controls.Add(_browseIMDIProgram, 1, 0);
 
-			_flowLayoutExtra.Controls.Add(_imdiProgramTable);
+			// DO NOT SHOW THE LAUNCH OPTION AT THIS TIME
+			//_flowLayoutExtra.Controls.Add(_imdiProgramTable);
 		}
 
 		private void SelectIMDIProgramOnClick(object sender, EventArgs eventArgs)
@@ -212,8 +216,12 @@ namespace SIL.Archiving.IMDI
 
 		private void SetControlProperties()
 		{
-			_browseIMDIProgram.Visible = (_selectIMDIPreset.SelectedIndex == (_selectIMDIPreset.Items.Count - 1));
-			UpdateLaunchButtonText();
+			// DO NOT SHOW THE LAUNCH OPTION AT THIS TIME
+			//_browseIMDIProgram.Visible = (_selectIMDIPreset.SelectedIndex == (_selectIMDIPreset.Items.Count - 1));
+			//UpdateLaunchButtonText();
+			_buttonLaunchRamp.Visible = false;
+			_tableLayoutPanel.SetColumn(_buttonCreatePackage, 1);
+			_buttonCancel.Text = LocalizationManager.GetString("DialogBoxes.IMDIArchivingDlg.CloseButtonLabel", "Close");
 			UpdateOverviewText();
 		}
 

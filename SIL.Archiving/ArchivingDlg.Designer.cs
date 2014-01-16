@@ -30,10 +30,10 @@
 		{
 			this.components = new System.ComponentModel.Container();
 			this._tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+			this._buttonCreatePackage = new System.Windows.Forms.Button();
 			this._linkOverview = new System.Windows.Forms.LinkLabel();
 			this._progressBar = new System.Windows.Forms.ProgressBar();
 			this._logBox = new Palaso.UI.WindowsForms.Progress.LogBox();
-			this._buttonCreatePackage = new System.Windows.Forms.Button();
 			this._buttonLaunchRamp = new System.Windows.Forms.Button();
 			this._buttonCancel = new System.Windows.Forms.Button();
 			this._flowLayoutExtra = new System.Windows.Forms.FlowLayoutPanel();
@@ -48,10 +48,10 @@
 			this._tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this._tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this._tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this._tableLayoutPanel.Controls.Add(this._buttonCreatePackage, 0, 4);
 			this._tableLayoutPanel.Controls.Add(this._linkOverview, 0, 0);
 			this._tableLayoutPanel.Controls.Add(this._progressBar, 0, 2);
 			this._tableLayoutPanel.Controls.Add(this._logBox, 0, 1);
-			this._tableLayoutPanel.Controls.Add(this._buttonCreatePackage, 0, 4);
 			this._tableLayoutPanel.Controls.Add(this._buttonLaunchRamp, 1, 4);
 			this._tableLayoutPanel.Controls.Add(this._buttonCancel, 2, 4);
 			this._tableLayoutPanel.Controls.Add(this._flowLayoutExtra, 0, 3);
@@ -67,10 +67,25 @@
 			this._tableLayoutPanel.Size = new System.Drawing.Size(355, 408);
 			this._tableLayoutPanel.TabIndex = 0;
 			// 
+			// _buttonCreatePackage
+			// 
+			this._buttonCreatePackage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this._buttonCreatePackage.AutoSize = true;
+			this.locExtender.SetLocalizableToolTip(this._buttonCreatePackage, null);
+			this.locExtender.SetLocalizationComment(this._buttonCreatePackage, null);
+			this.locExtender.SetLocalizingId(this._buttonCreatePackage, "DialogBoxes.ArchivingDlg._buttonCreatePackage");
+			this._buttonCreatePackage.Location = new System.Drawing.Point(58, 382);
+			this._buttonCreatePackage.Margin = new System.Windows.Forms.Padding(8, 0, 0, 0);
+			this._buttonCreatePackage.Name = "_buttonCreatePackage";
+			this._buttonCreatePackage.Size = new System.Drawing.Size(106, 26);
+			this._buttonCreatePackage.TabIndex = 0;
+			this._buttonCreatePackage.Text = "&1) Create Package";
+			this._buttonCreatePackage.UseVisualStyleBackColor = true;
+			// 
 			// _linkOverview
 			// 
 			this._linkOverview.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this._linkOverview.AutoSize = true;
 			this._tableLayoutPanel.SetColumnSpan(this._linkOverview, 3);
 			this._linkOverview.LinkArea = new System.Windows.Forms.LinkArea(0, 0);
@@ -88,7 +103,7 @@
 			// _progressBar
 			// 
 			this._progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this._tableLayoutPanel.SetColumnSpan(this._progressBar, 3);
 			this._progressBar.Location = new System.Drawing.Point(0, 349);
 			this._progressBar.Margin = new System.Windows.Forms.Padding(0, 0, 0, 12);
@@ -99,8 +114,8 @@
 			// _logBox
 			// 
 			this._logBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-			| System.Windows.Forms.AnchorStyles.Left) 
-			| System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this._logBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this._logBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(171)))), ((int)(((byte)(173)))), ((int)(((byte)(179)))));
 			this._logBox.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
@@ -126,21 +141,6 @@
 			this._logBox.TabStop = false;
 			this._logBox.ReportErrorLinkClicked += new System.EventHandler(this.HandleLogBoxReportErrorLinkClicked);
 			// 
-			// _buttonCreatePackage
-			// 
-			this._buttonCreatePackage.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this._buttonCreatePackage.AutoSize = true;
-			this.locExtender.SetLocalizableToolTip(this._buttonCreatePackage, null);
-			this.locExtender.SetLocalizationComment(this._buttonCreatePackage, null);
-			this.locExtender.SetLocalizingId(this._buttonCreatePackage, "DialogBoxes.ArchivingDlg._buttonCreatePackage");
-			this._buttonCreatePackage.Location = new System.Drawing.Point(48, 382);
-			this._buttonCreatePackage.Margin = new System.Windows.Forms.Padding(8, 0, 0, 0);
-			this._buttonCreatePackage.Name = "_buttonCreatePackage";
-			this._buttonCreatePackage.Size = new System.Drawing.Size(106, 26);
-			this._buttonCreatePackage.TabIndex = 0;
-			this._buttonCreatePackage.Text = "&1) Create Package";
-			this._buttonCreatePackage.UseVisualStyleBackColor = true;
-			// 
 			// _buttonLaunchRamp
 			// 
 			this._buttonLaunchRamp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -149,10 +149,10 @@
 			this.locExtender.SetLocalizableToolTip(this._buttonLaunchRamp, null);
 			this.locExtender.SetLocalizationComment(this._buttonLaunchRamp, null);
 			this.locExtender.SetLocalizingId(this._buttonLaunchRamp, "DialogBoxes.ArchivingDlg._buttonLaunchRamp");
-			this._buttonLaunchRamp.Location = new System.Drawing.Point(162, 382);
+			this._buttonLaunchRamp.Location = new System.Drawing.Point(172, 382);
 			this._buttonLaunchRamp.Margin = new System.Windows.Forms.Padding(8, 0, 0, 0);
 			this._buttonLaunchRamp.Name = "_buttonLaunchRamp";
-			this._buttonLaunchRamp.Size = new System.Drawing.Size(110, 26);
+			this._buttonLaunchRamp.Size = new System.Drawing.Size(100, 26);
 			this._buttonLaunchRamp.TabIndex = 1;
 			this._buttonLaunchRamp.Text = "&2) Launch {0}";
 			this._buttonLaunchRamp.UseVisualStyleBackColor = true;
@@ -219,8 +219,6 @@
 
 		#endregion
 
-		private System.Windows.Forms.Button _buttonCreatePackage;
-		private System.Windows.Forms.Button _buttonCancel;
 		private System.Windows.Forms.LinkLabel _linkOverview;
 		private System.Windows.Forms.ProgressBar _progressBar;
 		private L10NSharp.UI.L10NSharpExtender locExtender;
@@ -228,5 +226,7 @@
 		protected System.Windows.Forms.TableLayoutPanel _tableLayoutPanel;
 		protected System.Windows.Forms.FlowLayoutPanel _flowLayoutExtra;
 		protected System.Windows.Forms.Button _buttonLaunchRamp;
+		protected System.Windows.Forms.Button _buttonCreatePackage;
+		protected System.Windows.Forms.Button _buttonCancel;
 	}
 }
