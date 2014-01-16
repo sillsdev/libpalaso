@@ -32,3 +32,4 @@ L10NSharp.*
 *.cache
 Download/
 *.nupkg
+/lib/Debug/icu.net.dll

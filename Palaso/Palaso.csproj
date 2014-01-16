@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -73,10 +73,6 @@
 	<WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-   <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\Debug\icu.net.dll</HintPath>
-	</Reference>
 	<None Include="..\lib\Debug\icudt40.dll">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
@@ -91,10 +87,6 @@
 	</None>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
-   <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\Release\icu.net.dll</HintPath>
-	</Reference>
 	<None Include="..\lib\Release\icudt40.dll">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
@@ -109,19 +101,11 @@
 	</None>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono'">
-   <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\DebugMono\icu.net.dll</HintPath>
-	</Reference>
 	<None Include="..\lib\DebugMono\icu.net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'ReleaseMono'">
-   <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\ReleaseMono\icu.net.dll</HintPath>
-	</Reference>
 	<None Include="..\lib\ReleaseMono\icu.net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
@@ -136,6 +120,10 @@
 	</None>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="icu.net, Version=1.1.57.0, Culture=neutral, PublicKeyToken=416fdd914afa6b66, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\common\icu.net.dll</HintPath>
+    </Reference>
 	<Reference Include="System.Configuration" />
 	<Reference Include="System.Xml.Linq" />
 	<Reference Include="System" />
