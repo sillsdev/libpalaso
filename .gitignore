@@ -29,3 +29,4 @@ L10NSharp.*
 .nuget/NuGet.exe
 *.cache
 Download/
+/lib/Debug/icu.net.dll
