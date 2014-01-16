@@ -98,7 +98,7 @@ namespace SIL.Archiving.IMDI.Lists
 				if (node.Attributes == null) continue;
 
 				var txt = node.Attributes["Value"].Value; // the "Value" attribute contains the text to show to the user
-				var val = node.InnerText;                 // if InnerText is set, it contains the value for the meta-data file
+				var val = node.InnerText.Replace("Definition:", "").Replace("\t", " ").Replace("\r", "").Replace("\n", " ").Trim();  // if InnerText is set, it may contain the value for the meta-data file (some files do, some don't)
 
 				// most of the time InnerText is empty - use the "Value" attribute for both if it is empty
 				AddItem(new IMDIListItem(txt, string.IsNullOrEmpty(val) ? txt : val));
