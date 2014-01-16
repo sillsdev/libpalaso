@@ -43,7 +43,7 @@ copy_wget() {
 # build: palaso-precise64-develop-continuous (bt334)
 # project: libpalaso
 # URL: http://build.palaso.org/viewType.html?buildTypeId=bt334
-# VCS: https://github.com/sillsdev/libpalaso.git [master]
+# VCS: https://github.com/sillsdev/libpalaso.git [develop]
 # dependencies:
 # [0] build: L10NSharp Mono continuous (bt271)
 #     project: L10NSharp
@@ -70,7 +70,7 @@ copy_wget() {
 #     project: Libraries
 #     URL: http://build.palaso.org/viewType.html?buildTypeId=bt281
 #     clean: false
-#     revision: 0.1.44.e6db4679b030
+#     revision: latest.lastSuccessful
 #     paths: {"*.dll"=>"lib\\ReleaseMono", "*.config"=>"lib\\ReleaseMono"}
 #     VCS: https://github.com/sillsdev/icu-dotnet [master]
 
@@ -85,6 +85,6 @@ copy_auto http://build.palaso.org/guestAuth/repository/download/bt271/latest.las
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt271/latest.lastSuccessful/L10NSharp.dll.mdb ../lib/DebugMono/L10NSharp.dll.mdb
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt281/latest.lastSuccessful/icu.net.dll ../lib/DebugMono/icu.net.dll
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt281/latest.lastSuccessful/icu.net.dll.config ../lib/DebugMono/icu.net.dll.config
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt281/0.1.44.e6db4679b030/icu.net.dll ../lib/ReleaseMono/icu.net.dll
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt281/0.1.44.e6db4679b030/icu.net.dll.config ../lib/ReleaseMono/icu.net.dll.config
+copy_auto http://build.palaso.org/guestAuth/repository/download/bt281/latest.lastSuccessful/icu.net.dll ../lib/ReleaseMono/icu.net.dll
+copy_auto http://build.palaso.org/guestAuth/repository/download/bt281/latest.lastSuccessful/icu.net.dll.config ../lib/ReleaseMono/icu.net.dll.config
 # End of script
