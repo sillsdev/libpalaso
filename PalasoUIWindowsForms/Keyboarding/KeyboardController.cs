@@ -158,7 +158,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 			#endregion
 
-			private IKeyboardDefinition DefaultKeyboard
+		    public IKeyboardDefinition DefaultKeyboard
 			{
 				get { return Adaptors.First(adaptor => adaptor.Type == KeyboardType.System).DefaultKeyboard; }
 			}
