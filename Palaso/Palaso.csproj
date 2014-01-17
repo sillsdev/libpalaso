@@ -378,6 +378,7 @@
 	<Compile Include="Xml\XmlSerializationHelper.cs" />
 	<Compile Include="Xml\XmlUtils.cs" />
 	<Compile Include="Xml\XmlWriterExtensions.cs" />
+    <Compile Include="PlatformUtilities\Platform.cs" />
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="Properties\Resources.resx">
