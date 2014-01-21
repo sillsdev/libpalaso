@@ -1,49 +1,40 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace SIL.Archiving
 {
-	/// ------------------------------------------------------------------------------------
-	/// <summary>
-	///
-	/// </summary>
-	/// ------------------------------------------------------------------------------------
-	public class ArchivingLanguage
+	/// <summary></summary>
+	public class ArchivingLanguage : IComparable
 	{
 		protected string _iso3Code;    // ex. "eng"
 		protected string _englishName; // ex. "English"
 
-		/// ------------------------------------------------------------------------------------
+		/// <summary></summary>
 		public ArchivingLanguage(string iso3Code)
 		{
-			_iso3Code = iso3Code;
+			Iso3Code = iso3Code;
 		}
 
-		/// ------------------------------------------------------------------------------------
-		public ArchivingLanguage(string iso3Code, string englishName)
+		/// <summary></summary>
+		public ArchivingLanguage(string iso3Code, string languageName)
 		{
-			_iso3Code = iso3Code;
-			_englishName = englishName;
+			LanguageName = languageName;
+			Iso3Code = iso3Code;
 		}
 
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// The ISO3 code for the language. Ex. "eng"
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
+		/// <summary></summary>
+		public string LanguageName { get; set; }
+
+		/// <summary></summary>
 		public string Iso3Code
 		{
 			get { return _iso3Code; }
 			set { _iso3Code = value.ToLower(); }
 		}
 
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// The English name of the language. Used for searching, human-readable. If not
-		/// provided by the host software, an attempt will be made to determine the name
-		/// based on the ISO3 code. Ex. "English"
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
+		/// <summary></summary>
 		public string EnglishName
 		{
 			get
@@ -82,18 +73,61 @@ namespace SIL.Archiving
 			set { _englishName = value; }
 		}
 
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// The script used for the Subject Language. Ex. "Latn:Latin"
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
+		/// <summary>The script used for the Subject Language. Ex. "Latn:Latin"</summary>
 		public string Script { get; set; }
 
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// The dialect used for the language. Ex. "03035:Standard; deu"
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
+		/// <summary>The dialect used for the language. Ex. "03035:Standard; deu"</summary>
 		public string Dialect { get; set; }
+
+		/// <summary>Compare 2 ArchivingLanguage objects. They are identical if they have the same Iso3Code and LanguageName</summary>
+		public int CompareTo(object obj)
+		{
+			if (obj == null)
+				return 1;
+
+			ArchivingLanguage other = obj as ArchivingLanguage;
+
+			if (other == null)
+				throw new ArgumentException();
+
+			// first compare the Iso3Code
+			int result = String.Compare(Iso3Code, other.Iso3Code, StringComparison.Ordinal);
+			if (result != 0) return result;
+
+			// if the same Iso3Code, compare the LanguageName
+			return String.Compare(LanguageName, other.LanguageName, StringComparison.Ordinal);
+		}
+
+		/// <summary>Compare 2 LanguageString objects. They are identical if they have the same Iso3LanguageId</summary>
+		public static int Compare(ArchivingLanguage langA, ArchivingLanguage langB)
+		{
+			return langA.CompareTo(langB);
+		}
 	}
+
+	/// <summary>Compare 2 LanguageString objects. They are identical if they have the same Iso3LanguageId</summary>
+	public class ArchivingLanguageComparer : IEqualityComparer<ArchivingLanguage>
+	{
+		public bool Equals(ArchivingLanguage x, ArchivingLanguage y)
+		{
+			return (x.CompareTo(y) == 0);
+		}
+
+		public int GetHashCode(ArchivingLanguage obj)
+		{
+			return (obj.Iso3Code + obj.LanguageName).GetHashCode();
+		}
+	}
+
+	/// <summary>Simplify creating and managing ArchivingLanguage collections</summary>
+	public class ArchivingLanguageCollection : HashSet<ArchivingLanguage>
+	{
+		/// <summary>Default constructor</summary>
+		public ArchivingLanguageCollection()
+			: base(new ArchivingLanguageComparer())
+		{
+			// additional constructor code can go here
+		}
+	}
+
 }
