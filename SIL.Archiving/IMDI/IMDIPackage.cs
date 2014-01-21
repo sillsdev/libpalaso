@@ -15,6 +15,9 @@ namespace SIL.Archiving.IMDI
 		/// <summary></summary>
 		public MetaTranscript BaseImdiFile { get; private set; }
 
+		/// <summary>The file to import into Arbil</summary>
+		public string MainExportFile { get; private set; }
+
 		private readonly bool _corpus;
 		private readonly string _packagePath;
 
@@ -73,7 +76,11 @@ namespace SIL.Archiving.IMDI
 				sessionFiles.Add(sessImdi.WriteImdiFile(_packagePath, Name));
 			}
 
-			if (!_corpus) return true;
+			if (!_corpus)
+			{
+				MainExportFile = sessionFiles[0];
+				return true;
+			}
 
 			var corpus = (Corpus) BaseMajorObject;
 
@@ -85,7 +92,7 @@ namespace SIL.Archiving.IMDI
 			corpus.CatalogueLink = CreateCorpusCatalogue();
 
 			//  Create the corpus imdi file
-			BaseImdiFile.WriteImdiFile(_packagePath, Name);
+			MainExportFile = BaseImdiFile.WriteImdiFile(_packagePath, Name);
 
 			return true;
 		}

@@ -253,8 +253,12 @@ namespace SIL.Archiving.IMDI
 
 			if (success)
 			{
-				DisplayMessage(LocalizationManager.GetString("DialogBoxes.ArchivingDlg.ReadyToCallIMDIMsg",
-					"Ready to hand the package to IMDI program"), MessageType.Success);
+				// copy the path to the imdi file to the clipboard
+				Clipboard.SetData(DataFormats.Text, _imdiData.MainExportFile);
+
+				var successMsg = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.ReadyToCallIMDIMsg",
+					"Exported to {0}. This path is now on your clipboard. If you are using Arbil, go to File, Import, then paste this path in.");
+				DisplayMessage(string.Format(successMsg, _imdiData.MainExportFile), MessageType.Success);
 			}
 
 			IsBusy = false;

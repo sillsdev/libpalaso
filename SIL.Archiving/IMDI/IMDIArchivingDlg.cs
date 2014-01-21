@@ -222,6 +222,7 @@ namespace SIL.Archiving.IMDI
 			_buttonLaunchRamp.Visible = false;
 			_tableLayoutPanel.SetColumn(_buttonCreatePackage, 1);
 			_buttonCancel.Text = LocalizationManager.GetString("DialogBoxes.IMDIArchivingDlg.CloseButtonLabel", "Close");
+			_buttonCreatePackage.Text = LocalizationManager.GetString("DialogBoxes.IMDIArchivingDlg.CreatePackageButtonLabel", "Create Package");
 			UpdateOverviewText();
 		}
 
