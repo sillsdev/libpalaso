@@ -219,5 +219,17 @@ namespace SIL.Archiving.Generic.AccessProtocol
 		{
 			return OptionName;
 		}
+
+		/// <summary />
+		public string ValueMember
+		{
+			get { return OptionName; }
+		}
+
+		/// <summary />
+		public string DisplayMember
+		{
+			get { return (string.IsNullOrEmpty(Description)) ? OptionName : Description; }
+		}
 	}
 }
