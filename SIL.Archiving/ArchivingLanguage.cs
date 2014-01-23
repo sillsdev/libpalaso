@@ -25,6 +25,14 @@ namespace SIL.Archiving
 		}
 
 		/// <summary></summary>
+		public ArchivingLanguage(string iso3Code, string languageName, string englishName)
+		{
+			LanguageName = languageName;
+			Iso3Code = iso3Code;
+			EnglishName = englishName;
+		}
+
+		/// <summary></summary>
 		public string LanguageName { get; set; }
 
 		/// <summary></summary>

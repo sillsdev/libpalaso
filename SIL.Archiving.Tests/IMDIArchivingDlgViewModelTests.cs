@@ -10,16 +10,17 @@ namespace SIL.Archiving.Tests
 {
 	[TestFixture]
 	[Category("Archiving")]
-	class IMDIArchivingDlgViewModelTests
+	internal class IMDIArchivingDlgViewModelTests
 	{
 		private IMDIArchivingDlgViewModel _model;
 		private TemporaryFolder _tmpFolder;
 		private const string kAppName = "Tèst App Náme";
 		private const string kTitle = "Tèst Title";
-		private const string kArchiveId = "Tèst Corpus Náme";  // include some invalid characters for testing
+		private const string kArchiveId = "Tèst Corpus Náme"; // include some invalid characters for testing
 		private Dictionary<string, Tuple<IEnumerable<string>, string>> _filesToAdd;
 
 		#region Setup and Teardown
+
 		/// ------------------------------------------------------------------------------------
 		[SetUp]
 		public void Setup()
@@ -37,9 +38,11 @@ namespace SIL.Archiving.Tests
 			_model.CleanUp();
 			_tmpFolder.Dispose();
 		}
+
 		#endregion
 
 		#region Miscellaneous Tests
+
 		/// ------------------------------------------------------------------------------------
 		[Test]
 		public void NormalizeFilename_FileName_NormalizedFileName()
@@ -58,9 +61,11 @@ namespace SIL.Archiving.Tests
 			Assert.AreEqual(21, dirName.Length);
 			Assert.AreEqual("T_st_Title_", dirName.Substring(0, 11));
 		}
+
 		#endregion
 
 		#region GetNameOfProgramToLaunch tests
+
 		/// ------------------------------------------------------------------------------------
 		[Test]
 		[Category("SkipOnTeamCity")]
@@ -69,7 +74,10 @@ namespace SIL.Archiving.Tests
 			// fails on TeamCity because Arbil is not installed
 
 			_model.ProgramPreset = "Arbil";
-			Assert.AreEqual("Arbil", _model.NameOfProgramToLaunch);
+
+			// AT THIS TIME WE ARE NOT SHOWING THE LAUNCH OPTION
+			//Assert.AreEqual("Arbil", _model.NameOfProgramToLaunch);
+			Assert.IsNull(_model.NameOfProgramToLaunch);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -80,11 +88,16 @@ namespace SIL.Archiving.Tests
 			// fails on TeamCity because Arbil is not installed
 
 			_model.ProgramPreset = "Arbil";
-			Assert.AreEqual("Arbil", _model.NameOfProgramToLaunch);
+
+			// AT THIS TIME WE ARE NOT SHOWING THE LAUNCH OPTION
+			//Assert.AreEqual("Arbil", _model.NameOfProgramToLaunch);
+			Assert.IsNull(_model.NameOfProgramToLaunch);
 		}
+
 		#endregion
 
 		#region SetAbstract Tests
+
 		[Test]
 		public void SetAbstract_UnspecifiedLanguage_AddsDescriptionToCorpusImdiFile()
 		{
@@ -176,15 +189,17 @@ namespace SIL.Archiving.Tests
 			Assert.AreEqual(0, descriptions.Count);
 		}
 
-		[Test]
-		public void SetAbstract_BogusLanguage_ThrowsException()
-		{
-			_model.Initialize();
-			Dictionary<string, string> descriptions = new Dictionary<string, string>();
-			descriptions["eng"] = "Story about a frog";
-			descriptions["frn"] = "L'histoire d'une grenouille";
-			Assert.Throws(typeof(ArgumentException), () => _model.SetAbstract(descriptions));
-		}
+		// We now accept languages not in the Arbil list
+		//[Test]
+		//public void SetAbstract_BogusLanguage_ThrowsException()
+		//{
+		//    _model.Initialize();
+		//    Dictionary<string, string> descriptions = new Dictionary<string, string>();
+		//    descriptions["eng"] = "Story about a frog";
+		//    descriptions["frn"] = "L'histoire d'une grenouille";
+		//    Assert.Throws(typeof (ArgumentException), () => _model.SetAbstract(descriptions));
+		//}
+
 		#endregion
 
 		#region Helper methods

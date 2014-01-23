@@ -13,8 +13,6 @@ namespace SIL.Archiving.Tests
 	[Category("Archiving")]
 	class IMDI30Tests
 	{
-
-		/// ------------------------------------------------------------------------------------
 		[Test]
 		public void SessionDate_DateTime_ValidStringProduced()
 		{
@@ -28,7 +26,6 @@ namespace SIL.Archiving.Tests
 			Assert.AreEqual(dateIn.ToString("yyyy-MM-dd"), dateOut, "The date returned was not what was expected.");
 		}
 
-		/// ------------------------------------------------------------------------------------
 		[Test]
 		public void SessionDate_YearOnly_ValidStringProduced()
 		{
@@ -42,7 +39,6 @@ namespace SIL.Archiving.Tests
 			Assert.AreEqual(dateIn.ToString(CultureInfo.InvariantCulture), dateOut, "The date returned was not what was expected.");
 		}
 
-		/// ------------------------------------------------------------------------------------
 		[Test]
 		public void SessionDate_DateRange_ValidStringProduced()
 		{
@@ -56,7 +52,6 @@ namespace SIL.Archiving.Tests
 			Assert.AreEqual(dateIn, dateOut, "The date returned was not what was expected.");
 		}
 
-		/// ------------------------------------------------------------------------------------
 		[Test]
 		public void ActorType_ArchivingActor_ValidActorType()
 		{
@@ -124,7 +119,6 @@ namespace SIL.Archiving.Tests
 			Assert.IsTrue(additionalLanguageFound, "The additional language was not found.");
 		}
 
-		/// ------------------------------------------------------------------------------------
 		[Test]
 		public void LocationType_ArchivingLocation_ValidLocationType()
 		{
@@ -144,7 +138,6 @@ namespace SIL.Archiving.Tests
 			Assert.AreEqual("315 N Main St", locOut.Address);
 		}
 
-		/// ------------------------------------------------------------------------------------
 		[Test]
 		public void SetContinent_InvalidContinent_ReturnsUnspecified()
 		{
@@ -154,7 +147,6 @@ namespace SIL.Archiving.Tests
 			Assert.AreEqual("Unspecified", location.Continent.Value);
 		}
 
-		/// ------------------------------------------------------------------------------------
 		[Test]
 		public void AddDescription_Add2ForSameLanguage_AddsOnlyTheFirst()
 		{
@@ -169,8 +161,6 @@ namespace SIL.Archiving.Tests
 			Assert.AreEqual("First description", obj.Description.First().Value);
 		}
 
-
-		/// ------------------------------------------------------------------------------------
 		[Test]
 		public void AddSubjectLanguge_AddDuplicate_DuplicateNotAdded()
 		{
@@ -186,7 +176,6 @@ namespace SIL.Archiving.Tests
 			Assert.IsTrue(proj.ContentIso3Languages.Contains(new ArchivingLanguage("spa")));
 		}
 
-		/// ------------------------------------------------------------------------------------
 		[Test]
 		public void AddDocumentLanguge_AddDuplicate_DuplicateNotAdded()
 		{
@@ -200,13 +189,6 @@ namespace SIL.Archiving.Tests
 			Assert.AreEqual(2, proj.MetadataIso3Languages.Count);
 			Assert.IsTrue(proj.MetadataIso3Languages.Contains(new ArchivingLanguage("fra")));
 			Assert.IsTrue(proj.MetadataIso3Languages.Contains(new ArchivingLanguage("spa")));
-		}
-
-		/// ------------------------------------------------------------------------------------
-		[Test]
-		public void FindByISO3Code_InvalidIso3Code_ThrowsArgumentException()
-		{
-			Assert.Throws<ArgumentException>(() => LanguageList.FindByISO3Code("qqq"));
 		}
 
 		[Test]
@@ -245,6 +227,18 @@ namespace SIL.Archiving.Tests
 
 			Assert.AreEqual(0, session.Resources.MediaFile.Count);
 			Assert.AreEqual(0, session.Resources.WrittenResource.Count);
+		}
+
+		[Test]
+		public void FindByISO3Code_InvalidIso3Code_MustBeInList_Throws()
+		{
+			Assert.Throws<ArgumentException>(() => LanguageList.FindByISO3Code("xyz", true));
+		}
+
+		[Test]
+		public void FindByISO3Code_InvalidIso3Code_NotMustBeInList_DoesNotThrow()
+		{
+			Assert.DoesNotThrow(() => LanguageList.FindByISO3Code("xyz", false));
 		}
 	}
 }

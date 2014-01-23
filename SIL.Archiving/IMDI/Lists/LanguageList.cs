@@ -73,7 +73,8 @@ namespace SIL.Archiving.IMDI.Lists
 		/// <summary></summary>
 		public string EnglishName
 		{
-			get { return Text;  }
+			get { return Text; }
+			set { Text = value; }
 		}
 
 		/// <summary></summary>
@@ -108,6 +109,13 @@ namespace SIL.Archiving.IMDI.Lists
 		/// -------------------------------------------------------------------------------------------
 		public static LanguageItem FindByISO3Code(string iso3Code)
 		{
+			// language is an open list, so allow items not in the official Arbil list
+			return FindByISO3Code(iso3Code, false);
+		}
+
+		/// -------------------------------------------------------------------------------------------
+		public static LanguageItem FindByISO3Code(string iso3Code, bool mustBeInList)
+		{
 			// check for und
 			if (iso3Code == "und") return new LanguageItem("Undetermined", "ISO639-3:und");
 
@@ -115,10 +123,14 @@ namespace SIL.Archiving.IMDI.Lists
 			var item = GetList().FirstOrDefault(i => i.Value.EndsWith(":" + iso3Code));
 
 			// return language item if found
-			if (item != null) return (LanguageItem) item;
+			if (item != null) return (LanguageItem)item;
+
+			// if not found, and not limited to list, just return the code passed in
+			if (!mustBeInList) return new LanguageItem(string.Empty, "ISO639-3:" + iso3Code.ToLower());
 
 			// if not found, throw exception
-			var msg = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.InvalidLanguageCode", "Invalid ISO 639-3 code: {0}");
+			var msg = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.InvalidLanguageCode",
+				"Invalid ISO 639-3 code: {0}");
 			throw new ArgumentException(string.Format(msg, iso3Code), "iso3Code");
 		}
 
@@ -152,8 +164,12 @@ namespace SIL.Archiving.IMDI.Lists
 			}
 
 			if (item != null)
+			{
 				item.OtherName = archLanguage.LanguageName;
-
+				if (string.IsNullOrEmpty(item.EnglishName))
+					item.EnglishName = archLanguage.EnglishName;
+			}
+			
 			return item;
 		}
 	}

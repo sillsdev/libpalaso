@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 using Palaso.WritingSystems;
 
@@ -37,8 +36,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void _okButton_Click(object sender, EventArgs e)
 		{
-			this.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.Close();
+			DialogResult = DialogResult.OK;
+			Close();
 		}
 
 //        public Iso639LanguageCode ISOCodeAndName
