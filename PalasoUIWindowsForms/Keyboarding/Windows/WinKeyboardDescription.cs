@@ -90,6 +90,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			SentenceMode = other.SentenceMode;
 			WindowHandle = other.WindowHandle;
 			InternalLocalizedName = other.InternalLocalizedName;
+			InputProcessorProfile = other.InputProcessorProfile;
+			InternalName = other.InternalName;
+			Layout = other.Layout;
+			Locale = other.Locale;
 		}
 
 		public override IKeyboardDefinition Clone()

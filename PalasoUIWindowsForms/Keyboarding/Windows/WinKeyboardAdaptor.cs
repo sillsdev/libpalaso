@@ -378,6 +378,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 				}
 
 				var profile = winKeyboard.InputProcessorProfile;
+				if ((profile.Flags & TfIppFlags.Enabled) == 0)
+					return winKeyboard;
+
 				ProcessorProfiles.ChangeCurrentLanguage(profile.LangId);
 				if (ProfileMgr == null)
 				{
