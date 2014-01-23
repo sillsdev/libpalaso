@@ -120,7 +120,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 					if (profile.CatId != Guids.TfcatTipKeyboard)
 						continue;
 
-					if (profile.ProfileType == TfProfileType.KeyboardLayout || (profile.Flags & TfIppFlags.Enabled) != 0)
+					if ((profile.Flags & TfIppFlags.Enabled) != 0)
 					{
 						KeyboardController.Manager.RegisterKeyboard(new WinKeyboardDescription(profile, this));
 					}
@@ -396,6 +396,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			catch (ArgumentException)
 			{
 				// throws exception for non-supported culture, though seems to set it OK.
+			}
+			catch (COMException e)
+			{
+				var profile = winKeyboard.InputProcessorProfile;
+				var msg = string.Format("Got COM exception trying to activate IM:" + Environment.NewLine +
+					"LangId={0}, clsId={1}, hkl={2}, guidProfile={3}, flags={4}, type={5}, catId={6}",
+					profile.LangId, profile.ClsId, profile.Hkl, profile.GuidProfile, profile.Flags, profile.ProfileType, profile.CatId);
+				throw new ApplicationException(msg, e);
 			}
 			return winKeyboard;
 		}
