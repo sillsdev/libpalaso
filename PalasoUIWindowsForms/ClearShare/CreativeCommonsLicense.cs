@@ -148,6 +148,8 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		private static string MakeUrlFromTokenAndVersion(string token, string version)
 		{
 			var url = token + "/";
+			if (token.StartsWith("cc-"))
+				url = url.Substring("cc-".Length); // don't want this as part of URL.
 
 			if (!string.IsNullOrEmpty(version))
 				url += version + "/";
@@ -162,7 +164,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		{
 			get
 			{
-				var token = "";
+				var token = "cc-";
 				if (AttributionRequired)
 					token += "by-";
 				if (!CommercialUseAllowed)
@@ -181,7 +183,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 						throw new ArgumentOutOfRangeException("derivativeRule");
 				}
 				token = token.TrimEnd(new char[] {'-'});
-				if (token == "")
+				if (token == "cc")
 					token = "srr"; //some rights reserved
 				return token;
 			}
