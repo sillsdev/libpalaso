@@ -10,9 +10,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private Iso639LanguageCode _selectedWritingSystem;
 		private EthnologueLookup _ethnologueLookup;
 
+		/// <summary>Force the dialog to return 3 letter iso codes even if a 2 letter code is available</summary>
+		public bool Force3LetterCodes { get; set; }
 
 		public LookupIsoCodeModel()
 		{
+			Force3LetterCodes = false;
 			_languageCodes = StandardTags.ValidIso639LanguageCodes;
 		}
 
@@ -32,7 +35,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public IEnumerable<LanguageInfo> GetMatchingLanguages(string typedText)
 		{
 			if(_ethnologueLookup==null)
-				 _ethnologueLookup = new EthnologueLookup();
+				_ethnologueLookup = new EthnologueLookup { Force3LetterCodes = Force3LetterCodes };
 
 			/* This works, but the results are satisfactory yet (they could be with some enancement to the matcher
 			 We would need it to favor exact prefix matches... currently an exact match could be several items down the list.
@@ -52,7 +55,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 //                    yield return lang;
 //                }
 //            }
-			foreach (var language in    _ethnologueLookup.SuggestLanguages(typedText))
+			foreach (var language in _ethnologueLookup.SuggestLanguages(typedText))
 			{
 				yield return language;
 			}

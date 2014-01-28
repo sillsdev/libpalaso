@@ -68,11 +68,23 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			//NB: we're loosing non-ascii somewhere... the copyright symbol is just the most obvious
 			if (!string.IsNullOrEmpty(m.CopyrightNotice))
 			{
-                m.CopyrightNotice = m.CopyrightNotice.Replace("Copyright �", "Copyright ©");
+				m.CopyrightNotice = m.CopyrightNotice.Replace("Copyright �", "Copyright ©");
 			}
 
 			//clear out the change-setting we just caused, because as of right now, we are clean with respect to what is on disk, no need to save.
 			m.HasChanges = false;
+		}
+
+		private static string _exifTool;
+
+		private static string ExifToolPath
+		{
+			get
+			{
+				if (_exifTool == null)
+					_exifTool = FileLocator.LocateExecutable("exiftool.exe");
+				return _exifTool;
+			}
 		}
 
 		private LicenseInfo _license;
@@ -224,16 +236,17 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			var values = new Dictionary<string, string>();
 			try
 			{
-				var exifPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
+				var exifPath = ExifToolPath;
 				var args = new StringBuilder();
-				args.Append("-charset cp65001 "); //utf-8
+				args.Append("-charset UTF8 ");
 				foreach (var assignment in MetadataAssignments)
 				{
 					args.Append(" " + assignment.Switch + " ");
 				}
-				var result = CommandLineRunner.Run(exifPath, String.Format("{0} \"{1}\"", args.ToString(), path),
-												   _commandLineEncoding, Path.GetDirectoryName(path), 20 /*had a possiblefailure at 5: BL-242*/,
-												   new NullProgress());
+				var result = CommandLineRunner.Run(exifPath, String.Format("{0} \"{1}\"", args, path),
+					_commandLineEncoding, Path.GetDirectoryName(path), 20 /*had a possiblefailure at 5: BL-242*/,
+					new NullProgress());
+
 				if(result.DidTimeOut)
 				{
 					//we don't know what causes this... just a guess... maybe the file was locked?
@@ -371,7 +384,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		public void Write(string path)
 		{
-			var exifToolPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
+			var exifToolPath = ExifToolPath;
 			//-E   -overwrite_original_in_place -d %Y
 			StringBuilder arguments = new StringBuilder();
 
@@ -387,7 +400,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 			//NB: when it comes time to having multiple contibutors, see Hatton's question on http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3680.0.html.  We need -sep ";" or whatever to ensure we get a list.
 
-			arguments.Append("-charset cp65001 ");//utf-8
+			arguments.Append("-charset UTF8 ");
 			arguments.AppendFormat("-use MWG ");  //see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html  and http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
 			arguments.AppendFormat(" \"{0}\"", path);
 			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), _commandLineEncoding, Path.GetDirectoryName(_path), 5, new NullProgress());
@@ -501,13 +514,13 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				File.Delete(path);
 
 			StringBuilder arguments = new StringBuilder();
-			arguments.Append("-charset cp65001 ");//utf-8
+			arguments.Append("-charset UTF8 ");
 			arguments.AppendFormat("-o \"{0}\"", path);
 			AddAssignmentArguments(arguments);
 
 			//arguments.AppendFormat(" -use MWG ");  //see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html  and http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
 
-			var exifToolPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
+			var exifToolPath = ExifToolPath;
 			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), _commandLineEncoding, Path.GetDirectoryName(path), 5, new NullProgress());
 
 		}
@@ -521,7 +534,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			if(!File.Exists(path))
 				throw new FileNotFoundException(path);
 
-			var exifToolPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
+			var exifToolPath = ExifToolPath;
 
 
 			//OK, so exiftool doesn't actually let us just read an xmp file. It needs an image to push the values into.
@@ -534,9 +547,10 @@ namespace Palaso.UI.WindowsForms.ClearShare
 					tempImage.Save(temp.Path);
 				}
 				StringBuilder arguments = new StringBuilder();
-				arguments.Append("-charset cp65001 ");//utf-8
+				arguments.Append("-charset UTF8 ");
 				arguments.AppendFormat(" -all -tagsfromfile \"{0}\" -all:all \"{1}\"", path, temp.Path);
-				var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), _commandLineEncoding, Path.GetDirectoryName(path), 5, new NullProgress());
+				var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), _commandLineEncoding,
+					Path.GetDirectoryName(path), 5, new NullProgress());
 				LoadProperties(temp.Path, this);
 			}
 

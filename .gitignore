@@ -1,16 +1,14 @@
-
-
-output
+output/
 Thumbs.db
-.bzr
-obj
-bin
-test-results
+.bzr/
+obj/
+bin/
+test-results/
 *.suo
 *.resharper
 *.user
 _ReSharper.*
-config
+config/
 *.pidb
 *.userprefs
 *.nunit
@@ -20,6 +18,8 @@ config
 $(Configuration)
 nant.resx.bak
 lib/DebugMono/icu*40.dll
+lib/*/icu.net.dll
+lib/*/icu.net.dll.config
 *.lnk
 CopyTo*.bat
 *.orig
@@ -29,3 +29,4 @@ L10NSharp.*
 *.ncrunchsolution
 .nuget/NuGet.exe
 *.cache
+Download/

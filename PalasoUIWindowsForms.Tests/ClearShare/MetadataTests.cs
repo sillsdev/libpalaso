@@ -11,7 +11,7 @@ using Palaso.UI.WindowsForms.ImageToolbox;
 
 namespace PalasoUIWindowsForms.Tests.ClearShare
 {
-	[TestFixture, Ignore("Needs exiftool in the distfiles")]
+	[TestFixture]
 	public class MetadataTests
 	{
 		private Bitmap _mediaFile;
@@ -41,7 +41,8 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 			Assert.AreEqual("Copyright Test", Metadata.FromFile(_tempFile.Path).CopyrightNotice);
 		}
 
-		[Test, Ignore("not yet")]
+		[Test]
+		[Platform(Exclude="Win", Reason="Test has issues on Windows")]
 		public void RoundTripPng_CopyrightNoticeWithNonAscii()
 		{
 			_outgoing.CopyrightNotice = "Copyright ŋoŋ";
@@ -50,7 +51,8 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 		}
 
 
-		[Test, Ignore("not yet")]
+		[Test]
+		[Platform(Exclude="Win", Reason="Test has issues on Windows")]
 		public void RoundTripPng_AttributionNameWithNonAscii()
 		{
 			_outgoing.Creator = "joŋ";
