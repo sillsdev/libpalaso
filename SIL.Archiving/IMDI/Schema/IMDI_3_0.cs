@@ -686,7 +686,7 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks>Closed vocabulary</remarks>
 		public void SetContinent(string continent)
 		{
-			var continentList = ListConstructor.GetClosedList(ListType.Continents);
+			var continentList = ListConstructor.GetClosedList(ListType.Continents, false);
 			Continent = continentList.FindByValue(continent).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.Continents));
 		}
 
@@ -1018,42 +1018,42 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public void SetInteractivity(string interactivity)
 		{
-			ClosedIMDIItemList list = ListConstructor.GetClosedList(ListType.ContentInteractivity);
+			IMDIItemList list = ListConstructor.GetClosedList(ListType.ContentInteractivity);
 			CommunicationContext.Interactivity = list.FindByValue(interactivity).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentInteractivity));
 		}
 
 		/// <remarks/>
 		public void SetPlanningType(string planningType)
 		{
-			ClosedIMDIItemList list = ListConstructor.GetClosedList(ListType.ContentPlanningType);
+			IMDIItemList list = ListConstructor.GetClosedList(ListType.ContentPlanningType);
 			CommunicationContext.PlanningType = list.FindByValue(planningType).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentPlanningType));
 		}
 
 		/// <remarks/>
 		public void SetInvolvement(string involvement)
 		{
-			ClosedIMDIItemList list = ListConstructor.GetClosedList(ListType.ContentInvolvement);
+			IMDIItemList list = ListConstructor.GetClosedList(ListType.ContentInvolvement);
 			CommunicationContext.Involvement = list.FindByValue(involvement).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentInvolvement));
 		}
 
 		/// <remarks/>
 		public void SetSocialContext(string socialContext)
 		{
-			ClosedIMDIItemList list = ListConstructor.GetClosedList(ListType.ContentSocialContext);
+			IMDIItemList list = ListConstructor.GetClosedList(ListType.ContentSocialContext);
 			CommunicationContext.SocialContext = list.FindByValue(socialContext).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentSocialContext));
 		}
 
 		/// <remarks/>
 		public void SetEventStructure(string eventStructure)
 		{
-			ClosedIMDIItemList list = ListConstructor.GetClosedList(ListType.ContentEventStructure);
+			IMDIItemList list = ListConstructor.GetClosedList(ListType.ContentEventStructure);
 			CommunicationContext.EventStructure = list.FindByValue(eventStructure).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentEventStructure));
 		}
 
 		/// <remarks/>
 		public void SetChannel(string channel)
 		{
-			ClosedIMDIItemList list = ListConstructor.GetClosedList(ListType.ContentChannel);
+			IMDIItemList list = ListConstructor.GetClosedList(ListType.ContentChannel);
 			CommunicationContext.Channel = list.FindByValue(channel).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentChannel));
 		}
 
@@ -1327,7 +1327,7 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public void SetSex(string gender)
 		{
-			ClosedIMDIItemList genderList = ListConstructor.GetClosedList(ListType.ActorSex);
+			IMDIItemList genderList = ListConstructor.GetClosedList(ListType.ActorSex);
 			Sex = genderList.FindByValue(gender).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ActorSex));
 		}
 

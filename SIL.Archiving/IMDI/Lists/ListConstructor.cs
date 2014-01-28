@@ -1,127 +1,59 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Net;
-using System.Xml;
-using SIL.Archiving.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SIL.Archiving.IMDI.Lists
 {
 	/// <summary>
 	///
 	/// </summary>
-	public class ListConstructor
+	public static class ListConstructor
 	{
-		private static string _listPath;
 		private static readonly Dictionary<string, IMDIItemList> _loadedLists = new Dictionary<string, IMDIItemList>();
 
-		/// <summary>Returns a list of IMDIListItems that can also be used as the data source of a combo or list box</summary>
+		/// ---------------------------------------------------------------------------------------
+		/// <summary>Constructs a list of IMDIListItems that can be used as the data source of a
+		/// combo or list box</summary>
 		/// <param name="listName">Name of the XML file that contains the desired list. It is suggested to
-		/// use values from IMDI_Schema.ListTypes class. If not found on the local system, we will attempt
-		/// to download from http://www.mpi.nl/IMDI/Schema.
+		///     use values from IMDI_Schema.ListTypes class. If not found on the local system, we will attempt
+		///     to download from http://www.mpi.nl/IMDI/Schema.
 		/// </param>
-		/// <returns>List of IMDIListItems</returns>
-		public static IMDIItemList GetList(string listName)
+		/// <param name="uppercaseFirstCharacter">Make first character of each item uppercase</param>
+		/// <param name="localize">Delegate to use for getting localized versions of the Text and
+		/// Definition of list items. The parameters are: 1) the list name; 2) list item value;
+		/// 3) "Definition" or "Text"; 4) default (English) value.</param>
+		public static IMDIItemList GetList(string listName, bool uppercaseFirstCharacter, Func<string, string, string, string, string> localize)
 		{
-			listName = CleanListName(listName);
+			listName = ListNameWithXmlExtension(listName);
+			IMDIItemList list;
 
-			if (!_loadedLists.ContainsKey(listName))
-				_loadedLists.Add(listName, new IMDIItemList(GetNodeList(listName)));
+			if (!_loadedLists.TryGetValue(listName, out list))
+			{
+				list = new IMDIItemList(listName, uppercaseFirstCharacter);
+				_loadedLists.Add(listName, list);
+			}
 
-			return _loadedLists[listName];
+			list.Localize(localize);
+
+			return list;
 		}
 
+		/// ---------------------------------------------------------------------------------------
 		/// <summary>>Returns a list of IMDIListItems that can also be used as the data source of a combo or list box</summary>
 		/// <param name="listName"></param>
 		/// <returns></returns>
-		public static ClosedIMDIItemList GetClosedList(string listName)
+		public static IMDIItemList GetClosedList(string listName, bool uppercaseFirstCharacter = true)
 		{
-			listName = CleanListName(listName);
-
-			if (!_loadedLists.ContainsKey(listName))
-				_loadedLists.Add(listName, new ClosedIMDIItemList(GetNodeList(listName)));
-
+			var list = GetList(listName, uppercaseFirstCharacter, null);
 			// make sure this is a closed list
-			return _loadedLists[listName].ToClosedList();
+			list.Closed = true;
+			return list;
 		}
 
-		/// <summary>Gets a list of the Entry nodes from the selected XML file.</summary>
-		/// <param name="listName">Name of the XML file that contains the desired list. It is suggested to
-		/// use values from IMDI_Schema.ListTypes class. If not found on the local system, we will attempt
-		/// to download from http://www.mpi.nl/IMDI/Schema.
-		/// </param>
-		/// <returns></returns>
-		public static XmlNodeList GetNodeList(string listName)
-		{
-			listName = CleanListName(listName);
-
-			var listFileName = CheckFile(listName);
-
-			// if the file was not found, thrwo an exception
-			if (string.IsNullOrEmpty(listFileName))
-				throw new FileNotFoundException(string.Format("The list {0} was not found.", listName));
-
-			XmlDocument doc = new XmlDocument();
-			doc.Load(listFileName);
-
-			var nsmgr = new XmlNamespaceManager(doc.NameTable);
-			nsmgr.AddNamespace("imdi", "http://www.mpi.nl/IMDI/Schema/IMDI");
-
-			// if not a valid XML file, throw an exception
-			if (doc.DocumentElement == null)
-				throw new XmlException(string.Format("The file {0} was not a valid XML file.", listFileName));
-
-			var nodes = doc.DocumentElement.SelectNodes("//imdi:VocabularyDef/imdi:Entry", nsmgr);
-
-			// if no entries were found, throw an exception
-			if (nodes == null)
-				throw new XmlException(string.Format("The file {0} does not contain any list entries.", listFileName));
-
-			return nodes;
-		}
-
-		private static string ListPath
-		{
-			get
-			{
-				if (!string.IsNullOrEmpty(_listPath)) return _listPath;
-
-				var thisPath = ArchivingFileSystem.SilCommonIMDIDataFolder;
-
-				// check if path exists
-				if (!Directory.Exists(thisPath))
-					throw new DirectoryNotFoundException("Not able to find the IMDI lists directory.");
-
-				_listPath = thisPath;
-
-				return _listPath;
-			}
-		}
-
-
-
-		private static string CheckFile(string listName)
-		{
-			var listFileName = Path.Combine(ListPath, listName);
-
-			// if file already exists locally, return it now
-			if (File.Exists(listFileName))
-				return listFileName;
-
-			// attempt to download if not already in list folder
-			var url = ListType.Link(listName);
-			Debug.WriteLine("Downloading from {0} to {1}", url, listFileName);
-			var wc = new WebClient();
-			wc.DownloadFile(url, listFileName);
-
-			// return full name, or null if not able to download
-			return File.Exists(listFileName) ? listFileName : null;
-		}
-
-		private static string CleanListName(string listName)
+		/// ---------------------------------------------------------------------------------------
+		internal static string ListNameWithXmlExtension(string listName)
 		{
 			if (!listName.EndsWith(".xml"))
-				listName += ".xml"; // make sure the name has .xml extension
+				listName += ".xml";
 			return listName;
 		}
 	}

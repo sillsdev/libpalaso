@@ -12,7 +12,7 @@ namespace SIL.Archiving.IMDI.Lists
 		/// <summary>Constructs a new LanguageItem</summary>
 		/// <param name="englishName">Example: "English"</param>
 		/// <param name="imdiCode">Example: "ISO639-3:eng"</param>
-		internal LanguageItem(string englishName, string imdiCode) : base(englishName, imdiCode) {}
+		internal LanguageItem(string englishName, string imdiCode) : base(imdiCode, englishName) { }
 
 		internal LanguageItem(string englishName, string imdiCode, string otherName) : this(englishName, imdiCode)
 		{
@@ -91,19 +91,33 @@ namespace SIL.Archiving.IMDI.Lists
 
 		/// <summary>Get the list of languages</summary>
 		/// <returns></returns>
-		public static LanguageList GetList()
+		private static LanguageList GetList()
 		{
 			return _instance ?? (_instance = new LanguageList());
 		}
 
 		/// ---------------------------------------------------------------------------------------
-		protected LanguageList() : base(ListConstructor.GetNodeList(ListType.MPILanguages)) {}
-
-		/// <summary>Overriden so that the List contains LanguageItems rather than IMDIListItems</summary>
-		/// <param name="item"></param>
-		public override void AddItem(IMDIListItem item)
+		protected LanguageList() : base(ListType.MPILanguages, false)
 		{
-			Add(new LanguageItem(item.Text, item.Value));
+		}
+
+		/// ---------------------------------------------------------------------------------------
+		protected override void Initialize()
+		{
+			// no-op
+		}
+
+		/// ---------------------------------------------------------------------------------------
+		public override void Localize(Func<string, string, string, string, string> localize)
+		{
+			// no-op
+		}
+
+		/// ---------------------------------------------------------------------------------------
+		/// <summary>Overriden so that the List contains LanguageItems rather than IMDIListItems</summary>
+		public override void AddItem(string englishName, string code)
+		{
+			Add(new LanguageItem(englishName, code));
 		}
 
 		/// -------------------------------------------------------------------------------------------
