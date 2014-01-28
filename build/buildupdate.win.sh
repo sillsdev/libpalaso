@@ -1,10 +1,25 @@
 #!/bin/bash
 # server=build.palaso.org
 # project=libpalaso
-# build=palaso-win32-develop-continuous
+# build=palaso-win32-master-buildupdate
 # root_dir=..
+# $Id: da666a7e5eb1d63b434514279cd14cacd26c730f $
 
 # *** Functions ***
+force=
+
+while getopts f opt; do
+	case $opt in
+	f)
+		force=1
+		;;
+
+	esac
+done
+
+shift $((OPTIND - 1))
+
+
 copy_auto() {
 	where_curl=$(type -P curl)
 	where_wget=$(type -P wget)
@@ -22,7 +37,7 @@ copy_auto() {
 
 copy_curl() {
 	echo "curl: $2 <= $1"
-	if [ -e "$2" ]
+	if [ -e "$2" ] && [ "$force" != "1" ]
 	then
 		curl -# -L -z $2 -o $2 $1
 	else
@@ -40,9 +55,9 @@ copy_wget() {
 }
 
 # *** Results ***
-# build: palaso-win32-develop-continuous (bt330)
+# build: palaso-win32-master-buildupdate (bt348)
 # project: libpalaso
-# URL: http://build.palaso.org/viewType.html?buildTypeId=bt330
+# URL: http://build.palaso.org/viewType.html?buildTypeId=bt348
 # VCS: https://github.com/sillsdev/libpalaso.git []
 # dependencies:
 # [0] build: L10NSharp continuous (bt196)
