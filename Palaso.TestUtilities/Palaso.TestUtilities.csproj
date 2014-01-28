@@ -43,7 +43,7 @@
 	<DebugSymbols>true</DebugSymbols>
 	<OutputPath>..\output\DebugMono</OutputPath>
 	<DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
-	<DocumentationFile>..\output\Debug\Palaso.TestUtilities.XML</DocumentationFile>
+	<DocumentationFile>..\output\DebugMono\Palaso.TestUtilities.XML</DocumentationFile>
 	<DebugType>full</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
 	<ErrorReport>prompt</ErrorReport>
