@@ -379,7 +379,7 @@
 	<Compile Include="Xml\XmlUtils.cs" />
 	<Compile Include="Xml\XmlWriterExtensions.cs" />
     <Compile Include="PlatformUtilities\Platform.cs" />
-    <Compile Include="IO\Path.cs" />
+    <Compile Include="IO\PathUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="Properties\Resources.resx">

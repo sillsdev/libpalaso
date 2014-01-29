@@ -4,7 +4,7 @@ using System;
 
 namespace Palaso.IO
 {
-	public static class Path
+	public static class PathUtilities
 	{
 
 		// On Unix there are more characters valid in file names, but we
