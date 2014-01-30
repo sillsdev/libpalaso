@@ -3,7 +3,9 @@
 # project=libpalaso
 # build=palaso-win32-master-buildupdate
 # root_dir=..
-# $Id: da666a7e5eb1d63b434514279cd14cacd26c730f $
+# $Id: fddd609c79cf98392f7892a4a56d48a466d329de $
+
+cd "$(dirname "$0")"
 
 # *** Functions ***
 force=
@@ -53,6 +55,7 @@ copy_wget() {
 	wget -q -L -N $1
 	cd -
 }
+
 
 # *** Results ***
 # build: palaso-win32-master-buildupdate (bt348)
