@@ -215,6 +215,7 @@ namespace SIL.Archiving
 			_setFilesToArchive = setFilesToArchive;
 			_titles[id] = title;
 			_propertiesSet[id] = MetadataProperties.Title;
+			AdditionalMessages = new Dictionary<string, MessageType>();
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -542,5 +543,8 @@ namespace SIL.Archiving
 
 		/// <summary></summary>
 		public abstract IArchivingPackage ArchivingPackage { get; }
+
+		/// <remarks/>
+		public Dictionary<string, MessageType> AdditionalMessages { get; private set; }
 	}
 }

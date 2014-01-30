@@ -1,11 +1,11 @@
 [
 {"protocol":"FURCS","documentation":"furcs.html","choices":[
-	{"label":"","description":"only the Depositor and delegate can access"},
 	{"label":"F","description":"access is Free to all"},
 	{"label":"U","description":"all Users can access (requires registration)"},
 	{"label":"RC","description":"Researchers and Community members are allowed access"},
 	{"label":"C","description":"only Community members are allowed access (normally requires application to Depositor)"},
-	{"label":"S","description":"only Subscribers are allowed access (requires application to Depositor)"}]},
+	{"label":"S","description":"only Subscribers are allowed access (requires application to Depositor)"},
+	{"label":"","description":"only the Depositor and delegate can access"}]},
 {"protocol":"REAP","documentation":"reap.html","choices":[
 	{"label":"","description":"<unknown>"},
 	{"label":"Entity curators","description":"Restricted to Entity curators"},
