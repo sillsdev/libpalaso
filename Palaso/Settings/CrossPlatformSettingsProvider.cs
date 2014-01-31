@@ -251,12 +251,13 @@ namespace Palaso.Settings
 					var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
 					directoryList.Sort(VersionDirectoryComparison);
 					var previousDirectory = directoryList[0];
-					if(!previousDirectory.EndsWith(assembly.GetName().Version.ToString()) && directoryList.Count <= 1)
-					{
-						return null;
-					}
 					if(previousDirectory.EndsWith(assembly.GetName().Version.ToString()))
 					{
+						if (directoryList.Count == 1)
+						{
+							// The only directory is for the current version; no need to upgrade.
+							return null;
+						}
 						previousDirectory = directoryList[1];
 					}
 					var settingsLocation = Path.Combine(previousDirectory, "user.config");

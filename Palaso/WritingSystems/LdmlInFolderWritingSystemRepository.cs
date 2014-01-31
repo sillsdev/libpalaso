@@ -30,7 +30,7 @@ namespace Palaso.WritingSystems
 		///<param name="basePath">base location of the global writing system repository</param>
 		///<param name="migrationHandler">Callback if during the initialization any writing system id's are changed</param>
 		///<param name="loadProblemHandler">Callback if during the initialization any writing systems cannot be loaded</param>
-		///<param name="roundtripFlex70PrivateUse"></param>
+		///<param name="compatibilityMode"></param>
 		public static LdmlInFolderWritingSystemRepository Initialize(
 			string basePath,
 			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
@@ -48,7 +48,7 @@ namespace Palaso.WritingSystems
 			var loadProblems = new List<WritingSystemRepositoryProblem>();
 			loadProblems.AddRange(migrator.MigrationProblems);
 			loadProblems.AddRange(instance.LoadProblems);
-			if (loadProblems.Count > 0)
+			if (loadProblems.Count > 0 && loadProblemHandler != null)
 			{
 				loadProblemHandler(loadProblems);
 			}
