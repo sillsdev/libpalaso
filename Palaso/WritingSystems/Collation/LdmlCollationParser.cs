@@ -82,6 +82,21 @@ namespace Palaso.WritingSystems.Collation
 						variableTopRule, icuRules.Substring(variableTopPositionIfNotUsed));
 				}
 			}
+			return TrimUnescapedWhitespace(icuRules);
+		}
+
+		/// <summary>
+		/// Trim all whitespace from the beginning, and all unescaped whitespace from the end.
+		/// </summary>
+		/// <param name="icuRules"></param>
+		/// <returns></returns>
+		private static string TrimUnescapedWhitespace(string icuRules)
+		{
+			var lastEscapeIndex = icuRules.LastIndexOf('\\');
+			if(lastEscapeIndex + 2 == icuRules.Length)
+			{
+				return icuRules.TrimStart();
+			}
 			return icuRules.Trim();
 		}
 
