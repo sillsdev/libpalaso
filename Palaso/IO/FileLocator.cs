@@ -248,20 +248,18 @@ namespace Palaso.IO
 		}
 
 
-		/// <summary>
-		/// Find a file which, on a development machine, lives in [solution]/[distFileFolderName]/[subPath],
-		/// and when installed, lives in
-		/// [applicationFolder]/[distFileFolderName]/[subPath1]/[subPathN]  or
-		/// [applicationFolder]/[subPath]/[subPathN]
-		/// </summary>
-		/// <example>GetFileDistributedWithApplication("info", "releaseNotes.htm");</example>
-		public static string GetFileDistributedWithApplication(bool optional, params string[] partsOfTheSubPath)
-		{
-			foreach (var directoryHoldingFiles in new []{null, "DistFiles", "common" /*for wesay*/})
+	    /// <summary>
+	    /// Find a file which, on a development machine, lives in [solution]/[distFileFolderName]/[subPath],
+	    /// and when installed, lives in
+	    /// [applicationFolder]/[distFileFolderName]/[subPath1]/[subPathN]  or
+	    /// [applicationFolder]/[subPath]/[subPathN]
+	    /// </summary>
+	    /// <example>GetFileDistributedWithApplication("info", "releaseNotes.htm");</example>
+	    public static string GetFileDistributedWithApplication(bool optional, params string[] partsOfTheSubPath)
+	    {
+	        foreach (var directoryHoldingFiles in new[] {"", "DistFiles", "common" /*for wesay*/, "src" /*for Bloom*/})
 			{
-				var path = FileLocator.DirectoryOfApplicationOrSolution;
-				if(directoryHoldingFiles!=null)
-					path = Path.Combine(path, directoryHoldingFiles);
+                var path = Path.Combine(FileLocator.DirectoryOfApplicationOrSolution, directoryHoldingFiles);
 
 				foreach (var part in partsOfTheSubPath)
 				{
@@ -310,23 +308,16 @@ namespace Palaso.IO
 			if (Directory.Exists(path))
 				return path;
 
-			//try distfiles
-			path = FileLocator.DirectoryOfApplicationOrSolution;
-			path = Path.Combine(path,"DistFiles");
-			foreach (var part in partsOfTheSubPath)
-			{
-				path = System.IO.Path.Combine(path, part);
-			}
-			if (Directory.Exists(path))
-				return path;
-
-			//try src (e.g. Bloom keeps its javascript under source directory (and in distfiles only when installed)
-			path = FileLocator.DirectoryOfApplicationOrSolution;
-			path = Path.Combine(path, "src");
-			foreach (var part in partsOfTheSubPath)
-			{
-				path = System.IO.Path.Combine(path, part);
-			}
+		    foreach (var directoryHoldingFiles in new[] {"", "DistFiles", "common" /*for wesay*/, "src" /*for Bloom*/})
+		    {
+		        path = Path.Combine(FileLocator.DirectoryOfApplicationOrSolution, directoryHoldingFiles);
+		        foreach (var part in partsOfTheSubPath)
+		        {
+		            path = System.IO.Path.Combine(path, part);
+		        }
+		        if (Directory.Exists(path))
+		            return path;
+		    }
 
 			if (optional && !Directory.Exists(path))
 				return null;
