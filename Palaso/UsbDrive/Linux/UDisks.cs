@@ -33,12 +33,6 @@ namespace Palaso.UsbDrive.Linux
 					yield return device;
 				}
 			}
-			// If Bus.System is not closed, the program hangs when it ends, waiting for
-			// the associated thread to quit.  It appears to properly reopen Bus.System
-			// if we try to use it again after closing it.
-			// And calling Close() here appears to work okay in conjunction with the
-			// yield return above.
-			Bus.System.Close();
 		}
 	}
 }
