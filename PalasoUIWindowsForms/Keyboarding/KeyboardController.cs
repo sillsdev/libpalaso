@@ -70,7 +70,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				SetKeyboardAdaptors(new IKeyboardAdaptor[] {
 #if __MonoCS__
-					new XkbKeyboardAdaptor(), new IbusKeyboardAdaptor()
+					new XkbKeyboardAdaptor(), new IbusKeyboardAdaptor(), new CombinedKeyboardAdaptor()
 #else
 					new WinKeyboardAdaptor()
 #endif

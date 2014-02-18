@@ -110,23 +110,45 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				for (int iLayout = 0; iLayout < layoutList.Count; iLayout++)
 				{
 					var layout = layoutList[iLayout];
-					var description = GetDescription(layout);
+					AddKeyboardForLayout(layout, iGroup);
+				}
+			}
+		}
 
-					CultureInfo culture = null;
-					try
+		private void AddKeyboardForLayout(XklConfigRegistry.LayoutDescription layout, int iGroup = 0)
+		{
+			var description = GetDescription(layout);
+			CultureInfo culture = null;
+			try
+			{
+				culture = new CultureInfo(layout.LocaleId);
+			}
+			catch (ArgumentException)
+			{
+				// This can happen if the locale is not supported.
+				// TODO: fix mono's list of supported locales. Doesn't support e.g. de-BE.
+				// See mono/tools/locale-builder.
+			}
+			var inputLanguage = new InputLanguageWrapper(culture, IntPtr.Zero, layout.Language);
+			var keyboard = new XkbKeyboardDescription(description, layout.LayoutId, layout.LocaleId,
+				inputLanguage, this, iGroup);
+			KeyboardController.Manager.RegisterKeyboard(keyboard);
+		}
+
+		internal void AddKeyboards(List<string> layoutNames)
+		{
+			var configRegistry = XklConfigRegistry.Create(m_engine);
+			var layouts = configRegistry.Layouts;
+
+			foreach (var kvp in layouts)
+			{
+				foreach (var layout in kvp.Value)
+				{
+					if ((layoutNames.Contains(layout.LayoutId) && layout.LayoutId == layout.LanguageCode) ||
+						layoutNames.Contains(string.Format("{0}+{1}", layout.LanguageCode, layout.LayoutId)))
 					{
-						culture = new CultureInfo(layout.LocaleId);
+						AddKeyboardForLayout(layout);
 					}
-					catch (ArgumentException)
-					{
-						// This can happen if the locale is not supported.
-						// TODO: fix mono's list of supported locales. Doesn't support e.g. de-BE.
-						// See mono/tools/locale-builder.
-					}
-					var inputLanguage = new InputLanguageWrapper(culture, IntPtr.Zero, layout.Language);
-					var keyboard = new XkbKeyboardDescription(description, layout.LayoutId, layout.LocaleId,
-						inputLanguage, this, iGroup);
-					KeyboardController.Manager.RegisterKeyboard(keyboard);
 				}
 			}
 		}
