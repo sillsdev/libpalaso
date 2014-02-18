@@ -70,23 +70,22 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 		}
 
-		internal void AddKeyboards(List<string> layouts)
+		internal void AddKeyboards(Dictionary<string, int> layouts)
 		{
-			List<string> copiedLayouts = new List<string>(layouts);
+			List<string> missingLayouts = new List<string>(layouts.Keys);
 			foreach (var ibusKeyboard in GetAllIBusKeyboards())
 			{
-				if (layouts.Contains(ibusKeyboard.LongName))
+				if (layouts.ContainsKey(ibusKeyboard.LongName))
 				{
-					copiedLayouts.Remove(ibusKeyboard.LongName);
+					missingLayouts.Remove(ibusKeyboard.LongName);
 					var keyboard = new IbusKeyboardDescription(this, ibusKeyboard);
+					keyboard.SystemIndex = layouts[ibusKeyboard.LongName];
 					KeyboardController.Manager.RegisterKeyboard(keyboard);
 				}
 			}
-
-			foreach (var layout in copiedLayouts)
+			foreach (var layout in missingLayouts)
 			{
 				Console.WriteLine("Didn't find " + layout);
-
 			}
 		}
 
@@ -120,11 +119,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 					return false;
 
 				// check our cached value
-				if (GlobalCachedInputContext.Keyboard == keyboard)
+				if (GlobalCachedInputContext.Keyboard == keyboard && !KeyboardController.CombinedKeyboardHandling)
 					return true;
 
 				var context = GlobalCachedInputContext.InputContext;
-
 				if (keyboard == null || keyboard.IBusKeyboardEngine == null)
 				{
 					context.Reset();
@@ -133,16 +131,24 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 					return true;
 				}
 
-				// Set the associated XKB keyboard
-				var parentLayout = keyboard.ParentLayout;
-				if (parentLayout == "en")
-					parentLayout = "us";
-				var xkbKeyboard = Keyboard.Controller.AllAvailableKeyboards.FirstOrDefault(kbd => kbd.Layout == parentLayout);
-				if (xkbKeyboard != null)
-					xkbKeyboard.Activate();
-
-				// Then set the IBus keyboard
-				context.SetEngine(keyboard.IBusKeyboardEngine.LongName);
+				if (KeyboardController.CombinedKeyboardHandling)
+				{
+					var comm = IBusCommunicator as IbusCommunicator;
+					context = comm.EstablishProperInputContext();
+					KeyboardController.CombinedAdaptor.SelectKeyboard(keyboard.SystemIndex);
+				}
+				else
+				{
+					// Set the associated XKB keyboard
+					var parentLayout = keyboard.ParentLayout;
+					if (parentLayout == "en")
+						parentLayout = "us";
+					var xkbKeyboard = Keyboard.Controller.AllAvailableKeyboards.FirstOrDefault(kbd => kbd.Layout == parentLayout);
+					if (xkbKeyboard != null)
+						xkbKeyboard.Activate();
+					// Then set the IBus keyboard
+					context.SetEngine(keyboard.IBusKeyboardEngine.LongName);
+				}
 
 				GlobalCachedInputContext.Keyboard = keyboard;
 				return true;

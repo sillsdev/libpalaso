@@ -59,6 +59,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 								};
 
 			m_ibus = new InputBus(m_connection);
+	Console.WriteLine("DEBUG IbusCommunicator(): m_ibus.GetAddress() => '{0}'", m_ibus.GetAddress());
 		}
 
 		#region Disposable stuff
@@ -217,21 +218,23 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 			try
 			{
-				if (!m_inputContext.IsEnabled())
+				if (!m_contextUpdated && !m_inputContext.IsEnabled())
 					return false;
 
 				var modifiers = ConvertToIbusModifiers(state, (char)keySym);
 
 				return m_inputContext.ProcessKeyEvent(keySym, scanCode, modifiers);
 			}
-			catch(NDesk.DBus.DBusConectionErrorException)
+			catch(NDesk.DBus.DBusConectionErrorException e)
 			{
+				Console.WriteLine("DEBUG ProcessKeyEvent(): caught DBusConectionErrorException: {0}", e);
 				m_ibus = null;
 				m_inputContext = null;
 				NotifyUserOfIBusConnectionDropped();
 			}
-			catch(System.NullReferenceException)
+			catch(System.NullReferenceException e)
 			{
+				Console.WriteLine("DEBUG ProcessKeyEvent(): caught NullReferenceException: {0}", e);
 			}
 			return false;
 		}
@@ -256,19 +259,39 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		{
 			m_inputContext = m_ibus.CreateInputContext("IbusCommunicator");
 
-			ProtectedIBusInvoke(() =>
+			AttachContextMethods(m_inputContext);
+		}
+
+		private bool m_contextUpdated;
+		/// <summary>
+		/// For IBus 1.5, we must use the current InputContext because there is no
+		/// way to enable one we create ourselves.  (InputContext.Enable() has turned
+		/// into a no-op.)
+		/// </summary>
+		public IInputContext EstablishProperInputContext()
+		{
+			if (m_contextUpdated)
+				return m_inputContext;
+			var path = m_ibus.CurrentInputContext();
+			m_inputContext = new InputContext(m_connection, path);
+
+			AttachContextMethods(m_inputContext);
+			m_contextUpdated = true;
+			return m_inputContext;
+		}
+
+		internal void AttachContextMethods(IInputContext context)
+		{
+			ProtectedIBusInvoke(() => 
 			{
-				m_inputContext.CommitText += OnCommitText;
-				m_inputContext.UpdatePreeditText += OnUpdatePreeditText;
-				m_inputContext.HidePreeditText += OnHidePreeditText;
-				m_inputContext.ForwardKeyEvent += OnKeyEvent;
-				m_inputContext.DeleteSurroundingText += OnDeleteSurroundingText;
-
-					m_inputContext.SetCapabilities(Capabilities.Focus | Capabilities.PreeditText |
-						Capabilities.SurroundingText);
-				m_inputContext.Enable();
+				context.CommitText += OnCommitText;
+				context.UpdatePreeditText += OnUpdatePreeditText;
+				context.HidePreeditText += OnHidePreeditText;
+				context.ForwardKeyEvent += OnKeyEvent;
+				context.DeleteSurroundingText += OnDeleteSurroundingText;
+				context.SetCapabilities(Capabilities.Focus | Capabilities.PreeditText | Capabilities.SurroundingText);
+				context.Enable();
 			});
-
 		}
 
 		/// <summary>
