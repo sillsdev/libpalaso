@@ -135,7 +135,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			KeyboardController.Manager.RegisterKeyboard(keyboard);
 		}
 
-		internal void AddKeyboards(List<string> layoutNames)
+		internal void AddKeyboards(Dictionary<string, int> layoutNamesAndIndexes)
 		{
 			var configRegistry = XklConfigRegistry.Create(m_engine);
 			var layouts = configRegistry.Layouts;
@@ -144,10 +144,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			{
 				foreach (var layout in kvp.Value)
 				{
-					if ((layoutNames.Contains(layout.LayoutId) && layout.LayoutId == layout.LanguageCode) ||
-						layoutNames.Contains(string.Format("{0}+{1}", layout.LanguageCode, layout.LayoutId)))
+					int index;
+					if ((layoutNamesAndIndexes.TryGetValue(layout.LayoutId, out index) && layout.LayoutId == layout.LanguageCode) ||
+						layoutNamesAndIndexes.TryGetValue(string.Format("{0}+{1}", layout.LanguageCode, layout.LayoutId), out index))
 					{
-						AddKeyboardForLayout(layout);
+						AddKeyboardForLayout(layout, index);
 					}
 				}
 			}
@@ -188,7 +189,16 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				throw new ArgumentException();
 
 			if (xkbKeyboard.GroupIndex >= 0)
-				m_engine.SetGroup(xkbKeyboard.GroupIndex);
+			{
+				if (KeyboardController.CombinedKeyboardHandling)
+				{
+					KeyboardController.CombinedAdaptor.SelectKeyboard(xkbKeyboard.GroupIndex);
+				}
+				else
+				{
+					m_engine.SetGroup(xkbKeyboard.GroupIndex);
+				}
+			}
 			return true;
 		}
 
