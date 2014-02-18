@@ -70,6 +70,26 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 		}
 
+		internal void AddKeyboards(List<string> layouts)
+		{
+			List<string> copiedLayouts = new List<string>(layouts);
+			foreach (var ibusKeyboard in GetAllIBusKeyboards())
+			{
+				if (layouts.Contains(ibusKeyboard.LongName))
+				{
+					copiedLayouts.Remove(ibusKeyboard.LongName);
+					var keyboard = new IbusKeyboardDescription(this, ibusKeyboard);
+					KeyboardController.Manager.RegisterKeyboard(keyboard);
+				}
+			}
+
+			foreach (var layout in copiedLayouts)
+			{
+				Console.WriteLine("Didn't find " + layout);
+
+			}
+		}
+
 		private IBusEngineDesc[] GetIBusKeyboards()
 		{
 			if (!IBusCommunicator.Connected)
@@ -77,6 +97,15 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 			var ibusWrapper = new InputBus(IBusCommunicator.Connection);
 			return ibusWrapper.ListActiveEngines();
+		}
+
+		private IBusEngineDesc[] GetAllIBusKeyboards()
+		{
+			if (!IBusCommunicator.Connected)
+				return new IBusEngineDesc[0];
+
+			var ibusWrapper = new InputBus(IBusCommunicator.Connection);
+			return ibusWrapper.ListEngines();
 		}
 
 		private bool SetIMEKeyboard(IbusKeyboardDescription keyboard)
@@ -105,7 +134,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				}
 
 				// Set the associated XKB keyboard
-				var parentLayout = keyboard.IBusKeyboardEngine.Layout;
+				var parentLayout = keyboard.ParentLayout;
 				if (parentLayout == "en")
 					parentLayout = "us";
 				var xkbKeyboard = Keyboard.Controller.AllAvailableKeyboards.FirstOrDefault(kbd => kbd.Layout == parentLayout);
