@@ -94,7 +94,7 @@ namespace Palaso.Reporting
 
 		private string MassagePagePath(string pagePath)
 		{
-			if (pagePath.Trim().Length == 0)
+			if (pagePath == null || pagePath.Trim().Length == 0)
 			{
 				Debug.Fail("Empty path");
 				pagePath = "unknown";
