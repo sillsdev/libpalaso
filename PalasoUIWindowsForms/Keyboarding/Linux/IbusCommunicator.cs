@@ -59,7 +59,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 								};
 
 			m_ibus = new InputBus(m_connection);
-	Console.WriteLine("DEBUG IbusCommunicator(): m_ibus.GetAddress() => '{0}'", m_ibus.GetAddress());
 		}
 
 		#region Disposable stuff
@@ -227,14 +226,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 			catch(NDesk.DBus.DBusConectionErrorException e)
 			{
-				Console.WriteLine("DEBUG ProcessKeyEvent(): caught DBusConectionErrorException: {0}", e);
+				Console.WriteLine("IbusCommunicator.ProcessKeyEvent({0},{1},{2}): caught DBusConectionErrorException: {3}", keySym, scanCode, state, e);
 				m_ibus = null;
 				m_inputContext = null;
 				NotifyUserOfIBusConnectionDropped();
 			}
 			catch(System.NullReferenceException e)
 			{
-				Console.WriteLine("DEBUG ProcessKeyEvent(): caught NullReferenceException: {0}", e);
+				Console.WriteLine("IbusCommunicator.ProcessKeyEvent({0},{1},{2}): caught NullReferenceException: {3}", keySym, scanCode, state, e);
 			}
 			return false;
 		}
