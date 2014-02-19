@@ -284,7 +284,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		private void DetachContextMethods(IInputContext context)
 		{
 			ProtectedIBusInvoke(() => 
-			{
+ 			{
 				context.CommitText -= OnCommitText;
 				context.UpdatePreeditText -= OnUpdatePreeditText;
 				context.HidePreeditText -= OnHidePreeditText;
