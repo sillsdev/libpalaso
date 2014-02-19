@@ -272,6 +272,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		{
 			if (m_contextUpdated)
 				return m_inputContext;
+			DetachContextMethods(m_inputContext);
 			var path = m_ibus.CurrentInputContext();
 			m_inputContext = new InputContext(m_connection, path);
 
@@ -280,7 +281,19 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			return m_inputContext;
 		}
 
-		internal void AttachContextMethods(IInputContext context)
+		private void DetachContextMethods(IInputContext context)
+		{
+			ProtectedIBusInvoke(() => 
+			{
+				context.CommitText -= OnCommitText;
+				context.UpdatePreeditText -= OnUpdatePreeditText;
+				context.HidePreeditText -= OnHidePreeditText;
+				context.ForwardKeyEvent -= OnKeyEvent;
+				context.DeleteSurroundingText -= OnDeleteSurroundingText;
+			});
+		}
+
+		private void AttachContextMethods(IInputContext context)
 		{
 			ProtectedIBusInvoke(() => 
 			{
