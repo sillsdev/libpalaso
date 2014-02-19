@@ -49,7 +49,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 
 			col = BetterGrid.CreateDropDownListComboBoxColumn("role",
 				_model.OlacRoles.Select(r => r.ToString()));
-			col.HeaderText = "Role";
+			col.HeaderText = @"Role";
 			col.Width = 120;
 			_grid.Columns.Add(col);
 
@@ -214,11 +214,15 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 				if (_msgWindow == null)
 					_msgWindow = new FadingMessageWindow();
 
-				int col = _grid.Columns[kvp.Key].Index;
-				var rc = _grid.GetCellDisplayRectangle(col, e.RowIndex, true);
-				var pt = new Point(rc.X + (rc.Width / 2), rc.Y + 4);
-				_msgWindow.Show(kvp.Value, _grid.PointToScreen(pt));
-				_grid.CurrentCell = _grid[col, e.RowIndex];
+				var dataGridViewColumn = _grid.Columns[kvp.Key];
+				if (dataGridViewColumn != null)
+				{
+					int col = dataGridViewColumn.Index;
+					var rc = _grid.GetCellDisplayRectangle(col, e.RowIndex, true);
+					var pt = new Point(rc.X + (rc.Width / 2), rc.Y + 4);
+					_msgWindow.Show(kvp.Value, _grid.PointToScreen(pt));
+					_grid.CurrentCell = _grid[col, e.RowIndex];
+				}
 			}
 		}
 
@@ -278,6 +282,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 				var txtBox = e.Control as TextBox;
 				_grid.Tag = txtBox;
 				_grid.CellEndEdit += HandleGridCellEndEdit;
+				if (txtBox == null) return;
 				txtBox.KeyPress += HandleCellEditBoxKeyPress;
 				txtBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 				txtBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
@@ -287,7 +292,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			{
 				var cboBox = e.Control as ComboBox;
 				_grid.Tag = cboBox;
-				cboBox.SelectedIndexChanged += HandleRoleValueChanged;
+				if (cboBox != null) cboBox.SelectedIndexChanged += HandleRoleValueChanged;
 				_grid.CellEndEdit += HandleGridCellEndEdit;
 			}
 		}
@@ -303,6 +308,29 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		void HandleGridCellEndEdit(object sender, DataGridViewCellEventArgs e)
 		{
 			var ctrl = _grid.Tag as Control;
+
+			// SP-793: Text should match case of autocomplete list
+			if (e.ColumnIndex == 0)
+			{
+				var txtBox = ctrl as TextBox;
+				if (txtBox != null)
+				{
+					// is the current text an exact match for the autocomplete list?
+					var list = txtBox.AutoCompleteCustomSource.Cast<object>().ToList();
+					var found = list.FirstOrDefault(item => String.Equals(item.ToString(), txtBox.Text, StringComparison.CurrentCulture));
+
+					if (found == null)
+					{
+						// is the current text a match except for case for the autocomplete list?
+						found = list.FirstOrDefault(item => String.Equals(item.ToString(), txtBox.Text, StringComparison.CurrentCultureIgnoreCase));
+						if (found != null)
+						{
+							txtBox.Text = found.ToString();
+							_grid.CurrentCell.Value = txtBox.Text;
+						}
+					}
+				}
+			}
 
 			if (ctrl is TextBox)
 				ctrl.KeyPress -= HandleCellEditBoxKeyPress;

@@ -29,8 +29,7 @@ namespace Palaso.Tests.Xml
 			Assert.IsNotNull(dom.SelectSingleNodeHonoringDefaultNS("html/body/div/textarea"));
 		}
 
-
-	[Test]
+		[Test]
 		public void SelectSingleNodeHonoringDefaultNS_XHtml_CanFindAncestorDiv()
 		{
 			var dom = new XmlDocument();

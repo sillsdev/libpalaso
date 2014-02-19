@@ -1,66 +1,68 @@
 #!/bin/bash
 # server=build.palaso.org
 # project=libpalaso
-# build=palaso-win32-master-buildupdate
+# build=palaso-win32-master Continuous
 # root_dir=..
-# $Id: fddd609c79cf98392f7892a4a56d48a466d329de $
+# $Id: 50ae191e9e7146711d602e58cde080678d265c48 $
 
 cd "$(dirname "$0")"
 
 # *** Functions ***
-force=
+force=0
+clean=0
 
-while getopts f opt; do
-	case $opt in
-	f)
-		force=1
-		;;
-
-	esac
+while getopts fc opt; do
+case $opt in
+f) force=1 ;;
+c) clean=1 ;;
+esac
 done
 
-shift $((OPTIND - 1))
-
-
 copy_auto() {
-	where_curl=$(type -P curl)
-	where_wget=$(type -P wget)
-	if [ "$where_curl" != "" ]
-	then
-		copy_curl $1 $2
-	elif [ "$where_wget" != "" ]
-	then
-		copy_wget $1 $2
-	else
-		echo "Missing curl or wget"
-		exit 1
-	fi
+if [ "$clean" == "1" ]
+then
+echo cleaning $2
+rm -f ""$2""
+else
+where_curl=$(type -P curl)
+where_wget=$(type -P wget)
+if [ "$where_curl" != "" ]
+then
+copy_curl $1 $2
+elif [ "$where_wget" != "" ]
+then
+copy_wget $1 $2
+else
+echo "Missing curl or wget"
+exit 1
+fi
+fi
 }
 
 copy_curl() {
-	echo "curl: $2 <= $1"
-	if [ -e "$2" ] && [ "$force" != "1" ]
-	then
-		curl -# -L -z $2 -o $2 $1
-	else
-		curl -# -L -o $2 $1
-	fi
+echo "curl: $2 <= $1"
+if [ -e "$2" ] && [ "$force" != "1" ]
+then
+curl -# -L -z $2 -o $2 $1
+else
+curl -# -L -o $2 $1
+fi
 }
 
 copy_wget() {
-	echo "wget: $2 <= $1"
-	f=$(basename $2)
-	d=$(dirname $2)
-	cd $d
-	wget -q -L -N $1
-	cd -
+echo "wget: $2 <= $1"
+f=$(basename $2)
+d=$(dirname $2)
+cd $d
+wget -q -L -N $1
+cd -
 }
 
 
 # *** Results ***
-# build: palaso-win32-master-buildupdate (bt348)
+# build: palaso-win32-master Continuous (bt223)
 # project: libpalaso
-# URL: http://build.palaso.org/viewType.html?buildTypeId=bt348
+# URL: http://build.palaso.org/viewType.html?buildTypeId=bt223
 # VCS: https://github.com/sillsdev/libpalaso.git []
 # dependencies:
 # [0] build: L10NSharp continuous (bt196)
@@ -68,28 +70,28 @@ copy_wget() {
 #     URL: http://build.palaso.org/viewType.html?buildTypeId=bt196
 #     clean: false
 #     revision: latest.lastSuccessful
-#     paths: {"L10NSharp.dll"=>"lib\\Release", "L10NSharp.pdb"=>"lib\\Release"}
+#     paths: {"L10NSharp.dll"=>"lib/Release", "L10NSharp.pdb"=>"lib/Release"}
 #     VCS: https://bitbucket.org/hatton/l10nsharp []
 # [1] build: L10NSharp continuous (bt196)
 #     project: L10NSharp
 #     URL: http://build.palaso.org/viewType.html?buildTypeId=bt196
 #     clean: false
 #     revision: latest.lastSuccessful
-#     paths: {"L10NSharp.dll"=>"lib\\Debug", "L10NSharp.pdb"=>"lib\\Debug"}
+#     paths: {"L10NSharp.dll"=>"lib/Debug", "L10NSharp.pdb"=>"lib/Debug"}
 #     VCS: https://bitbucket.org/hatton/l10nsharp []
 # [2] build: icucil-win32-default Continuous (bt14)
 #     project: Libraries
 #     URL: http://build.palaso.org/viewType.html?buildTypeId=bt14
 #     clean: false
 #     revision: latest.lastSuccessful
-#     paths: {"*.dll"=>"lib\\Release", "*.config"=>"lib\\Release"}
+#     paths: {"*.dll"=>"lib/Release", "*.config"=>"lib/Release"}
 #     VCS: https://github.com/sillsdev/icu-dotnet [master]
 # [3] build: icucil-win32-default Continuous (bt14)
 #     project: Libraries
 #     URL: http://build.palaso.org/viewType.html?buildTypeId=bt14
 #     clean: false
 #     revision: latest.lastSuccessful
-#     paths: {"*.dll"=>"lib\\Debug", "*.config"=>"lib\\Debug"}
+#     paths: {"*.dll"=>"lib/Debug", "*.config"=>"lib/Debug"}
 #     VCS: https://github.com/sillsdev/icu-dotnet [master]
 
 # make sure output directories exist
