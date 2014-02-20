@@ -1,4 +1,4 @@
-﻿﻿// Copyright (c) 2013 SIL International
+﻿// Copyright (c) 2013 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
 using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
 using Palaso.WritingSystems;
+using Palaso.Reporting;
 
 namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 {
@@ -41,6 +42,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 		[DllImport("libgobject-2.0-0.dll")]
 		private extern static void g_object_unref(IntPtr obj);
+
+		[DllImport("libgobject-2.0-0.dll")]
+		private extern static void g_variant_unref(IntPtr value);
 
 		[DllImport("libdconf.dll")]
 		private extern static IntPtr dconf_client_new();
@@ -146,8 +150,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			{
 				_client = IntPtr.Zero;
 				// Older Ubuntu versions have a version of the dconf library with a
-				// different version number. However, since those Ubuntu versions don't
-				// have combined keyboards this really doesn't matter.
+				// different version number (different from what libdconf.dll gets
+				// mapped to in app.config). However, since those Ubuntu versions
+				// don't have combined keyboards this really doesn't matter.
 				HasCombinedKeyboards = false;
 				return;
 			}
@@ -235,9 +240,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			IntPtr error = IntPtr.Zero;
 			bool okay = dconf_client_write_sync(_client, "/org/gnome/desktop/input-sources/current", value,
 				ref tag, cancellable, out error);
+			g_variant_unref(value);
 			if (!okay)
 			{
 				Console.WriteLine("CombinedKeyboardAdaptor.SelectKeyboard({0}) failed", index);
+				Logger.WriteEvent("CombinedKeyboardAdaptor.SelectKeyboard({0}) failed", index);
 			}
 		}
 	}
