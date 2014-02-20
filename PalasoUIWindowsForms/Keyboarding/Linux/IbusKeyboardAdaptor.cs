@@ -57,8 +57,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				KeyboardController.EventProvider.ControlAdded += OnControlRegistered;
 				KeyboardController.EventProvider.ControlRemoving += OnControlRemoving;
 			}
-
-			IBusCommunicator.CreateInputContext();
 		}
 
 		protected virtual void InitKeyboards()
@@ -133,8 +131,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 				if (KeyboardController.CombinedKeyboardHandling)
 				{
-					var comm = IBusCommunicator as IbusCommunicator;
-					context = comm.EstablishProperInputContext();
 					KeyboardController.CombinedAdaptor.SelectKeyboard(keyboard.SystemIndex);
 				}
 				else

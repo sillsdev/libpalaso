@@ -168,7 +168,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// </summary>
 		public void FocusIn()
 		{
-			if (m_inputContext == null)
+			if (InputContext == null)
 				return;
 
 			ProtectedIBusInvoke(() => m_inputContext.FocusIn());
@@ -217,7 +217,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 			try
 			{
-				if (!m_contextUpdated && !m_inputContext.IsEnabled())
+				// m_inputContext.IsEnabled() throws an exception for IBus 1.5.
+				if (!KeyboardController.CombinedKeyboardHandling && !m_inputContext.IsEnabled())
 					return false;
 
 				var modifiers = ConvertToIbusModifiers(state, (char)keySym);
@@ -249,48 +250,35 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			ProtectedIBusInvoke(m_inputContext.Reset);
 		}
 
+		private bool m_contextCreated;
+
 		/// <summary>
-		/// Create an input context and setup callback handlers. This method gets
-		/// called by the IbusKeyboardAdaptor.
+		/// Create an input context and setup callback handlers.  This method should be
+		/// called only once, and then after KeyboardController.CombinedKeyboardHandling
+		/// has been set properly.
 		/// </summary>
-		/// <remarks>One input context per application is sufficient.</remarks>
-		public void CreateInputContext()
-		{
-			m_inputContext = m_ibus.CreateInputContext("IbusCommunicator");
-
-			AttachContextMethods(m_inputContext);
-		}
-
-		private bool m_contextUpdated;
-		/// <summary>
+		/// <remarks>
 		/// For IBus 1.5, we must use the current InputContext because there is no
 		/// way to enable one we create ourselves.  (InputContext.Enable() has turned
-		/// into a no-op.)
-		/// </summary>
-		public IInputContext EstablishProperInputContext()
+		/// into a no-op.)  For IBus 1.4, we must create one ourselves because
+		/// m_ibus.CurrentInputContext() throws an exception.
+		/// </remarks>
+		public void CreateInputContext()
 		{
-			if (m_contextUpdated)
-				return m_inputContext;
-			DetachContextMethods(m_inputContext);
-			var path = m_ibus.CurrentInputContext();
-			m_inputContext = new InputContext(m_connection, path);
-
-			AttachContextMethods(m_inputContext);
-			m_contextUpdated = true;
-			return m_inputContext;
-		}
-
-		private void DetachContextMethods(IInputContext context)
-		{
-			ProtectedIBusInvoke(() => 
+			System.Diagnostics.Debug.Assert(!m_contextCreated);
+			if (KeyboardController.CombinedKeyboardHandling)
 			{
-				context.CommitText -= OnCommitText;
-				context.UpdatePreeditText -= OnUpdatePreeditText;
-				context.HidePreeditText -= OnHidePreeditText;
-				context.ForwardKeyEvent -= OnKeyEvent;
-				context.DeleteSurroundingText -= OnDeleteSurroundingText;
-			});
+				var path = m_ibus.CurrentInputContext();
+				m_inputContext = new InputContext(m_connection, path);
+			}
+			else
+			{
+				m_inputContext = m_ibus.CreateInputContext("IbusCommunicator");
+			}
+			AttachContextMethods(m_inputContext);
+			m_contextCreated = true;
 		}
+
 
 		private void AttachContextMethods(IInputContext context)
 		{
@@ -302,8 +290,27 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				context.ForwardKeyEvent += OnKeyEvent;
 				context.DeleteSurroundingText += OnDeleteSurroundingText;
 				context.SetCapabilities(Capabilities.Focus | Capabilities.PreeditText | Capabilities.SurroundingText);
-				context.Enable();
+				context.Enable();	// not needed for IBus 1.5, but doesn't hurt.
 			});
+		}
+
+		/// <summary>
+		/// Get the ibus input context, creating it if necessary.
+		/// </summary>
+		/// <remarks>
+		/// This must be called after the KeyboardController.CombinedKeyboardHandling has been set.
+		/// </remarks>
+		protected IInputContext InputContext
+		{
+			get
+			{
+				if (m_inputContext != null)
+					return m_inputContext;
+				if (m_contextCreated)
+					return null;		// we must have had an error that cleared m_inputContext
+				CreateInputContext();
+				return m_inputContext;
+			}
 		}
 
 		/// <summary>
