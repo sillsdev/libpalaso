@@ -68,25 +68,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 		}
 
-		internal void AddKeyboards(Dictionary<string, int> layouts)
-		{
-			List<string> missingLayouts = new List<string>(layouts.Keys);
-			foreach (var ibusKeyboard in GetAllIBusKeyboards())
-			{
-				if (layouts.ContainsKey(ibusKeyboard.LongName))
-				{
-					missingLayouts.Remove(ibusKeyboard.LongName);
-					var keyboard = new IbusKeyboardDescription(this, ibusKeyboard);
-					keyboard.SystemIndex = layouts[ibusKeyboard.LongName];
-					KeyboardController.Manager.RegisterKeyboard(keyboard);
-				}
-			}
-			foreach (var layout in missingLayouts)
-			{
-				Console.WriteLine("Didn't find " + layout);
-			}
-		}
-
 		private IBusEngineDesc[] GetIBusKeyboards()
 		{
 			if (!IBusCommunicator.Connected)
@@ -96,7 +77,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			return ibusWrapper.ListActiveEngines();
 		}
 
-		private IBusEngineDesc[] GetAllIBusKeyboards()
+		internal IBusEngineDesc[] GetAllIBusKeyboards()
 		{
 			if (!IBusCommunicator.Connected)
 				return new IBusEngineDesc[0];
@@ -105,46 +86,51 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			return ibusWrapper.ListEngines();
 		}
 
+		internal bool CanSetIbusKeyboard()
+		{
+			if (!IBusCommunicator.Connected)
+				return false;
+			IBusCommunicator.FocusIn();
+			if (GlobalCachedInputContext.InputContext == null)
+				return false;
+			return true;
+		}
+
+		internal bool IBusKeyboardAlreadySet(IbusKeyboardDescription keyboard)
+		{
+			// check our cached value
+			if (GlobalCachedInputContext.Keyboard == keyboard)
+				return true;
+			if (keyboard == null || keyboard.IBusKeyboardEngine == null)
+			{
+				var context = GlobalCachedInputContext.InputContext;
+				context.Reset();
+				GlobalCachedInputContext.Keyboard = null;
+				context.Disable();
+				return true;
+			}
+			return false;
+		}
+
 		private bool SetIMEKeyboard(IbusKeyboardDescription keyboard)
 		{
 			try
 			{
-				if (!IBusCommunicator.Connected)
+				if (!CanSetIbusKeyboard())
 					return false;
-
-				IBusCommunicator.FocusIn();
-				if (GlobalCachedInputContext.InputContext == null)
-					return false;
-
-				// check our cached value
-				if (GlobalCachedInputContext.Keyboard == keyboard && !KeyboardController.CombinedKeyboardHandling)
+				if (IBusKeyboardAlreadySet(keyboard))
 					return true;
 
+				// Set the associated XKB keyboard
+				var parentLayout = keyboard.ParentLayout;
+				if (parentLayout == "en")
+					parentLayout = "us";
+				var xkbKeyboard = Keyboard.Controller.AllAvailableKeyboards.FirstOrDefault(kbd => kbd.Layout == parentLayout);
+				if (xkbKeyboard != null)
+					xkbKeyboard.Activate();
+				// Then set the IBus keyboard
 				var context = GlobalCachedInputContext.InputContext;
-				if (keyboard == null || keyboard.IBusKeyboardEngine == null)
-				{
-					context.Reset();
-					GlobalCachedInputContext.Keyboard = null;
-					context.Disable();
-					return true;
-				}
-
-				if (KeyboardController.CombinedKeyboardHandling)
-				{
-					KeyboardController.CombinedAdaptor.SelectKeyboard(keyboard.SystemIndex);
-				}
-				else
-				{
-					// Set the associated XKB keyboard
-					var parentLayout = keyboard.ParentLayout;
-					if (parentLayout == "en")
-						parentLayout = "us";
-					var xkbKeyboard = Keyboard.Controller.AllAvailableKeyboards.FirstOrDefault(kbd => kbd.Layout == parentLayout);
-					if (xkbKeyboard != null)
-						xkbKeyboard.Activate();
-					// Then set the IBus keyboard
-					context.SetEngine(keyboard.IBusKeyboardEngine.LongName);
-				}
+				context.SetEngine(keyboard.IBusKeyboardEngine.LongName);
 
 				GlobalCachedInputContext.Keyboard = keyboard;
 				return true;

@@ -115,7 +115,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 		}
 
-		private void AddKeyboardForLayout(XklConfigRegistry.LayoutDescription layout, int iGroup = 0)
+		private void AddKeyboardForLayout(XklConfigRegistry.LayoutDescription layout, int iGroup)
+		{
+			AddKeyboardForLayout(layout, iGroup, this);
+		}
+
+		internal void AddKeyboardForLayout(XklConfigRegistry.LayoutDescription layout, int iGroup, IKeyboardAdaptor engine)
 		{
 			var description = GetDescription(layout);
 			CultureInfo culture = null;
@@ -131,27 +136,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 			var inputLanguage = new InputLanguageWrapper(culture, IntPtr.Zero, layout.Language);
 			var keyboard = new XkbKeyboardDescription(description, layout.LayoutId, layout.LocaleId,
-				inputLanguage, this, iGroup);
+				inputLanguage, engine, iGroup);
 			KeyboardController.Manager.RegisterKeyboard(keyboard);
 		}
 
-		internal void AddKeyboards(Dictionary<string, int> layoutNamesAndIndexes)
+		internal IXklEngine XklEngine
 		{
-			var configRegistry = XklConfigRegistry.Create(m_engine);
-			var layouts = configRegistry.Layouts;
-
-			foreach (var kvp in layouts)
-			{
-				foreach (var layout in kvp.Value)
-				{
-					int index;
-					if ((layoutNamesAndIndexes.TryGetValue(layout.LayoutId, out index) && layout.LayoutId == layout.LanguageCode) ||
-						layoutNamesAndIndexes.TryGetValue(string.Format("{0}+{1}", layout.LanguageCode, layout.LayoutId), out index))
-					{
-						AddKeyboardForLayout(layout, index);
-					}
-				}
-			}
+			get { return m_engine; }
 		}
 
 		public List<IKeyboardErrorDescription> ErrorKeyboards
@@ -190,14 +181,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 			if (xkbKeyboard.GroupIndex >= 0)
 			{
-				if (KeyboardController.CombinedKeyboardHandling)
-				{
-					KeyboardController.CombinedAdaptor.SelectKeyboard(xkbKeyboard.GroupIndex);
-				}
-				else
-				{
-					m_engine.SetGroup(xkbKeyboard.GroupIndex);
-				}
+				m_engine.SetGroup(xkbKeyboard.GroupIndex);
 			}
 			return true;
 		}

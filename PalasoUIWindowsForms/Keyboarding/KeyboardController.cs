@@ -93,6 +93,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				if (!Instance.Keyboards.Contains(description))
 					Instance.Keyboards.Add(description);
 			}
+
+			internal static void ClearAllKeyboards()
+			{
+				Instance.Keyboards.Clear();
+			}
 		}
 		#endregion
 
@@ -498,30 +503,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		/// Flag that Linux is using the combined keyboard handling (Ubuntu saucy/trusty/later?)
 		/// </summary>
 		public static bool CombinedKeyboardHandling { get; internal set; }
-
-		private static CombinedKeyboardAdaptor _combinedAdaptor;
-		/// <summary>
-		/// Gets the CombinedKeyboardAdaptor object.
-		/// </summary>
-		internal static CombinedKeyboardAdaptor CombinedAdaptor
-		{
-			get
-			{
-				if (_combinedAdaptor == null && CombinedKeyboardHandling)
-				{
-					foreach (var adaptor in Adaptors)
-					{
-						if (adaptor is CombinedKeyboardAdaptor)
-						{
-							_combinedAdaptor = adaptor as CombinedKeyboardAdaptor;
-							break;
-						}
-					}
-					System.Diagnostics.Debug.Assert(_combinedAdaptor != null);
-				}
-				return _combinedAdaptor;
-			}
-		}
 #endif
 
 		/// <summary>

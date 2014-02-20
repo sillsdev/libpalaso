@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using X11.XKlavier;
 using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
 using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
 using Palaso.WritingSystems;
@@ -43,9 +44,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		[DllImport("libgobject-2.0-0.dll")]
 		private extern static void g_object_unref(IntPtr obj);
 
-		[DllImport("libgobject-2.0-0.dll")]
-		private extern static void g_variant_unref(IntPtr value);
-
 		[DllImport("libdconf.dll")]
 		private extern static IntPtr dconf_client_new();
 
@@ -73,7 +71,20 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				return;
 
 			var xkbAdaptor = GetAdaptor<XkbKeyboardAdaptor>();
-			xkbAdaptor.AddKeyboards(XkbKeyboards);
+			var configRegistry = XklConfigRegistry.Create(xkbAdaptor.XklEngine);
+			var layouts = configRegistry.Layouts;
+			foreach (var kvp in layouts)
+			{
+				foreach (var layout in kvp.Value)
+				{
+					int index;
+					if ((XkbKeyboards.TryGetValue(layout.LayoutId, out index) && layout.LayoutId == layout.LanguageCode) ||
+						XkbKeyboards.TryGetValue(string.Format("{0}+{1}", layout.LanguageCode, layout.LayoutId), out index))
+					{
+						xkbAdaptor.AddKeyboardForLayout(layout, index, this);
+					}
+				}
+			}
 		}
 
 		private void RegisterIbusKeyboards()
@@ -82,7 +93,19 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				return;
 
 			var ibusAdaptor = GetAdaptor<IbusKeyboardAdaptor>();
-			ibusAdaptor.AddKeyboards(IbusKeyboards);
+			List<string> missingLayouts = new List<string>(IbusKeyboards.Keys);
+			foreach (var ibusKeyboard in ibusAdaptor.GetAllIBusKeyboards())
+			{
+				if (IbusKeyboards.ContainsKey(ibusKeyboard.LongName))
+				{
+					missingLayouts.Remove(ibusKeyboard.LongName);
+					var keyboard = new IbusKeyboardDescription(this, ibusKeyboard);
+					keyboard.SystemIndex = IbusKeyboards[ibusKeyboard.LongName];
+					KeyboardController.Manager.RegisterKeyboard(keyboard);
+				}
+			}
+			foreach (var layout in missingLayouts)
+				Console.WriteLine("Didn't find " + layout);
 		}
 
 		private static T GetAdaptor<T>() where T: class
@@ -186,12 +209,49 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 		public bool ActivateKeyboard(IKeyboardDefinition keyboard)
 		{
-			throw new NotImplementedException();
+			Debug.Assert(keyboard is KeyboardDescription);
+			Debug.Assert(((KeyboardDescription)keyboard).Engine == this);
+			if (keyboard is XkbKeyboardDescription)
+			{
+				var xkbKeyboard = keyboard as XkbKeyboardDescription;
+				if (xkbKeyboard.GroupIndex >= 0)
+					SelectKeyboard(xkbKeyboard.GroupIndex);
+			}
+			else if (keyboard is IbusKeyboardDescription)
+			{
+				var ibusKeyboard = keyboard as IbusKeyboardDescription;
+				try
+				{
+					var ibusAdaptor = GetAdaptor<IbusKeyboardAdaptor>();
+					if (!ibusAdaptor.CanSetIbusKeyboard())
+						return false;
+					if (ibusAdaptor.IBusKeyboardAlreadySet(ibusKeyboard))
+						return true;
+					SelectKeyboard(ibusKeyboard.SystemIndex);
+					GlobalCachedInputContext.Keyboard = ibusKeyboard;
+				}
+				catch (Exception e)
+				{
+					Debug.WriteLine(string.Format("Changing keyboard failed, is kfml/ibus running? {0}", e));
+					return false;
+				}
+			}
+			else
+			{
+				throw new ArgumentException();
+			}
+			return true;
 		}
 
 		public void DeactivateKeyboard(IKeyboardDefinition keyboard)
 		{
-			throw new NotImplementedException();
+			if (keyboard is IbusKeyboardDescription)
+			{
+				var ibusAdaptor = GetAdaptor<IbusKeyboardAdaptor>();
+				if (ibusAdaptor.CanSetIbusKeyboard())
+					GlobalCachedInputContext.InputContext.Reset();
+			}
+			GlobalCachedInputContext.Keyboard = null;
 		}
 
 		public IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
@@ -240,7 +300,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			IntPtr error = IntPtr.Zero;
 			bool okay = dconf_client_write_sync(_client, "/org/gnome/desktop/input-sources/current", value,
 				ref tag, cancellable, out error);
-			g_variant_unref(value);
+			// Do not call g_variant_unref(value) here.  The documentation says that g_variant_new_uint32
+			// returns "a floating reference to a new uint32 GVariant instance.", i.e.
+			// "Don't free data after the code is done."
 			if (!okay)
 			{
 				Console.WriteLine("CombinedKeyboardAdaptor.SelectKeyboard({0}) failed", index);
