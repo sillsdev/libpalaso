@@ -1262,10 +1262,13 @@ namespace SIL.Archiving.IMDI.Schema
 			if (!string.IsNullOrEmpty(actor.Gender))
 				SetSex(actor.Gender);
 
-
 			// Education
 			if (!string.IsNullOrEmpty(actor.Education))
 				Education = actor.Education;
+
+			// Role
+			if (!string.IsNullOrEmpty(actor.Role))
+				Role = actor.Role.ToVocabularyType(false, ListType.Link(ListType.ActorRole)); ;
 
 			// Occupation
 			if (!string.IsNullOrEmpty(actor.Occupation))
@@ -1379,6 +1382,9 @@ namespace SIL.Archiving.IMDI.Schema
 
 			if (Name.Length > 0)
 				actr.Name = Name[0];
+
+			if (!string.IsNullOrEmpty(Role.Value))
+				actr.Role = Role.Value;
 
 			if (!string.IsNullOrEmpty(BirthDate))
 				actr.BirthDate = BirthDate;

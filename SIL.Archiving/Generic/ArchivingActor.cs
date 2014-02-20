@@ -103,6 +103,9 @@ namespace SIL.Archiving.Generic
 		public string Occupation;
 
 		/// <summary />
+		public string Role;
+
+		/// <summary />
 		public void AddKeyValuePair(string key, string value)
 		{
 			Keys.Add(new KeyValuePair<string, string>(key, value));
@@ -119,7 +122,10 @@ namespace SIL.Archiving.Generic
 			if (other == null)
 				throw new ArgumentException();
 
-			return String.Compare(GetFullName(), other.GetFullName(), StringComparison.OrdinalIgnoreCase);
+			var fullNameCompare = String.Compare(GetFullName(), other.GetFullName(), StringComparison.OrdinalIgnoreCase);
+			var nameCompare = String.Compare(GetName(), other.GetName(), StringComparison.OrdinalIgnoreCase);
+
+			return nameCompare == 0 ? 0 : fullNameCompare;
 		}
 
 		/// <summary>Compare 2 ArchivingActor objects. They are identical if they have the same FullName</summary>

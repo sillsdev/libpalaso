@@ -254,7 +254,12 @@ namespace SIL.Archiving.IMDI
 			if (success)
 			{
 				// copy the path to the imdi file to the clipboard
-				Clipboard.SetData(DataFormats.Text, _imdiData.MainExportFile);
+
+				// SP-818: Crash in IMDI export when dialog tries to put string on clipboard
+				//   18 FEB 2014, Phil Hopper: I found this possible solution using retries on StackOverflow
+				//   http://stackoverflow.com/questions/5707990/requested-clipboard-operation-did-not-succeed
+				//Clipboard.SetData(DataFormats.Text, _imdiData.MainExportFile);
+				Clipboard.SetDataObject(_imdiData.MainExportFile, true, 3, 500);
 
 				var successMsg = LocalizationManager.GetString("DialogBoxes.ArchivingDlg.ReadyToCallIMDIMsg",
 					"Exported to {0}. This path is now on your clipboard. If you are using Arbil, go to File, Import, then paste this path in.");
