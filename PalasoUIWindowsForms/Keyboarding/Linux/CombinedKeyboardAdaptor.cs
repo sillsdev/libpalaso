@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2013 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+#if __MonoCS__
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -311,4 +312,4 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		}
 	}
 }
-
+#endif
