@@ -328,7 +328,15 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			string arguments = null;
 
 #if MONO
-			program = "ibus-setup";
+			if (KeyboardController.CombinedKeyboardHandling)
+			{
+				program = "/usr/bin/gnome-control-center";
+				arguments = "region layouts";
+			}
+			else
+			{
+				program = "/usr/bin/ibus-setup";
+			}
 #else
 			program = Path.Combine(
 				Environment.GetFolderPath(Environment.SpecialFolder.System), @"control.exe");
