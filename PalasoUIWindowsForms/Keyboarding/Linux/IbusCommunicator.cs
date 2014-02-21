@@ -266,8 +266,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		public void CreateInputContext()
 		{
 			System.Diagnostics.Debug.Assert(!m_contextCreated);
+			if (m_ibus == null)
+			{
+				Console.WriteLine("IbusCommunicator.CreateInputContext(): m_ibus == null!?");
+				return;
+			}
 			if (KeyboardController.CombinedKeyboardHandling)
 			{
+				Console.WriteLine("IbusCommunicator.CreateInputContext(): processing for CombinedKeyboardHandling!?");
 				var path = m_ibus.CurrentInputContext();
 				m_inputContext = new InputContext(m_connection, path);
 			}
