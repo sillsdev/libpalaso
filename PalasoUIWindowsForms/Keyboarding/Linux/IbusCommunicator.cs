@@ -266,6 +266,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		public void CreateInputContext()
 		{
 			System.Diagnostics.Debug.Assert(!m_contextCreated);
+			if (m_ibus == null)
+			{
+				// This seems to be needed for tests on TeamCity.
+				Console.WriteLine("IbusCommunicator.CreateInputContext(): m_ibus == null!?");
+				return;
+			}
 			if (KeyboardController.CombinedKeyboardHandling)
 			{
 				var path = m_ibus.CurrentInputContext();
