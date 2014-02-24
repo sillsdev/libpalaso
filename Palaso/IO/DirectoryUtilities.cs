@@ -134,8 +134,9 @@ namespace Palaso.IO
 		}
 
 		/// <summary>
-		/// Directory.Move fails if the src and dest are on different partitions (e.g., temp and documents are on differen drives).
-		/// This will do a move if it can, else do a copy followed by a delete.
+		/// Directory.Move fails if the src and dest are on different partitions (e.g., temp and
+		/// documents are on different drives). This will do a move if it can, else do a copy
+		/// followed by a delete.
 		/// </summary>
 		public static void MoveDirectorySafely(string sourcePath, string destinationPath)
 		{
@@ -144,8 +145,8 @@ namespace Palaso.IO
 				Directory.Move(sourcePath, destinationPath);
 				return;
 			}
-			CopyDirectoryWithException(sourcePath,destinationPath);
-			Directory.Delete(sourcePath,true);
+			CopyDirectoryWithException(sourcePath, destinationPath);
+			Directory.Delete(sourcePath, true);
 		}
 
 
@@ -173,7 +174,8 @@ namespace Palaso.IO
 		/// </summary>
 		/// <param name="path">Directory path to look in.</param>
 		/// <returns>Zero or more directory names that are not system or hidden.</returns>
-		/// <exception cref="System.UnauthorizedAccessException ">E.g. when the user does not have read permission.</exception>
+		/// <exception cref="System.UnauthorizedAccessException">E.g. when the user does not have
+		/// read permission.</exception>
 		public static string[] GetSafeDirectories(string path)
 		{
 				return (from directoryName in Directory.GetDirectories(path)
