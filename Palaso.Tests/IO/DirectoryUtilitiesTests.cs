@@ -424,5 +424,80 @@ namespace Palaso.Tests.IO
 				Assert.AreNotEqual(targetDir, uniqueFolderPath);
 			}
 		}
+
+		[Test]
+		public void MoveDirectorySafely_SameFileThrows()
+		{
+			using (var tempFile = new TempFile())
+			{
+				Assert.That(() => DirectoryUtilities.MoveDirectorySafely(tempFile.Path, tempFile.Path),
+					Throws.InstanceOf<IOException>());
+			}
+		}
+
+		[Test]
+		public void MoveDirectorySafely_MoveToExistingFileThrows()
+		{
+			using (var tempFile = new TempFile())
+			using (var existingFile = new TempFile())
+			{
+				Assert.That(() => DirectoryUtilities.MoveDirectorySafely(tempFile.Path, existingFile.Path),
+					Throws.InstanceOf<IOException>());
+			}
+		}
+
+		[Test]
+		public void MoveDirectorySafely_MoveDirToExistingDirThrows()
+		{
+			using (var tempDir = new TemporaryFolder("TempRootDir"))
+			using (var existingDir = new TemporaryFolder("NewTempRootDir"))
+			{
+				Assert.That(() => DirectoryUtilities.MoveDirectorySafely(tempDir.Path, existingDir.Path),
+					Throws.InstanceOf<IOException>());
+			}
+		}
+
+		[Test]
+		public void MoveDirectorySafely_MoveDirToExistingFileThrows()
+		{
+			using (var tempDir = new TemporaryFolder("TempRootDir"))
+			using (var existingFile = new TempFile())
+			{
+				Assert.That(() => DirectoryUtilities.MoveDirectorySafely(tempDir.Path, existingFile.Path),
+					Throws.InstanceOf<IOException>());
+			}
+		}
+
+		[Test]
+		public void MoveDirectorySafely_MoveFileToExistingDirThrows()
+		{
+			// while this could theoretically work the docs for Directory.Move say that if you
+			// specify a file as source than destination also has to be a file.
+			using (var tempFile = new TempFile())
+			using (var existingDir = new TemporaryFolder("TempRootDir"))
+			{
+				Assert.That(() => DirectoryUtilities.MoveDirectorySafely(tempFile.Path, existingDir.Path),
+					Throws.InstanceOf<IOException>());
+			}
+		}
+
+		[Test]
+		[Ignore("It's hard to programmatically create a directory on a different volume")]
+		public void MoveDirectorySafely_MoveDirToDifferentVolume()
+		{
+			// Move a directory to a different drive/partition. Creating a test that really does
+			// that in a generic way would be quite an effort, especially on Linux (I don't see
+			// a way that would allow to get a writable directory on a different partition), so
+			// I leave this test as documentation that shows that when moving to a different
+			// partition it shouldn't throw (in contrast to Directory.Move).
+			using (var tempDir = new TemporaryFolder("TempRootDir"))
+			using (var dirOnDifferentVolume = new TemporaryFolder("NewTempRootDir"))
+			{
+				Assert.That(() => DirectoryUtilities.MoveDirectorySafely(tempDir.Path,
+					Path.Combine(dirOnDifferentVolume.Path, "TempDir")),
+					Throws.Nothing);
+			}
+		}
+
 	}
 }

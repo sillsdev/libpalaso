@@ -142,13 +142,30 @@ namespace Palaso.IO
 		{
 			if(Path.GetPathRoot(destinationPath).ToLower() == Path.GetPathRoot(sourcePath).ToLower())
 			{
-				Directory.Move(sourcePath, destinationPath);
-				return;
+				try
+				{
+					Directory.Move(sourcePath, destinationPath);
+					return;
+				}
+				catch (IOException)
+				{
+					// We get an IOException if
+					// - An attempt was made to move a directory to a different volume (which
+					//   can happen on Linux despite the test above).
+					// - or destDirName already exists.
+					// - or The sourceDirName and destDirName parameters refer to the same file
+					//   or directory.
+					// In the first case we want to try the copy approach.
+					if (Path.GetFullPath(sourcePath).ToLower() == Path.GetFullPath(destinationPath).ToLower() ||
+						Directory.Exists(destinationPath) || File.Exists(destinationPath))
+					{
+						throw;
+					}
+				}
 			}
 			CopyDirectoryWithException(sourcePath, destinationPath);
 			Directory.Delete(sourcePath, true);
 		}
-
 
 		private static void ReportFailedCopyAndCleanUp(Exception error, string srcDirectory, string dstDirectory)
 		{
