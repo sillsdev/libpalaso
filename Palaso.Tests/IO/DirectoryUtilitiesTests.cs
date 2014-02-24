@@ -75,9 +75,7 @@ namespace Palaso.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-#if MONO
-		[Ignore("This test won't fail as expected on Linux")]
-#endif
+		[Platform(Exclude = "Linux", Reason = "This test won't fail as expected on Linux")]
 		public void CopyFolder_SourceContainsLockedFile_ReturnsFalse()
 		{
 			using (new Reporting.ErrorReport.NonFatalErrorReportExpected())
@@ -90,9 +88,7 @@ namespace Palaso.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-#if MONO
-		[Ignore("This test won't fail as expected on Linux")]
-#endif
+		[Platform(Exclude = "Linux", Reason = "This test won't fail as expected on Linux")]
 		public void CopyFolder_CopyFails_DestinationFolderNotLeftBehind()
 		{
 			using (new Reporting.ErrorReport.NonFatalErrorReportExpected())
@@ -216,14 +212,10 @@ namespace Palaso.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
+		[Platform(Exclude = "Linux", Reason = "This test is not valid on a Linux file system")]
 		public void AreDirectoriesEquivalent_DifferByDirectionOfSlash_ReturnsTrue()
 		{
-#if MONO
-			// 02 SEP 2013, Phil Hopper: this test is not valid on a linux file system.
-			return;
-#else
 			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"C:/temp"));
-#endif
 
 		}
 
@@ -240,26 +232,33 @@ namespace Palaso.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void AreDirectoriesEquivalent_DifferByTrailingDot_ResultDependsOnOperatingSystem()
+		[Platform(Exclude = "Linux", Reason = "This test tests Windows behaviour")]
+		public void AreDirectoriesEquivalent_DifferByTrailingDot_Windows()
 		{
-#if MONO
-			Assert.IsFalse(
-#else
-			Assert.IsTrue(
-#endif
-DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp.", @"C:\temp"));
+			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp.", @"C:\temp"));
+		}
+
+		[Test]
+		[Platform(Include = "Linux", Reason = "This test tests Linux behaviour")]
+		public void AreDirectoriesEquivalent_DifferByTrailingDot_Linux()
+		{
+			Assert.IsFalse(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp.", @"C:\temp"));
 		}
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void AreDirectoriesEquivalent_DifferByTrailingDotsAndBackslash_ResultDependsOnOperatingSystem()
+		[Platform(Exclude = "Linux", Reason = "This test tests Windows behaviour")]
+		public void AreDirectoriesEquivalent_DifferByTrailingDotsAndBackslash_Windows()
 		{
-#if MONO
-			Assert.IsFalse(
-#else
-			Assert.IsTrue(
-#endif
-DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp...\", @"C:\temp"));
+			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp...\", @"C:\temp"));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		[Platform(Include = "Linux", Reason = "This test tests Linux behaviour")]
+		public void AreDirectoriesEquivalent_DifferByTrailingDotsAndBackslash_Linux()
+		{
+			Assert.IsFalse(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp...\", @"C:\temp"));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -275,14 +274,18 @@ DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp...\", @"C:\temp"));
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
+		[Platform(Exclude = "Linux", Reason = "This test tests Windows behaviour")]
+		public void AreDirectoriesEquivalent_DifferentCase_Windows()
+		{
+			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"c:\TEMP\x\..\..\tEmp\."));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		[Platform(Include = "Linux", Reason = "This test tests Linux behaviour")]
 		public void AreDirectoriesEquivalent_DifferentCase_ResultDependsOnOperatingSystem()
 		{
-#if MONO
-			Assert.IsFalse(
-#else
-			Assert.IsTrue(
-#endif
-			DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"c:\TEMP\x\..\..\tEmp\."));
+			Assert.IsFalse(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"c:\TEMP\x\..\..\tEmp\."));
 		}
 
 		/// ------------------------------------------------------------------------------------
