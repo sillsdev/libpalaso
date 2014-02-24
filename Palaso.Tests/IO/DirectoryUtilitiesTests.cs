@@ -424,5 +424,87 @@ namespace Palaso.Tests.IO
 				Assert.AreNotEqual(targetDir, uniqueFolderPath);
 			}
 		}
+
+		[Test]
+		public void MoveDirectorySafely_SameFileThrows()
+		{
+			using (var tempFile = new TempFile())
+			{
+				Assert.That(() => DirectoryUtilities.MoveDirectorySafely(tempFile.Path, tempFile.Path),
+					Throws.InstanceOf<IOException>());
+			}
+		}
+
+		[Test]
+		public void MoveDirectorySafely_MoveToExistingFileThrows()
+		{
+			using (var tempFile = new TempFile())
+			using (var existingFile = new TempFile())
+			{
+				Assert.That(() => DirectoryUtilities.MoveDirectorySafely(tempFile.Path, existingFile.Path),
+					Throws.InstanceOf<IOException>());
+			}
+		}
+
+		[Test]
+		public void MoveDirectorySafely_MoveDirToExistingDirThrows()
+		{
+			using (var tempDir = new TemporaryFolder("TempRootDir"))
+			using (var existingDir = new TemporaryFolder("NewTempRootDir"))
+			{
+				Assert.That(() => DirectoryUtilities.MoveDirectorySafely(tempDir.Path, existingDir.Path),
+					Throws.InstanceOf<IOException>());
+			}
+		}
+
+		[Test]
+		public void MoveDirectorySafely_MoveDirToExistingFileThrows()
+		{
+			using (var tempDir = new TemporaryFolder("TempRootDir"))
+			using (var existingFile = new TempFile())
+			{
+				Assert.That(() => DirectoryUtilities.MoveDirectorySafely(tempDir.Path, existingFile.Path),
+					Throws.InstanceOf<IOException>());
+			}
+		}
+
+		[Test]
+		public void MoveDirectorySafely_MoveFileToExistingDirThrows()
+		{
+			// while this could theoretically work the docs for Directory.Move say that if you
+			// specify a file as source than destination also has to be a file.
+			using (var tempFile = new TempFile())
+			using (var existingDir = new TemporaryFolder("TempRootDir"))
+			{
+				Assert.That(() => DirectoryUtilities.MoveDirectorySafely(tempFile.Path, existingDir.Path),
+					Throws.InstanceOf<IOException>());
+			}
+		}
+
+		[Test]
+		[Platform(Exclude = "Win", Reason="Don't know how to test this on Windows")]
+		public void MoveDirectorySafely_MoveDirToDifferentVolume()
+		{
+			// On Linux, /tmp is typicall a ram disk and therefore a different partition from
+			// /var/tmp which is supposed to persist across reboots.
+			// On Mac, /tmp isn't usually a ram disk. However, it's possible to create and mount
+			// loop filesystems (disk images) without root privileges. So it would be possible
+			// to extend this when porting to Mac.
+			if (PathUtilities.GetDeviceNumber("/tmp") == PathUtilities.GetDeviceNumber("/var/tmp"))
+				Assert.Ignore("For this test /tmp and /var/tmp have to be on different partitions");
+
+			var tempDir = Path.Combine("/tmp", Path.GetRandomFileName());
+			Directory.CreateDirectory(tempDir);
+			var dirOnDifferentVolume = Path.Combine("/var/tmp", Path.GetRandomFileName());
+			Directory.CreateDirectory(dirOnDifferentVolume);
+			using (TemporaryFolder.TrackExisting(tempDir))
+			using (TemporaryFolder.TrackExisting(dirOnDifferentVolume))
+			{
+				Assert.That(() => DirectoryUtilities.MoveDirectorySafely(tempDir,
+					Path.Combine(dirOnDifferentVolume, "TempDir")),
+					Throws.Nothing);
+			}
+		}
+
 	}
 }
