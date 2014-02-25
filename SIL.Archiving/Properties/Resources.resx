@@ -121,16 +121,28 @@
   <data name="AccessProtocols" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\AccessProtocols.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="ailca" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\ailca.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="ailla" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\ailla.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="anla" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\anla.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="CustomAccessProtocols" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\CustomAccessProtocols.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="elar" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\elar.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="EmptyMets" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\EmptyMets.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="furcs" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\furcs.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
   <data name="reap" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\reap.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="tla" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\tla.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>
