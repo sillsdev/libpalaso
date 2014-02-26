@@ -175,11 +175,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="IMDI\Schema\IMDI_3_0_Fix.py" />
-    <Content Include="Resources\ailca.html" />
-    <Content Include="Resources\ailla.html" />
-    <Content Include="Resources\anla.html" />
-    <Content Include="Resources\elar.html" />
-    <Content Include="Resources\tla.html" />
+    <None Include="Resources\ailca.html" />
+    <None Include="Resources\ailla.html" />
+    <None Include="Resources\anla.html" />
+    <None Include="Resources\elar.html" />
+    <None Include="Resources\tla.html" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
