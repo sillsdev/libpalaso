@@ -50,6 +50,13 @@ namespace SIL.Archiving.Generic.AccessProtocol
 
 			var dataDirectory = useDefault ? ArchivingFileSystem.SilCommonArchivingDataFolder : programDirectory;
 
+			if (Path.GetFileName(dataDirectory) != ArchivingFileSystem.kAccessProtocolFolderName)
+			{
+				var parentFolder = Path.GetDirectoryName(dataDirectory);
+				if (parentFolder != null && Path.GetFileName(parentFolder) == ArchivingFileSystem.kAccessProtocolFolderName)
+					dataDirectory = parentFolder;
+			}
+
 			if (!Directory.Exists(dataDirectory))
 				throw new DirectoryNotFoundException(dataDirectory);
 

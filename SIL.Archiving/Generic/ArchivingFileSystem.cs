@@ -7,6 +7,8 @@ namespace SIL.Archiving.Generic
 	/// <summary />
 	public static class ArchivingFileSystem
 	{
+		internal const string kAccessProtocolFolderName = "Archiving";
+  
 		/// <summary />
 		public static string SilCommonDataFolder
 		{
@@ -16,7 +18,7 @@ namespace SIL.Archiving.Generic
 		/// <summary />
 		public static string SilCommonArchivingDataFolder
 		{
-			get { return CheckFolder(Path.Combine(SilCommonDataFolder, "Archiving")); }
+			get { return CheckFolder(Path.Combine(SilCommonDataFolder, kAccessProtocolFolderName)); }
 		}
 
 		/// <summary />
