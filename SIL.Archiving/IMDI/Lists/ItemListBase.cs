@@ -12,7 +12,7 @@ using SIL.Archiving.IMDI.Schema;
 namespace SIL.Archiving.IMDI.Lists
 {
 	/// <summary>Generic class to handle items in the IMDI lists</summary>
-	public class IMDIListItem
+	public class IMDIListItem : IComparable
 	{
 		/// <summary>Suitable for display to the user (potentially localized)</summary>
 		public string Text { get; protected set; }
@@ -73,6 +73,53 @@ namespace SIL.Archiving.IMDI.Lists
 				}
 			}
 		}
+
+		/// <summary>Used for sorting. Compare 2 IMDIListItem objects. They are identical if the Text properties are the same</summary>
+		public int CompareTo(object obj)
+		{
+			if (obj == null)
+				return 1;
+
+			IMDIListItem other = obj as IMDIListItem;
+
+			if (other == null)
+				throw new ArgumentException();
+
+			// handle special cases
+			var thisValue = CheckSpecialCase(this);
+			var thatValue = CheckSpecialCase(other);
+
+			// compare the Text properties
+			return String.Compare(thisValue, thatValue, StringComparison.InvariantCultureIgnoreCase);
+		}
+
+		/// <summary>Used for sorting. Compare 2 IMDIListItem objects. They are identical if the Text properties are the same</summary>
+		public static int Compare(IMDIListItem itemA, IMDIListItem itemB)
+		{
+			return itemA.CompareTo(itemB);
+		}
+
+		/// <summary>This allows forcing specific entries to the top of the sort order</summary>
+		private static string CheckSpecialCase(IMDIListItem inputValue)
+		{
+			switch (inputValue.Value)
+			{
+				case null:
+				case "":
+					return "A";
+
+				case "Unknown":
+					return "B";
+
+				case "Undefined":
+					return "C";
+
+				case "Unspecified":
+					return "D";
+			}
+
+			return "Z" + inputValue.Text;
+		}
 	}
 
 	/// <summary>
@@ -125,6 +172,11 @@ namespace SIL.Archiving.IMDI.Lists
 			
 			PopulateList(GetNodeList(listName), uppercaseFirstCharacter);
 
+			InitializeThis();
+		}
+
+		private void InitializeThis()
+		{
 			Initialize();
 		}
 
