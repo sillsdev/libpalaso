@@ -81,9 +81,31 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					_desiredLanguageDisplayName.Text = _model.LanguageInfo.DesiredName;
 				}
 			}
+			if (_desiredLanguageDisplayName.Visible)
+				AdjustDesiredLanguageNameFieldLocations();
 
 			UpdateReadiness();
 			_searchTimer.Start();
+		}
+
+		/// <summary>
+		/// The label and textbox controls overlap on Linux/Mono.  Adjust them to not overlap.
+		/// </summary>
+		private void AdjustDesiredLanguageNameFieldLocations()
+		{
+			var labelLocation = _desiredLanguageLabel.Location;
+			var labelWidth = _desiredLanguageLabel.Width;
+			var nameLocation = _desiredLanguageDisplayName.Location;
+			if (labelLocation.X + labelWidth + 5 >= nameLocation.X)
+			{
+				var newLabelLoc = new System.Drawing.Point(_listView.Location.X, labelLocation.Y);
+				_desiredLanguageLabel.Location = newLabelLoc;
+				if (newLabelLoc.X + labelWidth + 5 >= nameLocation.X)
+				{
+					var newNameLoc = new System.Drawing.Point(newLabelLoc.X + labelWidth + 6, nameLocation.Y);
+					_desiredLanguageDisplayName.Location = newNameLoc;
+				}
+			}
 		}
 
 		private new bool DesignMode
