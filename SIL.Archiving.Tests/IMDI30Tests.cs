@@ -240,5 +240,71 @@ namespace SIL.Archiving.Tests
 		{
 			Assert.DoesNotThrow(() => LanguageList.FindByISO3Code("xyz", false));
 		}
+
+		[Test]
+		[Category("SkipOnTeamCity")]
+		public void GetList_RemoveNone_ReturnUnknownAndUnspecified()
+		{
+			var countries = ListConstructor.GetList(ListType.Countries, true, null, ListConstructor.RemoveUnknown.RemoveNone);
+
+			Assert.NotNull(countries.FindByText("Unknown"));
+			Assert.NotNull(countries.FindByText("Unspecified"));
+			Assert.NotNull(countries.FindByText("Undefined"));
+		}
+
+		[Test]
+		[Category("SkipOnTeamCity")]
+		public void GetList_LeaveUnknown_ReturnUnspecified()
+		{
+			var countries = ListConstructor.GetList(ListType.Countries, true, null, ListConstructor.RemoveUnknown.LeaveUnknown);
+
+			Assert.NotNull(countries.FindByText("Unknown"));
+			Assert.IsNull(countries.FindByText("Unspecified"));
+			Assert.IsNull(countries.FindByText("Undefined"));
+		}
+
+		[Test]
+		[Category("SkipOnTeamCity")]
+		public void GetList_RemoveAll_ReturnNone()
+		{
+			var countries = ListConstructor.GetList(ListType.Countries, true, null, ListConstructor.RemoveUnknown.RemoveAll);
+
+			Assert.IsNull(countries.FindByText("Unknown"));
+			Assert.IsNull(countries.FindByText("Unspecified"));
+			Assert.IsNull(countries.FindByText("Undefined"));
+		}
+
+		[Test]
+		[Category("SkipOnTeamCity")]
+		public void GetClosedList_RemoveNone_ReturnUnknownAndUnspecified()
+		{
+			var countries = ListConstructor.GetClosedList(ListType.Countries, true, ListConstructor.RemoveUnknown.RemoveNone);
+
+			Assert.NotNull(countries.FindByText("Unknown"));
+			Assert.NotNull(countries.FindByText("Unspecified"));
+			Assert.NotNull(countries.FindByText("Undefined"));
+		}
+
+		[Test]
+		[Category("SkipOnTeamCity")]
+		public void GetClosedList_LeaveUnknown_ReturnUnspecified()
+		{
+			var countries = ListConstructor.GetClosedList(ListType.Countries, true, ListConstructor.RemoveUnknown.LeaveUnknown);
+
+			Assert.NotNull(countries.FindByText("Unknown"));
+			Assert.IsNull(countries.FindByText("Unspecified"));
+			Assert.IsNull(countries.FindByText("Undefined"));
+		}
+
+		[Test]
+		[Category("SkipOnTeamCity")]
+		public void GetClosedList_RemoveAll_ReturnNone()
+		{
+			var countries = ListConstructor.GetClosedList(ListType.Countries, true, ListConstructor.RemoveUnknown.RemoveAll);
+
+			Assert.IsNull(countries.FindByText("Unknown"));
+			Assert.IsNull(countries.FindByText("Unspecified"));
+			Assert.IsNull(countries.FindByText("Undefined"));
+		}
 	}
 }

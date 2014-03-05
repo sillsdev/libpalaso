@@ -165,12 +165,26 @@ namespace SIL.Archiving.IMDI.Lists
 		///     to download from http://www.mpi.nl/IMDI/Schema.
 		/// </param>
 		/// <param name="uppercaseFirstCharacter">Make first character of each item uppercase</param>
-		internal IMDIItemList(string listName, bool uppercaseFirstCharacter)
+		internal IMDIItemList(string listName, bool uppercaseFirstCharacter) 
+			: this(listName, uppercaseFirstCharacter, ListConstructor.RemoveUnknown.RemoveNone)
+		{
+		}
+
+		/// ---------------------------------------------------------------------------------------
+		/// <summary>Constructs a list of IMDIListItems that can be used as the data source of a
+		/// combo or list box</summary>
+		/// <param name="listName">Name of the XML file that contains the desired list. It is suggested to
+		///     use values from IMDI_Schema.ListTypes class. If not found on the local system, we will attempt
+		///     to download from http://www.mpi.nl/IMDI/Schema.
+		/// </param>
+		/// <param name="uppercaseFirstCharacter">Make first character of each item uppercase</param>
+		/// <param name="removeUnknown">Specify which values of "unknown" to remove</param>
+		internal IMDIItemList(string listName, bool uppercaseFirstCharacter, ListConstructor.RemoveUnknown removeUnknown)
 		{
 			Debug.Assert(listName.EndsWith(".xml"));
 			_listname = listName.Substring(0, listName.Length - 4);
-			
-			PopulateList(GetNodeList(listName), uppercaseFirstCharacter);
+
+			PopulateList(GetNodeList(listName), uppercaseFirstCharacter, removeUnknown);
 
 			InitializeThis();
 		}
@@ -269,13 +283,27 @@ namespace SIL.Archiving.IMDI.Lists
 		}
 
 		/// ---------------------------------------------------------------------------------------
-		protected void PopulateList(XmlNodeList nodes, bool uppercaseFirstCharacter)
+		protected void PopulateList(XmlNodeList nodes, bool uppercaseFirstCharacter, ListConstructor.RemoveUnknown removeUnknown)
 		{
 			foreach (XmlNode node in nodes)
 			{
 				if (node.Attributes == null) continue;
 
 				var value = node.Attributes["Value"].Value; // the "Value" attribute contains the meta-data value to save
+
+				switch (value.ToLower())
+				{
+					case "unknown":
+						if (removeUnknown == ListConstructor.RemoveUnknown.RemoveAll) continue;
+						break;
+
+					case "unspecified":
+					case "undetermined":
+					case "undefined":
+						if (removeUnknown != ListConstructor.RemoveUnknown.RemoveNone) continue;
+						break;
+				}
+
 				var definition = node.InnerText.Replace("Definition:", "").Replace("\t", " ").Replace("\r", "").Replace("\n", " ").Trim();  // if InnerText is set, it may contain the value for the meta-data file (some files do, some don't)
 
 				if (uppercaseFirstCharacter && !string.IsNullOrEmpty(value) &&
