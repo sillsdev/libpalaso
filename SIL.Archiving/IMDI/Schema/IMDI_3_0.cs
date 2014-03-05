@@ -686,7 +686,7 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks>Closed vocabulary</remarks>
 		public void SetContinent(string continent)
 		{
-			var continentList = ListConstructor.GetClosedList(ListType.Continents, false);
+			var continentList = ListConstructor.GetClosedList(ListType.Continents, false, ListConstructor.RemoveUnknown.RemoveNone);
 			Continent = continentList.FindByValue(continent).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.Continents));
 		}
 

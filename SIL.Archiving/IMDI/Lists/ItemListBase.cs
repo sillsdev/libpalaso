@@ -334,7 +334,7 @@ namespace SIL.Archiving.IMDI.Lists
 			}
 			catch
 			{
-				return Closed ? this.First(i => String.Equals(i.Value, "Unspecified", StringComparison.CurrentCultureIgnoreCase)) : null;
+				return Closed ? this.FirstOrDefault(i => String.Equals(i.Value, "Unspecified", StringComparison.CurrentCultureIgnoreCase)) : null;
 			}
 		}
 
