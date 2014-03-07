@@ -20,6 +20,15 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		}
 
 		/// <summary>
+		/// Get or set the name of the desired language to search for.
+		/// </summary>
+		public string DesiredLanguageName
+		{
+			get { return _lookupISOControl.DesiredLanguageName; }
+			set { _lookupISOControl.DesiredLanguageName = value; }
+		}
+
+		/// <summary>
 		/// If you wouldn't be paying attention to their requested name, and are only going to look at the code, then
 		/// set this to default so that they aren't fooled into thinking they can modify the name they'll see in your application.
 		/// </summary>
