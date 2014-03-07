@@ -83,6 +83,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 			if (_desiredLanguageDisplayName.Visible)
 				AdjustDesiredLanguageNameFieldLocations();
+			AdjustCannotFindLanguageLocation();
 
 			UpdateReadiness();
 			_searchTimer.Start();
@@ -105,6 +106,23 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					var newNameLoc = new System.Drawing.Point(newLabelLoc.X + labelWidth + 6, nameLocation.Y);
 					_desiredLanguageDisplayName.Location = newNameLoc;
 				}
+			}
+		}
+
+		/// <summary>
+		/// The link label for "Cannot find language?" is truncated on Linux/Mono.
+		/// Adjust the location to allow it to display properly.
+		/// </summary>
+		private void AdjustCannotFindLanguageLocation()
+		{
+			//_cannotFindLanguageLink
+			var labelLocation = _cannotFindLanguageLink.Location;
+			var labelWidth = _cannotFindLanguageLink.Width;
+			var shortage = labelLocation.X + labelWidth - this.Width;
+			if (shortage > 0)
+			{
+				var newLoc = new System.Drawing.Point(labelLocation.X - shortage, labelLocation.Y);
+				_cannotFindLanguageLink.Location = newLoc;
 			}
 		}
 
