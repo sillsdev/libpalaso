@@ -52,6 +52,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 		private Timer m_Timer;
 		private WinKeyboardDescription m_ExpectedKeyboard;
 		private bool m_fSwitchedLanguages;
+		/// <summary>Used to prevent re-entrancy. <c>true</c> while we're in the middle of switching keyboards.</summary>
+		private bool m_fSwitchingKeyboards;
 		internal ITfInputProcessorProfiles ProcessorProfiles { get; private set; }
 		internal ITfInputProcessorProfileMgr ProfileMgr { get; private set; }
 
@@ -335,35 +337,46 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 
 		private void SwitchKeyboard(WinKeyboardDescription winKeyboard)
 		{
-			((IKeyboardControllerImpl)Keyboard.Controller).ActiveKeyboard = ActivateKeyboard(winKeyboard);
-			if (Form.ActiveForm != null)
-			{
-				// If we activate a keyboard while a particular Form is active, we want to know about
-				// input language change calls for that form. The previous -= may help make sure we
-				// don't get multiple hookups.
-				Form.ActiveForm.InputLanguageChanged -= ActiveFormOnInputLanguageChanged;
-				Form.ActiveForm.InputLanguageChanged += ActiveFormOnInputLanguageChanged;
-			}
-
-			// If we have a TIP (TSF Input Processor) we don't have a handle. But we do the
-			// keyboard switching through TSF so we don't need the workaround below.
-			if (!UseWindowsApiForKeyboardSwitching(winKeyboard))
+			if (m_fSwitchingKeyboards)
 				return;
 
-			m_ExpectedKeyboard = winKeyboard;
-			// The following lines help to work around a Windows bug (happens at least on
-			// XP-SP3): When you set the current input language (by any method), if there is more
-			// than one loaded input language associated with that same culture, Windows may
-			// initially go along with your request, and even respond to an immediate query of
-			// the current input language with the answer you expect.  However, within a fraction
-			// of a second, it often takes the initiative to again change the input language to
-			// the _other_ input language having that same culture. We check that the proper
-			// input language gets set by enabling a timer so that we can re-set the input
-			// language if necessary.
-			m_fSwitchedLanguages = true;
-			// stop timer first so that the 0.5s interval restarts.
-			m_Timer.Stop();
-			m_Timer.Start();
+			m_fSwitchingKeyboards = true;
+			try
+			{
+				((IKeyboardControllerImpl)Keyboard.Controller).ActiveKeyboard = ActivateKeyboard(winKeyboard);
+				if (Form.ActiveForm != null)
+				{
+					// If we activate a keyboard while a particular Form is active, we want to know about
+					// input language change calls for that form. The previous -= may help make sure we
+					// don't get multiple hookups.
+					Form.ActiveForm.InputLanguageChanged -= ActiveFormOnInputLanguageChanged;
+					Form.ActiveForm.InputLanguageChanged += ActiveFormOnInputLanguageChanged;
+				}
+
+				// If we have a TIP (TSF Input Processor) we don't have a handle. But we do the
+				// keyboard switching through TSF so we don't need the workaround below.
+				if (!UseWindowsApiForKeyboardSwitching(winKeyboard))
+					return;
+
+				m_ExpectedKeyboard = winKeyboard;
+				// The following lines help to work around a Windows bug (happens at least on
+				// XP-SP3): When you set the current input language (by any method), if there is more
+				// than one loaded input language associated with that same culture, Windows may
+				// initially go along with your request, and even respond to an immediate query of
+				// the current input language with the answer you expect.  However, within a fraction
+				// of a second, it often takes the initiative to again change the input language to
+				// the _other_ input language having that same culture. We check that the proper
+				// input language gets set by enabling a timer so that we can re-set the input
+				// language if necessary.
+				m_fSwitchedLanguages = true;
+				// stop timer first so that the 0.5s interval restarts.
+				m_Timer.Stop();
+				m_Timer.Start();
+			}
+			finally
+			{
+				m_fSwitchingKeyboards = false;
+			}
 		}
 
 		private WinKeyboardDescription ActivateKeyboard(WinKeyboardDescription winKeyboard)
