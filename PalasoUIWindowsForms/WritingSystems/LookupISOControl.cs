@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -68,6 +68,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			set { _searchText.Text  = value; }
 		}
 
+		string _initialDesiredName;
+		/// <summary>
+		/// Get the desired name of the language found, or set the name of the language to search for.
+		/// </summary>
+		public string DesiredLanguageName
+		{
+			get { return _desiredLanguageDisplayName.Text.Trim(); }
+			set { _initialDesiredName = value; }
+		}
+
 		private void OnLoad(object sender, EventArgs e)
 		{
 			if (DesignMode)
@@ -80,6 +90,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					_incomingLanguageInfo = _model.LanguageInfo;
 					_desiredLanguageDisplayName.Text = _model.LanguageInfo.DesiredName;
 				}
+			}
+			else if (!String.IsNullOrWhiteSpace(_initialDesiredName))
+			{
+				_searchText.Text = _initialDesiredName;
+				_desiredLanguageDisplayName.Text = _initialDesiredName;
 			}
 			if (_desiredLanguageDisplayName.Visible)
 				AdjustDesiredLanguageNameFieldLocations();
@@ -145,6 +160,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				if (_incomingLanguageInfo != null && _incomingLanguageInfo.Code == _model.LanguageInfo.Code && !string.IsNullOrEmpty(_incomingLanguageInfo.DesiredName))
 				{
 					_desiredLanguageDisplayName.Text = _incomingLanguageInfo.DesiredName;
+				}
+				else if (_model.ISOCode == "qaa" && !String.IsNullOrEmpty(_initialDesiredName))
+				{
+					_desiredLanguageDisplayName.Text = _initialDesiredName;
+					_model.LanguageInfo.Names.Insert(0, _initialDesiredName);
+					_model.LanguageInfo.DesiredName = _initialDesiredName;
 				}
 				else
 				{
@@ -255,6 +276,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				dlg.ShowDialog();
 
 				_desiredLanguageDisplayName.Text = _searchText.Text.ToUpperFirstLetter();
+				if (String.IsNullOrEmpty(_initialDesiredName))
+					_initialDesiredName = _desiredLanguageDisplayName.Text;
 				_searchText.Text = "?";
 				if (_desiredLanguageDisplayName.Visible)
 				{
