@@ -366,5 +366,11 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			_grid.Rows.RemoveAt(rowIndex);
 			_grid.CurrentCell = _grid[0, _grid.CurrentCellAddress.Y];
 		}
+
+		/// <remarks>SP-874: Localize column headers</remarks>
+		public void SetColumnHeaderText(int columnIndex, string headerText)
+		{
+			_grid.Columns[columnIndex].HeaderText = headerText;
+		}
 	}
 }
