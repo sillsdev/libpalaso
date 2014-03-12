@@ -169,5 +169,11 @@ namespace Palaso.UI.WindowsForms.Reporting
 			}
 			return true;
 		}
+
+		public static void DoNotCallThisMethod()
+		{
+			// SP-835: The Debug.Fail code is running in what is supposed to be Release code
+			Debug.Fail("This is a DEBUG build.");
+		}
 	}
 }
