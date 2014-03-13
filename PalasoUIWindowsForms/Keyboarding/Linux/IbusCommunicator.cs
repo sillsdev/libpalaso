@@ -269,7 +269,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			if (m_ibus == null)
 			{
 				// This seems to be needed for tests on TeamCity.
-				Console.WriteLine("IbusCommunicator.CreateInputContext(): m_ibus == null!?");
+				// It also seems that it shouldn't be necessary to run IBus to use Linux keyboarding!
 				return;
 			}
 			if (KeyboardController.CombinedKeyboardHandling)
