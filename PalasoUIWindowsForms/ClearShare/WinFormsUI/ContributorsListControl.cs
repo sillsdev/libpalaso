@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Media;
 using System.Windows.Forms;
+using L10NSharp.UI;
 using Palaso.Code;
 using Palaso.UI.WindowsForms.Widgets.BetterGrid;
 
@@ -16,8 +17,10 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 	{
 		public delegate KeyValuePair<string, string> ValidatingContributorHandler(
 			ContributorsListControl sender, Contribution contribution, CancelEventArgs e);
-
 		public event ValidatingContributorHandler ValidatingContributor;
+
+		public delegate void ColumnHeaderMouseClickHandler(object sender, DataGridViewCellMouseEventArgs e);
+		public event ColumnHeaderMouseClickHandler ColumnHeaderMouseClick;
 
 		private FadingMessageWindow _msgWindow;
 		private readonly ContributorsListControlViewModel _model;
@@ -73,9 +76,17 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			_grid.Enter += delegate { _grid.SelectionMode = DataGridViewSelectionMode.CellSelect; };
 			_grid.RowValidated += HandleGridRowValidated;
 			_grid.RowsRemoved += HandleGridRowsRemoved;
+			_grid.ColumnHeaderMouseClick += _grid_ColumnHeaderMouseClick;
 
 			if (_model.ContributorsGridSettings != null)
 				_model.ContributorsGridSettings.InitializeGrid(_grid);
+		}
+
+		// SP-874: Not able to open L10NSharp with Alt-Shift-click
+		void _grid_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+		{
+			if (ColumnHeaderMouseClick != null)
+				ColumnHeaderMouseClick(sender, e);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -371,6 +382,18 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		public void SetColumnHeaderText(int columnIndex, string headerText)
 		{
 			_grid.Columns[columnIndex].HeaderText = headerText;
+		}
+
+		/// <remarks>SP-874: Localize column headers</remarks>
+		public void SetLocalizationExtender(L10NSharpExtender extender)
+		{
+			extender.SetLocalizingId(_grid, "ContributorsEditorGrid");
+		}
+
+		/// <remarks>We need to be able to adjust the visual properties to match the hosting program</remarks>
+		public BetterGrid Grid
+		{
+			get { return _grid; }
 		}
 	}
 }
