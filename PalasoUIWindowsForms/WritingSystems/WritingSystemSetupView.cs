@@ -14,10 +14,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	{
 		private WritingSystemSetupModel _model;
 		public event EventHandler UserWantsHelpWithDeletingWritingSystems;
+		public event EventHandler UserWantsHelpWithCustomSorting;
 
 		public WritingSystemSetupView()
 		{
 			InitializeComponent();
+			_propertiesTabControl.UserWantsHelpWithCustomSorting += OnHelpWithCustomSorting;
 		}
 		public WritingSystemSetupView(WritingSystemSetupModel model)
 			: this()
@@ -80,6 +82,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				UserWantsHelpWithDeletingWritingSystems(sender, e);
 			}
+		}
+
+		private void OnHelpWithCustomSorting(object sender, EventArgs e)
+		{
+			if (UserWantsHelpWithCustomSorting != null)
+				UserWantsHelpWithCustomSorting(sender, e);
 		}
 
 		/// <summary>

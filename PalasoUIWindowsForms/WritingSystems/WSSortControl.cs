@@ -21,6 +21,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private IKeyboardDefinition _defaultKeyboard;
 		private string _defaultFontName;
 		private float _defaultFontSize;
+		public event EventHandler UserWantsHelpWithCustomSorting;
 
 		public WSSortControl()
 		{
@@ -273,7 +274,8 @@ peach";
 
 		private void OnHelpLabelClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			Process.Start("http://wesay.org/wiki/How_to_sort_using_a_custom_sort_sequence");
+			if (UserWantsHelpWithCustomSorting != null)
+				UserWantsHelpWithCustomSorting(sender, e);
 		}
 	}
 }
