@@ -15,11 +15,13 @@ namespace Palaso.BuildTasks.UpdateBuildTypeFile
 		[Required]
 		public ITaskItem[] BuildTypePaths { get; set; }
 
-		[Required]
 		public string BuildType { get; set; }
 
 		public override bool Execute()
 		{
+			if (string.IsNullOrEmpty(BuildType))
+				return true;
+
 			var buildTypeFile = BuildTypePaths.Single();
 			var path = buildTypeFile.ItemSpec;
 			var contents = File.ReadAllText(path);
