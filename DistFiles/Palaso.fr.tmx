@@ -388,7 +388,7 @@
     </tu>
     <tu tuid="MetadataEditor.TitleNoCredit">
       <tuv xml:lang="en">
-        <seg>Copyright, &amp; License</seg>
+        <seg>Copyright &amp; License</seg>
       </tuv>
       <tuv xml:lang="fr">
         <seg>Copyright et licence</seg>
