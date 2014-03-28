@@ -45,6 +45,9 @@ namespace PalasoUIWindowsForms.TestApp
 
 		private void OnFolderBrowserControlClicked(object sender, EventArgs e)
 		{
+#if __MonoCS__
+			MessageBox.Show("FolderBrowserControl not supported on Linux");
+#else
 			using (var form = new Form())
 			{
 				var browser = new Palaso.UI.WindowsForms.FolderBrowserControl.FolderBrowserControl();
@@ -58,6 +61,7 @@ namespace PalasoUIWindowsForms.TestApp
 				form.Controls.Add(browser);
 				form.ShowDialog();
 			}
+#endif
 		}
 
 		private void OnLookupISOCodeDialogClicked(object sender, EventArgs e)

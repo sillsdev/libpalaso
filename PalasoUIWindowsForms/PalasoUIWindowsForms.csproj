@@ -269,7 +269,8 @@
 	<Compile Include="FileSystem\ConfirmRecycleDialog.designer.cs">
 	  <DependentUpon>ConfirmRecycleDialog.cs</DependentUpon>
 	</Compile>
-	<Compile Include="FolderBrowserControl\FolderBrowserControl.cs">
+	<Compile Include="FolderBrowserControl\FolderBrowserControl.cs"
+	    Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
 	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="FontHelper.cs" />
