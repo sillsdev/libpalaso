@@ -58,7 +58,7 @@ namespace Palaso.BuildTasks.UpdateBuildTypeFile
 			var iStart = contents.IndexOf("{", i, StringComparison.Ordinal) + 1;
 			var iEnd = contents.IndexOf("}", iStart, StringComparison.Ordinal);
 			var versionTypeEnumBody = contents.Substring(iStart, iEnd - iStart);
-			Regex regex = new Regex(@"[\w-[0-9]]\w*", RegexOptions.Compiled);
+			Regex regex = new Regex(@"(?:((?!\d)\w+(?:\.(?!\d)\w+)*)\.)?((?!\d)\w+)", RegexOptions.Compiled);
 			return (from object type in regex.Matches(versionTypeEnumBody) select type.ToString()).ToList();
 		}
 
