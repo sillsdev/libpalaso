@@ -122,9 +122,17 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 					if (profile.CatId != Guids.TfcatTipKeyboard)
 						continue;
 
-					if ((profile.Flags & TfIppFlags.Enabled) != 0)
+					if ((profile.Flags & TfIppFlags.Enabled) == 0)
+						continue;
+
+					try
 					{
 						KeyboardController.Manager.RegisterKeyboard(new WinKeyboardDescription(profile, this));
+					}
+					catch (CultureNotFoundException)
+					{
+						// ignore if we can't find a culture (this can happen e.g. when a language gets
+						// removed that was previously assigned to a WS) - see LT-15333
 					}
 				}
 			}

@@ -80,8 +80,17 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 		public WinKeyboardDescription(string locale, string layout, IKeyboardAdaptor engine)
 			: base(engine, KeyboardType.System)
 		{
-			Initialize(locale, new WinKeyboardAdaptor.LayoutName(layout), locale,
-				new InputLanguageWrapper(new CultureInfo(locale), IntPtr.Zero, layout));
+			InputLanguageWrapper inputLanguage = null;
+			try
+			{
+				inputLanguage = new InputLanguageWrapper(new CultureInfo(locale), IntPtr.Zero, layout);
+			}
+			catch (CultureNotFoundException)
+			{
+				// ignore if we can't find a culture (this can happen e.g. when a language gets
+				// removed that was previously assigned to a WS) - see LT-15333
+			}
+			Initialize(locale, new WinKeyboardAdaptor.LayoutName(layout), locale, inputLanguage);
 		}
 
 		internal WinKeyboardDescription(WinKeyboardDescription other): base(other)
