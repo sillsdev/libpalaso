@@ -134,20 +134,38 @@ namespace Palaso.IO
 		}
 
 		/// <summary>
-		/// Directory.Move fails if the src and dest are on different partitions (e.g., temp and documents are on differen drives).
-		/// This will do a move if it can, else do a copy followed by a delete.
+		/// Directory.Move fails if the src and dest are on different partitions (e.g., temp and
+		/// documents are on different drives). This will do a move if it can, else do a copy
+		/// followed by a delete.
 		/// </summary>
 		public static void MoveDirectorySafely(string sourcePath, string destinationPath)
 		{
 			if(Path.GetPathRoot(destinationPath).ToLower() == Path.GetPathRoot(sourcePath).ToLower())
 			{
-				Directory.Move(sourcePath, destinationPath);
-				return;
+				try
+				{
+					Directory.Move(sourcePath, destinationPath);
+					return;
+				}
+				catch (IOException)
+				{
+					// We get an IOException if
+					// - An attempt was made to move a directory to a different volume (which
+					//   can happen on Linux despite the test above).
+					// - or destDirName already exists.
+					// - or The sourceDirName and destDirName parameters refer to the same file
+					//   or directory.
+					// In the first case we want to try the copy approach.
+					if (Path.GetFullPath(sourcePath).ToLower() == Path.GetFullPath(destinationPath).ToLower() ||
+						Directory.Exists(destinationPath) || File.Exists(destinationPath))
+					{
+						throw;
+					}
+				}
 			}
-			CopyDirectoryWithException(sourcePath,destinationPath);
-			Directory.Delete(sourcePath,true);
+			CopyDirectoryWithException(sourcePath, destinationPath);
+			Directory.Delete(sourcePath, true);
 		}
-
 
 		private static void ReportFailedCopyAndCleanUp(Exception error, string srcDirectory, string dstDirectory)
 		{
@@ -173,7 +191,8 @@ namespace Palaso.IO
 		/// </summary>
 		/// <param name="path">Directory path to look in.</param>
 		/// <returns>Zero or more directory names that are not system or hidden.</returns>
-		/// <exception cref="System.UnauthorizedAccessException ">E.g. when the user does not have read permission.</exception>
+		/// <exception cref="System.UnauthorizedAccessException">E.g. when the user does not have
+		/// read permission.</exception>
 		public static string[] GetSafeDirectories(string path)
 		{
 				return (from directoryName in Directory.GetDirectories(path)

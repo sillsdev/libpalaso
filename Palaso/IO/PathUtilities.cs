@@ -1,6 +1,11 @@
-﻿// Copyright (c) 2014 SIL International
+// Copyright (c) 2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
+using System.Diagnostics;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Palaso.IO
 {
@@ -56,6 +61,107 @@ namespace Palaso.IO
 				'\\',
 				'/'
 			};
+		}
+
+		public static int GetDeviceNumber(string filePath)
+		{
+			if (Palaso.PlatformUtilities.Platform.IsWindows)
+			{
+				var driveInfo = new DriveInfo(Path.GetPathRoot(filePath));
+				return driveInfo.Name.ToUpper()[0] - 'A' + 1;
+			}
+
+			var process = new Process() { StartInfo = new ProcessStartInfo {
+					FileName = "stat",
+					Arguments = string.Format("-c %d {0}", filePath),
+					UseShellExecute = false,
+					RedirectStandardOutput = true,
+					CreateNoWindow = true
+				}
+			};
+			process.Start();
+			process.WaitForExit();
+			var output = process.StandardOutput.ReadToEnd();
+			return Convert.ToInt32(output);
+		}
+
+		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 1)]
+		private struct SHFILEOPSTRUCT
+		{
+			public IntPtr hwnd;
+			[MarshalAs(UnmanagedType.U4)]
+			public int wFunc;
+			public string pFrom;
+			public string pTo;
+			public short fFlags;
+			[MarshalAs(UnmanagedType.Bool)]
+			public bool fAnyOperationsAborted;
+			public IntPtr hNameMappings;
+			public string lpszProgressTitle;
+		}
+
+		[DllImport("shell32.dll", CharSet = CharSet.Auto)]
+		private static extern int SHFileOperation(ref SHFILEOPSTRUCT FileOp);
+
+		private const int FO_DELETE = 3;
+		private const int FOF_ALLOWUNDO = 0x40;
+		private const int FOF_NOCONFIRMATION = 0x10; // Don't prompt the user
+		private const int FOF_SIMPLEPROGRESS = 0x0100;
+
+		private static void WriteTrashInfoFile(string trashPath, string filePath, string trashedFile)
+		{
+			var trashInfo = Path.Combine(trashPath, "info", trashedFile + ".trashinfo");
+			var lines = new List<string>();
+			lines.Add("[Trash Info]");
+			lines.Add(string.Format("Path={0}", filePath));
+			lines.Add(string.Format("DeletionDate={0}",
+				DateTime.Now.ToString("yyyyMMddTHH:mm:ss", CultureInfo.InvariantCulture)));
+			File.WriteAllLines(trashInfo, lines);
+		}
+
+		/// <summary>
+		/// Delete a file or directory by moving it to the trash bin
+		/// </summary>
+		/// <param name="filePath">Full path of the file.</param>
+		/// <returns><c>true</c> if successfully deleted.</returns>
+		public static bool DeleteToRecycleBin(string filePath)
+		{
+			if (Palaso.PlatformUtilities.Platform.IsWindows)
+			{
+				// alternative using visual basic dll:
+				// FileSystem.DeleteDirectory(item.FolderPath,UIOption.OnlyErrorDialogs), RecycleOption.SendToRecycleBin);
+
+				//moves it to the recyle bin
+				var shf = new SHFILEOPSTRUCT();
+				shf.wFunc = FO_DELETE;
+				shf.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION;
+				string pathWith2Nulls = filePath + "\0\0";
+				shf.pFrom = pathWith2Nulls;
+
+				SHFileOperation(ref shf);
+				return !shf.fAnyOperationsAborted;
+			}
+
+			// On Linux we'll have to move the file to $XDG_DATA_HOME/Trash/files and create
+			// a filename.trashinfo file in $XDG_DATA_HOME/Trash/info that contains the original
+			// filepath and the deletion date. See http://stackoverflow.com/a/20255190
+			// and http://freedesktop.org/wiki/Specifications/trash-spec/.
+			// Environment.SpecialFolder.LocalApplicationData corresponds to $XDG_DATA_HOME.
+
+			// move file or directory
+			if (Directory.Exists(filePath) || File.Exists(filePath))
+			{
+				var trashPath = Path.Combine(Environment.GetFolderPath(
+					Environment.SpecialFolder.LocalApplicationData), "Trash");
+				var trashedFileName = Path.GetRandomFileName();
+				var recyclePath = Path.Combine(Path.Combine(trashPath, "files"), trashedFileName);
+
+				WriteTrashInfoFile(trashPath, filePath, trashedFileName);
+				// Directory.Move works for directories and files
+				DirectoryUtilities.MoveDirectorySafely(filePath, recyclePath);
+				return true;
+			}
+			return false;
 		}
 	}
 }
