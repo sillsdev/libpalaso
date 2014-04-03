@@ -154,6 +154,14 @@ namespace Palaso.IO
 				var trashPath = Path.Combine(Environment.GetFolderPath(
 					Environment.SpecialFolder.LocalApplicationData), "Trash");
 				var trashedFileName = Path.GetRandomFileName();
+				if (!Directory.Exists(trashPath))
+				{
+					// in case the trash bin doesn't exist we create it. This can happen e.g.
+					// on the build machine
+					Directory.CreateDirectory(Path.Combine(trashPath, "files"));
+					Directory.CreateDirectory(Path.Combine(trashPath, "info"));
+				}
+
 				var recyclePath = Path.Combine(Path.Combine(trashPath, "files"), trashedFileName);
 
 				WriteTrashInfoFile(trashPath, filePath, trashedFileName);
