@@ -1,6 +1,7 @@
-﻿// Copyright (c) 2014 SIL International
+// Copyright (c) 2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
+using System.Diagnostics;
 
 namespace Palaso.IO
 {
@@ -56,6 +57,28 @@ namespace Palaso.IO
 				'\\',
 				'/'
 			};
+		}
+
+		public static int GetDeviceNumber(string filePath)
+		{
+			if (Palaso.PlatformUtilities.Platform.IsWindows)
+			{
+				var driveInfo = new DriveInfo(Path.GetPathRoot(filePath));
+				return driveInfo.Name.ToUpper()[0] - 'A' + 1;
+			}
+
+			var process = new Process() { StartInfo = new ProcessStartInfo {
+					FileName = "stat",
+					Arguments = string.Format("-c %d {0}", filePath),
+					UseShellExecute = false,
+					RedirectStandardOutput = true,
+					CreateNoWindow = true
+				}
+			};
+			process.Start();
+			process.WaitForExit();
+			var output = process.StandardOutput.ReadToEnd();
+			return Convert.ToInt32(output);
 		}
 	}
 }
