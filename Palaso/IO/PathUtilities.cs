@@ -126,8 +126,11 @@ namespace Palaso.IO
 		/// <returns><c>true</c> if successfully deleted.</returns>
 		public static bool DeleteToRecycleBin(string filePath)
 		{
-			if (Palaso.PlatformUtilities.Platform.IsWindows)
+			if (PlatformUtilities.Platform.IsWindows)
 			{
+				if (!File.Exists(filePath) && !Directory.Exists(filePath))
+					return false;
+
 				// alternative using visual basic dll:
 				// FileSystem.DeleteDirectory(item.FolderPath,UIOption.OnlyErrorDialogs), RecycleOption.SendToRecycleBin);
 

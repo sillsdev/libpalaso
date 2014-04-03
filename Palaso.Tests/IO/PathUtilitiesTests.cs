@@ -107,8 +107,7 @@ namespace Palaso.Tests.IO
 		public void DeleteToRecycleBin_NonexistingFileReturnsFalse()
 		{
 			// Setup
-			var file = Path.GetTempFileName();
-			File.Delete(file);
+			var file = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
 			// Exercise
 			var result = PathUtilities.DeleteToRecycleBin(file);
