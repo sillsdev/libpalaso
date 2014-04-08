@@ -136,6 +136,7 @@
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\DebugMono\L10NSharp.dll</HintPath>
 	</Reference>
+    <Reference Include="Mono.Posix"/>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'ReleaseMono'">
    <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
@@ -149,6 +150,7 @@
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\ReleaseMono\L10NSharp.dll</HintPath>
 	</Reference>
+    <Reference Include="Mono.Posix"/>
   </ItemGroup>
   <ItemGroup>
 	<Reference Include="Enchant.Net">

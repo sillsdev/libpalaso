@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using X11;
+using Mono.Unix;
 
 namespace X11.XKlavier
 {
@@ -29,16 +30,16 @@ namespace X11.XKlavier
 		}
 
 		private string[] m_GroupNames;
+		private string[] m_LocalizedGroupNames;
 
-		public XklEngine()
+		public XklEngine(): this(X11Helper.GetDisplayConnection())
 		{
-			var display = X11Helper.GetDisplayConnection();
-			Engine = xkl_engine_get_instance(display);
 		}
 
 		public XklEngine(IntPtr display)
 		{
 			Engine = xkl_engine_get_instance(display);
+			Catalog.Init("xkeyboard-config", string.Empty);
 		}
 
 		public void Close()
@@ -61,6 +62,9 @@ namespace X11.XKlavier
 			get { return xkl_engine_get_num_groups(Engine); }
 		}
 
+		/// <summary>
+		/// Gets the non-localized, English names of the installed XKB keyboards
+		/// </summary>
 		public virtual string[] GroupNames
 		{
 			get
@@ -78,6 +82,26 @@ namespace X11.XKlavier
 					}
 				}
 				return m_GroupNames;
+			}
+		}
+
+		/// <summary>
+		/// Gets the localized names of the installed XKB keyboards
+		/// </summary>
+		public virtual string[] LocalizedGroupNames
+		{
+			get
+			{
+				if (m_LocalizedGroupNames == null)
+				{
+					var count = GroupNames.Length;
+					m_LocalizedGroupNames = new string[count];
+					for (int i = 0; i < count; i++)
+					{
+						m_LocalizedGroupNames[i] = Catalog.GetString(GroupNames[i]);
+					}
+				}
+				return m_LocalizedGroupNames;
 			}
 		}
 
