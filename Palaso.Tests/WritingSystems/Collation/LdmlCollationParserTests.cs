@@ -150,7 +150,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset><last_tertiary_ignorable/></reset><ic> ?-</ic></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("& [last tertiary ignorable] = \\  = \\? = \\-", icu);
+			Assert.AreEqual("& [last tertiary ignorable] = ' ' = '?' = '-'", icu);
 		}
 
 		[Test]
@@ -158,7 +158,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		{
 			_collationXml = "<rules><reset><last_tertiary_ignorable/></reset><ic>?- </ic></rules>";
 			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
-			Assert.AreEqual("& [last tertiary ignorable] = \\? = \\- = \\ ", icu);
+			Assert.AreEqual("& [last tertiary ignorable] = '?' = '-' = ' '", icu);
 		}
 
 		[Test]
