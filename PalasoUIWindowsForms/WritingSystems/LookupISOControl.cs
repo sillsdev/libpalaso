@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -68,14 +68,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			set { _searchText.Text  = value; }
 		}
 
-		string _initialDesiredName;
 		/// <summary>
-		/// Get the desired name of the language found, or set the name of the language to search for.
+		/// Get the desired name of the language found.
 		/// </summary>
 		public string DesiredLanguageName
 		{
 			get { return _desiredLanguageDisplayName.Text.Trim(); }
-			set { _initialDesiredName = value; }
 		}
 
 		private void OnLoad(object sender, EventArgs e)
@@ -90,11 +88,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					_incomingLanguageInfo = _model.LanguageInfo;
 					_desiredLanguageDisplayName.Text = _model.LanguageInfo.DesiredName;
 				}
-			}
-			else if (!String.IsNullOrWhiteSpace(_initialDesiredName))
-			{
-				_searchText.Text = _initialDesiredName;
-				_desiredLanguageDisplayName.Text = _initialDesiredName;
 			}
 			if (_desiredLanguageDisplayName.Visible)
 				AdjustDesiredLanguageNameFieldLocations();
@@ -161,11 +154,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					_desiredLanguageDisplayName.Text = _incomingLanguageInfo.DesiredName;
 				}
-				else if (_model.ISOCode == "qaa" && !String.IsNullOrEmpty(_initialDesiredName))
+				else if (_model.ISOCode == "qaa")
 				{
-					_desiredLanguageDisplayName.Text = _initialDesiredName;
-					_model.LanguageInfo.Names.Insert(0, _initialDesiredName);
-					_model.LanguageInfo.DesiredName = _initialDesiredName;
+					if (_searchText.Text != "?")
+						_failedSearchText = _searchText.Text.ToUpperFirstLetter();
+					_desiredLanguageDisplayName.Text = _failedSearchText;
+					_model.LanguageInfo.Names.Insert(0, _failedSearchText);
+					_model.LanguageInfo.DesiredName = _failedSearchText;
 				}
 				else
 				{
@@ -269,6 +264,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
+		private string _failedSearchText;
 		private void _cannotFindLanguageLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
 			using (var dlg = new CannotFindMyLanguageDialog())
@@ -276,8 +272,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				dlg.ShowDialog();
 
 				_desiredLanguageDisplayName.Text = _searchText.Text.ToUpperFirstLetter();
-				if (String.IsNullOrEmpty(_initialDesiredName))
-					_initialDesiredName = _desiredLanguageDisplayName.Text;
+				_failedSearchText = _searchText.Text.ToUpperFirstLetter();
 				_searchText.Text = "?";
 				if (_desiredLanguageDisplayName.Visible)
 				{

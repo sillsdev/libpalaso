@@ -20,12 +20,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		}
 
 		/// <summary>
-		/// Get or set the name of the desired language to search for.
+		/// Get the name of the desired language to search for.
 		/// </summary>
 		public string DesiredLanguageName
 		{
 			get { return _lookupISOControl.DesiredLanguageName; }
-			set { _lookupISOControl.DesiredLanguageName = value; }
 		}
 
 		/// <summary>
