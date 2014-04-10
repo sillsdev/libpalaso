@@ -68,6 +68,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			set { _searchText.Text  = value; }
 		}
 
+		/// <summary>
+		/// Get the desired name of the language found.
+		/// </summary>
+		public string DesiredLanguageName
+		{
+			get { return _desiredLanguageDisplayName.Text.Trim(); }
+		}
+
 		private void OnLoad(object sender, EventArgs e)
 		{
 			if (DesignMode)
@@ -145,6 +153,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				if (_incomingLanguageInfo != null && _incomingLanguageInfo.Code == _model.LanguageInfo.Code && !string.IsNullOrEmpty(_incomingLanguageInfo.DesiredName))
 				{
 					_desiredLanguageDisplayName.Text = _incomingLanguageInfo.DesiredName;
+				}
+				else if (_model.ISOCode == "qaa")
+				{
+					if (_searchText.Text != "?")
+						_failedSearchText = _searchText.Text.ToUpperFirstLetter();
+					_desiredLanguageDisplayName.Text = _failedSearchText;
+					_model.LanguageInfo.Names.Insert(0, _failedSearchText);
+					_model.LanguageInfo.DesiredName = _failedSearchText;
 				}
 				else
 				{
@@ -248,6 +264,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
+		private string _failedSearchText;
 		private void _cannotFindLanguageLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
 			using (var dlg = new CannotFindMyLanguageDialog())
@@ -255,6 +272,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				dlg.ShowDialog();
 
 				_desiredLanguageDisplayName.Text = _searchText.Text.ToUpperFirstLetter();
+				_failedSearchText = _searchText.Text.ToUpperFirstLetter();
 				_searchText.Text = "?";
 				if (_desiredLanguageDisplayName.Visible)
 				{
