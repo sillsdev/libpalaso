@@ -189,6 +189,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			{
 				var unixPaths = new[]
 									{
+										@"/usr/share/ArtOfReading/images",	// standard LSB/FHS location
 										@"c:\art of reading\images", @"/usr/share/SIL/ArtOfReading/images",
 										@"/var/share/ArtOfReading/images"
 									};
