@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -761,6 +761,7 @@
 	<Compile Include="Keyboarding\Linux\X11KeyConverter.cs" />
 	<Compile Include="Keyboarding\InternalInterfaces\IXklEngine.cs" />
 	<Compile Include="Keyboarding\Windows\MsTsfInterfaces.cs" />
+	<Compile Include="Keyboarding\Linux\CombinedKeyboardAdaptor.cs" />
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="ClearShare\ClearShareResources.resx">
