@@ -37,6 +37,7 @@
 			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this._regionCombo = new System.Windows.Forms.ComboBox();
+			this._warningLabel = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this.SuspendLayout();
 			//
 			// linkLabel1
@@ -129,6 +130,21 @@
 			this._regionCombo.TabIndex = 9;
 			this._regionCombo.SelectedIndexChanged += new System.EventHandler(this.RegionCombo_OnSelectedIndexChanged);
 			//
+			// _warningLabel
+			//
+			this._warningLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+				| System.Windows.Forms.AnchorStyles.Right)));
+			this._warningLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this._warningLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this._warningLabel.Location = new System.Drawing.Point(1, 100);
+			this._warningLabel.Multiline = true;
+			this._warningLabel.Name = "_warningLabel";
+			this._warningLabel.ReadOnly = true;
+			this._warningLabel.Size = new System.Drawing.Size(213, 40);
+			this._warningLabel.TabStop = false;
+			this._warningLabel.TabIndex = 9;
+			this._warningLabel.Text = "Do not change anything here if this project is shared with other people.  Data loss or corruption may result.";
+			//
 			// ScriptRegionVariantView
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -140,8 +156,9 @@
 			this.Controls.Add(this.betterLabel2);
 			this.Controls.Add(this.linkLabel1);
 			this.Controls.Add(this.betterLabel1);
+			this.Controls.Add(this._warningLabel);
 			this.Name = "ScriptRegionVariantView";
-			this.Size = new System.Drawing.Size(232, 107);
+			this.Size = new System.Drawing.Size(232, 140);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -157,5 +174,6 @@
 		private System.Windows.Forms.TextBox _variant;
 		private System.Windows.Forms.ToolTip toolTip1;
 		private System.Windows.Forms.ComboBox _regionCombo;
+		private Palaso.UI.WindowsForms.Widgets.BetterLabel _warningLabel;
 	}
 }
