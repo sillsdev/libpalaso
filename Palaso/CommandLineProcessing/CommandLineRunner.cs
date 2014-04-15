@@ -46,9 +46,28 @@ namespace Palaso.CommandLineProcessing
 		/// <returns></returns>
 		public static ExecutionResult Run(string exePath, string arguments, Encoding encoding, string fromDirectory, int secondsBeforeTimeOut, IProgress progress, Action<string> actionForReportingProgress)
 		{
-			return new CommandLineRunner().Start(exePath, arguments, encoding, fromDirectory, secondsBeforeTimeOut, progress,
-										actionForReportingProgress);
+			return Run(exePath, arguments, encoding, fromDirectory, secondsBeforeTimeOut, progress,
+										actionForReportingProgress, null);
 		}
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="exePath"></param>
+        /// <param name="arguments"></param>
+        /// <param name="encoding"></param>
+        /// <param name="fromDirectory"></param>
+        /// <param name="secondsBeforeTimeOut"></param>
+        /// <param name="progress"></param>
+        /// <param name="actionForReportingProgress"> Normally a simple thing like this: (s)=>progress.WriteVerbose(s). If you pass null, then the old synchronous reader will be used instead, with no feedback to the user as the process runs.
+        /// </param>
+        /// <param name="standardInputPath">If not null, redirect standard input to read from the specified file.</param>
+        /// <returns></returns>
+        public static ExecutionResult Run(string exePath, string arguments, Encoding encoding, string fromDirectory, int secondsBeforeTimeOut, IProgress progress, Action<string> actionForReportingProgress, string standardInputPath)
+        {
+            return new CommandLineRunner().Start(exePath, arguments, encoding, fromDirectory, secondsBeforeTimeOut, progress,
+                                        actionForReportingProgress, standardInputPath);
+        }
 
 		public bool Abort(int secondsBeforeTimeout)
 		{
@@ -59,7 +78,7 @@ namespace Palaso.CommandLineProcessing
 		/// <summary>
 		/// use this one if you're doing a long running task that you'll have running in a thread, so that you need a way to abort it
 		/// </summary>
-		public ExecutionResult Start(string exePath, string arguments, Encoding encoding, string fromDirectory, int secondsBeforeTimeOut, IProgress progress, Action<string> actionForReportingProgress)
+        public ExecutionResult Start(string exePath, string arguments, Encoding encoding, string fromDirectory, int secondsBeforeTimeOut, IProgress progress, Action<string> actionForReportingProgress, string standardInputPath = null)
 		{
 			progress.WriteVerbose("running '{0} {1}' from '{2}'", exePath, arguments, fromDirectory);
 			ExecutionResult result = new ExecutionResult();
@@ -82,11 +101,20 @@ namespace Palaso.CommandLineProcessing
 				_processReader = new AsyncProcessOutputReader(_process, progress, actionForReportingProgress);
 			else
 				_processReader = new SynchronousProcessOutputReader(_process, progress);
+		    if (standardInputPath != null)
+		        _process.StartInfo.RedirectStandardInput = true;
 
 			try
 			{
 				Debug.WriteLine("CommandLineRunner Starting at " + DateTime.Now.ToString());
 				_process.Start();
+			    if (standardInputPath != null)
+			    {
+			        var myWriter = _process.StandardInput.BaseStream;
+			        var input = File.ReadAllBytes(standardInputPath);
+                    myWriter.Write(input, 0, input.Length);
+                    myWriter.Close(); // no more input
+			    }
 			}
 			catch (Win32Exception error)
 			{

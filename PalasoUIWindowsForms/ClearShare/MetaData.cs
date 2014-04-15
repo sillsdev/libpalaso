@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -7,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Windows.Forms;
 using Palaso.CommandLineProcessing;
 using Palaso.Extensions;
 using Palaso.IO;
@@ -243,18 +245,20 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				{
 					args.Append(" " + assignment.Switch + " ");
 				}
-				var result = CommandLineRunner.Run(exifPath, String.Format("{0} \"{1}\"", args, path),
+				var result = CommandLineRunner.Run(exifPath, String.Format("{0} -", args),
 					_commandLineEncoding, Path.GetDirectoryName(path), 20 /*had a possiblefailure at 5: BL-242*/,
-					new NullProgress());
+					new NullProgress(), null, path);
 
 				if(result.DidTimeOut)
 				{
 					//we don't know what causes this... just a guess... maybe the file was locked?
 					Thread.Sleep(2000); //give it a second
 
-					result = CommandLineRunner.Run(exifPath, String.Format("{0} \"{1}\"", args.ToString(), path),
+                    // The hyphen says to read from standard input. This allows us to bypass the problem of passing a filename to exiftool,
+                    // which can't handle non-ascii filenames.
+					result = CommandLineRunner.Run(exifPath, String.Format("{0} -", args.ToString()),
 												  _commandLineEncoding, Path.GetDirectoryName(path), 20,
-												  new NullProgress());
+												  new NullProgress(), null, path);
 
 					if (result.DidTimeOut)
 					{
@@ -382,53 +386,79 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			Write(_path);
 		}
 
-		public void Write(string path)
-		{
-			var exifToolPath = ExifToolPath;
-			//-E   -overwrite_original_in_place -d %Y
-			StringBuilder arguments = new StringBuilder();
+        public void Write(string path)
+        {
+            var exifToolPath = ExifToolPath;
+            //-E   -overwrite_original_in_place -d %Y
+            StringBuilder arguments = new StringBuilder();
 
-			//No arguments.Append("-P "); //don't change the modified date  (this isn't totally obvious... it's good unless it interferes with backup)
+            //No arguments.Append("-P "); //don't change the modified date  (this isn't totally obvious... it's good unless it interferes with backup)
 
-			AddAssignmentArguments(arguments);
+            AddAssignmentArguments(arguments);
 
-			if (arguments.ToString().Length == 0)
-			{
-				//no metadata
-				return;
-			}
+            if (arguments.ToString().Length == 0)
+            {
+                //no metadata
+                return;
+            }
 
-			//NB: when it comes time to having multiple contibutors, see Hatton's question on http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3680.0.html.  We need -sep ";" or whatever to ensure we get a list.
+            //NB: when it comes time to having multiple contibutors, see Hatton's question on http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3680.0.html.  We need -sep ";" or whatever to ensure we get a list.
 
-			arguments.Append("-charset UTF8 ");
-			arguments.AppendFormat("-use MWG ");  //see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html  and http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
-			arguments.AppendFormat(" \"{0}\"", path);
-			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), _commandLineEncoding, Path.GetDirectoryName(_path), 5, new NullProgress());
-			// -XMP-dc:Rights="Copyright SIL International" -XMP-xmpRights:Marked="True" -XMP-cc:License="http://creativecommons.org/licenses/by-sa/2.0/" *.png");
+            arguments.Append("-charset UTF8 ");
+            arguments.AppendFormat("-use MWG ");  //see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html  and http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
+            arguments.AppendFormat(" -"); // read from standard input. This avoids the problem that exiftool can't handle non-ascii file names
+			var process = new Process();
+			process.StartInfo.RedirectStandardError = true;
+			process.StartInfo.RedirectStandardOutput = true; // standard output will be the modified binary file.
+			process.StartInfo.UseShellExecute = false;
+			process.StartInfo.CreateNoWindow = true;
+			process.StartInfo.WorkingDirectory = Path.GetDirectoryName(_path);
+			process.StartInfo.FileName = exifToolPath;
+			process.StartInfo.Arguments = arguments.ToString();
+		    process.StartInfo.RedirectStandardInput = true;
 
+            try
+            {
+                Debug.WriteLine("CommandLineRunner Starting at " + DateTime.Now.ToString());
+                process.Start();
 
+                var myWriter = process.StandardInput.BaseStream;
+                var input = File.ReadAllBytes(path);
+                myWriter.Write(input, 0, input.Length);
+                myWriter.Close(); // no more input
+                if (process.WaitForExit(5000) && process.ExitCode == 0)
+                {
+                    // Process exited successfully.
+                    // Write the binary data produced by exiftool over the file.
+                    using (var fileStream = new FileStream(path, FileMode.OpenOrCreate))
+                    {
+                        process.StandardOutput.BaseStream.CopyTo(fileStream);
+                    }
+                }
+                else
+                {
+                    // what should we do here?
+                    MessageBox.Show("Could not write changes to " + path + ". Check whether it is writeable.");
+                    Debug.WriteLine(process.StandardError.ReadToEnd());
+                    return;
+                }
+            }
+            catch (Win32Exception error)
+            {
+                throw;
+            }
 
-			//-overwrite_original didn't work for this
-			var extra = path + "_original";
-			try
-			{
-				if (File.Exists(extra))
-					File.Delete(extra);
-			}
-			catch (Exception)
-			{
-				//not worth reporting
-			}
+            // -XMP-dc:Rights="Copyright SIL International" -XMP-xmpRights:Marked="True" -XMP-cc:License="http://creativecommons.org/licenses/by-sa/2.0/" *.png");
 
 #if DEBUG
-			Debug.WriteLine("writing");
-			Debug.WriteLine(arguments.ToString());
-			Debug.WriteLine(result.StandardError);
-			Debug.WriteLine(result.StandardOutput);
+            Debug.WriteLine("writing");
+            Debug.WriteLine(arguments.ToString());
+            Debug.WriteLine(process.StandardError.ReadToEnd());
+            //Debug.WriteLine(result.StandardOutput);
 #endif
-			//as of right now, we are clean with respect to what is on disk, no need to save.
-			HasChanges = false;
-		}
+            //as of right now, we are clean with respect to what is on disk, no need to save.
+            HasChanges = false;
+        }
 
 		private void AddAssignmentArguments(StringBuilder arguments)
 		{
