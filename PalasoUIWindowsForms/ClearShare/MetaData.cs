@@ -407,55 +407,57 @@ namespace Palaso.UI.WindowsForms.ClearShare
             arguments.Append("-charset UTF8 ");
             arguments.AppendFormat("-use MWG ");  //see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html  and http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
             arguments.AppendFormat(" -"); // read from standard input. This avoids the problem that exiftool can't handle non-ascii file names
-			var process = new Process();
-			process.StartInfo.RedirectStandardError = true;
-			process.StartInfo.RedirectStandardOutput = true; // standard output will be the modified binary file.
-			process.StartInfo.UseShellExecute = false;
-			process.StartInfo.CreateNoWindow = true;
-			process.StartInfo.WorkingDirectory = Path.GetDirectoryName(_path);
-			process.StartInfo.FileName = exifToolPath;
-			process.StartInfo.Arguments = arguments.ToString();
-		    process.StartInfo.RedirectStandardInput = true;
-
-            try
+            using (var process = new Process())
             {
-                Debug.WriteLine("CommandLineRunner Starting at " + DateTime.Now.ToString());
-                process.Start();
+                process.StartInfo.RedirectStandardError = true;
+                process.StartInfo.RedirectStandardOutput = true; // standard output will be the modified binary file.
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.CreateNoWindow = true;
+                process.StartInfo.WorkingDirectory = Path.GetDirectoryName(_path);
+                process.StartInfo.FileName = exifToolPath;
+                process.StartInfo.Arguments = arguments.ToString();
+                process.StartInfo.RedirectStandardInput = true;
 
-                var myWriter = process.StandardInput.BaseStream;
-                var input = File.ReadAllBytes(path);
-                myWriter.Write(input, 0, input.Length);
-                myWriter.Close(); // no more input
-                if (process.WaitForExit(5000) && process.ExitCode == 0)
+                try
                 {
-                    // Process exited successfully.
-                    // Write the binary data produced by exiftool over the file.
-                    using (var fileStream = new FileStream(path, FileMode.OpenOrCreate))
+                    Debug.WriteLine("CommandLineRunner Starting at " + DateTime.Now.ToString());
+                    process.Start();
+
+                    var myWriter = process.StandardInput.BaseStream;
+                    var input = File.ReadAllBytes(path);
+                    myWriter.Write(input, 0, input.Length);
+                    myWriter.Close(); // no more input
+                    if (process.WaitForExit(5000) && process.ExitCode == 0)
                     {
-                        process.StandardOutput.BaseStream.CopyTo(fileStream);
+                        // Process exited successfully.
+                        // Write the binary data produced by exiftool over the file.
+                        using (var fileStream = new FileStream(path, FileMode.OpenOrCreate))
+                        {
+                            process.StandardOutput.BaseStream.CopyTo(fileStream);
+                        }
+                    }
+                    else
+                    {
+                        // what should we do here?
+                        MessageBox.Show("Could not write changes to " + path + ". Check whether it is writeable.");
+                        Debug.WriteLine(process.StandardError.ReadToEnd());
+                        return;
                     }
                 }
-                else
+                catch (Win32Exception error)
                 {
-                    // what should we do here?
-                    MessageBox.Show("Could not write changes to " + path + ". Check whether it is writeable.");
-                    Debug.WriteLine(process.StandardError.ReadToEnd());
-                    return;
+                    throw;
                 }
-            }
-            catch (Win32Exception error)
-            {
-                throw;
-            }
 
-            // -XMP-dc:Rights="Copyright SIL International" -XMP-xmpRights:Marked="True" -XMP-cc:License="http://creativecommons.org/licenses/by-sa/2.0/" *.png");
+                // -XMP-dc:Rights="Copyright SIL International" -XMP-xmpRights:Marked="True" -XMP-cc:License="http://creativecommons.org/licenses/by-sa/2.0/" *.png");
 
 #if DEBUG
-            Debug.WriteLine("writing");
-            Debug.WriteLine(arguments.ToString());
-            Debug.WriteLine(process.StandardError.ReadToEnd());
-            //Debug.WriteLine(result.StandardOutput);
+                Debug.WriteLine("writing");
+                Debug.WriteLine(arguments.ToString());
+                Debug.WriteLine(process.StandardError.ReadToEnd());
+                //Debug.WriteLine(result.StandardOutput);
 #endif
+            }
             //as of right now, we are clean with respect to what is on disk, no need to save.
             HasChanges = false;
         }

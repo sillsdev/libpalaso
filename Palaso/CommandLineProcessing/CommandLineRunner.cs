@@ -85,89 +85,94 @@ namespace Palaso.CommandLineProcessing
 			result.Arguments = arguments;
 			result.ExePath = exePath;
 
-			_process = new Process();
-			_process.StartInfo.RedirectStandardError = true;
-			_process.StartInfo.RedirectStandardOutput = true;
-			_process.StartInfo.UseShellExecute = false;
-			_process.StartInfo.CreateNoWindow = true;
-			_process.StartInfo.WorkingDirectory = fromDirectory;
-			_process.StartInfo.FileName = exePath;
-			_process.StartInfo.Arguments = arguments;
-			if (encoding != null)
-			{
-				_process.StartInfo.StandardOutputEncoding = encoding;
-			}
-			if (actionForReportingProgress != null)
-				_processReader = new AsyncProcessOutputReader(_process, progress, actionForReportingProgress);
-			else
-				_processReader = new SynchronousProcessOutputReader(_process, progress);
-		    if (standardInputPath != null)
-		        _process.StartInfo.RedirectStandardInput = true;
+		    using (_process = new Process())
+		    {
+		        _process.StartInfo.RedirectStandardError = true;
+		        _process.StartInfo.RedirectStandardOutput = true;
+		        _process.StartInfo.UseShellExecute = false;
+		        _process.StartInfo.CreateNoWindow = true;
+		        _process.StartInfo.WorkingDirectory = fromDirectory;
+		        _process.StartInfo.FileName = exePath;
+		        _process.StartInfo.Arguments = arguments;
+		        if (encoding != null)
+		        {
+		            _process.StartInfo.StandardOutputEncoding = encoding;
+		        }
+		        if (actionForReportingProgress != null)
+		            _processReader = new AsyncProcessOutputReader(_process, progress, actionForReportingProgress);
+		        else
+		            _processReader = new SynchronousProcessOutputReader(_process, progress);
+		        if (standardInputPath != null)
+		            _process.StartInfo.RedirectStandardInput = true;
 
-			try
-			{
-				Debug.WriteLine("CommandLineRunner Starting at " + DateTime.Now.ToString());
-				_process.Start();
-			    if (standardInputPath != null)
-			    {
-			        var myWriter = _process.StandardInput.BaseStream;
-			        var input = File.ReadAllBytes(standardInputPath);
-                    myWriter.Write(input, 0, input.Length);
-                    myWriter.Close(); // no more input
-			    }
-			}
-			catch (Win32Exception error)
-			{
-				throw;
-			}
+		        try
+		        {
+		            Debug.WriteLine("CommandLineRunner Starting at " + DateTime.Now.ToString());
+		            _process.Start();
+		            if (standardInputPath != null)
+		            {
+		                var myWriter = _process.StandardInput.BaseStream;
+		                var input = File.ReadAllBytes(standardInputPath);
+		                myWriter.Write(input, 0, input.Length);
+		                myWriter.Close(); // no more input
+		            }
+		        }
+		        catch (Win32Exception error)
+		        {
+		            throw;
+		        }
 
-			if (secondsBeforeTimeOut > TimeoutSecondsOverrideForUnitTests)
-				secondsBeforeTimeOut = TimeoutSecondsOverrideForUnitTests;
+		        if (secondsBeforeTimeOut > TimeoutSecondsOverrideForUnitTests)
+		            secondsBeforeTimeOut = TimeoutSecondsOverrideForUnitTests;
 
-			bool timedOut = false;
-			Debug.WriteLine("CommandLineRunner Reading at " + DateTime.Now.ToString("HH:mm:ss.ffff"));
-			if (!_processReader.Read(secondsBeforeTimeOut))
-			{
-				timedOut = !progress.CancelRequested;
-				try
-				{
-					if (_process.HasExited)
-					{
-						progress.WriteWarning("Process exited, cancelRequested was {0}", progress.CancelRequested);
-					}
-					else
-					{
-						if (timedOut)
-							progress.WriteWarning("({0}) Timed Out...", exePath);
-						progress.WriteWarning("Killing Process ({0})", exePath);
-						_process.Kill();
-					}
-				}
-				catch (Exception e)
-				{
-					progress.WriteWarning("Exception while killing process, as though the process reader failed to notice that the process was over: {0}", e.Message);
-					progress.WriteWarning("Process.HasExited={0}", _process.HasExited.ToString());
-				}
-			}
-			result.StandardOutput = _processReader.StandardOutput;
-			result.StandardError = _processReader.StandardError;
+		        bool timedOut = false;
+		        Debug.WriteLine("CommandLineRunner Reading at " + DateTime.Now.ToString("HH:mm:ss.ffff"));
+		        if (!_processReader.Read(secondsBeforeTimeOut))
+		        {
+		            timedOut = !progress.CancelRequested;
+		            try
+		            {
+		                if (_process.HasExited)
+		                {
+		                    progress.WriteWarning("Process exited, cancelRequested was {0}", progress.CancelRequested);
+		                }
+		                else
+		                {
+		                    if (timedOut)
+		                        progress.WriteWarning("({0}) Timed Out...", exePath);
+		                    progress.WriteWarning("Killing Process ({0})", exePath);
+		                    _process.Kill();
+		                }
+		            }
+		            catch (Exception e)
+		            {
+		                progress.WriteWarning(
+		                    "Exception while killing process, as though the process reader failed to notice that the process was over: {0}",
+		                    e.Message);
+		                progress.WriteWarning("Process.HasExited={0}", _process.HasExited.ToString());
+		            }
+		        }
+		        result.StandardOutput = _processReader.StandardOutput;
+		        result.StandardError = _processReader.StandardError;
 
-			if (timedOut)
-			{
-				result.StandardError += Environment.NewLine + "Timed Out after waiting " + secondsBeforeTimeOut + " seconds.";
-				result.ExitCode = ExecutionResult.kTimedOut;
-			}
+		        if (timedOut)
+		        {
+		            result.StandardError += Environment.NewLine + "Timed Out after waiting " + secondsBeforeTimeOut +
+		                                    " seconds.";
+		            result.ExitCode = ExecutionResult.kTimedOut;
+		        }
 
-			else if (progress.CancelRequested)
-			{
-				result.StandardError += Environment.NewLine + "User Cancelled.";
-				result.ExitCode = ExecutionResult.kCancelled;
-			}
-			else
-			{
-				result.ExitCode = _process.ExitCode;
-			}
-			return result;
+		        else if (progress.CancelRequested)
+		        {
+		            result.StandardError += Environment.NewLine + "User Cancelled.";
+		            result.ExitCode = ExecutionResult.kCancelled;
+		        }
+		        else
+		        {
+		            result.ExitCode = _process.ExitCode;
+		        }
+		    }
+		    return result;
 		}
 		/// <summary>
 		/// On Windows, We can't get unicode over the command-line barrier, so
