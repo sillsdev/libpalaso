@@ -427,21 +427,36 @@ namespace Palaso.UI.WindowsForms.ClearShare
                     var input = File.ReadAllBytes(path);
                     myWriter.Write(input, 0, input.Length);
                     myWriter.Close(); // no more input
-                    if (process.WaitForExit(5000) && process.ExitCode == 0)
+                    if (process.WaitForExit(5000))
                     {
-                        // Process exited successfully.
-                        // Write the binary data produced by exiftool over the file.
-                        using (var fileStream = new FileStream(path, FileMode.OpenOrCreate))
+                        if (process.ExitCode == 0)
                         {
-                            process.StandardOutput.BaseStream.CopyTo(fileStream);
+                            // Process exited successfully.
+                            // Write the binary data produced by exiftool over the file.
+                            try
+                            {
+                                using (var fileStream = new FileStream(path, FileMode.OpenOrCreate))
+                                {
+                                    process.StandardOutput.BaseStream.CopyTo(fileStream);
+                                }
+
+                            }
+                            catch (UnauthorizedAccessException)
+                            {
+                                MessageBox.Show("Could not write changes to \"" + path + "\". Check whether it is writeable.");
+                            }
+                        }
+                        else
+                        {
+                            // Finished, but with problems. Not a file IO problem, because we're using standard input and output. We should be able to retrieve whatever the process wrote.
+                            MessageBox.Show("Updating metadata for \"" + path + "\" Failed. Please report these details: error code is " + process.ExitCode + " and standard Error contains " + process.StandardError.ReadToEnd());
                         }
                     }
                     else
                     {
-                        // what should we do here?
-                        MessageBox.Show("Could not write changes to " + path + ". Check whether it is writeable.");
-                        Debug.WriteLine(process.StandardError.ReadToEnd());
-                        return;
+                        // Timed out. Ugh.
+                        MessageBox.Show("Updating metadata for \"" + path + "\" took too long. Please report this to the developers.");
+                       return;
                     }
                 }
                 catch (Win32Exception error)
