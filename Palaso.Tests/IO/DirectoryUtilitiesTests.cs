@@ -506,5 +506,40 @@ namespace Palaso.Tests.IO
 			}
 		}
 
+		[Test]
+		[Platform(Exclude = "Win", Reason="Don't know how to test this on Windows")]
+		public void MoveDirectorySafely_MoveFileToDifferentVolume()
+		{
+			// On Linux, /tmp is typicall a ram disk and therefore a different partition from
+			// /var/tmp which is supposed to persist across reboots.
+			// On Mac, /tmp isn't usually a ram disk. However, it's possible to create and mount
+			// loop filesystems (disk images) without root privileges. So it would be possible
+			// to extend this when porting to Mac.
+			if (PathUtilities.GetDeviceNumber("/tmp") == PathUtilities.GetDeviceNumber("/var/tmp"))
+				Assert.Ignore("For this test /tmp and /var/tmp have to be on different partitions");
+
+			var tempFile = Path.Combine("/tmp", Path.GetRandomFileName());
+			var dirOnDifferentVolume = Path.Combine("/var/tmp", Path.GetRandomFileName());
+			Directory.CreateDirectory(dirOnDifferentVolume);
+			using (File.Create(tempFile))
+			using (TempFile.TrackExisting(tempFile))
+			using (TemporaryFolder.TrackExisting(dirOnDifferentVolume))
+			{
+				var destinationFile = Path.Combine(dirOnDifferentVolume, "TempFile");
+				Assert.That(() => DirectoryUtilities.MoveDirectorySafely(tempFile, destinationFile),
+					Throws.Nothing);
+				Assert.That(File.Exists(destinationFile), Is.True);
+				Assert.That(File.Exists(tempFile), Is.False);
+			}
+		}
+
+		[Test]
+		public void MoveDirectorySafely_SourceDirDoesNotExist()
+		{
+			Assert.That(() => DirectoryUtilities.MoveDirectorySafely(
+				Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()),
+				Path.Combine(Path.GetTempPath(), Path.GetRandomFileName())),
+				Throws.InstanceOf<DirectoryNotFoundException>());
+		}
 	}
 }

@@ -71,18 +71,38 @@ namespace Palaso.IO
 				return driveInfo.Name.ToUpper()[0] - 'A' + 1;
 			}
 
-			var process = new Process() { StartInfo = new ProcessStartInfo {
+			// filePath can mean a file or a directory.
+			var pathToCheck = filePath;
+			if (!File.Exists(pathToCheck) && !Directory.Exists(pathToCheck))
+			{
+				pathToCheck = Path.GetDirectoryName(pathToCheck);
+
+				if (!Directory.Exists(pathToCheck))
+					return GetDeviceNumber(pathToCheck);
+			}
+
+			using (var process = new Process())
+			{
+				process.StartInfo = new ProcessStartInfo {
 					FileName = "stat",
-					Arguments = string.Format("-c %d {0}", filePath),
+					Arguments = string.Format("-c %d {0}", pathToCheck),
 					UseShellExecute = false,
 					RedirectStandardOutput = true,
 					CreateNoWindow = true
-				}
-			};
-			process.Start();
-			process.WaitForExit();
-			var output = process.StandardOutput.ReadToEnd();
-			return Convert.ToInt32(output);
+				};
+				process.Start();
+				process.WaitForExit();
+				var output = process.StandardOutput.ReadToEnd();
+				return Convert.ToInt32(output);
+			}
+		}
+
+		public static bool PathsAreOnSameVolume(string firstPath, string secondPath)
+		{
+			if (string.IsNullOrEmpty(firstPath) || string.IsNullOrEmpty(secondPath))
+				return false;
+
+			return PathUtilities.GetDeviceNumber(firstPath) == PathUtilities.GetDeviceNumber(secondPath);
 		}
 
 		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 1)]
