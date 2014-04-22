@@ -418,15 +418,18 @@ namespace Palaso.UI.WindowsForms.ClearShare
                 process.StartInfo.Arguments = arguments.ToString();
                 process.StartInfo.RedirectStandardInput = true;
 
-                try
-                {
-                    Debug.WriteLine("CommandLineRunner Starting at " + DateTime.Now.ToString());
-                    process.Start();
+                Debug.WriteLine("CommandLineRunner Starting at " + DateTime.Now.ToString());
+                process.Start();
 
-                    var myWriter = process.StandardInput.BaseStream;
-                    var input = File.ReadAllBytes(path);
-                    myWriter.Write(input, 0, input.Length);
-                    myWriter.Close(); // no more input
+                var myWriter = process.StandardInput.BaseStream;
+                var input = File.ReadAllBytes(path);
+                myWriter.Write(input, 0, input.Length);
+                myWriter.Close(); // no more input
+                byte[] newFileContent;
+                using (var output = new MemoryStream())
+                {
+                    process.StandardOutput.BaseStream.CopyTo(output);
+
                     if (process.WaitForExit(5000))
                     {
                         if (process.ExitCode == 0)
@@ -437,31 +440,32 @@ namespace Palaso.UI.WindowsForms.ClearShare
                             {
                                 using (var fileStream = new FileStream(path, FileMode.OpenOrCreate))
                                 {
-                                    process.StandardOutput.BaseStream.CopyTo(fileStream);
+                                    output.Seek(0, SeekOrigin.Begin);
+                                    output.CopyTo(fileStream);
                                 }
-
                             }
                             catch (UnauthorizedAccessException)
                             {
-                                MessageBox.Show("Could not write changes to \"" + path + "\". Check whether it is writeable.");
+                                MessageBox.Show("Could not write changes to \"" + path +
+                                                "\". Check whether it is writeable.");
                             }
                         }
                         else
                         {
                             // Finished, but with problems. Not a file IO problem, because we're using standard input and output. We should be able to retrieve whatever the process wrote.
-                            MessageBox.Show("Updating metadata for \"" + path + "\" Failed. Please report these details: error code is " + process.ExitCode + " and standard Error contains " + process.StandardError.ReadToEnd());
+                            MessageBox.Show("Updating metadata for \"" + path +
+                                            "\" Failed. Please report these details: error code is " +
+                                            process.ExitCode + " and standard Error contains " +
+                                            process.StandardError.ReadToEnd());
                         }
                     }
                     else
                     {
                         // Timed out. Ugh.
-                        MessageBox.Show("Updating metadata for \"" + path + "\" took too long. Please report this to the developers.");
-                       return;
+                        MessageBox.Show("Updating metadata for \"" + path +
+                                        "\" took too long. Please report this to the developers.");
+                        return;
                     }
-                }
-                catch (Win32Exception error)
-                {
-                    throw;
                 }
 
                 // -XMP-dc:Rights="Copyright SIL International" -XMP-xmpRights:Marked="True" -XMP-cc:License="http://creativecommons.org/licenses/by-sa/2.0/" *.png");
