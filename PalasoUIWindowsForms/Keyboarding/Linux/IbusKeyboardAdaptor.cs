@@ -424,7 +424,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			// Don't turn on any Ibus IME keyboard until requested explicitly.
 			// If we do nothing, the first Ibus IME keyboard is automatically activated.
 			IBusCommunicator.FocusIn();
-			if (GlobalCachedInputContext.InputContext != null && GetIBusKeyboards().Length > 0)
+			if (GlobalCachedInputContext.InputContext != null)
 			{
 				var context = GlobalCachedInputContext.InputContext;
 				context.Reset();
