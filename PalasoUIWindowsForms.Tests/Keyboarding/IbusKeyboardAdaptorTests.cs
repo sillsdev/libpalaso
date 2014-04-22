@@ -20,6 +20,8 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 	{
 		class DoNothingIbusCommunicator: IIbusCommunicator
 		{
+			private IBusConnection _connection = IBusConnectionFactory.Create();
+
 			public event Action<object> CommitText;
 
 			public event Action<object, int> UpdatePreeditText;
@@ -78,12 +80,15 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			{
 				get
 				{
-					throw new NotImplementedException();
+					return _connection;
 				}
 			}
 
 			public void Dispose()
 			{
+				if (_connection != null)
+					_connection.Dispose();
+				_connection = null;
 			}
 		}
 
