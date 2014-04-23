@@ -54,6 +54,7 @@ namespace PalasoUIWindowsForms.TestApp
 			this.btnShowReleaseNotes = new System.Windows.Forms.Button();
 			this.superToolTip1 = new Palaso.UI.WindowsForms.SuperToolTip.SuperToolTip(this.components);
 			this.label1 = new System.Windows.Forms.Label();
+			this.btnMetaDataEditor = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// btnFolderBrowserControl
@@ -145,10 +146,23 @@ namespace PalasoUIWindowsForms.TestApp
 			// 
 			// TestAppForm
 			// 
+			// btnMetaDataEditor
+			// 
+			this.btnMetaDataEditor.Location = new System.Drawing.Point(12, 157);
+			this.btnMetaDataEditor.Name = "btnMetaDataEditor";
+			this.btnMetaDataEditor.Size = new System.Drawing.Size(157, 23);
+			this.btnMetaDataEditor.TabIndex = 0;
+			this.btnMetaDataEditor.Text = "Meta Data Editor";
+			this.btnMetaDataEditor.UseVisualStyleBackColor = true;
+			this.btnMetaDataEditor.Click += new System.EventHandler(this.OnShowMetaDataEditorClicked);
+			// 
+			// TestAppForm
+			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(284, 262);
 			this.Controls.Add(this.label1);
+			this.Controls.Add(this.btnMetaDataEditor);
 			this.Controls.Add(this.btnShowReleaseNotes);
 			this.Controls.Add(this.btnSilAboutBox);
 			this.Controls.Add(this.btnArtOfReading);
@@ -172,5 +186,6 @@ namespace PalasoUIWindowsForms.TestApp
 		private System.Windows.Forms.Button btnShowReleaseNotes;
 		private Palaso.UI.WindowsForms.SuperToolTip.SuperToolTip superToolTip1;
 		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Button btnMetaDataEditor;
 	}
 }
