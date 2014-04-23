@@ -4,12 +4,23 @@ using System;
 using System.IO;
 using NUnit.Framework;
 using Palaso.IO;
+using System.Diagnostics;
+using Palaso.TestUtilities;
 
 namespace Palaso.Tests.IO
 {
 	[TestFixture]
 	public class PathUtilitiesTests
 	{
+		private bool TmpAndRootOnDifferentPartitions;
+
+		[TestFixtureSetUp]
+		public void FixtureSetUp()
+		{
+			if (Palaso.PlatformUtilities.Platform.IsLinux)
+				TmpAndRootOnDifferentPartitions = StatFile("/tmp") != StatFile("/");
+		}
+
 		[Test]
 		public void DeleteToRecycleBin_FileDeleted()
 		{
@@ -114,6 +125,163 @@ namespace Palaso.Tests.IO
 
 			// Verify
 			Assert.That(result, Is.False);
+		}
+
+		[Test]
+		public void PathsAreOnSameVolume_SameFile()
+		{
+			using (var tempFile = new TempFile())
+			{
+				Assert.That(PathUtilities.PathsAreOnSameVolume(tempFile.Path, tempFile.Path),
+					Is.True);
+			}
+		}
+
+		[Test]
+		public void PathsAreOnSameVolume_SameVolume()
+		{
+			using (var tempFile1 = new TempFile())
+			using (var tempFile2 = new TempFile())
+			{
+				Assert.That(PathUtilities.PathsAreOnSameVolume(tempFile1.Path, tempFile2.Path),
+					Is.True);
+			}
+		}
+
+		[Test]
+		public void PathsAreOnSameVolume_OneEmpty()
+		{
+			using (var tempFile = new TempFile())
+			{
+				Assert.That(PathUtilities.PathsAreOnSameVolume(tempFile.Path, string.Empty),
+					Is.False);
+				Assert.That(PathUtilities.PathsAreOnSameVolume(string.Empty, tempFile.Path),
+					Is.False);
+			}
+		}
+
+		[Test]
+		public void PathsAreOnSameVolume_OneNull()
+		{
+			using (var tempFile = new TempFile())
+			{
+				Assert.That(PathUtilities.PathsAreOnSameVolume(tempFile.Path, null),
+					Is.False);
+				Assert.That(PathUtilities.PathsAreOnSameVolume(null, tempFile.Path),
+					Is.False);
+			}
+		}
+
+		[Test]
+		[Platform(Include = "Linux", Reason="Linux specific test")]
+		public void PathsAreOnSameVolume_TwoVolumesLinux()
+		{
+			// On Linux, /tmp is typically a ram disk and therefore a different partition from
+			// /var/tmp which is supposed to persist across reboots.
+			// On Mac, /tmp isn't usually a ram disk. However, it's possible to create and mount
+			// loop filesystems (disk images) without root privileges. So it would be possible
+			// to extend this when porting to Mac.
+			if (PathUtilities.GetDeviceNumber("/tmp") == PathUtilities.GetDeviceNumber("/var/tmp"))
+				Assert.Ignore("For this test /tmp and /var/tmp have to be on different partitions");
+
+			var tempFile1 = Path.Combine("/tmp", Path.GetRandomFileName());
+			var tempFile2 = Path.Combine("/var/tmp", Path.GetRandomFileName());
+			using (File.Create(tempFile1))
+			using (File.Create(tempFile2))
+			using (TempFile.TrackExisting(tempFile1))
+			using (TempFile.TrackExisting(tempFile2))
+			{
+				Assert.That(PathUtilities.PathsAreOnSameVolume(tempFile1, tempFile2),
+					Is.False);
+			}
+		}
+
+		[Test]
+		[Platform(Include = "Win", Reason="Windows specific test")]
+		public void PathsAreOnSameVolume_TwoVolumesWindows()
+		{
+			if (Environment.GetLogicalDrives().Length < 2)
+				Assert.Ignore("For this test we need at least two drives");
+
+			var tempFile1 = Path.Combine(Environment.GetLogicalDrives()[0], "file1");
+			var tempFile2 = Path.Combine(Environment.GetLogicalDrives()[1], "file2");
+			Assert.That(PathUtilities.PathsAreOnSameVolume(tempFile1, tempFile2),
+				Is.False);
+		}
+
+		private string StatFile(string path)
+		{
+			using (var process = new Process())
+			{
+				process.StartInfo = new ProcessStartInfo {
+					FileName = "stat",
+					Arguments = string.Format("-c %d {0}", path),
+					UseShellExecute = false,
+					RedirectStandardOutput = true,
+					CreateNoWindow = true
+				};
+				process.Start();
+				process.WaitForExit();
+				return process.StandardOutput.ReadToEnd();
+			}
+		}
+
+		[Test]
+		[Platform(Include = "Linux", Reason="Linux specific test")]
+		public void GetDeviceNumber_NonExistingFileReturnsNumberOfParentDirectory()
+		{
+			if (!TmpAndRootOnDifferentPartitions)
+				Assert.Ignore("For this test / and /tmp have to be on different partitions");
+
+			var deviceNumber = PathUtilities.GetDeviceNumber(Path.Combine("/tmp", Path.GetRandomFileName()));
+			Assert.That(deviceNumber, Is.EqualTo(PathUtilities.GetDeviceNumber("/tmp")));
+		}
+
+		[Test]
+		[Platform(Include = "Linux", Reason="Linux specific test")]
+		public void GetDeviceNumber_ExistingFileReturnsNumberOfParentDirectory()
+		{
+			if (!TmpAndRootOnDifferentPartitions)
+				Assert.Ignore("For this test / and /tmp have to be on different partitions");
+
+			var fileName = Path.Combine("/tmp", Path.GetRandomFileName());
+
+			using (File.Create(fileName))
+			using (TempFile.TrackExisting(fileName))
+			{
+				var deviceNumber = PathUtilities.GetDeviceNumber(fileName);
+				Assert.That(deviceNumber, Is.EqualTo(PathUtilities.GetDeviceNumber("/tmp")));
+			}
+		}
+
+		[Test]
+		[Platform(Include = "Linux", Reason="Linux specific test")]
+		public void GetDeviceNumber_FileInNonExistingSubdirectoryReturnsNumberOfParentDirectory()
+		{
+			if (!TmpAndRootOnDifferentPartitions)
+				Assert.Ignore("For this test / and /tmp have to be on different partitions");
+
+			var deviceNumber = PathUtilities.GetDeviceNumber(
+				Path.Combine("/tmp", Path.GetRandomFileName(), Path.GetRandomFileName()));
+			Assert.That(deviceNumber, Is.EqualTo(PathUtilities.GetDeviceNumber("/tmp")));
+		}
+
+		[Test]
+		[Platform(Include = "Linux", Reason="Linux specific test")]
+		public void GetDeviceNumber_NonExistingFileInExistingSubdirectoryReturnsNumberOfParentDirectory()
+		{
+			if (!TmpAndRootOnDifferentPartitions)
+				Assert.Ignore("For this test / and /tmp have to be on different partitions");
+
+			var dirName = Path.Combine("/tmp", Path.GetRandomFileName());
+			Directory.CreateDirectory(dirName);
+
+			using (TemporaryFolder.TrackExisting(dirName))
+			{
+				var deviceNumber = PathUtilities.GetDeviceNumber(
+					Path.Combine(dirName, Path.GetRandomFileName()));
+				Assert.That(deviceNumber, Is.EqualTo(PathUtilities.GetDeviceNumber("/tmp")));
+			}
 		}
 
 	}

@@ -134,37 +134,39 @@ namespace Palaso.IO
 		}
 
 		/// <summary>
-		/// Directory.Move fails if the src and dest are on different partitions (e.g., temp and
-		/// documents are on different drives). This will do a move if it can, else do a copy
-		/// followed by a delete.
+		/// Move <paramref name="sourcePath"/> to <paramref name="destinationPath"/>. If src
+		/// and dest are on different partitions (e.g., temp and documents are on different
+		/// drives) then this method will do a copy followed by a delete. This is in contrast
+		/// to Directory.Move which fails if src and dest are on different partitions.
 		/// </summary>
+		/// <param name="sourcePath">The source directory or file, similar to Directory.Move</param>
+		/// <param name="destinationPath">The destination directory or file. If <paramref name="sourcePath"/>
+		/// is a file then <paramref name="destinationPath"/> also needs to be a file.</param>
 		public static void MoveDirectorySafely(string sourcePath, string destinationPath)
 		{
-			if(Path.GetPathRoot(destinationPath).ToLower() == Path.GetPathRoot(sourcePath).ToLower())
+			if (PathUtilities.PathsAreOnSameVolume(destinationPath, sourcePath))
 			{
-				try
-				{
-					Directory.Move(sourcePath, destinationPath);
-					return;
-				}
-				catch (IOException)
-				{
-					// We get an IOException if
-					// - An attempt was made to move a directory to a different volume (which
-					//   can happen on Linux despite the test above).
-					// - or destDirName already exists.
-					// - or The sourceDirName and destDirName parameters refer to the same file
-					//   or directory.
-					// In the first case we want to try the copy approach.
-					if (Path.GetFullPath(sourcePath).ToLower() == Path.GetFullPath(destinationPath).ToLower() ||
-						Directory.Exists(destinationPath) || File.Exists(destinationPath))
-					{
-						throw;
-					}
-				}
+				Directory.Move(sourcePath, destinationPath);
+				return;
 			}
-			CopyDirectoryWithException(sourcePath, destinationPath);
-			Directory.Delete(sourcePath, true);
+			if (Directory.Exists(sourcePath))
+			{
+				CopyDirectoryWithException(sourcePath, destinationPath);
+				Directory.Delete(sourcePath, true);
+			}
+			else if (File.Exists(sourcePath))
+			{
+				if (File.Exists(destinationPath) || Directory.Exists(destinationPath))
+					throw new IOException("Cannot create a file when that file already exists.");
+
+				File.Copy(sourcePath, destinationPath);
+				File.Delete(sourcePath);
+			}
+			else
+			{
+				throw new DirectoryNotFoundException(
+					string.Format("Could not find a part of the path '{0}'", sourcePath));
+			}
 		}
 
 		private static void ReportFailedCopyAndCleanUp(Exception error, string srcDirectory, string dstDirectory)
