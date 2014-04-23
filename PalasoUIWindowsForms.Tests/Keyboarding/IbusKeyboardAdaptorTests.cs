@@ -107,6 +107,11 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			protected override void InitKeyboards()
 			{
 			}
+
+			protected override IBusEngineDesc[] GetIBusKeyboards()
+			{
+				return new IBusEngineDesc[0];
+			}
 		}
 
 		private static IbusKeyboardDescription CreateMockIbusKeyboard(IbusKeyboardAdaptor ibusKeyboardAdapter,
