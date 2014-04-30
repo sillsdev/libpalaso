@@ -47,10 +47,12 @@ namespace PalasoUIWindowsForms.TestApp
 			this.btnLookupISOCodeDialog = new System.Windows.Forms.Button();
 			this.btnWritingSystemSetupDialog = new System.Windows.Forms.Button();
 			this.btnArtOfReading = new System.Windows.Forms.Button();
+			this.btnSilAboutBox = new System.Windows.Forms.Button();
+			this.btnShowReleaseNotes = new System.Windows.Forms.Button();
 			this.SuspendLayout();
-			//
+			// 
 			// btnFolderBrowserControl
-			//
+			// 
 			this.btnFolderBrowserControl.Location = new System.Drawing.Point(12, 12);
 			this.btnFolderBrowserControl.Name = "btnFolderBrowserControl";
 			this.btnFolderBrowserControl.Size = new System.Drawing.Size(157, 23);
@@ -58,9 +60,9 @@ namespace PalasoUIWindowsForms.TestApp
 			this.btnFolderBrowserControl.Text = "FolderBrowserControl";
 			this.btnFolderBrowserControl.UseVisualStyleBackColor = true;
 			this.btnFolderBrowserControl.Click += new System.EventHandler(this.OnFolderBrowserControlClicked);
-			//
+			// 
 			// btnLookupISOCodeDialog
-			//
+			// 
 			this.btnLookupISOCodeDialog.Location = new System.Drawing.Point(12, 41);
 			this.btnLookupISOCodeDialog.Name = "btnLookupISOCodeDialog";
 			this.btnLookupISOCodeDialog.Size = new System.Drawing.Size(157, 23);
@@ -68,9 +70,9 @@ namespace PalasoUIWindowsForms.TestApp
 			this.btnLookupISOCodeDialog.Text = "LookupISOCodeDialog";
 			this.btnLookupISOCodeDialog.UseVisualStyleBackColor = true;
 			this.btnLookupISOCodeDialog.Click += new System.EventHandler(this.OnLookupISOCodeDialogClicked);
-			//
+			// 
 			// btnWritingSystemSetupDialog
-			//
+			// 
 			this.btnWritingSystemSetupDialog.Location = new System.Drawing.Point(12, 70);
 			this.btnWritingSystemSetupDialog.Name = "btnWritingSystemSetupDialog";
 			this.btnWritingSystemSetupDialog.Size = new System.Drawing.Size(157, 23);
@@ -78,9 +80,9 @@ namespace PalasoUIWindowsForms.TestApp
 			this.btnWritingSystemSetupDialog.Text = "WritingSystemSetupDialog";
 			this.btnWritingSystemSetupDialog.UseVisualStyleBackColor = true;
 			this.btnWritingSystemSetupDialog.Click += new System.EventHandler(this.OnWritingSystemSetupDialogClicked);
-			//
+			// 
 			// btnArtOfReading
-			//
+			// 
 			this.btnArtOfReading.Location = new System.Drawing.Point(12, 99);
 			this.btnArtOfReading.Name = "btnArtOfReading";
 			this.btnArtOfReading.Size = new System.Drawing.Size(157, 23);
@@ -88,17 +90,39 @@ namespace PalasoUIWindowsForms.TestApp
 			this.btnArtOfReading.Text = "ArtOfReading";
 			this.btnArtOfReading.UseVisualStyleBackColor = true;
 			this.btnArtOfReading.Click += new System.EventHandler(this.OnArtOfReadingClicked);
-			//
-			// TestApp
-			//
+			// 
+			// btnSilAboutBox
+			// 
+			this.btnSilAboutBox.Location = new System.Drawing.Point(12, 128);
+			this.btnSilAboutBox.Name = "btnSilAboutBox";
+			this.btnSilAboutBox.Size = new System.Drawing.Size(157, 23);
+			this.btnSilAboutBox.TabIndex = 0;
+			this.btnSilAboutBox.Text = "SIL AboutBox";
+			this.btnSilAboutBox.UseVisualStyleBackColor = true;
+			this.btnSilAboutBox.Click += new System.EventHandler(this.OnSilAboutBoxClicked);
+			// 
+			// btnShowReleaseNotes
+			// 
+			this.btnShowReleaseNotes.Location = new System.Drawing.Point(12, 157);
+			this.btnShowReleaseNotes.Name = "btnShowReleaseNotes";
+			this.btnShowReleaseNotes.Size = new System.Drawing.Size(157, 23);
+			this.btnShowReleaseNotes.TabIndex = 0;
+			this.btnShowReleaseNotes.Text = "Show Release Notes";
+			this.btnShowReleaseNotes.UseVisualStyleBackColor = true;
+			this.btnShowReleaseNotes.Click += new System.EventHandler(this.OnShowReleaseNotesClicked);
+			// 
+			// TestAppForm
+			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(284, 262);
+			this.Controls.Add(this.btnShowReleaseNotes);
+			this.Controls.Add(this.btnSilAboutBox);
 			this.Controls.Add(this.btnArtOfReading);
 			this.Controls.Add(this.btnWritingSystemSetupDialog);
 			this.Controls.Add(this.btnLookupISOCodeDialog);
 			this.Controls.Add(this.btnFolderBrowserControl);
-			this.Name = "TestApp";
+			this.Name = "TestAppForm";
 			this.Text = "PalasoUIWindowsForms.TestApp";
 			this.ResumeLayout(false);
 
@@ -110,5 +134,7 @@ namespace PalasoUIWindowsForms.TestApp
 		private System.Windows.Forms.Button btnLookupISOCodeDialog;
 		private System.Windows.Forms.Button btnWritingSystemSetupDialog;
 		private System.Windows.Forms.Button btnArtOfReading;
+		private System.Windows.Forms.Button btnSilAboutBox;
+		private System.Windows.Forms.Button btnShowReleaseNotes;
 	}
 }
