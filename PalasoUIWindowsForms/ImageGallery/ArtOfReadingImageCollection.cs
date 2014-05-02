@@ -188,11 +188,11 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
 			{
 				var unixPaths = new[]
-									{
-										@"/usr/share/ArtOfReading/images",	// standard LSB/FHS location
-										@"c:\art of reading\images", @"/usr/share/SIL/ArtOfReading/images",
-										@"/var/share/ArtOfReading/images"
-									};
+				{
+					@"/usr/share/ArtOfReading/images",		// new package location (standard LSB/FHS location)
+					@"/usr/share/SIL/ArtOfReading/images",	// old (lost) package location
+					@"/var/share/ArtOfReading/images"		// obsolete test location (?)
+				};
 
 				foreach (var path in unixPaths)
 				{

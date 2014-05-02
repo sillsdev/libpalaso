@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -22,6 +23,13 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			InitializeComponent();
 			_thumbnailViewer.CaptionMethod = ((s) => string.Empty);//don't show a caption
 			_searchResultStats.Text = "";
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			{
+				// For Linux, we can install the package if requested.
+				this.betterLinkLabel1.Text = "Install the Art Of Reading package (this may be very slow)";
+				this.betterLinkLabel1.URL = null;
+				this.betterLinkLabel1.LinkClicked += InstallLinkClicked;
+			}
 		}
 
 		public void Dispose()
@@ -194,6 +202,50 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			_searchTermsBox.Focus();
 		}
 
-
+		/// <summary>
+		/// Try to install the artofreading package if possible.  Use a GUI program if
+		/// possible, but if not, try the command-line program with a GUI password
+		/// dialog.
+		/// </summary>
+		/// <remarks>
+		/// This is potentially so slow (300MB download) that we fire off the program
+		/// but don't wait for it to finish.  (On Windows, it fires off a web page to
+		/// start the download and doesn't wait.)
+		/// </remarks>
+		private void InstallLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			if (Environment.OSVersion.Platform != PlatformID.Unix)
+				return;
+			// Install the artofreading package if at all possible.
+			if (File.Exists("/usr/bin/software-center"))
+			{
+				using (var process = new Process())
+				{
+					process.StartInfo = new ProcessStartInfo {
+						FileName = "/usr/bin/python",
+						Arguments = "/usr/bin/software-center artofreading",
+						UseShellExecute = false,
+						RedirectStandardOutput = false,
+						CreateNoWindow = false
+					};
+					process.Start();
+				}
+			}
+			else if (File.Exists("/usr/bin/ssh-askpass"))
+			{
+				using (var process = new Process())
+				{
+					process.StartInfo = new ProcessStartInfo {
+						FileName = "/usr/bin/sudo",
+						Arguments = "-A /usr/bin/apt-get -y install artofreading",
+						UseShellExecute = false,
+						RedirectStandardOutput = false,
+						CreateNoWindow = false
+					};
+					process.StartInfo.EnvironmentVariables.Add("SUDO_ASKPASS", "/usr/bin/ssh-askpass");
+					process.Start();
+				}
+			}
+		}
 	}
 }
