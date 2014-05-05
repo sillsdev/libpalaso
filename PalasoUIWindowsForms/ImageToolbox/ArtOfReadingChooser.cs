@@ -208,9 +208,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// dialog.
 		/// </summary>
 		/// <remarks>
-		/// This is potentially so slow (300MB download) that we fire off the program
-		/// but don't wait for it to finish.  (On Windows, it fires off a web page to
-		/// start the download and doesn't wait.)
+		/// On Windows, the link label opens a web page to let the user download the
+		/// installer.  This is the analogous behavior for Linux, but is potentially
+		/// so slow (300MB download) that we fire off the program without waiting for
+		/// it to finish.
 		/// </remarks>
 		private void InstallLinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
@@ -223,7 +224,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				{
 					process.StartInfo = new ProcessStartInfo {
 						FileName = "/usr/bin/python",
-						Arguments = "/usr/bin/software-center artofreading",
+						Arguments = "/usr/bin/software-center art-of-reading",
 						UseShellExecute = false,
 						RedirectStandardOutput = false,
 						CreateNoWindow = false
@@ -237,7 +238,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				{
 					process.StartInfo = new ProcessStartInfo {
 						FileName = "/usr/bin/sudo",
-						Arguments = "-A /usr/bin/apt-get -y install artofreading",
+						Arguments = "-A /usr/bin/apt-get -y install art-of-reading",
 						UseShellExecute = false,
 						RedirectStandardOutput = false,
 						CreateNoWindow = false
