@@ -55,6 +55,7 @@ namespace Palaso.Reporting
 				s_singleton.BeginGoogleAnalytics(domain, googleAnalyticsAccountCode, reportAsDeveloper);
 				settings.PreviousVersion = ErrorReport.VersionNumberString;
 				settings.PreviousLaunchDate = DateTime.Now.Date;
+				s_singleton._mostRecentArea = "Initializing"; // Seems more useful to put in something in case an error occurs before app gets this set.
 			}
 
 		/// <summary>

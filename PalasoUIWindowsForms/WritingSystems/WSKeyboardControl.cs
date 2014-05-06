@@ -59,6 +59,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	// Keyman is not supported, setup link should not say "Windows".
 			_keymanConfigurationLink.Visible = false;
 			_keyboardSettingsLink.Text = L10NSharp.LocalizationManager.GetString("WSKeyboardControl.SetupKeyboards", "Set up keyboards");
+
+			// The sequence of Events in Mono dictate using GotFocus instead of Enter as the point
+			// when we want to assign keyboard and font to this textbox.  (For some reason, using
+			// Enter works fine for the WSFontControl._testArea textbox control.)
+			this._testArea.Enter -= new System.EventHandler(this._testArea_Enter);
+			this._testArea.GotFocus += new System.EventHandler(this._testArea_Enter);
 #endif
 		}
 
@@ -321,7 +327,15 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			string arguments = null;
 
 #if MONO
-			program = "ibus-setup";
+			if (KeyboardController.CombinedKeyboardHandling)
+			{
+				program = "/usr/bin/gnome-control-center";
+				arguments = "region layouts";
+			}
+			else
+			{
+				program = "/usr/bin/ibus-setup";
+			}
 #else
 			program = Path.Combine(
 				Environment.GetFolderPath(Environment.SpecialFolder.System), @"control.exe");

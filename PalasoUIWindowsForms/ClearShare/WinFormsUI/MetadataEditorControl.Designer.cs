@@ -43,7 +43,7 @@
 			this._creativeCommons = new System.Windows.Forms.RadioButton();
 			this._unknownLicense = new System.Windows.Forms.RadioButton();
 			this._customLicense = new System.Windows.Forms.RadioButton();
-			this._customLicenseDescription = new System.Windows.Forms.TextBox();
+			this._customRightsStatement = new System.Windows.Forms.TextBox();
 			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
 			this.betterLabel2 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this._illustratorLabel = new System.Windows.Forms.Label();
@@ -252,19 +252,19 @@
 			this._customLicense.UseVisualStyleBackColor = true;
 			this._customLicense.CheckedChanged += new System.EventHandler(this.OnLicenseComponentChanged);
 			//
-			// _customLicenseDescription
+			// _customRightsStatement
 			//
-			this._customLicenseDescription.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._L10NSharpExtender.SetLocalizableToolTip(this._customLicenseDescription, null);
-			this._L10NSharpExtender.SetLocalizationComment(this._customLicenseDescription, null);
-			this._L10NSharpExtender.SetLocalizationPriority(this._customLicenseDescription, L10NSharp.LocalizationPriority.NotLocalizable);
-			this._L10NSharpExtender.SetLocalizingId(this._customLicenseDescription, "MetadataEditor.MetadataEditorControl._customLicenseDescription");
-			this._customLicenseDescription.Location = new System.Drawing.Point(62, 450);
-			this._customLicenseDescription.Multiline = true;
-			this._customLicenseDescription.Name = "_customLicenseDescription";
-			this._customLicenseDescription.Size = new System.Drawing.Size(268, 67);
-			this._customLicenseDescription.TabIndex = 3;
-			this._customLicenseDescription.TextChanged += new System.EventHandler(this._customLicenseDescription_TextChanged);
+			this._customRightsStatement.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._L10NSharpExtender.SetLocalizableToolTip(this._customRightsStatement, null);
+			this._L10NSharpExtender.SetLocalizationComment(this._customRightsStatement, null);
+			this._L10NSharpExtender.SetLocalizationPriority(this._customRightsStatement, L10NSharp.LocalizationPriority.NotLocalizable);
+			this._L10NSharpExtender.SetLocalizingId(this._customRightsStatement, "MetadataEditor.MetadataEditorControl._customRightsStatement");
+			this._customRightsStatement.Location = new System.Drawing.Point(62, 450);
+			this._customRightsStatement.Multiline = true;
+			this._customRightsStatement.Name = "_customRightsStatement";
+			this._customRightsStatement.Size = new System.Drawing.Size(268, 67);
+			this._customRightsStatement.TabIndex = 3;
+			this._customRightsStatement.TextChanged += new System.EventHandler(this._customLicenseDescription_TextChanged);
 			//
 			// _L10NSharpExtender
 			//
@@ -457,7 +457,7 @@
 			this.Controls.Add(this._linkToRefinedCreativeCommonsWarning);
 			this.Controls.Add(this._linkToDefintionOfNonCommercial);
 			this.Controls.Add(this.tableLayoutPanel1);
-			this.Controls.Add(this._customLicenseDescription);
+			this.Controls.Add(this._customRightsStatement);
 			this.Controls.Add(this._customLicense);
 			this.Controls.Add(this._unknownLicense);
 			this.Controls.Add(this._creativeCommons);
@@ -500,7 +500,7 @@
 		private System.Windows.Forms.RadioButton _creativeCommons;
 		private System.Windows.Forms.RadioButton _unknownLicense;
 		private System.Windows.Forms.RadioButton _customLicense;
-		private System.Windows.Forms.TextBox _customLicenseDescription;
+		private System.Windows.Forms.TextBox _customRightsStatement;
 		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
 		private System.Windows.Forms.Label label2;

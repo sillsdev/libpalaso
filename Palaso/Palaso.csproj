@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -222,6 +222,7 @@
 	<Compile Include="Network\HttpUtilityFromMono.cs" />
 	<Compile Include="Network\ProxyCredentialSettings.Designer.cs" />
 	<Compile Include="Network\RobustNetworkOperation.cs" />
+	<Compile Include="PalasoSetup.cs" />
 	<Compile Include="Progress\Commands\AsyncCommand.cs" />
 	<Compile Include="Progress\BackgroundWorkerState.cs" />
 	<Compile Include="Progress\Commands\BasicCommand.cs" />
@@ -379,6 +380,8 @@
 	<Compile Include="Xml\XmlSerializationHelper.cs" />
 	<Compile Include="Xml\XmlUtils.cs" />
 	<Compile Include="Xml\XmlWriterExtensions.cs" />
+    <Compile Include="PlatformUtilities\Platform.cs" />
+    <Compile Include="IO\PathUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="Properties\Resources.resx">

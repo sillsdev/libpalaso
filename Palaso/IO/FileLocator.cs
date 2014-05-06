@@ -1,10 +1,13 @@
-﻿using System;
+﻿// Copyright (c) 2014 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Win32;
 using Palaso.Code;
+using Palaso.PlatformUtilities;
 using Palaso.Reporting;
 using Palaso.Extensions;
 
@@ -174,26 +177,93 @@ namespace Palaso.IO
 			}
 		}
 
+		private static string LocateExecutableDistributedWithApplication(string[] partsOfTheSubPath)
+		{
+			var exe = GetFileDistributedWithApplication(true, partsOfTheSubPath);
+			if (string.IsNullOrEmpty(exe))
+			{
+				var newParts = new List<string>(partsOfTheSubPath);
+				newParts.Insert(0, Platform.IsWindows ? "Windows" : "Linux");
+				exe = GetFileDistributedWithApplication(true, newParts.ToArray());
+			}
+			return exe;
+		}
 
 		/// <summary>
-		/// Find a file which, on a development machine, lives in [solution]/[distFileFolderName]/[subPath],
+		/// Find an executable file which, on a development machine, lives in
+		/// [solution]/[distFileFolderName]/[subPath1]/[subPathN] or
+		/// [solution]/[distFileFolderName]/[platform]/[subPath1]/[subPathN]
 		/// and when installed, lives in
-		/// [applicationFolder]/[distFileFolderName]/[subPath1]/[subPathN]  or
-		/// [applicationFolder]/[subPath]/[subPathN]
+		/// [applicationFolder]/[distFileFolderName]/[subPath1]/[subPathN] or
+		/// [applicationFolder]/[distFileFolderName]/[platform]/[subPath1]/[subPathN] or
+		/// [applicationFolder]/[subPath1]/[subPathN]. If the executable can't be found we
+		/// search in the ProgramFiles folder ([programfiles]/[subPath1]/[subPathN]) on Windows,
+		/// and in the folders included in the PATH environment variable on Linux.
+		/// When the executable has a prefix of ".exe" we're running on Linux we also
+		/// search for files without the prefix.
 		/// </summary>
-		/// <example>GetFileDistributedWithApplication("info", "releaseNotes.htm");</example>
-		public static string GetFileDistributedWithApplication(bool optional, params string[] partsOfTheSubPath)
+		/// <example>GetFileDistributedWithApplication("exiftool.exe");</example>
+		public static string LocateExecutable(bool throwExceptionIfNotFound, params string[] partsOfTheSubPath)
 		{
-			foreach (var directoryHoldingFiles in new []{null, "DistFiles", "common" /*for wesay*/})
+			var exe = LocateExecutableDistributedWithApplication(partsOfTheSubPath);
+			if (string.IsNullOrEmpty(exe) && Platform.IsLinux)
 			{
-				var path = FileLocator.DirectoryOfApplicationOrSolution;
-				path = FileLocator.DirectoryOfApplicationOrSolution;
-				if(directoryHoldingFiles!=null)
-					path = Path.Combine(path, directoryHoldingFiles);
+				var newParts = new List<string>(partsOfTheSubPath);
+				newParts[newParts.Count - 1] = Path.GetFileNameWithoutExtension(newParts.Last());
+				exe = LocateExecutableDistributedWithApplication(newParts.ToArray());
+			}
+
+			if (string.IsNullOrEmpty(exe))
+			{
+				var newParts = new List<string>(partsOfTheSubPath);
+				var exeFileName = newParts.Last();
+				newParts.Remove(exeFileName);
+				exe = LocateInProgramFiles(exeFileName, true, newParts.ToArray());
+
+				if (string.IsNullOrEmpty(exe) && Platform.IsLinux)
+				{
+					exeFileName = Path.GetFileNameWithoutExtension(exeFileName);
+					exe = LocateInProgramFiles(exeFileName, true, newParts.ToArray());
+				}
+			}
+
+			if (!string.IsNullOrEmpty(exe))
+				return exe;
+			if (throwExceptionIfNotFound)
+			{
+				var subPath = string.Empty;
+				foreach (var part in partsOfTheSubPath)
+				{
+					subPath = Path.Combine(subPath, part);
+				}
+				throw new ApplicationException("Could not locate the required executable, " + subPath);
+			}
+
+			return null;
+		}
+
+		public static string LocateExecutable(params string[] partsOfTheSubPath)
+		{
+			return LocateExecutable(true, partsOfTheSubPath);
+		}
+
+
+	    /// <summary>
+	    /// Find a file which, on a development machine, lives in [solution]/[distFileFolderName]/[subPath],
+	    /// and when installed, lives in
+	    /// [applicationFolder]/[distFileFolderName]/[subPath1]/[subPathN]  or
+	    /// [applicationFolder]/[subPath]/[subPathN]
+	    /// </summary>
+	    /// <example>GetFileDistributedWithApplication("info", "releaseNotes.htm");</example>
+	    public static string GetFileDistributedWithApplication(bool optional, params string[] partsOfTheSubPath)
+	    {
+	        foreach (var directoryHoldingFiles in new[] {"", "DistFiles", "common" /*for wesay*/, "src" /*for Bloom*/})
+			{
+                var path = Path.Combine(FileLocator.DirectoryOfApplicationOrSolution, directoryHoldingFiles);
 
 				foreach (var part in partsOfTheSubPath)
 				{
-					path = System.IO.Path.Combine(path, part);
+					path = Path.Combine(path, part);
 				}
 				if (File.Exists(path))
 					return path;
@@ -203,9 +273,9 @@ namespace Palaso.IO
 				return null;
 			string subpath="";
 			foreach (var part in partsOfTheSubPath)
-				{
-					subpath = System.IO.Path.Combine(subpath, part);
-				}
+			{
+				subpath = Path.Combine(subpath, part);
+			}
 			throw new ApplicationException("Could not locate the required file, "+ subpath);
 		}
 
@@ -217,9 +287,9 @@ namespace Palaso.IO
 		/// </summary>
 		/// <example>GetFileDistributedWithApplication("info", "releaseNotes.htm");</example>
 		public static string GetFileDistributedWithApplication(params string[] partsOfTheSubPath)
-			{
-				return GetFileDistributedWithApplication(false, partsOfTheSubPath);
-			}
+		{
+			return GetFileDistributedWithApplication(false, partsOfTheSubPath);
+		}
 
 
 		/// <summary>
@@ -238,23 +308,16 @@ namespace Palaso.IO
 			if (Directory.Exists(path))
 				return path;
 
-			//try distfiles
-			path = FileLocator.DirectoryOfApplicationOrSolution;
-			path = Path.Combine(path,"DistFiles");
-			foreach (var part in partsOfTheSubPath)
-			{
-				path = System.IO.Path.Combine(path, part);
-			}
-			if (Directory.Exists(path))
-				return path;
-
-			//try src (e.g. Bloom keeps its javascript under source directory (and in distfiles only when installed)
-			path = FileLocator.DirectoryOfApplicationOrSolution;
-			path = Path.Combine(path, "src");
-			foreach (var part in partsOfTheSubPath)
-			{
-				path = System.IO.Path.Combine(path, part);
-			}
+		    foreach (var directoryHoldingFiles in new[] {"", "DistFiles", "common" /*for wesay*/, "src" /*for Bloom*/})
+		    {
+		        path = Path.Combine(FileLocator.DirectoryOfApplicationOrSolution, directoryHoldingFiles);
+		        foreach (var part in partsOfTheSubPath)
+		        {
+		            path = System.IO.Path.Combine(path, part);
+		        }
+		        if (Directory.Exists(path))
+		            return path;
+		    }
 
 			if (optional && !Directory.Exists(path))
 				return null;
@@ -282,6 +345,7 @@ namespace Palaso.IO
 		{
 			return new FileLocator(new List<string>(_searchPaths.Concat(addedSearchPaths)));
 		}
+
 		#region Methods for locating file in program files folders
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -325,7 +389,7 @@ namespace Palaso.IO
 			// normally are no sub-directories in the program files directories.
 
 			// The subFoldersToSearch parameter is not valid on Linux.
-			return LocateInProgramFilesUsingDeepSearch(exeName);
+			return LocateInProgramFilesUsingShallowSearch(exeName);
 #endif
 		}
 
@@ -428,20 +492,19 @@ namespace Palaso.IO
 		/// <summary>
 		/// Returns a list of the possible paths to the program files folder, taking into
 		/// account that 2 often (or always?) exist in a Win64 OS (i.e. "Program Files" and
-		/// "Program Files (x86)").
+		/// "Program Files (x86)"). On Mono we return the folders of the PATH variable.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private static IEnumerable<string> GetPossibleProgramFilesFolders()
 		{
-#if !__MonoCS__
+#if __MonoCS__
+			foreach (var dir in Environment.GetEnvironmentVariable("PATH").Split(':'))
+				yield return dir;
+			yield return "/opt"; // RAMP is installed in the /opt directory by default
+#else
 			var pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
 			yield return pf.Replace(" (x86)", string.Empty);
 			yield return pf.Replace(" (x86)", string.Empty) + " (x86)";
-#else
-			yield return "/opt"; // RAMP is installed in the /opt directory by default
-			yield return "/usr/local/bin";
-			yield return "/usr/bin";
-			yield return "/bin";
 #endif
 		}
 

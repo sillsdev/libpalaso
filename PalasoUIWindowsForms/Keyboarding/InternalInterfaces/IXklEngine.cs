@@ -16,6 +16,7 @@ namespace X11.XKlavier
 		string Name { get;}
 		int NumGroups { get;}
 		string[] GroupNames { get;}
+		string[] LocalizedGroupNames { get; }
 		int NextGroup { get;}
 		int PrevGroup { get;}
 		int CurrentWindowGroup { get;}

@@ -146,6 +146,22 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
+		public void TertiaryIgnorableSpace_ProducesCorrectIcu()
+		{
+			_collationXml = "<rules><reset><last_tertiary_ignorable/></reset><ic> ?-</ic></rules>";
+			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
+			Assert.AreEqual("& [last tertiary ignorable] = ' ' = '?' = '-'", icu);
+		}
+
+		[Test]
+		public void TertiaryIgnorableSpaceAsLast_ProducesCorrectIcu()
+		{
+			_collationXml = "<rules><reset><last_tertiary_ignorable/></reset><ic>?- </ic></rules>";
+			string icu = LdmlCollationParser.GetIcuRulesFromCollationNode(_collationXml);
+			Assert.AreEqual("& [last tertiary ignorable] = '?' = '-' = ' '", icu);
+		}
+
+		[Test]
 		public void FirstSecondarygnorable_ProducesCorrectIndirectNode()
 		{
 			_collationXml = "<rules><reset><first_secondary_ignorable /></reset></rules>";

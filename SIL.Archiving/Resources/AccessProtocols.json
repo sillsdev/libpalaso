@@ -1,0 +1,35 @@
+[
+{"protocol":"AILCA","documentation":"ailca.html","choices":[
+	{"label":"F","description":"access is Free to all"},
+	{"label":"U","description":"all Users can access (requires registration)"},
+	{"label":"RC","description":"Researchers and Community members are allowed access"},
+	{"label":"C","description":"only Community members are allowed access (normally requires application to Depositor)"},
+	{"label":"S","description":"only Subscribers are allowed access (requires application to Depositor)"},
+	{"label":"","description":"only the Depositor and delegate can access"}]},
+{"protocol":"AILLA","documentation":"ailla.html","choices":[
+	{"label":"Level 1","description":"Public Access"},
+	{"label":"Level 2","description":"Password"},
+	{"label":"Level 3","description":"Time limit"},
+	{"label":"Level 4","description":"Depositor control"}]},
+{"protocol":"ANLA","documentation":"anla.html","choices":[
+	{"label":"Unrestricted access","description":"Unrestricted access"},
+	{"label":"No access until specific date","description":"No access until specific date"},
+	{"label":"Restricted access","description":"Restricted access"}]},
+{"protocol":"ELAR","documentation":"elar.html","choices":[
+	{"label":"U","description":"all Users can access"},
+	{"label":"R","description":"Researchers and Community members are allowed access"},
+	{"label":"C","description":"only Community members are allowed access (normally requires application to Depositor)"},
+	{"label":"S","description":"only Subscribers are allowed access (requires application to Depositor)"}]},
+{"protocol":"REAP","documentation":"reap.html","choices":[
+	{"label":"","description":"<unknown>"},
+	{"label":"Entity curators","description":"Restricted to Entity curators"},
+	{"label":"Entity","description":"Restricted to Entity staff"},
+	{"label":"Insite users","description":"Restricted to Insite users"},
+	{"label":"Strategic partners","description":"Restricted to Strategic partners"},
+	{"label":"Public","description":"Public"}]},
+{"protocol":"TLA","documentation":"tla.html","choices":[
+	{"label":"Open","description":"Open"},
+	{"label":"Restricted","description":"Restricted"},
+	{"label":"Protected","description":"Protected"},
+	{"label":"Closed","description":"Closed"}]}
+]

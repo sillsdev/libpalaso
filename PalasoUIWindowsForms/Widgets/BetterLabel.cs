@@ -23,12 +23,41 @@ namespace Palaso.UI.WindowsForms.Widgets
 			SetStyle(ControlStyles.UserPaint,true);
 			_backgroundBrush = new SolidBrush(BackColor);
 			_textBrush = new SolidBrush(ForeColor);
+#if __MonoCS__
+			// These settings (and the overrides below) don't keep the BetterLabel from getting focus in Mono,
+			// but they do keep it from showing highlighted selections within the label.
+			Enabled = true;
+			// These may not work any better than setting UserPaint true, but ...
+			SetStyle(ControlStyles.UserMouse, true);
+			SetStyle(ControlStyles.Selectable | ControlStyles.StandardClick | ControlStyles.StandardDoubleClick, false);
+#endif
 		}
+
+#if __MonoCS__
+		protected override void OnMouseDown(MouseEventArgs args)
+		{
+			// ignore the mouse totally.
+		}
+		protected override void OnMouseMove(MouseEventArgs args)
+		{
+			// ignore the mouse totally.
+		}
+		protected override void OnMouseUp(MouseEventArgs args)
+		{
+			// ignore the mouse totally.
+		}
+#endif
 
 		/// <summary>
 		/// we custom draw so that we can be ReadOnly without being necessarily grey
 		/// </summary>
 		/// <param name="e"></param>
+		/// <remarks>
+		/// Mono's TextBox doesn't call OnPaint, so this doesn't work on Linux.
+		/// (A Mono comment claims that MS/.Net doesn't call OnPaint, which it does,
+		/// and it's unclear how to fix the Mono code reliably.)  Mono also seems to
+		/// ignore ControlStyles settings almost totally.
+		/// </remarks>
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			e.Graphics.FillRectangle(_backgroundBrush,DisplayRectangle);

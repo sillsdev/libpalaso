@@ -320,7 +320,7 @@ namespace Palaso.UI.WindowsForms.Reporting
 		/// ------------------------------------------------------------------------------------
 		protected void GatherData()
 		{
-			_details.Text += "\r\nTo Reproduce: " + m_reproduce.Text + "\r\n";
+			_details.Text += Environment.NewLine + "To Reproduce: " + m_reproduce.Text + Environment.NewLine;
 		}
 
 		 public void Report(Exception error, Form owningForm)
@@ -365,8 +365,8 @@ namespace Palaso.UI.WindowsForms.Reporting
 			 //we want the developer to read.
 			 if (innerMostException != null)
 			 {
-				 _details.Text += "Inner-most exception:\r\n" + ErrorReport.GetExceptionText(innerMostException) +
-								  "\r\n\r\nFull, hierarchical exception contents:\r\n" + _details.Text;
+				_details.Text = string.Format("Inner-most exception:{2}{0}{2}{2}Full, hierarchical exception contents:{2}{1}",
+					ErrorReport.GetExceptionText(innerMostException), _details.Text, Environment.NewLine);
 			 }
 
 			 AddErrorReportingPropertiesToDetails();
@@ -624,7 +624,8 @@ namespace Palaso.UI.WindowsForms.Reporting
 			 {
 				 PutOnClipboard();
 				 ErrorReport.NotifyUserOfProblem(error,
-					 "This program wasn't able to get your email program, if you have one, to send the error message.  The contents of the error message has been placed on your Clipboard.");
+					"This program wasn't able to get your email program, if you have one, to send the error message.  " +
+					"The contents of the error message has been placed on your Clipboard.");
 				 return false;
 			 }
 			 return false;
@@ -719,14 +720,14 @@ namespace Palaso.UI.WindowsForms.Reporting
 		 private void _privacyNoticeButton_Click(object sender, EventArgs e)
 		 {
 			MessageBox.Show(
-				@"If you don’t care who reads your bug report, you can skip this notice.
+				@"If you don't care who reads your bug report, you can skip this notice.
 
-When you submit a crash report or other issue, the contents of your email go in our issue tracking system, “jira”, which is available via the web at http://jira.palso.org/issues. This is the normal way to handle issues in an open-source project.
+When you submit a crash report or other issue, the contents of your email go in our issue tracking system, ""jira"", which is available via the web at http://jira.palaso.org/issues. This is the normal way to handle issues in an open-source project.
 
 Our issue-tracking system is not searchable by those without an account. Therefore, someone searching via Google will not find your bug reports.
 
-However, anyone can make an account and then read what you sent us. So if you have something private to say, please send it to one of the developers privately with a note that you don’t want the issue in our issue tracking system. If need be, we’ll make some kind of sanitized place-holder for your issue so that we don’t lose it.
-");
+However, anyone can make an account and then read what you sent us. So if you have something private to say, please send it to one of the developers privately with a note that you don't want the issue in our issue tracking system. If need be, we'll make some kind of sanitized place-holder for your issue so that we don't lose it.
+", "Privacy Notice");
 		 }
 
 		 private void ExceptionReportingDialog_KeyPress(object sender, KeyPressEventArgs e)

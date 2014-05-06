@@ -50,12 +50,12 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 					_derivatives.Checked = cc.DerivativeRule == CreativeCommonsLicense.DerivativeRules.Derivatives;
 					_commercial.Checked = cc.CommercialUseAllowed;
 					_nonCommercial.Checked = !cc.CommercialUseAllowed;
-					_customLicenseDescription.Text = _metadata.License.RightsStatement;
+					_customRightsStatement.Text = _metadata.License.RightsStatement;
 				}
 				else if(_metadata.License is CustomLicense)
 				{
 					_customLicense.Checked = true;
-					_customLicenseDescription.Text = _metadata.License.RightsStatement;
+					_customRightsStatement.Text = _metadata.License.RightsStatement;
 				}
 				else
 				{
@@ -80,10 +80,10 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			if(_settingUp)
 				return;
 
+		    var previousLicense = _metadata.License;
+
 			if (_metadata.License == null || !(_metadata.License is CreativeCommonsLicense))//todo: that's kinda heavy-handed
 				_metadata.License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
-
-
 
 			if (_creativeCommons.Checked)
 			{
@@ -97,6 +97,16 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 				else
 					cc.DerivativeRule = CreativeCommonsLicense.DerivativeRules.NoDerivatives;
 				_licenseImage.Image = cc.GetImage();
+
+			    // If we're going from custom to CC, we could as easily just copy the statement into CC license.
+                // Maybe they want that. If they don't, mabye they'll fail to notice that we turned their 
+                // custom license into a CC restriction, or be confused by why we did that.
+                // In addition, custom restrictions are so... undesirable / unenforcable. So we have to guess,
+                //and we're going to guess on the side of getting rid of it.
+			    if (!(previousLicense is CreativeCommonsLicense))
+			    {
+			        _customRightsStatement.Text = "";
+			    }
 			}
 			if(_unknownLicense.Checked)
 			{
@@ -104,7 +114,8 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			}
 			if (_customLicense.Checked)
 			{
-				_metadata.License = new CustomLicense();
+			    _metadata.License = new CustomLicense() {RightsStatement = _customRightsStatement.Text};
+
 			}
 
 			UpdateDisplay();
@@ -114,17 +125,19 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		{
 			panel1.Enabled = panel2.Enabled = _creativeCommons.Checked;
 			_licenseImage.Visible = _creativeCommons.Checked;
-			_customLicenseDescription.Enabled = _customLicense.Checked || _creativeCommons.Checked;
-			_linkToRefinedCreativeCommonsWarning.Visible = _creativeCommons.Checked && !string.IsNullOrWhiteSpace(_customLicenseDescription.Text) ;
+			_customRightsStatement.Enabled = _customLicense.Checked || _creativeCommons.Checked;
+			_linkToRefinedCreativeCommonsWarning.Visible = _creativeCommons.Checked && !string.IsNullOrWhiteSpace(_customRightsStatement.Text) ;
 			_additionalRequestsLabel.Visible = _creativeCommons.Checked;
 			if (_creativeCommons.Checked)
 			{
-				_customLicenseDescription.Top = _additionalRequestsLabel.Bottom+10;
-				_customLicenseDescription.Left = _creativeCommons.Left;
+				_customRightsStatement.Top = _additionalRequestsLabel.Bottom+10;
+				_customRightsStatement.Left = _creativeCommons.Left;
+			    _customRightsStatement.Width = tableLayoutPanel1.Right - _customRightsStatement.Left; 
 			}
 			else {
-				_customLicenseDescription.Top = _additionalRequestsLabel.Top;
-				_customLicenseDescription.Left = _licenseImage.Left;
+				_customRightsStatement.Top = _additionalRequestsLabel.Top;
+				_customRightsStatement.Left = _licenseImage.Left;
+                _customRightsStatement.Width = tableLayoutPanel1.Right - _customRightsStatement.Left; 
 			}
 		}
 
@@ -156,13 +169,13 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 				var customLicense = _metadata.License as CustomLicense;
 
 				if (customLicense != null)
-					customLicense.RightsStatement = _customLicenseDescription.Text;
+					customLicense.RightsStatement = _customRightsStatement.Text;
 			}
 			if (_creativeCommons.Checked)
 			{
 				var l = _metadata.License as CreativeCommonsLicense;
 
-				l.RightsStatement = _customLicenseDescription.Text;
+				l.RightsStatement = _customRightsStatement.Text;
 			}
 			UpdateDisplay();
 		}

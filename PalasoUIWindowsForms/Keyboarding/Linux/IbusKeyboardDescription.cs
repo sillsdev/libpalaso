@@ -50,6 +50,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		{
 			get { return IBusKeyboardEngine.Layout; }
 		}
+
+		internal int SystemIndex { get; set; }
 	}
 }
 #endif

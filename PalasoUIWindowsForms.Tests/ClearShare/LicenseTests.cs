@@ -131,12 +131,12 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 		[Test]
 		public void Token_GivenCreativeCommonsLicense()
 		{
-			Assert.That(new CreativeCommonsLicense(true,true,CreativeCommonsLicense.DerivativeRules.Derivatives).Token, Is.EqualTo("by"));
-			Assert.That(new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike).Token, Is.EqualTo("by-sa"));
-			Assert.That(new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.NoDerivatives).Token, Is.EqualTo("by-nd"));
-			Assert.That(new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.Derivatives).Token, Is.EqualTo("by-nc"));
-			Assert.That(new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike).Token, Is.EqualTo("by-nc-sa"));
-			Assert.That(new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.NoDerivatives).Token, Is.EqualTo("by-nc-nd"));
+			Assert.That(new CreativeCommonsLicense(true,true,CreativeCommonsLicense.DerivativeRules.Derivatives).Token, Is.EqualTo("cc-by"));
+			Assert.That(new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike).Token, Is.EqualTo("cc-by-sa"));
+			Assert.That(new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.NoDerivatives).Token, Is.EqualTo("cc-by-nd"));
+			Assert.That(new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.Derivatives).Token, Is.EqualTo("cc-by-nc"));
+			Assert.That(new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike).Token, Is.EqualTo("cc-by-nc-sa"));
+			Assert.That(new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.NoDerivatives).Token, Is.EqualTo("cc-by-nc-nd"));
 		}
 
 	}

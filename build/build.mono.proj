@@ -68,7 +68,7 @@
 		<Delete Files="@(ExistingPackageBuildFiles)" />
 	</Target>
 	<ItemGroup>
-		<Source Include="$(RootDir)/**/*" Exclude="$(RootDir)/**/irrKlang.NET2.0.dll;$(RootDir)/**/obj/**/*;$(RootDir)/**/bin/**/*;$(RootDir)/**/test-results/**/*;$(RootDir)/output/**/*;$(RootDir)/.hg/**/*;$(RootDir)/lib/Debug/**/*;$(RootDir)/lib/Release/**/*;$(RootDir)/lib/*Configuration*/**/*" />
+		<Source Include="$(RootDir)/**/*" Exclude="$(RootDir)/**/irrKlang.NET2.0.dll;$(RootDir)/**/obj/**/*;$(RootDir)/**/bin/**/*;$(RootDir)/**/test-results/**/*;$(RootDir)/output/**/*;$(RootDir)/.hg/**/*;$(RootDir)/.git/**/*;$(RootDir)/lib/Debug/**/*;$(RootDir)/lib/Release/**/*;$(RootDir)/lib/*Configuration*/**/*" />
 	</ItemGroup>
 	<Target Name="SourcePackage" DependsOnTargets="PackageClean;SetAssemblyVersion">
 		<CreateProperty Value="$(OutputDir)/$(ApplicationNameLC)-$(Version).tar.gz">

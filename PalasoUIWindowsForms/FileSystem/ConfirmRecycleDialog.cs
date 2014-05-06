@@ -3,6 +3,8 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using L10NSharp;
+using Palaso.IO;
 
 namespace Palaso.UI.WindowsForms.FileSystem
 {
@@ -16,10 +18,17 @@ namespace Palaso.UI.WindowsForms.FileSystem
 			_messageLabel.Font = SystemFonts.MessageBoxFont;
 		}
 
-		public ConfirmRecycleDialog(string labelForThingBeingDeleted) : this()
+		public ConfirmRecycleDialog(string labelForThingBeingDeleted, bool multipleItems = false, string localizationManagerId = null)
+			: this()
 		{
+			if (!string.IsNullOrEmpty(localizationManagerId))
+				_L10NSharpExtender.LocalizationManagerId = localizationManagerId;
+
 			LabelForThingBeingDeleted = labelForThingBeingDeleted.Trim();
-			_messageLabel.Text = string.Format(_messageLabel.Text, LabelForThingBeingDeleted);
+			string msgFmt = multipleItems ? LocalizationManager.GetString("DialogBoxes.ConfirmRecycleDialog.MessageForMultipleItems",
+				"{0} will be moved to the Recycle Bin.", 
+				"Param 0 is a description of the things being deleted (e.g., \"The selected files\"") : _messageLabel.Text;
+			_messageLabel.Text = string.Format(msgFmt, LabelForThingBeingDeleted);
 
 			// Sometimes, setting the text in the previous line will force the table layout control
 			// to resize itself accordingly, which will fire its SizeChanged event. However,
@@ -56,17 +65,17 @@ namespace Palaso.UI.WindowsForms.FileSystem
 			Close();
 		}
 
-		public static bool JustConfirm(string labelForThingBeingDeleted)
+		public static bool JustConfirm(string labelForThingBeingDeleted, bool multipleItems = false, string localizationManagerId = null)
 		{
-			using (var dlg = new ConfirmRecycleDialog(labelForThingBeingDeleted))
+			using (var dlg = new ConfirmRecycleDialog(labelForThingBeingDeleted, multipleItems, localizationManagerId))
 			{
 				return DialogResult.OK == dlg.ShowDialog();
 			}
 		}
 
-		public static bool ConfirmThenRecycle(string labelForThingBeingDeleted, string pathToRecycle)
+		public static bool ConfirmThenRecycle(string labelForThingBeingDeleted, string pathToRecycle, bool multipleItems = false, string localizationManagerId = null)
 		{
-			using (var dlg = new ConfirmRecycleDialog(labelForThingBeingDeleted))
+			using (var dlg = new ConfirmRecycleDialog(labelForThingBeingDeleted, multipleItems, localizationManagerId))
 			{
 				if (DialogResult.OK != dlg.ShowDialog())
 					return false;
@@ -84,69 +93,14 @@ namespace Palaso.UI.WindowsForms.FileSystem
 		{
 			try
 			{
-#if MONO
-			   // TODO: Find a way in Mono to send something to the recycle bin.
-				try
-				{
-					File.Delete(path);
-				}
-				catch
-				{
-					try
-					{
-						Directory.Delete(path);
-					}
-					catch
-					{
-					}
-				}
-				return true;
-				#else
-
-				//alternative using visual basic dll:  FileSystem.DeleteDirectory(item.FolderPath,UIOption.OnlyErrorDialogs), RecycleOption.SendToRecycleBin);
-
-				//moves it to the recyle bin
-				var shf = new SHFILEOPSTRUCT();
-				shf.wFunc = FO_DELETE;
-				shf.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION;
-				string pathWith2Nulls = path + "\0\0";
-				shf.pFrom = pathWith2Nulls;
-
-				SHFileOperation(ref shf);
-				return !shf.fAnyOperationsAborted;
-				#endif
-
+				return PathUtilities.DeleteToRecycleBin(path);
 			}
 			catch (Exception exception)
 			{
-				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(exception, "Could not delete that book.");
+				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(exception,
+					"Could not delete file or directory {0}.", path);
 				return false;
 			}
 		}
-
-#if !MONO
-		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 1)]
-		public struct SHFILEOPSTRUCT
-		{
-			public IntPtr hwnd;
-			[MarshalAs(UnmanagedType.U4)]
-			public int wFunc;
-			public string pFrom;
-			public string pTo;
-			public short fFlags;
-			[MarshalAs(UnmanagedType.Bool)]
-			public bool fAnyOperationsAborted;
-			public IntPtr hNameMappings;
-			public string lpszProgressTitle;
-		}
-
-		[DllImport("shell32.dll", CharSet = CharSet.Auto)]
-		public static extern int SHFileOperation(ref SHFILEOPSTRUCT FileOp);
-
-		public const int FO_DELETE = 3;
-		public const int FOF_ALLOWUNDO = 0x40;
-		public const int FOF_NOCONFIRMATION = 0x10; // Don't prompt the user
-		public const int FOF_SIMPLEPROGRESS = 0x0100;
-#endif
 	}
 }

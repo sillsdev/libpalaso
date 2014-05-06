@@ -5,13 +5,14 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using Palaso.IO;
+using Palaso.TestUtilities;
 using Palaso.UI.WindowsForms.ClearShare;
 using Palaso.UI.WindowsForms.ClearShare.WinFormsUI;
 using Palaso.UI.WindowsForms.ImageToolbox;
 
 namespace PalasoUIWindowsForms.Tests.ClearShare
 {
-	[TestFixture, Ignore("Needs exiftool in the distfiles")]
+	[TestFixture]
 	public class MetadataTests
 	{
 		private Bitmap _mediaFile;
@@ -41,7 +42,8 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 			Assert.AreEqual("Copyright Test", Metadata.FromFile(_tempFile.Path).CopyrightNotice);
 		}
 
-		[Test, Ignore("not yet")]
+		[Test]
+		[Platform(Exclude="Win", Reason="Test has issues on Windows")]
 		public void RoundTripPng_CopyrightNoticeWithNonAscii()
 		{
 			_outgoing.CopyrightNotice = "Copyright ŋoŋ";
@@ -50,7 +52,8 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 		}
 
 
-		[Test, Ignore("not yet")]
+		[Test]
+		[Platform(Exclude="Win", Reason="Test has issues on Windows")]
 		public void RoundTripPng_AttributionNameWithNonAscii()
 		{
 			_outgoing.Creator = "joŋ";
@@ -96,6 +99,37 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 			Assert.AreEqual(cc.CommercialUseAllowed, false);
 			Assert.AreEqual(cc.DerivativeRule, CreativeCommonsLicense.DerivativeRules.NoDerivatives);
 		}
+
+        [Test]
+        public void RoundTripPng_FileNameHasNonAsciiCharacters()
+        {
+            var mediaFile = new Bitmap(10, 10);
+            using (var folder = new TemporaryFolder("LibPalaso exiftool Test"))
+            {
+                var path = folder.Combine("Love these non-áscii chárácters.png");
+                mediaFile.Save(path);
+                var outgoing = Metadata.FromFile(path);
+
+                outgoing.Creator = "joe shmo";
+                outgoing.Write();
+                Assert.AreEqual("joe shmo", Metadata.FromFile(path).Creator);
+            }
+        }
+        [Test]
+        public void RoundTripPng_InPathWithNonAsciiCharacters()
+        {
+            var mediaFile = new Bitmap(10, 10);
+            using (var folder = new TemporaryFolder("LibPalaso exiftool Test with non-áscii chárácters"))
+            {
+                var path = folder.Combine("test.png");
+                mediaFile.Save(path);
+                var outgoing = Metadata.FromFile(path);
+
+                outgoing.Creator = "joe shmo";
+                outgoing.Write();
+                Assert.AreEqual("joe shmo", Metadata.FromFile(path).Creator);
+            }
+        }
 
 
 		[Test]
