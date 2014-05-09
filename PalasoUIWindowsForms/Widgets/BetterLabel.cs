@@ -140,6 +140,8 @@ namespace Palaso.UI.WindowsForms.Widgets
 
 	public class BetterLinkLabel : BetterLabel
 	{
+		public event LinkLabelLinkClickedEventHandler LinkClicked;
+
 		public BetterLinkLabel()
 		{
 			ReadOnly = false;
@@ -184,6 +186,10 @@ namespace Palaso.UI.WindowsForms.Widgets
 				{
 					Palaso.Reporting.ErrorReport.NotifyUserOfProblem(string.Format("Could not follow that link to {0}. Your computer is not set up to follow links of that kind, but you can try typing it into your web browser.",URL));
 				}
+			}
+			else if (LinkClicked != null)
+			{
+				LinkClicked(this, new LinkLabelLinkClickedEventArgs(new LinkLabel.Link()));
 			}
 		}
 	}
