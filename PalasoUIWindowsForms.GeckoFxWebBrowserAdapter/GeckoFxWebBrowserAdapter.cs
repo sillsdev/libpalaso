@@ -55,14 +55,14 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		private static void SetUpXulRunner()
 		{
 
-			if(IsXpcomInitialized())
+			if (IsXpcomInitialized())
 				return;
 
 			string xulRunnerPath = Environment.GetEnvironmentVariable("XULRUNNER");
-			if(!Directory.Exists(xulRunnerPath))
+			if (!Directory.Exists(xulRunnerPath))
 			{
 				xulRunnerPath = Path.Combine(FileLocator.DirectoryOfApplicationOrSolution, "xulrunner");
-				if(!Directory.Exists(xulRunnerPath))
+				if (!Directory.Exists(xulRunnerPath))
 				{
 					//if this is a programmer, go look in the lib directory
 					xulRunnerPath = Path.Combine(FileLocator.DirectoryOfApplicationOrSolution,
@@ -71,13 +71,13 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 					//on my build machine, I really like to have the dir labelled with the version.
 					//but it's a hassle to update all the other parts (installer, build machine) with this number,
 					//so we only use it if we don't find the unnumbered alternative.
-					if(!Directory.Exists(xulRunnerPath))
+					if (!Directory.Exists(xulRunnerPath))
 					{
 						xulRunnerPath = Path.Combine(FileLocator.DirectoryOfApplicationOrSolution,
 							Path.Combine("lib", "xulrunner" + XulRunnerVersion));
 					}
 
-					if(!Directory.Exists(xulRunnerPath))
+					if (!Directory.Exists(xulRunnerPath))
 					{
 						throw new ConfigurationException(
 							"Can't find the directory where xulrunner (version {0}) is installed",
@@ -128,9 +128,6 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		/// GeckoWebBrowser. If the type of the EventHandler or EventArg is defined in gecko
 		/// then the <code>AddGeckoDefinedEventhandler</code> must be used.
 		/// </summary>
-		/// <param name="webBrowser"></param>
-		/// <param name="eventName"></param>
-		/// <param name="action"></param>
 		private void AddEventHandler(Control webBrowser, string eventName, EventHandler action)
 		{
 			var webBrowserType = GeckoWinAssembly.GetType(GeckoBrowserType);
@@ -143,9 +140,6 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		/// This method will look up all the event types reflectively and can be used even when the EventArgs or
 		/// EventHandler types are defined in the gecko assembly.
 		/// </summary>
-		/// <param name="webBrowser"></param>
-		/// <param name="eventName"></param>
-		/// <param name="handlerName"></param>
 		private void AddGeckoDefinedEventHandler(Control webBrowser, string eventName, string handlerName)
 		{
 			var webBrowserType = GeckoWinAssembly.GetType(GeckoBrowserType);
@@ -201,7 +195,7 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		/// <summary>
 		/// Reflectively construct a GeckoWebBrowser and set the Dock property.
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>a reflectively created GeckoWebBrowser as a Control</returns>
 		private Control InstantiateGeckoWebBrowser()
 		{
 			var browserType = GeckoWinAssembly.GetType(GeckoBrowserType);
@@ -218,7 +212,7 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		/// </summary>
 		private static void LoadGeckoAssemblies()
 		{
-			if(GeckoCoreAssembly != null && GeckoWinAssembly != null)
+			if (GeckoCoreAssembly != null && GeckoWinAssembly != null)
 				return;
 			try
 			{
@@ -243,7 +237,9 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 			}
 			catch(Exception e)
 			{
-				ErrorReport.ReportNonFatalException(e);
+				MessageBox.Show("Unable to load geckofx dependancy. Files may not have been included in the build.",
+									 "Failed to load geckofx", MessageBoxButtons.OK, MessageBoxIcon.Error);
+				throw new ApplicationException("Unable to load geckofx dependancy", e);
 			}
 		}
 
