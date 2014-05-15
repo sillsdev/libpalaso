@@ -43,12 +43,17 @@ namespace PalasoUIWindowsForms.TestApp
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
+			Palaso.UI.WindowsForms.SuperToolTip.SuperToolTipInfoWrapper superToolTipInfoWrapper1 = new Palaso.UI.WindowsForms.SuperToolTip.SuperToolTipInfoWrapper();
+			Palaso.UI.WindowsForms.SuperToolTip.SuperToolTipInfo superToolTipInfo1 = new Palaso.UI.WindowsForms.SuperToolTip.SuperToolTipInfo();
 			this.btnFolderBrowserControl = new System.Windows.Forms.Button();
 			this.btnLookupISOCodeDialog = new System.Windows.Forms.Button();
 			this.btnWritingSystemSetupDialog = new System.Windows.Forms.Button();
 			this.btnArtOfReading = new System.Windows.Forms.Button();
 			this.btnSilAboutBox = new System.Windows.Forms.Button();
 			this.btnShowReleaseNotes = new System.Windows.Forms.Button();
+			this.superToolTip1 = new Palaso.UI.WindowsForms.SuperToolTip.SuperToolTip(this.components);
+			this.label1 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// btnFolderBrowserControl
@@ -111,11 +116,39 @@ namespace PalasoUIWindowsForms.TestApp
 			this.btnShowReleaseNotes.UseVisualStyleBackColor = true;
 			this.btnShowReleaseNotes.Click += new System.EventHandler(this.OnShowReleaseNotesClicked);
 			// 
+			// superToolTip1
+			// 
+			this.superToolTip1.FadingInterval = 10;
+			// 
+			// label1
+			// 
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(13, 187);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(149, 13);
+			superToolTipInfo1.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+			superToolTipInfo1.BackgroundGradientEnd = System.Drawing.Color.Blue;
+			superToolTipInfo1.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
+			superToolTipInfo1.BodyText = "This is the body text";
+			superToolTipInfo1.FooterForeColor = System.Drawing.Color.Lime;
+			superToolTipInfo1.FooterText = "And this is the footer";
+			superToolTipInfo1.HeaderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+			superToolTipInfo1.HeaderText = "The header can serve as a title";
+			superToolTipInfo1.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
+			superToolTipInfo1.ShowFooter = true;
+			superToolTipInfo1.ShowFooterSeparator = true;
+			superToolTipInfoWrapper1.SuperToolTipInfo = superToolTipInfo1;
+			superToolTipInfoWrapper1.UseSuperToolTip = true;
+			this.superToolTip1.SetSuperStuff(this.label1, superToolTipInfoWrapper1);
+			this.label1.TabIndex = 1;
+			this.label1.Text = "Hover over me to see a tooltip";
+			// 
 			// TestAppForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(284, 262);
+			this.Controls.Add(this.label1);
 			this.Controls.Add(this.btnShowReleaseNotes);
 			this.Controls.Add(this.btnSilAboutBox);
 			this.Controls.Add(this.btnArtOfReading);
@@ -125,6 +158,7 @@ namespace PalasoUIWindowsForms.TestApp
 			this.Name = "TestAppForm";
 			this.Text = "PalasoUIWindowsForms.TestApp";
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
@@ -136,5 +170,7 @@ namespace PalasoUIWindowsForms.TestApp
 		private System.Windows.Forms.Button btnArtOfReading;
 		private System.Windows.Forms.Button btnSilAboutBox;
 		private System.Windows.Forms.Button btnShowReleaseNotes;
+		private Palaso.UI.WindowsForms.SuperToolTip.SuperToolTip superToolTip1;
+		private System.Windows.Forms.Label label1;
 	}
 }
