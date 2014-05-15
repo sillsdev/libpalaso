@@ -170,7 +170,8 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 		public static bool IsAvailable()
 		{
-			return !string.IsNullOrEmpty(TryToGetRootImageCatalogPath()) && !string.IsNullOrEmpty(TryToGetPathToIndex());
+			string imagesPath = TryToGetRootImageCatalogPath();
+			return !string.IsNullOrEmpty(imagesPath) && !string.IsNullOrEmpty(TryToGetPathToIndex(imagesPath));
 		}
 
 		public static string TryToGetRootImageCatalogPath()
@@ -252,23 +253,17 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 			c.RootImagePath = path;
 
-			string pathToIndexFile = TryToGetPathToIndex();
+			string pathToIndexFile = TryToGetPathToIndex(path);
 			c.LoadIndex(pathToIndexFile);
 			return c;
 		}
 
-		public static string TryToGetPathToIndex()
+		public static string TryToGetPathToIndex(string imagesPath)
 		{
-			//look for the folder created by the ArtOfReadingFree installer
-			var aorInstallerTarget = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("SIL", "Art Of Reading", "images");
-			var path = aorInstallerTarget.CombineForPath("index.txt");
-			if (File.Exists(path))
-				return path;
-
-			aorInstallerTarget = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("SIL", "ArtOfReading");
-			path = aorInstallerTarget.CombineForPath("index.txt");
-			if (File.Exists(path))
-				return path;
+			if (!string.IsNullOrEmpty(imagesPath))
+			{
+				return Directory.GetParent(imagesPath).FullName.CombineForPath("index.txt");
+			}
 
 			return FileLocator.GetFileDistributedWithApplication(true, "ArtOfReadingIndexV3_en.txt");
 		}
