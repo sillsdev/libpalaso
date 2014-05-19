@@ -542,6 +542,7 @@
     <Compile Include="Widgets\BetterLabel.designer.cs">
       <DependentUpon>BetterLabel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Widgets\BetterLinkLabel.cs" />
     <Compile Include="Widgets\BitmapButton.cs">
       <SubType>Component</SubType>
     </Compile>
