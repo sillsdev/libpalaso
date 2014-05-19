@@ -17,6 +17,8 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using Palaso.IO;
+using Palaso.UI.WindowsForms.ClearShare;
+using Palaso.UI.WindowsForms.ClearShare.WinFormsUI;
 using Palaso.UI.WindowsForms.ImageGallery;
 using Palaso.UI.WindowsForms.Keyboarding;
 using Palaso.UI.WindowsForms.ReleaseNotes;
@@ -134,6 +136,14 @@ and displays it as HTML.
 			{
 				using (var dlg = new ShowReleaseNotesDialog(SystemIcons.WinLogo, tempFile.Path))
 					dlg.ShowDialog();
+			}
+		}
+
+		private void OnShowMetaDataEditorClicked(object sender, EventArgs e)
+		{
+			using (var dlg = new MetadataEditorDialog(new Metadata()))
+			{
+				dlg.ShowDialog();
 			}
 		}
 	}
