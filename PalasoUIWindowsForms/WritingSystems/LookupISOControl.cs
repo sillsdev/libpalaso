@@ -157,10 +157,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				else if (_model.ISOCode == "qaa")
 				{
 					if (_searchText.Text != "?")
+					{
 						_failedSearchText = _searchText.Text.ToUpperFirstLetter();
-					_desiredLanguageDisplayName.Text = _failedSearchText;
-					_model.LanguageInfo.Names.Insert(0, _failedSearchText);
-					_model.LanguageInfo.DesiredName = _failedSearchText;
+						_desiredLanguageDisplayName.Text = _failedSearchText;
+						_model.LanguageInfo.Names.Insert(0, _failedSearchText);
+						_model.LanguageInfo.DesiredName = _failedSearchText;
+					}
 				}
 				else
 				{
