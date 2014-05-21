@@ -103,7 +103,6 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 
 		public string DocumentText
 		{
-			get { return m_WebBrowserAdapter.DocumentText; }
 			set { m_WebBrowserAdapter.DocumentText = value; }
 		}
 

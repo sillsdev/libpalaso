@@ -93,8 +93,7 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 
 		private Uri GetGeckoNavigatedEventArgsUri(object eventArg)
 		{
-			var eventType = GeckoWinAssembly.GetType("Gecko.GeckoNavigatedEventArgs") ??
-								 GeckoWinAssembly.GetType("Gecko.GeckoNavigatedEventArgs"); //Try new ns then old ns
+			var eventType = GeckoWinAssembly.GetType("Gecko.GeckoNavigatedEventArgs");
 			return GetUriValue(eventArg, eventType);
 		}
 
@@ -342,7 +341,6 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 
 		public string DocumentText
 		{
-			get { return null; }
 			set { CallBrowserMethod(_webBrowser, "LoadContent", new object[] {value, Url != null ? Url.AbsoluteUri : "about:blank", "text/html"}); }
 		}
 

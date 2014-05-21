@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
-using System.IO;
 using System.Windows.Forms;
 
 namespace Palaso.UI.WindowsForms.HtmlBrowser
@@ -10,7 +9,7 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 	{
 		bool CanGoBack { get; }
 		bool CanGoForward { get; }
-		string DocumentText { get; set; }
+		string DocumentText { set; }
 		string DocumentTitle { get; }
 		bool Focused { get; }
 		bool IsBusy { get; }
