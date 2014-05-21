@@ -34,14 +34,14 @@ namespace Palaso.UI.WindowsForms.SIL
 			this._buildDate = new System.Windows.Forms.Label();
 			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
 			this._versionNumber = new System.Windows.Forms.Label();
-			this._browser = new XWebBrowser();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
+			this._browser = new Palaso.UI.WindowsForms.HtmlBrowser.XWebBrowser();
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			this.SuspendLayout();
-			//
+			// 
 			// _buildDate
-			//
+			// 
 			this._buildDate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this._buildDate.AutoSize = true;
 			this._buildDate.Font = new System.Drawing.Font("Segoe UI", 8F);
@@ -54,14 +54,14 @@ namespace Palaso.UI.WindowsForms.SIL
 			this._buildDate.Size = new System.Drawing.Size(60, 13);
 			this._buildDate.TabIndex = 1;
 			this._buildDate.Text = "build date";
-			//
+			// 
 			// _L10NSharpExtender
-			//
+			// 
 			this._L10NSharpExtender.LocalizationManagerId = "Bloom";
 			this._L10NSharpExtender.PrefixForNewItems = "AboutDialog";
-			//
+			// 
 			// _versionNumber
-			//
+			// 
 			this._versionNumber.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this._versionNumber.AutoSize = true;
 			this._versionNumber.Font = new System.Drawing.Font("Segoe UI", 8F);
@@ -74,22 +74,9 @@ namespace Palaso.UI.WindowsForms.SIL
 			this._versionNumber.Size = new System.Drawing.Size(44, 13);
 			this._versionNumber.TabIndex = 6;
 			this._versionNumber.Text = "version";
-			//
-			// _browser
-			//
-			this._browser.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-			| System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
-			this._L10NSharpExtender.SetLocalizableToolTip(this._browser, null);
-			this._L10NSharpExtender.SetLocalizationComment(this._browser, null);
-			this._L10NSharpExtender.SetLocalizingId(this._browser, "AboutDialog.Browser");
-			this._browser.Location = new System.Drawing.Point(142, 12);
-			this._browser.Name = "_browser";
-			this._browser.Size = new System.Drawing.Size(431, 435);
-			this._browser.TabIndex = 2;
-			//
+			// 
 			// pictureBox1
-			//
+			// 
 			this.pictureBox1.Image = global::Palaso.UI.WindowsForms.Properties.Resources.SILLogoBlue132x184;
 			this._L10NSharpExtender.SetLocalizableToolTip(this.pictureBox1, null);
 			this._L10NSharpExtender.SetLocalizationComment(this.pictureBox1, null);
@@ -100,9 +87,24 @@ namespace Palaso.UI.WindowsForms.SIL
 			this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
 			this.pictureBox1.TabIndex = 8;
 			this.pictureBox1.TabStop = false;
-			//
+			// 
+			// _browser
+			// 
+			this._browser.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this._browser.IsWebBrowserContextMenuEnabled = false;
+			this._L10NSharpExtender.SetLocalizableToolTip(this._browser, null);
+			this._L10NSharpExtender.SetLocalizationComment(this._browser, null);
+			this._L10NSharpExtender.SetLocalizingId(this._browser, "AboutDialog.Browser");
+			this._browser.Location = new System.Drawing.Point(142, 12);
+			this._browser.Name = "_browser";
+			this._browser.Size = new System.Drawing.Size(431, 435);
+			this._browser.TabIndex = 2;
+			this._browser.Url = new System.Uri("about:blank", System.UriKind.Absolute);
+			// 
 			// SILAboutBox
-			//
+			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.WhiteSmoke;
@@ -124,7 +126,7 @@ namespace Palaso.UI.WindowsForms.SIL
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "About";
-			this.Load += new System.EventHandler(this.SILAboutBox_Load);
+			this.Shown += new System.EventHandler(this.SILAboutBoxShown);
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			this.ResumeLayout(false);

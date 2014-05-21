@@ -19,6 +19,7 @@ using System.Windows.Forms;
 using Palaso.IO;
 using Palaso.UI.WindowsForms.ClearShare;
 using Palaso.UI.WindowsForms.ClearShare.WinFormsUI;
+using Palaso.UI.WindowsForms.HtmlBrowser;
 using Palaso.UI.WindowsForms.ImageGallery;
 using Palaso.UI.WindowsForms.Keyboarding;
 using Palaso.UI.WindowsForms.ReleaseNotes;
@@ -116,10 +117,19 @@ namespace PalasoUIWindowsForms.TestApp
 
 		private void OnSilAboutBoxClicked(object sender, EventArgs e)
 		{
-			using (var tempfile = new TempFile("<h3>Copyright 2014 <a href=\"http://sil.org\">SIL International</a></h3>" +
-				"<p>Testing the <b>about box</b></p>"))
+			XWebBrowser.DefaultBrowserType = XWebBrowser.BrowserType.WinForms;
+			ShowSilAboutBox();
+		}
+
+		private static void ShowSilAboutBox()
+		{
+			using(var tempfile = TempFile.WithExtension("html"))
 			{
-				using (var dlg = new SILAboutBox(tempfile.Path))
+				File.WriteAllText(tempfile.Path,
+										@"<html><body><h3>Copyright 2014 <a href=""http://sil.org"">SIL International</a></h3>" +
+										@"<p>Testing the <b>about box</b></p></body></html>"); 
+				var uri = new Uri(tempfile.Path);
+				using(var dlg = new SILAboutBox(uri.AbsoluteUri))
 					dlg.ShowDialog();
 			}
 		}
@@ -145,6 +155,12 @@ and displays it as HTML.
 			{
 				dlg.ShowDialog();
 			}
+		}
+
+		private void _silAboutBoxGecko_Click(object sender, EventArgs e)
+		{
+			XWebBrowser.DefaultBrowserType = XWebBrowser.BrowserType.GeckoFx;
+			ShowSilAboutBox();
 		}
 	}
 }

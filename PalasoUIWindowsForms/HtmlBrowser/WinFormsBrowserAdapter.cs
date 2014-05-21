@@ -50,6 +50,11 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 			get { return m_WebBrowser.DocumentTitle; }
 		}
 
+		public HtmlDocument Document
+		{
+			get { return m_WebBrowser.Document; }
+		}
+
 		public bool Focused
 		{
 			get { return m_WebBrowser.Focused; }
@@ -110,6 +115,15 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		public void Stop()
 		{
 			m_WebBrowser.Stop();
+		}
+
+		public void ScrollLastElementIntoView()
+		{
+			if(Document != null && Document.Body != null)
+			{
+				var childCount = Document.Body.Children.Count;
+				Document.Body.Children[childCount - 1].ScrollIntoView(false);
+			}
 		}
 
 		public object NativeBrowser

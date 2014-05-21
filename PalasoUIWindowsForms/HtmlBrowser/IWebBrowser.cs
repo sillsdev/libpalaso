@@ -24,6 +24,7 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		void Refresh();
 		void Refresh(WebBrowserRefreshOption opt);
 		void Stop();
+		void ScrollLastElementIntoView();
 		object NativeBrowser { get; }
 	}
 }
