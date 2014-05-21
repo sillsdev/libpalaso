@@ -196,7 +196,7 @@ namespace Palaso.WritingSystems
 					return Names.FirstOrDefault();
 				return _desiredName;
 			}
-			set { _desiredName = value.Trim(); }
+			set { _desiredName = string.IsNullOrEmpty(value) ? value : value.Trim(); }
 		}
 	}
 }

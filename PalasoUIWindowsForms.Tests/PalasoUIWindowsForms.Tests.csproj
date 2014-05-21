@@ -184,6 +184,7 @@
 	<Compile Include="Keyboarding\IbusDefaultEventHandlerTests.cs" />
 	<Compile Include="Keyboarding\IbusKeyboardAdaptorTests.cs" />
 	<Compile Include="Keyboarding\WinKeyboardAdaptorTests.cs" />
+	<Compile Include="Keyboarding\WinKeyboardDescriptionTests.cs" />
   </ItemGroup>
   <ItemGroup>
 	<ProjectReference Include="..\Palaso.Tests\Palaso.Tests.csproj">

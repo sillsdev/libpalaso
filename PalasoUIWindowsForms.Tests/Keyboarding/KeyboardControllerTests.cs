@@ -173,9 +173,19 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		public void DefaultForWritingSystem_OldPalasoKeymanKeyboard()
 		{
 			var inputLanguage = new InputLanguageWrapper(new CultureInfo("en-US"), IntPtr.Zero, "foo");
-			var expectedKeyboard = new KeyboardDescription("IPA Unicode 1.1.1 - English (US)", "IPA Unicode 1.1.1", "en-US", inputLanguage,
-				KeyboardController.Adaptors[0]);
-			KeyboardController.Manager.RegisterKeyboard(expectedKeyboard);
+			KeyboardDescription expectedKeyboard;
+			if (Keyboard.Controller.AllAvailableKeyboards.Any(kbd => kbd.Layout == "IPA Unicode 1.1.1"))
+			{
+				expectedKeyboard =
+					Keyboard.Controller.AllAvailableKeyboards.First(kbd => kbd.Layout == "IPA Unicode 1.1.1")
+						as KeyboardDescription;
+			}
+			else
+			{
+				expectedKeyboard = new KeyboardDescription("IPA Unicode 1.1.1 - English (US)", "IPA Unicode 1.1.1",
+					"en-US", inputLanguage, KeyboardController.Adaptors[0]);
+				KeyboardController.Manager.RegisterKeyboard(expectedKeyboard);
+			}
 
 			// Palaso sets the keyboard property for Keyman keyboards to <layoutname>
 			var ws = new MockWritingSystemDefinition { Keyboard = "IPA Unicode 1.1.1" };

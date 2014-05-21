@@ -38,6 +38,100 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 
 		}
 
+		#region Helper class/method to set the LANGUAGE environment variable
+
+		/// <summary>Helper class/method to set the LANGUAGE environment variable. This is
+		/// necessary to get localized texts</summary>
+		/// <remarks>A different, probably cleaner approach, would be to derive a class from
+		/// NUnit's ActionAttribute. However, this currently doesn't work when running the tests
+		/// in MonoDevelop (at least up to version 4.3).</remarks>
+		class LanguageHelper: IDisposable
+		{
+			private string OldLanguage { get; set; }
+			public LanguageHelper(string language)
+			{
+				// To get XklConfigRegistry to return values in the expected language we have to
+				// set the LANGUAGE environment variable.
+
+				OldLanguage = Environment.GetEnvironmentVariable("LANGUAGE");
+				Environment.SetEnvironmentVariable("LANGUAGE", string.Format("{0}:{1}",
+					language.Replace('-', '_'), OldLanguage));
+			}
+
+			#region Disposable stuff
+
+			#if DEBUG
+			/// <summary/>
+			~LanguageHelper()
+			{
+				Dispose(false);
+			}
+			#endif
+			/// <summary/>
+			public bool IsDisposed { get; private set; }
+
+			/// <summary/>
+			public void Dispose()
+			{
+				Dispose(true);
+				GC.SuppressFinalize(this);
+			}
+
+			/// <summary/>
+			protected virtual void Dispose(bool fDisposing)
+			{
+				System.Diagnostics.Debug.WriteLineIf(!fDisposing, "****** Missing Dispose() call for " + GetType() + ". *******");
+				if (fDisposing && !IsDisposed)
+				{
+					// dispose managed and unmanaged objects
+					Environment.SetEnvironmentVariable("LANGUAGE", OldLanguage);
+				}
+				IsDisposed = true;
+			}
+
+			#endregion
+			/// <summary>
+			/// Checks the list of installed languages and ignores the test if the desired language
+			/// is not installed.
+			/// </summary>
+			/// <param name="desiredLanguage">Desired language.</param>
+			public static void CheckInstalledLanguages(string desiredLanguage)
+			{
+				var language = desiredLanguage.Replace('-', '_');
+				if (Environment.GetEnvironmentVariable("LANGUAGE").Contains(language))
+					return;
+
+				using (var process = new Process())
+				{
+					process.StartInfo.FileName = "locale";
+					process.StartInfo.Arguments = "-a";
+					process.StartInfo.UseShellExecute = false;
+					process.StartInfo.CreateNoWindow = true;
+					process.StartInfo.RedirectStandardOutput = true;
+					process.Start();
+					process.WaitForExit();
+
+					for (var line = process.StandardOutput.ReadLine();
+						line != null;
+						line = process.StandardOutput.ReadLine())
+					{
+						if (line.StartsWith(language, StringComparison.InvariantCultureIgnoreCase))
+							return;
+					}
+
+					Assert.Ignore("Can't run test because language pack for {0} is not installed.",
+						desiredLanguage);
+				}
+			}
+		}
+
+		private LanguageHelper SetLanguage(string language)
+		{
+			LanguageHelper.CheckInstalledLanguages(language);
+			return new LanguageHelper(language);
+		}
+		#endregion
+
 		[DllImportAttribute("libgtk-x11-2.0")]
 		[return: MarshalAs(UnmanagedType.I4)]
 		private static extern bool gtk_init_check(ref int argc, ref IntPtr argv) ;
@@ -234,6 +328,26 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			Assert.AreEqual(1, keyboards.Count());
 			Assert.AreEqual("de-DE_de", keyboards.First().Id);
 			Assert.AreEqual("German - Deutsch (Deutschland)", keyboards.First().Name);
+		}
+
+		/// <summary>
+		/// Tests the values returned by InstalledKeyboards if the UICulture is set to German
+		/// and we're getting localized keyboard layouts
+		/// </summary>
+		[Test]
+		[SetUICulture("de-DE")]
+		public void InstalledKeyboards_Germany_AllGerman() // FWNX-1388
+		{
+			XklEngineResponder.SetGroupNames = new string[] { KeyboardGermany };
+
+			using (SetLanguage("de-DE"))
+			{
+				KeyboardController.Manager.SetKeyboardAdaptors(new [] { new XkbKeyboardAdaptor(new XklEngineResponder()) });
+				var keyboards = Keyboard.Controller.AllAvailableKeyboards;
+				Assert.AreEqual(1, keyboards.Count());
+				Assert.AreEqual("de-DE_de", keyboards.First().Id);
+				Assert.AreEqual("Deutsch - Deutsch (Deutschland)", keyboards.First().Name);
+			}
 		}
 
 		/// <summary>

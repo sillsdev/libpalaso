@@ -1,4 +1,6 @@
-﻿namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
+﻿using System.Drawing;
+
+namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 {
 	partial class MetadataEditorControl
 	{
@@ -28,9 +30,12 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.Windows.Forms.Label label2;
+			System.Windows.Forms.Label label3;
+
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MetadataEditorControl));
-			this.label3 = new System.Windows.Forms.Label();
+			label3 = new System.Windows.Forms.Label();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this._shareAlike = new System.Windows.Forms.RadioButton();
 			this._noDerivates = new System.Windows.Forms.RadioButton();
@@ -47,7 +52,7 @@
 			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
 			this.betterLabel2 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this._illustratorLabel = new System.Windows.Forms.Label();
-			this.label2 = new System.Windows.Forms.Label();
+			label2 = new System.Windows.Forms.Label();
 			this._illustrator = new System.Windows.Forms.TextBox();
 			this._copyrightYear = new System.Windows.Forms.TextBox();
 			this._copyrightBy = new System.Windows.Forms.TextBox();
@@ -65,16 +70,16 @@
 			//
 			// label3
 			//
-			this.label3.AutoSize = true;
-			this.label3.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._L10NSharpExtender.SetLocalizableToolTip(this.label3, null);
-			this._L10NSharpExtender.SetLocalizationComment(this.label3, null);
-			this._L10NSharpExtender.SetLocalizingId(this.label3, "MetadataEditor.License");
-			this.label3.Location = new System.Drawing.Point(12, 132);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(46, 15);
-			this.label3.TabIndex = 9;
-			this.label3.Text = "License";
+			label3.AutoSize = true;
+			label3.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._L10NSharpExtender.SetLocalizableToolTip(label3, null);
+			this._L10NSharpExtender.SetLocalizationComment(label3, null);
+			this._L10NSharpExtender.SetLocalizingId(label3, "MetadataEditor.License");
+			label3.Location = new System.Drawing.Point(12, 132);
+			label3.Name = "label3";
+			label3.Size = new System.Drawing.Size(46, 15);
+			label3.TabIndex = 9;
+			label3.Text = "License";
 			//
 			// panel1
 			//
@@ -210,6 +215,7 @@
 			// _creativeCommons
 			//
 			this._creativeCommons.AutoSize = true;
+			this._creativeCommons.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this._L10NSharpExtender.SetLocalizableToolTip(this._creativeCommons, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._creativeCommons, null);
 			this._L10NSharpExtender.SetLocalizingId(this._creativeCommons, "MetadataEditor.CreativeCommons");
@@ -225,6 +231,7 @@
 			// _unknownLicense
 			//
 			this._unknownLicense.AutoSize = true;
+			this._unknownLicense.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this._L10NSharpExtender.SetLocalizableToolTip(this._unknownLicense, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._unknownLicense, null);
 			this._L10NSharpExtender.SetLocalizingId(this._unknownLicense, "MetadataEditor.UnknownLicense");
@@ -240,6 +247,7 @@
 			// _customLicense
 			//
 			this._customLicense.AutoSize = true;
+			this._customLicense.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this._L10NSharpExtender.SetLocalizableToolTip(this._customLicense, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._customLicense, null);
 			this._L10NSharpExtender.SetLocalizingId(this._customLicense, "MetadataEditor.CustomLicense");
@@ -306,18 +314,17 @@
 			//
 			// label2
 			//
-			this.label2.AutoSize = true;
-			this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.label2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._L10NSharpExtender.SetLocalizableToolTip(this.label2, null);
-			this._L10NSharpExtender.SetLocalizationComment(this.label2, null);
-			this._L10NSharpExtender.SetLocalizingId(this.label2, "MetadataEditor.CopyrightYear");
-			this.label2.Location = new System.Drawing.Point(3, 29);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(99, 29);
-			this.label2.TabIndex = 8;
-			this.label2.Text = "Copyright Year";
-			this.label2.Click += new System.EventHandler(this.label2_Click);
+			label2.AutoSize = true;
+			label2.Dock = System.Windows.Forms.DockStyle.Fill;
+			label2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._L10NSharpExtender.SetLocalizableToolTip(label2, null);
+			this._L10NSharpExtender.SetLocalizationComment(label2, null);
+			this._L10NSharpExtender.SetLocalizingId(label2, "MetadataEditor.CopyrightYear");
+			label2.Location = new System.Drawing.Point(3, 29);
+			label2.Name = "label2";
+			label2.Size = new System.Drawing.Size(99, 29);
+			label2.TabIndex = 8;
+			label2.Text = "Copyright Year";
 			//
 			// _illustrator
 			//
@@ -420,11 +427,11 @@
 			this._L10NSharpExtender.SetLocalizationComment(this._additionalRequestsLabel, "When you choose a Creative Commons License, this label shows over the text box at" +
 		" the bottom.");
 			this._L10NSharpExtender.SetLocalizingId(this._additionalRequestsLabel, "MetadataEditor.additionalRequestsLabel");
-			this._additionalRequestsLabel.Location = new System.Drawing.Point(42, 434);
+			this._additionalRequestsLabel.Location = new System.Drawing.Point(42, 432);
 			this._additionalRequestsLabel.Multiline = true;
 			this._additionalRequestsLabel.Name = "_additionalRequestsLabel";
 			this._additionalRequestsLabel.ReadOnly = true;
-			this._additionalRequestsLabel.Size = new System.Drawing.Size(151, 13);
+			this._additionalRequestsLabel.Size = new System.Drawing.Size(151, 16);
 			this._additionalRequestsLabel.TabIndex = 30;
 			this._additionalRequestsLabel.TabStop = false;
 			this._additionalRequestsLabel.Text = "Additional Requests";
@@ -434,7 +441,7 @@
 			this.tableLayoutPanel1.ColumnCount = 2;
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-			this.tableLayoutPanel1.Controls.Add(this.label2, 0, 1);
+			this.tableLayoutPanel1.Controls.Add(label2, 0, 1);
 			this.tableLayoutPanel1.Controls.Add(this._illustratorLabel, 0, 0);
 			this.tableLayoutPanel1.Controls.Add(this._illustrator, 1, 0);
 			this.tableLayoutPanel1.Controls.Add(this._copyrightYear, 1, 1);
@@ -465,7 +472,7 @@
 			this.Controls.Add(this.panel2);
 			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.betterLabel2);
-			this.Controls.Add(this.label3);
+			this.Controls.Add(label3);
 			this._L10NSharpExtender.SetLocalizableToolTip(this, null);
 			this._L10NSharpExtender.SetLocalizationComment(this, null);
 			this._L10NSharpExtender.SetLocalizingId(this, "MetadataEditor.MetadataEditorControl.MetadataEditorControl");
@@ -486,7 +493,6 @@
 
 		#endregion
 
-		private System.Windows.Forms.Label label3;
 		private Widgets.BetterLabel betterLabel2;
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.RadioButton _shareAlike;
@@ -503,7 +509,6 @@
 		private System.Windows.Forms.TextBox _customRightsStatement;
 		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label _illustratorLabel;
 		private System.Windows.Forms.TextBox _illustrator;
 		private System.Windows.Forms.TextBox _copyrightYear;

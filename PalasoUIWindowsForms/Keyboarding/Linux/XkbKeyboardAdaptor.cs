@@ -13,11 +13,11 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using X11.XKlavier;
+using Palaso.Reporting;
 using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
 using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
 using Palaso.UI.WindowsForms.Keyboarding.Types;
 using Palaso.WritingSystems;
-using Icu;
 
 namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 {
@@ -29,9 +29,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		protected List<IKeyboardErrorDescription> m_BadLocales;
 		private IXklEngine m_engine;
 
-		public XkbKeyboardAdaptor()
+		public XkbKeyboardAdaptor(): this(new XklEngine())
 		{
-			m_engine = new XklEngine();
 		}
 
 		/// <summary>
@@ -43,7 +42,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			m_engine = engine;
 		}
 
-		private string GetLanguageCountry(Locale locale)
+		private string GetLanguageCountry(Icu.Locale locale)
 		{
 			if (string.IsNullOrEmpty(locale.Country) && string.IsNullOrEmpty(locale.Language))
 				return string.Empty;
@@ -58,8 +57,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		{
 			get
 			{
-				var localesByLanguageCountry = new Dictionary<string, Locale>();
-				foreach (var locale in Locale.AvailableLocales)
+				var localesByLanguageCountry = new Dictionary<string, Icu.Locale>();
+				foreach (var locale in Icu.Locale.AvailableLocales)
 				{
 					var languageCountry = GetLanguageCountry(locale);
 					if (string.IsNullOrEmpty(languageCountry) ||
@@ -91,19 +90,23 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 			var configRegistry = XklConfigRegistry.Create(m_engine);
 			var layouts = configRegistry.Layouts;
-			//var icuLocales = IcuLocalesByLanguageCountry;
 
 			for (int iGroup = 0; iGroup < m_engine.GroupNames.Length; iGroup++)
 			{
 				// a group in a xkb keyboard is a keyboard layout. This can be used with
 				// multiple languages - which language is ambigious. Here we just add all
 				// of them.
-				var groupName = m_engine.GroupNames[iGroup];
+				// m_engine.GroupNames are not localized, but the layouts are. Before we try
+				// to compare them we better localize the group name as well, or we won't find
+				// much (FWNX-1388)
+				var groupName = m_engine.LocalizedGroupNames[iGroup];
 				List<XklConfigRegistry.LayoutDescription> layoutList;
 				if (!layouts.TryGetValue(groupName, out layoutList))
 				{
 					// No language in layouts uses the groupName keyboard layout.
 					m_BadLocales.Add(new KeyboardErrorDescription(groupName));
+					Console.WriteLine("WARNING: Couldn't find layout for {0}.", groupName);
+					Logger.WriteEvent("WARNING: Couldn't find layout for {0}.", groupName);
 					continue;
 				}
 

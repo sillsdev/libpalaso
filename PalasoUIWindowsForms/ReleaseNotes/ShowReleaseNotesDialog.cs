@@ -19,19 +19,6 @@ namespace Palaso.UI.WindowsForms.ReleaseNotes
 			_path = path;
 			Icon = icon;
 			InitializeComponent();
-			_browser.Disposed += new EventHandler(_browser_Disposed);
-		}
-
-		void _browser_Disposed(object sender, EventArgs e)
-		{
-			try
-			{
-				_temp.Dispose();
-			}
-			catch (Exception error)
-			{
-				Debug.Fail(error.Message);
-			}
 		}
 
 		private void ShowReleaseNotesDialog_Load(object sender, EventArgs e)

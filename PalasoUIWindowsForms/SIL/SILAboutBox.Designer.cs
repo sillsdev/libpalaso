@@ -1,4 +1,5 @@
 ﻿using System.Windows.Forms;
+using Palaso.UI.WindowsForms.HtmlBrowser;
 
 namespace Palaso.UI.WindowsForms.SIL
 {
@@ -33,7 +34,7 @@ namespace Palaso.UI.WindowsForms.SIL
 			this._buildDate = new System.Windows.Forms.Label();
 			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
 			this._versionNumber = new System.Windows.Forms.Label();
-			this._browser = new System.Windows.Forms.WebBrowser();
+			this._browser = new XWebBrowser();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -134,7 +135,7 @@ namespace Palaso.UI.WindowsForms.SIL
 		#endregion
 
 		private System.Windows.Forms.Label _buildDate;
-		private WebBrowser _browser;
+		private XWebBrowser _browser;
 		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
 		private System.Windows.Forms.Label _versionNumber;
 		private PictureBox pictureBox1;

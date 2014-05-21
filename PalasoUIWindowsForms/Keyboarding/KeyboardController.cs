@@ -105,6 +105,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		private sealed class KeyboardControllerImpl : IKeyboardController, IKeyboardControllerImpl, IDisposable
 		{
 			private List<string> LanguagesAlreadyShownKeyboardNotFoundMessages { get; set; }
+			private IKeyboardDefinition m_ActiveKeyboard;
 			public KeyboardCollection Keyboards { get; private set; }
 			public Dictionary<Control, object> EventHandlers { get; private set; }
 			public event RegisterEventHandler ControlAdded;
@@ -113,7 +114,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			public KeyboardControllerImpl()
 			{
 				Keyboards = new KeyboardCollection();
-				ActiveKeyboard = new KeyboardDescriptionNull();
 				EventHandlers = new Dictionary<Control, object>();
 				LanguagesAlreadyShownKeyboardNotFoundMessages = new List<string>();
 			}
@@ -283,7 +283,27 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			/// <summary>
 			/// Gets or sets the currently active keyboard
 			/// </summary>
-			public IKeyboardDefinition ActiveKeyboard { get; set; }
+			public IKeyboardDefinition ActiveKeyboard
+			{
+				get
+				{
+					if (m_ActiveKeyboard == null)
+					{
+						try
+						{
+							var lang = InputLanguage.CurrentInputLanguage;
+							m_ActiveKeyboard = GetKeyboard(lang.LayoutName, lang.Culture.Name);
+						}
+						catch (CultureNotFoundException)
+						{
+						}
+						if (m_ActiveKeyboard == null)
+							m_ActiveKeyboard = KeyboardDescription.Zero;
+					}
+					return m_ActiveKeyboard;
+				}
+				set { m_ActiveKeyboard = value; }
+			}
 
 			/// <summary>
 			/// Figures out the system default keyboard for the specified writing system (the one to use if we have no available KnownKeyboards).

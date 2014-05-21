@@ -1,1176 +1,1185 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
-	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-	<ProductVersion>9.0.21022</ProductVersion>
-	<SchemaVersion>2.0</SchemaVersion>
-	<ProjectGuid>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</ProjectGuid>
-	<OutputType>Library</OutputType>
-	<AppDesignerFolder>Properties</AppDesignerFolder>
-	<RootNamespace>Palaso.UI.WindowsForms</RootNamespace>
-	<AssemblyName>PalasoUIWindowsForms</AssemblyName>
-	<FileUpgradeFlags>
-	</FileUpgradeFlags>
-	<UpgradeBackupLocation>
-	</UpgradeBackupLocation>
-	<OldToolsVersion>3.5</OldToolsVersion>
-	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-	<PublishUrl>publish\</PublishUrl>
-	<Install>true</Install>
-	<InstallFrom>Disk</InstallFrom>
-	<UpdateEnabled>false</UpdateEnabled>
-	<UpdateMode>Foreground</UpdateMode>
-	<UpdateInterval>7</UpdateInterval>
-	<UpdateIntervalUnits>Days</UpdateIntervalUnits>
-	<UpdatePeriodically>false</UpdatePeriodically>
-	<UpdateRequired>false</UpdateRequired>
-	<MapFileExtensions>true</MapFileExtensions>
-	<ApplicationRevision>0</ApplicationRevision>
-	<ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-	<IsWebBootstrapper>false</IsWebBootstrapper>
-	<UseApplicationTrust>false</UseApplicationTrust>
-	<BootstrapperEnabled>true</BootstrapperEnabled>
-	<SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-	<RestorePackages>true</RestorePackages>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Palaso.UI.WindowsForms</RootNamespace>
+    <AssemblyName>PalasoUIWindowsForms</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-	<DebugSymbols>true</DebugSymbols>
-	<DebugType>full</DebugType>
-	<Optimize>false</Optimize>
-	<OutputPath>..\output\Debug</OutputPath>
-	<DefineConstants>DEBUG;TRACE</DefineConstants>
-	<ErrorReport>prompt</ErrorReport>
-	<WarningLevel>1</WarningLevel>
-	<DocumentationFile>..\output\Debug\PalasoUIWindowsForms.XML</DocumentationFile>
-	<PlatformTarget>x86</PlatformTarget>
-	<LangVersion>default</LangVersion>
-	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\output\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>1</WarningLevel>
+    <DocumentationFile>..\output\Debug\PalasoUIWindowsForms.XML</DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>default</LangVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-	<DebugType>pdbonly</DebugType>
-	<Optimize>true</Optimize>
-	<OutputPath>..\output\Release</OutputPath>
-	<DefineConstants>TRACE</DefineConstants>
-	<ErrorReport>prompt</ErrorReport>
-	<WarningLevel>4</WarningLevel>
-	<PlatformTarget>x86</PlatformTarget>
-	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\output\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
-	<DebugSymbols>true</DebugSymbols>
-	<OutputPath>..\output\DebugMono</OutputPath>
-	<DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
-	<DebugType>full</DebugType>
-	<PlatformTarget>AnyCPU</PlatformTarget>
-	<ErrorReport>prompt</ErrorReport>
-	<WarningLevel>4</WarningLevel>
-	<Optimize>false</Optimize>
-	<TargetFrameworkProfile>
-	</TargetFrameworkProfile>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\output\DebugMono</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
-	<OutputPath>..\output\ReleaseMono</OutputPath>
-	<DefineConstants>TRACE;MONO</DefineConstants>
-	<Optimize>true</Optimize>
-	<DebugType>pdbonly</DebugType>
-	<PlatformTarget>AnyCPU</PlatformTarget>
-	<ErrorReport>prompt</ErrorReport>
-	<WarningLevel>4</WarningLevel>
-	<TargetFrameworkProfile>
-	</TargetFrameworkProfile>
+    <OutputPath>..\output\ReleaseMono</OutputPath>
+    <DefineConstants>TRACE;MONO</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-   <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\Debug\icu.net.dll</HintPath>
-	</Reference>
-	<None Include="..\lib\Debug\icudt40.dll">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
-	<None Include="..\lib\Debug\icuin40.dll">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
-	<None Include="..\lib\Debug\icuuc40.dll">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
-	<None Include="..\lib\Debug\icu.net.dll.config">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
-	<Reference Include="..\lib\Debug\L10NSharp.dll">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\Debug\L10NSharp.dll</HintPath>
-	</Reference>
+    <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Debug\icu.net.dll</HintPath>
+    </Reference>
+    <None Include="..\lib\Debug\icudt40.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\lib\Debug\icuin40.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\lib\Debug\icuuc40.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\lib\Debug\icu.net.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Reference Include="..\lib\Debug\L10NSharp.dll">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Debug\L10NSharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
-   <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\Release\icu.net.dll</HintPath>
-	</Reference>
-	<None Include="..\lib\Release\icudt40.dll">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
-	<None Include="..\lib\Release\icuin40.dll">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
-	<None Include="..\lib\Release\icuuc40.dll">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
-	<None Include="..\lib\Release\icu.net.dll.config">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
-	<Reference Include="..\lib\Release\L10NSharp.dll">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\Release\L10NSharp.dll</HintPath>
-	</Reference>
+    <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Release\icu.net.dll</HintPath>
+    </Reference>
+    <None Include="..\lib\Release\icudt40.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\lib\Release\icuin40.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\lib\Release\icuuc40.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\lib\Release\icu.net.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Reference Include="..\lib\Release\L10NSharp.dll">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Release\L10NSharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono'">
-   <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\DebugMono\icu.net.dll</HintPath>
-	</Reference>
-	<None Include="..\lib\DebugMono\icu.net.dll.config">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
-	<Reference Include="..\lib\DebugMono\L10NSharp.dll">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\DebugMono\L10NSharp.dll</HintPath>
-	</Reference>
+    <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\DebugMono\icu.net.dll</HintPath>
+    </Reference>
+    <None Include="..\lib\DebugMono\icu.net.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Reference Include="..\lib\DebugMono\L10NSharp.dll">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\DebugMono\L10NSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'ReleaseMono'">
-   <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\ReleaseMono\icu.net.dll</HintPath>
-	</Reference>
-	<None Include="..\lib\ReleaseMono\icu.net.dll.config">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
-	<Reference Include="..\lib\ReleaseMono\L10NSharp.dll">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\ReleaseMono\L10NSharp.dll</HintPath>
-	</Reference>
+    <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\ReleaseMono\icu.net.dll</HintPath>
+    </Reference>
+    <None Include="..\lib\ReleaseMono\icu.net.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Reference Include="..\lib\ReleaseMono\L10NSharp.dll">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\ReleaseMono\L10NSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
-	<Reference Include="Enchant.Net">
-	  <HintPath>..\lib\common\Enchant.Net.dll</HintPath>
-	</Reference>
+    <Reference Include="Enchant.Net">
+      <HintPath>..\lib\common\Enchant.Net.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
-	<Reference Include="irrKlang.NET4">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\$(Configuration)\irrKlang.NET4.dll</HintPath>
-	</Reference>
-	<Reference Include="NAudio, Version=1.5.3.0, Culture=neutral, processorArchitecture=x86">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\$(Configuration)\NAudio.dll</HintPath>
-	</Reference>
+    <Reference Include="irrKlang.NET4">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\$(Configuration)\irrKlang.NET4.dll</HintPath>
+    </Reference>
+    <Reference Include="NAudio, Version=1.5.3.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\$(Configuration)\NAudio.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' ">
-	<Reference Include="NDesk.DBus">
-	  <HintPath>..\lib\commonMono\NDesk.DBus.dll</HintPath>
-	</Reference>
-	<Reference Include="ibusdotnet">
-	  <HintPath>..\lib\commonMono\ibusdotnet.dll</HintPath>
-	</Reference>
-	<None Include="..\lib\commonMono\NDesk.DBus.dll.config">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
+    <Reference Include="NDesk.DBus">
+      <HintPath>..\lib\commonMono\NDesk.DBus.dll</HintPath>
+    </Reference>
+    <Reference Include="ibusdotnet">
+      <HintPath>..\lib\commonMono\ibusdotnet.dll</HintPath>
+    </Reference>
+    <None Include="..\lib\commonMono\NDesk.DBus.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <!-- this is the Microsoft WIndows Image Acquisition COM library, for scanner and camera control-->
   <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
-	<Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
-	  <SpecificVersion>False</SpecificVersion>
-	  <EmbedInteropTypes>False</EmbedInteropTypes>
-	  <HintPath>..\lib\$(Configuration)\Interop.WIA.dll</HintPath>
-	</Reference>
+    <Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <HintPath>..\lib\$(Configuration)\Interop.WIA.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-	<None Include="packages.config" />
-	<None Include="Progress\LogBoxSettings.settings">
-	  <Generator>SettingsSingleFileGenerator</Generator>
-	  <LastGenOutput>LogBoxSettings.Designer.cs</LastGenOutput>
-	</None>
-	<None Include="Registration\Registration.settings">
-	  <Generator>PublicSettingsSingleFileGenerator</Generator>
-	  <LastGenOutput>Registration.Designer.cs</LastGenOutput>
-	</None>
-	<None Include="SettingProtection\SettingsProtection1.settings">
-	  <Generator>SettingsSingleFileGenerator</Generator>
-	  <LastGenOutput>SettingsProtection1.Designer.cs</LastGenOutput>
-	</None>
-	<None Include="SettingProtection\SettingsProtectionSettings.settings">
-	  <Generator>SettingsSingleFileGenerator</Generator>
-	  <LastGenOutput>SettingsProtectionSettings.Designer.cs</LastGenOutput>
-	</None>
-	<None Include="..\lib\common\Enchant.Net.dll.config">
-	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
-	<Reference Include="sysglobl" />
-	<Reference Include="System" />
-	<Reference Include="System.Configuration" />
-	<Reference Include="System.Data" />
-	<Reference Include="System.Drawing" />
-	<Reference Include="System.Runtime.Serialization" />
-	<Reference Include="System.Security" />
-	<Reference Include="System.ServiceModel" />
-	<Reference Include="System.Windows.Forms" />
-	<Reference Include="System.Xml" />
-	<Reference Include="System.Xml.Linq" />
-	<Reference Include="WindowsBase" />
+    <None Include="packages.config" />
+    <None Include="Progress\LogBoxSettings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>LogBoxSettings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Registration\Registration.settings">
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Registration.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="SettingProtection\SettingsProtection1.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>SettingsProtection1.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="SettingProtection\SettingsProtectionSettings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>SettingsProtectionSettings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="..\lib\common\Enchant.Net.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Reference Include="sysglobl" />
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-	<Compile Include="ClearShare\ClearShareResources.Designer.cs" />
-	<Compile Include="ClearShare\Contribution.cs" />
-	<Compile Include="ClearShare\ContributionCollection.cs" />
-	<Compile Include="ClearShare\WinFormsUI\ContributorsListControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="ClearShare\WinFormsUI\ContributorsListControl.designer.cs">
-	  <DependentUpon>ContributorsListControl.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ClearShare\ContributorsListControlViewModel.cs" />
-	<Compile Include="ClearShare\CreativeCommonsLicense.cs" />
-	<Compile Include="ClearShare\WinFormsUI\FadingMessageForm.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="ClearShare\WinFormsUI\FadingMessageForm.designer.cs">
-	  <DependentUpon>FadingMessageForm.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ClearShare\License.cs" />
-	<Compile Include="ClearShare\MetaData.cs" />
-	<Compile Include="ClearShare\OlacSystem.cs" />
-	<Compile Include="ClearShare\Role.cs" />
-	<Compile Include="ClearShare\WinFormsUI\MetadataEditorDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="ClearShare\WinFormsUI\MetadataEditorDialog.Designer.cs">
-	  <DependentUpon>MetadataEditorDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ClearShare\Work.cs" />
-	<Compile Include="ColorHelper.cs" />
-	<Compile Include="Extensions\ControlExtensions.cs" />
-	<Compile Include="Extensions\FormExtensions.cs" />
-	<Compile Include="FileDialogExtender\Enums.cs" />
-	<Compile Include="FileDialogExtender\Extensions.cs" />
-	<Compile Include="FileDialogExtender\FileDialogControlBase.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="FileDialogExtender\FileDialogControlBase.designer.cs">
-	  <DependentUpon>FileDialogControlBase.cs</DependentUpon>
-	</Compile>
-	<Compile Include="FileDialogExtender\HelperTypes.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="FileDialogExtender\structs.cs" />
-	<Compile Include="FileDialogExtender\Win32.cs" />
-	<Compile Include="FileSystem\ConfirmRecycleDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="FileSystem\ConfirmRecycleDialog.designer.cs">
-	  <DependentUpon>ConfirmRecycleDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="FolderBrowserControl\FolderBrowserControl.cs"
-	    Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="FontHelper.cs" />
-	<Compile Include="HotSpot\HotSpot.cs" />
-	<Compile Include="HotSpot\HotSpotProvider.cs" />
-	<Compile Include="HotSpot\RetrieveHotSpotsEventArgs.cs" />
-	<Compile Include="i18n\ILocalizableControl.cs" />
-	<Compile Include="i18n\LocalizationHelper.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="i18n\LocalizationHelper.designer.cs">
-	  <DependentUpon>LocalizationHelper.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ImageGallery\ArtOfReadingImageCollection.cs" />
-	<Compile Include="ImageGallery\IImageCollection.cs" />
-	<Compile Include="ImageGallery\ImageUtilities.cs" />
-	<Compile Include="ImageGallery\PictureChooser.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="ImageGallery\PictureChooser.designer.cs">
-	  <DependentUpon>PictureChooser.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ImageGallery\ThumbnailViewer.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="ImageGallery\ThumbnailViewer.designer.cs">
-	  <DependentUpon>ThumbnailViewer.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ImageToolbox\AcquireImageControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="ImageToolbox\AcquireImageControl.Designer.cs">
-	  <DependentUpon>AcquireImageControl.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ImageToolbox\ArtOfReadingChooser.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="ImageToolbox\ArtOfReadingChooser.Designer.cs">
-	  <DependentUpon>ArtOfReadingChooser.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ImageToolbox\Cropping\Grip.cs" />
-	<Compile Include="ImageToolbox\Cropping\ImageCropper.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="ImageToolbox\Cropping\ImageCropper.designer.cs">
-	  <DependentUpon>ImageCropper.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ClearShare\WinFormsUI\MetadataDisplayControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="ClearShare\WinFormsUI\MetadataDisplayControl.Designer.cs">
-	  <DependentUpon>MetadataDisplayControl.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ImageToolbox\OpenFileDialogWithViews.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="ImageToolbox\ImageToolboxSettings.Designer.cs">
-	  <AutoGen>True</AutoGen>
-	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
-	  <DependentUpon>ImageToolboxSettings.settings</DependentUpon>
-	</Compile>
-	<Compile Include="ImageToolbox\ImageToolboxControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="ImageToolbox\ImageToolboxControl.Designer.cs">
-	  <DependentUpon>ImageToolboxControl.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ImageToolbox\ImageToolboxDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="ImageToolbox\ImageToolboxDialog.Designer.cs">
-	  <DependentUpon>ImageToolboxDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ClearShare\LicenseInfo.cs" />
-	<Compile Include="ClearShare\LicenseLogos.Designer.cs">
-	  <AutoGen>True</AutoGen>
-	  <DesignTime>True</DesignTime>
-	  <DependentUpon>LicenseLogos.resx</DependentUpon>
-	</Compile>
-	<Compile Include="ClearShare\WinFormsUI\MetadataEditorControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="ClearShare\WinFormsUI\MetadataEditorControl.Designer.cs">
-	  <DependentUpon>MetadataEditorControl.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ImageToolbox\PalasoImage.cs" />
-	<Compile Include="ImageToolbox\ImageToolboxButtons.Designer.cs">
-	  <AutoGen>True</AutoGen>
-	  <DesignTime>True</DesignTime>
-	  <DependentUpon>ImageToolboxButtons.resx</DependentUpon>
-	</Compile>
-	<Compile Include="ImageToolbox\SampleImages.Designer.cs">
-	  <AutoGen>True</AutoGen>
-	  <DesignTime>True</DesignTime>
-	  <DependentUpon>SampleImages.resx</DependentUpon>
-	</Compile>
-	<Compile Include="ImageToolbox\ImageAcquisitionService.cs" />
-	<Compile Include="Keyboarding\Interfaces\IKeyboardErrorDescription.cs" />
-	<Compile Include="Keyboarding\InternalInterfaces\IKeyboardAdaptor.cs" />
-	<Compile Include="Keyboarding\InternalInterfaces\IKeyboardControllerImpl.cs" />
-	<Compile Include="Keyboarding\KeyboardDescription.cs" />
-	<Compile Include="Keyboarding\KeyboardDescriptionNull.cs" />
-	<Compile Include="Keyboarding\KeyboardErrorDescription.cs" />
-	<Compile Include="Keyboarding\Linux\IbusKeyboardAdaptor.cs" />
-	<Compile Include="Keyboarding\Linux\X11.cs" />
-	<Compile Include="Keyboarding\Linux\XkbKeyboardAdaptor.cs" />
-	<Compile Include="Keyboarding\Linux\XkbKeyboardDescription.cs" />
-	<Compile Include="Keyboarding\Linux\XklConfigRegistry.cs" />
-	<Compile Include="Keyboarding\Linux\XklEngine.cs" />
-	<Compile Include="Keyboarding\Types\InputLanguageWrapper.cs" />
-	<Compile Include="Keyboarding\Types\KeyboardCollection.cs" />
-	<Compile Include="Keyboarding\Types\MouseEvent.cs" />
-	<Compile Include="Keyboarding\KeyboardController.cs" />
-	<Compile Include="Keyboarding\Types\Win32.cs" />
-	<Compile Include="Keyboarding\Windows\WinKeyboardAdaptor.cs" />
-	<Compile Include="Keyboarding\Windows\WinKeyboardDescription.cs" />
-	<Compile Include="Miscellaneous\IUserInterfaceMemory.cs" />
-	<Compile Include="Miscellaneous\TaskBarFlasher.cs" />
-	<Compile Include="Miscellaneous\UsageEmailDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="Miscellaneous\UserRegistrationDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="Miscellaneous\UserRegistrationDialog.Designer.cs">
-	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="Miscellaneous\WaitCursor.cs" />
-	<Compile Include="PaintingHelper.cs" />
-	<Compile Include="PortableSettingsProvider\FormSettings.cs" />
-	<Compile Include="PortableSettingsProvider\GridSettings.cs" />
-	<Compile Include="PortableSettingsProvider\MruFiles.cs" />
-	<Compile Include="PortableSettingsProvider\PortableSettingsProvider.cs" />
-	<Compile Include="Progress\LogBox.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="Progress\LogBox.designer.cs">
-	  <DependentUpon>LogBox.cs</DependentUpon>
-	</Compile>
-	<Compile Include="Progress\ProgressDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="Progress\Commands\ProgressDialogHandler.cs" />
-	<Compile Include="Progress\ProgressDialogProgressState.cs" />
-	<Compile Include="Progress\ProgressNotificationProvider.cs" />
-	<Compile Include="Progress\TransformWithProgressDialog.cs" />
-	<Compile Include="Properties\AssemblyInfo.cs" />
-	<Compile Include="Properties\Resources1.Designer.cs">
-	  <DependentUpon>Resources.resx</DependentUpon>
-	  <DesignTime>True</DesignTime>
-	  <AutoGen>True</AutoGen>
-	</Compile>
-	<Compile Include="PropertyBag-NoTests\FilePathEditor.cs" />
-	<Compile Include="PropertyBag-NoTests\PropertyBag.cs" />
-	<Compile Include="ReflectionHelper.cs" />
-	<Compile Include="Registration\Registration.Designer.cs">
-	  <AutoGen>True</AutoGen>
-	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
-	  <DependentUpon>Registration.settings</DependentUpon>
-	</Compile>
-	<Compile Include="ReleaseNotes\MarkdownSharp.cs" />
-	<Compile Include="SettingProtection\SettingsProtection1.Designer.cs">
-	  <AutoGen>True</AutoGen>
-	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
-	  <DependentUpon>SettingsProtection1.settings</DependentUpon>
-	</Compile>
-	<Compile Include="SettingProtection\SettingsProtectionHelper.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="SettingProtection\SettingsProtectionHelper.Designer.cs">
-	  <DependentUpon>SettingsProtectionHelper.cs</DependentUpon>
-	</Compile>
-	<Compile Include="SettingProtection\SettingsPasswordDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="SettingProtection\SettingsPasswordDialog.Designer.cs">
-	  <DependentUpon>SettingsPasswordDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="SettingProtection\SettingsProtectionIcons.Designer.cs">
-	  <AutoGen>True</AutoGen>
-	  <DesignTime>True</DesignTime>
-	  <DependentUpon>SettingsProtectionIcons.resx</DependentUpon>
-	</Compile>
-	<Compile Include="SettingProtection\SettingsLauncherButton.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="SettingProtection\SettingsLauncherButton.Designer.cs">
-	  <DependentUpon>SettingsLauncherButton.cs</DependentUpon>
-	</Compile>
-	<Compile Include="SettingProtection\SettingProtectionDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="SettingProtection\SettingProtectionDialog.Designer.cs">
-	  <DependentUpon>SettingProtectionDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="SettingProtection\SettingsProtection.cs" />
-	<Compile Include="SettingProtection\SettingsProtectionSettings.Designer.cs">
-	  <AutoGen>True</AutoGen>
-	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
-	  <DependentUpon>SettingsProtectionSettings.settings</DependentUpon>
-	</Compile>
-	<Compile Include="SettingProtection\SettingsProtectionLauncherButton.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="SettingProtection\SettingsProtectionLauncherButton.Designer.cs">
-	  <DependentUpon>SettingsProtectionLauncherButton.cs</DependentUpon>
-	</Compile>
-	<Compile Include="ReleaseNotes\ShowReleaseNotesDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="ReleaseNotes\ShowReleaseNotesDialog.Designer.cs">
-	  <DependentUpon>ShowReleaseNotesDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="SIL\SILAboutBox.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="SIL\SILAboutBox.Designer.cs">
-	  <DependentUpon>SILAboutBox.cs</DependentUpon>
-	</Compile>
-	<Compile Include="Spelling\TextBoxSpellChecker.cs" />
-	<Compile Include="SuperToolTip\dlgSuperToolTipEditor.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="SuperToolTip\dlgSuperToolTipEditor.designer.cs">
-	  <DependentUpon>dlgSuperToolTipEditor.cs</DependentUpon>
-	</Compile>
-	<Compile Include="SuperToolTip\SuperToolTip.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="SuperToolTip\SuperToolTip.designer.cs">
-	  <DependentUpon>SuperToolTip.cs</DependentUpon>
-	</Compile>
-	<Compile Include="SuperToolTip\SuperToolTipInfo.cs" />
-	<Compile Include="SuperToolTip\SuperToolTipInfoWrapper.cs" />
-	<Compile Include="SuperToolTip\SuperToolTipWindowData.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="SuperToolTip\SuperToolTipWindowData.designer.cs">
-	  <DependentUpon>SuperToolTipWindowData.cs</DependentUpon>
-	</Compile>
-	<Compile Include="Widgets\AutoHeightLabel.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="Widgets\BetterCheckedListBox.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="Widgets\BetterCheckedListBox.designer.cs">
-	  <DependentUpon>BetterCheckedListBox.cs</DependentUpon>
-	</Compile>
-	<Compile Include="Widgets\BetterGrid\BetterGrid.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="Widgets\BetterGrid\CalendarCell.cs" />
-	<Compile Include="Widgets\BetterGrid\CalendarColumn.cs" />
-	<Compile Include="Widgets\BetterGrid\CalendarEditingControl.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="Widgets\BetterGrid\CellCustomDropDownList.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="Widgets\BetterGrid\CheckBoxColumnHeaderHandler.cs" />
-	<Compile Include="Widgets\BetterGrid\GridSettings.cs" />
-	<Compile Include="Widgets\BetterGrid\PushButtonCell.cs" />
-	<Compile Include="Widgets\BetterGrid\PushButtonColumn.cs" />
-	<Compile Include="Widgets\BetterLabel.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="Widgets\BetterLabel.designer.cs">
-	  <DependentUpon>BetterLabel.cs</DependentUpon>
-	</Compile>
-	<Compile Include="Widgets\BitmapButton.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="Widgets\ControlListBox.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="Widgets\ControlListBox.designer.cs">
-	  <DependentUpon>ControlListBox.cs</DependentUpon>
-	</Compile>
-	<Compile Include="Widgets\CustomDropDown.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="Widgets\EnhancedPanel.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="Widgets\Flying\Animator.cs" />
-	<Compile Include="Widgets\Flying\FlyingLabel.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="Widgets\HeaderLabel.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="Widgets\Prompt.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="Reporting\ExceptionReportingDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="Progress\LabelProgress.cs" />
-	<Compile Include="Progress\LogBoxResources.Designer.cs">
-	  <DependentUpon>LogBoxResources.resx</DependentUpon>
-	  <AutoGen>True</AutoGen>
-	  <DesignTime>True</DesignTime>
-	</Compile>
-	<Compile Include="Progress\LogBoxSettings.Designer.cs">
-	  <DependentUpon>LogBoxSettings.settings</DependentUpon>
-	  <AutoGen>True</AutoGen>
-	  <DesignTimeSharedInput>True</DesignTimeSharedInput>
-	</Compile>
-	<Compile Include="Reporting\ProblemNotificationDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="Reporting\ProblemNotificationDialog.Designer.cs">
-	  <DependentUpon>ProblemNotificationDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="Proxy\ProxyCredentialsRequestDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="Proxy\ProxyCredentialsRequestDialog.designer.cs">
-	  <DependentUpon>ProxyCredentialsRequestDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="Progress\SimpleProgressIndicator.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="Progress\SimpleStatusProgress.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="Progress\TextBoxProgress.cs" />
-	<Compile Include="Reporting\WinFormsErrorReporter.cs" />
-	<Compile Include="Reporting\WinFormsExceptionHandler.cs" />
-	<Compile Include="Widgets\XButton.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\CannotFindMyLanguageDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\CannotFindMyLanguageDialog.Designer.cs">
-	  <DependentUpon>CannotFindMyLanguageDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\DeleteInputSystemDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\DeleteInputSystemDialog.Designer.cs">
-	  <DependentUpon>DeleteInputSystemDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\LookupISOCodeModel.cs" />
-	<Compile Include="WritingSystems\LookupISOControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\LookupISOControl.Designer.cs">
-	  <DependentUpon>LookupISOControl.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\WritingSystemDefinitionVariantHelper.cs" />
-	<Compile Include="WritingSystems\WSIdentifiers\UnlistedLanguageView.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\WSIdentifiers\UnlistedLanguageView.Designer.cs">
-	  <DependentUpon>UnlistedLanguageView.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\WSTree\GetDialectNameDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\WSTree\GetDialectNameDialog.Designer.cs">
-	  <DependentUpon>GetDialectNameDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\LookupISOCodeDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\LookupISOCodeDialog.Designer.cs">
-	  <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\WSIdentifiers\NothingSpecialView.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\WSIdentifiers\NothingSpecialView.Designer.cs">
-	  <DependentUpon>NothingSpecialView.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\WSIdentifiers\IpaIdentifierView.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\WSIdentifiers\IpaIdentifierView.Designer.cs">
-	  <DependentUpon>IpaIdentifierView.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\WSIdentifiers\CustomIdentifierView.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\WSIdentifiers\CustomIdentifierView.Designer.cs">
-	  <DependentUpon>CustomIdentifierView.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\WSIdentifiers\ScriptRegionVariantView.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\WSIdentifiers\ScriptRegionVariantView.Designer.cs">
-	  <DependentUpon>ScriptRegionVariantView.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\WSIdentifiers\VoiceIdentifierView.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\WSIdentifiers\VoiceIdentifierView.Designer.cs">
-	  <DependentUpon>VoiceIdentifierView.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\WSIdentifiers\WSIdentifierView.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\WSIdentifiers\WSIdentifierView.Designer.cs">
-	  <DependentUpon>WSIdentifierView.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\WSTree\WritingSystemSuggestion.cs" />
-	<Compile Include="WritingSystems\WSTree\WritingSystemTreeItem.cs" />
-	<Compile Include="WritingSystems\WSTree\WritingSystemTreeModel.cs" />
-	<Compile Include="WritingSystems\WSPickerUsingComboBox.cs">
-	  <SubType>Component</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\WSPickerUsingComboBox.Designer.cs">
-	  <DependentUpon>WSPickerUsingComboBox.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\WritingSystemSetupModel.cs" />
-	<Compile Include="WritingSystems\WritingSystemFromWindowsLocaleProvider.cs" />
-	<Compile Include="WritingSystems\WSAddDuplicateMoreButtonBar.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\WSAddDuplicateMoreButtonBar.Designer.cs">
-	  <DependentUpon>WSAddDuplicateMoreButtonBar.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\WSFontControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\WSFontControl.Designer.cs">
-	  <DependentUpon>WSFontControl.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\WSKeyboardControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\WSKeyboardControl.Designer.cs">
-	  <DependentUpon>WSKeyboardControl.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\WSPickerUsingListView.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\WSPickerUsingListView.Designer.cs">
-	  <DependentUpon>WSPickerUsingListView.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\WritingSystemSetupDialog.cs">
-	  <SubType>Form</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\WritingSystemSetupDialog.Designer.cs">
-	  <DependentUpon>WritingSystemSetupDialog.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\WritingSystemSetupView.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\WritingSystemSetupView.Designer.cs">
-	  <DependentUpon>WritingSystemSetupView.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\WSPropertiesTabControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\WSPropertiesTabControl.Designer.cs">
-	  <DependentUpon>WSPropertiesTabControl.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\WSSortControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\WSSortControl.Designer.cs">
-	  <DependentUpon>WSSortControl.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\WSSpellingControl.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\WSSpellingControl.Designer.cs">
-	  <DependentUpon>WSSpellingControl.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\WSTree\WritingSystemTreeView.cs">
-	  <SubType>UserControl</SubType>
-	</Compile>
-	<Compile Include="WritingSystems\WSTree\WritingSystemTreeView.Designer.cs">
-	  <DependentUpon>WritingSystemTreeView.cs</DependentUpon>
-	</Compile>
-	<Compile Include="WritingSystems\WSTree\WritingSystemSuggestor.cs" />
-	<Compile Include="Keyboarding\Linux\GlobalCachedInputContext.cs" />
-	<Compile Include="Keyboarding\Linux\IbusDefaultEventHandler.cs" />
-	<Compile Include="Keyboarding\Types\RegisterEventArgs.cs" />
-	<Compile Include="Keyboarding\Interfaces\IIbusEventHandler.cs" />
-	<Compile Include="Keyboarding\InternalInterfaces\IIbusCommunicator.cs" />
-	<Compile Include="Keyboarding\Linux\IbusCommunicator.cs" />
-	<Compile Include="Keyboarding\Linux\IbusKeyboardDescription.cs" />
-	<Compile Include="Keyboarding\Linux\X11KeyConverter.cs" />
-	<Compile Include="Keyboarding\InternalInterfaces\IXklEngine.cs" />
-	<Compile Include="Keyboarding\Windows\MsTsfInterfaces.cs" />
-	<Compile Include="Keyboarding\Linux\CombinedKeyboardAdaptor.cs" />
+    <Compile Include="ClearShare\ClearShareResources.Designer.cs" />
+    <Compile Include="ClearShare\Contribution.cs" />
+    <Compile Include="ClearShare\ContributionCollection.cs" />
+    <Compile Include="ClearShare\WinFormsUI\ContributorsListControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ClearShare\WinFormsUI\ContributorsListControl.designer.cs">
+      <DependentUpon>ContributorsListControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ClearShare\ContributorsListControlViewModel.cs" />
+    <Compile Include="ClearShare\CreativeCommonsLicense.cs" />
+    <Compile Include="ClearShare\WinFormsUI\FadingMessageForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ClearShare\WinFormsUI\FadingMessageForm.designer.cs">
+      <DependentUpon>FadingMessageForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ClearShare\License.cs" />
+    <Compile Include="ClearShare\MetaData.cs" />
+    <Compile Include="ClearShare\OlacSystem.cs" />
+    <Compile Include="ClearShare\Role.cs" />
+    <Compile Include="ClearShare\WinFormsUI\MetadataEditorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ClearShare\WinFormsUI\MetadataEditorDialog.Designer.cs">
+      <DependentUpon>MetadataEditorDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ClearShare\Work.cs" />
+    <Compile Include="ColorHelper.cs" />
+    <Compile Include="Extensions\ControlExtensions.cs" />
+    <Compile Include="Extensions\FormExtensions.cs" />
+    <Compile Include="FileDialogExtender\Enums.cs" />
+    <Compile Include="FileDialogExtender\Extensions.cs" />
+    <Compile Include="FileDialogExtender\FileDialogControlBase.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FileDialogExtender\FileDialogControlBase.designer.cs">
+      <DependentUpon>FileDialogControlBase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FileDialogExtender\HelperTypes.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FileDialogExtender\structs.cs" />
+    <Compile Include="FileDialogExtender\Win32.cs" />
+    <Compile Include="FileSystem\ConfirmRecycleDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FileSystem\ConfirmRecycleDialog.designer.cs">
+      <DependentUpon>ConfirmRecycleDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FolderBrowserControl\FolderBrowserControl.cs" Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FontHelper.cs" />
+    <Compile Include="HotSpot\HotSpot.cs" />
+    <Compile Include="HotSpot\HotSpotProvider.cs" />
+    <Compile Include="HotSpot\RetrieveHotSpotsEventArgs.cs" />
+    <Compile Include="i18n\ILocalizableControl.cs" />
+    <Compile Include="i18n\LocalizationHelper.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="i18n\LocalizationHelper.designer.cs">
+      <DependentUpon>LocalizationHelper.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImageGallery\ArtOfReadingImageCollection.cs" />
+    <Compile Include="ImageGallery\IImageCollection.cs" />
+    <Compile Include="ImageGallery\ImageUtilities.cs" />
+    <Compile Include="ImageGallery\PictureChooser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImageGallery\PictureChooser.designer.cs">
+      <DependentUpon>PictureChooser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImageGallery\ThumbnailViewer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ImageGallery\ThumbnailViewer.designer.cs">
+      <DependentUpon>ThumbnailViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImageToolbox\AcquireImageControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ImageToolbox\AcquireImageControl.Designer.cs">
+      <DependentUpon>AcquireImageControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImageToolbox\ArtOfReadingChooser.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ImageToolbox\ArtOfReadingChooser.Designer.cs">
+      <DependentUpon>ArtOfReadingChooser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImageToolbox\Cropping\Grip.cs" />
+    <Compile Include="ImageToolbox\Cropping\ImageCropper.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ImageToolbox\Cropping\ImageCropper.designer.cs">
+      <DependentUpon>ImageCropper.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ClearShare\WinFormsUI\MetadataDisplayControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ClearShare\WinFormsUI\MetadataDisplayControl.Designer.cs">
+      <DependentUpon>MetadataDisplayControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImageToolbox\OpenFileDialogWithViews.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ImageToolbox\ImageToolboxSettings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ImageToolboxSettings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="ImageToolbox\ImageToolboxControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ImageToolbox\ImageToolboxControl.Designer.cs">
+      <DependentUpon>ImageToolboxControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImageToolbox\ImageToolboxDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImageToolbox\ImageToolboxDialog.Designer.cs">
+      <DependentUpon>ImageToolboxDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ClearShare\LicenseInfo.cs" />
+    <Compile Include="ClearShare\LicenseLogos.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LicenseLogos.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ClearShare\WinFormsUI\MetadataEditorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ClearShare\WinFormsUI\MetadataEditorControl.Designer.cs">
+      <DependentUpon>MetadataEditorControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImageToolbox\PalasoImage.cs" />
+    <Compile Include="ImageToolbox\ImageToolboxButtons.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ImageToolboxButtons.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ImageToolbox\SampleImages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SampleImages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ImageToolbox\ImageAcquisitionService.cs" />
+    <Compile Include="Keyboarding\Interfaces\IKeyboardErrorDescription.cs" />
+    <Compile Include="Keyboarding\InternalInterfaces\IKeyboardAdaptor.cs" />
+    <Compile Include="Keyboarding\InternalInterfaces\IKeyboardControllerImpl.cs" />
+    <Compile Include="Keyboarding\KeyboardDescription.cs" />
+    <Compile Include="Keyboarding\KeyboardDescriptionNull.cs" />
+    <Compile Include="Keyboarding\KeyboardErrorDescription.cs" />
+    <Compile Include="Keyboarding\Linux\IbusKeyboardAdaptor.cs" />
+    <Compile Include="Keyboarding\Linux\X11.cs" />
+    <Compile Include="Keyboarding\Linux\XkbKeyboardAdaptor.cs" />
+    <Compile Include="Keyboarding\Linux\XkbKeyboardDescription.cs" />
+    <Compile Include="Keyboarding\Linux\XklConfigRegistry.cs" />
+    <Compile Include="Keyboarding\Linux\XklEngine.cs" />
+    <Compile Include="Keyboarding\Types\InputLanguageWrapper.cs" />
+    <Compile Include="Keyboarding\Types\KeyboardCollection.cs" />
+    <Compile Include="Keyboarding\Types\MouseEvent.cs" />
+    <Compile Include="Keyboarding\KeyboardController.cs" />
+    <Compile Include="Keyboarding\Types\Win32.cs" />
+    <Compile Include="Keyboarding\Windows\WinKeyboardAdaptor.cs" />
+    <Compile Include="Keyboarding\Windows\WinKeyboardDescription.cs" />
+    <Compile Include="Miscellaneous\IUserInterfaceMemory.cs" />
+    <Compile Include="Miscellaneous\TaskBarFlasher.cs" />
+    <Compile Include="Miscellaneous\UsageEmailDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Miscellaneous\UserRegistrationDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Miscellaneous\UserRegistrationDialog.Designer.cs">
+      <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Miscellaneous\WaitCursor.cs" />
+    <Compile Include="PaintingHelper.cs" />
+    <Compile Include="PortableSettingsProvider\FormSettings.cs" />
+    <Compile Include="PortableSettingsProvider\GridSettings.cs" />
+    <Compile Include="PortableSettingsProvider\MruFiles.cs" />
+    <Compile Include="PortableSettingsProvider\PortableSettingsProvider.cs" />
+    <Compile Include="Progress\LogBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Progress\LogBox.designer.cs">
+      <DependentUpon>LogBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Progress\ProgressDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Progress\Commands\ProgressDialogHandler.cs" />
+    <Compile Include="Progress\ProgressDialogProgressState.cs" />
+    <Compile Include="Progress\ProgressNotificationProvider.cs" />
+    <Compile Include="Progress\TransformWithProgressDialog.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources1.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="PropertyBag-NoTests\FilePathEditor.cs" />
+    <Compile Include="PropertyBag-NoTests\PropertyBag.cs" />
+    <Compile Include="ReflectionHelper.cs" />
+    <Compile Include="Registration\Registration.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Registration.settings</DependentUpon>
+    </Compile>
+    <Compile Include="ReleaseNotes\MarkdownSharp.cs" />
+    <Compile Include="SettingProtection\SettingsProtection1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SettingsProtection1.settings</DependentUpon>
+    </Compile>
+    <Compile Include="SettingProtection\SettingsProtectionHelper.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SettingProtection\SettingsProtectionHelper.Designer.cs">
+      <DependentUpon>SettingsProtectionHelper.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SettingProtection\SettingsPasswordDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SettingProtection\SettingsPasswordDialog.Designer.cs">
+      <DependentUpon>SettingsPasswordDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SettingProtection\SettingsProtectionIcons.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SettingsProtectionIcons.resx</DependentUpon>
+    </Compile>
+    <Compile Include="SettingProtection\SettingsLauncherButton.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SettingProtection\SettingsLauncherButton.Designer.cs">
+      <DependentUpon>SettingsLauncherButton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SettingProtection\SettingProtectionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SettingProtection\SettingProtectionDialog.Designer.cs">
+      <DependentUpon>SettingProtectionDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SettingProtection\SettingsProtection.cs" />
+    <Compile Include="SettingProtection\SettingsProtectionSettings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SettingsProtectionSettings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="SettingProtection\SettingsProtectionLauncherButton.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SettingProtection\SettingsProtectionLauncherButton.Designer.cs">
+      <DependentUpon>SettingsProtectionLauncherButton.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ReleaseNotes\ShowReleaseNotesDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ReleaseNotes\ShowReleaseNotesDialog.Designer.cs">
+      <DependentUpon>ShowReleaseNotesDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SIL\SILAboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SIL\SILAboutBox.Designer.cs">
+      <DependentUpon>SILAboutBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Spelling\TextBoxSpellChecker.cs" />
+    <Compile Include="SuperToolTip\dlgSuperToolTipEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SuperToolTip\dlgSuperToolTipEditor.designer.cs">
+      <DependentUpon>dlgSuperToolTipEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SuperToolTip\SuperToolTip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SuperToolTip\SuperToolTip.designer.cs">
+      <DependentUpon>SuperToolTip.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SuperToolTip\SuperToolTipInfo.cs" />
+    <Compile Include="SuperToolTip\SuperToolTipInfoWrapper.cs" />
+    <Compile Include="SuperToolTip\SuperToolTipWindowData.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SuperToolTip\SuperToolTipWindowData.designer.cs">
+      <DependentUpon>SuperToolTipWindowData.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Widgets\AutoHeightLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Widgets\BetterCheckedListBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Widgets\BetterCheckedListBox.designer.cs">
+      <DependentUpon>BetterCheckedListBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Widgets\BetterGrid\BetterGrid.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Widgets\BetterGrid\CalendarCell.cs" />
+    <Compile Include="Widgets\BetterGrid\CalendarColumn.cs" />
+    <Compile Include="Widgets\BetterGrid\CalendarEditingControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Widgets\BetterGrid\CellCustomDropDownList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Widgets\BetterGrid\CheckBoxColumnHeaderHandler.cs" />
+    <Compile Include="Widgets\BetterGrid\GridSettings.cs" />
+    <Compile Include="Widgets\BetterGrid\PushButtonCell.cs" />
+    <Compile Include="Widgets\BetterGrid\PushButtonColumn.cs" />
+    <Compile Include="Widgets\BetterLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Widgets\BetterLabel.designer.cs">
+      <DependentUpon>BetterLabel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Widgets\BetterLinkLabel.cs" />
+    <Compile Include="Widgets\BitmapButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Widgets\ControlListBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Widgets\ControlListBox.designer.cs">
+      <DependentUpon>ControlListBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Widgets\CustomDropDown.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Widgets\EnhancedPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Widgets\Flying\Animator.cs" />
+    <Compile Include="Widgets\Flying\FlyingLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Widgets\HeaderLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Widgets\Prompt.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Reporting\ExceptionReportingDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Progress\LabelProgress.cs" />
+    <Compile Include="Progress\LogBoxResources.Designer.cs">
+      <DependentUpon>LogBoxResources.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Progress\LogBoxSettings.Designer.cs">
+      <DependentUpon>LogBoxSettings.settings</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Reporting\ProblemNotificationDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Reporting\ProblemNotificationDialog.Designer.cs">
+      <DependentUpon>ProblemNotificationDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Proxy\ProxyCredentialsRequestDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Proxy\ProxyCredentialsRequestDialog.designer.cs">
+      <DependentUpon>ProxyCredentialsRequestDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Progress\SimpleProgressIndicator.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Progress\SimpleStatusProgress.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Progress\TextBoxProgress.cs" />
+    <Compile Include="Reporting\WinFormsErrorReporter.cs" />
+    <Compile Include="Reporting\WinFormsExceptionHandler.cs" />
+    <Compile Include="Widgets\XButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\CannotFindMyLanguageDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\CannotFindMyLanguageDialog.Designer.cs">
+      <DependentUpon>CannotFindMyLanguageDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\DeleteInputSystemDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\DeleteInputSystemDialog.Designer.cs">
+      <DependentUpon>DeleteInputSystemDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\LookupISOCodeModel.cs" />
+    <Compile Include="WritingSystems\LookupISOControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\LookupISOControl.Designer.cs">
+      <DependentUpon>LookupISOControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\WritingSystemDefinitionVariantHelper.cs" />
+    <Compile Include="WritingSystems\WSIdentifiers\UnlistedLanguageView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\WSIdentifiers\UnlistedLanguageView.Designer.cs">
+      <DependentUpon>UnlistedLanguageView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\WSTree\GetDialectNameDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\WSTree\GetDialectNameDialog.Designer.cs">
+      <DependentUpon>GetDialectNameDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\LookupISOCodeDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\LookupISOCodeDialog.Designer.cs">
+      <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\WSIdentifiers\NothingSpecialView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\WSIdentifiers\NothingSpecialView.Designer.cs">
+      <DependentUpon>NothingSpecialView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\WSIdentifiers\IpaIdentifierView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\WSIdentifiers\IpaIdentifierView.Designer.cs">
+      <DependentUpon>IpaIdentifierView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\WSIdentifiers\CustomIdentifierView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\WSIdentifiers\CustomIdentifierView.Designer.cs">
+      <DependentUpon>CustomIdentifierView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\WSIdentifiers\ScriptRegionVariantView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\WSIdentifiers\ScriptRegionVariantView.Designer.cs">
+      <DependentUpon>ScriptRegionVariantView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\WSIdentifiers\VoiceIdentifierView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\WSIdentifiers\VoiceIdentifierView.Designer.cs">
+      <DependentUpon>VoiceIdentifierView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\WSIdentifiers\WSIdentifierView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\WSIdentifiers\WSIdentifierView.Designer.cs">
+      <DependentUpon>WSIdentifierView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\WSTree\WritingSystemSuggestion.cs" />
+    <Compile Include="WritingSystems\WSTree\WritingSystemTreeItem.cs" />
+    <Compile Include="WritingSystems\WSTree\WritingSystemTreeModel.cs" />
+    <Compile Include="WritingSystems\WSPickerUsingComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\WSPickerUsingComboBox.Designer.cs">
+      <DependentUpon>WSPickerUsingComboBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\WritingSystemSetupModel.cs" />
+    <Compile Include="WritingSystems\WritingSystemFromWindowsLocaleProvider.cs" />
+    <Compile Include="WritingSystems\WSAddDuplicateMoreButtonBar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\WSAddDuplicateMoreButtonBar.Designer.cs">
+      <DependentUpon>WSAddDuplicateMoreButtonBar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\WSFontControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\WSFontControl.Designer.cs">
+      <DependentUpon>WSFontControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\WSKeyboardControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\WSKeyboardControl.Designer.cs">
+      <DependentUpon>WSKeyboardControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\WSPickerUsingListView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\WSPickerUsingListView.Designer.cs">
+      <DependentUpon>WSPickerUsingListView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\WritingSystemSetupDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\WritingSystemSetupDialog.Designer.cs">
+      <DependentUpon>WritingSystemSetupDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\WritingSystemSetupView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\WritingSystemSetupView.Designer.cs">
+      <DependentUpon>WritingSystemSetupView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\WSPropertiesTabControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\WSPropertiesTabControl.Designer.cs">
+      <DependentUpon>WSPropertiesTabControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\WSSortControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\WSSortControl.Designer.cs">
+      <DependentUpon>WSSortControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\WSSpellingControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\WSSpellingControl.Designer.cs">
+      <DependentUpon>WSSpellingControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\WSTree\WritingSystemTreeView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WritingSystems\WSTree\WritingSystemTreeView.Designer.cs">
+      <DependentUpon>WritingSystemTreeView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystems\WSTree\WritingSystemSuggestor.cs" />
+    <Compile Include="Keyboarding\Linux\GlobalCachedInputContext.cs" />
+    <Compile Include="Keyboarding\Linux\IbusDefaultEventHandler.cs" />
+    <Compile Include="Keyboarding\Types\RegisterEventArgs.cs" />
+    <Compile Include="Keyboarding\Interfaces\IIbusEventHandler.cs" />
+    <Compile Include="Keyboarding\InternalInterfaces\IIbusCommunicator.cs" />
+    <Compile Include="Keyboarding\Linux\IbusCommunicator.cs" />
+    <Compile Include="Keyboarding\Linux\IbusKeyboardDescription.cs" />
+    <Compile Include="Keyboarding\Linux\X11KeyConverter.cs" />
+    <Compile Include="Keyboarding\InternalInterfaces\IXklEngine.cs" />
+    <Compile Include="Keyboarding\Windows\MsTsfInterfaces.cs" />
+    <Compile Include="Keyboarding\Linux\CombinedKeyboardAdaptor.cs" />
+    <Compile Include="HtmlBrowser\IWebBrowser.cs" />
+    <Compile Include="HtmlBrowser\IWebBrowserCallbacks.cs" />
+    <Compile Include="HtmlBrowser\WinFormsBrowserAdapter.cs" />
+    <Compile Include="HtmlBrowser\XWebBrowser.Designer.cs" />
+    <Compile Include="HtmlBrowser\XWebBrowser.cs">
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-	<EmbeddedResource Include="ClearShare\ClearShareResources.resx">
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ClearShare\WinFormsUI\ContributorsListControl.resx">
-	  <DependentUpon>ContributorsListControl.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ClearShare\WinFormsUI\FadingMessageForm.resx">
-	  <DependentUpon>FadingMessageForm.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ClearShare\WinFormsUI\MetadataEditorDialog.resx">
-	  <DependentUpon>MetadataEditorDialog.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="FileDialogExtender\FileDialogControlBase.resx">
-	  <DependentUpon>FileDialogControlBase.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="FileSystem\ConfirmRecycleDialog.resx">
-	  <DependentUpon>ConfirmRecycleDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="FolderBrowserControl\FolderBrowserControl.resx">
-	  <DependentUpon>FolderBrowserControl.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ImageGallery\PictureChooser.resx">
-	  <DependentUpon>PictureChooser.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\AcquireImageControl.resx">
-	  <DependentUpon>AcquireImageControl.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\ArtOfReadingChooser.resx">
-	  <DependentUpon>ArtOfReadingChooser.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\Cropping\ImageCropper.resx">
-	  <DependentUpon>ImageCropper.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ClearShare\WinFormsUI\MetadataDisplayControl.resx">
-	  <DependentUpon>MetadataDisplayControl.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\ImageToolboxButtons.resx">
-	  <Generator>ResXFileCodeGenerator</Generator>
-	  <LastGenOutput>ImageToolboxButtons.Designer.cs</LastGenOutput>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\ImageToolboxControl.resx">
-	  <DependentUpon>ImageToolboxControl.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\ImageToolboxDialog.resx">
-	  <DependentUpon>ImageToolboxDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ClearShare\LicenseLogos.resx">
-	  <Generator>ResXFileCodeGenerator</Generator>
-	  <LastGenOutput>LicenseLogos.Designer.cs</LastGenOutput>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ClearShare\WinFormsUI\MetadataEditorControl.resx">
-	  <DependentUpon>MetadataEditorControl.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ImageToolbox\SampleImages.resx">
-	  <Generator>ResXFileCodeGenerator</Generator>
-	  <LastGenOutput>SampleImages.Designer.cs</LastGenOutput>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Miscellaneous\UsageEmailDialog.resx">
-	  <DependentUpon>UsageEmailDialog.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Miscellaneous\UserRegistrationDialog.resx">
-	  <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Progress\LogBox.resx">
-	  <DependentUpon>LogBox.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Progress\ProgressDialog.resx">
-	  <DependentUpon>ProgressDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Properties\Resources.resx">
-	  <SubType>Designer</SubType>
-	  <Generator>ResXFileCodeGenerator</Generator>
-	  <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
-	</EmbeddedResource>
-	<EmbeddedResource Include="ReleaseNotes\ShowReleaseNotesDialog.resx">
-	  <DependentUpon>ShowReleaseNotesDialog.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="SettingProtection\SettingsProtectionHelper.resx">
-	  <DependentUpon>SettingsProtectionHelper.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="SettingProtection\SettingsPasswordDialog.resx">
-	  <DependentUpon>SettingsPasswordDialog.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="SettingProtection\SettingsProtectionIcons.resx">
-	  <Generator>ResXFileCodeGenerator</Generator>
-	  <LastGenOutput>SettingsProtectionIcons.Designer.cs</LastGenOutput>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="SettingProtection\SettingsLauncherButton.resx">
-	  <DependentUpon>SettingsLauncherButton.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="SettingProtection\SettingProtectionDialog.resx">
-	  <DependentUpon>SettingProtectionDialog.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="SettingProtection\SettingsProtectionLauncherButton.resx">
-	  <DependentUpon>SettingsProtectionLauncherButton.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="SIL\SILAboutBox.resx">
-	  <DependentUpon>SILAboutBox.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="SuperToolTip\dlgSuperToolTipEditor.resx">
-	  <DependentUpon>dlgSuperToolTipEditor.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="SuperToolTip\SuperToolTipWindowData.resx">
-	  <DependentUpon>SuperToolTipWindowData.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Widgets\BetterCheckedListBox.resx">
-	  <DependentUpon>BetterCheckedListBox.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Widgets\BetterLabel.resx">
-	  <DependentUpon>BetterLabel.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Widgets\BitmapButton.resx">
-	  <DependentUpon>BitmapButton.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Widgets\ControlListBox.resx">
-	  <DependentUpon>ControlListBox.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Reporting\ExceptionReportingDialog.resx">
-	  <DependentUpon>ExceptionReportingDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Progress\LogBoxResources.resx">
-	  <Generator>ResXFileCodeGenerator</Generator>
-	  <LastGenOutput>LogBoxResources.Designer.cs</LastGenOutput>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Reporting\ProblemNotificationDialog.resx">
-	  <DependentUpon>ProblemNotificationDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="Proxy\ProxyCredentialsRequestDialog.resx">
-	  <DependentUpon>ProxyCredentialsRequestDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\CannotFindMyLanguageDialog.resx">
-	  <DependentUpon>CannotFindMyLanguageDialog.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\DeleteInputSystemDialog.resx">
-	  <DependentUpon>DeleteInputSystemDialog.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\LookupISOControl.resx">
-	  <DependentUpon>LookupISOControl.cs</DependentUpon>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WSIdentifiers\UnlistedLanguageView.resx">
-	  <DependentUpon>UnlistedLanguageView.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WSTree\GetDialectNameDialog.resx">
-	  <DependentUpon>GetDialectNameDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\LookupISOCodeDialog.resx">
-	  <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WSIdentifiers\NothingSpecialView.resx">
-	  <DependentUpon>NothingSpecialView.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WSIdentifiers\IpaIdentifierView.resx">
-	  <DependentUpon>IpaIdentifierView.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WSIdentifiers\CustomIdentifierView.resx">
-	  <DependentUpon>CustomIdentifierView.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WSIdentifiers\ScriptRegionVariantView.resx">
-	  <DependentUpon>ScriptRegionVariantView.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WSIdentifiers\VoiceIdentifierView.resx">
-	  <DependentUpon>VoiceIdentifierView.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WSIdentifiers\WSIdentifierView.resx">
-	  <DependentUpon>WSIdentifierView.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WSPickerUsingComboBox.resx">
-	  <DependentUpon>WSPickerUsingComboBox.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WSAddDuplicateMoreButtonBar.resx">
-	  <DependentUpon>WSAddDuplicateMoreButtonBar.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WSFontControl.resx">
-	  <DependentUpon>WSFontControl.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WSKeyboardControl.resx">
-	  <DependentUpon>WSKeyboardControl.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WSPickerUsingListView.resx">
-	  <DependentUpon>WSPickerUsingListView.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WritingSystemSetupDialog.resx">
-	  <DependentUpon>WritingSystemSetupDialog.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WritingSystemSetupView.resx">
-	  <DependentUpon>WritingSystemSetupView.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WSPropertiesTabControl.resx">
-	  <DependentUpon>WSPropertiesTabControl.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WSSortControl.resx">
-	  <DependentUpon>WSSortControl.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WSSpellingControl.resx">
-	  <DependentUpon>WSSpellingControl.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
-	<EmbeddedResource Include="WritingSystems\WSTree\WritingSystemTreeView.resx">
-	  <DependentUpon>WritingSystemTreeView.cs</DependentUpon>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
+    <EmbeddedResource Include="ClearShare\ClearShareResources.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ClearShare\WinFormsUI\ContributorsListControl.resx">
+      <DependentUpon>ContributorsListControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ClearShare\WinFormsUI\FadingMessageForm.resx">
+      <DependentUpon>FadingMessageForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ClearShare\WinFormsUI\MetadataEditorDialog.resx">
+      <DependentUpon>MetadataEditorDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FileDialogExtender\FileDialogControlBase.resx">
+      <DependentUpon>FileDialogControlBase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FileSystem\ConfirmRecycleDialog.resx">
+      <DependentUpon>ConfirmRecycleDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FolderBrowserControl\FolderBrowserControl.resx">
+      <DependentUpon>FolderBrowserControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImageGallery\PictureChooser.resx">
+      <DependentUpon>PictureChooser.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImageToolbox\AcquireImageControl.resx">
+      <DependentUpon>AcquireImageControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImageToolbox\ArtOfReadingChooser.resx">
+      <DependentUpon>ArtOfReadingChooser.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImageToolbox\Cropping\ImageCropper.resx">
+      <DependentUpon>ImageCropper.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ClearShare\WinFormsUI\MetadataDisplayControl.resx">
+      <DependentUpon>MetadataDisplayControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImageToolbox\ImageToolboxButtons.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ImageToolboxButtons.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImageToolbox\ImageToolboxControl.resx">
+      <DependentUpon>ImageToolboxControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImageToolbox\ImageToolboxDialog.resx">
+      <DependentUpon>ImageToolboxDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ClearShare\LicenseLogos.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>LicenseLogos.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ClearShare\WinFormsUI\MetadataEditorControl.resx">
+      <DependentUpon>MetadataEditorControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ImageToolbox\SampleImages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SampleImages.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Miscellaneous\UsageEmailDialog.resx">
+      <DependentUpon>UsageEmailDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Miscellaneous\UserRegistrationDialog.resx">
+      <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Progress\LogBox.resx">
+      <DependentUpon>LogBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Progress\ProgressDialog.resx">
+      <DependentUpon>ProgressDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ReleaseNotes\ShowReleaseNotesDialog.resx">
+      <DependentUpon>ShowReleaseNotesDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SettingProtection\SettingsProtectionHelper.resx">
+      <DependentUpon>SettingsProtectionHelper.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SettingProtection\SettingsPasswordDialog.resx">
+      <DependentUpon>SettingsPasswordDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SettingProtection\SettingsProtectionIcons.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SettingsProtectionIcons.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SettingProtection\SettingsLauncherButton.resx">
+      <DependentUpon>SettingsLauncherButton.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SettingProtection\SettingProtectionDialog.resx">
+      <DependentUpon>SettingProtectionDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SettingProtection\SettingsProtectionLauncherButton.resx">
+      <DependentUpon>SettingsProtectionLauncherButton.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SIL\SILAboutBox.resx">
+      <DependentUpon>SILAboutBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SuperToolTip\dlgSuperToolTipEditor.resx">
+      <DependentUpon>dlgSuperToolTipEditor.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SuperToolTip\SuperToolTipWindowData.resx">
+      <DependentUpon>SuperToolTipWindowData.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Widgets\BetterCheckedListBox.resx">
+      <DependentUpon>BetterCheckedListBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Widgets\BetterLabel.resx">
+      <DependentUpon>BetterLabel.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Widgets\BitmapButton.resx">
+      <DependentUpon>BitmapButton.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Widgets\ControlListBox.resx">
+      <DependentUpon>ControlListBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reporting\ExceptionReportingDialog.resx">
+      <DependentUpon>ExceptionReportingDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Progress\LogBoxResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>LogBoxResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Reporting\ProblemNotificationDialog.resx">
+      <DependentUpon>ProblemNotificationDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Proxy\ProxyCredentialsRequestDialog.resx">
+      <DependentUpon>ProxyCredentialsRequestDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\CannotFindMyLanguageDialog.resx">
+      <DependentUpon>CannotFindMyLanguageDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\DeleteInputSystemDialog.resx">
+      <DependentUpon>DeleteInputSystemDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\LookupISOControl.resx">
+      <DependentUpon>LookupISOControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\WSIdentifiers\UnlistedLanguageView.resx">
+      <DependentUpon>UnlistedLanguageView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\WSTree\GetDialectNameDialog.resx">
+      <DependentUpon>GetDialectNameDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\LookupISOCodeDialog.resx">
+      <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\WSIdentifiers\NothingSpecialView.resx">
+      <DependentUpon>NothingSpecialView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\WSIdentifiers\IpaIdentifierView.resx">
+      <DependentUpon>IpaIdentifierView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\WSIdentifiers\CustomIdentifierView.resx">
+      <DependentUpon>CustomIdentifierView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\WSIdentifiers\ScriptRegionVariantView.resx">
+      <DependentUpon>ScriptRegionVariantView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\WSIdentifiers\VoiceIdentifierView.resx">
+      <DependentUpon>VoiceIdentifierView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\WSIdentifiers\WSIdentifierView.resx">
+      <DependentUpon>WSIdentifierView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\WSPickerUsingComboBox.resx">
+      <DependentUpon>WSPickerUsingComboBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\WSAddDuplicateMoreButtonBar.resx">
+      <DependentUpon>WSAddDuplicateMoreButtonBar.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\WSFontControl.resx">
+      <DependentUpon>WSFontControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\WSKeyboardControl.resx">
+      <DependentUpon>WSKeyboardControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\WSPickerUsingListView.resx">
+      <DependentUpon>WSPickerUsingListView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\WritingSystemSetupDialog.resx">
+      <DependentUpon>WritingSystemSetupDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\WritingSystemSetupView.resx">
+      <DependentUpon>WritingSystemSetupView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\WSPropertiesTabControl.resx">
+      <DependentUpon>WSPropertiesTabControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\WSSortControl.resx">
+      <DependentUpon>WSSortControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\WSSpellingControl.resx">
+      <DependentUpon>WSSpellingControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystems\WSTree\WritingSystemTreeView.resx">
+      <DependentUpon>WritingSystemTreeView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-	<ProjectReference Include="..\Palaso.Media\Palaso.Media.csproj">
-	  <Project>{66B3504A-3B4E-45CB-903A-A9A75B22EF68}</Project>
-	  <Name>Palaso.Media</Name>
-	</ProjectReference>
-	<ProjectReference Include="..\Palaso\Palaso.csproj">
-	  <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
-	  <Name>Palaso</Name>
-	</ProjectReference>
+    <ProjectReference Include="..\Palaso.Media\Palaso.Media.csproj">
+      <Project>{66B3504A-3B4E-45CB-903A-A9A75B22EF68}</Project>
+      <Name>Palaso.Media</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Palaso\Palaso.csproj">
+      <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
+      <Name>Palaso</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-	<Reference Include="System.Core">
-	  <RequiredTargetFramework>3.5</RequiredTargetFramework>
-	</Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-	<BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-	  <Visible>False</Visible>
-	  <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-	  <Install>false</Install>
-	</BootstrapperPackage>
-	<BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-	  <Visible>False</Visible>
-	  <ProductName>.NET Framework 3.5 SP1</ProductName>
-	  <Install>true</Install>
-	</BootstrapperPackage>
-	<BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-	  <Visible>False</Visible>
-	  <ProductName>Windows Installer 3.1</ProductName>
-	  <Install>true</Install>
-	</BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-	<None Include="app.config" />
-	<None Include="ImageToolbox\ImageToolboxSettings.settings">
-	  <Generator>SettingsSingleFileGenerator</Generator>
-	  <LastGenOutput>ImageToolboxSettings.Designer.cs</LastGenOutput>
-	</None>
-	<None Include="Resources\credits.png" />
+    <None Include="app.config" />
+    <None Include="ImageToolbox\ImageToolboxSettings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>ImageToolboxSettings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Resources\credits.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\browse.png" />
+    <None Include="Resources\browse.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\scanner.png" />
+    <None Include="Resources\scanner.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\searchFolder.png" />
+    <None Include="Resources\searchFolder.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\crop.png" />
+    <None Include="Resources\crop.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="artwork\sampleScan.png" />
+    <None Include="artwork\sampleScan.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\camera.png" />
+    <None Include="Resources\camera.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\File_Cc.logo.circle.svg.html" />
+    <None Include="Resources\File_Cc.logo.circle.svg.html" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\cc-BY-88x311.png" />
+    <None Include="Resources\cc-BY-88x311.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\cc-BY-88x31.png" />
+    <None Include="Resources\cc-BY-88x31.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\scanner64x64.png" />
+    <None Include="Resources\scanner64x64.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\camera64x64.png" />
+    <None Include="Resources\camera64x64.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\RecycleBin.png" />
+    <None Include="Resources\RecycleBin.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\DeleteMessageBoxButtonImage.png" />
+    <None Include="Resources\DeleteMessageBoxButtonImage.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\DeleteMessageBoxImage.png" />
+    <None Include="Resources\DeleteMessageBoxImage.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\Information.png" />
+    <None Include="Resources\Information.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\RemoveGridRowHot.png" />
+    <None Include="Resources\RemoveGridRowHot.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\RemoveGridRowNormal.png" />
+    <None Include="Resources\RemoveGridRowNormal.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\OlacRoles.xml" />
+    <None Include="Resources\OlacRoles.xml" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\Licenses.png" />
+    <None Include="Resources\Licenses.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\by-nd.png" />
+    <None Include="Resources\by-nd.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\srr.png" />
+    <None Include="Resources\srr.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\by-sa.png" />
+    <None Include="Resources\by-sa.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\by-nc.png" />
+    <None Include="Resources\by-nc.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\by-nc-sa.png" />
+    <None Include="Resources\by-nc-sa.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\by-nc-nd.png" />
+    <None Include="Resources\by-nc-nd.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\by.png" />
+    <None Include="Resources\by.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\lockClosed16x16.png" />
+    <None Include="Resources\lockClosed16x16.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\lockClosed48x48.png" />
+    <None Include="Resources\lockClosed48x48.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\lockOpen16x16.png" />
+    <None Include="Resources\lockOpen16x16.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\lockClosedHidden16x16.png" />
+    <None Include="Resources\lockClosedHidden16x16.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\lockClosedHidden48x48.png" />
+    <None Include="Resources\lockClosedHidden48x48.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\lockOpenHidden16x16.png" />
+    <None Include="Resources\lockOpenHidden16x16.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\lockOpenHidden48x48.png" />
+    <None Include="Resources\lockOpenHidden48x48.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\settings16x16.png" />
+    <None Include="Resources\settings16x16.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\search22x22.png" />
+    <None Include="Resources\search22x22.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\search18x18.png" />
+    <None Include="Resources\search18x18.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\menuButton.png" />
+    <None Include="Resources\menuButton.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\MenuButtonArrow.png" />
+    <None Include="Resources\MenuButtonArrow.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\spy16x16.png" />
+    <None Include="Resources\spy16x16.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\SILInBlueNoTagLineWithTrademark100x50.png" />
+    <None Include="Resources\SILInBlueNoTagLineWithTrademark100x50.png" />
   </ItemGroup>
   <ItemGroup>
-	<None Include="Resources\SILLogoBlue132x184.png" />
+    <None Include="Resources\SILLogoBlue132x184.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="'$(OS)'=='Windows_NT' AND Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

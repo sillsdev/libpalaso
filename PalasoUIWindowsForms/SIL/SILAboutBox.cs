@@ -108,8 +108,9 @@ namespace Palaso.UI.WindowsForms.SIL
 
 		private string GetBuiltOnDate()
 		{
-			var file = _assembly.CodeBase.Replace("file:", string.Empty);
-			file = file.TrimStart('/');
+			var file = _assembly.CodeBase.Replace("file://", string.Empty);
+			if (PlatformUtilities.Platform.IsWindows)
+				file = file.TrimStart('/');
 			var fi = new FileInfo(file);
 
 			return string.Format("Built on {0}", fi.CreationTime.ToString("dd-MMM-yyyy"));
@@ -144,7 +145,7 @@ namespace Palaso.UI.WindowsForms.SIL
 		}
 		private void SILAboutBox_Load(object sender, EventArgs e)
 		{
-			_browser.Navigate(_pathToAboutBoxHtml,false);
+			_browser.Navigate(_pathToAboutBoxHtml);
 			_browser.Navigating += _browser_Navigating;
 		}
 

@@ -217,9 +217,9 @@ namespace Palaso.IO
 			{
 				try
 				{
-					if ((Path.GetPathRoot(sourcePath) != Path.GetPathRoot(destinationPath))
+					if (!PathUtilities.PathsAreOnSameVolume(sourcePath, destinationPath)
 						||
-						((!string.IsNullOrEmpty(backupPath)) && (Path.GetPathRoot(sourcePath) != Path.GetPathRoot(backupPath))))
+						(!string.IsNullOrEmpty(backupPath) && !PathUtilities.PathsAreOnSameVolume(sourcePath,backupPath)))
 					{
 						//can't use File.Replace or File.Move across volumes (sigh)
 						if (!string.IsNullOrEmpty(backupPath) && File.Exists(destinationPath))
