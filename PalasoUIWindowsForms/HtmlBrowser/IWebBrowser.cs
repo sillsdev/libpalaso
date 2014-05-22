@@ -9,6 +9,11 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 	{
 		bool CanGoBack { get; }
 		bool CanGoForward { get; }
+		/// <summary>
+		/// Set of the DocumentText will load the given string content into the browser.
+		/// If a get for DocumentText proves necessary Jason promises to write the reflective
+		/// gecko implementation.
+		/// </summary>
 		string DocumentText { set; }
 		string DocumentTitle { get; }
 		bool Focused { get; }
