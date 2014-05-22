@@ -51,38 +51,41 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 
 		private IWebBrowser CreateBrowser(BrowserType type)
 		{
-			while (true)
+			switch (type)
 			{
-				switch (type)
-				{
-					case BrowserType.WinForms:
-						return new WinFormsBrowserAdapter(this);
-					case BrowserType.GeckoFx:
-						var path = Path.Combine(Path.GetDirectoryName(
-							new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath),
-							"PalasoUIWindowsForms.GeckoFxWebBrowserAdapter.dll");
-						if (File.Exists(path))
+				case BrowserType.WinForms:
+					return new WinFormsBrowserAdapter(this);
+				case BrowserType.GeckoFx:
+					var path = Path.Combine(Path.GetDirectoryName(
+						new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath),
+						"PalasoUIWindowsForms.GeckoBrowserAdapter.dll");
+					if (File.Exists(path))
+					{
+						var assembly = Assembly.LoadFile(path);
+						if (assembly != null)
 						{
-							var assembly = Assembly.LoadFile(path);
-							if (assembly != null)
+							var browser = assembly.GetType("Palaso.UI.WindowsForms.HtmlBrowser.GeckoFxWebBrowserAdapter");
+							if(browser != null)
 							{
-								var browser = assembly.GetType("Palaso.UI.WindowsForms.HtmlBrowser.GeckoFxWebBrowserAdapter");
-								if (browser != null)
+								try
+								{
 									return (IWebBrowser)Activator.CreateInstance(browser, this);
+								}
+								catch(Exception)
+								{
+									; //Eat exceptions creating the GeckoFxWebBrowserAdapter
+								}
 							}
 						}
-						type = BrowserType.Fallback;
-						break;
-					case BrowserType.Default:
-					case BrowserType.Fallback:
-						IWebBrowser webBrowser = null;
-						if (PlatformUtilities.Platform.IsWindows)
-							webBrowser = CreateBrowser(BrowserType.WinForms);
-						if (webBrowser != null || type == BrowserType.Fallback)
-							return webBrowser;
-						type = BrowserType.GeckoFx;
-						break;
-				}
+					}
+					//We failed to Create the GeckoFxWebBrowserAdapter, so drop into the fallback case
+					goto case BrowserType.Fallback;
+				case BrowserType.Fallback:
+				default:
+					IWebBrowser webBrowser = null;
+					if (PlatformUtilities.Platform.IsWindows)
+						webBrowser = CreateBrowser(BrowserType.WinForms);
+						return webBrowser;
 			}
 		}
 
@@ -100,7 +103,6 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 
 		public string DocumentText
 		{
-			get { return m_WebBrowserAdapter.DocumentText; }
 			set { m_WebBrowserAdapter.DocumentText = value; }
 		}
 
@@ -169,6 +171,11 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		public void Stop()
 		{
 			m_WebBrowserAdapter.Stop();
+		}
+
+		public void ScrollLastElementIntoView()
+		{
+			m_WebBrowserAdapter.ScrollLastElementIntoView();
 		}
 
 		/// <summary>

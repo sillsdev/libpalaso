@@ -99,7 +99,8 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 
 		private Uri GetGeckoNavigatingEventArgsUri(object eventArg)
 		{
-			var eventType = GeckoCoreAssembly.GetType("Gecko.Events.GeckoNavigatingEventArgs");
+			var eventType = GeckoCoreAssembly.GetType("Gecko.Events.GeckoNavigatingEventArgs") ??
+								 GeckoWinAssembly.GetType("Gecko.GeckoNavigatingEventArgs"); //Try new ns then old ns
 			return GetUriValue(eventArg, eventType);
 		}
 
@@ -340,8 +341,7 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 
 		public string DocumentText
 		{
-			get { return _webBrowser.Text; }
-			set { _webBrowser.Text = value; }
+			set { CallBrowserMethod(_webBrowser, "LoadContent", new object[] {value, Url != null ? Url.AbsoluteUri : "about:blank", "text/html"}); }
 		}
 
 		public string DocumentTitle
@@ -409,6 +409,35 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		public void Stop()
 		{
 			CallBrowserMethod(_webBrowser, "Stop", new object[] {});
+		}
+
+		public void ScrollLastElementIntoView()
+		{
+			var geckoDocumentType = GeckoCoreAssembly.GetType("Gecko.GeckoDocument");
+			var geckoHtmlElementType = GeckoCoreAssembly.GetType("Gecko.GeckoHtmlElement");
+			var geckoNodeListType = GeckoCoreAssembly.GetType("Gecko.GeckoNodeCollection");
+			var webBrowserType = GeckoWinAssembly.GetType(GeckoBrowserType);
+			var documentProperty = webBrowserType.GetProperty("Document", geckoDocumentType);
+			var document = documentProperty.GetValue(_webBrowser, BindingFlags.Default, null, null, null);
+			if(document != null)
+			{
+				var bodyProperty = geckoDocumentType.GetProperty("Body", geckoHtmlElementType);
+				var body = bodyProperty.GetValue(document, BindingFlags.Default, null, null, null);
+				if(body != null)
+				{
+					var childrenProperty = geckoHtmlElementType.GetProperty("ChildNodes", geckoNodeListType);
+					var children = childrenProperty.GetValue(body, BindingFlags.Default, null, null, null);
+					var countLengthProp = geckoNodeListType.GetProperty("Length", typeof(int));
+					var countLength = (int)countLengthProp.GetValue(children, BindingFlags.Default, null, null, null);
+					if(countLength > 0)
+					{
+						var lastChildProp = geckoNodeListType.GetProperty("Item"); //Magic
+						var lastchild = lastChildProp.GetValue(children, new object[] { countLength - 1 });
+						var scrollIntoView = geckoHtmlElementType.GetMethod("ScrollIntoView");
+						scrollIntoView.Invoke(lastchild, BindingFlags.Default, null, null, null);
+					}
+				}
+			}
 		}
 
 		public object NativeBrowser
