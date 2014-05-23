@@ -260,9 +260,18 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 		public static string TryToGetPathToIndex(string imagesPath)
 		{
+			// ArtOfReading3FreeSetp.exe installs index.txt in the parent directory 
+			// of images.  The previous verison of this code looked in images directory
+			// as well.
 			if (!string.IsNullOrEmpty(imagesPath))
 			{
-				return Directory.GetParent(imagesPath).FullName.CombineForPath("index.txt");
+				var path = Directory.GetParent(imagesPath).FullName.CombineForPath("index.txt");
+				if (File.Exists(path))
+					return path;
+
+				path = imagesPath.CombineForPath("index.txt");
+				if (File.Exists(path))
+					return path;
 			}
 
 			return FileLocator.GetFileDistributedWithApplication(true, "ArtOfReadingIndexV3_en.txt");
