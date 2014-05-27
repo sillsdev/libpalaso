@@ -415,7 +415,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this._linkToRefinedCreativeCommonsWarning.Size = new System.Drawing.Size(170, 16);
 			this._linkToRefinedCreativeCommonsWarning.TabIndex = 29;
 			this._linkToRefinedCreativeCommonsWarning.TabStop = false;
-			this._linkToRefinedCreativeCommonsWarning.Text = "Not Enforcable";
+			this._linkToRefinedCreativeCommonsWarning.Text = "Not Enforceable";
 			this._linkToRefinedCreativeCommonsWarning.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this._linkToRefinedCreativeCommonsWarning.URL = "http://creativecommons.org/licenses/by-nc/4.0/legalcode#s7a";
 			//
