@@ -199,7 +199,11 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 			get { return m_WebBrowserAdapter.NativeBrowser; }
 		}
 
-		public bool WebBrowserShortcutsEnabled { get; set; }
+		public bool WebBrowserShortcutsEnabled
+		{
+			get { return m_WebBrowserAdapter.WebBrowserShortcutsEnabled; }
+			set { m_WebBrowserAdapter.WebBrowserShortcutsEnabled = value; }
+		}
 
 		#endregion
 

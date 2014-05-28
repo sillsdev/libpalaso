@@ -473,6 +473,9 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 			get { return _webBrowser; }
 		}
 
+		/// <summary>
+		/// TODO: If Gecko browsers have keyboard shortcuts, write some code to enable/disable them here.
+		/// </summary>
 		public bool WebBrowserShortcutsEnabled { get; set; }
 
 		#endregion
