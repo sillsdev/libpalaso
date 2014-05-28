@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
-using System.IO;
 using System.Windows.Forms;
 
 namespace Palaso.UI.WindowsForms.HtmlBrowser
@@ -129,6 +128,24 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		public object NativeBrowser
 		{
 			get { return m_WebBrowser; }
+		}
+
+		public bool WebBrowserShortcutsEnabled
+		{
+			get { return m_WebBrowser.WebBrowserShortcutsEnabled; }
+			set { m_WebBrowser.WebBrowserShortcutsEnabled = value; }
+		}
+
+		public bool AllowNavigation
+		{
+			get { return m_WebBrowser.AllowNavigation; }
+			set { m_WebBrowser.AllowNavigation = value; }
+		}
+
+		public bool AllowWebBrowserDrop
+		{
+			get { return m_WebBrowser.AllowWebBrowserDrop; }
+			set { m_WebBrowser.AllowWebBrowserDrop = value; }
 		}
 
 		#endregion

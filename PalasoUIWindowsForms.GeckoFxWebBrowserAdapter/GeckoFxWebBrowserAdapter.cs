@@ -304,7 +304,7 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		/// <param name="webBrowser"></param>
 		/// <param name="methodName"></param>
 		/// <param name="parameters"></param>
-		private void CallBrowserMethod(object webBrowser, string methodName, object[] parameters)
+		private bool CallBrowserMethod(object webBrowser, string methodName, object[] parameters)
 		{
 			var webBrowserType = GeckoWinAssembly.GetType(GeckoBrowserType);
 			var types = new Type[parameters.Length];
@@ -313,7 +313,12 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 				types[i] = parameters[i].GetType();
 			}
 			var method = webBrowserType.GetMethod(methodName, types);
+			if(method == null)
+			{
+				return false;
+			}
 			method.Invoke(webBrowser, parameters);
+			return true;
 		}
 
 		#endregion
@@ -329,19 +334,36 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 
 		#region IWebBrowser Members
 
+		/// <summary>
+		/// Rather then adding more reflective methods just handle this property here at the adapter level.
+		/// </summary>
+		public bool AllowNavigation { get; set; }
+
+		/// <summary>
+		/// TODO: If this is necessary for the GeckoBrowser we need to figure out an implementation
+		/// </summary>
+		public bool AllowWebBrowserDrop { get; set; }
+
 		public bool CanGoBack
 		{
-			get { return GetBrowserProperty<bool>(_webBrowser, "CanGoBack"); }
+			get { return AllowNavigation && GetBrowserProperty<bool>(_webBrowser, "CanGoBack"); }
 		}
 
 		public bool CanGoForward
 		{
-			get { return GetBrowserProperty<bool>(_webBrowser, "CanGoForward"); }
+			get { return AllowNavigation && GetBrowserProperty<bool>(_webBrowser, "CanGoForward"); }
 		}
 
 		public string DocumentText
 		{
-			set { CallBrowserMethod(_webBrowser, "LoadContent", new object[] {value, Url != null ? Url.AbsoluteUri : "about:blank", "text/html"}); }
+			set
+			{
+				if(!CallBrowserMethod(_webBrowser, "LoadContent",
+												 new object[] {value, Url != null ? Url.AbsoluteUri : "about:blank", "text/html"}))
+				{
+					CallBrowserMethod(_webBrowser, "LoadHtml", new object[] { value }); //GeckoFx 14 did not have LoadContent
+				}
+			}
 		}
 
 		public string DocumentTitle
@@ -378,22 +400,28 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 
 		public bool GoBack()
 		{
-			return CallBrowserMethod<bool>(_webBrowser, "GoBack");
+			if(AllowNavigation)
+				return CallBrowserMethod<bool>(_webBrowser, "GoBack");
+			return false;
 		}
 
 		public bool GoForward()
 		{
-			return CallBrowserMethod<bool>(_webBrowser, "GoForward");
+			if(AllowNavigation)
+				return CallBrowserMethod<bool>(_webBrowser, "GoForward");
+			return false;
 		}
 
 		public void Navigate(string urlString)
 		{
-			CallBrowserMethod(_webBrowser, "Navigate", new object[] { urlString });
+			if(AllowNavigation)
+				CallBrowserMethod(_webBrowser, "Navigate", new object[] { urlString });
 		}
 
 		public void Navigate(Uri url)
 		{
-			CallBrowserMethod(_webBrowser, "Navigate", new object[] { url.AbsoluteUri });
+			if(AllowNavigation)
+				CallBrowserMethod(_webBrowser, "Navigate", new object[] { url.AbsoluteUri });
 		}
 
 		public void Refresh()
@@ -444,6 +472,12 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		{
 			get { return _webBrowser; }
 		}
+
+		/// <summary>
+		/// TODO: If Gecko browsers have keyboard shortcuts, write some code to enable/disable them here.
+		/// </summary>
+		public bool WebBrowserShortcutsEnabled { get; set; }
+
 		#endregion
 	}
 }

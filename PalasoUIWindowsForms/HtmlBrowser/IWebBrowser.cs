@@ -7,6 +7,8 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 {
 	public interface IWebBrowser
 	{
+		bool AllowNavigation { get; set; }
+		bool AllowWebBrowserDrop { get; set; }
 		bool CanGoBack { get; }
 		bool CanGoForward { get; }
 		/// <summary>
@@ -30,5 +32,6 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		void Stop();
 		void ScrollLastElementIntoView();
 		object NativeBrowser { get; }
+		bool WebBrowserShortcutsEnabled { get; set; }
 	}
 }

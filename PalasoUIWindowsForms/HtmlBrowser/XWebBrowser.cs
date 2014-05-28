@@ -91,6 +91,18 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 
 		#region IWebBrowser Members
 
+		public bool AllowNavigation
+		{
+			get { return m_WebBrowserAdapter.AllowNavigation; }
+			set { m_WebBrowserAdapter.AllowNavigation = value; }
+		}
+
+		public bool AllowWebBrowserDrop
+		{
+			get { return m_WebBrowserAdapter.AllowWebBrowserDrop; }
+			set { m_WebBrowserAdapter.AllowWebBrowserDrop = value; }
+		}
+
 		public bool CanGoBack
 		{
 			get { return m_WebBrowserAdapter.CanGoBack; }
@@ -185,6 +197,12 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		public object NativeBrowser
 		{
 			get { return m_WebBrowserAdapter.NativeBrowser; }
+		}
+
+		public bool WebBrowserShortcutsEnabled
+		{
+			get { return m_WebBrowserAdapter.WebBrowserShortcutsEnabled; }
+			set { m_WebBrowserAdapter.WebBrowserShortcutsEnabled = value; }
 		}
 
 		#endregion
