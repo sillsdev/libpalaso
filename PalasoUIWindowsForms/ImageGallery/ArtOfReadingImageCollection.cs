@@ -95,44 +95,44 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			{
 				var path = Path.Combine(RootImagePath, ((string) macPath).Replace(':', Path.DirectorySeparatorChar));
 				if (!limitToThoseActuallyAvailable)
-                {
-                    yield return path;
-                    continue; // don't look further
-                }
+				{
+					yield return path;
+					continue; // don't look further
+				}
 
 				if (File.Exists(path))
 				{
 					yield return path;
-                    continue; // don't look further
-                }
+					continue; // don't look further
+				}
 
 				// These results may be from an older index that has the original file names, and were tifs.
 				// The re-republished versions (which have embedd3ed metadata and watermarks) start with AOR_ and end with png
 				var updatedPath =
 					Path.GetDirectoryName(path).CombineForPath("AOR_" + Path.GetFileName(path).Replace(".tif", ".png"));
 
-                if (File.Exists(updatedPath))
+				if (File.Exists(updatedPath))
 				{
-                    yield return updatedPath;
-                    continue; // don't look further
-                }
+					yield return updatedPath;
+					continue; // don't look further
+				}
 
-                // In version 3, some country's files (Mexico only?) were split into two subdirectories.
-                // Instead of republishing the index and making everybody reinstall AOR,
-                // we'll see if we can find the file in a subdirectory.
-                var parentDir = Path.GetDirectoryName(path);
-                var fileName = Path.GetFileName(path);
-                var subDirs = Directory.EnumerateDirectories(parentDir);
-                foreach (var subDir in subDirs)
-                {
-                    updatedPath = Path.Combine(parentDir, subDir, fileName);
-                    if (File.Exists(updatedPath))
-                    {
-                        yield return updatedPath;
-                        continue;
-                    }
-                }
-            }
+				// In version 3, some country's files (Mexico only?) were split into two subdirectories.
+				// Instead of republishing the index and making everybody reinstall AOR,
+				// we'll see if we can find the file in a subdirectory.
+				var parentDir = Path.GetDirectoryName(path);
+				var fileName = Path.GetFileName(path);
+				var subDirs = Directory.EnumerateDirectories(parentDir);
+				foreach (var subDir in subDirs)
+				{
+					updatedPath = Path.Combine(parentDir, subDir, fileName);
+					if (File.Exists(updatedPath))
+					{
+						yield return updatedPath;
+						continue;
+					}
+				}
+			}
 		}
 
 		private IEnumerable<object> GetMatchingPictures(IEnumerable<string> keywords, out bool foundExactMatches)
