@@ -68,7 +68,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 		}
 
-		private IBusEngineDesc[] GetIBusKeyboards()
+		protected virtual IBusEngineDesc[] GetIBusKeyboards()
 		{
 			if (!IBusCommunicator.Connected)
 				return new IBusEngineDesc[0];
