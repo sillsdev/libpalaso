@@ -183,6 +183,7 @@ x.Play());
 			   x.StopRecordingAndSaveAsWav();
 			   x.Play();
 			   Thread.Sleep(1000);
+				x.StopPlaying();
 		   }
 	   }
 
@@ -207,6 +208,7 @@ x.Play());
 				   var y = AudioFactory.AudioSession(f.Path);
 				   y.Play();
 				   Thread.Sleep(1000);
+					y.StopPlaying();
 			   }
 		   }
 	   }
@@ -342,6 +344,7 @@ session.Recorder.StartRecording());
 			   ISimpleAudioSession x = RecordSomething(f);
 			   x.Play();
 			   Thread.Sleep(100);	// Ensure file exists to be played.
+				x.StopPlaying();
 		   }
 	   }
 
