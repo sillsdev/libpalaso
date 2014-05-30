@@ -79,8 +79,6 @@ namespace Palaso.Extensions
 			}
 		}
 
-		private static XmlNode _xmlNodeUsedForEscaping;
-
 		public static string EscapeAnyUnicodeCharactersIllegalInXml(this string text)
 		{
 			//we actually want to preserve html markup, just escape the disallowed unicode characters
@@ -100,18 +98,28 @@ namespace Palaso.Extensions
 			return text;
 		}
 
+		private static StringBuilder _bldrUsedForEscaping;
+		private static XmlWriterSettings _settingsUsedForEscaping;
+		private static XmlWriter _writerUsedForEscaping;
+
 		public static string EscapeSoXmlSeesAsPureTextAndEscapeCharactersIllegalInXml(this string text)
 		{
-			if (_xmlNodeUsedForEscaping == null) //notice, this is only done once per run
+			if (_bldrUsedForEscaping == null)
+				_bldrUsedForEscaping = new StringBuilder();
+			else
+				_bldrUsedForEscaping.Clear();
+			if (_settingsUsedForEscaping == null)
 			{
-				XmlDocument doc = new XmlDocument();
-					// review: There are other, cheaper ways of doing this.  System.Security has a good escape mechanism IIRC CP 2011-01
-				_xmlNodeUsedForEscaping = doc.CreateElement("text", "x", "");
+				_settingsUsedForEscaping = new XmlWriterSettings();
+				_settingsUsedForEscaping.NewLineHandling = NewLineHandling.None;		// don't fiddle with newlines
+				_settingsUsedForEscaping.ConformanceLevel = ConformanceLevel.Fragment;	// allow just text by itself
+				_settingsUsedForEscaping.CheckCharacters = false;						// allow invalid characters in
 			}
+			if (_writerUsedForEscaping == null)
+				_writerUsedForEscaping = XmlWriter.Create(_bldrUsedForEscaping, _settingsUsedForEscaping);
 
-			_xmlNodeUsedForEscaping.InnerText = text;
-			text = _xmlNodeUsedForEscaping.InnerXml;
-			return text;
+			_writerUsedForEscaping.WriteString(text);
+			return _bldrUsedForEscaping.ToString();
 		}
 
 		/// <summary>

@@ -31,11 +31,14 @@
 
 	<ItemGroup>
 		<ExistingObjectFiles
-			Include="$(RootDir)/**/obj/**/*;$(RootDir)/output/$(Configuration)/**/*"
-			Exclude="$(RootDir)/.hg/**/*"
+			Include="$(RootDir)/output/$(Configuration)/**/*"
+			Exclude="$(RootDir)/.hg/**/*;$(RootDir)/.git/**/*"
 		/>
 	</ItemGroup>
 	<Target Name="Clean">
+		<Exec
+			Command="find . -name obj -type d -print0 | xargs -0 rm -rf"
+			WorkingDirectory="$(RootDir)" />
 		<Delete Files="@(ExistingObjectFiles)" />
 	</Target>
 

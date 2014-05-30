@@ -359,9 +359,8 @@ session.Recorder.StartRecording());
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav")) {
 				var x = AudioFactory.AudioSession (file.Path);
-				Assert.DoesNotThrow (() =>
-					x.Play ()
-				);
+				Assert.DoesNotThrow( () => x.Play() );
+				Assert.DoesNotThrow( () => x.StopPlaying() );
 			}
 	   }
 
@@ -371,9 +370,10 @@ session.Recorder.StartRecording());
 
 			string fpath = "/tmp/dump.ogg";
 			var x = AudioFactory.AudioSession (fpath);
-			x.StartRecording();
+			Assert.DoesNotThrow( () => x.StartRecording() );
+			Assert.IsTrue(x.IsRecording);
 			Thread.Sleep(1000);
-			x.StopRecordingAndSaveAsWav();
+			Assert.DoesNotThrow( () => x.StopRecordingAndSaveAsWav() );
 	   }
 	}
 }
