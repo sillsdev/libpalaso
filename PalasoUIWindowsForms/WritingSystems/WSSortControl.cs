@@ -37,11 +37,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_defaultFontSize = _sortRulesTextBox.Font.SizeInPoints;
 
 			// default text for testing the sort rules
-			_testSortText.Text = @"pear
-apple
-orange
-mango
-peach";
+			// default text for testing the sort rules; bug fix for WS-55 so all platforms have the right line ending
+			_testSortText.Text = String.Join(Environment.NewLine, new string[] { "pear", "apple", "orange", "mango", "peach" });
 		}
 
 		public void BindToModel(WritingSystemSetupModel model)
