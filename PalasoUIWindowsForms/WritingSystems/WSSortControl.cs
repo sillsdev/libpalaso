@@ -42,6 +42,9 @@ apple
 orange
 mango
 peach";
+#if !__MonoCS__ // bug fix for WS-55; Windows needs <CR><LF>
+	_testSortText.Text.Replace("\n","\r\n");
+#endif
 		}
 
 		public void BindToModel(WritingSystemSetupModel model)
