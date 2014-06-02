@@ -98,28 +98,32 @@ namespace Palaso.Extensions
 			return text;
 		}
 
+		private static object _lockUsedForEscaping = new object(); 
 		private static StringBuilder _bldrUsedForEscaping;
 		private static XmlWriterSettings _settingsUsedForEscaping;
 		private static XmlWriter _writerUsedForEscaping;
 
 		public static string EscapeSoXmlSeesAsPureTextAndEscapeCharactersIllegalInXml(this string text)
 		{
-			if (_bldrUsedForEscaping == null)
-				_bldrUsedForEscaping = new StringBuilder();
-			else
-				_bldrUsedForEscaping.Clear();
-			if (_settingsUsedForEscaping == null)
+			lock (_lockUsedForEscaping)
 			{
-				_settingsUsedForEscaping = new XmlWriterSettings();
-				_settingsUsedForEscaping.NewLineHandling = NewLineHandling.None;		// don't fiddle with newlines
-				_settingsUsedForEscaping.ConformanceLevel = ConformanceLevel.Fragment;	// allow just text by itself
-				_settingsUsedForEscaping.CheckCharacters = false;						// allow invalid characters in
-			}
-			if (_writerUsedForEscaping == null)
-				_writerUsedForEscaping = XmlWriter.Create(_bldrUsedForEscaping, _settingsUsedForEscaping);
+				if (_bldrUsedForEscaping == null)
+					_bldrUsedForEscaping = new StringBuilder();
+				else
+					_bldrUsedForEscaping.Clear();
+				if (_settingsUsedForEscaping == null)
+				{
+					_settingsUsedForEscaping = new XmlWriterSettings();
+					_settingsUsedForEscaping.NewLineHandling = NewLineHandling.None;		// don't fiddle with newlines
+					_settingsUsedForEscaping.ConformanceLevel = ConformanceLevel.Fragment;	// allow just text by itself
+					_settingsUsedForEscaping.CheckCharacters = false;						// allow invalid characters in
+				}
+				if (_writerUsedForEscaping == null)
+					_writerUsedForEscaping = XmlWriter.Create(_bldrUsedForEscaping, _settingsUsedForEscaping);
 
-			_writerUsedForEscaping.WriteString(text);
-			return _bldrUsedForEscaping.ToString();
+				_writerUsedForEscaping.WriteString(text);
+				return _bldrUsedForEscaping.ToString();
+			}
 		}
 
 		/// <summary>
