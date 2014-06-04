@@ -163,7 +163,7 @@ namespace PalasoUIWindowsForms.TestApp
 			this._silAboutBoxGecko.TabIndex = 2;
 			this._silAboutBoxGecko.Text = "SIL AboutBox (Gecko)";
 			this._silAboutBoxGecko.UseVisualStyleBackColor = true;
-			this._silAboutBoxGecko.Click += new System.EventHandler(this._silAboutBoxGecko_Click);
+			this._silAboutBoxGecko.Click += new System.EventHandler(this.OnSilAboutBoxGeckoClicked);
 			// 
 			// TestAppForm
 			// 

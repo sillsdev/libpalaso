@@ -53,8 +53,13 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		{
 			switch (type)
 			{
+				case BrowserType.Default:
 				case BrowserType.WinForms:
-					return new WinFormsBrowserAdapter(this);
+					if (PlatformUtilities.Platform.IsWindows)
+						return new WinFormsBrowserAdapter(this);
+					// The WinForms adapter works only on Windows. On Linux we fall through to
+					// the geckofx case instead.
+					goto case BrowserType.GeckoFx;
 				case BrowserType.GeckoFx:
 					var path = Path.Combine(Path.GetDirectoryName(
 						new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath),
@@ -65,15 +70,15 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 						if (assembly != null)
 						{
 							var browser = assembly.GetType("Palaso.UI.WindowsForms.HtmlBrowser.GeckoFxWebBrowserAdapter");
-							if(browser != null)
+							if (browser != null)
 							{
 								try
 								{
 									return (IWebBrowser)Activator.CreateInstance(browser, this);
 								}
-								catch(Exception)
+								catch (Exception)
 								{
-									; //Eat exceptions creating the GeckoFxWebBrowserAdapter
+									//Eat exceptions creating the GeckoFxWebBrowserAdapter
 								}
 							}
 						}
@@ -82,10 +87,9 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 					goto case BrowserType.Fallback;
 				case BrowserType.Fallback:
 				default:
-					IWebBrowser webBrowser = null;
 					if (PlatformUtilities.Platform.IsWindows)
-						webBrowser = CreateBrowser(BrowserType.WinForms);
-						return webBrowser;
+						return CreateBrowser(BrowserType.WinForms);
+					return null;
 			}
 		}
 
