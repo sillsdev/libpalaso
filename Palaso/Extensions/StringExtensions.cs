@@ -122,6 +122,7 @@ namespace Palaso.Extensions
 					_writerUsedForEscaping = XmlWriter.Create(_bldrUsedForEscaping, _settingsUsedForEscaping);
 
 				_writerUsedForEscaping.WriteString(text);
+				_writerUsedForEscaping.Flush();
 				return _bldrUsedForEscaping.ToString();
 			}
 		}
