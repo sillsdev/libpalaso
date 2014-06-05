@@ -47,6 +47,12 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		{
 			InitializeComponent();
 			m_WebBrowserAdapter = CreateBrowser(type);
+
+			// set default values
+			m_WebBrowserAdapter.AllowNavigation = true;
+			m_WebBrowserAdapter.AllowWebBrowserDrop = true;
+			m_WebBrowserAdapter.IsWebBrowserContextMenuEnabled = true;
+			m_WebBrowserAdapter.WebBrowserShortcutsEnabled = true;
 		}
 
 		private IWebBrowser CreateBrowser(BrowserType type)
@@ -95,12 +101,14 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 
 		#region IWebBrowser Members
 
+		[DefaultValue(true)]
 		public bool AllowNavigation
 		{
 			get { return m_WebBrowserAdapter.AllowNavigation; }
 			set { m_WebBrowserAdapter.AllowNavigation = value; }
 		}
 
+		[DefaultValue(true)]
 		public bool AllowWebBrowserDrop
 		{
 			get { return m_WebBrowserAdapter.AllowWebBrowserDrop; }
@@ -137,6 +145,7 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 			get { return m_WebBrowserAdapter.IsBusy; }
 		}
 
+		[DefaultValue(true)]
 		public bool IsWebBrowserContextMenuEnabled
 		{
 			get { return m_WebBrowserAdapter.IsWebBrowserContextMenuEnabled; }
@@ -203,6 +212,7 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 			get { return m_WebBrowserAdapter.NativeBrowser; }
 		}
 
+		[DefaultValue(true)]
 		public bool WebBrowserShortcutsEnabled
 		{
 			get { return m_WebBrowserAdapter.WebBrowserShortcutsEnabled; }
