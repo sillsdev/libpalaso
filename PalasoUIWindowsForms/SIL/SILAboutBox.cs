@@ -148,7 +148,7 @@ namespace Palaso.UI.WindowsForms.SIL
 
 		private void SILAboutBoxShown(object sender, EventArgs e)
 		{
-			_browser.Navigate(_pathToAboutBoxHtml);
+			_browser.Url = new Uri(_pathToAboutBoxHtml);
 			_browser.Navigated += _browser_Navigated;
 		}
 

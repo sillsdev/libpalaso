@@ -102,6 +102,7 @@ namespace Palaso.UI.WindowsForms.SIL
 			this._browser.Size = new System.Drawing.Size(431, 435);
 			this._browser.TabIndex = 2;
 			this._browser.Url = new System.Uri("about:blank", System.UriKind.Absolute);
+			this._browser.AllowNavigation = false;
 			// 
 			// SILAboutBox
 			// 
