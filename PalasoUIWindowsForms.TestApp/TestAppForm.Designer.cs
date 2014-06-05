@@ -125,7 +125,7 @@ namespace PalasoUIWindowsForms.TestApp
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(13, 216);
+			this.label1.Location = new System.Drawing.Point(12, 246);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(149, 13);
 			superToolTipInfo1.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
@@ -147,7 +147,7 @@ namespace PalasoUIWindowsForms.TestApp
 			// 
 			// btnMetaDataEditor
 			// 
-			this.btnMetaDataEditor.Location = new System.Drawing.Point(12, 186);
+			this.btnMetaDataEditor.Location = new System.Drawing.Point(12, 214);
 			this.btnMetaDataEditor.Name = "btnMetaDataEditor";
 			this.btnMetaDataEditor.Size = new System.Drawing.Size(157, 23);
 			this.btnMetaDataEditor.TabIndex = 0;
@@ -169,7 +169,7 @@ namespace PalasoUIWindowsForms.TestApp
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(284, 262);
+			this.ClientSize = new System.Drawing.Size(187, 268);
 			this.Controls.Add(this._silAboutBoxGecko);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.btnMetaDataEditor);
