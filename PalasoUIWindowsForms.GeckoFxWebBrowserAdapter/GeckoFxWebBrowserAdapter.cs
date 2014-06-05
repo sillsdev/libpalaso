@@ -54,7 +54,6 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 
 		private static void SetUpXulRunner()
 		{
-
 			if (IsXpcomInitialized())
 				return;
 
@@ -219,7 +218,7 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 			{
 				try
 				{
-					GeckoCoreAssembly = Assembly.LoadFrom("Geckofx-Core.dll");
+					GeckoCoreAssembly = Assembly.Load("Geckofx-Core");
 				}
 				catch(FileNotFoundException)
 				{
@@ -228,7 +227,7 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 				}
 				try
 				{
-					GeckoWinAssembly = Assembly.LoadFrom("Geckofx-Winforms.dll");
+					GeckoWinAssembly = Assembly.Load("Geckofx-Winforms");
 				}
 				catch(FileNotFoundException)
 				{
@@ -239,7 +238,7 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 			catch(Exception e)
 			{
 				MessageBox.Show("Unable to load geckofx dependancy. Files may not have been included in the build.",
-									 "Failed to load geckofx", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					"Failed to load geckofx", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				throw new ApplicationException("Unable to load geckofx dependancy", e);
 			}
 		}
