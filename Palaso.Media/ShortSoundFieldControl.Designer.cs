@@ -58,12 +58,14 @@
 			//
 			// _deleteButton
 			//
-			this._deleteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			// this._deleteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			// BUG FIX WS-67: In order to have cross-platform consistency this line was omitted, and the line with ImageAlign was added.
 			this._deleteButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this._deleteButton.Enabled = false;
 			this._deleteButton.FlatAppearance.BorderColor = System.Drawing.Color.Silver;
 			this._deleteButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 			this._deleteButton.Image = global::Palaso.Media.Properties.Resources.Delete;
+			this._deleteButton.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft; // part of display bug fix WS-67
 			this._deleteButton.Location = new System.Drawing.Point(204, 0);
 			this._deleteButton.Name = "_deleteButton";
 			this._deleteButton.Size = new System.Drawing.Size(38, 19);
