@@ -121,6 +121,7 @@ namespace Palaso.UI.WindowsForms.SIL
 			var ver = _assembly.GetName().Version;
 			return string.Format("{0}.{1}.{2}", ver.Major, ver.Minor, ver.Build);
 		}
+
 		private string GetCopyright()
 		{
 			foreach (object attribute in _assembly.GetCustomAttributes(false))
@@ -132,6 +133,7 @@ namespace Palaso.UI.WindowsForms.SIL
 			}
 			return string.Empty;
 		}
+
 		private string GetTitle()
 		{
 			foreach (object attribute in _assembly.GetCustomAttributes(false))
@@ -143,12 +145,12 @@ namespace Palaso.UI.WindowsForms.SIL
 			}
 			return string.Empty;
 		}
+
 		private void SILAboutBoxShown(object sender, EventArgs e)
 		{
-			_browser.Navigate(_pathToAboutBoxHtml);
+			_browser.Url = new Uri(_pathToAboutBoxHtml);
 			_browser.Navigated += _browser_Navigated;
 		}
-
 
 		private void _browser_Navigated(object sender, WebBrowserNavigatedEventArgs e)
 		{

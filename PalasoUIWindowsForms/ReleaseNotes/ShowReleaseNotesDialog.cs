@@ -28,7 +28,7 @@ namespace Palaso.UI.WindowsForms.ReleaseNotes
 			var md = new Markdown();
 			_temp = TempFile.WithExtension("htm"); //enhance: will leek a file to temp
 			File.WriteAllText(_temp.Path, md.Transform(contents));
-			_browser.Navigate(_temp.Path);
+			_browser.Url = new Uri(_temp.Path);
 		}
 	}
 }

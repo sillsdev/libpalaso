@@ -1,13 +1,5 @@
-﻿// ---------------------------------------------------------------------------------------------
-#region // Copyright (c) 2013, SIL International. All Rights Reserved.
-// <copyright from='2013' to='2013' company='SIL International'>
-//		Copyright (c) 2013, SIL International. All Rights Reserved.
-//
-//		Distributable under the terms of either the Common Public License or the
-//		GNU Lesser General Public License, as specified in the LICENSING.txt file.
-// </copyright>
-#endregion
-// ---------------------------------------------------------------------------------------------
+﻿// Copyright (c) 2013-2014 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -117,17 +109,22 @@ namespace PalasoUIWindowsForms.TestApp
 
 		private void OnSilAboutBoxClicked(object sender, EventArgs e)
 		{
-			XWebBrowser.DefaultBrowserType = XWebBrowser.BrowserType.WinForms;
-			ShowSilAboutBox();
+			ShowSilAboutBox(XWebBrowser.BrowserType.Default);
 		}
 
-		private static void ShowSilAboutBox()
+		private void OnSilAboutBoxGeckoClicked(object sender, EventArgs e)
 		{
+			ShowSilAboutBox(XWebBrowser.BrowserType.GeckoFx);
+		}
+
+		private static void ShowSilAboutBox(XWebBrowser.BrowserType browserType)
+		{
+			XWebBrowser.DefaultBrowserType = browserType;
 			using(var tempfile = TempFile.WithExtension("html"))
 			{
 				File.WriteAllText(tempfile.Path,
-										@"<html><body><h3>Copyright 2014 <a href=""http://sil.org"">SIL International</a></h3>" +
-										@"<p>Testing the <b>about box</b></p></body></html>"); 
+					@"<html><body><h3>Copyright 2014 <a href=""http://sil.org"">SIL International</a></h3>" +
+					@"<p>Testing the <b>about box</b></p></body></html>");
 				var uri = new Uri(tempfile.Path);
 				using(var dlg = new SILAboutBox(uri.AbsoluteUri))
 					dlg.ShowDialog();
@@ -157,10 +154,5 @@ and displays it as HTML.
 			}
 		}
 
-		private void _silAboutBoxGecko_Click(object sender, EventArgs e)
-		{
-			XWebBrowser.DefaultBrowserType = XWebBrowser.BrowserType.GeckoFx;
-			ShowSilAboutBox();
-		}
 	}
 }
