@@ -210,15 +210,7 @@ namespace X11.XKlavier
 			var subitemIsNull = subitem.Parent.RefCount == IntPtr.Zero;
 			XklConfigItem language = (XklConfigItem)Marshal.PtrToStructure(data, typeof(XklConfigItem));
 			var description = subitemIsNull ? item.Description : subitem.Description;
-			List<LayoutDescription > layouts;
-			if (m_Layouts.ContainsKey(description))
-				layouts = m_Layouts[description];
-			else
-			{
-				layouts = new List<LayoutDescription>();
-				m_Layouts[description] = layouts;
-			}
-
+			var layouts = GetLayoutList(description);
 			var newLayout = new LayoutDescription {
 				LayoutId = subitemIsNull ? item.Name : subitem.Name,
 				Description = description,
@@ -250,26 +242,22 @@ namespace X11.XKlavier
 			var subitemIsNull = subitem.Parent.RefCount == IntPtr.Zero;
 			XklConfigItem country = (XklConfigItem)Marshal.PtrToStructure(data, typeof(XklConfigItem));
 			var description = subitemIsNull ? item.Description : subitem.Description;
-			List<LayoutDescription > layouts;
-			if (m_Layouts.ContainsKey(description))
-				layouts = m_Layouts[description];
-			else
-			{
-				layouts = new List<LayoutDescription>();
-				m_Layouts[description] = layouts;
-			}
 			var name = subitemIsNull ? item.Name : subitem.Name;
 			var variant = subitemIsNull ? String.Empty : subitem.Description;
+			var layouts = GetLayoutList(description);
 			foreach (var desc in layouts)
 			{
 				if (desc.LayoutId == name && desc.Description == description && desc.LayoutVariant == variant)
 					return;
 			}
+			var langCode = subitemIsNull ? item.Short_Description : subitem.Short_Description;
+			if (String.IsNullOrEmpty(langCode))
+				langCode = subitemIsNull ? item.Name : subitem.Name;
 			var newLayout = new LayoutDescription {
 				LayoutId = name,
 				Description = description,
 				LayoutVariant = variant,
-				LanguageCode = Get2LetterLanguageCode(subitemIsNull ? item.Short_Description : subitem.Short_Description),
+				LanguageCode = Get2LetterLanguageCode(langCode),
 				CountryCode = country.Name
 			};
 			layouts.Add(newLayout);
@@ -299,17 +287,8 @@ namespace X11.XKlavier
 		void StoreLayoutInfo(XklConfigItem item, IntPtr data)
 		{
 			var description = item.Description;
-			List<LayoutDescription> layouts;
-			if (m_Layouts.ContainsKey(description))
-			{
-				layouts = m_Layouts[description];
-			}
-			else
-			{
-				layouts = new List<LayoutDescription>();
-				m_Layouts[description] = layouts;
-			}
 			var variant = data != IntPtr.Zero ? description : String.Empty;
+			var layouts = GetLayoutList(description);
 			foreach (var desc in layouts)
 			{
 				if (desc.LayoutId == item.Name && desc.Description == description && desc.LayoutVariant == variant)
@@ -323,17 +302,35 @@ namespace X11.XKlavier
 			if (data != IntPtr.Zero)
 			{
 				XklConfigItem parent = (XklConfigItem)Marshal.PtrToStructure(data, typeof(XklConfigItem));
-				newLayout.LanguageCode = Get2LetterLanguageCode(String.IsNullOrEmpty(item.Short_Description) ? parent.Short_Description : item.Short_Description);
+				var langCode = String.IsNullOrEmpty(item.Short_Description) ? parent.Short_Description : item.Short_Description;
+				if (String.IsNullOrEmpty(langCode))
+					langCode = String.IsNullOrEmpty(item.Name) ? parent.Name : item.Name;
+				newLayout.LanguageCode = Get2LetterLanguageCode(langCode);
 				if (parent.Name.Length == 2 || item.Name != item.Short_Description)
 					newLayout.CountryCode = parent.Name.ToUpper();
 			}
 			else
 			{
-				newLayout.LanguageCode = Get2LetterLanguageCode(item.Short_Description);
+				newLayout.LanguageCode = Get2LetterLanguageCode(String.IsNullOrEmpty(item.Short_Description) ? item.Name : item.Short_Description);
 				if (item.Name.Length == 2 || item.Name != item.Short_Description)
 					newLayout.CountryCode = item.Name.ToUpper();
 			}
 			layouts.Add(newLayout);
+		}
+
+		List<LayoutDescription> GetLayoutList(string description)
+		{
+			List<LayoutDescription> layouts;
+			if (m_Layouts.ContainsKey(description))
+			{
+				layouts = m_Layouts[description];
+			}
+			else
+			{
+				layouts = new List<LayoutDescription>();
+				m_Layouts[description] = layouts;
+			}
+			return layouts;
 		}
 
 		#region p/invoke related
@@ -388,7 +385,7 @@ namespace X11.XKlavier
 
 		[DllImport("libxklavier")]
 		private extern static void xkl_config_registry_foreach_country_variant(IntPtr configRegistry,
-			string languageCode, TwoConfigItemsProcessFunc func, IntPtr data);
+			string countryCode, TwoConfigItemsProcessFunc func, IntPtr data);
 
 		[DllImport("libxklavier")]
 		private extern static void xkl_config_registry_foreach_layout(IntPtr configRegistry,
