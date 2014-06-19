@@ -19,7 +19,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		/// <summary>
 		/// The null keyboard description
 		/// </summary>
-		public static IKeyboardDefinition Zero = new KeyboardDescriptionNull();
+		public static readonly IKeyboardDefinition Zero = new KeyboardDescriptionNull();
 
 		/// <summary>
 		/// Initializes a new instance of the
@@ -140,11 +140,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		/// </summary>
 		public override void Activate()
 		{
-			var oldActiveKeyboard = Keyboard.Controller.ActiveKeyboard;
-			if (oldActiveKeyboard != null && oldActiveKeyboard.Id == this.Id)
-				return;
-
-			var activeKeyboard = oldActiveKeyboard as KeyboardDescription;
+			var activeKeyboard = Keyboard.Controller.ActiveKeyboard as KeyboardDescription;
             if (activeKeyboard != null && activeKeyboard.DeactivatePreviousKeyboard(this))
 				activeKeyboard.Deactivate();
 
