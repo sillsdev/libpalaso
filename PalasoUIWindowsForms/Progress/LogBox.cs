@@ -163,7 +163,13 @@ namespace Palaso.UI.WindowsForms.Progress
 
 		public override string Text
 		{
-			get { return "Box:" + _box.Text + "Verbose:" + _verboseBox.Text; }
+			get {
+				// The Text property get called during ctor so return an 
+				// empty string in that case.  This works around a crash 
+				// in WeSay.
+				if (_box == null || _verboseBox == null) return String.Empty;
+				return "Box:" + _box.Text + "Verbose:" + _verboseBox.Text; 
+			}
 		}
 
 		public string Rtf
