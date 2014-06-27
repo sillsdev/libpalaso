@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -32,7 +32,7 @@
     <Optimize>false</Optimize>
     <OutputPath>..\output\DebugMono</OutputPath>
     <WarningLevel>4</WarningLevel>
-    <AssemblyName>PalasoUIWindowsForms.GeckoFxWebBrowserAdapter</AssemblyName>
+    <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
     <DebugSymbols>true</DebugSymbols>
     <DefineConstants>DEBUG;</DefineConstants>
   </PropertyGroup>
@@ -40,18 +40,12 @@
     <Optimize>true</Optimize>
     <OutputPath>..\output\ReleaseMono</OutputPath>
     <WarningLevel>4</WarningLevel>
-    <AssemblyName>PalasoUIWindowsForms.GeckoFxWebBrowserAdapter</AssemblyName>
+    <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="geckofx-core-14">
-      <HintPath>lib\geckofx-core-14.dll</HintPath>
-    </Reference>
-    <Reference Include="Geckofx-Winforms-14">
-      <HintPath>lib\Geckofx-Winforms-14.dll</HintPath>
-    </Reference>
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
@@ -68,15 +62,5 @@
       <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
       <Name>Palaso</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="lib\geckofix.so">
-      <Link>geckofix.so</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="lib\geckofx-core-14.dll.config">
-      <Link>geckofx-core-14.dll.config</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 </Project>

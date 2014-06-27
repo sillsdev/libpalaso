@@ -312,7 +312,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			{
 				if (m_inputContext != null)
 					return m_inputContext;
-				if (m_contextCreated)
+				if (m_contextCreated || !Connected)
 					return null;		// we must have had an error that cleared m_inputContext
 				CreateInputContext();
 				return m_inputContext;

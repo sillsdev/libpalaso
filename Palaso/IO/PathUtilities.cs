@@ -85,7 +85,7 @@ namespace Palaso.IO
 			{
 				process.StartInfo = new ProcessStartInfo {
 					FileName = "stat",
-					Arguments = string.Format("-c %d {0}", pathToCheck),
+					Arguments = string.Format("-c %d \"{0}\"", pathToCheck),
 					UseShellExecute = false,
 					RedirectStandardOutput = true,
 					CreateNoWindow = true

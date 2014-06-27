@@ -6,16 +6,16 @@ using IrrKlang;
 
 namespace Palaso.Media
 {
-	public class AudioIrrKlangSession : ISimpleAudioSession, ISimpleAudioWithEvents
+	public class AudioIrrKlangSession : ISimpleAudioSession, ISimpleAudioWithEvents, IDisposable
 	{
-		private IAudioRecorder _recorder;
-		private ISoundEngine _engine;
+		private readonly IAudioRecorder _recorder;
+		private readonly ISoundEngine _engine;
 		private ISound _sound;
 		private bool _thinkWeAreRecording;
 		private DateTime _startRecordingTime;
 		private DateTime _stopRecordingTime;
 		private readonly string _path;
-		private ISoundStopEventReceiver _irrklangEventProxy;
+		private readonly ISoundStopEventReceiver _irrklangEventProxy;
 		private ISoundSource _soundSource;
 
 		/// <summary>
@@ -153,6 +153,8 @@ namespace Palaso.Media
 			// the file open and locked
 			byte[] audioData = File.ReadAllBytes(_path);	//REVIEW: will this leak?
 			 _soundSource = engine.AddSoundSourceFromMemory(audioData, _path);
+			if (_sound != null)
+				_sound.Dispose();
 			_sound = engine.Play2D(_soundSource, false, false, false);
 			_sound.setSoundStopEventReceiver(_irrklangEventProxy,engine);
 		}
@@ -270,7 +272,20 @@ namespace Palaso.Media
 
 		public void StopPlaying()
 		{
+			if (_sound != null && !_sound.Finished)
+				_sound.Stop();
 			_engine.StopAllSounds();
+		}
+
+		public void Dispose()
+		{
+			_engine.Dispose();
+			_recorder.Dispose();
+			if (_sound != null)
+			{
+				_sound.Dispose();
+				_sound = null;
+			}
 		}
 	}
 }

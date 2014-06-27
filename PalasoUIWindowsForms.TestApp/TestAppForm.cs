@@ -1,13 +1,5 @@
-﻿// ---------------------------------------------------------------------------------------------
-#region // Copyright (c) 2013, SIL International. All Rights Reserved.
-// <copyright from='2013' to='2013' company='SIL International'>
-//		Copyright (c) 2013, SIL International. All Rights Reserved.
-//
-//		Distributable under the terms of either the Common Public License or the
-//		GNU Lesser General Public License, as specified in the LICENSING.txt file.
-// </copyright>
-#endregion
-// ---------------------------------------------------------------------------------------------
+﻿// Copyright (c) 2013-2014 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,6 +9,9 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using Palaso.IO;
+using Palaso.UI.WindowsForms.ClearShare;
+using Palaso.UI.WindowsForms.ClearShare.WinFormsUI;
+using Palaso.UI.WindowsForms.HtmlBrowser;
 using Palaso.UI.WindowsForms.ImageGallery;
 using Palaso.UI.WindowsForms.Keyboarding;
 using Palaso.UI.WindowsForms.ReleaseNotes;
@@ -114,10 +109,24 @@ namespace PalasoUIWindowsForms.TestApp
 
 		private void OnSilAboutBoxClicked(object sender, EventArgs e)
 		{
-			using (var tempfile = new TempFile("<h3>Copyright 2014 <a href=\"http://sil.org\">SIL International</a></h3>" +
-				"<p>Testing the <b>about box</b></p>"))
+			ShowSilAboutBox(XWebBrowser.BrowserType.Default);
+		}
+
+		private void OnSilAboutBoxGeckoClicked(object sender, EventArgs e)
+		{
+			ShowSilAboutBox(XWebBrowser.BrowserType.GeckoFx);
+		}
+
+		private static void ShowSilAboutBox(XWebBrowser.BrowserType browserType)
+		{
+			XWebBrowser.DefaultBrowserType = browserType;
+			using(var tempfile = TempFile.WithExtension("html"))
 			{
-				using (var dlg = new SILAboutBox(tempfile.Path))
+				File.WriteAllText(tempfile.Path,
+					@"<html><body><h3>Copyright 2014 <a href=""http://sil.org"">SIL International</a></h3>" +
+					@"<p>Testing the <b>about box</b></p></body></html>");
+				var uri = new Uri(tempfile.Path);
+				using(var dlg = new SILAboutBox(uri.AbsoluteUri))
 					dlg.ShowDialog();
 			}
 		}
@@ -136,5 +145,14 @@ and displays it as HTML.
 					dlg.ShowDialog();
 			}
 		}
+
+		private void OnShowMetaDataEditorClicked(object sender, EventArgs e)
+		{
+			using (var dlg = new MetadataEditorDialog(new Metadata()))
+			{
+				dlg.ShowDialog();
+			}
+		}
+
 	}
 }

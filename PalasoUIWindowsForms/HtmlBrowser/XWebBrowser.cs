@@ -47,46 +47,73 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		{
 			InitializeComponent();
 			m_WebBrowserAdapter = CreateBrowser(type);
+
+			// set default values
+			m_WebBrowserAdapter.AllowNavigation = true;
+			m_WebBrowserAdapter.AllowWebBrowserDrop = true;
+			m_WebBrowserAdapter.IsWebBrowserContextMenuEnabled = true;
+			m_WebBrowserAdapter.WebBrowserShortcutsEnabled = true;
 		}
 
 		private IWebBrowser CreateBrowser(BrowserType type)
 		{
-			while (true)
+			switch (type)
 			{
-				switch (type)
-				{
-					case BrowserType.WinForms:
+				case BrowserType.Default:
+				case BrowserType.WinForms:
+					if (PlatformUtilities.Platform.IsWindows)
 						return new WinFormsBrowserAdapter(this);
-					case BrowserType.GeckoFx:
-						var path = Path.Combine(Path.GetDirectoryName(
-							new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath),
-							"PalasoUIWindowsForms.GeckoFxWebBrowserAdapter.dll");
-						if (File.Exists(path))
+					// The WinForms adapter works only on Windows. On Linux we fall through to
+					// the geckofx case instead.
+					goto case BrowserType.GeckoFx;
+				case BrowserType.GeckoFx:
+					var path = Path.Combine(Path.GetDirectoryName(
+						new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath),
+						"PalasoUIWindowsForms.GeckoBrowserAdapter.dll");
+					if (File.Exists(path))
+					{
+						var assembly = Assembly.LoadFile(path);
+						if (assembly != null)
 						{
-							var assembly = Assembly.LoadFile(path);
-							if (assembly != null)
+							var browser = assembly.GetType("Palaso.UI.WindowsForms.HtmlBrowser.GeckoFxWebBrowserAdapter");
+							if (browser != null)
 							{
-								var browser = assembly.GetType("Palaso.UI.WindowsForms.HtmlBrowser.GeckoFxWebBrowserAdapter");
-								if (browser != null)
+								try
+								{
 									return (IWebBrowser)Activator.CreateInstance(browser, this);
+								}
+								catch (Exception)
+								{
+									//Eat exceptions creating the GeckoFxWebBrowserAdapter
+								}
 							}
 						}
-						type = BrowserType.Fallback;
-						break;
-					case BrowserType.Default:
-					case BrowserType.Fallback:
-						IWebBrowser webBrowser = null;
-						if (PlatformUtilities.Platform.IsWindows)
-							webBrowser = CreateBrowser(BrowserType.WinForms);
-						if (webBrowser != null || type == BrowserType.Fallback)
-							return webBrowser;
-						type = BrowserType.GeckoFx;
-						break;
-				}
+					}
+					//We failed to Create the GeckoFxWebBrowserAdapter, so drop into the fallback case
+					goto case BrowserType.Fallback;
+				case BrowserType.Fallback:
+				default:
+					if (PlatformUtilities.Platform.IsWindows)
+						return CreateBrowser(BrowserType.WinForms);
+					return null;
 			}
 		}
 
 		#region IWebBrowser Members
+
+		[DefaultValue(true)]
+		public bool AllowNavigation
+		{
+			get { return m_WebBrowserAdapter.AllowNavigation; }
+			set { m_WebBrowserAdapter.AllowNavigation = value; }
+		}
+
+		[DefaultValue(true)]
+		public bool AllowWebBrowserDrop
+		{
+			get { return m_WebBrowserAdapter.AllowWebBrowserDrop; }
+			set { m_WebBrowserAdapter.AllowWebBrowserDrop = value; }
+		}
 
 		public bool CanGoBack
 		{
@@ -100,7 +127,6 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 
 		public string DocumentText
 		{
-			get { return m_WebBrowserAdapter.DocumentText; }
 			set { m_WebBrowserAdapter.DocumentText = value; }
 		}
 
@@ -119,6 +145,7 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 			get { return m_WebBrowserAdapter.IsBusy; }
 		}
 
+		[DefaultValue(true)]
 		public bool IsWebBrowserContextMenuEnabled
 		{
 			get { return m_WebBrowserAdapter.IsWebBrowserContextMenuEnabled; }
@@ -171,6 +198,11 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 			m_WebBrowserAdapter.Stop();
 		}
 
+		public void ScrollLastElementIntoView()
+		{
+			m_WebBrowserAdapter.ScrollLastElementIntoView();
+		}
+
 		/// <summary>
 		/// Provides access to the native browser control (WebBrowser or GeckoWebBrowser)
 		/// </summary>
@@ -178,6 +210,13 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		public object NativeBrowser
 		{
 			get { return m_WebBrowserAdapter.NativeBrowser; }
+		}
+
+		[DefaultValue(true)]
+		public bool WebBrowserShortcutsEnabled
+		{
+			get { return m_WebBrowserAdapter.WebBrowserShortcutsEnabled; }
+			set { m_WebBrowserAdapter.WebBrowserShortcutsEnabled = value; }
 		}
 
 		#endregion

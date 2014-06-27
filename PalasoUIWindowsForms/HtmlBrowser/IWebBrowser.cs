@@ -1,16 +1,22 @@
 ﻿// Copyright (c) 2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
-using System.IO;
 using System.Windows.Forms;
 
 namespace Palaso.UI.WindowsForms.HtmlBrowser
 {
 	public interface IWebBrowser
 	{
+		bool AllowNavigation { get; set; }
+		bool AllowWebBrowserDrop { get; set; }
 		bool CanGoBack { get; }
 		bool CanGoForward { get; }
-		string DocumentText { get; set; }
+		/// <summary>
+		/// Set of the DocumentText will load the given string content into the browser.
+		/// If a get for DocumentText proves necessary Jason promises to write the reflective
+		/// gecko implementation.
+		/// </summary>
+		string DocumentText { set; }
 		string DocumentTitle { get; }
 		bool Focused { get; }
 		bool IsBusy { get; }
@@ -24,6 +30,8 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		void Refresh();
 		void Refresh(WebBrowserRefreshOption opt);
 		void Stop();
+		void ScrollLastElementIntoView();
 		object NativeBrowser { get; }
+		bool WebBrowserShortcutsEnabled { get; set; }
 	}
 }

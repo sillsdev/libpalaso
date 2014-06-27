@@ -95,21 +95,42 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			{
 				var path = Path.Combine(RootImagePath, ((string) macPath).Replace(':', Path.DirectorySeparatorChar));
 				if (!limitToThoseActuallyAvailable)
+				{
 					yield return path;
+					continue; // don't look further
+				}
 
 				if (File.Exists(path))
 				{
 					yield return path;
+					continue; // don't look further
 				}
-				//the index has the original file names, and were tifs.
 
-				//the re-republished versions (which have embedd3ed metadata and watermarks) start with AOR_ and end with png
-				path =
+				// These results may be from an older index that has the original file names, and were tifs.
+				// The re-republished versions (which have embedd3ed metadata and watermarks) start with AOR_ and end with png
+				var updatedPath =
 					Path.GetDirectoryName(path).CombineForPath("AOR_" + Path.GetFileName(path).Replace(".tif", ".png"));
 
-				if(File.Exists(path))
+				if (File.Exists(updatedPath))
 				{
-					yield return path;
+					yield return updatedPath;
+					continue; // don't look further
+				}
+
+				// In version 3, some country's files (Mexico only?) were split into two subdirectories.
+				// Instead of republishing the index and making everybody reinstall AOR,
+				// we'll see if we can find the file in a subdirectory.
+				var parentDir = Path.GetDirectoryName(path);
+				var fileName = Path.GetFileName(path);
+				var subDirs = Directory.EnumerateDirectories(parentDir);
+				foreach (var subDir in subDirs)
+				{
+					updatedPath = Path.Combine(parentDir, subDir, fileName);
+					if (File.Exists(updatedPath))
+					{
+						yield return updatedPath;
+						continue;
+					}
 				}
 			}
 		}
@@ -170,7 +191,8 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 		public static bool IsAvailable()
 		{
-			return !string.IsNullOrEmpty(TryToGetRootImageCatalogPath()) && !string.IsNullOrEmpty(TryToGetPathToIndex());
+			string imagesPath = TryToGetRootImageCatalogPath();
+			return !string.IsNullOrEmpty(imagesPath) && !string.IsNullOrEmpty(TryToGetPathToIndex(imagesPath));
 		}
 
 		public static string TryToGetRootImageCatalogPath()
@@ -188,10 +210,11 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
 			{
 				var unixPaths = new[]
-									{
-										@"c:\art of reading\images", @"/usr/share/SIL/ArtOfReading/images",
-										@"/var/share/ArtOfReading/images"
-									};
+				{
+					@"/usr/share/ArtOfReading/images",		// new package location (standard LSB/FHS location)
+					@"/usr/share/SIL/ArtOfReading/images",	// old (lost) package location
+					@"/var/share/ArtOfReading/images"		// obsolete test location (?)
+				};
 
 				foreach (var path in unixPaths)
 				{
@@ -251,23 +274,26 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 			c.RootImagePath = path;
 
-			string pathToIndexFile = TryToGetPathToIndex();
+			string pathToIndexFile = TryToGetPathToIndex(path);
 			c.LoadIndex(pathToIndexFile);
 			return c;
 		}
 
-		public static string TryToGetPathToIndex()
+		public static string TryToGetPathToIndex(string imagesPath)
 		{
-			//look for the folder created by the ArtOfReadingFree installer
-			var aorInstallerTarget = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("SIL", "Art Of Reading", "images");
-			var path = aorInstallerTarget.CombineForPath("index.txt");
-			if (File.Exists(path))
-				return path;
+			// ArtOfReading3FreeSetp.exe installs index.txt in the parent directory 
+			// of images.  The previous verison of this code looked in images directory
+			// as well.
+			if (!string.IsNullOrEmpty(imagesPath))
+			{
+				var path = Directory.GetParent(imagesPath).FullName.CombineForPath("index.txt");
+				if (File.Exists(path))
+					return path;
 
-			aorInstallerTarget = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("SIL", "ArtOfReading");
-			path = aorInstallerTarget.CombineForPath("index.txt");
-			if (File.Exists(path))
-				return path;
+				path = imagesPath.CombineForPath("index.txt");
+				if (File.Exists(path))
+					return path;
+			}
 
 			return FileLocator.GetFileDistributedWithApplication(true, "ArtOfReadingIndexV3_en.txt");
 		}

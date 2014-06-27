@@ -68,6 +68,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._listView.View = System.Windows.Forms.View.Details;
 			this._listView.SelectedIndexChanged += new System.EventHandler(this.OnSelectedIndexChanged);
 			this._listView.DoubleClick += new System.EventHandler(this.listView1_DoubleClick);
+			this._listView.Sorting = System.Windows.Forms.SortOrder.Ascending;
 			//
 			// PrimaryNameHeader
 			//

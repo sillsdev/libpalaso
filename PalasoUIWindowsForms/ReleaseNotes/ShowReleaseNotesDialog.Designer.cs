@@ -59,6 +59,7 @@ namespace Palaso.UI.WindowsForms.ReleaseNotes
 			this._browser.Name = "_browser";
 			this._browser.Size = new System.Drawing.Size(652, 304);
 			this._browser.TabIndex = 0;
+			this._browser.AllowNavigation = false;
 			//
 			// _okButton
 			//
