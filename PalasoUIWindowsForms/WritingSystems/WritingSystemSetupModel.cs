@@ -1251,7 +1251,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				throw new InvalidOperationException("Unable to duplicate current selection when there is no current selection.");
 			}
-			var ws = _writingSystemRepository.MakeDuplicate(CurrentDefinition);
+			// Doing a true clone type duplication is too dangerous -- it's easy for a user to delete
+			// existing writing systems unknowingly, thus deleting data in those writing systems.
+			// Get list of existing known ids, both permanent and temporary so that we don't risk
+			// replacing/deleting them unknowingly.
+			var wsIds = new List<string>();
+			foreach (var wsT in _writingSystemRepository.AllWritingSystems)
+				wsIds.Add(wsT.Id);
+			foreach (var wsT in WritingSystemDefinitions)
+				wsIds.Add(wsT.Id);
+			var ws = WritingSystemDefinition.CreateCopyWithUniqueId(CurrentDefinition, wsIds);
 			WritingSystemDefinitions.Insert(CurrentIndex+1, ws);
 			OnAddOrDelete();
 			CurrentDefinition = ws;
