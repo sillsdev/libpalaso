@@ -30,3 +30,4 @@ L10NSharp.*
 .nuget/NuGet.exe
 *.cache
 Download/
+*.nupkg

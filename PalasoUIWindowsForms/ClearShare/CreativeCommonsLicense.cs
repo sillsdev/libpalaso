@@ -68,7 +68,11 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			if(!metadataProperties.ContainsKey("license"))
 				throw new ApplicationException("A license property is required in order to make a Creative Commons License from metadata.");
 
-			return FromLicenseUrl(metadataProperties["license"]);
+			var result = FromLicenseUrl(metadataProperties["license"]);
+			string rights;
+			if (metadataProperties.TryGetValue("rights (en)", out rights))
+				result.RightsStatement = rights;
+			return result;
 		}
 
 		/// <summary>
