@@ -95,7 +95,9 @@ namespace Palaso.Extensions
 			text = text.Replace("_amp;", "&");
 			text = text.Replace("_quot;", "\"");
 			text = text.Replace("_apos;", "'");
-			return text;
+
+			// Also ensure NFC form for XML output.
+			return text.Normalize(NormalizationForm.FormC);
 		}
 
 		private static object _lockUsedForEscaping = new object(); 
