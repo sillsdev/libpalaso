@@ -21,12 +21,19 @@ namespace Palaso.Tests.Text
 			get {  return "|_parent|"; }
 		}
 
+		public override string EqualsExceptionList
+		{
+			//_spans: is a List<T> which doesn't compare well with Equals (two separate empty lists are deemed different for example)
+			get {  return "|_spans|"; }
+		}
+
 		protected override List<ValuesToSet> DefaultValuesForTypes
 		{
 			get { return new List<ValuesToSet>
 							 {
 								 new ValuesToSet("string", "not string"),
-								 new ValuesToSet(new Annotation{IsOn = false}, new Annotation{IsOn = true})
+								 new ValuesToSet(new Annotation{IsOn = false}, new Annotation{IsOn = true}),
+								 new ValuesToSet(new List<LanguageForm.FormatSpan>(), new List<LanguageForm.FormatSpan>{new LanguageForm.FormatSpan()})
 							 }; }
 		}
 	}
