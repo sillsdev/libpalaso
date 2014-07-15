@@ -85,7 +85,9 @@ namespace Palaso.Lift.Merging
 					}
 				}
 
-				string outputPath = Path.GetTempFileName();
+				// We will want to call LiftSorter.SortLiftFiles() with this temporary
+				// filename, and it thus MUST end with ".lift".
+				string outputPath = Path.GetTempFileName() + ".lift";
 				try
 				{
 					MergeInNewFile(pathToMergeInTo, files[i].FullName, outputPath);
@@ -302,6 +304,8 @@ namespace Palaso.Lift.Merging
 				}
 			}
 
+			// After writing the updated file, ensure that it ends up sorted correctly.
+			LiftSorter.SortLiftFiles(outputPath);
 		}
 
 
