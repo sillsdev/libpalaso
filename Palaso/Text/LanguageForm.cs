@@ -36,6 +36,13 @@ namespace Palaso.Text
 			_form =  form;
 		}
 
+		public LanguageForm(LanguageForm form, MultiTextBase parent)
+			: this(form.WritingSystemId, form.Form, parent)
+		{
+			foreach (var span in form.Spans)
+				AddSpan(span.Index, span.Length, span.Lang, span.Class, span.LinkURL);
+		}
+
 		[XmlAttribute("ws")]
 		public string WritingSystemId
 		{
@@ -159,6 +166,83 @@ namespace Palaso.Text
 		{
 			var span = new FormatSpan {Index=index, Length=length, Lang=lang, Class=style, LinkURL=url};
 			_spans.Add(span);
+		}
+
+		/// <summary>
+		/// Adjusts the spans for the changes from oldText to newText.  Assume that only one chunk of
+		/// text has changed between the two strings.
+		/// </summary>
+		public static void AdjustSpansForTextChange(string oldText, string newText, List<FormatSpan> spans)
+		{
+			// Be paranoid and check for null strings...  Just convert them to empty strings for our purposes.
+			// (I don't think they'll ever be null, but that fits the category of famous last words...)
+			if (oldText == null)
+				oldText = String.Empty;
+			if (newText == null)
+				newText = String.Empty;
+			// If there are no spans, the text hasn't actually changed, or the text length hasn't changed,
+			// then we'll assume we don't need to do anything.
+			if (spans == null || spans.Count == 0 || newText == oldText || newText.Length == oldText.Length)
+				return;
+			// Get the locations of the first changing character in the old string.
+			// We assume that OnTextChanged gets called for every single change, so that
+			// pinpoints the location, and the change in string length tells us the length
+			// of the change itself. (>0 = insertion, <0 = deletion)
+			int minLength = Math.Min(newText.Length, oldText.Length);
+			int diffLocation = minLength;
+			for (int i = 0; i < minLength; ++i)
+			{
+				if (newText[i] != oldText[i])
+				{
+					diffLocation = i;
+					break;
+				}
+			}
+			int diffLength = newText.Length - oldText.Length;
+			foreach (var span in spans)
+				AdjustSpan(span, diffLocation, diffLength);
+		}
+
+		private static void AdjustSpan(FormatSpan span, int location, int length)
+		{
+			if (span.Length <= 0)
+				return;		// we've already deleted all the characters in the span.
+			if (location > span.Index + span.Length || length == 0)
+				return;		// the change doesn't affect the span.
+			// Adding characters to the end of the span is probably desireable if they differ.
+			if (length > 0)
+			{
+				// Inserting characters is fairly easy to deal with.
+				if (location <= span.Index)
+					span.Index += length;
+				else
+					span.Length += length;
+			}
+			// The span changes only if the deletion starts before the end of the span.
+			else if (location < span.Index + span.Length)
+			{
+				// Deleting characters has a number of cases to deal with.
+				// Remember, length is a negative number here!
+				if (location < span.Index)
+				{
+					if (span.Index + length >= location)
+					{
+						span.Index += length;
+					}
+					else
+					{
+						int before = span.Index - location;
+						span.Index = location;
+						span.Length += (before + length);
+					}
+				}
+				else
+				{
+					span.Length += length;
+					if (span.Length < location - span.Index)
+						span.Length = location - span.Index;
+				}
+			}
 		}
 	}
 }

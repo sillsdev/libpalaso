@@ -720,6 +720,9 @@ namespace Palaso.DictionaryServices.Lift
 						int count;
 						foreach (var span in spans)
 						{
+							// User edits may have effectively deleted the text of this span.
+							if (span.Length <= 0)
+								continue;
 							if (index < span.Index)
 							{
 								count = span.Index - index;
@@ -757,6 +760,9 @@ namespace Palaso.DictionaryServices.Lift
 						int count;
 						foreach (var span in spans)
 						{
+							// User edits may have effectively deleted the text of this span.
+							if (span.Length <= 0)
+								continue;
 							if (index < span.Index)
 							{
 								count = span.Index - index;
