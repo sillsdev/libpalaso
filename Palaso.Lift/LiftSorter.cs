@@ -28,10 +28,17 @@ namespace Palaso.Lift
 	{
 		private static readonly Encoding Utf8 = Encoding.UTF8;
 
-		public static void SortLiftFile(string liftPathname)
+		/// <summary>
+		/// Sort one or more lift files in the folder that contains the given lift file.
+		///
+		/// The resulting sorted file will be in a canonical order for the attributes and elements
+		/// </summary>
+		/// <param name="liftPathname">The assumed main lift file in a folder.</param>
+		public static void SortLiftFiles(string liftPathname)
 		{
 			Guard.AgainstNullOrEmptyString(liftPathname, "liftPathname");
 			Guard.Against(Path.GetExtension(liftPathname).ToLowerInvariant() != ".lift", "Unexpected file extension");
+			Guard.Against<FileNotFoundException>(!File.Exists(liftPathname), "Lift file does not exist.");
 			var projectDir = Path.GetDirectoryName(liftPathname);
 
 			foreach (var liftFile in Directory.GetFiles(projectDir, @"*.lift"))
@@ -95,7 +102,13 @@ namespace Palaso.Lift
 			}
 		}
 
-		public static void SortLiftRangesFile(string liftRangesPathname)
+		/// <summary>
+		/// Sort zero or more lift range files in the folder that contains the given lift ranges file.
+		///
+		/// The resulting sorted file will be in a canonical order for the attributes and elements
+		/// </summary>
+		/// <param name="liftRangesPathname">The given lift ranges file (may or may not exist, which is fine)</param>
+		public static void SortLiftRangesFiles(string liftRangesPathname)
 		{
 			Guard.AgainstNullOrEmptyString(liftRangesPathname, "liftRangesPathname");
 			Guard.Against(Path.GetExtension(liftRangesPathname).ToLowerInvariant() != ".lift-ranges", "Unexpected file extension");
@@ -145,10 +158,7 @@ namespace Palaso.Lift
 		{
 			get
 			{
-				var result = new HashSet<string>();
-				result.Add("text");
-				result.Add("span");
-				return result;
+				return new HashSet<string> {"text", "span"};
 			}
 		}
 
@@ -209,16 +219,6 @@ namespace Palaso.Lift
 		private static void WriteElement(XmlWriter writer, XElement element)
 		{
 			XmlUtils.WriteNode(writer, element, LiftSuppressIndentingChildren);
-		}
-
-		private static void WriteElement(XmlWriter writer, string element)
-		{
-			XmlUtils.WriteNode(writer, element, LiftSuppressIndentingChildren);
-		}
-
-		private static void WriteElement(XmlWriter writer, byte[] element)
-		{
-			WriteElement(writer, Encoding.UTF8.GetString(element));
 		}
 
 		private static SortedDictionary<string, string> SortRootElementAttributes(string pathname)

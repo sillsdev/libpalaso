@@ -13,13 +13,13 @@ namespace Palaso.Lift.Tests
 		[Test]
 		public void NullPathnameThrows()
 		{
-			Assert.Throws<ArgumentNullException>(() =>  LiftSorter.SortLiftFile(null));
+			Assert.Throws<ArgumentNullException>(() =>  LiftSorter.SortLiftFiles(null));
 		}
 
 		[Test]
 		public void EmptyPathnameThrows()
 		{
-			Assert.Throws<ArgumentNullException>(() => LiftSorter.SortLiftFile(""));
+			Assert.Throws<ArgumentNullException>(() => LiftSorter.SortLiftFiles(""));
 		}
 
 		[Test]
@@ -27,7 +27,7 @@ namespace Palaso.Lift.Tests
 		{
 			using (var tempFolder = new TempFolder("TempLiftProject" + Guid.NewGuid()))
 			{
-				Assert.DoesNotThrow(() => LiftSorter.SortLiftFile(Path.Combine(tempFolder.Path, "bogus.lift")));
+				Assert.Throws<FileNotFoundException>(() => LiftSorter.SortLiftFiles(Path.Combine(tempFolder.Path, "bogus.lift")));
 			}
 		}
 
@@ -36,7 +36,7 @@ namespace Palaso.Lift.Tests
 		{
 			using (var tempFile = IO.TempFile.WithFilename("bogus.txt"))
 			{
-				Assert.Throws<InvalidOperationException>(() => LiftSorter.SortLiftFile(tempFile.Path));
+				Assert.Throws<InvalidOperationException>(() => LiftSorter.SortLiftFiles(tempFile.Path));
 			}
 		}
 
@@ -55,7 +55,7 @@ namespace Palaso.Lift.Tests
 				File.WriteAllText(liftFile.Path, liftData);
 				File.WriteAllText(secondLiftFile.Path, liftData);
 
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path); // Called once, but it will sort both lift files in that one call.
 
 				var doc = XDocument.Load(liftFile.Path);
 				var entries = doc.Root.Elements("entry").ToList();
@@ -111,7 +111,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var entryChildren = doc.Root.Element("entry").Elements().ToList();
 				Assert.IsTrue(entryChildren.Count == 21);
@@ -231,7 +231,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var pronunciation = doc.Root.Element("entry").Element("pronunciation");
 				var pronunciationChildren = pronunciation.Elements().ToList();
@@ -302,7 +302,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var variant = doc.Root.Element("entry").Element("variant");
 				var variantChildren = variant.Elements().ToList();
@@ -377,7 +377,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var note = doc.Root.Element("entry").Element("note");
 				var noteChildren = note.Elements().ToList();
@@ -425,7 +425,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var relation = doc.Root.Element("entry").Element("relation");
 				var relationChildren = relation.Elements().ToList();
@@ -477,7 +477,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var etymology = doc.Root.Element("entry").Element("etymology");
 				var etymologyChildren = etymology.Elements().ToList();
@@ -527,7 +527,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var annotation = doc.Root.Element("entry").Element("annotation");
 				var annotationChildren = annotation.Elements().ToList();
@@ -559,7 +559,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var trait = doc.Root.Element("entry").Element("trait");
 				var traitChildren = trait.Elements().ToList();
@@ -595,7 +595,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var field = doc.Root.Element("entry").Element("field");
 				var fieldChildren = field.Elements().ToList();
@@ -655,7 +655,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var senseChildren = doc.Root.Element("entry").Element("sense").Elements().ToList();
 				Assert.IsTrue(senseChildren.Count == 26);
@@ -774,7 +774,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var definition = doc.Root.Element("entry").Element("sense").Element("definition");
 				var definitionChildren = definition.Elements().ToList();
@@ -811,7 +811,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var gloss = doc.Root.Element("entry").Element("sense").Element("gloss");
 				var glossChildren = gloss.Elements().ToList();
@@ -853,7 +853,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var grammaticalInfo = doc.Root.Element("entry").Element("sense").Element("grammatical-info");
 				var grammaticalInfoChildren = grammaticalInfo.Elements().ToList();
@@ -905,7 +905,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var example = doc.Root.Element("entry").Element("sense").Element("example");
 				var exampleChildren = example.Elements().ToList();
@@ -987,7 +987,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var reversal = doc.Root.Element("entry").Element("sense").Element("reversal");
 				var reversalChildren = reversal.Elements().ToList();
@@ -1052,7 +1052,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var relation = doc.Root.Element("entry").Element("sense").Element("relation");
 				var relationChildren = relation.Elements().ToList();
@@ -1099,7 +1099,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var illustration = doc.Root.Element("entry").Element("sense").Element("illustration");
 				var illustrationChildren = illustration.Elements().ToList();
@@ -1145,7 +1145,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var note = doc.Root.Element("entry").Element("sense").Element("note");
 				var noteChildren = note.Elements().ToList();
@@ -1190,7 +1190,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var annotation = doc.Root.Element("entry").Element("sense").Element("annotation");
 				var annotationChildren = annotation.Elements().ToList();
@@ -1224,7 +1224,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var trait = doc.Root.Element("entry").Element("sense").Element("trait");
 				var traitChildren = trait.Elements().ToList();
@@ -1262,7 +1262,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var field = doc.Root.Element("entry").Element("sense").Element("field");
 				var fieldChildren = field.Elements().ToList();
@@ -1300,7 +1300,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var subsenseChildren = doc.Root.Element("entry").Element("sense").Element("subsense").Elements().ToList();
 				Assert.IsTrue(subsenseChildren.Count == 2);
@@ -1329,7 +1329,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var header = doc.Root.Elements("header");
 				var childElements = header.Elements().ToList();
@@ -1408,7 +1408,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var rangeElements = doc.Root.Elements("header").Elements("ranges").Elements("range").ToList();
 				Assert.IsTrue(rangeElements.Count == 2);
@@ -1488,7 +1488,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var fieldElements = doc.Root.Elements("header").Elements("fields").Elements("field").ToList();
 				Assert.IsTrue(fieldElements.Count == 2);
@@ -1534,7 +1534,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var descriptionFormElements = doc.Root.Element("header").Element("description").Elements("form").ToList();
 				Assert.IsTrue(descriptionFormElements.Count == 2);
@@ -1571,7 +1571,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+				LiftSorter.SortLiftFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var attributes = doc.Root.Attributes().ToList();
 				Assert.IsTrue(attributes.Count == 2);
@@ -1605,13 +1605,13 @@ namespace Palaso.Lift.Tests
 		[Test]
 		public void NullPathnameForLiftRangesThrows()
 		{
-			Assert.Throws<ArgumentNullException>(() => LiftSorter.SortLiftRangesFile(null));
+			Assert.Throws<ArgumentNullException>(() => LiftSorter.SortLiftRangesFiles(null));
 		}
 
 		[Test]
 		public void EmptyPathnameForLiftRangesThrows()
 		{
-			Assert.Throws<ArgumentNullException>(() => LiftSorter.SortLiftRangesFile(""));
+			Assert.Throws<ArgumentNullException>(() => LiftSorter.SortLiftRangesFiles(""));
 		}
 
 		[Test]
@@ -1619,7 +1619,7 @@ namespace Palaso.Lift.Tests
 		{
 			using (var tempFolder = new TempFolder("TempLiftProject" + Guid.NewGuid()))
 			{
-				Assert.DoesNotThrow(() => LiftSorter.SortLiftRangesFile(Path.Combine(tempFolder.Path, "bogus.lift-ranges")));
+				Assert.DoesNotThrow(() => LiftSorter.SortLiftRangesFiles(Path.Combine(tempFolder.Path, "bogus.lift-ranges")));
 			}
 		}
 
@@ -1628,7 +1628,7 @@ namespace Palaso.Lift.Tests
 		{
 			using (var tempFile = IO.TempFile.WithFilename("bogus.txt"))
 			{
-				Assert.Throws<InvalidOperationException>(() => LiftSorter.SortLiftRangesFile(tempFile.Path));
+				Assert.Throws<InvalidOperationException>(() => LiftSorter.SortLiftRangesFiles(tempFile.Path));
 			}
 		}
 
@@ -1646,7 +1646,8 @@ namespace Palaso.Lift.Tests
 			{
 				File.WriteAllText(liftRangesFile.Path, liftData);
 				File.WriteAllText(secondLiftRangesFile.Path, liftData);
-				LiftSorter.SortLiftRangesFile(liftRangesFile.Path);
+
+				LiftSorter.SortLiftRangesFiles(liftRangesFile.Path); // Called once, but it will sort both lift ranges files in that one call.
 
 				var doc = XDocument.Load(liftRangesFile.Path);
 				Assert.AreEqual("lift-ranges", doc.Root.Name.LocalName);
@@ -1681,7 +1682,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift-ranges"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftRangesFile(liftFile.Path);
+				LiftSorter.SortLiftRangesFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var range = doc.Root.Element("range");
 				var children = range.Elements().ToList();
@@ -1732,7 +1733,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift-ranges"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftRangesFile(liftFile.Path);
+				LiftSorter.SortLiftRangesFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var rangeElement = doc.Root.Element("range").Element("range-element");
 				var children = rangeElement.Elements().ToList();
