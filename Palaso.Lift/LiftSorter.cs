@@ -28,104 +28,123 @@ namespace Palaso.Lift
 	{
 		private static readonly Encoding Utf8 = Encoding.UTF8;
 
-		public static void SortLiftFile(string liftPathname)
+		/// <summary>
+		/// Sort one or more lift files in the folder that contains the given lift file.
+		///
+		/// The resulting sorted file will be in a canonical order for the attributes and elements
+		/// </summary>
+		/// <param name="liftPathname">The assumed main lift file in a folder.</param>
+		public static void SortLiftFiles(string liftPathname)
 		{
 			Guard.AgainstNullOrEmptyString(liftPathname, "liftPathname");
 			Guard.Against(Path.GetExtension(liftPathname).ToLowerInvariant() != ".lift", "Unexpected file extension");
 			Guard.Against<FileNotFoundException>(!File.Exists(liftPathname), "Lift file does not exist.");
+			var projectDir = Path.GetDirectoryName(liftPathname);
 
-			using (var tempFile = new TempFile(File.ReadAllText(liftPathname), Utf8))
+			foreach (var liftFile in Directory.GetFiles(projectDir, @"*.lift"))
 			{
-				var sortedRootAttributes = SortRootElementAttributes(tempFile.Path);
-				var sortedEntries = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
-				XElement header = null;
-				using (var splitter = new FastXmlElementSplitter(tempFile.Path))
+				using (var tempFile = new TempFile(File.ReadAllText(liftFile), Utf8))
 				{
-					bool hasHeader;
-					foreach (var record in splitter.GetSecondLevelElementStrings("header", "entry", out hasHeader))
+					var sortedRootAttributes = SortRootElementAttributes(tempFile.Path);
+					var sortedEntries = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
+					XElement header = null;
+					using (var splitter = new FastXmlElementSplitter(tempFile.Path))
 					{
-						var element = XElement.Parse(record);
-						SortAttributes(element);
+						bool hasHeader;
+						foreach (var record in splitter.GetSecondLevelElementStrings("header", "entry", out hasHeader))
+						{
+							var element = XElement.Parse(record);
+							SortAttributes(element);
 
-						if (hasHeader)
-						{
-							hasHeader = false;
-							header = element;
-							SortHeader(header);
-						}
-						else
-						{
-							var guidKey = element.Attribute("guid").Value.ToLowerInvariant();
-							if (!sortedEntries.ContainsKey(guidKey))
+							if (hasHeader)
 							{
-								SortEntry(element);
-								sortedEntries.Add(GetUniqueKey(sortedEntries.Keys, guidKey), element);
+								hasHeader = false;
+								header = element;
+								SortHeader(header);
+							}
+							else
+							{
+								var guidKey = element.Attribute("guid").Value.ToLowerInvariant();
+								if (!sortedEntries.ContainsKey(guidKey))
+								{
+									SortEntry(element);
+									sortedEntries.Add(GetUniqueKey(sortedEntries.Keys, guidKey), element);
+								}
 							}
 						}
 					}
+
+					using (var writer = XmlWriter.Create(tempFile.Path, CanonicalXmlSettings.CreateXmlWriterSettings()))
+					{
+						writer.WriteStartDocument();
+						writer.WriteStartElement("lift");
+
+						foreach (var rootAttributeKvp in sortedRootAttributes)
+						{
+							writer.WriteAttributeString(rootAttributeKvp.Key, rootAttributeKvp.Value);
+						}
+
+						if (header != null)
+						{
+							WriteElement(writer, header);
+						}
+
+						foreach (var entryElement in sortedEntries.Values)
+						{
+							WriteElement(writer, entryElement);
+						}
+
+						writer.WriteEndElement();
+						writer.WriteEndDocument();
+					}
+					File.Copy(tempFile.Path, liftFile, true);
 				}
-
-				using (var writer = XmlWriter.Create(tempFile.Path, CanonicalXmlSettings.CreateXmlWriterSettings()))
-				{
-					writer.WriteStartDocument();
-					writer.WriteStartElement("lift");
-
-					foreach (var rootAttributeKvp in sortedRootAttributes)
-					{
-						writer.WriteAttributeString(rootAttributeKvp.Key, rootAttributeKvp.Value);
-					}
-
-					if (header != null)
-					{
-						WriteElement(writer, header);
-					}
-
-					foreach (var entryElement in sortedEntries.Values)
-					{
-						WriteElement(writer, entryElement);
-					}
-
-					writer.WriteEndElement();
-					writer.WriteEndDocument();
-				}
-				File.Copy(tempFile.Path, liftPathname, true);
 			}
 		}
 
-		public static void SortLiftRangesFile(string liftRangesPathname)
+		/// <summary>
+		/// Sort zero or more lift range files in the folder that contains the given lift ranges file.
+		///
+		/// The resulting sorted file will be in a canonical order for the attributes and elements
+		/// </summary>
+		/// <param name="liftRangesPathname">The given lift ranges file (may or may not exist, which is fine)</param>
+		public static void SortLiftRangesFiles(string liftRangesPathname)
 		{
 			Guard.AgainstNullOrEmptyString(liftRangesPathname, "liftRangesPathname");
 			Guard.Against(Path.GetExtension(liftRangesPathname).ToLowerInvariant() != ".lift-ranges", "Unexpected file extension");
-			Guard.Against<FileNotFoundException>(!File.Exists(liftRangesPathname), "Lift range file does not exist.");
+			var projectDir = Path.GetDirectoryName(liftRangesPathname);
 
-			using (var tempFile = new TempFile(File.ReadAllText(liftRangesPathname), Utf8))
+			foreach (var liftRangesFile in Directory.GetFiles(projectDir, @"*.lift-ranges"))
 			{
-				var sortedRootAttributes = SortRootElementAttributes(tempFile.Path);
-
-				var doc = XDocument.Load(liftRangesPathname);
-				SortAttributes(doc.Root);
-				SortRanges(doc.Root);
-
-				using (var writer = XmlWriter.Create(tempFile.Path, CanonicalXmlSettings.CreateXmlWriterSettings()))
+				using (var tempFile = new TempFile(File.ReadAllText(liftRangesFile), Utf8))
 				{
-					writer.WriteStartDocument();
-					writer.WriteStartElement(doc.Root.Name.LocalName);
+					var sortedRootAttributes = SortRootElementAttributes(tempFile.Path);
 
-					foreach (var rootAttributeKvp in sortedRootAttributes)
+					var doc = XDocument.Load(liftRangesFile);
+					SortAttributes(doc.Root);
+					SortRanges(doc.Root);
+
+					using (var writer = XmlWriter.Create(tempFile.Path, CanonicalXmlSettings.CreateXmlWriterSettings()))
 					{
-						writer.WriteAttributeString(rootAttributeKvp.Key, rootAttributeKvp.Value);
+						writer.WriteStartDocument();
+						writer.WriteStartElement(doc.Root.Name.LocalName);
+
+						foreach (var rootAttributeKvp in sortedRootAttributes)
+						{
+							writer.WriteAttributeString(rootAttributeKvp.Key, rootAttributeKvp.Value);
+						}
+
+						foreach (var rangeElement in doc.Root.Elements())
+						{
+							WriteElement(writer, rangeElement);
+						}
+
+						writer.WriteEndElement();
+						writer.WriteEndDocument();
 					}
 
-					foreach (var rangeElement in doc.Root.Elements())
-					{
-						WriteElement(writer, rangeElement);
-					}
-
-					writer.WriteEndElement();
-					writer.WriteEndDocument();
+					File.Copy(tempFile.Path, liftRangesFile, true);
 				}
-
-				File.Copy(tempFile.Path, liftRangesPathname, true);
 			}
 		}
 
@@ -139,10 +158,7 @@ namespace Palaso.Lift
 		{
 			get
 			{
-				var result = new HashSet<string>();
-				result.Add("text");
-				result.Add("span");
-				return result;
+				return new HashSet<string> {"text", "span"};
 			}
 		}
 
@@ -203,16 +219,6 @@ namespace Palaso.Lift
 		private static void WriteElement(XmlWriter writer, XElement element)
 		{
 			XmlUtils.WriteNode(writer, element, LiftSuppressIndentingChildren);
-		}
-
-		private static void WriteElement(XmlWriter writer, string element)
-		{
-			XmlUtils.WriteNode(writer, element, LiftSuppressIndentingChildren);
-		}
-
-		private static void WriteElement(XmlWriter writer, byte[] element)
-		{
-			WriteElement(writer, Encoding.UTF8.GetString(element));
 		}
 
 		private static SortedDictionary<string, string> SortRootElementAttributes(string pathname)
