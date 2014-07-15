@@ -29,76 +29,72 @@ namespace Palaso.Lift
 		private static readonly Encoding Utf8 = Encoding.UTF8;
 
 		/// <summary>
-		/// Sort one or more lift files in the folder that contains the given lift file.
+		/// Sort the provided lift file into canonical order.
 		///
 		/// The resulting sorted file will be in a canonical order for the attributes and elements
 		/// </summary>
 		/// <param name="liftPathname">The assumed main lift file in a folder.</param>
-		public static void SortLiftFiles(string liftPathname)
+		public static void SortLiftFile(string liftPathname)
 		{
 			Guard.AgainstNullOrEmptyString(liftPathname, "liftPathname");
 			Guard.Against(Path.GetExtension(liftPathname).ToLowerInvariant() != ".lift", "Unexpected file extension");
 			Guard.Against<FileNotFoundException>(!File.Exists(liftPathname), "Lift file does not exist.");
-			var projectDir = Path.GetDirectoryName(liftPathname);
 
-			foreach (var liftFile in Directory.GetFiles(projectDir, @"*.lift"))
+			using (var tempFile = new TempFile(File.ReadAllText(liftPathname), Utf8))
 			{
-				using (var tempFile = new TempFile(File.ReadAllText(liftFile), Utf8))
+				var sortedRootAttributes = SortRootElementAttributes(tempFile.Path);
+				var sortedEntries = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
+				XElement header = null;
+				using (var splitter = new FastXmlElementSplitter(tempFile.Path))
 				{
-					var sortedRootAttributes = SortRootElementAttributes(tempFile.Path);
-					var sortedEntries = new SortedDictionary<string, XElement>(StringComparer.InvariantCultureIgnoreCase);
-					XElement header = null;
-					using (var splitter = new FastXmlElementSplitter(tempFile.Path))
+					bool hasHeader;
+					foreach (var record in splitter.GetSecondLevelElementStrings("header", "entry", out hasHeader))
 					{
-						bool hasHeader;
-						foreach (var record in splitter.GetSecondLevelElementStrings("header", "entry", out hasHeader))
-						{
-							var element = XElement.Parse(record);
-							SortAttributes(element);
+						var element = XElement.Parse(record);
+						SortAttributes(element);
 
-							if (hasHeader)
+						if (hasHeader)
+						{
+							hasHeader = false;
+							header = element;
+							SortHeader(header);
+						}
+						else
+						{
+							var guidKey = element.Attribute("guid").Value.ToLowerInvariant();
+							if (!sortedEntries.ContainsKey(guidKey))
 							{
-								hasHeader = false;
-								header = element;
-								SortHeader(header);
-							}
-							else
-							{
-								var guidKey = element.Attribute("guid").Value.ToLowerInvariant();
-								if (!sortedEntries.ContainsKey(guidKey))
-								{
-									SortEntry(element);
-									sortedEntries.Add(GetUniqueKey(sortedEntries.Keys, guidKey), element);
-								}
+								SortEntry(element);
+								sortedEntries.Add(GetUniqueKey(sortedEntries.Keys, guidKey), element);
 							}
 						}
 					}
-
-					using (var writer = XmlWriter.Create(tempFile.Path, CanonicalXmlSettings.CreateXmlWriterSettings()))
-					{
-						writer.WriteStartDocument();
-						writer.WriteStartElement("lift");
-
-						foreach (var rootAttributeKvp in sortedRootAttributes)
-						{
-							writer.WriteAttributeString(rootAttributeKvp.Key, rootAttributeKvp.Value);
-						}
-
-						if (header != null)
-						{
-							WriteElement(writer, header);
-						}
-
-						foreach (var entryElement in sortedEntries.Values)
-						{
-							WriteElement(writer, entryElement);
-						}
-
-						writer.WriteEndElement();
-						writer.WriteEndDocument();
-					}
-					File.Copy(tempFile.Path, liftFile, true);
 				}
+
+				using (var writer = XmlWriter.Create(tempFile.Path, CanonicalXmlSettings.CreateXmlWriterSettings()))
+				{
+					writer.WriteStartDocument();
+					writer.WriteStartElement("lift");
+
+					foreach (var rootAttributeKvp in sortedRootAttributes)
+					{
+						writer.WriteAttributeString(rootAttributeKvp.Key, rootAttributeKvp.Value);
+					}
+
+					if (header != null)
+					{
+						WriteElement(writer, header);
+					}
+
+					foreach (var entryElement in sortedEntries.Values)
+					{
+						WriteElement(writer, entryElement);
+					}
+
+					writer.WriteEndElement();
+					writer.WriteEndDocument();
+				}
+				File.Copy(tempFile.Path, liftPathname, true);
 			}
 		}
 
