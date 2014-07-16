@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Xml;
 using Palaso.Lift.Validation;
+using Palaso.Xml;
 
 namespace Palaso.Lift.Merging
 {
@@ -85,7 +86,9 @@ namespace Palaso.Lift.Merging
 					}
 				}
 
-				string outputPath = Path.GetTempFileName();
+				// We will want to call LiftSorter.SortLiftFile() with this temporary
+				// filename, and it thus MUST end with ".lift".
+				string outputPath = Path.GetTempFileName() + ".lift";
 				try
 				{
 					MergeInNewFile(pathToMergeInTo, files[i].FullName, outputPath);
@@ -301,7 +304,8 @@ namespace Palaso.Lift.Merging
 					}
 				}
 			}
-
+			// After writing the updated file, ensure that it ends up sorted correctly.
+			LiftSorter.SortLiftFile(outputPath);
 		}
 
 
@@ -393,10 +397,13 @@ namespace Palaso.Lift.Merging
 			}
 			else
 			{
-				writer.WriteNode(olderReader, true);
+				// The default XmlWriter.WriteNode() method is insufficient to write <text> nodes
+				// properly if they start with a <span> node!
+				// See https://jira.palaso.org/issues/browse/WS-34794.
+				var element = olderReader.ReadOuterXml();
+				XmlUtils.WriteNode(writer, element, LiftSorter.LiftSuppressIndentingChildren);
 			}
 		}
-
 
 		internal class FileInfoLastWriteTimeComparer : IComparer<FileInfo>
 		{
@@ -411,8 +418,5 @@ namespace Palaso.Lift.Merging
 				return timecomparison;
 			}
 		}
-
-
-
 	}
 }

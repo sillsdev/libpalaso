@@ -25,7 +25,10 @@ namespace Palaso.Lift.Tests
 		[Test]
 		public void NonexistantFileThrows()
 		{
-			Assert.Throws<FileNotFoundException>(() => LiftSorter.SortLiftFile("bogus.lift"));
+			using (var tempFolder = new TempFolder("TempLiftProject" + Guid.NewGuid()))
+			{
+				Assert.Throws<FileNotFoundException>(() => LiftSorter.SortLiftFile(Path.Combine(tempFolder.Path, "bogus.lift")));
+			}
 		}
 
 		[Test]
@@ -49,7 +52,9 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftFile(liftFile.Path);
+
+				LiftSorter.SortLiftFile(liftFile.Path); // Called once, but it will sort both lift files in that one call.
+
 				var doc = XDocument.Load(liftFile.Path);
 				var entries = doc.Root.Elements("entry").ToList();
 				Assert.IsTrue(entries.Count == 2);
@@ -1592,19 +1597,22 @@ namespace Palaso.Lift.Tests
 		[Test]
 		public void NullPathnameForLiftRangesThrows()
 		{
-			Assert.Throws<ArgumentNullException>(() => LiftSorter.SortLiftRangesFile(null));
+			Assert.Throws<ArgumentNullException>(() => LiftSorter.SortLiftRangesFiles(null));
 		}
 
 		[Test]
 		public void EmptyPathnameForLiftRangesThrows()
 		{
-			Assert.Throws<ArgumentNullException>(() => LiftSorter.SortLiftRangesFile(""));
+			Assert.Throws<ArgumentNullException>(() => LiftSorter.SortLiftRangesFiles(""));
 		}
 
 		[Test]
-		public void NonexistantFileForLiftRangesThrows()
+		public void NonexistantFileForLiftRangesDoesNotThrow()
 		{
-			Assert.Throws<FileNotFoundException>(() => LiftSorter.SortLiftRangesFile("bogus.lift-ranges"));
+			using (var tempFolder = new TempFolder("TempLiftProject" + Guid.NewGuid()))
+			{
+				Assert.DoesNotThrow(() => LiftSorter.SortLiftRangesFiles(Path.Combine(tempFolder.Path, "bogus.lift-ranges")));
+			}
 		}
 
 		[Test]
@@ -1612,7 +1620,7 @@ namespace Palaso.Lift.Tests
 		{
 			using (var tempFile = IO.TempFile.WithFilename("bogus.txt"))
 			{
-				Assert.Throws<InvalidOperationException>(() => LiftSorter.SortLiftRangesFile(tempFile.Path));
+				Assert.Throws<InvalidOperationException>(() => LiftSorter.SortLiftRangesFiles(tempFile.Path));
 			}
 		}
 
@@ -1625,13 +1633,24 @@ namespace Palaso.Lift.Tests
 <range id='2' />
 <range id='1' />
 </lift-ranges>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift-ranges"))
+			using (var liftRangesFile = IO.TempFile.WithFilename("good.lift-ranges"))
+			using (var secondLiftRangesFile = IO.TempFile.WithFilename("good-dup.lift-ranges"))
 			{
-				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftRangesFile(liftFile.Path);
-				var doc = XDocument.Load(liftFile.Path);
+				File.WriteAllText(liftRangesFile.Path, liftData);
+				File.WriteAllText(secondLiftRangesFile.Path, liftData);
+
+				LiftSorter.SortLiftRangesFiles(liftRangesFile.Path); // Called once, but it will sort both lift ranges files in that one call.
+
+				var doc = XDocument.Load(liftRangesFile.Path);
 				Assert.AreEqual("lift-ranges", doc.Root.Name.LocalName);
 				var ranges = doc.Root.Elements("range").ToList();
+				Assert.IsTrue(ranges.Count == 2);
+				Assert.IsTrue(ranges[0].Attribute("id").Value == "1");
+				Assert.IsTrue(ranges[1].Attribute("id").Value == "2");
+
+				doc = XDocument.Load(secondLiftRangesFile.Path);
+				Assert.AreEqual("lift-ranges", doc.Root.Name.LocalName);
+				ranges = doc.Root.Elements("range").ToList();
 				Assert.IsTrue(ranges.Count == 2);
 				Assert.IsTrue(ranges[0].Attribute("id").Value == "1");
 				Assert.IsTrue(ranges[1].Attribute("id").Value == "2");
@@ -1655,7 +1674,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift-ranges"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftRangesFile(liftFile.Path);
+				LiftSorter.SortLiftRangesFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var range = doc.Root.Element("range");
 				var children = range.Elements().ToList();
@@ -1706,7 +1725,7 @@ namespace Palaso.Lift.Tests
 			using (var liftFile = IO.TempFile.WithFilename("good.lift-ranges"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
-				LiftSorter.SortLiftRangesFile(liftFile.Path);
+				LiftSorter.SortLiftRangesFiles(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
 				var rangeElement = doc.Root.Element("range").Element("range-element");
 				var children = rangeElement.Elements().ToList();

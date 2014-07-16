@@ -99,6 +99,8 @@ mkdir -p ../lib/ReleaseMono
 mkdir -p ../lib/DebugMono
 
 # download artifact dependencies
+copy_auto http://build.palaso.org/guestAuth/repository/download/bt411/latest.lastSuccessful/taglib-sharp.dll ../lib/ReleaseMono/taglib-sharp.dll
+copy_auto http://build.palaso.org/guestAuth/repository/download/bt411/latest.lastSuccessful/taglib-sharp.dll ../lib/DebugMono/taglib-sharp.dll
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt271/latest.lastSuccessful/L10NSharp.dll ../lib/ReleaseMono/L10NSharp.dll
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt271/latest.lastSuccessful/L10NSharp.dll ../lib/DebugMono/L10NSharp.dll
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt281/latest.lastSuccessful/icu.net.dll ../lib/ReleaseMono/icu.net.dll

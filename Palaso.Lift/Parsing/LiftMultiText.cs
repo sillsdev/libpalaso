@@ -252,6 +252,25 @@ namespace Palaso.Lift.Parsing
 		}
 
 		/// <summary>
+		/// For WeSay, to allow spans to be carried along even if not used.
+		/// </summary>
+		public Dictionary<string, List<LiftSpan>> AllSpans
+		{
+			get
+			{
+				Dictionary<string, List<LiftSpan>> result = new Dictionary<string, List<LiftSpan>>();
+				foreach (KeyValuePair<string, LiftString> pair in this)
+				{
+					if (pair.Value != null)
+					{
+						result.Add(pair.Key, pair.Value.Spans);
+					}
+				}
+				return result;
+			}
+		}
+
+		/// <summary>
 		/// Check whether this LiftMultiText is empty.
 		/// </summary>
 		public bool IsEmpty

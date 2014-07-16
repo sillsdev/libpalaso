@@ -20,6 +20,7 @@ nant.resx.bak
 lib/DebugMono/icu*40.dll
 lib/*/icu.net.dll
 lib/*/icu.net.dll.config
+lib/*/taglib-sharp.dll
 *.lnk
 CopyTo*.bat
 *.orig
@@ -30,4 +31,5 @@ L10NSharp.*
 .nuget/NuGet.exe
 *.cache
 Download/
+*.nupkg
 /lib/Debug/icu.net.dll
