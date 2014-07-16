@@ -31,7 +31,7 @@ namespace Palaso.Tests.Xml
 		[Test]
 		public void Null_Pathname_Throws()
 		{
-			Assert.Throws<ArgumentException>(() => new FastXmlElementSplitter(null));
+			Assert.Throws<ArgumentException>(() => new FastXmlElementSplitter((string)null));
 		}
 
 		[Test]
@@ -509,6 +509,99 @@ namespace Palaso.Tests.Xml
 			CheckGoodFile(hasRecordsInput, 5, "header", "entry");
 		}
 
+		[Test]
+		public void SplitterHandlesMultipleEntryTypes()
+		{
+			const string simulatedLexicalFile =
+				@"<Lexicon>
+  <Language>Takwane</Language>
+  <FontName>Tahoma</FontName>
+  <FontSize>9</FontSize>
+  <Analyses>
+	<item>
+	  <string>ahibathiziwa</string>
+	  <ArrayOfLexeme>
+		<Lexeme Type='Prefix' Form='ahi' Homograph='1' />
+		<Lexeme Type='Stem' Form='bathiz' Homograph='1' />
+		<Lexeme Type='Suffix' Form='iwa' Homograph='1' />
+	  </ArrayOfLexeme>
+	</item>
+	<item>
+	  <string>dhahaleele</string>
+	  <ArrayOfLexeme>
+		<Lexeme Type='Prefix' Form='dha' Homograph='1' />
+		<Lexeme Type='Stem' Form='haleel' Homograph='1' />
+		<Lexeme Type='Suffix' Form='e' Homograph='1' />
+	  </ArrayOfLexeme>
+	</item>
+ </Analyses>
+ <Entries>
+	<item>
+	  <Lexeme Type='Word' Form='eehu' Homograph='1' />
+	  <Entry>
+		<Sense Id='AnuoxmE2'>
+		  <Gloss Language='English'>our</Gloss>
+		</Sense>
+		<Sense Id='LgBvPFTX'>
+		  <Gloss Language='Portuguese'>nosso</Gloss>
+		</Sense>
+	  </Entry>
+	</item>
+	<item>
+	  <Lexeme Type='Word' Form='yesu' Homograph='1' />
+	  <Entry>
+		<Sense Id='BBY1Mk/1'>
+		  <Gloss Language='English'>jesus</Gloss>
+		</Sense>
+		<Sense Id='zV8exv2K'>
+		  <Gloss Language='Portuguese'>jesus</Gloss>
+		</Sense>
+	  </Entry>
+	</item>
+  </Entries>
+</Lexicon>";
+			var goodPathname = Path.GetTempFileName();
+			try
+			{
+				File.WriteAllText(goodPathname, simulatedLexicalFile, Encoding.UTF8);
+				using (var fastXmlElementSplitter = new FastXmlElementSplitter(goodPathname))
+				{
+					ProcessMultipleEntryContent(fastXmlElementSplitter);
+				}
+				using (var fastXmlElementSplitter = new FastXmlElementSplitter(File.ReadAllBytes(goodPathname)))
+				{
+					ProcessMultipleEntryContent(fastXmlElementSplitter);
+				}
+			}
+			finally
+			{
+				File.Delete(goodPathname);
+			}
+
+		}
+
+		private static void ProcessMultipleEntryContent(FastXmlElementSplitter fastXmlElementSplitter)
+		{
+			string[] expectedNames = new string[] { "Language", "FontName", "FontSize", "Analyses", "Entries" };
+			var elements = fastXmlElementSplitter.GetSecondLevelElements().ToList();
+			Assert.AreEqual(5, elements.Count);
+			for (var i = 0; i < elements.Count; ++i)
+			{
+				var curElement = elements[i];
+				Assert.AreEqual(curElement.Name, expectedNames[i]);
+				var el = XElement.Parse(curElement.BytesAsString);
+				if (i >= 3)  // parse the sublist for Analyses and Entries
+				{
+					using (var splitter = new FastXmlElementSplitter(curElement.Bytes))
+					{
+						var subElements = splitter.GetSecondLevelElements().ToList();
+						Assert.AreEqual(2, subElements.Count);
+						Assert.IsFalse(subElements.Any(t => t.Name != "item"));
+					}
+				}
+			}
+		}
+
 		// This test may be uncommented to try the splitter on some particular file which causes problems.
 		//[Test]
 		//public void SplitterParsesProblemFile()
@@ -532,23 +625,11 @@ namespace Palaso.Tests.Xml
 				File.WriteAllText(goodPathname, hasRecordsInput, enc);
 				using (var fastXmlElementSplitter = new FastXmlElementSplitter(goodPathname))
 				{
-					bool foundOptionalFirstElement;
-					var elementBytes =
-						fastXmlElementSplitter.GetSecondLevelElementBytes(firstElementMarker, recordMarker, out foundOptionalFirstElement)
-											  .ToList();
-					Assert.AreEqual(expectedCount, elementBytes.Count);
-					var elementStrings =
-						fastXmlElementSplitter.GetSecondLevelElementStrings(firstElementMarker, recordMarker,
-							out foundOptionalFirstElement).ToList();
-					Assert.AreEqual(expectedCount, elementStrings.Count);
-					for (var i = 0; i < elementStrings.Count; ++i)
-					{
-						var currentStr = elementStrings[i];
-						Assert.AreEqual(
-							currentStr,
-							enc.GetString(elementBytes[i]));
-						var el = XElement.Parse(currentStr);
-					}
+					ProcessContent(fastXmlElementSplitter, expectedCount, firstElementMarker, recordMarker, enc);
+				}
+				using (var fastXmlElementSplitter = new FastXmlElementSplitter(File.ReadAllBytes(goodPathname)))
+				{
+					ProcessContent(fastXmlElementSplitter, expectedCount, firstElementMarker, recordMarker, enc);
 				}
 			}
 			finally
@@ -556,5 +637,28 @@ namespace Palaso.Tests.Xml
 				File.Delete(goodPathname);
 			}
 		}
+
+		private static void ProcessContent(FastXmlElementSplitter fastXmlElementSplitter, int expectedCount, string firstElementMarker,
+			string recordMarker, Encoding enc)
+		{
+			bool foundOptionalFirstElement;
+			var elementBytes =
+				fastXmlElementSplitter.GetSecondLevelElementBytes(firstElementMarker, recordMarker, out foundOptionalFirstElement)
+										.ToList();
+			Assert.AreEqual(expectedCount, elementBytes.Count);
+			var elementStrings =
+				fastXmlElementSplitter.GetSecondLevelElementStrings(firstElementMarker, recordMarker,
+					out foundOptionalFirstElement).ToList();
+			Assert.AreEqual(expectedCount, elementStrings.Count);
+			for (var i = 0; i < elementStrings.Count; ++i)
+			{
+				var currentStr = elementStrings[i];
+				Assert.AreEqual(
+					currentStr,
+					enc.GetString(elementBytes[i]));
+				var el = XElement.Parse(currentStr);
+			}
+		}
+
 	}
 }
