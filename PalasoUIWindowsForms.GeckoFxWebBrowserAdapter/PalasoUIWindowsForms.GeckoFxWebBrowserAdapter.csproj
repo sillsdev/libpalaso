@@ -1,66 +1,119 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D000879E-9AA6-4811-A6F0-80DF6119FB08}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>PalasoUIWindowsForms.GeckoBrowserAdapter</RootNamespace>
+	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+	<ProjectGuid>{D000879E-9AA6-4811-A6F0-80DF6119FB08}</ProjectGuid>
+	<OutputType>Library</OutputType>
+	<RootNamespace>PalasoUIWindowsForms.GeckoBrowserAdapter</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\output\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
+	<DebugSymbols>true</DebugSymbols>
+	<DebugType>full</DebugType>
+	<Optimize>false</Optimize>
+	<OutputPath>..\output\Debug</OutputPath>
+	<DefineConstants>DEBUG;</DefineConstants>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<ConsolePause>false</ConsolePause>
+	<AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\output\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
-    <DebugSymbols>true</DebugSymbols>
+	<DebugType>pdbonly</DebugType>
+	<Optimize>true</Optimize>
+	<OutputPath>..\output\Release</OutputPath>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<ConsolePause>false</ConsolePause>
+	<AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
+	<DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
-    <Optimize>false</Optimize>
-    <OutputPath>..\output\DebugMono</OutputPath>
-    <WarningLevel>4</WarningLevel>
-    <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
-    <DebugSymbols>true</DebugSymbols>
-    <DefineConstants>DEBUG;</DefineConstants>
+	<Optimize>false</Optimize>
+	<OutputPath>..\output\DebugMono</OutputPath>
+	<WarningLevel>4</WarningLevel>
+	<AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
+	<DebugSymbols>true</DebugSymbols>
+	<DefineConstants>DEBUG;</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
-    <Optimize>true</Optimize>
-    <OutputPath>..\output\ReleaseMono</OutputPath>
-    <WarningLevel>4</WarningLevel>
-    <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>pdbonly</DebugType>
+	<Optimize>true</Optimize>
+	<OutputPath>..\output\ReleaseMono</OutputPath>
+	<WarningLevel>4</WarningLevel>
+	<AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
+	<DebugSymbols>true</DebugSymbols>
+	<DebugType>pdbonly</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+	<DebugSymbols>true</DebugSymbols>
+	<OutputPath>bin\x86\Debug\</OutputPath>
+	<DefineConstants>DEBUG;</DefineConstants>
+	<DebugType>full</DebugType>
+	<PlatformTarget>x86</PlatformTarget>
+	<CodeAnalysisLogFile>..\output\Debug\PalasoUIWindowsForms.GeckoBrowserAdapter.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+	<CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+	<CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+	<ErrorReport>prompt</ErrorReport>
+	<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	<CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+	<CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+	<DebugSymbols>true</DebugSymbols>
+	<OutputPath>bin\x86\Release\</OutputPath>
+	<Optimize>true</Optimize>
+	<DebugType>pdbonly</DebugType>
+	<PlatformTarget>x86</PlatformTarget>
+	<CodeAnalysisLogFile>..\output\Release\PalasoUIWindowsForms.GeckoBrowserAdapter.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+	<CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+	<CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+	<ErrorReport>prompt</ErrorReport>
+	<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	<CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+	<CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMono|x86'">
+	<DebugSymbols>true</DebugSymbols>
+	<OutputPath>bin\x86\DebugMono\</OutputPath>
+	<DefineConstants>DEBUG;</DefineConstants>
+	<PlatformTarget>x86</PlatformTarget>
+	<CodeAnalysisLogFile>..\output\DebugMono\PalasoUIWindowsForms.GeckoBrowserAdapter.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+	<CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+	<CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+	<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	<CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+	<CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMono|x86'">
+	<DebugSymbols>true</DebugSymbols>
+	<OutputPath>bin\x86\ReleaseMono\</OutputPath>
+	<Optimize>true</Optimize>
+	<DebugType>pdbonly</DebugType>
+	<PlatformTarget>x86</PlatformTarget>
+	<CodeAnalysisLogFile>..\output\ReleaseMono\PalasoUIWindowsForms.GeckoBrowserAdapter.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+	<CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+	<CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+	<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	<CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+	<CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Windows.Forms" />
+	<Reference Include="System" />
+	<Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="GeckoFxWebBrowserAdapter.cs" />
+	<Compile Include="Properties\AssemblyInfo.cs" />
+	<Compile Include="GeckoFxWebBrowserAdapter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\PalasoUIWindowsForms\PalasoUIWindowsForms.csproj">
-      <Project>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</Project>
-      <Name>PalasoUIWindowsForms</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Palaso\Palaso.csproj">
-      <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
-      <Name>Palaso</Name>
-    </ProjectReference>
+	<ProjectReference Include="..\PalasoUIWindowsForms\PalasoUIWindowsForms.csproj">
+	  <Project>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</Project>
+	  <Name>PalasoUIWindowsForms</Name>
+	</ProjectReference>
+	<ProjectReference Include="..\Palaso\Palaso.csproj">
+	  <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
+	  <Name>Palaso</Name>
+	</ProjectReference>
   </ItemGroup>
 </Project>
