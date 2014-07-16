@@ -43,7 +43,7 @@
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>1</WarningLevel>
 	<DocumentationFile>..\output\Debug\PalasoUIWindowsForms.XML</DocumentationFile>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+	<PlatformTarget>AnyCPU</PlatformTarget>
 	<LangVersion>default</LangVersion>
 	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
@@ -54,7 +54,7 @@
 	<DefineConstants>TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+	<PlatformTarget>AnyCPU</PlatformTarget>
 	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
@@ -80,8 +80,67 @@
 	<TargetFrameworkProfile>
 	</TargetFrameworkProfile>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+	<DebugSymbols>true</DebugSymbols>
+	<OutputPath>bin\x86\Debug\</OutputPath>
+	<DefineConstants>DEBUG;TRACE</DefineConstants>
+	<DocumentationFile>..\output\Debug\PalasoUIWindowsForms.XML</DocumentationFile>
+	<WarningLevel>1</WarningLevel>
+	<DebugType>full</DebugType>
+	<PlatformTarget>x86</PlatformTarget>
+	<CodeAnalysisLogFile>..\output\Debug\PalasoUIWindowsForms.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+	<CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+	<CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+	<LangVersion>default</LangVersion>
+	<ErrorReport>prompt</ErrorReport>
+	<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	<CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+	<CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+	<OutputPath>bin\x86\Release\</OutputPath>
+	<DefineConstants>TRACE</DefineConstants>
+	<Optimize>true</Optimize>
+	<DebugType>pdbonly</DebugType>
+	<PlatformTarget>x86</PlatformTarget>
+	<CodeAnalysisLogFile>..\output\Release\PalasoUIWindowsForms.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+	<CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+	<CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+	<ErrorReport>prompt</ErrorReport>
+	<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	<CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+	<CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMono|x86'">
+	<DebugSymbols>true</DebugSymbols>
+	<OutputPath>bin\x86\DebugMono\</OutputPath>
+	<DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
+	<DebugType>full</DebugType>
+	<PlatformTarget>x86</PlatformTarget>
+	<CodeAnalysisLogFile>..\output\DebugMono\PalasoUIWindowsForms.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+	<CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+	<CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+	<ErrorReport>prompt</ErrorReport>
+	<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	<CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+	<CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMono|x86'">
+	<OutputPath>bin\x86\ReleaseMono\</OutputPath>
+	<DefineConstants>TRACE;MONO</DefineConstants>
+	<Optimize>true</Optimize>
+	<DebugType>pdbonly</DebugType>
+	<PlatformTarget>x86</PlatformTarget>
+	<CodeAnalysisLogFile>..\output\ReleaseMono\PalasoUIWindowsForms.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+	<CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+	<CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+	<ErrorReport>prompt</ErrorReport>
+	<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	<CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+	<CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-   <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+	<Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\Debug\icu.net.dll</HintPath>
 	</Reference>
@@ -97,13 +156,13 @@
 	<None Include="..\lib\Debug\icu.net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-    <Reference Include="L10NSharp.dll">
+	<Reference Include="L10NSharp.dll">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\Debug\L10NSharp.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
-   <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+	<Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\Release\icu.net.dll</HintPath>
 	</Reference>
@@ -119,38 +178,38 @@
 	<None Include="..\lib\Release\icu.net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-    <Reference Include="L10NSharp.dll">
+	<Reference Include="L10NSharp.dll">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\Release\L10NSharp.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono'">
-   <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+	<Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\DebugMono\icu.net.dll</HintPath>
 	</Reference>
 	<None Include="..\lib\DebugMono\icu.net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-    <Reference Include="L10NSharp.dll">
+	<Reference Include="L10NSharp.dll">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\DebugMono\L10NSharp.dll</HintPath>
 	</Reference>
-    <Reference Include="Mono.Posix" />
+	<Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'ReleaseMono'">
-   <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+	<Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\ReleaseMono\icu.net.dll</HintPath>
 	</Reference>
 	<None Include="..\lib\ReleaseMono\icu.net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-    <Reference Include="L10NSharp.dll">
+	<Reference Include="L10NSharp.dll">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\ReleaseMono\L10NSharp.dll</HintPath>
 	</Reference>
-    <Reference Include="Mono.Posix" />
+	<Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
 	<Reference Include="Enchant.Net">
@@ -207,14 +266,14 @@
 	<None Include="..\lib\common\Enchant.Net.dll.config">
 	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</None>
-    <Reference Include="Keyman7Interop">
-      <HintPath>..\lib\common\Keyman7Interop.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="KeymanLink">
-      <HintPath>..\lib\common\KeymanLink.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
+	<Reference Include="Keyman7Interop">
+	  <HintPath>..\lib\common\Keyman7Interop.dll</HintPath>
+	  <EmbedInteropTypes>False</EmbedInteropTypes>
+	</Reference>
+	<Reference Include="KeymanLink">
+	  <HintPath>..\lib\common\KeymanLink.dll</HintPath>
+	  <EmbedInteropTypes>False</EmbedInteropTypes>
+	</Reference>
 	<Reference Include="sysglobl" />
 	<Reference Include="System" />
 	<Reference Include="System.Configuration" />
@@ -226,26 +285,22 @@
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
 	<Reference Include="System.Xml.Linq" />
-    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL"
-               Condition="'$(Configuration)' == 'DebugMono'">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\DebugMono\taglib-sharp.dll</HintPath>
-    </Reference>
-    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL"
-               Condition="'$(Configuration)' == 'Debug'">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Debug\taglib-sharp.dll</HintPath>
-    </Reference>
-    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL"
-           Condition="'$(Configuration)' == 'ReleaseMono'">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\ReleaseMono\taglib-sharp.dll</HintPath>
-    </Reference>
-    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL"
-           Condition="'$(Configuration)' == 'Release'">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Release\taglib-sharp.dll</HintPath>
-    </Reference>
+	<Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL" Condition="'$(Configuration)' == 'DebugMono'">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\DebugMono\taglib-sharp.dll</HintPath>
+	</Reference>
+	<Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL" Condition="'$(Configuration)' == 'Debug'">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\Debug\taglib-sharp.dll</HintPath>
+	</Reference>
+	<Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL" Condition="'$(Configuration)' == 'ReleaseMono'">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\ReleaseMono\taglib-sharp.dll</HintPath>
+	</Reference>
+	<Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL" Condition="'$(Configuration)' == 'Release'">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\Release\taglib-sharp.dll</HintPath>
+	</Reference>
 	<Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -299,7 +354,7 @@
 	<Compile Include="FileSystem\ConfirmRecycleDialog.designer.cs">
 	  <DependentUpon>ConfirmRecycleDialog.cs</DependentUpon>
 	</Compile>
-    <Compile Include="FolderBrowserControl\FolderBrowserControl.cs" Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
+	<Compile Include="FolderBrowserControl\FolderBrowserControl.cs" Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
 	  <SubType>UserControl</SubType>
 	</Compile>
 	<Compile Include="FontHelper.cs" />
@@ -414,8 +469,8 @@
 	<Compile Include="Keyboarding\Types\MouseEvent.cs" />
 	<Compile Include="Keyboarding\KeyboardController.cs" />
 	<Compile Include="Keyboarding\Types\Win32.cs" />
-    <Compile Include="Keyboarding\Windows\KeymanKeyboardAdaptor.cs" />
-    <Compile Include="Keyboarding\Windows\KeymanKeyboardDescription.cs" />
+	<Compile Include="Keyboarding\Windows\KeymanKeyboardAdaptor.cs" />
+	<Compile Include="Keyboarding\Windows\KeymanKeyboardDescription.cs" />
 	<Compile Include="Keyboarding\Windows\WinKeyboardAdaptor.cs" />
 	<Compile Include="Keyboarding\Windows\WinKeyboardDescription.cs" />
 	<Compile Include="Miscellaneous\IUserInterfaceMemory.cs" />
@@ -572,9 +627,9 @@
 	<Compile Include="Widgets\BetterLabel.designer.cs">
 	  <DependentUpon>BetterLabel.cs</DependentUpon>
 	</Compile>
-    <Compile Include="Widgets\BetterLinkLabel.cs">
-      <SubType>Component</SubType>
-    </Compile>
+	<Compile Include="Widgets\BetterLinkLabel.cs">
+	  <SubType>Component</SubType>
+	</Compile>
 	<Compile Include="Widgets\BitmapButton.cs">
 	  <SubType>Component</SubType>
 	</Compile>
@@ -794,14 +849,14 @@
 	<Compile Include="Keyboarding\Linux\X11KeyConverter.cs" />
 	<Compile Include="Keyboarding\InternalInterfaces\IXklEngine.cs" />
 	<Compile Include="Keyboarding\Windows\MsTsfInterfaces.cs" />
-    <Compile Include="Keyboarding\Linux\CombinedKeyboardAdaptor.cs" />
-    <Compile Include="HtmlBrowser\IWebBrowser.cs" />
-    <Compile Include="HtmlBrowser\IWebBrowserCallbacks.cs" />
-    <Compile Include="HtmlBrowser\WinFormsBrowserAdapter.cs" />
-    <Compile Include="HtmlBrowser\XWebBrowser.Designer.cs" />
-    <Compile Include="HtmlBrowser\XWebBrowser.cs">
-      <SubType>Component</SubType>
-    </Compile>
+	<Compile Include="Keyboarding\Linux\CombinedKeyboardAdaptor.cs" />
+	<Compile Include="HtmlBrowser\IWebBrowser.cs" />
+	<Compile Include="HtmlBrowser\IWebBrowserCallbacks.cs" />
+	<Compile Include="HtmlBrowser\WinFormsBrowserAdapter.cs" />
+	<Compile Include="HtmlBrowser\XWebBrowser.Designer.cs" />
+	<Compile Include="HtmlBrowser\XWebBrowser.cs">
+	  <SubType>Component</SubType>
+	</Compile>
   </ItemGroup>
   <ItemGroup>
 	<EmbeddedResource Include="ClearShare\ClearShareResources.resx">
