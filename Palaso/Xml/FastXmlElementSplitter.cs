@@ -19,7 +19,7 @@ namespace Palaso.Xml
 	///</summary>
 	public class FastXmlElementSplitter : IDisposable
 	{
-		internal readonly static Encoding EncUtf8 = Encoding.UTF8;
+		private readonly static Encoding EncUtf8 = Encoding.UTF8;
 		private readonly static byte _openingAngleBracket = EncUtf8.GetBytes("<")[0];
 		private readonly static byte _closingAngleBracket = EncUtf8.GetBytes(">")[0];
 		private readonly static byte _slash = EncUtf8.GetBytes("/")[0];
@@ -703,7 +703,7 @@ namespace Palaso.Xml
 
 	class ByteArrayReader : IByteAccessor
 	{
-		byte[] _bytes;
+		readonly byte[] _bytes;
 
 		public ByteArrayReader(byte[] bytes)
 		{
@@ -751,7 +751,7 @@ namespace Palaso.Xml
 
 		public string BytesAsString
 		{
-			get { return FastXmlElementSplitter.EncUtf8.GetString(Bytes); }
+			get { return Encoding.UTF8.GetString(Bytes); }
 		}
 	}
 }
