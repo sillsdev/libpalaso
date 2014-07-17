@@ -80,8 +80,67 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+	<DebugSymbols>true</DebugSymbols>
+	<OutputPath>bin\x86\Debug\</OutputPath>
+	<DefineConstants>DEBUG;TRACE</DefineConstants>
+	<DocumentationFile>..\output\Debug\PalasoUIWindowsForms.XML</DocumentationFile>
+	<WarningLevel>1</WarningLevel>
+	<DebugType>full</DebugType>
+	<PlatformTarget>x86</PlatformTarget>
+	<CodeAnalysisLogFile>..\output\Debug\PalasoUIWindowsForms.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+	<CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+	<CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+	<LangVersion>default</LangVersion>
+	<ErrorReport>prompt</ErrorReport>
+	<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	<CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+	<CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+	<OutputPath>bin\x86\Release\</OutputPath>
+	<DefineConstants>TRACE</DefineConstants>
+	<Optimize>true</Optimize>
+	<DebugType>pdbonly</DebugType>
+	<PlatformTarget>x86</PlatformTarget>
+	<CodeAnalysisLogFile>..\output\Release\PalasoUIWindowsForms.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+	<CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+	<CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+	<ErrorReport>prompt</ErrorReport>
+	<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	<CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+	<CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMono|x86'">
+	<DebugSymbols>true</DebugSymbols>
+	<OutputPath>bin\x86\DebugMono\</OutputPath>
+	<DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
+	<DebugType>full</DebugType>
+	<PlatformTarget>x86</PlatformTarget>
+	<CodeAnalysisLogFile>..\output\DebugMono\PalasoUIWindowsForms.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+	<CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+	<CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+	<ErrorReport>prompt</ErrorReport>
+	<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	<CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+	<CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMono|x86'">
+	<OutputPath>bin\x86\ReleaseMono\</OutputPath>
+	<DefineConstants>TRACE;MONO</DefineConstants>
+	<Optimize>true</Optimize>
+	<DebugType>pdbonly</DebugType>
+	<PlatformTarget>x86</PlatformTarget>
+	<CodeAnalysisLogFile>..\output\ReleaseMono\PalasoUIWindowsForms.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+	<CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+	<CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+	<ErrorReport>prompt</ErrorReport>
+	<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	<CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+	<CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+	<Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Debug\icu.net.dll</HintPath>
     </Reference>
@@ -103,7 +162,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
-    <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+	<Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Release\icu.net.dll</HintPath>
     </Reference>
@@ -125,7 +184,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono'">
-    <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+	<Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\DebugMono\icu.net.dll</HintPath>
     </Reference>
@@ -139,7 +198,7 @@
     <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'ReleaseMono'">
-    <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+	<Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\ReleaseMono\icu.net.dll</HintPath>
     </Reference>
@@ -218,23 +277,19 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL"
-               Condition="'$(Configuration)' == 'DebugMono'">
+	<Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL" Condition="'$(Configuration)' == 'DebugMono'">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\DebugMono\taglib-sharp.dll</HintPath>
     </Reference>
-    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL"
-               Condition="'$(Configuration)' == 'Debug'">
+	<Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL" Condition="'$(Configuration)' == 'Debug'">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Debug\taglib-sharp.dll</HintPath>
     </Reference>
-    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL"
-           Condition="'$(Configuration)' == 'ReleaseMono'">
+	<Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL" Condition="'$(Configuration)' == 'ReleaseMono'">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\ReleaseMono\taglib-sharp.dll</HintPath>
     </Reference>
-    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL"
-           Condition="'$(Configuration)' == 'Release'">
+	<Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL" Condition="'$(Configuration)' == 'Release'">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Release\taglib-sharp.dll</HintPath>
     </Reference>
