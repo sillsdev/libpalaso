@@ -29,7 +29,7 @@ namespace Palaso.Xml
 		private static byte[] startComment = EncUtf8.GetBytes("!--");
 		private static byte[] endComment = EncUtf8.GetBytes("-->");
 
-		private ByteAccessor _input;
+		private IByteAccessor _input;
 
 		/// <summary>
 		/// The value of this boolean will only be set after calls are made to get the elements
@@ -530,7 +530,7 @@ namespace Palaso.Xml
 	/// <summary>
 	/// An abstraction of the methods needed to either access a file or a byte array in similar ways.
 	/// </summary>
-	internal interface ByteAccessor
+	internal interface IByteAccessor
 	{
 		void Close();
 		byte this[int index] { get; }
@@ -546,7 +546,7 @@ namespace Palaso.Xml
 	/// Also, if the file is mainly accessed sequentially, some of the data reading will be overlapped with
 	/// processing it, at least for a large file.
 	/// </summary>
-	internal class AsyncFileReader : ByteAccessor
+	internal class AsyncFileReader : IByteAccessor
 	{
 		private string _pathname;
 		// MS doc says this is the smallest buffer that will produce real async reads.
@@ -701,7 +701,7 @@ namespace Palaso.Xml
 		public IAsyncResult Token; // from BeginRead; should be passed to EndRead when we need the data.
 	}
 
-	class ByteArrayReader : ByteAccessor
+	class ByteArrayReader : IByteAccessor
 	{
 		byte[] _bytes;
 

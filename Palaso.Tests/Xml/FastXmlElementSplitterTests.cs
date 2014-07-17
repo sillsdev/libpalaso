@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml.Linq;
 using NUnit.Framework;
+using Palaso.IO;
 using Palaso.Xml;
 
 namespace Palaso.Tests.Xml
@@ -85,20 +86,14 @@ namespace Palaso.Tests.Xml
 				@"<?xml version='1.0' encoding='utf-8'?>
 <classdata>
 </classdata>";
-			var tempPathname = Path.GetTempFileName();
-			var goodXmlPathname = Path.ChangeExtension(tempPathname, ".ClassData");
-			File.Delete(tempPathname);
-			try
+
+			using (var tempFile = TempFile.WithExtension(".ClassData"))
 			{
-				File.WriteAllText(goodXmlPathname, noRecordsInput, Encoding.UTF8);
-				using (var reader = new FastXmlElementSplitter(goodXmlPathname))
+				File.WriteAllText(tempFile.Path, noRecordsInput, Encoding.UTF8);
+				using (var reader = new FastXmlElementSplitter(tempFile.Path))
 				{
 					Assert.AreEqual(0, reader.GetSecondLevelElementBytes("rt").Count());
 				}
-			}
-			finally
-			{
-				File.Delete(goodXmlPathname);
 			}
 		}
 
@@ -109,20 +104,13 @@ namespace Palaso.Tests.Xml
 				@"<?xml version='1.0' encoding='utf-8'?>
 <classdata />";
 
-			var tempPathname = Path.GetTempFileName();
-			var goodXmlPathname = Path.ChangeExtension(tempPathname, ".ClassData");
-			File.Delete(tempPathname);
-			try
+			using (var tempFile = TempFile.WithExtension(".ClassData"))
 			{
-				File.WriteAllText(goodXmlPathname, noRecordsInput, Encoding.UTF8);
-				using (var reader = new FastXmlElementSplitter(goodXmlPathname))
+				File.WriteAllText(tempFile.Path, noRecordsInput, Encoding.UTF8);
+				using (var reader = new FastXmlElementSplitter(tempFile.Path))
 				{
 					Assert.AreEqual(0, reader.GetSecondLevelElementBytes("rt").Count());
 				}
-			}
-			finally
-			{
-				File.Delete(goodXmlPathname);
 			}
 		}
 
@@ -130,22 +118,16 @@ namespace Palaso.Tests.Xml
 		public void Not_Xml_Throws()
 		{
 			const string noRecordsInput = "Some random text file.";
-			var tempPathname = Path.GetTempFileName();
-			var goodPathname = Path.ChangeExtension(tempPathname, ".txt");
-			File.Delete(tempPathname);
-			try
+
+			using (var tempFile = TempFile.WithExtension(".txt"))
 			{
-				File.WriteAllText(goodPathname, noRecordsInput, Encoding.UTF8);
-				using (var reader = new FastXmlElementSplitter(goodPathname))
+				File.WriteAllText(tempFile.Path, noRecordsInput, Encoding.UTF8);
+				using (var reader = new FastXmlElementSplitter(tempFile.Path))
 				{
 					// An earlier version was expected to throw XmlException. But we aren't parsing XML well enough to do that confidently.
 					// Note: the ToList is needed to force the enumeration to enumerate.
 					Assert.Throws<ArgumentException>(() => reader.GetSecondLevelElementBytes("rt").ToList());
 				}
-			}
-			finally
-			{
-				File.Delete(goodPathname);
 			}
 		}
 
@@ -560,24 +542,18 @@ namespace Palaso.Tests.Xml
 	</item>
   </Entries>
 </Lexicon>";
-			var goodPathname = Path.GetTempFileName();
-			try
+			using (var tempFile = new TempFile())
 			{
-				File.WriteAllText(goodPathname, simulatedLexicalFile, Encoding.UTF8);
-				using (var fastXmlElementSplitter = new FastXmlElementSplitter(goodPathname))
+				File.WriteAllText(tempFile.Path, simulatedLexicalFile, Encoding.UTF8);
+				using (var fastXmlElementSplitter = new FastXmlElementSplitter(tempFile.Path))
 				{
 					ProcessMultipleEntryContent(fastXmlElementSplitter);
 				}
-				using (var fastXmlElementSplitter = new FastXmlElementSplitter(File.ReadAllBytes(goodPathname)))
+				using (var fastXmlElementSplitter = new FastXmlElementSplitter(File.ReadAllBytes(tempFile.Path)))
 				{
 					ProcessMultipleEntryContent(fastXmlElementSplitter);
 				}
 			}
-			finally
-			{
-				File.Delete(goodPathname);
-			}
-
 		}
 
 		private static void ProcessMultipleEntryContent(FastXmlElementSplitter fastXmlElementSplitter)
