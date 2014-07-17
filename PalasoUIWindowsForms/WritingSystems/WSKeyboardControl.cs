@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using L10NSharp;
 using Microsoft.Win32;
 using Palaso.UI.WindowsForms.Keyboarding;
+using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
 using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems

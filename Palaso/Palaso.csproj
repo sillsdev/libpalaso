@@ -31,7 +31,6 @@
 	<IsWebBootstrapper>false</IsWebBootstrapper>
 	<UseApplicationTrust>false</UseApplicationTrust>
 	<BootstrapperEnabled>true</BootstrapperEnabled>
-	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
@@ -42,7 +41,7 @@
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<DocumentationFile>..\output\Debug\Palaso.XML</DocumentationFile>
-	<PlatformTarget>AnyCPU</PlatformTarget>
+	<PlatformTarget>x86</PlatformTarget>
 	<LangVersion>default</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -52,7 +51,7 @@
 	<DefineConstants>TRACE</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
-	<PlatformTarget>AnyCPU</PlatformTarget>
+	<PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
