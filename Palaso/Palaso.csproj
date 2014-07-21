@@ -91,7 +91,7 @@
 	</None>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
-	<Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\Release\icu.net.dll</HintPath>
 	</Reference>

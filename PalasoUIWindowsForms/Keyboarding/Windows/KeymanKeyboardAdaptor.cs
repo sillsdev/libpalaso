@@ -25,6 +25,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 
 		public void UpdateAvailableKeyboards()
 		{
+			// Try the Keyman 7/8 interface
 			try
 			{
 				var keyman = new TavultesoftKeymanClass();
@@ -36,9 +37,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 				// Keyman 7 isn't installed or whatever.
 			}
 
+			// Try the Keyman 6 interface
 			try
 			{
-                var keymanLink = new KeymanLink.KeymanLink();
+				var keymanLink = new KeymanLink.KeymanLink();
 				if (keymanLink.Initialize())
 				{
 					foreach (var keyboard in keymanLink.Keyboards)

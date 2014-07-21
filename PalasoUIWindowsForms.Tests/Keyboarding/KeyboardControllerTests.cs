@@ -72,8 +72,10 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Test]
 		public void GetKeyboard_FromOldParatextId_ExistingKeyboardReturnsKeyboard()
 		{
-			var keyboardFooBoo = Keyboard.Controller.CreateKeyboardDefinition("foo", "az-Latn-AZ"); // This is the case of a keyboard that the old Palaso system was incapable of supporting.
+			// This is the case of a keyboard that the old Palaso system was incapable of supporting.
+			var keyboardFooBoo = Keyboard.Controller.CreateKeyboardDefinition("foo", "az-Latn-AZ");
 			KeyboardController.Manager.RegisterKeyboard(keyboardFooBoo);
+
 			var keyboard = Keyboard.Controller.CreateKeyboardDefinition("foo", "en-US");
 			KeyboardController.Manager.RegisterKeyboard(keyboard);
 
@@ -93,8 +95,11 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		[Test]
 		public void GetKeyboard_FromOldPalasoId_ExistingKeyboardReturnsKeyboard()
 		{
-			var keyboardFooBoo = Keyboard.Controller.CreateKeyboardDefinition("foo", "az-Latn-AZ"); // This demonstrates the case of a keyboard that the old Palaso system was incapable of supporting. There's no way to reference this keyboard, or is there???
+			// This demonstrates the case of a keyboard that the old Palaso system was incapable of supporting.
+			// There's no way to reference this keyboard, or is there???
+			var keyboardFooBoo = Keyboard.Controller.CreateKeyboardDefinition("foo", "az-Latn-AZ");
 			KeyboardController.Manager.RegisterKeyboard(keyboardFooBoo);
+
 			var keyboardFooF = Keyboard.Controller.CreateKeyboardDefinition("foo-az", "en-US");
 			KeyboardController.Manager.RegisterKeyboard(keyboardFooF);
 			var keyboardFoo = Keyboard.Controller.CreateKeyboardDefinition("foo", "en-US");

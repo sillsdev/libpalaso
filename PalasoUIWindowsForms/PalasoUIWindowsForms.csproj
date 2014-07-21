@@ -166,6 +166,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\$(Configuration)\NAudio.dll</HintPath>
     </Reference>
+    <Reference Include="Keyman7Interop">
+      <HintPath>..\lib\$(Configuration)\Keyman7Interop.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="KeymanLink">
+      <HintPath>..\lib\$(Configuration)\KeymanLink.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' ">
     <Reference Include="NDesk.DBus">
@@ -207,14 +215,6 @@
     <None Include="..\lib\common\Enchant.Net.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Reference Include="Keyman7Interop">
-      <HintPath>..\lib\common\Keyman7Interop.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="KeymanLink">
-      <HintPath>..\lib\common\KeymanLink.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
     <Reference Include="sysglobl" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />

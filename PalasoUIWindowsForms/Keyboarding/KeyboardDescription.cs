@@ -123,10 +123,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			return string.Format("{1} - {0}", cultureName, layoutName);
 		}
 
-        protected virtual bool DeactivatePreviousKeyboard(IKeyboardDefinition keyboardToActivate)
-        {
-            return true;
-        }
+		protected virtual bool DeactivatePreviousKeyboard(IKeyboardDefinition keyboardToActivate)
+		{
+			return true;
+		}
 
 		#region IKeyboardDefinition Members
 
@@ -141,7 +141,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		public override void Activate()
 		{
 			var activeKeyboard = Keyboard.Controller.ActiveKeyboard as KeyboardDescription;
-            if (activeKeyboard != null && activeKeyboard.DeactivatePreviousKeyboard(this))
+			if (activeKeyboard != null && activeKeyboard.DeactivatePreviousKeyboard(this))
 				activeKeyboard.Deactivate();
 
 			Keyboard.Controller.ActiveKeyboard = Zero;
