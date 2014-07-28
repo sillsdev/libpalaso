@@ -4,6 +4,7 @@ using System.Configuration;
 using System.IO;
 using System.Reflection;
 using System.Xml;
+using Palaso.Reporting;
 
 namespace Palaso.Settings
 {
@@ -362,29 +363,37 @@ namespace Palaso.Settings
 					if(_settingsXml == null)
 					{
 						_settingsXml = new XmlDocument();
-						if(File.Exists(Path.Combine(UserConfigLocation, "user.config")))
+						var userConfigFilePath = Path.Combine(UserConfigLocation, "user.config");
+						if(File.Exists(userConfigFilePath))
 						{
-							_settingsXml.Load(Path.Combine(UserConfigLocation, "user.config"));
+							try
+							{
+								_settingsXml.Load(Path.Combine(UserConfigLocation, "user.config"));
+								return _settingsXml;
+							}
+							catch(XmlException e)
+							{
+								ErrorReport.ReportNonFatalExceptionWithMessage(e, "A settings file was corrupted. Some user settings may have been lost.");
+								File.Delete(userConfigFilePath);
+							}
 						}
-						else
-						{
-							//Create new document
-							var dec = _settingsXml.CreateXmlDeclaration("1.0", "utf-8", string.Empty);
-							_settingsXml.AppendChild(dec);
 
-							var nodeRoot = _settingsXml.CreateNode(XmlNodeType.Element, "configuration", "");
-							var configSections = _settingsXml.CreateNode(XmlNodeType.Element, "configSections", "");
-							var sectionGroup = _settingsXml.CreateElement("sectionGroup");
-							sectionGroup.SetAttribute("name", "userSettings");
-							var userSettingsAssembly = Assembly.GetAssembly(typeof(UserSettingsGroup));
-							var typeValue = String.Format("{0}, {1}", typeof(UserSettingsGroup), userSettingsAssembly);
-							sectionGroup.SetAttribute("type", typeValue);
-							configSections.AppendChild(sectionGroup);
-							var userSettings =  _settingsXml.CreateNode(XmlNodeType.Element, "userSettings", "");
-							nodeRoot.AppendChild(configSections);
-							nodeRoot.AppendChild(userSettings);
-							_settingsXml.AppendChild(nodeRoot);
-						}
+						//If there was no file, or if the file was corrupt create a new document
+						var dec = _settingsXml.CreateXmlDeclaration("1.0", "utf-8", string.Empty);
+						_settingsXml.AppendChild(dec);
+
+						var nodeRoot = _settingsXml.CreateNode(XmlNodeType.Element, "configuration", "");
+						var configSections = _settingsXml.CreateNode(XmlNodeType.Element, "configSections", "");
+						var sectionGroup = _settingsXml.CreateElement("sectionGroup");
+						sectionGroup.SetAttribute("name", "userSettings");
+						var userSettingsAssembly = Assembly.GetAssembly(typeof(UserSettingsGroup));
+						var typeValue = String.Format("{0}, {1}", typeof(UserSettingsGroup), userSettingsAssembly);
+						sectionGroup.SetAttribute("type", typeValue);
+						configSections.AppendChild(sectionGroup);
+						var userSettings =  _settingsXml.CreateNode(XmlNodeType.Element, "userSettings", "");
+						nodeRoot.AppendChild(configSections);
+						nodeRoot.AppendChild(userSettings);
+						_settingsXml.AppendChild(nodeRoot);
 					}
 
 					return _settingsXml;

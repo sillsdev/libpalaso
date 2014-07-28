@@ -20,7 +20,8 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 			{
 				if (DialogResult.OK == dlg.ShowDialog())
 				{
-					string path  = Path.GetTempFileName();
+					// File name ending in .tmp will confuse TagLib#...doesn't know what kind of metadata to write.
+					string path  = Path.ChangeExtension(Path.GetTempFileName(), ".png");
 					dlg.ImageInfo.Save(path);
 					Process.Start("explorer.exe", "/select, \"" + path + "\"");
 				}

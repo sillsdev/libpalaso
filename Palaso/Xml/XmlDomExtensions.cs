@@ -46,23 +46,26 @@ namespace Palaso.Xml
 
 		private static void AddSheet(this XmlDocument dom, XmlNode head, string cssFilePath, string namespaceIfDesired)
 		{
-			//we're going to add file:// later
-			cssFilePath = cssFilePath.Replace("file:///", "");
-			cssFilePath = cssFilePath.Replace("file://", "");
-			cssFilePath = "file://" + cssFilePath;
+			// don't modify http paths
+			if (!cssFilePath.StartsWith("http"))
+			{
+				// we're going to add file:// later
+				cssFilePath = cssFilePath.Replace("file:///", "").Replace("file://", "");
+				
+				// absolute or relative path?
+				if (File.Exists(cssFilePath))
+				{
+					// this is a local file, use absolute path
+					var file = new FileInfo(cssFilePath);
+					cssFilePath = new Uri(file.FullName).AbsoluteUri;
+				}
+			}
 
 			var link = string.IsNullOrEmpty(namespaceIfDesired) ? dom.CreateElement("link") : dom.CreateElement("link", namespaceIfDesired);
 			link.SetAttribute("rel", "stylesheet");
-
-			if(cssFilePath.Contains(Path.DirectorySeparatorChar.ToString())) // review: not sure about relative vs. complete paths
-			{
-				link.SetAttribute("href", cssFilePath);
-			}
-			else //at least with gecko/firefox, something like "file://foo.css" is never found, so just give it raw
-			{
-				link.SetAttribute("href",cssFilePath);
-			}
+			link.SetAttribute("href", cssFilePath);
 			link.SetAttribute("type", "text/css");
+
 			head.AppendChild(link);
 		}
 	}

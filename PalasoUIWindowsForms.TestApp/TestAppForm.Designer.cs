@@ -55,6 +55,7 @@ namespace PalasoUIWindowsForms.TestApp
 			this.superToolTip1 = new Palaso.UI.WindowsForms.SuperToolTip.SuperToolTip(this.components);
 			this.label1 = new System.Windows.Forms.Label();
 			this.btnMetaDataEditor = new System.Windows.Forms.Button();
+			this._silAboutBoxGecko = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// btnFolderBrowserControl
@@ -109,7 +110,7 @@ namespace PalasoUIWindowsForms.TestApp
 			// 
 			// btnShowReleaseNotes
 			// 
-			this.btnShowReleaseNotes.Location = new System.Drawing.Point(12, 157);
+			this.btnShowReleaseNotes.Location = new System.Drawing.Point(12, 185);
 			this.btnShowReleaseNotes.Name = "btnShowReleaseNotes";
 			this.btnShowReleaseNotes.Size = new System.Drawing.Size(157, 23);
 			this.btnShowReleaseNotes.TabIndex = 0;
@@ -124,7 +125,7 @@ namespace PalasoUIWindowsForms.TestApp
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(13, 187);
+			this.label1.Location = new System.Drawing.Point(12, 246);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(149, 13);
 			superToolTipInfo1.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
@@ -144,11 +145,9 @@ namespace PalasoUIWindowsForms.TestApp
 			this.label1.TabIndex = 1;
 			this.label1.Text = "Hover over me to see a tooltip";
 			// 
-			// TestAppForm
-			// 
 			// btnMetaDataEditor
 			// 
-			this.btnMetaDataEditor.Location = new System.Drawing.Point(12, 157);
+			this.btnMetaDataEditor.Location = new System.Drawing.Point(12, 214);
 			this.btnMetaDataEditor.Name = "btnMetaDataEditor";
 			this.btnMetaDataEditor.Size = new System.Drawing.Size(157, 23);
 			this.btnMetaDataEditor.TabIndex = 0;
@@ -156,11 +155,22 @@ namespace PalasoUIWindowsForms.TestApp
 			this.btnMetaDataEditor.UseVisualStyleBackColor = true;
 			this.btnMetaDataEditor.Click += new System.EventHandler(this.OnShowMetaDataEditorClicked);
 			// 
+			// _silAboutBoxGecko
+			// 
+			this._silAboutBoxGecko.Location = new System.Drawing.Point(12, 157);
+			this._silAboutBoxGecko.Name = "_silAboutBoxGecko";
+			this._silAboutBoxGecko.Size = new System.Drawing.Size(157, 23);
+			this._silAboutBoxGecko.TabIndex = 2;
+			this._silAboutBoxGecko.Text = "SIL AboutBox (Gecko)";
+			this._silAboutBoxGecko.UseVisualStyleBackColor = true;
+			this._silAboutBoxGecko.Click += new System.EventHandler(this.OnSilAboutBoxGeckoClicked);
+			// 
 			// TestAppForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(284, 262);
+			this.ClientSize = new System.Drawing.Size(187, 268);
+			this.Controls.Add(this._silAboutBoxGecko);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.btnMetaDataEditor);
 			this.Controls.Add(this.btnShowReleaseNotes);
@@ -187,5 +197,6 @@ namespace PalasoUIWindowsForms.TestApp
 		private Palaso.UI.WindowsForms.SuperToolTip.SuperToolTip superToolTip1;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Button btnMetaDataEditor;
+		private System.Windows.Forms.Button _silAboutBoxGecko;
 	}
 }

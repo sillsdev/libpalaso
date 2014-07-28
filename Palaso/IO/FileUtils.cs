@@ -297,5 +297,15 @@ namespace Palaso.IO
 			return shortBuilder.ToString();
 #endif
 		}
+
+		/// <summary>
+		/// Normalize the path so that it uses forward slashes instead of backslashes. This is
+		/// useful when a path gets read from a file that gets shared between Windows and Linux -
+		/// if the path contains backslashes it can't be found on Linux.
+		/// </summary>
+		public static string NormalizePath(string path)
+		{
+			return path.Replace('\\', '/');
+		}
 	}
 }

@@ -23,7 +23,6 @@ To get the source code, you'll need Git. Then from a command line, give this com
 `git clone https://github.com/sillsdev/libpalaso`
 
 
-Building
---------
-
-You can open and build Palaso.sln in Visual Studio or MonoDevelop.
+Development
+-----------
+For instructions on building and contributing, see <https://github.com/sillsdev/libpalaso/wiki/Development>.

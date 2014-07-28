@@ -66,6 +66,17 @@ namespace Palaso.Xml
 			return x;
 		}
 
+		/// <summary>
+		/// Deletes the specified nodes from their parents.
+		/// </summary>
+		/// <remarks>We shouldn't delete the nodes while iterating over the
+		/// node list because that modifies the enumeration that we're looping over.</remarks>
+		public static void DeleteNodes(this XmlNode node, string path)
+		{
+			foreach (var toDelete in node.SafeSelectNodes(path).OfType<XmlElement>().ToArray())
+				toDelete.ParentNode.RemoveChild(toDelete);
+		}
+
 		public static string SelectTextPortion(this XmlNode node, string path, params object[] args)
 		{
 			var x = node.SelectNodes(string.Format(path, args));

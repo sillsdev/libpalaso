@@ -54,7 +54,6 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 
 		private static void SetUpXulRunner()
 		{
-
 			if (IsXpcomInitialized())
 				return;
 
@@ -99,7 +98,8 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 
 		private Uri GetGeckoNavigatingEventArgsUri(object eventArg)
 		{
-			var eventType = GeckoCoreAssembly.GetType("Gecko.Events.GeckoNavigatingEventArgs");
+			var eventType = GeckoCoreAssembly.GetType("Gecko.Events.GeckoNavigatingEventArgs") ??
+								 GeckoWinAssembly.GetType("Gecko.GeckoNavigatingEventArgs"); //Try new ns then old ns
 			return GetUriValue(eventArg, eventType);
 		}
 
@@ -218,7 +218,7 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 			{
 				try
 				{
-					GeckoCoreAssembly = Assembly.LoadFrom("Geckofx-Core.dll");
+					GeckoCoreAssembly = Assembly.Load("Geckofx-Core");
 				}
 				catch(FileNotFoundException)
 				{
@@ -227,7 +227,7 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 				}
 				try
 				{
-					GeckoWinAssembly = Assembly.LoadFrom("Geckofx-Winforms.dll");
+					GeckoWinAssembly = Assembly.Load("Geckofx-Winforms");
 				}
 				catch(FileNotFoundException)
 				{
@@ -238,7 +238,7 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 			catch(Exception e)
 			{
 				MessageBox.Show("Unable to load geckofx dependancy. Files may not have been included in the build.",
-									 "Failed to load geckofx", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					"Failed to load geckofx", MessageBoxButtons.OK, MessageBoxIcon.Error);
 				throw new ApplicationException("Unable to load geckofx dependancy", e);
 			}
 		}
@@ -303,7 +303,7 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		/// <param name="webBrowser"></param>
 		/// <param name="methodName"></param>
 		/// <param name="parameters"></param>
-		private void CallBrowserMethod(object webBrowser, string methodName, object[] parameters)
+		private bool CallBrowserMethod(object webBrowser, string methodName, object[] parameters)
 		{
 			var webBrowserType = GeckoWinAssembly.GetType(GeckoBrowserType);
 			var types = new Type[parameters.Length];
@@ -312,7 +312,12 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 				types[i] = parameters[i].GetType();
 			}
 			var method = webBrowserType.GetMethod(methodName, types);
+			if(method == null)
+			{
+				return false;
+			}
 			method.Invoke(webBrowser, parameters);
+			return true;
 		}
 
 		#endregion
@@ -328,20 +333,36 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 
 		#region IWebBrowser Members
 
+		/// <summary>
+		/// Rather then adding more reflective methods just handle this property here at the adapter level.
+		/// </summary>
+		public bool AllowNavigation { get; set; }
+
+		/// <summary>
+		/// TODO: If this is necessary for the GeckoBrowser we need to figure out an implementation
+		/// </summary>
+		public bool AllowWebBrowserDrop { get; set; }
+
 		public bool CanGoBack
 		{
-			get { return GetBrowserProperty<bool>(_webBrowser, "CanGoBack"); }
+			get { return AllowNavigation && GetBrowserProperty<bool>(_webBrowser, "CanGoBack"); }
 		}
 
 		public bool CanGoForward
 		{
-			get { return GetBrowserProperty<bool>(_webBrowser, "CanGoForward"); }
+			get { return AllowNavigation && GetBrowserProperty<bool>(_webBrowser, "CanGoForward"); }
 		}
 
 		public string DocumentText
 		{
-			get { return _webBrowser.Text; }
-			set { _webBrowser.Text = value; }
+			set
+			{
+				if(!CallBrowserMethod(_webBrowser, "LoadContent",
+												 new object[] {value, Url != null ? Url.AbsoluteUri : "about:blank", "text/html"}))
+				{
+					CallBrowserMethod(_webBrowser, "LoadHtml", new object[] { value }); //GeckoFx 14 did not have LoadContent
+				}
+			}
 		}
 
 		public string DocumentTitle
@@ -378,22 +399,28 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 
 		public bool GoBack()
 		{
-			return CallBrowserMethod<bool>(_webBrowser, "GoBack");
+			if(AllowNavigation)
+				return CallBrowserMethod<bool>(_webBrowser, "GoBack");
+			return false;
 		}
 
 		public bool GoForward()
 		{
-			return CallBrowserMethod<bool>(_webBrowser, "GoForward");
+			if(AllowNavigation)
+				return CallBrowserMethod<bool>(_webBrowser, "GoForward");
+			return false;
 		}
 
 		public void Navigate(string urlString)
 		{
-			CallBrowserMethod(_webBrowser, "Navigate", new object[] { urlString });
+			if(AllowNavigation)
+				CallBrowserMethod(_webBrowser, "Navigate", new object[] { urlString });
 		}
 
 		public void Navigate(Uri url)
 		{
-			CallBrowserMethod(_webBrowser, "Navigate", new object[] { url.AbsoluteUri });
+			if(AllowNavigation)
+				CallBrowserMethod(_webBrowser, "Navigate", new object[] { url.AbsoluteUri });
 		}
 
 		public void Refresh()
@@ -411,10 +438,45 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 			CallBrowserMethod(_webBrowser, "Stop", new object[] {});
 		}
 
+		public void ScrollLastElementIntoView()
+		{
+			var geckoDocumentType = GeckoCoreAssembly.GetType("Gecko.GeckoDocument");
+			var geckoHtmlElementType = GeckoCoreAssembly.GetType("Gecko.GeckoHtmlElement");
+			var geckoNodeListType = GeckoCoreAssembly.GetType("Gecko.GeckoNodeCollection");
+			var webBrowserType = GeckoWinAssembly.GetType(GeckoBrowserType);
+			var documentProperty = webBrowserType.GetProperty("Document", geckoDocumentType);
+			var document = documentProperty.GetValue(_webBrowser, BindingFlags.Default, null, null, null);
+			if(document != null)
+			{
+				var bodyProperty = geckoDocumentType.GetProperty("Body", geckoHtmlElementType);
+				var body = bodyProperty.GetValue(document, BindingFlags.Default, null, null, null);
+				if(body != null)
+				{
+					var childrenProperty = geckoHtmlElementType.GetProperty("ChildNodes", geckoNodeListType);
+					var children = childrenProperty.GetValue(body, BindingFlags.Default, null, null, null);
+					var countLengthProp = geckoNodeListType.GetProperty("Length", typeof(int));
+					var countLength = (int)countLengthProp.GetValue(children, BindingFlags.Default, null, null, null);
+					if(countLength > 0)
+					{
+						var lastChildProp = geckoNodeListType.GetProperty("Item"); //Magic
+						var lastchild = lastChildProp.GetValue(children, new object[] { countLength - 1 });
+						var scrollIntoView = geckoHtmlElementType.GetMethod("ScrollIntoView");
+						scrollIntoView.Invoke(lastchild, BindingFlags.Default, null, null, null);
+					}
+				}
+			}
+		}
+
 		public object NativeBrowser
 		{
 			get { return _webBrowser; }
 		}
+
+		/// <summary>
+		/// TODO: If Gecko browsers have keyboard shortcuts, write some code to enable/disable them here.
+		/// </summary>
+		public bool WebBrowserShortcutsEnabled { get; set; }
+
 		#endregion
 	}
 }
