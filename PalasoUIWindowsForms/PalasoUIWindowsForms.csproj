@@ -187,7 +187,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="Progress\LogBoxSettings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>LogBoxSettings.Designer.cs</LastGenOutput>
@@ -542,7 +541,9 @@
     <Compile Include="Widgets\BetterLabel.designer.cs">
       <DependentUpon>BetterLabel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Widgets\BetterLinkLabel.cs" />
+    <Compile Include="Widgets\BetterLinkLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Widgets\BitmapButton.cs">
       <SubType>Component</SubType>
     </Compile>
