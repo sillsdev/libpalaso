@@ -413,14 +413,12 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 
 		public void Navigate(string urlString)
 		{
-			if(AllowNavigation)
-				CallBrowserMethod(_webBrowser, "Navigate", new object[] { urlString });
+			CallBrowserMethod(_webBrowser, "Navigate", new object[] { urlString });
 		}
 
 		public void Navigate(Uri url)
 		{
-			if(AllowNavigation)
-				CallBrowserMethod(_webBrowser, "Navigate", new object[] { url.AbsoluteUri });
+			Navigate(url.AbsoluteUri);
 		}
 
 		public void Refresh()

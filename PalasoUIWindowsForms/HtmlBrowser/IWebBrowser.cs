@@ -7,7 +7,6 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 {
 	public interface IWebBrowser
 	{
-		bool AllowNavigation { get; set; }
 		bool AllowWebBrowserDrop { get; set; }
 		bool CanGoBack { get; }
 		bool CanGoForward { get; }

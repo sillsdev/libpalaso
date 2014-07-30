@@ -148,14 +148,11 @@ namespace Palaso.UI.WindowsForms.SIL
 
 		private void SILAboutBoxShown(object sender, EventArgs e)
 		{
-			_browser.Url = new Uri(_pathToAboutBoxHtml);
-			_browser.Navigated += _browser_Navigated;
-		}
-
-		private void _browser_Navigated(object sender, WebBrowserNavigatedEventArgs e)
-		{
-			_browser.Refresh();
-			_browser.ScrollLastElementIntoView();
+			//review: EB had changed from Navigate to this in ab66af23393f74b767ffd78c2182bd1fdc8eb963, presumably to 
+			// get around the AllowNavigation=false problem. It may work on Linux, but it didn't on Windows, which would just show a blank browser.
+			//_browser.Url = new Uri(_pathToAboutBoxHtml);
+			// So I've instead modified the browser wrapper to always let the first navigation get through, regardless
+			_browser.Navigate(_pathToAboutBoxHtml);
 		}
 	}
 }
