@@ -21,7 +21,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces
 	/// interface if you want to provide a double for unit testing. Otherwise the default
 	/// implementation is sufficient.
 	/// </summary>
-	public interface IKeyboardControllerImpl: IDisposable
+	internal interface IKeyboardControllerImpl: IDisposable
 	{
 		/// <summary>
 		/// Gets the available keyboards
@@ -34,7 +34,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces
 		/// </summary>
 		IKeyboardDefinition ActiveKeyboard { get; set; }
 
-		/// <summary>
+        /// <summary>
+        /// Gets the default system keyboard.
+        /// </summary>
+        IKeyboardDefinition DefaultKeyboard { get; }
+        
+        /// <summary>
 		/// Registers the control for keyboarding. Called by KeyboardController when the
 		/// application registers a control by calling KeyboardController.Register.
 		/// </summary>

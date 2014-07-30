@@ -166,6 +166,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\$(Configuration)\NAudio.dll</HintPath>
     </Reference>
+    <Reference Include="Keyman7Interop">
+      <HintPath>..\lib\$(Configuration)\Keyman7Interop.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="KeymanLink">
+      <HintPath>..\lib\$(Configuration)\KeymanLink.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' ">
     <Reference Include="NDesk.DBus">
@@ -405,6 +413,8 @@
     <Compile Include="Keyboarding\Types\MouseEvent.cs" />
     <Compile Include="Keyboarding\KeyboardController.cs" />
     <Compile Include="Keyboarding\Types\Win32.cs" />
+    <Compile Include="Keyboarding\Windows\KeymanKeyboardAdaptor.cs" />
+    <Compile Include="Keyboarding\Windows\KeymanKeyboardDescription.cs" />
     <Compile Include="Keyboarding\Windows\WinKeyboardAdaptor.cs" />
     <Compile Include="Keyboarding\Windows\WinKeyboardDescription.cs" />
     <Compile Include="Miscellaneous\IUserInterfaceMemory.cs" />

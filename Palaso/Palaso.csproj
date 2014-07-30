@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
 	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -91,7 +91,7 @@
 	</None>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
-   <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
 	  <SpecificVersion>False</SpecificVersion>
 	  <HintPath>..\lib\Release\icu.net.dll</HintPath>
 	</Reference>

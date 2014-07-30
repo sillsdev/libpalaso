@@ -14,7 +14,7 @@ namespace Palaso.WritingSystems
 	/// </summary>
 	public interface IKeyboardController: IDisposable
 	{
-		IKeyboardDefinition GetKeyboard(string layoutName);
+		IKeyboardDefinition GetKeyboard(string layoutNameWithLocale);
 		IKeyboardDefinition GetKeyboard(string layoutName, string locale);
 		IKeyboardDefinition GetKeyboard(IWritingSystemDefinition writingSystem);
 		IKeyboardDefinition GetKeyboard(IInputLanguage language);
