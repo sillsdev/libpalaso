@@ -2,6 +2,7 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
@@ -49,7 +50,6 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 			m_WebBrowserAdapter = CreateBrowser(type);
 
 			// set default values
-			m_WebBrowserAdapter.AllowNavigation = true;
 			m_WebBrowserAdapter.AllowWebBrowserDrop = true;
 			m_WebBrowserAdapter.IsWebBrowserContextMenuEnabled = true;
 			m_WebBrowserAdapter.WebBrowserShortcutsEnabled = true;
@@ -101,12 +101,12 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 
 		#region IWebBrowser Members
 
-		[DefaultValue(true)]
-		public bool AllowNavigation
-		{
-			get { return m_WebBrowserAdapter.AllowNavigation; }
-			set { m_WebBrowserAdapter.AllowNavigation = value; }
-		}
+		/// <summary>
+		/// If false, allows initial page load, but after that it opens new links in the system browser
+		/// </summary>
+		/// <remarks>Note that we're not using the browser's built-in property; we enforce this in a more
+		/// intelligent way by intercepting navigation attempts and doing the right thing.</remarks>
+		[DefaultValue(true)] public bool AllowNavigation;
 
 		[DefaultValue(true)]
 		public bool AllowWebBrowserDrop
@@ -270,10 +270,24 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 				Navigated(this, e);
 		}
 
+		protected bool GetShouldThisNavigationUseExternalBrowser(string urlString)
+		{
+			//ignore AllowNavigation when we haven't loaded the initial page yet
+			return !AllowNavigation && Url != null && Url.OriginalString != "about:blank";
+		}
+
 		void IWebBrowserCallbacks.OnNavigating(WebBrowserNavigatingEventArgs e)
 		{
-			if (Navigating != null)
+			//we're interpretting AllowNavigation==false as meaning "links should open in an external browser"
+			if (GetShouldThisNavigationUseExternalBrowser(e.Url.AbsolutePath))
+			{				
+				Process.Start(e.Url.AbsoluteUri);
+				e.Cancel = true;
+			}
+			else if (Navigating != null)
+			{
 				Navigating(this, e);
+			}
 		}
 
 		void IWebBrowserCallbacks.OnNewWindow(CancelEventArgs e)
