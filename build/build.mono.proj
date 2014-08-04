@@ -37,7 +37,7 @@
 	</ItemGroup>
 	<Target Name="Clean">
 		<Exec
-			Command="find . -name obj -type d -print0 | xargs -0 rm -rf"
+			Command="find . %5c( -name obj -o -name bin -o -name test-results %5c) -type d -print0 | xargs -0 rm -rf"
 			WorkingDirectory="$(RootDir)" />
 		<Delete Files="@(ExistingObjectFiles)" />
 	</Target>
@@ -71,9 +71,9 @@
 		<Delete Files="@(ExistingPackageBuildFiles)" />
 	</Target>
 	<ItemGroup>
-		<Source Include="$(RootDir)/**/*" Exclude="$(RootDir)/**/irrKlang.NET2.0.dll;$(RootDir)/**/obj/**/*;$(RootDir)/**/bin/**/*;$(RootDir)/**/test-results/**/*;$(RootDir)/output/**/*;$(RootDir)/.hg/**/*;$(RootDir)/.git/**/*;$(RootDir)/lib/Debug/**/*;$(RootDir)/lib/Release/**/*;$(RootDir)/lib/*Configuration*/**/*" />
+		<Source Include="$(RootDir)/**/*" Exclude="$(RootDir)/output/**/*;$(RootDir)/.hg/**/*;$(RootDir)/.git/**/*;$(RootDir)/lib/Debug/**/*;$(RootDir)/lib/Release/**/*;$(RootDir)/lib/*Configuration*/**/*" />
 	</ItemGroup>
-	<Target Name="SourcePackage" DependsOnTargets="PackageClean;SetAssemblyVersion">
+	<Target Name="SourcePackage" DependsOnTargets="Clean;PackageClean;SetAssemblyVersion">
 		<CreateProperty Value="$(OutputDir)/$(ApplicationNameLC)-$(Version).tar.gz">
 			<Output TaskParameter="Value" PropertyName="SourcePackageFileName" />
 		</CreateProperty>
