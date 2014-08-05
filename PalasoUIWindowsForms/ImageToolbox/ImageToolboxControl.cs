@@ -266,7 +266,32 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 					Guard.AgainstNull(dlg.Metadata, " dlg.Metadata");
 					_imageInfo.Metadata = dlg.Metadata;
 					SetupMetaDataControls(_imageInfo.Metadata);
-					_imageInfo.SaveUpdatedMetadataIfItMakesSense();
+					try
+					{
+						_imageInfo.SaveUpdatedMetadataIfItMakesSense();
+					}
+					catch (SystemException ex)
+					{
+						if (ex is IOException || ex is UnauthorizedAccessException || ex is NotSupportedException)
+						{
+							//maybe we just can't write to the original file
+							//try making a copy and writing to that
+							string origFilePath = _imageInfo.OriginalFilePath;
+							if (!string.IsNullOrEmpty(origFilePath) && File.Exists(origFilePath))
+							{
+								string tempPath = Path.ChangeExtension(Path.GetTempFileName(),
+									Path.GetExtension(origFilePath));
+								_imageInfo.Save(tempPath);
+								_imageInfo.OriginalFilePath = tempPath;
+								_imageInfo.FileName = Path.GetFileName(tempPath);
+								_imageInfo.SaveUpdatedMetadataIfItMakesSense();
+							}
+							else
+								throw;
+						}
+						else
+							throw;
+					}
 					_imageInfo.Metadata.StoreAsExemplar(Metadata.FileCategory.Image);
 				}
 			}

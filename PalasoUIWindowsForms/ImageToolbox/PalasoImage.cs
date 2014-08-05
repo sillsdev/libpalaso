@@ -34,7 +34,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// But in on circumumstance, we do care: when the user chooses a from disk (as opposed to from camera or scanner)
 		/// and enters metadata, we want to store that metadata in the original.  That's the only reason we store this path.
 		/// </summary>
-		private static string _pathForSavingMetadataChanges;
+		private string _pathForSavingMetadataChanges;
 
 		public bool Disposed;
 
@@ -90,7 +90,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// Really, just the name, not the path.  Use if you want to save the image somewhere.
 		/// Will be null if the PalasoImage was created via an Image instead of a file.
 		/// </summary>
-		public string FileName { get; private set; }
+		public string FileName { get; internal set; }
 
 
 		/// <summary>
@@ -207,13 +207,13 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		public static PalasoImage FromFile(string path)
 		{
-			_pathForSavingMetadataChanges = path;
-			var i = new PalasoImage()
-					   {
-						   Image = LoadImageWithoutLocking(path),
-						   FileName = Path.GetFileName(path)
+			var i = new PalasoImage
+			{
+				Image = LoadImageWithoutLocking(path),
+				FileName = Path.GetFileName(path),
+				_pathForSavingMetadataChanges = path,
+				Metadata = Metadata.FromFile(path)
 			};
-			i.Metadata = Metadata.FromFile(path);
 			return i;
 		}
 
@@ -223,6 +223,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		public string OriginalFilePath
 		{
 			get { return _pathForSavingMetadataChanges; }
+			internal set { _pathForSavingMetadataChanges = value; }
 		}
 
 		/*
