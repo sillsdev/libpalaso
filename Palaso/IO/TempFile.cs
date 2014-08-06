@@ -8,6 +8,11 @@ namespace Palaso.IO
 
 	/// <summary>
 	/// This is useful a temporary file is needed. When it is disposed, it will delete the file.
+	/// 
+	/// Sometimes it is useful to make a temp file and NOT have the TempFile class delete it. 
+	/// In such cases, simply do not Dispose() the TempFile. To make this possible and reliable, 
+	/// this class deliberately does NOT implement a destructor or do anything to ensure 
+	/// the file is deleted if the TempFile is not disposed. Please don't change this.
 	/// </summary>
 	/// <example>using(f = new TempFile())</example>
 	public class TempFile : IDisposable
@@ -49,6 +54,8 @@ namespace Palaso.IO
 		{
 			get { return _path; }
 		}
+
+		// See comment on class above regarding Dispose
 		public void Dispose()
 		{
 			File.Delete(_path);
