@@ -50,32 +50,26 @@ namespace Palaso.Tests.Xml
 		[Test]
 		public void Null_Parameter_Throws()
 		{
-			// review: I (CP) don't know that this is a sufficiently good method for determining the file - even in windows.
-			// In mono I had to make this the absolute path. 2011-01
-#if MONO
-			using (var reader = new FastXmlElementSplitter(Assembly.GetExecutingAssembly().CodeBase.Replace(@"file://", null)))
-#else
-			using (var reader = new FastXmlElementSplitter(Assembly.GetExecutingAssembly().CodeBase.Replace(@"file:///", null)))
-#endif
+			using (var tempFile = new TempFile(""))
 			{
-				// ToList is needed to make the enumerable evaluate.
-				Assert.Throws<ArgumentException>(() => reader.GetSecondLevelElementBytes(null).ToList());
+				using (var reader = new FastXmlElementSplitter(tempFile.Path))
+				{
+					// ToList is needed to make the enumerable evaluate.
+					Assert.Throws<ArgumentException>(() => reader.GetSecondLevelElementBytes(null).ToList());
+				}
 			}
 		}
 
 		[Test]
 		public void Empty_String_Parameter_Throws()
 		{
-			// review: I (CP) don't know that this is a sufficiently good method for determining the file - even in windows.
-			// In mono I had to make this the absolute path. 2011-01
-#if MONO
-			using (var reader = new FastXmlElementSplitter(Assembly.GetExecutingAssembly().CodeBase.Replace(@"file://", null)))
-#else
-			using (var reader = new FastXmlElementSplitter(Assembly.GetExecutingAssembly().CodeBase.Replace(@"file:///", null)))
-#endif
+			using (var tempFile = new TempFile(""))
 			{
-				// ToList is needed to make the enumeration evaluate.
-				Assert.Throws<ArgumentException>(() => reader.GetSecondLevelElementBytes("").ToList());
+				using (var reader = new FastXmlElementSplitter(tempFile.Path))
+				{
+					// ToList is needed to make the enumeration evaluate.
+					Assert.Throws<ArgumentException>(() => reader.GetSecondLevelElementBytes("").ToList());
+				}
 			}
 		}
 
