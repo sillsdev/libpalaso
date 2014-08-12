@@ -136,7 +136,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			_copyExemplarMetadata.Visible = Metadata.HaveStoredExemplar(Metadata.FileCategory.Image);
 			if (_invitationToMetadataPanel.Visible && _copyExemplarMetadata.Visible)
 			{
-				var s = LocalizationManager.GetString("Use {0}", "ImageToolbox.CopyExemplarMetadata", "Used to copy a previous metadata set to the current image. The  {0} will be replaced with the name of the exemplar image.");
+				var s = LocalizationManager.GetString("ImageToolbox.CopyExemplarMetadata", "Use {0}", "Used to copy a previous metadata set to the current image. The  {0} will be replaced with the name of the exemplar image.");
 				_copyExemplarMetadata.Text = string.Format(s, Metadata.GetStoredExemplarSummaryString(Metadata.FileCategory.Image));
 			}
 		}
@@ -267,35 +267,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 					Guard.AgainstNull(dlg.Metadata, " dlg.Metadata");
 					_imageInfo.Metadata = dlg.Metadata;
 					SetupMetaDataControls(_imageInfo.Metadata);
-					try
-					{
-						_imageInfo.SaveUpdatedMetadataIfItMakesSense();
-					}
-					catch (SystemException ex)
-					{
-						if (ex is IOException || ex is UnauthorizedAccessException || ex is NotSupportedException)
-						{
-							//maybe we just can't write to the original file
-							//so try making a copy and writing to that
-
-							//note: this means the original file will not have metadata saved to it meaning that
-							//if we insert the same file again, the rights will not be the same (or have to be re-modified)
-							//enhance: we could, theoretically, maintain some sort persistent map with the source file and metadata
-							string origFilePath = _imageInfo.PathForSavingMetadataChanges;
-							if (!string.IsNullOrEmpty(origFilePath) && File.Exists(origFilePath))
-							{
-								string tempPath = TempFile.WithExtension(Path.GetExtension(origFilePath)).Path;
-								_imageInfo.Save(tempPath);
-								_imageInfo.PathForSavingMetadataChanges = tempPath;
-								_imageInfo.FileName = Path.GetFileName(tempPath);
-								_imageInfo.SaveUpdatedMetadataIfItMakesSense();
-							}
-							else
-								throw;
-						}
-						else
-							throw;
-					}
+					_imageInfo.SaveUpdatedMetadataIfItMakesSense();
 					_imageInfo.Metadata.StoreAsExemplar(Metadata.FileCategory.Image);
 				}
 			}
