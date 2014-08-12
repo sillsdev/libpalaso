@@ -177,7 +177,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		{
 			try
 			{
-				TrySaveUpdatedMetadataIfItMakesSense();
+				AttemptToSaveUpdatedMetadataIfItMakesSense();
 			}
 			catch (SystemException ex)
 			{
@@ -196,7 +196,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 						Save(tempPath);
 						PathForSavingMetadataChanges = tempPath;
 						FileName = Path.GetFileName(tempPath);
-						TrySaveUpdatedMetadataIfItMakesSense();
+						AttemptToSaveUpdatedMetadataIfItMakesSense();
 					}
 					else
 						throw;
@@ -205,7 +205,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 					throw;
 			}
 		}
-		private void TrySaveUpdatedMetadataIfItMakesSense()
+		private void AttemptToSaveUpdatedMetadataIfItMakesSense()
 		{
 			ThrowIfDisposedOfAlready();
 			if (Metadata != null && Metadata.HasChanges && !string.IsNullOrEmpty(_pathForSavingMetadataChanges) && File.Exists(_pathForSavingMetadataChanges))
