@@ -26,13 +26,18 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			}
 		}
 
+		private string _originalFilePath;
+
 		/// <summary>
-		/// generally, when we load an image, we can happily forget where it came from, becuase
-		/// the nature of the palso image system is to deliver images, not file paths, to documents
+		/// Generally, when we load an image, we can happily forget where it came from, because
+		/// the nature of the palaso image system is to deliver images, not file paths, to documents
 		/// (we don't believe in "linking" to files somewhere on the disk which is just asking for problems
-		/// as the document is shared.
-		/// But in on circumumstance, we do care: when the user chooses a from disk (as opposed to from camera or scanner)
-		/// and enters metadata, we want to store that metadata in the original.  That's the only reason we store this path.
+		/// as the document is shared).
+		/// But in one circumumstance, we do care: when the user chooses from disk (as opposed to from camera or scanner)
+		/// and enters metadata, we want to store that metadata in the original.  
+		/// However, there is one circumstance (currently) in which this is not the original path:
+		/// If we attempt to save metadata and can't (e.g. file is readonly), we create a temp file and 
+		/// store the metadata there, then serve the temp file to the requestor.  That's why we store this path.
 		/// </summary>
 		private string _pathForSavingMetadataChanges;
 
@@ -211,6 +216,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				Image = LoadImageWithoutLocking(path),
 				FileName = Path.GetFileName(path),
+				_originalFilePath = path,
 				_pathForSavingMetadataChanges = path,
 				Metadata = Metadata.FromFile(path)
 			};
@@ -221,6 +227,14 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// will be set if this was created using FromFile
 		/// </summary>
 		public string OriginalFilePath
+		{
+			get { return _originalFilePath; }
+		}
+
+		/// <summary>
+		/// will be set if this was created using FromFile
+		/// </summary>
+		public string PathForSavingMetadataChanges
 		{
 			get { return _pathForSavingMetadataChanges; }
 			internal set { _pathForSavingMetadataChanges = value; }

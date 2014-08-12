@@ -281,12 +281,12 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 							//note: this means the original file will not have metadata saved to it meaning that
 							//if we insert the same file again, the rights will not be the same (or have to be re-modified)
 							//enhance: we could, theoretically, maintain some sort persistent map with the source file and metadata
-							string origFilePath = _imageInfo.OriginalFilePath;
+							string origFilePath = _imageInfo.PathForSavingMetadataChanges;
 							if (!string.IsNullOrEmpty(origFilePath) && File.Exists(origFilePath))
 							{
 								string tempPath = TempFile.WithExtension(Path.GetExtension(origFilePath)).Path;
 								_imageInfo.Save(tempPath);
-								_imageInfo.OriginalFilePath = tempPath;
+								_imageInfo.PathForSavingMetadataChanges = tempPath;
 								_imageInfo.FileName = Path.GetFileName(tempPath);
 								_imageInfo.SaveUpdatedMetadataIfItMakesSense();
 							}
