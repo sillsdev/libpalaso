@@ -177,7 +177,9 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		{
 			try
 			{
-				AttemptToSaveUpdatedMetadataIfItMakesSense();
+				ThrowIfDisposedOfAlready();
+				if (Metadata != null && Metadata.HasChanges && !string.IsNullOrEmpty(_pathForSavingMetadataChanges) && File.Exists(_pathForSavingMetadataChanges))
+					SaveUpdatedMetadata();
 			}
 			catch (SystemException ex)
 			{
@@ -196,7 +198,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 						Save(tempPath);
 						PathForSavingMetadataChanges = tempPath;
 						FileName = Path.GetFileName(tempPath);
-						AttemptToSaveUpdatedMetadataIfItMakesSense();
+						SaveUpdatedMetadata();
 					}
 					else
 						throw;
@@ -205,14 +207,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 					throw;
 			}
 		}
-		private void AttemptToSaveUpdatedMetadataIfItMakesSense()
+		private void SaveUpdatedMetadata()
 		{
-			ThrowIfDisposedOfAlready();
-			if (Metadata != null && Metadata.HasChanges && !string.IsNullOrEmpty(_pathForSavingMetadataChanges) && File.Exists(_pathForSavingMetadataChanges))
-			{
-				Metadata.Write(_pathForSavingMetadataChanges);
-				Metadata.HasChanges = false;
-			}
+			Metadata.Write(_pathForSavingMetadataChanges);
+			Metadata.HasChanges = false;
 		}
 
 		private static Image LoadImageWithoutLocking(string path)
