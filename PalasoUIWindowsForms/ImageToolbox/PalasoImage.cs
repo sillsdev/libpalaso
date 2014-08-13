@@ -175,12 +175,42 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// </summary>
 		public void SaveUpdatedMetadataIfItMakesSense()
 		{
-			ThrowIfDisposedOfAlready();
-			if (Metadata != null && Metadata.HasChanges && !string.IsNullOrEmpty(_pathForSavingMetadataChanges) && File.Exists(_pathForSavingMetadataChanges))
+			try
 			{
-				Metadata.Write(_pathForSavingMetadataChanges);
-				Metadata.HasChanges = false;
+				ThrowIfDisposedOfAlready();
+				if (Metadata != null && Metadata.HasChanges && !string.IsNullOrEmpty(_pathForSavingMetadataChanges) && File.Exists(_pathForSavingMetadataChanges))
+					SaveUpdatedMetadata();
 			}
+			catch (SystemException ex)
+			{
+				if (ex is IOException || ex is UnauthorizedAccessException || ex is NotSupportedException)
+				{
+					//maybe we just can't write to the original file
+					//so try making a copy and writing to that
+
+					//note: this means the original file will not have metadata saved to it meaning that
+					//if we insert the same file again, the rights will not be the same (or have to be re-modified)
+					//enhance: we could, theoretically, maintain some sort persistent map with the source file and metadata
+					string origFilePath = PathForSavingMetadataChanges;
+					if (!string.IsNullOrEmpty(origFilePath) && File.Exists(origFilePath))
+					{
+						string tempPath = TempFile.WithExtension(Path.GetExtension(origFilePath)).Path;
+						Save(tempPath);
+						PathForSavingMetadataChanges = tempPath;
+						FileName = Path.GetFileName(tempPath);
+						SaveUpdatedMetadata();
+					}
+					else
+						throw;
+				}
+				else
+					throw;
+			}
+		}
+		private void SaveUpdatedMetadata()
+		{
+			Metadata.Write(_pathForSavingMetadataChanges);
+			Metadata.HasChanges = false;
 		}
 
 		private static Image LoadImageWithoutLocking(string path)
