@@ -50,7 +50,7 @@ namespace Palaso.Lift
 					bool hasHeader;
 					foreach (var record in splitter.GetSecondLevelElementStrings("header", "entry", out hasHeader))
 					{
-						var element = XElement.Parse(record);
+						XElement element = FixBadTextElements(record);
 						SortAttributes(element);
 
 						if (hasHeader)
@@ -117,6 +117,8 @@ namespace Palaso.Lift
 					var sortedRootAttributes = SortRootElementAttributes(tempFile.Path);
 
 					var doc = XDocument.Load(liftRangesFile);
+					FixBadTextElementsInXDocument(doc);
+
 					SortAttributes(doc.Root);
 					SortRanges(doc.Root);
 
@@ -889,6 +891,26 @@ namespace Palaso.Lift
 				if (!keys.Contains(keyWithSuffix))
 					return keyWithSuffix;
 				keyWithSuffix = keyCandidate + suffix++;
+			}
+		}
+
+		public static XElement FixBadTextElements(string parentEntry)
+		{
+			var parentElement = XElement.Parse(parentEntry);
+			foreach (var misnamedElement in parentElement.Descendants("element"))
+			{
+				misnamedElement.Name = "text";
+				misnamedElement.Attribute("name").Remove();
+			}
+			return parentElement;
+		}
+
+		public static void FixBadTextElementsInXDocument(XDocument parentEntry)
+		{
+			foreach (var misnamedElement in parentEntry.Descendants("element"))
+			{
+				misnamedElement.Name = "text";
+				misnamedElement.Attribute("name").Remove();
 			}
 		}
 	}
