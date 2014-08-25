@@ -11,6 +11,15 @@ using Palaso.Reporting;
 
 namespace Palaso.UI.WindowsForms.HtmlBrowser
 {
+	/// <summary>
+	/// This class is an adapter for GeckoFx' GeckoWebBrowser class. It is used by
+	/// Palaso.UI.WindowsForms.HtmlBrowser.XWebBrowser.
+	///
+	/// Clients should NOT use this class directly. Instead they should use the XWebBrowser
+	/// class (or Gecko.GeckoWebBrowser if they need GeckoFx functionality).
+	/// </summary>
+	/// <remarks> The assembly containing this class gets loaded dynamically so
+	/// that we don't have a dependency on GeckoFx unless we want to use it.</remarks>
 	class GeckoFxWebBrowserAdapter: IWebBrowser
 	{
 		private const string GeckoBrowserType = "Gecko.GeckoWebBrowser";
