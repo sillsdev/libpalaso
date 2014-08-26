@@ -25,15 +25,8 @@ namespace Palaso.Reporting
 	/// Helper class that makes it easier to get information out of nested exceptions to
 	/// display in the UI.
 	/// </summary>
-	public class ExceptionHelper
+	public static class ExceptionHelper
 	{
-		/// <summary>
-		/// Not intended to be instantiated, because it contains only static methods
-		/// </summary>
-		private ExceptionHelper()
-		{
-		}
-
 		/// <summary>
 		/// Get the messages from all nested exceptions
 		/// </summary>

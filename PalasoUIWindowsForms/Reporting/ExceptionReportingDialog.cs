@@ -8,7 +8,7 @@ using Palaso.Reporting;
 
 namespace Palaso.UI.WindowsForms.Reporting
 {
-	public class ExceptionReportingDialog : Form
+	internal class ExceptionReportingDialog : Form
 	{
 		#region Member variables
 
