@@ -8,7 +8,7 @@ using Palaso.Reporting;
 
 namespace Palaso.UI.WindowsForms.Reporting
 {
-	 public class ExceptionReportingDialog : Form
+	public class ExceptionReportingDialog : Form
 	{
 		#region Member variables
 
@@ -20,11 +20,11 @@ namespace Palaso.UI.WindowsForms.Reporting
 		private bool _isLethal;
 
 		private Button _sendAndCloseButton;
-		 private TextBox _notificationText;
-		 private TextBox textBox1;
-		 private ComboBox _methodCombo;
-		 private Button _privacyNoticeButton;
-		 private Label _emailAddress;
+		private TextBox _notificationText;
+		private TextBox textBox1;
+		private ComboBox _methodCombo;
+		private Button _privacyNoticeButton;
+		private Label _emailAddress;
 		private static bool s_doIgnoreReport = false;
 
 		#endregion
@@ -215,32 +215,32 @@ namespace Palaso.UI.WindowsForms.Reporting
 
 		}
 
-		 private void SetupMethodCombo()
-		 {
-			 _methodCombo.Items.Clear();
-			 _methodCombo.Items.Add(new ReportingMethod("Send using my email program", "&Email", "mapiWithPopup", SendViaEmail));
-			 _methodCombo.Items.Add(new ReportingMethod("Copy to clipboard", "&Copy", "clipboard", PutOnClipboard));
-		 }
+		private void SetupMethodCombo()
+		{
+			_methodCombo.Items.Clear();
+			_methodCombo.Items.Add(new ReportingMethod("Send using my email program", "&Email", "mapiWithPopup", SendViaEmail));
+			_methodCombo.Items.Add(new ReportingMethod("Copy to clipboard", "&Copy", "clipboard", PutOnClipboard));
+		}
 
-		 class ReportingMethod
-		 {
-			 private readonly string _label;
-			 public readonly string CloseButtonLabel;
-			 public readonly string Id;
-			 public readonly Func<bool> Method;
+		class ReportingMethod
+		{
+			private readonly string _label;
+			public readonly string CloseButtonLabel;
+			public readonly string Id;
+			public readonly Func<bool> Method;
 
-			 public ReportingMethod(string label, string closeButtonLabel, string id, Func<bool> method)
-			 {
-				 _label = label;
-				 CloseButtonLabel = closeButtonLabel;
-				 Id = id;
-				 Method = method;
-			 }
-			 public override string ToString()
-			 {
-				 return _label;
-			 }
-		 }
+			public ReportingMethod(string label, string closeButtonLabel, string id, Func<bool> method)
+			{
+				_label = label;
+				CloseButtonLabel = closeButtonLabel;
+				Id = id;
+				Method = method;
+			}
+			public override string ToString()
+			{
+				return _label;
+			}
+		}
 		#endregion
 
 
@@ -323,186 +323,184 @@ namespace Palaso.UI.WindowsForms.Reporting
 			_details.Text += Environment.NewLine + "To Reproduce: " + m_reproduce.Text + Environment.NewLine;
 		}
 
-		 public void Report(Exception error, Form owningForm)
+		public void Report(Exception error, Form owningForm)
 		{
 			Report(null,null, error, owningForm);
 		}
 
 
-		 public void Report(string message, string messageBeforeStack, Exception error, Form owningForm)
-		 {
-			 try
-			 {
-				 if(!string.IsNullOrEmpty(message))
+		public void Report(string message, string messageBeforeStack, Exception error, Form owningForm)
+		{
+			try
+			{
+				if(!string.IsNullOrEmpty(message))
 					UsageReporter.ReportExceptionString(message);
-				 else if(error!=null)
-					 UsageReporter.ReportException(error);
-			 }
-			 catch
-			 {
-				 //swallow
-			 }
+				else if(error!=null)
+					UsageReporter.ReportException(error);
+			}
+			catch
+			{
+				//swallow
+			}
 
-			 PrepareDialog();
-			 if(!string.IsNullOrEmpty(message))
-				 _notificationText.Text = message;
+			PrepareDialog();
+			if(!string.IsNullOrEmpty(message))
+				_notificationText.Text = message;
 
-			 if (!string.IsNullOrEmpty(message))
-			 {
+			if (!string.IsNullOrEmpty(message))
+			{
 				_details.Text += "Message (not an exception): " + message + Environment.NewLine;
 				_details.Text += Environment.NewLine;
-			 }
+			}
 			if (!string.IsNullOrEmpty(messageBeforeStack))
-			 {
-				 _details.Text += messageBeforeStack;
-				 _details.Text += Environment.NewLine;
-			 }
-
-			 Exception innerMostException = null;
-			 _details.Text += ErrorReport.GetHiearchicalExceptionInfo(error, ref innerMostException);
-
-			 //if the exception had inner exceptions, show the inner-most exception first, since that is usually the one
-			 //we want the developer to read.
-			 if (innerMostException != null)
-			 {
-				_details.Text = string.Format("Inner-most exception:{2}{0}{2}{2}Full, hierarchical exception contents:{2}{1}",
-					ErrorReport.GetExceptionText(innerMostException), _details.Text, Environment.NewLine);
-			 }
-
-			 AddErrorReportingPropertiesToDetails();
-
-
-			 Debug.WriteLine(_details.Text);
-			 if (innerMostException != null)
-			 {
-				 error = innerMostException;
-			 }
-
-
-			 try
-			 {
-				 Logger.WriteEvent("Got exception " + error.GetType().Name);
-			 }
-			 catch (Exception err)
-			 {
-				 //We have more than one report of dieing while logging an exception.
-				 _details.Text += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
-				 _details.Text += "Was trying to log the exception: " + error.Message + Environment.NewLine;
-				 _details.Text += "Recent events:" + Environment.NewLine;
-				 _details.Text += Logger.MinorEventsLog;
-			 }
-
-			 ShowReportDialogIfAppropriate(owningForm);
-		 }
-
-		 public void Report(string message, string messageBeforeStack, StackTrace stackTrace, Form owningForm)
-		 {
-			 PrepareDialog();
-			 _notificationText.Text = message;
-
-			_details.Text += "Message (not an exception): " + message + Environment.NewLine;
-			 _details.Text += Environment.NewLine;
-			 if(!string.IsNullOrEmpty(messageBeforeStack))
-			 {
+			{
 				_details.Text += messageBeforeStack;
 				_details.Text += Environment.NewLine;
-			 }
+			}
+
+			Exception innerMostException = null;
+			_details.Text += ErrorReport.GetHiearchicalExceptionInfo(error, ref innerMostException);
+
+			//if the exception had inner exceptions, show the inner-most exception first, since that is usually the one
+			//we want the developer to read.
+			if (innerMostException != null)
+			{
+				_details.Text = string.Format("Inner-most exception:{2}{0}{2}{2}Full, hierarchical exception contents:{2}{1}",
+					ErrorReport.GetExceptionText(innerMostException), _details.Text, Environment.NewLine);
+			}
+
+			AddErrorReportingPropertiesToDetails();
+
+
+			Debug.WriteLine(_details.Text);
+			if (innerMostException != null)
+			{
+				error = innerMostException;
+			}
+
+
+			try
+			{
+				Logger.WriteEvent("Got exception " + error.GetType().Name);
+			}
+			catch (Exception err)
+			{
+				//We have more than one report of dieing while logging an exception.
+				_details.Text += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
+				_details.Text += "Was trying to log the exception: " + error.Message + Environment.NewLine;
+				_details.Text += "Recent events:" + Environment.NewLine;
+				_details.Text += Logger.MinorEventsLog;
+			}
+
+			ShowReportDialogIfAppropriate(owningForm);
+		}
+
+		public void Report(string message, string messageBeforeStack, StackTrace stackTrace, Form owningForm)
+		{
+			PrepareDialog();
+			_notificationText.Text = message;
+
+			_details.Text += "Message (not an exception): " + message + Environment.NewLine;
+			_details.Text += Environment.NewLine;
+			if(!string.IsNullOrEmpty(messageBeforeStack))
+			{
+				_details.Text += messageBeforeStack;
+				_details.Text += Environment.NewLine;
+			}
 			_details.Text += "--Stack--"+ Environment.NewLine;;
-			 _details.Text += stackTrace.ToString() + Environment.NewLine; ;
+			_details.Text += stackTrace.ToString() + Environment.NewLine; ;
 
 
-			 AddErrorReportingPropertiesToDetails();
+			AddErrorReportingPropertiesToDetails();
 
-			 Debug.WriteLine(_details.Text);
+			Debug.WriteLine(_details.Text);
 
 
-			 try
-			 {
-				 Logger.WriteEvent("Got error message " + message);
-			 }
-			 catch (Exception err)
-			 {
-				 //We have more than one report of dieing while logging an exception.
-				 _details.Text += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
-			 }
+			try
+			{
+				Logger.WriteEvent("Got error message " + message);
+			}
+			catch (Exception err)
+			{
+				//We have more than one report of dieing while logging an exception.
+				_details.Text += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
+			}
 
-			 ShowReportDialogIfAppropriate(owningForm);
-		 }
+			ShowReportDialogIfAppropriate(owningForm);
+		}
 
-		 private void AddErrorReportingPropertiesToDetails()
-		 {
+		private void AddErrorReportingPropertiesToDetails()
+		{
 
-			 _details.Text += Environment.NewLine+"--Error Reporting Properties--"+Environment.NewLine;
-			 foreach (string label in ErrorReport.Properties.Keys)
-			 {
-				 _details.Text += label + ": " + ErrorReport.Properties[label] + Environment.NewLine;
-			 }
+			_details.Text += Environment.NewLine+"--Error Reporting Properties--"+Environment.NewLine;
+			foreach (string label in ErrorReport.Properties.Keys)
+			{
+				_details.Text += label + ": " + ErrorReport.Properties[label] + Environment.NewLine;
+			}
 
-			 _details.Text += Environment.NewLine+"--Log--"+Environment.NewLine;
-			 try
-			 {
-				 _details.Text += Logger.LogText;
-			 }
-			 catch (Exception err)
-			 {
-				 //We have more than one report of dieing while logging an exception.
-				 _details.Text += "****Could not read from log: " + err.Message + Environment.NewLine;
-			 }
-		 }
+			_details.Text += Environment.NewLine+"--Log--"+Environment.NewLine;
+			try
+			{
+				_details.Text += Logger.LogText;
+			}
+			catch (Exception err)
+			{
+				//We have more than one report of dieing while logging an exception.
+				_details.Text += "****Could not read from log: " + err.Message + Environment.NewLine;
+			}
+		}
 
-		 private void PrepareDialog()
-		 {
-			 CheckDisposed();
-			 Font = SystemFonts.MessageBoxFont;
+		private void PrepareDialog()
+		{
+			CheckDisposed();
+			Font = SystemFonts.MessageBoxFont;
 
-			 //
-			 // Required for Windows Form Designer support
-			 //
-			 InitializeComponent();
-			 _emailAddress.Text = ErrorReport.EmailAddress;
-			 SetupMethodCombo();
+			//
+			// Required for Windows Form Designer support
+			//
+			InitializeComponent();
+			_emailAddress.Text = ErrorReport.EmailAddress;
+			SetupMethodCombo();
 
-			 foreach (ReportingMethod  method in _methodCombo.Items)
-			 {
-				 if (ErrorReportSettings.Default.ReportingMethod == method.Id)
-				 {
+			foreach (ReportingMethod  method in _methodCombo.Items)
+			{
+				if (ErrorReportSettings.Default.ReportingMethod == method.Id)
+				{
 					SelectedMethod = method;
 					break;
-				 }
-			 }
+				}
+			}
 
-			 if (!_isLethal)
-			 {
-				 BackColor = Color.FromArgb(255, 255, 192); //yellow
+			if (!_isLethal)
+			{
+				BackColor = Color.FromArgb(255, 255, 192); //yellow
 				_notificationText.Text = "Take Courage. It'll work out.";
-				 _notificationText.BackColor = BackColor;
-				 _pleaseHelpText.BackColor = BackColor;
-				 textBox1.BackColor = BackColor;
-			 }
+				_notificationText.BackColor = BackColor;
+				_pleaseHelpText.BackColor = BackColor;
+				textBox1.BackColor = BackColor;
+			}
 
-			 SetupCloseButtonText();
-		 }
+			SetupCloseButtonText();
+		}
 
-		 private void ShowReportDialogIfAppropriate(Form owningForm)
-		 {
-
-
-			 if (ErrorReport.IsOkToInteractWithUser)
-			 {
-				 s_doIgnoreReport = true;
-				 ShowDialog(owningForm);
-				 s_doIgnoreReport = false;
-			 }
-			 else //the test environment already prohibits dialogs but will save the contents of assertions in some log.
-			 {
-				 Debug.Fail(_details.Text);
-			 }
+		private void ShowReportDialogIfAppropriate(Form owningForm)
+		{
+			if (ErrorReport.IsOkToInteractWithUser)
+			{
+				s_doIgnoreReport = true;
+				ShowDialog(owningForm);
+				s_doIgnoreReport = false;
+			}
+			else //the test environment already prohibits dialogs but will save the contents of assertions in some log.
+			{
+				Debug.Fail(_details.Text);
+			}
 
 
-		 }
+		}
 
 
-		 /// ------------------------------------------------------------------------------------
+		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		///
 		/// </summary>
@@ -520,7 +518,7 @@ namespace Palaso.UI.WindowsForms.Reporting
 			}
 			GatherData();
 
-		   // Clipboard.SetDataObject(_details.Text, true);
+		  // Clipboard.SetDataObject(_details.Text, true);
 
 			if (SelectedMethod.Method())
 			{
@@ -533,8 +531,8 @@ namespace Palaso.UI.WindowsForms.Reporting
 			}
 		}
 
-		 private bool PutOnClipboard()
-		 {
+		private bool PutOnClipboard()
+		{
 			if (ErrorReport.EmailAddress != null)
 			{
 				_details.Text = String.Format("Please e-mail this to {0} {1}", ErrorReport.EmailAddress, _details.Text);
@@ -561,8 +559,8 @@ namespace Palaso.UI.WindowsForms.Reporting
 #else
 			Clipboard.SetDataObject(_details.Text, true);
 #endif
-			 return true;
-		 }
+			return true;
+		}
 
 #if MONO
 		// Workaround for Xamarin bug #4959
@@ -576,62 +574,62 @@ namespace Palaso.UI.WindowsForms.Reporting
 		internal extern static void gtk_clipboard_set_text(IntPtr clipboard, [MarshalAs(UnmanagedType.LPStr)] string text, int len);
 #endif
 
-		 private bool SendViaEmail()
-		 {
-			 try
-			 {
-				 var emailProvider = EmailProviderFactory.PreferredEmailProvider();
-				 var emailMessage = emailProvider.CreateMessage();
-				 emailMessage.To.Add(ErrorReport.EmailAddress);
-				 emailMessage.Subject = ErrorReport.EmailSubject;
-				 emailMessage.Body = _details.Text;
-				 if (emailMessage.Send(emailProvider))
-				 {
-					 CloseUp();
-					 return true;
-				 }
-			 }
-			 catch (Exception)
-			 {
-				 //swallow it and go to the alternate method
-			 }
+		private bool SendViaEmail()
+		{
+			try
+			{
+				var emailProvider = EmailProviderFactory.PreferredEmailProvider();
+				var emailMessage = emailProvider.CreateMessage();
+				emailMessage.To.Add(ErrorReport.EmailAddress);
+				emailMessage.Subject = ErrorReport.EmailSubject;
+				emailMessage.Body = _details.Text;
+				if (emailMessage.Send(emailProvider))
+				{
+					CloseUp();
+					return true;
+				}
+			}
+			catch (Exception)
+			{
+				//swallow it and go to the alternate method
+			}
 
-			 try
-			 {
-				 //EmailMessage msg = new EmailMessage();
-				 // This currently does not work. The main issue seems to be the length of the error report. mailto
-				 // apparently has some limit on the length of the message, and we are exceeding that.
-				 var emailProvider = EmailProviderFactory.PreferredEmailProvider();
-				 var emailMessage = emailProvider.CreateMessage();
-				 emailMessage.To.Add(ErrorReport.EmailAddress);
-				 emailMessage.Subject = ErrorReport.EmailSubject;
-				 if (Environment.OSVersion.Platform == PlatformID.Unix)
-				 {
-					 emailMessage.Body = _details.Text;
-				 }
-				 else
-				 {
-					 PutOnClipboard();
-					 emailMessage.Body = "<Details of the crash have been copied to the clipboard. Please paste them here>";
-				 }
-				 if (emailMessage.Send(emailProvider))
-				 {
-					 CloseUp();
-					 return true;
-				 }
-			 }
-			 catch (Exception error)
-			 {
-				 PutOnClipboard();
-				 ErrorReport.NotifyUserOfProblem(error,
+			try
+			{
+				//EmailMessage msg = new EmailMessage();
+				// This currently does not work. The main issue seems to be the length of the error report. mailto
+				// apparently has some limit on the length of the message, and we are exceeding that.
+				var emailProvider = EmailProviderFactory.PreferredEmailProvider();
+				var emailMessage = emailProvider.CreateMessage();
+				emailMessage.To.Add(ErrorReport.EmailAddress);
+				emailMessage.Subject = ErrorReport.EmailSubject;
+				if (Environment.OSVersion.Platform == PlatformID.Unix)
+				{
+					emailMessage.Body = _details.Text;
+				}
+				else
+				{
+					PutOnClipboard();
+					emailMessage.Body = "<Details of the crash have been copied to the clipboard. Please paste them here>";
+				}
+				if (emailMessage.Send(emailProvider))
+				{
+					CloseUp();
+					return true;
+				}
+			}
+			catch (Exception error)
+			{
+				PutOnClipboard();
+				ErrorReport.NotifyUserOfProblem(error,
 					"This program wasn't able to get your email program, if you have one, to send the error message.  " +
 					"The contents of the error message has been placed on your Clipboard.");
-				 return false;
-			 }
-			 return false;
-		 }
+				return false;
+			}
+			return false;
+		}
 
-		 private void CloseUp()
+		private void CloseUp()
 		{
 			if (!_isLethal || ModifierKeys.Equals(Keys.Shift))
 			{
@@ -688,37 +686,37 @@ namespace Palaso.UI.WindowsForms.Reporting
 			base.OnKeyUp(e);
 		}
 
-		 private void OnJustExit_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-		 {
-			 CloseUp();
-		 }
+		private void OnJustExit_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			CloseUp();
+		}
 
-		 private void _methodCombo_SelectedIndexChanged(object sender, EventArgs e)
-		 {
-			 SetupCloseButtonText();
-		 }
+		private void _methodCombo_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			SetupCloseButtonText();
+		}
 
-		 private void SetupCloseButtonText()
-		 {
+		private void SetupCloseButtonText()
+		{
 			_sendAndCloseButton.Text = SelectedMethod.CloseButtonLabel;
-			 if (!_isLethal)
-			 {
+			if (!_isLethal)
+			{
 				// _dontSendEmailLink.Text = "Don't Send Email";
-			 }
-			 else
-			 {
-				 _sendAndCloseButton.Text += " and Exit";
-			 }
-		 }
+			}
+			else
+			{
+				_sendAndCloseButton.Text += " and Exit";
+			}
+		}
 
-		 private ReportingMethod SelectedMethod
-		 {
-			 get { return ((ReportingMethod) _methodCombo.SelectedItem); }
-			 set { _methodCombo.SelectedItem = value; }
-		 }
+		private ReportingMethod SelectedMethod
+		{
+			get { return ((ReportingMethod) _methodCombo.SelectedItem); }
+			set { _methodCombo.SelectedItem = value; }
+		}
 
-		 private void _privacyNoticeButton_Click(object sender, EventArgs e)
-		 {
+		private void _privacyNoticeButton_Click(object sender, EventArgs e)
+		{
 			MessageBox.Show(
 				@"If you don't care who reads your bug report, you can skip this notice.
 
@@ -728,14 +726,14 @@ Our issue-tracking system is not searchable by those without an account. Therefo
 
 However, anyone can make an account and then read what you sent us. So if you have something private to say, please send it to one of the developers privately with a note that you don't want the issue in our issue tracking system. If need be, we'll make some kind of sanitized place-holder for your issue so that we don't lose it.
 ", "Privacy Notice");
-		 }
+		}
 
-		 private void ExceptionReportingDialog_KeyPress(object sender, KeyPressEventArgs e)
-		 {
-			 if(e.KeyChar== 27)//ESCAPE
-			 {
+		private void ExceptionReportingDialog_KeyPress(object sender, KeyPressEventArgs e)
+		{
+			if(e.KeyChar== 27)//ESCAPE
+			{
 				CloseUp();
-			 }
-		 }
+			}
+		}
 	}
 }

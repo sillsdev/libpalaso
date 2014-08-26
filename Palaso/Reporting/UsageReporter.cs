@@ -29,34 +29,34 @@ namespace Palaso.Reporting
 #endif
 		}
 
-			/// <summary>
-			///
-			/// </summary>
-			/// <example>
-			/// UsageReporter.Init(Settings.Default.Reporting, "myproduct.org", "UA-11111111-2",
-			///#if DEBUG
-			///                true
-			///#else
-			///                false
-			///#endif
-			///                );
-			/// </example>
-			/// <param name="settings"></param>
-			/// <param name="domain"></param>
-			/// <param name="googleAnalyticsAccountCode"></param>
-			/// <param name="reportAsDeveloper">Normally this is true for DEBUG builds. It is separated out here because sometimes a developer
-			/// uses a Release build of Palaso.dll, but would still want his/her activities logged as a developer.</param>
-			public static void Init(ReportingSettings settings, string domain, string googleAnalyticsAccountCode, bool reportAsDeveloper)
-			{
-				s_singleton = new UsageReporter();
-				s_singleton._settings = settings;
-				s_singleton._realPreviousVersion = settings.PreviousVersion;
-				s_singleton._settings.Launches++;
-				s_singleton.BeginGoogleAnalytics(domain, googleAnalyticsAccountCode, reportAsDeveloper);
-				settings.PreviousVersion = ErrorReport.VersionNumberString;
-				settings.PreviousLaunchDate = DateTime.Now.Date;
-				s_singleton._mostRecentArea = "Initializing"; // Seems more useful to put in something in case an error occurs before app gets this set.
-			}
+		/// <summary>
+		///
+		/// </summary>
+		/// <example>
+		/// UsageReporter.Init(Settings.Default.Reporting, "myproduct.org", "UA-11111111-2",
+		///#if DEBUG
+		///                true
+		///#else
+		///                false
+		///#endif
+		///                );
+		/// </example>
+		/// <param name="settings"></param>
+		/// <param name="domain"></param>
+		/// <param name="googleAnalyticsAccountCode"></param>
+		/// <param name="reportAsDeveloper">Normally this is true for DEBUG builds. It is separated out here because sometimes a developer
+		/// uses a Release build of Palaso.dll, but would still want his/her activities logged as a developer.</param>
+		public static void Init(ReportingSettings settings, string domain, string googleAnalyticsAccountCode, bool reportAsDeveloper)
+		{
+			s_singleton = new UsageReporter();
+			s_singleton._settings = settings;
+			s_singleton._realPreviousVersion = settings.PreviousVersion;
+			s_singleton._settings.Launches++;
+			s_singleton.BeginGoogleAnalytics(domain, googleAnalyticsAccountCode, reportAsDeveloper);
+			settings.PreviousVersion = ErrorReport.VersionNumberString;
+			settings.PreviousLaunchDate = DateTime.Now.Date;
+			s_singleton._mostRecentArea = "Initializing"; // Seems more useful to put in something in case an error occurs before app gets this set.
+		}
 
 		/// <summary>
 		/// A unique guid for this machine, which is the same for all palaso apps (because we store it in special palaso text file in appdata)
@@ -94,7 +94,7 @@ namespace Palaso.Reporting
 			string dir = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "SIL");
 			Directory.CreateDirectory(dir);
 			string path = Path.Combine(dir, "UserIdentifier.txt");
-		   // ReportingSetting.Default.Identifier = "";
+			// ReportingSetting.Default.Identifier = "";
 			if (!_settings.HaveShowRegistrationDialog)
 			{
 					_settings.HaveShowRegistrationDialog = true;
@@ -182,8 +182,7 @@ namespace Palaso.Reporting
 
 				if (s_singleton != null && !String.IsNullOrEmpty(s_singleton._appNameToUseInReporting))
 				{
-				 return s_singleton._appNameToUseInDialogs;
-
+					return s_singleton._appNameToUseInDialogs;
 				}
 				return EntryAssembly.ProductName;
 			}
@@ -199,7 +198,7 @@ namespace Palaso.Reporting
 			{
 				if (s_singleton != null && !String.IsNullOrEmpty(s_singleton._appNameToUseInReporting))
 				{
-					 return s_singleton._appNameToUseInReporting;
+					return s_singleton._appNameToUseInReporting;
 				}
 				return EntryAssembly.ProductName;
 			}
@@ -214,7 +213,7 @@ namespace Palaso.Reporting
 		/// </summary>
 		public static void ResetSettingsForTests()
 		{
-		   // RegistryAccess.SetStringRegistryValue("launches", "0");
+			// RegistryAccess.SetStringRegistryValue("launches", "0");
 			if (s_singleton != null && s_singleton._settings == null)
 			{
 				s_singleton._settings = new ReportingSettings();
@@ -267,7 +266,6 @@ namespace Palaso.Reporting
 		/// <summary>
 		///  Reports upgrades, launches, etc., and allows for later calls to notify analytics of navigation and events
 		/// </summary>
-
 		private void BeginGoogleAnalytics(string domain, string googleAnalyticsAccountCode, bool reportAsDeveloper)
 		{
 				var osLabel = ErrorReport.GetOperatingSystemLabel();
@@ -347,9 +345,9 @@ namespace Palaso.Reporting
 		/// <example>SendEvent("dictionary/browseView", "Command", "DeleteWord", "","")</example>
 		/// <example>SendEvent("dictionary/browseView", "Error", "DeleteWord", "some error message we got","")</example>
 		public static void SendEvent(string programArea, string category, string action, string optionalLabel, int optionalInteger)
-				{
-					if (s_singleton == null)
-						return;
+		{
+			if (s_singleton == null)
+				return;
 
 			if (!s_singleton._settings.OkToPingBasicUsageData)
 						return;

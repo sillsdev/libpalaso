@@ -22,7 +22,7 @@ namespace Palaso.Reporting
 	{
 		private readonly List<ILogger> _loggers= new List<ILogger>();
 
-  //          this just lead to problems.  Better to say "this doesn't own anything", and let the DI container handle the lifetimes
+//          this just lead to problems.  Better to say "this doesn't own anything", and let the DI container handle the lifetimes
 //        public void Dispose()
 //        {
 //            foreach (ILogger logger in _loggers)
@@ -341,7 +341,7 @@ namespace Palaso.Reporting
 		private static void SetActualLogPath(string filename)
 		{
 			_actualLogPath = Path.Combine(Path.GetTempPath(),
-										  Path.Combine(EntryAssembly.CompanyName, UsageReporter.AppNameToUseInReporting));
+				Path.Combine(EntryAssembly.CompanyName, UsageReporter.AppNameToUseInReporting));
 			Directory.CreateDirectory(_actualLogPath);
 			_actualLogPath = Path.Combine(_actualLogPath, filename);
 		}
@@ -362,8 +362,8 @@ namespace Palaso.Reporting
 		private void WriteEventCore(string message, params object[] args)
 		{
 #if !DEBUG
-				try
-				{
+			try
+			{
 #endif
 			CheckDisposed();
 			if (m_out != null && m_out.BaseStream.CanWrite)
@@ -378,11 +378,11 @@ namespace Palaso.Reporting
 				//Debug.WriteLine("-----"+"\r\n"+m_minorEvents.ToString());
 			}
 #if !DEBUG
-				}
-				catch(Exception)
-				{
-				 //swallow
-				}
+			}
+			catch (Exception)
+			{
+				//swallow
+			}
 #endif
 		}
 
@@ -417,7 +417,7 @@ namespace Palaso.Reporting
 				}
 				catch(Exception)
 				{
-				 //swallow
+					//swallow
 				}
 #endif
 			}
