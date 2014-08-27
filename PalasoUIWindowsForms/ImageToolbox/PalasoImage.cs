@@ -107,17 +107,35 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		}
 
 		/// <summary>
-		/// Save an image to the given path, with the metadata embeded
+		/// Save an image to the given path, with the metadata embedded.
+		/// Use the file extension of path to determine to format to save.
 		/// </summary>
 		/// <param name="path"></param>
 		public void Save(string path)
 		{
+			var format = GetImageFormatForExtension(Path.GetExtension(path));
+			SaveInFormat(path, format);
+		}
+
+		/// <summary>
+		/// Return the preferred file extension to be used for web format.
+		/// Preserve jpeg or convert to png format.
+		/// </summary>
+		/// <param name="fileExtension"></param>
+		public static string FileExtForWebFormat(string fileExtension)
+		{
+			var format = GetImageFormatForExtension(fileExtension);
+			return format == ImageFormat.Jpeg ? ".jpg" : ".png";
+		}
+		
+		private void SaveInFormat(string path, ImageFormat format)
+		{
 			ThrowIfDisposedOfAlready();
-			SaveImageSafely(path);
+			SaveImageSafely(path, format);
 			Metadata.Write(path);
 		}
 
-		private void SaveImageSafely(string path)
+		private void SaveImageSafely(string path, ImageFormat format)
 		{
 			using (var image = new Bitmap(Image))
 			//nb: there are cases (notibly http://jira.palaso.org/issues/browse/WS-34711, after cropping a jpeg) where we get out of memory if we are not operating on a copy
@@ -134,41 +152,41 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 													   ", perhaps because this program or another locked it. Quit and try again. Then restart your computer and try again."+System.Environment.NewLine+error.Message);
 					}
 				}
-				image.Save(path, ShouldSaveAsJpeg ? ImageFormat.Jpeg : ImageFormat.Png);
+
+				image.Save(path, format);
 			}
 		}
 
-		private bool ShouldSaveAsJpeg
+		private static ImageFormat GetImageFormatForExtension(string fileExtension)
 		{
-			get
+			if (string.IsNullOrEmpty(fileExtension))
+				throw new ArgumentException(
+					string.Format("Bad extension: {0}", fileExtension));
+
+			switch (fileExtension.ToLower())
 			{
-				/*
-			 * Note, each guid is VERY SIMILAR. The difference is only in the last 2 digits of the 1st group.
-			   Undefined  B96B3CA9
-				MemoryBMP  B96B3CAA
-				BMP    B96B3CAB
-				EMF    B96B3CAC
-				WMF    B96B3CAD
-				JPEG    B96B3CAE
-				PNG    B96B3CAF
-				GIF    B96B3CB0
-				TIFF    B96B3CB1
-				EXIF    B96B3CB2
-				Icon    B96B3CB5
-			 */
-				if (ImageFormat.Jpeg.Guid == Image.RawFormat.Guid)
-					return true;
+			case @".bmp":
+				return ImageFormat.Bmp;
 
-				if (ImageFormat.Jpeg.Equals(Image.PixelFormat)) //review
-					return true;
+			case @".gif":
+				return ImageFormat.Gif;
 
-				if (string.IsNullOrEmpty(FileName))
-					return false;
+			case @".jpg":
+			case @".jpeg":
+				return ImageFormat.Jpeg;
 
-				return new[] {"jpg", "jpeg"}.Contains(Path.GetExtension(FileName).ToLower());
+			case @".png":
+				return ImageFormat.Png;
+
+			case @".tif":
+			case @".tiff":
+				return ImageFormat.Tiff;
+
+			default:
+				throw new NotImplementedException();
 			}
 		}
-
+			
 		/// <summary>
 		/// If you edit the metadata, call this. If it happens to have an actual file associated, it will save it.
 		/// If not (e.g. the image came from a scanner), it won't do anything.
