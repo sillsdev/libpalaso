@@ -1767,6 +1767,68 @@ namespace Palaso.Lift.Tests
 		}
 
 		[Test]
+		public void BadTextElementsAreFixedBeforeSorting()
+		{
+			// badly formatted entry: <element name='text'>string</element>
+			// replaced with proper entry: <text>string</text>
+
+			const string liftData =
+@"<?xml version='1.0' encoding='utf-8'?>
+<lift-ranges>
+<range id='1' >
+<range-element id='1' >
+<label>
+<form lang='en'>
+<element name='text'>aa</element>
+</form>
+</label>
+<description>
+<form lang='fr'>
+<element name='text'>ab</element>
+</form>
+</description>
+</range-element>
+</range>
+</lift-ranges>";
+
+			using (var liftFile = IO.TempFile.WithFilename("good.lift-ranges"))
+			{
+				File.WriteAllText(liftFile.Path, liftData);
+				LiftSorter.SortLiftRangesFiles(liftFile.Path);
+				var doc = XDocument.Load (liftFile.Path);
+				var rangeElement = doc.Root.Element("range").Element ("range-element");
+				var children = rangeElement.Elements().ToList();
+				Assert.IsTrue(children.Count == 2);
+
+				var currentChild = children[0];
+				Assert.AreEqual("description", currentChild.Name.LocalName);
+				var formChild = currentChild.Elements().ToList();
+				Assert.IsTrue(formChild.Count == 1);
+				currentChild = formChild[0];
+				Assert.AreEqual("form", currentChild.Name.LocalName);
+				Assert.AreEqual("fr", currentChild.Attribute("lang").Value);
+				var textChild = currentChild.Elements().ToList();
+				Assert.IsTrue(textChild.Count == 1);
+				currentChild = textChild[0];
+				Assert.AreEqual("text", currentChild.Name.LocalName);
+				Assert.AreEqual("ab", currentChild.Value);
+
+				currentChild = children[1];
+				Assert.AreEqual("label", currentChild.Name.LocalName);
+				formChild = currentChild.Elements().ToList();
+				Assert.IsTrue(formChild.Count == 1);
+				currentChild = formChild[0];
+				Assert.AreEqual("form", currentChild.Name.LocalName);
+				Assert.AreEqual("en", currentChild.Attribute("lang").Value);
+				textChild = currentChild.Elements().ToList();
+				Assert.IsTrue(textChild.Count == 1);
+				currentChild = textChild[0];
+				Assert.AreEqual("text", currentChild.Name.LocalName);
+				Assert.AreEqual("aa", currentChild.Value);
+			}
+		}
+
+		[Test]
 		public void GetUniqueKeyForDictionary()
 		{
 			var sortedDictionary = new SortedDictionary<string, string>

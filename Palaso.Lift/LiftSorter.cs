@@ -117,7 +117,7 @@ namespace Palaso.Lift
 					var sortedRootAttributes = SortRootElementAttributes(tempFile.Path);
 
 					var doc = XDocument.Load(liftRangesFile);
-					FixBadTextElementsInXDocument(doc);
+					FixBadTextElementsInXContainer(doc);
 
 					SortAttributes(doc.Root);
 					SortRanges(doc.Root);
@@ -897,17 +897,13 @@ namespace Palaso.Lift
 		public static XElement FixBadTextElements(string parentEntry)
 		{
 			var parentElement = XElement.Parse(parentEntry);
-			foreach (var misnamedElement in parentElement.Descendants("element"))
-			{
-				misnamedElement.Name = "text";
-				misnamedElement.Attribute("name").Remove();
-			}
+			FixBadTextElementsInXContainer(parentElement);
 			return parentElement;
 		}
 
-		public static void FixBadTextElementsInXDocument(XDocument parentEntry)
+		public static void FixBadTextElementsInXContainer(XContainer parentElement)
 		{
-			foreach (var misnamedElement in parentEntry.Descendants("element"))
+			foreach (var misnamedElement in parentElement.Descendants("element"))
 			{
 				misnamedElement.Name = "text";
 				misnamedElement.Attribute("name").Remove();
