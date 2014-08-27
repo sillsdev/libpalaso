@@ -60,11 +60,12 @@ namespace Palaso.UI.WindowsForms.Reporting
 		/// ------------------------------------------------------------------------------------
 		protected void HandleUnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
-			if (!GetShouldHandleException(sender, e.ExceptionObject as Exception))
+			var exception = e.ExceptionObject as Exception;
+			if (!GetShouldHandleException(sender, exception))
 				return;
 
-			if (e.ExceptionObject is Exception)
-				DisplayError(e.ExceptionObject as Exception);
+			if (exception != null)
+				DisplayError(exception);
 			else
 				DisplayError(new ApplicationException("Got unknown exception"));
 		}
