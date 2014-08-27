@@ -107,7 +107,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		}
 
 		/// <summary>
-		/// Save an image to the given path, with the metadata embeded.
+		/// Save an image to the given path, with the metadata embedded.
 		/// Use the file extension of path to determine to format to save.
 		/// </summary>
 		/// <param name="path"></param>
