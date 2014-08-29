@@ -105,8 +105,9 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		/// If false, allows initial page load, but after that it opens new links in the system browser
 		/// </summary>
 		/// <remarks>Note that we're not using the browser's built-in property; we enforce this in a more
-		/// intelligent way by intercepting navigation attempts and doing the right thing.</remarks>
-		[DefaultValue(true)] public bool AllowNavigation;
+		/// intelligent way by intercepting navigation attempts and doing the right thing.  Also, we want
+		/// a purely embedded browser by default that handles navigation internally.</remarks>
+		public bool AllowNavigation = true;
 
 		[DefaultValue(true)]
 		public bool AllowWebBrowserDrop
