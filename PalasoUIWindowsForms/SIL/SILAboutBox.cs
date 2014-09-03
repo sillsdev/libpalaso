@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+using L10NSharp;
 
 namespace Palaso.UI.WindowsForms.SIL
 {
@@ -9,6 +10,9 @@ namespace Palaso.UI.WindowsForms.SIL
 	{
 		private readonly Assembly _assembly;
 		private readonly string _pathToAboutBoxHtml;
+
+		public event EventHandler CheckForUpdatesClicked;
+		public event EventHandler ReleaseNotesClicked;
 
 		/// <summary>
 		///
@@ -24,6 +28,26 @@ namespace Palaso.UI.WindowsForms.SIL
 			Text = "About " + GetTitle();
 		}
 
+		protected override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			
+			if (CheckForUpdatesClicked == null)
+				_checkForUpdates.Visible = false;
+			else
+				_checkForUpdates.Click += (sender, args) => CheckForUpdatesClicked(this, args);
+
+			if (ReleaseNotesClicked == null)
+				_releaseNotesLabel.Visible = false;
+			else
+				_releaseNotesLabel.Click += (sender, args) => ReleaseNotesClicked(this, args);
+		}
+
+		public void NotifyNoUpdatesAvailable()
+		{
+			_checkForUpdates.Text = LocalizationManager.GetString("AboutDialog.NoUpdates", "No Updates");
+			_checkForUpdates.Enabled = false;
+		}
 
 		#region Assembly Attribute Accessors
 
