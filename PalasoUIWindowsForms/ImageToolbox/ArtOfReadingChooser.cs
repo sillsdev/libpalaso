@@ -187,6 +187,12 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 #if DEBUG
 				//  _searchTermsBox.Text = @"flower";
 #endif
+				if (string.IsNullOrEmpty(_searchTermsBox.Text))
+				{
+					_messageLabel.Visible = true;
+					_messageLabel.Font = new Font(SystemFonts.DialogFont.FontFamily, 10);
+					_messageLabel.Text = "This is the 'Art Of Reading' gallery. In the box above, type what you are searching for, then press ENTER. You can type words in English and Indonesian.".Localize("ImageToolbox.EnterSearchTerms");
+				}
 				_thumbnailViewer.SelectedIndexChanged += new EventHandler(_thumbnailViewer_SelectedIndexChanged);
 			}
 
