@@ -14,7 +14,7 @@ namespace Palaso.UI.WindowsForms.ReleaseNotes
 		private readonly string _path;
 		private TempFile _temp;
 
-		public ShowReleaseNotesDialog(System.Drawing.Icon icon,string path)
+		public ShowReleaseNotesDialog(System.Drawing.Icon icon, string path)
 		{
 			_path = path;
 			Icon = icon;
