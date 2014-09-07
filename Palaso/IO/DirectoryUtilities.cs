@@ -284,5 +284,21 @@ namespace Palaso.IO
 			}
 			return Path.Combine(parent, name + suffix);
 		}
+
+		/// <summary>
+		/// Checks if there are any entries in a directory
+		/// </summary>
+		/// <param name="path">Path to the directory to check</param>
+		/// <param name="onlyCheckForFiles">If this value is TRUE then this method will return TRUE if there are existing 
+		/// subdirectories but no files in the directory identified by <paramref name="path"/>.</param>
+		/// <returns>Returns TRUE if there are no entries in the directory, unless <paramref name="onlyCheckForFiles"/> is TRUE, 
+		/// then returns TRUE if there are no file entries in the directory. Otherwise returns FALSE.</returns>
+		public static bool DirectoryIsEmpty(string path, bool onlyCheckForFiles = false)
+		{
+			if (onlyCheckForFiles)
+				return !Directory.EnumerateFiles(path).Any();
+
+			return !Directory.EnumerateFileSystemEntries(path).Any();
+		}
 	}
 }

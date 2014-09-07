@@ -541,5 +541,37 @@ namespace Palaso.Tests.IO
 				Path.Combine(Path.GetTempPath(), Path.GetRandomFileName())),
 				Throws.InstanceOf<DirectoryNotFoundException>());
 		}
+
+		[Test]
+		public void IsEmpty_DirectoryIsEmpty()
+		{
+			using (var tempDir = new TemporaryFolder("IsEmpty_DirectoryIsEmpty"))
+			{
+				Assert.IsTrue(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path));
+			}
+		}
+
+		[Test]
+		public void IsEmpty_DirectoryContainsSubDirectory()
+		{
+			using (var tempDir = new TemporaryFolder("IsEmpty_DirectoryContainsSubDirectory"))
+			{
+				Directory.CreateDirectory(Path.Combine(tempDir.Path, "subDirectory"));
+				Assert.IsFalse(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path));
+				Assert.IsTrue(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path, true));
+			}
+		}
+
+		[Test]
+		public void IsEmpty_DirectoryContainsFile()
+		{
+			using (var tempDir = new TemporaryFolder("IsEmpty_DirectoryContainsFile"))
+			{
+				var file = tempDir.GetNewTempFile(false);
+				File.WriteAllText(file.Path, "Some test text");
+				Assert.IsFalse(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path));
+				Assert.IsFalse(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path, true));
+			}
+		}
 	}
 }
