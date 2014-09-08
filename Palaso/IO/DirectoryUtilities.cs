@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Threading;
-
 using Palaso.Reporting;
 
 namespace Palaso.IO
@@ -283,6 +282,20 @@ namespace Palaso.IO
 				suffix = i.ToString();
 			}
 			return Path.Combine(parent, name + suffix);
+		}
+
+		/// <summary>
+		/// Checks if there are any entries in a directory
+		/// </summary>
+		/// <param name="path">Path to the directory to check</param>
+		/// <param name="onlyCheckForFiles">if this is TRUE, a directory that contains subdirectories but no files will be considered empty.</param>
+		/// <returns></returns>
+		public static bool DirectoryIsEmpty(string path, bool onlyCheckForFiles = false)
+		{
+			if (onlyCheckForFiles)
+				return !Directory.EnumerateFiles(path).Any();
+
+			return !Directory.EnumerateFileSystemEntries(path).Any();
 		}
 	}
 }

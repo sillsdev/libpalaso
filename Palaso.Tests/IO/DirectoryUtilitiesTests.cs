@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using NUnit.Framework;
 using Palaso.IO;
 using Palaso.TestUtilities;
@@ -540,6 +539,39 @@ namespace Palaso.Tests.IO
 				Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()),
 				Path.Combine(Path.GetTempPath(), Path.GetRandomFileName())),
 				Throws.InstanceOf<DirectoryNotFoundException>());
+		}
+
+		[Test]
+		public void DirectoryIsEmpty_DirectoryIsEmpty()
+		{
+			using (var tempDir = new TemporaryFolder("IsEmpty_DirectoryIsEmpty"))
+			{
+				Assert.IsTrue(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path));
+				Assert.IsTrue(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path, true));
+			}
+		}
+
+		[Test]
+		public void DirectoryIsEmpty_DirectoryContainsSubDirectory()
+		{
+			using (var tempDir = new TemporaryFolder("IsEmpty_DirectoryContainsSubDirectory"))
+			{
+				Directory.CreateDirectory(Path.Combine(tempDir.Path, "subDirectory"));
+				Assert.IsFalse(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path));
+				Assert.IsTrue(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path, true));
+			}
+		}
+
+		[Test]
+		public void DirectoryIsEmpty_DirectoryContainsFile()
+		{
+			using (var tempDir = new TemporaryFolder("IsEmpty_DirectoryContainsFile"))
+			{
+				var file = tempDir.GetNewTempFile(false);
+				File.WriteAllText(file.Path, @"Some test text");
+				Assert.IsFalse(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path));
+				Assert.IsFalse(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path, true));
+			}
 		}
 	}
 }
