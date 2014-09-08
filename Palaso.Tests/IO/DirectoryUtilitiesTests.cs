@@ -573,5 +573,20 @@ namespace Palaso.Tests.IO
 				Assert.IsFalse(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path, true));
 			}
 		}
+
+		[Test]
+		public void DirectoryIsEmpty_SubdirectoryContainsFile()
+		{
+			using (var tempDir = new TemporaryFolder("IsEmpty_DirectoryContainsFile"))
+			{
+				var dir = Directory.CreateDirectory(Path.Combine(tempDir.Path, "subDirectory2"));
+				var fileName = Path.Combine(dir.FullName, "tempFile.txt");
+				File.WriteAllText(fileName, @"Some test text");
+				Assert.IsTrue(File.Exists(fileName));
+				Assert.IsFalse(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path));
+				Assert.IsTrue(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path, true));
+				File.Delete(fileName);
+			}
+		}
 	}
 }

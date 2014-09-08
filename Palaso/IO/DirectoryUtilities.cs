@@ -288,7 +288,9 @@ namespace Palaso.IO
 		/// Checks if there are any entries in a directory
 		/// </summary>
 		/// <param name="path">Path to the directory to check</param>
-		/// <param name="onlyCheckForFiles">if this is TRUE, a directory that contains subdirectories but no files will be considered empty.</param>
+		/// <param name="onlyCheckForFiles">if this is TRUE, a directory that contains subdirectories but no files will be considered empty.
+		/// Subdirectories are not checked, so if onlyCheckForFiles is TRUE and there is a subdirectory that contains a file, the directory
+		/// will still be considered empty.</param>
 		/// <returns></returns>
 		public static bool DirectoryIsEmpty(string path, bool onlyCheckForFiles = false)
 		{
