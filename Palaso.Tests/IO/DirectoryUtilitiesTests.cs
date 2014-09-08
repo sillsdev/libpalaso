@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using NUnit.Framework;
 using Palaso.IO;
 using Palaso.TestUtilities;
@@ -543,16 +542,17 @@ namespace Palaso.Tests.IO
 		}
 
 		[Test]
-		public void IsEmpty_DirectoryIsEmpty()
+		public void DirectoryIsEmpty_DirectoryIsEmpty()
 		{
 			using (var tempDir = new TemporaryFolder("IsEmpty_DirectoryIsEmpty"))
 			{
 				Assert.IsTrue(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path));
+				Assert.IsTrue(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path, true));
 			}
 		}
 
 		[Test]
-		public void IsEmpty_DirectoryContainsSubDirectory()
+		public void DirectoryIsEmpty_DirectoryContainsSubDirectory()
 		{
 			using (var tempDir = new TemporaryFolder("IsEmpty_DirectoryContainsSubDirectory"))
 			{
@@ -563,12 +563,12 @@ namespace Palaso.Tests.IO
 		}
 
 		[Test]
-		public void IsEmpty_DirectoryContainsFile()
+		public void DirectoryIsEmpty_DirectoryContainsFile()
 		{
 			using (var tempDir = new TemporaryFolder("IsEmpty_DirectoryContainsFile"))
 			{
 				var file = tempDir.GetNewTempFile(false);
-				File.WriteAllText(file.Path, "Some test text");
+				File.WriteAllText(file.Path, @"Some test text");
 				Assert.IsFalse(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path));
 				Assert.IsFalse(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path, true));
 			}

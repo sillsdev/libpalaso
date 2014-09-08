@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Threading;
-
 using Palaso.Reporting;
 
 namespace Palaso.IO
@@ -289,10 +288,8 @@ namespace Palaso.IO
 		/// Checks if there are any entries in a directory
 		/// </summary>
 		/// <param name="path">Path to the directory to check</param>
-		/// <param name="onlyCheckForFiles">If this value is TRUE then this method will return TRUE if there are existing 
-		/// subdirectories but no files in the directory identified by <paramref name="path"/>.</param>
-		/// <returns>Returns TRUE if there are no entries in the directory, unless <paramref name="onlyCheckForFiles"/> is TRUE, 
-		/// then returns TRUE if there are no file entries in the directory. Otherwise returns FALSE.</returns>
+		/// <param name="onlyCheckForFiles">if this is TRUE, a directory that contains subdirectories but no files will be considered empty.</param>
+		/// <returns></returns>
 		public static bool DirectoryIsEmpty(string path, bool onlyCheckForFiles = false)
 		{
 			if (onlyCheckForFiles)
