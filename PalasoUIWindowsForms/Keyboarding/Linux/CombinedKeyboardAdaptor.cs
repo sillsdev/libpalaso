@@ -190,6 +190,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				return;
 			}
 			KeyboardController.CombinedKeyboardHandling = true;
+			KeyboardController.Manager.ClearAllKeyboards();
 
 			AddAllKeyboards(g_variant_print(sources, false).Trim('[', ']'));
 		}
