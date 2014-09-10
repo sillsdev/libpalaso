@@ -79,8 +79,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				foreach (var layout in kvp.Value)
 				{
 					int index;
-					if ((XkbKeyboards.TryGetValue(layout.LayoutId, out index) && layout.LayoutId == layout.LanguageCode) ||
-						XkbKeyboards.TryGetValue(string.Format("{0}+{1}", layout.LanguageCode, layout.LayoutId), out index))
+					if ((XkbKeyboards.TryGetValue(layout.LayoutId, out index) && (layout.LayoutId == layout.CountryCode.ToLowerInvariant())) ||
+						XkbKeyboards.TryGetValue(string.Format("{0}+{1}", layout.CountryCode.ToLowerInvariant(), layout.LayoutId), out index))
 					{
 						xkbAdaptor.AddKeyboardForLayout(layout, index, this);
 					}
@@ -190,6 +190,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				return;
 			}
 			KeyboardController.CombinedKeyboardHandling = true;
+			KeyboardController.Manager.ClearAllKeyboards();
 
 			AddAllKeyboards(g_variant_print(sources, false).Trim('[', ']'));
 		}
