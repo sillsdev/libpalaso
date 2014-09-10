@@ -108,6 +108,7 @@ namespace Palaso.UI.WindowsForms.SIL
 			this._browser.Size = new System.Drawing.Size(395, 435);
 			this._browser.TabIndex = 9;
 			this._browser.Url = new System.Uri("about:blank", System.UriKind.Absolute);
+			this._browser.AllowNavigation = false;
 			// 
 			// _checkForUpdates
 			// 
