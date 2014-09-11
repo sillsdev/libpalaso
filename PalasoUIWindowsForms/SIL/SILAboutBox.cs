@@ -18,12 +18,18 @@ namespace Palaso.UI.WindowsForms.SIL
 		///
 		/// </summary>
 		/// <param name="pathToAboutBoxHtml">For example, use FileLocator.GetFileDistributedWithApplication("distfiles", "aboutBox.htm")</param>
-		public SILAboutBox(string pathToAboutBoxHtml)
+		/// <param name="useFullVersionNumber"><c>false</c> to only display the first three
+		/// parts of the version number, i.e. "MajorVersion.MinorVersion.Build",
+		/// <c>true</c> to display the full version number as found in Application.ProductVersion.
+		/// Passing <c>true</c> is useful if you want to display e.g. the git or hg revision of
+		/// the build. Typically this would be set in the AssemblyInformationalVersion.</param>
+		public SILAboutBox(string pathToAboutBoxHtml, bool useFullVersionNumber = false)
 		{
 			_assembly = Assembly.GetEntryAssembly(); // assembly;
 			_pathToAboutBoxHtml = pathToAboutBoxHtml;
 			InitializeComponent();
-			_versionNumber.Text = GetShortVersionInfo();
+			_versionNumber.Text = useFullVersionNumber ? Application.ProductVersion :
+				GetShortVersionInfo();
 			_buildDate.Text = GetBuiltOnDate();
 			Text = "About " + GetTitle();
 		}
