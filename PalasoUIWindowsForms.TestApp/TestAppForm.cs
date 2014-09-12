@@ -109,25 +109,27 @@ namespace PalasoUIWindowsForms.TestApp
 
 		private void OnSilAboutBoxClicked(object sender, EventArgs e)
 		{
-			ShowSilAboutBox(XWebBrowser.BrowserType.Default);
+			ShowSilAboutBox(XWebBrowser.BrowserType.Default, true);
 		}
 
 		private void OnSilAboutBoxGeckoClicked(object sender, EventArgs e)
 		{
-			ShowSilAboutBox(XWebBrowser.BrowserType.GeckoFx);
+			ShowSilAboutBox(XWebBrowser.BrowserType.GeckoFx, false);
 		}
 
-		private static void ShowSilAboutBox(XWebBrowser.BrowserType browserType)
+		private static void ShowSilAboutBox(XWebBrowser.BrowserType browserType, bool useFullVersionNumber)
 		{
 			XWebBrowser.DefaultBrowserType = browserType;
-			using(var tempfile = TempFile.WithExtension("html"))
+			using (var tempfile = TempFile.WithExtension("html"))
 			{
 				File.WriteAllText(tempfile.Path,
 					@"<html><body><h3>Copyright 2014 <a href=""http://sil.org"">SIL International</a></h3>" +
 					@"<p>Testing the <b>about box</b></p></body></html>");
 				var uri = new Uri(tempfile.Path);
-				using(var dlg = new SILAboutBox(uri.AbsoluteUri))
+				using (var dlg = new SILAboutBox(uri.AbsoluteUri, useFullVersionNumber))
+				{
 					dlg.ShowDialog();
+				}
 			}
 		}
 
