@@ -79,8 +79,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				foreach (var layout in kvp.Value)
 				{
 					int index;
-					if ((XkbKeyboards.TryGetValue(layout.LayoutId, out index) && (layout.LayoutId == layout.CountryCode.ToLowerInvariant())) ||
-						XkbKeyboards.TryGetValue(string.Format("{0}+{1}", layout.CountryCode.ToLowerInvariant(), layout.LayoutId), out index))
+					// Custom keyboards may omit defining a country code.  Try to survive such cases.
+					string codeToMatch;
+					if (layout.CountryCode == null)
+						codeToMatch = layout.LanguageCode.ToLowerInvariant();
+					else
+						codeToMatch = layout.CountryCode.ToLowerInvariant();
+					if ((XkbKeyboards.TryGetValue(layout.LayoutId, out index) && (layout.LayoutId == codeToMatch)) ||
+						XkbKeyboards.TryGetValue(string.Format("{0}+{1}", codeToMatch, layout.LayoutId), out index))
 					{
 						xkbAdaptor.AddKeyboardForLayout(layout, index, this);
 					}
