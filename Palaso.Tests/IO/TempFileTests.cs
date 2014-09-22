@@ -53,5 +53,18 @@ namespace Palaso.Tests.IO
 			}
 			Assert.IsFalse(File.Exists(expectedPathname));
 		}
+
+		[Test]
+		public void WithFilenameInTempFolder_CreatesAndDeletes()
+		{
+			var tempFile = TempFile.WithFilenameInTempFolder("myFile.txt");
+			Assert.That(Path.GetFileName(tempFile.Path), Is.EqualTo("myFile.txt"));
+			var directoryName = Path.GetDirectoryName(tempFile.Path);
+			Assert.That(Path.GetDirectoryName(directoryName) + Path.DirectorySeparatorChar, Is.EqualTo(Path.GetTempPath()));
+			var extra = Path.Combine(directoryName, "extra.txt");
+			File.WriteAllText(extra, "this is a test");
+			tempFile.Dispose();
+			Assert.That(Directory.Exists(directoryName), Is.False);
+		}
 	}
 }

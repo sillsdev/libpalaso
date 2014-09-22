@@ -18,6 +18,7 @@ namespace Palaso.IO
 	public class TempFile : IDisposable
 	{
 		protected string _path;
+		private string _folderToDelete; // if not null, delete this as well on dispose
 
 		public TempFile()
 		{
@@ -59,6 +60,8 @@ namespace Palaso.IO
 		public void Dispose()
 		{
 			File.Delete(_path);
+			if (_folderToDelete != null)
+				Directory.Delete(_folderToDelete, true);
 		}
 
 		public static TempFile CopyOf(string pathToExistingFile)
@@ -116,6 +119,22 @@ namespace Palaso.IO
 			var pathname = System.IO.Path.Combine(System.IO.Path.GetTempPath(), filename);
 			File.Create(pathname).Close();
 			return TrackExisting(pathname);
+		}
+
+		/// <summary>
+		/// Creates a file with the specified name in a new, randomly named folder.
+		/// Dispose will dispose of the folder (and any subsequently added content) as well as the temp file.
+		/// </summary>
+		/// <param name="fileName"></param>
+		/// <returns></returns>
+		public static TempFile WithFilenameInTempFolder(string fileName)
+		{
+			var tempFolder = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName());
+			Directory.CreateDirectory(tempFolder);
+			var path = System.IO.Path.Combine(tempFolder, fileName);
+			var result = TempFile.TrackExisting(path);
+			result._folderToDelete = tempFolder;
+			return result;
 		}
 
 		/// <summary>
