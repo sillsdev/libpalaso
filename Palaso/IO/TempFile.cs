@@ -61,7 +61,7 @@ namespace Palaso.IO
 		{
 			File.Delete(_path);
 			if (_folderToDelete != null)
-				Directory.Delete(_folderToDelete, true);
+				DirectoryUtilities.DeleteDirectoryRobust(_folderToDelete);
 		}
 
 		public static TempFile CopyOf(string pathToExistingFile)
