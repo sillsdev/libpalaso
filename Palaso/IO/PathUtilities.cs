@@ -194,6 +194,26 @@ namespace Palaso.IO
 			}
 			return false;
 		}
+
+		/// <summary>
+		/// On Windows this selects the file in Windows Explorer; on Linux it opens the containing
+		/// directory in Nautilus (or whatever application xdg-open starts for displaying
+		/// directories.
+		/// </summary>
+		/// <param name="filePath">File path.</param>
+		public static void SelectFileInExplorer(string filePath)
+		{
+
+			if (PlatformUtilities.Platform.IsWindows)
+				Process.Start("explorer.exe", "/select, \"" + filePath + "\"");
+			else
+			{
+				// On Linux we can't open Nautilus and select a file in a directory.
+				// So we just open the directory and let the user select the file.
+				Process.Start("xdg-open", "\"" + Path.GetDirectoryName(filePath) + "\"");
+			}
+		}
+
 	}
 }
 
