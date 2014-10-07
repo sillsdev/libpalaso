@@ -225,10 +225,16 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 					throw;
 			}
 		}
+
+		/// <summary>Returns if the format of the image file supports metadata</summary>
+		public bool FileFormatSupportsMetadata
+		{
+			get { return Metadata.FileFormatSupportsMetadata(_pathForSavingMetadataChanges); }
+		}
+
 		private void SaveUpdatedMetadata()
 		{
 			Metadata.Write(_pathForSavingMetadataChanges);
-			Metadata.HasChanges = false;
 		}
 
 		private static Image LoadImageWithoutLocking(string path)
