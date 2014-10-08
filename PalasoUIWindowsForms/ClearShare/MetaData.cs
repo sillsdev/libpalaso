@@ -350,9 +350,21 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			Write(_path);
 		}
 
-		public void Write(string path)
+		/// <summary>Returns if the format of the image file supports metadata</summary>
+		public bool FileFormatSupportsMetadata(string path)
 		{
 			var file = TagLib.File.Create(path) as TagLib.Image.File;
+			return file != null && !file.GetType().FullName.Contains("NoMetadata");
+		}
+
+		public void Write(string path)
+		{
+			// do not attempt to add metadata to a file type that does not support it.
+			if (!FileFormatSupportsMetadata(path))
+				throw new NotSupportedException(String.Format("The image file {0} is in a format that does not support metadata.", Path.GetFileName(path)));
+
+			var file = TagLib.File.Create(path) as TagLib.Image.File;
+
 			file.GetTag(TagTypes.XMP, true); // The Xmp tag, at least, must exist so we can store properties into it.
 			// This does nothing if the file is not allowed to have PNG tags, that is, if it's not a PNG file.
 			// If it is, we want this tag to exist, since otherwise tools like exiftool (and hence old versions
