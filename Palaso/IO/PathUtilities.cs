@@ -210,7 +210,7 @@ namespace Palaso.IO
 			switch (fileManager)
 			{
 				case "explorer.exe":
-					arguments = string.Format("/select \"{0}\"", filePath);
+					arguments = string.Format("/select, \"{0}\"", filePath);
 					break;
 				case "nautilus":
 				case "nemo":
