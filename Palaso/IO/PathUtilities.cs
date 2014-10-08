@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+using Palaso.Extensions;
+using Palaso.Reporting;
 
 namespace Palaso.IO
 {
@@ -196,21 +198,109 @@ namespace Palaso.IO
 		}
 
 		/// <summary>
-		/// On Windows this selects the file in Windows Explorer; on Linux it opens the containing
-		/// directory in Nautilus (or whatever application xdg-open starts for displaying
-		/// directories.
+		/// On Windows this selects the file in Windows Explorer; on Linux it selects the file
+		/// in the default file manager if that supports selecting a file and we know it,
+		/// otherwise we fall back to xdg-open and open the directory that contains that file.
 		/// </summary>
 		/// <param name="filePath">File path.</param>
 		public static void SelectFileInExplorer(string filePath)
 		{
-
-			if (PlatformUtilities.Platform.IsWindows)
-				Process.Start("explorer.exe", "/select, \"" + filePath + "\"");
-			else
+			var fileManager = DefaultFileManager;
+			string arguments;
+			switch (fileManager)
 			{
-				// On Linux we can't open Nautilus and select a file in a directory.
-				// So we just open the directory and let the user select the file.
-				Process.Start("xdg-open", "\"" + Path.GetDirectoryName(filePath) + "\"");
+				case "explorer.exe":
+					arguments = string.Format("/select \"{0}\"", filePath);
+					break;
+				case "nautilus":
+				case "nemo":
+					arguments = string.Format("\"{0}\"", filePath);
+					break;
+				default:
+					fileManager = "xdg-open";
+					arguments = string.Format("\"{0}\"", Path.GetDirectoryName(filePath));
+					break;
+			}
+			Process.Start(fileManager, arguments);
+		}
+
+		private static string GetDefaultFileManager()
+		{
+			if (PlatformUtilities.Platform.IsWindows)
+				return "explorer.exe";
+
+			const string fallbackFileManager = "xdg-open";
+
+			using (var xdgmime = new Process())
+			{
+				bool processError = false;
+				xdgmime.RunProcess("xdg-mime", "query default inode/directory", exception =>  {
+					processError = true;
+				});
+				if (processError)
+				{
+					Logger.WriteMinorEvent("Error executing 'xdg-mime query default inode/directory'");
+					return fallbackFileManager;
+				}
+				string desktopFile = xdgmime.StandardOutput.ReadToEnd().TrimEnd(' ', '\n', '\r');
+				xdgmime.WaitForExit();
+				if (string.IsNullOrEmpty(desktopFile))
+				{
+					Logger.WriteMinorEvent("Didn't find default value for mime type inode/directory");
+					return fallbackFileManager;
+				}
+				// Look in /usr/share/applications for .desktop file
+				var desktopFilename = Path.Combine(
+					Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+					"applications", desktopFile);
+				if (!File.Exists(desktopFilename))
+				{
+					// We didn't find the .desktop file yet, so check in ~/.local/share/applications
+					desktopFilename = Path.Combine(
+						Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+						"applications", desktopFile);
+				}
+				if (!File.Exists(desktopFilename))
+				{
+					Logger.WriteMinorEvent("Can't find desktop file for {0}", desktopFile);
+					return fallbackFileManager;
+				}
+				using (var reader = File.OpenText(desktopFilename))
+				{
+					string line;
+					for (line = reader.ReadLine();
+						!line.StartsWith("Exec=", StringComparison.InvariantCultureIgnoreCase) && !reader.EndOfStream;
+						line = reader.ReadLine())
+					{
+					}
+
+					if (!line.StartsWith("Exec=", StringComparison.InvariantCultureIgnoreCase))
+					{
+						Logger.WriteMinorEvent("Can't find Exec line in {0}", desktopFile);
+						_defaultFileManager = string.Empty;
+						return _defaultFileManager;
+					}
+
+					var start = "Exec=".Length;
+					var argStart = line.IndexOf('%');
+					var cmdLine = argStart > 0 ? line.Substring(start, argStart - start) : line.Substring(start);
+					cmdLine = cmdLine.TrimEnd();
+					Logger.WriteMinorEvent("Detected default file manager as {0}", cmdLine);
+					return cmdLine;
+				}
+			}
+		}
+
+		private static string _defaultFileManager;
+
+		private static string DefaultFileManager
+		{
+			get
+			{
+				if (_defaultFileManager == null)
+					_defaultFileManager = GetDefaultFileManager();
+
+				return _defaultFileManager;
 			}
 		}
 

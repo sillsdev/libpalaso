@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using Palaso.IO;
@@ -156,5 +157,13 @@ and displays it as HTML.
 			}
 		}
 
+		private void OnSelectFileClicked(object sender, System.EventArgs e)
+		{
+			// Get first file in personal folder
+			var fileName = Directory.EnumerateFiles(
+				Environment.GetFolderPath(Environment.SpecialFolder.Personal))
+				.First(x => !Path.GetFileName(x).StartsWith(".", StringComparison.InvariantCulture));
+			PathUtilities.SelectFileInExplorer(fileName);
+		}
 	}
 }
