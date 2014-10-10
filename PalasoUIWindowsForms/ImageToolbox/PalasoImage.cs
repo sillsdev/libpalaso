@@ -198,7 +198,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				if (!FileFormatSupportsMetadata) return;
 
 				ThrowIfDisposedOfAlready();
-				if (Metadata != null && Metadata.HasChanges && !string.IsNullOrEmpty(_pathForSavingMetadataChanges) && File.Exists(_pathForSavingMetadataChanges)) { }
+				if (Metadata != null && Metadata.HasChanges && !string.IsNullOrEmpty(_pathForSavingMetadataChanges) && File.Exists(_pathForSavingMetadataChanges))
 					SaveUpdatedMetadata();
 			}
 			catch (SystemException ex)
