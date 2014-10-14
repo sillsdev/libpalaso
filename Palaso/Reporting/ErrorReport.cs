@@ -371,8 +371,8 @@ namespace Palaso.Reporting
 			public bool Match(OperatingSystem os)
 			{
 				return os.Version.Minor == _minor &&
-					   os.Version.Major == _major &&
-					   os.Platform == _platform;
+					os.Version.Major == _major &&
+					os.Platform == _platform;
 			}
 		}
 
@@ -530,7 +530,7 @@ namespace Palaso.Reporting
 				return;
 			}
 			_errorReporter.ReportNonFatalException(exception, policy);
-			 UsageReporter.ReportException(false, null, exception, null);
+			UsageReporter.ReportException(false, null, exception, null);
 		}
 
 		/// <summary>
@@ -590,7 +590,7 @@ namespace Palaso.Reporting
 
 		public bool ShouldShowMessage(string message)
 		{
-			 if(_alreadyReportedMessages.Contains(message))
+			if(_alreadyReportedMessages.Contains(message))
 				return false;
 			_alreadyReportedMessages.Add(message);
 			return true;

@@ -8,8 +8,10 @@ using Palaso.Reporting;
 
 namespace Palaso.UI.WindowsForms.Reporting
 {
-	public class WinFormsExceptionHandler: ExceptionHandler
+	internal class WinFormsExceptionHandler: ExceptionHandler
 	{
+		// see comment on ExceptionReportingDialog.s_reportDataStack
+		internal static Control ControlOnUIThread { get; private set; }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -19,6 +21,11 @@ namespace Palaso.UI.WindowsForms.Reporting
 		/// ------------------------------------------------------------------------------------
 		public WinFormsExceptionHandler()
 		{
+			// We need to create a control on the UI thread so that we have a control that we
+			// can use to invoke the error reporting dialog on the correct thread.
+			ControlOnUIThread = new Control();
+			ControlOnUIThread.CreateControl();
+
 			// Using Application.ThreadException rather than
 			// AppDomain.CurrentDomain.UnhandledException has the advantage that the
 			// program doesn't necessarily ends - we can ignore the exception and continue.
@@ -60,11 +67,12 @@ namespace Palaso.UI.WindowsForms.Reporting
 		/// ------------------------------------------------------------------------------------
 		protected void HandleUnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
-			if (!GetShouldHandleException(sender, e.ExceptionObject as Exception))
+			var exception = e.ExceptionObject as Exception;
+			if (!GetShouldHandleException(sender, exception))
 				return;
 
-			if (e.ExceptionObject is Exception)
-				DisplayError(e.ExceptionObject as Exception);
+			if (exception != null)
+				DisplayError(exception);
 			else
 				DisplayError(new ApplicationException("Got unknown exception"));
 		}

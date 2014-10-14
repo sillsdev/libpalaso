@@ -3,14 +3,13 @@ using System.Diagnostics;
 
 namespace Palaso.Reporting
 {
-	public class ConsoleErrorReporter:IErrorReporter
+	public class ConsoleErrorReporter: IErrorReporter
 	{
 		private enum Severity
 		{
 			Fatal,
 			NonFatal
 		}
-
 
 		public void ReportFatalException(Exception error)
 		{
@@ -81,8 +80,8 @@ namespace Palaso.Reporting
 			//we want the developer to read.
 			if (innerMostException != null)
 			{
-				textToReport += "Inner-most exception:\r\n" + ErrorReport.GetExceptionText(innerMostException) +
-								 "\r\n\r\nFull, hierarchical exception contents:\r\n" + textToReport;
+				textToReport += string.Format("Inner-most exception:{0}{1}{0}{0}Full, hierarchical exception contents:{0}{2}",
+					Environment.NewLine, ErrorReport.GetExceptionText(innerMostException), textToReport);
 			}
 
 			textToReport += ErrorReportingProperties;
