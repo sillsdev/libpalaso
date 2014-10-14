@@ -212,5 +212,35 @@ using System.Runtime.InteropServices;
 			Assert.That(v, Is.StringContaining("AssemblyFileVersion(\"4.2.1.346"));
 			Assert.That(v, Is.Not.StringContaining("AssemblyFileVersion(\"4.2.1.0"));
 		}
+
+		[Test]
+		public void GetModifiedContents_InformationalVersionKeepsHashFromIncomingVersion_NoFileVersion()
+		{
+			var stamper = new StampAssemblies();
+			var content = @"
+[assembly: AssemblyVersion(""0.7.*.0"")]
+[assembly: AssemblyFileVersion(""1.0.0.0"")]
+[assembly: AssemblyInformationalVersion(""2.3.4.5"")]";
+
+			var s = stamper.GetModifiedContents(content, "*.*.123.9e1b12ec3712", null);
+			Assert.That(s, Is.StringContaining("AssemblyVersion(\"0.7.123.0\")"));
+			Assert.That(s, Is.StringContaining("AssemblyFileVersion(\"1.0.123.0\")"));
+			Assert.That(s, Is.StringContaining("AssemblyInformationalVersion(\"2.3.123.9e1b12ec3712\")"));
+		}
+
+		[Test]
+		public void GetModifiedContents_InformationalVersionKeepsHashFromIncomingVersion_BothParams()
+		{
+			var stamper = new StampAssemblies();
+			var content = @"
+[assembly: AssemblyVersion(""0.7.*.0"")]
+[assembly: AssemblyFileVersion(""1.0.0.0"")]
+[assembly: AssemblyInformationalVersion(""2.3.4.5"")]";
+
+			var s = stamper.GetModifiedContents(content, "*.*.123.9e1b12ec3712", "*.*.456.f7a874");
+			Assert.That(s, Is.StringContaining("AssemblyVersion(\"0.7.123.0\")"));
+			Assert.That(s, Is.StringContaining("AssemblyFileVersion(\"1.0.456.0\")"));
+			Assert.That(s, Is.StringContaining("AssemblyInformationalVersion(\"2.3.123.9e1b12ec3712\")"));
+		}
 	}
 }
