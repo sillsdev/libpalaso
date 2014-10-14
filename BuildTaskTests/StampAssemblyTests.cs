@@ -33,7 +33,7 @@ namespace Palaso.BuildTask.Tests
 [assembly: AssemblyFileVersion(""1.0.0.0"")]";
 
 			var s = stamper.GetModifiedContents(content, "*.*.123.456", null);
-			Assert.IsTrue(s.Contains("0.7.123.456"));
+			Assert.That(s, Is.StringContaining("0.7.123.456"));
 		}
 
 		[Test]
@@ -46,7 +46,7 @@ namespace Palaso.BuildTask.Tests
 [assembly: AssemblyFileVersion(""1.0.0.0"")]";
 
 			var s = stamper.GetModifiedContents(content, "*.*.123.9e1b12ec3712", null);
-			Assert.IsTrue(s.Contains("0.7.123.0"));
+			Assert.That(s, Is.StringContaining("0.7.123.0"));
 		}
 
 		/// <summary>
@@ -63,7 +63,7 @@ namespace Palaso.BuildTask.Tests
 [assembly: AssemblyFileVersion(""1.2.*"")]";
 
 			var s = stamper.GetModifiedContents(content, "*.*.345.6", null);
-			Assert.IsTrue(s.Contains("1.2.345.6"));
+			Assert.That(s, Is.StringContaining("1.2.345.6"));
 		}
 
 		/// <summary>
@@ -80,7 +80,7 @@ namespace Palaso.BuildTask.Tests
 [assembly: AssemblyFileVersion(""*.*.*.*"")]";
 
 			var s = stamper.GetModifiedContents(content, "*.*.345.6", null);
-			Assert.IsTrue(s.Contains("0.0.345.6"));
+			Assert.That(s, Is.StringContaining("0.0.345.6"));
 		}
 
 		[Test]
@@ -94,7 +94,7 @@ namespace Palaso.BuildTask.Tests
 [assembly: AssemblyFileVersion(""1.0.0.0"")]";
 
 			var s = stamper.GetModifiedContents(content, "*.*.121.93bc7076063f", null);
-			Assert.IsTrue(s.Contains("1.0.121.0"));
+			Assert.That(s, Is.StringContaining("1.0.121.0"));
 		}
 
 
@@ -113,7 +113,7 @@ namespace Palaso.BuildTask.Tests
 [assembly: AssemblyFileVersion(""0.0.9.789"")]";
 
 			var s = stamper.GetModifiedContents(content, "0.3.14", null);
-			Assert.IsTrue(s.Contains("0.3.14"), s);
+			Assert.That(s, Is.StringContaining("0.3.14"), s);
 		}
 
 		/// <summary>
@@ -159,7 +159,7 @@ using System.Runtime.InteropServices;
 ".Replace('\'', '"');
 
 			var s = stamper.GetModifiedContents(content, "*.*.121.93bc7076063f", null);
-			Assert.IsTrue(s.Contains("0.1.121.0"));
+			Assert.That(s, Is.StringContaining("0.1.121.0"));
 		}
 
 		[Test]
@@ -172,10 +172,10 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion(""8.8.8.88"")]";
 
 			var v = stamper.GetModifiedContents(content, "5.4.3.2", "1.2.3.4");
-			Assert.IsTrue(v.Contains("AssemblyVersion(\"5.4.3.2"));
-			Assert.IsTrue(v.Contains("AssemblyFileVersion(\"1.2.3.4"));
-			Assert.IsFalse(v.Contains("9.9.9.99"));
-			Assert.IsFalse(v.Contains("8.8.8.88"));
+			Assert.That(v, Is.StringContaining("AssemblyVersion(\"5.4.3.2\")"));
+			Assert.That(v, Is.StringContaining("AssemblyFileVersion(\"1.2.3.4\")"));
+			Assert.That(v, Is.Not.StringContaining("9.9.9.99"));
+			Assert.That(v, Is.Not.StringContaining("8.8.8.88"));
 		}
 
 		[Test]
@@ -188,10 +188,10 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion(""8.8.8.88"")]";
 
 			var v = stamper.GetModifiedContents(content, "5.4.3.2", null);
-			Assert.IsTrue(v.Contains("AssemblyVersion(\"5.4.3.2"));
-			Assert.IsTrue(v.Contains("AssemblyFileVersion(\"5.4.3.2"));
-			Assert.IsFalse(v.Contains("9.9.9.99"));
-			Assert.IsFalse(v.Contains("8.8.8.88"));
+			Assert.That(v, Is.StringContaining("AssemblyVersion(\"5.4.3.2"));
+			Assert.That(v, Is.StringContaining("AssemblyFileVersion(\"5.4.3.2"));
+			Assert.That(v, Is.Not.StringContaining("9.9.9.99"));
+			Assert.That(v, Is.Not.StringContaining("8.8.8.88"));
 		}
 		/// <summary>
 		/// This test simulates the actual configuration of the icu.net wrapper as of January 2013.
@@ -208,9 +208,39 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion(""4.2.1.0"")]";
 
 			var v = stamper.GetModifiedContents(content, "*.*.*", "*.*.*.346");
-			Assert.IsTrue(v.Contains("AssemblyVersion(\"4.2.1.0"));
-			Assert.IsTrue(v.Contains("AssemblyFileVersion(\"4.2.1.346"));
-			Assert.IsFalse(v.Contains("AssemblyFileVersion(\"4.2.1.0"));
+			Assert.That(v, Is.StringContaining("AssemblyVersion(\"4.2.1.0"));
+			Assert.That(v, Is.StringContaining("AssemblyFileVersion(\"4.2.1.346"));
+			Assert.That(v, Is.Not.StringContaining("AssemblyFileVersion(\"4.2.1.0"));
+		}
+
+		[Test]
+		public void GetModifiedContents_InformationalVersionKeepsHashFromIncomingVersion_NoFileVersion()
+		{
+			var stamper = new StampAssemblies();
+			var content = @"
+[assembly: AssemblyVersion(""0.7.*.0"")]
+[assembly: AssemblyFileVersion(""1.0.0.0"")]
+[assembly: AssemblyInformationalVersion(""2.3.4.5"")]";
+
+			var s = stamper.GetModifiedContents(content, "*.*.123.9e1b12ec3712", null);
+			Assert.That(s, Is.StringContaining("AssemblyVersion(\"0.7.123.0\")"));
+			Assert.That(s, Is.StringContaining("AssemblyFileVersion(\"1.0.123.0\")"));
+			Assert.That(s, Is.StringContaining("AssemblyInformationalVersion(\"2.3.123.9e1b12ec3712\")"));
+		}
+
+		[Test]
+		public void GetModifiedContents_InformationalVersionKeepsHashFromIncomingVersion_BothParams()
+		{
+			var stamper = new StampAssemblies();
+			var content = @"
+[assembly: AssemblyVersion(""0.7.*.0"")]
+[assembly: AssemblyFileVersion(""1.0.0.0"")]
+[assembly: AssemblyInformationalVersion(""2.3.4.5"")]";
+
+			var s = stamper.GetModifiedContents(content, "*.*.123.9e1b12ec3712", "*.*.456.f7a874");
+			Assert.That(s, Is.StringContaining("AssemblyVersion(\"0.7.123.0\")"));
+			Assert.That(s, Is.StringContaining("AssemblyFileVersion(\"1.0.456.0\")"));
+			Assert.That(s, Is.StringContaining("AssemblyInformationalVersion(\"2.3.123.9e1b12ec3712\")"));
 		}
 	}
 }
