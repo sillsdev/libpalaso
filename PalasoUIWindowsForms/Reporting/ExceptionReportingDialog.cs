@@ -5,11 +5,37 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Palaso.Email;
 using Palaso.Reporting;
+using System.Threading;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Palaso.UI.WindowsForms.Reporting
 {
 	internal class ExceptionReportingDialog : Form
 	{
+		#region Local structs
+		private struct ExceptionReportingData
+		{
+			public ExceptionReportingData(string message, string messageBeforeStack,
+				Exception error, StackTrace stackTrace, Form owningForm, int threadId)
+			{
+				Message = message;
+				MessageBeforeStack = messageBeforeStack;
+				Error = error;
+				StackTrace = stackTrace;
+				OwningForm = owningForm;
+				ThreadId = threadId;
+			}
+
+			public string Message;
+			public string MessageBeforeStack;
+			public Exception Error;
+			public Form OwningForm;
+			public StackTrace StackTrace;
+			public int ThreadId;
+		}
+		#endregion
+
 		#region Member variables
 
 		private Label label3;
@@ -25,7 +51,24 @@ namespace Palaso.UI.WindowsForms.Reporting
 		private ComboBox _methodCombo;
 		private Button _privacyNoticeButton;
 		private Label _emailAddress;
-		private static bool s_doIgnoreReport = false;
+		private static bool s_doIgnoreReport;
+		/// <summary>
+		/// Stack with exception data.
+		/// </summary>
+		/// <remarks>When an exception occurs on a background thread ideally it should be handled
+		/// by the application. However, not all applications are always implemented to do it
+		/// that way, so we need a safe fall back that doesn't pop up a dialog from a (non-UI)
+		/// background thread.
+		///
+		/// This implementation creates a control on the UI thread
+		/// (WinFormsExceptionHandler.ControlOnUIThread) in order to be able to check
+		/// if invoke is required. When an exception occurs on a background thread we push the
+		/// exception data to an exception data stack and try to invoke the exception dialog on
+		/// the UI thread. In case that the UI thread already shows an exception dialog we skip
+		/// the exception (similar to the behavior we already have when we get an exception on
+		/// the UI thread while displaying the exception dialog). Otherwise we display the
+		/// exception dialog, appending the messages from the exception data stack.</remarks>
+		private static Stack<ExceptionReportingData> s_reportDataStack = new Stack<ExceptionReportingData>();
 
 		#endregion
 
@@ -243,8 +286,6 @@ namespace Palaso.UI.WindowsForms.Reporting
 		}
 		#endregion
 
-
-
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// show a dialog or output to the error log, as appropriate.
@@ -279,6 +320,11 @@ namespace Palaso.UI.WindowsForms.Reporting
 		{
 			if (s_doIgnoreReport)
 			{
+				lock (s_reportDataStack)
+				{
+					s_reportDataStack.Push(new ExceptionReportingData(null, null, error,
+						null, parent, Thread.CurrentThread.ManagedThreadId));
+				}
 				return;            // ignore message if we are showing from a previous error
 			}
 
@@ -292,6 +338,11 @@ namespace Palaso.UI.WindowsForms.Reporting
 		{
 			if (s_doIgnoreReport)
 			{
+				lock (s_reportDataStack)
+				{
+					s_reportDataStack.Push(new ExceptionReportingData(message, null, null,
+						stack, null, Thread.CurrentThread.ManagedThreadId));
+				}
 				return;            // ignore message if we are showing from a previous error
 			}
 
@@ -305,6 +356,11 @@ namespace Palaso.UI.WindowsForms.Reporting
 		{
 			if (s_doIgnoreReport)
 			{
+				lock (s_reportDataStack)
+				{
+					s_reportDataStack.Push(new ExceptionReportingData(message, null, error,
+						null, null, Thread.CurrentThread.ManagedThreadId));
+				}
 				return;            // ignore message if we are showing from a previous error
 			}
 
@@ -313,11 +369,7 @@ namespace Palaso.UI.WindowsForms.Reporting
 				dlg.Report(message, null, error,null);
 			}
 		}
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		///
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
+
 		protected void GatherData()
 		{
 			_details.Text += Environment.NewLine + "To Reproduce: " + m_reproduce.Text + Environment.NewLine;
@@ -328,125 +380,217 @@ namespace Palaso.UI.WindowsForms.Reporting
 			Report(null,null, error, owningForm);
 		}
 
-
 		public void Report(string message, string messageBeforeStack, Exception error, Form owningForm)
+		{
+			lock (s_reportDataStack)
+			{
+				s_reportDataStack.Push(new ExceptionReportingData(message, messageBeforeStack, error,
+					null, owningForm, Thread.CurrentThread.ManagedThreadId));
+			}
+
+			if (WinFormsExceptionHandler.ControlOnUIThread.InvokeRequired)
+			{
+				// we got called from a background thread.
+				WinFormsExceptionHandler.ControlOnUIThread.Invoke(
+					new Action(ReportInternal));
+				return;
+			}
+
+			ReportInternal();
+		}
+
+		public void Report(string message, string messageBeforeStack, StackTrace stackTrace, Form owningForm)
+		{
+			lock (s_reportDataStack)
+			{
+				s_reportDataStack.Push(new ExceptionReportingData(message, messageBeforeStack, null,
+					stackTrace, owningForm, Thread.CurrentThread.ManagedThreadId));
+			}
+
+			if (WinFormsExceptionHandler.ControlOnUIThread.InvokeRequired)
+			{
+				// we got called from a background thread.
+				WinFormsExceptionHandler.ControlOnUIThread.Invoke(
+					new Action(ReportInternal));
+				return;
+			}
+
+			ReportInternal();
+		}
+
+		private void ReportInternal()
+		{
+			// This method will/should always be called on the UI thread
+			Debug.Assert(!WinFormsExceptionHandler.ControlOnUIThread.InvokeRequired);
+
+			ExceptionReportingData reportingData;
+			lock (s_reportDataStack)
+			{
+				if (s_reportDataStack.Count <= 0)
+					return;
+
+				reportingData = s_reportDataStack.Pop();
+			}
+
+			ReportExceptionToAnalytics(reportingData);
+
+			if (s_doIgnoreReport)
+				return; // ignore message if we are showing from a previous error
+
+			PrepareDialog();
+
+			if(!string.IsNullOrEmpty(reportingData.Message))
+				_notificationText.Text = reportingData.Message;
+
+			var bldr = new StringBuilder();
+			var innerMostException = FormatMessage(bldr, reportingData);
+			bldr.Append(AddMessagesFromBackgroundThreads());
+			_details.Text += bldr.ToString();
+
+			Debug.WriteLine(_details.Text);
+			var error = reportingData.Error;
+			if (error != null)
+			{
+				if (innerMostException != null)
+				{
+					error = innerMostException;
+				}
+
+				try
+				{
+					Logger.WriteEvent("Got exception " + error.GetType().Name);
+				}
+				catch (Exception err)
+				{
+					//We have more than one report of dieing while logging an exception.
+					_details.Text += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
+					_details.Text += "Was trying to log the exception: " + error.Message + Environment.NewLine;
+					_details.Text += "Recent events:" + Environment.NewLine;
+					_details.Text += Logger.MinorEventsLog;
+				}
+			}
+			else
+			{
+				try
+				{
+					Logger.WriteEvent("Got error message " + reportingData.Message);
+				}
+				catch (Exception err)
+				{
+					//We have more than one report of dieing while logging an exception.
+					_details.Text += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
+				}
+			}
+
+			ShowReportDialogIfAppropriate(reportingData.OwningForm);
+		}
+
+		private static void ReportExceptionToAnalytics(ExceptionReportingData reportingData)
 		{
 			try
 			{
-				if(!string.IsNullOrEmpty(message))
-					UsageReporter.ReportExceptionString(message);
-				else if(error!=null)
-					UsageReporter.ReportException(error);
+				if (!string.IsNullOrEmpty(reportingData.Message))
+					UsageReporter.ReportExceptionString(reportingData.Message);
+				else if (reportingData.Error != null)
+					UsageReporter.ReportException(reportingData.Error);
 			}
 			catch
 			{
 				//swallow
 			}
-
-			PrepareDialog();
-			if(!string.IsNullOrEmpty(message))
-				_notificationText.Text = message;
-
-			if (!string.IsNullOrEmpty(message))
-			{
-				_details.Text += "Message (not an exception): " + message + Environment.NewLine;
-				_details.Text += Environment.NewLine;
-			}
-			if (!string.IsNullOrEmpty(messageBeforeStack))
-			{
-				_details.Text += messageBeforeStack;
-				_details.Text += Environment.NewLine;
-			}
-
-			Exception innerMostException = null;
-			_details.Text += ErrorReport.GetHiearchicalExceptionInfo(error, ref innerMostException);
-
-			//if the exception had inner exceptions, show the inner-most exception first, since that is usually the one
-			//we want the developer to read.
-			if (innerMostException != null)
-			{
-				_details.Text = string.Format("Inner-most exception:{2}{0}{2}{2}Full, hierarchical exception contents:{2}{1}",
-					ErrorReport.GetExceptionText(innerMostException), _details.Text, Environment.NewLine);
-			}
-
-			AddErrorReportingPropertiesToDetails();
-
-
-			Debug.WriteLine(_details.Text);
-			if (innerMostException != null)
-			{
-				error = innerMostException;
-			}
-
-
-			try
-			{
-				Logger.WriteEvent("Got exception " + error.GetType().Name);
-			}
-			catch (Exception err)
-			{
-				//We have more than one report of dieing while logging an exception.
-				_details.Text += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
-				_details.Text += "Was trying to log the exception: " + error.Message + Environment.NewLine;
-				_details.Text += "Recent events:" + Environment.NewLine;
-				_details.Text += Logger.MinorEventsLog;
-			}
-
-			ShowReportDialogIfAppropriate(owningForm);
 		}
 
-		public void Report(string message, string messageBeforeStack, StackTrace stackTrace, Form owningForm)
+		private static string AddMessagesFromBackgroundThreads()
 		{
-			PrepareDialog();
-			_notificationText.Text = message;
-
-			_details.Text += "Message (not an exception): " + message + Environment.NewLine;
-			_details.Text += Environment.NewLine;
-			if(!string.IsNullOrEmpty(messageBeforeStack))
-			{
-				_details.Text += messageBeforeStack;
-				_details.Text += Environment.NewLine;
-			}
-			_details.Text += "--Stack--"+ Environment.NewLine;;
-			_details.Text += stackTrace.ToString() + Environment.NewLine; ;
-
-
-			AddErrorReportingPropertiesToDetails();
-
-			Debug.WriteLine(_details.Text);
-
-
-			try
-			{
-				Logger.WriteEvent("Got error message " + message);
-			}
-			catch (Exception err)
-			{
-				//We have more than one report of dieing while logging an exception.
-				_details.Text += "****Could not write to log (" + err.Message + ")" + Environment.NewLine;
-			}
-
-			ShowReportDialogIfAppropriate(owningForm);
+			var bldr = new StringBuilder();
+			for (bool messageOnStack = AddNextMessageFromStack(bldr); messageOnStack;)
+				messageOnStack = AddNextMessageFromStack(bldr);
+			return bldr.ToString();
 		}
 
-		private void AddErrorReportingPropertiesToDetails()
+		private static bool AddNextMessageFromStack(StringBuilder bldr)
 		{
+			ExceptionReportingData data;
+			lock (s_reportDataStack)
+			{
+				if (s_reportDataStack.Count <= 0)
+					return false;
 
-			_details.Text += Environment.NewLine+"--Error Reporting Properties--"+Environment.NewLine;
+				data = s_reportDataStack.Pop();
+			}
+
+			ReportExceptionToAnalytics(data);
+			bldr.AppendLine("---------------------------------");
+			bldr.AppendFormat("The following exception occurred on a different thread ({0}) at about the same time:",
+				data.ThreadId);
+			bldr.AppendLine();
+			bldr.AppendLine();
+			FormatMessage(bldr, data);
+			return true;
+		}
+
+		private static Exception FormatMessage(StringBuilder bldr, ExceptionReportingData data)
+		{
+			if (!string.IsNullOrEmpty(data.Message))
+			{
+				bldr.Append("Message (not an exception): ");
+				bldr.AppendLine(data.Message);
+				bldr.AppendLine();
+			}
+			if (!string.IsNullOrEmpty(data.MessageBeforeStack))
+			{
+				bldr.AppendLine(data.MessageBeforeStack);
+			}
+
+			if (data.Error != null)
+			{
+				Exception innerMostException = null;
+				bldr.Append(ErrorReport.GetHiearchicalExceptionInfo(data.Error, ref innerMostException));
+				//if the exception had inner exceptions, show the inner-most exception first, since that is usually the one
+				//we want the developer to read.
+				if (innerMostException != null)
+				{
+					var oldText = bldr.ToString();
+					bldr.Clear();
+					bldr.AppendLine("Inner-most exception:");
+					bldr.AppendLine(ErrorReport.GetExceptionText(innerMostException));
+					bldr.AppendLine();
+					bldr.AppendLine("Full, hierarchical exception contents:");
+					bldr.Append(oldText);
+				}
+				AddErrorReportingPropertiesToDetails(bldr);
+				return innerMostException;
+			}
+			if (data.StackTrace != null)
+			{
+				bldr.AppendLine("--Stack--");
+				bldr.AppendLine(data.StackTrace.ToString());
+			}
+
+			return null;
+		}
+
+		private static void AddErrorReportingPropertiesToDetails(StringBuilder bldr)
+		{
+			bldr.AppendLine();
+			bldr.AppendLine("--Error Reporting Properties--");
 			foreach (string label in ErrorReport.Properties.Keys)
 			{
-				_details.Text += label + ": " + ErrorReport.Properties[label] + Environment.NewLine;
+				bldr.Append(label);
+				bldr.Append(": ");
+				bldr.AppendLine(ErrorReport.Properties[label]);
 			}
 
-			_details.Text += Environment.NewLine+"--Log--"+Environment.NewLine;
+			bldr.AppendLine();
+			bldr.AppendLine("--Log--");
 			try
 			{
-				_details.Text += Logger.LogText;
+				bldr.Append(Logger.LogText);
 			}
 			catch (Exception err)
 			{
 				//We have more than one report of dieing while logging an exception.
-				_details.Text += "****Could not read from log: " + err.Message + Environment.NewLine;
+				bldr.AppendLine("****Could not read from log: " + err.Message);
 			}
 		}
 
