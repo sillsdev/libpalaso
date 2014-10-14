@@ -210,7 +210,7 @@ namespace Palaso.IO
 			switch (fileManager)
 			{
 				case "explorer.exe":
-					arguments = string.Format("/select \"{0}\"", filePath);
+					arguments = string.Format("/select, \"{0}\"", filePath);
 					break;
 				case "nautilus":
 				case "nemo":
@@ -222,6 +222,26 @@ namespace Palaso.IO
 					break;
 			}
 			Process.Start(fileManager, arguments);
+		}
+
+		/// <summary>
+		/// Opens the specified directory in the default file manager
+		/// </summary>
+		/// <param name="directory">Full path of the directory</param>
+		public static void OpenDirectoryInExplorer(string directory)
+		{
+			var fileManager = DefaultFileManager;
+			string arguments = string.Format("\"{0}\"", directory);
+			Process.Start(fileManager, arguments);
+		}
+
+		/// <summary>
+		/// Opens the file in the application associated with the file type.
+		/// </summary>
+		/// <param name="filePath">Full path to the file</param>
+		public static void OpenFileInApplication(string filePath)
+		{
+			Process.Start(filePath);
 		}
 
 		private static string GetDefaultFileManager()
