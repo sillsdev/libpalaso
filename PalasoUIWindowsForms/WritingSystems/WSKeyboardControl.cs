@@ -324,18 +324,34 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void _windowsKeyboardSettingsLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			string program;
+			string program = null;
 			string arguments = null;
 
 #if MONO
+			// Try for the most likely keyboard setup programs.  If none found,
+			// inform the user.
 			if (KeyboardController.CombinedKeyboardHandling)
 			{
-				program = "/usr/bin/gnome-control-center";
-				arguments = "region layouts";
+				if (File.Exists("/usr/bin/unity-control-center"))
+				{
+					program = "/usr/bin/unity-control-center";
+					arguments = "region layouts";
+				}
+				else if (File.Exists("/usr/bin/gnome-control-center"))
+				{
+					program = "/usr/bin/gnome-control-center";
+					arguments = "region layouts";
+				}
 			}
 			else
 			{
-				program = "/usr/bin/ibus-setup";
+				if (File.Exists("/usr/bin/ibus-setup"))
+					program = "/usr/bin/ibus-setup";
+			}
+			if (String.IsNullOrEmpty(program))
+			{
+				MessageBox.Show("Cannot open keyboard setup program", "Information");
+				return;
 			}
 #else
 			program = Path.Combine(
