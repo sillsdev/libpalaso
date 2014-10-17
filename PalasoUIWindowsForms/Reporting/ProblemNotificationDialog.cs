@@ -5,7 +5,12 @@ using Palaso.UI.WindowsForms.Miscellaneous;
 
 namespace Palaso.UI.WindowsForms.Reporting
 {
-	internal partial class ProblemNotificationDialog : Form
+	/// <summary>
+	/// Display problem notification dialog.
+	/// NOTE: It is recommended to call Palaso.Reporting.ErrorReport.NotifyUserOfProblem
+	/// instead of instantiating this class.
+	/// </summary>
+	public partial class ProblemNotificationDialog : Form
 	{
 		private DialogResult _alternateButton1DialogResult;
 
