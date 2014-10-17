@@ -125,6 +125,15 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		private void SetupMetaDataControls(Metadata metaData)
 		{
+			if (_currentImageBox.Image == null)
+			{
+				// Otherwise, the metadata controls are visible upon first load (with no image).
+				// Clicking them causes crashes.
+				_invitationToMetadataPanel.Visible = false;
+				_metadataDisplayControl.Visible = false;
+				return;
+			}
+
 			//NB: there was a bug here where the display control refused to go to visible, if this was called before loading. Weird.  So now, we have an OnLoad() to call it again.
 			_invitationToMetadataPanel.Visible = (metaData == null || metaData.IsEmpty);
 			_metadataDisplayControl.Visible = !_invitationToMetadataPanel.Visible;
