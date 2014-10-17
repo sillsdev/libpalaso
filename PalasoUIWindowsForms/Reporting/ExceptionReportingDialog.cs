@@ -11,7 +11,12 @@ using System.Text;
 
 namespace Palaso.UI.WindowsForms.Reporting
 {
-	internal class ExceptionReportingDialog : Form
+	/// <summary>
+	/// Display exception reporting dialog.
+	/// NOTE: It is recommended to call one of Palaso.Reporting.ErrorReport.Report(Non)Fatal*
+	/// methods instead of instantiating this class.
+	/// </summary>
+	public class ExceptionReportingDialog : Form
 	{
 		#region Local structs
 		private struct ExceptionReportingData
