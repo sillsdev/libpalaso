@@ -418,11 +418,18 @@ namespace Palaso.IO
 			{
 				// calling Directory.GetFiles("C:\Program Files", exeName, SearchOption.AllDirectories) will fail
 				// if even one of the children of the Program Files doesn't allow you to search it.
-				// So instead we first gather up all the children diretories, and then search those.
+				// So instead we first gather up all the children directories, and then search those.
 				// Some will give us access denied, and that's fine, we skip them.
+				// But we don't want to look in child directories on Linux because GetPossibleProgramFilesFolders()
+				// gives us the individual elements of the PATH environment variable, and these specify exactly
+				// those directories that should be searched for program files.
 				foreach (var path in subFoldersToSearch.Select(sf => Path.Combine(progFolder, sf)).Where(Directory.Exists))
 				{
+#if __MonoCS__
+					var subDir = path;
+#else
 					foreach (var subDir in DirectoryUtilities.GetSafeDirectories(path))
+#endif
 					{
 						try
 						{
