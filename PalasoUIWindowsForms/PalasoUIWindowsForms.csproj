@@ -225,23 +225,19 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL"
-               Condition="'$(Configuration)' == 'DebugMono'">
+    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL" Condition="'$(Configuration)' == 'DebugMono'">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\DebugMono\taglib-sharp.dll</HintPath>
     </Reference>
-    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL"
-               Condition="'$(Configuration)' == 'Debug'">
+    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL" Condition="'$(Configuration)' == 'Debug'">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Debug\taglib-sharp.dll</HintPath>
     </Reference>
-    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL"
-           Condition="'$(Configuration)' == 'ReleaseMono'">
+    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL" Condition="'$(Configuration)' == 'ReleaseMono'">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\ReleaseMono\taglib-sharp.dll</HintPath>
     </Reference>
-    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL"
-           Condition="'$(Configuration)' == 'Release'">
+    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL" Condition="'$(Configuration)' == 'Release'">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Release\taglib-sharp.dll</HintPath>
     </Reference>

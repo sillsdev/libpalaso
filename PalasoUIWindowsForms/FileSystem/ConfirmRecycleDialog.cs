@@ -1,10 +1,9 @@
 using System;
 using System.Drawing;
-using System.IO;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using L10NSharp;
 using Palaso.IO;
+using Palaso.UI.WindowsForms.Extensions;
 
 namespace Palaso.UI.WindowsForms.FileSystem
 {
@@ -29,22 +28,6 @@ namespace Palaso.UI.WindowsForms.FileSystem
 				"{0} will be moved to the Recycle Bin.", 
 				"Param 0 is a description of the things being deleted (e.g., \"The selected files\"") : _messageLabel.Text;
 			_messageLabel.Text = string.Format(msgFmt, LabelForThingBeingDeleted);
-
-			// Sometimes, setting the text in the previous line will force the table layout control
-			// to resize itself accordingly, which will fire its SizeChanged event. However,
-			// sometimes the text is not long enough to force the table layout to be resized,
-			// therefore, we need to call it manually, just to be sure the form gets sized correctly.
-			HandleTableLayoutSizeChanged(null, null);
-		}
-
-		private void HandleTableLayoutSizeChanged(object sender, EventArgs e)
-		{
-			if (!IsHandleCreated)
-				CreateHandle();
-
-			var scn = Screen.FromControl(this);
-			var desiredHeight = tableLayout.Height + Padding.Top + Padding.Bottom + (Height - ClientSize.Height);
-			Height = Math.Min(desiredHeight, scn.WorkingArea.Height - 20);
 		}
 
 		protected override void OnBackColorChanged(EventArgs e)
