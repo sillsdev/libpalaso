@@ -425,6 +425,13 @@
       <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Miscellaneous\WaitCursor.cs" />
+    <Compile Include="SimpleMessageDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SimpleMessageDialog.Designer.cs">
+      <DependentUpon>SimpleMessageDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UniqueToken\UniqueToken.cs" />
     <Compile Include="PaintingHelper.cs" />
     <Compile Include="PortableSettingsProvider\FormSettings.cs" />
     <Compile Include="PortableSettingsProvider\GridSettings.cs" />
@@ -915,6 +922,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SIL\SILAboutBox.resx">
       <DependentUpon>SILAboutBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SimpleMessageDialog.resx">
+      <DependentUpon>SimpleMessageDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SuperToolTip\dlgSuperToolTipEditor.resx">
       <DependentUpon>dlgSuperToolTipEditor.cs</DependentUpon>
