@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using Palaso.Code;
 using Palaso.Reporting;
@@ -15,21 +16,8 @@ namespace Palaso.UI.WindowsForms.UniqueToken
 	/// </summary>
 	public static class UniqueToken
 	{
-		// The current use of this class in Linux requires use of shared memory which is disabled by default.
-		// Mono decided (as of 2.8) that shared memory should not be enabled by default because of potential bugs.
-		// This may prove to be a poor implementation which can be replaced by a lock file at some point.
-		//
-		// If shared memory is not enabled, a mutex will always be acquired.  
-		static UniqueToken()
-		{
-			if (PlatformUtilities.Platform.IsLinux)
-			{
-				Guard.Against(Environment.GetEnvironmentVariable("MONO_ENABLE_SHM") != "1", 
-					"With the current implementation of this class, MONO_ENABLE_SHM must be set to 1");
-			}
-		}
-
-		private static Mutex s_mutex;
+		private static string m_uniqueIdentifier;
+		private static FileStream m_lockFile;
 
 		/// <summary>
 		/// Try to acquire the token quietly
@@ -41,21 +29,17 @@ namespace Palaso.UI.WindowsForms.UniqueToken
 			Guard.AgainstNull(uniqueIdentifier, "uniqueIdentifier");
 
 			// Each process may only acquire one token
-			if (s_mutex != null)
+			if (m_lockFile != null)
 				return false;
 
 			bool tokenAcquired = false;
 			try
 			{
-				s_mutex = Mutex.OpenExisting(uniqueIdentifier);
-				tokenAcquired = s_mutex.WaitOne(TimeSpan.FromMilliseconds(1 * 1000), false);
-			}
-			catch (WaitHandleCannotBeOpenedException) //doesn't exist, we're the first.
-			{
-				s_mutex = new Mutex(true, uniqueIdentifier, out tokenAcquired);
+				m_lockFile = File.Open(Path.GetTempPath() + uniqueIdentifier + ".locktoken", FileMode.OpenOrCreate, FileAccess.Read, FileShare.None);
+				m_uniqueIdentifier = uniqueIdentifier;
 				tokenAcquired = true;
 			}
-			catch (AbandonedMutexException)
+			catch (IOException)
 			{
 			}
 			return tokenAcquired;
@@ -74,54 +58,70 @@ namespace Palaso.UI.WindowsForms.UniqueToken
 			Guard.AgainstNull(uniqueIdentifier, "uniqueIdentifier");
 
 			bool tokenAcquired = AcquireTokenQuietly(uniqueIdentifier);
+			if (tokenAcquired)
+				return true;
 
 			string waitingMsg = applicationName == null ?
 				L10NSharp.LocalizationManager.GetString("Application.WaitingFinish.General", "Waiting for other application to finish...") :
-				L10NSharp.LocalizationManager.GetString("Application.WaitingFinish.Specific", "Waiting for other {0} to finish...", "{0} is the application name");
+				String.Format(
+					L10NSharp.LocalizationManager.GetString("Application.WaitingFinish.Specific", "Waiting for other {0} to finish...", "{0} is the application name"),
+					applicationName);
 			using (var dlg = new SimpleMessageDialog(waitingMsg, applicationName))
 			{
 				dlg.Show();
+				dlg.Update();
 				try
 				{
-					s_mutex = Mutex.OpenExisting(uniqueIdentifier);
-					tokenAcquired = s_mutex.WaitOne(TimeSpan.FromMilliseconds(secondsToWait * 1000), false);
-				}
-				catch (AbandonedMutexException)
+					for (int i=0; i < secondsToWait; i++)
 				{
-					s_mutex = new Mutex(true, uniqueIdentifier, out tokenAcquired);
-					tokenAcquired = true;
+						tokenAcquired = AcquireTokenQuietly(uniqueIdentifier);
+						if (tokenAcquired)
+							break;
+						Thread.Sleep(1000);
+					}
 				}
 				catch (Exception e)
 				{
 					string errorMsg = applicationName == null ?
 						L10NSharp.LocalizationManager.GetString("Application.ProblemStarting.General", 
 						"There was a problem starting the application which might require that you restart your computer.") :
-						L10NSharp.LocalizationManager.GetString("Application.ProblemStarting.Specific", 
-						"There was a problem starting {0} which might require that you restart your computer.", "{0} is the application name");
+						String.Format(
+							L10NSharp.LocalizationManager.GetString("Application.ProblemStarting.Specific", 
+								"There was a problem starting {0} which might require that you restart your computer.", "{0} is the application name"),
+							applicationName);
 					ErrorReport.NotifyUserOfProblem(e, errorMsg);
 				}
 			}
 
 			if (!tokenAcquired) // cannot acquire
 			{
-				s_mutex = null;
 				string errorMsg = applicationName == null ?
 						L10NSharp.LocalizationManager.GetString("Application.AlreadyRunning.General", 
 						"Another copy of the application is already running. If you cannot find it, restart your computer.") :
-						L10NSharp.LocalizationManager.GetString("Application.AlreadyRunning.Specific",
-						"Another copy of the application is already running. If you cannot find that {0}, restart your computer.", "{0} is the application name");
+						String.Format(
+							L10NSharp.LocalizationManager.GetString("Application.AlreadyRunning.Specific",
+								"Another copy of {0} is already running. If you cannot find that {0}, restart your computer.",
+								"{0} is the application name"),
+							applicationName);
 				ErrorReport.NotifyUserOfProblem(errorMsg);
 				return false;
 			}
 			return true;
 		}
 
+		/// <summary>
+		/// Releases the token when client is finished with it
+		/// 
+		/// Even though it is a very good idea to release the token when finished with it,
+		/// in the event of a crash, the file is released anyway meaning another application can get it.
+		/// </summary>
 		public static void ReleaseToken()
 		{
-			if (s_mutex != null)
+			if (m_lockFile != null)
 			{
-				s_mutex.ReleaseMutex();
-				s_mutex = null;
+				m_lockFile.Close();
+				File.Delete(Path.GetTempPath() + m_uniqueIdentifier + ".locktoken");
+				m_lockFile = null;
 			}
 		}
 	}
