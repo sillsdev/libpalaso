@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Xml;
@@ -131,6 +132,12 @@ namespace Palaso.Settings
 
 		private void SetValue(XmlNode groupNode, SettingsPropertyValue propVal)
 		{
+			// Paranoid check on data coming from .NET or Mono
+			if(propVal == null)
+			{
+				return;
+			}
+
 			XmlElement settingNode;
 
 			try
@@ -168,7 +175,10 @@ namespace Palaso.Settings
 			}
 			if(propVal.Property.SerializeAs == SettingsSerializeAs.String)
 			{
-				valueNode.InnerText = propVal.SerializedValue.ToString();
+				// In some cases the serialized value in the propVal can return null.
+				// Set the contents of the setting xml to the empty string in that case.
+				var serializedValue = propVal.SerializedValue;
+				valueNode.InnerText = serializedValue != null ? serializedValue.ToString() : String.Empty;
 			}
 			else if(propVal.Property.SerializeAs == SettingsSerializeAs.Xml)
 			{
