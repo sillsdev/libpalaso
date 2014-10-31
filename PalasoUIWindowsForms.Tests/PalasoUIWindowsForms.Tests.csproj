@@ -161,6 +161,7 @@
       <DependentUpon>DialogWithSomeSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="SettingsProtection\SettingsProtectionUITests.cs" />
+    <Compile Include="SimpleMessageDialogTests.cs" />
     <Compile Include="SpellChecking\TextBoxSpellChecker.cs" />
     <Compile Include="SuperToolTip\SuperToolTipTestForm.cs">
       <SubType>Form</SubType>
@@ -168,6 +169,7 @@
     <Compile Include="SuperToolTip\SuperToolTipTestForm.Designer.cs">
       <DependentUpon>SuperToolTipTestForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UniqueToken\UniqueTokenTests.cs" />
     <Compile Include="Widgets\PromptTests.cs" />
     <Compile Include="WritingSystems\LookupIsoCodeModelTests.cs" />
     <Compile Include="WritingSystems\UITests.cs" />
