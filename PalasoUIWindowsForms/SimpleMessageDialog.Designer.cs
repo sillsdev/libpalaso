@@ -50,6 +50,7 @@
 			this.Controls.Add(this._dialogMessage);
 			this.Name = "SimpleMessageDialog";
 			this.Text = "caption";
+			this.Activated += new System.EventHandler(this.SimpleMessageDialog_Activated);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

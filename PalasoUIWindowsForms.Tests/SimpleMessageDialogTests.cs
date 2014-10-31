@@ -13,8 +13,7 @@ namespace PalasoUIWindowsForms.Tests
 			using (var dlg = new SimpleMessageDialog("my message", "my title"))
 			{
 				dlg.Show();
-				dlg.Update();
-				System.Threading.Thread.Sleep(5000);
+				System.Threading.Thread.Sleep(2000);
 			}
 		}
 
@@ -26,8 +25,7 @@ namespace PalasoUIWindowsForms.Tests
 			using (var dlg = new SimpleMessageDialog(longMessage, "my title"))
 			{
 				dlg.Show();
-				dlg.Update();
-				System.Threading.Thread.Sleep(5000);
+				System.Threading.Thread.Sleep(2000);
 			}
 		}
 
@@ -38,14 +36,12 @@ namespace PalasoUIWindowsForms.Tests
 			using (var dlg = new SimpleMessageDialog("the caption bar is still there, though empty"))
 			{
 				dlg.Show();
-				dlg.Update();
-				System.Threading.Thread.Sleep(3000);
+				System.Threading.Thread.Sleep(2000);
 			}
 			using (var dlg = new SimpleMessageDialog("the caption bar is still there, though empty", null))
 			{
 				dlg.Show();
-				dlg.Update();
-				System.Threading.Thread.Sleep(3000);
+				System.Threading.Thread.Sleep(2000);
 			}
 		}
 
@@ -56,8 +52,7 @@ namespace PalasoUIWindowsForms.Tests
 			using (var dlg = new SimpleMessageDialog("the caption bar can be hidden if truly desired", ""))
 			{
 				dlg.Show();
-				dlg.Update();
-				System.Threading.Thread.Sleep(3000);
+				System.Threading.Thread.Sleep(2000);
 			}
 		}
 	}

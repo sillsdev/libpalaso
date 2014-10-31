@@ -6,7 +6,7 @@ namespace PalasoUIWindowsForms.Tests.UniqueToken
 	class UniqueTokenTests
 	{
 		[Test]
-		public void AcquireTokenQuietlyTest()
+		public void AcquireTokenQuietly_SucceedsWhenTokenNotCurrentlyHeld()
 		{
 			const string uniqueIdentifier = "abc";
 
@@ -25,7 +25,7 @@ namespace PalasoUIWindowsForms.Tests.UniqueToken
 		}
 
 		[Test]
-		public void AcquireTokenQuietlyTest_AcquireReleaseAcquireRelease()
+		public void AcquireTokenQuietlyTest_AcquireWithDifferentIdentifierAfterRelease()
 		{
 			const string uniqueIdentifier = "abc";
 			const string uniqueIdentifier2 = "def";
@@ -57,17 +57,26 @@ namespace PalasoUIWindowsForms.Tests.UniqueToken
 		}
 
 		[Test]
-		public void ReleaseTokenTest_ReleaseBeforeAcquireOk()
+		public void ReleaseTokenTest_ReleaseBeforeAcquireDoesNotThrow()
 		{
-			Palaso.UI.WindowsForms.UniqueToken.UniqueToken.ReleaseToken();
+			Assert.DoesNotThrow(Palaso.UI.WindowsForms.UniqueToken.UniqueToken.ReleaseToken);
 		}
 
 		[Test]
-		public void AcquireTokenTest()
+		public void AcquireToken_SucceedsWhenTokenNotCurrentlyHeld()
 		{
 			const string uniqueIdentifier = "abc";
 
 			bool tokenAcquired = Palaso.UI.WindowsForms.UniqueToken.UniqueToken.AcquireToken(uniqueIdentifier);
+			Assert.IsTrue(tokenAcquired);
+
+			// No wait so test doesn't take a while
+			tokenAcquired = Palaso.UI.WindowsForms.UniqueToken.UniqueToken.AcquireToken(uniqueIdentifier, null, 0);
+			Assert.IsFalse(tokenAcquired);
+
+			Palaso.UI.WindowsForms.UniqueToken.UniqueToken.ReleaseToken();
+
+			tokenAcquired = Palaso.UI.WindowsForms.UniqueToken.UniqueToken.AcquireToken(uniqueIdentifier);
 			Assert.IsTrue(tokenAcquired);
 
 			Palaso.UI.WindowsForms.UniqueToken.UniqueToken.ReleaseToken();

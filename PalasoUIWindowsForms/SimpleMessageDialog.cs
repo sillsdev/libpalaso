@@ -9,20 +9,8 @@ namespace Palaso.UI.WindowsForms
 	/// however, we always want a caption bar even if we don't have a caption.  Use " " to get this result.
 	/// If the caller truly wants no caption bar, call with "".
 	/// 
-	/// One gotcha here:
-	/// There are times when this dialog doesn't display the message correctly but instead shows a white rectangle.
-	/// To prevent this, you can call form.Update() after form.Show()
-	/// 
-	/// e.g.
-	///		using (var dlg = new SimpleMessageDialog("my message", "my title"))
-	///		{
-	///			dlg.Show();
-	///			dlg.Update();
-	///			System.Threading.Thread.Sleep(5000);
-	///		}
-	/// 
-	/// An example of when this might be useful is to let the user know something is happening in the background,
-	/// but that something will time out.
+	/// An example of when this might be useful is an information message that doesn't need acknowledgement...
+	/// Normal usage is that the caller of Show() will eventually call Hide() or just Dispose(), without waiting for the user to do anything.
 	/// </summary>
 	public partial class SimpleMessageDialog : Form
 	{
@@ -33,6 +21,12 @@ namespace Palaso.UI.WindowsForms
 			InitializeComponent();
 			Text = caption;
 			_dialogMessage.Text = msg;
+		}
+
+		// Without this, for an unknown reason, a white rectangle is displayed in place of the message
+		private void SimpleMessageDialog_Activated(object sender, System.EventArgs e)
+		{
+			Update();
 		}
 	}
 }

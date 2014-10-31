@@ -7,12 +7,18 @@ using Palaso.Reporting;
 namespace Palaso.UI.WindowsForms.UniqueToken
 {
 	/// <summary>
+	/// At a high level, this class is used to ensure that a given token (based on a unique string)
+	/// can only be obtained by one process on the whole system.
+	/// Each process is only allowed to acquire one token.
+	/// The process should release the token when it is no longer being used;
+	/// however, my testing shows that if the process crashes, it will still release the token.
+	/// 
 	/// Though it could have uses outside of this, the orginal use of this class is to accomplish
 	/// enforcement of a single instance application.
 	/// Though it has not been tested, it should also work to enforce an application being able
 	/// to have multiple instances where each instance has a unique project open.
 	/// For the former, pass the application name as the uniqueIdetifier (e.g. "Bloom").
-	/// For the latter, the client could pass the path the project file as the uniqueIdentifier.
+	/// For the latter, the client could pass the path of the project file as the uniqueIdentifier.
 	/// </summary>
 	public static class UniqueToken
 	{
@@ -35,7 +41,7 @@ namespace Palaso.UI.WindowsForms.UniqueToken
 			bool tokenAcquired = false;
 			try
 			{
-				m_lockFile = File.Open(Path.GetTempPath() + uniqueIdentifier + ".locktoken", FileMode.OpenOrCreate, FileAccess.Read, FileShare.None);
+				m_lockFile = File.Open(GetLockFileFullPath(uniqueIdentifier), FileMode.OpenOrCreate, FileAccess.Read, FileShare.None);
 				m_uniqueIdentifier = uniqueIdentifier;
 				tokenAcquired = true;
 			}
@@ -69,7 +75,6 @@ namespace Palaso.UI.WindowsForms.UniqueToken
 			using (var dlg = new SimpleMessageDialog(waitingMsg, applicationName))
 			{
 				dlg.Show();
-				dlg.Update();
 				try
 				{
 					for (int i=0; i < secondsToWait; i++)
@@ -120,9 +125,14 @@ namespace Palaso.UI.WindowsForms.UniqueToken
 			if (m_lockFile != null)
 			{
 				m_lockFile.Close();
-				File.Delete(Path.GetTempPath() + m_uniqueIdentifier + ".locktoken");
+				File.Delete(GetLockFileFullPath(m_uniqueIdentifier));
 				m_lockFile = null;
 			}
+		}
+
+		private static string GetLockFileFullPath(string uniqueIdentifier)
+		{
+			return Path.Combine(Path.GetTempPath(), uniqueIdentifier + ".locktoken");
 		}
 	}
 }
