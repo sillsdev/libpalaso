@@ -137,6 +137,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -198,6 +199,10 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="i18n\StringCatalog.cs" />
     <Compile Include="CommandLineProcessing\CommandLineRunner.cs" />
+    <Compile Include="IO\FileLock\FileLockContent.cs" />
+    <Compile Include="IO\FileLock\IFileLock.cs" />
+    <Compile Include="IO\FileLock\FileSys\LockIO.cs" />
+    <Compile Include="IO\FileLock\SimpleFileLock.cs" />
     <Compile Include="IO\FileUtils.cs" />
     <Compile Include="EventsAndDelegates\GenericEventArgs.cs" />
     <Compile Include="IO\DirectoryUtilities.cs" />
