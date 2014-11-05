@@ -1,7 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Threading;
 using Palaso.Code;
+using Palaso.IO.FileLock;
 using Palaso.Reporting;
 
 namespace Palaso.UI.WindowsForms.UniqueToken
@@ -22,8 +22,9 @@ namespace Palaso.UI.WindowsForms.UniqueToken
 	/// </summary>
 	public static class UniqueToken
 	{
-		private static string m_uniqueIdentifier;
-		private static FileStream m_lockFile;
+		private const string FileExtension = ".locktoken";
+
+		private static SimpleFileLock s_fileLock;
 
 		/// <summary>
 		/// Try to acquire the token quietly
@@ -35,20 +36,11 @@ namespace Palaso.UI.WindowsForms.UniqueToken
 			Guard.AgainstNull(uniqueIdentifier, "uniqueIdentifier");
 
 			// Each process may only acquire one token
-			if (m_lockFile != null)
+			if (s_fileLock != null)
 				return false;
 
-			bool tokenAcquired = false;
-			try
-			{
-				m_lockFile = File.Open(GetLockFileFullPath(uniqueIdentifier), FileMode.OpenOrCreate, FileAccess.Read, FileShare.None);
-				m_uniqueIdentifier = uniqueIdentifier;
-				tokenAcquired = true;
-			}
-			catch (IOException)
-			{
-			}
-			return tokenAcquired;
+			s_fileLock = SimpleFileLock.Create(uniqueIdentifier + FileExtension);
+			return s_fileLock.TryAcquireLock();
 		}
 
 		/// <summary>
@@ -122,17 +114,11 @@ namespace Palaso.UI.WindowsForms.UniqueToken
 		/// </summary>
 		public static void ReleaseToken()
 		{
-			if (m_lockFile != null)
+			if (s_fileLock != null)
 			{
-				m_lockFile.Close();
-				File.Delete(GetLockFileFullPath(m_uniqueIdentifier));
-				m_lockFile = null;
+				s_fileLock.ReleaseLock();
+				s_fileLock = null;
 			}
-		}
-
-		private static string GetLockFileFullPath(string uniqueIdentifier)
-		{
-			return Path.Combine(Path.GetTempPath(), uniqueIdentifier + ".locktoken");
 		}
 	}
 }

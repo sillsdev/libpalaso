@@ -67,16 +67,16 @@ namespace PalasoUIWindowsForms.Tests.UniqueToken
 		{
 			const string uniqueIdentifier = "abc";
 
-			bool tokenAcquired = Palaso.UI.WindowsForms.UniqueToken.UniqueToken.AcquireToken(uniqueIdentifier);
+			// No wait so test doesn't take a while
+			bool tokenAcquired = Palaso.UI.WindowsForms.UniqueToken.UniqueToken.AcquireToken(uniqueIdentifier, null, 0);
 			Assert.IsTrue(tokenAcquired);
 
-			// No wait so test doesn't take a while
 			tokenAcquired = Palaso.UI.WindowsForms.UniqueToken.UniqueToken.AcquireToken(uniqueIdentifier, null, 0);
 			Assert.IsFalse(tokenAcquired);
 
 			Palaso.UI.WindowsForms.UniqueToken.UniqueToken.ReleaseToken();
 
-			tokenAcquired = Palaso.UI.WindowsForms.UniqueToken.UniqueToken.AcquireToken(uniqueIdentifier);
+			tokenAcquired = Palaso.UI.WindowsForms.UniqueToken.UniqueToken.AcquireToken(uniqueIdentifier, null, 0);
 			Assert.IsTrue(tokenAcquired);
 
 			Palaso.UI.WindowsForms.UniqueToken.UniqueToken.ReleaseToken();
