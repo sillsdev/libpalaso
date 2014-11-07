@@ -13,6 +13,14 @@ namespace Palaso.UI.WindowsForms.Reporting
 		// see comment on ExceptionReportingDialog.s_reportDataStack
 		internal static Control ControlOnUIThread { get; private set; }
 
+		internal static bool InvokeRequired
+		{
+			get
+			{
+				return !ControlOnUIThread.IsDisposed && ControlOnUIThread.InvokeRequired;
+			}
+		}
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Set exception handler. Needs to be done before we create splash screen (don't
