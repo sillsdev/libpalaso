@@ -393,7 +393,7 @@ namespace Palaso.UI.WindowsForms.Reporting
 					null, owningForm, Thread.CurrentThread.ManagedThreadId));
 			}
 
-			if (WinFormsExceptionHandler.ControlOnUIThread.InvokeRequired)
+			if (WinFormsExceptionHandler.InvokeRequired)
 			{
 				// we got called from a background thread.
 				WinFormsExceptionHandler.ControlOnUIThread.Invoke(
@@ -412,7 +412,7 @@ namespace Palaso.UI.WindowsForms.Reporting
 					stackTrace, owningForm, Thread.CurrentThread.ManagedThreadId));
 			}
 
-			if (WinFormsExceptionHandler.ControlOnUIThread.InvokeRequired)
+			if (WinFormsExceptionHandler.InvokeRequired)
 			{
 				// we got called from a background thread.
 				WinFormsExceptionHandler.ControlOnUIThread.Invoke(
@@ -426,7 +426,7 @@ namespace Palaso.UI.WindowsForms.Reporting
 		private void ReportInternal()
 		{
 			// This method will/should always be called on the UI thread
-			Debug.Assert(!WinFormsExceptionHandler.ControlOnUIThread.InvokeRequired);
+			Debug.Assert(!WinFormsExceptionHandler.InvokeRequired);
 
 			ExceptionReportingData reportingData;
 			lock (s_reportDataStack)
