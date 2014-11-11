@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -351,19 +352,26 @@ namespace Palaso.IO
 
 			foreach (var progFolder in GetPossibleProgramFilesFolders().Where(Directory.Exists))
 			{
+				// calling Directory.GetFiles("C:\Program Files", exeName, SearchOption.AllDirectories) will fail
+				// if even one of the children of the Program Files doesn't allow you to search it.
+				// So instead we first gather up all the children diretories, and then search those.
+				// Some will give us access denied, and that's fine, we skip them.
 				foreach (var path in subFoldersToSearch.Select(sf => Path.Combine(progFolder, sf)).Where(Directory.Exists))
 				{
-					try
+					foreach (var subDir in DirectoryUtilities.GetSafeDirectories(path))
 					{
-						var tgtPath = Directory.GetFiles(path, exeName, srcOption).FirstOrDefault();
-						if (tgtPath != null)
-							return tgtPath;
+						try
+						{
+							var tgtPath = Directory.GetFiles(subDir, exeName, srcOption).FirstOrDefault();
+							if (tgtPath != null)
+								return tgtPath;
+						}
+						catch (Exception e)
+						{
+							Debug.Fail(e.Message);
+							//swallow. Some paths, we aren't allowed to look in (like Google Chrome crash reports)
+						}
 					}
-					catch (Exception)
-					{
-						//swallow. Some paths, we aren't allowed to look in (like Google Chrome crash reports)
-					}
-
 				}
 			}
 
