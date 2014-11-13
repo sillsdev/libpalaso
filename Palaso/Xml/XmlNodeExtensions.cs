@@ -21,10 +21,20 @@ namespace Palaso.Xml
 		}
 
 		/// <summary>
-		/// this is safe to use with foreach, unlike SelectNodes
+		/// Returns an empty list rather than null
 		/// </summary>
+		/// <remarks>NOTE: even with this method it is not safe to modify the underlaying
+		/// document. While seemingly nothing bad happens it doesn't work on Mono, and the
+		/// MSDN documentation warns against doing so
+		/// (http://msdn.microsoft.com/en-us/library/hcebdtae%28v=vs.110%29.aspx).
+		/// </remarks>
 		public static XmlNodeList SafeSelectNodes(this XmlNode node, string path, XmlNamespaceManager namespaceManager)
 		{
+			// REVIEW (EberhardB): it's not clear to me why we need these two methods. The comment
+			// below suggests it will return an empty list rather than null, but I don't observe
+			// SelectNodes returning null which means it could be used in a foreach anyways. And
+			// the purpose that the method name suggests, allowing to modify the document
+			// in a foreach loop, doesn't work.
 			var x = node.SelectNodes(path, namespaceManager);
 			if (x == null)
 				return new NullXMlNodeList();
@@ -32,8 +42,13 @@ namespace Palaso.Xml
 		}
 
 		/// <summary>
-		/// honors default namespace and will return an empty list rather than null
+		/// Honors default namespace and will return an empty list rather than null
 		/// </summary>
+		/// <remarks>NOTE: even with this method it is not safe to modify the underlaying
+		/// document. While seemingly nothing bad happens it doesn't work on Mono, and the
+		/// MSDN documentation warns against doing so
+		/// (http://msdn.microsoft.com/en-us/library/hcebdtae%28v=vs.110%29.aspx).
+		/// </remarks>
 		public static XmlNodeList SafeSelectNodes(this XmlNode node, string path)
 		{
 			Guard.AgainstNull(node, "SafeSelectNodes(node,"+path+"): node was null");
@@ -49,6 +64,17 @@ namespace Palaso.Xml
 			if (x == null)
 				return new NullXMlNodeList();
 			return x;
+		}
+
+		/// <summary>
+		/// Deletes the specified nodes from their parents.
+		/// </summary>
+		/// <remarks>We shouldn't delete the nodes while iterating over the
+		/// node list because that modifies the enumeration that we're looping over.</remarks>
+		public static void DeleteNodes(this XmlNode node, string path)
+		{
+			foreach (var toDelete in node.SafeSelectNodes(path).OfType<XmlElement>().ToArray())
+				toDelete.ParentNode.RemoveChild(toDelete);
 		}
 
 		public static string SelectTextPortion(this XmlNode node, string path, params object[] args)

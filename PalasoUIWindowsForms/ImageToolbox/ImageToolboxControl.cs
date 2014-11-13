@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows.Forms;
 using L10NSharp;
 using Palaso.Code;
+using Palaso.IO;
 using Palaso.UI.WindowsForms.ClearShare;
 using Palaso.UI.WindowsForms.ClearShare.WinFormsUI;
 using Palaso.UI.WindowsForms.ImageToolbox.Cropping;
@@ -124,6 +125,15 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		private void SetupMetaDataControls(Metadata metaData)
 		{
+			if (_currentImageBox.Image == null)
+			{
+				// Otherwise, the metadata controls are visible upon first load (with no image).
+				// Clicking them causes crashes.
+				_invitationToMetadataPanel.Visible = false;
+				_metadataDisplayControl.Visible = false;
+				return;
+			}
+
 			//NB: there was a bug here where the display control refused to go to visible, if this was called before loading. Weird.  So now, we have an OnLoad() to call it again.
 			_invitationToMetadataPanel.Visible = (metaData == null || metaData.IsEmpty);
 			_metadataDisplayControl.Visible = !_invitationToMetadataPanel.Visible;
@@ -135,7 +145,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			_copyExemplarMetadata.Visible = Metadata.HaveStoredExemplar(Metadata.FileCategory.Image);
 			if (_invitationToMetadataPanel.Visible && _copyExemplarMetadata.Visible)
 			{
-				var s = LocalizationManager.GetString("Use {0}", "ImageToolbox.CopyExemplarMetadata", "Used to copy a previous metadata set to the current image. The  {0} will be replaced with the name of the exemplar image.");
+				var s = LocalizationManager.GetString("ImageToolbox.CopyExemplarMetadata", "Use {0}", "Used to copy a previous metadata set to the current image. The  {0} will be replaced with the name of the exemplar image.");
 				_copyExemplarMetadata.Text = string.Format(s, Metadata.GetStoredExemplarSummaryString(Metadata.FileCategory.Image));
 			}
 		}

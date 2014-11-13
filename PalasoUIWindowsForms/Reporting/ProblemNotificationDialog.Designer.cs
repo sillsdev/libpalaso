@@ -136,7 +136,6 @@ namespace Palaso.UI.WindowsForms.Reporting
 			this.ClientSize = new System.Drawing.Size(466, 189);
 			this.ControlBox = false;
 			this.Controls.Add(this.tableLayoutOuter);
-			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.MinimumSize = new System.Drawing.Size(450, 38);

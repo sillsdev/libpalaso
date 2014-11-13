@@ -73,7 +73,7 @@ namespace Palaso.Xml
 			public override bool Read()
 			{
 				// Since we use this class only for deserialization, catch file not found
-				// exceptions for the case when the XML file contains a !DOCTYPE declearation
+				// exceptions for the case when the XML file contains a !DOCTYPE declaration
 				// and the specified DTD file is not found. (This is because the base class
 				// attempts to open the DTD by merely reading the !DOCTYPE node from the
 				// current directory instead of relative to the XML document location.)

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Windows.Forms;
 using NUnit.Framework;
 using Palaso.UI.WindowsForms.ClearShare;
@@ -16,7 +18,14 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 			Application.EnableVisualStyles();
 			using (var dlg = new ImageToolboxDialog(new PalasoImage(),null))// "arrow"))
 			{
-				dlg.ShowDialog();
+				if (DialogResult.OK == dlg.ShowDialog())
+				{
+					// File name ending in .tmp will confuse TagLib#...doesn't know what kind of metadata to write.
+					string path  = Path.ChangeExtension(Path.GetTempFileName(), ".png");
+					dlg.ImageInfo.Save(path);
+					Process.Start("explorer.exe", "/select, \"" + path + "\"");
+				}
+
 			}
 		}
 

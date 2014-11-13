@@ -634,6 +634,10 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 				e.Control.Parent.Paint += HandleEditControlTextBoxPanelPaint;
 			}
 
+			// Fix the black background on the drop down menu
+			// http://nickstips.wordpress.com/2010/12/20/c-datagridviewcomboboxcolumn-drop-down-menu-appears-all-black/
+			e.CellStyle.BackColor = DefaultCellStyle.BackColor;
+
 			var cbo = e.Control as ComboBox;
 			if (cbo == null)
 				return;
