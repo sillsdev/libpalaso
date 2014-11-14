@@ -29,34 +29,33 @@ namespace Palaso.Reporting
 #endif
 		}
 
-		/// <summary>
-		///
-		/// </summary>
-		/// <example>
-		/// UsageReporter.Init(Settings.Default.Reporting, "myproduct.org", "UA-11111111-2",
-		///#if DEBUG
-		///                true
-		///#else
-		///                false
-		///#endif
-		///                );
-		/// </example>
-		/// <param name="settings"></param>
-		/// <param name="domain"></param>
-		/// <param name="googleAnalyticsAccountCode"></param>
-		/// <param name="reportAsDeveloper">Normally this is true for DEBUG builds. It is separated out here because sometimes a developer
-		/// uses a Release build of Palaso.dll, but would still want his/her activities logged as a developer.</param>
-		public static void Init(ReportingSettings settings, string domain, string googleAnalyticsAccountCode, bool reportAsDeveloper)
-		{
-			s_singleton = new UsageReporter();
-			s_singleton._settings = settings;
-			s_singleton._realPreviousVersion = settings.PreviousVersion;
-			s_singleton._settings.Launches++;
-			s_singleton.BeginGoogleAnalytics(domain, googleAnalyticsAccountCode, reportAsDeveloper);
-			settings.PreviousVersion = ErrorReport.VersionNumberString;
-			settings.PreviousLaunchDate = DateTime.Now.Date;
-			s_singleton._mostRecentArea = "Initializing"; // Seems more useful to put in something in case an error occurs before app gets this set.
-		}
+			/// <summary>
+			///
+			/// </summary>
+			/// <example>
+			/// UsageReporter.Init(Settings.Default.Reporting, "myproduct.org", "UA-11111111-2",
+			///#if DEBUG
+			///                true
+			///#else
+			///                false
+			///#endif
+			///                );
+			/// </example>
+			/// <param name="settings"></param>
+			/// <param name="domain"></param>
+			/// <param name="googleAnalyticsAccountCode"></param>
+			/// <param name="reportAsDeveloper">Normally this is true for DEBUG builds. It is separated out here because sometimes a developer
+			/// uses a Release build of Palaso.dll, but would still want his/her activities logged as a developer.</param>
+			public static void Init(ReportingSettings settings, string domain, string googleAnalyticsAccountCode, bool reportAsDeveloper)
+			{
+				s_singleton = new UsageReporter();
+				s_singleton._settings = settings;
+				s_singleton._realPreviousVersion = settings.PreviousVersion;
+				s_singleton._settings.Launches++;
+				s_singleton.BeginGoogleAnalytics(domain, googleAnalyticsAccountCode, reportAsDeveloper);
+				settings.PreviousVersion = ErrorReport.VersionNumberString;
+				settings.PreviousLaunchDate = DateTime.Now.Date;
+			}
 
 		/// <summary>
 		/// A unique guid for this machine, which is the same for all palaso apps (because we store it in special palaso text file in appdata)
@@ -94,7 +93,7 @@ namespace Palaso.Reporting
 			string dir = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "SIL");
 			Directory.CreateDirectory(dir);
 			string path = Path.Combine(dir, "UserIdentifier.txt");
-			// ReportingSetting.Default.Identifier = "";
+		   // ReportingSetting.Default.Identifier = "";
 			if (!_settings.HaveShowRegistrationDialog)
 			{
 					_settings.HaveShowRegistrationDialog = true;
@@ -179,22 +178,17 @@ namespace Palaso.Reporting
 		{
 			get
 			{
-				if (s_singleton != null)
+
+				if (s_singleton != null && !String.IsNullOrEmpty(s_singleton._appNameToUseInReporting))
 				{
-					lock (s_singleton)
-					{
-						if (!String.IsNullOrEmpty(s_singleton._appNameToUseInDialogs))
-						{
-							return s_singleton._appNameToUseInDialogs;
-						}
-					}
+				 return s_singleton._appNameToUseInDialogs;
+
 				}
 				return EntryAssembly.ProductName;
 			}
 			set
 			{
-				lock (s_singleton)
-					s_singleton._appNameToUseInDialogs = value;
+				s_singleton._appNameToUseInDialogs = value;
 			}
 		}
 
@@ -202,22 +196,15 @@ namespace Palaso.Reporting
 		{
 			get
 			{
-				if (s_singleton != null)
+				if (s_singleton != null && !String.IsNullOrEmpty(s_singleton._appNameToUseInReporting))
 				{
-					lock (s_singleton)
-					{
-						if (!String.IsNullOrEmpty(s_singleton._appNameToUseInReporting))
-						{
-							return s_singleton._appNameToUseInReporting;
-						}
-					}
+					 return s_singleton._appNameToUseInReporting;
 				}
 				return EntryAssembly.ProductName;
 			}
 			set
 			{
-				lock (s_singleton)
-					s_singleton._appNameToUseInReporting = value;
+				s_singleton._appNameToUseInReporting = value;
 			}
 		}
 
@@ -226,18 +213,14 @@ namespace Palaso.Reporting
 		/// </summary>
 		public static void ResetSettingsForTests()
 		{
-			// RegistryAccess.SetStringRegistryValue("launches", "0");
-			if (s_singleton == null)
-				return;
-
-			lock (s_singleton)
+		   // RegistryAccess.SetStringRegistryValue("launches", "0");
+			if (s_singleton != null && s_singleton._settings == null)
 			{
-				if (s_singleton._settings == null)
-					s_singleton._settings = new ReportingSettings();
-
-				s_singleton._settings.Launches = 0;
-				s_singleton.MakeLaunchDateSafe();
+				s_singleton._settings = new ReportingSettings();
 			}
+
+			s_singleton._settings.Launches = 0;
+			s_singleton.MakeLaunchDateSafe();
 		}
 
 		/// <summary>
@@ -283,6 +266,7 @@ namespace Palaso.Reporting
 		/// <summary>
 		///  Reports upgrades, launches, etc., and allows for later calls to notify analytics of navigation and events
 		/// </summary>
+
 		private void BeginGoogleAnalytics(string domain, string googleAnalyticsAccountCode, bool reportAsDeveloper)
 		{
 				var osLabel = ErrorReport.GetOperatingSystemLabel();
@@ -324,33 +308,31 @@ namespace Palaso.Reporting
 			if (s_singleton == null)
 				return;
 
-			lock (s_singleton)
+			if (!s_singleton._settings.OkToPingBasicUsageData)
+				return;
+			try
 			{
-				if (!s_singleton._settings.OkToPingBasicUsageData)
+				if (s_singleton._analytics == null)
+				{
+					//note for now, I'm figuring some libaries might call this, with no way to know if the host app has enabled it.
+					//so we don't act like it is an error.
+					Debug.WriteLine("Got Navigation notice but google analytics wasn't enabled");
 					return;
-				try
-				{
-					if (s_singleton._analytics == null)
-					{
-						//note for now, I'm figuring some libaries might call this, with no way to know if the host app has enabled it.
-						//so we don't act like it is an error.
-						Debug.WriteLine("Got Navigation notice but google analytics wasn't enabled");
-						return;
-					}
-
-					//var uri = new Uri(programArea);
-
-					var area = string.Format(programArea, args);
-					Debug.WriteLine("SendNavigationNotice(" + area + ")");
-					s_singleton._analytics.SendNavigationNotice(area);
-					s_singleton._mostRecentArea = area;
 				}
-				catch (Exception e)
-				{
+
+				//var uri = new Uri(programArea);
+
+
+				var area = string.Format(programArea, args);
+				Debug.WriteLine("SendNavigationNotice(" + area + ")");
+				s_singleton._analytics.SendNavigationNotice(area);
+				s_singleton._mostRecentArea = area;
+			}
+			catch (Exception e)
+			{
 #if DEBUG
-					throw;
+				throw;
 #endif
-				}
 			}
 		}
 
@@ -364,75 +346,70 @@ namespace Palaso.Reporting
 		/// <example>SendEvent("dictionary/browseView", "Command", "DeleteWord", "","")</example>
 		/// <example>SendEvent("dictionary/browseView", "Error", "DeleteWord", "some error message we got","")</example>
 		public static void SendEvent(string programArea, string category, string action, string optionalLabel, int optionalInteger)
-		{
-			if (s_singleton == null)
-				return;
-
-			lock (s_singleton)
-			{
-				if (!s_singleton._settings.OkToPingBasicUsageData)
-					return;
-				try
 				{
-					if (s_singleton._analytics == null)
-					{
-						//note for now, I'm figuring some libaries might call this, with no way to know if the host app has enabled it.
-						//so we don't act like it is an error.
-						Debug.WriteLine("Got SendEvent notice but google analytics wasn't enabled");
+					if (s_singleton == null)
 						return;
-					}
-					Debug.WriteLine(string.Format("SendEvent(cat={0},action={1},label={2},value={3}", category, action, optionalLabel, optionalInteger));
-					s_singleton._analytics.SendEvent(programArea, category, action, optionalLabel, optionalInteger);
-				}
-				catch (Exception e)
+
+			if (!s_singleton._settings.OkToPingBasicUsageData)
+						return;
+ try
+			{
+				if (s_singleton._analytics == null)
 				{
-#if DEBUG
-					throw;
-#endif
+					//note for now, I'm figuring some libaries might call this, with no way to know if the host app has enabled it.
+					//so we don't act like it is an error.
+					Debug.WriteLine("Got SendEvent notice but google analytics wasn't enabled");
+					return;
 				}
+				Debug.WriteLine(string.Format("SendEvent(cat={0},action={1},label={2},value={3}",category,action,optionalLabel,optionalInteger));
+				s_singleton._analytics.SendEvent(programArea, category, action, optionalLabel, optionalInteger);
 			}
-		}
+			catch (Exception e)
+			{
+#if DEBUG
+				throw;
+#endif
+			}
+				}
 
 		/// <summary>
 		/// Send an error to Google Analytics, if BeginGoogleAnalytics was previously called
 		/// </summary>
 		public static void ReportException(bool wasFatal, string theCommandOrOtherContext, Exception error, string messageUserSaw)
 		{
+
 			if (s_singleton == null)
 				return;
 
-			lock (s_singleton)
+			if (error!=null && s_singleton._mostRecentException == error)
+				return; //it's hard to avoid getting here twice with all the various paths
+
+			s_singleton._mostRecentException = error;
+
+			var sb = new StringBuilder();
+			if (!string.IsNullOrEmpty(messageUserSaw))
+				sb.Append(messageUserSaw + "|");
+			if (error != null)
+				sb.Append(error.Message + "|");
+			if(s_singleton._mostRecentArea!=null)
+				sb.Append(s_singleton._mostRecentArea + "|");
+			if (!string.IsNullOrEmpty(theCommandOrOtherContext))
+				sb.Append(theCommandOrOtherContext + "|");
+			if (wasFatal)
+				sb.Append(" fatal |");
+			if (error != null)
 			{
-				if (error != null && s_singleton._mostRecentException == error)
-					return; //it's hard to avoid getting here twice with all the various paths
-
-				s_singleton._mostRecentException = error;
-
-				var sb = new StringBuilder();
-				if (!string.IsNullOrEmpty(messageUserSaw))
-					sb.Append(messageUserSaw + "|");
-				if (error != null)
-					sb.Append(error.Message + "|");
-				if (s_singleton._mostRecentArea != null)
-					sb.Append(s_singleton._mostRecentArea + "|");
-				if (!string.IsNullOrEmpty(theCommandOrOtherContext))
-					sb.Append(theCommandOrOtherContext + "|");
-				if (wasFatal)
-					sb.Append(" fatal |");
-				if (error != null)
-				{
-					if (error.InnerException != null)
-						sb.Append("Inner: " + error.InnerException.Message + "|");
-					sb.Append(error.StackTrace);
-				}
-				// Maximum URI length is about 2000 (probably 2083 to be exact), so truncate this info if ncessary.
-				// A lot of characters (such as spaces) are going to be replaced with % codes, and there is a pretty hefty
-				// wad of additional stuff that goes into the URL besides this stuff, so cap it at 1000 and hope for the best.
-				if (sb.Length > 1000)
-					sb.Length = 1000;
-
-				SendEvent(s_singleton._mostRecentArea, "error", sb.ToString(), ErrorReport.VersionNumberString, 0);
+				if(error.InnerException!=null)
+					sb.Append("Inner: "+error.InnerException.Message + "|");
+				sb.Append(error.StackTrace);
 			}
+			// Maximum URI length is about 2000 (probably 2083 to be exact), so truncate this info if ncessary.
+			// A lot of characters (such as spaces) are going to be replaced with % codes, and there is a pretty hefty
+			// wad of additional stuff that goes into the URL besides this stuff, so cap it at 1000 and hope for the best.
+			if (sb.Length > 1000)
+				sb.Length = 1000;
+
+			SendEvent(s_singleton._mostRecentArea, "error", sb.ToString(), ErrorReport.VersionNumberString, 0);
 		}
 
 		public static void ReportException(Exception error)

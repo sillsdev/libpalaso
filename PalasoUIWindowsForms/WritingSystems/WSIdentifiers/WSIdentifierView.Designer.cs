@@ -60,7 +60,7 @@
 			//
 			this._detailPanel.Location = new System.Drawing.Point(102, 80);
 			this._detailPanel.Name = "_detailPanel";
-			this._detailPanel.Size = new System.Drawing.Size(264, 140);
+			this._detailPanel.Size = new System.Drawing.Size(264, 100);
 			this._detailPanel.TabIndex = 13;
 			//
 			// betterLabel5
@@ -103,7 +103,7 @@
 			this.Controls.Add(this.betterLabel5);
 			this.Controls.Add(this.betterLabel4);
 			this.Name = "WSIdentifierView";
-			this.Size = new System.Drawing.Size(381, 270);
+			this.Size = new System.Drawing.Size(381, 229);
 			this.VisibleChanged += new System.EventHandler(this.OnVisibleChanged);
 			this.ResumeLayout(false);
 			this.PerformLayout();

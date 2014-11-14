@@ -21,7 +21,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private IKeyboardDefinition _defaultKeyboard;
 		private string _defaultFontName;
 		private float _defaultFontSize;
-		public event EventHandler UserWantsHelpWithCustomSorting;
 
 		public WSSortControl()
 		{
@@ -37,8 +36,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_defaultFontSize = _sortRulesTextBox.Font.SizeInPoints;
 
 			// default text for testing the sort rules
-			// default text for testing the sort rules; bug fix for WS-55 so all platforms have the right line ending
-			_testSortText.Text = String.Join(Environment.NewLine, new string[] { "pear", "apple", "orange", "mango", "peach" });
+			_testSortText.Text = @"pear
+apple
+orange
+mango
+peach";
 		}
 
 		public void BindToModel(WritingSystemSetupModel model)
@@ -271,8 +273,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void OnHelpLabelClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			if (UserWantsHelpWithCustomSorting != null)
-				UserWantsHelpWithCustomSorting(sender, e);
+			Process.Start("http://wesay.org/wiki/How_to_sort_using_a_custom_sort_sequence");
 		}
 	}
 }

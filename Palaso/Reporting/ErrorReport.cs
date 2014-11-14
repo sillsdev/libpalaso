@@ -150,10 +150,8 @@ namespace Palaso.Reporting
 				version += " (apparent build date: ";
 				try
 				{
-					string path = assembly.CodeBase.Replace(@"file://", "");
-					if (Palaso.PlatformUtilities.Platform.IsWindows)
-						path = path.TrimStart('/');
-					version += File.GetLastWriteTimeUtc(path).ToString("dd-MMM-yyyy") + ")";
+					string path = assembly.CodeBase.Replace(@"file:///", "");
+					version += File.GetLastWriteTimeUtc(path).Date.ToShortDateString() + ")";
 				}
 				catch
 				{
@@ -205,9 +203,8 @@ namespace Palaso.Reporting
 			{
 				var asm = Assembly.GetEntryAssembly();
 				var ver = asm.GetName().Version;
-				var file = asm.CodeBase.Replace("file://", string.Empty);
-				if (Palaso.PlatformUtilities.Platform.IsWindows)
-					file = file.TrimStart('/');
+				var file = asm.CodeBase.Replace("file:", string.Empty);
+				file = file.TrimStart('/');
 				var fi = new FileInfo(file);
 
 				return string.Format(
@@ -371,8 +368,8 @@ namespace Palaso.Reporting
 			public bool Match(OperatingSystem os)
 			{
 				return os.Version.Minor == _minor &&
-					os.Version.Major == _major &&
-					os.Platform == _platform;
+					   os.Version.Major == _major &&
+					   os.Platform == _platform;
 			}
 		}
 
@@ -401,17 +398,17 @@ namespace Palaso.Reporting
 			}
 			else
 			{
-			var list = new List<Version>();
-			list.Add(new Version(System.PlatformID.Win32NT,0,5, "Windows 2000"));
-			list.Add(new Version(System.PlatformID.Win32NT, 1, 5, "Windows XP"));
-			list.Add(new Version(System.PlatformID.Win32NT, 0, 6, "Vista"));
-			list.Add(new Version(System.PlatformID.Win32NT, 1, 6, "Windows 7"));
-			list.Add(new Version(System.PlatformID.Win32NT, 2, 6, "Windows 8"));
-			foreach (var version in list)
-			{
-				if(version.Match(System.Environment.OSVersion))
-					return version.Label + " " + Environment.OSVersion.ServicePack;
-			}
+				var list = new List<Version>();
+				list.Add(new Version(System.PlatformID.Win32NT, 0,5, "Windows 2000"));
+				list.Add(new Version(System.PlatformID.Win32NT, 1, 5, "Windows XP"));
+				list.Add(new Version(System.PlatformID.Win32NT, 0, 6, "Vista"));
+				list.Add(new Version(System.PlatformID.Win32NT, 1, 6, "Windows 7"));
+				list.Add(new Version(System.PlatformID.Win32NT, 2, 6, "Windows 8"));
+				foreach (var version in list)
+				{
+					if(version.Match(System.Environment.OSVersion))
+						return version.Label + " " + Environment.OSVersion.ServicePack;
+				}
 			}
 			return System.Environment.OSVersion.VersionString;
 		}
@@ -530,7 +527,7 @@ namespace Palaso.Reporting
 				return;
 			}
 			_errorReporter.ReportNonFatalException(exception, policy);
-			UsageReporter.ReportException(false, null, exception, null);
+			 UsageReporter.ReportException(false, null, exception, null);
 		}
 
 		/// <summary>
@@ -590,7 +587,7 @@ namespace Palaso.Reporting
 
 		public bool ShouldShowMessage(string message)
 		{
-			if(_alreadyReportedMessages.Contains(message))
+			 if(_alreadyReportedMessages.Contains(message))
 				return false;
 			_alreadyReportedMessages.Add(message);
 			return true;

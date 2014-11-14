@@ -206,28 +206,5 @@ namespace Palaso.Tests.IO
 					File.Delete(tempPathname);
 			}
 		}
-
-		[Test]
-		public void NormalizePath_SlashStaysSlash()
-		{
-			Assert.That(FileUtils.NormalizePath("/a/b/c"), Is.EqualTo("/a/b/c"));
-		}
-
-		[Test]
-		public void NormalizePath_BackslashConvertsToSlash()
-		{
-			Assert.That(FileUtils.NormalizePath("\\a\\b\\c"), Is.EqualTo("/a/b/c"));
-		}
-
-		[Test]
-		public void NormalizePath_MixedConvertsToSlashes()
-		{
-			Assert.That(FileUtils.NormalizePath("/a\\b/c"), Is.EqualTo("/a/b/c"));
-		}
-		[Test]
-		public void NormalizePath_WindowsStylePathConvertsToSlashes()
-		{
-			Assert.That(FileUtils.NormalizePath("c:\\a\\b\\c"), Is.EqualTo("c:/a/b/c"));
-		}
 	}
 }

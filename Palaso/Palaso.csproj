@@ -143,7 +143,6 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -201,14 +200,9 @@
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\IEnumberableExtensions.cs" />
-    <Compile Include="Extensions\ProcessExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="i18n\StringCatalog.cs" />
     <Compile Include="CommandLineProcessing\CommandLineRunner.cs" />
-    <Compile Include="IO\FileLock\FileLockContent.cs" />
-    <Compile Include="IO\FileLock\IFileLock.cs" />
-    <Compile Include="IO\FileLock\FileSys\LockIO.cs" />
-    <Compile Include="IO\FileLock\SimpleFileLock.cs" />
     <Compile Include="IO\FileUtils.cs" />
     <Compile Include="EventsAndDelegates\GenericEventArgs.cs" />
     <Compile Include="IO\DirectoryUtilities.cs" />
@@ -233,7 +227,6 @@
     <Compile Include="Network\HttpUtilityFromMono.cs" />
     <Compile Include="Network\ProxyCredentialSettings.Designer.cs" />
     <Compile Include="Network\RobustNetworkOperation.cs" />
-    <Compile Include="PalasoSetup.cs" />
     <Compile Include="Progress\Commands\AsyncCommand.cs" />
     <Compile Include="Progress\BackgroundWorkerState.cs" />
     <Compile Include="Progress\Commands\BasicCommand.cs" />
@@ -391,8 +384,6 @@
     <Compile Include="Xml\XmlSerializationHelper.cs" />
     <Compile Include="Xml\XmlUtils.cs" />
     <Compile Include="Xml\XmlWriterExtensions.cs" />
-    <Compile Include="PlatformUtilities\Platform.cs" />
-    <Compile Include="IO\PathUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -440,7 +431,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
-       Other similar extension points exist, see Microsoft.Common.targets.
+	   Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">

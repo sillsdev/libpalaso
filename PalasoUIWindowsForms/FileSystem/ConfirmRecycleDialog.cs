@@ -1,9 +1,8 @@
 using System;
 using System.Drawing;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using L10NSharp;
-using Palaso.IO;
-using Palaso.UI.WindowsForms.Extensions;
 
 namespace Palaso.UI.WindowsForms.FileSystem
 {
@@ -17,17 +16,26 @@ namespace Palaso.UI.WindowsForms.FileSystem
 			_messageLabel.Font = SystemFonts.MessageBoxFont;
 		}
 
-		public ConfirmRecycleDialog(string labelForThingBeingDeleted, bool multipleItems = false, string localizationManagerId = null)
-			: this()
+		public ConfirmRecycleDialog(string labelForThingBeingDeleted) : this()
 		{
-			if (!string.IsNullOrEmpty(localizationManagerId))
-				_L10NSharpExtender.LocalizationManagerId = localizationManagerId;
-
 			LabelForThingBeingDeleted = labelForThingBeingDeleted.Trim();
-			string msgFmt = multipleItems ? LocalizationManager.GetString("DialogBoxes.ConfirmRecycleDialog.MessageForMultipleItems",
-				"{0} will be moved to the Recycle Bin.", 
-				"Param 0 is a description of the things being deleted (e.g., \"The selected files\"") : _messageLabel.Text;
-			_messageLabel.Text = string.Format(msgFmt, LabelForThingBeingDeleted);
+			_messageLabel.Text = string.Format(_messageLabel.Text, LabelForThingBeingDeleted);
+
+			// Sometimes, setting the text in the previous line will force the table layout control
+			// to resize itself accordingly, which will fire its SizeChanged event. However,
+			// sometimes the text is not long enough to force the table layout to be resized,
+			// therefore, we need to call it manually, just to be sure the form gets sized correctly.
+			HandleTableLayoutSizeChanged(null, null);
+		}
+
+		private void HandleTableLayoutSizeChanged(object sender, EventArgs e)
+		{
+			if (!IsHandleCreated)
+				CreateHandle();
+
+			var scn = Screen.FromControl(this);
+			var desiredHeight = tableLayout.Height + Padding.Top + Padding.Bottom + (Height - ClientSize.Height);
+			Height = Math.Min(desiredHeight, scn.WorkingArea.Height - 20);
 		}
 
 		protected override void OnBackColorChanged(EventArgs e)
@@ -48,17 +56,17 @@ namespace Palaso.UI.WindowsForms.FileSystem
 			Close();
 		}
 
-		public static bool JustConfirm(string labelForThingBeingDeleted, bool multipleItems = false, string localizationManagerId = null)
+		public static bool JustConfirm(string labelForThingBeingDeleted)
 		{
-			using (var dlg = new ConfirmRecycleDialog(labelForThingBeingDeleted, multipleItems, localizationManagerId))
+			using (var dlg = new ConfirmRecycleDialog(labelForThingBeingDeleted))
 			{
 				return DialogResult.OK == dlg.ShowDialog();
 			}
 		}
 
-		public static bool ConfirmThenRecycle(string labelForThingBeingDeleted, string pathToRecycle, bool multipleItems = false, string localizationManagerId = null)
+		public static bool ConfirmThenRecycle(string labelForThingBeingDeleted, string pathToRecycle)
 		{
-			using (var dlg = new ConfirmRecycleDialog(labelForThingBeingDeleted, multipleItems, localizationManagerId))
+			using (var dlg = new ConfirmRecycleDialog(labelForThingBeingDeleted))
 			{
 				if (DialogResult.OK != dlg.ShowDialog())
 					return false;
@@ -76,14 +84,69 @@ namespace Palaso.UI.WindowsForms.FileSystem
 		{
 			try
 			{
-				return PathUtilities.DeleteToRecycleBin(path);
+#if MONO
+			   // TODO: Find a way in Mono to send something to the recycle bin.
+				try
+				{
+					File.Delete(path);
+				}
+				catch
+				{
+					try
+					{
+						Directory.Delete(path);
+					}
+					catch
+					{
+					}
+				}
+				return true;
+				#else
+
+				//alternative using visual basic dll:  FileSystem.DeleteDirectory(item.FolderPath,UIOption.OnlyErrorDialogs), RecycleOption.SendToRecycleBin);
+
+				//moves it to the recyle bin
+				var shf = new SHFILEOPSTRUCT();
+				shf.wFunc = FO_DELETE;
+				shf.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION;
+				string pathWith2Nulls = path + "\0\0";
+				shf.pFrom = pathWith2Nulls;
+
+				SHFileOperation(ref shf);
+				return !shf.fAnyOperationsAborted;
+				#endif
+
 			}
 			catch (Exception exception)
 			{
-				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(exception,
-					"Could not delete file or directory {0}.", path);
+				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(exception, "Could not delete that book.");
 				return false;
 			}
 		}
+
+#if !MONO
+		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 1)]
+		public struct SHFILEOPSTRUCT
+		{
+			public IntPtr hwnd;
+			[MarshalAs(UnmanagedType.U4)]
+			public int wFunc;
+			public string pFrom;
+			public string pTo;
+			public short fFlags;
+			[MarshalAs(UnmanagedType.Bool)]
+			public bool fAnyOperationsAborted;
+			public IntPtr hNameMappings;
+			public string lpszProgressTitle;
+		}
+
+		[DllImport("shell32.dll", CharSet = CharSet.Auto)]
+		public static extern int SHFileOperation(ref SHFILEOPSTRUCT FileOp);
+
+		public const int FO_DELETE = 3;
+		public const int FOF_ALLOWUNDO = 0x40;
+		public const int FOF_NOCONFIRMATION = 0x10; // Don't prompt the user
+		public const int FOF_SIMPLEPROGRESS = 0x0100;
+#endif
 	}
 }

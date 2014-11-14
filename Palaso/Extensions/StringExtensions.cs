@@ -79,6 +79,8 @@ namespace Palaso.Extensions
 			}
 		}
 
+		private static XmlNode _xmlNodeUsedForEscaping;
+
 		public static string EscapeAnyUnicodeCharactersIllegalInXml(this string text)
 		{
 			//we actually want to preserve html markup, just escape the disallowed unicode characters
@@ -95,38 +97,21 @@ namespace Palaso.Extensions
 			text = text.Replace("_amp;", "&");
 			text = text.Replace("_quot;", "\"");
 			text = text.Replace("_apos;", "'");
-
-			// Also ensure NFC form for XML output.
-			return text.Normalize(NormalizationForm.FormC);
+			return text;
 		}
-
-		private static object _lockUsedForEscaping = new object(); 
-		private static StringBuilder _bldrUsedForEscaping;
-		private static XmlWriterSettings _settingsUsedForEscaping;
-		private static XmlWriter _writerUsedForEscaping;
 
 		public static string EscapeSoXmlSeesAsPureTextAndEscapeCharactersIllegalInXml(this string text)
 		{
-			lock (_lockUsedForEscaping)
+			if (_xmlNodeUsedForEscaping == null) //notice, this is only done once per run
 			{
-				if (_bldrUsedForEscaping == null)
-					_bldrUsedForEscaping = new StringBuilder();
-				else
-					_bldrUsedForEscaping.Clear();
-				if (_settingsUsedForEscaping == null)
-				{
-					_settingsUsedForEscaping = new XmlWriterSettings();
-					_settingsUsedForEscaping.NewLineHandling = NewLineHandling.None;		// don't fiddle with newlines
-					_settingsUsedForEscaping.ConformanceLevel = ConformanceLevel.Fragment;	// allow just text by itself
-					_settingsUsedForEscaping.CheckCharacters = false;						// allow invalid characters in
-				}
-				if (_writerUsedForEscaping == null)
-					_writerUsedForEscaping = XmlWriter.Create(_bldrUsedForEscaping, _settingsUsedForEscaping);
-
-				_writerUsedForEscaping.WriteString(text);
-				_writerUsedForEscaping.Flush();
-				return _bldrUsedForEscaping.ToString();
+				XmlDocument doc = new XmlDocument();
+					// review: There are other, cheaper ways of doing this.  System.Security has a good escape mechanism IIRC CP 2011-01
+				_xmlNodeUsedForEscaping = doc.CreateElement("text", "x", "");
 			}
+
+			_xmlNodeUsedForEscaping.InnerText = text;
+			text = _xmlNodeUsedForEscaping.InnerXml;
+			return text;
 		}
 
 		/// <summary>
@@ -212,31 +197,6 @@ namespace Palaso.Extensions
 			text = text.Replace("&&", kObjReplacementChar.ToString(CultureInfo.InvariantCulture));
 			text = text.Replace("&", string.Empty);
 			return text.Replace(kObjReplacementChar.ToString(CultureInfo.InvariantCulture), "&");
-		}
-
-		/// <summary>
-		/// Trims the string, and returns null if the result is zero length
-		/// </summary>
-		/// <param name="value"></param>
-		/// <param name="trimChars"></param>
-		/// <returns></returns>
-		public static string NullTrim(this string value, char[] trimChars)
-		{
-			if (string.IsNullOrEmpty(value))
-				return null;
-
-			value = value.Trim(trimChars);
-			return string.IsNullOrEmpty(value) ? null : value;
-		}
-
-		/// <summary>
-		/// Trims the string, and returns null if the result is zero length
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
-		public static string NullTrim(this string value)
-		{
-			return value.NullTrim(null);
 		}
 	}
 }

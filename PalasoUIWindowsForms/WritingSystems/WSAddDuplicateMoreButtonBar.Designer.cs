@@ -78,7 +78,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			this._exportMenuItem.Name = "_exportMenuItem";
 			this._exportMenuItem.Size = new System.Drawing.Size(259, 22);
-			this._exportMenuItem.Text = "&Save a Copy of the {0} LDML File...";
+			this._exportMenuItem.Text = "&Save a Coy of the {0} LDML File...";
 			this._exportMenuItem.Click += new System.EventHandler(this.ExportMenuClick);
 			//
 			// _importMenuItem

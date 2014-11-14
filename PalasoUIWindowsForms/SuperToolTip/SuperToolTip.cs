@@ -239,17 +239,16 @@ namespace Palaso.UI.WindowsForms.SuperToolTip
 
 		private void FadeOnTick(object obj, EventArgs e)
 		{
-			window.Opacity = window.Opacity + (fadingDirection == FadingDirection.FadeOut ? -.1 : .1);
-
-			if (window.Opacity >= 1.0 && fadingDirection == FadingDirection.FadeIn)
+			if (window.Opacity == 1 && fadingDirection == FadingDirection.FadeIn)
 			{
 				fadingTimer.Stop();
 			}
-			else if (window.Opacity <= 0.0 && fadingDirection == FadingDirection.FadeOut)
+			if (window.Opacity == 0 && fadingDirection == FadingDirection.FadeOut)
 			{
 				fadingTimer.Stop();
 				window.Close();
 			}
+			window.Opacity = window.Opacity + (fadingDirection == FadingDirection.FadeOut ? -.1 : .1);
 		}
 
 		private SuperToolTipInfoWrapper GetControlInfo(Control control)
@@ -352,7 +351,7 @@ namespace Palaso.UI.WindowsForms.SuperToolTip
 
 		public SuperToolTipWindow()
 		{
-			FormBorderStyle = FormBorderStyle.FixedSingle;
+			FormBorderStyle = FormBorderStyle.FixedToolWindow;
 			ShowInTaskbar = false;
 			ControlBox = false;
 			_checkMouseLeftTimer = new Timer();

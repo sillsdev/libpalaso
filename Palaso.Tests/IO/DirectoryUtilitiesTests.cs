@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using Palaso.IO;
 using Palaso.TestUtilities;
@@ -74,7 +75,9 @@ namespace Palaso.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Exclude = "Linux", Reason = "This test won't fail as expected on Linux")]
+#if MONO
+		[Ignore("This test won't fail as expected on Linux")]
+#endif
 		public void CopyFolder_SourceContainsLockedFile_ReturnsFalse()
 		{
 			using (new Reporting.ErrorReport.NonFatalErrorReportExpected())
@@ -87,7 +90,9 @@ namespace Palaso.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Exclude = "Linux", Reason = "This test won't fail as expected on Linux")]
+#if MONO
+		[Ignore("This test won't fail as expected on Linux")]
+#endif
 		public void CopyFolder_CopyFails_DestinationFolderNotLeftBehind()
 		{
 			using (new Reporting.ErrorReport.NonFatalErrorReportExpected())
@@ -211,10 +216,14 @@ namespace Palaso.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Exclude = "Linux", Reason = "This test is not valid on a Linux file system")]
 		public void AreDirectoriesEquivalent_DifferByDirectionOfSlash_ReturnsTrue()
 		{
+#if MONO
+			// 02 SEP 2013, Phil Hopper: this test is not valid on a linux file system.
+			return;
+#else
 			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"C:/temp"));
+#endif
 
 		}
 
@@ -231,33 +240,26 @@ namespace Palaso.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Exclude = "Linux", Reason = "This test tests Windows behaviour")]
-		public void AreDirectoriesEquivalent_DifferByTrailingDot_Windows()
+		public void AreDirectoriesEquivalent_DifferByTrailingDot_ResultDependsOnOperatingSystem()
 		{
-			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp.", @"C:\temp"));
-		}
-
-		[Test]
-		[Platform(Include = "Linux", Reason = "This test tests Linux behaviour")]
-		public void AreDirectoriesEquivalent_DifferByTrailingDot_Linux()
-		{
-			Assert.IsFalse(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp.", @"C:\temp"));
+#if MONO
+			Assert.IsFalse(
+#else
+			Assert.IsTrue(
+#endif
+DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp.", @"C:\temp"));
 		}
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Exclude = "Linux", Reason = "This test tests Windows behaviour")]
-		public void AreDirectoriesEquivalent_DifferByTrailingDotsAndBackslash_Windows()
+		public void AreDirectoriesEquivalent_DifferByTrailingDotsAndBackslash_ResultDependsOnOperatingSystem()
 		{
-			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp...\", @"C:\temp"));
-		}
-
-		/// ------------------------------------------------------------------------------------
-		[Test]
-		[Platform(Include = "Linux", Reason = "This test tests Linux behaviour")]
-		public void AreDirectoriesEquivalent_DifferByTrailingDotsAndBackslash_Linux()
-		{
-			Assert.IsFalse(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp...\", @"C:\temp"));
+#if MONO
+			Assert.IsFalse(
+#else
+			Assert.IsTrue(
+#endif
+DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp...\", @"C:\temp"));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -273,18 +275,14 @@ namespace Palaso.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Platform(Exclude = "Linux", Reason = "This test tests Windows behaviour")]
-		public void AreDirectoriesEquivalent_DifferentCase_Windows()
-		{
-			Assert.IsTrue(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"c:\TEMP\x\..\..\tEmp\."));
-		}
-
-		/// ------------------------------------------------------------------------------------
-		[Test]
-		[Platform(Include = "Linux", Reason = "This test tests Linux behaviour")]
 		public void AreDirectoriesEquivalent_DifferentCase_ResultDependsOnOperatingSystem()
 		{
-			Assert.IsFalse(DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"c:\TEMP\x\..\..\tEmp\."));
+#if MONO
+			Assert.IsFalse(
+#else
+			Assert.IsTrue(
+#endif
+			DirectoryUtilities.AreDirectoriesEquivalent(@"C:\temp", @"c:\TEMP\x\..\..\tEmp\."));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -421,171 +419,6 @@ namespace Palaso.Tests.IO
 				var uniqueFolderPath = DirectoryUtilities.GetUniqueFolderPath(targetDir + Path.DirectorySeparatorChar);
 				Assert.IsFalse(Directory.Exists(uniqueFolderPath));
 				Assert.AreNotEqual(targetDir, uniqueFolderPath);
-			}
-		}
-
-		[Test]
-		public void MoveDirectorySafely_SameFileThrows()
-		{
-			using (var tempFile = new TempFile())
-			{
-				Assert.That(() => DirectoryUtilities.MoveDirectorySafely(tempFile.Path, tempFile.Path),
-					Throws.InstanceOf<IOException>());
-			}
-		}
-
-		[Test]
-		public void MoveDirectorySafely_MoveToExistingFileThrows()
-		{
-			using (var tempFile = new TempFile())
-			using (var existingFile = new TempFile())
-			{
-				Assert.That(() => DirectoryUtilities.MoveDirectorySafely(tempFile.Path, existingFile.Path),
-					Throws.InstanceOf<IOException>());
-			}
-		}
-
-		[Test]
-		public void MoveDirectorySafely_MoveDirToExistingDirThrows()
-		{
-			using (var tempDir = new TemporaryFolder("TempRootDir"))
-			using (var existingDir = new TemporaryFolder("NewTempRootDir"))
-			{
-				Assert.That(() => DirectoryUtilities.MoveDirectorySafely(tempDir.Path, existingDir.Path),
-					Throws.InstanceOf<IOException>());
-			}
-		}
-
-		[Test]
-		public void MoveDirectorySafely_MoveDirToExistingFileThrows()
-		{
-			using (var tempDir = new TemporaryFolder("TempRootDir"))
-			using (var existingFile = new TempFile())
-			{
-				Assert.That(() => DirectoryUtilities.MoveDirectorySafely(tempDir.Path, existingFile.Path),
-					Throws.InstanceOf<IOException>());
-			}
-		}
-
-		[Test]
-		public void MoveDirectorySafely_MoveFileToExistingDirThrows()
-		{
-			// while this could theoretically work the docs for Directory.Move say that if you
-			// specify a file as source than destination also has to be a file.
-			using (var tempFile = new TempFile())
-			using (var existingDir = new TemporaryFolder("TempRootDir"))
-			{
-				Assert.That(() => DirectoryUtilities.MoveDirectorySafely(tempFile.Path, existingDir.Path),
-					Throws.InstanceOf<IOException>());
-			}
-		}
-
-		[Test]
-		[Platform(Exclude = "Win", Reason="Don't know how to test this on Windows")]
-		public void MoveDirectorySafely_MoveDirToDifferentVolume()
-		{
-			// On Linux, /tmp is typicall a ram disk and therefore a different partition from
-			// /var/tmp which is supposed to persist across reboots.
-			// On Mac, /tmp isn't usually a ram disk. However, it's possible to create and mount
-			// loop filesystems (disk images) without root privileges. So it would be possible
-			// to extend this when porting to Mac.
-			if (PathUtilities.GetDeviceNumber("/tmp") == PathUtilities.GetDeviceNumber("/var/tmp"))
-				Assert.Ignore("For this test /tmp and /var/tmp have to be on different partitions");
-
-			var tempDir = Path.Combine("/tmp", Path.GetRandomFileName());
-			Directory.CreateDirectory(tempDir);
-			var dirOnDifferentVolume = Path.Combine("/var/tmp", Path.GetRandomFileName());
-			Directory.CreateDirectory(dirOnDifferentVolume);
-			using (TemporaryFolder.TrackExisting(tempDir))
-			using (TemporaryFolder.TrackExisting(dirOnDifferentVolume))
-			{
-				Assert.That(() => DirectoryUtilities.MoveDirectorySafely(tempDir,
-					Path.Combine(dirOnDifferentVolume, "TempDir")),
-					Throws.Nothing);
-			}
-		}
-
-		[Test]
-		[Platform(Exclude = "Win", Reason="Don't know how to test this on Windows")]
-		public void MoveDirectorySafely_MoveFileToDifferentVolume()
-		{
-			// On Linux, /tmp is typicall a ram disk and therefore a different partition from
-			// /var/tmp which is supposed to persist across reboots.
-			// On Mac, /tmp isn't usually a ram disk. However, it's possible to create and mount
-			// loop filesystems (disk images) without root privileges. So it would be possible
-			// to extend this when porting to Mac.
-			if (PathUtilities.GetDeviceNumber("/tmp") == PathUtilities.GetDeviceNumber("/var/tmp"))
-				Assert.Ignore("For this test /tmp and /var/tmp have to be on different partitions");
-
-			var tempFile = Path.Combine("/tmp", Path.GetRandomFileName());
-			var dirOnDifferentVolume = Path.Combine("/var/tmp", Path.GetRandomFileName());
-			Directory.CreateDirectory(dirOnDifferentVolume);
-			using (File.Create(tempFile))
-			using (TempFile.TrackExisting(tempFile))
-			using (TemporaryFolder.TrackExisting(dirOnDifferentVolume))
-			{
-				var destinationFile = Path.Combine(dirOnDifferentVolume, "TempFile");
-				Assert.That(() => DirectoryUtilities.MoveDirectorySafely(tempFile, destinationFile),
-					Throws.Nothing);
-				Assert.That(File.Exists(destinationFile), Is.True);
-				Assert.That(File.Exists(tempFile), Is.False);
-			}
-		}
-
-		[Test]
-		public void MoveDirectorySafely_SourceDirDoesNotExist()
-		{
-			Assert.That(() => DirectoryUtilities.MoveDirectorySafely(
-				Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()),
-				Path.Combine(Path.GetTempPath(), Path.GetRandomFileName())),
-				Throws.InstanceOf<DirectoryNotFoundException>());
-		}
-
-		[Test]
-		public void DirectoryIsEmpty_DirectoryIsEmpty()
-		{
-			using (var tempDir = new TemporaryFolder("IsEmpty_DirectoryIsEmpty"))
-			{
-				Assert.IsTrue(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path));
-				Assert.IsTrue(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path, true));
-			}
-		}
-
-		[Test]
-		public void DirectoryIsEmpty_DirectoryContainsSubDirectory()
-		{
-			using (var tempDir = new TemporaryFolder("IsEmpty_DirectoryContainsSubDirectory"))
-			{
-				Directory.CreateDirectory(Path.Combine(tempDir.Path, "subDirectory"));
-				Assert.IsFalse(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path));
-				Assert.IsTrue(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path, true));
-			}
-		}
-
-		[Test]
-		public void DirectoryIsEmpty_DirectoryContainsFile()
-		{
-			using (var tempDir = new TemporaryFolder("IsEmpty_DirectoryContainsFile"))
-			{
-				var file = tempDir.GetNewTempFile(false);
-				File.WriteAllText(file.Path, @"Some test text");
-				Assert.IsFalse(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path));
-				Assert.IsFalse(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path, true));
-			}
-		}
-
-		[Test]
-		public void DirectoryIsEmpty_SubdirectoryContainsFile()
-		{
-			using (var tempDir = new TemporaryFolder("IsEmpty_DirectoryContainsFile"))
-			{
-				var dir = Directory.CreateDirectory(Path.Combine(tempDir.Path, "subDirectory2"));
-				var fileName = Path.Combine(dir.FullName, "tempFile.txt");
-				File.WriteAllText(fileName, @"Some test text");
-				Assert.IsTrue(File.Exists(fileName));
-				Assert.IsFalse(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path));
-				Assert.IsTrue(DirectoryUtilities.DirectoryIsEmpty(tempDir.Path, true));
-				File.Delete(fileName);
 			}
 		}
 	}

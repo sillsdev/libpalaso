@@ -5,11 +5,6 @@ using Palaso.UI.WindowsForms.Miscellaneous;
 
 namespace Palaso.UI.WindowsForms.Reporting
 {
-	/// <summary>
-	/// Display problem notification dialog.
-	/// NOTE: It is recommended to call Palaso.Reporting.ErrorReport.NotifyUserOfProblem
-	/// instead of instantiating this class.
-	/// </summary>
 	public partial class ProblemNotificationDialog : Form
 	{
 		private DialogResult _alternateButton1DialogResult;
@@ -72,7 +67,7 @@ namespace Palaso.UI.WindowsForms.Reporting
 			if (icon != null)
 				_icon.Image = icon;
 
-			Text = dialogTitle;
+		   Text = dialogTitle;
 			_message.Text = message;
 		}
 

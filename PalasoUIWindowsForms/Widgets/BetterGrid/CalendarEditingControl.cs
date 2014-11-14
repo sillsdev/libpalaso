@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
@@ -7,49 +6,11 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 	/// ----------------------------------------------------------------------------------------
 	internal class CalendarEditingControl : DateTimePicker, IDataGridViewEditingControl
 	{
-		private DataGridView _parentGrid;
-
 		/// ------------------------------------------------------------------------------------
 		public CalendarEditingControl()
 		{
 			Format = DateTimePickerFormat.Short;
 		}
-
-		#region Private properties
-		/// ------------------------------------------------------------------------------------
-		private DataGridView Grid
-		{
-			get
-			{
-				if (_parentGrid == null)
-				{
-					Control parent = Parent;
-					while (parent != null && !(parent is DataGridView))
-						parent = parent.Parent;
-					_parentGrid = parent as DataGridView;
-				}
-				return _parentGrid;
-			}
-		}
-
-		/// ------------------------------------------------------------------------------------
-		private Color GridForeColor
-		{
-			get
-			{
-				return (Grid != null) ? Grid.ForeColor : Color.Black;
-			}
-		}
-
-		/// ------------------------------------------------------------------------------------
-		private Color GridBackColor
-		{
-			get
-			{
-				return (Grid != null) ? Grid.BackColor : Color.White;
-			}
-		}
-		#endregion
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -96,19 +57,8 @@ namespace Palaso.UI.WindowsForms.Widgets.BetterGrid
 		public void ApplyCellStyleToEditingControl(DataGridViewCellStyle dataGridViewCellStyle)
 		{
 			Font = dataGridViewCellStyle.Font;
-			if (!Application.RenderWithVisualStyles)
-			{
-				var foreColor = dataGridViewCellStyle.ForeColor;
-				if (foreColor.IsEmpty)
-					foreColor = GridForeColor;
-				var backColor = dataGridViewCellStyle.BackColor;
-				if (backColor.IsEmpty)
-					backColor = GridBackColor;
-				if (!foreColor.IsEmpty && foreColor != backColor)
-					CalendarForeColor = foreColor;
-				if (!backColor.IsEmpty && backColor != CalendarForeColor)
-					CalendarMonthBackground = backColor;
-			}
+			CalendarForeColor = dataGridViewCellStyle.ForeColor;
+			CalendarMonthBackground = dataGridViewCellStyle.BackColor;
 		}
 
 		/// ------------------------------------------------------------------------------------

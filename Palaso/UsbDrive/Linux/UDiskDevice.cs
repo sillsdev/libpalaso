@@ -71,11 +71,7 @@ namespace Palaso.UsbDrive.Linux
 
 		public bool IsMounted
 		{
-			get
-			{
-				var isMounted = GetProperty("DeviceIsMounted");
-				return !String.IsNullOrEmpty(isMounted) && isMounted.ToLowerInvariant() == "true";
-			}
+			get { return GetProperty("DeviceIsMounted") == "True"; }
 		}
 
 		public string VolumeLabel

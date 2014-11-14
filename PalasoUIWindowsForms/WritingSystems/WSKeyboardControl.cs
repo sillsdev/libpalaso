@@ -60,12 +60,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	// Keyman is not supported, setup link should not say "Windows".
 			_keymanConfigurationLink.Visible = false;
 			_keyboardSettingsLink.Text = L10NSharp.LocalizationManager.GetString("WSKeyboardControl.SetupKeyboards", "Set up keyboards");
-
-			// The sequence of Events in Mono dictate using GotFocus instead of Enter as the point
-			// when we want to assign keyboard and font to this textbox.  (For some reason, using
-			// Enter works fine for the WSFontControl._testArea textbox control.)
-			this._testArea.Enter -= new System.EventHandler(this._testArea_Enter);
-			this._testArea.GotFocus += new System.EventHandler(this._testArea_Enter);
 #endif
 		}
 
@@ -324,34 +318,18 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void _windowsKeyboardSettingsLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			string program = null;
+			string program;
 			string arguments = null;
 
 #if MONO
-			// Try for the most likely keyboard setup programs.  If none found,
-			// inform the user.
 			if (KeyboardController.CombinedKeyboardHandling)
 			{
-				if (File.Exists("/usr/bin/unity-control-center"))
-				{
-					program = "/usr/bin/unity-control-center";
-					arguments = "region layouts";
-				}
-				else if (File.Exists("/usr/bin/gnome-control-center"))
-				{
-					program = "/usr/bin/gnome-control-center";
-					arguments = "region layouts";
-				}
+				program = "/usr/bin/gnome-control-center";
+				arguments = "region layouts";
 			}
 			else
 			{
-				if (File.Exists("/usr/bin/ibus-setup"))
-					program = "/usr/bin/ibus-setup";
-			}
-			if (String.IsNullOrEmpty(program))
-			{
-				MessageBox.Show("Cannot open keyboard setup program", "Information");
-				return;
+				program = "/usr/bin/ibus-setup";
 			}
 #else
 			program = Path.Combine(

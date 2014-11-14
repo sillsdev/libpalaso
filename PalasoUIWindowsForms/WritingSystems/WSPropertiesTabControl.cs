@@ -8,12 +8,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 	public partial class WSPropertiesTabControl : UserControl
 	{
 		private WritingSystemSetupModel _model;
-		public event EventHandler UserWantsHelpWithCustomSorting;
 
 		public WSPropertiesTabControl()
 		{
 			InitializeComponent();
-			_sortControl.UserWantsHelpWithCustomSorting += OnHelpWithCustomSorting;
 
 			if (!KeyboardController.IsInitialized)
 			{
@@ -90,12 +88,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			if (_tabControl.SelectedTab == _keyboardsPage)
 				_keyboardControl.Focus();
-		}
-
-		private void OnHelpWithCustomSorting(object sender, EventArgs e)
-		{
-			if (UserWantsHelpWithCustomSorting != null)
-				UserWantsHelpWithCustomSorting(sender, e);
 		}
 	}
 }

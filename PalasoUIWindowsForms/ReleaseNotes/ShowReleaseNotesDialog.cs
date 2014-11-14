@@ -14,11 +14,24 @@ namespace Palaso.UI.WindowsForms.ReleaseNotes
 		private readonly string _path;
 		private TempFile _temp;
 
-		public ShowReleaseNotesDialog(System.Drawing.Icon icon, string path)
+		public ShowReleaseNotesDialog(System.Drawing.Icon icon,string path)
 		{
 			_path = path;
 			Icon = icon;
 			InitializeComponent();
+			_browser.Disposed += new EventHandler(_browser_Disposed);
+		}
+
+		void _browser_Disposed(object sender, EventArgs e)
+		{
+			try
+			{
+				_temp.Dispose();
+			}
+			catch (Exception error)
+			{
+				Debug.Fail(error.Message);
+			}
 		}
 
 		private void ShowReleaseNotesDialog_Load(object sender, EventArgs e)
@@ -28,7 +41,7 @@ namespace Palaso.UI.WindowsForms.ReleaseNotes
 			var md = new Markdown();
 			_temp = TempFile.WithExtension("htm"); //enhance: will leek a file to temp
 			File.WriteAllText(_temp.Path, md.Transform(contents));
-			_browser.Url = new Uri(_temp.Path);
+			_browser.Navigate(_temp.Path);
 		}
 	}
 }

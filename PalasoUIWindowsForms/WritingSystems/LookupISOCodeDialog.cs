@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using Palaso.WritingSystems;
 
@@ -10,21 +11,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			InitializeComponent();
 			ShowDesiredLanguageNameField = true;
-		}
-
-		/// <summary>Force the dialog to return 3 letter iso codes even if a 2 letter code is available</summary>
-		public bool Force3LetterCodes
-		{
-			get { return _lookupISOControl.Force3LetterCodes; }
-			set { _lookupISOControl.Force3LetterCodes = value; }
-		}
-
-		/// <summary>
-		/// Get the name of the desired language to search for.
-		/// </summary>
-		public string DesiredLanguageName
-		{
-			get { return _lookupISOControl.DesiredLanguageName; }
 		}
 
 		/// <summary>
@@ -44,8 +30,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void _okButton_Click(object sender, EventArgs e)
 		{
-			DialogResult = DialogResult.OK;
-			Close();
+			this.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.Close();
 		}
 
 //        public Iso639LanguageCode ISOCodeAndName

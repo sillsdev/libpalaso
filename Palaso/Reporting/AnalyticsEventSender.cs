@@ -94,7 +94,7 @@ namespace Palaso.Reporting
 
 		private string MassagePagePath(string pagePath)
 		{
-			if (pagePath == null || pagePath.Trim().Length == 0)
+			if (pagePath.Trim().Length == 0)
 			{
 				Debug.Fail("Empty path");
 				pagePath = "unknown";
@@ -124,59 +124,61 @@ namespace Palaso.Reporting
 
 			var bw = new BackgroundWorker();
 			bw.DoWork += (o, args) =>
-			{
+							 {
 //                RobustNetworkOperation.Do(proxy =>
 //                                              {
-				try
-				{
+								 try
+								 {
 //jh: i got tired of seeing this in the logs
 //                                     Logger.WriteMinorEvent("Attempting SendUrlRequestAsync({0}",
 //                                                            requestUriString);
 
-					HttpWebRequest request = (HttpWebRequest) WebRequest.Create(requestUriString);
-					request.CookieContainer = new CookieContainer();
-					//                                                    request.Proxy = proxy;
-					if(_googleCookie!=null)
-						request.CookieContainer.Add(request.RequestUri, _googleCookie);
+									 HttpWebRequest request = (HttpWebRequest) WebRequest.Create(requestUriString);
+									 request.CookieContainer = new CookieContainer();
+									 //                                                    request.Proxy = proxy;
+									 if(_googleCookie!=null)
+										 request.CookieContainer.Add(request.RequestUri, _googleCookie);
 
-					//warning, this uses the ui thread:
-					//request.BeginGetResponse(new AsyncCallback(RespCallback), null);
-					//since we're in the background anyway...
-					//review but on a single core machine, might this still hang us up, or does it sleep, internally?
-					HttpWebResponse response = (HttpWebResponse) request.GetResponse();
+									 //warning, this uses the ui thread:
+									 //request.BeginGetResponse(new AsyncCallback(RespCallback), null);
+									 //since we're in the background anyway...
+									 //review but on a single core machine, might this still hang us up, or does it sleep, internally?
+									 HttpWebResponse response = (HttpWebResponse) request.GetResponse();
 
-					//Review: is it the request or the response that should have the cookie?  Neither do
+									 //Review: is it the request or the response that should have the cookie?  Neither do
 
-					CookieCollection cookieCollection = response.Cookies;
-					if(cookieCollection!=null && cookieCollection.Count>0)
-					{
-						_rememberGoogleCookie(cookieCollection[0]);
-						Debug.Assert(cookieCollection.Count==1, "(Debug mode only Did not expect multiple cookies from google analytics.");
-					}
-					Debug.WriteLine("Succesful SendUrlRequestAsync");// ah well
-				}
-				catch (WebException e)
-				{
-					if (e.Status == WebExceptionStatus.Timeout)
-					{
-						Debug.WriteLine("  TimedOut SendUrlRequestAsync");// ah well
-					}
+									 CookieCollection cookieCollection = response.Cookies;
+									 if(cookieCollection!=null && cookieCollection.Count>0)
+									 {
+										 _rememberGoogleCookie(cookieCollection[0]);
+										 Debug.Assert(cookieCollection.Count==1, "(Debug mode only Did not expect multiple cookies from google analytics.");
+									 }
+									 Debug.WriteLine("Succesful SendUrlRequestAsync");// ah well
+								 }
+								 catch (WebException e)
+								 {
+									 if (e.Status == WebExceptionStatus.Timeout)
+									 {
+										 Debug.WriteLine("  TimedOut SendUrlRequestAsync");// ah well
+									 }
+									 else
+									 {
 #if DEBUG
-					else
-					{
-						throw e;
-					}
+										 throw e;
 #endif
-				}
-			};
+									 }
+								 }
+							 };
 //                                              }, null);
-			bw.RunWorkerAsync();
+			 bw.RunWorkerAsync();
 		}
 
 		private static void RespCallback(IAsyncResult ar)
 		{
 
 		}
+
+
 
 		private string GetUrl(Dictionary<string, string> parameters)
 		{

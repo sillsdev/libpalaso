@@ -48,6 +48,11 @@
 			this.ReadOnly = true;
 			this.Size = new System.Drawing.Size(100, 20);
 			this.TabStop = false;
+			this.BackColorChanged += new System.EventHandler(this.BetterLabel_BackColorChanged);
+			this.ForeColorChanged += new System.EventHandler(this.BetterLabel_ForeColorChanged);
+			this.SizeChanged += new System.EventHandler(this.BetterLabel_SizeChanged);
+			this.TextChanged += new System.EventHandler(this.BetterLabel_TextChanged);
+			this.ParentChanged += new System.EventHandler(this.BetterLabel_ParentChanged);
 			this.ResumeLayout(false);
 
 		}

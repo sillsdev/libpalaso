@@ -490,7 +490,6 @@ namespace Palaso.UI.WindowsForms.Progress
 			this._statusLabel.Size = new System.Drawing.Size(355, 15);
 			this._statusLabel.TabIndex = 12;
 			this._statusLabel.Text = "#";
-			this._statusLabel.UseMnemonic = false;
 			//
 			// _progressBar
 			//
@@ -531,7 +530,6 @@ namespace Palaso.UI.WindowsForms.Progress
 			this._progressLabel.Size = new System.Drawing.Size(272, 13);
 			this._progressLabel.TabIndex = 9;
 			this._progressLabel.Text = "#";
-			this._progressLabel.UseMnemonic = false;
 			//
 			// _showWindowIfTakingLongTimeTimer
 			//
@@ -558,7 +556,6 @@ namespace Palaso.UI.WindowsForms.Progress
 			this._overviewLabel.Size = new System.Drawing.Size(355, 15);
 			this._overviewLabel.TabIndex = 8;
 			this._overviewLabel.Text = "#";
-			this._overviewLabel.UseMnemonic = false;
 			//
 			// tableLayout
 			//
