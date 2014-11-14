@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace Palaso.Extensions
@@ -68,8 +67,8 @@ namespace Palaso.Extensions
 		}
 
 
-//		/// <summary>
-//		/// if we can't parse it, we stick in the min value & write a warning to the progress
+		/// <summary>
+		/// if we can't parse it, we stick in the min value & write a warning to the progress
 //        /// </summary>
 //
 //        public static DateTime ParseDateTimePermissivelyWithFallbackToDefaultAndWarningToProgress(string when, IProgress progress)
@@ -93,13 +92,11 @@ namespace Palaso.Extensions
 		{
 			try
 			{
-				return ParseISO8601DateTime(when);
+				return DateTimeExtensions.ParseISO8601DateTime(when);
 			}
 			catch (Exception e)
 			{
-				// Up-until mid-version 1.1, we were accidentally saving locale-specific dates
-
-				// First try a few common cultures
+				//Up-until mid-version 1.1, we were accidentally saving locale-specific dates
 				DateTime date;
 				List<CultureInfo> culturesToTry = new List<CultureInfo>(new[]
 																			{
@@ -109,44 +106,15 @@ namespace Palaso.Extensions
 																				CultureInfo.CreateSpecificCulture("en-GB"),
 																				CultureInfo.CreateSpecificCulture("ru")
 																			});
-				if (TryParseWithTheseCultures(when, out date, culturesToTry))
-					return date;
+				foreach (var cultureInfo in culturesToTry)
+				{
+					if (DateTime.TryParse(when, cultureInfo.DateTimeFormat, DateTimeStyles.None,
+									   out date))
+						return date;
+				}
 
-				// If not found, try more
-				if (TryParseWithTheseCultures(when, out date, CultureInfo.GetCultures(CultureTypes.SpecificCultures)))
-					return date;
-
-				// If still not found, give up and re-throw the exception.
-				throw;
+				throw e;
 			}
-		}
-
-		private static bool TryParseWithTheseCultures(string when, out DateTime parsed, IEnumerable<CultureInfo> cultures)
-		{
-			foreach (var cultureInfo in cultures)
-			{
-				if (DateTime.TryParse(when, cultureInfo.DateTimeFormat, DateTimeStyles.None, out parsed))
-					return true;
-			}
-
-			// not found, return failure
-			parsed = DateTime.MinValue;
-			return false;
-		}
-
-		/// <summary />
-		public static bool IsISO8601Date(this string value)
-		{
-			if (string.IsNullOrEmpty(value))
-				return false;
-
-			var rx = new Regex(@"^\d{4}[-]\d{2}[-]\d{2}$");
-			var m = rx.Match(value);
-
-			if (!m.Success) return false;
-
-			DateTime testDate;
-			return (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out testDate));
 		}
 	}
 }

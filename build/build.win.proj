@@ -11,7 +11,7 @@
 	<UsingTask TaskName="NUnitTeamCity" AssemblyFile="$(agent_home_dir)/plugins/dotnetPlugin/bin/JetBrains.BuildServer.MSBuildLoggers.dll" />
 
 	<PropertyGroup>
-		<Solution>Palaso VS2010.sln</Solution>
+		<Solution>Palaso.sln</Solution>
 		<ApplicationName>PalasoLibrary</ApplicationName>
 		<Configuration>Release</Configuration>
 	</PropertyGroup>

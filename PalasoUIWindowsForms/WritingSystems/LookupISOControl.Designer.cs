@@ -68,7 +68,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._listView.View = System.Windows.Forms.View.Details;
 			this._listView.SelectedIndexChanged += new System.EventHandler(this.OnSelectedIndexChanged);
 			this._listView.DoubleClick += new System.EventHandler(this.listView1_DoubleClick);
-			this._listView.Sorting = System.Windows.Forms.SortOrder.Ascending;
 			//
 			// PrimaryNameHeader
 			//
@@ -184,8 +183,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			// _L10NSharpExtender
 			//
-			this._L10NSharpExtender.LocalizationManagerId = "Palaso";
-			this._L10NSharpExtender.PrefixForNewItems = "LanguageLookup";
+			this._L10NSharpExtender.LocalizationManagerId = null;
+			this._L10NSharpExtender.PrefixForNewItems = null;
 			//
 			// LookupISOControl
 			//

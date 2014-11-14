@@ -25,25 +25,6 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 		}
 
 		[Test, Ignore("By Hand")]
-		public void ShowFullDialogTwiceToCheckRoundTripping()
-		{
-			var m = new Metadata();
-			m.License = CreativeCommonsLicense.FromToken("by");
-			m.License.RightsStatement = "some restrictions";
-
-			using (var dlg = new MetadataEditorDialog(m))
-			{
-				dlg.ShowDialog();
-				m = dlg.Metadata;
-			}
-
-			using (var dlg = new MetadataEditorDialog(m))
-			{
-				dlg.ShowDialog();
-			}
-		}
-
-		[Test, Ignore("By Hand")]
 		public void ShowControl()
 		{
 			var m = new Metadata();

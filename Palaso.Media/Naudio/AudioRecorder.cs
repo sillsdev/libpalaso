@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using NAudio;
 using NAudio.Wave;
@@ -382,63 +380,62 @@ namespace Palaso.Media.Naudio
 		}
 
 		/// ------------------------------------------------------------------------------------
-		private IEnumerable<MixerControl> MixerLineControls
-		{
-			get
-			{
-				int attempts = 0;
-				while (attempts++ < 2)
-				{
-					try
-					{
-						if (Environment.OSVersion.Version.Major >= 6) // Vista and over
-						{
-							var mixerLine = _waveIn.GetMixerLine();
-							//new MixerLine((IntPtr)waveInDeviceNumber, 0, MixerFlags.WaveIn);
-							return mixerLine.Controls;
-						}
-
-						int waveInDeviceNumber = _waveIn.DeviceNumber;
-						var mixer = new Mixer(waveInDeviceNumber);
-						foreach (var source in from destination in mixer.Destinations
-							where destination.ComponentType == MixerLineComponentType.DestinationWaveIn
-							from source in destination.Sources
-							where source.ComponentType == MixerLineComponentType.SourceMicrophone
-							select source)
-							return source.Controls;
-					}
-					catch (MmException e)
-					{
-						Logger.WriteEvent("MmException caught: {0}", e.Message);
-						if (attempts > 2)
-							throw;
-					}
-
-					Thread.Sleep(50); // User might have been making changes in Control Panel that messed us up. Let's see if the problem fixes itself.
-				}
-				return new MixerControl[0];
-			}
-		}
-
-		/// ------------------------------------------------------------------------------------
 		protected virtual void ConnectWithVolumeControl()
 		{
-			foreach (var control in MixerLineControls)
+			int waveInDeviceNumber = _waveIn.DeviceNumber;
+			if (Environment.OSVersion.Version.Major >= 6) // Vista and over
 			{
-				if (control.ControlType == MixerControlType.Volume)
+				var mixerLine = _waveIn.GetMixerLine();
+				//new MixerLine((IntPtr)waveInDeviceNumber, 0, MixerFlags.WaveIn);
+				foreach (var control in mixerLine.Controls)
 				{
-					_volumeControl = control as UnsignedMixerControl;
+					if (control.ControlType == MixerControlType.Volume)
+					{
+						_volumeControl = control as UnsignedMixerControl;
 
-					//REVIEW: was this (from original author). This would boost us to the max (as the original code had a 100 for _microphoneLevel)
-					//MicrophoneLevel = _microphoneLevel;
-					//Now, we do the opposite. Give preference to the system volume. If your application supports independent volume setting, that's
-					//fine, but you'll have to explicity set it via the MicrophoneLevel property.
+						//REVIEW: was this (from original author). This would boost us to the max (as the original code had a 100 for _microphoneLevel)
+						//MicrophoneLevel = _microphoneLevel;
+						//Now, we do the opposite. Give preference to the system volume. If your application supports independent volume setting, that's
+						//fine, but you'll have to explicity set it via the MicrophoneLevel property.
 
-					_microphoneLevel = _volumeControl.Percent;
+						_microphoneLevel = _volumeControl.Percent;
 
-					break;
+						break;
+					}
 				}
 			}
+			else
+			{
+				var mixer = new Mixer(waveInDeviceNumber);
+				foreach (var destination in mixer.Destinations)
+				{
+					if (destination.ComponentType == MixerLineComponentType.DestinationWaveIn)
+					{
+						foreach (var source in destination.Sources)
+						{
+							if (source.ComponentType == MixerLineComponentType.SourceMicrophone)
+							{
+								foreach (var control in source.Controls)
+								{
+									if (control.ControlType == MixerControlType.Volume)
+									{
+										_volumeControl = control as UnsignedMixerControl;
+										//REVIEW: was this (from original author). This would boost us to the max (as the original code had a 100 for _microphoneLevel)
+										//MicrophoneLevel = _microphoneLevel;
+										//Now, we do the opposite. Give preference to the system volume. If your application supports independent volume setting, that's
+										//fine, but you'll have to explicity set it via the MicrophoneLevel property.
+
+										_microphoneLevel = _volumeControl.Percent;
+
+										break;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
 		}
 
 		/// ------------------------------------------------------------------------------------

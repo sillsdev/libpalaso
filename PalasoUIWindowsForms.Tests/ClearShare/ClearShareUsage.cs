@@ -38,31 +38,5 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 				Assert.AreEqual(2,work2.Contributions.Count());
 			}
 		}
-
-		[Test]
-		public void TypicalEmbedInJson()
-		{
-			// example
-			var license = new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.Derivatives);
-			license.RightsStatement = "Please acknowledge using 'Based on work of SIL International'";
-
-			var json = "{\"license\":'" + license.Token + "\",\"rights\":\"" + license.RightsStatement + "\"}";
-			// store json somewhere.
-
-			// parse json and get
-			var token = "custom"; // from license field
-			var rights = "Academic Institutions may use this free of charge";
-
-			// reconstitute the license
-			var recoveredLicense = LicenseInfo.FromToken(token);
-			license.RightsStatement = rights;
-
-			Assert.That(recoveredLicense, Is.InstanceOf<CustomLicense>());
-
-			Assert.That(LicenseInfo.FromToken("ask"), Is.InstanceOf<NullLicense>());
-			var ccLicense = LicenseInfo.FromToken("by-nc-sa");
-			Assert.That(ccLicense, Is.InstanceOf<CreativeCommonsLicense>());
-			Assert.That(((CreativeCommonsLicense)ccLicense).AttributionRequired, Is.True);
-		}
 	}
 }

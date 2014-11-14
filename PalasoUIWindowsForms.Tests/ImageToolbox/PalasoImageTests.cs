@@ -58,23 +58,6 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 		}
 
 		[Test]
-		public void FromFileTwiceMaintainsCorrectPath()
-		{
-			using (var bitmap1 = new Bitmap(10, 10))
-			using (var bitmap2 = new Bitmap(10, 10))
-			using (var tf1 = TempFile.WithExtension(".png"))
-			using (var tf2 = TempFile.WithExtension(".png"))
-			{
-				bitmap1.Save(tf1.Path);
-				bitmap2.Save(tf2.Path);
-				using (var pi1 = PalasoImage.FromFile(tf1.Path))
-				using (var pi2 = PalasoImage.FromFile(tf2.Path))
-					Assert.AreNotEqual(pi1.OriginalFilePath, pi2.OriginalFilePath);
-					
-			}
-		}
-
-		[Test]
 		public void FromFile_DoesNotLockFile()
 		{
 		   using(Bitmap bitmap = new Bitmap(10, 10))

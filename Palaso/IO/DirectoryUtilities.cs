@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading;
+
 using Palaso.Reporting;
 
 namespace Palaso.IO
@@ -133,40 +134,20 @@ namespace Palaso.IO
 		}
 
 		/// <summary>
-		/// Move <paramref name="sourcePath"/> to <paramref name="destinationPath"/>. If src
-		/// and dest are on different partitions (e.g., temp and documents are on different
-		/// drives) then this method will do a copy followed by a delete. This is in contrast
-		/// to Directory.Move which fails if src and dest are on different partitions.
+		/// Directory.Move fails if the src and dest are on different partitions (e.g., temp and documents are on differen drives).
+		/// This will do a move if it can, else do a copy followed by a delete.
 		/// </summary>
-		/// <param name="sourcePath">The source directory or file, similar to Directory.Move</param>
-		/// <param name="destinationPath">The destination directory or file. If <paramref name="sourcePath"/>
-		/// is a file then <paramref name="destinationPath"/> also needs to be a file.</param>
 		public static void MoveDirectorySafely(string sourcePath, string destinationPath)
 		{
-			if (PathUtilities.PathsAreOnSameVolume(destinationPath, sourcePath))
+			if(Path.GetPathRoot(destinationPath).ToLower() == Path.GetPathRoot(sourcePath).ToLower())
 			{
 				Directory.Move(sourcePath, destinationPath);
 				return;
 			}
-			if (Directory.Exists(sourcePath))
-			{
-				CopyDirectoryWithException(sourcePath, destinationPath);
-				Directory.Delete(sourcePath, true);
-			}
-			else if (File.Exists(sourcePath))
-			{
-				if (File.Exists(destinationPath) || Directory.Exists(destinationPath))
-					throw new IOException("Cannot create a file when that file already exists.");
-
-				File.Copy(sourcePath, destinationPath);
-				File.Delete(sourcePath);
-			}
-			else
-			{
-				throw new DirectoryNotFoundException(
-					string.Format("Could not find a part of the path '{0}'", sourcePath));
-			}
+			CopyDirectoryWithException(sourcePath,destinationPath);
+			Directory.Delete(sourcePath,true);
 		}
+
 
 		private static void ReportFailedCopyAndCleanUp(Exception error, string srcDirectory, string dstDirectory)
 		{
@@ -192,8 +173,7 @@ namespace Palaso.IO
 		/// </summary>
 		/// <param name="path">Directory path to look in.</param>
 		/// <returns>Zero or more directory names that are not system or hidden.</returns>
-		/// <exception cref="System.UnauthorizedAccessException">E.g. when the user does not have
-		/// read permission.</exception>
+		/// <exception cref="System.UnauthorizedAccessException ">E.g. when the user does not have read permission.</exception>
 		public static string[] GetSafeDirectories(string path)
 		{
 				return (from directoryName in Directory.GetDirectories(path)
@@ -282,22 +262,6 @@ namespace Palaso.IO
 				suffix = i.ToString();
 			}
 			return Path.Combine(parent, name + suffix);
-		}
-
-		/// <summary>
-		/// Checks if there are any entries in a directory
-		/// </summary>
-		/// <param name="path">Path to the directory to check</param>
-		/// <param name="onlyCheckForFiles">if this is TRUE, a directory that contains subdirectories but no files will be considered empty.
-		/// Subdirectories are not checked, so if onlyCheckForFiles is TRUE and there is a subdirectory that contains a file, the directory
-		/// will still be considered empty.</param>
-		/// <returns></returns>
-		public static bool DirectoryIsEmpty(string path, bool onlyCheckForFiles = false)
-		{
-			if (onlyCheckForFiles)
-				return !Directory.EnumerateFiles(path).Any();
-
-			return !Directory.EnumerateFileSystemEntries(path).Any();
 		}
 	}
 }

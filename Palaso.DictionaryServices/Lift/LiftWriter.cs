@@ -680,7 +680,6 @@ namespace Palaso.DictionaryServices.Lift
 		{
 			foreach (LanguageForm form in forms)
 			{
-				var spans = form.Spans;
 				Writer.WriteStartElement(wrapper);
 				Writer.WriteAttributeString("lang", form.WritingSystemId);
 				if (doMarkTheFirst)
@@ -713,103 +712,19 @@ namespace Palaso.DictionaryServices.Lift
 				if(isTextWellFormedXml)
 				{
 					Writer.WriteStartElement("text");
-					if (spans.Count > 0)
-					{
-						Writer.WriteString("");		// trick writer into knowing this is "mixed mode".
-						int index = 0;
-						int count;
-						foreach (var span in spans)
-						{
-							// User edits may have effectively deleted the text of this span.
-							if (span.Length <= 0)
-								continue;
-							if (index < span.Index)
-							{
-								count = span.Index - index;
-								string txtBefore = String.Empty;
-								if (index + count <= form.Form.Length)
-									txtBefore = form.Form.Substring(index, count);
-								else if (index < form.Form.Length)
-									txtBefore = form.Form.Substring(index);
-								Writer.WriteRaw(txtBefore.EscapeAnyUnicodeCharactersIllegalInXml());
-							}
-							var txtInner = WriteSpanStartElementAndGetText(form, span);
-							Writer.WriteRaw(txtInner.EscapeAnyUnicodeCharactersIllegalInXml());
-							Writer.WriteEndElement();
-							index = span.Index + span.Length;
-						}
-						if (index < form.Form.Length)
-						{
-							var txtAfter = form.Form.Substring(index);
-							Writer.WriteRaw(txtAfter.EscapeAnyUnicodeCharactersIllegalInXml());
-						}
-					}
-					else
-					{
-						Writer.WriteRaw(form.Form.EscapeAnyUnicodeCharactersIllegalInXml());
-					}
+					Writer.WriteRaw(form.Form.EscapeAnyUnicodeCharactersIllegalInXml());
 					Writer.WriteEndElement();
+//                    Writer.WriteRaw(wrappedTextToExport.EscapeAnyUnicodeCharactersIllegalInXml());// .WriteRaw(wrappedTextToExport);
 				}
 				else
 				{
 					Writer.WriteStartElement("text");
-					if (spans.Count > 0)
-					{
-						Writer.WriteString("");		// trick writer into knowing this is "mixed mode".
-						int index = 0;
-						int count;
-						foreach (var span in spans)
-						{
-							// User edits may have effectively deleted the text of this span.
-							if (span.Length <= 0)
-								continue;
-							if (index < span.Index)
-							{
-								count = span.Index - index;
-								string txtBefore = String.Empty;
-								if (index + count <= form.Form.Length)
-									txtBefore = form.Form.Substring(index, count);
-								else if (index < form.Form.Length)
-									txtBefore = form.Form.Substring(index);
-								Writer.WriteRaw(txtBefore.EscapeSoXmlSeesAsPureTextAndEscapeCharactersIllegalInXml());
-							}
-							var txtInner = WriteSpanStartElementAndGetText(form, span);
-							Writer.WriteRaw(txtInner.EscapeSoXmlSeesAsPureTextAndEscapeCharactersIllegalInXml());
-							Writer.WriteEndElement();
-							index = span.Index + span.Length;
-						}
-						if (index < form.Form.Length)
-						{
-							var txtAfter = form.Form.Substring(index);
-							Writer.WriteRaw(txtAfter.EscapeSoXmlSeesAsPureTextAndEscapeCharactersIllegalInXml());
-						}
-					}
-					else
-					{
-						Writer.WriteRaw(form.Form.EscapeSoXmlSeesAsPureTextAndEscapeCharactersIllegalInXml());
-					}
+					Writer.WriteRaw(form.Form.EscapeSoXmlSeesAsPureTextAndEscapeCharactersIllegalInXml());
 					Writer.WriteEndElement();
 				}
 				WriteFlags(form);
 				Writer.WriteEndElement();
 			}
-		}
-
-		string WriteSpanStartElementAndGetText(LanguageForm form, LanguageForm.FormatSpan span)
-		{
-			Writer.WriteStartElement("span");
-			if (!String.IsNullOrEmpty(span.Lang))
-				Writer.WriteAttributeString("lang", span.Lang);
-			if (!String.IsNullOrEmpty(span.Class))
-				Writer.WriteAttributeString("class", span.Class);
-			if (!String.IsNullOrEmpty(span.LinkURL))
-				Writer.WriteAttributeString("href", span.LinkURL);
-			if (span.Index + span.Length <= form.Form.Length)
-				return form.Form.Substring(span.Index, span.Length);
-			else if (span.Index < form.Form.Length)
-				return form.Form.Substring(span.Index);
-			else
-				return String.Empty;
 		}
 
 		private void WriteFlags(IAnnotatable thing)

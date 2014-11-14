@@ -17,7 +17,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces
 	public delegate void RegisterEventHandler(object sender, RegisterEventArgs e);
 
 	/// <summary>
-	/// Interface for the implementation of the keyboard controller. Implement this
+	/// Internal interface for the implementation of the keyboard controller. Implement this
 	/// interface if you want to provide a double for unit testing. Otherwise the default
 	/// implementation is sufficient.
 	/// </summary>
@@ -34,12 +34,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces
 		/// </summary>
 		IKeyboardDefinition ActiveKeyboard { get; set; }
 
-        /// <summary>
-        /// Gets the default system keyboard.
-        /// </summary>
-        IKeyboardDefinition DefaultKeyboard { get; }
-        
-        /// <summary>
+		/// <summary>
 		/// Registers the control for keyboarding. Called by KeyboardController when the
 		/// application registers a control by calling KeyboardController.Register.
 		/// </summary>

@@ -76,7 +76,7 @@
 			this.betterLinkLabel1.TabStop = false;
 			this.betterLinkLabel1.Text = "Download Art Of Reading Installer";
 			this.betterLinkLabel1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-			this.betterLinkLabel1.URL = "http://bloomlibrary.org/#/artofreading";
+			this.betterLinkLabel1.URL = "http://bloom.palaso.org/art-of-reading/";
 			this.betterLinkLabel1.Visible = false;
 			//
 			// _messageLabel

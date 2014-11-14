@@ -15,12 +15,8 @@ namespace Palaso.WritingSystems
 		Dictionary<string, List<LanguageInfo>> NameToLanguageIndex = new Dictionary<string, List<LanguageInfo>>();
 		Dictionary<string,string> ThreeToTwoLetter = new Dictionary<string, string>();
 
-		/// <summary>Force the dialog to return 3 letter iso codes even if a 2 letter code is available</summary>
-		public bool Force3LetterCodes { get; set; }
-
 		public EthnologueLookup()
 		{
-			Force3LetterCodes = false;
 			foreach (var line in LanguageRegistryResources.TwoToThreeCodes.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
 			{
 				var items = line.Split('\t');
@@ -118,7 +114,7 @@ namespace Palaso.WritingSystems
 			else if(searchString =="*")
 			{
 				foreach (var l in from x in CodeToLanguageIndex select x.Value)
-					yield return Set3LetterCode(l);
+					yield return l;
 			}
 			else
 			{
@@ -133,22 +129,9 @@ namespace Palaso.WritingSystems
 				sorted.Sort(new ResultComparer(searchString));
 				foreach (var languageInfo in sorted)
 				{
-					yield return Set3LetterCode(languageInfo);
+					yield return languageInfo;
 				}
 			}
-		}
-
-		// look up 3 letter codes
-		private LanguageInfo Set3LetterCode(LanguageInfo langInfo)
-		{
-			if (!Force3LetterCodes) return langInfo;
-			if (langInfo.Code.Length == 3) return langInfo;
-
-			var found = ThreeToTwoLetter.Where(p => p.Value == langInfo.Code).Select(p => p.Key).FirstOrDefault();
-			if (!string.IsNullOrEmpty(found))
-				langInfo.Code = found;
-
-			return langInfo;
 		}
 
 		private class ResultComparer : IComparer<LanguageInfo>
@@ -196,7 +179,7 @@ namespace Palaso.WritingSystems
 					return Names.FirstOrDefault();
 				return _desiredName;
 			}
-			set { _desiredName = string.IsNullOrEmpty(value) ? value : value.Trim(); }
+			set { _desiredName = value.Trim(); }
 		}
 	}
 }

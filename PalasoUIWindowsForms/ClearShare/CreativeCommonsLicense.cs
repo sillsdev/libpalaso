@@ -27,7 +27,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		public override string ToString()
 		{
-			return Token;  //by-nc-sa
+			return Abbreviation;  //by-nc-sa
 		}
 
 		private bool _commercialUseAllowed;
@@ -58,7 +58,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			}
 		}
 
-		public const string kDefaultVersion = "4.0";
+		public string kDefaultVersion = "3.0";
 
 		/// <summary>
 		/// at the moment, we only use the license url, but in future we could add other custom provisions, like "ok to crop" (if they're allowed by cc?)
@@ -68,26 +68,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			if(!metadataProperties.ContainsKey("license"))
 				throw new ApplicationException("A license property is required in order to make a Creative Commons License from metadata.");
 
-			var result = FromLicenseUrl(metadataProperties["license"]);
-			string rights;
-			if (metadataProperties.TryGetValue("rights (en)", out rights))
-				result.RightsStatement = rights;
-			return result;
-		}
-
-		/// <summary>
-		/// Create a CCL from a string produced by the Token method of a CCL.
-		/// It will have the current default Version.
-		/// Other values are not guaranteed to work, though at present they will.
-		/// Enhance: Possibly we should try to verify that the token is a valid CCL one?
-		/// </summary>
-		/// <param name="token"></param>
-		/// <returns></returns>
-		public static LicenseInfo FromToken(string token)
-		{
-			var result = new CreativeCommonsLicense();
-			result.Url = MakeUrlFromTokenAndVersion(token, kDefaultVersion);
-			return result;
+			return FromLicenseUrl(metadataProperties["license"]);
 		}
 
 
@@ -119,7 +100,13 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		{
 			get
 			{
-				return MakeUrlFromTokenAndVersion(Token, Version);
+				var url = Abbreviation;
+
+				url += "/";
+
+				if(!string.IsNullOrEmpty(Version))
+					url+=Version+"/";
+				return "http://creativecommons.org/licenses/" + url;
 			}
 			set
 			{
@@ -149,47 +136,32 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		}
 
-		private static string MakeUrlFromTokenAndVersion(string token, string version)
-		{
-			var url = token + "/";
-			if (token.StartsWith("cc-"))
-				url = url.Substring("cc-".Length); // don't want this as part of URL.
-
-			if (!string.IsNullOrEmpty(version))
-				url += version + "/";
-			return "http://creativecommons.org/licenses/" + url;
-		}
-
-
-		/// <summary>
-		/// A string form used for serialization
-		/// </summary>
-		public override string Token
+		private string Abbreviation
 		{
 			get
 			{
-				var token = "cc-";
+				var url = "";
 				if (AttributionRequired)
-					token += "by-";
+					url += "by-";
 				if (!CommercialUseAllowed)
-					token += "nc-";
+					url += "nc-";
 				switch (DerivativeRule)
 				{
 					case DerivativeRules.NoDerivatives:
-						token += "nd";
+						url += "nd";
 						break;
 					case DerivativeRules.DerivativesWithShareAndShareAlike:
-						token += "sa";
+						url += "sa";
 						break;
 					case DerivativeRules.Derivatives:
 						break;
 					default:
 						throw new ArgumentOutOfRangeException("derivativeRule");
 				}
-				token = token.TrimEnd(new char[] {'-'});
-				if (token == "cc")
-					token = "srr"; //some rights reserved
-				return token;
+				url = url.TrimEnd(new char[] {'-'});
+				if (url == "")
+					url = "srr"; //some rights reserved
+				return url;
 			}
 		}
 

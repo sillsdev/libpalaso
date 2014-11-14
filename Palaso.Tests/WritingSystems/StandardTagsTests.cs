@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using NUnit.Framework;
 using Palaso.WritingSystems;
 
@@ -8,6 +10,17 @@ namespace Palaso.Tests.WritingSystems
 	[TestFixture]
 	public class StandardTagsTests
 	{
+		private class TestEvironment : IDisposable
+		{
+			public TestEvironment()
+			{
+				// I guess we don't need this right now
+			}
+			public void Dispose()
+			{
+			}
+		}
+
 		[Test]
 		public void ValidIso639LanguageCodes_HasEnglish_True()
 		{
@@ -19,22 +32,15 @@ namespace Palaso.Tests.WritingSystems
 		public void CodeFaHasIso3Pes()
 		{
 			var codes = StandardTags.ValidIso639LanguageCodes;
-			var target = codes.First(code => code.Code == "fa");
+			var target = codes.Where(code => code.Code == "fa").First();
 			Assert.That(target.ISO3Code, Is.EqualTo("pes"));
-		}
-
-		[Test]
-		public void CodeAqtHasIso3Angaite() // Updated to the 2014 version of the subtag registry
-		{
-			var codes = StandardTags.ValidIso639LanguageCodes;
-            Assert.That(codes.Exists(code => code.Code == "aqt"), Is.True);
 		}
 
 		[Test]
 		public void ValidIso639LanguageCodes_HasISO3CodeForEnglish()
 		{
 			var codes = StandardTags.ValidIso639LanguageCodes;
-			var english = codes.First(code => code.Code == "en");
+			var english = codes.Where(code => code.Code == "en").First();
 			Assert.That(english.ISO3Code, Is.EqualTo("eng"));
 		}
 
@@ -52,7 +58,7 @@ namespace Palaso.Tests.WritingSystems
 			Assert.IsTrue(codes.Any(code => code.Code == "Latn"));
 		}
 
-        [Test]
+		[Test]
 		public void ValidIso15924Scripts_HasOldItalic_True()
 		{
 			var codes = StandardTags.ValidIso15924Scripts;
@@ -98,7 +104,7 @@ namespace Palaso.Tests.WritingSystems
 		public void ValidIso15924Scripts_HasHiraganaKatakana_True()
 		{
 			var codes = StandardTags.ValidIso15924Scripts;
-            Assert.IsTrue(codes.Any(code => code.Label == "Japanese syllabaries (Hiragana + Katakana)"));
+			Assert.IsTrue(codes.Any(code => code.Label == "Hiragana + Katakana"));
 		}
 
 		[Test]

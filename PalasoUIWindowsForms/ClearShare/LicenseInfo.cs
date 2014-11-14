@@ -24,22 +24,6 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		public abstract string GetDescription(string iso639_3LanguageCode);
 
-		/// <summary>
-		/// A string that is a good short indication of the license type, and can be used in FromToken.
-		/// </summary>
-		public abstract string Token { get; }
-
-		public static LicenseInfo FromToken(string abbr)
-		{
-			switch (abbr)
-			{
-				case "ask": return new NullLicense();
-				case "custom": return new CustomLicense();
-				default:
-					return CreativeCommonsLicense.FromToken(abbr);
-			}
-		}
-
 		virtual public Image GetImage()
 		{
 			return null;
@@ -58,15 +42,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		public bool HasChanges { get; set; }
 
 		/// <summary>
-		/// custom or extra rights. Note that accoring to Creative Commons, "extra" rights are expressly dissallowed by section 7 a:
-		///     http://creativecommons.org/licenses/by-nc/4.0/legalcode#s7a
-		///     "The Licensor shall not be bound by any additional or different terms or conditions communicated by You unless expressly agreed."
-		///
-		/// However, consider the case of one application that uses this library, Bloom. A significant portion of the material it is trying to
-		/// help people license is restricted to the country of origin. Niether CC nor anyone else is going to allow for that, so we're
-		/// allowing people to express that restriction in this field, but the UI also makes it clear that these are
-		/// not legally enforceable if they are choosing a CC license. While not legally enforcable, they are not worthless, as they define
-		/// what is ethical. We expect that the vast majority of people are going to abide by them.
+		/// custom or extra rights
 		/// </summary>
 		public string RightsStatement {get; set; }
 	}
@@ -76,12 +52,6 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		public override string GetDescription(string iso639_3LanguageCode)
 		{
 			return "For permission to reuse, contact the copyright holder.";
-		}
-
-		public override string Token
-		{
-			//do not think of changing this, there is data out there that could get messed up
-			get { return "ask"; }
 		}
 
 		public override string ToString()
@@ -114,12 +84,6 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			if (string.IsNullOrEmpty(RightsStatement))
 				return "For permission to reuse, contact the copyright holder.";
 			return "";
-		}
-
-		public override string Token
-		{
-			//do not think of changing this, there is data out there that could get messed up
-			get { return "custom"; }
 		}
 
 		public override Image GetImage()
