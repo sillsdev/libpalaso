@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
+using System.Xml.Linq;
 using NUnit.Framework;
 using Palaso.Xml;
 
@@ -43,6 +44,59 @@ namespace Palaso.TestUtilities
 				dom.LoadXml(_xmlString);
 				return dom;
 			}
+		}
+
+		/// <summary>
+		/// Assert functional equivalence of two XML strings while ignoring whitespace
+		/// 
+		/// May fail if XML header is different.  Also, see warning in CanonicalXml.
+		/// </summary>
+		/// <param name="xml"></param>
+		public void EqualsIgnoreWhitespace(string xml)
+		{
+			Assert.AreEqual(CanonicalXml.ToCanonicalString(_xmlString), CanonicalXml.ToCanonicalString(xml));
+		}
+
+		/// <summary>
+		/// Assert functional inequivalence of two XML strings while ignoring whitespace
+		/// </summary>
+		/// <param name="xml"></param>
+		public void NotEqualsIgnoreWhitespace(string xml)
+		{
+			Assert.AreNotEqual(CanonicalXml.ToCanonicalString(_xmlString), CanonicalXml.ToCanonicalString(xml));
+		}
+
+		/// <summary>
+		/// Assert node-by-node equivalence of two XML strings
+		/// This will ignore irrelevant whitespace.
+		/// 
+		/// The only known difference between this method and EqualsIgnoreWhitespace
+		/// is this completely ignores the encoding set in the header.
+		/// However, given the difference of implementation, other differences could exist.
+		/// 
+		/// Additionally, the output of a failed test is much less useful here than 
+		/// the character-by-character comparison achieved by EqualsIgnoreWhitespace.
+		/// </summary>
+		/// <param name="xml"></param>
+		public void IsNodewiseEqualTo(string xml)
+		{
+			Assert.IsTrue(NodeWiseEquals(xml),
+				String.Format("{0}\n\nis not nodewise equivalent to\n\n{1}", _xmlString, xml));
+		}
+
+		/// <summary>
+		/// Assert node-by-node inequivalence of two XML strings
+		/// </summary>
+		/// <param name="xml"></param>
+		public void IsNotNodewiseEqualTo(string xml)
+		{
+			Assert.IsFalse(NodeWiseEquals(xml),
+				String.Format("{0}\n\nis nodewise equivalent to\n\n{1}", _xmlString, xml));
+		}
+
+		private bool NodeWiseEquals(string xml)
+		{
+			return XNode.DeepEquals(XElement.Parse(_xmlString), XElement.Parse(xml));
 		}
 	}
 
