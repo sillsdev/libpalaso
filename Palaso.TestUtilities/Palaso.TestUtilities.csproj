@@ -1,93 +1,95 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-	<ProductVersion>9.0.21022</ProductVersion>
-	<SchemaVersion>2.0</SchemaVersion>
-	<ProjectGuid>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</ProjectGuid>
-	<OutputType>Library</OutputType>
-	<AppDesignerFolder>Properties</AppDesignerFolder>
-	<RootNamespace>Palaso.TestUtilities</RootNamespace>
-	<AssemblyName>Palaso.TestUtilities</AssemblyName>
-	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-	<FileAlignment>512</FileAlignment>
-	<FileUpgradeFlags>
-	</FileUpgradeFlags>
-	<OldToolsVersion>3.5</OldToolsVersion>
-	<UpgradeBackupLocation />
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Palaso.TestUtilities</RootNamespace>
+    <AssemblyName>Palaso.TestUtilities</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-	<DebugSymbols>true</DebugSymbols>
-	<DebugType>full</DebugType>
-	<Optimize>false</Optimize>
-	<OutputPath>..\output\Debug</OutputPath>
-	<DefineConstants>DEBUG;TRACE</DefineConstants>
-	<ErrorReport>prompt</ErrorReport>
-	<WarningLevel>4</WarningLevel>
-	<DocumentationFile>..\output\Debug\Palaso.TestUtilities.XML</DocumentationFile>
-	<PlatformTarget>x86</PlatformTarget>
-	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\output\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\output\Debug\Palaso.TestUtilities.XML</DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-	<DebugType>pdbonly</DebugType>
-	<Optimize>true</Optimize>
-	<OutputPath>..\output\Release</OutputPath>
-	<DefineConstants>TRACE</DefineConstants>
-	<ErrorReport>prompt</ErrorReport>
-	<WarningLevel>4</WarningLevel>
-	<TargetFrameworkProfile>Client</TargetFrameworkProfile>
-	<PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\output\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
-	<DebugSymbols>true</DebugSymbols>
-	<OutputPath>..\output\DebugMono</OutputPath>
-	<DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
-	<DocumentationFile>..\output\DebugMono\Palaso.TestUtilities.XML</DocumentationFile>
-	<DebugType>full</DebugType>
-	<PlatformTarget>AnyCPU</PlatformTarget>
-	<ErrorReport>prompt</ErrorReport>
-	<TargetFrameworkProfile>
-	</TargetFrameworkProfile>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\output\DebugMono</OutputPath>
+    <DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
+    <DocumentationFile>..\output\DebugMono\Palaso.TestUtilities.XML</DocumentationFile>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
-	<OutputPath>..\output\ReleaseMono</OutputPath>
-	<DefineConstants>TRACE;MONO</DefineConstants>
-	<Optimize>true</Optimize>
-	<DebugType>pdbonly</DebugType>
-	<PlatformTarget>AnyCPU</PlatformTarget>
-	<ErrorReport>prompt</ErrorReport>
-	<TargetFrameworkProfile>
-	</TargetFrameworkProfile>
+    <OutputPath>..\output\ReleaseMono</OutputPath>
+    <DefineConstants>TRACE;MONO</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <ItemGroup>
-	<Reference Include="nunit.framework, Version=2.5.5.10112, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-	  <SpecificVersion>False</SpecificVersion>
-	  <HintPath>..\lib\common\nunit.framework.dll</HintPath>
-	</Reference>
-	<Reference Include="System" />
-	<Reference Include="System.Core" />
-	<Reference Include="System.Xml.Linq" />
-	<Reference Include="System.Data.DataSetExtensions" />
-	<Reference Include="System.Data" />
-	<Reference Include="System.Xml" />
+    <Reference Include="nunit.framework, Version=2.5.5.10112, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\common\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-	<Compile Include="CanonicalXml.cs" />
-	<Compile Include="ConstrainStringByLine.cs" />
-	<Compile Include="FluentAssertXml.cs" />
-	<Compile Include="LdmlContentForTests.cs" />
-	<Compile Include="LiftContentForTests.cs" />
-	<Compile Include="Properties\AssemblyInfo.cs" />
-	<Compile Include="TemporaryFolder.cs" />
-	<Compile Include="TemporaryFolderTests.cs" />
-	<Compile Include="TestUtilities.cs" />
+    <Compile Include="CanonicalXml.cs" />
+    <Compile Include="CanonicalXmlTests.cs" />
+    <Compile Include="ConstrainStringByLine.cs" />
+    <Compile Include="FluentAssertXml.cs" />
+    <Compile Include="FluentAssertXmlTests.cs" />
+    <Compile Include="LdmlContentForTests.cs" />
+    <Compile Include="LiftContentForTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TemporaryFolder.cs" />
+    <Compile Include="TemporaryFolderTests.cs" />
+    <Compile Include="TestUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
-	<ProjectReference Include="..\Palaso\Palaso.csproj">
-	  <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
-	  <Name>Palaso</Name>
-	</ProjectReference>
+    <ProjectReference Include="..\Palaso\Palaso.csproj">
+      <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
+      <Name>Palaso</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
