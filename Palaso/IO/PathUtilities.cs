@@ -231,8 +231,23 @@ namespace Palaso.IO
 		public static void OpenDirectoryInExplorer(string directory)
 		{
 			var fileManager = DefaultFileManager;
-			string arguments = string.Format("\"{0}\"", directory);
-			Process.Start(fileManager, arguments);
+			var arguments = "\"{0}\"";
+
+			// the value returned by GetDefaultFileManager() may include arguments
+			var firstSpace = fileManager.IndexOf(' ');
+			if (firstSpace > -1)
+			{
+				arguments = fileManager.Substring(firstSpace + 1) + " " + arguments;
+				fileManager = fileManager.Substring(0, firstSpace);
+			}
+			arguments = string.Format(arguments, directory);
+
+			Process.Start(new ProcessStartInfo()
+				{
+					FileName = fileManager,
+					Arguments = arguments,
+					UseShellExecute = false
+				});
 		}
 
 		/// <summary>
