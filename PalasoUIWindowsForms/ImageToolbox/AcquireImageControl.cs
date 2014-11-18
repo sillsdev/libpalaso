@@ -351,7 +351,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				case Modes.Gallery:
 					_pictureBox.Visible = false;
-					_pictureBox.Image = null; //prevent error upon resetting visibility to true
 					_galleryControl.Visible= true;
 					//_galleryButton.Select();
 					_galleryButton.Checked = true;

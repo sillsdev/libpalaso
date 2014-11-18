@@ -1251,16 +1251,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				throw new InvalidOperationException("Unable to duplicate current selection when there is no current selection.");
 			}
-			// Doing a true clone type duplication is too dangerous -- it's easy for a user to delete
-			// existing writing systems unknowingly, thus deleting data in those writing systems.
-			// Get list of existing known ids, both permanent and temporary so that we don't risk
-			// replacing/deleting them unknowingly.
-			var wsIds = new List<string>();
-			foreach (var wsT in _writingSystemRepository.AllWritingSystems)
-				wsIds.Add(wsT.Id);
-			foreach (var wsT in WritingSystemDefinitions)
-				wsIds.Add(wsT.Id);
-			var ws = WritingSystemDefinition.CreateCopyWithUniqueId(CurrentDefinition, wsIds);
+			var ws = _writingSystemRepository.MakeDuplicate(CurrentDefinition);
 			WritingSystemDefinitions.Insert(CurrentIndex+1, ws);
 			OnAddOrDelete();
 			CurrentDefinition = ws;
@@ -1517,6 +1508,54 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			OnCurrentItemUpdated();
 		}
 
+		internal void SetCurrentVariantFromUnlistedLanguageName(string languageName)
+		{
+			string rfcVariant = "";
+			string rfcPrivateUse = "";
+
+			string trimmedLanguageName = TrimLanguageNameForPrivateUse(languageName);
+
+			WritingSystemDefinition.SplitVariantAndPrivateUse(CurrentVariant, out rfcVariant, out rfcPrivateUse);
+			List<string> privateUseTokens = rfcPrivateUse.Split('-').ToList();
+			if (privateUseTokens.Contains(trimmedLanguageName, StringComparison.OrdinalIgnoreCase))
+			{
+				return;
+			}
+
+			// check if there is already a code in private use
+			string previousPrivateUseCode = "";
+			foreach (var notWellKnownTag in WritingSystemDefinition.FilterWellKnownPrivateUseTags(privateUseTokens))
+			{
+				previousPrivateUseCode = notWellKnownTag;
+				break;
+			}
+
+			// remove previous private use code if present
+			if (!string.IsNullOrEmpty(previousPrivateUseCode))
+			{
+				privateUseTokens.Remove(previousPrivateUseCode);
+			}
+
+			if (languageName != "Language Not Listed" && !string.IsNullOrEmpty(languageName))
+			{
+				privateUseTokens.Insert(0, trimmedLanguageName);
+			}
+
+			rfcPrivateUse = string.Join("-", privateUseTokens.ToArray());
+			CurrentVariant = WritingSystemDefinition.ConcatenateVariantAndPrivateUse(rfcVariant, rfcPrivateUse);
+		}
+
+
+		internal static string TrimLanguageNameForPrivateUse(string languageName)
+		{
+			languageName = Regex.Replace(languageName, @"[^a-zA-Z]", "");
+			if (languageName.Length > 8)
+			{
+				languageName = languageName.Substring(0, 8);
+			}
+			return languageName;
+		}
+
 		public void IdentifierVoiceSelected()
 		{
 			CurrentIsVoice = true;
@@ -1524,16 +1563,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public void IdentifierNothingSelected()
 		{
-			// Don't clear the language name here.  See https://jira.sil.org/browse/WS-44.
-			// FieldWorks marks custom languages, regions, and scripts with the first
-			// available code designated for such purposes, but also adds information to the
-			// variant in the private use area.  Don't throw any of that away here.
-			if (CurrentISO != "qaa" && CurrentRegion != "QM" && CurrentScriptCode != "Qaaa")
-				CurrentVariant = string.Empty;
-			if (CurrentRegion != "QM")
-				CurrentRegion = string.Empty;
-			if (CurrentScriptCode != "Qaaa")
-				CurrentScriptCode = string.Empty;
+			CurrentLanguageName = string.Empty;
+			CurrentVariant = string.Empty;
+			CurrentRegion = string.Empty;
+			CurrentScriptCode = string.Empty;
 		}
 
 		public void IdentifierIpaSelected()

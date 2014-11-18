@@ -544,6 +544,15 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			SaveImeConversionStatus(winKeyboard);
 		}
 
+		public void ActivateDefaultKeyboard()
+		{
+			var keyboard = DefaultKeyboard;
+			if (keyboard == null)
+				return;
+
+			keyboard.Activate();
+		}
+
 		public IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
 		{
 			return GetKeyboardDescription(inputLanguage);

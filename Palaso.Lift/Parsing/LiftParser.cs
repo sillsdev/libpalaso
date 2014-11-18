@@ -960,21 +960,17 @@ namespace Palaso.Lift.Parsing
 					string id = reader.GetAttribute("id");
 					// unused	string guid = reader.GetAttribute("guid");
 					bool foundDesiredRange = id == rangeId;
-					bool emptyRange = reader.IsEmptyElement;
 					reader.ReadStartElement();
-					if (!emptyRange)
+					while (reader.IsStartElement("range-element"))
 					{
-						while (reader.IsStartElement("range-element"))
+						string rangeElementXml = reader.ReadOuterXml();
+						if (foundDesiredRange && !String.IsNullOrEmpty(rangeElementXml))
 						{
-							string rangeElementXml = reader.ReadOuterXml();
-							if (foundDesiredRange && !String.IsNullOrEmpty(rangeElementXml))
-							{
-								ReadRangeElement(id, GetNodeFromString(rangeElementXml));
-							}
+							ReadRangeElement(id, GetNodeFromString(rangeElementXml));
 						}
-						Debug.Assert(reader.LocalName == "range");
-						reader.ReadEndElement(); // </range>
 					}
+					Debug.Assert(reader.LocalName == "range");
+					reader.ReadEndElement(); // </range>
 					if (foundDesiredRange)
 						return;		// we've seen the range we wanted from this file.
 				}

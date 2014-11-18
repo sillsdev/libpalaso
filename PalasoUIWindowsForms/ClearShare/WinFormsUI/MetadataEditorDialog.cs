@@ -26,7 +26,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			set
 			{
 				_metadataEditorControl.ShowCreator = value;
-				Text = value ? LocalizationManager.GetString("MetadataEditor.TitleWithCredit", "Credit, Copyright, & License") :  LocalizationManager.GetString("MetadataEditor.TitleNoCredit", "Copyright & License");
+				Text = value ? LocalizationManager.GetString("MetadataEditor.TitleWithCredit", "Credit, Copyright, & License") :  LocalizationManager.GetString("MetadataEditor.TitleNoCredit", "Copyright, & License");
 			}
 		}
 

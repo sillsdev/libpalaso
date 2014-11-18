@@ -1405,38 +1405,6 @@ namespace Palaso.Lift.Tests.Parsing
 			_mocks.VerifyAllExpectationsHaveBeenMet();
 		}
 
-		[Test]
-		public void ReadLiftRangesFileWithEmptyRange()
-		{
-			using (_mocks.Ordered)
-			{
-				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
-					.With(Is.EqualTo("list"), Is.EqualTo("1"), Is.Null, Is.Null,
-						Is.EqualTo(new LiftMultiText()),
-						Is.EqualTo(new LiftMultiText("en", "first")),
-						Is.EqualTo(new LiftMultiText("en", "1st")),
-						IsEqualToIgnoreNl("<range-element id=\"1\"><label><form lang=\"en\"><text>first</text></form></label><abbrev><form lang=\"en\"><text>1st</text></form></abbrev></range-element>"));
-				Expect.Exactly(1).On(_merger).Method("ProcessRangeElement")
-					.With(Is.EqualTo("list"), Is.EqualTo("2"), Is.Null, Is.Null,
-						Is.EqualTo(new LiftMultiText()),
-						Is.EqualTo(new LiftMultiText("en", "second")),
-						Is.EqualTo(new LiftMultiText("en", "2nd")),
-						IsEqualToIgnoreNl("<range-element id=\"2\"><label><form lang=\"en\"><text>second</text></form></label><abbrev><form lang=\"en\"><text>2nd</text></form></abbrev></range-element>"));
-			}
-			using (TempFile r = new TempFile("<lift-ranges>" +
-				"<range id=\"empty\"/>" +
-				"<range id=\"list\">" +
-				"<range-element id=\"1\"><label><form lang=\"en\"><text>first</text></form></label><abbrev><form lang=\"en\"><text>1st</text></form></abbrev></range-element>" +
-				"<range-element id=\"2\"><label><form lang=\"en\"><text>second</text></form></label><abbrev><form lang=\"en\"><text>2nd</text></form></abbrev></range-element>" +
-				"</range>" +
-				"</lift-ranges>"))
-			using (TempFile f = new TempFile(String.Format("<lift version='{0}'><header><ranges><range href=\"file://{1}\" id=\"empty\"/><range href=\"file://{1}\" id=\"list\"/></ranges></header></lift>",
-				Validator.LiftVersion, r.Path)))
-			{
-				_parser.ReadLiftFile(f.Path);
-			}
-			_mocks.VerifyAllExpectationsHaveBeenMet();
-		}
 		/*
 		 *
 		/// <summary>

@@ -22,7 +22,7 @@ namespace Palaso.Reporting
 	{
 		private readonly List<ILogger> _loggers= new List<ILogger>();
 
-//          this just lead to problems.  Better to say "this doesn't own anything", and let the DI container handle the lifetimes
+  //          this just lead to problems.  Better to say "this doesn't own anything", and let the DI container handle the lifetimes
 //        public void Dispose()
 //        {
 //            foreach (ILogger logger in _loggers)
@@ -77,6 +77,7 @@ namespace Palaso.Reporting
 		private static Logger _singleton;
 		protected StreamWriter m_out;
 		private StringBuilder m_minorEvents;
+		//protected MemoryStream m_minorEvents;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -288,29 +289,26 @@ namespace Palaso.Reporting
 		//enhance: why start over?
 		private string GetLogTextAndStartOver()
 		{
-			lock (_singleton)
+			CheckDisposed();
+			m_out.Flush();
+			m_out.Close();
+
+			//get the old
+			StringBuilder contents = new StringBuilder();
+			if (!File.Exists(LogPath))
 			{
-				CheckDisposed();
-				m_out.Flush();
-				m_out.Close();
-
-				//get the old
-				StringBuilder contents = new StringBuilder();
-				if (!File.Exists(LogPath))
-				{
-					File.Create(LogPath);
-				}
-				using (StreamReader reader = File.OpenText(LogPath))
-				{
-					contents.Append(reader.ReadToEnd());
-					contents.AppendLine("Details of most recent events:");
-					contents.AppendLine(m_minorEvents.ToString());
-
-				}
-				StartAppendingToLog();
-
-				return contents.ToString();
+				File.Create(LogPath);
 			}
+			using (StreamReader reader = File.OpenText(LogPath))
+			{
+				contents.Append(reader.ReadToEnd());
+				contents.AppendLine("Details of most recent events:");
+				contents.AppendLine(m_minorEvents.ToString());
+
+			}
+			StartAppendingToLog();
+
+			return contents.ToString();
 		}
 
 		/// <summary>
@@ -343,7 +341,7 @@ namespace Palaso.Reporting
 		private static void SetActualLogPath(string filename)
 		{
 			_actualLogPath = Path.Combine(Path.GetTempPath(),
-				Path.Combine(EntryAssembly.CompanyName, UsageReporter.AppNameToUseInReporting));
+										  Path.Combine(EntryAssembly.CompanyName, UsageReporter.AppNameToUseInReporting));
 			Directory.CreateDirectory(_actualLogPath);
 			_actualLogPath = Path.Combine(_actualLogPath, filename);
 		}
@@ -363,32 +361,29 @@ namespace Palaso.Reporting
 
 		private void WriteEventCore(string message, params object[] args)
 		{
-			lock (_singleton)
-			{
 #if !DEBUG
 				try
 				{
 #endif
-				CheckDisposed();
-				if (m_out != null && m_out.BaseStream.CanWrite)
-				{
-					m_out.Write(DateTime.Now.ToLongTimeString() + "\t");
-					m_out.WriteLine(message, args);
-					m_out.Flush();//in case we crash
+			CheckDisposed();
+			if (m_out != null && m_out.BaseStream.CanWrite)
+			{
+				m_out.Write(DateTime.Now.ToLongTimeString() + "\t");
+				m_out.WriteLine(message,args);
+				m_out.Flush();//in case we crash
 
-					//want this to show up in the proper order in the minor event list, too
-					WriteMinorEvent(message, args);
+				//want this to show up in the proper order in the minor event list, too
+				WriteMinorEvent(message,args);
 
-					//Debug.WriteLine("-----"+"\r\n"+m_minorEvents.ToString());
-				}
+				//Debug.WriteLine("-----"+"\r\n"+m_minorEvents.ToString());
+			}
 #if !DEBUG
 				}
-				catch (Exception)
+				catch(Exception)
 				{
-					//swallow
+				 //swallow
 				}
 #endif
-			}
 		}
 
 		/// <summary>
@@ -403,15 +398,13 @@ namespace Palaso.Reporting
 		private void WriteMinorEventCore(string message, params object[] args)
 		{
 			CheckDisposed();
-			lock (_singleton)
+			if (m_minorEvents != null )
 			{
-				if (m_minorEvents != null)
-				{
 #if !DEBUG
-					try
-					{
+				try
+				{
 #endif
-					if (m_minorEvents.Length > 5000)
+				if (m_minorEvents.Length > 5000)
 					{
 						int roughlyHowMuchToCut = 500;
 						int cutoff = m_minorEvents.ToString().IndexOf(System.Environment.NewLine, roughlyHowMuchToCut);
@@ -421,14 +414,14 @@ namespace Palaso.Reporting
 					m_minorEvents.AppendFormat(message, args);
 					m_minorEvents.AppendLine();
 #if !DEBUG
-					}
-					catch(Exception)
-					{
-						//swallow
-					}
-#endif
 				}
+				catch(Exception)
+				{
+				 //swallow
+				}
+#endif
 			}
+
 		}
 
 		public static void ShowUserTheLogFile()

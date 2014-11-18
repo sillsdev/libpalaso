@@ -117,7 +117,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			// _languageName
 			//
-			this._languageName.Dock = System.Windows.Forms.DockStyle.Fill;
+			this._languageName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
 			this._languageName.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this._languageName.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this._languageName.Location = new System.Drawing.Point(3, 3);

@@ -3,10 +3,10 @@ using System.ComponentModel;
 using System.IO;
 using System.Media;
 using System.Threading;
+using NAudio.Wave;
 using NUnit.Framework;
 using Palaso.IO;
 #if !MONO
-using NAudio.Wave;
 using Palaso.Media.Naudio;
 #endif
 using Palaso.Media.Tests.Properties;

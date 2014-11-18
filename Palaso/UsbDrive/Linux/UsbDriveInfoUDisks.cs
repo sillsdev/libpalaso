@@ -27,15 +27,9 @@ namespace Palaso.UsbDrive.Linux
 			{
 				if (_device.IsMounted)
 				{
-					string mountPath = String.Empty;
-					//When a device is present but not mounted, this method will throw an ArgumentException.
-					//In particular this can be the case just after inserting a UsbDevice.
-					//The loop here tries to mitigate such an occurrence.
-					string[] paths = _device.MountPaths;
-					while (_device.IsMounted && paths == null || paths.Length == 0)
-						paths = _device.MountPaths;
-					if (paths != null && paths.Length > 0)
-						mountPath = paths[0];
+					string mountPath = _device.MountPaths[0];
+					//When a device is present but not mounted. This method will throw an ArgumentException.
+					//In particular this can be the case just after inserting a UsbDevice
 					return new DirectoryInfo(mountPath);
 				}
 				return new DirectoryInfo(String.Empty);

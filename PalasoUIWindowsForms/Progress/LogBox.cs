@@ -77,18 +77,8 @@ namespace Palaso.UI.WindowsForms.Progress
 				ClientSize.Height - (_tableLayout.Top + 1));
 
 			_box.Dock = DockStyle.Fill;
-			_box.LinkClicked += _box_LinkClicked;
-			_verboseBox.LinkClicked += _box_LinkClicked;
 			_synchronizationContext = SynchronizationContext.Current;
 		}
-
-		void _box_LinkClicked(object sender, LinkClickedEventArgs e)
-		{
-			if (LinkClicked != null)
-				LinkClicked(this, e);
-		}
-
-		public event EventHandler<LinkClickedEventArgs> LinkClicked; 
 
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public SynchronizationContext SyncContext
@@ -163,13 +153,7 @@ namespace Palaso.UI.WindowsForms.Progress
 
 		public override string Text
 		{
-			get {
-				// The Text property get called during ctor so return an 
-				// empty string in that case.  This works around a crash 
-				// in WeSay.
-				if (_box == null || _verboseBox == null) return String.Empty;
-				return "Box:" + _box.Text + "Verbose:" + _verboseBox.Text; 
-			}
+			get { return "Box:" + _box.Text + "Verbose:" + _verboseBox.Text; }
 		}
 
 		public string Rtf
@@ -270,14 +254,14 @@ namespace Palaso.UI.WindowsForms.Progress
 			try
 			{
 #endif
-			foreach (var rtfBox in new[] {_box, _verboseBox})
+			foreach (var rtfBox in new[] { _box, _verboseBox })
 			{
-				var rtfBoxForDelegate = rtfBox; //no really, this assignment is needed. Took hours to track down this bug.
+				var rtfBoxForDelegate = rtfBox;//no really, this assignment is needed. Took hours to track down this bug.
 				var styleForDelegate = style;
 				SafeInvoke(rtfBox, (() =>
 				{
 #if !MONO // changing the text colour throws exceptions with mono 2011-12-09
-					// so just append plain text
+						// so just append plain text
 					if (!rtfBoxForDelegate.Font.FontFamily.IsStyleAvailable(styleForDelegate))
 						style = rtfBoxForDelegate.Font.Style;
 

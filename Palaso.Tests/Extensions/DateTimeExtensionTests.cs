@@ -21,16 +21,5 @@ namespace Palaso.Tests.Extensions
 			var when = DateTimeExtensions.ParseISO8601DateTime(whenSample);
 			Assert.AreEqual(whenSample, when.ToISO8601DateAndUTCTimeString());
 		}
-
-		[Test]
-		public void IsISO8601Date_ReturnsCorrectValue()
-		{
-			Assert.True("2014-01-01".IsISO8601Date());
-			Assert.True("2014-12-31".IsISO8601Date());
-			Assert.False("12/12/2014".IsISO8601Date());
-			Assert.False("12 DEC 2014".IsISO8601Date());
-			Assert.False("2014-13-01".IsISO8601Date());
-			Assert.False("2014-12-32".IsISO8601Date());
-		}
 	}
 }

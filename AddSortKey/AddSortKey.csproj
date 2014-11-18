@@ -63,7 +63,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
 	<DebugSymbols>true</DebugSymbols>
-	<OutputPath>..\output\DebugMono</OutputPath>
+	<OutputPath>..\output\Debug</OutputPath>
 	<DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
 	<DebugType>full</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>

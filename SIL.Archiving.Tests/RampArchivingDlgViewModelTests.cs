@@ -9,7 +9,6 @@ using Palaso.IO;
 using Palaso.Reporting;
 using Palaso.TestUtilities;
 using Palaso.UI.WindowsForms.ClearShare;
-using SIL.Archiving.Generic;
 
 namespace SIL.Archiving.Tests
 {
@@ -18,7 +17,6 @@ namespace SIL.Archiving.Tests
 	public class SessionArchivingTests
 	{
 		private RampArchivingDlgViewModel _helper;
-		private Dictionary<string, Tuple<IEnumerable<string>, string>> _filesToAdd;
 
 		/// ------------------------------------------------------------------------------------
 		[SetUp]
@@ -26,10 +24,8 @@ namespace SIL.Archiving.Tests
 		{
 			ErrorReport.IsOkToInteractWithUser = false;
 
-			_helper = new RampArchivingDlgViewModel("Test App", "Test Title", "tst", null,
-				SetFilesToArchive, GetFileDescription);
+			_helper = new RampArchivingDlgViewModel("Test App", "Test Title", "tst", GetFileDescription);
 			_helper.AppSpecificFilenameNormalization = CustomFilenameNormalization;
-			_filesToAdd = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -38,7 +34,7 @@ namespace SIL.Archiving.Tests
 		{
 			_helper.CleanUp();
 
-			try { File.Delete(_helper.PackagePath); }
+			try { File.Delete(_helper.RampPackagePath); }
 // ReSharper disable once EmptyGeneralCatchClause
 			catch { }
 		}
@@ -57,17 +53,20 @@ namespace SIL.Archiving.Tests
 		[Category("SkipOnTeamCity")]
 		public void CreateRampPackageWithSessionArchiveAndMetsFile_CreatesRampPackage()
 		{
+
 			TemporaryFolder tmpFolder = new TemporaryFolder("ArchiveHelperTestFolder");
 			try
 			{
 				string fileName = Path.Combine(tmpFolder.Path, "ddo.session");
 				File.CreateText(fileName).Close();
+				var filesToAdd = new Dictionary<string, Tuple<IEnumerable<string>, string>>();
 				var fileList = new[] { Path.Combine(tmpFolder.Path, "ddo.session") };
-				_filesToAdd.Add(string.Empty, new Tuple<IEnumerable<string>, string>(fileList, "Message to display."));
-				_helper.Initialize();
+				filesToAdd.Add(string.Empty, new Tuple<IEnumerable<string>, string>(fileList, "Message to display."));
+				int dummy;
+				_helper.Initialize(() => filesToAdd, out dummy);
 				_helper.CreateMetsFile();
 				Assert.IsTrue(_helper.CreateRampPackage());
-				Assert.IsTrue(File.Exists(_helper.PackagePath));
+				Assert.IsTrue(File.Exists(_helper.RampPackagePath));
 			}
 			finally
 			{
@@ -320,7 +319,7 @@ namespace SIL.Archiving.Tests
 		{
 			_helper.SetAudience(AudienceType.Vernacular);
 			_helper.SetVernacularMaterialsAndContentType(VernacularMaterialsType.LiteracyEducation_Riddles);
-			var data = _helper.GetMetadata();
+			var data = _helper.GetUnencodedMetsData();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
 				RampArchivingDlgViewModel.kAudience + "\":\"" + RampArchivingDlgViewModel.kAudienceVernacular + "\",\"" +
 				RampArchivingDlgViewModel.kVernacularMaterialsType + "\":\"" + RampArchivingDlgViewModel.kVernacularMaterialGeneral + "\",\"" +
@@ -340,23 +339,6 @@ namespace SIL.Archiving.Tests
 
 		#region SetAbstract tests
 		/// ------------------------------------------------------------------------------------
-		[Test]
-		public void SetAbstract_SetSingleAbstractWithoutLanguage_IncludedInMetsData()
-		{
-			_helper.SetAbstract("SayMore doesn't let the user specify the language explicitly.", string.Empty);
-			var data = _helper.GetMetadata();
-			Assert.AreEqual("{\"dc.title\":\"Test Title\"," +
-				"\"description.abstract.has\":\"Y\",\"dc.description.abstract\":{" +
-				"\"0\":{\" \":\"SayMore doesn't let the user specify the language explicitly.\"}}}",
-				data);
-
-			//"{\"dc.title\":\"what\",\"broad_type\":\"wider_audience\",\"dc.type.mode\":[\"Text\"],\"dc.description.stage\":\"rough_draft\"," +
-			//    "\"version.type\":\"first\",\"dc.type.scholarlyWork\":\"Data set\",\"dc.subject.subjectLanguage\":{\"0\":{\"dialect\":\"\"}}," +
-			//    "\"dc.language.iso\":{\"0\":{\"dialect\":\"\"}},\"dc.subject.silDomain\":[\"LING:Linguistics\"],\"sil.sensitivity.metadata\":\"Public\"," +
-			//    "\"files\":{\"0\":{\" \":\"gmreadme.txt\",\"description\":\"junk\"}},\"status\":\"ready\"," +
-			//    "\"description.abstract.has\":\"Y\",\"dc.description.abstract\":{\"0\":{\" \":\"\"SayMore doesn't let the use specify the language explicitly.\"}}}"
-		}
-
 		[Test]
 		public void SetAbstract_SetTwice_ThrowsInvalidOperationException()
 		{
@@ -385,7 +367,7 @@ namespace SIL.Archiving.Tests
 			abstracts["fra"] = "C'est assez abstrait";
 			abstracts["spa"] = "Esto es bastante abstracto";
 			_helper.SetAbstract(abstracts);
-			var data = _helper.GetMetadata();
+			var data = _helper.GetUnencodedMetsData();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\"," +
 				"\"description.abstract.has\":\"Y\",\"dc.description.abstract\":{" +
 				"\"0\":{\" \":\"This is pretty abstract\",\"lang\":\"eng\"}," +
@@ -401,7 +383,7 @@ namespace SIL.Archiving.Tests
 		public void SetAudioVideoExtent_FreeFormString_IncludedInMetsData()
 		{
 			_helper.SetAudioVideoExtent("6 and a half seconds");
-			var data = _helper.GetMetadata();
+			var data = _helper.GetUnencodedMetsData();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
 				RampArchivingDlgViewModel.kRecordingExtent + "\":\"6 and a half seconds\"}",
 				data);
@@ -413,7 +395,7 @@ namespace SIL.Archiving.Tests
 		{
 			TimeSpan duration = new TimeSpan(0, 2, 3, 4);
 			_helper.SetAudioVideoExtent(duration);
-			var data = _helper.GetMetadata();
+			var data = _helper.GetUnencodedMetsData();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
 				RampArchivingDlgViewModel.kRecordingExtent + "\":\"02:03:04\"}",
 				data);
@@ -437,7 +419,7 @@ namespace SIL.Archiving.Tests
 		public void SetContentLanguages_TwoLanguages_IncludedInMetsData()
 		{
 			_helper.SetContentLanguages("eng", "fra");
-			var data = _helper.GetMetadata();
+			var data = _helper.GetUnencodedMetsData();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
 				RampArchivingDlgViewModel.kContentLanguages + "\":{\"0\":{\" \":\"eng:English\"},\"1\":{\" \":\"fra:French\"}}}",
 				data);
@@ -466,10 +448,10 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void SetContributors_Empty_NoChangeToMetsData()
 		{
-			var dataBefore = _helper.GetMetadata();
+			var dataBefore = _helper.GetUnencodedMetsData();
 			var empty = new ContributionCollection();
 			_helper.SetContributors(empty);
-			var dataAfter = _helper.GetMetadata();
+			var dataAfter = _helper.GetUnencodedMetsData();
 			Assert.AreEqual(dataBefore, dataAfter);
 		}
 
@@ -482,7 +464,7 @@ namespace SIL.Archiving.Tests
 			contributors.Add(new Contribution("Erkel", olacSystem.GetRoleByCodeOrThrow("author")));
 			contributors.Add(new Contribution("Sungfu", olacSystem.GetRoleByCodeOrThrow("recorder")));
 			_helper.SetContributors(contributors);
-			var data = _helper.GetMetadata();
+			var data = _helper.GetUnencodedMetsData();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
 				RampArchivingDlgViewModel.kContributor + "\":{\"0\":{\" \":\"Erkel\",\"role\":\"author\"},\"1\":{\" \":\"Sungfu\",\"role\":\"recorder\"}}}",
 				data);
@@ -508,7 +490,7 @@ namespace SIL.Archiving.Tests
 		public void SetCreationDate_FreeFormString_IncludedInMetsData()
 		{
 			_helper.SetCreationDate("four years ago");
-			var data = _helper.GetMetadata();
+			var data = _helper.GetUnencodedMetsData();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
 				RampArchivingDlgViewModel.kDateCreated + "\":\"four years ago\"}",
 				data);
@@ -520,7 +502,7 @@ namespace SIL.Archiving.Tests
 		{
 			DateTime creationDate = new DateTime(2012, 4, 13);
 			_helper.SetCreationDate(creationDate);
-			var data = _helper.GetMetadata();
+			var data = _helper.GetUnencodedMetsData();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
 				RampArchivingDlgViewModel.kDateCreated + "\":\"2012-04-13\"}",
 				data);
@@ -541,7 +523,7 @@ namespace SIL.Archiving.Tests
 		public void SetDatasetExtent_FreeFormString_IncludedInMetsData()
 		{
 			_helper.SetDatasetExtent("6 voice records and maybe an odd text file or two");
-			var data = _helper.GetMetadata();
+			var data = _helper.GetUnencodedMetsData();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
 				RampArchivingDlgViewModel.kDatasetExtent + "\":\"6 voice records and maybe an odd text file or two\"}",
 				data);
@@ -568,9 +550,9 @@ namespace SIL.Archiving.Tests
 		[Test]
 		public void SetDescription_Empty_NoChangeToMetsData()
 		{
-			var dataBefore = _helper.GetMetadata();
+			var dataBefore = _helper.GetUnencodedMetsData();
 			_helper.SetDescription(new Dictionary<string, string>());
-			var dataAfter = _helper.GetMetadata();
+			var dataAfter = _helper.GetUnencodedMetsData();
 			Assert.AreEqual(dataBefore, dataAfter);
 		}
 
@@ -582,7 +564,7 @@ namespace SIL.Archiving.Tests
 			descriptions["eng"] = "General data";
 			descriptions["spa"] = "Datos generales";
 			_helper.SetDescription(descriptions);
-			var data = _helper.GetMetadata();
+			var data = _helper.GetUnencodedMetsData();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" + RampArchivingDlgViewModel.kFlagHasGeneralDescription + "\":\"Y\",\"" +
 				RampArchivingDlgViewModel.kGeneralDescription + "\":{\"0\":{\" \":\"General data\",\"lang\":\"eng\"},\"1\":{\" \":\"Datos generales\",\"lang\":\"spa\"}}}",
 				data);
@@ -653,13 +635,6 @@ namespace SIL.Archiving.Tests
 		}
 
 		#region Private helper methods
-		/// ------------------------------------------------------------------------------------
-		private void SetFilesToArchive(ArchivingDlgViewModel model)
-		{
-			foreach (var kvp in _filesToAdd)
-				model.AddFileGroup(kvp.Key, kvp.Value.Item1, kvp.Value.Item2);
-		}
-
 		/// ------------------------------------------------------------------------------------
 		private string GetFileDescription(string key, string file)
 		{

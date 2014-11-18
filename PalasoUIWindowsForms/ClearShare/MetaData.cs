@@ -1,49 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
-using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Windows.Forms;
 using Palaso.CommandLineProcessing;
 using Palaso.Extensions;
 using Palaso.IO;
 using Palaso.Progress;
-using TagLib;
-using TagLib.Image;
-using TagLib.Xmp;
-using File = System.IO.File;
 
 namespace Palaso.UI.WindowsForms.ClearShare
 {
 	/// <summary>
-	/// Provides reading and writing of metdata, currently for any file which TagLib can read AND write (images, pdf).
-	/// Where multiple metadata formats are in a file (XMP, EXIF, IPTC-IIM), we read the first one we find (that has a non-empty value) and write them all.
-	/// Working Group guidelines: http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
+	/// Provides reading and writing of metdata, currently for any file which exiftool can read AND write (images, pdf).
+	/// ExifTool can read many more formats that it can write (video, html, docx), but I have not tested those yet  (should be easy).
+	/// ExifTool can also read/write sidecar files, but that is not yet implemented here, either (should be easy).
+	/// Where multiple metadata formats are in a file (XMP, EXIF, IPTC-IIM), exif provides conformance to the MedatData
+	/// Working Group guidelines: http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf, which we use by telling exiftool to
+	/// to "-use MWG": http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html.  E.g., this puts the "Copyright" into both the exif "copyright", and "xmp:Rights".
 	///
 	/// Microsoft Pro Photo Tools: http://www.microsoft.com/download/en/details.aspx?id=13518
-	///
-	/// A previous version of this class used exiftool.exe to read and write this data. The exact fields chosen to store each piece of ClearShare metadata
-	/// were chosen when working with exiftool as the best matches to the data we want to store; when switching to taglib, the same names were used
-	/// as precisely as possible in order to ensure the greatest possible data interchange with exiftool and anything using it, especially programs
-	/// using old versions of this library.
-	/// Backwards compatibility was achieved for all fields: we can read anything written by the old version of MetaData.
-	/// Forwards compatibility was also fully achieved for files with no existing metadata: if the new library is used to add metadata
-	/// to a file which previously had none, old versions of this library (and exiftool generally) should be able to read all of it correctly.
-	/// There is however one case I haven't been able to fix:
-	///   - Add metadata to a file using exiftool (or an old version of this library, or possibly other tools that write EXIF:Copyright)
-	///   - Modify the copyright using this new version
-	///   - Attempt to read it using the old version.
-	/// In that scenario, exiftool continues to find the old copyright notice.
-	/// Apparently, in addition to storing it in the XMP dc:rights/default field and (typically) PNG Copyright field, exiftool stores it
-	/// in yet another tag, which taglib does not support, at least for PNG files. Running exiftool with arguments -a -u - args -g
-	/// indicates that the unchanged version is in  EXIF:Copyright. And if this value is present, it is what ExifTool (8.5.6.0) returns
-	/// when it is simply asked for Copyright, even though the new value is stored in two other copyright fields.
 	/// </summary>
 	public class Metadata
 	{
@@ -73,50 +52,23 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		/// <param name="m"></param>
 		private static void LoadProperties(string path, Metadata m)
 		{
-			var file = TagLib.File.Create(path) as TagLib.Image.File;
-			LoadProperties(file.ImageTag, m);
-		}
+			var properties = GetImageProperites(path);
 
-		/// <summary>
-		/// Load the properties of the specified MetaData object from the specified ImageTag.
-		/// tagMain may be a CombinedImageTag (when working with a real image file) or an XmpTag (when working with an XMP file).
-		/// Most of the data is read simply from the XmpTag (which is the Xmp property of the combined tag, if it is not tagMain itself).
-		/// But, we don't want to pass combinedTag.Xmp when working with a file, because some files may have CopyRightNotice or Creator
-		/// stored (only) in some other tag;
-		/// and we need to handle the case where we only have an XmpTag, because there appears to be no way to create a
-		/// combinedTag that just has an XmpTag inside it (or indeed any way to create any combinedTag except as part of
-		/// reading a real image file).
-		/// </summary>
-		private static void LoadProperties(ImageTag tagMain, Metadata m)
-		{
-			m.CopyrightNotice = tagMain.Copyright;
-			m.Creator = tagMain.Creator;
-			XmpTag xmpTag = tagMain as XmpTag;
-			if (xmpTag == null)
-				xmpTag = ((CombinedImageTag) tagMain).Xmp;
-			var licenseProperties = new Dictionary<string, string>();
-			if (xmpTag != null)
+			foreach (var assignment in MetadataAssignments)
 			{
-				m.CollectionUri = xmpTag.GetTextNode(kNsCollections,
-					"CollectionURI");
-				m.CollectionName = xmpTag.GetTextNode(
-					kNsCollections,
-					"CollectionName");
-				m.AttributionUrl = xmpTag.GetTextNode(kNsCc, "attributionURL");
-
-				var licenseUrl = xmpTag.GetTextNode(kNsCc, "license");
-				if (!string.IsNullOrWhiteSpace(licenseUrl))
-					licenseProperties["license"] = licenseUrl;
-				var rights = GetRights(xmpTag);
-				if (rights != null)
-					licenseProperties["rights (en)"] = rights;
+				string propertyValue;
+				if (properties.TryGetValue(assignment.ResultLabel.ToLower(), out propertyValue))
+				{
+					assignment.AssignmentAction.Invoke(m, propertyValue);
+					m.IsEmpty = false;
+				}
 			}
-			m.License = LicenseInfo.FromXmp(licenseProperties);
+			m.License = LicenseInfo.FromXmp(properties);
 
 			//NB: we're loosing non-ascii somewhere... the copyright symbol is just the most obvious
 			if (!string.IsNullOrEmpty(m.CopyrightNotice))
 			{
-				m.CopyrightNotice = m.CopyrightNotice.Replace("Copyright �", "Copyright ©");
+				m.CopyrightNotice = m.CopyrightNotice.Replace("Copyright ?", "Copyright ©");
 			}
 
 			//clear out the change-setting we just caused, because as of right now, we are clean with respect to what is on disk, no need to save.
@@ -266,6 +218,73 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			}
 		}
 
+
+		private static Dictionary<string, string> GetImageProperites(string path)
+		{
+			var values = new Dictionary<string, string>();
+			try
+			{
+				var exifPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
+				var args = new StringBuilder();
+				args.Append("-charset cp65001 "); //utf-8
+				foreach (var assignment in MetadataAssignments)
+				{
+					args.Append(" " + assignment.Switch + " ");
+				}
+				var result = CommandLineRunner.Run(exifPath, String.Format("{0} \"{1}\"", args.ToString(), path),
+												   _commandLineEncoding, Path.GetDirectoryName(path), 20 /*had a possiblefailure at 5: BL-242*/,
+												   new NullProgress());
+				if(result.DidTimeOut)
+				{
+					//we don't know what causes this... just a guess... maybe the file was locked?
+					Thread.Sleep(2000); //give it a second
+
+					result = CommandLineRunner.Run(exifPath, String.Format("{0} \"{1}\"", args.ToString(), path),
+												  _commandLineEncoding, Path.GetDirectoryName(path), 20,
+												  new NullProgress());
+
+					if (result.DidTimeOut)
+					{
+						Palaso.Reporting.ErrorReport.NotifyUserOfProblem("The program that reads metadata (e.g. copyright) from the image: " +
+																		   path + " did not report back in the allotted time. We know about this problem are and trying to figure out what causes it (seems to happen on slower computers).");
+						Palaso.Reporting.UsageReporter.ReportExceptionString("ExifTool timed out: " + (result.StandardError ?? "") + "|" + (result.StandardOutput ?? ""));
+
+						return values;
+					}
+				}
+
+#if DEBUG
+				Debug.WriteLine("reading");
+				Debug.WriteLine(args.ToString());
+				Debug.WriteLine(result.StandardError);
+				Debug.WriteLine(result.StandardOutput);
+#endif
+				var lines = result.StandardOutput.SplitTrimmed('\n');
+
+				foreach (var line in lines)
+				{
+					var parts = line.SplitTrimmed(':');
+					if (parts.Count < 2)
+						continue;
+
+					//recombine any parts of the value which had a colon (like a url does)
+					string value = parts[1];
+					for (int i = 2; i < parts.Count; ++i)
+						value = value + ":" + parts[i];
+
+					values.Add(parts[0].ToLower(), value);
+				}
+			}
+			catch (Exception error)
+			{
+				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(error,
+																 "The program had trouble checking the metadata in the image: " +
+																 path);
+			}
+			return values;
+		}
+
+
 		private class MetadataAssignement
 		{
 			public Func<Metadata, string> GetStringFunction { get; set; }
@@ -350,30 +369,63 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			Write(_path);
 		}
 
-		/// <summary>Returns if the format of the image file supports metadata</summary>
-		public bool FileFormatSupportsMetadata(string path)
-		{
-			var file = TagLib.File.Create(path) as TagLib.Image.File;
-			return file != null && !file.GetType().FullName.Contains("NoMetadata");
-		}
-
 		public void Write(string path)
 		{
-			// do not attempt to add metadata to a file type that does not support it.
-			if (!FileFormatSupportsMetadata(path))
-				throw new NotSupportedException(String.Format("The image file {0} is in a format that does not support metadata.", Path.GetFileName(path)));
+			var exifToolPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
+			//-E   -overwrite_original_in_place -d %Y
+			StringBuilder arguments = new StringBuilder();
 
-			var file = TagLib.File.Create(path) as TagLib.Image.File;
+			//No arguments.Append("-P "); //don't change the modified date  (this isn't totally obvious... it's good unless it interferes with backup)
 
-			file.GetTag(TagTypes.XMP, true); // The Xmp tag, at least, must exist so we can store properties into it.
-			// This does nothing if the file is not allowed to have PNG tags, that is, if it's not a PNG file.
-			// If it is, we want this tag to exist, since otherwise tools like exiftool (and hence old versions
-			// of this library and its clients) won't see our copyright notice and creator, at least.
-			file.GetTag(TagTypes.Png, true);
-			SaveInImageTag(file.ImageTag);
-			file.Save();
+			AddAssignmentArguments(arguments);
+
+			if (arguments.ToString().Length == 0)
+			{
+				//no metadata
+				return;
+			}
+
+			//NB: when it comes time to having multiple contibutors, see Hatton's question on http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3680.0.html.  We need -sep ";" or whatever to ensure we get a list.
+
+			arguments.Append("-charset cp65001 ");//utf-8
+			arguments.AppendFormat("-use MWG ");  //see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html  and http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
+			arguments.AppendFormat(" \"{0}\"", path);
+			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), _commandLineEncoding, Path.GetDirectoryName(_path), 5, new NullProgress());
+			// -XMP-dc:Rights="Copyright SIL International" -XMP-xmpRights:Marked="True" -XMP-cc:License="http://creativecommons.org/licenses/by-sa/2.0/" *.png");
+
+
+
+			//-overwrite_original didn't work for this
+			var extra = path + "_original";
+			try
+			{
+				if (File.Exists(extra))
+					File.Delete(extra);
+			}
+			catch (Exception)
+			{
+				//not worth reporting
+			}
+
+#if DEBUG
+			Debug.WriteLine("writing");
+			Debug.WriteLine(arguments.ToString());
+			Debug.WriteLine(result.StandardError);
+			Debug.WriteLine(result.StandardOutput);
+#endif
 			//as of right now, we are clean with respect to what is on disk, no need to save.
 			HasChanges = false;
+		}
+
+		private void AddAssignmentArguments(StringBuilder arguments)
+		{
+			foreach (var assignment in MetadataAssignments)
+			{
+				if (assignment.ShouldSetValue(this))
+				{
+					arguments.AppendFormat(" " + assignment.Switch + "=\"" + assignment.GetStringFunction(this) + "\" ");
+				}
+			}
 		}
 
 		public void SetupReasonableLicenseDefaultBeforeEditing()
@@ -439,159 +491,25 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		}
 
 		/// <summary>
-		/// Update the value of the specified node, or create it.
-		/// Seems SetTextNode should work whether or not is already exists, but in some cases it doesn't.
-		/// </summary>
-		/// <param name="tag"></param>
-		/// <param name="ns"></param>
-		/// <param name="name"></param>
-		/// <param name="val"></param>
-		void AddOrModify(XmpTag tag, string ns, string name, string val)
-		{
-			var node = tag.FindNode(ns, name);
-			if (node != null)
-				node.Value = val;
-			else
-				tag.SetTextNode(ns, name, val);
-		}
-
-		/// <summary>
-		/// Save the properties of this in tagMain in a suitable form for writing to a file which we can read and LoadProperties from
-		/// to recover the current state of this object.
-		/// tagMain may be a CombinedImageTag (when working with a real image file) or an XmpTag (when working with an XMP file).
-		/// Most of the data is stored simply in the XmpTag (which is the Xmp property of the combined tag, if it is not tagMain itself).
-		/// But, we don't want to pass combinedTag.Xmp when working with a file, because setting CopyRightNotice and Creator directly
-		/// on the combinedTag may save it in additional places that may be useful;
-		/// and we need to handle the case where we only have an XmpTag, because there appears to be no way to create a
-		/// combinedTag that just has an XmpTag inside it (or indeed any way to create any combinedTag except as part of
-		/// reading a real file).
-		/// </summary>
-		void SaveInImageTag(ImageTag tagMain)
-		{
-			// Taglib doesn't care what namespace prefix is used for these namespaces (which it doesn't already know about).
-			// It will happily assign them to be ns1 and ns2 and successfully read back the data.
-			// However, exiftool and its clients, including older versions of this library, will only recognize the
-			// cc data if the namespace has the 'standard' abbreviation.
-			// I'm not sure whether the pdf one is necessary, but minimally it makes the xmp more readable and less unusual.
-			// This is a bit of a kludge...I'm using a method that TagLib says is only meant for unit tests,
-			// and modifying what is meant to be an internal data structure, bypassing the (internal) method normally used
-			// to initialize it. But it gets the job done without requiring us to fork taglib.
-			XmpTag.NamespacePrefixes["http://creativecommons.org/ns#"] = "cc";
-			XmpTag.NamespacePrefixes["http://ns.adobe.com/pdf/1.3/"] = "pdf";
-
-			XmpTag xmp = tagMain as XmpTag;
-			if (xmp == null)
-				xmp = ((CombinedImageTag) tagMain).Xmp;
-			SetCopyright(tagMain, CopyrightNotice);
-			tagMain.Creator = Creator;
-			AddOrModify(xmp, kNsCollections, "CollectionURI", CollectionUri);
-			AddOrModify(xmp, kNsCollections, "CollectionName", CollectionName);
-			AddOrModify(xmp, kNsCc, "attributionURL", AttributionUrl);
-			if (License != null && !string.IsNullOrWhiteSpace(License.Url))
-				AddOrModify(xmp, kNsCc, "license", License.Url);
-			SetRights(xmp, License == null ? null : License.RightsStatement);
-		}
-
-		/// <summary>
-		/// Set the copyright. This is tricky because when we do tagMain.Copyright = value,
-		/// this sets the rights:default langauge to that string (as we wish), as well as setting
-		/// copyright in any other tag that may be present and support it. We don't want to bypass
-		/// setting copyright on other tags, so we need to set it on tagMain, not just do something
-		/// to the xmp.
-		/// However, taglib clears all other alternatives of rights when it does this.
-		/// We don't want that, because it might include our rights statement, which we store in the
-		/// English language alternative.
-		/// This is probably excessively cautious for right now, since the only client of this method
-		/// sets rights AFTER setting copyright; but I wanted a method that would be safe for any
-		/// future use.
-		/// (Though...it will need enhancing if we store yet more information in yet other alternatives.)
-		/// </summary>
-		/// <param name="file"></param>
-		/// <param name="copyright"></param>
-		void SetCopyright(ImageTag tagMain, string copyright)
-		{
-			XmpTag xmp = tagMain as XmpTag;
-			if (xmp == null)
-				xmp = ((CombinedImageTag)tagMain).Xmp;
-			var oldRights = GetRights(xmp);
-			tagMain.Copyright = copyright;
-			if (oldRights != null)
-				SetRights(xmp, oldRights);
-		}
-
-		void SetRights(XmpTag xmp, string rights)
-		{
-			var rightsNode = xmp.FindNode("http://purl.org/dc/elements/1.1/", "rights");
-			if (rightsNode == null)
-			{
-				if (string.IsNullOrEmpty(rights))
-					return; // leave it missing.
-				// No existing rights node, and we have some. We use (default lang) rights for copyright too, and there seems to be no way to
-				// make the base node without setting that. So set it to something meaningless.
-				// This will typically never happen, since our dialog requires a non-empty copyright.
-				// I'm not entirely happy with it, but as far as I can discover the current version of taglib cannot
-				// set the 'en' alternative of dc:rights without setting the  default alternative. In fact, I'm not sure the
-				// result of doing so would technically be valid xmp; the standard calls for every langauge alternation
-				// to have a default.
-				xmp.SetLangAltNode("http://purl.org/dc/elements/1.1/", "rights", "Unknown");
-				rightsNode = xmp.FindNode("http://purl.org/dc/elements/1.1/", "rights");
-			}
-			foreach (var child in rightsNode.Children)
-			{
-				if (child.Namespace == "http://www.w3.org/1999/02/22-rdf-syntax-ns#" && child.Name == "li" &&
-					HasLangQualifier(child, "en"))
-				{
-					if (string.IsNullOrEmpty(rights))
-					{
-						rightsNode.RemoveChild(child);
-						// enhance: possibly we should remove rightsNode, if it now has no children, and if taglib can.
-						// However, we always require a copyright, so this will typically not happen.
-					}
-					else
-						child.Value = rights;
-					return;
-				}
-			}
-			// Didn't find an existing rights:en node.
-			if (string.IsNullOrEmpty(rights))
-				return; // leave it missing.
-			var childNode = new XmpNode(XmpTag.RDF_NS, "li", rights);
-			childNode.AddQualifier(new XmpNode(XmpTag.XML_NS, "lang", "en"));
-
-			rightsNode.AddChild(childNode);
-		}
-
-		static bool HasLangQualifier(XmpNode node, string lang)
-		{
-			var qualifier = node.GetQualifier(XmpTag.XML_NS, "lang");
-			return qualifier != null && qualifier.Value == lang;
-		}
-
-		static string GetRights(XmpTag xmp)
-		{
-			var rightsNode = xmp.FindNode("http://purl.org/dc/elements/1.1/", "rights");
-			if (rightsNode == null)
-				return null;
-			foreach (var child in rightsNode.Children)
-			{
-				if (child.Namespace == "http://www.w3.org/1999/02/22-rdf-syntax-ns#" && child.Name == "li" &&
-					HasLangQualifier(child, "en"))
-				{
-					return child.Value;
-				}
-			}
-			return null;
-		}
-
-		/// <summary>
 		/// Saves all the metadata that fits in XMP to a file.
 		/// </summary>
 		/// <example>SaveXmplFile("c:\dir\metadata.xmp")</example>
 		public void SaveXmpFile(string path)
 		{
-			var tag = new XmpTag();
-			SaveInImageTag(tag);
-			File.WriteAllText(path, tag.Render(), Encoding.UTF8);
+			Debug.Assert(path.EndsWith(".xmp"), "No really, the file must end in .xmp or exiftool won't work.");
+			if(File.Exists(path))
+				File.Delete(path);
+
+			StringBuilder arguments = new StringBuilder();
+			arguments.Append("-charset cp65001 ");//utf-8
+			arguments.AppendFormat("-o \"{0}\"", path);
+			AddAssignmentArguments(arguments);
+
+			//arguments.AppendFormat(" -use MWG ");  //see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/MWG.html  and http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
+
+			var exifToolPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
+			var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), _commandLineEncoding, Path.GetDirectoryName(path), 5, new NullProgress());
+
 		}
 
 		/// <summary>
@@ -603,8 +521,25 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			if(!File.Exists(path))
 				throw new FileNotFoundException(path);
 
-			var xmp = new XmpTag(File.ReadAllText(path, Encoding.UTF8), null);
-			LoadProperties(xmp, this);
+			var exifToolPath = FileLocator.GetFileDistributedWithApplication("exiftool.exe");
+
+
+			//OK, so exiftool doesn't actually let us just read an xmp file. It needs an image to push the values into.
+			//So we oblige by creating a temp image, pushing the values in, then reading out the values. Wheeww.
+			using(var temp = TempFile.WithExtension("png"))
+			{
+				File.Delete(temp.Path);
+				using (var tempImage = new Bitmap(1, 1))
+				{
+					tempImage.Save(temp.Path);
+				}
+				StringBuilder arguments = new StringBuilder();
+				arguments.Append("-charset cp65001 ");//utf-8
+				arguments.AppendFormat(" -all -tagsfromfile \"{0}\" -all:all \"{1}\"", path, temp.Path);
+				var result = CommandLineRunner.Run(exifToolPath, arguments.ToString(), _commandLineEncoding, Path.GetDirectoryName(path), 5, new NullProgress());
+				LoadProperties(temp.Path, this);
+			}
+
 		}
 
 		/// <summary>
@@ -707,8 +642,6 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		const string kCopyrightPattern = @"\D*(?<year>\d\d\d\d)?(,\s)?(?<by>.+)?";
 		const string kNoYearPattern = @"([cC]opyright\s+)?(COPYRIGHT\s+)?\©?\s*(?<by>.+)";
-		private const string kNsCollections = "http://www.metadataworkinggroup.com/schemas/collections/";
-		private const string kNsCc = "http://creativecommons.org/ns#";
 
 
 		public string GetCopyrightYear()
