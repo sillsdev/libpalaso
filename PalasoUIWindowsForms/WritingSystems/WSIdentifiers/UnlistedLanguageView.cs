@@ -78,9 +78,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems.WSIdentifiers
 		{
 			if (_updatingFromModel)
 				return;
-			//ResetFieldsIfNecessary();
-			//_model.SetCurrentVariant = "x-" + nonStandardLanguageCode.Text;
-			_model.SetCurrentVariantFromUnlistedLanguageName(nonStandardLanguageName.Text);
+			// Note that we don't want to change the private use language code just because
+			// the language name changes.  The private use language code should be invariant
+			// once it is set.  Changing it can cause major problems in sharing data with
+			// other people.  See https://jira.sil.org/browse/WS-43.
 			_model.CurrentLanguageName = nonStandardLanguageName.Text;
 		}
 

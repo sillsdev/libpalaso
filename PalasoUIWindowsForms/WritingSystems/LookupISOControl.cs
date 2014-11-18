@@ -18,6 +18,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private LanguageInfo _incomingLanguageInfo;
 		public event EventHandler ReadinessChanged;
 
+		/// <summary>Force the dialog to return 3 letter iso codes even if a 2 letter code is available</summary>
+		public bool Force3LetterCodes
+		{
+			get { return _model.Force3LetterCodes; }
+			set { _model.Force3LetterCodes = value; }
+		}
+
 		public void UpdateReadiness()
 		{
 			EventHandler handler = ReadinessChanged;
@@ -61,6 +68,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			set { _searchText.Text  = value; }
 		}
 
+		/// <summary>
+		/// Get the desired name of the language found.
+		/// </summary>
+		public string DesiredLanguageName
+		{
+			get { return _desiredLanguageDisplayName.Text.Trim(); }
+		}
+
 		private void OnLoad(object sender, EventArgs e)
 		{
 			if (DesignMode)
@@ -74,9 +89,49 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					_desiredLanguageDisplayName.Text = _model.LanguageInfo.DesiredName;
 				}
 			}
+			if (_desiredLanguageDisplayName.Visible)
+				AdjustDesiredLanguageNameFieldLocations();
+			AdjustCannotFindLanguageLocation();
 
 			UpdateReadiness();
 			_searchTimer.Start();
+		}
+
+		/// <summary>
+		/// The label and textbox controls overlap on Linux/Mono.  Adjust them to not overlap.
+		/// </summary>
+		private void AdjustDesiredLanguageNameFieldLocations()
+		{
+			var labelLocation = _desiredLanguageLabel.Location;
+			var labelWidth = _desiredLanguageLabel.Width;
+			var nameLocation = _desiredLanguageDisplayName.Location;
+			if (labelLocation.X + labelWidth + 5 >= nameLocation.X)
+			{
+				var newLabelLoc = new System.Drawing.Point(_listView.Location.X, labelLocation.Y);
+				_desiredLanguageLabel.Location = newLabelLoc;
+				if (newLabelLoc.X + labelWidth + 5 >= nameLocation.X)
+				{
+					var newNameLoc = new System.Drawing.Point(newLabelLoc.X + labelWidth + 6, nameLocation.Y);
+					_desiredLanguageDisplayName.Location = newNameLoc;
+				}
+			}
+		}
+
+		/// <summary>
+		/// The link label for "Cannot find language?" is truncated on Linux/Mono.
+		/// Adjust the location to allow it to display properly.
+		/// </summary>
+		private void AdjustCannotFindLanguageLocation()
+		{
+			//_cannotFindLanguageLink
+			var labelLocation = _cannotFindLanguageLink.Location;
+			var labelWidth = _cannotFindLanguageLink.Width;
+			var shortage = labelLocation.X + labelWidth - this.Width;
+			if (shortage > 0)
+			{
+				var newLoc = new System.Drawing.Point(labelLocation.X - shortage, labelLocation.Y);
+				_cannotFindLanguageLink.Location = newLoc;
+			}
 		}
 
 		private new bool DesignMode
@@ -98,6 +153,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				if (_incomingLanguageInfo != null && _incomingLanguageInfo.Code == _model.LanguageInfo.Code && !string.IsNullOrEmpty(_incomingLanguageInfo.DesiredName))
 				{
 					_desiredLanguageDisplayName.Text = _incomingLanguageInfo.DesiredName;
+				}
+				else if (_model.ISOCode == "qaa")
+				{
+					if (_searchText.Text != "?")
+					{
+						_failedSearchText = _searchText.Text.ToUpperFirstLetter();
+						_desiredLanguageDisplayName.Text = _failedSearchText;
+						_model.LanguageInfo.Names.Insert(0, _failedSearchText);
+						_model.LanguageInfo.DesiredName = _failedSearchText;
+					}
 				}
 				else
 				{
@@ -201,6 +266,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			}
 		}
 
+		private string _failedSearchText;
 		private void _cannotFindLanguageLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
 			using (var dlg = new CannotFindMyLanguageDialog())
@@ -208,6 +274,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				dlg.ShowDialog();
 
 				_desiredLanguageDisplayName.Text = _searchText.Text.ToUpperFirstLetter();
+				_failedSearchText = _searchText.Text.ToUpperFirstLetter();
 				_searchText.Text = "?";
 				if (_desiredLanguageDisplayName.Visible)
 				{

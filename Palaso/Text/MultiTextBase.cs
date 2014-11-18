@@ -172,6 +172,18 @@ namespace Palaso.Text
 		}
 
 		/// <summary>
+		/// Gets the Spans for the exact alternative or null.
+		/// </summary>
+		public List<LanguageForm.FormatSpan> GetExactAlternativeSpans(string writingSystemId)
+		{
+			LanguageForm alt = Find(writingSystemId);
+			if (null == alt)
+				return null;
+			else
+				return alt.Spans;
+		}
+
+		/// <summary>
 		/// Gives the string of the requested id if it exists, else the 'first'(?) one that does exist, else Empty String
 		/// </summary>
 		/// <returns></returns>
@@ -350,7 +362,7 @@ namespace Palaso.Text
 			}
 
 			//actually copy the contents, as we must now be the parent
-			forms[Forms.Length] = new LanguageForm(languageForm.WritingSystemId, languageForm.Form, this);
+			forms[Forms.Length] = new LanguageForm(languageForm, this);
 			Array.Sort(forms);
 			_forms = forms;
 		}

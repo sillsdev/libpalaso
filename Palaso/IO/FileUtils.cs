@@ -217,9 +217,9 @@ namespace Palaso.IO
 			{
 				try
 				{
-					if ((Path.GetPathRoot(sourcePath) != Path.GetPathRoot(destinationPath))
+					if (!PathUtilities.PathsAreOnSameVolume(sourcePath, destinationPath)
 						||
-						((!string.IsNullOrEmpty(backupPath)) && (Path.GetPathRoot(sourcePath) != Path.GetPathRoot(backupPath))))
+						(!string.IsNullOrEmpty(backupPath) && !PathUtilities.PathsAreOnSameVolume(sourcePath,backupPath)))
 					{
 						//can't use File.Replace or File.Move across volumes (sigh)
 						if (!string.IsNullOrEmpty(backupPath) && File.Exists(destinationPath))
@@ -296,6 +296,16 @@ namespace Palaso.IO
 			GetShortPathName(path, shortBuilder, (uint)shortBuilder.Capacity);
 			return shortBuilder.ToString();
 #endif
+		}
+
+		/// <summary>
+		/// Normalize the path so that it uses forward slashes instead of backslashes. This is
+		/// useful when a path gets read from a file that gets shared between Windows and Linux -
+		/// if the path contains backslashes it can't be found on Linux.
+		/// </summary>
+		public static string NormalizePath(string path)
+		{
+			return path.Replace('\\', '/');
 		}
 	}
 }

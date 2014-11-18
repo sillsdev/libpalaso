@@ -201,6 +201,33 @@ namespace Palaso.Lift
 			return m;
 		}
 
+		public static MultiText Create(Dictionary<string, string> forms, Dictionary<string, List<LiftSpan>> spans)
+		{
+			if (forms == null)
+				throw new ArgumentNullException("forms");
+			if (spans == null)
+				spans = new Dictionary<string, List<LiftSpan>>();
+			MultiText m = new MultiText();
+			CopyForms(forms, m);
+			m.CopySpans(spans);
+			return m;
+		}
+
+		void CopySpans(Dictionary<string, List<LiftSpan>> spans)
+		{
+			foreach (var key in spans.Keys)
+			{
+				LanguageForm form = Find(key);
+				if (form == null)
+					continue;
+				foreach (var span in spans[key])
+				{
+					form.AddSpan(span.Index, span.Length, span.Lang, span.Class, span.LinkURL);
+				}
+			}
+		}
+
+
 		public static string ConvertLiftStringToSimpleStringWithMarkers(LiftString liftString)
 		{
 			string stringWithSpans = liftString.Text;

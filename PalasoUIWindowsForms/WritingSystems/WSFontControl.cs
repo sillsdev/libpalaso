@@ -25,6 +25,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_fontComboBox.Text = _defaultFontName;
 			_fontSizeComboBox.Text = _defaultFontSize.ToString();
 			_promptForFontTestArea.SetPrompt(_testArea, "Use this area to type something to test out your font.");
+			if (KeyboardController.IsInitialized)
+				KeyboardController.Register(_testArea);
 		}
 
 		public void BindToModel(WritingSystemSetupModel model)
@@ -191,6 +193,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				return;
 			}
 			_defaultKeyboard = Keyboard.Controller.ActiveKeyboard;
+			_model.ActivateCurrentKeyboard();
 		}
 
 		private void _testArea_Leave(object sender, EventArgs e)

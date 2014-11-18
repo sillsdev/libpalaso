@@ -1,6 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using Palaso.IO;
+using Palaso.PlatformUtilities;
 using Palaso.Reporting;
 using Palaso.UsbDrive;
 
@@ -73,10 +76,7 @@ namespace Palaso.Tests.IO
 			Assert.IsNotNull(FileLocator.GetFromRegistryProgramThatOpensFileType("txt"));
 		}
 
-		// 12 SEP 2013, Phil Hopper: LocateInProgramFiles should work on Mono now.
 		[Test]
-		//[Platform(Exclude="Unix")]
-		//[Category("KnownMonoIssue")]
 		public void LocateInProgramFiles_SendInvalidProgramNoDeepSearch_ReturnsNull()
 		{
 			Assert.IsNull(FileLocator.LocateInProgramFiles("blah.exe", false));
@@ -91,46 +91,88 @@ namespace Palaso.Tests.IO
 			Assert.IsNull(FileLocator.LocateInProgramFiles("msinfo32.exe", false));
 		}
 
-		// 12 SEP 2013, Phil Hopper: LocateInProgramFiles should work on Mono now.
 		[Test]
-		//[Platform(Exclude="Unix")]
-		//[Category("SkipOnTeamCity;KnownMonoIssue")]
 		public void LocateInProgramFiles_SendValidProgramDeepSearch_ReturnsProgramPath()
 		{
-			var findFile = (IsMono ? "bash" : "msinfo32.exe");
+			var findFile = (Platform.IsMono ? "bash" : "msinfo32.exe");
 			Assert.IsNotNull(FileLocator.LocateInProgramFiles(findFile, true));
 		}
 
-		// 12 SEP 2013, Phil Hopper: LocateInProgramFiles should work on Mono now.
 		[Test]
-		//[Platform(Exclude="Unix")]
-		//[Category("SkipOnTeamCity;KnownMonoIssue")]
 		public void LocateInProgramFiles_SendValidProgramDeepSearch_SubFolderSpecified_ReturnsProgramPath()
 		{
-			var findFile = (IsMono ? "bash" : "msinfo32.exe");
+			var findFile = (Platform.IsMono ? "bash" : "msinfo32.exe");
 
 			// this will work on Mono because it ignores the subFoldersToSearch parameter
 			Assert.IsNotNull(FileLocator.LocateInProgramFiles(findFile, true, "Common Files"));
 		}
 
-		// 12 SEP 2013, Phil Hopper: LocateInProgramFiles should work on Mono now.
 		[Test]
-		//[Platform(Exclude="Unix")]
-		//[Category("SkipOnTeamCity;KnownMonoIssue")]
 		public void LocateInProgramFiles_SendInValidSubFolder_DoesNotThrow()
 		{
-			var findFile = (IsMono ? "bash" : "msinfo32.exe");
+			var findFile = (Platform.IsMono ? "bash" : "msinfo32.exe");
 			Assert.DoesNotThrow(() => FileLocator.LocateInProgramFiles(findFile, true, "!~@blah"));
 		}
 
 		//TODO: this could use lots more tests
 
-		/// <summary>
-		/// Using this function to avoid using conditional compile blocks
-		/// </summary>
-		private static bool IsMono
+		[Test]
+		public void LocateExecutable_DistFiles()
 		{
-			get { return (System.Type.GetType("Mono.Runtime") != null); }
+			Assert.That(FileLocator.LocateExecutable("DirectoryForTests", "SampleExecutable.exe"),
+				Is.StringEnding(string.Format("DistFiles{0}DirectoryForTests{0}SampleExecutable.exe",
+					Path.DirectorySeparatorChar)));
 		}
+
+		[Test]
+		[Platform(Exclude="Linux")]
+		public void LocateExecutable_PlatformSpecificInDistFiles_Windows()
+		{
+			Assert.That(FileLocator.LocateExecutable("DirectoryForTests", "dummy.exe"),
+				Is.StringEnding(string.Format("DistFiles{0}Windows{0}DirectoryForTests{0}dummy.exe",
+				Path.DirectorySeparatorChar)));
+		}
+
+		[Test]
+		[Platform(Include="Linux")]
+		public void LocateExecutable_PlatformSpecificInDistFiles_LinuxWithoutExtension()
+		{
+			Assert.That(FileLocator.LocateExecutable("DirectoryForTests", "dummy.exe"),
+				Is.StringEnding(string.Format("DistFiles{0}Linux{0}DirectoryForTests{0}dummy",
+				Path.DirectorySeparatorChar)));
+		}
+
+		[Test]
+		[Platform(Include="Linux")]
+		public void LocateExecutable_PlatformSpecificInDistFiles_Linux()
+		{
+			Assert.That(FileLocator.LocateExecutable("DirectoryForTests", "dummy2.exe"),
+				Is.StringEnding(string.Format("DistFiles{0}Linux{0}DirectoryForTests{0}dummy2.exe",
+				Path.DirectorySeparatorChar)));
+		}
+
+		[Test]
+		public void LocateExecutable_NonexistingFile()
+		{
+			Assert.That(FileLocator.LocateExecutable(false, "__nonexisting.exe"), Is.Null);
+		}
+
+		[Test]
+		public void LocateExecutable_NonexistingFileThrows()
+		{
+			Assert.That(() => FileLocator.LocateExecutable("__nonexisting.exe"),
+				Throws.Exception.TypeOf<ApplicationException>());
+		}
+
+		[Test]
+		[Platform(Include="Linux")]
+		public void LocateExecutable_ExeInPath()
+		{
+			var exifTool = FileLocator.LocateExecutable("exiftool.exe");
+			Assert.That(exifTool, Is.Not.StringEnding(".exe"));
+			Assert.That(File.Exists(exifTool), Is.True);
+		}
+
+
 	}
 }

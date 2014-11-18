@@ -37,37 +37,47 @@ namespace Palaso.BuildTasks.StampAssemblies
 				SafeLog("StampAssemblies: Stamping {0}", inputAssemblyPath);
 				//SafeLog("StampAssemblies: Contents: {0}",contents);
 
+				// ENHANCE: add property for InformationalVersion
 				File.WriteAllText(path,  GetModifiedContents(contents, Version, FileVersion));
 			}
 			return true;
 		}
 
+		private string ExpandTemplate(string whichAttribute, string contents,
+			VersionParts incomingVersion, bool allowHashAsRevision)
+		{
+			try
+			{
+				var regex = new Regex(string.Format(@"\[assembly\: {0}\(""(.+)""", whichAttribute));
+				var result = regex.Match(contents);
+				if (result == Match.Empty)
+					return contents;
+				var versionTemplateInFile = ParseVersionString(result.Groups[1].Value, allowHashAsRevision);
+				var newVersion = MergeTemplates(incomingVersion, versionTemplateInFile);
+
+				SafeLog("StampAssemblies: Merging existing {0} with incoming {1} to produce {2}.",
+					versionTemplateInFile.ToString(), incomingVersion.ToString(), newVersion);
+				return regex.Replace(contents, string.Format(@"[assembly: {0}(""{1}""", whichAttribute, newVersion));
+			}
+			catch (Exception e)
+			{
+				Log.LogError("Could not parse the {0} attribute, which should be something like 0.7.*.* or 1.0.0.0",
+					whichAttribute);
+				Log.LogErrorFromException(e);
+				throw e;
+			}
+		}
+
 		public string GetModifiedContents(string contents, string incomingVersion, string incomingFileVersion)
 		{
-			var versionTemplateInFile = GetExistingAssemblyVersion(contents);
-			var fileVersionTemplateInFile = GetExistingAssemblyFileVersion(contents);
-			var versionTemplateInBuildScript = ParseVersionString(incomingVersion);
-			VersionParts fileVersionTemplateInScript = null;
-			fileVersionTemplateInScript = incomingFileVersion != null ? ParseVersionString(incomingFileVersion)
-																	  : versionTemplateInBuildScript;
+			var versionTemplateInBuildScript = ParseVersionString(incomingVersion, false);
+			var fileVersionTemplateInScript = incomingFileVersion != null ?
+				ParseVersionString(incomingFileVersion, false) : versionTemplateInBuildScript;
+			var infoVersionTemplateInBuildScript = ParseVersionString(incomingVersion, true);
 
-			var newVersion = MergeTemplates(versionTemplateInBuildScript, versionTemplateInFile);
-			var newFileVersion = MergeTemplates(fileVersionTemplateInScript, fileVersionTemplateInFile);
-
-			SafeLog("StampAssemblies: Merging existing {0} with incoming {1} to produce {2}.",
-				versionTemplateInFile.ToString(), incomingVersion, newVersion);
-			SafeLog("StampAssemblies: Merging existing {0} with incoming {1} to produce {2}.",
-				fileVersionTemplateInFile.ToString(), incomingFileVersion, newFileVersion);
-
-
-			var replacement = string.Format(
-				"[assembly: AssemblyVersion(\"{0}\")]",
-				newVersion);
-			contents = Regex.Replace(contents, @"\[assembly: AssemblyVersion\("".*""\)\]", replacement);
-			replacement = string.Format(
-				"[assembly: AssemblyFileVersion(\"{0}\")]",
-				newFileVersion);
-			contents = Regex.Replace(contents, @"\[assembly: AssemblyFileVersion\("".*""\)\]", replacement);
+			contents = ExpandTemplate("AssemblyVersion", contents, versionTemplateInBuildScript, false );
+			contents = ExpandTemplate("AssemblyFileVersion", contents, fileVersionTemplateInScript, false);
+			contents = ExpandTemplate("AssemblyInformationalVersion", contents, infoVersionTemplateInBuildScript, true);
 			return contents;
 		}
 
@@ -111,37 +121,35 @@ namespace Palaso.BuildTasks.StampAssemblies
 			return result.TrimEnd(new char[] {'.'});
 		}
 
-		public VersionParts GetExistingAssemblyVersion(string contents)
+		private VersionParts GetExistingAssemblyVersion(string whichAttribute, string contents)
 		{
 			try
 			{
-				var result = Regex.Match(contents, @"\[assembly\: AssemblyVersion\(""(.+)""");
+				var result = Regex.Match(contents, string.Format(@"\[assembly\: {0}\(""(.+)""", whichAttribute));
+				if (result == Match.Empty)
+					return null;
 				return ParseVersionString(result.Groups[1].Value);
 			}
 			catch (Exception e)
 			{
-				Log.LogError("Could not parse the AssemblyVersion attribute, which should be something like 0.7.*.* or 1.0.0.0");
+				Log.LogError("Could not parse the {0} attribute, which should be something like 0.7.*.* or 1.0.0.0",
+					whichAttribute);
 				Log.LogErrorFromException(e);
 				throw e;
 			}
+		}
+
+		public VersionParts GetExistingAssemblyVersion(string contents)
+		{
+			return GetExistingAssemblyVersion("AssemblyVersion", contents);
 		}
 
 		public VersionParts GetExistingAssemblyFileVersion(string contents)
 		{
-			try
-			{
-				var result = Regex.Match(contents, @"\[assembly\: AssemblyFileVersion\(""(.+)""");
-				return ParseVersionString(result.Groups[1].Value);
-			}
-			catch (Exception e)
-			{
-				Log.LogError("Could not parse the AssemblyVersion attribute, which should be something like 0.7.*.* or 1.0.0.0");
-				Log.LogErrorFromException(e);
-				throw e;
-			}
+			return GetExistingAssemblyVersion("AssemblyFileVersion", contents);
 		}
 
-		public VersionParts ParseVersionString(string contents)
+		public VersionParts ParseVersionString(string contents, bool allowHashAsRevision = false)
 		{
 			var result = Regex.Match(contents, @"(.+)\.(.+)\.(.+)\.(.+)");
 			if(!result.Success)
@@ -168,10 +176,10 @@ namespace Palaso.BuildTasks.StampAssemblies
 					v.parts[i] = "*";
 				}
 			}
-			//can't propogate a hash code, though it's nice (for build server display purposes)
-			//to send it through to us. So for now, we just strip it out.
-			if(v.parts[3].IndexOfAny(new char[]{'a','b','c','d','e','f'}) >-1)
+
+			if(!allowHashAsRevision && v.parts[3].IndexOfAny(new char[]{'a','b','c','d','e','f'}) >-1)
 			{
+				// zero out hash code which we can't have in numeric version numbers
 				v.parts[3] = "0";
 			}
 

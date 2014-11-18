@@ -480,7 +480,7 @@ namespace Palaso.DictionaryServices.Lift
 
 		private static void MergeIn(MultiTextBase multiText, LiftMultiText forms)
 		{
-			multiText.MergeIn(MultiText.Create(forms.AsSimpleStrings));
+			multiText.MergeIn(MultiText.Create(forms.AsSimpleStrings, forms.AllSpans));
 			AddAnnotationsToMultiText(forms, multiText);
 		}
 

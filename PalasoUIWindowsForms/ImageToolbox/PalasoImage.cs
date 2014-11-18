@@ -2,10 +2,12 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using Palaso.Code;
 using Palaso.IO;
 using Palaso.UI.WindowsForms.ClearShare;
+using System.Linq;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
 {
@@ -24,15 +26,20 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			}
 		}
 
+		private string _originalFilePath;
+
 		/// <summary>
-		/// generally, when we load an image, we can happily forget where it came from, becuase
-		/// the nature of the palso image system is to deliver images, not file paths, to documents
+		/// Generally, when we load an image, we can happily forget where it came from, because
+		/// the nature of the palaso image system is to deliver images, not file paths, to documents
 		/// (we don't believe in "linking" to files somewhere on the disk which is just asking for problems
-		/// as the document is shared.
-		/// But in on circumumstance, we do care: when the user chooses a from disk (as opposed to from camera or scanner)
-		/// and enters metadata, we want to store that metadata in the original.  That's the only reason we store this path.
+		/// as the document is shared).
+		/// But in one circumumstance, we do care: when the user chooses from disk (as opposed to from camera or scanner)
+		/// and enters metadata, we want to store that metadata in the original.  
+		/// However, there is one circumstance (currently) in which this is not the original path:
+		/// If we attempt to save metadata and can't (e.g. file is readonly), we create a temp file and 
+		/// store the metadata there, then serve the temp file to the requestor.  That's why we store this path.
 		/// </summary>
-		private static string _pathForSavingMetadataChanges;
+		private string _pathForSavingMetadataChanges;
 
 		public bool Disposed;
 
@@ -88,7 +95,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// Really, just the name, not the path.  Use if you want to save the image somewhere.
 		/// Will be null if the PalasoImage was created via an Image instead of a file.
 		/// </summary>
-		public string FileName { get; private set; }
+		public string FileName { get; internal set; }
 
 
 		/// <summary>
@@ -100,28 +107,136 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		}
 
 		/// <summary>
-		/// Save an image to the given path, with the metadata embeded
+		/// Save an image to the given path, with the metadata embedded.
+		/// Use the file extension of path to determine to format to save.
 		/// </summary>
 		/// <param name="path"></param>
 		public void Save(string path)
 		{
-			ThrowIfDisposedOfAlready();
-			Image.Save(path);
-			Metadata.Write();
+			var format = GetImageFormatForExtension(Path.GetExtension(path));
+			SaveInFormat(path, format);
 		}
 
+		/// <summary>
+		/// Return the preferred file extension to be used for web format.
+		/// Preserve jpeg or convert to png format.
+		/// </summary>
+		/// <param name="fileExtension"></param>
+		public static string FileExtForWebFormat(string fileExtension)
+		{
+			var format = GetImageFormatForExtension(fileExtension);
+			return format == ImageFormat.Jpeg ? ".jpg" : ".png";
+		}
+		
+		private void SaveInFormat(string path, ImageFormat format)
+		{
+			ThrowIfDisposedOfAlready();
+			SaveImageSafely(path, format);
+			Metadata.Write(path);
+		}
+
+		private void SaveImageSafely(string path, ImageFormat format)
+		{
+			using (var image = new Bitmap(Image))
+			//nb: there are cases (notibly http://jira.palaso.org/issues/browse/WS-34711, after cropping a jpeg) where we get out of memory if we are not operating on a copy
+			{
+				if (File.Exists(path))
+				{
+					try
+					{
+						File.Delete(path);
+					}
+					catch (System.IO.IOException error)
+					{
+						throw new ApplicationException("The program could not replace the image " + path +
+													   ", perhaps because this program or another locked it. Quit and try again. Then restart your computer and try again."+System.Environment.NewLine+error.Message);
+					}
+				}
+
+				image.Save(path, format);
+			}
+		}
+
+		private static ImageFormat GetImageFormatForExtension(string fileExtension)
+		{
+			if (string.IsNullOrEmpty(fileExtension))
+				throw new ArgumentException(
+					string.Format("Bad extension: {0}", fileExtension));
+
+			switch (fileExtension.ToLower())
+			{
+			case @".bmp":
+				return ImageFormat.Bmp;
+
+			case @".gif":
+				return ImageFormat.Gif;
+
+			case @".jpg":
+			case @".jpeg":
+				return ImageFormat.Jpeg;
+
+			case @".png":
+				return ImageFormat.Png;
+
+			case @".tif":
+			case @".tiff":
+				return ImageFormat.Tiff;
+
+			default:
+				throw new NotImplementedException();
+			}
+		}
+			
 		/// <summary>
 		/// If you edit the metadata, call this. If it happens to have an actual file associated, it will save it.
 		/// If not (e.g. the image came from a scanner), it won't do anything.
 		/// </summary>
 		public void SaveUpdatedMetadataIfItMakesSense()
 		{
-			ThrowIfDisposedOfAlready();
-			if (Metadata != null && Metadata.HasChanges && !string.IsNullOrEmpty(_pathForSavingMetadataChanges) && File.Exists(_pathForSavingMetadataChanges))
+			try
 			{
-				Metadata.Write(_pathForSavingMetadataChanges);
-				Metadata.HasChanges = false;
+				if (!FileFormatSupportsMetadata) return;
+
+				ThrowIfDisposedOfAlready();
+				if (Metadata != null && Metadata.HasChanges && !string.IsNullOrEmpty(_pathForSavingMetadataChanges) && File.Exists(_pathForSavingMetadataChanges))
+					SaveUpdatedMetadata();
 			}
+			catch (SystemException ex)
+			{
+				if (ex is IOException || ex is UnauthorizedAccessException || ex is NotSupportedException)
+				{
+					//maybe we just can't write to the original file
+					//so try making a copy and writing to that
+
+					//note: this means the original file will not have metadata saved to it meaning that
+					//if we insert the same file again, the rights will not be the same (or have to be re-modified)
+					//enhance: we could, theoretically, maintain some sort persistent map with the source file and metadata
+					string origFilePath = PathForSavingMetadataChanges;
+					if (!string.IsNullOrEmpty(origFilePath) && File.Exists(origFilePath))
+					{
+						string tempPath = TempFile.WithExtension(Path.GetExtension(origFilePath)).Path;
+						Save(tempPath);
+						PathForSavingMetadataChanges = tempPath;
+						FileName = Path.GetFileName(tempPath);
+						if (FileFormatSupportsMetadata) SaveUpdatedMetadata();
+					}
+					else
+						throw;
+				}
+				else
+					throw;
+			}
+		}
+
+		/// <summary>Returns if the format of the image file supports metadata</summary>
+		public bool FileFormatSupportsMetadata
+		{
+			get { return Metadata.FileFormatSupportsMetadata(_pathForSavingMetadataChanges); }
+		}
+
+		private void SaveUpdatedMetadata()
+		{
+			Metadata.Write(_pathForSavingMetadataChanges);
 		}
 
 		private static Image LoadImageWithoutLocking(string path)
@@ -153,13 +268,14 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		public static PalasoImage FromFile(string path)
 		{
-			_pathForSavingMetadataChanges = path;
-			var i = new PalasoImage()
-					   {
-						   Image = LoadImageWithoutLocking(path),
-						   FileName = Path.GetFileName(path)
+			var i = new PalasoImage
+			{
+				Image = LoadImageWithoutLocking(path),
+				FileName = Path.GetFileName(path),
+				_originalFilePath = path,
+				_pathForSavingMetadataChanges = path,
+				Metadata = Metadata.FromFile(path)
 			};
-			i.Metadata = Metadata.FromFile(path);
 			return i;
 		}
 
@@ -168,7 +284,16 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// </summary>
 		public string OriginalFilePath
 		{
+			get { return _originalFilePath; }
+		}
+
+		/// <summary>
+		/// will be set if this was created using FromFile
+		/// </summary>
+		public string PathForSavingMetadataChanges
+		{
 			get { return _pathForSavingMetadataChanges; }
+			internal set { _pathForSavingMetadataChanges = value; }
 		}
 
 		/*

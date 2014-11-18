@@ -35,11 +35,11 @@
 			((System.ComponentModel.ISupportInitialize)(this._image)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.l10NSharpExtender1)).BeginInit();
 			this.SuspendLayout();
-			//
+			// 
 			// betterLinkLabel1
-			//
-			this.betterLinkLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
+			// 
+			this.betterLinkLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.betterLinkLabel1.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.betterLinkLabel1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline);
 			this.betterLinkLabel1.ForeColor = System.Drawing.Color.Blue;
@@ -56,9 +56,9 @@
 			this.betterLinkLabel1.Text = "Settings Protection...";
 			this.betterLinkLabel1.URL = null;
 			this.betterLinkLabel1.Click += new System.EventHandler(this.betterLinkLabel1_Click);
-			//
+			// 
 			// _image
-			//
+			// 
 			this._image.Image = global::Palaso.UI.WindowsForms.Properties.Resources.lockClosed48x48;
 			this.l10NSharpExtender1.SetLocalizableToolTip(this._image, null);
 			this.l10NSharpExtender1.SetLocalizationComment(this._image, null);
@@ -69,14 +69,14 @@
 			this._image.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
 			this._image.TabIndex = 2;
 			this._image.TabStop = false;
-			//
+			// 
 			// l10NSharpExtender1
-			//
+			// 
 			this.l10NSharpExtender1.LocalizationManagerId = "Palaso";
 			this.l10NSharpExtender1.PrefixForNewItems = "SettingsProtection";
-			//
+			// 
 			// SettingsProtectionLauncherButton
-			//
+			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.betterLinkLabel1);
@@ -84,10 +84,10 @@
 			this.l10NSharpExtender1.SetLocalizableToolTip(this, null);
 			this.l10NSharpExtender1.SetLocalizationComment(this, null);
 			this.l10NSharpExtender1.SetLocalizingId(this, "SettingsProtection.SettingsProtectionLauncherButton.SettingsProtectionLauncherBut" +
-		"ton");
+        "ton");
 			this.Margin = new System.Windows.Forms.Padding(0);
 			this.Name = "SettingsProtectionLauncherButton";
-			this.Size = new System.Drawing.Size(257, 37);
+			this.Size = new System.Drawing.Size(163, 37);
 			((System.ComponentModel.ISupportInitialize)(this._image)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.l10NSharpExtender1)).EndInit();
 			this.ResumeLayout(false);

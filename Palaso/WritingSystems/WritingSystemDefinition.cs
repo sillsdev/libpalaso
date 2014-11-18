@@ -586,7 +586,25 @@ namespace Palaso.WritingSystems
 		{
 			get
 			{
-				return String.IsNullOrEmpty(_abbreviation) ? Language : _abbreviation;
+				if (String.IsNullOrEmpty(_abbreviation))
+				{
+					// Use the language subtag unless it's an unlisted language.
+					// If it's an unlisted language, use the private use area language subtag.
+					if (Language == "qaa")
+					{
+						int idx = Id.IndexOf("-x-");
+						if (idx > 0 && Id.Length > idx + 3)
+						{
+							var abbr = Id.Substring(idx + 3);
+							idx = abbr.IndexOf('-');
+							if (idx > 0)
+								abbr = abbr.Substring(0, idx);
+							return abbr;
+						}
+					}
+					return Language;
+				}
+				return _abbreviation;
 			}
 			set
 			{

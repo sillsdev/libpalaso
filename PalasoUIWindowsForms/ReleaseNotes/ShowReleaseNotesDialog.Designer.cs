@@ -1,4 +1,8 @@
-﻿namespace Palaso.UI.WindowsForms.ReleaseNotes
+﻿using Palaso.UI.WindowsForms.HtmlBrowser;
+using System;
+using System.Diagnostics;
+
+namespace Palaso.UI.WindowsForms.ReleaseNotes
 {
 	partial class ShowReleaseNotesDialog
 	{
@@ -13,10 +17,23 @@
 		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && (components != null))
+			if (disposing)
 			{
-				components.Dispose();
+				if (components != null)
+					components.Dispose();
+				if (_temp != null)
+				{
+					try
+					{
+						_temp.Dispose();
+					}
+					catch (Exception error)
+					{
+						Debug.Fail(error.Message);
+					}
+				}
 			}
+			_temp = null;
 			base.Dispose(disposing);
 		}
 
@@ -28,13 +45,12 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this._browser = new System.Windows.Forms.WebBrowser();
+			this._browser = new XWebBrowser();
 			this._okButton = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			//
 			// _browser
 			//
-			this._browser.AllowWebBrowserDrop = false;
 			this._browser.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 			| System.Windows.Forms.AnchorStyles.Left)
 			| System.Windows.Forms.AnchorStyles.Right)));
@@ -43,6 +59,7 @@
 			this._browser.Name = "_browser";
 			this._browser.Size = new System.Drawing.Size(652, 304);
 			this._browser.TabIndex = 0;
+			this._browser.AllowNavigation = false;
 			//
 			// _okButton
 			//
@@ -77,7 +94,7 @@
 
 		#endregion
 
-		private System.Windows.Forms.WebBrowser _browser;
+		private XWebBrowser _browser;
 		private System.Windows.Forms.Button _okButton;
 	}
 }

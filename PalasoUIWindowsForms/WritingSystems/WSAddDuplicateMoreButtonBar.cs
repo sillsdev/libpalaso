@@ -105,7 +105,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			dialog.RestoreDirectory = true;
 			if (dialog.ShowDialog(this) == DialogResult.OK)
 			{
-				_model.ImportFile(dialog.FileName);
+				// There's no reason for the program to crash if the import fails.
+				// See https://jira.sil.org/browse/WS-112 for details.
+				try
+				{
+					_model.ImportFile(dialog.FileName);
+				}
+				catch (ApplicationException ex)
+				{
+					Palaso.Reporting.ErrorReport.NotifyUserOfProblem(ex, "There was a problem reading the LDML (language/orthography definition) file.");
+				}
 			}
 		}
 
