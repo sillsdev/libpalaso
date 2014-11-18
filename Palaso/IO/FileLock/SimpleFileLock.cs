@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Palaso.IO.FileLock.FileSys;
+using Palaso.PlatformUtilities;
 
 namespace Palaso.IO.FileLock
 {
@@ -45,7 +46,7 @@ namespace Palaso.IO.FileLock
 				}
 
 				//The process which created it is no longer running
-				if (!ProcessIsRunning((int)lockContent.PID))
+				if (!ProcessIsRunning((int)lockContent.PID, lockContent.ProcessName))
 				{
 					return AcquireLock();
 				}
@@ -93,10 +94,30 @@ namespace Palaso.IO.FileLock
 			return LockIO.WriteLock(LockFilePath, CreateLockContent());
 		}
 
-		private bool ProcessIsRunning(int processId)
+		private static bool ProcessIsRunning(int processId, string processName)
 		{
-			// I tried including the process name in the check, but on Linux, the names didn't match
-			return Process.GetProcesses().Any(x => x.Id == processId);
+			// First, look for a process with this processId
+			var process = Process.GetProcesses().FirstOrDefault(x => x.Id == processId);
+
+			// If there is no process with this processId, it is not running.
+			if (process == null) return false;
+
+			// Next, check for a match on processName.
+			var isRunning = process.ProcessName == processName;
+
+			// If a match was found or this is running on Windows, this is as far as we need to go.
+			if (isRunning || Platform.IsWindows) return isRunning;
+
+			// We need to look a little deeper on Linux.
+
+			// If the name of the process is not "mono" or does not start with "mono-", this is not
+			// a mono application, and therefore this is not the process we are looking for.
+			if (process.ProcessName.ToLower() != "mono" && !process.ProcessName.ToLower().StartsWith("mono-"))
+				return false;
+
+			// The mono application will have a module with the same name as the process, with ".exe" added.
+			var moduleName = processName.ToLower() + ".exe";
+			return process.Modules.Cast<ProcessModule>().Any(mod => mod.ModuleName.ToLower() == moduleName);
 		}
 
 		#endregion
