@@ -16,6 +16,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private string _unlistedLanguageName;
 		private string _incomingDesiredName;
 		private LanguageInfo _incomingLanguageInfo;
+
 		public event EventHandler ReadinessChanged;
 
 		/// <summary>Force the dialog to return 3 letter iso codes even if a 2 letter code is available</summary>
@@ -28,7 +29,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public void UpdateReadiness()
 		{
 			EventHandler handler = ReadinessChanged;
-			if (handler != null) handler(this, null);
+			if (handler != null)
+				handler(this, null);
 		}
 
 		public event EventHandler DoubleClicked;
@@ -43,7 +45,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public bool ShowDesiredLanguageNameField
 		{
-			set { _desiredLanguageDisplayName.Visible = _desiredLanguageLabel.Visible= value; }
+			set { _desiredLanguageDisplayName.Visible = _desiredLanguageLabel.Visible = value; }
 		}
 
 		public LanguageInfo LanguageInfo
@@ -65,7 +67,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public string ISOCode
 		{
 			get { return _model.ISOCode; }
-			set { _searchText.Text  = value; }
+			set { _searchText.Text = value; }
 		}
 
 		/// <summary>
@@ -142,6 +144,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					(LicenseManager.UsageMode == LicenseUsageMode.Designtime);
 			}
 		}
+
 		private void OnSelectedIndexChanged(object sender, EventArgs e)
 		{
 			var oldIso = _model.ISOCode;
@@ -207,18 +210,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_listView.SelectedIndices.Clear();
 			var toShow = new List<ListViewItem>();
 
-
 			if (_searchText.Text == "?")
 			{
 				var description = L10NSharp.LocalizationManager.GetString("LanguageLookup.UnlistedLanguage", "Unlisted Language");
-				List<string> names = new List<string>(new string[] {description});
-				LanguageInfo unlistedLanguage = new LanguageInfo() {Code = "qaa", Country = "", Names = names};
+				List<string> names = new List<string>(new string[] { description });
+				LanguageInfo unlistedLanguage = new LanguageInfo() { Code = "qaa", Country = "", Names = names };
 				ListViewItem item = new ListViewItem(description);
 				item.SubItems.Add("qaa");
 				item.Tag = unlistedLanguage;
 				item.Selected = true;
 				_listView.Items.Add(item);
-
 			}
 			else
 			{
@@ -233,8 +234,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					item.Tag = lang;
 					toShow.Add(item);
 
-//					if (!itemSelected && typedText.Length > 1 &&
-//					    (lang.Code.ToLower() == typedText || lang.Names[0].ToLower().StartsWith(typedText.ToLower())))
+					//					if (!itemSelected && typedText.Length > 1 &&
+					//					    (lang.Code.ToLower() == typedText || lang.Names[0].ToLower().StartsWith(typedText.ToLower())))
 					if (!itemSelected)
 					{
 						item.Selected = true;
@@ -248,7 +249,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				}
 				_desiredLanguageDisplayName.Enabled = itemSelected;
 				_listView.Items.AddRange(toShow.ToArray());
-
 			}
 			_listView.ResumeLayout();
 			//            if (_listView.Items.Count > 0)
@@ -267,6 +267,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		}
 
 		private string _failedSearchText;
+
 		private void _cannotFindLanguageLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
 			using (var dlg = new CannotFindMyLanguageDialog())
@@ -286,7 +287,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void _desiredLanguageDisplayName_TextChanged(object sender, EventArgs e)
 		{
-			if(_model.LanguageInfo!=null)
+			if (_model.LanguageInfo != null)
 				_model.LanguageInfo.DesiredName = _desiredLanguageDisplayName.Text;
 			UpdateReadiness();
 		}
