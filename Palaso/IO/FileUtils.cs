@@ -296,14 +296,6 @@ namespace Palaso.IO
 		   [MarshalAs(UnmanagedType.LPTStr)]string lpszLongPath,
 		   [MarshalAs(UnmanagedType.LPTStr)]StringBuilder lpszShortPath,
 		   uint cchBuffer);
-
-		[DllImport("Shlwapi.dll")]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		static extern bool PathIsNetworkPath(String pszPath);
-
-		[DllImport("Shlwapi.dll")]
-		[return: MarshalAs(UnmanagedType.Bool)]
-		static extern bool PathIsUNC(String pszPath);
 #endif
 
 		/// <summary>
