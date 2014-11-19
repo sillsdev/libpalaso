@@ -132,6 +132,12 @@
 		<seg>Unlisted Language</seg>
 	  </tuv>
 	</tu>
+	<tu tuid="LanguageLookup.CountryCount">
+	  <note>Shown when there are multiple countries and it is just confusing to list them all.</note>
+	  <tuv xml:lang="en">
+		<seg>{0} Countries</seg>
+	  </tuv>
+	</tu>
 	<tu tuid="MetadataDisplay.Creator">
 	  <tuv xml:lang="en">
 		<seg>Creator: {0}</seg>

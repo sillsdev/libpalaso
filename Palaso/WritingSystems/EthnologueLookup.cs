@@ -17,7 +17,7 @@ namespace Palaso.WritingSystems
 
 		/// <summary>Force the dialog to return 3 letter iso codes even if a 2 letter code is available</summary>
 		public bool Force3LetterCodes { get; set; }
-
+		
 		public EthnologueLookup()
 		{
 			Force3LetterCodes = false;
@@ -99,6 +99,7 @@ namespace Palaso.WritingSystems
 				if(!language.Country.Contains(countryName))
 				{
 					language.Country += ", " + countryName;
+					++language.CountryCount;
 				}
 			}
 			return language;
@@ -184,6 +185,7 @@ namespace Palaso.WritingSystems
 		public string Country;
 		public string Code;
 		private string _desiredName;
+		public int CountryCount;
 
 		/// <summary>
 		/// People sometimes don't want use the Ethnologue-supplied name

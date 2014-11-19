@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using L10NSharp;
 using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
@@ -55,11 +57,18 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 //                    yield return lang;
 //                }
 //            }
+
+			// Users were having problems when they looked up things like "English" and were presented with "United Arab Emirates"
+			// and such, as these colonial languages are spoken in so many countries. So this just displays the number of countries.
 			foreach (var language in _ethnologueLookup.SuggestLanguages(typedText))
-			{
+			{			
+				if (language.CountryCount > 2) // 3 or more was chosen because generally 2 languages fit in the space allowed
+				{
+					var msg = LocalizationManager.GetString("LanguageLookup.CountryCount", "{0} Countries","Shown when there are multiple countries and it is just confusing to list them all.");
+					language.Country =  string.Format(msg, language.CountryCount);
+				}
 				yield return language;
 			}
-
 		}
 
 
