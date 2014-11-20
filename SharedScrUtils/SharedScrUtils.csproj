@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SIL.ScriptureUtils</RootNamespace>
-    <AssemblyName>SharedScrUtils</AssemblyName>
+    <AssemblyName>SIL.ScriptureUtils</AssemblyName>
     <SccProjectName>
     </SccProjectName>
     <SccLocalPath>
@@ -50,7 +50,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>..\output\Debug\SharedScrUtils.xml</DocumentationFile>
+    <DocumentationFile>..\output\Debug\SIL.ScriptureUtils.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -95,12 +95,6 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SilUtils\SilUtils.csproj">
-      <Project>{4E4CE84F-BB35-416A-8E4F-B8C096DA32B7}</Project>
-      <Name>SilUtils</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
