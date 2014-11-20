@@ -31,6 +31,12 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void SuggestLanguages_LargeMispelling_StillFinds()
+		{
+			Assert.AreEqual(_ethnologue.SuggestLanguages("angrish").Count(), 1);
+		}
+
+		[Test]
 		public void SuggestLanguages_Thai_ReturnsThaiAsFirstChoiceLanguage()
 		{
 			/*	tha	KH 	D	Thai Koh Kong

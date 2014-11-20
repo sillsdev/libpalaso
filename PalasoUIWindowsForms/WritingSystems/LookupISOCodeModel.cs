@@ -37,29 +37,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			if(_ethnologueLookup==null)
 				_ethnologueLookup = new EthnologueLookup { Force3LetterCodes = Force3LetterCodes };
 
-			/* This works, but the results are satisfactory yet (they could be with some enancement to the matcher
-			 We would need it to favor exact prefix matches... currently an exact match could be several items down the list.
-
-			var d = new ApproximateMatcher.GetStringDelegate<WritingSystemDefinition.Iso639LanguageCode>(c => c.Name);
-			var languages = ApproximateMatcher.FindClosestForms(_languageCodes, d, s, ApproximateMatcherOptions.IncludePrefixedAndNextClosestForms);
-			*/
-
-//            typedText = typedText.ToLowerInvariant();
-//
-//            foreach (Iso639LanguageCode lang in _languageCodes)
-//            {
-//                if (string.IsNullOrEmpty(typedText) // in which case, show all of them
-//                    || (lang.InvariantLowerCaseCode.StartsWith(typedText)
-//                        || lang.Name.ToLowerInvariant().StartsWith(typedText)))
-//                {
-//                    yield return lang;
-//                }
-//            }
-			foreach (var language in _ethnologueLookup.SuggestLanguages(typedText))
-			{
-				yield return language;
-			}
-
+			return _ethnologueLookup.SuggestLanguages(typedText);
 		}
 
 
