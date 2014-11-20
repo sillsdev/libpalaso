@@ -47,9 +47,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Archiving", "SIL.Archiv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Archiving.Tests", "SIL.Archiving.Tests\SIL.Archiving.Tests.csproj", "{892C7F20-FBBB-4AB3-BAC2-E40A135567B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedScrUtils", "SharedScrUtils\SharedScrUtils.csproj", "{F71BA7B9-D9DC-4F8C-A307-87B503D0E05B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.ScriptureUtils", "SharedScrUtils\SIL.ScriptureUtils.csproj", "{F71BA7B9-D9DC-4F8C-A307-87B503D0E05B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedScrUtilsTests", "SharedScrUtils.Tests\SharedScrUtilsTests.csproj", "{4528287F-BA86-49D8-AFBB-1250A60CE7EA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.ScriptureUtils.Tests", "SharedScrUtils.Tests\SIL.ScriptureUtils.Tests.csproj", "{4528287F-BA86-49D8-AFBB-1250A60CE7EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
