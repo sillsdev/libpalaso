@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Windows.Forms;
+using L10NSharp;
 using Palaso.Extensions;
 using Palaso.WritingSystems;
 
@@ -210,6 +211,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_listView.SelectedIndices.Clear();
 			var toShow = new List<ListViewItem>();
 
+			var multipleCountriesLabel = LocalizationManager.GetString("LanguageLookup.CountryCount", "{0} Countries", "Shown when there are multiple countries and it is just confusing to list them all.");
+
 			if (_searchText.Text == "?")
 			{
 				var description = L10NSharp.LocalizationManager.GetString("LanguageLookup.UnlistedLanguage", "Unlisted Language");
@@ -228,7 +231,15 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					ListViewItem item = new ListViewItem(lang.Names[0]);
 					item.SubItems.Add(lang.Code);
-					item.SubItems.Add(lang.Country);
+					
+					// Users were having problems when they looked up things like "English" and were presented with "United Arab Emirates"
+					// and such, as these colonial languages are spoken in so many countries. So this just displays the number of countries.
+					var country = lang.Country;
+					if (lang.CountryCount > 2) // 3 or more was chosen because generally 2 languages fit in the space allowed
+					{
+						country = string.Format(multipleCountriesLabel, lang.CountryCount);
+					}
+					item.SubItems.Add(country);
 					item.SubItems.Add(string.Join(", ", lang.Names.Skip(1)));
 					item.SubItems.Add(lang.Country);
 					item.Tag = lang;

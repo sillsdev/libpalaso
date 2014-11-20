@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Palaso.Text;
 
 namespace Palaso.WritingSystems
 {
@@ -124,11 +125,25 @@ namespace Palaso.WritingSystems
 			{
 				IEnumerable<LanguageInfo> matchOnCode = from x in CodeToLanguageIndex where x.Key.ToLowerInvariant().StartsWith(searchString) select x.Value;
 				var matchOnName = from x in NameToLanguageIndex where x.Key.ToLowerInvariant().StartsWith(searchString) select x.Value;
+
+				if (!matchOnName.Any())
+				{
+					// look  for approximate matches
+					const int kMaxEditDistance = 3;
+					var itemFormExtractor = new ApproximateMatcher.GetStringDelegate<KeyValuePair<string, List<LanguageInfo>>>(pair => pair.Key);
+					var matches = ApproximateMatcher.FindClosestForms<KeyValuePair<string, List<LanguageInfo>>>(NameToLanguageIndex, itemFormExtractor,
+																										  searchString,
+																										  ApproximateMatcherOptions.None,
+																										  kMaxEditDistance);
+					matchOnName = from m in matches select m.Value;
+				}
+
 				List<LanguageInfo> combined = new List<LanguageInfo>(matchOnCode);
 				foreach (var l in matchOnName)
 				{
 					combined.AddRange(l);
 				}
+
 				List<LanguageInfo> sorted = new List<LanguageInfo>(combined.Distinct());
 				sorted.Sort(new ResultComparer(searchString));
 				foreach (var languageInfo in sorted)
