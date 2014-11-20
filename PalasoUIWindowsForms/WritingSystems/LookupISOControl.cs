@@ -154,6 +154,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					_desiredLanguageDisplayName.Text = _incomingLanguageInfo.DesiredName;
 				}
+				// for names like "Chinese", we're going to assume they want the displayed name to be "中文" (and French/français, etc.)
+				else if (!string.IsNullOrEmpty(_model.LanguageInfo.LocalName))
+				{
+					_desiredLanguageDisplayName.Text = _model.LanguageInfo.LocalName;
+				}
 				else if (_model.ISOCode == "qaa")
 				{
 					if (_searchText.Text != "?")
@@ -225,10 +230,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				var itemSelected = false;
 				foreach (LanguageInfo lang in _model.GetMatchingLanguages(typedText))
 				{
-					ListViewItem item = new ListViewItem(lang.Names[0]);
+					var mainName = string.IsNullOrEmpty(lang.LocalName) ? lang.Names[0] : lang.LocalName;
+					ListViewItem item = new ListViewItem(mainName);
 					item.SubItems.Add(lang.Code);
 					item.SubItems.Add(lang.Country);
-					item.SubItems.Add(string.Join(", ", lang.Names.Skip(1)));
+					var numberOfNamesAlreadyUsed = string.IsNullOrEmpty(lang.LocalName) ? 1 : 0;
+					item.SubItems.Add(string.Join(", ", lang.Names.Skip(numberOfNamesAlreadyUsed)));
 					item.SubItems.Add(lang.Country);
 					item.Tag = lang;
 					toShow.Add(item);
@@ -249,6 +256,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				_desiredLanguageDisplayName.Enabled = itemSelected;
 				_listView.Items.AddRange(toShow.ToArray());
 
+				//scroll down to the selected item
+				if (_listView.SelectedItems.Count>0)
+				{
+					_listView.SelectedItems[0].EnsureVisible();
+				}
 			}
 			_listView.ResumeLayout();
 			//            if (_listView.Items.Count > 0)
