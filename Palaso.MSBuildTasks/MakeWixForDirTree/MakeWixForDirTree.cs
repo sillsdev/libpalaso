@@ -35,7 +35,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 		private string[] _filesAndDirsToExclude = null;
 		private Regex _fileMatchPattern = new Regex(@".*");
 		private Regex _ignoreFilePattern = new Regex(@"IGNOREME");
-		private string _installerSourcePath;
+		private string _installerSourceDirectory;
 
 		//todo: this should just be a list
 		private Dictionary<string, string> m_exclude = new Dictionary<string, string>();
@@ -119,8 +119,8 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 		/// </summary>
 		public string InstallerSourceDirectory
 		{
-			get { return _installerSourcePath; }
-			set { _installerSourcePath = value; }
+			get { return _installerSourceDirectory; }
+			set { _installerSourceDirectory = value; }
 		}
 
 
@@ -143,6 +143,8 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			LogMessage(MessageImportance.High, "Creating Wix fragment for " + _rootDir);
 			//make it an absolute path
 			_outputFilePath = Path.GetFullPath(_outputFilePath);
+			if (!string.IsNullOrEmpty(_installerSourceDirectory))
+				_installerSourceDirectory = Path.GetFullPath(_installerSourceDirectory);
 
 			/* hatton removed this... it would leave deleted files referenced in the wxs file
 			 if (File.Exists(_outputFilePath))
@@ -441,10 +443,10 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 				elemFile.SetAttribute("KeyPath", "yes");
 			}
 			string relativePath;
-			if (String.IsNullOrEmpty(_installerSourcePath))
+			if (String.IsNullOrEmpty(_installerSourceDirectory))
 				relativePath = PathUtil.RelativePathTo(Path.GetDirectoryName(_outputFilePath), path);
 			else
-				relativePath = PathUtil.RelativePathTo(Path.GetDirectoryName(_installerSourcePath), path);
+				relativePath = PathUtil.RelativePathTo(_installerSourceDirectory, path);
 			elemFile.SetAttribute("Source", relativePath);
 
 			if (GiveAllPermissions)
