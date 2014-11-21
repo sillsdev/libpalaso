@@ -25,7 +25,6 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 					dlg.ImageInfo.Save(path);
 					Process.Start("explorer.exe", "/select, \"" + path + "\"");
 				}
-
 			}
 		}
 

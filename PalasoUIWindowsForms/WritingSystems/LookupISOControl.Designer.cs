@@ -47,17 +47,17 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).BeginInit();
 			this.SuspendLayout();
-			//
+			// 
 			// _listView
-			//
-			this._listView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-			| System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
+			// 
+			this._listView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this._listView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-			this.PrimaryNameHeader,
-			this.codeHeader,
-			this.countryHeader,
-			this.AlternateNamesHeader});
+            this.PrimaryNameHeader,
+            this.codeHeader,
+            this.countryHeader,
+            this.AlternateNamesHeader});
 			this._listView.FullRowSelect = true;
 			this._listView.HideSelection = false;
 			this._listView.Location = new System.Drawing.Point(0, 29);
@@ -69,41 +69,41 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._listView.SelectedIndexChanged += new System.EventHandler(this.OnSelectedIndexChanged);
 			this._listView.DoubleClick += new System.EventHandler(this.listView1_DoubleClick);
 			this._listView.Sorting = System.Windows.Forms.SortOrder.Ascending;
-			//
+			// 
 			// PrimaryNameHeader
-			//
+			// 
 			this._L10NSharpExtender.SetLocalizableToolTip(this.PrimaryNameHeader, null);
 			this._L10NSharpExtender.SetLocalizationComment(this.PrimaryNameHeader, null);
 			this._L10NSharpExtender.SetLocalizingId(this.PrimaryNameHeader, "LanguageLookup.PrimaryNameHeader");
 			this.PrimaryNameHeader.Text = "Name";
 			this.PrimaryNameHeader.Width = 104;
-			//
+			// 
 			// codeHeader
-			//
+			// 
 			this._L10NSharpExtender.SetLocalizableToolTip(this.codeHeader, null);
 			this._L10NSharpExtender.SetLocalizationComment(this.codeHeader, null);
 			this._L10NSharpExtender.SetLocalizingId(this.codeHeader, "LanguageLookup.CodeHeader");
 			this.codeHeader.Text = "Code";
 			this.codeHeader.Width = 57;
-			//
+			// 
 			// countryHeader
-			//
+			// 
 			this._L10NSharpExtender.SetLocalizableToolTip(this.countryHeader, null);
 			this._L10NSharpExtender.SetLocalizationComment(this.countryHeader, null);
 			this._L10NSharpExtender.SetLocalizingId(this.countryHeader, "LanguageLookup.CountryHeader");
 			this.countryHeader.Text = "Country";
 			this.countryHeader.Width = 116;
-			//
+			// 
 			// AlternateNamesHeader
-			//
+			// 
 			this._L10NSharpExtender.SetLocalizableToolTip(this.AlternateNamesHeader, null);
 			this._L10NSharpExtender.SetLocalizationComment(this.AlternateNamesHeader, null);
 			this._L10NSharpExtender.SetLocalizingId(this.AlternateNamesHeader, "LanguageLookup.AlternateNamesHeader");
 			this.AlternateNamesHeader.Text = "Other Names";
 			this.AlternateNamesHeader.Width = 437;
-			//
+			// 
 			// _searchText
-			//
+			// 
 			this._L10NSharpExtender.SetLocalizableToolTip(this._searchText, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._searchText, null);
 			this._L10NSharpExtender.SetLocalizingId(this._searchText, "LanguageLookup.LookupISOControl._searchText");
@@ -111,13 +111,13 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._searchText.Name = "_searchText";
 			this._searchText.Size = new System.Drawing.Size(228, 20);
 			this._searchText.TabIndex = 0;
-			//
+			// 
 			// _searchTimer
-			//
+			// 
 			this._searchTimer.Tick += new System.EventHandler(this._searchTimer_Tick);
-			//
+			// 
 			// pictureBox1
-			//
+			// 
 			this.pictureBox1.BackColor = System.Drawing.Color.White;
 			this.pictureBox1.Image = global::Palaso.UI.WindowsForms.Properties.Resources.search18x18;
 			this._L10NSharpExtender.SetLocalizableToolTip(this.pictureBox1, null);
@@ -130,9 +130,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
 			this.pictureBox1.TabIndex = 11;
 			this.pictureBox1.TabStop = false;
-			//
+			// 
 			// _cannotFindLanguageLink
-			//
+			// 
 			this._cannotFindLanguageLink.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this._cannotFindLanguageLink.AutoSize = true;
 			this._L10NSharpExtender.SetLocalizableToolTip(this._cannotFindLanguageLink, null);
@@ -145,9 +145,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._cannotFindLanguageLink.TabStop = true;
 			this._cannotFindLanguageLink.Text = "Can\'t find your language?";
 			this._cannotFindLanguageLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this._cannotFindLanguageLink_LinkClicked);
-			//
+			// 
 			// _desiredLanguageLabel
-			//
+			// 
 			this._desiredLanguageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this._desiredLanguageLabel.AutoSize = true;
 			this._L10NSharpExtender.SetLocalizableToolTip(this._desiredLanguageLabel, null);
@@ -159,11 +159,12 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._desiredLanguageLabel.TabIndex = 14;
 			this._desiredLanguageLabel.Text = "You can change how the language name will be displayed here:";
 			this._desiredLanguageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			//
+			// 
 			// _desiredLanguageDisplayName
-			//
+			// 
 			this._desiredLanguageDisplayName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this._desiredLanguageDisplayName.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._desiredLanguageDisplayName.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._desiredLanguageDisplayName.ForeColor = System.Drawing.Color.RoyalBlue;
 			this._L10NSharpExtender.SetLocalizableToolTip(this._desiredLanguageDisplayName, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._desiredLanguageDisplayName, null);
 			this._L10NSharpExtender.SetLocalizingId(this._desiredLanguageDisplayName, "LanguageLookup.LookupISOControl._desiredLanguageDisplayName");
@@ -172,23 +173,23 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			this._desiredLanguageDisplayName.Size = new System.Drawing.Size(243, 33);
 			this._desiredLanguageDisplayName.TabIndex = 13;
 			this._desiredLanguageDisplayName.TextChanged += new System.EventHandler(this._desiredLanguageDisplayName_TextChanged);
-			//
+			// 
 			// flowLayoutPanel1
-			//
+			// 
 			this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
 			this.flowLayoutPanel1.Location = new System.Drawing.Point(56, 349);
 			this.flowLayoutPanel1.Name = "flowLayoutPanel1";
 			this.flowLayoutPanel1.Size = new System.Drawing.Size(453, 37);
 			this.flowLayoutPanel1.TabIndex = 15;
-			//
+			// 
 			// _L10NSharpExtender
-			//
+			// 
 			this._L10NSharpExtender.LocalizationManagerId = "Palaso";
 			this._L10NSharpExtender.PrefixForNewItems = "LanguageLookup";
-			//
+			// 
 			// LookupISOControl
-			//
+			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this._desiredLanguageLabel);

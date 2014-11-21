@@ -30,7 +30,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		public void UpdateReadiness()
 		{
 			EventHandler handler = ReadinessChanged;
-			if (handler != null)
+			if(handler != null)
 				handler(this, null);
 		}
 
@@ -81,18 +81,18 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void OnLoad(object sender, EventArgs e)
 		{
-			if (DesignMode)
+			if(DesignMode)
 				return;
-			if (_model.LanguageInfo != null)
+			if(_model.LanguageInfo != null)
 			{
 				_searchText.Text = _model.LanguageInfo.Code;
-				if (!string.IsNullOrEmpty(_model.LanguageInfo.DesiredName))
+				if(!string.IsNullOrEmpty(_model.LanguageInfo.DesiredName))
 				{
 					_incomingLanguageInfo = _model.LanguageInfo;
 					_desiredLanguageDisplayName.Text = _model.LanguageInfo.DesiredName;
 				}
 			}
-			if (_desiredLanguageDisplayName.Visible)
+			if(_desiredLanguageDisplayName.Visible)
 				AdjustDesiredLanguageNameFieldLocations();
 			AdjustCannotFindLanguageLocation();
 
@@ -108,11 +108,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			var labelLocation = _desiredLanguageLabel.Location;
 			var labelWidth = _desiredLanguageLabel.Width;
 			var nameLocation = _desiredLanguageDisplayName.Location;
-			if (labelLocation.X + labelWidth + 5 >= nameLocation.X)
+			if(labelLocation.X + labelWidth + 5 >= nameLocation.X)
 			{
 				var newLabelLoc = new System.Drawing.Point(_listView.Location.X, labelLocation.Y);
 				_desiredLanguageLabel.Location = newLabelLoc;
-				if (newLabelLoc.X + labelWidth + 5 >= nameLocation.X)
+				if(newLabelLoc.X + labelWidth + 5 >= nameLocation.X)
 				{
 					var newNameLoc = new System.Drawing.Point(newLabelLoc.X + labelWidth + 6, nameLocation.Y);
 					_desiredLanguageDisplayName.Location = newNameLoc;
@@ -130,7 +130,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			var labelLocation = _cannotFindLanguageLink.Location;
 			var labelWidth = _cannotFindLanguageLink.Width;
 			var shortage = labelLocation.X + labelWidth - this.Width;
-			if (shortage > 0)
+			if(shortage > 0)
 			{
 				var newLoc = new System.Drawing.Point(labelLocation.X - shortage, labelLocation.Y);
 				_cannotFindLanguageLink.Location = newLoc;
@@ -149,18 +149,23 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		private void OnSelectedIndexChanged(object sender, EventArgs e)
 		{
 			var oldIso = _model.ISOCode;
-			if (_listView.SelectedIndices != null && _listView.SelectedIndices.Count > 0)
+			if(_listView.SelectedIndices != null && _listView.SelectedIndices.Count > 0)
 			{
 				ListViewItem item = _listView.Items[_listView.SelectedIndices[0]];
 				_model.LanguageInfo = item.Tag as LanguageInfo;
 
-				if (_incomingLanguageInfo != null && _incomingLanguageInfo.Code == _model.LanguageInfo.Code && !string.IsNullOrEmpty(_incomingLanguageInfo.DesiredName))
+				if(_incomingLanguageInfo != null && _incomingLanguageInfo.Code == _model.LanguageInfo.Code && !string.IsNullOrEmpty(_incomingLanguageInfo.DesiredName))
 				{
 					_desiredLanguageDisplayName.Text = _incomingLanguageInfo.DesiredName;
 				}
-				else if (_model.ISOCode == "qaa")
+				// for names like "Chinese", we're going to assume they want the displayed name to be "中文" (and French/français, etc.)
+				else if(!string.IsNullOrEmpty(_model.LanguageInfo.LocalName))
 				{
-					if (_searchText.Text != "?")
+					_desiredLanguageDisplayName.Text = _model.LanguageInfo.LocalName;
+				}
+				else if(_model.ISOCode == "qaa")
+				{
+					if(_searchText.Text != "?")
 					{
 						_failedSearchText = _searchText.Text.ToUpperFirstLetter();
 						_desiredLanguageDisplayName.Text = _failedSearchText;
@@ -172,9 +177,9 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 				{
 					_desiredLanguageDisplayName.Text = _model.LanguageInfo.Names[0];
 					//now if they were typing another form, well then that form makes a better default "Desired Name" than the official primary name
-					foreach (var name in _model.LanguageInfo.Names)
+					foreach(var name in _model.LanguageInfo.Names)
 					{
-						if (name.ToLowerInvariant().StartsWith(_searchText.Text.ToLowerInvariant()))
+						if(name.ToLowerInvariant().StartsWith(_searchText.Text.ToLowerInvariant()))
 						{
 							_desiredLanguageDisplayName.Text = name;
 							break;
@@ -182,7 +187,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 					}
 				}
 			}
-			if (_model.ISOCode != oldIso)
+			if(_model.ISOCode != oldIso)
 				UpdateReadiness();
 		}
 
@@ -200,7 +205,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			var oldIso = _model.ISOCode;
 			var typedText = _searchText.Text.Trim();
-			if (typedText == _lastSearchedForText)
+			if(typedText == _lastSearchedForText)
 			{
 				return;
 			}
@@ -213,7 +218,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 			var multipleCountriesLabel = LocalizationManager.GetString("LanguageLookup.CountryCount", "{0} Countries", "Shown when there are multiple countries and it is just confusing to list them all.");
 
-			if (_searchText.Text == "?")
+			if(_searchText.Text == "?")
 			{
 				var description = L10NSharp.LocalizationManager.GetString("LanguageLookup.UnlistedLanguage", "Unlisted Language");
 				List<string> names = new List<string>(new string[] { description });
@@ -227,39 +232,45 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			else
 			{
 				var itemSelected = false;
-				foreach (LanguageInfo lang in _model.GetMatchingLanguages(typedText))
+				foreach(LanguageInfo lang in _model.GetMatchingLanguages(typedText))
 				{
-					ListViewItem item = new ListViewItem(lang.Names[0]);
+					var mainName = string.IsNullOrEmpty(lang.LocalName) ? lang.Names[0] : lang.LocalName;
+					var item = new ListViewItem(mainName);
 					item.SubItems.Add(lang.Code);
-					
+
 					// Users were having problems when they looked up things like "English" and were presented with "United Arab Emirates"
 					// and such, as these colonial languages are spoken in so many countries. So this just displays the number of countries.
 					var country = lang.Country;
-					if (lang.CountryCount > 2) // 3 or more was chosen because generally 2 languages fit in the space allowed
+					if(lang.CountryCount > 2) // 3 or more was chosen because generally 2 languages fit in the space allowed
 					{
 						country = string.Format(multipleCountriesLabel, lang.CountryCount);
 					}
 					item.SubItems.Add(country);
-					item.SubItems.Add(string.Join(", ", lang.Names.Skip(1)));
-					item.SubItems.Add(lang.Country);
+					var numberOfNamesAlreadyUsed = string.IsNullOrEmpty(lang.LocalName) ? 1 : 0;
+					item.SubItems.Add(string.Join(", ", lang.Names.Skip(numberOfNamesAlreadyUsed)));
 					item.Tag = lang;
 					toShow.Add(item);
 
 					//					if (!itemSelected && typedText.Length > 1 &&
 					//					    (lang.Code.ToLower() == typedText || lang.Names[0].ToLower().StartsWith(typedText.ToLower())))
-					if (!itemSelected)
+					if(!itemSelected)
 					{
 						item.Selected = true;
 						itemSelected = true; //we only want to select the first one
 					}
 				}
-				if (!itemSelected)
+				if(!itemSelected)
 				{
 					_model.LanguageInfo = null;
 					//_desiredLanguageDisplayName.Text = _searchText.Text;
 				}
 				_desiredLanguageDisplayName.Enabled = itemSelected;
 				_listView.Items.AddRange(toShow.ToArray());
+				//scroll down to the selected item
+				if(_listView.SelectedItems.Count > 0)
+				{
+					_listView.SelectedItems[0].EnsureVisible();
+				}
 			}
 			_listView.ResumeLayout();
 			//            if (_listView.Items.Count > 0)
@@ -271,7 +282,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void listView1_DoubleClick(object sender, EventArgs e)
 		{
-			if (DoubleClicked != null)
+			if(DoubleClicked != null)
 			{
 				DoubleClicked(this, null);
 			}
@@ -281,14 +292,14 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void _cannotFindLanguageLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			using (var dlg = new CannotFindMyLanguageDialog())
+			using(var dlg = new CannotFindMyLanguageDialog())
 			{
 				dlg.ShowDialog();
 
 				_desiredLanguageDisplayName.Text = _searchText.Text.ToUpperFirstLetter();
 				_failedSearchText = _searchText.Text.ToUpperFirstLetter();
 				_searchText.Text = "?";
-				if (_desiredLanguageDisplayName.Visible)
+				if(_desiredLanguageDisplayName.Visible)
 				{
 					_desiredLanguageDisplayName.Select();
 					_desiredLanguageDisplayName.Enabled = true;
@@ -298,7 +309,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void _desiredLanguageDisplayName_TextChanged(object sender, EventArgs e)
 		{
-			if (_model.LanguageInfo != null)
+			if(_model.LanguageInfo != null)
 				_model.LanguageInfo.DesiredName = _desiredLanguageDisplayName.Text;
 			UpdateReadiness();
 		}
