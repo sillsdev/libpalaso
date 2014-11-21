@@ -22,6 +22,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		{
 			InitializeComponent();
 			_thumbnailViewer.CaptionMethod = ((s) => string.Empty);//don't show a caption
+			_thumbnailViewer.LoadComplete += ThumbnailViewerOnLoadComplete;
 			_searchResultStats.Text = "";
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
 			{
@@ -100,6 +101,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			}
 			_searchButton.Enabled = true;
 			//_okButton.Enabled = false;
+		}
+
+		private void ThumbnailViewerOnLoadComplete(object sender, EventArgs eventArgs)
+		{
 			Cursor.Current = Cursors.Default;
 		}
 

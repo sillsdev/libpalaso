@@ -16,7 +16,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 	{
 		private BackgroundWorker _thumbnailWorker = new BackgroundWorker();
 
-		public event EventHandler OnLoadComplete;
+		public event EventHandler LoadComplete;
 
 		public string SelectedPath
 		{
@@ -107,8 +107,8 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 		void OnRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
-			if (OnLoadComplete != null)
-				OnLoadComplete(this, new EventArgs());
+			if (LoadComplete != null)
+				LoadComplete(this, new EventArgs());
 		}
 
 		public Image GetThumbNail(string fileName)

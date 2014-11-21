@@ -16,7 +16,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 	public partial class WebThumbnailViewer : UserControl, IThumbnailViewer
 	{
 		private XWebBrowser _browser;
-		public event EventHandler OnLoadComplete;
+		public event EventHandler LoadComplete;
 		private TempFile _htmlFile;
 
 		public event EventHandler SelectedIndexChanged;
@@ -33,8 +33,8 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			Controls.Add(_browser);
 			_browser.Navigated += ((sender, args) =>
 			{
-				if (OnLoadComplete != null)
-					OnLoadComplete(this, new EventArgs());
+				if (LoadComplete != null)
+					LoadComplete(this, new EventArgs());
 			});
 			var browserAdapter = ((GeckoFxWebBrowserAdapter)_browser.Adapter);
 			browserAdapter.AddDomClickHandler((id) =>
@@ -100,12 +100,13 @@ namespace Palaso.UI.WindowsForms.ImageGallery
     <style>
         body {{margin: 3px}}
         p {{margin:0}}
-        div.imageWrap {{border: 1px solid {1}; margin: 0 18px 39px 21px; display: inline-block;}}
+        div.imageWrap {{border: 1px solid {1}; margin: 0 8px 19px 11px; display: inline-block;}}
 		div.imageWrapRel {{position:relative}}
         div.imageWrapOuter {{height: {0}px;width: {0}px;display: table;#position: relative;}}
         div.imageWrapMid {{#position: absolute;#top: 50%;display: table-cell;vertical-align: middle;}}
         div.imageWrapInner {{position: relative;}}
         img.image {{max-height: {0}px;max-width: {0}px;margin: 0 auto;display: block;}}
+		img[src=''] {{visibility: hidden}}
         div.selected {{border-color: #94BBD9;}}
         div.selected div.imageWrapOuter:after {{content: ' ';position: absolute;left: 0;top:0;height: {0}px;width: {0}px;background-color: rgba(148,187,217,.5);}}
     </style>
@@ -117,10 +118,18 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 				var htmlPath = new Uri(path).AbsolutePath;
 				sb.AppendLine("<div class='imageWrap' id='" + htmlPath
 					+ "'><div class='imageWrapRel'><div class='imageWrapOuter'><div class='imageWrapMid'><div class='imageWrapInner'>");
-				sb.AppendLine("<img class='image' src='file://" + htmlPath + "'>");
+				// the data-echo attribute is part of lazy loading for very long lists (see below).
+				sb.AppendLine("<img class='image' src='' data-echo='file://" + htmlPath + "'>");
 				sb.AppendLine("</div></div></div></div></div>");
 			}
-			sb.AppendLine("</p></body></html>");
+			sb.AppendLine("</p>");
+			sb.AppendLine("<script>");
+			// This script (together with the data-echo attributes created above) makes the images load lazily...only retrieved as they become visible.
+			//! echo.js v1.6.0 | (c) 2014 @toddmotto | https://github.com/toddmotto/echo
+			sb.AppendLine(
+				"!function(t,e){\"function\"==typeof define&&define.amd?define(function(){return e(t)}):\"object\"==typeof exports?module.exports=e:t.echo=e(t)}(this,function(t){\"use strict\";var e,n,o,r,c,i={},l=function(){},a=function(t,e){var n=t.getBoundingClientRect();return n.right>=e.l&&n.bottom>=e.t&&n.left<=e.r&&n.top<=e.b},d=function(){(r||!n)&&(clearTimeout(n),n=setTimeout(function(){i.render(),n=null},o))};return i.init=function(n){n=n||{};var a=n.offset||0,u=n.offsetVertical||a,f=n.offsetHorizontal||a,s=function(t,e){return parseInt(t||e,10)};e={t:s(n.offsetTop,u),b:s(n.offsetBottom,u),l:s(n.offsetLeft,f),r:s(n.offsetRight,f)},o=s(n.throttle,250),r=n.debounce!==!1,c=!!n.unload,l=n.callback||l,i.render(),document.addEventListener?(t.addEventListener(\"scroll\",d,!1),t.addEventListener(\"load\",d,!1)):(t.attachEvent(\"onscroll\",d),t.attachEvent(\"onload\",d))},i.render=function(){for(var n,o,r=document.querySelectorAll(\"img[data-echo]\"),d=r.length,u={l:0-e.l,t:0-e.t,b:(t.innerHeight||document.documentElement.clientHeight)+e.b,r:(t.innerWidth||document.documentElement.clientWidth)+e.r},f=0;d>f;f++)o=r[f],a(o,u)?(c&&o.setAttribute(\"data-echo-placeholder\",o.src),o.src=o.getAttribute(\"data-echo\"),c||o.removeAttribute(\"data-echo\"),l(o,\"load\")):c&&(n=o.getAttribute(\"data-echo-placeholder\"))&&(o.src=n,o.removeAttribute(\"data-echo-placeholder\"),l(o,\"unload\"));d||i.detach()},i.detach=function(){document.removeEventListener?t.removeEventListener(\"scroll\",d):t.detachEvent(\"onscroll\",d),clearTimeout(n)},i});");
+			sb.AppendLine("echo.init({offset:200});");
+			sb.AppendLine("</script></body></html>");
 			// What we want to do here is _browser.NavigateToString(sb.ToString()).
 			// But the Windows.Forms WebBrowser class doesn't have that method.
 			if (_htmlFile == null)

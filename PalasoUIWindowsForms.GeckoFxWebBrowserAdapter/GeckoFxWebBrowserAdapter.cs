@@ -367,14 +367,24 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		private object _targetClicked;
 
 		/// <summary>
+		/// Called (by reflection) when the user clicks in the DOM, as arranged by AddDomClickHandler above.
+		/// This method figures out the ID of the element clicked or its closest parent that has an ID,
+		/// and invokes the _clickHandler action with the ID string as argument.
+		/// See the comment on AddDomClickHandler for more.
+		/// </summary>
+		/// <remarks>
 		/// VS thinks this method is unused, but actually it is Gecko can be configured
 		/// to call it when a click happens.
-		/// </summary>
+		/// </remarks>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void ClickHandler(object sender, EventArgs e)
 		{
-			// What we want to do is something like this:
+			// Here is the non-reflection version of this method; we make all these calls
+			// using reflection following the pre-existing principle that building LibPalaso
+			// should not require an actual reference to GeckoFx.
+			// It may be time to abandon that (and rename this assembly) if we add much more
+			// gecko-specific functionality.
 			//var ge = e as DomEventArgs;
 			//var target = (GeckoHtmlElement)ge.Target.CastToGeckoElement();
 			//while (target != null && target.Attributes["id"] == null)

@@ -30,6 +30,11 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 				if (SelectedIndexChanged != null)
 					SelectedIndexChanged(sender, args);
 			};
+			_thumbnailViewer.LoadComplete += (sender, args) =>
+			{
+				if (LoadComplete != null)
+					LoadComplete(sender, args);
+			};
 			_thumbnailViewer.TheControl.Dock = DockStyle.Fill;
 			Controls.Add(_thumbnailViewer.TheControl);
 		}
@@ -94,6 +99,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 		}
 
 		public event EventHandler SelectedIndexChanged;
+		public event EventHandler LoadComplete;
 	}
 
 	public interface IThumbnailViewer
@@ -109,5 +115,6 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 		Color ThumbBorderColor { get; set; }
 		int ThumbNailSize { get; set; }
 		event EventHandler SelectedIndexChanged;
+		event EventHandler LoadComplete;
 	}
 }
