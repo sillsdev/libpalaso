@@ -48,7 +48,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		void _thumbnailViewer_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			if(ImageChanged!=null && _thumbnailViewer.SelectedItems.Count>0)
+			if(ImageChanged!=null && _thumbnailViewer.HasSelection)
 			{
 				ImageChanged.Invoke(this, null);
 			}
@@ -56,7 +56,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		private void _thumbnailViewer_DoubleClick(object sender, EventArgs e)
 		{
-			if (ImageChangedAndAccepted != null && _thumbnailViewer.SelectedItems.Count > 0)
+			if (ImageChangedAndAccepted != null && _thumbnailViewer.HasSelection)
 			{
 				ImageChangedAndAccepted.Invoke(this, null);
 			}

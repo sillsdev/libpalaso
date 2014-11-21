@@ -97,16 +97,13 @@
 			this._thumbnailViewer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
-			this._thumbnailViewer.CanLoad = false;
 			this._thumbnailViewer.CaptionMethod = null;
 			this._thumbnailViewer.Location = new System.Drawing.Point(0, 66);
-			this._thumbnailViewer.MultiSelect = false;
 			this._thumbnailViewer.Name = "_thumbnailViewer";
 			this._thumbnailViewer.Size = new System.Drawing.Size(627, 534);
 			this._thumbnailViewer.TabIndex = 0;
 			this._thumbnailViewer.ThumbBorderColor = System.Drawing.Color.Wheat;
 			this._thumbnailViewer.ThumbNailSize = 95;
-			this._thumbnailViewer.UseCompatibleStateImageBehavior = false;
 			this._thumbnailViewer.SelectedIndexChanged += new System.EventHandler(this._thumbnailViewer_SelectedIndexChanged);
 			this._thumbnailViewer.DoubleClick += new System.EventHandler(this._thumbnailViewer_DoubleClick);
 			//

@@ -317,11 +317,14 @@
     <Compile Include="ImageGallery\PictureChooser.designer.cs">
       <DependentUpon>PictureChooser.cs</DependentUpon>
     </Compile>
-    <Compile Include="ImageGallery\ThumbnailViewer.cs">
+    <Compile Include="ImageGallery\ListViewThumbnailViewer.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ImageGallery\ThumbnailViewer.designer.cs">
-      <DependentUpon>ThumbnailViewer.cs</DependentUpon>
+    <Compile Include="ImageGallery\ListViewThumbnailViewer.designer.cs">
+      <DependentUpon>ListViewThumbnailViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImageGallery\ThumbnailViewer.cs">
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ImageToolbox\AcquireImageControl.cs">
       <SubType>UserControl</SubType>
