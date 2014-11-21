@@ -31,16 +31,16 @@ namespace Palaso.WritingSystems
 
 			foreach (var line in LanguageRegistryResources.CountryCodes.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
 			{
-				var items = line.Split('\t');//id name area
-				CountryCodeToCountryName.Add(items[0].Trim(),items[1].Trim());
+				var items = line.Split('\t'); //id name area
+				CountryCodeToCountryName.Add(items[0].Trim(), items[1].Trim());
 			}
-			CountryCodeToCountryName.Add("?","?");//for unlisted language
+			CountryCodeToCountryName.Add("?", "?"); //for unlisted language
 
 			//LanguageIndex.txt Format: LangID	CountryID	NameType	Name
 			//a language appears on one row for each of its alternative langauges
 			List<string> entries = new List<string>(LanguageRegistryResources.LanguageIndex.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries));
 			entries.Add("qaa\t?\tL\tUnlisted Language");
-			foreach (string entry in entries.Skip(1))//skip the header
+			foreach (string entry in entries.Skip(1)) //skip the header
 			{
 				var items = entry.Split('\t');
 				if (items.Length != 4)
@@ -57,20 +57,38 @@ namespace Palaso.WritingSystems
 				{
 					while (language.Names.Contains(name))
 						language.Names.Remove(name);
-					language.Names.Insert(0,name);
+					language.Names.Insert(0, name);
 				}
 				else
 				{
-					if(!language.Names.Contains(name))
-						language.Names.Add(name);//intentionally not lower-casing
+					if (!language.Names.Contains(name))
+						language.Names.Add(name); //intentionally not lower-casing
 				}
 			}
+
+			//Why just this small set? Only out of convenience. Ideally we'd have a db of all languages as they write it in their literature.
+			this.CodeToLanguageIndex["fr"].LocalName =  "français";
+			this.CodeToLanguageIndex["es"].LocalName =  "español";
+			this.CodeToLanguageIndex["zho"].LocalName =  "中文"; //chinese
+			this.CodeToLanguageIndex["hi"].LocalName =  "हिन्दी"; //hindi
+			this.CodeToLanguageIndex["bn"].LocalName =  "বাংলা"; //bengali
+			this.CodeToLanguageIndex["te"].LocalName =  "తెలుగు"; //telugu
+			this.CodeToLanguageIndex["ta"].LocalName =  "தமிழ்"; //tamil
+			this.CodeToLanguageIndex["ur"].LocalName =  "اُردُو"; //urdu
+			this.CodeToLanguageIndex["ar"].LocalName =  "العربية/عربي"; //arabic
+			this.CodeToLanguageIndex["th"].LocalName = "ภาษาไทย"; //thai
+			this.CodeToLanguageIndex["id"].LocalName = "Bahasa Indonesia"; //indonesian
+
 
 			foreach (var languageInfo in CodeToLanguageIndex.Values)
 			{
 				foreach (var name in languageInfo.Names)
 				{
 					GetOrCreateListFromName(name).Add(languageInfo);
+				}
+				if (!string.IsNullOrEmpty(languageInfo.LocalName))
+				{
+					GetOrCreateListFromName(languageInfo.LocalName).Add(languageInfo);
 				}
 			}
 		}
@@ -198,6 +216,12 @@ namespace Palaso.WritingSystems
 		public List<string> Names=new List<string>();
 		public string Country;
 		public string Code;
+
+		/// <summary>
+		/// Currently, we only have English names in our database. This holds the language name in the language, when we know it
+		/// </summary>
+		public string LocalName;
+
 		private string _desiredName;
 
 		/// <summary>
