@@ -35,6 +35,7 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 		private string[] _filesAndDirsToExclude = null;
 		private Regex _fileMatchPattern = new Regex(@".*");
 		private Regex _ignoreFilePattern = new Regex(@"IGNOREME");
+		private string _installerSourcePath;
 
 		//todo: this should just be a list
 		private Dictionary<string, string> m_exclude = new Dictionary<string, string>();
@@ -112,7 +113,15 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			set { m_checkOnly = value; }
 		}
 
-
+		/// <summary>
+		/// Directory where the installer source (.wixproj) is located.
+		/// If provided, is used to determine relative path of the components
+		/// </summary>
+		public string InstallerSourceDirectory
+		{
+			get { return _installerSourcePath; }
+			set { _installerSourcePath = value; }
+		}
 
 
 		[Output, Required]
@@ -431,7 +440,11 @@ namespace Palaso.BuildTasks.MakeWixForDirTree
 			{
 				elemFile.SetAttribute("KeyPath", "yes");
 			}
-			string relativePath = PathUtil.RelativePathTo(Path.GetDirectoryName(_outputFilePath), path);
+			string relativePath;
+			if (String.IsNullOrEmpty(_installerSourcePath))
+				relativePath = PathUtil.RelativePathTo(Path.GetDirectoryName(_outputFilePath), path);
+			else
+				relativePath = PathUtil.RelativePathTo(Path.GetDirectoryName(_installerSourcePath), path);
 			elemFile.SetAttribute("Source", relativePath);
 
 			if (GiveAllPermissions)
