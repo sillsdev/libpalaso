@@ -102,6 +102,29 @@ namespace Palaso.Tests.IO
 			}
 		}
 
+		/// <summary>
+		/// Regression Test. It used to be that if the path, on windows, was a network path (even \\localhost\c$\),
+		/// this would fail as it couldn't find a drive letter.
+		/// </summary>
+		[Test]
+		public void ReplaceFileWithUserInteractionIfNeeded_UsingUNCLocalHostPath()
+		{
+			using (var source = new TempFile("new"))
+			using (var backup = new TempFile("previousBackup"))
+			using (var destination = new TempFile("old"))
+			{
+				FileUtils.ReplaceFileWithUserInteractionIfNeeded(ConvertToUNCLocalHostPath(source.Path), ConvertToUNCLocalHostPath(destination.Path), backup.Path);
+				Assert.AreEqual("new", File.ReadAllText(destination.Path));
+				Assert.AreEqual("old", File.ReadAllText(backup.Path));
+			}
+		}
+
+		private string ConvertToUNCLocalHostPath(string drivePath)
+		{
+			string driveLetter = Directory.GetDirectoryRoot(drivePath);
+			return drivePath.Replace(driveLetter, "//localhost/" + driveLetter.Replace(":\\", "") + "$/");
+		}
+
 		[Test]
 		public void ReplaceFileWithUserInteractionIfNeeded_SameDrive_OK()
 		{
