@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SIL.ScriptureUtils</RootNamespace>
-    <AssemblyName>SIL.ScriptureUtilsTests</AssemblyName>
+    <AssemblyName>SIL.ScriptureUtils.Tests</AssemblyName>
     <SccProjectName>
     </SccProjectName>
     <SccLocalPath>
