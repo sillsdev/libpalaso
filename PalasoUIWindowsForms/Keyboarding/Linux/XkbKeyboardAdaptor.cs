@@ -209,13 +209,27 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// <summary>
 		/// Gets the default keyboard of the system.
 		/// </summary>
-		/// <remarks>For Xkb the default keyboard is the first one.</remarks>
+		/// <remarks>
+		/// For Xkb the default keyboard has GroupIndex set to zero.
+		/// Wasta/Cinnamon keyboarding doesn't always have the system keyboard at index 0.
+		/// It may have an IBus keyboard at that position.
+		/// </remarks>
 		public IKeyboardDefinition DefaultKeyboard
 		{
 			get
 			{
-				return Keyboard.Controller.AllAvailableKeyboards.Where(kbd => kbd.Type == KeyboardType.System)
-					.FirstOrDefault(x => x is XkbKeyboardDescription && ((XkbKeyboardDescription)x).GroupIndex == 0);
+				int minGroup = Int32.MaxValue;
+				IKeyboardDefinition retval = null;
+				foreach (var kbd in Keyboard.Controller.AllAvailableKeyboards)
+				{
+					if (kbd is XkbKeyboardDescription && kbd.Type == KeyboardType.System &&
+						((XkbKeyboardDescription)kbd).GroupIndex < minGroup)
+					{
+						retval = kbd;
+						minGroup = ((XkbKeyboardDescription)kbd).GroupIndex;
+					}
+				}
+				return retval;
 			}
 		}
 
