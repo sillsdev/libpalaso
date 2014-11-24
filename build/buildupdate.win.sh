@@ -3,7 +3,7 @@
 # project=libpalaso
 # build=palaso-win32-master Continuous
 # root_dir=..
-# $Id: 50ae191e9e7146711d602e58cde080678d265c48 $
+# $Id: d32984f53cd52f171a9cba46cd3879538ad23431 $
 
 cd "$(dirname "$0")"
 
@@ -17,6 +17,8 @@ f) force=1 ;;
 c) clean=1 ;;
 esac
 done
+
+shift $((OPTIND - 1))
 
 copy_auto() {
 if [ "$clean" == "1" ]
@@ -71,14 +73,14 @@ cd -
 #     clean: false
 #     revision: latest.lastSuccessful
 #     paths: {"L10NSharp.dll"=>"lib/Release", "L10NSharp.pdb"=>"lib/Release"}
-#     VCS: https://bitbucket.org/hatton/l10nsharp []
+#     VCS: https://bitbucket.org/sillsdev/l10nsharp []
 # [1] build: L10NSharp continuous (bt196)
 #     project: L10NSharp
 #     URL: http://build.palaso.org/viewType.html?buildTypeId=bt196
 #     clean: false
 #     revision: latest.lastSuccessful
 #     paths: {"L10NSharp.dll"=>"lib/Debug", "L10NSharp.pdb"=>"lib/Debug"}
-#     VCS: https://bitbucket.org/hatton/l10nsharp []
+#     VCS: https://bitbucket.org/sillsdev/l10nsharp []
 # [2] build: icucil-win32-default Continuous (bt14)
 #     project: Libraries
 #     URL: http://build.palaso.org/viewType.html?buildTypeId=bt14
@@ -93,14 +95,26 @@ cd -
 #     revision: latest.lastSuccessful
 #     paths: {"*.dll"=>"lib/Debug", "*.config"=>"lib/Debug"}
 #     VCS: https://github.com/sillsdev/icu-dotnet [master]
+# [4] build: TagLib-Sharp Continuous (bt411)
+#     project: Libraries
+#     URL: http://build.palaso.org/viewType.html?buildTypeId=bt411
+#     clean: false
+#     revision: latest.lastSuccessful
+#     paths: {"taglib-sharp.dll"=>"lib/Release"}
+#     VCS: https://github.com/sillsdev/taglib-sharp.git [develop]
+# [5] build: TagLib-Sharp Continuous (bt411)
+#     project: Libraries
+#     URL: http://build.palaso.org/viewType.html?buildTypeId=bt411
+#     clean: false
+#     revision: latest.lastSuccessful
+#     paths: {"taglib-sharp.dll"=>"lib/Debug"}
+#     VCS: https://github.com/sillsdev/taglib-sharp.git [develop]
 
 # make sure output directories exist
-mkdir -p ../lib/Release
 mkdir -p ../lib/Debug
+mkdir -p ../lib/Release
 
 # download artifact dependencies
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt411/latest.lastSuccessful/taglib-sharp.dll ../lib/Release/taglib-sharp.dll
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt411/latest.lastSuccessful/taglib-sharp.dll ../lib/Debug/taglib-sharp.dll
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt196/latest.lastSuccessful/L10NSharp.dll ../lib/Release/L10NSharp.dll
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt196/latest.lastSuccessful/L10NSharp.pdb ../lib/Release/L10NSharp.pdb
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt196/latest.lastSuccessful/L10NSharp.dll ../lib/Debug/L10NSharp.dll
@@ -115,4 +129,6 @@ copy_auto http://build.palaso.org/guestAuth/repository/download/bt14/latest.last
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt14/latest.lastSuccessful/icuin40.dll ../lib/Debug/icuin40.dll
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt14/latest.lastSuccessful/icuuc40.dll ../lib/Debug/icuuc40.dll
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt14/latest.lastSuccessful/icu.net.dll.config ../lib/Debug/icu.net.dll.config
+copy_auto http://build.palaso.org/guestAuth/repository/download/bt411/latest.lastSuccessful/taglib-sharp.dll ../lib/Release/taglib-sharp.dll
+copy_auto http://build.palaso.org/guestAuth/repository/download/bt411/latest.lastSuccessful/taglib-sharp.dll ../lib/Debug/taglib-sharp.dll
 # End of script

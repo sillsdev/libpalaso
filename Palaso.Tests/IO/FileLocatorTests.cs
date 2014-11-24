@@ -164,15 +164,5 @@ namespace Palaso.Tests.IO
 				Throws.Exception.TypeOf<ApplicationException>());
 		}
 
-		[Test]
-		[Platform(Include="Linux")]
-		public void LocateExecutable_ExeInPath()
-		{
-			var exifTool = FileLocator.LocateExecutable("exiftool.exe");
-			Assert.That(exifTool, Is.Not.StringEnding(".exe"));
-			Assert.That(File.Exists(exifTool), Is.True);
-		}
-
-
 	}
 }

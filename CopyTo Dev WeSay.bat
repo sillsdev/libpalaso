@@ -1,9 +1,9 @@
+set weSayDir=..\wesayDev
+copy /Y output\debug\*.dll %weSayDir%\lib\debug
+copy /Y output\debug\*.pdb %weSayDir%\lib\debug
+copy /Y output\debug\Palaso.BuildTasks.dll %weSayDir%\bld
 
-copy /Y output\debug\*.dll c:\dev\wesayDev\lib\debug
-copy /Y output\debug\*.pdb c:\dev\wesayDev\lib\debug
-copy /Y output\debug\Palaso.BuildTasks.dll c:\dev\wesayDev\bld
-
-copy /Y c:\dev\wesayDev\lib\debug\palaso*.* c:\dev\wesayDev\output\debug
+copy /Y %weSayDir%\lib\debug\palaso*.* %weSayDir%\output\debug
 
 
 pause

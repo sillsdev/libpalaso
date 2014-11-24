@@ -1,12 +1,13 @@
-copy /Y output\debug\Palaso.dll c:\dev\pdfDroplet\lib
-copy /Y output\debug\Palaso.xml c:\dev\pdfDroplet\lib
-copy /Y output\debug\Palaso.pdb c:\dev\pdfDroplet\lib
-copy /Y output\debug\Palaso.TestUtilities.* c:\dev\pdfDroplet\lib
-REM copy /Y output\debug\PalasoUIWindowsForms.dll c:\dev\pdfDroplet\lib
-REM copy /Y output\debug\PalasoUIWindowsForms.xml c:\dev\pdfDroplet\lib
-REM copy /Y output\debug\PalasoUIWindowsForms.pdb c:\dev\pdfDroplet\lib
-copy /Y output\debug\Palaso.BuildTasks.dll c:\dev\pdfDroplet\build
+set pdfDropletDir=..\pdfDropletDir
+copy /Y output\debug\Palaso.dll %pdfDropletDir%\lib
+copy /Y output\debug\Palaso.xml %pdfDropletDir%\lib
+copy /Y output\debug\Palaso.pdb %pdfDropletDir%\lib
+copy /Y output\debug\Palaso.TestUtilities.* %pdfDropletDir%\lib
+REM copy /Y output\debug\PalasoUIWindowsForms.dll %pdfDropletDir%\lib
+REM copy /Y output\debug\PalasoUIWindowsForms.xml %pdfDropletDir%\lib
+REM copy /Y output\debug\PalasoUIWindowsForms.pdb %pdfDropletDir%\lib
+copy /Y output\debug\Palaso.BuildTasks.dll %pdfDropletDir%\build
 
-copy /Y c:\dev\pdfDroplet\lib\Palaso.dll c:\dev\pdfDroplet\output\debug
+copy /Y %pdfDropletDir%\lib\Palaso.dll %pdfDropletDir%\output\debug
 
 pause
