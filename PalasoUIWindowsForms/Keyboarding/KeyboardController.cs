@@ -70,7 +70,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				SetKeyboardAdaptors(new IKeyboardAdaptor[] {
 #if __MonoCS__
-					new XkbKeyboardAdaptor(), new IbusKeyboardAdaptor(), new CombinedKeyboardAdaptor()
+					new XkbKeyboardAdaptor(), new IbusKeyboardAdaptor(), new CombinedKeyboardAdaptor(),
+					new CinnamonIbusAdaptor()
 #else
 					new WinKeyboardAdaptor(), new KeymanKeyboardAdaptor(),
 #endif
@@ -278,7 +279,15 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			/// </summary>
 			public void ActivateDefaultKeyboard()
 			{
-				SetKeyboard(DefaultKeyboard);
+				if (CinnamonKeyboardHandling)
+				{
+					CinnamonIbusAdaptor wasta = Adaptors.First(adaptor => adaptor.GetType().ToString().Contains("CinnamonIbus")) as CinnamonIbusAdaptor;
+					wasta.ActivateDefaultKeyboard();
+				}
+				else
+				{
+					SetKeyboard(DefaultKeyboard);
+				}
 			}
 
 			/// <summary>
@@ -544,6 +553,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		/// Flag that Linux is using the combined keyboard handling (Ubuntu saucy/trusty/later?)
 		/// </summary>
 		public static bool CombinedKeyboardHandling { get; internal set; }
+		/// <summary>
+		/// Flag that Linux is Wasta-14 (Mint 17/Cinnamon) using IBus for keyboarding.
+		/// </summary>
+		public static bool CinnamonKeyboardHandling { get;	internal set; }
 #endif
 
 		/// <summary>
