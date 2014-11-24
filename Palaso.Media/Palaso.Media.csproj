@@ -58,7 +58,7 @@
 	<DebugSymbols>True</DebugSymbols>
 	<OutputPath>..\output\DebugMono</OutputPath>
 	<DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
-	<DocumentationFile>..\output\Debug\Palaso.Media.XML</DocumentationFile>
+	<DocumentationFile>..\output\DebugMono\Palaso.Media.XML</DocumentationFile>
 	<DebugType>full</DebugType>
 	<PlatformTarget>AnyCPU</PlatformTarget>
 	<LangVersion>default</LangVersion>
