@@ -2,7 +2,7 @@
 
 namespace Palaso.UI.WindowsForms.ImageGallery
 {
-	partial class ThumbnailViewer
+	partial class WebThumbnailViewer
 	{
 		/// <summary>
 		/// Required designer variable.

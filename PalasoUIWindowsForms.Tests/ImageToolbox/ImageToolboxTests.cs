@@ -5,6 +5,7 @@ using System.IO;
 using System.Windows.Forms;
 using NUnit.Framework;
 using Palaso.UI.WindowsForms.ClearShare;
+using Palaso.UI.WindowsForms.ImageGallery;
 using Palaso.UI.WindowsForms.ImageToolbox;
 
 namespace PalasoUIWindowsForms.Tests.ImageToolbox
@@ -25,6 +26,25 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 					dlg.ImageInfo.Save(path);
 					Process.Start("explorer.exe", "/select, \"" + path + "\"");
 				}
+			}
+		}
+
+		[Test, Ignore("by hand only")]
+		[STAThread]
+		public void ShowGeckoToolbox()
+		{
+			Application.EnableVisualStyles();
+			ThumbnailViewer.UseWebViewer = true;
+			using (var dlg = new ImageToolboxDialog(new PalasoImage(), null))// "arrow"))
+			{
+				if (DialogResult.OK == dlg.ShowDialog())
+				{
+					// File name ending in .tmp will confuse TagLib#...doesn't know what kind of metadata to write.
+					string path = Path.ChangeExtension(Path.GetTempFileName(), ".png");
+					dlg.ImageInfo.Save(path);
+					Process.Start("explorer.exe", "/select, \"" + path + "\"");
+				}
+
 			}
 		}
 

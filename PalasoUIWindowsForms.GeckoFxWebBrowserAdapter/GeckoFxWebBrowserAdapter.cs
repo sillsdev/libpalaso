@@ -2,6 +2,7 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -338,6 +339,119 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 			if (IsXpcomInitialized())
 				ShutdownXpcom();
 			Application.ApplicationExit -= OnApplicationExit;
+		}
+
+		private Action<string> _clickHandler;
+		/// <summary>
+		/// When a click occurs in the document, execute the specified action, passing the ID
+		/// of the closest containing element that has one. Only one such action can be registered.
+		/// </summary>
+		/// <remarks>
+		/// This supports a minimal handling of clicks, as needed by the WebThumbnailViewer.
+		/// Applying Yagni, I haven't tried to put it in the IWebBrowser interface, which would
+		/// require implementing for WebBrowser as well. OTOH, I have continued to use reflection
+		/// so that an actual reference to Gecko is not required.
+		/// An event-based version would be logical, but again, I think Yagni may apply.
+		/// If there's ever reason to make this functionality public, we should think about a
+		/// more general version of it.
+		/// </remarks>
+		/// <param name="handler"></param>
+		internal void AddDomClickHandler(Action<string> handler)
+		{
+			Debug.Assert(_clickHandler == null); // for now we only handle one click handler.
+			_clickHandler = handler;
+			AddGeckoDefinedEventHandler(_webBrowser, "DomClick", "ClickHandler");
+		}
+
+		private object _lastTargetClicked;
+		private object _targetClicked;
+
+		/// <summary>
+		/// Called (by reflection) when the user clicks in the DOM, as arranged by AddDomClickHandler above.
+		/// This method figures out the ID of the element clicked or its closest parent that has an ID,
+		/// and invokes the _clickHandler action with the ID string as argument.
+		/// See the comment on AddDomClickHandler for more.
+		/// </summary>
+		/// <remarks>
+		/// VS thinks this method is unused, but actually it is Gecko can be configured
+		/// to call it when a click happens.
+		/// </remarks>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void ClickHandler(object sender, EventArgs e)
+		{
+			// Here is the non-reflection version of this method; we make all these calls
+			// using reflection following the pre-existing principle that building LibPalaso
+			// should not require an actual reference to GeckoFx.
+			// It may be time to abandon that (and rename this assembly) if we add much more
+			// gecko-specific functionality.
+			//var ge = e as DomEventArgs;
+			//var target = (GeckoHtmlElement)ge.Target.CastToGeckoElement();
+			//while (target != null && target.Attributes["id"] == null)
+			//	target = target.Parent;
+			//if (target == null)
+			//	return;
+			//var id = target.Attributes["id"].NodeValue;
+			// _clickHandler(id);
+			var geckoHtmlEltType = GeckoCoreAssembly.GetType("Gecko.DomEventArgs");
+			var targetProp = geckoHtmlEltType.GetProperty("Target");
+			var targetRaw = targetProp.GetValue(e, new object[0]);
+
+			var domEventTargetType = GeckoCoreAssembly.GetType("Gecko.DOM.DomEventTarget");
+			var castToElementMethod = domEventTargetType.GetMethod("CastToGeckoElement");
+			var target = castToElementMethod.Invoke(targetRaw, new object[0]);
+
+			var elementType = GeckoCoreAssembly.GetType("Gecko.GeckoHtmlElement");
+			var attributesProp = elementType.GetProperty("Attributes");
+			var dictType = GeckoCoreAssembly.GetType("Gecko.DOM.GeckoNamedNodeMap");
+			var itemProp = dictType.GetProperty("Item", new Type[] { typeof(string) });
+			var parentProp = elementType.GetProperty("Parent");
+
+			while (target != null)
+			{
+				var attrs = attributesProp.GetValue(target, new object[0]);
+				var idAttr = itemProp.GetValue(attrs, new object[] { "id" });
+				if (idAttr != null)
+				{
+					var nodeType = GeckoCoreAssembly.GetType("Gecko.GeckoAttribute");
+					var valueProp = nodeType.GetProperty("NodeValue");
+					string id = (string)valueProp.GetValue(idAttr, new object[0]);
+					_lastTargetClicked = _targetClicked;
+					_targetClicked = target;
+					_clickHandler(id);
+					return;
+				}
+				target = parentProp.GetValue(target, new object[0]);
+			}
+		}
+
+		/// <summary>
+		/// Set the class of the HTML element previously clicked (that is, the one before the most recent click).
+		/// </summary>
+		/// <param name="val"></param>
+		internal void SetClassOfLastClickTarget(string val)
+		{
+			SetClass(_lastTargetClicked, val);
+		}
+
+		/// <summary>
+		/// Set the class of the HTML element most recently clicked.
+		/// </summary>
+		/// <remarks>This is another case of doing just enough to support WebThumbnailViewer.</remarks>
+		/// <param name="val"></param>
+		internal void SetClassOfClickTarget(string val)
+		{
+			SetClass(_targetClicked, val);
+		}
+
+		private void SetClass(object target, string val)
+		{
+			if (target == null)
+				return;
+			// target.SetAttribute("class", "selected")
+			var elementType = GeckoCoreAssembly.GetType("Gecko.GeckoHtmlElement");
+			var setAttrMethod = elementType.GetMethod("SetAttribute");
+			setAttrMethod.Invoke(target, new object[] {"class", val});
 		}
 
 		#region IWebBrowser Members

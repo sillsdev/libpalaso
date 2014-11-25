@@ -82,7 +82,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 		private void _thumbnailViewer_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			_okButton.Enabled = (_thumbnailViewer.SelectedItems.Count > 0);
+			_okButton.Enabled = (_thumbnailViewer.HasSelection);
 		}
 
 		private void PictureChooser_FormClosing(object sender, FormClosingEventArgs e)
