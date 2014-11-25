@@ -60,12 +60,5 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code + " with desired name: " + dialog.SelectedLanguage.DesiredName);
 		}
 
-		[Test]
-		public void GetMatchingLanguages_LanguageIsInMultipleCountries_JustTellHowMany()
-		{
-			var model = new LookupIsoCodeModel();
-			var results = model.GetMatchingLanguages("Dutch");
-			Assert.AreEqual("5 Countries", results.First().Country);
-		}
 	}
 }
