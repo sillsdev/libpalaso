@@ -80,7 +80,11 @@
     <Compile Include="BookLabel.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="IScrVers.cs" />
+    <Compile Include="IVerseReference.cs" />
     <Compile Include="MultilingScrBooks.cs" />
+    <Compile Include="ScrReference.cs" />
+    <Compile Include="ScrVers.cs" />
+    <Compile Include="VersificationTable.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

@@ -83,11 +83,12 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BCVRefTests.cs" />
     <Compile Include="MultilingScrBooksTests.cs" />
-    <Compile Include="Properties\Resource.Designer.cs">
+    <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Resource.resx</DependentUpon>
+      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="ScrReferenceTests.cs" />
     <Compile Include="TestScrVers.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -108,10 +109,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Resource.resx">
+    <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -119,6 +119,11 @@
       <Project>{F71BA7B9-D9DC-4F8C-A307-87B503D0E05B}</Project>
       <Name>SharedScrUtils</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\eng.vrs" />
+    <None Include="Resources\lxx.vrs" />
+    <None Include="Resources\org.vrs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
