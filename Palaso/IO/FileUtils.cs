@@ -217,9 +217,12 @@ namespace Palaso.IO
 			{
 				try
 				{
-					if (!PathUtilities.PathsAreOnSameVolume(sourcePath, destinationPath)
+					if (UnsafeForFileReplaceMethod(sourcePath) || UnsafeForFileReplaceMethod(destinationPath)
 						||
-						(!string.IsNullOrEmpty(backupPath) && !PathUtilities.PathsAreOnSameVolume(sourcePath,backupPath)))
+						(!string.IsNullOrEmpty(backupPath) && !PathUtilities.PathsAreOnSameVolume(sourcePath,backupPath))
+						||
+						!PathUtilities.PathsAreOnSameVolume(sourcePath, destinationPath)
+						)
 					{
 						//can't use File.Replace or File.Move across volumes (sigh)
 						if (!string.IsNullOrEmpty(backupPath) && File.Exists(destinationPath))
@@ -262,6 +265,19 @@ namespace Palaso.IO
 				}
 			}
 			while (!succeeded);
+		}
+
+		// NB: I don't actually know for sure that we can't do the replace on these paths; this dev doesn't
+		// have a network to test on. What I do know is that the code checking to see if they are on the
+		// same drive fails for UNC paths, so this at least gets us past that problem
+		private static bool UnsafeForFileReplaceMethod(string path)
+		{
+#if !MONO
+			return path.StartsWith("//") || path.StartsWith("\\\\");
+#else
+			return false; // we will soon be requesting some testing with networks on Linux; 
+			//as a result of that, we might need to do something here, too. Or maybe not.
+#endif
 		}
 
 		private static void ReportFailedReplacement(string destinationPath, Exception error)

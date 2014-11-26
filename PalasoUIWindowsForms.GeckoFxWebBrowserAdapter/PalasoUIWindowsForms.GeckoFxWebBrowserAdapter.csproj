@@ -46,11 +46,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GeckoFxWebBrowserAdapter.cs" />
+    <Compile Include="WebThumbnailViewer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WebThumbnailViewer.designer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

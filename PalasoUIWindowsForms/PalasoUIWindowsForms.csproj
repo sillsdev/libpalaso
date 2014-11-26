@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -317,11 +317,14 @@
     <Compile Include="ImageGallery\PictureChooser.designer.cs">
       <DependentUpon>PictureChooser.cs</DependentUpon>
     </Compile>
-    <Compile Include="ImageGallery\ThumbnailViewer.cs">
+    <Compile Include="ImageGallery\ListViewThumbnailViewer.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="ImageGallery\ThumbnailViewer.designer.cs">
-      <DependentUpon>ThumbnailViewer.cs</DependentUpon>
+    <Compile Include="ImageGallery\ListViewThumbnailViewer.designer.cs">
+      <DependentUpon>ListViewThumbnailViewer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ImageGallery\ThumbnailViewer.cs">
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="ImageToolbox\AcquireImageControl.cs">
       <SubType>UserControl</SubType>
@@ -797,6 +800,7 @@
     <Compile Include="Keyboarding\InternalInterfaces\IXklEngine.cs" />
     <Compile Include="Keyboarding\Windows\MsTsfInterfaces.cs" />
     <Compile Include="Keyboarding\Linux\CombinedKeyboardAdaptor.cs" />
+    <Compile Include="Keyboarding\Linux\CinnamonIbusAdaptor.cs" />
     <Compile Include="HtmlBrowser\IWebBrowser.cs" />
     <Compile Include="HtmlBrowser\IWebBrowserCallbacks.cs" />
     <Compile Include="HtmlBrowser\WinFormsBrowserAdapter.cs" />

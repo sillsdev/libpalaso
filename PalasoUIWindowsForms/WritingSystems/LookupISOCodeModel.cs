@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using L10NSharp;
 using Palaso.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.WritingSystems
@@ -34,12 +36,11 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		public IEnumerable<LanguageInfo> GetMatchingLanguages(string typedText)
 		{
-			if(_ethnologueLookup==null)
+			if (_ethnologueLookup == null)
 				_ethnologueLookup = new EthnologueLookup { Force3LetterCodes = Force3LetterCodes };
 
 			return _ethnologueLookup.SuggestLanguages(typedText);
 		}
-
 
 		public LanguageInfo LanguageInfo;
 

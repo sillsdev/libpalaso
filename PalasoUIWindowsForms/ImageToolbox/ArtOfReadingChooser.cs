@@ -22,6 +22,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		{
 			InitializeComponent();
 			_thumbnailViewer.CaptionMethod = ((s) => string.Empty);//don't show a caption
+			_thumbnailViewer.LoadComplete += ThumbnailViewerOnLoadComplete;
 			_searchResultStats.Text = "";
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
 			{
@@ -48,7 +49,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		void _thumbnailViewer_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			if(ImageChanged!=null && _thumbnailViewer.SelectedItems.Count>0)
+			if(ImageChanged!=null && _thumbnailViewer.HasSelection)
 			{
 				ImageChanged.Invoke(this, null);
 			}
@@ -56,7 +57,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		private void _thumbnailViewer_DoubleClick(object sender, EventArgs e)
 		{
-			if (ImageChangedAndAccepted != null && _thumbnailViewer.SelectedItems.Count > 0)
+			if (ImageChangedAndAccepted != null && _thumbnailViewer.HasSelection)
 			{
 				ImageChangedAndAccepted.Invoke(this, null);
 			}
@@ -100,6 +101,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			}
 			_searchButton.Enabled = true;
 			//_okButton.Enabled = false;
+		}
+
+		private void ThumbnailViewerOnLoadComplete(object sender, EventArgs eventArgs)
+		{
 			Cursor.Current = Cursors.Default;
 		}
 

@@ -213,6 +213,8 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 			get { return m_WebBrowserAdapter.NativeBrowser; }
 		}
 
+		public IWebBrowser Adapter { get { return m_WebBrowserAdapter; } }
+
 		[DefaultValue(true)]
 		public bool WebBrowserShortcutsEnabled
 		{

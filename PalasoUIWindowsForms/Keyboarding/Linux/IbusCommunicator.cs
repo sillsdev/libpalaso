@@ -218,7 +218,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			try
 			{
 				// m_inputContext.IsEnabled() throws an exception for IBus 1.5.
-				if (!KeyboardController.CombinedKeyboardHandling && !m_inputContext.IsEnabled())
+				if (!KeyboardController.CombinedKeyboardHandling && !KeyboardController.CinnamonKeyboardHandling && !m_inputContext.IsEnabled())
 					return false;
 
 				var modifiers = ConvertToIbusModifiers(state, (char)keySym);

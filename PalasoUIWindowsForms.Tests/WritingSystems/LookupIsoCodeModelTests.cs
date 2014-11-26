@@ -14,7 +14,6 @@ using Palaso.UI.WindowsForms.WritingSystems;
 
 namespace PalasoUIWindowsForms.Tests.WritingSystems
 {
-
 	[TestFixture]
 	public class LookupIsoCodeModelTests
 	{
@@ -31,8 +30,9 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		{
 			var dialog = new LookupISOCodeDialog();
 			Application.Run(dialog);
-			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code+" with desired name: "+dialog.SelectedLanguage.DesiredName);
+			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code + " with desired name: " + dialog.SelectedLanguage.DesiredName);
 		}
+
 		[Test, Ignore("By hand only")]
 		public void LookupISODialog_WithInitialCodeAndCustomName()
 		{
@@ -46,7 +46,7 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 		public void LookupISODialog_WithInitialCodeOnly()
 		{
 			var dialog = new LookupISOCodeDialog();
-			dialog.SelectedLanguage = new LanguageInfo() { Code = "etr"};
+			dialog.SelectedLanguage = new LanguageInfo() { Code = "etr" };
 			Application.Run(dialog);
 			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code + " with desired name: " + dialog.SelectedLanguage.DesiredName);
 		}
@@ -59,5 +59,6 @@ namespace PalasoUIWindowsForms.Tests.WritingSystems
 			Application.Run(dialog);
 			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code + " with desired name: " + dialog.SelectedLanguage.DesiredName);
 		}
+
 	}
 }

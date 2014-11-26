@@ -26,17 +26,18 @@ namespace PalasoUIWindowsForms.TestApp
 
 		private void OnPictureChooserClicked(object sender, EventArgs e)
 		{
+			ThumbnailViewer.UseWebViewer = _useGeckoVersion.Checked;
 			var images = new ArtOfReadingImageCollection();
-			images.LoadIndex(Path.Combine(Assembly.GetEntryAssembly().Location, "ImageGallery/artofreadingindexv3_en.txt"));
+			images.LoadIndex(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "ImageGallery/artofreadingindexv3_en.txt"));
 			images.RootImagePath = RootImagePath.Text;
 			var form = new PictureChooser(images, "duck");
-			Application.Run(form);
+			form.ShowDialog();
 			Result.Text = "Result: " + form.ChosenPath;
 		}
 
 		private void OnLoad(object sender, EventArgs e)
 		{
-			RootImagePath.Text = @"c:\art of reading\images";
+			RootImagePath.Text = @"C:\ProgramData\SIL\Art Of Reading\images";
 		}
 	}
 }

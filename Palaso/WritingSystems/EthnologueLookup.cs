@@ -14,7 +14,7 @@ namespace Palaso.WritingSystems
 		Dictionary<string, string> CountryCodeToCountryName = new Dictionary<string, string>();
 		Dictionary<string, LanguageInfo> CodeToLanguageIndex = new Dictionary<string, LanguageInfo>();
 		Dictionary<string, List<LanguageInfo>> NameToLanguageIndex = new Dictionary<string, List<LanguageInfo>>();
-		Dictionary<string,string> ThreeToTwoLetter = new Dictionary<string, string>();
+		Dictionary<string, string> ThreeToTwoLetter = new Dictionary<string, string>();
 
 		/// <summary>Force the dialog to return 3 letter iso codes even if a 2 letter code is available</summary>
 		public bool Force3LetterCodes { get; set; }
@@ -28,13 +28,12 @@ namespace Palaso.WritingSystems
 				ThreeToTwoLetter.Add(items[1].Trim(), items[0].Trim());
 			}
 
-
 			foreach (var line in LanguageRegistryResources.CountryCodes.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
 			{
 				var items = line.Split('\t'); //id name area
 				CountryCodeToCountryName.Add(items[0].Trim(), items[1].Trim());
 			}
-			CountryCodeToCountryName.Add("?", "?"); //for unlisted language
+			CountryCodeToCountryName.Add("?","?");//for unlisted language
 
 			//LanguageIndex.txt Format: LangID	CountryID	NameType	Name
 			//a language appears on one row for each of its alternative langauges
@@ -111,13 +110,14 @@ namespace Palaso.WritingSystems
 			if (!CodeToLanguageIndex.TryGetValue(code, out language))
 			{
 				language = new LanguageInfo() { Code = code, Country = countryName };
-				CodeToLanguageIndex.Add(code,language);
+				CodeToLanguageIndex.Add(code, language);
 			}
 			else
 			{
-				if(!language.Country.Contains(countryName))
+				if (!language.Country.Contains(countryName))
 				{
 					language.Country += ", " + countryName;
+					++language.CountryCount;
 				}
 			}
 			return language;
@@ -134,7 +134,7 @@ namespace Palaso.WritingSystems
 			{
 				yield break;
 			}
-			else if(searchString =="*")
+			else if (searchString == "*")
 			{
 				foreach (var l in from x in CodeToLanguageIndex select x.Value)
 					yield return Set3LetterCode(l);
@@ -197,7 +197,7 @@ namespace Palaso.WritingSystems
 			{
 				if (x.Code == y.Code)
 					return 0;
-				if (x.Code == _searchString || x.Names[0].ToLowerInvariant()==_searchString)
+				if (x.Code == _searchString || x.Names[0].ToLowerInvariant() == _searchString)
 				{
 					return -1;
 				}
@@ -205,7 +205,7 @@ namespace Palaso.WritingSystems
 				{
 					return 1;
 				}
-//enhance we could favor ones where some language matches
+				//enhance we could favor ones where some language matches
 				return 0;
 			}
 		}
@@ -213,7 +213,7 @@ namespace Palaso.WritingSystems
 
 	public class LanguageInfo
 	{
-		public List<string> Names=new List<string>();
+		public List<string> Names = new List<string>();
 		public string Country;
 		public string Code;
 
@@ -223,6 +223,7 @@ namespace Palaso.WritingSystems
 		public string LocalName;
 
 		private string _desiredName;
+		public int CountryCount;
 
 		/// <summary>
 		/// People sometimes don't want use the Ethnologue-supplied name
