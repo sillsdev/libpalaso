@@ -1,15 +1,16 @@
-copy /Y output\debug\Palaso.dll c:\dev\SayMore\lib\dotnet
-copy /Y output\debug\Palaso.xml c:\dev\SayMore\lib\dotnet
-copy /Y output\debug\Palaso.pdb c:\dev\SayMore\lib\dotnet
-copy /Y output\debug\Palaso.TestUtilities.* c:\dev\SayMore\lib\dotnet
-copy /Y output\debug\PalasoUIWindowsForms.dll c:\dev\SayMore\lib\dotnet
-copy /Y output\debug\Palaso.Media.dll c:\dev\SayMore\lib\dotnet
-copy /Y output\debug\Palaso.Media.xml c:\dev\SayMore\lib\dotnet
-copy /Y output\debug\Palaso.Media.pdb c:\dev\SayMore\lib\dotnet
-copy /Y output\debug\PalasoUIWindowsForms.xml c:\dev\SayMore\lib\dotnet
-copy /Y output\debug\PalasoUIWindowsForms.pdb c:\dev\SayMore\lib\dotnet
-copy /Y output\debug\Palaso.BuildTasks.dll c:\dev\SayMore\build
+set sayMoreDir=..\SayMore
+copy /Y output\debug\Palaso.dll %sayMoreDir%\lib\dotnet
+copy /Y output\debug\Palaso.xml %sayMoreDir%\lib\dotnet
+copy /Y output\debug\Palaso.pdb %sayMoreDir%\lib\dotnet
+copy /Y output\debug\Palaso.TestUtilities.* %sayMoreDir%\lib\dotnet
+copy /Y output\debug\PalasoUIWindowsForms.dll %sayMoreDir%\lib\dotnet
+copy /Y output\debug\Palaso.Media.dll %sayMoreDir%\lib\dotnet
+copy /Y output\debug\Palaso.Media.xml %sayMoreDir%\lib\dotnet
+copy /Y output\debug\Palaso.Media.pdb %sayMoreDir%\lib\dotnet
+copy /Y output\debug\PalasoUIWindowsForms.xml %sayMoreDir%\lib\dotnet
+copy /Y output\debug\PalasoUIWindowsForms.pdb %sayMoreDir%\lib\dotnet
+copy /Y output\debug\Palaso.BuildTasks.dll %sayMoreDir%\build
 
-copy /Y c:\dev\SayMore\lib\dotnet\Palaso*.* c:\dev\SayMore\output\debug
+copy /Y %sayMoreDir%\lib\dotnet\Palaso*.* %sayMoreDir%\output\debug
 
 pause
