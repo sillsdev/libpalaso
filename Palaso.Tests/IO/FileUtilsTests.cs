@@ -107,6 +107,7 @@ namespace Palaso.Tests.IO
 		/// this would fail as it couldn't find a drive letter.
 		/// </summary>
 		[Test]
+		[Platform(Exclude = "Linux", Reason = "ConvertToUNCLocalHostPath only works on Windows")]
 		public void ReplaceFileWithUserInteractionIfNeeded_UsingUNCLocalHostPath()
 		{
 			using (var source = new TempFile("new"))
