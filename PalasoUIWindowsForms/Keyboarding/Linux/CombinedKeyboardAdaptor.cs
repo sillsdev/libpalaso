@@ -22,48 +22,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 	/// real keyboard controller.
 	/// XKB keyboards get handled by IBus as well.
 	/// </summary>
-	public class CombinedKeyboardAdaptor: IKeyboardAdaptor
+	public class CombinedKeyboardAdaptor: CommonBaseAdaptor
 	{
 		private static bool HasCombinedKeyboards = true;
-		private Dictionary<string,int> IbusKeyboards;
-		private Dictionary<string,int> XkbKeyboards;
 		private int _kbdIndex;
 		private IntPtr _client = IntPtr.Zero;
 
-		#region P/Invoke imports for glib and dconf
-		// NOTE: we directly use glib/dconf methods here since we don't want to
-		// introduce an otherwise unnecessary dependency on gconf-sharp/gnome-sharp.
-		[DllImport("libgobject-2.0-0.dll")]
-		private extern static void g_type_init();
-
-		[DllImport("libgobject-2.0-0.dll")]
-		private extern static string g_variant_print(IntPtr variant, bool typeAnnotate);
-
-		[DllImport("libgobject-2.0-0.dll")]
-		private extern static IntPtr g_variant_new_uint32(UInt32 value);
-
-		[DllImport("libgobject-2.0-0.dll")]
-		private extern static void g_object_unref(IntPtr obj);
-
-		[DllImport("libdconf.dll")]
-		private extern static IntPtr dconf_client_new();
-
-		[DllImport("libdconf.dll")]
-		private extern static IntPtr dconf_client_read(IntPtr client, string key);
-
-		[DllImport("libdconf.dll")]
-		private extern static bool dconf_client_write_sync(IntPtr client, string key, IntPtr value,
-			ref string tag, IntPtr cancellable, out IntPtr error);
-		#endregion
-
-		public CombinedKeyboardAdaptor()
+		public CombinedKeyboardAdaptor() : base()
 		{
-			g_type_init();
-		}
-
-		private static string GetValue(string raw)
-		{
-			return raw.Trim().Trim('\'');
 		}
 
 		private void RegisterXkbKeyboards()
@@ -115,26 +81,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				Console.WriteLine("Didn't find " + layout);
 		}
 
-		private static T GetAdaptor<T>() where T: class
-		{
-			foreach (var adaptor in KeyboardController.Adaptors)
-			{
-				var tAdaptor = adaptor as T;
-				if (tAdaptor != default(T))
-					return tAdaptor;
-			}
-			return default(T);
-		}
-
 		private void AddKeyboard(string source)
 		{
-			var parts = source.Trim('(', ')').Split(',');
+			var parts = source.Split(new String[]{";;"}, StringSplitOptions.None);
 			Debug.Assert(parts.Length == 2);
 			if (parts.Length != 2)
 				return;
-
-			var type = GetValue(parts[0]);
-			var layout = GetValue(parts[1]);
+			var type = parts[0];
+			var layout = parts[1];
 			if (type == "xkb")
 				XkbKeyboards.Add(layout, _kbdIndex);
 			else
@@ -142,71 +96,53 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			++_kbdIndex;
 		}
 
-		private void AddKeyboards(string source)
-		{
-			int startNextSegment = source.IndexOf("), (", StringComparison.InvariantCulture);
-			if (startNextSegment < 0)
-				AddKeyboard(source);
-			else
-			{
-				AddKeyboard(source.Substring(0, startNextSegment));
-				AddKeyboards(source.Substring(startNextSegment + 4));
-			}
-		}
-
-		private void AddAllKeyboards(string source)
+		protected override void AddAllKeyboards(string[] source)
 		{
 			_kbdIndex = 0;
-			AddKeyboards(source);
+			for (int i = 0; i < source.Length; ++i)
+				AddKeyboard(source[i]);
 			RegisterIbusKeyboards();
 			RegisterXkbKeyboards();
 		}
 
-		#region IKeyboardAdaptor implementation
-		public void Initialize()
+		protected override bool UseThisAdaptor
 		{
-			if (!HasCombinedKeyboards)
-				return;
-
-			IbusKeyboards = new Dictionary<string, int>();
-			XkbKeyboards = new Dictionary<string, int>();
-
-			try
+			get
 			{
-				KeyboardController.CombinedKeyboardHandling = false;
-				_client = dconf_client_new();
+				return HasCombinedKeyboards;
 			}
-			catch (DllNotFoundException)
+			set
 			{
-				_client = IntPtr.Zero;
-				// Older Ubuntu versions have a version of the dconf library with a
-				// different version number (different from what libdconf.dll gets
-				// mapped to in app.config). However, since those Ubuntu versions
-				// don't have combined keyboards this really doesn't matter.
-				HasCombinedKeyboards = false;
-				return;
+				HasCombinedKeyboards = value;
+				KeyboardController.CombinedKeyboardHandling = value;
 			}
+		}
 
+		protected override string GSettingsSchema { get { return null; } }	// we don't use GSettings
+
+		/// <summary>
+		/// Return the list of keyboards in the combined handler, or null if this adaptor should
+		/// not be used.
+		/// </summary>
+		protected override string[] GetMyKeyboards(IntPtr client, IntPtr settingsGeneral)
+		{
 			// This is the proper path for the combined keyboard handling, not the path
 			// given in the IBus reference documentation.
-			var sources = dconf_client_read(_client, "/org/gnome/desktop/input-sources/sources");
+			var sources = dconf_client_read(client, "/org/gnome/desktop/input-sources/sources");
 			if (sources == IntPtr.Zero)
-			{
-				HasCombinedKeyboards = false;
-				return;
-			}
-			KeyboardController.CombinedKeyboardHandling = true;
-			KeyboardController.Manager.ClearAllKeyboards();
+				return null;
+			var list = GetStringArrayFromGVariantListArray(sources);
+			g_variant_unref(sources);
 
-			AddAllKeyboards(g_variant_print(sources, false).Trim('[', ']'));
+			// Save the connection to dconf since we use it in keyboard switching.
+			_client = client;
+			g_object_ref(_client);
+
+			return list;
 		}
 
-		public void UpdateAvailableKeyboards()
-		{
-			Initialize();
-		}
-
-		public void Close()
+		#region IKeyboardAdaptor implementation
+		public override void Close()
 		{
 			if (_client != IntPtr.Zero)
 			{
@@ -215,7 +151,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 		}
 
-		public bool ActivateKeyboard(IKeyboardDefinition keyboard)
+		public override bool ActivateKeyboard(IKeyboardDefinition keyboard)
 		{
 			Debug.Assert(keyboard is KeyboardDescription);
 			Debug.Assert(((KeyboardDescription)keyboard).Engine == this);
@@ -251,7 +187,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			return true;
 		}
 
-		public void DeactivateKeyboard(IKeyboardDefinition keyboard)
+		public override void DeactivateKeyboard(IKeyboardDefinition keyboard)
 		{
 			if (keyboard is IbusKeyboardDescription)
 			{
@@ -261,44 +197,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 			GlobalCachedInputContext.Keyboard = null;
 		}
-
-		public IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
-		{
-			throw new NotImplementedException();
-		}
-
-		public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
-		{
-			throw new NotImplementedException();
-		}
-
-		public List<IKeyboardErrorDescription> ErrorKeyboards
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-		}
-
-		public IKeyboardDefinition DefaultKeyboard
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-		}
-
-		public KeyboardType Type
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-		}
-
 		#endregion
 
-		internal void SelectKeyboard(int index)
+		private void SelectKeyboard(int index)
 		{
 			if (!HasCombinedKeyboards || _client == IntPtr.Zero)
 				return;

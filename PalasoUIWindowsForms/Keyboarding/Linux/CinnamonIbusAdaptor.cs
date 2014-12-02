@@ -22,61 +22,24 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 	/// Starting with Wasta 14, if IBus is used for keyboard inputs, things are joined together,
 	/// but not the same as the combined keyboard processing in Trusty (Ubuntu 14.04).
 	/// </summary>
-	public class CinnamonIbusAdaptor: IKeyboardAdaptor
+	public class CinnamonIbusAdaptor: CommonBaseAdaptor
 	{
+		private IIbusCommunicator m_ibuscom;
+
+		// These should not change while the program is running, and they're expensive to obtain.
+		// So we've made them static.
+		static string _defaultLayout;
+		static string _defaultVariant;
+		static string _defaultOption;
+		static string[] _latinLayouts;
+		static bool _use_xmodmap;
+
+		// This starts out true, is set false once and for all the first time the system
+		// is probed for this style of keyboarding if it's not appropriate.
 		private static bool IsCinnamonWithIbus = true;
-		private Dictionary<string,int> IbusKeyboards;
-		private Dictionary<string,int> XkbKeyboards;
 
-		#region P/Invoke imports for glib and dconf
-		// NOTE: we directly use glib/dconf methods here since we don't want to
-		// introduce an otherwise unnecessary dependency on gconf-sharp/gnome-sharp.
-		[DllImport("libgobject-2.0.so")]
-		private extern static void g_type_init();
-
-		[DllImport("libgobject-2.0.so")]
-		private extern static IntPtr g_variant_new_uint32(UInt32 value);
-
-		[DllImport("libgobject-2.0.so")]
-		private extern static void g_object_unref(IntPtr obj);
-
-		[DllImport("libgio-2.0.so")]
-		private extern static IntPtr g_settings_new(string schema_id);
-
-		[DllImport("libgio-2.0.so")]
-		private extern static IntPtr g_settings_get_value(IntPtr settings, string key);
-
-		[DllImport("libglib-2.0.so")]
-		private extern static void g_variant_unref(IntPtr value);
-
-		[DllImport("libglib-2.0.so")]
-		private extern static uint g_variant_n_children(IntPtr value);
-
-		[DllImport("libglib-2.0.so")]
-		private extern static IntPtr g_variant_get_child_value(IntPtr value, uint index_);
-
-		[DllImport("libglib-2.0.so")]
-		private extern static IntPtr g_variant_get_string(IntPtr value, out int length);
-
-		[DllImport("libglib-2.0.so")]
-		private extern static bool g_variant_get_boolean(IntPtr value);
-
-		[DllImport("libdconf.dll")]
-		private extern static IntPtr dconf_client_new();
-
-		[DllImport("libdconf.dll")]
-		private extern static IntPtr dconf_client_read(IntPtr client, string key);
-
-		[DllImport("libdconf.dll")]
-		private extern static bool dconf_client_write_sync(IntPtr client, string key, IntPtr value,
-			ref string tag, IntPtr cancellable, out IntPtr error);
-		#endregion
-
-		public CinnamonIbusAdaptor()
+		public CinnamonIbusAdaptor() : base()
 		{
-			// g_type_init() is needed for Precise, but deprecated for Trusty.
-			// Remove this (and the DllImport above) when we stop supporting Precise.
-			g_type_init();
 		}
 
 		private void RegisterIbusKeyboards()
@@ -107,18 +70,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				Console.WriteLine("Didn't find " + layout);
 		}
 
-		private static T GetAdaptor<T>() where T: class
-		{
-			foreach (var adaptor in KeyboardController.Adaptors)
-			{
-				var tAdaptor = adaptor as T;
-				if (tAdaptor != default(T))
-					return tAdaptor;
-			}
-			return default(T);
-		}
-
-		private void AddAllKeyboards(string[] list)
+		protected override void AddAllKeyboards(string[] list)
 		{
 			// e.g., "pinyin", "xkb:us::eng", "xkb:fr::fra", "xkb:de::ger", "/usr/share/kmfl/IPA14.kmn", "xkb:es::spa"
 			int kbdIndex = 0;
@@ -130,86 +82,56 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			RegisterIbusKeyboards();
 		}
 
+		protected override bool UseThisAdaptor
+		{
+			get
+			{
+				return IsCinnamonWithIbus;
+			}
+			set
+			{
+				IsCinnamonWithIbus = value;
+				KeyboardController.CinnamonKeyboardHandling = value;
+			}
+		}
+
+		protected override string GSettingsSchema { get { return "org.freedesktop.ibus.general"; } }
+
+		protected override string[] GetMyKeyboards(IntPtr client, IntPtr settingsGeneral)
+		{
+			// This tells us whether we're running under Wasta 14 (Mint 17/Cinnamon).
+			var cinnamon = dconf_client_read(client, "/org/cinnamon/number-workspaces");
+			if (cinnamon == IntPtr.Zero)
+				return null;
+			g_variant_unref(cinnamon);
+
+			// This is the proper path for the combined keyboard handling on Cinnamon with IBus.
+			var sources = dconf_client_read(client, "/desktop/ibus/general/preload-engines");
+			if (sources == IntPtr.Zero)
+				return null;
+			var list = GetStringArrayFromGVariantArray(sources);
+			g_variant_unref(sources);
+
+			// Maybe the user experimented with cinnamon, but isn't really using it?
+			var desktop = Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP");
+			if (!String.IsNullOrEmpty(desktop) && !desktop.ToLowerInvariant().Contains("cinnamon"))
+				return null;
+
+			// Maybe the user experimented with ibus, then removed it??
+			if (!System.IO.File.Exists("/usr/bin/ibus-setup"))
+				return null;
+
+			// Call these only once per run of the program.
+			if (_defaultLayout == null)
+				LoadDefaultXkbSettings();
+			if (_latinLayouts == null)
+				LoadLatinLayouts(settingsGeneral);
+
+			return list;
+		}
+
 		#region IKeyboardAdaptor implementation
-		public void Initialize()
-		{
-			if (!IsCinnamonWithIbus)
-				return;
-
-			IntPtr client = IntPtr.Zero;
-			IntPtr settingsGeneral = IntPtr.Zero;
-
-			try
-			{
-				IsCinnamonWithIbus = false;
-				KeyboardController.CinnamonKeyboardHandling = false;
-				IbusKeyboards = new Dictionary<string, int>();
-				XkbKeyboards = new Dictionary<string, int>();
-
-				try
-				{
-					client = dconf_client_new();
-					settingsGeneral = g_settings_new("org.freedesktop.ibus.general");
-				}
-				catch (DllNotFoundException)
-				{
-					// Older Wasta (Mint) versions have a version of the dconf library with a
-					// different version number (different from what libdconf.dll gets
-					// mapped to in app.config). However, since those Wasta (Mint) versions
-					// don't have combined keyboards under IBus this really doesn't
-					// matter.
-					return;
-				}
-
-				// This tells us whether we're running under Wasta 14 (Mint 17/Cinnamon).
-				var cinnamon = dconf_client_read(client, "/org/cinnamon/number-workspaces");
-				if (cinnamon == IntPtr.Zero)
-					return;
-				g_variant_unref(cinnamon);
-
-				// This is the proper path for the combined keyboard handling on Cinnamon with IBus.
-				var sources = dconf_client_read(client, "/desktop/ibus/general/preload-engines");
-				if (sources == IntPtr.Zero)
-					return;
-
-				// Maybe the user experimented with cinnamon, but isn't really using it?
-				var desktop = Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP");
-				if (!String.IsNullOrEmpty(desktop) && !desktop.ToLowerInvariant().Contains("cinnamon"))
-					return;
-
-				// Maybe the user experimented with ibus, then removed it??
-				if (!System.IO.File.Exists("/usr/bin/ibus-setup"))
-					return;
-
-				IsCinnamonWithIbus = true;
-				KeyboardController.CinnamonKeyboardHandling = true;
-				KeyboardController.Manager.ClearAllKeyboards();
-
-				var list = GetStringArrayFromGVariant(sources);
-				AddAllKeyboards(list);
-				g_variant_unref(sources);
-
-				// Call these only once per run of the program.
-				if (_defaultLayout == null)
-					LoadDefaultXkbSettings();
-				if (_latinLayouts == null)
-					LoadLatinLayouts(settingsGeneral);
-			}
-			finally
-			{
-				if (client != IntPtr.Zero)
-					g_object_unref(client);
-				if (settingsGeneral != IntPtr.Zero)
-					g_object_unref(settingsGeneral);
-			}
-		}
-
-		public void UpdateAvailableKeyboards()
-		{
-			Initialize();
-		}
-
-		public void Close()
+		public override void Close()
 		{
 			if (m_ibuscom != null)
 			{
@@ -218,9 +140,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 		}
 
-		private IIbusCommunicator m_ibuscom;
-
-		public bool ActivateKeyboard(IKeyboardDefinition keyboard)
+		public override bool ActivateKeyboard(IKeyboardDefinition keyboard)
 		{
 			Debug.Assert(keyboard is KeyboardDescription);
 			Debug.Assert(((KeyboardDescription)keyboard).Engine == this);
@@ -261,7 +181,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			return true;
 		}
 
-		public void DeactivateKeyboard(IKeyboardDefinition keyboard)
+		public override void DeactivateKeyboard(IKeyboardDefinition keyboard)
 		{
 			//Console.WriteLine ("DEBUG deactivating {0}", keyboard);
 			if (keyboard is IbusKeyboardDescription)
@@ -277,51 +197,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 			GlobalCachedInputContext.Keyboard = null;
 		}
-
-		public IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
-		{
-			throw new NotImplementedException();
-		}
-
-		public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
-		{
-			throw new NotImplementedException();
-		}
-
-		public List<IKeyboardErrorDescription> ErrorKeyboards
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-		}
-
-		public IKeyboardDefinition DefaultKeyboard
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-		}
-
-		public KeyboardType Type
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-		}
-
 		#endregion
 
-		// These should not change while the program is running, and they're expensive to obtain.
-		// So we've made them static.
-		static string _defaultLayout;
-		static string _defaultVariant;
-		static string _defaultOption;
-		static string[] _latinLayouts;
-		static bool _use_xmodmap;
-
+		/// <summary>
+		/// This is call by the keyboard controller since we don't have any true XKB handlers
+		/// around to be the default keyboard.
+		/// </summary>
 		public void ActivateDefaultKeyboard()
 		{
 			//Console.WriteLine("DEBUG CinnamonIbusAdaptor.ActivateDefaultKeyboard()");
@@ -336,7 +217,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// <remarks>
 		/// This mimics the behavior of the ibus panel applet code.
 		/// </remarks>
-		private void SetLayout(IbusKeyboardDescription ibusKeyboard)
+		private static void SetLayout(IbusKeyboardDescription ibusKeyboard)
 		{
 			var layout = ibusKeyboard.ParentLayout;
 			if (layout == "en")
@@ -427,7 +308,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// <remarks>
 		/// This mimics the behavior of the ibus panel applet code.
 		/// </remarks>
-		static void SetXModMap()
+		private static void SetXModMap()
 		{
 			string homedir = Environment.GetEnvironmentVariable("HOME");
 			foreach (string file in _knownXModMapFiles)
@@ -487,10 +368,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// <summary>
 		/// Load a couple of settings from the GNOME settings system.
 		/// </summary>
-		void LoadLatinLayouts(IntPtr settingsGeneral)
+		private static void LoadLatinLayouts(IntPtr settingsGeneral)
 		{
 			IntPtr value = g_settings_get_value(settingsGeneral, "xkb-latin-layouts");
-			_latinLayouts = GetStringArrayFromGVariant(value);
+			_latinLayouts = GetStringArrayFromGVariantArray(value);
 			g_variant_unref(value);
 
 			_use_xmodmap = false;
@@ -506,34 +387,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			//for (int i = 0; i < _latinLayouts.Length; ++i)
 			//	Console.Write("  '{0}'", _latinLayouts[i]);
 			//Console.WriteLine();
-		}
-
-		/// <summary>
-		/// Convert a GVariant handle that points to a list of strings to a C# string array.
-		/// Without leaking memory in the process!
-		/// </summary>
-		/// <remarks>
-		/// No check is made to verify that the input value actually points to an array of strings.
-		/// </remarks>
-		public static string[] GetStringArrayFromGVariant(IntPtr value)
-		{
-			if (value == IntPtr.Zero)
-				return new string[0];
-			uint size = g_variant_n_children(value);
-			string[] list = new string[size];
-			for (uint i = 0; i < size; ++i)
-			{
-				IntPtr child = g_variant_get_child_value(value, i);
-				int length;
-				// handle must not be freed -- it points into the actual GVariant memory for child!
-				IntPtr handle = g_variant_get_string(child, out length);
-				byte[] rawbytes = new byte[length];
-				Marshal.Copy(handle, rawbytes, 0, length);
-				list[i] = Encoding.UTF8.GetString(rawbytes);
-				g_variant_unref(child);
-				//Console.WriteLine("DEBUG GetStringArrayFromGVariant(): list[{0}] = \"{1}\" (length = {2})", i, list[i], length);
-			}
-			return list;
 		}
 	}
 }
