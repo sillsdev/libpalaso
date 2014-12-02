@@ -799,6 +799,7 @@
     <Compile Include="Keyboarding\Linux\X11KeyConverter.cs" />
     <Compile Include="Keyboarding\InternalInterfaces\IXklEngine.cs" />
     <Compile Include="Keyboarding\Windows\MsTsfInterfaces.cs" />
+    <Compile Include="Keyboarding\Linux\CommonBaseAdaptor.cs" />
     <Compile Include="Keyboarding\Linux\CombinedKeyboardAdaptor.cs" />
     <Compile Include="Keyboarding\Linux\CinnamonIbusAdaptor.cs" />
     <Compile Include="HtmlBrowser\IWebBrowser.cs" />
