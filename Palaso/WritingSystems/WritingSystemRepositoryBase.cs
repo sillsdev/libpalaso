@@ -148,7 +148,9 @@ namespace Palaso.WritingSystems
 
 		public bool Contains(string identifier)
 		{
-			return _writingSystems.ContainsKey(identifier);
+			// identifier should not be null, but some unit tests never define StoreID
+			// on their temporary WritingSystemDefinition objects.
+			return identifier != null && _writingSystems.ContainsKey(identifier);
 		}
 
 		public bool CanSet(IWritingSystemDefinition ws)
