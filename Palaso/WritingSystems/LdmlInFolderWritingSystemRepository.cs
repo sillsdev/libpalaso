@@ -296,6 +296,8 @@ namespace Palaso.WritingSystems
 
 		override public void Remove(string storeId)
 		{
+			if (storeId == null)
+				throw new ArgumentNullException("storeId");
 			if (!Contains(storeId))
 				throw new ArgumentOutOfRangeException("storeId");
 			// Remove() uses the StoreID field, but file storage uses the Id field.
