@@ -293,7 +293,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			if (_possibleKeyboardsList.SelectedItems.Count != 0)
 			{
 				var currentKeyboard = _possibleKeyboardsList.SelectedItems[0].Tag as KeyboardDefinitionAdapter;
-				if (_model.CurrentKeyboard.Layout != currentKeyboard.Layout ||
+				if (_model.CurrentKeyboard == null ||
+					_model.CurrentKeyboard.Layout != currentKeyboard.Layout ||
 					_model.CurrentKeyboard.Locale != currentKeyboard.Locale)
 				{
 					_model.CurrentKeyboard = Keyboard.Controller.CreateKeyboardDefinition(currentKeyboard.Layout,

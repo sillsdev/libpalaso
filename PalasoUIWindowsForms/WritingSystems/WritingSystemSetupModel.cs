@@ -626,7 +626,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				if (CurrentDefinition == null)
 					return; // Hopefully can't happen
-				if (CurrentDefinition.LocalKeyboard.Equals(value))
+				if (CurrentDefinition.LocalKeyboard != null && CurrentDefinition.LocalKeyboard.Equals(value))
 					return;
 				CurrentDefinition.LocalKeyboard = value.Layout == KeyboardDescriptionNull.DefaultKeyboardName ? null : value;
 				OnCurrentItemUpdated();
