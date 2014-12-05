@@ -96,9 +96,12 @@ namespace Palaso.WritingSystems
 		string Bcp47Tag { get; }
 
 		/// <summary>
-		/// The identifier for this writing syetm definition. Use this in files and as a key to the IWritingSystemRepository.
+		/// The identifier for this writing system definition. Use this in files and as a key to the IWritingSystemRepository.
 		/// Note that this is usually identical to the Bcp47 tag and should rarely differ.
 		/// </summary>
+		/// <remarks>
+		/// StoreID is the actual key for IWritingSystemRepository methods.  It is usually the same as Id, but not always.
+		/// </remarks>
 		string Id { get; }
 
 		/// <summary>

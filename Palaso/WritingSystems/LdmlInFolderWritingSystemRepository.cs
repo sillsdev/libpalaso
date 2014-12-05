@@ -294,14 +294,19 @@ namespace Palaso.WritingSystems
 			_changeLog.LogConflate(wsToConflate, wsToConflateWith);
 		}
 
-		override public void Remove(string identifier)
+		override public void Remove(string storeId)
 		{
+			if (!Contains(storeId))
+				throw new ArgumentOutOfRangeException("storeId");
+			// Remove() uses the StoreID field, but file storage uses the Id field.
+			var ws = Get(storeId);
+			string identifier = ws.Id;	// may differ from storeId!!
 			//we really need to get it in the trash, else, if was auto-provided,
 			//it'll keep coming back!
-			if (!File.Exists(GetFilePathFromIdentifier(identifier)) && Contains(identifier))
+			if (!File.Exists(GetFilePathFromIdentifier(identifier)))
 			{
-				var ws = Get(identifier);
 				SaveDefinition(ws);
+				storeId = ws.StoreID;	// Save() may change StoreID.
 			}
 
 			if (File.Exists(GetFilePathFromIdentifier(identifier)))
@@ -315,7 +320,7 @@ namespace Palaso.WritingSystems
 				}
 				File.Move(GetFilePathFromIdentifier(identifier), destination);
 			}
-			base.Remove(identifier);
+			base.Remove(storeId);
 			if (!Conflating)
 			{
 				_changeLog.LogDelete(identifier);

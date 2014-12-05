@@ -1223,9 +1223,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 											CurrentDefinition.Id, message));
 						return;
 					}
-					if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.Id))
+					// If you play around with renaming/revising writing systems, the Id assigned to
+					// the writing system keeps up with the changes, but the StoreID which is the
+					// real key for IWritingSystemRepository methods stays the same.  I find this
+					// a questionable design decision myself, but there may be good reasons for it.
+					// However, not calling _writingSystemRepository.Remove() can cause problems
+					// with data getting out of sync.  (See https://jira.sil.org/browse/WS-281 for
+					// an example of such problems.)
+					if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.StoreID))
 					{
-						_writingSystemRepository.Remove(CurrentDefinition.Id);
+						_writingSystemRepository.Remove(CurrentDefinition.StoreID);
 					}
 					break;
 			}

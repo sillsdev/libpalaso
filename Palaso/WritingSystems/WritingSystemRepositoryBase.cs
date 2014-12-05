@@ -73,6 +73,15 @@ namespace Palaso.WritingSystems
 			Conflating = false;
 		}
 
+		/// <summary>
+		/// Remove the specified WritingSystemDefinition.
+		/// </summary>
+		/// <param name="identifier">the StoreID of the WritingSystemDefinition</param>
+		/// <remarks>
+		/// Note that ws.StoreID may differ from ws.Id.  The former is the key into the
+		/// dictionary, but the latter is what gets persisted to disk (and shown to the
+		/// user).
+		/// </remarks>
 		virtual public void Remove(string identifier)
 		{
 			if (identifier == null)
@@ -83,13 +92,19 @@ namespace Palaso.WritingSystems
 			{
 				throw new ArgumentOutOfRangeException("identifier");
 			}
+			// Remove() uses the StoreID field, but file storage and UI use the Id field.
+			string realId = _writingSystems[identifier].Id;
 			// Delete from us
 			//??? Do we really delete or just mark for deletion?
+
 			_writingSystems.Remove(identifier);
-			_writingSystemsToIgnore.Remove(identifier);
+			if (_writingSystemsToIgnore.ContainsKey(identifier))
+				_writingSystemsToIgnore.Remove(identifier);
+			if (_writingSystemsToIgnore.ContainsKey(realId))
+				_writingSystemsToIgnore.Remove(realId);
 			if (!Conflating && WritingSystemDeleted != null)
 			{
-				WritingSystemDeleted(this, new WritingSystemDeletedEventArgs(identifier));
+				WritingSystemDeleted(this, new WritingSystemDeletedEventArgs(realId));
 			}
 			//TODO: Could call the shared store to advise that one has been removed.
 			//TODO: This may be useful if writing systems were reference counted.
