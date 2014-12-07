@@ -190,9 +190,21 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				if (ibusAdaptor.CanSetIbusKeyboard())
 				{
 					var context = GlobalCachedInputContext.InputContext;
-					context.SetEngine("");
-					context.Reset();
-					context.Disable();
+					try
+					{
+							context.SetEngine("");
+							context.Reset();
+							context.Disable();
+					}
+					catch (Exception ex)
+					{
+						// We don't want a random DBus exception to kill the program.
+						// If the keyboarding doesn't work quite right, that's still
+						// better than dying spontaneously.  (And keyboarding seems
+						// to keep working okay according to my limited testing even
+						// after exceptions have been caught and ignored here.)
+						Console.WriteLine ("DBUS EXCEPTION CAUGHT: {0}", ex.Message);
+					}
 				}
 			}
 			GlobalCachedInputContext.Keyboard = null;

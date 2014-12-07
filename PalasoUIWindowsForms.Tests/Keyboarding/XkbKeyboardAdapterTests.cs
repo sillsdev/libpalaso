@@ -98,7 +98,10 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			public static void CheckInstalledLanguages(string desiredLanguage)
 			{
 				var language = desiredLanguage.Replace('-', '_');
-				if (Environment.GetEnvironmentVariable("LANGUAGE").Contains(language))
+				// Some systems (notably Mint 17/Cinnamon aka Wasta-14) don't have a LANGUAGE environment
+				// variable, so we need to check for a null value.
+				var langFromEnv = Environment.GetEnvironmentVariable ("LANGUAGE");
+				if (langFromEnv != null && langFromEnv.Contains(language))
 					return;
 
 				using (var process = new Process())
