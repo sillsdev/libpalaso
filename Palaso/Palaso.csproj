@@ -37,7 +37,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\output\Debug</OutputPath>
-    <DefineConstants>TRACE;DEBUG;STRONG_NAME</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\output\Debug\Palaso.XML</DocumentationFile>
@@ -48,7 +48,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\output\Release</OutputPath>
-    <DefineConstants>TRACE;STRONG_NAME</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
@@ -56,7 +56,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\output\DebugMono</OutputPath>
-    <DefineConstants>TRACE;DEBUG;MONO;STRONG_NAME</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -65,20 +65,52 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
     <OutputPath>..\output\ReleaseMono</OutputPath>
-    <DefineConstants>TRACE;MONO;STRONG_NAME</DefineConstants>
+    <DefineConstants>TRACE;MONO</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\output\DebugStrongName\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;STRONG_NAME</DefineConstants>
+    <DocumentationFile>..\output\DebugStrongName\Palaso.XML</DocumentationFile>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>default</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\output\DebugMonoStrongName\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MONO;STRONG_NAME</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseStrongName|AnyCPU'">
+    <OutputPath>..\output\ReleaseStrongName\</OutputPath>
+    <DefineConstants>TRACE;STRONG_NAME</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|AnyCPU'">
+    <OutputPath>..\output\ReleaseMonoStrongName\</OutputPath>
+    <DefineConstants>TRACE;MONO;STRONG_NAME</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName'">
     <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Debug\icu.net.dll</HintPath>
@@ -96,7 +128,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+  <ItemGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
     <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Release\icu.net.dll</HintPath>
@@ -114,7 +146,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'DebugMono'">
+  <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'DebugMonoStrongName'">
     <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\DebugMono\icu.net.dll</HintPath>
@@ -123,7 +155,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'ReleaseMono'">
+  <ItemGroup Condition="'$(Configuration)' == 'ReleaseMono' Or '$(Configuration)' == 'ReleaseMonoStrongName'">
     <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\ReleaseMono\icu.net.dll</HintPath>
@@ -132,7 +164,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' ">
+  <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'DebugMonoStrongName' Or '$(Configuration)' == 'ReleaseMono' Or '$(Configuration)' == 'ReleaseMonoStrongName'">
     <Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\commonMono\NDesk.DBus.dll</HintPath>
@@ -319,13 +351,6 @@
     <Compile Include="UiBindings\ICountGiver.cs" />
     <Compile Include="UiBindings\IDisplayStringAdaptor.cs" />
     <Compile Include="UsbDrive\UsbDriveInfo.cs" />
-    <Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\IUDiskDevice.cs" />
-    <Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\IUDisks.cs" />
-    <Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UDiskDevice.cs" />
-    <Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UDisks.cs" />
-    <Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UsbDriveInfoUDisks.cs" />
-    <Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UsbDriveInfoHAL.cs" />
-    <Compile Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release' " Include="UsbDrive\Windows\UsbDriveInfoWindows.cs" />
     <Compile Include="IO\FileRelatedStrings.Designer.cs">
       <DependentUpon>FileRelatedStrings.resx</DependentUpon>
       <DesignTime>True</DesignTime>
@@ -393,6 +418,17 @@
     <Compile Include="Xml\XmlWriterExtensions.cs" />
     <Compile Include="PlatformUtilities\Platform.cs" />
     <Compile Include="IO\PathUtilities.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName' Or '$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
+    <Compile Include="UsbDrive\Windows\UsbDriveInfoWindows.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'DebugMonoStrongName' Or '$(Configuration)' == 'ReleaseMono' Or '$(Configuration)' == 'ReleaseMonoStrongName'">
+    <Compile Include="UsbDrive\Linux\IUDiskDevice.cs" />
+    <Compile Include="UsbDrive\Linux\IUDisks.cs" />
+    <Compile Include="UsbDrive\Linux\UDiskDevice.cs" />
+    <Compile Include="UsbDrive\Linux\UDisks.cs" />
+    <Compile Include="UsbDrive\Linux\UsbDriveInfoUDisks.cs" />
+    <Compile Include="UsbDrive\Linux\UsbDriveInfoHAL.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
