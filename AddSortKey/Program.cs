@@ -2,7 +2,8 @@ using System;
 using System.Globalization;
 using System.Xml;
 using System.Xml.XPath;
-using Palaso.WritingSystems.Collation;
+using SIL.WritingSystems.WritingSystems;
+using SIL.WritingSystems.WritingSystems.Collation;
 
 namespace AddSortKey
 {

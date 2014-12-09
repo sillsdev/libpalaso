@@ -6,7 +6,8 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using Palaso.IO;
 using Palaso.Reporting;
-using Palaso.WritingSystems;
+using SIL.WritingSystems;
+using SIL.WritingSystems.WritingSystems;
 using Palaso.Xml;
 using Palaso.Extensions;
 

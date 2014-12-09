@@ -138,7 +138,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SIL.ScriptureUtils\SIL.ScriptureUtils.csproj">
       <Project>{F71BA7B9-D9DC-4F8C-A307-87B503D0E05B}</Project>
-      <Name>SharedScrUtils</Name>
+      <Name>SIL.ScriptureUtils</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

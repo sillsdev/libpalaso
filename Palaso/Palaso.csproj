@@ -268,46 +268,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Settings\CrossPlatformSettingsProvider.cs" />
-    <Compile Include="Spart\Actions\ActionEventArgs.cs" />
-    <Compile Include="Spart\Actions\ActionHandler.cs" />
-    <Compile Include="Spart\Actions\Actions.cs" />
-    <Compile Include="Spart\Debug\DebugContext.cs" />
-    <Compile Include="Spart\Debug\Debugger.cs" />
-    <Compile Include="Spart\ParserError.cs" />
-    <Compile Include="Spart\ParserErrorException.cs" />
-    <Compile Include="Spart\Parsers\BinaryTerminalParser.cs" />
-    <Compile Include="Spart\Parsers\Composite\AlternativeParser.cs" />
-    <Compile Include="Spart\Parsers\Composite\DifferenceParser.cs" />
-    <Compile Include="Spart\Parsers\Composite\IntersectionParser.cs" />
-    <Compile Include="Spart\Parsers\Composite\ListParser.cs" />
-    <Compile Include="Spart\Parsers\Composite\RepetitionParser.cs" />
-    <Compile Include="Spart\Parsers\Composite\SequenceParser.cs" />
-    <Compile Include="Spart\Parsers\Composite\XorParser.cs" />
-    <Compile Include="Spart\Parsers\NegatableParser.cs" />
-    <Compile Include="Spart\Parsers\NonTerminal\AssertiveParser.cs" />
-    <Compile Include="Spart\Parsers\NonTerminal\IParserContext.cs" />
-    <Compile Include="Spart\Parsers\NonTerminal\NonTerminalParser.cs" />
-    <Compile Include="Spart\Parsers\NonTerminal\PostParseEventArgs.cs" />
-    <Compile Include="Spart\Parsers\NonTerminal\PostParseEventHandler.cs" />
-    <Compile Include="Spart\Parsers\NonTerminal\PreParseEventArgs.cs" />
-    <Compile Include="Spart\Parsers\NonTerminal\PreParseEventHandler.cs" />
-    <Compile Include="Spart\Parsers\NonTerminal\Rule.cs" />
-    <Compile Include="Spart\Parsers\Ops.cs" />
-    <Compile Include="Spart\Parsers\Parser.cs" />
-    <Compile Include="Spart\Parsers\ParserMatch.cs" />
-    <Compile Include="Spart\Parsers\Primitives\CharParser.cs" />
-    <Compile Include="Spart\Parsers\Primitives\CharRecognizer.cs" />
-    <Compile Include="Spart\Parsers\Primitives\EndParser.cs" />
-    <Compile Include="Spart\Parsers\Primitives\EolParser.cs" />
-    <Compile Include="Spart\Parsers\Primitives\NothingParser.cs" />
-    <Compile Include="Spart\Parsers\Primitives\StringParser.cs" />
-    <Compile Include="Spart\Parsers\Prims.cs" />
-    <Compile Include="Spart\Parsers\TerminalParser.cs" />
-    <Compile Include="Spart\Parsers\UnaryTerminalParser.cs" />
-    <Compile Include="Spart\Scanners\IFilter.cs" />
-    <Compile Include="Spart\Scanners\IScanner.cs" />
-    <Compile Include="Spart\Scanners\StringScanner.cs" />
-    <Compile Include="Spart\Scanners\ToLowerFilter.cs" />
     <Compile Include="Annotations\Annotation.cs" />
     <Compile Include="Annotations\IAnnotatable.cs" />
     <Compile Include="Spelling\WordTokenizer.cs" />
@@ -331,58 +291,7 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
-    <Compile Include="WritingSystems\Collation\ICollator.cs" />
-    <Compile Include="WritingSystems\Collation\IcuRulesCollator.cs" />
-    <Compile Include="WritingSystems\Collation\AddSortKeysToXml.cs" />
-    <Compile Include="WritingSystems\Collation\IcuRulesParser.cs" />
-    <Compile Include="WritingSystems\Collation\LdmlCollationParser.cs" />
-    <Compile Include="WritingSystems\Collation\SystemCollator.cs" />
-    <Compile Include="WritingSystems\DefaultKeyboardController.cs" />
-    <Compile Include="WritingSystems\EthnologueLookup.cs" />
-    <Compile Include="WritingSystems\FlexConformPrivateUseRfc5646TagInterpreter.cs" />
-    <Compile Include="WritingSystems\IInputLanguage.cs" />
-    <Compile Include="WritingSystems\IKeyboardController.cs" />
-    <Compile Include="WritingSystems\IKeyboardDefinition.cs" />
-    <Compile Include="WritingSystems\Iso15924Script.cs" />
-    <Compile Include="WritingSystems\Iso639LanguageCode.cs" />
-    <Compile Include="WritingSystems\IWritingSystemDefinition.cs" />
-    <Compile Include="WritingSystems\IWritingSystemRepository.cs" />
-    <Compile Include="WritingSystems\DefaultKeyboardDefinition.cs" />
-    <Compile Include="WritingSystems\Keyboard.cs" />
-    <Compile Include="WritingSystems\LanguageRegistryResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>LanguageRegistryResources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\LdmlDataMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WritingSystems\Collation\SimpleRulesCollator.cs" />
-    <Compile Include="WritingSystems\LdmlInFolderWritingSystemRepository.cs" />
-    <Compile Include="WritingSystems\LdmlInXmlWritingSystemRepository.cs" />
-    <Compile Include="WritingSystems\LdmlNodeComparer.cs" />
-    <Compile Include="WritingSystems\Migration\GlobalWritingSystemRepositoryMigrator.cs" />
-    <Compile Include="WritingSystems\Migration\Rfc5646TagCleaner.cs" />
-    <Compile Include="WritingSystems\Migration\LdmlInFolderWritingSystemRepositoryMigrator.cs" />
-    <Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\LdmlAdaptorV0.cs" />
-    <Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\LdmlAdaptorV1.cs" />
-    <Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\LdmlCollationParserV0.cs" />
-    <Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\LdmlNodeComparerV0.cs" />
-    <Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\LdmlVersion0MigrationStrategy.cs" />
-    <Compile Include="WritingSystems\Migration\WritingSystemLdmlVersionGetter.cs" />
-    <Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\WritingSystemDefinitionV0.cs" />
-    <Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\WritingSystemDefinitionV1.cs" />
-    <Compile Include="WritingSystems\Migration\WritingSystemsLdmlV0To1Migration\XmlHelpersV0.cs" />
-    <Compile Include="WritingSystems\WritingSystemOrphanFinder.cs" />
-    <Compile Include="WritingSystems\RFC5646Tag.cs" />
-    <Compile Include="WritingSystems\StandardTags.cs" />
-    <Compile Include="WritingSystems\StringContainsExtension.cs" />
-    <Compile Include="WritingSystems\GlobalWritingSystemRepository.cs" />
-    <Compile Include="WritingSystems\WritingSystemLogEvent.cs" />
-    <Compile Include="WritingSystems\WritingSystemChangeLog.cs" />
-    <Compile Include="WritingSystems\WritingSystemChangeLogDataMapper.cs" />
-    <Compile Include="WritingSystems\WritingSystemDefinition.cs" />
-    <Compile Include="WritingSystems\WritingSystemRepositoryBase.cs" />
-    <Compile Include="WritingSystems\WritingSystemRepositoryProblem.cs" />
     <Compile Include="Xml\CanonicalXmlSettings.cs" />
     <Compile Include="Xml\FastXmlElementSplitter.cs" />
     <Compile Include="Xml\XmlDomExtensions.cs" />
@@ -405,18 +314,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>FileRelatedStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\LanguageRegistryResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>LanguageRegistryResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Reporting\Usage.ico" />
-    <None Include="Resources\TwoToThreeCodes.txt" />
-    <None Include="Resources\LanguageIndex.txt" />
-    <None Include="Resources\LanguageCodes.txt" />
-    <None Include="Resources\ianaSubtagRegistry.txt" />
-    <None Include="Resources\CountryCodes.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -435,9 +335,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Spart\Parsers\NonTerminal\Contexts\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

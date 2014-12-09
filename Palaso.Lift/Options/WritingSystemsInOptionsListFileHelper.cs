@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
-using Palaso.WritingSystems;
+using SIL.WritingSystems;
+using SIL.WritingSystems.WritingSystems;
 using Palaso.Xml;
 
 namespace Palaso.Lift.Options

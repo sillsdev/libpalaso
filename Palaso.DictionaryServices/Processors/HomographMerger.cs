@@ -4,7 +4,8 @@ using System.Linq;
 using Palaso.Data;
 using Palaso.DictionaryServices.Model;
 using Palaso.Progress;
-using Palaso.WritingSystems;
+using SIL.WritingSystems;
+using SIL.WritingSystems.WritingSystems;
 
 namespace Palaso.DictionaryServices.Processors
 {

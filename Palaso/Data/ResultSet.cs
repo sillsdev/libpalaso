@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Palaso.WritingSystems.Collation;
 
 namespace Palaso.Data
 {
