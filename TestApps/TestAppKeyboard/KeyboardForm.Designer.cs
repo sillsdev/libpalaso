@@ -1,6 +1,4 @@
-﻿using Palaso.UI.WindowsForms.Keyboarding;
-
-namespace TestAppKeyboard
+﻿namespace TestAppKeyboard
 {
 	partial class KeyboardForm
 	{

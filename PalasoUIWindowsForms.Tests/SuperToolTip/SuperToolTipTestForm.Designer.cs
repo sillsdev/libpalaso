@@ -1,6 +1,6 @@
 using Palaso.UI.WindowsForms.SuperToolTip;
 
-namespace WritingSystemSetup.Tests
+namespace SIL.WritingSystemsetup.Tests
 {
 	partial class SuperToolTipTestForm
 	{

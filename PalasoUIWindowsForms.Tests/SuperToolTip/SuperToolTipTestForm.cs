@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.SuperToolTip;
 
-namespace WritingSystemSetup.Tests
+namespace SIL.WritingSystemsetup.Tests
 {
 	public partial class SuperToolTipTestForm : Form
 	{

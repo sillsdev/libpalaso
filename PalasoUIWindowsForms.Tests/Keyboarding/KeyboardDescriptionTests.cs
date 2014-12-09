@@ -14,10 +14,8 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using Palaso.UI.WindowsForms.Keyboarding;
-using Palaso.UI.WindowsForms.Keyboarding.Types;
 using Palaso.WritingSystems;
-using Palaso.Tests.Code;
+using Palaso.TestUtilities;
 
 namespace PalasoUIWindowsForms.Tests.Keyboarding
 {

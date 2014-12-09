@@ -13,9 +13,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
-using Palaso.UI.WindowsForms.Keyboarding;
-using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
-using Palaso.UI.WindowsForms.Keyboarding.Types;
 using Palaso.WritingSystems;
 
 namespace PalasoUIWindowsForms.Tests.Keyboarding

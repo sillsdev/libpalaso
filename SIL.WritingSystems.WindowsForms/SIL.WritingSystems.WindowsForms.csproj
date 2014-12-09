@@ -1,0 +1,391 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F7DF58E2-5B67-498A-9F64-B5F1584A5AB9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SIL.WritingSystems.WindowsForms</RootNamespace>
+    <AssemblyName>SIL.WritingSystems.WindowsForms</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\output\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\output\Debug\SIL.WritingSystems.WindowsForms.XML</DocumentationFile>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>default</LangVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\output\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\output\DebugMono</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU'">
+    <OutputPath>..\output\ReleaseMono</OutputPath>
+    <DefineConstants>TRACE;MONO</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <Reference Include="Keyman7Interop.dll">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Debug\Keyman7Interop.dll</HintPath>
+    </Reference>
+    <Reference Include="KeymanLink.dll">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Debug\KeymanLink.dll</HintPath>
+    </Reference>
+    <Reference Include="L10NSharp.dll">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Debug\L10NSharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <Reference Include="Keyman7Interop.dll">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Release\Keyman7Interop.dll</HintPath>
+    </Reference>
+    <Reference Include="KeymanLink.dll">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Release\KeymanLink.dll</HintPath>
+    </Reference>
+    <Reference Include="L10NSharp.dll">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Release\L10NSharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'DebugMono'">
+    <None Include="..\lib\DebugMono\icu.net.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'ReleaseMono'">
+    <None Include="..\lib\ReleaseMono\icu.net.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Enchant.Net">
+      <HintPath>..\lib\common\Enchant.Net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="sysglobl" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CannotFindMyLanguageDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CannotFindMyLanguageDialog.Designer.cs">
+      <DependentUpon>CannotFindMyLanguageDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DeleteInputSystemDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DeleteInputSystemDialog.Designer.cs">
+      <DependentUpon>DeleteInputSystemDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Keyboarding\Interfaces\IIbusEventHandler.cs" />
+    <Compile Include="Keyboarding\Interfaces\IKeyboardErrorDescription.cs" />
+    <Compile Include="Keyboarding\InternalInterfaces\IIbusCommunicator.cs" />
+    <Compile Include="Keyboarding\InternalInterfaces\IKeyboardAdaptor.cs" />
+    <Compile Include="Keyboarding\InternalInterfaces\IKeyboardControllerImpl.cs" />
+    <Compile Include="Keyboarding\InternalInterfaces\IXklEngine.cs" />
+    <Compile Include="Keyboarding\KeyboardController.cs" />
+    <Compile Include="Keyboarding\KeyboardDescription.cs" />
+    <Compile Include="Keyboarding\KeyboardDescriptionNull.cs" />
+    <Compile Include="Keyboarding\KeyboardErrorDescription.cs" />
+    <Compile Include="Keyboarding\Linux\CinnamonIbusAdaptor.cs" />
+    <Compile Include="Keyboarding\Linux\CombinedKeyboardAdaptor.cs" />
+    <Compile Include="Keyboarding\Linux\CommonBaseAdaptor.cs" />
+    <Compile Include="Keyboarding\Linux\GlobalCachedInputContext.cs" />
+    <Compile Include="Keyboarding\Linux\IbusCommunicator.cs" />
+    <Compile Include="Keyboarding\Linux\IbusDefaultEventHandler.cs" />
+    <Compile Include="Keyboarding\Linux\IbusKeyboardAdaptor.cs" />
+    <Compile Include="Keyboarding\Linux\IbusKeyboardDescription.cs" />
+    <Compile Include="Keyboarding\Linux\X11.cs" />
+    <Compile Include="Keyboarding\Linux\X11KeyConverter.cs" />
+    <Compile Include="Keyboarding\Linux\XkbKeyboardAdaptor.cs" />
+    <Compile Include="Keyboarding\Linux\XkbKeyboardDescription.cs" />
+    <Compile Include="Keyboarding\Linux\XklConfigRegistry.cs" />
+    <Compile Include="Keyboarding\Linux\XklEngine.cs" />
+    <Compile Include="Keyboarding\Types\InputLanguageWrapper.cs" />
+    <Compile Include="Keyboarding\Types\KeyboardCollection.cs" />
+    <Compile Include="Keyboarding\Types\MouseEvent.cs" />
+    <Compile Include="Keyboarding\Types\RegisterEventArgs.cs" />
+    <Compile Include="Keyboarding\Types\Win32.cs" />
+    <Compile Include="Keyboarding\Windows\KeymanKeyboardAdaptor.cs" />
+    <Compile Include="Keyboarding\Windows\KeymanKeyboardDescription.cs" />
+    <Compile Include="Keyboarding\Windows\MsTsfInterfaces.cs" />
+    <Compile Include="Keyboarding\Windows\WinKeyboardAdaptor.cs" />
+    <Compile Include="Keyboarding\Windows\WinKeyboardDescription.cs" />
+    <Compile Include="LookupISOCodeDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LookupISOCodeDialog.Designer.cs">
+      <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LookupISOCodeModel.cs" />
+    <Compile Include="LookupISOControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="LookupISOControl.Designer.cs">
+      <DependentUpon>LookupISOControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WritingSystemDefinitionVariantHelper.cs" />
+    <Compile Include="WritingSystemFromWindowsLocaleProvider.cs" />
+    <Compile Include="WritingSystemSetupDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WritingSystemSetupDialog.Designer.cs">
+      <DependentUpon>WritingSystemSetupDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WritingSystemSetupModel.cs" />
+    <Compile Include="WritingSystemSetupView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WritingSystemSetupView.Designer.cs">
+      <DependentUpon>WritingSystemSetupView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WSAddDuplicateMoreButtonBar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WSAddDuplicateMoreButtonBar.Designer.cs">
+      <DependentUpon>WSAddDuplicateMoreButtonBar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WSFontControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WSFontControl.Designer.cs">
+      <DependentUpon>WSFontControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WSIdentifiers\CustomIdentifierView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WSIdentifiers\CustomIdentifierView.Designer.cs">
+      <DependentUpon>CustomIdentifierView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WSIdentifiers\IpaIdentifierView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WSIdentifiers\IpaIdentifierView.Designer.cs">
+      <DependentUpon>IpaIdentifierView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WSIdentifiers\NothingSpecialView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WSIdentifiers\NothingSpecialView.Designer.cs">
+      <DependentUpon>NothingSpecialView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WSIdentifiers\ScriptRegionVariantView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WSIdentifiers\ScriptRegionVariantView.Designer.cs">
+      <DependentUpon>ScriptRegionVariantView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WSIdentifiers\UnlistedLanguageView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WSIdentifiers\UnlistedLanguageView.Designer.cs">
+      <DependentUpon>UnlistedLanguageView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WSIdentifiers\VoiceIdentifierView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WSIdentifiers\VoiceIdentifierView.Designer.cs">
+      <DependentUpon>VoiceIdentifierView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WSIdentifiers\WSIdentifierView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WSIdentifiers\WSIdentifierView.Designer.cs">
+      <DependentUpon>WSIdentifierView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WSKeyboardControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WSKeyboardControl.Designer.cs">
+      <DependentUpon>WSKeyboardControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WSPickerUsingComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WSPickerUsingComboBox.Designer.cs">
+      <DependentUpon>WSPickerUsingComboBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WSPickerUsingListView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WSPickerUsingListView.Designer.cs">
+      <DependentUpon>WSPickerUsingListView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WSPropertiesTabControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WSPropertiesTabControl.Designer.cs">
+      <DependentUpon>WSPropertiesTabControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WSSortControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WSSortControl.Designer.cs">
+      <DependentUpon>WSSortControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WSSpellingControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WSSpellingControl.Designer.cs">
+      <DependentUpon>WSSpellingControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WSTree\GetDialectNameDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WSTree\GetDialectNameDialog.Designer.cs">
+      <DependentUpon>GetDialectNameDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WSTree\WritingSystemSuggestion.cs" />
+    <Compile Include="WSTree\WritingSystemSuggestor.cs" />
+    <Compile Include="WSTree\WritingSystemTreeItem.cs" />
+    <Compile Include="WSTree\WritingSystemTreeModel.cs" />
+    <Compile Include="WSTree\WritingSystemTreeView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="WSTree\WritingSystemTreeView.Designer.cs">
+      <DependentUpon>WritingSystemTreeView.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PalasoUIWindowsForms\PalasoUIWindowsForms.csproj">
+      <Project>{db44f49c-d8c6-434f-81ed-28ea5c9e8195}</Project>
+      <Name>PalasoUIWindowsForms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Palaso\Palaso.csproj">
+      <Project>{3527da1d-1e25-48be-a71e-9ebf7f9208d4}</Project>
+      <Name>Palaso</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj">
+      <Project>{52A93C63-08F4-4527-8E6E-AC2ADEBA6E2D}</Project>
+      <Name>SIL.WritingSystems</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CannotFindMyLanguageDialog.resx">
+      <DependentUpon>CannotFindMyLanguageDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DeleteInputSystemDialog.resx">
+      <DependentUpon>DeleteInputSystemDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LookupISOCodeDialog.resx">
+      <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LookupISOControl.resx">
+      <DependentUpon>LookupISOControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystemSetupDialog.resx">
+      <DependentUpon>WritingSystemSetupDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WritingSystemSetupView.resx">
+      <DependentUpon>WritingSystemSetupView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WSAddDuplicateMoreButtonBar.resx">
+      <DependentUpon>WSAddDuplicateMoreButtonBar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WSFontControl.resx">
+      <DependentUpon>WSFontControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WSIdentifiers\CustomIdentifierView.resx">
+      <DependentUpon>CustomIdentifierView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WSIdentifiers\IpaIdentifierView.resx">
+      <DependentUpon>IpaIdentifierView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WSIdentifiers\NothingSpecialView.resx">
+      <DependentUpon>NothingSpecialView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WSIdentifiers\ScriptRegionVariantView.resx">
+      <DependentUpon>ScriptRegionVariantView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WSIdentifiers\UnlistedLanguageView.resx">
+      <DependentUpon>UnlistedLanguageView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WSIdentifiers\VoiceIdentifierView.resx">
+      <DependentUpon>VoiceIdentifierView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WSIdentifiers\WSIdentifierView.resx">
+      <DependentUpon>WSIdentifierView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WSKeyboardControl.resx">
+      <DependentUpon>WSKeyboardControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WSPickerUsingComboBox.resx">
+      <DependentUpon>WSPickerUsingComboBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WSPickerUsingListView.resx">
+      <DependentUpon>WSPickerUsingListView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WSPropertiesTabControl.resx">
+      <DependentUpon>WSPropertiesTabControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WSSortControl.resx">
+      <DependentUpon>WSSortControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WSSpellingControl.resx">
+      <DependentUpon>WSSpellingControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WSTree\GetDialectNameDialog.resx">
+      <DependentUpon>GetDialectNameDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WSTree\WritingSystemTreeView.resx">
+      <DependentUpon>WritingSystemTreeView.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

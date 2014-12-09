@@ -11,7 +11,6 @@
 using System;
 using System.Windows.Forms;
 using NUnit.Framework;
-using Palaso.UI.WindowsForms.Keyboarding.Types;
 using Palaso.WritingSystems;
 
 namespace PalasoUIWindowsForms.Tests.Keyboarding

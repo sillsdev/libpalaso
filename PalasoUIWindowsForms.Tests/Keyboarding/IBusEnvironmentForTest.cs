@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 using Palaso.Reporting;
-using Palaso.UI.WindowsForms.Keyboarding;
 
 #if MONO
 #if WANT_PORT

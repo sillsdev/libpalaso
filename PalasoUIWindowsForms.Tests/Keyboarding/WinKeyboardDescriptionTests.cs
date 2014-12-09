@@ -3,10 +3,8 @@
 #if !__MonoCS__
 using System;
 using System.Collections.Generic;
-using Microsoft.Unmanaged.TSF;
 using NUnit.Framework;
-using Palaso.Tests.Code;
-using Palaso.UI.WindowsForms.Keyboarding.Windows;
+using Palaso.TestUtilities;
 using Palaso.WritingSystems;
 
 namespace PalasoUIWindowsForms.Tests.Keyboarding

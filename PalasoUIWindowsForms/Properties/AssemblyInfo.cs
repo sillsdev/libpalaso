@@ -35,3 +35,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: System.CLSCompliant(true)]
 [assembly: InternalsVisibleTo("PalasoUIWindowsForms.Tests")]
+[assembly: InternalsVisibleTo("SIL.WritingSystems")]
+[assembly: InternalsVisibleTo("SIL.WritingSystems.WindowsForms")]

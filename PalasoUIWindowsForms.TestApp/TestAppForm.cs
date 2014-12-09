@@ -14,12 +14,10 @@ using Palaso.UI.WindowsForms.ClearShare;
 using Palaso.UI.WindowsForms.ClearShare.WinFormsUI;
 using Palaso.UI.WindowsForms.HtmlBrowser;
 using Palaso.UI.WindowsForms.ImageGallery;
-using Palaso.UI.WindowsForms.Keyboarding;
 using Palaso.UI.WindowsForms.ReleaseNotes;
 using Palaso.UI.WindowsForms.SIL;
 using Palaso.UI.WindowsForms.WritingSystems;
 using Palaso.WritingSystems;
-using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 using PalasoUIWindowsForms.TestApp.Properties;
 
 namespace PalasoUIWindowsForms.TestApp

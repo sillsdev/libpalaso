@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -165,14 +165,6 @@
     <Reference Include="NAudio, Version=1.5.3.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\$(Configuration)\NAudio.dll</HintPath>
-    </Reference>
-    <Reference Include="Keyman7Interop">
-      <HintPath>..\lib\$(Configuration)\Keyman7Interop.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="KeymanLink">
-      <HintPath>..\lib\$(Configuration)\KeymanLink.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' ">
@@ -395,27 +387,6 @@
       <DependentUpon>SampleImages.resx</DependentUpon>
     </Compile>
     <Compile Include="ImageToolbox\ImageAcquisitionService.cs" />
-    <Compile Include="Keyboarding\Interfaces\IKeyboardErrorDescription.cs" />
-    <Compile Include="Keyboarding\InternalInterfaces\IKeyboardAdaptor.cs" />
-    <Compile Include="Keyboarding\InternalInterfaces\IKeyboardControllerImpl.cs" />
-    <Compile Include="Keyboarding\KeyboardDescription.cs" />
-    <Compile Include="Keyboarding\KeyboardDescriptionNull.cs" />
-    <Compile Include="Keyboarding\KeyboardErrorDescription.cs" />
-    <Compile Include="Keyboarding\Linux\IbusKeyboardAdaptor.cs" />
-    <Compile Include="Keyboarding\Linux\X11.cs" />
-    <Compile Include="Keyboarding\Linux\XkbKeyboardAdaptor.cs" />
-    <Compile Include="Keyboarding\Linux\XkbKeyboardDescription.cs" />
-    <Compile Include="Keyboarding\Linux\XklConfigRegistry.cs" />
-    <Compile Include="Keyboarding\Linux\XklEngine.cs" />
-    <Compile Include="Keyboarding\Types\InputLanguageWrapper.cs" />
-    <Compile Include="Keyboarding\Types\KeyboardCollection.cs" />
-    <Compile Include="Keyboarding\Types\MouseEvent.cs" />
-    <Compile Include="Keyboarding\KeyboardController.cs" />
-    <Compile Include="Keyboarding\Types\Win32.cs" />
-    <Compile Include="Keyboarding\Windows\KeymanKeyboardAdaptor.cs" />
-    <Compile Include="Keyboarding\Windows\KeymanKeyboardDescription.cs" />
-    <Compile Include="Keyboarding\Windows\WinKeyboardAdaptor.cs" />
-    <Compile Include="Keyboarding\Windows\WinKeyboardDescription.cs" />
     <Compile Include="Miscellaneous\IUserInterfaceMemory.cs" />
     <Compile Include="Miscellaneous\TaskBarFlasher.cs" />
     <Compile Include="Miscellaneous\UsageEmailDialog.cs">
@@ -643,165 +614,6 @@
     <Compile Include="Widgets\XButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="WritingSystems\CannotFindMyLanguageDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\CannotFindMyLanguageDialog.Designer.cs">
-      <DependentUpon>CannotFindMyLanguageDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\DeleteInputSystemDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\DeleteInputSystemDialog.Designer.cs">
-      <DependentUpon>DeleteInputSystemDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\LookupISOCodeModel.cs" />
-    <Compile Include="WritingSystems\LookupISOControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\LookupISOControl.Designer.cs">
-      <DependentUpon>LookupISOControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\WritingSystemDefinitionVariantHelper.cs" />
-    <Compile Include="WritingSystems\WSIdentifiers\UnlistedLanguageView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\WSIdentifiers\UnlistedLanguageView.Designer.cs">
-      <DependentUpon>UnlistedLanguageView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\WSTree\GetDialectNameDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\WSTree\GetDialectNameDialog.Designer.cs">
-      <DependentUpon>GetDialectNameDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\LookupISOCodeDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\LookupISOCodeDialog.Designer.cs">
-      <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\WSIdentifiers\NothingSpecialView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\WSIdentifiers\NothingSpecialView.Designer.cs">
-      <DependentUpon>NothingSpecialView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\WSIdentifiers\IpaIdentifierView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\WSIdentifiers\IpaIdentifierView.Designer.cs">
-      <DependentUpon>IpaIdentifierView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\WSIdentifiers\CustomIdentifierView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\WSIdentifiers\CustomIdentifierView.Designer.cs">
-      <DependentUpon>CustomIdentifierView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\WSIdentifiers\ScriptRegionVariantView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\WSIdentifiers\ScriptRegionVariantView.Designer.cs">
-      <DependentUpon>ScriptRegionVariantView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\WSIdentifiers\VoiceIdentifierView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\WSIdentifiers\VoiceIdentifierView.Designer.cs">
-      <DependentUpon>VoiceIdentifierView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\WSIdentifiers\WSIdentifierView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\WSIdentifiers\WSIdentifierView.Designer.cs">
-      <DependentUpon>WSIdentifierView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\WSTree\WritingSystemSuggestion.cs" />
-    <Compile Include="WritingSystems\WSTree\WritingSystemTreeItem.cs" />
-    <Compile Include="WritingSystems\WSTree\WritingSystemTreeModel.cs" />
-    <Compile Include="WritingSystems\WSPickerUsingComboBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\WSPickerUsingComboBox.Designer.cs">
-      <DependentUpon>WSPickerUsingComboBox.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\WritingSystemSetupModel.cs" />
-    <Compile Include="WritingSystems\WritingSystemFromWindowsLocaleProvider.cs" />
-    <Compile Include="WritingSystems\WSAddDuplicateMoreButtonBar.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\WSAddDuplicateMoreButtonBar.Designer.cs">
-      <DependentUpon>WSAddDuplicateMoreButtonBar.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\WSFontControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\WSFontControl.Designer.cs">
-      <DependentUpon>WSFontControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\WSKeyboardControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\WSKeyboardControl.Designer.cs">
-      <DependentUpon>WSKeyboardControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\WSPickerUsingListView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\WSPickerUsingListView.Designer.cs">
-      <DependentUpon>WSPickerUsingListView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\WritingSystemSetupDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\WritingSystemSetupDialog.Designer.cs">
-      <DependentUpon>WritingSystemSetupDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\WritingSystemSetupView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\WritingSystemSetupView.Designer.cs">
-      <DependentUpon>WritingSystemSetupView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\WSPropertiesTabControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\WSPropertiesTabControl.Designer.cs">
-      <DependentUpon>WSPropertiesTabControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\WSSortControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\WSSortControl.Designer.cs">
-      <DependentUpon>WSSortControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\WSSpellingControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\WSSpellingControl.Designer.cs">
-      <DependentUpon>WSSpellingControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\WSTree\WritingSystemTreeView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="WritingSystems\WSTree\WritingSystemTreeView.Designer.cs">
-      <DependentUpon>WritingSystemTreeView.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystems\WSTree\WritingSystemSuggestor.cs" />
-    <Compile Include="Keyboarding\Linux\GlobalCachedInputContext.cs" />
-    <Compile Include="Keyboarding\Linux\IbusDefaultEventHandler.cs" />
-    <Compile Include="Keyboarding\Types\RegisterEventArgs.cs" />
-    <Compile Include="Keyboarding\Interfaces\IIbusEventHandler.cs" />
-    <Compile Include="Keyboarding\InternalInterfaces\IIbusCommunicator.cs" />
-    <Compile Include="Keyboarding\Linux\IbusCommunicator.cs" />
-    <Compile Include="Keyboarding\Linux\IbusKeyboardDescription.cs" />
-    <Compile Include="Keyboarding\Linux\X11KeyConverter.cs" />
-    <Compile Include="Keyboarding\InternalInterfaces\IXklEngine.cs" />
-    <Compile Include="Keyboarding\Windows\MsTsfInterfaces.cs" />
-    <Compile Include="Keyboarding\Linux\CommonBaseAdaptor.cs" />
-    <Compile Include="Keyboarding\Linux\CombinedKeyboardAdaptor.cs" />
-    <Compile Include="Keyboarding\Linux\CinnamonIbusAdaptor.cs" />
     <Compile Include="HtmlBrowser\IWebBrowser.cs" />
     <Compile Include="HtmlBrowser\IWebBrowserCallbacks.cs" />
     <Compile Include="HtmlBrowser\WinFormsBrowserAdapter.cs" />
@@ -968,95 +780,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Proxy\ProxyCredentialsRequestDialog.resx">
       <DependentUpon>ProxyCredentialsRequestDialog.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\CannotFindMyLanguageDialog.resx">
-      <DependentUpon>CannotFindMyLanguageDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\DeleteInputSystemDialog.resx">
-      <DependentUpon>DeleteInputSystemDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\LookupISOControl.resx">
-      <DependentUpon>LookupISOControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\WSIdentifiers\UnlistedLanguageView.resx">
-      <DependentUpon>UnlistedLanguageView.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\WSTree\GetDialectNameDialog.resx">
-      <DependentUpon>GetDialectNameDialog.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\LookupISOCodeDialog.resx">
-      <DependentUpon>LookupISOCodeDialog.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\WSIdentifiers\NothingSpecialView.resx">
-      <DependentUpon>NothingSpecialView.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\WSIdentifiers\IpaIdentifierView.resx">
-      <DependentUpon>IpaIdentifierView.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\WSIdentifiers\CustomIdentifierView.resx">
-      <DependentUpon>CustomIdentifierView.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\WSIdentifiers\ScriptRegionVariantView.resx">
-      <DependentUpon>ScriptRegionVariantView.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\WSIdentifiers\VoiceIdentifierView.resx">
-      <DependentUpon>VoiceIdentifierView.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\WSIdentifiers\WSIdentifierView.resx">
-      <DependentUpon>WSIdentifierView.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\WSPickerUsingComboBox.resx">
-      <DependentUpon>WSPickerUsingComboBox.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\WSAddDuplicateMoreButtonBar.resx">
-      <DependentUpon>WSAddDuplicateMoreButtonBar.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\WSFontControl.resx">
-      <DependentUpon>WSFontControl.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\WSKeyboardControl.resx">
-      <DependentUpon>WSKeyboardControl.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\WSPickerUsingListView.resx">
-      <DependentUpon>WSPickerUsingListView.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\WritingSystemSetupDialog.resx">
-      <DependentUpon>WritingSystemSetupDialog.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\WritingSystemSetupView.resx">
-      <DependentUpon>WritingSystemSetupView.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\WSPropertiesTabControl.resx">
-      <DependentUpon>WSPropertiesTabControl.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\WSSortControl.resx">
-      <DependentUpon>WSSortControl.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\WSSpellingControl.resx">
-      <DependentUpon>WSSpellingControl.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystems\WSTree\WritingSystemTreeView.resx">
-      <DependentUpon>WritingSystemTreeView.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>

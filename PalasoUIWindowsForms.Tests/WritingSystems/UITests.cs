@@ -9,7 +9,6 @@ using NUnit.Framework;
 using Palaso.TestUtilities;
 using Palaso.UI.WindowsForms.WritingSystems;
 using Palaso.WritingSystems;
-using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace PalasoUIWindowsForms.Tests.WritingSystems
 {

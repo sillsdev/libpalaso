@@ -7,7 +7,6 @@ using Palaso.TestUtilities;
 using Palaso.UI.WindowsForms.WritingSystems;
 using Palaso.UI.WindowsForms.WritingSystems.WSTree;
 using Palaso.WritingSystems;
-using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
 {

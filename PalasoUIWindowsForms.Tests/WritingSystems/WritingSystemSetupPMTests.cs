@@ -6,7 +6,6 @@ using System.Windows.Forms;
 using NUnit.Framework;
 using Palaso.Code;
 using Palaso.Reporting;
-using Palaso.UI.WindowsForms.Keyboarding;
 using Palaso.WritingSystems;
 using Palaso.UI.WindowsForms.WritingSystems;
 using System.Linq;

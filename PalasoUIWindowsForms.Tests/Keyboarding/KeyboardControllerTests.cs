@@ -6,10 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
-using Palaso.UI.WindowsForms.Keyboarding;
-using Palaso.UI.WindowsForms.Keyboarding.Types;
 using Palaso.WritingSystems;
-using Palaso.WritingSystems.Collation;
 
 namespace PalasoUIWindowsForms.Tests.Keyboarding
 {
