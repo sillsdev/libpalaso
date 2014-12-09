@@ -9,7 +9,8 @@ using Palaso.Lift;
 using Palaso.Lift.Options;
 using Palaso.TestUtilities;
 using Palaso.Text;
-using Palaso.WritingSystems;
+using SIL.WritingSystems;
+using SIL.WritingSystems.WritingSystems;
 
 namespace WeSay.LexicalModel.Tests
 {

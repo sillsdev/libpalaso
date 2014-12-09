@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Palaso.Lift;
 
 using NUnit.Framework;
-using Palaso.Tests.Code;
+using Palaso.TestUtilities;
 
 namespace Palaso.Lift.Tests
 {

@@ -4,9 +4,9 @@ using System.IO;
 using System.Xml;
 using NUnit.Framework;
 using Palaso.TestUtilities;
-using Palaso.WritingSystems;
-using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
-using Palaso.Extensions;
+using SIL.WritingSystems;
+using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using SIL.WritingSystems.WritingSystems;
 
 namespace Palaso.Lift.Tests
 {

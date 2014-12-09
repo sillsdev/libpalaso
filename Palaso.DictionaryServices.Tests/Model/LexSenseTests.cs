@@ -4,7 +4,7 @@ using System.ComponentModel;
 using NUnit.Framework;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
-using Palaso.Tests.Code;
+using Palaso.TestUtilities;
 
 namespace Palaso.DictionaryServices.Tests.Model
 {

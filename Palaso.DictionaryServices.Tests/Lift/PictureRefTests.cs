@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using Palaso.Lift;
-using Palaso.Tests.Code;
+using Palaso.TestUtilities;
 using Palaso.Text;
 
 namespace Palaso.DictionaryServices.Tests.Lift

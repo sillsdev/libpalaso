@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using Palaso.Annotations;
-using Palaso.Tests.Code;
+using Palaso.TestUtilities;
 using Palaso.Text;
 
 namespace Palaso.Tests.Text

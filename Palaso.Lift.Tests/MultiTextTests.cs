@@ -5,7 +5,7 @@ using Palaso.Lift;
 using Palaso.Lift.Parsing;
 using NUnit.Framework;
 using Palaso.Lift.Tests;
-using Palaso.Tests.Code;
+using Palaso.TestUtilities;
 using Palaso.Text;
 
 namespace WeSay.LexicalModel.Tests.Foundation

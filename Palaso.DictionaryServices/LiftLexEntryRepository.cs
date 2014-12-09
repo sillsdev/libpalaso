@@ -10,7 +10,8 @@ using Palaso.Lift.Options;
 using Palaso.UiBindings;
 using Palaso.Progress;
 using Palaso.Text;
-using Palaso.WritingSystems;
+using SIL.WritingSystems;
+using SIL.WritingSystems.WritingSystems;
 
 #if MONO
 using Palaso.Linq;

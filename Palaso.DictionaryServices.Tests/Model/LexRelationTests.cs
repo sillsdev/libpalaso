@@ -4,7 +4,7 @@ using System.IO;
 using NUnit.Framework;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
-using Palaso.Tests.Code;
+using Palaso.TestUtilities;
 
 // TODO Can this be moved up to Palaso.Lift.Tests?
 

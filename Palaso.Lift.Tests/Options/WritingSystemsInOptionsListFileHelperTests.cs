@@ -5,8 +5,9 @@ using System.Linq;
 using NUnit.Framework;
 using Palaso.Lift.Options;
 using Palaso.TestUtilities;
-using Palaso.WritingSystems;
-using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using SIL.WritingSystems;
+using SIL.WritingSystems.WritingSystems;
+using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace Palaso.Lift.Tests.Options
 {

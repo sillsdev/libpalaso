@@ -4,7 +4,7 @@ using Palaso.Annotations;
 using Palaso.Lift.Options;
 
 using NUnit.Framework;
-using Palaso.Tests.Code;
+using Palaso.TestUtilities;
 
 namespace Palaso.Lift.Tests
 {
