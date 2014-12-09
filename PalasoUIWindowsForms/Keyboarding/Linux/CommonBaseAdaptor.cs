@@ -178,7 +178,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 		}
 
-		public IKeyboardDefinition DefaultKeyboard
+		public virtual IKeyboardDefinition DefaultKeyboard
 		{
 			get
 			{

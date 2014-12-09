@@ -166,7 +166,18 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		    public IKeyboardDefinition DefaultKeyboard
 			{
-				get { return Adaptors.First(adaptor => adaptor.Type == KeyboardType.System).DefaultKeyboard; }
+				get
+				{
+					var defaultKbd = Adaptors.First(adaptor => adaptor.Type == KeyboardType.System).DefaultKeyboard;
+#if __MonoCS__
+					if (defaultKbd == null && CinnamonKeyboardHandling)
+					{
+						CinnamonIbusAdaptor cinn = Adaptors.First(adaptor => adaptor is CinnamonIbusAdaptor) as CinnamonIbusAdaptor;
+						defaultKbd = cinn.DefaultKeyboard;
+					}
+#endif
+					return defaultKbd;
+				}
 			}
 
 			public IKeyboardDefinition GetKeyboard(string layoutNameWithLocale)
@@ -282,8 +293,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				if (CinnamonKeyboardHandling)
 				{
 #if __MonoCS__
-					CinnamonIbusAdaptor wasta = Adaptors.First(adaptor => adaptor.GetType().ToString().Contains("CinnamonIbus")) as CinnamonIbusAdaptor;
-					wasta.ActivateDefaultKeyboard();
+					CinnamonIbusAdaptor cinn = Adaptors.First(adaptor => adaptor is CinnamonIbusAdaptor) as CinnamonIbusAdaptor;
+					cinn.ActivateDefaultKeyboard();
 #endif
 				}
 				else
