@@ -14,10 +14,10 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using Palaso.WritingSystems;
 using Palaso.TestUtilities;
+using SIL.WritingSystems.WindowsForms.Keyboarding;
 
-namespace PalasoUIWindowsForms.Tests.Keyboarding
+namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 {
 	[TestFixture]
 	public class KeyboardDescriptionIClonableGenericTests : IClonableGenericTests<KeyboardDescription, IKeyboardDefinition>

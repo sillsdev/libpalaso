@@ -1,15 +1,15 @@
-#if !MONO
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
-using Palaso.Code;
 using Palaso.Reporting;
-using Palaso.WritingSystems;
+using SIL.WritingSystems.WindowsForms.Keyboarding;
+using SIL.WritingSystems.WindowsForms.Keyboarding.Windows;
 
-namespace PalasoUIWindowsForms.Tests.Keyboarding
+#if !MONO
+
+
+namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 {
 	[TestFixture]
 	[Category("SkipOnTeamCity")] // TeamCity builds don't seem to be able to see any installed keyboards.

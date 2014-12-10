@@ -2,15 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
-using Palaso.Code;
 using Palaso.Reporting;
-using Palaso.WritingSystems;
-using Palaso.UI.WindowsForms.WritingSystems;
-using System.Linq;
+using SIL.WritingSystems.WindowsForms.Keyboarding;
 
-namespace PalasoUIWindowsForms.Tests.WritingSystems
+namespace SIL.WritingSystems.WindowsForms.Tests
 {
 	[TestFixture]
 	public class WritingSystemSetupPMTests

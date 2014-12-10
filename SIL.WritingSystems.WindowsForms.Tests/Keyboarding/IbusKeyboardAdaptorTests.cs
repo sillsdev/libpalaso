@@ -1,5 +1,8 @@
 // Copyright (c) 2013, SIL International.
 // Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
+
+namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
+{
 #if __MonoCS__
 using System;
 using System.Collections.Generic;
@@ -177,3 +180,4 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 	}
 }
 #endif
+}

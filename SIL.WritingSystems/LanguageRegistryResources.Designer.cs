@@ -39,7 +39,7 @@ namespace SIL.WritingSystems {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("LanguageRegistryResources", typeof(LanguageRegistryResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SIL.WritingSystems.LanguageRegistryResources", typeof(LanguageRegistryResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -158,8 +158,7 @@ namespace SIL.WritingSystems {
         ///aau	PG	L	Abau
         ///aaw	PG	L	Solong
         ///aax	ID	L	Mandobo Atas
-        ///aaz	ID	L	Amarasi
-        /// [rest of string was truncated]&quot;;.
+        ///aaz	ID	L	Amarasi        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string LanguageCodes {
             get {

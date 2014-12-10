@@ -1,4 +1,6 @@
-﻿#if MONO
+﻿namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
+{
+#if MONO
 using System;
 using NUnit.Framework;
 using Palaso.Reporting;
@@ -87,3 +89,4 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 }
 #endif
 #endif
+}

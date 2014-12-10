@@ -80,19 +80,11 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="nunit.framework">
       <HintPath>..\lib\common\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="ibusdotnet">
-      <HintPath>..\lib\commonMono\ibusdotnet.dll</HintPath>
-    </Reference>
-    <Reference Include="NDesk.DBus">
-      <HintPath>..\lib\commonMono\NDesk.DBus.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -118,16 +110,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>TestImages.resx</DependentUpon>
     </Compile>
-    <Compile Include="Keyboarding\FakeKeyboardController.cs" />
-    <Compile Include="Keyboarding\IBusAdaptorTestsWithIBus.cs" />
-    <Compile Include="Keyboarding\IBusAdaptorTestsWithoutIBus.cs" />
-    <Compile Include="Keyboarding\IBusEnvironmentForTest.cs" />
-    <Compile Include="Keyboarding\InputLanguageWrapperTests.cs" />
-    <Compile Include="Keyboarding\KeyboardControllerTests.cs" />
-    <Compile Include="Keyboarding\KeyboardDescriptionTests.cs" />
-    <Compile Include="Keyboarding\WindowsKeyboardControllerTests.cs" />
-    <Compile Include="Keyboarding\XkbKeyboardAdapterTests.cs" />
-    <Compile Include="Keyboarding\XklEngineTests.cs" />
     <Compile Include="Progress\Commands\ProgressDialogHandlerTests.cs" />
     <Compile Include="Progress\ProgressDialogTests.cs" />
     <Compile Include="Progress\ProgressIndicatorTests.cs" />
@@ -171,28 +153,11 @@
     </Compile>
     <Compile Include="UniqueToken\UniqueTokenTests.cs" />
     <Compile Include="Widgets\PromptTests.cs" />
-    <Compile Include="WritingSystems\LookupIsoCodeModelTests.cs" />
-    <Compile Include="WritingSystems\UITests.cs" />
-    <Compile Include="WritingSystems\Tree\WritingSystemTreeItemTests.cs" />
-    <Compile Include="WritingSystems\Tree\WritingSystemVariantSuggestorTests.cs" />
-    <Compile Include="WritingSystems\WritingSystemDefinitionVariantHelperTests.cs" />
-    <Compile Include="WritingSystems\WritingSystemSetupPMTests.cs" />
-    <Compile Include="WritingSystems\WritingSystemFromWindowsLocaleProviderTests.cs" />
-    <Compile Include="Keyboarding\LinuxKeyboardControllerTests.cs" />
-    <Compile Include="WritingSystems\Tree\WritingSystemTreeModelTests.cs" />
     <Compile Include="ErrorReporting\ErrorReportingTests.cs" />
     <Compile Include="Progress\LogBox\LogBoxFormForTest.cs" />
     <Compile Include="Progress\LogBox\LogBoxTests.cs" />
-    <Compile Include="Keyboarding\IbusDefaultEventHandlerTests.cs" />
-    <Compile Include="Keyboarding\IbusKeyboardAdaptorTests.cs" />
-    <Compile Include="Keyboarding\WinKeyboardAdaptorTests.cs" />
-    <Compile Include="Keyboarding\WinKeyboardDescriptionTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Palaso.Tests\Palaso.Tests.csproj">
-      <Project>{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}</Project>
-      <Name>Palaso.Tests</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Palaso.TestUtilities\Palaso.TestUtilities.csproj">
       <Project>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</Project>
       <Name>Palaso.TestUtilities</Name>

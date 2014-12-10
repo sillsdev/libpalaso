@@ -1,3 +1,5 @@
+namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
+{
 #if MONO
 using System.Collections.Generic;
 using System.Linq;
@@ -252,3 +254,4 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 	}
 }
 #endif
+}

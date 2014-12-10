@@ -6,6 +6,9 @@
 // 	GNU Lesser General Public License, as specified in the LICENSING.txt file.
 // </copyright>
 // --------------------------------------------------------------------------------------------
+
+namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
+{
 #if __MonoCS__
 using System;
 using System.Collections.Generic;
@@ -415,3 +418,4 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 	}
 }
 #endif
+}

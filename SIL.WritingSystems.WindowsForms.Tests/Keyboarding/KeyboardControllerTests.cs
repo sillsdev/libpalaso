@@ -1,14 +1,17 @@
 // Copyright (c) 2013, SIL International.
 // Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
-using Palaso.WritingSystems;
+using SIL.WritingSystems.Collation;
+using SIL.WritingSystems.WindowsForms.Keyboarding;
+using SIL.WritingSystems.WindowsForms.Keyboarding.Types;
 
-namespace PalasoUIWindowsForms.Tests.Keyboarding
+namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 {
 	[TestFixture]
 	public class KeyboardControllerTests

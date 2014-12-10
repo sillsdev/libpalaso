@@ -8,12 +8,11 @@
 // </copyright>
 #endregion
 // ---------------------------------------------------------------------------------------------
-using System;
 using System.Windows.Forms;
 using NUnit.Framework;
-using Palaso.WritingSystems;
+using SIL.WritingSystems.WindowsForms.Keyboarding.Types;
 
-namespace PalasoUIWindowsForms.Tests.Keyboarding
+namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 {
 	[TestFixture]
 	public class InputLanguageWrapperTests

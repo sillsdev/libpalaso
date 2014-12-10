@@ -5,6 +5,8 @@
 //
 // Original author: MarkS 2013-01-04 XklEngineTests.cs
 
+namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
+{
 #if __MonoCS__
 using System;
 using NUnit.Framework;
@@ -67,3 +69,4 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 	}
 }
 #endif
+}

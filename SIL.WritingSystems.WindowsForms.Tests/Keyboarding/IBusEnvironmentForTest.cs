@@ -1,7 +1,5 @@
-﻿using System;
-using System.Windows.Forms;
-using Palaso.Reporting;
-
+﻿namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
+{
 #if MONO
 #if WANT_PORT
 namespace PalasoUIWindowsForms.Tests.Keyboarding
@@ -70,3 +68,4 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 }
 #endif
 #endif
+}

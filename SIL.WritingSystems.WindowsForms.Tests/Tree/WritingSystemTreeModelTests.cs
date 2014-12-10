@@ -4,11 +4,10 @@ using System.Linq;
 using Moq;
 using NUnit.Framework;
 using Palaso.TestUtilities;
-using Palaso.UI.WindowsForms.WritingSystems;
-using Palaso.UI.WindowsForms.WritingSystems.WSTree;
-using Palaso.WritingSystems;
+using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using SIL.WritingSystems.WindowsForms.WSTree;
 
-namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
+namespace SIL.WritingSystems.WindowsForms.Tests.Tree
 {
 	[TestFixture]
 	public class WritingSystemTreeModelTests

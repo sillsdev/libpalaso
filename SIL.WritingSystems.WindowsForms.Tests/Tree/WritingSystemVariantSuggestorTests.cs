@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using NUnit.Framework;
-using Palaso.UI.WindowsForms.WritingSystems.WSTree;
-using Palaso.WritingSystems;
+using SIL.WritingSystems.WindowsForms.WSTree;
 
-namespace PalasoUIWindowsForms.Tests.WritingSystems.Tree
+namespace SIL.WritingSystems.WindowsForms.Tests.Tree
 {
 	[TestFixture]
 	public class WritingSystemVariantSuggestorTests

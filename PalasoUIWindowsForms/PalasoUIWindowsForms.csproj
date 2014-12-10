@@ -81,10 +81,6 @@
     </TargetFrameworkProfile>
   </PropertyGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-    <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Debug\icu.net.dll</HintPath>
-    </Reference>
     <None Include="..\lib\Debug\icudt40.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -103,10 +99,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
-    <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Release\icu.net.dll</HintPath>
-    </Reference>
     <None Include="..\lib\Release\icudt40.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -125,10 +117,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono'">
-    <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\DebugMono\icu.net.dll</HintPath>
-    </Reference>
     <None Include="..\lib\DebugMono\icu.net.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -139,10 +127,6 @@
     <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'ReleaseMono'">
-    <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\ReleaseMono\icu.net.dll</HintPath>
-    </Reference>
     <None Include="..\lib\ReleaseMono\icu.net.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -155,16 +139,6 @@
   <ItemGroup>
     <Reference Include="Enchant.Net">
       <HintPath>..\lib\common\Enchant.Net.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
-    <Reference Include="irrKlang.NET4">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\$(Configuration)\irrKlang.NET4.dll</HintPath>
-    </Reference>
-    <Reference Include="NAudio, Version=1.5.3.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\$(Configuration)\NAudio.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' ">
@@ -206,14 +180,10 @@
     <None Include="..\lib\common\Enchant.Net.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Reference Include="sysglobl" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
-    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
@@ -784,10 +754,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Palaso.Media\Palaso.Media.csproj">
-      <Project>{66B3504A-3B4E-45CB-903A-A9A75B22EF68}</Project>
-      <Name>Palaso.Media</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Palaso\Palaso.csproj">
       <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
       <Name>Palaso</Name>

@@ -7,10 +7,9 @@ using System.Threading;
 using System.Windows.Forms;
 using NUnit.Framework;
 using Palaso.TestUtilities;
-using Palaso.UI.WindowsForms.WritingSystems;
-using Palaso.WritingSystems;
+using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
-namespace PalasoUIWindowsForms.Tests.WritingSystems
+namespace SIL.WritingSystems.WindowsForms.Tests
 {
 	[TestFixture]
 	public class UITests

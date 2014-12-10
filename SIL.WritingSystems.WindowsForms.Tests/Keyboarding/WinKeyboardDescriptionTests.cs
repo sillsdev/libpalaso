@@ -1,13 +1,16 @@
 // Copyright (c) 2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-#if !__MonoCS__
+
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
+using Microsoft.Unmanaged.TSF;
 using Palaso.TestUtilities;
-using Palaso.WritingSystems;
+using SIL.WritingSystems.WindowsForms.Keyboarding.Windows;
 
-namespace PalasoUIWindowsForms.Tests.Keyboarding
+#if !__MonoCS__
+
+
+namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 {
 	internal class TestWrapper
 	{

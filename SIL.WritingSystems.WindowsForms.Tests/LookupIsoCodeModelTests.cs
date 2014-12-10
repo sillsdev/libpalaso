@@ -1,18 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.IO;
-using System.Linq;
 using System.Windows.Forms;
-using System.Text;
-
 using NUnit.Framework;
 
-using Palaso.WritingSystems;
-using Palaso.UI.WindowsForms.WritingSystems;
-
-namespace PalasoUIWindowsForms.Tests.WritingSystems
+namespace SIL.WritingSystems.WindowsForms.Tests
 {
 	[TestFixture]
 	public class LookupIsoCodeModelTests

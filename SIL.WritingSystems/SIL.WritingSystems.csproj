@@ -127,10 +127,10 @@
     <Compile Include="IWritingSystemRepository.cs" />
     <Compile Include="Keyboard.cs" />
     <Compile Include="LanguageRegistryResources.Designer.cs">
-	  <AutoGen>True</AutoGen>
-	  <DesignTime>True</DesignTime>
-	  <DependentUpon>LanguageRegistryResources.resx</DependentUpon>
-	</Compile>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LanguageRegistryResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="LdmlDataMapper.cs" />
     <Compile Include="LdmlInFolderWritingSystemRepository.cs" />
     <Compile Include="LdmlInXmlWritingSystemRepository.cs" />
@@ -221,10 +221,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="LanguageRegistryResources.resx">
-	  <Generator>ResXFileCodeGenerator</Generator>
-	  <LastGenOutput>LanguageRegistryResources.Designer.cs</LastGenOutput>
-	  <SubType>Designer</SubType>
-	</EmbeddedResource>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>LanguageRegistryResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

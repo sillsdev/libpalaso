@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using Palaso.UI.WindowsForms.WritingSystems;
-using Palaso.WritingSystems;
+﻿using NUnit.Framework;
 
-namespace PalasoUIWindowsForms.Tests.WritingSystems
+namespace SIL.WritingSystems.WindowsForms.Tests.Tree
 {
 	[TestFixture, Ignore("Not Yet")]
 	public class WritingSystemTreeItemTests

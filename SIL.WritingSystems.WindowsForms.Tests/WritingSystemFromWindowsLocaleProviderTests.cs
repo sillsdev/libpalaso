@@ -1,12 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
 using NUnit.Framework;
-using Palaso.UI.WindowsForms.WritingSystems;
-using Palaso.WritingSystems;
 
-namespace PalasoUIWindowsForms.Tests.WritingSystems
+namespace SIL.WritingSystems.WindowsForms.Tests
 {
 	[TestFixture]
 	public class WritingSystemFromWindowsLocaleProviderTests

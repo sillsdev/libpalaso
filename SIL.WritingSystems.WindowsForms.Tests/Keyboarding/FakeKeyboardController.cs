@@ -8,14 +8,12 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
 using System.Globalization;
-using System.Windows.Forms;
-using Palaso.WritingSystems;
+using SIL.WritingSystems.WindowsForms.Keyboarding;
+using SIL.WritingSystems.WindowsForms.Keyboarding.Types;
 
-namespace PalasoUIWindowsForms.Tests.Keyboarding
+namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 {
 	/// <summary>
 	/// Implements a fake do-nothing keyboard controller.
