@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using Palaso.WritingSystems;
+using SIL.WritingSystems;
+using SIL.WritingSystems.WindowsForms.Keyboarding;
 
 namespace TestAppKeyboard
 {
@@ -22,10 +17,10 @@ namespace TestAppKeyboard
 			KeyboardController.Register(testAreaA);
 			KeyboardController.Register(testAreaB);
 			KeyboardController.Register(testAreaC);
-			LoadKeyboards(this.keyboardsA);
-			LoadKeyboards(this.keyboardsB);
-			LoadKeyboards(this.keyboardsC);
-			LoadKeyboards(this.currentKeyboard);
+			LoadKeyboards(keyboardsA);
+			LoadKeyboards(keyboardsB);
+			LoadKeyboards(keyboardsC);
+			LoadKeyboards(currentKeyboard);
 		}
 
 		public void LoadKeyboards(ComboBox comboBox)

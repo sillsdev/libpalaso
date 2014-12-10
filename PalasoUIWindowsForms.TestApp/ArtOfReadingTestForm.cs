@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Windows.Forms;
 
 using Palaso.UI.WindowsForms.ImageGallery;
-using Palaso.UI.WindowsForms.WritingSystems;
-using Palaso.WritingSystems;
-using PalasoUIWindowsForms.TestApp.Properties;
 
 namespace PalasoUIWindowsForms.TestApp
 {

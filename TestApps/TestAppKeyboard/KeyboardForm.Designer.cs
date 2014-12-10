@@ -1,4 +1,6 @@
-﻿namespace TestAppKeyboard
+﻿using SIL.WritingSystems.WindowsForms.Keyboarding;
+
+namespace TestAppKeyboard
 {
 	partial class KeyboardForm
 	{

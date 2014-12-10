@@ -2,23 +2,21 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using Palaso.IO;
 using Palaso.UI.WindowsForms.ClearShare;
 using Palaso.UI.WindowsForms.ClearShare.WinFormsUI;
 using Palaso.UI.WindowsForms.HtmlBrowser;
-using Palaso.UI.WindowsForms.ImageGallery;
 using Palaso.UI.WindowsForms.ReleaseNotes;
 using Palaso.UI.WindowsForms.SIL;
-using Palaso.UI.WindowsForms.WritingSystems;
-using Palaso.WritingSystems;
 using PalasoUIWindowsForms.TestApp.Properties;
+using SIL.WritingSystems;
+using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using SIL.WritingSystems.WindowsForms;
+using SIL.WritingSystems.WindowsForms.Keyboarding;
 
 namespace PalasoUIWindowsForms.TestApp
 {
