@@ -2,8 +2,7 @@ using System;
 using System.Globalization;
 using System.Xml;
 using System.Xml.XPath;
-using SIL.WritingSystems.WritingSystems;
-using SIL.WritingSystems.WritingSystems.Collation;
+using SIL.WritingSystems.Collation;
 
 namespace AddSortKey
 {
