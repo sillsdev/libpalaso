@@ -7,7 +7,6 @@ using System.Xml;
 using Palaso.IO;
 using Palaso.Reporting;
 using SIL.WritingSystems;
-using SIL.WritingSystems.WritingSystems;
 using Palaso.Xml;
 using Palaso.Extensions;
 

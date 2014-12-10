@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using SIL.WritingSystems;
-using SIL.WritingSystems.WritingSystems;
-
 using Palaso.Data;
 
 namespace Palaso.Tests.Data

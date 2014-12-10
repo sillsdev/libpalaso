@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using Palaso.Code;
 using Palaso.Migration;
-using SIL.WritingSystems.WritingSystems;
-using SIL.WritingSystems.WritingSystems.Migration;
 
 namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {

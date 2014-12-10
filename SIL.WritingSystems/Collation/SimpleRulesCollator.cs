@@ -10,9 +10,9 @@ using Spart.Parsers;
 using Spart.Parsers.NonTerminal;
 using Spart.Parsers.Primitives;
 using Spart.Scanners;
-using Debugger=Spart.Debug.Debugger;
+using Debugger = Spart.Debug.Debugger;
 
-namespace SIL.WritingSystems.WritingSystems.Collation
+namespace SIL.WritingSystems.Collation
 {
 	public class SimpleRulesCollator : ICollator
 	{

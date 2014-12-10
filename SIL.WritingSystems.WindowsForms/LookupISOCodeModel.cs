@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using L10NSharp;
-using SIL.WritingSystems;
 
 namespace SIL.WritingSystems.WindowsForms
 {

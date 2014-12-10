@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SIL.WritingSystems.WritingSystems {
+namespace SIL.WritingSystems {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace SIL.WritingSystems.WritingSystems {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WritingSystems.WritingSystems.LanguageRegistryResources", typeof(LanguageRegistryResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("LanguageRegistryResources", typeof(LanguageRegistryResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

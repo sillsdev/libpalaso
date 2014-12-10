@@ -3,7 +3,6 @@ using System.Xml;
 using NUnit.Framework;
 using Palaso.TestUtilities;
 using SIL.WritingSystems;
-using SIL.WritingSystems.WritingSystems;
 using Palaso.Xml;
 
 namespace Palaso.Tests.Xml

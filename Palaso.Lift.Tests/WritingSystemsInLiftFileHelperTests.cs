@@ -6,7 +6,6 @@ using NUnit.Framework;
 using Palaso.TestUtilities;
 using SIL.WritingSystems;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
-using SIL.WritingSystems.WritingSystems;
 
 namespace Palaso.Lift.Tests
 {

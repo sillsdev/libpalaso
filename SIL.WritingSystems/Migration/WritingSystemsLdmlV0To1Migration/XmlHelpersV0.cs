@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Xml;
 
-namespace SIL.WritingSystems.Xml
+namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
 	public class XmlHelpersV0
 	{

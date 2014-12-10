@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using Palaso.Xml;
-using SIL.WritingSystems.WritingSystems.Collation;
+using SIL.WritingSystems.Collation;
 
 namespace SIL.WritingSystems
 {

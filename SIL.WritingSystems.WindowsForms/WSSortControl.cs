@@ -1,14 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
-using SIL.WritingSystems.WindowsForms.Keyboarding;
-using SIL.WritingSystems;
 
 namespace SIL.WritingSystems.WindowsForms
 {

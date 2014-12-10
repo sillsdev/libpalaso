@@ -2,7 +2,6 @@ using System;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using SIL.WritingSystems.WindowsForms.WSTree;
-using SIL.WritingSystems;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace SIL.WritingSystems.WindowsForms

@@ -1,6 +1,5 @@
 using System;
 using System.Windows.Forms;
-using SIL.WritingSystems;
 
 namespace SIL.WritingSystems.WindowsForms
 {

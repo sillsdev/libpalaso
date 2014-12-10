@@ -5,8 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
-using SIL.WritingSystems;
-using SIL.WritingSystems.WritingSystems.Migration;
+using SIL.WritingSystems.Migration;
 
 namespace SIL.WritingSystems.WindowsForms
 {

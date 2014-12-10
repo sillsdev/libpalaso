@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -11,7 +10,7 @@ using Spart.Parsers;
 using Spart.Scanners;
 using Debugger = Spart.Debug.Debugger;
 
-namespace SIL.WritingSystems.WritingSystems.Collation
+namespace SIL.WritingSystems.Collation
 {
 	public class IcuRulesParser
 	{

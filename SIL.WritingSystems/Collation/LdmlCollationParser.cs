@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using Palaso.Xml;
 
-namespace SIL.WritingSystems.WritingSystems.Collation
+namespace SIL.WritingSystems.Collation
 {
 	public class LdmlCollationParser
 	{

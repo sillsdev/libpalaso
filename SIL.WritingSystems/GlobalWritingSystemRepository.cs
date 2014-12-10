@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
+using SIL.WritingSystems.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
-using SIL.WritingSystems.WritingSystems.Migration;
 
 namespace SIL.WritingSystems
 {

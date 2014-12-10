@@ -5,7 +5,6 @@ using Palaso.Data;
 using Palaso.DictionaryServices.Model;
 using Palaso.Progress;
 using SIL.WritingSystems;
-using SIL.WritingSystems.WritingSystems;
 
 namespace Palaso.DictionaryServices.Processors
 {

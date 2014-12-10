@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Xml;
 
-namespace SIL.WritingSystems.WritingSystems
+namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
 	/// <summary>
 	/// Class for comparison of order of nodes in an LDML document.

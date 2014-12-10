@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Palaso.Text;
-using SIL.WritingSystems.WritingSystems;
 
 namespace SIL.WritingSystems
 {

@@ -6,8 +6,6 @@ using System.Windows.Forms;
 using L10NSharp;
 using Microsoft.Win32;
 using SIL.WritingSystems.WindowsForms.Keyboarding;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Interfaces;
-using SIL.WritingSystems;
 
 namespace SIL.WritingSystems.WindowsForms
 {

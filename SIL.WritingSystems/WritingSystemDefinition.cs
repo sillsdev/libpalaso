@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Palaso.Code;
-using SIL.WritingSystems.WritingSystems.Collation;
+using SIL.WritingSystems.Collation;
 
 namespace SIL.WritingSystems
 {

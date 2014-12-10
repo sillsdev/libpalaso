@@ -11,7 +11,6 @@ using Palaso.UiBindings;
 using Palaso.Progress;
 using Palaso.Text;
 using SIL.WritingSystems;
-using SIL.WritingSystems.WritingSystems;
 
 #if MONO
 using Palaso.Linq;

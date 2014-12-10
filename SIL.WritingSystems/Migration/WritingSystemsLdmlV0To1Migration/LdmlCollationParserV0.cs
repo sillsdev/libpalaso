@@ -5,9 +5,8 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
-using SIL.WritingSystems.Xml;
 
-namespace SIL.WritingSystems.WritingSystems.Collation
+namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
 	public class LdmlCollationParserV0
 	{

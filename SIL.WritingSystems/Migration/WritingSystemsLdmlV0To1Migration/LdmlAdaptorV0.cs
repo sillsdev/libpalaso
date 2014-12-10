@@ -1,14 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
 using Palaso.Xml;
-using SIL.WritingSystems.WritingSystems;
-using SIL.WritingSystems.WritingSystems.Collation;
-using SIL.WritingSystems.Xml;
+using SIL.WritingSystems.Collation;
 
 namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {

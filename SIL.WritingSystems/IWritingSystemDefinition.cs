@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using SIL.WritingSystems.WritingSystems.Collation;
+using SIL.WritingSystems.Collation;
 
 namespace SIL.WritingSystems
 {

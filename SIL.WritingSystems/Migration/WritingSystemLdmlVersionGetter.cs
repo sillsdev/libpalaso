@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Palaso.Migration;
 
-namespace SIL.WritingSystems.WritingSystems.Migration
+namespace SIL.WritingSystems.Migration
 {
 	/// <summary>
 	/// This identifies the version of an LDML file via /ldml/special/palaso:version/@value node

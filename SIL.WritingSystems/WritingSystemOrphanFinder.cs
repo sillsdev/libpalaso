@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SIL.WritingSystems.WritingSystems.Migration;
+using SIL.WritingSystems.Migration;
 
 namespace SIL.WritingSystems
 {

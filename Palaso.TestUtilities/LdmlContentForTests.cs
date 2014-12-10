@@ -1,7 +1,6 @@
 using System;
 using SIL.WritingSystems;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
-using SIL.WritingSystems.WritingSystems;
 
 namespace Palaso.TestUtilities
 {

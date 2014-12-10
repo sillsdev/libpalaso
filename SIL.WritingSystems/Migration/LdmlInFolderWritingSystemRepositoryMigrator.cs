@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Palaso.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
-namespace SIL.WritingSystems.WritingSystems.Migration
+namespace SIL.WritingSystems.Migration
 {
 	public class LdmlInFolderWritingSystemRepositoryMigrator : FolderMigrator
 	{
