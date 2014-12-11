@@ -66,6 +66,10 @@
     <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Debug\icu.net.dll</HintPath>
+    </Reference>
     <None Include="..\lib\Debug\icudt40.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -80,6 +84,10 @@
     </None>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Release\icu.net.dll</HintPath>
+    </Reference>
     <None Include="..\lib\Release\icudt40.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
