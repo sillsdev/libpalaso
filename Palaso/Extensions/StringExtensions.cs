@@ -238,5 +238,29 @@ namespace Palaso.Extensions
 		{
 			return value.NullTrim(null);
 		}
+
+		/// <summary>
+		/// Determines whether the string contains the specified string using the specified comparison.
+		/// </summary>
+		public static bool Contains(this String stringToSearch, String stringToFind, StringComparison comparison)
+		{
+			int ind = stringToSearch.IndexOf(stringToFind, comparison); //This comparer should be extended to be "-"/"_" insensitive as well.
+			return ind != -1;
+		}
+
+		/// <summary>
+		/// Determines whether the list of string contains the specified string using the specified comparison.
+		/// </summary>
+		public static bool Contains(this IEnumerable<string> listToSearch, string itemToFind, StringComparison comparison)
+		{
+			foreach (string s in listToSearch)
+			{
+				if (s.Equals(itemToFind, comparison))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 }

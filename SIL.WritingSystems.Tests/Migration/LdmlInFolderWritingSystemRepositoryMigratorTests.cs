@@ -751,8 +751,8 @@ namespace SIL.WritingSystems.Tests.Migration
 
 				var wsV1 = new WritingSystemDefinitionV1();
 				new LdmlAdaptorV1().Read(environment.MappedFilePath("test.ldml"), wsV1);
-				Assert.AreEqual(String.Empty, wsV1.SortRules);
-				Assert.AreEqual(Enum.GetName(typeof(WritingSystemDefinitionV0.SortRulesType), wsV0.SortUsing), Enum.GetName(typeof(WritingSystemDefinitionV1.SortRulesType), wsV0.SortUsing));
+				Assert.AreEqual(String.Empty, wsV1.CollationRules);
+				Assert.AreEqual(Enum.GetName(typeof(WritingSystemDefinitionV0.SortRulesType), wsV0.SortUsing), Enum.GetName(typeof(CollationRulesTypes), wsV0.SortUsing));
 			}
 		}
 
@@ -772,8 +772,8 @@ namespace SIL.WritingSystems.Tests.Migration
 
 				var wsV1 = new WritingSystemDefinitionV1();
 				new LdmlAdaptorV1().Read(environment.MappedFilePath("test.ldml"), wsV1);
-				Assert.AreEqual(wsV0.SortRules, wsV1.SortRules);
-				Assert.AreEqual(Enum.GetName(typeof(WritingSystemDefinitionV0.SortRulesType), wsV0.SortUsing), Enum.GetName(typeof(WritingSystemDefinitionV1.SortRulesType), wsV0.SortUsing));
+				Assert.AreEqual(wsV0.SortRules, wsV1.CollationRules);
+				Assert.AreEqual(Enum.GetName(typeof(WritingSystemDefinitionV0.SortRulesType), wsV0.SortUsing), Enum.GetName(typeof(CollationRulesTypes), wsV0.SortUsing));
 			}
 		}
 
@@ -793,8 +793,8 @@ namespace SIL.WritingSystems.Tests.Migration
 
 				var wsV1 = new WritingSystemDefinitionV1();
 				new LdmlAdaptorV1().Read(environment.MappedFilePath("test.ldml"), wsV1);
-				Assert.AreEqual(wsV0.SortRules, wsV1.SortRules);
-				Assert.AreEqual(Enum.GetName(typeof(WritingSystemDefinitionV0.SortRulesType), wsV0.SortUsing), Enum.GetName(typeof(WritingSystemDefinitionV1.SortRulesType), wsV0.SortUsing));
+				Assert.AreEqual(wsV0.SortRules, wsV1.CollationRules);
+				Assert.AreEqual(Enum.GetName(typeof(WritingSystemDefinitionV0.SortRulesType), wsV0.SortUsing), Enum.GetName(typeof(CollationRulesTypes), wsV0.SortUsing));
 			}
 		}
 
@@ -814,8 +814,8 @@ namespace SIL.WritingSystems.Tests.Migration
 
 				var wsV1 = new WritingSystemDefinitionV1();
 				new LdmlAdaptorV1().Read(environment.MappedFilePath("test.ldml"), wsV1);
-				Assert.AreEqual(wsV0.SortRules, wsV1.SortRules);
-				Assert.AreEqual(Enum.GetName(typeof(WritingSystemDefinitionV0.SortRulesType), wsV0.SortUsing), Enum.GetName(typeof(WritingSystemDefinitionV1.SortRulesType), wsV0.SortUsing));
+				Assert.AreEqual(wsV0.SortRules, wsV1.CollationRules);
+				Assert.AreEqual((int) wsV0.SortUsing, (int) wsV1.CollationRulesType);
 			}
 		}
 

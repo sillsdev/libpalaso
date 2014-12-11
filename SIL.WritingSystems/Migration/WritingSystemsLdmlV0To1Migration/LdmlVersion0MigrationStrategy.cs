@@ -76,8 +76,8 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 					Keyboard = writingSystemDefinitionV0.Keyboard,
 					LanguageName = writingSystemDefinitionV0.LanguageName,
 					RightToLeftScript = writingSystemDefinitionV0.RightToLeftScript,
-					SortRules = writingSystemDefinitionV0.SortRules,
-					SortUsing = (WritingSystemDefinitionV1.SortRulesType)writingSystemDefinitionV0.SortUsing,
+					CollationRules = writingSystemDefinitionV0.SortRules,
+					CollationRulesType = (CollationRulesTypes) writingSystemDefinitionV0.SortUsing,
 					SpellCheckingId = writingSystemDefinitionV0.SpellCheckingId,
 					VersionDescription = writingSystemDefinitionV0.VersionDescription,
 					DateModified = DateTime.Now
@@ -190,7 +190,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 		private static string UniqueTagForDuplicate(string rfcTag, IEnumerable<string> uniqueRfcTags)
 		{
-			RFC5646Tag tag = RFC5646Tag.Parse(rfcTag);
+			Rfc5646Tag tag = Rfc5646Tag.Parse(rfcTag);
 			string originalPrivateUse = tag.PrivateUse;
 			int duplicateNumber = 0;
 			do

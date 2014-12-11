@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Xml;
 using Palaso.Xml;
 using SIL.WritingSystems.Collation;
@@ -11,7 +10,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
 	public class LdmlAdaptorV0
 	{
-		private XmlNamespaceManager _nameSpaceManager;
+		private readonly XmlNamespaceManager _nameSpaceManager;
 
 		public LdmlAdaptorV0()
 		{
@@ -28,11 +27,13 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			{
 				throw new ArgumentNullException("ws");
 			}
-			XmlReaderSettings settings = new XmlReaderSettings();
-			settings.NameTable = _nameSpaceManager.NameTable;
-			settings.ValidationType = ValidationType.None;
-			settings.XmlResolver = null;
-			settings.ProhibitDtd = false;
+			var settings = new XmlReaderSettings
+			{
+				NameTable = _nameSpaceManager.NameTable,
+				ValidationType = ValidationType.None,
+				XmlResolver = null,
+				DtdProcessing = DtdProcessing.Parse
+			};
 			using (XmlReader reader = XmlReader.Create(filePath, settings))
 			{
 				ReadLdml(reader, ws);
@@ -49,12 +50,14 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			{
 				throw new ArgumentNullException("ws");
 			}
-			XmlReaderSettings settings = new XmlReaderSettings();
-			settings.NameTable = _nameSpaceManager.NameTable;
-			settings.ConformanceLevel = ConformanceLevel.Auto;
-			settings.ValidationType = ValidationType.None;
-			settings.XmlResolver = null;
-			settings.ProhibitDtd = false;
+			var settings = new XmlReaderSettings
+			{
+				NameTable = _nameSpaceManager.NameTable,
+				ConformanceLevel = ConformanceLevel.Auto,
+				ValidationType = ValidationType.None,
+				XmlResolver = null,
+				DtdProcessing = DtdProcessing.Parse
+			};
 			using (XmlReader reader = XmlReader.Create(xmlReader, settings))
 			{
 				ReadLdml(reader, ws);
@@ -64,47 +67,6 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		private static bool FindElement(XmlReader reader, string name)
 		{
 			return XmlHelpersV0.FindNextElementInSequence(reader, name, LdmlNodeComparerV0.CompareElementNames);
-		}
-
-		private static bool FindElement(XmlReader reader, string name, string nameSpace)
-		{
-			return XmlHelpersV0.FindNextElementInSequence(reader, name, nameSpace, LdmlNodeComparerV0.CompareElementNames);
-		}
-
-		private static void WriteLdmlText(XmlWriter writer, string text)
-		{
-			// Not all Unicode characters are valid in an XML document, so we need to create
-			// the <cp hex="X"> elements to replace the invalid characters.
-			// Note: While 0xD (carriage return) is a valid XML character, it is automatically
-			// either dropped or coverted to 0xA by any conforming XML parser, so we also make a <cp>
-			// element for that one.
-			StringBuilder sb = new StringBuilder(text.Length);
-			for (int i=0; i < text.Length; i++)
-			{
-				int code = Char.ConvertToUtf32(text, i);
-				if ((code == 0x9) ||
-					(code == 0xA) ||
-					(code >= 0x20 && code <= 0xD7FF) ||
-					(code >= 0xE000 && code <= 0xFFFD) ||
-					(code >= 0x10000 && code <= 0x10FFFF))
-				{
-					sb.Append(Char.ConvertFromUtf32(code));
-				}
-				else
-				{
-					writer.WriteString(sb.ToString());
-					writer.WriteStartElement("cp");
-					writer.WriteAttributeString("hex", String.Format("{0:X}", code));
-					writer.WriteEndElement();
-					sb = new StringBuilder(text.Length - i);
-				}
-
-				if (Char.IsSurrogatePair(text, i))
-				{
-					i++;
-				}
-			}
-			writer.WriteString(sb.ToString());
 		}
 
 		private void ReadLdml(XmlReader reader, WritingSystemDefinitionV0 ws)
@@ -199,7 +161,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				ws.Variant = GetSubNodeAttributeValue(identityReader, "variant", "type");
 
 				// move to end of identity node
-				while (identityReader.Read()) ;
+				while (identityReader.Read()) { }
 			}
 			if (!reader.IsEmptyElement)
 			{
@@ -223,7 +185,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				layoutReader.ReadStartElement("layout");
 				ws.RightToLeftScript = GetSubNodeAttributeValue(layoutReader, "orientation", "characters") ==
 									   "right-to-left";
-				while (layoutReader.Read());
+				while (layoutReader.Read()) { }
 			}
 			if (!reader.IsEmptyElement)
 			{
@@ -256,7 +218,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 					string collationXml = reader.ReadInnerXml();
 					ReadCollationElement(collationXml, ws);
 				}
-				while (collationsReader.Read());
+				while (collationsReader.Read()) { }
 			}
 			if (!reader.IsEmptyElement)
 			{
@@ -360,22 +322,20 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			{
 				throw new ArgumentNullException("ws");
 			}
-			XmlWriterSettings writerSettings = new XmlWriterSettings();
-			writerSettings.Indent = true;
-			writerSettings.IndentChars = "\t";
-			writerSettings.NewLineHandling = NewLineHandling.None;
 			XmlReader reader = null;
 			try
 			{
 				if (oldFile != null)
 				{
-					XmlReaderSettings readerSettings = new XmlReaderSettings();
-					readerSettings.NameTable = _nameSpaceManager.NameTable;
-					readerSettings.ConformanceLevel = ConformanceLevel.Auto;
-					readerSettings.ValidationType = ValidationType.None;
-					readerSettings.XmlResolver = null;
-					readerSettings.ProhibitDtd = false;
-					readerSettings.IgnoreWhitespace = true;
+					var readerSettings = new XmlReaderSettings
+					{
+						NameTable = _nameSpaceManager.NameTable,
+						ConformanceLevel = ConformanceLevel.Auto,
+						ValidationType = ValidationType.None,
+						XmlResolver = null,
+						DtdProcessing = DtdProcessing.Parse,
+						IgnoreWhitespace = true
+					};
 					reader = XmlReader.Create(oldFile, readerSettings);
 				}
 				using (XmlWriter writer = XmlWriter.Create(filePath, CanonicalXmlSettings.CreateXmlWriterSettings()))
@@ -409,12 +369,14 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			{
 				if (xmlReader != null)
 				{
-					XmlReaderSettings settings = new XmlReaderSettings();
-					settings.NameTable = _nameSpaceManager.NameTable;
-					settings.ConformanceLevel = ConformanceLevel.Auto;
-					settings.ValidationType = ValidationType.None;
-					settings.XmlResolver = null;
-					settings.ProhibitDtd = false;
+					var settings = new XmlReaderSettings
+					{
+						NameTable = _nameSpaceManager.NameTable,
+						ConformanceLevel = ConformanceLevel.Auto,
+						ValidationType = ValidationType.None,
+						XmlResolver = null,
+						DtdProcessing = DtdProcessing.Parse
+					};
 					reader = XmlReader.Create(xmlReader, settings);
 				}
 				WriteLdml(xmlWriter, reader, ws);
@@ -697,7 +659,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			WriteBeginSpecialElement(writer, "palaso");
 			WriteSpecialValue(writer, "palaso", "abbreviation", ws.Abbreviation);
 			WriteSpecialValue(writer, "palaso", "defaultFontFamily", ws.DefaultFontName);
-			if (ws.DefaultFontSize != 0)
+			if (Math.Abs(ws.DefaultFontSize) > float.Epsilon)
 			{
 				WriteSpecialValue(writer, "palaso", "defaultFontSize", ws.DefaultFontSize.ToString());
 			}
@@ -796,7 +758,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 						WriteCollationRulesFromCustomSimple(writer, reader, ws);
 						break;
 					case WritingSystemDefinitionV0.SortRulesType.CustomICU:
-						WriteCollationRulesFromCustomICU(writer, reader, ws);
+						WriteCollationRulesFromCustomIcu(writer, reader, ws);
 						break;
 					default:
 						string message = string.Format("Unhandled SortRulesType '{0}' while writing LDML definition file.", ws.SortUsing);
@@ -890,18 +852,18 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				return;
 			}
 			string icu = SimpleRulesCollator.ConvertToIcuRules(ws.SortRules ?? string.Empty);
-			WriteCollationRulesFromICUString(writer, reader, icu);
+			WriteCollationRulesFromIcuString(writer, reader, icu);
 		}
 
-		private void WriteCollationRulesFromCustomICU(XmlWriter writer, XmlReader reader, WritingSystemDefinitionV0 ws)
+		private void WriteCollationRulesFromCustomIcu(XmlWriter writer, XmlReader reader, WritingSystemDefinitionV0 ws)
 		{
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
 			Debug.Assert(ws.SortUsing == WritingSystemDefinitionV0.SortRulesType.CustomICU);
-			WriteCollationRulesFromICUString(writer, reader, ws.SortRules);
+			WriteCollationRulesFromIcuString(writer, reader, ws.SortRules);
 		}
 
-		private void WriteCollationRulesFromICUString(XmlWriter writer, XmlReader reader, string icu)
+		private void WriteCollationRulesFromIcuString(XmlWriter writer, XmlReader reader, string icu)
 		{
 			Debug.Assert(writer != null);
 			icu = icu ?? string.Empty;
@@ -916,7 +878,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				// for now we'll omit anything in the suppress_contractions and optimize nodes
 				FindElement(reader, "special");
 			}
-			IcuRulesParser parser = new IcuRulesParser(false);
+			var parser = new IcuRulesParser(false);
 			string message;
 			// avoid throwing exception, just don't save invalid data
 			if (!parser.ValidateIcuRules(icu, out message))
@@ -924,14 +886,6 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				return;
 			}
 			parser.WriteIcuRules(writer, icu);
-		}
-
-		//This class is used to load writing systems from ldml. It will allow the ldml adaptor to load
-		//writing systems that are otherwise invalid and give the consumer a chance to fix them up before
-		//loading them into a "real" writing system.
-		private class WritingSystemV0DefinitionForValidationChecking:WritingSystemDefinitionV0
-		{
-
 		}
 	}
 }

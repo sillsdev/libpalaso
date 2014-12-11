@@ -66,11 +66,11 @@ namespace SIL.WritingSystems
 
 		public static int CompareElementNames(string x, string y)
 		{
-			lock (_key)
+			lock (SyncRoot)
 			{
 				if (_elementNameValues == null)
 				{
-					_elementNameValues = BuildOrderDictionary(_elementOrderedNameList);
+					_elementNameValues = BuildOrderDictionary(ElementOrderedNameList);
 				}
 			}
 			// Any element named "special" always comes last, even after other new elements that may have been
@@ -88,17 +88,17 @@ namespace SIL.WritingSystems
 
 		public static int CompareAttributeNames(string x, string y)
 		{
-			lock (_key)
+			lock (SyncRoot)
 			{
 				if (_attributeNameValues == null)
 				{
-					_attributeNameValues = BuildOrderDictionary(_attributeOrderedNameList);
+					_attributeNameValues = BuildOrderDictionary(AttributeOrderedNameList);
 				}
 			}
 			return GetItemStrength(x, _attributeNameValues).CompareTo(GetItemStrength(y, _attributeNameValues));
 		}
 
-		private static readonly object _key = new object();
+		private static readonly object SyncRoot = new object();
 		private static Dictionary<XmlNodeType, int> _nodeTypeStrengths;
 
 		private static int GetItemStrength<T>(T item, IDictionary<T, int> strengthMap)
@@ -109,7 +109,7 @@ namespace SIL.WritingSystems
 
 		private static int CompareNodeTypes(XmlNode x, XmlNode y)
 		{
-			lock (_key)
+			lock (SyncRoot)
 			{
 				if (_nodeTypeStrengths == null)
 				{
@@ -121,7 +121,8 @@ namespace SIL.WritingSystems
 			return GetItemStrength(x.NodeType, _nodeTypeStrengths).CompareTo(GetItemStrength(y.NodeType, _nodeTypeStrengths));
 		}
 
-		static readonly string[] _elementOrderedNameList = new string[] {
+		static readonly string[] ElementOrderedNameList =
+		{
 			"ldml", "alternate", "attributeOrder", "attributes", "blockingItems", "calendarSystem", "character",
 			"character-fallback", "codePattern", "codesByTerritory", "comment", "context", "cp", "deprecatedItems",
 			"distinguishingItems", "elementOrder", "first_variable", "fractions", "identity", "info", "languageAlias",
@@ -162,9 +163,11 @@ namespace SIL.WritingSystems
 			"transforms", "metadata", "codeMappings", "likelySubtags", "metazoneInfo", "plurals", "telephoneCodeData",
 			"units", "collations", "posix", "segmentations", "references", "weekendStart", "weekendEnd", "width", "x",
 			"yesstr", "nostr", "yesexpr", "noexpr", "zone", "metazone", "special", "zoneAlias", "zoneFormatting",
-			"zoneItem", "supplementalData"};
+			"zoneItem", "supplementalData"
+		};
 
-		static readonly string[] _attributeOrderedNameList = new string[] {
+		static readonly string[] AttributeOrderedNameList =
+		{
 			"_q", "type", "id", "choice", "key", "registry", "source", "target", "path", "day", "date", "version",
 			"count", "lines", "characters", "iso4217", "before", "from", "to", "mzone", "number", "time", "casing",
 			"list", "uri", "digits", "rounding", "iso3166", "hex", "request", "direction", "alternate", "backwards",
@@ -174,7 +177,8 @@ namespace SIL.WritingSystems
 			"territory", "tzidVersion", "value", "values", "variant", "variants", "visibility", "alpha3", "code",
 			"end", "exclude", "fips10", "gdp", "internet", "literacyPercent", "locales", "officialStatus",
 			"population", "populationPercent", "start", "used", "writingPercent", "validSubLocales", "standard",
-			"references", "alt", "draft"};
+			"references", "alt", "draft"
+		};
 
 		private static Dictionary<string, int> _elementNameValues;
 		private static Dictionary<string, int> _attributeNameValues;
@@ -212,7 +216,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		private static int CompareAttributeValues(XmlNode x, XmlNode y)
 		{
-			lock (_key)
+			lock (SyncRoot)
 			{
 				if (_valueValues == null)
 				{
@@ -258,11 +262,11 @@ namespace SIL.WritingSystems
 		{
 			_valueValues = new Dictionary<string, Dictionary<string, int>>(14);
 			Dictionary<string, int> workingList = BuildOrderDictionary(
-				new string[] {"sun", "mon", "tue", "wed", "thu", "fri", "sat"});
+				new[] {"sun", "mon", "tue", "wed", "thu", "fri", "sat"});
 			_valueValues["weekendStart/day"] = workingList;
 			_valueValues["weekendEnd/day"] = workingList;
 			_valueValues["day/type"] = workingList;
-			workingList = BuildOrderDictionary(new string[] {"full", "long", "medium", "short"});
+			workingList = BuildOrderDictionary(new[] {"full", "long", "medium", "short"});
 			_valueValues["dateFormatLength/type"] = workingList;
 			_valueValues["timeFormatLength/type"] = workingList;
 			_valueValues["dateTimeFormatLength/type"] = workingList;
@@ -270,18 +274,18 @@ namespace SIL.WritingSystems
 			_valueValues["scientificFormatLength/type"] = workingList;
 			_valueValues["percentFormatLength/type"] = workingList;
 			_valueValues["currencyFormatLength/type"] = workingList;
-			workingList = BuildOrderDictionary(new string[] {"wide", "abbreviated", "narrow"});
+			workingList = BuildOrderDictionary(new[] {"wide", "abbreviated", "narrow"});
 			_valueValues["monthWidth/type"] = workingList;
 			_valueValues["dayWidth/type"] = workingList;
 			workingList = BuildOrderDictionary(
-				new string[] {"era", "year", "month", "week", "day", "weekday", "dayperiod", "hour", "minute", "second", "zone"});
+				new[] {"era", "year", "month", "week", "day", "weekday", "dayperiod", "hour", "minute", "second", "zone"});
 			_valueValues["field/type"] = workingList;
 		}
 
 		private static Dictionary<string, int> BuildOrderDictionary(string[] valuesInOrder)
 		{
 			Debug.Assert(valuesInOrder != null);
-			Dictionary<string, int> result = new Dictionary<string, int>(valuesInOrder.Length);
+			var result = new Dictionary<string, int>(valuesInOrder.Length);
 			for (int i = 0; i < valuesInOrder.Length; i++)
 			{
 				result.Add(valuesInOrder[i], i);

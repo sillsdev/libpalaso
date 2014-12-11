@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using SIL.WritingSystems.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
@@ -11,8 +12,8 @@ namespace SIL.WritingSystems
 	public class GlobalWritingSystemRepository : LdmlInFolderWritingSystemRepository
 	{
 
-		private static GlobalWritingSystemRepository _instance = null;
-		private static readonly object _padlock = new object();
+		private static GlobalWritingSystemRepository _instance;
+		private static readonly object Padlock = new object();
 
 		///<summary>
 		/// Returns an instance of the global writing system reposistory.  Apps must call Intialize prior to calling this.
@@ -24,7 +25,7 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				lock (_padlock)
+				lock (Padlock)
 				{
 					if (_instance == null)
 					{
@@ -52,7 +53,7 @@ namespace SIL.WritingSystems
 		///<param name="migrationHandler">Callback if during the initialization any writing system id's are changed</param>
 		internal static GlobalWritingSystemRepository InitializeWithBasePath(string basePath, LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler)
 		{
-			lock (_padlock)
+			lock (Padlock)
 			{
 				if (_instance == null)
 				{
@@ -110,7 +111,7 @@ namespace SIL.WritingSystems
 		///</summary>
 		public static string CurrentVersionPath(string basePath)
 		{
-			return Path.Combine(basePath, WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString());
+			return Path.Combine(basePath, WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString(CultureInfo.InvariantCulture));
 		}
 
 	}

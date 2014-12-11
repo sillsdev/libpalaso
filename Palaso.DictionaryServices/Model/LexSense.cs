@@ -8,7 +8,7 @@ using Palaso.Reporting;
 
 namespace Palaso.DictionaryServices.Model
 {
-	public sealed class LexSense: PalasoDataObject, IClonableGeneric<LexSense>
+	public sealed class LexSense : PalasoDataObject, ICloneable<LexSense>, IEquatable<LexSense>
 	{
 		//private readonly SenseGlossMultiText _gloss;
 		private readonly BindingList<LexExampleSentence> _exampleSentences;

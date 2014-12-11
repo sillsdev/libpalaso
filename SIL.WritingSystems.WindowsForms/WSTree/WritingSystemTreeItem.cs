@@ -104,10 +104,10 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 
 	public class WritingSystemDefinitionTreeItem : WritingSystemTreeItem
 	{
-		public IWritingSystemDefinition Definition { get; set; }
+		public WritingSystemDefinition Definition { get; set; }
 		protected static Font kExistingItemFont = new Font(SystemFonts.MessageBoxFont.Name, 11);
 
-		public WritingSystemDefinitionTreeItem(IWritingSystemDefinition definition, Action<WritingSystemTreeItem> clickAction)
+		public WritingSystemDefinitionTreeItem(WritingSystemDefinition definition, Action<WritingSystemTreeItem> clickAction)
 			: base(definition.ListLabel, clickAction)
 		{
 			Definition = definition;

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SIL.WritingSystems;
 
 namespace SIL.WritingSystems.WindowsForms.WSTree
 {
@@ -41,7 +40,7 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 		/// </summary>
 		public bool SuppressSuggestionsForMajorWorldLanguages { get; set; }
 
-		public IEnumerable<IWritingSystemDefinitionSuggestion> GetSuggestions(IWritingSystemDefinition primary, IEnumerable<IWritingSystemDefinition> existingWritingSystemsForLanguage)
+		public IEnumerable<IWritingSystemDefinitionSuggestion> GetSuggestions(WritingSystemDefinition primary, IEnumerable<WritingSystemDefinition> existingWritingSystemsForLanguage)
 		{
 			if(string.IsNullOrEmpty(primary.Language) && !primary.Variant.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
 				yield break;
@@ -72,7 +71,7 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 		}
 
 
-		public IEnumerable<IWritingSystemDefinitionSuggestion> GetOtherLanguageSuggestions(IEnumerable<IWritingSystemDefinition> existingDefinitions)
+		public IEnumerable<IWritingSystemDefinitionSuggestion> GetOtherLanguageSuggestions(IEnumerable<WritingSystemDefinition> existingDefinitions)
 		{
 			if (OtherKnownWritingSystems != null)
 			{

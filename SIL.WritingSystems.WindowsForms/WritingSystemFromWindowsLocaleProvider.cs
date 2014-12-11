@@ -9,6 +9,9 @@ using SIL.WritingSystems.Migration;
 
 namespace SIL.WritingSystems.WindowsForms
 {
+	/// <summary>
+	/// This class gets a writing system for each installed input language.
+	/// </summary>
 	public class WritingSystemFromWindowsLocaleProvider : IEnumerable<WritingSystemDefinition>
 	{
 //        public static Palaso.WritingSystems.WritingSystemDefinition Get(string rfc4646)
@@ -44,7 +47,7 @@ namespace SIL.WritingSystems.WindowsForms
 			{
 				//REVIEW: if we changed the "none" to "Replacement", that would presumably get us past the KanKani crash, but is that the right
 				//thing to do, or a hack which would mean we lose region information on other languages?
-				System.Globalization.CultureAndRegionInfoBuilder b = new CultureAndRegionInfoBuilder(language.Culture.ThreeLetterISOLanguageName, CultureAndRegionModifiers.None);
+				var b = new CultureAndRegionInfoBuilder(language.Culture.ThreeLetterISOLanguageName, CultureAndRegionModifiers.None);
 				b.LoadDataFromCultureInfo(language.Culture);
 				return b.TwoLetterISORegionName ?? String.Empty;
 			}
@@ -60,9 +63,9 @@ namespace SIL.WritingSystems.WindowsForms
 
 		public IEnumerator<WritingSystemDefinition> GetEnumerator()
 		{
-			var defs = GetLanguageAndKeyboardCombinations();
+			IEnumerable<WritingSystemDefinition> defs = GetLanguageAndKeyboardCombinations();
 			//now just return the unique ones (Works because no keyboard in the rfc4646)
-			var unique= defs.GroupBy(d => d.Bcp47Tag)
+			IEnumerable<WritingSystemDefinition> unique = defs.GroupBy(d => d.Bcp47Tag)
 				.Select(g => g.First());
 			return unique.GetEnumerator();
 		}
@@ -71,7 +74,7 @@ namespace SIL.WritingSystems.WindowsForms
 		{
 			foreach (InputLanguage language in InputLanguage.InstalledInputLanguages)
 			{
-				CultureInfo culture = null;
+				CultureInfo culture;
 				try
 				{
 					//http://www.wesay.org/issues/browse/WS-34598
@@ -79,7 +82,7 @@ namespace SIL.WritingSystems.WindowsForms
 					//http://www.ironspeed.com/Designer/3.2.4/WebHelp/Part_VI/Culture_ID__XXX__is_not_a_supported_culture.htm and others
 					culture = language.Culture;
 				}
-				catch (CultureNotFoundException e)
+				catch (CultureNotFoundException)
 				{
 					continue;
 				}
@@ -93,9 +96,6 @@ namespace SIL.WritingSystems.WindowsForms
 					region = GetRegion(language);
 				}
 
-
-				var name = TrimOffCountryNameOfMajorLanguage(language);
-
 				var cleaner = new Rfc5646TagCleaner(culture.TwoLetterISOLanguageName, "", region, "", "");
 				cleaner.Clean();
 
@@ -108,24 +108,13 @@ namespace SIL.WritingSystems.WindowsForms
 					culture.TextInfo.IsRightToLeft);
 				def.NativeName = culture.NativeName;
 				def.Keyboard = language.LayoutName;
-				def.SortUsing = WritingSystemDefinition.SortRulesType.OtherLanguage;
-				def.SortRules = culture.IetfLanguageTag;
+				def.CollationRulesType = CollationRulesTypes.OtherLanguage;
+				def.CollationRules = culture.IetfLanguageTag;
 				def.DefaultFontSize = 12;
 				def.LanguageName = culture.DisplayName;
 
 				yield return def;
 			}
-		}
-
-		/// <summary>
-		/// It's confusing for people to be presented with "English (UnitedStates)" or Icelandic (Iceland)
-		/// </summary>
-		private string TrimOffCountryNameOfMajorLanguage(InputLanguage language)
-		{
-			var name = language.Culture.EnglishName;
-			if (name.StartsWith("English"))
-				name = "English";
-			return name;
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()

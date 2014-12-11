@@ -48,7 +48,7 @@ namespace SIL.WritingSystems.WindowsForms
 		public WritingSystemSetupDialog(
 			string writingSystemRepositoryPath,
 			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
-			WritingSystemLoadProblemHandler loadProblemHandler
+			Action<IEnumerable<WritingSystemRepositoryProblem>> loadProblemHandler
 		) : this(LdmlInFolderWritingSystemRepository.Initialize(
 			writingSystemRepositoryPath,
 			migrationHandler,

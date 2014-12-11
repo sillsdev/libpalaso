@@ -1,14 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Palaso.Data;
 
 namespace SIL.WritingSystems
 {
-	//This is different from the algorithm used by the RfcTagCleaner because Flex puts Wellknown Scripts, Regions and Properties behind
-	//the private use "x-" marker and expects them to be treated as if non-private use. So while the Rfc5646TagCleaner would simply move
-	//"x-en-Zxxx-US-fonipa-private" to private use, this class converts it to "qaa-Zxxx-US-fonipa-x-private-en".
-	//Also this class tries to move any private use language subtag (starts with "x-" as per flex) to be the first private use tag when
-	//rearranged
+	/// <summary>
+	/// This is different from the algorithm used by the RfcTagCleaner because Flex puts Wellknown Scripts, Regions and Properties behind
+	/// the private use "x-" marker and expects them to be treated as if non-private use. So while the Rfc5646TagCleaner would simply move
+	/// "x-en-Zxxx-US-fonipa-private" to private use, this class converts it to "qaa-Zxxx-US-fonipa-x-private-en".
+	/// Also this class tries to move any private use language subtag (starts with "x-" as per flex) to be the first private use tag when
+	/// rearranged
+	/// </summary>
 	public class FlexConformPrivateUseRfc5646TagInterpreter
 	{
 		private string _language = String.Empty;
@@ -43,7 +46,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private string[] StripXs(string newPrivateUse)
+		private IEnumerable<string> StripXs(string newPrivateUse)
 		{
 			return newPrivateUse.Split('-').Where(str => !str.Equals("x", StringComparison.OrdinalIgnoreCase)).ToArray();
 		}
@@ -109,9 +112,9 @@ namespace SIL.WritingSystems
 			ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, region, variant);
 		}
 
-		public string RFC5646Tag
+		public string Rfc5646Tag
 		{
-			get { return string.Join("-", new string[] { Language, Script, Region, Variant }.Select(t => t).Where(str => !String.IsNullOrEmpty(str)).ToArray()); }
+			get { return string.Join("-", new[] { Language, Script, Region, Variant }.Select(t => t).Where(str => !String.IsNullOrEmpty(str)).ToArray()); }
 		}
 
 		public string Language

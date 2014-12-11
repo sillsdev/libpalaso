@@ -4,11 +4,6 @@ using System.Globalization;
 
 namespace SIL.WritingSystems
 {
-	public delegate void WritingSystemIdChangedEventHandler(object sender, WritingSystemIdChangedEventArgs e);
-	public delegate void WritingSystemDeleted(object sender, WritingSystemDeletedEventArgs e);
-	public delegate void WritingSystemConflatedEventHandler(object sender, WritingSystemConflatedEventArgs e);
-	public delegate void WritingSystemLoadProblemHandler(IEnumerable<WritingSystemRepositoryProblem> problems);
-
 	///<summary>
 	/// Specifies any comaptibiltiy modes that can be imposed on a WritingSystemRepository
 	///</summary>
@@ -26,52 +21,76 @@ namespace SIL.WritingSystems
 		Flex7V0Compatible
 	};
 
+	public class WritingSystemIdChangedEventArgs : EventArgs
+	{
+		public WritingSystemIdChangedEventArgs(string oldId, string newId)
+		{
+			OldId = oldId;
+			NewId = newId;
+		}
+		public string OldId { get; private set; }
+		public string NewId { get; private set; }
+	}
+
+	public class WritingSystemConflatedEventArgs : WritingSystemIdChangedEventArgs
+	{
+		public WritingSystemConflatedEventArgs(string oldId, string newId)
+			: base(oldId, newId)
+		{
+		}
+	}
+
+	public class WritingSystemDeletedEventArgs : EventArgs
+	{
+		public WritingSystemDeletedEventArgs(string id)
+		{
+			Id = id;
+		}
+		public string Id { get; private set; }
+	}
+
+	/// <summary>
+	/// The writing system repository interface.
+	/// </summary>
 	public interface IWritingSystemRepository
 	{
 		/// <summary>
 		/// Notifies a consuming class of a changed writing system id on Set()
 		/// </summary>
-		event WritingSystemIdChangedEventHandler WritingSystemIdChanged;
+		event EventHandler<WritingSystemIdChangedEventArgs> WritingSystemIdChanged;
 
 		/// <summary>
 		/// Notifies a consuming class of a deleted writing system
 		/// </summary>
-		event WritingSystemDeleted WritingSystemDeleted;
+		event EventHandler<WritingSystemDeletedEventArgs> WritingSystemDeleted;
 
 		/// <summary>
 		/// Notifies a consuming class of a conflated writing system
 		/// </summary>
-		event WritingSystemConflatedEventHandler WritingSystemConflated;
+		event EventHandler<WritingSystemConflatedEventArgs> WritingSystemConflated;
 
 		/// <summary>
 		/// Adds the writing system to the store or updates the store information about
 		/// an already-existing writing system.  Set should be called when there is a change
 		/// that updates the RFC5646 information.
 		/// </summary>
-		void Set(IWritingSystemDefinition ws);
+		void Set(WritingSystemDefinition ws);
 
 		/// <summary>
 		/// Returns true if a call to Set should succeed, false if a call to Set would throw
 		/// </summary>
-		bool CanSet(IWritingSystemDefinition ws);
+		bool CanSet(WritingSystemDefinition ws);
 
 		/// <summary>
 		/// Gets the writing system object for the given Store ID
 		/// </summary>
-		IWritingSystemDefinition Get(string identifier);
+		WritingSystemDefinition Get(string identifier);
 
 		/// <summary>
 		/// If the given writing system were passed to Set, this function returns the
 		/// new StoreID that would be assigned.
 		/// </summary>
-		string GetNewStoreIDWhenSet(IWritingSystemDefinition ws);
-
-		/// <summary>
-		/// Returns true if a writing system with the given Store ID exists in the store
-		/// Contains is preferred
-		/// </summary>
-		[Obsolete("Use Contains instead")]
-		bool Exists(string identifier);
+		string GetNewStoreIDWhenSet(WritingSystemDefinition ws);
 
 		/// <summary>
 		/// Returns true if a writing system with the given Store ID exists in the store
@@ -87,7 +106,7 @@ namespace SIL.WritingSystems
 		/// Creates a new writing system object and returns it.  Set will need to be called
 		/// once identifying information has been changed in order to save it in the store.
 		/// </summary>
-		IWritingSystemDefinition CreateNew();
+		WritingSystemDefinition CreateNew();
 
 		/// <summary>
 		/// Merges two writing systems into one.
@@ -102,23 +121,23 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Returns a list of all writing system definitions in the store.
 		/// </summary>
-		IEnumerable<IWritingSystemDefinition> AllWritingSystems { get; }
+		IEnumerable<WritingSystemDefinition> AllWritingSystems { get; }
 
 		/// <summary>
 		/// Returns a list of *text* writing systems in the store
 		/// </summary>
-		IEnumerable<IWritingSystemDefinition> TextWritingSystems { get; }
+		IEnumerable<WritingSystemDefinition> TextWritingSystems { get; }
 
 		/// <summary>
 		/// Returns a list of *audio* writing systems in the store
 		/// </summary>
-		IEnumerable<IWritingSystemDefinition> VoiceWritingSystems { get; }
+		IEnumerable<WritingSystemDefinition> VoiceWritingSystems { get; }
 		/// <summary>
 		/// Makes a duplicate of an existing writing system definition.  Set will need
 		/// to be called with this new duplicate once identifying information has been changed
 		/// in order to place the new definition in the store.
 		/// </summary>
-		IWritingSystemDefinition MakeDuplicate(IWritingSystemDefinition definition);
+		WritingSystemDefinition MakeDuplicate(WritingSystemDefinition definition);
 
 		/// <summary>
 		/// If a consumer has a writingSystemId that is not contained in the
@@ -145,6 +164,9 @@ namespace SIL.WritingSystems
 		/// </summary>
 		string WritingSystemIdHasChangedTo(string id);
 
+		/// <summary>
+		/// 
+		/// </summary>
 		void LastChecked(string identifier, DateTime dateModified);
 
 		/// <summary>
@@ -156,12 +178,12 @@ namespace SIL.WritingSystems
 		/// Returns a list of writing systems from rhs which are newer than ones in the store.
 		/// </summary>
 		// TODO: Maybe this should be IEnumerable<string> .... which returns the identifiers.
-		IEnumerable<IWritingSystemDefinition> WritingSystemsNewerIn(IEnumerable<IWritingSystemDefinition> rhs);
+		IEnumerable<WritingSystemDefinition> WritingSystemsNewerIn(IEnumerable<WritingSystemDefinition> rhs);
 
 		/// <summary>
 		/// Event Handler that updates the store when a writing system id has changed
 		/// </summary>
-		void OnWritingSystemIDChange(IWritingSystemDefinition ws, string oldId);
+		void OnWritingSystemIDChange(WritingSystemDefinition ws, string oldId);
 
 		///<summary>
 		/// Returns a list of writing system tags that apply only to text based writing systems.
@@ -217,6 +239,6 @@ namespace SIL.WritingSystems
 		///			ActiveWritingSystem, wsRepo.AllWritingSystems.ToArray())
 		/// }
 		/// Linux usage will have to be determined, no InputLangChanged event gets raised in Mono.
-		IWritingSystemDefinition GetWsForInputLanguage(string layoutName, CultureInfo cultureInfo, IWritingSystemDefinition wsCurrent, IWritingSystemDefinition[] candidates);
+		WritingSystemDefinition GetWsForInputLanguage(string layoutName, CultureInfo cultureInfo, WritingSystemDefinition wsCurrent, WritingSystemDefinition[] candidates);
 	}
 }

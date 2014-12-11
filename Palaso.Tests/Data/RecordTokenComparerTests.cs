@@ -74,14 +74,10 @@ namespace Palaso.Tests.Data
 		{
 			using (var e = new TestEnvironment())
 			{
-				var ws = new WritingSystemDefinition("en");
-				ws.SortUsing = WritingSystemDefinition.SortRulesType.OtherLanguage;
-				ws.SortRules = "km-KH";
+				var ws = new WritingSystemDefinition("en") {CollationRulesType = CollationRulesTypes.OtherLanguage, CollationRules = "km-KH"};
 				var sd1 = new SortDefinition("Form", ws.Collator);
-				var results1 = new Dictionary<string, object>();
-				results1.Add("Form", "សង្ឃនៃអំបូរអឺរ៉ុន");
-				var results2 = new Dictionary<string, object>();
-				results2.Add("Form", "បូជាចារ្យនៃអំបូរអឺរ៉ុន");
+				var results1 = new Dictionary<string, object> {{"Form", "សង្ឃនៃអំបូរអឺរ៉ុន"}};
+				var results2 = new Dictionary<string, object> {{"Form", "បូជាចារ្យនៃអំបូរអឺរ៉ុន"}};
 				var rt1 = new RecordToken<PalasoTestItem>(e.DataMapper, results1, new TestRepositoryId(8));
 				var rt2 = new RecordToken<PalasoTestItem>(e.DataMapper, results2, new TestRepositoryId(8));
 

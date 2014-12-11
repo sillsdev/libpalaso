@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Palaso.Code;
 using Palaso.Lift;
 
 namespace Palaso.DictionaryServices.Model
 {
-	public sealed class LexExampleSentence: PalasoDataObject, IClonableGeneric<LexExampleSentence>
+	public sealed class LexExampleSentence: PalasoDataObject, ICloneable<LexExampleSentence>, IEquatable<LexExampleSentence>
 	{
 		private string _translationType;
 

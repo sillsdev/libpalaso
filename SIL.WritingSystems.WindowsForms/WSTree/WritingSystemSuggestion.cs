@@ -34,7 +34,7 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 
 	public class VoiceSuggestion : WritingSystemSuggestion
 	{
-		public VoiceSuggestion(IWritingSystemDefinition primary)
+		public VoiceSuggestion(WritingSystemDefinition primary)
 		{
 			_templateDefinition = primary.Clone();
 			_templateDefinition.IsVoice = true;
@@ -45,7 +45,7 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 		{
 			return TemplateDefinition;
 		}
-		public static bool ShouldSuggest(IEnumerable<IWritingSystemDefinition> existingWritingSystemsForLanguage)
+		public static bool ShouldSuggest(IEnumerable<WritingSystemDefinition> existingWritingSystemsForLanguage)
 		{
 			return !existingWritingSystemsForLanguage.Any(def => def.IsVoice);
 		}
@@ -53,10 +53,10 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 
 	public class DialectSuggestion : WritingSystemSuggestion
 	{
-		public DialectSuggestion(IWritingSystemDefinition primary)
+		public DialectSuggestion(WritingSystemDefinition primary)
 		{
 			_templateDefinition = primary.Clone();
-			this.Label = string.Format("new dialect of {0}", _templateDefinition.LanguageName);
+			Label = string.Format("new dialect of {0}", _templateDefinition.LanguageName);
 		}
 		public override WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()
 		{
@@ -75,7 +75,7 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 		/// </summary>
 		private readonly string[] _fontsForIpa = { "arial unicode ms", "lucinda sans unicode", "doulous sil", FontFamily.GenericSansSerif.Name };
 
-		public IpaSuggestion(IWritingSystemDefinition primary)
+		public IpaSuggestion(WritingSystemDefinition primary)
 		{
 			_templateDefinition = new WritingSystemDefinition(primary.Language, "", primary.Region, primary.Variant, "ipa", false)
 									  {
@@ -87,7 +87,7 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 			var ipaKeyboard = Keyboard.Controller.AllAvailableKeyboards.FirstOrDefault(k => k.Id.ToLower().Contains("ipa"));
 			if (ipaKeyboard != null)
 				_templateDefinition.Keyboard = ipaKeyboard.Id;
-			this.Label = string.Format("IPA input system for {0}", _templateDefinition.LanguageName);
+			Label = string.Format("IPA input system for {0}", _templateDefinition.LanguageName);
 		}
 		public override WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()
 		{
@@ -101,18 +101,18 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 			return f.Name.ToLower() == name.ToLower();
 		}
 
-		public static bool ShouldSuggest(IEnumerable<IWritingSystemDefinition> existingWritingSystemsForLanguage)
+		public static bool ShouldSuggest(IEnumerable<WritingSystemDefinition> existingWritingSystemsForLanguage)
 		{
-			return !existingWritingSystemsForLanguage.Any(def => def.IpaStatus != IpaStatusChoices.NotIpa);
+			return existingWritingSystemsForLanguage.All(def => def.IpaStatus == IpaStatusChoices.NotIpa);
 		}
 	}
 
 	public class OtherSuggestion : WritingSystemSuggestion
 	{
-		public OtherSuggestion(IWritingSystemDefinition primary, IEnumerable<IWritingSystemDefinition> exisitingWritingSystemsForLanguage)
+		public OtherSuggestion(WritingSystemDefinition primary, IEnumerable<WritingSystemDefinition> exisitingWritingSystemsForLanguage)
 		{
 			_templateDefinition = WritingSystemDefinition.CreateCopyWithUniqueId(primary, exisitingWritingSystemsForLanguage.Select(ws=>ws.Id));
-			this.Label = string.Format("other input system for {0}", _templateDefinition.LanguageName);
+			Label = string.Format("other input system for {0}", _templateDefinition.LanguageName);
 		}
 		public override WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()
 		{
@@ -129,7 +129,7 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 		public LanguageSuggestion(WritingSystemDefinition definition)
 		{
 			_templateDefinition = definition;
-			this.Label = string.Format(_templateDefinition.ListLabel);
+			Label = string.Format(_templateDefinition.ListLabel);
 		}
 		public override WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()
 		{

@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
-using SIL.WritingSystems;
 
 namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
 {
@@ -71,7 +66,7 @@ namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
 
 		private void UpdateSpecialComboBox()
 		{
-			if (_model.CurrentISO == WellKnownSubTags.Unlisted.Language)
+			if (_model.CurrentISO == WellKnownSubtags.UnlistedLanguage)
 			{
 				if (comboBox1.Items.Count == 4)
 				{

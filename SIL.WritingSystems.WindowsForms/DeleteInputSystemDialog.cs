@@ -16,16 +16,16 @@ namespace SIL.WritingSystems.WindowsForms
 
 		public event EventHandler HelpWithDeletingWritingSystemsButtonClickedEvent;
 
-		public DeleteInputSystemDialog(IWritingSystemDefinition wsToDelete,
-									   IEnumerable<IWritingSystemDefinition> possibleWritingSystemsToConflateWith, bool showHelpButton)
+		public DeleteInputSystemDialog(WritingSystemDefinition wsToDelete,
+									   IEnumerable<WritingSystemDefinition> possibleWritingSystemsToConflateWith, bool showHelpButton)
 		{
 			InitializeComponent();
 			if (!showHelpButton)
 			{
 				_helpButton.Hide();
 			}
-			_deleteRadioButton.Text = String.Format((string) _deleteRadioButton.Text, DisplayName(wsToDelete));
-			_mergeRadioButton.Text = String.Format((string) _mergeRadioButton.Text, DisplayName(wsToDelete));
+			_deleteRadioButton.Text = String.Format(_deleteRadioButton.Text, DisplayName(wsToDelete));
+			_mergeRadioButton.Text = String.Format(_mergeRadioButton.Text, DisplayName(wsToDelete));
 			_wsSelectionComboBox.Items.AddRange(
 				possibleWritingSystemsToConflateWith.Where(ws => ws != wsToDelete).Select(ws=>new WritingSystemDisplayAdaptor(ws)).ToArray());
 			Choice = Choices.Delete;
@@ -42,7 +42,7 @@ namespace SIL.WritingSystems.WindowsForms
 			_deleteRadioButton.Checked = true;
 		}
 
-		private static string DisplayName(IWritingSystemDefinition ws)
+		private static string DisplayName(WritingSystemDefinition ws)
 		{
 			return String.Format("\"{0}\" ({1})", ws.ListLabel, ws.Id);
 		}
@@ -91,16 +91,16 @@ namespace SIL.WritingSystems.WindowsForms
 			Close();
 		}
 
-		public IWritingSystemDefinition WritingSystemToConflateWith
+		public WritingSystemDefinition WritingSystemToConflateWith
 		{
 			get { return ((WritingSystemDisplayAdaptor) _wsSelectionComboBox.SelectedItem).AdaptedWs; }
 		}
 
 		private class WritingSystemDisplayAdaptor
 		{
-			private IWritingSystemDefinition _wsToAdapt;
+			private WritingSystemDefinition _wsToAdapt;
 
-			public WritingSystemDisplayAdaptor(IWritingSystemDefinition wsToAdapt)
+			public WritingSystemDisplayAdaptor(WritingSystemDefinition wsToAdapt)
 			{
 				_wsToAdapt = wsToAdapt;
 			}
@@ -110,7 +110,7 @@ namespace SIL.WritingSystems.WindowsForms
 				return DisplayName(_wsToAdapt);
 			}
 
-			public IWritingSystemDefinition AdaptedWs
+			public WritingSystemDefinition AdaptedWs
 			{
 				get { return _wsToAdapt; }
 			}

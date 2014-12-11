@@ -12,7 +12,7 @@ using Palaso.Text;
 
 namespace Palaso.Lift
 {
-	public interface IPalasoDataObjectProperty : IClonableGeneric<IPalasoDataObjectProperty>
+	public interface IPalasoDataObjectProperty : ICloneable<IPalasoDataObjectProperty>, IEquatable<IPalasoDataObjectProperty>
 	{
 		PalasoDataObject Parent { set; }
 	}

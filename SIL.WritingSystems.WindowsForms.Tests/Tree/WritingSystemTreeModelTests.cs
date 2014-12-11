@@ -45,7 +45,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Tree
 
 			public void SetDefinitionsInStore(IEnumerable<WritingSystemDefinition> defs)
 			{
-				MockSetupModel.SetupGet(x => x.WritingSystemDefinitions).Returns(new List<IWritingSystemDefinition>(defs));
+				MockSetupModel.SetupGet(x => x.WritingSystemDefinitions).Returns(new List<WritingSystemDefinition>(defs));
 			}
 
 			public void Dispose()

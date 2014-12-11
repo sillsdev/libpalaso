@@ -1,16 +1,12 @@
 using System;
 using System.Xml.Serialization;
 using Palaso.Code;
-using Palaso.Text;
-
 
 namespace Palaso.Annotations
 {
-	public class Annotatable : IAnnotatable, IClonableGeneric<Annotatable>
+	public class Annotatable : IAnnotatable, ICloneable<Annotatable>, IEquatable<Annotatable>
 	{
 		protected Annotation _annotation;
-
-		public Annotatable(){}
 
 		[XmlAttribute("starred")]
 		public bool IsStarred
@@ -62,7 +58,7 @@ namespace Palaso.Annotations
 	/// <summary>
 	/// An annotation is a like a "flag" on a field. You can say, e.g., "I'm not sure about this"
 	/// </summary>
-	public class Annotation: IClonableGeneric<Annotation>
+	public class Annotation : ICloneable<Annotation>, IEquatable<Annotation>
 	{
 		/// <summary>
 		/// 0 means "off".  1 means "starred". In the future, other positive values could correspond to other icon.

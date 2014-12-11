@@ -46,7 +46,7 @@ namespace SIL.WritingSystems
 				}
 				else
 				{
-					return x.Description.CompareTo(y.Description);
+					return String.Compare(x.Description, y.Description, StringComparison.Ordinal);
 				}
 			}
 		}

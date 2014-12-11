@@ -9,7 +9,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void ParseSubtagForParts_SubtagContainsMultipleParts_PartsAreReturned()
 		{
-			List<string> parts = RFC5646Tag.SubTag.ParseSubtagForParts("en-Latn-x-audio");
+			List<string> parts = Rfc5646Tag.Subtag.ParseSubtagForParts("en-Latn-x-audio");
 			Assert.AreEqual(4, parts.Count);
 			Assert.AreEqual("en", parts[0]);
 			Assert.AreEqual("Latn", parts[1]);
@@ -20,7 +20,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void ParseSubtagForParts_SubtagContainsOnePart_PartIsReturned()
 		{
-			List<string> parts = RFC5646Tag.SubTag.ParseSubtagForParts("en");
+			List<string> parts = Rfc5646Tag.Subtag.ParseSubtagForParts("en");
 			Assert.AreEqual(1, parts.Count);
 			Assert.AreEqual("en", parts[0]);
 		}
@@ -28,21 +28,21 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void ParseSubtagForParts_SubtagIsEmpty_ListisEmpty()
 		{
-			List<string> parts = RFC5646Tag.SubTag.ParseSubtagForParts("");
+			List<string> parts = Rfc5646Tag.Subtag.ParseSubtagForParts("");
 			Assert.IsTrue(parts.Count == 0);
 		}
 
 		[Test]
 		public void ParseSubtagForParts_SubtagcontainsOnlyDashes_ListisEmpty()
 		{
-			List<string> parts = RFC5646Tag.SubTag.ParseSubtagForParts("-------");
+			List<string> parts = Rfc5646Tag.Subtag.ParseSubtagForParts("-------");
 			Assert.IsTrue(parts.Count == 0);
 		}
 
 		[Test]
 		public void ParseSubtagForParts_SubtagContainsMultipleConsecutiveDashes_DashesAreTreatedAsSingleDashes()
 		{
-			List<string> parts = RFC5646Tag.SubTag.ParseSubtagForParts("-en--Latn-x---audio--");
+			List<string> parts = Rfc5646Tag.Subtag.ParseSubtagForParts("-en--Latn-x---audio--");
 			Assert.AreEqual(4, parts.Count);
 			Assert.AreEqual("en", parts[0]);
 			Assert.AreEqual("Latn", parts[1]);

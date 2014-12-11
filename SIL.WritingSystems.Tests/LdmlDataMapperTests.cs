@@ -117,9 +117,7 @@ namespace SIL.WritingSystems.Tests
 			var ldmlAdaptor = new LdmlDataMapper();
 
 			const string sortRules = "(A̍ a̍)";
-			var wsWithSimpleCustomSortRules = new WritingSystemDefinition();
-			wsWithSimpleCustomSortRules.SortUsing = WritingSystemDefinition.SortRulesType.CustomSimple;
-			wsWithSimpleCustomSortRules.SortRules = sortRules;
+			var wsWithSimpleCustomSortRules = new WritingSystemDefinition {CollationRulesType = CollationRulesTypes.CustomSimple, CollationRules = sortRules};
 
 			var wsFromLdml = new WritingSystemDefinition();
 			using (var tempFile = new TempFile())
@@ -128,7 +126,7 @@ namespace SIL.WritingSystems.Tests
 				ldmlAdaptor.Read(tempFile.Path, wsFromLdml);
 			}
 
-			Assert.AreEqual(sortRules, wsFromLdml.SortRules);
+			Assert.AreEqual(sortRules, wsFromLdml.CollationRules);
 		}
 
 		[Test]
@@ -138,18 +136,11 @@ namespace SIL.WritingSystems.Tests
 
 			Keyboard.Controller = new MyKeyboardController();
 
-			const string sortRules = "(A̍ a̍)";
 			var wsWithKnownKeyboards = new WritingSystemDefinition();
-			var keyboard1 = new DefaultKeyboardDefinition();
-			keyboard1.Locale = "en-US";
-			keyboard1.Layout = "MyFavoriteKeyboard";
-			keyboard1.OperatingSystem = PlatformID.MacOSX; // pick something that for sure won't be our default
+			var keyboard1 = new DefaultKeyboardDefinition {Locale = "en-US", Layout = "MyFavoriteKeyboard", OperatingSystem = PlatformID.MacOSX};
 			wsWithKnownKeyboards.AddKnownKeyboard(keyboard1);
 
-			var keyboard2 = new DefaultKeyboardDefinition();
-			keyboard2.Locale = "en-GB";
-			keyboard2.Layout = "SusannasFavoriteKeyboard";
-			keyboard2.OperatingSystem = PlatformID.Unix;
+			var keyboard2 = new DefaultKeyboardDefinition {Locale = "en-GB", Layout = "SusannasFavoriteKeyboard", OperatingSystem = PlatformID.Unix};
 			wsWithKnownKeyboards.AddKnownKeyboard(keyboard2);
 
 			var wsFromLdml = new WritingSystemDefinition();
@@ -181,7 +172,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			public override IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
 			{
-				return new MyKeyboardDefn()
+				return new MyKeyboardDefn
 				{
 					Layout = layout,
 					Locale = locale,
@@ -248,7 +239,7 @@ namespace SIL.WritingSystems.Tests
 					var wsFromNoCollationElement = new WritingSystemDefinition();
 					adaptor.Read(pathToLdmlWithNoCollationElement, wsFromNoCollationElement);
 
-					Assert.AreEqual(wsFromNoCollationElement.SortUsing, wsFromEmptyCollationElement.SortUsing);
+					Assert.AreEqual(wsFromNoCollationElement.CollationRulesType, wsFromEmptyCollationElement.CollationRulesType);
 				}
 				finally
 				{
@@ -835,8 +826,8 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(() => dataMapper.Read(file.Path, ws),
 								Throws.Exception.TypeOf<ApplicationException>()
 										.With.Property("Message")
-										.EqualTo(String.Format("The LDML tag 'en' is version 0.  Version {1} was expected.", file.Path,
-																	  WritingSystemDefinition.LatestWritingSystemDefinitionVersion)));
+										.EqualTo(String.Format("The LDML tag 'en' is version 0.  Version {0} was expected.", 
+										WritingSystemDefinition.LatestWritingSystemDefinitionVersion)));
 			}
 		}
 
@@ -888,8 +879,8 @@ namespace SIL.WritingSystems.Tests
 				var secondTripMapper = new LdmlDataMapper();
 				var secondTripWs = new WritingSystemDefinition();
 				secondTripMapper.Read(roundTripOut.Path, secondTripWs);
-				secondTripWs.AddKnownKeyboard(new DefaultKeyboardDefinition()
-					{
+				secondTripWs.AddKnownKeyboard(new DefaultKeyboardDefinition
+				{
 						Locale = "qaa",
 						Layout = "x-tel",
 						OperatingSystem = PlatformID.Xbox

@@ -13,7 +13,7 @@ namespace Palaso.DictionaryServices.Model
 		List<LexField> Fields { get; }
 	}
 
-	public class LexTrait:IClonableGeneric<LexTrait>
+	public class LexTrait : ICloneable<LexTrait>, IEquatable<LexTrait>
 	{
 		public string Name;
 		public string Value;

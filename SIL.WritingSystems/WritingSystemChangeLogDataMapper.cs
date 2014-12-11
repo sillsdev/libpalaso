@@ -38,20 +38,21 @@ namespace SIL.WritingSystems
 			_tempWriteFilePath = filePath + "_appended";
 
 			// xmlreader settings
-			_xmlReadSettings = new XmlReaderSettings();
-			_xmlReadSettings.ValidationType = ValidationType.None;
-			_xmlReadSettings.XmlResolver = null;
-			_xmlReadSettings.ProhibitDtd = false;
-			_xmlReadSettings.IgnoreWhitespace = true;
+			_xmlReadSettings = new XmlReaderSettings
+			{
+				ValidationType = ValidationType.None,
+				XmlResolver = null,
+				DtdProcessing = DtdProcessing.Parse,
+				IgnoreWhitespace = true
+			};
 		}
 
-		private XmlReaderSettings _xmlReadSettings;
-		private string _tempWriteFilePath;
+		private readonly XmlReaderSettings _xmlReadSettings;
+		private readonly string _tempWriteFilePath;
 		public string FilePath { get; set; }
 
 		public void Read(WritingSystemChangeLog log)
 		{
-
 			if (File.Exists(FilePath))
 			{
 				try
@@ -63,7 +64,8 @@ namespace SIL.WritingSystems
 							ReadLog(reader, log);
 						}
 					}
-				}catch(FormatException e)   //This exception is thrown when the time format is locale specific. This was the case for a very short time when the log was introduced. (WS-34444)
+				}
+				catch(FormatException)   //This exception is thrown when the time format is locale specific. This was the case for a very short time when the log was introduced. (WS-34444)
 				{
 					File.Delete(FilePath);
 				}

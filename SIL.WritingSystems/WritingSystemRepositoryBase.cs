@@ -21,15 +21,19 @@ namespace SIL.WritingSystems
 	abstract public class WritingSystemRepositoryBase : IWritingSystemRepository
 	{
 
-		private readonly Dictionary<string, IWritingSystemDefinition> _writingSystems;
+		private readonly Dictionary<string, WritingSystemDefinition> _writingSystems;
 		private readonly Dictionary<string, DateTime> _writingSystemsToIgnore;
 
-		protected Dictionary<string, string> _idChangeMap;
+		private readonly Dictionary<string, string> _idChangeMap;
 
-		public event WritingSystemIdChangedEventHandler WritingSystemIdChanged;
-		public event WritingSystemDeleted WritingSystemDeleted;
-		public event WritingSystemConflatedEventHandler WritingSystemConflated;
-		protected bool Conflating{ get; private set; }
+		public event EventHandler<WritingSystemIdChangedEventArgs> WritingSystemIdChanged;
+		public event EventHandler<WritingSystemDeletedEventArgs> WritingSystemDeleted;
+		public event EventHandler<WritingSystemConflatedEventArgs> WritingSystemConflated;
+
+		/// <summary>
+		/// Indicates that writing systems are merging.
+		/// </summary>
+		protected bool Conflating { get; private set; }
 
 		/// <summary>
 		/// Constructor, set the CompatibilityMode
@@ -37,12 +41,15 @@ namespace SIL.WritingSystems
 		protected WritingSystemRepositoryBase(WritingSystemCompatibility compatibilityMode)
 		{
 			CompatibilityMode = compatibilityMode;
-			_writingSystems = new Dictionary<string, IWritingSystemDefinition>(StringComparer.OrdinalIgnoreCase);
+			_writingSystems = new Dictionary<string, WritingSystemDefinition>(StringComparer.OrdinalIgnoreCase);
 			_writingSystemsToIgnore = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
 			_idChangeMap = new Dictionary<string, string>();
 			//_sharedStore = LdmlSharedWritingSystemRepository.Singleton;
 		}
 
+		/// <summary>
+		/// Gets the writing systems to ignore.
+		/// </summary>
 		protected IDictionary<string, DateTime> WritingSystemsToIgnore
 		{
 			get
@@ -51,11 +58,22 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		virtual public IWritingSystemDefinition CreateNew()
+		/// <summary>
+		/// Gets the changed IDs mapping.
+		/// </summary>
+		protected IDictionary<string, string> ChangedIDs
+		{
+			get { return _idChangeMap; }
+		}
+
+		virtual public WritingSystemDefinition CreateNew()
 		{
 			return new WritingSystemDefinition();
 		}
 
+		/// <summary>
+		/// Creates the LDML adaptor that this repository will use.
+		/// </summary>
 		virtual protected LdmlDataMapper CreateLdmlAdaptor()
 		{
 			return new LdmlDataMapper();
@@ -123,12 +141,15 @@ namespace SIL.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Removes all writing systems.
+		/// </summary>
 		protected void Clear()
 		{
 			_writingSystems.Clear();
 		}
 
-		public IWritingSystemDefinition MakeDuplicate(IWritingSystemDefinition definition)
+		public WritingSystemDefinition MakeDuplicate(WritingSystemDefinition definition)
 		{
 			if (definition == null)
 			{
@@ -139,12 +160,6 @@ namespace SIL.WritingSystems
 
 		public abstract bool WritingSystemIdHasChanged(string id);
 
-		[Obsolete("Deprecated: use Contains instead")]
-		public bool Exists(string identifier)
-		{
-			return Contains(identifier);
-		}
-
 		public bool Contains(string identifier)
 		{
 			// identifier should not be null, but some unit tests never define StoreID
@@ -152,7 +167,7 @@ namespace SIL.WritingSystems
 			return identifier != null && _writingSystems.ContainsKey(identifier);
 		}
 
-		public bool CanSet(IWritingSystemDefinition ws)
+		public bool CanSet(WritingSystemDefinition ws)
 		{
 			if (ws == null)
 			{
@@ -162,7 +177,7 @@ namespace SIL.WritingSystems
 				ws.StoreID != _writingSystems[ws.Id].StoreID);
 		}
 
-		public virtual void  Set(IWritingSystemDefinition ws)
+		public virtual void Set(WritingSystemDefinition ws)
 		{
 			if (ws == null)
 			{
@@ -187,14 +202,14 @@ namespace SIL.WritingSystems
 			// and we should respect the one the user set...though this is a very unlikely scenario, as we probably
 			// don't have a local setting for a WS that is just being created.
 			IKeyboardDefinition keyboard;
-			if (_localKeyboardSettings != null && ((WritingSystemDefinition) ws).RawLocalKeyboard == null
+			if (_localKeyboardSettings != null && ws.RawLocalKeyboard == null
 				&& _localKeyboardSettings.TryGetValue(ws.Id, out keyboard))
 			{
 				ws.LocalKeyboard = keyboard;
 			}
 			if (!String.IsNullOrEmpty(oldId) && (oldId != ws.Id))
 			{
-				UpdateIdChangeMap(oldId, ws.Id);
+				UpdateChangedIDs(oldId, ws.Id);
 				if (WritingSystemIdChanged != null)
 				{
 					WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.Id));
@@ -206,7 +221,10 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		protected void UpdateIdChangeMap(string oldId, string newId)
+		/// <summary>
+		/// Updates the changed IDs mapping.
+		/// </summary>
+		protected void UpdateChangedIDs(string oldId, string newId)
 		{
 			if (_idChangeMap.ContainsValue(oldId))
 			{
@@ -221,7 +239,10 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		protected void LoadIdChangeMapFromExistingWritingSystems()
+		/// <summary>
+		/// Loads the changed IDs mapping from the existing writing systems.
+		/// </summary>
+		protected void LoadChangedIDsFromExistingWritingSystems()
 		{
 			_idChangeMap.Clear();
 			foreach (var pair in _writingSystems)
@@ -230,7 +251,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		public string GetNewStoreIDWhenSet(IWritingSystemDefinition ws)
+		public string GetNewStoreIDWhenSet(WritingSystemDefinition ws)
 		{
 			if (ws == null)
 			{
@@ -239,7 +260,7 @@ namespace SIL.WritingSystems
 			return String.IsNullOrEmpty(ws.StoreID) ? ws.Id : ws.StoreID;
 		}
 
-		public IWritingSystemDefinition Get(string identifier)
+		public WritingSystemDefinition Get(string identifier)
 		{
 			if (identifier == null)
 			{
@@ -264,7 +285,7 @@ namespace SIL.WritingSystems
 		{
 		}
 
-		virtual protected void OnChangeNotifySharedStore(IWritingSystemDefinition ws)
+		virtual protected void OnChangeNotifySharedStore(WritingSystemDefinition ws)
 		{
 			DateTime lastDateModified;
 			if (_writingSystemsToIgnore.TryGetValue(ws.Id, out lastDateModified) && ws.DateModified > lastDateModified)
@@ -275,14 +296,14 @@ namespace SIL.WritingSystems
 		{
 		}
 
-		virtual public IEnumerable<IWritingSystemDefinition> WritingSystemsNewerIn(IEnumerable<IWritingSystemDefinition> rhs)
+		virtual public IEnumerable<WritingSystemDefinition> WritingSystemsNewerIn(IEnumerable<WritingSystemDefinition> rhs)
 		{
 			if (rhs == null)
 			{
 				throw new ArgumentNullException("rhs");
 			}
 			var newerWritingSystems = new List<WritingSystemDefinition>();
-			foreach (var ws in rhs)
+			foreach (WritingSystemDefinition ws in rhs)
 			{
 				Guard.AgainstNull(ws, "ws in rhs");
 				if (_writingSystems.ContainsKey(ws.Bcp47Tag))
@@ -298,7 +319,7 @@ namespace SIL.WritingSystems
 			return newerWritingSystems;
 		}
 
-		public IEnumerable<IWritingSystemDefinition> AllWritingSystems
+		public IEnumerable<WritingSystemDefinition> AllWritingSystems
 		{
 			get
 			{
@@ -306,17 +327,17 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		public IEnumerable<IWritingSystemDefinition> TextWritingSystems
+		public IEnumerable<WritingSystemDefinition> TextWritingSystems
 		{
 			get { return _writingSystems.Values.Where(ws => !ws.IsVoice); }
 		}
 
-		public IEnumerable<IWritingSystemDefinition> VoiceWritingSystems
+		public IEnumerable<WritingSystemDefinition> VoiceWritingSystems
 		{
 			get { return _writingSystems.Values.Where(ws => ws.IsVoice); }
 		}
 
-		public virtual void OnWritingSystemIDChange(IWritingSystemDefinition ws, string oldId)
+		public virtual void OnWritingSystemIDChange(WritingSystemDefinition ws, string oldId)
 		{
 			_writingSystems[ws.Id] = ws;
 			_writingSystems.Remove(oldId);
@@ -348,7 +369,7 @@ namespace SIL.WritingSystems
 			get
 			{
 				var root = new XElement("keyboards");
-				foreach (var ws in AllWritingSystems)
+				foreach (WritingSystemDefinition ws in AllWritingSystems)
 				{
 					// We don't want to call LocalKeyboard here, because that will come up with some default.
 					// If RawLocalKeyboard is null, we have never typed in this WS.
@@ -356,7 +377,7 @@ namespace SIL.WritingSystems
 					// or done a Send/Receive and obtained a better list of KnownKeyboards, and we can then
 					// make a better first guess than we can now. Calling LocalKeyboard and persisting the
 					// result would have the effect of making our current guess permanent.
-					var kbd = ((WritingSystemDefinition) ws).RawLocalKeyboard;
+					IKeyboardDefinition kbd = ws.RawLocalKeyboard;
 					if (kbd == null)
 						continue;
 					root.Add(new XElement("keyboard",
@@ -409,14 +430,14 @@ namespace SIL.WritingSystems
 		/// <param name="wsCurrent"></param>
 		/// <param name="options"></param>
 		/// <returns></returns>
-		public IWritingSystemDefinition GetWsForInputLanguage(string layoutName, CultureInfo cultureInfo, IWritingSystemDefinition wsCurrent,
-			IWritingSystemDefinition[] options)
+		public WritingSystemDefinition GetWsForInputLanguage(string layoutName, CultureInfo cultureInfo, WritingSystemDefinition wsCurrent,
+			WritingSystemDefinition[] options)
 		{
 			// See if the default is suitable.
 			if (WsMatchesLayout(layoutName, wsCurrent) && WsMatchesCulture(cultureInfo, wsCurrent))
 				return wsCurrent;
-			IWritingSystemDefinition layoutMatch = null;
-			IWritingSystemDefinition cultureMatch = null;
+			WritingSystemDefinition layoutMatch = null;
+			WritingSystemDefinition cultureMatch = null;
 			foreach (var ws in options)
 			{
 				bool matchesCulture = WsMatchesCulture(cultureInfo, ws);
@@ -433,16 +454,14 @@ namespace SIL.WritingSystems
 			return layoutMatch ?? cultureMatch ?? wsCurrent;
 		}
 
-		bool WsMatchesLayout(string layoutName, IWritingSystemDefinition ws)
+		private bool WsMatchesLayout(string layoutName, WritingSystemDefinition ws)
 		{
-			var wsd = ws as WritingSystemDefinition;
-			return wsd != null && wsd.RawLocalKeyboard != null && wsd.RawLocalKeyboard.Layout == layoutName;
+			return ws != null && ws.RawLocalKeyboard != null && ws.RawLocalKeyboard.Layout == layoutName;
 		}
 
-		private bool WsMatchesCulture(CultureInfo cultureInfo, IWritingSystemDefinition ws)
+		private bool WsMatchesCulture(CultureInfo cultureInfo, WritingSystemDefinition ws)
 		{
-			var wsd = ws as WritingSystemDefinition;
-			return wsd != null && wsd.RawLocalKeyboard != null && wsd.RawLocalKeyboard.Locale == cultureInfo.Name;
+			return ws != null && ws.RawLocalKeyboard != null && ws.RawLocalKeyboard.Locale == cultureInfo.Name;
 		}
 
 		private string GetAttributeValue(XElement node, string attrName)
@@ -452,32 +471,5 @@ namespace SIL.WritingSystems
 				return "";
 			return attr.Value;
 		}
-	}
-
-	public class WritingSystemIdChangedEventArgs : EventArgs
-	{
-		public WritingSystemIdChangedEventArgs(string oldId, string newId)
-		{
-			OldId = oldId;
-			NewId = newId;
-		}
-		public string OldId { get; private set; }
-		public string NewId { get; private set; }
-	}
-
-	public class WritingSystemConflatedEventArgs:WritingSystemIdChangedEventArgs
-	{
-		public WritingSystemConflatedEventArgs(string oldId, string newId) : base(oldId, newId)
-		{
-		}
-	}
-
-	public class WritingSystemDeletedEventArgs : EventArgs
-	{
-		public WritingSystemDeletedEventArgs(string id)
-		{
-			Id = id;
-		}
-		public string Id { get; private set; }
 	}
 }

@@ -14,37 +14,37 @@ namespace SIL.WritingSystems
 	/// - does not support singletons other than "x-"
 	/// - does not support grandfathered, regular or irregular tags
 	/// </summary>
-	internal class RFC5646Tag : Object, IClonableGeneric<RFC5646Tag>
+	internal class Rfc5646Tag : ICloneable<Rfc5646Tag>, IEquatable<Rfc5646Tag>
 	{
-		internal class SubTag: IClonableGeneric<SubTag>
+		internal class Subtag : ICloneable<Subtag>
 		{
-			private List<string> _subTagParts;
+			private readonly List<string> _subtagParts;
 
-			public SubTag()
+			public Subtag()
 			{
-				_subTagParts = new List<string>();
+				_subtagParts = new List<string>();
 			}
 
-			public SubTag(SubTag rhs)
+			public Subtag(Subtag rhs)
 			{
-				_subTagParts = new List<string>(rhs._subTagParts);
+				_subtagParts = new List<string>(rhs._subtagParts);
 			}
 
 			public int Count
 			{
-				get { return _subTagParts.Count; }
+				get { return _subtagParts.Count; }
 			}
 
 			public string CompleteTag
 			{
 				get
 				{
-					if (_subTagParts.Count == 0)
+					if (_subtagParts.Count == 0)
 					{
 						return String.Empty;
 					}
 					string subtagAsString = "";
-					foreach (string part in _subTagParts)
+					foreach (string part in _subtagParts)
 					{
 						if (!String.IsNullOrEmpty(subtagAsString))
 						{
@@ -58,7 +58,7 @@ namespace SIL.WritingSystems
 
 			public IEnumerable<string> AllParts
 			{
-				get { return _subTagParts; }
+				get { return _subtagParts; }
 			}
 
 			public static List<string> ParseSubtagForParts(string subtagToParse)
@@ -74,14 +74,14 @@ namespace SIL.WritingSystems
 				List<string> partsOfStringToAdd = ParseSubtagForParts(partsToAdd);
 				foreach (string part in partsOfStringToAdd)
 				{
-					_subTagParts.Add(part);
+					_subtagParts.Add(part);
 				}
 			}
 
 			public void ThrowIfSubtagContainsInvalidContent()
 			{
 				string offendingSubtag;
-				if ((!String.IsNullOrEmpty(offendingSubtag = _subTagParts.Find(StringContainsNonAlphaNumericCharacters))))
+				if ((!String.IsNullOrEmpty(offendingSubtag = _subtagParts.Find(StringContainsNonAlphaNumericCharacters))))
 				{
 					throw new ValidationException(
 						String.Format(
@@ -107,69 +107,56 @@ namespace SIL.WritingSystems
 					{
 						continue;
 					}
-					int indexOfPartToRemove = _subTagParts.FindIndex(partInSubtag => partInSubtag.Equals(partToRemove, StringComparison.OrdinalIgnoreCase));
-					_subTagParts.RemoveAt(indexOfPartToRemove);
+					int indexOfPartToRemove = _subtagParts.FindIndex(partInSubtag => partInSubtag.Equals(partToRemove, StringComparison.OrdinalIgnoreCase));
+					_subtagParts.RemoveAt(indexOfPartToRemove);
 				}
 			}
 
 			public bool Contains(string partToFind)
 			{
-				return _subTagParts.Any(part => part.Equals(partToFind, StringComparison.OrdinalIgnoreCase));
+				return _subtagParts.Any(part => part.Equals(partToFind, StringComparison.OrdinalIgnoreCase));
 			}
 
 			public void ThrowIfSubtagContainsDuplicates()
 			{
-				foreach (string part in _subTagParts)
+				foreach (string part in _subtagParts)
 				{
 					//if (part.Equals("-") || part.Equals("_"))
 					//{
 					//    continue;
 					//}
-					if(_subTagParts.FindAll(p => p.Equals(part, StringComparison.OrdinalIgnoreCase)).Count > 1)
+					if(_subtagParts.FindAll(p => p.Equals(part, StringComparison.OrdinalIgnoreCase)).Count > 1)
 					{
 						throw new ValidationException(String.Format("Subtags may never contain duplicate parts. The duplicate part was: {0}", part));
 					}
 				}
 			}
 
-			public SubTag Clone()
+			public Subtag Clone()
 			{
-				return new SubTag(this);
-			}
-
-			public override bool Equals(object other)
-			{
-				if (!(other is SubTag)) return false;
-				return Equals((SubTag) other);
-			}
-
-			public bool Equals(SubTag other)
-			{
-				if (other == null) return false;
-				if (!_subTagParts.SequenceEqual(other._subTagParts)) return false;
-				return true;
+				return new Subtag(this);
 			}
 
 			public IEnumerable<string> GetPrivateUseSubtagsMatchingRegEx(string pattern)
 			{
 				var regex = new Regex(pattern);
-				return _subTagParts.Where(part => regex.IsMatch(part));
+				return _subtagParts.Where(part => regex.IsMatch(part));
 			}
 		}
 
 		private string _language = "";
 		private string _script = "";
 		private string _region = "";
-		private SubTag _variant = new SubTag();
-		private SubTag _privateUse = new SubTag();
+		private Subtag _variant = new Subtag();
+		private Subtag _privateUse = new Subtag();
 		private bool _requiresValidTag = true;
 
-		public RFC5646Tag() :
+		public Rfc5646Tag() :
 			this("qaa", String.Empty, String.Empty, String.Empty, String.Empty)
 		{
 		}
 
-		public RFC5646Tag(string language, string script, string region, string variant, string privateUse)
+		public Rfc5646Tag(string language, string script, string region, string variant, string privateUse)
 		{
 			_language = language ?? "";
 			_script = script ?? "";
@@ -183,13 +170,13 @@ namespace SIL.WritingSystems
 		/// Copy constructor
 		///</summary>
 		///<param name="rhs"></param>
-		public RFC5646Tag(RFC5646Tag rhs)
+		public Rfc5646Tag(Rfc5646Tag rhs)
 		{
 			_language = rhs._language;
 			_script = rhs._script;
 			_region = rhs._region;
-			_variant = new SubTag(rhs._variant);
-			_privateUse = new SubTag(rhs._privateUse);
+			_variant = new Subtag(rhs._variant);
+			_privateUse = new Subtag(rhs._privateUse);
 			_requiresValidTag = rhs._requiresValidTag;
 		}
 
@@ -311,7 +298,7 @@ namespace SIL.WritingSystems
 
 		private void SetPrivateUseSubtags(string tags)
 		{
-			_privateUse = new SubTag();
+			_privateUse = new Subtag();
 			AddToPrivateUse(tags);
 		}
 
@@ -375,7 +362,7 @@ namespace SIL.WritingSystems
 			}
 			set
 			{
-				_variant = new SubTag();
+				_variant = new Subtag();
 				AddToVariant(value);
 			}
 		}
@@ -405,12 +392,6 @@ namespace SIL.WritingSystems
 			get { return _privateUse.Count > 0; }
 		}
 
-		private void SetVariantSubtags(string tags)
-		{
-			_variant = new SubTag();
-			AddToVariant(tags);
-		}
-
 		private void ValidateVariant()
 		{
 			var invalidPart = _variant.AllParts.FirstOrDefault(part => !StandardTags.IsValidRegisteredVariant(part));
@@ -432,11 +413,11 @@ namespace SIL.WritingSystems
 		///</summary>
 		///<param name="inputString">valid RFC5646 string</param>
 		///<returns>RFC5646Tag object</returns>
-		public static RFC5646Tag Parse(string inputString)
+		public static Rfc5646Tag Parse(string inputString)
 		{
 			var tokens = inputString.Split(new[] {'-'});
 
-			var rfc5646Tag = new RFC5646Tag();
+			var rfc5646Tag = new Rfc5646Tag();
 
 			bool haveX = false;
 			for (int position = 0; position < tokens.Length; ++position)
@@ -452,7 +433,7 @@ namespace SIL.WritingSystems
 					//This is the case for RfcTags consisting only of a private use subtag
 					if(position==1)
 					{
-						rfc5646Tag = new RFC5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, token);
+						rfc5646Tag = new Rfc5646Tag(String.Empty, String.Empty, String.Empty, String.Empty, token);
 						continue;
 					}
 					rfc5646Tag.AddToPrivateUse(token);
@@ -485,16 +466,16 @@ namespace SIL.WritingSystems
 
 		public override bool Equals(Object obj)
 		{
-			if (!(obj is RFC5646Tag)) return false;
-			return Equals((RFC5646Tag) obj);
+			if (!(obj is Rfc5646Tag)) return false;
+			return Equals((Rfc5646Tag) obj);
 		}
 
-		public RFC5646Tag Clone()
+		public Rfc5646Tag Clone()
 		{
-			return new RFC5646Tag(this);
+			return new Rfc5646Tag(this);
 		}
 
-		public bool Equals(RFC5646Tag other)
+		public bool Equals(Rfc5646Tag other)
 		{
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;

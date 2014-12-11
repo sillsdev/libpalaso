@@ -18,6 +18,9 @@ namespace SIL.WritingSystems
 		/// <summary>Force the dialog to return 3 letter iso codes even if a 2 letter code is available</summary>
 		public bool Force3LetterCodes { get; set; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="EthnologueLookup"/> class.
+		/// </summary>
 		public EthnologueLookup()
 		{
 			Force3LetterCodes = false;
@@ -44,9 +47,9 @@ namespace SIL.WritingSystems
 				if (items.Length != 4)
 					continue;
 				var code = items[0].Trim();
-				string TwoLetterCode;
-				if (ThreeToTwoLetter.TryGetValue(code, out TwoLetterCode))
-					code = TwoLetterCode;
+				string twoLetterCode;
+				if (ThreeToTwoLetter.TryGetValue(code, out twoLetterCode))
+					code = twoLetterCode;
 
 				LanguageInfo language = GetOrCreateLanguageFromCode(code, items[1].Trim());
 
@@ -65,17 +68,17 @@ namespace SIL.WritingSystems
 			}
 
 			//Why just this small set? Only out of convenience. Ideally we'd have a db of all languages as they write it in their literature.
-			this.CodeToLanguageIndex["fr"].LocalName =  "français";
-			this.CodeToLanguageIndex["es"].LocalName =  "español";
-			this.CodeToLanguageIndex["zho"].LocalName =  "中文"; //chinese
-			this.CodeToLanguageIndex["hi"].LocalName =  "हिन्दी"; //hindi
-			this.CodeToLanguageIndex["bn"].LocalName =  "বাংলা"; //bengali
-			this.CodeToLanguageIndex["te"].LocalName =  "తెలుగు"; //telugu
-			this.CodeToLanguageIndex["ta"].LocalName =  "தமிழ்"; //tamil
-			this.CodeToLanguageIndex["ur"].LocalName =  "اُردُو"; //urdu
-			this.CodeToLanguageIndex["ar"].LocalName =  "العربية/عربي"; //arabic
-			this.CodeToLanguageIndex["th"].LocalName = "ภาษาไทย"; //thai
-			this.CodeToLanguageIndex["id"].LocalName = "Bahasa Indonesia"; //indonesian
+			CodeToLanguageIndex["fr"].LocalName =  "français";
+			CodeToLanguageIndex["es"].LocalName =  "español";
+			CodeToLanguageIndex["zho"].LocalName =  "中文"; //chinese
+			CodeToLanguageIndex["hi"].LocalName =  "हिन्दी"; //hindi
+			CodeToLanguageIndex["bn"].LocalName =  "বাংলা"; //bengali
+			CodeToLanguageIndex["te"].LocalName =  "తెలుగు"; //telugu
+			CodeToLanguageIndex["ta"].LocalName =  "தமிழ்"; //tamil
+			CodeToLanguageIndex["ur"].LocalName =  "اُردُو"; //urdu
+			CodeToLanguageIndex["ar"].LocalName =  "العربية/عربي"; //arabic
+			CodeToLanguageIndex["th"].LocalName = "ภาษาไทย"; //thai
+			CodeToLanguageIndex["id"].LocalName = "Bahasa Indonesia"; //indonesian
 
 
 			foreach (var languageInfo in CodeToLanguageIndex.Values)
@@ -108,7 +111,7 @@ namespace SIL.WritingSystems
 			var countryName = CountryCodeToCountryName[country];
 			if (!CodeToLanguageIndex.TryGetValue(code, out language))
 			{
-				language = new LanguageInfo() { Code = code, Country = countryName };
+				language = new LanguageInfo {Code = code, Country = countryName};
 				CodeToLanguageIndex.Add(code, language);
 			}
 			else
@@ -130,10 +133,9 @@ namespace SIL.WritingSystems
 			if (searchString != null)
 				searchString = searchString.Trim().ToLowerInvariant();
 			if (string.IsNullOrEmpty(searchString))
-			{
 				yield break;
-			}
-			else if (searchString == "*")
+
+			if (searchString == "*")
 			{
 				foreach (var l in from x in CodeToLanguageIndex select x.Value)
 					yield return Set3LetterCode(l);
@@ -141,27 +143,27 @@ namespace SIL.WritingSystems
 			else
 			{
 				IEnumerable<LanguageInfo> matchOnCode = from x in CodeToLanguageIndex where x.Key.ToLowerInvariant().StartsWith(searchString) select x.Value;
-				var matchOnName = from x in NameToLanguageIndex where x.Key.ToLowerInvariant().StartsWith(searchString) select x.Value;
+				List<LanguageInfo>[] matchOnName = (from x in NameToLanguageIndex where x.Key.ToLowerInvariant().StartsWith(searchString) select x.Value).ToArray();
 
 				if (!matchOnName.Any())
 				{
 					// look  for approximate matches
 					const int kMaxEditDistance = 3;
 					var itemFormExtractor = new ApproximateMatcher.GetStringDelegate<KeyValuePair<string, List<LanguageInfo>>>(pair => pair.Key);
-					var matches = ApproximateMatcher.FindClosestForms<KeyValuePair<string, List<LanguageInfo>>>(NameToLanguageIndex, itemFormExtractor,
-																										  searchString,
-																										  ApproximateMatcherOptions.None,
-																										  kMaxEditDistance);
-					matchOnName = from m in matches select m.Value;
+					var matches = ApproximateMatcher.FindClosestForms(NameToLanguageIndex, itemFormExtractor,
+						searchString,
+						ApproximateMatcherOptions.None,
+						kMaxEditDistance);
+					matchOnName = (from m in matches select m.Value).ToArray();
 				}
 
-				List<LanguageInfo> combined = new List<LanguageInfo>(matchOnCode);
+				var combined = new List<LanguageInfo>(matchOnCode);
 				foreach (var l in matchOnName)
 				{
 					combined.AddRange(l);
 				}
 
-				List<LanguageInfo> sorted = new List<LanguageInfo>(combined.Distinct());
+				var sorted = new List<LanguageInfo>(combined.Distinct());
 				sorted.Sort(new ResultComparer(searchString));
 				foreach (var languageInfo in sorted)
 				{

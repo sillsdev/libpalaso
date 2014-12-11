@@ -7,6 +7,9 @@ using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace SIL.WritingSystems
 {
+	/// <summary>
+	/// A folder-based, LDML writing system repository.
+	/// </summary>
 	public class LdmlInFolderWritingSystemRepository : WritingSystemRepositoryBase
 	{
 		///<summary>
@@ -18,7 +21,7 @@ namespace SIL.WritingSystems
 		public static LdmlInFolderWritingSystemRepository Initialize(
 			string basePath,
 			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
-			WritingSystemLoadProblemHandler loadProblemHandler
+			Action<IEnumerable<WritingSystemRepositoryProblem>> loadProblemHandler
 		)
 		{
 			return Initialize(basePath, migrationHandler, loadProblemHandler, WritingSystemCompatibility.Strict);
@@ -34,7 +37,7 @@ namespace SIL.WritingSystems
 		public static LdmlInFolderWritingSystemRepository Initialize(
 			string basePath,
 			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
-			WritingSystemLoadProblemHandler loadProblemHandler,
+			Action<IEnumerable<WritingSystemRepositoryProblem>> loadProblemHandler,
 			WritingSystemCompatibility compatibilityMode
 		)
 		{
@@ -56,7 +59,7 @@ namespace SIL.WritingSystems
 			return instance;
 		}
 
-		private const string _kExtension = ".ldml";
+		private const string Extension = ".ldml";
 		private string _path;
 		private IEnumerable<WritingSystemDefinition> _systemWritingSystemProvider;
 		private readonly WritingSystemChangeLog _changeLog;
@@ -83,11 +86,17 @@ namespace SIL.WritingSystems
 			_changeLog = new WritingSystemChangeLog(new WritingSystemChangeLogDataMapper(Path.Combine(PathToWritingSystems, "idchangelog.xml")));
 		}
 
+		/// <summary>
+		/// Gets the load problems.
+		/// </summary>
 		public IList<WritingSystemRepositoryProblem> LoadProblems
 		{
 			get { return _loadProblems; }
 		}
 
+		/// <summary>
+		/// Gets or sets the path to the writing systems folder.
+		/// </summary>
 		public string PathToWritingSystems
 		{
 			get
@@ -122,11 +131,17 @@ namespace SIL.WritingSystems
 			return Path.Combine(PathToWritingSystems, GetFileNameFromIdentifier(identifier));
 		}
 
+		/// <summary>
+		/// Gets the file name from the specified identifier.
+		/// </summary>
 		protected static string GetFileNameFromIdentifier(string identifier)
 		{
-			return identifier + _kExtension;
+			return identifier + Extension;
 		}
 
+		/// <summary>
+		/// Loads all writing system definitions.
+		/// </summary>
 		protected void LoadAllDefinitions()
 		{
 			Clear();
@@ -150,14 +165,14 @@ namespace SIL.WritingSystems
 					continue;
 				}
 
-				if (String.Compare(wsFromFile.StoreID, wsFromFile.Bcp47Tag, true) != 0)
+				if (string.Compare(wsFromFile.StoreID, wsFromFile.Bcp47Tag, StringComparison.OrdinalIgnoreCase) != 0)
 				{
 					bool badFileName = true;
 					if (wsFromFile.StoreID != null && wsFromFile.StoreID.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
 					{
 						var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 						interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(wsFromFile.StoreID);
-						if (interpreter.RFC5646Tag.Equals(wsFromFile.Bcp47Tag, StringComparison.OrdinalIgnoreCase))
+						if (interpreter.Rfc5646Tag.Equals(wsFromFile.Bcp47Tag, StringComparison.OrdinalIgnoreCase))
 						{
 							badFileName = false;
 						}
@@ -191,12 +206,12 @@ namespace SIL.WritingSystems
 					_loadProblems.Add(problem);
 				}
 			}
-			LoadIdChangeMapFromExistingWritingSystems();
+			LoadChangedIDsFromExistingWritingSystems();
 		}
 
 		private WritingSystemDefinition GetWritingSystemFromLdml(string filePath)
 		{
-			var ws = (WritingSystemDefinition)CreateNew();
+			WritingSystemDefinition ws = CreateNew();
 			LdmlDataMapper adaptor = CreateLdmlAdaptor();
 			if (File.Exists(filePath))
 			{
@@ -215,16 +230,16 @@ namespace SIL.WritingSystems
 
 		private void AddActiveOSLanguages()
 		{
-				foreach (WritingSystemDefinition ws in _systemWritingSystemProvider)
+			foreach (WritingSystemDefinition ws in _systemWritingSystemProvider)
+			{
+				if (null == FindAlreadyLoadedWritingSystem(ws.Bcp47Tag))
 				{
-					if (null == FindAlreadyLoadedWritingSystem(ws.Bcp47Tag))
+					if (!HaveMatchingDefinitionInTrash(ws.Bcp47Tag))
 					{
-						if (!HaveMatchingDefinitionInTrash(ws.Bcp47Tag))
-						{
-							Set(ws);
-						}
+						Set(ws);
 					}
 				}
+			}
 		}
 
 		/// <summary>
@@ -240,16 +255,14 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private IWritingSystemDefinition FindAlreadyLoadedWritingSystem(string bcp47Tag)
+		private WritingSystemDefinition FindAlreadyLoadedWritingSystem(string bcp47Tag)
 		{
 			return AllWritingSystems.FirstOrDefault(ws => ws.Bcp47Tag == bcp47Tag);
 		}
 
-		internal void SaveDefinition(IWritingSystemDefinition ws)
-		{
-			SaveDefinition((WritingSystemDefinition)ws);
-		}
-
+		/// <summary>
+		/// Saves a writing system definition.
+		/// </summary>
 		public void SaveDefinition(WritingSystemDefinition ws)
 		{
 			Set(ws);
@@ -275,10 +288,10 @@ namespace SIL.WritingSystems
 
 			ws.Modified = false;
 
-			if (_idChangeMap.Any(p => p.Value == ws.StoreID))
+			if (ChangedIDs.Any(p => p.Value == ws.StoreID))
 			{
 				// log this id change to the writing system change log
-				var pair = _idChangeMap.First(p => p.Value == ws.StoreID);
+				var pair = ChangedIDs.First(p => p.Value == ws.StoreID);
 				_changeLog.LogChange(pair.Key, pair.Value);
 			} else
 			{
@@ -356,11 +369,10 @@ namespace SIL.WritingSystems
 				OnChangeNotifySharedStore(ws);
 			}
 
-
-			LoadIdChangeMapFromExistingWritingSystems();
+			LoadChangedIDsFromExistingWritingSystems();
 		}
 
-		public override void Set(IWritingSystemDefinition ws)
+		public override void Set(WritingSystemDefinition ws)
 		{
 			if (ws == null)
 			{

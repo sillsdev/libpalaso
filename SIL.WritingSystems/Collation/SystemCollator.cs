@@ -44,15 +44,30 @@ namespace SIL.WritingSystems.Collation
 				return String.CompareOrdinal(x, y);
 			}
 			return 0;
-
-
-
-
 		}
 
 		public int Compare(object x, object y)
 		{
 			return Compare((string)x, (string)y);
+		}
+
+		/// <summary>
+		/// Validates the specified culture ID.
+		/// </summary>
+		public static bool ValidateCultureID(string cultureId, out string message)
+		{
+			try
+			{
+				if (!String.IsNullOrEmpty(cultureId))
+					GetCultureInfoFromWritingSystemId(cultureId);
+			}
+			catch (Exception e)
+			{
+				message = String.Format("Error while validating sorting rules: {0}", e.Message);
+				return false;
+			}
+			message = null;
+			return true;
 		}
 
 		private static CultureInfo GetCultureInfoFromWritingSystemId(string cultureId)

@@ -135,7 +135,7 @@ namespace SIL.WritingSystems.WindowsForms
 				if (dlg.DialogResult != DialogResult.OK)
 					return null;
 				var variant = String.Empty;
-				if (dlg.SelectedLanguage.Code == WellKnownSubTags.Unlisted.Language)
+				if (dlg.SelectedLanguage.Code == WellKnownSubtags.UnlistedLanguage)
 				{
 					variant = "x-" + "Unlisted";
 				}

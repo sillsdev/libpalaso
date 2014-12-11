@@ -190,7 +190,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 				{
 					for (int i = 1; i < parts.Length; i++)
 					{
-						var kb = GetKeyboard(string.Join((string) "-", (IEnumerable<string>) parts.Take(i)), string.Join((string) "-", (IEnumerable<string>) parts.Skip(i)));
+						var kb = GetKeyboard(string.Join("-", parts.Take(i)), string.Join("-", parts.Skip(i)));
 						if (!kb.Equals(KeyboardDescription.Zero))
 							return kb;
 					}
@@ -214,7 +214,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 			/// <returns>
 			/// Returns <c>KeyboardDescription.Zero</c> if no keyboard can be found.
 			/// </returns>
-			public IKeyboardDefinition GetKeyboard(IWritingSystemDefinition writingSystem)
+			public IKeyboardDefinition GetKeyboard(WritingSystemDefinition writingSystem)
 			{
 				if (writingSystem == null)
 					return KeyboardDescription.Zero;
@@ -259,7 +259,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 				SetKeyboard(GetKeyboard(layoutName, locale));
 			}
 
-			public void SetKeyboard(IWritingSystemDefinition writingSystem)
+			public void SetKeyboard(WritingSystemDefinition writingSystem)
 			{
 				SetKeyboard(writingSystem.LocalKeyboard);
 			}
@@ -341,7 +341,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 			/// Figures out the system default keyboard for the specified writing system (the one to use if we have no available KnownKeyboards).
 			/// The implementation may use obsolete fields such as Keyboard
 			/// </summary>
-			public IKeyboardDefinition DefaultForWritingSystem(IWritingSystemDefinition ws)
+			public IKeyboardDefinition DefaultForWritingSystem(WritingSystemDefinition ws)
 			{
 				return LegacyForWritingSystem(ws) ?? DefaultKeyboard;
 			}
@@ -352,13 +352,9 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 			/// </summary>
 			/// <param name="ws"></param>
 			/// <returns></returns>
-			public IKeyboardDefinition LegacyForWritingSystem(IWritingSystemDefinition ws)
+			public IKeyboardDefinition LegacyForWritingSystem(WritingSystemDefinition ws)
 			{
-				var legacyWs = ws as ILegacyWritingSystemDefinition;
-				if (legacyWs == null)
-					return DefaultKeyboard;
-
-				return LegacyKeyboardHandling.GetKeyboardFromLegacyWritingSystem(legacyWs, this);
+				return LegacyKeyboardHandling.GetKeyboardFromLegacyWritingSystem(ws, this);
 			}
 
 			/// <summary>
@@ -386,7 +382,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 
 			private static class LegacyKeyboardHandling
 			{
-				public static IKeyboardDefinition GetKeyboardFromLegacyWritingSystem(ILegacyWritingSystemDefinition ws,
+				public static IKeyboardDefinition GetKeyboardFromLegacyWritingSystem(WritingSystemDefinition ws,
 					KeyboardControllerImpl controller)
 				{
 					if (!string.IsNullOrEmpty(ws.WindowsLcid))
@@ -416,7 +412,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 					return null;
 				}
 
-				private static IKeyboardDefinition HandleFwLegacyKeyboards(ILegacyWritingSystemDefinition ws,
+				private static IKeyboardDefinition HandleFwLegacyKeyboards(WritingSystemDefinition ws,
 					KeyboardControllerImpl controller)
 				{
 					var lcid = GetLcid(ws);
@@ -454,7 +450,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 					return null;
 				}
 
-				private static int GetLcid(ILegacyWritingSystemDefinition ws)
+				private static int GetLcid(WritingSystemDefinition ws)
 				{
 
 					int lcid;

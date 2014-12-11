@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Palaso.Extensions;
 
 namespace SIL.WritingSystems.Migration
 {
+	/// <summary>
+	/// The RFC5646 tag cleaner.
+	/// </summary>
 	public class Rfc5646TagCleaner
 	{
 		private SubTag _languageSubTag;
@@ -12,6 +16,9 @@ namespace SIL.WritingSystems.Migration
 		private SubTag _variantSubTag;
 		private SubTag _privateUseSubTag;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Rfc5646TagCleaner"/> class.
+		/// </summary>
 		public Rfc5646TagCleaner(string language, string script, string region, string variant, string privateUse)
 		{
 			Language = language;
@@ -21,6 +28,9 @@ namespace SIL.WritingSystems.Migration
 			PrivateUse = privateUse;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Rfc5646TagCleaner"/> class.
+		/// </summary>
 		public Rfc5646TagCleaner(string completeTag)
 		{
 			Language = completeTag;
@@ -30,35 +40,57 @@ namespace SIL.WritingSystems.Migration
 			PrivateUse = "";
 		}
 
+		/// <summary>
+		/// Gets the language.
+		/// </summary>
 		public string Language
 		{
 			get { return _languageSubTag.CompleteTag; }
 			private set { _languageSubTag = new SubTag(value); }
 		}
+
+		/// <summary>
+		/// Gets the script.
+		/// </summary>
 		public string Script
 		{
 			get { return _scriptSubTag.CompleteTag; }
 			private set { _scriptSubTag = new SubTag(value); }
 		}
+
+		/// <summary>
+		/// Gets the region.
+		/// </summary>
 		public string Region
 		{
 			get { return _regionSubTag.CompleteTag; }
 			private set { _regionSubTag = new SubTag(value); }
 		}
+
+		/// <summary>
+		/// Gets the variant.
+		/// </summary>
 		public string Variant
 		{
 			get { return _variantSubTag.CompleteTag; }
 			private set { _variantSubTag = new SubTag(value); }
 		}
+
+		/// <summary>
+		/// Gets the private use.
+		/// </summary>
 		public string PrivateUse
 		{
 			get { return _privateUseSubTag.CompleteTag; }
 			private set { _privateUseSubTag = new SubTag(value); }
 		}
 
+		/// <summary>
+		/// Gets the complete tag.
+		/// </summary>
 		public string GetCompleteTag()
 		{
-			var rfcTag = new RFC5646Tag(Language, Script, Region, Variant, PrivateUse);
+			var rfcTag = new Rfc5646Tag(Language, Script, Region, Variant, PrivateUse);
 			return rfcTag.CompleteTag;
 		}
 
@@ -217,6 +249,9 @@ namespace SIL.WritingSystems.Migration
 			}
 		}
 
+		/// <summary>
+		/// Cleans the tag.
+		/// </summary>
 		public void Clean()
 		{
 			// Migrate legacy ISO3 language codes to IANA 2 letter language codes, if there's a match.
@@ -258,10 +293,10 @@ namespace SIL.WritingSystems.Migration
 			MoveFirstPartToPrivateUseIfNecessary(_scriptSubTag, StandardTags.IsValidIso15924ScriptCode, "Qaaa", false);
 			MoveFirstPartToPrivateUseIfNecessary(_regionSubTag, StandardTags.IsValidIso3166Region, "QM", false);
 			//This fixes a bug where the LdmlAdaptorV1 was writing out Zxxx as part of the variant to mark an audio writing system
-			if (_variantSubTag.Contains(WellKnownSubTags.Audio.Script))
+			if (_variantSubTag.Contains(WellKnownSubtags.AudioScript))
 			{
-				MoveTagsMatching(_variantSubTag, _scriptSubTag, tag => tag.Equals(WellKnownSubTags.Audio.Script));
-				_privateUseSubTag.AddToSubtag(WellKnownSubTags.Audio.PrivateUseSubtag);
+				MoveTagsMatching(_variantSubTag, _scriptSubTag, tag => tag.Equals(WellKnownSubtags.AudioScript));
+				_privateUseSubTag.AddToSubtag(WellKnownSubtags.AudioPrivateUse);
 			}
 			// Fixes various legacy problems.
 			if (Language.Equals("cmn", StringComparison.OrdinalIgnoreCase))
@@ -296,8 +331,8 @@ namespace SIL.WritingSystems.Migration
 				//if it looks like we moved a custom script set the subtag to mark that we've moved it
 				if(_scriptSubTag.IsEmpty
 					&& part.Length == 4 //potential custom script tag
-					&& !WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag.EndsWith(part)
-					&& !WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag.EndsWith(part))
+					&& !WellKnownSubtags.IpaPhonemicPrivateUse.EndsWith(part)
+					&& !WellKnownSubtags.IpaPhoneticPrivateUse.EndsWith(part))
 				{
 					_scriptSubTag = new SubTag("Qaaa");
 				}
@@ -317,17 +352,17 @@ namespace SIL.WritingSystems.Migration
 			_scriptSubTag.KeepFirstAndMoveRemainderTo(_privateUseSubTag);
 			_regionSubTag.KeepFirstAndMoveRemainderTo(_privateUseSubTag);
 
-			if (_privateUseSubTag.Contains(WellKnownSubTags.Audio.PrivateUseSubtag))
+			if (_privateUseSubTag.Contains(WellKnownSubtags.AudioPrivateUse))
 			{
 				// Move every tag that's not a Zxxx to private use
-				if (!_scriptSubTag.IsEmpty && !_scriptSubTag.Contains(WellKnownSubTags.Audio.Script))
+				if (!_scriptSubTag.IsEmpty && !_scriptSubTag.Contains(WellKnownSubtags.AudioScript))
 				{
 					MoveTagsMatching(_scriptSubTag, _privateUseSubTag, tag => !_privateUseSubTag.Contains(tag));
 				}
 				// If we don't have a Zxxx already, set it. This protects tags already present, but with unusual case
-				if (!_scriptSubTag.Contains(WellKnownSubTags.Audio.Script))
+				if (!_scriptSubTag.Contains(WellKnownSubtags.AudioScript))
 				{
-					_scriptSubTag = new SubTag(WellKnownSubTags.Audio.Script);
+					_scriptSubTag = new SubTag(WellKnownSubtags.AudioScript);
 				}
 			}
 

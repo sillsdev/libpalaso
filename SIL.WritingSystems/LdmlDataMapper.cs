@@ -45,11 +45,13 @@ namespace SIL.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			var settings = new XmlReaderSettings();
-			settings.NameTable = _nameSpaceManager.NameTable;
-			settings.ValidationType = ValidationType.None;
-			settings.XmlResolver = null;
-			settings.ProhibitDtd = false;
+			var settings = new XmlReaderSettings
+			{
+				NameTable = _nameSpaceManager.NameTable,
+				ValidationType = ValidationType.None,
+				XmlResolver = null,
+				DtdProcessing = DtdProcessing.Parse
+			};
 			using (XmlReader reader = XmlReader.Create(filePath, settings))
 			{
 				ReadLdml(reader, ws);
@@ -66,12 +68,14 @@ namespace SIL.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			XmlReaderSettings settings = new XmlReaderSettings();
-			settings.NameTable = _nameSpaceManager.NameTable;
-			settings.ConformanceLevel = ConformanceLevel.Auto;
-			settings.ValidationType = ValidationType.None;
-			settings.XmlResolver = null;
-			settings.ProhibitDtd = false;
+			var settings = new XmlReaderSettings
+			{
+				NameTable = _nameSpaceManager.NameTable,
+				ConformanceLevel = ConformanceLevel.Auto,
+				ValidationType = ValidationType.None,
+				XmlResolver = null,
+				DtdProcessing = DtdProcessing.Parse
+			};
 			using (XmlReader reader = XmlReader.Create(xmlReader, settings))
 			{
 				ReadLdml(reader, ws);
@@ -227,7 +231,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private void GetKnownKeyboards(XmlReader reader, IWritingSystemDefinition ws)
+		private void GetKnownKeyboards(XmlReader reader, WritingSystemDefinition ws)
 		{
 			reader.MoveToContent();
 			Debug.Assert(reader.NodeType == XmlNodeType.Element && reader.Name == Palaso2NamespaceName+ ":" + KnownKeyboardsElementName);
@@ -386,25 +390,25 @@ namespace SIL.WritingSystems
 					string rulesTypeAsString = GetSpecialValue(collationReader, "palaso", "sortRulesType");
 					if(!String.IsNullOrEmpty(rulesTypeAsString))
 					{
-						ws.SortUsing = (WritingSystemDefinition.SortRulesType)Enum.Parse(typeof(WritingSystemDefinition.SortRulesType), rulesTypeAsString);
+						ws.CollationRulesType = (CollationRulesTypes) Enum.Parse(typeof(CollationRulesTypes), rulesTypeAsString);
 					}
 				}
 			}
-			switch (ws.SortUsing)
+			switch (ws.CollationRulesType)
 			{
-				case WritingSystemDefinition.SortRulesType.OtherLanguage:
+				case CollationRulesTypes.OtherLanguage:
 					ReadCollationRulesForOtherLanguage(collationXml, ws);
 					break;
-				case WritingSystemDefinition.SortRulesType.CustomSimple:
+				case CollationRulesTypes.CustomSimple:
 					ReadCollationRulesForCustomSimple(collationXml, ws);
 					break;
-				case WritingSystemDefinition.SortRulesType.CustomICU:
+				case CollationRulesTypes.CustomIcu:
 					ReadCollationRulesForCustomICU(collationXml, ws);
 					break;
-				case WritingSystemDefinition.SortRulesType.DefaultOrdering:
+				case CollationRulesTypes.DefaultOrdering:
 					break;
 				default:
-					string message = string.Format("Unhandled SortRulesType '{0}' while writing LDML definition file.", ws.SortUsing);
+					string message = string.Format("Unhandled SortRulesType '{0}' while writing LDML definition file.", ws.CollationRulesType);
 					throw new ApplicationException(message);
 			}
 		}
@@ -424,7 +428,7 @@ namespace SIL.WritingSystems
 						string sortRules = collationReader.GetAttribute("source");
 						if (sortRules != null)
 						{
-							ws.SortRules = sortRules;
+							ws.CollationRules = sortRules;
 							foundValue = true;
 						}
 					}
@@ -432,7 +436,7 @@ namespace SIL.WritingSystems
 				if (!foundValue)
 				{
 					// missing base alias element, fall back to ICU rules
-					ws.SortUsing = WritingSystemDefinition.SortRulesType.CustomICU;
+					ws.CollationRulesType = CollationRulesTypes.CustomIcu;
 					ReadCollationRulesForCustomICU(collationXml, ws);
 				}
 			}
@@ -440,7 +444,7 @@ namespace SIL.WritingSystems
 
 		private void ReadCollationRulesForCustomICU(string collationXml, WritingSystemDefinition ws)
 		{
-			ws.SortRules = LdmlCollationParser.GetIcuRulesFromCollationNode(collationXml);
+			ws.CollationRules = LdmlCollationParser.GetIcuRulesFromCollationNode(collationXml);
 		}
 
 		private void ReadCollationRulesForCustomSimple(string collationXml, WritingSystemDefinition ws)
@@ -448,11 +452,11 @@ namespace SIL.WritingSystems
 			string rules;
 			if (LdmlCollationParser.TryGetSimpleRulesFromCollationNode(collationXml, out rules))
 			{
-				ws.SortRules = rules;
+				ws.CollationRules = rules;
 				return;
 			}
 			// fall back to ICU rules if Simple rules don't work
-			ws.SortUsing = WritingSystemDefinition.SortRulesType.CustomICU;
+			ws.CollationRulesType = CollationRulesTypes.CustomIcu;
 			ReadCollationRulesForCustomICU(collationXml, ws);
 		}
 
@@ -484,13 +488,15 @@ namespace SIL.WritingSystems
 			{
 				if (oldFile != null)
 				{
-					var readerSettings = new XmlReaderSettings();
-					readerSettings.NameTable = _nameSpaceManager.NameTable;
-					readerSettings.IgnoreWhitespace = true;
-					readerSettings.ConformanceLevel = ConformanceLevel.Auto;
-					readerSettings.ValidationType = ValidationType.None;
-					readerSettings.XmlResolver = null;
-					readerSettings.ProhibitDtd = false;
+					var readerSettings = new XmlReaderSettings
+					{
+						NameTable = _nameSpaceManager.NameTable,
+						IgnoreWhitespace = true,
+						ConformanceLevel = ConformanceLevel.Auto,
+						ValidationType = ValidationType.None,
+						XmlResolver = null,
+						DtdProcessing = DtdProcessing.Parse
+					};
 					reader = XmlReader.Create(oldFile, readerSettings);
 				}
 				using (var writer = XmlWriter.Create(filePath, CanonicalXmlSettings.CreateXmlWriterSettings()))
@@ -538,13 +544,15 @@ namespace SIL.WritingSystems
 			{
 				if (oldFileReader != null)
 				{
-					XmlReaderSettings settings = new XmlReaderSettings();
-					settings.NameTable = _nameSpaceManager.NameTable;
-					settings.IgnoreWhitespace = true;
-					settings.ConformanceLevel = ConformanceLevel.Auto;
-					settings.ValidationType = ValidationType.None;
-					settings.XmlResolver = null;
-					settings.ProhibitDtd = false;
+					var settings = new XmlReaderSettings
+					{
+						NameTable = _nameSpaceManager.NameTable,
+						IgnoreWhitespace = true,
+						ConformanceLevel = ConformanceLevel.Auto,
+						ValidationType = ValidationType.None,
+						XmlResolver = null,
+						DtdProcessing = DtdProcessing.Parse
+					};
 					reader = XmlReader.Create(oldFileReader, settings);
 				}
 				WriteLdml(xmlWriter, reader, ws);
@@ -780,7 +788,7 @@ namespace SIL.WritingSystems
 					var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 					interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, territory, variant);
 					if ((language.StartsWith("x-", StringComparison.OrdinalIgnoreCase) ||  language.Equals("x", StringComparison.OrdinalIgnoreCase))&&
-						interpreter.RFC5646Tag == ws.Bcp47Tag)
+						interpreter.Rfc5646Tag == ws.Bcp47Tag)
 					{
 						copyFlexFormat = true;
 						_wsIsFlexPrivateUse = true;
@@ -1007,7 +1015,7 @@ namespace SIL.WritingSystems
 				needToCopy = false;
 			}
 
-			if (ws.SortUsing == WritingSystemDefinition.SortRulesType.DefaultOrdering && !needToCopy)
+			if (ws.CollationRulesType == CollationRulesTypes.DefaultOrdering && !needToCopy)
 				return;
 
 			if (needToCopy && reader.IsEmptyElement)
@@ -1029,26 +1037,26 @@ namespace SIL.WritingSystems
 				}
 			}
 
-			if (ws.SortUsing != WritingSystemDefinition.SortRulesType.DefaultOrdering)
+			if (ws.CollationRulesType != CollationRulesTypes.DefaultOrdering)
 			{
 				writer.WriteStartElement("collation");
-				switch (ws.SortUsing)
+				switch (ws.CollationRulesType)
 				{
-					case WritingSystemDefinition.SortRulesType.OtherLanguage:
+					case CollationRulesTypes.OtherLanguage:
 						WriteCollationRulesFromOtherLanguage(writer, reader, ws);
 						break;
-					case WritingSystemDefinition.SortRulesType.CustomSimple:
+					case CollationRulesTypes.CustomSimple:
 						WriteCollationRulesFromCustomSimple(writer, reader, ws);
 						break;
-					case WritingSystemDefinition.SortRulesType.CustomICU:
+					case CollationRulesTypes.CustomIcu:
 						WriteCollationRulesFromCustomICU(writer, reader, ws);
 						break;
 					default:
-						string message = string.Format("Unhandled SortRulesType '{0}' while writing LDML definition file.", ws.SortUsing);
+						string message = string.Format("Unhandled SortRulesType '{0}' while writing LDML definition file.", ws.CollationRulesType);
 						throw new ApplicationException(message);
 				}
 				WriteBeginSpecialElement(writer, "palaso");
-				WriteSpecialValue(writer, "palaso", "sortRulesType", ws.SortUsing.ToString());
+				WriteSpecialValue(writer, "palaso", "sortRulesType", ws.CollationRulesType.ToString());
 				writer.WriteEndElement();
 				if (needToCopy)
 				{
@@ -1107,13 +1115,13 @@ namespace SIL.WritingSystems
 		{
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
-			Debug.Assert(ws.SortUsing == WritingSystemDefinition.SortRulesType.OtherLanguage);
+			Debug.Assert(ws.CollationRulesType == CollationRulesTypes.OtherLanguage);
 
 			// Since the alias element gets all information from another source,
 			// we should remove all other elements in this collation element.  We
 			// leave "special" elements as they are custom data from some other app.
 			writer.WriteStartElement("base");
-			WriteElementWithAttribute(writer, "alias", "source", ws.SortRules);
+			WriteElementWithAttribute(writer, "alias", "source", ws.CollationRules);
 			writer.WriteEndElement();
 			if (reader != null)
 			{
@@ -1126,15 +1134,15 @@ namespace SIL.WritingSystems
 		{
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
-			Debug.Assert(ws.SortUsing == WritingSystemDefinition.SortRulesType.CustomSimple);
+			Debug.Assert(ws.CollationRulesType == CollationRulesTypes.CustomSimple);
 
 			string message;
 			// avoid throwing exception, just don't save invalid data
-			if (!SimpleRulesCollator.ValidateSimpleRules(ws.SortRules ?? string.Empty, out message))
+			if (!SimpleRulesCollator.ValidateSimpleRules(ws.CollationRules ?? string.Empty, out message))
 			{
 				return;
 			}
-			string icu = SimpleRulesCollator.ConvertToIcuRules(ws.SortRules ?? string.Empty);
+			string icu = SimpleRulesCollator.ConvertToIcuRules(ws.CollationRules ?? string.Empty);
 			WriteCollationRulesFromICUString(writer, reader, icu);
 		}
 
@@ -1142,8 +1150,8 @@ namespace SIL.WritingSystems
 		{
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
-			Debug.Assert(ws.SortUsing == WritingSystemDefinition.SortRulesType.CustomICU);
-			WriteCollationRulesFromICUString(writer, reader, ws.SortRules);
+			Debug.Assert(ws.CollationRulesType == CollationRulesTypes.CustomIcu);
+			WriteCollationRulesFromICUString(writer, reader, ws.CollationRules);
 		}
 
 		private void WriteCollationRulesFromICUString(XmlWriter writer, XmlReader reader, string icu)

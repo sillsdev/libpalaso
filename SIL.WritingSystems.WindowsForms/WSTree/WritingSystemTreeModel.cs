@@ -82,14 +82,14 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 
 		private void AddExistingDefinitionsAndSuggestions(List<WritingSystemTreeItem> items)
 		{
-			var x = new List<IWritingSystemDefinition>(_setupModel.WritingSystemDefinitions);
+			var x = new List<WritingSystemDefinition>(_setupModel.WritingSystemDefinitions);
 
 			var systemsOfSameLanguage = x.GroupBy(def=>def.LanguageName);
 
 			foreach (var defsOfSameLanguage in systemsOfSameLanguage)
 			{
 				WritingSystemTreeItem parent;
-				IWritingSystemDefinition itemToUseForSuggestions;
+				WritingSystemDefinition itemToUseForSuggestions;
 				if (OneWritingSystemIsASuitableParent(defsOfSameLanguage))
 				{
 					var primaryDefinition = ChooseMainDefinitionOfLanguage(defsOfSameLanguage);
@@ -128,7 +128,7 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 			}
 		}
 
-		private WritingSystemTreeItem MakeExistingDefinitionItem(IWritingSystemDefinition definition)
+		private WritingSystemTreeItem MakeExistingDefinitionItem(WritingSystemDefinition definition)
 		{
 			var item = new WritingSystemDefinitionTreeItem(definition, OnClickExistingDefinition);
 			item.Selected = item.Definition == _setupModel.CurrentDefinition;
@@ -140,21 +140,21 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 			_setupModel.SetCurrentDefinition(((WritingSystemDefinitionTreeItem)treeItem).Definition);
 		}
 
-		private IWritingSystemDefinition ChooseMainDefinitionOfLanguage(IEnumerable<IWritingSystemDefinition> definitions)
+		private WritingSystemDefinition ChooseMainDefinitionOfLanguage(IEnumerable<WritingSystemDefinition> definitions)
 		{
 			var x = definitions.OrderBy(def => GetSpecificityScore(def));
 			return x.First();
 		}
 
-		private bool OneWritingSystemIsASuitableParent(IEnumerable<IWritingSystemDefinition> definitions)
+		private bool OneWritingSystemIsASuitableParent(IEnumerable<WritingSystemDefinition> definitions)
 		{
 			if (definitions.Count() == 1)
 				return true;
-			var x = definitions.OrderBy<IWritingSystemDefinition, int>(GetSpecificityScore).ToArray();
+			var x = definitions.OrderBy(GetSpecificityScore).ToArray();
 			return GetSpecificityScore(x[0]) != GetSpecificityScore(x[1]);
 		}
 
-		private int GetSpecificityScore(IWritingSystemDefinition definition)
+		private int GetSpecificityScore(WritingSystemDefinition definition)
 		{
 			int score = 0;
 			if(!string.IsNullOrEmpty(definition.Region))

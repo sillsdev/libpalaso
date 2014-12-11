@@ -15,6 +15,13 @@ namespace SIL.WritingSystems.Tests
 			return new WritingSystemDefinition();
 		}
 
+		protected override bool Equals(WritingSystemDefinition x, WritingSystemDefinition y)
+		{
+			if (x == null)
+				return y == null;
+			return x.ValueEquals(y);
+		}
+
 		public override string ExceptionList
 		{
 			// We do want to clone KnownKeyboards, but I don't think the automatic cloneable test for it can handle a list.
@@ -31,9 +38,9 @@ namespace SIL.WritingSystems.Tests
 								 new ValuesToSet(false, true),
 								 new ValuesToSet("to be", "!(to be)"),
 								 new ValuesToSet(DateTime.Now, DateTime.MinValue),
-								 new ValuesToSet(WritingSystemDefinition.SortRulesType.CustomICU, WritingSystemDefinition.SortRulesType.DefaultOrdering),
-								 new ValuesToSet(new RFC5646Tag("en", "Latn", "US", "1901", "test"), RFC5646Tag.Parse("de")),
-								 new SubclassValuesToSet<IKeyboardDefinition>(new DefaultKeyboardDefinition() {Layout="mine"}, new DefaultKeyboardDefinition(){Layout="theirs"})
+								 new ValuesToSet(CollationRulesTypes.CustomIcu, CollationRulesTypes.DefaultOrdering),
+								 new ValuesToSet(new Rfc5646Tag("en", "Latn", "US", "1901", "test"), Rfc5646Tag.Parse("de")),
+								 new SubclassValuesToSet<IKeyboardDefinition>(new DefaultKeyboardDefinition {Layout="mine"}, new DefaultKeyboardDefinition {Layout="theirs"})
 							 };
 			}
 		}
@@ -45,8 +52,8 @@ namespace SIL.WritingSystems.Tests
 		public void CloneCopiesKnownKeyboards()
 		{
 			var original = new WritingSystemDefinition();
-			var kbd1 = new DefaultKeyboardDefinition() {Layout = "mine"};
-			var kbd2 = new DefaultKeyboardDefinition() {Layout = "yours"};
+			var kbd1 = new DefaultKeyboardDefinition {Layout = "mine"};
+			var kbd2 = new DefaultKeyboardDefinition {Layout = "yours"};
 			original.AddKnownKeyboard(kbd1);
 			original.AddKnownKeyboard(kbd2);
 			var copy = original.Clone();
@@ -62,24 +69,24 @@ namespace SIL.WritingSystems.Tests
 		public void EqualsComparesKnownKeyboards()
 		{
 			var first = new WritingSystemDefinition();
-			var kbd1 = new DefaultKeyboardDefinition() { Layout = "mine" };
-			var kbd2 = new DefaultKeyboardDefinition() { Layout = "yours" };
+			var kbd1 = new DefaultKeyboardDefinition { Layout = "mine" };
+			var kbd2 = new DefaultKeyboardDefinition { Layout = "yours" };
 			first.AddKnownKeyboard(kbd1);
 			first.AddKnownKeyboard(kbd2);
 			var second = new WritingSystemDefinition();
-			var kbd3 = new DefaultKeyboardDefinition() { Layout = "mine" }; // equal to kbd1
-			var kbd4 = new DefaultKeyboardDefinition() {Layout = "theirs"};
+			var kbd3 = new DefaultKeyboardDefinition { Layout = "mine" }; // equal to kbd1
+			var kbd4 = new DefaultKeyboardDefinition { Layout = "theirs" };
 
-			Assert.That(first.Equals(second), Is.False, "ws with empty known keyboards should not equal one with some");
+			Assert.That(first.ValueEquals(second), Is.False, "ws with empty known keyboards should not equal one with some");
 			second.AddKnownKeyboard(kbd3);
-			Assert.That(first.Equals(second), Is.False, "ws's with different length known keyboard lits should not be equal");
+			Assert.That(first.ValueEquals(second), Is.False, "ws's with different length known keyboard lits should not be equal");
 			second.AddKnownKeyboard(kbd2.Clone());
-			Assert.That(first.Equals(second), Is.True, "ws's with same known keyboard lists should be equal");
+			Assert.That(first.ValueEquals(second), Is.True, "ws's with same known keyboard lists should be equal");
 
 			second = new WritingSystemDefinition();
 			second.AddKnownKeyboard(kbd3);
 			second.AddKnownKeyboard(kbd4);
-			Assert.That(first.Equals(second), Is.False, "ws with same-length lists of different known keyboards should not be equal");
+			Assert.That(first.ValueEquals(second), Is.False, "ws with same-length lists of different known keyboards should not be equal");
 		}
 	}
 
@@ -476,9 +483,9 @@ namespace SIL.WritingSystems.Tests
 			secondValueToSet.Add(typeof (string), "Y");
 			firstValueToSet.Add(typeof (DateTime), new DateTime(2007, 12, 31));
 			secondValueToSet.Add(typeof (DateTime), new DateTime(2008, 1, 1));
-			firstValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU);
-			secondValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomSimple);
-			firstValueToSet.Add(typeof(RFC5646Tag), new RFC5646Tag("de", "Latn", "", "1901","audio"));
+			firstValueToSet.Add(typeof(CollationRulesTypes), CollationRulesTypes.CustomIcu);
+			secondValueToSet.Add(typeof(CollationRulesTypes), CollationRulesTypes.CustomSimple);
+			firstValueToSet.Add(typeof(Rfc5646Tag), new Rfc5646Tag("de", "Latn", "", "1901","audio"));
 
 			firstValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.IpaPhonemic);
 			secondValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.NotIpa);
@@ -536,8 +543,8 @@ namespace SIL.WritingSystems.Tests
 				{typeof (bool), true},
 				{typeof (string), "Foo"},
 				{typeof (DateTime), DateTime.Now},
-				{typeof (WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU},
-				{typeof (RFC5646Tag), new RFC5646Tag("en", "Latn", "US", "1901", "test")}
+				{typeof (CollationRulesTypes), CollationRulesTypes.CustomIcu},
+				{typeof (Rfc5646Tag), new Rfc5646Tag("en", "Latn", "US", "1901", "test")}
 			};
 			foreach (var fieldInfo in typeof(WritingSystemDefinition).GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
 			{
@@ -582,7 +589,7 @@ namespace SIL.WritingSystems.Tests
 		public void SortUsingDefaultOrdering_ValidateSortRulesWhenNotEmpty_IsFalse()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.SortRules = "abcd";
+			ws.CollationRules = "abcd";
 			string message;
 			Assert.IsFalse(ws.ValidateCollationRules(out message));
 		}
@@ -611,7 +618,7 @@ namespace SIL.WritingSystems.Tests
 						 Variant = "1901",
 						 IsVoice = true
 					 };
-			Assert.AreEqual(WellKnownSubTags.Audio.Script, ws.Script);
+			Assert.AreEqual(WellKnownSubtags.AudioScript, ws.Script);
 			Assert.AreEqual("US", ws.Region);
 			Assert.AreEqual("1901-x-audio", ws.Variant);
 			Assert.AreEqual("qaa-Zxxx-US-1901-x-audio", ws.Bcp47Tag);
@@ -655,9 +662,9 @@ namespace SIL.WritingSystems.Tests
 			var ws = new WritingSystemDefinition();
 			ws.SetAllComponents(
 				"th",
-				WellKnownSubTags.Audio.Script,
+				WellKnownSubtags.AudioScript,
 				"",
-				WellKnownSubTags.Audio.PrivateUseSubtag
+				WellKnownSubtags.AudioPrivateUse
 			);
 			Assert.IsTrue(ws.IsVoice);
 		}
@@ -678,9 +685,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Variant_ChangedToSomethingOtherThanXDashAudioWhileIsVoiceIsTrue_IsVoiceIsChangedToFalse()
 		{
-			var ws = new WritingSystemDefinition();
-			ws.IsVoice = true;
-			ws.Variant = "1901";
+			var ws = new WritingSystemDefinition {IsVoice = true, Variant = "1901"};
 			Assert.AreEqual("1901", ws.Variant);
 			Assert.IsFalse(ws.IsVoice);
 		}
@@ -688,8 +693,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Iso639_SetValidLanguage_IsSet()
 		{
-			var ws = new WritingSystemDefinition();
-			ws.Language = "th";
+			var ws = new WritingSystemDefinition {Language = "th"};
 			Assert.AreEqual("th", ws.Language);
 		}
 
@@ -823,7 +827,7 @@ namespace SIL.WritingSystems.Tests
 		public void Variant_SetToXDashAudioWhileScriptIsNotZxxx_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ArgumentException>(() => ws.Variant = WellKnownSubTags.Audio.PrivateUseSubtag);
+			Assert.Throws<ArgumentException>(() => ws.Variant = WellKnownSubtags.AudioPrivateUse);
 		}
 
 		[Test]
@@ -832,9 +836,9 @@ namespace SIL.WritingSystems.Tests
 			var ws = new WritingSystemDefinition();
 			ws.SetAllComponents(
 				"th",
-				WellKnownSubTags.Audio.Script,
+				WellKnownSubtags.AudioScript,
 				"",
-				WellKnownSubTags.Audio.PrivateUseSubtag
+				WellKnownSubtags.AudioPrivateUse
 			);
 			Assert.Throws<ValidationException>(() => ws.Script = "Ltn");
 		}
@@ -845,11 +849,11 @@ namespace SIL.WritingSystems.Tests
 			var ws = new WritingSystemDefinition();
 			ws.SetAllComponents(
 				"th",
-				WellKnownSubTags.Audio.Script,
+				WellKnownSubtags.AudioScript,
 				"",
-				WellKnownSubTags.Audio.PrivateUseSubtag
+				WellKnownSubtags.AudioPrivateUse
 			);
-			Assert.AreEqual(ws.Variant, WellKnownSubTags.Audio.PrivateUseSubtag);
+			Assert.AreEqual(ws.Variant, WellKnownSubtags.AudioPrivateUse);
 		}
 
 		[Test]
@@ -865,7 +869,7 @@ namespace SIL.WritingSystems.Tests
 			var ws = new WritingSystemDefinition();
 			ws.SetAllComponents(
 				"th",
-				WellKnownSubTags.Audio.Script,
+				WellKnownSubtags.AudioScript,
 				"",
 				"x-AUDIO"
 			);
@@ -878,7 +882,7 @@ namespace SIL.WritingSystems.Tests
 			var ws = new WritingSystemDefinition ();
 			ws.SetAllComponents(
 				"th",
-				WellKnownSubTags.Audio.Script,
+				WellKnownSubtags.AudioScript,
 				"",
 				"x-PrefixaudioPostfix"
 			);
@@ -891,9 +895,9 @@ namespace SIL.WritingSystems.Tests
 			var ws = new WritingSystemDefinition();
 			ws.SetAllComponents(
 				"th",
-				WellKnownSubTags.Audio.Script,
+				WellKnownSubtags.AudioScript,
 				"",
-				WellKnownSubTags.Audio.PrivateUseSubtag + "-" + WellKnownSubTags.Ipa.VariantSubtag
+				WellKnownSubtags.AudioPrivateUse + "-" + WellKnownSubtags.IpaVariant
 			);
 			Assert.AreEqual("x-audio-fonipa", ws.Variant);
 		}
@@ -903,7 +907,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			Assert.Throws<ArgumentException>(
-				() => ws.SetAllComponents("qaa", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Ipa.VariantSubtag + "-" + WellKnownSubTags.Audio.PrivateUseSubtag));
+				() => ws.SetAllComponents("qaa", WellKnownSubtags.AudioScript, "", WellKnownSubtags.IpaVariant + "-" + WellKnownSubtags.AudioPrivateUse));
 		}
 
 		[Test]
@@ -911,7 +915,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			Assert.Throws<ArgumentException>(
-				() => ws.SetAllComponents("qaa", "", "", WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag));
+				() => ws.SetAllComponents("qaa", "", "", WellKnownSubtags.IpaPhoneticPrivateUse));
 		}
 
 		[Test]
@@ -919,7 +923,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			Assert.Throws<ArgumentException>(
-				() => ws.SetAllComponents("qaa", "", "", WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag));
+				() => ws.SetAllComponents("qaa", "", "", WellKnownSubtags.IpaPhonemicPrivateUse));
 		}
 
 		[Test]
@@ -927,7 +931,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			Assert.Throws<ArgumentException>(
-				() => ws.SetAllComponents("qaa", "", "", WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag + '-' + WellKnownSubTags.Ipa.VariantSubtag));
+				() => ws.SetAllComponents("qaa", "", "", WellKnownSubtags.IpaPhoneticPrivateUse + '-' + WellKnownSubtags.IpaVariant));
 		}
 
 		[Test]
@@ -935,7 +939,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			Assert.Throws<ArgumentException>(
-				() => ws.SetAllComponents("qaa", "", "", WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag + '-' + WellKnownSubTags.Ipa.VariantSubtag));
+				() => ws.SetAllComponents("qaa", "", "", WellKnownSubtags.IpaPhonemicPrivateUse + '-' + WellKnownSubtags.IpaVariant));
 		}
 
 		[Test]
@@ -943,7 +947,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			Assert.Throws<ArgumentException>(
-				() => ws.SetAllComponents("qaa", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.PrivateUseSubtag + "-" + "etic"));
+				() => ws.SetAllComponents("qaa", WellKnownSubtags.AudioScript, "", WellKnownSubtags.AudioPrivateUse + "-" + "etic"));
 		}
 
 		[Test]
@@ -951,7 +955,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			Assert.Throws<ArgumentException>(
-				() => ws.SetAllComponents("qaa", WellKnownSubTags.Audio.Script, "", WellKnownSubTags.Audio.PrivateUseSubtag + "-" + "emic"));
+				() => ws.SetAllComponents("qaa", WellKnownSubtags.AudioScript, "", WellKnownSubtags.AudioPrivateUse + "-" + "emic"));
 		}
 
 		[Test]
@@ -987,8 +991,8 @@ namespace SIL.WritingSystems.Tests
 			var ws = WritingSystemDefinition.Parse("x-private");
 			Assert.That(ws.Variant, Is.EqualTo("x-private"));
 			ws.IsVoice = true;
-			Assert.That(ws.Language, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
-			Assert.That(ws.Script, Is.EqualTo(WellKnownSubTags.Unwritten.Script));
+			Assert.That(ws.Language, Is.EqualTo(WellKnownSubtags.UnlistedLanguage));
+			Assert.That(ws.Script, Is.EqualTo(WellKnownSubtags.UnwrittenScript));
 			Assert.That(ws.Region, Is.EqualTo(""));
 			Assert.That(ws.Variant, Is.EqualTo("x-private-audio"));
 		}
@@ -1068,7 +1072,7 @@ namespace SIL.WritingSystems.Tests
 			var ws = new WritingSystemDefinition();
 			ws.Language = "de";
 			ws.Script = "ZXXX";
-			ws.Variant = WellKnownSubTags.Audio.PrivateUseSubtag;
+			ws.Variant = WellKnownSubtags.AudioPrivateUse;
 			Assert.IsTrue(ws.IsVoice);
 		}
 
@@ -1220,25 +1224,23 @@ namespace SIL.WritingSystems.Tests
 		{
 			var writingSystem = new WritingSystemDefinition("x-bogus");
 			writingSystem.IpaStatus = IpaStatusChoices.Ipa;
-			Assert.AreEqual(WellKnownSubTags.Unlisted.Language, writingSystem.Language);
+			Assert.AreEqual(WellKnownSubtags.UnlistedLanguage, writingSystem.Language);
 			Assert.AreEqual("qaa-fonipa-x-bogus", writingSystem.Bcp47Tag);
 		}
 
 		[Test]
 		public void IpaStatus_SetToPhoneticRfcTagStartsWithxDash_InsertsUnknownlanguagemarkerAsLanguageSubtag()
 		{
-			var writingSystem = new WritingSystemDefinition("x-bogus");
-			writingSystem.IpaStatus = IpaStatusChoices.IpaPhonetic;
-			Assert.AreEqual(WellKnownSubTags.Unlisted.Language, writingSystem.Language);
+			var writingSystem = new WritingSystemDefinition("x-bogus") {IpaStatus = IpaStatusChoices.IpaPhonetic};
+			Assert.AreEqual(WellKnownSubtags.UnlistedLanguage, writingSystem.Language);
 			Assert.AreEqual("qaa-fonipa-x-bogus-etic", writingSystem.Bcp47Tag);
 		}
 
 		[Test]
 		public void IpaStatus_SetToPhonemicRfcTagStartsWithxDash_InsertsUnknownlanguagemarkerAsLanguageSubtag()
 		{
-			var writingSystem = new WritingSystemDefinition("x-bogus");
-			writingSystem.IpaStatus = IpaStatusChoices.IpaPhonemic;
-			Assert.AreEqual(WellKnownSubTags.Unlisted.Language, writingSystem.Language);
+			var writingSystem = new WritingSystemDefinition("x-bogus") {IpaStatus = IpaStatusChoices.IpaPhonemic};
+			Assert.AreEqual(WellKnownSubtags.UnlistedLanguage, writingSystem.Language);
 			Assert.AreEqual("qaa-fonipa-x-bogus-emic", writingSystem.Bcp47Tag);
 		}
 
@@ -1457,8 +1459,8 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void GetDefaultFontSizeOrMinimum_SetAt0_GreaterThanSix()
 		{
-			var ws = new WritingSystemDefinition()
-						 {
+			var ws = new WritingSystemDefinition
+			{
 							 DefaultFontSize = 0
 						 };
 			Assert.Greater(ws.GetDefaultFontSizeOrMinimum(), 6);
@@ -1474,8 +1476,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void ListLabel_ScriptSet_LabelIsLanguageWithScriptInBrackets()
 		{
-			var ws = new WritingSystemDefinition("de");
-			ws.Script = "Armi";
+			var ws = new WritingSystemDefinition("de") {Script = "Armi"};
 			Assert.That(ws.ListLabel, Is.EqualTo("German (Armi)"));
 		}
 
@@ -1483,25 +1484,21 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void ListLabel_RegionSet_LabelIsLanguageWithRegionInBrackets()
 		{
-			var ws = new WritingSystemDefinition("de");
-			ws.Region = "US";
+			var ws = new WritingSystemDefinition("de") {Region = "US"};
 			Assert.That(ws.ListLabel, Is.EqualTo("German (US)"));
 		}
 
 		[Test]
 		public void ListLabel_ScriptRegionSet_LabelIsLanguageWithScriptandRegionInBrackets()
 		{
-			var ws = new WritingSystemDefinition("de");
-			ws.Script = "Armi";
-			ws.Region = "US";
+			var ws = new WritingSystemDefinition("de") {Script = "Armi", Region = "US"};
 			Assert.That(ws.ListLabel, Is.EqualTo("German (Armi-US)"));
 		}
 
 		[Test]
 		public void ListLabel_ScriptVariantSet_LabelIsLanguageWithScriptandVariantInBrackets()
 		{
-			var ws = new WritingSystemDefinition("de");
-			ws.Script = "Armi";
+			var ws = new WritingSystemDefinition("de") {Script = "Armi"};
 			ws.AddToVariant("smth");
 			Assert.That(ws.ListLabel, Is.EqualTo("German (Armi-x-smth)"));
 		}
@@ -1509,8 +1506,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void ListLabel_RegionVariantSet_LabelIsLanguageWithRegionAndVariantInBrackets()
 		{
-			var ws = new WritingSystemDefinition("de");
-			ws.Region = "US";
+			var ws = new WritingSystemDefinition("de") {Region = "US"};
 			ws.AddToVariant("smth");
 			Assert.That(ws.ListLabel, Is.EqualTo("German (US-x-smth)"));
 		}
@@ -1518,8 +1514,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void ListLabel_VariantSetToIpa_LabelIsLanguageWithIPAInBrackets()
 		{
-			var ws = new WritingSystemDefinition("de");
-			ws.Variant = WellKnownSubTags.Ipa.VariantSubtag;
+			var ws = new WritingSystemDefinition("de") {Variant = WellKnownSubtags.IpaVariant};
 			Assert.That(ws.ListLabel, Is.EqualTo("German (IPA)"));
 		}
 
@@ -1596,12 +1591,10 @@ namespace SIL.WritingSystems.Tests
 		public void OtherAvailableKeyboards_DefaultsToAllAvailable()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var kbd1 = new DefaultKeyboardDefinition() {Layout = "something", Locale="en-US"};
-			var kbd2 = new DefaultKeyboardDefinition() { Layout = "somethingElse", Locale = "en-GB" };
+			var kbd1 = new DefaultKeyboardDefinition {Layout = "something", Locale="en-US"};
+			var kbd2 = new DefaultKeyboardDefinition {Layout = "somethingElse", Locale = "en-GB"};
 			var controller = new MockKeyboardController();
-			var keyboardList = new List<IKeyboardDefinition>();
-			keyboardList.Add(kbd1);
-			keyboardList.Add(kbd2);
+			var keyboardList = new List<IKeyboardDefinition> {kbd1, kbd2};
 			controller.AllAvailableKeyboards = keyboardList;
 			Keyboard.Controller = controller;
 
@@ -1615,13 +1608,11 @@ namespace SIL.WritingSystems.Tests
 		public void OtherAvailableKeyboards_OmitsKnownKeyboards()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var kbd1 = new DefaultKeyboardDefinition() { Layout = "something", Locale = "en-US" };
-			var kbd2 = new DefaultKeyboardDefinition() { Layout = "somethingElse", Locale = "en-GB" };
-			var kbd3 = new DefaultKeyboardDefinition() { Layout = "something", Locale = "en-US" }; // equal to kbd1
+			var kbd1 = new DefaultKeyboardDefinition {Layout = "something", Locale = "en-US"};
+			var kbd2 = new DefaultKeyboardDefinition {Layout = "somethingElse", Locale = "en-GB"};
+			var kbd3 = new DefaultKeyboardDefinition {Layout = "something", Locale = "en-US"}; // equal to kbd1
 			var controller = new MockKeyboardController();
-			var keyboardList = new List<IKeyboardDefinition>();
-			keyboardList.Add(kbd1);
-			keyboardList.Add(kbd2);
+			var keyboardList = new List<IKeyboardDefinition> {kbd1, kbd2};
 			controller.AllAvailableKeyboards = keyboardList;
 			Keyboard.Controller = controller;
 			ws.AddKnownKeyboard(kbd3);
@@ -1656,7 +1647,7 @@ namespace SIL.WritingSystems.Tests
 			/// <returns>
 			/// Returns <c>KeyboardDescription.Zero</c> if no keyboard can be found.
 			/// </returns>
-			public IKeyboardDefinition GetKeyboard(IWritingSystemDefinition writingSystem)
+			public IKeyboardDefinition GetKeyboard(WritingSystemDefinition writingSystem)
 			{
 				throw new NotImplementedException();
 			}
@@ -1684,7 +1675,7 @@ namespace SIL.WritingSystems.Tests
 				throw new NotImplementedException();
 			}
 
-			public void SetKeyboard(IWritingSystemDefinition writingSystem)
+			public void SetKeyboard(WritingSystemDefinition writingSystem)
 			{
 				throw new NotImplementedException();
 			}
@@ -1705,19 +1696,19 @@ namespace SIL.WritingSystems.Tests
 			public IEnumerable<IKeyboardDefinition> AllAvailableKeyboards { get; set; }
 
 			public IKeyboardDefinition Default;
-			public IWritingSystemDefinition ArgumentPassedToDefault;
+			public WritingSystemDefinition ArgumentPassedToDefault;
 			public void UpdateAvailableKeyboards()
 			{
 				throw new NotImplementedException();
 			}
 
-			public IKeyboardDefinition DefaultForWritingSystem(IWritingSystemDefinition ws)
+			public IKeyboardDefinition DefaultForWritingSystem(WritingSystemDefinition ws)
 			{
 				ArgumentPassedToDefault = ws;
 				return Default;
 			}
 
-			public IKeyboardDefinition LegacyForWritingSystem(IWritingSystemDefinition ws)
+			public IKeyboardDefinition LegacyForWritingSystem(WritingSystemDefinition ws)
 			{
 				throw new NotImplementedException();
 			}
@@ -1752,7 +1743,7 @@ namespace SIL.WritingSystems.Tests
 		public void SettingLocalKeyboard_AddsToKnownKeyboards()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var kbd1 = new DefaultKeyboardDefinition() { Layout = "something", Locale = "en-US" };
+			var kbd1 = new DefaultKeyboardDefinition {Layout = "something", Locale = "en-US"};
 
 			ws.LocalKeyboard = kbd1;
 
@@ -1767,8 +1758,8 @@ namespace SIL.WritingSystems.Tests
 		public void AddKnownKeyboard_DoesNotMakeDuplicates()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var kbd1 = new DefaultKeyboardDefinition() { Layout = "something", Locale = "en-US" };
-			var kbd2 = new DefaultKeyboardDefinition() { Layout = "something", Locale = "en-US" };
+			var kbd1 = new DefaultKeyboardDefinition {Layout = "something", Locale = "en-US"};
+			var kbd2 = new DefaultKeyboardDefinition {Layout = "something", Locale = "en-US"};
 
 			ws.AddKnownKeyboard(kbd1);
 			Assert.That(ws.Modified, Is.True);
@@ -1783,8 +1774,8 @@ namespace SIL.WritingSystems.Tests
 		public void SetLocalKeyboard_ToAlreadyKnownKeyboard_SetsModifiedFlag()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var kbd1 = new DefaultKeyboardDefinition() { Layout = "something", Locale = "en-US" };
-			var kbd2 = new DefaultKeyboardDefinition() { Layout = "something", Locale = "en-US" };
+			var kbd1 = new DefaultKeyboardDefinition {Layout = "something", Locale = "en-US"};
+			var kbd2 = new DefaultKeyboardDefinition {Layout = "something", Locale = "en-US"};
 
 			ws.AddKnownKeyboard(kbd1);
 			ws.LocalKeyboard = kbd2;
@@ -1806,9 +1797,9 @@ namespace SIL.WritingSystems.Tests
 		public void LocalKeyboard_DefaultsToFirstKnownAvailable()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var kbd1 = new DefaultKeyboardDefinition() { Layout = "something", Locale = "en-US" };
-			var kbd2 = new DefaultKeyboardDefinition() { Layout = "somethingElse", Locale = "en-US" };
-			var kbd3 = new DefaultKeyboardDefinition() { Layout = "somethingElse", Locale = "en-US" };
+			var kbd1 = new DefaultKeyboardDefinition { Layout = "something", Locale = "en-US" };
+			var kbd2 = new DefaultKeyboardDefinition { Layout = "somethingElse", Locale = "en-US" };
+			var kbd3 = new DefaultKeyboardDefinition { Layout = "somethingElse", Locale = "en-US" };
 
 			ws.AddKnownKeyboard(kbd1);
 			ws.AddKnownKeyboard(kbd2);

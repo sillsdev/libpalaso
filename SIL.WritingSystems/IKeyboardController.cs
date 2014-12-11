@@ -12,18 +12,50 @@ namespace SIL.WritingSystems
 	/// </summary>
 	public interface IKeyboardController: IDisposable
 	{
+		/// <summary>
+		/// Tries to get the keyboard with the specified <paramref name="layoutNameWithLocale"/>.
+		/// </summary>
 		IKeyboardDefinition GetKeyboard(string layoutNameWithLocale);
+
+		/// <summary>
+		/// Tries to get the keyboard with the specified <paramref name="layoutName"/>
+		/// and <paramref name="locale"/>.
+		/// </summary>
 		IKeyboardDefinition GetKeyboard(string layoutName, string locale);
-		IKeyboardDefinition GetKeyboard(IWritingSystemDefinition writingSystem);
+
+		/// <summary>
+		/// Tries to get the keyboard for the specified <paramref name="writingSystem"/>.
+		/// </summary>
+		IKeyboardDefinition GetKeyboard(WritingSystemDefinition writingSystem);
+
+		/// <summary>
+		/// Tries to get the keyboard for the specified <paramref name="language"/>.
+		/// </summary>
 		IKeyboardDefinition GetKeyboard(IInputLanguage language);
 
 		/// <summary>
 		/// Activates the keyboard
 		/// </summary>
 		void SetKeyboard(IKeyboardDefinition keyboard);
+
+		/// <summary>
+		/// Activates the keyboard
+		/// </summary>
 		void SetKeyboard(string layoutName);
+
+		/// <summary>
+		/// Activates the keyboard
+		/// </summary>
 		void SetKeyboard(string layoutName, string locale);
-		void SetKeyboard(IWritingSystemDefinition writingSystem);
+
+		/// <summary>
+		/// Activates the keyboard
+		/// </summary>
+		void SetKeyboard(WritingSystemDefinition writingSystem);
+
+		/// <summary>
+		/// Activates the keyboard
+		/// </summary>
 		void SetKeyboard(IInputLanguage language);
 
 		/// <summary>
@@ -51,14 +83,14 @@ namespace SIL.WritingSystems
 		/// Figures out the system default keyboard for the specified writing system (the one to use if we have no available KnownKeyboards).
 		/// The implementation may use obsolete fields such as Keyboard
 		/// </summary>
-		IKeyboardDefinition DefaultForWritingSystem(IWritingSystemDefinition ws);
+		IKeyboardDefinition DefaultForWritingSystem(WritingSystemDefinition ws);
 
 		/// <summary>
 		/// Finds a keyboard specified using one of the legacy fields. If such a keyboard is found, it is appropriate to
 		/// automatically add it to KnownKeyboards. If one is not, a general DefaultKeyboard should NOT be added.
 		/// This is intended to be used when KnownKeyboards is empty. It may return null.
 		/// </summary>
-		IKeyboardDefinition LegacyForWritingSystem(IWritingSystemDefinition ws);
+		IKeyboardDefinition LegacyForWritingSystem(WritingSystemDefinition ws);
 		/// <summary>
 		/// Creates and returns a keyboard definition object based on the layout and locale.
 		/// </summary>

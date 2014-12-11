@@ -5,6 +5,9 @@ using System.Xml.XPath;
 
 namespace SIL.WritingSystems
 {
+	/// <summary>
+	/// A writing system repository where all LDML defintions are stored in a single XML file.
+	/// </summary>
 	public class LdmlInXmlWritingSystemRepository : WritingSystemRepositoryBase
 	{
 		/// <summary>
@@ -15,6 +18,9 @@ namespace SIL.WritingSystems
 		{
 		}
 
+		/// <summary>
+		/// Saves all writing system definitions.
+		/// </summary>
 		public void SaveAllDefinitions(XmlWriter xmlWriter)
 		{
 			xmlWriter.WriteStartElement("writingsystems");
@@ -29,15 +35,18 @@ namespace SIL.WritingSystems
 			//(but which has the same identifier)
 		}
 
+		/// <summary>
+		/// Loads all writing system definitions.
+		/// </summary>
 		public void LoadAllDefinitions(string filePath)
 		{
-			XPathDocument xpDoc = new XPathDocument(new StreamReader(filePath));
+			var xpDoc = new XPathDocument(new StreamReader(filePath));
 			XPathNavigator xpNav = xpDoc.CreateNavigator();
 			XPathNodeIterator nodes = xpNav.Select("//writingsystems/ldml");
 			LdmlDataMapper adaptor = CreateLdmlAdaptor();
 			foreach (XPathNavigator nav in nodes)
 			{
-				var ws = (WritingSystemDefinition)CreateNew();
+				WritingSystemDefinition ws = CreateNew();
 				XmlReader xmlReader = nav.ReadSubtree();
 				adaptor.Read(xmlReader, ws);
 				ws.StoreID = ws.Bcp47Tag;
@@ -45,6 +54,9 @@ namespace SIL.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Loads all writing system definitions.
+		/// </summary>
 		public void LoadAllDefinitions(XmlReader xmlReader)
 		{
 			LdmlDataMapper adaptor = CreateLdmlAdaptor();
@@ -53,7 +65,7 @@ namespace SIL.WritingSystems
 			{
 				while (xmlReader.ReadToFollowing("ldml"))
 				{
-					var ws = (WritingSystemDefinition)CreateNew();
+					WritingSystemDefinition ws = CreateNew();
 					adaptor.Read(xmlReader.ReadSubtree(), ws);
 					ws.StoreID = ws.Bcp47Tag;
 					Set(ws);
@@ -61,7 +73,6 @@ namespace SIL.WritingSystems
 
 			}
 		}
-
 
 		public override bool WritingSystemIdHasChanged(string id)
 		{

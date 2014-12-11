@@ -48,7 +48,7 @@ namespace SIL.WritingSystems.Tests
 			var ws = WritingSystemDefinition.Parse("x-private");
 			Assert.That(ws.Variant, Is.EqualTo("x-private"));
 			ws.IpaStatus = IpaStatusChoices.IpaPhonetic;
-			Assert.That(ws.Language, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
+			Assert.That(ws.Language, Is.EqualTo(WellKnownSubtags.UnlistedLanguage));
 			Assert.That(ws.Script, Is.EqualTo(""));
 			Assert.That(ws.Region, Is.EqualTo(""));
 			Assert.That(ws.Variant, Is.EqualTo("fonipa-x-private-etic"));
@@ -61,7 +61,7 @@ namespace SIL.WritingSystems.Tests
 			var ws = WritingSystemDefinition.Parse("x-private");
 			Assert.That(ws.Variant, Is.EqualTo("x-private"));
 			ws.IpaStatus = IpaStatusChoices.Ipa;
-			Assert.That(ws.Language, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
+			Assert.That(ws.Language, Is.EqualTo(WellKnownSubtags.UnlistedLanguage));
 			Assert.That(ws.Script, Is.EqualTo(""));
 			Assert.That(ws.Region, Is.EqualTo(""));
 			Assert.That(ws.Variant, Is.EqualTo("fonipa-x-private"));
@@ -74,7 +74,7 @@ namespace SIL.WritingSystems.Tests
 			var ws = WritingSystemDefinition.Parse("x-private");
 			Assert.That(ws.Variant, Is.EqualTo("x-private"));
 			ws.IpaStatus = IpaStatusChoices.IpaPhonemic;
-			Assert.That(ws.Language, Is.EqualTo(WellKnownSubTags.Unlisted.Language));
+			Assert.That(ws.Language, Is.EqualTo(WellKnownSubtags.UnlistedLanguage));
 			Assert.That(ws.Script, Is.EqualTo(""));
 			Assert.That(ws.Region, Is.EqualTo(""));
 			Assert.That(ws.Variant, Is.EqualTo("fonipa-x-private-emic"));
@@ -304,9 +304,9 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void FilterWellKnownPrivateUseTags_HasOnlyWellKnownTags_EmptyList()
 		{
-			string[] listToFilter = {WellKnownSubTags.Audio.PrivateUseSubtag,
-										WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag,
-										WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag
+			string[] listToFilter = {WellKnownSubtags.AudioPrivateUse,
+										WellKnownSubtags.IpaPhonemicPrivateUse,
+										WellKnownSubtags.IpaPhoneticPrivateUse
 									};
 			IEnumerable<string> result = WritingSystemDefinition.FilterWellKnownPrivateUseTags(listToFilter);
 			Assert.That(result, Is.Empty);
@@ -315,21 +315,21 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void FilterWellKnownPrivateUseTags_HasWellKnownTagsAndUnknownTags_ListWithUnknownTags()
 		{
-			string[] listToFilter = { "v", WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag, WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag };
+			string[] listToFilter = { "v", WellKnownSubtags.IpaPhonemicPrivateUse, WellKnownSubtags.IpaPhoneticPrivateUse };
 			IEnumerable<string> result = WritingSystemDefinition.FilterWellKnownPrivateUseTags(listToFilter);
 			Assert.That(result, Has.Member("v"));
-			Assert.That(result, Has.No.Member(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag));
-			Assert.That(result, Has.No.Member(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag));
+			Assert.That(result, Has.No.Member(WellKnownSubtags.IpaPhonemicPrivateUse));
+			Assert.That(result, Has.No.Member(WellKnownSubtags.IpaPhoneticPrivateUse));
 		}
 
 		[Test]
 		public void FilterWellKnownPrivateUseTags_HasUpperCaseWellKnownTagsAndUnknownTags_ListWithUnknownTags()
 		{
-			string[] listToFilter = { "v", WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag.ToUpper(), WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag.ToUpper() };
+			string[] listToFilter = { "v", WellKnownSubtags.IpaPhonemicPrivateUse.ToUpper(), WellKnownSubtags.IpaPhoneticPrivateUse.ToUpper() };
 			IEnumerable<string> result = WritingSystemDefinition.FilterWellKnownPrivateUseTags(listToFilter);
 			Assert.That(result, Has.Member("v"));
-			Assert.That(result, Has.No.Member(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag.ToUpper()));
-			Assert.That(result, Has.No.Member(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag.ToUpper()));
+			Assert.That(result, Has.No.Member(WellKnownSubtags.IpaPhonemicPrivateUse.ToUpper()));
+			Assert.That(result, Has.No.Member(WellKnownSubtags.IpaPhoneticPrivateUse.ToUpper()));
 		}
 
 		[Test]
@@ -461,8 +461,8 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void SplitVariantAndPrivateUse_VariantAndPrivateUseWithCapitalXDash_ReturnsConcatenatedVariantAndPrivateUse()
 		{
-			string variant = String.Empty;
-			string privateUse = String.Empty;
+			string variant;
+			string privateUse;
 			WritingSystemDefinition.SplitVariantAndPrivateUse("1901-X-audio", out variant, out privateUse);
 			Assert.That(variant, Is.EqualTo("1901"));
 			Assert.That(privateUse, Is.EqualTo("audio"));

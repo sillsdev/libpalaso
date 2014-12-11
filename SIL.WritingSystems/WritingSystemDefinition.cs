@@ -4,10 +4,61 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Palaso.Code;
+using Palaso.Extensions;
 using SIL.WritingSystems.Collation;
 
 namespace SIL.WritingSystems
 {
+	/// <summary>
+	/// Collation rules types
+	/// </summary>
+	public enum CollationRulesTypes
+	{
+		/// <summary>
+		/// Default Unicode ordering rules (actually CustomIcu without any rules)
+		/// </summary>
+		[Description("Default Ordering")]
+		DefaultOrdering,
+		/// <summary>
+		/// Custom Simple (Shoebox/Toolbox) style rules
+		/// </summary>
+		[Description("Custom Simple (Shoebox style) rules")]
+		CustomSimple,
+		/// <summary>
+		/// Custom ICU rules
+		/// </summary>
+		[Description("Custom ICU rules")]
+		CustomIcu,
+		/// <summary>
+		/// Use the sort rules from another language. When this is set, the SortRules are interpreted as a cultureId for the language to sort like.
+		/// </summary>
+		[Description("Same as another language")]
+		OtherLanguage
+	}
+
+	/// <summary>
+	/// IPA status choices
+	/// </summary>
+	public enum IpaStatusChoices
+	{
+		/// <summary>
+		/// Not IPA
+		/// </summary>
+		NotIpa,
+		/// <summary>
+		/// Generic IPA
+		/// </summary>
+		Ipa,
+		/// <summary>
+		/// Phonetic IPA
+		/// </summary>
+		IpaPhonetic,
+		/// <summary>
+		/// Phonemic IPA
+		/// </summary>
+		IpaPhonemic
+	}
+
 	/// <summary>
 	/// This class stores the information used to define various writing system properties. The Language, Script, Region and Variant
 	/// properties conform to the subtags of the same name defined in BCP47 (Rfc5646) and are enforced by the Rfc5646Tag class. it is worth
@@ -21,40 +72,18 @@ namespace SIL.WritingSystems
 	/// Likewise "audio" marks a writing system as audio and must always be used in conjunction with script "Zxxx". Convenience methods
 	/// are provided for Ipa and Audio properties as IpaStatus and IsVoice respectively.
 	/// </summary>
-	public class WritingSystemDefinition : IClonableGeneric<WritingSystemDefinition>, IWritingSystemDefinition, ILegacyWritingSystemDefinition
+	public class WritingSystemDefinition : ICloneable<WritingSystemDefinition>
 	{
-		public enum SortRulesType
-		{
-			/// <summary>
-			/// Default Unicode ordering rules (actually CustomICU without any rules)
-			/// </summary>
-			[Description("Default Ordering")]
-			DefaultOrdering,
-			/// <summary>
-			/// Custom Simple (Shoebox/Toolbox) style rules
-			/// </summary>
-			[Description("Custom Simple (Shoebox style) rules")]
-			CustomSimple,
-			/// <summary>
-			/// Custom ICU rules
-			/// </summary>
-			[Description("Custom ICU rules")]
-			CustomICU,
-			/// <summary>
-			/// Use the sort rules from another language. When this is set, the SortRules are interpreted as a cultureId for the language to sort like.
-			/// </summary>
-			[Description("Same as another language")]
-			OtherLanguage
-		}
-
-		//This is the version of our writingsystemDefinition implementation and is mostly used for migration purposes.
-		//This should not be confused with the version of the locale data contained in this writing system.
-		//That information is stored in the "VersionNumber" property.
+		/// <summary>
+		/// This is the version of our writingsystemDefinition implementation and is mostly used for migration purposes.
+		/// This should not be confused with the version of the locale data contained in this writing system.
+		/// That information is stored in the "VersionNumber" property.
+		/// </summary>
 		public const int LatestWritingSystemDefinitionVersion = 2;
 
-		private RFC5646Tag _rfcTag;
-		private const int kMinimumFontSize=7;
-		private const int kDefaultSizeIfWeDontKnow = 10;
+		private Rfc5646Tag _rfcTag;
+		private const int MinimumFontSize = 7;
+		private const int DefaultSizeIfWeDontKnow = 10;
 
 		private string _languageName;
 
@@ -70,8 +99,8 @@ namespace SIL.WritingSystems
 		private float _defaultFontSize;
 		private string _keyboard;
 
-		private SortRulesType _sortUsing;
-		private string _sortRules;
+		private CollationRulesTypes _collationRulesType;
+		private string _collationRules;
 		private string _spellCheckingId;
 
 		private string _nativeName;
@@ -79,14 +108,16 @@ namespace SIL.WritingSystems
 		private ICollator _collator;
 		private string _id;
 
+		private readonly List<IKeyboardDefinition> _knownKeyboards = new List<IKeyboardDefinition>();
+
 		/// <summary>
 		/// Creates a new WritingSystemDefinition with Language subtag set to "qaa"
 		/// </summary>
 		public WritingSystemDefinition()
 		{
-			_sortUsing = SortRulesType.DefaultOrdering;
+			_collationRulesType = CollationRulesTypes.DefaultOrdering;
 			_isUnicodeEncoded = true;
-			_rfcTag = new RFC5646Tag();
+			_rfcTag = new Rfc5646Tag();
 			UpdateIdFromRfcTag();
 		}
 
@@ -97,7 +128,7 @@ namespace SIL.WritingSystems
 		public WritingSystemDefinition(string bcp47Tag)
 			: this()
 		{
-			_rfcTag = RFC5646Tag.Parse(bcp47Tag);
+			_rfcTag = Rfc5646Tag.Parse(bcp47Tag);
 			_abbreviation = _languageName = _nativeName = string.Empty;
 			UpdateIdFromRfcTag();
 		}
@@ -132,19 +163,11 @@ namespace SIL.WritingSystems
 			string variantPart;
 			string privateUsePart;
 			SplitVariantAndPrivateUse(variant, out variantPart, out privateUsePart);
-			_rfcTag = new RFC5646Tag(language, script, region, variantPart, privateUsePart);
+			_rfcTag = new Rfc5646Tag(language, script, region, variantPart, privateUsePart);
 
 			_abbreviation = abbreviation;
 			_rightToLeftScript = rightToLeftScript;
 			UpdateIdFromRfcTag();
-		}
-
-		/// <summary>
-		/// Copy constructor from IWritingSystem: useable only if the interface is in fact implemented by this class.
-		/// </summary>
-		/// <param name="ws"></param>
-		internal WritingSystemDefinition(IWritingSystemDefinition ws) : this ((WritingSystemDefinition)ws)
-		{
 		}
 
 		/// <summary>
@@ -161,12 +184,12 @@ namespace SIL.WritingSystems
 			_versionNumber = ws._versionNumber;
 			_versionDescription = ws._versionDescription;
 			_nativeName = ws._nativeName;
-			_sortUsing = ws._sortUsing;
-			_sortRules = ws._sortRules;
+			_collationRulesType = ws._collationRulesType;
+			_collationRules = ws._collationRules;
 			_spellCheckingId = ws._spellCheckingId;
 			_dateModified = ws._dateModified;
 			_isUnicodeEncoded = ws._isUnicodeEncoded;
-			_rfcTag = new RFC5646Tag(ws._rfcTag);
+			_rfcTag = new Rfc5646Tag(ws._rfcTag);
 			_languageName = ws._languageName;
 			if (ws._localKeyboard != null)
 				_localKeyboard = ws._localKeyboard.Clone();
@@ -187,51 +210,22 @@ namespace SIL.WritingSystems
 			set { UpdateString(ref _versionNumber, value); }
 		}
 
+		/// <summary>
+		/// Gets or sets the version description.
+		/// </summary>
 		virtual public string VersionDescription
 		{
 			get { return _versionDescription; }
 			set { UpdateString(ref _versionDescription, value); }
 		}
 
+		/// <summary>
+		/// Gets or sets the date modified.
+		/// </summary>
 		virtual public DateTime DateModified
 		{
 			get { return _dateModified; }
 			set { _dateModified = value; }
-		}
-
-		public IEnumerable<Iso639LanguageCode> ValidLanguages
-		{
-			get
-			{
-				return StandardTags.ValidIso639LanguageCodes;
-			}
-		}
-
-		public IEnumerable<Iso15924Script> ValidScript
-		{
-			get
-			{
-				return StandardTags.ValidIso15924Scripts;
-			}
-		}
-
-		public IEnumerable<IanaSubtag> ValidRegions
-		{
-			get
-			{
-				return StandardTags.ValidIso3166Regions;
-			}
-		}
-
-		public IEnumerable<IanaSubtag> ValidVariants
-		{
-			get
-			{
-				foreach (var variant in StandardTags.ValidRegisteredVariants)
-				{
-					yield return variant;
-				}
-			}
 		}
 
 		/// <summary>
@@ -265,9 +259,9 @@ namespace SIL.WritingSystems
 				//We need this to make sure that our language tag won't start with the variant "fonipa"
 				if(_rfcTag.Language == "")
 				{
-					_rfcTag.Language = WellKnownSubTags.Unlisted.Language;
+					_rfcTag.Language = WellKnownSubtags.UnlistedLanguage;
 				}
-				_rfcTag.RemoveFromPrivateUse(WellKnownSubTags.Audio.PrivateUseSubtag);
+				_rfcTag.RemoveFromPrivateUse(WellKnownSubtags.AudioPrivateUse);
 				/* "There are some variant subtags that have no prefix field,
 				 * eg. fonipa (International IpaPhonetic Alphabet). Such variants
 				 * should appear after any other variant subtags with prefix information."
@@ -278,18 +272,16 @@ namespace SIL.WritingSystems
 
 				switch (value)
 				{
-					default:
-						break;
 					case IpaStatusChoices.Ipa:
-						_rfcTag.AddToVariant(WellKnownSubTags.Ipa.VariantSubtag);
+						_rfcTag.AddToVariant(WellKnownSubtags.IpaVariant);
 						break;
 					case IpaStatusChoices.IpaPhonemic:
-						_rfcTag.AddToVariant(WellKnownSubTags.Ipa.VariantSubtag);
-						_rfcTag.AddToPrivateUse(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag);
+						_rfcTag.AddToVariant(WellKnownSubtags.IpaVariant);
+						_rfcTag.AddToPrivateUse(WellKnownSubtags.IpaPhonemicPrivateUse);
 						break;
 					case IpaStatusChoices.IpaPhonetic:
-						_rfcTag.AddToVariant(WellKnownSubTags.Ipa.VariantSubtag);
-						_rfcTag.AddToPrivateUse(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag);
+						_rfcTag.AddToVariant(WellKnownSubtags.IpaVariant);
+						_rfcTag.AddToPrivateUse(WellKnownSubtags.IpaPhoneticPrivateUse);
 						break;
 				}
 				Modified = true;
@@ -315,15 +307,15 @@ namespace SIL.WritingSystems
 					Keyboard = string.Empty;
 					if(Language == "")
 					{
-						Language = WellKnownSubTags.Unlisted.Language;
+						Language = WellKnownSubtags.UnlistedLanguage;
 					}
-					Script = WellKnownSubTags.Audio.Script;
-					_rfcTag.AddToPrivateUse(WellKnownSubTags.Audio.PrivateUseSubtag);
+					Script = WellKnownSubtags.AudioScript;
+					_rfcTag.AddToPrivateUse(WellKnownSubtags.AudioPrivateUse);
 				}
 				else
 				{
 					_rfcTag.Script = String.Empty;
-					_rfcTag.RemoveFromPrivateUse(WellKnownSubTags.Audio.PrivateUseSubtag);
+					_rfcTag.RemoveFromPrivateUse(WellKnownSubtags.AudioPrivateUse);
 				}
 				Modified = true;
 				UpdateIdFromRfcTag();
@@ -335,13 +327,13 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				return _rfcTag.PrivateUseContains(WellKnownSubTags.Audio.PrivateUseSubtag);
+				return _rfcTag.PrivateUseContains(WellKnownSubtags.AudioPrivateUse);
 			}
 		}
 
 		private bool ScriptSubTagIsAudio
 		{
-			get { return _rfcTag.Script.Equals(WellKnownSubTags.Audio.Script,StringComparison.OrdinalIgnoreCase); }
+			get { return _rfcTag.Script.Equals(WellKnownSubtags.AudioScript, StringComparison.OrdinalIgnoreCase); }
 		}
 
 		/// <summary>
@@ -468,17 +460,17 @@ namespace SIL.WritingSystems
 				return;
 			if (VariantSubTagIsAudio && !ScriptSubTagIsAudio)
 			{
-				throw new ArgumentException("The script subtag must be set to " + WellKnownSubTags.Audio.Script + " when the variant tag indicates an audio writing system.");
+				throw new ArgumentException("The script subtag must be set to " + WellKnownSubtags.AudioScript + " when the variant tag indicates an audio writing system.");
 			}
 			bool rfcTagHasAnyIpa = VariantSubTagIsIpaConform ||
-									_rfcTag.PrivateUseContains(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag) ||
-									_rfcTag.PrivateUseContains(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag);
+									_rfcTag.PrivateUseContains(WellKnownSubtags.IpaPhonemicPrivateUse) ||
+									_rfcTag.PrivateUseContains(WellKnownSubtags.IpaPhoneticPrivateUse);
 			if (VariantSubTagIsAudio && rfcTagHasAnyIpa)
 			{
 				throw new ArgumentException("A writing system may not be marked as audio and ipa at the same time.");
 			}
-			if((_rfcTag.PrivateUseContains(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag)  ||
-				_rfcTag.PrivateUseContains(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag)) &&
+			if((_rfcTag.PrivateUseContains(WellKnownSubtags.IpaPhonemicPrivateUse)  ||
+				_rfcTag.PrivateUseContains(WellKnownSubtags.IpaPhoneticPrivateUse)) &&
 				!VariantSubTagIsIpaConform)
 			{
 				throw new ArgumentException("A writing system may not be marked as phonetic (x-etic) or phonemic (x-emic) and lack the variant marker fonipa.");
@@ -489,7 +481,7 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				return _rfcTag.VariantContains(WellKnownSubTags.Ipa.VariantSubtag);
+				return _rfcTag.VariantContains(WellKnownSubtags.IpaVariant);
 			}
 		}
 
@@ -497,8 +489,8 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				return  _rfcTag.VariantContains(WellKnownSubTags.Ipa.VariantSubtag) &&
-					_rfcTag.PrivateUseContains(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag);
+				return  _rfcTag.VariantContains(WellKnownSubtags.IpaVariant) &&
+					_rfcTag.PrivateUseContains(WellKnownSubtags.IpaPhoneticPrivateUse);
 			}
 		}
 
@@ -506,8 +498,8 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				return _rfcTag.VariantContains(WellKnownSubTags.Ipa.VariantSubtag) &&
-					_rfcTag.PrivateUseContains(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag);
+				return _rfcTag.VariantContains(WellKnownSubtags.IpaVariant) &&
+					_rfcTag.PrivateUseContains(WellKnownSubtags.IpaPhonemicPrivateUse);
 			}
 		}
 
@@ -525,7 +517,7 @@ namespace SIL.WritingSystems
 			string variantPart;
 			string privateUsePart;
 			SplitVariantAndPrivateUse(variant, out variantPart, out privateUsePart);
-			_rfcTag = new RFC5646Tag(language, script, region, variantPart, privateUsePart);
+			_rfcTag = new Rfc5646Tag(language, script, region, variantPart, privateUsePart);
 			UpdateIdFromRfcTag();
 			if(oldId == _rfcTag.CompleteTag)
 			{
@@ -592,7 +584,7 @@ namespace SIL.WritingSystems
 					// If it's an unlisted language, use the private use area language subtag.
 					if (Language == "qaa")
 					{
-						int idx = Id.IndexOf("-x-");
+						int idx = Id.IndexOf("-x-", StringComparison.Ordinal);
 						if (idx > 0 && Id.Length > idx + 3)
 						{
 							var abbr = Id.Substring(idx + 3);
@@ -675,12 +667,13 @@ namespace SIL.WritingSystems
 		/// <param name="otherWritingsystemIds"></param>
 		/// <returns></returns>
 		public static WritingSystemDefinition CreateCopyWithUniqueId(
-			IWritingSystemDefinition writingSystemToCopy, IEnumerable<string> otherWritingsystemIds)
+			WritingSystemDefinition writingSystemToCopy, IEnumerable<string> otherWritingsystemIds)
 		{
-			var newWs = writingSystemToCopy.Clone();
+			WritingSystemDefinition newWs = writingSystemToCopy.Clone();
 			var lastAppended = String.Empty;
 			int duplicateNumber = 0;
-			while (otherWritingsystemIds.Any(id => id.Equals(newWs.Id, StringComparison.OrdinalIgnoreCase)))
+			string[] wsIds = otherWritingsystemIds.ToArray();
+			while (wsIds.Any(id => id.Equals(newWs.Id, StringComparison.OrdinalIgnoreCase)))
 			{
 				newWs._rfcTag.RemoveFromPrivateUse(lastAppended);
 				var currentToAppend = String.Format("dupl{0}", duplicateNumber);
@@ -695,6 +688,9 @@ namespace SIL.WritingSystems
 			return newWs;
 		}
 
+		/// <summary>
+		/// Updates the specified field and marks the writing system as modified.
+		/// </summary>
 		protected void UpdateString(ref string field, string value)
 		{
 			if (field == value)
@@ -730,7 +726,7 @@ namespace SIL.WritingSystems
 			{
 				//jh (Oct 2010) made it start with RFC5646 because all ws's in a lang start with the
 				//same abbreviation, making imppossible to see (in SOLID for example) which you chose.
-				bool languageIsUnknown = Bcp47Tag.Equals(WellKnownSubTags.Unlisted.Language, StringComparison.OrdinalIgnoreCase);
+				bool languageIsUnknown = Bcp47Tag.Equals(WellKnownSubtags.UnlistedLanguage, StringComparison.OrdinalIgnoreCase);
 				if (!String.IsNullOrEmpty(Bcp47Tag) && !languageIsUnknown)
 				{
 					return Bcp47Tag;
@@ -751,14 +747,16 @@ namespace SIL.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Gets the list label.
+		/// </summary>
 		virtual public string ListLabel
 		{
 			get
 			{
 				//the idea here is to give writing systems a nice legible label for. For this reason subtags are replaced with nice labels
-				var wsToConstructLabelFrom = this.Clone();
-				string n = string.Empty;
-				n = !String.IsNullOrEmpty(wsToConstructLabelFrom.LanguageName) ? wsToConstructLabelFrom.LanguageName : wsToConstructLabelFrom.DisplayLabel;
+				WritingSystemDefinition wsToConstructLabelFrom = Clone();
+				string n = !String.IsNullOrEmpty(wsToConstructLabelFrom.LanguageName) ? wsToConstructLabelFrom.LanguageName : wsToConstructLabelFrom.DisplayLabel;
 				string details = "";
 
 				if (wsToConstructLabelFrom.IpaStatus != IpaStatusChoices.NotIpa)
@@ -819,11 +817,17 @@ namespace SIL.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this instance is a duplicate.
+		/// </summary>
 		protected bool IsDuplicate
 		{
 			get { return _rfcTag.GetPrivateUseSubtagsMatchingRegEx(@"^dupl\d$").Count() != 0; }
 		}
 
+		/// <summary>
+		/// Gets the duplicate numbers.
+		/// </summary>
 		protected IEnumerable<string> DuplicateNumbers
 		{
 			get
@@ -868,6 +872,9 @@ namespace SIL.WritingSystems
 		/// </summary>
 		virtual public bool Modified { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether the writing system will be deleted.
+		/// </summary>
 		virtual public bool MarkedForDeletion { get; set; }
 
 		/// <summary>
@@ -896,7 +903,7 @@ namespace SIL.WritingSystems
 			}
 			set
 			{
-				if (value == _defaultFontSize)
+				if (Math.Abs(value - _defaultFontSize) < float.Epsilon)
 				{
 					return;
 				}
@@ -915,8 +922,8 @@ namespace SIL.WritingSystems
 		/// <returns></returns>
 		virtual public float GetDefaultFontSizeOrMinimum()
 		{
-			if (_defaultFontSize < kMinimumFontSize)
-				return kDefaultSizeIfWeDontKnow;
+			if (_defaultFontSize < MinimumFontSize)
+				return DefaultSizeIfWeDontKnow;
 			return _defaultFontSize;
 		}
 
@@ -941,20 +948,30 @@ namespace SIL.WritingSystems
 
 		private IKeyboardDefinition _localKeyboard;
 
+		/// <summary>
+		/// This field retrieves the value obtained from the FieldWorks LDML extension fw:windowsLCID.
+		/// This is used only when current information in LocalKeyboard or KnownKeyboards is not useable.
+		/// It is not useful to modify this or set it in new LDML files; however, we need a public setter
+		/// because FieldWorks overrides the code that normally reads this from the LDML file.
+		/// </summary>
 		public string WindowsLcid { get; set; }
 
+		/// <summary>
+		/// This tracks the keyboard that should be used for this writing system on this computer.
+		/// It is not shared with other users of the project.
+		/// </summary>
 		public IKeyboardDefinition LocalKeyboard
 		{
 			get
 			{
 				if (_localKeyboard == null)
 				{
-					var available = new HashSet<IKeyboardDefinition>(SIL.WritingSystems.Keyboard.Controller.AllAvailableKeyboards);
+					var available = new HashSet<IKeyboardDefinition>(WritingSystems.Keyboard.Controller.AllAvailableKeyboards);
 					_localKeyboard = (from k in KnownKeyboards where available.Contains(k) select k).FirstOrDefault();
 				}
 				if (_localKeyboard == null)
 				{
-					_localKeyboard = SIL.WritingSystems.Keyboard.Controller.DefaultForWritingSystem(this);
+					_localKeyboard = WritingSystems.Keyboard.Controller.DefaultForWritingSystem(this);
 				}
 				return _localKeyboard;
 			}
@@ -1009,14 +1026,14 @@ namespace SIL.WritingSystems
 		/// Indicates the type of sort rules used to encode the sort order.
 		/// Note that the actual sort rules are contained in the SortRules property
 		/// </summary>
-		virtual public SortRulesType SortUsing
+		virtual public CollationRulesTypes CollationRulesType
 		{
-			get { return _sortUsing; }
+			get { return _collationRulesType; }
 			set
 			{
-				if (value != _sortUsing)
+				if (value != _collationRulesType)
 				{
-					_sortUsing = value;
+					_collationRulesType = value;
 					_collator = null;
 					Modified = true;
 				}
@@ -1027,13 +1044,13 @@ namespace SIL.WritingSystems
 		/// The sort rules that efine the sort order.
 		/// Note that you must indicate the type of sort rules used by setting the "SortUsing" property
 		/// </summary>
-		virtual public string SortRules
+		virtual public string CollationRules
 		{
-			get { return _sortRules ?? string.Empty; }
+			get { return _collationRules ?? string.Empty; }
 			set
 			{
 				_collator = null;
-				UpdateString(ref _sortRules, value);
+				UpdateString(ref _collationRules, value);
 			}
 		}
 
@@ -1043,18 +1060,18 @@ namespace SIL.WritingSystems
 		/// <param name="languageCode">A valid language code</param>
 		public void SortUsingOtherLanguage(string languageCode)
 		{
-			SortUsing = SortRulesType.OtherLanguage;
-			SortRules = languageCode;
+			CollationRulesType = CollationRulesTypes.OtherLanguage;
+			CollationRules = languageCode;
 		}
 
 		/// <summary>
 		/// A convenience method for sorting with custom ICU rules
 		/// </summary>
 		/// <param name="sortRules">custom ICU sortrules</param>
-		public void SortUsingCustomICU(string sortRules)
+		public void SortUsingCustomIcu(string sortRules)
 		{
-			SortUsing = SortRulesType.CustomICU;
-			SortRules = sortRules;
+			CollationRulesType = CollationRulesTypes.CustomIcu;
+			CollationRules = sortRules;
 		}
 
 		/// <summary>
@@ -1063,8 +1080,8 @@ namespace SIL.WritingSystems
 		/// <param name="sortRules">"shoebox" style rules</param>
 		public void SortUsingCustomSimple(string sortRules)
 		{
-			SortUsing = SortRulesType.CustomSimple;
-			SortRules = sortRules;
+			CollationRulesType = CollationRulesTypes.CustomSimple;
+			CollationRules = sortRules;
 		}
 
 		/// <summary>
@@ -1089,19 +1106,19 @@ namespace SIL.WritingSystems
 			{
 				if (_collator == null)
 				{
-					switch (SortUsing)
+					switch (CollationRulesType)
 					{
-						case SortRulesType.DefaultOrdering:
+						case CollationRulesTypes.DefaultOrdering:
 							_collator = new IcuRulesCollator(String.Empty); // was SystemCollator(null);
 							break;
-						case SortRulesType.CustomSimple:
-							_collator = new SimpleRulesCollator(SortRules);
+						case CollationRulesTypes.CustomSimple:
+							_collator = new SimpleRulesCollator(CollationRules);
 							break;
-						case SortRulesType.CustomICU:
-							_collator = new IcuRulesCollator(SortRules);
+						case CollationRulesTypes.CustomIcu:
+							_collator = new IcuRulesCollator(CollationRules);
 							break;
-						case SortRulesType.OtherLanguage:
-							_collator = new SystemCollator(SortRules);
+						case CollationRulesTypes.OtherLanguage:
+							_collator = new SystemCollator(CollationRules);
 							break;
 					}
 				}
@@ -1117,25 +1134,16 @@ namespace SIL.WritingSystems
 		virtual public bool ValidateCollationRules(out string message)
 		{
 			message = null;
-			switch (SortUsing)
+			switch (CollationRulesType)
 			{
-				case SortRulesType.DefaultOrdering:
-					return String.IsNullOrEmpty(SortRules);
-				case SortRulesType.CustomICU:
-					return IcuRulesCollator.ValidateSortRules(SortRules, out message);
-				case SortRulesType.CustomSimple:
-					return SimpleRulesCollator.ValidateSimpleRules(SortRules, out message);
-				case SortRulesType.OtherLanguage:
-					try
-					{
-						new SystemCollator(SortRules);
-					}
-					catch (Exception e)
-					{
-						message = String.Format("Error while validating sorting rules: {0}", e.Message);
-						return false;
-					}
-					return true;
+				case CollationRulesTypes.DefaultOrdering:
+					return String.IsNullOrEmpty(CollationRules);
+				case CollationRulesTypes.CustomIcu:
+					return IcuRulesCollator.ValidateSortRules(CollationRules, out message);
+				case CollationRulesTypes.CustomSimple:
+					return SimpleRulesCollator.ValidateSimpleRules(CollationRules, out message);
+				case CollationRulesTypes.OtherLanguage:
+					return SystemCollator.ValidateCultureID(CollationRules, out message);
 			}
 			return false;
 		}
@@ -1155,13 +1163,10 @@ namespace SIL.WritingSystems
 			return new WritingSystemDefinition(this);
 		}
 
-		public override bool Equals(Object obj)
-		{
-			if (!(obj is WritingSystemDefinition)) return false;
-			return Equals((WritingSystemDefinition)obj);
-		}
-
-		public bool Equals(WritingSystemDefinition other)
+		/// <summary>
+		/// Checks for value equality with the specified writing system.
+		/// </summary>
+		public bool ValueEquals(WritingSystemDefinition other)
 		{
 			if (other == null) return false;
 			if (!_rfcTag.Equals(other._rfcTag)) return false;
@@ -1171,14 +1176,14 @@ namespace SIL.WritingSystems
 			if ((_versionDescription != null && !_versionDescription.Equals(other._versionDescription)) || (other._versionDescription != null && !other._versionDescription.Equals(_versionDescription))) return false;
 			if ((_defaultFontName != null && !_defaultFontName.Equals(other._defaultFontName)) || (other._defaultFontName != null && !other._defaultFontName.Equals(_defaultFontName))) return false;
 			if ((_keyboard != null && !_keyboard.Equals(other._keyboard)) || (other._keyboard != null && !other._keyboard.Equals(_keyboard))) return false;
-			if ((_sortRules != null && !_sortRules.Equals(other._sortRules)) || (other._sortRules != null && !other._sortRules.Equals(_sortRules))) return false;
+			if ((_collationRules != null && !_collationRules.Equals(other._collationRules)) || (other._collationRules != null && !other._collationRules.Equals(_collationRules))) return false;
 			if ((_spellCheckingId != null && !_spellCheckingId.Equals(other._spellCheckingId)) || (other._spellCheckingId != null && !other._spellCheckingId.Equals(_spellCheckingId))) return false;
 			if ((_nativeName != null && !_nativeName.Equals(other._nativeName)) || (other._nativeName != null && !other._nativeName.Equals(_nativeName))) return false;
 			if ((_id != null && !_id.Equals(other._id)) || (other._id != null && !other._id.Equals(_id))) return false;
 			if (!_isUnicodeEncoded.Equals(other._isUnicodeEncoded)) return false;
 			if (!_dateModified.Equals(other._dateModified)) return false;
 			if (!_defaultFontSize.Equals(other._defaultFontSize)) return false;
-			if (!SortUsing.Equals(other.SortUsing)) return false;
+			if (!CollationRulesType.Equals(other.CollationRulesType)) return false;
 			if (!_rightToLeftScript.Equals(other._rightToLeftScript)) return false;
 			if ((_localKeyboard != null  && !_localKeyboard.Equals(other._localKeyboard)) || (_localKeyboard == null && other._localKeyboard != null)) return false;
 			if (WindowsLcid != other.WindowsLcid) return false;
@@ -1187,6 +1192,7 @@ namespace SIL.WritingSystems
 			{
 				if (!_knownKeyboards[i].Equals(other._knownKeyboards[i])) return false;
 			}
+
 			return true;
 		}
 
@@ -1194,7 +1200,6 @@ namespace SIL.WritingSystems
 		{
 			_id = Bcp47Tag;
 		}
-
 
 		/// <summary>
 		/// Indicates whether this writing system is unicode encoded or legacy encoded
@@ -1221,7 +1226,7 @@ namespace SIL.WritingSystems
 		/// <param name="completeTag">A valid BCP47 tag</param>
 		public void SetTagFromString(string completeTag)
 		{
-			_rfcTag = RFC5646Tag.Parse(completeTag);
+			_rfcTag = Rfc5646Tag.Parse(completeTag);
 			UpdateIdFromRfcTag();
 			Modified = true;
 		}
@@ -1254,22 +1259,28 @@ namespace SIL.WritingSystems
 		{
 			foreach (var privateUseToken in privateUseTokens)
 			{
-				string strippedToken = RFC5646Tag.StripLeadingPrivateUseMarker(privateUseToken);
-				if (strippedToken.Equals(RFC5646Tag.StripLeadingPrivateUseMarker(WellKnownSubTags.Audio.PrivateUseSubtag), StringComparison.OrdinalIgnoreCase) ||
-					strippedToken.Equals(RFC5646Tag.StripLeadingPrivateUseMarker(WellKnownSubTags.Ipa.PhonemicPrivateUseSubtag), StringComparison.OrdinalIgnoreCase) ||
-					strippedToken.Equals(RFC5646Tag.StripLeadingPrivateUseMarker(WellKnownSubTags.Ipa.PhoneticPrivateUseSubtag), StringComparison.OrdinalIgnoreCase))
+				string strippedToken = Rfc5646Tag.StripLeadingPrivateUseMarker(privateUseToken);
+				if (strippedToken.Equals(Rfc5646Tag.StripLeadingPrivateUseMarker(WellKnownSubtags.AudioPrivateUse), StringComparison.OrdinalIgnoreCase) ||
+					strippedToken.Equals(Rfc5646Tag.StripLeadingPrivateUseMarker(WellKnownSubtags.IpaPhonemicPrivateUse), StringComparison.OrdinalIgnoreCase) ||
+					strippedToken.Equals(Rfc5646Tag.StripLeadingPrivateUseMarker(WellKnownSubtags.IpaPhoneticPrivateUse), StringComparison.OrdinalIgnoreCase))
 					continue;
 				yield return privateUseToken;
 			}
 		}
 
-		List<IKeyboardDefinition> _knownKeyboards = new List<IKeyboardDefinition>();
-
+		/// <summary>
+		/// Keyboards known to have been used with this writing system. Not all may be available on this system.
+		/// Enhance: document (or add to this interface?) a way of getting available keyboards.
+		/// </summary>
 		public IEnumerable<IKeyboardDefinition> KnownKeyboards
 		{
 			get { return _knownKeyboards; }
 		}
 
+		/// <summary>
+		/// Note that a new keyboard is known to be used for this writing system.
+		/// </summary>
+		/// <param name="newKeyboard"></param>
 		public void AddKnownKeyboard(IKeyboardDefinition newKeyboard)
 		{
 			if (newKeyboard == null)
@@ -1291,44 +1302,8 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				return SIL.WritingSystems.Keyboard.Controller.AllAvailableKeyboards.Except(KnownKeyboards);
+				return WritingSystems.Keyboard.Controller.AllAvailableKeyboards.Except(KnownKeyboards);
 			}
-		}
-	}
-
-	public enum IpaStatusChoices
-	{
-		NotIpa,
-		Ipa,
-		IpaPhonetic,
-		IpaPhonemic
-	}
-
-	public class WellKnownSubTags
-	{
-		public class Unlisted
-		{
-			public const string Language = "qaa";
-		}
-
-		public class Unwritten
-		{
-			public const string Script = "Zxxx";
-		}
-
-		//The "x-" is required before each of the strings below, since WritingSystemDefinition needs "x-" to distinguish BCP47 private use from variant
-		//Without the "x-"  a consumer who wanted to set a writing ystem as audio would have to write: ws.Variant = "x-" + WellKnownSubtags.Audio.PrivateUseSubtag
-		public class Audio
-		{
-			public const string PrivateUseSubtag = "x-audio";
-			public const string Script= Unwritten.Script;
-		}
-
-		public class Ipa
-		{
-			public const string VariantSubtag = "fonipa";
-			public const string PhonemicPrivateUseSubtag = "x-emic";
-			public const string PhoneticPrivateUseSubtag = "x-etic";
 		}
 	}
 }

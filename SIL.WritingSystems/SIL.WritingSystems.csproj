@@ -21,7 +21,8 @@
     <DefineConstants>DEBUG;TRACE;STRONG_NAME</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\output\Debug\SIL.WritingSystems.XML</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
     <LangVersion>default</LangVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
@@ -140,7 +141,6 @@
     <Compile Include="IKeyboardDefinition.cs" />
     <Compile Include="Iso15924Script.cs" />
     <Compile Include="Iso639LanguageCode.cs" />
-    <Compile Include="IWritingSystemDefinition.cs" />
     <Compile Include="IWritingSystemRepository.cs" />
     <Compile Include="Keyboard.cs" />
     <Compile Include="LanguageRegistryResources.Designer.cs">
@@ -174,7 +174,7 @@
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\XmlHelpersV0.cs" />
     <Compile Include="RFC5646Tag.cs" />
     <Compile Include="StandardTags.cs" />
-    <Compile Include="StringContainsExtension.cs" />
+    <Compile Include="WellKnownSubtags.cs" />
     <Compile Include="WritingSystemChangeLog.cs" />
     <Compile Include="WritingSystemChangeLogDataMapper.cs" />
     <Compile Include="WritingSystemDefinition.cs" />

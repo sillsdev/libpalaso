@@ -12,6 +12,7 @@ using Palaso.Code;
 using SIL.WritingSystems.WindowsForms.Keyboarding;
 using Palaso.i18n;
 using Palaso.Reporting;
+using Palaso.Extensions;
 using SIL.WritingSystems.WindowsForms.WSTree;
 
 namespace SIL.WritingSystems.WindowsForms
@@ -31,11 +32,11 @@ namespace SIL.WritingSystems.WindowsForms
 	public class WritingSystemSetupModel
 	{
 		private readonly bool _usingRepository;
-		private IWritingSystemDefinition _currentWritingSystem;
+		private WritingSystemDefinition _currentWritingSystem;
 		private int _currentIndex;
 		private readonly IWritingSystemRepository _writingSystemRepository;
-		private readonly List<IWritingSystemDefinition> _writingSystemDefinitions;
-		private readonly List<IWritingSystemDefinition> _deletedWritingSystemDefinitions;
+		private readonly List<WritingSystemDefinition> _writingSystemDefinitions;
+		private readonly List<WritingSystemDefinition> _deletedWritingSystemDefinitions;
 
 		internal string DefaultCustomSimpleSortRules = "A a-B b-C c-D d-E e-F f-G g-H h-I i-J j-K k-L l-M m-N n-O o-P p-Q q-R r-S s-T t-U u-V v-W w-X x-Y y-Z z".Replace("-", "\r\n");
 
@@ -67,8 +68,8 @@ namespace SIL.WritingSystems.WindowsForms
 			WritingSystemSuggestor = new WritingSystemSuggestor();
 
 			_writingSystemRepository = writingSystemRepository;
-			_writingSystemDefinitions = new List<IWritingSystemDefinition>(_writingSystemRepository.AllWritingSystems);
-			_deletedWritingSystemDefinitions = new List<IWritingSystemDefinition>();
+			_writingSystemDefinitions = new List<WritingSystemDefinition>(_writingSystemRepository.AllWritingSystems);
+			_deletedWritingSystemDefinitions = new List<WritingSystemDefinition>();
 			_currentIndex = -1;
 			_usingRepository = true;
 		}
@@ -89,7 +90,7 @@ namespace SIL.WritingSystems.WindowsForms
 			_currentWritingSystem = ws;
 			_currentIndex = 0;
 			_writingSystemRepository = null;
-			_writingSystemDefinitions = new List<IWritingSystemDefinition>(1);
+			_writingSystemDefinitions = new List<WritingSystemDefinition>(1);
 			WritingSystemDefinitions.Add(ws);
 			_deletedWritingSystemDefinitions = null;
 			_usingRepository = false;
@@ -202,7 +203,7 @@ namespace SIL.WritingSystems.WindowsForms
 		/// available on WritingSystemDefinition.  This is needed to ensure that the UI
 		/// stays up to date with any changes to the underlying WritingSystemDefinition.
 		/// </summary>
-		internal IWritingSystemDefinition CurrentDefinition
+		internal WritingSystemDefinition CurrentDefinition
 		{
 			get
 			{
@@ -238,7 +239,7 @@ namespace SIL.WritingSystems.WindowsForms
 			return true;
 		}
 
-		public virtual bool SetCurrentDefinition(IWritingSystemDefinition definition)
+		public virtual bool SetCurrentDefinition(WritingSystemDefinition definition)
 		{
 			var index = WritingSystemDefinitions.FindIndex(d => d == definition);
 			if (index < 0)
@@ -395,7 +396,7 @@ namespace SIL.WritingSystems.WindowsForms
 				{
 					return false;
 				}
-				return CurrentDefinition == null ? false : WritingSystemListCanSave[CurrentIndex];
+				return CurrentDefinition != null && WritingSystemListCanSave[CurrentIndex];
 			}
 		}
 
@@ -406,12 +407,12 @@ namespace SIL.WritingSystems.WindowsForms
 		{
 			get
 			{
-				foreach (Enum customSortRulesType in Enum.GetValues(typeof(WritingSystemDefinition.SortRulesType)))
+				foreach (Enum customSortRulesType in Enum.GetValues(typeof(CollationRulesTypes)))
 				{
 					FieldInfo fi =
 							customSortRulesType.GetType().GetField(customSortRulesType.ToString());
 
-					DescriptionAttribute[] descriptions =
+					var descriptions =
 						(DescriptionAttribute[])
 						fi.GetCustomAttributes(typeof (DescriptionAttribute), false);
 					string description;
@@ -448,8 +449,8 @@ namespace SIL.WritingSystems.WindowsForms
 					var ws = WritingSystemDefinitions[i];
 					// don't allow if it references another language on our prohibited list and this one
 					// isn't already on the prohibited list
-					if (ws.SortUsing == WritingSystemDefinition.SortRulesType.OtherLanguage
-						&& !string.IsNullOrEmpty(ws.Bcp47Tag) && prohibitedList.Contains(ws.SortRules)
+					if (ws.CollationRulesType == CollationRulesTypes.OtherLanguage
+						&& !string.IsNullOrEmpty(ws.Bcp47Tag) && prohibitedList.Contains(ws.CollationRules)
 						&& !prohibitedList.Contains(ws.Bcp47Tag))
 					{
 						prohibitedList.Add(ws.Bcp47Tag);
@@ -648,7 +649,7 @@ namespace SIL.WritingSystems.WindowsForms
 				{
 					if (String.IsNullOrEmpty(CurrentDefinition.Language))
 					{
-						CurrentDefinition.Language = WellKnownSubTags.Unlisted.Language;
+						CurrentDefinition.Language = WellKnownSubtags.UnlistedLanguage;
 					}
 					CurrentDefinition.Region = value;
 					OnCurrentItemUpdated();
@@ -698,7 +699,7 @@ namespace SIL.WritingSystems.WindowsForms
 				{
 					if(String.IsNullOrEmpty(CurrentDefinition.Language))
 					{
-						CurrentDefinition.Language = WellKnownSubTags.Unlisted.Language;
+						CurrentDefinition.Language = WellKnownSubtags.UnlistedLanguage;
 					}
 					CurrentDefinition.Script = value;
 					OnCurrentItemUpdated();
@@ -733,7 +734,7 @@ namespace SIL.WritingSystems.WindowsForms
 						var fixedVariant = WritingSystemDefinitionVariantHelper.ValidVariantString(value);
 						if (String.IsNullOrEmpty(CurrentDefinition.Language) && !fixedVariant.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
 						{
-							CurrentDefinition.Language = WellKnownSubTags.Unlisted.Language;
+							CurrentDefinition.Language = WellKnownSubtags.UnlistedLanguage;
 						}
 						CurrentDefinition.Variant = fixedVariant;
 						OnCurrentItemUpdated();
@@ -757,7 +758,7 @@ namespace SIL.WritingSystems.WindowsForms
 			}
 		}
 
-		virtual public string VerboseDescription(IWritingSystemDefinition writingSystem)
+		virtual public string VerboseDescription(WritingSystemDefinition writingSystem)
 		{
 			var summary = new StringBuilder();
 			summary.AppendFormat(" {0}", writingSystem.LanguageName);
@@ -826,15 +827,15 @@ namespace SIL.WritingSystems.WindowsForms
 
 		public string CurrentSortUsing
 		{
-			get { return CurrentDefinition.SortUsing.ToString(); }
+			get { return CurrentDefinition.CollationRulesType.ToString(); }
 			set
 			{
 				if (!String.IsNullOrEmpty(value))
 				{
-					var valueAsSortUsing = (WritingSystemDefinition.SortRulesType)Enum.Parse(typeof (WritingSystemDefinition.SortRulesType), value);
-					if (valueAsSortUsing != CurrentDefinition.SortUsing)
+					var valueAsSortUsing = (CollationRulesTypes) Enum.Parse(typeof (CollationRulesTypes), value);
+					if (valueAsSortUsing != CurrentDefinition.CollationRulesType)
 					{
-						CurrentDefinition.SortUsing = valueAsSortUsing;
+						CurrentDefinition.CollationRulesType = valueAsSortUsing;
 						OnCurrentItemUpdated();
 					}
 				}
@@ -845,26 +846,26 @@ namespace SIL.WritingSystems.WindowsForms
 		{
 			get
 			{
-				if (String.IsNullOrEmpty(CurrentDefinition.SortRules) && CurrentSortUsing == "CustomSimple")
+				if (String.IsNullOrEmpty(CurrentDefinition.CollationRules) && CurrentSortUsing == "CustomSimple")
 				{
 					return DefaultCustomSimpleSortRules;
 				}
 				else
 				{
-					return CurrentDefinition.SortRules ?? string.Empty;
+					return CurrentDefinition.CollationRules ?? string.Empty;
 				}
 			}
 			set
 			{
-				if (CurrentDefinition.SortRules != value)
+				if (CurrentDefinition.CollationRules != value)
 				{
-					CurrentDefinition.SortRules = value;
+					CurrentDefinition.CollationRules = value;
 					OnCurrentItemUpdated();
 				}
 			}
 		}
 
-		public virtual List<IWritingSystemDefinition> WritingSystemDefinitions
+		public virtual List<WritingSystemDefinition> WritingSystemDefinitions
 		{
 			get { return _writingSystemDefinitions; }
 		}
@@ -894,7 +895,7 @@ namespace SIL.WritingSystems.WindowsForms
 				{
 					return SelectionsForSpecialCombo.Ipa;
 				}
-				if (_currentWritingSystem.Language == WellKnownSubTags.Unlisted.Language)
+				if (_currentWritingSystem.Language == WellKnownSubtags.UnlistedLanguage)
 				{
 					return SelectionsForSpecialCombo.UnlistedLanguageDetails;
 				}
@@ -924,7 +925,7 @@ namespace SIL.WritingSystems.WindowsForms
 				{
 					if(String.IsNullOrEmpty(_currentWritingSystem.Language))
 					{
-						_currentWritingSystem.Language = WellKnownSubTags.Unlisted.Language;
+						_currentWritingSystem.Language = WellKnownSubtags.UnlistedLanguage;
 					}
 					_currentWritingSystem.IpaStatus = value;
 					OnCurrentItemUpdated();
@@ -1276,7 +1277,7 @@ namespace SIL.WritingSystems.WindowsForms
 			{
 				throw new InvalidOperationException("Unable to add new input system definition when there is no store.");
 			}
-			IWritingSystemDefinition ws=null;
+			WritingSystemDefinition ws;
 			if (MethodToShowUiToBootstrapNewDefinition == null)
 			{
 				ws = _writingSystemRepository.CreateNew();
@@ -1289,7 +1290,7 @@ namespace SIL.WritingSystems.WindowsForms
 			if(ws==null)//cancelled
 				return;
 
-			if (ws.Abbreviation == WellKnownSubTags.Unlisted.Language) // special case for Unlisted Language
+			if (ws.Abbreviation == WellKnownSubtags.UnlistedLanguage) // special case for Unlisted Language
 			{
 				ws.Abbreviation = "v"; // TODO magic string!!! UnlistedLanguageView.DefaultAbbreviation;
 			}
@@ -1360,7 +1361,7 @@ namespace SIL.WritingSystems.WindowsForms
 		{
 			// NOTE: It is not a good idea to remove and then add all writing systems, even though it would
 			// NOTE: accomplish the same goal as any information in the LDML file not used by palaso would be lost.
-			var unsettableWritingSystems = new List<IWritingSystemDefinition>();
+			var unsettableWritingSystems = new List<WritingSystemDefinition>();
 			foreach (var ws in WritingSystemDefinitions)
 			{
 				if (_writingSystemRepository.CanSet(ws))
@@ -1472,7 +1473,7 @@ namespace SIL.WritingSystems.WindowsForms
 //        {
 //
 //        }
-		public virtual void AddPredefinedDefinition(IWritingSystemDefinition definition)
+		public virtual void AddPredefinedDefinition(WritingSystemDefinition definition)
 		{
 			if (!_usingRepository)
 			{
@@ -1483,7 +1484,7 @@ namespace SIL.WritingSystems.WindowsForms
 			OnAddOrDelete();
 		}
 
-		internal void RenameIsoCode(IWritingSystemDefinition existingWs)
+		internal void RenameIsoCode(WritingSystemDefinition existingWs)
 		{
 			WritingSystemDefinition newWs = null;
 			if (!_usingRepository)
@@ -1611,17 +1612,17 @@ namespace SIL.WritingSystems.WindowsForms
 
 	public class WhatToDoWithDataInWritingSystemToBeDeletedEventArgs : EventArgs
 	{
-		private IWritingSystemDefinition _writingSystemIdToConflateWith;
+		private WritingSystemDefinition _writingSystemIdToConflateWith;
 
-		public WhatToDoWithDataInWritingSystemToBeDeletedEventArgs(IWritingSystemDefinition writingSystemIdToDelete)
+		public WhatToDoWithDataInWritingSystemToBeDeletedEventArgs(WritingSystemDefinition writingSystemIdToDelete)
 		{
 			WritingSystemIdToDelete = writingSystemIdToDelete;
 			WhatToDo = WhatToDos.Delete;
 		}
 
 		public WhatToDos WhatToDo { get; set; }
-		public IWritingSystemDefinition WritingSystemIdToDelete { get; private set; }
-		public IWritingSystemDefinition WritingSystemIdToConflateWith
+		public WritingSystemDefinition WritingSystemIdToDelete { get; private set; }
+		public WritingSystemDefinition WritingSystemIdToConflateWith
 		{
 			get
 			{

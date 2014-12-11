@@ -17,25 +17,11 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		IWritingSystemRepository _writingSystemRepository;
 		string _testFilePath;
 
-		private class DeleteCurrentTestEnvironment:IDisposable
+		private class DeleteCurrentTestEnvironment : IDisposable
 		{
-
-			public bool AskIfDataExistsInWritingSystemToBeDeletedFired { get; private set; }
 			public bool AskIfOkToConflateWritingSystemsFired { get; private set; }
 			public bool AskUserWhatToDoWithDataInWritingSystemToBeDeletedFired { get; private set; }
 			public bool AskIfOkToDeleteWritingSystemFired { get; private set; }
-
-			public void OnAskIfDataExistsInWritingSystemToBeDeleted_NoData(object sender, AskIfDataExistsInWritingSystemToBeDeletedEventArgs args)
-			{
-				AskIfDataExistsInWritingSystemToBeDeletedFired = true;
-				args.ProjectContainsDataInWritingSystemToBeDeleted = false;
-			}
-
-			public void OnAskIfDataExistsInWritingSystemToBeDeleted_DataExists(object sender, AskIfDataExistsInWritingSystemToBeDeletedEventArgs args)
-			{
-				AskIfDataExistsInWritingSystemToBeDeletedFired = true;
-				args.ProjectContainsDataInWritingSystemToBeDeleted = true;
-			}
 
 			public void OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Delete(object sender, WhatToDoWithDataInWritingSystemToBeDeletedEventArgs args)
 			{
@@ -144,7 +130,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		[Test]
 		public void DeleteCurrent_NoLongerInList()
 		{
-			using (var e = new DeleteCurrentTestEnvironment())
+			using (new DeleteCurrentTestEnvironment())
 			{
 				_model.AddNew();
 				_model.CurrentISO = "pt";
@@ -252,7 +238,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		[Test]
 		public void Event_Delete_TriggersOnAddDelete()
 		{
-			using (var e = new DeleteCurrentTestEnvironment())
+			using (new DeleteCurrentTestEnvironment())
 			{
 				_model.AddNew();
 				_model.CurrentISO = "pt";
@@ -493,7 +479,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 			string key = _model.CurrentRFC4646;
 			_model.AddNew();
 			_model.CurrentISO = "de";
-			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.OtherLanguage.ToString();
+			_model.CurrentSortUsing = CollationRulesTypes.OtherLanguage.ToString();
 			_model.CurrentSortRules = key;
 			key = _model.CurrentRFC4646;
 			_model.CurrentIndex = 0;
@@ -597,7 +583,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		{
 			_model.AddNew();
 			_model.CurrentISO = "pt";
-			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
+			_model.CurrentSortUsing = CollationRulesTypes.CustomIcu.ToString();
 			_model.CurrentSortRules = "&b<a<c";
 			Assert.IsNull(_model.TestSort(null));
 		}
@@ -607,7 +593,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		{
 			_model.AddNew();
 			_model.CurrentISO = "pt";
-			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
+			_model.CurrentSortUsing = CollationRulesTypes.CustomIcu.ToString();
 			_model.CurrentSortRules = "&b<a<c";
 			Assert.AreEqual("b\r\na\r\nc", _model.TestSort("a\r\nb\r\nc"));
 		}
@@ -618,7 +604,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 			string message;
 			_model.AddNew();
 			_model.CurrentISO = "pt";
-			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
+			_model.CurrentSortUsing = CollationRulesTypes.CustomIcu.ToString();
 			_model.CurrentSortRules = "&b<a<c";
 			Assert.IsTrue(_model.ValidateCurrentSortRules(out message));
 		}
@@ -629,7 +615,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 			string message;
 			_model.AddNew();
 			_model.CurrentISO = "pt";
-			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.CustomICU.ToString();
+			_model.CurrentSortUsing = CollationRulesTypes.CustomIcu.ToString();
 			_model.CurrentSortRules = "&&b<a<c";
 			Assert.IsFalse(_model.ValidateCurrentSortRules(out message));
 		}
@@ -640,7 +626,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 			string message;
 			_model.AddNew();
 			_model.CurrentISO = "pt";
-			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.CustomSimple.ToString();
+			_model.CurrentSortUsing = CollationRulesTypes.CustomSimple.ToString();
 			_model.CurrentSortRules = "b a c";
 			Assert.IsTrue(_model.ValidateCurrentSortRules(out message));
 		}
@@ -651,7 +637,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 			string message;
 			_model.AddNew();
 			_model.CurrentISO = "pt";
-			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.CustomSimple.ToString();
+			_model.CurrentSortUsing = CollationRulesTypes.CustomSimple.ToString();
 			_model.CurrentSortRules = "ab b b";
 			Assert.IsFalse(_model.ValidateCurrentSortRules(out message));
 		}
@@ -662,7 +648,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 			string message;
 			_model.AddNew();
 			_model.CurrentISO = "pt";
-			_model.CurrentSortUsing = WritingSystemDefinition.SortRulesType.OtherLanguage.ToString();
+			_model.CurrentSortUsing = CollationRulesTypes.OtherLanguage.ToString();
 			_model.CurrentSortRules = "en";
 			Assert.IsTrue(_model.ValidateCurrentSortRules(out message));
 		}
@@ -781,7 +767,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		}
 
 		[Test]
-		public void VerboseDescriptionWhenJustISO()
+		public void VerboseDescriptionWhenJustIso()
 		{
 			_model.CurrentDefinition = new WritingSystemDefinition("en", "", "", "", "", false);
 			Assert.AreEqual("English. (en)", _model.VerboseDescription(_model.CurrentDefinition));
@@ -1119,7 +1105,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void SortRules_RulesAreEmptyAndSortTypeIsCustomSimple_DefaultSortRules()
 		{
 			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
-			Assert.That(_model.CurrentDefinition.SortRules, Is.Empty);
+			Assert.That(_model.CurrentDefinition.CollationRules, Is.Empty);
 			_model.CurrentSortUsing = "CustomSimple";
 			Assert.That(_model.CurrentSortRules, Is.EqualTo(_model.DefaultCustomSimpleSortRules));
 		}
@@ -1139,7 +1125,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void SortRules_RulesAreEmptyAndSortTypeIsCustomICU_StillEmpty()
 		{
 			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
-			Assert.That(_model.CurrentDefinition.SortRules, Is.Empty);
+			Assert.That(_model.CurrentDefinition.CollationRules, Is.Empty);
 			_model.CurrentSortUsing = "CustomICU";
 			Assert.That(_model.CurrentSortRules, Is.Empty);
 		}

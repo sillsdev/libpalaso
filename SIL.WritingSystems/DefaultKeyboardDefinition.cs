@@ -11,14 +11,20 @@ namespace SIL.WritingSystems
 	/// the implementations of IKeyboardDefinition from PalasoUIWindowsForms or some similar library.
 	/// In particular while this class can store various data it does nothing about actually activating a keyboard.
 	/// Review: possibly that method and this class should be made abstract?</remarks>
-	public class DefaultKeyboardDefinition : IClonableGeneric<IKeyboardDefinition>, IKeyboardDefinition
+	public class DefaultKeyboardDefinition : ICloneable<IKeyboardDefinition>, IEquatable<IKeyboardDefinition>, IKeyboardDefinition
 	{
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DefaultKeyboardDefinition"/> class.
+		/// </summary>
 		public DefaultKeyboardDefinition()
 		{
 			Type = KeyboardType.System;
 			Layout = string.Empty;
 			Locale = string.Empty;
 		}
+		/// <summary>
+		/// Initializes a new instance of the <see cref="DefaultKeyboardDefinition"/> class.
+		/// </summary>
 		public DefaultKeyboardDefinition(DefaultKeyboardDefinition kd)
 		{
 			Type = kd.Type;
@@ -137,14 +143,20 @@ namespace SIL.WritingSystems
 			return Layout == other.Layout && Locale == other.Locale;
 		}
 
+		/// <summary>
+		/// Equality operator.
+		/// </summary>
 		public static bool operator ==(DefaultKeyboardDefinition left, DefaultKeyboardDefinition right)
 		{
 			// Check for both being null
 			if (ReferenceEquals(null, left))
-				return ReferenceEquals(null , right);
+				return ReferenceEquals(null, right);
 			return left.Equals(right);
 		}
 
+		/// <summary>
+		/// Equality operator.
+		/// </summary>
 		public static bool operator !=(DefaultKeyboardDefinition left, DefaultKeyboardDefinition right)
 		{
 			return !(left == right);

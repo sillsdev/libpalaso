@@ -15,27 +15,18 @@ namespace SIL.WritingSystems
 		{
 			get { return new DefaultKeyboardDefinition(); }
 		}
-		/// <summary>
-		/// Tries to get the keyboard with the specified <paramref name="layoutName"/>.
-		/// </summary>
+
 		public IKeyboardDefinition GetKeyboard(string layoutName)
 		{
 			return TrivialKeyboard;
 		}
 
-		/// <summary>
-		/// Tries to get the keyboard with the specified <paramref name="layoutName"/>
-		/// and <paramref name="locale"/>.
-		/// </summary>
 		public IKeyboardDefinition GetKeyboard(string layoutName, string locale)
 		{
 			return TrivialKeyboard;
 		}
 
-		/// <summary>
-		/// Tries to get the keyboard for the specified <paramref name="writingSystem"/>.
-		/// </summary>
-		public IKeyboardDefinition GetKeyboard(IWritingSystemDefinition writingSystem)
+		public IKeyboardDefinition GetKeyboard(WritingSystemDefinition writingSystem)
 		{
 			return TrivialKeyboard;
 		}
@@ -57,7 +48,7 @@ namespace SIL.WritingSystems
 		{
 		}
 
-		public void SetKeyboard(IWritingSystemDefinition writingSystem)
+		public void SetKeyboard(WritingSystemDefinition writingSystem)
 		{
 		}
 
@@ -81,12 +72,12 @@ namespace SIL.WritingSystems
 		{
 		}
 
-		public virtual IKeyboardDefinition DefaultForWritingSystem(IWritingSystemDefinition ws)
+		public virtual IKeyboardDefinition DefaultForWritingSystem(WritingSystemDefinition ws)
 		{
-			return new DefaultKeyboardDefinition() {Layout = "English", Locale = "en-US"};
+			return new DefaultKeyboardDefinition {Layout = "English", Locale = "en-US"};
 		}
 
-		public IKeyboardDefinition LegacyForWritingSystem(IWritingSystemDefinition ws)
+		public IKeyboardDefinition LegacyForWritingSystem(WritingSystemDefinition ws)
 		{
 			return null;
 		}
@@ -98,8 +89,8 @@ namespace SIL.WritingSystems
 		/// availability of the keyboard and what engine provides it.</remarks>
 		public virtual IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
 		{
-			return new DefaultKeyboardDefinition()
-				{
+			return new DefaultKeyboardDefinition
+			{
 					Layout = layout,
 					Locale = locale,
 					OperatingSystem = Environment.OSVersion.Platform

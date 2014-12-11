@@ -13,8 +13,19 @@ namespace SIL.WritingSystems
 	/// ----------------------------------------------------------------------------------------
 	public interface IInputLanguage
 	{
+		/// <summary>
+		/// Gets the culture.
+		/// </summary>
 		CultureInfo Culture { get; }
+
+		/// <summary>
+		/// Gets the handle.
+		/// </summary>
 		IntPtr Handle { get; }
+
+		/// <summary>
+		/// Gets the layout name.
+		/// </summary>
 		string LayoutName { get; }
 	}
 }

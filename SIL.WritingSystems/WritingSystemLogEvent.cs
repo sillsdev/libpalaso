@@ -7,7 +7,7 @@ namespace SIL.WritingSystems
 	public class WritingSystemLogEvent
 	{
 		public WritingSystemLogEvent(string type) :
-			this(type, System.DateTime.UtcNow) { }
+			this(type, DateTime.UtcNow) { }
 
 		public WritingSystemLogEvent(string type, DateTime iso8601Datetime)
 		{

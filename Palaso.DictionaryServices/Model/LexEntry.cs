@@ -19,7 +19,7 @@ namespace Palaso.DictionaryServices.Model
 	/// some languages/dictionaries, these will be indistinguishable from "words".
 	/// In others, words are made up of lexical entries.
 	/// </summary>
-	public class LexEntry: PalasoDataObject, IClonableGeneric<LexEntry>
+	public class LexEntry: PalasoDataObject, ICloneable<LexEntry>, IEquatable<LexEntry>
 	{
 		private MultiText _lexicalForm;
 		private Guid _guid;

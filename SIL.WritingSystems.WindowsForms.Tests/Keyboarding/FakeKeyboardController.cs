@@ -41,7 +41,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		/// Figures out the system default keyboard for the specified writing system (the one to use if we have no available KnownKeyboards).
 		/// The implementation may use obsolete fields such as Keyboard
 		/// </summary>
-		public override IKeyboardDefinition DefaultForWritingSystem(IWritingSystemDefinition ws)
+		public override IKeyboardDefinition DefaultForWritingSystem(WritingSystemDefinition ws)
 		{
 			return KeyboardDescription.Zero;
 		}
