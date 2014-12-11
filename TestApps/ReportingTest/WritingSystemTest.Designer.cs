@@ -1,4 +1,6 @@
-﻿namespace TestApp
+﻿using Palaso.UI.WindowsForms.SIL;
+
+namespace TestApp
 {
 	partial class WritingSystemTest
 	{
@@ -28,7 +30,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.wsPropertiesPanel1 = new Palaso.UI.WindowsForms.WritingSystems.WritingSystemSetupView();
+			this.wsPropertiesPanel1 = new SIL.WritingSystems.WindowsForms.WritingSystemSetupView();
 			this.button1 = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			//
@@ -66,7 +68,7 @@
 
 		#endregion
 
-		private Palaso.UI.WindowsForms.WritingSystems.WritingSystemSetupView wsPropertiesPanel1;
+		private SIL.WritingSystems.WindowsForms.WritingSystemSetupView wsPropertiesPanel1;
 		private System.Windows.Forms.Button button1;
 
 	}

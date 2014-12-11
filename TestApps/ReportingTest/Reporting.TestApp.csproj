@@ -182,6 +182,14 @@
 	  <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
 	  <Name>Palaso</Name>
 	</ProjectReference>
+    <ProjectReference Include="..\..\SIL.WritingSystems.WindowsForms\SIL.WritingSystems.WindowsForms.csproj">
+      <Project>{f7df58e2-5b67-498a-9f64-b5f1584a5ab9}</Project>
+      <Name>SIL.WritingSystems.WindowsForms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SIL.WritingSystems\SIL.WritingSystems.csproj">
+      <Project>{52a93c63-08f4-4527-8e6e-ac2adeba6e2d}</Project>
+      <Name>SIL.WritingSystems</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
 	<BootstrapperPackage Include="Microsoft.Net.Client.3.5">
