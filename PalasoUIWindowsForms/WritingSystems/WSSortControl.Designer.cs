@@ -133,7 +133,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			//
 			// tableLayoutPanel3
 			//
-			this.tableLayoutPanel3.AutoSize = true;
+			this.tableLayoutPanel3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.tableLayoutPanel3.ColumnCount = 2;
 			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
