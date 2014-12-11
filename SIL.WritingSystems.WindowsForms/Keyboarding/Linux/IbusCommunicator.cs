@@ -4,8 +4,8 @@
 using System;
 using System.Windows.Forms;
 using IBusDotNet;
-using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
-using Palaso.UI.WindowsForms.Keyboarding.Types;
+using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
+using SIL.WritingSystems.WindowsForms.Keyboarding.Types;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 {

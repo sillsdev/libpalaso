@@ -4,16 +4,13 @@
 // GNU Lesser General Public License, as specified in the LICENSING.txt file.
 //
 // Original author: MarkS 2013-01-04 XklEngineTests.cs
-
-namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
-{
 #if __MonoCS__
 using System;
 using NUnit.Framework;
-using Palaso.UI.WindowsForms.Keyboarding.Linux;
+using SIL.WritingSystems.WindowsForms.Keyboarding.Linux;
 using X11.XKlavier;
 
-namespace PalasoUIWindowsForms.Tests.Keyboarding
+namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 {
 	[TestFixture]
 	[Platform(Include="Linux", Reason="Linux specific tests")]
@@ -69,4 +66,3 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 	}
 }
 #endif
-}

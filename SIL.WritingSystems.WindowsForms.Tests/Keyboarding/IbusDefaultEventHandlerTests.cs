@@ -1,16 +1,13 @@
 ﻿// Copyright (c) 2013, SIL International.
 // Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
-
-namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
-{
 #if __MonoCS__
 using System;
 using System.Windows.Forms;
 using IBusDotNet;
 using NUnit.Framework;
-using Palaso.UI.WindowsForms.Keyboarding.Linux;
+using SIL.WritingSystems.WindowsForms.Keyboarding.Linux;
 
-namespace PalasoUIWindowsForms.Tests.Keyboarding
+namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 {
 	[TestFixture]
 	public class IbusDefaultEventHandlerTests
@@ -269,4 +266,3 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 	}
 }
 #endif
-}

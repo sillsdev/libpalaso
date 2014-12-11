@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using X11.XKlavier;
-using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
-using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
-using Palaso.WritingSystems;
+using SIL.WritingSystems.WindowsForms.Keyboarding.Interfaces;
+using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
+using SIL.WritingSystems;
 using Palaso.Reporting;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux

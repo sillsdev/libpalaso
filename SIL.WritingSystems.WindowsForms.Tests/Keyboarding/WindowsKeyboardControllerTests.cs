@@ -1,3 +1,4 @@
+#if !MONO
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -5,9 +6,6 @@ using NUnit.Framework;
 using Palaso.Reporting;
 using SIL.WritingSystems.WindowsForms.Keyboarding;
 using SIL.WritingSystems.WindowsForms.Keyboarding.Windows;
-
-#if !MONO
-
 
 namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 {

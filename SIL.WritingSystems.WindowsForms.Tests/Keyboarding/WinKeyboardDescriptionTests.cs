@@ -1,13 +1,12 @@
 // Copyright (c) 2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-
+#if !__MonoCS__
 using System;
 using System.Collections.Generic;
 using Microsoft.Unmanaged.TSF;
 using Palaso.TestUtilities;
 using SIL.WritingSystems.WindowsForms.Keyboarding.Windows;
 
-#if !__MonoCS__
 
 
 namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding

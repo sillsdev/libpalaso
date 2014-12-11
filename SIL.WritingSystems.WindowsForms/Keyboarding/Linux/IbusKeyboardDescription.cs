@@ -3,10 +3,10 @@
 #if __MonoCS__
 using System;
 using System.Windows.Forms;
-using IBusDotNet;
 using Icu;
-using Palaso.WritingSystems;
-using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
+using IBusDotNet;
+using SIL.WritingSystems;
+using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 {

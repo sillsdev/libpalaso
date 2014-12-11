@@ -1,13 +1,13 @@
 // Copyright (c) 2013, SIL International.
 // Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
 #if __MonoCS__
+using Palaso.UI.WindowsForms.Extensions;
 using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using IBusDotNet;
-using Palaso.UI.WindowsForms.Extensions;
-using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
+using SIL.WritingSystems.WindowsForms.Keyboarding.Interfaces;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 {

@@ -1,8 +1,5 @@
 // Copyright (c) 2013, SIL International.
 // Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
-
-namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
-{
 #if __MonoCS__
 using System;
 using System.Collections.Generic;
@@ -10,13 +7,13 @@ using Moq;
 using NUnit.Framework;
 using IBusDotNet;
 using X11.XKlavier;
-using Palaso.UI.WindowsForms.Keyboarding;
-using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
-using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
-using Palaso.UI.WindowsForms.Keyboarding.Linux;
-using Palaso.UI.WindowsForms.Keyboarding.Types;
+using SIL.WritingSystems.WindowsForms.Keyboarding;
+using SIL.WritingSystems.WindowsForms.Keyboarding.Interfaces;
+using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
+using SIL.WritingSystems.WindowsForms.Keyboarding.Linux;
+using SIL.WritingSystems.WindowsForms.Keyboarding.Types;
 
-namespace PalasoUIWindowsForms.Tests.Keyboarding
+namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 {
 	[TestFixture]
 	public class IbusKeyboardAdaptorTests
@@ -180,4 +177,3 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 	}
 }
 #endif
-}

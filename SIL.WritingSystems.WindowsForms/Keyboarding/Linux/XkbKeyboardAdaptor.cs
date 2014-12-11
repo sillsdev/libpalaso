@@ -12,12 +12,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using Icu;
 using X11.XKlavier;
 using Palaso.Reporting;
-using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
-using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
-using Palaso.UI.WindowsForms.Keyboarding.Types;
-using Palaso.WritingSystems;
+using SIL.WritingSystems.WindowsForms.Keyboarding.Interfaces;
+using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
+using SIL.WritingSystems.WindowsForms.Keyboarding.Types;
+using SIL.WritingSystems;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 {

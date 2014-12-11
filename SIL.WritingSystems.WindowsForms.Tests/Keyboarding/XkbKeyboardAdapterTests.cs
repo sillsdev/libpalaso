@@ -6,9 +6,6 @@
 // 	GNU Lesser General Public License, as specified in the LICENSING.txt file.
 // </copyright>
 // --------------------------------------------------------------------------------------------
-
-namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
-{
 #if __MonoCS__
 using System;
 using System.Collections.Generic;
@@ -17,13 +14,13 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using NUnit.Framework;
-using Palaso.UI.WindowsForms.Keyboarding;
-using Palaso.UI.WindowsForms.Keyboarding.Linux;
-using Palaso.UI.WindowsForms.Keyboarding.Types;
-using Palaso.WritingSystems;
+using SIL.WritingSystems.WindowsForms.Keyboarding;
+using SIL.WritingSystems.WindowsForms.Keyboarding.Linux;
+using SIL.WritingSystems.WindowsForms.Keyboarding.Types;
+using SIL.WritingSystems;
 using X11.XKlavier;
 
-namespace PalasoUIWindowsForms.Tests.Keyboarding
+namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 {
 	[TestFixture]
 	[Platform(Include="Linux", Reason="Linux specific tests")]
@@ -418,4 +415,3 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 	}
 }
 #endif
-}

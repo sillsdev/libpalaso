@@ -1,16 +1,14 @@
-namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
-{
 #if MONO
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
 using Palaso.Reporting;
-using Palaso.UI.WindowsForms.Keyboarding;
-using Palaso.UI.WindowsForms.Keyboarding.Linux;
-using Palaso.WritingSystems;
+using SIL.WritingSystems.WindowsForms.Keyboarding;
+using SIL.WritingSystems.WindowsForms.Keyboarding.Linux;
+using SIL.WritingSystems;
 
-namespace PalasoUIWindowsForms.Tests.Keyboarding
+namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 {
 	[TestFixture]
 	[Category("SkipOnTeamCity")]
@@ -254,4 +252,3 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 	}
 }
 #endif
-}

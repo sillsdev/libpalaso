@@ -17,11 +17,11 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using IBusDotNet;
-using Palaso.UI.WindowsForms.Keyboarding;
-using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
-using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
-using Palaso.UI.WindowsForms.Keyboarding.Types;
-using Palaso.WritingSystems;
+using SIL.WritingSystems.WindowsForms.Keyboarding;
+using SIL.WritingSystems.WindowsForms.Keyboarding.Interfaces;
+using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
+using SIL.WritingSystems.WindowsForms.Keyboarding.Types;
+using SIL.WritingSystems;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 {

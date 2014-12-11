@@ -267,7 +267,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 			// For this test on Linux we only use the XkbKeyboardAdaptor and simulate an available
 			// IBus keyboard. This is necessary because otherwise the test might return an
 			// installed Danish IBus keyboard (m17n:da:post) instead of our expected dummy one.
-			KeyboardController.Manager.SetKeyboardAdaptors(new[] { new Palaso.UI.WindowsForms.Keyboarding.Linux.XkbKeyboardAdaptor() });
+			KeyboardController.Manager.SetKeyboardAdaptors(new[] { new SIL.WritingSystems.WindowsForms.Keyboarding.Linux.XkbKeyboardAdaptor() });
 			#endif
 			var inputLanguage = new InputLanguageWrapper(new CultureInfo("en-US"), IntPtr.Zero, "foo");
 			var expectedKeyboard = new KeyboardDescription("m17n:da:post - English (US)", "m17n:da:post", "en-US", inputLanguage,
