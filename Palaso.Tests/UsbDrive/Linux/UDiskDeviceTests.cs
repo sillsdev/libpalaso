@@ -6,6 +6,7 @@ using Palaso.UsbDrive.Linux;
 
 namespace Palaso.Tests.UsbDrive.Linux
 {
+	[Category("RequiresUSB")]
 	[Category("SkipOnTeamCity")]
 	[TestFixture]
 	public class UDiskDeviceTests

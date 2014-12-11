@@ -9,7 +9,7 @@ namespace Palaso.Tests.UsbDrive.Linux
 	[Category("SkipOnTeamCity")]
 	public class UDisksTests
 	{
-		[Test]
+		[Test, Ignore("not all systems have adapters")]
 		public void EnumerateAdapters_HasSome()
 		{
 			var disks = new UDisks();
@@ -33,7 +33,7 @@ namespace Palaso.Tests.UsbDrive.Linux
 			Assert.AreEqual(0, expanders.Count());
 		}
 
-		[Test]
+		[Test, Ignore("not all systems have ports")]
 		public void EnumeratePorts_HasSome()
 		{
 			var disks = new UDisks();
@@ -50,6 +50,7 @@ namespace Palaso.Tests.UsbDrive.Linux
 		}
 
 		[Test]
+		[Category("RequiresUSB")]
 		public void EnumerateUSB_HasOnlyUSBDevices()
 		{
 			var disks = new UDisks();
