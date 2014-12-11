@@ -107,6 +107,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Debug\icu.net.dll</HintPath>
     </Reference>
+    <Reference Include="Spart, Version=1.0.0.0, Culture=neutral, PublicKeyToken=14d24e064e474331, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\common\Spart.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -156,46 +160,6 @@
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\WritingSystemDefinitionV1.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\XmlHelpersV0.cs" />
     <Compile Include="RFC5646Tag.cs" />
-    <Compile Include="Spart\Actions\ActionEventArgs.cs" />
-    <Compile Include="Spart\Actions\ActionHandler.cs" />
-    <Compile Include="Spart\Actions\Actions.cs" />
-    <Compile Include="Spart\Debug\DebugContext.cs" />
-    <Compile Include="Spart\Debug\Debugger.cs" />
-    <Compile Include="Spart\ParserError.cs" />
-    <Compile Include="Spart\ParserErrorException.cs" />
-    <Compile Include="Spart\Parsers\BinaryTerminalParser.cs" />
-    <Compile Include="Spart\Parsers\Composite\AlternativeParser.cs" />
-    <Compile Include="Spart\Parsers\Composite\DifferenceParser.cs" />
-    <Compile Include="Spart\Parsers\Composite\IntersectionParser.cs" />
-    <Compile Include="Spart\Parsers\Composite\ListParser.cs" />
-    <Compile Include="Spart\Parsers\Composite\RepetitionParser.cs" />
-    <Compile Include="Spart\Parsers\Composite\SequenceParser.cs" />
-    <Compile Include="Spart\Parsers\Composite\XorParser.cs" />
-    <Compile Include="Spart\Parsers\NegatableParser.cs" />
-    <Compile Include="Spart\Parsers\NonTerminal\AssertiveParser.cs" />
-    <Compile Include="Spart\Parsers\NonTerminal\IParserContext.cs" />
-    <Compile Include="Spart\Parsers\NonTerminal\NonTerminalParser.cs" />
-    <Compile Include="Spart\Parsers\NonTerminal\PostParseEventArgs.cs" />
-    <Compile Include="Spart\Parsers\NonTerminal\PostParseEventHandler.cs" />
-    <Compile Include="Spart\Parsers\NonTerminal\PreParseEventArgs.cs" />
-    <Compile Include="Spart\Parsers\NonTerminal\PreParseEventHandler.cs" />
-    <Compile Include="Spart\Parsers\NonTerminal\Rule.cs" />
-    <Compile Include="Spart\Parsers\Ops.cs" />
-    <Compile Include="Spart\Parsers\Parser.cs" />
-    <Compile Include="Spart\Parsers\ParserMatch.cs" />
-    <Compile Include="Spart\Parsers\Primitives\CharParser.cs" />
-    <Compile Include="Spart\Parsers\Primitives\CharRecognizer.cs" />
-    <Compile Include="Spart\Parsers\Primitives\EndParser.cs" />
-    <Compile Include="Spart\Parsers\Primitives\EolParser.cs" />
-    <Compile Include="Spart\Parsers\Primitives\NothingParser.cs" />
-    <Compile Include="Spart\Parsers\Primitives\StringParser.cs" />
-    <Compile Include="Spart\Parsers\Prims.cs" />
-    <Compile Include="Spart\Parsers\TerminalParser.cs" />
-    <Compile Include="Spart\Parsers\UnaryTerminalParser.cs" />
-    <Compile Include="Spart\Scanners\IFilter.cs" />
-    <Compile Include="Spart\Scanners\IScanner.cs" />
-    <Compile Include="Spart\Scanners\StringScanner.cs" />
-    <Compile Include="Spart\Scanners\ToLowerFilter.cs" />
     <Compile Include="StandardTags.cs" />
     <Compile Include="StringContainsExtension.cs" />
     <Compile Include="WritingSystemChangeLog.cs" />
