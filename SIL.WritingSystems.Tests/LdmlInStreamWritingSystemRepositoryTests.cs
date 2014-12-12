@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace SIL.WritingSystems.Tests
 {
 	[TestFixture]
-	public class LdmlInXmlWritingSystemRepositoryInterfaceTests : IWritingSystemRepositoryTests
+	public class LdmlInXmlWritingSystemRepositoryInterfaceTests : WritingSystemRepositoryTests
 	{
 		public override IWritingSystemRepository CreateNewStore()
 		{

@@ -11,47 +11,30 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void KeyboardsDontEqualNull()
 		{
-			var keyboard1 = new DefaultKeyboardDefinition() { Layout = "layout1", Locale = "en-US", OperatingSystem = PlatformID.MacOSX };
-			DefaultKeyboardDefinition keyboard2 = null;
-			Assert.That(keyboard1 == keyboard2, Is.False);
-			Assert.That(keyboard2 == keyboard1, Is.False);
-			Assert.That(keyboard1 != keyboard2, Is.True);
-			Assert.That(keyboard2 != keyboard1, Is.True);
+			var keyboard1 = new DefaultKeyboardDefinition(KeyboardType.System, "layout1", "en-US");
+			Assert.That(keyboard1.Equals(null), Is.False);
 		}
 
 		[Test]
 		public void KeyboardEqualityDependsOnExpectedProperties()
 		{
-			var keyboard1 = new DefaultKeyboardDefinition() { Layout = "layout1", Locale = "en-US", OperatingSystem = PlatformID.MacOSX };
-			var keyboard2 = new DefaultKeyboardDefinition() { Layout = "layout1", Locale = "en-US", OperatingSystem = PlatformID.MacOSX };
-			Assert.That(keyboard1 == keyboard2, Is.True);
+			var keyboard1 = new DefaultKeyboardDefinition(KeyboardType.System, "layout1", "en-US");
+			var keyboard2 = new DefaultKeyboardDefinition(KeyboardType.System, "layout1", "en-US");
+			Assert.That(keyboard1.Equals(keyboard2), Is.True);
 			Assert.That(keyboard1.GetHashCode() == keyboard2.GetHashCode());
-			Assert.That(keyboard1 != keyboard2, Is.False);
-			IKeyboardDefinition kbd1 = keyboard1;
-			IKeyboardDefinition kbd2 = keyboard2;
-			Assert.That(kbd1.Equals(kbd2), Is.True);
 
-			keyboard2.Layout = "layout2";
-			Assert.That(keyboard1 == keyboard2, Is.False);
+			keyboard2 = new DefaultKeyboardDefinition(KeyboardType.System, "layout2", "en-US");
+			Assert.That(keyboard1.Equals(keyboard2), Is.False);
 			Assert.That(keyboard1.GetHashCode() != keyboard2.GetHashCode());
-			Assert.That(keyboard1 != keyboard2, Is.True);
-			Assert.That(kbd1.Equals(kbd2), Is.False);
 
-			keyboard2.Layout = "layout1";
-			Assert.That(keyboard1 == keyboard2, Is.True);
-			keyboard2.Locale = "en-GB";
-			Assert.That(keyboard1 == keyboard2, Is.False);
+			keyboard2 = new DefaultKeyboardDefinition(KeyboardType.System, "layout1", "en-US");
+			Assert.That(keyboard1.Equals(keyboard2), Is.True);
+			keyboard2 = new DefaultKeyboardDefinition(KeyboardType.System, "layout1", "en-GB");
+			Assert.That(keyboard1.Equals(keyboard2), Is.False);
 			Assert.That(keyboard1.GetHashCode() != keyboard2.GetHashCode());
-			Assert.That(keyboard1 != keyboard2, Is.True);
-			Assert.That(kbd1.Equals(kbd2), Is.False);
 
-			keyboard2.Locale = "en-US";
-			Assert.That(keyboard1 == keyboard2, Is.True);
-			keyboard2.OperatingSystem = PlatformID.Unix;
-			Assert.That(keyboard1 == keyboard2, Is.True, "Equality should NOT depend on OS");
-			Assert.That(keyboard1.GetHashCode() == keyboard2.GetHashCode(), "Hash should NOT depend on OS");
-			Assert.That(keyboard1 != keyboard2, Is.False);
-			Assert.That(kbd1.Equals(kbd2), Is.True);
+			keyboard2 = new DefaultKeyboardDefinition(KeyboardType.System, "layout1", "en-US");
+			Assert.That(keyboard1.Equals(keyboard2), Is.True);
 		}
 
 		[Test]
@@ -65,7 +48,7 @@ namespace SIL.WritingSystems.Tests
 	{
 		public override DefaultKeyboardDefinition CreateNewClonable()
 		{
-			return new DefaultKeyboardDefinition();
+			return new DefaultKeyboardDefinition(KeyboardType.System, string.Empty, string.Empty);
 		}
 
 		public override string ExceptionList
@@ -78,7 +61,7 @@ namespace SIL.WritingSystems.Tests
 			get
 			{
 				// Additional properties we do NOT want to consider for equality
-				return "|Type|OperatingSystem|IsAvailable|";
+				return "|_isAvailable|_type|";
 			}
 		}
 

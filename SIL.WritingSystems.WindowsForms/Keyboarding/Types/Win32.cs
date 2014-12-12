@@ -1,7 +1,6 @@
 // Copyright (c) 2013 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -15,7 +14,6 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Types
 		/// These values are used with the ImmGetConversionStatus and ImmSetConversionStatus functions.
 		/// </summary>
 		[Flags]
-		[CLSCompliant(false)]
 		public enum IME_CMODE : uint
 		{
 			/// <summary>Alphanumeric input mode. This is the default.</summary>

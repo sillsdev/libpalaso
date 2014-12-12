@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using SIL.WritingSystems;
 using System.Linq;
 
 namespace SIL.WritingSystems.WindowsForms.WSTree
@@ -12,14 +11,13 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 	public class WritingSystemTreeModel
 	{
 		private readonly WritingSystemSetupModel _setupModel;
-		private EventHandler _updateDisplay;
 		public event EventHandler UpdateDisplay;
 
 		public WritingSystemTreeModel(WritingSystemSetupModel setupModel)
 		{
 			_setupModel = setupModel;
-			_setupModel.ItemAddedOrDeleted += new EventHandler(OnSetupModel_ItemAddedOrDeleted);
-			_setupModel.CurrentItemUpdated += new EventHandler(OnCurrentItemUpdated);
+			_setupModel.ItemAddedOrDeleted += OnSetupModel_ItemAddedOrDeleted;
+			_setupModel.CurrentItemUpdated += OnCurrentItemUpdated;
 			Suggestor = new WritingSystemSuggestor();
 		}
 
@@ -132,7 +130,7 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 		{
 			var item = new WritingSystemDefinitionTreeItem(definition, OnClickExistingDefinition);
 			item.Selected = item.Definition == _setupModel.CurrentDefinition;
-			return (WritingSystemTreeItem) item;
+			return item;
 		}
 
 		private void OnClickExistingDefinition(WritingSystemTreeItem treeItem)
@@ -169,7 +167,7 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 		private void AddOtherLanguages(List<WritingSystemTreeItem> items)
 		{
 			var item = new WritingSystemTreeItem("Other Languages", null);
-			item.Children = new List<WritingSystemTreeItem>(from suggestion in this.Suggestor.GetOtherLanguageSuggestions(_setupModel.WritingSystemDefinitions)
+			item.Children = new List<WritingSystemTreeItem>(from suggestion in Suggestor.GetOtherLanguageSuggestions(_setupModel.WritingSystemDefinitions)
 							select (WritingSystemTreeItem) new WritingSystemCreationTreeItem(suggestion, OnClickAddCertainDefinition));
 			if(item.Children.Count()>0)
 				items.Add(item );

@@ -40,7 +40,8 @@ namespace SIL.WritingSystems.Tests
 								 new ValuesToSet(DateTime.Now, DateTime.MinValue),
 								 new ValuesToSet(CollationRulesTypes.CustomIcu, CollationRulesTypes.DefaultOrdering),
 								 new ValuesToSet(new Rfc5646Tag("en", "Latn", "US", "1901", "test"), Rfc5646Tag.Parse("de")),
-								 new SubclassValuesToSet<IKeyboardDefinition>(new DefaultKeyboardDefinition {Layout="mine"}, new DefaultKeyboardDefinition {Layout="theirs"})
+								 new SubclassValuesToSet<IKeyboardDefinition>(new DefaultKeyboardDefinition(KeyboardType.System, "mine", string.Empty),
+									 new DefaultKeyboardDefinition(KeyboardType.System, "theirs", string.Empty))
 							 };
 			}
 		}
@@ -52,11 +53,11 @@ namespace SIL.WritingSystems.Tests
 		public void CloneCopiesKnownKeyboards()
 		{
 			var original = new WritingSystemDefinition();
-			var kbd1 = new DefaultKeyboardDefinition {Layout = "mine"};
-			var kbd2 = new DefaultKeyboardDefinition {Layout = "yours"};
+			var kbd1 = new DefaultKeyboardDefinition(KeyboardType.System, "mine", string.Empty);
+			var kbd2 = new DefaultKeyboardDefinition(KeyboardType.System, "yours", string.Empty);
 			original.AddKnownKeyboard(kbd1);
 			original.AddKnownKeyboard(kbd2);
-			var copy = original.Clone();
+			WritingSystemDefinition copy = original.Clone();
 			Assert.That(copy.KnownKeyboards.Count(), Is.EqualTo(2));
 			Assert.That(copy.KnownKeyboards.First(), Is.EqualTo(kbd1));
 			Assert.That(ReferenceEquals(copy.KnownKeyboards.First(), kbd1), Is.False);
@@ -69,13 +70,13 @@ namespace SIL.WritingSystems.Tests
 		public void EqualsComparesKnownKeyboards()
 		{
 			var first = new WritingSystemDefinition();
-			var kbd1 = new DefaultKeyboardDefinition { Layout = "mine" };
-			var kbd2 = new DefaultKeyboardDefinition { Layout = "yours" };
+			var kbd1 = new DefaultKeyboardDefinition(KeyboardType.System, "mine", string.Empty);
+			var kbd2 = new DefaultKeyboardDefinition(KeyboardType.System, "yours", string.Empty);
 			first.AddKnownKeyboard(kbd1);
 			first.AddKnownKeyboard(kbd2);
 			var second = new WritingSystemDefinition();
-			var kbd3 = new DefaultKeyboardDefinition { Layout = "mine" }; // equal to kbd1
-			var kbd4 = new DefaultKeyboardDefinition { Layout = "theirs" };
+			var kbd3 = new DefaultKeyboardDefinition(KeyboardType.System, "mine", string.Empty); // equal to kbd1
+			var kbd4 = new DefaultKeyboardDefinition(KeyboardType.System, "theirs", string.Empty);
 
 			Assert.That(first.ValueEquals(second), Is.False, "ws with empty known keyboards should not equal one with some");
 			second.AddKnownKeyboard(kbd3);
@@ -452,8 +453,8 @@ namespace SIL.WritingSystems.Tests
 			// ObsoleteWindowsLcid has no public setter; it only gets a value by reading from an old file.
 			const string ignoreProperties = "|Modified|MarkedForDeletion|StoreID|DateModified|Rfc5646TagOnLoad|RequiresValidTag|WindowsLcid|";
 			// special test values to use for properties that are particular
-			Dictionary<string, object> firstValueSpecial = new Dictionary<string, object>();
-			Dictionary<string, object> secondValueSpecial = new Dictionary<string, object>();
+			var firstValueSpecial = new Dictionary<string, object>();
+			var secondValueSpecial = new Dictionary<string, object>();
 			firstValueSpecial.Add("Variant", "1901");
 			secondValueSpecial.Add("Variant", "biske");
 			firstValueSpecial.Add("Region", "US");
@@ -468,13 +469,13 @@ namespace SIL.WritingSystems.Tests
 			secondValueSpecial.Add("Script", "Latn");
 			firstValueSpecial.Add("DuplicateNumber", 0);
 			secondValueSpecial.Add("DuplicateNumber", 1);
-			firstValueSpecial.Add("LocalKeyboard", new DefaultKeyboardDefinition() {Layout="mine"});
-			secondValueSpecial.Add("LocalKeyboard", new DefaultKeyboardDefinition() { Layout = "yours" });
+			firstValueSpecial.Add("LocalKeyboard", new DefaultKeyboardDefinition(KeyboardType.System, "mine", string.Empty));
+			secondValueSpecial.Add("LocalKeyboard", new DefaultKeyboardDefinition(KeyboardType.System, "yours", string.Empty));
 			//firstValueSpecial.Add("SortUsing", "CustomSimple");
 			//secondValueSpecial.Add("SortUsing", "CustomICU");
 			// test values to use based on type
-			Dictionary<Type, object> firstValueToSet = new Dictionary<Type, object>();
-			Dictionary<Type, object> secondValueToSet = new Dictionary<Type, object>();
+			var firstValueToSet = new Dictionary<Type, object>();
+			var secondValueToSet = new Dictionary<Type, object>();
 			firstValueToSet.Add(typeof (float), 2.18281828459045f);
 			secondValueToSet.Add(typeof (float), 3.141592653589f);
 			firstValueToSet.Add(typeof (bool), true);
@@ -1591,8 +1592,8 @@ namespace SIL.WritingSystems.Tests
 		public void OtherAvailableKeyboards_DefaultsToAllAvailable()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var kbd1 = new DefaultKeyboardDefinition {Layout = "something", Locale="en-US"};
-			var kbd2 = new DefaultKeyboardDefinition {Layout = "somethingElse", Locale = "en-GB"};
+			var kbd1 = new DefaultKeyboardDefinition(KeyboardType.System, "something", "en-US");
+			var kbd2 = new DefaultKeyboardDefinition(KeyboardType.System, "somethingElse", "en-GB");
 			var controller = new MockKeyboardController();
 			var keyboardList = new List<IKeyboardDefinition> {kbd1, kbd2};
 			controller.AllAvailableKeyboards = keyboardList;
@@ -1608,9 +1609,9 @@ namespace SIL.WritingSystems.Tests
 		public void OtherAvailableKeyboards_OmitsKnownKeyboards()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var kbd1 = new DefaultKeyboardDefinition {Layout = "something", Locale = "en-US"};
-			var kbd2 = new DefaultKeyboardDefinition {Layout = "somethingElse", Locale = "en-GB"};
-			var kbd3 = new DefaultKeyboardDefinition {Layout = "something", Locale = "en-US"}; // equal to kbd1
+			var kbd1 = new DefaultKeyboardDefinition(KeyboardType.System, "something", "en-US");
+			var kbd2 = new DefaultKeyboardDefinition(KeyboardType.System, "somethingElse", "en-GB");
+			var kbd3 = new DefaultKeyboardDefinition(KeyboardType.System, "something", "en-US"); // equal to kbd1
 			var controller = new MockKeyboardController();
 			var keyboardList = new List<IKeyboardDefinition> {kbd1, kbd2};
 			controller.AllAvailableKeyboards = keyboardList;
@@ -1743,7 +1744,7 @@ namespace SIL.WritingSystems.Tests
 		public void SettingLocalKeyboard_AddsToKnownKeyboards()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var kbd1 = new DefaultKeyboardDefinition {Layout = "something", Locale = "en-US"};
+			var kbd1 = new DefaultKeyboardDefinition(KeyboardType.System, "something", "en-US");
 
 			ws.LocalKeyboard = kbd1;
 
@@ -1758,8 +1759,8 @@ namespace SIL.WritingSystems.Tests
 		public void AddKnownKeyboard_DoesNotMakeDuplicates()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var kbd1 = new DefaultKeyboardDefinition {Layout = "something", Locale = "en-US"};
-			var kbd2 = new DefaultKeyboardDefinition {Layout = "something", Locale = "en-US"};
+			var kbd1 = new DefaultKeyboardDefinition(KeyboardType.System, "something", "en-US");
+			var kbd2 = new DefaultKeyboardDefinition(KeyboardType.System, "something", "en-US");
 
 			ws.AddKnownKeyboard(kbd1);
 			Assert.That(ws.Modified, Is.True);
@@ -1774,8 +1775,8 @@ namespace SIL.WritingSystems.Tests
 		public void SetLocalKeyboard_ToAlreadyKnownKeyboard_SetsModifiedFlag()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var kbd1 = new DefaultKeyboardDefinition {Layout = "something", Locale = "en-US"};
-			var kbd2 = new DefaultKeyboardDefinition {Layout = "something", Locale = "en-US"};
+			var kbd1 = new DefaultKeyboardDefinition(KeyboardType.System, "something", "en-US");
+			var kbd2 = new DefaultKeyboardDefinition(KeyboardType.System, "something", "en-US");
 
 			ws.AddKnownKeyboard(kbd1);
 			ws.LocalKeyboard = kbd2;
@@ -1797,9 +1798,9 @@ namespace SIL.WritingSystems.Tests
 		public void LocalKeyboard_DefaultsToFirstKnownAvailable()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var kbd1 = new DefaultKeyboardDefinition { Layout = "something", Locale = "en-US" };
-			var kbd2 = new DefaultKeyboardDefinition { Layout = "somethingElse", Locale = "en-US" };
-			var kbd3 = new DefaultKeyboardDefinition { Layout = "somethingElse", Locale = "en-US" };
+			var kbd1 = new DefaultKeyboardDefinition(KeyboardType.System, "something", "en-US");
+			var kbd2 = new DefaultKeyboardDefinition(KeyboardType.System, "somethingElse", "en-US");
+			var kbd3 = new DefaultKeyboardDefinition(KeyboardType.System, "somethingElse", "en-US");
 
 			ws.AddKnownKeyboard(kbd1);
 			ws.AddKnownKeyboard(kbd2);
@@ -1817,7 +1818,7 @@ namespace SIL.WritingSystems.Tests
 		public void LocalKeyboard_DefersToController_WhenNoKnownAvailable()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var kbd1 = new DefaultKeyboardDefinition() { Layout = "something", Locale = "en-US" };
+			var kbd1 = new DefaultKeyboardDefinition(KeyboardType.System, "something", "en-US");
 
 			var controller = new MockKeyboardController();
 			var keyboardList = new List<IKeyboardDefinition>();

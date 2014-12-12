@@ -13,7 +13,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		private IKeyboardDefinition TrivialKeyboard
 		{
-			get { return new DefaultKeyboardDefinition(); }
+			get { return new DefaultKeyboardDefinition(KeyboardType.System, string.Empty, string.Empty); }
 		}
 
 		public IKeyboardDefinition GetKeyboard(string layoutName)
@@ -74,7 +74,7 @@ namespace SIL.WritingSystems
 
 		public virtual IKeyboardDefinition DefaultForWritingSystem(WritingSystemDefinition ws)
 		{
-			return new DefaultKeyboardDefinition {Layout = "English", Locale = "en-US"};
+			return new DefaultKeyboardDefinition(KeyboardType.System, "English", "en-US");
 		}
 
 		public IKeyboardDefinition LegacyForWritingSystem(WritingSystemDefinition ws)
@@ -89,12 +89,7 @@ namespace SIL.WritingSystems
 		/// availability of the keyboard and what engine provides it.</remarks>
 		public virtual IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
 		{
-			return new DefaultKeyboardDefinition
-			{
-					Layout = layout,
-					Locale = locale,
-					OperatingSystem = Environment.OSVersion.Platform
-				};
+			return new DefaultKeyboardDefinition(KeyboardType.System, layout, locale);
 		}
 
 		/// <summary>

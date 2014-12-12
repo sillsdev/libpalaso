@@ -29,12 +29,12 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 
 		public override string ExceptionList
 		{
-			get { return "|Engine|InputLanguage|"; }
+			get { return "|_engine|_inputLanguage|"; }
 		}
 
 		public override string EqualsExceptionList
 		{
-			get { return "|Type|Name|OperatingSystem|IsAvailable|InternalName|"; }
+			get { return "|_isAvailable|_name|"; }
 		}
 
 		protected override List<ValuesToSet> DefaultValuesForTypes

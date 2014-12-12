@@ -1,9 +1,8 @@
 // Copyright (c) 2011-2013 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-using System;
+
 using System.Diagnostics;
 using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
-using SIL.WritingSystems;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding
 {
@@ -21,13 +20,17 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		/// </summary>
 		public static readonly IKeyboardDefinition Zero = new KeyboardDescriptionNull();
 
+		private readonly IKeyboardAdaptor _engine;
+		private readonly string _name;
+		private readonly IInputLanguage _inputLanguage;
+
 		/// <summary>
 		/// Initializes a new instance of the
 		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.KeyboardDescription"/> class.
 		/// </summary>
 		internal KeyboardDescription(string name, string layout, string locale,
 			IInputLanguage language, IKeyboardAdaptor engine)
-			: this(name, layout, locale, language, engine, KeyboardType.System)
+			: this(name, layout, locale, language, engine, KeyboardType.System, true)
 		{
 		}
 
@@ -36,39 +39,29 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.KeyboardDescription"/> class.
 		/// </summary>
 		internal KeyboardDescription(string name, string layout, string locale,
-			IInputLanguage language, IKeyboardAdaptor engine, KeyboardType type)
+			IInputLanguage language, IKeyboardAdaptor engine, KeyboardType type, bool isAvailable)
+			: base(type, layout, locale, isAvailable)
 		{
-			InternalName = name;
-			Layout = layout;
-			Locale = locale;
-			Engine = engine;
-			Type = type;
-			IsAvailable = true;
-			OperatingSystem = Environment.OSVersion.Platform;
-			InputLanguage = language;
-		}
-
-		internal KeyboardDescription(IKeyboardAdaptor engine, KeyboardType type)
-		{
-			Engine = engine;
-			Type = type;
-			IsAvailable = true;
-			OperatingSystem = Environment.OSVersion.Platform;
+			_name = name;
+			_engine = engine;
+			_inputLanguage = language;
 		}
 
 		internal KeyboardDescription(KeyboardDescription other)
-			:base(other)
+			: base(other)
 		{
-			InternalName = other.Name;
-			Engine = other.Engine;
-			IsAvailable = other.IsAvailable;
-			InputLanguage = other.InputLanguage;
+			_name = other._name;
+			_engine = other._engine;
+			_inputLanguage = other._inputLanguage;
 		}
 
 		/// <summary>
 		/// Gets the keyboard adaptor that handles this keyboard.
 		/// </summary>
-		internal IKeyboardAdaptor Engine { get; private set; }
+		internal IKeyboardAdaptor Engine
+		{
+			get { return _engine; }
+		}
 
 		/// <summary>
 		/// Deactivate this keyboard.
@@ -90,32 +83,9 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 			return new KeyboardDescription(this);
 		}
 
-		/// <summary>
-		/// overload unfortunately required by IEquatable
-		/// </summary>
-		/// <param name="other"></param>
-		/// <returns></returns>
-		public bool Equals(KeyboardDescription other)
+		internal IInputLanguage InputLanguage
 		{
-			return Equals((IKeyboardDefinition) other);
-		}
-
-		/// <summary>
-		/// Returns a <see cref="T:System.String"/> that represents the current
-		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.KeyboardDescription"/>.
-		/// </summary>
-		public override string ToString()
-		{
-			return Name;
-		}
-
-		internal IInputLanguage InputLanguage { get; private set; }
-
-		protected string InternalName { get; set; }
-
-		protected void SetInputLanguage(IInputLanguage inputLanguage)
-		{
-			InputLanguage = inputLanguage;
+			get { return _inputLanguage; }
 		}
 
 		protected static string GetDisplayName(string cultureName, string layoutName)
@@ -133,7 +103,10 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		/// <summary>
 		/// Gets a human-readable name of the input method/language combination.
 		/// </summary>
-		public override string Name { get { return InternalName; } }
+		public override string Name
+		{
+			get { return _name; }
+		}
 
 		/// <summary>
 		/// Activate this keyboard.

@@ -8,13 +8,10 @@
 // --------------------------------------------------------------------------------------------
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using Palaso.Reporting;
-using SIL.WritingSystems;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Interfaces;
 using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
 #if __MonoCS__
 using SIL.WritingSystems.WindowsForms.Keyboarding.Linux;
@@ -73,7 +70,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 					new XkbKeyboardAdaptor(), new IbusKeyboardAdaptor(), new CombinedKeyboardAdaptor(),
 					new CinnamonIbusAdaptor()
 #else
-					new WinKeyboardAdaptor(), new KeymanKeyboardAdaptor(),
+					new WinKeyboardAdaptor(), new KeymanKeyboardAdaptor()
 #endif
 				});
 			}
@@ -103,10 +100,10 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		#endregion
 
 		#region Class KeyboardControllerImpl
-		private sealed class KeyboardControllerImpl : IKeyboardController, IKeyboardControllerImpl, IDisposable
+		private sealed class KeyboardControllerImpl : IKeyboardController, IKeyboardControllerImpl
 		{
 			private List<string> LanguagesAlreadyShownKeyboardNotFoundMessages { get; set; }
-			private IKeyboardDefinition m_ActiveKeyboard;
+			private IKeyboardDefinition _activeKeyboard;
 			public KeyboardCollection Keyboards { get; private set; }
 			public Dictionary<Control, object> EventHandlers { get; private set; }
 			public event RegisterEventHandler ControlAdded;
@@ -319,22 +316,22 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 			{
 				get
 				{
-					if (m_ActiveKeyboard == null)
+					if (_activeKeyboard == null)
 					{
 						try
 						{
 							var lang = InputLanguage.CurrentInputLanguage;
-							m_ActiveKeyboard = GetKeyboard(lang.LayoutName, lang.Culture.Name);
+							_activeKeyboard = GetKeyboard(lang.LayoutName, lang.Culture.Name);
 						}
 						catch (CultureNotFoundException)
 						{
 						}
-						if (m_ActiveKeyboard == null)
-							m_ActiveKeyboard = KeyboardDescription.Zero;
+						if (_activeKeyboard == null)
+							_activeKeyboard = KeyboardDescription.Zero;
 					}
-					return m_ActiveKeyboard;
+					return _activeKeyboard;
 				}
-				set { m_ActiveKeyboard = value; }
+				set { _activeKeyboard = value; }
 			}
 
 			/// <summary>
@@ -385,6 +382,9 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 				public static IKeyboardDefinition GetKeyboardFromLegacyWritingSystem(WritingSystemDefinition ws,
 					KeyboardControllerImpl controller)
 				{
+					if (ws == null)
+						return null;
+
 					if (!string.IsNullOrEmpty(ws.WindowsLcid))
 					{
 						var keyboard = HandleFwLegacyKeyboards(ws, controller);

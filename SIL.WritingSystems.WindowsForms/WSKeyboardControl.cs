@@ -264,7 +264,6 @@ namespace SIL.WritingSystems.WindowsForms
 			_possibleKeyboardsList.Focus(); // allows the user to use arrows to select, also makes selection more conspicuous
 		}
 
-		private string _previousKeyboard;
 		private int _previousTime;
 
 		private void _possibleKeyboardsList_SelectedIndexChanged(object sender, EventArgs e)

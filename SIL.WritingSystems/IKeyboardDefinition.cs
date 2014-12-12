@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SIL.WritingSystems
+﻿namespace SIL.WritingSystems
 {
 	/// <summary>
 	/// The different keyboard types we're supporting.
@@ -52,14 +50,6 @@ namespace SIL.WritingSystems
 		/// The name identifying the particular keyboard.
 		/// </summary>
 		string Layout { get; }
-
-		/// <summary>
-		/// One operating system on which the keyboard is known to work.
-		/// Enhance: should we store a list of OS's on which it works?
-		/// So far we only support WIN32NT and Linux, and the same keyboard rarely (never?) works on both,
-		/// but if we support say Mac, might it share keyboards with Linux?
-		/// </summary>
-		PlatformID OperatingSystem { get; }
 
 		/// <summary>
 		/// Answer true if the keyboard is available to use on this system (that is, it can be activated).

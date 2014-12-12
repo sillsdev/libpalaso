@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Windows.Forms;
-using SIL.WritingSystems.WindowsForms;
-using SIL.WritingSystems;
 
 namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
 {
-
 	public partial class IpaIdentifierView : UserControl, ISelectableIdentifierOptions
 	{
 		private readonly WritingSystemSetupModel _model;
-		private bool _updatingFromModel;
 
 		public IpaIdentifierView(WritingSystemSetupModel model)
 		{
@@ -26,11 +22,8 @@ namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
 		{
 			if (_model.CurrentDefinition != null)
 			{
-				_updatingFromModel = true;
-
 				//minus one because we skip the "not ipa" choice
 				comboBox1.SelectedIndex =(int) _model.CurrentIpaStatus-1;
-				_updatingFromModel = false;
 			}
 		}
 

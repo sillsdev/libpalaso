@@ -242,17 +242,8 @@ namespace SIL.WritingSystems
 				knownKeyboardsReader.MoveToContent();
 				while (knownKeyboardsReader.NodeType == XmlNodeType.Element && knownKeyboardsReader.Name == Palaso2NamespaceName + ":" + KeyboardElementName)
 				{
-					var keyboard = Keyboard.Controller.CreateKeyboardDefinition(knownKeyboardsReader.GetAttribute(LayoutAttrName),
+					IKeyboardDefinition keyboard = Keyboard.Controller.CreateKeyboardDefinition(knownKeyboardsReader.GetAttribute(LayoutAttrName),
 						knownKeyboardsReader.GetAttribute(LocaleAttrName));
-					var kd = keyboard as DefaultKeyboardDefinition;
-					// Review EberhardB (JohnT): do we actually want to store OS in the LDML, or at all? If not, get rid of this.
-					// If so, we need to make sure it can be loaded into the objects made by the real KeyboardController.
-					if (kd != null)
-					{
-						PlatformID id;
-						PlatformID.TryParse(knownKeyboardsReader.GetAttribute(OSAttrName), out id);
-						kd.OperatingSystem = id;
-					}
 					knownKeyboardsReader.Read();
 					FindElement(knownKeyboardsReader, KeyboardElementName);
 					ws.AddKnownKeyboard(keyboard);
@@ -937,7 +928,6 @@ namespace SIL.WritingSystems
 					writer.WriteStartElement(KeyboardElementName, p2Namespace);
 					writer.WriteAttributeString(LayoutAttrName, keyboard.Layout);
 					writer.WriteAttributeString(LocaleAttrName, keyboard.Locale);
-					writer.WriteAttributeString(OSAttrName, keyboard.OperatingSystem.ToString());
 					writer.WriteEndElement(); // Keyboard
 				}
 				writer.WriteEndElement(); // KnownKeyboards

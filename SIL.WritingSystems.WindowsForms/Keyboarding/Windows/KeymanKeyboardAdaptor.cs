@@ -3,10 +3,8 @@
 #if !__MonoCS__
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using SIL.WritingSystems.WindowsForms.Keyboarding.Interfaces;
 using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
-using SIL.WritingSystems;
 using Keyman7Interop;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
@@ -30,7 +28,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 			{
 				var keyman = new TavultesoftKeymanClass();
 				foreach (IKeymanKeyboard keyboard in keyman.Keyboards)
-					KeyboardController.Manager.RegisterKeyboard(new KeymanKeyboardDescription(keyboard.Name, false, this));
+					KeyboardController.Manager.RegisterKeyboard(new KeymanKeyboardDescription(keyboard.Name, false, this, true));
 			}
 			catch (Exception)
 			{				
@@ -44,7 +42,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 				if (keymanLink.Initialize())
 				{
 					foreach (var keyboard in keymanLink.Keyboards)
-						KeyboardController.Manager.RegisterKeyboard(new KeymanKeyboardDescription(keyboard.KbdName, true, this));
+						KeyboardController.Manager.RegisterKeyboard(new KeymanKeyboardDescription(keyboard.KbdName, true, this, true));
 				}
 			}
 			catch (Exception)
@@ -114,13 +112,13 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 			{
 				if (((KeymanKeyboardDescription) keyboard).IsKeyman6)
 				{
-					KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
+					var keymanLink = new KeymanLink.KeymanLink();
 					if (keymanLink.Initialize())
 						keymanLink.SelectKeymanKeyboard(null, false);
 				}
 				else
 				{
-					TavultesoftKeymanClass keyman = new TavultesoftKeymanClass();
+					var keyman = new TavultesoftKeymanClass();
 					keyman.Control.ActiveKeyboard = null;
 				}
 			}
@@ -142,7 +140,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 		/// </summary>
 		public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
 		{
-			return new KeymanKeyboardDescription(layout, false, this) {IsAvailable = false};
+			return new KeymanKeyboardDescription(layout, false, this, false);
 		}
 
 		/// <summary>

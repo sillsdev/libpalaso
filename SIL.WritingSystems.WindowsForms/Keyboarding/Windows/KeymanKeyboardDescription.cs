@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Security;
 using Microsoft.Win32;
 using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
-using SIL.WritingSystems;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 {
@@ -18,30 +17,33 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 		Justification = "WindowHandle is a reference to a control")]
 	internal class KeymanKeyboardDescription : KeyboardDescription
 	{
-		private static bool s_keymanKeyboardSwitchingSettingEnabled;
+		private static readonly bool KeymanKeyboardSwitchingSettingEnabled;
 
-		public bool IsKeyman6 { get; private set; }
+		private readonly bool _isKeyman6;
+
+		public bool IsKeyman6
+		{
+			get { return _isKeyman6; }
+		}
 
 		static KeymanKeyboardDescription()
 		{
-			s_keymanKeyboardSwitchingSettingEnabled = GetEvilKeymanKeyboardSwitchingSetting();
+			KeymanKeyboardSwitchingSettingEnabled = GetEvilKeymanKeyboardSwitchingSetting();
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the
 		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.Windows.KeymanKeyboardDescription"/> class.
 		/// </summary>
-		public KeymanKeyboardDescription(string layout, bool isKeyman6, IKeyboardAdaptor engine)
-			: base(engine, KeyboardType.OtherIm)
+		internal KeymanKeyboardDescription(string layout, bool isKeyman6, KeymanKeyboardAdaptor engine, bool isAvailable)
+			: base(layout, layout, string.Empty, null, engine, KeyboardType.OtherIm, isAvailable)
 		{
-			InternalName = layout;
-			Layout = layout;
-			IsKeyman6 = isKeyman6;
+			_isKeyman6 = isKeyman6;
 		}
 
-		internal KeymanKeyboardDescription(KeymanKeyboardDescription other): base(other)
+		internal KeymanKeyboardDescription(KeymanKeyboardDescription other) : base(other)
 		{
-			IsKeyman6 = other.IsKeyman6;
+			_isKeyman6 = other._isKeyman6;
 		}
 
 		public override IKeyboardDefinition Clone()
@@ -57,7 +59,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 		/// </summary>
 		protected override bool DeactivatePreviousKeyboard(IKeyboardDefinition keyboardToActivate)
 		{
-			return (!s_keymanKeyboardSwitchingSettingEnabled ||
+			return (!KeymanKeyboardSwitchingSettingEnabled ||
 				keyboardToActivate.Equals(((IKeyboardControllerImpl)Keyboard.Controller).DefaultKeyboard));
 		}
 

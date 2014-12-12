@@ -15,7 +15,6 @@ using Microsoft.Win32;
 using SIL.WritingSystems.WindowsForms.Keyboarding.Interfaces;
 using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
 using SIL.WritingSystems.WindowsForms.Keyboarding.Types;
-using SIL.WritingSystems;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 {
@@ -48,12 +47,12 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 			public string LocalizedName;
 		}
 
-		private List<IKeyboardErrorDescription> m_BadLocales;
-		private Timer m_Timer;
-		private WinKeyboardDescription m_ExpectedKeyboard;
-		private bool m_fSwitchedLanguages;
+		private readonly List<IKeyboardErrorDescription> _badLocales = new List<IKeyboardErrorDescription>();
+		private Timer _timer;
+		private WinKeyboardDescription _expectedKeyboard;
+		private bool _fSwitchedLanguages;
 		/// <summary>Used to prevent re-entrancy. <c>true</c> while we're in the middle of switching keyboards.</summary>
-		private bool m_fSwitchingKeyboards;
+		private bool _fSwitchingKeyboards;
 		internal ITfInputProcessorProfiles ProcessorProfiles { get; private set; }
 		internal ITfInputProcessorProfileMgr ProfileMgr { get; private set; }
 
@@ -127,7 +126,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 
 					try
 					{
-						KeyboardController.Manager.RegisterKeyboard(new WinKeyboardDescription(profile, this));
+						KeyboardController.Manager.RegisterKeyboard(CreateWinKeyboardDescription(profile, profile.LangId, profile.Hkl));
 					}
 					catch (CultureNotFoundException)
 					{
@@ -154,7 +153,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 				for (int i = 0; i < countKeyboardLayouts; i++)
 				{
 					var hkl = (IntPtr)Marshal.ReadInt32(current);
-					KeyboardController.Manager.RegisterKeyboard(new WinKeyboardDescription(hkl, this));
+					KeyboardController.Manager.RegisterKeyboard(CreateWinKeyboardDescription(new TfInputProcessorProfile(), HklToLangId(hkl), hkl));
 					current = (IntPtr)((ulong)current + elemSize);
 				}
 			}
@@ -162,6 +161,40 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 			{
 				Marshal.FreeCoTaskMem(keyboardLayouts);
 			}
+		}
+
+		private static ushort HklToLangId(IntPtr hkl)
+		{
+			return (ushort)((uint)hkl & 0xffff);
+		}
+
+		private WinKeyboardDescription CreateWinKeyboardDescription(TfInputProcessorProfile profile, ushort langId, IntPtr hkl)
+		{
+			var culture = new CultureInfo(langId);
+			string locale;
+			string cultureName;
+			try
+			{
+				cultureName = culture.DisplayName;
+				locale = culture.Name;
+			}
+			catch (CultureNotFoundException)
+			{
+				// we get an exception for non-supported cultures, probably because of a
+				// badly applied .NET patch.
+				// http://www.ironspeed.com/Designer/3.2.4/WebHelp/Part_VI/Culture_ID__XXX__is_not_a_supported_culture.htm and others
+				cultureName = "[Unknown Language]";
+				locale = "en-US";
+			}
+			LayoutName layoutName;
+			if (profile.Hkl == IntPtr.Zero && profile.ProfileType != TfProfileType.Illegal)
+			{
+				layoutName = new LayoutName(ProcessorProfiles.GetLanguageProfileDescription(
+					ref profile.ClsId, profile.LangId, ref profile.GuidProfile));
+			}
+			else
+				layoutName = GetLayoutNameEx(hkl);
+			return new WinKeyboardDescription(profile, cultureName, layoutName, locale, new InputLanguageWrapper(culture, hkl, layoutName.Name), this, true);
 		}
 
 		private void GetInputMethods()
@@ -245,15 +278,14 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 			var displayName = (string)Registry.GetValue(key, "Layout Display Name", null);
 			if (string.IsNullOrEmpty(layoutText) && string.IsNullOrEmpty(displayName))
 				return null;
-			else if (string.IsNullOrEmpty(displayName))
+			
+			if (string.IsNullOrEmpty(displayName))
 				return new LayoutName(layoutText);
-			else
-			{
-				var bldr = new StringBuilder(100);
-				Win32.SHLoadIndirectString(displayName, bldr, 100, IntPtr.Zero);
-				return string.IsNullOrEmpty(layoutText) ? new LayoutName(bldr.ToString()) :
-					new LayoutName(layoutText, bldr.ToString());
-			}
+
+			var bldr = new StringBuilder(100);
+			Win32.SHLoadIndirectString(displayName, bldr, 100, IntPtr.Zero);
+			return string.IsNullOrEmpty(layoutText) ? new LayoutName(bldr.ToString()) :
+				new LayoutName(layoutText, bldr.ToString());
 		}
 
 		/// <summary>
@@ -323,18 +355,18 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 
 		private void OnTimerTick(object sender, EventArgs eventArgs)
 		{
-			if (m_ExpectedKeyboard == null || !m_fSwitchedLanguages)
+			if (_expectedKeyboard == null || !_fSwitchedLanguages)
 				return;
 
-			if (InputLanguage.CurrentInputLanguage.Culture.KeyboardLayoutId == m_ExpectedKeyboard.InputLanguage.Culture.KeyboardLayoutId)
+			if (InputLanguage.CurrentInputLanguage.Culture.KeyboardLayoutId == _expectedKeyboard.InputLanguage.Culture.KeyboardLayoutId)
 			{
-				m_ExpectedKeyboard = null;
-				m_fSwitchedLanguages = false;
-				m_Timer.Enabled = false;
+				_expectedKeyboard = null;
+				_fSwitchedLanguages = false;
+				_timer.Enabled = false;
 				return;
 			}
 
-			SwitchKeyboard(m_ExpectedKeyboard);
+			SwitchKeyboard(_expectedKeyboard);
 		}
 
 		private bool UseWindowsApiForKeyboardSwitching(WinKeyboardDescription winKeyboard)
@@ -345,10 +377,10 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 
 		private void SwitchKeyboard(WinKeyboardDescription winKeyboard)
 		{
-			if (m_fSwitchingKeyboards)
+			if (_fSwitchingKeyboards)
 				return;
 
-			m_fSwitchingKeyboards = true;
+			_fSwitchingKeyboards = true;
 			try
 			{
 				((IKeyboardControllerImpl)Keyboard.Controller).ActiveKeyboard = ActivateKeyboard(winKeyboard);
@@ -366,7 +398,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 				if (!UseWindowsApiForKeyboardSwitching(winKeyboard))
 					return;
 
-				m_ExpectedKeyboard = winKeyboard;
+				_expectedKeyboard = winKeyboard;
 				// The following lines help to work around a Windows bug (happens at least on
 				// XP-SP3): When you set the current input language (by any method), if there is more
 				// than one loaded input language associated with that same culture, Windows may
@@ -376,14 +408,14 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 				// the _other_ input language having that same culture. We check that the proper
 				// input language gets set by enabling a timer so that we can re-set the input
 				// language if necessary.
-				m_fSwitchedLanguages = true;
+				_fSwitchedLanguages = true;
 				// stop timer first so that the 0.5s interval restarts.
-				m_Timer.Stop();
-				m_Timer.Start();
+				_timer.Stop();
+				_timer.Start();
 			}
 			finally
 			{
-				m_fSwitchingKeyboards = false;
+				_fSwitchingKeyboards = false;
 			}
 		}
 
@@ -501,8 +533,8 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 			Justification = "m_Timer gets disposed in Close() which gets called from KeyboardControllerImpl.Dispose")]
 		public void Initialize()
 		{
-			m_Timer = new Timer { Interval = 500 };
-			m_Timer.Tick += OnTimerTick;
+			_timer = new Timer { Interval = 500 };
+			_timer.Tick += OnTimerTick;
 
 			GetInputMethods();
 
@@ -518,16 +550,16 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 
 		public void Close()
 		{
-			if (m_Timer != null)
+			if (_timer != null)
 			{
-				m_Timer.Dispose();
-				m_Timer = null;
+				_timer.Dispose();
+				_timer = null;
 			}
 		}
 
 		public List<IKeyboardErrorDescription> ErrorKeyboards
 		{
-			get { return m_BadLocales; }
+			get { return _badLocales; }
 		}
 
 		public bool ActivateKeyboard(IKeyboardDefinition keyboard)
@@ -556,7 +588,18 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 		/// </summary>
 		public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
 		{
-			return new WinKeyboardDescription(locale, layout, this) {IsAvailable = false};
+			IInputLanguage inputLanguage;
+			try
+			{
+				inputLanguage = new InputLanguageWrapper(new CultureInfo(locale), IntPtr.Zero, layout);
+			}
+			catch (CultureNotFoundException)
+			{
+				// ignore if we can't find a culture (this can happen e.g. when a language gets
+				// removed that was previously assigned to a WS) - see LT-15333
+				inputLanguage = null;
+			}
+			return new WinKeyboardDescription(new TfInputProcessorProfile(), locale, new LayoutName(layout), locale, inputLanguage, this, false);
 		}
 
 		/// <summary>

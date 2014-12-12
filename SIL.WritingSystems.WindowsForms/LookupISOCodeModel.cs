@@ -6,7 +6,6 @@ namespace SIL.WritingSystems.WindowsForms
 	public class LookupIsoCodeModel
 	{
 		private readonly IList<Iso639LanguageCode> _languageCodes;
-		private Iso639LanguageCode _selectedWritingSystem;
 		private EthnologueLookup _ethnologueLookup;
 
 		/// <summary>Force the dialog to return 3 letter iso codes even if a 2 letter code is available</summary>

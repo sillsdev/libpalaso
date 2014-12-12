@@ -137,10 +137,10 @@ namespace SIL.WritingSystems.Tests
 			Keyboard.Controller = new MyKeyboardController();
 
 			var wsWithKnownKeyboards = new WritingSystemDefinition();
-			var keyboard1 = new DefaultKeyboardDefinition {Locale = "en-US", Layout = "MyFavoriteKeyboard", OperatingSystem = PlatformID.MacOSX};
+			var keyboard1 = new DefaultKeyboardDefinition(KeyboardType.System, "MyFavoriteKeyboard", "en-US");
 			wsWithKnownKeyboards.AddKnownKeyboard(keyboard1);
 
-			var keyboard2 = new DefaultKeyboardDefinition {Locale = "en-GB", Layout = "SusannasFavoriteKeyboard", OperatingSystem = PlatformID.Unix};
+			var keyboard2 = new DefaultKeyboardDefinition(KeyboardType.System, "SusannasFavoriteKeyboard", "en-GB");
 			wsWithKnownKeyboards.AddKnownKeyboard(keyboard2);
 
 			var wsFromLdml = new WritingSystemDefinition();
@@ -155,29 +155,25 @@ namespace SIL.WritingSystems.Tests
 			var keyboard1FromLdml = knownKeyboards[0];
 			Assert.That(keyboard1FromLdml.Layout, Is.EqualTo("MyFavoriteKeyboard"));
 			Assert.That(keyboard1FromLdml.Locale, Is.EqualTo("en-US"));
-			Assert.That(keyboard1FromLdml.OperatingSystem, Is.EqualTo(PlatformID.MacOSX));
 			Assert.That(keyboard1FromLdml, Is.InstanceOf<MyKeyboardDefn>(), "Reader should have used controller to create keyboard defn");
 
 			var keyboard2FromLdml = knownKeyboards[1];
 			Assert.That(keyboard2FromLdml.Layout, Is.EqualTo("SusannasFavoriteKeyboard"));
 			Assert.That(keyboard2FromLdml.Locale, Is.EqualTo("en-GB"));
-			Assert.That(keyboard2FromLdml.OperatingSystem, Is.EqualTo(PlatformID.Unix));
 		}
 
 		class MyKeyboardDefn : DefaultKeyboardDefinition
 		{
+			public MyKeyboardDefn(KeyboardType type, string layout, string locale) : base(type, layout, locale)
+			{
+			}
 		}
 
 		class MyKeyboardController : DefaultKeyboardController
 		{
 			public override IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
 			{
-				return new MyKeyboardDefn
-				{
-					Layout = layout,
-					Locale = locale,
-					OperatingSystem = Environment.OSVersion.Platform
-				};
+				return new MyKeyboardDefn(KeyboardType.System, layout, locale);
 			}
 		}
 
@@ -866,10 +862,7 @@ namespace SIL.WritingSystems.Tests
 				var dataMapper = new LdmlDataMapper();
 
 				dataMapper.Read(tempFile.Path, ws);
-				var keyboard1 = new DefaultKeyboardDefinition();
-				keyboard1.Locale = "en-US";
-				keyboard1.Layout = "MyFavoriteKeyboard";
-				keyboard1.OperatingSystem = PlatformID.MacOSX; // pick something that for sure won't be our default
+				var keyboard1 = new DefaultKeyboardDefinition(KeyboardType.System, "MyFavoriteKeyboard", "en-US");
 				ws.AddKnownKeyboard(keyboard1);
 				using(var fileStream = new FileStream(tempFile.Path, FileMode.Open))
 				{
@@ -879,12 +872,7 @@ namespace SIL.WritingSystems.Tests
 				var secondTripMapper = new LdmlDataMapper();
 				var secondTripWs = new WritingSystemDefinition();
 				secondTripMapper.Read(roundTripOut.Path, secondTripWs);
-				secondTripWs.AddKnownKeyboard(new DefaultKeyboardDefinition
-				{
-						Locale = "qaa",
-						Layout = "x-tel",
-						OperatingSystem = PlatformID.Xbox
-					});
+				secondTripWs.AddKnownKeyboard(new DefaultKeyboardDefinition(KeyboardType.System, "x-tel", "qaa"));
 				secondTripWs.WindowsLcid = "1037";
 				using(var fileStream = new FileStream(roundTripOut.Path, FileMode.Open))
 				{

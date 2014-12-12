@@ -13,24 +13,31 @@ namespace SIL.WritingSystems
 	/// Review: possibly that method and this class should be made abstract?</remarks>
 	public class DefaultKeyboardDefinition : ICloneable<IKeyboardDefinition>, IEquatable<IKeyboardDefinition>, IKeyboardDefinition
 	{
+		private readonly KeyboardType _type;
+		private readonly string _locale;
+		private readonly string _layout;
+		private readonly bool _isAvailable;
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DefaultKeyboardDefinition"/> class.
 		/// </summary>
-		public DefaultKeyboardDefinition()
+		public DefaultKeyboardDefinition(KeyboardType type, string layout, string locale, bool isAvailable = false)
 		{
-			Type = KeyboardType.System;
-			Layout = string.Empty;
-			Locale = string.Empty;
+			_type = type;
+			_layout = layout;
+			_locale = locale;
+			_isAvailable = isAvailable;
 		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DefaultKeyboardDefinition"/> class.
 		/// </summary>
 		public DefaultKeyboardDefinition(DefaultKeyboardDefinition kd)
 		{
-			Type = kd.Type;
-			Layout = kd.Layout;
-			Locale = kd.Locale;
-			OperatingSystem = kd.OperatingSystem;
+			_type = kd.Type;
+			_layout = kd._layout;
+			_locale = kd._locale;
+			_isAvailable = kd._isAvailable;
 		}
 
 		/// <summary>
@@ -52,7 +59,10 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Gets the type of this keyboard (system or other)
 		/// </summary>
-		public KeyboardType Type { get; protected set; }
+		public KeyboardType Type
+		{
+			get { return _type; }
+		}
 
 		/// <summary>
 		/// Gets a human-readable name of the input language.
@@ -77,25 +87,26 @@ namespace SIL.WritingSystems
 		/// This is mainly significant on Windows, which distinguishes (for example)
 		/// a German keyboard used in Germany, Switzerland, and Holland.
 		/// </summary>
-		public string Locale { get; set; }
+		public string Locale
+		{
+			get { return _locale; }
+		}
 
 		/// <summary>
 		/// The name identifying the particular keyboard.
 		/// </summary>
-		public string Layout { get; set; }
-
-		/// <summary>
-		/// One operating system on which the keyboard is known to work.
-		/// Enhance: should we store a list of OS's on which it works?
-		/// So far we only support WIN32NT and Linux, and the same keyboard rarely (never?) works on both,
-		/// but if we support say Mac, might it share keyboards with Linux?
-		/// </summary>
-		public PlatformID OperatingSystem { get; set; }
+		public string Layout
+		{
+			get { return _layout; }
+		}
 
 		/// <summary>
 		/// Answer true if the keyboard is available to use on this system (that is, it can be activated).
 		/// </summary>
-		public bool IsAvailable { get; set; }
+		public bool IsAvailable
+		{
+			get { return _isAvailable; }
+		}
 
 		/// <summary>
 		/// Make this keyboard the active one that will be used for typing. This default class does not do anything
@@ -114,13 +125,12 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// This overload is unfortunately required by the compiler to satisfy IEquateable.
+		/// Returns a <see cref="T:System.String"/> that represents the current
+		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.KeyboardDescription"/>.
 		/// </summary>
-		/// <param name="other"></param>
-		/// <returns></returns>
-		public bool Equals(DefaultKeyboardDefinition other)
+		public override string ToString()
 		{
-			return Equals((IKeyboardDefinition) other);
+			return Name;
 		}
 
 		public override bool Equals(Object obj)
@@ -140,26 +150,7 @@ namespace SIL.WritingSystems
 		{
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;
-			return Layout == other.Layout && Locale == other.Locale;
-		}
-
-		/// <summary>
-		/// Equality operator.
-		/// </summary>
-		public static bool operator ==(DefaultKeyboardDefinition left, DefaultKeyboardDefinition right)
-		{
-			// Check for both being null
-			if (ReferenceEquals(null, left))
-				return ReferenceEquals(null, right);
-			return left.Equals(right);
-		}
-
-		/// <summary>
-		/// Equality operator.
-		/// </summary>
-		public static bool operator !=(DefaultKeyboardDefinition left, DefaultKeyboardDefinition right)
-		{
-			return !(left == right);
+			return _layout == other.Layout && _locale == other.Locale;
 		}
 
 		/// <summary>
@@ -170,14 +161,10 @@ namespace SIL.WritingSystems
 		/// <returns></returns>
 		public override int GetHashCode()
 		{
-			// Don't crash if either Layout or Locale somehow end up being null.
-			if (Layout != null && Locale != null)
-			return Layout.GetHashCode() ^ Locale.GetHashCode();
-			if (Layout != null)
-				return Layout.GetHashCode();
-			if (Locale != null)
-				return Locale.GetHashCode();
-			return 0;
+			int code = 23;
+			code = code * 31 + (_layout == null ? 0 : _layout.GetHashCode());
+			code = code * 31 + (_locale == null ? 0 : _locale.GetHashCode());
+			return code;
 		}
 	}
 }

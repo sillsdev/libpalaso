@@ -87,9 +87,9 @@ namespace SIL.WritingSystems.WindowsForms
 			}
 			Enabled = true;
 			LoadLanguageChoicesFromModel();
-			if (_sortUsingValueMap.ContainsKey(_model.CurrentSortUsing))
+			if (_sortUsingValueMap.ContainsKey(_model.CurrentCollationRulesType))
 			{
-				_sortUsingComboBox.SelectedIndex = (int)_sortUsingValueMap[_model.CurrentSortUsing];
+				_sortUsingComboBox.SelectedIndex = (int)_sortUsingValueMap[_model.CurrentCollationRulesType];
 			}
 			else
 			{
@@ -116,7 +116,7 @@ namespace SIL.WritingSystems.WindowsForms
 			_changingModel = true;
 			try
 			{
-				_model.CurrentSortRules = _sortRulesTextBox.Text;
+				_model.CurrentCollationRules = _sortRulesTextBox.Text;
 				_rulesValidationTimer.Stop();
 				_rulesValidationTimer.Start();
 			}
@@ -138,7 +138,7 @@ namespace SIL.WritingSystems.WindowsForms
 			_changingModel = true;
 			try
 			{
-				_model.CurrentSortUsing = newValue;
+				_model.CurrentCollationRulesType = newValue;
 			}
 			finally
 			{
@@ -149,15 +149,15 @@ namespace SIL.WritingSystems.WindowsForms
 				_sortrules_panel.Visible = true;
 				_languagecombo_panel.Visible = true;
 				_rulesValidationTimer.Enabled = false;
-				if (_languageOptionMap.ContainsKey(_model.CurrentSortRules))
+				if (_languageOptionMap.ContainsKey(_model.CurrentCollationRules))
 				{
-					_languageComboBox.SelectedIndex = (int)_languageOptionMap[_model.CurrentSortRules];
+					_languageComboBox.SelectedIndex = (int)_languageOptionMap[_model.CurrentCollationRules];
 				}
 			}
 			else if (newValue == "CustomSimple" || newValue == "CustomICU")
 			{
 				_sortrules_panel.Visible = true;
-				_sortRulesTextBox.Text = _model.CurrentSortRules;
+				_sortRulesTextBox.Text = _model.CurrentCollationRules;
 			}
 		}
 
@@ -171,7 +171,7 @@ namespace SIL.WritingSystems.WindowsForms
 			_changingModel = true;
 			try
 			{
-				_model.CurrentSortRules = newValue;
+				_model.CurrentCollationRules = newValue;
 			}
 			finally
 			{

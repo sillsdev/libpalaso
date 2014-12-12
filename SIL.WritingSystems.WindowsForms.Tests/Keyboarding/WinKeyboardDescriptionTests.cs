@@ -7,8 +7,6 @@ using Microsoft.Unmanaged.TSF;
 using Palaso.TestUtilities;
 using SIL.WritingSystems.WindowsForms.Keyboarding.Windows;
 
-
-
 namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 {
 	internal class TestWrapper
@@ -18,20 +16,20 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		{
 			public override WinKeyboardDescription CreateNewClonable()
 			{
-				return new WinKeyboardDescription("en", "US", new WinKeyboardAdaptor());
+				var engine = new WinKeyboardAdaptor();
+				return (WinKeyboardDescription) engine.CreateKeyboardDefinition("en", "US");
 			}
 
 			public override string ExceptionList
 			{
-				get { return "|Engine|InputLanguage|"; }
+				get { return "|_engine|_inputLanguage|"; }
 			}
 
 			public override string EqualsExceptionList
 			{
 				get
 				{
-					return "|Type|Name|OperatingSystem|IsAvailable|InternalName|InternalLocalizedName|" +
-						"ConversionMode|SentenceMode|WindowHandle|InputProcessorProfile|";
+					return "|_internalLocalizedName|_profile|ConversionMode|SentenceMode|WindowHandle|_name|_isAvailable|";
 				}
 			}
 

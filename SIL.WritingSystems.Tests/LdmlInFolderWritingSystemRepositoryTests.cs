@@ -11,7 +11,7 @@ using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 namespace SIL.WritingSystems.Tests
 {
 	[TestFixture]
-	public class LdmlInFolderWritingSystemRepositoryInterfaceTests : IWritingSystemRepositoryTests
+	public class LdmlInFolderWritingSystemRepositoryInterfaceTests : WritingSystemRepositoryTests
 	{
 		private List<string> _testPaths;
 

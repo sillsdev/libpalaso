@@ -16,7 +16,7 @@ namespace SIL.WritingSystems
 	/// </summary>
 	internal class Rfc5646Tag : ICloneable<Rfc5646Tag>, IEquatable<Rfc5646Tag>
 	{
-		internal class Subtag : ICloneable<Subtag>
+		internal class Subtag : ICloneable<Subtag>, IEquatable<Subtag>
 		{
 			private readonly List<string> _subtagParts;
 
@@ -141,6 +141,27 @@ namespace SIL.WritingSystems
 			{
 				var regex = new Regex(pattern);
 				return _subtagParts.Where(part => regex.IsMatch(part));
+			}
+
+			public override bool Equals(object other)
+			{
+				if (!(other is Subtag)) return false;
+				return Equals((Subtag)other);
+			}
+
+			public bool Equals(Subtag other)
+			{
+				if (other == null) return false;
+				if (!_subtagParts.SequenceEqual(other._subtagParts)) return false;
+				return true;
+			}
+
+			public override int GetHashCode()
+			{
+				int code = 23;
+				foreach (string part in _subtagParts)
+					code = code * 31 + part.GetHashCode();
+				return code;
 			}
 		}
 

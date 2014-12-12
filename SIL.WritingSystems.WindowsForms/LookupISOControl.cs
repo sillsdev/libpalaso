@@ -11,10 +11,9 @@ namespace SIL.WritingSystems.WindowsForms
 {
 	public partial class LookupISOControl : UserControl
 	{
-		private LookupIsoCodeModel _model;
+		private readonly LookupIsoCodeModel _model;
 		private string _lastSearchedForText;
-		private string _unlistedLanguageName;
-		private string _incomingDesiredName;
+		private readonly string _unlistedLanguageName;
 		private LanguageInfo _incomingLanguageInfo;
 
 		public event EventHandler ReadinessChanged;

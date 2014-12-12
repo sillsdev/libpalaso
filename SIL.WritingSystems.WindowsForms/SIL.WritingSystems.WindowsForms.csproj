@@ -20,7 +20,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\output\Debug\SIL.WritingSystems.WindowsForms.XML</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
     <LangVersion>default</LangVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>

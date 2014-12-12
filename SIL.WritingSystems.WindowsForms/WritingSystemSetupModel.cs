@@ -125,7 +125,6 @@ namespace SIL.WritingSystems.WindowsForms
 						{
 							var result = Keyboard.Controller.CreateKeyboardDefinition(knownKeyboard.Layout,
 								knownKeyboard.Locale);
-							((KeyboardDescription)result).IsAvailable = false;
 							yield return result;
 						}
 					}
@@ -825,7 +824,7 @@ namespace SIL.WritingSystems.WindowsForms
 			}
 		}
 
-		public string CurrentSortUsing
+		public string CurrentCollationRulesType
 		{
 			get { return CurrentDefinition.CollationRulesType.ToString(); }
 			set
@@ -842,11 +841,11 @@ namespace SIL.WritingSystems.WindowsForms
 			}
 		}
 
-		public string CurrentSortRules
+		public string CurrentCollationRules
 		{
 			get
 			{
-				if (String.IsNullOrEmpty(CurrentDefinition.CollationRules) && CurrentSortUsing == "CustomSimple")
+				if (String.IsNullOrEmpty(CurrentDefinition.CollationRules) && CurrentCollationRulesType == "CustomSimple")
 				{
 					return DefaultCustomSimpleSortRules;
 				}
