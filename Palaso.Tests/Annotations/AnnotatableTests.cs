@@ -9,7 +9,7 @@ using Palaso.TestUtilities;
 namespace Palaso.Tests.Annotations
 {
 	[TestFixture]
-	public class AnnotatableIClonableGenericTests : IClonableGenericTests<Annotatable>
+	public class AnnotatableCloneableTests : CloneableTests<Annotatable>
 	{
 		public override Annotatable CreateNewClonable()
 		{
@@ -34,7 +34,7 @@ namespace Palaso.Tests.Annotations
 	}
 
 	[TestFixture]
-	public class AnnotationIClonableGenericTests : IClonableGenericTests<Annotation>
+	public class AnnotationCloneableTests : CloneableTests<Annotation>
 	{
 		public override Annotation CreateNewClonable()
 		{

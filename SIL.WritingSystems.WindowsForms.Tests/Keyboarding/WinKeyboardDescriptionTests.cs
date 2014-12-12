@@ -13,8 +13,8 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 {
 	internal class TestWrapper
 	{
-		public class WinKeyboardDescriptionIClonableGenericTests :
-			IClonableGenericTests<WinKeyboardDescription, IKeyboardDefinition>
+		public class WinKeyboardDescriptionCloneableTests :
+			CloneableTests<WinKeyboardDescription, IKeyboardDefinition>
 		{
 			public override WinKeyboardDescription CreateNewClonable()
 			{

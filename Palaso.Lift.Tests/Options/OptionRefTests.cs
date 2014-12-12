@@ -9,7 +9,7 @@ using Palaso.TestUtilities;
 namespace Palaso.Lift.Tests
 {
 	[TestFixture]
-	public class OptionRefIClonableGenericTests : IClonableGenericTests<IPalasoDataObjectProperty>
+	public class OptionRefCloneableTests : CloneableTests<IPalasoDataObjectProperty>
 	{
 		public override IPalasoDataObjectProperty CreateNewClonable()
 		{

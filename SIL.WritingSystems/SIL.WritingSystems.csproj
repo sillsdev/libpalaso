@@ -172,7 +172,7 @@
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\WritingSystemDefinitionV0.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\WritingSystemDefinitionV1.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\XmlHelpersV0.cs" />
-    <Compile Include="RFC5646Tag.cs" />
+    <Compile Include="Rfc5646Tag.cs" />
     <Compile Include="StandardTags.cs" />
     <Compile Include="WellKnownSubtags.cs" />
     <Compile Include="WritingSystemChangeLog.cs" />

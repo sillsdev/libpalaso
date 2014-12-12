@@ -11,7 +11,7 @@ using Palaso.TestUtilities;
 namespace Palaso.DictionaryServices.Tests.Model
 {
 	[TestFixture]
-	public class LexRelationIClonableGenericTests : IClonableGenericTests<IPalasoDataObjectProperty>
+	public class LexRelationCloneableTests : CloneableTests<IPalasoDataObjectProperty>
 	{
 		public override IPalasoDataObjectProperty CreateNewClonable()
 		{
@@ -45,7 +45,7 @@ namespace Palaso.DictionaryServices.Tests.Model
 	}
 
 	[TestFixture]
-	public class LexRelationCollectionIClonableGenericTests : IClonableGenericTests<IPalasoDataObjectProperty>
+	public class LexRelationCollectionCloneableTests : CloneableTests<IPalasoDataObjectProperty>
 	{
 		public override IPalasoDataObjectProperty CreateNewClonable()
 		{

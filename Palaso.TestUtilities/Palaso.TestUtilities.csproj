@@ -84,7 +84,7 @@
     <Compile Include="ConstrainStringByLine.cs" />
     <Compile Include="FluentAssertXml.cs" />
     <Compile Include="FluentAssertXmlTests.cs" />
-    <Compile Include="IClonableGenericTests.cs" />
+    <Compile Include="CloneableTests.cs" />
     <Compile Include="LdmlContentForTests.cs" />
     <Compile Include="LiftContentForTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

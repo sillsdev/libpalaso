@@ -12,7 +12,7 @@ namespace Palaso.DictionaryServices.Tests.Model
 {
 
 	[TestFixture]
-	public class LexVariantIClonableGenericTests : IClonableGenericTests<IPalasoDataObjectProperty>
+	public class LexVariantCloneableTests : CloneableTests<IPalasoDataObjectProperty>
 	{
 		public override IPalasoDataObjectProperty CreateNewClonable()
 		{

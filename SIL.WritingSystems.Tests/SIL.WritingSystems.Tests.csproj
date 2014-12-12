@@ -138,9 +138,9 @@
     <Compile Include="Migration\Rfc5646TagCleanerTests.cs" />
     <Compile Include="Migration\WritingSystemLdmlVersionGetterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RFC5646TagTests.cs" />
+    <Compile Include="Rfc5646TagTests.cs" />
     <Compile Include="StandardTagsTests.cs" />
-    <Compile Include="SubTagTests.cs" />
+    <Compile Include="SubtagTests.cs" />
     <Compile Include="WritingSystemChangeLogDataMapperTests.cs" />
     <Compile Include="WritingSystemChangeLogTests.cs" />
     <Compile Include="WritingSystemChangeTests.cs" />

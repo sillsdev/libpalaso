@@ -11,7 +11,7 @@ using Palaso.Text;
 namespace Palaso.DictionaryServices.Tests.Model
 {
 	[TestFixture]
-	public class LexEtymologyIClonableGenericTests : IClonableGenericTests<IPalasoDataObjectProperty>
+	public class LexEtymologyCloneableTests : CloneableTests<IPalasoDataObjectProperty>
 	{
 		public override IPalasoDataObjectProperty CreateNewClonable()
 		{

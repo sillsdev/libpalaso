@@ -12,7 +12,7 @@ using Palaso.Text;
 namespace Palaso.DictionaryServices.Tests.Model
 {
 	[TestFixture]
-	public class LexEntryClonableGenericTests:IClonableGenericTests<LexEntry>
+	public class LexEntryCloneableTests:CloneableTests<LexEntry>
 	{
 		public override LexEntry CreateNewClonable()
 		{

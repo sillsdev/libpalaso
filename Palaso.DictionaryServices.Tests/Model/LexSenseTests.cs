@@ -9,7 +9,7 @@ using Palaso.TestUtilities;
 namespace Palaso.DictionaryServices.Tests.Model
 {
 	[TestFixture]
-	public class LexSenseIClonableGenericTests:IClonableGenericTests<LexSense>
+	public class LexSenseCloneableTests:CloneableTests<LexSense>
 	{
 		public override LexSense CreateNewClonable()
 		{

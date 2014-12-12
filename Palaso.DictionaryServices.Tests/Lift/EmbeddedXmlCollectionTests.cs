@@ -8,7 +8,7 @@ using Palaso.TestUtilities;
 namespace Palaso.DictionaryServices.Tests.Lift
 {
 	[TestFixture]
-	public class EmbeddedXmlCollectionIClonableGenericTests : IClonableGenericTests<IPalasoDataObjectProperty>
+	public class EmbeddedXmlCollectionCloneableTests : CloneableTests<IPalasoDataObjectProperty>
 	{
 		public override IPalasoDataObjectProperty CreateNewClonable()
 		{

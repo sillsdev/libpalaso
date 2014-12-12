@@ -9,7 +9,7 @@ using Palaso.TestUtilities;
 namespace Palaso.DictionaryServices.Tests.Lift
 {
 	[TestFixture]
-	public class FlagStateIClonableGenericTests : IClonableGenericTests<IPalasoDataObjectProperty>
+	public class FlagStateCloneableTests : CloneableTests<IPalasoDataObjectProperty>
 	{
 		public override IPalasoDataObjectProperty CreateNewClonable()
 		{

@@ -61,7 +61,7 @@ namespace SIL.WritingSystems.Tests
 		}
 	}
 
-	public class DefaultKeyboardDefinitionIClonableGenericTests : IClonableGenericTests<DefaultKeyboardDefinition, IKeyboardDefinition>
+	public class DefaultKeyboardDefinitionCloneableTests : CloneableTests<DefaultKeyboardDefinition, IKeyboardDefinition>
 	{
 		public override DefaultKeyboardDefinition CreateNewClonable()
 		{

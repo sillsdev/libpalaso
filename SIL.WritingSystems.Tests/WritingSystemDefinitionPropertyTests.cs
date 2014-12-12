@@ -8,7 +8,7 @@ using Palaso.TestUtilities;
 
 namespace SIL.WritingSystems.Tests
 {
-	public class WritingSystemDefinitionIClonableGenericTests : IClonableGenericTests<WritingSystemDefinition>
+	public class WritingSystemDefinitionCloneableTests : CloneableTests<WritingSystemDefinition>
 	{
 		public override WritingSystemDefinition CreateNewClonable()
 		{

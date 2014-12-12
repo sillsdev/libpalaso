@@ -10,7 +10,7 @@ using Palaso.Text;
 namespace Palaso.DictionaryServices.Tests.Lift
 {
 	[TestFixture]
-	public class PictureRefIClonableGenericTests : IClonableGenericTests<IPalasoDataObjectProperty>
+	public class PictureRefCloneableTests : CloneableTests<IPalasoDataObjectProperty>
 	{
 		public override IPalasoDataObjectProperty CreateNewClonable()
 		{

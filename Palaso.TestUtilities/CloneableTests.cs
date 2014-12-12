@@ -16,13 +16,18 @@ namespace Palaso.TestUtilities
 	/// </summary>
 	/// <typeparam name="T">Implementation class</typeparam>
 	/// <typeparam name="TClone">Type that Clone() returns</typeparam>
-	public abstract class IClonableGenericTests<T, TClone> where T:ICloneable<TClone>
+	public abstract class CloneableTests<T, TClone> where T:ICloneable<TClone>
 	{
 		public abstract T CreateNewClonable();
 
 		protected virtual bool Equals(T x, T y)
 		{
-			return EqualityComparer<T>.Default.Equals(x, y);
+			return EqualityComparer<object>.Default.Equals(x, y);
+		}
+
+		private int Compare(T x, T y)
+		{
+			return Equals(x, y) ? 0 : 1;
 		}
 
 		protected class ValuesToSet
@@ -189,8 +194,8 @@ namespace Palaso.TestUtilities
 				}
 				fieldInfo.SetValue(item, valueToSet.ValueToSet);
 				fieldInfo.SetValue(unequalItem, valueToSet.NotEqualValueToSet);
-				Assert.That(item, Is.Not.EqualTo(unequalItem).Using<T>((x, y) => Equals(x, y) ? 0 : 1), "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList or EqualsExceptionList property.", fieldName);
-				Assert.That(unequalItem, Is.Not.EqualTo(item).Using<T>((x, y) => Equals(x, y) ? 0 : 1), "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList or EqualsExceptionList property.", fieldName);
+				Assert.That(item, Is.Not.EqualTo(unequalItem).Using<T>(Compare), "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList or EqualsExceptionList property.", fieldName);
+				Assert.That(unequalItem, Is.Not.EqualTo(item).Using<T>(Compare), "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList or EqualsExceptionList property.", fieldName);
 			}
 		}
 
@@ -205,7 +210,7 @@ namespace Palaso.TestUtilities
 			{
 				var item = CreateNewClonable();
 				var unequalItem = CreateNewClonable();
-				Assert.That(item, Is.EqualTo(unequalItem).Using<T>((x, y) => Equals(x, y) ? 0 : 1), "The two items were not equal on creation. You may need to override Equals(object other).");
+				Assert.That(item, Is.EqualTo(unequalItem).Using<T>(Compare), "The two items were not equal on creation. You may need to override Equals(object other).");
 				var fieldName = fieldInfo.Name;
 				if (fieldInfo.Name.Contains("<"))
 				{
@@ -229,8 +234,8 @@ namespace Palaso.TestUtilities
 				}
 				fieldInfo.SetValue(item, valueToSet.ValueToSet);
 				fieldInfo.SetValue(unequalItem, valueToSet.ValueToSet);
-				Assert.That(item, Is.EqualTo(unequalItem).Using<T>((x, y) => Equals(x, y) ? 0 : 1), "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList or EqualsExceptionList property.", fieldName);
-				Assert.That(unequalItem, Is.EqualTo(item).Using<T>((x, y) => Equals(x, y) ? 0 : 1), "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList or EqualsExceptionList property.", fieldName);
+				Assert.That(item, Is.EqualTo(unequalItem).Using<T>(Compare), "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList or EqualsExceptionList property.", fieldName);
+				Assert.That(unequalItem, Is.EqualTo(item).Using<T>(Compare), "Field \"{0}\" is not evaluated in Equals(T other). Please update Equals(T other) or add the field name to the ExceptionList or EqualsExceptionList property.", fieldName);
 			}
 		}
 
@@ -247,7 +252,7 @@ namespace Palaso.TestUtilities
 			{
 				var itemWithFieldToChange = CreateNewClonable();
 				var itemWithDefaultField = CreateNewClonable();
-				Assert.That(itemWithFieldToChange, Is.EqualTo(itemWithDefaultField).Using<T>((x, y) => Equals(x, y) ? 0 : 1), "The two items were not equal on creation. You may need to override Equals(object other).");
+				Assert.That(itemWithFieldToChange, Is.EqualTo(itemWithDefaultField).Using<T>(Compare), "The two items were not equal on creation. You may need to override Equals(object other).");
 				var fieldName = fieldInfo.Name;
 				if (fieldInfo.Name.Contains("<"))
 				{
@@ -307,7 +312,7 @@ namespace Palaso.TestUtilities
 	/// This supports the common case where the Clone type is the same as the implementation type.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public abstract class IClonableGenericTests<T> : IClonableGenericTests<T, T> where T: ICloneable<T>
+	public abstract class CloneableTests<T> : CloneableTests<T, T> where T: ICloneable<T>
 	{
 
 	}

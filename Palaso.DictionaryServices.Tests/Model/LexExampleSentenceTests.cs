@@ -10,7 +10,7 @@ using Palaso.TestUtilities;
 namespace Palaso.DictionaryServices.Tests.Model
 {
 	[TestFixture]
-	public class LexExampleSentenceIClonableGenericTests : IClonableGenericTests<LexExampleSentence>
+	public class LexExampleSentenceCloneableTests : CloneableTests<LexExampleSentence>
 	{
 		public override LexExampleSentence CreateNewClonable()
 		{

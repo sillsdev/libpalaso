@@ -20,7 +20,7 @@ using SIL.WritingSystems.WindowsForms.Keyboarding;
 namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 {
 	[TestFixture]
-	public class KeyboardDescriptionIClonableGenericTests : IClonableGenericTests<KeyboardDescription, IKeyboardDefinition>
+	public class KeyboardDescriptionCloneableTests : CloneableTests<KeyboardDescription, IKeyboardDefinition>
 	{
 		public override KeyboardDescription CreateNewClonable()
 		{

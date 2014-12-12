@@ -1,10 +1,36 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
+using Palaso.TestUtilities;
 
 namespace SIL.WritingSystems.Tests
 {
 	[TestFixture]
-	public class SubTagTests
+	internal class SubtagCloneableTests : CloneableTests<Rfc5646Tag.Subtag>
+	{
+		public override Rfc5646Tag.Subtag CreateNewClonable()
+		{
+			return new Rfc5646Tag.Subtag();
+		}
+
+		public override string ExceptionList
+		{
+			get { return ""; }
+		}
+
+		protected override List<ValuesToSet> DefaultValuesForTypes
+		{
+			get
+			{
+				return new List<ValuesToSet>
+							{
+								new ValuesToSet(new List<string>{"en"}, new List<string>{"de"})
+							};
+			}
+		}
+	}
+
+	[TestFixture]
+	public class SubtagTests
 	{
 		[Test]
 		public void ParseSubtagForParts_SubtagContainsMultipleParts_PartsAreReturned()

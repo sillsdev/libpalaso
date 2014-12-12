@@ -7,32 +7,7 @@ using Palaso.TestUtilities;
 namespace SIL.WritingSystems.Tests
 {
 	[TestFixture]
-	internal class SubTagIClonableGenericTests : IClonableGenericTests<Rfc5646Tag.Subtag>
-	{
-		public override Rfc5646Tag.Subtag CreateNewClonable()
-		{
-			return new Rfc5646Tag.Subtag();
-		}
-
-		public override string ExceptionList
-		{
-			get { return ""; }
-		}
-
-		protected override List<ValuesToSet> DefaultValuesForTypes
-		{
-			get
-			{
-				return new List<ValuesToSet>
-							{
-								new ValuesToSet(new List<string>{"en"}, new List<string>{"de"})
-							};
-			}
-		}
-	}
-
-	[TestFixture]
-	internal class RFC5646IClonableGenericTests:IClonableGenericTests<Rfc5646Tag>
+	internal class Rfc5646CloneableTests:CloneableTests<Rfc5646Tag>
 	{
 		public override Rfc5646Tag CreateNewClonable()
 		{
@@ -62,7 +37,7 @@ namespace SIL.WritingSystems.Tests
 	}
 
 	[TestFixture]
-	public class RFC5646TagTests
+	public class Rfc5646TagTests
 	{
 		[Test]
 		public void AddToPrivateUse_PrivateUseIsEmpty_PrivateUseEqualsStringToAdd()

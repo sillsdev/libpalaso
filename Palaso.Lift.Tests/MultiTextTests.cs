@@ -12,7 +12,7 @@ namespace WeSay.LexicalModel.Tests.Foundation
 {
 
 	[TestFixture]
-	public class MultiTextAsPalasoDataObjectPropertyIClonableGenericTests : IClonableGenericTests<IPalasoDataObjectProperty>
+	public class MultiTextAsPalasoDataObjectPropertyCloneableTests : CloneableTests<IPalasoDataObjectProperty>
 	{
 		public override IPalasoDataObjectProperty CreateNewClonable()
 		{

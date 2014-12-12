@@ -8,7 +8,7 @@ using Palaso.Text;
 namespace Palaso.Tests.Text
 {
 	[TestFixture]
-	public class LanguageFormIClonableGenericTests:IClonableGenericTests<Annotatable>
+	public class LanguageFormCloneableTests:CloneableTests<Annotatable>
 	{
 		public override Annotatable CreateNewClonable()
 		{
