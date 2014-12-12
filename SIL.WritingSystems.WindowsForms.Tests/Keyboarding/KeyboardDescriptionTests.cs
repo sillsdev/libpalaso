@@ -34,7 +34,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 
 		public override string EqualsExceptionList
 		{
-			get { return "|_isAvailable|_name|"; }
+			get { return "|_isAvailable|_name|_type|"; }
 		}
 
 		protected override List<ValuesToSet> DefaultValuesForTypes

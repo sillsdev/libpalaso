@@ -29,7 +29,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 			{
 				get
 				{
-					return "|_internalLocalizedName|_profile|ConversionMode|SentenceMode|WindowHandle|_name|_isAvailable|";
+					return "|_internalLocalizedName|_profile|ConversionMode|SentenceMode|WindowHandle|_name|_isAvailable|_type|";
 				}
 			}
 
