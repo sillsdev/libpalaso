@@ -29,6 +29,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 			#if MONO
 			_scannerButton.Enabled =  _cameraButton.Enabled = false;
+			// Mono layout doesn't always handle Anchor point properly.  Fix it.
+			fixMyLayoutForMono();
 			#endif
 
 			_galleryControl.ImageChanged += new EventHandler(_galleryControl_ImageChanged);
@@ -419,5 +421,54 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			}
 			e.Effect = DragDropEffects.None;
 		}
+
+#if __MonoCS__
+		/// <summary>
+		/// _galleryControl is supposed to fill us with just some minor margins to the left and right.
+		/// Mono changes our size before it calculates the margin to maintain with those anchors being
+		/// set left and right.  Being a timing/sequencing issue, this is hard to fix in Mono, so for
+		/// now we'll patch it with a workaround here.
+		/// </summary>
+		/// <remarks>
+		/// I know this is a hack, but my first attempt to patch Mono had no effect, and I'm not sure
+		/// this bug is worth spending much more time on.  (https://jira.sil.org/browse/BL-778 "[Linux]
+		/// Image Toolbox only displays 2 columns of AoR images (Windows does 3)")
+		/// </remarks>
+		protected void fixMyLayoutForMono()
+		{
+			// The numbers used here come from comparing the Size assignments of the various
+			// controls in the .Designer.cs file, taking into account also the Location
+			// assignments of the child controls.  These exact values are gone by the time
+			// we get here, so the differences (the margins for anchor right and bottom) are
+			// also gone.  This is exactly the bug in the Mono code:  the anchor margins are
+			// calculated at the wrong point when sizes have already changed.  (Note that the
+			// Location gives the margins for anchor left and top.)
+			if (_galleryControl != null && Contains(_galleryControl) &&
+				(Width - _galleryControl.Width > 6 || Height - _galleryControl.Height > 60))
+			{
+				var oldSize = _galleryControl.Size;
+				_galleryControl.Anchor = (System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left);
+				_galleryControl.Size = new Size(Width - 6, Height - 60);
+				_galleryControl.Anchor = (System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom |
+					System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right);
+				Console.WriteLine ("HACK: Manually adjusting ArtOfReadingChooser.Size from {0} to {1}", oldSize, _galleryControl.Size);
+			}
+			if (_messageLabel != null && Contains(_messageLabel) && Width - _messageLabel.Width != 223)
+			{
+				_messageLabel.Anchor = (System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left);
+				_messageLabel.Size = new Size(Width - 223, _messageLabel.Height);
+				_messageLabel.Anchor = (System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left |
+					System.Windows.Forms.AnchorStyles.Right);
+			}
+			if (_pictureBox != null && Contains (_pictureBox) &&
+				(Width != _pictureBox.Width || Height - _pictureBox.Height != 60))
+			{
+				_pictureBox.Anchor = (System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left);
+				_pictureBox.Size = new Size(Width, Height - 60);
+				_pictureBox.Anchor = (System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom |
+					System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right);
+			}
+		}
+#endif
 	}
 }
