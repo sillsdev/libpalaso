@@ -11,7 +11,7 @@ namespace SIL.WritingSystems
 	/// the implementations of IKeyboardDefinition from PalasoUIWindowsForms or some similar library.
 	/// In particular while this class can store various data it does nothing about actually activating a keyboard.
 	/// Review: possibly that method and this class should be made abstract?</remarks>
-	public class DefaultKeyboardDefinition : ICloneable<IKeyboardDefinition>, IEquatable<IKeyboardDefinition>, IKeyboardDefinition
+	public class DefaultKeyboardDefinition : IKeyboardDefinition
 	{
 		private readonly KeyboardType _type;
 		private readonly string _locale;
@@ -27,17 +27,6 @@ namespace SIL.WritingSystems
 			_layout = layout;
 			_locale = locale;
 			_isAvailable = isAvailable;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="DefaultKeyboardDefinition"/> class.
-		/// </summary>
-		public DefaultKeyboardDefinition(DefaultKeyboardDefinition kd)
-		{
-			_type = kd.Type;
-			_layout = kd._layout;
-			_locale = kd._locale;
-			_isAvailable = kd._isAvailable;
 		}
 
 		/// <summary>
@@ -117,54 +106,12 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// Clone this keyboard definition
-		/// </summary>
-		public virtual IKeyboardDefinition Clone()
-		{
-			return new DefaultKeyboardDefinition(this);
-		}
-
-		/// <summary>
 		/// Returns a <see cref="T:System.String"/> that represents the current
 		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.KeyboardDescription"/>.
 		/// </summary>
 		public override string ToString()
 		{
 			return Name;
-		}
-
-		public override bool Equals(Object obj)
-		{
-			if (!(obj is IKeyboardDefinition)) return false;
-			return Equals((IKeyboardDefinition)obj);
-		}
-
-		/// <summary>
-		/// We are claiming here that all IKeyboardDefinitions should do equality testing this way.
-		/// Currently all implementations inherit from this class and therefore do.
-		/// Additional implementations should be careful to do the same, otherwise, basic equality
-		/// expectations like a.Equals(b) iff b.Equals(a) may be violated. Similarly other implementations
-		/// should use the same definition of GetHashCode().
-		/// </summary>
-		public bool Equals(IKeyboardDefinition other)
-		{
-			if (ReferenceEquals(null, other)) return false;
-			if (ReferenceEquals(this, other)) return true;
-			return _layout == other.Layout && _locale == other.Locale;
-		}
-
-		/// <summary>
-		/// Note that to be consistent with Equals, any other implementation of IKeyboardDefinition
-		/// should use the same definition of GetHashCode as this.
-		/// Currently all implementations inherit from this class and therefore do.
-		/// </summary>
-		/// <returns></returns>
-		public override int GetHashCode()
-		{
-			int code = 23;
-			code = code * 31 + (_layout == null ? 0 : _layout.GetHashCode());
-			code = code * 31 + (_locale == null ? 0 : _locale.GetHashCode());
-			return code;
 		}
 	}
 }

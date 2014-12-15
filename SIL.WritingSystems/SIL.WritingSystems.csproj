@@ -143,6 +143,7 @@
     <Compile Include="Iso639LanguageCode.cs" />
     <Compile Include="IWritingSystemRepository.cs" />
     <Compile Include="Keyboard.cs" />
+    <Compile Include="KeyboardCollection.cs" />
     <Compile Include="LanguageRegistryResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

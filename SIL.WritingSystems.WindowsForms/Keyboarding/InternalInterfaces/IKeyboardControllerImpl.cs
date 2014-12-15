@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using SIL.WritingSystems;
 using SIL.WritingSystems.WindowsForms.Keyboarding.Types;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces

@@ -246,7 +246,7 @@ namespace SIL.WritingSystems
 						knownKeyboardsReader.GetAttribute(LocaleAttrName));
 					knownKeyboardsReader.Read();
 					FindElement(knownKeyboardsReader, KeyboardElementName);
-					ws.AddKnownKeyboard(keyboard);
+					ws.KnownKeyboards.Add(keyboard);
 				}
 			}
 		}

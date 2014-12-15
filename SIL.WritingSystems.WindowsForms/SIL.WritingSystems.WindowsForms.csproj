@@ -174,7 +174,6 @@
     <Compile Include="Keyboarding\Linux\XklConfigRegistry.cs" />
     <Compile Include="Keyboarding\Linux\XklEngine.cs" />
     <Compile Include="Keyboarding\Types\InputLanguageWrapper.cs" />
-    <Compile Include="Keyboarding\Types\KeyboardCollection.cs" />
     <Compile Include="Keyboarding\Types\MouseEvent.cs" />
     <Compile Include="Keyboarding\Types\RegisterEventArgs.cs" />
     <Compile Include="Keyboarding\Types\Win32.cs" />

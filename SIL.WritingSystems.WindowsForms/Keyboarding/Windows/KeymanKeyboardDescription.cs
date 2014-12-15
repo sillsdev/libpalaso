@@ -19,48 +19,9 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 	{
 		private static readonly bool KeymanKeyboardSwitchingSettingEnabled;
 
-		private readonly bool _isKeyman6;
-
-		public bool IsKeyman6
-		{
-			get { return _isKeyman6; }
-		}
-
 		static KeymanKeyboardDescription()
 		{
 			KeymanKeyboardSwitchingSettingEnabled = GetEvilKeymanKeyboardSwitchingSetting();
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the
-		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.Windows.KeymanKeyboardDescription"/> class.
-		/// </summary>
-		internal KeymanKeyboardDescription(string layout, bool isKeyman6, KeymanKeyboardAdaptor engine, bool isAvailable)
-			: base(layout, layout, string.Empty, null, engine, KeyboardType.OtherIm, isAvailable)
-		{
-			_isKeyman6 = isKeyman6;
-		}
-
-		internal KeymanKeyboardDescription(KeymanKeyboardDescription other) : base(other)
-		{
-			_isKeyman6 = other._isKeyman6;
-		}
-
-		public override IKeyboardDefinition Clone()
-		{
-			return new KeymanKeyboardDescription(this);
-		}
-	
-		/// <summary>
-		/// If the new keyboard is the default windows keyboard then we need to deactivate the Keyman 
-		/// keyboard without resetting the windows keyboard. However, if the default keyboard is a Keyman 
-		/// keyboard associated with the system default keyboard, then don't reset the Keyman keyboard as
-		/// that causes the association to appear as if it's not there due to a Keyman timing issue.
-		/// </summary>
-		protected override bool DeactivatePreviousKeyboard(IKeyboardDefinition keyboardToActivate)
-		{
-			return (!KeymanKeyboardSwitchingSettingEnabled ||
-				keyboardToActivate.Equals(((IKeyboardControllerImpl)Keyboard.Controller).DefaultKeyboard));
 		}
 
 		/// <summary>
@@ -102,6 +63,35 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 				// We shouldn't get this since we are opening for read-only, but you never know...
 			}
 			return true;
+		}
+
+		private readonly bool _isKeyman6;
+
+		/// <summary>
+		/// Initializes a new instance of the
+		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.Windows.KeymanKeyboardDescription"/> class.
+		/// </summary>
+		internal KeymanKeyboardDescription(string layout, bool isKeyman6, KeymanKeyboardAdaptor engine, bool isAvailable)
+			: base(layout, layout, string.Empty, null, engine, KeyboardType.OtherIm, isAvailable)
+		{
+			_isKeyman6 = isKeyman6;
+		}
+
+		public bool IsKeyman6
+		{
+			get { return _isKeyman6; }
+		}
+	
+		/// <summary>
+		/// If the new keyboard is the default windows keyboard then we need to deactivate the Keyman 
+		/// keyboard without resetting the windows keyboard. However, if the default keyboard is a Keyman 
+		/// keyboard associated with the system default keyboard, then don't reset the Keyman keyboard as
+		/// that causes the association to appear as if it's not there due to a Keyman timing issue.
+		/// </summary>
+		protected override bool DeactivatePreviousKeyboard(IKeyboardDefinition keyboardToActivate)
+		{
+			return (!KeymanKeyboardSwitchingSettingEnabled ||
+				keyboardToActivate.Equals(((IKeyboardControllerImpl)Keyboard.Controller).DefaultKeyboard));
 		}
 	}
 }

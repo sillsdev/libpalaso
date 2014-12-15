@@ -25,7 +25,7 @@ namespace SIL.WritingSystems.Tests
 		public override string ExceptionList
 		{
 			// We do want to clone KnownKeyboards, but I don't think the automatic cloneable test for it can handle a list.
-			get { return "|Modified|MarkedForDeletion|StoreID|_collator|_knownKeyboards|"; }
+			get { return "|Modified|MarkedForDeletion|StoreID|_collator|_knownKeyboards|_localKeyboard|"; }
 		}
 
 		protected override List<ValuesToSet> DefaultValuesForTypes
@@ -55,38 +55,37 @@ namespace SIL.WritingSystems.Tests
 			var original = new WritingSystemDefinition();
 			var kbd1 = new DefaultKeyboardDefinition(KeyboardType.System, "mine", string.Empty);
 			var kbd2 = new DefaultKeyboardDefinition(KeyboardType.System, "yours", string.Empty);
-			original.AddKnownKeyboard(kbd1);
-			original.AddKnownKeyboard(kbd2);
+			original.KnownKeyboards.Add(kbd1);
+			original.KnownKeyboards.Add(kbd2);
 			WritingSystemDefinition copy = original.Clone();
 			Assert.That(copy.KnownKeyboards.Count(), Is.EqualTo(2));
 			Assert.That(copy.KnownKeyboards.First(), Is.EqualTo(kbd1));
-			Assert.That(ReferenceEquals(copy.KnownKeyboards.First(), kbd1), Is.False);
+			Assert.That(ReferenceEquals(copy.KnownKeyboards.First(), kbd1), Is.True);
 		}
 
 		/// <summary>
 		/// The generic test that Equals compares everything can't, I believe, handle lists.
 		/// </summary>
 		[Test]
-		public void EqualsComparesKnownKeyboards()
+		public void ValueEqualsComparesKnownKeyboards()
 		{
 			var first = new WritingSystemDefinition();
 			var kbd1 = new DefaultKeyboardDefinition(KeyboardType.System, "mine", string.Empty);
 			var kbd2 = new DefaultKeyboardDefinition(KeyboardType.System, "yours", string.Empty);
-			first.AddKnownKeyboard(kbd1);
-			first.AddKnownKeyboard(kbd2);
+			first.KnownKeyboards.Add(kbd1);
+			first.KnownKeyboards.Add(kbd2);
 			var second = new WritingSystemDefinition();
-			var kbd3 = new DefaultKeyboardDefinition(KeyboardType.System, "mine", string.Empty); // equal to kbd1
-			var kbd4 = new DefaultKeyboardDefinition(KeyboardType.System, "theirs", string.Empty);
+			var kbd3 = new DefaultKeyboardDefinition(KeyboardType.System, "theirs", string.Empty);
 
 			Assert.That(first.ValueEquals(second), Is.False, "ws with empty known keyboards should not equal one with some");
-			second.AddKnownKeyboard(kbd3);
+			second.KnownKeyboards.Add(kbd1);
 			Assert.That(first.ValueEquals(second), Is.False, "ws's with different length known keyboard lits should not be equal");
-			second.AddKnownKeyboard(kbd2.Clone());
+			second.KnownKeyboards.Add(kbd2);
 			Assert.That(first.ValueEquals(second), Is.True, "ws's with same known keyboard lists should be equal");
 
-			second = new WritingSystemDefinition();
-			second.AddKnownKeyboard(kbd3);
-			second.AddKnownKeyboard(kbd4);
+			second.KnownKeyboards.Clear();
+			second.KnownKeyboards.Add(kbd1);
+			second.KnownKeyboards.Add(kbd3);
 			Assert.That(first.ValueEquals(second), Is.False, "ws with same-length lists of different known keyboards should not be equal");
 		}
 	}
@@ -1611,14 +1610,10 @@ namespace SIL.WritingSystems.Tests
 			var ws = new WritingSystemDefinition("de-x-dupl0");
 			var kbd1 = new DefaultKeyboardDefinition(KeyboardType.System, "something", "en-US");
 			var kbd2 = new DefaultKeyboardDefinition(KeyboardType.System, "somethingElse", "en-GB");
-			var kbd3 = new DefaultKeyboardDefinition(KeyboardType.System, "something", "en-US"); // equal to kbd1
-			var controller = new MockKeyboardController();
-			var keyboardList = new List<IKeyboardDefinition> {kbd1, kbd2};
-			controller.AllAvailableKeyboards = keyboardList;
-			Keyboard.Controller = controller;
-			ws.AddKnownKeyboard(kbd3);
+			Keyboard.Controller = new MockKeyboardController {AllAvailableKeyboards = new[] {kbd1, kbd2}};
+			ws.KnownKeyboards.Add(kbd1);
 
-			var result = ws.OtherAvailableKeyboards.ToList();
+			List<IKeyboardDefinition> result = ws.OtherAvailableKeyboards.ToList();
 
 			Assert.That(result, Has.Member(kbd2));
 			Assert.That(result, Has.No.Member(kbd1));
@@ -1762,10 +1757,10 @@ namespace SIL.WritingSystems.Tests
 			var kbd1 = new DefaultKeyboardDefinition(KeyboardType.System, "something", "en-US");
 			var kbd2 = new DefaultKeyboardDefinition(KeyboardType.System, "something", "en-US");
 
-			ws.AddKnownKeyboard(kbd1);
+			ws.KnownKeyboards.Add(kbd1);
 			Assert.That(ws.Modified, Is.True);
 			ws.Modified = false;
-			ws.AddKnownKeyboard(kbd2);
+			ws.KnownKeyboards.Add(kbd2);
 			Assert.That(ws.Modified, Is.False);
 
 			Assert.That(ws.KnownKeyboards.Count(), Is.EqualTo(1));
@@ -1778,7 +1773,7 @@ namespace SIL.WritingSystems.Tests
 			var kbd1 = new DefaultKeyboardDefinition(KeyboardType.System, "something", "en-US");
 			var kbd2 = new DefaultKeyboardDefinition(KeyboardType.System, "something", "en-US");
 
-			ws.AddKnownKeyboard(kbd1);
+			ws.KnownKeyboards.Add(kbd1);
 			ws.LocalKeyboard = kbd2;
 			Assert.That(ws.Modified, Is.True); // worth checking, but it doesn't really prove the point, since it will have also changed KnownKeyboards
 			ws.Modified = false;
@@ -1791,7 +1786,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
 
-			Assert.DoesNotThrow(() => ws.AddKnownKeyboard(null));
+			Assert.DoesNotThrow(() => ws.KnownKeyboards.Add(null));
 		}
 
 		[Test]
@@ -1800,16 +1795,11 @@ namespace SIL.WritingSystems.Tests
 			var ws = new WritingSystemDefinition("de-x-dupl0");
 			var kbd1 = new DefaultKeyboardDefinition(KeyboardType.System, "something", "en-US");
 			var kbd2 = new DefaultKeyboardDefinition(KeyboardType.System, "somethingElse", "en-US");
-			var kbd3 = new DefaultKeyboardDefinition(KeyboardType.System, "somethingElse", "en-US");
 
-			ws.AddKnownKeyboard(kbd1);
-			ws.AddKnownKeyboard(kbd2);
+			ws.KnownKeyboards.Add(kbd1);
+			ws.KnownKeyboards.Add(kbd2);
 
-			var controller = new MockKeyboardController();
-			var keyboardList = new List<IKeyboardDefinition>();
-			keyboardList.Add(kbd3);
-			controller.AllAvailableKeyboards = keyboardList;
-			Keyboard.Controller = controller;
+			Keyboard.Controller = new MockKeyboardController {AllAvailableKeyboards = new[] {kbd2}};
 
 			Assert.That(ws.LocalKeyboard, Is.EqualTo(kbd2));
 		}

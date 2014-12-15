@@ -60,8 +60,8 @@
     </Reference>
     <Reference Include="icu.net">
       <HintPath>..\lib\$(Configuration)\icu.net.dll</HintPath>
-    </Reference>  
-    <None Include="..\lib\commonMono\NDesk.DBus.dll.config"> 
+    </Reference>
+    <None Include="..\lib\commonMono\NDesk.DBus.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -87,11 +87,9 @@
     <Compile Include="Keyboarding\IbusKeyboardAdaptorTests.cs" />
     <Compile Include="Keyboarding\InputLanguageWrapperTests.cs" />
     <Compile Include="Keyboarding\KeyboardControllerTests.cs" />
-    <Compile Include="Keyboarding\KeyboardDescriptionTests.cs" />
     <Compile Include="Keyboarding\LinuxKeyboardControllerTests.cs" />
     <Compile Include="Keyboarding\WindowsKeyboardControllerTests.cs" />
     <Compile Include="Keyboarding\WinKeyboardAdaptorTests.cs" />
-    <Compile Include="Keyboarding\WinKeyboardDescriptionTests.cs" />
     <Compile Include="Keyboarding\XkbKeyboardAdapterTests.cs" />
     <Compile Include="Keyboarding\XklEngineTests.cs" />
     <Compile Include="LookupIsoCodeModelTests.cs" />

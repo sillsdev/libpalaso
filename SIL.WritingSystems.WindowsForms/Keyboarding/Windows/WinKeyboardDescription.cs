@@ -38,20 +38,6 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 			_internalLocalizedName = GetDisplayName(displayName, layoutName.LocalizedName);
 		}
 
-		internal WinKeyboardDescription(WinKeyboardDescription other) : base(other)
-		{
-			ConversionMode = other.ConversionMode;
-			SentenceMode = other.SentenceMode;
-			WindowHandle = other.WindowHandle;
-			_internalLocalizedName = other._internalLocalizedName;
-			_profile = other._profile;
-		}
-
-		public override IKeyboardDefinition Clone()
-		{
-			return new WinKeyboardDescription(this);
-		}
-
 		#region Overrides of DefaultKeyboardDefinition
 		/// <summary>
 		/// Gets a localized human-readable name of the input language.

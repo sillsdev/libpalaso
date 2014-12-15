@@ -123,7 +123,6 @@
     <Compile Include="Collation\SimpleRulesCollatorTests.cs" />
     <Compile Include="Collation\SortingTests.cs" />
     <Compile Include="Collation\SystemCollatorTests.cs" />
-    <Compile Include="DefaultKeyboardDefinitionTests.cs" />
     <Compile Include="EthnologueLookupTests.cs" />
     <Compile Include="FlexConformPrivateUseRfc5646TagInterpreterTests.cs" />
     <Compile Include="GlobalWritingSystemRepositoryTests.cs" />

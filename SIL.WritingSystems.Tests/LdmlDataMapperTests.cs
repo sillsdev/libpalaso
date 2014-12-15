@@ -138,10 +138,10 @@ namespace SIL.WritingSystems.Tests
 
 			var wsWithKnownKeyboards = new WritingSystemDefinition();
 			var keyboard1 = new DefaultKeyboardDefinition(KeyboardType.System, "MyFavoriteKeyboard", "en-US");
-			wsWithKnownKeyboards.AddKnownKeyboard(keyboard1);
+			wsWithKnownKeyboards.KnownKeyboards.Add(keyboard1);
 
 			var keyboard2 = new DefaultKeyboardDefinition(KeyboardType.System, "SusannasFavoriteKeyboard", "en-GB");
-			wsWithKnownKeyboards.AddKnownKeyboard(keyboard2);
+			wsWithKnownKeyboards.KnownKeyboards.Add(keyboard2);
 
 			var wsFromLdml = new WritingSystemDefinition();
 			using (var tempFile = new TempFile())
@@ -863,7 +863,7 @@ namespace SIL.WritingSystems.Tests
 
 				dataMapper.Read(tempFile.Path, ws);
 				var keyboard1 = new DefaultKeyboardDefinition(KeyboardType.System, "MyFavoriteKeyboard", "en-US");
-				ws.AddKnownKeyboard(keyboard1);
+				ws.KnownKeyboards.Add(keyboard1);
 				using(var fileStream = new FileStream(tempFile.Path, FileMode.Open))
 				{
 					dataMapper.Write(roundTripOut.Path, ws, fileStream);
@@ -872,7 +872,7 @@ namespace SIL.WritingSystems.Tests
 				var secondTripMapper = new LdmlDataMapper();
 				var secondTripWs = new WritingSystemDefinition();
 				secondTripMapper.Read(roundTripOut.Path, secondTripWs);
-				secondTripWs.AddKnownKeyboard(new DefaultKeyboardDefinition(KeyboardType.System, "x-tel", "qaa"));
+				secondTripWs.KnownKeyboards.Add(new DefaultKeyboardDefinition(KeyboardType.System, "x-tel", "qaa"));
 				secondTripWs.WindowsLcid = "1037";
 				using(var fileStream = new FileStream(roundTripOut.Path, FileMode.Open))
 				{

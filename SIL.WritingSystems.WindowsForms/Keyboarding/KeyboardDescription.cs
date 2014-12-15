@@ -1,7 +1,6 @@
 // Copyright (c) 2011-2013 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
-using System.Diagnostics;
 using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding
@@ -47,14 +46,6 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 			_inputLanguage = language;
 		}
 
-		internal KeyboardDescription(KeyboardDescription other)
-			: base(other)
-		{
-			_name = other._name;
-			_engine = other._engine;
-			_inputLanguage = other._inputLanguage;
-		}
-
 		/// <summary>
 		/// Gets the keyboard adaptor that handles this keyboard.
 		/// </summary>
@@ -70,17 +61,6 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		{
 			if (Engine != null)
 				Engine.DeactivateKeyboard(this);
-		}
-
-		/// <summary>
-		/// Deepclone
-		/// </summary>
-		/// <returns></returns>
-		public override IKeyboardDefinition Clone()
-		{
-			Debug.Assert(GetType().Name == typeof(KeyboardDescription).Name,
-				"Derived class doesn't implement Clone()");
-			return new KeyboardDescription(this);
 		}
 
 		internal IInputLanguage InputLanguage

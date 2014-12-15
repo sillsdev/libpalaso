@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -108,7 +109,7 @@ namespace SIL.WritingSystems
 		private ICollator _collator;
 		private string _id;
 
-		private readonly List<IKeyboardDefinition> _knownKeyboards = new List<IKeyboardDefinition>();
+		private readonly KeyboardCollection _knownKeyboards = new KeyboardCollection();
 
 		/// <summary>
 		/// Creates a new WritingSystemDefinition with Language subtag set to "qaa"
@@ -119,6 +120,14 @@ namespace SIL.WritingSystems
 			_isUnicodeEncoded = true;
 			_rfcTag = new Rfc5646Tag();
 			UpdateIdFromRfcTag();
+			_knownKeyboards.CollectionChanged += _knownKeyboards_CollectionChanged;
+		}
+
+		private void _knownKeyboards_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (_localKeyboard != null && !_knownKeyboards.Contains(_localKeyboard.Id))
+				_localKeyboard = null;
+			Modified = true;
 		}
 
 		/// <summary>
@@ -191,11 +200,10 @@ namespace SIL.WritingSystems
 			_isUnicodeEncoded = ws._isUnicodeEncoded;
 			_rfcTag = new Rfc5646Tag(ws._rfcTag);
 			_languageName = ws._languageName;
-			if (ws._localKeyboard != null)
-				_localKeyboard = ws._localKeyboard.Clone();
+			_localKeyboard = ws._localKeyboard;
 			WindowsLcid = ws.WindowsLcid;
 			foreach (var kbd in ws._knownKeyboards)
-				_knownKeyboards.Add(kbd.Clone());
+				_knownKeyboards.Add(kbd);
 			_id = ws._id;
 		}
 
@@ -967,18 +975,16 @@ namespace SIL.WritingSystems
 				if (_localKeyboard == null)
 				{
 					var available = new HashSet<IKeyboardDefinition>(WritingSystems.Keyboard.Controller.AllAvailableKeyboards);
-					_localKeyboard = (from k in KnownKeyboards where available.Contains(k) select k).FirstOrDefault();
+					_localKeyboard = _knownKeyboards.FirstOrDefault(available.Contains);
 				}
 				if (_localKeyboard == null)
-				{
 					_localKeyboard = WritingSystems.Keyboard.Controller.DefaultForWritingSystem(this);
-				}
 				return _localKeyboard;
 			}
 			set
 			{
+				_knownKeyboards.Add(value);
 				_localKeyboard = value;
-				AddKnownKeyboard(value);
 				Modified = true;
 			}
 		}
@@ -1185,13 +1191,9 @@ namespace SIL.WritingSystems
 			if (!_defaultFontSize.Equals(other._defaultFontSize)) return false;
 			if (!CollationRulesType.Equals(other.CollationRulesType)) return false;
 			if (!_rightToLeftScript.Equals(other._rightToLeftScript)) return false;
-			if ((_localKeyboard != null  && !_localKeyboard.Equals(other._localKeyboard)) || (_localKeyboard == null && other._localKeyboard != null)) return false;
+			if (!EqualityComparer<IKeyboardDefinition>.Default.Equals(_localKeyboard, other._localKeyboard)) return false;
 			if (WindowsLcid != other.WindowsLcid) return false;
-			if (_knownKeyboards.Count != other._knownKeyboards.Count) return false;
-			for (int i = 0; i < _knownKeyboards.Count; i++)
-			{
-				if (!_knownKeyboards[i].Equals(other._knownKeyboards[i])) return false;
-			}
+			if (!_knownKeyboards.SequenceEqual(other._knownKeyboards)) return false;
 
 			return true;
 		}
@@ -1272,27 +1274,9 @@ namespace SIL.WritingSystems
 		/// Keyboards known to have been used with this writing system. Not all may be available on this system.
 		/// Enhance: document (or add to this interface?) a way of getting available keyboards.
 		/// </summary>
-		public IEnumerable<IKeyboardDefinition> KnownKeyboards
+		public KeyboardCollection KnownKeyboards
 		{
 			get { return _knownKeyboards; }
-		}
-
-		/// <summary>
-		/// Note that a new keyboard is known to be used for this writing system.
-		/// </summary>
-		/// <param name="newKeyboard"></param>
-		public void AddKnownKeyboard(IKeyboardDefinition newKeyboard)
-		{
-			if (newKeyboard == null)
-				return;
-			// Review JohnT: how should this affect order?
-			// e.g.: last added should be first?
-			// Current algorithm keeps them in the order added, hopefully meaning the most likely one, added first,
-			// remains the default.
-			if (KnownKeyboards.Contains(newKeyboard))
-				return;
-			_knownKeyboards.Add(newKeyboard);
-			Modified = true;
 		}
 
 		/// <summary>
