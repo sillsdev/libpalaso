@@ -61,6 +61,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppKeyboard", "TestApps
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PalasoUIWindowsForms.GeckoFxWebBrowserAdapter", "PalasoUIWindowsForms.GeckoFxWebBrowserAdapter\PalasoUIWindowsForms.GeckoFxWebBrowserAdapter.csproj", "{D000879E-9AA6-4811-A6F0-80DF6119FB08}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.ScriptureControls", "SIL.ScriptureControls\SIL.ScriptureControls.csproj", "{6CA85A3E-4AB3-4BBC-861F-0C68F018868B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.ScriptureControls.Tests", "SIL.ScriptureControls.Tests\SIL.ScriptureControls.Tests.csproj", "{CCF34218-52D9-4092-ADB8-1893BBE5ED31}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -366,6 +370,30 @@ Global
 		{D000879E-9AA6-4811-A6F0-80DF6119FB08}.ReleaseMono|Any CPU.Build.0 = ReleaseMono|Any CPU
 		{D000879E-9AA6-4811-A6F0-80DF6119FB08}.ReleaseMono|x86.ActiveCfg = Release|Any CPU
 		{D000879E-9AA6-4811-A6F0-80DF6119FB08}.ReleaseMono|x86.Build.0 = Release|Any CPU
+		{6CA85A3E-4AB3-4BBC-861F-0C68F018868B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CA85A3E-4AB3-4BBC-861F-0C68F018868B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6CA85A3E-4AB3-4BBC-861F-0C68F018868B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6CA85A3E-4AB3-4BBC-861F-0C68F018868B}.DebugMono|Any CPU.ActiveCfg = Debug|Any CPU
+		{6CA85A3E-4AB3-4BBC-861F-0C68F018868B}.DebugMono|Any CPU.Build.0 = Debug|Any CPU
+		{6CA85A3E-4AB3-4BBC-861F-0C68F018868B}.DebugMono|x86.ActiveCfg = Debug|Any CPU
+		{6CA85A3E-4AB3-4BBC-861F-0C68F018868B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6CA85A3E-4AB3-4BBC-861F-0C68F018868B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6CA85A3E-4AB3-4BBC-861F-0C68F018868B}.Release|x86.ActiveCfg = Release|Any CPU
+		{6CA85A3E-4AB3-4BBC-861F-0C68F018868B}.ReleaseMono|Any CPU.ActiveCfg = Release|Any CPU
+		{6CA85A3E-4AB3-4BBC-861F-0C68F018868B}.ReleaseMono|Any CPU.Build.0 = Release|Any CPU
+		{6CA85A3E-4AB3-4BBC-861F-0C68F018868B}.ReleaseMono|x86.ActiveCfg = Release|Any CPU
+		{CCF34218-52D9-4092-ADB8-1893BBE5ED31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCF34218-52D9-4092-ADB8-1893BBE5ED31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCF34218-52D9-4092-ADB8-1893BBE5ED31}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CCF34218-52D9-4092-ADB8-1893BBE5ED31}.DebugMono|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCF34218-52D9-4092-ADB8-1893BBE5ED31}.DebugMono|Any CPU.Build.0 = Debug|Any CPU
+		{CCF34218-52D9-4092-ADB8-1893BBE5ED31}.DebugMono|x86.ActiveCfg = Debug|Any CPU
+		{CCF34218-52D9-4092-ADB8-1893BBE5ED31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCF34218-52D9-4092-ADB8-1893BBE5ED31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCF34218-52D9-4092-ADB8-1893BBE5ED31}.Release|x86.ActiveCfg = Release|Any CPU
+		{CCF34218-52D9-4092-ADB8-1893BBE5ED31}.ReleaseMono|Any CPU.ActiveCfg = Release|Any CPU
+		{CCF34218-52D9-4092-ADB8-1893BBE5ED31}.ReleaseMono|Any CPU.Build.0 = Release|Any CPU
+		{CCF34218-52D9-4092-ADB8-1893BBE5ED31}.ReleaseMono|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

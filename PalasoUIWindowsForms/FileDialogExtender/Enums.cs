@@ -359,7 +359,7 @@ namespace Palaso.UI.WindowsForms.FileDialogExtender
 
 	#region Windows Messages
 
-	internal enum Msg
+	public enum Msg
 	{
 		WM_NULL                   = 0x0000,
 		WM_CREATE                 = 0x0001,
