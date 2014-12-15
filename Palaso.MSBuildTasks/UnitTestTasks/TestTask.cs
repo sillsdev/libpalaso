@@ -49,6 +49,15 @@ namespace Palaso.BuildTasks.UnitTestTasks
 		public int FudgeFactor { get; set; }
 
 		/// <summary>
+		/// If <c>true</c> print the output of NUnit immediately, otherwise print it ater NUnit
+		/// finished.
+		/// </summary>
+		/// <value><c>true</c> if verbose; otherwise, <c>false</c>.</value>
+		public bool Verbose { get; set; }
+
+		private MessageImportance Importance;
+
+		/// <summary>
 		/// Contains the names of failed test suites
 		/// </summary>
 		[Output]
@@ -62,6 +71,8 @@ namespace Palaso.BuildTasks.UnitTestTasks
 
 		public override bool Execute()
 		{
+			Importance = Verbose ? MessageImportance.Normal : MessageImportance.Low;
+
 			if (FudgeFactor >= 0 && Timeout < Int32.MaxValue)
 				Timeout *= FudgeFactor;
 
@@ -231,6 +242,8 @@ namespace Palaso.BuildTasks.UnitTestTasks
 						break;
 					}
 
+					Log.LogMessage(Importance, logContents);
+
 					// ensure only one thread writes to the log at any time
 					lock (LockObject)
 					{
@@ -260,6 +273,9 @@ namespace Palaso.BuildTasks.UnitTestTasks
 					{
 						break;
 					}
+
+					if (Verbose)
+						Log.LogError(logContents);
 
 					// ensure only one thread writes to the log at any time
 					lock (LockObject)
