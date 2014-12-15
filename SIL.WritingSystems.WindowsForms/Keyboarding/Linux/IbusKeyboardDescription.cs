@@ -16,19 +16,9 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 
 		public IbusKeyboardDescription(IKeyboardAdaptor engine, IBusEngineDesc ibusKeyboard):
 			base(FormatKeyboardIdentifier(ibusKeyboard), ibusKeyboard.LongName, ibusKeyboard.Language,
-			null, engine, KeyboardType.OtherIm)
+			null, engine, KeyboardType.OtherIm, true)
 		{
 			IBusKeyboardEngine = ibusKeyboard;
-		}
-
-		internal IbusKeyboardDescription(IbusKeyboardDescription other): base(other)
-		{
-			IBusKeyboardEngine = other.IBusKeyboardEngine;
-		}
-
-		public override IKeyboardDefinition Clone()
-		{
-			return new IbusKeyboardDescription(this);
 		}
 
 		private const string OtherLanguage = "Other Language";

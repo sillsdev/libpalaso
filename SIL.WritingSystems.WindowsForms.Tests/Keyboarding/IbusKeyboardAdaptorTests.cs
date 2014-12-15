@@ -130,7 +130,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 			string layoutName, int group, XkbKeyboardAdaptor adapter)
 		{
 			var keyboard = new XkbKeyboardDescription(name, layout, locale,
-				new InputLanguageWrapper(locale, IntPtr.Zero, layoutName), adapter, group);
+				new InputLanguageWrapper(locale, IntPtr.Zero, layoutName), adapter, group, true);
 			KeyboardController.Manager.RegisterKeyboard(keyboard);
 			return keyboard;
 		}

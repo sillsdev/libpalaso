@@ -140,7 +140,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			}
 			var inputLanguage = new InputLanguageWrapper(culture, IntPtr.Zero, layout.Language);
 			var keyboard = new XkbKeyboardDescription(description, layout.LayoutId, layout.LocaleId,
-				inputLanguage, engine, iGroup);
+				inputLanguage, engine, iGroup, true);
 			KeyboardController.Manager.RegisterKeyboard(keyboard);
 		}
 
@@ -256,11 +256,11 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			// as missing, but create an English (US) keyboard underneath.
 			if (IsLocaleKnown(realLocale))
 				return new XkbKeyboardDescription(string.Format("{0} ({1})", locale, layout), layout, locale,
-					new InputLanguageWrapper(realLocale, IntPtr.Zero, layout), this, -1) {IsAvailable = false};
+					new InputLanguageWrapper(realLocale, IntPtr.Zero, layout), this, -1, false);
 			if (_missingKeyboardFmt == null)
 				_missingKeyboardFmt = L10NSharp.LocalizationManager.GetString("XkbKeyboardAdaptor.MissingKeyboard", "[Missing] {0} ({1})");
 			return new XkbKeyboardDescription(String.Format(_missingKeyboardFmt, locale, layout), layout, locale,
-				new InputLanguageWrapper("en", IntPtr.Zero, "US"), this, -1) {IsAvailable = false};
+				new InputLanguageWrapper("en", IntPtr.Zero, "US"), this, -1, false);
 		}
 
 		private static HashSet<string> _knownCultures;

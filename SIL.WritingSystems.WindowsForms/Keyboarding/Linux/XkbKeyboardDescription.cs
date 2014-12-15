@@ -21,28 +21,21 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 	{
 		/// <summary>
 		/// Initializes a new instance of the
-		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.Linux.XkbKeyboardDescription"/> class.
+		/// <see cref="T:SIL.WindowsForms.Keyboard.Linux.XkbKeyboardDescription"/> class.
 		/// </summary>
 		/// <param name='name'>Display name of the keyboard</param>
 		/// <param name='layout'>Name of the keyboard layout</param>
 		/// <param name='locale'>The locale of the keyboard</param>
+		/// <param name='language'>The language of the keyboard</param>
 		/// <param name='engine'>The keyboard adaptor that will handle this keyboard</param>
 		/// <param name='groupIndex'>The group index of this xkb keyboard</param>
+		/// <param name='isAvailable'>The keyboard is available</param>
 		internal XkbKeyboardDescription(string name, string layout, string locale,
-			IInputLanguage language, IKeyboardAdaptor engine, int groupIndex)
-			: base(name, layout, locale, language, engine)
+			IInputLanguage language, IKeyboardAdaptor engine, int groupIndex, bool isAvailable)
+			: base(name, layout, locale, language, engine, KeyboardType.System, isAvailable)
 		{
 			GroupIndex = groupIndex;
-		}
 
-		internal XkbKeyboardDescription(XkbKeyboardDescription other): base(other)
-		{
-			GroupIndex = other.GroupIndex;
-		}
-
-		public override IKeyboardDefinition Clone()
-		{
-			return new XkbKeyboardDescription(this);
 		}
 
 		/// <summary>
