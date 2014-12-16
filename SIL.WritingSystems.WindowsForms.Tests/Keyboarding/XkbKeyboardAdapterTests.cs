@@ -293,14 +293,13 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 			// It seems that Dutch (Belgium) got added recently, so some machines are missing
 			// this.
 			Assert.That(keyboards.Length == 3 || keyboards.Length == 2);
-			var expectedKeyboards = new List<IKeyboardDefinition>()
-				{ CreateKeyboard("German", "be", "de-BE") };
-			expectedKeyboards.Add(CreateKeyboard("French", "be", "fr-BE"));
+			var expectedKeyboardIDs = new List<string>()
+				{ "de-BE_be", "fr-BE_be" };
 
 			if (keyboards.Length > 2)
-				expectedKeyboards.Add(CreateKeyboard("Dutch", "be", "nl-BE"));
+				expectedKeyboardIDs.Add("nl-BE_be");
 
-			Assert.That(keyboards, Is.EquivalentTo(expectedKeyboards));
+			Assert.That(keyboards.Select(kbd => kbd.Id), Is.EquivalentTo(expectedKeyboardIDs));
 		}
 
 		[Test]
