@@ -7,7 +7,7 @@ namespace SIL.WritingSystems.Tests
 	[TestFixture]
 	internal class SubtagCloneableTests : CloneableTests<Rfc5646Tag.Subtag>
 	{
-		public override Rfc5646Tag.Subtag CreateNewClonable()
+		public override Rfc5646Tag.Subtag CreateNewCloneable()
 		{
 			return new Rfc5646Tag.Subtag();
 		}

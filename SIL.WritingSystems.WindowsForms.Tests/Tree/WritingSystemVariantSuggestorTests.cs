@@ -11,9 +11,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Tree
 		[Test, Ignore("Only works if there is an ipa keyboard installed")]
 		public void GetSuggestions_HasNormalLacksIpa_IpaSuggestedWhichCopiesAllRelevantFields()
 		{
-			var etr = new WritingSystemDefinition("etr", string.Empty, "region", "variant", "edo", true);
-			etr.DefaultFontName = "font";
-			etr.DefaultFontSize = 33;
+			var etr = new WritingSystemDefinition("etr", string.Empty, "region", "variant", "edo", true) {DefaultFont = new FontDefinition("font") {DefaultSize = 33}};
 			var list = new List<WritingSystemDefinition>(new[] {etr });
 			var suggestor = new WritingSystemSuggestor();
 			var suggestions = suggestor.GetSuggestions(etr, list);
@@ -26,7 +24,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Tree
 			Assert.IsTrue(string.IsNullOrEmpty(ipa.NativeName));
 			Assert.AreEqual("region", ipa.Region);
 			//Assert.AreEqual("arial unicode ms", ipa.DefaultFontName); this depends on what fonts are installed on the test system
-			Assert.AreEqual(33, ipa.DefaultFontSize);
+			Assert.AreEqual(33, ipa.DefaultFont.DefaultSize);
 
 			Assert.IsTrue(ipa.Keyboard.ToLower().Contains("ipa"));
 		}

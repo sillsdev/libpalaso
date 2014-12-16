@@ -14,7 +14,7 @@ namespace WeSay.LexicalModel.Tests.Foundation
 	[TestFixture]
 	public class MultiTextAsPalasoDataObjectPropertyCloneableTests : CloneableTests<IPalasoDataObjectProperty>
 	{
-		public override IPalasoDataObjectProperty CreateNewClonable()
+		public override IPalasoDataObjectProperty CreateNewCloneable()
 		{
 			return new MultiText();
 		}

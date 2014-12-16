@@ -659,7 +659,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			WriteBeginSpecialElement(writer, "palaso");
 			WriteSpecialValue(writer, "palaso", "abbreviation", ws.Abbreviation);
 			WriteSpecialValue(writer, "palaso", "defaultFontFamily", ws.DefaultFontName);
-			if (Math.Abs(ws.DefaultFontSize) > float.Epsilon)
+			if (ws.DefaultFontSize == 0)
 			{
 				WriteSpecialValue(writer, "palaso", "defaultFontSize", ws.DefaultFontSize.ToString());
 			}

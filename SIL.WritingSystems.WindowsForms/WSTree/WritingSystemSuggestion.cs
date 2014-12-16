@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using SIL.WritingSystems;
 
 namespace SIL.WritingSystems.WindowsForms.WSTree
 {
@@ -28,7 +27,7 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 
 		protected void SetLabelDetail(string detail)
 		{
-			this.Label = string.Format("{0} ({1})",_templateDefinition.LanguageName, detail);
+			Label = string.Format("{0} ({1})",_templateDefinition.LanguageName, detail);
 		}
 	}
 
@@ -77,12 +76,13 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 
 		public IpaSuggestion(WritingSystemDefinition primary)
 		{
+			string ipaFontName = _fontsForIpa.FirstOrDefault(FontExists);
+			FontDefinition ipaFont = string.IsNullOrEmpty(ipaFontName) ? null : new FontDefinition(ipaFontName) {DefaultSize = 12.0f};
 			_templateDefinition = new WritingSystemDefinition(primary.Language, "", primary.Region, primary.Variant, "ipa", false)
 									  {
 										  LanguageName = primary.LanguageName,
-										  DefaultFontSize = primary.DefaultFontSize,
-										  DefaultFontName = _fontsForIpa.FirstOrDefault(FontExists),
-										  IpaStatus = IpaStatusChoices.Ipa,
+										  DefaultFont = ipaFont,
+										  IpaStatus = IpaStatusChoices.Ipa
 									  };
 			var ipaKeyboard = Keyboard.Controller.AllAvailableKeyboards.FirstOrDefault(k => k.Id.ToLower().Contains("ipa"));
 			if (ipaKeyboard != null)

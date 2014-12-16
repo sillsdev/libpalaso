@@ -14,7 +14,7 @@ namespace Palaso.DictionaryServices.Tests.Model
 	[TestFixture]
 	public class LexEntryCloneableTests:CloneableTests<LexEntry>
 	{
-		public override LexEntry CreateNewClonable()
+		public override LexEntry CreateNewCloneable()
 		{
 			return new LexEntry();
 		}

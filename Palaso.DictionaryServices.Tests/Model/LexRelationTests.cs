@@ -13,7 +13,7 @@ namespace Palaso.DictionaryServices.Tests.Model
 	[TestFixture]
 	public class LexRelationCloneableTests : CloneableTests<IPalasoDataObjectProperty>
 	{
-		public override IPalasoDataObjectProperty CreateNewClonable()
+		public override IPalasoDataObjectProperty CreateNewCloneable()
 		{
 			return new LexRelation("Id", "targetId", null);
 		}
@@ -47,7 +47,7 @@ namespace Palaso.DictionaryServices.Tests.Model
 	[TestFixture]
 	public class LexRelationCollectionCloneableTests : CloneableTests<IPalasoDataObjectProperty>
 	{
-		public override IPalasoDataObjectProperty CreateNewClonable()
+		public override IPalasoDataObjectProperty CreateNewCloneable()
 		{
 			return new LexRelationCollection();
 		}

@@ -125,6 +125,7 @@
     <Compile Include="Collation\SystemCollatorTests.cs" />
     <Compile Include="EthnologueLookupTests.cs" />
     <Compile Include="FlexConformPrivateUseRfc5646TagInterpreterTests.cs" />
+    <Compile Include="FontDefinitionCloneableTests.cs" />
     <Compile Include="GlobalWritingSystemRepositoryTests.cs" />
     <Compile Include="WritingSystemRepositoryTests.cs" />
     <Compile Include="LdmlDataMapperTests.cs" />

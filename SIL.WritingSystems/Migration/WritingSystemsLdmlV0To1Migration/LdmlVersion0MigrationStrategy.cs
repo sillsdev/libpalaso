@@ -76,8 +76,8 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 					Keyboard = writingSystemDefinitionV0.Keyboard,
 					LanguageName = writingSystemDefinitionV0.LanguageName,
 					RightToLeftScript = writingSystemDefinitionV0.RightToLeftScript,
-					CollationRules = writingSystemDefinitionV0.SortRules,
-					CollationRulesType = (CollationRulesTypes) writingSystemDefinitionV0.SortUsing,
+					SortRules = writingSystemDefinitionV0.SortRules,
+					SortUsing = (WritingSystemDefinitionV1.SortRulesType) writingSystemDefinitionV0.SortUsing,
 					SpellCheckingId = writingSystemDefinitionV0.SpellCheckingId,
 					VersionDescription = writingSystemDefinitionV0.VersionDescription,
 					DateModified = DateTime.Now

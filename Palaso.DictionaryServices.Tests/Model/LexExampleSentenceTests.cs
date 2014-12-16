@@ -12,7 +12,7 @@ namespace Palaso.DictionaryServices.Tests.Model
 	[TestFixture]
 	public class LexExampleSentenceCloneableTests : CloneableTests<LexExampleSentence>
 	{
-		public override LexExampleSentence CreateNewClonable()
+		public override LexExampleSentence CreateNewCloneable()
 		{
 			return new LexExampleSentence();
 		}

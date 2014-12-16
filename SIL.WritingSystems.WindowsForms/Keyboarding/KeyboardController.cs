@@ -104,14 +104,14 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		{
 			private List<string> LanguagesAlreadyShownKeyboardNotFoundMessages { get; set; }
 			private IKeyboardDefinition _activeKeyboard;
-			public KeyboardCollection Keyboards { get; private set; }
+			public KeyboardDefinitionCollection Keyboards { get; private set; }
 			public Dictionary<Control, object> EventHandlers { get; private set; }
 			public event RegisterEventHandler ControlAdded;
 			public event ControlEventHandler ControlRemoving;
 
 			public KeyboardControllerImpl()
 			{
-				Keyboards = new KeyboardCollection();
+				Keyboards = new KeyboardDefinitionCollection();
 				EventHandlers = new Dictionary<Control, object>();
 				LanguagesAlreadyShownKeyboardNotFoundMessages = new List<string>();
 			}

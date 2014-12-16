@@ -563,12 +563,15 @@ namespace SIL.WritingSystems.WindowsForms
 
 		public string CurrentDefaultFontName
 		{
-			get { return CurrentDefinition.DefaultFontName ?? string.Empty; }
+			get { return CurrentDefinition.DefaultFont == null ? string.Empty : CurrentDefinition.DefaultFont.Name; }
 			set
 			{
-				if (CurrentDefinition.DefaultFontName != value)
+				if (CurrentDefinition.DefaultFont == null || CurrentDefinition.DefaultFont.Name != value)
 				{
-					CurrentDefinition.DefaultFontName = value;
+					FontDefinition font;
+					if (!CurrentDefinition.Fonts.TryGetFontDefinition(value, out font))
+						font = new FontDefinition(value) {DefaultSize = CurrentDefaultFontSize};
+					CurrentDefinition.DefaultFont = font;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -576,12 +579,12 @@ namespace SIL.WritingSystems.WindowsForms
 
 		public float CurrentDefaultFontSize
 		{
-			get { return CurrentDefinition.DefaultFontSize; }
+			get { return CurrentDefinition.DefaultFont == null ? 12.0f : CurrentDefinition.DefaultFont.DefaultSize; }
 			set
 			{
-				if (CurrentDefinition.DefaultFontSize != value)
+				if (CurrentDefinition.DefaultFont != null && CurrentDefinition.DefaultFont.DefaultSize != value)
 				{
-					CurrentDefinition.DefaultFontSize = value;
+					CurrentDefinition.DefaultFont.DefaultSize = value;
 					OnCurrentItemUpdated();
 				}
 			}

@@ -11,7 +11,7 @@ namespace Palaso.Tests.Annotations
 	[TestFixture]
 	public class AnnotatableCloneableTests : CloneableTests<Annotatable>
 	{
-		public override Annotatable CreateNewClonable()
+		public override Annotatable CreateNewCloneable()
 		{
 			return new Annotatable();
 		}
@@ -36,7 +36,7 @@ namespace Palaso.Tests.Annotations
 	[TestFixture]
 	public class AnnotationCloneableTests : CloneableTests<Annotation>
 	{
-		public override Annotation CreateNewClonable()
+		public override Annotation CreateNewCloneable()
 		{
 			return new Annotation();
 		}

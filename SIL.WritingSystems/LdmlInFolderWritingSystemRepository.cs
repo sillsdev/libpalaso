@@ -286,7 +286,7 @@ namespace SIL.WritingSystems
 			LdmlDataMapper adaptor = CreateLdmlAdaptor();
 			adaptor.Write(writingSystemFilePath, ws, oldData);
 
-			ws.Modified = false;
+			ws.ResetModified();
 
 			if (ChangedIDs.Any(p => p.Value == ws.StoreID))
 			{

@@ -13,7 +13,7 @@ namespace Palaso.DictionaryServices.Tests.Model
 	[TestFixture]
 	public class LexPhoneticCloneableTests:CloneableTests<IPalasoDataObjectProperty>
 	{
-		public override IPalasoDataObjectProperty CreateNewClonable()
+		public override IPalasoDataObjectProperty CreateNewCloneable()
 		{
 			return new LexPhonetic();
 		}

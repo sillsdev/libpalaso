@@ -10,7 +10,7 @@ namespace Palaso.Tests.Text
 	[TestFixture]
 	public class LanguageFormCloneableTests:CloneableTests<Annotatable>
 	{
-		public override Annotatable CreateNewClonable()
+		public override Annotatable CreateNewCloneable()
 		{
 			return new LanguageForm();
 		}

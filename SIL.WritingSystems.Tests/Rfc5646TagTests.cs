@@ -9,7 +9,7 @@ namespace SIL.WritingSystems.Tests
 	[TestFixture]
 	internal class Rfc5646CloneableTests:CloneableTests<Rfc5646Tag>
 	{
-		public override Rfc5646Tag CreateNewClonable()
+		public override Rfc5646Tag CreateNewCloneable()
 		{
 			return new Rfc5646Tag();
 		}

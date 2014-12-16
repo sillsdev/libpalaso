@@ -14,7 +14,7 @@ namespace Palaso.DictionaryServices.Tests.Model
 	[TestFixture]
 	public class LexVariantCloneableTests : CloneableTests<IPalasoDataObjectProperty>
 	{
-		public override IPalasoDataObjectProperty CreateNewClonable()
+		public override IPalasoDataObjectProperty CreateNewCloneable()
 		{
 			return new LexVariant();
 		}

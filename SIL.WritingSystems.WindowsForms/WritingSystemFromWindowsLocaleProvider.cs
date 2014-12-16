@@ -110,7 +110,6 @@ namespace SIL.WritingSystems.WindowsForms
 				def.Keyboard = language.LayoutName;
 				def.CollationRulesType = CollationRulesTypes.OtherLanguage;
 				def.CollationRules = culture.IetfLanguageTag;
-				def.DefaultFontSize = 12;
 				def.LanguageName = culture.DisplayName;
 
 				yield return def;

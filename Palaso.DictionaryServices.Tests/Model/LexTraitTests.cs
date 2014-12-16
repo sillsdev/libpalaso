@@ -13,7 +13,7 @@ namespace Palaso.DictionaryServices.Tests.Model
 	[TestFixture]
 	public class LexTraitCloneableTests : CloneableTests<LexTrait>
 	{
-		public override LexTrait CreateNewClonable()
+		public override LexTrait CreateNewCloneable()
 		{
 			return new LexTrait("type", "value");
 		}
@@ -43,7 +43,7 @@ namespace Palaso.DictionaryServices.Tests.Model
 	[TestFixture]
 	public class LexFieldCloneableTests : CloneableTests<IPalasoDataObjectProperty>
 	{
-		public override IPalasoDataObjectProperty CreateNewClonable()
+		public override IPalasoDataObjectProperty CreateNewCloneable()
 		{
 			return new LexField("type");
 		}

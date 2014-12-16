@@ -10,7 +10,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 	[TestFixture]
 	public class EmbeddedXmlCollectionCloneableTests : CloneableTests<IPalasoDataObjectProperty>
 	{
-		public override IPalasoDataObjectProperty CreateNewClonable()
+		public override IPalasoDataObjectProperty CreateNewCloneable()
 		{
 			return new EmbeddedXmlCollection();
 		}

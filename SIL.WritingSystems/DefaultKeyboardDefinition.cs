@@ -1,5 +1,4 @@
 ﻿using System;
-using Palaso.Code;
 
 namespace SIL.WritingSystems
 {

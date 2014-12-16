@@ -25,7 +25,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces
 		/// <summary>
 		/// Gets the available keyboards
 		/// </summary>
-		KeyboardCollection Keyboards { get; }
+		KeyboardDefinitionCollection Keyboards { get; }
 
 		/// <summary>
 		/// Gets or sets the currently active keyboard. This is just a place to record it; setting it does not

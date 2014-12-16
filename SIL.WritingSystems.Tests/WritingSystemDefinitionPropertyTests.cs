@@ -10,7 +10,7 @@ namespace SIL.WritingSystems.Tests
 {
 	public class WritingSystemDefinitionCloneableTests : CloneableTests<WritingSystemDefinition>
 	{
-		public override WritingSystemDefinition CreateNewClonable()
+		public override WritingSystemDefinition CreateNewCloneable()
 		{
 			return new WritingSystemDefinition();
 		}
@@ -25,7 +25,7 @@ namespace SIL.WritingSystems.Tests
 		public override string ExceptionList
 		{
 			// We do want to clone KnownKeyboards, but I don't think the automatic cloneable test for it can handle a list.
-			get { return "|Modified|MarkedForDeletion|StoreID|_collator|_knownKeyboards|_localKeyboard|"; }
+			get { return "|MarkedForDeletion|StoreID|_collator|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_modified|"; }
 		}
 
 		protected override List<ValuesToSet> DefaultValuesForTypes
@@ -47,7 +47,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		/// <summary>
-		/// The generic test that clone copies everything can't, I believe, handle lists.
+		/// The generic test that clone copies everything can't handle lists.
 		/// </summary>
 		[Test]
 		public void CloneCopiesKnownKeyboards()
@@ -58,13 +58,31 @@ namespace SIL.WritingSystems.Tests
 			original.KnownKeyboards.Add(kbd1);
 			original.KnownKeyboards.Add(kbd2);
 			WritingSystemDefinition copy = original.Clone();
-			Assert.That(copy.KnownKeyboards.Count(), Is.EqualTo(2));
-			Assert.That(copy.KnownKeyboards.First(), Is.EqualTo(kbd1));
-			Assert.That(ReferenceEquals(copy.KnownKeyboards.First(), kbd1), Is.True);
+			Assert.That(copy.KnownKeyboards.Count, Is.EqualTo(2));
+			Assert.That(copy.KnownKeyboards[0], Is.EqualTo(kbd1));
+			Assert.That(copy.KnownKeyboards[0] == kbd1, Is.True);
+		}
+
+		[Test]
+		public void CloneCopiesFonts()
+		{
+			var original = new WritingSystemDefinition();
+			var fd1 = new FontDefinition("font1");
+			var fd2 = new FontDefinition("font2");
+			original.Fonts.Add(fd1);
+			original.Fonts.Add(fd2);
+			original.DefaultFont = fd2;
+			WritingSystemDefinition copy = original.Clone();
+			Assert.That(copy.Fonts.Count, Is.EqualTo(2));
+			Assert.That(copy.Fonts[0].ValueEquals(fd1), Is.True);
+			Assert.That(ReferenceEquals(copy.Fonts[0], fd1), Is.False);
+			Assert.That(copy.DefaultFont.ValueEquals(fd2), Is.True);
+			Assert.That(copy.DefaultFont == fd2, Is.False);
+			Assert.That(copy.DefaultFont == copy.Fonts[1], Is.True);
 		}
 
 		/// <summary>
-		/// The generic test that Equals compares everything can't, I believe, handle lists.
+		/// The generic test that ValueEquals compares everything can't handle lists.
 		/// </summary>
 		[Test]
 		public void ValueEqualsComparesKnownKeyboards()
@@ -79,7 +97,7 @@ namespace SIL.WritingSystems.Tests
 
 			Assert.That(first.ValueEquals(second), Is.False, "ws with empty known keyboards should not equal one with some");
 			second.KnownKeyboards.Add(kbd1);
-			Assert.That(first.ValueEquals(second), Is.False, "ws's with different length known keyboard lits should not be equal");
+			Assert.That(first.ValueEquals(second), Is.False, "ws's with different length known keyboard lists should not be equal");
 			second.KnownKeyboards.Add(kbd2);
 			Assert.That(first.ValueEquals(second), Is.True, "ws's with same known keyboard lists should be equal");
 
@@ -87,6 +105,34 @@ namespace SIL.WritingSystems.Tests
 			second.KnownKeyboards.Add(kbd1);
 			second.KnownKeyboards.Add(kbd3);
 			Assert.That(first.ValueEquals(second), Is.False, "ws with same-length lists of different known keyboards should not be equal");
+		}
+
+		[Test]
+		public void ValueEqualsComparesFonts()
+		{
+			var first = new WritingSystemDefinition();
+			var fd1 = new FontDefinition("font1");
+			var fd2 = new FontDefinition("font2");
+			first.Fonts.Add(fd1);
+			first.Fonts.Add(fd2);
+			var second = new WritingSystemDefinition();
+			var fd3 = new FontDefinition("font1");
+			var fd4 = new FontDefinition("font3");
+
+			Assert.That(first.ValueEquals(second), Is.False, "ws with empty fonts should not equal one with some");
+			second.Fonts.Add(fd3);
+			Assert.That(first.ValueEquals(second), Is.False, "ws's with different length fonts lists should not be equal");
+			second.Fonts.Add(fd2.Clone());
+			Assert.That(first.ValueEquals(second), Is.True, "ws's with same fonts lists should be equal");
+			second.DefaultFont = second.Fonts[0];
+			Assert.That(first.ValueEquals(second), Is.True);
+			second.DefaultFont = second.Fonts[1];
+			Assert.That(first.ValueEquals(second), Is.False);
+
+			second = new WritingSystemDefinition();
+			second.Fonts.Add(fd3);
+			second.Fonts.Add(fd4);
+			Assert.That(first.ValueEquals(second), Is.False, "ws with same-length lists of different fonts should not be equal");
 		}
 	}
 
@@ -490,6 +536,9 @@ namespace SIL.WritingSystems.Tests
 			firstValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.IpaPhonemic);
 			secondValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.NotIpa);
 
+			firstValueToSet.Add(typeof(FontDefinition), new FontDefinition("font1"));
+			secondValueToSet.Add(typeof(FontDefinition), new FontDefinition("font2"));
+
 			foreach (PropertyInfo propertyInfo in typeof(WritingSystemDefinition).GetProperties(BindingFlags.Public | BindingFlags.Instance))
 			{
 				// skip read-only or ones in the ignore list
@@ -498,7 +547,7 @@ namespace SIL.WritingSystems.Tests
 					continue;
 				}
 				var ws = new WritingSystemDefinition();
-				ws.Modified = false;
+				ws.ResetModified();
 				// We need to ensure that all values we are setting are actually different than the current values.
 				// This could be accomplished by comparing with the current value or by setting twice with different values.
 				// We use the setting twice method so we don't require a getter on the property.
@@ -535,7 +584,7 @@ namespace SIL.WritingSystems.Tests
 			// _knownKeyboards and _localKeyboard are tested by the similar test in WritingSystemDefintionICloneableGenericTests.
 			// I (JohnT) suspect that this whole test is redundant but am keeping it in case this version
 			// confirms something subtly different.
-			const string ignoreFields = "|Modified|MarkedForDeletion|StoreID|_collator|_knownKeyboards|_localKeyboard|";
+			const string ignoreFields = "|MarkedForDeletion|StoreID|_collator|_knownKeyboards|_localKeyboard|_modified|_defaultFont|_fonts|";
 			// values to use for testing different types
 			var valuesToSet = new Dictionary<Type, object>
 			{
@@ -1454,16 +1503,13 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void GetDefaultFontSizeOrMinimum_DefaultConstructor_GreaterThanSix()
 		{
-			Assert.Greater(new WritingSystemDefinition().GetDefaultFontSizeOrMinimum(),6);
+			Assert.Greater(new FontDefinition("font").GetDefaultFontSizeOrMinimum(), 6);
 		}
 		[Test]
 		public void GetDefaultFontSizeOrMinimum_SetAt0_GreaterThanSix()
 		{
-			var ws = new WritingSystemDefinition
-			{
-							 DefaultFontSize = 0
-						 };
-			Assert.Greater(ws.GetDefaultFontSizeOrMinimum(), 6);
+			var fd = new FontDefinition("font") {DefaultSize = 0};
+			Assert.Greater(fd.GetDefaultFontSizeOrMinimum(), 6);
 		}
 
 		[Test]
@@ -1744,7 +1790,7 @@ namespace SIL.WritingSystems.Tests
 			ws.LocalKeyboard = kbd1;
 
 			Assert.That(ws.LocalKeyboard, Is.EqualTo(kbd1));
-			Assert.That(ws.KnownKeyboards.ToList(), Has.Member(kbd1));
+			Assert.That(ws.KnownKeyboards, Has.Member(kbd1));
 		}
 
 		/// <summary>
@@ -1759,11 +1805,11 @@ namespace SIL.WritingSystems.Tests
 
 			ws.KnownKeyboards.Add(kbd1);
 			Assert.That(ws.Modified, Is.True);
-			ws.Modified = false;
+			ws.ResetModified();
 			ws.KnownKeyboards.Add(kbd2);
 			Assert.That(ws.Modified, Is.False);
 
-			Assert.That(ws.KnownKeyboards.Count(), Is.EqualTo(1));
+			Assert.That(ws.KnownKeyboards.Count, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -1776,17 +1822,9 @@ namespace SIL.WritingSystems.Tests
 			ws.KnownKeyboards.Add(kbd1);
 			ws.LocalKeyboard = kbd2;
 			Assert.That(ws.Modified, Is.True); // worth checking, but it doesn't really prove the point, since it will have also changed KnownKeyboards
-			ws.Modified = false;
+			ws.ResetModified();
 			ws.LocalKeyboard = kbd1; // This time it's already a known keyboard so only the LocalKeyboard setter can be responsibe for setting the flag.
 			Assert.That(ws.Modified, Is.True);
-		}
-
-		[Test]
-		public void AddKnownKeyboard_Null_DoesNothing()
-		{
-			var ws = new WritingSystemDefinition("de-x-dupl0");
-
-			Assert.DoesNotThrow(() => ws.KnownKeyboards.Add(null));
 		}
 
 		[Test]
@@ -1818,6 +1856,59 @@ namespace SIL.WritingSystems.Tests
 
 			Assert.That(ws.LocalKeyboard, Is.EqualTo(kbd1));
 			Assert.That(controller.ArgumentPassedToDefault, Is.EqualTo(ws));
+		}
+
+		[Test]
+		public void LocalKeyboard_ResetWhenRemovedFromKnownKeyboards()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+			var kbd1 = new DefaultKeyboardDefinition(KeyboardType.System, "something", "en-US");
+			var kbd2 = new DefaultKeyboardDefinition(KeyboardType.System, "somethingElse", "en-US");
+			var kbd3 = new DefaultKeyboardDefinition(KeyboardType.System, "somethingEntirelyElse", "en-US");
+
+			var controller = new MockKeyboardController {AllAvailableKeyboards = new[] {kbd1, kbd2, kbd3}, Default = kbd3};
+			Keyboard.Controller = controller;
+
+			ws.KnownKeyboards.Add(kbd1);
+			ws.KnownKeyboards.Add(kbd2);
+			ws.LocalKeyboard = kbd2;
+
+			Assert.That(ws.LocalKeyboard, Is.EqualTo(kbd2));
+			ws.KnownKeyboards.RemoveAt(1);
+			Assert.That(ws.LocalKeyboard, Is.EqualTo(kbd1));
+			ws.KnownKeyboards.Clear();
+			Assert.That(ws.LocalKeyboard, Is.EqualTo(kbd3));
+		}
+
+		[Test]
+		public void DefaultFont_DefaultsToFirstFont()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+			var fd1 = new FontDefinition("font1");
+			var fd2 = new FontDefinition("font2");
+
+			ws.Fonts.Add(fd1);
+			ws.Fonts.Add(fd2);
+
+			Assert.That(ws.DefaultFont, Is.EqualTo(fd1));
+		}
+
+		[Test]
+		public void DefaultFont_ResetWhenRemovedFromFonts()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+			var fd1 = new FontDefinition("font1");
+			var fd2 = new FontDefinition("font2");
+
+			ws.Fonts.Add(fd1);
+			ws.Fonts.Add(fd2);
+			ws.DefaultFont = fd2;
+
+			Assert.That(ws.DefaultFont, Is.EqualTo(fd2));
+			ws.Fonts.RemoveAt(1);
+			Assert.That(ws.DefaultFont, Is.EqualTo(fd1));
+			ws.Fonts.Clear();
+			Assert.That(ws.DefaultFont, Is.Null);
 		}
 	}
 }

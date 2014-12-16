@@ -11,29 +11,26 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// A common definition of the trivial thing all the Get methods currently return.
 		/// </summary>
-		private IKeyboardDefinition TrivialKeyboard
-		{
-			get { return new DefaultKeyboardDefinition(KeyboardType.System, string.Empty, string.Empty); }
-		}
+		private readonly DefaultKeyboardDefinition _trivialKeyboard = new DefaultKeyboardDefinition(KeyboardType.System, "English", "en-US");
 
 		public IKeyboardDefinition GetKeyboard(string layoutName)
 		{
-			return TrivialKeyboard;
+			return _trivialKeyboard;
 		}
 
 		public IKeyboardDefinition GetKeyboard(string layoutName, string locale)
 		{
-			return TrivialKeyboard;
+			return _trivialKeyboard;
 		}
 
 		public IKeyboardDefinition GetKeyboard(WritingSystemDefinition writingSystem)
 		{
-			return TrivialKeyboard;
+			return _trivialKeyboard;
 		}
 
 		public IKeyboardDefinition GetKeyboard(IInputLanguage language)
 		{
-			return TrivialKeyboard;
+			return _trivialKeyboard;
 		}
 
 		public void SetKeyboard(IKeyboardDefinition keyboard)
@@ -74,7 +71,7 @@ namespace SIL.WritingSystems
 
 		public virtual IKeyboardDefinition DefaultForWritingSystem(WritingSystemDefinition ws)
 		{
-			return new DefaultKeyboardDefinition(KeyboardType.System, "English", "en-US");
+			return _trivialKeyboard;
 		}
 
 		public IKeyboardDefinition LegacyForWritingSystem(WritingSystemDefinition ws)

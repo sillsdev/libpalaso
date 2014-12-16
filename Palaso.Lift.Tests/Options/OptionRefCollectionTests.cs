@@ -11,7 +11,7 @@ namespace Palaso.Lift.Tests.Options
 	[TestFixture]
 	public class OptionRefCollectionCloneableTests : CloneableTests<IPalasoDataObjectProperty>
 	{
-		public override IPalasoDataObjectProperty CreateNewClonable()
+		public override IPalasoDataObjectProperty CreateNewCloneable()
 		{
 			return new OptionRefCollection();
 		}

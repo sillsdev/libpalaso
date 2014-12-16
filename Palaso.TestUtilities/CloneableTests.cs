@@ -18,7 +18,7 @@ namespace Palaso.TestUtilities
 	/// <typeparam name="TClone">Type that Clone() returns</typeparam>
 	public abstract class CloneableTests<T, TClone> where T:ICloneable<TClone>
 	{
-		public abstract T CreateNewClonable();
+		public abstract T CreateNewCloneable();
 
 		protected virtual bool Equals(T x, T y)
 		{
@@ -108,12 +108,12 @@ namespace Palaso.TestUtilities
 		[Test]
 		public void CloneCopiesAllNeededMembers()
 		{
-			var clonable = CreateNewClonable();
-			var fieldInfos = GetAllFields(clonable);
+			T clonable = CreateNewCloneable();
+			IEnumerable<FieldInfo> fieldInfos = GetAllFields(clonable);
 
-			foreach (var fieldInfo in fieldInfos)
+			foreach (FieldInfo fieldInfo in fieldInfos)
 			{
-				var fieldName = fieldInfo.Name;
+				string fieldName = fieldInfo.Name;
 				if (fieldInfo.Name.Contains("<"))
 				{
 					var splitResult = fieldInfo.Name.Split(new[] { '<', '>' });
@@ -147,7 +147,7 @@ namespace Palaso.TestUtilities
 
 		private static IEnumerable<FieldInfo> GetAllFields(T clonable)
 		{
-			var type = clonable.GetType();
+			Type type = clonable.GetType();
 			IEnumerable<FieldInfo> fieldInfos = new List<FieldInfo>();
 			//here we are traversing up the inheritance tree to get all of the fields on our base types
 			while (type != null)
@@ -163,13 +163,13 @@ namespace Palaso.TestUtilities
 		//x.Equals(y) && y.Equals(x) where x!= y
 		public void Equal_OneFieldDiffers_ReturnsFalse()
 		{
-			var itemToGetFieldsFrom = CreateNewClonable();
-			var fieldInfos = GetAllFields(itemToGetFieldsFrom);
+			T itemToGetFieldsFrom = CreateNewCloneable();
+			IEnumerable<FieldInfo> fieldInfos = GetAllFields(itemToGetFieldsFrom);
 
-			foreach (var fieldInfo in fieldInfos)
+			foreach (FieldInfo fieldInfo in fieldInfos)
 			{
-				var item = CreateNewClonable();
-				var unequalItem = CreateNewClonable();
+				T item = CreateNewCloneable();
+				T unequalItem = CreateNewCloneable();
 				Assert.That(item, Is.EqualTo(unequalItem).Using<T>((x, y) => Equals(x, y) ? 0 : 1), "The two items were not equal on creation. You may need to override Equals(object other).");
 				var fieldName = fieldInfo.Name;
 				if (fieldInfo.Name.Contains("<"))
@@ -203,13 +203,13 @@ namespace Palaso.TestUtilities
 		//x.Equals(y) && y.Equals(x) where x==y
 		public void Equal_ItemsAreEqual_ReturnsTrue()
 		{
-			var itemToGetFieldsFrom = CreateNewClonable();
-			var fieldInfos = GetAllFields(itemToGetFieldsFrom);
+			T itemToGetFieldsFrom = CreateNewCloneable();
+			IEnumerable<FieldInfo> fieldInfos = GetAllFields(itemToGetFieldsFrom);
 
-			foreach (var fieldInfo in fieldInfos)
+			foreach (FieldInfo fieldInfo in fieldInfos)
 			{
-				var item = CreateNewClonable();
-				var unequalItem = CreateNewClonable();
+				T item = CreateNewCloneable();
+				T unequalItem = CreateNewCloneable();
 				Assert.That(item, Is.EqualTo(unequalItem).Using<T>(Compare), "The two items were not equal on creation. You may need to override Equals(object other).");
 				var fieldName = fieldInfo.Name;
 				if (fieldInfo.Name.Contains("<"))
@@ -245,13 +245,13 @@ namespace Palaso.TestUtilities
 		//against the original value rather than null, we save ourselves a lot of boilerplate in the Equals method.
 		public void Equal_SecondFieldIsNull_ReturnsFalse()
 		{
-			var itemToGetFieldsFrom = CreateNewClonable();
-			var fieldInfos = GetAllFields(itemToGetFieldsFrom);
+			T itemToGetFieldsFrom = CreateNewCloneable();
+			IEnumerable<FieldInfo> fieldInfos = GetAllFields(itemToGetFieldsFrom);
 
-			foreach (var fieldInfo in fieldInfos)
+			foreach (FieldInfo fieldInfo in fieldInfos)
 			{
-				var itemWithFieldToChange = CreateNewClonable();
-				var itemWithDefaultField = CreateNewClonable();
+				T itemWithFieldToChange = CreateNewCloneable();
+				T itemWithDefaultField = CreateNewCloneable();
 				Assert.That(itemWithFieldToChange, Is.EqualTo(itemWithDefaultField).Using<T>(Compare), "The two items were not equal on creation. You may need to override Equals(object other).");
 				var fieldName = fieldInfo.Name;
 				if (fieldInfo.Name.Contains("<"))
@@ -295,7 +295,7 @@ namespace Palaso.TestUtilities
 		[Test]
 		public void Equals_OtherIsNull_ReturnsFalse()
 		{
-			var iEquatableUnderTest = CreateNewClonable();
+			T iEquatableUnderTest = CreateNewCloneable();
 			IEquatable<T> nullObject = null;
 			Assert.That(iEquatableUnderTest.Equals((T) nullObject), Is.False);
 		}
@@ -303,7 +303,7 @@ namespace Palaso.TestUtilities
 		[Test]
 		public void ObjectEquals_OtherIsNull_ReturnsFalse()
 		{
-			var iEquatableUnderTest = CreateNewClonable();
+			T iEquatableUnderTest = CreateNewCloneable();
 			Assert.That(iEquatableUnderTest.Equals(null), Is.False);
 		}
 	}

@@ -55,11 +55,11 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 			return new KeyboardDescription(layout, layout, locale, inputLanguage,  KeyboardController.Adaptors[0]);
 		}
 
-		public KeyboardCollection Keyboards
+		public KeyboardDefinitionCollection Keyboards
 		{
 			get
 			{
-				return new KeyboardCollection();
+				return new KeyboardDefinitionCollection();
 			}
 		}
 

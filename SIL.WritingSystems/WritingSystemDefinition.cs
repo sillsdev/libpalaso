@@ -83,8 +83,6 @@ namespace SIL.WritingSystems
 		public const int LatestWritingSystemDefinitionVersion = 2;
 
 		private Rfc5646Tag _rfcTag;
-		private const int MinimumFontSize = 7;
-		private const int DefaultSizeIfWeDontKnow = 10;
 
 		private string _languageName;
 
@@ -94,10 +92,10 @@ namespace SIL.WritingSystems
 		private string _versionNumber;
 		private string _versionDescription;
 
+		private bool _modified;
 		private DateTime _dateModified;
 
-		private string _defaultFontName;
-		private float _defaultFontSize;
+		private FontDefinition _defaultFont;
 		private string _keyboard;
 
 		private CollationRulesTypes _collationRulesType;
@@ -109,7 +107,8 @@ namespace SIL.WritingSystems
 		private ICollator _collator;
 		private string _id;
 
-		private readonly KeyboardCollection _knownKeyboards = new KeyboardCollection();
+		private readonly FontDefinitionCollection _fonts = new FontDefinitionCollection();
+		private readonly KeyboardDefinitionCollection _knownKeyboards = new KeyboardDefinitionCollection();
 
 		/// <summary>
 		/// Creates a new WritingSystemDefinition with Language subtag set to "qaa"
@@ -120,14 +119,22 @@ namespace SIL.WritingSystems
 			_isUnicodeEncoded = true;
 			_rfcTag = new Rfc5646Tag();
 			UpdateIdFromRfcTag();
+			_fonts.CollectionChanged += _fonts_CollectionChanged;
 			_knownKeyboards.CollectionChanged += _knownKeyboards_CollectionChanged;
+		}
+
+		private void _fonts_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (_defaultFont != null && !_fonts.Contains(_defaultFont))
+				_defaultFont = null;
+			_modified = true;
 		}
 
 		private void _knownKeyboards_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (_localKeyboard != null && !_knownKeyboards.Contains(_localKeyboard.Id))
 				_localKeyboard = null;
-			Modified = true;
+			_modified = true;
 		}
 
 		/// <summary>
@@ -187,8 +194,10 @@ namespace SIL.WritingSystems
 		{
 			_abbreviation = ws._abbreviation;
 			_rightToLeftScript = ws._rightToLeftScript;
-			_defaultFontName = ws._defaultFontName;
-			_defaultFontSize = ws._defaultFontSize;
+			foreach (FontDefinition fd in ws._fonts)
+				_fonts.Add(fd.Clone());
+			if (ws._defaultFont != null)
+				_defaultFont = _fonts[ws._fonts.IndexOf(ws._defaultFont)];
 			_keyboard = ws._keyboard;
 			_versionNumber = ws._versionNumber;
 			_versionDescription = ws._versionDescription;
@@ -202,7 +211,7 @@ namespace SIL.WritingSystems
 			_languageName = ws._languageName;
 			_localKeyboard = ws._localKeyboard;
 			WindowsLcid = ws.WindowsLcid;
-			foreach (var kbd in ws._knownKeyboards)
+			foreach (IKeyboardDefinition kbd in ws._knownKeyboards)
 				_knownKeyboards.Add(kbd);
 			_id = ws._id;
 		}
@@ -292,7 +301,7 @@ namespace SIL.WritingSystems
 						_rfcTag.AddToPrivateUse(WellKnownSubtags.IpaPhoneticPrivateUse);
 						break;
 				}
-				Modified = true;
+				_modified = true;
 				UpdateIdFromRfcTag();
 			}
 		}
@@ -325,7 +334,7 @@ namespace SIL.WritingSystems
 					_rfcTag.Script = String.Empty;
 					_rfcTag.RemoveFromPrivateUse(WellKnownSubtags.AudioPrivateUse);
 				}
-				Modified = true;
+				_modified = true;
 				UpdateIdFromRfcTag();
 				CheckVariantAndScriptRules();
 			}
@@ -372,7 +381,7 @@ namespace SIL.WritingSystems
 				_rfcTag.Variant = variant;
 				_rfcTag.PrivateUse = privateUse;
 
-				Modified = true;
+				_modified = true;
 				UpdateIdFromRfcTag();
 				CheckVariantAndScriptRules();
 			}
@@ -460,8 +469,6 @@ namespace SIL.WritingSystems
 			return variantToReturn;
 		}
 
-
-
 		private void CheckVariantAndScriptRules()
 		{
 			if (!RequiresValidTag)
@@ -531,7 +538,7 @@ namespace SIL.WritingSystems
 			{
 				return;
 			}
-			Modified = true;
+			_modified = true;
 			CheckVariantAndScriptRules();
 		}
 
@@ -553,7 +560,7 @@ namespace SIL.WritingSystems
 				}
 				_rfcTag.Region = value;
 				UpdateIdFromRfcTag();
-				Modified = true;
+				_modified = true;
 			}
 		}
 
@@ -575,7 +582,7 @@ namespace SIL.WritingSystems
 				}
 				_rfcTag.Language = value;
 				UpdateIdFromRfcTag();
-				Modified = true;
+				_modified = true;
 			}
 		}
 
@@ -606,10 +613,7 @@ namespace SIL.WritingSystems
 				}
 				return _abbreviation;
 			}
-			set
-			{
-				UpdateString(ref _abbreviation, value);
-			}
+			set { UpdateString(ref _abbreviation, value); }
 		}
 
 
@@ -618,10 +622,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		virtual public string Script
 		{
-			get
-			{
-				return _rfcTag.Script;
-			}
+			get { return _rfcTag.Script; }
 			set
 			{
 				value = value ?? "";
@@ -630,7 +631,7 @@ namespace SIL.WritingSystems
 					return;
 				}
 				_rfcTag.Script = value;
-				Modified = true;
+				_modified = true;
 				UpdateIdFromRfcTag();
 				CheckVariantAndScriptRules();
 			}
@@ -696,21 +697,26 @@ namespace SIL.WritingSystems
 			return newWs;
 		}
 
+		protected bool UpdateString(ref string field, string value)
+		{
+			//count null as same as ""
+			if (String.IsNullOrEmpty(field) && String.IsNullOrEmpty(value))
+				return false;
+
+			return UpdateField(ref field, value);
+		}
+
 		/// <summary>
 		/// Updates the specified field and marks the writing system as modified.
 		/// </summary>
-		protected void UpdateString(ref string field, string value)
+		protected bool UpdateField<T>(ref T field, T value)
 		{
-			if (field == value)
-				return;
+			if (EqualityComparer<T>.Default.Equals(field, value))
+				return false;
 
-			//count null as same as ""
-			if (String.IsNullOrEmpty(field) && String.IsNullOrEmpty(value))
-			{
-				return;
-			}
-			Modified = true;
+			_modified = true;
 			field = value;
+			return true;
 		}
 
 		/// <summary>
@@ -862,23 +868,36 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public string Id
 		{
-			get
-			{
-				return _id;
-			}
+			get { return _id; }
+
 			internal set
 			{
 				value = value ?? "";
 				_id = value;
-				Modified = true;
+				_modified = true;
 			}
 		}
 
 		/// <summary>
 		/// Indicates whether the writing system definition has been modified.
-		/// Note that this flag is automatically set by all methods that cause a modification and is reset by the IwritingSystemRepository.Save() method
+		/// Note that this flag is automatically set by all methods that cause a modification and is reset by the IWritingSystemRepository.Save() method
 		/// </summary>
-		virtual public bool Modified { get; set; }
+		virtual public bool Modified
+		{
+			get
+			{
+				if (_modified)
+					return true;
+				return _fonts.Any(f => f.Modified);
+			}
+		}
+
+		public void ResetModified()
+		{
+			_modified = false;
+			foreach (FontDefinition fd in _fonts)
+				fd.ResetModified();
+		}
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the writing system will be deleted.
@@ -888,51 +907,24 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// The font used to display data encoded in this writing system
 		/// </summary>
-		virtual public string DefaultFontName
+		virtual public FontDefinition DefaultFont
 		{
 			get
 			{
-				return _defaultFontName;
+				if (_defaultFont == null)
+					_defaultFont = _fonts.FirstOrDefault(fd => fd.Roles.Contains(FontDefinition.DefaultRole));
+				if (_defaultFont == null)
+					_defaultFont = _fonts.FirstOrDefault();
+				return _defaultFont;
 			}
 			set
 			{
-				UpdateString(ref _defaultFontName, value);
-			}
-		}
-
-		/// <summary>
-		/// the preferred font size to use for data encoded in this writing system.
-		/// </summary>
-		virtual public float DefaultFontSize
-		{
-			get
-			{
-				return _defaultFontSize;
-			}
-			set
-			{
-				if (Math.Abs(value - _defaultFontSize) < float.Epsilon)
+				if (UpdateField(ref _defaultFont, value))
 				{
-					return;
+					if (value != null && !_fonts.Contains(value))
+						_fonts.Add(value);
 				}
-				if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
-				{
-					throw new ArgumentOutOfRangeException();
-				}
-				_defaultFontSize = value;
-				Modified = true;
 			}
-		}
-
-		/// <summary>
-		/// enforcing a minimum on _defaultFontSize, while reasonable, just messed up too many IO unit tests
-		/// </summary>
-		/// <returns></returns>
-		virtual public float GetDefaultFontSizeOrMinimum()
-		{
-			if (_defaultFontSize < MinimumFontSize)
-				return DefaultSizeIfWeDontKnow;
-			return _defaultFontSize;
 		}
 
 		/// <summary>
@@ -942,16 +934,11 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				if(String.IsNullOrEmpty(_keyboard))
-				{
+				if (string.IsNullOrEmpty(_keyboard))
 					return "";
-				}
 				return _keyboard;
 			}
-			set
-			{
-				UpdateString(ref _keyboard, value);
-			}
+			set { UpdateString(ref _keyboard, value); }
 		}
 
 		private IKeyboardDefinition _localKeyboard;
@@ -983,9 +970,11 @@ namespace SIL.WritingSystems
 			}
 			set
 			{
-				_knownKeyboards.Add(value);
-				_localKeyboard = value;
-				Modified = true;
+				if (UpdateField(ref _localKeyboard, value))
+				{
+					if (value != null)
+						_knownKeyboards.Add(value);
+				}
 			}
 		}
 
@@ -999,18 +988,8 @@ namespace SIL.WritingSystems
 		/// </summary>
 		virtual public bool RightToLeftScript
 		{
-			get
-			{
-				return _rightToLeftScript;
-			}
-			set
-			{
-				if(value != _rightToLeftScript)
-				{
-					Modified = true;
-					_rightToLeftScript = value;
-				}
-			}
+			get { return _rightToLeftScript; }
+			set { UpdateField(ref _rightToLeftScript, value); }
 		}
 
 		/// <summary>
@@ -1018,14 +997,8 @@ namespace SIL.WritingSystems
 		/// </summary>
 		virtual public string NativeName
 		{
-			get
-			{
-				return _nativeName;
-			}
-			set
-			{
-				UpdateString(ref _nativeName, value);
-			}
+			get { return _nativeName; }
+			set { UpdateString(ref _nativeName, value); }
 		}
 
 		/// <summary>
@@ -1037,12 +1010,8 @@ namespace SIL.WritingSystems
 			get { return _collationRulesType; }
 			set
 			{
-				if (value != _collationRulesType)
-				{
-					_collationRulesType = value;
+				if (UpdateField(ref _collationRulesType, value))
 					_collator = null;
-					Modified = true;
-				}
 			}
 		}
 
@@ -1055,8 +1024,8 @@ namespace SIL.WritingSystems
 			get { return _collationRules ?? string.Empty; }
 			set
 			{
-				_collator = null;
-				UpdateString(ref _collationRules, value);
+				if (UpdateString(ref _collationRules, value))
+					_collator = null;
 			}
 		}
 
@@ -1095,10 +1064,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		virtual public string SpellCheckingId
 		{
-			get
-			{
-				return _spellCheckingId;
-			}
+			get { return _spellCheckingId; }
 			set { UpdateString(ref _spellCheckingId, value); }
 		}
 
@@ -1175,26 +1141,56 @@ namespace SIL.WritingSystems
 		public bool ValueEquals(WritingSystemDefinition other)
 		{
 			if (other == null) return false;
-			if (!_rfcTag.Equals(other._rfcTag)) return false;
-			if ((_languageName != null && !_languageName.Equals(other._languageName)) || (other._languageName != null && !other._languageName.Equals(_languageName))) return false;
-			if ((_abbreviation != null && !_abbreviation.Equals(other._abbreviation)) || (other._abbreviation != null && !other._abbreviation.Equals(_abbreviation))) return false;
-			if ((_versionNumber != null && !_versionNumber.Equals(other._versionNumber)) || (other._versionNumber != null && !other._versionNumber.Equals(_versionNumber))) return false;
-			if ((_versionDescription != null && !_versionDescription.Equals(other._versionDescription)) || (other._versionDescription != null && !other._versionDescription.Equals(_versionDescription))) return false;
-			if ((_defaultFontName != null && !_defaultFontName.Equals(other._defaultFontName)) || (other._defaultFontName != null && !other._defaultFontName.Equals(_defaultFontName))) return false;
-			if ((_keyboard != null && !_keyboard.Equals(other._keyboard)) || (other._keyboard != null && !other._keyboard.Equals(_keyboard))) return false;
-			if ((_collationRules != null && !_collationRules.Equals(other._collationRules)) || (other._collationRules != null && !other._collationRules.Equals(_collationRules))) return false;
-			if ((_spellCheckingId != null && !_spellCheckingId.Equals(other._spellCheckingId)) || (other._spellCheckingId != null && !other._spellCheckingId.Equals(_spellCheckingId))) return false;
-			if ((_nativeName != null && !_nativeName.Equals(other._nativeName)) || (other._nativeName != null && !other._nativeName.Equals(_nativeName))) return false;
-			if ((_id != null && !_id.Equals(other._id)) || (other._id != null && !other._id.Equals(_id))) return false;
-			if (!_isUnicodeEncoded.Equals(other._isUnicodeEncoded)) return false;
-			if (!_dateModified.Equals(other._dateModified)) return false;
-			if (!_defaultFontSize.Equals(other._defaultFontSize)) return false;
-			if (!CollationRulesType.Equals(other.CollationRulesType)) return false;
-			if (!_rightToLeftScript.Equals(other._rightToLeftScript)) return false;
-			if (!EqualityComparer<IKeyboardDefinition>.Default.Equals(_localKeyboard, other._localKeyboard)) return false;
-			if (WindowsLcid != other.WindowsLcid) return false;
-			if (!_knownKeyboards.SequenceEqual(other._knownKeyboards)) return false;
-
+			if (!_rfcTag.Equals(other._rfcTag))
+				return false;
+			if (_languageName != other._languageName)
+				return false;
+			if (_abbreviation != other._abbreviation)
+				return false;
+			if (_versionNumber != other._versionNumber)
+				return false;
+			if (_versionDescription != other._versionDescription)
+				return false;
+			if (_fonts.Count != other._fonts.Count)
+				return false;
+			for (int i = 0; i < _fonts.Count; i++)
+			{
+				if (!_fonts[i].ValueEquals(other._fonts[i]))
+					return false;
+			}
+			if (DefaultFont == null)
+			{
+				if (other.DefaultFont != null)
+					return false;
+			}
+			else if (!DefaultFont.ValueEquals(other.DefaultFont))
+			{
+				return false;
+			}
+			if (_keyboard != other._keyboard)
+				return false;
+			if (_collationRules != other._collationRules)
+				return false;
+			if (_spellCheckingId != other._spellCheckingId)
+				return false;
+			if (_nativeName != other._nativeName)
+				return false;
+			if (_id != other._id)
+				return false;
+			if (_isUnicodeEncoded != other._isUnicodeEncoded)
+				return false;
+			if (_dateModified != other._dateModified)
+				return false;
+			if (CollationRulesType != other.CollationRulesType)
+				return false;
+			if (_rightToLeftScript != other._rightToLeftScript)
+				return false;
+			if (LocalKeyboard != other.LocalKeyboard)
+				return false;
+			if (WindowsLcid != other.WindowsLcid)
+				return false;
+			if (!_knownKeyboards.SequenceEqual(other._knownKeyboards))
+				return false;
 			return true;
 		}
 
@@ -1208,18 +1204,8 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public bool IsUnicodeEncoded
 		{
-			get
-			{
-				return _isUnicodeEncoded;
-			}
-			set
-			{
-				if (value != _isUnicodeEncoded)
-				{
-					Modified = true;
-					_isUnicodeEncoded = value;
-				}
-			}
+			get { return _isUnicodeEncoded; }
+			set { UpdateField(ref _isUnicodeEncoded, value); }
 		}
 
 		/// <summary>
@@ -1230,7 +1216,7 @@ namespace SIL.WritingSystems
 		{
 			_rfcTag = Rfc5646Tag.Parse(completeTag);
 			UpdateIdFromRfcTag();
-			Modified = true;
+			_modified = true;
 		}
 
 		/// <summary>
@@ -1272,9 +1258,9 @@ namespace SIL.WritingSystems
 
 		/// <summary>
 		/// Keyboards known to have been used with this writing system. Not all may be available on this system.
-		/// Enhance: document (or add to this interface?) a way of getting available keyboards.
+		/// Enhance: document (or add to this class?) a way of getting available keyboards.
 		/// </summary>
-		public KeyboardCollection KnownKeyboards
+		public KeyboardDefinitionCollection KnownKeyboards
 		{
 			get { return _knownKeyboards; }
 		}
@@ -1288,6 +1274,11 @@ namespace SIL.WritingSystems
 			{
 				return WritingSystems.Keyboard.Controller.AllAvailableKeyboards.Except(KnownKeyboards);
 			}
+		}
+
+		public FontDefinitionCollection Fonts
+		{
+			get { return _fonts; }
 		}
 	}
 }

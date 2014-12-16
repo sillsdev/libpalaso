@@ -87,11 +87,6 @@ namespace SIL.WritingSystems
 			return XmlHelpers.FindNextElementInSequence(reader, name, LdmlNodeComparer.CompareElementNames);
 		}
 
-		private static bool FindElement(XmlReader reader, string name, string nameSpace)
-		{
-			return XmlHelpers.FindNextElementInSequence(reader, name, nameSpace, LdmlNodeComparer.CompareElementNames);
-		}
-
 		public static void WriteLdmlText(XmlWriter writer, string text)
 		{
 			// Not all Unicode characters are valid in an XML document, so we need to create
@@ -154,7 +149,7 @@ namespace SIL.WritingSystems
 				ReadTopLevelSpecialElement(reader, ws);
 			}
 			ws.StoreID = "";
-			ws.Modified = false;
+			ws.ResetModified();
 		}
 
 		protected virtual void ReadTopLevelSpecialElement(XmlReader reader, WritingSystemDefinition ws)
@@ -163,12 +158,12 @@ namespace SIL.WritingSystems
 			{
 				reader.ReadStartElement("special");
 				ws.Abbreviation = GetSpecialValue(reader, "palaso", "abbreviation");
-				ws.DefaultFontName = GetSpecialValue(reader, "palaso", "defaultFontFamily");
-				float fontSize;
-				if (float.TryParse(GetSpecialValue(reader, "palaso", "defaultFontSize"), out fontSize))
-				{
-					ws.DefaultFontSize = fontSize;
-				}
+				//ws.DefaultFontName = GetSpecialValue(reader, "palaso", "defaultFontFamily");
+				//float fontSize;
+				//if (float.TryParse(GetSpecialValue(reader, "palaso", "defaultFontSize"), out fontSize))
+				//{
+				//	ws.DefaultFontSize = fontSize;
+				//}
 				ws.Keyboard = GetSpecialValue(reader, "palaso", "defaultKeyboard");
 				string isLegacyEncoded = GetSpecialValue(reader, "palaso", "isLegacyEncoded");
 				if (!String.IsNullOrEmpty(isLegacyEncoded))
@@ -900,11 +895,11 @@ namespace SIL.WritingSystems
 			// Note. As per appendix L2 'Canonical Form' of the LDML specification elements are ordered alphabetically.
 			WriteBeginSpecialElement(writer, "palaso");
 			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "abbreviation", ws.Abbreviation);
-			WriteSpecialValue(writer, "palaso", "defaultFontFamily", ws.DefaultFontName);
-			if (ws.DefaultFontSize != 0)
-			{
-				WriteSpecialValue(writer, "palaso", "defaultFontSize", ws.DefaultFontSize.ToString());
-			}
+			//WriteSpecialValue(writer, "palaso", "defaultFontFamily", ws.DefaultFontName);
+			//if (ws.DefaultFontSize != 0)
+			//{
+			//	WriteSpecialValue(writer, "palaso", "defaultFontSize", ws.DefaultFontSize.ToString());
+			//}
 			WriteSpecialValue(writer, "palaso", "defaultKeyboard", ws.Keyboard);
 			if (!ws.IsUnicodeEncoded)
 			{

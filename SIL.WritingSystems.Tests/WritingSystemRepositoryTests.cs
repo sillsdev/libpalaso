@@ -153,12 +153,12 @@ namespace SIL.WritingSystems.Tests
 			_writingSystem.Language = "one";
 			RepositoryUnderTest.Set(_writingSystem);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
-			Assert.AreNotEqual("one font", _writingSystem.DefaultFontName);
+			Assert.AreNotEqual("lang1", _writingSystem.LanguageName);
 			_writingSystem.Language = "two";
-			_writingSystem.DefaultFontName = "one font";
+			_writingSystem.LanguageName = "lang1";
 			RepositoryUnderTest.Set(_writingSystem);
 			var ws2 = RepositoryUnderTest.Get("two");
-			Assert.AreEqual("one font", ws2.DefaultFontName);
+			Assert.AreEqual("lang1", ws2.LanguageName);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
 		}
 
@@ -362,7 +362,6 @@ namespace SIL.WritingSystems.Tests
 			{
 				Keyboard = "keyboard",
 				NativeName = "native name",
-				DefaultFontName = "font",
 				VersionDescription = "description of this version",
 				VersionNumber = "1.0"
 			};
@@ -377,7 +376,6 @@ namespace SIL.WritingSystems.Tests
 			Assert.AreEqual(ws1.RightToLeftScript, ws2.RightToLeftScript);
 			Assert.AreEqual(ws1.Keyboard, ws2.Keyboard);
 			Assert.AreEqual(ws1.NativeName, ws2.NativeName);
-			Assert.AreEqual(ws1.DefaultFontName, ws2.DefaultFontName);
 			Assert.AreEqual(ws1.VersionDescription, ws2.VersionDescription);
 			Assert.AreEqual(ws1.VersionNumber, ws2.VersionNumber);
 		}
