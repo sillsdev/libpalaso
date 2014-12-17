@@ -142,7 +142,6 @@ namespace SIL.WritingSystems
 			return value;
 		}
 
-
 		public float GetAttributeFloat(XElement element, string child, string attribute)
 		{
 			XElement childElem = element.Element(child);
@@ -233,19 +232,21 @@ namespace SIL.WritingSystems
 
 		private void GetKnownKeyboards(XElement knownKeyboards, WritingSystemDefinition ws)
 		{
-			Debug.Assert(knownKeyboards.NodeType == XmlNodeType.Element && knownKeyboards.Name == Palaso2NamespaceName + ":" + KnownKeyboardsElementName);
-			IEnumerable<XElement> keyboardList = knownKeyboards.Elements(Palaso2NamespaceName + ":" + KeyboardElementName);
+			Debug.Assert(knownKeyboards.Name == KnownKeyboardsElementName);
+			IEnumerable<XElement> keyboardList = knownKeyboards.Elements(Palaso2 + KeyboardElementName);
 			foreach(XElement keyboardElem in keyboardList)
 			{
+#if WS_FIX
 				IKeyboardDefinition keyboard = Keyboard.Controller.CreateKeyboardDefinition((string)keyboardElem.Attribute(LayoutAttrName),
 					(string)keyboardElem.Attribute(LocaleAttrName));
 				ws.KnownKeyboards.Add(keyboard);
+#endif
 			}
 		}
 
 		private void ReadIdentityElement(XElement identityElem, WritingSystemDefinition ws)
 		{
-			Debug.Assert(identityElem.NodeType == XmlNodeType.Element && identityElem.Name == "identity");
+			Debug.Assert(identityElem.Name == "identity");
 			XElement versionElem = identityElem.Element("version");
 			if (versionElem != null)
 			{
@@ -344,9 +345,9 @@ namespace SIL.WritingSystems
 			Debug.Assert(ws != null);
 
 			XElement specialElem = collationElem.Element("special");
-			if (specialElem != null) 
+			if (specialElem != null)
 			{
-				string rulesTypeAsString = GetAttributeString(specialElem, "palaso", "sortRulesType");
+				string rulesTypeAsString = GetSpecialValue(specialElem, Palaso, "sortRulesType");
 				if(!String.IsNullOrEmpty(rulesTypeAsString))
 				{
 					ws.CollationRulesType = (CollationRulesTypes) Enum.Parse(typeof(CollationRulesTypes), rulesTypeAsString);
@@ -847,11 +848,13 @@ namespace SIL.WritingSystems
 			// Note. As per appendix L2 'Canonical Form' of the LDML specification elements are ordered alphabetically.
 			WriteBeginSpecialElement(writer, "palaso");
 			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "abbreviation", ws.Abbreviation);
-			//WriteSpecialValue(writer, "palaso", "defaultFontFamily", ws.DefaultFontName);
-			//if (ws.DefaultFontSize != 0)
-			//{
-			//	WriteSpecialValue(writer, "palaso", "defaultFontSize", ws.DefaultFontSize.ToString());
-			//}
+#if WS_FIX
+			WriteSpecialValue(writer, "palaso", "defaultFontFamily", ws.DefaultFontName);
+			if (ws.DefaultFontSize != 0)
+			{
+				WriteSpecialValue(writer, "palaso", "defaultFontSize", ws.DefaultFontSize.ToString());
+			}
+#endif
 			WriteSpecialValue(writer, "palaso", "defaultKeyboard", ws.Keyboard);
 			if (!ws.IsUnicodeEncoded)
 			{
@@ -865,6 +868,7 @@ namespace SIL.WritingSystems
 			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "version", WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString());
 			writer.WriteEndElement();
 
+#if WS_FIX
 			if (ws.KnownKeyboards.Any())
 			{
 				var p2Namespace = _nameSpaceManager.LookupNamespace(Palaso2NamespaceName);
@@ -882,6 +886,7 @@ namespace SIL.WritingSystems
 					WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString());
 				writer.WriteEndElement(); // Special
 			}
+#endif
 		}
 
 		private void WriteFlexOrPalasoConformElement(XmlWriter writer, XmlReader reader, string nameSpaceName, string nodeName, string value)

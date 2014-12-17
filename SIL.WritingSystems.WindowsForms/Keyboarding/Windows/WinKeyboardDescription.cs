@@ -4,7 +4,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Unmanaged.TSF;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Types;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 {
@@ -22,39 +21,43 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 		Justification = "WindowHandle is a reference to a control")]
 	internal class WinKeyboardDescription : KeyboardDescription
 	{
-		private readonly string _internalLocalizedName;
-		private readonly TfInputProcessorProfile _profile;
+		private string _localizedName;
 
 		/// <summary>
 		/// Initializes a new instance of the
 		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.Windows.WinKeyboardDescription"/> class.
 		/// </summary>
-		internal WinKeyboardDescription(TfInputProcessorProfile profile, string displayName, WinKeyboardAdaptor.LayoutName layoutName, string locale,
-			IInputLanguage inputLanguage, WinKeyboardAdaptor engine, bool isAvailable)
-			: base(GetDisplayName(displayName, layoutName.Name), layoutName.Name, locale, inputLanguage, engine, KeyboardType.System, isAvailable)
+		internal WinKeyboardDescription(string id, string name, string layout, string locale, bool isAvailable,
+			IInputLanguage inputLanguage, WinKeyboardAdaptor engine, string localizedName, TfInputProcessorProfile profile)
+			: base(id, name, layout, locale, isAvailable, inputLanguage, engine)
 		{
-			_profile = profile;
-			ConversionMode = (int)(Win32.IME_CMODE.NATIVE | Win32.IME_CMODE.SYMBOL);
-			_internalLocalizedName = GetDisplayName(displayName, layoutName.LocalizedName);
+			_localizedName = localizedName;
+			InputProcessorProfile = profile;
+			ConversionMode = (int) (Win32.IME_CMODE.NATIVE | Win32.IME_CMODE.SYMBOL);
 		}
 
-		#region Overrides of DefaultKeyboardDefinition
 		/// <summary>
 		/// Gets a localized human-readable name of the input language.
 		/// </summary>
 		public override string LocalizedName
 		{
-			get { return _internalLocalizedName; }
+			get { return _localizedName; }
 		}
-		#endregion
 
 		internal int ConversionMode { get; set; }
 		internal int SentenceMode { get; set; }
 		internal IntPtr WindowHandle { get; set; }
 
-		public TfInputProcessorProfile InputProcessorProfile
+		internal TfInputProcessorProfile InputProcessorProfile { get; set; }
+
+		internal void SetIsAvailable(bool isAvailable)
 		{
-			get { return _profile; }
+			IsAvailable = isAvailable;
+		}
+
+		internal void SetLocalizedName(string localizedName)
+		{
+			_localizedName = localizedName;
 		}
 	}
 }

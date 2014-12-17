@@ -1,11 +1,12 @@
 // Copyright (c) 2013, SIL International.
 // Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
+
 using System;
 using System.Windows.Forms;
 
-namespace SIL.WritingSystems.WindowsForms.Keyboarding.Types
+namespace SIL.WritingSystems.WindowsForms.Keyboarding
 {
-	public class RegisterEventArgs: EventArgs
+	public class RegisterEventArgs : EventArgs
 	{
 		public RegisterEventArgs(Control control, object eventHandler)
 		{

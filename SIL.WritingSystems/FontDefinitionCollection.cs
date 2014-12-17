@@ -10,7 +10,12 @@
 		protected override void InsertItem(int index, FontDefinition item)
 		{
 			if (Contains(item.Name))
-				Remove(item.Name);
+			{
+				int oldIndex = IndexOf(this[item.Name]);
+				RemoveAt(oldIndex);
+				if (index > oldIndex)
+					index--;
+			}
 			base.InsertItem(index, item);
 		}
 

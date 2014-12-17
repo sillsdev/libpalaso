@@ -11,9 +11,9 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// A common definition of the trivial thing all the Get methods currently return.
 		/// </summary>
-		private readonly DefaultKeyboardDefinition _trivialKeyboard = new DefaultKeyboardDefinition(KeyboardType.System, "English", "en-US");
+		private readonly DefaultKeyboardDefinition _trivialKeyboard = new DefaultKeyboardDefinition("en-US_English", "English");
 
-		public IKeyboardDefinition GetKeyboard(string layoutName)
+		public IKeyboardDefinition GetKeyboard(string id)
 		{
 			return _trivialKeyboard;
 		}
@@ -37,7 +37,7 @@ namespace SIL.WritingSystems
 		{
 		}
 
-		public void SetKeyboard(string layoutName)
+		public void SetKeyboard(string id)
 		{
 		}
 
@@ -84,9 +84,11 @@ namespace SIL.WritingSystems
 		/// </summary>
 		/// <remarks>The keyboard controller implementing this method will have to check the
 		/// availability of the keyboard and what engine provides it.</remarks>
-		public virtual IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
+		public virtual IKeyboardDefinition CreateKeyboardDefinition(string id, KeyboardFormat format, string url)
 		{
-			return new DefaultKeyboardDefinition(KeyboardType.System, layout, locale);
+			_trivialKeyboard.Format = format;
+			_trivialKeyboard.Url = url;
+			return _trivialKeyboard;
 		}
 
 		/// <summary>

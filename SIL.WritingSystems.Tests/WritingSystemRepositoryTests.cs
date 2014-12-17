@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Xml.Linq;
 using NUnit.Framework;
 
 namespace SIL.WritingSystems.Tests
@@ -727,6 +726,7 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(RepositoryUnderTest.WritingSystemIdHasChangedTo("en"), Is.EqualTo("en"));
 		}
 
+#if WS_FIX
 		[Test]
 		public void LocalKeyboardSettings_RetrievesLocalKeyboardData()
 		{
@@ -794,6 +794,7 @@ namespace SIL.WritingSystems.Tests
 			Assert.DoesNotThrow(() => RepositoryUnderTest.LocalKeyboardSettings = "");
 			Assert.DoesNotThrow(() => RepositoryUnderTest.LocalKeyboardSettings = "   ");
 		}
+#endif
 
 		[Test]
 		public void GetWsForInputLanguage_GetsMatchingWsByCulture()
@@ -802,9 +803,9 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.Set(wsEn);
 			var wsFr = new WritingSystemDefinition("fr");
 			RepositoryUnderTest.Set(wsFr);
-			var kbdEn = new DefaultKeyboardDefinition(KeyboardType.System, "English", "en-US");
+			DefaultKeyboardDefinition kbdEn = CreateKeyboard("English", "en-US");
 			wsEn.LocalKeyboard = kbdEn;
-			var kbdFr = new DefaultKeyboardDefinition(KeyboardType.System, "French", "fr-FR");
+			DefaultKeyboardDefinition kbdFr = CreateKeyboard("French", "fr-FR");
 			wsFr.LocalKeyboard = kbdFr;
 
 			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("en-US"), wsEn, new[] {wsEn, wsFr}), Is.EqualTo(wsEn));
@@ -823,9 +824,9 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.Set(wsEn);
 			var wsFr = new WritingSystemDefinition("fr");
 			RepositoryUnderTest.Set(wsFr);
-			var kbdEn = new DefaultKeyboardDefinition(KeyboardType.System, "English", "en-US");
+			DefaultKeyboardDefinition kbdEn = CreateKeyboard("English", "en-US");
 			wsEn.LocalKeyboard = kbdEn;
-			var kbdFr = new DefaultKeyboardDefinition(KeyboardType.System, "French", "en-US");
+			DefaultKeyboardDefinition kbdFr = CreateKeyboard("French", "en-US");
 			wsFr.LocalKeyboard = kbdFr;
 
 			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("en-US"), wsEn, new[] { wsEn, wsFr }), Is.EqualTo(wsEn));
@@ -841,9 +842,9 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.Set(wsEn);
 			var wsFr = new WritingSystemDefinition("fr");
 			RepositoryUnderTest.Set(wsFr);
-			var kbdEn = new DefaultKeyboardDefinition(KeyboardType.System, "English", "en-US");
+			DefaultKeyboardDefinition kbdEn = CreateKeyboard("English", "en-US");
 			wsEn.LocalKeyboard = kbdEn;
-			var kbdFr = new DefaultKeyboardDefinition(KeyboardType.System, "English", "fr-US");
+			DefaultKeyboardDefinition kbdFr = CreateKeyboard("English", "fr-US");
 			wsFr.LocalKeyboard = kbdFr;
 
 			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("English", new CultureInfo("de-DE"), wsEn, new[] { wsEn, wsFr }), Is.EqualTo(wsEn));
@@ -863,13 +864,13 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.Set(wsFr);
 			var wsDe = new WritingSystemDefinition("de");
 			RepositoryUnderTest.Set(wsDe);
-			var kbdEn = new DefaultKeyboardDefinition(KeyboardType.System, "English", "en-US");
+			DefaultKeyboardDefinition kbdEn = CreateKeyboard("English", "en-US");
 			wsEn.LocalKeyboard = kbdEn;
-			var kbdEnIpa = new DefaultKeyboardDefinition(KeyboardType.System, "English-IPA", "en-US");
+			DefaultKeyboardDefinition kbdEnIpa = CreateKeyboard("English-IPA", "en-US");
 			wsEnIpa.LocalKeyboard = kbdEnIpa;
-			var kbdFr = new DefaultKeyboardDefinition(KeyboardType.System, "French", "fr-FR");
+			DefaultKeyboardDefinition kbdFr = CreateKeyboard("French", "fr-FR");
 			wsFr.LocalKeyboard = kbdFr;
-			var kbdDe = new DefaultKeyboardDefinition(KeyboardType.System, "English", "de-DE");
+			DefaultKeyboardDefinition kbdDe = CreateKeyboard("English", "de-DE");
 			wsDe.LocalKeyboard = kbdDe;
 
 			WritingSystemDefinition[] wss = {wsEn, wsFr, wsDe, wsEnIpa};
@@ -898,14 +899,14 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.Set(wsFr);
 			var wsDe = new WritingSystemDefinition("de");
 			RepositoryUnderTest.Set(wsDe);
-			var kbdEn = new DefaultKeyboardDefinition(KeyboardType.System, "English", "en-US");
+			DefaultKeyboardDefinition kbdEn = CreateKeyboard("English", "en-US");
 			wsEn.LocalKeyboard = kbdEn;
-			var kbdEnIpa = new DefaultKeyboardDefinition(KeyboardType.System, "English-IPA", "en-US");
+			DefaultKeyboardDefinition kbdEnIpa = CreateKeyboard("English-IPA", "en-US");
 			wsEnIpa.LocalKeyboard = kbdEnIpa;
 			wsEnUS.LocalKeyboard = kbdEn; // exact same keyboard used!
-			var kbdFr = new DefaultKeyboardDefinition(KeyboardType.System, "French", "fr-FR");
+			DefaultKeyboardDefinition kbdFr = CreateKeyboard("French", "fr-FR");
 			wsFr.LocalKeyboard = kbdFr;
-			var kbdDe = new DefaultKeyboardDefinition(KeyboardType.System, "English", "de-DE");
+			DefaultKeyboardDefinition kbdDe = CreateKeyboard("English", "de-DE");
 			wsDe.LocalKeyboard = kbdDe;
 
 			WritingSystemDefinition[] wss = {wsEn, wsFr, wsDe, wsEnIpa, wsEnUS};
@@ -935,9 +936,9 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.Set(wsEn);
 			var wsFr = new WritingSystemDefinition("fr");
 			RepositoryUnderTest.Set(wsFr);
-			var kbdEn = new DefaultKeyboardDefinition(KeyboardType.System, "English", "en-US");
+			DefaultKeyboardDefinition kbdEn = CreateKeyboard("English", "en-US");
 			wsEn.LocalKeyboard = kbdEn;
-			var kbdFr = new DefaultKeyboardDefinition(KeyboardType.System, "French", "en-US");
+			DefaultKeyboardDefinition kbdFr = CreateKeyboard("French", "en-US");
 			wsFr.LocalKeyboard = kbdFr;
 
 			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("fr-FR"), wsEn, new[] { wsEn, wsFr }), Is.EqualTo(wsEn));
@@ -945,6 +946,11 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("fr-FR"), wsEn, new[] { wsFr, wsEn }), Is.EqualTo(wsEn));
 			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("fr-FR"), wsFr, new[] { wsFr, wsEn }), Is.EqualTo(wsFr));
 			Assert.That(RepositoryUnderTest.GetWsForInputLanguage("", new CultureInfo("fr-FR"), null, new[] { wsFr, wsEn }), Is.Null);
+		}
+
+		private static DefaultKeyboardDefinition CreateKeyboard(string layout, string locale)
+		{
+			return new DefaultKeyboardDefinition(string.Format("{1}_{0}", layout, locale), layout, layout, locale, true);
 		}
 #endif
 	}

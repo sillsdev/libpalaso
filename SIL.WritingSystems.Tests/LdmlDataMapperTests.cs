@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Xml;
 using NUnit.Framework;
@@ -129,6 +128,7 @@ namespace SIL.WritingSystems.Tests
 			Assert.AreEqual(sortRules, wsFromLdml.CollationRules);
 		}
 
+#if WS_FIX
 		[Test]
 		public void RoundtripKnownKeyboards()
 		{
@@ -171,11 +171,12 @@ namespace SIL.WritingSystems.Tests
 
 		class MyKeyboardController : DefaultKeyboardController
 		{
-			public override IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
+			public override IKeyboardDefinition CreateKeyboardDefinition(string id)
 			{
-				return new MyKeyboardDefn(KeyboardType.System, layout, locale);
+				return new MyKeyboardDefn(KeyboardType.System, id, id);
 			}
 		}
+#endif
 
 		[Test]
 		public void ReadWindowsLcid()
@@ -520,7 +521,8 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		[Test, Ignore("defaultFontSize has been removed, but WriteVersion0Ldml writes it, even if it is 0.")]
+#if WS_FIX
+		[Test]
 		public void RoundTripFlexPrivateUseWritingSystem_LanguageIsPopulated()
 		{
 			using (var file = new TempFile())
@@ -536,7 +538,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		[Test, Ignore("defaultFontSize has been removed, but WriteVersion0Ldml writes it, even if it is 0.")]
+		[Test]
 		public void RoundTripFlexPrivateUseWritingSystem_LanguageAndScriptPopulated()
 		{
 			using (var file = new TempFile())
@@ -552,7 +554,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		[Test, Ignore("defaultFontSize has been removed, but WriteVersion0Ldml writes it, even if it is 0.")]
+		[Test]
 		public void RoundTripFlexPrivateUseWritingSystem_LanguageAndTerritoryPopulated()
 		{
 			using (var file = new TempFile())
@@ -568,7 +570,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		[Test, Ignore("defaultFontSize has been removed, but WriteVersion0Ldml writes it, even if it is 0.")]
+		[Test]
 		public void RoundTripFlexPrivateUseWritingSystem_LanguageAndVariantPopulated()
 		{
 			using (var file = new TempFile())
@@ -584,7 +586,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		[Test, Ignore("defaultFontSize has been removed, but WriteVersion0Ldml writes it, even if it is 0.")]
+		[Test]
 		public void RoundTripFlexPrivateUseWritingSystem_LanguageIsOnlyX_AllFieldsPopulated()
 		{
 			using (var file = new TempFile())
@@ -600,7 +602,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		[Test, Ignore("defaultFontSize has been removed, but WriteVersion0Ldml writes it, even if it is 0.")]
+		[Test]
 		public void RoundTripFlexPrivateUseWritingSystem_AllFieldsPopulated()
 		{
 			using (var file = new TempFile())
@@ -616,7 +618,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		[Test, Ignore("defaultFontSize has been removed, but WriteVersion0Ldml writes it, even if it is 0.")]
+		[Test]
 		public void RoundTripFlexPrivateUseWritingSystem_LanguageAndPrivateUsePopulated()
 		{
 			using (var file = new TempFile())
@@ -631,6 +633,7 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(File.ReadAllText(file.Path), Is.EqualTo(originalLdml));
 			}
 		}
+#endif
 
 		[Test]
 		public void Write_OriginalWasFlexPrivateUseWritingSystemButNowChangedLanguage_IdentityElementChangedToPalasoWay()
@@ -862,7 +865,7 @@ namespace SIL.WritingSystems.Tests
 				var dataMapper = new LdmlDataMapper();
 
 				dataMapper.Read(tempFile.Path, ws);
-				var keyboard1 = new DefaultKeyboardDefinition(KeyboardType.System, "MyFavoriteKeyboard", "en-US");
+				var keyboard1 = new DefaultKeyboardDefinition("MyFavoriteKeyboard", string.Empty);
 				ws.KnownKeyboards.Add(keyboard1);
 				using(var fileStream = new FileStream(tempFile.Path, FileMode.Open))
 				{
@@ -872,7 +875,7 @@ namespace SIL.WritingSystems.Tests
 				var secondTripMapper = new LdmlDataMapper();
 				var secondTripWs = new WritingSystemDefinition();
 				secondTripMapper.Read(roundTripOut.Path, secondTripWs);
-				secondTripWs.KnownKeyboards.Add(new DefaultKeyboardDefinition(KeyboardType.System, "x-tel", "qaa"));
+				secondTripWs.KnownKeyboards.Add(new DefaultKeyboardDefinition("x-tel", string.Empty));
 				secondTripWs.WindowsLcid = "1037";
 				using(var fileStream = new FileStream(roundTripOut.Path, FileMode.Open))
 				{

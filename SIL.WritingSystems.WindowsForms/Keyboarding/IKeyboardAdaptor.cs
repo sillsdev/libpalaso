@@ -6,21 +6,33 @@
 // 	GNU Lesser General Public License, as specified in the LICENSING.txt file.
 // </copyright>
 // --------------------------------------------------------------------------------------------
-using System;
-using System.Drawing;
-using System.Collections.Generic;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Interfaces;
-using SIL.WritingSystems;
 
-namespace SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces
+using System;
+
+namespace SIL.WritingSystems.WindowsForms.Keyboarding
 {
+	/// <summary>
+	/// The different keyboard types we're supporting.
+	/// </summary>
+	internal enum KeyboardAdaptorType
+	{
+		/// <summary>
+		/// System keyboard like Windows API or xkb
+		/// </summary>
+		System,
+		/// <summary>
+		/// Other input method like Keyman, InKey or ibus
+		/// </summary>
+		OtherIm
+	}
+
 	/// <summary>
 	/// Interface implemented by some helper classes used by KeyboardController, which
 	/// maintains a list of keyboard adapters, one for each type of keyboard on the current platform
 	/// which require different treatment.  In particular a keyboard adapter is responsible to figure out which keyboards of the type
 	/// it handles are installed, and to activate one of them when we think the user wants to type with it.
 	/// </summary>
-	public interface IKeyboardAdaptor
+	internal interface IKeyboardAdaptor : IDisposable
 	{
 		/// <summary>
 		/// Initialize the installed keyboards: add to the master list the available keyboards recognized by this adapter.
@@ -32,17 +44,6 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces
 		/// we need the list to be up-to-date (e.g., when displaying a chooser). The controller first empties the list.
 		/// </summary>
 		void UpdateAvailableKeyboards();
-
-		/// <summary/>
-		void Close();
-
-		/// <summary>
-		/// List of keyboard layouts that either gave an exception or other error trying to
-		/// get more information. We don't have enough information for these keyboard layouts
-		/// to include them in the list of installed keyboards.
-		/// </summary>
-		/// <returns>List of IKeyboardErrorDescription objects, or an empty list.</returns>
-		List<IKeyboardErrorDescription> ErrorKeyboards { get; }
 
 		bool ActivateKeyboard(IKeyboardDefinition keyboard);
 
@@ -57,7 +58,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces
 
 		/// <summary>
 		/// Creates and returns a keyboard definition object of the type needed by this adapter (and hooked to it)
-		/// based on the layout and locale. However, since this method is used (at least by external code) to create
+		/// based on the ID. However, since this method is used (at least by external code) to create
 		/// definitions for unavailable keyboards, the expectation is that this keyboard cannot be successfully
 		/// activated.
 		/// <remarks>This only needs to be implemented by the (first) adapter of type System. It will never be called
@@ -68,7 +69,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces
 		/// that does not match anything available on this system. Since it isn't available, it's arbitrary which
 		/// adapter creates a keyboard for it, so we arbitrarily pick the first of type System.</remarks>
 		/// </summary>
-		IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale);
+		IKeyboardDefinition CreateKeyboardDefinition(string id);
 
 		/// <summary>
 		/// Gets the default keyboard of the system. This only needs to be implemented by the (first) adapter of type system.
@@ -78,6 +79,11 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces
 		/// <summary>
 		/// Gets the type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
 		/// </summary>
-		KeyboardType Type { get; }
+		KeyboardAdaptorType Type { get; }
+
+		/// <summary>
+		/// Determines whether this adaptor can handle the specified keyboard format.
+		/// </summary>
+		bool CanHandleFormat(KeyboardFormat format);
 	}
 }

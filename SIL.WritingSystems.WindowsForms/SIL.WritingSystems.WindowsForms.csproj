@@ -149,16 +149,11 @@
     <Compile Include="DeleteInputSystemDialog.Designer.cs">
       <DependentUpon>DeleteInputSystemDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Keyboarding\Interfaces\IIbusEventHandler.cs" />
-    <Compile Include="Keyboarding\Interfaces\IKeyboardErrorDescription.cs" />
-    <Compile Include="Keyboarding\InternalInterfaces\IIbusCommunicator.cs" />
-    <Compile Include="Keyboarding\InternalInterfaces\IKeyboardAdaptor.cs" />
-    <Compile Include="Keyboarding\InternalInterfaces\IKeyboardControllerImpl.cs" />
-    <Compile Include="Keyboarding\InternalInterfaces\IXklEngine.cs" />
+    <Compile Include="Keyboarding\IKeyboardAdaptor.cs" />
+    <Compile Include="Keyboarding\InputLanguageWrapper.cs" />
     <Compile Include="Keyboarding\KeyboardController.cs" />
     <Compile Include="Keyboarding\KeyboardDescription.cs" />
     <Compile Include="Keyboarding\KeyboardDescriptionNull.cs" />
-    <Compile Include="Keyboarding\KeyboardErrorDescription.cs" />
     <Compile Include="Keyboarding\Linux\CinnamonIbusAdaptor.cs" />
     <Compile Include="Keyboarding\Linux\CombinedKeyboardAdaptor.cs" />
     <Compile Include="Keyboarding\Linux\CommonBaseAdaptor.cs" />
@@ -167,19 +162,20 @@
     <Compile Include="Keyboarding\Linux\IbusDefaultEventHandler.cs" />
     <Compile Include="Keyboarding\Linux\IbusKeyboardAdaptor.cs" />
     <Compile Include="Keyboarding\Linux\IbusKeyboardDescription.cs" />
+    <Compile Include="Keyboarding\Linux\IIbusCommunicator.cs" />
+    <Compile Include="Keyboarding\Linux\IIbusEventHandler.cs" />
+    <Compile Include="Keyboarding\Linux\IXklEngine.cs" />
     <Compile Include="Keyboarding\Linux\X11.cs" />
     <Compile Include="Keyboarding\Linux\X11KeyConverter.cs" />
     <Compile Include="Keyboarding\Linux\XkbKeyboardAdaptor.cs" />
     <Compile Include="Keyboarding\Linux\XkbKeyboardDescription.cs" />
     <Compile Include="Keyboarding\Linux\XklConfigRegistry.cs" />
     <Compile Include="Keyboarding\Linux\XklEngine.cs" />
-    <Compile Include="Keyboarding\Types\InputLanguageWrapper.cs" />
-    <Compile Include="Keyboarding\Types\MouseEvent.cs" />
-    <Compile Include="Keyboarding\Types\RegisterEventArgs.cs" />
-    <Compile Include="Keyboarding\Types\Win32.cs" />
+    <Compile Include="Keyboarding\RegisterEventArgs.cs" />
     <Compile Include="Keyboarding\Windows\KeymanKeyboardAdaptor.cs" />
     <Compile Include="Keyboarding\Windows\KeymanKeyboardDescription.cs" />
     <Compile Include="Keyboarding\Windows\MsTsfInterfaces.cs" />
+    <Compile Include="Keyboarding\Windows\Win32.cs" />
     <Compile Include="Keyboarding\Windows\WinKeyboardAdaptor.cs" />
     <Compile Include="Keyboarding\Windows\WinKeyboardDescription.cs" />
     <Compile Include="LookupISOCodeDialog.cs">
@@ -403,6 +399,7 @@
       <DependentUpon>WritingSystemTreeView.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

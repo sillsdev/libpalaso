@@ -28,19 +28,28 @@ namespace SIL.WritingSystems
 		protected override void InsertItem(int index, IKeyboardDefinition item)
 		{
 			if (Contains(item.Id))
-				return;
-
+			{
+				IKeyboardDefinition oldItem = this[item.Id];
+				int oldIndex = IndexOf(oldItem);
+				if (oldIndex == index - 1 && oldItem == item)
+					return;
+				RemoveAt(oldIndex);
+				if (index > oldIndex)
+					index--;
+			}
 			base.InsertItem(index, item);
 		}
 
-		public bool Contains(string layout, string locale)
+		public bool TryGetKeyboardDefinition(string id, out IKeyboardDefinition kd)
 		{
-			return Contains(DefaultKeyboardDefinition.GetId(locale, layout));
-		}
+			if (Contains(id))
+			{
+				kd = this[id];
+				return true;
+			}
 
-		public IKeyboardDefinition this[string layout, string locale]
-		{
-			get { return this[DefaultKeyboardDefinition.GetId(locale, layout)]; }
+			kd = null;
+			return false;
 		}
 	}
 }

@@ -1,8 +1,6 @@
 // Copyright (c) 2011-2013 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
-using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
-
 namespace SIL.WritingSystems.WindowsForms.Keyboarding
 {
 	/// <summary>
@@ -20,28 +18,16 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		public static readonly IKeyboardDefinition Zero = new KeyboardDescriptionNull();
 
 		private readonly IKeyboardAdaptor _engine;
-		private readonly string _name;
 		private readonly IInputLanguage _inputLanguage;
 
 		/// <summary>
 		/// Initializes a new instance of the
 		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.KeyboardDescription"/> class.
 		/// </summary>
-		internal KeyboardDescription(string name, string layout, string locale,
+		internal KeyboardDescription(string id, string name, string layout, string locale, bool isAvailable,
 			IInputLanguage language, IKeyboardAdaptor engine)
-			: this(name, layout, locale, language, engine, KeyboardType.System, true)
+			: base(id, name, layout, locale, isAvailable)
 		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the
-		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.KeyboardDescription"/> class.
-		/// </summary>
-		internal KeyboardDescription(string name, string layout, string locale,
-			IInputLanguage language, IKeyboardAdaptor engine, KeyboardType type, bool isAvailable)
-			: base(type, layout, locale, isAvailable)
-		{
-			_name = name;
 			_engine = engine;
 			_inputLanguage = language;
 		}
@@ -68,24 +54,9 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 			get { return _inputLanguage; }
 		}
 
-		protected static string GetDisplayName(string cultureName, string layoutName)
-		{
-			return string.Format("{1} - {0}", cultureName, layoutName);
-		}
-
 		protected virtual bool DeactivatePreviousKeyboard(IKeyboardDefinition keyboardToActivate)
 		{
 			return true;
-		}
-
-		#region IKeyboardDefinition Members
-
-		/// <summary>
-		/// Gets a human-readable name of the input method/language combination.
-		/// </summary>
-		public override string Name
-		{
-			get { return _name; }
 		}
 
 		/// <summary>
@@ -112,6 +83,5 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 			if (Engine.ActivateKeyboard(this))
 				Keyboard.Controller.ActiveKeyboard = this;
 		}
-	    #endregion
 	}
 }

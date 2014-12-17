@@ -13,9 +13,9 @@ namespace SIL.WritingSystems
 	public interface IKeyboardController: IDisposable
 	{
 		/// <summary>
-		/// Tries to get the keyboard with the specified <paramref name="layoutNameWithLocale"/>.
+		/// Tries to get the keyboard with the specified <paramref name="id"/>.
 		/// </summary>
-		IKeyboardDefinition GetKeyboard(string layoutNameWithLocale);
+		IKeyboardDefinition GetKeyboard(string id);
 
 		/// <summary>
 		/// Tries to get the keyboard with the specified <paramref name="layoutName"/>
@@ -41,7 +41,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Activates the keyboard
 		/// </summary>
-		void SetKeyboard(string layoutName);
+		void SetKeyboard(string id);
 
 		/// <summary>
 		/// Activates the keyboard
@@ -92,9 +92,9 @@ namespace SIL.WritingSystems
 		/// </summary>
 		IKeyboardDefinition LegacyForWritingSystem(WritingSystemDefinition ws);
 		/// <summary>
-		/// Creates and returns a keyboard definition object based on the layout and locale.
+		/// Creates and returns a keyboard definition object based on the ID.
 		/// </summary>
-		IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale);
+		IKeyboardDefinition CreateKeyboardDefinition(string id, KeyboardFormat format, string url);
 
 		/// <summary>
 		/// Gets or sets the currently active keyboard

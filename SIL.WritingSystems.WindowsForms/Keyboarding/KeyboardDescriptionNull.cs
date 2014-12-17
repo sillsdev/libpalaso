@@ -7,27 +7,29 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------
 using System;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Interfaces;
-using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
-using SIL.WritingSystems;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding
 {
 	/// <summary>
 	/// This implements a no-op keyboard that can be used where we don't know what keyboard to use
 	/// </summary>
-	internal class KeyboardDescriptionNull: IKeyboardDefinition
+	internal class KeyboardDescriptionNull : IKeyboardDefinition
 	{
-		internal const string DefaultKeyboardName = "(default)";
+		private const string DefaultKeyboardName = "(default)";
 
 		#region IKeyboardDefinition implementation
 		public void Activate()
 		{
 		}
 
-		public IKeyboardDefinition Clone()
+		public KeyboardFormat Format
 		{
-			return new KeyboardDescriptionNull();
+			get { return KeyboardFormat.Unknown; }
+		}
+
+		public string Url
+		{
+			get { return null; }
 		}
 
 		public string Id
@@ -35,9 +37,9 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 			get { return string.Empty; }
 		}
 
-		public KeyboardType Type
+		public KeyboardAdaptorType Type
 		{
-			get { return KeyboardType.System; }
+			get { return KeyboardAdaptorType.System; }
 		}
 
 		public string Name
@@ -48,27 +50,19 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		/// <summary>
 		/// Gets a localized human-readable name of the input language.
 		/// </summary>
-		public string LocalizedName { get { return DefaultKeyboardName; } }
-
-		/// <summary>
-		/// Gets the layout name of the keyboard
-		/// </summary>
-		public string Layout
+		public string LocalizedName
 		{
-			get { return DefaultKeyboardName; }
-		}
-
-		/// <summary>
-		/// One operating system on which the keyboard is known to work.
-		/// </summary>
-		public PlatformID OperatingSystem
-		{
-			get { return Environment.OSVersion.Platform; }
+			get { return Name; }
 		}
 
 		public string Locale
 		{
-			get { return "en-US"; } // arbitrary but at least a valid locale. Is there something more neutral we could use?
+			get { return string.Empty; }
+		}
+
+		public string Layout
+		{
+			get { return DefaultKeyboardName; }
 		}
 
 		public bool IsAvailable
@@ -78,10 +72,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 
 		public IKeyboardAdaptor Engine
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
+			get { throw new NotSupportedException(); }
 		}
 		#endregion
 
@@ -92,24 +83,6 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		public override string ToString()
 		{
 			return "<no keyboard>";
-		}
-
-		/// <summary>
-		/// Determines whether the specified <see cref="T:System.Object"/> is equal to the current
-		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.KeyboardDescriptionNull"/>.
-		/// </summary>
-		public override bool Equals(object obj)
-		{
-			return obj is KeyboardDescriptionNull;
-		}
-
-		/// <summary>
-		/// Serves as a hash function for a
-		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.KeyboardDescriptionNull"/> object.
-		/// </summary>
-		public override int GetHashCode()
-		{
-			return 0;
 		}
 	}
 }

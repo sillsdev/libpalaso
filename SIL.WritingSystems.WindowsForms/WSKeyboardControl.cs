@@ -21,19 +21,9 @@ namespace SIL.WritingSystems.WindowsForms
 				_descriptor = descriptor;
 			}
 
-			public string Id
+			public IKeyboardDefinition KeyboardDefinition
 			{
-				get { return _descriptor.Id; }
-			}
-
-			public string Layout
-			{
-				get { return _descriptor.Layout; }
-			}
-
-			public string Locale
-			{
-				get { return _descriptor.Locale; }
+				get { return _descriptor; }
 			}
 
 			public override string ToString()
@@ -50,7 +40,7 @@ namespace SIL.WritingSystems.WindowsForms
 		{
 			InitializeComponent();
 			if (KeyboardController.IsInitialized)
-				KeyboardController.Register(_testArea);
+				KeyboardController.Instance.RegisterControl(_testArea);
 			_defaultFontSize = _testArea.Font.SizeInPoints;
 			_defaultFontName = _testArea.Font.Name;
 			_possibleKeyboardsList.ShowItemToolTips = true;
@@ -112,7 +102,7 @@ namespace SIL.WritingSystems.WindowsForms
 				PopulateKeyboardList();
 				UpdateFromModel();
 			}
-			this.Disposed += OnDisposed;
+			Disposed += OnDisposed;
 		}
 
 		private void OnDisposed(object sender, EventArgs e)
@@ -135,10 +125,10 @@ namespace SIL.WritingSystems.WindowsForms
 
 		private ListViewItem MakeLabelItem(string text)
 		{
-			var label1 = new ListViewItem(text);
-			label1.BackColor = _labelColor;
-			label1.Font = new Font(_possibleKeyboardsList.Font, FontStyle.Bold);
-			return label1;
+			var label = new ListViewItem(text);
+			label.BackColor = _labelColor;
+			label.Font = new Font(_possibleKeyboardsList.Font, FontStyle.Bold);
+			return label;
 		}
 
 		private bool IsItemLabel(ListViewItem item)
@@ -220,14 +210,12 @@ namespace SIL.WritingSystems.WindowsForms
 				currentKeyboardDefinition = _possibleKeyboardsList.SelectedItems[0].Tag as KeyboardDefinitionAdapter;
 
 			if (_model.CurrentKeyboard != null &&
-				(currentKeyboardDefinition == null || _model.CurrentKeyboard.Layout != currentKeyboardDefinition.Layout
-				|| _model.CurrentKeyboard.Locale != currentKeyboardDefinition.Locale))
+				(currentKeyboardDefinition == null || _model.CurrentKeyboard != currentKeyboardDefinition.KeyboardDefinition))
 			{
 				foreach (ListViewItem item in _possibleKeyboardsList.Items)
 				{
 					var keyboard = item.Tag as KeyboardDefinitionAdapter;
-					if (keyboard != null && keyboard.Layout == _model.CurrentKeyboard.Layout
-						&& keyboard.Locale == _model.CurrentKeyboard.Locale)
+					if (keyboard != null && keyboard.KeyboardDefinition == _model.CurrentKeyboard)
 					{
 						//_possibleKeyboardsList.SelectedItems.Clear();
 						// We're updating the display from the model, so we don't need to run the code that
@@ -289,13 +277,11 @@ namespace SIL.WritingSystems.WindowsForms
 			}
 			if (_possibleKeyboardsList.SelectedItems.Count != 0)
 			{
-				var currentKeyboard = _possibleKeyboardsList.SelectedItems[0].Tag as KeyboardDefinitionAdapter;
+				var currentKeyboard = (KeyboardDefinitionAdapter) _possibleKeyboardsList.SelectedItems[0].Tag;
 				if (_model.CurrentKeyboard == null ||
-					_model.CurrentKeyboard.Layout != currentKeyboard.Layout ||
-					_model.CurrentKeyboard.Locale != currentKeyboard.Locale)
+					_model.CurrentKeyboard != currentKeyboard.KeyboardDefinition)
 				{
-					_model.CurrentKeyboard = Keyboard.Controller.CreateKeyboardDefinition(currentKeyboard.Layout,
-						currentKeyboard.Locale);
+					_model.CurrentKeyboard = currentKeyboard.KeyboardDefinition;
 				}
 			}
 

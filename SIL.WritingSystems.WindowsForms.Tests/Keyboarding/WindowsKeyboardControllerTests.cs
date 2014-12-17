@@ -13,8 +13,6 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 	[Category("SkipOnTeamCity")] // TeamCity builds don't seem to be able to see any installed keyboards.
 	public class WindowsKeyboardControllerTests
 	{
-		private Form _window;
-
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
@@ -31,28 +29,6 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		public void Setup()
 		{
 			ErrorReport.IsOkToInteractWithUser = false;
-		}
-
-		private void RequiresWindow()
-		{
-			_window = new Form();
-			var box = new TextBox();
-			box.Dock = DockStyle.Fill;
-			_window.Controls.Add(box);
-
-			_window.Show();
-			box.Select();
-			Application.DoEvents();
-		}
-
-		[TearDown]
-		public void Teardown()
-		{
-			if (_window != null)
-			{
-				_window.Close();
-				_window.Dispose();
-			}
 		}
 
 		[Test]
@@ -88,22 +64,13 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 			Assert.DoesNotThrow(() => Keyboard.Controller.SetKeyboard(keyboardName));
 		}
 
-		[Test]
-		public void ActivateKeyboard_BogusNameWithLocale_DoesntThrow()
-		{
-			// REVIEW: Should this show an error?
-			Assert.DoesNotThrow(
-				() => Keyboard.Controller.SetKeyboard("foobar", "en-US")
-			);
-		}
-
 		IKeyboardDefinition FirstInactiveKeyboard
 		{
 			get
 			{
-				var keyboards = Keyboard.Controller.AllAvailableKeyboards.Where(x => x.Type == KeyboardType.System);
-				Assert.Greater(keyboards.Count(), 0, "This test requires that the Windows IME has at least one language installed.");
-				var d = keyboards.FirstOrDefault(x => x != Keyboard.Controller.ActiveKeyboard);
+				WinKeyboardDescription[] keyboards = Keyboard.Controller.AllAvailableKeyboards.OfType<WinKeyboardDescription>().ToArray();
+				Assert.Greater(keyboards.Length, 0, "This test requires that the Windows IME has at least one language installed.");
+				WinKeyboardDescription d = keyboards.FirstOrDefault(x => x != Keyboard.Controller.ActiveKeyboard);
 				if (d == null)
 					return keyboards.First(); // Some tests have some value even if it is an active keyboard.
 				return d;
@@ -121,15 +88,6 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 
 		[Test]
 		[Category("Windows IME")]
-		public void WindowsIME_ActivateKeyboardUsingLayoutAndLocale_ReportsItWasActivated()
-		{
-			var d = FirstInactiveKeyboard;
-			Keyboard.Controller.SetKeyboard(d.Layout, d.Locale);
-			Assert.AreEqual(d, Keyboard.Controller.ActiveKeyboard);
-		}
-
-		[Test]
-		[Category("Windows IME")]
 		public void WindowsIME_ActivateKeyboardUsingKeyboard_ReportsItWasActivated()
 		{
 			var d = FirstInactiveKeyboard;
@@ -141,9 +99,9 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		[Category("Windows IME")]
 		public void WindowsIME_DeActivateKeyboard_RevertsToDefault()
 		{
-			var keyboards = Keyboard.Controller.AllAvailableKeyboards.Where(x => x.Type == KeyboardType.System);
-			Assert.Greater(keyboards.Count(), 1, "This test requires that the Windows IME has at least two languages installed.");
-			var d = GetNonDefaultKeyboard(keyboards.ToList());
+			IKeyboardDefinition[] keyboards = Keyboard.Controller.AllAvailableKeyboards.Where(kd => kd is WinKeyboardDescription).ToArray();
+			Assert.Greater(keyboards.Length, 1, "This test requires that the Windows IME has at least two languages installed.");
+			IKeyboardDefinition d = GetNonDefaultKeyboard(keyboards);
 			d.Activate();
 			Assert.AreEqual(d, Keyboard.Controller.ActiveKeyboard);
 			Keyboard.Controller.ActivateDefaultKeyboard();
@@ -154,9 +112,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		{
 			// The default language is not necessarily the first one, so we have to make sure
 			// that we don't select the default one.
-			var defaultKeyboard =
-			Keyboard.Controller.GetKeyboard(InputLanguage.DefaultInputLanguage.LayoutName,
-			InputLanguage.DefaultInputLanguage.Culture.Name);
+			IKeyboardDefinition defaultKeyboard = Keyboard.Controller.GetKeyboard(new InputLanguageWrapper(InputLanguage.DefaultInputLanguage));
 			int index = keyboards.Count - 1;
 			while (index >= 0)
 			{
@@ -174,27 +130,27 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		[Category("Windows IME")]
 		public void WindowsIME_GetKeyboards_GivesSeveralButOnlyWindowsOnes()
 		{
-			var keyboards = Keyboard.Controller.AllAvailableKeyboards.Where(x => x.Type == KeyboardType.System);
-			Assert.Greater(keyboards.Count(), 1, "This test requires that the Windows IME has at least two languages installed.");
+			WinKeyboardDescription[] keyboards = Keyboard.Controller.AllAvailableKeyboards.OfType<WinKeyboardDescription>().ToArray();
+			Assert.Greater(keyboards.Length, 1, "This test requires that the Windows IME has at least two languages installed.");
 
-			Assert.That(keyboards.Select(keyboard => ((KeyboardDescription)keyboard).Engine), Is.All.TypeOf<WinKeyboardAdaptor>());
+			Assert.That(keyboards.Select(keyboard => keyboard.Engine), Is.All.TypeOf<WinKeyboardAdaptor>());
 		}
 
 		[Test]
 		public void ActivateDefaultKeyboard_ActivatesDefaultInputLanguage()
 		{
 			Keyboard.Controller.ActivateDefaultKeyboard();
-			Assert.That(WinKeyboardAdaptor.GetInputLanguage(Keyboard.Controller.ActiveKeyboard),
+			Assert.That(WinKeyboardAdaptor.GetInputLanguage((WinKeyboardDescription) Keyboard.Controller.ActiveKeyboard),
 				Is.EqualTo(InputLanguage.DefaultInputLanguage));
 		}
 
 		[Test]
 		public void CreateKeyboardDefinition_NewKeyboard_ReturnsNewObject()
 		{
-			var keyboard = Keyboard.Controller.CreateKeyboardDefinition("foo", "en-US");
+			var keyboard = Keyboard.Controller.CreateKeyboardDefinition("en-US_foo", KeyboardFormat.Unknown, null);
 			Assert.That(keyboard, Is.Not.Null);
 			Assert.That(keyboard, Is.TypeOf<WinKeyboardDescription>());
-			Assert.That((keyboard as KeyboardDescription).InputLanguage, Is.Not.Null);
+			Assert.That(((KeyboardDescription) keyboard).InputLanguage, Is.Not.Null);
 		}
 
 		// TODO: Remove or implement

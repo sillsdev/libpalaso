@@ -74,9 +74,13 @@ namespace PalasoUIWindowsForms.TestApp
 				var wsRepo = LdmlInFolderWritingSystemRepository.Initialize(tempPath, onMigration, onLoadProblem);
 				using (var dialog = new WritingSystemSetupDialog(wsRepo))
 				{
+#if WS_FIX
 					dialog.WritingSystems.LocalKeyboardSettings = Settings.Default.LocalKeyboards;
+#endif
 					dialog.ShowDialog();
+#if WS_FIX
 					Settings.Default.LocalKeyboards = dialog.WritingSystems.LocalKeyboardSettings;
+#endif
 					Settings.Default.Save();
 				}
 			}

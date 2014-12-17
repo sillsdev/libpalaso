@@ -76,7 +76,6 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Keyboarding\FakeKeyboardController.cs" />
     <Compile Include="Keyboarding\IBusAdaptorTestsWithIBus.cs" />
     <Compile Include="Keyboarding\IBusAdaptorTestsWithoutIBus.cs" />
     <Compile Include="Keyboarding\IbusDefaultEventHandlerTests.cs" />

@@ -4,7 +4,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Security;
 using Microsoft.Win32;
-using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 {
@@ -65,22 +64,17 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 			return true;
 		}
 
-		private readonly bool _isKeyman6;
-
 		/// <summary>
 		/// Initializes a new instance of the
 		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.Windows.KeymanKeyboardDescription"/> class.
 		/// </summary>
 		internal KeymanKeyboardDescription(string layout, bool isKeyman6, KeymanKeyboardAdaptor engine, bool isAvailable)
-			: base(layout, layout, string.Empty, null, engine, KeyboardType.OtherIm, isAvailable)
+			: base(layout, layout, layout, string.Empty, isAvailable, null, engine)
 		{
-			_isKeyman6 = isKeyman6;
+			IsKeyman6 = isKeyman6;
 		}
 
-		public bool IsKeyman6
-		{
-			get { return _isKeyman6; }
-		}
+		internal bool IsKeyman6 { get; set; }
 	
 		/// <summary>
 		/// If the new keyboard is the default windows keyboard then we need to deactivate the Keyman 
@@ -90,8 +84,12 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 		/// </summary>
 		protected override bool DeactivatePreviousKeyboard(IKeyboardDefinition keyboardToActivate)
 		{
-			return (!KeymanKeyboardSwitchingSettingEnabled ||
-				keyboardToActivate.Equals(((IKeyboardControllerImpl)Keyboard.Controller).DefaultKeyboard));
+			return !KeymanKeyboardSwitchingSettingEnabled || keyboardToActivate == KeyboardController.Instance.DefaultKeyboard;
+		}
+
+		internal void SetIsAvailable(bool isAvailable)
+		{
+			IsAvailable = isAvailable;
 		}
 	}
 }

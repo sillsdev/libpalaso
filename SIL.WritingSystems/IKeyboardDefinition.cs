@@ -1,18 +1,31 @@
 ﻿namespace SIL.WritingSystems
 {
-	/// <summary>
-	/// The different keyboard types we're supporting.
-	/// </summary>
-	public enum KeyboardType
+	public enum KeyboardFormat
 	{
 		/// <summary>
-		/// System keyboard like Windows API or xkb
+		/// Unknown format
 		/// </summary>
-		System,
+		Unknown,
 		/// <summary>
-		/// Other input method like Keyman, InKey or ibus
+		/// Keyman source file (.kmn)
 		/// </summary>
-		OtherIm
+		Keyman,
+		/// <summary>
+		/// Compiled Keyman file (.kmx)
+		/// </summary>
+		CompiledKeyman,
+		/// <summary>
+		/// MSKLC file (.klc)
+		/// </summary>
+		Msklc,
+		/// <summary>
+		/// Keyboard layout LDML file
+		/// </summary>
+		Ldml,
+		/// <summary>
+		/// Mac keyboard layout file
+		/// </summary>
+		Keylayout
 	}
 
 	/// <summary>
@@ -24,11 +37,6 @@
 		/// Gets an identifier of the language/keyboard layout
 		/// </summary>
 		string Id { get; }
-
-		/// <summary>
-		/// Gets the type of this keyboard (system or other)
-		/// </summary>
-		KeyboardType Type { get; }
 
 		/// <summary>
 		/// Gets a human-readable (unlocalized) name of the input language.
@@ -61,5 +69,15 @@
 		/// Review JohnT: Do we need to pass the control or Form in which we want it activated?
 		/// </summary>
 		void Activate();
+
+		/// <summary>
+		/// Gets the keyboard source format.
+		/// </summary>
+		KeyboardFormat Format { get; }
+
+		/// <summary>
+		/// Gets the keyboard source URL.
+		/// </summary>
+		string Url { get; }
 	}
 }

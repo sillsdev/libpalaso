@@ -357,20 +357,22 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		//[Test]
-		//public void CanSaveAndReadDefaultFont()
-		//{
-		//	using (var environment = new TestEnvironment())
-		//	{
-		//		environment.WritingSystem.Language = "en";
-		//		environment.WritingSystem.DefaultFontName = "Courier";
-		//		environment.Collection.SaveDefinition(environment.WritingSystem);
+#if WS_FIX
+		[Test]
+		public void CanSaveAndReadDefaultFont()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WritingSystem.Language = "en";
+				environment.WritingSystem.DefaultFontName = "Courier";
+				environment.Collection.SaveDefinition(environment.WritingSystem);
 
-		//		var newCollection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
-		//		var ws2 = newCollection.Get("en");
-		//		Assert.AreEqual("Courier", ws2.DefaultFontName);
-		//	}
-		//}
+				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
+				var ws2 = newCollection.Get("en");
+				Assert.AreEqual("Courier", ws2.DefaultFontName);
+			}
+		}
+#endif
 
 		[Test]
 		public void CanSaveAndReadKeyboardName()

@@ -22,7 +22,7 @@ namespace SIL.WritingSystems.WindowsForms
 			_fontSizeComboBox.Text = _defaultFontSize.ToString();
 			_promptForFontTestArea.SetPrompt(_testArea, "Use this area to type something to test out your font.");
 			if (KeyboardController.IsInitialized)
-				KeyboardController.Register(_testArea);
+				KeyboardController.Instance.RegisterControl(_testArea);
 		}
 
 		public void BindToModel(WritingSystemSetupModel model)

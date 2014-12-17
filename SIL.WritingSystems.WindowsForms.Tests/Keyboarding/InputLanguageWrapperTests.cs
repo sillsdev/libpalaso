@@ -10,7 +10,7 @@
 // ---------------------------------------------------------------------------------------------
 using System.Windows.Forms;
 using NUnit.Framework;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Types;
+using SIL.WritingSystems.WindowsForms.Keyboarding;
 
 namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 {

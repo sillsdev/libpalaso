@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Xml.Linq;
 using Palaso.Code;
 
 namespace SIL.WritingSystems
@@ -198,6 +197,7 @@ namespace SIL.WritingSystems
 				_writingSystems.Remove(oldId);
 			}
 			_writingSystems[ws.Id] = ws;
+#if WS_FIX
 			// If the writing system already has a local keyboard, probably it has just been created in some dialog,
 			// and we should respect the one the user set...though this is a very unlikely scenario, as we probably
 			// don't have a local setting for a WS that is just being created.
@@ -207,6 +207,7 @@ namespace SIL.WritingSystems
 			{
 				ws.LocalKeyboard = keyboard;
 			}
+#endif
 			if (!String.IsNullOrEmpty(oldId) && (oldId != ws.Id))
 			{
 				UpdateChangedIDs(oldId, ws.Id);
@@ -356,6 +357,7 @@ namespace SIL.WritingSystems
 
 		public WritingSystemCompatibility CompatibilityMode { get; private set; }
 
+#if WS_FIX
 		private Dictionary<string, IKeyboardDefinition> _localKeyboardSettings;
 
 		/// <summary>
@@ -402,7 +404,7 @@ namespace SIL.WritingSystems
 				}
 				// We do it like this rather than looking up the writing system by the ws attribute so as not to force the
 				// creation of any writing systems which may be in the local keyboard settings but not in the current repo.
-				foreach (var ws in AllWritingSystems)
+				foreach (WritingSystemDefinition ws in AllWritingSystems)
 				{
 					IKeyboardDefinition localKeyboard;
 					if (_localKeyboardSettings.TryGetValue(ws.Id, out localKeyboard))
@@ -410,6 +412,15 @@ namespace SIL.WritingSystems
 				}
 			}
 		}
+
+		private string GetAttributeValue(XElement node, string attrName)
+		{
+			var attr = node.Attribute(attrName);
+			if (attr == null)
+				return "";
+			return attr.Value;
+		}
+#endif
 
 		/// <summary>
 		/// Get the writing system that is most probably intended by the user, when input language changes to the specified layout and cultureInfo,
@@ -438,7 +449,7 @@ namespace SIL.WritingSystems
 				return wsCurrent;
 			WritingSystemDefinition layoutMatch = null;
 			WritingSystemDefinition cultureMatch = null;
-			foreach (var ws in options)
+			foreach (WritingSystemDefinition ws in options)
 			{
 				bool matchesCulture = WsMatchesCulture(cultureInfo, ws);
 				if (WsMatchesLayout(layoutName, ws))
@@ -462,14 +473,6 @@ namespace SIL.WritingSystems
 		private bool WsMatchesCulture(CultureInfo cultureInfo, WritingSystemDefinition ws)
 		{
 			return ws != null && ws.RawLocalKeyboard != null && ws.RawLocalKeyboard.Locale == cultureInfo.Name;
-		}
-
-		private string GetAttributeValue(XElement node, string attrName)
-		{
-			var attr = node.Attribute(attrName);
-			if (attr == null)
-				return "";
-			return attr.Value;
 		}
 	}
 }

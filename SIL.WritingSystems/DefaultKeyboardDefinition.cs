@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SIL.WritingSystems
+﻿namespace SIL.WritingSystems
 {
 	/// <summary>
 	/// A simple record of the properties we track in writing systems defining a keyboard and implementing the keyboard-related
@@ -12,28 +10,26 @@ namespace SIL.WritingSystems
 	/// Review: possibly that method and this class should be made abstract?</remarks>
 	public class DefaultKeyboardDefinition : IKeyboardDefinition
 	{
-		private readonly KeyboardType _type;
 		private readonly string _locale;
 		private readonly string _layout;
-		private readonly bool _isAvailable;
+		private readonly string _id;
+		private readonly string _name;
+
+		public DefaultKeyboardDefinition(string id, string name)
+			: this(id, name, string.Empty, string.Empty, false)
+		{
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DefaultKeyboardDefinition"/> class.
 		/// </summary>
-		public DefaultKeyboardDefinition(KeyboardType type, string layout, string locale, bool isAvailable = false)
+		public DefaultKeyboardDefinition(string id, string name, string layout, string locale, bool isAvailable)
 		{
-			_type = type;
 			_layout = layout;
 			_locale = locale;
-			_isAvailable = isAvailable;
-		}
-
-		/// <summary>
-		/// Gets the identifier for the keyboard based on the provided locale and layout.
-		/// </summary>
-		public static string GetId(string locale, string layout)
-		{
-			return String.Format("{0}_{1}", locale, layout);
+			_id = id;
+			_name = name;
+			IsAvailable = isAvailable;
 		}
 
 		/// <summary>
@@ -41,15 +37,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public string Id
 		{
-			get { return GetId(Locale, Layout); }
-		}
-
-		/// <summary>
-		/// Gets the type of this keyboard (system or other)
-		/// </summary>
-		public KeyboardType Type
-		{
-			get { return _type; }
+			get { return _id; }
 		}
 
 		/// <summary>
@@ -57,7 +45,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public virtual string Name
 		{
-			get { return string.Format("{0} - {1}", Layout, Locale); }
+			get { return _name; }
 		}
 
 		/// <summary>
@@ -91,10 +79,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Answer true if the keyboard is available to use on this system (that is, it can be activated).
 		/// </summary>
-		public bool IsAvailable
-		{
-			get { return _isAvailable; }
-		}
+		public bool IsAvailable { get; protected set; }
 
 		/// <summary>
 		/// Make this keyboard the active one that will be used for typing. This default class does not do anything
@@ -103,6 +88,16 @@ namespace SIL.WritingSystems
 		public virtual void Activate()
 		{
 		}
+
+		/// <summary>
+		/// Gets or sets the keyboard source format.
+		/// </summary>
+		public KeyboardFormat Format { get; set; }
+
+		/// <summary>
+		/// Gets or sets the keyboard source URL.
+		/// </summary>
+		public string Url { get; set; }
 
 		/// <summary>
 		/// Returns a <see cref="T:System.String"/> that represents the current

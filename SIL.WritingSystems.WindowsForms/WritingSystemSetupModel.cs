@@ -100,7 +100,6 @@ namespace SIL.WritingSystems.WindowsForms
 		{
 			get
 			{
-				var allKeyboards = PossibleKeyboardsToChoose.ToList();
 				if (_currentWritingSystem != null)
 				{
 					// If there aren't any known, possibly this WS is being migrated from a legacy writing system.
@@ -108,26 +107,14 @@ namespace SIL.WritingSystems.WindowsForms
 					// It's tempting to actually modify the KnownKeyboards list and put it in, but that would be a
 					// very dubious thing for a getter to do, and also, would put it there permanently, even
 					// if the user does not confirm it.
-					if (_currentWritingSystem != null && !_currentWritingSystem.KnownKeyboards.Any())
+					if (_currentWritingSystem != null && _currentWritingSystem.KnownKeyboards.Count == 0)
 					{
-						var legacyKeyboard = Keyboard.Controller.LegacyForWritingSystem(_currentWritingSystem);
+						IKeyboardDefinition legacyKeyboard = Keyboard.Controller.LegacyForWritingSystem(_currentWritingSystem);
 						if (legacyKeyboard != null)
 							yield return legacyKeyboard;
 					}
-					foreach (var knownKeyboard in _currentWritingSystem.KnownKeyboards)
-					{
-						var available =
-							(from kbd in allKeyboards where kbd.Layout == knownKeyboard.Layout && kbd.Locale == knownKeyboard.Locale select kbd).
-								FirstOrDefault();
-						if (available != null)
-							yield return available;
-						else
-						{
-							var result = Keyboard.Controller.CreateKeyboardDefinition(knownKeyboard.Layout,
-								knownKeyboard.Locale);
-							yield return result;
-						}
-					}
+					foreach (IKeyboardDefinition knownKeyboard in _currentWritingSystem.KnownKeyboards)
+						yield return knownKeyboard;
 				}
 			}
 		}
@@ -136,25 +123,19 @@ namespace SIL.WritingSystems.WindowsForms
 		{
 			get
 			{
-				var result = PossibleKeyboardsToChoose.ToList();
+				List<IKeyboardDefinition> result = PossibleKeyboardsToChoose.ToList();
 				if (_currentWritingSystem != null)
 				{
-					foreach (var knownKeyboard in _currentWritingSystem.KnownKeyboards)
+					foreach (IKeyboardDefinition knownKeyboard in _currentWritingSystem.KnownKeyboards)
+						result.Remove(knownKeyboard);
+					if (_currentWritingSystem.KnownKeyboards.Count == 0)
 					{
-						var known =
-							(from kbd in result where kbd.Layout == knownKeyboard.Layout && kbd.Locale == knownKeyboard.Locale select kbd).
-								FirstOrDefault();
-						if (known != null)
-							result.Remove(known);
+						// If there's a legacy keyboard and no known keyboards, we move the legacy one to 'known';
+						// so don't show it here.
+						IKeyboardDefinition legacyKeyboard = Keyboard.Controller.LegacyForWritingSystem(_currentWritingSystem);
+						if (legacyKeyboard != null)
+							result.Remove(legacyKeyboard);
 					}
-				}
-				if (!_currentWritingSystem.KnownKeyboards.Any())
-				{
-					// If there's a legacy keyboard and no known keyboards, we move the legacy one to 'known';
-					// so don't show it here.
-					var legacyKeyboard = Keyboard.Controller.LegacyForWritingSystem(_currentWritingSystem);
-					if (legacyKeyboard != null)
-						result.Remove(legacyKeyboard);
 				}
 				return result;
 			}
@@ -175,10 +156,8 @@ namespace SIL.WritingSystems.WindowsForms
 				if (!Keyboard.Controller.AllAvailableKeyboards.Any())
 					yield return KeyboardDescription.Zero;
 
-				foreach (var keyboard in Keyboard.Controller.AllAvailableKeyboards)
-				{
+				foreach (IKeyboardDefinition keyboard in Keyboard.Controller.AllAvailableKeyboards)
 					yield return keyboard;
-				}
 			}
 		}
 
@@ -189,7 +168,7 @@ namespace SIL.WritingSystems.WindowsForms
 		{
 			get
 			{
-				foreach (FontFamily family in System.Drawing.FontFamily.Families)
+				foreach (FontFamily family in FontFamily.Families)
 				{
 					yield return family;
 				}
@@ -309,7 +288,7 @@ namespace SIL.WritingSystems.WindowsForms
 		{
 			get
 			{
-				return new string[] {"Writing System"};
+				return new[] {"Writing System"};
 			}
 		}
 
@@ -323,7 +302,7 @@ namespace SIL.WritingSystems.WindowsForms
 			{
 				foreach (WritingSystemDefinition definition in WritingSystemDefinitions)
 				{
-					yield return new string[]{definition.DisplayLabel};
+					yield return new[]{definition.DisplayLabel};
 				}
 			}
 		}
@@ -624,7 +603,7 @@ namespace SIL.WritingSystems.WindowsForms
 					return; // Hopefully can't happen
 				if (CurrentDefinition.LocalKeyboard != null && CurrentDefinition.LocalKeyboard.Equals(value))
 					return;
-				CurrentDefinition.LocalKeyboard = value.Layout == KeyboardDescriptionNull.DefaultKeyboardName ? null : value;
+				CurrentDefinition.LocalKeyboard = value == KeyboardDescription.Zero ? null : value;
 				OnCurrentItemUpdated();
 			}
 		}

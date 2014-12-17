@@ -1,34 +1,37 @@
 // Copyright (c) 2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
 #if !__MonoCS__
 using System;
 using System.Collections.Generic;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Interfaces;
-using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
 using Keyman7Interop;
+using System.Diagnostics;
+using System.Linq;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 {
 	/// <summary>
 	/// Class for handling Keyman keyboards not associated with a Windows language
 	/// </summary>
-	internal class KeymanKeyboardAdaptor: IKeyboardAdaptor
+	internal class KeymanKeyboardAdaptor : IKeyboardAdaptor
 	{
 		#region IKeyboardAdaptor Members
 
 		public void Initialize()
 		{
+			CheckDisposed();
 			UpdateAvailableKeyboards();
 		}
 
 		public void UpdateAvailableKeyboards()
 		{
+			CheckDisposed();
+			Dictionary<string, KeymanKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<KeymanKeyboardDescription>().ToDictionary(kd => kd.Id);
 			// Try the Keyman 7/8 interface
 			try
 			{
 				var keyman = new TavultesoftKeymanClass();
-				foreach (IKeymanKeyboard keyboard in keyman.Keyboards)
-					KeyboardController.Manager.RegisterKeyboard(new KeymanKeyboardDescription(keyboard.Name, false, this, true));
+				UpdateKeyboards(curKeyboards, keyman.Keyboards.OfType<IKeymanKeyboard>().Select(kb => kb.Name), false);
 			}
 			catch (Exception)
 			{				
@@ -40,40 +43,53 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 			{
 				var keymanLink = new KeymanLink.KeymanLink();
 				if (keymanLink.Initialize())
-				{
-					foreach (var keyboard in keymanLink.Keyboards)
-						KeyboardController.Manager.RegisterKeyboard(new KeymanKeyboardDescription(keyboard.KbdName, true, this, true));
-				}
+					UpdateKeyboards(curKeyboards, keymanLink.Keyboards.Select(kb => kb.KbdName), true);
 			}
 			catch (Exception)
 			{
 				// Keyman 6 isn't installed or whatever.
 			}
+
+			foreach (KeymanKeyboardDescription keyboard in curKeyboards.Values)
+				keyboard.SetIsAvailable(false);
 		}
 
-		public void Close()
+		private void UpdateKeyboards(Dictionary<string, KeymanKeyboardDescription> curKeyboards, IEnumerable<string> availableKeyboardNames, bool isKeyman6)
 		{
-		}
-
-		public List<IKeyboardErrorDescription> ErrorKeyboards
-		{
-			get { return null; }
+			foreach (string keyboardName in availableKeyboardNames)
+			{
+				KeymanKeyboardDescription existingKeyboard;
+				if (curKeyboards.TryGetValue(keyboardName, out existingKeyboard))
+				{
+					if (!existingKeyboard.IsAvailable)
+					{
+						existingKeyboard.SetIsAvailable(true);
+						existingKeyboard.IsKeyman6 = isKeyman6;
+					}
+					curKeyboards.Remove(keyboardName);
+				}
+				else
+				{
+					KeyboardController.Instance.Keyboards.Add(new KeymanKeyboardDescription(keyboardName, isKeyman6, this, true));
+				}
+			}
 		}
 
 		public bool ActivateKeyboard(IKeyboardDefinition keyboard)
 		{
+			CheckDisposed();
 			var keymanKbdDesc = (KeymanKeyboardDescription)keyboard;
 			if (keymanKbdDesc.IsKeyman6)
 			{
 				try
 				{
-					KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
+					var keymanLink = new KeymanLink.KeymanLink();
 					if (!keymanLink.Initialize())
 					{
 						Palaso.Reporting.ErrorReport.NotifyUserOfProblem("Keyman6 could not be activated.");
 						return false;
 					}
-					keymanLink.SelectKeymanKeyboard(keyboard.Layout);
+					keymanLink.SelectKeymanKeyboard(keyboard.Id);
 				}
 				catch (Exception)
 				{
@@ -84,13 +100,13 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 			{
 				try
 				{
-					TavultesoftKeymanClass keyman = new TavultesoftKeymanClass();
-					int oneBasedIndex = keyman.Keyboards.IndexOf(keyboard.Layout);
+					var keyman = new TavultesoftKeymanClass();
+					int oneBasedIndex = keyman.Keyboards.IndexOf(keyboard.Id);
 
 					if (oneBasedIndex < 1)
 					{
 						Palaso.Reporting.ErrorReport.NotifyUserOfProblem("The keyboard '{0}' could not be activated using Keyman 7.",
-							keyboard.Layout);
+							keyboard.Id);
 						return false;
 					}
 					keyman.Control.ActiveKeyboard = keyman.Keyboards[oneBasedIndex];
@@ -102,12 +118,13 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 				}
 			}
 
-			((IKeyboardControllerImpl)Keyboard.Controller).ActiveKeyboard = keyboard;
+			KeyboardController.Instance.ActiveKeyboard = keyboard;
 			return true;
 		}
 
 		public void DeactivateKeyboard(IKeyboardDefinition keyboard)
 		{
+			CheckDisposed();
 			try
 			{
 				if (((KeymanKeyboardDescription) keyboard).IsKeyman6)
@@ -134,13 +151,14 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 		}
 
 		/// <summary>
-		/// Creates and returns a keyboard definition object based on the layout and locale.
+		/// Creates and returns a keyboard definition object based on the ID.
 		/// Note that this method is used when we do NOT have a matching available keyboard.
 		/// Therefore we can presume that the created one is NOT available.
 		/// </summary>
-		public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
+		public IKeyboardDefinition CreateKeyboardDefinition(string id)
 		{
-			return new KeymanKeyboardDescription(layout, false, this, false);
+			CheckDisposed();
+			return new KeymanKeyboardDescription(id, false, this, false);
 		}
 
 		/// <summary>
@@ -158,11 +176,115 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 		/// <summary>
 		/// The type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
 		/// </summary>
-		public KeyboardType Type
+		public KeyboardAdaptorType Type
 		{
-			get { return KeyboardType.OtherIm; }
+			get
+			{
+				CheckDisposed();
+				return KeyboardAdaptorType.OtherIm;
+			}
 		}
+
+		public bool CanHandleFormat(KeyboardFormat format)
+		{
+			CheckDisposed();
+			switch (format)
+			{
+				case KeyboardFormat.CompiledKeyman:
+				case KeyboardFormat.Keyman:
+					return true;
+			}
+			return false;
+		}
+
 		#endregion
+
+		#region IDisposable & Co. implementation
+		// Region last reviewed: never
+
+		/// <summary>
+		/// Check to see if the object has been disposed.
+		/// All public Properties and Methods should call this
+		/// before doing anything else.
+		/// </summary>
+		public void CheckDisposed()
+		{
+			if (IsDisposed)
+				throw new ObjectDisposedException(String.Format("'{0}' in use after being disposed.", GetType().Name));
+		}
+
+		/// <summary>
+		/// See if the object has been disposed.
+		/// </summary>
+		public bool IsDisposed { get; private set; }
+
+		/// <summary>
+		/// Finalizer, in case client doesn't dispose it.
+		/// Force Dispose(false) if not already called (i.e. m_isDisposed is true)
+		/// </summary>
+		/// <remarks>
+		/// In case some clients forget to dispose it directly.
+		/// </remarks>
+		~KeymanKeyboardAdaptor()
+		{
+			Dispose(false);
+			// The base class finalizer is called automatically.
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <remarks>Must not be virtual.</remarks>
+		public void Dispose()
+		{
+			Dispose(true);
+			// This object will be cleaned up by the Dispose method.
+			// Therefore, you should call GC.SupressFinalize to
+			// take this object off the finalization queue
+			// and prevent finalization code for this object
+			// from executing a second time.
+			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Executes in two distinct scenarios.
+		///
+		/// 1. If disposing is true, the method has been called directly
+		/// or indirectly by a user's code via the Dispose method.
+		/// Both managed and unmanaged resources can be disposed.
+		///
+		/// 2. If disposing is false, the method has been called by the
+		/// runtime from inside the finalizer and you should not reference (access)
+		/// other managed objects, as they already have been garbage collected.
+		/// Only unmanaged resources can be disposed.
+		/// </summary>
+		/// <param name="disposing"></param>
+		/// <remarks>
+		/// If any exceptions are thrown, that is fine.
+		/// If the method is being done in a finalizer, it will be ignored.
+		/// If it is thrown by client code calling Dispose,
+		/// it needs to be handled by fixing the bug.
+		///
+		/// If subclasses override this method, they should call the base implementation.
+		/// </remarks>
+		protected virtual void Dispose(bool disposing)
+		{
+			Debug.WriteLineIf(!disposing, "****************** " + GetType().Name + " 'disposing' is false. ******************");
+			// Must not be run more than once.
+			if (IsDisposed)
+				return;
+
+			if (disposing)
+			{
+				// Dispose managed resources here.
+			}
+
+			// Dispose unmanaged resources here, whether disposing is true or false.
+
+			IsDisposed = true;
+		}
+
+		#endregion IDisposable & Co. implementation
 	}
 }
 #endif

@@ -12,18 +12,13 @@ using System.Text;
 using System.Windows.Forms;
 using Microsoft.Unmanaged.TSF;
 using Microsoft.Win32;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Interfaces;
-using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Types;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 {
 	/// <summary>
 	/// Class for handling Windows system keyboards
 	/// </summary>
-	[SuppressMessage("Gendarme.Rules.Design", "TypesWithDisposableFieldsShouldBeDisposableRule",
-		Justification = "m_Timer gets disposed in Close() which gets called from KeyboardControllerImpl.Dispose")]
-	internal class WinKeyboardAdaptor: IKeyboardAdaptor
+	internal class WinKeyboardAdaptor : IKeyboardAdaptor
 	{
 		internal class LayoutName
 		{
@@ -47,7 +42,6 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 			public string LocalizedName;
 		}
 
-		private readonly List<IKeyboardErrorDescription> _badLocales = new List<IKeyboardErrorDescription>();
 		private Timer _timer;
 		private WinKeyboardDescription _expectedKeyboard;
 		private bool _fSwitchedLanguages;
@@ -109,11 +103,11 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 			}
 		}
 
-		private void GetInputMethodsThroughTsf(short[] languages)
+		private IEnumerable<Tuple<TfInputProcessorProfile, ushort, IntPtr>> GetInputMethodsThroughTsf()
 		{
-			foreach (var langId in languages)
+			foreach (short langId in Languages)
 			{
-				var profilesEnumerator = ProfileMgr.EnumProfiles(langId);
+				IEnumTfInputProcessorProfiles profilesEnumerator = ProfileMgr.EnumProfiles(langId);
 				TfInputProcessorProfile profile;
 				while (profilesEnumerator.Next(1, out profile) == 1)
 				{
@@ -124,37 +118,29 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 					if ((profile.Flags & TfIppFlags.Enabled) == 0)
 						continue;
 
-					try
-					{
-						KeyboardController.Manager.RegisterKeyboard(CreateWinKeyboardDescription(profile, profile.LangId, profile.Hkl));
-					}
-					catch (CultureNotFoundException)
-					{
-						// ignore if we can't find a culture (this can happen e.g. when a language gets
-						// removed that was previously assigned to a WS) - see LT-15333
-					}
+					yield return Tuple.Create(profile, profile.LangId, profile.Hkl);
 				}
 			}
 		}
 
-		private void GetInputMethodsThroughWinApi()
+		private IEnumerable<Tuple<TfInputProcessorProfile, ushort, IntPtr>> GetInputMethodsThroughWinApi()
 		{
-			var countKeyboardLayouts = Win32.GetKeyboardLayoutList(0, IntPtr.Zero);
+			int countKeyboardLayouts = Win32.GetKeyboardLayoutList(0, IntPtr.Zero);
 			if (countKeyboardLayouts == 0)
-				return;
+				yield break;
 
-			var keyboardLayouts = Marshal.AllocCoTaskMem(countKeyboardLayouts * IntPtr.Size);
+			IntPtr keyboardLayouts = Marshal.AllocCoTaskMem(countKeyboardLayouts * IntPtr.Size);
 			try
 			{
 				Win32.GetKeyboardLayoutList(countKeyboardLayouts, keyboardLayouts);
 
-				var current = keyboardLayouts;
-				var elemSize = (ulong)IntPtr.Size;
+				IntPtr current = keyboardLayouts;
+				var elemSize = (ulong) IntPtr.Size;
 				for (int i = 0; i < countKeyboardLayouts; i++)
 				{
-					var hkl = (IntPtr)Marshal.ReadInt32(current);
-					KeyboardController.Manager.RegisterKeyboard(CreateWinKeyboardDescription(new TfInputProcessorProfile(), HklToLangId(hkl), hkl));
-					current = (IntPtr)((ulong)current + elemSize);
+					var hkl = (IntPtr) Marshal.ReadInt32(current);
+					yield return Tuple.Create(new TfInputProcessorProfile(), HklToLangId(hkl), hkl);
+					current = (IntPtr) ((ulong)current + elemSize);
 				}
 			}
 			finally
@@ -168,43 +154,82 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 			return (ushort)((uint)hkl & 0xffff);
 		}
 
-		private WinKeyboardDescription CreateWinKeyboardDescription(TfInputProcessorProfile profile, ushort langId, IntPtr hkl)
+		private static string GetId(string layout, string locale)
 		{
-			var culture = new CultureInfo(langId);
-			string locale;
-			string cultureName;
-			try
-			{
-				cultureName = culture.DisplayName;
-				locale = culture.Name;
-			}
-			catch (CultureNotFoundException)
-			{
-				// we get an exception for non-supported cultures, probably because of a
-				// badly applied .NET patch.
-				// http://www.ironspeed.com/Designer/3.2.4/WebHelp/Part_VI/Culture_ID__XXX__is_not_a_supported_culture.htm and others
-				cultureName = "[Unknown Language]";
-				locale = "en-US";
-			}
-			LayoutName layoutName;
-			if (profile.Hkl == IntPtr.Zero && profile.ProfileType != TfProfileType.Illegal)
-			{
-				layoutName = new LayoutName(ProcessorProfiles.GetLanguageProfileDescription(
-					ref profile.ClsId, profile.LangId, ref profile.GuidProfile));
-			}
-			else
-				layoutName = GetLayoutNameEx(hkl);
-			return new WinKeyboardDescription(profile, cultureName, layoutName, locale, new InputLanguageWrapper(culture, hkl, layoutName.Name), this, true);
+			return String.Format("{0}_{1}", locale, layout);
+		}
+
+		private static string GetDisplayName(string layout, string locale)
+		{
+			return string.Format("{0} - {1}", layout, locale);
 		}
 
 		private void GetInputMethods()
 		{
+			IEnumerable<Tuple<TfInputProcessorProfile, ushort, IntPtr>> imes;
 			if (ProfileMgr != null)
 				// Windows >= Vista
-				GetInputMethodsThroughTsf(Languages);
+				imes = GetInputMethodsThroughTsf();
 			else
 				// Windows XP
-				GetInputMethodsThroughWinApi();
+				imes = GetInputMethodsThroughWinApi();
+
+			Dictionary<string, WinKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<WinKeyboardDescription>().ToDictionary(kd => kd.Id);
+			foreach (Tuple<TfInputProcessorProfile, ushort, IntPtr> ime in imes)
+			{
+				TfInputProcessorProfile profile = ime.Item1;
+				ushort langId = ime.Item2;
+				IntPtr hkl = ime.Item3;
+
+				var culture = new CultureInfo(langId);
+				string locale;
+				string cultureName;
+				try
+				{
+					cultureName = culture.DisplayName;
+					locale = culture.Name;
+				}
+				catch (CultureNotFoundException)
+				{
+					// we get an exception for non-supported cultures, probably because of a
+					// badly applied .NET patch.
+					// http://www.ironspeed.com/Designer/3.2.4/WebHelp/Part_VI/Culture_ID__XXX__is_not_a_supported_culture.htm and others
+					cultureName = "[Unknown Language]";
+					locale = "en-US";
+				}
+
+				LayoutName layoutName;
+				if (profile.Hkl == IntPtr.Zero && profile.ProfileType != TfProfileType.Illegal)
+				{
+					layoutName = new LayoutName(ProcessorProfiles.GetLanguageProfileDescription(
+						ref profile.ClsId, profile.LangId, ref profile.GuidProfile));
+				}
+				else
+				{
+					layoutName = GetLayoutNameEx(hkl);
+				}
+
+				string id = GetId(layoutName.Name, locale);
+				WinKeyboardDescription existingKeyboard;
+				if (curKeyboards.TryGetValue(id, out existingKeyboard))
+				{
+					if (!existingKeyboard.IsAvailable)
+					{
+						existingKeyboard.SetIsAvailable(true);
+						existingKeyboard.InputProcessorProfile = profile;
+						existingKeyboard.SetLocalizedName(GetDisplayName(layoutName.LocalizedName, cultureName));
+					}
+					curKeyboards.Remove(id);
+				}
+				else
+				{
+					KeyboardController.Instance.Keyboards.Add(new WinKeyboardDescription(GetId(layoutName.Name, locale), GetDisplayName(layoutName.Name, cultureName),
+						layoutName.Name, locale, true, new InputLanguageWrapper(culture, hkl, layoutName.Name), this, GetDisplayName(layoutName.LocalizedName, cultureName), profile));
+				}
+			}
+
+			foreach (WinKeyboardDescription existingKeyboard in curKeyboards.Values)
+				existingKeyboard.SetIsAvailable(false);
 		}
 
 		internal static LayoutName GetLayoutNameEx(IntPtr handle)
@@ -291,7 +316,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 		/// <summary>
 		/// Gets the InputLanguage that has the same layout as <paramref name="keyboardDescription"/>.
 		/// </summary>
-		internal static InputLanguage GetInputLanguage(IKeyboardDefinition keyboardDescription)
+		internal static InputLanguage GetInputLanguage(WinKeyboardDescription keyboardDescription)
 		{
 			InputLanguage sameLayout = null;
 			InputLanguage sameCulture = null;
@@ -328,8 +353,8 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 			KeyboardDescription sameLayout = null;
 			KeyboardDescription sameCulture = null;
 			// TODO: write some tests
-			var requestedLayout = GetLayoutNameEx(inputLanguage.Handle).Name;
-			foreach (KeyboardDescription keyboardDescription in Keyboard.Controller.AllAvailableKeyboards)
+			string requestedLayout = GetLayoutNameEx(inputLanguage.Handle).Name;
+			foreach (WinKeyboardDescription keyboardDescription in KeyboardController.Instance.AllAvailableKeyboards.OfType<WinKeyboardDescription>())
 			{
 				try
 				{
@@ -383,7 +408,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 			_fSwitchingKeyboards = true;
 			try
 			{
-				((IKeyboardControllerImpl)Keyboard.Controller).ActiveKeyboard = ActivateKeyboard(winKeyboard);
+				KeyboardController.Instance.ActiveKeyboard = ActivateKeyboard(winKeyboard);
 				if (Form.ActiveForm != null)
 				{
 					// If we activate a keyboard while a particular Form is active, we want to know about
@@ -548,28 +573,16 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 			GetInputMethods();
 		}
 
-		public void Close()
-		{
-			if (_timer != null)
-			{
-				_timer.Dispose();
-				_timer = null;
-			}
-		}
-
-		public List<IKeyboardErrorDescription> ErrorKeyboards
-		{
-			get { return _badLocales; }
-		}
-
 		public bool ActivateKeyboard(IKeyboardDefinition keyboard)
 		{
+			CheckDisposed();
 			SwitchKeyboard(keyboard as WinKeyboardDescription);
 			return true;
 		}
 
 		public void DeactivateKeyboard(IKeyboardDefinition keyboard)
 		{
+			CheckDisposed();
 			var winKeyboard = keyboard as WinKeyboardDescription;
 			Debug.Assert(winKeyboard != null);
 
@@ -578,28 +591,41 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 
 		public IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
 		{
+			CheckDisposed();
 			return GetKeyboardDescription(inputLanguage);
 		}
 
 		/// <summary>
-		/// Creates and returns a keyboard definition object based on the layout and locale.
+		/// Creates and returns a keyboard definition object based on the ID.
 		/// Note that this method is used when we do NOT have a matching available keyboard.
 		/// Therefore we can presume that the created one is NOT available.
 		/// </summary>
-		public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
+		public IKeyboardDefinition CreateKeyboardDefinition(string id)
 		{
+			CheckDisposed();
+
+			string[] parts = id.Split('_');
+			string locale = parts[0];
+			string layout = parts[1];
+
 			IInputLanguage inputLanguage;
+			string cultureName;
 			try
 			{
-				inputLanguage = new InputLanguageWrapper(new CultureInfo(locale), IntPtr.Zero, layout);
+				var ci = new CultureInfo(locale);
+				cultureName = ci.DisplayName;
+				inputLanguage = new InputLanguageWrapper(ci, IntPtr.Zero, layout);
 			}
 			catch (CultureNotFoundException)
 			{
 				// ignore if we can't find a culture (this can happen e.g. when a language gets
 				// removed that was previously assigned to a WS) - see LT-15333
 				inputLanguage = null;
+				cultureName = "[Unknown Language]";
 			}
-			return new WinKeyboardDescription(new TfInputProcessorProfile(), locale, new LayoutName(layout), locale, inputLanguage, this, false);
+
+			return new WinKeyboardDescription(id, GetDisplayName(layout, cultureName), layout, locale, false, inputLanguage, this,
+				GetDisplayName(layout, cultureName), new TfInputProcessorProfile());
 		}
 
 		/// <summary>
@@ -607,17 +633,130 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 		/// </summary>
 		public IKeyboardDefinition DefaultKeyboard
 		{
-			get { return GetKeyboardDescription(InputLanguage.DefaultInputLanguage.Interface()); }
+			get
+			{
+				CheckDisposed();
+				return GetKeyboardDescription(InputLanguage.DefaultInputLanguage.Interface());
+			}
 		}
 
 		/// <summary>
 		/// The type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
 		/// </summary>
-		public KeyboardType Type
+		public KeyboardAdaptorType Type
 		{
-			get { return KeyboardType.System; }
+			get
+			{
+				CheckDisposed();
+				return KeyboardAdaptorType.System;
+			}
 		}
+
+		public bool CanHandleFormat(KeyboardFormat format)
+		{
+			CheckDisposed();
+			switch (format)
+			{
+				case KeyboardFormat.Msklc:
+				case KeyboardFormat.Unknown:
+					return true;
+			}
+			return false;
+		}
+
 		#endregion
+
+		#region IDisposable & Co. implementation
+		// Region last reviewed: never
+
+		/// <summary>
+		/// Check to see if the object has been disposed.
+		/// All public Properties and Methods should call this
+		/// before doing anything else.
+		/// </summary>
+		public void CheckDisposed()
+		{
+			if (IsDisposed)
+				throw new ObjectDisposedException(String.Format("'{0}' in use after being disposed.", GetType().Name));
+		}
+
+		/// <summary>
+		/// See if the object has been disposed.
+		/// </summary>
+		public bool IsDisposed { get; private set; }
+
+		/// <summary>
+		/// Finalizer, in case client doesn't dispose it.
+		/// Force Dispose(false) if not already called (i.e. m_isDisposed is true)
+		/// </summary>
+		/// <remarks>
+		/// In case some clients forget to dispose it directly.
+		/// </remarks>
+		~WinKeyboardAdaptor()
+		{
+			Dispose(false);
+			// The base class finalizer is called automatically.
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <remarks>Must not be virtual.</remarks>
+		public void Dispose()
+		{
+			Dispose(true);
+			// This object will be cleaned up by the Dispose method.
+			// Therefore, you should call GC.SupressFinalize to
+			// take this object off the finalization queue
+			// and prevent finalization code for this object
+			// from executing a second time.
+			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Executes in two distinct scenarios.
+		///
+		/// 1. If disposing is true, the method has been called directly
+		/// or indirectly by a user's code via the Dispose method.
+		/// Both managed and unmanaged resources can be disposed.
+		///
+		/// 2. If disposing is false, the method has been called by the
+		/// runtime from inside the finalizer and you should not reference (access)
+		/// other managed objects, as they already have been garbage collected.
+		/// Only unmanaged resources can be disposed.
+		/// </summary>
+		/// <param name="disposing"></param>
+		/// <remarks>
+		/// If any exceptions are thrown, that is fine.
+		/// If the method is being done in a finalizer, it will be ignored.
+		/// If it is thrown by client code calling Dispose,
+		/// it needs to be handled by fixing the bug.
+		///
+		/// If subclasses override this method, they should call the base implementation.
+		/// </remarks>
+		protected virtual void Dispose(bool disposing)
+		{
+			Debug.WriteLineIf(!disposing, "****************** " + GetType().Name + " 'disposing' is false. ******************");
+			// Must not be run more than once.
+			if (IsDisposed)
+				return;
+
+			if (disposing)
+			{
+				// Dispose managed resources here.
+				if (_timer != null)
+				{
+					_timer.Dispose();
+					_timer = null;
+				}
+			}
+
+			// Dispose unmanaged resources here, whether disposing is true or false.
+
+			IsDisposed = true;
+		}
+
+		#endregion IDisposable & Co. implementation
 	}
 }
 #endif
