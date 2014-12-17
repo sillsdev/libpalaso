@@ -107,6 +107,11 @@ namespace Palaso.BuildTasks.UnitTestTasks
 		public string ToolPath { get; set; }
 
 		/// <summary>
+		/// Apartment for running tests: MTA (Default), STA
+		/// </summary>
+		public string Apartment { get; set; }
+
+		/// <summary>
 		/// Gets the name of the NUnit executable. When running on Mono this is
 		/// different from ProgramName() which returns the executable we'll start.
 		/// </summary>
@@ -185,6 +190,8 @@ namespace Palaso.BuildTasks.UnitTestTasks
 				bldr.AppendFormat(" \"{0}err={1}\"", switchChar, ErrorOutputFile);
 			if (!String.IsNullOrEmpty(Framework))
 				bldr.AppendFormat(" {0}framework={1}", switchChar, Framework);
+			if (!String.IsNullOrEmpty(Apartment))
+				bldr.AppendFormat(" {0}apartment={1}", switchChar, Apartment);
 			bldr.AppendFormat(" {0}labels", switchChar);
 			return bldr.ToString();
 		}
@@ -272,11 +279,17 @@ namespace Palaso.BuildTasks.UnitTestTasks
 				var trimmedLine = line.Trim();
 				if (trimmedLine.StartsWith("***** "))
 					lines.Add(trimmedLine);
-				else
-					Log.LogMessage(MessageImportance.Normal, line);
+				else if (!Verbose)
+				{
+					// Print out collected messages of NUnit unless we already printed them in
+					// the base class
+					Log.LogMessage(MessageImportance.Normal, trimmedLine);
+				}
 			}
 			if (fTimedOut)
 			{
+				// If the tests time out we have an invalid XML file. Create a valid XML file
+				// that contains as much as possible.
 				if (File.Exists(OutputXmlFile))
 				{
 					FileInfo fi = new FileInfo(OutputXmlFile);
