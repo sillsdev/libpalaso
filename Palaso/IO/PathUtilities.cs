@@ -65,6 +65,9 @@ namespace Palaso.IO
 			};
 		}
 
+		// map directory name to its disk device number (not used on Windows)
+		private static Dictionary<string,int> _deviceNumber = new Dictionary<string, int>();
+
 		public static int GetDeviceNumber(string filePath)
 		{
 			if (Palaso.PlatformUtilities.Platform.IsWindows)
@@ -73,19 +76,34 @@ namespace Palaso.IO
 				return driveInfo.Name.ToUpper()[0] - 'A' + 1;
 			}
 
-			// filePath can mean a file or a directory.
+			// filePath can mean a file or a directory.  Get the directory
+			// so that our device number cache can work better.  (fewer
+			// unique directory names than filenames)
 			var pathToCheck = filePath;
-			if (!File.Exists(pathToCheck) && !Directory.Exists(pathToCheck))
-			{
+			if (File.Exists(pathToCheck))
 				pathToCheck = Path.GetDirectoryName(pathToCheck);
-
-				if (!Directory.Exists(pathToCheck))
-					return GetDeviceNumber(pathToCheck);
+			else if (!Directory.Exists(pathToCheck))
+			{
+				// Work up the path until a directory exists.
+				do
+				{
+					pathToCheck = Path.GetDirectoryName(pathToCheck);
+				}
+				while (!String.IsNullOrEmpty(pathToCheck) && !Directory.Exists(pathToCheck));
+				// If the whole path is invalid, give up.
+				if (String.IsNullOrEmpty(pathToCheck))
+					return -1;
 			}
+
+			int retval;
+			// Use cached value if we can to avoid process invocation.
+			if (_deviceNumber.TryGetValue(pathToCheck, out retval))
+				return retval;
 
 			using (var process = new Process())
 			{
-				process.StartInfo = new ProcessStartInfo {
+				process.StartInfo = new ProcessStartInfo
+				{
 					FileName = "stat",
 					Arguments = string.Format("-c %d \"{0}\"", pathToCheck),
 					UseShellExecute = false,
@@ -93,9 +111,26 @@ namespace Palaso.IO
 					CreateNoWindow = true
 				};
 				process.Start();
-				process.WaitForExit();
 				var output = process.StandardOutput.ReadToEnd();
-				return Convert.ToInt32(output);
+				// This process is frequently not exiting even after filling the output string
+				// with the desired information.  So we'll wait a couple of seconds instead of
+				// waiting forever and just go on.  If there's data to process, we'll use it.
+				// (2 seconds should be more than enough for that simple command to execute.
+				// "time statc -c %d "/tmp" reports 2ms of real time and 2ms of user time.)
+				// See https://jira.sil.org/browse/BL-771 for a bug report involving this code
+				// with a simple process.WaitForExit().
+				// This feels like a Mono bug of some sort, so feel free to regard this as a
+				// workaround hack.
+				process.WaitForExit(2000);
+				if (!String.IsNullOrWhiteSpace(output))
+				{
+					if (Int32.TryParse(output.Trim(), out retval))
+					{
+						_deviceNumber.Add(pathToCheck, retval);
+						return retval;
+					}
+				}
+				return -1;
 			}
 		}
 
