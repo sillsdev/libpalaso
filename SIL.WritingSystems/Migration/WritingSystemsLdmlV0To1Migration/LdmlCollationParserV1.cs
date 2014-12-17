@@ -2,15 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
-using System.Xml.Linq;
+using System.Text;
+using Palaso.Xml;
 
-namespace SIL.WritingSystems.Collation
+namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
-	public class LdmlCollationParser
+	public class LdmlCollationParserV1
 	{
 		private const string NewLine = "\r\n";
 		private static readonly Regex UnicodeEscape4Digit = new Regex(@"\\[u]([0-9A-F]{4})", RegexOptions.IgnoreCase);
@@ -35,36 +35,39 @@ namespace SIL.WritingSystems.Collation
 			return rules;
 		}
 
-		public static string GetIcuRulesFromCollationNode(XElement collationElem)
+		public static string GetIcuRulesFromCollationNode(string collationXml)
 		{
-			if (collationElem == null)
+			if (collationXml == null)
 			{
-				throw new ArgumentNullException("collationElem");
+				throw new ArgumentNullException("collationXml");
 			}
 
+			XmlReaderSettings readerSettings = new XmlReaderSettings();
+			readerSettings.CloseInput = true;
+			readerSettings.ConformanceLevel = ConformanceLevel.Fragment;
 			string icuRules = string.Empty;
 			string variableTop = null;
 			int variableTopPositionIfNotUsed = 0;
-			XElement settingsElem = collationElem.Element("settings");
-			if (settingsElem != null)
+			using (XmlReader collationReader = XmlReader.Create(new StringReader(collationXml), readerSettings))
 			{
-				icuRules += GetIcuSettingsFromSettingsNode(settingsElem, out variableTop);
-				variableTopPositionIfNotUsed = icuRules.Length;
-			}
-			XElement suppressElem = collationElem.Element("suppress_contractions");
-			if (suppressElem != null)
-			{
-				icuRules += GetIcuOptionFromNode(suppressElem);
-			}
-			XElement optimizeElem = collationElem.Element("optimize");
-			if (optimizeElem != null)
-			{
-				icuRules += GetIcuOptionFromNode(optimizeElem);
-			}
-			XElement rulesElem = collationElem.Element("rules");
-			if (rulesElem != null)
-			{
-				icuRules += GetIcuRulesFromRulesNode(rulesElem, ref variableTop);
+				if (XmlHelpers.FindNextElementInSequence(collationReader, "settings", LdmlNodeComparer.CompareElementNames))
+				{
+					icuRules += GetIcuSettingsFromSettingsNode(collationReader, out variableTop);
+					variableTopPositionIfNotUsed = icuRules.Length;
+				}
+				if (XmlHelpers.FindNextElementInSequence(collationReader, "suppress_contractions",
+														 LdmlNodeComparer.CompareElementNames))
+				{
+					icuRules += GetIcuOptionFromNode(collationReader);
+				}
+				if (XmlHelpers.FindNextElementInSequence(collationReader, "optimize", LdmlNodeComparer.CompareElementNames))
+				{
+					icuRules += GetIcuOptionFromNode(collationReader);
+				}
+				if (XmlHelpers.FindNextElementInSequence(collationReader, "rules", LdmlNodeComparer.CompareElementNames))
+				{
+					icuRules += GetIcuRulesFromRulesNode(collationReader, ref variableTop);
+				}
 			}
 
 			if (variableTop != null)
@@ -98,79 +101,92 @@ namespace SIL.WritingSystems.Collation
 			return icuRules.Trim();
 		}
 
-		public static bool TryGetSimpleRulesFromCollationNode(XElement collationElem, out string rules)
+		public static bool TryGetSimpleRulesFromCollationNode(string collationXml, out string rules)
 		{
-			if (collationElem == null)
+			if (collationXml == null)
 			{
-				throw new ArgumentNullException("collationElem");
+				throw new ArgumentNullException("collationXml");
 			}
 
+			XmlReaderSettings readerSettings = new XmlReaderSettings();
+			readerSettings.CloseInput = true;
+			readerSettings.ConformanceLevel = ConformanceLevel.Fragment;
+			readerSettings.IgnoreWhitespace = true;
 			rules = null;
-			XElement settingsElem = collationElem.Element("settings");
-			// simple rules can't deal with any non-default settings
-			if (settingsElem != null)
-			{ 
-				return false;
-			}
-			XElement rulesElem = collationElem.Element("rules");
-			if (rulesElem == null)
+			using (XmlReader collationReader = XmlReader.Create(new StringReader(collationXml), readerSettings))
 			{
-				rules = string.Empty;
-				return true;
+				// simple rules can't deal with any non-default settings
+				if (XmlHelpers.FindNextElementInSequence(collationReader, "settings", LdmlNodeComparer.CompareElementNames))
+				{
+					return false;
+				}
+				if (!XmlHelpers.FindNextElementInSequence(collationReader, "rules", LdmlNodeComparer.CompareElementNames))
+				{
+					rules = string.Empty;
+					return true;
+				}
+				rules = GetSimpleRulesFromRulesNode(collationReader);
 			}
-			rules = GetSimpleRulesFromRulesNode(rulesElem);
 			return rules != null;
 		}
 
-		private static string GetSimpleRulesFromRulesNode(XElement element)
+		private static string GetSimpleRulesFromRulesNode(XmlReader reader)
 		{
-			if (element.IsEmpty)
+			if (reader.IsEmptyElement)
 			{
 				return string.Empty;
 			}
 			bool first = true;
 			bool inGroup = false;
 			string simpleRules = string.Empty;
-			foreach(XElement childElem in element.Elements())
-			{ 
+			reader.Read();
+			while (reader.NodeType != XmlNodeType.EndElement && !reader.EOF)
+			{
+				if (reader.NodeType != XmlNodeType.Element)
+				{
+					reader.Read();
+					continue;
+				}
 				// First child node MUST BE <reset before="primary"><first_non_ignorable /></reset>
 				if (first &&
-					(childElem.Name != "reset" || GetBeforeOption(childElem) != "[before 1] " || GetIcuData(childElem) != "[first regular]"))
+					(reader.Name != "reset" || GetBeforeOption(reader) != "[before 1] " || GetIcuData(reader) != "[first regular]"))
 				{
 					return null;
 				}
 				if (first)
 				{
 					first = false;
+					reader.Read();
 					continue;
 				}
-				switch (childElem.Name.ToString())
+				switch (reader.Name)
 				{
 					case "p":
-						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) + NewLine + GetTextData(childElem);
+						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) + NewLine + GetTextData(reader);
 						break;
 					case "s":
-						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) + " " + GetTextData(childElem);
+						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) + " " + GetTextData(reader);
 						break;
 					case "t":
 						BeginSimpleGroupIfNeeded(ref inGroup, ref simpleRules);
-						simpleRules += " " + GetTextData(childElem);
+						simpleRules += " " + GetTextData(reader);
 						break;
 					case "pc":
 						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) +
-									   BuildSimpleRulesFromConcatenatedData(NewLine, GetTextData(childElem));
+									   BuildSimpleRulesFromConcatenatedData(NewLine, GetTextData(reader));
 						break;
 					case "sc":
 						simpleRules += EndSimpleGroupIfNeeded(ref inGroup) +
-									   BuildSimpleRulesFromConcatenatedData(" ", GetTextData(childElem));
+									   BuildSimpleRulesFromConcatenatedData(" ", GetTextData(reader));
 						break;
 					case "tc":
 						BeginSimpleGroupIfNeeded(ref inGroup, ref simpleRules);
-						simpleRules += BuildSimpleRulesFromConcatenatedData(" ", GetTextData(childElem));
+						simpleRules += BuildSimpleRulesFromConcatenatedData(" ", GetTextData(reader));
 						break;
 					default: // element name not allowed for simple rules conversion
 						return null;
 				}
+				reader.ReadEndElement();
 			}
 			simpleRules += EndSimpleGroupIfNeeded(ref inGroup);
 			return simpleRules.Trim();
@@ -306,9 +322,10 @@ namespace SIL.WritingSystems.Collation
 			return rule;
 		}
 
-		private static string GetIcuSettingsFromSettingsNode(XElement settingsElem, out string variableTop)
+		private static string GetIcuSettingsFromSettingsNode(XmlReader reader, out string variableTop)
 		{
-			Debug.Assert(settingsElem.Name == "settings");
+			Debug.Assert(reader.NodeType == XmlNodeType.Element);
+			Debug.Assert(reader.Name == "settings");
 			variableTop = null;
 			Dictionary<string, string> strengthValues = new Dictionary<string, string>();
 			strengthValues["primary"] = "1";
@@ -317,36 +334,36 @@ namespace SIL.WritingSystems.Collation
 			strengthValues["quaternary"] = "4";
 			strengthValues["identical"] = "I";
 			string icuSettings = string.Empty;
-			foreach (XAttribute att in settingsElem.Attributes())
+			while (reader.MoveToNextAttribute())
 			{
-				switch (att.Name.ToString())
+				switch (reader.Name)
 				{
 					case "alternate":
 					case "normalization":
 					case "caseLevel":
 					case "caseFirst":
 					case "numeric":
-						icuSettings += String.Format(NewLine + "[{0} {1}]", att.Name, att.Value);
+						icuSettings += String.Format(NewLine + "[{0} {1}]", reader.Name, reader.Value);
 						break;
 					case "strength":
-						if (!strengthValues.ContainsKey(att.Value))
+						if (!strengthValues.ContainsKey(reader.Value))
 						{
 							throw new ApplicationException("Invalid collation strength setting in LDML");
 						}
-						icuSettings += String.Format(NewLine + "[strength {0}]", strengthValues[att.Value]);
+						icuSettings += String.Format(NewLine + "[strength {0}]", strengthValues[reader.Value]);
 						break;
 					case "backwards":
-						if (att.Value != "off" && att.Value != "on")
+						if (reader.Value != "off" && reader.Value != "on")
 						{
 							throw new ApplicationException("Invalid backwards setting in LDML collation.");
 						}
-						icuSettings += String.Format(NewLine + "[backwards {0}]", att.Value == "off" ? "1" : "2");
+						icuSettings += String.Format(NewLine + "[backwards {0}]", reader.Value == "off" ? "1" : "2");
 						break;
 					case "hiraganaQuaternary":
-						icuSettings += String.Format(NewLine + "[hiraganaQ {0}]", att.Value);
+						icuSettings += String.Format(NewLine + "[hiraganaQ {0}]", reader.Value);
 						break;
 					case "variableTop":
-						variableTop = EscapeForIcu(UnescapeVariableTop(att.Value));
+						variableTop = EscapeForIcu(UnescapeVariableTop(reader.Value));
 						break;
 				}
 			}
@@ -367,83 +384,89 @@ namespace SIL.WritingSystems.Collation
 			return result;
 		}
 
-		private static string GetIcuOptionFromNode(XElement collationElem)
+		private static string GetIcuOptionFromNode(XmlReader reader)
 		{
-			Debug.Assert(collationElem.NodeType == XmlNodeType.Element);
-			string result = string.Empty;
-			switch (collationElem.Name.ToString())
+			Debug.Assert(reader.NodeType == XmlNodeType.Element);
+			string result;
+			switch (reader.Name)
 			{
 				case "suppress_contractions":
 				case "optimize":
-					result = String.Format(NewLine + "[{0} {1}]", collationElem.Name.ToString().Replace('_', ' '), collationElem.Value);
+					result = String.Format(NewLine + "[{0} {1}]", reader.Name.Replace('_', ' '), reader.ReadElementString());
 					break;
 				default:
-					throw new ApplicationException(String.Format("Invalid LDML collation option element: {0}", collationElem.Name));
+					throw new ApplicationException(String.Format("Invalid LDML collation option element: {0}", reader.Name));
 			}
 			return result;
 		}
 
-		private static string GetIcuRulesFromRulesNode(XElement rulesElem, ref string variableTop)
+		private static string GetIcuRulesFromRulesNode(XmlReader reader, ref string variableTop)
 		{
 			string rules = string.Empty;
-			if (rulesElem != null)
-			{ 
-				foreach(XElement elem in rulesElem.Elements())
+			using (XmlReader rulesReader = reader.ReadSubtree())
+			{
+				// skip initial "rules" element
+				rulesReader.Read();
+				while (rulesReader.Read())
 				{
 					string icuData;
-					switch (elem.Name.ToString())
+					if (rulesReader.NodeType != XmlNodeType.Element)
+					{
+						continue;
+					}
+					switch (rulesReader.Name)
 					{
 						case "reset":
-							string beforeOption = GetBeforeOption(elem);
-							icuData = GetIcuData(elem);
+							string beforeOption = GetBeforeOption(rulesReader);
+							icuData = GetIcuData(rulesReader);
 							// I added a space after the ampersand to increase readability with situations where the first
 							// character following a reset may be a combining character or some other character that would be
 							// rendered around the ampersand
 							rules += String.Format(NewLine + "& {2}{0}{1}", icuData, GetVariableTopString(icuData, ref variableTop),
-								beforeOption);
+												   beforeOption);
 							break;
 						case "p":
-							icuData = GetIcuData(elem);
+							icuData = GetIcuData(rulesReader);
 							rules += String.Format(" < {0}{1}", icuData, GetVariableTopString(icuData, ref variableTop));
 							break;
 						case "s":
-							icuData = GetIcuData(elem);
+							icuData = GetIcuData(rulesReader);
 							rules += String.Format(" << {0}{1}", icuData, GetVariableTopString(icuData, ref variableTop));
 							break;
 						case "t":
-							icuData = GetIcuData(elem);
+							icuData = GetIcuData(rulesReader);
 							rules += String.Format(" <<< {0}{1}", icuData, GetVariableTopString(icuData, ref variableTop));
 							break;
 						case "i":
-							icuData = GetIcuData(elem);
+							icuData = GetIcuData(rulesReader);
 							rules += String.Format(" = {0}{1}", icuData, GetVariableTopString(icuData, ref variableTop));
 							break;
 						case "pc":
-							rules += BuildRuleFromConcatenatedData("<", elem, ref variableTop);
+							rules += BuildRuleFromConcatenatedData("<", rulesReader, ref variableTop);
 							break;
 						case "sc":
-							rules += BuildRuleFromConcatenatedData("<<", elem, ref variableTop);
+							rules += BuildRuleFromConcatenatedData("<<", rulesReader, ref variableTop);
 							break;
 						case "tc":
-							rules += BuildRuleFromConcatenatedData("<<<", elem, ref variableTop);
+							rules += BuildRuleFromConcatenatedData("<<<", rulesReader, ref variableTop);
 							break;
 						case "ic":
-							rules += BuildRuleFromConcatenatedData("=", elem, ref variableTop);
+							rules += BuildRuleFromConcatenatedData("=", rulesReader, ref variableTop);
 							break;
 						case "x":
-							rules += GetRuleFromExtendedNode(elem);
+							rules += GetRuleFromExtendedNode(rulesReader);
 							break;
 						default:
-							throw new ApplicationException(String.Format("Invalid LDML collation rule element: {0}", elem.Name));
+							throw new ApplicationException(String.Format("Invalid LDML collation rule element: {0}", rulesReader.Name));
 					}
 				}
 			}
 			return rules;
 		}
 
-		private static string GetBeforeOption(XElement element)
+		private static string GetBeforeOption(XmlReader reader)
 		{
-			switch ((string)element.Attribute("before"))
+			switch (reader.GetAttribute("before"))
 			{
 				case "primary":
 					return "[before 1] ";
@@ -459,39 +482,57 @@ namespace SIL.WritingSystems.Collation
 			}
 		}
 
-		private static string GetIcuData(XElement element)
+		private static string GetIcuData(XmlReader reader)
 		{
-			if (element.IsEmpty)
+			if (reader.IsEmptyElement)
 			{
-				throw new ApplicationException(String.Format("Empty LDML collation rule: {0}", element.Name));
+				throw new ApplicationException(String.Format("Empty LDML collation rule: {0}", reader.Name));
 			}
-			XElement child = element.Elements().FirstOrDefault();
-			if ((child != null) && (child.Name != "cp"))
+			string data = reader.ReadString();
+			if (reader.NodeType == XmlNodeType.Element && reader.Name != "cp")
 			{
-				return GetIndirectPosition(child);
+				return GetIndirectPosition(reader);
 			}
-			string data = GetTextData(element);
+			data += GetTextData(reader);
 			return EscapeForIcu(data);
 		}
 
-		private static string GetTextData(XElement element)
+		private static string GetTextData(XmlReader reader)
 		{
-			string data = string.Empty;
-			foreach (XElement child in element.Elements("cp"))
-				data += GetCPData(child);
-			if (data == string.Empty)
-				data = (string) element;
+			string data = reader.ReadString();
+			while (reader.NodeType != XmlNodeType.EndElement)
+			{
+				switch (reader.NodeType)
+				{
+					case XmlNodeType.Comment:
+					case XmlNodeType.ProcessingInstruction:
+						reader.Read();
+						break;
+					case XmlNodeType.CDATA:
+					case XmlNodeType.EntityReference:
+					case XmlNodeType.Text:
+					case XmlNodeType.Whitespace:
+					case XmlNodeType.SignificantWhitespace:
+						data += reader.ReadString();
+						break;
+					case XmlNodeType.Element:
+						data += GetCPData(reader);
+						break;
+					default:
+						throw new ApplicationException("Unexpected XML node type inside LDML collation data element.");
+				}
+			}
 			return data;
 		}
 
-		private static string GetCPData(XElement element)
+		private static string GetCPData(XmlReader reader)
 		{
-			Debug.Assert(element.NodeType == XmlNodeType.Element);
-			if (element.Name != "cp")
+			Debug.Assert(reader.NodeType == XmlNodeType.Element);
+			if (reader.Name != "cp")
 			{
-				throw new ApplicationException(string.Format("Unexpected element '{0}' in text data node", element.Name));
+				throw new ApplicationException(string.Format("Unexpected element '{0}' in text data node", reader.Name));
 			}
-			string hex = (string)element.Attribute("hex");
+			string hex = reader.GetAttribute("hex");
 			string result = string.Empty;
 			if (!string.IsNullOrEmpty(hex))
 			{
@@ -509,13 +550,14 @@ namespace SIL.WritingSystems.Collation
 					throw new ApplicationException("Invalid Unicode code point in LDML 'cp' element.", e);
 				}
 			}
+			reader.Skip();
 			return result;
 		}
 
-		private static string GetIndirectPosition(XElement element)
+		private static string GetIndirectPosition(XmlReader reader)
 		{
 			string result;
-			switch (element.Name.ToString())
+			switch (reader.Name)
 			{
 				case "first_non_ignorable":
 					result = "[first regular]";
@@ -524,15 +566,16 @@ namespace SIL.WritingSystems.Collation
 					result = "[last regular]";
 					break;
 				default:
-					result = "[" + element.Name.ToString().Replace('_', ' ') + "]";
+					result = "[" + reader.Name.Replace('_', ' ') + "]";
 					break;
 			}
+			reader.Skip();
 			return result;
 		}
 
-		private static string BuildRuleFromConcatenatedData(string op, XElement element, ref string variableTop)
+		private static string BuildRuleFromConcatenatedData(string op, XmlReader reader, ref string variableTop)
 		{
-			string data = GetTextData(element);
+			string data = GetTextData(reader);
 			StringBuilder rule = new StringBuilder(20*data.Length);
 			for (int i = 0; i < data.Length; i++)
 			{
@@ -559,38 +602,45 @@ namespace SIL.WritingSystems.Collation
 			return " < [variable top]";
 		}
 
-		private static string GetRuleFromExtendedNode(XElement element)
+		private static string GetRuleFromExtendedNode(XmlReader reader)
 		{
 			string rule = string.Empty;
-			if (element.IsEmpty)
+			if (reader.IsEmptyElement)
 			{
 				return rule;
 			}
-			foreach(XElement child in element.Elements())
+			reader.Read();
+			while (reader.NodeType != XmlNodeType.EndElement && !reader.EOF)
 			{
-				switch (child.Name.ToString())
+				if (reader.NodeType != XmlNodeType.Element)
+				{
+					reader.Read();
+					continue;
+				}
+				switch (reader.Name)
 				{
 					case "context":
-						rule += String.Format("{0} | ", GetIcuData(child));
+						rule += String.Format("{0} | ", GetIcuData(reader));
 						break;
 					case "extend":
-						rule += String.Format(" / {0}", GetIcuData(child));
+						rule += String.Format(" / {0}", GetIcuData(reader));
 						break;
 					case "p":
-						rule = String.Format(" < {0}{1}", rule, GetIcuData(child));
+						rule = String.Format(" < {0}{1}", rule, GetIcuData(reader));
 						break;
 					case "s":
-						rule = String.Format(" << {0}{1}", rule, GetIcuData(child));
+						rule = String.Format(" << {0}{1}", rule, GetIcuData(reader));
 						break;
 					case "t":
-						rule = String.Format(" <<< {0}{1}", rule, GetIcuData(child));
+						rule = String.Format(" <<< {0}{1}", rule, GetIcuData(reader));
 						break;
 					case "i":
-						rule = String.Format(" = {0}{1}", rule, GetIcuData(child));
+						rule = String.Format(" = {0}{1}", rule, GetIcuData(reader));
 						break;
 					default:
-						throw new ApplicationException(String.Format("Invalid node in extended LDML collation rule: {0}", child.Name));
+						throw new ApplicationException(String.Format("Invalid node in extended LDML collation rule: {0}", reader.Name));
 				}
+				reader.Read();
 			}
 			return rule;
 		}

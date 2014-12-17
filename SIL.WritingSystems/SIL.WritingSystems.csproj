@@ -146,6 +146,7 @@
     <Compile Include="IWritingSystemRepository.cs" />
     <Compile Include="Keyboard.cs" />
     <Compile Include="KeyboardDefinitionCollection.cs" />
+    <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\LdmlCollationParserV1.cs" />
     <Compile Include="ObservableKeyedCollection.cs" />
     <Compile Include="LanguageRegistryResources.Designer.cs">
       <AutoGen>True</AutoGen>

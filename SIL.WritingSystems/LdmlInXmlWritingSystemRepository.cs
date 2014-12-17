@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.XPath;
 
 namespace SIL.WritingSystems

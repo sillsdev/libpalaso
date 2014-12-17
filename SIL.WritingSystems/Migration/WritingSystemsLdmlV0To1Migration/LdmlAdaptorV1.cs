@@ -390,13 +390,13 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 		private void ReadCollationRulesForCustomICU(string collationXml, WritingSystemDefinitionV1 ws)
 		{
-			ws.SortRules = LdmlCollationParser.GetIcuRulesFromCollationNode(collationXml);
+			ws.SortRules = LdmlCollationParserV1.GetIcuRulesFromCollationNode(collationXml);
 		}
 
 		private void ReadCollationRulesForCustomSimple(string collationXml, WritingSystemDefinitionV1 ws)
 		{
 			string rules;
-			if (LdmlCollationParser.TryGetSimpleRulesFromCollationNode(collationXml, out rules))
+			if (LdmlCollationParserV1.TryGetSimpleRulesFromCollationNode(collationXml, out rules))
 			{
 				ws.SortRules = rules;
 				return;
