@@ -58,8 +58,10 @@ namespace Palaso.DictionaryServices.Tests
 		{
 			var retval = new WritingSystemDefinition();
 			retval.Language = languageISO;
+#if WS_FIX
 			retval.DefaultFontName = font.Name;
 			retval.DefaultFontSize = font.Size;
+#endif
 			return retval;
 		}
 
