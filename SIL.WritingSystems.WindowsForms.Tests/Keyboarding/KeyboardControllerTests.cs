@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
 using SIL.WritingSystems.WindowsForms.Keyboarding;
+using SIL.WritingSystems.WindowsForms.Keyboarding.Linux;
 
 namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 {
@@ -28,14 +29,13 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		[Test]
 		public void CreateKeyboardDefinition_ExistingKeyboard_ReturnsReference()
 		{
-			var inputLanguage = new InputLanguageWrapper(new CultureInfo("en-US"), IntPtr.Zero, "foo");
 			var expectedKeyboard = new KeyboardDescription("en-US_foo", "foo - English (US)", "foo", "en-US", true,
-				inputLanguage, KeyboardController.Instance.Adaptors[0]);
+				KeyboardController.Instance.Adaptors[0]);
 			KeyboardController.Instance.Keyboards.Add(expectedKeyboard);
 			IKeyboardDefinition keyboard = Keyboard.Controller.CreateKeyboardDefinition("en-US_foo", KeyboardFormat.Unknown, null);
 			Assert.That(keyboard, Is.SameAs(expectedKeyboard));
 			Assert.That(keyboard, Is.TypeOf<KeyboardDescription>());
-			Assert.That(((KeyboardDescription) keyboard).InputLanguage, Is.EqualTo(inputLanguage));
+			Assert.That(keyboard.Name, Is.EqualTo("foo - English (US)"));
 		}
 
 		[Test]
@@ -141,9 +141,8 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		[Test]
 		public void DefaultForWritingSystem_OldPalasoWinIMEKeyboard()
 		{
-			var inputLanguage = new InputLanguageWrapper(new CultureInfo("en-US"), IntPtr.Zero, "foo");
 			var expectedKeyboard = new KeyboardDescription("en-US_foo", "foo - English (US)", "foo", "en-US", true,
-				inputLanguage, KeyboardController.Instance.Adaptors[0]);
+				KeyboardController.Instance.Adaptors[0]);
 			KeyboardController.Instance.Keyboards.Add(expectedKeyboard);
 
 			// Palaso sets the keyboard property for Windows system keyboards to <layoutname>-<locale>
@@ -158,7 +157,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 			if (!KeyboardController.Instance.Keyboards.TryGetKeyboardDefinition("IPA Unicode 1.1.1", out expectedKeyboard))
 			{
 				expectedKeyboard = new KeyboardDescription("IPA Unicode 1.1.1", "IPA Unicode 1.1.1 - English (US)", "IPA Unicode 1.1.1", string.Empty, true,
-					null, KeyboardController.Instance.Adaptors[0]);
+					KeyboardController.Instance.Adaptors[0]);
 				KeyboardController.Instance.Keyboards.Add(expectedKeyboard);
 			}
 
@@ -174,11 +173,10 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 			// For this test on Linux we only use the XkbKeyboardAdaptor and simulate an available
 			// IBus keyboard. This is necessary because otherwise the test might return an
 			// installed Danish IBus keyboard (m17n:da:post) instead of our expected dummy one.
-			KeyboardController.Manager.SetKeyboardAdaptors(new[] { new SIL.WritingSystems.WindowsForms.Keyboarding.Linux.XkbKeyboardAdaptor() });
+			KeyboardController.Instance.SetKeyboardAdaptors(new XkbKeyboardAdaptor());
 			#endif
-			var inputLanguage = new InputLanguageWrapper(new CultureInfo("en-US"), IntPtr.Zero, "foo");
 			var expectedKeyboard = new KeyboardDescription("m17n:da:post", "m17n:da:post - English (US)", "m17n:da:post", string.Empty, true,
-				inputLanguage, KeyboardController.Instance.Adaptors[0]);
+				KeyboardController.Instance.Adaptors[0]);
 			KeyboardController.Instance.Keyboards.Add(expectedKeyboard);
 
 			// Palaso sets the keyboard property for Ibus keyboards to <ibus longname>
@@ -196,7 +194,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 
 			var inputLanguage = new InputLanguageWrapper("sq-AL", IntPtr.Zero, "US");
 			var expectedKeyboard = new KeyboardDescription("sq-AL_US", "US - Albanian (Albania)", "US", "sq-AL", true,
-				inputLanguage, KeyboardController.Instance.Adaptors[0]);
+				KeyboardController.Instance.Adaptors[0]) {InputLanguage = inputLanguage};
 			KeyboardController.Instance.Keyboards.Add(expectedKeyboard);
 
 			// FieldWorks sets the WindowsLcid property for System keyboards to <lcid>
@@ -220,9 +218,8 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		[Test]
 		public void DefaultForWritingSystem_OldFwKeymanKeyboard()
 		{
-			var inputLanguage = new InputLanguageWrapper(new CultureInfo("en-US"), IntPtr.Zero, "foo");
 			var expectedKeyboard = new KeyboardDescription("en-US_IPA Unicode 1.1.1", "IPA Unicode 1.1.1 - English (US)", "IPA Unicode 1.1.1", "en-US", true,
-				inputLanguage, KeyboardController.Instance.Adaptors[0]);
+				KeyboardController.Instance.Adaptors[0]);
 			KeyboardController.Instance.Keyboards.Add(expectedKeyboard);
 
 			// FieldWorks sets the keyboard property for Keyman keyboards to <layoutname> and WindowsLcid to <lcid>

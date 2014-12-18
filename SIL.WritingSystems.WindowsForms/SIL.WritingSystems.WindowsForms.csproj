@@ -88,6 +88,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono'">
+    <Reference Include="icu.net">
+      <HintPath>..\lib\DebugMono\icu.net.dll</HintPath>
+    </Reference>
     <None Include="..\lib\DebugMono\icu.net.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -98,6 +101,9 @@
     <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'ReleaseMono'">
+    <Reference Include="icu.net">
+      <HintPath>..\lib\ReleaseMono\icu.net.dll</HintPath>
+    </Reference>
     <None Include="..\lib\ReleaseMono\icu.net.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -118,9 +124,6 @@
     </Reference>
     <Reference Include="ibusdotnet">
       <HintPath>..\lib\commonMono\ibusdotnet.dll</HintPath>
-    </Reference>
-    <Reference Include="icu.net">
-      <HintPath>..\lib\$(Configuration)\icu.net.dll</HintPath>
     </Reference>
     <None Include="..\lib\commonMono\NDesk.DBus.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

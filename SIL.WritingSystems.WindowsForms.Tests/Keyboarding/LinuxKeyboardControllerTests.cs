@@ -61,8 +61,8 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		[Test]
 		public void GetAllKeyboards_GivesSeveral()
 		{
-			var keyboards = Keyboard.Controller.AllAvailableKeyboards;
-			Assert.Greater(keyboards.Count(), 1, "This test requires that the Windows IME has at least two languages installed.");
+			IKeyboardDefinition[] keyboards = Keyboard.Controller.AllAvailableKeyboards.ToArray();
+			Assert.Greater(keyboards.Length, 1, "This test requires that the Windows IME has at least two languages installed.");
 		}
 
 		[Test]
@@ -244,7 +244,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		public void CreateKeyboardDefinition_NewKeyboard_ReturnsNewObject()
 		{
 			// REVIEW: adjust this test
-			var keyboard = Keyboard.Controller.CreateKeyboardDefinition("foo", "en-US");
+			IKeyboardDefinition keyboard = Keyboard.Controller.CreateKeyboardDefinition("en-US_foo", KeyboardFormat.Unknown, null);
 			Assert.That(keyboard, Is.Not.Null);
 			Assert.That(keyboard, Is.TypeOf<XkbKeyboardDescription>());
 		}

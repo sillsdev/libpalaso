@@ -7,14 +7,13 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using IBusDotNet;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Interfaces;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 {
 	/// <summary>
 	/// Default event handler for IBUS events that works with a WinForms text box.
 	/// </summary>
-	public class IbusDefaultEventHandler: IIbusEventHandler
+	public class IbusDefaultEventHandler : IIbusEventHandler
 	{
 		private TextBox m_TextBox;
 		/// <summary>

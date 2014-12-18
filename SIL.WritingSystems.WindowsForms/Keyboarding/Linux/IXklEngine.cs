@@ -1,8 +1,5 @@
 // Copyright (c) 2013, SIL International.
 // Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
-
-namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
-{
 #if __MonoCS__
 using System;
 
@@ -34,4 +31,3 @@ namespace X11.XKlavier
 	}
 }
 #endif
-}

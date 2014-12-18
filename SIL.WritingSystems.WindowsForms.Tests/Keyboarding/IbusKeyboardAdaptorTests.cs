@@ -8,10 +8,7 @@ using NUnit.Framework;
 using IBusDotNet;
 using X11.XKlavier;
 using SIL.WritingSystems.WindowsForms.Keyboarding;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Interfaces;
-using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
 using SIL.WritingSystems.WindowsForms.Keyboarding.Linux;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Types;
 
 namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 {
@@ -121,18 +118,24 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 			engineDescMock.Setup(x => x.Name).Returns(name);
 			engineDescMock.Setup(x => x.Language).Returns(language);
 			engineDescMock.Setup(x => x.Layout).Returns(layout);
-			var keyboard = new IbusKeyboardDescription(ibusKeyboardAdapter, engineDescMock.Object);
-			KeyboardController.Manager.RegisterKeyboard(keyboard);
+			var keyboard = new IbusKeyboardDescription(string.Format("{0}_{1}", language, name), engineDescMock.Object, ibusKeyboardAdapter);
+			KeyboardController.Instance.Keyboards.Add(keyboard);
 			return keyboard;
 		}
 
 		private static XkbKeyboardDescription CreateMockXkbKeyboard(string name, string layout, string locale,
 			string layoutName, int group, XkbKeyboardAdaptor adapter)
 		{
-			var keyboard = new XkbKeyboardDescription(name, layout, locale,
-				new InputLanguageWrapper(locale, IntPtr.Zero, layoutName), adapter, group, true);
-			KeyboardController.Manager.RegisterKeyboard(keyboard);
+			var keyboard = new XkbKeyboardDescription(string.Format("{0}_{1}", layout, locale), name, layout, locale, true,
+				new InputLanguageWrapper(locale, IntPtr.Zero, layoutName), adapter, group);
+			KeyboardController.Instance.Keyboards.Add(keyboard);
 			return keyboard;
+		}
+
+		[SetUp]
+		public void SetUp()
+		{
+			KeyboardController.Initialize();
 		}
 
 		[TearDown]
@@ -140,6 +143,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		{
 			GlobalCachedInputContext.Keyboard = null;
 			GlobalCachedInputContext.Clear();
+			KeyboardController.Shutdown();
 		}
 
 		[Test]
@@ -157,7 +161,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 			var ibusKeyboardAdapter = new IbusKeyboardAdaptorDouble(new DoNothingIbusCommunicator());
 			var xklEngineMock = new Mock<IXklEngine>();
 			var xkbKeyboardAdapter = new XkbKeyboardAdaptorDouble(xklEngineMock.Object);
-			KeyboardController.Manager.SetKeyboardAdaptors(new IKeyboardAdaptor[] { xkbKeyboardAdapter, ibusKeyboardAdapter});
+			KeyboardController.Instance.SetKeyboardAdaptors(new IKeyboardAdaptor[] { xkbKeyboardAdapter, ibusKeyboardAdapter});
 
 			var ibusKeyboard = CreateMockIbusKeyboard(ibusKeyboardAdapter, name, language, layout);
 			var deKeyboard = CreateMockXkbKeyboard("German - German (Germany)", "de", "de-DE", "German", DeKeyboardGroup, xkbKeyboardAdapter);

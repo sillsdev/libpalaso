@@ -15,9 +15,6 @@ using System.Linq;
 using Icu;
 using X11.XKlavier;
 using Palaso.Reporting;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Interfaces;
-using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Types;
 using SIL.WritingSystems;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
@@ -25,10 +22,9 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 	/// <summary>
 	/// Class for handling xkb keyboards on Linux
 	/// </summary>
-	public class XkbKeyboardAdaptor: IKeyboardAdaptor
+	internal class XkbKeyboardAdaptor : IKeyboardAdaptor
 	{
-		protected List<IKeyboardErrorDescription> m_BadLocales;
-		private IXklEngine m_engine;
+		private IXklEngine _engine;
 
 		public XkbKeyboardAdaptor(): this(new XklEngine())
 		{
@@ -40,7 +36,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		/// </summary>
 		public XkbKeyboardAdaptor(IXklEngine engine)
 		{
-			m_engine = engine;
+			_engine = engine;
 		}
 
 		private string GetLanguageCountry(Icu.Locale locale)
@@ -80,19 +76,16 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 
 		protected virtual void InitLocales()
 		{
-			if (m_BadLocales != null)
-				return;
 			ReinitLocales();
 		}
 
 		private void ReinitLocales()
 		{
-			m_BadLocales = new List<IKeyboardErrorDescription>();
+			var configRegistry = XklConfigRegistry.Create(_engine);
+			Dictionary<string, List<XklConfigRegistry.LayoutDescription>> layouts = configRegistry.Layouts;
 
-			var configRegistry = XklConfigRegistry.Create(m_engine);
-			var layouts = configRegistry.Layouts;
-
-			for (int iGroup = 0; iGroup < m_engine.GroupNames.Length; iGroup++)
+			Dictionary<string, XkbKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<XkbKeyboardDescription>().ToDictionary(kd => kd.Id);
+			for (int iGroup = 0; iGroup < _engine.GroupNames.Length; iGroup++)
 			{
 				// a group in a xkb keyboard is a keyboard layout. This can be used with
 				// multiple languages - which language is ambigious. Here we just add all
@@ -100,12 +93,11 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 				// m_engine.GroupNames are not localized, but the layouts are. Before we try
 				// to compare them we better localize the group name as well, or we won't find
 				// much (FWNX-1388)
-				var groupName = m_engine.LocalizedGroupNames[iGroup];
+				string groupName = _engine.LocalizedGroupNames[iGroup];
 				List<XklConfigRegistry.LayoutDescription> layoutList;
 				if (!layouts.TryGetValue(groupName, out layoutList))
 				{
 					// No language in layouts uses the groupName keyboard layout.
-					m_BadLocales.Add(new KeyboardErrorDescription(groupName));
 					Console.WriteLine("WARNING: Couldn't find layout for {0}.", groupName);
 					Logger.WriteEvent("WARNING: Couldn't find layout for {0}.", groupName);
 					continue;
@@ -113,20 +105,19 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 
 				for (int iLayout = 0; iLayout < layoutList.Count; iLayout++)
 				{
-					var layout = layoutList[iLayout];
-					AddKeyboardForLayout(layout, iGroup);
+					XklConfigRegistry.LayoutDescription layout = layoutList[iLayout];
+					AddKeyboardForLayout(curKeyboards, layout, iGroup, this);
 				}
 			}
+
+			foreach (XkbKeyboardDescription existingKeyboard in curKeyboards.Values)
+				existingKeyboard.SetIsAvailable(false);
 		}
 
-		private void AddKeyboardForLayout(XklConfigRegistry.LayoutDescription layout, int iGroup)
+		public static void AddKeyboardForLayout(IDictionary<string, XkbKeyboardDescription> curKeyboards, XklConfigRegistry.LayoutDescription layout,
+			int iGroup, IKeyboardAdaptor engine)
 		{
-			AddKeyboardForLayout(layout, iGroup, this);
-		}
-
-		internal void AddKeyboardForLayout(XklConfigRegistry.LayoutDescription layout, int iGroup, IKeyboardAdaptor engine)
-		{
-			var description = GetDescription(layout);
+			string description = GetDescription(layout);
 			CultureInfo culture = null;
 			try
 			{
@@ -138,24 +129,31 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 				// TODO: fix mono's list of supported locales. Doesn't support e.g. de-BE.
 				// See mono/tools/locale-builder.
 			}
+			string id = string.Format("{0}_{1}", layout.LocaleId, layout.LayoutId);
 			var inputLanguage = new InputLanguageWrapper(culture, IntPtr.Zero, layout.Language);
-			var keyboard = new XkbKeyboardDescription(description, layout.LayoutId, layout.LocaleId,
-				inputLanguage, engine, iGroup, true);
-			KeyboardController.Manager.RegisterKeyboard(keyboard);
-		}
-
-		internal IXklEngine XklEngine
-		{
-			get { return m_engine; }
-		}
-
-		public List<IKeyboardErrorDescription> ErrorKeyboards
-		{
-			get
+			XkbKeyboardDescription existingKeyboard;
+			if (curKeyboards.TryGetValue(id, out existingKeyboard))
 			{
-				InitLocales();
-				return m_BadLocales;
+				if (!existingKeyboard.IsAvailable)
+				{
+					existingKeyboard.SetIsAvailable(true);
+					existingKeyboard.SetName(description);
+					existingKeyboard.SetInputLanguage(inputLanguage);
+					existingKeyboard.GroupIndex = iGroup;
+				}
+				curKeyboards.Remove(id);
 			}
+			else
+			{
+				var keyboard = new XkbKeyboardDescription(id, description, layout.LayoutId, layout.LocaleId, true,
+					inputLanguage, engine, iGroup);
+				KeyboardController.Instance.Keyboards.Add(keyboard);
+			}
+		}
+
+		public IXklEngine XklEngine
+		{
+			get { return _engine; }
 		}
 
 		public void Initialize()
@@ -166,12 +164,6 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		public void UpdateAvailableKeyboards()
 		{
 			ReinitLocales();
-		}
-
-		public void Close()
-		{
-			m_engine.Close();
-			m_engine = null;
 		}
 
 		public bool ActivateKeyboard(IKeyboardDefinition keyboard)
@@ -185,7 +177,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 
 			if (xkbKeyboard.GroupIndex >= 0)
 			{
-				m_engine.SetGroup(xkbKeyboard.GroupIndex);
+				_engine.SetGroup(xkbKeyboard.GroupIndex);
 			}
 			return true;
 		}
@@ -202,9 +194,9 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		/// <summary>
 		/// The type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
 		/// </summary>
-		public KeyboardType Type
+		public KeyboardAdaptorType Type
 		{
-			get { return KeyboardType.System; }
+			get { return KeyboardAdaptorType.System; }
 		}
 
 		/// <summary>
@@ -221,28 +213,35 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			{
 				int minGroup = Int32.MaxValue;
 				IKeyboardDefinition retval = null;
-				foreach (var kbd in Keyboard.Controller.AllAvailableKeyboards)
+				foreach (XkbKeyboardDescription kbd in Keyboard.Controller.AllAvailableKeyboards.OfType<XkbKeyboardDescription>())
 				{
-					if (kbd is XkbKeyboardDescription && kbd.Type == KeyboardType.System &&
-						((XkbKeyboardDescription)kbd).GroupIndex < minGroup)
+					if (kbd.GroupIndex < minGroup)
 					{
 						retval = kbd;
-						minGroup = ((XkbKeyboardDescription)kbd).GroupIndex;
+						minGroup = kbd.GroupIndex;
 					}
 				}
 				return retval;
 			}
 		}
-
-		private string _missingKeyboardFmt;
+			
 		/// <summary>
 		/// Creates and returns a keyboard definition object based on the layout and locale.
 		/// Note that this method is used when we do NOT have a matching available keyboard.
 		/// Therefore we can presume that the created one is NOT available.
 		/// </summary>
-		public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
+		public IKeyboardDefinition CreateKeyboardDefinition(string id)
 		{
-			var realLocale = locale;
+			return CreateKeyboardDefinition(id, this);
+		}
+
+		public static IKeyboardDefinition CreateKeyboardDefinition(string id, IKeyboardAdaptor engine)
+		{
+			string[] parts = id.Split('_');
+			string locale = parts[0];
+			string layout = parts[1];
+
+			string realLocale = locale;
 			if (locale == "zh")
 			{
 				realLocale = "zh-CN";	// Mono doesn't support bare "zh" until version 3 sometime
@@ -251,16 +250,16 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			{
 				realLocale = "is";			// 0x040F is the numeric code for Icelandic.
 			}
+
 			// Don't crash if the locale is unknown to the system.  (It may be that ibus is not running and
 			// this particular locale and layout refer to an ibus keyboard.)  Mark the keyboard description
 			// as missing, but create an English (US) keyboard underneath.
 			if (IsLocaleKnown(realLocale))
-				return new XkbKeyboardDescription(string.Format("{0} ({1})", locale, layout), layout, locale,
-					new InputLanguageWrapper(realLocale, IntPtr.Zero, layout), this, -1, false);
-			if (_missingKeyboardFmt == null)
-				_missingKeyboardFmt = L10NSharp.LocalizationManager.GetString("XkbKeyboardAdaptor.MissingKeyboard", "[Missing] {0} ({1})");
-			return new XkbKeyboardDescription(String.Format(_missingKeyboardFmt, locale, layout), layout, locale,
-				new InputLanguageWrapper("en", IntPtr.Zero, "US"), this, -1, false);
+				return new XkbKeyboardDescription(id, string.Format("{0} ({1})", locale, layout), layout, locale, false,
+					new InputLanguageWrapper(realLocale, IntPtr.Zero, layout), engine, -1);
+			string missingKeyboardFmt = L10NSharp.LocalizationManager.GetString("XkbKeyboardAdaptor.MissingKeyboard", "[Missing] {0} ({1})");
+			return new XkbKeyboardDescription(id, String.Format(missingKeyboardFmt, locale, layout), layout, locale, false,
+				new InputLanguageWrapper("en", IntPtr.Zero, "US"), engine, -1);
 		}
 
 		private static HashSet<string> _knownCultures;
@@ -277,6 +276,103 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			}
 			return _knownCultures.Contains(locale);
 		}
+
+		public bool CanHandleFormat(KeyboardFormat format)
+		{
+			return format == KeyboardFormat.Unknown;
+		}
+
+		#region IDisposable & Co. implementation
+		// Region last reviewed: never
+
+		/// <summary>
+		/// Check to see if the object has been disposed.
+		/// All public Properties and Methods should call this
+		/// before doing anything else.
+		/// </summary>
+		public void CheckDisposed()
+		{
+			if (IsDisposed)
+				throw new ObjectDisposedException(String.Format("'{0}' in use after being disposed.", GetType().Name));
+		}
+
+		/// <summary>
+		/// See if the object has been disposed.
+		/// </summary>
+		public bool IsDisposed { get; private set; }
+
+		/// <summary>
+		/// Finalizer, in case client doesn't dispose it.
+		/// Force Dispose(false) if not already called (i.e. m_isDisposed is true)
+		/// </summary>
+		/// <remarks>
+		/// In case some clients forget to dispose it directly.
+		/// </remarks>
+		~XkbKeyboardAdaptor()
+		{
+			Dispose(false);
+			// The base class finalizer is called automatically.
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <remarks>Must not be virtual.</remarks>
+		public void Dispose()
+		{
+			Dispose(true);
+			// This object will be cleaned up by the Dispose method.
+			// Therefore, you should call GC.SupressFinalize to
+			// take this object off the finalization queue
+			// and prevent finalization code for this object
+			// from executing a second time.
+			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Executes in two distinct scenarios.
+		///
+		/// 1. If disposing is true, the method has been called directly
+		/// or indirectly by a user's code via the Dispose method.
+		/// Both managed and unmanaged resources can be disposed.
+		///
+		/// 2. If disposing is false, the method has been called by the
+		/// runtime from inside the finalizer and you should not reference (access)
+		/// other managed objects, as they already have been garbage collected.
+		/// Only unmanaged resources can be disposed.
+		/// </summary>
+		/// <param name="disposing"></param>
+		/// <remarks>
+		/// If any exceptions are thrown, that is fine.
+		/// If the method is being done in a finalizer, it will be ignored.
+		/// If it is thrown by client code calling Dispose,
+		/// it needs to be handled by fixing the bug.
+		///
+		/// If subclasses override this method, they should call the base implementation.
+		/// </remarks>
+		protected virtual void Dispose(bool disposing)
+		{
+			Debug.WriteLineIf(!disposing, "****************** " + GetType().Name + " 'disposing' is false. ******************");
+			// Must not be run more than once.
+			if (IsDisposed)
+				return;
+
+			if (disposing)
+			{
+				// Dispose managed resources here.
+				if (_engine != null)
+				{
+					_engine.Close();
+					_engine = null;
+				}
+			}
+
+			// Dispose unmanaged resources here, whether disposing is true or false.
+
+			IsDisposed = true;
+		}
+
+		#endregion IDisposable & Co. implementation
 	}
 }
 #endif

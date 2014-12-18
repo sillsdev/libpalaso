@@ -52,7 +52,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 			{
 				_instance = new KeyboardController();
 				Keyboard.Controller = _instance;
-				_instance.InitializeAdaptors();
+				_instance.SetDefaultAdaptors();
 			}
 			catch (Exception)
 			{
@@ -94,20 +94,28 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 			_keyboards = new KeyboardDefinitionCollection();
 			_eventHandlers = new Dictionary<Control, object>();
 			_languagesAlreadyShownKeyboardNotFoundMessages = new List<string>();
-
-			_adaptors = new List<IKeyboardAdaptor>
-			{
-#if __MonoCS__
-				new XkbKeyboardAdaptor(), new IbusKeyboardAdaptor(), new CombinedKeyboardAdaptor(),
-				new CinnamonIbusAdaptor()
-#else
-				new WinKeyboardAdaptor(), new KeymanKeyboardAdaptor()
-#endif
-			};
+			_adaptors = new List<IKeyboardAdaptor>();
 		}
 
-		private void InitializeAdaptors()
+		private void SetDefaultAdaptors()
 		{
+#if __MonoCS__
+			if (CombinedKeyboardAdaptor.IsRequired)
+				SetKeyboardAdaptors(new CombinedKeyboardAdaptor());
+			else if (CinnamonIbusAdaptor.IsRequired)
+				SetKeyboardAdaptors(new CinnamonIbusAdaptor());
+			else
+				SetKeyboardAdaptors(new XkbKeyboardAdaptor(), new IbusKeyboardAdaptor());
+#else
+			SetKeyboardAdaptors(new WinKeyboardAdaptor(), new KeymanKeyboardAdaptor());
+#endif
+		}
+
+		internal void SetKeyboardAdaptors(params IKeyboardAdaptor[] adaptors)
+		{
+			_keyboards.Clear();
+			_adaptors.Clear();
+			_adaptors.AddRange(adaptors);
 			// this will also populate m_keyboards
 			foreach (IKeyboardAdaptor adaptor in _adaptors)
 				adaptor.Initialize();
@@ -127,6 +135,11 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		internal IList<IKeyboardAdaptor> Adaptors
 		{
 			get { return _adaptors; }
+		}
+
+		internal IDictionary<Control, object> EventHandlers
+		{
+			get { return _eventHandlers; }
 		}
 
 		#region Disposable stuff
@@ -277,17 +290,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		/// </summary>
 		public void ActivateDefaultKeyboard()
 		{
-			if (CinnamonKeyboardHandling)
-			{
-#if __MonoCS__
-				CinnamonIbusAdaptor wasta = Adaptors.First(adaptor => adaptor.GetType().ToString().Contains("CinnamonIbus")) as CinnamonIbusAdaptor;
-				wasta.ActivateDefaultKeyboard();
-#endif
-			}
-			else
-			{
-				SetKeyboard(DefaultKeyboard);
-			}
+			SetKeyboard(DefaultKeyboard);
 		}
 
 		/// <summary>
@@ -416,16 +419,17 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 			_eventHandlers.Remove(control);
 		}
 
-#if __MonoCS__
-		/// <summary>
-		/// Flag that Linux is using the combined keyboard handling (Ubuntu saucy/trusty/later?)
-		/// </summary>
-		public bool CombinedKeyboardHandling { get; internal set; }
-#endif
-		/// <summary>
-		/// Flag that Linux is Wasta-14 (Mint 17/Cinnamon) using IBus for keyboarding.
-		/// </summary>
-		public bool CinnamonKeyboardHandling { get; internal set; }
+		#if __MonoCS__
+		public bool CombinedKeyboardHandling
+		{
+			get { return Adaptors.Any(a => a is CombinedKeyboardAdaptor); }
+		}
+
+		public bool CinnamonKeyboardHandling
+		{
+			get { return Adaptors.Any(a => a is CinnamonIbusAdaptor); }
+		}
+		#endif
 
 		private IKeyboardDefinition HandleFwLegacyKeyboards(WritingSystemDefinition ws)
 		{

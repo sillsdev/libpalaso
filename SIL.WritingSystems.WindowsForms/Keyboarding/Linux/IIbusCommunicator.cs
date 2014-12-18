@@ -1,14 +1,11 @@
 // Copyright (c) 2013, SIL International.
 // Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
-
-namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
-{
 #if __MonoCS__
 using System;
 using System.Windows.Forms;
 using IBusDotNet;
 
-namespace SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces
+namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 {
 	/// <summary>
 	/// Methods that the IbusKeyboardAdaptor calls to communicate with IBus, and events that
@@ -19,7 +16,6 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces
 	/// IBus, e.g. creating and releasing the connection to IBus and dealing with connection
 	/// errors.
 	/// </summary>
-	[CLSCompliant(false)]
 	public interface IIbusCommunicator : IDisposable
 	{
 		/// <summary>
@@ -103,4 +99,3 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces
 	}
 }
 #endif
-}

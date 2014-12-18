@@ -2,16 +2,10 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 #if __MonoCS__
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using X11.XKlavier;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Interfaces;
-using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
 using SIL.WritingSystems;
-using Palaso.Reporting;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 {
@@ -20,11 +14,8 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 	/// in one place.  Trusty (Ubuntu 14.04) and Mint 17/Cinnamon (Wasta 14) both do this,
 	/// but in somewhat different ways.
 	/// </summary>
-	public abstract class CommonBaseAdaptor: IKeyboardAdaptor
+	internal abstract class CommonBaseAdaptor : IKeyboardAdaptor
 	{
-		protected Dictionary<string,int> IbusKeyboards;
-		protected Dictionary<string,int> XkbKeyboards;
-
 		#region P/Invoke imports for glib and dconf
 		// NOTE: we directly use glib/dconf methods here since we don't want to
 		// introduce an otherwise unnecessary dependency on gconf-sharp/gnome-sharp.
@@ -72,25 +63,13 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			ref string tag, IntPtr cancellable, out IntPtr error);
 		#endregion
 
-		public CommonBaseAdaptor()
+		protected CommonBaseAdaptor()
 		{
 			// g_type_init() is needed for Precise, but deprecated for Trusty.
 			// Remove this (and the DllImport above) when we stop supporting Precise.
 			g_type_init();
 		}
 
-		protected static T GetAdaptor<T>() where T: class
-		{
-			foreach (var adaptor in KeyboardController.Adaptors)
-			{
-				var tAdaptor = adaptor as T;
-				if (tAdaptor != default(T))
-					return tAdaptor;
-			}
-			return default(T);
-		}
-
-		protected abstract bool UseThisAdaptor { get; set; }
 		protected abstract string GSettingsSchema { get; }
 		protected abstract string[] GetMyKeyboards(IntPtr client, IntPtr settings);
 		protected abstract void AddAllKeyboards(string[] list);
@@ -98,16 +77,10 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		#region IKeyboardAdaptor implementation
 		public virtual void Initialize()
 		{
-			// Defaults to true, so if false we know we don't need to initialize any further.
-			if (!UseThisAdaptor)
-				return;
 			IntPtr client = IntPtr.Zero;
 			IntPtr settingsGeneral = IntPtr.Zero;
 			try
 			{
-				IbusKeyboards = new Dictionary<string, int>();
-				XkbKeyboards = new Dictionary<string, int>();
-				UseThisAdaptor = false;
 				try
 				{
 					client = dconf_client_new();
@@ -123,12 +96,10 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 					// matter.
 					return;
 				}
-				var list = GetMyKeyboards(client, settingsGeneral);
+				string[] list = GetMyKeyboards(client, settingsGeneral);
 				if (list == null)
 					return;
 
-				UseThisAdaptor = true;
-				KeyboardController.Manager.ClearAllKeyboards();
 				AddAllKeyboards(list);
 			}
 			finally
@@ -145,53 +116,33 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			Initialize();
 		}
 
-		public virtual void Close()
-		{
-			throw new NotImplementedException();		// must be implemented by subclass
-		}
+		public abstract bool ActivateKeyboard(IKeyboardDefinition keyboard);
 
-		public virtual bool ActivateKeyboard(IKeyboardDefinition keyboard)
-		{
-			throw new NotImplementedException();		// must be implemented by subclass
-		}
-
-		public virtual void DeactivateKeyboard(IKeyboardDefinition keyboard)
-		{
-			throw new NotImplementedException();		// must be implemented by subclass
-		}
+		public abstract void DeactivateKeyboard(IKeyboardDefinition keyboard);
 
 		public IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
 		{
 			throw new NotImplementedException();
 		}
 
-		public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
+		public abstract IKeyboardDefinition CreateKeyboardDefinition(string id);
+
+		public abstract IKeyboardDefinition DefaultKeyboard
 		{
-			throw new NotImplementedException();
+			get;
 		}
 
-		public List<IKeyboardErrorDescription> ErrorKeyboards
+		public KeyboardAdaptorType Type
 		{
 			get
 			{
-				throw new NotImplementedException();
+				return KeyboardAdaptorType.System;
 			}
 		}
 
-		public IKeyboardDefinition DefaultKeyboard
+		public bool CanHandleFormat(KeyboardFormat format)
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-		}
-
-		public KeyboardType Type
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
+			return format == KeyboardFormat.Unknown;
 		}
 
 		#endregion
@@ -250,6 +201,93 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			}
 			return list;
 		}
+
+		#region IDisposable & Co. implementation
+		// Region last reviewed: never
+
+		/// <summary>
+		/// Check to see if the object has been disposed.
+		/// All public Properties and Methods should call this
+		/// before doing anything else.
+		/// </summary>
+		public void CheckDisposed()
+		{
+			if (IsDisposed)
+				throw new ObjectDisposedException(String.Format("'{0}' in use after being disposed.", GetType().Name));
+		}
+
+		/// <summary>
+		/// See if the object has been disposed.
+		/// </summary>
+		public bool IsDisposed { get; private set; }
+
+		/// <summary>
+		/// Finalizer, in case client doesn't dispose it.
+		/// Force Dispose(false) if not already called (i.e. m_isDisposed is true)
+		/// </summary>
+		/// <remarks>
+		/// In case some clients forget to dispose it directly.
+		/// </remarks>
+		~CommonBaseAdaptor()
+		{
+			Dispose(false);
+			// The base class finalizer is called automatically.
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <remarks>Must not be virtual.</remarks>
+		public void Dispose()
+		{
+			Dispose(true);
+			// This object will be cleaned up by the Dispose method.
+			// Therefore, you should call GC.SupressFinalize to
+			// take this object off the finalization queue
+			// and prevent finalization code for this object
+			// from executing a second time.
+			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Executes in two distinct scenarios.
+		///
+		/// 1. If disposing is true, the method has been called directly
+		/// or indirectly by a user's code via the Dispose method.
+		/// Both managed and unmanaged resources can be disposed.
+		///
+		/// 2. If disposing is false, the method has been called by the
+		/// runtime from inside the finalizer and you should not reference (access)
+		/// other managed objects, as they already have been garbage collected.
+		/// Only unmanaged resources can be disposed.
+		/// </summary>
+		/// <param name="disposing"></param>
+		/// <remarks>
+		/// If any exceptions are thrown, that is fine.
+		/// If the method is being done in a finalizer, it will be ignored.
+		/// If it is thrown by client code calling Dispose,
+		/// it needs to be handled by fixing the bug.
+		///
+		/// If subclasses override this method, they should call the base implementation.
+		/// </remarks>
+		protected virtual void Dispose(bool disposing)
+		{
+			Debug.WriteLineIf(!disposing, "****************** " + GetType().Name + " 'disposing' is false. ******************");
+			// Must not be run more than once.
+			if (IsDisposed)
+				return;
+
+			if (disposing)
+			{
+				// Dispose managed resources here.
+			}
+
+			// Dispose unmanaged resources here, whether disposing is true or false.
+
+			IsDisposed = true;
+		}
+
+		#endregion IDisposable & Co. implementation
 	}
 }
 #endif

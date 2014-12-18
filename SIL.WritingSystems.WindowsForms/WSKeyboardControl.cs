@@ -314,7 +314,7 @@ namespace SIL.WritingSystems.WindowsForms
 #if MONO
 			// Try for the most likely keyboard setup programs.  If none found,
 			// inform the user.
-			if (KeyboardController.CombinedKeyboardHandling)
+			if (KeyboardController.Instance.CombinedKeyboardHandling)
 			{
 				if (File.Exists("/usr/bin/unity-control-center"))
 				{

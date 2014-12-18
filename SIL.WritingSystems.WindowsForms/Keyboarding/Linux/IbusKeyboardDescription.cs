@@ -3,20 +3,21 @@
 #if __MonoCS__
 using System;
 using System.Windows.Forms;
-using Icu;
 using IBusDotNet;
-using SIL.WritingSystems;
-using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 {
-	internal class IbusKeyboardDescription: KeyboardDescription
+	internal class IbusKeyboardDescription : KeyboardDescription
 	{
-		public IBusEngineDesc IBusKeyboardEngine { get; private set;}
+		private IBusEngineDesc _ibusKeyboard;
 
-		public IbusKeyboardDescription(IKeyboardAdaptor engine, IBusEngineDesc ibusKeyboard):
-			base(FormatKeyboardIdentifier(ibusKeyboard), ibusKeyboard.LongName, ibusKeyboard.Language,
-			null, engine, KeyboardType.OtherIm, true)
+		public IbusKeyboardDescription(string id, string layout, string locale, IKeyboardAdaptor engine)
+			: base (id, FormatKeyboardIdentifier(layout, locale), layout, locale, false, engine)
+		{
+		}
+
+		public IbusKeyboardDescription(string id, IBusEngineDesc ibusKeyboard, IKeyboardAdaptor engine)
+			: base(id, FormatKeyboardIdentifier(ibusKeyboard.Name, ibusKeyboard.Language), ibusKeyboard.LongName, ibusKeyboard.Language, true, engine)
 		{
 			IBusKeyboardEngine = ibusKeyboard;
 		}
@@ -26,14 +27,13 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		/// <summary>
 		/// Produce IBus keyboard identifier which is similar to the actual ibus switcher menu.
 		/// </summary>
-		private static string FormatKeyboardIdentifier(IBusEngineDesc engineDesc)
+		private static string FormatKeyboardIdentifier(string layout, string locale)
 		{
-			string id = engineDesc.Language;
-			string languageName = string.IsNullOrEmpty(id) ? OtherLanguage :
-				new Locale(id).GetDisplayName(new Locale(Application.CurrentCulture.TwoLetterISOLanguageName));
-			if (id != null && id.ToLowerInvariant() == languageName.ToLowerInvariant())
+			string languageName = string.IsNullOrEmpty(locale) ? OtherLanguage :
+				new Icu.Locale(locale).GetDisplayName(new Icu.Locale(Application.CurrentCulture.TwoLetterISOLanguageName));
+			if (locale != null && locale.ToLowerInvariant() == languageName.ToLowerInvariant())
 				languageName = OtherLanguage;
-			return String.Format("{0} - {1}", languageName, engineDesc.Name);
+			return String.Format("{0} - {1}", languageName, layout);
 		}
 
 		public string ParentLayout
@@ -41,7 +41,22 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			get { return IBusKeyboardEngine.Layout; }
 		}
 
-		internal int SystemIndex { get; set; }
+		public IBusEngineDesc IBusKeyboardEngine
+		{
+			get { return _ibusKeyboard; }
+			set
+			{
+				_ibusKeyboard = value;
+				Name = FormatKeyboardIdentifier(_ibusKeyboard.Name, _ibusKeyboard.Language);
+			}
+		}
+
+		public int SystemIndex { get; set; }
+
+		public void SetIsAvailable(bool isAvailable)
+		{
+			IsAvailable = isAvailable;
+		}
 	}
 }
 #endif

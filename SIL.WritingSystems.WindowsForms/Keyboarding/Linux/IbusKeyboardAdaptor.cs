@@ -6,21 +6,17 @@
 // 	GNU Lesser General Public License, as specified in the LICENSING.txt file.
 // </copyright>
 // --------------------------------------------------------------------------------------------
-using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 
 #if __MonoCS__
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using IBusDotNet;
 using SIL.WritingSystems.WindowsForms.Keyboarding;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Interfaces;
-using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Types;
 using SIL.WritingSystems;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
@@ -28,15 +24,14 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 	/// <summary>
 	/// Class for handling ibus keyboards on Linux. Currently just a wrapper for KeyboardSwitcher.
 	/// </summary>
-	[CLSCompliant(false)]
-	public class IbusKeyboardAdaptor: IKeyboardAdaptor
+	internal class IbusKeyboardAdaptor : IKeyboardAdaptor
 	{
-		private IIbusCommunicator IBusCommunicator;
-		private bool m_needIMELocation;
+		private readonly IIbusCommunicator _ibusComm;
+		private bool _needIMELocation;
 
 		/// <summary>
 		/// Initializes a new instance of the
-		/// <see cref="Palaso.UI.WindowsForms.Keyboard.Linux.IbusKeyboardAdaptor"/> class.
+		/// <see cref="SIL.WritingSystems.WindowsForms.Keyboarding.Linux.IbusKeyboardAdaptor"/> class.
 		/// </summary>
 		public IbusKeyboardAdaptor(): this(new IbusCommunicator())
 		{
@@ -47,50 +42,65 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		/// </summary>
 		public IbusKeyboardAdaptor(IIbusCommunicator ibusCommunicator)
 		{
-			IBusCommunicator = ibusCommunicator;
+			_ibusComm = ibusCommunicator;
 
-			if (!IBusCommunicator.Connected)
+			if (!_ibusComm.Connected)
 				return;
-
-			if (KeyboardController.EventProvider != null)
-			{
-				KeyboardController.EventProvider.ControlAdded += OnControlRegistered;
-				KeyboardController.EventProvider.ControlRemoving += OnControlRemoving;
-			}
+				
+			KeyboardController.Instance.ControlAdded += OnControlRegistered;
+			KeyboardController.Instance.ControlRemoving += OnControlRemoving;
 		}
 
 		protected virtual void InitKeyboards()
 		{
-			foreach (var ibusKeyboard in GetIBusKeyboards())
+			Dictionary<string, IbusKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<IbusKeyboardDescription>().ToDictionary(kd => kd.Id);
+			foreach (IBusEngineDesc ibusKeyboard in GetIBusKeyboards())
 			{
-				var keyboard = new IbusKeyboardDescription(this, ibusKeyboard);
-				KeyboardController.Manager.RegisterKeyboard(keyboard);
+				string id = string.Format("{0}_{1}", ibusKeyboard.Language, ibusKeyboard.LongName);
+				IbusKeyboardDescription existingKeyboard;
+				if (curKeyboards.TryGetValue(id, out existingKeyboard))
+				{
+					if (!existingKeyboard.IsAvailable)
+					{
+						existingKeyboard.SetIsAvailable(true);
+						existingKeyboard.IBusKeyboardEngine = ibusKeyboard;
+					}
+					curKeyboards.Remove(id);
+				}
+				else
+				{
+					var keyboard = new IbusKeyboardDescription(id, ibusKeyboard, this);
+					KeyboardController.Instance.Keyboards.Add(keyboard);
+				}
 			}
+
+			foreach (IbusKeyboardDescription existingKeyboard in curKeyboards.Values)
+				existingKeyboard.SetIsAvailable(false);
 		}
 
 		protected virtual IBusEngineDesc[] GetIBusKeyboards()
 		{
-			if (!IBusCommunicator.Connected)
+			if (!_ibusComm.Connected)
 				return new IBusEngineDesc[0];
 
-			var ibusWrapper = new InputBus(IBusCommunicator.Connection);
+			var ibusWrapper = new InputBus(_ibusComm.Connection);
 			return ibusWrapper.ListActiveEngines();
 		}
 
 		internal IBusEngineDesc[] GetAllIBusKeyboards()
 		{
-			if (!IBusCommunicator.Connected)
+			if (!_ibusComm.Connected)
 				return new IBusEngineDesc[0];
 
-			var ibusWrapper = new InputBus(IBusCommunicator.Connection);
+			var ibusWrapper = new InputBus(_ibusComm.Connection);
 			return ibusWrapper.ListEngines();
 		}
 
 		internal bool CanSetIbusKeyboard()
 		{
-			if (!IBusCommunicator.Connected)
+			if (!_ibusComm.Connected)
 				return false;
-			IBusCommunicator.FocusIn();
+			_ibusComm.FocusIn();
 			if (GlobalCachedInputContext.InputContext == null)
 				return false;
 			return true;
@@ -122,14 +132,14 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 					return true;
 
 				// Set the associated XKB keyboard
-				var parentLayout = keyboard.ParentLayout;
+				string parentLayout = keyboard.ParentLayout;
 				if (parentLayout == "en")
 					parentLayout = "us";
-				var xkbKeyboard = Keyboard.Controller.AllAvailableKeyboards.FirstOrDefault(kbd => kbd.Layout == parentLayout);
+				IKeyboardDefinition xkbKeyboard = Keyboard.Controller.AllAvailableKeyboards.FirstOrDefault(kbd => kbd.Layout == parentLayout);
 				if (xkbKeyboard != null)
 					xkbKeyboard.Activate();
 				// Then set the IBus keyboard
-				var context = GlobalCachedInputContext.InputContext;
+				IInputContext context = GlobalCachedInputContext.InputContext;
 				context.SetEngine(keyboard.IBusKeyboardEngine.LongName);
 
 				GlobalCachedInputContext.Keyboard = keyboard;
@@ -148,7 +158,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			if (eventHandler != null)
 			{
 				var location = eventHandler.SelectionLocationAndHeight;
-				IBusCommunicator.NotifySelectionLocationAndHeight(location.Left, location.Top,
+				_ibusComm.NotifySelectionLocationAndHeight(location.Left, location.Top,
 					location.Height);
 			}
 		}
@@ -160,7 +170,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		/// </returns>
 		private bool ResetAndWaitForCommit(Control control)
 		{
-			IBusCommunicator.Reset();
+			_ibusComm.Reset();
 
 			// This should allow any generated commits to be handled by the message pump.
 			// TODO: find a better way to synchronize
@@ -178,7 +188,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 				return null;
 
 			object handler;
-			if (!KeyboardController.EventProvider.EventHandlers.TryGetValue(control, out handler))
+			if (!KeyboardController.Instance.EventHandlers.TryGetValue(control, out handler))
 				return null;
 			return handler as IIbusEventHandler;
 		}
@@ -194,13 +204,13 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 					Debug.Assert(e.Control is TextBox, "Currently only TextBox controls are compatible with the default IBus event handler.");
 					eventHandler = new IbusDefaultEventHandler((TextBox)e.Control);
 				}
-				KeyboardController.EventProvider.EventHandlers[e.Control] = eventHandler;
+				KeyboardController.Instance.EventHandlers[e.Control] = eventHandler;
 
-				IBusCommunicator.CommitText += eventHandler.OnCommitText;
-				IBusCommunicator.UpdatePreeditText += eventHandler.OnUpdatePreeditText;
-				IBusCommunicator.HidePreeditText += eventHandler.OnHidePreeditText;
-				IBusCommunicator.KeyEvent += eventHandler.OnIbusKeyPress;
-				IBusCommunicator.DeleteSurroundingText += eventHandler.OnDeleteSurroundingText;
+				_ibusComm.CommitText += eventHandler.OnCommitText;
+				_ibusComm.UpdatePreeditText += eventHandler.OnUpdatePreeditText;
+				_ibusComm.HidePreeditText += eventHandler.OnHidePreeditText;
+				_ibusComm.KeyEvent += eventHandler.OnIbusKeyPress;
+				_ibusComm.DeleteSurroundingText += eventHandler.OnDeleteSurroundingText;
 
 				e.Control.GotFocus += HandleGotFocus;
 				e.Control.LostFocus += HandleLostFocus;
@@ -233,12 +243,12 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 				var eventHandler = GetEventHandlerForControl(e.Control);
 				if (eventHandler != null)
 				{
-					IBusCommunicator.CommitText -= eventHandler.OnCommitText;
-					IBusCommunicator.UpdatePreeditText -= eventHandler.OnUpdatePreeditText;
-					IBusCommunicator.HidePreeditText -= eventHandler.OnHidePreeditText;
-					IBusCommunicator.KeyEvent -= eventHandler.OnIbusKeyPress;
-					IBusCommunicator.DeleteSurroundingText -= eventHandler.OnDeleteSurroundingText;
-					KeyboardController.EventProvider.EventHandlers.Remove(e.Control);
+					_ibusComm.CommitText -= eventHandler.OnCommitText;
+					_ibusComm.UpdatePreeditText -= eventHandler.OnUpdatePreeditText;
+					_ibusComm.HidePreeditText -= eventHandler.OnHidePreeditText;
+					_ibusComm.KeyEvent -= eventHandler.OnIbusKeyPress;
+					_ibusComm.DeleteSurroundingText -= eventHandler.OnDeleteSurroundingText;
+					KeyboardController.Instance.EventHandlers.Remove(e.Control);
 				}
 
 			}
@@ -261,13 +271,13 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 
 		private bool PassKeyEventToIbus(Control control, int keySym, Keys modifierKeys)
 		{
-			if (!IBusCommunicator.Connected)
+			if (!_ibusComm.Connected)
 				return false;
 
 			int scancode = X11KeyConverter.GetScanCode(keySym);
 			if (scancode > -1)
 			{
-				if (IBusCommunicator.ProcessKeyEvent(keySym, scancode, modifierKeys))
+				if (_ibusComm.ProcessKeyEvent(keySym, scancode, modifierKeys))
 				{
 					return true;
 				}
@@ -283,19 +293,19 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		#region Event Handler for control
 		private void HandleGotFocus(object sender, EventArgs e)
 		{
-			if (!IBusCommunicator.Connected)
+			if (!_ibusComm.Connected)
 				return;
 
-			IBusCommunicator.FocusIn();
-			m_needIMELocation = true;
+			_ibusComm.FocusIn();
+			_needIMELocation = true;
 		}
 
 		private void HandleLostFocus(object sender, EventArgs e)
 		{
-			if (!IBusCommunicator.Connected)
+			if (!_ibusComm.Connected)
 				return;
 
-			IBusCommunicator.FocusOut();
+			_ibusComm.FocusOut();
 
 			var eventHandler = GetEventHandlerForControl(sender as Control);
 			if (eventHandler == null)
@@ -310,17 +320,17 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		/// </summary>
 		private void HandlePreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
 		{
-			if (!IBusCommunicator.Connected)
+			if (!_ibusComm.Connected)
 				return;
 
 			var eventHandler = GetEventHandlerForControl(sender as Control);
 			if (eventHandler == null)
 				return;
 
-			if (m_needIMELocation)
+			if (_needIMELocation)
 			{
 				SetImePreeditWindowLocationAndSize(sender as Control);
-				m_needIMELocation = false;
+				_needIMELocation = false;
 			}
 
 			var key = e.KeyCode;
@@ -397,16 +407,16 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 
 		private void HandleMouseDown(object sender, MouseEventArgs e)
 		{
-			if (!IBusCommunicator.Connected)
+			if (!_ibusComm.Connected)
 				return;
 
 			ResetAndWaitForCommit(sender as Control);
-			m_needIMELocation = true;
+			_needIMELocation = true;
 		}
 
 		private void HandleScroll(object sender, ScrollEventArgs e)
 		{
-			if (!IBusCommunicator.Connected)
+			if (!_ibusComm.Connected)
 				return;
 
 			SetImePreeditWindowLocationAndSize(sender as Control);
@@ -423,7 +433,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			InitKeyboards();
 			// Don't turn on any Ibus IME keyboard until requested explicitly.
 			// If we do nothing, the first Ibus IME keyboard is automatically activated.
-			IBusCommunicator.FocusIn();
+			_ibusComm.FocusIn();
 			if (GlobalCachedInputContext.InputContext != null && GetIBusKeyboards().Length > 0)
 			{
 				var context = GlobalCachedInputContext.InputContext;
@@ -432,21 +442,12 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 				context.SetEngine("");
 				context.Disable();
 			}
-			IBusCommunicator.FocusOut();
+			_ibusComm.FocusOut();
 		}
 
 		public void UpdateAvailableKeyboards()
 		{
 			InitKeyboards();
-		}
-
-		/// <summary/>
-		public void Close()
-		{
-			if (!IBusCommunicator.IsDisposed)
-			{
-				IBusCommunicator.Dispose();
-			}
 		}
 
 		public bool ActivateKeyboard(IKeyboardDefinition keyboard)
@@ -463,19 +464,6 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			SetIMEKeyboard(null);
 		}
 
-		/// <summary>
-		/// List of keyboard layouts that either gave an exception or other error trying to
-		/// get more information. We don't have enough information for these keyboard layouts
-		/// to include them in the list of installed keyboards.
-		/// </summary>
-		public List<IKeyboardErrorDescription> ErrorKeyboards
-		{
-			get
-			{
-				return new List<IKeyboardErrorDescription>();
-			}
-		}
-
 		// Currently we expect this to only be useful on Windows.
 		public IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
 		{
@@ -485,9 +473,9 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		/// <summary>
 		/// The type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
 		/// </summary>
-		public KeyboardType Type
+		public KeyboardAdaptorType Type
 		{
-			get { return KeyboardType.OtherIm; }
+			get { return KeyboardAdaptorType.OtherIm; }
 		}
 
 		/// <summary>
@@ -502,12 +490,105 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		/// Only the primary (Type=System) adapter is required to implement this method. This one makes keyboards
 		/// during Initialize, but is not used to make an unavailable keyboard to match an LDML file.
 		/// </summary>
-		public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
+		public IKeyboardDefinition CreateKeyboardDefinition(string id)
 		{
 			throw new NotImplementedException();
 		}
 
+		public bool CanHandleFormat(KeyboardFormat format)
+		{
+			return false;
+		}
+
 		#endregion
+
+		#region IDisposable & Co. implementation
+		// Region last reviewed: never
+
+		/// <summary>
+		/// Check to see if the object has been disposed.
+		/// All public Properties and Methods should call this
+		/// before doing anything else.
+		/// </summary>
+		public void CheckDisposed()
+		{
+			if (IsDisposed)
+				throw new ObjectDisposedException(String.Format("'{0}' in use after being disposed.", GetType().Name));
+		}
+
+		/// <summary>
+		/// See if the object has been disposed.
+		/// </summary>
+		public bool IsDisposed { get; private set; }
+
+		/// <summary>
+		/// Finalizer, in case client doesn't dispose it.
+		/// Force Dispose(false) if not already called (i.e. m_isDisposed is true)
+		/// </summary>
+		/// <remarks>
+		/// In case some clients forget to dispose it directly.
+		/// </remarks>
+		~IbusKeyboardAdaptor()
+		{
+			Dispose(false);
+			// The base class finalizer is called automatically.
+		}
+
+		/// <summary>
+		///
+		/// </summary>
+		/// <remarks>Must not be virtual.</remarks>
+		public void Dispose()
+		{
+			Dispose(true);
+			// This object will be cleaned up by the Dispose method.
+			// Therefore, you should call GC.SupressFinalize to
+			// take this object off the finalization queue
+			// and prevent finalization code for this object
+			// from executing a second time.
+			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Executes in two distinct scenarios.
+		///
+		/// 1. If disposing is true, the method has been called directly
+		/// or indirectly by a user's code via the Dispose method.
+		/// Both managed and unmanaged resources can be disposed.
+		///
+		/// 2. If disposing is false, the method has been called by the
+		/// runtime from inside the finalizer and you should not reference (access)
+		/// other managed objects, as they already have been garbage collected.
+		/// Only unmanaged resources can be disposed.
+		/// </summary>
+		/// <param name="disposing"></param>
+		/// <remarks>
+		/// If any exceptions are thrown, that is fine.
+		/// If the method is being done in a finalizer, it will be ignored.
+		/// If it is thrown by client code calling Dispose,
+		/// it needs to be handled by fixing the bug.
+		///
+		/// If subclasses override this method, they should call the base implementation.
+		/// </remarks>
+		protected virtual void Dispose(bool disposing)
+		{
+			Debug.WriteLineIf(!disposing, "****************** " + GetType().Name + " 'disposing' is false. ******************");
+			// Must not be run more than once.
+			if (IsDisposed)
+				return;
+
+			if (disposing)
+			{
+				// Dispose managed resources here.
+				_ibusComm.Dispose();
+			}
+
+			// Dispose unmanaged resources here, whether disposing is true or false.
+
+			IsDisposed = true;
+		}
+
+		#endregion IDisposable & Co. implementation
 	}
 }
 #endif

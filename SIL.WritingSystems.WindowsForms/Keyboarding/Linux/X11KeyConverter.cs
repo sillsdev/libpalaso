@@ -9,7 +9,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using X11;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Types;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 {

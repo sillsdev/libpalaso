@@ -13,7 +13,6 @@
 		private readonly string _locale;
 		private readonly string _layout;
 		private readonly string _id;
-		private readonly string _name;
 
 		public DefaultKeyboardDefinition(string id, string name)
 			: this(id, name, string.Empty, string.Empty, false)
@@ -28,7 +27,7 @@
 			_layout = layout;
 			_locale = locale;
 			_id = id;
-			_name = name;
+			Name = name;
 			IsAvailable = isAvailable;
 		}
 
@@ -43,10 +42,7 @@
 		/// <summary>
 		/// Gets a human-readable name of the input language.
 		/// </summary>
-		public virtual string Name
-		{
-			get { return _name; }
-		}
+		public string Name { get; protected set; }
 
 		/// <summary>
 		/// Gets a localized human-readable name of the input language.

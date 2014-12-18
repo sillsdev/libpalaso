@@ -10,7 +10,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 	/// one, and records the engine (IKeyboardAdapter) which is associated with it and can perform such functions as really activating it.
 	/// This class is adequate for some engines; others subclass it.
 	/// </summary>
-	public class KeyboardDescription : DefaultKeyboardDefinition
+	internal class KeyboardDescription : DefaultKeyboardDefinition
 	{
 		/// <summary>
 		/// The null keyboard description
@@ -18,24 +18,22 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		public static readonly IKeyboardDefinition Zero = new KeyboardDescriptionNull();
 
 		private readonly IKeyboardAdaptor _engine;
-		private readonly IInputLanguage _inputLanguage;
 
 		/// <summary>
 		/// Initializes a new instance of the
-		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.KeyboardDescription"/> class.
+		/// <see cref="SIL.WritingSystems.WindowsForms.Keyboarding.KeyboardDescription"/> class.
 		/// </summary>
-		internal KeyboardDescription(string id, string name, string layout, string locale, bool isAvailable,
-			IInputLanguage language, IKeyboardAdaptor engine)
+		public KeyboardDescription(string id, string name, string layout, string locale, bool isAvailable,
+			IKeyboardAdaptor engine)
 			: base(id, name, layout, locale, isAvailable)
 		{
 			_engine = engine;
-			_inputLanguage = language;
 		}
 
 		/// <summary>
 		/// Gets the keyboard adaptor that handles this keyboard.
 		/// </summary>
-		internal IKeyboardAdaptor Engine
+		public IKeyboardAdaptor Engine
 		{
 			get { return _engine; }
 		}
@@ -43,16 +41,13 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		/// <summary>
 		/// Deactivate this keyboard.
 		/// </summary>
-		internal void Deactivate()
+		public void Deactivate()
 		{
 			if (Engine != null)
 				Engine.DeactivateKeyboard(this);
 		}
 
-		internal IInputLanguage InputLanguage
-		{
-			get { return _inputLanguage; }
-		}
+		public IInputLanguage InputLanguage { get; internal protected set; }
 
 		protected virtual bool DeactivatePreviousKeyboard(IKeyboardDefinition keyboardToActivate)
 		{

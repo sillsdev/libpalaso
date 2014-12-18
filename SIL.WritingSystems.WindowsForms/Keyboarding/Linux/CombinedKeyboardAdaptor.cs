@@ -4,12 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
+using System.Linq;
 using X11.XKlavier;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Interfaces;
-using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
 using SIL.WritingSystems;
 using Palaso.Reporting;
+using IBusDotNet;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 {
@@ -22,100 +21,156 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 	/// real keyboard controller.
 	/// XKB keyboards get handled by IBus as well.
 	/// </summary>
-	public class CombinedKeyboardAdaptor: CommonBaseAdaptor
+	internal class CombinedKeyboardAdaptor : CommonBaseAdaptor
 	{
-		private static bool HasCombinedKeyboards = true;
+		private static bool DetermineIsRequired()
+		{
+			IntPtr client = IntPtr.Zero;
+			try
+			{
+				try
+				{
+					client = dconf_client_new();
+				}
+				catch (DllNotFoundException)
+				{
+					// Older versions of Linux have a version of the dconf library with a
+					// different version number (different from what libdconf.dll gets
+					// mapped to in app.config). However, since those Linux versions
+					// don't have combined keyboards under IBus this really doesn't
+					// matter.
+					return false;
+				}
+
+				// This is the proper path for the combined keyboard handling, not the path
+				// given in the IBus reference documentation.
+				IntPtr sources = dconf_client_read(client, "/org/gnome/desktop/input-sources/sources");
+				if (sources == IntPtr.Zero)
+					return false;
+				g_variant_unref(sources);
+			}
+			finally
+			{
+				if (client != IntPtr.Zero)
+					g_object_unref(client);
+			}
+
+			return true;
+		}
+
+		private static bool? _isRequired;
+
+		public static bool IsRequired
+		{
+			get
+			{
+				// only compute this once
+				if (_isRequired == null)
+					_isRequired = DetermineIsRequired();
+				return (bool) _isRequired;
+			}
+		}
+			
 		private int _kbdIndex;
 		private IntPtr _client = IntPtr.Zero;
+		private readonly XkbKeyboardAdaptor _xkbAdaptor;
+		private readonly IbusKeyboardAdaptor _ibusAdaptor;
+		private readonly Dictionary<string,int> _ibusKeyboards;
+		private readonly Dictionary<string,int> _xkbKeyboards;
 
-		public CombinedKeyboardAdaptor() : base()
+		public CombinedKeyboardAdaptor()
 		{
+			_xkbAdaptor = new XkbKeyboardAdaptor();
+			_ibusAdaptor = new IbusKeyboardAdaptor();
+			_xkbKeyboards = new Dictionary<string, int>();
+			_ibusKeyboards = new Dictionary<string, int>();
 		}
 
 		private void RegisterXkbKeyboards()
 		{
-			if (XkbKeyboards.Count <= 0)
+			if (_xkbKeyboards.Count == 0)
 				return;
-
-			var xkbAdaptor = GetAdaptor<XkbKeyboardAdaptor>();
-			var configRegistry = XklConfigRegistry.Create(xkbAdaptor.XklEngine);
-			var layouts = configRegistry.Layouts;
-			foreach (var kvp in layouts)
+				
+			var configRegistry = XklConfigRegistry.Create(_xkbAdaptor.XklEngine);
+			Dictionary<string, List<XklConfigRegistry.LayoutDescription>> layouts = configRegistry.Layouts;
+			Dictionary<string, XkbKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<XkbKeyboardDescription>().ToDictionary(kd => kd.Id);
+			foreach (KeyValuePair<string, List<XklConfigRegistry.LayoutDescription>> kvp in layouts)
 			{
-				foreach (var layout in kvp.Value)
+				foreach (XklConfigRegistry.LayoutDescription layout in kvp.Value)
 				{
-					int index;
 					// Custom keyboards may omit defining a country code.  Try to survive such cases.
-					string codeToMatch;
-					if (layout.CountryCode == null)
-						codeToMatch = layout.LanguageCode.ToLowerInvariant();
-					else
-						codeToMatch = layout.CountryCode.ToLowerInvariant();
-					if ((XkbKeyboards.TryGetValue(layout.LayoutId, out index) && (layout.LayoutId == codeToMatch)) ||
-						XkbKeyboards.TryGetValue(string.Format("{0}+{1}", codeToMatch, layout.LayoutId), out index))
+					string codeToMatch = layout.CountryCode == null ? layout.LanguageCode.ToLowerInvariant() : layout.CountryCode.ToLowerInvariant();
+					int index;
+					if ((_xkbKeyboards.TryGetValue(layout.LayoutId, out index) && (layout.LayoutId == codeToMatch))
+						|| _xkbKeyboards.TryGetValue(string.Format("{0}+{1}", codeToMatch, layout.LayoutId), out index))
 					{
-						xkbAdaptor.AddKeyboardForLayout(layout, index, this);
+						XkbKeyboardAdaptor.AddKeyboardForLayout(curKeyboards, layout, index, this);
 					}
 				}
 			}
+
+			foreach (XkbKeyboardDescription existingKeyboard in curKeyboards.Values)
+				existingKeyboard.SetIsAvailable(false);
 		}
 
 		private void RegisterIbusKeyboards()
 		{
-			if (IbusKeyboards.Count <= 0)
+			if (_ibusKeyboards.Count == 0)
 				return;
 
-			var ibusAdaptor = GetAdaptor<IbusKeyboardAdaptor>();
-			List<string> missingLayouts = new List<string>(IbusKeyboards.Keys);
-			foreach (var ibusKeyboard in ibusAdaptor.GetAllIBusKeyboards())
+			Dictionary<string, IbusKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<IbusKeyboardDescription>().ToDictionary(kd => kd.Id);
+			foreach (IBusEngineDesc ibusKeyboard in _ibusAdaptor.GetAllIBusKeyboards())
 			{
-				if (IbusKeyboards.ContainsKey(ibusKeyboard.LongName))
+				if (_ibusKeyboards.ContainsKey(ibusKeyboard.LongName))
 				{
-					missingLayouts.Remove(ibusKeyboard.LongName);
-					var keyboard = new IbusKeyboardDescription(this, ibusKeyboard);
-					keyboard.SystemIndex = IbusKeyboards[ibusKeyboard.LongName];
-					KeyboardController.Manager.RegisterKeyboard(keyboard);
+					string id = string.Format("{0}_{1}", ibusKeyboard.Language, ibusKeyboard.LongName);
+					IbusKeyboardDescription keyboard;
+					if (curKeyboards.TryGetValue(id, out keyboard))
+					{
+						if (!keyboard.IsAvailable)
+						{
+							keyboard.SetIsAvailable(true);
+							keyboard.IBusKeyboardEngine = ibusKeyboard;
+						}
+						curKeyboards.Remove(id);
+					}
+					else
+					{
+						keyboard = new IbusKeyboardDescription(id, ibusKeyboard, this);
+						KeyboardController.Instance.Keyboards.Add(keyboard);
+					}
+					keyboard.SystemIndex = _ibusKeyboards[ibusKeyboard.LongName];
 				}
 			}
-			foreach (var layout in missingLayouts)
-				Console.WriteLine("Didn't find " + layout);
+
+			foreach (IbusKeyboardDescription existingKeyboard in curKeyboards.Values)
+				existingKeyboard.SetIsAvailable(false);
 		}
 
 		private void AddKeyboard(string source)
 		{
-			var parts = source.Split(new String[]{";;"}, StringSplitOptions.None);
+			var parts = source.Split(new []{";;"}, StringSplitOptions.None);
 			Debug.Assert(parts.Length == 2);
 			if (parts.Length != 2)
 				return;
 			var type = parts[0];
 			var layout = parts[1];
 			if (type == "xkb")
-				XkbKeyboards.Add(layout, _kbdIndex);
+				_xkbKeyboards.Add(layout, _kbdIndex);
 			else
-				IbusKeyboards.Add(layout, _kbdIndex);
+				_ibusKeyboards.Add(layout, _kbdIndex);
 			++_kbdIndex;
 		}
 
-		protected override void AddAllKeyboards(string[] source)
+		protected override void AddAllKeyboards(string[] list)
 		{
+			_xkbKeyboards.Clear();
+			_ibusKeyboards.Clear();
 			_kbdIndex = 0;
-			for (int i = 0; i < source.Length; ++i)
-				AddKeyboard(source[i]);
+			for (int i = 0; i < list.Length; ++i)
+				AddKeyboard(list[i]);
 			RegisterIbusKeyboards();
 			RegisterXkbKeyboards();
-		}
-
-		protected override bool UseThisAdaptor
-		{
-			get
-			{
-				return HasCombinedKeyboards;
-			}
-			set
-			{
-				HasCombinedKeyboards = value;
-				KeyboardController.CombinedKeyboardHandling = value;
-			}
 		}
 
 		protected override string GSettingsSchema { get { return null; } }	// we don't use GSettings
@@ -124,14 +179,14 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		/// Return the list of keyboards in the combined handler, or null if this adaptor should
 		/// not be used.
 		/// </summary>
-		protected override string[] GetMyKeyboards(IntPtr client, IntPtr settingsGeneral)
+		protected override string[] GetMyKeyboards(IntPtr client, IntPtr settings)
 		{
 			// This is the proper path for the combined keyboard handling, not the path
 			// given in the IBus reference documentation.
-			var sources = dconf_client_read(client, "/org/gnome/desktop/input-sources/sources");
+			IntPtr sources = dconf_client_read(client, "/org/gnome/desktop/input-sources/sources");
 			if (sources == IntPtr.Zero)
 				return null;
-			var list = GetStringArrayFromGVariantListArray(sources);
+			string[] list = GetStringArrayFromGVariantListArray(sources);
 			g_variant_unref(sources);
 
 			// Save the connection to dconf since we use it in keyboard switching.
@@ -142,14 +197,6 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		}
 
 		#region IKeyboardAdaptor implementation
-		public override void Close()
-		{
-			if (_client != IntPtr.Zero)
-			{
-				g_object_unref(_client);
-				_client = IntPtr.Zero;
-			}
-		}
 
 		public override bool ActivateKeyboard(IKeyboardDefinition keyboard)
 		{
@@ -166,10 +213,9 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 				var ibusKeyboard = keyboard as IbusKeyboardDescription;
 				try
 				{
-					var ibusAdaptor = GetAdaptor<IbusKeyboardAdaptor>();
-					if (!ibusAdaptor.CanSetIbusKeyboard())
+					if (!_ibusAdaptor.CanSetIbusKeyboard())
 						return false;
-					if (ibusAdaptor.IBusKeyboardAlreadySet(ibusKeyboard))
+					if (_ibusAdaptor.IBusKeyboardAlreadySet(ibusKeyboard))
 						return true;
 					SelectKeyboard(ibusKeyboard.SystemIndex);
 					GlobalCachedInputContext.Keyboard = ibusKeyboard;
@@ -191,22 +237,32 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		{
 			if (keyboard is IbusKeyboardDescription)
 			{
-				var ibusAdaptor = GetAdaptor<IbusKeyboardAdaptor>();
-				if (ibusAdaptor.CanSetIbusKeyboard())
+				if (_ibusAdaptor.CanSetIbusKeyboard())
 					GlobalCachedInputContext.InputContext.Reset();
 			}
 			GlobalCachedInputContext.Keyboard = null;
 		}
+
+		public override IKeyboardDefinition DefaultKeyboard
+		{
+			get { return _xkbAdaptor.DefaultKeyboard; }
+		}
+
+		public override IKeyboardDefinition CreateKeyboardDefinition(string id)
+		{
+			return XkbKeyboardAdaptor.CreateKeyboardDefinition(id, this);
+		}
+
 		#endregion
 
 		private void SelectKeyboard(int index)
 		{
-			if (!HasCombinedKeyboards || _client == IntPtr.Zero)
+			if (_client == IntPtr.Zero)
 				return;
 			IntPtr value = g_variant_new_uint32((uint)index);
 			string tag = null;
 			IntPtr cancellable = IntPtr.Zero;
-			IntPtr error = IntPtr.Zero;
+			IntPtr error;
 			bool okay = dconf_client_write_sync(_client, "/org/gnome/desktop/input-sources/current", value,
 				ref tag, cancellable, out error);
 			// Do not call g_variant_unref(value) here.  The documentation says that g_variant_new_uint32
@@ -217,6 +273,30 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 				Console.WriteLine("CombinedKeyboardAdaptor.SelectKeyboard({0}) failed", index);
 				Logger.WriteEvent("CombinedKeyboardAdaptor.SelectKeyboard({0}) failed", index);
 			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			Debug.WriteLineIf(!disposing, "****************** " + GetType().Name + " 'disposing' is false. ******************");
+			// Must not be run more than once.
+			if (IsDisposed)
+				return;
+
+			if (disposing)
+			{
+				// Dispose managed resources here.
+				_xkbAdaptor.Dispose();
+				_ibusAdaptor.Dispose();
+			}
+
+			// Dispose unmanaged resources here, whether disposing is true or false.
+			if (_client != IntPtr.Zero)
+			{
+				g_object_unref(_client);
+				_client = IntPtr.Zero;
+			}
+
+			base.Dispose(disposing);
 		}
 	}
 }

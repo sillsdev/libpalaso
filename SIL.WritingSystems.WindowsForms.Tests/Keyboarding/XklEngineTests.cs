@@ -7,7 +7,6 @@
 #if __MonoCS__
 using System;
 using NUnit.Framework;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Linux;
 using X11.XKlavier;
 
 namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding

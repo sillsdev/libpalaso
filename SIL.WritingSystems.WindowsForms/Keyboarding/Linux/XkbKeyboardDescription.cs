@@ -7,9 +7,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------
 #if __MonoCS__
-using System;
 using SIL.WritingSystems.WindowsForms.Keyboarding;
-using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
 using SIL.WritingSystems;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
@@ -17,31 +15,39 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 	/// <summary>
 	/// Keyboard description for a XKB keyboard layout.
 	/// </summary>
-	public class XkbKeyboardDescription: KeyboardDescription
+	internal class XkbKeyboardDescription: KeyboardDescription
 	{
 		/// <summary>
 		/// Initializes a new instance of the
-		/// <see cref="T:SIL.WindowsForms.Keyboard.Linux.XkbKeyboardDescription"/> class.
+		/// <see cref="SIL.WritingSystems.WindowsForms.Keyboarding.Linux.XkbKeyboardDescription"/> class.
 		/// </summary>
-		/// <param name='name'>Display name of the keyboard</param>
-		/// <param name='layout'>Name of the keyboard layout</param>
-		/// <param name='locale'>The locale of the keyboard</param>
-		/// <param name='language'>The language of the keyboard</param>
-		/// <param name='engine'>The keyboard adaptor that will handle this keyboard</param>
-		/// <param name='groupIndex'>The group index of this xkb keyboard</param>
-		/// <param name='isAvailable'>The keyboard is available</param>
-		internal XkbKeyboardDescription(string name, string layout, string locale,
-			IInputLanguage language, IKeyboardAdaptor engine, int groupIndex, bool isAvailable)
-			: base(name, layout, locale, language, engine, KeyboardType.System, isAvailable)
+		public XkbKeyboardDescription(string id, string name, string layout, string locale, bool isAvailable,
+			IInputLanguage language, IKeyboardAdaptor engine, int groupIndex)
+			: base(id, name, layout, locale, isAvailable, engine)
 		{
+			InputLanguage = language;
 			GroupIndex = groupIndex;
-
 		}
 
 		/// <summary>
 		/// Gets the group index of this keyboard.
 		/// </summary>
-		public int GroupIndex { get; private set; }
+		public int GroupIndex { get; set; }
+
+		public void SetIsAvailable(bool isAvailable)
+		{
+			IsAvailable = isAvailable;
+		}
+
+		public void SetName(string name)
+		{
+			Name = name;
+		}
+
+		public void SetInputLanguage(IInputLanguage language)
+		{
+			InputLanguage = language;
+		}
 	}
 }
 #endif

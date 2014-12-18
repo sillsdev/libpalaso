@@ -5,13 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
-using X11.XKlavier;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Interfaces;
-using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
 using SIL.WritingSystems;
-using Palaso.Reporting;
+using IBusDotNet;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 {
@@ -22,9 +18,71 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 	/// Starting with Wasta 14, if IBus is used for keyboard inputs, things are joined together,
 	/// but not the same as the combined keyboard processing in Trusty (Ubuntu 14.04).
 	/// </summary>
-	public class CinnamonIbusAdaptor: CommonBaseAdaptor
+	internal class CinnamonIbusAdaptor : CommonBaseAdaptor
 	{
-		private IIbusCommunicator m_ibuscom;
+		private static bool DetermineIsRequired()
+		{
+			IntPtr client = IntPtr.Zero;
+			try
+			{
+				try
+				{
+					client = dconf_client_new();
+				}
+				catch (DllNotFoundException)
+				{
+					// Older versions of Linux have a version of the dconf library with a
+					// different version number (different from what libdconf.dll gets
+					// mapped to in app.config). However, since those Linux versions
+					// don't have combined keyboards under IBus this really doesn't
+					// matter.
+					return false;
+				}
+
+				// This tells us whether we're running under Wasta 14 (Mint 17/Cinnamon).
+				IntPtr cinnamon = dconf_client_read(client, "/org/cinnamon/number-workspaces");
+				if (cinnamon == IntPtr.Zero)
+					return false;
+				g_variant_unref(cinnamon);
+
+				// This is the proper path for the combined keyboard handling on Cinnamon with IBus.
+				IntPtr sources = dconf_client_read(client, "/desktop/ibus/general/preload-engines");
+				if (sources == IntPtr.Zero)
+					return false;
+				g_variant_unref(sources);
+			}
+			finally
+			{
+				if (client != IntPtr.Zero)
+					g_object_unref(client);
+			}
+
+			// Maybe the user experimented with cinnamon, but isn't really using it?
+			string desktop = Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP");
+			if (!String.IsNullOrEmpty(desktop) && !desktop.ToLowerInvariant().Contains("cinnamon"))
+				return false;
+
+			// Maybe the user experimented with ibus, then removed it??
+			if (!System.IO.File.Exists("/usr/bin/ibus-setup"))
+				return false;
+
+			return true;
+		}
+		private static bool? _isRequired;
+
+		public static bool IsRequired
+		{
+			get
+			{
+				// only compute this once
+				if (_isRequired == null)
+					_isRequired = DetermineIsRequired();
+				return (bool) _isRequired;
+			}
+		}
+
+
+		private IIbusCommunicator _ibuscom;
 
 		// These should not change while the program is running, and they're expensive to obtain.
 		// So we've made them static.
@@ -34,111 +92,84 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		static string[] _latinLayouts;
 		static bool _use_xmodmap;
 
-		// This starts out true, is set false once and for all the first time the system
-		// is probed for this style of keyboarding if it's not appropriate.
-		private static bool IsCinnamonWithIbus = true;
+		private readonly IbusKeyboardAdaptor _ibusAdaptor;
+		private readonly Dictionary<string,int> _ibusKeyboards;
 
-		public CinnamonIbusAdaptor() : base()
+		public CinnamonIbusAdaptor()
 		{
+			_ibusAdaptor = new IbusKeyboardAdaptor();
+			_ibusKeyboards = new Dictionary<string, int>();
 		}
 
 		private void RegisterIbusKeyboards()
 		{
-			if (IbusKeyboards.Count <= 0)
+			if (_ibusKeyboards.Count == 0)
 				return;
 
-			var ibusAdaptor = GetAdaptor<IbusKeyboardAdaptor>();
-			List<string> missingLayouts = new List<string>(IbusKeyboards.Keys);
-			foreach (var ibusKeyboard in ibusAdaptor.GetAllIBusKeyboards())
+			Dictionary<string, IbusKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<IbusKeyboardDescription>().ToDictionary(kd => kd.Id);
+			foreach (IBusEngineDesc ibusKeyboard in _ibusAdaptor.GetAllIBusKeyboards())
 			{
-				if (IbusKeyboards.ContainsKey(ibusKeyboard.LongName))
+				if (_ibusKeyboards.ContainsKey(ibusKeyboard.LongName)
+					|| (_ibusKeyboards.ContainsKey(ibusKeyboard.Name) && ibusKeyboard.Name.StartsWith("xkb:", StringComparison.Ordinal)))
 				{
-					missingLayouts.Remove(ibusKeyboard.LongName);
-					var keyboard = new IbusKeyboardDescription(this, ibusKeyboard);
-					keyboard.SystemIndex = IbusKeyboards[ibusKeyboard.LongName];
-					KeyboardController.Manager.RegisterKeyboard(keyboard);
-				}
-				else if (IbusKeyboards.ContainsKey(ibusKeyboard.Name) && ibusKeyboard.Name.StartsWith ("xkb:"))
-				{
-					missingLayouts.Remove(ibusKeyboard.Name);
-					var keyboard = new IbusKeyboardDescription(this, ibusKeyboard);
-					keyboard.SystemIndex = IbusKeyboards [ibusKeyboard.LongName];
-					KeyboardController.Manager.RegisterKeyboard(keyboard);
+					string id = string.Format("{0}_{1}", ibusKeyboard.Language, ibusKeyboard.LongName);
+					IbusKeyboardDescription keyboard;
+					if (curKeyboards.TryGetValue(id, out keyboard))
+					{
+						if (!keyboard.IsAvailable)
+						{
+							keyboard.SetIsAvailable(true);
+							keyboard.IBusKeyboardEngine = ibusKeyboard;
+						}
+						curKeyboards.Remove(id);
+					}
+					else
+					{
+						keyboard = new IbusKeyboardDescription(id, ibusKeyboard, this);
+						KeyboardController.Instance.Keyboards.Add(keyboard);
+					}
+					keyboard.SystemIndex = _ibusKeyboards[ibusKeyboard.LongName];
 				}
 			}
-			foreach (var layout in missingLayouts)
-				Console.WriteLine("Didn't find " + layout);
+
+			foreach (IbusKeyboardDescription existingKeyboard in curKeyboards.Values)
+				existingKeyboard.SetIsAvailable(false);
 		}
 
 		protected override void AddAllKeyboards(string[] list)
 		{
+			_ibusKeyboards.Clear();
 			// e.g., "pinyin", "xkb:us::eng", "xkb:fr::fra", "xkb:de::ger", "/usr/share/kmfl/IPA14.kmn", "xkb:es::spa"
 			int kbdIndex = 0;
-			foreach (var item in list)
+			foreach (string item in list)
 			{
-				IbusKeyboards.Add(item, kbdIndex);
+				_ibusKeyboards.Add(item, kbdIndex);
 				++kbdIndex;
 			}
 			RegisterIbusKeyboards();
 		}
 
-		protected override bool UseThisAdaptor
-		{
-			get
-			{
-				return IsCinnamonWithIbus;
-			}
-			set
-			{
-				IsCinnamonWithIbus = value;
-				KeyboardController.CinnamonKeyboardHandling = value;
-			}
-		}
-
 		protected override string GSettingsSchema { get { return "org.freedesktop.ibus.general"; } }
 
-		protected override string[] GetMyKeyboards(IntPtr client, IntPtr settingsGeneral)
+		protected override string[] GetMyKeyboards(IntPtr client, IntPtr settings)
 		{
-			// This tells us whether we're running under Wasta 14 (Mint 17/Cinnamon).
-			var cinnamon = dconf_client_read(client, "/org/cinnamon/number-workspaces");
-			if (cinnamon == IntPtr.Zero)
-				return null;
-			g_variant_unref(cinnamon);
-
 			// This is the proper path for the combined keyboard handling on Cinnamon with IBus.
-			var sources = dconf_client_read(client, "/desktop/ibus/general/preload-engines");
+			IntPtr sources = dconf_client_read(client, "/desktop/ibus/general/preload-engines");
 			if (sources == IntPtr.Zero)
 				return null;
-			var list = GetStringArrayFromGVariantArray(sources);
+			string[] list = GetStringArrayFromGVariantArray(sources);
 			g_variant_unref(sources);
-
-			// Maybe the user experimented with cinnamon, but isn't really using it?
-			var desktop = Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP");
-			if (!String.IsNullOrEmpty(desktop) && !desktop.ToLowerInvariant().Contains("cinnamon"))
-				return null;
-
-			// Maybe the user experimented with ibus, then removed it??
-			if (!System.IO.File.Exists("/usr/bin/ibus-setup"))
-				return null;
 
 			// Call these only once per run of the program.
 			if (_defaultLayout == null)
 				LoadDefaultXkbSettings();
 			if (_latinLayouts == null)
-				LoadLatinLayouts(settingsGeneral);
+				LoadLatinLayouts(settings);
 
 			return list;
 		}
 
 		#region IKeyboardAdaptor implementation
-		public override void Close()
-		{
-			if (m_ibuscom != null)
-			{
-				m_ibuscom.Dispose();
-				m_ibuscom = null;
-			}
-		}
 
 		public override bool ActivateKeyboard(IKeyboardDefinition keyboard)
 		{
@@ -150,20 +181,19 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 				var ibusKeyboard = keyboard as IbusKeyboardDescription;
 				try
 				{
-					if (m_ibuscom == null)
-						m_ibuscom = new IbusCommunicator();
-					m_ibuscom.FocusIn();
-					var ibusAdaptor = GetAdaptor<IbusKeyboardAdaptor>();
-					if (!ibusAdaptor.CanSetIbusKeyboard())
+					if (_ibuscom == null)
+						_ibuscom = new IbusCommunicator();
+					_ibuscom.FocusIn();
+					if (!_ibusAdaptor.CanSetIbusKeyboard())
 						return false;
-					if (ibusAdaptor.IBusKeyboardAlreadySet(ibusKeyboard))
+					if (_ibusAdaptor.IBusKeyboardAlreadySet(ibusKeyboard))
 						return true;
 
 					// Set the associated XKB layout
 					SetLayout(ibusKeyboard);
 
 					// Then set the IBus keyboard (may be an XKB keyboard in actuality)
-					var context = GlobalCachedInputContext.InputContext;
+					IInputContext context = GlobalCachedInputContext.InputContext;
 					//Console.WriteLine ("DEBUG calling context.SetEngine({0})", ibusKeyboard.IBusKeyboardEngine.LongName);
 					context.SetEngine(ibusKeyboard.IBusKeyboardEngine.LongName);
 					GlobalCachedInputContext.Keyboard = ibusKeyboard;
@@ -186,8 +216,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			//Console.WriteLine ("DEBUG deactivating {0}", keyboard);
 			if (keyboard is IbusKeyboardDescription)
 			{
-				var ibusAdaptor = GetAdaptor<IbusKeyboardAdaptor>();
-				if (ibusAdaptor.CanSetIbusKeyboard())
+				if (_ibusAdaptor.CanSetIbusKeyboard())
 				{
 					var context = GlobalCachedInputContext.InputContext;
 					try
@@ -209,6 +238,26 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			}
 			GlobalCachedInputContext.Keyboard = null;
 		}
+
+		public override IKeyboardDefinition DefaultKeyboard
+		{
+			get
+			{
+				return KeyboardController.Instance.AllAvailableKeyboards.OfType<IbusKeyboardDescription>()
+					.FirstOrDefault(kd => kd.ParentLayout == _defaultLayout
+						&& kd.IBusKeyboardEngine.LayoutVariant == _defaultVariant
+						&& kd.IBusKeyboardEngine.LayoutOption == _defaultOption);
+			}
+		}
+
+		public override IKeyboardDefinition CreateKeyboardDefinition(string id)
+		{
+			string[] parts = id.Split('_');
+			string locale = parts[0];
+			string layout = parts[1];
+			return new IbusKeyboardDescription(id, layout, locale, this); 
+		}
+
 		#endregion
 
 		/// <summary>
@@ -231,11 +280,11 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		/// </remarks>
 		private static void SetLayout(IbusKeyboardDescription ibusKeyboard)
 		{
-			var layout = ibusKeyboard.ParentLayout;
+			string layout = ibusKeyboard.ParentLayout;
 			if (layout == "en")
 				layout = "us";	// layout is a country code, not a language code!
-			var variant = ibusKeyboard.IBusKeyboardEngine.LayoutVariant;
-			var option = ibusKeyboard.IBusKeyboardEngine.LayoutOption;
+			string variant = ibusKeyboard.IBusKeyboardEngine.LayoutVariant;
+			string option = ibusKeyboard.IBusKeyboardEngine.LayoutOption;
 			Debug.Assert(layout != null);
 
 			bool need_us_layout = false;
@@ -399,6 +448,29 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			//for (int i = 0; i < _latinLayouts.Length; ++i)
 			//	Console.Write("  '{0}'", _latinLayouts[i]);
 			//Console.WriteLine();
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			Debug.WriteLineIf(!disposing, "****************** " + GetType().Name + " 'disposing' is false. ******************");
+			// Must not be run more than once.
+			if (IsDisposed)
+				return;
+
+			if (disposing)
+			{
+				// Dispose managed resources here.
+				if (_ibuscom != null)
+				{
+					_ibuscom.Dispose ();
+					_ibuscom = null;
+				}
+				_ibusAdaptor.Dispose();
+			}
+
+			// Dispose unmanaged resources here, whether disposing is true or false.
+
+			base.Dispose(disposing);
 		}
 	}
 }

@@ -4,8 +4,6 @@
 using System;
 using System.Windows.Forms;
 using IBusDotNet;
-using SIL.WritingSystems.WindowsForms.Keyboarding.InternalInterfaces;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Types;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 {
@@ -108,13 +106,13 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			{
 				action();
 			}
-			catch(NDesk.DBus.DBusConectionErrorException)
+			catch (NDesk.DBus.DBusConectionErrorException)
 			{
 				m_ibus = null;
 				m_inputContext = null;
 				NotifyUserOfIBusConnectionDropped();
 			}
-			catch(System.NullReferenceException)
+			catch (System.NullReferenceException)
 			{
 			}
 		}
@@ -218,21 +216,21 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			try
 			{
 				// m_inputContext.IsEnabled() throws an exception for IBus 1.5.
-				if (!KeyboardController.CombinedKeyboardHandling && !KeyboardController.CinnamonKeyboardHandling && !m_inputContext.IsEnabled())
+				if (!KeyboardController.Instance.CombinedKeyboardHandling && !KeyboardController.Instance.CinnamonKeyboardHandling && !m_inputContext.IsEnabled())
 					return false;
 
 				var modifiers = ConvertToIbusModifiers(state, (char)keySym);
 
 				return m_inputContext.ProcessKeyEvent(keySym, scanCode, modifiers);
 			}
-			catch(NDesk.DBus.DBusConectionErrorException e)
+			catch (NDesk.DBus.DBusConectionErrorException e)
 			{
 				Console.WriteLine("IbusCommunicator.ProcessKeyEvent({0},{1},{2}): caught DBusConectionErrorException: {3}", keySym, scanCode, state, e);
 				m_ibus = null;
 				m_inputContext = null;
 				NotifyUserOfIBusConnectionDropped();
 			}
-			catch(System.NullReferenceException e)
+			catch (System.NullReferenceException e)
 			{
 				Console.WriteLine("IbusCommunicator.ProcessKeyEvent({0},{1},{2}): caught NullReferenceException: {3}", keySym, scanCode, state, e);
 			}
@@ -272,7 +270,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 				// It also seems that it shouldn't be necessary to run IBus to use Linux keyboarding!
 				return;
 			}
-			if (KeyboardController.CombinedKeyboardHandling)
+			if (KeyboardController.Instance.CombinedKeyboardHandling)
 			{
 				var path = m_ibus.CurrentInputContext();
 				m_inputContext = new InputContext(m_connection, path);
