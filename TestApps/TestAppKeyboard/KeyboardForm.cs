@@ -38,7 +38,7 @@ namespace TestAppKeyboard
 		{
 			if (cbOnEnter.Checked)
 			{
-				var wantKeyboard = (KeyboardDescription)keyboardsA.SelectedItem;
+				var wantKeyboard = (IKeyboardDefinition)keyboardsA.SelectedItem;
 				Console.WriteLine("Enter A: Set to {0}", wantKeyboard);
 				Keyboard.Controller.SetKeyboard(wantKeyboard);
 			} else {
@@ -50,7 +50,7 @@ namespace TestAppKeyboard
 		{
 			if (cbOnEnter.Checked)
 			{
-				var wantKeyboard = (KeyboardDescription)keyboardsB.SelectedItem;
+				var wantKeyboard = (IKeyboardDefinition)keyboardsB.SelectedItem;
 				Console.WriteLine("Enter B: Set to {0}", wantKeyboard);
 				Keyboard.Controller.SetKeyboard(wantKeyboard);
 			} else {
@@ -62,7 +62,7 @@ namespace TestAppKeyboard
 		{
 			if (cbOnEnter.Checked)
 			{
-				var wantKeyboard = (KeyboardDescription)keyboardsC.SelectedItem;
+				var wantKeyboard = (IKeyboardDefinition) keyboardsC.SelectedItem;
 				Console.WriteLine("Enter C: Set to {0}", wantKeyboard);
 				Keyboard.Controller.SetKeyboard(wantKeyboard);
 			} else {

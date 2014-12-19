@@ -7,15 +7,11 @@ using NUnit.Framework;
 namespace SIL.WritingSystems.Tests
 {
 	[TestFixture]
+	[Category("SkipOnTeamCity")]
 	public class SldrTests
 	{
-		[SetUp]
-		public void SetUp()
-		{
 
-		}
-
-		[Test, Ignore("Run by hand")]
+		[Test]
 		public void Get_EmptyFileName_Throws()
 		{
 			string filename = string.Empty;
@@ -29,7 +25,7 @@ namespace SIL.WritingSystems.Tests
 			);
 		}
 
-		[Test, Ignore("Run by hand")]
+		[Test]
 		public void Get_BadFileName_Throws()
 		{
 			const string filename = "c:\badpath";
@@ -43,10 +39,10 @@ namespace SIL.WritingSystems.Tests
 			);
 		}
 
-		[Test, Ignore("Run by hand")]
+		[Test]
 		public void Get_BadBcp47Tag_Throws()
 		{
-			const string filename = "c:\\temp\\en.ldml";
+			string filename = Path.Combine(Path.GetTempPath(), "en.ldml");
 			const string bcp47Tag = "!@#";
 
 			if (File.Exists(filename))
@@ -58,10 +54,10 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		// This test should be run on TC.  But ignore for now until LDML service correctly writes the SIL namespace
-		[Test, Ignore("Run by hand")]
+		[Test]
 		public void Get_Validate()
 		{
-			const string filename = "c:\\temp\\en_GB.ldml";
+			string filename = Path.Combine(Path.GetTempPath(), "en_GB.ldml");
 			const string bcp47Tag = "en-GB";
 
 			const string expectedLanguage = "en";

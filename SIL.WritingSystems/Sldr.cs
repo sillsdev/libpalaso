@@ -3,7 +3,6 @@ using System.Linq;
 using System.Xml.Linq;
 using System;
 using System.Net;
-using System.Web;
 
 namespace SIL.WritingSystems
 {
@@ -48,13 +47,13 @@ namespace SIL.WritingSystems
 			}
 
 			// Concatenate url string
-			string url = string.Format("{0}{1}?uid={2}&flatten={3}", SldrRepository, HttpUtility.UrlEncode(bcp47Tag) , HttpUtility.UrlEncode(userId), Convert.ToInt32(flatten));
+			string url = string.Format("{0}{1}?uid={2}&flatten={3}", SldrRepository, bcp47Tag , userId, Convert.ToInt32(flatten));
 			string tempFilename = filename + ".tmp";
 			try
 			{
 				// Download the LDML file to a temp file in case the transfer gets interrupted
-				WebClient webClient = new WebClient();
-				webClient.DownloadFile(url, tempFilename);
+				var webClient = new WebClient();
+				webClient.DownloadFile(Uri.EscapeUriString(url), tempFilename);
 
 				// Move the completed temp file to filename
 				if (File.Exists(filename))

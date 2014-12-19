@@ -7,7 +7,6 @@ using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
 using SIL.WritingSystems.WindowsForms.Keyboarding;
-using SIL.WritingSystems.WindowsForms.Keyboarding.Linux;
 
 namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 {
