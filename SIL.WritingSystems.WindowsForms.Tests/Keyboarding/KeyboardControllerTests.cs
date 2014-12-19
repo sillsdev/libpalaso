@@ -156,7 +156,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		public void DefaultForWritingSystem_OldPalasoKeymanKeyboard()
 		{
 			IKeyboardDefinition expectedKeyboard;
-			if (!KeyboardController.Instance.Keyboards.TryGetKeyboardDefinition("IPA Unicode 1.1.1", out expectedKeyboard))
+			if (!KeyboardController.Instance.Keyboards.TryGetItem("IPA Unicode 1.1.1", out expectedKeyboard))
 			{
 				expectedKeyboard = new KeyboardDescription("IPA Unicode 1.1.1", "IPA Unicode 1.1.1 - English (US)", "IPA Unicode 1.1.1", string.Empty, true,
 					KeyboardController.Instance.Adaptors[0]);

@@ -130,6 +130,7 @@
     <Compile Include="FlexConformPrivateUseRfc5646TagInterpreterTests.cs" />
     <Compile Include="FontDefinitionCloneableTests.cs" />
     <Compile Include="GlobalWritingSystemRepositoryTests.cs" />
+    <Compile Include="SpellCheckDictionaryDefinitionCloneableTests.cs" />
     <Compile Include="WritingSystemRepositoryTests.cs" />
     <Compile Include="LdmlDataMapperTests.cs" />
     <Compile Include="LdmlInFolderWritingSystemRepositoryTests.cs" />

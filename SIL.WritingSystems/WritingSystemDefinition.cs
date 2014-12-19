@@ -4,7 +4,6 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Palaso.Code;
 using Palaso.Extensions;
 using SIL.WritingSystems.Collation;
 
@@ -73,7 +72,7 @@ namespace SIL.WritingSystems
 	/// Likewise "audio" marks a writing system as audio and must always be used in conjunction with script "Zxxx". Convenience methods
 	/// are provided for Ipa and Audio properties as IpaStatus and IsVoice respectively.
 	/// </summary>
-	public class WritingSystemDefinition : ICloneable<WritingSystemDefinition>
+	public class WritingSystemDefinition : MutableDefinitionBase<WritingSystemDefinition>
 	{
 		/// <summary>
 		/// This is the version of our writingsystemDefinition implementation and is mostly used for migration purposes.
@@ -83,32 +82,25 @@ namespace SIL.WritingSystems
 		public const int LatestWritingSystemDefinitionVersion = 2;
 
 		private Rfc5646Tag _rfcTag;
-
 		private string _languageName;
-
 		private string _abbreviation;
 		private bool _isUnicodeEncoded;
-
 		private string _versionNumber;
 		private string _versionDescription;
-
-		private bool _modified;
 		private DateTime _dateModified;
-
 		private FontDefinition _defaultFont;
 		private string _keyboard;
-
 		private CollationRulesTypes _collationRulesType;
 		private string _collationRules;
-		private string _spellCheckingId;
-
 		private string _nativeName;
 		private bool _rightToLeftScript;
 		private ICollator _collator;
+		private IKeyboardDefinition _localKeyboard;
 		private string _id;
-
+		private SpellCheckDictionaryDefinition _spellCheckDictionary;
 		private readonly FontDefinitionCollection _fonts = new FontDefinitionCollection();
 		private readonly KeyboardDefinitionCollection _knownKeyboards = new KeyboardDefinitionCollection();
+		private readonly SpellCheckDictionaryDefinitionCollection _spellCheckDictionaries = new SpellCheckDictionaryDefinitionCollection();
 
 		/// <summary>
 		/// Creates a new WritingSystemDefinition with Language subtag set to "qaa"
@@ -121,20 +113,28 @@ namespace SIL.WritingSystems
 			UpdateIdFromRfcTag();
 			_fonts.CollectionChanged += _fonts_CollectionChanged;
 			_knownKeyboards.CollectionChanged += _knownKeyboards_CollectionChanged;
+			_spellCheckDictionaries.CollectionChanged += _spellCheckDictionaries_CollectionChanged;
+		}
+
+		private void _spellCheckDictionaries_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (_spellCheckDictionary != null && !_spellCheckDictionaries.Contains(_spellCheckDictionary))
+				_spellCheckDictionary = null;
+			Modified = true;
 		}
 
 		private void _fonts_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (_defaultFont != null && !_fonts.Contains(_defaultFont))
 				_defaultFont = null;
-			_modified = true;
+			Modified = true;
 		}
 
 		private void _knownKeyboards_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			if (_localKeyboard != null && !_knownKeyboards.Contains(_localKeyboard.Id))
+			if (_localKeyboard != null && !_knownKeyboards.Contains(_localKeyboard))
 				_localKeyboard = null;
-			_modified = true;
+			Modified = true;
 		}
 
 		/// <summary>
@@ -204,7 +204,10 @@ namespace SIL.WritingSystems
 			_nativeName = ws._nativeName;
 			_collationRulesType = ws._collationRulesType;
 			_collationRules = ws._collationRules;
-			_spellCheckingId = ws._spellCheckingId;
+			foreach (SpellCheckDictionaryDefinition scdd in ws._spellCheckDictionaries)
+				_spellCheckDictionaries.Add(scdd.Clone());
+			if (ws._spellCheckDictionary != null)
+				_spellCheckDictionary = _spellCheckDictionaries[ws._spellCheckDictionaries.IndexOf(ws._spellCheckDictionary)];
 			_dateModified = ws._dateModified;
 			_isUnicodeEncoded = ws._isUnicodeEncoded;
 			_rfcTag = new Rfc5646Tag(ws._rfcTag);
@@ -301,7 +304,7 @@ namespace SIL.WritingSystems
 						_rfcTag.AddToPrivateUse(WellKnownSubtags.IpaPhoneticPrivateUse);
 						break;
 				}
-				_modified = true;
+				Modified = true;
 				UpdateIdFromRfcTag();
 			}
 		}
@@ -334,7 +337,7 @@ namespace SIL.WritingSystems
 					_rfcTag.Script = String.Empty;
 					_rfcTag.RemoveFromPrivateUse(WellKnownSubtags.AudioPrivateUse);
 				}
-				_modified = true;
+				Modified = true;
 				UpdateIdFromRfcTag();
 				CheckVariantAndScriptRules();
 			}
@@ -381,7 +384,7 @@ namespace SIL.WritingSystems
 				_rfcTag.Variant = variant;
 				_rfcTag.PrivateUse = privateUse;
 
-				_modified = true;
+				Modified = true;
 				UpdateIdFromRfcTag();
 				CheckVariantAndScriptRules();
 			}
@@ -538,7 +541,7 @@ namespace SIL.WritingSystems
 			{
 				return;
 			}
-			_modified = true;
+			Modified = true;
 			CheckVariantAndScriptRules();
 		}
 
@@ -560,7 +563,7 @@ namespace SIL.WritingSystems
 				}
 				_rfcTag.Region = value;
 				UpdateIdFromRfcTag();
-				_modified = true;
+				Modified = true;
 			}
 		}
 
@@ -582,7 +585,7 @@ namespace SIL.WritingSystems
 				}
 				_rfcTag.Language = value;
 				UpdateIdFromRfcTag();
-				_modified = true;
+				Modified = true;
 			}
 		}
 
@@ -631,7 +634,7 @@ namespace SIL.WritingSystems
 					return;
 				}
 				_rfcTag.Script = value;
-				_modified = true;
+				Modified = true;
 				UpdateIdFromRfcTag();
 				CheckVariantAndScriptRules();
 			}
@@ -695,28 +698,6 @@ namespace SIL.WritingSystems
 				duplicateNumber++;
 			}
 			return newWs;
-		}
-
-		protected bool UpdateString(ref string field, string value)
-		{
-			//count null as same as ""
-			if (String.IsNullOrEmpty(field) && String.IsNullOrEmpty(value))
-				return false;
-
-			return UpdateField(ref field, value);
-		}
-
-		/// <summary>
-		/// Updates the specified field and marks the writing system as modified.
-		/// </summary>
-		protected bool UpdateField<T>(ref T field, T value)
-		{
-			if (EqualityComparer<T>.Default.Equals(field, value))
-				return false;
-
-			_modified = true;
-			field = value;
-			return true;
 		}
 
 		/// <summary>
@@ -874,7 +855,7 @@ namespace SIL.WritingSystems
 			{
 				value = value ?? "";
 				_id = value;
-				_modified = true;
+				Modified = true;
 			}
 		}
 
@@ -882,19 +863,19 @@ namespace SIL.WritingSystems
 		/// Indicates whether the writing system definition has been modified.
 		/// Note that this flag is automatically set by all methods that cause a modification and is reset by the IWritingSystemRepository.Save() method
 		/// </summary>
-		virtual public bool Modified
+		public override bool Modified
 		{
 			get
 			{
-				if (_modified)
+				if (base.Modified)
 					return true;
 				return _fonts.Any(f => f.Modified);
 			}
 		}
 
-		public void ResetModified()
+		public override void ResetModified()
 		{
-			_modified = false;
+			base.ResetModified();
 			foreach (FontDefinition fd in _fonts)
 				fd.ResetModified();
 		}
@@ -912,7 +893,7 @@ namespace SIL.WritingSystems
 			get
 			{
 				if (_defaultFont == null)
-					_defaultFont = _fonts.FirstOrDefault(fd => fd.Roles.Contains(FontDefinition.DefaultRole));
+					_defaultFont = _fonts.FirstOrDefault(fd => fd.Roles.HasFlag(FontRoles.Default));
 				if (_defaultFont == null)
 					_defaultFont = _fonts.FirstOrDefault();
 				return _defaultFont;
@@ -940,8 +921,6 @@ namespace SIL.WritingSystems
 			}
 			set { UpdateString(ref _keyboard, value); }
 		}
-
-		private IKeyboardDefinition _localKeyboard;
 
 		/// <summary>
 		/// This field retrieves the value obtained from the FieldWorks LDML extension fw:windowsLCID.
@@ -1060,15 +1039,6 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// The id used to select the spell checker.
-		/// </summary>
-		virtual public string SpellCheckingId
-		{
-			get { return _spellCheckingId; }
-			set { UpdateString(ref _spellCheckingId, value); }
-		}
-
-		/// <summary>
 		/// Returns an ICollator interface that can be used to sort strings based
 		/// on the custom collation rules.
 		/// </summary>
@@ -1130,7 +1100,7 @@ namespace SIL.WritingSystems
 		/// Note that this excludes the properties: Modified, MarkedForDeletion and StoreID
 		/// </summary>
 		/// <returns></returns>
-		virtual public WritingSystemDefinition Clone()
+		public override WritingSystemDefinition Clone()
 		{
 			return new WritingSystemDefinition(this);
 		}
@@ -1138,9 +1108,11 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Checks for value equality with the specified writing system.
 		/// </summary>
-		public bool ValueEquals(WritingSystemDefinition other)
+		public override bool ValueEquals(WritingSystemDefinition other)
 		{
-			if (other == null) return false;
+			if (other == null)
+				return false;
+
 			if (!_rfcTag.Equals(other._rfcTag))
 				return false;
 			if (_languageName != other._languageName)
@@ -1151,6 +1123,26 @@ namespace SIL.WritingSystems
 				return false;
 			if (_versionDescription != other._versionDescription)
 				return false;
+			if (_keyboard != other._keyboard)
+				return false;
+			if (_collationRules != other._collationRules)
+				return false;
+			if (_nativeName != other._nativeName)
+				return false;
+			if (_id != other._id)
+				return false;
+			if (_isUnicodeEncoded != other._isUnicodeEncoded)
+				return false;
+			if (_dateModified != other._dateModified)
+				return false;
+			if (CollationRulesType != other.CollationRulesType)
+				return false;
+			if (_rightToLeftScript != other._rightToLeftScript)
+				return false;
+			if (WindowsLcid != other.WindowsLcid)
+				return false;
+
+			// fonts
 			if (_fonts.Count != other._fonts.Count)
 				return false;
 			for (int i = 0; i < _fonts.Count; i++)
@@ -1167,29 +1159,29 @@ namespace SIL.WritingSystems
 			{
 				return false;
 			}
-			if (_keyboard != other._keyboard)
+
+			// spell checking dictionaries
+			if (_spellCheckDictionaries.Count != other._spellCheckDictionaries.Count)
 				return false;
-			if (_collationRules != other._collationRules)
+			for (int i = 0; i < _spellCheckDictionaries.Count; i++)
+			{
+				if (!_spellCheckDictionaries[i].ValueEquals(other._spellCheckDictionaries[i]))
+					return false;
+			}
+			if (SpellCheckDictionary == null)
+			{
+				if (other.SpellCheckDictionary != null)
+					return false;
+			}
+			else if (!SpellCheckDictionary.ValueEquals(other.SpellCheckDictionary))
+			{
 				return false;
-			if (_spellCheckingId != other._spellCheckingId)
-				return false;
-			if (_nativeName != other._nativeName)
-				return false;
-			if (_id != other._id)
-				return false;
-			if (_isUnicodeEncoded != other._isUnicodeEncoded)
-				return false;
-			if (_dateModified != other._dateModified)
-				return false;
-			if (CollationRulesType != other.CollationRulesType)
-				return false;
-			if (_rightToLeftScript != other._rightToLeftScript)
+			}
+
+			// keyboards
+			if (!_knownKeyboards.SequenceEqual(other._knownKeyboards))
 				return false;
 			if (LocalKeyboard != other.LocalKeyboard)
-				return false;
-			if (WindowsLcid != other.WindowsLcid)
-				return false;
-			if (!_knownKeyboards.SequenceEqual(other._knownKeyboards))
 				return false;
 			return true;
 		}
@@ -1216,7 +1208,7 @@ namespace SIL.WritingSystems
 		{
 			_rfcTag = Rfc5646Tag.Parse(completeTag);
 			UpdateIdFromRfcTag();
-			_modified = true;
+			Modified = true;
 		}
 
 		/// <summary>
@@ -1279,6 +1271,29 @@ namespace SIL.WritingSystems
 		public FontDefinitionCollection Fonts
 		{
 			get { return _fonts; }
+		}
+
+		public SpellCheckDictionaryDefinitionCollection SpellCheckDictionaries
+		{
+			get { return _spellCheckDictionaries; }
+		}
+
+		public SpellCheckDictionaryDefinition SpellCheckDictionary
+		{
+			get
+			{
+				if (_spellCheckDictionary == null)
+					_spellCheckDictionary = _spellCheckDictionaries.FirstOrDefault();
+				return _spellCheckDictionary;
+			}
+			set
+			{
+				if (UpdateField(ref _spellCheckDictionary, value))
+				{
+					if (value != null && !_spellCheckDictionaries.Contains(value))
+						_spellCheckDictionaries.Add(value);
+				}
+			}
 		}
 	}
 }

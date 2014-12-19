@@ -3,14 +3,14 @@ using Palaso.TestUtilities;
 
 namespace SIL.WritingSystems.Tests
 {
-	public class FontDefinitionCloneableTests : CloneableTests<FontDefinition>
+	public class SpellCheckDictionaryDefinitionCloneableTests : CloneableTests<SpellCheckDictionaryDefinition>
 	{
-		public override FontDefinition CreateNewCloneable()
+		public override SpellCheckDictionaryDefinition CreateNewCloneable()
 		{
-			return new FontDefinition("font1"); 
+			return new SpellCheckDictionaryDefinition("dict1");
 		}
 
-		protected override bool Equals(FontDefinition x, FontDefinition y)
+		protected override bool Equals(SpellCheckDictionaryDefinition x, SpellCheckDictionaryDefinition y)
 		{
 			if (x == null)
 				return y == null;
@@ -29,9 +29,7 @@ namespace SIL.WritingSystems.Tests
 				return new List<ValuesToSet>
 				{
 					new ValuesToSet("to be", "!(to be)"),
-					new ValuesToSet(12.0f, 13.0f),
-					new ValuesToSet(FontEngines.Graphite, FontEngines.OpenType),
-					new ValuesToSet(FontRoles.Default, FontRoles.Emphasis)
+					new ValuesToSet(SpellCheckDictionaryFormat.Hunspell, SpellCheckDictionaryFormat.Wordlist)
 				};
 			}
 		}

@@ -146,6 +146,7 @@
     <Compile Include="IWritingSystemRepository.cs" />
     <Compile Include="Keyboard.cs" />
     <Compile Include="KeyboardDefinitionCollection.cs" />
+    <Compile Include="MutableDefinitionBase.cs" />
     <Compile Include="Sldr.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\LdmlCollationParserV1.cs" />
     <Compile Include="ObservableKeyedCollection.cs" />
@@ -179,6 +180,8 @@
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\WritingSystemDefinitionV1.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\XmlHelpersV0.cs" />
     <Compile Include="Rfc5646Tag.cs" />
+    <Compile Include="SpellCheckDictionaryDefinition.cs" />
+    <Compile Include="SpellCheckDictionaryDefinitionCollection.cs" />
     <Compile Include="StandardTags.cs" />
     <Compile Include="WellKnownSubtags.cs" />
     <Compile Include="WritingSystemChangeLog.cs" />

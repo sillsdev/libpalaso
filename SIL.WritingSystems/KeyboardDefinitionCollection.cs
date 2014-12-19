@@ -24,32 +24,5 @@ namespace SIL.WritingSystems
 		{
 			return item.Id;
 		}
-
-		protected override void InsertItem(int index, IKeyboardDefinition item)
-		{
-			if (Contains(item.Id))
-			{
-				IKeyboardDefinition oldItem = this[item.Id];
-				int oldIndex = IndexOf(oldItem);
-				if (oldIndex == index - 1 && oldItem == item)
-					return;
-				RemoveAt(oldIndex);
-				if (index > oldIndex)
-					index--;
-			}
-			base.InsertItem(index, item);
-		}
-
-		public bool TryGetKeyboardDefinition(string id, out IKeyboardDefinition kd)
-		{
-			if (Contains(id))
-			{
-				kd = this[id];
-				return true;
-			}
-
-			kd = null;
-			return false;
-		}
 	}
 }

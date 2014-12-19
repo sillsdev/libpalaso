@@ -308,7 +308,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		public IKeyboardDefinition CreateKeyboardDefinition(string id, KeyboardFormat format, string url)
 		{
 			IKeyboardDefinition keyboard;
-			if (!_keyboards.TryGetKeyboardDefinition(id, out keyboard))
+			if (!_keyboards.TryGetItem(id, out keyboard))
 			{
 				keyboard = _adaptors.First(adaptor => adaptor.CanHandleFormat(format)).CreateKeyboardDefinition(id);
 				_keyboards.Add(keyboard);

@@ -1,26 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using Palaso.Code;
 
 namespace SIL.WritingSystems
 {
 	[Flags]
 	public enum FontEngines
 	{
-		OpenType,
-		Graphite
+		None = 0,
+		OpenType = 1,
+		Graphite = 2
 	}
 
-	public class FontDefinition : ICloneable<FontDefinition>
+	[Flags]
+	public enum FontRoles
+	{
+		None = 0,
+		Default = 1,
+		Heading = 2,
+		Emphasis = 4
+	}
+
+	public class FontDefinition : MutableDefinitionBase<FontDefinition>
 	{
 		private const int MinimumFontSize = 7;
 		private const int DefaultSizeIfWeDontKnow = 10;
-
-		public const string DefaultRole = "default";
-		public const string HeadingRole = "heading";
-		public const string EmphasisRole = "emphasis";
 
 		private readonly string _name;
 		private float _defaultSize;
@@ -28,14 +30,14 @@ namespace SIL.WritingSystems
 		private string _language;
 		private string _openTypeLanguage;
 		private string _minVersion;
-		private readonly ObservableCollection<string> _roles;
+		private FontRoles _roles;
 		private FontEngines _engines;
 		private string _subset;
+		private string _url;
 
 		public FontDefinition(string name)
 		{
 			_name = name;
-			_roles = new ObservableCollection<string>();
 		}
 
 		public FontDefinition(FontDefinition fd)
@@ -46,9 +48,10 @@ namespace SIL.WritingSystems
 			_language = fd._language;
 			_openTypeLanguage = fd._openTypeLanguage;
 			_minVersion = fd._minVersion;
-			_roles = new ObservableCollection<string>(fd._roles);
+			_roles = fd._roles;
 			_engines = fd._engines;
 			_subset = fd._subset;
+			_url = fd._url;
 		}
 
 		public string Name
@@ -91,9 +94,10 @@ namespace SIL.WritingSystems
 			set { UpdateString(ref _minVersion, value); }
 		}
 
-		public ICollection<string> Roles
+		public FontRoles Roles
 		{
 			get { return _roles; }
+			set { UpdateField(ref _roles, value); }
 		}
 
 		public FontEngines Engines
@@ -108,6 +112,12 @@ namespace SIL.WritingSystems
 			set { UpdateString(ref _subset, value); }
 		}
 
+		public string Url
+		{
+			get { return _url; }
+			set { UpdateString(ref _url, value); }
+		}
+
 		/// <summary>
 		/// enforcing a minimum on _defaultFontSize, while reasonable, just messed up too many IO unit tests
 		/// </summary>
@@ -119,45 +129,16 @@ namespace SIL.WritingSystems
 			return _defaultSize;
 		}
 
-		private bool UpdateString(ref string field, string value)
-		{
-			//count null as same as ""
-			if (String.IsNullOrEmpty(field) && String.IsNullOrEmpty(value))
-				return false;
-
-			return UpdateField(ref field, value);
-		}
-
-		/// <summary>
-		/// Updates the specified field and marks the writing system as modified.
-		/// </summary>
-		private bool UpdateField<T>(ref T field, T value)
-		{
-			if (EqualityComparer<T>.Default.Equals(field, value))
-				return false;
-
-			Modified = true;
-			field = value;
-			return true;
-		}
-
-		public bool Modified { get; private set; }
-
-		public void ResetModified()
-		{
-			Modified = false;
-		}
-
-		public bool ValueEquals(FontDefinition other)
+		public override bool ValueEquals(FontDefinition other)
 		{
 			if (other == null)
 				return false;
-			return _name == other._name && DefaultSize == other.DefaultSize && Features == other.Features && Language == other.Language
-				&& OpenTypeLanguage == other.OpenTypeLanguage && MinVersion == other.MinVersion && _roles.SequenceEqual(other._roles)
-				&& Engines == other.Engines && Subset == other.Subset;
+			return _name == other._name && _defaultSize == other._defaultSize && _features == other._features && _language == other._language
+				&& _openTypeLanguage == other._openTypeLanguage && _minVersion == other._minVersion && _roles == other._roles
+				&& _engines == other._engines && _subset == other._subset && _url == other._url;
 		}
 
-		public FontDefinition Clone()
+		public override FontDefinition Clone()
 		{
 			return new FontDefinition(this);
 		}

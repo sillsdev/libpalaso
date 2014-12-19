@@ -196,7 +196,9 @@ namespace SIL.WritingSystems
 					ws.IsUnicodeEncoded = !Convert.ToBoolean(isLegacyEncoded);
 				}
 				ws.LanguageName = GetSpecialValue(specialElem, Palaso, "languageName");
+#if WS_FIX
 				ws.SpellCheckingId = GetSpecialValue(specialElem, Palaso, "spellCheckingId");
+#endif
 				if (!_wsIsFlexPrivateUse)
 				{
 					string version = GetSpecialValue(specialElem, Palaso, "version");
@@ -861,10 +863,12 @@ namespace SIL.WritingSystems
 				WriteSpecialValue(writer, "palaso", "isLegacyEncoded", (!ws.IsUnicodeEncoded).ToString());
 			}
 			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "languageName", ws.LanguageName);
+#if WS_FIX
 			if (!String.IsNullOrEmpty(ws.SpellCheckingId))
 			{
 				WriteSpecialValue(writer, "palaso", "spellCheckingId", ws.SpellCheckingId);
 			}
+#endif
 			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "version", WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString());
 			writer.WriteEndElement();
 

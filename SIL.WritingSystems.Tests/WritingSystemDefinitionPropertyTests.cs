@@ -25,7 +25,7 @@ namespace SIL.WritingSystems.Tests
 		public override string ExceptionList
 		{
 			// We do want to clone KnownKeyboards, but I don't think the automatic cloneable test for it can handle a list.
-			get { return "|MarkedForDeletion|StoreID|_collator|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_modified|"; }
+			get { return "|MarkedForDeletion|StoreID|_collator|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionary|_spellCheckDictionaries|Modified|"; }
 		}
 
 		protected override List<ValuesToSet> DefaultValuesForTypes
@@ -81,6 +81,24 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(copy.DefaultFont == copy.Fonts[1], Is.True);
 		}
 
+		[Test]
+		public void CloneCopiesSpellCheckDictionaries()
+		{
+			var original = new WritingSystemDefinition();
+			var scdd1 = new SpellCheckDictionaryDefinition("dict1");
+			var scdd2 = new SpellCheckDictionaryDefinition("dict2");
+			original.SpellCheckDictionaries.Add(scdd1);
+			original.SpellCheckDictionaries.Add(scdd2);
+			original.SpellCheckDictionary = scdd2;
+			WritingSystemDefinition copy = original.Clone();
+			Assert.That(copy.SpellCheckDictionaries.Count, Is.EqualTo(2));
+			Assert.That(copy.SpellCheckDictionaries[0].ValueEquals(scdd1), Is.True);
+			Assert.That(ReferenceEquals(copy.SpellCheckDictionaries[0], scdd1), Is.False);
+			Assert.That(copy.SpellCheckDictionary.ValueEquals(scdd2), Is.True);
+			Assert.That(copy.SpellCheckDictionary == scdd2, Is.False);
+			Assert.That(copy.SpellCheckDictionary == copy.SpellCheckDictionaries[1], Is.True);
+		}
+
 		/// <summary>
 		/// The generic test that ValueEquals compares everything can't handle lists.
 		/// </summary>
@@ -121,9 +139,9 @@ namespace SIL.WritingSystems.Tests
 
 			Assert.That(first.ValueEquals(second), Is.False, "ws with empty fonts should not equal one with some");
 			second.Fonts.Add(fd3);
-			Assert.That(first.ValueEquals(second), Is.False, "ws's with different length fonts lists should not be equal");
+			Assert.That(first.ValueEquals(second), Is.False, "ws's with different length font lists should not be equal");
 			second.Fonts.Add(fd2.Clone());
-			Assert.That(first.ValueEquals(second), Is.True, "ws's with same fonts lists should be equal");
+			Assert.That(first.ValueEquals(second), Is.True, "ws's with same font lists should be equal");
 			second.DefaultFont = second.Fonts[0];
 			Assert.That(first.ValueEquals(second), Is.True);
 			second.DefaultFont = second.Fonts[1];
@@ -133,6 +151,34 @@ namespace SIL.WritingSystems.Tests
 			second.Fonts.Add(fd3);
 			second.Fonts.Add(fd4);
 			Assert.That(first.ValueEquals(second), Is.False, "ws with same-length lists of different fonts should not be equal");
+		}
+
+		[Test]
+		public void ValueEqualsComparesSpellCheckDictionaries()
+		{
+			var first = new WritingSystemDefinition();
+			var scdd1 = new SpellCheckDictionaryDefinition("dict1");
+			var scdd2 = new SpellCheckDictionaryDefinition("dict2");
+			first.SpellCheckDictionaries.Add(scdd1);
+			first.SpellCheckDictionaries.Add(scdd2);
+			var second = new WritingSystemDefinition();
+			var scdd3 = new SpellCheckDictionaryDefinition("dict1");
+			var scdd4 = new SpellCheckDictionaryDefinition("dict3");
+
+			Assert.That(first.ValueEquals(second), Is.False, "ws with empty dictionaries should not equal one with some");
+			second.SpellCheckDictionaries.Add(scdd3);
+			Assert.That(first.ValueEquals(second), Is.False, "ws's with different length dictionary lists should not be equal");
+			second.SpellCheckDictionaries.Add(scdd2.Clone());
+			Assert.That(first.ValueEquals(second), Is.True, "ws's with same dictionary lists should be equal");
+			second.SpellCheckDictionary = second.SpellCheckDictionaries[0];
+			Assert.That(first.ValueEquals(second), Is.True);
+			second.SpellCheckDictionary = second.SpellCheckDictionaries[1];
+			Assert.That(first.ValueEquals(second), Is.False);
+
+			second = new WritingSystemDefinition();
+			second.SpellCheckDictionaries.Add(scdd3);
+			second.SpellCheckDictionaries.Add(scdd4);
+			Assert.That(first.ValueEquals(second), Is.False, "ws with same-length lists of different dictionaries should not be equal");
 		}
 	}
 
@@ -539,6 +585,9 @@ namespace SIL.WritingSystems.Tests
 			firstValueToSet.Add(typeof(FontDefinition), new FontDefinition("font1"));
 			secondValueToSet.Add(typeof(FontDefinition), new FontDefinition("font2"));
 
+			firstValueToSet.Add(typeof(SpellCheckDictionaryDefinition), new SpellCheckDictionaryDefinition("dict1"));
+			secondValueToSet.Add(typeof(SpellCheckDictionaryDefinition), new SpellCheckDictionaryDefinition("dict2"));
+
 			foreach (PropertyInfo propertyInfo in typeof(WritingSystemDefinition).GetProperties(BindingFlags.Public | BindingFlags.Instance))
 			{
 				// skip read-only or ones in the ignore list
@@ -584,7 +633,7 @@ namespace SIL.WritingSystems.Tests
 			// _knownKeyboards and _localKeyboard are tested by the similar test in WritingSystemDefintionICloneableGenericTests.
 			// I (JohnT) suspect that this whole test is redundant but am keeping it in case this version
 			// confirms something subtly different.
-			const string ignoreFields = "|MarkedForDeletion|StoreID|_collator|_knownKeyboards|_localKeyboard|_modified|_defaultFont|_fonts|";
+			const string ignoreFields = "|MarkedForDeletion|StoreID|_collator|_knownKeyboards|_localKeyboard|Modified|_defaultFont|_fonts|_spellCheckDictionary|_spellCheckDictionaries|";
 			// values to use for testing different types
 			var valuesToSet = new Dictionary<Type, object>
 			{
@@ -1908,6 +1957,37 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(ws.DefaultFont, Is.EqualTo(fd1));
 			ws.Fonts.Clear();
 			Assert.That(ws.DefaultFont, Is.Null);
+		}
+
+		[Test]
+		public void SpellCheckDictionary_DefaultsToFirstDictionary()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+			var scdd1 = new SpellCheckDictionaryDefinition("dict1");
+			var scdd2 = new SpellCheckDictionaryDefinition("dict2");
+
+			ws.SpellCheckDictionaries.Add(scdd1);
+			ws.SpellCheckDictionaries.Add(scdd2);
+
+			Assert.That(ws.SpellCheckDictionary, Is.EqualTo(scdd1));
+		}
+
+		[Test]
+		public void SpellCheckDictionary_ResetWhenRemovedFromDictionaries()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+			var scdd1 = new SpellCheckDictionaryDefinition("dict1");
+			var scdd2 = new SpellCheckDictionaryDefinition("dict2");
+
+			ws.SpellCheckDictionaries.Add(scdd1);
+			ws.SpellCheckDictionaries.Add(scdd2);
+			ws.SpellCheckDictionary = scdd2;
+
+			Assert.That(ws.SpellCheckDictionary, Is.EqualTo(scdd2));
+			ws.SpellCheckDictionaries.RemoveAt(1);
+			Assert.That(ws.SpellCheckDictionary, Is.EqualTo(scdd1));
+			ws.SpellCheckDictionaries.Clear();
+			Assert.That(ws.SpellCheckDictionary, Is.Null);
 		}
 	}
 }

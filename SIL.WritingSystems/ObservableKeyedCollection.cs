@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace SIL.WritingSystems
@@ -6,6 +7,18 @@ namespace SIL.WritingSystems
 	public abstract class ObservableKeyedCollection<TKey, T> : KeyedCollection<TKey, T>, INotifyCollectionChanged
 	{
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+		public bool TryGetItem(TKey key, out T item)
+		{
+			if (Contains(key))
+			{
+				item = this[key];
+				return true;
+			}
+
+			item = default(T);
+			return false;
+		}
 
 		protected override void ClearItems()
 		{
@@ -15,6 +28,17 @@ namespace SIL.WritingSystems
 
 		protected override void InsertItem(int index, T item)
 		{
+			TKey key = GetKeyForItem(item);
+			if (Contains(key))
+			{
+				T oldItem = this[key];
+				int oldIndex = IndexOf(oldItem);
+				if (oldIndex == index - 1 && EqualityComparer<T>.Default.Equals(oldItem, item))
+					return;
+				RemoveAt(oldIndex);
+				if (index > oldIndex)
+					index--;
+			}
 			base.InsertItem(index, item);
 			OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index));
 		}

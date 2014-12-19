@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
+using System.Management.Instrumentation;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
@@ -548,7 +549,7 @@ namespace SIL.WritingSystems.WindowsForms
 				if (CurrentDefinition.DefaultFont == null || CurrentDefinition.DefaultFont.Name != value)
 				{
 					FontDefinition font;
-					if (!CurrentDefinition.Fonts.TryGetFontDefinition(value, out font))
+					if (!CurrentDefinition.Fonts.TryGetItem(value, out font))
 						font = new FontDefinition(value) {DefaultSize = CurrentDefaultFontSize};
 					CurrentDefinition.DefaultFont = font;
 					OnCurrentItemUpdated();
@@ -939,13 +940,16 @@ namespace SIL.WritingSystems.WindowsForms
 				{
 					return string.Empty;
 				}
-				return CurrentDefinition.SpellCheckingId ?? string.Empty;
+				return CurrentDefinition.SpellCheckDictionary.Id ?? string.Empty;
 			}
 			set
 			{
-				if (CurrentDefinition.SpellCheckingId != value)
+				if (CurrentDefinition.SpellCheckDictionary == null || CurrentDefinition.SpellCheckDictionary.Id != value)
 				{
-					CurrentDefinition.SpellCheckingId = value;
+					SpellCheckDictionaryDefinition dictionary;
+					if (!CurrentDefinition.SpellCheckDictionaries.TryGetItem(value, out dictionary))
+						dictionary = new SpellCheckDictionaryDefinition(value) {Format = SpellCheckDictionaryFormat.Hunspell};
+					CurrentDefinition.SpellCheckDictionary = dictionary;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -974,18 +978,16 @@ namespace SIL.WritingSystems.WindowsForms
 
 			try
 			{
-				using (Broker broker = new Broker())
+				using (var broker = new Broker())
 				{
 					// add installed dictionaries
 					_spellCheckerItems.AddRange(broker.Dictionaries.Select(dictionaryInfo => new SpellCheckInfo(dictionaryInfo)));
 
-					// add current dictionary, if not installed
-					if (!string.IsNullOrEmpty(CurrentSpellCheckingId))
+					if (CurrentDefinition != null)
 					{
-						if (!broker.DictionaryExists(CurrentSpellCheckingId))
-						{
-							_spellCheckerItems.Add(new SpellCheckInfo(CurrentSpellCheckingId));
-						}
+						// add WS dictionaries, if not installed
+						_spellCheckerItems.AddRange(CurrentDefinition.SpellCheckDictionaries
+							.Where(scdd => scdd.Format == SpellCheckDictionaryFormat.Hunspell && !broker.DictionaryExists(scdd.Id)).Select(scdd => new SpellCheckInfo(scdd.Id)));
 					}
 				}
 			}
@@ -1004,8 +1006,8 @@ namespace SIL.WritingSystems.WindowsForms
 
 		public class SpellCheckInfo
 		{
-			private DictionaryInfo _info = null;
-			private string _id = "";
+			private readonly DictionaryInfo _info;
+			private readonly string _id = "";
 
 			public SpellCheckInfo(DictionaryInfo info)
 			{
