@@ -7,6 +7,9 @@ using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
 using SIL.WritingSystems.WindowsForms.Keyboarding;
+#if __MonoCS__
+using SIL.WritingSystems.WindowsForms.Keyboarding.Linux;
+#endif
 
 namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 {
@@ -168,12 +171,12 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		[Test]
 		public void DefaultForWritingSystem_OldPalasoIbusKeyboard()
 		{
-			#if __MonoCS__
+#if __MonoCS__
 			// For this test on Linux we only use the XkbKeyboardAdaptor and simulate an available
 			// IBus keyboard. This is necessary because otherwise the test might return an
 			// installed Danish IBus keyboard (m17n:da:post) instead of our expected dummy one.
 			KeyboardController.Instance.SetKeyboardAdaptors(new XkbKeyboardAdaptor());
-			#endif
+#endif
 			var expectedKeyboard = new KeyboardDescription("m17n:da:post", "m17n:da:post - English (US)", "m17n:da:post", string.Empty, true,
 				KeyboardController.Instance.Adaptors[0]);
 			KeyboardController.Instance.Keyboards.Add(expectedKeyboard);
