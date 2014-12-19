@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
-using System.Management.Instrumentation;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
