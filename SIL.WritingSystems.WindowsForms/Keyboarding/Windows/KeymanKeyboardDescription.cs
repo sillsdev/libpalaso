@@ -69,7 +69,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.Windows.KeymanKeyboardDescription"/> class.
 		/// </summary>
 		internal KeymanKeyboardDescription(string layout, bool isKeyman6, KeymanKeyboardAdaptor engine, bool isAvailable)
-			: base(layout, layout, layout, string.Empty, isAvailable, null, engine)
+			: base(layout, layout, layout, string.Empty, isAvailable, engine)
 		{
 			IsKeyman6 = isKeyman6;
 		}

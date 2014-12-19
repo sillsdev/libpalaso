@@ -29,8 +29,9 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 		/// </summary>
 		internal WinKeyboardDescription(string id, string name, string layout, string locale, bool isAvailable,
 			IInputLanguage inputLanguage, WinKeyboardAdaptor engine, string localizedName, TfInputProcessorProfile profile)
-			: base(id, name, layout, locale, isAvailable, inputLanguage, engine)
+			: base(id, name, layout, locale, isAvailable, engine)
 		{
+			InputLanguage = inputLanguage;
 			_localizedName = localizedName;
 			InputProcessorProfile = profile;
 			ConversionMode = (int) (Win32.IME_CMODE.NATIVE | Win32.IME_CMODE.SYMBOL);
