@@ -25,7 +25,8 @@
     </DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
     <LangVersion>default</LangVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -127,6 +128,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -146,6 +148,7 @@
     <Compile Include="IWritingSystemRepository.cs" />
     <Compile Include="Keyboard.cs" />
     <Compile Include="KeyboardDefinitionCollection.cs" />
+    <Compile Include="Sldr.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\LdmlCollationParserV1.cs" />
     <Compile Include="ObservableKeyedCollection.cs" />
     <Compile Include="LanguageRegistryResources.Designer.cs">
