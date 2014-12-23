@@ -75,7 +75,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 			}
 		}
 
-		public bool ActivateKeyboard(IKeyboardDefinition keyboard)
+		public bool ActivateKeyboard(KeyboardDescription keyboard)
 		{
 			CheckDisposed();
 			var keymanKbdDesc = (KeymanKeyboardDescription)keyboard;
@@ -122,7 +122,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 			return true;
 		}
 
-		public void DeactivateKeyboard(IKeyboardDefinition keyboard)
+		public void DeactivateKeyboard(KeyboardDescription keyboard)
 		{
 			CheckDisposed();
 			try
@@ -145,7 +145,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 			}
 		}
 
-		public IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
+		public KeyboardDescription GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
 		{
 			throw new NotImplementedException("Keyman keyboards that are not associated with a language cannot be looked up by language.");
 		}
@@ -155,7 +155,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 		/// Note that this method is used when we do NOT have a matching available keyboard.
 		/// Therefore we can presume that the created one is NOT available.
 		/// </summary>
-		public IKeyboardDefinition CreateKeyboardDefinition(string id)
+		public KeyboardDescription CreateKeyboardDefinition(string id)
 		{
 			CheckDisposed();
 			return new KeymanKeyboardDescription(id, false, this, false);
@@ -164,7 +164,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 		/// <summary>
 		/// Gets the default keyboard of the system.
 		/// </summary>
-		public IKeyboardDefinition DefaultKeyboard
+		public KeyboardDescription DefaultKeyboard
 		{
 			get
 			{

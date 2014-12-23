@@ -156,6 +156,7 @@
     <Compile Include="Keyboarding\InputLanguageWrapper.cs" />
     <Compile Include="Keyboarding\KeyboardController.cs" />
     <Compile Include="Keyboarding\KeyboardDescription.cs" />
+    <Compile Include="Keyboarding\KeyboardDescriptionCollection.cs" />
     <Compile Include="Keyboarding\KeyboardDescriptionNull.cs" />
     <Compile Include="Keyboarding\Linux\CinnamonIbusAdaptor.cs" />
     <Compile Include="Keyboarding\Linux\CombinedKeyboardAdaptor.cs" />

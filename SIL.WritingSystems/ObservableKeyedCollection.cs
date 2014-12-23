@@ -1,33 +1,45 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 
 namespace SIL.WritingSystems
 {
-	public abstract class ObservableKeyedCollection<TKey, T> : KeyedCollection<TKey, T>, INotifyCollectionChanged
+	internal class ObservableKeyedCollection<TKey, T> : KeyedCollection<TKey, T>, INotifyCollectionChanged, INotifyPropertyChanged
 	{
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
-
-		public bool TryGetItem(TKey key, out T item)
+		event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
 		{
-			if (Contains(key))
-			{
-				item = this[key];
-				return true;
-			}
+			add { PropertyChanged += value; }
+			remove { PropertyChanged -= value; }
+		}
 
-			item = default(T);
-			return false;
+		protected event PropertyChangedEventHandler PropertyChanged;
+
+		private readonly SimpleMonitor _reentrancyMonitor = new SimpleMonitor();
+		private readonly Func<T, TKey> _keySelector;
+
+		public ObservableKeyedCollection(Func<T, TKey> keySelector)
+		{
+			_keySelector = keySelector;
+		}
+
+		protected override TKey GetKeyForItem(T item)
+		{
+			return _keySelector(item);
 		}
 
 		protected override void ClearItems()
 		{
+			CheckReentrancy();
 			base.ClearItems();
 			OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 		}
 
 		protected override void InsertItem(int index, T item)
 		{
+			CheckReentrancy();
 			TKey key = GetKeyForItem(item);
 			if (Contains(key))
 			{
@@ -45,6 +57,7 @@ namespace SIL.WritingSystems
 
 		protected override void RemoveItem(int index)
 		{
+			CheckReentrancy();
 			T oldItem = this[index];
 			base.RemoveItem(index);
 			OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldItem, index));
@@ -52,6 +65,7 @@ namespace SIL.WritingSystems
 
 		protected override void SetItem(int index, T item)
 		{
+			CheckReentrancy();
 			T oldItem = this[index];
 			base.SetItem(index, item);
 			OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, item, oldItem, index));
@@ -60,7 +74,30 @@ namespace SIL.WritingSystems
 		protected virtual void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
 		{
 			if (CollectionChanged != null)
-				CollectionChanged(this, e);
+			{
+				using (BlockReentrancy())
+					CollectionChanged(this, e);
+			}
+		}
+
+		protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
+		{
+			if (PropertyChanged != null)
+			{
+				using (BlockReentrancy())
+					PropertyChanged(this, e);
+			}
+		}
+
+		protected void CheckReentrancy()
+		{
+			if (_reentrancyMonitor.Busy)
+				throw new InvalidOperationException("This collection cannot be changed during a CollectionChanged event.");
+		}
+
+		protected IDisposable BlockReentrancy()
+		{
+			return _reentrancyMonitor.Enter();
 		}
 	}
 }

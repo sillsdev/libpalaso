@@ -12,6 +12,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using Palaso.Reporting;
+using Palaso.Extensions;
 #if __MonoCS__
 using SIL.WritingSystems.WindowsForms.Keyboarding.Linux;
 #else
@@ -86,12 +87,12 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		private readonly List<string> _languagesAlreadyShownKeyboardNotFoundMessages;
 		private IKeyboardDefinition _activeKeyboard;
 		private readonly List<IKeyboardAdaptor> _adaptors;
-		private readonly KeyboardDefinitionCollection _keyboards;
+		private readonly KeyboardDescriptionCollection _keyboards;
 		private readonly Dictionary<Control, object> _eventHandlers;
 
 		private KeyboardController()
 		{
-			_keyboards = new KeyboardDefinitionCollection();
+			_keyboards = new KeyboardDescriptionCollection();
 			_eventHandlers = new Dictionary<Control, object>();
 			_languagesAlreadyShownKeyboardNotFoundMessages = new List<string>();
 			_adaptors = new List<IKeyboardAdaptor>();
@@ -127,7 +128,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 				adapter.UpdateAvailableKeyboards();
 		}
 
-		internal KeyboardDefinitionCollection Keyboards
+		internal KeyboardDescriptionCollection Keyboards
 		{
 			get { return _keyboards; }
 		}
@@ -307,16 +308,15 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		/// </summary>
 		public IKeyboardDefinition CreateKeyboardDefinition(string id, KeyboardFormat format, string url)
 		{
-			IKeyboardDefinition keyboard;
+			KeyboardDescription keyboard;
 			if (!_keyboards.TryGetItem(id, out keyboard))
 			{
 				keyboard = _adaptors.First(adaptor => adaptor.CanHandleFormat(format)).CreateKeyboardDefinition(id);
 				_keyboards.Add(keyboard);
 			}
 
-			var keyboardDesc = (KeyboardDescription) keyboard;
-			keyboardDesc.Format = format;
-			keyboardDesc.Url = url;
+			keyboard.Format = format;
+			keyboard.Url = url;
 
 			return keyboard;
 		}

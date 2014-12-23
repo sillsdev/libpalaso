@@ -573,23 +573,20 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 			GetInputMethods();
 		}
 
-		public bool ActivateKeyboard(IKeyboardDefinition keyboard)
+		public bool ActivateKeyboard(KeyboardDescription keyboard)
 		{
 			CheckDisposed();
-			SwitchKeyboard(keyboard as WinKeyboardDescription);
+			SwitchKeyboard((WinKeyboardDescription) keyboard);
 			return true;
 		}
 
-		public void DeactivateKeyboard(IKeyboardDefinition keyboard)
+		public void DeactivateKeyboard(KeyboardDescription keyboard)
 		{
 			CheckDisposed();
-			var winKeyboard = keyboard as WinKeyboardDescription;
-			Debug.Assert(winKeyboard != null);
-
-			SaveImeConversionStatus(winKeyboard);
+			SaveImeConversionStatus((WinKeyboardDescription) keyboard);
 		}
 
-		public IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
+		public KeyboardDescription GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
 		{
 			CheckDisposed();
 			return GetKeyboardDescription(inputLanguage);
@@ -600,7 +597,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 		/// Note that this method is used when we do NOT have a matching available keyboard.
 		/// Therefore we can presume that the created one is NOT available.
 		/// </summary>
-		public IKeyboardDefinition CreateKeyboardDefinition(string id)
+		public KeyboardDescription CreateKeyboardDefinition(string id)
 		{
 			CheckDisposed();
 
@@ -631,7 +628,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 		/// <summary>
 		/// Gets the default keyboard of the system.
 		/// </summary>
-		public IKeyboardDefinition DefaultKeyboard
+		public KeyboardDescription DefaultKeyboard
 		{
 			get
 			{

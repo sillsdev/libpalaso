@@ -45,16 +45,16 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		/// </summary>
 		void UpdateAvailableKeyboards();
 
-		bool ActivateKeyboard(IKeyboardDefinition keyboard);
+		bool ActivateKeyboard(KeyboardDescription keyboard);
 
 		/// <summary>
 		/// Called to allow state to be saved when a different keyboard is being activated or the window is being deactivated.
 		/// Does not change the active keyboard.
 		/// </summary>
 		/// <param name="keyboard"></param>
-		void DeactivateKeyboard(IKeyboardDefinition keyboard);
+		void DeactivateKeyboard(KeyboardDescription keyboard);
 
-		IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage);
+		KeyboardDescription GetKeyboardForInputLanguage(IInputLanguage inputLanguage);
 
 		/// <summary>
 		/// Creates and returns a keyboard definition object of the type needed by this adapter (and hooked to it)
@@ -69,12 +69,12 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		/// that does not match anything available on this system. Since it isn't available, it's arbitrary which
 		/// adapter creates a keyboard for it, so we arbitrarily pick the first of type System.</remarks>
 		/// </summary>
-		IKeyboardDefinition CreateKeyboardDefinition(string id);
+		KeyboardDescription CreateKeyboardDefinition(string id);
 
 		/// <summary>
 		/// Gets the default keyboard of the system. This only needs to be implemented by the (first) adapter of type system.
 		/// </summary>
-		IKeyboardDefinition DefaultKeyboard { get; }
+		KeyboardDescription DefaultKeyboard { get; }
 
 		/// <summary>
 		/// Gets the type of keyboards this adaptor handles: system or other (like Keyman, ibus...)

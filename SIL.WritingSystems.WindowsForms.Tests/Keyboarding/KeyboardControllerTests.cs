@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
+using Palaso.Extensions;
 using SIL.WritingSystems.WindowsForms.Keyboarding;
 #if __MonoCS__
 using SIL.WritingSystems.WindowsForms.Keyboarding.Linux;
@@ -43,8 +44,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		[Test]
 		public void GetKeyboard_FromInputLanguage_ExistingKeyboardReturnsKeyboard()
 		{
-			var keyboard = Keyboard.Controller.CreateKeyboardDefinition("en-US_foo", KeyboardFormat.Unknown, null);
-			KeyboardController.Instance.Keyboards.Add(keyboard);
+			IKeyboardDefinition keyboard = Keyboard.Controller.CreateKeyboardDefinition("en-US_foo", KeyboardFormat.Unknown, null);
 
 			var inputLanguage = new InputLanguageWrapper(new CultureInfo("en-US"), IntPtr.Zero, "foo");
 			Assert.That(Keyboard.Controller.GetKeyboard(inputLanguage), Is.EqualTo(keyboard));
@@ -53,8 +53,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		[Test]
 		public void GetKeyboard_FromNewPalasoId_ExistingKeyboardReturnsKeyboard()
 		{
-			var keyboard = Keyboard.Controller.CreateKeyboardDefinition("en-US_foo", KeyboardFormat.Unknown, null);
-			KeyboardController.Instance.Keyboards.Add(keyboard);
+			IKeyboardDefinition keyboard = Keyboard.Controller.CreateKeyboardDefinition("en-US_foo", KeyboardFormat.Unknown, null);
 
 			Assert.That(Keyboard.Controller.GetKeyboard("en-US_foo"), Is.EqualTo(keyboard));
 		}
@@ -62,9 +61,6 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		[Test]
 		public void GetKeyboard_FromNewPalasoId_NonExistingKeyboard()
 		{
-			var keyboard = Keyboard.Controller.CreateKeyboardDefinition("en-US_foo", KeyboardFormat.Unknown, null);
-			KeyboardController.Instance.Keyboards.Add(keyboard);
-
 			Assert.That(Keyboard.Controller.GetKeyboard("en-US_glop"), Is.EqualTo(KeyboardDescription.Zero));
 		}
 
@@ -72,11 +68,8 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		public void GetKeyboard_FromOldParatextId_ExistingKeyboardReturnsKeyboard()
 		{
 			// This is the case of a keyboard that the old Palaso system was incapable of supporting.
-			var keyboardFooBoo = Keyboard.Controller.CreateKeyboardDefinition("az-Latn-AZ_foo", KeyboardFormat.Unknown, null);
-			KeyboardController.Instance.Keyboards.Add(keyboardFooBoo);
-
-			var keyboard = Keyboard.Controller.CreateKeyboardDefinition("en-US_foo", KeyboardFormat.Unknown, null);
-			KeyboardController.Instance.Keyboards.Add(keyboard);
+			IKeyboardDefinition keyboardFooBoo = Keyboard.Controller.CreateKeyboardDefinition("az-Latn-AZ_foo", KeyboardFormat.Unknown, null);
+			IKeyboardDefinition keyboard = Keyboard.Controller.CreateKeyboardDefinition("en-US_foo", KeyboardFormat.Unknown, null);
 
 			Assert.That(Keyboard.Controller.GetKeyboard("foo|en-US"), Is.EqualTo(keyboard));
 			Assert.That(Keyboard.Controller.GetKeyboard("foo|az-Latn-AZ"), Is.EqualTo(keyboardFooBoo));
@@ -85,9 +78,6 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		[Test]
 		public void GetKeyboard_FromOldParatextId_NonExistingKeyboard()
 		{
-			var keyboard = Keyboard.Controller.CreateKeyboardDefinition("en-US_foo", KeyboardFormat.Unknown, null);
-			KeyboardController.Instance.Keyboards.Add(keyboard);
-
 			Assert.That(Keyboard.Controller.GetKeyboard("glop|en-US"), Is.EqualTo(KeyboardDescription.Zero));
 		}
 
@@ -97,12 +87,8 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 			// This demonstrates the case of a keyboard that the old Palaso system was incapable of supporting.
 			// There's no way to reference this keyboard, or is there???
 			IKeyboardDefinition keyboardFooBoo = Keyboard.Controller.CreateKeyboardDefinition("az-Latn-AZ_foo", KeyboardFormat.Unknown, null);
-			KeyboardController.Instance.Keyboards.Add(keyboardFooBoo);
-
 			IKeyboardDefinition keyboardFooF = Keyboard.Controller.CreateKeyboardDefinition("en-US_foo-az", KeyboardFormat.Unknown, null);
-			KeyboardController.Instance.Keyboards.Add(keyboardFooF);
 			IKeyboardDefinition keyboardFoo = Keyboard.Controller.CreateKeyboardDefinition("en-US_foo", KeyboardFormat.Unknown, null);
-			KeyboardController.Instance.Keyboards.Add(keyboardFoo);
 
 			Assert.That(Keyboard.Controller.GetKeyboard("foo-az-en-US"), Is.EqualTo(keyboardFooF));
 			Assert.That(Keyboard.Controller.GetKeyboard("foo-en-US"), Is.EqualTo(keyboardFoo));
@@ -112,9 +98,6 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		[Test]
 		public void GetKeyboard_FromOldPalasoId_NonExistingKeyboard()
 		{
-			var keyboard = Keyboard.Controller.CreateKeyboardDefinition("en-US_foo", KeyboardFormat.Unknown, null);
-			KeyboardController.Instance.Keyboards.Add(keyboard);
-
 			Assert.That(Keyboard.Controller.GetKeyboard("glop-en-US"), Is.EqualTo(KeyboardDescription.Zero));
 		}
 
@@ -155,7 +138,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		[Test]
 		public void DefaultForWritingSystem_OldPalasoKeymanKeyboard()
 		{
-			IKeyboardDefinition expectedKeyboard;
+			KeyboardDescription expectedKeyboard;
 			if (!KeyboardController.Instance.Keyboards.TryGetItem("IPA Unicode 1.1.1", out expectedKeyboard))
 			{
 				expectedKeyboard = new KeyboardDescription("IPA Unicode 1.1.1", "IPA Unicode 1.1.1 - English (US)", "IPA Unicode 1.1.1", string.Empty, true,

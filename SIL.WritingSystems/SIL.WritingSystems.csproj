@@ -136,7 +136,6 @@
     <Compile Include="EthnologueLookup.cs" />
     <Compile Include="FlexConformPrivateUseRfc5646TagInterpreter.cs" />
     <Compile Include="FontDefinition.cs" />
-    <Compile Include="FontDefinitionCollection.cs" />
     <Compile Include="GlobalWritingSystemRepository.cs" />
     <Compile Include="IInputLanguage.cs" />
     <Compile Include="IKeyboardController.cs" />
@@ -145,8 +144,8 @@
     <Compile Include="Iso639LanguageCode.cs" />
     <Compile Include="IWritingSystemRepository.cs" />
     <Compile Include="Keyboard.cs" />
-    <Compile Include="KeyboardDefinitionCollection.cs" />
     <Compile Include="DefinitionBase.cs" />
+    <Compile Include="SimpleMonitor.cs" />
     <Compile Include="Sldr.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\LdmlCollationParserV1.cs" />
     <Compile Include="ObservableKeyedCollection.cs" />
@@ -181,7 +180,6 @@
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\XmlHelpersV0.cs" />
     <Compile Include="Rfc5646Tag.cs" />
     <Compile Include="SpellCheckDictionaryDefinition.cs" />
-    <Compile Include="SpellCheckDictionaryDefinitionCollection.cs" />
     <Compile Include="StandardTags.cs" />
     <Compile Include="WellKnownSubtags.cs" />
     <Compile Include="WritingSystemChangeLog.cs" />
