@@ -693,7 +693,8 @@ namespace SIL.WritingSystems
 			writer.WriteStartElement("identity");
 			writer.WriteStartElement("version");
 			writer.WriteAttributeString("number", ws.VersionNumber);
-			writer.WriteString(ws.VersionDescription);
+			if (!string.IsNullOrEmpty(ws.VersionDescription))
+				writer.WriteString(ws.VersionDescription);
 			writer.WriteEndElement();
 			WriteElementWithAttribute(writer, "generation", "date", String.Format("{0:s}", ws.DateModified));
 

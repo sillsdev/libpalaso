@@ -39,7 +39,7 @@
 
 		public string Url
 		{
-			get { return _url; }
+			get { return _url ?? string.Empty; }
 			set { UpdateString(ref _url, value); }
 		}
 
@@ -47,7 +47,7 @@
 		{
 			if (other == null)
 				return false;
-			return _id == other._id && _format == other._format && _url == other._url;
+			return _id == other._id && _format == other._format && Url == other.Url;
 		}
 
 		public override SpellCheckDictionaryDefinition Clone()

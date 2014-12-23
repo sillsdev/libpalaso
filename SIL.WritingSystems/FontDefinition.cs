@@ -72,25 +72,25 @@ namespace SIL.WritingSystems
 
 		public string Features
 		{
-			get { return _features; }
+			get { return _features ?? string.Empty; }
 			set { UpdateString(ref _features, value); }
 		}
 
 		public string Language
 		{
-			get { return _language; }
+			get { return _language ?? string.Empty; }
 			set { UpdateString(ref _language, value); }
 		}
 
 		public string OpenTypeLanguage
 		{
-			get { return _openTypeLanguage; }
+			get { return _openTypeLanguage ?? string.Empty; }
 			set { UpdateString(ref _openTypeLanguage, value); }
 		}
 
 		public string MinVersion
 		{
-			get { return _minVersion; }
+			get { return _minVersion ?? string.Empty; }
 			set { UpdateString(ref _minVersion, value); }
 		}
 
@@ -108,13 +108,13 @@ namespace SIL.WritingSystems
 
 		public string Subset
 		{
-			get { return _subset; }
+			get { return _subset ?? string.Empty; }
 			set { UpdateString(ref _subset, value); }
 		}
 
 		public string Url
 		{
-			get { return _url; }
+			get { return _url ?? string.Empty; }
 			set { UpdateString(ref _url, value); }
 		}
 
@@ -133,9 +133,9 @@ namespace SIL.WritingSystems
 		{
 			if (other == null)
 				return false;
-			return _name == other._name && _defaultSize == other._defaultSize && _features == other._features && _language == other._language
-				&& _openTypeLanguage == other._openTypeLanguage && _minVersion == other._minVersion && _roles == other._roles
-				&& _engines == other._engines && _subset == other._subset && _url == other._url;
+			return _name == other._name && _defaultSize == other._defaultSize && Features == other.Features && Language == other.Language
+				&& OpenTypeLanguage == other.OpenTypeLanguage && MinVersion == other.MinVersion && _roles == other._roles
+				&& _engines == other._engines && Subset == other.Subset && Url == other.Url;
 		}
 
 		public override FontDefinition Clone()

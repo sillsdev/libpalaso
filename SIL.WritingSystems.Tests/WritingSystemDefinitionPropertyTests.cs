@@ -542,7 +542,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			// Put any properties to ignore in this string surrounded by "|"
 			// ObsoleteWindowsLcid has no public setter; it only gets a value by reading from an old file.
-			const string ignoreProperties = "|MarkedForDeletion|StoreID|DateModified|Rfc5646TagOnLoad|RequiresValidTag|WindowsLcid|";
+			const string ignoreProperties = "|MarkedForDeletion|StoreID|DateModified|Rfc5646TagOnLoad|RequiresValidTag|";
 			// special test values to use for properties that are particular
 			var firstValueSpecial = new Dictionary<string, object>();
 			var secondValueSpecial = new Dictionary<string, object>();

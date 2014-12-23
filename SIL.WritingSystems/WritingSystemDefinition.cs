@@ -97,6 +97,9 @@ namespace SIL.WritingSystems
 		private ICollator _collator;
 		private IKeyboardDefinition _localKeyboard;
 		private string _id;
+		private string _defaultRegion;
+		private string _variantName;
+		private string _windowsLcid;
 		private SpellCheckDictionaryDefinition _spellCheckDictionary;
 		private readonly FontDefinitionCollection _fonts = new FontDefinitionCollection();
 		private readonly KeyboardDefinitionCollection _knownKeyboards = new KeyboardDefinitionCollection();
@@ -213,7 +216,9 @@ namespace SIL.WritingSystems
 			_rfcTag = new Rfc5646Tag(ws._rfcTag);
 			_languageName = ws._languageName;
 			_localKeyboard = ws._localKeyboard;
-			WindowsLcid = ws.WindowsLcid;
+			_windowsLcid = ws._windowsLcid;
+			_defaultRegion = ws._defaultRegion;
+			_variantName = ws._variantName;
 			foreach (IKeyboardDefinition kbd in ws._knownKeyboards)
 				_knownKeyboards.Add(kbd);
 			_id = ws._id;
@@ -226,7 +231,7 @@ namespace SIL.WritingSystems
 		///</summary>
 		virtual public string VersionNumber
 		{
-			get { return _versionNumber; }
+			get { return _versionNumber ?? string.Empty; }
 			set { UpdateString(ref _versionNumber, value); }
 		}
 
@@ -235,7 +240,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		virtual public string VersionDescription
 		{
-			get { return _versionDescription; }
+			get { return _versionDescription ?? string.Empty; }
 			set { UpdateString(ref _versionDescription, value); }
 		}
 
@@ -648,25 +653,19 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				if (!String.IsNullOrEmpty(_languageName))
+				if (!string.IsNullOrEmpty(_languageName))
 				{
 					return _languageName;
 				}
-				var code = StandardTags.ValidIso639LanguageCodes.FirstOrDefault(c => c.Code.Equals(Language));
+				Iso639LanguageCode code = StandardTags.ValidIso639LanguageCodes.FirstOrDefault(c => c.Code.Equals(Language));
 				if (code != null)
-				{
 					return code.Name;
-				}
 				return "Unknown Language";
 
 				// TODO Make the below work.
 				//return StandardTags.LanguageName(Language) ?? "Unknown Language";
 			}
-			set
-			{
-				value = value ?? "";
-				UpdateString(ref _languageName, value);
-			}
+			set { UpdateString(ref _languageName, value); }
 		}
 
 		/// <summary>
@@ -853,8 +852,7 @@ namespace SIL.WritingSystems
 
 			internal set
 			{
-				value = value ?? "";
-				_id = value;
+				_id = value ?? string.Empty;
 				IsChanged = true;
 			}
 		}
@@ -913,12 +911,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		virtual public string Keyboard
 		{
-			get
-			{
-				if (string.IsNullOrEmpty(_keyboard))
-					return "";
-				return _keyboard;
-			}
+			get { return _keyboard ?? string.Empty; }
 			set { UpdateString(ref _keyboard, value); }
 		}
 
@@ -928,7 +921,11 @@ namespace SIL.WritingSystems
 		/// It is not useful to modify this or set it in new LDML files; however, we need a public setter
 		/// because FieldWorks overrides the code that normally reads this from the LDML file.
 		/// </summary>
-		public string WindowsLcid { get; set; }
+		public string WindowsLcid
+		{
+			get { return _windowsLcid ?? string.Empty; }
+			set { UpdateString(ref _windowsLcid, value); }
+		}
 
 		/// <summary>
 		/// This tracks the keyboard that should be used for this writing system on this computer.
@@ -976,7 +973,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		virtual public string NativeName
 		{
-			get { return _nativeName; }
+			get { return _nativeName ?? string.Empty; }
 			set { UpdateString(ref _nativeName, value); }
 		}
 
@@ -1115,19 +1112,19 @@ namespace SIL.WritingSystems
 
 			if (!_rfcTag.Equals(other._rfcTag))
 				return false;
-			if (_languageName != other._languageName)
+			if (LanguageName != other.LanguageName)
 				return false;
-			if (_abbreviation != other._abbreviation)
+			if (Abbreviation != other.Abbreviation)
 				return false;
-			if (_versionNumber != other._versionNumber)
+			if (VersionNumber != other.VersionNumber)
 				return false;
-			if (_versionDescription != other._versionDescription)
+			if (VersionDescription != other.VersionDescription)
 				return false;
-			if (_keyboard != other._keyboard)
+			if (Keyboard != other.Keyboard)
 				return false;
-			if (_collationRules != other._collationRules)
+			if (CollationRules != other.CollationRules)
 				return false;
-			if (_nativeName != other._nativeName)
+			if (NativeName != other.NativeName)
 				return false;
 			if (_id != other._id)
 				return false;
@@ -1140,6 +1137,10 @@ namespace SIL.WritingSystems
 			if (_rightToLeftScript != other._rightToLeftScript)
 				return false;
 			if (WindowsLcid != other.WindowsLcid)
+				return false;
+			if (DefaultRegion != other.DefaultRegion)
+				return false;
+			if (VariantName != other.VariantName)
 				return false;
 
 			// fonts
@@ -1295,5 +1296,18 @@ namespace SIL.WritingSystems
 				}
 			}
 		}
+
+		public string DefaultRegion
+		{
+			get { return _defaultRegion ?? string.Empty; }
+			set { UpdateString(ref _defaultRegion, value); }
+		}
+
+		public string VariantName
+		{
+			get { return _variantName ?? string.Empty; }
+			set { UpdateString(ref _variantName, value); }
+		}
+
 	}
 }
