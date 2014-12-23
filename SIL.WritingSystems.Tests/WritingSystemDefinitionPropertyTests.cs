@@ -25,7 +25,7 @@ namespace SIL.WritingSystems.Tests
 		public override string ExceptionList
 		{
 			// We do want to clone KnownKeyboards, but I don't think the automatic cloneable test for it can handle a list.
-			get { return "|MarkedForDeletion|StoreID|_collator|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionary|_spellCheckDictionaries|IsChanged|"; }
+			get { return "|MarkedForDeletion|StoreID|_collator|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionary|_spellCheckDictionaries|IsChanged|_matchedPairs|_punctuationPatterns|_quotationMarks|"; }
 		}
 
 		protected override List<ValuesToSet> DefaultValuesForTypes
@@ -40,8 +40,8 @@ namespace SIL.WritingSystems.Tests
 								 new ValuesToSet(DateTime.Now, DateTime.MinValue),
 								 new ValuesToSet(CollationRulesTypes.CustomIcu, CollationRulesTypes.DefaultOrdering),
 								 new ValuesToSet(new Rfc5646Tag("en", "Latn", "US", "1901", "test"), Rfc5646Tag.Parse("de")),
-								 new SubclassValuesToSet<IKeyboardDefinition>(new DefaultKeyboardDefinition("mine", string.Empty),
-									 new DefaultKeyboardDefinition("theirs", string.Empty))
+								 new ValuesToSet(QuotationParagraphContinueType.None, QuotationParagraphContinueType.All),
+								 new ValuesToSet(QuotationParagraphContinueMark.Open, QuotationParagraphContinueMark.Close)
 							 };
 			}
 		}
@@ -97,6 +97,45 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(copy.SpellCheckDictionary.ValueEquals(scdd2), Is.True);
 			Assert.That(copy.SpellCheckDictionary == scdd2, Is.False);
 			Assert.That(copy.SpellCheckDictionary == copy.SpellCheckDictionaries[1], Is.True);
+		}
+
+		[Test]
+		public void CloneCopiesMatchedPairs()
+		{
+			var original = new WritingSystemDefinition();
+			var mp1 = new MatchedPair("(", ")", false);
+			var mp2 = new MatchedPair("[", "]", false);
+			original.MatchedPairs.Add(mp1);
+			original.MatchedPairs.Add(mp2);
+			WritingSystemDefinition copy = original.Clone();
+			Assert.That(copy.MatchedPairs.Count, Is.EqualTo(2));
+			Assert.That(copy.MatchedPairs, Is.EquivalentTo(new[] { mp1, mp2 }));
+		}
+
+		[Test]
+		public void CloneCopiesPunctuationPatterns()
+		{
+			var original = new WritingSystemDefinition();
+			var pp1 = new PunctuationPattern("?", PunctuationPatternContext.Final);
+			var pp2 = new PunctuationPattern(":", PunctuationPatternContext.Final);
+			original.PunctuationPatterns.Add(pp1);
+			original.PunctuationPatterns.Add(pp2);
+			WritingSystemDefinition copy = original.Clone();
+			Assert.That(copy.PunctuationPatterns.Count, Is.EqualTo(2));
+			Assert.That(copy.PunctuationPatterns, Is.EquivalentTo(new[] { pp1, pp2 }));
+		}
+
+		[Test]
+		public void CloneCopiesQuotationMarks()
+		{
+			var original = new WritingSystemDefinition();
+			var qm1 = new QuotationMark("«", "»", null);
+			var qm2 = new QuotationMark("‹", "›", null);
+			original.QuotationMarks.Add(qm1);
+			original.QuotationMarks.Add(qm2);
+			WritingSystemDefinition copy = original.Clone();
+			Assert.That(copy.QuotationMarks.Count, Is.EqualTo(2));
+			Assert.That(copy.QuotationMarks, Is.EqualTo(new[] { qm1, qm2 }));
 		}
 
 		/// <summary>
@@ -179,6 +218,75 @@ namespace SIL.WritingSystems.Tests
 			second.SpellCheckDictionaries.Add(scdd3);
 			second.SpellCheckDictionaries.Add(scdd4);
 			Assert.That(first.ValueEquals(second), Is.False, "ws with same-length lists of different dictionaries should not be equal");
+		}
+
+		[Test]
+		public void ValueEqualsComparesMatchedPairs()
+		{
+			var first = new WritingSystemDefinition();
+			var mp1 = new MatchedPair("(", ")", false);
+			var mp2 = new MatchedPair("[", "]", false);
+			first.MatchedPairs.Add(mp1);
+			first.MatchedPairs.Add(mp2);
+			var second = new WritingSystemDefinition();
+			var mp3 = new MatchedPair("{", "}", false);
+
+			Assert.That(first.ValueEquals(second), Is.False, "ws with empty matched pairs should not equal one with some");
+			second.MatchedPairs.Add(mp1);
+			Assert.That(first.ValueEquals(second), Is.False, "ws's with different length matched pair lists should not be equal");
+			second.MatchedPairs.Add(mp2);
+			Assert.That(first.ValueEquals(second), Is.True, "ws's with same matched pair lists should be equal");
+
+			second.MatchedPairs.Clear();
+			second.MatchedPairs.Add(mp1);
+			second.MatchedPairs.Add(mp3);
+			Assert.That(first.ValueEquals(second), Is.False, "ws with same-length lists of different matched pairs should not be equal");
+		}
+
+		[Test]
+		public void ValueEqualsComparesPunctuationPatterns()
+		{
+			var first = new WritingSystemDefinition();
+			var pp1 = new PunctuationPattern("?", PunctuationPatternContext.Final);
+			var pp2 = new PunctuationPattern(":", PunctuationPatternContext.Final);
+			first.PunctuationPatterns.Add(pp1);
+			first.PunctuationPatterns.Add(pp2);
+			var second = new WritingSystemDefinition();
+			var pp3 = new PunctuationPattern(",", PunctuationPatternContext.Final);
+
+			Assert.That(first.ValueEquals(second), Is.False, "ws with empty punctuation patterns should not equal one with some");
+			second.PunctuationPatterns.Add(pp1);
+			Assert.That(first.ValueEquals(second), Is.False, "ws's with different length punctuation pattern lists should not be equal");
+			second.PunctuationPatterns.Add(pp2);
+			Assert.That(first.ValueEquals(second), Is.True, "ws's with same punctuation pattern lists should be equal");
+
+			second.PunctuationPatterns.Clear();
+			second.PunctuationPatterns.Add(pp1);
+			second.PunctuationPatterns.Add(pp3);
+			Assert.That(first.ValueEquals(second), Is.False, "ws with same-length lists of different punctuation patterns should not be equal");
+		}
+
+		[Test]
+		public void ValueEqualsComparesQuotationMarks()
+		{
+			var first = new WritingSystemDefinition();
+			var qm1 = new QuotationMark("«", "»", null);
+			var qm2 = new QuotationMark("‹", "›", null);
+			first.QuotationMarks.Add(qm1);
+			first.QuotationMarks.Add(qm2);
+			var second = new WritingSystemDefinition();
+			var qm3 = new QuotationMark("{", "}", null);
+
+			Assert.That(first.ValueEquals(second), Is.False, "ws with empty quotation marks should not equal one with some");
+			second.QuotationMarks.Add(qm1);
+			Assert.That(first.ValueEquals(second), Is.False, "ws's with different length quotation mark lists should not be equal");
+			second.QuotationMarks.Add(qm2);
+			Assert.That(first.ValueEquals(second), Is.True, "ws's with same quotation mark lists should be equal");
+
+			second.QuotationMarks.Clear();
+			second.QuotationMarks.Add(qm1);
+			second.QuotationMarks.Add(qm3);
+			Assert.That(first.ValueEquals(second), Is.False, "ws with same-length lists of different quotation marks should not be equal");
 		}
 	}
 
@@ -578,15 +686,16 @@ namespace SIL.WritingSystems.Tests
 			firstValueToSet.Add(typeof(CollationRulesTypes), CollationRulesTypes.CustomIcu);
 			secondValueToSet.Add(typeof(CollationRulesTypes), CollationRulesTypes.CustomSimple);
 			firstValueToSet.Add(typeof(Rfc5646Tag), new Rfc5646Tag("de", "Latn", "", "1901","audio"));
-
 			firstValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.IpaPhonemic);
 			secondValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.NotIpa);
-
 			firstValueToSet.Add(typeof(FontDefinition), new FontDefinition("font1"));
 			secondValueToSet.Add(typeof(FontDefinition), new FontDefinition("font2"));
-
 			firstValueToSet.Add(typeof(SpellCheckDictionaryDefinition), new SpellCheckDictionaryDefinition("dict1"));
 			secondValueToSet.Add(typeof(SpellCheckDictionaryDefinition), new SpellCheckDictionaryDefinition("dict2"));
+			firstValueToSet.Add(typeof(QuotationParagraphContinueType), QuotationParagraphContinueType.None);
+			secondValueToSet.Add(typeof(QuotationParagraphContinueType), QuotationParagraphContinueType.All);
+			firstValueToSet.Add(typeof(QuotationParagraphContinueMark), QuotationParagraphContinueMark.Open);
+			secondValueToSet.Add(typeof(QuotationParagraphContinueMark), QuotationParagraphContinueMark.Close);
 
 			foreach (PropertyInfo propertyInfo in typeof(WritingSystemDefinition).GetProperties(BindingFlags.Public | BindingFlags.Instance))
 			{
@@ -620,58 +729,9 @@ namespace SIL.WritingSystems.Tests
 				}
 				catch(Exception error)
 				{
-					Assert.Fail("Error setting property WritingSystemDefinition.{0},{1}", propertyInfo.Name, error.ToString());
+					Assert.Fail("Error setting property WritingSystemDefinition.{0},{1}", propertyInfo.Name, error);
 				}
 				Assert.IsTrue(ws.IsChanged, "Modifying WritingSystemDefinition.{0} did not change modified flag.", propertyInfo.Name);
-			}
-		}
-
-		[Test]
-		public void CloneCopiesAllNeededMembers()
-		{
-			// Put any fields to ignore in this string surrounded by "|"
-			// _knownKeyboards and _localKeyboard are tested by the similar test in WritingSystemDefintionICloneableGenericTests.
-			// I (JohnT) suspect that this whole test is redundant but am keeping it in case this version
-			// confirms something subtly different.
-			const string ignoreFields = "|MarkedForDeletion|StoreID|_collator|_knownKeyboards|_localKeyboard|IsChanged|_defaultFont|_fonts|_spellCheckDictionary|_spellCheckDictionaries|";
-			// values to use for testing different types
-			var valuesToSet = new Dictionary<Type, object>
-			{
-				{typeof (float), 3.14f},
-				{typeof (bool), true},
-				{typeof (string), "Foo"},
-				{typeof (DateTime), DateTime.Now},
-				{typeof (CollationRulesTypes), CollationRulesTypes.CustomIcu},
-				{typeof (Rfc5646Tag), new Rfc5646Tag("en", "Latn", "US", "1901", "test")}
-			};
-			foreach (var fieldInfo in typeof(WritingSystemDefinition).GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
-			{
-				var fieldName = fieldInfo.Name;
-				if (fieldInfo.Name.Contains("<"))
-				{
-					var splitResult = fieldInfo.Name.Split(new[] {'<', '>'});
-					fieldName = splitResult[1];
-				}
-				if (ignoreFields.Contains("|" + fieldName + "|"))
-				{
-					continue;
-				}
-				var ws = new WritingSystemDefinition();
-				if (valuesToSet.ContainsKey(fieldInfo.FieldType))
-				{
-					fieldInfo.SetValue(ws, valuesToSet[fieldInfo.FieldType]);
-				}
-				else
-				{
-					Assert.Fail("Unhandled field type - please update the test to handle type {0}. The field that uses this type is {1}.", fieldInfo.FieldType.Name, fieldName);
-				}
-				var theClone = ws.Clone();
-				if(fieldInfo.GetValue(ws).GetType() != typeof(string))  //strings are special in .net so we won't worry about checking them here.
-				{
-					Assert.AreNotSame(fieldInfo.GetValue(ws), fieldInfo.GetValue(theClone),
-									  "The field {0} refers to the same object, it was not copied.", fieldName);
-				}
-				Assert.AreEqual(valuesToSet[fieldInfo.FieldType], fieldInfo.GetValue(theClone), "Field {0} not copied on WritingSystemDefinition.Clone()", fieldName);
 			}
 		}
 

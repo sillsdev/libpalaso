@@ -60,6 +60,21 @@ namespace SIL.WritingSystems
 		IpaPhonemic
 	}
 
+	public enum QuotationParagraphContinueType
+	{
+		None,
+		All,
+		Outermost,
+		Innermost
+	}
+
+	public enum QuotationParagraphContinueMark
+	{
+		Open,
+		Close,
+		Continue
+	}
+
 	/// <summary>
 	/// This class stores the information used to define various writing system properties. The Language, Script, Region and Variant
 	/// properties conform to the subtags of the same name defined in BCP47 (Rfc5646) and are enforced by the Rfc5646Tag class. it is worth
@@ -102,9 +117,14 @@ namespace SIL.WritingSystems
 		private string _variantName;
 		private string _windowsLcid;
 		private SpellCheckDictionaryDefinition _spellCheckDictionary;
+		private QuotationParagraphContinueType _quotationParagraphContinueType;
+		private QuotationParagraphContinueMark _quotationParagraphContinueMark;
 		private readonly ObservableKeyedCollection<string, FontDefinition> _fonts = new ObservableKeyedCollection<string, FontDefinition>(fd => fd.Name);
 		private readonly ObservableKeyedCollection<string, IKeyboardDefinition> _knownKeyboards = new ObservableKeyedCollection<string, IKeyboardDefinition>(kd => kd.Id);
 		private readonly ObservableKeyedCollection<string, SpellCheckDictionaryDefinition> _spellCheckDictionaries = new ObservableKeyedCollection<string, SpellCheckDictionaryDefinition>(scdd => scdd.Id);
+		private readonly ObservableHashSet<MatchedPair> _matchedPairs;
+		private readonly ObservableHashSet<PunctuationPattern> _punctuationPatterns;
+		private readonly ObservableCollection<QuotationMark> _quotationMarks;
 
 		/// <summary>
 		/// Creates a new WritingSystemDefinition with Language subtag set to "qaa"
@@ -114,10 +134,36 @@ namespace SIL.WritingSystems
 			_collationRulesType = CollationRulesTypes.DefaultOrdering;
 			_isUnicodeEncoded = true;
 			_rfcTag = new Rfc5646Tag();
+			_matchedPairs = new ObservableHashSet<MatchedPair>();
+			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>();
+			_quotationMarks = new ObservableCollection<QuotationMark>();
 			UpdateIdFromRfcTag();
+			SetupCollectionChangeListeners();
+		}
+
+		private void SetupCollectionChangeListeners()
+		{
 			_fonts.CollectionChanged += _fonts_CollectionChanged;
 			_knownKeyboards.CollectionChanged += _knownKeyboards_CollectionChanged;
 			_spellCheckDictionaries.CollectionChanged += _spellCheckDictionaries_CollectionChanged;
+			_matchedPairs.CollectionChanged += _matchedPairs_CollectionChanged;
+			_punctuationPatterns.CollectionChanged += _punctuationPatterns_CollectionChanged;
+			_quotationMarks.CollectionChanged += _quotationMarks_CollectionChanged;
+		}
+
+		private void _quotationMarks_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			IsChanged = true;
+		}
+
+		private void _punctuationPatterns_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			IsChanged = true;
+		}
+
+		private void _matchedPairs_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			IsChanged = true;
 		}
 
 		private void _spellCheckDictionaries_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -222,7 +268,15 @@ namespace SIL.WritingSystems
 			_variantName = ws._variantName;
 			foreach (IKeyboardDefinition kbd in ws._knownKeyboards)
 				_knownKeyboards.Add(kbd);
+			_matchedPairs = new ObservableHashSet<MatchedPair>(ws._matchedPairs);
+			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>(ws._punctuationPatterns);
+			_quotationMarks = new ObservableCollection<QuotationMark>();
+			foreach (QuotationMark qm in ws.QuotationMarks)
+				_quotationMarks.Add(qm);
+			_quotationParagraphContinueType = ws._quotationParagraphContinueType;
+			_quotationParagraphContinueMark = ws._quotationParagraphContinueMark;
 			_id = ws._id;
+			SetupCollectionChangeListeners();
 		}
 
 		///<summary>
@@ -1088,105 +1142,6 @@ namespace SIL.WritingSystems
 			return false;
 		}
 
-		public override string ToString()
-		{
-			return _rfcTag.ToString();
-		}
-
-		/// <summary>
-		/// Creates a clone of the current writing system.
-		/// Note that this excludes the properties: Modified, MarkedForDeletion and StoreID
-		/// </summary>
-		/// <returns></returns>
-		public override WritingSystemDefinition Clone()
-		{
-			return new WritingSystemDefinition(this);
-		}
-
-		/// <summary>
-		/// Checks for value equality with the specified writing system.
-		/// </summary>
-		public override bool ValueEquals(WritingSystemDefinition other)
-		{
-			if (other == null)
-				return false;
-
-			if (!_rfcTag.Equals(other._rfcTag))
-				return false;
-			if (LanguageName != other.LanguageName)
-				return false;
-			if (Abbreviation != other.Abbreviation)
-				return false;
-			if (VersionNumber != other.VersionNumber)
-				return false;
-			if (VersionDescription != other.VersionDescription)
-				return false;
-			if (Keyboard != other.Keyboard)
-				return false;
-			if (CollationRules != other.CollationRules)
-				return false;
-			if (NativeName != other.NativeName)
-				return false;
-			if (_id != other._id)
-				return false;
-			if (_isUnicodeEncoded != other._isUnicodeEncoded)
-				return false;
-			if (_dateModified != other._dateModified)
-				return false;
-			if (CollationRulesType != other.CollationRulesType)
-				return false;
-			if (_rightToLeftScript != other._rightToLeftScript)
-				return false;
-			if (WindowsLcid != other.WindowsLcid)
-				return false;
-			if (DefaultRegion != other.DefaultRegion)
-				return false;
-			if (VariantName != other.VariantName)
-				return false;
-
-			// fonts
-			if (_fonts.Count != other._fonts.Count)
-				return false;
-			for (int i = 0; i < _fonts.Count; i++)
-			{
-				if (!_fonts[i].ValueEquals(other._fonts[i]))
-					return false;
-			}
-			if (DefaultFont == null)
-			{
-				if (other.DefaultFont != null)
-					return false;
-			}
-			else if (!DefaultFont.ValueEquals(other.DefaultFont))
-			{
-				return false;
-			}
-
-			// spell checking dictionaries
-			if (_spellCheckDictionaries.Count != other._spellCheckDictionaries.Count)
-				return false;
-			for (int i = 0; i < _spellCheckDictionaries.Count; i++)
-			{
-				if (!_spellCheckDictionaries[i].ValueEquals(other._spellCheckDictionaries[i]))
-					return false;
-			}
-			if (SpellCheckDictionary == null)
-			{
-				if (other.SpellCheckDictionary != null)
-					return false;
-			}
-			else if (!SpellCheckDictionary.ValueEquals(other.SpellCheckDictionary))
-			{
-				return false;
-			}
-
-			// keyboards
-			if (!_knownKeyboards.SequenceEqual(other._knownKeyboards))
-				return false;
-			if (LocalKeyboard != other.LocalKeyboard)
-				return false;
-			return true;
-		}
 
 		private void UpdateIdFromRfcTag()
 		{
@@ -1310,5 +1265,141 @@ namespace SIL.WritingSystems
 			set { UpdateString(ref _variantName, value); }
 		}
 
+		public ISet<MatchedPair> MatchedPairs
+		{
+			get { return _matchedPairs; }
+		}
+
+		public ISet<PunctuationPattern> PunctuationPatterns
+		{
+			get { return _punctuationPatterns; }
+		}
+
+		public IList<QuotationMark> QuotationMarks
+		{
+			get { return _quotationMarks; }
+		}
+
+		public QuotationParagraphContinueType QuotationParagraphContinueType
+		{
+			get { return _quotationParagraphContinueType; }
+			set { UpdateField(ref _quotationParagraphContinueType, value); }
+		}
+
+		public QuotationParagraphContinueMark QuotationParagraphContinueMark
+		{
+			get { return _quotationParagraphContinueMark; }
+			set { UpdateField(ref _quotationParagraphContinueMark, value); }
+		}
+
+		public override string ToString()
+		{
+			return _rfcTag.ToString();
+		}
+
+		/// <summary>
+		/// Creates a clone of the current writing system.
+		/// Note that this excludes the properties: Modified, MarkedForDeletion and StoreID
+		/// </summary>
+		/// <returns></returns>
+		public override WritingSystemDefinition Clone()
+		{
+			return new WritingSystemDefinition(this);
+		}
+
+		/// <summary>
+		/// Checks for value equality with the specified writing system.
+		/// </summary>
+		public override bool ValueEquals(WritingSystemDefinition other)
+		{
+			if (other == null)
+				return false;
+
+			if (!_rfcTag.Equals(other._rfcTag))
+				return false;
+			if (LanguageName != other.LanguageName)
+				return false;
+			if (Abbreviation != other.Abbreviation)
+				return false;
+			if (VersionNumber != other.VersionNumber)
+				return false;
+			if (VersionDescription != other.VersionDescription)
+				return false;
+			if (Keyboard != other.Keyboard)
+				return false;
+			if (CollationRules != other.CollationRules)
+				return false;
+			if (NativeName != other.NativeName)
+				return false;
+			if (_id != other._id)
+				return false;
+			if (_isUnicodeEncoded != other._isUnicodeEncoded)
+				return false;
+			if (_dateModified != other._dateModified)
+				return false;
+			if (CollationRulesType != other.CollationRulesType)
+				return false;
+			if (_rightToLeftScript != other._rightToLeftScript)
+				return false;
+			if (WindowsLcid != other.WindowsLcid)
+				return false;
+			if (DefaultRegion != other.DefaultRegion)
+				return false;
+			if (VariantName != other.VariantName)
+				return false;
+			if (!_matchedPairs.SetEquals(other._matchedPairs))
+				return false;
+			if (!_punctuationPatterns.SetEquals(other._punctuationPatterns))
+				return false;
+			if (!_quotationMarks.SequenceEqual(other._quotationMarks))
+				return false;
+			if (_quotationParagraphContinueType != other._quotationParagraphContinueType)
+				return false;
+			if (_quotationParagraphContinueMark != other._quotationParagraphContinueMark)
+				return false;
+			// fonts
+			if (_fonts.Count != other._fonts.Count)
+				return false;
+			for (int i = 0; i < _fonts.Count; i++)
+			{
+				if (!_fonts[i].ValueEquals(other._fonts[i]))
+					return false;
+			}
+			if (DefaultFont == null)
+			{
+				if (other.DefaultFont != null)
+					return false;
+			}
+			else if (!DefaultFont.ValueEquals(other.DefaultFont))
+			{
+				return false;
+			}
+
+			// spell checking dictionaries
+			if (_spellCheckDictionaries.Count != other._spellCheckDictionaries.Count)
+				return false;
+			for (int i = 0; i < _spellCheckDictionaries.Count; i++)
+			{
+				if (!_spellCheckDictionaries[i].ValueEquals(other._spellCheckDictionaries[i]))
+					return false;
+			}
+			if (SpellCheckDictionary == null)
+			{
+				if (other.SpellCheckDictionary != null)
+					return false;
+			}
+			else if (!SpellCheckDictionary.ValueEquals(other.SpellCheckDictionary))
+			{
+				return false;
+			}
+
+			// keyboards
+			if (!_knownKeyboards.SequenceEqual(other._knownKeyboards))
+				return false;
+			if (LocalKeyboard != other.LocalKeyboard)
+				return false;
+
+			return true;
+		}
 	}
 }

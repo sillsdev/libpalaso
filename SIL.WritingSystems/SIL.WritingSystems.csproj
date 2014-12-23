@@ -144,7 +144,11 @@
     <Compile Include="Iso639LanguageCode.cs" />
     <Compile Include="IWritingSystemRepository.cs" />
     <Compile Include="Keyboard.cs" />
+    <Compile Include="MatchedPair.cs" />
     <Compile Include="DefinitionBase.cs" />
+    <Compile Include="ObservableHashSet.cs" />
+    <Compile Include="PunctuationPattern.cs" />
+    <Compile Include="QuotationMark.cs" />
     <Compile Include="SimpleMonitor.cs" />
     <Compile Include="Sldr.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\LdmlCollationParserV1.cs" />
