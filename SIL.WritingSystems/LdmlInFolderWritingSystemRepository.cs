@@ -268,7 +268,7 @@ namespace SIL.WritingSystems
 			Set(ws);
 			string writingSystemFilePath = GetFilePathFromIdentifier(ws.StoreID);
 			MemoryStream oldData = null;
-			if (!ws.Modified && File.Exists(writingSystemFilePath))
+			if (!ws.IsChanged && File.Exists(writingSystemFilePath))
 			{
 				return; // no need to save (better to preserve the modified date)
 			}
@@ -286,7 +286,7 @@ namespace SIL.WritingSystems
 			LdmlDataMapper adaptor = CreateLdmlAdaptor();
 			adaptor.Write(writingSystemFilePath, ws, oldData);
 
-			ws.ResetModified();
+			ws.AcceptChanges();
 
 			if (ChangedIDs.Any(p => p.Value == ws.StoreID))
 			{

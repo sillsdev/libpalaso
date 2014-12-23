@@ -19,7 +19,7 @@ namespace SIL.WritingSystems
 		Emphasis = 4
 	}
 
-	public class FontDefinition : MutableDefinitionBase<FontDefinition>
+	public class FontDefinition : DefinitionBase<FontDefinition>
 	{
 		private const int MinimumFontSize = 7;
 		private const int DefaultSizeIfWeDontKnow = 10;

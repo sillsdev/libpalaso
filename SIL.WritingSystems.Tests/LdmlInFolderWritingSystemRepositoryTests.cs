@@ -539,7 +539,7 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			{
 				//not worth saving until has some data
-				Assert.IsFalse(environment.WritingSystem.Modified);
+				Assert.IsFalse(environment.WritingSystem.IsChanged);
 			}
 		}
 
@@ -549,7 +549,7 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			{
 				environment.WritingSystem.Language = "en";
-				Assert.IsTrue(environment.WritingSystem.Modified);
+				Assert.IsTrue(environment.WritingSystem.IsChanged);
 			}
 		}
 
@@ -562,7 +562,7 @@ namespace SIL.WritingSystems.Tests
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
 				var ws2 = newCollection.Get(environment.WritingSystem.StoreID);
-				Assert.IsFalse(ws2.Modified);
+				Assert.IsFalse(ws2.IsChanged);
 			}
 		}
 
@@ -572,11 +572,11 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			{
 				environment.WritingSystem.Language = "en";
-				Assert.IsTrue(environment.WritingSystem.Modified);
+				Assert.IsTrue(environment.WritingSystem.IsChanged);
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				Assert.IsFalse(environment.WritingSystem.Modified);
+				Assert.IsFalse(environment.WritingSystem.IsChanged);
 				environment.WritingSystem.Language = "de";
-				Assert.IsTrue(environment.WritingSystem.Modified);
+				Assert.IsTrue(environment.WritingSystem.IsChanged);
 			}
 		}
 

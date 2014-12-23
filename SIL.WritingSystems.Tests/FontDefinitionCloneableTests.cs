@@ -19,7 +19,7 @@ namespace SIL.WritingSystems.Tests
 
 		public override string ExceptionList
 		{
-			get { return "|Modified|"; }
+			get { return "|IsChanged|"; }
 		}
 
 		protected override List<ValuesToSet> DefaultValuesForTypes

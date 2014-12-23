@@ -25,7 +25,7 @@ namespace SIL.WritingSystems.Tests
 		public override string ExceptionList
 		{
 			// We do want to clone KnownKeyboards, but I don't think the automatic cloneable test for it can handle a list.
-			get { return "|MarkedForDeletion|StoreID|_collator|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionary|_spellCheckDictionaries|Modified|"; }
+			get { return "|MarkedForDeletion|StoreID|_collator|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionary|_spellCheckDictionaries|IsChanged|"; }
 		}
 
 		protected override List<ValuesToSet> DefaultValuesForTypes
@@ -538,11 +538,11 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void ModifyingDefinitionSetsModifiedFlag()
+		public void ModifyingDefinitionSetIsChangedFlag()
 		{
 			// Put any properties to ignore in this string surrounded by "|"
 			// ObsoleteWindowsLcid has no public setter; it only gets a value by reading from an old file.
-			const string ignoreProperties = "|Modified|MarkedForDeletion|StoreID|DateModified|Rfc5646TagOnLoad|RequiresValidTag|WindowsLcid|";
+			const string ignoreProperties = "|MarkedForDeletion|StoreID|DateModified|Rfc5646TagOnLoad|RequiresValidTag|WindowsLcid|";
 			// special test values to use for properties that are particular
 			var firstValueSpecial = new Dictionary<string, object>();
 			var secondValueSpecial = new Dictionary<string, object>();
@@ -596,7 +596,7 @@ namespace SIL.WritingSystems.Tests
 					continue;
 				}
 				var ws = new WritingSystemDefinition();
-				ws.ResetModified();
+				ws.AcceptChanges();
 				// We need to ensure that all values we are setting are actually different than the current values.
 				// This could be accomplished by comparing with the current value or by setting twice with different values.
 				// We use the setting twice method so we don't require a getter on the property.
@@ -622,7 +622,7 @@ namespace SIL.WritingSystems.Tests
 				{
 					Assert.Fail("Error setting property WritingSystemDefinition.{0},{1}", propertyInfo.Name, error.ToString());
 				}
-				Assert.IsTrue(ws.Modified, "Modifying WritingSystemDefinition.{0} did not change modified flag.", propertyInfo.Name);
+				Assert.IsTrue(ws.IsChanged, "Modifying WritingSystemDefinition.{0} did not change modified flag.", propertyInfo.Name);
 			}
 		}
 
@@ -633,7 +633,7 @@ namespace SIL.WritingSystems.Tests
 			// _knownKeyboards and _localKeyboard are tested by the similar test in WritingSystemDefintionICloneableGenericTests.
 			// I (JohnT) suspect that this whole test is redundant but am keeping it in case this version
 			// confirms something subtly different.
-			const string ignoreFields = "|MarkedForDeletion|StoreID|_collator|_knownKeyboards|_localKeyboard|Modified|_defaultFont|_fonts|_spellCheckDictionary|_spellCheckDictionaries|";
+			const string ignoreFields = "|MarkedForDeletion|StoreID|_collator|_knownKeyboards|_localKeyboard|IsChanged|_defaultFont|_fonts|_spellCheckDictionary|_spellCheckDictionaries|";
 			// values to use for testing different types
 			var valuesToSet = new Dictionary<Type, object>
 			{
@@ -1476,7 +1476,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var writingSystem = WritingSystemDefinition.FromSubtags("en", "Zxxx", "", "1901-x-audio");
 			writingSystem.SetAllComponents("de", "Latn", "US", "fonipa-x-etic");
-			Assert.AreEqual(writingSystem.Modified, true);
+			Assert.AreEqual(writingSystem.IsChanged, true);
 		}
 
 		[Test]
@@ -1484,7 +1484,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var writingSystem = WritingSystemDefinition.FromSubtags("en", "Zxxx", "", "1901-x-audio");
 			writingSystem.SetAllComponents("en", "Zxxx", "", "1901-x-audio");
-			Assert.AreEqual(writingSystem.Modified, false);
+			Assert.AreEqual(writingSystem.IsChanged, false);
 		}
 
 		[Test]
@@ -1852,10 +1852,10 @@ namespace SIL.WritingSystems.Tests
 			var kbd1 = new DefaultKeyboardDefinition("something", "en-US");
 
 			ws.KnownKeyboards.Add(kbd1);
-			Assert.That(ws.Modified, Is.True);
-			ws.ResetModified();
+			Assert.That(ws.IsChanged, Is.True);
+			ws.AcceptChanges();
 			ws.KnownKeyboards.Add(kbd1);
-			Assert.That(ws.Modified, Is.False);
+			Assert.That(ws.IsChanged, Is.False);
 
 			Assert.That(ws.KnownKeyboards.Count, Is.EqualTo(1));
 		}
@@ -1869,10 +1869,10 @@ namespace SIL.WritingSystems.Tests
 
 			ws.KnownKeyboards.Add(kbd1);
 			ws.LocalKeyboard = kbd2;
-			Assert.That(ws.Modified, Is.True); // worth checking, but it doesn't really prove the point, since it will have also changed KnownKeyboards
-			ws.ResetModified();
+			Assert.That(ws.IsChanged, Is.True); // worth checking, but it doesn't really prove the point, since it will have also changed KnownKeyboards
+			ws.AcceptChanges();
 			ws.LocalKeyboard = kbd1; // This time it's already a known keyboard so only the LocalKeyboard setter can be responsibe for setting the flag.
-			Assert.That(ws.Modified, Is.True);
+			Assert.That(ws.IsChanged, Is.True);
 		}
 
 		[Test]

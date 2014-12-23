@@ -72,7 +72,7 @@ namespace SIL.WritingSystems
 	/// Likewise "audio" marks a writing system as audio and must always be used in conjunction with script "Zxxx". Convenience methods
 	/// are provided for Ipa and Audio properties as IpaStatus and IsVoice respectively.
 	/// </summary>
-	public class WritingSystemDefinition : MutableDefinitionBase<WritingSystemDefinition>
+	public class WritingSystemDefinition : DefinitionBase<WritingSystemDefinition>
 	{
 		/// <summary>
 		/// This is the version of our writingsystemDefinition implementation and is mostly used for migration purposes.
@@ -120,21 +120,21 @@ namespace SIL.WritingSystems
 		{
 			if (_spellCheckDictionary != null && !_spellCheckDictionaries.Contains(_spellCheckDictionary))
 				_spellCheckDictionary = null;
-			Modified = true;
+			IsChanged = true;
 		}
 
 		private void _fonts_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (_defaultFont != null && !_fonts.Contains(_defaultFont))
 				_defaultFont = null;
-			Modified = true;
+			IsChanged = true;
 		}
 
 		private void _knownKeyboards_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (_localKeyboard != null && !_knownKeyboards.Contains(_localKeyboard))
 				_localKeyboard = null;
-			Modified = true;
+			IsChanged = true;
 		}
 
 		/// <summary>
@@ -304,7 +304,7 @@ namespace SIL.WritingSystems
 						_rfcTag.AddToPrivateUse(WellKnownSubtags.IpaPhoneticPrivateUse);
 						break;
 				}
-				Modified = true;
+				IsChanged = true;
 				UpdateIdFromRfcTag();
 			}
 		}
@@ -337,7 +337,7 @@ namespace SIL.WritingSystems
 					_rfcTag.Script = String.Empty;
 					_rfcTag.RemoveFromPrivateUse(WellKnownSubtags.AudioPrivateUse);
 				}
-				Modified = true;
+				IsChanged = true;
 				UpdateIdFromRfcTag();
 				CheckVariantAndScriptRules();
 			}
@@ -384,7 +384,7 @@ namespace SIL.WritingSystems
 				_rfcTag.Variant = variant;
 				_rfcTag.PrivateUse = privateUse;
 
-				Modified = true;
+				IsChanged = true;
 				UpdateIdFromRfcTag();
 				CheckVariantAndScriptRules();
 			}
@@ -541,7 +541,7 @@ namespace SIL.WritingSystems
 			{
 				return;
 			}
-			Modified = true;
+			IsChanged = true;
 			CheckVariantAndScriptRules();
 		}
 
@@ -563,7 +563,7 @@ namespace SIL.WritingSystems
 				}
 				_rfcTag.Region = value;
 				UpdateIdFromRfcTag();
-				Modified = true;
+				IsChanged = true;
 			}
 		}
 
@@ -585,7 +585,7 @@ namespace SIL.WritingSystems
 				}
 				_rfcTag.Language = value;
 				UpdateIdFromRfcTag();
-				Modified = true;
+				IsChanged = true;
 			}
 		}
 
@@ -634,7 +634,7 @@ namespace SIL.WritingSystems
 					return;
 				}
 				_rfcTag.Script = value;
-				Modified = true;
+				IsChanged = true;
 				UpdateIdFromRfcTag();
 				CheckVariantAndScriptRules();
 			}
@@ -855,7 +855,7 @@ namespace SIL.WritingSystems
 			{
 				value = value ?? "";
 				_id = value;
-				Modified = true;
+				IsChanged = true;
 			}
 		}
 
@@ -863,21 +863,21 @@ namespace SIL.WritingSystems
 		/// Indicates whether the writing system definition has been modified.
 		/// Note that this flag is automatically set by all methods that cause a modification and is reset by the IWritingSystemRepository.Save() method
 		/// </summary>
-		public override bool Modified
+		public override bool IsChanged
 		{
 			get
 			{
-				if (base.Modified)
-					return true;
-				return _fonts.Any(f => f.Modified);
+				return base.IsChanged || _fonts.Any(fd => fd.IsChanged) || _spellCheckDictionaries.Any(scdd => scdd.IsChanged);
 			}
 		}
 
-		public override void ResetModified()
+		public override void AcceptChanges()
 		{
-			base.ResetModified();
+			base.AcceptChanges();
 			foreach (FontDefinition fd in _fonts)
-				fd.ResetModified();
+				fd.AcceptChanges();
+			foreach (SpellCheckDictionaryDefinition scdd in _spellCheckDictionaries)
+				scdd.AcceptChanges();
 		}
 
 		/// <summary>
@@ -1208,7 +1208,7 @@ namespace SIL.WritingSystems
 		{
 			_rfcTag = Rfc5646Tag.Parse(completeTag);
 			UpdateIdFromRfcTag();
-			Modified = true;
+			IsChanged = true;
 		}
 
 		/// <summary>

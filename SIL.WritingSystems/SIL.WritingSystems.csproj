@@ -146,7 +146,7 @@
     <Compile Include="IWritingSystemRepository.cs" />
     <Compile Include="Keyboard.cs" />
     <Compile Include="KeyboardDefinitionCollection.cs" />
-    <Compile Include="MutableDefinitionBase.cs" />
+    <Compile Include="DefinitionBase.cs" />
     <Compile Include="Sldr.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\LdmlCollationParserV1.cs" />
     <Compile Include="ObservableKeyedCollection.cs" />

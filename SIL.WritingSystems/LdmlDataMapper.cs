@@ -177,7 +177,7 @@ namespace SIL.WritingSystems
 				ReadTopLevelSpecialElement(specialElem, ws);
 			}
 			ws.StoreID = "";
-			ws.ResetModified();
+			ws.AcceptChanges();
 		}
 
 		protected virtual void ReadTopLevelSpecialElement(XElement specialElem, WritingSystemDefinition ws)

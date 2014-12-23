@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Palaso.Code;
 
 namespace SIL.WritingSystems
 {
-	public abstract class MutableDefinitionBase<T> : ICloneable<T>
+	public abstract class DefinitionBase<T> : IChangeTracking, ICloneable<T>
 	{
-		public virtual bool Modified { get; protected set; }
+		public virtual bool IsChanged { get; protected set; }
 
-		public virtual void ResetModified()
+		public virtual void AcceptChanges()
 		{
-			Modified = false;
+			IsChanged = false;
 		}
 
 		public abstract bool ValueEquals(T other);
@@ -33,7 +34,7 @@ namespace SIL.WritingSystems
 			if (EqualityComparer<TField>.Default.Equals(field, value))
 				return false;
 
-			Modified = true;
+			IsChanged = true;
 			field = value;
 			return true;
 		}

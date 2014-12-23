@@ -8,7 +8,7 @@
 		Lift
 	}
 
-	public class SpellCheckDictionaryDefinition : MutableDefinitionBase<SpellCheckDictionaryDefinition>
+	public class SpellCheckDictionaryDefinition : DefinitionBase<SpellCheckDictionaryDefinition>
 	{
 		private readonly string _id;
 		private string _url;
