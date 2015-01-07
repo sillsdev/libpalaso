@@ -116,18 +116,18 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			Initialize();
 		}
 
-		public abstract bool ActivateKeyboard(IKeyboardDefinition keyboard);
+		public abstract bool ActivateKeyboard(KeyboardDescription keyboard);
 
-		public abstract void DeactivateKeyboard(IKeyboardDefinition keyboard);
+		public abstract void DeactivateKeyboard(KeyboardDescription keyboard);
 
-		public IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
+		public KeyboardDescription GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
 		{
 			throw new NotImplementedException();
 		}
 
-		public abstract IKeyboardDefinition CreateKeyboardDefinition(string id);
+		public abstract KeyboardDescription CreateKeyboardDefinition(string id);
 
-		public abstract IKeyboardDefinition DefaultKeyboard
+		public abstract KeyboardDescription DefaultKeyboard
 		{
 			get;
 		}

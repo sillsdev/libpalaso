@@ -10,7 +10,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using NUnit.Framework;
@@ -377,9 +376,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 			var adaptor = new XkbKeyboardAdaptor(new XklEngineResponder());
 			KeyboardController.Instance.SetKeyboardAdaptors(adaptor);
 
-			IEnumerable<IKeyboardDefinition> keyboards = Keyboard.Controller.AllAvailableKeyboards;
-
-			adaptor.ActivateKeyboard(keyboards.First());
+			adaptor.ActivateKeyboard(KeyboardController.Instance.Keyboards.First());
 		}
 
 		/// <summary>
@@ -392,13 +389,11 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 
 			var adaptor = new XkbKeyboardAdaptor(new XklEngineResponder());
 			KeyboardController.Instance.SetKeyboardAdaptors(adaptor);
-			IEnumerable<IKeyboardDefinition> keyboards = Keyboard.Controller.AllAvailableKeyboards;
-			adaptor.ActivateKeyboard(keyboards.First());
+			adaptor.ActivateKeyboard(KeyboardController.Instance.Keyboards.First());
 
 			adaptor = new XkbKeyboardAdaptor(new XklEngineResponder());
 			KeyboardController.Instance.SetKeyboardAdaptors(adaptor);
-			keyboards = Keyboard.Controller.AllAvailableKeyboards;
-			adaptor.ActivateKeyboard(keyboards.First());
+			adaptor.ActivateKeyboard(KeyboardController.Instance.Keyboards.First());
 		}
 	}
 }

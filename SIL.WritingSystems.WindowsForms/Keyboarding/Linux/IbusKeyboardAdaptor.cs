@@ -450,7 +450,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			InitKeyboards();
 		}
 
-		public bool ActivateKeyboard(IKeyboardDefinition keyboard)
+		public bool ActivateKeyboard(KeyboardDescription keyboard)
 		{
 			var ibusKeyboard = keyboard as IbusKeyboardDescription;
 			return SetIMEKeyboard(ibusKeyboard);
@@ -459,13 +459,13 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		/// <summary>
 		/// Deactivates the specified keyboard.
 		/// </summary>
-		public void DeactivateKeyboard(IKeyboardDefinition keyboard)
+		public void DeactivateKeyboard(KeyboardDescription keyboard)
 		{
 			SetIMEKeyboard(null);
 		}
 
 		// Currently we expect this to only be useful on Windows.
-		public IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
+		public KeyboardDescription GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
 		{
 			throw new NotImplementedException();
 		}
@@ -481,7 +481,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		/// <summary>
 		/// Implemenation is not required because this is not the primary (Type System) adapter.
 		/// </summary>
-		public IKeyboardDefinition DefaultKeyboard
+		public KeyboardDescription DefaultKeyboard
 		{
 			get { throw new NotImplementedException(); }
 		}
@@ -490,7 +490,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		/// Only the primary (Type=System) adapter is required to implement this method. This one makes keyboards
 		/// during Initialize, but is not used to make an unavailable keyboard to match an LDML file.
 		/// </summary>
-		public IKeyboardDefinition CreateKeyboardDefinition(string id)
+		public KeyboardDescription CreateKeyboardDefinition(string id)
 		{
 			throw new NotImplementedException();
 		}

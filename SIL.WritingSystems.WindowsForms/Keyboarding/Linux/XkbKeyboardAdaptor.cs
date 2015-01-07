@@ -166,10 +166,9 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			ReinitLocales();
 		}
 
-		public bool ActivateKeyboard(IKeyboardDefinition keyboard)
+		public bool ActivateKeyboard(KeyboardDescription keyboard)
 		{
-			Debug.Assert(keyboard is KeyboardDescription);
-			Debug.Assert(((KeyboardDescription)keyboard).Engine == this);
+			Debug.Assert(keyboard.Engine == this);
 			Debug.Assert(keyboard is XkbKeyboardDescription);
 			var xkbKeyboard = keyboard as XkbKeyboardDescription;
 			if (xkbKeyboard == null)
@@ -182,11 +181,11 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			return true;
 		}
 
-		public void DeactivateKeyboard(IKeyboardDefinition keyboard)
+		public void DeactivateKeyboard(KeyboardDescription keyboard)
 		{
 		}
 
-		public IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
+		public KeyboardDescription GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
 		{
 			throw new NotImplementedException();
 		}
@@ -207,12 +206,12 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		/// Wasta/Cinnamon keyboarding doesn't always have the system keyboard at index 0.
 		/// It may have an IBus keyboard at that position.
 		/// </remarks>
-		public IKeyboardDefinition DefaultKeyboard
+		public KeyboardDescription DefaultKeyboard
 		{
 			get
 			{
 				int minGroup = Int32.MaxValue;
-				IKeyboardDefinition retval = null;
+				XkbKeyboardDescription retval = null;
 				foreach (XkbKeyboardDescription kbd in Keyboard.Controller.AllAvailableKeyboards.OfType<XkbKeyboardDescription>())
 				{
 					if (kbd.GroupIndex < minGroup)
@@ -230,12 +229,12 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		/// Note that this method is used when we do NOT have a matching available keyboard.
 		/// Therefore we can presume that the created one is NOT available.
 		/// </summary>
-		public IKeyboardDefinition CreateKeyboardDefinition(string id)
+		public KeyboardDescription CreateKeyboardDefinition(string id)
 		{
 			return CreateKeyboardDefinition(id, this);
 		}
 
-		public static IKeyboardDefinition CreateKeyboardDefinition(string id, IKeyboardAdaptor engine)
+		public static XkbKeyboardDescription CreateKeyboardDefinition(string id, IKeyboardAdaptor engine)
 		{
 			string[] parts = id.Split('_');
 			string locale = parts[0];

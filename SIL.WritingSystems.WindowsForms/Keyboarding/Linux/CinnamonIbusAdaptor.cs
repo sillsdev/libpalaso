@@ -171,14 +171,13 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 
 		#region IKeyboardAdaptor implementation
 
-		public override bool ActivateKeyboard(IKeyboardDefinition keyboard)
+		public override bool ActivateKeyboard(KeyboardDescription keyboard)
 		{
-			Debug.Assert(keyboard is KeyboardDescription);
-			Debug.Assert(((KeyboardDescription)keyboard).Engine == this);
+			Debug.Assert(keyboard.Engine == this);
 			//Console.WriteLine("DEBUG CinnamonIbusAdaptor.ActivateKeyboard({0})", keyboard);
-			if (keyboard is IbusKeyboardDescription)
+			var ibusKeyboard = keyboard as IbusKeyboardDescription;
+			if (ibusKeyboard != null)
 			{
-				var ibusKeyboard = keyboard as IbusKeyboardDescription;
 				try
 				{
 					if (_ibuscom == null)
@@ -211,7 +210,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			return true;
 		}
 
-		public override void DeactivateKeyboard(IKeyboardDefinition keyboard)
+		public override void DeactivateKeyboard(KeyboardDescription keyboard)
 		{
 			//Console.WriteLine ("DEBUG deactivating {0}", keyboard);
 			if (keyboard is IbusKeyboardDescription)
@@ -239,7 +238,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			GlobalCachedInputContext.Keyboard = null;
 		}
 
-		public override IKeyboardDefinition DefaultKeyboard
+		public override KeyboardDescription DefaultKeyboard
 		{
 			get
 			{
@@ -250,7 +249,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			}
 		}
 
-		public override IKeyboardDefinition CreateKeyboardDefinition(string id)
+		public override KeyboardDescription CreateKeyboardDefinition(string id)
 		{
 			string[] parts = id.Split('_');
 			string locale = parts[0];

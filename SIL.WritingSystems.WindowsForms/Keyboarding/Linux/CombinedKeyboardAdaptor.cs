@@ -198,19 +198,18 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 
 		#region IKeyboardAdaptor implementation
 
-		public override bool ActivateKeyboard(IKeyboardDefinition keyboard)
+		public override bool ActivateKeyboard(KeyboardDescription keyboard)
 		{
-			Debug.Assert(keyboard is KeyboardDescription);
-			Debug.Assert(((KeyboardDescription)keyboard).Engine == this);
+			Debug.Assert(keyboard.Engine == this);
 			if (keyboard is XkbKeyboardDescription)
 			{
-				var xkbKeyboard = keyboard as XkbKeyboardDescription;
+				var xkbKeyboard = (XkbKeyboardDescription) keyboard;
 				if (xkbKeyboard.GroupIndex >= 0)
 					SelectKeyboard(xkbKeyboard.GroupIndex);
 			}
 			else if (keyboard is IbusKeyboardDescription)
 			{
-				var ibusKeyboard = keyboard as IbusKeyboardDescription;
+				var ibusKeyboard = (IbusKeyboardDescription) keyboard;
 				try
 				{
 					if (!_ibusAdaptor.CanSetIbusKeyboard())
@@ -233,7 +232,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			return true;
 		}
 
-		public override void DeactivateKeyboard(IKeyboardDefinition keyboard)
+		public override void DeactivateKeyboard(KeyboardDescription keyboard)
 		{
 			if (keyboard is IbusKeyboardDescription)
 			{
@@ -243,12 +242,12 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			GlobalCachedInputContext.Keyboard = null;
 		}
 
-		public override IKeyboardDefinition DefaultKeyboard
+		public override KeyboardDescription DefaultKeyboard
 		{
 			get { return _xkbAdaptor.DefaultKeyboard; }
 		}
 
-		public override IKeyboardDefinition CreateKeyboardDefinition(string id)
+		public override KeyboardDescription CreateKeyboardDefinition(string id)
 		{
 			return XkbKeyboardAdaptor.CreateKeyboardDefinition(id, this);
 		}
