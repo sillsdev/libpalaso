@@ -935,7 +935,7 @@ namespace SIL.WritingSystems.WindowsForms
 		{
 			get
 			{
-				if (CurrentDefinition == null)
+				if (CurrentDefinition == null || CurrentDefinition.SpellCheckDictionary == null)
 				{
 					return string.Empty;
 				}

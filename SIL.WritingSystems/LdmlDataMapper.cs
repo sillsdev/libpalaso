@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
+using Palaso.Extensions;
 using Palaso.Xml;
 using SIL.WritingSystems.Collation;
 
@@ -34,12 +35,36 @@ namespace SIL.WritingSystems
 		private static XNamespace FW = "urn://fieldworks.sil.org/ldmlExtensions/v1";
 		private static XNamespace Palaso = "urn://palaso.org/ldmlExtensions/v1";
 		private static XNamespace Palaso2 = "urn://palaso.org/ldmlExtensions/v2";
+		private static XNamespace Sil = "urn://www.sil.org/ldml/0.1";
 
 		public LdmlDataMapper()
 		{
 			_nameSpaceManager = MakeNameSpaceManager();
 		}
 
+		/// <summary>
+		/// Mapping of font engine attribute to FontEngines enumeration.
+		/// If this attribute is missing, the engines are assumed to be "gr ot"
+		/// </summary>
+		private static readonly Dictionary<string, FontEngines> EngineToFontEngines = new Dictionary<string, FontEngines>
+		{
+			{string.Empty, FontEngines.OpenType | FontEngines.Graphite },
+			{"ot", FontEngines.OpenType},
+			{"gr", FontEngines.Graphite}
+		};
+
+		/// <summary>
+		/// Mapping of font role/type attribute to FontRoles enumeration
+		/// If this attribute is missing, the font role default is used
+		/// </summary>
+		private static readonly Dictionary<string, FontRoles> RoleToFontRoles = new Dictionary<string, FontRoles>
+		{
+			{string.Empty, FontRoles.Default},
+			{"default", FontRoles.Default},
+			{"heading", FontRoles.Heading},
+			{"emphasis", FontRoles.Emphasis}
+		};
+		
 		public void Read(string filePath, WritingSystemDefinition ws)
 		{
 			if (filePath == null)
@@ -120,37 +145,6 @@ namespace SIL.WritingSystems
 			writer.WriteString(sb.ToString());
 		}
 
-		public string GetAttributeString(XElement element, string child, string attribute)
-		{
-			string value = string.Empty;
-			XElement childElem = element.Element(child);
-			if (childElem != null)
-			{
-				value = (string) childElem.Attribute(attribute) ?? string.Empty;
-			}
-			return value;
-		}
-
-		public string GetAttributeString(XElement element, XNamespace ns, string child, string attribute)
-		{
-			string value = string.Empty;
-			XElement childElem = element.Element(ns + child);
-			if (childElem != null)
-			{
-				value = (string)childElem.Attribute(attribute) ?? string.Empty;
-			}
-			return value;
-		}
-
-		public float GetAttributeFloat(XElement element, string child, string attribute)
-		{
-			XElement childElem = element.Element(child);
-			if (childElem != null)
-				return (float) childElem.Attribute("defaultFontSize");
-			return 0.0f;
-			
-		}
-		
 		private void ReadLdml(XElement element, WritingSystemDefinition ws)
 		{
 			Debug.Assert(element != null);
@@ -223,6 +217,15 @@ namespace SIL.WritingSystems
 			{
 				ws.WindowsLcid = GetLcid(specialElem);
 			}
+			else
+			{
+				XElement externalResourcesElem = specialElem.Element(Sil + "external-resources");
+				if (externalResourcesElem != null)
+				{
+					// Parse font element
+					ReadFontElement(externalResourcesElem, ws);
+				}
+			}
 		}
 
 		private string GetLcid(XElement element)
@@ -246,6 +249,73 @@ namespace SIL.WritingSystems
 			}
 		}
 
+		private void ReadFontElement(XElement externalResourcesElem, WritingSystemDefinition ws)
+		{
+			if (externalResourcesElem != null)
+			{
+				XElement fontElem = externalResourcesElem.Element(Sil + "font");
+				if (fontElem != null)
+				{
+					string fontName = fontElem.GetAttributeValue("name");
+					if (!fontName.Equals(string.Empty))
+					{
+						FontDefinition fd = new FontDefinition(fontName);
+
+						// Types (space separate list)
+						string roles = fontElem.GetAttributeValue("types");
+						if (!String.IsNullOrEmpty(roles))
+						{
+							IEnumerable<string> roleList = roles.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+							foreach (string roleEntry in roleList)
+							{
+								fd.Roles |= RoleToFontRoles[roleEntry];
+							}
+						}
+						else
+						{
+							fd.Roles = FontRoles.Default;
+						}
+							
+						// Size
+						fd.DefaultSize = (float?) fontElem.Attribute("size") ?? 1.0f;
+
+						// Minversion
+						fd.MinVersion = fontElem.GetAttributeValue("minversion");
+
+						// Features (space separated list of key=value pairs)
+						fd.Features = fontElem.GetAttributeValue("features");
+
+						// Language
+						fd.Language = fontElem.GetAttributeValue("lang");
+
+						// OpenType language
+						fd.OpenTypeLanguage = fontElem.GetAttributeValue("otlang");
+
+						// Font Engine (space separated list) supercedes legacy isGraphite flag
+						string engines = fontElem.GetAttributeValue("engines");
+						if (!String.IsNullOrEmpty(engines))
+						{
+							IEnumerable<string> engineList = engines.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+							foreach (string engineEntry in engineList)
+							{
+								fd.Engines |= (EngineToFontEngines[engineEntry]);
+							}
+						}
+
+						// Subset
+						fd.Subset = fontElem.GetAttributeValue("subset").ToLower();
+
+						// URL elements
+						foreach (XElement urlElem in fontElem.Elements(Sil + "url"))
+						{
+							fd.Urls.Add(urlElem.Value);
+						}
+						ws.Fonts.Add(fd);
+					}
+				}
+			}
+		}
+
 		private void ReadIdentityElement(XElement identityElem, WritingSystemDefinition ws)
 		{
 			Debug.Assert(identityElem.Name == "identity");
@@ -261,7 +331,8 @@ namespace SIL.WritingSystems
 			{
 				string dateTime = (string) generationElem.Attribute("date") ?? string.Empty;
 				DateTime modified = DateTime.UtcNow;
-				if (!string.IsNullOrEmpty(dateTime.Trim()) && !DateTime.TryParse(dateTime, out modified))
+				const string dateUninitialized = "$Date$";
+				if (!string.Equals(dateTime, dateUninitialized) && (!string.IsNullOrEmpty(dateTime.Trim()) && !DateTime.TryParse(dateTime, out modified)))
 				{
 					//CVS format:    "$Date: 2008/06/18 22:52:35 $"
 					modified = DateTime.ParseExact(dateTime, "'$Date: 'yyyy/MM/dd HH:mm:ss $", null,
@@ -271,28 +342,10 @@ namespace SIL.WritingSystems
 				ws.DateModified = modified;
 			}
 
-			string language = string.Empty;
-			XElement languageElem = identityElem.Element("language");
-			if (languageElem != null)
-			{
-				language = (string) languageElem.Attribute("type") ?? string.Empty;
-			}
-
-			string script = string.Empty;
-			XElement scriptElem = identityElem.Element("script");
-			if (scriptElem != null)
-			{
-				script = (string) scriptElem.Attribute("type") ?? string.Empty;
-			}
-
-			string region = string.Empty;
-			XElement territoryElem = identityElem.Element("territory");
-			if (territoryElem != null)
-			{
-				region = (string)territoryElem.Attribute("type") ?? string.Empty;
-			}
-
-			string variant = GetAttributeString(identityElem, "variant", "type");
+			string language = identityElem.GetAttributeValue("language", "type");
+			string script = identityElem.GetAttributeValue("script", "type");
+			string region = identityElem.GetAttributeValue("territory", "type");
+			string variant = identityElem.GetAttributeValue("variant", "type");
 
 			if ((language.StartsWith("x-", StringComparison.OrdinalIgnoreCase) || language.Equals("x", StringComparison.OrdinalIgnoreCase)))
 			{
@@ -322,7 +375,7 @@ namespace SIL.WritingSystems
 			// are top-to-bottom characters and right-to-left lines, but can also be written with
 			// left-to-right characters and top-to-bottom lines.
 			//Debug.Assert(layoutElem.NodeType == XmlNodeType.Element && layoutElem.Name == "layout");
-			string characters = GetAttributeString(layoutElem, "orientation", "characters");
+			string characters = layoutElem.GetAttributeValue("orientation", "characters");
 			ws.RightToLeftScript = (characters == "right-to-left");
 		}
 

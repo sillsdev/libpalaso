@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Linq;
 
 namespace SIL.WritingSystems
 {
@@ -33,11 +37,23 @@ namespace SIL.WritingSystems
 		private FontRoles _roles;
 		private FontEngines _engines;
 		private string _subset;
-		private string _url;
+		private readonly ObservableCollection<string> _urls;
+
+		private void SetupCollectionChangeListeners()
+		{
+			_urls.CollectionChanged += UrlsCollectionChanged;
+		}
+
+		private void UrlsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			IsChanged = true;
+		}
 
 		public FontDefinition(string name)
 		{
 			_name = name;
+			_urls = new ObservableCollection<string>();
+			SetupCollectionChangeListeners();
 		}
 
 		public FontDefinition(FontDefinition fd)
@@ -51,7 +67,12 @@ namespace SIL.WritingSystems
 			_roles = fd._roles;
 			_engines = fd._engines;
 			_subset = fd._subset;
-			_url = fd._url;
+			_urls = new ObservableCollection<string>();
+			foreach (string url in fd._urls)
+			{
+				_urls.Add(url);
+			}
+			SetupCollectionChangeListeners();
 		}
 
 		public string Name
@@ -112,10 +133,9 @@ namespace SIL.WritingSystems
 			set { UpdateString(ref _subset, value); }
 		}
 
-		public string Url
+		public IList<string> Urls
 		{
-			get { return _url ?? string.Empty; }
-			set { UpdateString(ref _url, value); }
+			get { return _urls; }
 		}
 
 		/// <summary>
@@ -135,7 +155,7 @@ namespace SIL.WritingSystems
 				return false;
 			return _name == other._name && _defaultSize == other._defaultSize && Features == other.Features && Language == other.Language
 				&& OpenTypeLanguage == other.OpenTypeLanguage && MinVersion == other.MinVersion && _roles == other._roles
-				&& _engines == other._engines && Subset == other.Subset && Url == other.Url;
+				&& _engines == other._engines && Subset == other.Subset && Urls.SequenceEqual(other.Urls);
 		}
 
 		public override FontDefinition Clone()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
 using NUnit.Framework;
@@ -249,6 +250,55 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+		[Test]
+		public void Read_LdmlFont()
+		{
+			using (var tempFile = new TempFile())
+			{
+				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
+				{
+					writer.Write(
+#region filecontent
+@"<?xml version='1.0' encoding='utf-8'?>
+<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
+	<identity>
+		<version number='$Revision$'>Font version description</version>
+		<generation date='$Date$'/>
+		<!-- name.en(en)='English' -->
+		<language type='en'/>
+		<script type='Latn'/>
+	</identity>
+	<special>
+		<sil:external-resources>
+			<sil:font types='default emphasis' name='Padauk' size='2.1' minversion='3.1.4' features='order=3 children=2 color=red createDate=1996' lang='en' engines='gr ot' otlang='abcd' subset='unknown' >
+				<sil:url>http://wirl.scripts.sil.org/padauk</sil:url>
+				<sil:url>http://scripts.sil.org/cms/scripts/page.php?item_id=padauk</sil:url>
+			</sil:font>
+		</sil:external-resources>
+	</special>
+</ldml>".Replace("'", "\""));
+					#endregion
+				}
+				var ws = new WritingSystemDefinition();
+				var dataMapper = new LdmlDataMapper();
+
+				dataMapper.Read(tempFile.Path, ws);
+
+				FontDefinition other = new FontDefinition("Padauk");
+				other.DefaultSize = 2.1f;
+				other.MinVersion = "3.1.4";
+				other.Features = "order=3 children=2 color=red createDate=1996";
+				other.Language = "en";
+				other.Engines = FontEngines.Graphite | FontEngines.OpenType;
+				other.OpenTypeLanguage = "abcd";
+				other.Roles = FontRoles.Default | FontRoles.Emphasis;
+				other.Subset = "unknown";
+				other.Urls.Add("http://wirl.scripts.sil.org/padauk");
+				other.Urls.Add("http://scripts.sil.org/cms/scripts/page.php?item_id=padauk");
+
+				Assert.That(ws.Fonts.First().ValueEquals(other));
+			}
+		}
 
 		[Test]
 		public void Read_LdmlContainsOnlyPrivateUse_IsoAndprivateUseSetCorrectly()
