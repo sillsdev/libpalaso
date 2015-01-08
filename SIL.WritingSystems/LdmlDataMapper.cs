@@ -64,7 +64,19 @@ namespace SIL.WritingSystems
 			{"heading", FontRoles.Heading},
 			{"emphasis", FontRoles.Emphasis}
 		};
-		
+
+		/// <summary>
+		/// Mapping of spell checking type attribute to SpellCheckDictionaryFormat
+		/// </summary>
+		private static readonly Dictionary<string, SpellCheckDictionaryFormat> SpellCheckToSpecllCheckDictionaryFormats = new Dictionary
+			<string, SpellCheckDictionaryFormat>
+		{
+			{string.Empty, SpellCheckDictionaryFormat.Unknown},
+			{"hunspell", SpellCheckDictionaryFormat.Hunspell},
+			{"wordlist", SpellCheckDictionaryFormat.Wordlist},
+			{"lift", SpellCheckDictionaryFormat.Lift}
+		};
+
 		public void Read(string filePath, WritingSystemDefinition ws)
 		{
 			if (filePath == null)
@@ -224,6 +236,8 @@ namespace SIL.WritingSystems
 				{
 					// Parse font element
 					ReadFontElement(externalResourcesElem, ws);
+
+					ReadSpellcheckElement(externalResourcesElem, ws);
 				}
 			}
 		}
@@ -251,67 +265,85 @@ namespace SIL.WritingSystems
 
 		private void ReadFontElement(XElement externalResourcesElem, WritingSystemDefinition ws)
 		{
-			if (externalResourcesElem != null)
+			XElement fontElem = externalResourcesElem.Element(Sil + "font");
+			if (fontElem != null)
 			{
-				XElement fontElem = externalResourcesElem.Element(Sil + "font");
-				if (fontElem != null)
+				string fontName = fontElem.GetAttributeValue("name");
+				if (!fontName.Equals(string.Empty))
 				{
-					string fontName = fontElem.GetAttributeValue("name");
-					if (!fontName.Equals(string.Empty))
+					FontDefinition fd = new FontDefinition(fontName);
+
+					// Types (space separate list)
+					string roles = fontElem.GetAttributeValue("types");
+					if (!String.IsNullOrEmpty(roles))
 					{
-						FontDefinition fd = new FontDefinition(fontName);
-
-						// Types (space separate list)
-						string roles = fontElem.GetAttributeValue("types");
-						if (!String.IsNullOrEmpty(roles))
+						IEnumerable<string> roleList = roles.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+						foreach (string roleEntry in roleList)
 						{
-							IEnumerable<string> roleList = roles.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
-							foreach (string roleEntry in roleList)
-							{
-								fd.Roles |= RoleToFontRoles[roleEntry];
-							}
+							fd.Roles |= RoleToFontRoles[roleEntry];
 						}
-						else
-						{
-							fd.Roles = FontRoles.Default;
-						}
-							
-						// Size
-						fd.DefaultSize = (float?) fontElem.Attribute("size") ?? 1.0f;
-
-						// Minversion
-						fd.MinVersion = fontElem.GetAttributeValue("minversion");
-
-						// Features (space separated list of key=value pairs)
-						fd.Features = fontElem.GetAttributeValue("features");
-
-						// Language
-						fd.Language = fontElem.GetAttributeValue("lang");
-
-						// OpenType language
-						fd.OpenTypeLanguage = fontElem.GetAttributeValue("otlang");
-
-						// Font Engine (space separated list) supercedes legacy isGraphite flag
-						string engines = fontElem.GetAttributeValue("engines");
-						if (!String.IsNullOrEmpty(engines))
-						{
-							IEnumerable<string> engineList = engines.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
-							foreach (string engineEntry in engineList)
-							{
-								fd.Engines |= (EngineToFontEngines[engineEntry]);
-							}
-						}
-
-						// Subset
-						fd.Subset = fontElem.GetAttributeValue("subset").ToLower();
-
-						// URL elements
-						foreach (XElement urlElem in fontElem.Elements(Sil + "url"))
-						{
-							fd.Urls.Add(urlElem.Value);
-						}
-						ws.Fonts.Add(fd);
 					}
+					else
+					{
+						fd.Roles = FontRoles.Default;
+					}
+							
+					// Size
+					fd.DefaultSize = (float?) fontElem.Attribute("size") ?? 1.0f;
+
+					// Minversion
+					fd.MinVersion = fontElem.GetAttributeValue("minversion");
+
+					// Features (space separated list of key=value pairs)
+					fd.Features = fontElem.GetAttributeValue("features");
+
+					// Language
+					fd.Language = fontElem.GetAttributeValue("lang");
+
+					// OpenType language
+					fd.OpenTypeLanguage = fontElem.GetAttributeValue("otlang");
+
+					// Font Engine (space separated list) supercedes legacy isGraphite flag
+					string engines = fontElem.GetAttributeValue("engines");
+					if (!String.IsNullOrEmpty(engines))
+					{
+						IEnumerable<string> engineList = engines.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+						foreach (string engineEntry in engineList)
+						{
+							fd.Engines |= (EngineToFontEngines[engineEntry]);
+						}
+					}
+
+					// Subset
+					fd.Subset = fontElem.GetAttributeValue("subset").ToLower();
+
+					// URL elements
+					foreach (XElement urlElem in fontElem.Elements(Sil + "url"))
+					{
+						fd.Urls.Add(urlElem.Value);
+					}
+					ws.Fonts.Add(fd);
+				}
+			}
+		}
+
+		private void ReadSpellcheckElement(XElement externalResourcesElem, WritingSystemDefinition ws)
+		{
+			XElement scElem = externalResourcesElem.Element(Sil + "spellcheck");
+			if (scElem != null)
+			{
+				string type = scElem.GetAttributeValue("type");
+				if (!type.Equals(string.Empty))
+				{
+					SpellCheckDictionaryDefinition scd =
+						new SpellCheckDictionaryDefinition(SpellCheckToSpecllCheckDictionaryFormats[type]);
+
+					// URL elements
+					foreach (XElement urlElem in scElem.Elements(Sil + "url"))
+					{
+						scd.Urls.Add(urlElem.Value);
+					}
+					ws.SpellCheckDictionaries.Add(scd);
 				}
 			}
 		}

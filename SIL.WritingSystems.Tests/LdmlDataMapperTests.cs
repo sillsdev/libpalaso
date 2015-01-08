@@ -301,6 +301,48 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void Read_LdmlSpellChecker()
+		{
+			using (var tempFile = new TempFile())
+			{
+				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
+				{
+					writer.Write(
+					#region filecontent
+@"<?xml version='1.0' encoding='utf-8'?>
+<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
+	<identity>
+		<version number='$Revision$'>Font version description</version>
+		<generation date='$Date$'/>
+		<!-- name.en(en)='English' -->
+		<language type='en'/>
+		<script type='Latn'/>
+	</identity>
+	<special>
+		<sil:external-resources>
+			<sil:spellcheck type='hunspell'>
+				<sil:url>http://wirl.scripts.sil.org/hunspell</sil:url>
+				<sil:url>http://scripts.sil.org/cms/scripts/page.php?item_id=hunspell</sil:url>
+			</sil:spellcheck>
+		</sil:external-resources>
+	</special>
+</ldml>".Replace("'", "\""));
+					#endregion
+				}
+				var ws = new WritingSystemDefinition();
+				var dataMapper = new LdmlDataMapper();
+
+				dataMapper.Read(tempFile.Path, ws);
+
+				SpellCheckDictionaryDefinition other = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
+				other.Urls.Add("http://wirl.scripts.sil.org/hunspell");
+				other.Urls.Add("http://scripts.sil.org/cms/scripts/page.php?item_id=hunspell");
+
+				Assert.That(ws.SpellCheckDictionaries.First().ValueEquals(other));
+			}
+		}
+
+		[Test]
 		public void Read_LdmlContainsOnlyPrivateUse_IsoAndprivateUseSetCorrectly()
 		{
 			const string ldmlWithOnlyPrivateUse = "<ldml><identity><version number=\"\" /><language type=\"\" /><variant type=\"x-private-use\" /></identity><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" ><palaso:version value=\"2\" /></special></ldml>";

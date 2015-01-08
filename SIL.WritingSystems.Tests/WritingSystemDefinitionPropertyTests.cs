@@ -85,8 +85,8 @@ namespace SIL.WritingSystems.Tests
 		public void CloneCopiesSpellCheckDictionaries()
 		{
 			var original = new WritingSystemDefinition();
-			var scdd1 = new SpellCheckDictionaryDefinition("dict1");
-			var scdd2 = new SpellCheckDictionaryDefinition("dict2");
+			var scdd1 = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
+			var scdd2 = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Lift);
 			original.SpellCheckDictionaries.Add(scdd1);
 			original.SpellCheckDictionaries.Add(scdd2);
 			original.SpellCheckDictionary = scdd2;
@@ -196,13 +196,13 @@ namespace SIL.WritingSystems.Tests
 		public void ValueEqualsComparesSpellCheckDictionaries()
 		{
 			var first = new WritingSystemDefinition();
-			var scdd1 = new SpellCheckDictionaryDefinition("dict1");
-			var scdd2 = new SpellCheckDictionaryDefinition("dict2");
+			var scdd1 = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
+			var scdd2 = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Lift);
 			first.SpellCheckDictionaries.Add(scdd1);
 			first.SpellCheckDictionaries.Add(scdd2);
 			var second = new WritingSystemDefinition();
-			var scdd3 = new SpellCheckDictionaryDefinition("dict1");
-			var scdd4 = new SpellCheckDictionaryDefinition("dict3");
+			var scdd3 = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
+			var scdd4 = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Wordlist);
 
 			Assert.That(first.ValueEquals(second), Is.False, "ws with empty dictionaries should not equal one with some");
 			second.SpellCheckDictionaries.Add(scdd3);
@@ -690,8 +690,8 @@ namespace SIL.WritingSystems.Tests
 			secondValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.NotIpa);
 			firstValueToSet.Add(typeof(FontDefinition), new FontDefinition("font1"));
 			secondValueToSet.Add(typeof(FontDefinition), new FontDefinition("font2"));
-			firstValueToSet.Add(typeof(SpellCheckDictionaryDefinition), new SpellCheckDictionaryDefinition("dict1"));
-			secondValueToSet.Add(typeof(SpellCheckDictionaryDefinition), new SpellCheckDictionaryDefinition("dict2"));
+			firstValueToSet.Add(typeof(SpellCheckDictionaryDefinition), new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell));
+			secondValueToSet.Add(typeof(SpellCheckDictionaryDefinition), new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Lift));
 			firstValueToSet.Add(typeof(QuotationParagraphContinueType), QuotationParagraphContinueType.None);
 			secondValueToSet.Add(typeof(QuotationParagraphContinueType), QuotationParagraphContinueType.All);
 			firstValueToSet.Add(typeof(QuotationParagraphContinueMark), QuotationParagraphContinueMark.Open);
@@ -2023,8 +2023,8 @@ namespace SIL.WritingSystems.Tests
 		public void SpellCheckDictionary_DefaultsToFirstDictionary()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var scdd1 = new SpellCheckDictionaryDefinition("dict1");
-			var scdd2 = new SpellCheckDictionaryDefinition("dict2");
+			var scdd1 = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
+			var scdd2 = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Lift);
 
 			ws.SpellCheckDictionaries.Add(scdd1);
 			ws.SpellCheckDictionaries.Add(scdd2);
@@ -2036,8 +2036,8 @@ namespace SIL.WritingSystems.Tests
 		public void SpellCheckDictionary_ResetWhenRemovedFromDictionaries()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var scdd1 = new SpellCheckDictionaryDefinition("dict1");
-			var scdd2 = new SpellCheckDictionaryDefinition("dict2");
+			var scdd1 = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
+			var scdd2 = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Lift);
 
 			ws.SpellCheckDictionaries.Add(scdd1);
 			ws.SpellCheckDictionaries.Add(scdd2);

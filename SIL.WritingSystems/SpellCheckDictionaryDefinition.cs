@@ -1,4 +1,9 @@
-﻿namespace SIL.WritingSystems
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Linq;
+
+namespace SIL.WritingSystems
 {
 	public enum SpellCheckDictionaryFormat
 	{
@@ -10,44 +15,52 @@
 
 	public class SpellCheckDictionaryDefinition : DefinitionBase<SpellCheckDictionaryDefinition>
 	{
-		private readonly string _id;
-		private string _url;
-		private SpellCheckDictionaryFormat _format;
+		private readonly SpellCheckDictionaryFormat _format;
+		private ObservableCollection<string> _urls;
 
-		public SpellCheckDictionaryDefinition(string id)
+		private void SetupCollectionChangeListeners()
 		{
-			_id = id;
+			_urls.CollectionChanged += UrlsCollectionChanged;
+		}
+
+		private void UrlsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			IsChanged = true;
+		}
+
+		public SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat format)
+		{
+			_format = format;
+			_urls = new ObservableCollection<string>();
+			SetupCollectionChangeListeners();
 		}
 
 		public SpellCheckDictionaryDefinition(SpellCheckDictionaryDefinition other)
 		{
-			_id = other._id;
 			_format = other._format;
-			_url = other._url;
-		}
-
-		public string Id
-		{
-			get { return _id; }
+			_urls = new ObservableCollection<string>();
+			foreach (string url in other._urls)
+			{
+				_urls.Add(url);
+			}
+			SetupCollectionChangeListeners();
 		}
 
 		public SpellCheckDictionaryFormat Format
 		{
 			get { return _format; }
-			set { UpdateField(ref _format, value); }
 		}
 
-		public string Url
+		public IList<string> Urls
 		{
-			get { return _url ?? string.Empty; }
-			set { UpdateString(ref _url, value); }
+			get { return _urls; }
 		}
 
 		public override bool ValueEquals(SpellCheckDictionaryDefinition other)
 		{
 			if (other == null)
 				return false;
-			return _id == other._id && _format == other._format && Url == other.Url;
+			return _format == other._format && Urls.SequenceEqual(other.Urls);
 		}
 
 		public override SpellCheckDictionaryDefinition Clone()
