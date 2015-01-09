@@ -939,15 +939,21 @@ namespace SIL.WritingSystems.WindowsForms
 				{
 					return string.Empty;
 				}
-				return CurrentDefinition.SpellCheckDictionary.Id ?? string.Empty;
+				return CurrentDefinition.SpellCheckDictionary.LanguageTag;
 			}
 			set
 			{
-				if (CurrentDefinition.SpellCheckDictionary == null || CurrentDefinition.SpellCheckDictionary.Id != value)
+				string langTag = value == null ? string.Empty : value.Replace('_', '-');
+				if (CurrentDefinition.SpellCheckDictionary == null || CurrentDefinition.SpellCheckDictionary.LanguageTag != langTag)
 				{
-					SpellCheckDictionaryDefinition dictionary;
-					if (!CurrentDefinition.SpellCheckDictionaries.TryGetItem(value, out dictionary))
-						dictionary = new SpellCheckDictionaryDefinition(value) {Format = SpellCheckDictionaryFormat.Hunspell};
+					SpellCheckDictionaryDefinition dictionary = null;
+					if (langTag != string.Empty)
+					{
+						dictionary = CurrentDefinition.SpellCheckDictionaries
+							.FirstOrDefault(scdd => scdd.LanguageTag == langTag && scdd.Format == SpellCheckDictionaryFormat.Hunspell);
+						if (dictionary == null)
+							dictionary = new SpellCheckDictionaryDefinition(langTag, SpellCheckDictionaryFormat.Hunspell);
+					}
 					CurrentDefinition.SpellCheckDictionary = dictionary;
 					OnCurrentItemUpdated();
 				}

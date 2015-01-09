@@ -336,7 +336,7 @@ namespace SIL.WritingSystems
 				if (!type.Equals(string.Empty))
 				{
 					SpellCheckDictionaryDefinition scd =
-						new SpellCheckDictionaryDefinition(SpellCheckToSpecllCheckDictionaryFormats[type]);
+						new SpellCheckDictionaryDefinition(ws.Bcp47Tag, SpellCheckToSpecllCheckDictionaryFormats[type]);
 
 					// URL elements
 					foreach (XElement urlElem in scElem.Elements(Sil + "url"))
@@ -395,6 +395,19 @@ namespace SIL.WritingSystems
 			}
 			//Set the id simply as the concatenation of whatever was in the ldml file.
 			ws.Id = String.Join("-", new[] {language, script, region, variant}.Where(subtag => !String.IsNullOrEmpty(subtag)).ToArray());
+
+			// TODO: Parse rest of special element.  Currently only handling a subset
+			XElement specialElem = identityElem.Element("special");
+			if (specialElem != null)
+			{
+				XElement silIdentityElem = specialElem.Element(Sil + "identity");
+				if (silIdentityElem != null)
+				{
+					ws.WindowsLcid = silIdentityElem.GetAttributeValue("windowsLCID");
+					ws.DefaultRegion = silIdentityElem.GetAttributeValue("defaultRegion");
+					ws.VariantName = silIdentityElem.GetAttributeValue("variantName");
+				}
+			}
 		}
 
 		private void ReadLayoutElement(XElement layoutElem, WritingSystemDefinition ws)

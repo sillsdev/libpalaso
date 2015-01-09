@@ -180,7 +180,7 @@ namespace SIL.WritingSystems.Tests
 #endif
 
 		[Test]
-		public void ReadWindowsLcid()
+		public void Read_LdmlIdentity()
 		{
 			var ldmlAdaptor = new LdmlDataMapper();
 			var wsFromLdml = new WritingSystemDefinition();
@@ -190,28 +190,28 @@ namespace SIL.WritingSystems.Tests
 				{
 					writer.Write(
 @"<?xml version='1.0' encoding='utf-8'?>
-<ldml>
+<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
 	<identity>
-		<version
-			number='' />
-		<language
-			type='qaa' />
-		<variant
-			type='x-lel' />
+		<version number='$Revision$'>Identity version description</version>
+		<generation date='$Date$'/>
+		<!-- name.en(en)='English' -->
+		<language type='en'/>
+		<script type='Latn'/>
+		<special>
+			<sil:identity windowsLCID='1036' defaultRegion='US' variantName='1996'>
+			</sil:identity>
+		</special>
 	</identity>
-	<collations />
-
-	<special xmlns:fw='urn://fieldworks.sil.org/ldmlExtensions/v1'>
-		<fw:graphiteEnabled
-			value='False' />
-		<fw:windowsLCID
-			value='1036' />
-	</special>
 </ldml>".Replace("'", "\""));
 				}
 				ldmlAdaptor.Read(tempFile.Path, wsFromLdml);
 			}
+			Assert.That(wsFromLdml.VersionNumber, Is.EqualTo("$Revision$"));
+			Assert.That(wsFromLdml.VersionDescription, Is.EqualTo("Identity version description"));
+			Assert.That(wsFromLdml.Id, Is.EqualTo("en-Latn"));
 			Assert.That(wsFromLdml.WindowsLcid, Is.EqualTo("1036"));
+			Assert.That(wsFromLdml.DefaultRegion, Is.EqualTo("US"));
+			Assert.That(wsFromLdml.VariantName, Is.EqualTo("1996"));
 		}
 
 		[Test]
@@ -334,7 +334,7 @@ namespace SIL.WritingSystems.Tests
 
 				dataMapper.Read(tempFile.Path, ws);
 
-				SpellCheckDictionaryDefinition other = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
+				SpellCheckDictionaryDefinition other = new SpellCheckDictionaryDefinition("en-Latn", SpellCheckDictionaryFormat.Hunspell);
 				other.Urls.Add("http://wirl.scripts.sil.org/hunspell");
 				other.Urls.Add("http://scripts.sil.org/cms/scripts/page.php?item_id=hunspell");
 

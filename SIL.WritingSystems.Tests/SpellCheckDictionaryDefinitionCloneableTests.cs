@@ -8,7 +8,7 @@ namespace SIL.WritingSystems.Tests
 	{
 		public override SpellCheckDictionaryDefinition CreateNewCloneable()
 		{
-			return new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
+			return new SpellCheckDictionaryDefinition("language-Tag", SpellCheckDictionaryFormat.Hunspell);
 		}
 
 		protected override bool Equals(SpellCheckDictionaryDefinition x, SpellCheckDictionaryDefinition y)
@@ -41,7 +41,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void CloneCopiesUrls()
 		{
-			var original = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
+			var original = new SpellCheckDictionaryDefinition("language-Tag", SpellCheckDictionaryFormat.Hunspell);
 			string url1 = "url1";
 			string url2 = "url2";
 			original.Urls.Add(url1);
@@ -54,12 +54,12 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void ValueEqualsComparesUrls()
 		{
-			SpellCheckDictionaryDefinition first = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
+			SpellCheckDictionaryDefinition first = new SpellCheckDictionaryDefinition("language-Tag", SpellCheckDictionaryFormat.Hunspell);
 			string url1 = "url1";
 			string url2 = "url2";
 			first.Urls.Add(url1);
 			first.Urls.Add(url2);
-			SpellCheckDictionaryDefinition second = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
+			SpellCheckDictionaryDefinition second = new SpellCheckDictionaryDefinition("language-Tag", SpellCheckDictionaryFormat.Hunspell);
 			string url3 = "url1";
 			string url4 = "url3";
 
@@ -69,7 +69,7 @@ namespace SIL.WritingSystems.Tests
 			second.Urls.Add(url2);
 			Assert.That(first.ValueEquals(second), Is.True, "sd's with same url lists should be equal");
 
-			second = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
+			second = new SpellCheckDictionaryDefinition("language-Tag", SpellCheckDictionaryFormat.Hunspell);
 			second.Urls.Add(url3);
 			second.Urls.Add(url4);
 			Assert.That(first.ValueEquals(second), Is.False, "sd with same-length lists of different URLs should not be equal");

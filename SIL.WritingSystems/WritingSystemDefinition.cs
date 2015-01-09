@@ -121,7 +121,7 @@ namespace SIL.WritingSystems
 		private QuotationParagraphContinueMark _quotationParagraphContinueMark;
 		private readonly ObservableKeyedCollection<string, FontDefinition> _fonts = new ObservableKeyedCollection<string, FontDefinition>(fd => fd.Name);
 		private readonly ObservableKeyedCollection<string, IKeyboardDefinition> _knownKeyboards = new ObservableKeyedCollection<string, IKeyboardDefinition>(kd => kd.Id);
-		private readonly ObservableKeyedCollection<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition> _spellCheckDictionaries = new ObservableKeyedCollection<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition>(scdd => scdd.Format);
+		private readonly ObservableKeyedCollection<string, SpellCheckDictionaryDefinition> _spellCheckDictionaries = new ObservableKeyedCollection<string, SpellCheckDictionaryDefinition>(scdd => string.Format("{0}_{1}", scdd.LanguageTag, scdd.Format));
 		private readonly ObservableHashSet<MatchedPair> _matchedPairs;
 		private readonly ObservableHashSet<PunctuationPattern> _punctuationPatterns;
 		private readonly ObservableCollection<QuotationMark> _quotationMarks;
@@ -1230,7 +1230,7 @@ namespace SIL.WritingSystems
 			get { return _fonts; }
 		}
 
-		public KeyedCollection<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition> SpellCheckDictionaries
+		public KeyedCollection<string, SpellCheckDictionaryDefinition> SpellCheckDictionaries
 		{
 			get { return _spellCheckDictionaries; }
 		}
