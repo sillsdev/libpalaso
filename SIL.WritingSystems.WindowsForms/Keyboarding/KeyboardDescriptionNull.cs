@@ -7,6 +7,7 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------
 using System;
+using System.Collections.Generic;
 
 namespace SIL.WritingSystems.WindowsForms.Keyboarding
 {
@@ -27,7 +28,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 			get { return KeyboardFormat.Unknown; }
 		}
 
-		public string Url
+		public IList<string> Urls
 		{
 			get { return null; }
 		}

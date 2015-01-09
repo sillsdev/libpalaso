@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SIL.WritingSystems
 {
@@ -84,10 +85,17 @@ namespace SIL.WritingSystems
 		/// </summary>
 		/// <remarks>The keyboard controller implementing this method will have to check the
 		/// availability of the keyboard and what engine provides it.</remarks>
-		public virtual IKeyboardDefinition CreateKeyboardDefinition(string id, KeyboardFormat format, string url)
+		public virtual IKeyboardDefinition CreateKeyboardDefinition(string id, KeyboardFormat format, IEnumerable<string> urls)
 		{
 			_trivialKeyboard.Format = format;
-			_trivialKeyboard.Url = url;
+			
+			// Clear any exisiting URL list
+			_trivialKeyboard.Urls.Clear();
+
+			foreach (string url in urls)
+			{
+				_trivialKeyboard.Urls.Add(url);
+			}
 			return _trivialKeyboard;
 		}
 

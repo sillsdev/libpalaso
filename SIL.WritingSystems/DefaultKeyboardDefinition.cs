@@ -1,11 +1,13 @@
-﻿namespace SIL.WritingSystems
+﻿using System.Collections.Generic;
+
+namespace SIL.WritingSystems
 {
 	/// <summary>
 	/// A simple record of the properties we track in writing systems defining a keyboard and implementing the keyboard-related
 	/// writing system methods and properties.
 	/// </summary>
 	/// <remarks>This is a not-fully-functional base class. Apps that make use of keyboard switching functionality will use
-	/// the implementations of IKeyboardDefinition from PalasoUIWindowsForms or some similar library.
+	/// the implementations of IKeyboardDefinition from SIL.WritingSystems.WindowsForms or some similar library.
 	/// In particular while this class can store various data it does nothing about actually activating a keyboard.
 	/// Review: possibly that method and this class should be made abstract?</remarks>
 	public class DefaultKeyboardDefinition : IKeyboardDefinition
@@ -13,6 +15,7 @@
 		private readonly string _locale;
 		private readonly string _layout;
 		private readonly string _id;
+		private readonly List<string> _urls = new List<string>(); 
 
 		public DefaultKeyboardDefinition(string id, string name)
 			: this(id, name, string.Empty, string.Empty, false)
@@ -91,9 +94,9 @@
 		public KeyboardFormat Format { get; set; }
 
 		/// <summary>
-		/// Gets or sets the keyboard source URL.
+		/// Gets the keyboard source URLs.
 		/// </summary>
-		public string Url { get; set; }
+		public IList<string> Urls { get { return _urls; } }
 
 		/// <summary>
 		/// Returns a <see cref="T:System.String"/> that represents the current

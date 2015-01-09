@@ -1,4 +1,6 @@
-﻿namespace SIL.WritingSystems
+﻿using System.Collections.Generic;
+
+namespace SIL.WritingSystems
 {
 	public enum KeyboardFormat
 	{
@@ -77,7 +79,8 @@
 
 		/// <summary>
 		/// Gets the keyboard source URL.
+		/// For now these will not be changed
 		/// </summary>
-		string Url { get; }
+		IList<string> Urls { get; }
 	}
 }

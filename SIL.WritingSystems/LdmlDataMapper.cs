@@ -76,6 +76,19 @@ namespace SIL.WritingSystems
 			{"lift", SpellCheckDictionaryFormat.Lift}
 		};
 
+		/// <summary>
+		/// Mapping of keyboard type attribute to KeyboardFormat
+		/// </summary>
+		private static readonly Dictionary<string, KeyboardFormat> KeyboardToKeyboardFormat = new Dictionary<string, KeyboardFormat>
+		{
+			{string.Empty, KeyboardFormat.Unknown},
+			{"kmn", KeyboardFormat.Keyman },
+			{"kmx", KeyboardFormat.CompiledKeyman },
+			{"msklc", KeyboardFormat.Msklc},
+			{"ldml", KeyboardFormat.Ldml},
+			{"keylayout", KeyboardFormat.Keylayout}
+		}; 
+
 		public void Read(string filePath, WritingSystemDefinition ws)
 		{
 			if (filePath == null)
@@ -233,10 +246,9 @@ namespace SIL.WritingSystems
 				XElement externalResourcesElem = specialElem.Element(Sil + "external-resources");
 				if (externalResourcesElem != null)
 				{
-					// Parse font element
 					ReadFontElement(externalResourcesElem, ws);
-
 					ReadSpellcheckElement(externalResourcesElem, ws);
+					ReadKeyboardElement(externalResourcesElem, ws);
 				}
 			}
 		}
@@ -264,8 +276,7 @@ namespace SIL.WritingSystems
 
 		private void ReadFontElement(XElement externalResourcesElem, WritingSystemDefinition ws)
 		{
-			XElement fontElem = externalResourcesElem.Element(Sil + "font");
-			if (fontElem != null)
+			foreach (XElement fontElem in externalResourcesElem.Elements(Sil + "font"))
 			{
 				string fontName = fontElem.GetAttributeValue("name");
 				if (!fontName.Equals(string.Empty))
@@ -328,8 +339,7 @@ namespace SIL.WritingSystems
 
 		private void ReadSpellcheckElement(XElement externalResourcesElem, WritingSystemDefinition ws)
 		{
-			XElement scElem = externalResourcesElem.Element(Sil + "spellcheck");
-			if (scElem != null)
+			foreach (XElement scElem in externalResourcesElem.Elements(Sil + "spellcheck"))
 			{
 				string type = scElem.GetAttributeValue("type");
 				if (!type.Equals(string.Empty))
@@ -343,6 +353,25 @@ namespace SIL.WritingSystems
 						scd.Urls.Add(urlElem.Value);
 					}
 					ws.SpellCheckDictionaries.Add(scd);
+				}
+			}
+		}
+
+		private void ReadKeyboardElement(XElement externalResourcesElem, WritingSystemDefinition ws)
+		{
+			foreach (XElement kbdElem in externalResourcesElem.Elements(Sil + "kbd"))
+			{
+				string id = kbdElem.GetAttributeValue("id");
+				if (!string.IsNullOrEmpty(id))
+				{
+					KeyboardFormat format = KeyboardToKeyboardFormat[kbdElem.GetAttributeValue("type")];
+					List<string> urls = new List<string>();
+					foreach (XElement urlElem in kbdElem.Elements(Sil + "url"))
+					{
+						urls.Add(urlElem.Value);
+					}
+					IKeyboardDefinition keyboard = Keyboard.Controller.CreateKeyboardDefinition(id, format, urls );
+					ws.KnownKeyboards.Add(keyboard);
 				}
 			}
 		}

@@ -306,7 +306,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		/// <summary>
 		/// Creates and returns a keyboard definition object based on the ID.
 		/// </summary>
-		public IKeyboardDefinition CreateKeyboardDefinition(string id, KeyboardFormat format, string url)
+		public IKeyboardDefinition CreateKeyboardDefinition(string id, KeyboardFormat format, IEnumerable<string> urls)
 		{
 			KeyboardDescription keyboard;
 			if (!_keyboards.TryGetItem(id, out keyboard))
@@ -316,8 +316,13 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 			}
 
 			keyboard.Format = format;
-			keyboard.Url = url;
-
+			if (urls != null)
+			{
+				foreach (string url in urls)
+				{
+					keyboard.Urls.Add(url);
+				}
+			}
 			return keyboard;
 		}
 

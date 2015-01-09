@@ -91,10 +91,11 @@ namespace SIL.WritingSystems
 		/// This is intended to be used when KnownKeyboards is empty. It may return null.
 		/// </summary>
 		IKeyboardDefinition LegacyForWritingSystem(WritingSystemDefinition ws);
+
 		/// <summary>
 		/// Creates and returns a keyboard definition object based on the ID.
 		/// </summary>
-		IKeyboardDefinition CreateKeyboardDefinition(string id, KeyboardFormat format, string url);
+		IKeyboardDefinition CreateKeyboardDefinition(string id, KeyboardFormat format, IEnumerable<string> urls);
 
 		/// <summary>
 		/// Gets or sets the currently active keyboard

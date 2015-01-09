@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -263,7 +264,7 @@ namespace SIL.WritingSystems.Tests
 @"<?xml version='1.0' encoding='utf-8'?>
 <ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
 	<identity>
-		<version number='$Revision$'>Font version description</version>
+		<version number='$Revision$'/>
 		<generation date='$Date$'/>
 		<!-- name.en(en)='English' -->
 		<language type='en'/>
@@ -313,7 +314,7 @@ namespace SIL.WritingSystems.Tests
 @"<?xml version='1.0' encoding='utf-8'?>
 <ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
 	<identity>
-		<version number='$Revision$'>Font version description</version>
+		<version number='$Revision$'/>
 		<generation date='$Date$'/>
 		<!-- name.en(en)='English' -->
 		<language type='en'/>
@@ -340,6 +341,49 @@ namespace SIL.WritingSystems.Tests
 				other.Urls.Add("http://scripts.sil.org/cms/scripts/page.php?item_id=hunspell");
 
 				Assert.That(ws.SpellCheckDictionaries.First().ValueEquals(other));
+			}
+		}
+
+		[Test]
+		public void Read_LdmlKeyboard()
+		{
+			using (var tempFile = new TempFile())
+			{
+				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
+				{
+					writer.Write(
+					#region filecontent
+@"<?xml version='1.0' encoding='utf-8'?>
+<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
+	<identity>
+		<version number='$Revision$'/>
+		<generation date='$Date$'/>
+		<!-- name.en(en)='English' -->
+		<language type='en'/>
+		<script type='Latn'/>
+	</identity>
+	<special>
+		<sil:external-resources>
+			<sil:kbd id='Compiled Keyman9' type='kmx'>
+				<sil:url>http://wirl.scripts.sil.org/keyman</sil:url>
+				<sil:url>http://scripts.sil.org/cms/scripts/page.php?item_id=keyman9</sil:url>
+			</sil:kbd>
+		</sil:external-resources>
+	</special>
+</ldml>".Replace("'", "\""));
+					#endregion
+				}
+				var ws = new WritingSystemDefinition();
+				var dataMapper = new LdmlDataMapper();
+
+				dataMapper.Read(tempFile.Path, ws);
+
+				List<string>urls = new List<string>();
+				urls.Add("http://wirl.scripts.sil.org/keyman");
+				urls.Add("http://scripts.sil.org/cms/scripts/page.php?item_id=keyman9");
+				IKeyboardDefinition other = Keyboard.Controller.CreateKeyboardDefinition("Compiled Keyman9", KeyboardFormat.CompiledKeyman, urls);
+
+				Assert.That(ws.KnownKeyboards.First(), Is.EqualTo(other));
 			}
 		}
 

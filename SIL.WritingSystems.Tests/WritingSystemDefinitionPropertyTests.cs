@@ -1883,7 +1883,7 @@ namespace SIL.WritingSystems.Tests
 			/// </summary>
 			/// <remarks>The keyboard controller implementing this method will have to check the
 			/// availability of the keyboard and what engine provides it.</remarks>
-			public IKeyboardDefinition CreateKeyboardDefinition(string id, KeyboardFormat format, string url)
+			public IKeyboardDefinition CreateKeyboardDefinition(string id, KeyboardFormat format, IEnumerable<string> urls)
 			{
 				throw new NotImplementedException();
 			}
