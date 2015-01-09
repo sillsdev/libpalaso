@@ -17,7 +17,7 @@ namespace SIL.WritingSystems
 		public InheritedCollationDefinition(InheritedCollationDefinition icrd)
 			: base(icrd)
 		{
-			_baseLanguageTag = icrd._baseLanguageTag;
+			_baseLanguageTag = icrd._baseLanguageTag == null ? null : icrd._baseLanguageTag.Clone();
 			_baseType = icrd._baseType;
 		}
 

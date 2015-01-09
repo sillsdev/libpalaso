@@ -69,7 +69,9 @@ namespace Palaso.Tests.Data
 			}
 		}
 
+		// Needs to pull down a LDML file from the SLDR which can take time, so skip on TeamCity
 		[Test]
+		[Category("SkipOnTeamCity")]
 		public void Compare_KhmerWordsUsingWritingSystemSameAsOtherLanguage_ComparesNotEqual()
 		{
 			using (var e = new TestEnvironment())
