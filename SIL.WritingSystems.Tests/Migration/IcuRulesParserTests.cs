@@ -4,9 +4,9 @@ using System.Xml;
 using NUnit.Framework;
 using Palaso.TestUtilities;
 using Palaso.Xml;
-using SIL.WritingSystems.Collation;
+using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
-namespace SIL.WritingSystems.Tests.Collation
+namespace SIL.WritingSystems.Tests.Migration
 {
 	[TestFixture]
 	public class IcuRulesParserTests

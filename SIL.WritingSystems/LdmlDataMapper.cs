@@ -9,7 +9,6 @@ using System.Xml;
 using System.Xml.Linq;
 using Palaso.Extensions;
 using Palaso.Xml;
-using SIL.WritingSystems.Collation;
 
 namespace SIL.WritingSystems
 {
@@ -444,6 +443,7 @@ namespace SIL.WritingSystems
 			Debug.Assert(collationElem != null);
 			Debug.Assert(ws != null);
 
+#if WS_FIX
 			XElement specialElem = collationElem.Element("special");
 			if (specialElem != null)
 			{
@@ -470,8 +470,10 @@ namespace SIL.WritingSystems
 					string message = string.Format("Unhandled SortRulesType '{0}' while writing LDML definition file.", ws.CollationRulesType);
 					throw new ApplicationException(message);
 			}
+#endif
 		}
 
+#if WS_FIX
 		private void ReadCollationRulesForOtherLanguage(XElement collationElem, WritingSystemDefinition ws)
 		{
 			bool foundValue = false;
@@ -510,6 +512,7 @@ namespace SIL.WritingSystems
 			ws.CollationRulesType = CollationRulesTypes.CustomIcu;
 			ReadCollationRulesForCustomICU(collationElem, ws);
 		}
+#endif
 
 		public void Write(string filePath, WritingSystemDefinition ws, Stream oldFile)
 		{
@@ -1048,6 +1051,7 @@ namespace SIL.WritingSystems
 		{
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
+#if WS_FIX
 			bool needToCopy = reader != null && reader.NodeType == XmlNodeType.Element && reader.Name == "collation";
 			if (needToCopy)
 			{
@@ -1154,8 +1158,10 @@ namespace SIL.WritingSystems
 				if (startElementWritten)
 					writer.WriteEndElement();
 			}
+#endif
 		}
 
+#if WS_FIX
 		private void WriteCollationRulesFromOtherLanguage(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
 		{
 			Debug.Assert(writer != null);
@@ -1223,6 +1229,6 @@ namespace SIL.WritingSystems
 			}
 			parser.WriteIcuRules(writer, icu);
 		}
-
+#endif
 	}
 }

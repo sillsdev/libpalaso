@@ -119,18 +119,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddSortKeysToXmlTests.cs" />
+    <Compile Include="CollationDefinitionCloneableTests.cs" />
+    <Compile Include="InheritedCollationDefinitionCloneableTests.cs" />
+    <Compile Include="LdmlCollationParserTests.cs" />
+    <Compile Include="Migration\IcuRulesParserTests.cs" />
+    <Compile Include="SimpleCollationDefinitionCloneableTests.cs" />
+    <Compile Include="SimpleCollationRulesParserTests.cs" />
     <Compile Include="SldrTests.cs" />
-    <Compile Include="Collation\AddSortKeysToXmlTests.cs" />
-    <Compile Include="Collation\IcuRulesParserTests.cs" />
-    <Compile Include="Collation\LdmlCollationParserTests.cs" />
-    <Compile Include="Collation\SimpleRulesCollatorTests.cs" />
-    <Compile Include="Collation\SortingTests.cs" />
-    <Compile Include="Collation\SystemCollatorTests.cs" />
     <Compile Include="EthnologueLookupTests.cs" />
     <Compile Include="FlexConformPrivateUseRfc5646TagInterpreterTests.cs" />
     <Compile Include="FontDefinitionCloneableTests.cs" />
     <Compile Include="GlobalWritingSystemRepositoryTests.cs" />
+    <Compile Include="SortingTests.cs" />
     <Compile Include="SpellCheckDictionaryDefinitionCloneableTests.cs" />
+    <Compile Include="SystemCollatorTests.cs" />
     <Compile Include="WritingSystemRepositoryTests.cs" />
     <Compile Include="LdmlDataMapperTests.cs" />
     <Compile Include="LdmlInFolderWritingSystemRepositoryTests.cs" />

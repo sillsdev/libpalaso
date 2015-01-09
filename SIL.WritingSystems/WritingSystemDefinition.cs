@@ -2,41 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Palaso.Extensions;
-using SIL.WritingSystems.Collation;
 
 namespace SIL.WritingSystems
 {
-	/// <summary>
-	/// Collation rules types
-	/// </summary>
-	public enum CollationRulesTypes
-	{
-		/// <summary>
-		/// Default Unicode ordering rules (actually CustomIcu without any rules)
-		/// </summary>
-		[Description("Default Ordering")]
-		DefaultOrdering,
-		/// <summary>
-		/// Custom Simple (Shoebox/Toolbox) style rules
-		/// </summary>
-		[Description("Custom Simple (Shoebox style) rules")]
-		CustomSimple,
-		/// <summary>
-		/// Custom ICU rules
-		/// </summary>
-		[Description("Custom ICU rules")]
-		CustomIcu,
-		/// <summary>
-		/// Use the sort rules from another language. When this is set, the SortRules are interpreted as a cultureId for the language to sort like.
-		/// </summary>
-		[Description("Same as another language")]
-		OtherLanguage
-	}
-
 	/// <summary>
 	/// IPA status choices
 	/// </summary>
@@ -106,37 +77,34 @@ namespace SIL.WritingSystems
 		private DateTime _dateModified;
 		private FontDefinition _defaultFont;
 		private string _keyboard;
-		private CollationRulesTypes _collationRulesType;
-		private string _collationRules;
 		private string _nativeName;
 		private bool _rightToLeftScript;
-		private ICollator _collator;
 		private IKeyboardDefinition _localKeyboard;
 		private string _id;
 		private string _defaultRegion;
 		private string _variantName;
 		private string _windowsLcid;
+		private CollationDefinition _defaultCollation;
 		private SpellCheckDictionaryDefinition _spellCheckDictionary;
 		private QuotationParagraphContinueType _quotationParagraphContinueType;
 		private QuotationParagraphContinueMark _quotationParagraphContinueMark;
 		private readonly ObservableKeyedCollection<string, FontDefinition> _fonts = new ObservableKeyedCollection<string, FontDefinition>(fd => fd.Name);
 		private readonly ObservableKeyedCollection<string, IKeyboardDefinition> _knownKeyboards = new ObservableKeyedCollection<string, IKeyboardDefinition>(kd => kd.Id);
 		private readonly ObservableKeyedCollection<string, SpellCheckDictionaryDefinition> _spellCheckDictionaries = new ObservableKeyedCollection<string, SpellCheckDictionaryDefinition>(scdd => string.Format("{0}_{1}", scdd.LanguageTag, scdd.Format));
+		private readonly ObservableKeyedCollection<string, CollationDefinition> _collations = new ObservableKeyedCollection<string, CollationDefinition>(cd => cd.Type);
 		private readonly ObservableHashSet<MatchedPair> _matchedPairs;
 		private readonly ObservableHashSet<PunctuationPattern> _punctuationPatterns;
-		private readonly ObservableCollection<QuotationMark> _quotationMarks;
+		private readonly ObservableCollection<QuotationMark> _quotationMarks = new ObservableCollection<QuotationMark>();
 
 		/// <summary>
 		/// Creates a new WritingSystemDefinition with Language subtag set to "qaa"
 		/// </summary>
 		public WritingSystemDefinition()
 		{
-			_collationRulesType = CollationRulesTypes.DefaultOrdering;
 			_isUnicodeEncoded = true;
 			_rfcTag = new Rfc5646Tag();
 			_matchedPairs = new ObservableHashSet<MatchedPair>();
 			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>();
-			_quotationMarks = new ObservableCollection<QuotationMark>();
 			UpdateIdFromRfcTag();
 			SetupCollectionChangeListeners();
 		}
@@ -149,6 +117,7 @@ namespace SIL.WritingSystems
 			_matchedPairs.CollectionChanged += _matchedPairs_CollectionChanged;
 			_punctuationPatterns.CollectionChanged += _punctuationPatterns_CollectionChanged;
 			_quotationMarks.CollectionChanged += _quotationMarks_CollectionChanged;
+			_collations.CollectionChanged += _collations_CollectionChanged;
 		}
 
 		private void _quotationMarks_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -184,6 +153,13 @@ namespace SIL.WritingSystems
 		{
 			if (_localKeyboard != null && !_knownKeyboards.Contains(_localKeyboard))
 				_localKeyboard = null;
+			IsChanged = true;
+		}
+
+		private void _collations_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (_defaultCollation != null && !_collations.Contains(_defaultCollation))
+				_defaultCollation = null;
 			IsChanged = true;
 		}
 
@@ -252,8 +228,6 @@ namespace SIL.WritingSystems
 			_versionNumber = ws._versionNumber;
 			_versionDescription = ws._versionDescription;
 			_nativeName = ws._nativeName;
-			_collationRulesType = ws._collationRulesType;
-			_collationRules = ws._collationRules;
 			foreach (SpellCheckDictionaryDefinition scdd in ws._spellCheckDictionaries)
 				_spellCheckDictionaries.Add(scdd.Clone());
 			if (ws._spellCheckDictionary != null)
@@ -270,12 +244,19 @@ namespace SIL.WritingSystems
 				_knownKeyboards.Add(kbd);
 			_matchedPairs = new ObservableHashSet<MatchedPair>(ws._matchedPairs);
 			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>(ws._punctuationPatterns);
-			_quotationMarks = new ObservableCollection<QuotationMark>();
 			foreach (QuotationMark qm in ws.QuotationMarks)
 				_quotationMarks.Add(qm);
 			_quotationParagraphContinueType = ws._quotationParagraphContinueType;
 			_quotationParagraphContinueMark = ws._quotationParagraphContinueMark;
 			_id = ws._id;
+			foreach (CollationDefinition cd in ws._collations)
+				_collations.Add(cd.Clone());
+			if (ws._defaultCollation != null)
+			{
+				int index = ws._collations.IndexOf(ws._defaultCollation);
+				if (index != -1)
+					_defaultCollation = _collations[index];
+			}
 			SetupCollectionChangeListeners();
 		}
 
@@ -284,7 +265,7 @@ namespace SIL.WritingSystems
 		///This should not be confused with the version of our writingsystemDefinition implementation which is mostly used for migration purposes.
 		///That information is stored in the "LatestWritingSystemDefinitionVersion" property.
 		///</summary>
-		virtual public string VersionNumber
+		public string VersionNumber
 		{
 			get { return _versionNumber ?? string.Empty; }
 			set { UpdateString(ref _versionNumber, value); }
@@ -293,7 +274,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Gets or sets the version description.
 		/// </summary>
-		virtual public string VersionDescription
+		public string VersionDescription
 		{
 			get { return _versionDescription ?? string.Empty; }
 			set { UpdateString(ref _versionDescription, value); }
@@ -302,7 +283,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Gets or sets the date modified.
 		/// </summary>
-		virtual public DateTime DateModified
+		public DateTime DateModified
 		{
 			get { return _dateModified; }
 			set { _dateModified = value; }
@@ -311,7 +292,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Adjusts the BCP47 tag to indicate the desired form of Ipa by inserting fonipa in the variant and emic or etic in private use where necessary.
 		/// </summary>
-		virtual public IpaStatusChoices IpaStatus
+		public IpaStatusChoices IpaStatus
 		{
 			get
 			{
@@ -372,7 +353,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Adjusts the BCP47 tag to indicate that this is an "audio writing system" by inserting "audio" in the private use and "Zxxx" in the script
 		/// </summary>
-		virtual public bool IsVoice
+		public bool IsVoice
 		{
 			get
 			{
@@ -423,7 +404,7 @@ namespace SIL.WritingSystems
 		/// variant/ private use handling
 		/// </summary>
 		// Todo: this could/should become an ordered list of variant tags
-		virtual public string Variant
+		public string Variant
 		{
 			get
 			{
@@ -608,7 +589,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// A string representing the subtag of the same name as defined by BCP47.
 		/// </summary>
-		virtual public string Region
+		public string Region
 		{
 			get
 			{
@@ -630,7 +611,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// A string representing the subtag of the same name as defined by BCP47.
 		/// </summary>
-		virtual public string Language
+		public string Language
 		{
 			get
 			{
@@ -652,7 +633,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// The desired abbreviation for the writing system
 		/// </summary>
-		virtual public string Abbreviation
+		public string Abbreviation
 		{
 			get
 			{
@@ -683,7 +664,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// A string representing the subtag of the same name as defined by BCP47.
 		/// </summary>
-		virtual public string Script
+		public string Script
 		{
 			get { return _rfcTag.Script; }
 			set
@@ -704,7 +685,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// The language name to use. Typically this is the language name associated with the BCP47 language subtag as defined by the IANA subtag registry
 		/// </summary>
-		virtual public string LanguageName
+		public string LanguageName
 		{
 			get
 			{
@@ -764,12 +745,12 @@ namespace SIL.WritingSystems
 		/// **make changes to ws**
 		/// repo.Set(ws);
 		/// </summary>
-		virtual public string StoreID { get; set; }
+		public string StoreID { get; set; }
 
 		/// <summary>
 		/// A automatically generated descriptive label for the writing system definition.
 		/// </summary>
-		virtual public string DisplayLabel
+		public string DisplayLabel
 		{
 			get
 			{
@@ -799,7 +780,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Gets the list label.
 		/// </summary>
-		virtual public string ListLabel
+		public string ListLabel
 		{
 			get
 			{
@@ -936,12 +917,12 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Gets or sets a value indicating whether the writing system will be deleted.
 		/// </summary>
-		virtual public bool MarkedForDeletion { get; set; }
+		public bool MarkedForDeletion { get; set; }
 
 		/// <summary>
 		/// The font used to display data encoded in this writing system
 		/// </summary>
-		virtual public FontDefinition DefaultFont
+		public FontDefinition DefaultFont
 		{
 			get
 			{
@@ -964,7 +945,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// The preferred keyboard to use to generate data encoded in this writing system.
 		/// </summary>
-		virtual public string Keyboard
+		public string Keyboard
 		{
 			get { return _keyboard ?? string.Empty; }
 			set { UpdateString(ref _keyboard, value); }
@@ -1017,7 +998,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Indicates whether this writing system is read and written from left to right or right to left
 		/// </summary>
-		virtual public bool RightToLeftScript
+		public bool RightToLeftScript
 		{
 			get { return _rightToLeftScript; }
 			set { UpdateField(ref _rightToLeftScript, value); }
@@ -1026,122 +1007,36 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// The windows "NativeName" from the Culture class
 		/// </summary>
-		virtual public string NativeName
+		public string NativeName
 		{
 			get { return _nativeName ?? string.Empty; }
 			set { UpdateString(ref _nativeName, value); }
 		}
 
-		/// <summary>
-		/// Indicates the type of sort rules used to encode the sort order.
-		/// Note that the actual sort rules are contained in the SortRules property
-		/// </summary>
-		virtual public CollationRulesTypes CollationRulesType
-		{
-			get { return _collationRulesType; }
-			set
-			{
-				if (UpdateField(ref _collationRulesType, value))
-					_collator = null;
-			}
-		}
-
-		/// <summary>
-		/// The sort rules that efine the sort order.
-		/// Note that you must indicate the type of sort rules used by setting the "SortUsing" property
-		/// </summary>
-		virtual public string CollationRules
-		{
-			get { return _collationRules ?? string.Empty; }
-			set
-			{
-				if (UpdateString(ref _collationRules, value))
-					_collator = null;
-			}
-		}
-
-		/// <summary>
-		/// A convenience method for sorting like anthoer language
-		/// </summary>
-		/// <param name="languageCode">A valid language code</param>
-		public void SortUsingOtherLanguage(string languageCode)
-		{
-			CollationRulesType = CollationRulesTypes.OtherLanguage;
-			CollationRules = languageCode;
-		}
-
-		/// <summary>
-		/// A convenience method for sorting with custom ICU rules
-		/// </summary>
-		/// <param name="sortRules">custom ICU sortrules</param>
-		public void SortUsingCustomIcu(string sortRules)
-		{
-			CollationRulesType = CollationRulesTypes.CustomIcu;
-			CollationRules = sortRules;
-		}
-
-		/// <summary>
-		/// A convenience method for sorting with "shoebox" style rules
-		/// </summary>
-		/// <param name="sortRules">"shoebox" style rules</param>
-		public void SortUsingCustomSimple(string sortRules)
-		{
-			CollationRulesType = CollationRulesTypes.CustomSimple;
-			CollationRules = sortRules;
-		}
-
-		/// <summary>
-		/// Returns an ICollator interface that can be used to sort strings based
-		/// on the custom collation rules.
-		/// </summary>
-		virtual public ICollator Collator
+		public CollationDefinition DefaultCollation
 		{
 			get
 			{
-				if (_collator == null)
-				{
-					switch (CollationRulesType)
-					{
-						case CollationRulesTypes.DefaultOrdering:
-							_collator = new IcuRulesCollator(String.Empty); // was SystemCollator(null);
-							break;
-						case CollationRulesTypes.CustomSimple:
-							_collator = new SimpleRulesCollator(CollationRules);
-							break;
-						case CollationRulesTypes.CustomIcu:
-							_collator = new IcuRulesCollator(CollationRules);
-							break;
-						case CollationRulesTypes.OtherLanguage:
-							_collator = new SystemCollator(CollationRules);
-							break;
-					}
-				}
-				return _collator;
+				if (_defaultCollation == null)
+					_defaultCollation = _collations.FirstOrDefault();
+				if (_defaultCollation == null)
+					_defaultCollation = new CollationDefinition("standard");
+				return _defaultCollation;
 			}
-		}
-
-		/// <summary>
-		/// Tests whether the current custom collation rules are valid.
-		/// </summary>
-		/// <param name="message">Used for an error message if rules do not validate.</param>
-		/// <returns>True if rules are valid, false otherwise.</returns>
-		virtual public bool ValidateCollationRules(out string message)
-		{
-			message = null;
-			switch (CollationRulesType)
+			set
 			{
-				case CollationRulesTypes.DefaultOrdering:
-					return String.IsNullOrEmpty(CollationRules);
-				case CollationRulesTypes.CustomIcu:
-					return IcuRulesCollator.ValidateSortRules(CollationRules, out message);
-				case CollationRulesTypes.CustomSimple:
-					return SimpleRulesCollator.ValidateSimpleRules(CollationRules, out message);
-				case CollationRulesTypes.OtherLanguage:
-					return SystemCollator.ValidateCultureID(CollationRules, out message);
+				if (UpdateField(ref _defaultCollation, value))
+				{
+					if (value != null && !_collations.Contains(value))
+						_collations.Add(value);
+				}
 			}
-			return false;
 		}
 
+		public KeyedCollection<string, CollationDefinition> Collations
+		{
+			get { return _collations; }
+		}
 
 		private void UpdateIdFromRfcTag()
 		{
@@ -1327,8 +1222,6 @@ namespace SIL.WritingSystems
 				return false;
 			if (Keyboard != other.Keyboard)
 				return false;
-			if (CollationRules != other.CollationRules)
-				return false;
 			if (NativeName != other.NativeName)
 				return false;
 			if (_id != other._id)
@@ -1336,8 +1229,6 @@ namespace SIL.WritingSystems
 			if (_isUnicodeEncoded != other._isUnicodeEncoded)
 				return false;
 			if (_dateModified != other._dateModified)
-				return false;
-			if (CollationRulesType != other.CollationRulesType)
 				return false;
 			if (_rightToLeftScript != other._rightToLeftScript)
 				return false;
@@ -1398,6 +1289,24 @@ namespace SIL.WritingSystems
 				return false;
 			if (LocalKeyboard != other.LocalKeyboard)
 				return false;
+
+			// collations
+			if (_collations.Count != other._collations.Count)
+				return false;
+			for (int i = 0; i < _collations.Count; i++)
+			{
+				if (!_collations[i].ValueEquals(other._collations[i]))
+					return false;
+			}
+			if (DefaultCollation == null)
+			{
+				if (other.DefaultCollation != null)
+					return false;
+			}
+			else if (!DefaultCollation.ValueEquals(other.DefaultCollation))
+			{
+				return false;
+			}
 
 			return true;
 		}

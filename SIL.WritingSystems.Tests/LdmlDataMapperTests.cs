@@ -111,6 +111,7 @@ namespace SIL.WritingSystems.Tests
 			AssertThatXmlIn.String(sw.ToString()).HasAtLeastOneMatchForXpath("/ldml/special[text()=\"hey\"]");
 		}
 
+#if WS_FIX
 		[Test]
 		public void RoundtripSimpleCustomSortRules_WS33715()
 		{
@@ -129,7 +130,6 @@ namespace SIL.WritingSystems.Tests
 			Assert.AreEqual(sortRules, wsFromLdml.CollationRules);
 		}
 
-#if WS_FIX
 		[Test]
 		public void RoundtripKnownKeyboards()
 		{
@@ -214,6 +214,7 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(wsFromLdml.VariantName, Is.EqualTo("1996"));
 		}
 
+#if WS_FIX
 		[Test]
 		//WS-33992
 		public void Read_LdmlContainsEmptyCollationElement_SortUsingIsSetToSameAsIfNoCollationElementExisted()
@@ -249,7 +250,7 @@ namespace SIL.WritingSystems.Tests
 				File.Delete(pathToLdmlWithEmptyCollationElement);
 			}
 		}
-
+#endif
 		[Test]
 		public void Read_LdmlFont()
 		{

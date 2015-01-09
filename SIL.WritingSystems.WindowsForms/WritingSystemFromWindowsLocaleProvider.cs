@@ -108,8 +108,7 @@ namespace SIL.WritingSystems.WindowsForms
 					culture.TextInfo.IsRightToLeft);
 				def.NativeName = culture.NativeName;
 				def.Keyboard = language.LayoutName;
-				def.CollationRulesType = CollationRulesTypes.OtherLanguage;
-				def.CollationRules = culture.IetfLanguageTag;
+				def.DefaultCollation = new InheritedCollationDefinition("standard") { BaseLanguageTag = culture.IetfLanguageTag };
 				def.LanguageName = culture.DisplayName;
 
 				yield return def;

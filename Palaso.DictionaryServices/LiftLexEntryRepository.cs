@@ -282,7 +282,7 @@ namespace Palaso.DictionaryServices
 
 				ResultSet<LexEntry> itemsMatching = _decoratedDataMapper.GetItemsMatching(headWordQuery);
 				var sortOrder = new SortDefinition[4];
-				sortOrder[0] = new SortDefinition("Form", writingSystemDefinition.Collator);
+				sortOrder[0] = new SortDefinition("Form", writingSystemDefinition.DefaultCollation.Collator);
 				sortOrder[1] = new SortDefinition("OrderForRoundTripping", Comparer<int>.Default);
 				sortOrder[2] = new SortDefinition("OrderInFile", Comparer<int>.Default);
 				sortOrder[3] = new SortDefinition("CreationTime", Comparer<DateTime>.Default);
@@ -382,7 +382,7 @@ namespace Palaso.DictionaryServices
 				ResultSet<LexEntry> itemsMatching = _decoratedDataMapper.GetItemsMatching(lexicalFormWithAlternativeQuery);
 
 				var sortOrder = new SortDefinition[1];
-				sortOrder[0] = new SortDefinition("Form", writingSystemDefinition.Collator);
+				sortOrder[0] = new SortDefinition("Form", writingSystemDefinition.DefaultCollation.Collator);
 
 				_caches.Add(cacheName, new ResultSetCache<LexEntry>(this, sortOrder, itemsMatching, lexicalFormWithAlternativeQuery));
 			}
@@ -420,7 +420,7 @@ namespace Palaso.DictionaryServices
 				ResultSet<LexEntry> itemsMatching = _decoratedDataMapper.GetItemsMatching(lexicalFormQuery);
 
 				var sortOrder = new SortDefinition[1];
-				sortOrder[0] = new SortDefinition("Form", writingSystemDefinition.Collator);
+				sortOrder[0] = new SortDefinition("Form", writingSystemDefinition.DefaultCollation.Collator);
 
 				_caches.Add(cacheName, new ResultSetCache<LexEntry>(this, sortOrder, itemsMatching, lexicalFormQuery));
 			}
@@ -536,7 +536,7 @@ namespace Palaso.DictionaryServices
 				ResultSet<LexEntry> itemsMatching = _decoratedDataMapper.GetItemsMatching(definitionQuery);
 
 				var sortOrder = new SortDefinition[2];
-				sortOrder[0] = new SortDefinition("Form", writingSystemDefinition.Collator);
+				sortOrder[0] = new SortDefinition("Form", writingSystemDefinition.DefaultCollation.Collator);
 				sortOrder[1] = new SortDefinition("Sense", Comparer<int>.Default);
 				_caches.Add(cacheName, new ResultSetCache<LexEntry>(this, sortOrder, itemsMatching, definitionQuery));
 			}
@@ -698,7 +698,7 @@ namespace Palaso.DictionaryServices
 					);
 				ResultSet<LexEntry> itemsMatchingQuery = GetItemsMatching(MatchingGlossQuery);
 				var sortDefinition = new SortDefinition[4];
-				sortDefinition[0] = new SortDefinition("Form", lexicalUnitWritingSystemDefinition.Collator);
+				sortDefinition[0] = new SortDefinition("Form", lexicalUnitWritingSystemDefinition.DefaultCollation.Collator);
 				sortDefinition[1] = new SortDefinition("Gloss", StringComparer.InvariantCulture);
 				sortDefinition[2] = new SortDefinition("GlossWritingSystem", StringComparer.InvariantCulture);
 				sortDefinition[3] = new SortDefinition("SenseNumber", Comparer<int>.Default);

@@ -4,7 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Xml;
 using Palaso.Xml;
-using SIL.WritingSystems.Collation;
 
 namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
@@ -845,13 +844,14 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			Debug.Assert(ws != null);
 			Debug.Assert(ws.SortUsing == WritingSystemDefinitionV0.SortRulesType.CustomSimple);
 
+			var parser = new SimpleRulesParser();
 			string message;
 			// avoid throwing exception, just don't save invalid data
-			if (!SimpleRulesCollator.ValidateSimpleRules(ws.SortRules ?? string.Empty, out message))
+			if (!parser.ValidateSimpleRules(ws.SortRules ?? string.Empty, out message))
 			{
 				return;
 			}
-			string icu = SimpleRulesCollator.ConvertToIcuRules(ws.SortRules ?? string.Empty);
+			string icu = parser.ConvertToIcuRules(ws.SortRules ?? string.Empty);
 			WriteCollationRulesFromIcuString(writer, reader, icu);
 		}
 

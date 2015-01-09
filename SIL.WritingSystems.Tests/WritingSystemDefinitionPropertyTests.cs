@@ -25,7 +25,7 @@ namespace SIL.WritingSystems.Tests
 		public override string ExceptionList
 		{
 			// We do want to clone KnownKeyboards, but I don't think the automatic cloneable test for it can handle a list.
-			get { return "|MarkedForDeletion|StoreID|_collator|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionary|_spellCheckDictionaries|IsChanged|_matchedPairs|_punctuationPatterns|_quotationMarks|"; }
+			get { return "|MarkedForDeletion|StoreID|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionary|_spellCheckDictionaries|IsChanged|_matchedPairs|_punctuationPatterns|_quotationMarks|_defaultCollation|_collations|"; }
 		}
 
 		protected override List<ValuesToSet> DefaultValuesForTypes
@@ -38,7 +38,6 @@ namespace SIL.WritingSystems.Tests
 								 new ValuesToSet(false, true),
 								 new ValuesToSet("to be", "!(to be)"),
 								 new ValuesToSet(DateTime.Now, DateTime.MinValue),
-								 new ValuesToSet(CollationRulesTypes.CustomIcu, CollationRulesTypes.DefaultOrdering),
 								 new ValuesToSet(new Rfc5646Tag("en", "Latn", "US", "1901", "test"), Rfc5646Tag.Parse("de")),
 								 new ValuesToSet(QuotationParagraphContinueType.None, QuotationParagraphContinueType.All),
 								 new ValuesToSet(QuotationParagraphContinueMark.Open, QuotationParagraphContinueMark.Close)
@@ -136,6 +135,24 @@ namespace SIL.WritingSystems.Tests
 			WritingSystemDefinition copy = original.Clone();
 			Assert.That(copy.QuotationMarks.Count, Is.EqualTo(2));
 			Assert.That(copy.QuotationMarks, Is.EqualTo(new[] { qm1, qm2 }));
+		}
+
+		[Test]
+		public void CloneCopiesCollations()
+		{
+			var original = new WritingSystemDefinition();
+			var cd1 = new CollationDefinition("standard");
+			var cd2 = new CollationDefinition("other");
+			original.Collations.Add(cd1);
+			original.Collations.Add(cd2);
+			original.DefaultCollation = cd2;
+			WritingSystemDefinition copy = original.Clone();
+			Assert.That(copy.Collations.Count, Is.EqualTo(2));
+			Assert.That(copy.Collations[0].ValueEquals(cd1), Is.True);
+			Assert.That(ReferenceEquals(copy.Collations[0], cd1), Is.False);
+			Assert.That(copy.DefaultCollation.ValueEquals(cd2), Is.True);
+			Assert.That(copy.DefaultCollation == cd2, Is.False);
+			Assert.That(copy.DefaultCollation == copy.Collations[1], Is.True);
 		}
 
 		/// <summary>
@@ -287,6 +304,34 @@ namespace SIL.WritingSystems.Tests
 			second.QuotationMarks.Add(qm1);
 			second.QuotationMarks.Add(qm3);
 			Assert.That(first.ValueEquals(second), Is.False, "ws with same-length lists of different quotation marks should not be equal");
+		}
+
+		[Test]
+		public void ValueEqualsComparesCollations()
+		{
+			var first = new WritingSystemDefinition();
+			var cd1 = new CollationDefinition("standard");
+			var cd2 = new CollationDefinition("other1");
+			first.Collations.Add(cd1);
+			first.Collations.Add(cd2);
+			var second = new WritingSystemDefinition();
+			var cd3 = new CollationDefinition("standard");
+			var cd4 = new CollationDefinition("other2");
+
+			Assert.That(first.ValueEquals(second), Is.False, "ws with empty collations should not equal one with some");
+			second.Collations.Add(cd3);
+			Assert.That(first.ValueEquals(second), Is.False, "ws's with different length collation lists should not be equal");
+			second.Collations.Add(cd2.Clone());
+			Assert.That(first.ValueEquals(second), Is.True, "ws's with same collation lists should be equal");
+			second.DefaultCollation = second.Collations[0];
+			Assert.That(first.ValueEquals(second), Is.True);
+			second.DefaultCollation = second.Collations[1];
+			Assert.That(first.ValueEquals(second), Is.False);
+
+			second = new WritingSystemDefinition();
+			second.Collations.Add(cd3);
+			second.Collations.Add(cd4);
+			Assert.That(first.ValueEquals(second), Is.False, "ws with same-length lists of different collations should not be equal");
 		}
 	}
 
@@ -683,8 +728,6 @@ namespace SIL.WritingSystems.Tests
 			secondValueToSet.Add(typeof (string), "Y");
 			firstValueToSet.Add(typeof (DateTime), new DateTime(2007, 12, 31));
 			secondValueToSet.Add(typeof (DateTime), new DateTime(2008, 1, 1));
-			firstValueToSet.Add(typeof(CollationRulesTypes), CollationRulesTypes.CustomIcu);
-			secondValueToSet.Add(typeof(CollationRulesTypes), CollationRulesTypes.CustomSimple);
 			firstValueToSet.Add(typeof(Rfc5646Tag), new Rfc5646Tag("de", "Latn", "", "1901","audio"));
 			firstValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.IpaPhonemic);
 			secondValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.NotIpa);
@@ -696,6 +739,8 @@ namespace SIL.WritingSystems.Tests
 			secondValueToSet.Add(typeof(QuotationParagraphContinueType), QuotationParagraphContinueType.All);
 			firstValueToSet.Add(typeof(QuotationParagraphContinueMark), QuotationParagraphContinueMark.Open);
 			secondValueToSet.Add(typeof(QuotationParagraphContinueMark), QuotationParagraphContinueMark.Close);
+			firstValueToSet.Add(typeof(CollationDefinition), new CollationDefinition("standard"));
+			secondValueToSet.Add(typeof(CollationDefinition), new SimpleCollationDefinition("standard"));
 
 			foreach (PropertyInfo propertyInfo in typeof(WritingSystemDefinition).GetProperties(BindingFlags.Public | BindingFlags.Instance))
 			{
@@ -733,37 +778,6 @@ namespace SIL.WritingSystems.Tests
 				}
 				Assert.IsTrue(ws.IsChanged, "Modifying WritingSystemDefinition.{0} did not change modified flag.", propertyInfo.Name);
 			}
-		}
-
-		[Test]
-		public void SortUsingDefaultOrdering_ValidateSortRulesWhenEmpty_IsTrue()
-		{
-			var ws = new WritingSystemDefinition();
-			string message;
-			Assert.IsTrue(ws.ValidateCollationRules(out message));
-		}
-
-		[Test]
-		public void SortUsingDefaultOrdering_ValidateSortRulesWhenNotEmpty_IsFalse()
-		{
-			var ws = new WritingSystemDefinition();
-			ws.CollationRules = "abcd";
-			string message;
-			Assert.IsFalse(ws.ValidateCollationRules(out message));
-		}
-
-		[Test]
-		public void SortUsingOtherLanguage_NullRules_DoesNotThrow()
-		{
-			// This is the current policy for 'OtherLanguage' which currently returns a SystemCollator.
-			// If SystemCollator can't determine the other langauge it uses Invariant very quietly.
-			// review: Is this the behaviour we want? CP 2011-04
-			var ws = new WritingSystemDefinition();
-			ws.SortUsingOtherLanguage("NotAValidLanguageCode");
-			var collator = ws.Collator;
-			int result1 = collator.Compare("b", "A");
-			int result2 = collator.Compare("b", "a");
-			Assert.AreEqual(result1, result2);
 		}
 
 		[Test]
@@ -2048,6 +2062,46 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(ws.SpellCheckDictionary, Is.EqualTo(scdd1));
 			ws.SpellCheckDictionaries.Clear();
 			Assert.That(ws.SpellCheckDictionary, Is.Null);
+		}
+
+		[Test]
+		public void DefaultCollation_DefaultsToFirstCollation()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+			var cd1 = new CollationDefinition("standard");
+			var cd2 = new CollationDefinition("other");
+
+			ws.Collations.Add(cd1);
+			ws.Collations.Add(cd2);
+
+			Assert.That(ws.DefaultCollation, Is.EqualTo(cd1));
+		}
+
+		[Test]
+		public void DefaultCollation_DefaultsToDefaultOrderingCollationWhenEmpty()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+
+			Assert.That(ws.DefaultCollation.Type, Is.EqualTo("standard"));
+			Assert.That(ws.DefaultCollation.IcuRules, Is.EqualTo(string.Empty));
+		}
+
+		[Test]
+		public void DefaultCollation_ResetWhenRemovedFromCollations()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+			var cd1 = new CollationDefinition("standard");
+			var cd2 = new CollationDefinition("other");
+
+			ws.Collations.Add(cd1);
+			ws.Collations.Add(cd2);
+			ws.DefaultCollation = cd2;
+
+			Assert.That(ws.DefaultCollation, Is.EqualTo(cd2));
+			ws.Collations.RemoveAt(1);
+			Assert.That(ws.DefaultCollation, Is.EqualTo(cd1));
+			ws.Collations.Clear();
+			Assert.That(ws.DefaultCollation, Is.Not.EqualTo(cd1));
 		}
 	}
 }

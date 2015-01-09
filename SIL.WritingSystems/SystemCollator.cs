@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 
-namespace SIL.WritingSystems.Collation
+namespace SIL.WritingSystems
 {
 	public class SystemCollator : ICollator
 	{

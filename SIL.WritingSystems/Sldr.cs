@@ -38,11 +38,13 @@ namespace SIL.WritingSystems
 			// If the LDML file already exists, attempt to extract userId
 			if (File.Exists(filename))
 			{
-				XElement element = XElement.Load(filename);
-				XElement identityElem = element.Descendants(Sil + "identity").First(); 
-				if (identityElem != null)
+				var fi = new FileInfo(filename);
+				if (fi.Length > 0)
 				{
-					userId = (string) identityElem.Attribute("uid") ?? UnknownUserId;
+					XElement element = XElement.Load(filename);
+					XElement identityElem = element.Descendants(Sil + "identity").First();
+					if (identityElem != null)
+						userId = (string) identityElem.Attribute("uid") ?? UnknownUserId;
 				}
 			}
 

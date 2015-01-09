@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using SIL.WritingSystems.Collation;
 
-namespace SIL.WritingSystems.Tests.Collation
+namespace SIL.WritingSystems.Tests
 {
 	[TestFixture]
 	public class SortingTests

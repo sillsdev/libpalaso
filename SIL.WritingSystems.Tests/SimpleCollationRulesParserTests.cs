@@ -1,14 +1,12 @@
-using System;
 using NUnit.Framework;
-using SIL.WritingSystems.Collation;
 using Spart;
 
-namespace SIL.WritingSystems.Tests.Collation
+namespace SIL.WritingSystems.Tests
 {
 	[TestFixture]
-	public class SimpleRulesCollatorTests
+	public class SimpleCollationRulesParserTests
 	{
-		private const string ICUstart = "&[before 1] [first regular] < ";
+		private const string IcuStart = "&[before 1] [first regular] < ";
 		static private void VerifyIcuRules(string icuRules)
 		{
 			new IcuRulesCollator(icuRules);
@@ -18,7 +16,8 @@ namespace SIL.WritingSystems.Tests.Collation
 		{
 			try
 			{
-				SimpleRulesCollator.ConvertToIcuRules(rules);
+				var parser = new SimpleRulesParser();
+				parser.ConvertToIcuRules(rules);
 			}
 			catch (ParserErrorException e)
 			{
@@ -32,14 +31,16 @@ namespace SIL.WritingSystems.Tests.Collation
 
 		static private void VerifyParseIsSyntacticEquivalent(string simplestRule, string syntacticEquivalent)
 		{
-			string expected = SimpleRulesCollator.ConvertToIcuRules(simplestRule);
-			string actual = SimpleRulesCollator.ConvertToIcuRules(syntacticEquivalent);
+			var parser = new SimpleRulesParser();
+			string expected = parser.ConvertToIcuRules(simplestRule);
+			string actual = parser.ConvertToIcuRules(syntacticEquivalent);
 			Assert.AreEqual(expected, actual);
 		}
 
 		static private void VerifyExpectedIcuFromActualSimple(string icuExpected, string shoeboxActual)
 		{
-			string icuRulesActual = SimpleRulesCollator.ConvertToIcuRules(shoeboxActual);
+			var parser = new SimpleRulesParser();
+			string icuRulesActual = parser.ConvertToIcuRules(shoeboxActual);
 			VerifyIcuRules(icuExpected);
 			Assert.AreEqual(icuExpected, icuRulesActual);
 		}
@@ -75,34 +76,34 @@ namespace SIL.WritingSystems.Tests.Collation
 		[Test]
 		public void ConvertToIcuRules_Digraph()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "n < ng", "n\nng");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "n < ng", "n\nng");
 		}
 
 		[Test]
 		public void ConvertToIcuRules_SecondarySegments()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "b << B < a << A", "b B\na A");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "b << B < a << A", "b B\na A");
 		}
 
 		[Test]
 		public void ConvertToIcuRules_SegmentsWithinParenthesis_ConsideredTertiary()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "b << B < \u0101 << a <<< A", "b B\n\\u0101 (a A)");
-			VerifyExpectedIcuFromActualSimple(ICUstart + "b << B < \u0101 <<< a << A", "b B\n(\\u0101 a) A");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "b << B < \u0101 << a <<< A", "b B\n\\u0101 (a A)");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "b << B < \u0101 <<< a << A", "b B\n(\\u0101 a) A");
 		}
 
 
 		[Test]
 		public void ConvertToIcuRules_PaddedWithWhiteSpace()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "b <<< B < \u0101 <<< a <<< A", "(b  \t B \t ) \n (\t\\u0101   \ta  A\t)\t");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "b <<< B < \u0101 <<< a <<< A", "(b  \t B \t ) \n (\t\\u0101   \ta  A\t)\t");
 		}
 
 		[Test]
 		public void ConvertToIcuRules_Parse()
 		{
 			VerifyExpectedIcuFromActualSimple(
-				ICUstart + "a <<< A << \u3022 <<< \u3064 < b << B < c <<< C < e <<< E << e\u3000 <<< E\u3000 < ng << Ng << NG < \u1234\u1234\u1234",
+				IcuStart + "a <<< A << \u3022 <<< \u3064 < b << B < c <<< C < e <<< E << e\u3000 <<< E\u3000 < ng << Ng << NG < \u1234\u1234\u1234",
 				"   \n   ( a   A ) (\\u3022 \\u3064)\n\nb B\n(c C)\n(e E)(e\\u3000 E\\u3000)\n   \n ng Ng NG\n\\u1234\\u1234\\u1234");
 
 		}
@@ -111,7 +112,7 @@ namespace SIL.WritingSystems.Tests.Collation
 		[Test]
 		public void ConvertToIcuRules_SingleElement()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a", "a");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a", "a");
 		}
 
 
@@ -119,7 +120,7 @@ namespace SIL.WritingSystems.Tests.Collation
 		public void ConvertToIcuRules_NoHyphenInRules_HasIgnoreHyphen()
 		{
 			//&[last primary ignorable] <<< '-' <<<
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a", "a");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a", "a");
 		}
 
 
@@ -167,7 +168,7 @@ namespace SIL.WritingSystems.Tests.Collation
 		[Test]
 		public void ConvertToIcuRules_SingleUnicodeEscChar()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a", "\\u0061");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a", "\\u0061");
 		}
 
 		[Test]
@@ -210,8 +211,9 @@ namespace SIL.WritingSystems.Tests.Collation
 		[Test]
 		public void ConvertToIcuRules_TwoSingleElements()
 		{
-			string result = SimpleRulesCollator.ConvertToIcuRules("a A");
-			Assert.AreEqual(ICUstart + "a << A", result);
+			var parser = new SimpleRulesParser();
+			string result = parser.ConvertToIcuRules("a A");
+			Assert.AreEqual(IcuStart + "a << A", result);
 		}
 
 		[Test]
@@ -246,7 +248,7 @@ namespace SIL.WritingSystems.Tests.Collation
 		[Test]
 		public void ConvertToIcuRules_TwoSingleElementsInGroup()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a <<< A", "(a A)");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a <<< A", "(a A)");
 		}
 
 		[Test]
@@ -292,7 +294,7 @@ namespace SIL.WritingSystems.Tests.Collation
 		[Test]
 		public void ConvertToIcuRules_TwoSingleElementsOnSeparateLines()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a < A", "a\nA");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a < A", "a\nA");
 		}
 
 		[Test]
@@ -338,32 +340,32 @@ namespace SIL.WritingSystems.Tests.Collation
 		[Test]
 		public void ConvertToIcuRules_ThreeSingleElementsOnSeparateLines()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "c < b < a", "c\nb\na");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "c < b < a", "c\nb\na");
 		}
 
 		[Test]
 		public void ConvertToIcuRules_TwoSingleElementsOnSeparateLinesWithBlankLines()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a < b", "\n a \n \n b  \n");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a < b", "\n a \n \n b  \n");
 		}
 
 
 		[Test]
 		public void ConvertToIcuRules_ThreeSingleCharactersOnSameLine()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a << A << \u0301", "a A \\u0301");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a << A << \u0301", "a A \\u0301");
 		}
 
 		[Test]
 		public void ConvertToIcuRules_ThreeSingleCharactersInParenthesis()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a <<< A <<< \u0301", "(a A \\u0301)");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a <<< A <<< \u0301", "(a A \\u0301)");
 		}
 
 		[Test]
 		public void ConvertToIcuRules_GroupFollowedBySingleCharacter()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a <<< A << \u0301", "(a A)\\u0301");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a <<< A << \u0301", "(a A)\\u0301");
 		}
 
 		[Test]
@@ -377,7 +379,7 @@ namespace SIL.WritingSystems.Tests.Collation
 		[Test]
 		public void ConvertToIcuRules_SingleCharacterFollowedByGroup()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a << A <<< \u0301", "a(A \\u0301)");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a << A <<< \u0301", "a(A \\u0301)");
 		}
 
 		[Test]
@@ -391,7 +393,7 @@ namespace SIL.WritingSystems.Tests.Collation
 		[Test]
 		public void ConvertToIcuRules_MultipleCharactersFormingCollationElement()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "abcd << ab\u1234cd", "abcd ab\\u1234cd");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "abcd << ab\u1234cd", "abcd ab\\u1234cd");
 		}
 
 		[Test]
@@ -605,49 +607,49 @@ namespace SIL.WritingSystems.Tests.Collation
 		[Test]
 		public void ConvertToIcuRules_UnicodeCharacterReferenceWithFiveHexDigits_LastDigitTreatedAsCharacter()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "\u12345", "\\u12345");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "\u12345", "\\u12345");
 		}
 
 		[Test]
 		public void ConvertToIcuRules_UnicodeCharacterReference_VerifyUnsigned()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "\uA123", "\\uA123");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "\uA123", "\\uA123");
 		}
 
 		[Test]
 		public void ConvertToIcuRules_UnicodeCharacterReference_SurrogateLowBound()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "\\ud800", "\\ud800");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "\\ud800", "\\ud800");
 		}
 
 		[Test]
 		public void ConvertToIcuRules_SurrogateCharacterLowBound()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "\ud800", "\ud800");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "\ud800", "\ud800");
 		}
 
 		[Test]
 		public void ConvertToIcuRules_UnicodeCharacterReference_SurrogateHighBounds()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "\\udfff", "\\udfff");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "\\udfff", "\\udfff");
 		}
 
 		[Test]
 		public void ConvertToIcuRules_SurrogateCharacterHighBound()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "\udfff", "\udfff");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "\udfff", "\udfff");
 		}
 
 		[Test]
 		public void ConvertToIcuRules_UnicodeCharacterReference_Surrogates()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a << \\ud800\\udc00", "a \\ud800\\udc00");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a << \\ud800\\udc00", "a \\ud800\\udc00");
 		}
 
 		[Test]
 		public void ConvertToIcuRules_SurrogateCharacters()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a << \ud800\udc00", "a \ud800\udc00");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a << \ud800\udc00", "a \ud800\udc00");
 		}
 
 		[Test]
@@ -655,7 +657,7 @@ namespace SIL.WritingSystems.Tests.Collation
 		{
 			//I would have thought that this would not be legal from ICU but there
 			//is no error message now
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a << \\udc00\\ud800", "a \\udc00\\ud800");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a << \\udc00\\ud800", "a \\udc00\\ud800");
 		}
 
 		[Test]
@@ -663,7 +665,7 @@ namespace SIL.WritingSystems.Tests.Collation
 		{
 			//I would have thought that this would not be legal from ICU but there
 			//is no error message now
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a << \udc00\ud800", "a \udc00\ud800");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a << \udc00\ud800", "a \udc00\ud800");
 		}
 
 
@@ -680,7 +682,7 @@ namespace SIL.WritingSystems.Tests.Collation
 		public void ConvertToIcuRules_AsciiCharacterNotLetterOrDigit_RequiresIcuEscaping()
 		{
 			VerifyExpectedIcuFromActualSimple(
-				ICUstart + "\\\\ << \\< << \\<\\< << \\<\\<\\< << \\= << \\&",
+				IcuStart + "\\\\ << \\< << \\<\\< << \\<\\<\\< << \\= << \\&",
 				"\\u005c < << <<< = &");
 		}
 
@@ -691,188 +693,5 @@ namespace SIL.WritingSystems.Tests.Collation
 				() => VerifyParserError("scr0006", "ph\na A)\nb B\nc C",2,4)
 			);
 		}
-
-
-		[Test]
-		public void Compare_CapsAsSecondaryDistinction()
-		{
-			//naive sort
-			string[] list = new string[] {"ana",
-										  "anga",
-										  "ango",
-										  "ano",
-										  "na",
-										  "Na",
-										  "nga",
-										  "Nga",
-										  "ngo",
-										  "Ngo",
-										  "NGo",
-										  "no",
-										  "No"};
-
-			string[] expected = new string[] { "ana",
-											   "ano",
-											   "anga",
-											   "ango",
-											   "Na",
-											   "na",
-											   "No",
-											   "no",
-											   "Nga",
-											   "nga",
-											   "NGo",
-											   "Ngo",
-											   "ngo"};
-			Assert.AreEqual(list.Length, expected.Length );
-
-			SimpleRulesCollator collator = new SimpleRulesCollator("A a\nN n\nNG Ng ng\nO o");
-			Array.Sort(list, collator);
-
-
-			for (int i = 0; i < list.Length; i++)
-			{
-				Assert.AreEqual(expected[i], list[i], "at index {0}", i);
-			}
-		}
-
-		[Test]
-		public void Compare_CapsAsPrimaryDistinction()
-		{
-			//naive sort
-			string[] list = new string[] {"ana",
-										  "anga",
-										  "ango",
-										  "ano",
-										  "na",
-										  "Na",
-										  "nga",
-										  "Nga",
-										  "ngo",
-										  "Ngo",
-										  "NGo",
-										  "no",
-										  "No"};
-
-			string[] expected = new string[] {
-											   "ana",
-											   "ano",
-											   "anga",
-											   "ango",
-											   "Na",
-											   "No",
-											   "na",
-											   "no",
-											   "NGo",
-											   "Nga",
-											   "Ngo",
-											   "nga",
-											   "ngo"};
-			Assert.AreEqual(list.Length, expected.Length);
-
-			SimpleRulesCollator collator = new SimpleRulesCollator("A\na\nN\nn\nNG\nNg\nng\nO\no");
-			Array.Sort(list, collator);
-
-
-			for (int i = 0; i < list.Length; i++)
-			{
-				Assert.AreEqual(expected[i], list[i], "at index {0}", i);
-			}
-		}
-
-		private void VerifyExpectedSort(string simpleRules, string[] original, string[] expected)
-		{
-			Assert.AreEqual(original.Length, expected.Length);
-
-			SimpleRulesCollator collator = new SimpleRulesCollator(simpleRules);
-			Array.Sort(original, collator);
-
-
-			for (int i = 0; i < original.Length; i++)
-			{
-				Assert.AreEqual(expected[i], original[i], "at index {0}", i);
-			}
-		}
-
-		[Test]
-		public void Compare_Hyphens()
-		{
-			var original = new string[] {"anna",
-										"-ana",
-										  "ana"};
-
-			var expected = new string[] { "ana",
-										   "anna",
-										   "-ana"};
-			VerifyExpectedSort("a\nb\n-", original, expected);
-		}
-
-		[Test]
-		public void CollatingSequenceBeginsWithDigraph()
-		{
-			//naive sort
-			string[] list = new string[] {"hello",
-										  "me",
-										  "phone",
-										  "test",
-										  "world"};
-
-			string[] expected = new string[] { "phone",
-												"hello",
-												"me",
-												"test",
-												"world"};
-			Assert.AreEqual(list.Length, expected.Length);
-
-			SimpleRulesCollator collator = new SimpleRulesCollator("ph (Ph  e)\na A\nb B\nc C\nd D");
-			Array.Sort(list, collator);
-
-
-			for (int i = 0; i < list.Length; i++)
-			{
-				Assert.AreEqual(expected[i], list[i], "at index {0}", i);
-			}
-
-
-		}
-
-
-		[Test]
-		public void UndefinedCollatingSequencesSortToBottom()
-		{
-			//naive sort
-			string[] list = new string[] {"hello",
-										  "me",
-										  "phone",
-										  "\u0268lo",
-										  "igloo",
-										  "test",
-										  "alpha",
-										  "echo",
-										  "world"};
-
-			string[] expected = new string[] { "igloo",
-												"\u0268lo",
-												"alpha",
-												"echo",
-												"hello",
-												"me",
-												"phone",
-												"test",
-												"world"};
-			Assert.AreEqual(list.Length, expected.Length);
-
-			SimpleRulesCollator collator = new SimpleRulesCollator("i \\u0268");
-			Array.Sort(list, collator);
-
-
-			for (int i = 0; i < list.Length; i++)
-			{
-				Assert.AreEqual(expected[i], list[i], "at index {0}", i);
-			}
-
-
-		}
-
 	}
 }

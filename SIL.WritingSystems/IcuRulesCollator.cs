@@ -1,16 +1,18 @@
 using System;
 using System.Globalization;
+using Icu.Collation;
 
-namespace SIL.WritingSystems.Collation
+namespace SIL.WritingSystems
 {
-	public class IcuRulesCollator: ICollator {
-		private Icu.Collation.RuleBasedCollator _collator;
+	public class IcuRulesCollator : ICollator
+	{
+		private readonly RuleBasedCollator _collator;
 
 		public IcuRulesCollator(string rules)
 		{
 			try
 			{
-				this._collator = new Icu.Collation.RuleBasedCollator(LdmlCollationParser.ReplaceUnicodeEscapesForICU(rules));
+				_collator = new RuleBasedCollator(LdmlCollationParser.ReplaceUnicodeEscapesForIcu(rules));
 			}
 			catch (DllNotFoundException e)
 			{
@@ -20,20 +22,13 @@ namespace SIL.WritingSystems.Collation
 
 		public static bool ValidateSortRules(string rules, out string message)
 		{
-			IcuRulesParser parser = new IcuRulesParser();
-			if (!parser.ValidateIcuRules(rules, out message))
+			Collator.CollationRuleErrorInfo errorInfo = Collator.CheckRules(LdmlCollationParser.ReplaceUnicodeEscapesForIcu(rules));
+			if (errorInfo != null)
 			{
+				message = string.Format("Invalid ICU rules (Line: {0}, Column: {1}).", errorInfo.Line, errorInfo.Offset);
 				return false;
 			}
-			try
-			{
-				new IcuRulesCollator(rules);
-			}
-			catch (Exception e)
-			{
-				message = String.Format("Invalid ICU sort rules: {0}", e.Message);
-				return false;
-			}
+			message = null;
 			return true;
 		}
 

@@ -479,7 +479,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 			string key = _model.CurrentRFC4646;
 			_model.AddNew();
 			_model.CurrentISO = "de";
-			_model.CurrentCollationRulesType = CollationRulesTypes.OtherLanguage.ToString();
+			_model.CurrentCollationRulesType = "OtherLanguage";
 			_model.CurrentCollationRules = key;
 			key = _model.CurrentRFC4646;
 			_model.CurrentIndex = 0;
@@ -583,7 +583,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		{
 			_model.AddNew();
 			_model.CurrentISO = "pt";
-			_model.CurrentCollationRulesType = CollationRulesTypes.CustomIcu.ToString();
+			_model.CurrentCollationRulesType = "CustomIcu";
 			_model.CurrentCollationRules = "&b<a<c";
 			Assert.IsNull(_model.TestSort(null));
 		}
@@ -593,7 +593,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		{
 			_model.AddNew();
 			_model.CurrentISO = "pt";
-			_model.CurrentCollationRulesType = CollationRulesTypes.CustomIcu.ToString();
+			_model.CurrentCollationRulesType = "CustomIcu";
 			_model.CurrentCollationRules = "&b<a<c";
 			Assert.AreEqual("b\r\na\r\nc", _model.TestSort("a\r\nb\r\nc"));
 		}
@@ -604,7 +604,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 			string message;
 			_model.AddNew();
 			_model.CurrentISO = "pt";
-			_model.CurrentCollationRulesType = CollationRulesTypes.CustomIcu.ToString();
+			_model.CurrentCollationRulesType = "CustomIcu";
 			_model.CurrentCollationRules = "&b<a<c";
 			Assert.IsTrue(_model.ValidateCurrentSortRules(out message));
 		}
@@ -615,7 +615,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 			string message;
 			_model.AddNew();
 			_model.CurrentISO = "pt";
-			_model.CurrentCollationRulesType = CollationRulesTypes.CustomIcu.ToString();
+			_model.CurrentCollationRulesType = "CustomIcu";
 			_model.CurrentCollationRules = "&&b<a<c";
 			Assert.IsFalse(_model.ValidateCurrentSortRules(out message));
 		}
@@ -626,7 +626,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 			string message;
 			_model.AddNew();
 			_model.CurrentISO = "pt";
-			_model.CurrentCollationRulesType = CollationRulesTypes.CustomSimple.ToString();
+			_model.CurrentCollationRulesType = "CustomSimple";
 			_model.CurrentCollationRules = "b a c";
 			Assert.IsTrue(_model.ValidateCurrentSortRules(out message));
 		}
@@ -637,7 +637,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 			string message;
 			_model.AddNew();
 			_model.CurrentISO = "pt";
-			_model.CurrentCollationRulesType = CollationRulesTypes.CustomSimple.ToString();
+			_model.CurrentCollationRulesType = "CustomSimple";
 			_model.CurrentCollationRules = "ab b b";
 			Assert.IsFalse(_model.ValidateCurrentSortRules(out message));
 		}
@@ -648,7 +648,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 			string message;
 			_model.AddNew();
 			_model.CurrentISO = "pt";
-			_model.CurrentCollationRulesType = CollationRulesTypes.OtherLanguage.ToString();
+			_model.CurrentCollationRulesType = "OtherLanguage";
 			_model.CurrentCollationRules = "en";
 			Assert.IsTrue(_model.ValidateCurrentSortRules(out message));
 		}
@@ -1105,7 +1105,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void SortRules_RulesAreEmptyAndSortTypeIsCustomSimple_DefaultSortRules()
 		{
 			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
-			Assert.That(_model.CurrentDefinition.CollationRules, Is.Empty);
+			Assert.That(_model.CurrentCollationRulesType, Is.EqualTo("DefaultOrdering"));
 			_model.CurrentCollationRulesType = "CustomSimple";
 			Assert.That(_model.CurrentCollationRules, Is.EqualTo(_model.DefaultCustomSimpleSortRules));
 		}
@@ -1114,6 +1114,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void SortRules_HasExistingRules_RulesAreNotReplacedWithDefault()
 		{
 			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
+			_model.CurrentCollationRulesType = "CustomSimple";
 			_model.CurrentCollationRules = "1 2 3 4 5 a b c d e";
 			_model.CurrentCollationRulesType = "CustomSimple";
 			Assert.That(_model.CurrentCollationRules, Is.Not.EqualTo(_model.DefaultCustomSimpleSortRules));
@@ -1125,7 +1126,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void SortRules_RulesAreEmptyAndSortTypeIsCustomICU_StillEmpty()
 		{
 			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
-			Assert.That(_model.CurrentDefinition.CollationRules, Is.Empty);
+			Assert.That(_model.CurrentCollationRulesType, Is.EqualTo("DefaultOrdering"));
 			_model.CurrentCollationRulesType = "CustomIcu";
 			Assert.That(_model.CurrentCollationRules, Is.Empty);
 		}

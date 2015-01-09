@@ -3,9 +3,8 @@ using System.Globalization;
 using System.Xml;
 using System.Xml.XPath;
 using NUnit.Framework;
-using SIL.WritingSystems.Collation;
 
-namespace SIL.WritingSystems.Tests.Collation
+namespace SIL.WritingSystems.Tests
 {
 	[TestFixture]
 	public class AddSortKeysToXmlTests

@@ -131,25 +131,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AddSortKeysToXml.cs" />
+    <Compile Include="CollationDefinition.cs" />
     <Compile Include="DefaultKeyboardController.cs" />
     <Compile Include="DefaultKeyboardDefinition.cs" />
     <Compile Include="EthnologueLookup.cs" />
     <Compile Include="FlexConformPrivateUseRfc5646TagInterpreter.cs" />
     <Compile Include="FontDefinition.cs" />
     <Compile Include="GlobalWritingSystemRepository.cs" />
+    <Compile Include="ICollator.cs" />
+    <Compile Include="IcuRulesCollator.cs" />
     <Compile Include="IInputLanguage.cs" />
     <Compile Include="IKeyboardController.cs" />
     <Compile Include="IKeyboardDefinition.cs" />
+    <Compile Include="InheritedCollationDefinition.cs" />
     <Compile Include="Iso15924Script.cs" />
     <Compile Include="Iso639LanguageCode.cs" />
     <Compile Include="IWritingSystemRepository.cs" />
     <Compile Include="Keyboard.cs" />
+    <Compile Include="LdmlCollationParser.cs" />
     <Compile Include="MatchedPair.cs" />
     <Compile Include="DefinitionBase.cs" />
+    <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\IcuRulesParser.cs" />
     <Compile Include="ObservableHashSet.cs" />
     <Compile Include="PunctuationPattern.cs" />
     <Compile Include="QuotationMark.cs" />
+    <Compile Include="SimpleRulesParser.cs" />
     <Compile Include="SimpleMonitor.cs" />
+    <Compile Include="SimpleCollationDefinition.cs" />
     <Compile Include="Sldr.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\LdmlCollationParserV1.cs" />
     <Compile Include="ObservableKeyedCollection.cs" />
@@ -163,13 +172,6 @@
     <Compile Include="LdmlInXmlWritingSystemRepository.cs" />
     <Compile Include="LdmlNodeComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Collation\AddSortKeysToXml.cs" />
-    <Compile Include="Collation\ICollator.cs" />
-    <Compile Include="Collation\IcuRulesCollator.cs" />
-    <Compile Include="Collation\IcuRulesParser.cs" />
-    <Compile Include="Collation\LdmlCollationParser.cs" />
-    <Compile Include="Collation\SimpleRulesCollator.cs" />
-    <Compile Include="Collation\SystemCollator.cs" />
     <Compile Include="Migration\GlobalWritingSystemRepositoryMigrator.cs" />
     <Compile Include="Migration\LdmlInFolderWritingSystemRepositoryMigrator.cs" />
     <Compile Include="Migration\Rfc5646TagCleaner.cs" />
@@ -185,6 +187,7 @@
     <Compile Include="Rfc5646Tag.cs" />
     <Compile Include="SpellCheckDictionaryDefinition.cs" />
     <Compile Include="StandardTags.cs" />
+    <Compile Include="SystemCollator.cs" />
     <Compile Include="WellKnownSubtags.cs" />
     <Compile Include="WritingSystemChangeLog.cs" />
     <Compile Include="WritingSystemChangeLogDataMapper.cs" />

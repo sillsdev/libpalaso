@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Xml.XPath;
 using Palaso.Base32;
 
-namespace SIL.WritingSystems.Collation
+namespace SIL.WritingSystems
 {
 	public class AddSortKeysToXml
 	{
