@@ -120,6 +120,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AddSortKeysToXmlTests.cs" />
+    <Compile Include="CharacterSetDefinitionCloneableTests.cs" />
     <Compile Include="CollationDefinitionCloneableTests.cs" />
     <Compile Include="InheritedCollationDefinitionCloneableTests.cs" />
     <Compile Include="LdmlCollationParserTests.cs" />

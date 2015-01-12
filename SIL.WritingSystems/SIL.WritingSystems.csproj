@@ -132,6 +132,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AddSortKeysToXml.cs" />
+    <Compile Include="CharacterSetDefinition.cs" />
     <Compile Include="CollationDefinition.cs" />
     <Compile Include="DefaultKeyboardController.cs" />
     <Compile Include="DefaultKeyboardDefinition.cs" />

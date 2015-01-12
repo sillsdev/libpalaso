@@ -25,7 +25,7 @@ namespace SIL.WritingSystems.Tests
 		public override string ExceptionList
 		{
 			// We do want to clone KnownKeyboards, but I don't think the automatic cloneable test for it can handle a list.
-			get { return "|MarkedForDeletion|StoreID|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionary|_spellCheckDictionaries|IsChanged|_matchedPairs|_punctuationPatterns|_quotationMarks|_defaultCollation|_collations|"; }
+			get { return "|MarkedForDeletion|StoreID|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionary|_spellCheckDictionaries|IsChanged|_matchedPairs|_punctuationPatterns|_quotationMarks|_defaultCollation|_collations|_characterSets|"; }
 		}
 
 		protected override List<ValuesToSet> DefaultValuesForTypes
@@ -153,6 +153,20 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(copy.DefaultCollation.ValueEquals(cd2), Is.True);
 			Assert.That(copy.DefaultCollation == cd2, Is.False);
 			Assert.That(copy.DefaultCollation == copy.Collations[1], Is.True);
+		}
+
+		[Test]
+		public void CloneCopiesCharacterSets()
+		{
+			var original = new WritingSystemDefinition();
+			var cs1 = new CharacterSetDefinition("cs1");
+			var cs2 = new CharacterSetDefinition("cs2");
+			original.CharacterSets.Add(cs1);
+			original.CharacterSets.Add(cs2);
+			WritingSystemDefinition copy = original.Clone();
+			Assert.That(copy.CharacterSets.Count, Is.EqualTo(2));
+			Assert.That(copy.CharacterSets[0].ValueEquals(cs1), Is.True);
+			Assert.That(ReferenceEquals(copy.CharacterSets[0], cs1), Is.False);
 		}
 
 		/// <summary>
@@ -332,6 +346,30 @@ namespace SIL.WritingSystems.Tests
 			second.Collations.Add(cd3);
 			second.Collations.Add(cd4);
 			Assert.That(first.ValueEquals(second), Is.False, "ws with same-length lists of different collations should not be equal");
+		}
+
+		[Test]
+		public void ValueEqualsComparesCharacterSets()
+		{
+			var first = new WritingSystemDefinition();
+			var cs1 = new CharacterSetDefinition("cs1");
+			var cs2 = new CharacterSetDefinition("cs2");
+			first.CharacterSets.Add(cs1);
+			first.CharacterSets.Add(cs2);
+			var second = new WritingSystemDefinition();
+			var cs3 = new CharacterSetDefinition("cs1");
+			var cs4 = new CharacterSetDefinition("cs3");
+
+			Assert.That(first.ValueEquals(second), Is.False, "ws with empty character sets should not equal one with some");
+			second.CharacterSets.Add(cs3);
+			Assert.That(first.ValueEquals(second), Is.False, "ws's with different length character set lists should not be equal");
+			second.CharacterSets.Add(cs2.Clone());
+			Assert.That(first.ValueEquals(second), Is.True, "ws's with same character set lists should be equal");
+
+			second = new WritingSystemDefinition();
+			second.CharacterSets.Add(cs3);
+			second.CharacterSets.Add(cs4);
+			Assert.That(first.ValueEquals(second), Is.False, "ws with same-length lists of different character sets should not be equal");
 		}
 	}
 

@@ -41,39 +41,31 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void CloneCopiesUrls()
 		{
-			var original = new SpellCheckDictionaryDefinition("language-Tag", SpellCheckDictionaryFormat.Hunspell);
-			string url1 = "url1";
-			string url2 = "url2";
-			original.Urls.Add(url1);
-			original.Urls.Add(url2);
+			var original = new SpellCheckDictionaryDefinition("en", SpellCheckDictionaryFormat.Hunspell);
+			original.Urls.Add("url1");
+			original.Urls.Add("url2");
 			SpellCheckDictionaryDefinition copy = original.Clone();
-			Assert.That(copy.Urls.Count, Is.EqualTo(2));
-			Assert.That(copy.Urls[0] == url1, Is.True);
+			Assert.That(copy.Urls, Is.EqualTo(new string[] { "url1", "url2" }));
 		}
 
 		[Test]
 		public void ValueEqualsComparesUrls()
 		{
-			SpellCheckDictionaryDefinition first = new SpellCheckDictionaryDefinition("language-Tag", SpellCheckDictionaryFormat.Hunspell);
-			string url1 = "url1";
-			string url2 = "url2";
-			first.Urls.Add(url1);
-			first.Urls.Add(url2);
-			SpellCheckDictionaryDefinition second = new SpellCheckDictionaryDefinition("language-Tag", SpellCheckDictionaryFormat.Hunspell);
-			string url3 = "url1";
-			string url4 = "url3";
+			var first = new SpellCheckDictionaryDefinition("en", SpellCheckDictionaryFormat.Hunspell);
+			first.Urls.Add("url1");
+			first.Urls.Add("url2");
+			var second = new SpellCheckDictionaryDefinition("en", SpellCheckDictionaryFormat.Hunspell);
 
-			Assert.That(first.ValueEquals(second), Is.False, "sd with empty urls should not equal one with some");
-			second.Urls.Add(url3);
-			Assert.That(first.ValueEquals(second), Is.False, "sd's with different length url lists should not be equal");
-			second.Urls.Add(url2);
-			Assert.That(first.ValueEquals(second), Is.True, "sd's with same url lists should be equal");
+			Assert.That(first.ValueEquals(second), Is.False, "dict with empty URLs should not equal one with some");
+			second.Urls.Add("url1");
+			Assert.That(first.ValueEquals(second), Is.False, "dicts with different length URL lists should not be equal");
+			second.Urls.Add("url2");
+			Assert.That(first.ValueEquals(second), Is.True, "dicts with same URL lists should be equal");
 
-			second = new SpellCheckDictionaryDefinition("language-Tag", SpellCheckDictionaryFormat.Hunspell);
-			second.Urls.Add(url3);
-			second.Urls.Add(url4);
-			Assert.That(first.ValueEquals(second), Is.False, "sd with same-length lists of different URLs should not be equal");
-
+			second.Urls.Clear();
+			second.Urls.Add("url1");
+			second.Urls.Add("url3");
+			Assert.That(first.ValueEquals(second), Is.False, "dicts with same-length lists of different URLs should not be equal");
 		}
 	}
 }

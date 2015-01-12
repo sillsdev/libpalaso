@@ -44,38 +44,30 @@ namespace SIL.WritingSystems.Tests
 		public void CloneCopiesUrls()
 		{
 			var original = new FontDefinition("font1");
-			string url1 = "url1";
-			string url2 = "url2";
-			original.Urls.Add(url1);
-			original.Urls.Add(url2);
+			original.Urls.Add("url1");
+			original.Urls.Add("url2");
 			FontDefinition copy = original.Clone();
-			Assert.That(copy.Urls.Count, Is.EqualTo(2));
-			Assert.That(copy.Urls[0] == url1, Is.True);
+			Assert.That(copy.Urls, Is.EqualTo(new string[] {"url1", "url2"}));
 		}
 
 		[Test]
 		public void ValueEqualsComparesUrls()
 		{
-			FontDefinition first = new FontDefinition("font1");
-			string url1 = "url1";
-			string url2 = "url2";
-			first.Urls.Add(url1);
-			first.Urls.Add(url2);
-			FontDefinition second = new FontDefinition("font1");
-			string url3 = "url1";
-			string url4 = "url3";
+			var first = new FontDefinition("font1");
+			first.Urls.Add("url1");
+			first.Urls.Add("url2");
+			var second = new FontDefinition("font1");
 
-			Assert.That(first.ValueEquals(second), Is.False, "fd with empty urls should not equal one with some");
-			second.Urls.Add(url3);
-			Assert.That(first.ValueEquals(second), Is.False, "fd's with different length url lists should not be equal");
-			second.Urls.Add(url2);
-			Assert.That(first.ValueEquals(second), Is.True, "fd's with same font lists should be equal");
+			Assert.That(first.ValueEquals(second), Is.False, "font with empty URLs should not equal one with some");
+			second.Urls.Add("url1");
+			Assert.That(first.ValueEquals(second), Is.False, "fonts with different length URL lists should not be equal");
+			second.Urls.Add("url2");
+			Assert.That(first.ValueEquals(second), Is.True, "fonts with same URL lists should be equal");
 
-			second = new FontDefinition("font1");
-			second.Urls.Add(url3);
-			second.Urls.Add(url4);
-			Assert.That(first.ValueEquals(second), Is.False, "fd with same-length lists of different URLs should not be equal");
-			
+			second.Urls.Clear();
+			second.Urls.Add("url1");
+			second.Urls.Add("url3");
+			Assert.That(first.ValueEquals(second), Is.False, "fonts with same-length lists of different URLs should not be equal");
 		}
 	}
 }

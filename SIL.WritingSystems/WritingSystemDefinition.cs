@@ -95,6 +95,7 @@ namespace SIL.WritingSystems
 		private readonly ObservableHashSet<MatchedPair> _matchedPairs;
 		private readonly ObservableHashSet<PunctuationPattern> _punctuationPatterns;
 		private readonly ObservableCollection<QuotationMark> _quotationMarks = new ObservableCollection<QuotationMark>();
+		private readonly ObservableKeyedCollection<string, CharacterSetDefinition> _characterSets = new ObservableKeyedCollection<string, CharacterSetDefinition>(csd => csd.Type); 
 
 		/// <summary>
 		/// Creates a new WritingSystemDefinition with Language subtag set to "qaa"
@@ -257,6 +258,8 @@ namespace SIL.WritingSystems
 				if (index != -1)
 					_defaultCollation = _collations[index];
 			}
+			foreach (CharacterSetDefinition csd in ws._characterSets)
+				_characterSets.Add(csd.Clone());
 			SetupCollectionChangeListeners();
 		}
 
@@ -901,7 +904,8 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				return base.IsChanged || ChildrenIsChanged(_fonts) || ChildrenIsChanged(_spellCheckDictionaries) || ChildrenIsChanged(_collations);
+				return base.IsChanged || ChildrenIsChanged(_fonts) || ChildrenIsChanged(_spellCheckDictionaries)
+					|| ChildrenIsChanged(_collations) || ChildrenIsChanged(_characterSets);
 			}
 		}
 
@@ -911,6 +915,7 @@ namespace SIL.WritingSystems
 			ChildrenAcceptChanges(_fonts);
 			ChildrenAcceptChanges(_spellCheckDictionaries);
 			ChildrenAcceptChanges(_collations);
+			ChildrenAcceptChanges(_characterSets);
 		}
 
 		/// <summary>
@@ -1038,6 +1043,11 @@ namespace SIL.WritingSystems
 		public KeyedCollection<string, CollationDefinition> Collations
 		{
 			get { return _collations; }
+		}
+
+		public KeyedCollection<string, CharacterSetDefinition> CharacterSets
+		{
+			get { return _characterSets; }
 		}
 
 		private void UpdateIdFromRfcTag()
@@ -1308,6 +1318,15 @@ namespace SIL.WritingSystems
 			else if (!DefaultCollation.ValueEquals(other.DefaultCollation))
 			{
 				return false;
+			}
+
+			// character sets
+			if (_characterSets.Count != other._characterSets.Count)
+				return false;
+			for (int i = 0; i < _characterSets.Count; i++)
+			{
+				if (!_characterSets[i].ValueEquals(other._characterSets[i]))
+					return false;
 			}
 
 			return true;
