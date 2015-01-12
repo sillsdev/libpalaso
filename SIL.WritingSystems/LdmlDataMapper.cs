@@ -89,6 +89,40 @@ namespace SIL.WritingSystems
 			{"keylayout", KeyboardFormat.Keylayout}
 		}; 
 
+		/// <summary>
+		/// Mapping of context attribute to PunctuationPatternContext
+		/// </summary>
+		private static readonly Dictionary<string, PunctuationPatternContext> ContextToPunctuationPatternContext = new Dictionary<string, PunctuationPatternContext>
+		{
+			{"init", PunctuationPatternContext.Initial},
+			{"medial", PunctuationPatternContext.Medial},
+			{"final", PunctuationPatternContext.Final},
+			{"break", PunctuationPatternContext.Break},
+			{"isolate", PunctuationPatternContext.Isolate}
+		};
+
+		/// <summary>
+		/// Mapping of paraContinueType attribute to QuotationParagraphContinueType
+		/// </summary>
+		private static readonly Dictionary<string, QuotationParagraphContinueType> QuotationToQuotationParagraphContinueTypes = new Dictionary<string, QuotationParagraphContinueType>
+		{
+			{string.Empty, QuotationParagraphContinueType.None},
+			{"all", QuotationParagraphContinueType.All},
+			{"outer", QuotationParagraphContinueType.Outermost},
+			{"innter", QuotationParagraphContinueType.Innermost}
+		};
+
+		/// <summary>
+		/// Mapping of paraContinueMark attribute to QuotationParagraphContinueMark
+		/// </summary>
+		private static readonly Dictionary<string, QuotationParagraphContinueMark> QuotationToQuotationParagraphContinueMarks = new Dictionary<string, QuotationParagraphContinueMark>
+		{
+			{string.Empty, QuotationParagraphContinueMark.Open},
+			{"open", QuotationParagraphContinueMark.Open},
+			{"close", QuotationParagraphContinueMark.Close},
+			{"special", QuotationParagraphContinueMark.Continue}
+		};
+ 
 		public void Read(string filePath, WritingSystemDefinition ws)
 		{
 			if (filePath == null)
@@ -181,6 +215,10 @@ namespace SIL.WritingSystems
 			XElement identityElem = element.Element("identity");
 			if (identityElem != null)
 				ReadIdentityElement(identityElem, ws);
+
+			XElement delimitersElem = element.Element("delimiters");
+			if (delimitersElem != null)
+				ReadDelimitersElem(delimitersElem, ws);
 
 			XElement layoutElem = element.Element("layout");
 			if (layoutElem != null)
@@ -434,6 +472,63 @@ namespace SIL.WritingSystems
 					ws.WindowsLcid = silIdentityElem.GetAttributeValue("windowsLCID");
 					ws.DefaultRegion = silIdentityElem.GetAttributeValue("defaultRegion");
 					ws.VariantName = silIdentityElem.GetAttributeValue("variantName");
+				}
+			}
+		}
+
+		private void ReadDelimitersElem(XElement delimitersElem, WritingSystemDefinition ws)
+		{
+			Debug.Assert(delimitersElem.Name == "delimiters");
+
+			// Currently we don't use quotationStart, quotationEnd, alternateQuotationStart, alternateQuotationEnd
+
+			XElement specialElem = delimitersElem.Element("special");
+			if (specialElem != null)
+			{
+				XElement matchedPairsElem = specialElem.Element(Sil + "matched-pairs");
+				if (matchedPairsElem != null)
+				{
+					foreach (XElement matchedPairElem in matchedPairsElem.Elements(Sil + "matched-pair"))
+					{
+						string open = matchedPairElem.GetAttributeValue("open");
+						string close = matchedPairElem.GetAttributeValue("close");
+						bool paraClose = (bool?) matchedPairElem.Attribute("paraClose") ?? false;
+						MatchedPair mp = new MatchedPair(open, close, paraClose);
+						ws.MatchedPairs.Add(mp);
+					}
+				}
+
+				XElement punctuationPatternsElem = specialElem.Element(Sil + "punctuation-patterns");
+				if (punctuationPatternsElem != null)
+				{
+					foreach (XElement punctuationPatternElem in punctuationPatternsElem.Elements(Sil + "punctuation-pattern"))
+					{
+						string pattern = punctuationPatternElem.GetAttributeValue("pattern");
+						PunctuationPatternContext ppc = ContextToPunctuationPatternContext[
+							punctuationPatternElem.GetAttributeValue("context")];
+						PunctuationPattern pp = new PunctuationPattern(pattern, ppc);
+						ws.PunctuationPatterns.Add(pp);
+					}
+				}
+
+				XElement quotationsElem = specialElem.Element(Sil + "quotation-marks");
+				if (quotationsElem != null)
+				{
+					// Currently we don't use quotationContinue or alternateQuotationContinue
+
+					ws.QuotationParagraphContinueType = QuotationToQuotationParagraphContinueTypes[
+						quotationsElem.GetAttributeValue("paraContinueType")];
+					ws.QuotationParagraphContinueMark = QuotationToQuotationParagraphContinueMarks[
+						quotationsElem.GetAttributeValue("paraContinueMark")];
+
+					foreach (XElement quotationElem in quotationsElem.Elements(Sil + "quotation"))
+					{
+						string open = quotationElem.GetAttributeValue("open");
+						string close = quotationElem.GetAttributeValue("close");
+						string cont = quotationElem.GetAttributeValue("continue");
+						QuotationMark qm = new QuotationMark(open, close, cont);
+						ws.QuotationMarks.Add(qm);
+					}
 				}
 			}
 		}

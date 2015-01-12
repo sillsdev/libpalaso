@@ -215,6 +215,60 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(wsFromLdml.VariantName, Is.EqualTo("1996"));
 		}
 
+		[Test]
+		public void Read_LdmlDelimiters()
+		{
+			var ldmlAdaptor = new LdmlDataMapper();
+			var wsFromLdml = new WritingSystemDefinition();
+			using (var tempFile = new TempFile())
+			{
+				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
+				{
+					writer.Write(
+@"<?xml version='1.0' encoding='utf-8'?>
+<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
+	<identity>
+		<version number='$Revision$'/>
+		<generation date='$Date$'/>
+		<!-- name.en(en)='English' -->
+		<language type='en'/>
+		<script type='Latn'/>
+	</identity>
+	<delimiters>
+		<!-- Currently parser doesn't do anything with quotationStart, quotationEnd, alternateQuotationStart, alternateQuotationEnd -->
+		<quotationStart>qtStart</quotationStart>
+		<quotationEnd>qtEnd</quotationEnd>
+		<alternateQuotationStart>altQtStart</alternateQuotationStart>
+		<alternateQuotationEnd>altQtEnd</alternateQuotationEnd>
+		<special>
+			<sil:matched-pairs>
+				<sil:matched-pair open='mpOpen1' close='mpClose2' paraClose='false'></sil:matched-pair>
+			</sil:matched-pairs>
+			<sil:punctuation-patterns>
+				<sil:punctuation-pattern pattern='pattern1' context='medial'></sil:punctuation-pattern>
+			</sil:punctuation-patterns>
+			<sil:quotation-marks paraContinueType='outer' paraContinueMark='close'>
+				<!-- Currently parser doesn't do anything with quotationContinue or alternateQuotationContinue -->
+				<sil:quotationContinue>quoteContinue1</sil:quotationContinue>
+				<sil:alternateQuotationContinue>altQuoteContinue2</sil:alternateQuotationContinue>
+				<sil:quotation open='open1' close='close2' continue='cont3'></sil:quotation>
+			</sil:quotation-marks>
+		</special>
+	</delimiters>
+</ldml>".Replace("'", "\""));
+				}
+				ldmlAdaptor.Read(tempFile.Path, wsFromLdml);
+			}
+			MatchedPair mp = new MatchedPair("mpOpen1", "mpClose2", false);
+			Assert.That(wsFromLdml.MatchedPairs.FirstOrDefault(), Is.EqualTo(mp));
+			PunctuationPattern pp = new PunctuationPattern("pattern1", PunctuationPatternContext.Medial);
+			Assert.That(wsFromLdml.PunctuationPatterns.FirstOrDefault(), Is.EqualTo(pp));
+			Assert.That(wsFromLdml.QuotationParagraphContinueType, Is.EqualTo(QuotationParagraphContinueType.Outermost));
+			Assert.That(wsFromLdml.QuotationParagraphContinueMark, Is.EqualTo(QuotationParagraphContinueMark.Close));
+			QuotationMark qm = new QuotationMark("open1", "close2", "cont3");
+			Assert.That(wsFromLdml.QuotationMarks.FirstOrDefault(), Is.EqualTo(qm));
+		}
+
 #if WS_FIX
 		[Test]
 		//WS-33992
