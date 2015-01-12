@@ -901,17 +901,16 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				return base.IsChanged || _fonts.Any(fd => fd.IsChanged) || _spellCheckDictionaries.Any(scdd => scdd.IsChanged);
+				return base.IsChanged || ChildrenIsChanged(_fonts) || ChildrenIsChanged(_spellCheckDictionaries) || ChildrenIsChanged(_collations);
 			}
 		}
 
 		public override void AcceptChanges()
 		{
 			base.AcceptChanges();
-			foreach (FontDefinition fd in _fonts)
-				fd.AcceptChanges();
-			foreach (SpellCheckDictionaryDefinition scdd in _spellCheckDictionaries)
-				scdd.AcceptChanges();
+			ChildrenAcceptChanges(_fonts);
+			ChildrenAcceptChanges(_spellCheckDictionaries);
+			ChildrenAcceptChanges(_collations);
 		}
 
 		/// <summary>
@@ -1020,7 +1019,10 @@ namespace SIL.WritingSystems
 				if (_defaultCollation == null)
 					_defaultCollation = _collations.FirstOrDefault();
 				if (_defaultCollation == null)
+				{
 					_defaultCollation = new CollationDefinition("standard");
+					_collations.Add(_defaultCollation);
+				}
 				return _defaultCollation;
 			}
 			set

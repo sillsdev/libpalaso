@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Palaso.Code;
 
 namespace SIL.WritingSystems
@@ -37,6 +38,18 @@ namespace SIL.WritingSystems
 			IsChanged = true;
 			field = value;
 			return true;
+		}
+
+		protected static void ChildrenAcceptChanges(IEnumerable<IChangeTracking> children)
+		{
+			foreach (IChangeTracking child in children)
+				child.AcceptChanges();
+		}
+
+
+		protected static bool ChildrenIsChanged(IEnumerable<IChangeTracking> children)
+		{
+			return children.Any(child => child.IsChanged);
 		}
 	}
 }
