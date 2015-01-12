@@ -215,8 +215,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				if (string.IsNullOrEmpty(layoutName) && string.IsNullOrEmpty(locale))
 					return KeyboardDescription.Zero;
 
-				return Keyboards.Contains(layoutName, locale) ?
-					Keyboards[layoutName, locale] : KeyboardDescription.Zero;
+				if (Keyboards.Contains(layoutName, locale))
+					return Keyboards[layoutName, locale];
+				return KeyboardDescription.Zero;
 			}
 
 			/// <summary>
