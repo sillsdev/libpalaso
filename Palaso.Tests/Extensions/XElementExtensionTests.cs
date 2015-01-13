@@ -14,7 +14,7 @@ namespace Palaso.Tests.Extensions
 		private static string contents =
 @"<?xml version='1.0' encoding='utf-8'?>
 <ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
-	<identity version='3.14'>Identity description</identity>
+	<identity version='3.14' sil:date='Jan 1, 2015'>Identity description</identity>
 	<sil:special version='10'>Special description</sil:special>
 </ldml>".Replace("'", "\"");
 
@@ -37,6 +37,15 @@ namespace Palaso.Tests.Extensions
 		}
 
 		[Test]
+		public void GetNamespaceAttribute()
+		{
+			XElement root = XElement.Parse(contents);
+			XElement identityElem = root.Element("identity");
+			string attribute = identityElem.GetAttributeValue(Sil + "date");
+			Assert.That(attribute.Equals("Jan 1, 2015"));
+		}
+
+		[Test]
 		public void GetChildNullAttribute()
 		{
 			XElement root = XElement.Parse(contents);
@@ -56,7 +65,7 @@ namespace Palaso.Tests.Extensions
 		public void GetChildNamespaceNullAttribute()
 		{
 			XElement root = XElement.Parse(contents);
-			string attribute = root.GetAttributeValue(Sil, "special", "date");
+			string attribute = root.GetAttributeValue(Sil + "special", "date");
 			Assert.That(attribute.Equals(string.Empty));
 			
 		}
@@ -65,7 +74,7 @@ namespace Palaso.Tests.Extensions
 		public void GetChildNamespaceAttribute()
 		{
 			XElement root = XElement.Parse(contents);
-			string attribute = root.GetAttributeValue(Sil, "special", "version");
+			string attribute = root.GetAttributeValue(Sil + "special", "version");
 			Assert.That(attribute.Equals("10"));
 		}
 

@@ -306,6 +306,252 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 #endif
+
+		[Test]
+		public void Read_LdmlStandardCollation()
+		{
+			using (var tempFile = new TempFile())
+			{
+				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
+				{
+					writer.Write(
+#region filecontent
+@"<?xml version='1.0' encoding='utf-8'?>
+<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
+	<identity>
+		<version number='$Revision$'/>
+		<generation date='$Date$'/>
+		<!-- name.en(aa)='Afar' -->
+		<language type='aa'/>
+		<script type='Latn'/>
+	</identity>
+	<collations>
+		<defaultCollation>standard</defaultCollation>
+		<collation type='standard'>
+			<cr><![CDATA[
+				&B<t<<<T<s<<<S<e<<<E
+				&C<k<<<K<x<<<X<i<<<I
+				&D<q<<<Q<r<<<R
+				&G<o<<<O
+				&W<h<<<H
+			]]></cr>
+		</collation>
+	</collations>
+</ldml>".Replace("'", "\""));
+#endregion
+				}
+				var wsFromLdml = new WritingSystemDefinition();
+				var dataMapper = new LdmlDataMapper();
+
+				dataMapper.Read(tempFile.Path, wsFromLdml);
+
+				CollationDefinition cd = new CollationDefinition("standard");
+				cd.IcuRules =
+					"&B<t<<<T<s<<<S<e<<<E\n\t\t\t\t&C<k<<<K<x<<<X<i<<<I\n\t\t\t\t&D<q<<<Q<r<<<R\n\t\t\t\t&G<o<<<O\n\t\t\t\t&W<h<<<H";
+				Assert.That(wsFromLdml.Collations.First().ValueEquals(cd));
+			}
+		}
+
+		[Test]
+		public void Read_LdmlSimpleCollation()
+		{
+			using (var tempFile = new TempFile())
+			{
+				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
+				{
+					writer.Write(
+#region filecontent
+@"<?xml version='1.0' encoding='utf-8'?>
+<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
+	<identity>
+		<version number='$Revision$'/>
+		<generation date='$Date$'/>
+		<!-- name.en(aa)='Afar' -->
+		<language type='aa'/>
+		<script type='Latn'/>
+	</identity>
+	<collations>
+		<defaultCollation>standard</defaultCollation>
+		<collation type='standard'>
+			<cr><![CDATA[
+				&B<t<<<T<s<<<S<e<<<E
+				&C<k<<<K<x<<<X<i<<<I
+				&D<q<<<Q<r<<<R
+				&G<o<<<O
+				&W<h<<<H
+			]]></cr>
+			<special>
+				<sil:simple><![CDATA[
+					a/A
+					b/B
+					t/T
+					s/S
+					c/C
+					k/K
+					x/X
+					i/I
+					d/D
+					q/Q
+					r/R
+					e/E
+					f/F
+					g/G
+					o/O
+					j/J
+					l/L
+					m/M
+					n/N
+					p/P
+					u/U
+					v/V
+					w/W
+					h/H
+					y/Y
+					z/Z
+				]]></sil:simple>
+			</special>
+		</collation>
+	</collations>
+</ldml>".Replace("'", "\""));
+					#endregion
+				}
+				var wsFromLdml = new WritingSystemDefinition();
+				var dataMapper = new LdmlDataMapper();
+
+				dataMapper.Read(tempFile.Path, wsFromLdml);
+
+				SimpleCollationDefinition cd = new SimpleCollationDefinition("standard");
+				cd.SimpleRules =
+					"\n\t\t\t\t\ta/A\n\t\t\t\t\tb/B\n\t\t\t\t\tt/T\n\t\t\t\t\ts/S\n\t\t\t\t\tc/C\n\t\t\t\t\tk/K\n\t\t\t\t\tx/X\n\t\t\t\t\ti/I\n\t\t\t\t\td/D\n\t\t\t\t\tq/Q\n\t\t\t\t\tr/R\n\t\t\t\t\te/E\n\t\t\t\t\tf/F\n\t\t\t\t\tg/G\n\t\t\t\t\to/O\n\t\t\t\t\tj/J\n\t\t\t\t\tl/L\n\t\t\t\t\tm/M\n\t\t\t\t\tn/N\n\t\t\t\t\tp/P\n\t\t\t\t\tu/U\n\t\t\t\t\tv/V\n\t\t\t\t\tw/W\n\t\t\t\t\th/H\n\t\t\t\t\ty/Y\n\t\t\t\t\tz/Z\n\t\t\t\t";
+				cd.IcuRules =
+					"&[before 1] [first regular]  < a\\/A < b\\/B < t\\/T < s\\/S < c\\/C < k\\/K < x\\/X < i\\/I < d\\/D < q\\/Q < r\\/R < e\\/E < f\\/F < g\\/G < o\\/O < j\\/J < l\\/L < m\\/M < n\\/N < p\\/P < u\\/U < v\\/V < w\\/W < h\\/H < y\\/Y < z\\/Z";
+				Assert.That(wsFromLdml.Collations.First().ValueEquals(cd));
+				Assert.That(wsFromLdml.DefaultCollation.ValueEquals(cd));
+			}
+		}
+
+		[Test]
+		public void Read_LdmlSimpleCollationNeedsCompiling()
+		{
+			using (var tempFile = new TempFile())
+			{
+				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
+				{
+					writer.Write(
+					#region filecontent
+@"<?xml version='1.0' encoding='utf-8'?>
+<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
+	<identity>
+		<version number='$Revision$'/>
+		<generation date='$Date$'/>
+		<!-- name.en(aa)='Afar' -->
+		<language type='aa'/>
+		<script type='Latn'/>
+	</identity>
+	<collations>
+		<defaultCollation>standard</defaultCollation>
+		<collation type='standard' sil:needscompiling='true'>
+			<special>
+				<sil:simple><![CDATA[
+					a/A
+					b/B
+					t/T
+					s/S
+					c/C
+					k/K
+					x/X
+					i/I
+					d/D
+					q/Q
+					r/R
+					e/E
+					f/F
+					g/G
+					o/O
+					j/J
+					l/L
+					m/M
+					n/N
+					p/P
+					u/U
+					v/V
+					w/W
+					h/H
+					y/Y
+					z/Z
+				]]></sil:simple>
+			</special>
+		</collation>
+	</collations>
+</ldml>".Replace("'", "\""));
+					#endregion
+				}
+				var wsFromLdml = new WritingSystemDefinition();
+				var dataMapper = new LdmlDataMapper();
+
+				dataMapper.Read(tempFile.Path, wsFromLdml);
+
+				SimpleCollationDefinition cd = new SimpleCollationDefinition("standard");
+				cd.SimpleRules =
+					"\n\t\t\t\t\ta/A\n\t\t\t\t\tb/B\n\t\t\t\t\tt/T\n\t\t\t\t\ts/S\n\t\t\t\t\tc/C\n\t\t\t\t\tk/K\n\t\t\t\t\tx/X\n\t\t\t\t\ti/I\n\t\t\t\t\td/D\n\t\t\t\t\tq/Q\n\t\t\t\t\tr/R\n\t\t\t\t\te/E\n\t\t\t\t\tf/F\n\t\t\t\t\tg/G\n\t\t\t\t\to/O\n\t\t\t\t\tj/J\n\t\t\t\t\tl/L\n\t\t\t\t\tm/M\n\t\t\t\t\tn/N\n\t\t\t\t\tp/P\n\t\t\t\t\tu/U\n\t\t\t\t\tv/V\n\t\t\t\t\tw/W\n\t\t\t\t\th/H\n\t\t\t\t\ty/Y\n\t\t\t\t\tz/Z\n\t\t\t\t";
+				cd.IcuRules =
+					"&[before 1] [first regular]  < a\\/A < b\\/B < t\\/T < s\\/S < c\\/C < k\\/K < x\\/X < i\\/I < d\\/D < q\\/Q < r\\/R < e\\/E < f\\/F < g\\/G < o\\/O < j\\/J < l\\/L < m\\/M < n\\/N < p\\/P < u\\/U < v\\/V < w\\/W < h\\/H < y\\/Y < z\\/Z";
+				Assert.That(wsFromLdml.Collations.First().ValueEquals(cd));
+				Assert.That(wsFromLdml.DefaultCollation.ValueEquals(cd));
+			}
+		}
+
+		[Test]
+		public void Read_LdmlInheritedCollation()
+		{
+			using (var tempFile = new TempFile())
+			{
+				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
+				{
+					writer.Write(
+					#region filecontent
+@"<?xml version='1.0' encoding='utf-8'?>
+<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
+	<identity>
+		<version number='$Revision$'/>
+		<generation date='$Date$'/>
+		<!-- name.en(aa)='Afar' -->
+		<language type='aa'/>
+		<script type='Latn'/>
+	</identity>
+	<collations>
+		<defaultCollation>standard</defaultCollation>
+		<collation type='standard'>
+			<cr><![CDATA[
+				&B<t<<<T<s<<<S<e<<<E
+				&C<k<<<K<x<<<X<i<<<I
+				&D<q<<<Q<r<<<R
+				&G<o<<<O
+				&W<h<<<H
+			]]></cr>
+			<special>
+				<sil:inherited base='my' type='standard'/>
+			</special>
+		</collation>
+	</collations>
+</ldml>".Replace("'", "\""));
+					#endregion
+				}
+				var wsFromLdml = new WritingSystemDefinition();
+				var dataMapper = new LdmlDataMapper();
+
+				dataMapper.Read(tempFile.Path, wsFromLdml);
+
+				InheritedCollationDefinition cd = new InheritedCollationDefinition("standard");
+				cd.BaseLanguageTag = "my";
+				cd.BaseType = "standard";
+				cd.IcuRules =
+					"&B<t<<<T<s<<<S<e<<<E\n\t\t\t\t&C<k<<<K<x<<<X<i<<<I\n\t\t\t\t&D<q<<<Q<r<<<R\n\t\t\t\t&G<o<<<O\n\t\t\t\t&W<h<<<H";
+				Assert.That(wsFromLdml.Collations.First().ValueEquals(cd));
+				Assert.That(wsFromLdml.DefaultCollation.ValueEquals(cd));
+			}
+		}
+
 		[Test]
 		public void Read_LdmlFont()
 		{

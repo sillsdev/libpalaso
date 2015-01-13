@@ -550,93 +550,87 @@ namespace SIL.WritingSystems
 		private void ReadCollationsElement(XElement collationsElem, WritingSystemDefinition ws)
 		{
 			Debug.Assert(collationsElem.NodeType == XmlNodeType.Element && collationsElem.Name == "collations");
+			XElement defaultCollationElem = collationsElem.Element("defaultCollation");
+			string defaultCollation = (string) defaultCollationElem ?? "standard";
 			foreach (XElement collationElem in collationsElem.Elements("collation"))
 			{
-				// having no type is the same as type=standard, and is the only one we're interested in
-				string typeValue = (string)collationElem.Attribute("type") ?? string.Empty;
-				if (string.IsNullOrEmpty(typeValue) || typeValue == "standard")
-				{
-					ReadCollationElement(collationElem, ws);
-					break;
-				}
+				ReadCollationElement(collationElem, ws, defaultCollation);
 			}
 		}
 
-		private void ReadCollationElement(XElement collationElem, WritingSystemDefinition ws)
+		private void ReadCollationElement(XElement collationElem, WritingSystemDefinition ws, string defaultCollation)
 		{
 			Debug.Assert(collationElem != null);
 			Debug.Assert(ws != null);
 
-#if WS_FIX
+			string collationType = collationElem.GetAttributeValue("type");
+			bool needsCompiling = (bool?) collationElem.Attribute(Sil + "needscompiling") ?? false;
+
+			CollationDefinition cd = null;
 			XElement specialElem = collationElem.Element("special");
-			if (specialElem != null)
+			if ((specialElem != null) && (specialElem.HasElements))
 			{
-				string rulesTypeAsString = GetSpecialValue(specialElem, Palaso, "sortRulesType");
-				if(!String.IsNullOrEmpty(rulesTypeAsString))
+				string specialType = (specialElem.Elements().First().Name.LocalName);
+				switch (specialType)
 				{
-					ws.CollationRulesType = (CollationRulesTypes) Enum.Parse(typeof(CollationRulesTypes), rulesTypeAsString);
+					case "inherited":
+						XElement inheritedElem = specialElem.Element(Sil + "inherited");
+						cd = ReadCollationRulesForOtherLanguage(inheritedElem, collationType);
+						break;
+					case "simple":
+						XElement simpleElem = specialElem.Element(Sil + "simple");
+						cd = ReadCollationRulesForCustomSimple(simpleElem, collationType);
+						break;
+					case "reordered":
+						// Skip for now
+						break;
 				}
 			}
-			switch (ws.CollationRulesType)
+			else
 			{
-				case CollationRulesTypes.OtherLanguage:
-					ReadCollationRulesForOtherLanguage(collationElem, ws);
-					break;
-				case CollationRulesTypes.CustomSimple:
-					ReadCollationRulesForCustomSimple(collationElem, ws);
-					break;
-				case CollationRulesTypes.CustomIcu:
-					ReadCollationRulesForCustomICU(collationElem, ws);
-					break;
-				case CollationRulesTypes.DefaultOrdering:
-					break;
-				default:
-					string message = string.Format("Unhandled SortRulesType '{0}' while writing LDML definition file.", ws.CollationRulesType);
-					throw new ApplicationException(message);
+				cd = new CollationDefinition(collationType);
 			}
-#endif
-		}
 
-#if WS_FIX
-		private void ReadCollationRulesForOtherLanguage(XElement collationElem, WritingSystemDefinition ws)
-		{
-			bool foundValue = false;
-			XElement baseElem = collationElem.Element("base");
-			if (baseElem != null)
+			// Only add collation definition if it's been set
+			if (cd != null)
 			{
-				string sortRules = (string) baseElem.Attribute("source") ?? string.Empty;
-				if (sortRules != string.Empty)
+				// If ICU rules are out of sync, re-compile
+				if (needsCompiling)
 				{
-					ws.CollationRules = sortRules;
-					foundValue = true;
+					string errorMsg;
+					cd.Validate(out errorMsg);
+					// TODO: Throw exception with ErrorMsg?
 				}
-			}
-			if (!foundValue)
-			{
-				// missing base alias element, fall back to ICU rules
-				ws.CollationRulesType = CollationRulesTypes.CustomIcu;
-				ReadCollationRulesForCustomICU(collationElem, ws);
+				else
+					cd.IcuRules = LdmlCollationParser.GetIcuRulesFromCollationNode(collationElem);
+
+				ws.Collations.Add(cd);
+				if (collationType == defaultCollation)
+					ws.DefaultCollation = cd;
 			}
 		}
 
-		private void ReadCollationRulesForCustomICU(XElement collationElem, WritingSystemDefinition ws)
+		private CollationDefinition ReadCollationRulesForOtherLanguage(XElement inheritedElem, string collationType)
 		{
-			ws.CollationRules = LdmlCollationParser.GetIcuRulesFromCollationNode(collationElem);
+			Debug.Assert(inheritedElem != null);
+			string baseLanguageTag = inheritedElem.GetAttributeValue("base");
+			string baseType = inheritedElem.GetAttributeValue("type");
+
+			// TODO: Read referenced LDML and get collation from there
+			InheritedCollationDefinition cd = new InheritedCollationDefinition(collationType);
+			cd.BaseLanguageTag = baseLanguageTag;
+			cd.BaseType = baseType;
+			return cd;
 		}
 
-		private void ReadCollationRulesForCustomSimple(XElement collationElem, WritingSystemDefinition ws)
+		private CollationDefinition ReadCollationRulesForCustomSimple(XElement simpleElem, string collationType)
 		{
-			string rules;
-			if (LdmlCollationParser.TryGetSimpleRulesFromCollationNode(collationElem, out rules))
-			{
-				ws.CollationRules = rules;
-				return;
-			}
-			// fall back to ICU rules if Simple rules don't work
-			ws.CollationRulesType = CollationRulesTypes.CustomIcu;
-			ReadCollationRulesForCustomICU(collationElem, ws);
+			Debug.Assert(simpleElem != null);
+
+			SimpleCollationDefinition cd = new SimpleCollationDefinition(collationType);
+			cd.SimpleRules = (string)simpleElem;
+			return cd;
 		}
-#endif
 
 		public void Write(string filePath, WritingSystemDefinition ws, Stream oldFile)
 		{
