@@ -5,8 +5,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
+using Icu;
 using Palaso.Extensions;
 using Palaso.Xml;
 
@@ -215,6 +217,10 @@ namespace SIL.WritingSystems
 			XElement identityElem = element.Element("identity");
 			if (identityElem != null)
 				ReadIdentityElement(identityElem, ws);
+
+			XElement charactersElem = element.Element("characters");
+			if (charactersElem != null)
+				ReadCharacterElem(charactersElem, ws);
 
 			XElement delimitersElem = element.Element("delimiters");
 			if (delimitersElem != null)
@@ -474,6 +480,38 @@ namespace SIL.WritingSystems
 					ws.VariantName = silIdentityElem.GetAttributeValue("variantName");
 				}
 			}
+		}
+
+		private void ReadCharacterElem(XElement charactersElem, WritingSystemDefinition ws)
+		{
+			Debug.Assert(charactersElem.Name == "characters");
+
+			foreach (XElement exemplarCharactersElem in charactersElem.Elements("exemplarCharacters"))
+			{
+				ReadExemplarCharactersElem(exemplarCharactersElem, ws);
+			}
+
+			XElement specialElem = charactersElem.Element("special");
+			if (specialElem != null)
+			{
+				foreach (XElement exemplarCharactersElem in specialElem.Elements(Sil + "exemplarCharacters"))
+				{
+					ReadExemplarCharactersElem(exemplarCharactersElem, ws);
+				}
+			}
+		}
+
+		private void ReadExemplarCharactersElem(XElement exemplarCharactersElem, WritingSystemDefinition ws)
+		{
+			string type = (string) exemplarCharactersElem.Attribute("type") ?? "main";
+			CharacterSetDefinition csd = new CharacterSetDefinition(type);
+
+			var charList = UnicodeSet.ToCharacters((string) exemplarCharactersElem);
+			foreach (string charItem in charList)
+			{
+				csd.Characters.Add(charItem);
+			}
+			ws.CharacterSets.Add(csd);
 		}
 
 		private void ReadDelimitersElem(XElement delimitersElem, WritingSystemDefinition ws)

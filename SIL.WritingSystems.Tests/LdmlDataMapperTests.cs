@@ -216,6 +216,57 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void Read_LdmlCharacters()
+		{
+			var ldmlAdaptor = new LdmlDataMapper();
+			var wsFromLdml = new WritingSystemDefinition();
+			using (var tempFile = new TempFile())
+			{
+				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
+				{
+					writer.Write(
+// ldml string is split to handle special escaped punctuation in footnotes type
+#region filecontent
+@"<?xml version='1.0' encoding='utf-8'?>
+<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
+	<identity>
+		<version number='$Revision$'/>
+		<generation date='$Date$'/>
+		<!-- name.en(en)='English' -->
+		<language type='en'/>
+		<script type='Latn'/>
+	</identity>
+	<characters>
+		<exemplarCharacters type='index'>[A-G H-N O P Q R S T U V W X Y Z {AZ}]</exemplarCharacters>
+		<exemplarCharacters>[a b c d e f g h i j k l m n o p q r s t u v w x y z]</exemplarCharacters>
+		<special>".Replace("'", "\"") +
+
+			@"<sil:exemplarCharacters type=\quot;footnotes\quot;>[\- ‐ – — , ; \: ! ? . … ' ‘ ’ \quot; “ ” ( ) \[ \] § @ * / \&amp; # † ‡ ′ ″]</sil:exemplarCharacters>".Replace("\\quot;", "\"")+
+
+		@"</special>\
+	</characters>
+</ldml>".Replace("'", "\""));
+#endregion
+				}
+				ldmlAdaptor.Read(tempFile.Path, wsFromLdml);
+			}
+			CharacterSetDefinition index = new CharacterSetDefinition("index");
+			for (int i = (int) 'A'; i <= (int) 'Z'; i++)
+				index.Characters.Add(((char) i).ToString());
+			index.Characters.Add("AZ");
+
+			CharacterSetDefinition footnotes = new CharacterSetDefinition("footnotes");
+			string footnotesString = "- ‐ – — , ; : ! ? . … ' ‘ ’ \" “ ” ( ) [ ] § @ * / & # † ‡ ′ ″";
+			foreach (string str in footnotesString.Split(' '))
+			{
+				footnotes.Characters.Add(str);
+			}
+
+			Assert.That(wsFromLdml.CharacterSets["index"].ValueEquals(index));
+			Assert.That(wsFromLdml.CharacterSets["footnotes"].ValueEquals(footnotes));
+		}
+
+		[Test]
 		public void Read_LdmlDelimiters()
 		{
 			var ldmlAdaptor = new LdmlDataMapper();
@@ -225,6 +276,7 @@ namespace SIL.WritingSystems.Tests
 				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
 				{
 					writer.Write(
+#region filecontent
 @"<?xml version='1.0' encoding='utf-8'?>
 <ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
 	<identity>
@@ -256,6 +308,7 @@ namespace SIL.WritingSystems.Tests
 		</special>
 	</delimiters>
 </ldml>".Replace("'", "\""));
+#endregion
 				}
 				ldmlAdaptor.Read(tempFile.Path, wsFromLdml);
 			}
