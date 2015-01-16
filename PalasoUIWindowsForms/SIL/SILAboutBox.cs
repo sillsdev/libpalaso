@@ -143,7 +143,9 @@ namespace Palaso.UI.WindowsForms.SIL
 				file = file.TrimStart('/');
 			var fi = new FileInfo(file);
 
-			return string.Format("Built on {0}", fi.CreationTime.ToString("dd-MMM-yyyy"));
+			// Use UTC for calculation of build-on-date so that we get the same date regardless
+			// of timezone setting.
+			return string.Format("Built on {0}", fi.CreationTimeUtc.ToString("dd-MMM-yyyy"));
 		}
 
 		private string GetShortVersionInfo()
