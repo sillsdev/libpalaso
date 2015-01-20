@@ -103,7 +103,7 @@ namespace SIL.WritingSystems.WindowsForms
 					cleaner.Language,
 					cleaner.Script,
 					cleaner.Region,
-					WritingSystemDefinition.ConcatenateVariantAndPrivateUse(cleaner.Variant, cleaner.PrivateUse),
+					IetfLanguageTag.ConcatenateVariantAndPrivateUse(cleaner.Variant, cleaner.PrivateUse),
 					culture.ThreeLetterISOLanguageName,
 					culture.TextInfo.IsRightToLeft);
 				def.NativeName = culture.NativeName;

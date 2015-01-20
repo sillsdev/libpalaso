@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Palaso.Extensions;
+using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace SIL.WritingSystems.Migration
 {
@@ -268,9 +269,9 @@ namespace SIL.WritingSystems.Migration
 
 					if (String.IsNullOrEmpty(migrateFrom))
 					{
-						foreach (var code in StandardTags.ValidIso639LanguageCodes)
+						foreach (var code in StandardSubtags.Iso639Languages)
 						{
-							if (code.ISO3Code.Equals(part))
+							if (code.Iso3Code == part)
 							{
 								migrateFrom = part;
 								migrateTo = code.Code;
@@ -289,9 +290,9 @@ namespace SIL.WritingSystems.Migration
 			// care about to the appropriate position in the private use section.
 			// In the process we may remove anything non-alphanumeric, since otherwise we may move a marker that later
 			// disappears (pathologically).
-			MoveFirstPartToPrivateUseIfNecessary(_languageSubTag, StandardTags.IsValidIso639LanguageCode, "qaa", true);
-			MoveFirstPartToPrivateUseIfNecessary(_scriptSubTag, StandardTags.IsValidIso15924ScriptCode, "Qaaa", false);
-			MoveFirstPartToPrivateUseIfNecessary(_regionSubTag, StandardTags.IsValidIso3166Region, "QM", false);
+			MoveFirstPartToPrivateUseIfNecessary(_languageSubTag, StandardSubtags.IsValidIso639LanguageCode, "qaa", true);
+			MoveFirstPartToPrivateUseIfNecessary(_scriptSubTag, StandardSubtags.IsValidIso15924ScriptCode, "Qaaa", false);
+			MoveFirstPartToPrivateUseIfNecessary(_regionSubTag, StandardSubtags.IsValidIso3166RegionCode, "QM", false);
 			//This fixes a bug where the LdmlAdaptorV1 was writing out Zxxx as part of the variant to mark an audio writing system
 			if (_variantSubTag.Contains(WellKnownSubtags.AudioScript))
 			{
@@ -312,9 +313,9 @@ namespace SIL.WritingSystems.Migration
 			MovePartsToPrivateUseIfNecessary(_languageSubTag);
 
 			// Move script, region, and variant present in the langauge tag to their proper subtag.
-			MoveTagsMatching(_languageSubTag, _scriptSubTag, StandardTags.IsValidIso15924ScriptCode, StandardTags.IsValidIso639LanguageCode);
-			MoveTagsMatching(_languageSubTag, _regionSubTag, StandardTags.IsValidIso3166Region, StandardTags.IsValidIso639LanguageCode);
-			MoveTagsMatching(_languageSubTag, _variantSubTag, StandardTags.IsValidRegisteredVariant, StandardTags.IsValidIso639LanguageCode);
+			MoveTagsMatching(_languageSubTag, _scriptSubTag, StandardSubtags.IsValidIso15924ScriptCode, StandardSubtags.IsValidIso639LanguageCode);
+			MoveTagsMatching(_languageSubTag, _regionSubTag, StandardSubtags.IsValidIso3166RegionCode, StandardSubtags.IsValidIso639LanguageCode);
+			MoveTagsMatching(_languageSubTag, _variantSubTag, StandardSubtags.IsValidRegisteredVariantCode, StandardSubtags.IsValidIso639LanguageCode);
 
 			// Move all other tags that don't belong to the private use subtag.
 
@@ -322,7 +323,7 @@ namespace SIL.WritingSystems.Migration
 			var tempSubTag = new SubTag();
 
 			MoveTagsMatching(
-				_languageSubTag, tempSubTag, tag => !StandardTags.IsValidIso639LanguageCode(tag)
+				_languageSubTag, tempSubTag, tag => !StandardSubtags.IsValidIso639LanguageCode(tag)
 			);
 			//place all the moved parts in private use.
 			foreach (var part in tempSubTag.AllParts)
@@ -339,13 +340,13 @@ namespace SIL.WritingSystems.Migration
 			}
 
 			MoveTagsMatching(
-				_scriptSubTag, _privateUseSubTag, tag => !StandardTags.IsValidIso15924ScriptCode(tag)
+				_scriptSubTag, _privateUseSubTag, tag => !StandardSubtags.IsValidIso15924ScriptCode(tag)
 			);
 			MoveTagsMatching(
-				_regionSubTag, _privateUseSubTag, tag => !StandardTags.IsValidIso3166Region(tag)
+				_regionSubTag, _privateUseSubTag, tag => !StandardSubtags.IsValidIso3166RegionCode(tag)
 			);
 			MoveTagsMatching(
-				_variantSubTag, _privateUseSubTag, tag => !StandardTags.IsValidRegisteredVariant(tag)
+				_variantSubTag, _privateUseSubTag, tag => !StandardSubtags.IsValidRegisteredVariantCode(tag)
 			);
 
 			_languageSubTag.KeepFirstAndMoveRemainderTo(_privateUseSubTag);
@@ -385,7 +386,7 @@ namespace SIL.WritingSystems.Migration
 			// Two more legacy problems. We don't allow -etic or -emic without fonipa, so insert if needed.
 			// If it has some other standard variant we won't be able to fix it...not sure what the right answer would be.
 			// At least we catch the more common case.
-			foreach (var part in _privateUseSubTag.AllParts)
+			foreach (string part in _privateUseSubTag.AllParts)
 			{
 				if (string.IsNullOrEmpty(Variant)
 					&& (part.Equals("etic",StringComparison.OrdinalIgnoreCase) || part.Equals("emic", StringComparison.OrdinalIgnoreCase)))
@@ -414,7 +415,7 @@ namespace SIL.WritingSystems.Migration
 		private void MoveFirstPartToPrivateUseIfNecessary(SubTag from, Func<string, bool> test, string standardPrivatePart,
 			bool keepStandardPartInPrivateUse)
 		{
-			var part = from.AllParts.FirstOrDefault();
+			string part = from.AllParts.FirstOrDefault();
 			if (part == null)
 				return; // nothing to move.
 			if (test(part))
@@ -448,7 +449,7 @@ namespace SIL.WritingSystems.Migration
 		/// </summary>
 		private bool MoveStandardPartToStart(SubTag from, Func<string, bool> test, bool keepStandardPartInPrivateUse)
 		{
-			foreach (var goodPart in from.AllParts)
+			foreach (string goodPart in from.AllParts)
 			{
 				if (keepStandardPartInPrivateUse && goodPart.Equals("x", StringComparison.OrdinalIgnoreCase))
 					return false;

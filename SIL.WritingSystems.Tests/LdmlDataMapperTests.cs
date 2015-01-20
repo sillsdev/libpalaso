@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using NUnit.Framework;
-using Palaso.Data;
 using Palaso.IO;
 using Palaso.TestUtilities;
 using Palaso.Xml;
@@ -80,17 +79,6 @@ namespace SIL.WritingSystems.Tests
 			Assert.Throws<ArgumentNullException>(
 				() => _adaptor.Write((XmlWriter)null, _ws, null)
 			);
-		}
-
-		[Test]
-		public void WriteSetsRequiresValidTagToTrue()
-		{
-			var ws = new WritingSystemDefinition();
-			ws.RequiresValidTag = false;
-			ws.Language = "Kalaba";
-			var sw = new StringWriter();
-			var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
-			Assert.Throws(typeof(ValidationException), () => _adaptor.Write(writer, ws, null));
 		}
 
 		[Test]
@@ -198,6 +186,7 @@ namespace SIL.WritingSystems.Tests
 		<!-- name.en(en)='English' -->
 		<language type='en'/>
 		<script type='Latn'/>
+		<variant type='x-test'/>
 		<special>
 			<sil:identity windowsLCID='1036' defaultRegion='US' variantName='1996'>
 			</sil:identity>
@@ -209,10 +198,10 @@ namespace SIL.WritingSystems.Tests
 			}
 			Assert.That(wsFromLdml.VersionNumber, Is.EqualTo("$Revision$"));
 			Assert.That(wsFromLdml.VersionDescription, Is.EqualTo("Identity version description"));
-			Assert.That(wsFromLdml.Id, Is.EqualTo("en-Latn"));
+			Assert.That(wsFromLdml.Id, Is.EqualTo("en-Latn-x-test"));
 			Assert.That(wsFromLdml.WindowsLcid, Is.EqualTo("1036"));
 			Assert.That(wsFromLdml.DefaultRegion, Is.EqualTo("US"));
-			Assert.That(wsFromLdml.VariantName, Is.EqualTo("1996"));
+			Assert.That(wsFromLdml.Variants[0].Name, Is.EqualTo("1996"));
 		}
 
 		[Test]
@@ -312,13 +301,13 @@ namespace SIL.WritingSystems.Tests
 				}
 				ldmlAdaptor.Read(tempFile.Path, wsFromLdml);
 			}
-			MatchedPair mp = new MatchedPair("mpOpen1", "mpClose2", false);
+			var mp = new MatchedPair("mpOpen1", "mpClose2", false);
 			Assert.That(wsFromLdml.MatchedPairs.FirstOrDefault(), Is.EqualTo(mp));
-			PunctuationPattern pp = new PunctuationPattern("pattern1", PunctuationPatternContext.Medial);
+			var pp = new PunctuationPattern("pattern1", PunctuationPatternContext.Medial);
 			Assert.That(wsFromLdml.PunctuationPatterns.FirstOrDefault(), Is.EqualTo(pp));
 			Assert.That(wsFromLdml.QuotationParagraphContinueType, Is.EqualTo(QuotationParagraphContinueType.Outermost));
 			Assert.That(wsFromLdml.QuotationParagraphContinueMark, Is.EqualTo(QuotationParagraphContinueMark.Close));
-			QuotationMark qm = new QuotationMark("open1", "close2", "cont3");
+			var qm = new QuotationMark("open1", "close2", "cont3");
 			Assert.That(wsFromLdml.QuotationMarks.FirstOrDefault(), Is.EqualTo(qm));
 		}
 
@@ -639,7 +628,7 @@ namespace SIL.WritingSystems.Tests
 
 				dataMapper.Read(tempFile.Path, ws);
 
-				FontDefinition other = new FontDefinition("Padauk");
+				var other = new FontDefinition("Padauk");
 				other.DefaultSize = 2.1f;
 				other.MinVersion = "3.1.4";
 				other.Features = "order=3 children=2 color=red createDate=1996";
@@ -756,8 +745,8 @@ namespace SIL.WritingSystems.Tests
 				adaptor.Read(pathToLdmlWithEmptyCollationElement, wsFromLdml);
 				var ws = new WritingSystemDefinition();
 				adaptor.Read(pathToLdmlWithEmptyCollationElement, ws);
-				Assert.That(wsFromLdml.Language, Is.EqualTo(String.Empty));
-				Assert.That(wsFromLdml.Variant, Is.EqualTo("x-private-use"));
+				Assert.That(wsFromLdml.Language, Is.Null);
+				Assert.That(wsFromLdml.Variants, Is.EqualTo(new VariantSubtag[] {"private", "use"}));
 			}
 			finally
 			{
@@ -871,6 +860,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+#if WS_FIX
 		[Test]
 		public void Read_ValidLanguageTagStartingWithXButVersion0_Throws()
 		{
@@ -923,6 +913,7 @@ namespace SIL.WritingSystems.Tests
 				AssertThatLdmlMatches("x-en", "", "", "", file);
 			}
 		}
+#endif
 
 		[Test]
 		public void WriteRoundTrip_LdmlIsValidLanguageStartingWithX_LdmlIsUnchanged()
@@ -933,12 +924,13 @@ namespace SIL.WritingSystems.Tests
 				var adaptor = new LdmlDataMapper();
 				var ws = new WritingSystemDefinition();
 				adaptor.Read(file.Path, ws);
-				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path), true), WritingSystemCompatibility.Flex7V0Compatible);
+				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path), true));
 				AssertThatLdmlMatches("xh", "", "", "", file);
 				AssertThatVersionIs(2, file);
 			}
 		}
 
+#if WS_FIX
 		[Test]
 		public void Read_LdmlIsFlexPrivateUseFormatOnlyLanguageIsPopulated_WritingSystemHasDataInPrivateUse()
 		{
@@ -1011,7 +1003,6 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-#if WS_FIX
 		[Test]
 		public void RoundTripFlexPrivateUseWritingSystem_LanguageIsPopulated()
 		{
@@ -1123,7 +1114,6 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(File.ReadAllText(file.Path), Is.EqualTo(originalLdml));
 			}
 		}
-#endif
 
 		[Test]
 		public void Write_OriginalWasFlexPrivateUseWritingSystemButNowChangedLanguage_IdentityElementChangedToPalasoWay()
@@ -1243,6 +1233,7 @@ namespace SIL.WritingSystems.Tests
 				}
 			}
 		}
+#endif
 
 		[Test]
 		public void Read_NonDescriptLdml_WritingSystemIdIsSameAsRfc5646Tag()
@@ -1256,6 +1247,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+#if WS_FIX
 		[Test]
 		public void Read_FlexEntirelyPrivateUseLdmlContainingLanguageScriptRegionVariant_WritingSystemIdIsConcatOfLanguageScriptRegionVariant()
 		{
@@ -1319,6 +1311,7 @@ namespace SIL.WritingSystems.Tests
 										WritingSystemDefinition.LatestWritingSystemDefinitionVersion)));
 			}
 		}
+#endif
 
 		[Test]
 		public void RoundTrippingLdmlDoesNotDuplicateSections()
@@ -1377,10 +1370,10 @@ namespace SIL.WritingSystems.Tests
 
 		private static void AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(WritingSystemDefinition ws, string language, string script, string territory, string variant)
 		{
-			Assert.That(ws.Language, Is.EqualTo(language));
+			Assert.That(ws.Language.Code, Is.EqualTo(language));
 			Assert.That(ws.Script, Is.EqualTo(script));
 			Assert.That(ws.Region, Is.EqualTo(territory));
-			Assert.That(ws.Variant, Is.EqualTo(variant));
+			Assert.That(ws.Variants, Is.EqualTo(variant));
 		}
 
 		private static void WriteVersion0Ldml(string language, string script, string territory, string variant, TempFile file)
@@ -1395,7 +1388,8 @@ namespace SIL.WritingSystems.Tests
 
 		private static void WriteVersion2Ldml(string language, string script, string territory, string variant, TempFile file)
 		{
-			var ws = new WritingSystemDefinition { Language = language, Script = script, Region = territory, Variant = variant };
+			var ws = new WritingSystemDefinition();
+			ws.SetAllComponents(language, script, territory, variant);
 			new LdmlDataMapper().Write(file.Path, ws, null);
 		}
 

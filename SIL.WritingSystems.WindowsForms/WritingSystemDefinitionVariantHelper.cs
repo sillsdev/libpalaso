@@ -18,14 +18,14 @@ namespace SIL.WritingSystems.WindowsForms
 			var privateUse = new List<string>();
 			bool haveSeenX = false;
 
-			foreach (var token in tokens)
+			foreach (string token in tokens)
 			{
 				if (token == "x")
 				{
 					haveSeenX = true;
 					continue;
 				}
-				if (!haveSeenX && StandardTags.IsValidRegisteredVariant(token))
+				if (!haveSeenX && StandardSubtags.IsValidRegisteredVariantCode(token))
 				{
 					variants.Add(token);
 				}

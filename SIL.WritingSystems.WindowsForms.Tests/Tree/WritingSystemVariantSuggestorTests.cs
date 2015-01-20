@@ -18,15 +18,15 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Tree
 
 			WritingSystemDefinition ipa = ((WritingSystemSuggestion)suggestions.First(defn => ((WritingSystemSuggestion)defn).TemplateDefinition.Script == "ipa")).TemplateDefinition;
 
-			Assert.AreEqual("etr", ipa.Language);
-			Assert.AreEqual("fonipa", ipa.Variant);
-			Assert.AreEqual("Edolo", ipa.LanguageName);
-			Assert.IsTrue(string.IsNullOrEmpty(ipa.NativeName));
-			Assert.AreEqual("region", ipa.Region);
+			Assert.That(ipa.Language, Is.EqualTo((LanguageSubtag) "etr"));
+			Assert.That(ipa.Variants, Is.EqualTo(new VariantSubtag[] {"fonipa"}));
+			Assert.That(ipa.LanguageName, Is.EqualTo("Edolo"));
+			Assert.That(string.IsNullOrEmpty(ipa.NativeName), Is.True);
+			Assert.That(ipa.Region, Is.EqualTo((RegionSubtag) "region"));
 			//Assert.AreEqual("arial unicode ms", ipa.DefaultFontName); this depends on what fonts are installed on the test system
-			Assert.AreEqual(33, ipa.DefaultFont.DefaultSize);
+			Assert.That(ipa.DefaultFont.DefaultSize, Is.EqualTo(33));
 
-			Assert.IsTrue(ipa.Keyboard.ToLower().Contains("ipa"));
+			Assert.That(ipa.Keyboard.ToLower().Contains("ipa"), Is.True);
 		}
 
 		[Test] // ok
@@ -38,7 +38,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Tree
 			var suggestor = new WritingSystemSuggestor();
 			var suggestions = suggestor.GetSuggestions(etr, list);
 
-			Assert.IsFalse(suggestions.Any(defn => ((WritingSystemSuggestion)defn).TemplateDefinition.Variant == "fonipa"));
+			Assert.That(suggestions.Any(defn => ((WritingSystemSuggestion) defn).TemplateDefinition.Variants.Contains("fonipa")), Is.False);
 		}
 
 		[Test]
@@ -71,11 +71,11 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Tree
 			var suggestor = new WritingSystemSuggestor();
 			suggestor.SuppressSuggestionsForMajorWorldLanguages =false;
 			var suggestions = suggestor.GetSuggestions(english, list);
-			Assert.IsTrue(suggestions.Any(defn => ((WritingSystemSuggestion)defn).TemplateDefinition.Variant == "fonipa"));
+			Assert.That(suggestions.Any(defn => ((WritingSystemSuggestion) defn).TemplateDefinition.Variants.Contains("fonipa")), Is.True);
 
 			suggestor.SuppressSuggestionsForMajorWorldLanguages =true;
 			suggestions = suggestor.GetSuggestions(english, list);
-			Assert.IsFalse(suggestions.Any(defn => ((WritingSystemSuggestion)defn).TemplateDefinition.Variant == "fonipa"));
+			Assert.That(suggestions.Any(defn => ((WritingSystemSuggestion) defn).TemplateDefinition.Variants.Contains("fonipa")), Is.False);
 		}
 	}
 }

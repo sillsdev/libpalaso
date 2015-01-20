@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Palaso.Data;
 
-namespace SIL.WritingSystems
+namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
 	/// <summary>
 	/// This is different from the algorithm used by the RfcTagCleaner because Flex puts Wellknown Scripts, Regions and Properties behind
@@ -29,13 +29,13 @@ namespace SIL.WritingSystems
 
 			if (!String.IsNullOrEmpty(variant))
 			{
-				WritingSystemDefinition.SplitVariantAndPrivateUse(variant, out newVariant, out newPrivateUse);
+				IetfLanguageTag.SplitVariantAndPrivateUse(variant, out newVariant, out newPrivateUse);
 			}
 			var privateUseSubtagsWithoutXs = StripXs(newPrivateUse);
 			var languageSubtagsWithoutXs = StripXs(language);
 			newPrivateUse = String.Join("-", (languageSubtagsWithoutXs.Union(privateUseSubtagsWithoutXs)).Where(str=>!String.IsNullOrEmpty(str)).ToArray());
 
-			_variant = WritingSystemDefinition.ConcatenateVariantAndPrivateUse(newVariant, newPrivateUse);
+			_variant = IetfLanguageTag.ConcatenateVariantAndPrivateUse(newVariant, newPrivateUse);
 
 			if (!(String.IsNullOrEmpty(script) &&
 				  String.IsNullOrEmpty(region) &&
@@ -72,12 +72,11 @@ namespace SIL.WritingSystems
 					}
 					language = currentToken;
 				}
-				else if (position == 1 && !StandardTags.IsValidIso15924ScriptCode(currentToken))
+				else if (position == 1 && !StandardSubtags.IsValidIso15924ScriptCode(currentToken))
 				{
 					language = language + '-' + currentToken;
-					continue;
 				}
-				else if (StandardTags.IsValidIso15924ScriptCode(currentToken))
+				else if (StandardSubtags.IsValidIso15924ScriptCode(currentToken))
 				{
 					if (!String.IsNullOrEmpty(region) || !String.IsNullOrEmpty(variant))
 					{
@@ -88,7 +87,7 @@ namespace SIL.WritingSystems
 					}
 					script = currentToken;
 				}
-				else if (StandardTags.IsValidIso3166Region(currentToken))
+				else if (StandardSubtags.IsValidIso3166RegionCode(currentToken))
 				{
 					if (!String.IsNullOrEmpty(variant))
 					{
@@ -99,7 +98,7 @@ namespace SIL.WritingSystems
 					}
 					region = currentToken;
 				}
-				else if (StandardTags.IsValidRegisteredVariant(currentToken))
+				else if (StandardSubtags.IsValidRegisteredVariantCode(currentToken))
 				{
 					variant = variant + currentToken;
 				}
@@ -108,7 +107,7 @@ namespace SIL.WritingSystems
 					privateUse = String.IsNullOrEmpty(privateUse) ? currentToken : privateUse + '-' + currentToken;
 				}
 			}
-			variant = WritingSystemDefinition.ConcatenateVariantAndPrivateUse(variant, privateUse);
+			variant = IetfLanguageTag.ConcatenateVariantAndPrivateUse(variant, privateUse);
 			ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, region, variant);
 		}
 

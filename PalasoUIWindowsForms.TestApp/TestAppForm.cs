@@ -60,7 +60,7 @@ namespace PalasoUIWindowsForms.TestApp
 
 		private void OnLookupISOCodeDialogClicked(object sender, EventArgs e)
 		{
-			using (var dialog = new LookupISOCodeDialog())
+			using (var dialog = new LookupIsoCodeDialog())
 				dialog.ShowDialog();
 		}
 

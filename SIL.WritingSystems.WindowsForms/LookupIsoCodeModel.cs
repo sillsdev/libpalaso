@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SIL.WritingSystems.WindowsForms
 {
 	public class LookupIsoCodeModel
 	{
-		private readonly IList<Iso639LanguageCode> _languageCodes;
 		private EthnologueLookup _ethnologueLookup;
 
 		/// <summary>Force the dialog to return 3 letter iso codes even if a 2 letter code is available</summary>
@@ -14,7 +14,6 @@ namespace SIL.WritingSystems.WindowsForms
 		public LookupIsoCodeModel()
 		{
 			Force3LetterCodes = false;
-			_languageCodes = StandardTags.ValidIso639LanguageCodes;
 		}
 
 		/// <summary>
@@ -22,12 +21,9 @@ namespace SIL.WritingSystems.WindowsForms
 		/// </summary>
 		/// <param name="iso639Code"></param>
 		/// <returns></returns>
-		public Iso639LanguageCode GetExactLanguageMatch(string iso639Code)
+		public LanguageSubtag GetExactLanguageMatch(string iso639Code)
 		{
-			iso639Code = iso639Code.ToLowerInvariant();
-			return _languageCodes.FirstOrDefault(
-				code => code.InvariantLowerCaseCode == iso639Code
-				);
+			return StandardSubtags.Iso639Languages.FirstOrDefault(code => code.Iso3Code != null && code.Iso3Code.Equals(iso639Code, StringComparison.InvariantCultureIgnoreCase));
 		}
 
 		public IEnumerable<LanguageInfo> GetMatchingLanguages(string typedText)
@@ -40,7 +36,7 @@ namespace SIL.WritingSystems.WindowsForms
 
 		public LanguageInfo LanguageInfo;
 
-		public string ISOCode
+		public string IsoCode
 		{
 			get
 			{

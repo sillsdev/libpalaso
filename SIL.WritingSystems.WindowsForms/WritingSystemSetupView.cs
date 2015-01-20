@@ -129,7 +129,7 @@ namespace SIL.WritingSystems.WindowsForms
 
 		private static WritingSystemDefinition ShowCreateNewWritingSystemDialog()
 		{
-			using (var dlg = new LookupISOCodeDialog() { ShowDesiredLanguageNameField =false})
+			using (var dlg = new LookupIsoCodeDialog() { ShowDesiredLanguageNameField =false})
 			{
 				dlg.ShowDialog();
 				if (dlg.DialogResult != DialogResult.OK)

@@ -170,7 +170,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			_writingSystem.Language = "sr";
 			_writingSystem.Script = "Latn";
-			_writingSystem.Variant = "x-RS";
+			_writingSystem.Variants.Add("RS");
 			RepositoryUnderTest.Set(_writingSystem);
 			Assert.IsNotNull(RepositoryUnderTest.Get("sr-Latn-x-rs"));
 		}
@@ -182,9 +182,9 @@ namespace SIL.WritingSystems.Tests
 		public void Get_StoredWithLowerCaseButRequestedUsingUpperCase_Finds()
 		{
 
-			_writingSystem.Language = "sR";
-			_writingSystem.Script = "LaTn";
-			_writingSystem.Variant = "x-rs";
+			_writingSystem.Language = new LanguageSubtag("sR", false);
+			_writingSystem.Script = new ScriptSubtag("LaTn", false);
+			_writingSystem.Variants.Add("rs");
 			RepositoryUnderTest.Set(_writingSystem);
 			Assert.IsNotNull(RepositoryUnderTest.Get("sr-Latn-x-RS"));
 		}
@@ -272,7 +272,7 @@ namespace SIL.WritingSystems.Tests
 			ws1.Language = "en";
 			Assert.AreEqual("en", ws1.Bcp47Tag);
 			WritingSystemDefinition ws2 = ws1.Clone();
-			ws2.Variant = "1901";
+			ws2.Variants.Add("1901");
 			Assert.AreEqual("en-1901", ws2.Bcp47Tag);
 
 			RepositoryUnderTest.Set(ws1);
@@ -369,8 +369,8 @@ namespace SIL.WritingSystems.Tests
 			Assert.AreEqual(ws1.Language, ws2.Language);
 			Assert.AreEqual(ws1.Script, ws2.Script);
 			Assert.AreEqual(ws1.Region, ws2.Region);
-			Assert.AreEqual(ws1.Variant, ws2.Variant);
 			Assert.AreEqual(ws1.LanguageName, ws2.LanguageName);
+			Assert.That(ws1.Variants, Is.EqualTo(ws2.Variants));
 			Assert.AreEqual(ws1.Abbreviation, ws2.Abbreviation);
 			Assert.AreEqual(ws1.RightToLeftScript, ws2.RightToLeftScript);
 			Assert.AreEqual(ws1.Keyboard, ws2.Keyboard);
@@ -578,7 +578,7 @@ namespace SIL.WritingSystems.Tests
 			var ws = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(ws);
 			RepositoryUnderTest.Save();
-			ws.Variant = "x-orig";
+			ws.Variants.Add("orig");
 			RepositoryUnderTest.Set(ws);
 			var newWs = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(newWs);
@@ -635,7 +635,7 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.Set(ws);
 			RepositoryUnderTest.Save();
 			//Now change the Id
-			ws.Variant = "x-bogus";
+			ws.Variants.Add("bogus");
 			RepositoryUnderTest.Save();
 			Assert.That(RepositoryUnderTest.WritingSystemIdHasChanged("en"), Is.True);
 		}
@@ -649,13 +649,13 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.Set(wsEn);
 			RepositoryUnderTest.Save();
 			//Now change the Id and create a duplicate of the original Id
-			wsEn.Variant = "x-bogus";
+			wsEn.Variants.Add("bogus");
 			RepositoryUnderTest.Set(wsEn);
 			var wsEnDup = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(wsEnDup);
 			RepositoryUnderTest.Save();
 			//Now change the duplicate's Id as well
-			wsEnDup.Variant = "x-bogus2";
+			wsEnDup.Variants.Add("bogus2");
 			RepositoryUnderTest.Set(wsEnDup);
 			RepositoryUnderTest.Save();
 			Assert.That(RepositoryUnderTest.WritingSystemIdHasChanged("en"), Is.True);
@@ -689,7 +689,7 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.Set(ws);
 			RepositoryUnderTest.Save();
 			//Now change the Id
-			ws.Variant = "x-bogus";
+			ws.Variants.Add("bogus");
 			RepositoryUnderTest.Save();
 			Assert.That(RepositoryUnderTest.WritingSystemIdHasChangedTo("en"), Is.EqualTo("en-x-bogus"));
 		}
@@ -703,13 +703,13 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.Set(wsEn);
 			RepositoryUnderTest.Save();
 			//Now change the Id and create a duplicate of the original Id
-			wsEn.Variant = "x-bogus";
+			wsEn.Variants.Add("bogus");
 			RepositoryUnderTest.Set(wsEn);
 			var wsEnDup = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(wsEnDup);
 			RepositoryUnderTest.Save();
 			//Now change the duplicate's Id as well
-			wsEnDup.Variant = "x-bogus2";
+			wsEnDup.Variants.Add("bogus2");
 			RepositoryUnderTest.Set(wsEnDup);
 			RepositoryUnderTest.Save();
 			Assert.That(RepositoryUnderTest.WritingSystemIdHasChangedTo("en"), Is.Null);

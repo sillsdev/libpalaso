@@ -17,7 +17,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		[Test, Ignore("By hand only")]
 		public void LookupISODialog()
 		{
-			var dialog = new LookupISOCodeDialog();
+			var dialog = new LookupIsoCodeDialog();
 			Application.Run(dialog);
 			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code + " with desired name: " + dialog.SelectedLanguage.DesiredName);
 		}
@@ -25,7 +25,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		[Test, Ignore("By hand only")]
 		public void LookupISODialog_WithInitialCodeAndCustomName()
 		{
-			var dialog = new LookupISOCodeDialog();
+			var dialog = new LookupIsoCodeDialog();
 			dialog.SelectedLanguage = new LanguageInfo() { Code = "etr", DesiredName = "Etoloooo" };
 			Application.Run(dialog);
 			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code + " with desired name: " + dialog.SelectedLanguage.DesiredName);
@@ -34,7 +34,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		[Test, Ignore("By hand only")]
 		public void LookupISODialog_WithInitialCodeOnly()
 		{
-			var dialog = new LookupISOCodeDialog();
+			var dialog = new LookupIsoCodeDialog();
 			dialog.SelectedLanguage = new LanguageInfo() { Code = "etr" };
 			Application.Run(dialog);
 			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code + " with desired name: " + dialog.SelectedLanguage.DesiredName);
@@ -43,7 +43,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		[Test, Ignore("By hand only")]
 		public void LookupISODialog_WithInitialQAACodeAndCustomName()
 		{
-			var dialog = new LookupISOCodeDialog();
+			var dialog = new LookupIsoCodeDialog();
 			dialog.SelectedLanguage = new LanguageInfo() { Code = "qaa", DesiredName = "Vulcan" };
 			Application.Run(dialog);
 			MessageBox.Show("returned:" + dialog.SelectedLanguage.Code + " with desired name: " + dialog.SelectedLanguage.DesiredName);

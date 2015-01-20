@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -6,7 +7,7 @@ namespace SIL.WritingSystems
 {
 	public class InheritedCollationDefinition : CollationDefinition
 	{
-		private Rfc5646Tag _baseLanguageTag;
+		private string _baseLanguageTag;
 		private string _baseType;
 
 		public InheritedCollationDefinition(string type)
@@ -17,21 +18,19 @@ namespace SIL.WritingSystems
 		public InheritedCollationDefinition(InheritedCollationDefinition icrd)
 			: base(icrd)
 		{
-			_baseLanguageTag = icrd._baseLanguageTag == null ? null : icrd._baseLanguageTag.Clone();
+			_baseLanguageTag = icrd._baseLanguageTag;
 			_baseType = icrd._baseType;
 		}
 
 		public string BaseLanguageTag
 		{
-			get { return _baseLanguageTag == null ? string.Empty : _baseLanguageTag.CompleteTag; }
+			get { return _baseLanguageTag; }
 			set
 			{
-				if ((_baseLanguageTag == null && !string.IsNullOrEmpty(value)) || (_baseLanguageTag != null && _baseLanguageTag.CompleteTag != value))
-				{
-					_baseLanguageTag = string.IsNullOrEmpty(value) ? null : Rfc5646Tag.Parse(value);
-					IsChanged = true;
+				if (!IetfLanguageTag.IsValid(value))
+					throw new ArgumentException("A valid language tag is required.", "value");
+				if (UpdateString(ref _baseLanguageTag, value))
 					ResetCollator();
-				}
 			}
 		}
 
@@ -64,7 +63,7 @@ namespace SIL.WritingSystems
 			string tempFile = Path.GetTempFileName();
 			try
 			{
-				Sldr.GetLdmlFile(tempFile, _baseLanguageTag.CompleteTag);
+				Sldr.GetLdmlFile(tempFile, _baseLanguageTag);
 				XElement rootElem = XElement.Load(tempFile);
 				XElement collationsElem = rootElem.Element("collations");
 				if (collationsElem != null)

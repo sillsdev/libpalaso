@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -42,11 +41,11 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 
 		public IEnumerable<IWritingSystemDefinitionSuggestion> GetSuggestions(WritingSystemDefinition primary, IEnumerable<WritingSystemDefinition> existingWritingSystemsForLanguage)
 		{
-			if(string.IsNullOrEmpty(primary.Language) && !primary.Variant.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
+			if (primary.Language == null && primary.Variants.Any(v => !v.IsPrivateUse))
 				yield break;
 
-			if(SuppressSuggestionsForMajorWorldLanguages
-			   && new[]{"en", "th", "es", "fr", "de", "hi", "id", "vi","my","pt", "fi", "ar", "it","sv", "ja", "ko", "ch", "nl", "ru"}.Contains(primary.Language))
+			if (SuppressSuggestionsForMajorWorldLanguages
+			   && new[]{"en", "th", "es", "fr", "de", "hi", "id", "vi","my","pt", "fi", "ar", "it","sv", "ja", "ko", "ch", "nl", "ru"}.Contains((string) primary.Language))
 				yield break;
 
 			if (SuggestIpa && IpaSuggestion.ShouldSuggest(existingWritingSystemsForLanguage))

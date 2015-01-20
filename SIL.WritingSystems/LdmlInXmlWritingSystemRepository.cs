@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Xml;
-using System.Xml.Linq;
 using System.Xml.XPath;
 
 namespace SIL.WritingSystems
@@ -11,14 +10,6 @@ namespace SIL.WritingSystems
 	/// </summary>
 	public class LdmlInXmlWritingSystemRepository : WritingSystemRepositoryBase
 	{
-		/// <summary>
-		/// Use the default repository
-		/// </summary>
-		public LdmlInXmlWritingSystemRepository() :
-			base(WritingSystemCompatibility.Strict)
-		{
-		}
-
 		/// <summary>
 		/// Saves all writing system definitions.
 		/// </summary>

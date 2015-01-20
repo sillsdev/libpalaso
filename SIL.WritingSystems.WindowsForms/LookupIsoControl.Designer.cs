@@ -2,7 +2,7 @@
 
 namespace SIL.WritingSystems.WindowsForms
 {
-	partial class LookupISOControl
+	partial class LookupIsoControl
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -202,7 +202,7 @@ namespace SIL.WritingSystems.WindowsForms
 			this._L10NSharpExtender.SetLocalizableToolTip(this, null);
 			this._L10NSharpExtender.SetLocalizationComment(this, null);
 			this._L10NSharpExtender.SetLocalizingId(this, "LanguageLookup.LookupISOControl.LookupISOControl");
-			this.Name = "LookupISOControl";
+			this.Name = "LookupIsoControl";
 			this.Size = new System.Drawing.Size(758, 343);
 			this.Load += new System.EventHandler(this.OnLoad);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

@@ -37,9 +37,11 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Constructor, set the CompatibilityMode
 		/// </summary>
-		protected WritingSystemRepositoryBase(WritingSystemCompatibility compatibilityMode)
+		protected WritingSystemRepositoryBase()
 		{
+#if WS_FIX
 			CompatibilityMode = compatibilityMode;
+#endif
 			_writingSystems = new Dictionary<string, WritingSystemDefinition>(StringComparer.OrdinalIgnoreCase);
 			_writingSystemsToIgnore = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
 			_idChangeMap = new Dictionary<string, string>();
@@ -355,9 +357,9 @@ namespace SIL.WritingSystems
 			return idsToFilter.Where(id => textIds.Contains(id));
 		}
 
+#if WS_FIX
 		public WritingSystemCompatibility CompatibilityMode { get; private set; }
 
-#if WS_FIX
 		private Dictionary<string, IKeyboardDefinition> _localKeyboardSettings;
 
 		/// <summary>

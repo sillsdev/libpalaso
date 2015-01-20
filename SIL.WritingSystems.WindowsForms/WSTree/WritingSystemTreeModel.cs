@@ -155,11 +155,11 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 		private int GetSpecificityScore(WritingSystemDefinition definition)
 		{
 			int score = 0;
-			if(!string.IsNullOrEmpty(definition.Region))
+			if (definition.Region != null)
 				++score;
-			if(!string.IsNullOrEmpty(definition.Script))
+			if (definition.Script != null)
 				++score;
-			if(!string.IsNullOrEmpty(definition.Variant))
+			if (definition.Variants.Count > 0)
 				++score;
 			return score;
 		}

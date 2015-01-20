@@ -31,8 +31,10 @@ namespace SIL.WritingSystems
 	public class LdmlDataMapper
 	{
 		private readonly XmlNamespaceManager _nameSpaceManager;
+#if WS_FIX
 		private bool _wsIsFlexPrivateUse;
 		private WritingSystemCompatibility _compatibilityMode;
+#endif
 		private static XNamespace FW = "urn://fieldworks.sil.org/ldmlExtensions/v1";
 		private static XNamespace Palaso = "urn://palaso.org/ldmlExtensions/v1";
 		private static XNamespace Palaso2 = "urn://palaso.org/ldmlExtensions/v2";
@@ -260,7 +262,7 @@ namespace SIL.WritingSystems
 				ws.LanguageName = GetSpecialValue(specialElem, Palaso, "languageName");
 #if WS_FIX
 				ws.SpellCheckingId = GetSpecialValue(specialElem, Palaso, "spellCheckingId");
-#endif
+
 				if (!_wsIsFlexPrivateUse)
 				{
 					string version = GetSpecialValue(specialElem, Palaso, "version");
@@ -275,6 +277,7 @@ namespace SIL.WritingSystems
 							));
 					}
 				}
+#endif
 			}
 			else if (specialElem.Attribute(XNamespace.Xmlns + "palaso2") != null)
 			{
@@ -451,6 +454,7 @@ namespace SIL.WritingSystems
 			string region = identityElem.GetAttributeValue("territory", "type");
 			string variant = identityElem.GetAttributeValue("variant", "type");
 
+#if WS_FIX
 			if ((language.StartsWith("x-", StringComparison.OrdinalIgnoreCase) || language.Equals("x", StringComparison.OrdinalIgnoreCase)))
 			{
 				var flexRfcTagInterpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
@@ -465,6 +469,9 @@ namespace SIL.WritingSystems
 
 				_wsIsFlexPrivateUse = false;
 			}
+#else
+			ws.SetAllComponents(language, script, region, variant);
+#endif
 			//Set the id simply as the concatenation of whatever was in the ldml file.
 			ws.Id = String.Join("-", new[] {language, script, region, variant}.Where(subtag => !String.IsNullOrEmpty(subtag)).ToArray());
 
@@ -477,7 +484,9 @@ namespace SIL.WritingSystems
 				{
 					ws.WindowsLcid = silIdentityElem.GetAttributeValue("windowsLCID");
 					ws.DefaultRegion = silIdentityElem.GetAttributeValue("defaultRegion");
-					ws.VariantName = silIdentityElem.GetAttributeValue("variantName");
+					string variantName = silIdentityElem.GetAttributeValue("variantName");
+					if (!string.IsNullOrEmpty(variantName) && ws.Variants.Count > 0)
+						ws.Variants[0] = new VariantSubtag(ws.Variants[0], variantName);
 				}
 			}
 		}
@@ -670,21 +679,17 @@ namespace SIL.WritingSystems
 			return cd;
 		}
 
-		public void Write(string filePath, WritingSystemDefinition ws, Stream oldFile)
-		{
-			Write(filePath, ws, oldFile, WritingSystemCompatibility.Strict);
-		}
-
 		/// <summary>
 		/// The "oldFile" parameter allows the LdmldataMapper to allow data that it doesn't understand to be roundtripped.
 		/// </summary>
 		/// <param name="filePath"></param>
 		/// <param name="ws"></param>
 		/// <param name="oldFile"></param>
-		/// <param name="compatibilityMode"></param>
-		public void Write(string filePath, WritingSystemDefinition ws, Stream oldFile, WritingSystemCompatibility compatibilityMode)
+		public void Write(string filePath, WritingSystemDefinition ws, Stream oldFile)
 		{
+#if WS_FIX
 			_compatibilityMode = compatibilityMode;
+#endif
 			if (filePath == null)
 			{
 				throw new ArgumentNullException("filePath");
@@ -725,21 +730,17 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		public void Write(XmlWriter xmlWriter, WritingSystemDefinition ws, XmlReader oldFileReader)
-		{
-			Write(xmlWriter, ws, oldFileReader, WritingSystemCompatibility.Strict);
-		}
-
 		/// <summary>
 		/// The "oldFileReader" parameter allows the LdmldataMapper to allow data that it doesn't understand to be roundtripped.
 		/// </summary>
 		/// <param name="xmlWriter"></param>
 		/// <param name="ws"></param>
 		/// <param name="oldFileReader"></param>
-		/// <param name="compatibilityMode"></param>
-		public void Write(XmlWriter xmlWriter, WritingSystemDefinition ws, XmlReader oldFileReader, WritingSystemCompatibility compatibilityMode)
+		public void Write(XmlWriter xmlWriter, WritingSystemDefinition ws, XmlReader oldFileReader)
 		{
+#if WS_FIX
 			_compatibilityMode = compatibilityMode;
+#endif
 			if (xmlWriter == null)
 			{
 				throw new ArgumentNullException("xmlWriter");
@@ -748,8 +749,6 @@ namespace SIL.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			// We don't want to run any risk of persisting an invalid writing system in an LDML.
-			ws.RequiresValidTag = true;
 			XmlReader reader = null;
 			try
 			{
@@ -779,7 +778,9 @@ namespace SIL.WritingSystems
 
 		private void WriteLdml(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
 		{
+#if WS_FIX
 			_wsIsFlexPrivateUse = false;
+#endif
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
 			writer.WriteStartElement("ldml");
@@ -955,13 +956,14 @@ namespace SIL.WritingSystems
 			writer.WriteEndElement();
 			WriteElementWithAttribute(writer, "generation", "date", String.Format("{0:s}", ws.DateModified));
 
+#if WS_FIX
 			bool copyFlexFormat = false;
 			string language = String.Empty;
 			string script = String.Empty;
 			string territory = String.Empty;
 			string variant = String.Empty;
 			bool readerIsOnIdentityElement = IsReaderOnElementNodeNamed(reader, "identity");
-			if(readerIsOnIdentityElement && !reader.IsEmptyElement)
+			if (readerIsOnIdentityElement && !reader.IsEmptyElement)
 			{
 				reader.ReadToDescendant("language");
 				while(!IsReaderOnElementNodeNamed(reader, "special") && !IsReaderOnEndElementNodeNamed(reader, "identity"))
@@ -1003,18 +1005,18 @@ namespace SIL.WritingSystems
 			{
 				WriteRFC5646TagElements(writer, ws.Language, ws.Script, ws.Region, ws.Variant);
 			}
+#else
+			WriteRFC5646TagElements(writer, ws.Language, ws.Script, ws.Region, IetfLanguageTag.GetVariantCodes(ws.Variants));
+#endif
 			if (IsReaderOnElementNodeNamed(reader, "identity"))
 			{
-				if (reader.IsEmptyElement)
-				{
-					reader.Skip();
-				}
+				reader.Skip();
 			}
 			if (IsReaderOnElementNodeNamed(reader, "special"))
 			{
 				CopyToEndElement(writer, reader);
 			}
-			if(IsReaderOnEndElementNodeNamed(reader, "identity"))
+			if (IsReaderOnEndElementNodeNamed(reader, "identity"))
 			{
 				reader.Read();
 			}
@@ -1153,6 +1155,7 @@ namespace SIL.WritingSystems
 
 		private void WriteFlexOrPalasoConformElement(XmlWriter writer, XmlReader reader, string nameSpaceName, string nodeName, string value)
 		{
+#if WS_FIX
 			if(_wsIsFlexPrivateUse)
 			{
 				CopyOldFlexNode(reader, writer, nameSpaceName, nodeName);
@@ -1161,6 +1164,9 @@ namespace SIL.WritingSystems
 			{
 				WriteSpecialValue(writer, nameSpaceName, nodeName, value);
 			}
+#else
+			WriteSpecialValue(writer, nameSpaceName, nodeName, value);
+#endif
 		}
 
 		private void CopyOldFlexNode(XmlReader reader, XmlWriter writer, string nameSpaceName, string nodeName)

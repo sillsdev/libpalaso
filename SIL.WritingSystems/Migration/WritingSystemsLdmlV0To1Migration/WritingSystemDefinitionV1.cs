@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq;
 
 namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
@@ -82,7 +81,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 		public string Variant
 		{
-			get { return WritingSystemDefinition.ConcatenateVariantAndPrivateUse(_rfcTag.Variant, _rfcTag.PrivateUse); }
+			get { return IetfLanguageTag.ConcatenateVariantAndPrivateUse(_rfcTag.Variant, _rfcTag.PrivateUse); }
 		}
 
 		public string StoreID { get; set; }
@@ -143,14 +142,10 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			get
 			{
 				if (!string.IsNullOrEmpty(_languageName))
-				{
 					return _languageName;
-				}
-				var code = StandardTags.ValidIso639LanguageCodes.FirstOrDefault(c => c.Code.Equals(Language));
-				if (code != null)
-				{
-					return code.Name;
-				}
+				LanguageSubtag languageSubtag;
+				if (StandardSubtags.Iso639Languages.TryGetItem(Language, out languageSubtag))
+					return languageSubtag.Name;
 				return "Unknown Language";
 			}
 
@@ -165,7 +160,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		{
 			string variantPart;
 			string privateUsePart;
-			WritingSystemDefinition.SplitVariantAndPrivateUse(variant, out variantPart, out privateUsePart);
+			IetfLanguageTag.SplitVariantAndPrivateUse(variant, out variantPart, out privateUsePart);
 			_rfcTag = new Rfc5646Tag(language, script, region, variantPart, privateUsePart);
 			_id = Bcp47Tag;
 		}

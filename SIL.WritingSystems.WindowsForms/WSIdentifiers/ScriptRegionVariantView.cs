@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
-using System.Text;
 using System.Linq;
 using System.Windows.Forms;
-using SIL.WritingSystems;
 
 namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
 {
@@ -24,12 +19,12 @@ namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
 				model.SelectionChanged += UpdateDisplayFromModel;
 			}
 
-			_scriptCombo.Items.Add(new Iso15924Script("", "")); // add a blank item at the top of the list
-			_scriptCombo.Items.AddRange(StandardTags.ValidIso15924Scripts.ToArray());
-			_scriptCombo.DisplayMember = "Label";
-			_regionCombo.Items.Add(new IanaSubtag("region", "", ""));  // add a blank item at the top of the list
-			_regionCombo.Items.AddRange(StandardTags.ValidIso3166Regions.ToArray());
-			_regionCombo.DisplayMember = "Description";
+			_scriptCombo.Items.Add(new ScriptSubtag("blank", "", true)); // add a blank item at the top of the list
+			_scriptCombo.Items.AddRange(StandardSubtags.Iso15924Scripts.Cast<object>().ToArray());
+			_scriptCombo.DisplayMember = "Name";
+			_regionCombo.Items.Add(new RegionSubtag("blank", "", true));  // add a blank item at the top of the list
+			_regionCombo.Items.AddRange(StandardSubtags.Iso3166Regions.Cast<object>().ToArray());
+			_regionCombo.DisplayMember = "Name";
 		}
 
 		private void UpdateDisplayFromModel(object sender, EventArgs e)
@@ -73,7 +68,7 @@ namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
 		{
 			if (_updatingFromModel)
 				return;
-			_model.CurrentVariant=_variant.Text;
+			_model.CurrentVariant = _variant.Text;
 			// update the display, since we may have changed the variant text
 			UpdateDisplayFromModel(null, null);
 		}
@@ -91,7 +86,8 @@ namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
 				string originalCode = _model.CurrentScriptCode;
 				try
 				{
-					_model.CurrentScriptCode = ((Iso15924Script)_scriptCombo.SelectedItem).Code;
+					var scriptSubtag = (ScriptSubtag) _scriptCombo.SelectedItem;
+					_model.CurrentScriptCode = scriptSubtag.Code == "blank" ? string.Empty : scriptSubtag.Code;
 				}
 				catch (ArgumentException error)
 				{
@@ -116,11 +112,12 @@ namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
 				return;
 			if (_regionCombo.SelectedItem == null)
 			{
-				_model.CurrentRegion = "";
+				_model.CurrentRegion = string.Empty;
 			}
 			else
 			{
-				_model.CurrentRegion = ((IanaSubtag)_regionCombo.SelectedItem).Subtag;
+				var regionSubtag = (RegionSubtag) _regionCombo.SelectedItem;
+				_model.CurrentRegion = regionSubtag.Code == "blank" ? string.Empty : regionSubtag.Code;
 			}
 		}
 

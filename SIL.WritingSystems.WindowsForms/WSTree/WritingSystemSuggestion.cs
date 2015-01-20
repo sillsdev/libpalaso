@@ -62,7 +62,13 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 			var dlg = new GetDialectNameDialog();
 			if (DialogResult.OK != dlg.ShowDialog())
 				return null;
-			TemplateDefinition.Variant = WritingSystemDefinitionVariantHelper.ValidVariantString(dlg.DialectName);
+			IEnumerable<VariantSubtag> variantSubtags;
+			if (IetfLanguageTag.TryGetVariantSubtags(WritingSystemDefinitionVariantHelper.ValidVariantString(dlg.DialectName), out variantSubtags))
+			{
+				TemplateDefinition.Variants.Clear();
+				foreach (VariantSubtag variantSubtag in variantSubtags)
+					TemplateDefinition.Variants.Add(variantSubtag);
+			}
 			return TemplateDefinition;
 		}
 	}
@@ -78,12 +84,17 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 		{
 			string ipaFontName = _fontsForIpa.FirstOrDefault(FontExists);
 			FontDefinition ipaFont = string.IsNullOrEmpty(ipaFontName) ? null : new FontDefinition(ipaFontName) {DefaultSize = 12.0f};
-			_templateDefinition = new WritingSystemDefinition(primary.Language, "", primary.Region, primary.Variant, "ipa", false)
+			_templateDefinition = new WritingSystemDefinition
 									  {
+										  Language = primary.Language,
+										  Region = primary.Region,
 										  LanguageName = primary.LanguageName,
+										  Abbreviation = "ipa",
 										  DefaultFont = ipaFont,
 										  IpaStatus = IpaStatusChoices.Ipa
 									  };
+			foreach (VariantSubtag variantSubtag in primary.Variants)
+				_templateDefinition.Variants.Add(variantSubtag);
 			var ipaKeyboard = Keyboard.Controller.AllAvailableKeyboards.FirstOrDefault(k => k.Id.ToLower().Contains("ipa"));
 			if (ipaKeyboard != null)
 				_templateDefinition.Keyboard = ipaKeyboard.Id;

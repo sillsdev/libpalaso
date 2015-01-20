@@ -9,7 +9,7 @@ using Palaso.Extensions;
 
 namespace SIL.WritingSystems.WindowsForms
 {
-	public partial class LookupISOControl : UserControl
+	public partial class LookupIsoControl : UserControl
 	{
 		private readonly LookupIsoCodeModel _model;
 		private string _lastSearchedForText;
@@ -34,7 +34,7 @@ namespace SIL.WritingSystems.WindowsForms
 
 		public event EventHandler DoubleClicked;
 
-		public LookupISOControl()
+		public LookupIsoControl()
 		{
 			InitializeComponent();
 			ShowDesiredLanguageNameField = true;
@@ -65,7 +65,7 @@ namespace SIL.WritingSystems.WindowsForms
 
 		public string ISOCode
 		{
-			get { return _model.ISOCode; }
+			get { return _model.IsoCode; }
 			set { _searchText.Text = value; }
 		}
 
@@ -146,7 +146,7 @@ namespace SIL.WritingSystems.WindowsForms
 
 		private void OnSelectedIndexChanged(object sender, EventArgs e)
 		{
-			var oldIso = _model.ISOCode;
+			var oldIso = _model.IsoCode;
 			if(_listView.SelectedIndices != null && _listView.SelectedIndices.Count > 0)
 			{
 				ListViewItem item = _listView.Items[_listView.SelectedIndices[0]];
@@ -161,7 +161,7 @@ namespace SIL.WritingSystems.WindowsForms
 				{
 					_desiredLanguageDisplayName.Text = _model.LanguageInfo.LocalName;
 				}
-				else if(_model.ISOCode == "qaa")
+				else if(_model.IsoCode == "qaa")
 				{
 					if(_searchText.Text != "?")
 					{
@@ -185,7 +185,7 @@ namespace SIL.WritingSystems.WindowsForms
 					}
 				}
 			}
-			if(_model.ISOCode != oldIso)
+			if(_model.IsoCode != oldIso)
 				UpdateReadiness();
 		}
 
@@ -201,7 +201,7 @@ namespace SIL.WritingSystems.WindowsForms
 
 		private void _searchTimer_Tick(object sender, EventArgs e)
 		{
-			var oldIso = _model.ISOCode;
+			var oldIso = _model.IsoCode;
 			var typedText = _searchText.Text.Trim();
 			if(typedText == _lastSearchedForText)
 			{

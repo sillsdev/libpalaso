@@ -133,17 +133,17 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 			using (new DeleteCurrentTestEnvironment())
 			{
 				_model.AddNew();
-				_model.CurrentISO = "pt";
+				_model.CurrentIso = "pt";
 				_model.AddNew();
-				_model.CurrentISO = "de";
+				_model.CurrentIso = "de";
 				_model.AddNew();
-				_model.CurrentISO = "th";
+				_model.CurrentIso = "th";
 				var writingSystems = new List<string>();
 				for (_model.CurrentIndex = _model.WritingSystemCount - 1;
 					 _model.HasCurrentSelection;
 					 _model.CurrentIndex--)
 				{
-					writingSystems.Insert(0, _model.CurrentISO);
+					writingSystems.Insert(0, _model.CurrentIso);
 				}
 				string deletedWritingSystem = writingSystems[1];
 				_model.CurrentIndex = 1;
@@ -152,7 +152,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 					 _model.HasCurrentSelection;
 					 _model.CurrentIndex--)
 				{
-					Assert.AreNotEqual(deletedWritingSystem, _model.CurrentISO);
+					Assert.AreNotEqual(deletedWritingSystem, _model.CurrentIso);
 				}
 			}
 		}
@@ -173,15 +173,15 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void SetCurrentIndexFromRfc4646_NotFound_ReturnsTrueAndCurrentIsChanged()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			_model.CurrentRegion = "BR";
 			_model.AddNew();
-			_model.CurrentISO = "de";
+			_model.CurrentIso = "de";
 			Assert.IsTrue(_model.SetCurrentIndexFromRfc46464("de"));
 			Assert.AreEqual(1, _model.CurrentIndex);
-			Assert.AreEqual("de", _model.CurrentISO);
+			Assert.AreEqual("de", _model.CurrentIso);
 			Assert.IsTrue(_model.SetCurrentIndexFromRfc46464("pt-BR"));
-			Assert.AreEqual("pt", _model.CurrentISO);
+			Assert.AreEqual("pt", _model.CurrentIso);
 			Assert.AreEqual(0, _model.CurrentIndex);
 
 		}
@@ -190,13 +190,13 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void CurrentSelectByIndex_GetCurrentCorrect()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			_model.AddNew();
-			_model.CurrentISO = "de";
+			_model.CurrentIso = "de";
 			_model.AddNew();
-			_model.CurrentISO = "th";
+			_model.CurrentIso = "th";
 			_model.CurrentIndex = 1;
-			Assert.AreEqual("de", _model.CurrentISO);
+			Assert.AreEqual("de", _model.CurrentIso);
 		}
 
 		[Test]
@@ -228,7 +228,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void Event_Duplicate_TriggersOnAddDelete()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			bool eventTriggered = false;
 			_model.ItemAddedOrDeleted += delegate { eventTriggered = true; };
 			_model.DuplicateCurrent();
@@ -241,7 +241,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 			using (new DeleteCurrentTestEnvironment())
 			{
 				_model.AddNew();
-				_model.CurrentISO = "pt";
+				_model.CurrentIso = "pt";
 				bool eventTriggered = false;
 				_model.ItemAddedOrDeleted += delegate { eventTriggered = true; };
 				_model.DeleteCurrent();
@@ -262,9 +262,9 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void Event_SameItemSelected_DoesNotTriggerSelectionChanged()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			_model.AddNew();
-			_model.CurrentISO = "de";
+			_model.CurrentIso = "de";
 			bool eventTriggered = false;
 			_model.CurrentIndex = 0;
 			_model.SelectionChanged += delegate { eventTriggered = true; };
@@ -276,9 +276,9 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void Event_DifferentItemSelected_TriggersSelectionChanged()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			_model.AddNew();
-			_model.CurrentISO = "de";
+			_model.CurrentIso = "de";
 			bool eventTriggered = false;
 			_model.CurrentIndex = 0;
 			_model.SelectionChanged += delegate { eventTriggered = true; };
@@ -290,7 +290,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void Event_ItemSelectedSelectNegative1_TriggersSelectionChanged()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			bool eventTriggered = false;
 			_model.CurrentIndex = 0;
 			_model.SelectionChanged += delegate { eventTriggered = true; };
@@ -302,7 +302,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void Event_ItemSelectedClearSelection_TriggersSelectionChanged()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			bool eventTriggered = false;
 			_model.CurrentIndex = 0;
 			_model.SelectionChanged += delegate { eventTriggered = true; };
@@ -314,7 +314,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void Event_NoItemSelectedClearSelection_DoesNotTriggerSelectionChanged()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			bool eventTriggered = false;
 			_model.ClearSelection();
 			_model.SelectionChanged += delegate { eventTriggered = true; };
@@ -328,7 +328,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 			_model.AddNew();
 			bool eventTriggered = false;
 			_model.CurrentItemUpdated += delegate { eventTriggered = true; };
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			Assert.IsTrue(eventTriggered);
 		}
 
@@ -337,9 +337,9 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		{
 			_model.AddNew();
 			bool eventTriggered = false;
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			_model.CurrentItemUpdated += delegate { eventTriggered = true; };
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			Assert.IsFalse(eventTriggered);
 		}
 
@@ -354,11 +354,11 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void DuplicateCurrent_AppearsInList()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			_model.AddNew();
-			_model.CurrentISO = "de";
+			_model.CurrentIso = "de";
 			_model.AddNew();
-			_model.CurrentISO = "th";
+			_model.CurrentIso = "th";
 			_model.CurrentIndex = 1;
 			_model.DuplicateCurrent();
 			Assert.AreEqual(4, _model.WritingSystemCount);
@@ -384,10 +384,10 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void EditCurrentSelection_UpdatesCanSaveForCurrent()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			_model.AddNew();
 			Assert.IsTrue(_model.CanSaveCurrent);
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			Assert.IsFalse(_model.CanSaveCurrent);
 		}
 
@@ -395,19 +395,19 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void EditCurrentSelection_UpdatesCanSaveForAll()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			_model.AddNew();
-			_model.CurrentISO = "de";
+			_model.CurrentIso = "de";
 			_model.AddNew();
-			_model.CurrentISO = "de";
+			_model.CurrentIso = "de";
 			_model.CurrentIndex = 1;
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			_model.CurrentIndex = 0;
 			bool[] canSave = _model.WritingSystemListCanSave;
 			Assert.IsFalse(canSave[0]);
 			Assert.IsFalse(canSave[1]);
 			Assert.IsTrue(canSave[2]);
-			_model.CurrentISO = "th";
+			_model.CurrentIso = "th";
 			canSave = _model.WritingSystemListCanSave;
 			Assert.IsTrue(canSave[0]);
 			Assert.IsTrue(canSave[1]);
@@ -418,14 +418,14 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void EditCurrentSelection_UpdatesCanSaveAndFixesCycle()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			_model.AddNew();
-			_model.CurrentISO = "de";
+			_model.CurrentIso = "de";
 			_model.CurrentIndex = 0;
-			_model.CurrentISO = "de";
+			_model.CurrentIso = "de";
 			Assert.IsFalse(_model.CanSaveCurrent);
 			_model.CurrentIndex = 1;
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			bool[] canSave = _model.WritingSystemListCanSave;
 			Assert.IsTrue(canSave[0]);
 			Assert.IsTrue(canSave[1]);
@@ -447,7 +447,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void SortLanguageOptions_DoesNotIncludeCurrnt()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			foreach (KeyValuePair<string, string> languageOption in _model.SortLanguageOptions)
 			{
 				Assert.AreNotEqual(_model.CurrentRFC4646, languageOption.Key);
@@ -459,10 +459,10 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void SortLanuageOptions_DoesIncludeOtherWritingSystems()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			string key = _model.CurrentRFC4646;
 			_model.AddNew();
-			_model.CurrentISO = "de";
+			_model.CurrentIso = "de";
 			bool found = false;
 			foreach (KeyValuePair<string, string> languageOption in _model.SortLanguageOptions)
 			{
@@ -475,10 +475,10 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void SortLanuageOptions_DoesNotIncludeOtherWritingSystemsThatMakeACycle()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			string key = _model.CurrentRFC4646;
 			_model.AddNew();
-			_model.CurrentISO = "de";
+			_model.CurrentIso = "de";
 			_model.CurrentCollationRulesType = "OtherLanguage";
 			_model.CurrentCollationRules = key;
 			key = _model.CurrentRFC4646;
@@ -582,7 +582,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void TestSort_NullString_DoesNothing()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			_model.CurrentCollationRulesType = "CustomIcu";
 			_model.CurrentCollationRules = "&b<a<c";
 			Assert.IsNull(_model.TestSort(null));
@@ -592,7 +592,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void TestSort_RulesAndString_SortsCorrectly()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			_model.CurrentCollationRulesType = "CustomIcu";
 			_model.CurrentCollationRules = "&b<a<c";
 			Assert.AreEqual("b\r\na\r\nc", _model.TestSort("a\r\nb\r\nc"));
@@ -603,7 +603,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		{
 			string message;
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			_model.CurrentCollationRulesType = "CustomIcu";
 			_model.CurrentCollationRules = "&b<a<c";
 			Assert.IsTrue(_model.ValidateCurrentSortRules(out message));
@@ -614,7 +614,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		{
 			string message;
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			_model.CurrentCollationRulesType = "CustomIcu";
 			_model.CurrentCollationRules = "&&b<a<c";
 			Assert.IsFalse(_model.ValidateCurrentSortRules(out message));
@@ -625,7 +625,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		{
 			string message;
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			_model.CurrentCollationRulesType = "CustomSimple";
 			_model.CurrentCollationRules = "b a c";
 			Assert.IsTrue(_model.ValidateCurrentSortRules(out message));
@@ -636,7 +636,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		{
 			string message;
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			_model.CurrentCollationRulesType = "CustomSimple";
 			_model.CurrentCollationRules = "ab b b";
 			Assert.IsFalse(_model.ValidateCurrentSortRules(out message));
@@ -649,7 +649,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		{
 			string message;
 			_model.AddNew();
-			_model.CurrentISO = "pt";
+			_model.CurrentIso = "pt";
 			_model.CurrentCollationRulesType = "OtherLanguage";
 			_model.CurrentCollationRules = "en";
 			Assert.IsTrue(_model.ValidateCurrentSortRules(out message));
@@ -737,7 +737,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void SelectionForSpecialCombo_HasRegionAndIPA_GivesIPA()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "en";
+			_model.CurrentIso = "en";
 			_model.CurrentRegion = "BR";
 			_model.CurrentVariant = "fonipa";
 			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.Ipa, _model.SelectionForSpecialCombo);
@@ -747,7 +747,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void SelectionForSpecialCombo_HasRegion_GivesScriptRegionVariant()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "en";
+			_model.CurrentIso = "en";
 			_model.CurrentRegion = "BR";
 			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.ScriptRegionVariant, _model.SelectionForSpecialCombo);
 		}
@@ -756,7 +756,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void SelectionForSpecialCombo_HasKnownScript_GivesScriptRegionVariant()
 		{
 			_model.AddNew();
-			_model.CurrentISO = "en";
+			_model.CurrentIso = "en";
 			_model.CurrentScriptCode = "Cyrl";
 			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.ScriptRegionVariant, _model.SelectionForSpecialCombo);
 		}
@@ -814,7 +814,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		public void CurrentScriptOptionReturnCorrectScript()
 		{
 			_model.CurrentDefinition = new WritingSystemDefinition("en", "Kore", "", "", "", false);
-			Assert.AreEqual("Korean", _model.CurrentIso15924Script.ShortLabel());
+			Assert.AreEqual("Korean", _model.CurrentIso15924Script.ShortName);
 		}
 
 		[Test]
@@ -869,7 +869,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 			_writingSystemRepository.Set(ws);
 			_model = new WritingSystemSetupModel(_writingSystemRepository);
 			//Now change the Id so it's a duplicate of another ws already in the repo
-			ws.Variant = "";
+			ws.Variants.Clear();
 			_model.SetAllPossibleAndRemoveOthers();
 			Assert.That(_writingSystemRepository.Count, Is.EqualTo(2));
 			Assert.That(_writingSystemRepository.Contains("en"));
@@ -886,7 +886,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 			_writingSystemRepository.Set(ws);
 			_model = new WritingSystemSetupModel(_writingSystemRepository);
 			//Now change the Id so it's a duplicate of another ws already in the repo
-			ws.Variant = "";
+			ws.Variants.Clear();
 			_model.SetAllPossibleAndRemoveOthers();
 			Assert.That(_writingSystemRepository.Count, Is.EqualTo(2));
 			Assert.That(_writingSystemRepository.Contains("en"));

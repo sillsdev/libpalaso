@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
-using Palaso.Extensions;
 
 namespace SIL.WritingSystems
 {
@@ -68,10 +68,14 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public const int LatestWritingSystemDefinitionVersion = 2;
 
-		private Rfc5646Tag _rfcTag;
 		private string _languageName;
+		private string _bcp47Tag;
+		private LanguageSubtag _language;
+		private ScriptSubtag _script;
+		private RegionSubtag _region;
+		private readonly ObservableCollection<VariantSubtag> _variants = new ObservableCollection<VariantSubtag>();
 		private string _abbreviation;
-		private bool _isUnicodeEncoded;
+		private bool _isUnicodeEncoded = true;
 		private string _versionNumber;
 		private string _versionDescription;
 		private DateTime _dateModified;
@@ -82,7 +86,6 @@ namespace SIL.WritingSystems
 		private IKeyboardDefinition _localKeyboard;
 		private string _id;
 		private string _defaultRegion;
-		private string _variantName;
 		private string _windowsLcid;
 		private CollationDefinition _defaultCollation;
 		private SpellCheckDictionaryDefinition _spellCheckDictionary;
@@ -95,18 +98,19 @@ namespace SIL.WritingSystems
 		private readonly ObservableHashSet<MatchedPair> _matchedPairs;
 		private readonly ObservableHashSet<PunctuationPattern> _punctuationPatterns;
 		private readonly ObservableCollection<QuotationMark> _quotationMarks = new ObservableCollection<QuotationMark>();
-		private readonly ObservableKeyedCollection<string, CharacterSetDefinition> _characterSets = new ObservableKeyedCollection<string, CharacterSetDefinition>(csd => csd.Type); 
+		private readonly ObservableKeyedCollection<string, CharacterSetDefinition> _characterSets = new ObservableKeyedCollection<string, CharacterSetDefinition>(csd => csd.Type);
+		private bool _ignoreVariantChanges;
 
 		/// <summary>
 		/// Creates a new WritingSystemDefinition with Language subtag set to "qaa"
 		/// </summary>
 		public WritingSystemDefinition()
 		{
-			_isUnicodeEncoded = true;
-			_rfcTag = new Rfc5646Tag();
+			_language = WellKnownSubtags.UnlistedLanguage;
 			_matchedPairs = new ObservableHashSet<MatchedPair>();
 			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>();
-			UpdateIdFromRfcTag();
+			_bcp47Tag = IetfLanguageTag.ToLanguageTag(_language, _script, _region, _variants);
+			_id = _bcp47Tag;
 			SetupCollectionChangeListeners();
 		}
 
@@ -119,6 +123,16 @@ namespace SIL.WritingSystems
 			_punctuationPatterns.CollectionChanged += _punctuationPatterns_CollectionChanged;
 			_quotationMarks.CollectionChanged += _quotationMarks_CollectionChanged;
 			_collations.CollectionChanged += _collations_CollectionChanged;
+			_variants.CollectionChanged += _variants_CollectionChanged;
+		}
+
+		private void _variants_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (!_ignoreVariantChanges)
+			{
+				CheckVariantAndScriptRules();
+				UpdateRfcTag();
+			}
 		}
 
 		private void _quotationMarks_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -169,26 +183,18 @@ namespace SIL.WritingSystems
 		/// </summary>
 		/// <param name="bcp47Tag">A valid BCP47 tag</param>
 		public WritingSystemDefinition(string bcp47Tag)
-			: this()
 		{
-			_rfcTag = Rfc5646Tag.Parse(bcp47Tag);
+			IEnumerable<VariantSubtag> variantSubtags;
+			if (!IetfLanguageTag.TryGetSubtags(bcp47Tag, out _language, out _script, out _region, out variantSubtags))
+				throw new ArgumentException("A valid language tag is required.", "bcp47Tag");
+			_matchedPairs = new ObservableHashSet<MatchedPair>();
+			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>();
+			foreach (VariantSubtag variantSubtag in variantSubtags)
+				_variants.Add(variantSubtag);
+			_bcp47Tag = bcp47Tag;
 			_abbreviation = _languageName = _nativeName = string.Empty;
-			UpdateIdFromRfcTag();
-		}
-
-		/// <summary>
-		/// True when the validity of the writing system defn's tag is being enforced. This is the normal and default state.
-		/// Setting this true will throw unless the tag has previously been put into a valid state.
-		/// Attempting to Save the writing system defn will set this true (and may throw).
-		/// </summary>
-		public bool RequiresValidTag
-		{
-			get { return _rfcTag.RequiresValidTag; }
-			set
-			{
-				_rfcTag.RequiresValidTag = value;
-				CheckVariantAndScriptRules();
-			}
+			_id = _bcp47Tag;
+			SetupCollectionChangeListeners();
 		}
 
 		/// <summary>
@@ -201,16 +207,14 @@ namespace SIL.WritingSystems
 		/// <param name="abbreviation">The desired abbreviation for this writing system definition</param>
 		/// <param name="rightToLeftScript">Indicates whether this writing system uses a right to left script</param>
 		public WritingSystemDefinition(string language, string script, string region, string variant, string abbreviation, bool rightToLeftScript)
-			: this()
 		{
-			string variantPart;
-			string privateUsePart;
-			SplitVariantAndPrivateUse(variant, out variantPart, out privateUsePart);
-			_rfcTag = new Rfc5646Tag(language, script, region, variantPart, privateUsePart);
-
 			_abbreviation = abbreviation;
 			_rightToLeftScript = rightToLeftScript;
-			UpdateIdFromRfcTag();
+			_matchedPairs = new ObservableHashSet<MatchedPair>();
+			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>();
+			SetAllComponents(language, script, region, variant);
+			IsChanged = false;
+			SetupCollectionChangeListeners();
 		}
 
 		/// <summary>
@@ -219,6 +223,12 @@ namespace SIL.WritingSystems
 		/// <param name="ws">The ws.</param>
 		public WritingSystemDefinition(WritingSystemDefinition ws)
 		{
+			_language = ws._language;
+			_script = ws._script;
+			_region = ws._region;
+			_variants = new ObservableCollection<VariantSubtag>();
+			foreach (VariantSubtag variantSubtag in ws._variants)
+				_variants.Add(variantSubtag);
 			_abbreviation = ws._abbreviation;
 			_rightToLeftScript = ws._rightToLeftScript;
 			foreach (FontDefinition fd in ws._fonts)
@@ -235,12 +245,11 @@ namespace SIL.WritingSystems
 				_spellCheckDictionary = _spellCheckDictionaries[ws._spellCheckDictionaries.IndexOf(ws._spellCheckDictionary)];
 			_dateModified = ws._dateModified;
 			_isUnicodeEncoded = ws._isUnicodeEncoded;
-			_rfcTag = new Rfc5646Tag(ws._rfcTag);
 			_languageName = ws._languageName;
+			_bcp47Tag = ws._bcp47Tag;
 			_localKeyboard = ws._localKeyboard;
 			_windowsLcid = ws._windowsLcid;
 			_defaultRegion = ws._defaultRegion;
-			_variantName = ws._variantName;
 			foreach (IKeyboardDefinition kbd in ws._knownKeyboards)
 				_knownKeyboards.Add(kbd);
 			_matchedPairs = new ObservableHashSet<MatchedPair>(ws._matchedPairs);
@@ -299,16 +308,12 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				if (Rfc5646TagIsPhonemicConform)
+				if (_variants.Contains(WellKnownSubtags.IpaVariant))
 				{
-					return IpaStatusChoices.IpaPhonemic;
-				}
-				if (Rfc5646TagIsPhoneticConform)
-				{
-					return IpaStatusChoices.IpaPhonetic;
-				}
-				if (VariantSubTagIsIpaConform)
-				{
+					if (_variants.Contains(WellKnownSubtags.IpaPhonemicPrivateUse))
+						return IpaStatusChoices.IpaPhonemic;
+					if (_variants.Contains(WellKnownSubtags.IpaPhoneticPrivateUse))
+						return IpaStatusChoices.IpaPhonetic;
 					return IpaStatusChoices.Ipa;
 				}
 				return IpaStatusChoices.NotIpa;
@@ -316,40 +321,55 @@ namespace SIL.WritingSystems
 
 			set
 			{
-				if (IpaStatus == value)
+				if (IpaStatus != value)
 				{
-					return;
-				}
-				//We need this to make sure that our language tag won't start with the variant "fonipa"
-				if(_rfcTag.Language == "")
-				{
-					_rfcTag.Language = WellKnownSubtags.UnlistedLanguage;
-				}
-				_rfcTag.RemoveFromPrivateUse(WellKnownSubtags.AudioPrivateUse);
-				/* "There are some variant subtags that have no prefix field,
-				 * eg. fonipa (International IpaPhonetic Alphabet). Such variants
-				 * should appear after any other variant subtags with prefix information."
-				 */
-				_rfcTag.RemoveFromPrivateUse("x-etic");
-				_rfcTag.RemoveFromPrivateUse("x-emic");
-				_rfcTag.RemoveFromVariant("fonipa");
+					RemoveVariants(WellKnownSubtags.IpaVariant, WellKnownSubtags.IpaPhonemicPrivateUse, WellKnownSubtags.IpaPhoneticPrivateUse, WellKnownSubtags.AudioPrivateUse);
 
-				switch (value)
+					if (_language == null)
+						_language = WellKnownSubtags.UnlistedLanguage;
+
+					int index = IndexOfFirstPrivateUseVariant();
+
+					switch (value)
+					{
+						case IpaStatusChoices.Ipa:
+							_variants.Insert(index, WellKnownSubtags.IpaVariant);
+							break;
+						case IpaStatusChoices.IpaPhonemic:
+							_variants.Insert(index, WellKnownSubtags.IpaVariant);
+							_variants.Insert(index + 1, WellKnownSubtags.IpaPhonemicPrivateUse);
+							break;
+						case IpaStatusChoices.IpaPhonetic:
+							_variants.Insert(index, WellKnownSubtags.IpaVariant);
+							_variants.Insert(index + 1, WellKnownSubtags.IpaPhoneticPrivateUse);
+							break;
+					}
+				}
+			}
+		}
+
+		private int IndexOfFirstPrivateUseVariant()
+		{
+			for (int i = 0; i < _variants.Count; i++)
+			{
+				if (_variants[i].IsPrivateUse)
+					return i;
+			}
+			return _variants.Count;
+		}
+
+		private void RemoveVariants(params VariantSubtag[] variantSubtags)
+		{
+			var variantSubtagsSet = new HashSet<VariantSubtag>(variantSubtags);
+			for (int i = _variants.Count - 1; i >= 0; i--)
+			{
+				if (variantSubtagsSet.Contains(_variants[i]))
 				{
-					case IpaStatusChoices.Ipa:
-						_rfcTag.AddToVariant(WellKnownSubtags.IpaVariant);
-						break;
-					case IpaStatusChoices.IpaPhonemic:
-						_rfcTag.AddToVariant(WellKnownSubtags.IpaVariant);
-						_rfcTag.AddToPrivateUse(WellKnownSubtags.IpaPhonemicPrivateUse);
-						break;
-					case IpaStatusChoices.IpaPhonetic:
-						_rfcTag.AddToVariant(WellKnownSubtags.IpaVariant);
-						_rfcTag.AddToPrivateUse(WellKnownSubtags.IpaPhoneticPrivateUse);
+					variantSubtagsSet.Remove(_variants[i]);
+					_variants.RemoveAt(i);
+					if (variantSubtagsSet.Count == 0)
 						break;
 				}
-				IsChanged = true;
-				UpdateIdFromRfcTag();
 			}
 		}
 
@@ -360,44 +380,33 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				return ScriptSubTagIsAudio && VariantSubTagIsAudio;
+				return ScriptSubTagIsAudio && _variants.Contains(WellKnownSubtags.AudioPrivateUse);
 			}
 			set
 			{
-				if (IsVoice == value) { return; }
+				if (IsVoice == value)
+					return;
+
 				if (value)
 				{
+					if (_language == null)
+						_language = WellKnownSubtags.UnlistedLanguage;
 					IpaStatus = IpaStatusChoices.NotIpa;
 					Keyboard = string.Empty;
-					if(Language == "")
-					{
-						Language = WellKnownSubtags.UnlistedLanguage;
-					}
-					Script = WellKnownSubtags.AudioScript;
-					_rfcTag.AddToPrivateUse(WellKnownSubtags.AudioPrivateUse);
+					_script = StandardSubtags.Iso15924Scripts[WellKnownSubtags.AudioScript];
+					_variants.Add(StandardSubtags.CommonPrivateUseVariants[WellKnownSubtags.AudioPrivateUse]);
 				}
 				else
 				{
-					_rfcTag.Script = String.Empty;
-					_rfcTag.RemoveFromPrivateUse(WellKnownSubtags.AudioPrivateUse);
+					_script = null;
+					RemoveVariants(WellKnownSubtags.AudioPrivateUse);
 				}
-				IsChanged = true;
-				UpdateIdFromRfcTag();
-				CheckVariantAndScriptRules();
-			}
-		}
-
-		private bool VariantSubTagIsAudio
-		{
-			get
-			{
-				return _rfcTag.PrivateUseContains(WellKnownSubtags.AudioPrivateUse);
 			}
 		}
 
 		private bool ScriptSubTagIsAudio
 		{
-			get { return _rfcTag.Script.Equals(WellKnownSubtags.AudioScript, StringComparison.OrdinalIgnoreCase); }
+			get { return _script != null && _script.Code.Equals(WellKnownSubtags.AudioScript, StringComparison.OrdinalIgnoreCase); }
 		}
 
 		/// <summary>
@@ -407,161 +416,27 @@ namespace SIL.WritingSystems
 		/// variant/ private use handling
 		/// </summary>
 		// Todo: this could/should become an ordered list of variant tags
-		public string Variant
+		public IList<VariantSubtag> Variants
 		{
-			get
-			{
-				string variantToReturn = ConcatenateVariantAndPrivateUse(_rfcTag.Variant, _rfcTag.PrivateUse);
-				return variantToReturn;
-			}
-			set
-			{
-				value = value ?? "";
-				if (value == Variant)
-				{
-					return;
-				}
-				// Note that the WritingSystemDefinition provides no direct support for private use except via Variant set.
-				string variant;
-				string privateUse;
-				SplitVariantAndPrivateUse(value, out variant, out privateUse);
-				_rfcTag.Variant = variant;
-				_rfcTag.PrivateUse = privateUse;
-
-				IsChanged = true;
-				UpdateIdFromRfcTag();
-				CheckVariantAndScriptRules();
-			}
-		}
-
-		/// <summary>
-		/// Adds a valid BCP47 registered variant subtag to the variant. Any other tag is inserted as private use.
-		/// </summary>
-		/// <param name="registeredVariantOrPrivateUseSubtag">A valid variant tag or another tag which will be inserted into private use.</param>
-		public void AddToVariant(string registeredVariantOrPrivateUseSubtag)
-		{
-			if (StandardTags.IsValidRegisteredVariant(registeredVariantOrPrivateUseSubtag))
-			{
-				_rfcTag.AddToVariant(registeredVariantOrPrivateUseSubtag);
-			}
-			else
-			{
-				_rfcTag.AddToPrivateUse(registeredVariantOrPrivateUseSubtag);
-			}
-			UpdateIdFromRfcTag();
-			CheckVariantAndScriptRules();
-		}
-
-		/// <summary>
-		/// A convenience method to help consumers deal with variant and private use subtags both being stored in the Variant property.
-		/// This method will search the Variant part of the BCP47 tag for an "x" extension marker and split the tag into variant and private use sections
-		/// Note the complementary method "ConcatenateVariantAndPrivateUse"
-		/// </summary>
-		/// <param name="variantAndPrivateUse">The string containing variant and private use sections seperated by an "x" private use subtag</param>
-		/// <param name="variant">The resulting variant section</param>
-		/// <param name="privateUse">The resulting private use section</param>
-		public static void SplitVariantAndPrivateUse(string variantAndPrivateUse, out string variant, out string privateUse)
-		{
-			if (variantAndPrivateUse.StartsWith("x-",StringComparison.OrdinalIgnoreCase)) // Private Use at the beginning
-			{
-				variantAndPrivateUse = variantAndPrivateUse.Substring(2); // Strip the leading x-
-				variant = "";
-				privateUse = variantAndPrivateUse;
-			}
-			else if (variantAndPrivateUse.Contains("-x-", StringComparison.OrdinalIgnoreCase)) // Private Use from the middle
-			{
-				string[] partsOfVariant = variantAndPrivateUse.Split(new[] { "-x-" }, StringSplitOptions.None);
-				if(partsOfVariant.Length == 1)  //Must have been a capital X
-				{
-					partsOfVariant = variantAndPrivateUse.Split(new[] { "-X-" }, StringSplitOptions.None);
-				}
-				variant = partsOfVariant[0];
-				privateUse = partsOfVariant[1];
-			}
-			else // No Private Use, it's contains variants only
-			{
-				variant = variantAndPrivateUse;
-				privateUse = "";
-			}
-		}
-
-		/// <summary>
-		/// A convenience method to help consumers deal with registeredVariantSubtags and private use subtags both being stored in the Variant property.
-		/// This method will insert a "x" private use subtag between a set of registered BCP47 variants and a set of private use subtags
-		/// Note the complementary method "ConcatenateVariantAndPrivateUse"
-		/// </summary>
-		/// <param name="registeredVariantSubtags">A set of registered variant subtags</param>
-		/// <param name="privateUseSubtags">A set of private use subtags</param>
-		/// <returns>The resulting combination of registeredVariantSubtags and private use.</returns>
-		public static string ConcatenateVariantAndPrivateUse(string registeredVariantSubtags, string privateUseSubtags)
-		{
-			if(String.IsNullOrEmpty(privateUseSubtags))
-			{
-				return registeredVariantSubtags;
-			}
-			if(!privateUseSubtags.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
-			{
-				privateUseSubtags = String.Concat("x-", privateUseSubtags);
-			}
-
-			string variantToReturn = registeredVariantSubtags;
-			if (!String.IsNullOrEmpty(privateUseSubtags))
-			{
-				if (!String.IsNullOrEmpty(variantToReturn))
-				{
-					variantToReturn += "-";
-				}
-				variantToReturn += privateUseSubtags;
-			}
-			return variantToReturn;
+			get { return _variants; }
 		}
 
 		private void CheckVariantAndScriptRules()
 		{
-			if (!RequiresValidTag)
-				return;
-			if (VariantSubTagIsAudio && !ScriptSubTagIsAudio)
+			if (_variants.Contains(WellKnownSubtags.AudioPrivateUse) && !ScriptSubTagIsAudio)
 			{
-				throw new ArgumentException("The script subtag must be set to " + WellKnownSubtags.AudioScript + " when the variant tag indicates an audio writing system.");
+				throw new InvalidOperationException("The script subtag must be set to " + WellKnownSubtags.AudioScript + " when the variant tag indicates an audio writing system.");
 			}
-			bool rfcTagHasAnyIpa = VariantSubTagIsIpaConform ||
-									_rfcTag.PrivateUseContains(WellKnownSubtags.IpaPhonemicPrivateUse) ||
-									_rfcTag.PrivateUseContains(WellKnownSubtags.IpaPhoneticPrivateUse);
-			if (VariantSubTagIsAudio && rfcTagHasAnyIpa)
+			bool rfcTagHasAnyIpa = _variants.Contains(WellKnownSubtags.IpaVariant)
+				|| _variants.Contains(WellKnownSubtags.IpaPhonemicPrivateUse) || _variants.Contains(WellKnownSubtags.IpaPhoneticPrivateUse);
+			if (_variants.Contains(WellKnownSubtags.AudioPrivateUse) && rfcTagHasAnyIpa)
 			{
-				throw new ArgumentException("A writing system may not be marked as audio and ipa at the same time.");
+				throw new InvalidOperationException("A writing system may not be marked as audio and ipa at the same time.");
 			}
-			if((_rfcTag.PrivateUseContains(WellKnownSubtags.IpaPhonemicPrivateUse)  ||
-				_rfcTag.PrivateUseContains(WellKnownSubtags.IpaPhoneticPrivateUse)) &&
-				!VariantSubTagIsIpaConform)
+			if ((_variants.Contains(WellKnownSubtags.IpaPhonemicPrivateUse) || _variants.Contains(WellKnownSubtags.IpaPhoneticPrivateUse))
+				&& !_variants.Contains(WellKnownSubtags.IpaVariant))
 			{
-				throw new ArgumentException("A writing system may not be marked as phonetic (x-etic) or phonemic (x-emic) and lack the variant marker fonipa.");
-			}
-		}
-
-		private bool VariantSubTagIsIpaConform
-		{
-			get
-			{
-				return _rfcTag.VariantContains(WellKnownSubtags.IpaVariant);
-			}
-		}
-
-		private bool Rfc5646TagIsPhoneticConform
-		{
-			get
-			{
-				return  _rfcTag.VariantContains(WellKnownSubtags.IpaVariant) &&
-					_rfcTag.PrivateUseContains(WellKnownSubtags.IpaPhoneticPrivateUse);
-			}
-		}
-
-		private bool Rfc5646TagIsPhonemicConform
-		{
-			get
-			{
-				return _rfcTag.VariantContains(WellKnownSubtags.IpaVariant) &&
-					_rfcTag.PrivateUseContains(WellKnownSubtags.IpaPhonemicPrivateUse);
+				throw new InvalidOperationException("A writing system may not be marked as phonetic (x-etic) or phonemic (x-emic) and lack the variant marker fonipa.");
 			}
 		}
 
@@ -575,61 +450,57 @@ namespace SIL.WritingSystems
 		/// <param name="variant">A valid BCP47 variant subtag.</param>
 		public void SetAllComponents(string language, string script, string region, string variant)
 		{
-			string oldId = _rfcTag.CompleteTag;
-			string variantPart;
-			string privateUsePart;
-			SplitVariantAndPrivateUse(variant, out variantPart, out privateUsePart);
-			_rfcTag = new Rfc5646Tag(language, script, region, variantPart, privateUsePart);
-			UpdateIdFromRfcTag();
-			if(oldId == _rfcTag.CompleteTag)
+			string oldId = _bcp47Tag;
+			_bcp47Tag = IetfLanguageTag.ToLanguageTag(language, script, region, variant);
+			if (oldId != _bcp47Tag)
 			{
-				return;
-			}
-			IsChanged = true;
-			CheckVariantAndScriptRules();
-		}
-
-		/// <summary>
-		/// A string representing the subtag of the same name as defined by BCP47.
-		/// </summary>
-		public string Region
-		{
-			get
-			{
-				return _rfcTag.Region;
-			}
-			set
-			{
-				value = value ?? "";
-				if (value == Region)
+				IEnumerable<VariantSubtag> variantSubtags;
+				IetfLanguageTag.TryGetSubtags(_bcp47Tag, out _language, out _script, out _region, out variantSubtags);
+				_ignoreVariantChanges = true;
+				try
 				{
-					return;
+					_variants.Clear();
+					foreach (VariantSubtag variantSubtag in variantSubtags)
+						_variants.Add(variantSubtag);
 				}
-				_rfcTag.Region = value;
-				UpdateIdFromRfcTag();
-				IsChanged = true;
+				finally
+				{
+					_ignoreVariantChanges = false;
+				}
+				CheckVariantAndScriptRules();
+				UpdateRfcTag();
 			}
 		}
 
 		/// <summary>
 		/// A string representing the subtag of the same name as defined by BCP47.
 		/// </summary>
-		public string Language
+		public RegionSubtag Region
 		{
-			get
-			{
-				return _rfcTag.Language;
-			}
+			get { return _region; }
 			set
 			{
-				value = value ?? "";
-				if (value == Language)
+				if (_region != value)
 				{
-					return;
+					_region = value;
+					UpdateRfcTag();
 				}
-				_rfcTag.Language = value;
-				UpdateIdFromRfcTag();
-				IsChanged = true;
+			}
+		}
+
+		/// <summary>
+		/// A string representing the subtag of the same name as defined by BCP47.
+		/// </summary>
+		public LanguageSubtag Language
+		{
+			get { return _language; }
+			set
+			{
+				if (_language != value)
+				{
+					_language = value;
+					UpdateRfcTag();
+				}
 			}
 		}
 
@@ -644,7 +515,7 @@ namespace SIL.WritingSystems
 				{
 					// Use the language subtag unless it's an unlisted language.
 					// If it's an unlisted language, use the private use area language subtag.
-					if (Language == "qaa")
+					if (_language == WellKnownSubtags.UnlistedLanguage)
 					{
 						int idx = Id.IndexOf("-x-", StringComparison.Ordinal);
 						if (idx > 0 && Id.Length > idx + 3)
@@ -656,7 +527,7 @@ namespace SIL.WritingSystems
 							return abbr;
 						}
 					}
-					return Language;
+					return _language;
 				}
 				return _abbreviation;
 			}
@@ -667,20 +538,17 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// A string representing the subtag of the same name as defined by BCP47.
 		/// </summary>
-		public string Script
+		public ScriptSubtag Script
 		{
-			get { return _rfcTag.Script; }
+			get { return _script; }
 			set
 			{
-				value = value ?? "";
-				if (value == Script)
+				if (_script != value)
 				{
-					return;
+					_script = value;
+					CheckVariantAndScriptRules();
+					UpdateRfcTag();
 				}
-				_rfcTag.Script = value;
-				IsChanged = true;
-				UpdateIdFromRfcTag();
-				CheckVariantAndScriptRules();
 			}
 		}
 
@@ -693,16 +561,10 @@ namespace SIL.WritingSystems
 			get
 			{
 				if (!string.IsNullOrEmpty(_languageName))
-				{
 					return _languageName;
-				}
-				Iso639LanguageCode code = StandardTags.ValidIso639LanguageCodes.FirstOrDefault(c => c.Code.Equals(Language));
-				if (code != null)
-					return code.Name;
+				if (_language != null && !string.IsNullOrEmpty(_language.Name))
+					return _language.Name;
 				return "Unknown Language";
-
-				// TODO Make the below work.
-				//return StandardTags.LanguageName(Language) ?? "Unknown Language";
 			}
 			set { UpdateString(ref _languageName, value); }
 		}
@@ -716,21 +578,20 @@ namespace SIL.WritingSystems
 		/// <param name="writingSystemToCopy"></param>
 		/// <param name="otherWritingsystemIds"></param>
 		/// <returns></returns>
-		public static WritingSystemDefinition CreateCopyWithUniqueId(
-			WritingSystemDefinition writingSystemToCopy, IEnumerable<string> otherWritingsystemIds)
+		public static WritingSystemDefinition CreateCopyWithUniqueId(WritingSystemDefinition writingSystemToCopy, IEnumerable<string> otherWritingsystemIds)
 		{
 			WritingSystemDefinition newWs = writingSystemToCopy.Clone();
-			var lastAppended = String.Empty;
+			var lastAppended = string.Empty;
 			int duplicateNumber = 0;
 			string[] wsIds = otherWritingsystemIds.ToArray();
 			while (wsIds.Any(id => id.Equals(newWs.Id, StringComparison.OrdinalIgnoreCase)))
 			{
-				newWs._rfcTag.RemoveFromPrivateUse(lastAppended);
-				var currentToAppend = String.Format("dupl{0}", duplicateNumber);
-				if (!newWs._rfcTag.PrivateUse.Contains(currentToAppend))
+				if (!string.IsNullOrEmpty(lastAppended))
+					newWs.RemoveVariants(lastAppended);
+				string currentToAppend = string.Format("dupl{0}", duplicateNumber);
+				if (!newWs._variants.Contains(currentToAppend))
 				{
-					newWs._rfcTag.AddToPrivateUse(currentToAppend);
-					newWs.UpdateIdFromRfcTag();
+					newWs.Variants.Add(new VariantSubtag(currentToAppend, null, true, null));
 					lastAppended = currentToAppend;
 				}
 				duplicateNumber++;
@@ -760,7 +621,7 @@ namespace SIL.WritingSystems
 				//jh (Oct 2010) made it start with RFC5646 because all ws's in a lang start with the
 				//same abbreviation, making imppossible to see (in SOLID for example) which you chose.
 				bool languageIsUnknown = Bcp47Tag.Equals(WellKnownSubtags.UnlistedLanguage, StringComparison.OrdinalIgnoreCase);
-				if (!String.IsNullOrEmpty(Bcp47Tag) && !languageIsUnknown)
+				if (!string.IsNullOrEmpty(Bcp47Tag) && !languageIsUnknown)
 				{
 					return Bcp47Tag;
 				}
@@ -788,84 +649,97 @@ namespace SIL.WritingSystems
 			get
 			{
 				//the idea here is to give writing systems a nice legible label for. For this reason subtags are replaced with nice labels
-				WritingSystemDefinition wsToConstructLabelFrom = Clone();
-				string n = !String.IsNullOrEmpty(wsToConstructLabelFrom.LanguageName) ? wsToConstructLabelFrom.LanguageName : wsToConstructLabelFrom.DisplayLabel;
-				string details = "";
-
-				if (wsToConstructLabelFrom.IpaStatus != IpaStatusChoices.NotIpa)
+				var details = new StringBuilder();
+				if (IpaStatus != IpaStatusChoices.NotIpa)
 				{
 					switch (IpaStatus)
 					{
 						case IpaStatusChoices.Ipa:
-							details += "IPA-";
+							details.Append("IPA-");
 							break;
 						case IpaStatusChoices.IpaPhonetic:
-							details += "IPA-etic-";
+							details.Append("IPA-etic-");
 							break;
 						case IpaStatusChoices.IpaPhonemic:
-							details += "IPA-emic-";
+							details.Append("IPA-emic-");
 							break;
 						default:
 							throw new ArgumentOutOfRangeException();
 					}
-					wsToConstructLabelFrom.IpaStatus = IpaStatusChoices.NotIpa;
 				}
-				if (wsToConstructLabelFrom.IsVoice)
+				if (IsVoice)
+					details.Append("Voice-");
+
+				if (IsDuplicate)
 				{
-					details += "Voice-";
-					wsToConstructLabelFrom.IsVoice = false;
-				}
-				if (wsToConstructLabelFrom.IsDuplicate)
-				{
-					var duplicateNumbers = new List<string>(wsToConstructLabelFrom.DuplicateNumbers);
-					foreach (var number in duplicateNumbers)
+					foreach (string number in DuplicateNumbers)
 					{
-						details += "Copy";
+						details.Append("Copy");
 						if (number != "0")
-						{
-							details += number;
-						}
-						details += "-";
-						wsToConstructLabelFrom._rfcTag.RemoveFromPrivateUse("dupl" + number);
+							details.Append(number);
+						details.Append("-");
 					}
 				}
 
-				if (!String.IsNullOrEmpty(wsToConstructLabelFrom.Script))
+				if (_script != null && !IsVoice)
+					details.AppendFormat("{0}-", _script.Code);
+				if (_region != null)
+					details.AppendFormat("{0}-", _region.Code);
+				foreach (VariantSubtag variantSubtag in _variants.Where(v => !v.IsPrivateUse))
 				{
-					details += wsToConstructLabelFrom.Script+"-";
-				}
-				if (!String.IsNullOrEmpty(wsToConstructLabelFrom.Region))
-				{
-					details += wsToConstructLabelFrom.Region + "-";
-				}
-				if (!String.IsNullOrEmpty(wsToConstructLabelFrom.Variant))
-				{
-					details += wsToConstructLabelFrom.Variant + "-";
+					// skip variant tags that have already been added to the details
+					if (variantSubtag == WellKnownSubtags.IpaVariant)
+						continue;
+					details.AppendFormat("{0}-", variantSubtag.Code);
 				}
 
-				details = details.Trim(new[] { '-' });
+				bool first = true;
+				foreach (VariantSubtag variantSubtag in _variants.Where(v => v.IsPrivateUse))
+				{
+					// skip variant tags that have already been added to the details
+					if (variantSubtag == WellKnownSubtags.AudioPrivateUse
+						|| variantSubtag == WellKnownSubtags.IpaPhonemicPrivateUse
+						|| variantSubtag == WellKnownSubtags.IpaPhoneticPrivateUse
+						|| variantSubtag.Code.StartsWith("dupl"))
+					{
+						continue;
+					}
+
+					if (first)
+					{
+						details.Append("x-");
+						first = false;
+					}
+					details.AppendFormat("{0}-", variantSubtag.Code);
+				}
+
+				string name = !string.IsNullOrEmpty(LanguageName) ? LanguageName : DisplayLabel;
 				if (details.Length > 0)
-					details = " ("+details + ")";
-				return n+details;
+				{
+					// remove trailing dash
+					details.Remove(details.Length - 1, 1);
+					return string.Format("{0} ({1})", name, details);
+				}
+				return name;
 			}
 		}
 
 		/// <summary>
 		/// Gets a value indicating whether this instance is a duplicate.
 		/// </summary>
-		protected bool IsDuplicate
+		private bool IsDuplicate
 		{
-			get { return _rfcTag.GetPrivateUseSubtagsMatchingRegEx(@"^dupl\d$").Count() != 0; }
+			get { return _variants.Any(v => v.Code.StartsWith("dupl")); }
 		}
 
 		/// <summary>
 		/// Gets the duplicate numbers.
 		/// </summary>
-		protected IEnumerable<string> DuplicateNumbers
+		private IEnumerable<string> DuplicateNumbers
 		{
 			get
 			{
-				return _rfcTag.GetPrivateUseSubtagsMatchingRegEx(@"^dupl\d$").Select(subtag => Regex.Match(subtag, @"\d*$").Value);
+				return _variants.Where(v => v.Code.StartsWith("dupl")).Select(v => Regex.Match(v.Code, @"\d*$").Value);
 			}
 		}
 
@@ -875,10 +749,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public string Bcp47Tag
 		{
-			get
-			{
-				return _rfcTag.CompleteTag;
-			}
+			get { return _bcp47Tag; }
 		}
 
 		/// <summary>
@@ -926,15 +797,16 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// The font used to display data encoded in this writing system
 		/// </summary>
-		public FontDefinition DefaultFont
+		public virtual FontDefinition DefaultFont
 		{
 			get
 			{
-				if (_defaultFont == null)
-					_defaultFont = _fonts.FirstOrDefault(fd => fd.Roles.HasFlag(FontRoles.Default));
-				if (_defaultFont == null)
-					_defaultFont = _fonts.FirstOrDefault();
-				return _defaultFont;
+				FontDefinition font = _defaultFont;
+				if (font == null)
+					font = _fonts.FirstOrDefault(fd => fd.Roles.HasFlag(FontRoles.Default));
+				if (font == null)
+					font = _fonts.FirstOrDefault();
+				return font;
 			}
 			set
 			{
@@ -975,14 +847,15 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				if (_localKeyboard == null)
+				IKeyboardDefinition keyboard = _localKeyboard;
+				if (keyboard == null)
 				{
 					var available = new HashSet<IKeyboardDefinition>(WritingSystems.Keyboard.Controller.AllAvailableKeyboards);
-					_localKeyboard = _knownKeyboards.FirstOrDefault(available.Contains);
+					keyboard = _knownKeyboards.FirstOrDefault(available.Contains);
 				}
-				if (_localKeyboard == null)
-					_localKeyboard = WritingSystems.Keyboard.Controller.DefaultForWritingSystem(this);
-				return _localKeyboard;
+				if (keyboard == null)
+					keyboard = WritingSystems.Keyboard.Controller.DefaultForWritingSystem(this);
+				return keyboard;
 			}
 			set
 			{
@@ -1002,7 +875,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Indicates whether this writing system is read and written from left to right or right to left
 		/// </summary>
-		public bool RightToLeftScript
+		public virtual bool RightToLeftScript
 		{
 			get { return _rightToLeftScript; }
 			set { UpdateField(ref _rightToLeftScript, value); }
@@ -1019,17 +892,7 @@ namespace SIL.WritingSystems
 
 		public CollationDefinition DefaultCollation
 		{
-			get
-			{
-				if (_defaultCollation == null)
-					_defaultCollation = _collations.FirstOrDefault();
-				if (_defaultCollation == null)
-				{
-					_defaultCollation = new CollationDefinition("standard");
-					_collations.Add(_defaultCollation);
-				}
-				return _defaultCollation;
-			}
+			get { return _defaultCollation ?? _collations.FirstOrDefault(); }
 			set
 			{
 				if (UpdateField(ref _defaultCollation, value))
@@ -1050,9 +913,11 @@ namespace SIL.WritingSystems
 			get { return _characterSets; }
 		}
 
-		private void UpdateIdFromRfcTag()
+		private void UpdateRfcTag()
 		{
-			_id = Bcp47Tag;
+			_bcp47Tag = IetfLanguageTag.ToLanguageTag(_language, _script, _region, _variants);
+			_id = _bcp47Tag;
+			IsChanged = true;
 		}
 
 		/// <summary>
@@ -1065,25 +930,12 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// Parses the supplied BCP47 tag and sets the Language, Script, Region and Variant properties accordingly
-		/// </summary>
-		/// <param name="completeTag">A valid BCP47 tag</param>
-		public void SetTagFromString(string completeTag)
-		{
-			_rfcTag = Rfc5646Tag.Parse(completeTag);
-			UpdateIdFromRfcTag();
-			IsChanged = true;
-		}
-
-		/// <summary>
 		/// Parses the supplied BCP47 tag and return a new writing system definition with the correspnding Language, Script, Region and Variant properties
 		/// </summary>
 		/// <param name="bcp47Tag">A valid BCP47 tag</param>
 		public static WritingSystemDefinition Parse(string bcp47Tag)
 		{
-			var writingSystemDefinition = new WritingSystemDefinition();
-			writingSystemDefinition.SetTagFromString(bcp47Tag);
-			return writingSystemDefinition;
+			return new WritingSystemDefinition(bcp47Tag);
 		}
 
 		/// <summary>
@@ -1092,24 +944,6 @@ namespace SIL.WritingSystems
 		public static WritingSystemDefinition FromSubtags(string language, string script, string region, string variantAndPrivateUse)
 		{
 			return new WritingSystemDefinition(language, script, region, variantAndPrivateUse, string.Empty, false);
-		}
-
-		/// <summary>
-		/// Filters out all "WellKnownSubTags" out of a list of subtags
-		/// </summary>
-		/// <param name="privateUseTokens"></param>
-		/// <returns></returns>
-		public static IEnumerable<string> FilterWellKnownPrivateUseTags(IEnumerable<string> privateUseTokens)
-		{
-			foreach (var privateUseToken in privateUseTokens)
-			{
-				string strippedToken = Rfc5646Tag.StripLeadingPrivateUseMarker(privateUseToken);
-				if (strippedToken.Equals(Rfc5646Tag.StripLeadingPrivateUseMarker(WellKnownSubtags.AudioPrivateUse), StringComparison.OrdinalIgnoreCase) ||
-					strippedToken.Equals(Rfc5646Tag.StripLeadingPrivateUseMarker(WellKnownSubtags.IpaPhonemicPrivateUse), StringComparison.OrdinalIgnoreCase) ||
-					strippedToken.Equals(Rfc5646Tag.StripLeadingPrivateUseMarker(WellKnownSubtags.IpaPhoneticPrivateUse), StringComparison.OrdinalIgnoreCase))
-					continue;
-				yield return privateUseToken;
-			}
 		}
 
 		/// <summary>
@@ -1144,12 +978,7 @@ namespace SIL.WritingSystems
 
 		public SpellCheckDictionaryDefinition SpellCheckDictionary
 		{
-			get
-			{
-				if (_spellCheckDictionary == null)
-					_spellCheckDictionary = _spellCheckDictionaries.FirstOrDefault();
-				return _spellCheckDictionary;
-			}
+			get { return _spellCheckDictionary ?? _spellCheckDictionaries.FirstOrDefault(); }
 			set
 			{
 				if (UpdateField(ref _spellCheckDictionary, value))
@@ -1164,12 +993,6 @@ namespace SIL.WritingSystems
 		{
 			get { return _defaultRegion ?? string.Empty; }
 			set { UpdateString(ref _defaultRegion, value); }
-		}
-
-		public string VariantName
-		{
-			get { return _variantName ?? string.Empty; }
-			set { UpdateString(ref _variantName, value); }
 		}
 
 		public ISet<MatchedPair> MatchedPairs
@@ -1201,7 +1024,7 @@ namespace SIL.WritingSystems
 
 		public override string ToString()
 		{
-			return _rfcTag.ToString();
+			return _bcp47Tag;
 		}
 
 		/// <summary>
@@ -1221,10 +1044,17 @@ namespace SIL.WritingSystems
 		{
 			if (other == null)
 				return false;
-
-			if (!_rfcTag.Equals(other._rfcTag))
+			if (_language != other._language)
 				return false;
-			if (LanguageName != other.LanguageName)
+			if (_script != other._script)
+				return false;
+			if (_region != other._region)
+				return false;
+			if (!_variants.SequenceEqual(other._variants))
+				return false;
+			if (_languageName != other._languageName)
+				return false;
+			if (!_bcp47Tag.Equals(other._bcp47Tag))
 				return false;
 			if (Abbreviation != other.Abbreviation)
 				return false;
@@ -1247,8 +1077,6 @@ namespace SIL.WritingSystems
 			if (WindowsLcid != other.WindowsLcid)
 				return false;
 			if (DefaultRegion != other.DefaultRegion)
-				return false;
-			if (VariantName != other.VariantName)
 				return false;
 			if (!_matchedPairs.SetEquals(other._matchedPairs))
 				return false;

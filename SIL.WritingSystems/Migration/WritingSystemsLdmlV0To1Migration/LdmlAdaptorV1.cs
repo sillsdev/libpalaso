@@ -616,23 +616,6 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			return false;
 		}
 
-		public void FillWithDefaults(string rfc4646, WritingSystemDefinition ws)
-		{
-			string id = rfc4646.ToLower();
-			switch (id)
-			{
-				case "en-latn":
-					ws.Language = "en";
-					ws.LanguageName = "English";
-					ws.Abbreviation = "eng";
-					ws.Script = "Latn";
-					break;
-				 default:
-					ws.Script = "Latn";
-					break;
-			}
-		}
-
 		private string GetSubNodeAttributeValue(XmlReader reader, string elementName, string attributeName)
 		{
 			return FindElement(reader, elementName) ? (reader.GetAttribute(attributeName) ?? string.Empty) : string.Empty;

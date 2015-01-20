@@ -18,7 +18,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// An audio private use subtag.
 		/// </summary>
-		public const string AudioPrivateUse = "x-audio";
+		public const string AudioPrivateUse = "audio";
 
 		/// <summary>
 		/// An audio script.
@@ -33,11 +33,16 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// A phonemic IPA private use subtag.
 		/// </summary>
-		public const string IpaPhonemicPrivateUse = "x-emic";
+		public const string IpaPhonemicPrivateUse = "emic";
 
 		/// <summary>
 		/// A phonetic IPA private use subtag.
 		/// </summary>
-		public const string IpaPhoneticPrivateUse = "x-etic";
+		public const string IpaPhoneticPrivateUse = "etic";
+
+		/// <summary>
+		/// A pinyin variant.
+		/// </summary>
+		public const string PinyinVariant = "pinyin";
 	}
 }

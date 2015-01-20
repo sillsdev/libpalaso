@@ -66,7 +66,7 @@ namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
 
 		private void UpdateSpecialComboBox()
 		{
-			if (_model.CurrentISO == WellKnownSubtags.UnlistedLanguage)
+			if (_model.CurrentIso == WellKnownSubtags.UnlistedLanguage)
 			{
 				if (comboBox1.Items.Count == 4)
 				{

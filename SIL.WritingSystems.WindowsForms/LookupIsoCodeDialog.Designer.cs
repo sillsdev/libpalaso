@@ -1,7 +1,7 @@
 using L10NSharp;
 namespace SIL.WritingSystems.WindowsForms
 {
-	partial class LookupISOCodeDialog
+	partial class LookupIsoCodeDialog
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -33,7 +33,7 @@ namespace SIL.WritingSystems.WindowsForms
 			this._okButton = new System.Windows.Forms.Button();
 			this._cancelButton = new System.Windows.Forms.Button();
 			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
-			this._lookupISOControl = new LookupISOControl();
+			this._lookupISOControl = new LookupIsoControl();
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).BeginInit();
 			this.SuspendLayout();
 			//
@@ -102,7 +102,7 @@ namespace SIL.WritingSystems.WindowsForms
 			this._L10NSharpExtender.SetLocalizingId(this, "LanguageLookup.LanguageLookupDialogWindowTitle");
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "LookupISOCodeDialog";
+			this.Name = "LookupIsoCodeDialog";
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
 			this.Text = "Lookup Language Code...";
@@ -115,7 +115,7 @@ namespace SIL.WritingSystems.WindowsForms
 
 		private System.Windows.Forms.Button _okButton;
 		private System.Windows.Forms.Button _cancelButton;
-		private LookupISOControl _lookupISOControl;
+		private LookupIsoControl _lookupISOControl;
 		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
 	}
 }

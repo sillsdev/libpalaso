@@ -3,9 +3,9 @@ using System.Windows.Forms;
 
 namespace SIL.WritingSystems.WindowsForms
 {
-	public partial class LookupISOCodeDialog : Form
+	public partial class LookupIsoCodeDialog : Form
 	{
-		public LookupISOCodeDialog()
+		public LookupIsoCodeDialog()
 		{
 			InitializeComponent();
 			ShowDesiredLanguageNameField = true;

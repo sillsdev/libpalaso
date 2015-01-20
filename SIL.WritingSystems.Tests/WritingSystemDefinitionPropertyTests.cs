@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
-using Palaso.Data;
 using Palaso.TestUtilities;
+using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace SIL.WritingSystems.Tests
 {
@@ -25,7 +25,7 @@ namespace SIL.WritingSystems.Tests
 		public override string ExceptionList
 		{
 			// We do want to clone KnownKeyboards, but I don't think the automatic cloneable test for it can handle a list.
-			get { return "|MarkedForDeletion|StoreID|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionary|_spellCheckDictionaries|IsChanged|_matchedPairs|_punctuationPatterns|_quotationMarks|_defaultCollation|_collations|_characterSets|"; }
+			get { return "|MarkedForDeletion|StoreID|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionary|_spellCheckDictionaries|IsChanged|_matchedPairs|_punctuationPatterns|_quotationMarks|_defaultCollation|_collations|_characterSets|_variants|_language|_script|_region|_ignoreVariantChanges|"; }
 		}
 
 		protected override List<ValuesToSet> DefaultValuesForTypes
@@ -38,7 +38,6 @@ namespace SIL.WritingSystems.Tests
 								 new ValuesToSet(false, true),
 								 new ValuesToSet("to be", "!(to be)"),
 								 new ValuesToSet(DateTime.Now, DateTime.MinValue),
-								 new ValuesToSet(new Rfc5646Tag("en", "Latn", "US", "1901", "test"), Rfc5646Tag.Parse("de")),
 								 new ValuesToSet(QuotationParagraphContinueType.None, QuotationParagraphContinueType.All),
 								 new ValuesToSet(QuotationParagraphContinueMark.Open, QuotationParagraphContinueMark.Close)
 							 };
@@ -167,6 +166,16 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(copy.CharacterSets.Count, Is.EqualTo(2));
 			Assert.That(copy.CharacterSets[0].ValueEquals(cs1), Is.True);
 			Assert.That(ReferenceEquals(copy.CharacterSets[0], cs1), Is.False);
+		}
+
+		[Test]
+		public void CloneCopiesVariants()
+		{
+			var original = new WritingSystemDefinition();
+			original.Variants.Add("1901");
+			original.Variants.Add("biske");
+			WritingSystemDefinition copy = original.Clone();
+			Assert.That(copy.Variants, Is.EqualTo(new VariantSubtag[] {"1901", "biske"}));
 		}
 
 		/// <summary>
@@ -371,6 +380,26 @@ namespace SIL.WritingSystems.Tests
 			second.CharacterSets.Add(cs4);
 			Assert.That(first.ValueEquals(second), Is.False, "ws with same-length lists of different character sets should not be equal");
 		}
+
+		[Test]
+		public void ValueEqualsComparesVariants()
+		{
+			var first = new WritingSystemDefinition();
+			first.Variants.Add("1901");
+			first.Variants.Add("biske");
+			var second = new WritingSystemDefinition();
+
+			Assert.That(first.ValueEquals(second), Is.False, "ws with empty variants should not equal one with some");
+			second.Variants.Add("1901");
+			Assert.That(first.ValueEquals(second), Is.False, "ws's with different length variant lists should not be equal");
+			second.Variants.Add("biske");
+			Assert.That(first.ValueEquals(second), Is.True, "ws's with same variant lists should be equal");
+
+			second.Variants.Clear();
+			second.Variants.Add("1901");
+			second.Variants.Add("fonipa");
+			Assert.That(first.ValueEquals(second), Is.False, "ws with same-length lists of different variants should not be equal");
+		}
 	}
 
 	[TestFixture]
@@ -380,18 +409,20 @@ namespace SIL.WritingSystems.Tests
 		public void FromRFC5646Subtags_AllArgs_SetsOk()
 		{
 			var ws = WritingSystemDefinition.FromSubtags("en", "Latn", "US", "x-whatever");
-			Assert.AreEqual(ws.Language, "en");
-			Assert.AreEqual(ws.Script, "Latn");
-			Assert.AreEqual(ws.Region, "US");
-			Assert.AreEqual(ws.Variant, "x-whatever");
+			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) "en"));
+			Assert.That(ws.Script, Is.EqualTo((ScriptSubtag) "Latn"));
+			Assert.That(ws.Region, Is.EqualTo((RegionSubtag) "US"));
+			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"whatever"}));
 		}
 
 		private void AssertWritingSystem(WritingSystemDefinition wsDef, string language, string script, string region, string variant)
 		{
-			Assert.AreEqual(language, wsDef.Language);
-			Assert.AreEqual(script, wsDef.Script);
-			Assert.AreEqual(region, wsDef.Region);
-			Assert.AreEqual(variant, wsDef.Variant);
+			Assert.That(wsDef.Language, Is.EqualTo((LanguageSubtag) language));
+			Assert.That(wsDef.Script, Is.EqualTo((ScriptSubtag) script));
+			Assert.That(wsDef.Region, Is.EqualTo((RegionSubtag) region));
+			IEnumerable<VariantSubtag> variantSubtags;
+			Assert.That(IetfLanguageTag.TryGetVariantSubtags(variant, out variantSubtags));
+			Assert.That(wsDef.Variants, Is.EqualTo(variantSubtags));
 		}
 
 		[Test]
@@ -481,14 +512,14 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Parse_HasBadSubtag_Throws()
 		{
-			Assert.Throws<ValidationException>(() => WritingSystemDefinition.Parse("qaa-dupl1"));
+			Assert.Throws<ArgumentException>(() => WritingSystemDefinition.Parse("qaa-dupl1"));
 		}
 
 		[Test]
 		public void Parse_HasLanguageAndMultipleVariants_WritingSystemHasExpectedFields()
 		{
 			var tag = WritingSystemDefinition.Parse("en-alalc97-aluku");
-			AssertWritingSystem(tag, "en", string.Empty, string.Empty, "alalc97-aluku");
+			AssertWritingSystem(tag, "en", null, null, "alalc97-aluku");
 		}
 
 		[Test]
@@ -559,7 +590,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			ws.Language = "en";
-			ws.Variant = "1901";
+			ws.Variants.Add("1901");
 			Assert.AreEqual("en-1901", ws.DisplayLabel);
 		}
 
@@ -575,60 +606,25 @@ namespace SIL.WritingSystems.Tests
 		public void Variant_ConsistsOnlyOfRfc5646Variant_VariantIsSetCorrectly()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.Variant = "fonipa";
-			Assert.AreEqual("fonipa", ws.Variant);
-		}
-
-		[Test]
-		public void InvalidTagOkWhenRequiresValidTagFalse()
-		{
-			var ws = new WritingSystemDefinition();
-			ws.RequiresValidTag = false;
-			ws.Language = "Kalaba";
-			Assert.That(ws.Language, Is.EqualTo("Kalaba"));
-		}
-
-		[Test]
-		public void DuplicatePrivateUseOkWhenRequiresValidTagFalse()
-		{
-			var ws = new WritingSystemDefinition();
-			ws.RequiresValidTag = false;
-			ws.Variant = "x-nong-nong";
-			Assert.That(ws.Variant, Is.EqualTo("x-nong-nong"));
-		}
-
-		[Test]
-		public void InvalidTagThrowsWhenRequiresValidTagSetToTrue()
-		{
-			var ws = new WritingSystemDefinition();
-			ws.RequiresValidTag = false;
-			ws.Language = "Kalaba";
-			Assert.Throws(typeof (ValidationException), () => ws.RequiresValidTag = true);
-		}
-
-		[Test]
-		public void DuplicatePrivateUseThrowsWhenRequiresValidTagSetToTrue()
-		{
-			var ws = new WritingSystemDefinition();
-			ws.RequiresValidTag = false;
-			ws.Variant = "x-nong-nong";
-			Assert.Throws(typeof(ValidationException), () => ws.RequiresValidTag = true);
+			ws.Variants.Add("fonipa");
+			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"fonipa"}));
 		}
 
 		[Test]
 		public void Variant_ConsistsOnlyOfRfc5646PrivateUse_VariantIsSetCorrectly()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.Variant = "x-test";
-			Assert.AreEqual("x-test", ws.Variant);
+			ws.Variants.Add("test");
+			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"test"}));
 		}
 
 		[Test]
 		public void Variant_ConsistsOfBothRfc5646VariantandprivateUse_VariantIsSetCorrectly()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.Variant = "fonipa-x-etic";
-			Assert.AreEqual("fonipa-x-etic", ws.Variant);
+			ws.Variants.Add("fonipa");
+			ws.Variants.Add("etic");
+			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"fonipa", "etic"}));
 		}
 
 		[Test]
@@ -719,13 +715,13 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Constructor_OnlyVariantIsPassedIn_Throws()
 		{
-			Assert.Throws<ValidationException>(()=>new WritingSystemDefinition("", "", "", "bogus", "", false));
+			Assert.Throws<ArgumentException>(()=>new WritingSystemDefinition("", "", "", "bogus", "", false));
 		}
 
 		[Test]
 		public void ReadsISORegistry()
 		{
-			Assert.Greater(StandardTags.ValidIso639LanguageCodes.Count, 100);
+			Assert.Greater(StandardSubtags.Iso639Languages.Count, 100);
 		}
 
 		[Test]
@@ -733,22 +729,12 @@ namespace SIL.WritingSystems.Tests
 		{
 			// Put any properties to ignore in this string surrounded by "|"
 			// ObsoleteWindowsLcid has no public setter; it only gets a value by reading from an old file.
-			const string ignoreProperties = "|MarkedForDeletion|StoreID|DateModified|Rfc5646TagOnLoad|RequiresValidTag|";
+			const string ignoreProperties = "|MarkedForDeletion|StoreID|DateModified|";
 			// special test values to use for properties that are particular
 			var firstValueSpecial = new Dictionary<string, object>();
 			var secondValueSpecial = new Dictionary<string, object>();
-			firstValueSpecial.Add("Variant", "1901");
-			secondValueSpecial.Add("Variant", "biske");
-			firstValueSpecial.Add("Region", "US");
-			secondValueSpecial.Add("Region", "GB");
-			firstValueSpecial.Add("ISO639", "en");
-			secondValueSpecial.Add("ISO639", "de");
-			firstValueSpecial.Add("Language", "en");
-			secondValueSpecial.Add("Language", "de");
-			firstValueSpecial.Add("ISO", "en");
-			secondValueSpecial.Add("ISO", "de");
-			firstValueSpecial.Add("Script", "Zxxx");
-			secondValueSpecial.Add("Script", "Latn");
+			firstValueSpecial.Add("Iso639", "en");
+			secondValueSpecial.Add("Iso639", "de");
 			firstValueSpecial.Add("DuplicateNumber", 0);
 			secondValueSpecial.Add("DuplicateNumber", 1);
 			firstValueSpecial.Add("LocalKeyboard", new DefaultKeyboardDefinition("mine", string.Empty));
@@ -779,6 +765,12 @@ namespace SIL.WritingSystems.Tests
 			secondValueToSet.Add(typeof(QuotationParagraphContinueMark), QuotationParagraphContinueMark.Close);
 			firstValueToSet.Add(typeof(CollationDefinition), new CollationDefinition("standard"));
 			secondValueToSet.Add(typeof(CollationDefinition), new SimpleCollationDefinition("standard"));
+			firstValueToSet.Add(typeof(LanguageSubtag), new LanguageSubtag("en", false));
+			secondValueToSet.Add(typeof(LanguageSubtag), new LanguageSubtag("de", false));
+			firstValueToSet.Add(typeof(ScriptSubtag), new ScriptSubtag("Latn", false));
+			secondValueToSet.Add(typeof(ScriptSubtag), new ScriptSubtag("Armi", false));
+			firstValueToSet.Add(typeof(RegionSubtag), new RegionSubtag("US", false));
+			secondValueToSet.Add(typeof(RegionSubtag), new RegionSubtag("GB", false));
 
 			foreach (PropertyInfo propertyInfo in typeof(WritingSystemDefinition).GetProperties(BindingFlags.Public | BindingFlags.Instance))
 			{
@@ -810,7 +802,7 @@ namespace SIL.WritingSystems.Tests
 									propertyInfo.PropertyType.Name);
 					}
 				}
-				catch(Exception error)
+				catch (Exception error)
 				{
 					Assert.Fail("Error setting property WritingSystemDefinition.{0},{1}", propertyInfo.Name, error);
 				}
@@ -825,12 +817,12 @@ namespace SIL.WritingSystems.Tests
 					 {
 						 Script = "Latn",
 						 Region = "US",
-						 Variant = "1901",
+						 Variants = {"1901"},
 						 IsVoice = true
 					 };
-			Assert.AreEqual(WellKnownSubtags.AudioScript, ws.Script);
-			Assert.AreEqual("US", ws.Region);
-			Assert.AreEqual("1901-x-audio", ws.Variant);
+			Assert.That(ws.Script, Is.EqualTo((ScriptSubtag) WellKnownSubtags.AudioScript));
+			Assert.That(ws.Region, Is.EqualTo((RegionSubtag) "US"));
+			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"1901", "audio"}));
 			Assert.AreEqual("qaa-Zxxx-US-1901-x-audio", ws.Bcp47Tag);
 		}
 
@@ -842,7 +834,7 @@ namespace SIL.WritingSystems.Tests
 						 Language = "en",
 						 IsVoice = true
 					 };
-			Assert.AreEqual("en", ws.Language);
+			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) "en"));
 		}
 
 		[Test]
@@ -851,9 +843,9 @@ namespace SIL.WritingSystems.Tests
 			var ws = new WritingSystemDefinition();
 			ws.IsVoice = true;
 			ws.IsVoice = false;
-			Assert.AreEqual("", ws.Script);
-			Assert.AreEqual("", ws.Region);
-			Assert.AreEqual("", ws.Variant);
+			Assert.That(ws.Script, Is.Null);
+			Assert.That(ws.Region, Is.Null);
+			Assert.That(ws.Variants, Is.Empty);
 		}
 
 		[Test]
@@ -863,7 +855,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				IsVoice = true
 			};
-			Assert.Throws<ValidationException>(() => ws.Script = "change!");
+			Assert.Throws<InvalidOperationException>(() => ws.Script = "change!");
 		}
 
 		[Test]
@@ -874,7 +866,7 @@ namespace SIL.WritingSystems.Tests
 				"th",
 				WellKnownSubtags.AudioScript,
 				"",
-				WellKnownSubtags.AudioPrivateUse
+				"x-audio"
 			);
 			Assert.IsTrue(ws.IsVoice);
 		}
@@ -895,35 +887,28 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Variant_ChangedToSomethingOtherThanXDashAudioWhileIsVoiceIsTrue_IsVoiceIsChangedToFalse()
 		{
-			var ws = new WritingSystemDefinition {IsVoice = true, Variant = "1901"};
-			Assert.AreEqual("1901", ws.Variant);
-			Assert.IsFalse(ws.IsVoice);
+			var ws = new WritingSystemDefinition();
+			ws.IsVoice = true;
+			ws.Variants.Clear();
+			ws.Variants.Add("1901");
+			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"1901"}));
+			Assert.That(ws.IsVoice, Is.False);
 		}
 
 		[Test]
 		public void Iso639_SetValidLanguage_IsSet()
 		{
 			var ws = new WritingSystemDefinition {Language = "th"};
-			Assert.AreEqual("th", ws.Language);
-		}
-
-		[Test]
-		public void Iso639_SetInvalidLanguage_Throws()
-		{
-			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.Language = "xyz");
+			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) "th"));
 		}
 
 		[Test]
 		public void IsVoice_ToggledAfterVariantHasBeenSet_DoesNotRemoveVariant()
 		{
-			var ws = new WritingSystemDefinition
-					 {
-						 Variant = "1901",
-						 IsVoice = true
-					 };
+			var ws = new WritingSystemDefinition {Variants = {"1901"}};
+			ws.IsVoice = true;
 			ws.IsVoice = false;
-			Assert.AreEqual("1901", ws.Variant);
+			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"1901"}));
 		}
 
 		[Test]
@@ -935,7 +920,7 @@ namespace SIL.WritingSystems.Tests
 			};
 			ws.IsVoice = true;
 			ws.IsVoice = false;
-			Assert.AreEqual("US", ws.Region);
+			Assert.That(ws.Region, Is.EqualTo((RegionSubtag) "US"));
 		}
 
 		[Test]
@@ -947,7 +932,7 @@ namespace SIL.WritingSystems.Tests
 			};
 			ws.IsVoice = true;
 			ws.IsVoice = false;
-			Assert.AreEqual("", ws.Script);
+			Assert.That(ws.Script, Is.Null);
 		}
 
 		[Test]
@@ -982,54 +967,13 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Script_ScriptNull_EmptyString()
-		{
-			var ws = new WritingSystemDefinition();
-			ws.Script = null;
-			Assert.That("", Is.EqualTo(ws.Script));
-		}
-
-		[Test]
-		public void Variant_VariantNull_EmptyString()
-		{
-			var ws = new WritingSystemDefinition();
-			ws.Variant = null;
-			Assert.That("", Is.EqualTo(ws.Variant));
-		}
-
-		[Test]
-		public void Region_RegionNull_EmptyString()
-		{
-			var ws = new WritingSystemDefinition();
-			ws.Region = null;
-			Assert.That("", Is.EqualTo(ws.Region));
-		}
-
-		[Test]
-		public void Language_LangaugeNull_EmptyString()
-		{
-			var ws = new WritingSystemDefinition();
-			// Set private use so that we can legally set the language to null
-			ws.Variant = "x-any";
-			ws.Language = null;
-			Assert.That("", Is.EqualTo(ws.Language));
-		}
-
-		[Test]
-		public void Variant_ResetToEmptyString_ClearsVariant()
-		{
-			var ws = new WritingSystemDefinition();
-			ws.Variant = "Biske";
-			Assert.AreEqual("Biske", ws.Variant);
-			ws.Variant = "";
-			Assert.AreEqual("", ws.Variant);
-		}
-
-		[Test]
 		public void Variant_IsSetWithDuplicateTags_DontKnowWhatToDo()
 		{
-			Assert.Throws<ValidationException>(
-				() => new WritingSystemDefinition {Variant = "duplicate-duplicate"}
+			var ws = new WritingSystemDefinition();
+			ws.Language = "en";
+			ws.Variants.Add("1901");
+			Assert.Throws<ArgumentException>(
+				() => ws.Variants.Add("1901")
 			);
 		}
 
@@ -1037,7 +981,7 @@ namespace SIL.WritingSystems.Tests
 		public void Variant_SetToXDashAudioWhileScriptIsNotZxxx_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ArgumentException>(() => ws.Variant = WellKnownSubtags.AudioPrivateUse);
+			Assert.Throws<InvalidOperationException>(() => ws.Variants.Add(WellKnownSubtags.AudioPrivateUse));
 		}
 
 		[Test]
@@ -1048,9 +992,9 @@ namespace SIL.WritingSystems.Tests
 				"th",
 				WellKnownSubtags.AudioScript,
 				"",
-				WellKnownSubtags.AudioPrivateUse
+				"x-audio"
 			);
-			Assert.Throws<ValidationException>(() => ws.Script = "Ltn");
+			Assert.Throws<InvalidOperationException>(() => ws.Script = "Ltn");
 		}
 
 		[Test]
@@ -1061,16 +1005,16 @@ namespace SIL.WritingSystems.Tests
 				"th",
 				WellKnownSubtags.AudioScript,
 				"",
-				WellKnownSubtags.AudioPrivateUse
+				"x-audio"
 			);
-			Assert.AreEqual(ws.Variant, WellKnownSubtags.AudioPrivateUse);
+			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {WellKnownSubtags.AudioPrivateUse}));
 		}
 
 		[Test]
 		public void Variant_SetToxDashCapitalAUDIOWhileScriptIsNotZxxx_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ArgumentException>(() => ws.Variant = "x-AUDIO");
+			Assert.Throws<InvalidOperationException>(() => ws.Variants.Add(new VariantSubtag("AUDIO", true)));
 		}
 
 		[Test]
@@ -1083,7 +1027,7 @@ namespace SIL.WritingSystems.Tests
 				"",
 				"x-AUDIO"
 			);
-			Assert.Throws<ValidationException>(() => ws.Script = "Ltn");
+			Assert.Throws<InvalidOperationException>(() => ws.Script = "Ltn");
 		}
 
 		[Test]
@@ -1107,9 +1051,9 @@ namespace SIL.WritingSystems.Tests
 				"th",
 				WellKnownSubtags.AudioScript,
 				"",
-				WellKnownSubtags.AudioPrivateUse + "-" + WellKnownSubtags.IpaVariant
+				"x-audio-fonipa"
 			);
-			Assert.AreEqual("x-audio-fonipa", ws.Variant);
+			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"audio", new VariantSubtag("fonipa", true)}));
 		}
 
 		[Test]
@@ -1199,12 +1143,12 @@ namespace SIL.WritingSystems.Tests
 		public void IsVoice_SetToTrueOnEntirelyPrivateUseLanguageTag_markerForUnlistedLanguageIsInserted()
 		{
 			var ws = WritingSystemDefinition.Parse("x-private");
-			Assert.That(ws.Variant, Is.EqualTo("x-private"));
+			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"private"}));
 			ws.IsVoice = true;
-			Assert.That(ws.Language, Is.EqualTo(WellKnownSubtags.UnlistedLanguage));
-			Assert.That(ws.Script, Is.EqualTo(WellKnownSubtags.UnwrittenScript));
-			Assert.That(ws.Region, Is.EqualTo(""));
-			Assert.That(ws.Variant, Is.EqualTo("x-private-audio"));
+			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) WellKnownSubtags.UnlistedLanguage));
+			Assert.That(ws.Script, Is.EqualTo((ScriptSubtag) WellKnownSubtags.UnwrittenScript));
+			Assert.That(ws.Region, Is.Null);
+			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"private", "audio"}));
 		}
 
 		[Test]
@@ -1253,10 +1197,10 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Iso639_SetEmpty_ThrowsValidationException()
+		public void Iso639_SetEmpty_ThrowsException()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(()=>ws.Language = String.Empty);
+			Assert.Throws<ArgumentNullException>(() => ws.Language = null);
 		}
 
 		[Test]
@@ -1264,7 +1208,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			ws.Language = "de";
-			Assert.Throws<ValidationException>(() => ws.Variant = "x_audio");
+			Assert.Throws<ArgumentException>(() => ws.Variants.Add("x_audio"));
 		}
 
 		[Test]
@@ -1273,7 +1217,7 @@ namespace SIL.WritingSystems.Tests
 			var ws = new WritingSystemDefinition();
 			ws.Language = "de";
 			ws.Script = "Latn";
-			Assert.Throws<ArgumentException>(() => ws.Variant = "x-AUDIO");
+			Assert.Throws<InvalidOperationException>(() => ws.Variants.Add(new VariantSubtag("AUDIO", true)));
 		}
 
 		[Test]
@@ -1282,7 +1226,7 @@ namespace SIL.WritingSystems.Tests
 			var ws = new WritingSystemDefinition();
 			ws.Language = "de";
 			ws.Script = "ZXXX";
-			ws.Variant = WellKnownSubtags.AudioPrivateUse;
+			ws.Variants.Add(WellKnownSubtags.AudioPrivateUse);
 			Assert.IsTrue(ws.IsVoice);
 		}
 
@@ -1292,58 +1236,59 @@ namespace SIL.WritingSystems.Tests
 			var ws = new WritingSystemDefinition();
 			ws.Language = "de";
 			ws.Script = "latn";
-			Assert.Throws<ArgumentException>(()=>ws.Variant = "x-private-audio");
+			ws.Variants.Add("private");
+			Assert.Throws<InvalidOperationException>(()=>ws.Variants.Add("audio"));
 		}
 
 		[Test]
 		public void LanguageSubtag_ContainsXDashAudio_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.Language = "de-x-audio");
+			Assert.Throws<ArgumentException>(() => ws.Language = "de-x-audio");
 		}
 
 		[Test]
 		public void Language_ContainsZxxx_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.Language = "de-Zxxx");
+			Assert.Throws<ArgumentException>(() => ws.Language = "de-Zxxx");
 		}
 
 		[Test]
 		public void LanguageSubtag_ContainsCapitalXDashAudio_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.Language = "de-X-AuDiO");
+			Assert.Throws<ArgumentException>(() => ws.Language = "de-X-AuDiO");
 		}
 
-		[Test]
 		public void Language_SetWithInvalidLanguageTag_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.Language = "bogus");
+			Assert.Throws<ArgumentException>(() => ws.Language = "bogus");
 		}
 
 		[Test]
 		public void Script_SetWithInvalidScriptTag_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.Language = "bogus");
+			ws.Language = "en";
+			Assert.Throws<ArgumentException>(() => ws.Script = "bogus");
 		}
 
 		[Test]
 		public void Region_SetWithInvalidRegionTag_Throws()
 		{
-
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.Language = "bogus");
+			ws.Language = "en";
+			Assert.Throws<ArgumentException>(() => ws.Region = "bogus");
 		}
 
 		[Test]
 		public void Variant_SetWithPrivateUseTag_VariantisSet()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.Variant = "x-lalala";
-			Assert.AreEqual("x-lalala", ws.Variant);
+			ws.Variants.Add("lalala");
+			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"lalala"}));
 		}
 
 		[Test]
@@ -1351,14 +1296,14 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			ws.SetAllComponents("th", "", "", "");
-			Assert.AreEqual("th", ws.Language);
+			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) "th"));
 		}
 
 		[Test]
-		public void SetRfc5646LanguageTagComponents_BadLanguage_Throws()
+		public void SetRfc5646LanguageTagComponents_PrivateUseLanguage_IsSet()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(
+			Assert.Throws<ArgumentException>(
 				() => ws.SetAllComponents("BadLanguage", "", "", "")
 			);
 		}
@@ -1368,14 +1313,14 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			ws.SetAllComponents("th", "Thai", "", "");
-			Assert.AreEqual("Thai", ws.Script);
+			Assert.That(ws.Script, Is.EqualTo((ScriptSubtag) "Thai"));
 		}
 
 		[Test]
 		public void SetRfc5646LanguageTagComponents_BadScript_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(
+			Assert.Throws<ArgumentException>(
 				() => ws.SetAllComponents("th", "BadScript", "", "")
 			);
 		}
@@ -1385,14 +1330,14 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			ws.SetAllComponents("th", "Thai", "TH", "");
-			Assert.AreEqual("TH", ws.Region);
+			Assert.That(ws.Region, Is.EqualTo((RegionSubtag) "TH"));
 		}
 
 		[Test]
 		public void SetRfc5646LanguageTagComponents_BadRegion_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(
+			Assert.Throws<ArgumentException>(
 				() => ws.SetAllComponents("th", "Thai", "BadRegion", "")
 			);
 		}
@@ -1402,14 +1347,14 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			ws.SetAllComponents("th", "Thai", "TH", "1901");
-			Assert.AreEqual("1901", ws.Variant);
+			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"1901"}));
 		}
 
 		[Test]
 		public void SetRfc5646LanguageTagComponents_BadVariant_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(
+			Assert.Throws<ArgumentException>(
 				() => ws.SetAllComponents("th", "Thai", "TH", "BadVariant")
 			);
 		}
@@ -1434,26 +1379,25 @@ namespace SIL.WritingSystems.Tests
 		{
 			var writingSystem = new WritingSystemDefinition("x-bogus");
 			writingSystem.IpaStatus = IpaStatusChoices.Ipa;
-			Assert.AreEqual(WellKnownSubtags.UnlistedLanguage, writingSystem.Language);
-			Assert.AreEqual("qaa-fonipa-x-bogus", writingSystem.Bcp47Tag);
+			Assert.That(writingSystem.Language, Is.EqualTo((LanguageSubtag) WellKnownSubtags.UnlistedLanguage));
+			Assert.That(writingSystem.Bcp47Tag, Is.EqualTo("qaa-fonipa-x-bogus"));
 		}
 
 		[Test]
 		public void IpaStatus_SetToPhoneticRfcTagStartsWithxDash_InsertsUnknownlanguagemarkerAsLanguageSubtag()
 		{
 			var writingSystem = new WritingSystemDefinition("x-bogus") {IpaStatus = IpaStatusChoices.IpaPhonetic};
-			Assert.AreEqual(WellKnownSubtags.UnlistedLanguage, writingSystem.Language);
-			Assert.AreEqual("qaa-fonipa-x-bogus-etic", writingSystem.Bcp47Tag);
+			Assert.That(writingSystem.Language, Is.EqualTo((LanguageSubtag) WellKnownSubtags.UnlistedLanguage));
+			Assert.That(writingSystem.Bcp47Tag, Is.EqualTo("qaa-fonipa-x-etic-bogus"));
 		}
 
 		[Test]
 		public void IpaStatus_SetToPhonemicRfcTagStartsWithxDash_InsertsUnknownlanguagemarkerAsLanguageSubtag()
 		{
 			var writingSystem = new WritingSystemDefinition("x-bogus") {IpaStatus = IpaStatusChoices.IpaPhonemic};
-			Assert.AreEqual(WellKnownSubtags.UnlistedLanguage, writingSystem.Language);
-			Assert.AreEqual("qaa-fonipa-x-bogus-emic", writingSystem.Bcp47Tag);
+			Assert.That(writingSystem.Language, Is.EqualTo((LanguageSubtag) WellKnownSubtags.UnlistedLanguage));
+			Assert.That(writingSystem.Bcp47Tag, Is.EqualTo("qaa-fonipa-x-emic-bogus"));
 		}
-
 
 		[Test]
 		public void CloneContructor_VariantStartsWithxDash_VariantIsCopied()
@@ -1490,7 +1434,8 @@ namespace SIL.WritingSystems.Tests
 		public void Variant_Set_Idchanged()
 		{
 			var writingSystem = WritingSystemDefinition.FromSubtags("en", "Zxxx", "", "1901-x-bogus");
-			writingSystem.Variant = "x-audio";
+			writingSystem.Variants.Clear();
+			writingSystem.Variants.Add("audio");
 			Assert.AreEqual("en-Zxxx-x-audio", writingSystem.Id);
 		}
 
@@ -1563,7 +1508,7 @@ namespace SIL.WritingSystems.Tests
 		public void AddToVariant_IdIsSet()
 		{
 			var writingSystem = WritingSystemDefinition.FromSubtags("en", "Zxxx", "", "1901-x-audio");
-			writingSystem.AddToVariant("bauddha");
+			writingSystem.Variants.Add("bauddha");
 			Assert.AreEqual("en-Zxxx-1901-bauddha-x-audio", writingSystem.Id);
 		}
 
@@ -1571,7 +1516,7 @@ namespace SIL.WritingSystems.Tests
 		public void AddToVariant_NonRegisteredVariant_IdIsSet()
 		{
 			var writingSystem = WritingSystemDefinition.FromSubtags("en", "Zxxx", "", "1901-x-audio");
-			writingSystem.AddToVariant("bogus");
+			writingSystem.Variants.Add("bogus");
 			Assert.AreEqual("en-Zxxx-1901-x-audio-bogus", writingSystem.Id);
 		}
 
@@ -1597,14 +1542,6 @@ namespace SIL.WritingSystems.Tests
 			var writingSystem = WritingSystemDefinition.FromSubtags("en", "Zxxx", "", "1901-x-audio");
 			writingSystem.SetAllComponents("en", "Zxxx", "", "1901-x-audio");
 			Assert.AreEqual(writingSystem.IsChanged, false);
-		}
-
-		[Test]
-		public void SetRfc5646FromString_IdIsSet()
-		{
-			var writingSystem = WritingSystemDefinition.FromSubtags("en", "Zxxx", "", "1901-x-audio");
-			writingSystem.SetTagFromString("de-Latn-US-fonipa-x-etic");
-			Assert.AreEqual("de-Latn-US-fonipa-x-etic", writingSystem.Id);
 		}
 
 		[Test]
@@ -1706,7 +1643,7 @@ namespace SIL.WritingSystems.Tests
 		public void ListLabel_ScriptVariantSet_LabelIsLanguageWithScriptandVariantInBrackets()
 		{
 			var ws = new WritingSystemDefinition("de") {Script = "Armi"};
-			ws.AddToVariant("smth");
+			ws.Variants.Add("smth");
 			Assert.That(ws.ListLabel, Is.EqualTo("German (Armi-x-smth)"));
 		}
 
@@ -1714,14 +1651,14 @@ namespace SIL.WritingSystems.Tests
 		public void ListLabel_RegionVariantSet_LabelIsLanguageWithRegionAndVariantInBrackets()
 		{
 			var ws = new WritingSystemDefinition("de") {Region = "US"};
-			ws.AddToVariant("smth");
+			ws.Variants.Add("smth");
 			Assert.That(ws.ListLabel, Is.EqualTo("German (US-x-smth)"));
 		}
 
 		[Test]
 		public void ListLabel_VariantSetToIpa_LabelIsLanguageWithIPAInBrackets()
 		{
-			var ws = new WritingSystemDefinition("de") {Variant = WellKnownSubtags.IpaVariant};
+			var ws = new WritingSystemDefinition("de") {Variants = {WellKnownSubtags.IpaVariant}};
 			Assert.That(ws.ListLabel, Is.EqualTo("German (IPA)"));
 		}
 
@@ -1777,7 +1714,7 @@ namespace SIL.WritingSystems.Tests
 		public void ListLabel_VariantContainsUnknownVariant_LabelIsLanguageWithVariantInBrackets()
 		{
 			var ws = new WritingSystemDefinition("de");
-			ws.AddToVariant("garble");
+			ws.Variants.Add("garble");
 			Assert.That(ws.ListLabel, Is.EqualTo("German (x-garble)"));
 		}
 
@@ -1789,8 +1726,8 @@ namespace SIL.WritingSystems.Tests
 			newWs.Region = "US";
 			newWs.Script = "Armi";
 			newWs.IpaStatus = IpaStatusChoices.IpaPhonetic;
-			newWs.AddToVariant("garble");
-			newWs.AddToVariant("1901");
+			newWs.Variants.Add("garble");
+			newWs.Variants.Add("1901");
 			Assert.That(newWs.ListLabel, Is.EqualTo("German (IPA-etic-Copy-Copy1-Armi-US-1901-x-garble)"));
 		}
 
@@ -2113,15 +2050,6 @@ namespace SIL.WritingSystems.Tests
 			ws.Collations.Add(cd2);
 
 			Assert.That(ws.DefaultCollation, Is.EqualTo(cd1));
-		}
-
-		[Test]
-		public void DefaultCollation_DefaultsToDefaultOrderingCollationWhenEmpty()
-		{
-			var ws = new WritingSystemDefinition("de-x-dupl0");
-
-			Assert.That(ws.DefaultCollation.Type, Is.EqualTo("standard"));
-			Assert.That(ws.DefaultCollation.IcuRules, Is.EqualTo(string.Empty));
 		}
 
 		[Test]

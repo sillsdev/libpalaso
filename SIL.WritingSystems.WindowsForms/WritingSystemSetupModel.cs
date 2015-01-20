@@ -291,7 +291,7 @@ namespace SIL.WritingSystems.WindowsForms
 
 		private void SetCurrentCollationRulesTypeFromDefinition()
 		{
-			if (CurrentDefinition == null)
+			if (CurrentDefinition == null || CurrentDefinition.DefaultCollation == null)
 				_currentCollationRulesType = CollationRulesType.DefaultOrdering;
 			else if (CurrentDefinition.DefaultCollation is SimpleCollationDefinition)
 				_currentCollationRulesType = CollationRulesType.CustomSimple;
@@ -618,9 +618,9 @@ namespace SIL.WritingSystems.WindowsForms
 			get { return CurrentDefinition.DisplayLabel ?? string.Empty; }
 		}
 
-		public string CurrentISO
+		public string CurrentIso
 		{
-			get { return CurrentDefinition == null ? string.Empty : (CurrentDefinition.Language ?? string.Empty); }
+			get { return CurrentDefinition == null ? string.Empty : ((string) CurrentDefinition.Language ?? string.Empty); }
 			set
 			{
 				if (CurrentDefinition.Language != value)
@@ -635,7 +635,7 @@ namespace SIL.WritingSystems.WindowsForms
 		{
 			get
 			{
-				if(CurrentDefinition==null)
+				if (CurrentDefinition == null)
 					return null;
 				if (CurrentDefinition.LocalKeyboard != null)
 					return CurrentDefinition.LocalKeyboard;
@@ -667,7 +667,7 @@ namespace SIL.WritingSystems.WindowsForms
 
 		public string CurrentRegion
 		{
-			get { return  CurrentDefinition==null ? string.Empty : (CurrentDefinition.Region ?? string.Empty); }
+			get { return  CurrentDefinition == null ? string.Empty : ((string) CurrentDefinition.Region ?? string.Empty); }
 			set
 			{
 				if (CurrentDefinition.Region != value)
@@ -748,28 +748,38 @@ namespace SIL.WritingSystems.WindowsForms
 
 		public string CurrentVariant
 		{
-			get { return CurrentDefinition.Variant ?? string.Empty; }
+			get { return IetfLanguageTag.GetVariantCodes(CurrentDefinition.Variants) ?? string.Empty; }
 			set
 			{
-				string original = CurrentDefinition.Variant;
-				if (CurrentDefinition.Variant != value)
+				if (IetfLanguageTag.GetVariantCodes(CurrentDefinition.Variants) != value)
 				{
-					try
-					{
-						var fixedVariant = WritingSystemDefinitionVariantHelper.ValidVariantString(value);
-						if (String.IsNullOrEmpty(CurrentDefinition.Language) && !fixedVariant.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
-						{
-							CurrentDefinition.Language = WellKnownSubtags.UnlistedLanguage;
-						}
-						CurrentDefinition.Variant = fixedVariant;
-						OnCurrentItemUpdated();
-					}
-					catch (ArgumentException e)
-					{
-						CurrentDefinition.Variant = original;
-						Palaso.Reporting.ErrorReport.NotifyUserOfProblem(e.Message);
-					}
+					string fixedVariant = WritingSystemDefinitionVariantHelper.ValidVariantString(value);
+					if (string.IsNullOrEmpty(CurrentDefinition.Language) && !fixedVariant.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
+						CurrentDefinition.Language = WellKnownSubtags.UnlistedLanguage;
 
+					IEnumerable<VariantSubtag> variantSubtags;
+					if (IetfLanguageTag.TryGetVariantSubtags(value, out variantSubtags))
+					{
+						VariantSubtag[] originalVariantSubtags = CurrentDefinition.Variants.ToArray();
+						try
+						{
+							CurrentDefinition.Variants.Clear();
+							foreach (VariantSubtag variantSubtag in variantSubtags)
+								CurrentDefinition.Variants.Add(variantSubtag);
+							OnCurrentItemUpdated();
+						}
+						catch (InvalidOperationException e)
+						{
+							CurrentDefinition.Variants.Clear();
+							foreach (VariantSubtag variantSubtag in originalVariantSubtags)
+								CurrentDefinition.Variants.Add(variantSubtag);
+							ErrorReport.NotifyUserOfProblem(e.Message);
+						}
+					}
+					else
+					{
+						ErrorReport.NotifyUserOfProblem("Variant tags are invalid.");
+					}
 				}
 			}
 		}
@@ -787,29 +797,23 @@ namespace SIL.WritingSystems.WindowsForms
 		{
 			var summary = new StringBuilder();
 			summary.AppendFormat(" {0}", writingSystem.LanguageName);
-			if (!String.IsNullOrEmpty(writingSystem.Region))
-			{
-				summary.AppendFormat(" in {0}", writingSystem.Region);
-			}
-			if (!String.IsNullOrEmpty(writingSystem.Script))
-			{
-				summary.AppendFormat(" written in {0} script", CurrentIso15924Script.ShortLabel());
-			}
+			if (writingSystem.Region != null)
+				summary.AppendFormat(" in {0}", writingSystem.Region.Code);
+			if (writingSystem.Script != null)
+				summary.AppendFormat(" written in {0} script", CurrentIso15924Script.ShortName);
 
 			summary.AppendFormat(". ({0})", writingSystem.Bcp47Tag);
 			return summary.ToString().Trim();
 		}
 
-		public Iso15924Script CurrentIso15924Script
+		public ScriptSubtag CurrentIso15924Script
 		{
 			get
 			{
 				if (_currentWritingSystem == null)
 					return null;
 
-				string script = String.IsNullOrEmpty(_currentWritingSystem.Script) ? "latn" : _currentWritingSystem.Script;
-				return StandardTags.ValidIso15924Scripts.FirstOrDefault(scriptInfo => scriptInfo.Code == script);
-				//return WritingSystemDefinition.ScriptOptions.FirstOrDefault(o => o.Code == CurrentScriptCode);
+				return _currentWritingSystem.Script ?? "Latn";
 			}
 			set
 			{
@@ -860,19 +864,20 @@ namespace SIL.WritingSystems.WindowsForms
 					var type = (CollationRulesType) Enum.Parse(typeof(CollationRulesType), value);
 					if (type != _currentCollationRulesType)
 					{
+						string defType = CurrentDefinition.DefaultCollation == null ? "standard" : CurrentDefinition.DefaultCollation.Type;
 						switch (type)
 						{
 							case CollationRulesType.DefaultOrdering:
 							case CollationRulesType.CustomIcu:
-								CurrentDefinition.DefaultCollation = new CollationDefinition(CurrentDefinition.DefaultCollation.Type);
+								CurrentDefinition.DefaultCollation = new CollationDefinition(defType);
 								break;
 
 							case CollationRulesType.CustomSimple:
-								CurrentDefinition.DefaultCollation = new SimpleCollationDefinition(CurrentDefinition.DefaultCollation.Type);
+								CurrentDefinition.DefaultCollation = new SimpleCollationDefinition(defType);
 								break;
 
 							case CollationRulesType.OtherLanguage:
-								CurrentDefinition.DefaultCollation = new InheritedCollationDefinition(CurrentDefinition.DefaultCollation.Type);
+								CurrentDefinition.DefaultCollation = new InheritedCollationDefinition(defType);
 								break;
 						}
 						_currentCollationRulesType = type;
@@ -966,9 +971,9 @@ namespace SIL.WritingSystems.WindowsForms
 				{
 					return SelectionsForSpecialCombo.UnlistedLanguageDetails;
 				}
-				if (!string.IsNullOrEmpty(_currentWritingSystem.Script) ||
-					!string.IsNullOrEmpty(_currentWritingSystem.Region) ||
-					!string.IsNullOrEmpty(_currentWritingSystem.Variant)
+				if (_currentWritingSystem.Script != null
+					|| _currentWritingSystem.Region != null
+					|| _currentWritingSystem.Variants.Count > 0
 				)
 				{
 					return SelectionsForSpecialCombo.ScriptRegionVariant;
@@ -1001,15 +1006,14 @@ namespace SIL.WritingSystems.WindowsForms
 		}
 
 		// This is currently only useful for setting the region combobox, since it is expecting an IANASubtag
-		public IanaSubtag CurrentRegionTag
+		public RegionSubtag CurrentRegionTag
 		{
 			get
 			{
 				if (CurrentDefinition == null)
-				{
 					return null;
-				}
-				return StandardTags.ValidIso3166Regions.FirstOrDefault(regionInfo => regionInfo.Subtag == CurrentRegion);
+
+				return CurrentRegion;
 			}
 			set { throw new NotImplementedException(); }
 		}
@@ -1447,7 +1451,7 @@ namespace SIL.WritingSystems.WindowsForms
 					unsettableWritingSystems.Add(ws);
 				}
 			}
-			foreach (var unsettableWs in unsettableWritingSystems)
+			foreach (WritingSystemDefinition unsettableWs in unsettableWritingSystems)
 			{
 				//create a writing system just to get the unique id, then copy that id to the writing system that we want to set
 				var uniqueWs = WritingSystemDefinition.CreateCopyWithUniqueId(unsettableWs,
@@ -1455,7 +1459,9 @@ namespace SIL.WritingSystems.WindowsForms
 				unsettableWs.Language = uniqueWs.Language;
 				unsettableWs.Script = uniqueWs.Script;
 				unsettableWs.Region = uniqueWs.Region;
-				unsettableWs.Variant = uniqueWs.Variant;
+				unsettableWs.Variants.Clear();
+				foreach (VariantSubtag variantSubtag in uniqueWs.Variants)
+					unsettableWs.Variants.Add(variantSubtag);
 				OnAddOrDelete();
 				_writingSystemRepository.Set(unsettableWs);
 			}
@@ -1574,17 +1580,14 @@ namespace SIL.WritingSystems.WindowsForms
 			existingWs.LanguageName = newWs.LanguageName;
 
 			// Remove First Not WellKnownPrivateUseTag
-			string rfcVariant = "";
-			string rfcPrivateUse = "";
-			WritingSystemDefinition.SplitVariantAndPrivateUse(existingWs.Variant, out rfcVariant, out rfcPrivateUse);
-			var privateUseTokens = new List<string>(rfcPrivateUse.Split('-'));
-			string oldIsoCode = WritingSystemDefinition.FilterWellKnownPrivateUseTags(privateUseTokens).FirstOrDefault();
-			if (!String.IsNullOrEmpty(oldIsoCode))
+			for (int i = 0; i < existingWs.Variants.Count; i++)
 			{
-				privateUseTokens.Remove(oldIsoCode);
+				if (existingWs.Variants[i].IsPrivateUse && !StandardSubtags.CommonPrivateUseVariants.Contains(existingWs.Variants[i].Code))
+				{
+					existingWs.Variants.RemoveAt(i);
+					break;
+				}
 			}
-			string newPrivateUse = "x-" + String.Join("-", privateUseTokens.ToArray()); //would be nice if writingsystemdefintion.ConcatenateVariantAndPrivateUse would add the x for us
-			existingWs.Variant = WritingSystemDefinition.ConcatenateVariantAndPrivateUse(rfcVariant, newPrivateUse);
 
 			OnSelectionChanged();
 			OnCurrentItemUpdated();
@@ -1601,7 +1604,7 @@ namespace SIL.WritingSystems.WindowsForms
 			// FieldWorks marks custom languages, regions, and scripts with the first
 			// available code designated for such purposes, but also adds information to the
 			// variant in the private use area.  Don't throw any of that away here.
-			if (CurrentISO != "qaa" && CurrentRegion != "QM" && CurrentScriptCode != "Qaaa")
+			if (CurrentIso != "qaa" && CurrentRegion != "QM" && CurrentScriptCode != "Qaaa")
 				CurrentVariant = string.Empty;
 			if (CurrentRegion != "QM")
 				CurrentRegion = string.Empty;
@@ -1625,7 +1628,7 @@ namespace SIL.WritingSystems.WindowsForms
 		{
 			if (CurrentDefinition != null)
 			{
-				CurrentVariant = CurrentDefinition.Variant;
+				CurrentVariant = IetfLanguageTag.GetVariantCodes(CurrentDefinition.Variants);
 				CurrentRegion = CurrentDefinition.Region;
 				CurrentScriptCode = CurrentDefinition.Script;
 				CurrentIsVoice = CurrentDefinition.IsVoice;

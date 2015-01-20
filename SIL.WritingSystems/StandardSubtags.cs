@@ -1,98 +1,33 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace SIL.WritingSystems
 {
-	public class IanaSubtag
-	{
-		public IanaSubtag(string type, string subtag, string description)
-		{
-			Type = type;
-			Subtag = subtag;
-			Description = description;
-		}
-
-		public override string ToString()
-		{
-			return Description;
-		}
-
-		public string Type { get; private set; }
-
-		public string Subtag { get; private set; }
-
-		public string Description { get; private set; }
-
-		public static int CompareByDescription(IanaSubtag x, IanaSubtag y)
-		{
-			if (x == null)
-			{
-				if (y == null)
-				{
-					return 0;
-				}
-				else
-				{
-					return -1;
-				}
-			}
-			else
-			{
-				if (y == null)
-				{
-					return 1;
-				}
-				else
-				{
-					return String.Compare(x.Description, y.Description, StringComparison.Ordinal);
-				}
-			}
-		}
-	}
-
 	/// <summary>
 	/// This class parses the IANA subtag registry in order to provide a list of valid language, script, region and variant subtags
 	/// for use by the Rfc5646Tag and other classes.
 	/// </summary>
-	public class StandardTags
+	public class StandardSubtags
 	{
-
-		public class IanaVariantSubtag : IanaSubtag
+		private class SubtagCollection<T> : KeyedCollection<string, T> where T : Subtag
 		{
-			/// <summary>
-			/// A Variant with no prefixes (prefixes will be null) may be applied to any language. One with one or more prefixes may only be
-			/// applied to those language tags which begin with that prefix. (This is currently not enforced, but the information is available
-			/// for use by dialogs which display variant choices.)
-			/// </summary>
-			public string[] Prefixes { get; private set; }
-
-			public IanaVariantSubtag(string type, string subtag, string description, IEnumerable<string> prefixes) : base(type, subtag, description)
+			public SubtagCollection(IEnumerable<T> items)
+				: base(StringComparer.InvariantCultureIgnoreCase)
 			{
-				if (prefixes != null)
-					Prefixes = prefixes.ToArray();
+				foreach (T item in items)
+					Add(item);
+			}
+
+			protected override string GetKeyForItem(T item)
+			{
+				return item.Code;
 			}
 		}
 
-		static StandardTags()
-		{
-			ValidIso15924Scripts = new List<Iso15924Script>();
-			ValidIso639LanguageCodes = new List<Iso639LanguageCode>();
-			ValidIso3166Regions = new List<IanaSubtag>();
-			ValidRegisteredVariants = new List<IanaVariantSubtag>();
-			LoadIanaSubtags();
-		}
-
-		public static List<Iso15924Script> ValidIso15924Scripts { get; private set; }
-
-		public static List<Iso639LanguageCode> ValidIso639LanguageCodes { get; private set; }
-
-		public static List<IanaSubtag> ValidIso3166Regions { get; private set; }
-
-		public static List<IanaVariantSubtag> ValidRegisteredVariants { get; private set; }
-
-		private static void LoadIanaSubtags()
+		static StandardSubtags()
 		{
 			// JohnT: can't find anywhere else to document this, so here goes: TwoToThreeMap is a file adapted from
 			// FieldWorks Ethnologue\Data\iso-639-3_20080804.tab, by discarding all but the first column (3-letter
@@ -101,16 +36,20 @@ namespace SIL.WritingSystems
 			// Iana code, and the string after it is the one we want to return as the corresponding ISO3Code.
 			// The following block of code assembles these lines into a map we can use to fill this slot properly
 			// when building the main table.
-			var TwoToThreeMap = new Dictionary<string, string>();
+			var twoToThreeMap = new Dictionary<string, string>();
 			string[] encodingPairs = LanguageRegistryResources.TwoToThreeCodes.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
 			foreach (string pair in encodingPairs)
 			{
 				var items = pair.Split('\t');
 				if (items.Length != 2)
 					continue;
-				TwoToThreeMap[items[0]] = items[1];
+				twoToThreeMap[items[0]] = items[1];
 			}
 
+			var languages = new List<LanguageSubtag>();
+			var scripts = new List<ScriptSubtag>();
+			var regions = new List<RegionSubtag>();
+			var variants = new List<VariantSubtag>();
 			string[] ianaSubtagsAsStrings = LanguageRegistryResources.ianaSubtagRegistry.Split(new[] { "%%" }, StringSplitOptions.None);
 			foreach (string ianaSubtagAsString in ianaSubtagsAsStrings)
 			{
@@ -148,43 +87,52 @@ namespace SIL.WritingSystems
 				switch (type)
 				{
 					case "language":
-
 						string iso3Code;
-						if (!TwoToThreeMap.TryGetValue(subtag, out iso3Code))
+						if (!twoToThreeMap.TryGetValue(subtag, out iso3Code))
 							iso3Code = String.Empty;
-						ValidIso639LanguageCodes.Add(
-							new Iso639LanguageCode(subtag, description, iso3Code)
-							);
+						languages.Add(new LanguageSubtag(subtag, description, false, iso3Code));
 						break;
 					case "script":
-						ValidIso15924Scripts.Add(
-							new Iso15924Script(description, subtag)
-							);
+						scripts.Add(new ScriptSubtag(subtag, description, false));
 						break;
 					case "region":
-						ValidIso3166Regions.Add(
-							new IanaSubtag(type, subtag, description)
-							);
+						regions.Add(new RegionSubtag(subtag, description, false));
 						break;
 					case "variant":
-						ValidRegisteredVariants.Add(
-							new IanaVariantSubtag(type, subtag, description, GetVariantPrefixes(subTagComponents))
-							);
+						variants.Add(new VariantSubtag(subtag, description, false, GetVariantPrefixes(subTagComponents)));
 						break;
 				}
 			}
 
-			ValidIso639LanguageCodes.Sort(Iso639LanguageCode.CompareByName);
-			ValidIso15924Scripts.Sort(Iso15924Script.CompareScriptOptions);
-			ValidIso3166Regions.Sort(IanaSubtag.CompareByDescription);
-			ValidRegisteredVariants.Sort(IanaSubtag.CompareByDescription);
+			// These ones are considered non-private in that the user can't edit the code, but they already contain needed X's.
+			//variants.Add(new VariantSubtag("fonipa-x-etic", "Phonetic", false, null));
+			//variants.Add(new VariantSubtag("fonipa-x-emic", "Phonemic", false, null));
+			//variants.Add(new VariantSubtag("x-py", "Pinyin", false, null));
+			//variants.Add(new VariantSubtag("x-pyn", "Pinyin Numbered", false, null));
+			//variants.Add(new VariantSubtag("x-audio", "Audio", false, null));
 
-			// Add Unlisted Language at the end
-			ValidIso639LanguageCodes.Insert(ValidIso639LanguageCodes.Count, new Iso639LanguageCode("qaa", "Language Not Listed", String.Empty));
-
-			// To help people find Latin as a script tag
-			ValidIso15924Scripts.Insert(0, new Iso15924Script("Roman (Latin)", "Latn"));
+			Iso639Languages = new ReadOnlyKeyedCollection<string, LanguageSubtag>(new SubtagCollection<LanguageSubtag>(languages.OrderBy(l => Regex.Replace(l.Name, @"[^\w]", ""))
+				.Concat(new[] {new LanguageSubtag(WellKnownSubtags.UnlistedLanguage, "Language Not Listed", false, string.Empty)})));
+			Iso15924Scripts = new ReadOnlyKeyedCollection<string, ScriptSubtag>(new SubtagCollection<ScriptSubtag>(scripts.OrderBy(s => s.Name)));
+			Iso3166Regions = new ReadOnlyKeyedCollection<string, RegionSubtag>(new SubtagCollection<RegionSubtag>(regions.OrderBy(r => r.Name)));
+			RegisteredVariants = new ReadOnlyKeyedCollection<string, VariantSubtag>(new SubtagCollection<VariantSubtag>(variants.OrderBy(v => v.Name)));
+			CommonPrivateUseVariants = new ReadOnlyKeyedCollection<string, VariantSubtag>(new SubtagCollection<VariantSubtag>(new[]
+			{
+				new VariantSubtag(WellKnownSubtags.IpaPhoneticPrivateUse, "Phonetic", true, null),
+				new VariantSubtag(WellKnownSubtags.IpaPhonemicPrivateUse, "Phonemic", true, null),
+				new VariantSubtag(WellKnownSubtags.AudioPrivateUse, "Audio", true, null)
+			}));
 		}
+
+		public static ReadOnlyKeyedCollection<string, ScriptSubtag> Iso15924Scripts { get; private set; }
+
+		public static ReadOnlyKeyedCollection<string, LanguageSubtag> Iso639Languages { get; private set; }
+
+		public static ReadOnlyKeyedCollection<string, RegionSubtag> Iso3166Regions { get; private set; }
+
+		public static ReadOnlyKeyedCollection<string, VariantSubtag> RegisteredVariants { get; private set; }
+
+		public static ReadOnlyKeyedCollection<string, VariantSubtag> CommonPrivateUseVariants { get; private set; }
 
 		private static IEnumerable<string> GetVariantPrefixes(string[] subTagComponents)
 		{
@@ -197,7 +145,7 @@ namespace SIL.WritingSystems
 
 		internal static string SubTagComponentDescription(string component)
 		{
-			string description = component.Substring(component.IndexOf(" ") + 1);
+			string description = component.Substring(component.IndexOf(" ", StringComparison.Ordinal) + 1);
 			description = Regex.Replace(description, @"\(alias for ", "(");
 			if (description[0] == '(')
 			{
@@ -237,41 +185,23 @@ namespace SIL.WritingSystems
 
 		public static bool IsValidIso639LanguageCode(string languageCodeToCheck)
 		{
-			if (languageCodeToCheck.Equals("qaa", StringComparison.OrdinalIgnoreCase))
-			{
-				return true;
-			}
-			return ValidIso639LanguageCodes.Any(code => languageCodeToCheck.Equals(code.Code, StringComparison.OrdinalIgnoreCase));
+			return Iso639Languages.Contains(languageCodeToCheck);
 		}
 
 		public static bool IsValidIso15924ScriptCode(string scriptTagToCheck)
 		{
-			return IsStandardIso15924ScriptCode(scriptTagToCheck) || IsPrivateUseScriptCode(scriptTagToCheck);
+			return Iso15924Scripts.Contains(scriptTagToCheck) || IsPrivateUseScriptCode(scriptTagToCheck);
 		}
 
 		public static bool IsPrivateUseScriptCode(string scriptCode)
 		{
 			var scriptCodeU = scriptCode.ToUpperInvariant();
-			return (scriptCodeU.CompareTo("QAAA") >= 0 && scriptCodeU.CompareTo("QABX") <= 0);
+			return (string.Compare(scriptCodeU, "QAAA", StringComparison.Ordinal) >= 0 && string.Compare(scriptCodeU, "QABX", StringComparison.Ordinal) <= 0);
 		}
 
-		public static bool IsStandardIso15924ScriptCode(string scriptTagToCheck)
+		public static bool IsValidIso3166RegionCode(string regionCodeToCheck)
 		{
-			return ValidIso15924Scripts.Any(
-				code => scriptTagToCheck.Equals(code.Code, StringComparison.OrdinalIgnoreCase)
-				);
-		}
-
-		public static bool IsValidIso3166Region(string regionCodeToCheck)
-		{
-			return IsStandardIso3166Region(regionCodeToCheck) || IsPrivateUseRegionCode(regionCodeToCheck);
-		}
-
-		public static bool IsStandardIso3166Region(string regionCodeToCheck)
-		{
-			return ValidIso3166Regions.Any(
-				code => regionCodeToCheck.Equals(code.Subtag, StringComparison.OrdinalIgnoreCase)
-				);
+			return Iso3166Regions.Contains(regionCodeToCheck) || IsPrivateUseRegionCode(regionCodeToCheck);
 		}
 
 		/// <summary>
@@ -286,15 +216,13 @@ namespace SIL.WritingSystems
 		{
 			var regionCodeU = regionCode.ToUpperInvariant();
 			return regionCodeU == "AA" || regionCodeU == "ZZ"
-				|| (regionCodeU.CompareTo("QM") >= 0 && regionCodeU.CompareTo("QZ") <= 0)
-				|| (regionCodeU.CompareTo("XA") >= 0 && regionCodeU.CompareTo("XZ") <= 0);
+				|| (string.Compare(regionCodeU, "QM", StringComparison.Ordinal) >= 0 && string.Compare(regionCodeU, "QZ", StringComparison.Ordinal) <= 0)
+				|| (string.Compare(regionCodeU, "XA", StringComparison.Ordinal) >= 0 && string.Compare(regionCodeU, "XZ", StringComparison.Ordinal) <= 0);
 		}
 
-		public static bool IsValidRegisteredVariant(string variantToCheck)
+		public static bool IsValidRegisteredVariantCode(string variantToCheck)
 		{
-			return ValidRegisteredVariants.Any(
-				code => variantToCheck.Equals(code.Subtag, StringComparison.OrdinalIgnoreCase)
-				);
+			return RegisteredVariants.Contains(variantToCheck);
 		}
 	}
 }

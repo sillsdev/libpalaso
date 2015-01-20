@@ -18,7 +18,7 @@ namespace SIL.WritingSystems.Tests
 
 			public TestEnvironment(string id1, string id2)
 			{
-				WritingSystemRepository = new LdmlInFolderWritingSystemRepository(WritingSystemsPath, WritingSystemCompatibility.Flex7V0Compatible);
+				WritingSystemRepository = new LdmlInFolderWritingSystemRepository(WritingSystemsPath);
 				_file = _folder.GetNewTempFile(true);
 				File.WriteAllText(_file.Path, String.Format("|{0}||{0}||{1}|", id1, id2));
 			}
@@ -116,7 +116,7 @@ namespace SIL.WritingSystems.Tests
 				var englishWs = new WritingSystemDefinition("en");
 				e.WritingSystemRepository.Set(englishWs);
 				e.WritingSystemRepository.Save();
-				englishWs.Variant = "x-new";
+				englishWs.Variants.Add("new");
 				e.WritingSystemRepository.Set(englishWs);
 				e.WritingSystemRepository.Save();
 				WritingSystemOrphanFinder.FindOrphans(e.GetIdsFromFile, e.ReplaceIdInFile, e.WritingSystemRepository);
@@ -141,6 +141,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+#if WS_FIX
 		[Test]
 		/* Ideally we would be able to preserve the 2 x's in compatibility mode. However we stopped short
 		 * of requiring the WritingSystemDefinition to hold info about malformed tags. So, in this case
@@ -156,7 +157,6 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(e.WritingSystemRepository.Count, Is.EqualTo(2));
 			}
 		}
-
-
+#endif
 	}
 }

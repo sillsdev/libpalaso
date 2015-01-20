@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using Palaso.Code;
 using Palaso.Data;
 
-namespace SIL.WritingSystems
+namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
 	/// <summary>
 	/// The RFC5646Tag class represents a language tag that conforms to Rfc5646. It relies heavily on the StandardTags class for
@@ -284,7 +284,7 @@ namespace SIL.WritingSystems
 					"The language tag may not contain dashes. I.e. there may only be a single iso 639 tag in this subtag"
 				);
 			}
-			if (!StandardTags.IsValidIso639LanguageCode(_language))
+			if (!StandardSubtags.IsValidIso639LanguageCode(_language))
 			{
 				throw new ValidationException(String.Format("'{0}' is not a valid ISO-639 language code.", _language));
 			}
@@ -343,7 +343,7 @@ namespace SIL.WritingSystems
 			{
 				throw new ValidationException("The script tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag");
 			}
-			if(!StandardTags.IsValidIso15924ScriptCode(_script))
+			if(!StandardSubtags.IsValidIso15924ScriptCode(_script))
 			{
 				throw new ValidationException(String.Format("'{0}' is not a valid ISO-15924 script code.", _script));
 			}
@@ -369,7 +369,7 @@ namespace SIL.WritingSystems
 			{
 				throw new ValidationException("The region tag may not contain dashes or underscores. I.e. there may only be a single iso 639 tag in this subtag");
 			}
-			if (!StandardTags.IsValidIso3166Region(_region))
+			if (!StandardSubtags.IsValidIso3166RegionCode(_region))
 			{
 				throw new ValidationException(String.Format("'{0}' is not a valid ISO-3166 region code.", _region));
 			}
@@ -415,7 +415,7 @@ namespace SIL.WritingSystems
 
 		private void ValidateVariant()
 		{
-			var invalidPart = _variant.AllParts.FirstOrDefault(part => !StandardTags.IsValidRegisteredVariant(part));
+			var invalidPart = _variant.AllParts.FirstOrDefault(part => !StandardSubtags.IsValidRegisteredVariantCode(part));
 			if (!String.IsNullOrEmpty(invalidPart))
 			{
 				throw new ValidationException(
@@ -465,17 +465,17 @@ namespace SIL.WritingSystems
 					rfc5646Tag.Language = token;
 					continue;
 				}
-				if (position <= 1 && StandardTags.IsValidIso15924ScriptCode(token))
+				if (position <= 1 && StandardSubtags.IsValidIso15924ScriptCode(token))
 				{
 					rfc5646Tag.Script = token;
 					continue;
 				}
-				if (position <= 2 && StandardTags.IsValidIso3166Region(token))
+				if (position <= 2 && StandardSubtags.IsValidIso3166RegionCode(token))
 				{
 					rfc5646Tag.Region = token;
 					continue;
 				}
-				if (StandardTags.IsValidRegisteredVariant(token))
+				if (StandardSubtags.IsValidRegisteredVariantCode(token))
 				{
 					rfc5646Tag.AddToVariant(token);
 					continue;
