@@ -46,11 +46,9 @@ namespace SIL.WritingSystems
 
 		public override bool Validate(out string message)
 		{
+			message = null;
 			if (IsValid)
-			{
-				message = null;
 				return true;
-			}
 
 			if (_baseLanguageTag == null)
 			{
@@ -76,7 +74,6 @@ namespace SIL.WritingSystems
 						{
 							IcuRules = LdmlCollationParser.GetIcuRulesFromCollationNode(collationElem);
 							IsValid = true;
-							message = null;
 							return true;
 						}
 					}
