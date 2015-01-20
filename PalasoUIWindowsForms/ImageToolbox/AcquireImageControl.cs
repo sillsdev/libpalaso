@@ -451,7 +451,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				_galleryControl.Size = new Size(Width - 6, Height - 60);
 				_galleryControl.Anchor = (System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom |
 					System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right);
-				Console.WriteLine ("HACK: Manually adjusting ArtOfReadingChooser.Size from {0} to {1}", oldSize, _galleryControl.Size);
 			}
 			if (_messageLabel != null && Contains(_messageLabel) && Width - _messageLabel.Width != 223)
 			{
