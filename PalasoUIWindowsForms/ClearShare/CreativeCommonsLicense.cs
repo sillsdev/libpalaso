@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using L10NSharp;
 
 namespace Palaso.UI.WindowsForms.ClearShare
 {
@@ -193,32 +194,73 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			}
 		}
 
-		//we'll need to give out an image, description, url.
-		//what you *store* in the image metadata is a different question.
-		public override string GetDescription(string iso639_3LanguageCode)
+		/// <summary>
+		/// Get a simple, non-legal summary of the license, using the "best" language for which we can find a translation.
+		/// </summary>
+		/// <param name="iso6393LanguageCode">A single language to try and use for the description.</param>
+		/// <returns>The description of the license if we have it in this language, else the English</returns>
+		public override string GetDescription(string iso6393LanguageCode)
+		{
+			string idOfLanguageUsed;
+			return GetDescription(new string[] {iso6393LanguageCode}, out  idOfLanguageUsed);
+		}
+
+		/// <summary>
+		/// Get a simple, non-legal summary of the license, using the "best" language for which we can find a translation.
+		/// </summary>
+		/// <param name="languagePriorityIds"></param>
+		/// <param name="idOfLanguageUsed">The id of the language we were able to use. Unreliable if we had to use a mix of languages.</param>
+		/// <returns>The description of the license.</returns>
+		public override string GetDescription(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
 		{
 			//Enanced labs.creativecommons.org has a lot of code, some of which might be useful, especially if we wanted a full, rather than consise, description.
-
+			
+			//Note that this isn't going to be able to convey to the caller the situation if some strings are translatable in some language, but others in some other language.
+			//It will just end up being an amalgam in that case.
 			string s="";
 
 			if(CommercialUseAllowed)
-				s+="You are free to make commercial use of this work. ";
+				s += GetComponentOfLicenseInBestLanguage("CommercialUseAllowed", "You are free to make commercial use of this work.", languagePriorityIds, out idOfLanguageUsed) + " ";
 			else
-				s += "You may not use this work for commercial purposes. ";
+				s += GetComponentOfLicenseInBestLanguage("NonCommercial", "You may not use this work for commercial purposes.", languagePriorityIds, out idOfLanguageUsed) + " ";
 
 			if(DerivativeRule == DerivativeRules.Derivatives)
-				s += "You are free to adapt, remix, copy, distribute, and transmit this work. ";
+				s += GetComponentOfLicenseInBestLanguage("Derivatives", "You may adapt and add to this work.", languagePriorityIds, out idOfLanguageUsed) + " ";
 
 			if (DerivativeRule == DerivativeRules.NoDerivatives)
-				s += "You may not alter, transform, or build upon this work without permission. ";
+				s += GetComponentOfLicenseInBestLanguage("NoDerivatives", "You may not make changes or build upon this work without permission.", languagePriorityIds, out idOfLanguageUsed) + " ";
 
 			if (DerivativeRule == DerivativeRules.DerivativesWithShareAndShareAlike)
-				s += "You may adapt or build upon this work, but you may distribute the resulting work only under the same or similar license to this one.";
+				s += GetComponentOfLicenseInBestLanguage("DerivativesWithShareAndShareAlike", "You may adapt and add to this work, but you may distribute the resulting work only under the same or similar license to this one.", languagePriorityIds, out idOfLanguageUsed) + " ";
 
 			if (AttributionRequired)
-				s += "You must attribute the work in the manner specified by the author. ";
+				s += GetComponentOfLicenseInBestLanguage("AttributionRequired", "You must keep the copyright and credits for authors, illustrators, etc.", languagePriorityIds, out idOfLanguageUsed) + " ";
 
-			return s;
+			return s.Trim();
+		}
+
+		private string GetComponentOfLicenseInBestLanguage(string idSuffix, string englishText, IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
+		{
+			var id = "MetadataDisplay.Licenses.CreativeCommons." + idSuffix;
+			var comment = "See http://creativecommons.org/ to find out how this is normally translated in your language. What we're aiming for here is an easy to understand summary.";
+			foreach(var targetLanguage in languagePriorityIds)
+			{
+				if (targetLanguage == "en")
+				{
+					//do the query to make sure the string is there to be translated someday
+					var unused = LocalizationManager.GetDynamicString("Palaso", id, englishText, comment);
+					idOfLanguageUsed = "en";
+					return englishText;
+				}
+				//otherwise, see if we have a translation
+				if (LocalizationManager.GetIsStringAvailableForLangId(id, targetLanguage))
+				{
+					idOfLanguageUsed = targetLanguage;
+					return LocalizationManager.GetDynamicStringOrEnglish("Palaso", id, englishText, comment, targetLanguage);
+				}
+			}
+			idOfLanguageUsed = string.Empty;
+			return "[Missing translation for "+id+"]";
 		}
 
 		public override Image GetImage()

@@ -313,6 +313,7 @@
     <Compile Include="Progress\StringBuilderTests.cs" />
     <Compile Include="PlatformUtilities\PlatformTests.cs" />
     <Compile Include="IO\PathUtilitiesTests.cs" />
+    <Compile Include="SetupFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Palaso\Palaso.csproj">

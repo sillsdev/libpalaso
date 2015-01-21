@@ -22,7 +22,7 @@ namespace Palaso.IO
 
 		public TempFile()
 		{
-			 _path = System.IO.Path.GetTempFileName();
+			_path = System.IO.Path.GetTempFileName();
 		}
 
 		public TempFile(bool dontMakeMeAFileAndDontSetPath)
@@ -86,8 +86,11 @@ namespace Palaso.IO
 
 		public static TempFile CreateAndGetPathButDontMakeTheFile()
 		{
-			TempFile t = new TempFile();
-			File.Delete(t.Path);
+			// it's safer to use GetRandomFileName here because otherwise we might end up with
+			// identical files with the same name if the app creates temp files quickly enough
+			// while deleting the created file.
+			var t = new TempFile(System.IO.Path.Combine(System.IO.Path.GetTempPath(),
+				System.IO.Path.GetRandomFileName()), false);
 			return t;
 		}
 

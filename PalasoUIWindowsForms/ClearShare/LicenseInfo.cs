@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using L10NSharp;
 
 namespace Palaso.UI.WindowsForms.ClearShare
 {
@@ -22,7 +24,8 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			return new NullLicense();
 		}
 
-		public abstract string GetDescription(string iso639_3LanguageCode);
+		public abstract string GetDescription(string iso6393LanguageCode);
+		public abstract string GetDescription(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed);
 
 		/// <summary>
 		/// A string that is a good short indication of the license type, and can be used in FromToken.
@@ -73,9 +76,46 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 	public class NullLicense : LicenseInfo
 	{
-		public override string GetDescription(string iso639_3LanguageCode)
+		/// <summary>
+		/// Get a simple, non-legal summary of the license, using the "best" language for which we can find a translation.
+		/// </summary>
+		/// <param name="iso6393LanguageCode">A single language to try and use for the description.</param>
+		/// <returns>The description of the license if we have it in this language, else the English</returns>
+		public override string GetDescription(string iso6393LanguageCode)
 		{
-			return "For permission to reuse, contact the copyright holder.";
+			string idOfLanguageUsed;
+			return GetDescription(new string[] {iso6393LanguageCode, "en"}, out idOfLanguageUsed);
+		}
+
+		/// <summary>
+		/// Get a simple, non-legal summary of the license, using the "best" language for which we can find a translation.
+		/// </summary>
+		/// <param name="languagePriorityIds"></param>
+		/// <param name="idOfLanguageUsed">The id of the language we were able to use. Unreliable if we had to use a mix of languages.</param>
+		/// <returns>The description of the license.</returns>
+		public override string GetDescription(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
+		{
+			var id = "MetadataDisplay.Licenses.NullLicense";
+			var englishText = "For permission to reuse, contact the copyright holder.";
+			var comment = "This is used when all we have is a copyright, no other license.";
+			foreach(var targetLanguage in languagePriorityIds)
+			{
+				if(targetLanguage == "en")
+				{
+					//do the query to make sure the string is there to be translated someday
+					var unused = LocalizationManager.GetDynamicString("Palaso", id, englishText, comment);
+					idOfLanguageUsed = "en";
+					return englishText;
+				}
+				if(LocalizationManager.GetIsStringAvailableForLangId(id, targetLanguage))
+				{
+					idOfLanguageUsed = targetLanguage;
+					
+					return LocalizationManager.GetDynamicStringOrEnglish("Palaso", id, englishText, comment, targetLanguage);
+				}
+			}
+			idOfLanguageUsed = string.Empty;
+			return "[Missing translation for " + id + "]";
 		}
 
 		public override string Token
@@ -109,11 +149,27 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			return "Custom License";
 		}
 
-		public override string GetDescription(string iso639_3LanguageCode)
+		/// <summary>
+		/// Currently, we don't even know the language of custom license strings, so this implementation just gives you the string it has
+		/// </summary>
+		/// <returns></returns>
+		public override string GetDescription(string iso6393LanguageCode)
 		{
 			if (string.IsNullOrEmpty(RightsStatement))
 				return "For permission to reuse, contact the copyright holder.";
 			return "";
+		}
+
+		/// <summary>
+		/// Currently, we don't even know the language of custom license strings, so this implementation just pretends that it gave you the language you asked for.
+		/// </summary>
+		/// <param name="languagePriorityIds"></param>
+		/// <param name="idOfLanguageUsed"></param>
+		/// <returns></returns>
+		public override string GetDescription(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
+		{
+			idOfLanguageUsed = languagePriorityIds.First();
+			return GetDescription(idOfLanguageUsed);
 		}
 
 		public override string Token
