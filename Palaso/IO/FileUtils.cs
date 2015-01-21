@@ -222,6 +222,8 @@ namespace Palaso.IO
 						(!string.IsNullOrEmpty(backupPath) && !PathUtilities.PathsAreOnSameVolume(sourcePath,backupPath))
 						||
 						!PathUtilities.PathsAreOnSameVolume(sourcePath, destinationPath)
+						||
+						!File.Exists(destinationPath)
 						)
 					{
 						//can't use File.Replace or File.Move across volumes (sigh)
