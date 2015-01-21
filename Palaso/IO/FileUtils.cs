@@ -285,7 +285,10 @@ namespace Palaso.IO
 		private static void ReportFailedReplacement(string destinationPath, Exception error)
 		{
 			var result = ErrorReport.NotifyUserOfProblem(new ShowAlwaysPolicy(), "Give Up", ErrorResult.No,
-				EntryAssembly.ProductName + " was unable to update the file '" + destinationPath + "'.  Please ensure there is not another copy of this program running, nor any other program that might have that file open, then click the 'OK' button below.\r\nThe error was: \r\n" + error.Message);
+				string.Format("{0} was unable to update the file '{1}'.  Please ensure there is not another " +
+					"copy of this program running, nor any other program that might have that file open, " +
+					"then click the 'OK' button below.{3}The error was: {3}{2}",
+					EntryAssembly.ProductName, destinationPath, error.Message, Environment.NewLine));
 			if (result == ErrorResult.No)
 			{
 				throw error; // pass it up to the caller
