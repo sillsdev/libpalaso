@@ -66,5 +66,15 @@ namespace Palaso.Tests.IO
 			tempFile.Dispose();
 			Assert.That(Directory.Exists(directoryName), Is.False);
 		}
+
+		[Test]
+		public void CreateAndGetPathButDontMakeTheFile_ReturnsUniqueFilenames()
+		{
+			using (var file1 = TempFile.CreateAndGetPathButDontMakeTheFile())
+			using (var file2 = TempFile.CreateAndGetPathButDontMakeTheFile())
+			{
+				Assert.That(file1.Path, Is.Not.EqualTo(file2.Path));
+			}
+		}
 	}
 }

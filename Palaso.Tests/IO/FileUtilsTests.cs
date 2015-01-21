@@ -151,6 +151,18 @@ namespace Palaso.Tests.IO
 		}
 
 		[Test]
+		public void ReplaceFileWithUserInteractionIfNeeded_DestinationDoesntExist_OK()
+		{
+			using (var destination = TempFile.CreateAndGetPathButDontMakeTheFile())
+			using (var source = new TempFile("one"))
+			{
+				Assert.That(() => FileUtils.ReplaceFileWithUserInteractionIfNeeded(source.Path, destination.Path, null),
+					Throws.Nothing);
+				Assert.That(File.ReadAllText(destination.Path), Is.EqualTo("one"));
+			}
+		}
+
+		[Test]
 		public void GrepFile_FileContainsPattern_True()
 		{
 			using (var e = new TestEnvironment())
