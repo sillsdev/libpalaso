@@ -16,27 +16,22 @@ namespace Palaso.Reporting
 			WriteExceptionToConsole(error, null, Severity.Fatal);
 		}
 
-		public ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy, string alternateButton1Label, ErrorResult resultIfAlternateButtonPressed, string message)
+		public ErrorResult NotifyUserOfProblem(IRepeatNoticePolicy policy, string alternateButton1Label,
+			ErrorResult resultIfAlternateButtonPressed, string message)
 		{
 			if (!policy.ShouldShowMessage(message))
 			{
 				return ErrorResult.OK;
 			}
 
-
 			if (ErrorReport.IsOkToInteractWithUser)
 			{
-				if (ErrorReport.IsOkToInteractWithUser)
-				{
-					Console.WriteLine(message);
-					Console.WriteLine(policy.ReoccurenceMessage);
-				}
+				Console.WriteLine(message);
+				Console.WriteLine(policy.ReoccurenceMessage);
 				return ErrorResult.OK;
 			}
-			else
-			{
-				throw new ErrorReport.ProblemNotificationSentToUserException(message);
-			}
+
+			throw new ErrorReport.ProblemNotificationSentToUserException(message);
 		}
 
 		public void ReportNonFatalException(Exception exception, IRepeatNoticePolicy policy)
