@@ -22,7 +22,7 @@ namespace Palaso.IO
 
 		public TempFile()
 		{
-			 _path = System.IO.Path.GetTempFileName();
+			_path = System.IO.Path.GetTempFileName();
 		}
 
 		public TempFile(bool dontMakeMeAFileAndDontSetPath)
