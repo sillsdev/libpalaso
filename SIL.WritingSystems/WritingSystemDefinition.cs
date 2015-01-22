@@ -39,13 +39,6 @@ namespace SIL.WritingSystems
 		Innermost
 	}
 
-	public enum QuotationParagraphContinueMark
-	{
-		Open,
-		Close,
-		Continue
-	}
-
 	/// <summary>
 	/// This class stores the information used to define various writing system properties. The Language, Script, Region and Variant
 	/// properties conform to the subtags of the same name defined in BCP47 (Rfc5646) and are enforced by the Rfc5646Tag class. it is worth
@@ -90,7 +83,6 @@ namespace SIL.WritingSystems
 		private CollationDefinition _defaultCollation;
 		private SpellCheckDictionaryDefinition _spellCheckDictionary;
 		private QuotationParagraphContinueType _quotationParagraphContinueType;
-		private QuotationParagraphContinueMark _quotationParagraphContinueMark;
 		private readonly ObservableKeyedCollection<string, FontDefinition> _fonts = new ObservableKeyedCollection<string, FontDefinition>(fd => fd.Name);
 		private readonly ObservableKeyedCollection<string, IKeyboardDefinition> _knownKeyboards = new ObservableKeyedCollection<string, IKeyboardDefinition>(kd => kd.Id);
 		private readonly ObservableKeyedCollection<string, SpellCheckDictionaryDefinition> _spellCheckDictionaries = new ObservableKeyedCollection<string, SpellCheckDictionaryDefinition>(scdd => string.Format("{0}_{1}", scdd.LanguageTag, scdd.Format));
@@ -257,7 +249,6 @@ namespace SIL.WritingSystems
 			foreach (QuotationMark qm in ws.QuotationMarks)
 				_quotationMarks.Add(qm);
 			_quotationParagraphContinueType = ws._quotationParagraphContinueType;
-			_quotationParagraphContinueMark = ws._quotationParagraphContinueMark;
 			_id = ws._id;
 			foreach (CollationDefinition cd in ws._collations)
 				_collations.Add(cd.Clone());
@@ -1016,12 +1007,6 @@ namespace SIL.WritingSystems
 			set { UpdateField(ref _quotationParagraphContinueType, value); }
 		}
 
-		public QuotationParagraphContinueMark QuotationParagraphContinueMark
-		{
-			get { return _quotationParagraphContinueMark; }
-			set { UpdateField(ref _quotationParagraphContinueMark, value); }
-		}
-
 		public override string ToString()
 		{
 			return _bcp47Tag;
@@ -1085,8 +1070,6 @@ namespace SIL.WritingSystems
 			if (!_quotationMarks.SequenceEqual(other._quotationMarks))
 				return false;
 			if (_quotationParagraphContinueType != other._quotationParagraphContinueType)
-				return false;
-			if (_quotationParagraphContinueMark != other._quotationParagraphContinueMark)
 				return false;
 			// fonts
 			if (_fonts.Count != other._fonts.Count)

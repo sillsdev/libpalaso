@@ -288,11 +288,12 @@ namespace SIL.WritingSystems.Tests
 			<sil:punctuation-patterns>
 				<sil:punctuation-pattern pattern='pattern1' context='medial'></sil:punctuation-pattern>
 			</sil:punctuation-patterns>
-			<sil:quotation-marks paraContinueType='outer' paraContinueMark='close'>
+			<sil:quotation-marks paraContinueType='outer'>
 				<!-- Currently parser doesn't do anything with quotationContinue or alternateQuotationContinue -->
 				<sil:quotationContinue>quoteContinue1</sil:quotationContinue>
 				<sil:alternateQuotationContinue>altQuoteContinue2</sil:alternateQuotationContinue>
-				<sil:quotation open='open1' close='close2' continue='cont3'></sil:quotation>
+				<sil:quotation open='open1' close='close2' continue='cont3' level='3'/>
+				<sil:quotation type='narrative' level='1' open='' />
 			</sil:quotation-marks>
 		</special>
 	</delimiters>
@@ -306,9 +307,10 @@ namespace SIL.WritingSystems.Tests
 			var pp = new PunctuationPattern("pattern1", PunctuationPatternContext.Medial);
 			Assert.That(wsFromLdml.PunctuationPatterns.FirstOrDefault(), Is.EqualTo(pp));
 			Assert.That(wsFromLdml.QuotationParagraphContinueType, Is.EqualTo(QuotationParagraphContinueType.Outermost));
-			Assert.That(wsFromLdml.QuotationParagraphContinueMark, Is.EqualTo(QuotationParagraphContinueMark.Close));
-			var qm = new QuotationMark("open1", "close2", "cont3");
-			Assert.That(wsFromLdml.QuotationMarks.FirstOrDefault(), Is.EqualTo(qm));
+			var qm1 = new QuotationMark("open1", "close2", "cont3", 3, QuotationMarkingSystemType.Normal);
+			Assert.That(wsFromLdml.QuotationMarks.FirstOrDefault(), Is.EqualTo(qm1));
+			var qm2 = new QuotationMark("", null, null, 1, QuotationMarkingSystemType.Narrative);
+			Assert.That(wsFromLdml.QuotationMarks[1], Is.EqualTo(qm2));
 		}
 
 #if WS_FIX

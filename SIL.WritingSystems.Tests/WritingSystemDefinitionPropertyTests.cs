@@ -39,7 +39,6 @@ namespace SIL.WritingSystems.Tests
 								 new ValuesToSet("to be", "!(to be)"),
 								 new ValuesToSet(DateTime.Now, DateTime.MinValue),
 								 new ValuesToSet(QuotationParagraphContinueType.None, QuotationParagraphContinueType.All),
-								 new ValuesToSet(QuotationParagraphContinueMark.Open, QuotationParagraphContinueMark.Close)
 							 };
 			}
 		}
@@ -127,8 +126,8 @@ namespace SIL.WritingSystems.Tests
 		public void CloneCopiesQuotationMarks()
 		{
 			var original = new WritingSystemDefinition();
-			var qm1 = new QuotationMark("«", "»", null);
-			var qm2 = new QuotationMark("‹", "›", null);
+			var qm1 = new QuotationMark("«", "»", null, 1, QuotationMarkingSystemType.Narrative);
+			var qm2 = new QuotationMark("‹", "›", null, 3, QuotationMarkingSystemType.Normal);
 			original.QuotationMarks.Add(qm1);
 			original.QuotationMarks.Add(qm2);
 			WritingSystemDefinition copy = original.Clone();
@@ -310,12 +309,12 @@ namespace SIL.WritingSystems.Tests
 		public void ValueEqualsComparesQuotationMarks()
 		{
 			var first = new WritingSystemDefinition();
-			var qm1 = new QuotationMark("«", "»", null);
-			var qm2 = new QuotationMark("‹", "›", null);
+			var qm1 = new QuotationMark("«", "»", null, 3, QuotationMarkingSystemType.Narrative);
+			var qm2 = new QuotationMark("‹", "›", null, 1, QuotationMarkingSystemType.Normal);
 			first.QuotationMarks.Add(qm1);
 			first.QuotationMarks.Add(qm2);
 			var second = new WritingSystemDefinition();
-			var qm3 = new QuotationMark("{", "}", null);
+			var qm3 = new QuotationMark("{", "}", null, 3, QuotationMarkingSystemType.Narrative);
 
 			Assert.That(first.ValueEquals(second), Is.False, "ws with empty quotation marks should not equal one with some");
 			second.QuotationMarks.Add(qm1);
@@ -761,8 +760,6 @@ namespace SIL.WritingSystems.Tests
 			secondValueToSet.Add(typeof(SpellCheckDictionaryDefinition), new SpellCheckDictionaryDefinition("language-Tag", SpellCheckDictionaryFormat.Lift));
 			firstValueToSet.Add(typeof(QuotationParagraphContinueType), QuotationParagraphContinueType.None);
 			secondValueToSet.Add(typeof(QuotationParagraphContinueType), QuotationParagraphContinueType.All);
-			firstValueToSet.Add(typeof(QuotationParagraphContinueMark), QuotationParagraphContinueMark.Open);
-			secondValueToSet.Add(typeof(QuotationParagraphContinueMark), QuotationParagraphContinueMark.Close);
 			firstValueToSet.Add(typeof(CollationDefinition), new CollationDefinition("standard"));
 			secondValueToSet.Add(typeof(CollationDefinition), new SimpleCollationDefinition("standard"));
 			firstValueToSet.Add(typeof(LanguageSubtag), new LanguageSubtag("en", false));

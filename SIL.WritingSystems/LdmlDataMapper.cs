@@ -117,16 +117,14 @@ namespace SIL.WritingSystems
 		};
 
 		/// <summary>
-		/// Mapping of paraContinueMark attribute to QuotationParagraphContinueMark
+		/// Mapping of quotation marking system attribute to QuotationMarkingSystemType
 		/// </summary>
-		private static readonly Dictionary<string, QuotationParagraphContinueMark> QuotationToQuotationParagraphContinueMarks = new Dictionary<string, QuotationParagraphContinueMark>
+		private static readonly Dictionary<string, QuotationMarkingSystemType>QuotationToQuotationMarkingSystemTypes = new Dictionary<string, QuotationMarkingSystemType>
 		{
-			{string.Empty, QuotationParagraphContinueMark.Open},
-			{"open", QuotationParagraphContinueMark.Open},
-			{"close", QuotationParagraphContinueMark.Close},
-			{"special", QuotationParagraphContinueMark.Continue}
+			{string.Empty, QuotationMarkingSystemType.Normal},
+			{"narrative", QuotationMarkingSystemType.Narrative}
 		};
- 
+
 		public void Read(string filePath, WritingSystemDefinition ws)
 		{
 			if (filePath == null)
@@ -565,16 +563,19 @@ namespace SIL.WritingSystems
 
 					ws.QuotationParagraphContinueType = QuotationToQuotationParagraphContinueTypes[
 						quotationsElem.GetAttributeValue("paraContinueType")];
-					ws.QuotationParagraphContinueMark = QuotationToQuotationParagraphContinueMarks[
-						quotationsElem.GetAttributeValue("paraContinueMark")];
 
 					foreach (XElement quotationElem in quotationsElem.Elements(Sil + "quotation"))
 					{
 						string open = quotationElem.GetAttributeValue("open");
 						string close = quotationElem.GetAttributeValue("close");
 						string cont = quotationElem.GetAttributeValue("continue");
-						QuotationMark qm = new QuotationMark(open, close, cont);
-						ws.QuotationMarks.Add(qm);
+						int level = (int?)quotationElem.Attribute("level") ?? 1;
+						QuotationMarkingSystemType type;
+						if (QuotationToQuotationMarkingSystemTypes.TryGetValue(quotationElem.GetAttributeValue("type"), out type))
+						{
+							QuotationMark qm = new QuotationMark(open, close, cont, level, type);
+							ws.QuotationMarks.Add(qm);
+						}
 					}
 				}
 			}
