@@ -670,7 +670,7 @@ namespace SIL.WritingSystems.Tests
 					problems[0].Exception,
 					Is.TypeOf<ApplicationException>().With.Property("Message").
 					ContainsSubstring(String.Format(
-						@"The writing system file {0} seems to be named inconsistently. It contains the Rfc5646 tag: 'de-Latn-CH-1901'. The name should have been made consistent with its content upon migration of the writing systems.",
+						@"The writing system file {0} seems to be named inconsistently. It contains the Rfc5646 tag: 'de-latn-ch-1901'. The name should have been made consistent with its content upon migration of the writing systems.",
 						Path.Combine(environment.TestPath, "tpi-Zxxx-x-audio.ldml")
 					))
 				);
@@ -691,7 +691,6 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-#if WS_FIX
 		[Test]
 		public void Set_WritingSystemWasLoadedFromFlexPrivateUseLdmlAndRearranged_DoesNotChangeFileName()
 		{
@@ -706,7 +705,6 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(File.Exists(pathToFlexprivateUseLdml), Is.True);
 			}
 		}
-#endif
 
 		[Test]
 		//this used to throw
@@ -744,7 +742,6 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-#if WS_FIX
 		[Test]
 		public void LoadAllDefinitions_FilenameIsFlexConformPrivateUseAndDoesNotMatchRfc5646TagWithLegacySupport_DoesNotThrow()
 		{
@@ -755,7 +752,7 @@ namespace SIL.WritingSystems.Tests
 				var repo = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem, WritingSystemCompatibility.Flex7V0Compatible);
 
 				// Now try to load up.
-				Assert.That(repo.Get("x-en-Zxxx").Language, Is.EqualTo("qaa"));
+				Assert.That(repo.Get("x-en-Zxxx").Language, Is.EqualTo(new LanguageSubtag("en", true)));
 			}
 		}
 
@@ -769,10 +766,9 @@ namespace SIL.WritingSystems.Tests
 				var repo = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem, WritingSystemCompatibility.Strict);
 
 				// Now try to load up.
-				Assert.That(repo.Get("qaa-Zxxx-x-en").Language, Is.EqualTo("qaa"));
+				Assert.That(repo.Get("qaa-Zxxx-x-en").Language, Is.EqualTo(new LanguageSubtag("en", true)));
 			}
 		}
-#endif
 
 		[Test]
 		public void Set_NewWritingSystem_StoreContainsWritingSystem()
@@ -786,7 +782,6 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-#if WS_FIX
 		[Test]
 		public void SaveDefinition_WritingSystemCameFromFlexPrivateUseLdml_FileNameIsRetained()
 		{
@@ -800,7 +795,6 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(File.Exists(pathToFlexprivateUseLdml));
 			}
 		}
-#endif
 
 		[Test]
 		public void SaveDefinition_WritingSystemCameFromValidRfc5646WritingSystemStartingWithX_FileNameIsChanged()

@@ -122,10 +122,10 @@
     <Compile Include="AddSortKeysToXmlTests.cs" />
     <Compile Include="CharacterSetDefinitionCloneableTests.cs" />
     <Compile Include="CollationDefinitionCloneableTests.cs" />
+    <Compile Include="FlexConformPrivateUseRfc5646TagInterpreterTests.cs" />
     <Compile Include="IetfLanguageTagTests.cs" />
     <Compile Include="InheritedCollationDefinitionCloneableTests.cs" />
     <Compile Include="LdmlCollationParserTests.cs" />
-    <Compile Include="Migration\FlexConformPrivateUseRfc5646TagInterpreterTests.cs" />
     <Compile Include="Migration\IcuRulesParserTests.cs" />
     <Compile Include="Migration\Rfc5646TagTests.cs" />
     <Compile Include="Migration\SubtagTests.cs" />

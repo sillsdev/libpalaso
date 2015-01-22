@@ -102,26 +102,9 @@ namespace SIL.WritingSystems
 			VariantSubtag[] variantSubtagsArray = variantSubtags.ToArray();
 			if (variantSubtagsArray.Length == 0)
 				return null;
-			var sb = new StringBuilder();
-			foreach (VariantSubtag variantSubtag in variantSubtagsArray.Where(v => !v.IsPrivateUse))
-			{
-				if (sb.Length != 0)
-					sb.Append("-");
-				sb.Append(variantSubtag.Code);
-			}
-			bool firstPrivateUse = true;
-			foreach (VariantSubtag variantSubtag in variantSubtagsArray.Where(v => v.IsPrivateUse))
-			{
-				if (sb.Length != 0)
-					sb.Append("-");
-				if (firstPrivateUse)
-				{
-					sb.Append("x-");
-					firstPrivateUse = false;
-				}
-				sb.Append(variantSubtag.Code);
-			}
-			return sb.ToString();
+
+			return ConcatenateVariantAndPrivateUse(string.Join("-", variantSubtagsArray.Where(v => !v.IsPrivateUse)),
+				string.Join("-", variantSubtagsArray.Where(v => v.IsPrivateUse)));
 		}
 
 		/// <summary>
@@ -253,6 +236,18 @@ namespace SIL.WritingSystems
 					}
 					break;
 			}
+		}
+
+		public static int GetIndexOfFirstPrivateUseVariant(IEnumerable<VariantSubtag> variantSubtags)
+		{
+			int i = 0;
+			foreach (VariantSubtag variantSubtag in variantSubtags)
+			{
+				if (variantSubtag.IsPrivateUse)
+					break;
+				i++;
+			}
+			return i;
 		}
 
 		/// <summary>
@@ -407,7 +402,8 @@ namespace SIL.WritingSystems
 			if (isCustomLanguage)
 			{
 				inPrivateUse = true;
-				sb.Append("-");
+				if (sb.Length > 0)
+					sb.Append("-");
 				sb.Append("x-");
 				sb.Append(languageSubtag.Code);
 			}
@@ -466,10 +462,51 @@ namespace SIL.WritingSystems
 		/// <returns></returns>
 		public static string ToLanguageTag(string languageCode, string scriptCode, string regionCode, string variantCodes)
 		{
-			IEnumerable<VariantSubtag> variantSubtags;
-			if (!TryGetVariantSubtags(variantCodes, out variantSubtags))
-				throw new ArgumentException("The specified variant codes are invalid.", "variantCodes");
-			return ToLanguageTag(languageCode, scriptCode, regionCode, variantSubtags);
+			var sb = new StringBuilder();
+			if (!string.IsNullOrEmpty(languageCode))
+			{
+				if (!StandardSubtags.IsValidIso639LanguageCode(languageCode))
+					throw new ArgumentException("The language code is invalid.", "languageCode");
+				sb.Append(languageCode);
+			}
+
+			if (!string.IsNullOrEmpty(scriptCode))
+			{
+				if (string.IsNullOrEmpty(languageCode))
+					throw new ArgumentException("A language code is required.", "languageCode");
+				if (!StandardSubtags.IsValidIso15924ScriptCode(scriptCode))
+					throw new ArgumentException("The script code is invalid.", "scriptCode");
+				sb.Append("-");
+				sb.Append(scriptCode);
+			}
+
+			if (!string.IsNullOrEmpty(regionCode))
+			{
+				if (string.IsNullOrEmpty(languageCode))
+					throw new ArgumentException("A language code is required.", "languageCode");
+				if (!StandardSubtags.IsValidIso3166RegionCode(regionCode))
+					throw new ArgumentException("The region code is invaild.", "regionCode");
+				sb.Append("-");
+				sb.Append(regionCode);
+			}
+
+			if (!string.IsNullOrEmpty(variantCodes))
+			{
+				if (string.IsNullOrEmpty(languageCode) && !variantCodes.StartsWith("x-", StringComparison.InvariantCultureIgnoreCase))
+					throw new ArgumentException("A language code is required.", "languageCode");
+				foreach (string variantCode in variantCodes.Split(new[] {'-'}, StringSplitOptions.RemoveEmptyEntries))
+				{
+					if (variantCode.Equals("x", StringComparison.InvariantCultureIgnoreCase))
+						break;
+					if (!StandardSubtags.IsValidRegisteredVariantCode(variantCode))
+						throw new ArgumentException("A variant code is invalid.", "variantCodes");
+				}
+				if (sb.Length > 0)
+					sb.Append("-");
+				sb.Append(variantCodes);
+			}
+
+			return sb.ToString();
 		}
 
 		/// <summary>
@@ -570,10 +607,10 @@ namespace SIL.WritingSystems
 		public static bool GetCodes(string langTag, out string languageCode, out string scriptCode, out string regionCode,
 			out string variantCodes)
 		{
-			languageCode = null;
-			scriptCode = null;
-			regionCode = null;
-			variantCodes = null;
+			languageCode = string.Empty;
+			scriptCode = string.Empty;
+			regionCode = string.Empty;
+			variantCodes = string.Empty;
 
 			LanguageSubtag languageSubtag;
 			ScriptSubtag scriptSubtag;
@@ -582,10 +619,51 @@ namespace SIL.WritingSystems
 			if (!TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
 				return false;
 
-			languageCode = languageSubtag;
-			scriptCode = scriptSubtag;
-			regionCode = regionSubtag;
-			variantCodes = GetVariantCodes(variantSubtags);
+			VariantSubtag[] variantSubtagsArray = variantSubtags.ToArray();
+			var privateUseCodes = new List<string>();
+			if (languageSubtag != null)
+			{
+				if (languageSubtag.IsPrivateUse && languageSubtag.Code != WellKnownSubtags.UnlistedLanguage)
+				{
+					languageCode = WellKnownSubtags.UnlistedLanguage;
+					privateUseCodes.Add(languageSubtag.Code);
+				}
+				else
+				{
+					languageCode = languageSubtag.Code;
+				}
+			}
+
+			if (scriptSubtag != null)
+			{
+				if (scriptSubtag.IsPrivateUse && !StandardSubtags.IsPrivateUseScriptCode(scriptSubtag.Code))
+				{
+					scriptCode = "Qaaa";
+					privateUseCodes.Add(scriptSubtag.Code);
+				}
+				else
+				{
+					scriptCode = scriptSubtag.Code;
+				}
+			}
+
+			if (regionSubtag != null)
+			{
+				if (regionSubtag.IsPrivateUse && !StandardSubtags.IsPrivateUseRegionCode(regionSubtag.Code))
+				{
+					regionCode = "QM";
+					privateUseCodes.Add(regionSubtag.Code);
+				}
+				else
+				{
+					regionCode = regionSubtag.Code;
+				}
+			}
+
+			privateUseCodes.AddRange(variantSubtagsArray.Where(v => v.IsPrivateUse).Select(v => v.Code));
+			variantCodes = ConcatenateVariantAndPrivateUse(string.Join("-", variantSubtagsArray.Where(v => !v.IsPrivateUse).Select(v => v.Code)),
+				string.Join("-", privateUseCodes));
+
 			return true;
 		}
 
@@ -633,7 +711,7 @@ namespace SIL.WritingSystems
 					// after the x as a language code if it is a valid one. Otherwise, we just let qaa be the language.
 					if (privateUseCodes.Count > 0 && LangPattern.IsMatch(privateUseCodes[0]))
 					{
-						languageSubtag = new LanguageSubtag(privateUseCodes[0], "", true, null);
+						languageSubtag = new LanguageSubtag(privateUseCodes[0], null, true, null);
 						privateUseCodes.RemoveAt(0);
 					}
 					else
@@ -646,6 +724,15 @@ namespace SIL.WritingSystems
 					if (!StandardSubtags.Iso639Languages.TryGetItem(languageCode, out languageSubtag))
 						return false;
 				}
+			}
+			else if (LangPattern.IsMatch(privateUseCodes[0]))
+			{
+				languageSubtag = new LanguageSubtag(privateUseCodes[0], null, true, null);
+				privateUseCodes.RemoveAt(0);
+			}
+			else
+			{
+				return false;
 			}
 
 			Group scriptGroup = match.Groups["script"];
@@ -693,7 +780,7 @@ namespace SIL.WritingSystems
 				}
 			}
 
-			foreach (string privateUseCode in privateUseCodes)
+			foreach (string privateUseCode in privateUseCodes.Where(c => !c.Equals("x", StringComparison.InvariantCultureIgnoreCase)))
 			{
 				VariantSubtag variantSubtag;
 				if (!StandardSubtags.CommonPrivateUseVariants.TryGetItem(privateUseCode, out variantSubtag))

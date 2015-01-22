@@ -137,6 +137,7 @@
     <Compile Include="DefaultKeyboardController.cs" />
     <Compile Include="DefaultKeyboardDefinition.cs" />
     <Compile Include="EthnologueLookup.cs" />
+    <Compile Include="FlexConformPrivateUseRfc5646TagInterpreter.cs" />
     <Compile Include="FontDefinition.cs" />
     <Compile Include="GlobalWritingSystemRepository.cs" />
     <Compile Include="ICollator.cs" />
@@ -152,8 +153,6 @@
     <Compile Include="LdmlCollationParser.cs" />
     <Compile Include="MatchedPair.cs" />
     <Compile Include="DefinitionBase.cs" />
-    <Compile Include="Migration\WritingSystemCompatibility.cs" />
-    <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\FlexConformPrivateUseRfc5646TagInterpreter.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\IcuRulesParser.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\Rfc5646Tag.cs" />
     <Compile Include="ObservableHashSet.cs" />

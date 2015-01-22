@@ -178,14 +178,14 @@ namespace SIL.WritingSystems
 		{
 			IEnumerable<VariantSubtag> variantSubtags;
 			if (!IetfLanguageTag.TryGetSubtags(bcp47Tag, out _language, out _script, out _region, out variantSubtags))
-				throw new ArgumentException("A valid language tag is required.", "bcp47Tag");
+				throw new ArgumentException("The language tag is invalid.", "bcp47Tag");
 			_matchedPairs = new ObservableHashSet<MatchedPair>();
 			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>();
 			foreach (VariantSubtag variantSubtag in variantSubtags)
 				_variants.Add(variantSubtag);
 			_bcp47Tag = bcp47Tag;
-			_abbreviation = _languageName = _nativeName = string.Empty;
 			_id = _bcp47Tag;
+			_abbreviation = _languageName = _nativeName = string.Empty;
 			SetupCollectionChangeListeners();
 		}
 
@@ -319,7 +319,7 @@ namespace SIL.WritingSystems
 					if (_language == null)
 						_language = WellKnownSubtags.UnlistedLanguage;
 
-					int index = IndexOfFirstPrivateUseVariant();
+					int index = IetfLanguageTag.GetIndexOfFirstPrivateUseVariant(_variants);
 
 					switch (value)
 					{
@@ -337,16 +337,6 @@ namespace SIL.WritingSystems
 					}
 				}
 			}
-		}
-
-		private int IndexOfFirstPrivateUseVariant()
-		{
-			for (int i = 0; i < _variants.Count; i++)
-			{
-				if (_variants[i].IsPrivateUse)
-					return i;
-			}
-			return _variants.Count;
 		}
 
 		private void RemoveVariants(params VariantSubtag[] variantSubtags)
@@ -459,7 +449,8 @@ namespace SIL.WritingSystems
 					_ignoreVariantChanges = false;
 				}
 				CheckVariantAndScriptRules();
-				UpdateRfcTag();
+				_id = _bcp47Tag;
+				IsChanged = true;
 			}
 		}
 

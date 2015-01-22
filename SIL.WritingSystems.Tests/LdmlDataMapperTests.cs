@@ -747,8 +747,8 @@ namespace SIL.WritingSystems.Tests
 				adaptor.Read(pathToLdmlWithEmptyCollationElement, wsFromLdml);
 				var ws = new WritingSystemDefinition();
 				adaptor.Read(pathToLdmlWithEmptyCollationElement, ws);
-				Assert.That(wsFromLdml.Language, Is.Null);
-				Assert.That(wsFromLdml.Variants, Is.EqualTo(new VariantSubtag[] {"private", "use"}));
+				Assert.That(wsFromLdml.Language, Is.EqualTo((LanguageSubtag) "private"));
+				Assert.That(wsFromLdml.Variants, Is.EqualTo(new VariantSubtag[] {"use"}));
 			}
 			finally
 			{
@@ -862,7 +862,6 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-#if WS_FIX
 		[Test]
 		public void Read_ValidLanguageTagStartingWithXButVersion0_Throws()
 		{
@@ -874,6 +873,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+#if WS_FIX
 		[Test]
 		public void WriteNoRoundTrip_LdmlIsFlexPrivateUseFormatLanguageOnly_LdmlIsChanged()
 		{
@@ -932,7 +932,6 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-#if WS_FIX
 		[Test]
 		public void Read_LdmlIsFlexPrivateUseFormatOnlyLanguageIsPopulated_WritingSystemHasDataInPrivateUse()
 		{
@@ -941,7 +940,7 @@ namespace SIL.WritingSystems.Tests
 				WriteVersion0Ldml("x-en", "", "", "", file);
 				var ws = new WritingSystemDefinition();
 				new LdmlDataMapper().Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "", "", "", "x-en");
+				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), null, null, Enumerable.Empty<VariantSubtag>());
 			}
 		}
 
@@ -953,7 +952,7 @@ namespace SIL.WritingSystems.Tests
 				WriteVersion0Ldml("x-en", "Zxxx", "", "", file);
 				var ws = new WritingSystemDefinition();
 				new LdmlDataMapper().Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "Zxxx", "", "x-en");
+				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), "Zxxx", null, Enumerable.Empty<VariantSubtag>());
 			}
 		}
 
@@ -965,7 +964,7 @@ namespace SIL.WritingSystems.Tests
 				WriteVersion0Ldml("x-en", "", "US", "", file);
 				var ws = new WritingSystemDefinition();
 				new LdmlDataMapper().Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "", "US", "x-en");
+				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), null, "US", Enumerable.Empty<VariantSubtag>());
 			}
 		}
 
@@ -977,7 +976,7 @@ namespace SIL.WritingSystems.Tests
 				WriteVersion0Ldml("x-en", "", "", "fonipa", file);
 				var ws = new WritingSystemDefinition();
 				new LdmlDataMapper().Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "", "", "fonipa-x-en");
+				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), null, null, new VariantSubtag[] {"fonipa"});
 			}
 		}
 
@@ -989,7 +988,7 @@ namespace SIL.WritingSystems.Tests
 				WriteVersion0Ldml("x-en", "Zxxx", "US", "1901-x-audio", file);
 				var ws = new WritingSystemDefinition();
 				new LdmlDataMapper().Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "Zxxx", "US", "1901-x-en-audio");
+				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), "Zxxx", "US", new VariantSubtag[] {"1901", "audio"});
 			}
 		}
 
@@ -1001,10 +1000,11 @@ namespace SIL.WritingSystems.Tests
 				WriteVersion0Ldml("x-en", "", "", "x-private", file);
 				var ws = new WritingSystemDefinition();
 				new LdmlDataMapper().Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "", "", "", "x-en-private");
+				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), null, null, new VariantSubtag[] {"private"});
 			}
 		}
 
+#if WS_FIX
 		[Test]
 		public void RoundTripFlexPrivateUseWritingSystem_LanguageIsPopulated()
 		{
@@ -1116,6 +1116,7 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(File.ReadAllText(file.Path), Is.EqualTo(originalLdml));
 			}
 		}
+#endif
 
 		[Test]
 		public void Write_OriginalWasFlexPrivateUseWritingSystemButNowChangedLanguage_IdentityElementChangedToPalasoWay()
@@ -1126,10 +1127,10 @@ namespace SIL.WritingSystems.Tests
 				var ws = new WritingSystemDefinition();
 				var adaptor = new LdmlDataMapper();
 				adaptor.Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "", "", "", "x-en");
+				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), null, null, Enumerable.Empty<VariantSubtag>());
 				ws.Language = "de";
 				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
-				AssertThatLdmlMatches("de", "", "", "x-en", file);
+				AssertThatLdmlMatches("de", "", "", "", file);
 			}
 		}
 
@@ -1142,7 +1143,7 @@ namespace SIL.WritingSystems.Tests
 				var ws = new WritingSystemDefinition();
 				var adaptor = new LdmlDataMapper();
 				adaptor.Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "Zxxx", "", "x-en");
+				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), "Zxxx", null, Enumerable.Empty<VariantSubtag>());
 				ws.Script = "Latn";
 				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
 				AssertThatLdmlMatches("qaa", "Latn", "", "x-en", file);
@@ -1158,7 +1159,7 @@ namespace SIL.WritingSystems.Tests
 				var ws = new WritingSystemDefinition();
 				var adaptor = new LdmlDataMapper();
 				adaptor.Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "", "US", "x-en");
+				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), null, "US", Enumerable.Empty<VariantSubtag>());
 				ws.Region = "GB";
 				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
 				AssertThatLdmlMatches("qaa", "", "GB", "x-en", file);
@@ -1174,8 +1175,9 @@ namespace SIL.WritingSystems.Tests
 				var ws = new WritingSystemDefinition();
 				var adaptor = new LdmlDataMapper();
 				adaptor.Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "qaa", "", "", "fonipa-x-en");
-				ws.Variant = "1901-x-en";
+				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), null, null, new VariantSubtag[] {"fonipa"});
+				ws.Variants.Clear();
+				ws.Variants.Add("1901");
 				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
 				AssertThatLdmlMatches("qaa", "", "", "1901-x-en", file);
 			}
@@ -1190,10 +1192,11 @@ namespace SIL.WritingSystems.Tests
 				var ws = new WritingSystemDefinition();
 				var adaptor = new LdmlDataMapper();
 				adaptor.Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, "", "", "", "x-en-private");
-				ws.Variant = "x-en-changed";
+				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), null, null, new VariantSubtag[] {"private"});
+				ws.Variants.Clear();
+				ws.Variants.Add("changed");
 				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
-				AssertThatLdmlMatches("", "", "", "x-en-changed", file);
+				AssertThatLdmlMatches("qaa", "", "", "x-en-changed", file);
 			}
 		}
 
@@ -1235,7 +1238,6 @@ namespace SIL.WritingSystems.Tests
 				}
 			}
 		}
-#endif
 
 		[Test]
 		public void Read_NonDescriptLdml_WritingSystemIdIsSameAsRfc5646Tag()
@@ -1249,7 +1251,6 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-#if WS_FIX
 		[Test]
 		public void Read_FlexEntirelyPrivateUseLdmlContainingLanguageScriptRegionVariant_WritingSystemIdIsConcatOfLanguageScriptRegionVariant()
 		{
@@ -1313,7 +1314,6 @@ namespace SIL.WritingSystems.Tests
 										WritingSystemDefinition.LatestWritingSystemDefinitionVersion)));
 			}
 		}
-#endif
 
 		[Test]
 		public void RoundTrippingLdmlDoesNotDuplicateSections()
@@ -1370,12 +1370,12 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		private static void AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(WritingSystemDefinition ws, string language, string script, string territory, string variant)
+		private static void AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(WritingSystemDefinition ws, LanguageSubtag language, ScriptSubtag script, RegionSubtag territory, IEnumerable<VariantSubtag> variants)
 		{
-			Assert.That(ws.Language.Code, Is.EqualTo(language));
+			Assert.That(ws.Language, Is.EqualTo(language));
 			Assert.That(ws.Script, Is.EqualTo(script));
 			Assert.That(ws.Region, Is.EqualTo(territory));
-			Assert.That(ws.Variants, Is.EqualTo(variant));
+			Assert.That(ws.Variants, Is.EqualTo(variants));
 		}
 
 		private static void WriteVersion0Ldml(string language, string script, string territory, string variant, TempFile file)

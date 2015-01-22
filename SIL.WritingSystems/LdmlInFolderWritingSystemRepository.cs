@@ -44,7 +44,7 @@ namespace SIL.WritingSystems
 			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(basePath, migrationHandler, compatibilityMode);
 			migrator.Migrate();
 
-			var instance = new LdmlInFolderWritingSystemRepository(basePath);
+			var instance = new LdmlInFolderWritingSystemRepository(basePath, compatibilityMode);
 			instance.LoadAllDefinitions();
 
 			// Call the loadProblemHandler with both migration problems and load problems
@@ -69,7 +69,18 @@ namespace SIL.WritingSystems
 		/// use a special path for the repository
 		/// </summary>
 		/// <param name="basePath"></param>
-		protected internal LdmlInFolderWritingSystemRepository(string basePath)
+		protected internal LdmlInFolderWritingSystemRepository(string basePath) :
+			this(basePath, WritingSystemCompatibility.Strict)
+		{
+		}
+
+		/// <summary>
+		/// use a special path for the repository
+		/// </summary>
+		/// <param name="basePath"></param>
+		/// <param name="compatibilityMode"></param>
+		protected internal LdmlInFolderWritingSystemRepository(string basePath, WritingSystemCompatibility compatibilityMode)
+			: base(compatibilityMode)
 		{
 			PathToWritingSystems = basePath;
 			_changeLog = new WritingSystemChangeLog(new WritingSystemChangeLogDataMapper(Path.Combine(PathToWritingSystems, "idchangelog.xml")));

@@ -31,8 +31,8 @@ namespace SIL.WritingSystems
 	public class LdmlDataMapper
 	{
 		private readonly XmlNamespaceManager _nameSpaceManager;
-#if WS_FIX
 		private bool _wsIsFlexPrivateUse;
+#if WS_FIX
 		private WritingSystemCompatibility _compatibilityMode;
 #endif
 		private static XNamespace FW = "urn://fieldworks.sil.org/ldmlExtensions/v1";
@@ -260,7 +260,7 @@ namespace SIL.WritingSystems
 				ws.LanguageName = GetSpecialValue(specialElem, Palaso, "languageName");
 #if WS_FIX
 				ws.SpellCheckingId = GetSpecialValue(specialElem, Palaso, "spellCheckingId");
-
+#endif
 				if (!_wsIsFlexPrivateUse)
 				{
 					string version = GetSpecialValue(specialElem, Palaso, "version");
@@ -275,7 +275,6 @@ namespace SIL.WritingSystems
 							));
 					}
 				}
-#endif
 			}
 			else if (specialElem.Attribute(XNamespace.Xmlns + "palaso2") != null)
 			{
@@ -452,7 +451,6 @@ namespace SIL.WritingSystems
 			string region = identityElem.GetAttributeValue("territory", "type");
 			string variant = identityElem.GetAttributeValue("variant", "type");
 
-#if WS_FIX
 			if ((language.StartsWith("x-", StringComparison.OrdinalIgnoreCase) || language.Equals("x", StringComparison.OrdinalIgnoreCase)))
 			{
 				var flexRfcTagInterpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
@@ -467,9 +465,7 @@ namespace SIL.WritingSystems
 
 				_wsIsFlexPrivateUse = false;
 			}
-#else
-			ws.SetAllComponents(language, script, region, variant);
-#endif
+
 			//Set the id simply as the concatenation of whatever was in the ldml file.
 			ws.Id = String.Join("-", new[] {language, script, region, variant}.Where(subtag => !String.IsNullOrEmpty(subtag)).ToArray());
 
@@ -779,9 +775,7 @@ namespace SIL.WritingSystems
 
 		private void WriteLdml(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
 		{
-#if WS_FIX
 			_wsIsFlexPrivateUse = false;
-#endif
 			Debug.Assert(writer != null);
 			Debug.Assert(ws != null);
 			writer.WriteStartElement("ldml");
@@ -1007,7 +1001,7 @@ namespace SIL.WritingSystems
 				WriteRFC5646TagElements(writer, ws.Language, ws.Script, ws.Region, ws.Variant);
 			}
 #else
-			WriteRFC5646TagElements(writer, ws.Language, ws.Script, ws.Region, IetfLanguageTag.GetVariantCodes(ws.Variants));
+			WriteLanguageTagElements(writer, ws.Bcp47Tag);
 #endif
 			if (IsReaderOnElementNodeNamed(reader, "identity"))
 			{
@@ -1024,8 +1018,11 @@ namespace SIL.WritingSystems
 			writer.WriteEndElement();
 		}
 
-		private void WriteRFC5646TagElements(XmlWriter writer, string language, string script, string region, string variant)
+		private void WriteLanguageTagElements(XmlWriter writer, string languageTag)
 		{
+			string language, script, region, variant;
+			IetfLanguageTag.GetCodes(languageTag, out language, out script, out region, out variant);
+
 			WriteElementWithAttribute(writer, "language", "type", language);
 			if (!String.IsNullOrEmpty(script))
 			{
@@ -1156,7 +1153,6 @@ namespace SIL.WritingSystems
 
 		private void WriteFlexOrPalasoConformElement(XmlWriter writer, XmlReader reader, string nameSpaceName, string nodeName, string value)
 		{
-#if WS_FIX
 			if(_wsIsFlexPrivateUse)
 			{
 				CopyOldFlexNode(reader, writer, nameSpaceName, nodeName);
@@ -1165,9 +1161,6 @@ namespace SIL.WritingSystems
 			{
 				WriteSpecialValue(writer, nameSpaceName, nodeName, value);
 			}
-#else
-			WriteSpecialValue(writer, nameSpaceName, nodeName, value);
-#endif
 		}
 
 		private void CopyOldFlexNode(XmlReader reader, XmlWriter writer, string nameSpaceName, string nodeName)

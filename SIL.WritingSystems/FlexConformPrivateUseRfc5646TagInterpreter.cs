@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Palaso.Data;
 
-namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
+namespace SIL.WritingSystems
 {
 	/// <summary>
 	/// This is different from the algorithm used by the RfcTagCleaner because Flex puts Wellknown Scripts, Regions and Properties behind
@@ -31,19 +31,14 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			{
 				IetfLanguageTag.SplitVariantAndPrivateUse(variant, out newVariant, out newPrivateUse);
 			}
-			var privateUseSubtagsWithoutXs = StripXs(newPrivateUse);
-			var languageSubtagsWithoutXs = StripXs(language);
+			IEnumerable<string> privateUseSubtagsWithoutXs = StripXs(newPrivateUse);
+			IEnumerable<string> languageSubtagsWithoutXs = StripXs(language);
 			newPrivateUse = String.Join("-", (languageSubtagsWithoutXs.Union(privateUseSubtagsWithoutXs)).Where(str=>!String.IsNullOrEmpty(str)).ToArray());
 
 			_variant = IetfLanguageTag.ConcatenateVariantAndPrivateUse(newVariant, newPrivateUse);
 
-			if (!(String.IsNullOrEmpty(script) &&
-				  String.IsNullOrEmpty(region) &&
-				  String.IsNullOrEmpty(newVariant))
-				)
-			{
+			if (!string.IsNullOrEmpty(script) || !string.IsNullOrEmpty(region) || !string.IsNullOrEmpty(newVariant))
 				_language = "qaa";
-			}
 		}
 
 		private IEnumerable<string> StripXs(string newPrivateUse)

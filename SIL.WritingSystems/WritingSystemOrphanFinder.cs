@@ -47,7 +47,7 @@ namespace SIL.WritingSystems
 				{
 					continue;
 				}
-				string newId = wsId;
+				string newId;
 				if (writingSystemRepository.WritingSystemIdHasChanged(wsId))
 				{
 					newId = writingSystemRepository.WritingSystemIdHasChangedTo(wsId);
@@ -55,7 +55,6 @@ namespace SIL.WritingSystems
 				else
 				{
 					// It's an orphan
-#if WS_FIX
 					// Check for the writing system repository compatibility mode
 					if (writingSystemRepository.CompatibilityMode == WritingSystemCompatibility.Flex7V0Compatible)
 					{
@@ -66,6 +65,11 @@ namespace SIL.WritingSystems
 							rfcTagCleaner.Clean();
 							newId = rfcTagCleaner.GetCompleteTag();
 						}
+						else
+						{
+							// remove any extra "x"s
+							newId = wsId.Replace("-x", "");
+						}
 					}
 					else
 					{
@@ -74,12 +78,6 @@ namespace SIL.WritingSystems
 						rfcTagCleaner.Clean();
 						newId = rfcTagCleaner.GetCompleteTag();
 					}
-#else
-					// Clean it
-					var rfcTagCleaner = new Rfc5646TagCleaner(wsId);
-					rfcTagCleaner.Clean();
-					newId = rfcTagCleaner.GetCompleteTag();
-#endif
 				}
 				var conformantWritingSystem = WritingSystemDefinition.Parse(newId);
 				// If it changed, then change
