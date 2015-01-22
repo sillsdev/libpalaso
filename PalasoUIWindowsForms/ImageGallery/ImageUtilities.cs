@@ -1,12 +1,11 @@
 ﻿using System.Drawing;
 using System.Drawing.Drawing2D;
 
-
 namespace Palaso.UI.WindowsForms.ImageGallery
 {
 	public static class ImageUtilities
 	{
-		public static Image GetThumbNail(string imagePath, int destinationWidth, int destinationHeight, Color borderColor)
+		public static Image GetThumbNail(string imagePath, int destinationWidth, int destinationHeight, Color borderColor, Color backgroundColor)
 		{
 
 			Bitmap bmp;
@@ -24,58 +23,51 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			destinationWidth = bmp.Width > destinationWidth ? destinationWidth : bmp.Width;
 			destinationHeight = bmp.Height > destinationHeight ? destinationHeight : bmp.Height;
 
-			int actualWidth = destinationWidth;
-			int actualHeight = destinationHeight;
+			var actualWidth = destinationWidth;
+			var actualHeight = destinationHeight;
 
 			if (bmp.Width > bmp.Height)
-				actualHeight = (int)(((float)bmp.Height / (float)bmp.Width) * actualWidth);
+				actualHeight = (int)((bmp.Height / (float)bmp.Width) * actualWidth);
 			else if (bmp.Width < bmp.Height)
-				actualWidth = (int)(((float)bmp.Width / (float)bmp.Height) * actualHeight);
+				actualWidth = (int)((bmp.Width / (float)bmp.Height) * actualHeight);
 
-			int horizontalOffset = (destinationWidth / 2) - (actualWidth / 2);
-			int verticalOffset = (destinationHeight / 2) - (actualHeight / 2);
+			var horizontalOffset = (destinationWidth / 2) - (actualWidth / 2);
+			var verticalOffset = (destinationHeight / 2) - (actualHeight / 2);
 
-#if MONO
-//    this worked but didn't incorporate the offsets, so when it went back to the caller, it got displayed
-//            out of proportion.
-//            Image x = bmp.GetThumbnailImage(destinationWidth, destinationHeight, callbackOnAbort, System.IntPtr.Zero);
-//            return x;
+			var retBmp = PlatformUtilities.Platform.IsWindows
+				? new Bitmap(destinationWidth, destinationHeight, System.Drawing.Imaging.PixelFormat.Format64bppPArgb)
+				: new Bitmap(destinationWidth, destinationHeight);
 
+			using (var grp = Graphics.FromImage(retBmp))
+			{
+				grp.PixelOffsetMode = PixelOffsetMode.None;
+				grp.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
-			Bitmap retBmp = new Bitmap(destinationWidth, destinationHeight);//, System.Drawing.Imaging.PixelFormat.Format64bppPArgb);
-			Graphics grp = Graphics.FromImage(retBmp);
-			//grp.PixelOffsetMode = PixelOffsetMode.None;
-		 //guessing that this is the problem?   grp.InterpolationMode = InterpolationMode.HighQualityBicubic;
+				// fill with background color
+				using (var b = new SolidBrush(backgroundColor))
+				{
+					grp.FillRectangle(b, 0, 0, destinationWidth, destinationHeight);
+				}
 
-			grp.DrawImage(bmp, horizontalOffset, verticalOffset, actualWidth, actualHeight);
+				// draw the image
+				grp.DrawImage(bmp, horizontalOffset, verticalOffset, actualWidth, actualHeight);
 
-//            Pen pn = new Pen(borderColor, 1); //Color.Wheat
-//
-//
-//            grp.DrawRectangle(pn, 0, 0, retBmp.Width - 1, retBmp.Height - 1);
-
-			return retBmp;
-#else
-
-			Bitmap retBmp = new Bitmap(destinationWidth, destinationHeight, System.Drawing.Imaging.PixelFormat.Format64bppPArgb);
-			Graphics grp = Graphics.FromImage(retBmp);
-			grp.PixelOffsetMode = PixelOffsetMode.None;
-			grp.InterpolationMode = InterpolationMode.HighQualityBicubic;
-
-			grp.DrawImage(bmp, horizontalOffset, verticalOffset, actualWidth, actualHeight);
-
-			Pen pn = new Pen(borderColor, 1); //Color.Wheat
-
-
-			grp.DrawRectangle(pn, 0, 0, retBmp.Width - 1, retBmp.Height - 1);
+				// draw border
+				using (var pn = new Pen(borderColor, 1))
+				{
+					grp.DrawRectangle(pn, 0, 0, retBmp.Width - 1, retBmp.Height - 1);
+				}
+			}
 
 			return retBmp;
-#endif
 		}
 
-		private static bool callbackOnAbort()
+		public static Image GetThumbNail(string imagePath, int destinationWidth, int destinationHeight, Color borderColor)
 		{
-			return false;
+			// This uses black as the default background color in order to avoid changing the behavior. Previously
+			// the method created an image without setting the background color which resulted in the image having
+			// a black background.
+			return GetThumbNail(imagePath, destinationWidth, destinationHeight, borderColor, Color.Black);
 		}
 	}
 }
