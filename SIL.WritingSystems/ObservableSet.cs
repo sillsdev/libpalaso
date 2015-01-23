@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace SIL.WritingSystems
 {
-	internal class ObservableHashSet<T> : ISet<T>, INotifyCollectionChanged, INotifyPropertyChanged
+	public class ObservableSet<T> : ISet<T>, INotifyCollectionChanged, INotifyPropertyChanged
 	{
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
 		event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
@@ -21,22 +21,22 @@ namespace SIL.WritingSystems
 		private readonly SimpleMonitor _reentrancyMonitor = new SimpleMonitor();
 		private readonly HashSet<T> _set;
  
-		public ObservableHashSet()
+		public ObservableSet()
 		{
 			_set = new HashSet<T>();
 		}
 
-		public ObservableHashSet(IEqualityComparer<T> comparer)
+		public ObservableSet(IEqualityComparer<T> comparer)
 		{
 			_set = new HashSet<T>(comparer);
 		}
 
-		public ObservableHashSet(IEnumerable<T> items)
+		public ObservableSet(IEnumerable<T> items)
 		{
 			_set = new HashSet<T>(items);
 		}
 
-		public ObservableHashSet(IEnumerable<T> items, IEqualityComparer<T> comparer)
+		public ObservableSet(IEnumerable<T> items, IEqualityComparer<T> comparer)
 		{
 			_set = new HashSet<T>(items, comparer);
 		}

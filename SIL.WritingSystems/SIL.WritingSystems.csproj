@@ -155,7 +155,7 @@
     <Compile Include="DefinitionBase.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\IcuRulesParser.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\Rfc5646Tag.cs" />
-    <Compile Include="ObservableHashSet.cs" />
+    <Compile Include="ObservableSet.cs" />
     <Compile Include="PunctuationPattern.cs" />
     <Compile Include="QuotationMark.cs" />
     <Compile Include="ReadOnlyKeyedCollection.cs" />

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
@@ -87,53 +86,53 @@ namespace SIL.WritingSystems
 			{
 				if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
 					throw new ArgumentOutOfRangeException("value");
-				UpdateField(ref _defaultSize, value);
+				UpdateField(() => DefaultSize, ref _defaultSize, value);
 			}
 		}
 
 		public string Features
 		{
 			get { return _features ?? string.Empty; }
-			set { UpdateString(ref _features, value); }
+			set { UpdateString(() => Features, ref _features, value); }
 		}
 
 		public string Language
 		{
 			get { return _language ?? string.Empty; }
-			set { UpdateString(ref _language, value); }
+			set { UpdateString(() => Language, ref _language, value); }
 		}
 
 		public string OpenTypeLanguage
 		{
 			get { return _openTypeLanguage ?? string.Empty; }
-			set { UpdateString(ref _openTypeLanguage, value); }
+			set { UpdateString(() => OpenTypeLanguage, ref _openTypeLanguage, value); }
 		}
 
 		public string MinVersion
 		{
 			get { return _minVersion ?? string.Empty; }
-			set { UpdateString(ref _minVersion, value); }
+			set { UpdateString(() => MinVersion, ref _minVersion, value); }
 		}
 
 		public FontRoles Roles
 		{
 			get { return _roles; }
-			set { UpdateField(ref _roles, value); }
+			set { UpdateField(() => Roles, ref _roles, value); }
 		}
 
 		public FontEngines Engines
 		{
 			get { return _engines; }
-			set { UpdateField(ref _engines, value); }
+			set { UpdateField(() => Engines, ref _engines, value); }
 		}
 
 		public string Subset
 		{
 			get { return _subset ?? string.Empty; }
-			set { UpdateString(ref _subset, value); }
+			set { UpdateString(() => Subset, ref _subset, value); }
 		}
 
-		public IList<string> Urls
+		public ObservableCollection<string> Urls
 		{
 			get { return _urls; }
 		}

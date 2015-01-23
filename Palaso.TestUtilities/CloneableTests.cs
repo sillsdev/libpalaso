@@ -128,7 +128,7 @@ namespace Palaso.TestUtilities
 				{
 					defaultValue = DefaultValuesForTypes.Single(dv => dv.TypeOfDefaultValue == fieldInfo.FieldType).ValueToSet;
 				}
-				catch(InvalidOperationException e)
+				catch (InvalidOperationException)
 				{
 					Assert.Fail("Unhandled field type - please update the test to handle type \"{0}\". The field that uses this type is \"{1}\".", fieldInfo.FieldType.Name, fieldName);
 				}
@@ -253,7 +253,7 @@ namespace Palaso.TestUtilities
 				T itemWithFieldToChange = CreateNewCloneable();
 				T itemWithDefaultField = CreateNewCloneable();
 				Assert.That(itemWithFieldToChange, Is.EqualTo(itemWithDefaultField).Using<T>(Compare), "The two items were not equal on creation. You may need to override Equals(object other).");
-				var fieldName = fieldInfo.Name;
+				string fieldName = fieldInfo.Name;
 				if (fieldInfo.Name.Contains("<"))
 				{
 					var splitResult = fieldInfo.Name.Split(new[] { '<', '>' });

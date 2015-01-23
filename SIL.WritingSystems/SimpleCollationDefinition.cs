@@ -20,7 +20,7 @@
 			get { return _simpleRules ?? string.Empty; }
 			set
 			{
-				if (UpdateString(ref _simpleRules, value))
+				if (UpdateString(() => SimpleRules, ref _simpleRules, value))
 					ResetCollator();
 			}
 		}

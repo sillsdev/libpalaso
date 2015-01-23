@@ -87,8 +87,8 @@ namespace SIL.WritingSystems
 		private readonly ObservableKeyedCollection<string, IKeyboardDefinition> _knownKeyboards = new ObservableKeyedCollection<string, IKeyboardDefinition>(kd => kd.Id);
 		private readonly ObservableKeyedCollection<string, SpellCheckDictionaryDefinition> _spellCheckDictionaries = new ObservableKeyedCollection<string, SpellCheckDictionaryDefinition>(scdd => string.Format("{0}_{1}", scdd.LanguageTag, scdd.Format));
 		private readonly ObservableKeyedCollection<string, CollationDefinition> _collations = new ObservableKeyedCollection<string, CollationDefinition>(cd => cd.Type);
-		private readonly ObservableHashSet<MatchedPair> _matchedPairs;
-		private readonly ObservableHashSet<PunctuationPattern> _punctuationPatterns;
+		private readonly ObservableSet<MatchedPair> _matchedPairs;
+		private readonly ObservableSet<PunctuationPattern> _punctuationPatterns;
 		private readonly ObservableCollection<QuotationMark> _quotationMarks = new ObservableCollection<QuotationMark>();
 		private readonly ObservableKeyedCollection<string, CharacterSetDefinition> _characterSets = new ObservableKeyedCollection<string, CharacterSetDefinition>(csd => csd.Type);
 		private bool _ignoreVariantChanges;
@@ -99,8 +99,8 @@ namespace SIL.WritingSystems
 		public WritingSystemDefinition()
 		{
 			_language = WellKnownSubtags.UnlistedLanguage;
-			_matchedPairs = new ObservableHashSet<MatchedPair>();
-			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>();
+			_matchedPairs = new ObservableSet<MatchedPair>();
+			_punctuationPatterns = new ObservableSet<PunctuationPattern>();
 			_defaultCollation = new CollationDefinition("standard");
 			_collations.Add(_defaultCollation);
 			_languageTag = IetfLanguageTag.ToLanguageTag(_language, _script, _region, _variants);
@@ -122,8 +122,8 @@ namespace SIL.WritingSystems
 				_variants.Add(variantSubtag);
 			CheckVariantAndScriptRules();
 			_id = _languageTag;
-			_matchedPairs = new ObservableHashSet<MatchedPair>();
-			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>();
+			_matchedPairs = new ObservableSet<MatchedPair>();
+			_punctuationPatterns = new ObservableSet<PunctuationPattern>();
 			_defaultCollation = new CollationDefinition("standard");
 			_collations.Add(_defaultCollation);
 			_abbreviation = _languageName = _nativeName = string.Empty;
@@ -186,8 +186,8 @@ namespace SIL.WritingSystems
 			_defaultRegion = ws._defaultRegion;
 			foreach (IKeyboardDefinition kbd in ws._knownKeyboards)
 				_knownKeyboards.Add(kbd);
-			_matchedPairs = new ObservableHashSet<MatchedPair>(ws._matchedPairs);
-			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>(ws._punctuationPatterns);
+			_matchedPairs = new ObservableSet<MatchedPair>(ws._matchedPairs);
+			_punctuationPatterns = new ObservableSet<PunctuationPattern>(ws._punctuationPatterns);
 			foreach (QuotationMark qm in ws.QuotationMarks)
 				_quotationMarks.Add(qm);
 			_quotationParagraphContinueType = ws._quotationParagraphContinueType;
@@ -223,6 +223,7 @@ namespace SIL.WritingSystems
 			{
 				CheckVariantAndScriptRules();
 				UpdateLanguageTag();
+				IsChanged = true;
 			}
 		}
 
@@ -277,7 +278,7 @@ namespace SIL.WritingSystems
 		public string VersionNumber
 		{
 			get { return _versionNumber ?? string.Empty; }
-			set { UpdateString(ref _versionNumber, value); }
+			set { UpdateString(() => VersionNumber, ref _versionNumber, value); }
 		}
 
 		/// <summary>
@@ -286,7 +287,7 @@ namespace SIL.WritingSystems
 		public string VersionDescription
 		{
 			get { return _versionDescription ?? string.Empty; }
-			set { UpdateString(ref _versionDescription, value); }
+			set { UpdateString(() => VersionDescription, ref _versionDescription, value); }
 		}
 
 		/// <summary>
@@ -397,13 +398,9 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// A string representing the subtag of the same name as defined by BCP47.
-		/// Note that the variant also includes the private use subtags. These are appended to the variant subtags seperated by "-x-"
-		/// Also note the convenience methods "SplitVariantAndPrivateUse" and "ConcatenateVariantAndPrivateUse" for easier
-		/// variant/ private use handling
+		/// The variant and private use subtags.
 		/// </summary>
-		// Todo: this could/should become an ordered list of variant tags
-		public IList<VariantSubtag> Variants
+		public ObservableCollection<VariantSubtag> Variants
 		{
 			get { return _variants; }
 		}
@@ -468,11 +465,8 @@ namespace SIL.WritingSystems
 			get { return _region; }
 			set
 			{
-				if (_region != value)
-				{
-					_region = value;
+				if (UpdateField(() => Region, ref _region, value))
 					UpdateLanguageTag();
-				}
 			}
 		}
 
@@ -484,11 +478,8 @@ namespace SIL.WritingSystems
 			get { return _language; }
 			set
 			{
-				if (_language != value)
-				{
-					_language = value;
+				if (UpdateField(() => Language, ref _language, value))
 					UpdateLanguageTag();
-				}
 			}
 		}
 
@@ -519,7 +510,7 @@ namespace SIL.WritingSystems
 				}
 				return _abbreviation;
 			}
-			set { UpdateString(ref _abbreviation, value); }
+			set { UpdateString(() => Abbreviation, ref _abbreviation, value); }
 		}
 
 
@@ -531,9 +522,8 @@ namespace SIL.WritingSystems
 			get { return _script; }
 			set
 			{
-				if (_script != value)
+				if (UpdateField(() => Script, ref _script, value))
 				{
-					_script = value;
 					CheckVariantAndScriptRules();
 					UpdateLanguageTag();
 				}
@@ -554,7 +544,7 @@ namespace SIL.WritingSystems
 					return _language.Name;
 				return "Unknown Language";
 			}
-			set { UpdateString(ref _languageName, value); }
+			set { UpdateString(() => LanguageName, ref _languageName, value); }
 		}
 
 		/// <summary>
@@ -785,7 +775,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// The font used to display data encoded in this writing system
 		/// </summary>
-		public virtual FontDefinition DefaultFont
+		public FontDefinition DefaultFont
 		{
 			get
 			{
@@ -798,7 +788,7 @@ namespace SIL.WritingSystems
 			}
 			set
 			{
-				if (UpdateField(ref _defaultFont, value))
+				if (UpdateField(() => DefaultFont, ref _defaultFont, value))
 				{
 					if (value != null && !_fonts.Contains(value))
 						_fonts.Add(value);
@@ -812,7 +802,7 @@ namespace SIL.WritingSystems
 		public string Keyboard
 		{
 			get { return _keyboard ?? string.Empty; }
-			set { UpdateString(ref _keyboard, value); }
+			set { UpdateString(() => Keyboard, ref _keyboard, value); }
 		}
 
 		/// <summary>
@@ -824,7 +814,7 @@ namespace SIL.WritingSystems
 		public string WindowsLcid
 		{
 			get { return _windowsLcid ?? string.Empty; }
-			set { UpdateString(ref _windowsLcid, value); }
+			set { UpdateString(() => WindowsLcid, ref _windowsLcid, value); }
 		}
 
 		/// <summary>
@@ -847,7 +837,7 @@ namespace SIL.WritingSystems
 			}
 			set
 			{
-				if (UpdateField(ref _localKeyboard, value))
+				if (UpdateField(() => LocalKeyboard, ref _localKeyboard, value))
 				{
 					if (value != null)
 						_knownKeyboards.Add(value);
@@ -863,10 +853,10 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Indicates whether this writing system is read and written from left to right or right to left
 		/// </summary>
-		public virtual bool RightToLeftScript
+		public bool RightToLeftScript
 		{
 			get { return _rightToLeftScript; }
-			set { UpdateField(ref _rightToLeftScript, value); }
+			set { UpdateField(() => RightToLeftScript, ref _rightToLeftScript, value); }
 		}
 
 		/// <summary>
@@ -875,7 +865,7 @@ namespace SIL.WritingSystems
 		public string NativeName
 		{
 			get { return _nativeName ?? string.Empty; }
-			set { UpdateString(ref _nativeName, value); }
+			set { UpdateString(() => NativeName, ref _nativeName, value); }
 		}
 
 		public CollationDefinition DefaultCollation
@@ -883,7 +873,7 @@ namespace SIL.WritingSystems
 			get { return _defaultCollation ?? _collations.FirstOrDefault(); }
 			set
 			{
-				if (UpdateField(ref _defaultCollation, value))
+				if (UpdateField(() => DefaultCollation, ref _defaultCollation, value))
 				{
 					if (value != null && !_collations.Contains(value))
 						_collations.Add(value);
@@ -891,12 +881,12 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		public KeyedCollection<string, CollationDefinition> Collations
+		public ObservableKeyedCollection<string, CollationDefinition> Collations
 		{
 			get { return _collations; }
 		}
 
-		public KeyedCollection<string, CharacterSetDefinition> CharacterSets
+		public ObservableKeyedCollection<string, CharacterSetDefinition> CharacterSets
 		{
 			get { return _characterSets; }
 		}
@@ -905,7 +895,6 @@ namespace SIL.WritingSystems
 		{
 			_languageTag = IetfLanguageTag.ToLanguageTag(_language, _script, _region, _variants);
 			_id = _languageTag;
-			IsChanged = true;
 		}
 
 		/// <summary>
@@ -914,14 +903,14 @@ namespace SIL.WritingSystems
 		public bool IsUnicodeEncoded
 		{
 			get { return _isUnicodeEncoded; }
-			set { UpdateField(ref _isUnicodeEncoded, value); }
+			set { UpdateField(() => IsUnicodeEncoded, ref _isUnicodeEncoded, value); }
 		}
 
 		/// <summary>
 		/// Keyboards known to have been used with this writing system. Not all may be available on this system.
 		/// Enhance: document (or add to this class?) a way of getting available keyboards.
 		/// </summary>
-		public KeyedCollection<string, IKeyboardDefinition> KnownKeyboards
+		public ObservableKeyedCollection<string, IKeyboardDefinition> KnownKeyboards
 		{
 			get { return _knownKeyboards; }
 		}
@@ -937,12 +926,12 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		public KeyedCollection<string, FontDefinition> Fonts
+		public ObservableKeyedCollection<string, FontDefinition> Fonts
 		{
 			get { return _fonts; }
 		}
 
-		public KeyedCollection<string, SpellCheckDictionaryDefinition> SpellCheckDictionaries
+		public ObservableKeyedCollection<string, SpellCheckDictionaryDefinition> SpellCheckDictionaries
 		{
 			get { return _spellCheckDictionaries; }
 		}
@@ -952,7 +941,7 @@ namespace SIL.WritingSystems
 			get { return _spellCheckDictionary ?? _spellCheckDictionaries.FirstOrDefault(); }
 			set
 			{
-				if (UpdateField(ref _spellCheckDictionary, value))
+				if (UpdateField(() => SpellCheckDictionary, ref _spellCheckDictionary, value))
 				{
 					if (value != null && !_spellCheckDictionaries.Contains(value))
 						_spellCheckDictionaries.Add(value);
@@ -963,20 +952,20 @@ namespace SIL.WritingSystems
 		public string DefaultRegion
 		{
 			get { return _defaultRegion ?? string.Empty; }
-			set { UpdateString(ref _defaultRegion, value); }
+			set { UpdateString(() => DefaultRegion, ref _defaultRegion, value); }
 		}
 
-		public ISet<MatchedPair> MatchedPairs
+		public ObservableSet<MatchedPair> MatchedPairs
 		{
 			get { return _matchedPairs; }
 		}
 
-		public ISet<PunctuationPattern> PunctuationPatterns
+		public ObservableSet<PunctuationPattern> PunctuationPatterns
 		{
 			get { return _punctuationPatterns; }
 		}
 
-		public IList<QuotationMark> QuotationMarks
+		public ObservableCollection<QuotationMark> QuotationMarks
 		{
 			get { return _quotationMarks; }
 		}
@@ -984,7 +973,7 @@ namespace SIL.WritingSystems
 		public QuotationParagraphContinueType QuotationParagraphContinueType
 		{
 			get { return _quotationParagraphContinueType; }
-			set { UpdateField(ref _quotationParagraphContinueType, value); }
+			set { UpdateField(() => QuotationParagraphContinueType, ref _quotationParagraphContinueType, value); }
 		}
 
 		public override string ToString()

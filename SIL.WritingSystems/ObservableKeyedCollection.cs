@@ -6,7 +6,7 @@ using System.ComponentModel;
 
 namespace SIL.WritingSystems
 {
-	internal class ObservableKeyedCollection<TKey, T> : KeyedCollection<TKey, T>, INotifyCollectionChanged, INotifyPropertyChanged
+	public class ObservableKeyedCollection<TKey, T> : KeyedCollection<TKey, T>, INotifyCollectionChanged, INotifyPropertyChanged
 	{
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
 		event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged

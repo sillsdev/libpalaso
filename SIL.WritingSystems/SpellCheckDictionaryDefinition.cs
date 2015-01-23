@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 
@@ -17,14 +16,14 @@ namespace SIL.WritingSystems
 	{
 		private readonly string _languageTag;
 		private readonly SpellCheckDictionaryFormat _format;
-		private ObservableCollection<string> _urls;
+		private readonly ObservableCollection<string> _urls;
 
 		private void SetupCollectionChangeListeners()
 		{
-			_urls.CollectionChanged += UrlsCollectionChanged;
+			_urls.CollectionChanged += _urls_CollectionChanged;
 		}
 
-		private void UrlsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		private void _urls_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			IsChanged = true;
 		}
@@ -43,9 +42,7 @@ namespace SIL.WritingSystems
 			_format = other._format;
 			_urls = new ObservableCollection<string>();
 			foreach (string url in other._urls)
-			{
 				_urls.Add(url);
-			}
 			SetupCollectionChangeListeners();
 		}
 
@@ -64,7 +61,7 @@ namespace SIL.WritingSystems
 			get { return _format; }
 		}
 
-		public IList<string> Urls
+		public ObservableCollection<string> Urls
 		{
 			get { return _urls; }
 		}

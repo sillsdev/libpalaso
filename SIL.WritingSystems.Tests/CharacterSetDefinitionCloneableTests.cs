@@ -20,7 +20,7 @@ namespace SIL.WritingSystems.Tests
 
 		public override string ExceptionList
 		{
-			get { return "|IsChanged|_characters|"; }
+			get { return "|IsChanged|_characters|PropertyChanged|"; }
 		}
 
 		protected override List<ValuesToSet> DefaultValuesForTypes

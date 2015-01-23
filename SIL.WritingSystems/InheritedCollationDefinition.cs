@@ -29,7 +29,7 @@ namespace SIL.WritingSystems
 			{
 				if (!IetfLanguageTag.IsValid(value))
 					throw new ArgumentException("A valid language tag is required.", "value");
-				if (UpdateString(ref _baseLanguageTag, value))
+				if (UpdateString(() => BaseLanguageTag, ref _baseLanguageTag, value))
 					ResetCollator();
 			}
 		}
@@ -39,7 +39,7 @@ namespace SIL.WritingSystems
 			get { return _baseType ?? string.Empty; }
 			set
 			{
-				if (UpdateString(ref _baseType, value))
+				if (UpdateString(() => BaseType, ref _baseType, value))
 					ResetCollator();
 			}
 		}

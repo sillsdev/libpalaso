@@ -1,24 +1,23 @@
-﻿using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 
 namespace SIL.WritingSystems
 {
 	public class CharacterSetDefinition : DefinitionBase<CharacterSetDefinition>
 	{
 		private readonly string _type;
-		private readonly ObservableHashSet<string> _characters; 
+		private readonly ObservableSet<string> _characters; 
 
 		public CharacterSetDefinition(string type)
 		{
 			_type = type;
-			_characters = new ObservableHashSet<string>();
+			_characters = new ObservableSet<string>();
 			SetupCollectionChangeListeners();
 		}
 
 		public CharacterSetDefinition(CharacterSetDefinition csd)
 		{
 			_type = csd._type;
-			_characters = new ObservableHashSet<string>(csd._characters);
+			_characters = new ObservableSet<string>(csd._characters);
 			SetupCollectionChangeListeners();
 		}
 
@@ -37,7 +36,7 @@ namespace SIL.WritingSystems
 			get { return _type; }
 		}
 
-		public ISet<string> Characters
+		public ObservableSet<string> Characters
 		{
 			get { return _characters; }
 		}

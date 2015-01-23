@@ -25,7 +25,7 @@ namespace SIL.WritingSystems.Tests
 		public override string ExceptionList
 		{
 			// We do want to clone KnownKeyboards, but I don't think the automatic cloneable test for it can handle a list.
-			get { return "|MarkedForDeletion|StoreID|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionary|_spellCheckDictionaries|IsChanged|_matchedPairs|_punctuationPatterns|_quotationMarks|_defaultCollation|_collations|_characterSets|_variants|_language|_script|_region|_ignoreVariantChanges|"; }
+			get { return "|MarkedForDeletion|StoreID|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionary|_spellCheckDictionaries|IsChanged|_matchedPairs|_punctuationPatterns|_quotationMarks|_defaultCollation|_collations|_characterSets|_variants|_language|_script|_region|_ignoreVariantChanges|PropertyChanged|"; }
 		}
 
 		protected override List<ValuesToSet> DefaultValuesForTypes
