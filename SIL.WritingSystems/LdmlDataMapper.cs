@@ -113,7 +113,7 @@ namespace SIL.WritingSystems
 			{string.Empty, QuotationParagraphContinueType.None},
 			{"all", QuotationParagraphContinueType.All},
 			{"outer", QuotationParagraphContinueType.Outermost},
-			{"innter", QuotationParagraphContinueType.Innermost}
+			{"inner", QuotationParagraphContinueType.Innermost}
 		};
 
 		/// <summary>
@@ -174,7 +174,7 @@ namespace SIL.WritingSystems
 			// Not all Unicode characters are valid in an XML document, so we need to create
 			// the <cp hex="X"> elements to replace the invalid characters.
 			// Note: While 0xD (carriage return) is a valid XML character, it is automatically
-			// either dropped or coverted to 0xA by any conforming XML parser, so we also make a <cp>
+			// either dropped or converted to 0xA by any conforming XML parser, so we also make a <cp>
 			// element for that one.
 			StringBuilder sb = new StringBuilder(text.Length);
 			for (int i=0; i < text.Length; i++)
@@ -499,7 +499,9 @@ namespace SIL.WritingSystems
 			{
 				foreach (XElement exemplarCharactersElem in specialElem.Elements(Sil + "exemplarCharacters"))
 				{
-					ReadExemplarCharactersElem(exemplarCharactersElem, ws);
+					// Sil:exemplarCharacters are required to have a type
+					if (!string.IsNullOrEmpty((string)exemplarCharactersElem.Attribute("type")))
+						ReadExemplarCharactersElem(exemplarCharactersElem, ws);
 				}
 			}
 		}
