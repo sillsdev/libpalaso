@@ -32,7 +32,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void IpaStatus_SetToPhoneticOnEntirelyPrivateUseWritingSystem_MarkerForUnlistedLanguageIsInserted()
 		{
-			var ws = WritingSystemDefinition.Parse("x-private");
+			var ws = new WritingSystemDefinition("x-private");
 			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) "private"));
 			ws.IpaStatus = IpaStatusChoices.IpaPhonetic;
 			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) "private"));
@@ -44,7 +44,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void IpaStatus_SetToIpaOnEntirelyPrivateUseWritingSystem_MarkerForUnlistedLanguageIsInserted()
 		{
-			var ws = WritingSystemDefinition.Parse("x-private");
+			var ws = new WritingSystemDefinition("x-private");
 			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) "private"));
 			ws.IpaStatus = IpaStatusChoices.Ipa;
 			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) "private"));
@@ -56,7 +56,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void IpaStatus_SetToPhonemicOnEntirelyPrivateUseWritingSystem_MarkerForUnlistedLanguageIsInserted()
 		{
-			var ws = WritingSystemDefinition.Parse("x-private");
+			var ws = new WritingSystemDefinition("x-private");
 			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) "private"));
 			ws.IpaStatus = IpaStatusChoices.IpaPhonemic;
 			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) "private"));

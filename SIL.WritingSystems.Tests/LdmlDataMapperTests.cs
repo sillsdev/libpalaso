@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -239,13 +240,13 @@ namespace SIL.WritingSystems.Tests
 				}
 				ldmlAdaptor.Read(tempFile.Path, wsFromLdml);
 			}
-			CharacterSetDefinition index = new CharacterSetDefinition("index");
-			for (int i = (int) 'A'; i <= (int) 'Z'; i++)
-				index.Characters.Add(((char) i).ToString());
+			var index = new CharacterSetDefinition("index");
+			for (int i = 'A'; i <= (int) 'Z'; i++)
+				index.Characters.Add(((char) i).ToString(CultureInfo.InvariantCulture));
 			index.Characters.Add("AZ");
 
-			CharacterSetDefinition footnotes = new CharacterSetDefinition("footnotes");
-			string footnotesString = "- ‐ – — , ; : ! ? . … ' ‘ ’ \" “ ” ( ) [ ] § @ * / & # † ‡ ′ ″";
+			var footnotes = new CharacterSetDefinition("footnotes");
+			const string footnotesString = "- ‐ – — , ; : ! ? . … ' ‘ ’ \" “ ” ( ) [ ] § @ * / & # † ‡ ′ ″";
 			foreach (string str in footnotesString.Split(' '))
 			{
 				footnotes.Characters.Add(str);
@@ -829,7 +830,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				//Create an ldml fiel to read
 				var adaptor = new LdmlDataMapper();
-				var ws = WritingSystemDefinition.Parse("en-Zxxx-x-audio");
+				var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
 				adaptor.Write(file.Path, ws, null);
 
 				//change the read writing system and write it out again
@@ -849,7 +850,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				//create an ldml file to read that contains layout info
 				var adaptor = new LdmlDataMapper();
-				var ws = WritingSystemDefinition.Parse("en-Zxxx-x-audio");
+				var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
 				ws.RightToLeftScript = true;
 				adaptor.Write(file.Path, ws, null);
 

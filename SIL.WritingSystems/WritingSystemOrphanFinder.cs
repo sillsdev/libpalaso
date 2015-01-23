@@ -79,17 +79,17 @@ namespace SIL.WritingSystems
 						newId = rfcTagCleaner.GetCompleteTag();
 					}
 				}
-				var conformantWritingSystem = WritingSystemDefinition.Parse(newId);
+				var conformantWritingSystem = new WritingSystemDefinition(newId);
 				// If it changed, then change
-				if (conformantWritingSystem.Bcp47Tag != wsId)
+				if (conformantWritingSystem.LanguageTag != wsId)
 				{
 					conformantWritingSystem = WritingSystemDefinition.CreateCopyWithUniqueId(conformantWritingSystem, updatedIds);
-					replaceIdsInFile(wsId, conformantWritingSystem.Bcp47Tag);
+					replaceIdsInFile(wsId, conformantWritingSystem.LanguageTag);
 					updatedIds.Remove(wsId);
-					updatedIds.Add(conformantWritingSystem.Bcp47Tag);
+					updatedIds.Add(conformantWritingSystem.LanguageTag);
 				}
 				// Check if it's in the repo
-				if (writingSystemRepository.Contains(conformantWritingSystem.Bcp47Tag))
+				if (writingSystemRepository.Contains(conformantWritingSystem.LanguageTag))
 				{
 					continue;
 				}

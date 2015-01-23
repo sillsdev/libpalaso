@@ -120,7 +120,7 @@ namespace SIL.WritingSystems.WindowsForms
 			}
 			else
 			{
-				_rfc4646.Text = _model.CurrentDefinition.Bcp47Tag;
+				_rfc4646.Text = _model.CurrentDefinition.LanguageTag;
 				_languageName.Text = _model.CurrentDefinition.ListLabel;
 				_languageName.Font = SystemFonts.MessageBoxFont;
 				_rfc4646.Font = SystemFonts.MessageBoxFont;

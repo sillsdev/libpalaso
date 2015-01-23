@@ -49,7 +49,7 @@ namespace SIL.WritingSystems
 				WritingSystemDefinition ws = CreateNew();
 				XmlReader xmlReader = nav.ReadSubtree();
 				adaptor.Read(xmlReader, ws);
-				ws.StoreID = ws.Bcp47Tag;
+				ws.StoreID = ws.LanguageTag;
 				Set(ws);
 			}
 		}
@@ -67,7 +67,7 @@ namespace SIL.WritingSystems
 				{
 					WritingSystemDefinition ws = CreateNew();
 					adaptor.Read(xmlReader.ReadSubtree(), ws);
-					ws.StoreID = ws.Bcp47Tag;
+					ws.StoreID = ws.LanguageTag;
 					Set(ws);
 				}
 

@@ -806,7 +806,7 @@ namespace Palaso.DictionaryServices.Tests.Processors
 			{
 				using (var repo = new LiftLexEntryRepository(input.Path))
 				{
-					var ws = HomographMerger.GuessPrimarLexicalFormWritingSystem(repo, _progress);
+					var ws = HomographMerger.GuessPrimaryLexicalFormWritingSystem(repo, _progress);
 					HomographMerger.Merge(repo, ws, traitsWithMultiplicity, _progress);
 				}
 

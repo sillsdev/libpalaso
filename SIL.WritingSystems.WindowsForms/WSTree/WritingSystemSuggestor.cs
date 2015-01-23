@@ -24,13 +24,12 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 		public WritingSystemSuggestor()
 		{
 			OtherKnownWritingSystems =
-				new WritingSystemFromWindowsLocaleProvider().Union(new List<WritingSystemDefinition>
-																	   {WritingSystemDefinition.Parse("tpi")});
-			SuppressSuggestionsForMajorWorldLanguages=true;
-			SuggestIpa=true;
-			SuggestDialects=true;
+				new WritingSystemFromWindowsLocaleProvider().Union(new List<WritingSystemDefinition> {new WritingSystemDefinition("tpi")});
+			SuppressSuggestionsForMajorWorldLanguages = true;
+			SuggestIpa = true;
+			SuggestDialects = true;
 			SuggestOther = true;
-			SuggestVoice=false;
+			SuggestVoice = false;
 		}
 
 		/// <summary>
@@ -76,7 +75,7 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 			{
 				foreach (WritingSystemDefinition language in OtherKnownWritingSystems)
 				{
-					if (!existingDefinitions.Any(def => def.Bcp47Tag == language.Bcp47Tag))
+					if (!existingDefinitions.Any(def => def.LanguageTag == language.LanguageTag))
 						yield return new LanguageSuggestion(language);
 				}
 			}

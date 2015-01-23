@@ -62,7 +62,7 @@ namespace SIL.WritingSystems
 		public const int LatestWritingSystemDefinitionVersion = 2;
 
 		private string _languageName;
-		private string _bcp47Tag;
+		private string _languageTag;
 		private LanguageSubtag _language;
 		private ScriptSubtag _script;
 		private RegionSubtag _region;
@@ -101,8 +101,107 @@ namespace SIL.WritingSystems
 			_language = WellKnownSubtags.UnlistedLanguage;
 			_matchedPairs = new ObservableHashSet<MatchedPair>();
 			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>();
-			_bcp47Tag = IetfLanguageTag.ToLanguageTag(_language, _script, _region, _variants);
-			_id = _bcp47Tag;
+			_defaultCollation = new CollationDefinition("standard");
+			_collations.Add(_defaultCollation);
+			_languageTag = IetfLanguageTag.ToLanguageTag(_language, _script, _region, _variants);
+			_id = _languageTag;
+			SetupCollectionChangeListeners();
+		}
+
+		/// <summary>
+		/// Creates a new WritingSystemDefinition by parsing a valid BCP47 tag
+		/// </summary>
+		/// <param name="languageTag">A valid BCP47 tag</param>
+		public WritingSystemDefinition(string languageTag)
+		{
+			_languageTag = languageTag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			if (!IetfLanguageTag.TryGetSubtags(languageTag, out _language, out _script, out _region, out variantSubtags))
+				throw new ArgumentException("The language tag is invalid.", "languageTag");
+			foreach (VariantSubtag variantSubtag in variantSubtags)
+				_variants.Add(variantSubtag);
+			CheckVariantAndScriptRules();
+			_id = _languageTag;
+			_matchedPairs = new ObservableHashSet<MatchedPair>();
+			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>();
+			_defaultCollation = new CollationDefinition("standard");
+			_collations.Add(_defaultCollation);
+			_abbreviation = _languageName = _nativeName = string.Empty;
+			SetupCollectionChangeListeners();
+		}
+
+		public WritingSystemDefinition(string language, string script, string region, string variant)
+			: this(IetfLanguageTag.ToLanguageTag(language, script, region, variant))
+		{
+		}
+
+		/// <summary>
+		/// Creates a new WritingSystemDefinition
+		/// </summary>
+		/// <param name="language">A valid BCP47 language subtag</param>
+		/// <param name="script">A valid BCP47 script subtag</param>
+		/// <param name="region">A valid BCP47 region subtag</param>
+		/// <param name="variant">A valid BCP47 variant subtag</param>
+		/// <param name="abbreviation">The desired abbreviation for this writing system definition</param>
+		/// <param name="rightToLeftScript">Indicates whether this writing system uses a right to left script</param>
+		public WritingSystemDefinition(string language, string script, string region, string variant, string abbreviation, bool rightToLeftScript)
+			: this(IetfLanguageTag.ToLanguageTag(language, script, region, variant))
+		{
+			_abbreviation = abbreviation;
+			_rightToLeftScript = rightToLeftScript;
+		}
+
+		/// <summary>
+		/// Copy constructor.
+		/// </summary>
+		/// <param name="ws">The ws.</param>
+		public WritingSystemDefinition(WritingSystemDefinition ws)
+		{
+			_language = ws._language;
+			_script = ws._script;
+			_region = ws._region;
+			_variants = new ObservableCollection<VariantSubtag>();
+			foreach (VariantSubtag variantSubtag in ws._variants)
+				_variants.Add(variantSubtag);
+			_abbreviation = ws._abbreviation;
+			_rightToLeftScript = ws._rightToLeftScript;
+			foreach (FontDefinition fd in ws._fonts)
+				_fonts.Add(fd.Clone());
+			if (ws._defaultFont != null)
+				_defaultFont = _fonts[ws._fonts.IndexOf(ws._defaultFont)];
+			_keyboard = ws._keyboard;
+			_versionNumber = ws._versionNumber;
+			_versionDescription = ws._versionDescription;
+			_nativeName = ws._nativeName;
+			foreach (SpellCheckDictionaryDefinition scdd in ws._spellCheckDictionaries)
+				_spellCheckDictionaries.Add(scdd.Clone());
+			if (ws._spellCheckDictionary != null)
+				_spellCheckDictionary = _spellCheckDictionaries[ws._spellCheckDictionaries.IndexOf(ws._spellCheckDictionary)];
+			_dateModified = ws._dateModified;
+			_isUnicodeEncoded = ws._isUnicodeEncoded;
+			_languageName = ws._languageName;
+			_languageTag = ws._languageTag;
+			_localKeyboard = ws._localKeyboard;
+			_windowsLcid = ws._windowsLcid;
+			_defaultRegion = ws._defaultRegion;
+			foreach (IKeyboardDefinition kbd in ws._knownKeyboards)
+				_knownKeyboards.Add(kbd);
+			_matchedPairs = new ObservableHashSet<MatchedPair>(ws._matchedPairs);
+			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>(ws._punctuationPatterns);
+			foreach (QuotationMark qm in ws.QuotationMarks)
+				_quotationMarks.Add(qm);
+			_quotationParagraphContinueType = ws._quotationParagraphContinueType;
+			_id = ws._id;
+			foreach (CollationDefinition cd in ws._collations)
+				_collations.Add(cd.Clone());
+			if (ws._defaultCollation != null)
+			{
+				int index = ws._collations.IndexOf(ws._defaultCollation);
+				if (index != -1)
+					_defaultCollation = _collations[index];
+			}
+			foreach (CharacterSetDefinition csd in ws._characterSets)
+				_characterSets.Add(csd.Clone());
 			SetupCollectionChangeListeners();
 		}
 
@@ -123,7 +222,7 @@ namespace SIL.WritingSystems
 			if (!_ignoreVariantChanges)
 			{
 				CheckVariantAndScriptRules();
-				UpdateRfcTag();
+				UpdateLanguageTag();
 			}
 		}
 
@@ -168,99 +267,6 @@ namespace SIL.WritingSystems
 			if (_defaultCollation != null && !_collations.Contains(_defaultCollation))
 				_defaultCollation = null;
 			IsChanged = true;
-		}
-
-		/// <summary>
-		/// Creates a new WritingSystemDefinition by parsing a valid BCP47 tag
-		/// </summary>
-		/// <param name="bcp47Tag">A valid BCP47 tag</param>
-		public WritingSystemDefinition(string bcp47Tag)
-		{
-			IEnumerable<VariantSubtag> variantSubtags;
-			if (!IetfLanguageTag.TryGetSubtags(bcp47Tag, out _language, out _script, out _region, out variantSubtags))
-				throw new ArgumentException("The language tag is invalid.", "bcp47Tag");
-			_matchedPairs = new ObservableHashSet<MatchedPair>();
-			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>();
-			foreach (VariantSubtag variantSubtag in variantSubtags)
-				_variants.Add(variantSubtag);
-			_bcp47Tag = bcp47Tag;
-			_id = _bcp47Tag;
-			_abbreviation = _languageName = _nativeName = string.Empty;
-			SetupCollectionChangeListeners();
-		}
-
-		/// <summary>
-		/// Creates a new WritingSystemDefinition
-		/// </summary>
-		/// <param name="language">A valid BCP47 language subtag</param>
-		/// <param name="script">A valid BCP47 script subtag</param>
-		/// <param name="region">A valid BCP47 region subtag</param>
-		/// <param name="variant">A valid BCP47 variant subtag</param>
-		/// <param name="abbreviation">The desired abbreviation for this writing system definition</param>
-		/// <param name="rightToLeftScript">Indicates whether this writing system uses a right to left script</param>
-		public WritingSystemDefinition(string language, string script, string region, string variant, string abbreviation, bool rightToLeftScript)
-		{
-			_abbreviation = abbreviation;
-			_rightToLeftScript = rightToLeftScript;
-			_matchedPairs = new ObservableHashSet<MatchedPair>();
-			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>();
-			SetAllComponents(language, script, region, variant);
-			IsChanged = false;
-			SetupCollectionChangeListeners();
-		}
-
-		/// <summary>
-		/// Copy constructor.
-		/// </summary>
-		/// <param name="ws">The ws.</param>
-		public WritingSystemDefinition(WritingSystemDefinition ws)
-		{
-			_language = ws._language;
-			_script = ws._script;
-			_region = ws._region;
-			_variants = new ObservableCollection<VariantSubtag>();
-			foreach (VariantSubtag variantSubtag in ws._variants)
-				_variants.Add(variantSubtag);
-			_abbreviation = ws._abbreviation;
-			_rightToLeftScript = ws._rightToLeftScript;
-			foreach (FontDefinition fd in ws._fonts)
-				_fonts.Add(fd.Clone());
-			if (ws._defaultFont != null)
-				_defaultFont = _fonts[ws._fonts.IndexOf(ws._defaultFont)];
-			_keyboard = ws._keyboard;
-			_versionNumber = ws._versionNumber;
-			_versionDescription = ws._versionDescription;
-			_nativeName = ws._nativeName;
-			foreach (SpellCheckDictionaryDefinition scdd in ws._spellCheckDictionaries)
-				_spellCheckDictionaries.Add(scdd.Clone());
-			if (ws._spellCheckDictionary != null)
-				_spellCheckDictionary = _spellCheckDictionaries[ws._spellCheckDictionaries.IndexOf(ws._spellCheckDictionary)];
-			_dateModified = ws._dateModified;
-			_isUnicodeEncoded = ws._isUnicodeEncoded;
-			_languageName = ws._languageName;
-			_bcp47Tag = ws._bcp47Tag;
-			_localKeyboard = ws._localKeyboard;
-			_windowsLcid = ws._windowsLcid;
-			_defaultRegion = ws._defaultRegion;
-			foreach (IKeyboardDefinition kbd in ws._knownKeyboards)
-				_knownKeyboards.Add(kbd);
-			_matchedPairs = new ObservableHashSet<MatchedPair>(ws._matchedPairs);
-			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>(ws._punctuationPatterns);
-			foreach (QuotationMark qm in ws.QuotationMarks)
-				_quotationMarks.Add(qm);
-			_quotationParagraphContinueType = ws._quotationParagraphContinueType;
-			_id = ws._id;
-			foreach (CollationDefinition cd in ws._collations)
-				_collations.Add(cd.Clone());
-			if (ws._defaultCollation != null)
-			{
-				int index = ws._collations.IndexOf(ws._defaultCollation);
-				if (index != -1)
-					_defaultCollation = _collations[index];
-			}
-			foreach (CharacterSetDefinition csd in ws._characterSets)
-				_characterSets.Add(csd.Clone());
-			SetupCollectionChangeListeners();
 		}
 
 		///<summary>
@@ -431,12 +437,12 @@ namespace SIL.WritingSystems
 		/// <param name="variant">A valid BCP47 variant subtag.</param>
 		public void SetAllComponents(string language, string script, string region, string variant)
 		{
-			string oldId = _bcp47Tag;
-			_bcp47Tag = IetfLanguageTag.ToLanguageTag(language, script, region, variant);
-			if (oldId != _bcp47Tag)
+			string oldId = _languageTag;
+			_languageTag = IetfLanguageTag.ToLanguageTag(language, script, region, variant);
+			if (oldId != _languageTag)
 			{
 				IEnumerable<VariantSubtag> variantSubtags;
-				IetfLanguageTag.TryGetSubtags(_bcp47Tag, out _language, out _script, out _region, out variantSubtags);
+				IetfLanguageTag.TryGetSubtags(_languageTag, out _language, out _script, out _region, out variantSubtags);
 				_ignoreVariantChanges = true;
 				try
 				{
@@ -449,7 +455,7 @@ namespace SIL.WritingSystems
 					_ignoreVariantChanges = false;
 				}
 				CheckVariantAndScriptRules();
-				_id = _bcp47Tag;
+				_id = _languageTag;
 				IsChanged = true;
 			}
 		}
@@ -465,7 +471,7 @@ namespace SIL.WritingSystems
 				if (_region != value)
 				{
 					_region = value;
-					UpdateRfcTag();
+					UpdateLanguageTag();
 				}
 			}
 		}
@@ -481,7 +487,7 @@ namespace SIL.WritingSystems
 				if (_language != value)
 				{
 					_language = value;
-					UpdateRfcTag();
+					UpdateLanguageTag();
 				}
 			}
 		}
@@ -529,7 +535,7 @@ namespace SIL.WritingSystems
 				{
 					_script = value;
 					CheckVariantAndScriptRules();
-					UpdateRfcTag();
+					UpdateLanguageTag();
 				}
 			}
 		}
@@ -602,10 +608,10 @@ namespace SIL.WritingSystems
 			{
 				//jh (Oct 2010) made it start with RFC5646 because all ws's in a lang start with the
 				//same abbreviation, making imppossible to see (in SOLID for example) which you chose.
-				bool languageIsUnknown = Bcp47Tag.Equals(WellKnownSubtags.UnlistedLanguage, StringComparison.OrdinalIgnoreCase);
-				if (!string.IsNullOrEmpty(Bcp47Tag) && !languageIsUnknown)
+				bool languageIsUnknown = LanguageTag.Equals(WellKnownSubtags.UnlistedLanguage, StringComparison.OrdinalIgnoreCase);
+				if (!string.IsNullOrEmpty(LanguageTag) && !languageIsUnknown)
 				{
-					return Bcp47Tag;
+					return LanguageTag;
 				}
 				if (languageIsUnknown)
 				{
@@ -727,11 +733,11 @@ namespace SIL.WritingSystems
 
 
 		/// <summary>
-		/// The current BCP47 tag which is a concatenation of the Language, Script, Region and Variant properties.
+		/// The current IETF language tag which is a concatenation of the Language, Script, Region and Variant properties.
 		/// </summary>
-		public string Bcp47Tag
+		public string LanguageTag
 		{
-			get { return _bcp47Tag; }
+			get { return _languageTag; }
 		}
 
 		/// <summary>
@@ -895,10 +901,10 @@ namespace SIL.WritingSystems
 			get { return _characterSets; }
 		}
 
-		private void UpdateRfcTag()
+		private void UpdateLanguageTag()
 		{
-			_bcp47Tag = IetfLanguageTag.ToLanguageTag(_language, _script, _region, _variants);
-			_id = _bcp47Tag;
+			_languageTag = IetfLanguageTag.ToLanguageTag(_language, _script, _region, _variants);
+			_id = _languageTag;
 			IsChanged = true;
 		}
 
@@ -909,23 +915,6 @@ namespace SIL.WritingSystems
 		{
 			get { return _isUnicodeEncoded; }
 			set { UpdateField(ref _isUnicodeEncoded, value); }
-		}
-
-		/// <summary>
-		/// Parses the supplied BCP47 tag and return a new writing system definition with the correspnding Language, Script, Region and Variant properties
-		/// </summary>
-		/// <param name="bcp47Tag">A valid BCP47 tag</param>
-		public static WritingSystemDefinition Parse(string bcp47Tag)
-		{
-			return new WritingSystemDefinition(bcp47Tag);
-		}
-
-		/// <summary>
-		/// Returns a new writing system definition with the corresponding Language, Script, Region and Variant properties set
-		/// </summary>
-		public static WritingSystemDefinition FromSubtags(string language, string script, string region, string variantAndPrivateUse)
-		{
-			return new WritingSystemDefinition(language, script, region, variantAndPrivateUse, string.Empty, false);
 		}
 
 		/// <summary>
@@ -1000,7 +989,7 @@ namespace SIL.WritingSystems
 
 		public override string ToString()
 		{
-			return _bcp47Tag;
+			return _languageTag;
 		}
 
 		/// <summary>
@@ -1030,7 +1019,7 @@ namespace SIL.WritingSystems
 				return false;
 			if (_languageName != other._languageName)
 				return false;
-			if (!_bcp47Tag.Equals(other._bcp47Tag))
+			if (!_languageTag.Equals(other._languageTag))
 				return false;
 			if (Abbreviation != other.Abbreviation)
 				return false;

@@ -165,14 +165,14 @@ namespace SIL.WritingSystems
 					continue;
 				}
 
-				if (string.Compare(wsFromFile.StoreID, wsFromFile.Bcp47Tag, StringComparison.OrdinalIgnoreCase) != 0)
+				if (string.Compare(wsFromFile.StoreID, wsFromFile.LanguageTag, StringComparison.OrdinalIgnoreCase) != 0)
 				{
 					bool badFileName = true;
 					if (wsFromFile.StoreID != null && wsFromFile.StoreID.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
 					{
 						var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 						interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(wsFromFile.StoreID);
-						if (interpreter.Rfc5646Tag.Equals(wsFromFile.Bcp47Tag, StringComparison.OrdinalIgnoreCase))
+						if (interpreter.Rfc5646Tag.Equals(wsFromFile.LanguageTag, StringComparison.OrdinalIgnoreCase))
 						{
 							badFileName = false;
 						}
@@ -185,7 +185,7 @@ namespace SIL.WritingSystems
 							Exception = new ApplicationException(
 								String.Format(
 									"The writing system file {0} seems to be named inconsistently. It contains the Rfc5646 tag: '{1}'. The name should have been made consistent with its content upon migration of the writing systems.",
-									filePath, wsFromFile.Bcp47Tag)),
+									filePath, wsFromFile.LanguageTag)),
 							FilePath = filePath
 						};
 						_loadProblems.Add(problem);
@@ -232,9 +232,9 @@ namespace SIL.WritingSystems
 		{
 			foreach (WritingSystemDefinition ws in _systemWritingSystemProvider)
 			{
-				if (null == FindAlreadyLoadedWritingSystem(ws.Bcp47Tag))
+				if (null == FindAlreadyLoadedWritingSystem(ws.LanguageTag))
 				{
-					if (!HaveMatchingDefinitionInTrash(ws.Bcp47Tag))
+					if (!HaveMatchingDefinitionInTrash(ws.LanguageTag))
 					{
 						Set(ws);
 					}
@@ -257,7 +257,7 @@ namespace SIL.WritingSystems
 
 		private WritingSystemDefinition FindAlreadyLoadedWritingSystem(string bcp47Tag)
 		{
-			return AllWritingSystems.FirstOrDefault(ws => ws.Bcp47Tag == bcp47Tag);
+			return AllWritingSystems.FirstOrDefault(ws => ws.LanguageTag == bcp47Tag);
 		}
 
 		/// <summary>

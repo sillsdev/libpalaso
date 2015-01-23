@@ -33,7 +33,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 			{
 				AskUserWhatToDoWithDataInWritingSystemToBeDeletedFired = true;
 				args.WhatToDo = WhatToDos.Conflate;
-				args.WritingSystemIdToConflateWith = WritingSystemDefinition.Parse("de");
+				args.WritingSystemIdToConflateWith = new WritingSystemDefinition("de");
 			}
 
 			public void OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Nothing(object sender, WhatToDoWithDataInWritingSystemToBeDeletedEventArgs args)

@@ -307,11 +307,11 @@ namespace SIL.WritingSystems
 			foreach (WritingSystemDefinition ws in rhs)
 			{
 				Guard.AgainstNull(ws, "ws in rhs");
-				if (_writingSystems.ContainsKey(ws.Bcp47Tag))
+				if (_writingSystems.ContainsKey(ws.LanguageTag))
 				{
 					DateTime lastDateModified;
-					if ((!_writingSystemsToIgnore.TryGetValue(ws.Bcp47Tag, out lastDateModified) || ws.DateModified > lastDateModified)
-						&& (ws.DateModified > _writingSystems[ws.Bcp47Tag].DateModified))
+					if ((!_writingSystemsToIgnore.TryGetValue(ws.LanguageTag, out lastDateModified) || ws.DateModified > lastDateModified)
+						&& (ws.DateModified > _writingSystems[ws.LanguageTag].DateModified))
 					{
 						newerWritingSystems.Add(ws.Clone());
 					}

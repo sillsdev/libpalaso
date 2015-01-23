@@ -237,7 +237,7 @@ namespace SIL.WritingSystems.WindowsForms
 		/// <returns>false if the code wasn't found</returns>
 		public virtual bool SetCurrentIndexFromRfc46464(string rfc4646)
 		{
-			var index = WritingSystemDefinitions.FindIndex(d => d.Bcp47Tag == rfc4646);
+			var index = WritingSystemDefinitions.FindIndex(d => d.LanguageTag == rfc4646);
 			if(index<0)
 			{
 				return false;
@@ -460,10 +460,10 @@ namespace SIL.WritingSystems.WindowsForms
 				// create a list of languages we have to disallow to prevent a cycle
 				// in the sort options
 				var prohibitedList = new List<string>();
-				if (CurrentDefinition != null && !string.IsNullOrEmpty(CurrentDefinition.Bcp47Tag))
+				if (CurrentDefinition != null && !string.IsNullOrEmpty(CurrentDefinition.LanguageTag))
 				{
 					// don't allow the current language to be picked
-					prohibitedList.Add(CurrentDefinition.Bcp47Tag);
+					prohibitedList.Add(CurrentDefinition.LanguageTag);
 				}
 				for (int i = 0; i < WritingSystemDefinitions.Count; i++)
 				{
@@ -472,10 +472,10 @@ namespace SIL.WritingSystems.WindowsForms
 					// don't allow if it references another language on our prohibited list and this one
 					// isn't already on the prohibited list
 					if (inheritedCollation != null
-						&& !string.IsNullOrEmpty(ws.Bcp47Tag) && prohibitedList.Contains(inheritedCollation.BaseLanguageTag)
-						&& !prohibitedList.Contains(ws.Bcp47Tag))
+						&& !string.IsNullOrEmpty(ws.LanguageTag) && prohibitedList.Contains(inheritedCollation.BaseLanguageTag)
+						&& !prohibitedList.Contains(ws.LanguageTag))
 					{
-						prohibitedList.Add(ws.Bcp47Tag);
+						prohibitedList.Add(ws.LanguageTag);
 						// Restart the scan through all the writing systems every time we add a prohibited one.
 						// This ensuers that we catch all possible cycles.
 						i = -1;
@@ -692,7 +692,7 @@ namespace SIL.WritingSystems.WindowsForms
 				}
 				else
 				{
-					return CurrentDefinition.Bcp47Tag ?? string.Empty;
+					return CurrentDefinition.LanguageTag ?? string.Empty;
 				}
 			}
 //            set
@@ -802,7 +802,7 @@ namespace SIL.WritingSystems.WindowsForms
 			if (writingSystem.Script != null)
 				summary.AppendFormat(" written in {0} script", CurrentIso15924Script.ShortName);
 
-			summary.AppendFormat(". ({0})", writingSystem.Bcp47Tag);
+			summary.AppendFormat(". ({0})", writingSystem.LanguageTag);
 			return summary.ToString().Trim();
 		}
 

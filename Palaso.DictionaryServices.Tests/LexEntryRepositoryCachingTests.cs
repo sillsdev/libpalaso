@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using Palaso.Data;
-using Palaso.DictionaryServices;
 using Palaso.DictionaryServices.Model;
+using Palaso.IO;
 using Palaso.TestUtilities;
 using NUnit.Framework;
 using SIL.WritingSystems;
@@ -14,31 +14,33 @@ namespace Palaso.DictionaryServices.Tests
 	public class LiftLexEntryRepositoryCachingTests
 	{
 		private TemporaryFolder _tempfolder;
+		private TempFile _tempFile;
 		private LiftLexEntryRepository _repository;
 
 		[SetUp]
 		public void Setup()
 		{
-			_tempfolder = new TemporaryFolder();
-			string persistedFilePath = _tempfolder.GetTemporaryFile();
-			_repository = new LiftLexEntryRepository(persistedFilePath);
+			_tempfolder = new TemporaryFolder("LiftLexEntryRepositoryCachingTests");
+			_tempFile = _tempfolder.GetNewTempFile(true);
+			_repository = new LiftLexEntryRepository(_tempFile.Path);
 		}
 
 		[TearDown]
 		public void Teardown()
 		{
 			_repository.Dispose();
+			_tempFile.Dispose();
 			_tempfolder.Dispose();
 		}
 
 		[Test]
 		public void GetAllEntriesSortedByHeadWord_CreateItemAfterFirstCall_EntryIsReturnedAndSortedInResultSet()
 		{
-			LexEntry entryBeforeFirstQuery = CreateEntryWithLexicalFormBeforeFirstQuery("de", "word 1");
+			CreateEntryWithLexicalFormBeforeFirstQuery("de", "word 1");
 
 			_repository.GetAllEntriesSortedByHeadword(WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont));
 
-			LexEntry entryAfterFirstQuery = _repository.CreateItem();
+			_repository.CreateItem();
 
 			ResultSet<LexEntry> results = _repository.GetAllEntriesSortedByHeadword(WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont));
 			Assert.AreEqual(2, results.Count);
@@ -54,15 +56,13 @@ namespace Palaso.DictionaryServices.Tests
 			return entryBeforeFirstQuery;
 		}
 
-		private static WritingSystemDefinition WritingSystemDefinitionForTest(string languageISO, Font font)
+		private static WritingSystemDefinition WritingSystemDefinitionForTest(string languageIso, Font font)
 		{
-			var retval = new WritingSystemDefinition();
-			retval.Language = languageISO;
-#if WS_FIX
-			retval.DefaultFontName = font.Name;
-			retval.DefaultFontSize = font.Size;
-#endif
-			return retval;
+			return new WritingSystemDefinition
+			{
+				Language = languageIso,
+				DefaultFont = new FontDefinition(font.Name) {DefaultSize = font.Size}
+			};
 		}
 
 		[Test]
@@ -129,7 +129,7 @@ namespace Palaso.DictionaryServices.Tests
 		[Test]
 		public void GetAllEntriesSortedByHeadWord_DeleteAllItemsAfterFirstCall_EntryIsDeletedInResultSet()
 		{
-			LexEntry entrytoBeDeleted = CreateEntryWithLexicalFormBeforeFirstQuery("de", "word 0");
+			CreateEntryWithLexicalFormBeforeFirstQuery("de", "word 0");
 
 			_repository.GetAllEntriesSortedByHeadword(WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont));
 
@@ -142,11 +142,11 @@ namespace Palaso.DictionaryServices.Tests
 		[Test]
 		public void GetAllEntriesSortedByLexicalForm_CreateItemAfterFirstCall_EntryIsReturnedAndSortedInResultSet()
 		{
-			LexEntry entryBeforeFirstQuery = CreateEntryWithLexicalFormBeforeFirstQuery("de", "word 1");
+			CreateEntryWithLexicalFormBeforeFirstQuery("de", "word 1");
 
 			_repository.GetAllEntriesSortedByLexicalFormOrAlternative(WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont));
 
-			LexEntry entryAfterFirstQuery = _repository.CreateItem();
+			_repository.CreateItem();
 
 			ResultSet<LexEntry> results = _repository.GetAllEntriesSortedByLexicalFormOrAlternative(WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont));
 			Assert.AreEqual(2, results.Count);
@@ -172,7 +172,7 @@ namespace Palaso.DictionaryServices.Tests
 		[Test]
 		public void GetAllEntriesSortedByLexicalForm_ModifyAndSaveMultipleAfterFirstCall_EntriesModifiedAndSortedInResultSet()
 		{
-			List<LexEntry> entriesToModify = new List<LexEntry>();
+			var entriesToModify = new List<LexEntry>();
 			entriesToModify.Add(CreateEntryWithLexicalFormBeforeFirstQuery("de", "word 0"));
 			entriesToModify.Add(CreateEntryWithLexicalFormBeforeFirstQuery("de", "word 1"));
 
@@ -218,7 +218,7 @@ namespace Palaso.DictionaryServices.Tests
 		[Test]
 		public void GetAllEntriesSortedByLexicalForm_DeleteAllItemsAfterFirstCall_EntryIsDeletedInResultSet()
 		{
-			LexEntry entrytoBeDeleted = CreateEntryWithLexicalFormBeforeFirstQuery("de", "word 0");
+			CreateEntryWithLexicalFormBeforeFirstQuery("de", "word 0");
 
 			_repository.GetAllEntriesSortedByLexicalFormOrAlternative(WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont));
 
@@ -281,11 +281,11 @@ namespace Palaso.DictionaryServices.Tests
 		[Test]
 		public void GetAllEntriesSortedByDefinition_CreateItemAfterFirstCall_EntryIsReturnedAndSortedInResultSet()
 		{
-			LexEntry entryBeforeFirstQuery = CreateEntryWithDefinitionBeforeFirstQuery("de", "word 1");
+			CreateEntryWithDefinitionBeforeFirstQuery("de", "word 1");
 
 			_repository.GetAllEntriesSortedByDefinitionOrGloss(WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont));
 
-			LexEntry entryAfterFirstQuery = CreateEntryWithDefinitionBeforeFirstQuery("de", "word 2");
+			CreateEntryWithDefinitionBeforeFirstQuery("de", "word 2");
 
 			ResultSet<LexEntry> results = _repository.GetAllEntriesSortedByDefinitionOrGloss(WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont));
 			Assert.AreEqual(2, results.Count);
@@ -356,7 +356,7 @@ namespace Palaso.DictionaryServices.Tests
 		[Test]
 		public void GetAllEntriesSortedByDefinition_DeleteAllItemsAfterFirstCall_EntryIsDeletedInResultSet()
 		{
-			LexEntry entrytoBeDeleted = CreateEntryWithDefinitionBeforeFirstQuery("de", "word 0");
+			CreateEntryWithDefinitionBeforeFirstQuery("de", "word 0");
 
 			_repository.GetAllEntriesSortedByDefinitionOrGloss(WritingSystemDefinitionForTest("de", SystemFonts.DefaultFont));
 

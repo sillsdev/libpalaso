@@ -55,7 +55,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Tree
 		{
 			var suggestor = new WritingSystemSuggestor();
 
-			var existingWritingSystems = new List<WritingSystemDefinition>{WritingSystemDefinition.Parse("tpi")};
+			var existingWritingSystems = new List<WritingSystemDefinition>{new WritingSystemDefinition("tpi")};
 			Assert.That(suggestor.GetOtherLanguageSuggestions(existingWritingSystems).Any(ws => ws.Label == "Tok Pisin"), Is.False);
 		}
 

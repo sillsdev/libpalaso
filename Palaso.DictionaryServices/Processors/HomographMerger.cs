@@ -15,25 +15,28 @@ namespace Palaso.DictionaryServices.Processors
 	public class HomographMerger
 	{
 
+		/// <summary>
+		/// Merge homographs.
+		/// </summary>
 		public static void Merge(LiftLexEntryRepository repo, string writingSystemIdForMatching, string[] traitsWithMultiplicity, IProgress progress)
 		{
 			var alreadyProcessed = new List<RepositoryId>();
 
 			var ids = new List<RepositoryId>(repo.GetAllItems());
-			for (int i = 0; i < ids.Count; i++)
+			foreach (RepositoryId id in ids)
 			{
 				if (progress.CancelRequested)
 				{
 					throw new OperationCanceledException("User cancelled");
 				}
-				if (alreadyProcessed.Contains(ids[i]))
+				if (alreadyProcessed.Contains(id))
 					continue;
-				alreadyProcessed.Add(ids[i]);
-				var entry = repo.GetItem(ids[i]);
-				var writingSystemForMatching = WritingSystemDefinition.Parse(writingSystemIdForMatching);
+				alreadyProcessed.Add(id);
+				var entry = repo.GetItem(id);
+				var writingSystemForMatching = new WritingSystemDefinition(writingSystemIdForMatching);
 				var matches = repo.GetEntriesWithMatchingLexicalForm(
 					entry.LexicalForm.GetExactAlternative(writingSystemIdForMatching), writingSystemForMatching
-				);
+					);
 
 				//at this point we have entries which match along a single ws axis. We may or may not be able to merge them...
 
@@ -46,7 +49,7 @@ namespace Palaso.DictionaryServices.Processors
 				var matchAlreadyProcessed = new List<RepositoryId>();
 				foreach (RecordToken<LexEntry> incomingMatch in matches)
 				{
-					if (incomingMatch.Id == ids[i])
+					if (incomingMatch.Id == id)
 						continue; // The entry will match itself at least this time.
 					if (matchAlreadyProcessed.Contains(incomingMatch.Id))
 						continue; //we'll be here at least as each element matches itself
@@ -69,11 +72,10 @@ namespace Palaso.DictionaryServices.Processors
 					else
 					{
 						progress.WriteMessageWithColor("black", "Merged {0} homographs of {1}.", 1 + mergeCount,
-													   lexicalForm);
+							lexicalForm);
 					}
 					progress.WriteMessage(""); //blank line
 				}
-
 			}
 
 			MergeSensesWithinEntries(repo, traitsWithMultiplicity, progress);
@@ -131,18 +133,21 @@ namespace Palaso.DictionaryServices.Processors
 			public Counter(string id)
 			{
 				Id = id;
-				count = 1;
+				Count = 1;
 			}
-			public string Id;
-			public int count;
+			public readonly string Id;
+			public int Count;
 		}
 
-		public static string GuessPrimarLexicalFormWritingSystem(LiftLexEntryRepository repo, IProgress progress)
+		/// <summary>
+		/// Guess the writing system for the primary lexical form.
+		/// </summary>
+		public static string GuessPrimaryLexicalFormWritingSystem(LiftLexEntryRepository repo, IProgress progress)
 		{
 			progress.WriteMessage("Looking at 1st 1000 entries to determine which Writing System to use for matching...");
 			var choices = new Dictionary<string, Counter>();
 
-			var ids = repo.GetAllItems();
+			RepositoryId[] ids = repo.GetAllItems();
 			for (int i = 0; i < 1000 && i < ids.Length; i++)
 			{
 				var entry = repo.GetItem(ids[i]);
@@ -151,7 +156,7 @@ namespace Palaso.DictionaryServices.Processors
 					Counter counter;
 					if (choices.TryGetValue(languageForm.WritingSystemId, out counter))
 					{
-						++counter.count;
+						++counter.Count;
 					}
 					else
 					{
@@ -164,7 +169,7 @@ namespace Palaso.DictionaryServices.Processors
 				progress.WriteError("Could not determine a primary writing system for matching entries.");
 				return null;
 			}
-			var z = choices.OrderByDescending(p => p.Value.count).FirstOrDefault();
+			KeyValuePair<string, Counter> z = choices.OrderByDescending(p => p.Value.Count).FirstOrDefault();
 			progress.WriteMessage("Will use '{0}' for matching.", z.Value.Id);
 
 			return z.Value.Id;

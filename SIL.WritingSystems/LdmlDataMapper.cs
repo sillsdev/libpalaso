@@ -5,7 +5,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using Icu;
@@ -265,11 +264,11 @@ namespace SIL.WritingSystems
 				{
 					string version = GetSpecialValue(specialElem, Palaso, "version");
 					version = string.IsNullOrEmpty(version) ? "0" : version;
-					if (version != WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString())
+					if (version != WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString(CultureInfo.InvariantCulture))
 					{
 						throw new ApplicationException(String.Format(
 							"The LDML tag '{0}' is version {1}.  Version {2} was expected.",
-							ws.Bcp47Tag,
+							ws.LanguageTag,
 							version,
 							WritingSystemDefinition.LatestWritingSystemDefinitionVersion
 							));
@@ -389,7 +388,7 @@ namespace SIL.WritingSystems
 				if (!type.Equals(string.Empty))
 				{
 					SpellCheckDictionaryDefinition scd =
-						new SpellCheckDictionaryDefinition(ws.Bcp47Tag, SpellCheckToSpecllCheckDictionaryFormats[type]);
+						new SpellCheckDictionaryDefinition(ws.LanguageTag, SpellCheckToSpecllCheckDictionaryFormats[type]);
 
 					// URL elements
 					foreach (XElement urlElem in scElem.Elements(Sil + "url"))
@@ -595,13 +594,12 @@ namespace SIL.WritingSystems
 
 		private void ReadCollationsElement(XElement collationsElem, WritingSystemDefinition ws)
 		{
-			Debug.Assert(collationsElem.NodeType == XmlNodeType.Element && collationsElem.Name == "collations");
+			Debug.Assert(collationsElem.Name == "collations");
+			ws.Collations.Clear();
 			XElement defaultCollationElem = collationsElem.Element("defaultCollation");
 			string defaultCollation = (string) defaultCollationElem ?? "standard";
 			foreach (XElement collationElem in collationsElem.Elements("collation"))
-			{
 				ReadCollationElement(collationElem, ws, defaultCollation);
-			}
 		}
 
 		private void ReadCollationElement(XElement collationElem, WritingSystemDefinition ws, string defaultCollation)
@@ -663,19 +661,14 @@ namespace SIL.WritingSystems
 			string baseType = inheritedElem.GetAttributeValue("type");
 
 			// TODO: Read referenced LDML and get collation from there
-			InheritedCollationDefinition cd = new InheritedCollationDefinition(collationType);
-			cd.BaseLanguageTag = baseLanguageTag;
-			cd.BaseType = baseType;
-			return cd;
+			return new InheritedCollationDefinition(collationType) {BaseLanguageTag = baseLanguageTag, BaseType = baseType};
 		}
 
 		private CollationDefinition ReadCollationRulesForCustomSimple(XElement simpleElem, string collationType)
 		{
 			Debug.Assert(simpleElem != null);
 
-			SimpleCollationDefinition cd = new SimpleCollationDefinition(collationType);
-			cd.SimpleRules = (string)simpleElem;
-			return cd;
+			return new SimpleCollationDefinition(collationType) {SimpleRules = (string) simpleElem};
 		}
 
 		/// <summary>
@@ -1003,7 +996,7 @@ namespace SIL.WritingSystems
 				WriteRFC5646TagElements(writer, ws.Language, ws.Script, ws.Region, ws.Variant);
 			}
 #else
-			WriteLanguageTagElements(writer, ws.Bcp47Tag);
+			WriteLanguageTagElements(writer, ws.LanguageTag);
 #endif
 			if (IsReaderOnElementNodeNamed(reader, "identity"))
 			{
@@ -1023,7 +1016,7 @@ namespace SIL.WritingSystems
 		private void WriteLanguageTagElements(XmlWriter writer, string languageTag)
 		{
 			string language, script, region, variant;
-			IetfLanguageTag.GetCodes(languageTag, out language, out script, out region, out variant);
+			IetfLanguageTag.GetParts(languageTag, out language, out script, out region, out variant);
 
 			WriteElementWithAttribute(writer, "language", "type", language);
 			if (!String.IsNullOrEmpty(script))

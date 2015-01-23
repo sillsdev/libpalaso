@@ -65,7 +65,7 @@ namespace SIL.WritingSystems.WindowsForms
 		{
 			IEnumerable<WritingSystemDefinition> defs = GetLanguageAndKeyboardCombinations();
 			//now just return the unique ones (Works because no keyboard in the rfc4646)
-			IEnumerable<WritingSystemDefinition> unique = defs.GroupBy(d => d.Bcp47Tag)
+			IEnumerable<WritingSystemDefinition> unique = defs.GroupBy(d => d.LanguageTag)
 				.Select(g => g.First());
 			return unique.GetEnumerator();
 		}

@@ -599,70 +599,76 @@ namespace SIL.WritingSystems
 		/// Gets the codes of the specified language tag.
 		/// </summary>
 		/// <param name="langTag">The lang tag.</param>
-		/// <param name="languageCode">The language code.</param>
-		/// <param name="scriptCode">The script code.</param>
-		/// <param name="regionCode">The region code.</param>
-		/// <param name="variantCodes">The variant code.</param>
+		/// <param name="language">The language part.</param>
+		/// <param name="script">The script part.</param>
+		/// <param name="region">The region part.</param>
+		/// <param name="variant">The variant part.</param>
 		/// <returns></returns>
-		public static bool GetCodes(string langTag, out string languageCode, out string scriptCode, out string regionCode,
-			out string variantCodes)
+		public static bool GetParts(string langTag, out string language, out string script, out string region, out string variant)
 		{
-			languageCode = string.Empty;
-			scriptCode = string.Empty;
-			regionCode = string.Empty;
-			variantCodes = string.Empty;
+			language = null;
+			script = null;
+			region = null;
+			variant = null;
 
-			LanguageSubtag languageSubtag;
-			ScriptSubtag scriptSubtag;
-			RegionSubtag regionSubtag;
-			IEnumerable<VariantSubtag> variantSubtags;
-			if (!TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
+			Match match = LangTagPattern.Match(langTag);
+			if (!match.Success)
 				return false;
 
-			VariantSubtag[] variantSubtagsArray = variantSubtags.ToArray();
-			var privateUseCodes = new List<string>();
-			if (languageSubtag != null)
+			Group languageGroup = match.Groups["language"];
+			if (languageGroup.Success)
 			{
-				if (languageSubtag.IsPrivateUse && languageSubtag.Code != WellKnownSubtags.UnlistedLanguage)
-				{
-					languageCode = WellKnownSubtags.UnlistedLanguage;
-					privateUseCodes.Add(languageSubtag.Code);
-				}
-				else
-				{
-					languageCode = languageSubtag.Code;
-				}
+				if (!StandardSubtags.IsValidIso639LanguageCode(languageGroup.Value))
+					return false;
+				language = languageGroup.Value;
 			}
 
-			if (scriptSubtag != null)
+			Group scriptGroup = match.Groups["script"];
+			if (scriptGroup.Success)
 			{
-				if (scriptSubtag.IsPrivateUse && !StandardSubtags.IsPrivateUseScriptCode(scriptSubtag.Code))
+				if (!StandardSubtags.IsValidIso15924ScriptCode(scriptGroup.Value))
 				{
-					scriptCode = "Qaaa";
-					privateUseCodes.Add(scriptSubtag.Code);
+					language = null;
+					return false;
 				}
-				else
-				{
-					scriptCode = scriptSubtag.Code;
-				}
+				script = scriptGroup.Value;
 			}
 
-			if (regionSubtag != null)
+			Group regionGroup = match.Groups["region"];
+			if (regionGroup.Success)
 			{
-				if (regionSubtag.IsPrivateUse && !StandardSubtags.IsPrivateUseRegionCode(regionSubtag.Code))
+				if (!StandardSubtags.IsValidIso3166RegionCode(regionGroup.Value))
 				{
-					regionCode = "QM";
-					privateUseCodes.Add(regionSubtag.Code);
+					language = null;
+					script = null;
+					return false;
 				}
-				else
-				{
-					regionCode = regionSubtag.Code;
-				}
+				region = regionGroup.Value;
 			}
 
-			privateUseCodes.AddRange(variantSubtagsArray.Where(v => v.IsPrivateUse).Select(v => v.Code));
-			variantCodes = ConcatenateVariantAndPrivateUse(string.Join("-", variantSubtagsArray.Where(v => !v.IsPrivateUse).Select(v => v.Code)),
-				string.Join("-", privateUseCodes));
+			string variantCodes;
+			Group variantGroup = match.Groups["variant"];
+			if (variantGroup.Success)
+			{
+				if (variantGroup.Value.Split(new[] {'-'}, StringSplitOptions.RemoveEmptyEntries).Any(v => !StandardSubtags.IsValidRegisteredVariantCode(v)))
+				{
+					language = null;
+					script = null;
+					region = null;
+					return false;
+				}
+				variantCodes = variantGroup.Value;
+			}
+			else
+			{
+				variantCodes = string.Empty;
+			}
+
+			Group privateUseGroup = match.Groups["privateuse"];
+			string privateUseCodes = privateUseGroup.Success ? privateUseGroup.Value : string.Empty;
+
+			if (!string.IsNullOrEmpty(variantCodes) || !string.IsNullOrEmpty(privateUseCodes))
+				variant = ConcatenateVariantAndPrivateUse(variantCodes, privateUseCodes);
 
 			return true;
 		}
@@ -700,7 +706,7 @@ namespace SIL.WritingSystems
 			if (languageGroup.Success)
 			{
 				string languageCode = languageGroup.Value;
-				if (languageCode.Equals("qaa", StringComparison.OrdinalIgnoreCase))
+				if (languageCode.Equals(WellKnownSubtags.UnlistedLanguage, StringComparison.OrdinalIgnoreCase))
 				{
 					// In our own WS dialog, we don't allow no language, but if it isn't a standard one, a language like xkal
 					// produces an identifier like qaa-x-kal, and we interepret the first thing after the x as a private
@@ -711,12 +717,12 @@ namespace SIL.WritingSystems
 					// after the x as a language code if it is a valid one. Otherwise, we just let qaa be the language.
 					if (privateUseCodes.Count > 0 && LangPattern.IsMatch(privateUseCodes[0]))
 					{
-						languageSubtag = new LanguageSubtag(privateUseCodes[0], null, true, null);
+						languageSubtag = new LanguageSubtag(privateUseCodes[0], true);
 						privateUseCodes.RemoveAt(0);
 					}
 					else
 					{
-						languageSubtag = "qaa"; // We do allow just plain qaa.
+						languageSubtag = WellKnownSubtags.UnlistedLanguage; // We do allow just plain qaa.
 					}
 				}
 				else
@@ -727,8 +733,19 @@ namespace SIL.WritingSystems
 			}
 			else if (LangPattern.IsMatch(privateUseCodes[0]))
 			{
-				languageSubtag = new LanguageSubtag(privateUseCodes[0], null, true, null);
+				// in this case, the language subtag should always be private use
+				languageSubtag = new LanguageSubtag(privateUseCodes[0], true);
 				privateUseCodes.RemoveAt(0);
+				if (privateUseCodes.Count > 0 && ScriptPattern.IsMatch(privateUseCodes[0]))
+				{
+					scriptSubtag = privateUseCodes[0];
+					privateUseCodes.RemoveAt(0);
+				}
+				if (privateUseCodes.Count > 0 && RegionPattern.IsMatch(privateUseCodes[0]))
+				{
+					regionSubtag = privateUseCodes[0];
+					privateUseCodes.RemoveAt(0);
+				}
 			}
 			else
 			{
@@ -741,7 +758,7 @@ namespace SIL.WritingSystems
 				string scriptCode = scriptGroup.Value;
 				if (scriptCode.Equals("Qaaa", StringComparison.OrdinalIgnoreCase) && privateUseCodes.Count > 0)
 				{
-					scriptSubtag = new ScriptSubtag(privateUseCodes[0], "", true);
+					scriptSubtag = new ScriptSubtag(privateUseCodes[0], true);
 					privateUseCodes.RemoveAt(0);
 				}
 				else
@@ -757,7 +774,7 @@ namespace SIL.WritingSystems
 				string regionCode = regionGroup.Value;
 				if (regionCode.Equals("QM", StringComparison.OrdinalIgnoreCase) && privateUseCodes.Count > 0)
 				{
-					regionSubtag = new RegionSubtag(privateUseCodes[0], "", true);
+					regionSubtag = new RegionSubtag(privateUseCodes[0], true);
 					privateUseCodes.RemoveAt(0);
 				}
 				else

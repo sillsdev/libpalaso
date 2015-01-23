@@ -32,7 +32,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests
 		{
 			IEnumerable<WritingSystemDefinition> provider = new WritingSystemFromWindowsLocaleProvider();
 			Assert.IsNotNull(provider.First());
-			foreach (var group in provider.GroupBy(d=>d.Bcp47Tag))
+			foreach (var group in provider.GroupBy(d=>d.LanguageTag))
 			{
 				Assert.AreEqual(1, group.Count());
 			}

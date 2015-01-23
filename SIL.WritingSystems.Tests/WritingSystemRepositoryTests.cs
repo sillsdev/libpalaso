@@ -60,8 +60,8 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Conflate_TwoWritingSystemsOneIsConflatedIntoOther_OneWritingSystemRemains()
 		{
-			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("en"));
-			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("de"));
+			RepositoryUnderTest.Set(new WritingSystemDefinition("en"));
+			RepositoryUnderTest.Set(new WritingSystemDefinition("de"));
 			RepositoryUnderTest.Conflate("en", "de");
 			Assert.That(RepositoryUnderTest.Contains("de"), Is.True);
 			Assert.That(RepositoryUnderTest.Contains("en"), Is.False);
@@ -71,8 +71,8 @@ namespace SIL.WritingSystems.Tests
 		public void Conflate_WritingSystemsIsConflated_FiresWritingSystemsIsConflatedEvent()
 		{
 			RepositoryUnderTest.WritingSystemConflated += OnWritingSystemConflated;
-			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("en"));
-			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("de"));
+			RepositoryUnderTest.Set(new WritingSystemDefinition("en"));
+			RepositoryUnderTest.Set(new WritingSystemDefinition("de"));
 			RepositoryUnderTest.Conflate("en", "de");
 			Assert.That(RepositoryUnderTest.Contains("de"), Is.True);
 			Assert.That(RepositoryUnderTest.Contains("en"), Is.False);
@@ -85,8 +85,8 @@ namespace SIL.WritingSystems.Tests
 		public void Conflate_WritingSystemsIsConflated_FiresWritingSystemsIsDeletedEventIsNotFired()
 		{
 			RepositoryUnderTest.WritingSystemDeleted += OnWritingsystemDeleted;
-			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("en"));
-			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("de"));
+			RepositoryUnderTest.Set(new WritingSystemDefinition("en"));
+			RepositoryUnderTest.Set(new WritingSystemDefinition("de"));
 			RepositoryUnderTest.Conflate("en", "de");
 			Assert.That(RepositoryUnderTest.Contains("de"), Is.True);
 			Assert.That(RepositoryUnderTest.Contains("en"), Is.False);
@@ -101,8 +101,8 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Remove_TwoWritingSystemsOneIsDeleted_OneWritingSystemRemains()
 		{
-			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("en"));
-			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("de"));
+			RepositoryUnderTest.Set(new WritingSystemDefinition("en"));
+			RepositoryUnderTest.Set(new WritingSystemDefinition("de"));
 			RepositoryUnderTest.Remove("en");
 			Assert.That(RepositoryUnderTest.Contains("de"), Is.True);
 			Assert.That(RepositoryUnderTest.Contains("en"), Is.False);
@@ -270,10 +270,10 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws1 = new WritingSystemDefinition();
 			ws1.Language = "en";
-			Assert.AreEqual("en", ws1.Bcp47Tag);
+			Assert.AreEqual("en", ws1.LanguageTag);
 			WritingSystemDefinition ws2 = ws1.Clone();
 			ws2.Variants.Add("1901");
-			Assert.AreEqual("en-1901", ws2.Bcp47Tag);
+			Assert.AreEqual("en-1901", ws2.LanguageTag);
 
 			RepositoryUnderTest.Set(ws1);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
@@ -492,7 +492,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void TextWritingSystems_IdIsNotText_ReturnsEmpty()
 		{
-			var ws = WritingSystemDefinition.Parse("en");
+			var ws = new WritingSystemDefinition("en");
 			ws.IsVoice = true;
 			RepositoryUnderTest.Set(ws);
 			var wsIdsToFilter = new List<string> {ws.Id};
@@ -503,9 +503,9 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void TextWritingSystems_IdIsText_ReturnsId()
 		{
-			var ws = WritingSystemDefinition.Parse("en");
+			var ws = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(ws);
-			var wsIdsToFilter = new List<string> { ws.Id };
+			var wsIdsToFilter = new List<string> {ws.Id};
 			var textIds = new List<string>(RepositoryUnderTest.FilterForTextIds(wsIdsToFilter));
 			Assert.AreEqual(1, textIds.Count);
 			Assert.AreEqual("en", textIds[0]);
@@ -514,11 +514,11 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void TextWritingSystems_IdsAreMixOfTextAndNotText_ReturnsOnlyTextIds()
 		{
-			var ws = WritingSystemDefinition.Parse("en");
-			var ws1 = WritingSystemDefinition.Parse("de");
-			var ws2 = WritingSystemDefinition.Parse("th");
+			var ws = new WritingSystemDefinition("en");
+			var ws1 = new WritingSystemDefinition("de");
+			var ws2 = new WritingSystemDefinition("th");
 			ws2.IsVoice = true;
-			var ws3 = WritingSystemDefinition.Parse("pt");
+			var ws3 = new WritingSystemDefinition("pt");
 			ws3.IsVoice = true;
 
 			RepositoryUnderTest.Set(ws);
@@ -538,9 +538,9 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void FilterForTextIds_PreservesOrderGivenByParameter()
 		{
-			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("ar"));
-			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("en"));
-			RepositoryUnderTest.Set(WritingSystemDefinition.Parse("th"));
+			RepositoryUnderTest.Set(new WritingSystemDefinition("ar"));
+			RepositoryUnderTest.Set(new WritingSystemDefinition("en"));
+			RepositoryUnderTest.Set(new WritingSystemDefinition("th"));
 
 			var textIds = new List<string>(RepositoryUnderTest.FilterForTextIds(new []{"en","ar","th"}));
 
@@ -564,7 +564,7 @@ namespace SIL.WritingSystems.Tests
 		public void Set_IdOfWritingSystemChanged_EventArgsAreCorrect()
 		{
 			RepositoryUnderTest.WritingSystemIdChanged += OnWritingSystemIdChanged;
-			var ws = WritingSystemDefinition.Parse("en");
+			var ws = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(ws);
 			ws.Language = "de";
 			RepositoryUnderTest.Set(ws);
@@ -589,7 +589,7 @@ namespace SIL.WritingSystems.Tests
 		public void Set_IdOfWritingSystemIsUnChanged_EventIsNotFired()
 		{
 			RepositoryUnderTest.WritingSystemIdChanged += OnWritingSystemIdChanged;
-			var ws = WritingSystemDefinition.Parse("en");
+			var ws = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(ws);
 			ws.Language = "en";
 			RepositoryUnderTest.Set(ws);
@@ -600,7 +600,7 @@ namespace SIL.WritingSystems.Tests
 		public void Set_NewWritingSystem_EventIsNotFired()
 		{
 			RepositoryUnderTest.WritingSystemIdChanged += OnWritingSystemIdChanged;
-			var ws = WritingSystemDefinition.Parse("en");
+			var ws = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(ws);
 			Assert.That(_writingSystemIdChangedEventArgs, Is.Null);
 		}
@@ -619,7 +619,7 @@ namespace SIL.WritingSystems.Tests
 		public void Remove_WritingsystemIdExists_FiresEventAndEventArgIsSetToIdOfDeletedWritingSystem()
 		{
 			RepositoryUnderTest.WritingSystemDeleted += OnWritingsystemDeleted;
-			var ws = WritingSystemDefinition.Parse("en");
+			var ws = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(ws);
 			RepositoryUnderTest.Remove(ws.Id);
 			Assert.That(_writingSystemDeletedEventArgs.Id, Is.EqualTo(ws.Id));
