@@ -45,7 +45,7 @@ namespace SIL.WritingSystems
 			return true;
 		}
 
-		private static string GetPropertyName<TField>(Expression<Func<TField>> propertyExpression)
+		protected static string GetPropertyName<TField>(Expression<Func<TField>> propertyExpression)
 		{
 			if (propertyExpression == null)
 				throw new ArgumentNullException("propertyExpression");

@@ -397,14 +397,6 @@ namespace SIL.WritingSystems
 			get { return _script != null && _script.Code.Equals(WellKnownSubtags.AudioScript, StringComparison.OrdinalIgnoreCase); }
 		}
 
-		/// <summary>
-		/// The variant and private use subtags.
-		/// </summary>
-		public ObservableCollection<VariantSubtag> Variants
-		{
-			get { return _variants; }
-		}
-
 		private void CheckVariantAndScriptRules()
 		{
 			if (_variants.Contains(WellKnownSubtags.AudioPrivateUse) && !ScriptSubTagIsAudio)
@@ -457,9 +449,29 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		/// <summary>
-		/// A string representing the subtag of the same name as defined by BCP47.
-		/// </summary>
+		public LanguageSubtag Language
+		{
+			get { return _language; }
+			set
+			{
+				if (UpdateField(() => Language, ref _language, value))
+					UpdateLanguageTag();
+			}
+		}
+
+		public ScriptSubtag Script
+		{
+			get { return _script; }
+			set
+			{
+				if (UpdateField(() => Script, ref _script, value))
+				{
+					CheckVariantAndScriptRules();
+					UpdateLanguageTag();
+				}
+			}
+		}
+
 		public RegionSubtag Region
 		{
 			get { return _region; }
@@ -471,22 +483,17 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// A string representing the subtag of the same name as defined by BCP47.
+		/// The variant and private use subtags.
 		/// </summary>
-		public LanguageSubtag Language
+		public ObservableCollection<VariantSubtag> Variants
 		{
-			get { return _language; }
-			set
-			{
-				if (UpdateField(() => Language, ref _language, value))
-					UpdateLanguageTag();
-			}
+			get { return _variants; }
 		}
 
 		/// <summary>
 		/// The desired abbreviation for the writing system
 		/// </summary>
-		public string Abbreviation
+		public virtual string Abbreviation
 		{
 			get
 			{
@@ -513,28 +520,10 @@ namespace SIL.WritingSystems
 			set { UpdateString(() => Abbreviation, ref _abbreviation, value); }
 		}
 
-
-		/// <summary>
-		/// A string representing the subtag of the same name as defined by BCP47.
-		/// </summary>
-		public ScriptSubtag Script
-		{
-			get { return _script; }
-			set
-			{
-				if (UpdateField(() => Script, ref _script, value))
-				{
-					CheckVariantAndScriptRules();
-					UpdateLanguageTag();
-				}
-			}
-		}
-
-
 		/// <summary>
 		/// The language name to use. Typically this is the language name associated with the BCP47 language subtag as defined by the IANA subtag registry
 		/// </summary>
-		public string LanguageName
+		public virtual string LanguageName
 		{
 			get
 			{
@@ -592,7 +581,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// A automatically generated descriptive label for the writing system definition.
 		/// </summary>
-		public string DisplayLabel
+		public virtual string DisplayLabel
 		{
 			get
 			{
@@ -622,7 +611,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Gets the list label.
 		/// </summary>
-		public string ListLabel
+		public virtual string ListLabel
 		{
 			get
 			{
@@ -775,7 +764,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// The font used to display data encoded in this writing system
 		/// </summary>
-		public FontDefinition DefaultFont
+		public virtual FontDefinition DefaultFont
 		{
 			get
 			{
@@ -799,7 +788,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// The preferred keyboard to use to generate data encoded in this writing system.
 		/// </summary>
-		public string Keyboard
+		public virtual string Keyboard
 		{
 			get { return _keyboard ?? string.Empty; }
 			set { UpdateString(() => Keyboard, ref _keyboard, value); }
@@ -811,7 +800,7 @@ namespace SIL.WritingSystems
 		/// It is not useful to modify this or set it in new LDML files; however, we need a public setter
 		/// because FieldWorks overrides the code that normally reads this from the LDML file.
 		/// </summary>
-		public string WindowsLcid
+		public virtual string WindowsLcid
 		{
 			get { return _windowsLcid ?? string.Empty; }
 			set { UpdateString(() => WindowsLcid, ref _windowsLcid, value); }
@@ -821,7 +810,7 @@ namespace SIL.WritingSystems
 		/// This tracks the keyboard that should be used for this writing system on this computer.
 		/// It is not shared with other users of the project.
 		/// </summary>
-		public IKeyboardDefinition LocalKeyboard
+		public virtual IKeyboardDefinition LocalKeyboard
 		{
 			get
 			{
@@ -853,7 +842,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Indicates whether this writing system is read and written from left to right or right to left
 		/// </summary>
-		public bool RightToLeftScript
+		public virtual bool RightToLeftScript
 		{
 			get { return _rightToLeftScript; }
 			set { UpdateField(() => RightToLeftScript, ref _rightToLeftScript, value); }
@@ -862,13 +851,13 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// The windows "NativeName" from the Culture class
 		/// </summary>
-		public string NativeName
+		public virtual string NativeName
 		{
 			get { return _nativeName ?? string.Empty; }
 			set { UpdateString(() => NativeName, ref _nativeName, value); }
 		}
 
-		public CollationDefinition DefaultCollation
+		public virtual CollationDefinition DefaultCollation
 		{
 			get { return _defaultCollation ?? _collations.FirstOrDefault(); }
 			set
@@ -891,7 +880,7 @@ namespace SIL.WritingSystems
 			get { return _characterSets; }
 		}
 
-		private void UpdateLanguageTag()
+		protected virtual void UpdateLanguageTag()
 		{
 			_languageTag = IetfLanguageTag.ToLanguageTag(_language, _script, _region, _variants);
 			_id = _languageTag;
@@ -900,7 +889,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Indicates whether this writing system is unicode encoded or legacy encoded
 		/// </summary>
-		public bool IsUnicodeEncoded
+		public virtual bool IsUnicodeEncoded
 		{
 			get { return _isUnicodeEncoded; }
 			set { UpdateField(() => IsUnicodeEncoded, ref _isUnicodeEncoded, value); }
@@ -936,7 +925,7 @@ namespace SIL.WritingSystems
 			get { return _spellCheckDictionaries; }
 		}
 
-		public SpellCheckDictionaryDefinition SpellCheckDictionary
+		public virtual SpellCheckDictionaryDefinition SpellCheckDictionary
 		{
 			get { return _spellCheckDictionary ?? _spellCheckDictionaries.FirstOrDefault(); }
 			set
@@ -949,7 +938,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		public string DefaultRegion
+		public virtual string DefaultRegion
 		{
 			get { return _defaultRegion ?? string.Empty; }
 			set { UpdateString(() => DefaultRegion, ref _defaultRegion, value); }
