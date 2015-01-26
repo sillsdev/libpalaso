@@ -182,7 +182,7 @@ namespace SIL.WritingSystems.WindowsForms
 			{
 				// Returns default keyboard if there are no keyboards
 				if (!Keyboard.Controller.AllAvailableKeyboards.Any())
-					yield return KeyboardDescription.Zero;
+					yield return KeyboardController.NullKeyboard;
 
 				foreach (IKeyboardDefinition keyboard in Keyboard.Controller.AllAvailableKeyboards)
 					yield return keyboard;
@@ -647,7 +647,7 @@ namespace SIL.WritingSystems.WindowsForms
 					return; // Hopefully can't happen
 				if (CurrentDefinition.LocalKeyboard != null && CurrentDefinition.LocalKeyboard.Equals(value))
 					return;
-				CurrentDefinition.LocalKeyboard = value == KeyboardDescription.Zero ? null : value;
+				CurrentDefinition.LocalKeyboard = value == KeyboardController.NullKeyboard ? null : value;
 				OnCurrentItemUpdated();
 			}
 		}

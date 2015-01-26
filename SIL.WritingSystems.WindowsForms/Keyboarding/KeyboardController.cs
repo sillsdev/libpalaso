@@ -32,6 +32,11 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 	{
 		#region Static methods and properties
 
+		/// <summary>
+		/// The null keyboard description
+		/// </summary>
+		public static readonly IKeyboardDefinition NullKeyboard = new KeyboardDescriptionNull();
+
 		private static KeyboardController _instance;
 
 		public static KeyboardController Instance
@@ -184,7 +189,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		public IKeyboardDefinition GetKeyboard(string id)
 		{
 			if (string.IsNullOrEmpty(id))
-				return KeyboardDescription.Zero;
+				return NullKeyboard;
 
 			if (_keyboards.Contains(id))
 				return _keyboards[id];
@@ -203,21 +208,21 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 				for (int i = 1; i < parts.Length; i++)
 				{
 					var kb = GetKeyboard(string.Join("-", parts.Take(i)), string.Join("-", parts.Skip(i)));
-					if (!kb.Equals(KeyboardDescription.Zero))
+					if (kb != NullKeyboard)
 						return kb;
 				}
 			}
 
-			return KeyboardDescription.Zero;
+			return NullKeyboard;
 		}
 
 		public IKeyboardDefinition GetKeyboard(string layoutName, string locale)
 		{
 			if (string.IsNullOrEmpty(layoutName) && string.IsNullOrEmpty(locale))
-				return KeyboardDescription.Zero;
+				return NullKeyboard;
 
 			IKeyboardDefinition result = _keyboards.FirstOrDefault(kd => kd.Layout == layoutName && kd.Locale == locale);
-			return result ?? KeyboardDescription.Zero;
+			return result ?? NullKeyboard;
 		}
 
 		/// <summary>
@@ -229,8 +234,8 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		public IKeyboardDefinition GetKeyboard(WritingSystemDefinition writingSystem)
 		{
 			if (writingSystem == null)
-				return KeyboardDescription.Zero;
-			return writingSystem.LocalKeyboard ?? KeyboardDescription.Zero;
+				return NullKeyboard;
+			return writingSystem.LocalKeyboard ?? NullKeyboard;
 		}
 
 		public IKeyboardDefinition GetKeyboard(IInputLanguage language)
@@ -238,10 +243,8 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 			// NOTE: on Windows InputLanguage.LayoutName returns a wrong name in some cases.
 			// Therefore we need this overload so that we can identify the keyboard correctly.
 			return _keyboards
-				.Where(keyboard => keyboard is KeyboardDescription &&
-					((KeyboardDescription)keyboard).InputLanguage != null &&
-					((KeyboardDescription)keyboard).InputLanguage.Equals(language))
-				.DefaultIfEmpty(KeyboardDescription.Zero)
+				.Where(keyboard => keyboard.InputLanguage != null && keyboard.InputLanguage.Equals(language))
+				.DefaultIfEmpty(NullKeyboard)
 				.First();
 		}
 
@@ -252,7 +255,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		public void SetKeyboard(string id)
 		{
 			IKeyboardDefinition keyboard = GetKeyboard(id);
-			if (keyboard.Equals(KeyboardDescription.Zero))
+			if (keyboard == NullKeyboard)
 			{
 				if (!_languagesAlreadyShownKeyboardNotFoundMessages.Contains(id))
 				{
@@ -344,7 +347,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 					{
 					}
 					if (_activeKeyboard == null)
-						_activeKeyboard = KeyboardDescription.Zero;
+						_activeKeyboard = NullKeyboard;
 				}
 				return _activeKeyboard;
 			}
@@ -387,7 +390,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 				string locale = GetLocaleName(ws.Keyboard);
 				string layout = GetLayoutName(ws.Keyboard);
 				IKeyboardDefinition result = GetKeyboard(layout, locale);
-				if (result != KeyboardDescription.Zero)
+				if (result != NullKeyboard)
 					return result;
 
 				// Palaso Keyman or Ibus keyboard
@@ -449,10 +452,9 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 						IKeyboardDefinition keyboard = _keyboards.FirstOrDefault(
 							kbd =>
 							{
-								var keyboardDescription = kbd as KeyboardDescription;
-								if (keyboardDescription == null || keyboardDescription.InputLanguage == null || keyboardDescription.InputLanguage.Culture == null)
+								if (kbd.InputLanguage == null || kbd.InputLanguage.Culture == null)
 									return false;
-								return keyboardDescription.InputLanguage.Culture.LCID == lcid;
+								return kbd.InputLanguage.Culture.LCID == lcid;
 							});
 						if (keyboard != null)
 							return keyboard;
@@ -462,7 +464,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 						// FW keyman keyboard
 						var culture = new CultureInfo(lcid);
 						IKeyboardDefinition keyboard = GetKeyboard(ws.Keyboard, culture.Name);
-						if (keyboard != KeyboardDescription.Zero)
+						if (keyboard != NullKeyboard)
 							return keyboard;
 					}
 				}
