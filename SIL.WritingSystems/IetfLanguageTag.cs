@@ -107,6 +107,11 @@ namespace SIL.WritingSystems
 				string.Join("-", variantSubtagsArray.Where(v => v.IsPrivateUse)));
 		}
 
+		public static bool IsValidLanguageCode(string code)
+		{
+			return LangPattern.IsMatch(code);
+		}
+
 		/// <summary>
 		/// Converts the specified ICU locale to a language tag. If the ICU locale is already a valid
 		/// language tag, it will return it.

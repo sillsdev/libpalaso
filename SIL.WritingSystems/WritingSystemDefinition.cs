@@ -195,11 +195,7 @@ namespace SIL.WritingSystems
 			foreach (CollationDefinition cd in ws._collations)
 				_collations.Add(cd.Clone());
 			if (ws._defaultCollation != null)
-			{
-				int index = ws._collations.IndexOf(ws._defaultCollation);
-				if (index != -1)
-					_defaultCollation = _collations[index];
-			}
+				_defaultCollation = _collations[ws._collations.IndexOf(ws._defaultCollation)];
 			foreach (CharacterSetDefinition csd in ws._characterSets)
 				_characterSets.Add(csd.Clone());
 			SetupCollectionChangeListeners();
