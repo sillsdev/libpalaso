@@ -568,7 +568,7 @@ namespace SIL.WritingSystems
 						string cont = quotationElem.GetAttributeValue("continue");
 						int level = (int?)quotationElem.Attribute("level") ?? 1;
 						QuotationMarkingSystemType type;
-						if (QuotationToQuotationMarkingSystemTypes.TryGetValue(quotationElem.GetAttributeValue("type"), out type))
+						if (QuotationToQuotationMarkingSystemTypes.TryGetValue(quotationElem.GetAttributeValue("type") ?? string.Empty, out type))
 						{
 							QuotationMark qm = new QuotationMark(open, close, cont, level, type);
 							ws.QuotationMarks.Add(qm);
