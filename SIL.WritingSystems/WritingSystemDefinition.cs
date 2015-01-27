@@ -758,30 +758,6 @@ namespace SIL.WritingSystems
 		public bool MarkedForDeletion { get; set; }
 
 		/// <summary>
-		/// The font used to display data encoded in this writing system
-		/// </summary>
-		public virtual FontDefinition DefaultFont
-		{
-			get
-			{
-				FontDefinition font = _defaultFont;
-				if (font == null)
-					font = _fonts.FirstOrDefault(fd => fd.Roles.HasFlag(FontRoles.Default));
-				if (font == null)
-					font = _fonts.FirstOrDefault();
-				return font;
-			}
-			set
-			{
-				if (UpdateField(() => DefaultFont, ref _defaultFont, value))
-				{
-					if (value != null && !_fonts.Contains(value))
-						_fonts.Add(value);
-				}
-			}
-		}
-
-		/// <summary>
 		/// The preferred keyboard to use to generate data encoded in this writing system.
 		/// </summary>
 		public virtual string Keyboard
@@ -800,39 +776,6 @@ namespace SIL.WritingSystems
 		{
 			get { return _windowsLcid ?? string.Empty; }
 			set { UpdateString(() => WindowsLcid, ref _windowsLcid, value); }
-		}
-
-		/// <summary>
-		/// This tracks the keyboard that should be used for this writing system on this computer.
-		/// It is not shared with other users of the project.
-		/// </summary>
-		public virtual IKeyboardDefinition LocalKeyboard
-		{
-			get
-			{
-				IKeyboardDefinition keyboard = _localKeyboard;
-				if (keyboard == null)
-				{
-					var available = new HashSet<IKeyboardDefinition>(WritingSystems.Keyboard.Controller.AllAvailableKeyboards);
-					keyboard = _knownKeyboards.FirstOrDefault(available.Contains);
-				}
-				if (keyboard == null)
-					keyboard = WritingSystems.Keyboard.Controller.DefaultForWritingSystem(this);
-				return keyboard;
-			}
-			set
-			{
-				if (UpdateField(() => LocalKeyboard, ref _localKeyboard, value))
-				{
-					if (value != null)
-						_knownKeyboards.Add(value);
-				}
-			}
-		}
-
-		internal IKeyboardDefinition RawLocalKeyboard
-		{
-			get { return _localKeyboard; }
 		}
 
 		/// <summary>
@@ -892,6 +835,39 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
+		/// This tracks the keyboard that should be used for this writing system on this computer.
+		/// It is not shared with other users of the project.
+		/// </summary>
+		public virtual IKeyboardDefinition LocalKeyboard
+		{
+			get
+			{
+				IKeyboardDefinition keyboard = _localKeyboard;
+				if (keyboard == null)
+				{
+					var available = new HashSet<IKeyboardDefinition>(WritingSystems.Keyboard.Controller.AllAvailableKeyboards);
+					keyboard = _knownKeyboards.FirstOrDefault(available.Contains);
+				}
+				if (keyboard == null)
+					keyboard = WritingSystems.Keyboard.Controller.DefaultForWritingSystem(this);
+				return keyboard;
+			}
+			set
+			{
+				if (UpdateField(() => LocalKeyboard, ref _localKeyboard, value))
+				{
+					if (value != null)
+						_knownKeyboards.Add(value);
+				}
+			}
+		}
+
+		internal IKeyboardDefinition RawLocalKeyboard
+		{
+			get { return _localKeyboard; }
+		}
+
+		/// <summary>
 		/// Keyboards known to have been used with this writing system. Not all may be available on this system.
 		/// Enhance: document (or add to this class?) a way of getting available keyboards.
 		/// </summary>
@@ -911,14 +887,33 @@ namespace SIL.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// The font used to display data encoded in this writing system
+		/// </summary>
+		public virtual FontDefinition DefaultFont
+		{
+			get
+			{
+				FontDefinition font = _defaultFont;
+				if (font == null)
+					font = _fonts.FirstOrDefault(fd => fd.Roles.HasFlag(FontRoles.Default));
+				if (font == null)
+					font = _fonts.FirstOrDefault();
+				return font;
+			}
+			set
+			{
+				if (UpdateField(() => DefaultFont, ref _defaultFont, value))
+				{
+					if (value != null && !_fonts.Contains(value))
+						_fonts.Add(value);
+				}
+			}
+		}
+
 		public ObservableKeyedCollection<string, FontDefinition> Fonts
 		{
 			get { return _fonts; }
-		}
-
-		public ObservableKeyedCollection<string, SpellCheckDictionaryDefinition> SpellCheckDictionaries
-		{
-			get { return _spellCheckDictionaries; }
 		}
 
 		public virtual SpellCheckDictionaryDefinition SpellCheckDictionary
@@ -932,6 +927,11 @@ namespace SIL.WritingSystems
 						_spellCheckDictionaries.Add(value);
 				}
 			}
+		}
+
+		public ObservableKeyedCollection<string, SpellCheckDictionaryDefinition> SpellCheckDictionaries
+		{
+			get { return _spellCheckDictionaries; }
 		}
 
 		public virtual string DefaultRegion
