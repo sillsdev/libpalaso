@@ -277,11 +277,10 @@ namespace SIL.WritingSystems.Tests
 		<script type='Latn'/>
 	</identity>
 	<delimiters>
-		<!-- Currently parser doesn't do anything with quotationStart, quotationEnd, alternateQuotationStart, alternateQuotationEnd -->
-		<quotationStart>qtStart</quotationStart>
-		<quotationEnd>qtEnd</quotationEnd>
-		<alternateQuotationStart>altQtStart</alternateQuotationStart>
-		<alternateQuotationEnd>altQtEnd</alternateQuotationEnd>
+		<quotationStart>'</quotationStart>
+		<quotationEnd>'</quotationEnd>
+		<alternateQuotationStart>{</alternateQuotationStart>
+		<alternateQuotationEnd>}</alternateQuotationEnd>
 		<special>
 			<sil:matched-pairs>
 				<sil:matched-pair open='mpOpen1' close='mpClose2' paraClose='false'></sil:matched-pair>
@@ -308,10 +307,18 @@ namespace SIL.WritingSystems.Tests
 			var pp = new PunctuationPattern("pattern1", PunctuationPatternContext.Medial);
 			Assert.That(wsFromLdml.PunctuationPatterns.FirstOrDefault(), Is.EqualTo(pp));
 			Assert.That(wsFromLdml.QuotationParagraphContinueType, Is.EqualTo(QuotationParagraphContinueType.Outermost));
-			var qm1 = new QuotationMark("open1", "close2", "cont3", 3, QuotationMarkingSystemType.Normal);
-			Assert.That(wsFromLdml.QuotationMarks.FirstOrDefault(), Is.EqualTo(qm1));
-			var qm2 = new QuotationMark("", null, null, 1, QuotationMarkingSystemType.Narrative);
+			// Verify Level 1 normal quotation marks (quotationStart and quotationEnd)
+			var qm1 = new QuotationMark("\"", "\"", null, 1, QuotationMarkingSystemType.Normal);
+			Assert.That(wsFromLdml.QuotationMarks[0], Is.EqualTo(qm1));
+			// Verify Level 2 normal quotation marks (alternateQuotationStart and alternateQuotationEnd)
+			var qm2 = new QuotationMark("{", "}", null, 2, QuotationMarkingSystemType.Normal);
 			Assert.That(wsFromLdml.QuotationMarks[1], Is.EqualTo(qm2));
+			// Verify Level 3 normal quotation marks (special: sil:quotation-marks)
+			var qm3 = new QuotationMark("open1", "close2", "cont3", 3, QuotationMarkingSystemType.Normal);
+			Assert.That(wsFromLdml.QuotationMarks[2], Is.EqualTo(qm3));
+			// Verify Level 1 narrative quotation marks (special: sil:quotation-marks)
+			var qm4 = new QuotationMark("", null, null, 1, QuotationMarkingSystemType.Narrative);
+			Assert.That(wsFromLdml.QuotationMarks[3], Is.EqualTo(qm4));
 		}
 
 #if WS_FIX

@@ -8,11 +8,11 @@ namespace Palaso.Extensions
 		/// Get the attribute value of the element as a string.
 		/// <param name="element">base XElement</param>
 		/// <param name="attribute">attribute to return</param>
-		/// <returns>attribute value.  string.Empty if the attribute doesn't exist</returns>
+		/// <returns>attribute value; null if there is no attribute with the specified name</returns>
 		/// </summary>
 		public static string GetAttributeValue(this XElement element, string attribute)
 		{
-			string value = (string) element.Attribute(attribute) ?? string.Empty;
+			string value = (string) element.Attribute(attribute) ?? null;
 			return value;
 		}
 
@@ -21,10 +21,10 @@ namespace Palaso.Extensions
 		/// </summary>
 		/// <param name="element">base XElement</param>
 		/// <param name="attribute">XName of the attribute to return</param>
-		/// <returns>attribute value.  string.Empty if the attribute doesn't exist</returns>
+		/// <returns>attribute value; null if there is no attribute with the specified name</returns>
 		public static string GetAttributeValue(this XElement element, XName attribute)
 		{
-			string value = (string) element.Attribute(attribute) ?? string.Empty;
+			string value = (string) element.Attribute(attribute) ?? null;
 			return value;
 		}
 
@@ -33,11 +33,11 @@ namespace Palaso.Extensions
 		/// <param name="element">parent XElement</param>
 		/// <param name="child">child element name</param>
 		/// <param name="attribute">attribute to return</param>
-		/// <returns>attribute value.  string.Empty if the attribute doesn't exist</returns>
+		/// <returns>attribute value; null if there is no attribute with the specified name</returns>
 		/// </summary>
 		public static string GetAttributeValue(this XElement element, string child, string attribute)
 		{
-			string value = string.Empty;
+			string value = null;
 			XElement childElem = element.Element(child);
 			if (childElem != null)
 			{
@@ -51,11 +51,11 @@ namespace Palaso.Extensions
 		/// <param name="element">parent XElement</param>
 		/// <param name="child">XName of the child element</param>
 		/// <param name="attribute">attribute to return</param>
-		/// <returns>attribute value.  string.Empty if the attribute doesn't exist</returns>
+		/// <returns>attribute value; null if there is no attribute with the specified name</returns>
 		/// </summary>
 		public static string GetAttributeValue(this XElement element, XName child, string attribute)
 		{
-			string value = string.Empty;
+			string value = null;
 			XElement childElem = element.Element(child);
 			if (childElem != null)
 			{
@@ -99,8 +99,9 @@ namespace Palaso.Extensions
 		}
 
 		/// <summary>
-		/// Set the attribute value of a child element as a string.  If the child element doesn't exist, it is created.
-		/// The attribute is removed if the value is null.
+		/// Set the attribute value of a child element as a string.
+		/// If value is not null or empty, the child element is created if it doesn't exist.
+		/// If value is null or empty, the attribute is removed.
 		/// </summary>
 		/// <param name="element">parent XElement</param>
 		/// <param name="child">child element name</param>
@@ -108,19 +109,28 @@ namespace Palaso.Extensions
 		/// <param name="value">attribute value</param>
 		public static void SetAttributeValue(this XElement element, string child, string attribute, string value)
 		{
-			XElement childElem = element.GetOrCreateElement(child);
-			XAttribute attr = childElem.Attribute(attribute);
+			XElement childElem = element.Element(child);
 			if (!string.IsNullOrEmpty(value))
-				childElem.SetAttributeValue(attribute, value);
-			else if (attr != null)
 			{
-				attr.Remove();
+				if (childElem == null)
+					childElem = element.GetOrCreateElement(child);
+				childElem.SetAttributeValue(attribute, value);
+			}
+			else if (childElem != null)
+			{
+				// Child element exists, so remove the blank attribute
+				XAttribute attr = childElem.Attribute(attribute);
+				if (attr != null)
+				{
+					attr.Remove();
+				}
 			}
 		}
 
 		/// <summary>
-		/// Set the attribute value of a child element as a string.  If the child element doesn't exist, it is created.
-		/// The attribute is removed if the value is null.
+		/// Set the attribute value of a child element as a string.
+		/// If value is not null or empty, the child element is created if it doesn't exist.
+		/// If value is null or empty, the attribute is removed.
 		/// </summary>
 		/// <param name="element">parent XElement</param>
 		/// <param name="child">XName of the child element</param>
@@ -128,13 +138,21 @@ namespace Palaso.Extensions
 		/// <param name="value">attribute value</param>
 		public static void SetAttributeValue(this XElement element, XName child, string attribute, string value)
 		{
-			XElement childElem = element.GetOrCreateElement(child);
-			XAttribute attr = childElem.Attribute(attribute);
+			XElement childElem = element.Element(child);
 			if (!string.IsNullOrEmpty(value))
-				childElem.SetAttributeValue(attribute, value);
-			else if (attr != null)
 			{
-				attr.Remove();
+				if (childElem == null)
+					childElem = element.GetOrCreateElement(child);
+				childElem.SetAttributeValue(attribute, value);
+			}
+			else if (childElem != null)
+			{
+				// Child element exists, so remove the blank attribute
+				XAttribute attr = childElem.Attribute(attribute);
+				if (attr != null)
+				{
+					attr.Remove();
+				}
 			}
 		}
 	}

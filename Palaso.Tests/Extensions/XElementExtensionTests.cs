@@ -21,16 +21,14 @@ namespace Palaso.Tests.Extensions
 		public void GetNullAttribute()
 		{
 			XElement root = XElement.Parse(Contents);
-			string attribute = root.GetAttributeValue("date");
-			Assert.That(attribute.Equals(string.Empty));
+			Assert.Null(root.GetAttributeValue("date"));
 		}
 
 		[Test]
 		public void GetChildNullAttribute()
 		{
 			XElement root = XElement.Parse(Contents);
-			string attribute = root.GetAttributeValue("identity", "date");
-			Assert.That(attribute.Equals(string.Empty));
+			Assert.Null(root.GetAttributeValue("identity", "date"));
 		}
 
 		[Test]
@@ -71,7 +69,7 @@ namespace Palaso.Tests.Extensions
 			XElement root = XElement.Parse(Contents);
 			// Assert child element exists, but attribute does not
 			Assert.That(root.Elements("identity").Any(), Is.True);
-			Assert.That(root.GetAttributeValue("identity", "color"), Is.EqualTo(string.Empty));
+			Assert.Null(root.GetAttributeValue("identity", "color"));
 			// Set the new attribute
 			root.SetAttributeValue("identity", "color", "blue");
 			Assert.That(root.GetAttributeValue("identity", "color"), Is.EqualTo("blue"));
@@ -83,7 +81,7 @@ namespace Palaso.Tests.Extensions
 			XElement root = XElement.Parse(Contents);
 			// Assert child element exists, but attribute does not
 			Assert.That(root.Elements(Sil + "special").Any(), Is.True);
-			Assert.That(root.GetAttributeValue(Sil + "special", "color"), Is.EqualTo(string.Empty));
+			Assert.Null(root.GetAttributeValue(Sil + "special", "color"));
 			// Set the attribute
 			root.SetAttributeValue(Sil + "special", "color", "blue");
 			Assert.That(root.GetAttributeValue(Sil + "special", "color").Equals("blue"));
@@ -95,13 +93,19 @@ namespace Palaso.Tests.Extensions
 			XElement root = XElement.Parse(Contents);
 			string attribute = root.GetAttributeValue("identity", "version");
 			Assert.That(attribute.Equals("3.14"));
+			// Modify and verify version attribute
 			root.SetAttributeValue("identity", "version", "4.0");
 			Assert.That(root.GetAttributeValue("identity", "version"), Is.EqualTo("4.0"));
-			// Remove the attribute
-			root.SetAttributeValue("identity", "version", null);
+			// Set color attribute and remove with null
+			root.SetAttributeValue("identity", "color", "blue");
+			Assert.That(root.GetAttributeValue("identity", "color"), Is.EqualTo("blue"));
+			root.SetAttributeValue("identity", "color", null);
+			Assert.That(string.IsNullOrEmpty(root.GetAttributeValue("identity", "color")));
+			// Remove the version attribute with empty string
+			root.SetAttributeValue("identity", "version", "");
 			XAttribute attr = root.Element("identity").Attribute("version");
 			Assert.Null(attr);
-			// Attempt to remove the attribute again
+			// Attempt to remove the version attribute again
 			root.SetAttributeValue("identity", "version", null);
 			attr = root.Element("identity").Attribute("version");
 			Assert.Null(attr);
@@ -112,7 +116,7 @@ namespace Palaso.Tests.Extensions
 		{
 			XElement root = XElement.Parse(Contents);
 			string attribute = root.GetAttributeValue(Sil + "special", "date");
-			Assert.That(attribute.Equals(string.Empty));
+			Assert.Null(attribute);
 			
 		}
 
@@ -122,13 +126,19 @@ namespace Palaso.Tests.Extensions
 			XElement root = XElement.Parse(Contents);
 			string attribute = root.GetAttributeValue(Sil + "special", "version");
 			Assert.That(attribute.Equals("10"));
+			// Modify and verify version attribute
 			root.SetAttributeValue(Sil + "special", "version", "4.0");
 			Assert.That(root.GetAttributeValue(Sil + "special", "version"), Is.EqualTo("4.0"));
-			// Remove the attribute
-			root.SetAttributeValue(Sil + "special", "version", null);
+			// Set color attribute and remove with null
+			root.SetAttributeValue(Sil + "special", "color", "blue");
+			Assert.That(root.GetAttributeValue(Sil + "special", "color"), Is.EqualTo("blue"));
+			root.SetAttributeValue(Sil + "special", "color", null);
+			Assert.That(string.IsNullOrEmpty(root.GetAttributeValue(Sil + "special", "color")));
+			// Remove the version attribute with empty string
+			root.SetAttributeValue(Sil + "special", "version", "");
 			XAttribute attr = root.Element(Sil + "special").Attribute("version");
 			Assert.Null(attr);
-			// Attempt to remove the attribute again
+			// Attempt to remove the version attribute again
 			root.SetAttributeValue(Sil + "special", "version", null);
 			attr = root.Element(Sil + "special").Attribute("version");
 			Assert.Null(attr);
