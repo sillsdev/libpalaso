@@ -49,6 +49,7 @@ namespace SIL.WritingSystems
 		private static readonly Regex LangPattern;
 		private static readonly Regex ScriptPattern;
 		private static readonly Regex RegionPattern;
+		private static readonly Regex VariantPattern;
 		private static readonly Regex PrivateUsePattern;
 
 		static IetfLanguageTag()
@@ -58,6 +59,7 @@ namespace SIL.WritingSystems
 			LangPattern = new Regex("\\A(" + LanguageExpr + ")\\z", RegexOptions.ExplicitCapture);
 			ScriptPattern = new Regex("\\A(" + ScriptExpr + ")\\z", RegexOptions.ExplicitCapture);
 			RegionPattern = new Regex("\\A(" + RegionExpr + ")\\z", RegexOptions.ExplicitCapture);
+			VariantPattern = new Regex("\\A(" + VariantSubExpr + ")\\z", RegexOptions.ExplicitCapture);
 			PrivateUsePattern = new Regex("\\A(" + PrivateUseSubExpr + ")\\z", RegexOptions.ExplicitCapture);
 		}
 
@@ -110,6 +112,21 @@ namespace SIL.WritingSystems
 		public static bool IsValidLanguageCode(string code)
 		{
 			return LangPattern.IsMatch(code);
+		}
+
+		public static bool IsValidScriptCode(string code)
+		{
+			return ScriptPattern.IsMatch(code);
+		}
+
+		public static bool IsValidRegionCode(string code)
+		{
+			return RegionPattern.IsMatch(code);
+		}
+
+		public static bool IsValidVariantCode(string code)
+		{
+			return VariantPattern.IsMatch(code);
 		}
 
 		/// <summary>
