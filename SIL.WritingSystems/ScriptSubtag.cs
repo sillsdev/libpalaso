@@ -12,6 +12,11 @@
 		{
 		}
 
+		public ScriptSubtag(ScriptSubtag subtag, string name)
+			: this(subtag.Code, name, subtag.IsPrivateUse)
+		{
+		}
+
 		public string ShortName
 		{
 			get

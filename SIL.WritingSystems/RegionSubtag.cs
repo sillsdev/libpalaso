@@ -12,6 +12,11 @@
 		{
 		}
 
+		public RegionSubtag(RegionSubtag subtag, string name)
+			: this(subtag.Code, name, subtag.IsPrivateUse)
+		{
+		}
+
 		public static implicit operator RegionSubtag(string code)
 		{
 			if (string.IsNullOrEmpty(code))
