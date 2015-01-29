@@ -133,7 +133,16 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 				sb.AppendLine("<div class='imageWrap' id='" + htmlPath
 					+ "'><div class='imageWrapRel'><div class='imageWrapOuter'><div class='imageWrapMid'><div class='imageWrapInner'>");
 				// the data-echo attribute is part of lazy loading for very long lists (see below).
-				sb.AppendLine("<img class='image' src='' data-echo='file://" + new Uri(GetThumbnailFile(path)).AbsolutePath + "'>");
+
+				if (PlatformUtilities.Platform.IsWindows)
+				{
+					sb.AppendLine("<img class='image' src='' data-echo='file://" + htmlPath + "'>");
+				}
+				else
+				{
+					sb.AppendLine("<img class='image' src='' data-echo='file://" + new Uri(GetThumbnailFile(path)).AbsolutePath + "'>");
+				}
+				
 				sb.AppendLine("</div></div></div></div></div>");
 			}
 			sb.AppendLine("</p>");
