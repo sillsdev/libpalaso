@@ -68,9 +68,6 @@
 	<Reference Include="Ionic.Zip">
 	  <HintPath>..\lib\Ionic.Zip.dll</HintPath>
 	</Reference>
-	<Reference Include="L10NSharp">
-	  <HintPath>..\packages\L10NSharp.1.1.3\lib\net40-Client\L10NSharp.dll</HintPath>
-	</Reference>
 	<Reference Include="System" />
 	<Reference Include="System.configuration" />
 	<Reference Include="System.Core" />
@@ -133,6 +130,30 @@
 	  <LastGenOutput>Settings.Designer.cs</LastGenOutput>
 	</None>
 	<None Include="Resources\EmptyMets.xml" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+	<Reference Include="..\lib\Debug\L10NSharp.dll">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\Debug\L10NSharp.dll</HintPath>
+	</Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+	<Reference Include="..\lib\Release\L10NSharp.dll">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\Release\L10NSharp.dll</HintPath>
+	</Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'DebugMono'">
+	<Reference Include="..\lib\DebugMono\L10NSharp.dll">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\DebugMono\L10NSharp.dll</HintPath>
+	</Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'ReleaseMono'">
+	<Reference Include="..\lib\ReleaseMono\L10NSharp.dll">
+	  <SpecificVersion>False</SpecificVersion>
+	  <HintPath>..\lib\ReleaseMono\L10NSharp.dll</HintPath>
+	</Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
