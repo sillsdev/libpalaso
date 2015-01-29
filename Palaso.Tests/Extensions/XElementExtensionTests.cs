@@ -21,14 +21,14 @@ namespace Palaso.Tests.Extensions
 		public void GetNullAttribute()
 		{
 			XElement root = XElement.Parse(Contents);
-			Assert.Null(root.GetAttributeValue("date"));
+			Assert.That(root.GetAttributeValue("date"), Is.Null);
 		}
 
 		[Test]
 		public void GetChildNullAttribute()
 		{
 			XElement root = XElement.Parse(Contents);
-			Assert.Null(root.GetAttributeValue("identity", "date"));
+			Assert.That(root.GetAttributeValue("identity", "date"), Is.Null);
 		}
 
 		[Test]
@@ -54,11 +54,11 @@ namespace Palaso.Tests.Extensions
 		{
 			XElement root = XElement.Parse(Contents);
 			// Test child previously doesn't exist and will be created
-			Assert.Null(root.Element("child"));
+			Assert.That(root.Element("child"), Is.Null);
 			XElement childElem = root.GetOrCreateElement("child");
 			Assert.That(root.Element("child"), Is.EqualTo(childElem));
 			// Test Sil:child previously doesn't exist and will be created
-			Assert.Null(root.Element(Sil + "child"));
+			Assert.That(root.Element(Sil + "child"), Is.Null);
 			XElement silChildElem = root.GetOrCreateElement(Sil + "child");
 			Assert.That(root.Element(Sil + "child"), Is.EqualTo(silChildElem));
 		}
@@ -69,7 +69,7 @@ namespace Palaso.Tests.Extensions
 			XElement root = XElement.Parse(Contents);
 			// Assert child element exists, but attribute does not
 			Assert.That(root.Elements("identity").Any(), Is.True);
-			Assert.Null(root.GetAttributeValue("identity", "color"));
+			Assert.That(root.GetAttributeValue("identity", "color"), Is.Null);
 			// Set the new attribute
 			root.SetAttributeValue("identity", "color", "blue");
 			Assert.That(root.GetAttributeValue("identity", "color"), Is.EqualTo("blue"));
@@ -81,7 +81,7 @@ namespace Palaso.Tests.Extensions
 			XElement root = XElement.Parse(Contents);
 			// Assert child element exists, but attribute does not
 			Assert.That(root.Elements(Sil + "special").Any(), Is.True);
-			Assert.Null(root.GetAttributeValue(Sil + "special", "color"));
+			Assert.That(root.GetAttributeValue(Sil + "special", "color"), Is.Null);
 			// Set the attribute
 			root.SetAttributeValue(Sil + "special", "color", "blue");
 			Assert.That(root.GetAttributeValue(Sil + "special", "color").Equals("blue"));
@@ -104,11 +104,11 @@ namespace Palaso.Tests.Extensions
 			// Remove the version attribute with empty string
 			root.SetAttributeValue("identity", "version", "");
 			XAttribute attr = root.Element("identity").Attribute("version");
-			Assert.Null(attr);
+			Assert.That(attr, Is.Null);
 			// Attempt to remove the version attribute again
 			root.SetAttributeValue("identity", "version", null);
 			attr = root.Element("identity").Attribute("version");
-			Assert.Null(attr);
+			Assert.That(attr, Is.Null);
 		}
 
 		[Test]
@@ -116,7 +116,7 @@ namespace Palaso.Tests.Extensions
 		{
 			XElement root = XElement.Parse(Contents);
 			string attribute = root.GetAttributeValue(Sil + "special", "date");
-			Assert.Null(attribute);
+			Assert.That(attribute, Is.Null);
 			
 		}
 
@@ -137,11 +137,29 @@ namespace Palaso.Tests.Extensions
 			// Remove the version attribute with empty string
 			root.SetAttributeValue(Sil + "special", "version", "");
 			XAttribute attr = root.Element(Sil + "special").Attribute("version");
-			Assert.Null(attr);
+			Assert.That(attr, Is.Null);
 			// Attempt to remove the version attribute again
 			root.SetAttributeValue(Sil + "special", "version", null);
 			attr = root.Element(Sil + "special").Attribute("version");
-			Assert.Null(attr);
+			Assert.That(attr, Is.Null);
+		}
+
+		[Test]
+		public void SetOptionalAttribute()
+		{
+			XElement root = XElement.Parse(Contents);
+			XElement identityElem = root.Element("identity");
+			identityElem.SetOptionalAttributeValue("color", "blue");
+			Assert.That(root.GetAttributeValue("identity", "color"), Is.EqualTo("blue"));
+			// Remove the color attribute with empty string
+			identityElem.SetOptionalAttributeValue("color", string.Empty);
+			Assert.That(root.GetAttributeValue("identity", "color"), Is.Null);
+			// Recreate the color attribute
+			identityElem.SetOptionalAttributeValue("color", "blue");
+			Assert.That(root.GetAttributeValue("identity", "color"), Is.EqualTo("blue"));
+			// Remove the color attribute with null
+			identityElem.SetOptionalAttributeValue("color", null);
+			Assert.That(root.GetAttributeValue("identity", "color"), Is.Null);
 		}
 	}
 }

@@ -29,20 +29,11 @@ namespace SIL.WritingSystems
 	/// </summary>
 	public class LdmlDataMapper
 	{
-		private readonly XmlNamespaceManager _nameSpaceManager;
 		private bool _wsIsFlexPrivateUse;
 #if WS_FIX
 		private WritingSystemCompatibility _compatibilityMode;
 #endif
-		private static XNamespace FW = "urn://fieldworks.sil.org/ldmlExtensions/v1";
-		private static XNamespace Palaso = "urn://palaso.org/ldmlExtensions/v1";
-		private static XNamespace Palaso2 = "urn://palaso.org/ldmlExtensions/v2";
 		private static XNamespace Sil = "urn://www.sil.org/ldml/0.1";
-
-		public LdmlDataMapper()
-		{
-			_nameSpaceManager = MakeNameSpaceManager();
-		}
 
 		/// <summary>
 		/// Mapping of font engine attribute to FontEngines enumeration.
@@ -53,6 +44,17 @@ namespace SIL.WritingSystems
 			{string.Empty, FontEngines.OpenType | FontEngines.Graphite },
 			{"ot", FontEngines.OpenType},
 			{"gr", FontEngines.Graphite}
+		};
+
+		/// <summary>
+		/// Mapping of FontEngines enumeration to font engine attribute.
+		/// If the engine is none, leave an empty string
+		/// </summary>
+		private static readonly Dictionary<FontEngines, string> FontEnginesToEngine = new Dictionary<FontEngines, string>
+		{
+			{FontEngines.None, string.Empty},
+			{FontEngines.OpenType, "ot"},
+			{FontEngines.Graphite, "gr"}
 		};
 
 		/// <summary>
@@ -68,7 +70,17 @@ namespace SIL.WritingSystems
 		};
 
 		/// <summary>
-		/// Mapping of spell checking type attribute to SpellCheckDictionaryFormat
+		/// Mapping of FontRoles enumeration to font role/type attribute
+		/// </summary>
+		private static readonly Dictionary<FontRoles, string> FontRolesToRole = new Dictionary<FontRoles, string> 
+		{
+			{FontRoles.Default, "default"},
+			{FontRoles.Heading, "heading"},
+			{FontRoles.Emphasis, "emphasis"}
+		};
+
+		/// <summary>
+		/// Mapping of spell checking type attribute to SpellCheckDictionaryFormat enumeration
 		/// </summary>
 		private static readonly Dictionary<string, SpellCheckDictionaryFormat> SpellCheckToSpecllCheckDictionaryFormats = new Dictionary
 			<string, SpellCheckDictionaryFormat>
@@ -80,7 +92,19 @@ namespace SIL.WritingSystems
 		};
 
 		/// <summary>
-		/// Mapping of keyboard type attribute to KeyboardFormat
+		/// Mapping of SpellCheckDictionaryFormat enumeration to spell checking type attribute
+		/// </summary>
+		private static readonly Dictionary<SpellCheckDictionaryFormat, string> SpellCheckDictionaryFormatsToSpellCheck = new Dictionary
+			<SpellCheckDictionaryFormat, string>
+		{
+			{SpellCheckDictionaryFormat.Unknown, string.Empty},
+			{SpellCheckDictionaryFormat.Hunspell, "hunspell"},
+			{SpellCheckDictionaryFormat.Wordlist, "wordlist"},
+			{SpellCheckDictionaryFormat.Lift, "lift"}
+		};
+
+		/// <summary>
+		/// Mapping of keyboard type attribute to KeyboardFormat enumeration
 		/// </summary>
 		private static readonly Dictionary<string, KeyboardFormat> KeyboardToKeyboardFormat = new Dictionary<string, KeyboardFormat>
 		{
@@ -93,7 +117,20 @@ namespace SIL.WritingSystems
 		}; 
 
 		/// <summary>
-		/// Mapping of context attribute to PunctuationPatternContext
+		/// Mapping of KeyboardFormat enumeration to keyboard type attribute
+		/// </summary>
+		private static readonly Dictionary<KeyboardFormat, string> KeyboardFormatToKeyboard = new Dictionary<KeyboardFormat, string>
+		{
+			{KeyboardFormat.Unknown, string.Empty},
+			{KeyboardFormat.Keyman, "kmn"},
+			{KeyboardFormat.CompiledKeyman, "kmx"},
+			{KeyboardFormat.Msklc, "msklc"},
+			{KeyboardFormat.Ldml, "ldml"},
+			{KeyboardFormat.Keylayout, "keylayout"}
+		}; 
+
+		/// <summary>
+		/// Mapping of context attribute to PunctuationPatternContext enumeration
 		/// </summary>
 		private static readonly Dictionary<string, PunctuationPatternContext> ContextToPunctuationPatternContext = new Dictionary<string, PunctuationPatternContext>
 		{
@@ -105,7 +142,19 @@ namespace SIL.WritingSystems
 		};
 
 		/// <summary>
-		/// Mapping of paraContinueType attribute to QuotationParagraphContinueType
+		/// Mapping of PunctuationPatternContext enumeration to context attribute
+		/// </summary>
+		private static readonly Dictionary<PunctuationPatternContext, string> PunctuationPatternContextToContext = new Dictionary<PunctuationPatternContext, string>
+		{
+			{PunctuationPatternContext.Initial, "init"},
+			{PunctuationPatternContext.Medial, "medial"},
+			{PunctuationPatternContext.Final, "final"},
+			{PunctuationPatternContext.Break, "break"},
+			{PunctuationPatternContext.Isolate, "isolate"}
+		};
+
+		/// <summary>
+		/// Mapping of paraContinueType attribute to QuotationParagraphContinueType enumeration
 		/// </summary>
 		private static readonly Dictionary<string, QuotationParagraphContinueType> QuotationToQuotationParagraphContinueTypes = new Dictionary<string, QuotationParagraphContinueType>
 		{
@@ -116,12 +165,32 @@ namespace SIL.WritingSystems
 		};
 
 		/// <summary>
-		/// Mapping of quotation marking system attribute to QuotationMarkingSystemType
+		/// Mapping of QuotationParagraphContinueType enumeration to paraContinueType attribute
+		/// </summary>
+		private static readonly Dictionary<QuotationParagraphContinueType, string> QuotationParagraphContinueTypesToQuotation = new Dictionary<QuotationParagraphContinueType, string>
+		{
+			{QuotationParagraphContinueType.None, string.Empty},
+			{QuotationParagraphContinueType.All, "all"},
+			{QuotationParagraphContinueType.Outermost, "outer"},
+			{QuotationParagraphContinueType.Innermost, "inner"}
+		};
+
+		/// <summary>
+		/// Mapping of quotation marking system attribute to QuotationMarkingSystemType enumeration
 		/// </summary>
 		private static readonly Dictionary<string, QuotationMarkingSystemType>QuotationToQuotationMarkingSystemTypes = new Dictionary<string, QuotationMarkingSystemType>
 		{
 			{string.Empty, QuotationMarkingSystemType.Normal},
 			{"narrative", QuotationMarkingSystemType.Narrative}
+		};
+
+		/// <summary>
+		/// Mapping of QuotationMarkingSystemType enumeration to quotation marking system attribute
+		/// </summary>
+		private static readonly Dictionary<QuotationMarkingSystemType, string> QuotationMarkingSystemTypesToQuotation = new Dictionary<QuotationMarkingSystemType, string>
+		{
+			{QuotationMarkingSystemType.Normal, string.Empty},
+			{QuotationMarkingSystemType.Narrative, "narrative"}
 		};
 
 		public void Read(string filePath, WritingSystemDefinition ws)
@@ -150,7 +219,6 @@ namespace SIL.WritingSystems
 			}
 			var settings = new XmlReaderSettings
 			{
-				NameTable = _nameSpaceManager.NameTable,
 				ConformanceLevel = ConformanceLevel.Auto,
 				ValidationType = ValidationType.None,
 				XmlResolver = null,
@@ -161,11 +229,6 @@ namespace SIL.WritingSystems
 				XElement element = XElement.Load(reader);
 				ReadLdml(element, ws);
 			}
-		}
-
-		private static bool FindElement(XmlReader reader, string name)
-		{
-			return XmlHelpers.FindNextElementInSequence(reader, name, LdmlNodeComparer.CompareElementNames);
 		}
 
 		public static void WriteLdmlText(XmlWriter writer, string text)
@@ -219,15 +282,19 @@ namespace SIL.WritingSystems
 
 			XElement charactersElem = element.Element("characters");
 			if (charactersElem != null)
-				ReadCharacterElem(charactersElem, ws);
+				ReadCharacterElement(charactersElem, ws);
 
 			XElement delimitersElem = element.Element("delimiters");
 			if (delimitersElem != null)
-				ReadDelimitersElem(delimitersElem, ws);
+				ReadDelimitersElement(delimitersElem, ws);
 
 			XElement layoutElem = element.Element("layout");
 			if (layoutElem != null)
 				ReadLayoutElement(layoutElem, ws);
+
+			XElement numbersElem = element.Element("numbers");
+			if (numbersElem != null)
+				ReadNumbersElement(numbersElem, ws);
 
 			XElement collationsElem = element.Element("collations");
 			if (collationsElem != null)
@@ -241,79 +308,14 @@ namespace SIL.WritingSystems
 			ws.AcceptChanges();
 		}
 
-		protected virtual void ReadTopLevelSpecialElement(XElement specialElem, WritingSystemDefinition ws)
+		private void ReadTopLevelSpecialElement(XElement specialElem, WritingSystemDefinition ws)
 		{
-			if (specialElem.Attribute(XNamespace.Xmlns + "palaso") != null)
+			XElement externalResourcesElem = specialElem.Element(Sil + "external-resources");
+			if (externalResourcesElem != null)
 			{
-				ws.Abbreviation = GetSpecialValue(specialElem, Palaso, "abbreviation");
-#if WS_FIX
-				ws.DefaultFontName = GetAttributeString(specialElem, "palaso", "defaultFontFamily");
-				ws.DefaultFontSize = GetAttributeFloat(specialElem, "palaso", "defaultFontSize");
-#endif
-				ws.Keyboard = GetSpecialValue(specialElem, Palaso, "defaultKeyboard");
-				string isLegacyEncoded = GetSpecialValue(specialElem, Palaso, "isLegacyEncoded");
-				if (!String.IsNullOrEmpty(isLegacyEncoded))
-				{
-					ws.IsUnicodeEncoded = !Convert.ToBoolean(isLegacyEncoded);
-				}
-				ws.LanguageName = GetSpecialValue(specialElem, Palaso, "languageName");
-#if WS_FIX
-				ws.SpellCheckingId = GetSpecialValue(specialElem, Palaso, "spellCheckingId");
-#endif
-				if (!_wsIsFlexPrivateUse)
-				{
-					string version = GetSpecialValue(specialElem, Palaso, "version");
-					version = string.IsNullOrEmpty(version) ? "0" : version;
-					if (version != WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString(CultureInfo.InvariantCulture))
-					{
-						throw new ApplicationException(String.Format(
-							"The LDML tag '{0}' is version {1}.  Version {2} was expected.",
-							ws.LanguageTag,
-							version,
-							WritingSystemDefinition.LatestWritingSystemDefinitionVersion
-							));
-					}
-				}
-			}
-			else if (specialElem.Attribute(XNamespace.Xmlns + "palaso2") != null)
-			{
-				XElement keyboardElem = specialElem.Element("special");
-				GetKnownKeyboards(keyboardElem, ws);
-			}
-			else if (specialElem.Attribute(XNamespace.Xmlns + "fw") != null)
-			{
-				ws.WindowsLcid = GetLcid(specialElem);
-			}
-			else
-			{
-				XElement externalResourcesElem = specialElem.Element(Sil + "external-resources");
-				if (externalResourcesElem != null)
-				{
-					ReadFontElement(externalResourcesElem, ws);
-					ReadSpellcheckElement(externalResourcesElem, ws);
-					ReadKeyboardElement(externalResourcesElem, ws);
-				}
-			}
-		}
-
-		private string GetLcid(XElement element)
-		{
-			Debug.Assert(element.NodeType == XmlNodeType.Element && element.Name == "special");
-			XElement windowsLcidElem = element.Element(FW + "windowsLCID");
-			return windowsLcidElem == null ? string.Empty : (string) windowsLcidElem.Attribute("value");
-		}
-
-		private void GetKnownKeyboards(XElement knownKeyboards, WritingSystemDefinition ws)
-		{
-			Debug.Assert(knownKeyboards.Name == KnownKeyboardsElementName);
-			IEnumerable<XElement> keyboardList = knownKeyboards.Elements(Palaso2 + KeyboardElementName);
-			foreach(XElement keyboardElem in keyboardList)
-			{
-#if WS_FIX
-				IKeyboardDefinition keyboard = Keyboard.Controller.CreateKeyboardDefinition((string)keyboardElem.Attribute(LayoutAttrName),
-					(string)keyboardElem.Attribute(LocaleAttrName));
-				ws.KnownKeyboards.Add(keyboard);
-#endif
+				ReadFontElement(externalResourcesElem, ws);
+				ReadSpellcheckElement(externalResourcesElem, ws);
+				ReadKeyboardElement(externalResourcesElem, ws);
 			}
 		}
 
@@ -340,9 +342,9 @@ namespace SIL.WritingSystems
 					{
 						fd.Roles = FontRoles.Default;
 					}
-							
-					// Size
-					fd.DefaultSize = (float?) fontElem.Attribute("size") ?? 1.0f;
+
+					// Relative Size
+					fd.DefaultRelativeSize = (float?) fontElem.Attribute("size") ?? 1.0f;
 
 					// Minversion
 					fd.MinVersion = fontElem.GetAttributeValue("minversion");
@@ -484,7 +486,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private void ReadCharacterElem(XElement charactersElem, WritingSystemDefinition ws)
+		private void ReadCharacterElement(XElement charactersElem, WritingSystemDefinition ws)
 		{
 			Debug.Assert(charactersElem.Name == "characters");
 
@@ -518,11 +520,27 @@ namespace SIL.WritingSystems
 			ws.CharacterSets.Add(csd);
 		}
 
-		private void ReadDelimitersElem(XElement delimitersElem, WritingSystemDefinition ws)
+		private void ReadDelimitersElement(XElement delimitersElem, WritingSystemDefinition ws)
 		{
 			Debug.Assert(delimitersElem.Name == "delimiters");
 
-			// Currently we don't use quotationStart, quotationEnd, alternateQuotationStart, alternateQuotationEnd
+			// level 1: quotationStart, quotationEnd
+			string open = (string)delimitersElem.Element("quotationStart");
+			string close = (string)delimitersElem.Element("quotationEnd");
+			if (!string.IsNullOrEmpty(open) || (!string.IsNullOrEmpty(close)))
+			{
+				var qm = new QuotationMark(open, close, null, 1, QuotationMarkingSystemType.Normal);
+				ws.QuotationMarks.Add(qm);
+			}
+
+			// level 2: alternateQuotationStart, alternateQuotationEnd
+			open = (string)delimitersElem.Element("alternateQuotationStart");
+			close = (string)delimitersElem.Element("alternateQuotationEnd");
+			if (!string.IsNullOrEmpty(open) || (!string.IsNullOrEmpty(close)))
+			{
+				var qm = new QuotationMark(open, close, null, 2, QuotationMarkingSystemType.Normal);
+				ws.QuotationMarks.Add(qm);
+			}
 
 			XElement specialElem = delimitersElem.Element("special");
 			if (specialElem != null)
@@ -532,8 +550,8 @@ namespace SIL.WritingSystems
 				{
 					foreach (XElement matchedPairElem in matchedPairsElem.Elements(Sil + "matched-pair"))
 					{
-						string open = matchedPairElem.GetAttributeValue("open");
-						string close = matchedPairElem.GetAttributeValue("close");
+						open = matchedPairElem.GetAttributeValue("open");
+						close = matchedPairElem.GetAttributeValue("close");
 						bool paraClose = (bool?) matchedPairElem.Attribute("paraClose") ?? false;
 						MatchedPair mp = new MatchedPair(open, close, paraClose);
 						ws.MatchedPairs.Add(mp);
@@ -556,23 +574,20 @@ namespace SIL.WritingSystems
 				XElement quotationsElem = specialElem.Element(Sil + "quotation-marks");
 				if (quotationsElem != null)
 				{
-					// Currently we don't use quotationContinue or alternateQuotationContinue
-
 					ws.QuotationParagraphContinueType = QuotationToQuotationParagraphContinueTypes[
 						quotationsElem.GetAttributeValue("paraContinueType")];
 
 					foreach (XElement quotationElem in quotationsElem.Elements(Sil + "quotation"))
 					{
-						string open = quotationElem.GetAttributeValue("open");
-						string close = quotationElem.GetAttributeValue("close");
+						open = quotationElem.GetAttributeValue("open");
+						close = quotationElem.GetAttributeValue("close");
 						string cont = quotationElem.GetAttributeValue("continue");
 						int level = (int?)quotationElem.Attribute("level") ?? 1;
-						QuotationMarkingSystemType type;
-						if (QuotationToQuotationMarkingSystemTypes.TryGetValue(quotationElem.GetAttributeValue("type") ?? string.Empty, out type))
-						{
-							QuotationMark qm = new QuotationMark(open, close, cont, level, type);
-							ws.QuotationMarks.Add(qm);
-						}
+						string type = quotationElem.GetAttributeValue("type");
+						QuotationMarkingSystemType qmType = !string.IsNullOrEmpty(type) ? QuotationToQuotationMarkingSystemTypes[type] : QuotationMarkingSystemType.Normal;
+						
+						var qm = new QuotationMark(open, close, cont, level, qmType);
+						ws.QuotationMarks.Add(qm);
 					}
 				}
 			}
@@ -588,8 +603,35 @@ namespace SIL.WritingSystems
 			// are top-to-bottom characters and right-to-left lines, but can also be written with
 			// left-to-right characters and top-to-bottom lines.
 			//Debug.Assert(layoutElem.NodeType == XmlNodeType.Element && layoutElem.Name == "layout");
-			string characters = layoutElem.GetAttributeValue("orientation", "characters");
-			ws.RightToLeftScript = (characters == "right-to-left");
+			string characterOrder = layoutElem.GetAttributeValue("orientation", "characterOrder");
+			ws.RightToLeftScript = (characterOrder == "right-to-left");
+		}
+
+		// Numbering system gets added to the character set definition
+		private void ReadNumbersElement(XElement numbersElem, WritingSystemDefinition ws)
+		{
+			Debug.Assert(numbersElem.Name == "numbers");
+
+			XElement defaultNumberingSystemElem = numbersElem.Element("defaultNumberingSystem");
+			if (defaultNumberingSystemElem != null)
+			{
+				string id = (string) defaultNumberingSystemElem;
+				var numberingSystemsElem =
+					numbersElem.Elements("numberingSystem")
+						.Where(e => id == e.GetAttributeValue("id") && e.GetAttributeValue("type") == "numeric")
+						.FirstOrDefault();
+				if (numberingSystemsElem != null)
+				{
+					var csd = new CharacterSetDefinition("numeric");
+					// Only handle numeric types
+					string digits = numberingSystemsElem.GetAttributeValue("digits");
+					foreach (var charItem in digits)
+					{
+						csd.Characters.Add(charItem.ToString());
+					}
+					ws.CharacterSets.Add(csd);
+				}
+			}
 		}
 
 		private void ReadCollationsElement(XElement collationsElem, WritingSystemDefinition ws)
@@ -646,7 +688,10 @@ namespace SIL.WritingSystems
 					// TODO: Throw exception with ErrorMsg?
 				}
 				else
+				{
 					cd.IcuRules = LdmlCollationParser.GetIcuRulesFromCollationNode(collationElem);
+					cd.IsValid = true;
+				}
 
 				ws.Collations.Add(cd);
 				if (collationType == defaultCollation)
@@ -693,11 +738,11 @@ namespace SIL.WritingSystems
 			XmlReader reader = null;
 			try
 			{
+				XElement element = null;
 				if (oldFile != null)
 				{
 					var readerSettings = new XmlReaderSettings
 					{
-						NameTable = _nameSpaceManager.NameTable,
 						IgnoreWhitespace = true,
 						ConformanceLevel = ConformanceLevel.Auto,
 						ValidationType = ValidationType.None,
@@ -705,11 +750,21 @@ namespace SIL.WritingSystems
 						DtdProcessing = DtdProcessing.Parse
 					};
 					reader = XmlReader.Create(oldFile, readerSettings);
+					element = XElement.Load(reader);
 				}
-				using (var writer = XmlWriter.Create(filePath, CanonicalXmlSettings.CreateXmlWriterSettings()))
+				else
 				{
-					writer.WriteStartDocument();
-					WriteLdml(writer, reader, ws);
+					element = new XElement("ldml");
+				}
+				// Use Canonical xml settings suitable for use in Chorus applications
+				// except NewLineOnAttributes to conform to SLDR files
+				var writerSettings = CanonicalXmlSettings.CreateXmlWriterSettings();
+				writerSettings.NewLineOnAttributes = false;
+				using (var writer = XmlWriter.Create(filePath, writerSettings))
+				{
+					// Assign SIL namespace
+					element.SetAttributeValue(XNamespace.Xmlns + "sil", Sil);
+					WriteLdml(writer, element, ws);
 					writer.Close();
 				}
 			}
@@ -741,211 +796,107 @@ namespace SIL.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			XmlReader reader = null;
 			try
 			{
+				XElement element = null;
 				if (oldFileReader != null)
 				{
-					var settings = new XmlReaderSettings
-					{
-						NameTable = _nameSpaceManager.NameTable,
-						IgnoreWhitespace = true,
-						ConformanceLevel = ConformanceLevel.Auto,
-						ValidationType = ValidationType.None,
-						XmlResolver = null,
-						DtdProcessing = DtdProcessing.Parse
-					};
-					reader = XmlReader.Create(oldFileReader, settings);
+					element = XElement.Load(oldFileReader);
 				}
-				WriteLdml(xmlWriter, reader, ws);
+				else
+				{
+					element = new XElement("ldml");
+				}
+				WriteLdml(xmlWriter, element, ws);
 			}
 			finally
 			{
-				if (reader != null)
-				{
-					reader.Close();
-				}
 			}
 		}
 
-		private void WriteLdml(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
+		/// <summary>
+		/// Update element based on the writing system model.  At the end, write the contents to LDML
+		/// </summary>
+		/// <param name="writer"></param>
+		/// <param name="element"></param>
+		/// <param name="ws"></param>
+		private void WriteLdml(XmlWriter writer, XElement element, WritingSystemDefinition ws)
 		{
 			_wsIsFlexPrivateUse = false;
-			Debug.Assert(writer != null);
+			Debug.Assert(element != null);
 			Debug.Assert(ws != null);
-			writer.WriteStartElement("ldml");
-			if (reader != null)
+
+			XElement identityElem = element.GetOrCreateElement("identity");
+			WriteIdentityElement(identityElem, ws);
+			if (identityElem.IsEmpty)
+				identityElem.Remove();
+
+			XElement charactersElem = element.GetOrCreateElement("characters");
+			WriteCharactersElement(charactersElem, ws);
+			if (charactersElem.IsEmpty)
+				charactersElem.Remove();
+
+			XElement delimitersElem = element.GetOrCreateElement("delimiters");
+			WriteDelimitersElement(delimitersElem, ws);
+			if (delimitersElem.IsEmpty)
+				delimitersElem.Remove();
+
+			XElement layoutElem = element.GetOrCreateElement("layout");
+			WriteLayoutElement(layoutElem, ws);
+			if (layoutElem.IsEmpty)
+				layoutElem.Remove();
+
+			XElement numbersElem = element.GetOrCreateElement("numbers");
+			WriteNumbersElement(numbersElem, ws);
+			if (numbersElem.IsEmpty)
+				numbersElem.Remove();
+
+			XElement collationsElem = element.GetOrCreateElement("collations");
+			WriteCollationsElement(collationsElem, ws);
+			if (collationsElem.IsEmpty)
+				collationsElem.Remove();
+
+			// TODO: Can have multiple specials.  Find the one with external-resources.  Also handle case where we
+			// create special because writingsystem has entries to write
+			XElement specialElem = element.Elements("special").FirstOrDefault(e => e.Element(Sil + "external-resources") != null);
+			if (specialElem == null && (ws.Fonts.Count > 0 || ws.KnownKeyboards.Count > 0 || ws.SpellCheckDictionaries.Count > 0))
 			{
-				reader.MoveToContent();
-				reader.ReadStartElement("ldml");
-				CopyUntilElement(writer, reader, "identity");
+				// Create element
+				specialElem = element.GetOrCreateElement("special");
 			}
-			WriteIdentityElement(writer, reader, ws);
-			if (reader != null)
+			if (specialElem != null)
 			{
-				CopyUntilElement(writer, reader, "layout");
+				WriteTopLevelSpecialElements(specialElem, ws);
+				if (specialElem.IsEmpty)
+					specialElem.Remove();
 			}
-			WriteLayoutElement(writer, reader, ws);
-			if (reader != null)
-			{
-				CopyUntilElement(writer, reader, "collations");
-			}
-			WriteCollationsElement(writer, reader, ws);
-			if (reader != null)
-			{
-				CopyUntilElement(writer, reader, "special");
-			}
-			WriteTopLevelSpecialElements(writer, reader, ws);
-			if (reader != null)
-			{
-				CopyOtherSpecialElements(writer, reader);
-				CopyToEndElement(writer, reader);
-			}
-			writer.WriteEndElement();
+
+			element.WriteTo(writer);
 		}
 
-		private void CopyUntilElement(XmlWriter writer, XmlReader reader, string elementName)
+		private void WriteIdentityElement(XElement identityElem, WritingSystemDefinition ws)
 		{
-			Debug.Assert(writer != null);
-			Debug.Assert(reader != null);
-			Debug.Assert(!string.IsNullOrEmpty(elementName));
-			if (reader.NodeType == XmlNodeType.None)
-			{
-				reader.Read();
-			}
-			while (!reader.EOF && reader.NodeType != XmlNodeType.EndElement
-				&& (reader.NodeType != XmlNodeType.Element || LdmlNodeComparer.CompareElementNames(reader.Name, elementName) < 0))
-			{
-				// XmlWriter.WriteNode doesn't do anything if the node type is Attribute
-				if (reader.NodeType == XmlNodeType.Attribute)
-				{
-					writer.WriteAttributes(reader, false);
-				}
-				else
-				{
-					writer.WriteNode(reader, false);
-				}
-			}
-		}
-
-		private void CopyToEndElement(XmlWriter writer, XmlReader reader)
-		{
-			Debug.Assert(writer != null);
-			Debug.Assert(reader != null);
-			while (!reader.EOF && reader.NodeType != XmlNodeType.EndElement)
-			{
-				// XmlWriter.WriteNode doesn't do anything if the node type is Attribute
-				if (reader.NodeType == XmlNodeType.Attribute)
-				{
-					writer.WriteAttributes(reader, false);
-				}
-				else
-				{
-					writer.WriteNode(reader, false);
-				}
-			}
-			// either read the end element or no-op if EOF
-			reader.Read();
-		}
-
-		private void CopyOtherSpecialElements(XmlWriter writer, XmlReader reader)
-		{
-			Debug.Assert(writer != null);
-			Debug.Assert(reader != null);
-			while(!reader.EOF && reader.NodeType != XmlNodeType.EndElement
-					 && (reader.NodeType != XmlNodeType.Element || reader.Name == "special"))
-			{
-				if(reader.NodeType == XmlNodeType.Element)
-				{
-					bool knownNs = IsKnownSpecialElement(reader);
-					reader.MoveToElement();
-					if(knownNs)
-					{
-						reader.Skip();
-						continue;
-					}
-				}
-				writer.WriteNode(reader, false);
-			}
-		}
-
-		private bool IsKnownSpecialElement(XmlReader reader)
-		{
-			while (reader.MoveToNextAttribute())
-			{
-				if (reader.Name.StartsWith("xmlns:") && _nameSpaceManager.HasNamespace(reader.Name.Substring(6, reader.Name.Length - 6)))
-					return true;
-			}
-			return false;
-		}
-
-		public void FillWithDefaults(string rfc4646, WritingSystemDefinition ws)
-		{
-			string id = rfc4646.ToLower();
-			switch (id)
-			{
-				case "en-latn":
-					ws.Language = "en";
-					ws.LanguageName = "English";
-					ws.Abbreviation = "eng";
-					ws.Script = "Latn";
-					break;
-				 default:
-					ws.Script = "Latn";
-					break;
-			}
-		}
-
-
-		protected string GetSpecialValue(XElement element, XNamespace ns, string field)
-		{
-			XElement child = element.Element(ns + field);
-			return child == null ? string.Empty : (string) child.Attribute("value");
-		}
-
-		private XmlNamespaceManager MakeNameSpaceManager()
-		{
-			XmlNamespaceManager m = new XmlNamespaceManager(new NameTable());
-			AddNamespaces(m);
-			return m;
-		}
-
-		protected virtual void AddNamespaces(XmlNamespaceManager m)
-		{
-			m.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
-			m.AddNamespace("palaso2", "urn://palaso.org/ldmlExtensions/v2");
-		}
-
-		private void WriteElementWithAttribute(XmlWriter writer, string elementName, string attributeName, string value)
-		{
-			writer.WriteStartElement(elementName);
-			writer.WriteAttributeString(attributeName, value);
-			writer.WriteEndElement();
-		}
-
-		protected void WriteSpecialValue(XmlWriter writer, string ns, string field, string value)
-		{
-			if (String.IsNullOrEmpty(value))
-			{
-				return;
-			}
-			writer.WriteStartElement(field, _nameSpaceManager.LookupNamespace(ns));
-			writer.WriteAttributeString("value", value);
-			writer.WriteEndElement();
-		}
-
-		private void WriteIdentityElement(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
-		{
-			Debug.Assert(writer != null);
+			Debug.Assert(identityElem != null);
 			Debug.Assert(ws != null);
-			writer.WriteStartElement("identity");
-			writer.WriteStartElement("version");
-			writer.WriteAttributeString("number", ws.VersionNumber);
-			if (!string.IsNullOrEmpty(ws.VersionDescription))
-				writer.WriteString(ws.VersionDescription);
-			writer.WriteEndElement();
-			WriteElementWithAttribute(writer, "generation", "date", String.Format("{0:s}", ws.DateModified));
 
+			// Remove non-special elements and repopulate later
+			identityElem.Elements().Where(e => e.Name != "special").Remove();
+
+			// Remove special sil:identity elements and repopulate later
+			XElement specialElem = identityElem.Element("special");
+			if (specialElem != null)
+			{
+				identityElem.Element("special").Elements().Where(e => e.Name == Sil + "identity").Remove();
+				if (specialElem.IsEmpty)
+					specialElem.Remove();
+			}
+
+			// Version is required.  If VersionNumber is blank, the empty attribute is still written
+			XElement versionElem = identityElem.GetOrCreateElement("version");
+			versionElem.SetAttributeValue("number", ws.VersionNumber);
+
+			identityElem.SetAttributeValue("generation", "date", String.Format("{0:s}", ws.DateModified));
+			// TODO: Keeping this block until we sort out migration
 #if WS_FIX
 			bool copyFlexFormat = false;
 			string language = String.Empty;
@@ -996,390 +947,434 @@ namespace SIL.WritingSystems
 				WriteRFC5646TagElements(writer, ws.Language, ws.Script, ws.Region, ws.Variant);
 			}
 #else
-			WriteLanguageTagElements(writer, ws.LanguageTag);
+			WriteLanguageTagElements(identityElem, ws.LanguageTag);
 #endif
-			if (IsReaderOnElementNodeNamed(reader, "identity"))
+			// Create special element if data needs to be written
+			if (!string.IsNullOrEmpty(ws.WindowsLcid) || !string.IsNullOrEmpty(ws.DefaultRegion) || (ws.Variants.Count > 0))
 			{
-				reader.Skip();
+				specialElem = identityElem.GetOrCreateElement("special");
+				XElement silIdentityElem = specialElem.GetOrCreateElement(Sil + "identity");
+
+				// TODO: how do we recover uid attribute?
+
+				silIdentityElem.SetOptionalAttributeValue("windowsLCID", ws.WindowsLcid);
+				silIdentityElem.SetOptionalAttributeValue("defaultRegion", ws.DefaultRegion);
+				// TODO: For now, use the first variant as the variantName
+				if (ws.Variants.Count > 0)
+					silIdentityElem.SetOptionalAttributeValue("variantName", ws.Variants.First().Name);
 			}
-			if (IsReaderOnElementNodeNamed(reader, "special"))
-			{
-				CopyToEndElement(writer, reader);
-			}
-			if (IsReaderOnEndElementNodeNamed(reader, "identity"))
-			{
-				reader.Read();
-			}
-			writer.WriteEndElement();
 		}
 
-		private void WriteLanguageTagElements(XmlWriter writer, string languageTag)
+		private void WriteLanguageTagElements(XElement identityElem, string languageTag) 
 		{
 			string language, script, region, variant;
 			IetfLanguageTag.GetParts(languageTag, out language, out script, out region, out variant);
-
-			WriteElementWithAttribute(writer, "language", "type", language);
-			if (!String.IsNullOrEmpty(script))
-			{
-				WriteElementWithAttribute(writer, "script", "type", script);
-			}
-			if (!String.IsNullOrEmpty(region))
-			{
-				WriteElementWithAttribute(writer, "territory", "type", region);
-			}
-			if (!String.IsNullOrEmpty(variant))
-			{
-				WriteElementWithAttribute(writer, "variant", "type", variant);
-			}
+			
+			// language element is required
+			identityElem.SetAttributeValue("language", "type", language);
+			// write the rest if they have contents
+			if (!string.IsNullOrEmpty(script))
+				identityElem.SetAttributeValue("script", "type", script);
+			if (!string.IsNullOrEmpty(region))
+				identityElem.SetAttributeValue("territory", "type", region);
+			if (!string.IsNullOrEmpty(variant))
+				identityElem.SetAttributeValue("variant", "type", variant);
 		}
-
-		private bool IsReaderOnElementNodeNamed(XmlReader reader, string name)
+				
+		private void WriteCharactersElement(XElement charactersElem, WritingSystemDefinition ws)
 		{
-			return reader != null && reader.NodeType == XmlNodeType.Element && reader.Name == name;
-		}
-
-		private bool IsReaderOnEndElementNodeNamed(XmlReader reader, string name)
-		{
-			return reader != null && reader.NodeType == XmlNodeType.EndElement && reader.Name == name;
-		}
-
-		private void WriteLayoutElement(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
-		{
-			Debug.Assert(writer != null);
+			Debug.Assert(charactersElem != null);
 			Debug.Assert(ws != null);
-			bool needToCopy = reader != null && reader.NodeType == XmlNodeType.Element && reader.Name == "layout";
-			// if we're left-to-right, we don't need to write out default values
-			bool needLayoutElement = ws.RightToLeftScript;
 
-			if (needLayoutElement)
+			// Remove all exemplarCharacters and Sil:exemplarCharacters to repopulate later
+			charactersElem.Elements("exemplarCharacters").Remove();
+			XElement specialElem = charactersElem.Element("special");
+			if (specialElem != null)
 			{
-				writer.WriteStartElement("layout");
-				writer.WriteStartElement("orientation");
-				// omit default value for "lines" attribute
-				writer.WriteAttributeString("characters", "right-to-left");
-				writer.WriteEndElement();
+				specialElem.Elements(Sil + "exemplarCharacters").Remove();
+				if (specialElem.IsEmpty)
+					specialElem.Remove();
 			}
-			if (needToCopy)
+
+			foreach (var csd in ws.CharacterSets)
 			{
-				if (reader.IsEmptyElement)
+				XElement exemplarCharactersElem = null;
+				switch (csd.Type)
 				{
-					reader.Skip();
+					// These character sets go to the normal LDML exemplarCharacters space
+					// http://unicode.org/reports/tr35/tr35-general.html#Exemplars
+					case "main" :
+					case "auxiliary" :
+					case "index" :
+					case "punctuation" :
+						exemplarCharactersElem = new XElement("exemplarCharacters", UnicodeSet.ToPattern(csd.Characters));
+						// Assume main set doesn't have an attribute type
+						if (csd.Type != "main")
+							exemplarCharactersElem.SetAttributeValue("type", csd.Type);
+						charactersElem.Add(exemplarCharactersElem);
+						break;
+					// All others go to special Sil:exemplarCharacters
+					default :
+						exemplarCharactersElem = new XElement(Sil + "exemplarCharacters", UnicodeSet.ToPattern(csd.Characters));
+						exemplarCharactersElem.SetAttributeValue("type", csd.Type);
+						specialElem = charactersElem.GetOrCreateElement("special");
+						specialElem.Add(exemplarCharactersElem);
+						break;
 				}
+			}
+		}
+
+		private void WriteDelimitersElement(XElement delimitersElem, WritingSystemDefinition ws)
+		{
+			Debug.Assert(delimitersElem != null);
+			Debug.Assert(ws != null);
+
+			// Remove existing non-special elements and repopulate
+			delimitersElem.Elements().Where(e => e.Name != "special").Remove();
+
+			// Level 1 normal => quotationStart and quotationEnd
+			QuotationMark qm1 = ws.QuotationMarks.Where(q => q.Level == 1 && q.Type == QuotationMarkingSystemType.Normal).FirstOrDefault();
+			if (qm1 != null)
+			{
+				var quotationStartElem = new XElement("quotationStart", qm1.Open);
+				var quotationEndElem = new XElement("quotationEnd", qm1.Close);
+				delimitersElem.Add(quotationStartElem);
+				delimitersElem.Add(quotationEndElem);
+			}
+			// Level 2 normal => alternateQuotationStart and alternateQuotationEnd
+			QuotationMark qm2 = ws.QuotationMarks.Where(q => q.Level == 2 && q.Type == QuotationMarkingSystemType.Normal).FirstOrDefault();
+			if (qm2 != null)
+			{
+				var alternateQuotationStartElem = new XElement("alternateQuotationStart", qm2.Open);
+				var alternateQuotationEndElem = new XElement("alternateQuotationEnd", qm2.Close);
+				delimitersElem.Add(alternateQuotationStartElem);
+				delimitersElem.Add(alternateQuotationEndElem);
+			}
+
+			// Remove all exisiting Sil:matched pairs and repopulate
+			XElement specialElem = delimitersElem.Element("special");
+			XElement matchedPairsElem = null;
+			if (specialElem != null)
+			{
+				matchedPairsElem = specialElem.Element(Sil + "matched-pairs");
+				if (matchedPairsElem != null)
+				{
+					matchedPairsElem.Elements(Sil + "matched-pair").Remove();
+					if (matchedPairsElem.IsEmpty)
+						matchedPairsElem.Remove();
+				}
+				if (specialElem.IsEmpty)
+					specialElem.Remove();
+			}
+			foreach (var mp in ws.MatchedPairs)
+			{
+				var matchedPairElem = new XElement(Sil + "matched-pair");
+				// open and close are required
+				matchedPairElem.SetAttributeValue("open", mp.Open);
+				matchedPairElem.SetAttributeValue("close", mp.Close);
+				matchedPairElem.SetAttributeValue("paraClose", mp.ParagraphClose ); // optional, default to false?
+				specialElem = delimitersElem.GetOrCreateElement("special");
+				matchedPairsElem = specialElem.GetOrCreateElement(Sil + "matched-pairs");
+				matchedPairsElem.Add(matchedPairElem);
+			}
+
+			// Remove all existing Sil:punctuation-patterns and repopulate
+			XElement punctuationPatternsElem = null;
+			if (specialElem != null)
+			{
+				punctuationPatternsElem = specialElem.Element(Sil + "punctuation-patterns");
+				if (punctuationPatternsElem != null)
+				{
+					punctuationPatternsElem.Elements(Sil + "punctuation-patterns").Remove();
+					if (punctuationPatternsElem.IsEmpty)
+						punctuationPatternsElem.Remove();
+				}
+				if (specialElem.IsEmpty)
+					specialElem.Remove();
+			}
+			foreach (var pp in ws.PunctuationPatterns)
+			{
+				var punctuationPatternElem = new XElement(Sil + "punctuation-pattern");
+				// text is required
+				punctuationPatternElem.SetAttributeValue("pattern", pp.Pattern);
+				punctuationPatternElem.SetAttributeValue("context", PunctuationPatternContextToContext[pp.Context]);
+				specialElem = delimitersElem.GetOrCreateElement("special");
+				punctuationPatternsElem = specialElem.GetOrCreateElement(Sil + "punctuation-patterns");
+				punctuationPatternsElem.Add(punctuationPatternElem);
+			}
+
+			// Preserve existing Sil:quotation-marks that aren't narrative or blank.
+			// Remove the rest since we will repopulate them
+			XElement quotationmarksElem = null;
+			if (specialElem != null)
+			{
+				quotationmarksElem = specialElem.Element(Sil + "quotation-marks");
+				if (quotationmarksElem != null)
+				{
+					quotationmarksElem.Elements(Sil + "quotation").Where(e=>string.IsNullOrEmpty(e.GetAttributeValue("type"))).Remove();
+					quotationmarksElem.Elements(Sil + "quotation").Where(e=>e.GetAttributeValue("type") == "narrative").Remove();
+					if (quotationmarksElem.IsEmpty)
+						quotationmarksElem.Remove();
+				}
+				if (specialElem.IsEmpty)
+					specialElem.Remove();
+			}
+
+			foreach (var qm in ws.QuotationMarks)
+			{
+				// Level 1 and 2 normal have already been written
+				if (!((qm.Level == 1 || qm.Level == 2) && qm.Type == QuotationMarkingSystemType.Normal))
+				{
+					var quotationElem = new XElement(Sil + "quotation");
+					// open and level required
+					quotationElem.SetAttributeValue("open", qm.Open);
+					quotationElem.SetOptionalAttributeValue("close", qm.Close);
+					quotationElem.SetOptionalAttributeValue("continue", qm.Continue);
+					quotationElem.SetAttributeValue("level", qm.Level);
+					// normal quotation mark can have no attribute defined.  Narrative --> "narrative"
+					quotationElem.SetAttributeValue("type", QuotationMarkingSystemTypesToQuotation[qm.Type]);
+
+					specialElem = delimitersElem.GetOrCreateElement("special");
+					quotationmarksElem = specialElem.GetOrCreateElement(Sil + "quotation-marks");
+					quotationmarksElem.Add(quotationElem);
+				}
+			}
+			if ((ws.QuotationParagraphContinueType != QuotationParagraphContinueType.None) && (quotationmarksElem != null))
+			{
+				quotationmarksElem.SetAttributeValue("paraContinueType",
+					QuotationParagraphContinueTypesToQuotation[ws.QuotationParagraphContinueType]);
+			}
+		}
+
+		private void WriteLayoutElement(XElement layoutElem, WritingSystemDefinition ws)
+		{
+			Debug.Assert(layoutElem != null);
+			Debug.Assert(ws != null);
+
+			// Remove characterOrder element and repopulate
+			XElement orientationElem = layoutElem.Element("orientation");
+			if (orientationElem != null)
+			{
+				orientationElem.Elements().Where(e => e.Name == "characterOrder").Remove();
+				if (orientationElem.IsEmpty)
+					orientationElem.Remove();
+			}
+
+			// we generally don't need to write out default values, but SLDR seems to always write characterOrder
+			orientationElem = layoutElem.GetOrCreateElement("orientation");
+			XElement characterOrderElem = orientationElem.GetOrCreateElement("characterOrder");
+			characterOrderElem.SetValue(ws.RightToLeftScript ? "right-to-left" : "left-to-right");
+			// Ignore lineOrder
+		}
+
+		private void WriteNumbersElement(XElement numbersElem, WritingSystemDefinition ws)
+		{
+			Debug.Assert(numbersElem != null);
+			Debug.Assert(ws != null);
+
+			// Remove numberingSystems of type numeric and repopulate
+			numbersElem.Elements("numberingSystem").Where(e => e.GetAttributeValue("type") == "numeric").Remove();
+ 
+			foreach (var csd in ws.CharacterSets)
+			{
+				if (csd.Type == "numeric")
+				{
+					var numberingSystemsElem = new XElement("numberingSystems");
+					numberingSystemsElem.SetAttributeValue("type", csd.Type);
+					string digits = string.Join("", csd.Characters);
+					numberingSystemsElem.SetAttributeValue("digits", digits);
+					numbersElem.Add(numberingSystemsElem);
+				}
+			}
+		}
+
+		private void WriteCollationsElement(XElement collationsElem, WritingSystemDefinition ws)
+		{
+			Debug.Assert(collationsElem != null);
+			Debug.Assert(ws != null);
+
+			// Preserve exisiting collations since we don't process them all
+			// Remove only the collations we can repopulate from the writing system
+			collationsElem.Descendants("special").Where(e => e.Name != (Sil + "reordered")).Remove();
+			collationsElem.Descendants("special").Where(e => e.IsEmpty).Remove();
+
+			if (ws.DefaultCollation != null)
+			{
+				XElement defaultCollationElem = collationsElem.GetOrCreateElement("defaultCollation");
+				defaultCollationElem.SetValue(ws.DefaultCollation.Type);
+			}
+			
+			foreach (var collation in ws.Collations)
+			{
+				WriteCollationElement(collationsElem, collation);
+			}
+		}
+
+		private void WriteCollationElement(XElement collationsElem, CollationDefinition collation)
+		{
+			Debug.Assert(collationsElem != null);
+			Debug.Assert(collation != null);
+
+			// Find the collation with the matching attribute Type
+			var collationElem = collationsElem.Elements("collation").Where(e=> e.GetAttributeValue("type") == collation.Type).FirstOrDefault();
+			if (collationElem == null)
+			{
+				collationElem = new XElement("collation", new XAttribute("type", collation.Type));
+				collationsElem.Add(collationElem);
+			}
+			// If collation valid and icu rules exist, populate icu rules
+			if (!string.IsNullOrEmpty(collation.IcuRules))
+			{
+				XElement crElem = collationElem.GetOrCreateElement("cr");
+				// Remove existing Icu rule
+				crElem.RemoveAll();
+				crElem.Add(new XCData(collation.IcuRules));
+				// SLDR generally doesn't include needsCompiling if false
+				if (collation.IsValid)
+					collationElem.SetAttributeValue(Sil + "needsCompiling", null);
 				else
-				{
-					reader.Read();
-					// skip any existing orientation and alias element, and copy the rest
-					if (FindElement(reader, "orientation"))
-					{
-						reader.Skip();
-					}
-					if (reader.NodeType != XmlNodeType.EndElement && !needLayoutElement)
-					{
-						needLayoutElement = true;
-						writer.WriteStartElement("layout");
-					}
-					CopyToEndElement(writer, reader);
-				}
+					collationElem.SetAttributeValue(Sil + "needsCompiling", "true");
 			}
-			if (needLayoutElement)
+			var inheritedCollation = collation as InheritedCollationDefinition;
+			if (inheritedCollation != null)
 			{
-				writer.WriteEndElement();
+				XElement specialElem = collationElem.GetOrCreateElement("special");
+				collationElem = specialElem.GetOrCreateElement(Sil + "inherited");
+				WriteCollationRulesFromOtherLanguage(collationElem, (InheritedCollationDefinition)collation);
 			}
+			var simpleCollation = collation as SimpleCollationDefinition;
+			if (simpleCollation != null)
+			{
+				XElement specialElem = collationElem.GetOrCreateElement("special");
+				collationElem = specialElem.GetOrCreateElement(Sil + "simple");
+				WriteCollationRulesFromCustomSimple(collationElem, (SimpleCollationDefinition)collation);
+			}
+			
 		}
 
-		protected void WriteBeginSpecialElement(XmlWriter writer, string ns)
+		private void WriteCollationRulesFromOtherLanguage(XElement collationElement, InheritedCollationDefinition cd)
 		{
-			writer.WriteStartElement("special");
-			writer.WriteAttributeString("xmlns", ns, null, _nameSpaceManager.LookupNamespace(ns));
+			Debug.Assert(collationElement != null);
+			Debug.Assert(cd != null);
+			
+			// base and type are required attributes
+			collationElement.SetAttributeValue("base", cd.BaseLanguageTag);
+			collationElement.SetAttributeValue("type", cd.BaseType);
 		}
 
-		private const string KnownKeyboardsElementName = "knownKeyboards";
-		private const string Palaso2NamespaceName = "palaso2";
-		private const string KeyboardElementName = "keyboard";
-		private const string LayoutAttrName = "layout";
-		private const string LocaleAttrName = "locale";
-		protected virtual void WriteTopLevelSpecialElements(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
+		private void WriteCollationRulesFromCustomSimple(XElement collationElement, SimpleCollationDefinition cd)
 		{
-			// Note. As per appendix L2 'Canonical Form' of the LDML specification elements are ordered alphabetically.
-			WriteBeginSpecialElement(writer, "palaso");
-			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "abbreviation", ws.Abbreviation);
-#if WS_FIX
-			WriteSpecialValue(writer, "palaso", "defaultFontFamily", ws.DefaultFontName);
-			if (ws.DefaultFontSize != 0)
-			{
-				WriteSpecialValue(writer, "palaso", "defaultFontSize", ws.DefaultFontSize.ToString());
-			}
-#endif
-			WriteSpecialValue(writer, "palaso", "defaultKeyboard", ws.Keyboard);
-			if (!ws.IsUnicodeEncoded)
-			{
-				WriteSpecialValue(writer, "palaso", "isLegacyEncoded", (!ws.IsUnicodeEncoded).ToString());
-			}
-			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "languageName", ws.LanguageName);
-#if WS_FIX
-			if (!String.IsNullOrEmpty(ws.SpellCheckingId))
-			{
-				WriteSpecialValue(writer, "palaso", "spellCheckingId", ws.SpellCheckingId);
-			}
-#endif
-			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "version", WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString());
-			writer.WriteEndElement();
+			Debug.Assert(collationElement != null);
+			Debug.Assert(cd != null);
 
-#if WS_FIX
-			if (ws.KnownKeyboards.Any())
-			{
-				var p2Namespace = _nameSpaceManager.LookupNamespace(Palaso2NamespaceName);
-				WriteBeginSpecialElement(writer, Palaso2NamespaceName);
-				writer.WriteStartElement(KnownKeyboardsElementName, p2Namespace);
-				foreach (var keyboard in ws.KnownKeyboards)
-				{
-					writer.WriteStartElement(KeyboardElementName, p2Namespace);
-					writer.WriteAttributeString(LayoutAttrName, keyboard.Layout);
-					writer.WriteAttributeString(LocaleAttrName, keyboard.Locale);
-					writer.WriteEndElement(); // Keyboard
-				}
-				writer.WriteEndElement(); // KnownKeyboards
-				WriteFlexOrPalasoConformElement(writer, reader, Palaso2NamespaceName, "version",
-					WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString());
-				writer.WriteEndElement(); // Special
-			}
-#endif
+			collationElement.Add(new XCData(cd.SimpleRules));
+		}
+		
+		private void WriteTopLevelSpecialElements(XElement specialElem, WritingSystemDefinition ws)
+		{
+			XElement externalResourcesElem = specialElem.GetOrCreateElement(Sil + "external-resources");
+			WriteFontElement(externalResourcesElem, ws);
+			WriteSpellcheckElement(externalResourcesElem, ws);
+			WriteKeyboardElement(externalResourcesElem, ws);
 		}
 
-		private void WriteFlexOrPalasoConformElement(XmlWriter writer, XmlReader reader, string nameSpaceName, string nodeName, string value)
+		private void WriteFontElement(XElement externalResourcesElem, WritingSystemDefinition ws)
 		{
-			if(_wsIsFlexPrivateUse)
-			{
-				CopyOldFlexNode(reader, writer, nameSpaceName, nodeName);
-			}
-			else
-			{
-				WriteSpecialValue(writer, nameSpaceName, nodeName, value);
-			}
-		}
-
-		private void CopyOldFlexNode(XmlReader reader, XmlWriter writer, string nameSpaceName, string nodeName)
-		{
-			if(reader != null && reader.ReadToDescendant(nodeName, _nameSpaceManager.LookupNamespace(nameSpaceName)))
-			{
-				writer.WriteNode(reader, true);
-			}
-		}
-
-		private void WriteCollationsElement(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
-		{
-			Debug.Assert(writer != null);
+			Debug.Assert(externalResourcesElem != null);
 			Debug.Assert(ws != null);
-			bool needToCopy = reader != null && reader.NodeType == XmlNodeType.Element && reader.Name == "collations";
 
-			writer.WriteStartElement("collations");
-			if (needToCopy)
+			// Remove exisiting fonts and repopulate
+			externalResourcesElem.Elements(Sil + "font").Remove();
+			foreach (var font in ws.Fonts)
 			{
-				if (reader.IsEmptyElement)
+				var fontElem = new XElement(Sil + "font");
+				fontElem.SetAttributeValue("name", font.Name);
+
+				// Generate space-separated list of font roles
+				if (font.Roles != FontRoles.Default)
 				{
-					reader.Skip();
-					needToCopy = false;
-				}
-				else
-				{
-					reader.ReadStartElement("collations");
-					if (FindElement(reader, "alias"))
+					List<string> fontRoleList = new List<string>();
+					foreach (FontRoles fontRole in Enum.GetValues(typeof(FontRoles)))
 					{
-						reader.Skip();
+						if ((font.Roles & fontRole) != 0)
+							fontRoleList.Add(FontRolesToRole[fontRole]);
 					}
-					CopyUntilElement(writer, reader, "collation");
+					fontElem.SetAttributeValue("types", string.Join(" ", fontRoleList));
 				}
+
+				if (font.DefaultRelativeSize != 1.0f)
+				{
+					fontElem.SetAttributeValue("size", font.DefaultRelativeSize);
+				}
+
+				fontElem.SetOptionalAttributeValue("minverison", font.MinVersion);
+				fontElem.SetOptionalAttributeValue("features", font.Features);
+				fontElem.SetOptionalAttributeValue("lang", font.Language);
+				fontElem.SetOptionalAttributeValue("otlang", font.OpenTypeLanguage);
+				fontElem.SetOptionalAttributeValue("subset", font.Subset);
+
+				// Generate space-separated list of font engines
+				if (font.Engines != (FontEngines.Graphite | FontEngines.OpenType))
+				{
+					List<string> fontEngineList = new List<string>();
+					foreach (FontEngines fontEngine in Enum.GetValues(typeof (FontEngines)))
+					{
+						if ((font.Engines & fontEngine) != 0)
+							fontEngineList.Add(FontEnginesToEngine[fontEngine]);
+					}
+					fontElem.SetAttributeValue("engines", string.Join(" ", fontEngineList));
+				}
+
+				externalResourcesElem.Add(fontElem);
 			}
-			WriteCollationElement(writer, reader, ws);
-			if (needToCopy)
-			{
-				CopyToEndElement(writer, reader);
-			}
-			writer.WriteEndElement();
 		}
 
-		private void WriteCollationElement(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
+		private void WriteSpellcheckElement(XElement externalResourcesElem, WritingSystemDefinition ws)
 		{
-			Debug.Assert(writer != null);
+			Debug.Assert(externalResourcesElem != null);
 			Debug.Assert(ws != null);
-#if WS_FIX
-			bool needToCopy = reader != null && reader.NodeType == XmlNodeType.Element && reader.Name == "collation";
-			if (needToCopy)
-			{
-				string collationType = reader.GetAttribute("type");
-				needToCopy = String.IsNullOrEmpty(collationType) || collationType == "standard";
-			}
-			if (needToCopy && reader.IsEmptyElement)
-			{
-				reader.Skip();
-				needToCopy = false;
-			}
 
-			if (ws.CollationRulesType == CollationRulesTypes.DefaultOrdering && !needToCopy)
-				return;
+			// Remove spellcheck entries and repopulate
+			externalResourcesElem.Elements(Sil + "spellcheck").Remove();
+			foreach (SpellCheckDictionaryDefinition scd in ws.SpellCheckDictionaries)
+			{
+				var scElem = new XElement(Sil + "spellcheck");
+				scElem.SetAttributeValue("type", SpellCheckDictionaryFormatsToSpellCheck[scd.Format]);
 
-			if (needToCopy && reader.IsEmptyElement)
-			{
-				reader.Skip();
-				needToCopy = false;
-			}
-			if (!needToCopy)
-			{
-				// set to null if we don't need to copy to make it easier to tell in the methods we call
-				reader = null;
-			}
-			else
-			{
-				reader.ReadStartElement("collation");
-				while (reader.NodeType == XmlNodeType.Attribute)
+				// URL elements
+				foreach (var url in scd.Urls)
 				{
-					reader.Read();
+					var urlElem  = new XElement(Sil + "url", url);
+					scElem.Add(urlElem);
 				}
+				externalResourcesElem.Add(scElem);
 			}
+		}
 
-			if (ws.CollationRulesType != CollationRulesTypes.DefaultOrdering)
+		private void WriteKeyboardElement(XElement externalResourcesElem, WritingSystemDefinition ws)
+		{
+			Debug.Assert(externalResourcesElem != null);
+			Debug.Assert(ws != null);
+			
+			// Remove keyboard entries and repopulate
+			externalResourcesElem.Elements(Sil + "keyboard").Remove();
+
+			foreach (var keyboard in ws.KnownKeyboards)
 			{
-				writer.WriteStartElement("collation");
-				switch (ws.CollationRulesType)
+				var kbdElem = new XElement(Sil + "kbd");
+				// id required
+				kbdElem.SetAttributeValue("id", keyboard.Id);
+				if (!string.IsNullOrEmpty(keyboard.Id))
 				{
-					case CollationRulesTypes.OtherLanguage:
-						WriteCollationRulesFromOtherLanguage(writer, reader, ws);
-						break;
-					case CollationRulesTypes.CustomSimple:
-						WriteCollationRulesFromCustomSimple(writer, reader, ws);
-						break;
-					case CollationRulesTypes.CustomIcu:
-						WriteCollationRulesFromCustomICU(writer, reader, ws);
-						break;
-					default:
-						string message = string.Format("Unhandled SortRulesType '{0}' while writing LDML definition file.", ws.CollationRulesType);
-						throw new ApplicationException(message);
-				}
-				WriteBeginSpecialElement(writer, "palaso");
-				WriteSpecialValue(writer, "palaso", "sortRulesType", ws.CollationRulesType.ToString());
-				writer.WriteEndElement();
-				if (needToCopy)
-				{
-					if (FindElement(reader, "special"))
+					kbdElem.SetAttributeValue("type", KeyboardFormatToKeyboard[keyboard.Format]);
+					foreach (var url in keyboard.Urls)
 					{
-						CopyOtherSpecialElements(writer, reader);
-					}
-					CopyToEndElement(writer, reader);
-				}
-				writer.WriteEndElement();
-			}
-			else if (needToCopy)
-			{
-				bool startElementWritten = false;
-				if (FindElement(reader, "special"))
-				{
-					// write out any other special elements
-					while (!reader.EOF && reader.NodeType != XmlNodeType.EndElement
-						&& (reader.NodeType != XmlNodeType.Element || reader.Name == "special"))
-					{
-						if (reader.NodeType == XmlNodeType.Element)
-						{
-							bool knownNs = IsKnownSpecialElement(reader);
-							reader.MoveToElement();
-							if (knownNs)
-							{
-								reader.Skip();
-								continue;
-							}
-						}
-						if (!startElementWritten)
-						{
-							writer.WriteStartElement("collation");
-							startElementWritten = true;
-						}
-						writer.WriteNode(reader, false);
+						var urlElem = new XElement(Sil + "url", url);
+						kbdElem.Add(urlElem);
 					}
 				}
-
-				if (!reader.EOF && reader.NodeType != XmlNodeType.EndElement)
-				{
-					// copy any other elements
-					if (!startElementWritten)
-					{
-						writer.WriteStartElement("collation");
-						startElementWritten = true;
-					}
-					CopyToEndElement(writer, reader);
-				}
-				if (startElementWritten)
-					writer.WriteEndElement();
-			}
-#endif
-		}
-
-#if WS_FIX
-		private void WriteCollationRulesFromOtherLanguage(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
-		{
-			Debug.Assert(writer != null);
-			Debug.Assert(ws != null);
-			Debug.Assert(ws.CollationRulesType == CollationRulesTypes.OtherLanguage);
-
-			// Since the alias element gets all information from another source,
-			// we should remove all other elements in this collation element.  We
-			// leave "special" elements as they are custom data from some other app.
-			writer.WriteStartElement("base");
-			WriteElementWithAttribute(writer, "alias", "source", ws.CollationRules);
-			writer.WriteEndElement();
-			if (reader != null)
-			{
-				// don't copy anything, but skip to the 1st special node
-				FindElement(reader, "special");
+				externalResourcesElem.Add(kbdElem);
 			}
 		}
-
-		private void WriteCollationRulesFromCustomSimple(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
-		{
-			Debug.Assert(writer != null);
-			Debug.Assert(ws != null);
-			Debug.Assert(ws.CollationRulesType == CollationRulesTypes.CustomSimple);
-
-			string message;
-			// avoid throwing exception, just don't save invalid data
-			if (!SimpleRulesCollator.ValidateSimpleRules(ws.CollationRules ?? string.Empty, out message))
-			{
-				return;
-			}
-			string icu = SimpleRulesCollator.ConvertToIcuRules(ws.CollationRules ?? string.Empty);
-			WriteCollationRulesFromICUString(writer, reader, icu);
-		}
-
-		private void WriteCollationRulesFromCustomICU(XmlWriter writer, XmlReader reader, WritingSystemDefinition ws)
-		{
-			Debug.Assert(writer != null);
-			Debug.Assert(ws != null);
-			Debug.Assert(ws.CollationRulesType == CollationRulesTypes.CustomIcu);
-			WriteCollationRulesFromICUString(writer, reader, ws.CollationRules);
-		}
-
-		private void WriteCollationRulesFromICUString(XmlWriter writer, XmlReader reader, string icu)
-		{
-			Debug.Assert(writer != null);
-			icu = icu ?? string.Empty;
-			if (reader != null)
-			{
-				// don't copy any alias that would override our rules
-				if (FindElement(reader, "alias"))
-				{
-					reader.Skip();
-				}
-				CopyUntilElement(writer, reader, "settings");
-				// for now we'll omit anything in the suppress_contractions and optimize nodes
-				FindElement(reader, "special");
-			}
-			IcuRulesParser parser = new IcuRulesParser(false);
-			string message;
-			// avoid throwing exception, just don't save invalid data
-			if (!parser.ValidateIcuRules(icu, out message))
-			{
-				return;
-			}
-			parser.WriteIcuRules(writer, icu);
-		}
-#endif
 	}
 }

@@ -29,6 +29,7 @@ namespace SIL.WritingSystems
 
 		private readonly string _name;
 		private float _defaultSize;
+		private float _defaultRelativeSize;
 		private string _features;
 		private string _language;
 		private string _openTypeLanguage;
@@ -59,6 +60,7 @@ namespace SIL.WritingSystems
 		{
 			_name = fd._name;
 			_defaultSize = fd._defaultSize;
+			_defaultRelativeSize = fd._defaultRelativeSize;
 			_features = fd._features;
 			_language = fd._language;
 			_openTypeLanguage = fd._openTypeLanguage;
@@ -87,6 +89,17 @@ namespace SIL.WritingSystems
 				if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
 					throw new ArgumentOutOfRangeException("value");
 				UpdateField(() => DefaultSize, ref _defaultSize, value);
+			}
+		}
+
+		public float DefaultRelativeSize
+		{
+			get { return _defaultRelativeSize; }
+			set
+			{
+				if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
+					throw new ArgumentOutOfRangeException("value");
+				UpdateField(() => DefaultRelativeSize, ref _defaultRelativeSize, value);
 			}
 		}
 
@@ -152,7 +165,7 @@ namespace SIL.WritingSystems
 		{
 			if (other == null)
 				return false;
-			return _name == other._name && _defaultSize == other._defaultSize && Features == other.Features && Language == other.Language
+			return _name == other._name && _defaultSize == other._defaultSize && _defaultRelativeSize == other._defaultRelativeSize && Features == other.Features && Language == other.Language
 				&& OpenTypeLanguage == other.OpenTypeLanguage && MinVersion == other.MinVersion && _roles == other._roles
 				&& _engines == other._engines && Subset == other.Subset && Urls.SequenceEqual(other.Urls);
 		}

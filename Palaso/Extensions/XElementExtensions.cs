@@ -1,4 +1,5 @@
 ﻿using System.Xml.Linq;
+using Palaso.UiBindings;
 
 namespace Palaso.Extensions
 {
@@ -154,6 +155,21 @@ namespace Palaso.Extensions
 					attr.Remove();
 				}
 			}
+		}
+
+		/// <summary>
+		/// Set the attribute value of an element as a string.
+		/// If the value is null or empty, the attribute is removed
+		/// </summary>
+		/// <remarks>
+		/// This extension was created because XElement.SetAttributeValue() still creates attributes if the value is empty.
+		/// </remarks>
+		/// <param name="element">base XElement</param>
+		/// <param name="attribute">attribute to set</param>
+		/// <param name="value">attribute value</param>
+		public static void SetOptionalAttributeValue(this XElement element, string attribute, string value)
+		{
+			element.SetAttributeValue(attribute, string.IsNullOrEmpty(value) ? null : value);
 		}
 	}
 }

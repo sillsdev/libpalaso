@@ -235,6 +235,10 @@ namespace SIL.WritingSystems.Tests
 			@"<sil:exemplarCharacters type=\quot;footnotes\quot;>[\- ‐ – — , ; \: ! ? . … ' ‘ ’ \quot; “ ” ( ) \[ \] § @ * / \&amp; # † ‡ ′ ″]</sil:exemplarCharacters>".Replace("\\quot;", "\"")+
 		@"</special>
 	</characters>
+	<numbers>
+		<defaultNumberingSystem>thai</defaultNumberingSystem>
+		<numberingSystem id='thai' type='numeric' digits='๐๑๒๓๔๕๖๗๘๙' />
+	</numbers>
 </ldml>".Replace("'", "\""));
 #endregion
 				}
@@ -252,8 +256,15 @@ namespace SIL.WritingSystems.Tests
 				footnotes.Characters.Add(str);
 			}
 
+			var numeric = new CharacterSetDefinition("numeric");
+			const string numericString = "๐ ๑ ๒ ๓ ๔ ๕ ๖ ๗ ๘ ๙";
+			foreach (string str in numericString.Split(' '))
+			{
+				numeric.Characters.Add(str);
+			}
 			Assert.That(wsFromLdml.CharacterSets["index"].ValueEquals(index));
 			Assert.That(wsFromLdml.CharacterSets["footnotes"].ValueEquals(footnotes));
+			Assert.That(wsFromLdml.CharacterSets["numeric"].ValueEquals(numeric));
 		}
 
 		[Test]
@@ -307,10 +318,19 @@ namespace SIL.WritingSystems.Tests
 			var pp = new PunctuationPattern("pattern1", PunctuationPatternContext.Medial);
 			Assert.That(wsFromLdml.PunctuationPatterns.FirstOrDefault(), Is.EqualTo(pp));
 			Assert.That(wsFromLdml.QuotationParagraphContinueType, Is.EqualTo(QuotationParagraphContinueType.Outermost));
-			var qm1 = new QuotationMark("open1", "close2", "cont3", 3, QuotationMarkingSystemType.Normal);
-			Assert.That(wsFromLdml.QuotationMarks.FirstOrDefault(), Is.EqualTo(qm1));
-			var qm2 = new QuotationMark("", null, null, 1, QuotationMarkingSystemType.Narrative);
+			// Verify Level 1 normal quotation marks (quotationStart and quotationEnd)
+			var qm1 = new QuotationMark("\"", "\"", null, 1, QuotationMarkingSystemType.Normal);
+			Assert.That(wsFromLdml.QuotationMarks[0], Is.EqualTo(qm1));
+			// Verify Level 2 normal quotation marks (alternateQuotationStart and alternateQuotationEnd)
+			var qm2 = new QuotationMark("{", "}", null, 2, QuotationMarkingSystemType.Normal);
 			Assert.That(wsFromLdml.QuotationMarks[1], Is.EqualTo(qm2));
+			// Verify Level 3 normal quotation marks (special: sil:quotation-marks)
+			var qm3 = new QuotationMark("open1", "close2", "cont3", 3, QuotationMarkingSystemType.Normal);
+			Assert.That(wsFromLdml.QuotationMarks[2], Is.EqualTo(qm3));
+			// Verify Level 1 narrative quotation marks (special: sil:quotation-marks)
+			var qm4 = new QuotationMark("", null, null, 1, QuotationMarkingSystemType.Narrative);
+			Assert.That(wsFromLdml.QuotationMarks[3], Is.EqualTo(qm4));
+
 		}
 
 #if WS_FIX
@@ -631,7 +651,7 @@ namespace SIL.WritingSystems.Tests
 				dataMapper.Read(tempFile.Path, ws);
 
 				var other = new FontDefinition("Padauk");
-				other.DefaultSize = 2.1f;
+				other.DefaultRelativeSize = 2.1f;
 				other.MinVersion = "3.1.4";
 				other.Features = "order=3 children=2 color=red createDate=1996";
 				other.Language = "en";
@@ -795,31 +815,28 @@ namespace SIL.WritingSystems.Tests
 #else
 			string expectedFileContent =
 #region filecontent
-@"<?xml version='1.0' encoding='utf-8'?>
-<ldml>
+ @"<?xml version='1.0' encoding='utf-8'?>
+<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
 	<identity>
-		<version
-			number='' />
-		<generation
-			date='0001-01-01T00:00:00' />
-		<language
-			type='en' />
-		<script
-			type='Zxxx' />
-		<territory
-			type='US' />
-		<variant
-			type='x-audio' />
+		<version number='' />
+		<generation date='0001-01-01T00:00:00' />
+		<language type='en' />
+		<script type='Zxxx' />
+		<territory type='US' />
+		<variant type='x-audio' />
+		<special>
+			<sil:identity variantName='Audio' />
+		</special>
 	</identity>
-	<collations />
-	<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
-		<palaso:abbreviation
-			value='en' />
-		<palaso:languageName
-			value='English' />
-		<palaso:version
-			value='2' />
-	</special>
+	<layout>
+		<orientation>
+			<characterOrder>left-to-right</characterOrder>
+		</orientation>
+	</layout>
+	<collations>
+		<defaultCollation>standard</defaultCollation>
+		<collation type='standard' />
+	</collations>
 </ldml>".Replace("'", "\"").Replace("\n", "\r\n").Replace("\r\r\n", "\r\n");
 
 #endregion
@@ -827,7 +844,7 @@ namespace SIL.WritingSystems.Tests
 #endif
 			using (var file = new TempFile())
 			{
-				//Create an ldml fiel to read
+				//Create an ldml file to read
 				var adaptor = new LdmlDataMapper();
 				var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
 				adaptor.Write(file.Path, ws, null);
@@ -837,7 +854,6 @@ namespace SIL.WritingSystems.Tests
 				adaptor.Read(file.Path, ws2);
 				ws2.Region = "US";
 				adaptor.Write(file.Path, ws2, new MemoryStream(File.ReadAllBytes(file.Path)));
-
 				Assert.That(File.ReadAllText(file.Path), Is.EqualTo(expectedFileContent));
 			}
 		}
@@ -862,6 +878,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+#if WS_FIX
 		[Test]
 		public void Read_ValidLanguageTagStartingWithXButVersion0_Throws()
 		{
@@ -873,7 +890,6 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-#if WS_FIX
 		[Test]
 		public void WriteNoRoundTrip_LdmlIsFlexPrivateUseFormatLanguageOnly_LdmlIsChanged()
 		{
@@ -928,7 +944,9 @@ namespace SIL.WritingSystems.Tests
 				adaptor.Read(file.Path, ws);
 				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path), true));
 				AssertThatLdmlMatches("xh", "", "", "", file);
+#if WS_FIX
 				AssertThatVersionIs(2, file);
+#endif
 			}
 		}
 
@@ -1200,6 +1218,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+#if WS_FIX
 		[Test]
 		public void Read_ReadPrivateUseWsFromFieldWorksLdmlThenNormalLdmlMissingVersion1Element_Throws()
 		{
@@ -1238,6 +1257,7 @@ namespace SIL.WritingSystems.Tests
 				}
 			}
 		}
+#endif
 
 		[Test]
 		public void Read_NonDescriptLdml_WritingSystemIdIsSameAsRfc5646Tag()
@@ -1299,6 +1319,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+#if WS_FIX
 		[Test]
 		public void Read_V0Ldml_ThrowFriendlyException()
 		{
@@ -1314,6 +1335,7 @@ namespace SIL.WritingSystems.Tests
 										WritingSystemDefinition.LatestWritingSystemDefinitionVersion)));
 			}
 		}
+#endif
 
 		[Test]
 		public void RoundTrippingLdmlDoesNotDuplicateSections()
