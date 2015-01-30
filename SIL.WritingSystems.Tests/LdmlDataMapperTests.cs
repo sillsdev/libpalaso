@@ -206,6 +206,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		// TODO: Fix this on Linux  DWONG 01-21-2015
+		// This tests characters and numbers elements
 		[Test]
 		[Platform(Exclude = "Linux")]
 		public void Read_LdmlCharacters()
@@ -784,31 +785,27 @@ namespace SIL.WritingSystems.Tests
 			string expectedFileContent =
 #region filecontent
 @"<?xml version='1.0' encoding='utf-8'?>
-<ldml>
+<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
 	<identity>
-		<version
-			number='' />
-		<generation
-			date='0001-01-01T00:00:00' />
-		<language
-			type='en' />
-		<script
-			type='Zxxx' />
-		<territory
-			type='US' />
-		<variant
-			type='x-audio' />
+		<version number='' />
+		<generation date='0001-01-01T00:00:00' />
+		<language type='en' />
+		<script type='Zxxx' />
+		<territory type='US' />
+		<variant type='x-audio' />
+		<special>
+			<sil:identity variantName='Audio' />
+		</special>
 	</identity>
-	<collations />
-	<special
-		xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
-		<palaso:abbreviation
-			value='en' />
-		<palaso:languageName
-			value='English' />
-		<palaso:version
-			value='2' />
-	</special>
+	<layout>
+		<orientation>
+			<characterOrder>left-to-right</characterOrder>
+		</orientation>
+	</layout>
+	<collations>
+		<defaultCollation>standard</defaultCollation>
+		<collation type='standard' />
+	</collations>
 </ldml>".Replace("'", "\"").Replace("\n", "\r\n");
 #endregion
 
