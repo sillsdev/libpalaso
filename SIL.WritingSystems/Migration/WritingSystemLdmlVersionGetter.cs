@@ -20,8 +20,13 @@ namespace SIL.WritingSystems.Migration
 
 		public WritingSystemLdmlVersionGetter(WritingSystemCompatibility compatibilityMode)
 		{
+			// Can't use XPathVersion to parse Sil namespace version, so using SilLdmlVersion
+			var versionNodeVersionLdml = new SilLdmlVersion();
+			_versionGetters.Add(versionNodeVersionLdml);
+
 			var versionNodeVersion = new XPathVersion(1, "/ldml/special/palaso:version/@value");
 			versionNodeVersion.NamespaceManager.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
+			_versionGetters.Add(versionNodeVersion);
 
 			if(compatibilityMode == WritingSystemCompatibility.Flex7V0Compatible){
 				var flexPrivateUseVersionGetter = new XPathVersion(1, "/ldml/identity/language/@type");
@@ -29,7 +34,6 @@ namespace SIL.WritingSystems.Migration
 				_versionGetters.Add(flexPrivateUseVersionGetter);
 			}
 
-			_versionGetters.Add(versionNodeVersion);
 		}
 
 		public int GetFileVersion(string ldmlFilePath)

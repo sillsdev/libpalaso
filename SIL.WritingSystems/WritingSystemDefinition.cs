@@ -59,7 +59,7 @@ namespace SIL.WritingSystems
 		/// This should not be confused with the version of the locale data contained in this writing system.
 		/// That information is stored in the "VersionNumber" property.
 		/// </summary>
-		public const int LatestWritingSystemDefinitionVersion = 2;
+		public const int LatestWritingSystemDefinitionVersion = 3;
 
 		private string _languageName;
 		private string _languageTag;
