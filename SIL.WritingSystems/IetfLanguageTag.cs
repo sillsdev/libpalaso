@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Icu;
+using Palaso.Data;
 using Palaso.Extensions;
 
 namespace SIL.WritingSystems
@@ -337,18 +338,13 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Generates a language tag from the specified subtags.
 		/// </summary>
-		/// <param name="languageSubtag">The language subtag.</param>
-		/// <param name="scriptSubtag">The script subtag.</param>
-		/// <param name="regionSubtag">The region subtag.</param>
-		/// <param name="variantSubtags">The variant subtags.</param>
-		/// <returns></returns>
-		public static string ToLanguageTag(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag, RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags)
+		public static string ToLanguageTag(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag, RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags, bool validate = true)
 		{
 			VariantSubtag[] variantSubtagsArray = variantSubtags.ToArray();
-			if (languageSubtag == null && (scriptSubtag != null || regionSubtag != null || variantSubtagsArray.Any(v => !v.IsPrivateUse)))
-				throw new ArgumentNullException("languageSubtag");
-			if (languageSubtag == null && variantSubtagsArray.Length == 0)
-				throw new ArgumentNullException("languageSubtag");
+			if (validate && languageSubtag == null && (scriptSubtag != null || regionSubtag != null || variantSubtagsArray.Any(v => !v.IsPrivateUse)))
+				throw new ValidationException("A language subtag is required.");
+			if (validate && languageSubtag == null && variantSubtagsArray.Length == 0)
+				throw new ValidationException("A language subtag is required.");
 
 			var sb = new StringBuilder();
 
@@ -358,8 +354,8 @@ namespace SIL.WritingSystems
 				// Insert non-custom language, script, region into main part of code.
 				if (languageSubtag.IsPrivateUse && languageSubtag.Code != WellKnownSubtags.UnlistedLanguage)
 				{
-					if (!LangPattern.IsMatch(languageSubtag.Code))
-						throw new ArgumentException("The private use language code is invalid.", "languageSubtag");
+					if (validate && !LangPattern.IsMatch(languageSubtag.Code))
+						throw new ValidationException("The private use language code is invalid.");
 					sb.Append("qaa");
 					isCustomLanguage = true;
 				}
@@ -372,13 +368,14 @@ namespace SIL.WritingSystems
 			bool isCustomScript = false;
 			if (scriptSubtag != null)
 			{
-				sb.Append("-");
+				if (sb.Length > 0)
+					sb.Append("-");
 				// Qaaa is our flag to expect a script in private-use. If the actual value is Qaaa, we need to treat it as custom,
 				// so we don't confuse some other private-use tag with a custom script.
 				if (scriptSubtag.IsPrivateUse && !StandardSubtags.IsPrivateUseScriptCode(scriptSubtag.Code))
 				{
-					if (!ScriptPattern.IsMatch(scriptSubtag.Code))
-						throw new ArgumentException("The private use script code is invalid.", "scriptSubtag");
+					if (validate && !ScriptPattern.IsMatch(scriptSubtag.Code))
+						throw new ValidationException("The private use script code is invalid.");
 					sb.Append("Qaaa");
 					isCustomScript = true;
 				}
@@ -391,13 +388,14 @@ namespace SIL.WritingSystems
 			bool isCustomRegion = false;
 			if (regionSubtag != null)
 			{
-				sb.Append("-");
+				if (sb.Length > 0)
+					sb.Append("-");
 				// QM is our flag to expect a region in private-use. If the actual value is QM, we need to treat it as custom,
 				// so we don't confuse some other private-use tag with a custom region.
 				if (regionSubtag.IsPrivateUse && !StandardSubtags.IsPrivateUseRegionCode(regionSubtag.Code))
 				{
-					if (!RegionPattern.IsMatch(regionSubtag.Code))
-						throw new ArgumentException("The private use region code is invalid.", "regionSubtag");
+					if (validate && !RegionPattern.IsMatch(regionSubtag.Code))
+						throw new ValidationException("The private use region code is invalid.");
 					sb.Append("QM");
 					isCustomRegion = true;
 				}
@@ -410,9 +408,10 @@ namespace SIL.WritingSystems
 			var variants = new HashSet<string>();
 			foreach (VariantSubtag variantSubtag in variantSubtagsArray.Where(vs => !vs.IsPrivateUse))
 			{
-				if (variants.Contains(variantSubtag.Code))
-					throw new ArgumentException("Duplicate variants are not allowed.", "variantSubtags");
-				sb.Append("-");
+				if (validate && variants.Contains(variantSubtag.Code))
+					throw new ValidationException("Duplicate variants are not allowed.");
+				if (sb.Length > 0)
+					sb.Append("-");
 				sb.Append(variantSubtag.Code);
 				variants.Add(variantSubtag.Code);
 			}
@@ -430,7 +429,8 @@ namespace SIL.WritingSystems
 
 			if (isCustomScript)
 			{
-				sb.Append("-");
+				if (sb.Length > 0)
+					sb.Append("-");
 				if (!inPrivateUse)
 				{
 					inPrivateUse = true;
@@ -441,7 +441,8 @@ namespace SIL.WritingSystems
 
 			if (isCustomRegion)
 			{
-				sb.Append("-");
+				if (sb.Length > 0)
+					sb.Append("-");
 				if (!inPrivateUse)
 				{
 					inPrivateUse = true;
@@ -451,13 +452,18 @@ namespace SIL.WritingSystems
 			}
 			else if (languageSubtag != null && languageSubtag.Code == "zh" && languageSubtag.Iso3Code == "cmn" && regionSubtag == null)
 			{
-				sb.Append("-CN");
+				if (sb.Length > 0)
+					sb.Append("-");
+				sb.Append("CN");
 			}
 
+			variants.Clear();
 			foreach (VariantSubtag variantSubtag in variantSubtagsArray.Where(vs => vs.IsPrivateUse))
 			{
-				if (!PrivateUsePattern.IsMatch(variantSubtag.Code))
-					throw new ArgumentException("The variant subtags contains an invalid subtag.", "variantSubtags");
+				if (validate && !PrivateUsePattern.IsMatch(variantSubtag.Code))
+					throw new ValidationException("The private use subtags contains an invalid subtag.");
+				if (validate && variants.Contains(variantSubtag.Code))
+					throw new ValidationException("Duplicate private use subtags are not allowed.");
 
 				if (sb.Length > 0)
 					sb.Append("-");
@@ -467,6 +473,7 @@ namespace SIL.WritingSystems
 					sb.Append("x-");
 				}
 				sb.Append(variantSubtag.Code);
+				variants.Add(variantSubtag.Code);
 			}
 
 			return sb.ToString();
@@ -475,51 +482,48 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Generates a language tag from the specified codes.
 		/// </summary>
-		/// <param name="languageCode">The language code.</param>
-		/// <param name="scriptCode">The script code.</param>
-		/// <param name="regionCode">The region code.</param>
-		/// <param name="variantCodes">The variant code.</param>
-		/// <returns></returns>
-		public static string ToLanguageTag(string languageCode, string scriptCode, string regionCode, string variantCodes)
+		public static string ToLanguageTag(string languageCode, string scriptCode, string regionCode, string variantCodes, bool validate = true)
 		{
 			var sb = new StringBuilder();
 			if (!string.IsNullOrEmpty(languageCode))
 			{
-				if (!StandardSubtags.IsValidIso639LanguageCode(languageCode))
-					throw new ArgumentException("The language code is invalid.", "languageCode");
+				if (validate && !StandardSubtags.IsValidIso639LanguageCode(languageCode))
+					throw new ValidationException("The language code is invalid.");
 				sb.Append(languageCode);
 			}
 
 			if (!string.IsNullOrEmpty(scriptCode))
 			{
-				if (string.IsNullOrEmpty(languageCode))
-					throw new ArgumentException("A language code is required.", "languageCode");
-				if (!StandardSubtags.IsValidIso15924ScriptCode(scriptCode))
-					throw new ArgumentException("The script code is invalid.", "scriptCode");
-				sb.Append("-");
+				if (validate && string.IsNullOrEmpty(languageCode))
+					throw new ValidationException("A language code is required.");
+				if (validate && !StandardSubtags.IsValidIso15924ScriptCode(scriptCode))
+					throw new ValidationException("The script code is invalid.");
+				if (sb.Length > 0)
+					sb.Append("-");
 				sb.Append(scriptCode);
 			}
 
 			if (!string.IsNullOrEmpty(regionCode))
 			{
-				if (string.IsNullOrEmpty(languageCode))
-					throw new ArgumentException("A language code is required.", "languageCode");
-				if (!StandardSubtags.IsValidIso3166RegionCode(regionCode))
-					throw new ArgumentException("The region code is invaild.", "regionCode");
-				sb.Append("-");
+				if (validate && string.IsNullOrEmpty(languageCode))
+					throw new ValidationException("A language code is required.");
+				if (validate && !StandardSubtags.IsValidIso3166RegionCode(regionCode))
+					throw new ValidationException("The region code is invaild.");
+				if (sb.Length > 0)
+					sb.Append("-");
 				sb.Append(regionCode);
 			}
 
 			if (!string.IsNullOrEmpty(variantCodes))
 			{
-				if (string.IsNullOrEmpty(languageCode) && !variantCodes.StartsWith("x-", StringComparison.InvariantCultureIgnoreCase))
-					throw new ArgumentException("A language code is required.", "languageCode");
+				if (validate && string.IsNullOrEmpty(languageCode) && !variantCodes.StartsWith("x-", StringComparison.InvariantCultureIgnoreCase))
+					throw new ValidationException("A language code is required.");
 				foreach (string variantCode in variantCodes.Split(new[] {'-'}, StringSplitOptions.RemoveEmptyEntries))
 				{
 					if (variantCode.Equals("x", StringComparison.InvariantCultureIgnoreCase))
 						break;
-					if (!StandardSubtags.IsValidRegisteredVariantCode(variantCode))
-						throw new ArgumentException("A variant code is invalid.", "variantCodes");
+					if (validate && !StandardSubtags.IsValidRegisteredVariantCode(variantCode))
+						throw new ValidationException("A variant code is invalid.");
 				}
 				if (sb.Length > 0)
 					sb.Append("-");
@@ -541,7 +545,7 @@ namespace SIL.WritingSystems
 			RegionSubtag regionSubtag;
 			IEnumerable<VariantSubtag> variantSubtags;
 			if (!TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
-				throw new ArgumentException("langTag is not a valid RFC5646 language tag.", "langTag");
+				throw new ValidationException("The language tag is invalid.");
 			return ToIcuLocale(languageSubtag, scriptSubtag, regionSubtag, variantSubtags);
 		}
 
@@ -556,7 +560,7 @@ namespace SIL.WritingSystems
 		public static string ToIcuLocale(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag, RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags)
 		{
 			if (languageSubtag == null)
-				throw new ArgumentNullException("languageSubtag");
+				throw new ValidationException("A language subtag is required.");
 
 			var sb = new StringBuilder();
 			//start with the LanguageCode
@@ -606,11 +610,11 @@ namespace SIL.WritingSystems
 		public static string ToIcuLocale(string languageCode, string scriptCode, string regionCode, string variantCodes)
 		{
 			if (string.IsNullOrEmpty(languageCode))
-				throw new ArgumentNullException("languageCode");
+				throw new ValidationException("A language code is required.");
 
 			IEnumerable<VariantSubtag> variantSubtags;
 			if (!TryGetVariantSubtags(variantCodes, out variantSubtags))
-				throw new ArgumentException("The specified variant codes are invalid.", "variantCodes");
+				throw new ValidationException("A variant code is invalid.");
 
 			return ToIcuLocale(languageCode, scriptCode, regionCode, variantCodes);
 		}

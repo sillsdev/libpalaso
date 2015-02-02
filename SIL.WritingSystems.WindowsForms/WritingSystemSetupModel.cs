@@ -9,6 +9,7 @@ using System.Text;
 using System.Windows.Forms;
 using Enchant;
 using Palaso.Code;
+using Palaso.Data;
 using SIL.WritingSystems.WindowsForms.Keyboarding;
 using Palaso.i18n;
 using Palaso.Reporting;
@@ -768,7 +769,7 @@ namespace SIL.WritingSystems.WindowsForms
 								CurrentDefinition.Variants.Add(variantSubtag);
 							OnCurrentItemUpdated();
 						}
-						catch (InvalidOperationException e)
+						catch (ValidationException e)
 						{
 							CurrentDefinition.Variants.Clear();
 							foreach (VariantSubtag variantSubtag in originalVariantSubtags)

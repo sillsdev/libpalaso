@@ -749,6 +749,8 @@ namespace SIL.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
+			// We don't want to run any risk of persisting an invalid writing system in an LDML.
+			ws.RequiresValidLanguageTag = true;
 			XmlReader reader = null;
 			try
 			{
@@ -810,6 +812,8 @@ namespace SIL.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
+			// We don't want to run any risk of persisting an invalid writing system in an LDML.
+			ws.RequiresValidLanguageTag = true;
 			try
 			{
 				XElement element;

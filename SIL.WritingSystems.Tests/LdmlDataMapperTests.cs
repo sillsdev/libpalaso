@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using NUnit.Framework;
+using Palaso.Data;
 using Palaso.IO;
 using Palaso.TestUtilities;
 using Palaso.Xml;
@@ -88,6 +89,17 @@ namespace SIL.WritingSystems.Tests
 			Assert.Throws<ArgumentNullException>(
 				() => _adaptor.Write(XmlWriter.Create(new MemoryStream()), null, null)
 			);
+		}
+
+		[Test]
+		public void WriteSetsRequiresValidTagToTrue()
+		{
+			var ws = new WritingSystemDefinition();
+			ws.RequiresValidLanguageTag = false;
+			ws.Language = "InvalidLanguage";
+			var sw = new StringWriter();
+			var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
+			Assert.Throws<ValidationException>(() => _adaptor.Write(writer, ws, null));
 		}
 
 		[Test]

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
+using Palaso.Data;
 
 namespace SIL.WritingSystems.Tests
 {
@@ -217,7 +218,7 @@ namespace SIL.WritingSystems.Tests
 		/// Tests the ToIcuLocale method with an invalid language tag.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
+		[ExpectedException(typeof(ValidationException))]
 		public void ToIcuLocale_InvalidLangTag()
 		{
 			IetfLanguageTag.ToIcuLocale("en_Latn_US_X_ETIC");

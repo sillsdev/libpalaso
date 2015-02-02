@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Palaso.Data;
 
 namespace SIL.WritingSystems
 {
@@ -91,7 +92,8 @@ namespace SIL.WritingSystems
 		private readonly ObservableSet<PunctuationPattern> _punctuationPatterns;
 		private readonly ObservableCollection<QuotationMark> _quotationMarks = new ObservableCollection<QuotationMark>();
 		private readonly ObservableKeyedCollection<string, CharacterSetDefinition> _characterSets = new ObservableKeyedCollection<string, CharacterSetDefinition>(csd => csd.Type);
-		private bool _ignoreVariantChanges;
+		private readonly SimpleMonitor _ignoreVariantChanges = new SimpleMonitor();
+		private bool _requiresValidLanguageTag = true;
 
 		/// <summary>
 		/// Creates a new WritingSystemDefinition with Language subtag set to "qaa"
@@ -198,6 +200,7 @@ namespace SIL.WritingSystems
 				_defaultCollation = _collations[ws._collations.IndexOf(ws._defaultCollation)];
 			foreach (CharacterSetDefinition csd in ws._characterSets)
 				_characterSets.Add(csd.Clone());
+			_requiresValidLanguageTag = ws._requiresValidLanguageTag;
 			SetupCollectionChangeListeners();
 		}
 
@@ -215,7 +218,7 @@ namespace SIL.WritingSystems
 
 		private void _variants_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			if (!_ignoreVariantChanges)
+			if (!_ignoreVariantChanges.Busy)
 			{
 				CheckVariantAndScriptRules();
 				UpdateLanguageTag();
@@ -293,6 +296,25 @@ namespace SIL.WritingSystems
 		{
 			get { return _dateModified; }
 			set { _dateModified = value; }
+		}
+
+		/// <summary>
+		/// True when the validity of the writing system defn's tag is being enforced. This is the normal and default state.
+		/// Setting this true will throw unless the tag has previously been put into a valid state.
+		/// Attempting to Save the writing system defn will set this true (and may throw).
+		/// </summary>
+		public bool RequiresValidLanguageTag
+		{
+			get { return _requiresValidLanguageTag; }
+			set
+			{
+				if (_requiresValidLanguageTag != value)
+				{
+					_requiresValidLanguageTag = value;
+					CheckVariantAndScriptRules();
+					UpdateLanguageTag();
+				}
+			}
 		}
 
 		/// <summary>
@@ -395,20 +417,23 @@ namespace SIL.WritingSystems
 
 		private void CheckVariantAndScriptRules()
 		{
+			if (!_requiresValidLanguageTag)
+				return;
+
 			if (_variants.Contains(WellKnownSubtags.AudioPrivateUse) && !ScriptSubTagIsAudio)
 			{
-				throw new InvalidOperationException("The script subtag must be set to " + WellKnownSubtags.AudioScript + " when the variant tag indicates an audio writing system.");
+				throw new ValidationException("The script subtag must be set to " + WellKnownSubtags.AudioScript + " when the variant tag indicates an audio writing system.");
 			}
 			bool rfcTagHasAnyIpa = _variants.Contains(WellKnownSubtags.IpaVariant)
 				|| _variants.Contains(WellKnownSubtags.IpaPhonemicPrivateUse) || _variants.Contains(WellKnownSubtags.IpaPhoneticPrivateUse);
 			if (_variants.Contains(WellKnownSubtags.AudioPrivateUse) && rfcTagHasAnyIpa)
 			{
-				throw new InvalidOperationException("A writing system may not be marked as audio and ipa at the same time.");
+				throw new ValidationException("A writing system may not be marked as audio and ipa at the same time.");
 			}
 			if ((_variants.Contains(WellKnownSubtags.IpaPhonemicPrivateUse) || _variants.Contains(WellKnownSubtags.IpaPhoneticPrivateUse))
 				&& !_variants.Contains(WellKnownSubtags.IpaVariant))
 			{
-				throw new InvalidOperationException("A writing system may not be marked as phonetic (x-etic) or phonemic (x-emic) and lack the variant marker fonipa.");
+				throw new ValidationException("A writing system may not be marked as phonetic (x-etic) or phonemic (x-emic) and lack the variant marker fonipa.");
 			}
 		}
 
@@ -422,22 +447,18 @@ namespace SIL.WritingSystems
 		/// <param name="variant">A valid BCP47 variant subtag.</param>
 		public void SetAllComponents(string language, string script, string region, string variant)
 		{
+			_requiresValidLanguageTag = true;
 			string oldId = _languageTag;
 			_languageTag = IetfLanguageTag.ToLanguageTag(language, script, region, variant);
 			if (oldId != _languageTag)
 			{
 				IEnumerable<VariantSubtag> variantSubtags;
 				IetfLanguageTag.TryGetSubtags(_languageTag, out _language, out _script, out _region, out variantSubtags);
-				_ignoreVariantChanges = true;
-				try
+				using (_ignoreVariantChanges.Enter())
 				{
 					_variants.Clear();
 					foreach (VariantSubtag variantSubtag in variantSubtags)
 						_variants.Add(variantSubtag);
-				}
-				finally
-				{
-					_ignoreVariantChanges = false;
 				}
 				CheckVariantAndScriptRules();
 				_id = _languageTag;
@@ -821,7 +842,7 @@ namespace SIL.WritingSystems
 
 		protected virtual void UpdateLanguageTag()
 		{
-			_languageTag = IetfLanguageTag.ToLanguageTag(_language, _script, _region, _variants);
+			_languageTag = IetfLanguageTag.ToLanguageTag(_language, _script, _region, _variants, _requiresValidLanguageTag);
 			_id = _languageTag;
 		}
 
@@ -1024,6 +1045,8 @@ namespace SIL.WritingSystems
 			if (!_quotationMarks.SequenceEqual(other._quotationMarks))
 				return false;
 			if (_quotationParagraphContinueType != other._quotationParagraphContinueType)
+				return false;
+			if (_requiresValidLanguageTag != other._requiresValidLanguageTag)
 				return false;
 			// fonts
 			if (_fonts.Count != other._fonts.Count)
