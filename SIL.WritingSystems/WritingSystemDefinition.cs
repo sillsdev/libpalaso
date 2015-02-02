@@ -773,6 +773,11 @@ namespace SIL.WritingSystems
 			ChildrenAcceptChanges(_characterSets);
 		}
 
+		public void ForceChanged()
+		{
+			IsChanged = true;
+		}
+
 		/// <summary>
 		/// Gets or sets a value indicating whether the writing system will be deleted.
 		/// </summary>
