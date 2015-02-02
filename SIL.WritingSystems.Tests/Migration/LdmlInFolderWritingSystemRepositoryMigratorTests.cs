@@ -86,7 +86,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				Assert.AreEqual(2, environment.GetFileVersion(fileName));
+				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, environment.GetFileVersion(fileName));
 			}
 		}
 
@@ -888,7 +888,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 				var versionGetter = new WritingSystemLdmlVersionGetter();
-				Assert.AreEqual(2, versionGetter.GetFileVersion(environment.MappedFilePath("test.ldml")));
+				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, versionGetter.GetFileVersion(environment.MappedFilePath("test.ldml")));
 			}
 		}
 
@@ -1200,7 +1200,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				Assert.AreEqual(2, environment.GetFileVersion(environment.MappedFilePath("test.ldml")));
+				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, environment.GetFileVersion(environment.MappedFilePath("test.ldml")));
 			}
 		}
 
@@ -1236,6 +1236,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		// JohnT: this test is obsolete since we now DO migrate writing systems with this sort of ID.
 		// Not sure whether there is anything that should still be tested about this case. I think other tests cover it.
 		#region BogusFlexPrivateUseLdml
+#if WS_FIX
 		[Test]
 		public void Migrate_LdmlIsFlexPrivateUseFormatandMigratorIsToldRoundTrip_FileIsUntouched()
 		{
@@ -1265,7 +1266,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				Assert.That(File.ReadAllText(filePath), Is.EqualTo(originalFilecontent));
 			}
 		}
-
+#endif
 		[Test]
 		public void Migrate_LdmlIsFlexPrivateUseFormatMigratorIsToldNotToroundTrip_FileIsUpdated()
 		{

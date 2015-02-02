@@ -6,9 +6,9 @@ namespace SIL.WritingSystems.Tests
 	public class WritingSystemDefinitionVariantTests
 	{
 		[Test]
-		public void LatestVersion_IsTwo()
+		public void LatestVersion()
 		{
-			Assert.AreEqual(2, WritingSystemDefinition.LatestWritingSystemDefinitionVersion);
+			Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, WritingSystemDefinition.LatestWritingSystemDefinitionVersion);
 		}
 
 		[Test]
