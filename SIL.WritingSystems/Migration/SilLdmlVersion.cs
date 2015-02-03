@@ -15,7 +15,7 @@ namespace SIL.WritingSystems.Migration
 		/// </summary>
 		private static readonly Dictionary<string, int> UriToVersion = new Dictionary<string, int>
 		{
-			{"urn://www.sil.org/ldml/0.1", 3},
+			{"urn://www.sil.org/ldml/0.1", WritingSystemDefinition.LatestWritingSystemDefinitionVersion},
 		};
 
 		public int GetFileVersion(string filePath)
@@ -24,18 +24,18 @@ namespace SIL.WritingSystems.Migration
 			{
 				throw new ArgumentNullException("filePath");
 			}
-			int result = BadVersion;
 
 			XElement ldmlElem = XElement.Load(filePath);
-			if (ldmlElem.Name != "ldml")
+			if (ldmlElem.Name == "ldml")
 			{
-				return result;
+				int result;
+				string uri = (string)ldmlElem.Attribute(XNamespace.Xmlns + "sil");
+				if (!string.IsNullOrEmpty(uri) && UriToVersion.TryGetValue(uri, out result))
+				{
+					return result;
+				}
 			}
-
-			string uri = (string)ldmlElem.Attribute(XNamespace.Xmlns + "sil");
-			if (!string.IsNullOrEmpty(uri))
-				result = UriToVersion[uri];
-			return result;
+			return BadVersion;
 		}
 
 		public int StrategyGoodToVersion
