@@ -176,7 +176,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			ws.Variants.Add("fonipa");
-			ws.Variants.Add("PrefixEticPostfix");
+			ws.Variants.Add("pEticp");
 			Assert.That(ws.IpaStatus, Is.EqualTo(IpaStatusChoices.Ipa));
 		}
 

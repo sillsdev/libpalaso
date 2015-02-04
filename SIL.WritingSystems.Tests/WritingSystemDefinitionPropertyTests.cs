@@ -1054,15 +1054,10 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void IsVoice_VariantIsxDashPrefixaudioPostFix_ReturnsFalse()
+		public void IsVoice_VariantIsxDashPrefixaudioPostfix_ReturnsFalse()
 		{
-			var ws = new WritingSystemDefinition ();
-			ws.SetAllComponents(
-				"th",
-				WellKnownSubtags.AudioScript,
-				"",
-				"x-PrefixaudioPostfix"
-			);
+			var ws = new WritingSystemDefinition();
+			ws.SetAllComponents("th", WellKnownSubtags.AudioScript, "", "x-paudiop");
 			Assert.IsFalse(ws.IsVoice);
 		}
 
