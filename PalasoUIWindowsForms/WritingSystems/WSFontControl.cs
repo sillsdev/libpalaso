@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.Keyboarding;
 using Palaso.WritingSystems;
@@ -27,6 +24,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_promptForFontTestArea.SetPrompt(_testArea, "Use this area to type something to test out your font.");
 			if (KeyboardController.IsInitialized)
 				KeyboardController.Register(_testArea);
+		}
+
+		public bool ReadOnly
+		{
+			set
+			{
+				_fontComboBox.Enabled = !value;
+				_fontSizeComboBox.Enabled = !value;
+				_rightToLeftCheckBox.AutoCheck = !value;
+			}
 		}
 
 		public void BindToModel(WritingSystemSetupModel model)
