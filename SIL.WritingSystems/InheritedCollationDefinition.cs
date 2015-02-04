@@ -61,7 +61,7 @@ namespace SIL.WritingSystems
 			string tempFile = Path.GetTempFileName();
 			try
 			{
-				Sldr.GetLdmlFile(tempFile, _baseLanguageTag);
+				Sldr.GetLdmlFile(tempFile, _baseLanguageTag, new[] {"collations"});
 				XElement rootElem = XElement.Load(tempFile);
 				XElement collationsElem = rootElem.Element("collations");
 				if (collationsElem != null)
