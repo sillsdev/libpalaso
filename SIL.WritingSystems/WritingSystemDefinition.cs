@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Palaso.Data;
+using Palaso.Extensions;
 
 namespace SIL.WritingSystems
 {
@@ -1116,9 +1117,10 @@ namespace SIL.WritingSystems
 			// character sets
 			if (_characterSets.Count != other._characterSets.Count)
 				return false;
-			for (int i = 0; i < _characterSets.Count; i++)
+			foreach (CharacterSetDefinition csd in _characterSets)
 			{
-				if (!_characterSets[i].ValueEquals(other._characterSets[i]))
+				CharacterSetDefinition otherCsd;
+				if (!other._characterSets.TryGetItem(csd.Type, out otherCsd) || !csd.ValueEquals(otherCsd))
 					return false;
 			}
 
