@@ -2092,5 +2092,142 @@ namespace SIL.WritingSystems.Tests
 			ws.Collations.Clear();
 			Assert.That(ws.DefaultCollation, Is.Not.EqualTo(cd1));
 		}
+
+		private void VerifySubtagCodes(WritingSystemDefinition ws, string langCode, string scriptCode, string regionCode, string variantCode, string id)
+		{
+			Assert.That(ws.Language.Code, Is.EqualTo(langCode));
+			if (scriptCode == null)
+				Assert.That(ws.Script, Is.Null);
+			else
+				Assert.That(ws.Script.Code, Is.EqualTo(scriptCode));
+			if (regionCode == null)
+				Assert.That(ws.Region, Is.Null);
+			else
+				Assert.That(ws.Region.Code, Is.EqualTo(regionCode));
+			if (variantCode == null)
+				Assert.That(ws.Variants, Is.Empty);
+			else
+				Assert.That(IetfLanguageTag.GetVariantCodes(ws.Variants), Is.EqualTo(variantCode));
+
+			// Now check that we can get the same tags by parsing the ID.
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			IetfLanguageTag.TryGetSubtags(id, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags);
+			Assert.That(languageSubtag.Code, Is.EqualTo(langCode));
+			if (scriptCode == null)
+				Assert.That(scriptSubtag, Is.Null);
+			else
+				Assert.That(scriptSubtag.Code, Is.EqualTo(scriptCode));
+			if (regionCode == null)
+				Assert.That(regionSubtag, Is.Null);
+			else
+				Assert.That(regionSubtag.Code, Is.EqualTo(regionCode));
+			if (variantCode == null)
+				Assert.That(variantSubtags, Is.Empty);
+			else
+				Assert.That(IetfLanguageTag.GetVariantCodes(variantSubtags), Is.EqualTo(variantCode));
+		}
+
+		[Test]
+		public void LanguageAndVariantTags()
+		{
+			// A new writing system has a Language tag of qaa. This is also its language tag. The others are null.
+			var ws = new WritingSystemDefinition();
+			VerifySubtagCodes(ws, "qaa", null, null, null, "qaa");
+
+			ws.Language = "en";
+			VerifySubtagCodes(ws, "en", null, null, null, "en");
+			Assert.That(ws.LanguageName, Is.EqualTo("English"));
+
+			ws.Language = new LanguageSubtag("kal", "Kalaba", true, "");
+			Assert.That(ws.LanguageName, Is.EqualTo("Kalaba"));
+			VerifySubtagCodes(ws, "kal", null, null, null, "qaa-x-kal");
+			Assert.That(ws.Language.Name, Is.EqualTo("Kalaba"));
+
+			// This is a region code that is valid, so we don't store it in the private-use area of our code.
+			ws.Region = "QN";
+			VerifySubtagCodes(ws, "kal", null, "QN", null, "qaa-QN-x-kal");
+
+			// This is a standard region (Norway).
+			ws.Region = "NO";
+			VerifySubtagCodes(ws, "kal", null, "NO", null, "qaa-NO-x-kal");
+
+			// A private region
+			ws.Region = "ZD";
+			VerifySubtagCodes(ws, "kal", null, "ZD", null, "qaa-QM-x-kal-ZD");
+
+			// Add a private script
+			ws.Script = "Zfdr";
+			VerifySubtagCodes(ws, "kal", "Zfdr", "ZD", null, "qaa-Qaaa-QM-x-kal-Zfdr-ZD");
+
+			// Change it to a standard one
+			ws.Script = "Phnx";
+			VerifySubtagCodes(ws, "kal", "Phnx", "ZD", null, "qaa-Phnx-QM-x-kal-ZD");
+
+			// To the standard private-use marker
+			ws.Script = "Qaaa";
+			VerifySubtagCodes(ws, "kal", "Qaaa", "ZD", null, "qaa-Qaaa-QM-x-kal-Qaaa-ZD");
+
+			// Back to the special one
+			ws.Script = "Zfdr";
+			VerifySubtagCodes(ws, "kal", "Zfdr", "ZD", null, "qaa-Qaaa-QM-x-kal-Zfdr-ZD");
+
+			// Add a standard variant
+			ws.Variants.Add("fonipa");
+			VerifySubtagCodes(ws, "kal", "Zfdr", "ZD", "fonipa", "qaa-Qaaa-QM-fonipa-x-kal-Zfdr-ZD");
+
+			// Change it to a combination one
+			ws.Variants.Clear();
+			ws.Variants.Add("fonipa");
+			ws.Variants.Add("etic");
+			VerifySubtagCodes(ws, "kal", "Zfdr", "ZD", "fonipa-x-etic", "qaa-Qaaa-QM-fonipa-x-kal-Zfdr-ZD-etic");
+
+			// Back to no variant.
+			ws.Variants.Clear();
+			VerifySubtagCodes(ws, "kal", "Zfdr", "ZD", null, "qaa-Qaaa-QM-x-kal-Zfdr-ZD");
+
+			// Try a double combination
+			ws.Variants.Clear();
+			ws.Variants.Add("fonipa");
+			ws.Variants.Add("1996");
+			ws.Variants.Add("etic");
+			ws.Variants.Add("emic");
+			VerifySubtagCodes(ws, "kal", "Zfdr", "ZD", "fonipa-1996-x-etic-emic", "qaa-Qaaa-QM-fonipa-1996-x-kal-Zfdr-ZD-etic-emic");
+
+			// Drop a piece out of each
+			ws.Variants.Clear();
+			ws.Variants.Add("fonipa");
+			ws.Variants.Add("etic");
+			VerifySubtagCodes(ws, "kal", "Zfdr", "ZD", "fonipa-x-etic", "qaa-Qaaa-QM-fonipa-x-kal-Zfdr-ZD-etic");
+
+			// Soemthing totally unknown
+			ws.Variants.Clear();
+			ws.Variants.Add("fonipa");
+			ws.Variants.Add("blah");
+			VerifySubtagCodes(ws, "kal", "Zfdr", "ZD", "fonipa-x-blah", "qaa-Qaaa-QM-fonipa-x-kal-Zfdr-ZD-blah");
+
+			// Drop just the standard part
+			ws.Variants.Clear();
+			ws.Variants.Add("blah");
+			VerifySubtagCodes(ws, "kal", "Zfdr", "ZD", "x-blah", "qaa-Qaaa-QM-x-kal-Zfdr-ZD-blah");
+
+			// No longer a custom language
+			ws.Language = "en";
+			VerifySubtagCodes(ws, "en", "Zfdr", "ZD", "x-blah", "en-Qaaa-QM-x-Zfdr-ZD-blah");
+
+			// No longer a custom script
+			ws.Script = null;
+			VerifySubtagCodes(ws, "en", null, "ZD", "x-blah", "en-QM-x-ZD-blah");
+
+			// No longer a custom region
+			ws.Region = null;
+			VerifySubtagCodes(ws, "en", null, null, "x-blah", "en-x-blah");
+
+			// No more variant
+			ws.Variants.Clear();
+			VerifySubtagCodes(ws, "en", null, null, null, "en");
+		}
 	}
 }

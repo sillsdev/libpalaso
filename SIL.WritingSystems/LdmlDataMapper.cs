@@ -389,8 +389,7 @@ namespace SIL.WritingSystems
 				string type = scElem.GetAttributeValue("type");
 				if (!type.Equals(string.Empty))
 				{
-					SpellCheckDictionaryDefinition scd =
-						new SpellCheckDictionaryDefinition(ws.LanguageTag, SpellCheckToSpecllCheckDictionaryFormats[type]);
+					var scd = new SpellCheckDictionaryDefinition(ws.LanguageTag, SpellCheckToSpecllCheckDictionaryFormats[type]);
 
 					// URL elements
 					foreach (XElement urlElem in scElem.Elements(Sil + "url"))

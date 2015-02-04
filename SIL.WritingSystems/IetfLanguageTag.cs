@@ -104,8 +104,8 @@ namespace SIL.WritingSystems
 			if (variantSubtagsArray.Length == 0)
 				return null;
 
-			return ConcatenateVariantAndPrivateUse(string.Join("-", variantSubtagsArray.Where(v => !v.IsPrivateUse)),
-				string.Join("-", variantSubtagsArray.Where(v => v.IsPrivateUse)));
+			return ConcatenateVariantAndPrivateUse(string.Join("-", variantSubtagsArray.Where(v => !v.IsPrivateUse).Select(v => v.Code)),
+				string.Join("-", variantSubtagsArray.Where(v => v.IsPrivateUse).Select(v => v.Code)));
 		}
 
 		public static bool IsValidLanguageCode(string code)
@@ -751,8 +751,10 @@ namespace SIL.WritingSystems
 				}
 				else
 				{
-					if (!StandardSubtags.Iso639Languages.TryGetItem(languageCode, out languageSubtag))
+					if (!StandardSubtags.IsValidIso639LanguageCode(languageCode))
 						return false;
+
+					languageSubtag = languageCode;
 				}
 			}
 			else if (LangPattern.IsMatch(privateUseCodes[0]))
@@ -787,8 +789,10 @@ namespace SIL.WritingSystems
 				}
 				else
 				{
-					if (!StandardSubtags.Iso15924Scripts.TryGetItem(scriptCode, out scriptSubtag))
+					if (!StandardSubtags.IsValidIso15924ScriptCode(scriptCode))
 						return false;
+
+					scriptSubtag = scriptCode;
 				}
 			}
 
@@ -803,8 +807,10 @@ namespace SIL.WritingSystems
 				}
 				else
 				{
-					if (!StandardSubtags.Iso3166Regions.TryGetItem(regionCode, out regionSubtag))
+					if (!StandardSubtags.IsValidIso3166RegionCode(regionCode))
 						return false;
+
+					regionSubtag = regionCode;
 				}
 			}
 
