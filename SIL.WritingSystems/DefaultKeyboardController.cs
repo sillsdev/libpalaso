@@ -12,46 +12,60 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// A common definition of the trivial thing all the Get methods currently return.
 		/// </summary>
-		private readonly DefaultKeyboardDefinition _trivialKeyboard = new DefaultKeyboardDefinition("en-US_English", "English");
+		private readonly DefaultKeyboardDefinition _defaultKeyboard = new DefaultKeyboardDefinition("en-US_English", "English");
+		private readonly Dictionary<string, DefaultKeyboardDefinition> _keyboards = new Dictionary<string, DefaultKeyboardDefinition>();
+
+		public DefaultKeyboardController()
+		{
+			_keyboards[_defaultKeyboard.Id] = _defaultKeyboard;
+		}
 
 		public IKeyboardDefinition GetKeyboard(string id)
 		{
-			return _trivialKeyboard;
+			DefaultKeyboardDefinition keyboard;
+			if (_keyboards.TryGetValue(id, out keyboard))
+				return keyboard;
+			return null;
 		}
 
 		public IKeyboardDefinition GetKeyboard(string layoutName, string locale)
 		{
-			return _trivialKeyboard;
+			return _keyboards.Values.FirstOrDefault(k => k.Layout == layoutName && k.Locale == locale);
 		}
 
 		public IKeyboardDefinition GetKeyboard(WritingSystemDefinition writingSystem)
 		{
-			return _trivialKeyboard;
+			return writingSystem.LocalKeyboard;
 		}
 
 		public IKeyboardDefinition GetKeyboard(IInputLanguage language)
 		{
-			return _trivialKeyboard;
+			return GetKeyboard(language.LayoutName, language.Culture.Name);
 		}
 
 		public void SetKeyboard(IKeyboardDefinition keyboard)
 		{
+			ActiveKeyboard = keyboard;
 		}
 
 		public void SetKeyboard(string id)
 		{
+			ActiveKeyboard = GetKeyboard(id);
 		}
 
 		public void SetKeyboard(string layoutName, string locale)
 		{
+			ActiveKeyboard = GetKeyboard(layoutName, locale);
 		}
 
 		public void SetKeyboard(WritingSystemDefinition writingSystem)
 		{
+			ActiveKeyboard = GetKeyboard(writingSystem);
 		}
 
 		public void SetKeyboard(IInputLanguage language)
 		{
+			ActiveKeyboard = GetKeyboard(language);
 		}
 
 		/// <summary>
@@ -59,11 +73,12 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public void ActivateDefaultKeyboard()
 		{
+			ActiveKeyboard = _defaultKeyboard;
 		}
 
 		public IEnumerable<IKeyboardDefinition> AllAvailableKeyboards
 		{
-			get {return new IKeyboardDefinition[0];}
+			get { return _keyboards.Values; }
 		}
 
 		public void UpdateAvailableKeyboards()
@@ -72,7 +87,7 @@ namespace SIL.WritingSystems
 
 		public virtual IKeyboardDefinition DefaultForWritingSystem(WritingSystemDefinition ws)
 		{
-			return _trivialKeyboard;
+			return LegacyForWritingSystem(ws) ?? _defaultKeyboard;
 		}
 
 		public IKeyboardDefinition LegacyForWritingSystem(WritingSystemDefinition ws)
@@ -87,22 +102,35 @@ namespace SIL.WritingSystems
 		/// availability of the keyboard and what engine provides it.</remarks>
 		public virtual IKeyboardDefinition CreateKeyboardDefinition(string id, KeyboardFormat format, IEnumerable<string> urls)
 		{
-			_trivialKeyboard.Format = format;
+			DefaultKeyboardDefinition keyboard;
+			if (!_keyboards.TryGetValue(id, out keyboard))
+			{
+				string[] parts = id.Split('_');
+				string locale = parts[0];
+				string layout = parts.Length > 1 ? parts[1] : null;
+				keyboard = new DefaultKeyboardDefinition(id, layout, layout, locale, false);
+				_keyboards[id] = keyboard;
+			}
+
+			keyboard.Format = format;
 			
 			// Clear any exisiting URL list
-			_trivialKeyboard.Urls.Clear();
-
+			keyboard.Urls.Clear();
 			foreach (string url in urls)
-			{
-				_trivialKeyboard.Urls.Add(url);
-			}
-			return _trivialKeyboard;
+				keyboard.Urls.Add(url);
+			return keyboard;
 		}
 
 		/// <summary>
 		/// Gets the currently active keyboard
 		/// </summary>
 		public IKeyboardDefinition ActiveKeyboard { get; set; }
+
+		public void Reset()
+		{
+			_keyboards.Clear();
+			_keyboards[_defaultKeyboard.Id] = _defaultKeyboard;
+		}
 
 		#region Implementation of IDisposable
 		/// <summary>
