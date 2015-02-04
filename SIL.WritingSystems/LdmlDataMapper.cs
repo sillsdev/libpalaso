@@ -29,7 +29,6 @@ namespace SIL.WritingSystems
 	/// </summary>
 	public class LdmlDataMapper
 	{
-		private bool _wsIsFlexPrivateUse;
 #if WS_FIX
 		private WritingSystemCompatibility _compatibilityMode;
 #endif
@@ -238,7 +237,7 @@ namespace SIL.WritingSystems
 			// Note: While 0xD (carriage return) is a valid XML character, it is automatically
 			// either dropped or converted to 0xA by any conforming XML parser, so we also make a <cp>
 			// element for that one.
-			StringBuilder sb = new StringBuilder(text.Length);
+			var sb = new StringBuilder(text.Length);
 			for (int i=0; i < text.Length; i++)
 			{
 				int code = Char.ConvertToUtf32(text, i);
@@ -323,13 +322,13 @@ namespace SIL.WritingSystems
 		{
 			foreach (XElement fontElem in externalResourcesElem.Elements(Sil + "font"))
 			{
-				string fontName = fontElem.GetAttributeValue("name");
+				var fontName = (string) fontElem.Attribute("name");
 				if (!fontName.Equals(string.Empty))
 				{
-					FontDefinition fd = new FontDefinition(fontName);
+					var fd = new FontDefinition(fontName);
 
 					// Types (space separate list)
-					string roles = fontElem.GetAttributeValue("types");
+					var roles = (string) fontElem.Attribute("types");
 					if (!String.IsNullOrEmpty(roles))
 					{
 						IEnumerable<string> roleList = roles.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
@@ -347,19 +346,19 @@ namespace SIL.WritingSystems
 					fd.DefaultRelativeSize = (float?) fontElem.Attribute("size") ?? 1.0f;
 
 					// Minversion
-					fd.MinVersion = fontElem.GetAttributeValue("minversion");
+					fd.MinVersion = (string) fontElem.Attribute("minversion");
 
 					// Features (space separated list of key=value pairs)
-					fd.Features = fontElem.GetAttributeValue("features");
+					fd.Features = (string) fontElem.Attribute("features");
 
 					// Language
-					fd.Language = fontElem.GetAttributeValue("lang");
+					fd.Language = (string) fontElem.Attribute("lang");
 
 					// OpenType language
-					fd.OpenTypeLanguage = fontElem.GetAttributeValue("otlang");
+					fd.OpenTypeLanguage = (string) fontElem.Attribute("otlang");
 
 					// Font Engine (space separated list) supercedes legacy isGraphite flag
-					string engines = fontElem.GetAttributeValue("engines");
+					var engines = (string) fontElem.Attribute("engines");
 					if (!String.IsNullOrEmpty(engines))
 					{
 						IEnumerable<string> engineList = engines.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
@@ -370,7 +369,7 @@ namespace SIL.WritingSystems
 					}
 
 					// Subset
-					fd.Subset = fontElem.GetAttributeValue("subset").ToLower();
+					fd.Subset = (string) fontElem.Attribute("subset");
 
 					// URL elements
 					foreach (XElement urlElem in fontElem.Elements(Sil + "url"))
@@ -386,7 +385,7 @@ namespace SIL.WritingSystems
 		{
 			foreach (XElement scElem in externalResourcesElem.Elements(Sil + "spellcheck"))
 			{
-				string type = scElem.GetAttributeValue("type");
+				var type = (string) scElem.Attribute("type");
 				if (!type.Equals(string.Empty))
 				{
 					var scd = new SpellCheckDictionaryDefinition(ws.LanguageTag, SpellCheckToSpecllCheckDictionaryFormats[type]);
@@ -405,16 +404,11 @@ namespace SIL.WritingSystems
 		{
 			foreach (XElement kbdElem in externalResourcesElem.Elements(Sil + "kbd"))
 			{
-				string id = kbdElem.GetAttributeValue("id");
+				var id = (string) kbdElem.Attribute("id");
 				if (!string.IsNullOrEmpty(id))
 				{
-					KeyboardFormat format = KeyboardToKeyboardFormat[kbdElem.GetAttributeValue("type")];
-					List<string> urls = new List<string>();
-					foreach (XElement urlElem in kbdElem.Elements(Sil + "url"))
-					{
-						urls.Add(urlElem.Value);
-					}
-					IKeyboardDefinition keyboard = Keyboard.Controller.CreateKeyboardDefinition(id, format, urls );
+					KeyboardFormat format = KeyboardToKeyboardFormat[(string) kbdElem.Attribute("type")];
+					IKeyboardDefinition keyboard = Keyboard.Controller.CreateKeyboardDefinition(id, format, kbdElem.Elements(Sil + "url").Select(u => (string) u));
 					ws.KnownKeyboards.Add(keyboard);
 				}
 			}
@@ -456,14 +450,10 @@ namespace SIL.WritingSystems
 				var flexRfcTagInterpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 				flexRfcTagInterpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, region, variant);
 				ws.SetAllComponents(flexRfcTagInterpreter.Language, flexRfcTagInterpreter.Script, flexRfcTagInterpreter.Region, flexRfcTagInterpreter.Variant);
-
-				_wsIsFlexPrivateUse = true;
 			}
 			else
 			{
 				ws.SetAllComponents(language, script, region, variant);
-
-				_wsIsFlexPrivateUse = false;
 			}
 
 			//Set the id simply as the concatenation of whatever was in the ldml file.
@@ -476,9 +466,9 @@ namespace SIL.WritingSystems
 				XElement silIdentityElem = specialElem.Element(Sil + "identity");
 				if (silIdentityElem != null)
 				{
-					ws.WindowsLcid = silIdentityElem.GetAttributeValue("windowsLCID");
-					ws.DefaultRegion = silIdentityElem.GetAttributeValue("defaultRegion");
-					string variantName = silIdentityElem.GetAttributeValue("variantName");
+					ws.WindowsLcid = (string) silIdentityElem.Attribute("windowsLCID");
+					ws.DefaultRegion = (string) silIdentityElem.Attribute("defaultRegion");
+					var variantName = (string) silIdentityElem.Attribute("variantName");
 					if (!string.IsNullOrEmpty(variantName) && ws.Variants.Count > 0)
 						ws.Variants[0] = new VariantSubtag(ws.Variants[0], variantName);
 				}
@@ -509,7 +499,7 @@ namespace SIL.WritingSystems
 		private void ReadExemplarCharactersElem(XElement exemplarCharactersElem, WritingSystemDefinition ws)
 		{
 			string type = (string) exemplarCharactersElem.Attribute("type") ?? "main";
-			CharacterSetDefinition csd = new CharacterSetDefinition(type);
+			var csd = new CharacterSetDefinition(type);
 
 			var charList = UnicodeSet.ToCharacters((string) exemplarCharactersElem);
 			foreach (string charItem in charList)
@@ -524,8 +514,8 @@ namespace SIL.WritingSystems
 			Debug.Assert(delimitersElem.Name == "delimiters");
 
 			// level 1: quotationStart, quotationEnd
-			string open = (string)delimitersElem.Element("quotationStart");
-			string close = (string)delimitersElem.Element("quotationEnd");
+			var open = (string) delimitersElem.Element("quotationStart");
+			var close = (string) delimitersElem.Element("quotationEnd");
 			if (!string.IsNullOrEmpty(open) || (!string.IsNullOrEmpty(close)))
 			{
 				var qm = new QuotationMark(open, close, null, 1, QuotationMarkingSystemType.Normal);
@@ -549,10 +539,10 @@ namespace SIL.WritingSystems
 				{
 					foreach (XElement matchedPairElem in matchedPairsElem.Elements(Sil + "matched-pair"))
 					{
-						open = matchedPairElem.GetAttributeValue("open");
-						close = matchedPairElem.GetAttributeValue("close");
+						open = (string) matchedPairElem.Attribute("open");
+						close = (string) matchedPairElem.Attribute("close");
 						bool paraClose = (bool?) matchedPairElem.Attribute("paraClose") ?? false;
-						MatchedPair mp = new MatchedPair(open, close, paraClose);
+						var mp = new MatchedPair(open, close, paraClose);
 						ws.MatchedPairs.Add(mp);
 					}
 				}
@@ -562,10 +552,9 @@ namespace SIL.WritingSystems
 				{
 					foreach (XElement punctuationPatternElem in punctuationPatternsElem.Elements(Sil + "punctuation-pattern"))
 					{
-						string pattern = punctuationPatternElem.GetAttributeValue("pattern");
-						PunctuationPatternContext ppc = ContextToPunctuationPatternContext[
-							punctuationPatternElem.GetAttributeValue("context")];
-						PunctuationPattern pp = new PunctuationPattern(pattern, ppc);
+						var pattern = (string) punctuationPatternElem.Attribute("pattern");
+						PunctuationPatternContext ppc = ContextToPunctuationPatternContext[(string) punctuationPatternElem.Attribute("context")];
+						var pp = new PunctuationPattern(pattern, ppc);
 						ws.PunctuationPatterns.Add(pp);
 					}
 				}
@@ -573,16 +562,15 @@ namespace SIL.WritingSystems
 				XElement quotationsElem = specialElem.Element(Sil + "quotation-marks");
 				if (quotationsElem != null)
 				{
-					ws.QuotationParagraphContinueType = QuotationToQuotationParagraphContinueTypes[
-						quotationsElem.GetAttributeValue("paraContinueType")];
+					ws.QuotationParagraphContinueType = QuotationToQuotationParagraphContinueTypes[(string) quotationsElem.Attribute("paraContinueType")];
 
 					foreach (XElement quotationElem in quotationsElem.Elements(Sil + "quotation"))
 					{
-						open = quotationElem.GetAttributeValue("open");
-						close = quotationElem.GetAttributeValue("close");
-						string cont = quotationElem.GetAttributeValue("continue");
-						int level = (int?)quotationElem.Attribute("level") ?? 1;
-						string type = quotationElem.GetAttributeValue("type");
+						open = (string) quotationElem.Attribute("open");
+						close = (string) quotationElem.Attribute("close");
+						var cont = (string) quotationElem.Attribute("continue");
+						int level = (int?) quotationElem.Attribute("level") ?? 1;
+						var type = (string) quotationElem.Attribute("type");
 						QuotationMarkingSystemType qmType = !string.IsNullOrEmpty(type) ? QuotationToQuotationMarkingSystemTypes[type] : QuotationMarkingSystemType.Normal;
 						
 						var qm = new QuotationMark(open, close, cont, level, qmType);
@@ -614,20 +602,16 @@ namespace SIL.WritingSystems
 			XElement defaultNumberingSystemElem = numbersElem.Element("defaultNumberingSystem");
 			if (defaultNumberingSystemElem != null)
 			{
-				string id = (string) defaultNumberingSystemElem;
-				var numberingSystemsElem =
-					numbersElem.Elements("numberingSystem")
-						.Where(e => id == e.GetAttributeValue("id") && e.GetAttributeValue("type") == "numeric")
-						.FirstOrDefault();
+				var id = (string) defaultNumberingSystemElem;
+				XElement numberingSystemsElem = numbersElem.Elements("numberingSystem")
+					.FirstOrDefault(e => id == (string) e.Attribute("id") && (string) e.Attribute("type") == "numeric");
 				if (numberingSystemsElem != null)
 				{
 					var csd = new CharacterSetDefinition("numeric");
 					// Only handle numeric types
-					string digits = numberingSystemsElem.GetAttributeValue("digits");
-					foreach (var charItem in digits)
-					{
-						csd.Characters.Add(charItem.ToString());
-					}
+					var digits = (string) numberingSystemsElem.Attribute("digits");
+					foreach (char charItem in digits)
+						csd.Characters.Add(charItem.ToString(CultureInfo.InvariantCulture));
 					ws.CharacterSets.Add(csd);
 				}
 			}
@@ -648,7 +632,7 @@ namespace SIL.WritingSystems
 			Debug.Assert(collationElem != null);
 			Debug.Assert(ws != null);
 
-			string collationType = collationElem.GetAttributeValue("type");
+			var collationType = (string) collationElem.Attribute("type");
 			bool needsCompiling = (bool?) collationElem.Attribute(Sil + "needscompiling") ?? false;
 
 			CollationDefinition cd = null;
@@ -701,8 +685,8 @@ namespace SIL.WritingSystems
 		private CollationDefinition ReadCollationRulesForOtherLanguage(XElement inheritedElem, string collationType)
 		{
 			Debug.Assert(inheritedElem != null);
-			string baseLanguageTag = inheritedElem.GetAttributeValue("base");
-			string baseType = inheritedElem.GetAttributeValue("type");
+			var baseLanguageTag = (string) inheritedElem.Attribute("base");
+			var baseType = (string) inheritedElem.Attribute("type");
 
 			// TODO: Read referenced LDML and get collation from there
 			return new InheritedCollationDefinition(collationType) {BaseLanguageTag = baseLanguageTag, BaseType = baseType};
@@ -813,22 +797,8 @@ namespace SIL.WritingSystems
 			}
 			// We don't want to run any risk of persisting an invalid writing system in an LDML.
 			ws.RequiresValidLanguageTag = true;
-			try
-			{
-				XElement element;
-				if (oldFileReader != null)
-				{
-					element = XElement.Load(oldFileReader);
-				}
-				else
-				{
-					element = new XElement("ldml");
-				}
-				WriteLdml(xmlWriter, element, ws);
-			}
-			finally
-			{
-			}
+			XElement element = oldFileReader != null ? XElement.Load(oldFileReader) : new XElement("ldml");
+			WriteLdml(xmlWriter, element, ws);
 		}
 
 		/// <summary>
@@ -839,7 +809,6 @@ namespace SIL.WritingSystems
 		/// <param name="ws"></param>
 		private void WriteLdml(XmlWriter writer, XElement element, WritingSystemDefinition ws)
 		{
-			_wsIsFlexPrivateUse = false;
 			Debug.Assert(element != null);
 			Debug.Assert(ws != null);
 
@@ -894,7 +863,7 @@ namespace SIL.WritingSystems
 			XElement specialElem = identityElem.Element("special");
 			if (specialElem != null)
 			{
-				identityElem.Element("special").Elements().Where(e => e.Name == Sil + "identity").Remove();
+				specialElem.Elements().Where(e => e.Name == Sil + "identity").Remove();
 				RemoveIfEmpty(specialElem);
 			}
 
@@ -1042,7 +1011,7 @@ namespace SIL.WritingSystems
 			delimitersElem.Elements().Where(e => e.Name != "special").Remove();
 
 			// Level 1 normal => quotationStart and quotationEnd
-			QuotationMark qm1 = ws.QuotationMarks.Where(q => q.Level == 1 && q.Type == QuotationMarkingSystemType.Normal).FirstOrDefault();
+			QuotationMark qm1 = ws.QuotationMarks.FirstOrDefault(q => q.Level == 1 && q.Type == QuotationMarkingSystemType.Normal);
 			if (qm1 != null)
 			{
 				var quotationStartElem = new XElement("quotationStart", qm1.Open);
@@ -1051,7 +1020,7 @@ namespace SIL.WritingSystems
 				delimitersElem.Add(quotationEndElem);
 			}
 			// Level 2 normal => alternateQuotationStart and alternateQuotationEnd
-			QuotationMark qm2 = ws.QuotationMarks.Where(q => q.Level == 2 && q.Type == QuotationMarkingSystemType.Normal).FirstOrDefault();
+			QuotationMark qm2 = ws.QuotationMarks.FirstOrDefault(q => q.Level == 2 && q.Type == QuotationMarkingSystemType.Normal);
 			if (qm2 != null)
 			{
 				var alternateQuotationStartElem = new XElement("alternateQuotationStart", qm2.Open);
@@ -1116,8 +1085,8 @@ namespace SIL.WritingSystems
 				quotationmarksElem = specialElem.Element(Sil + "quotation-marks");
 				if (quotationmarksElem != null)
 				{
-					quotationmarksElem.Elements(Sil + "quotation").Where(e=>string.IsNullOrEmpty(e.GetAttributeValue("type"))).Remove();
-					quotationmarksElem.Elements(Sil + "quotation").Where(e=>e.GetAttributeValue("type") == "narrative").Remove();
+					quotationmarksElem.Elements(Sil + "quotation").Where(e => string.IsNullOrEmpty((string) e.Attribute("type"))).Remove();
+					quotationmarksElem.Elements(Sil + "quotation").Where(e => (string) e.Attribute("type") == "narrative").Remove();
 					RemoveIfEmpty(quotationmarksElem);
 				}
 				RemoveIfEmpty(specialElem);
@@ -1181,7 +1150,7 @@ namespace SIL.WritingSystems
 				defaultNumberingSystem = (string) defaultNumberingSystemElem;
 			// Remove defaultNumberingSystem and numberingSystems elements of type "numeric" to repopulate later
 			numbersElem.Elements("defaultNumberingSystem").Remove();
-			numbersElem.Elements("numberingSystem").Where(e => e.GetAttributeValue("type") == "numeric").Remove();
+			numbersElem.Elements("numberingSystem").Where(e => (string) e.Attribute("type") == "numeric").Remove();
 
 			foreach (var csd in ws.CharacterSets)
 			{
@@ -1234,7 +1203,7 @@ namespace SIL.WritingSystems
 			Debug.Assert(collation != null);
 
 			// Find the collation with the matching attribute Type
-			var collationElem = collationsElem.Elements("collation").Where(e=> e.GetAttributeValue("type") == collation.Type).FirstOrDefault();
+			var collationElem = collationsElem.Elements("collation").FirstOrDefault(e => (string) e.Attribute("type") == collation.Type);
 			if (collationElem == null)
 			{
 				collationElem = new XElement("collation", new XAttribute("type", collation.Type));
@@ -1248,10 +1217,7 @@ namespace SIL.WritingSystems
 				crElem.RemoveAll();
 				crElem.Add(new XCData(collation.IcuRules));
 				// SLDR generally doesn't include needsCompiling if false
-				if (collation.IsValid)
-					collationElem.SetAttributeValue(Sil + "needsCompiling", null);
-				else
-					collationElem.SetAttributeValue(Sil + "needsCompiling", "true");
+				collationElem.SetAttributeValue(Sil + "needsCompiling", collation.IsValid ? null : "true");
 			}
 			var inheritedCollation = collation as InheritedCollationDefinition;
 			if (inheritedCollation != null)
@@ -1311,7 +1277,7 @@ namespace SIL.WritingSystems
 				// Generate space-separated list of font roles
 				if (font.Roles != FontRoles.Default)
 				{
-					List<string> fontRoleList = new List<string>();
+					var fontRoleList = new List<string>();
 					foreach (FontRoles fontRole in Enum.GetValues(typeof(FontRoles)))
 					{
 						if ((font.Roles & fontRole) != 0)
@@ -1334,7 +1300,7 @@ namespace SIL.WritingSystems
 				// Generate space-separated list of font engines
 				if (font.Engines != (FontEngines.Graphite | FontEngines.OpenType))
 				{
-					List<string> fontEngineList = new List<string>();
+					var fontEngineList = new List<string>();
 					foreach (FontEngines fontEngine in Enum.GetValues(typeof (FontEngines)))
 					{
 						if ((font.Engines & fontEngine) != 0)

@@ -1,34 +1,9 @@
 ﻿using System.Xml.Linq;
-using Palaso.UiBindings;
 
 namespace Palaso.Extensions
 {
 	public static class XElementExtensions
 	{
-		/// <summary>
-		/// Get the attribute value of the element as a string.
-		/// <param name="element">base XElement</param>
-		/// <param name="attribute">attribute to return</param>
-		/// <returns>attribute value; null if there is no attribute with the specified name</returns>
-		/// </summary>
-		public static string GetAttributeValue(this XElement element, string attribute)
-		{
-			string value = (string) element.Attribute(attribute) ?? null;
-			return value;
-		}
-
-		/// <summary>
-		/// Get the attribute value of the element as a string
-		/// </summary>
-		/// <param name="element">base XElement</param>
-		/// <param name="attribute">XName of the attribute to return</param>
-		/// <returns>attribute value; null if there is no attribute with the specified name</returns>
-		public static string GetAttributeValue(this XElement element, XName attribute)
-		{
-			string value = (string) element.Attribute(attribute) ?? null;
-			return value;
-		}
-
 		/// <summary>
 		/// Get the attribute value of a child element as a string.
 		/// <param name="element">parent XElement</param>
@@ -42,7 +17,7 @@ namespace Palaso.Extensions
 			XElement childElem = element.Element(child);
 			if (childElem != null)
 			{
-				value = childElem.GetAttributeValue(attribute);
+				value = (string) childElem.Attribute(attribute);
 			}
 			return value;
 		}
@@ -60,7 +35,7 @@ namespace Palaso.Extensions
 			XElement childElem = element.Element(child);
 			if (childElem != null)
 			{
-				value = childElem.GetAttributeValue(attribute);
+				value = (string) childElem.Attribute(attribute);
 			}
 			return value;
 		}
