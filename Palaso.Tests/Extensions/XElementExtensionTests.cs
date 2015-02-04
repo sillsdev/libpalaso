@@ -18,35 +18,10 @@ namespace Palaso.Tests.Extensions
 </ldml>".Replace("'", "\"");
 
 		[Test]
-		public void GetNullAttribute()
-		{
-			XElement root = XElement.Parse(Contents);
-			Assert.That(root.GetAttributeValue("date"), Is.Null);
-		}
-
-		[Test]
 		public void GetChildNullAttribute()
 		{
 			XElement root = XElement.Parse(Contents);
 			Assert.That(root.GetAttributeValue("identity", "date"), Is.Null);
-		}
-
-		[Test]
-		public void GetAttribute()
-		{
-			XElement root = XElement.Parse(Contents);
-			XElement identityElem = root.Element("identity");
-			string attribute = identityElem.GetAttributeValue("version");
-			Assert.That(attribute.Equals("3.14"));
-		}
-
-		[Test]
-		public void GetNamespaceAttribute()
-		{
-			XElement root = XElement.Parse(Contents);
-			XElement identityElem = root.Element("identity");
-			string attribute = identityElem.GetAttributeValue(Sil + "date");
-			Assert.That(attribute.Equals("Jan 1, 2015"));
 		}
 
 		[Test]
