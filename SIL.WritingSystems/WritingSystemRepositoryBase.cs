@@ -81,7 +81,7 @@ namespace SIL.WritingSystems
 		virtual public void Conflate(string wsToConflate, string wsToConflateWith)
 		{
 			Conflating = true;
-			if(WritingSystemConflated != null)
+			if (WritingSystemConflated != null)
 			{
 				WritingSystemConflated(this, new WritingSystemConflatedEventArgs(wsToConflate, wsToConflateWith));
 			}
@@ -216,10 +216,8 @@ namespace SIL.WritingSystems
 					WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.Id));
 				}
 			}
-			if (ws.StoreID != ws.Id)
-			{
-				ws.StoreID = ws.Id;
-			}
+
+			ws.StoreID = ws.Id;
 		}
 
 		/// <summary>
@@ -230,7 +228,7 @@ namespace SIL.WritingSystems
 			if (_idChangeMap.ContainsValue(oldId))
 			{
 				// if the oldid is in the value of key/value, then we can update the cooresponding key with the newId
-				string keyToChange = _idChangeMap.Where(pair => pair.Value == oldId).First().Key;
+				string keyToChange = _idChangeMap.First(pair => pair.Value == oldId).Key;
 				_idChangeMap[keyToChange] = newId;
 			}
 			else if (_idChangeMap.ContainsKey(oldId))

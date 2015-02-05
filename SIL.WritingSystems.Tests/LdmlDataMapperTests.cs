@@ -664,7 +664,7 @@ namespace SIL.WritingSystems.Tests
 				dataMapper.Read(tempFile.Path, ws);
 
 				var other = new FontDefinition("Padauk");
-				other.DefaultRelativeSize = 2.1f;
+				other.RelativeSize = 2.1f;
 				other.MinVersion = "3.1.4";
 				other.Features = "order=3 children=2 color=red createDate=1996";
 				other.Language = "en";

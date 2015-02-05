@@ -291,7 +291,7 @@ namespace SIL.WritingSystems
 			if (ChangedIDs.Any(p => p.Value == ws.StoreID))
 			{
 				// log this id change to the writing system change log
-				var pair = ChangedIDs.First(p => p.Value == ws.StoreID);
+				KeyValuePair<string, string> pair = ChangedIDs.First(p => p.Value == ws.StoreID);
 				_changeLog.LogChange(pair.Key, pair.Value);
 			} else
 			{
@@ -330,11 +330,8 @@ namespace SIL.WritingSystems
 			}
 			base.Remove(identifier);
 			if (!Conflating)
-			{
 				_changeLog.LogDelete(identifier);
 			}
-
-		}
 
 		private string PathToWritingSystemTrash()
 		{
@@ -347,7 +344,7 @@ namespace SIL.WritingSystems
 			//a WS we want by having it deleted by an old WS we don't want
 			//(but which has the same identifier)
 			var idsToRemove = new List<string>();
-			foreach (var ws in AllWritingSystems)
+			foreach (WritingSystemDefinition ws in AllWritingSystems)
 			{
 				if (ws.MarkedForDeletion)
 				{
@@ -362,8 +359,8 @@ namespace SIL.WritingSystems
 			// make a copy and then go through that list - SaveDefinition calls Set which
 			// may delete and then insert the same writing system - which would change WritingSystemDefinitions
 			// and not be allowed in a foreach loop
-			var allDefs = AllWritingSystems.Where(CanSet).ToList();
-			foreach (var ws in allDefs)
+			List<WritingSystemDefinition> allDefs = AllWritingSystems.Where(CanSet).ToList();
+			foreach (WritingSystemDefinition ws in allDefs)
 			{
 				SaveDefinition(ws);
 				OnChangeNotifySharedStore(ws);

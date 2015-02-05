@@ -343,7 +343,7 @@ namespace SIL.WritingSystems
 					}
 
 					// Relative Size
-					fd.DefaultRelativeSize = (float?) fontElem.Attribute("size") ?? 1.0f;
+					fd.RelativeSize = (float?) fontElem.Attribute("size") ?? 1.0f;
 
 					// Minversion
 					fd.MinVersion = (string) fontElem.Attribute("minversion");
@@ -1286,9 +1286,9 @@ namespace SIL.WritingSystems
 					fontElem.SetAttributeValue("types", string.Join(" ", fontRoleList));
 				}
 
-				if (font.DefaultRelativeSize != 1.0f)
+				if (font.RelativeSize != 1.0f)
 				{
-					fontElem.SetAttributeValue("size", font.DefaultRelativeSize);
+					fontElem.SetAttributeValue("size", font.RelativeSize);
 				}
 
 				fontElem.SetOptionalAttributeValue("minverison", font.MinVersion);
