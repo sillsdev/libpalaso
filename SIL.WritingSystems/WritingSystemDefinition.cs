@@ -95,6 +95,8 @@ namespace SIL.WritingSystems
 		private readonly ObservableKeyedCollection<string, CharacterSetDefinition> _characterSets = new ObservableKeyedCollection<string, CharacterSetDefinition>(csd => csd.Type);
 		private readonly SimpleMonitor _ignoreVariantChanges = new SimpleMonitor();
 		private bool _requiresValidLanguageTag = true;
+		private string _legacyMapping;
+		private bool _isGraphiteEnabled;
 
 		/// <summary>
 		/// Creates a new WritingSystemDefinition with Language subtag set to "qaa"
@@ -202,6 +204,8 @@ namespace SIL.WritingSystems
 			foreach (CharacterSetDefinition csd in ws._characterSets)
 				_characterSets.Add(csd.Clone());
 			_requiresValidLanguageTag = ws._requiresValidLanguageTag;
+			_isGraphiteEnabled = ws._isGraphiteEnabled;
+			_legacyMapping = ws._legacyMapping;
 			SetupCollectionChangeListeners();
 		}
 
@@ -988,6 +992,26 @@ namespace SIL.WritingSystems
 			set { UpdateField(() => QuotationParagraphContinueType, ref _quotationParagraphContinueType, value); }
 		}
 
+		/// <summary>
+		/// Gets or sets the legacy mapping.
+		/// </summary>
+		/// <value>The legacy mapping.</value>
+		public string LegacyMapping
+		{
+			get { return _legacyMapping ?? string.Empty; }
+			set { UpdateString(() => LegacyMapping, ref _legacyMapping, value); }
+		}
+
+		/// <summary>
+		/// Gets or sets a value indicating whether Graphite is enabled for this writing system.
+		/// </summary>
+		/// <value><c>true</c> if Graphite is enabled, otherwise <c>false</c>.</value>
+		public bool IsGraphiteEnabled
+		{
+			get { return _isGraphiteEnabled; }
+			set { UpdateField(() => IsGraphiteEnabled, ref _isGraphiteEnabled, value); }
+		}
+
 		public override string ToString()
 		{
 			return _languageTag;
@@ -1053,6 +1077,10 @@ namespace SIL.WritingSystems
 			if (_quotationParagraphContinueType != other._quotationParagraphContinueType)
 				return false;
 			if (_requiresValidLanguageTag != other._requiresValidLanguageTag)
+				return false;
+			if (_isGraphiteEnabled != other._isGraphiteEnabled)
+				return false;
+			if (LegacyMapping != other.LegacyMapping)
 				return false;
 			// fonts
 			if (_fonts.Count != other._fonts.Count)
