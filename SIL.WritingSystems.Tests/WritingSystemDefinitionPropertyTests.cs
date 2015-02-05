@@ -1037,7 +1037,7 @@ namespace SIL.WritingSystems.Tests
 		public void Variant_SetToxDashCapitalAUDIOWhileScriptIsNotZxxx_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.Variants.Add(new VariantSubtag("AUDIO", true)));
+			Assert.Throws<ValidationException>(() => ws.Variants.Add("AUDIO"));
 		}
 
 		[Test]
@@ -1235,7 +1235,7 @@ namespace SIL.WritingSystems.Tests
 			var ws = new WritingSystemDefinition();
 			ws.Language = "de";
 			ws.Script = "Latn";
-			Assert.Throws<ValidationException>(() => ws.Variants.Add(new VariantSubtag("AUDIO", true)));
+			Assert.Throws<ValidationException>(() => ws.Variants.Add("AUDIO"));
 		}
 
 		[Test]

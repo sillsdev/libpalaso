@@ -34,6 +34,7 @@ namespace SIL.WritingSystems
 
 			_hashCode = 23;
 			_hashCode = _hashCode * 31 + _code.ToLowerInvariant().GetHashCode();
+			_hashCode = _hashCode * 31 + Name.GetHashCode();
 			_hashCode = _hashCode * 31 + _isPrivateUse.GetHashCode();
 		}
 
@@ -88,7 +89,7 @@ namespace SIL.WritingSystems
 		/// <returns></returns>
 		public bool Equals(Subtag other)
 		{
-			return other != null && other._code.Equals(_code, StringComparison.InvariantCultureIgnoreCase) && other._isPrivateUse == _isPrivateUse;
+			return other != null && other._code.Equals(_code, StringComparison.InvariantCultureIgnoreCase) && other.Name == Name && other._isPrivateUse == _isPrivateUse;
 		}
 
 		/// <summary>
