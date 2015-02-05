@@ -7,9 +7,9 @@ using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 namespace SIL.WritingSystems.Migration
 {
 	/// <summary>
-	/// The RFC5646 tag cleaner.
+	/// The IETF language tag cleaner.
 	/// </summary>
-	public class Rfc5646TagCleaner
+	public class IetfLanguageTagCleaner
 	{
 		private SubTag _languageSubTag;
 		private SubTag _scriptSubTag;
@@ -18,9 +18,9 @@ namespace SIL.WritingSystems.Migration
 		private SubTag _privateUseSubTag;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Rfc5646TagCleaner"/> class.
+		/// Initializes a new instance of the <see cref="IetfLanguageTagCleaner"/> class.
 		/// </summary>
-		public Rfc5646TagCleaner(string language, string script, string region, string variant, string privateUse)
+		public IetfLanguageTagCleaner(string language, string script, string region, string variant, string privateUse)
 		{
 			Language = language;
 			Script = script;
@@ -30,9 +30,9 @@ namespace SIL.WritingSystems.Migration
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Rfc5646TagCleaner"/> class.
+		/// Initializes a new instance of the <see cref="IetfLanguageTagCleaner"/> class.
 		/// </summary>
-		public Rfc5646TagCleaner(string completeTag)
+		public IetfLanguageTagCleaner(string completeTag)
 		{
 			Language = completeTag;
 			Script = "";
@@ -267,16 +267,13 @@ namespace SIL.WritingSystems.Migration
 					if (part.Equals("x", StringComparison.OrdinalIgnoreCase))
 						break; // don't migrate language code parts already explicitly marked private-use.
 
-					if (String.IsNullOrEmpty(migrateFrom))
+					if (string.IsNullOrEmpty(migrateFrom))
 					{
-						foreach (var code in StandardSubtags.Iso639Languages)
+						LanguageSubtag language = StandardSubtags.Iso639Languages.FirstOrDefault(l => l.Iso3Code == part);
+						if (language != null)
 						{
-							if (code.Iso3Code == part)
-							{
-								migrateFrom = part;
-								migrateTo = code.Code;
-								break;
-							}
+							migrateFrom = part;
+							migrateTo = language.Code;
 						}
 					}
 				}
@@ -322,9 +319,7 @@ namespace SIL.WritingSystems.Migration
 			//keep track of everything that we moved
 			var tempSubTag = new SubTag();
 
-			MoveTagsMatching(
-				_languageSubTag, tempSubTag, tag => !StandardSubtags.IsValidIso639LanguageCode(tag)
-			);
+			MoveTagsMatching(_languageSubTag, tempSubTag, tag => !StandardSubtags.IsValidIso639LanguageCode(tag));
 			//place all the moved parts in private use.
 			foreach (var part in tempSubTag.AllParts)
 			{
@@ -339,15 +334,9 @@ namespace SIL.WritingSystems.Migration
 				}
 			}
 
-			MoveTagsMatching(
-				_scriptSubTag, _privateUseSubTag, tag => !StandardSubtags.IsValidIso15924ScriptCode(tag)
-			);
-			MoveTagsMatching(
-				_regionSubTag, _privateUseSubTag, tag => !StandardSubtags.IsValidIso3166RegionCode(tag)
-			);
-			MoveTagsMatching(
-				_variantSubTag, _privateUseSubTag, tag => !StandardSubtags.IsValidRegisteredVariantCode(tag)
-			);
+			MoveTagsMatching(_scriptSubTag, _privateUseSubTag, tag => !StandardSubtags.IsValidIso15924ScriptCode(tag));
+			MoveTagsMatching(_regionSubTag, _privateUseSubTag, tag => !StandardSubtags.IsValidIso3166RegionCode(tag));
+			MoveTagsMatching(_variantSubTag, _privateUseSubTag, tag => !StandardSubtags.IsValidRegisteredVariantCode(tag));
 
 			_languageSubTag.KeepFirstAndMoveRemainderTo(_privateUseSubTag);
 			_scriptSubTag.KeepFirstAndMoveRemainderTo(_privateUseSubTag);
@@ -368,8 +357,8 @@ namespace SIL.WritingSystems.Migration
 			}
 
 			//These two methods may produce duplicates that will subsequently be removed. Do we care? - TA 29/3/2011
-			_privateUseSubTag.TruncatePartsToNumCharacters(8);
 			_privateUseSubTag.RemoveNonAlphaNumericCharacters();
+			_privateUseSubTag.TruncatePartsToNumCharacters(8);
 
 			_variantSubTag.RemoveDuplicates();
 			_privateUseSubTag.RemoveDuplicates();

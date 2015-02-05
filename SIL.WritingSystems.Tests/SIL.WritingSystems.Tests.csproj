@@ -147,7 +147,7 @@
     <Compile Include="Migration\GlobalWritingSystemRepositoryMigratorTests.cs" />
     <Compile Include="Migration\LdmlAdaptorV0Tests.cs" />
     <Compile Include="Migration\LdmlInFolderWritingSystemRepositoryMigratorTests.cs" />
-    <Compile Include="Migration\Rfc5646TagCleanerTests.cs" />
+    <Compile Include="Migration\IetfLanguageTagCleanerTests.cs" />
     <Compile Include="Migration\WritingSystemLdmlVersionGetterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StandardSubtagsTests.cs" />

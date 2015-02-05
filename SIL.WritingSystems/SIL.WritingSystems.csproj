@@ -180,7 +180,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Migration\GlobalWritingSystemRepositoryMigrator.cs" />
     <Compile Include="Migration\LdmlInFolderWritingSystemRepositoryMigrator.cs" />
-    <Compile Include="Migration\Rfc5646TagCleaner.cs" />
+    <Compile Include="Migration\IetfLanguageTagCleaner.cs" />
     <Compile Include="Migration\WritingSystemLdmlVersionGetter.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\LdmlAdaptorV0.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\LdmlAdaptorV1.cs" />

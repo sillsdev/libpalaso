@@ -61,7 +61,7 @@ namespace SIL.WritingSystems
 						if (!wsId.StartsWith("x-"))
 						{
 							// Clean it
-							var rfcTagCleaner = new Rfc5646TagCleaner(wsId);
+							var rfcTagCleaner = new IetfLanguageTagCleaner(wsId);
 							rfcTagCleaner.Clean();
 							newId = rfcTagCleaner.GetCompleteTag();
 						}
@@ -74,7 +74,7 @@ namespace SIL.WritingSystems
 					else
 					{
 						// Clean it
-						var rfcTagCleaner = new Rfc5646TagCleaner(wsId);
+						var rfcTagCleaner = new IetfLanguageTagCleaner(wsId);
 						rfcTagCleaner.Clean();
 						newId = rfcTagCleaner.GetCompleteTag();
 					}

@@ -96,7 +96,7 @@ namespace SIL.WritingSystems.WindowsForms
 					region = GetRegion(language);
 				}
 
-				var cleaner = new Rfc5646TagCleaner(culture.TwoLetterISOLanguageName, "", region, "", "");
+				var cleaner = new IetfLanguageTagCleaner(culture.TwoLetterISOLanguageName, "", region, "", "");
 				cleaner.Clean();
 
 				var def = new WritingSystemDefinition(

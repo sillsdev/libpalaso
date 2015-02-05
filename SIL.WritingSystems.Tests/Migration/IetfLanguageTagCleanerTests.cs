@@ -4,13 +4,12 @@ using SIL.WritingSystems.Migration;
 namespace SIL.WritingSystems.Tests.Migration
 {
 	[TestFixture]
-	public class Rfc5646TagCleanerTests
+	public class IetfLanguageTagCleanerTests
 	{
-
 		[Test]
 		public void CompleteTagConstructor_HasInvalidLanguageName_MovedToPrivateUse()
 		{
-			var cleaner = new Rfc5646TagCleaner("234");
+			var cleaner = new IetfLanguageTagCleaner("234");
 			cleaner.Clean();
 			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("qaa-x-234"));
 		}
@@ -18,7 +17,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void CompleteTagConstructor_HasLanguageNameAndOtherName_OtherNameMovedToPrivateUse()
 		{
-			var cleaner = new Rfc5646TagCleaner("abc-123");
+			var cleaner = new IetfLanguageTagCleaner("abc-123");
 			cleaner.Clean();
 			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("abc-x-123"));
 		}
@@ -26,7 +25,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void CompleteTagConstructor_LanguageNameWithAudio_GetZxxxAdded()
 		{
-			var cleaner = new Rfc5646TagCleaner("aaa-x-audio");
+			var cleaner = new IetfLanguageTagCleaner("aaa-x-audio");
 			cleaner.Clean();
 			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("aaa-Zxxx-x-audio"));
 		}
@@ -34,12 +33,12 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void CompleteTagConstructor_InvalidLanguageNameWithScript_QaaAdded()
 		{
-			var cleaner = new Rfc5646TagCleaner("wee-Latn");
+			var cleaner = new IetfLanguageTagCleaner("wee-Latn");
 			cleaner.Clean();
 			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("qaa-Latn-x-wee"));
 
 			// Also when initially "Latn" is properly in the Script field.
-			cleaner = new Rfc5646TagCleaner("wee", "Latn", "", "", "");
+			cleaner = new IetfLanguageTagCleaner("wee", "Latn", "", "", "");
 			cleaner.Clean();
 			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("qaa-Latn-x-wee"));
 		}
@@ -47,7 +46,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void CompleteTagConstructor_XDashBeforeValidLanguageNameInVariant_NoChange()
 		{
-			var cleaner = new Rfc5646TagCleaner("", "", "", "x-de", "");
+			var cleaner = new IetfLanguageTagCleaner("", "", "", "x-de", "");
 			cleaner.Clean();
 			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("x-de"));
 		}
@@ -55,7 +54,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void ValidLanguageCodeMarkedPrivate_InsertsQaa()
 		{
-			var cleaner = new Rfc5646TagCleaner("x-de", "", "", "", "");
+			var cleaner = new IetfLanguageTagCleaner("x-de", "", "", "", "");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "qaa", "", "", "", "qaa-x-de");
 		}
@@ -63,7 +62,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void Language_XDashBeforeString_AddsQaa()
 		{
-			var cleaner = new Rfc5646TagCleaner("x-blah");
+			var cleaner = new IetfLanguageTagCleaner("x-blah");
 			cleaner.Clean();
 			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("qaa-x-blah"));
 		}
@@ -71,7 +70,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void CompleteTagConstructor_QaaWithXDashBeforeValidLanguageName_NoChange()
 		{
-			var cleaner = new Rfc5646TagCleaner("qaa-x-th");
+			var cleaner = new IetfLanguageTagCleaner("qaa-x-th");
 			cleaner.Clean();
 			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("qaa-x-th"));
 			Assert.That(cleaner.Language, Is.EqualTo("qaa"));
@@ -81,7 +80,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void CompleteTagConstructor_TagContainsPrivateUseWithAdditionalXDash_RedundantXDashRemoved()
 		{
-			var cleaner = new Rfc5646TagCleaner("en-x-some-x-whatever");
+			var cleaner = new IetfLanguageTagCleaner("en-x-some-x-whatever");
 			cleaner.Clean();
 			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("en-x-some-whatever"));
 		}
@@ -89,7 +88,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void CompleteTagConstructor_TagContainsOnlyPrivateUseWithAdditionalXDash_RedundantXDashRemoved()
 		{
-			var cleaner = new Rfc5646TagCleaner("x-some-x-whatever");
+			var cleaner = new IetfLanguageTagCleaner("x-some-x-whatever");
 			cleaner.Clean();
 			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("qaa-x-some-whatever"));
 		}
@@ -97,7 +96,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void CompleteTagConstructor_PrivateUseWithAudioAndDuplicateX_MakesAudioTag()
 		{
-			var cleaner = new Rfc5646TagCleaner("x-en-Zxxx-x-audio");
+			var cleaner = new IetfLanguageTagCleaner("x-en-Zxxx-x-audio");
 			cleaner.Clean();
 			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("qaa-Zxxx-x-en-Zxxx-audio"));
 		}
@@ -105,7 +104,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void CompleteTagConstructor_ValidRfctagWithPrivateUseElements_NoChange()
 		{
-			var cleaner = new Rfc5646TagCleaner("qaa-Zxxx-x-Zxxx-AUDIO");
+			var cleaner = new IetfLanguageTagCleaner("qaa-Zxxx-x-Zxxx-AUDIO");
 			cleaner.Clean();
 			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("qaa-Zxxx-x-Zxxx-AUDIO"));
 			// Except, it should have moved things from Language, where the constructor puts them, to the appropriate places.
@@ -117,7 +116,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void CompleteTagConstructor_ValidRfctagWithLegacyIso3Code_MigratesToRfc2LetterCode()
 		{
-			var cleaner = new Rfc5646TagCleaner("eng");
+			var cleaner = new IetfLanguageTagCleaner("eng");
 			cleaner.Clean();
 			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("en"));
 		}
@@ -125,7 +124,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void CompleteTagConstructor_ValidRfctagWithLegacyIso3CodeAndPrivateUse_MigratesToRfc2LetterCodeAndPrivateUse()
 		{
-			var cleaner = new Rfc5646TagCleaner("eng-bogus");
+			var cleaner = new IetfLanguageTagCleaner("eng-bogus");
 			cleaner.Clean();
 			Assert.That(cleaner.GetCompleteTag(), Is.EqualTo("en-x-bogus"));
 		}
@@ -133,7 +132,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void AllPrivateComponents_InsertsStandardPrivateCodes()
 		{
-			var cleaner = new Rfc5646TagCleaner("x-kal", "x-script", "x-RG", "fonipa-x-etic", "");
+			var cleaner = new IetfLanguageTagCleaner("x-kal", "x-script", "x-RG", "fonipa-x-etic", "");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "qaa", "Qaaa", "QM", "fonipa", "qaa-Qaaa-QM-fonipa-x-kal-script-RG-etic");
 		}
@@ -141,7 +140,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void PrivateScriptKnownLanguage_InsertsPrivateScriptCode()
 		{
-			var cleaner = new Rfc5646TagCleaner("fr", "x-script", "", "", "");
+			var cleaner = new IetfLanguageTagCleaner("fr", "x-script", "", "", "");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "fr", "Qaaa", "", "", "fr-Qaaa-x-script");
 
@@ -150,7 +149,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void PrivateScriptKnownLanguageAndRegion_InsertsPrivateScriptCode()
 		{
-			var cleaner = new Rfc5646TagCleaner("fr", "x-script", "NO", "", "");
+			var cleaner = new IetfLanguageTagCleaner("fr", "x-script", "NO", "", "");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "fr", "Qaaa", "NO", "", "fr-Qaaa-NO-x-script");
 		}
@@ -158,7 +157,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void PrivateRegionKnownLanguageAndScript_InsertsPrivateRegionCode()
 		{
-			var cleaner = new Rfc5646TagCleaner("fr", "Latn", "x-ZY", "", "");
+			var cleaner = new IetfLanguageTagCleaner("fr", "Latn", "x-ZY", "", "");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "fr", "Latn", "QM", "", "fr-Latn-QM-x-ZY");
 		}
@@ -166,7 +165,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void PrivateRegionMultiPartVariant_InsertsPrivateRegionCode()
 		{
-			var cleaner = new Rfc5646TagCleaner("fr", "", "x-ZY", "fonipa-x-etic", "");
+			var cleaner = new IetfLanguageTagCleaner("fr", "", "x-ZY", "fonipa-x-etic", "");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "fr", "", "QM", "fonipa", "fr-QM-fonipa-x-ZY-etic");
 		}
@@ -174,7 +173,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void MultiPartVariantWithoutX_InsertsX()
 		{
-			var cleaner = new Rfc5646TagCleaner("fr", "", "", "fonipa-etic", "");
+			var cleaner = new IetfLanguageTagCleaner("fr", "", "", "fonipa-etic", "");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "fr", "", "", "fonipa", "fr-fonipa-x-etic");
 		}
@@ -182,7 +181,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void ZhNoRegion_InsertsRegionCN()
 		{
-			var cleaner = new Rfc5646TagCleaner("zh", "", "", "", "");
+			var cleaner = new IetfLanguageTagCleaner("zh", "", "", "", "");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "zh", "", "CN", "", "zh-CN");
 		}
@@ -190,7 +189,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void CmnNoRegion_BecomesZhCN()
 		{
-			var cleaner = new Rfc5646TagCleaner("cmn", "", "", "", "");
+			var cleaner = new IetfLanguageTagCleaner("cmn", "", "", "", "");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "zh", "", "CN", "", "zh-CN");
 		}
@@ -198,7 +197,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void Pes_BecomesFa()
 		{
-			var cleaner = new Rfc5646TagCleaner("pes", "Latn", "", "", "");
+			var cleaner = new IetfLanguageTagCleaner("pes", "Latn", "", "", "");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "fa", "Latn", "", "", "fa-Latn");
 		}
@@ -206,18 +205,18 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void Arb_BecomesAr()
 		{
-			var cleaner = new Rfc5646TagCleaner("arb", "", "x-ZG", "", "");
+			var cleaner = new IetfLanguageTagCleaner("arb", "", "x-ZG", "", "");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "ar", "", "QM", "", "ar-QM-x-ZG");
 		}
 		[Test]
 		public void ZhRegion_NoChange()
 		{
-			var cleaner = new Rfc5646TagCleaner("zh", "", "NO", "", "");
+			var cleaner = new IetfLanguageTagCleaner("zh", "", "NO", "", "");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "zh", "", "NO", "", "zh-NO");
 
-			cleaner = new Rfc5646TagCleaner("zh", "", "x-ZK", "", "");
+			cleaner = new IetfLanguageTagCleaner("zh", "", "x-ZK", "", "");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "zh", "", "QM", "", "zh-QM-x-ZK");
 		}
@@ -230,7 +229,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void LanguageSubtagContainsMultipleValidLanguageSubtagsAsWellAsDataThatIsNotValidLanguageScriptRegionOrVariant_AllSubtagsButFirstValidLanguageSubtagAreMovedToPrivateUse()
 		{
-			var cleaner = new Rfc5646TagCleaner("bogus-en-audio-tpi-bogus2-x-", "", "", "", "");
+			var cleaner = new IetfLanguageTagCleaner("bogus-en-audio-tpi-bogus2-x-", "", "", "", "");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "en", "Zxxx", "", "", "en-Zxxx-x-bogus-audio-bogus2-tpi");
 		}
@@ -238,7 +237,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void CmnRegion_BecomesZh()
 		{
-			var cleaner = new Rfc5646TagCleaner("cmn", "", "NO", "", "");
+			var cleaner = new IetfLanguageTagCleaner("cmn", "", "NO", "", "");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "zh", "", "NO", "", "zh-NO");
 		}
@@ -246,7 +245,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void EticWithoutFonipa_AddsFonipa()
 		{
-			var cleaner = new Rfc5646TagCleaner("en", "", "", "x-etic", "");
+			var cleaner = new IetfLanguageTagCleaner("en", "", "", "x-etic", "");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "en", "", "", "fonipa", "en-fonipa-x-etic");
 		}
@@ -254,7 +253,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void EmicWithoutFonipa_AddsFonipa()
 		{
-			var cleaner = new Rfc5646TagCleaner("en", "", "", "x-emic", "");
+			var cleaner = new IetfLanguageTagCleaner("en", "", "", "x-emic", "");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "en", "", "", "fonipa", "en-fonipa-x-emic");
 		}
@@ -262,7 +261,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void PrivateUseVariantLanguageCode_IsNotShortened()
 		{
-			var cleaner = new Rfc5646TagCleaner("qaa", "", "", "", "x-kal");
+			var cleaner = new IetfLanguageTagCleaner("qaa", "", "", "", "x-kal");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "qaa", "", "", "", "qaa-x-kal");
 		}
@@ -270,7 +269,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void LanguageCodeAfterX_IsNotShortened()
 		{
-			var cleaner = new Rfc5646TagCleaner("qaa-x-kal");
+			var cleaner = new IetfLanguageTagCleaner("qaa-x-kal");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "qaa", "", "", "", "qaa-x-kal");
 		}
@@ -278,7 +277,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void NewTagWithPrivateLanguage_IsNotModified()
 		{
-			var cleaner = new Rfc5646TagCleaner("qaa-Qaaa-QM-x-kal-Mysc-YY");
+			var cleaner = new IetfLanguageTagCleaner("qaa-Qaaa-QM-x-kal-Mysc-YY");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "qaa", "Qaaa", "QM", "", "qaa-Qaaa-QM-x-kal-Mysc-YY");
 		}
@@ -286,7 +285,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void NewTag_IsNotModified()
 		{
-			var cleaner = new Rfc5646TagCleaner("fr-Qaaa-QM-x-Mysc-YY");
+			var cleaner = new IetfLanguageTagCleaner("fr-Qaaa-QM-x-Mysc-YY");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "fr", "Qaaa", "QM", "", "fr-Qaaa-QM-x-Mysc-YY");
 		}
@@ -294,7 +293,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void RegionCodesThatMatchLanguageCodesNotMovedToPrivateUse()
 		{
-			var cleaner = new Rfc5646TagCleaner("rwr-IN");
+			var cleaner = new IetfLanguageTagCleaner("rwr-IN");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "rwr", "", "IN", "", "rwr-IN");
 		}
@@ -302,7 +301,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void CleanMarksCustomScriptMovedToPrivateUse()
 		{
-			var cleaner = new Rfc5646TagCleaner("en-Zyxw");
+			var cleaner = new IetfLanguageTagCleaner("en-Zyxw");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "en", "Qaaa", "", "", "en-Qaaa-x-Zyxw");
 		}
@@ -310,12 +309,12 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void ScriptEndingWithX_IsHandledCorrectly()
 		{
-			var cleaner = new Rfc5646TagCleaner("zh-Phnx-CN-fonipa-x-emic");
+			var cleaner = new IetfLanguageTagCleaner("zh-Phnx-CN-fonipa-x-emic");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "zh", "Phnx", "CN", "fonipa", "zh-Phnx-CN-fonipa-x-emic");
 		}
 
-		void VerifyRfcCleaner(Rfc5646TagCleaner cleaner, string language, string script, string region, string variant, string completeTag)
+		void VerifyRfcCleaner(IetfLanguageTagCleaner cleaner, string language, string script, string region, string variant, string completeTag)
 		{
 			Assert.That(cleaner.Language, Is.EqualTo(language));
 			Assert.That(cleaner.Script, Is.EqualTo(script));

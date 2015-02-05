@@ -58,7 +58,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			var writingSystemDefinitionV0 = new WritingSystemDefinitionV0();
 			new LdmlAdaptorV0().Read(sourceFilePath, writingSystemDefinitionV0);
 
-			var rfcHelper = new Rfc5646TagCleaner(
+			var rfcHelper = new IetfLanguageTagCleaner(
 				writingSystemDefinitionV0.ISO639,
 				writingSystemDefinitionV0.Script,
 				writingSystemDefinitionV0.Region,
