@@ -199,7 +199,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		public void SaveUpdatedMetadataIfItMakesSense()
 		{
 			ThrowIfDisposedOfAlready();
-			Guard.Against(FileFormatSupportsMetadata, "We can't put metadata into images of this format.");
+			Guard.AssertThat(FileFormatSupportsMetadata, "We can't put metadata into images of this format.");
 
 			if (Metadata != null && Metadata.HasChanges && !string.IsNullOrEmpty(_pathForSavingMetadataChanges) && File.Exists(_pathForSavingMetadataChanges))
 				SaveUpdatedMetadata();

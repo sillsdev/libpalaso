@@ -12,9 +12,9 @@ namespace Palaso.Code
 	{
 		/// <summary>
 		/// Will throw a <see cref="InvalidOperationException"/> if the assertion
-		/// is true, with the specificied message.
+		/// is true, with the supplied message.
 		/// </summary>
-		/// <param name="assertion">if set to <c>true</c> [assertion].</param>
+		/// <param name="expressionThatIsFalseIfEverythingIsOk">if set to <c>true</c> [assertion].</param>
 		/// <param name="message">The message.</param>
 		/// <example>
 		/// Sample usage:
@@ -22,11 +22,24 @@ namespace Palaso.Code
 		/// Guard.Against(string.IsNullOrEmpty(name), "Name must have a value");
 		/// </code>
 		/// </example>
-		public static void Against(bool assertion, string message)
+		public static void Against(bool expressionThatIsFalseIfEverythingIsOk, string message)
 		{
-			if (assertion == false)
+			if(expressionThatIsFalseIfEverythingIsOk == false)
 				return;
 			throw new InvalidOperationException(message);
+		}
+		/// <summary>
+		/// Will throw if assertion is false
+		/// </summary>
+		/// <param name="assertion"></param>
+		/// <param name="message"></param>
+		/// <exception cref="InvalidOperationException"></exception>
+		public static void AssertThat(bool assertion, string message)
+		{
+			if (!assertion)
+			{
+				throw new InvalidOperationException(message);
+			}
 		}
 
 		public static void AgainstNull(object value, string valueName)
