@@ -156,6 +156,9 @@
     <Compile Include="Migration\SilLdmlVersion.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\IcuRulesParser.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\Rfc5646Tag.cs" />
+    <Compile Include="Migration\WritingSystemsLdmlV2To3Migration\LdmlAdaptorV3.cs" />
+    <Compile Include="Migration\WritingSystemsLdmlV2To3Migration\LdmlVersion2MigrationStrategy.cs" />
+    <Compile Include="Migration\WritingSystemsLdmlV2To3Migration\WritingSystemDefinitionV3.cs" />
     <Compile Include="ObservableSet.cs" />
     <Compile Include="PunctuationPattern.cs" />
     <Compile Include="QuotationMark.cs" />

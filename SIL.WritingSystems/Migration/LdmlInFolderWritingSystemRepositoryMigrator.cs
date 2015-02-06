@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Palaso.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration;
 
 namespace SIL.WritingSystems.Migration
 {
@@ -37,6 +38,7 @@ namespace SIL.WritingSystems.Migration
 			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(migrationHandler, auditLog, 0, compatibilityMode));
 			// Version 0 strategy has been enhanced to also migrate version 1.
 			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(migrationHandler, auditLog, 1, compatibilityMode));
+			AddMigrationStrategy(new LdmlVersion2MigrationStrategy());
 		}
 
 		public IEnumerable<WritingSystemRepositoryProblem> MigrationProblems

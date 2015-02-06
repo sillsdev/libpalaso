@@ -113,14 +113,15 @@ namespace SIL.WritingSystems.Tests
 			AssertThatXmlIn.String(sw.ToString()).HasAtLeastOneMatchForXpath("/ldml/special[text()=\"hey\"]");
 		}
 
-#if WS_FIX
 		[Test]
 		public void RoundtripSimpleCustomSortRules_WS33715()
 		{
 			var ldmlAdaptor = new LdmlDataMapper();
 
 			const string sortRules = "(A̍ a̍)";
-			var wsWithSimpleCustomSortRules = new WritingSystemDefinition {CollationRulesType = CollationRulesTypes.CustomSimple, CollationRules = sortRules};
+			var cd = new SimpleCollationDefinition("standard") { SimpleRules = sortRules };
+			var wsWithSimpleCustomSortRules = new WritingSystemDefinition();
+			wsWithSimpleCustomSortRules.Collations.Add(cd);
 
 			var wsFromLdml = new WritingSystemDefinition();
 			using (var tempFile = new TempFile())
@@ -129,7 +130,8 @@ namespace SIL.WritingSystems.Tests
 				ldmlAdaptor.Read(tempFile.Path, wsFromLdml);
 			}
 
-			Assert.AreEqual(sortRules, wsFromLdml.CollationRules);
+			var cdFromLdml = (SimpleCollationDefinition)(wsFromLdml.Collations.FirstOrDefault());
+			Assert.AreEqual(sortRules, cdFromLdml.SimpleRules);
 		}
 
 		[Test]
@@ -137,13 +139,16 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ldmlAdaptor = new LdmlDataMapper();
 
-			Keyboard.Controller = new MyKeyboardController();
+			//Keyboard.Controller = new MyKeyboardController();
 
 			var wsWithKnownKeyboards = new WritingSystemDefinition();
-			var keyboard1 = new DefaultKeyboardDefinition(KeyboardType.System, "MyFavoriteKeyboard", "en-US");
+			// ID name layout local available
+			var keyboard1 = new DefaultKeyboardDefinition("en-US_MyFavoriteKeyboard", "MyFavoriteKeyboard", "MyFavoriteKeyboard", "en-US", true);
+			keyboard1.Format = KeyboardFormat.Msklc;
 			wsWithKnownKeyboards.KnownKeyboards.Add(keyboard1);
 
-			var keyboard2 = new DefaultKeyboardDefinition(KeyboardType.System, "SusannasFavoriteKeyboard", "en-GB");
+			var keyboard2 = new DefaultKeyboardDefinition("en-GB_SusannasFavoriteKeyboard", "SusannasFavoriteKeyboard", "SusannasFavoriteKeyboard", "en-GB", true);
+			keyboard2.Format = KeyboardFormat.Msklc;
 			wsWithKnownKeyboards.KnownKeyboards.Add(keyboard2);
 
 			var wsFromLdml = new WritingSystemDefinition();
@@ -158,28 +163,11 @@ namespace SIL.WritingSystems.Tests
 			var keyboard1FromLdml = knownKeyboards[0];
 			Assert.That(keyboard1FromLdml.Layout, Is.EqualTo("MyFavoriteKeyboard"));
 			Assert.That(keyboard1FromLdml.Locale, Is.EqualTo("en-US"));
-			Assert.That(keyboard1FromLdml, Is.InstanceOf<MyKeyboardDefn>(), "Reader should have used controller to create keyboard defn");
 
 			var keyboard2FromLdml = knownKeyboards[1];
 			Assert.That(keyboard2FromLdml.Layout, Is.EqualTo("SusannasFavoriteKeyboard"));
 			Assert.That(keyboard2FromLdml.Locale, Is.EqualTo("en-GB"));
 		}
-
-		class MyKeyboardDefn : DefaultKeyboardDefinition
-		{
-			public MyKeyboardDefn(KeyboardType type, string layout, string locale) : base(type, layout, locale)
-			{
-			}
-		}
-
-		class MyKeyboardController : DefaultKeyboardController
-		{
-			public override IKeyboardDefinition CreateKeyboardDefinition(string id)
-			{
-				return new MyKeyboardDefn(KeyboardType.System, id, id);
-			}
-		}
-#endif
 
 		[Test]
 		public void Read_LdmlIdentity()
@@ -346,43 +334,7 @@ namespace SIL.WritingSystems.Tests
 
 		}
 
-#if WS_FIX
-		[Test]
-		//WS-33992
-		public void Read_LdmlContainsEmptyCollationElement_SortUsingIsSetToSameAsIfNoCollationElementExisted()
-		{
-			const string ldmlWithEmptyCollationElement = "<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"qaa\" /></identity><dates /><collations><collation></collation></collations><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" ><palaso:version value=\"2\" /></special></ldml>";
-			const string ldmlwithNoCollationElement = "<ldml><!--Comment--><identity><version number=\"\" /><generation date=\"0001-01-01T00:00:00\" /><language type=\"qaa\" /></identity><dates /><collations/><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" ><palaso:version value=\"2\" /></special></ldml>";
-
-			string pathToLdmlWithEmptyCollationElement = Path.GetTempFileName();
-			try
-			{
-				File.WriteAllText(pathToLdmlWithEmptyCollationElement, ldmlWithEmptyCollationElement);
-				string pathToLdmlWithNoCollationElement = Path.GetTempFileName();
-				try
-				{
-					File.WriteAllText(pathToLdmlWithNoCollationElement, ldmlwithNoCollationElement);
-
-
-					var adaptor = new LdmlDataMapper();
-					var wsFromEmptyCollationElement = new WritingSystemDefinition();
-					adaptor.Read(pathToLdmlWithEmptyCollationElement, wsFromEmptyCollationElement);
-					var wsFromNoCollationElement = new WritingSystemDefinition();
-					adaptor.Read(pathToLdmlWithNoCollationElement, wsFromNoCollationElement);
-
-					Assert.AreEqual(wsFromNoCollationElement.CollationRulesType, wsFromEmptyCollationElement.CollationRulesType);
-				}
-				finally
-				{
-					File.Delete(pathToLdmlWithNoCollationElement);
-				}
-			}
-			finally
-			{
-				File.Delete(pathToLdmlWithEmptyCollationElement);
-			}
-		}
-#endif
+		//WS-33992 : Test removed since empty collations are removed
 
 		[Test]
 		public void Read_LdmlStandardCollation()
@@ -424,7 +376,7 @@ namespace SIL.WritingSystems.Tests
 
 				CollationDefinition cd = new CollationDefinition("standard");
 				cd.IcuRules =
-					"&B<t<<<T<s<<<S<e<<<E\n\t\t\t\t&C<k<<<K<x<<<X<i<<<I\n\t\t\t\t&D<q<<<Q<r<<<R\n\t\t\t\t&G<o<<<O\n\t\t\t\t&W<h<<<H";
+					"&B<t<<<T<s<<<S<e<<<E\r\n\t\t\t\t&C<k<<<K<x<<<X<i<<<I\r\n\t\t\t\t&D<q<<<Q<r<<<R\r\n\t\t\t\t&G<o<<<O\r\n\t\t\t\t&W<h<<<H";
 				Assert.That(wsFromLdml.Collations.First().ValueEquals(cd));
 			}
 		}
@@ -499,7 +451,7 @@ namespace SIL.WritingSystems.Tests
 
 				SimpleCollationDefinition cd = new SimpleCollationDefinition("standard");
 				cd.SimpleRules =
-					"\n\t\t\t\t\ta/A\n\t\t\t\t\tb/B\n\t\t\t\t\tt/T\n\t\t\t\t\ts/S\n\t\t\t\t\tc/C\n\t\t\t\t\tk/K\n\t\t\t\t\tx/X\n\t\t\t\t\ti/I\n\t\t\t\t\td/D\n\t\t\t\t\tq/Q\n\t\t\t\t\tr/R\n\t\t\t\t\te/E\n\t\t\t\t\tf/F\n\t\t\t\t\tg/G\n\t\t\t\t\to/O\n\t\t\t\t\tj/J\n\t\t\t\t\tl/L\n\t\t\t\t\tm/M\n\t\t\t\t\tn/N\n\t\t\t\t\tp/P\n\t\t\t\t\tu/U\n\t\t\t\t\tv/V\n\t\t\t\t\tw/W\n\t\t\t\t\th/H\n\t\t\t\t\ty/Y\n\t\t\t\t\tz/Z\n\t\t\t\t";
+					"\r\n\t\t\t\t\ta/A\r\n\t\t\t\t\tb/B\r\n\t\t\t\t\tt/T\r\n\t\t\t\t\ts/S\r\n\t\t\t\t\tc/C\r\n\t\t\t\t\tk/K\r\n\t\t\t\t\tx/X\r\n\t\t\t\t\ti/I\r\n\t\t\t\t\td/D\r\n\t\t\t\t\tq/Q\r\n\t\t\t\t\tr/R\r\n\t\t\t\t\te/E\r\n\t\t\t\t\tf/F\r\n\t\t\t\t\tg/G\r\n\t\t\t\t\to/O\r\n\t\t\t\t\tj/J\r\n\t\t\t\t\tl/L\r\n\t\t\t\t\tm/M\r\n\t\t\t\t\tn/N\r\n\t\t\t\t\tp/P\r\n\t\t\t\t\tu/U\r\n\t\t\t\t\tv/V\r\n\t\t\t\t\tw/W\r\n\t\t\t\t\th/H\r\n\t\t\t\t\ty/Y\r\n\t\t\t\t\tz/Z\r\n\t\t\t\t";
 				cd.IcuRules =
 					"&[before 1] [first regular]  < a\\/A < b\\/B < t\\/T < s\\/S < c\\/C < k\\/K < x\\/X < i\\/I < d\\/D < q\\/Q < r\\/R < e\\/E < f\\/F < g\\/G < o\\/O < j\\/J < l\\/L < m\\/M < n\\/N < p\\/P < u\\/U < v\\/V < w\\/W < h\\/H < y\\/Y < z\\/Z";
 				Assert.That(wsFromLdml.Collations.First().ValueEquals(cd));
@@ -570,7 +522,7 @@ namespace SIL.WritingSystems.Tests
 
 				SimpleCollationDefinition cd = new SimpleCollationDefinition("standard");
 				cd.SimpleRules =
-					"\n\t\t\t\t\ta/A\n\t\t\t\t\tb/B\n\t\t\t\t\tt/T\n\t\t\t\t\ts/S\n\t\t\t\t\tc/C\n\t\t\t\t\tk/K\n\t\t\t\t\tx/X\n\t\t\t\t\ti/I\n\t\t\t\t\td/D\n\t\t\t\t\tq/Q\n\t\t\t\t\tr/R\n\t\t\t\t\te/E\n\t\t\t\t\tf/F\n\t\t\t\t\tg/G\n\t\t\t\t\to/O\n\t\t\t\t\tj/J\n\t\t\t\t\tl/L\n\t\t\t\t\tm/M\n\t\t\t\t\tn/N\n\t\t\t\t\tp/P\n\t\t\t\t\tu/U\n\t\t\t\t\tv/V\n\t\t\t\t\tw/W\n\t\t\t\t\th/H\n\t\t\t\t\ty/Y\n\t\t\t\t\tz/Z\n\t\t\t\t";
+					"\r\n\t\t\t\t\ta/A\r\n\t\t\t\t\tb/B\r\n\t\t\t\t\tt/T\r\n\t\t\t\t\ts/S\r\n\t\t\t\t\tc/C\r\n\t\t\t\t\tk/K\r\n\t\t\t\t\tx/X\r\n\t\t\t\t\ti/I\r\n\t\t\t\t\td/D\r\n\t\t\t\t\tq/Q\r\n\t\t\t\t\tr/R\r\n\t\t\t\t\te/E\r\n\t\t\t\t\tf/F\r\n\t\t\t\t\tg/G\r\n\t\t\t\t\to/O\r\n\t\t\t\t\tj/J\r\n\t\t\t\t\tl/L\r\n\t\t\t\t\tm/M\r\n\t\t\t\t\tn/N\r\n\t\t\t\t\tp/P\r\n\t\t\t\t\tu/U\r\n\t\t\t\t\tv/V\r\n\t\t\t\t\tw/W\r\n\t\t\t\t\th/H\r\n\t\t\t\t\ty/Y\r\n\t\t\t\t\tz/Z\r\n\t\t\t\t";
 				cd.IcuRules =
 					"&[before 1] [first regular]  < a\\/A < b\\/B < t\\/T < s\\/S < c\\/C < k\\/K < x\\/X < i\\/I < d\\/D < q\\/Q < r\\/R < e\\/E < f\\/F < g\\/G < o\\/O < j\\/J < l\\/L < m\\/M < n\\/N < p\\/P < u\\/U < v\\/V < w\\/W < h\\/H < y\\/Y < z\\/Z";
 				Assert.That(wsFromLdml.Collations.First().ValueEquals(cd));
@@ -887,18 +839,18 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-#if WS_FIX
 		[Test]
 		public void Read_ValidLanguageTagStartingWithXButVersion0_Throws()
 		{
 			using (var file = new TempFile())
 			{
 				WriteVersion0Ldml("xh", "", "", "", file);
-				var adaptor = new LdmlDataMapper();
-				Assert.That(() => adaptor.Read(file.Path, new WritingSystemDefinition()), Throws.Exception.TypeOf<ApplicationException>());
+				var adaptor = new LdmlAdaptorV1();
+				Assert.That(() => adaptor.Read(file.Path, new WritingSystemDefinitionV1()), Throws.Exception.TypeOf<ApplicationException>());
 			}
 		}
 
+#if WS_FIX
 		[Test]
 		public void WriteNoRoundTrip_LdmlIsFlexPrivateUseFormatLanguageOnly_LdmlIsChanged()
 		{

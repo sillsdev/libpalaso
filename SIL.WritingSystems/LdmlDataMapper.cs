@@ -633,52 +633,55 @@ namespace SIL.WritingSystems
 			Debug.Assert(ws != null);
 
 			var collationType = (string) collationElem.Attribute("type");
-			bool needsCompiling = (bool?) collationElem.Attribute(Sil + "needscompiling") ?? false;
+			if (!string.IsNullOrEmpty(collationType))
+			{
+				bool needsCompiling = (bool?) collationElem.Attribute(Sil + "needscompiling") ?? false;
 
-			CollationDefinition cd = null;
-			XElement specialElem = collationElem.Element("special");
-			if ((specialElem != null) && (specialElem.HasElements))
-			{
-				string specialType = (specialElem.Elements().First().Name.LocalName);
-				switch (specialType)
+				CollationDefinition cd = null;
+				XElement specialElem = collationElem.Element("special");
+				if ((specialElem != null) && (specialElem.HasElements))
 				{
-					case "inherited":
-						XElement inheritedElem = specialElem.Element(Sil + "inherited");
-						cd = ReadCollationRulesForOtherLanguage(inheritedElem, collationType);
-						break;
-					case "simple":
-						XElement simpleElem = specialElem.Element(Sil + "simple");
-						cd = ReadCollationRulesForCustomSimple(simpleElem, collationType);
-						break;
-					case "reordered":
-						// Skip for now
-						break;
-				}
-			}
-			else
-			{
-				cd = new CollationDefinition(collationType);
-			}
-
-			// Only add collation definition if it's been set
-			if (cd != null)
-			{
-				// If ICU rules are out of sync, re-compile
-				if (needsCompiling)
-				{
-					string errorMsg;
-					cd.Validate(out errorMsg);
-					// TODO: Throw exception with ErrorMsg?
+					string specialType = (specialElem.Elements().First().Name.LocalName);
+					switch (specialType)
+					{
+						case "inherited":
+							XElement inheritedElem = specialElem.Element(Sil + "inherited");
+							cd = ReadCollationRulesForOtherLanguage(inheritedElem, collationType);
+							break;
+						case "simple":
+							XElement simpleElem = specialElem.Element(Sil + "simple");
+							cd = ReadCollationRulesForCustomSimple(simpleElem, collationType);
+							break;
+						case "reordered":
+							// Skip for now
+							break;
+					}
 				}
 				else
 				{
-					cd.IcuRules = LdmlCollationParser.GetIcuRulesFromCollationNode(collationElem);
-					cd.IsValid = true;
+					cd = new CollationDefinition(collationType);
 				}
 
-				ws.Collations.Add(cd);
-				if (collationType == defaultCollation)
-					ws.DefaultCollation = cd;
+				// Only add collation definition if it's been set
+				if (cd != null)
+				{
+					// If ICU rules are out of sync, re-compile
+					if (needsCompiling)
+					{
+						string errorMsg;
+						cd.Validate(out errorMsg);
+						// TODO: Throw exception with ErrorMsg?
+					}
+					else
+					{
+						cd.IcuRules = LdmlCollationParser.GetIcuRulesFromCollationNode(collationElem);
+						cd.IsValid = true;
+					}
+
+					ws.Collations.Add(cd);
+					if (collationType == defaultCollation)
+						ws.DefaultCollation = cd;
+				}
 			}
 		}
 
@@ -696,7 +699,7 @@ namespace SIL.WritingSystems
 		{
 			Debug.Assert(simpleElem != null);
 
-			return new SimpleCollationDefinition(collationType) {SimpleRules = (string) simpleElem};
+			return new SimpleCollationDefinition(collationType) {SimpleRules = ((string) simpleElem).Replace("\n", "\r\n")};
 		}
 
 		/// <summary>

@@ -43,7 +43,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			{
 				_environment.WriteContentToWritingSystemLdmlFile(LdmlContentForTests.Version0English());
 				var versionGetter = new WritingSystemLdmlVersionGetter();
-				Assert.AreEqual(-1, versionGetter.GetFileVersion(_environment.PathToWritingSystemLdmlFile));
+				Assert.That(versionGetter.GetFileVersion(_environment.PathToWritingSystemLdmlFile), Is.EqualTo(-1));
 			}
 		}
 
@@ -54,7 +54,18 @@ namespace SIL.WritingSystems.Tests.Migration
 			{
 				_environment.WriteContentToWritingSystemLdmlFile(LdmlContentForTests.Version1English());
 				var versionGetter = new WritingSystemLdmlVersionGetter();
-				Assert.AreEqual(1, versionGetter.GetFileVersion(_environment.PathToWritingSystemLdmlFile));
+				Assert.That(versionGetter.GetFileVersion(_environment.PathToWritingSystemLdmlFile), Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public void WritingSystemLdmlVerisonGetterGetFileVerison_FileIsVersion3_Returns3()
+		{
+			using (_environment = new TestEnvironment())
+			{
+				_environment.WriteContentToWritingSystemLdmlFile(LdmlContentForTests.Version3English());
+				var versionGetter = new WritingSystemLdmlVersionGetter();
+				Assert.That(versionGetter.GetFileVersion(_environment.PathToWritingSystemLdmlFile), Is.EqualTo(3));
 			}
 		}
 	}

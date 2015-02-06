@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml;
 using NUnit.Framework;
 using Palaso.TestUtilities;
 using SIL.WritingSystems.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration;
 
 namespace SIL.WritingSystems.Tests.Migration
 {
@@ -19,7 +21,9 @@ namespace SIL.WritingSystems.Tests.Migration
 			{
 				FolderContainingLdml = new TemporaryFolder("LdmlInFolderMigratorTests");
 				NamespaceManager = new XmlNamespaceManager(new NameTable());
+				NamespaceManager.AddNamespace("sil", "urn://www.sil.org/ldml/0.1");
 				NamespaceManager.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
+				NamespaceManager.AddNamespace("palaso2", "urn://palaso.org/ldmlExtensions/v2");
 			}
 
 			public XmlNamespaceManager NamespaceManager { get; private set; }
@@ -695,12 +699,8 @@ namespace SIL.WritingSystems.Tests.Migration
 
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/fallback/testing[text()='fallback']");
-				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/layout/testing[text()='layout']");
-				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/characters/testing[text()='characters']");
-				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/delimiters/testing[text()='delimiters']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/measurement/testing[text()='measurement']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/dates/testing[text()='dates']");
-				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/numbers/testing[text()='numbers']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/units/testing[text()='units']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/listPatterns/testing[text()='listPatterns']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/posix/testing[text()='posix']");
@@ -709,6 +709,8 @@ namespace SIL.WritingSystems.Tests.Migration
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/references/testing[text()='references']");
 			}
 		}
+		// Move to application-configuration
+#if WS_FIX
 
 		[Test]
 		public void Migrate_OriginalFileContainsAllSortsOfDataThatShouldJustBeCopiedOver_DataIsMigrated()
@@ -734,9 +736,10 @@ namespace SIL.WritingSystems.Tests.Migration
 					HasAtLeastOneMatchForXpath("/ldml/special/palaso:spellCheckingId[@value='ol']", environment.NamespaceManager);
 			}
 		}
+#endif
 
 		[Test]
-		public void Migrate_OriginalFileContainsNoCollationInfo_CollationInfoIsMigrated()
+		public void Migrate_OriginalFileContainsNoCollationInfo_StandardCollationInfoIsMigrated()
 		{
 			using (var environment = new TestEnvironment())
 			{
@@ -749,10 +752,12 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				var wsV1 = new WritingSystemDefinitionV1();
-				new LdmlAdaptorV1().Read(environment.MappedFilePath("test.ldml"), wsV1);
-				Assert.AreEqual(String.Empty, wsV1.SortRules);
-				Assert.AreEqual(Enum.GetName(typeof(WritingSystemDefinitionV0.SortRulesType), wsV0.SortUsing), Enum.GetName(typeof(WritingSystemDefinitionV1.SortRulesType), wsV1.SortUsing));
+				var wsV3 = new WritingSystemDefinitionV3();
+				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
+				var cdV3 = (CollationDefinition)wsV3.Collations.FirstOrDefault();
+				Assert.IsNullOrEmpty(wsV0.SortRules);
+				Assert.IsNullOrEmpty(cdV3.IcuRules);
+				Assert.That(cdV3.Type, Is.EqualTo("standard"));
 			}
 		}
 
@@ -770,10 +775,10 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				var wsV1 = new WritingSystemDefinitionV1();
-				new LdmlAdaptorV1().Read(environment.MappedFilePath("test.ldml"), wsV1);
-				Assert.AreEqual(wsV0.SortRules, wsV1.SortRules);
-				Assert.AreEqual(Enum.GetName(typeof(WritingSystemDefinitionV0.SortRulesType), wsV0.SortUsing), Enum.GetName(typeof(WritingSystemDefinitionV1.SortRulesType), wsV1.SortUsing));
+				var wsV3 = new WritingSystemDefinitionV3();
+				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
+				var cdV3 = (InheritedCollationDefinition)wsV3.Collations.FirstOrDefault();
+				Assert.AreEqual(wsV0.SortRules, cdV3.BaseLanguageTag);
 			}
 		}
 
@@ -791,10 +796,10 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				var wsV1 = new WritingSystemDefinitionV1();
-				new LdmlAdaptorV1().Read(environment.MappedFilePath("test.ldml"), wsV1);
-				Assert.AreEqual(wsV0.SortRules, wsV1.SortRules);
-				Assert.AreEqual(Enum.GetName(typeof(WritingSystemDefinitionV0.SortRulesType), wsV0.SortUsing), Enum.GetName(typeof(WritingSystemDefinitionV1.SortRulesType), wsV1.SortUsing));
+				var wsV3 = new WritingSystemDefinitionV3();
+				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
+				var cdV3 = (SimpleCollationDefinition) (wsV3.Collations.FirstOrDefault());
+				Assert.AreEqual(wsV0.SortRules, cdV3.SimpleRules);
 			}
 		}
 
@@ -812,12 +817,39 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				var wsV1 = new WritingSystemDefinitionV1();
-				new LdmlAdaptorV1().Read(environment.MappedFilePath("test.ldml"), wsV1);
-				Assert.AreEqual(wsV0.SortRules, wsV1.SortRules);
-				Assert.AreEqual(Enum.GetName(typeof(WritingSystemDefinitionV0.SortRulesType), wsV0.SortUsing), Enum.GetName(typeof(WritingSystemDefinitionV1.SortRulesType), wsV1.SortUsing));
+				var wsV3 = new WritingSystemDefinitionV3();
+				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
+				var cdV3 = (CollationDefinition) (wsV3.Collations.FirstOrDefault());
+				Assert.AreEqual(wsV0.SortRules, cdV3.IcuRules);
 			}
 		}
+
+// SpellcheckID to be written in application-specific
+#if WS_FIX
+		[Test]
+		public void Migrate_OriginalFileContainsSpellcheckId_SpellcheckIsMigrated()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile(
+					"test.ldml",
+					LdmlContentForTests.Version0WithCollationInfo(WritingSystemDefinitionV0.SortRulesType.DefaultOrdering));
+
+				var wsV0 = new WritingSystemDefinitionV0();
+				new LdmlAdaptorV0().Read(environment.FilePath("test.ldml"), wsV0);
+				var spellcheckId = wsV0.SpellCheckingId;
+
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+				
+				var wsV3 = new WritingSystemDefinitionV3();
+				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
+				var sd = wsV3.SpellCheckDictionaries.First();
+
+				// TODO: Assert SpellcheckID
+			}
+		}
+#endif
 
 		[Test]
 		public void Migrate_DateModified_IsLaterThanBeforeMigration()
@@ -835,9 +867,9 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				var wsV1= new WritingSystemDefinitionV1();
-				new LdmlAdaptorV1().Read(environment.MappedFilePath("test.ldml"), wsV1);
-				DateTime dateAfterMigration = wsV1.DateModified;
+				var wsV3= new WritingSystemDefinitionV3();
+				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
+				DateTime dateAfterMigration = wsV3.DateModified;
 				Assert.IsTrue(dateAfterMigration > dateBeforeMigration);
 			}
 		}
@@ -853,6 +885,8 @@ namespace SIL.WritingSystems.Tests.Migration
 			}
 		}
 
+// Move to application-configuration
+#if WS_FIX
 		[Test]
 		public void Migrate_LanguageNameIsSetTootherThanWhatIanaSubtagRegistrySays_LanguageNameIsMaintained()
 		{
@@ -878,6 +912,7 @@ namespace SIL.WritingSystems.Tests.Migration
 					HasAtLeastOneMatchForXpath("/ldml/special/palaso:languageName[@value = 'English']", environment.NamespaceManager);
 			}
 		}
+#endif
 
 		[Test]
 		public void Migrate_LdmlIsVersion0_IsLatestVersion()

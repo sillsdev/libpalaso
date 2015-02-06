@@ -57,7 +57,7 @@ namespace SIL.WritingSystems
 				GetIcuOptionFromNode(optimizeElem, icuRules);
 			XElement rulesElem = collationElem.Element("cr");
 			if (rulesElem != null)
-				icuRules.Append((string) rulesElem);
+				icuRules.Append(((string) rulesElem).Replace("\n", NewLine));
 
 			return TrimUnescapedWhitespace(icuRules.ToString());
 		}

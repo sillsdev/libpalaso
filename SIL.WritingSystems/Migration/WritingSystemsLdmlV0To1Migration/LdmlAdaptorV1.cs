@@ -156,13 +156,14 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				{
 					string version = GetSpecialValue(reader, "palaso", "version");
 					version = string.IsNullOrEmpty(version) ? "0" : version;
-					if (version != WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString())
+					const string expectedVersion = "2";
+					if (version != expectedVersion)
 					{
 						throw new ApplicationException(String.Format(
 														   "The LDML tag '{0}' is version {1}.  Version {2} was expected.",
 														   ws.Bcp47Tag,
 														   version,
-														   WritingSystemDefinition.LatestWritingSystemDefinitionVersion
+														   expectedVersion
 														   ));
 					}
 				}
@@ -840,7 +841,8 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			{
 				WriteSpecialValue(writer, "palaso", "spellCheckingId", ws.SpellCheckingId);
 			}
-			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "version", WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString());
+			// V1 only migrates to version 2
+			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "version", "2");
 			writer.WriteEndElement();
 		}
 
