@@ -117,7 +117,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 #endif
 		}
 
-		internal void SetKeyboardAdaptors(params IKeyboardAdaptor[] adaptors)
+		public void SetKeyboardAdaptors(params IKeyboardAdaptor[] adaptors)
 		{
 			_keyboards.Clear();
 			_adaptors.Clear();

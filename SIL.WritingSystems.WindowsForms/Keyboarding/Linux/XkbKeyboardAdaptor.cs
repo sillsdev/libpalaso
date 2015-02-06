@@ -22,7 +22,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 	/// <summary>
 	/// Class for handling xkb keyboards on Linux
 	/// </summary>
-	internal class XkbKeyboardAdaptor : IKeyboardAdaptor
+	public class XkbKeyboardAdaptor : IKeyboardAdaptor
 	{
 		private IXklEngine _engine;
 

@@ -10,7 +10,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 	/// one, and records the engine (IKeyboardAdapter) which is associated with it and can perform such functions as really activating it.
 	/// This class is adequate for some engines; others subclass it.
 	/// </summary>
-	internal class KeyboardDescription : DefaultKeyboardDefinition
+	public class KeyboardDescription : DefaultKeyboardDefinition
 	{
 		private readonly IKeyboardAdaptor _engine;
 

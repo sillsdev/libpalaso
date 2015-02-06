@@ -6,8 +6,6 @@
 // 	GNU Lesser General Public License, as specified in the LICENSING.txt file.
 // </copyright>
 // --------------------------------------------------------------------------------------------
-using System.Collections.Generic;
-
 
 #if __MonoCS__
 using System;
@@ -15,6 +13,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using System.Collections.Generic;
 using IBusDotNet;
 using SIL.WritingSystems.WindowsForms.Keyboarding;
 using SIL.WritingSystems;
@@ -24,7 +23,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 	/// <summary>
 	/// Class for handling ibus keyboards on Linux. Currently just a wrapper for KeyboardSwitcher.
 	/// </summary>
-	internal class IbusKeyboardAdaptor : IKeyboardAdaptor
+	public class IbusKeyboardAdaptor : IKeyboardAdaptor
 	{
 		private readonly IIbusCommunicator _ibusComm;
 		private bool _needIMELocation;

@@ -14,7 +14,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 	/// <summary>
 	/// The different keyboard types we're supporting.
 	/// </summary>
-	internal enum KeyboardAdaptorType
+	public enum KeyboardAdaptorType
 	{
 		/// <summary>
 		/// System keyboard like Windows API or xkb
@@ -32,7 +32,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 	/// which require different treatment.  In particular a keyboard adapter is responsible to figure out which keyboards of the type
 	/// it handles are installed, and to activate one of them when we think the user wants to type with it.
 	/// </summary>
-	internal interface IKeyboardAdaptor : IDisposable
+	public interface IKeyboardAdaptor : IDisposable
 	{
 		/// <summary>
 		/// Initialize the installed keyboards: add to the master list the available keyboards recognized by this adapter.
