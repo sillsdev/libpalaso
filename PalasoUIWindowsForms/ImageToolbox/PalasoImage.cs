@@ -186,7 +186,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				throw new NotImplementedException();
 			}
 		}
-			
+#if ifWeEverWantToSaveToOriginalAgain			
+		We're not doing this anymore, too risky. See https://jira.sil.org/browse/BL-1001 
 		/// <summary>
 		/// If you edit the metadata, call this. If it happens to have an actual file associated, it will save it.
 		/// If not (e.g. the image came from a scanner), it won't do anything.
@@ -227,7 +228,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 					throw;
 			}
 		}
-
+#endif
 		/// <summary>Returns if the format of the image file supports metadata</summary>
 		public bool FileFormatSupportsMetadata
 		{
