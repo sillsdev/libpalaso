@@ -114,7 +114,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 				existingKeyboard.SetIsAvailable(false);
 		}
 
-		public static void AddKeyboardForLayout(IDictionary<string, XkbKeyboardDescription> curKeyboards, XklConfigRegistry.LayoutDescription layout,
+		internal static void AddKeyboardForLayout(IDictionary<string, XkbKeyboardDescription> curKeyboards, XklConfigRegistry.LayoutDescription layout,
 			int iGroup, IKeyboardAdaptor engine)
 		{
 			string description = GetDescription(layout);
@@ -234,7 +234,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			return CreateKeyboardDefinition(id, this);
 		}
 
-		public static XkbKeyboardDescription CreateKeyboardDefinition(string id, IKeyboardAdaptor engine)
+		internal static XkbKeyboardDescription CreateKeyboardDefinition(string id, IKeyboardAdaptor engine)
 		{
 			string[] parts = id.Split('_');
 			string locale = parts[0];
