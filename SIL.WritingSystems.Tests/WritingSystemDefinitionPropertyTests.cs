@@ -26,7 +26,7 @@ namespace SIL.WritingSystems.Tests
 		public override string ExceptionList
 		{
 			// We do want to clone KnownKeyboards, but I don't think the automatic cloneable test for it can handle a list.
-			get { return "|MarkedForDeletion|StoreID|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionary|_spellCheckDictionaries|IsChanged|_matchedPairs|_punctuationPatterns|_quotationMarks|_defaultCollation|_collations|_characterSets|_variants|_language|_script|_region|_ignoreVariantChanges|PropertyChanged|"; }
+			get { return "|MarkedForDeletion|StoreID|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionaries|IsChanged|_matchedPairs|_punctuationPatterns|_quotationMarks|_defaultCollation|_collations|_characterSets|_variants|_language|_script|_region|_ignoreVariantChanges|PropertyChanged|"; }
 		}
 
 		protected override List<ValuesToSet> DefaultValuesForTypes
@@ -83,18 +83,14 @@ namespace SIL.WritingSystems.Tests
 		public void CloneCopiesSpellCheckDictionaries()
 		{
 			var original = new WritingSystemDefinition();
-			var scdd1 = new SpellCheckDictionaryDefinition("language-Tag", SpellCheckDictionaryFormat.Hunspell);
-			var scdd2 = new SpellCheckDictionaryDefinition("language-Tag", SpellCheckDictionaryFormat.Lift);
+			var scdd1 = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
+			var scdd2 = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Lift);
 			original.SpellCheckDictionaries.Add(scdd1);
 			original.SpellCheckDictionaries.Add(scdd2);
-			original.SpellCheckDictionary = scdd2;
 			WritingSystemDefinition copy = original.Clone();
 			Assert.That(copy.SpellCheckDictionaries.Count, Is.EqualTo(2));
 			Assert.That(copy.SpellCheckDictionaries[0].ValueEquals(scdd1), Is.True);
 			Assert.That(ReferenceEquals(copy.SpellCheckDictionaries[0], scdd1), Is.False);
-			Assert.That(copy.SpellCheckDictionary.ValueEquals(scdd2), Is.True);
-			Assert.That(copy.SpellCheckDictionary == scdd2, Is.False);
-			Assert.That(copy.SpellCheckDictionary == copy.SpellCheckDictionaries[1], Is.True);
 		}
 
 		[Test]
@@ -236,23 +232,19 @@ namespace SIL.WritingSystems.Tests
 		public void ValueEqualsComparesSpellCheckDictionaries()
 		{
 			var first = new WritingSystemDefinition();
-			var scdd1 = new SpellCheckDictionaryDefinition("language-Tag", SpellCheckDictionaryFormat.Hunspell);
-			var scdd2 = new SpellCheckDictionaryDefinition("language-Tag", SpellCheckDictionaryFormat.Lift);
+			var scdd1 = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
+			var scdd2 = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Lift);
 			first.SpellCheckDictionaries.Add(scdd1);
 			first.SpellCheckDictionaries.Add(scdd2);
 			var second = new WritingSystemDefinition();
-			var scdd3 = new SpellCheckDictionaryDefinition("language-Tag", SpellCheckDictionaryFormat.Hunspell);
-			var scdd4 = new SpellCheckDictionaryDefinition("language-Tag", SpellCheckDictionaryFormat.Wordlist);
+			var scdd3 = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
+			var scdd4 = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Wordlist);
 
 			Assert.That(first.ValueEquals(second), Is.False, "ws with empty dictionaries should not equal one with some");
 			second.SpellCheckDictionaries.Add(scdd3);
 			Assert.That(first.ValueEquals(second), Is.False, "ws's with different length dictionary lists should not be equal");
 			second.SpellCheckDictionaries.Add(scdd2.Clone());
 			Assert.That(first.ValueEquals(second), Is.True, "ws's with same dictionary lists should be equal");
-			second.SpellCheckDictionary = second.SpellCheckDictionaries[0];
-			Assert.That(first.ValueEquals(second), Is.True);
-			second.SpellCheckDictionary = second.SpellCheckDictionaries[1];
-			Assert.That(first.ValueEquals(second), Is.False);
 
 			second = new WritingSystemDefinition();
 			second.SpellCheckDictionaries.Add(scdd3);
@@ -788,8 +780,8 @@ namespace SIL.WritingSystems.Tests
 			secondValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.NotIpa);
 			firstValueToSet.Add(typeof(FontDefinition), new FontDefinition("font1"));
 			secondValueToSet.Add(typeof(FontDefinition), new FontDefinition("font2"));
-			firstValueToSet.Add(typeof(SpellCheckDictionaryDefinition), new SpellCheckDictionaryDefinition("language-Tag", SpellCheckDictionaryFormat.Hunspell));
-			secondValueToSet.Add(typeof(SpellCheckDictionaryDefinition), new SpellCheckDictionaryDefinition("language-Tag", SpellCheckDictionaryFormat.Lift));
+			firstValueToSet.Add(typeof(SpellCheckDictionaryDefinition), new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell));
+			secondValueToSet.Add(typeof(SpellCheckDictionaryDefinition), new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Lift));
 			firstValueToSet.Add(typeof(QuotationParagraphContinueType), QuotationParagraphContinueType.None);
 			secondValueToSet.Add(typeof(QuotationParagraphContinueType), QuotationParagraphContinueType.All);
 			firstValueToSet.Add(typeof(CollationDefinition), new CollationDefinition("standard"));
@@ -2024,37 +2016,6 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(ws.DefaultFont, Is.EqualTo(fd1));
 			ws.Fonts.Clear();
 			Assert.That(ws.DefaultFont, Is.Null);
-		}
-
-		[Test]
-		public void SpellCheckDictionary_DefaultsToFirstDictionary()
-		{
-			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var scdd1 = new SpellCheckDictionaryDefinition("languageTag", SpellCheckDictionaryFormat.Hunspell);
-			var scdd2 = new SpellCheckDictionaryDefinition("languageTag", SpellCheckDictionaryFormat.Lift);
-
-			ws.SpellCheckDictionaries.Add(scdd1);
-			ws.SpellCheckDictionaries.Add(scdd2);
-
-			Assert.That(ws.SpellCheckDictionary, Is.EqualTo(scdd1));
-		}
-
-		[Test]
-		public void SpellCheckDictionary_ResetWhenRemovedFromDictionaries()
-		{
-			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var scdd1 = new SpellCheckDictionaryDefinition("languageTag", SpellCheckDictionaryFormat.Hunspell);
-			var scdd2 = new SpellCheckDictionaryDefinition("languageTag", SpellCheckDictionaryFormat.Lift);
-
-			ws.SpellCheckDictionaries.Add(scdd1);
-			ws.SpellCheckDictionaries.Add(scdd2);
-			ws.SpellCheckDictionary = scdd2;
-
-			Assert.That(ws.SpellCheckDictionary, Is.EqualTo(scdd2));
-			ws.SpellCheckDictionaries.RemoveAt(1);
-			Assert.That(ws.SpellCheckDictionary, Is.EqualTo(scdd1));
-			ws.SpellCheckDictionaries.Clear();
-			Assert.That(ws.SpellCheckDictionary, Is.Null);
 		}
 
 		[Test]

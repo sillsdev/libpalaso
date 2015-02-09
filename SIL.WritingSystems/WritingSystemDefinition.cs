@@ -80,12 +80,12 @@ namespace SIL.WritingSystems
 		private string _id;
 		private string _defaultRegion;
 		private string _windowsLcid;
+		private string _spellCheckingId;
 		private CollationDefinition _defaultCollation;
-		private SpellCheckDictionaryDefinition _spellCheckDictionary;
 		private QuotationParagraphContinueType _quotationParagraphContinueType;
 		private readonly ObservableKeyedCollection<string, FontDefinition> _fonts = new ObservableKeyedCollection<string, FontDefinition>(fd => fd.Name);
 		private readonly ObservableKeyedCollection<string, IKeyboardDefinition> _knownKeyboards = new ObservableKeyedCollection<string, IKeyboardDefinition>(kd => kd.Id);
-		private readonly ObservableKeyedCollection<string, SpellCheckDictionaryDefinition> _spellCheckDictionaries = new ObservableKeyedCollection<string, SpellCheckDictionaryDefinition>(scdd => string.Format("{0}_{1}", scdd.LanguageTag, scdd.Format));
+		private readonly ObservableKeyedCollection<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition> _spellCheckDictionaries = new ObservableKeyedCollection<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition>(scdd => scdd.Format);
 		private readonly ObservableKeyedCollection<string, CollationDefinition> _collations = new ObservableKeyedCollection<string, CollationDefinition>(cd => cd.Type);
 		private readonly ObservableSet<MatchedPair> _matchedPairs;
 		private readonly ObservableSet<PunctuationPattern> _punctuationPatterns;
@@ -175,10 +175,9 @@ namespace SIL.WritingSystems
 			_keyboard = ws._keyboard;
 			_versionNumber = ws._versionNumber;
 			_versionDescription = ws._versionDescription;
+			_spellCheckingId = ws._spellCheckingId;
 			foreach (SpellCheckDictionaryDefinition scdd in ws._spellCheckDictionaries)
 				_spellCheckDictionaries.Add(scdd.Clone());
-			if (ws._spellCheckDictionary != null)
-				_spellCheckDictionary = _spellCheckDictionaries[ws._spellCheckDictionaries.IndexOf(ws._spellCheckDictionary)];
 			_dateModified = ws._dateModified;
 			_languageName = ws._languageName;
 			_languageTag = ws._languageTag;
@@ -244,8 +243,6 @@ namespace SIL.WritingSystems
 
 		private void _spellCheckDictionaries_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			if (_spellCheckDictionary != null && !_spellCheckDictionaries.Contains(_spellCheckDictionary))
-				_spellCheckDictionary = null;
 			IsChanged = true;
 		}
 
@@ -925,20 +922,16 @@ namespace SIL.WritingSystems
 			get { return _fonts; }
 		}
 
-		public virtual SpellCheckDictionaryDefinition SpellCheckDictionary
+		/// <summary>
+		/// The id used to select the spell checker.
+		/// </summary>
+		public virtual string SpellCheckingId
 		{
-			get { return _spellCheckDictionary ?? _spellCheckDictionaries.FirstOrDefault(); }
-			set
-			{
-				if (UpdateField(() => SpellCheckDictionary, ref _spellCheckDictionary, value))
-				{
-					if (value != null && !_spellCheckDictionaries.Contains(value))
-						_spellCheckDictionaries.Add(value);
-				}
-			}
+			get { return _spellCheckingId ?? string.Empty; }
+			set { UpdateString(() => SpellCheckingId, ref _spellCheckingId, value); }
 		}
 
-		public ObservableKeyedCollection<string, SpellCheckDictionaryDefinition> SpellCheckDictionaries
+		public ObservableKeyedCollection<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition> SpellCheckDictionaries
 		{
 			get { return _spellCheckDictionaries; }
 		}
@@ -1056,6 +1049,8 @@ namespace SIL.WritingSystems
 				return false;
 			if (LegacyMapping != other.LegacyMapping)
 				return false;
+			if (SpellCheckingId != other.SpellCheckingId)
+				return false;
 			// fonts
 			if (_fonts.Count != other._fonts.Count)
 				return false;
@@ -1081,15 +1076,6 @@ namespace SIL.WritingSystems
 			{
 				if (!_spellCheckDictionaries[i].ValueEquals(other._spellCheckDictionaries[i]))
 					return false;
-			}
-			if (SpellCheckDictionary == null)
-			{
-				if (other.SpellCheckDictionary != null)
-					return false;
-			}
-			else if (!SpellCheckDictionary.ValueEquals(other.SpellCheckDictionary))
-			{
-				return false;
 			}
 
 			// keyboards

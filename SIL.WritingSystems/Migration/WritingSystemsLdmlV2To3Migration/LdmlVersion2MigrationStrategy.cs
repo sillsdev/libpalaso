@@ -51,6 +51,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				Keyboard = writingSystemDefinitionV1.Keyboard,
 				LanguageName = writingSystemDefinitionV1.LanguageName,
 				RightToLeftScript = writingSystemDefinitionV1.RightToLeftScript,
+				SpellCheckingId = writingSystemDefinitionV1.SpellCheckingId,
 
 				VersionDescription = writingSystemDefinitionV1.VersionDescription,
 				DateModified = DateTime.Now
@@ -79,14 +80,6 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 					break;
 			}
 			writingSystemDefinitionV3.Collations.Add(cd);
-
-			// Convert spell checking Id
-			if (!string.IsNullOrEmpty(writingSystemDefinitionV1.SpellCheckingId))
-			{
-				var sd = new SpellCheckDictionaryDefinition(writingSystemDefinitionV1.SpellCheckingId.Replace("_", "-"),
-					SpellCheckDictionaryFormat.Hunspell);
-				writingSystemDefinitionV3.SpellCheckDictionary = sd;
-			}
 
 			writingSystemDefinitionV3.SetAllComponents(
 				writingSystemDefinitionV1.Language,

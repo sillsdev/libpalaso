@@ -410,7 +410,7 @@ namespace SIL.WritingSystems
 				var type = (string) scElem.Attribute("type");
 				if (!type.Equals(string.Empty))
 				{
-					var scd = new SpellCheckDictionaryDefinition(ws.LanguageTag, SpellCheckToSpecllCheckDictionaryFormats[type]);
+					var scd = new SpellCheckDictionaryDefinition(SpellCheckToSpecllCheckDictionaryFormats[type]);
 
 					// URL elements
 					foreach (XElement urlElem in scElem.Elements(Sil + "url"))

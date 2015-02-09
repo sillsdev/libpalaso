@@ -8,7 +8,7 @@ namespace SIL.WritingSystems.Tests
 	{
 		public override SpellCheckDictionaryDefinition CreateNewCloneable()
 		{
-			return new SpellCheckDictionaryDefinition("language-Tag", SpellCheckDictionaryFormat.Hunspell);
+			return new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
 		}
 
 		protected override bool Equals(SpellCheckDictionaryDefinition x, SpellCheckDictionaryDefinition y)
@@ -41,7 +41,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void CloneCopiesUrls()
 		{
-			var original = new SpellCheckDictionaryDefinition("en", SpellCheckDictionaryFormat.Hunspell);
+			var original = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
 			original.Urls.Add("url1");
 			original.Urls.Add("url2");
 			SpellCheckDictionaryDefinition copy = original.Clone();
@@ -51,10 +51,10 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void ValueEqualsComparesUrls()
 		{
-			var first = new SpellCheckDictionaryDefinition("en", SpellCheckDictionaryFormat.Hunspell);
+			var first = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
 			first.Urls.Add("url1");
 			first.Urls.Add("url2");
-			var second = new SpellCheckDictionaryDefinition("en", SpellCheckDictionaryFormat.Hunspell);
+			var second = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
 
 			Assert.That(first.ValueEquals(second), Is.False, "dict with empty URLs should not equal one with some");
 			second.Urls.Add("url1");

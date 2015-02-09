@@ -666,7 +666,7 @@ namespace SIL.WritingSystems.Tests
 
 				dataMapper.Read(tempFile.Path, ws);
 
-				SpellCheckDictionaryDefinition other = new SpellCheckDictionaryDefinition("en-Latn", SpellCheckDictionaryFormat.Hunspell);
+				var other = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
 				other.Urls.Add("http://wirl.scripts.sil.org/hunspell");
 				other.Urls.Add("http://scripts.sil.org/cms/scripts/page.php?item_id=hunspell");
 

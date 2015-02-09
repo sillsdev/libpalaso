@@ -14,7 +14,6 @@ namespace SIL.WritingSystems
 
 	public class SpellCheckDictionaryDefinition : DefinitionBase<SpellCheckDictionaryDefinition>
 	{
-		private readonly string _languageTag;
 		private readonly SpellCheckDictionaryFormat _format;
 		private readonly ObservableCollection<string> _urls;
 
@@ -28,9 +27,8 @@ namespace SIL.WritingSystems
 			IsChanged = true;
 		}
 
-		public SpellCheckDictionaryDefinition(string languageTag, SpellCheckDictionaryFormat format)
+		public SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat format)
 		{
-			_languageTag = languageTag;
 			_format = format;
 			_urls = new ObservableCollection<string>();
 			SetupCollectionChangeListeners();
@@ -38,22 +36,11 @@ namespace SIL.WritingSystems
 
 		public SpellCheckDictionaryDefinition(SpellCheckDictionaryDefinition other)
 		{
-			_languageTag = other._languageTag;
 			_format = other._format;
 			_urls = new ObservableCollection<string>();
 			foreach (string url in other._urls)
 				_urls.Add(url);
 			SetupCollectionChangeListeners();
-		}
-
-		public string Id
-		{
-			get { return string.Format("{0}_{1}", _languageTag, _format); }
-		}
-
-		public string LanguageTag
-		{
-			get { return _languageTag; }
 		}
 
 		public SpellCheckDictionaryFormat Format
@@ -70,7 +57,7 @@ namespace SIL.WritingSystems
 		{
 			if (other == null)
 				return false;
-			return _languageTag == other._languageTag && _format == other._format && Urls.SequenceEqual(other.Urls);
+			return _format == other._format && Urls.SequenceEqual(other.Urls);
 		}
 
 		public override SpellCheckDictionaryDefinition Clone()

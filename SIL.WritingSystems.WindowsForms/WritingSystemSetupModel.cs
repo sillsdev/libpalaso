@@ -1013,26 +1013,15 @@ namespace SIL.WritingSystems.WindowsForms
 		{
 			get
 			{
-				if (CurrentDefinition == null || CurrentDefinition.SpellCheckDictionary == null)
-				{
+				if (CurrentDefinition == null)
 					return string.Empty;
-				}
-				return CurrentDefinition.SpellCheckDictionary.LanguageTag;
+				return CurrentDefinition.SpellCheckingId;
 			}
 			set
 			{
-				string langTag = value == null ? string.Empty : value.Replace('_', '-');
-				if (CurrentDefinition.SpellCheckDictionary == null || CurrentDefinition.SpellCheckDictionary.LanguageTag != langTag)
+				if (CurrentDefinition.SpellCheckingId != value)
 				{
-					SpellCheckDictionaryDefinition dictionary = null;
-					if (langTag != string.Empty)
-					{
-						dictionary = CurrentDefinition.SpellCheckDictionaries
-							.FirstOrDefault(scdd => scdd.LanguageTag == langTag && scdd.Format == SpellCheckDictionaryFormat.Hunspell);
-						if (dictionary == null)
-							dictionary = new SpellCheckDictionaryDefinition(langTag, SpellCheckDictionaryFormat.Hunspell);
-					}
-					CurrentDefinition.SpellCheckDictionary = dictionary;
+					CurrentDefinition.SpellCheckingId = value;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -1066,11 +1055,11 @@ namespace SIL.WritingSystems.WindowsForms
 					// add installed dictionaries
 					_spellCheckerItems.AddRange(broker.Dictionaries.Select(dictionaryInfo => new SpellCheckInfo(dictionaryInfo)));
 
-					if (CurrentDefinition != null)
+					// add current dictionary, if not installed
+					if (!string.IsNullOrEmpty(CurrentSpellCheckingId))
 					{
-						// add WS dictionaries, if not installed
-						_spellCheckerItems.AddRange(CurrentDefinition.SpellCheckDictionaries
-							.Where(scdd => scdd.Format == SpellCheckDictionaryFormat.Hunspell && !broker.DictionaryExists(scdd.Id)).Select(scdd => new SpellCheckInfo(scdd.Id)));
+						if (!broker.DictionaryExists(CurrentSpellCheckingId))
+							_spellCheckerItems.Add(new SpellCheckInfo(CurrentSpellCheckingId));
 					}
 				}
 			}
