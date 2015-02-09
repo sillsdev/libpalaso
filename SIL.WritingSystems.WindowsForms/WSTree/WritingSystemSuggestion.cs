@@ -7,27 +7,20 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 {
 	public interface IWritingSystemDefinitionSuggestion
 	{
-		//public WritingSystemDefinition TemplateDefinition { get; private set; }
 		string Label { get; }
-		string ToolTip { get; }
 		WritingSystemDefinition ShowDialogIfNeededAndGetDefinition();
 	}
 
 	public abstract class WritingSystemSuggestion : IWritingSystemDefinitionSuggestion
 	{
-		internal WritingSystemDefinition _templateDefinition;
-		public WritingSystemDefinition TemplateDefinition
-		{
-			get { return _templateDefinition; }
-		}
+		public WritingSystemDefinition TemplateDefinition { get; protected set; }
 
 		public string Label { get; protected set; }
-		public string ToolTip { get; private set; }
 		public abstract WritingSystemDefinition ShowDialogIfNeededAndGetDefinition();
 
 		protected void SetLabelDetail(string detail)
 		{
-			Label = string.Format("{0} ({1})",_templateDefinition.LanguageName, detail);
+			Label = string.Format("{0} ({1})", TemplateDefinition.LanguageName, detail);
 		}
 	}
 
@@ -35,8 +28,8 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 	{
 		public VoiceSuggestion(WritingSystemDefinition primary)
 		{
-			_templateDefinition = primary.Clone();
-			_templateDefinition.IsVoice = true;
+			TemplateDefinition = primary.Clone();
+			TemplateDefinition.IsVoice = true;
 			SetLabelDetail("voice");
 		}
 
@@ -54,8 +47,8 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 	{
 		public DialectSuggestion(WritingSystemDefinition primary)
 		{
-			_templateDefinition = primary.Clone();
-			Label = string.Format("new dialect of {0}", _templateDefinition.LanguageName);
+			TemplateDefinition = primary.Clone();
+			Label = string.Format("new dialect of {0}", TemplateDefinition.LanguageName);
 		}
 		public override WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()
 		{
@@ -83,22 +76,23 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 		public IpaSuggestion(WritingSystemDefinition primary)
 		{
 			string ipaFontName = _fontsForIpa.FirstOrDefault(FontExists);
-			FontDefinition ipaFont = string.IsNullOrEmpty(ipaFontName) ? null : new FontDefinition(ipaFontName) {DefaultSize = 12.0f};
-			_templateDefinition = new WritingSystemDefinition
+			FontDefinition ipaFont = string.IsNullOrEmpty(ipaFontName) ? null : new FontDefinition(ipaFontName);
+			TemplateDefinition = new WritingSystemDefinition
 									  {
 										  Language = primary.Language,
 										  Region = primary.Region,
 										  LanguageName = primary.LanguageName,
 										  Abbreviation = "ipa",
 										  DefaultFont = ipaFont,
+										  DefaultFontSize = primary.DefaultFontSize,
 										  IpaStatus = IpaStatusChoices.Ipa
 									  };
 			foreach (VariantSubtag variantSubtag in primary.Variants)
-				_templateDefinition.Variants.Add(variantSubtag);
+				TemplateDefinition.Variants.Add(variantSubtag);
 			var ipaKeyboard = Keyboard.Controller.AllAvailableKeyboards.FirstOrDefault(k => k.Id.ToLower().Contains("ipa"));
 			if (ipaKeyboard != null)
-				_templateDefinition.Keyboard = ipaKeyboard.Id;
-			Label = string.Format("IPA input system for {0}", _templateDefinition.LanguageName);
+				TemplateDefinition.Keyboard = ipaKeyboard.Id;
+			Label = string.Format("IPA input system for {0}", TemplateDefinition.LanguageName);
 		}
 		public override WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()
 		{
@@ -122,8 +116,8 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 	{
 		public OtherSuggestion(WritingSystemDefinition primary, IEnumerable<WritingSystemDefinition> exisitingWritingSystemsForLanguage)
 		{
-			_templateDefinition = WritingSystemDefinition.CreateCopyWithUniqueId(primary, exisitingWritingSystemsForLanguage.Select(ws=>ws.Id));
-			Label = string.Format("other input system for {0}", _templateDefinition.LanguageName);
+			TemplateDefinition = WritingSystemDefinition.CreateCopyWithUniqueId(primary, exisitingWritingSystemsForLanguage.Select(ws=>ws.Id));
+			Label = string.Format("other input system for {0}", TemplateDefinition.LanguageName);
 		}
 		public override WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()
 		{
@@ -139,8 +133,8 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 	{
 		public LanguageSuggestion(WritingSystemDefinition definition)
 		{
-			_templateDefinition = definition;
-			Label = string.Format(_templateDefinition.ListLabel);
+			TemplateDefinition = definition;
+			Label = string.Format(TemplateDefinition.ListLabel);
 		}
 		public override WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()
 		{

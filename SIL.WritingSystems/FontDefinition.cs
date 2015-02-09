@@ -24,11 +24,7 @@ namespace SIL.WritingSystems
 
 	public class FontDefinition : DefinitionBase<FontDefinition>
 	{
-		private const int MinimumFontSize = 7;
-		private const int DefaultSizeIfWeDontKnow = 10;
-
 		private readonly string _name;
-		private float _defaultSize;
 		private float _relativeSize;
 		private string _features;
 		private string _language;
@@ -59,7 +55,6 @@ namespace SIL.WritingSystems
 		public FontDefinition(FontDefinition fd)
 		{
 			_name = fd._name;
-			_defaultSize = fd._defaultSize;
 			_relativeSize = fd._relativeSize;
 			_features = fd._features;
 			_language = fd._language;
@@ -79,17 +74,6 @@ namespace SIL.WritingSystems
 		public string Name
 		{
 			get { return _name; }
-		}
-
-		public float DefaultSize
-		{
-			get { return _defaultSize; }
-			set
-			{
-				if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
-					throw new ArgumentOutOfRangeException("value");
-				UpdateField(() => DefaultSize, ref _defaultSize, value);
-			}
 		}
 
 		public float RelativeSize
@@ -150,22 +134,11 @@ namespace SIL.WritingSystems
 			get { return _urls; }
 		}
 
-		/// <summary>
-		/// enforcing a minimum on _defaultFontSize, while reasonable, just messed up too many IO unit tests
-		/// </summary>
-		/// <returns></returns>
-		public float GetDefaultFontSizeOrMinimum()
-		{
-			if (_defaultSize < MinimumFontSize)
-				return DefaultSizeIfWeDontKnow;
-			return _defaultSize;
-		}
-
 		public override bool ValueEquals(FontDefinition other)
 		{
 			if (other == null)
 				return false;
-			return _name == other._name && _defaultSize == other._defaultSize && _relativeSize == other._relativeSize && Features == other.Features && Language == other.Language
+			return _name == other._name && _relativeSize == other._relativeSize && Features == other.Features && Language == other.Language
 				&& OpenTypeLanguage == other.OpenTypeLanguage && MinVersion == other.MinVersion && _roles == other._roles
 				&& _engines == other._engines && Subset == other.Subset && Urls.SequenceEqual(other.Urls);
 		}

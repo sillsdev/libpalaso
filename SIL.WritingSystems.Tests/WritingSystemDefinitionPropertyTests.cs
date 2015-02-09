@@ -89,8 +89,8 @@ namespace SIL.WritingSystems.Tests
 			original.SpellCheckDictionaries.Add(scdd2);
 			WritingSystemDefinition copy = original.Clone();
 			Assert.That(copy.SpellCheckDictionaries.Count, Is.EqualTo(2));
-			Assert.That(copy.SpellCheckDictionaries[0].ValueEquals(scdd1), Is.True);
-			Assert.That(ReferenceEquals(copy.SpellCheckDictionaries[0], scdd1), Is.False);
+			Assert.That(copy.SpellCheckDictionaries.First().ValueEquals(scdd1), Is.True);
+			Assert.That(ReferenceEquals(copy.SpellCheckDictionaries.First(), scdd1), Is.False);
 		}
 
 		[Test]
@@ -1611,13 +1611,14 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void GetDefaultFontSizeOrMinimum_DefaultConstructor_GreaterThanSix()
 		{
-			Assert.Greater(new FontDefinition("font").GetDefaultFontSizeOrMinimum(), 6);
+			Assert.That(new WritingSystemDefinition().GetDefaultFontSizeOrMinimum(), Is.GreaterThan(6));
 		}
+
 		[Test]
 		public void GetDefaultFontSizeOrMinimum_SetAt0_GreaterThanSix()
 		{
-			var fd = new FontDefinition("font") {DefaultSize = 0};
-			Assert.Greater(fd.GetDefaultFontSizeOrMinimum(), 6);
+			var ws = new WritingSystemDefinition {DefaultFontSize = 0};
+			Assert.That(ws.GetDefaultFontSizeOrMinimum(), Is.GreaterThan(6));
 		}
 
 		[Test]

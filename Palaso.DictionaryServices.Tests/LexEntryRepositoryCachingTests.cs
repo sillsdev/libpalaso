@@ -61,7 +61,8 @@ namespace Palaso.DictionaryServices.Tests
 			return new WritingSystemDefinition
 			{
 				Language = languageIso,
-				DefaultFont = new FontDefinition(font.Name) {DefaultSize = font.Size}
+				DefaultFont = new FontDefinition(font.Name),
+				DefaultFontSize = font.Size
 			};
 		}
 

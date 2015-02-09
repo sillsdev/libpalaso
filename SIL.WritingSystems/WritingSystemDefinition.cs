@@ -56,6 +56,8 @@ namespace SIL.WritingSystems
 	/// </summary>
 	public class WritingSystemDefinition : DefinitionBase<WritingSystemDefinition>
 	{
+		private const int MinimumFontSize = 7;
+		private const int DefaultSizeIfWeDontKnow = 10;
 		/// <summary>
 		/// This is the version of our writingsystemDefinition implementation and is mostly used for migration purposes.
 		/// This should not be confused with the version of the locale data contained in this writing system.
@@ -73,6 +75,7 @@ namespace SIL.WritingSystems
 		private string _versionNumber;
 		private string _versionDescription;
 		private DateTime _dateModified;
+		private float _defaultFontSize;
 		private FontDefinition _defaultFont;
 		private string _keyboard;
 		private bool _rightToLeftScript;
@@ -184,6 +187,7 @@ namespace SIL.WritingSystems
 			_localKeyboard = ws._localKeyboard;
 			_windowsLcid = ws._windowsLcid;
 			_defaultRegion = ws._defaultRegion;
+			_defaultFontSize = ws._defaultFontSize;
 			foreach (IKeyboardDefinition kbd in ws._knownKeyboards)
 				_knownKeyboards.Add(kbd);
 			_matchedPairs = new ObservableSet<MatchedPair>(ws._matchedPairs);
@@ -894,6 +898,32 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
+		/// the preferred font size to use for data encoded in this writing system.
+		/// </summary>
+		public virtual float DefaultFontSize
+		{
+			get { return _defaultFontSize; }
+			set
+			{
+				if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
+					throw new ArgumentOutOfRangeException("value");
+
+				UpdateField(() => DefaultFontSize, ref _defaultFontSize, value);
+			}
+		}
+
+		/// <summary>
+		/// enforcing a minimum on _defaultFontSize, while reasonable, just messed up too many IO unit tests
+		/// </summary>
+		/// <returns></returns>
+		public virtual float GetDefaultFontSizeOrMinimum()
+		{
+			if (_defaultFontSize < MinimumFontSize)
+				return DefaultSizeIfWeDontKnow;
+			return _defaultFontSize;
+		}
+
+		/// <summary>
 		/// The font used to display data encoded in this writing system
 		/// </summary>
 		public virtual FontDefinition DefaultFont
@@ -1050,6 +1080,8 @@ namespace SIL.WritingSystems
 			if (LegacyMapping != other.LegacyMapping)
 				return false;
 			if (SpellCheckingId != other.SpellCheckingId)
+				return false;
+			if (_defaultFontSize != other._defaultFontSize)
 				return false;
 			// fonts
 			if (_fonts.Count != other._fonts.Count)
