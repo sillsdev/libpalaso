@@ -30,12 +30,10 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.Windows.Forms.Label label2;
-			System.Windows.Forms.Label label3;
-
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MetadataEditorControl));
-			label3 = new System.Windows.Forms.Label();
+			this.label2 = new System.Windows.Forms.Label();
+			this.label3 = new System.Windows.Forms.Label();
 			this.panel1 = new System.Windows.Forms.Panel();
 			this._shareAlike = new System.Windows.Forms.RadioButton();
 			this._noDerivates = new System.Windows.Forms.RadioButton();
@@ -52,7 +50,6 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
 			this.betterLabel2 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this._illustratorLabel = new System.Windows.Forms.Label();
-			label2 = new System.Windows.Forms.Label();
 			this._illustrator = new System.Windows.Forms.TextBox();
 			this._copyrightYear = new System.Windows.Forms.TextBox();
 			this._copyrightBy = new System.Windows.Forms.TextBox();
@@ -67,22 +64,36 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).BeginInit();
 			this.tableLayoutPanel1.SuspendLayout();
 			this.SuspendLayout();
-			//
+			// 
+			// label2
+			// 
+			this.label2.AutoSize = true;
+			this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.label2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._L10NSharpExtender.SetLocalizableToolTip(this.label2, null);
+			this._L10NSharpExtender.SetLocalizationComment(this.label2, null);
+			this._L10NSharpExtender.SetLocalizingId(this.label2, "MetadataEditor.CopyrightYear");
+			this.label2.Location = new System.Drawing.Point(3, 29);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(99, 29);
+			this.label2.TabIndex = 8;
+			this.label2.Text = "Copyright Year";
+			// 
 			// label3
-			//
-			label3.AutoSize = true;
-			label3.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._L10NSharpExtender.SetLocalizableToolTip(label3, null);
-			this._L10NSharpExtender.SetLocalizationComment(label3, null);
-			this._L10NSharpExtender.SetLocalizingId(label3, "MetadataEditor.License");
-			label3.Location = new System.Drawing.Point(12, 132);
-			label3.Name = "label3";
-			label3.Size = new System.Drawing.Size(46, 15);
-			label3.TabIndex = 9;
-			label3.Text = "License";
-			//
+			// 
+			this.label3.AutoSize = true;
+			this.label3.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._L10NSharpExtender.SetLocalizableToolTip(this.label3, null);
+			this._L10NSharpExtender.SetLocalizationComment(this.label3, null);
+			this._L10NSharpExtender.SetLocalizingId(this.label3, "MetadataEditor.License");
+			this.label3.Location = new System.Drawing.Point(12, 132);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(46, 15);
+			this.label3.TabIndex = 9;
+			this.label3.Text = "License";
+			// 
 			// panel1
-			//
+			// 
 			this.panel1.Controls.Add(this._shareAlike);
 			this.panel1.Controls.Add(this._noDerivates);
 			this.panel1.Controls.Add(this._derivatives);
@@ -90,9 +101,9 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this.panel1.Name = "panel1";
 			this.panel1.Size = new System.Drawing.Size(222, 67);
 			this.panel1.TabIndex = 3;
-			//
+			// 
 			// _shareAlike
-			//
+			// 
 			this._shareAlike.AutoSize = true;
 			this._shareAlike.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._L10NSharpExtender.SetLocalizableToolTip(this._shareAlike, null);
@@ -106,9 +117,9 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this._shareAlike.Text = "Yes, as long as others share alike";
 			this._shareAlike.UseVisualStyleBackColor = true;
 			this._shareAlike.CheckedChanged += new System.EventHandler(this.OnLicenseComponentChanged);
-			//
+			// 
 			// _noDerivates
-			//
+			// 
 			this._noDerivates.AutoSize = true;
 			this._noDerivates.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._L10NSharpExtender.SetLocalizableToolTip(this._noDerivates, null);
@@ -122,9 +133,9 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this._noDerivates.Text = "No";
 			this._noDerivates.UseVisualStyleBackColor = true;
 			this._noDerivates.CheckedChanged += new System.EventHandler(this.OnLicenseComponentChanged);
-			//
+			// 
 			// _derivatives
-			//
+			// 
 			this._derivatives.AutoSize = true;
 			this._derivatives.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._L10NSharpExtender.SetLocalizableToolTip(this._derivatives, null);
@@ -138,9 +149,9 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this._derivatives.Text = "Yes";
 			this._derivatives.UseVisualStyleBackColor = true;
 			this._derivatives.CheckedChanged += new System.EventHandler(this.OnLicenseComponentChanged);
-			//
+			// 
 			// panel2
-			//
+			// 
 			this.panel2.Controls.Add(this.betterLabel1);
 			this.panel2.Controls.Add(this._nonCommercial);
 			this.panel2.Controls.Add(this._commercial);
@@ -148,14 +159,15 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this.panel2.Name = "panel2";
 			this.panel2.Size = new System.Drawing.Size(229, 65);
 			this.panel2.TabIndex = 20;
-			//
+			// 
 			// betterLabel1
-			//
-			this.betterLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
+			// 
+			this.betterLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.betterLabel1.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.betterLabel1.Enabled = false;
 			this.betterLabel1.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this.betterLabel1.ForeColor = System.Drawing.SystemColors.ControlText;
 			this._L10NSharpExtender.SetLocalizableToolTip(this.betterLabel1, null);
 			this._L10NSharpExtender.SetLocalizationComment(this.betterLabel1, null);
 			this._L10NSharpExtender.SetLocalizingId(this.betterLabel1, "MetadataEditor.AllowCommercialUse");
@@ -167,9 +179,9 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this.betterLabel1.TabIndex = 0;
 			this.betterLabel1.TabStop = false;
 			this.betterLabel1.Text = "Allow commercial uses of your work?";
-			//
+			// 
 			// _nonCommercial
-			//
+			// 
 			this._nonCommercial.AutoSize = true;
 			this._nonCommercial.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._L10NSharpExtender.SetLocalizableToolTip(this._nonCommercial, null);
@@ -183,9 +195,9 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this._nonCommercial.Text = "No";
 			this._nonCommercial.UseVisualStyleBackColor = true;
 			this._nonCommercial.CheckedChanged += new System.EventHandler(this.OnLicenseComponentChanged);
-			//
+			// 
 			// _commercial
-			//
+			// 
 			this._commercial.AutoSize = true;
 			this._commercial.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._L10NSharpExtender.SetLocalizableToolTip(this._commercial, null);
@@ -199,21 +211,22 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this._commercial.Text = "Yes";
 			this._commercial.UseVisualStyleBackColor = true;
 			this._commercial.CheckedChanged += new System.EventHandler(this.OnLicenseComponentChanged);
-			//
+			// 
 			// _licenseImage
-			//
+			// 
 			this._L10NSharpExtender.SetLocalizableToolTip(this._licenseImage, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._licenseImage, null);
 			this._L10NSharpExtender.SetLocalizationPriority(this._licenseImage, L10NSharp.LocalizationPriority.NotLocalizable);
 			this._L10NSharpExtender.SetLocalizingId(this._licenseImage, "MetadataEditor.MetadataEditorControl._licenseImage");
 			this._licenseImage.Location = new System.Drawing.Point(56, 342);
 			this._licenseImage.Name = "_licenseImage";
-			this._licenseImage.Size = new System.Drawing.Size(156, 40);
+			this._licenseImage.Size = new System.Drawing.Size(124, 40);
+			this._licenseImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
 			this._licenseImage.TabIndex = 21;
 			this._licenseImage.TabStop = false;
-			//
+			// 
 			// _creativeCommons
-			//
+			// 
 			this._creativeCommons.AutoSize = true;
 			this._creativeCommons.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this._L10NSharpExtender.SetLocalizableToolTip(this._creativeCommons, null);
@@ -221,15 +234,15 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizingId(this._creativeCommons, "MetadataEditor.CreativeCommons");
 			this._creativeCommons.Location = new System.Drawing.Point(42, 150);
 			this._creativeCommons.Name = "_creativeCommons";
-			this._creativeCommons.Size = new System.Drawing.Size(113, 17);
+			this._creativeCommons.Size = new System.Drawing.Size(127, 19);
 			this._creativeCommons.TabIndex = 22;
 			this._creativeCommons.TabStop = true;
 			this._creativeCommons.Text = "Creative Commons";
 			this._creativeCommons.UseVisualStyleBackColor = true;
 			this._creativeCommons.CheckedChanged += new System.EventHandler(this.OnLicenseComponentChanged);
-			//
+			// 
 			// _unknownLicense
-			//
+			// 
 			this._unknownLicense.AutoSize = true;
 			this._unknownLicense.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this._L10NSharpExtender.SetLocalizableToolTip(this._unknownLicense, null);
@@ -237,15 +250,15 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizingId(this._unknownLicense, "MetadataEditor.UnknownLicense");
 			this._unknownLicense.Location = new System.Drawing.Point(42, 388);
 			this._unknownLicense.Name = "_unknownLicense";
-			this._unknownLicense.Size = new System.Drawing.Size(250, 17);
+			this._unknownLicense.Size = new System.Drawing.Size(284, 19);
 			this._unknownLicense.TabIndex = 4;
 			this._unknownLicense.TabStop = true;
 			this._unknownLicense.Text = "Contact the copyright holder for any permissions";
 			this._unknownLicense.UseVisualStyleBackColor = true;
 			this._unknownLicense.CheckedChanged += new System.EventHandler(this.OnLicenseComponentChanged);
-			//
+			// 
 			// _customLicense
-			//
+			// 
 			this._customLicense.AutoSize = true;
 			this._customLicense.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this._L10NSharpExtender.SetLocalizableToolTip(this._customLicense, null);
@@ -253,15 +266,15 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this._L10NSharpExtender.SetLocalizingId(this._customLicense, "MetadataEditor.CustomLicense");
 			this._customLicense.Location = new System.Drawing.Point(42, 411);
 			this._customLicense.Name = "_customLicense";
-			this._customLicense.Size = new System.Drawing.Size(60, 17);
+			this._customLicense.Size = new System.Drawing.Size(67, 19);
 			this._customLicense.TabIndex = 26;
 			this._customLicense.TabStop = true;
 			this._customLicense.Text = "Custom";
 			this._customLicense.UseVisualStyleBackColor = true;
 			this._customLicense.CheckedChanged += new System.EventHandler(this.OnLicenseComponentChanged);
-			//
+			// 
 			// _customRightsStatement
-			//
+			// 
 			this._customRightsStatement.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._L10NSharpExtender.SetLocalizableToolTip(this._customRightsStatement, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._customRightsStatement, null);
@@ -273,19 +286,20 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this._customRightsStatement.Size = new System.Drawing.Size(268, 67);
 			this._customRightsStatement.TabIndex = 3;
 			this._customRightsStatement.TextChanged += new System.EventHandler(this._customLicenseDescription_TextChanged);
-			//
+			// 
 			// _L10NSharpExtender
-			//
+			// 
 			this._L10NSharpExtender.LocalizationManagerId = "Palaso";
 			this._L10NSharpExtender.PrefixForNewItems = "MetadataEditor";
-			//
+			// 
 			// betterLabel2
-			//
-			this.betterLabel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-			| System.Windows.Forms.AnchorStyles.Right)));
+			// 
+			this.betterLabel2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.betterLabel2.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.betterLabel2.Enabled = false;
 			this.betterLabel2.Font = new System.Drawing.Font("Segoe UI", 9F);
+			this.betterLabel2.ForeColor = System.Drawing.SystemColors.ControlText;
 			this._L10NSharpExtender.SetLocalizableToolTip(this.betterLabel2, null);
 			this._L10NSharpExtender.SetLocalizationComment(this.betterLabel2, null);
 			this._L10NSharpExtender.SetLocalizingId(this.betterLabel2, "MetadataEditor.AllowDerivatives");
@@ -297,9 +311,9 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this.betterLabel2.TabIndex = 12;
 			this.betterLabel2.TabStop = false;
 			this.betterLabel2.Text = "Allow modifications of your work?";
-			//
+			// 
 			// _illustratorLabel
-			//
+			// 
 			this._illustratorLabel.AutoSize = true;
 			this._illustratorLabel.Dock = System.Windows.Forms.DockStyle.Fill;
 			this._illustratorLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -311,23 +325,9 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this._illustratorLabel.Size = new System.Drawing.Size(99, 29);
 			this._illustratorLabel.TabIndex = 6;
 			this._illustratorLabel.Text = "Creator";
-			//
-			// label2
-			//
-			label2.AutoSize = true;
-			label2.Dock = System.Windows.Forms.DockStyle.Fill;
-			label2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this._L10NSharpExtender.SetLocalizableToolTip(label2, null);
-			this._L10NSharpExtender.SetLocalizationComment(label2, null);
-			this._L10NSharpExtender.SetLocalizingId(label2, "MetadataEditor.CopyrightYear");
-			label2.Location = new System.Drawing.Point(3, 29);
-			label2.Name = "label2";
-			label2.Size = new System.Drawing.Size(99, 29);
-			label2.TabIndex = 8;
-			label2.Text = "Copyright Year";
-			//
+			// 
 			// _illustrator
-			//
+			// 
 			this._illustrator.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._L10NSharpExtender.SetLocalizableToolTip(this._illustrator, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._illustrator, null);
@@ -338,9 +338,9 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this._illustrator.Size = new System.Drawing.Size(197, 23);
 			this._illustrator.TabIndex = 9;
 			this._illustrator.TextChanged += new System.EventHandler(this._illustrator_TextChanged);
-			//
+			// 
 			// _copyrightYear
-			//
+			// 
 			this._copyrightYear.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._L10NSharpExtender.SetLocalizableToolTip(this._copyrightYear, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._copyrightYear, null);
@@ -351,9 +351,9 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this._copyrightYear.Size = new System.Drawing.Size(38, 23);
 			this._copyrightYear.TabIndex = 10;
 			this._copyrightYear.TextChanged += new System.EventHandler(this._copyrightYear_TextChanged);
-			//
+			// 
 			// _copyrightBy
-			//
+			// 
 			this._copyrightBy.Dock = System.Windows.Forms.DockStyle.Fill;
 			this._copyrightBy.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._L10NSharpExtender.SetLocalizableToolTip(this._copyrightBy, null);
@@ -366,9 +366,9 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this._copyrightBy.Size = new System.Drawing.Size(220, 45);
 			this._copyrightBy.TabIndex = 27;
 			this._copyrightBy.TextChanged += new System.EventHandler(this._copyrightBy_TextChanged);
-			//
+			// 
 			// _copyrightHolderLabel
-			//
+			// 
 			this._copyrightHolderLabel.AutoSize = true;
 			this._copyrightHolderLabel.Dock = System.Windows.Forms.DockStyle.Fill;
 			this._copyrightHolderLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
@@ -380,16 +380,16 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this._copyrightHolderLabel.Size = new System.Drawing.Size(99, 51);
 			this._copyrightHolderLabel.TabIndex = 28;
 			this._copyrightHolderLabel.Text = "Copyright Holder";
-			//
+			// 
 			// _linkToDefintionOfNonCommercial
-			//
+			// 
 			this._linkToDefintionOfNonCommercial.BackColor = System.Drawing.SystemColors.Control;
 			this._linkToDefintionOfNonCommercial.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this._linkToDefintionOfNonCommercial.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Underline);
 			this._linkToDefintionOfNonCommercial.ForeColor = System.Drawing.Color.Blue;
 			this._L10NSharpExtender.SetLocalizableToolTip(this._linkToDefintionOfNonCommercial, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._linkToDefintionOfNonCommercial, "The meaning of  \"non-commercial\" is vague but important. This hyperlink takes you" +
-		" somewhere tha defines it.");
+        " somewhere tha defines it.");
 			this._L10NSharpExtender.SetLocalizingId(this._linkToDefintionOfNonCommercial, "MetadataEditor.betterLinkLabel1");
 			this._linkToDefintionOfNonCommercial.Location = new System.Drawing.Point(272, 172);
 			this._linkToDefintionOfNonCommercial.Multiline = true;
@@ -399,9 +399,9 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this._linkToDefintionOfNonCommercial.TabStop = false;
 			this._linkToDefintionOfNonCommercial.Text = "more info";
 			this._linkToDefintionOfNonCommercial.URL = "http://creativecommons.org/licenses/by-nc/4.0/legalcode#s1i";
-			//
+			// 
 			// _linkToRefinedCreativeCommonsWarning
-			//
+			// 
 			this._linkToRefinedCreativeCommonsWarning.BackColor = System.Drawing.SystemColors.Control;
 			this._linkToRefinedCreativeCommonsWarning.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this._linkToRefinedCreativeCommonsWarning.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Underline);
@@ -418,30 +418,31 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this._linkToRefinedCreativeCommonsWarning.Text = "Not Enforceable";
 			this._linkToRefinedCreativeCommonsWarning.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
 			this._linkToRefinedCreativeCommonsWarning.URL = "http://creativecommons.org/licenses/by-nc/4.0/legalcode#s7a";
-			//
+			// 
 			// _additionalRequestsLabel
-			//
+			// 
 			this._additionalRequestsLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this._additionalRequestsLabel.Enabled = false;
+			this._additionalRequestsLabel.ForeColor = System.Drawing.SystemColors.ControlText;
 			this._L10NSharpExtender.SetLocalizableToolTip(this._additionalRequestsLabel, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._additionalRequestsLabel, "When you choose a Creative Commons License, this label shows over the text box at" +
-		" the bottom.");
+        " the bottom.");
 			this._L10NSharpExtender.SetLocalizingId(this._additionalRequestsLabel, "MetadataEditor.additionalRequestsLabel");
 			this._additionalRequestsLabel.Location = new System.Drawing.Point(42, 432);
 			this._additionalRequestsLabel.Multiline = true;
 			this._additionalRequestsLabel.Name = "_additionalRequestsLabel";
 			this._additionalRequestsLabel.ReadOnly = true;
-			this._additionalRequestsLabel.Size = new System.Drawing.Size(151, 16);
+			this._additionalRequestsLabel.Size = new System.Drawing.Size(151, 13);
 			this._additionalRequestsLabel.TabIndex = 30;
 			this._additionalRequestsLabel.TabStop = false;
 			this._additionalRequestsLabel.Text = "Additional Requests";
-			//
+			// 
 			// tableLayoutPanel1
-			//
+			// 
 			this.tableLayoutPanel1.ColumnCount = 2;
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-			this.tableLayoutPanel1.Controls.Add(label2, 0, 1);
+			this.tableLayoutPanel1.Controls.Add(this.label2, 0, 1);
 			this.tableLayoutPanel1.Controls.Add(this._illustratorLabel, 0, 0);
 			this.tableLayoutPanel1.Controls.Add(this._illustrator, 1, 0);
 			this.tableLayoutPanel1.Controls.Add(this._copyrightYear, 1, 1);
@@ -455,9 +456,9 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
 			this.tableLayoutPanel1.Size = new System.Drawing.Size(318, 109);
 			this.tableLayoutPanel1.TabIndex = 27;
-			//
+			// 
 			// MetadataEditorControl
-			//
+			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this._additionalRequestsLabel);
@@ -472,7 +473,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			this.Controls.Add(this.panel2);
 			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.betterLabel2);
-			this.Controls.Add(label3);
+			this.Controls.Add(this.label3);
 			this._L10NSharpExtender.SetLocalizableToolTip(this, null);
 			this._L10NSharpExtender.SetLocalizationComment(this, null);
 			this._L10NSharpExtender.SetLocalizingId(this, "MetadataEditor.MetadataEditorControl.MetadataEditorControl");
@@ -517,5 +518,7 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 		private Widgets.BetterLinkLabel _linkToDefintionOfNonCommercial;
 		private Widgets.BetterLinkLabel _linkToRefinedCreativeCommonsWarning;
 		private Widgets.BetterLabel _additionalRequestsLabel;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Label label3;
 	}
 }
