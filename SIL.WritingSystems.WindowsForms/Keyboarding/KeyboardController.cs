@@ -45,7 +45,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		}
 
 		/// <summary>
-		/// Enables the PalasoUIWinForms keyboarding. This should be called during application startup.
+		/// Enables keyboarding. This should be called during application startup.
 		/// </summary>
 		public static void Initialize()
 		{
@@ -68,7 +68,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		}
 
 		/// <summary>
-		/// Ends support for the PalasoUIWinForms keyboarding
+		/// Ends support for keyboarding.
 		/// </summary>
 		public static void Shutdown()
 		{
@@ -120,6 +120,8 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		public void SetKeyboardAdaptors(params IKeyboardAdaptor[] adaptors)
 		{
 			_keyboards.Clear();
+			foreach (IKeyboardAdaptor adaptor in _adaptors)
+				adaptor.Dispose();
 			_adaptors.Clear();
 			_adaptors.AddRange(adaptors);
 			// this will also populate m_keyboards
