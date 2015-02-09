@@ -213,7 +213,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				s += "You may not alter, transform, or build upon this work without permission. ";
 
 			if (DerivativeRule == DerivativeRules.DerivativesWithShareAndShareAlike)
-				s += "You may adapt or build upon this work, but you may distribute the resulting work only under the same or similar license to this one.";
+				s += "You may adapt or build upon this work, but you may distribute the resulting work only under the same or similar license to this one. ";
 
 			if (AttributionRequired)
 				s += "You must attribute the work in the manner specified by the author. ";
