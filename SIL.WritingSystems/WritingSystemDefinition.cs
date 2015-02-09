@@ -70,13 +70,11 @@ namespace SIL.WritingSystems
 		private RegionSubtag _region;
 		private readonly ObservableCollection<VariantSubtag> _variants = new ObservableCollection<VariantSubtag>();
 		private string _abbreviation;
-		private bool _isUnicodeEncoded = true;
 		private string _versionNumber;
 		private string _versionDescription;
 		private DateTime _dateModified;
 		private FontDefinition _defaultFont;
 		private string _keyboard;
-		private string _nativeName;
 		private bool _rightToLeftScript;
 		private IKeyboardDefinition _localKeyboard;
 		private string _id;
@@ -131,7 +129,7 @@ namespace SIL.WritingSystems
 			_punctuationPatterns = new ObservableSet<PunctuationPattern>();
 			_defaultCollation = new CollationDefinition("standard");
 			_collations.Add(_defaultCollation);
-			_abbreviation = _languageName = _nativeName = string.Empty;
+			_abbreviation = _languageName = string.Empty;
 			SetupCollectionChangeListeners();
 		}
 
@@ -177,13 +175,11 @@ namespace SIL.WritingSystems
 			_keyboard = ws._keyboard;
 			_versionNumber = ws._versionNumber;
 			_versionDescription = ws._versionDescription;
-			_nativeName = ws._nativeName;
 			foreach (SpellCheckDictionaryDefinition scdd in ws._spellCheckDictionaries)
 				_spellCheckDictionaries.Add(scdd.Clone());
 			if (ws._spellCheckDictionary != null)
 				_spellCheckDictionary = _spellCheckDictionaries[ws._spellCheckDictionaries.IndexOf(ws._spellCheckDictionary)];
 			_dateModified = ws._dateModified;
-			_isUnicodeEncoded = ws._isUnicodeEncoded;
 			_languageName = ws._languageName;
 			_languageTag = ws._languageTag;
 			_localKeyboard = ws._localKeyboard;
@@ -818,15 +814,6 @@ namespace SIL.WritingSystems
 			set { UpdateField(() => RightToLeftScript, ref _rightToLeftScript, value); }
 		}
 
-		/// <summary>
-		/// The windows "NativeName" from the Culture class
-		/// </summary>
-		public virtual string NativeName
-		{
-			get { return _nativeName ?? string.Empty; }
-			set { UpdateString(() => NativeName, ref _nativeName, value); }
-		}
-
 		public virtual CollationDefinition DefaultCollation
 		{
 			get { return _defaultCollation ?? _collations.FirstOrDefault(); }
@@ -854,15 +841,6 @@ namespace SIL.WritingSystems
 		{
 			_languageTag = IetfLanguageTag.ToLanguageTag(_language, _script, _region, _variants, _requiresValidLanguageTag);
 			_id = _languageTag;
-		}
-
-		/// <summary>
-		/// Indicates whether this writing system is unicode encoded or legacy encoded
-		/// </summary>
-		public virtual bool IsUnicodeEncoded
-		{
-			get { return _isUnicodeEncoded; }
-			set { UpdateField(() => IsUnicodeEncoded, ref _isUnicodeEncoded, value); }
 		}
 
 		/// <summary>
@@ -1054,11 +1032,7 @@ namespace SIL.WritingSystems
 				return false;
 			if (Keyboard != other.Keyboard)
 				return false;
-			if (NativeName != other.NativeName)
-				return false;
 			if (_id != other._id)
-				return false;
-			if (_isUnicodeEncoded != other._isUnicodeEncoded)
 				return false;
 			if (_dateModified != other._dateModified)
 				return false;

@@ -434,20 +434,6 @@ namespace SIL.WritingSystems.Tests
 #endif
 
 		[Test]
-		public void IsUnicodeEncoded_TrueByDefault()
-		{
-			using (var environment = new TestEnvironment())
-			{
-				environment.WritingSystem.Language = "en";
-				environment.Collection.SaveDefinition(environment.WritingSystem);
-
-				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
-				var ws2 = newCollection.Get("en");
-				Assert.IsTrue(ws2.IsUnicodeEncoded);
-			}
-		}
-
-		[Test]
 		public void CanRemoveVariant()
 		{
 			using (var environment = new TestEnvironment())

@@ -653,19 +653,6 @@ namespace SIL.WritingSystems.WindowsForms
 			}
 		}
 
-		public string CurrentNativeName
-		{
-			get { return CurrentDefinition == null ? string.Empty : (CurrentDefinition.NativeName ?? string.Empty); }
-			set
-			{
-				if (CurrentDefinition.NativeName != value)
-				{
-					CurrentDefinition.NativeName = value;
-					OnCurrentItemUpdated();
-				}
-			}
-		}
-
 		public string CurrentRegion
 		{
 			get { return  CurrentDefinition == null ? string.Empty : ((string) CurrentDefinition.Region ?? string.Empty); }

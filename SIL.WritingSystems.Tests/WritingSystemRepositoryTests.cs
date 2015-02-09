@@ -360,7 +360,6 @@ namespace SIL.WritingSystems.Tests
 			var ws1 = new WritingSystemDefinition("en", "Zxxx", "US", "x-audio", "abbrev", false)
 			{
 				Keyboard = "keyboard",
-				NativeName = "native name",
 				VersionDescription = "description of this version",
 				VersionNumber = "1.0"
 			};
@@ -374,7 +373,6 @@ namespace SIL.WritingSystems.Tests
 			Assert.AreEqual(ws1.Abbreviation, ws2.Abbreviation);
 			Assert.AreEqual(ws1.RightToLeftScript, ws2.RightToLeftScript);
 			Assert.AreEqual(ws1.Keyboard, ws2.Keyboard);
-			Assert.AreEqual(ws1.NativeName, ws2.NativeName);
 			Assert.AreEqual(ws1.VersionDescription, ws2.VersionDescription);
 			Assert.AreEqual(ws1.VersionNumber, ws2.VersionNumber);
 		}

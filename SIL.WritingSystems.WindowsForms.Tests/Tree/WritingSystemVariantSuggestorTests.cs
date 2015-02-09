@@ -21,7 +21,6 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Tree
 			Assert.That(ipa.Language, Is.EqualTo((LanguageSubtag) "etr"));
 			Assert.That(ipa.Variants, Is.EqualTo(new VariantSubtag[] {"fonipa"}));
 			Assert.That(ipa.LanguageName, Is.EqualTo("Edolo"));
-			Assert.That(string.IsNullOrEmpty(ipa.NativeName), Is.True);
 			Assert.That(ipa.Region, Is.EqualTo((RegionSubtag) "region"));
 			//Assert.AreEqual("arial unicode ms", ipa.DefaultFontName); this depends on what fonts are installed on the test system
 			Assert.That(ipa.DefaultFont.DefaultSize, Is.EqualTo(33));

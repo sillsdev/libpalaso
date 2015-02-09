@@ -106,7 +106,6 @@ namespace SIL.WritingSystems.WindowsForms
 					IetfLanguageTag.ConcatenateVariantAndPrivateUse(cleaner.Variant, cleaner.PrivateUse),
 					culture.ThreeLetterISOLanguageName,
 					culture.TextInfo.IsRightToLeft);
-				def.NativeName = culture.NativeName;
 				def.Keyboard = language.LayoutName;
 				def.DefaultCollation = new InheritedCollationDefinition("standard") { BaseLanguageTag = culture.IetfLanguageTag };
 				def.LanguageName = culture.DisplayName;
