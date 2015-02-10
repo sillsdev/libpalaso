@@ -42,12 +42,6 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		public IbusKeyboardAdaptor(IIbusCommunicator ibusCommunicator)
 		{
 			_ibusComm = ibusCommunicator;
-
-			if (!_ibusComm.Connected)
-				return;
-				
-			KeyboardController.Instance.ControlAdded += OnControlRegistered;
-			KeyboardController.Instance.ControlRemoving += OnControlRemoving;
 		}
 
 		protected virtual void InitKeyboards()
@@ -429,6 +423,12 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		/// </summary>
 		public void Initialize()
 		{
+			if (_ibusComm.Connected)
+			{
+				KeyboardController.Instance.ControlAdded += OnControlRegistered;
+				KeyboardController.Instance.ControlRemoving += OnControlRemoving;
+			}
+
 			InitKeyboards();
 			// Don't turn on any Ibus IME keyboard until requested explicitly.
 			// If we do nothing, the first Ibus IME keyboard is automatically activated.
