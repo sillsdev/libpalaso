@@ -158,7 +158,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 			// For this test on Linux we only use the XkbKeyboardAdaptor and simulate an available
 			// IBus keyboard. This is necessary because otherwise the test might return an
 			// installed Danish IBus keyboard (m17n:da:post) instead of our expected dummy one.
-			KeyboardController.Instance.SetKeyboardAdaptors(new XkbKeyboardAdaptor());
+			KeyboardController.Initialize(new XkbKeyboardAdaptor());
 #endif
 			var expectedKeyboard = new KeyboardDescription("m17n:da:post", "m17n:da:post - English (US)", "m17n:da:post", string.Empty, true,
 				KeyboardController.Instance.Adaptors[0]);

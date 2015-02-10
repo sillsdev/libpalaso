@@ -132,18 +132,11 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 			return keyboard;
 		}
 
-		[SetUp]
-		public void SetUp()
-		{
-			KeyboardController.Initialize();
-		}
-
 		[TearDown]
 		public void TearDown()
 		{
 			GlobalCachedInputContext.Keyboard = null;
 			GlobalCachedInputContext.Clear();
-			KeyboardController.Shutdown();
 		}
 
 		[Test]
@@ -161,7 +154,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 			var ibusKeyboardAdapter = new IbusKeyboardAdaptorDouble(new DoNothingIbusCommunicator());
 			var xklEngineMock = new Mock<IXklEngine>();
 			var xkbKeyboardAdapter = new XkbKeyboardAdaptorDouble(xklEngineMock.Object);
-			KeyboardController.Instance.SetKeyboardAdaptors(new IKeyboardAdaptor[] { xkbKeyboardAdapter, ibusKeyboardAdapter});
+			KeyboardController.Initialize(xkbKeyboardAdapter, ibusKeyboardAdapter);
 
 			var ibusKeyboard = CreateMockIbusKeyboard(ibusKeyboardAdapter, name, language, layout);
 			var deKeyboard = CreateMockXkbKeyboard("German - German (Germany)", "de", "de-DE", "German", DeKeyboardGroup, xkbKeyboardAdapter);
@@ -177,6 +170,9 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 			xklEngineMock.Verify(x => x.SetGroup(layout == "fr" ? FrKeyboardGroup : EnKeyboardGroup),
 				string.Format("Switching to the ibus keyboard should activate the {0} xkb keyboard.",
 					layout == "fr" ? "French" : "English"));
+
+			// Shutdown
+			KeyboardController.Shutdown();
 		}
 	}
 }
