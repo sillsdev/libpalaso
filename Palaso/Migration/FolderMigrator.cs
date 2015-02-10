@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using Palaso.IO;
 using Palaso.Reporting;
 
@@ -91,7 +90,7 @@ namespace Palaso.Migration
 		/// Perform the migration
 		///</summary>
 		///<exception cref="InvalidOperationException"></exception>
-		public void Migrate()
+		public virtual void Migrate()
 		{
 			var problems = new List<FolderMigratorProblem>();
 
@@ -241,7 +240,10 @@ namespace Palaso.Migration
 		///</summary>
 		public string SearchPattern { get; set; }
 
-		private string SourcePath { get; set; }
+		/// <summary>
+		/// Gets the source path.
+		/// </summary>
+		protected string SourcePath { get; private set; }
 
 		private string MigrationPath
 		{

@@ -140,6 +140,7 @@
     <Compile Include="FlexConformPrivateUseRfc5646TagInterpreter.cs" />
     <Compile Include="FontDefinition.cs" />
     <Compile Include="GlobalWritingSystemRepository.cs" />
+    <Compile Include="ICustomDataMapper.cs" />
     <Compile Include="ICollator.cs" />
     <Compile Include="IcuRulesCollator.cs" />
     <Compile Include="IInputLanguage.cs" />

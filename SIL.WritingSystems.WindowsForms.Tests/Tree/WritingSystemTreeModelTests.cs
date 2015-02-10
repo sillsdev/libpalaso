@@ -20,6 +20,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Tree
 			{
 				var writingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(
 					_folder.Path,
+					Enumerable.Empty<ICustomDataMapper>(),
 					OnMigration,
 					OnLoadProblem
 				);

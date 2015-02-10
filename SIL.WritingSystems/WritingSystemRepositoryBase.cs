@@ -70,14 +70,6 @@ namespace SIL.WritingSystems
 			return new WritingSystemDefinition();
 		}
 
-		/// <summary>
-		/// Creates the LDML adaptor that this repository will use.
-		/// </summary>
-		virtual protected LdmlDataMapper CreateLdmlAdaptor()
-		{
-			return new LdmlDataMapper();
-		}
-
 		virtual public void Conflate(string wsToConflate, string wsToConflateWith)
 		{
 			Conflating = true;

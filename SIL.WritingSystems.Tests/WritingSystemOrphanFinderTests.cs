@@ -18,7 +18,7 @@ namespace SIL.WritingSystems.Tests
 
 			public TestEnvironment(string id1, string id2)
 			{
-				WritingSystemRepository = new LdmlInFolderWritingSystemRepository(WritingSystemsPath, WritingSystemCompatibility.Flex7V0Compatible);
+				WritingSystemRepository = new LdmlInFolderWritingSystemRepository(WritingSystemsPath, new List<ICustomDataMapper>(), WritingSystemCompatibility.Flex7V0Compatible);
 				_file = _folder.GetNewTempFile(true);
 				File.WriteAllText(_file.Path, String.Format("|{0}||{0}||{1}|", id1, id2));
 			}

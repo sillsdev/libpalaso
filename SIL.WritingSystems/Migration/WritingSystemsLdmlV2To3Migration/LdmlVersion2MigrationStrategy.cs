@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
@@ -15,9 +16,12 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 	/// </summary>
 	class LdmlVersion2MigrationStrategy : MigrationStrategyBase
 	{
-		public LdmlVersion2MigrationStrategy() :
+		private readonly List<ICustomDataMapper> _customDataMappers; 
+
+		public LdmlVersion2MigrationStrategy(IEnumerable<ICustomDataMapper> customDataMappers) :
 			base(2, 3)
 		{
+			_customDataMappers = customDataMappers.ToList();
 		}
 
 		public override void Migrate(string sourceFilePath, string destinationFilePath)
@@ -87,11 +91,12 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				writingSystemDefinitionV1.Region,
 				writingSystemDefinitionV1.Variant);
 
+			var ldmlDataMapper = new LdmlAdaptorV3();
 			using (Stream sourceStream = new FileStream(sourceFilePath, FileMode.Open))
-			{
-				var ldmlDataMapper = new LdmlAdaptorV3();
 				ldmlDataMapper.Write(destinationFilePath, writingSystemDefinitionV3, sourceStream);
-			}
+
+			foreach (ICustomDataMapper customDataMapper in _customDataMappers)
+				customDataMapper.Write(writingSystemDefinitionV3);
 		}
 	}
 }

@@ -12,39 +12,45 @@ namespace SIL.WritingSystems
 	/// </summary>
 	public class LdmlInFolderWritingSystemRepository : WritingSystemRepositoryBase
 	{
-		///<summary>
+		/// <summary>
 		/// Returns an instance of an ldml in folder writing system reposistory.
-		///</summary>
-		///<param name="basePath">base location of the global writing system repository</param>
-		///<param name="migrationHandler">Callback if during the initialization any writing system id's are changed</param>
-		///<param name="loadProblemHandler">Callback if during the initialization any writing systems cannot be loaded</param>
+		/// </summary>
+		/// <param name="basePath">base location of the global writing system repository</param>
+		/// <param name="customDataMappers">The custom data mappers.</param>
+		/// <param name="migrationHandler">Callback if during the initialization any writing system id's are changed</param>
+		/// <param name="loadProblemHandler">Callback if during the initialization any writing systems cannot be loaded</param>
+		/// <returns></returns>
 		public static LdmlInFolderWritingSystemRepository Initialize(
 			string basePath,
+			IEnumerable<ICustomDataMapper> customDataMappers,
 			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
 			Action<IEnumerable<WritingSystemRepositoryProblem>> loadProblemHandler
 		)
 		{
-			return Initialize(basePath, migrationHandler, loadProblemHandler, WritingSystemCompatibility.Strict);
+			return Initialize(basePath, customDataMappers, migrationHandler, loadProblemHandler, WritingSystemCompatibility.Strict);
 		}
 
-		///<summary>
-		/// Returns an instance of an ldml in folder writing system reposistory.
-		///</summary>
-		///<param name="basePath">base location of the global writing system repository</param>
-		///<param name="migrationHandler">Callback if during the initialization any writing system id's are changed</param>
-		///<param name="loadProblemHandler">Callback if during the initialization any writing systems cannot be loaded</param>
-		///<param name="compatibilityMode"></param>
+		/// <summary>
+		///  Returns an instance of an ldml in folder writing system reposistory.
+		/// </summary>
+		/// <param name="basePath">base location of the global writing system repository</param>
+		/// <param name="customDataMappers">The custom data mappers.</param>
+		/// <param name="migrationHandler">Callback if during the initialization any writing system id's are changed</param>
+		/// <param name="loadProblemHandler">Callback if during the initialization any writing systems cannot be loaded</param>
+		/// <param name="compatibilityMode"></param>
 		public static LdmlInFolderWritingSystemRepository Initialize(
 			string basePath,
+			IEnumerable<ICustomDataMapper> customDataMappers,
 			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
 			Action<IEnumerable<WritingSystemRepositoryProblem>> loadProblemHandler,
 			WritingSystemCompatibility compatibilityMode
 		)
 		{
-			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(basePath, migrationHandler, compatibilityMode);
+			ICustomDataMapper[] customDataMappersArray = customDataMappers.ToArray();
+			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(basePath, customDataMappersArray, migrationHandler, compatibilityMode);
 			migrator.Migrate();
 
-			var instance = new LdmlInFolderWritingSystemRepository(basePath, compatibilityMode);
+			var instance = new LdmlInFolderWritingSystemRepository(basePath, customDataMappersArray, compatibilityMode);
 			instance.LoadAllDefinitions();
 
 			// Call the loadProblemHandler with both migration problems and load problems
@@ -64,24 +70,24 @@ namespace SIL.WritingSystems
 		private IEnumerable<WritingSystemDefinition> _systemWritingSystemProvider;
 		private readonly WritingSystemChangeLog _changeLog;
 		private readonly IList<WritingSystemRepositoryProblem> _loadProblems = new List<WritingSystemRepositoryProblem>();
+		private readonly IList<ICustomDataMapper> _customDataMappers; 
 
 		/// <summary>
 		/// use a special path for the repository
 		/// </summary>
 		/// <param name="basePath"></param>
 		protected internal LdmlInFolderWritingSystemRepository(string basePath) :
-			this(basePath, WritingSystemCompatibility.Strict)
+			this(basePath, new List<ICustomDataMapper>(), WritingSystemCompatibility.Strict)
 		{
 		}
 
 		/// <summary>
 		/// use a special path for the repository
 		/// </summary>
-		/// <param name="basePath"></param>
-		/// <param name="compatibilityMode"></param>
-		protected internal LdmlInFolderWritingSystemRepository(string basePath, WritingSystemCompatibility compatibilityMode)
+		protected internal LdmlInFolderWritingSystemRepository(string basePath, IList<ICustomDataMapper> customDataMappers, WritingSystemCompatibility compatibilityMode)
 			: base(compatibilityMode)
 		{
+			_customDataMappers = customDataMappers;
 			PathToWritingSystems = basePath;
 			_changeLog = new WritingSystemChangeLog(new WritingSystemChangeLogDataMapper(Path.Combine(PathToWritingSystems, "idchangelog.xml")));
 		}
@@ -121,6 +127,11 @@ namespace SIL.WritingSystems
 			}
 		}
 
+		public IEnumerable<ICustomDataMapper> CustomDataMappers
+		{
+			get { return _customDataMappers; }
+		}
+
 		///<summary>
 		/// Returns the full path to the underlying store for this writing system.
 		///</summary>
@@ -150,9 +161,17 @@ namespace SIL.WritingSystems
 				WritingSystemDefinition wsFromFile;
 				try
 				{
-					wsFromFile = GetWritingSystemFromLdml(filePath);
+					wsFromFile = CreateNew();
+					var ldmlDataMapper = new LdmlDataMapper();
+					if (File.Exists(filePath))
+					{
+						ldmlDataMapper.Read(filePath, wsFromFile);
+						foreach (ICustomDataMapper customDataMapper in _customDataMappers)
+							customDataMapper.Read(wsFromFile);
+						wsFromFile.StoreID = Path.GetFileNameWithoutExtension(filePath);
+					}
 				}
-				catch(Exception e)
+				catch (Exception e)
 				{
 					// Add the exception to our list of problems and continue loading
 					var problem = new WritingSystemRepositoryProblem
@@ -177,7 +196,7 @@ namespace SIL.WritingSystems
 							badFileName = false;
 						}
 					}
-					if(badFileName)
+					if (badFileName)
 					{// Add the exception to our list of problems and continue loading
 						var problem = new WritingSystemRepositoryProblem
 						{
@@ -195,7 +214,8 @@ namespace SIL.WritingSystems
 				{
 					Set(wsFromFile);
 				}
-				catch(Exception e){
+				catch (Exception e)
+				{
 					// Add the exception to our list of problems and continue loading
 					var problem = new WritingSystemRepositoryProblem
 					{
@@ -207,18 +227,6 @@ namespace SIL.WritingSystems
 				}
 			}
 			LoadChangedIDsFromExistingWritingSystems();
-		}
-
-		private WritingSystemDefinition GetWritingSystemFromLdml(string filePath)
-		{
-			WritingSystemDefinition ws = CreateNew();
-			LdmlDataMapper adaptor = CreateLdmlAdaptor();
-			if (File.Exists(filePath))
-			{
-				adaptor.Read(filePath, ws);
-				ws.StoreID = Path.GetFileNameWithoutExtension(filePath);
-			}
-			return ws;
 		}
 
 		private bool HaveMatchingDefinitionInTrash(string identifier)
@@ -283,9 +291,10 @@ namespace SIL.WritingSystems
 				// What to do?  Assume that the UI has already checked for existing, asked, and allowed the overwrite.
 				File.Delete(writingSystemFilePath); //!!! Should this be move to trash?
 			}
-			LdmlDataMapper adaptor = CreateLdmlAdaptor();
-			adaptor.Write(writingSystemFilePath, ws, oldData);
-
+			var ldmlDataMapper = new LdmlDataMapper();
+			ldmlDataMapper.Write(writingSystemFilePath, ws, oldData);
+			foreach (ICustomDataMapper customDataMapper in _customDataMappers)
+				customDataMapper.Write(ws);
 			ws.AcceptChanges();
 
 			if (ChangedIDs.Any(p => p.Value == ws.StoreID))

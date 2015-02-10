@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using SIL.WritingSystems.WindowsForms.WSTree;
@@ -43,20 +44,6 @@ namespace SIL.WritingSystems.WindowsForms
 			_writingSystemSetupView.BindToModel(_model);
 		}
 
-		// This method really gets in the way of good migration.
-		[Obsolete("Initialize the writing system repository, then call the constructor that takes an IWritingSystemRepository")]
-		public WritingSystemSetupDialog(
-			string writingSystemRepositoryPath,
-			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
-			Action<IEnumerable<WritingSystemRepositoryProblem>> loadProblemHandler
-		) : this(LdmlInFolderWritingSystemRepository.Initialize(
-			writingSystemRepositoryPath,
-			migrationHandler,
-			loadProblemHandler
-		))
-		{
-		}
-
 		public WritingSystemSetupDialog(IWritingSystemRepository repository)
 		{
 			InitializeComponent();
@@ -91,37 +78,25 @@ namespace SIL.WritingSystems.WindowsForms
 			}
 		}
 
-  internal class DummyWritingSystemHandler
+		internal class DummyWritingSystemHandler
+		{
+			public static void onMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
+			{
+			}
 
-  {
-
-	  public static void onMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
-
-	  {
-
-	  }
-
-
-
-	  public static void onLoadProblem(IEnumerable<WritingSystemRepositoryProblem> problems)
-
-	  {
-
-	  }
-
-
-
-  }
+			public static void onLoadProblem(IEnumerable<WritingSystemRepositoryProblem> problems)
+			{
+			}
+		}
 
 		private void _openDirectory_Click(object sender, EventArgs e)
 		{
-			FolderBrowserDialog openDir = new FolderBrowserDialog();
+			var openDir = new FolderBrowserDialog();
 
 			openDir.RootFolder = Environment.SpecialFolder.Personal;
 
 			// Set the help text description for the FolderBrowserDialog.
-			openDir.Description =
-			"Select the folder with Writing Systems";
+			openDir.Description = "Select the folder with Writing Systems";
 
 			// Allow the user to create new files via the FolderBrowserDialog.
 			openDir.ShowNewFolderButton = true;
@@ -131,9 +106,12 @@ namespace SIL.WritingSystems.WindowsForms
 
 			if (result == DialogResult.OK)
 			{
-				var newDir = openDir.SelectedPath;
+				string newDir = openDir.SelectedPath;
+				var ldmlRepo = _model.WritingSystems as LdmlInFolderWritingSystemRepository;
+				IEnumerable<ICustomDataMapper> customDataMappers = ldmlRepo != null ? ldmlRepo.CustomDataMappers : Enumerable.Empty<ICustomDataMapper>();
 
-				var repository = LdmlInFolderWritingSystemRepository.Initialize(newDir,
+				LdmlInFolderWritingSystemRepository repository = LdmlInFolderWritingSystemRepository.Initialize(newDir,
+					customDataMappers,
 					DummyWritingSystemHandler.onMigration,
 					DummyWritingSystemHandler.onLoadProblem);
 				var dlg = new WritingSystemSetupDialog(repository);

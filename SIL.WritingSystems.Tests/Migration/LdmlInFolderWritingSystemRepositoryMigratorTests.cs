@@ -92,7 +92,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				const string fileName = "en-Zxxx-x-audio.ldml";
 				environment.WriteLdmlFile(fileName, LdmlContentForTests.Version0("en", "Zxxx", "", "x-audio"));
 
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 
 				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, environment.GetFileVersion(fileName));
@@ -107,7 +107,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				environment.WriteLdmlFile("en-Zxxx-x-audio.ldml", LdmlContentForTests.Version0("en", "Zxxx", "", "x-audio"));
 				environment.WriteLdmlFile("en-x-audio.ldml", LdmlContentForTests.Version0("en", "", "", "x-audio"));
 
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 
 				Assert.True(File.Exists(environment.MappedFilePath("en-Zxxx-x-audio.ldml")));
@@ -130,7 +130,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				environment.WriteLdmlFile("en-Zxxx-x-audio.ldml", LdmlContentForTests.Version0("en", "Zxxx", "", "x-audio"));
 				environment.WriteLdmlFile("en-x-audio.ldml", LdmlContentForTests.Version0("eN", "", "", "x-AuDio"));
 
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 
 				Assert.True(File.Exists(environment.MappedFilePath("en-Zxxx-x-audio.ldml")));
@@ -152,7 +152,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				environment.WriteLdmlFile("bogus.ldml", LdmlContentForTests.Version0("eN", "ZxXx", "", "x-AuDio"));
 				environment.WriteLdmlFile("en-Zxxx-x-audio.ldml", LdmlContentForTests.Version0("en", "", "", "x-audio"));
 
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 
 				Assert.True(File.Exists(environment.MappedFilePath("bogus.ldml")));
@@ -175,7 +175,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				environment.WriteLdmlFile("bogus1.ldml", LdmlContentForTests.Version0("en", "", "", "x-audio"));
 				environment.WriteLdmlFile("bogus2.ldml", LdmlContentForTests.Version0("en-x-audio", "", "", ""));
 
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 
 				Assert.True(File.Exists(environment.MappedFilePath("bogus.ldml")));
@@ -211,7 +211,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				environment.WriteLdmlFile("bogus3.ldml", LdmlContentForTests.Version0("zh", "", "CN", ""));
 				environment.WriteLdmlFile("bogus4.ldml", LdmlContentForTests.Version0("cmn", "", "", ""));
 
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 
 				AssertMigrationInfoContains(environment.MigrationInfo, "de-bogus-stuff", "de-Qaaa-QM-x-bogus-stuff");
@@ -233,7 +233,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-fonipa", "","",""));
 
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
@@ -247,7 +247,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-fonipa-x-etic", "", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='fonipa-x-etic']");
@@ -260,7 +260,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en", "", "", "biske-bogus-bauddha"));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='biske-bauddha-x-bogus']");
@@ -274,7 +274,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-fonipa-x-emic", "", "", ""));
 
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
@@ -289,7 +289,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-x-audio",String.Empty,String.Empty,String.Empty));
 
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-audio']");
@@ -302,7 +302,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-x-audio", "Latn", String.Empty, String.Empty));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Zxxx']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-audio-Latn']");
@@ -315,7 +315,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-x-audio", "Zxxx", String.Empty, String.Empty));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Zxxx']");
@@ -330,7 +330,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-Latn", String.Empty, String.Empty, String.Empty));
 
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
@@ -345,7 +345,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-US", String.Empty, String.Empty, String.Empty));
 
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
@@ -359,7 +359,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-1901", String.Empty, String.Empty, String.Empty));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='1901']");
@@ -372,7 +372,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-x-audio", String.Empty, String.Empty, "x-test"));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-audio-test']");
@@ -385,7 +385,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-bogus-stuff", String.Empty, String.Empty, String.Empty));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus-stuff']");
@@ -398,7 +398,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("bogus-en-audio-de-bogus2-x-", "", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
 			}
@@ -410,7 +410,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("bogus-en-audio-tpi-bogus2-x-", "", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus-audio-bogus2-tpi']");
 			}
@@ -422,7 +422,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("", "bogus-stuff", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Qaaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus-stuff']");
@@ -435,7 +435,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en", "Latn", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Latn']");
 			}
@@ -447,7 +447,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("", "x-bogus-Latn-test-Zxxx-bogus2-x-", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Latn']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus-test-bogus2-Zxxx']");
@@ -460,7 +460,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("", "x-bogus-Latn-audio-Afak-bogus2-x-", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Zxxx']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus-audio-bogus2-Afak-Latn']");
@@ -481,7 +481,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("bogus-stuff", "more-bogus", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Qaaa']");
@@ -495,7 +495,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("qaa", "", "bogus-stuff", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='QM']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus-stuff']");
@@ -508,7 +508,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en", "", "DE", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='DE']");
@@ -521,7 +521,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("", "", "", "bogus-stuff"));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus-stuff']");
 			}
@@ -533,7 +533,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-bogus", "", "", "x-BoGuS-stuff"));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus-stuff']");
@@ -546,7 +546,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en", "Zxxx-zxXX", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Zxxx']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-zxXX']");
@@ -559,7 +559,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en", "", "Us-US", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='Us']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-US']");
@@ -572,7 +572,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en", "", "", "biske-BiSKe"));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='biske-x-BiSKe']");
 			}
@@ -584,7 +584,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("de", "", "DE", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='de']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='DE']");
@@ -598,7 +598,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-En", "", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-En']");
@@ -611,7 +611,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("bogus-stuff", "", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus-stuff']");
@@ -624,7 +624,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en", "", "", "x-bogusstuffistolong"));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogusstu']");
@@ -637,7 +637,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("bogus", "", "", "x-bogus"));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus']");
@@ -650,7 +650,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("", "bogus-stuff", "", "x-bogus"));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Qaaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus-stuff']");
@@ -663,7 +663,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("", "", "bogus-stuff", "x-bogus"));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='QM']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus-stuff']");
@@ -676,7 +676,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("", "", "", "bogus-stuff-x-bogus"));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus-stuff']");
 			}
@@ -884,7 +884,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0WithLdmlInfoWeDontCareAbout("","","",""));
 
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
@@ -939,7 +939,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var wsV0 = new WritingSystemDefinitionV0();
 				new LdmlAdaptorV0().Read(environment.FilePath("test.ldml"), wsV0);
 
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 
 				var wsV3 = new WritingSystemDefinitionV3();
@@ -962,7 +962,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var wsV0 = new WritingSystemDefinitionV0();
 				new LdmlAdaptorV0().Read(environment.FilePath("test.ldml"), wsV0);
 
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 
 				var wsV3 = new WritingSystemDefinitionV3();
@@ -983,7 +983,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var wsV0 = new WritingSystemDefinitionV0();
 				new LdmlAdaptorV0().Read(environment.FilePath("test.ldml"), wsV0);
 
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 
 				var wsV3 = new WritingSystemDefinitionV3();
@@ -1004,7 +1004,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var wsV0 = new WritingSystemDefinitionV0();
 				new LdmlAdaptorV0().Read(environment.FilePath("test.ldml"), wsV0);
 
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 
 				var wsV3 = new WritingSystemDefinitionV3();
@@ -1054,7 +1054,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				new LdmlAdaptorV0().Read(environment.FilePath("test.ldml"), wsV0);
 				DateTime dateBeforeMigration = wsV0.DateModified;
 
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 
 				var wsV3= new WritingSystemDefinitionV3();
@@ -1070,7 +1070,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version99Default());
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				Assert.Throws<InvalidOperationException>(migrator.Migrate);
 			}
 		}
@@ -1110,7 +1110,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.EnglishVersion(0));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				var versionGetter = new WritingSystemLdmlVersionGetter();
 				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, versionGetter.GetFileVersion(environment.MappedFilePath("test.ldml")));
@@ -1157,7 +1157,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-x-a-x-b", "","",""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-a-b']");
@@ -1170,7 +1170,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("x-en.ldml", LdmlContentForTests.Version0("x-en", "", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("x-en.ldml"), "/ldml/identity/language[@type='qaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("x-en.ldml"), "/ldml/identity/variant[@type='x-en']");
@@ -1183,7 +1183,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("", "x-Latn-x-test", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Latn']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-test']");
@@ -1196,7 +1196,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("", "x-latn", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='latn']");
 			}
@@ -1208,7 +1208,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("", "", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
 			}
@@ -1220,7 +1220,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-x-", "", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
 			}
@@ -1232,7 +1232,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("", "Latn-x-", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Latn']");
 			}
@@ -1245,7 +1245,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("", "", "US-x-", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='US']");
 			}
@@ -1258,7 +1258,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("", "", "", "x-bogus-x-"));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-bogus']");
 			}
@@ -1270,7 +1270,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("de-e...n", "", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='de']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-en']");
@@ -1283,7 +1283,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("", "Z._x!x%x-Latn", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Latn']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-Zxxx']");
@@ -1296,7 +1296,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en", "", "U.!$%^S-gb", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='gb']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-US']");
@@ -1309,7 +1309,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en", "", "", "b*is^k_e-1901"));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='1901-x-biske']");
 			}
@@ -1321,7 +1321,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en", "", "", "x-t@#$e_st-hi"));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-test-hi']");
 			}
@@ -1333,7 +1333,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("!@$#-x-", "(*^%$-x-@#%-x", "x-@^**__", "x-@#$-x-_-x-x-"));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
 				AssertLdmlHasNoXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script");
@@ -1348,7 +1348,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("DE", "","",""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='DE']");
 				AssertLdmlHasNoXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script");
@@ -1363,7 +1363,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("de-DE", "", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='de']");
 				AssertLdmlHasNoXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script");
@@ -1378,7 +1378,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("de-de", "", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='de']");
 				AssertLdmlHasNoXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script");
@@ -1393,7 +1393,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-Zxxx", "", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Zxxx']");
@@ -1407,7 +1407,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en", "", "", "Zxxx"));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Zxxx']");
@@ -1422,7 +1422,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en", "", "", ""));
 
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 
 				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, environment.GetFileVersion(environment.MappedFilePath("test.ldml")));
@@ -1434,7 +1434,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		{
 			using (var environment = new TestEnvironment())
 			{
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 
 				Assert.AreEqual(0, Directory.GetFiles(environment.LdmlPath).Length);
@@ -1448,7 +1448,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en", "", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(), environment.OnMigrateCallback);
 				migrator.Migrate();
 
 				Assert.AreEqual(1, Directory.GetFiles(environment.LdmlPath).Length);
@@ -1503,7 +1503,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			{
 				environment.WriteLdmlFile("en-bogus.ldml",
 										  LdmlContentForTests.Version0("en-bogus", "", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath,
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(),
 																			   environment.OnMigrateCallback);
 				migrator.Migrate();
 				string idChangeLogFilePath = Path.Combine(environment.LdmlPath, "idchangelog.xml");
@@ -1518,7 +1518,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			{
 				environment.WriteLdmlFile("en.ldml",
 										  LdmlContentForTests.Version0("en", "", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath,
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, Enumerable.Empty<ICustomDataMapper>(),
 																			   environment.OnMigrateCallback);
 				migrator.Migrate();
 				string idChangeLogFilePath = Path.Combine(environment.LdmlPath, "idchangelog.xml");

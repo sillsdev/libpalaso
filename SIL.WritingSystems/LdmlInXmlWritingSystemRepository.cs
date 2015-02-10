@@ -26,8 +26,8 @@ namespace SIL.WritingSystems
 			xmlWriter.WriteStartElement("writingsystems");
 			foreach (WritingSystemDefinition ws in AllWritingSystems)
 			{
-				LdmlDataMapper adaptor = CreateLdmlAdaptor();
-				adaptor.Write(xmlWriter, ws, null);
+				var ldmlDataMapper = new LdmlDataMapper();
+				ldmlDataMapper.Write(xmlWriter, ws, null);
 			}
 			xmlWriter.WriteEndElement();
 			//delete anything we're going to delete first, to prevent loosing
@@ -43,12 +43,12 @@ namespace SIL.WritingSystems
 			var xpDoc = new XPathDocument(new StreamReader(filePath));
 			XPathNavigator xpNav = xpDoc.CreateNavigator();
 			XPathNodeIterator nodes = xpNav.Select("//writingsystems/ldml");
-			LdmlDataMapper adaptor = CreateLdmlAdaptor();
+			var ldmlDataMapper = new LdmlDataMapper();
 			foreach (XPathNavigator nav in nodes)
 			{
 				WritingSystemDefinition ws = CreateNew();
 				XmlReader xmlReader = nav.ReadSubtree();
-				adaptor.Read(xmlReader, ws);
+				ldmlDataMapper.Read(xmlReader, ws);
 				ws.StoreID = ws.LanguageTag;
 				Set(ws);
 			}
@@ -59,14 +59,14 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public void LoadAllDefinitions(XmlReader xmlReader)
 		{
-			LdmlDataMapper adaptor = CreateLdmlAdaptor();
+			var ldmlDataMapper = new LdmlDataMapper();
 			// Check the current node, it should be 'writingsystems'
 			if ("writingsystems" == xmlReader.Name)
 			{
 				while (xmlReader.ReadToFollowing("ldml"))
 				{
 					WritingSystemDefinition ws = CreateNew();
-					adaptor.Read(xmlReader.ReadSubtree(), ws);
+					ldmlDataMapper.Read(xmlReader.ReadSubtree(), ws);
 					ws.StoreID = ws.LanguageTag;
 					Set(ws);
 				}

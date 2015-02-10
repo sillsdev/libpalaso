@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
-using Palaso.Code;
+using System.Linq;
 using Palaso.IO;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
@@ -12,9 +13,9 @@ namespace SIL.WritingSystems.Migration
 	/// it leaves the older versions behind for apps that may be running older versions of the palaso library.
 	/// Note that the migrator does not continue to harvest data from older versions of the library.
 	///</summary>
-	public class GlobalWritingSystemRepositoryMigrator
+	public class GlobalWritingSystemRepositoryMigrator : LdmlInFolderWritingSystemRepositoryMigrator
 	{
-		private readonly LdmlVersion0MigrationStrategy.MigrationHandler _migrationHandler;
+		private readonly string _basePath;
 
 		///<summary>
 		/// Initializes the migrator with the given basePath (i.e. excluding the version), and a callback
@@ -22,13 +23,10 @@ namespace SIL.WritingSystems.Migration
 		/// should ensure that all writing systems tags they store are updated accordingly when the callback
 		/// is called.
 		///</summary>
-		///<param name="basePath"></param>
-		///<param name="migrationHandler"></param>
 		public GlobalWritingSystemRepositoryMigrator(string basePath, LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler)
+			: base(Path.Combine(basePath, WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString(CultureInfo.InvariantCulture)), Enumerable.Empty<ICustomDataMapper>(), migrationHandler)
 		{
-			Guard.AgainstNull(migrationHandler, "migrationHandler must be set");
-			_migrationHandler = migrationHandler;
-			BasePath = basePath;
+			_basePath = basePath;
 		}
 
 		///<summary>
@@ -37,8 +35,7 @@ namespace SIL.WritingSystems.Migration
 		///<returns></returns>
 		public bool NeedsMigration()
 		{
-			string currentVersionPath = VersionPath(WritingSystemDefinition.LatestWritingSystemDefinitionVersion);
-			return !Directory.Exists(currentVersionPath);
+			return !Directory.Exists(SourcePath);
 		}
 
 		///<summary>
@@ -46,28 +43,27 @@ namespace SIL.WritingSystems.Migration
 		/// ldml is harvested from older versions of the library, or the older flex location.
 		/// If both old palaso, and flex locations have the same ldml file the flex version is preferred.
 		///</summary>
-		public void Migrate()
+		public override void Migrate()
 		{
 			// Progress through our options backwards.
 			// General strategy is to copy the entire folder to the appropriate VersionPath and then migrate it,
 			// leaving the old version behind for apps possibly using an older palaso lib to still use.
 
 			// 1) Migrate the current folder forwards if it exists
-			string currentVersionPath = VersionPath(WritingSystemDefinition.LatestWritingSystemDefinitionVersion);
-			if (Directory.Exists(currentVersionPath))
+			if (Directory.Exists(SourcePath))
 			{
-				MigrateLdmlInFolder();
+				base.Migrate();
 				return;
 			}
 
 			// 2) Harvest any older ldml in %CommonApplicationData% (c:\ProgramData\SIL\WritingSystemRepository\N on win 7)
 			for (int version = WritingSystemDefinition.LatestWritingSystemDefinitionVersion - 1; version >= 0; --version)
 			{
-				string sourceVersionPath = VersionPath(version);
+				string sourceVersionPath = Path.Combine(_basePath, version.ToString(CultureInfo.InvariantCulture));
 				if (Directory.Exists(sourceVersionPath))
 				{
 					CopyLdmlFromFolder(sourceVersionPath);
-					MigrateLdmlInFolder();
+					base.Migrate();
 					return;
 				}
 			}
@@ -92,21 +88,14 @@ namespace SIL.WritingSystems.Migration
 				{
 				}
 			}
-			if (haveLdmlToCopy)
-			{
-				MigrateLdmlInFolder();
-			}
-		}
 
-		private void MigrateLdmlInFolder()
-		{
-			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(CurrentVersionPath, _migrationHandler, WritingSystemCompatibility.Strict);
-			migrator.Migrate();
+			if (haveLdmlToCopy)
+				base.Migrate();
 		}
 
 		private void CopyLdmlFromFolder(string sourcePath)
 		{
-			DirectoryUtilities.CopyDirectoryWithException(sourcePath, CurrentVersionPath);
+			DirectoryUtilities.CopyDirectoryWithException(sourcePath, SourcePath);
 		}
 
 		///<summary>
@@ -135,30 +124,6 @@ namespace SIL.WritingSystems.Migration
 					Directory.CreateDirectory(result);
 				return result;
 			}
-		}
-
-		///<summary>
-		/// The base path (i.e. excluding the version) to the global writing system store.
-		///</summary>
-		public string BasePath { get; private set; }
-
-		///<summary>
-		/// Returns the versioned path to the global writing system store (i.e. including the version).
-		///</summary>
-		///<param name="version"></param>
-		///<returns></returns>
-		public string VersionPath(int version)
-		{
-			return Path.Combine(BasePath, version.ToString());
-		}
-
-		///<summary>
-		/// Returns the versioned path to the current global writing system store.
-		///</summary>
-		///<returns></returns>
-		public string CurrentVersionPath
-		{
-			get { return VersionPath(WritingSystemDefinition.LatestWritingSystemDefinitionVersion); }
 		}
 	}
 }
