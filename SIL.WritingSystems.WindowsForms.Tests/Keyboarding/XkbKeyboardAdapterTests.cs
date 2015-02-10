@@ -376,7 +376,8 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardUSA };
 
-			KeyboardController.Initialize(new XkbKeyboardAdaptor(new XklEngineResponder()));
+			var adaptor = new XkbKeyboardAdaptor(new XklEngineResponder());
+			KeyboardController.Initialize(adaptor);
 			adaptor.ActivateKeyboard(KeyboardController.Instance.Keyboards.First());
 			KeyboardController.Shutdown();
 		}
@@ -389,11 +390,13 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardUSA };
 
-			KeyboardController.Initialize(new XkbKeyboardAdaptor(new XklEngineResponder()));
+			var adaptor = new XkbKeyboardAdaptor(new XklEngineResponder());
+			KeyboardController.Initialize(adaptor);
 			adaptor.ActivateKeyboard(KeyboardController.Instance.Keyboards.First());
 			KeyboardController.Shutdown();
 
-			KeyboardController.Initialize(new XkbKeyboardAdaptor(new XklEngineResponder()));
+			adaptor = new XkbKeyboardAdaptor(new XklEngineResponder());
+			KeyboardController.Initialize(adaptor);
 			adaptor.ActivateKeyboard(KeyboardController.Instance.Keyboards.First());
 			KeyboardController.Shutdown();
 		}
