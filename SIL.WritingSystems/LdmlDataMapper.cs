@@ -32,6 +32,7 @@ namespace SIL.WritingSystems
 #if WS_FIX
 		private WritingSystemCompatibility _compatibilityMode;
 #endif
+		private static readonly XNamespace Palaso = "urn://palaso.org/ldmlExtensions/v1";
 		private static readonly XNamespace Sil = "urn://www.sil.org/ldml/0.1";
 
 		/// <summary>
@@ -316,6 +317,27 @@ namespace SIL.WritingSystems
 				ReadSpellcheckElement(externalResourcesElem, ws);
 				ReadKeyboardElement(externalResourcesElem, ws);
 			}
+
+			// Flag invalid versions (0-2 inclusive) from reading legacy LDML files
+			// We're intentionally not using WritingSystemLDmlVerisonGetter and the
+			// cheeck for Flex7V0Compatible because the migrator will have handled that.
+			if (!string.IsNullOrEmpty((string)specialElem.Attribute(XNamespace.Xmlns + "palaso")))
+			{
+				string version = "0";
+				// Palaso namespace
+				XElement versionElem = specialElem.Element(Palaso + "version");
+				if (versionElem != null)
+				{
+					version = (string)versionElem.Attribute("value");
+					version = string.IsNullOrEmpty(version) ? "0" : version;
+				}
+				throw new ApplicationException(String.Format(
+					"The LDML tag '{0}' is version {1}.  Version {2} was expected.",
+					ws.LanguageTag,
+					version,
+					WritingSystemDefinition.LatestWritingSystemDefinitionVersion
+					));
+			}
 		}
 
 		private void ReadFontElement(XElement externalResourcesElem, WritingSystemDefinition ws)
@@ -445,7 +467,7 @@ namespace SIL.WritingSystems
 			string region = identityElem.GetAttributeValue("territory", "type");
 			string variant = identityElem.GetAttributeValue("variant", "type");
 
-			if ((language.StartsWith("x-", StringComparison.OrdinalIgnoreCase) || language.Equals("x", StringComparison.OrdinalIgnoreCase)))
+			if (!string.IsNullOrEmpty(language) && (language.StartsWith("x-", StringComparison.OrdinalIgnoreCase) || language.Equals("x", StringComparison.OrdinalIgnoreCase)))
 			{
 				var flexRfcTagInterpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 				flexRfcTagInterpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, region, variant);
@@ -590,8 +612,15 @@ namespace SIL.WritingSystems
 			// are top-to-bottom characters and right-to-left lines, but can also be written with
 			// left-to-right characters and top-to-bottom lines.
 			//Debug.Assert(layoutElem.NodeType == XmlNodeType.Element && layoutElem.Name == "layout");
-			string characterOrder = layoutElem.GetAttributeValue("orientation", "characterOrder");
-			ws.RightToLeftScript = (characterOrder == "right-to-left");
+			XElement orientationElem = layoutElem.Element("orientation");
+			if (orientationElem != null)
+			{
+				XElement characterOrderElem = orientationElem.Element("characterOrder");
+				if (characterOrderElem != null)
+				{
+					ws.RightToLeftScript = ((string)characterOrderElem == "right-to-left");
+				}
+			}
 		}
 
 		// Numbering system gets added to the character set definition

@@ -338,7 +338,7 @@ namespace SIL.WritingSystems.Tests
 										   environment.GetPathForWsId(ws2.LanguageTag));
 				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath("ldml/identity/variant[@type='x-piglatin']");
 
-				// Add this back when Abbreviation is written to application-specific namespace
+				// TODO: Add this back when Abbreviation is written to application-specific namespace
 #if WS_FIX
 				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath("ldml/special/palaso:abbreviation[@value='bl']",
 																	  environment.NamespaceManager);
@@ -361,6 +361,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+		// TODO: Add this when DefaultFontName is written to application-specific
 #if WS_FIX
 		[Test]
 		public void CanSaveAndReadDefaultFont()
@@ -378,9 +379,8 @@ namespace SIL.WritingSystems.Tests
 		}
 #endif
 
-#if WS_FIX
 		[Test]
-		public void CanSaveAndReadKeyboardName()
+		public void CanSaveAndReadKeyboardId()
 		{
 			using (var environment = new TestEnvironment())
 			{
@@ -392,7 +392,7 @@ namespace SIL.WritingSystems.Tests
 
 				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
 				WritingSystemDefinition ws2 = newCollection.Get("en");
-				Assert.AreEqual("Thai", ws2.KnownKeyboards[0].Name);
+				Assert.AreEqual("Thai", ws2.KnownKeyboards[0].Id);
 			}
 		}
 
@@ -412,8 +412,8 @@ namespace SIL.WritingSystems.Tests
 				Assert.IsTrue(ws2.RightToLeftScript);
 			}
 		}
-#endif
 
+		// TODO: Does IsUnicodeEncoded go away or get put in application-specific?
 #if WS_FIX
 		[Test]
 		public void CanSaveAndReadIsUnicode()
@@ -464,6 +464,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+		// TODO: Abbreviation to go in application-specific
 #if WS_FIX
 		[Test]
 		public void CanRemoveAbbreviation()
@@ -486,7 +487,6 @@ namespace SIL.WritingSystems.Tests
 				);
 			}
 		}
-#endif
 
 		[Test]
 		public void WritesAbbreviationToLdml()
@@ -497,12 +497,11 @@ namespace SIL.WritingSystems.Tests
 				environment.WritingSystem.Language = "en";
 				environment.WritingSystem.Abbreviation = "bl";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-#if WS_FIX
 				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.LanguageTag)).HasAtLeastOneMatchForXpath(
 					"ldml/special/palaso:abbreviation[@value='bl']", environment.NamespaceManager);
-#endif
 			}
 		}
+#endif
 
 		[Test]
 		public void CanDeleteFileThatIsNotInTrash()
@@ -704,6 +703,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+		// TODO: Add when migrating FlexPrivateUse
 #if WS_FIX
 		[Test]
 		public void Set_WritingSystemWasLoadedFromFlexPrivateUseLdmlAndRearranged_DoesNotChangeFileName()
@@ -821,7 +821,7 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			{
 				var pathToFlexprivateUseLdml = Path.Combine(environment.TestPath, "x-Zxxx-x-audio.ldml");
-				File.WriteAllText(pathToFlexprivateUseLdml, LdmlContentForTests.Version2("xh", "", "", ""));
+				File.WriteAllText(pathToFlexprivateUseLdml, LdmlContentForTests.Version3("xh", "", "", ""));
 				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
 				Assert.That(File.Exists(Path.Combine(environment.TestPath, "xh.ldml")));
 			}
@@ -1029,7 +1029,6 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-#if WS_FIX
 		[Test]
 		public void LoadAllDefinitions_LDMLV0_HasExpectedProblem()
 		{
@@ -1074,7 +1073,6 @@ namespace SIL.WritingSystems.Tests
 				);
 			}
 		}
-#endif
 
 		private static bool ContainsLanguageWithName(IEnumerable<WritingSystemDefinition> list, string name)
 		{

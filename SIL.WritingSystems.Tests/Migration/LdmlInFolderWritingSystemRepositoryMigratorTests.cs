@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Xml;
 using NUnit.Framework;
 using Palaso.TestUtilities;
@@ -34,6 +33,12 @@ namespace SIL.WritingSystems.Tests.Migration
 			{
 				string filePath = Path.Combine(FolderContainingLdml.Path, fileName);
 				File.WriteAllText(filePath, contentToWrite);
+			}
+
+			public void ReadLdmlFile(string filePath, WritingSystemDefinition ws)
+			{
+				var adaptor = new LdmlDataMapper();
+				adaptor.Read(filePath, ws);
 			}
 
 			public void OnMigrateCallback(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
@@ -677,6 +682,191 @@ namespace SIL.WritingSystems.Tests.Migration
 			}
 		}
 
+		#region FlexPrivateUseWritingSystem
+		[Test]
+		public void Migrate_OriginalWasFlexPrivateUseWritingSystemButNowChangedLanguage_IdentityElementChangedToPalasoWay()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("x-en", "", "", ""));
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-en']");
+				var ws = new WritingSystemDefinition();
+				environment.ReadLdmlFile(environment.MappedFilePath("test.ldml"), ws);
+				ws.Language = "de";
+				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.LanguageTag));
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='de']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='']");
+			}
+		}
+
+		[Test]
+		public void Migrate_OriginalWasFlexPrivateUseWritingSystemButNowChangedScript_IdentityElementChangedToPalasoWay()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("x-en", "Zxxx", "", ""));
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Zxxx']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-en']");
+				var ws = new WritingSystemDefinition();
+				environment.ReadLdmlFile(environment.MappedFilePath("test.ldml"), ws);
+				ws.Script = "Latn";
+				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.LanguageTag));
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Latn']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-en']");
+			}
+		}
+
+		[Test]
+		public void Migrate_OriginalWasFlexPrivateUseWritingSystemButNowChangedRegion_IdentityElementChangedToPalasoWay()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("x-en", "", "US", ""));
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='US']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-en']");
+				var ws = new WritingSystemDefinition();
+				environment.ReadLdmlFile(environment.MappedFilePath("test.ldml"), ws);
+				ws.Region = "GB";
+				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.LanguageTag));
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='GB']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-en']");
+			}
+		}
+
+		[Test]
+		public void Migrate_OriginalWasFlexPrivateUseWritingSystemButNowChangedVariant_IdentityElementChangedToPalasoWay()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("x-en", "", "", "fonipa"));
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='fonipa-x-en']");
+				var ws = new WritingSystemDefinition();
+				environment.ReadLdmlFile(environment.MappedFilePath("test.ldml"), ws);
+				ws.Variants.Clear();
+				ws.Variants.Add("1901");
+				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.LanguageTag));
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='1901-x-en']");
+			}
+		}
+
+		[Test]
+		public void Migrate_OriginalWasFlexPrivateUseWritingSystemButNowChangedPrivateUse_IdentityElementChangedToPalasoWay()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("x-en", "", "", "x-private"));
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-en-private']");
+				var ws = new WritingSystemDefinition();
+				environment.ReadLdmlFile(environment.MappedFilePath("test.ldml"), ws);
+				ws.Variants.Clear();
+				ws.Variants.Add("changed");
+				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.LanguageTag));
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-en-changed']");
+			}
+		}
+
+		[Test]
+		public void Migrate_LdmlIsFlexPrivateUseFormatLanguageAndVariantArePopulated_PrivateUseLanguageMovedToPrivateUse()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("x-en", "", "", "fonipa"));
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='fonipa-x-en']");
+			}
+		}
+
+		[Test]
+		public void Migrate_LdmlIsFlexPrivateUseFormatLanguageAndPrivateUseIsPopulated_LanguageTagIsMovedAndIsFirstInPrivateUse()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("x-en", "", "", "x-private"));
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-en-private']");
+			}
+		}
+
+		[Test]
+		public void Migrate_FlexEntirelyPrivateUseLdmlContainingLanguageScriptRegionVariant_WritingSystemVariantIsConcatOfPrivateUseVariant()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("x-en", "Zxxx", "US", "1901-x-audio"));
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Zxxx']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='US']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='1901-x-en-audio']");
+			}
+		}
+
+		[Test]
+		public void Migrate_FlexEntirelyPrivateUseLdmlContainingLanguage_WritingSystemVariantIsLanguage()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("x-en", "", "", ""));
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-en']");
+			}
+		}
+
+		[Test]
+		public void Migrate_FlexEntirelyPrivateUseLdmlContainingLanguageScript_WritingSystemVariantIsLanguage()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("x-en", "Zxxx", "", ""));
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "ldml/identity/language[@type='qaa']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "ldml/identity/script[@type='Zxxx']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "ldml/identity/variant[@type='x-en']");
+			}
+		}
+
+		[Test]
+		public void Migrate_FlexEntirelyPrivateUseLdmlContainingLanguageRegion_WritingSystemVariantIdIsLanguage()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("x-en", "", "US", ""));
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "ldml/identity/language[@type='qaa']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "ldml/identity/territory[@type='US']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "ldml/identity/variant[@type='x-en']");
+			}
+		}
+#endregion
+
 		private static void AssertLdmlHasXpath(string filePath, string xPath)
 		{
 			AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath(xPath);
@@ -754,7 +944,7 @@ namespace SIL.WritingSystems.Tests.Migration
 
 				var wsV3 = new WritingSystemDefinitionV3();
 				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
-				var cdV3 = (CollationDefinition)wsV3.Collations.FirstOrDefault();
+				CollationDefinition cdV3 = wsV3.Collations.FirstOrDefault();
 				Assert.IsNullOrEmpty(wsV0.SortRules);
 				Assert.IsNullOrEmpty(cdV3.IcuRules);
 				Assert.That(cdV3.Type, Is.EqualTo("standard"));
@@ -819,7 +1009,7 @@ namespace SIL.WritingSystems.Tests.Migration
 
 				var wsV3 = new WritingSystemDefinitionV3();
 				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
-				var cdV3 = (CollationDefinition) (wsV3.Collations.FirstOrDefault());
+				CollationDefinition cdV3 = wsV3.Collations.FirstOrDefault();
 				Assert.AreEqual(wsV0.SortRules, cdV3.IcuRules);
 			}
 		}
@@ -919,7 +1109,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0English());
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.EnglishVersion(0));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 				var versionGetter = new WritingSystemLdmlVersionGetter();
@@ -1302,31 +1492,6 @@ namespace SIL.WritingSystems.Tests.Migration
 			}
 		}
 #endif
-		[Test]
-		public void Migrate_LdmlIsFlexPrivateUseFormatMigratorIsToldNotToroundTrip_FileIsUpdated()
-		{
-			using (var environment = new TestEnvironment())
-			{
-				var originalFilecontent = LdmlContentForTests.Version0("x-en", "Zxxx", "US", "1901-x-audio");
-				environment.WriteLdmlFile("test.ldml", originalFilecontent);
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback, WritingSystemCompatibility.Strict);
-				migrator.Migrate();
-				AssertThatLdmlMatches("qaa", "Zxxx", "US", "1901-x-en-audio", environment.FilePath("qaa-Zxxx-US-1901-x-en-audio.ldml"));
-			}
-		}
-
-		[Test]
-		public void Migrate_LdmlIsFlexPrivateUseFormatDefaultMigrator_FileIsUpdated()
-		{
-			using (var environment = new TestEnvironment())
-			{
-				var originalFilecontent = LdmlContentForTests.Version0("x-en", "Zxxx", "US", "1901-x-audio");
-				environment.WriteLdmlFile("test.ldml", originalFilecontent);
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback, WritingSystemCompatibility.Strict);
-				migrator.Migrate();
-				AssertThatLdmlMatches("qaa", "Zxxx", "US", "1901-x-en-audio", environment.FilePath("qaa-Zxxx-US-1901-x-en-audio.ldml"));
-			}
-		}
 		#endregion
 
 		#region ChangeLog Tests
@@ -1363,22 +1528,5 @@ namespace SIL.WritingSystems.Tests.Migration
 
 		# endregion
 
-		private void AssertThatLdmlMatches(string language, string script, string territory, string variant, string filePath)
-		{
-			AssertThatIdentityElementisCorrectForContent("language", language, filePath);
-			AssertThatIdentityElementisCorrectForContent("script", script, filePath);
-			AssertThatIdentityElementisCorrectForContent("territory", territory, filePath);
-			AssertThatIdentityElementisCorrectForContent("variant", variant, filePath);
-		}
-
-		private static void AssertThatIdentityElementisCorrectForContent(string element, string content, string filePath)
-		{
-			if (String.IsNullOrEmpty(content) && element != "language")
-			{
-				AssertThatXmlIn.File(filePath).HasNoMatchForXpath(String.Format("/ldml/identity/{0}", element));
-				return;
-			}
-			AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath(String.Format("/ldml/identity/{0}[@type='{1}']", element, content));
-		}
 	}
 }

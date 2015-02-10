@@ -52,19 +52,6 @@ namespace SIL.WritingSystems.Tests.Migration
 	</special>
 </ldml>".Replace('\'', '"');
 
-// TODO: Where to put abbreviation {1} ?
-			public static readonly string LdmlV3 = @"<?xml version='1.0' encoding='utf-8'?>
-<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
-	<identity>
-		<version number='$Revision$'/>
-		<generation date='$Date$'/>
-		<language type='{0}'/>
-		<special>
-			<sil:identity />
-		</special>
-	</identity>
-</ldml>".Replace('\'', '"');
-
 			public TestEnvironment()
 			{
 				_palasoFileNames = Directory.GetFiles(GlobalWritingSystemRepositoryMigrator.PalasoLdmlPathPre0);

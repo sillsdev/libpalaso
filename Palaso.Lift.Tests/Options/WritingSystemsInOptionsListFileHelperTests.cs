@@ -204,7 +204,6 @@ namespace Palaso.Lift.Tests.Options
 			}
 		}
 
-#if WS_FIX
 		[Test]
 		//This test makes sure that existing Flex private use tags are not changed
 		public void CreateNonExistentWritingSystemsFoundInOptionsList_OptionsListFileContainsEntirelyPrivateUseRfcTagThatExistsInRepo_RfcTagIsNotMigrated()
@@ -220,7 +219,6 @@ namespace Palaso.Lift.Tests.Options
 				AssertThatXmlIn.File(e.PathToOptionsListFile).HasNoMatchForXpath("/optionsList/options/option/name/form[@lang='qaa-x-blah']");
 			}
 		}
-#endif
 
 		[Test]
 		public void CreateNonExistentWritingSystemsFoundInOptionsList_OptionsListFileContainsEntirelyPrivateUseRfcTagThatDoesNotExistInRepo_RfcTagIsMigrated()

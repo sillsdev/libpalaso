@@ -127,6 +127,7 @@
     <Compile Include="InheritedCollationDefinitionCloneableTests.cs" />
     <Compile Include="LdmlCollationParserTests.cs" />
     <Compile Include="Migration\IcuRulesParserTests.cs" />
+    <Compile Include="Migration\LdmlAdaptorV1Tests.cs" />
     <Compile Include="Migration\Rfc5646TagTests.cs" />
     <Compile Include="Migration\SilLdmlVerisonTests.cs" />
     <Compile Include="Migration\SubtagTests.cs" />

@@ -10,6 +10,7 @@ using Palaso.Data;
 using Palaso.IO;
 using Palaso.TestUtilities;
 using Palaso.Xml;
+using SIL.WritingSystems.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace SIL.WritingSystems.Tests
@@ -719,25 +720,30 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Read_LdmlContainsOnlyPrivateUse_IsoAndprivateUseSetCorrectly()
 		{
-			const string ldmlWithOnlyPrivateUse = "<ldml><identity><version number=\"\" /><language type=\"\" /><variant type=\"x-private-use\" /></identity><special xmlns:palaso=\"urn://palaso.org/ldmlExtensions/v1\" ><palaso:version value=\"2\" /></special></ldml>";
-
-
-			string pathToLdmlWithEmptyCollationElement = Path.GetTempFileName();
-			try
+			var adaptor = new LdmlDataMapper();
+			var wsFromLdml = new WritingSystemDefinition();
+			using (var tempFile = new TempFile())
 			{
-				File.WriteAllText(pathToLdmlWithEmptyCollationElement, ldmlWithOnlyPrivateUse);
-
-				var adaptor = new LdmlDataMapper();
-				var wsFromLdml = new WritingSystemDefinition();
-				adaptor.Read(pathToLdmlWithEmptyCollationElement, wsFromLdml);
-				var ws = new WritingSystemDefinition();
-				adaptor.Read(pathToLdmlWithEmptyCollationElement, ws);
+				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
+				{
+					writer.Write(
+#region filecontent
+@"<?xml version='1.0' encoding='utf-8'?>
+<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
+	<identity>
+		<version number='$Revision$'/>
+		<generation date='$Date$'/>
+		<variant type='x-private-use'/>
+	</identity>
+	<special>
+		<sil:special />
+	</special>
+</ldml>".Replace("'", "\""));
+#endregion
+				}
+				adaptor.Read(tempFile.Path, wsFromLdml);
 				Assert.That(wsFromLdml.Language, Is.EqualTo((LanguageSubtag) "private"));
 				Assert.That(wsFromLdml.Variants, Is.EqualTo(new VariantSubtag[] {"use"}));
-			}
-			finally
-			{
-				File.Delete(pathToLdmlWithEmptyCollationElement);
 			}
 		}
 
@@ -850,6 +856,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+// Add these when FlexPrivateUseFormat is migrated
 #if WS_FIX
 		[Test]
 		public void WriteNoRoundTrip_LdmlIsFlexPrivateUseFormatLanguageOnly_LdmlIsChanged()
@@ -899,87 +906,14 @@ namespace SIL.WritingSystems.Tests
 		{
 			using (var file = new TempFile())
 			{
-				WriteVersion2Ldml("xh", "", "", "", file);
+				WriteCurrentVersionLdml("xh", "", "", "", file);
 				var adaptor = new LdmlDataMapper();
 				var ws = new WritingSystemDefinition();
 				adaptor.Read(file.Path, ws);
 				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path), true));
 				AssertThatLdmlMatches("xh", "", "", "", file);
-#if WS_FIX
-				AssertThatVersionIs(2, file);
-#endif
-			}
-		}
-
-		[Test]
-		public void Read_LdmlIsFlexPrivateUseFormatOnlyLanguageIsPopulated_WritingSystemHasDataInPrivateUse()
-		{
-			using (var file = new TempFile())
-			{
-				WriteVersion0Ldml("x-en", "", "", "", file);
-				var ws = new WritingSystemDefinition();
-				new LdmlDataMapper().Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), null, null, Enumerable.Empty<VariantSubtag>());
-			}
-		}
-
-		[Test]
-		public void Read_LdmlIsFlexPrivateUseFormatLanguageAndScriptArePopulated_PrivateUseLanguageMovedToPrivateUse()
-		{
-			using (var file = new TempFile())
-			{
-				WriteVersion0Ldml("x-en", "Zxxx", "", "", file);
-				var ws = new WritingSystemDefinition();
-				new LdmlDataMapper().Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), "Zxxx", null, Enumerable.Empty<VariantSubtag>());
-			}
-		}
-
-		[Test]
-		public void Read_LdmlIsFlexPrivateUseFormatLanguageAndTerritoryArePopulated_PrivateUseLanguageMovedToPrivateUse()
-		{
-			using (var file = new TempFile())
-			{
-				WriteVersion0Ldml("x-en", "", "US", "", file);
-				var ws = new WritingSystemDefinition();
-				new LdmlDataMapper().Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), null, "US", Enumerable.Empty<VariantSubtag>());
-			}
-		}
-
-		[Test]
-		public void Read_LdmlIsFlexPrivateUseFormatLanguageAndVariantArePopulated_PrivateUseLanguageMovedToPrivateUse()
-		{
-			using (var file = new TempFile())
-			{
-				WriteVersion0Ldml("x-en", "", "", "fonipa", file);
-				var ws = new WritingSystemDefinition();
-				new LdmlDataMapper().Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), null, null, new VariantSubtag[] {"fonipa"});
-			}
-		}
-
-		[Test]
-		public void Read_LdmlIsFlexPrivateUseFormatAllFieldsArePopulated_PrivateUseLanguageMovedToPrivateUse()
-		{
-			using (var file = new TempFile())
-			{
-				WriteVersion0Ldml("x-en", "Zxxx", "US", "1901-x-audio", file);
-				var ws = new WritingSystemDefinition();
-				new LdmlDataMapper().Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), "Zxxx", "US", new VariantSubtag[] {"1901", "audio"});
-			}
-		}
-
-		[Test]
-		public void Read_LdmlIsFlexPrivateUseFormatLanguageAndPrivateUseIsPopulated_LanguageTagIsMovedAndIsFirstInPrivateUse()
-		{
-			using (var file = new TempFile())
-			{
-				WriteVersion0Ldml("x-en", "", "", "x-private", file);
-				var ws = new WritingSystemDefinition();
-				new LdmlDataMapper().Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), null, null, new VariantSubtag[] {"private"});
+				var versionReader = new WritingSystemLdmlVersionGetter();
+				Assert.That(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, Is.EqualTo(versionReader.GetFileVersion(file.Path)));
 			}
 		}
 
@@ -1097,190 +1031,19 @@ namespace SIL.WritingSystems.Tests
 		}
 #endif
 
-		[Test]
-		public void Write_OriginalWasFlexPrivateUseWritingSystemButNowChangedLanguage_IdentityElementChangedToPalasoWay()
-		{
-			using (var file = new TempFile())
-			{
-				WriteVersion0Ldml("x-en", "", "", "", file);
-				var ws = new WritingSystemDefinition();
-				var adaptor = new LdmlDataMapper();
-				adaptor.Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), null, null, Enumerable.Empty<VariantSubtag>());
-				ws.Language = "de";
-				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
-				AssertThatLdmlMatches("de", "", "", "", file);
-			}
-		}
-
-		[Test]
-		public void Write_OriginalWasFlexPrivateUseWritingSystemButNowChangedScript_IdentityElementChangedToPalasoWay()
-		{
-			using (var file = new TempFile())
-			{
-				WriteVersion0Ldml("x-en", "Zxxx", "", "", file);
-				var ws = new WritingSystemDefinition();
-				var adaptor = new LdmlDataMapper();
-				adaptor.Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), "Zxxx", null, Enumerable.Empty<VariantSubtag>());
-				ws.Script = "Latn";
-				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
-				AssertThatLdmlMatches("qaa", "Latn", "", "x-en", file);
-			}
-		}
-
-		[Test]
-		public void Write_OriginalWasFlexPrivateUseWritingSystemButNowChangedRegion_IdentityElementChangedToPalasoWay()
-		{
-			using (var file = new TempFile())
-			{
-				WriteVersion0Ldml("x-en", "", "US", "", file);
-				var ws = new WritingSystemDefinition();
-				var adaptor = new LdmlDataMapper();
-				adaptor.Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), null, "US", Enumerable.Empty<VariantSubtag>());
-				ws.Region = "GB";
-				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
-				AssertThatLdmlMatches("qaa", "", "GB", "x-en", file);
-			}
-		}
-
-		[Test]
-		public void Write_OriginalWasFlexPrivateUseWritingSystemButNowChangedVariant_IdentityElementChangedToPalasoWay()
-		{
-			using (var file = new TempFile())
-			{
-				WriteVersion0Ldml("x-en", "", "", "fonipa", file);
-				var ws = new WritingSystemDefinition();
-				var adaptor = new LdmlDataMapper();
-				adaptor.Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), null, null, new VariantSubtag[] {"fonipa"});
-				ws.Variants.Clear();
-				ws.Variants.Add("1901");
-				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
-				AssertThatLdmlMatches("qaa", "", "", "1901-x-en", file);
-			}
-		}
-
-		[Test]
-		public void Write_OriginalWasFlexPrivateUseWritingSystemButNowChangedPrivateUse_IdentityElementChangedToPalasoWay()
-		{
-			using (var file = new TempFile())
-			{
-				WriteVersion0Ldml("x-en", "", "", "x-private", file);
-				var ws = new WritingSystemDefinition();
-				var adaptor = new LdmlDataMapper();
-				adaptor.Read(file.Path, ws);
-				AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(ws, new LanguageSubtag("en", true), null, null, new VariantSubtag[] {"private"});
-				ws.Variants.Clear();
-				ws.Variants.Add("changed");
-				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path)));
-				AssertThatLdmlMatches("qaa", "", "", "x-en-changed", file);
-			}
-		}
-
-#if WS_FIX
-		[Test]
-		public void Read_ReadPrivateUseWsFromFieldWorksLdmlThenNormalLdmlMissingVersion1Element_Throws()
-		{
-			using (var badFlexLdml = new TempFile())
-			{
-				using (var version1Ldml = new TempFile())
-				{
-					WriteVersion0Ldml("x-en", "", "", "x-private", badFlexLdml);
-					WriteVersion0Ldml("en", "", "", "", version1Ldml);
-					var wsV1 = new WritingSystemDefinition();
-					var wsV0 = new WritingSystemDefinition();
-					var adaptor = new LdmlDataMapper();
-					adaptor.Read(badFlexLdml.Path, wsV0);
-					Assert.Throws<ApplicationException>(()=>adaptor.Read(version1Ldml.Path, wsV1));
-				}
-			}
-		}
-
-		[Test]
-		public void Write_WritePrivateUseWsFromFieldWorksLdmlThenNormalLdml_ContainsVersion1()
-		{
-			using (var badFlexLdml = new TempFile())
-			{
-				using (var version1Ldml = new TempFile())
-				{
-					var namespaceManager = new XmlNamespaceManager(new NameTable());
-					namespaceManager.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
-					WriteVersion0Ldml("x-en", "", "", "x-private", badFlexLdml);
-					var wsV0 = new WritingSystemDefinition();
-					var adaptor = new LdmlDataMapper();
-					adaptor.Read(badFlexLdml.Path, wsV0);
-					adaptor.Write(badFlexLdml.Path, wsV0, new MemoryStream(File.ReadAllBytes(badFlexLdml.Path)));
-					var wsV1 = new WritingSystemDefinition();
-					adaptor.Write(version1Ldml.Path, wsV1, null);
-					AssertThatVersionIs(2, version1Ldml);
-				}
-			}
-		}
-#endif
 
 		[Test]
 		public void Read_NonDescriptLdml_WritingSystemIdIsSameAsRfc5646Tag()
 		{
 			using (var file = new TempFile())
 			{
-				WriteVersion2Ldml("en", "Zxxx", "US", "1901-x-audio", file);
+				WriteCurrentVersionLdml("en", "Zxxx", "US", "1901-x-audio", file);
 				var ws = new WritingSystemDefinition();
 				new LdmlDataMapper().Read(file.Path, ws);
 				Assert.That(ws.Id, Is.EqualTo("en-Zxxx-US-1901-x-audio"));
 			}
 		}
 
-		[Test]
-		public void Read_FlexEntirelyPrivateUseLdmlContainingLanguageScriptRegionVariant_WritingSystemIdIsConcatOfLanguageScriptRegionVariant()
-		{
-			using (var file = new TempFile())
-			{
-				WriteVersion0Ldml("x-en", "Zxxx", "US", "1901-x-audio", file);
-				var ws = new WritingSystemDefinition();
-				new LdmlDataMapper().Read(file.Path, ws);
-				Assert.That(ws.Id, Is.EqualTo("x-en-Zxxx-US-1901-x-audio"));
-			}
-		}
-
-		[Test]
-		public void Read_FlexEntirelyPrivateUseLdmlContainingLanguage_WritingSystemIdIsLanguage()
-		{
-			using (var file = new TempFile())
-			{
-				WriteVersion0Ldml("x-en", "", "", "", file);
-				var ws = new WritingSystemDefinition();
-				new LdmlDataMapper().Read(file.Path, ws);
-				Assert.That(ws.Id, Is.EqualTo("x-en"));
-			}
-		}
-
-		[Test]
-		public void Read_FlexEntirelyPrivateUseLdmlContainingLanguageScript_WritingSystemIdIsConcatOfLanguageScript()
-		{
-			using (var file = new TempFile())
-			{
-				WriteVersion0Ldml("x-en", "Zxxx", "", "", file);
-				var ws = new WritingSystemDefinition();
-				new LdmlDataMapper().Read(file.Path, ws);
-				Assert.That(ws.Id, Is.EqualTo("x-en-Zxxx"));
-			}
-		}
-
-		[Test]
-		public void Read_FlexEntirelyPrivateUseLdmlContainingLanguageRegion_WritingSystemIdIsConcatOfLanguageRegion()
-		{
-			using (var file = new TempFile())
-			{
-				WriteVersion0Ldml("x-en", "", "US", "", file);
-				var ws = new WritingSystemDefinition();
-				new LdmlDataMapper().Read(file.Path, ws);
-				Assert.That(ws.Id, Is.EqualTo("x-en-US"));
-			}
-		}
-
-#if WS_FIX
 		[Test]
 		public void Read_V0Ldml_ThrowFriendlyException()
 		{
@@ -1296,7 +1059,23 @@ namespace SIL.WritingSystems.Tests
 										WritingSystemDefinition.LatestWritingSystemDefinitionVersion)));
 			}
 		}
-#endif
+
+		[Test]
+		public void Read_V1Ldml_ThrowFriendlyException()
+		{
+			using (var file = new TempFile())
+			{
+				// Note: Version 1 Ldml is written with Version 2
+				WriteVersion1Ldml("en", "", "", "", file);
+				var ws = new WritingSystemDefinition();
+				var dataMapper = new LdmlDataMapper();
+				Assert.That(() => dataMapper.Read(file.Path, ws),
+								Throws.Exception.TypeOf<ApplicationException>()
+										.With.Property("Message")
+										.EqualTo(String.Format("The LDML tag 'en' is version 2.  Version {0} was expected.",
+										WritingSystemDefinition.LatestWritingSystemDefinitionVersion)));
+			}
+		}
 
 		[Test]
 		public void RoundTrippingLdmlDoesNotDuplicateSections()
@@ -1366,12 +1145,19 @@ namespace SIL.WritingSystems.Tests
 			//using a writing system V0 here because the real writing system can't cope with the way
 			//flex encodes private-use language and shouldn't. But using a writing system + ldml adaptor
 			//is the quickest way to generate ldml so I'm using it here.
-			var ws = new WritingSystemDefinitionV0
-						 {ISO639 = language, Script = script, Region = territory, Variant = variant};
+			var ws = new WritingSystemDefinitionV0()
+				{ISO639 = language, Script = script, Region = territory, Variant = variant};
 			new LdmlAdaptorV0().Write(file.Path, ws, null);
 		}
 
-		private static void WriteVersion2Ldml(string language, string script, string territory, string variant, TempFile file)
+		private static void WriteVersion1Ldml(string language, string script, string territory, string variant, TempFile file)
+		{
+			var ws = new WritingSystemDefinitionV1();
+			ws.SetAllComponents(language, script, territory, variant);
+			new LdmlAdaptorV1().Write(file.Path, ws, null);
+		}
+
+		private static void WriteCurrentVersionLdml(string language, string script, string territory, string variant, TempFile file)
 		{
 			var ws = new WritingSystemDefinition();
 			ws.SetAllComponents(language, script, territory, variant);
@@ -1394,22 +1180,6 @@ namespace SIL.WritingSystems.Tests
 				return;
 			}
 			AssertThatXmlIn.File(file.Path).HasAtLeastOneMatchForXpath(String.Format("/ldml/identity/{0}[@type='{1}']", element, content));
-		}
-
-		private static void AssertThatVersionIs(int expectedVersion, TempFile file)
-		{
-			var namespaceManager = new XmlNamespaceManager(new NameTable());
-			namespaceManager.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
-
-			if(expectedVersion == 0)
-			{
-				AssertThatXmlIn.File(file.Path).HasNoMatchForXpath("/ldml/special/palaso:version[@value]", namespaceManager);
-			}
-			else
-			{
-				AssertThatXmlIn.File(file.Path).HasAtLeastOneMatchForXpath(
-					String.Format("/ldml/special/palaso:version[@value='{0}']", expectedVersion), namespaceManager);
-			}
 		}
 	}
 }
