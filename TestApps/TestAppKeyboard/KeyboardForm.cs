@@ -14,9 +14,9 @@ namespace TestAppKeyboard
 				return;
 
 			KeyboardController.Initialize();
-			KeyboardController.Instance.RegisterControl(testAreaA);
-			KeyboardController.Instance.RegisterControl(testAreaB);
-			KeyboardController.Instance.RegisterControl(testAreaC);
+			KeyboardController.RegisterControl(testAreaA);
+			KeyboardController.RegisterControl(testAreaB);
+			KeyboardController.RegisterControl(testAreaC);
 			LoadKeyboards(keyboardsA);
 			LoadKeyboards(keyboardsB);
 			LoadKeyboards(keyboardsC);

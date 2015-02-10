@@ -39,7 +39,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 
 		private static KeyboardController _instance;
 
-		public static KeyboardController Instance
+		internal static KeyboardController Instance
 		{
 			get { return _instance; }
 		}
@@ -47,7 +47,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		/// <summary>
 		/// Enables keyboarding. This should be called during application startup.
 		/// </summary>
-		public static void Initialize()
+		public static void Initialize(params IKeyboardAdaptor[] adaptors)
 		{
 			// Note: arguably it is undesirable to install this as the public keyboard controller before we initialize it.
 			// However, we have not in general attempted thread safety for the keyboarding code; it seems
@@ -56,9 +56,14 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 			// global.
 			try
 			{
+				if (_instance != null)
+					Shutdown();
 				_instance = new KeyboardController();
 				Keyboard.Controller = _instance;
-				_instance.SetDefaultAdaptors();
+				if (adaptors.Length == 0)
+					_instance.SetDefaultKeyboardAdaptors();
+				else
+					_instance.SetKeyboardAdaptors(adaptors);
 			}
 			catch (Exception)
 			{
@@ -84,6 +89,44 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		/// </summary>
 		public static bool IsInitialized { get { return _instance != null; } }
 
+		/// <summary>
+		/// Register the control for keyboarding, optionally providing an event handler for
+		/// a keyboarding adapter. If <paramref ref="eventHandler"/> is <c>null</c> the
+		/// default handler will be used.
+		/// The application should call this method for each control that needs IME input before
+		/// displaying the control, typically after calling the InitializeComponent() method.
+		/// </summary>
+		public static void RegisterControl(Control control, object eventHandler = null)
+		{
+			_instance._eventHandlers[control] = eventHandler;
+			if (_instance.ControlAdded != null)
+				_instance.ControlAdded(_instance, new RegisterEventArgs(control, eventHandler));
+		}
+
+		/// <summary>
+		/// Unregister the control from keyboarding. The application should call this method
+		/// prior to disposing the control so that the keyboard adapters can release unmanaged
+		/// resources.
+		/// </summary>
+		public static void UnregisterControl(Control control)
+		{
+			if (_instance.ControlRemoving != null)
+				_instance.ControlRemoving(_instance, new ControlEventArgs(control));
+			_instance._eventHandlers.Remove(control);
+		}
+
+		#if __MonoCS__
+		public static bool CombinedKeyboardHandling
+		{
+			get { return _instance.Adaptors.Any(a => a is CombinedKeyboardAdaptor); }
+		}
+
+		public static bool CinnamonKeyboardHandling
+		{
+			get { return _instance.Adaptors.Any(a => a is CinnamonIbusAdaptor); }
+		}
+		#endif
+
 		#endregion
 
 		public event EventHandler<RegisterEventArgs> ControlAdded;
@@ -103,21 +146,31 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 			_adaptors = new List<IKeyboardAdaptor>();
 		}
 
-		private void SetDefaultAdaptors()
+		private void SetDefaultKeyboardAdaptors()
 		{
+			var adaptors = new List<IKeyboardAdaptor>();
 #if __MonoCS__
 			if (CombinedKeyboardAdaptor.IsRequired)
-				SetKeyboardAdaptors(new CombinedKeyboardAdaptor());
+			{
+				adaptors.Add(new CombinedKeyboardAdaptor());
+			}
 			else if (CinnamonIbusAdaptor.IsRequired)
-				SetKeyboardAdaptors(new CinnamonIbusAdaptor());
+			{
+				adaptors.Add(new CinnamonIbusAdaptor());
+			}
 			else
-				SetKeyboardAdaptors(new XkbKeyboardAdaptor(), new IbusKeyboardAdaptor());
+			{
+				adaptors.Add(new XkbKeyboardAdaptor());
+				adaptors.Add(new IbusKeyboardAdaptor());
+			}
 #else
-			SetKeyboardAdaptors(new WinKeyboardAdaptor(), new KeymanKeyboardAdaptor());
+			adaptors.Add(new WinKeyboardAdaptor());
+			adaptors.Add(new KeymanKeyboardAdaptor());
 #endif
+			SetKeyboardAdaptors(adaptors);
 		}
 
-		public void SetKeyboardAdaptors(params IKeyboardAdaptor[] adaptors)
+		private void SetKeyboardAdaptors(IEnumerable<IKeyboardAdaptor> adaptors)
 		{
 			_keyboards.Clear();
 			foreach (IKeyboardAdaptor adaptor in _adaptors)
@@ -402,44 +455,6 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 
 			return null;
 		}
-
-		/// <summary>
-		/// Register the control for keyboarding, optionally providing an event handler for
-		/// a keyboarding adapter. If <paramref ref="eventHandler"/> is <c>null</c> the
-		/// default handler will be used.
-		/// The application should call this method for each control that needs IME input before
-		/// displaying the control, typically after calling the InitializeComponent() method.
-		/// </summary>
-		public void RegisterControl(Control control, object eventHandler = null)
-		{
-			_eventHandlers[control] = eventHandler;
-			if (ControlAdded != null)
-				ControlAdded(this, new RegisterEventArgs(control, eventHandler));
-		}
-
-		/// <summary>
-		/// Unregister the control from keyboarding. The application should call this method
-		/// prior to disposing the control so that the keyboard adapters can release unmanaged
-		/// resources.
-		/// </summary>
-		public void UnregisterControl(Control control)
-		{
-			if (ControlRemoving != null)
-				ControlRemoving(this, new ControlEventArgs(control));
-			_eventHandlers.Remove(control);
-		}
-
-		#if __MonoCS__
-		public bool CombinedKeyboardHandling
-		{
-			get { return Adaptors.Any(a => a is CombinedKeyboardAdaptor); }
-		}
-
-		public bool CinnamonKeyboardHandling
-		{
-			get { return Adaptors.Any(a => a is CinnamonIbusAdaptor); }
-		}
-		#endif
 
 		private IKeyboardDefinition HandleFwLegacyKeyboards(WritingSystemDefinition ws)
 		{

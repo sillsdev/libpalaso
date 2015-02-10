@@ -21,7 +21,7 @@ namespace SIL.WritingSystems.WindowsForms
 				if (components != null)
 					components.Dispose();
 
-				KeyboardController.Instance.UnregisterControl(_testArea);
+				KeyboardController.UnregisterControl(_testArea);
 
 				if (_hookedToForm)
 				{

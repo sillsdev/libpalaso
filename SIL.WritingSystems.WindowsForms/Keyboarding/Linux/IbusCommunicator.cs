@@ -216,7 +216,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			try
 			{
 				// m_inputContext.IsEnabled() throws an exception for IBus 1.5.
-				if (!KeyboardController.Instance.CombinedKeyboardHandling && !KeyboardController.Instance.CinnamonKeyboardHandling && !m_inputContext.IsEnabled())
+				if (!KeyboardController.CombinedKeyboardHandling && !KeyboardController.CinnamonKeyboardHandling && !m_inputContext.IsEnabled())
 					return false;
 
 				var modifiers = ConvertToIbusModifiers(state, (char)keySym);
@@ -270,7 +270,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 				// It also seems that it shouldn't be necessary to run IBus to use Linux keyboarding!
 				return;
 			}
-			if (KeyboardController.Instance.CombinedKeyboardHandling)
+			if (KeyboardController.CombinedKeyboardHandling)
 			{
 				var path = m_ibus.CurrentInputContext();
 				m_inputContext = new InputContext(m_connection, path);
