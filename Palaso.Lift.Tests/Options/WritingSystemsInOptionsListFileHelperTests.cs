@@ -6,7 +6,6 @@ using NUnit.Framework;
 using Palaso.Lift.Options;
 using Palaso.TestUtilities;
 using SIL.WritingSystems;
-using SIL.WritingSystems.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace Palaso.Lift.Tests.Options
@@ -74,12 +73,14 @@ namespace Palaso.Lift.Tests.Options
 
 			public void CreateWritingSystemRepository()
 			{
-				WritingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(WritingSystemsPath, onMigration, onLoadProblem, WritingSystemCompatibility.Strict);
+				WritingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(WritingSystemsPath, Enumerable.Empty<ICustomDataMapper>(),
+					onMigration, onLoadProblem, WritingSystemCompatibility.Strict);
 			}
 
 			public void CreateLegacyFriendlyWritingSystemRepository()
 			{
-				WritingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(WritingSystemsPath, onMigration, onLoadProblem, WritingSystemCompatibility.Flex7V0Compatible);
+				WritingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(WritingSystemsPath, Enumerable.Empty<ICustomDataMapper>(),
+					onMigration, onLoadProblem, WritingSystemCompatibility.Flex7V0Compatible);
 			}
 
 			private static void onMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)

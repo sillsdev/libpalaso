@@ -397,7 +397,8 @@ namespace SIL.WritingSystems.Tests
 				environment.WritingSystem.KnownKeyboards.Add(kbd1);
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 
-				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
+				LdmlInFolderWritingSystemRepository newCollection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, Enumerable.Empty<ICustomDataMapper>(),
+					DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
 				WritingSystemDefinition ws2 = newCollection.Get("en");
 				Assert.AreEqual("Thai", ws2.KnownKeyboards[0].Id);
 			}
@@ -414,7 +415,8 @@ namespace SIL.WritingSystems.Tests
 				Assert.IsTrue(environment.WritingSystem.RightToLeftScript);
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 
-				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
+				LdmlInFolderWritingSystemRepository newCollection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, Enumerable.Empty<ICustomDataMapper>(),
+					DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
 				var ws2 = newCollection.Get("en");
 				Assert.IsTrue(ws2.RightToLeftScript);
 			}

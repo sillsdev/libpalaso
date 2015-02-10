@@ -71,7 +71,7 @@ namespace PalasoUIWindowsForms.TestApp
 			KeyboardController.Initialize();
 			try
 			{
-				var wsRepo = LdmlInFolderWritingSystemRepository.Initialize(tempPath, onMigration, onLoadProblem);
+				LdmlInFolderWritingSystemRepository wsRepo = LdmlInFolderWritingSystemRepository.Initialize(tempPath, Enumerable.Empty<ICustomDataMapper>(), onMigration, onLoadProblem);
 				using (var dialog = new WritingSystemSetupDialog(wsRepo))
 				{
 #if WS_FIX

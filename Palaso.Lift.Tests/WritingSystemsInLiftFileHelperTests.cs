@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using NUnit.Framework;
 using Palaso.TestUtilities;
 using SIL.WritingSystems;
-using SIL.WritingSystems.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace Palaso.Lift.Tests
@@ -87,6 +87,7 @@ namespace Palaso.Lift.Tests
 				{
 					return _writingSystems ?? (_writingSystems = LdmlInFolderWritingSystemRepository.Initialize(
 						WritingSystemsPath,
+						Enumerable.Empty<ICustomDataMapper>(),
 						OnWritingSystemMigration,
 						OnWritingSystemLoadProblem,
 						WritingSystemCompatibility.Flex7V0Compatible
