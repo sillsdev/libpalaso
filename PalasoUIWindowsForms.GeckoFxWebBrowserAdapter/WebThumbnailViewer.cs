@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using Palaso.IO;
 using Palaso.UI.WindowsForms.HtmlBrowser;
 
+// ReSharper disable once CheckNamespace
 namespace Palaso.UI.WindowsForms.ImageGallery
 {
 	/// <summary>
@@ -15,9 +17,10 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 	/// </summary>
 	public partial class WebThumbnailViewer : UserControl, IThumbnailViewer
 	{
-		private XWebBrowser _browser;
+		private readonly XWebBrowser _browser;
 		public event EventHandler LoadComplete;
 		private TempFile _htmlFile;
+		private string _tempDirectoryName;
 
 		public event EventHandler SelectedIndexChanged;
 
@@ -25,6 +28,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 		{
 			CanLoad = false;
 			ThumbBorderColor = Color.Wheat;
+			ThumbBackgroundColor = Color.White;
 			ThumbNailSize = 95;
 			InitializeComponent();
 
@@ -37,7 +41,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 					LoadComplete(this, new EventArgs());
 			});
 			var browserAdapter = ((GeckoFxWebBrowserAdapter)_browser.Adapter);
-			browserAdapter.AddDomClickHandler((id) =>
+			browserAdapter.AddDomClickHandler(id =>
 			{
 				HasSelection = true;
 				var path = Uri.UnescapeDataString(id);
@@ -51,12 +55,14 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 				}
 			});
 		}
-		
+
 		public string SelectedPath { get; private set; }
 
 		public int ThumbNailSize { get; set; }
 
 		public Color ThumbBorderColor { get; set; }
+
+		public Color ThumbBackgroundColor { get; set; }
 
 		public bool IsLoading
 		{
@@ -67,11 +73,19 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 		public Image GetThumbNail(string fileName)
 		{
-			return ImageUtilities.GetThumbNail(fileName, ThumbNailSize, ThumbNailSize, ThumbBorderColor);
+			return ImageUtilities.GetThumbNail(fileName, ThumbNailSize, ThumbNailSize, ThumbBorderColor, ThumbBackgroundColor);
 		}
 
 		public void LoadItems(IEnumerable<string> pathList)
 		{
+			//BL-907: Crashes, probably out-of-memory error
+			if (_htmlFile == null)
+			{
+				_htmlFile = TempFile.WithFilenameInTempFolder("searchresults.htm");
+				_tempDirectoryName = Path.GetDirectoryName(_htmlFile.Path);
+			}
+
+
 			// OK, some of this is weird. I tried a lot of things. The tricky part is getting a reduced-size image
 			// to render in the center of a square box of fixed size, keeping its aspect ratio.
 			// I tried many things with FlexBox but everything I tried stretches the image vertically to fill the square box.
@@ -113,13 +127,22 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 </head>
 <body>
 <p>", ThumbNailSize, ColorToHtmlCode(ThumbBorderColor));
-			foreach (string path in pathList)
+			foreach (var path in pathList)
 			{
 				var htmlPath = new Uri(path).AbsolutePath;
 				sb.AppendLine("<div class='imageWrap' id='" + htmlPath
 					+ "'><div class='imageWrapRel'><div class='imageWrapOuter'><div class='imageWrapMid'><div class='imageWrapInner'>");
 				// the data-echo attribute is part of lazy loading for very long lists (see below).
-				sb.AppendLine("<img class='image' src='' data-echo='file://" + htmlPath + "'>");
+
+				if (PlatformUtilities.Platform.IsWindows)
+				{
+					sb.AppendLine("<img class='image' src='' data-echo='file://" + htmlPath + "'>");
+				}
+				else
+				{
+					sb.AppendLine("<img class='image' src='' data-echo='file://" + new Uri(GetThumbnailFile(path)).AbsolutePath + "'>");
+				}
+				
 				sb.AppendLine("</div></div></div></div></div>");
 			}
 			sb.AppendLine("</p>");
@@ -130,17 +153,29 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 				"!function(t,e){\"function\"==typeof define&&define.amd?define(function(){return e(t)}):\"object\"==typeof exports?module.exports=e:t.echo=e(t)}(this,function(t){\"use strict\";var e,n,o,r,c,i={},l=function(){},a=function(t,e){var n=t.getBoundingClientRect();return n.right>=e.l&&n.bottom>=e.t&&n.left<=e.r&&n.top<=e.b},d=function(){(r||!n)&&(clearTimeout(n),n=setTimeout(function(){i.render(),n=null},o))};return i.init=function(n){n=n||{};var a=n.offset||0,u=n.offsetVertical||a,f=n.offsetHorizontal||a,s=function(t,e){return parseInt(t||e,10)};e={t:s(n.offsetTop,u),b:s(n.offsetBottom,u),l:s(n.offsetLeft,f),r:s(n.offsetRight,f)},o=s(n.throttle,250),r=n.debounce!==!1,c=!!n.unload,l=n.callback||l,i.render(),document.addEventListener?(t.addEventListener(\"scroll\",d,!1),t.addEventListener(\"load\",d,!1)):(t.attachEvent(\"onscroll\",d),t.attachEvent(\"onload\",d))},i.render=function(){for(var n,o,r=document.querySelectorAll(\"img[data-echo]\"),d=r.length,u={l:0-e.l,t:0-e.t,b:(t.innerHeight||document.documentElement.clientHeight)+e.b,r:(t.innerWidth||document.documentElement.clientWidth)+e.r},f=0;d>f;f++)o=r[f],a(o,u)?(c&&o.setAttribute(\"data-echo-placeholder\",o.src),o.src=o.getAttribute(\"data-echo\"),c||o.removeAttribute(\"data-echo\"),l(o,\"load\")):c&&(n=o.getAttribute(\"data-echo-placeholder\"))&&(o.src=n,o.removeAttribute(\"data-echo-placeholder\"),l(o,\"unload\"));d||i.detach()},i.detach=function(){document.removeEventListener?t.removeEventListener(\"scroll\",d):t.detachEvent(\"onscroll\",d),clearTimeout(n)},i});");
 			sb.AppendLine("echo.init({offset:200});");
 			sb.AppendLine("</script></body></html>");
+
 			// What we want to do here is _browser.NavigateToString(sb.ToString()).
 			// But the Windows.Forms WebBrowser class doesn't have that method.
-			if (_htmlFile == null)
-				_htmlFile = TempFile.WithExtension("htm");
 			File.WriteAllText(_htmlFile.Path, sb.ToString(), Encoding.UTF8);
 			_browser.Navigate(_htmlFile.Path);
 		}
 
+		//BL-907: Crashes, probably out-of-memory error
+		private string GetThumbnailFile(string fileName)
+		{
+			var tempFileName = Path.Combine(_tempDirectoryName, Path.GetRandomFileName() + ".jpg");
+
+			using (var img = ImageUtilities.GetThumbNail(fileName, ThumbNailSize, ThumbNailSize, ThumbBorderColor, ThumbBackgroundColor))
+			{
+				img.Save(tempFileName, ImageFormat.Jpeg);
+			}
+			
+			return tempFileName;
+		}
+
 		string ColorToHtmlCode(Color color)
 		{
-			return string.Format("rgba({0},{1},{2},{3})", color.R, color.G, color.B, color.A/256.0);
+			return string.Format("rgba({0},{1},{2},{3})", color.R, color.G, color.B, color.A / 256.0);
 		}
 
 		public bool HasSelection { get; private set; }

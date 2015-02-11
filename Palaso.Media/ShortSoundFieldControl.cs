@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
+using Palaso.IO;
 using Palaso.Reporting;
 
 namespace Palaso.Media
@@ -245,7 +246,14 @@ namespace Palaso.Media
 				if (File.Exists(Path))
 					File.Delete(Path);
 
-				File.Copy(dlg.FileName, Path);
+				if (AreFilesInSameDirectory(dlg.FileName, Path))
+				{
+					// LT-15375 Don't copy the file to some weird name if the user wants to use their pre-existing
+					// file that's already in the right directory.
+					Path = dlg.FileName;
+				}
+				else
+					File.Copy(dlg.FileName, Path);
 			}
 			catch (Exception error)
 			{
@@ -253,6 +261,13 @@ namespace Palaso.Media
 			}
 			UpdateScreen();
 			return true;
+		}
+
+		private bool AreFilesInSameDirectory(string dlgPath, string newFilePath)
+		{
+			var dlgDir = System.IO.Path.GetDirectoryName(dlgPath);
+			var newDir = System.IO.Path.GetDirectoryName(newFilePath);
+			return DirectoryUtilities.AreDirectoriesEquivalent(dlgDir, newDir);
 		}
 
 		private void OnClickPlay(object sender, MouseEventArgs e)

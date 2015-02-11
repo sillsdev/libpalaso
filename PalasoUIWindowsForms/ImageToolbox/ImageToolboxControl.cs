@@ -276,7 +276,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 					Guard.AgainstNull(dlg.Metadata, " dlg.Metadata");
 					_imageInfo.Metadata = dlg.Metadata;
 					SetupMetaDataControls(_imageInfo.Metadata);
-					_imageInfo.SaveUpdatedMetadataIfItMakesSense();
+					//Not doing this anymore, too risky. See https://jira.sil.org/browse/BL-1001 _imageInfo.SaveUpdatedMetadataIfItMakesSense();
 					_imageInfo.Metadata.StoreAsExemplar(Metadata.FileCategory.Image);
 				}
 			}
@@ -319,7 +319,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		{
 			_imageInfo.Metadata.LoadFromStoredExemplar(Metadata.FileCategory.Image);
 			SetupMetaDataControls(ImageInfo.Metadata);
-			_imageInfo.SaveUpdatedMetadataIfItMakesSense();
+			//Not doing this anymore, too risky. See https://jira.sil.org/browse/BL-1001  _imageInfo.SaveUpdatedMetadataIfItMakesSense();
 		}
 	}
 

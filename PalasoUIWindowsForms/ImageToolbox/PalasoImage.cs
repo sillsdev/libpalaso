@@ -186,46 +186,23 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				throw new NotImplementedException();
 			}
 		}
-			
+		
+		
 		/// <summary>
 		/// If you edit the metadata, call this. If it happens to have an actual file associated, it will save it.
 		/// If not (e.g. the image came from a scanner), it won't do anything.
+		/// 
+		/// Warning. Don't use this on original books. See https://jira.sil.org/browse/BL-1001. Bloom uses it to 
+		/// update its own copies of books, when the user edits the metadata without opening the libpalaso
+		/// image toolbox.
 		/// </summary>
 		public void SaveUpdatedMetadataIfItMakesSense()
 		{
-			try
-			{
-				if (!FileFormatSupportsMetadata) return;
+			ThrowIfDisposedOfAlready();
+			Guard.AssertThat(FileFormatSupportsMetadata, "We can't put metadata into images of this format.");
 
-				ThrowIfDisposedOfAlready();
-				if (Metadata != null && Metadata.HasChanges && !string.IsNullOrEmpty(_pathForSavingMetadataChanges) && File.Exists(_pathForSavingMetadataChanges))
-					SaveUpdatedMetadata();
-			}
-			catch (SystemException ex)
-			{
-				if (ex is IOException || ex is UnauthorizedAccessException || ex is NotSupportedException)
-				{
-					//maybe we just can't write to the original file
-					//so try making a copy and writing to that
-
-					//note: this means the original file will not have metadata saved to it meaning that
-					//if we insert the same file again, the rights will not be the same (or have to be re-modified)
-					//enhance: we could, theoretically, maintain some sort persistent map with the source file and metadata
-					string origFilePath = PathForSavingMetadataChanges;
-					if (!string.IsNullOrEmpty(origFilePath) && File.Exists(origFilePath))
-					{
-						string tempPath = TempFile.WithExtension(Path.GetExtension(origFilePath)).Path;
-						Save(tempPath);
-						PathForSavingMetadataChanges = tempPath;
-						FileName = Path.GetFileName(tempPath);
-						if (FileFormatSupportsMetadata) SaveUpdatedMetadata();
-					}
-					else
-						throw;
-				}
-				else
-					throw;
-			}
+			if (Metadata != null && Metadata.HasChanges && !string.IsNullOrEmpty(_pathForSavingMetadataChanges) && File.Exists(_pathForSavingMetadataChanges))
+				SaveUpdatedMetadata();
 		}
 
 		/// <summary>Returns if the format of the image file supports metadata</summary>
