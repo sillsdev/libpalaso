@@ -197,17 +197,6 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		/// <summary>
 		/// Get a simple, non-legal summary of the license, using the "best" language for which we can find a translation.
 		/// </summary>
-		/// <param name="iso6393LanguageCode">A single language to try and use for the description.</param>
-		/// <returns>The description of the license if we have it in this language, else the English</returns>
-		public override string GetDescription(string iso6393LanguageCode)
-		{
-			string idOfLanguageUsed;
-			return GetDescription(new string[] {iso6393LanguageCode}, out  idOfLanguageUsed);
-		}
-
-		/// <summary>
-		/// Get a simple, non-legal summary of the license, using the "best" language for which we can find a translation.
-		/// </summary>
 		/// <param name="languagePriorityIds"></param>
 		/// <param name="idOfLanguageUsed">The id of the language we were able to use. Unreliable if we had to use a mix of languages.</param>
 		/// <returns>The description of the license.</returns>
@@ -241,26 +230,10 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		private string GetComponentOfLicenseInBestLanguage(string idSuffix, string englishText, IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
 		{
-			var id = "MetadataDisplay.Licenses.CreativeCommons." + idSuffix;
-			var comment = "See http://creativecommons.org/ to find out how this is normally translated in your language. What we're aiming for here is an easy to understand summary.";
-			foreach(var targetLanguage in languagePriorityIds)
-			{
-				if (targetLanguage == "en")
-				{
-					//do the query to make sure the string is there to be translated someday
-					var unused = LocalizationManager.GetDynamicString("Palaso", id, englishText, comment);
-					idOfLanguageUsed = "en";
-					return englishText;
-				}
-				//otherwise, see if we have a translation
-				if (LocalizationManager.GetIsStringAvailableForLangId(id, targetLanguage))
-				{
-					idOfLanguageUsed = targetLanguage;
-					return LocalizationManager.GetDynamicStringOrEnglish("Palaso", id, englishText, comment, targetLanguage);
-				}
-			}
-			idOfLanguageUsed = string.Empty;
-			return "[Missing translation for "+id+"]";
+			const string comment = "See http://creativecommons.org/ to find out how this is normally translated in your language. What we're aiming for here is an easy to understand summary.";
+
+			//Note: GetBestLicenseTranslation will prepend "MetadataDisplay.Licenses.", we should not include it here
+			return GetBestLicenseTranslation("CreativeCommons." + idSuffix, englishText, comment, languagePriorityIds, out idOfLanguageUsed);
 		}
 
 		public override Image GetImage()

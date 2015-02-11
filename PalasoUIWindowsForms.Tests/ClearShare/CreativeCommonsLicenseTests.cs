@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using NUnit.Framework;
-using Palaso.IO;
 using Palaso.UI.WindowsForms.ClearShare;
-using Palaso.UI.WindowsForms.ImageToolbox;
 
 namespace PalasoUIWindowsForms.Tests.ClearShare
 {
@@ -116,18 +110,9 @@ namespace PalasoUIWindowsForms.Tests.ClearShare
 		public void GetDescription_NoTranslation_GivesEnglish()
 		{
 			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
-			Assert.AreEqual(l.GetDescription("en"), l.GetDescription("qx"));
-
-		}
-		[Test]
-		public void GetDescription_DontHaveFirstChoice_GivesEnglish()
-		{
-			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
-			string usedLanguage;
-			//Assert.AreEqual(l.GetDescription("en"), l.GetDescription(new string[] { "qx", "en" }, out usedLanguage));
-			l.GetDescription(new string[] {"qx", "en"}, out usedLanguage);
-			Assert.AreEqual("en", usedLanguage);
-
+			string languageUsed;
+			Assert.AreEqual(l.GetDescription(new[] { "en" }, out languageUsed), l.GetDescription(new[]{"qx", "en"}, out languageUsed));
+			Assert.AreEqual("en",languageUsed);
 		}
 	}
 }
