@@ -13,18 +13,11 @@ namespace SIL.WritingSystems.Migration
 
 		public LdmlInFolderWritingSystemRepositoryMigrator(
 			string ldmlPath,
-			IEnumerable<ICustomDataMapper> customDataMappers,
-			LdmlVersion0MigrationStrategy.MigrationHandler onMigrationCallback
-		) : this(ldmlPath, customDataMappers, onMigrationCallback, WritingSystemCompatibility.Strict)
-		{
-		}
-
-		public LdmlInFolderWritingSystemRepositoryMigrator(
-			string ldmlPath,
-			IEnumerable<ICustomDataMapper> customDataMappers,
 			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
-			WritingSystemCompatibility compatibilityMode
-		) : base(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, ldmlPath)
+			IEnumerable<ICustomDataMapper> customDataMappers = null,
+			WritingSystemCompatibility compatibilityMode = WritingSystemCompatibility.Strict,
+			int versionToMigrateTo = WritingSystemDefinition.LatestWritingSystemDefinitionVersion
+		) : base(versionToMigrateTo, ldmlPath)
 		{
 			SearchPattern = "*.ldml";
 
@@ -39,7 +32,7 @@ namespace SIL.WritingSystems.Migration
 			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(migrationHandler, auditLog, 0, compatibilityMode));
 			// Version 0 strategy has been enhanced to also migrate version 1.
 			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(migrationHandler, auditLog, 1, compatibilityMode));
-			AddMigrationStrategy(new LdmlVersion2MigrationStrategy(customDataMappers));
+			AddMigrationStrategy(new LdmlVersion2MigrationStrategy(customDataMappers ?? Enumerable.Empty<ICustomDataMapper>()));
 		}
 
 		public IEnumerable<WritingSystemRepositoryProblem> MigrationProblems

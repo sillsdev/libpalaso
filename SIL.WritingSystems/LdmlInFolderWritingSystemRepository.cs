@@ -47,7 +47,7 @@ namespace SIL.WritingSystems
 		)
 		{
 			ICustomDataMapper[] customDataMappersArray = customDataMappers.ToArray();
-			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(basePath, customDataMappersArray, migrationHandler, compatibilityMode);
+			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(basePath, migrationHandler, customDataMappersArray, compatibilityMode);
 			migrator.Migrate();
 
 			var instance = new LdmlInFolderWritingSystemRepository(basePath, customDataMappersArray, compatibilityMode);

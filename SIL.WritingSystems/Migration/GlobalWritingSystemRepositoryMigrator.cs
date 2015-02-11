@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using Palaso.IO;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
@@ -24,7 +23,7 @@ namespace SIL.WritingSystems.Migration
 		/// is called.
 		///</summary>
 		public GlobalWritingSystemRepositoryMigrator(string basePath, LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler)
-			: base(Path.Combine(basePath, WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString(CultureInfo.InvariantCulture)), Enumerable.Empty<ICustomDataMapper>(), migrationHandler)
+			: base(Path.Combine(basePath, WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString(CultureInfo.InvariantCulture)), migrationHandler)
 		{
 			_basePath = basePath;
 		}
