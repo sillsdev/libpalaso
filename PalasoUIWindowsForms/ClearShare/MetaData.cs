@@ -10,10 +10,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
+using L10NSharp;
 using Palaso.CommandLineProcessing;
 using Palaso.Extensions;
 using Palaso.IO;
 using Palaso.Progress;
+using Palaso.Text;
 using TagLib;
 using TagLib.Image;
 using TagLib.Xmp;
@@ -638,14 +640,29 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		}
 
 		/// <summary>
-		///
+		/// Gets a text combining the creator, copyright, and license
 		/// </summary>
-		/// <param name="ideal_iso639LanguageCode">e.g. "en" or "fr"</param>
+		/// <param name="idealIso639LanguageCode">e.g. "en" or "fr"</param>
 		/// <returns></returns>
-		public string GetSummaryParagraph(string ideal_iso639LanguageCode)
+		[Obsolete("Instead, use the version with a prioritized list")]
+		public string GetSummaryParagraph(string idealIso639LanguageCode)
+		{
+			string idOfLanguageUsed;
+			return GetSummaryParagraph(new string[] { idealIso639LanguageCode }, out idOfLanguageUsed);
+		}
+
+		/// <summary>
+		/// Gets a text combining the creator, copyright, and license
+		/// </summary>
+		/// <remarks>It's possible to get parts in multiple languages if some parts have been localized, and other parts haven't</remarks>
+		/// <param name="languagePriorityIds">The summary will be in the first language available.</param>
+		/// <param name="idOfLanguageUsed"></param>
+		/// <returns></returns>
+		public string GetSummaryParagraph(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed) 
 		{
 			var b = new StringBuilder();
-			b.AppendLine("Creator: " + Creator);
+			string creatorLabel = LocalizationManager.GetString("MetadataDisplay.CreatorLabel", "Creator");
+			b.AppendLine(creatorLabel+": " + Creator);
 			b.AppendLine(CopyrightNotice);
 			if(!string.IsNullOrEmpty(CollectionName))
 				b.AppendLine(CollectionName);
@@ -653,7 +670,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				b.AppendLine(CollectionUri);
 			if (!string.IsNullOrEmpty(License.Url))
 				b.AppendLine(License.Url);
-			b.AppendLine(License.GetDescription(ideal_iso639LanguageCode));
+			b.AppendLine(License.GetDescription(languagePriorityIds, out idOfLanguageUsed));
 			return b.ToString();
 		}
 
