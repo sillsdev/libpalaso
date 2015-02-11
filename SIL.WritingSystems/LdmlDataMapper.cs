@@ -720,7 +720,6 @@ namespace SIL.WritingSystems
 			var baseLanguageTag = (string) inheritedElem.Attribute("base");
 			var baseType = (string) inheritedElem.Attribute("type");
 
-			// TODO: Read referenced LDML and get collation from there
 			return new InheritedCollationDefinition(collationType) {BaseLanguageTag = baseLanguageTag, BaseType = baseType};
 		}
 
@@ -1197,7 +1196,7 @@ namespace SIL.WritingSystems
 					}
 
 					// Populate numbering system element
-					var numberingSystemsElem = new XElement("numberingSystems");
+					var numberingSystemsElem = new XElement("numberingSystem");
 					numberingSystemsElem.SetAttributeValue("id", defaultNumberingSystem);
 					numberingSystemsElem.SetAttributeValue("type", csd.Type);
 					string digits = string.Join("", csd.Characters);

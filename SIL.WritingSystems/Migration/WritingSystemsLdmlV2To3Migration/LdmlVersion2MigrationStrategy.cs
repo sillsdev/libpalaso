@@ -16,7 +16,8 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 	/// </summary>
 	class LdmlVersion2MigrationStrategy : MigrationStrategyBase
 	{
-		private readonly List<ICustomDataMapper> _customDataMappers; 
+		private static readonly XNamespace Fw = "urn://fieldworks.sil.org/ldmlExtensions/v1";
+		private readonly List<ICustomDataMapper> _customDataMappers;
 
 		public LdmlVersion2MigrationStrategy(IEnumerable<ICustomDataMapper> customDataMappers) :
 			base(2, 3)
@@ -29,8 +30,11 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			var writingSystemDefinitionV1 = new WritingSystemDefinitionV1();
 			new LdmlAdaptorV1().Read(sourceFilePath, writingSystemDefinitionV1);
 
-			// Remove legacy palaso namespace from sourceFilePath
 			XElement ldmlElem = XElement.Load(sourceFilePath);
+			XElement fwElem =
+				ldmlElem.Elements("special").FirstOrDefault(e => !string.IsNullOrEmpty((string) e.Attribute(XNamespace.Xmlns + "fw")));
+			
+			// Remove legacy palaso namespace from sourceFilePath
 			ldmlElem.Elements("special").Where(e => !string.IsNullOrEmpty((string)e.Attribute(XNamespace.Xmlns + "palaso"))).Remove();
 			ldmlElem.Elements("special").Where(e => !string.IsNullOrEmpty((string)e.Attribute(XNamespace.Xmlns + "palaso2"))).Remove();
 
@@ -52,19 +56,22 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			var writingSystemDefinitionV3 = new WritingSystemDefinitionV3
 			{
 				Abbreviation = writingSystemDefinitionV1.Abbreviation,
+				DefaultFontSize = writingSystemDefinitionV1.DefaultFontSize,
 				Keyboard = writingSystemDefinitionV1.Keyboard,
 				LanguageName = writingSystemDefinitionV1.LanguageName,
 				RightToLeftScript = writingSystemDefinitionV1.RightToLeftScript,
 				SpellCheckingId = writingSystemDefinitionV1.SpellCheckingId,
-
 				VersionDescription = writingSystemDefinitionV1.VersionDescription,
-				DateModified = DateTime.Now
-				// TODO: reconcile these attributes
-#if WS_FIX
-				//DefaultFontName = writingSystemDefinitionV1.DefaultFontName,
-				//DefaultFontSize = writingSystemDefinitionV1.DefaultFontSize,
-#endif
+				DateModified = DateTime.Now,
+				WindowsLcid = writingSystemDefinitionV1.WindowsLcid
 			};
+
+			if (!string.IsNullOrEmpty(writingSystemDefinitionV1.DefaultFontName))
+			{
+				var fd = new FontDefinition(writingSystemDefinitionV1.DefaultFontName);
+				writingSystemDefinitionV3.Fonts.Add(fd);
+				writingSystemDefinitionV3.DefaultFont = fd;
+			}
 
 			// Convert sort rules to collation definition of standard type
 			CollationDefinition cd;
@@ -91,12 +98,99 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				writingSystemDefinitionV1.Region,
 				writingSystemDefinitionV1.Variant);
 
+			// Migrate fields from fw namespace
+			if (fwElem != null)
+			{
+				ReadFwSpecialElem(fwElem, writingSystemDefinitionV3);
+				fwElem.Remove();
+			}
+		
 			var ldmlDataMapper = new LdmlAdaptorV3();
 			using (Stream sourceStream = new FileStream(sourceFilePath, FileMode.Open))
 				ldmlDataMapper.Write(destinationFilePath, writingSystemDefinitionV3, sourceStream);
 
 			foreach (ICustomDataMapper customDataMapper in _customDataMappers)
 				customDataMapper.Write(writingSystemDefinitionV3);
+		}
+
+		/// <summary>
+		/// Parse a character set from the Fw:validChars element and add it to the writing system definition
+		/// </summary>
+		/// <param name="validCharsElem">XElement of Fw:validChars</param>
+		/// <param name="ws">writing system definition where the character set definition will be added</param>
+		/// <param name="elementName">name of the character set to read</param>
+		/// <param name="type">character set definition type</param>
+		private void AddCharacterSet(XElement validCharsElem, WritingSystemDefinition ws, string elementName, string type)
+		{
+			const char fwDelimiter = '\uFFFC';
+
+			XElement elem = validCharsElem.Element(elementName);
+			if ((elem != null) && !string.IsNullOrEmpty(type)) 
+			{
+				var characterString = (string)elem;
+				var csd = new CharacterSetDefinition(type);
+				foreach (var c in characterString.Split(fwDelimiter))
+					csd.Characters.Add(c);
+				ws.CharacterSets.Add(csd);
+			}
+		}
+
+		public void ReadFwSpecialElem(XElement fwElem, WritingSystemDefinition ws)
+		{
+			// DefaultFontFeatures
+			XElement elem = fwElem.Element(Fw + "defaultFontFeatures");
+			if ((elem != null) && ws.DefaultFont != null)
+				ws.DefaultFont.Features = (string)elem.Attribute("value");
+
+			elem = fwElem.Element(Fw + "graphiteEnabled");
+			if (elem != null)
+			{
+				bool graphiteEnabled;
+				if (bool.TryParse((string)elem.Attribute("value"), out graphiteEnabled))
+					ws.IsGraphiteEnabled = graphiteEnabled;
+			}
+
+			//MatchedPairs, PunctuationPatterns, QuotationMarks deprecated
+
+			// LegacyMapping
+			elem = fwElem.Element(Fw + "legacyMapping");
+			if (elem != null)
+			{
+				ws.LegacyMapping = (string) elem.Attribute("value");
+			}
+
+			// RegionName
+			elem = fwElem.Element(Fw + "regionName");
+			if (!string.IsNullOrEmpty(ws.Region) && (elem != null) && ws.Region.IsPrivateUse)
+				ws.Region = new RegionSubtag(ws.Region, (string) elem.Attribute("value"));
+
+			// ScriptName
+			elem = fwElem.Element(Fw + "scriptName");
+			if (!string.IsNullOrEmpty(ws.Script) && (elem != null) && ws.Script.IsPrivateUse)
+				ws.Script = new ScriptSubtag(ws.Script, (string) elem.Attribute("value"));
+
+			// VariantName
+			// Intentionally only checking the first variant
+			elem = fwElem.Element(Fw + "variantName");
+			if (ws.Variants.Count > 0 && (elem != null) && ws.Variants[0].IsPrivateUse)
+				ws.Variants[0] = new VariantSubtag(ws.Variants[0], (string) elem.Attribute("value"));
+
+			// Valid Chars
+			elem = fwElem.Element(Fw + "validChars");
+			if (elem != null)
+			{
+				try
+				{
+					var validCharsElem = XElement.Parse((string) elem.Attribute("value"));
+					AddCharacterSet(validCharsElem, ws, "WordForming", "main");
+					AddCharacterSet(validCharsElem, ws, "Numeric", "numeric");
+					AddCharacterSet(validCharsElem, ws, "Other", "punctuation");
+				}
+				catch (XmlException e)
+				{
+					// Move on if fw:validChars contains invalid XML
+				}
+			}
 		}
 	}
 }

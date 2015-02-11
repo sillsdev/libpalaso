@@ -1014,7 +1014,56 @@ namespace SIL.WritingSystems.Tests.Migration
 			}
 		}
 
-// SpellcheckID to be written in application-specific
+		[Test]
+		public void Migrate_OriginalFileContainsFwNamespace_InfoIsMigrated()
+		{
+			const char fwDelimiter = '\uFFFC';
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile(
+					"test.ldml",
+					LdmlContentForTests.Version0WithFw("en", "Zxxx", "GB", "1996-x-myOwnVariant"));
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+
+				var other = new FontDefinition("Arial");
+				other.Features = "order=3 children=2 color=red createDate=1996";
+				other.Roles = FontRoles.Default;
+
+				var wsV3 = new WritingSystemDefinitionV3();
+				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
+
+				var main = new CharacterSetDefinition("main");
+				const string mainString = "α￼Α￼ά￼ὰ￼ᾷ￼ἀ￼Ἀ￼ἁ￼Ἁ￼ἄ￼Ἄ￼ἂ￼ἅ￼Ἅ￼ἃ￼Ἃ￼ᾶ￼ᾳ￼ᾴ￼ἆ￼Ἆ￼ᾄ￼ᾅ￼β￼Β￼γ￼Γ￼δ￼Δ￼ε￼Ε￼έ￼ὲ￼ἐ￼Ἐ￼ἑ￼Ἑ￼ἔ￼Ἔ￼ἕ￼Ἕ￼ἓ￼Ἓ￼ζ￼Ζ￼η￼Η￼ή￼ὴ￼ῇ￼ἠ￼Ἠ￼ἡ￼Ἡ￼ἤ￼Ἤ￼ἢ￼ἥ￼Ἥ￼Ἢ￼ἣ￼ᾗ￼ῆ￼ῃ￼ῄ￼ἦ￼Ἦ￼ᾖ￼ἧ￼ᾐ￼ᾑ￼ᾔ￼θ￼Θ￼ι￼ί￼ὶ￼ϊ￼ΐ￼ῒ￼ἰ￼Ἰ￼ἱ￼Ἱ￼ἴ￼Ἴ￼ἵ￼Ἵ￼ἳ￼ῖ￼ἶ￼ἷ￼κ￼Κ￼λ￼Λ￼μ￼Μ￼ν￼Ν￼ξ￼Ξ￼ο￼Ο￼ό￼ὸ￼ὀ￼Ὀ￼ὁ￼Ὁ￼ὄ￼Ὄ￼ὅ￼ὂ￼Ὅ￼ὃ￼Ὃ￼π￼Π￼ρ￼Ρ￼ῥ￼Ῥ￼σ￼ς￼Σ￼τ￼Τ￼υ￼Υ￼ύ￼ὺ￼ϋ￼ΰ￼ῢ￼ὐ￼ὑ￼Ὑ￼ὔ￼ὕ￼ὒ￼Ὕ￼ὓ￼ῦ￼ὖ￼ὗ￼Ὗ￼φ￼Φ￼χ￼Χ￼ψ￼Ψ￼ω￼ώ￼ὼ￼ῷ￼ὠ￼ὡ￼Ὡ￼ὤ￼Ὤ￼ὢ￼ὥ￼Ὥ￼ᾧ￼ῶ￼ῳ￼ῴ￼ὦ￼Ὦ￼ὧ￼Ὧ￼ᾠ";
+				foreach (var str in mainString.Split(fwDelimiter))
+					main.Characters.Add(str);
+
+				var numeric = new CharacterSetDefinition("numeric");
+				const string numericString = "๐￼๑￼๒￼๓￼๔￼๕￼๖￼๗￼๘￼๙";
+				foreach (var str in numericString.Split(fwDelimiter))
+					numeric.Characters.Add(str);
+
+				var punctuation = new CharacterSetDefinition("punctuation");
+				const string punctuationString = "U+0020￼-￼,￼.￼’￼«￼»￼(￼)￼[￼]";
+				foreach (var str in punctuationString.Split(fwDelimiter))
+					punctuation.Characters.Add(str);
+
+				Assert.That(wsV3.Fonts.First().ValueEquals(other));
+				Assert.That(wsV3.WindowsLcid, Is.EqualTo("4321"));
+				Assert.That(wsV3.CharacterSets["main"].ValueEquals(main));
+				Assert.That(wsV3.CharacterSets["numeric"].ValueEquals(numeric));
+				Assert.That(wsV3.CharacterSets["punctuation"].ValueEquals(punctuation));
+
+				// Add these when written to application-specific
+#if WS_FIX
+				// ScriptName, RegionName, VariantName, LegacyMapping, IsGraphiteEnabled
+				Assert.That(wsV3.LegacyMapping, Is.EqualTo("SomeMapper"));
+				Assert.That(wsV3.IsGraphiteEnabled, Is.True);
+#endif
+			}
+		}
+
+		// Add when SpellCheckingId is written in application-specific
 #if WS_FIX
 		[Test]
 		public void Migrate_OriginalFileContainsSpellcheckId_SpellcheckIsMigrated()
@@ -1034,9 +1083,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				
 				var wsV3 = new WritingSystemDefinitionV3();
 				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
-				var sd = wsV3.SpellCheckDictionaries.First();
-
-				// TODO: Assert SpellcheckID
+				Assert.That(wsV3.SpellCheckingId, Is.EqualTo(spellcheckId));
 			}
 		}
 #endif

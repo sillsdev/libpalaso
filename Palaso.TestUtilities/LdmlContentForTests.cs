@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using SIL.WritingSystems;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
@@ -222,6 +222,41 @@ namespace Palaso.TestUtilities
 					break;
 			}
 			return collationelement;
+		}
+
+		static public string Version0WithFw(string language, string script, string region, string variant)
+		{
+			return String.Format(
+				@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+<identity>
+	<version number='' />
+	<generation date='0001-01-01T00:00:00' />
+	<language type='{0}' />
+	<script type='{1}' />
+	<territory type='{2}' />
+	<variant type='{3}' />
+</identity>
+<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
+	<palaso:defaultFontFamily value='Arial' />
+	<palaso:defaultFontSize value='12' />
+</special>
+<special xmlns:fw='urn://fieldworks.sil.org/ldmlExtensions/v1'>
+		<fw:graphiteEnabled value='True' />
+		<fw:validChars value='&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;
+&lt;ValidCharacters&gt;
+  &lt;WordForming&gt;α￼Α￼ά￼ὰ￼ᾷ￼ἀ￼Ἀ￼ἁ￼Ἁ￼ἄ￼Ἄ￼ἂ￼ἅ￼Ἅ￼ἃ￼Ἃ￼ᾶ￼ᾳ￼ᾴ￼ἆ￼Ἆ￼ᾄ￼ᾅ￼β￼Β￼γ￼Γ￼δ￼Δ￼ε￼Ε￼έ￼ὲ￼ἐ￼Ἐ￼ἑ￼Ἑ￼ἔ￼Ἔ￼ἕ￼Ἕ￼ἓ￼Ἓ￼ζ￼Ζ￼η￼Η￼ή￼ὴ￼ῇ￼ἠ￼Ἠ￼ἡ￼Ἡ￼ἤ￼Ἤ￼ἢ￼ἥ￼Ἥ￼Ἢ￼ἣ￼ᾗ￼ῆ￼ῃ￼ῄ￼ἦ￼Ἦ￼ᾖ￼ἧ￼ᾐ￼ᾑ￼ᾔ￼θ￼Θ￼ι￼ί￼ὶ￼ϊ￼ΐ￼ῒ￼ἰ￼Ἰ￼ἱ￼Ἱ￼ἴ￼Ἴ￼ἵ￼Ἵ￼ἳ￼ῖ￼ἶ￼ἷ￼κ￼Κ￼λ￼Λ￼μ￼Μ￼ν￼Ν￼ξ￼Ξ￼ο￼Ο￼ό￼ὸ￼ὀ￼Ὀ￼ὁ￼Ὁ￼ὄ￼Ὄ￼ὅ￼ὂ￼Ὅ￼ὃ￼Ὃ￼π￼Π￼ρ￼Ρ￼ῥ￼Ῥ￼σ￼ς￼Σ￼τ￼Τ￼υ￼Υ￼ύ￼ὺ￼ϋ￼ΰ￼ῢ￼ὐ￼ὑ￼Ὑ￼ὔ￼ὕ￼ὒ￼Ὕ￼ὓ￼ῦ￼ὖ￼ὗ￼Ὗ￼φ￼Φ￼χ￼Χ￼ψ￼Ψ￼ω￼ώ￼ὼ￼ῷ￼ὠ￼ὡ￼Ὡ￼ὤ￼Ὤ￼ὢ￼ὥ￼Ὥ￼ᾧ￼ῶ￼ῳ￼ῴ￼ὦ￼Ὦ￼ὧ￼Ὧ￼ᾠ&lt;/WordForming&gt;
+  &lt;Numeric&gt;๐￼๑￼๒￼๓￼๔￼๕￼๖￼๗￼๘￼๙&lt;/Numeric&gt;
+  &lt;Other&gt;U+0020￼-￼,￼.￼’￼«￼»￼(￼)￼[￼]&lt;/Other&gt;
+&lt;/ValidCharacters&gt;' />
+		<fw:defaultFontFeatures value='order=3 children=2 color=red createDate=1996' />
+		<fw:legacyMapping value='SomeMapper' />
+		<fw:scriptName value='scriptName' />
+		<fw:regionName value='regionName' />
+		<fw:variantName value='aVarName' />
+		<fw:windowsLCID value='4321' />
+</special>
+</ldml>".Replace('\'', '"'), language, script, region, variant);
 		}
 
 		static public string Version0(string language, string script, string region, string variant)
