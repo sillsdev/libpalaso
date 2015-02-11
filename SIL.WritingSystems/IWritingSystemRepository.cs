@@ -198,7 +198,6 @@ namespace SIL.WritingSystems
 		///</summary>
 		WritingSystemCompatibility CompatibilityMode { get; }
 
-#if WS_FIX
 		/// <summary>
 		/// A string which may be used to persist the user's local choice of LocalKeyboard for each writing system.
 		/// Typical usage: to persist local keyboards:
@@ -208,7 +207,6 @@ namespace SIL.WritingSystems
 		/// wsRepo.LocalKeyboardSettings = Settings.Default.LocalKeyboards;
 		/// </summary>
 		string LocalKeyboardSettings { get; set; }
-#endif
 
 		/// <summary>
 		/// Get the writing system that is most probably intended by the user, when input language changes to the specified layout and cultureInfo,

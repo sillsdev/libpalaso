@@ -1774,15 +1774,14 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(result, Has.No.Member(kbd1));
 		}
 
-		class MockKeyboardController : IKeyboardController
+		private class MockKeyboardController : IKeyboardController
 		{
-			/// <summary>
-			/// Tries to get the keyboard with the specified <paramref name="layoutName"/>.
-			/// </summary>
-			/// <returns>
-			/// Returns <c>KeyboardDescription.Zero</c> if no keyboard can be found.
-			/// </returns>
 			public IKeyboardDefinition GetKeyboard(string layoutName)
+			{
+				throw new NotImplementedException();
+			}
+
+			public bool TryGetKeyboard(string id, out IKeyboardDefinition keyboard)
 			{
 				throw new NotImplementedException();
 			}
@@ -1792,12 +1791,6 @@ namespace SIL.WritingSystems.Tests
 				throw new NotImplementedException();
 			}
 
-			/// <summary>
-			/// Tries to get the keyboard for the specified <paramref name="writingSystem"/>.
-			/// </summary>
-			/// <returns>
-			/// Returns <c>KeyboardDescription.Zero</c> if no keyboard can be found.
-			/// </returns>
 			public IKeyboardDefinition GetKeyboard(WritingSystemDefinition writingSystem)
 			{
 				throw new NotImplementedException();
@@ -1808,9 +1801,6 @@ namespace SIL.WritingSystems.Tests
 				throw new NotImplementedException();
 			}
 
-			/// <summary>
-			/// Sets the keyboard
-			/// </summary>
 			public void SetKeyboard(IKeyboardDefinition keyboard)
 			{
 				throw new NotImplementedException();
@@ -1836,9 +1826,6 @@ namespace SIL.WritingSystems.Tests
 				throw new NotImplementedException();
 			}
 
-			/// <summary>
-			/// Activates the keyboard of the default input language
-			/// </summary>
 			public void ActivateDefaultKeyboard()
 			{
 				throw new NotImplementedException();
@@ -1864,30 +1851,17 @@ namespace SIL.WritingSystems.Tests
 				throw new NotImplementedException();
 			}
 
-			/// <summary>
-			/// Creates and returns a keyboard definition object based on the ID.
-			/// </summary>
-			/// <remarks>The keyboard controller implementing this method will have to check the
-			/// availability of the keyboard and what engine provides it.</remarks>
 			public IKeyboardDefinition CreateKeyboardDefinition(string id, KeyboardFormat format, IEnumerable<string> urls)
 			{
 				throw new NotImplementedException();
 			}
 
-			/// <summary>
-			/// Gets or sets the currently active keyboard
-			/// </summary>
 			public IKeyboardDefinition ActiveKeyboard { get; set; }
 
-			#region Implementation of IDisposable
-			/// <summary>
-			/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-			/// </summary>
 			public void Dispose()
 			{
 				GC.SuppressFinalize(this);
 			}
-			#endregion
 		}
 
 		[Test]

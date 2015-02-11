@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Xml.Linq;
 using Palaso.Code;
 
 namespace SIL.WritingSystems
@@ -24,6 +25,7 @@ namespace SIL.WritingSystems
 		private readonly Dictionary<string, DateTime> _writingSystemsToIgnore;
 
 		private readonly Dictionary<string, string> _idChangeMap;
+		private Dictionary<string, IKeyboardDefinition> _localKeyboardSettings;
 
 		public event EventHandler<WritingSystemIdChangedEventArgs> WritingSystemIdChanged;
 		public event EventHandler<WritingSystemDeletedEventArgs> WritingSystemDeleted;
@@ -189,7 +191,7 @@ namespace SIL.WritingSystems
 				_writingSystems.Remove(oldId);
 			}
 			_writingSystems[ws.Id] = ws;
-#if WS_FIX
+
 			// If the writing system already has a local keyboard, probably it has just been created in some dialog,
 			// and we should respect the one the user set...though this is a very unlikely scenario, as we probably
 			// don't have a local setting for a WS that is just being created.
@@ -199,7 +201,7 @@ namespace SIL.WritingSystems
 			{
 				ws.LocalKeyboard = keyboard;
 			}
-#endif
+
 			if (!String.IsNullOrEmpty(oldId) && (oldId != ws.Id))
 			{
 				UpdateChangedIDs(oldId, ws.Id);
@@ -347,9 +349,6 @@ namespace SIL.WritingSystems
 
 		public WritingSystemCompatibility CompatibilityMode { get; private set; }
 
-#if WS_FIX
-		private Dictionary<string, IKeyboardDefinition> _localKeyboardSettings;
-
 		/// <summary>
 		/// Getter gets the XML string that represents the user preferred keyboard for each writing
 		/// system.
@@ -374,23 +373,26 @@ namespace SIL.WritingSystems
 						continue;
 					root.Add(new XElement("keyboard",
 						new XAttribute("ws", ws.Id),
-						new XAttribute("layout", kbd.Layout),
-						new XAttribute("locale", kbd.Locale)));
+						new XAttribute("id", kbd.Id)));
 				}
 				return root.ToString();
 			}
+
 			set
 			{
 				_localKeyboardSettings = null;
 				if (string.IsNullOrWhiteSpace(value))
 					return;
+
 				var root = XElement.Parse(value);
 				_localKeyboardSettings = new Dictionary<string, IKeyboardDefinition>();
-				foreach (var kbd in root.Elements("keyboard"))
+				foreach (XElement kbd in root.Elements("keyboard"))
 				{
-					var keyboard = Keyboard.Controller.CreateKeyboardDefinition(
-						GetAttributeValue(kbd, "layout"), GetAttributeValue(kbd, "locale"));
-					_localKeyboardSettings[kbd.Attribute("ws").Value] = keyboard;
+					var id = (string) kbd.Attribute("id");
+					IKeyboardDefinition keyboard;
+					if (!Keyboard.Controller.TryGetKeyboard(id, out keyboard))
+						keyboard = Keyboard.Controller.CreateKeyboardDefinition(id, KeyboardFormat.Unknown, Enumerable.Empty<string>());
+					_localKeyboardSettings[(string) kbd.Attribute("ws")] = keyboard;
 				}
 				// We do it like this rather than looking up the writing system by the ws attribute so as not to force the
 				// creation of any writing systems which may be in the local keyboard settings but not in the current repo.
@@ -402,15 +404,6 @@ namespace SIL.WritingSystems
 				}
 			}
 		}
-
-		private string GetAttributeValue(XElement node, string attrName)
-		{
-			var attr = node.Attribute(attrName);
-			if (attr == null)
-				return "";
-			return attr.Value;
-		}
-#endif
 
 		/// <summary>
 		/// Get the writing system that is most probably intended by the user, when input language changes to the specified layout and cultureInfo,

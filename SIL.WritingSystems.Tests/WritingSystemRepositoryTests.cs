@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Xml.Linq;
 using NUnit.Framework;
 
 namespace SIL.WritingSystems.Tests
@@ -724,7 +725,6 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(RepositoryUnderTest.WritingSystemIdHasChangedTo("en"), Is.EqualTo("en"));
 		}
 
-#if WS_FIX
 		[Test]
 		public void LocalKeyboardSettings_RetrievesLocalKeyboardData()
 		{
@@ -732,15 +732,14 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.Set(wsEn);
 			var wsFr = new WritingSystemDefinition("fr");
 			RepositoryUnderTest.Set(wsFr);
-			var kbd1 = new DefaultKeyboardDefinition(KeyboardType.System, "English", "en-GB");
+			var kbd1 = new DefaultKeyboardDefinition("en-GB_English", "English");
 			wsEn.LocalKeyboard = kbd1;
 
-			var result = RepositoryUnderTest.LocalKeyboardSettings;
-			var root = XElement.Parse(result);
+			string result = RepositoryUnderTest.LocalKeyboardSettings;
+			XElement root = XElement.Parse(result);
 			Assert.That(root.Elements("keyboard").Count(), Is.EqualTo(1), "should have local keyboard for en but not fr");
-			var keyboardElt = root.Elements("keyboard").First();
-			Assert.That(keyboardElt.Attribute("layout").Value, Is.EqualTo("English"));
-			Assert.That(keyboardElt.Attribute("locale").Value, Is.EqualTo("en-GB"));
+			XElement keyboardElt = root.Elements("keyboard").First();
+			Assert.That(keyboardElt.Attribute("id").Value, Is.EqualTo("en-GB_English"));
 			Assert.That(keyboardElt.Attribute("ws").Value, Is.EqualTo("en"));
 		}
 
@@ -751,16 +750,16 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.Set(wsEn);
 			var wsFr = new WritingSystemDefinition("fr");
 			RepositoryUnderTest.Set(wsFr);
-			var kbd1 = new DefaultKeyboardDefinition(KeyboardType.System, "English", "en-GB");
+			var kbd1 = new DefaultKeyboardDefinition("en-GB_English", "English");
 			wsEn.LocalKeyboard = kbd1;
 
 			RepositoryUnderTest.LocalKeyboardSettings =
 @"<keyboards>
-	<keyboard ws='en' layout='English' locale='en-AU'/>
-	<keyboard ws='fr' layout='French-IPA' locale='fr-FR'/>
+	<keyboard ws='en' id='en-AU_English'/>
+	<keyboard ws='fr' id='fr-FR_French-IPA'/>
 </keyboards>";
-			Assert.That(wsEn.LocalKeyboard.Locale, Is.EqualTo("en-AU"));
-			Assert.That(wsFr.LocalKeyboard.Layout, Is.EqualTo("French-IPA"));
+			Assert.That(wsEn.LocalKeyboard.Id, Is.EqualTo("en-AU_English"));
+			Assert.That(wsFr.LocalKeyboard.Id, Is.EqualTo("fr-FR_French-IPA"));
 		}
 
 		[Test]
@@ -768,21 +767,21 @@ namespace SIL.WritingSystems.Tests
 		{
 			RepositoryUnderTest.LocalKeyboardSettings =
 @"<keyboards>
-	<keyboard ws='en' layout='English' locale='en-AU'/>
-	<keyboard ws='fr' layout='French-IPA' locale='fr-FR'/>
-	<keyboard ws='de' layout='German-IPA' locale='de-DE'/>
+	<keyboard ws='en' id='en-AU_English'/>
+	<keyboard ws='fr' id='fr-FR_French-IPA'/>
+	<keyboard ws='de' id='de-DE_German-IPA'/>
 </keyboards>";
 			var wsEn = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(wsEn);
 			var wsFr = new WritingSystemDefinition("fr");
 			RepositoryUnderTest.Set(wsFr);
 			var wsDe = new WritingSystemDefinition("de");
-			wsDe.LocalKeyboard = new DefaultKeyboardDefinition(KeyboardType.System, "German", "de-SW");
+			wsDe.LocalKeyboard = new DefaultKeyboardDefinition("de-SW_German", "German");
 			RepositoryUnderTest.Set(wsDe);
 
-			Assert.That(wsEn.LocalKeyboard.Locale, Is.EqualTo("en-AU"));
-			Assert.That(wsFr.LocalKeyboard.Layout, Is.EqualTo("French-IPA"));
-			Assert.That(wsDe.LocalKeyboard.Layout, Is.EqualTo("German"), "should not apply local keyboard settings if new WS already has them");
+			Assert.That(wsEn.LocalKeyboard.Id, Is.EqualTo("en-AU_English"));
+			Assert.That(wsFr.LocalKeyboard.Id, Is.EqualTo("fr-FR_French-IPA"));
+			Assert.That(wsDe.LocalKeyboard.Id, Is.EqualTo("de-SW_German"), "should not apply local keyboard settings if new WS already has them");
 		}
 
 		[Test]
@@ -792,7 +791,6 @@ namespace SIL.WritingSystems.Tests
 			Assert.DoesNotThrow(() => RepositoryUnderTest.LocalKeyboardSettings = "");
 			Assert.DoesNotThrow(() => RepositoryUnderTest.LocalKeyboardSettings = "   ");
 		}
-#endif
 
 		[Test]
 		public void GetWsForInputLanguage_GetsMatchingWsByCulture()

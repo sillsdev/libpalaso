@@ -7,29 +7,37 @@ namespace SIL.WritingSystems
 	/// This interface defines the functions of a keyboard controller that are required to implement the keyboard-related
 	/// methods of WritingSystem.
 	/// Various classes obtain one of these when needed by reading Keyboard.Controller.
-	/// The default implementation of this in the core Palaso DLL has minimal functionality.
-	/// Typically clients will set Keyboard.Controller to some more useful class, such as UI.WindowsForms.KeyboardController.
+	/// The default implementation of this in the core SIL.WritingSystems DLL has minimal functionality.
+	/// Typically clients will set Keyboard.Controller to some more useful class, such as SIL.WritingSystems.WindowsForms.KeyboardController.
 	/// </summary>
 	public interface IKeyboardController: IDisposable
 	{
 		/// <summary>
 		/// Tries to get the keyboard with the specified <paramref name="id"/>.
+		/// If the keyboard doesn't exist, a no-op keyboard is returned.
 		/// </summary>
 		IKeyboardDefinition GetKeyboard(string id);
 
 		/// <summary>
+		/// Tries the get keyboard with the specified <paramref name="id"/>.
+		/// </summary>
+		bool TryGetKeyboard(string id, out IKeyboardDefinition keyboard);
+
+		/// <summary>
 		/// Tries to get the keyboard with the specified <paramref name="layoutName"/>
-		/// and <paramref name="locale"/>.
+		/// and <paramref name="locale"/>. If the keyboard doesn't exist, a no-op keyboard is returned.
 		/// </summary>
 		IKeyboardDefinition GetKeyboard(string layoutName, string locale);
 
 		/// <summary>
 		/// Tries to get the keyboard for the specified <paramref name="writingSystem"/>.
+		/// If the keyboard doesn't exist, a no-op keyboard is returned.
 		/// </summary>
 		IKeyboardDefinition GetKeyboard(WritingSystemDefinition writingSystem);
 
 		/// <summary>
 		/// Tries to get the keyboard for the specified <paramref name="language"/>.
+		/// If the keyboard doesn't exist, a no-op keyboard is returned.
 		/// </summary>
 		IKeyboardDefinition GetKeyboard(IInputLanguage language);
 

@@ -243,17 +243,37 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 
 		public IKeyboardDefinition GetKeyboard(string id)
 		{
-			if (string.IsNullOrEmpty(id))
-				return NullKeyboard;
+			IKeyboardDefinition keyboard;
+			if (TryGetKeyboard(id, out keyboard))
+				return keyboard;
+			return NullKeyboard;
+		}
 
-			if (_keyboards.Contains(id))
-				return _keyboards[id];
+		public bool TryGetKeyboard(string id, out IKeyboardDefinition keyboard)
+		{
+			if (string.IsNullOrEmpty(id))
+			{
+				keyboard = null;
+				return false;
+			}
+
+			KeyboardDescription kd;
+			if (_keyboards.TryGetItem(id, out kd))
+			{
+				keyboard = kd;
+				return true;
+			}
 
 			string[] parts = id.Split('|');
 			if (parts.Length == 2)
 			{
 				// This is the way Paratext stored IDs in 7.4-7.5 while there was a temporary bug-fix in place)
-				return GetKeyboard(parts[0], parts[1]);
+				keyboard = GetKeyboard(parts[0], parts[1]);
+				if (keyboard != NullKeyboard)
+					return true;
+
+				keyboard = null;
+				return false;
 			}
 
 			// Handle old Palaso IDs
@@ -262,13 +282,14 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 			{
 				for (int i = 1; i < parts.Length; i++)
 				{
-					var kb = GetKeyboard(string.Join("-", parts.Take(i)), string.Join("-", parts.Skip(i)));
-					if (kb != NullKeyboard)
-						return kb;
+					keyboard = GetKeyboard(string.Join("-", parts.Take(i)), string.Join("-", parts.Skip(i)));
+					if (keyboard != NullKeyboard)
+						return true;
 				}
 			}
 
-			return NullKeyboard;
+			keyboard = null;
+			return false;
 		}
 
 		public IKeyboardDefinition GetKeyboard(string layoutName, string locale)

@@ -28,6 +28,18 @@ namespace SIL.WritingSystems
 			return null;
 		}
 
+		public bool TryGetKeyboard(string id, out IKeyboardDefinition keyboard)
+		{
+			DefaultKeyboardDefinition dkd;
+			if (_keyboards.TryGetValue(id, out dkd))
+			{
+				keyboard = dkd;
+				return true;
+			}
+			keyboard = null;
+			return false;
+		}
+
 		public IKeyboardDefinition GetKeyboard(string layoutName, string locale)
 		{
 			return _keyboards.Values.FirstOrDefault(k => k.Layout == layoutName && k.Locale == locale);
