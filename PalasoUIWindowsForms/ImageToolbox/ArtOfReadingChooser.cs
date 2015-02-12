@@ -214,7 +214,38 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 #endif
 
 			_messageLabel.BackColor = Color.White;
-			_searchTermsBox.Focus();
+		}
+
+		/// <summary>
+		/// To actually focus on the search box, the Mono runtime library appears to
+		/// first need us to focus the search button, wait a bit, and then focus the
+		/// search box.  Bizarre, unfortunate, but true.  (One of those bugs that we
+		/// couldn't write code to do if we tried!)
+		/// See https://jira.sil.org/browse/BL-964.
+		/// </summary>
+		internal void FocusSearchBox()
+		{
+			_searchButton.GotFocus += _searchButtonGotSetupFocus;
+			_searchButton.Select();
+		}
+
+		private System.Windows.Forms.Timer _focusTimer1;
+
+		private void _searchButtonGotSetupFocus(object sender, EventArgs e)
+		{
+			_searchButton.GotFocus -= _searchButtonGotSetupFocus;
+			_focusTimer1 = new System.Windows.Forms.Timer(this.components);
+			_focusTimer1.Tick += new System.EventHandler(this._focusTimer1_Tick);
+			_focusTimer1.Interval = 100;
+			_focusTimer1.Enabled = true;
+		}
+
+		private void _focusTimer1_Tick(object sender, EventArgs e)
+		{
+			_focusTimer1.Enabled = false;
+			_focusTimer1.Dispose();
+			_focusTimer1 = null;
+			_searchTermsBox.TextBox.Focus();
 		}
 
 		/// <summary>
