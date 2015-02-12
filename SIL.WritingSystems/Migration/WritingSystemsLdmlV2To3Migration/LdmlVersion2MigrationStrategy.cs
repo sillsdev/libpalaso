@@ -45,14 +45,6 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				.Remove();
 			ldmlElem.Elements("collations").Elements("collation").Where(e => e.Descendants("special") != null).Remove();
 
-			var writerSettings = CanonicalXmlSettings.CreateXmlWriterSettings();
-			writerSettings.NewLineOnAttributes = false;
-			using (var writer = XmlWriter.Create(sourceFilePath, writerSettings))
-			{
-				ldmlElem.WriteTo(writer);
-				writer.Close();
-			}
-
 			var writingSystemDefinitionV3 = new WritingSystemDefinitionV3
 			{
 				Abbreviation = writingSystemDefinitionV1.Abbreviation,
@@ -98,13 +90,21 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				writingSystemDefinitionV1.Region,
 				writingSystemDefinitionV1.Variant);
 
-			// Migrate fields from fw namespace
+			// Migrate fields from legacy fw namespace, and then remove fw namespace
 			if (fwElem != null)
 			{
 				ReadFwSpecialElem(fwElem, writingSystemDefinitionV3);
 				fwElem.Remove();
 			}
-		
+
+			var writerSettings = CanonicalXmlSettings.CreateXmlWriterSettings();
+			writerSettings.NewLineOnAttributes = false;
+			using (var writer = XmlWriter.Create(sourceFilePath, writerSettings))
+			{
+				ldmlElem.WriteTo(writer);
+				writer.Close();
+			}
+
 			var ldmlDataMapper = new LdmlAdaptorV3();
 			using (Stream sourceStream = new FileStream(sourceFilePath, FileMode.Open))
 				ldmlDataMapper.Write(destinationFilePath, writingSystemDefinitionV3, sourceStream);

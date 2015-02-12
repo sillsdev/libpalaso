@@ -206,10 +206,8 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(wsFromLdml.Variants[0].Name, Is.EqualTo("1996"));
 		}
 
-		// TODO: Fix this on Linux  DWONG 01-21-2015
 		// This tests characters and numbers elements
 		[Test]
-		[Platform(Exclude = "Linux")]
 		public void Read_LdmlCharacters()
 		{
 			var ldmlAdaptor = new LdmlDataMapper();
