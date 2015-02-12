@@ -1,24 +1,51 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Xml;
 using System.Xml.Linq;
 using NUnit.Framework;
+using Palaso.TestUtilities;
 
 namespace SIL.WritingSystems.Tests
 {
 	[TestFixture]
-	[Category("SkipOnTeamCity")]
 	public class SldrTests
 	{
+		private class TestEnvironment : IDisposable
+		{
+			public TestEnvironment()
+			{
+				FolderContainingLdml = new TemporaryFolder("SldrTests");
+			}
+
+			private TemporaryFolder FolderContainingLdml { get; set; }
+
+			public void GetLdmlFile(string fileName, string bcp47Tag)
+			{
+				string filePath = Path.Combine(FolderContainingLdml.Path, fileName);
+				if (File.Exists(filePath))
+					File.Delete(filePath);
+
+				Sldr.GetLdmlFile(filePath, bcp47Tag);
+			}
+
+			public XElement ReadLdmlFile(string fileName)
+			{
+				string filePath = Path.Combine(FolderContainingLdml.Path, fileName);
+				return XElement.Load(filePath);
+			}
+
+			public void Dispose()
+			{
+				FolderContainingLdml.Dispose();
+			}
+		}
 
 		[Test]
 		public void Get_EmptyFileName_Throws()
 		{
 			string filename = string.Empty;
 			const string bcp47Tag = "en";
-
-			if (File.Exists(filename))
-				File.Delete(filename);
 
 			Assert.Throws<ArgumentException>(
 				() => Sldr.GetLdmlFile(filename, bcp47Tag)
@@ -28,11 +55,8 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Get_BadFileName_Throws()
 		{
-			const string filename = "c:\badpath";
+			const string filename = "/dev/null/foo";
 			const string bcp47Tag = "en";
-
-			if (File.Exists(filename))
-				File.Delete(filename);
 
 			Assert.Throws<System.Net.WebException>(
 				() => Sldr.GetLdmlFile(filename, bcp47Tag)
@@ -42,43 +66,42 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Get_BadBcp47Tag_Throws()
 		{
-			string filename = Path.Combine(Path.GetTempPath(), "en.ldml");
-			const string bcp47Tag = "!@#";
+			using (var environment = new TestEnvironment())
+			{
+				const string filename = "en.ldml";
+				const string bcp47Tag = "!@#";
 
-			if (File.Exists(filename))
-				File.Delete(filename);
-
-			Assert.Throws<System.Net.WebException>(
-				() => Sldr.GetLdmlFile(filename, bcp47Tag)
-			);
+				Assert.Throws<System.Net.WebException>(
+					() => environment.GetLdmlFile(filename, bcp47Tag)
+				);
+			}
 		}
 
-		// This test should be run on TC.  But ignore for now until LDML service correctly writes the SIL namespace
 		[Test]
 		public void Get_Validate()
 		{
-			string filename = Path.Combine(Path.GetTempPath(), "en_GB.ldml");
-			const string bcp47Tag = "en-GB";
+			using (var environment = new TestEnvironment())
+			{
+				const string filename = "en_GB.ldml";
+				const string bcp47Tag = "en-GB";
 
-			const string expectedLanguage = "en";
-			const string expectedScript = "Latn";
-			const string expectedTerritory = "GB";
+				const string expectedLanguage = "en";
+				const string expectedScript = "Latn";
+				const string expectedTerritory = "GB";
 
-			if (File.Exists(filename))
-				File.Delete(filename);
+				environment.GetLdmlFile(filename, bcp47Tag);
 
-			Sldr.GetLdmlFile(filename, bcp47Tag);
+				// Parse the LDML file
+				XElement element = environment.ReadLdmlFile(filename);
+				XElement identity = element.Descendants("identity").First();
+				Assert.AreEqual((string) identity.Element("language").Attribute("type"), expectedLanguage);
+				Assert.AreEqual((string) identity.Element("script").Attribute("type"), expectedScript);
+				Assert.AreEqual((string) identity.Element("territory").Attribute("type"), expectedTerritory);
 
-			// Parse the LDML file
-			XElement element = XElement.Load(filename);
-			XElement identity = element.Descendants("identity").First();
-			Assert.AreEqual((string)identity.Element("language").Attribute("type"), expectedLanguage);
-			Assert.AreEqual((string)identity.Element("script").Attribute("type"), expectedScript);
-			Assert.AreEqual((string)identity.Element("territory").Attribute("type"), expectedTerritory);
-
-			// Verify user ID is generated
-			XElement silIdentityElem = identity.Descendants(Sldr.Sil + "identity").First();
-			Assert.AreEqual(((string) silIdentityElem.Attribute("uid")).Length, 8);
+				// Verify user ID is generated
+				XElement silIdentityElem = identity.Descendants(Sldr.Sil + "identity").First();
+				Assert.AreEqual(((string) silIdentityElem.Attribute("uid")).Length, 8);
+			}
 		}
 	}
 }
