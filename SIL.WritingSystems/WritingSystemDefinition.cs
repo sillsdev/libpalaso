@@ -219,7 +219,7 @@ namespace SIL.WritingSystems
 
 		private void _variants_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			if (!_ignoreVariantChanges.Busy)
+			if (!_ignoreVariantChanges.Busy && (e.Action != NotifyCollectionChangedAction.Replace || ((VariantSubtag) e.OldItems[0]).Code != ((VariantSubtag) e.NewItems[0]).Code))
 			{
 				CheckVariantAndScriptRules();
 				UpdateLanguageTag();
@@ -470,7 +470,9 @@ namespace SIL.WritingSystems
 			get { return _language; }
 			set
 			{
-				if (UpdateField(() => Language, ref _language, value))
+				string oldCode = _language == null ? string.Empty : _language.Code;
+				UpdateField(() => Language, ref _language, value);
+				if (oldCode != (_language == null ? string.Empty : _language.Code))
 					UpdateLanguageTag();
 			}
 		}
@@ -480,7 +482,9 @@ namespace SIL.WritingSystems
 			get { return _script; }
 			set
 			{
-				if (UpdateField(() => Script, ref _script, value))
+				string oldCode = _script == null ? string.Empty : _script.Code;
+				UpdateField(() => Script, ref _script, value);
+				if (oldCode != (_script == null ? string.Empty : _script.Code))
 				{
 					CheckVariantAndScriptRules();
 					UpdateLanguageTag();
@@ -493,7 +497,9 @@ namespace SIL.WritingSystems
 			get { return _region; }
 			set
 			{
-				if (UpdateField(() => Region, ref _region, value))
+				string oldCode = _region == null ? string.Empty : _region.Code;
+				UpdateField(() => Region, ref _region, value);
+				if (oldCode != (_region == null ? string.Empty : _region.Code))
 					UpdateLanguageTag();
 			}
 		}
