@@ -18,9 +18,8 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Tree
 
 			WritingSystemDefinition ipa = ((WritingSystemSuggestion)suggestions.First(defn => ((WritingSystemSuggestion)defn).TemplateDefinition.Script == "ipa")).TemplateDefinition;
 
-			Assert.That(ipa.Language, Is.EqualTo((LanguageSubtag) "etr"));
+			Assert.That(ipa.Language, Is.EqualTo(new LanguageSubtag("etr", "Edolo")));
 			Assert.That(ipa.Variants, Is.EqualTo(new VariantSubtag[] {"fonipa"}));
-			Assert.That(ipa.LanguageName, Is.EqualTo("Edolo"));
 			Assert.That(ipa.Region, Is.EqualTo((RegionSubtag) "region"));
 			//Assert.AreEqual("arial unicode ms", ipa.DefaultFontName); this depends on what fonts are installed on the test system
 			Assert.That(ipa.DefaultFontSize, Is.EqualTo(33));

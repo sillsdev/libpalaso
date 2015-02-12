@@ -195,8 +195,8 @@ namespace SIL.WritingSystems
 
 		public static bool IsPrivateUseScriptCode(string scriptCode)
 		{
-			var scriptCodeU = scriptCode.ToUpperInvariant();
-			return (string.Compare(scriptCodeU, "QAAA", StringComparison.Ordinal) >= 0 && string.Compare(scriptCodeU, "QABX", StringComparison.Ordinal) <= 0);
+			return scriptCode.Length == 4 && string.Compare(scriptCode, "QAAA", StringComparison.InvariantCultureIgnoreCase) >= 0
+				&& string.Compare(scriptCode, "QABX", StringComparison.InvariantCultureIgnoreCase) <= 0;
 		}
 
 		public static bool IsValidIso3166RegionCode(string regionCodeToCheck)
@@ -214,10 +214,10 @@ namespace SIL.WritingSystems
 		/// </returns>
 		public static bool IsPrivateUseRegionCode(string regionCode)
 		{
-			var regionCodeU = regionCode.ToUpperInvariant();
-			return regionCodeU == "AA" || regionCodeU == "ZZ"
-				|| (string.Compare(regionCodeU, "QM", StringComparison.Ordinal) >= 0 && string.Compare(regionCodeU, "QZ", StringComparison.Ordinal) <= 0)
-				|| (string.Compare(regionCodeU, "XA", StringComparison.Ordinal) >= 0 && string.Compare(regionCodeU, "XZ", StringComparison.Ordinal) <= 0);
+			return regionCode.Length == 2
+				&& (regionCode.Equals("AA", StringComparison.InvariantCultureIgnoreCase) || regionCode.Equals("ZZ", StringComparison.InvariantCultureIgnoreCase)
+					|| (string.Compare(regionCode, "QM", StringComparison.InvariantCultureIgnoreCase) >= 0 && string.Compare(regionCode, "QZ", StringComparison.InvariantCultureIgnoreCase) <= 0)
+					|| (string.Compare(regionCode, "XA", StringComparison.InvariantCultureIgnoreCase) >= 0 && string.Compare(regionCode, "XZ", StringComparison.InvariantCultureIgnoreCase) <= 0));
 		}
 
 		public static bool IsValidRegisteredVariantCode(string variantToCheck)

@@ -9,5 +9,7 @@
 		void Read(WritingSystemDefinition ws);
 
 		void Write(WritingSystemDefinition ws);
+
+		void Remove(string wsId);
 	}
 }

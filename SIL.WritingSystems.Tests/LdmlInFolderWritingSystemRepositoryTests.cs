@@ -1079,7 +1079,7 @@ namespace SIL.WritingSystems.Tests
 
 		private static bool ContainsLanguageWithName(IEnumerable<WritingSystemDefinition> list, string name)
 		{
-			return list.Any(definition => definition.LanguageName == name);
+			return list.Any(definition => definition.Language.Name == name);
 		}
 
 		class DummyWritingSystemProvider : IEnumerable<WritingSystemDefinition>

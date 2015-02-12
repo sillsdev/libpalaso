@@ -65,7 +65,6 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public const int LatestWritingSystemDefinitionVersion = 3;
 
-		private string _languageName;
 		private string _languageTag;
 		private LanguageSubtag _language;
 		private ScriptSubtag _script;
@@ -97,7 +96,7 @@ namespace SIL.WritingSystems
 		private readonly SimpleMonitor _ignoreVariantChanges = new SimpleMonitor();
 		private bool _requiresValidLanguageTag = true;
 		private string _legacyMapping;
-		private bool _isGraphiteEnabled;
+		private bool _isGraphiteEnabled = true;
 
 		/// <summary>
 		/// Creates a new WritingSystemDefinition with Language subtag set to "qaa"
@@ -132,7 +131,6 @@ namespace SIL.WritingSystems
 			_punctuationPatterns = new ObservableSet<PunctuationPattern>();
 			_defaultCollation = new CollationDefinition("standard");
 			_collations.Add(_defaultCollation);
-			_abbreviation = _languageName = string.Empty;
 			SetupCollectionChangeListeners();
 		}
 
@@ -182,7 +180,6 @@ namespace SIL.WritingSystems
 			foreach (SpellCheckDictionaryDefinition scdd in ws._spellCheckDictionaries)
 				_spellCheckDictionaries.Add(scdd.Clone());
 			_dateModified = ws._dateModified;
-			_languageName = ws._languageName;
 			_languageTag = ws._languageTag;
 			_localKeyboard = ws._localKeyboard;
 			_windowsLcid = ws._windowsLcid;
@@ -540,22 +537,6 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// The language name to use. Typically this is the language name associated with the BCP47 language subtag as defined by the IANA subtag registry
-		/// </summary>
-		public virtual string LanguageName
-		{
-			get
-			{
-				if (!string.IsNullOrEmpty(_languageName))
-					return _languageName;
-				if (_language != null && !string.IsNullOrEmpty(_language.Name))
-					return _language.Name;
-				return "Unknown Language";
-			}
-			set { UpdateString(() => LanguageName, ref _languageName, value); }
-		}
-
-		/// <summary>
 		/// This method will make a copy of the given writing system and
 		/// then make the Id unique compared to list of Ids passed in by
 		/// appending dupl# where # is a digit that increases with the
@@ -613,13 +594,13 @@ namespace SIL.WritingSystems
 				}
 				if (languageIsUnknown)
 				{
-					if (!String.IsNullOrEmpty(_abbreviation))
+					if (!string.IsNullOrEmpty(_abbreviation))
 					{
 						return _abbreviation;
 					}
-					if (!String.IsNullOrEmpty(_languageName))
+					if (_language != WellKnownSubtags.UnlistedLanguage && !string.IsNullOrEmpty(_language.Name))
 					{
-						string n = _languageName;
+						string n = _language.Name;
 						return n.Substring(0, n.Length > 4 ? 4 : n.Length);
 					}
 				}
@@ -699,7 +680,7 @@ namespace SIL.WritingSystems
 					details.AppendFormat("{0}-", variantSubtag.Code);
 				}
 
-				string name = !string.IsNullOrEmpty(LanguageName) ? LanguageName : DisplayLabel;
+				string name = !string.IsNullOrEmpty(_language.Name) ? _language.Name : DisplayLabel;
 				if (details.Length > 0)
 				{
 					// remove trailing dash
@@ -1042,8 +1023,6 @@ namespace SIL.WritingSystems
 			if (_region != other._region)
 				return false;
 			if (!_variants.SequenceEqual(other._variants))
-				return false;
-			if (_languageName != other._languageName)
 				return false;
 			if (!_languageTag.Equals(other._languageTag))
 				return false;

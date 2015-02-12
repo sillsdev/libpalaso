@@ -20,7 +20,7 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 
 		protected void SetLabelDetail(string detail)
 		{
-			Label = string.Format("{0} ({1})", TemplateDefinition.LanguageName, detail);
+			Label = string.Format("{0} ({1})", TemplateDefinition.Language.Name, detail);
 		}
 	}
 
@@ -48,7 +48,7 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 		public DialectSuggestion(WritingSystemDefinition primary)
 		{
 			TemplateDefinition = primary.Clone();
-			Label = string.Format("new dialect of {0}", TemplateDefinition.LanguageName);
+			Label = string.Format("new dialect of {0}", TemplateDefinition.Language.Name);
 		}
 		public override WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()
 		{
@@ -81,7 +81,6 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 									  {
 										  Language = primary.Language,
 										  Region = primary.Region,
-										  LanguageName = primary.LanguageName,
 										  Abbreviation = "ipa",
 										  DefaultFont = ipaFont,
 										  DefaultFontSize = primary.DefaultFontSize,
@@ -92,7 +91,7 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 			var ipaKeyboard = Keyboard.Controller.AllAvailableKeyboards.FirstOrDefault(k => k.Id.ToLower().Contains("ipa"));
 			if (ipaKeyboard != null)
 				TemplateDefinition.Keyboard = ipaKeyboard.Id;
-			Label = string.Format("IPA input system for {0}", TemplateDefinition.LanguageName);
+			Label = string.Format("IPA input system for {0}", TemplateDefinition.Language.Name);
 		}
 		public override WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()
 		{
@@ -117,7 +116,7 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 		public OtherSuggestion(WritingSystemDefinition primary, IEnumerable<WritingSystemDefinition> exisitingWritingSystemsForLanguage)
 		{
 			TemplateDefinition = WritingSystemDefinition.CreateCopyWithUniqueId(primary, exisitingWritingSystemsForLanguage.Select(ws=>ws.Id));
-			Label = string.Format("other input system for {0}", TemplateDefinition.LanguageName);
+			Label = string.Format("other input system for {0}", TemplateDefinition.Language.Name);
 		}
 		public override WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()
 		{

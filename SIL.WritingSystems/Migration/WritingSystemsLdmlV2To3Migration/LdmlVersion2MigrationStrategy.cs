@@ -50,7 +50,6 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				Abbreviation = writingSystemDefinitionV1.Abbreviation,
 				DefaultFontSize = writingSystemDefinitionV1.DefaultFontSize,
 				Keyboard = writingSystemDefinitionV1.Keyboard,
-				LanguageName = writingSystemDefinitionV1.LanguageName,
 				RightToLeftScript = writingSystemDefinitionV1.RightToLeftScript,
 				SpellCheckingId = writingSystemDefinitionV1.SpellCheckingId,
 				VersionDescription = writingSystemDefinitionV1.VersionDescription,
@@ -89,6 +88,9 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				writingSystemDefinitionV1.Script,
 				writingSystemDefinitionV1.Region,
 				writingSystemDefinitionV1.Variant);
+
+			if (!string.IsNullOrEmpty(writingSystemDefinitionV1.LanguageName))
+				writingSystemDefinitionV3.Language = new LanguageSubtag(writingSystemDefinitionV3.Language, writingSystemDefinitionV1.LanguageName);
 
 			// Migrate fields from legacy fw namespace, and then remove fw namespace
 			if (fwElem != null)

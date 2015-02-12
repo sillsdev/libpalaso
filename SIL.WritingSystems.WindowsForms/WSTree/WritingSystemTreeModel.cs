@@ -82,7 +82,7 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 		{
 			var x = new List<WritingSystemDefinition>(_setupModel.WritingSystemDefinitions);
 
-			var systemsOfSameLanguage = x.GroupBy(def=>def.LanguageName);
+			var systemsOfSameLanguage = x.GroupBy(def=>def.Language.Name);
 
 			foreach (var defsOfSameLanguage in systemsOfSameLanguage)
 			{
@@ -99,7 +99,7 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 				}
 				else
 				{
-					parent = new GroupTreeItem(defsOfSameLanguage.First().LanguageName);
+					parent = new GroupTreeItem(defsOfSameLanguage.First().Language.Name);
 					parent.Children = new List<WritingSystemTreeItem>(from def in defsOfSameLanguage
 									select MakeExistingDefinitionItem(def));
 					itemToUseForSuggestions = defsOfSameLanguage.First();//unprincipled

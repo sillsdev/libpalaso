@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Xml.Linq;
 using NUnit.Framework;
 
 namespace SIL.WritingSystems.Tests
@@ -153,12 +152,11 @@ namespace SIL.WritingSystems.Tests
 			_writingSystem.Language = "one";
 			RepositoryUnderTest.Set(_writingSystem);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
-			Assert.AreNotEqual("lang1", _writingSystem.LanguageName);
-			_writingSystem.Language = "two";
-			_writingSystem.LanguageName = "lang1";
+			Assert.AreNotEqual("lang1", _writingSystem.Language.Name);
+			_writingSystem.Language = new LanguageSubtag("two", "lang1");
 			RepositoryUnderTest.Set(_writingSystem);
 			var ws2 = RepositoryUnderTest.Get("two");
-			Assert.AreEqual("lang1", ws2.LanguageName);
+			Assert.AreEqual("lang1", ws2.Language.Name);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
 		}
 
@@ -369,7 +367,6 @@ namespace SIL.WritingSystems.Tests
 			Assert.AreEqual(ws1.Language, ws2.Language);
 			Assert.AreEqual(ws1.Script, ws2.Script);
 			Assert.AreEqual(ws1.Region, ws2.Region);
-			Assert.AreEqual(ws1.LanguageName, ws2.LanguageName);
 			Assert.That(ws1.Variants, Is.EqualTo(ws2.Variants));
 			Assert.AreEqual(ws1.Abbreviation, ws2.Abbreviation);
 			Assert.AreEqual(ws1.RightToLeftScript, ws2.RightToLeftScript);
@@ -723,73 +720,6 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.Set(ws);
 			RepositoryUnderTest.Save();
 			Assert.That(RepositoryUnderTest.WritingSystemIdHasChangedTo("en"), Is.EqualTo("en"));
-		}
-
-		[Test]
-		public void LocalKeyboardSettings_RetrievesLocalKeyboardData()
-		{
-			var wsEn = new WritingSystemDefinition("en");
-			RepositoryUnderTest.Set(wsEn);
-			var wsFr = new WritingSystemDefinition("fr");
-			RepositoryUnderTest.Set(wsFr);
-			var kbd1 = new DefaultKeyboardDefinition("en-GB_English", "English");
-			wsEn.LocalKeyboard = kbd1;
-
-			string result = RepositoryUnderTest.LocalKeyboardSettings;
-			XElement root = XElement.Parse(result);
-			Assert.That(root.Elements("keyboard").Count(), Is.EqualTo(1), "should have local keyboard for en but not fr");
-			XElement keyboardElt = root.Elements("keyboard").First();
-			Assert.That(keyboardElt.Attribute("id").Value, Is.EqualTo("en-GB_English"));
-			Assert.That(keyboardElt.Attribute("ws").Value, Is.EqualTo("en"));
-		}
-
-		[Test]
-		public void SettingLocalKeyboardSettings_UpdatesLocalKeyboardsForExistingWritingSystems()
-		{
-			var wsEn = new WritingSystemDefinition("en");
-			RepositoryUnderTest.Set(wsEn);
-			var wsFr = new WritingSystemDefinition("fr");
-			RepositoryUnderTest.Set(wsFr);
-			var kbd1 = new DefaultKeyboardDefinition("en-GB_English", "English");
-			wsEn.LocalKeyboard = kbd1;
-
-			RepositoryUnderTest.LocalKeyboardSettings =
-@"<keyboards>
-	<keyboard ws='en' id='en-AU_English'/>
-	<keyboard ws='fr' id='fr-FR_French-IPA'/>
-</keyboards>";
-			Assert.That(wsEn.LocalKeyboard.Id, Is.EqualTo("en-AU_English"));
-			Assert.That(wsFr.LocalKeyboard.Id, Is.EqualTo("fr-FR_French-IPA"));
-		}
-
-		[Test]
-		public void SettingLocalKeyboardSettings_CausesLocalKeyboardToBeSetOnWritingSystemCreatedLater()
-		{
-			RepositoryUnderTest.LocalKeyboardSettings =
-@"<keyboards>
-	<keyboard ws='en' id='en-AU_English'/>
-	<keyboard ws='fr' id='fr-FR_French-IPA'/>
-	<keyboard ws='de' id='de-DE_German-IPA'/>
-</keyboards>";
-			var wsEn = new WritingSystemDefinition("en");
-			RepositoryUnderTest.Set(wsEn);
-			var wsFr = new WritingSystemDefinition("fr");
-			RepositoryUnderTest.Set(wsFr);
-			var wsDe = new WritingSystemDefinition("de");
-			wsDe.LocalKeyboard = new DefaultKeyboardDefinition("de-SW_German", "German");
-			RepositoryUnderTest.Set(wsDe);
-
-			Assert.That(wsEn.LocalKeyboard.Id, Is.EqualTo("en-AU_English"));
-			Assert.That(wsFr.LocalKeyboard.Id, Is.EqualTo("fr-FR_French-IPA"));
-			Assert.That(wsDe.LocalKeyboard.Id, Is.EqualTo("de-SW_German"), "should not apply local keyboard settings if new WS already has them");
-		}
-
-		[Test]
-		public void SettingLocalKeyboardSettingsToNullOrEmpty_DoesNothing()
-		{
-			Assert.DoesNotThrow(() => RepositoryUnderTest.LocalKeyboardSettings = null);
-			Assert.DoesNotThrow(() => RepositoryUnderTest.LocalKeyboardSettings = "");
-			Assert.DoesNotThrow(() => RepositoryUnderTest.LocalKeyboardSettings = "   ");
 		}
 
 		[Test]

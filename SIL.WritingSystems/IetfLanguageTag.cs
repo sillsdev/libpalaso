@@ -354,7 +354,7 @@ namespace SIL.WritingSystems
 				// Insert non-custom language, script, region into main part of code.
 				if (languageSubtag.IsPrivateUse && languageSubtag.Code != WellKnownSubtags.UnlistedLanguage)
 				{
-					if (validate && !LangPattern.IsMatch(languageSubtag.Code))
+					if (validate && !PrivateUsePattern.IsMatch(languageSubtag.Code))
 						throw new ValidationException("The private use language code is invalid.");
 					sb.Append("qaa");
 					isCustomLanguage = true;
@@ -374,7 +374,7 @@ namespace SIL.WritingSystems
 				// so we don't confuse some other private-use tag with a custom script.
 				if (scriptSubtag.IsPrivateUse && !StandardSubtags.IsPrivateUseScriptCode(scriptSubtag.Code))
 				{
-					if (validate && !ScriptPattern.IsMatch(scriptSubtag.Code))
+					if (validate && !PrivateUsePattern.IsMatch(scriptSubtag.Code))
 						throw new ValidationException("The private use script code is invalid.");
 					sb.Append("Qaaa");
 					isCustomScript = true;
@@ -394,7 +394,7 @@ namespace SIL.WritingSystems
 				// so we don't confuse some other private-use tag with a custom region.
 				if (regionSubtag.IsPrivateUse && !StandardSubtags.IsPrivateUseRegionCode(regionSubtag.Code))
 				{
-					if (validate && !RegionPattern.IsMatch(regionSubtag.Code))
+					if (validate && !PrivateUsePattern.IsMatch(regionSubtag.Code))
 						throw new ValidationException("The private use region code is invalid.");
 					sb.Append("QM");
 					isCustomRegion = true;

@@ -199,16 +199,6 @@ namespace SIL.WritingSystems
 		WritingSystemCompatibility CompatibilityMode { get; }
 
 		/// <summary>
-		/// A string which may be used to persist the user's local choice of LocalKeyboard for each writing system.
-		/// Typical usage: to persist local keyboards:
-		/// Settings.Default.LocalKeyboards = wsRepo.LocalKeyboardSettings;
-		/// Settings.Default.Save();
-		/// To restore persisted settings:
-		/// wsRepo.LocalKeyboardSettings = Settings.Default.LocalKeyboards;
-		/// </summary>
-		string LocalKeyboardSettings { get; set; }
-
-		/// <summary>
 		/// Get the writing system that is most probably intended by the user, when input language changes to the specified layout and cultureInfo,
 		/// given the indicated candidates, and that wsCurrent is the preferred result if it is a possible WS for the specified culture.
 		/// wsCurrent is also returned if none of the candidates is found to match the specified inputs.

@@ -226,6 +226,7 @@ namespace SIL.WritingSystems
 					_loadProblems.Add(problem);
 				}
 			}
+
 			LoadChangedIDsFromExistingWritingSystems();
 		}
 
@@ -338,6 +339,8 @@ namespace SIL.WritingSystems
 				File.Move(GetFilePathFromIdentifier(identifier), destination);
 			}
 			base.Remove(identifier);
+			foreach (ICustomDataMapper customDataMapper in _customDataMappers)
+				customDataMapper.Remove(identifier);
 			if (!Conflating)
 				_changeLog.LogDelete(identifier);
 			}

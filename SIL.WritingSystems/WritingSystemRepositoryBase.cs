@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Xml.Linq;
 using Palaso.Code;
 
 namespace SIL.WritingSystems
@@ -25,7 +24,6 @@ namespace SIL.WritingSystems
 		private readonly Dictionary<string, DateTime> _writingSystemsToIgnore;
 
 		private readonly Dictionary<string, string> _idChangeMap;
-		private Dictionary<string, IKeyboardDefinition> _localKeyboardSettings;
 
 		public event EventHandler<WritingSystemIdChangedEventArgs> WritingSystemIdChanged;
 		public event EventHandler<WritingSystemDeletedEventArgs> WritingSystemDeleted;
@@ -192,16 +190,6 @@ namespace SIL.WritingSystems
 			}
 			_writingSystems[ws.Id] = ws;
 
-			// If the writing system already has a local keyboard, probably it has just been created in some dialog,
-			// and we should respect the one the user set...though this is a very unlikely scenario, as we probably
-			// don't have a local setting for a WS that is just being created.
-			IKeyboardDefinition keyboard;
-			if (_localKeyboardSettings != null && ws.RawLocalKeyboard == null
-				&& _localKeyboardSettings.TryGetValue(ws.Id, out keyboard))
-			{
-				ws.LocalKeyboard = keyboard;
-			}
-
 			if (!String.IsNullOrEmpty(oldId) && (oldId != ws.Id))
 			{
 				UpdateChangedIDs(oldId, ws.Id);
@@ -348,62 +336,6 @@ namespace SIL.WritingSystems
 		}
 
 		public WritingSystemCompatibility CompatibilityMode { get; private set; }
-
-		/// <summary>
-		/// Getter gets the XML string that represents the user preferred keyboard for each writing
-		/// system.
-		/// Setter sets the user preferred keyboards on the writing systems based on the passed in
-		/// XML string.
-		/// </summary>
-		public string LocalKeyboardSettings
-		{
-			get
-			{
-				var root = new XElement("keyboards");
-				foreach (WritingSystemDefinition ws in AllWritingSystems)
-				{
-					// We don't want to call LocalKeyboard here, because that will come up with some default.
-					// If RawLocalKeyboard is null, we have never typed in this WS.
-					// By the time we do, the user may have installed one of the keyboards in KnownKeyboards,
-					// or done a Send/Receive and obtained a better list of KnownKeyboards, and we can then
-					// make a better first guess than we can now. Calling LocalKeyboard and persisting the
-					// result would have the effect of making our current guess permanent.
-					IKeyboardDefinition kbd = ws.RawLocalKeyboard;
-					if (kbd == null)
-						continue;
-					root.Add(new XElement("keyboard",
-						new XAttribute("ws", ws.Id),
-						new XAttribute("id", kbd.Id)));
-				}
-				return root.ToString();
-			}
-
-			set
-			{
-				_localKeyboardSettings = null;
-				if (string.IsNullOrWhiteSpace(value))
-					return;
-
-				var root = XElement.Parse(value);
-				_localKeyboardSettings = new Dictionary<string, IKeyboardDefinition>();
-				foreach (XElement kbd in root.Elements("keyboard"))
-				{
-					var id = (string) kbd.Attribute("id");
-					IKeyboardDefinition keyboard;
-					if (!Keyboard.Controller.TryGetKeyboard(id, out keyboard))
-						keyboard = Keyboard.Controller.CreateKeyboardDefinition(id, KeyboardFormat.Unknown, Enumerable.Empty<string>());
-					_localKeyboardSettings[(string) kbd.Attribute("ws")] = keyboard;
-				}
-				// We do it like this rather than looking up the writing system by the ws attribute so as not to force the
-				// creation of any writing systems which may be in the local keyboard settings but not in the current repo.
-				foreach (WritingSystemDefinition ws in AllWritingSystems)
-				{
-					IKeyboardDefinition localKeyboard;
-					if (_localKeyboardSettings.TryGetValue(ws.Id, out localKeyboard))
-						ws.LocalKeyboard = localKeyboard;
-				}
-			}
-		}
 
 		/// <summary>
 		/// Get the writing system that is most probably intended by the user, when input language changes to the specified layout and cultureInfo,

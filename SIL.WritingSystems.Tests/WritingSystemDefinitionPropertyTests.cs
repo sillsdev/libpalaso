@@ -620,14 +620,6 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void DisplayLabel_OnlyHasLanguageName_UsesFirstPartOfLanguageName()
-		{
-			var ws = new WritingSystemDefinition();
-			ws.LanguageName = "abcdefghijk";
-			Assert.AreEqual("abcd", ws.DisplayLabel);
-		}
-
-		[Test]
 		public void InvalidTagOkWhenRequiresValidTagFalse()
 		{
 			var ws = new WritingSystemDefinition();
@@ -669,7 +661,7 @@ namespace SIL.WritingSystems.Tests
 		public void LanguageName_Default_ReturnsUnknownLanguage()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.AreEqual("Language Not Listed", ws.LanguageName);
+			Assert.AreEqual("Language Not Listed", ws.Language.Name);
 		}
 
 		[Test]
@@ -677,15 +669,15 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			ws.Language = "en";
-			Assert.AreEqual("English", ws.LanguageName);
+			Assert.AreEqual("English", ws.Language.Name);
 		}
 
 		[Test]
 		public void LanguageName_SetCustom_ReturnsCustomName()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.LanguageName = "CustomName";
-			Assert.AreEqual("CustomName", ws.LanguageName);
+			ws.Language = new LanguageSubtag("kal", "CustomName");
+			Assert.AreEqual("CustomName", ws.Language.Name);
 		}
 
 		[Test]
@@ -1282,7 +1274,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			ws.Language = "en";
-			Assert.Throws<ValidationException>(() => ws.Script = "bogus");
+			Assert.Throws<ValidationException>(() => ws.Script = "xbogustag");
 		}
 
 		[Test]
@@ -1290,7 +1282,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			ws.Language = "en";
-			Assert.Throws<ValidationException>(() => ws.Region = "bogus");
+			Assert.Throws<ValidationException>(() => ws.Region = "xbogustag");
 		}
 
 		[Test]
@@ -2070,10 +2062,10 @@ namespace SIL.WritingSystems.Tests
 
 			ws.Language = "en";
 			VerifySubtagCodes(ws, "en", null, null, null, "en");
-			Assert.That(ws.LanguageName, Is.EqualTo("English"));
+			Assert.That(ws.Language.Name, Is.EqualTo("English"));
 
 			ws.Language = new LanguageSubtag("kal", "Kalaba", true, "");
-			Assert.That(ws.LanguageName, Is.EqualTo("Kalaba"));
+			Assert.That(ws.Language.Name, Is.EqualTo("Kalaba"));
 			VerifySubtagCodes(ws, "kal", null, null, null, "qaa-x-kal");
 			Assert.That(ws.Language.Name, Is.EqualTo("Kalaba"));
 

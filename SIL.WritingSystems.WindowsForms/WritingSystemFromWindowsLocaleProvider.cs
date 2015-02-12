@@ -109,7 +109,6 @@ namespace SIL.WritingSystems.WindowsForms
 				def.Keyboard = language.LayoutName;
 				def.DefaultCollation = new InheritedCollationDefinition("standard") { BaseLanguageTag = culture.IetfLanguageTag };
 				def.DefaultFontSize = 12;
-				def.LanguageName = culture.DisplayName;
 
 				yield return def;
 			}

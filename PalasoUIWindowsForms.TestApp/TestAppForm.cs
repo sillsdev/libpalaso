@@ -13,6 +13,7 @@ using Palaso.UI.WindowsForms.HtmlBrowser;
 using Palaso.UI.WindowsForms.ReleaseNotes;
 using Palaso.UI.WindowsForms.SIL;
 using PalasoUIWindowsForms.TestApp.Properties;
+using SIL.LexiconUtils;
 using SIL.WritingSystems;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 using SIL.WritingSystems.WindowsForms;
@@ -71,19 +72,41 @@ namespace PalasoUIWindowsForms.TestApp
 			KeyboardController.Initialize();
 			try
 			{
-				LdmlInFolderWritingSystemRepository wsRepo = LdmlInFolderWritingSystemRepository.Initialize(tempPath, Enumerable.Empty<ICustomDataMapper>(), onMigration, onLoadProblem);
-				using (var dialog = new WritingSystemSetupDialog(wsRepo))
+				ICustomDataMapper[] customDataMappers =
 				{
-					dialog.WritingSystems.LocalKeyboardSettings = Settings.Default.LocalKeyboards;
+					new UserSettingsWritingSystemDataMapper(GetUserSettings, SetUserSettings),
+					new ProjectSettingsWritingSystemDataMapper(GetProjectSettings, SetProjectSettings)
+				};
+				LdmlInFolderWritingSystemRepository wsRepo = LdmlInFolderWritingSystemRepository.Initialize(tempPath, customDataMappers, onMigration, onLoadProblem);
+				using (var dialog = new WritingSystemSetupDialog(wsRepo))
 					dialog.ShowDialog();
-					Settings.Default.LocalKeyboards = dialog.WritingSystems.LocalKeyboardSettings;
-					Settings.Default.Save();
-				}
 			}
 			finally
 			{
 				KeyboardController.Shutdown();
 			}
+		}
+
+		private static string GetUserSettings()
+		{
+			return Settings.Default.UserSettings;
+		}
+
+		private static void SetUserSettings(string settings)
+		{
+			Settings.Default.UserSettings = settings;
+			Settings.Default.Save();
+		}
+
+		private static string GetProjectSettings()
+		{
+			return Settings.Default.ProjectSettings;
+		}
+
+		private static void SetProjectSettings(string settings)
+		{
+			Settings.Default.ProjectSettings = settings;
+			Settings.Default.Save();
 		}
 
 		private void OnArtOfReadingClicked(object sender, EventArgs e)

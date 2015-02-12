@@ -535,12 +535,12 @@ namespace SIL.WritingSystems.WindowsForms
 
 		public string CurrentLanguageName
 		{
-			get { return CurrentDefinition.LanguageName ?? string.Empty; }
+			get { return CurrentDefinition.Language.Name; }
 			set
 			{
-				var valueBeforeSet = CurrentDefinition.LanguageName;
-				CurrentDefinition.LanguageName = value;
-				if (CurrentDefinition.LanguageName != valueBeforeSet)
+				string valueBeforeSet = CurrentDefinition.Language.Name;
+				CurrentDefinition.Language = new LanguageSubtag(CurrentDefinition.Language, value);
+				if (CurrentDefinition.Language.Name != valueBeforeSet)
 				{
 					OnCurrentItemUpdated();
 				}
@@ -784,7 +784,7 @@ namespace SIL.WritingSystems.WindowsForms
 		virtual public string VerboseDescription(WritingSystemDefinition writingSystem)
 		{
 			var summary = new StringBuilder();
-			summary.AppendFormat(" {0}", writingSystem.LanguageName);
+			summary.AppendFormat(" {0}", writingSystem.Language.Name);
 			if (writingSystem.Region != null)
 				summary.AppendFormat(" in {0}", writingSystem.Region.Code);
 			if (writingSystem.Script != null)
@@ -1554,7 +1554,6 @@ namespace SIL.WritingSystems.WindowsForms
 				return;
 
 			existingWs.Language = newWs.Language;
-			existingWs.LanguageName = newWs.LanguageName;
 
 			// Remove First Not WellKnownPrivateUseTag
 			for (int i = 0; i < existingWs.Variants.Count; i++)
