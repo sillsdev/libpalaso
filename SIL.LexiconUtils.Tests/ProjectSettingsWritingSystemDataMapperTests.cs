@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
+using System.Xml.Linq;
 using NUnit.Framework;
 using SIL.WritingSystems;
 
@@ -111,7 +113,7 @@ namespace SIL.LexiconUtils.Tests
 			ws1.Variants[1] = new VariantSubtag(ws1.Variants[1], "Custom 2");
 			projectSettingsDataMapper.Write(ws1);
 
-			Assert.That(userSettingsXml, Is.EqualTo(
+			Assert.That(XElement.Parse(userSettingsXml), Is.EqualTo(XElement.Parse(
 @"<LexiconProjectSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2"">
@@ -125,7 +127,7 @@ namespace SIL.LexiconUtils.Tests
       </VariantNames>
     </WritingSystem>
   </WritingSystems>
-</LexiconProjectSettings>"));
+</LexiconProjectSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 		}
 
 		[Test]
@@ -158,7 +160,7 @@ namespace SIL.LexiconUtils.Tests
 			ws1.Keyboard = "Old Keyboard";
 			userSettingsDataMapper.Write(ws1);
 
-			Assert.That(projectSettingsXml, Is.EqualTo(
+			Assert.That(XElement.Parse(projectSettingsXml), Is.EqualTo(XElement.Parse(
 @"<LexiconProjectSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2-var3"">
@@ -173,7 +175,7 @@ namespace SIL.LexiconUtils.Tests
       <Keyboard>Old Keyboard</Keyboard>
     </WritingSystem>
   </WritingSystems>
-</LexiconProjectSettings>"));
+</LexiconProjectSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 		}
 
 		[Test]
@@ -210,7 +212,7 @@ namespace SIL.LexiconUtils.Tests
 
 			var projectSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(() => projectSettingsXml, xml => projectSettingsXml = xml);
 			projectSettingsDataMapper.Remove("fr-FR");
-			Assert.That(projectSettingsXml, Is.EqualTo(
+			Assert.That(XElement.Parse(projectSettingsXml), Is.EqualTo(XElement.Parse(
 @"<LexiconProjectSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2"">
@@ -224,10 +226,10 @@ namespace SIL.LexiconUtils.Tests
       </VariantNames>
     </WritingSystem>
   </WritingSystems>
-</LexiconProjectSettings>"));
+</LexiconProjectSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 
 			projectSettingsDataMapper.Remove("qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2");
-			Assert.That(projectSettingsXml, Is.EqualTo("<LexiconProjectSettings />"));
+			Assert.That(XElement.Parse(projectSettingsXml), Is.EqualTo(XElement.Parse("<LexiconProjectSettings />")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 		}
 
 		[Test]
@@ -251,7 +253,7 @@ namespace SIL.LexiconUtils.Tests
 
 			var projectSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(() => projectSettingsXml, xml => projectSettingsXml = xml);
 			projectSettingsDataMapper.Remove("fr-FR");
-			Assert.That(projectSettingsXml, Is.EqualTo(
+			Assert.That(XElement.Parse(projectSettingsXml), Is.EqualTo(XElement.Parse(
 @"<LexiconProjectSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2"">
@@ -265,7 +267,7 @@ namespace SIL.LexiconUtils.Tests
       </VariantNames>
     </WritingSystem>
   </WritingSystems>
-</LexiconProjectSettings>"));
+</LexiconProjectSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 		}
 	}
 }
