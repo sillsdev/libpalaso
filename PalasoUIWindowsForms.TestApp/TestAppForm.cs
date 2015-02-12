@@ -74,8 +74,8 @@ namespace PalasoUIWindowsForms.TestApp
 			{
 				ICustomDataMapper[] customDataMappers =
 				{
-					new UserSettingsWritingSystemDataMapper(GetUserSettings, SetUserSettings),
-					new ProjectSettingsWritingSystemDataMapper(GetProjectSettings, SetProjectSettings)
+					new UserSettingsWritingSystemDataMapper(new ApplicationSettingsStore(Settings.Default, "UserSettings")),
+					new ProjectSettingsWritingSystemDataMapper(new ApplicationSettingsStore(Settings.Default, "ProjectSettings"))
 				};
 				LdmlInFolderWritingSystemRepository wsRepo = LdmlInFolderWritingSystemRepository.Initialize(tempPath, customDataMappers, onMigration, onLoadProblem);
 				using (var dialog = new WritingSystemSetupDialog(wsRepo))
@@ -85,28 +85,6 @@ namespace PalasoUIWindowsForms.TestApp
 			{
 				KeyboardController.Shutdown();
 			}
-		}
-
-		private static string GetUserSettings()
-		{
-			return Settings.Default.UserSettings;
-		}
-
-		private static void SetUserSettings(string settings)
-		{
-			Settings.Default.UserSettings = settings;
-			Settings.Default.Save();
-		}
-
-		private static string GetProjectSettings()
-		{
-			return Settings.Default.ProjectSettings;
-		}
-
-		private static void SetProjectSettings(string settings)
-		{
-			Settings.Default.ProjectSettings = settings;
-			Settings.Default.Save();
 		}
 
 		private void OnArtOfReadingClicked(object sender, EventArgs e)

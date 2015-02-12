@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 using System.Xml.Linq;
 using NUnit.Framework;
 using SIL.WritingSystems;
@@ -34,7 +33,7 @@ namespace SIL.LexiconUtils.Tests
   </WritingSystems>
 </LexiconProjectSettings>";
 
-			var projectSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(() => projectSettingsXml, xml => { });
+			var projectSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(new TestSettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)});
 
 			var ws1 = new WritingSystemDefinition("qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2");
 			projectSettingsDataMapper.Read(ws1);
@@ -74,17 +73,9 @@ namespace SIL.LexiconUtils.Tests
 		}
 
 		[Test]
-		public void Read_InvalidXml_Throws()
-		{
-			var projectSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(() => "Bad XML", xml => { });
-			var ws1 = new WritingSystemDefinition("en-US");
-			Assert.That(() => projectSettingsDataMapper.Read(ws1), Throws.TypeOf<XmlException>());
-		}
-
-		[Test]
 		public void Read_EmptyXml_NothingSet()
 		{
-			var projectSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(() => "", xml => { });
+			var projectSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(new TestSettingsStore());
 
 			var ws1 = new WritingSystemDefinition("en-US");
 			projectSettingsDataMapper.Read(ws1);
@@ -102,8 +93,8 @@ namespace SIL.LexiconUtils.Tests
 		[Test]
 		public void Write_EmptyXml_XmlUpdated()
 		{
-			string userSettingsXml = "";
-			var projectSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(() => userSettingsXml, xml => userSettingsXml = xml);
+			var settingsStore = new TestSettingsStore();
+			var projectSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(settingsStore);
 
 			var ws1 = new WritingSystemDefinition("qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2");
 			ws1.Language = new LanguageSubtag(ws1.Language, "Kalaba");
@@ -113,7 +104,7 @@ namespace SIL.LexiconUtils.Tests
 			ws1.Variants[1] = new VariantSubtag(ws1.Variants[1], "Custom 2");
 			projectSettingsDataMapper.Write(ws1);
 
-			Assert.That(XElement.Parse(userSettingsXml), Is.EqualTo(XElement.Parse(
+			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
 @"<LexiconProjectSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2"">
@@ -133,7 +124,7 @@ namespace SIL.LexiconUtils.Tests
 		[Test]
 		public void Write_ValidXml_XmlUpdated()
 		{
-			string projectSettingsXml =
+			const string projectSettingsXml =
 @"<LexiconProjectSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2-var3"">
@@ -150,7 +141,8 @@ namespace SIL.LexiconUtils.Tests
   </WritingSystems>
 </LexiconProjectSettings>";
 
-			var userSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(() => projectSettingsXml, xml => projectSettingsXml = xml);
+			var settingsStore = new TestSettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
+			var projectSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(settingsStore);
 			var ws1 = new WritingSystemDefinition("qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2-var3");
 			ws1.Abbreviation = "ka";
 			ws1.Variants[0] = new VariantSubtag(ws1.Variants[0], "Custom 1");
@@ -158,9 +150,9 @@ namespace SIL.LexiconUtils.Tests
 			ws1.SpellCheckingId = "en_US";
 			ws1.LegacyMapping = "converter";
 			ws1.Keyboard = "Old Keyboard";
-			userSettingsDataMapper.Write(ws1);
+			projectSettingsDataMapper.Write(ws1);
 
-			Assert.That(XElement.Parse(projectSettingsXml), Is.EqualTo(XElement.Parse(
+			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
 @"<LexiconProjectSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2-var3"">
@@ -179,17 +171,9 @@ namespace SIL.LexiconUtils.Tests
 		}
 
 		[Test]
-		public void Write_InvalidXmlFile_Throws()
-		{
-			var projectSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(() => "Bad XML", xml => { });
-			var ws1 = new WritingSystemDefinition("en-US");
-			Assert.That(() => projectSettingsDataMapper.Write(ws1), Throws.TypeOf<XmlException>());
-		}
-
-		[Test]
 		public void Remove_ExistingWritingSystem_UpdatesXml()
 		{
-			string projectSettingsXml =
+			const string projectSettingsXml =
 @"<LexiconProjectSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2"">
@@ -210,9 +194,10 @@ namespace SIL.LexiconUtils.Tests
   </WritingSystems>
 </LexiconProjectSettings>";
 
-			var projectSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(() => projectSettingsXml, xml => projectSettingsXml = xml);
+			var settingsStore = new TestSettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
+			var projectSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(settingsStore);
 			projectSettingsDataMapper.Remove("fr-FR");
-			Assert.That(XElement.Parse(projectSettingsXml), Is.EqualTo(XElement.Parse(
+			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
 @"<LexiconProjectSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2"">
@@ -229,13 +214,13 @@ namespace SIL.LexiconUtils.Tests
 </LexiconProjectSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 
 			projectSettingsDataMapper.Remove("qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2");
-			Assert.That(XElement.Parse(projectSettingsXml), Is.EqualTo(XElement.Parse("<LexiconProjectSettings />")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse("<LexiconProjectSettings />")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 		}
 
 		[Test]
 		public void Remove_NonexistentWritingSystem_DoesNotUpdateFile()
 		{
-			string projectSettingsXml =
+			const string projectSettingsXml =
 @"<LexiconProjectSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2"">
@@ -251,9 +236,10 @@ namespace SIL.LexiconUtils.Tests
   </WritingSystems>
 </LexiconProjectSettings>";
 
-			var projectSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(() => projectSettingsXml, xml => projectSettingsXml = xml);
+			var settingsStore = new TestSettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
+			var projectSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(settingsStore);
 			projectSettingsDataMapper.Remove("fr-FR");
-			Assert.That(XElement.Parse(projectSettingsXml), Is.EqualTo(XElement.Parse(
+			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
 @"<LexiconProjectSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2"">

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Linq;
 using System.Xml.Linq;
 using SIL.WritingSystems;
@@ -8,23 +7,19 @@ namespace SIL.LexiconUtils
 {
 	public class ProjectSettingsWritingSystemDataMapper : ICustomDataMapper
 	{
-		private readonly Func<string> _getSettings;
-		private readonly Action<string> _setSettings;
+		private readonly ISettingsStore _settingsStore;
 
-		public ProjectSettingsWritingSystemDataMapper(Func<string> getSettings, Action<string> setSettings)
+		public ProjectSettingsWritingSystemDataMapper(ISettingsStore settingsStore)
 		{
-			_getSettings = getSettings;
-			_setSettings = setSettings;
+			_settingsStore = settingsStore;
 		}
 
 		public void Read(WritingSystemDefinition ws)
 		{
-			string projectSettings = (_getSettings() ?? string.Empty).Trim();
-			if (string.IsNullOrEmpty(projectSettings))
+			XElement projectSettingsElem = _settingsStore.GetSettings();
+			if (projectSettingsElem == null)
 				return;
 
-			XElement projectSettingsElem = XElement.Parse(projectSettings);
-			Debug.Assert(projectSettingsElem != null);
 			XElement wsElem = projectSettingsElem.Elements("WritingSystems").Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.Id);
 			if (wsElem == null)
 				return;
@@ -76,8 +71,7 @@ namespace SIL.LexiconUtils
 
 		public void Write(WritingSystemDefinition ws)
 		{
-			string projectSettings = (_getSettings() ?? string.Empty).Trim();
-			XElement projectSettingsElem = !string.IsNullOrEmpty(projectSettings) ? XElement.Parse(projectSettings) : new XElement("LexiconProjectSettings");
+			XElement projectSettingsElem = _settingsStore.GetSettings() ?? new XElement("LexiconProjectSettings");
 			XElement wssElem = projectSettingsElem.Element("WritingSystems");
 			if (wssElem == null)
 			{
@@ -111,16 +105,15 @@ namespace SIL.LexiconUtils
 			if (!string.IsNullOrEmpty(ws.Keyboard))
 				wsElem.Add(new XElement("Keyboard", ws.Keyboard));
 
-			_setSettings(projectSettingsElem.ToString());
+			_settingsStore.SaveSettings(projectSettingsElem);
 		}
 
 		public void Remove(string wsId)
 		{
-			string projectSettings = (_getSettings() ?? string.Empty).Trim();
-			if (string.IsNullOrEmpty(projectSettings))
+			XElement projectSettingsElem = _settingsStore.GetSettings();
+			if (projectSettingsElem == null)
 				return;
 
-			XElement projectSettingsElem = XElement.Parse(projectSettings);
 			Debug.Assert(projectSettingsElem != null);
 			XElement wssElem = projectSettingsElem.Element("WritingSystems");
 			if (wssElem == null)
@@ -133,7 +126,7 @@ namespace SIL.LexiconUtils
 				if (!wssElem.HasElements)
 					wssElem.Remove();
 
-				_setSettings(projectSettingsElem.ToString());
+				_settingsStore.SaveSettings(projectSettingsElem);
 			}
 		}
 	}

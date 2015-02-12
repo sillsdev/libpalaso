@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 using System.Xml.Linq;
 using NUnit.Framework;
 using SIL.WritingSystems;
@@ -27,7 +26,7 @@ namespace SIL.LexiconUtils.Tests
   </WritingSystems>
 </LexiconUserSettings>";
 
-			var userSettingsDataMapper = new UserSettingsWritingSystemDataMapper(() => userSettingsXml, xml => { });
+			var userSettingsDataMapper = new UserSettingsWritingSystemDataMapper(new TestSettingsStore {SettingsElement = XElement.Parse(userSettingsXml)});
 
 			var ws1 = new WritingSystemDefinition("en-US");
 			userSettingsDataMapper.Read(ws1);
@@ -55,17 +54,9 @@ namespace SIL.LexiconUtils.Tests
 		}
 
 		[Test]
-		public void Read_InvalidXml_Throws()
-		{
-			var userSettingsDataMapper = new UserSettingsWritingSystemDataMapper(() => "Bad XML", xml => { });
-			var ws1 = new WritingSystemDefinition("en-US");
-			Assert.That(() => userSettingsDataMapper.Read(ws1), Throws.TypeOf<XmlException>());
-		}
-
-		[Test]
 		public void Read_EmptyXml_NothingSet()
 		{
-			var userSettingsDataMapper = new UserSettingsWritingSystemDataMapper(() => "", xml => { });
+			var userSettingsDataMapper = new UserSettingsWritingSystemDataMapper(new TestSettingsStore());
 
 			var ws1 = new WritingSystemDefinition("en-US");
 			userSettingsDataMapper.Read(ws1);
@@ -79,15 +70,15 @@ namespace SIL.LexiconUtils.Tests
 		[Test]
 		public void Write_EmptyXml_XmlUpdated()
 		{
-			string userSettingsXml = "";
-			var userSettingsDataMapper = new UserSettingsWritingSystemDataMapper(() => userSettingsXml, xml => userSettingsXml = xml);
+			var settingsStore = new TestSettingsStore();
+			var userSettingsDataMapper = new UserSettingsWritingSystemDataMapper(settingsStore);
 
 			var ws1 = new WritingSystemDefinition("en-US");
 			ws1.LocalKeyboard = Keyboard.Controller.CreateKeyboardDefinition("en-US_English-IPA", KeyboardFormat.Unknown, Enumerable.Empty<string>());
 			ws1.DefaultFont = new FontDefinition("Times New Roman");
 			userSettingsDataMapper.Write(ws1);
 
-			Assert.That(XElement.Parse(userSettingsXml), Is.EqualTo(XElement.Parse(
+			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
 @"<LexiconUserSettings>
   <WritingSystems>
     <WritingSystem id=""en-US"">
@@ -101,7 +92,7 @@ namespace SIL.LexiconUtils.Tests
 		[Test]
 		public void Write_ValidXml_XmlUpdated()
 		{
-			string userSettingsXml =
+			const string userSettingsXml =
 @"<LexiconUserSettings>
   <WritingSystems>
     <WritingSystem id=""en-US"">
@@ -111,7 +102,8 @@ namespace SIL.LexiconUtils.Tests
   </WritingSystems>
 </LexiconUserSettings>";
 
-			var userSettingsDataMapper = new UserSettingsWritingSystemDataMapper(() => userSettingsXml, xml => userSettingsXml = xml);
+			var settingsStore = new TestSettingsStore {SettingsElement = XElement.Parse(userSettingsXml)};
+			var userSettingsDataMapper = new UserSettingsWritingSystemDataMapper(settingsStore);
 			var ws1 = new WritingSystemDefinition("en-US");
 			ws1.LocalKeyboard = Keyboard.Controller.CreateKeyboardDefinition("en-US_English", KeyboardFormat.Unknown, Enumerable.Empty<string>());
 			ws1.DefaultFont = null;
@@ -119,7 +111,7 @@ namespace SIL.LexiconUtils.Tests
 			ws1.IsGraphiteEnabled = false;
 			userSettingsDataMapper.Write(ws1);
 
-			Assert.That(XElement.Parse(userSettingsXml), Is.EqualTo(XElement.Parse(
+			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
 @"<LexiconUserSettings>
   <WritingSystems>
     <WritingSystem id=""en-US"">
@@ -132,17 +124,9 @@ namespace SIL.LexiconUtils.Tests
 		}
 
 		[Test]
-		public void Write_InvalidXml_Throws()
-		{
-			var userSettingsDataMapper = new UserSettingsWritingSystemDataMapper(() => "Bad XML", xml => { });
-			var ws1 = new WritingSystemDefinition("en-US");
-			Assert.That(() => userSettingsDataMapper.Write(ws1), Throws.TypeOf<XmlException>());
-		}
-
-		[Test]
 		public void Remove_ExistingWritingSystem_UpdatesXml()
 		{
-			string userSettingsXml =
+			const string userSettingsXml =
 @"<LexiconUserSettings>
   <WritingSystems>
     <WritingSystem id=""en-US"">
@@ -156,9 +140,10 @@ namespace SIL.LexiconUtils.Tests
   </WritingSystems>
 </LexiconUserSettings>";
 
-			var userSettingsDataMapper = new UserSettingsWritingSystemDataMapper(() => userSettingsXml, xml => userSettingsXml = xml);
+			var settingsStore = new TestSettingsStore {SettingsElement = XElement.Parse(userSettingsXml)};
+			var userSettingsDataMapper = new UserSettingsWritingSystemDataMapper(settingsStore);
 			userSettingsDataMapper.Remove("fr-FR");
-			Assert.That(XElement.Parse(userSettingsXml), Is.EqualTo(XElement.Parse(
+			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
 @"<LexiconUserSettings>
   <WritingSystems>
     <WritingSystem id=""en-US"">
@@ -169,13 +154,13 @@ namespace SIL.LexiconUtils.Tests
 </LexiconUserSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 
 			userSettingsDataMapper.Remove("en-US");
-			Assert.That(XElement.Parse(userSettingsXml), Is.EqualTo(XElement.Parse("<LexiconUserSettings />")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse("<LexiconUserSettings />")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 		}
 
 		[Test]
 		public void Remove_NonexistentWritingSystem_DoesNotUpdateXml()
 		{
-			string userSettingsXml =
+			const string userSettingsXml =
 @"<LexiconUserSettings>
   <WritingSystems>
     <WritingSystem id=""en-US"">
@@ -185,9 +170,10 @@ namespace SIL.LexiconUtils.Tests
   </WritingSystems>
 </LexiconUserSettings>";
 
-			var userSettingsDataMapper = new UserSettingsWritingSystemDataMapper(() => userSettingsXml, xml => userSettingsXml = xml);
+			var settingsStore = new TestSettingsStore {SettingsElement = XElement.Parse(userSettingsXml)};
+			var userSettingsDataMapper = new UserSettingsWritingSystemDataMapper(settingsStore);
 			userSettingsDataMapper.Remove("fr-FR");
-			Assert.That(XElement.Parse(userSettingsXml), Is.EqualTo(XElement.Parse(
+			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
 @"<LexiconUserSettings>
   <WritingSystems>
     <WritingSystem id=""en-US"">

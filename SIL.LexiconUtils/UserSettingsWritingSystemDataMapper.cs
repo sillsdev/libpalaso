@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Xml.Linq;
 using Palaso.Extensions;
 using SIL.WritingSystems;
@@ -8,22 +7,19 @@ namespace SIL.LexiconUtils
 {
 	public class UserSettingsWritingSystemDataMapper : ICustomDataMapper
 	{
-		private readonly Func<string> _getSettings;
-		private readonly Action<string> _setSettings;
+		private readonly ISettingsStore _settingsStore;
 
-		public UserSettingsWritingSystemDataMapper(Func<string> getSettings, Action<string> setSettings)
+		public UserSettingsWritingSystemDataMapper(ISettingsStore settingsStore)
 		{
-			_getSettings = getSettings;
-			_setSettings = setSettings;
+			_settingsStore = settingsStore;
 		}
 
 		public void Read(WritingSystemDefinition ws)
 		{
-			string userSettings = (_getSettings() ?? string.Empty).Trim();
-			if (string.IsNullOrEmpty(userSettings))
+			XElement userSettingsElem = _settingsStore.GetSettings();
+			if (userSettingsElem == null)
 				return;
 
-			XElement userSettingsElem = XElement.Parse(userSettings);
 			XElement wsElem = userSettingsElem.Elements("WritingSystems").Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.Id);
 			if (wsElem == null)
 				return;
@@ -47,8 +43,7 @@ namespace SIL.LexiconUtils
 
 		public void Write(WritingSystemDefinition ws)
 		{
-			string userSettings = (_getSettings() ?? string.Empty).Trim();
-			XElement userSettingsElem = !string.IsNullOrEmpty(userSettings) ? XElement.Parse(userSettings) : new XElement("LexiconUserSettings");
+			XElement userSettingsElem = _settingsStore.GetSettings() ?? new XElement("LexiconUserSettings");
 			XElement wssElem = userSettingsElem.Element("WritingSystems");
 			if (wssElem == null)
 			{
@@ -72,16 +67,15 @@ namespace SIL.LexiconUtils
 			if (!ws.IsGraphiteEnabled)
 				wsElem.Add(new XElement("IsGraphiteEnabled", ws.IsGraphiteEnabled));
 
-			_setSettings(userSettingsElem.ToString());
+			_settingsStore.SaveSettings(userSettingsElem);
 		}
 
 		public void Remove(string wsId)
 		{
-			string userSettings = (_getSettings() ?? string.Empty).Trim();
-			if (string.IsNullOrEmpty(userSettings))
+			XElement userSettingsElem = _settingsStore.GetSettings();
+			if (userSettingsElem == null)
 				return;
 
-			XElement userSettingsElem = XElement.Parse(userSettings);
 			XElement wssElem = userSettingsElem.Element("WritingSystems");
 			if (wssElem == null)
 				return;
@@ -92,7 +86,8 @@ namespace SIL.LexiconUtils
 				wsElem.Remove();
 				if (!wssElem.HasElements)
 					wssElem.Remove();
-				_setSettings(userSettingsElem.ToString());
+
+				_settingsStore.SaveSettings(userSettingsElem);
 			}
 		}
 	}
