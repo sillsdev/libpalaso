@@ -1294,6 +1294,23 @@ namespace Palaso.WritingSystems
 				return WritingSystems.Keyboard.Controller.AllAvailableKeyboards.Except(KnownKeyboards);
 			}
 		}
+
+		public static System.Drawing.Font CreateFont(IWritingSystemDefinition writingSystem)
+		{
+			float size = writingSystem.DefaultFontSize > 0 ? writingSystem.DefaultFontSize : 12;
+			try
+			{
+				return new System.Drawing.Font(writingSystem.DefaultFontName, size);
+			}
+			catch (Exception e) //I could never get the above to fail, but a user did (WS-34091), so now we catch it here.
+			{
+				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(new Palaso.Reporting.ShowOncePerSessionBasedOnExactMessagePolicy(),
+					e,
+					"There is something wrong with the font {0} on this computer. Try re-installing it. Meanwhile, the font {1} will be used instead.",
+					writingSystem.DefaultFontName, System.Drawing.SystemFonts.DefaultFont.Name);
+				return new System.Drawing.Font(System.Drawing.SystemFonts.DefaultFont.Name, size);
+			}
+		}
 	}
 
 	public enum IpaStatusChoices

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -663,6 +663,13 @@
     <Compile Include="Widgets\Prompt.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Widgets\IControlThatKnowsWritingSystem.cs" />
+    <Compile Include="Widgets\ITextInputBox.cs" />
+    <Compile Include="Widgets\StdTextInputBox.cs" />
+    <Compile Include="Widgets\StdTextInputBox.Designer.cs">
+      <DependentUpon>StdTextInputBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Widgets\TextInputBox.cs" />
     <Compile Include="Reporting\ExceptionReportingDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -1010,6 +1017,9 @@
     <EmbeddedResource Include="Widgets\ControlListBox.resx">
       <DependentUpon>ControlListBox.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Widgets\StdTextInputBox.resx">
+      <DependentUpon>StdTextInputBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Reporting\ExceptionReportingDialog.resx">
       <DependentUpon>ExceptionReportingDialog.cs</DependentUpon>

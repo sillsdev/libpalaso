@@ -380,6 +380,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			if(_galleryControl.HaveImageCollectionOnThisComputer)
 			{
 				SetMode(Modes.Gallery);
+				_focusTimer.Interval = 100;
 				_focusTimer.Enabled = true;
 			}
 			else
@@ -389,10 +390,17 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		}
 
+		/// <summary>
+		/// Set the focus on the search box in the ArtOfReadingChooser after a delay
+		/// to let things settle down.  It's unfortunate, but the Mono runtime
+		/// library appears to need this.  (See https://jira.sil.org/browse/BL-964.)
+		/// </summary>
 		private void _focusTimer_Tick(object sender, EventArgs e)
 		{
 			_focusTimer.Enabled = false;
-			_galleryControl.Focus();
+			_focusTimer.Dispose();
+			_focusTimer = null;
+			_galleryControl.FocusSearchBox();
 		}
 
 		private void AcquireImageControl_DragEnter(object sender, DragEventArgs e)
