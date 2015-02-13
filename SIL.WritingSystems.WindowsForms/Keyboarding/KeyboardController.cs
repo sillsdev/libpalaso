@@ -244,7 +244,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 #if __MonoCS__
 				if (defaultKeyboard == null)
 				{
-					IKeyboardAdaptor cinnamonAdaptor = _instance.Adaptors.FirstOrDefault(a => a is CinnamonIbusAdaptor);
+					CinnamonIbusAdaptor cinnamonAdaptor = _instance.Adaptors.OfType<CinnamonIbusAdaptor>().FirstOrDefault();
 					if (cinnamonAdaptor != null)
 						defaultKeyboard = cinnamonAdaptor.DefaultKeyboard;
 				}
@@ -383,7 +383,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		public void ActivateDefaultKeyboard()
 		{
 #if __MonoCS__
-			IKeyboardAdaptor cinnamonAdaptor = _instance.Adaptors.FirstOrDefault(a => a is CinnamonIbusAdaptor);
+			CinnamonIbusAdaptor cinnamonAdaptor = _instance.Adaptors.OfType<CinnamonIbusAdaptor>().FirstOrDefault();
 			if (cinnamonAdaptor != null)
 			{
 				cinnamonAdaptor.ActivateDefaultKeyboard();

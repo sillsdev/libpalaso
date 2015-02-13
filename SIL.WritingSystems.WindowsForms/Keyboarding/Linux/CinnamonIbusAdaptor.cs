@@ -238,17 +238,6 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			GlobalCachedInputContext.Keyboard = null;
 		}
 
-		public override KeyboardDescription DefaultKeyboard
-		{
-			get
-			{
-				return KeyboardController.Instance.AllAvailableKeyboards.OfType<IbusKeyboardDescription>()
-					.FirstOrDefault(kd => kd.ParentLayout == _defaultLayout
-						&& kd.IBusKeyboardEngine.LayoutVariant == _defaultVariant
-						&& kd.IBusKeyboardEngine.LayoutOption == _defaultOption);
-			}
-		}
-
 		public override KeyboardDescription CreateKeyboardDefinition(string id)
 		{
 			string[] parts = id.Split('_');
@@ -472,7 +461,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 			base.Dispose(disposing);
 		}
 
-		private IKeyboardDefinition _defaultKeyboard;
+		private KeyboardDescription _defaultKeyboard;
 
 		/// <summary>
 		/// This adaptor doesn't make use of XkbKeyboardDefinition objects, so we have to
@@ -480,7 +469,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		/// best match to _defaultLayout.  An explicit xkb: keyboard is preferred, but we
 		/// settle for another match (or anything at all) if we need to.
 		/// </summary>
-		public override IKeyboardDefinition DefaultKeyboard
+		public override KeyboardDescription DefaultKeyboard
 		{
 			get
 			{
@@ -491,8 +480,8 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 						desired = String.Format ("xkb:{0}\\{1}:", _defaultLayout, _defaultVariant);
 					var pattern = String.Format("[^A-Za-z]{0}[^A-Za-z]|^{0}[^A-Za-z]|.*[^A-Za-z]{0}$", _defaultLayout);
 					var regex = new System.Text.RegularExpressions.Regex(pattern);
-					IKeyboardDefinition first = null;
-					foreach (var kbd in Keyboard.Controller.AllAvailableKeyboards)
+					KeyboardDescription first = null;
+					foreach (KeyboardDescription kbd in Keyboard.Controller.AllAvailableKeyboards)
 					{
 						if (first == null)
 							first = kbd;	// last-ditch value if all else fails
