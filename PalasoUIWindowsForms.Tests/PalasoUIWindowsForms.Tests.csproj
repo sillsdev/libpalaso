@@ -121,14 +121,14 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="nunit.framework">
-      <HintPath>..\lib\common\nunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="ibusdotnet">
       <HintPath>..\lib\commonMono\ibusdotnet.dll</HintPath>
     </Reference>
     <Reference Include="NDesk.DBus">
       <HintPath>..\lib\commonMono\NDesk.DBus.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -247,6 +247,7 @@
     <None Include="ImageGallery\ArtOfReadingIndexV3_en.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

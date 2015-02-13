@@ -1,6 +1,7 @@
 using System;
 using NUnit.Framework;
 using Palaso.Code;
+using Guard = Palaso.Code.Guard;
 
 namespace Palaso.Tests.Misc
 {
