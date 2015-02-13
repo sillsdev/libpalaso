@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
@@ -16,6 +17,18 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			//set some defaults in case they turn on CC
 			_shareAlike.Checked = true;
 			_nonCommercial.Checked = true;
+
+			//the system PictureBox makes the CC licenses look awful, so we are using one with a custom OnPaint()
+			var betterPictureBox = new BetterPictureBox()
+			{
+				SizeMode = _licenseImage.SizeMode,
+				Bounds = _licenseImage.Bounds,
+				TabStop = false
+			};
+			Controls.Add(betterPictureBox);
+			Controls.Remove(_licenseImage);
+			_licenseImage.Dispose();
+			_licenseImage = betterPictureBox;
 		}
 
 		protected override void OnParentChanged(EventArgs e)
@@ -185,6 +198,14 @@ namespace Palaso.UI.WindowsForms.ClearShare.WinFormsUI
 			if (_settingUp)
 				return;
 			_metadata.SetCopyrightNotice(_copyrightYear.Text, _copyrightBy.Text);
+		}
+	}
+	public class BetterPictureBox : PictureBox
+	{
+		protected override void OnPaint(PaintEventArgs paintEventArgs)
+		{
+			paintEventArgs.Graphics.InterpolationMode = InterpolationMode.High;
+			base.OnPaint(paintEventArgs);
 		}
 	}
 }

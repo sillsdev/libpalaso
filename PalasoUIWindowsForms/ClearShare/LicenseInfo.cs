@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using L10NSharp;
 
 namespace Palaso.UI.WindowsForms.ClearShare
 {
@@ -22,7 +24,7 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			return new NullLicense();
 		}
 
-		public abstract string GetDescription(string iso639_3LanguageCode);
+		public abstract string GetDescription(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed);
 
 		/// <summary>
 		/// A string that is a good short indication of the license type, and can be used in FromToken.
@@ -69,13 +71,46 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		/// what is ethical. We expect that the vast majority of people are going to abide by them.
 		/// </summary>
 		public string RightsStatement {get; set; }
+
+		protected virtual string GetBestLicenseTranslation(string idSuffix, string englishText, string comment,
+			IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
+		{
+			idSuffix = "MetadataDisplay.Licenses."+idSuffix;
+			foreach (var targetLanguage in languagePriorityIds)
+			{
+				if (targetLanguage == "en")
+				{
+					//do the query to make sure the string is there to be translated someday
+					var unused = LocalizationManager.GetDynamicString("Palaso", idSuffix, englishText, comment);
+					idOfLanguageUsed = "en";
+					return englishText;
+				}
+				//otherwise, see if we have a translation
+				if (LocalizationManager.GetIsStringAvailableForLangId(idSuffix, targetLanguage))
+				{
+					idOfLanguageUsed = targetLanguage;
+					return LocalizationManager.GetDynamicStringOrEnglish("Palaso", idSuffix, englishText, comment, targetLanguage);
+				}
+			}
+			idOfLanguageUsed = string.Empty;
+			return "[Missing translation for " + idSuffix + "]";
+		}
+
 	}
 
 	public class NullLicense : LicenseInfo
 	{
-		public override string GetDescription(string iso639_3LanguageCode)
+		/// <summary>
+		/// Get a simple, non-legal summary of the license, using the "best" language for which we can find a translation.
+		/// </summary>
+		/// <param name="languagePriorityIds"></param>
+		/// <param name="idOfLanguageUsed">The idSuffix of the language we were able to use. Unreliable if we had to use a mix of languages.</param>
+		/// <returns>The description of the license.</returns>
+		public override string GetDescription(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
 		{
-			return "For permission to reuse, contact the copyright holder.";
+			const string englishText = "For permission to reuse, contact the copyright holder.";
+			const string comment = "This is used when all we have is a copyright, no other license.";
+			return GetBestLicenseTranslation("NullLicense", englishText, comment, languagePriorityIds, out idOfLanguageUsed);
 		}
 
 		public override string Token
@@ -109,11 +144,26 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			return "Custom License";
 		}
 
-		public override string GetDescription(string iso639_3LanguageCode)
+		///<summary></summary>
+		/// <remarks>
+		/// Currently, we don't know the language of custom license strings, so we the ISO 639-2 code for undetermined, "und"
+		/// </remarks>
+		/// <param name="languagePriorityIds"></param>
+		/// <param name="idOfLanguageUsed"></param>
+		/// <returns></returns>
+		public override string GetDescription(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
 		{
+			//if we're empty, we're equivalent to a NullLicense
 			if (string.IsNullOrEmpty(RightsStatement))
-				return "For permission to reuse, contact the copyright holder.";
-			return "";
+			{
+				return new NullLicense().GetDescription(languagePriorityIds, out idOfLanguageUsed);
+			}
+
+			//We don't actually have a way of knowing what language this is, so we use "und", from http://www.loc.gov/standards/iso639-2/faq.html#25
+			//I hearby coin "Zook's First Law": Eventually any string entered by a user will wish it had been tagged with a language identifier
+			//"Zook's Second Law" can be: Eventually any string entered by a user will wish it was a multi-string (multiple (language,value) pairs)
+			idOfLanguageUsed = "und";
+			return RightsStatement;
 		}
 
 		public override string Token
@@ -129,14 +179,14 @@ namespace Palaso.UI.WindowsForms.ClearShare
 
 		public override bool EditingAllowed
 		{
-			get { return false; }//it may be ok, but we can't read the description.
+			get { return false; } //it may be ok, but we can't read the description.
 		}
 
 		public override string Url { get; set; }
 
 		public static LicenseInfo FromMetadata(Dictionary<string, string> properties)
 		{
-			 if(!properties.ContainsKey("rights (en)"))
+			if (!properties.ContainsKey("rights (en)"))
 				throw new ApplicationException("A license property is required in order to make a  Custom License from metadata.");
 
 			var license = new CustomLicense();
@@ -144,6 +194,4 @@ namespace Palaso.UI.WindowsForms.ClearShare
 			return license;
 		}
 	}
-
-
 }

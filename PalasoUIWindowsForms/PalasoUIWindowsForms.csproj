@@ -80,7 +80,46 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
   </PropertyGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\output\DebugStrongName\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>..\output\DebugStrongName\PalasoUIWindowsForms.XML</DocumentationFile>
+    <WarningLevel>1</WarningLevel>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>default</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\output\DebugMonoStrongName\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseStrongName|AnyCPU'">
+    <OutputPath>..\output\ReleaseStrongName\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|AnyCPU'">
+    <OutputPath>..\output\ReleaseMonoStrongName\</OutputPath>
+    <DefineConstants>TRACE;MONO</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName'">
     <None Include="..\lib\Debug\icudt40.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -97,8 +136,34 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Debug\L10NSharp.dll</HintPath>
     </Reference>
+    <Reference Include="irrKlang.NET4">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\$(Configuration)\irrKlang.NET4.dll</HintPath>
+    </Reference>
+    <Reference Include="NAudio, Version=1.5.3.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Debug\NAudio.dll</HintPath>
+    </Reference>
+    <Reference Include="Keyman7Interop">
+      <HintPath>..\lib\Debug\Keyman7Interop.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="KeymanLink">
+      <HintPath>..\lib\Debug\KeymanLink.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <!-- this is the Microsoft WIndows Image Acquisition COM library, for scanner and camera control-->
+    <Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <HintPath>..\lib\Debug\Interop.WIA.dll</HintPath>
+    </Reference>
+    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Debug\taglib-sharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+  <ItemGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
     <None Include="..\lib\Release\icudt40.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -115,8 +180,34 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Release\L10NSharp.dll</HintPath>
     </Reference>
+    <Reference Include="irrKlang.NET4">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Release\irrKlang.NET4.dll</HintPath>
+    </Reference>
+    <Reference Include="NAudio, Version=1.5.3.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Release\NAudio.dll</HintPath>
+    </Reference>
+    <Reference Include="Keyman7Interop">
+      <HintPath>..\lib\Release\Keyman7Interop.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="KeymanLink">
+      <HintPath>..\lib\Release\KeymanLink.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <!-- this is the Microsoft WIndows Image Acquisition COM library, for scanner and camera control-->
+    <Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <HintPath>..\lib\Release\Interop.WIA.dll</HintPath>
+    </Reference>
+    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Release\taglib-sharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'DebugMono'">
+  <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'DebugMonoStrongName'">
     <None Include="..\lib\DebugMono\icu.net.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -125,8 +216,12 @@
       <HintPath>..\lib\DebugMono\L10NSharp.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Posix" />
+    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\DebugMono\taglib-sharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'ReleaseMono'">
+  <ItemGroup Condition="'$(Configuration)' == 'ReleaseMono' Or '$(Configuration)' == 'ReleaseMonoStrongName'">
     <None Include="..\lib\ReleaseMono\icu.net.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -134,13 +229,17 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\ReleaseMono\L10NSharp.dll</HintPath>
     </Reference>
+    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\ReleaseMono\taglib-sharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Enchant.Net">
       <HintPath>..\lib\common\Enchant.Net.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' ">
+  <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'DebugMonoStrongName' Or '$(Configuration)' == 'ReleaseMono' Or '$(Configuration)' == 'ReleaseMonoStrongName'">
     <Reference Include="NDesk.DBus">
       <HintPath>..\lib\commonMono\NDesk.DBus.dll</HintPath>
     </Reference>
@@ -150,14 +249,6 @@
     <None Include="..\lib\commonMono\NDesk.DBus.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <!-- this is the Microsoft WIndows Image Acquisition COM library, for scanner and camera control-->
-  <ItemGroup Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
-    <Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-      <HintPath>..\lib\$(Configuration)\Interop.WIA.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Progress\LogBoxSettings.settings">
@@ -186,22 +277,6 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL" Condition="'$(Configuration)' == 'DebugMono'">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\DebugMono\taglib-sharp.dll</HintPath>
-    </Reference>
-    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL" Condition="'$(Configuration)' == 'Debug'">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Debug\taglib-sharp.dll</HintPath>
-    </Reference>
-    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL" Condition="'$(Configuration)' == 'ReleaseMono'">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\ReleaseMono\taglib-sharp.dll</HintPath>
-    </Reference>
-    <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL" Condition="'$(Configuration)' == 'Release'">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Release\taglib-sharp.dll</HintPath>
-    </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -255,7 +330,7 @@
     <Compile Include="FileSystem\ConfirmRecycleDialog.designer.cs">
       <DependentUpon>ConfirmRecycleDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="FolderBrowserControl\FolderBrowserControl.cs" Condition="'$(Configuration)' != 'DebugMono' And '$(Configuration)' != 'ReleaseMono' ">
+    <Compile Include="FolderBrowserControl\FolderBrowserControl.cs" Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName' Or '$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="FontHelper.cs" />
@@ -368,6 +443,7 @@
       <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Miscellaneous\WaitCursor.cs" />
+    <Compile Include="ScreenHelper.cs" />
     <Compile Include="SimpleMessageDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -545,6 +621,17 @@
     <Compile Include="Widgets\Prompt.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Widgets\IControlThatKnowsWritingSystem.cs" />
+    <Compile Include="Widgets\ITextInputBox.cs" />
+    <Compile Include="Widgets\StdTextInputBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Widgets\StdTextInputBox.Designer.cs">
+      <DependentUpon>StdTextInputBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Widgets\TextInputBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Reporting\ExceptionReportingDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -580,6 +667,7 @@
     <Compile Include="Progress\TextBoxProgress.cs" />
     <Compile Include="Reporting\WinFormsErrorReporter.cs" />
     <Compile Include="Reporting\WinFormsExceptionHandler.cs" />
+    <Compile Include="Widgets\WidgetExtensions.cs" />
     <Compile Include="Widgets\XButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -734,6 +822,9 @@
       <DependentUpon>ControlListBox.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Widgets\StdTextInputBox.resx">
+      <DependentUpon>StdTextInputBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Reporting\ExceptionReportingDialog.resx">
       <DependentUpon>ExceptionReportingDialog.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -756,6 +847,10 @@
     <ProjectReference Include="..\Palaso\Palaso.csproj">
       <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
       <Name>Palaso</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj">
+      <Project>{52a93c63-08f4-4527-8e6e-ac2adeba6e2d}</Project>
+      <Name>SIL.WritingSystems</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

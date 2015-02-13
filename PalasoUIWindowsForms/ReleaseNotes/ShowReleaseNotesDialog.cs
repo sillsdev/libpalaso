@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using Palaso.IO;
@@ -13,11 +13,12 @@ namespace Palaso.UI.WindowsForms.ReleaseNotes
 	{
 		private readonly string _path;
 		private TempFile _temp;
+		private readonly Icon _icon;
 
-		public ShowReleaseNotesDialog(System.Drawing.Icon icon, string path)
+		public ShowReleaseNotesDialog(Icon icon, string path)
 		{
 			_path = path;
-			Icon = icon;
+			_icon = icon;
 			InitializeComponent();
 		}
 
@@ -29,6 +30,14 @@ namespace Palaso.UI.WindowsForms.ReleaseNotes
 			_temp = TempFile.WithExtension("htm"); //enhance: will leek a file to temp
 			File.WriteAllText(_temp.Path, md.Transform(contents));
 			_browser.Url = new Uri(_temp.Path);
+		}
+
+		protected override void OnHandleCreated(EventArgs e)
+		{
+			base.OnHandleCreated(e);
+
+			// a bug in Mono requires us to wait to set Icon until handle created.
+			Icon = _icon;
 		}
 	}
 }

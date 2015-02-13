@@ -13,7 +13,6 @@ using System.Linq;
 using System.Windows.Forms;
 using Palaso.ObjectModel;
 using Palaso.Reporting;
-using Palaso.Extensions;
 #if __MonoCS__
 using SIL.WritingSystems.WindowsForms.Keyboarding.Linux;
 #else
@@ -239,7 +238,19 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 
 		public IKeyboardDefinition DefaultKeyboard
 		{
-			get { return _adaptors.First(adaptor => adaptor.Type == KeyboardAdaptorType.System).DefaultKeyboard; }
+			get
+			{
+				KeyboardDescription defaultKeyboard = _adaptors.First(adaptor => adaptor.Type == KeyboardAdaptorType.System).DefaultKeyboard;
+#if __MonoCS__
+				if (defaultKeyboard == null)
+				{
+					IKeyboardAdaptor cinnamonAdaptor = _instance.Adaptors.FirstOrDefault(a => a is CinnamonIbusAdaptor);
+					if (cinnamonAdaptor != null)
+						defaultKeyboard = cinnamonAdaptor.DefaultKeyboard;
+				}
+#endif
+				return defaultKeyboard;
+			}
 		}
 
 		public IKeyboardDefinition GetKeyboard(string id)
@@ -371,6 +382,14 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding
 		/// </summary>
 		public void ActivateDefaultKeyboard()
 		{
+#if __MonoCS__
+			IKeyboardAdaptor cinnamonAdaptor = _instance.Adaptors.FirstOrDefault(a => a is CinnamonIbusAdaptor);
+			if (cinnamonAdaptor != null)
+			{
+				cinnamonAdaptor.ActivateDefaultKeyboard();
+				return;
+			}
+#endif
 			SetKeyboard(DefaultKeyboard);
 		}
 

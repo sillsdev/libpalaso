@@ -49,6 +49,7 @@ namespace Palaso.Tests.UsbDrive
 		public void IsReady_1Drive_True()
 		{
 			var drives = UsbDriveInfo.GetDrives();
+			Assert.That(drives.Count, Is.GreaterThan(0));
 			Assert.That(drives[0].IsReady, Is.True);
 		}
 
@@ -59,6 +60,7 @@ namespace Palaso.Tests.UsbDrive
 		{
 			var drives = UsbDriveInfo.GetDrives();
 			// TODO The below is a platform specific expectation.  Fix for windows
+			Assert.That(drives.Count, Is.GreaterThan(0));
 			Assert.That(drives[0].RootDirectory.FullName, Is.StringContaining("/media/"));
 		}
 
@@ -68,6 +70,7 @@ namespace Palaso.Tests.UsbDrive
 		public void TotalSize_1Drive_GreaterThan1000()
 		{
 			var drives = UsbDriveInfo.GetDrives();
+			Assert.That(drives.Count, Is.GreaterThan(0));
 			Assert.That(drives[0].TotalSize, Is.GreaterThan(1000));
 		}
 
@@ -95,6 +98,7 @@ namespace Palaso.Tests.UsbDrive
 		public void TotalSize_2DrivesArePluggedIn_TheDrivesSizesAreCorrect()
 		{
 			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			Assert.That(usbDrives.Count, Is.GreaterThan(1));
 			Assert.AreEqual(_drive0.DriveSize, usbDrives[0].TotalSize);
 			Assert.AreEqual(_drive1.DriveSize, usbDrives[1].TotalSize);
 		}
@@ -105,6 +109,7 @@ namespace Palaso.Tests.UsbDrive
 		public void RootDirectory_2DrivesArePluggedInAndReady_TheDrivesPathsCorrect()
 		{
 			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			Assert.That(usbDrives.Count, Is.GreaterThan(1));
 			Assert.AreEqual(_drive0.Path.FullName, usbDrives[0].RootDirectory.FullName);
 			Assert.AreEqual(_drive1.Path.FullName, usbDrives[1].RootDirectory.FullName);
 		}
@@ -115,6 +120,7 @@ namespace Palaso.Tests.UsbDrive
 		public void IsReady_2DrivesAreMounted_ReturnsTrue()
 		{
 			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			Assert.That(usbDrives.Count, Is.GreaterThan(1));
 			Assert.IsTrue(usbDrives[0].IsReady);
 			Assert.IsTrue(usbDrives[1].IsReady);
 		}
@@ -125,6 +131,7 @@ namespace Palaso.Tests.UsbDrive
 		public void IsReady_3DrivesAreMounted_ReturnsTrue()
 		{
 			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			Assert.That(usbDrives.Count, Is.GreaterThan(2));
 			Assert.IsTrue(usbDrives[0].IsReady);
 			Assert.IsTrue(usbDrives[1].IsReady);
 			Assert.IsTrue(usbDrives[2].IsReady);
@@ -136,6 +143,7 @@ namespace Palaso.Tests.UsbDrive
 		public void IsReady_2DrivesAreNotMounted_ReturnsFalse()
 		{
 			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			Assert.That(usbDrives.Count, Is.GreaterThan(1));
 			Assert.IsFalse(usbDrives[0].IsReady);
 			Assert.IsFalse(usbDrives[1].IsReady);
 		}

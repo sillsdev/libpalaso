@@ -69,12 +69,11 @@ namespace Palaso.UI.WindowsForms.UniqueToken
 				dlg.Show();
 				try
 				{
-					for (int i=0; i < secondsToWait; i++)
-				{
-						tokenAcquired = AcquireTokenQuietly(uniqueIdentifier);
-						if (tokenAcquired)
-							break;
-						Thread.Sleep(1000);
+					var timeoutTime = DateTime.Now.AddSeconds(secondsToWait);
+					while(DateTime.Now < timeoutTime && !tokenAcquired)
+					{
+						tokenAcquired = s_fileLock.TryAcquireLock();
+						Thread.Sleep(500);
 					}
 				}
 				catch (Exception e)

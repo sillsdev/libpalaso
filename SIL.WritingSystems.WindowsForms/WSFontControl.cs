@@ -25,6 +25,16 @@ namespace SIL.WritingSystems.WindowsForms
 				KeyboardController.RegisterControl(_testArea);
 		}
 
+		public bool ReadOnly
+		{
+			set
+			{
+				_fontComboBox.Enabled = !value;
+				_fontSizeComboBox.Enabled = !value;
+				_rightToLeftCheckBox.AutoCheck = !value;
+			}
+		}
+
 		public void BindToModel(WritingSystemSetupModel model)
 		{
 			if (_model != null)

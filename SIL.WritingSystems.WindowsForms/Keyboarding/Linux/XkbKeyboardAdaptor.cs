@@ -203,24 +203,13 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 		/// </summary>
 		/// <remarks>
 		/// For Xkb the default keyboard has GroupIndex set to zero.
-		/// Wasta/Cinnamon keyboarding doesn't always have the system keyboard at index 0.
-		/// It may have an IBus keyboard at that position.
+		/// Wasta/Cinnamon keyboarding doesn't use XkbKeyboardDescription objects.
 		/// </remarks>
 		public KeyboardDescription DefaultKeyboard
 		{
 			get
 			{
-				int minGroup = Int32.MaxValue;
-				XkbKeyboardDescription retval = null;
-				foreach (XkbKeyboardDescription kbd in Keyboard.Controller.AllAvailableKeyboards.OfType<XkbKeyboardDescription>())
-				{
-					if (kbd.GroupIndex < minGroup)
-					{
-						retval = kbd;
-						minGroup = kbd.GroupIndex;
-					}
-				}
-				return retval;
+				return Keyboard.Controller.AllAvailableKeyboards.OfType<XkbKeyboardDescription>().FirstOrDefault(kbd => kbd.GroupIndex == 0);
 			}
 		}
 			

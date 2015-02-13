@@ -1,4 +1,6 @@
-﻿namespace Palaso.UI.WindowsForms.ImageToolbox
+﻿using Palaso.UI.WindowsForms.Widgets;
+
+namespace Palaso.UI.WindowsForms.ImageToolbox
 {
 	partial class ArtOfReadingChooser
 	{
@@ -30,7 +32,7 @@
 		{
 			this.components = new System.ComponentModel.Container();
 			this._searchButton = new System.Windows.Forms.Button();
-			this._searchTermsBox = new System.Windows.Forms.TextBox();
+			this._searchTermsBox = new TextInputBox();
 			this.betterLinkLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLinkLabel();
 			this._messageLabel = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
 			this._thumbnailViewer = new Palaso.UI.WindowsForms.ImageGallery.ThumbnailViewer();
@@ -149,7 +151,7 @@
 
 		private ImageGallery.ThumbnailViewer _thumbnailViewer;
 		private System.Windows.Forms.Button _searchButton;
-		private System.Windows.Forms.TextBox _searchTermsBox;
+		private TextInputBox _searchTermsBox;
 		private Widgets.BetterLabel _messageLabel;
 		private i18n.LocalizationHelper _localizationHelper;
 		private Widgets.BetterLinkLabel betterLinkLabel1;

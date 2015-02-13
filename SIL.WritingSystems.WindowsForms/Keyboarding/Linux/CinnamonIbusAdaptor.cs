@@ -471,6 +471,47 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Linux
 
 			base.Dispose(disposing);
 		}
+
+		private IKeyboardDefinition _defaultKeyboard;
+
+		/// <summary>
+		/// This adaptor doesn't make use of XkbKeyboardDefinition objects, so we have to
+		/// figure out the default keyboard here, searching the available keyboards for the
+		/// best match to _defaultLayout.  An explicit xkb: keyboard is preferred, but we
+		/// settle for another match (or anything at all) if we need to.
+		/// </summary>
+		public override IKeyboardDefinition DefaultKeyboard
+		{
+			get
+			{
+				if (_defaultKeyboard == null)
+				{
+					var desired = String.Format("xkb:{0}:", _defaultLayout);
+					if (!String.IsNullOrEmpty (_defaultVariant))
+						desired = String.Format ("xkb:{0}\\{1}:", _defaultLayout, _defaultVariant);
+					var pattern = String.Format("[^A-Za-z]{0}[^A-Za-z]|^{0}[^A-Za-z]|.*[^A-Za-z]{0}$", _defaultLayout);
+					var regex = new System.Text.RegularExpressions.Regex(pattern);
+					IKeyboardDefinition first = null;
+					foreach (var kbd in Keyboard.Controller.AllAvailableKeyboards)
+					{
+						if (first == null)
+							first = kbd;	// last-ditch value if all else fails
+						if (kbd.Layout.StartsWith(desired) || kbd.Layout == _defaultLayout)
+						{
+							_defaultKeyboard = kbd;
+							break;
+						}
+						if (regex.IsMatch(kbd.Layout))
+						{
+							_defaultKeyboard = kbd;
+						}
+					}
+					if (_defaultKeyboard == null)
+						_defaultKeyboard = first;
+				}
+				return _defaultKeyboard;
+			}
+		}
 	}
 }
 #endif
