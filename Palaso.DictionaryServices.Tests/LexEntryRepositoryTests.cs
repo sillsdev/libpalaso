@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using NUnit.Framework;
 using Palaso.Data;
 using Palaso.DictionaryServices;
@@ -26,7 +25,7 @@ namespace WeSay.LexicalModel.Tests
 			_temporaryFolder = new TemporaryFolder();
 			string filePath = _temporaryFolder.GetTemporaryFile();
 			_repository = new LiftLexEntryRepository(filePath);
-			_headwordWritingSystem = new WritingSystemDefinition("th");
+			_headwordWritingSystem = new WritingSystemDefinition("th") {DefaultCollation = new CollationDefinition("standard")};
 		}
 
 		[TearDown]
@@ -72,6 +71,7 @@ namespace WeSay.LexicalModel.Tests
 		{
 			var retval = new WritingSystemDefinition();
 			retval.Language = languageISO;
+			retval.DefaultCollation = new CollationDefinition("standard");
 			return retval;
 		}
 
