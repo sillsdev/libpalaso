@@ -28,6 +28,6 @@ if "%~1" == "" (
 @echo on
 @pushd "%~dp0"
 
-msbuild "/target:Clean;Compile" /property:Configuration="%BUILD%" /property:RootDir=..  /property:BUILD_NUMBER="0.0.0.abcd" build.win.proj
+msbuild "/target:Clean;Compile" /property:Configuration="%BUILD%" /property:RootDir=..  /property:BUILD_NUMBER="0.0.0.abcd" Palaso.proj
 
 @popd
