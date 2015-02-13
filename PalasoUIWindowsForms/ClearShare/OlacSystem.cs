@@ -5,8 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
-using Palaso.Code;
 using Palaso.UI.WindowsForms.Properties;
+using SIL.Code;
 
 namespace Palaso.UI.WindowsForms.ClearShare
 {

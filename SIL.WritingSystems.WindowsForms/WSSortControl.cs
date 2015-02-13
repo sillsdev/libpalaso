@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using SIL.Reporting;
 
 namespace SIL.WritingSystems.WindowsForms
 {
@@ -190,7 +191,7 @@ namespace SIL.WritingSystems.WindowsForms
 			}
 			catch (ApplicationException ex)
 			{
-				Palaso.Reporting.ErrorReport.NotifyUserOfProblem("Unable to sort test text: {0}", ex.Message);
+				ErrorReport.NotifyUserOfProblem("Unable to sort test text: {0}", ex.Message);
 			}
 		}
 

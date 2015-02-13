@@ -1,6 +1,6 @@
 ﻿using System.Collections.Specialized;
 using System.Linq;
-using Palaso.ObjectModel;
+using SIL.ObjectModel;
 
 namespace SIL.WritingSystems
 {

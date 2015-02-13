@@ -4,8 +4,8 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
-using Palaso.Code;
-using Palaso.Reporting;
+using SIL.Code;
+using SIL.Reporting;
 using Point = System.Drawing.Point;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
@@ -243,7 +243,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 			}
 			catch (Exception e)
 			{
-				Palaso.Reporting.ErrorReport.ReportNonFatalExceptionWithMessage(e,
+				ErrorReport.ReportNonFatalExceptionWithMessage(e,
 																				"Regression: ImageCropper: originalImage is hosed.");
 				return true;
 			}
@@ -404,7 +404,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 			catch (Exception e)
 			{
 				Debug.Fail(e.Message);
-				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(e, "Sorry, there was a problem getting the image");
+				ErrorReport.NotifyUserOfProblem(e, "Sorry, there was a problem getting the image");
 				return null;
 			}
 		}

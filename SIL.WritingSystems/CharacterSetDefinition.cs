@@ -1,5 +1,5 @@
 ﻿using System.Collections.Specialized;
-using Palaso.ObjectModel;
+using SIL.ObjectModel;
 
 namespace SIL.WritingSystems
 {

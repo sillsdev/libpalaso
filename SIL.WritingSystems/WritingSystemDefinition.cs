@@ -4,10 +4,10 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Palaso.Code;
-using Palaso.Data;
-using Palaso.Extensions;
-using Palaso.ObjectModel;
+using SIL.Code;
+using SIL.Data;
+using SIL.Extensions;
+using SIL.ObjectModel;
 
 namespace SIL.WritingSystems
 {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Palaso.Migration;
+using SIL.Migration;
 
 namespace SIL.WritingSystems.Migration
 {

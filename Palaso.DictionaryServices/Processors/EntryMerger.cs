@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Palaso.DictionaryServices.Model;
-using Palaso.Progress;
+using SIL.Progress;
 
 namespace Palaso.DictionaryServices.Processors
 {

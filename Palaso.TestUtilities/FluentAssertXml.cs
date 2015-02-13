@@ -4,7 +4,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using NUnit.Framework;
-using Palaso.Xml;
+using SIL.Xml;
 
 namespace Palaso.TestUtilities
 {

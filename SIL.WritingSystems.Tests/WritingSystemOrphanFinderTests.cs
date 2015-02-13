@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
-using Palaso.IO;
 using Palaso.TestUtilities;
+using SIL.IO;
 
 namespace SIL.WritingSystems.Tests
 {

@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using Palaso.Code;
 using Palaso.Lift;
-using Palaso.ObjectModel;
-using Palaso.Reporting;
+using SIL.ObjectModel;
+using SIL.Reporting;
 
 namespace Palaso.DictionaryServices.Model
 {

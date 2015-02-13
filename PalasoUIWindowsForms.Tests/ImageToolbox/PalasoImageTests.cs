@@ -6,9 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using Palaso.IO;
 using Palaso.UI.WindowsForms.ClearShare;
 using Palaso.UI.WindowsForms.ImageToolbox;
+using SIL.IO;
 
 namespace PalasoUIWindowsForms.Tests.ImageToolbox
 {

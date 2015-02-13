@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Palaso.Lift;
-using Palaso.Reporting;
-using Palaso.Text;
+using SIL.Text;
 
 namespace Palaso.DictionaryServices.Model
 {

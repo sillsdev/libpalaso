@@ -2,8 +2,8 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
-using Palaso.IO;
-using Palaso.Reporting;
+using SIL.IO;
+using SIL.Reporting;
 
 namespace Palaso.Media
 {

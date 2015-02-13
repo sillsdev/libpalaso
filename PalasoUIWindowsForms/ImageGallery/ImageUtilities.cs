@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Drawing.Drawing2D;
+using SIL.PlatformUtilities;
 
 namespace Palaso.UI.WindowsForms.ImageGallery
 {
@@ -34,7 +35,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			var horizontalOffset = (destinationWidth / 2) - (actualWidth / 2);
 			var verticalOffset = (destinationHeight / 2) - (actualHeight / 2);
 
-			var retBmp = PlatformUtilities.Platform.IsWindows
+			var retBmp = Platform.IsWindows
 				? new Bitmap(destinationWidth, destinationHeight, System.Drawing.Imaging.PixelFormat.Format64bppPArgb)
 				: new Bitmap(destinationWidth, destinationHeight);
 

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Xml;
 using NUnit.Framework;
-using Palaso.Reporting;
 using Palaso.TestUtilities;
 using SIL.Archiving.IMDI;
+using SIL.Reporting;
 
 namespace SIL.Archiving.Tests
 {

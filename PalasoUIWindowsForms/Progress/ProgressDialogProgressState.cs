@@ -1,6 +1,6 @@
 using System;
-using Palaso.Progress;
 using Palaso.UI.WindowsForms.Progress.Commands;
+using SIL.Progress;
 
 namespace Palaso.UI.WindowsForms.Progress
 {

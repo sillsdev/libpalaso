@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Palaso.Data;
 using Palaso.DictionaryServices.Model;
-using Palaso.IO;
 using Palaso.TestUtilities;
 using NUnit.Framework;
+using SIL.Data;
+using SIL.IO;
 using SIL.WritingSystems;
 
 namespace Palaso.DictionaryServices.Tests

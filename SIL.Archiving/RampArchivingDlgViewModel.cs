@@ -12,10 +12,10 @@ using System.Threading;
 using System.Windows.Forms;
 using Ionic.Zip;
 using L10NSharp;
-using Palaso.IO;
 using Palaso.UI.WindowsForms.ClearShare;
 using SIL.Archiving.Generic;
 using SIL.Archiving.Properties;
+using SIL.IO;
 using Timer = System.Threading.Timer;
 
 namespace SIL.Archiving
@@ -209,7 +209,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		public override string ArchiveInfoUrl
 		{
-			get { return Settings.Default.RampWebSite; }
+			get { return Properties.Settings.Default.RampWebSite; }
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -1210,7 +1210,7 @@ namespace SIL.Archiving
 		private string GetContributorsMetsPairs(Contribution contribution)
 		{
 			var roleCode = (contribution.Role != null &&
-				Settings.Default.RampContributorRoles.Contains(contribution.Role.Code) ?
+				Properties.Settings.Default.RampContributorRoles.Contains(contribution.Role.Code) ?
 				contribution.Role.Code : string.Empty);
 
 			return JSONUtils.MakeKeyValuePair(kDefaultKey, contribution.ContributorName) +

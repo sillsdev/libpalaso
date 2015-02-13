@@ -4,10 +4,10 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using Palaso.Code;
-using Palaso.IO;
 using Palaso.UI.WindowsForms.ClearShare;
 using System.Linq;
+using SIL.Code;
+using SIL.IO;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
 {

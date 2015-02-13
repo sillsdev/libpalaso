@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Linq;
-using Palaso.Code;
 
 namespace Palaso.Lift.Options
 {

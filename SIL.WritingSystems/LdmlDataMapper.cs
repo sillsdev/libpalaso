@@ -8,8 +8,8 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using Icu;
-using Palaso.Extensions;
-using Palaso.Xml;
+using SIL.Extensions;
+using SIL.Xml;
 
 namespace SIL.WritingSystems
 {

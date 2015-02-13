@@ -4,10 +4,10 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using Palaso.Extensions;
-using Palaso.IO;
-using Palaso.Linq;
-using Palaso.Text;
+using SIL.Extensions;
+using SIL.IO;
+using SIL.Linq;
+using SIL.Text;
 
 namespace Palaso.UI.WindowsForms.ImageGallery
 {

@@ -1,5 +1,5 @@
 using System;
-using Palaso.Data;
+using SIL.Data;
 
 namespace Palaso.Lift
 {

@@ -4,9 +4,9 @@ using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
-using Palaso.Extensions;
-using Palaso.Progress;
-using Palaso.Reporting;
+using SIL.Extensions;
+using SIL.Progress;
+using SIL.Reporting;
 
 namespace Palaso.UI.WindowsForms.Progress
 {

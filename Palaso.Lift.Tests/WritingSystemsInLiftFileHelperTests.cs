@@ -16,13 +16,13 @@ namespace Palaso.Lift.Tests
 		private class TestEnvironment : IDisposable
 		{
 			private readonly TemporaryFolder _folder;
-			private readonly IO.TempFile _liftFile1;
+			private readonly SIL.IO.TempFile _liftFile1;
 
 			public TestEnvironment(string liftFileContent)
 			{
 				_folder = new TemporaryFolder("WritingSystemsInLiftFileHelper");
 				var pathtoLiftFile1 = Path.Combine(_folder.Path, "test1.lift");
-				_liftFile1 = new IO.TempFile(liftFileContent);
+				_liftFile1 = new SIL.IO.TempFile(liftFileContent);
 				_liftFile1.MoveTo(pathtoLiftFile1);
 				Helper = new WritingSystemsInLiftFileHelper(WritingSystems, _liftFile1.Path);
 			}

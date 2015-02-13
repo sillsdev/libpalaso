@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
-using Palaso.Migration;
-using Palaso.Xml;
+using SIL.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using SIL.Xml;
 
 namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 {

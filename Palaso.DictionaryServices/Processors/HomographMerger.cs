@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Palaso.Data;
 using Palaso.DictionaryServices.Model;
-using Palaso.Progress;
+using SIL.Data;
+using SIL.Progress;
 using SIL.WritingSystems;
 
 namespace Palaso.DictionaryServices.Processors

@@ -4,7 +4,7 @@ using System.IO;
 using System.Media;
 using System.Threading;
 using NUnit.Framework;
-using Palaso.IO;
+using SIL.IO;
 #if !MONO
 using NAudio.Wave;
 using Palaso.Media.Naudio;

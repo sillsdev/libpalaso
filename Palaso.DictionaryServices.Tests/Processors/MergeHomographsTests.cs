@@ -3,8 +3,8 @@ using System.IO;
 using System.Xml;
 using NUnit.Framework;
 using Palaso.DictionaryServices.Processors;
-using Palaso.Progress;
 using Palaso.TestUtilities;
+using SIL.Progress;
 
 namespace Palaso.DictionaryServices.Tests.Processors
 {

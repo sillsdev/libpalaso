@@ -5,8 +5,8 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using L10NSharp;
-using Palaso.IO;
-using Palaso.Reporting;
+using SIL.IO;
+using SIL.Reporting;
 #if !MONO
 using WIA;
 #endif
@@ -106,7 +106,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 					}
 					catch (Exception err) //for example, http://jira.palaso.org/issues/browse/BL-199
 					{
-						Palaso.Reporting.ErrorReport.NotifyUserOfProblem(err,"Sorry, there was a problem loading that image.".Localize("ImageToolbox.ProblemLoadingImage"));
+						ErrorReport.NotifyUserOfProblem(err,"Sorry, there was a problem loading that image.".Localize("ImageToolbox.ProblemLoadingImage"));
 						return;
 					}
 					_pictureBox.Image = _currentImage.Image;
@@ -239,7 +239,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			}
 			catch (Exception error)
 			{
-				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(error, "Problem Getting Image".Localize("ImageToolbox.ProblemGettingImageFromDevice"));
+				ErrorReport.NotifyUserOfProblem(error, "Problem Getting Image".Localize("ImageToolbox.ProblemGettingImageFromDevice"));
 			}
 		}
 		#endif

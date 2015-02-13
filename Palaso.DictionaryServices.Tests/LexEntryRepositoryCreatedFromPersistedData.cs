@@ -5,10 +5,10 @@ using System.IO;
 using System.Threading;
 using NUnit.Framework;
 using Palaso.DictionaryServices.Lift;
-using Palaso.Extensions;
-using Palaso.Tests.Data;
 using Palaso.TestUtilities;
 using Palaso.DictionaryServices.Model;
+using SIL.Extensions;
+using SIL.Tests.Data;
 
 namespace Palaso.DictionaryServices.Tests
 {

@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
-using Palaso.Extensions;
+using SIL.Extensions;
 
 namespace Palaso.Lift.Parsing
 {

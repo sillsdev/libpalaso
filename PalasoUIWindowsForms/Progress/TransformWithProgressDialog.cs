@@ -2,8 +2,9 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using Palaso.Progress;
 using Palaso.UI.WindowsForms.Progress;
+using SIL.Progress;
+using SIL.Reporting;
 
 namespace Palaso.UI.WindowsForms.Progress
 {
@@ -82,10 +83,10 @@ namespace Palaso.UI.WindowsForms.Progress
 				if (dlg.ProgressStateResult!=null && dlg.ProgressStateResult.ExceptionThatWasEncountered != null)
 				{
 					if(failureWouldBeFatal)
-						Palaso.Reporting.ErrorReport.ReportFatalException(dlg.ProgressStateResult.ExceptionThatWasEncountered);
+						ErrorReport.ReportFatalException(dlg.ProgressStateResult.ExceptionThatWasEncountered);
 				   else
 					{
-						Palaso.Reporting.ErrorReport.ReportNonFatalException(dlg.ProgressStateResult.ExceptionThatWasEncountered);
+						ErrorReport.ReportNonFatalException(dlg.ProgressStateResult.ExceptionThatWasEncountered);
 					}
 					return false;
 				}

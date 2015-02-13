@@ -139,9 +139,9 @@
       <Project>{d74ce910-d44a-44f5-8c0f-f5e50b26f85d}</Project>
       <Name>Palaso.TestUtilities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Palaso\Palaso.csproj">
+    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
       <Project>{3527da1d-1e25-48be-a71e-9ebf7f9208d4}</Project>
-      <Name>Palaso</Name>
+      <Name>SIL.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.WritingSystems.WindowsForms\SIL.WritingSystems.WindowsForms.csproj">
       <Project>{f7df58e2-5b67-498a-9f64-b5f1584a5ab9}</Project>

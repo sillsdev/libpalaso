@@ -2,9 +2,10 @@ using System;
 using System.Threading;
 using System.Windows.Forms;
 using NUnit.Framework;
-using Palaso.Progress;
 using Palaso.UI.WindowsForms.Progress;
 using Palaso.UI.WindowsForms.Progress.Commands;
+using SIL.Progress;
+using SIL.Progress.Commands;
 
 namespace PalasoUIWindowsForms.Tests.Progress
 {

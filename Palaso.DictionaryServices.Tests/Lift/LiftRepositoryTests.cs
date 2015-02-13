@@ -3,9 +3,9 @@ using System.Xml;
 using NUnit.Framework;
 using Palaso.DictionaryServices.Lift;
 using Palaso.DictionaryServices.Model;
-using Palaso.Progress;
-using Palaso.Tests.Data;
 using Palaso.TestUtilities;
+using SIL.Progress;
+using SIL.Tests.Data;
 
 namespace Palaso.DictionaryServices.Tests.Lift
 {

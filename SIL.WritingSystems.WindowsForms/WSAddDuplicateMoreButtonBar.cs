@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using SIL.Reporting;
 
 namespace SIL.WritingSystems.WindowsForms
 {
@@ -113,7 +114,7 @@ namespace SIL.WritingSystems.WindowsForms
 				}
 				catch (ApplicationException ex)
 				{
-					Palaso.Reporting.ErrorReport.NotifyUserOfProblem(ex, "There was a problem reading the LDML (language/orthography definition) file.");
+					ErrorReport.NotifyUserOfProblem(ex, "There was a problem reading the LDML (language/orthography definition) file.");
 				}
 			}
 		}

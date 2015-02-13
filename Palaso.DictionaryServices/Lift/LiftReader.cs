@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
-using Palaso.Data;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.Lift.Options;
 using Palaso.Lift.Parsing;
 using Palaso.Lift.Validation;
-using Palaso.Progress;
-using Palaso.Reporting;
+using SIL.Data;
+using SIL.Progress;
+using SIL.Reporting;
 
 namespace Palaso.DictionaryServices.Lift
 {

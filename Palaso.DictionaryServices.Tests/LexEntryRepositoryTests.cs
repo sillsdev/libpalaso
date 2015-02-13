@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using Palaso.Data;
 using Palaso.DictionaryServices;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.Lift.Options;
 using Palaso.TestUtilities;
-using Palaso.Text;
+using SIL.Data;
+using SIL.Text;
 using SIL.WritingSystems;
 
 namespace WeSay.LexicalModel.Tests

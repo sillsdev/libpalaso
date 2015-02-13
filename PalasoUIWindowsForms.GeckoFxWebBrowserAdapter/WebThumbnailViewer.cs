@@ -5,8 +5,9 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using Palaso.IO;
 using Palaso.UI.WindowsForms.HtmlBrowser;
+using SIL.IO;
+using SIL.PlatformUtilities;
 
 // ReSharper disable once CheckNamespace
 namespace Palaso.UI.WindowsForms.ImageGallery
@@ -134,7 +135,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 					+ "'><div class='imageWrapRel'><div class='imageWrapOuter'><div class='imageWrapMid'><div class='imageWrapInner'>");
 				// the data-echo attribute is part of lazy loading for very long lists (see below).
 
-				if (PlatformUtilities.Platform.IsWindows)
+				if (Platform.IsWindows)
 				{
 					sb.AppendLine("<img class='image' src='' data-echo='file://" + htmlPath + "'>");
 				}

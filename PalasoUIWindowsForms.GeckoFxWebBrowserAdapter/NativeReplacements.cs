@@ -4,6 +4,7 @@ using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using SIL.PlatformUtilities;
 
 namespace Palaso.UI.WindowsForms.GeckoBasedControls
 {
@@ -119,7 +120,7 @@ namespace Palaso.UI.WindowsForms.GeckoBasedControls
 		/// </returns>
 		public static IntPtr GetFocus()
 		{
-			if (Palaso.PlatformUtilities.Platform.IsWindows)
+			if (Platform.IsWindows)
 				return WindowsGetFocus();
 
 			return MonoGetFocus();
@@ -227,7 +228,7 @@ namespace Palaso.UI.WindowsForms.GeckoBasedControls
 			if (control.IsDisposed)
 				throw new ObjectDisposedException("control");
 
-			if (Palaso.PlatformUtilities.Platform.IsWindows)
+			if (Platform.IsWindows)
 				NativeSendMessage(control.Handle, WM_SETFOCUS, (int)fromHandle, 0);
 			else
 			{
@@ -267,7 +268,7 @@ namespace Palaso.UI.WindowsForms.GeckoBasedControls
 		/// </summary>
 		public static void SendMessage(IntPtr hWnd, uint Msg, int wParam, int lParam)
 		{
-			if (Palaso.PlatformUtilities.Platform.IsDotNet)
+			if (Platform.IsDotNet)
 			{
 				NativeSendMessage(hWnd, Msg, wParam, lParam);
 			}

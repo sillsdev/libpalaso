@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
-using Palaso.Extensions;
-using Palaso.UiBindings;
+using SIL.Extensions;
+using SIL.UiBindings;
 
 namespace Palaso.Lift.Options
 {

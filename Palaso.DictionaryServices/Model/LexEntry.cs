@@ -4,14 +4,14 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using Palaso.Code;
-using Palaso.Data;
-using Palaso.i18n;
 using Palaso.Lift;
-using Palaso.ObjectModel;
-using Palaso.Reporting;
-using Palaso.Text;
+
 //using Palaso.UI.WindowsForms.i18n;
+using SIL.Data;
+using SIL.i18n;
+using SIL.ObjectModel;
+using SIL.Reporting;
+using SIL.Text;
 
 namespace Palaso.DictionaryServices.Model
 {

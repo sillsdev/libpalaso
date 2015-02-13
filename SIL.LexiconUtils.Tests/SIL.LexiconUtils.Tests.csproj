@@ -106,9 +106,9 @@
     <Compile Include="UserSettingsWritingSystemDataMapperTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Palaso\Palaso.csproj">
+    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
       <Project>{3527da1d-1e25-48be-a71e-9ebf7f9208d4}</Project>
-      <Name>Palaso</Name>
+      <Name>SIL.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.LexiconUtils\SIL.LexiconUtils.csproj">
       <Project>{fad20de2-d5bb-4d9d-aeef-61f02663105f}</Project>

@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
-using Palaso.Data;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.Lift.Options;
 using Palaso.Lift.Parsing;
-using Palaso.Text;
+using SIL.Data;
+using SIL.Text;
 
 namespace Palaso.DictionaryServices.Lift
 {

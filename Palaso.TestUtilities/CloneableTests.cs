@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
-using Palaso.Code;
-using Palaso.ObjectModel;
+using SIL.ObjectModel;
 
 namespace Palaso.TestUtilities
 {

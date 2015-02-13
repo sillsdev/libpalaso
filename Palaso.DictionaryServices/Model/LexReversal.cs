@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Palaso.Lift;
-using Palaso.Text;
+using SIL.Text;
 
 namespace Palaso.DictionaryServices.Model
 {

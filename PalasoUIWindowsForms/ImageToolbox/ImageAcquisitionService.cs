@@ -1,8 +1,8 @@
-﻿#if !MONO
+﻿using SIL.Reporting;
+#if !MONO
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using Palaso.Reporting;
 using WIA;
 using System.Runtime.InteropServices;
 

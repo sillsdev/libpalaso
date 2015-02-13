@@ -34,7 +34,7 @@ namespace Palaso.Lift.Tests
 		[Test]
 		public void NotLiftFileThrows()
 		{
-			using (var tempFile = IO.TempFile.WithFilename("bogus.txt"))
+			using (var tempFile = SIL.IO.TempFile.WithFilename("bogus.txt"))
 			{
 				Assert.Throws<InvalidOperationException>(() => LiftSorter.SortLiftFile(tempFile.Path));
 			}
@@ -49,7 +49,7 @@ namespace Palaso.Lift.Tests
 <entry guid='2' />
 <entry guid='1' />
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 
@@ -100,7 +100,7 @@ namespace Palaso.Lift.Tests
 		<relation ref='a' type='a' />
 	</entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -220,7 +220,7 @@ namespace Palaso.Lift.Tests
 		</pronunciation>
 	</entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -291,7 +291,7 @@ namespace Palaso.Lift.Tests
 		</variant>
 	</entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -366,7 +366,7 @@ namespace Palaso.Lift.Tests
 		</note>
 	</entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -414,7 +414,7 @@ namespace Palaso.Lift.Tests
 			</relation>
 	</entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -466,7 +466,7 @@ namespace Palaso.Lift.Tests
 			</etymology>
 	</entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -516,7 +516,7 @@ namespace Palaso.Lift.Tests
 			</annotation>
 	</entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -548,7 +548,7 @@ namespace Palaso.Lift.Tests
 			</trait>
 	</entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -584,7 +584,7 @@ namespace Palaso.Lift.Tests
 			</field>
 	</entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -644,7 +644,7 @@ namespace Palaso.Lift.Tests
 </sense>
 </entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -763,7 +763,7 @@ namespace Palaso.Lift.Tests
 </sense>
 	</entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -800,7 +800,7 @@ namespace Palaso.Lift.Tests
 </sense>
 	</entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -842,7 +842,7 @@ namespace Palaso.Lift.Tests
 </sense>
 </entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -894,7 +894,7 @@ namespace Palaso.Lift.Tests
 </sense>
 </entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -976,7 +976,7 @@ namespace Palaso.Lift.Tests
 </sense>
 </entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -1041,7 +1041,7 @@ namespace Palaso.Lift.Tests
 </sense>
 </entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -1088,7 +1088,7 @@ namespace Palaso.Lift.Tests
 </sense>
 </entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -1134,7 +1134,7 @@ namespace Palaso.Lift.Tests
 </sense>
 </entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -1179,7 +1179,7 @@ namespace Palaso.Lift.Tests
 </sense>
 </entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -1213,7 +1213,7 @@ namespace Palaso.Lift.Tests
 </sense>
 </entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -1251,7 +1251,7 @@ namespace Palaso.Lift.Tests
 </sense>
 </entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -1289,7 +1289,7 @@ namespace Palaso.Lift.Tests
 </sense>
 </entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -1318,7 +1318,7 @@ namespace Palaso.Lift.Tests
 <description />
 </header>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -1397,7 +1397,7 @@ namespace Palaso.Lift.Tests
 </ranges>
 </header>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -1477,7 +1477,7 @@ namespace Palaso.Lift.Tests
 	</fields>
 </header>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -1523,7 +1523,7 @@ namespace Palaso.Lift.Tests
 </description>
 </header>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -1560,7 +1560,7 @@ namespace Palaso.Lift.Tests
 <trait value='stem' name='morph-type' />
 </entry>
 </lift>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
@@ -1618,7 +1618,7 @@ namespace Palaso.Lift.Tests
 		[Test]
 		public void NotForLiftRangesFileThrows()
 		{
-			using (var tempFile = IO.TempFile.WithFilename("bogus.txt"))
+			using (var tempFile = SIL.IO.TempFile.WithFilename("bogus.txt"))
 			{
 				Assert.Throws<InvalidOperationException>(() => LiftSorter.SortLiftRangesFiles(tempFile.Path));
 			}
@@ -1633,8 +1633,8 @@ namespace Palaso.Lift.Tests
 <range id='2' />
 <range id='1' />
 </lift-ranges>";
-			using (var liftRangesFile = IO.TempFile.WithFilename("good.lift-ranges"))
-			using (var secondLiftRangesFile = IO.TempFile.WithFilename("good-dup.lift-ranges"))
+			using (var liftRangesFile = SIL.IO.TempFile.WithFilename("good.lift-ranges"))
+			using (var secondLiftRangesFile = SIL.IO.TempFile.WithFilename("good-dup.lift-ranges"))
 			{
 				File.WriteAllText(liftRangesFile.Path, liftData);
 				File.WriteAllText(secondLiftRangesFile.Path, liftData);
@@ -1671,7 +1671,7 @@ namespace Palaso.Lift.Tests
 <description />
 </range>
 </lift-ranges>";
-			using (var liftFile = IO.TempFile.WithFilename("good.lift-ranges"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift-ranges"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftRangesFiles(liftFile.Path);
@@ -1722,7 +1722,7 @@ namespace Palaso.Lift.Tests
 </range>
 </lift-ranges>";
 
-			using (var liftFile = IO.TempFile.WithFilename("good.lift-ranges"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift-ranges"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftRangesFiles(liftFile.Path);
@@ -1791,7 +1791,7 @@ namespace Palaso.Lift.Tests
 </range>
 </lift-ranges>";
 
-			using (var liftFile = IO.TempFile.WithFilename("good.lift-ranges"))
+			using (var liftFile = SIL.IO.TempFile.WithFilename("good.lift-ranges"))
 			{
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftRangesFiles(liftFile.Path);

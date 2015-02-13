@@ -5,11 +5,11 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using Enchant;
-using Palaso.i18n;
-using Palaso.Reporting;
 using Palaso.UI.WindowsForms.HotSpot;
-using Palaso.Spelling;
 using Palaso.UI.WindowsForms.i18n;
+using SIL.i18n;
+using SIL.Reporting;
+using SIL.Spelling;
 
 namespace Palaso.UI.WindowsForms.Spelling
 {

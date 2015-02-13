@@ -8,10 +8,10 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using System.Diagnostics;
-using Palaso.Extensions;
 using SIL.Archiving.Generic;
 using SIL.Archiving.Generic.AccessProtocol;
 using SIL.Archiving.IMDI.Lists;
+using SIL.Extensions;
 
 namespace SIL.Archiving.IMDI.Schema
 {

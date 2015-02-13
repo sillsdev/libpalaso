@@ -2,8 +2,9 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using L10NSharp;
-using Palaso.IO;
 using Palaso.UI.WindowsForms.Extensions;
+using SIL.IO;
+using SIL.Reporting;
 
 namespace Palaso.UI.WindowsForms.FileSystem
 {
@@ -80,7 +81,7 @@ namespace Palaso.UI.WindowsForms.FileSystem
 			}
 			catch (Exception exception)
 			{
-				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(exception,
+				ErrorReport.NotifyUserOfProblem(exception,
 					"Could not delete file or directory {0}.", path);
 				return false;
 			}

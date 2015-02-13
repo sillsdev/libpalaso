@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.Widgets;
-using Palaso.i18n;
+using SIL.i18n;
 
 
 namespace Palaso.UI.WindowsForms.i18n

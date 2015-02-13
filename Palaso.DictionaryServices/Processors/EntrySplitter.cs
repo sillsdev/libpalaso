@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Palaso.Data;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
-using Palaso.Progress;
+using SIL.Data;
+using SIL.Progress;
 
 namespace Palaso.DictionaryServices.Processors
 {

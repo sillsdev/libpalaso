@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Diagnostics;
 using System.Collections.Generic;
+using SIL.PlatformUtilities;
 
 namespace Palaso.UI.WindowsForms.GeckoBasedControls
 {
@@ -73,7 +74,7 @@ namespace Palaso.UI.WindowsForms.GeckoBasedControls
 						// on windows. (Which should peform a BeginInvoke/EndInvoke if the control was
 						// created by the main UI thread)
 						// Enhance: if uiSynchronizationForm isn't yet created then this may not work.
-						if (Palaso.PlatformUtilities.Platform.IsDotNet)
+						if (Platform.IsDotNet)
 						{
 							uiSynchronizationForm.Invoke(getUIThreadDetails);
 						}
@@ -254,7 +255,7 @@ namespace Palaso.UI.WindowsForms.GeckoBasedControls
 				// If Application Message pump has quit, Ignore Later actions.
 				// Mono: mono is setting Application.MessageLoop to false when showing
 				// a modal dialog and not setting it to true when closing the dialog.
-				if (Palaso.PlatformUtilities.Platform.IsDotNet && !Application.MessageLoop)
+				if (Platform.IsDotNet && !Application.MessageLoop)
 					return;
 
 				Debug.Assert(Thread.CurrentThread == uiSynchronizationThread, "Invoked on wrong thread");

@@ -1,7 +1,7 @@
 using System;
 using NUnit.Framework;
-using Palaso.Reporting;
 using System.Windows.Forms;
+using SIL.Reporting;
 
 namespace PalasoUIWindowsForms.Tests.ErrorReporting
 {

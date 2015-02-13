@@ -1,6 +1,7 @@
 // Copyright (c) 2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
+using SIL.Reporting;
 #if !__MonoCS__
 using System;
 using System.Collections.Generic;
@@ -86,7 +87,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 					var keymanLink = new KeymanLink.KeymanLink();
 					if (!keymanLink.Initialize())
 					{
-						Palaso.Reporting.ErrorReport.NotifyUserOfProblem("Keyman6 could not be activated.");
+						ErrorReport.NotifyUserOfProblem("Keyman6 could not be activated.");
 						return false;
 					}
 					keymanLink.SelectKeymanKeyboard(keyboard.Id);
@@ -105,7 +106,7 @@ namespace SIL.WritingSystems.WindowsForms.Keyboarding.Windows
 
 					if (oneBasedIndex < 1)
 					{
-						Palaso.Reporting.ErrorReport.NotifyUserOfProblem("The keyboard '{0}' could not be activated using Keyman 7.",
+						ErrorReport.NotifyUserOfProblem("The keyboard '{0}' could not be activated using Keyman 7.",
 							keyboard.Id);
 						return false;
 					}

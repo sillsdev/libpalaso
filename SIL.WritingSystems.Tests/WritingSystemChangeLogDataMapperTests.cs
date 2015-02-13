@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using NUnit.Framework;
-using Palaso.IO;
 using Palaso.TestUtilities;
+using SIL.IO;
 
 namespace SIL.WritingSystems.Tests
 {

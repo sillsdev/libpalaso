@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using Palaso.CommandLineProcessing;
-using Palaso.Extensions;
-using Palaso.IO;
-using Palaso.Progress;
+using SIL.CommandLineProcessing;
+using SIL.IO;
+using SIL.Progress;
 
 namespace Palaso.Media
 {
@@ -163,7 +162,7 @@ namespace Palaso.Media
             }
 
             var arguments = string.Format("-i \"{0}\" -vn -acodec libmp3lame -ac {1} \"{2}\"", inputPath, channels, outputPath);
-            var result = CommandLineProcessing.CommandLineRunner.Run(LocateAndRememberFFmpeg(),
+            var result = CommandLineRunner.Run(LocateAndRememberFFmpeg(),
                                                         arguments,
                                                         Environment.CurrentDirectory,
                                                         60 * 10, //10 minutes
@@ -207,7 +206,7 @@ namespace Palaso.Media
 
             var arguments = string.Format("-i \"{0}\" -vn -acodec vorbis -ac {1} \"{2}\"", inputPath, channels, outputPath);
             progress.WriteMessage("ffmpeg " + arguments);
-            var result = CommandLineProcessing.CommandLineRunner.Run(LocateAndRememberFFmpeg(),
+            var result = CommandLineRunner.Run(LocateAndRememberFFmpeg(),
                                                         arguments,
                                                         Environment.CurrentDirectory,
                                                         60 * 10, //10 minutes
@@ -309,7 +308,7 @@ namespace Palaso.Media
 
             progress.WriteMessage("ffmpeg " + arguments);
 
-            var result = CommandLineProcessing.CommandLineRunner.Run(LocateAndRememberFFmpeg(),
+            var result = CommandLineRunner.Run(LocateAndRememberFFmpeg(),
                                                         arguments,
                                                         Environment.CurrentDirectory,
                                                         60 * 10, //10 minutes
@@ -395,7 +394,7 @@ namespace Palaso.Media
             progress.WriteMessage("ffmpeg " + arguments);
 
 
-            var result = CommandLineProcessing.CommandLineRunner.Run(LocateAndRememberFFmpeg(),
+            var result = CommandLineRunner.Run(LocateAndRememberFFmpeg(),
                                                         arguments,
                                                         Environment.CurrentDirectory,
                                                         60 * 10, //10 minutes
@@ -447,7 +446,7 @@ namespace Palaso.Media
 
             progress.WriteMessage("ffmpeg " + arguments);
 
-            var result = CommandLineProcessing.CommandLineRunner.Run(LocateAndRememberFFmpeg(),
+            var result = CommandLineRunner.Run(LocateAndRememberFFmpeg(),
                                                         arguments,
                                                         Environment.CurrentDirectory,
                                                         60 * 10, //10 minutes
@@ -495,7 +494,7 @@ namespace Palaso.Media
 
             progress.WriteMessage("ffmpeg " + arguments);
 
-            var result = CommandLineProcessing.CommandLineRunner.Run(LocateAndRememberFFmpeg(),
+            var result = CommandLineRunner.Run(LocateAndRememberFFmpeg(),
                                                         arguments,
                                                         Environment.CurrentDirectory,
                                                         60 * 10, //10 minutes

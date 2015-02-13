@@ -4,8 +4,8 @@ using Palaso.DictionaryServices.Lift;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.Lift.Options;
-using Palaso.Progress;
-using Palaso.Text;
+using SIL.Progress;
+using SIL.Text;
 
 namespace Palaso.DictionaryServices.Lift
 {

@@ -1,8 +1,8 @@
 ﻿using System.Xml;
 using NUnit.Framework;
-using Palaso.IO;
 using System.Linq;
 using Palaso.UI.WindowsForms.ClearShare;
+using SIL.IO;
 
 namespace PalasoUIWindowsForms.Tests.ClearShare
 {

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using SIL.Xml;
 
 namespace Palaso.TestUtilities
 {
@@ -27,7 +28,7 @@ namespace Palaso.TestUtilities
 			var readerSettings = new XmlReaderSettings { IgnoreWhitespace = true };
 			using (var reader = XmlReader.Create(new StringReader(inputXml), readerSettings))
 			{
-				using (var writer = XmlWriter.Create(builder, Palaso.Xml.CanonicalXmlSettings.CreateXmlWriterSettings()))
+				using (var writer = XmlWriter.Create(builder, CanonicalXmlSettings.CreateXmlWriterSettings()))
 				{
 					writer.WriteNode(reader, false);
 				}
@@ -41,7 +42,7 @@ namespace Palaso.TestUtilities
 			var readerSettings = new XmlReaderSettings { IgnoreWhitespace = true, ConformanceLevel = ConformanceLevel.Fragment };
 			using (var reader = XmlReader.Create(new StringReader(inputXml), readerSettings))
 			{
-				using (var writer = XmlWriter.Create(builder, Palaso.Xml.CanonicalXmlSettings.CreateXmlWriterSettings(ConformanceLevel.Fragment)))
+				using (var writer = XmlWriter.Create(builder, CanonicalXmlSettings.CreateXmlWriterSettings(ConformanceLevel.Fragment)))
 				{
 					writer.WriteNode(reader, false);
 				}

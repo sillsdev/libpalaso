@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
-using Palaso.Reporting;
+using SIL.Reporting;
 using SIL.WritingSystems.WindowsForms.Keyboarding;
 
 namespace SIL.WritingSystems.WindowsForms.Tests

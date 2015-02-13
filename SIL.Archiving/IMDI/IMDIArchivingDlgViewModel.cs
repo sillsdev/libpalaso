@@ -9,7 +9,6 @@ using System.Threading;
 using L10NSharp;
 using SIL.Archiving.Generic;
 using SIL.Archiving.IMDI.Schema;
-using SIL.Archiving.Properties;
 using System.Windows.Forms;
 
 namespace SIL.Archiving.IMDI
@@ -101,7 +100,7 @@ namespace SIL.Archiving.IMDI
 		/// ------------------------------------------------------------------------------------
 		public override string ArchiveInfoUrl
 		{
-			get { return Settings.Default.IMDIWebSite; }
+			get { return Properties.Settings.Default.IMDIWebSite; }
 		}
 		#endregion
 

@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Xml;
 using Palaso.Lift.Validation;
-using Palaso.Xml;
+using SIL.Xml;
 
 namespace Palaso.Lift.Merging
 {

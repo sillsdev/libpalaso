@@ -149,17 +149,17 @@
       <Project>{66B3504A-3B4E-45CB-903A-A9A75B22EF68}</Project>
       <Name>Palaso.Media</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Palaso.Tests\Palaso.Tests.csproj">
+    <ProjectReference Include="..\SIL.Core.Tests\SIL.Core.Tests.csproj">
       <Project>{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}</Project>
-      <Name>Palaso.Tests</Name>
+      <Name>SIL.Core.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\PalasoUIWindowsForms\PalasoUIWindowsForms.csproj">
       <Project>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</Project>
       <Name>PalasoUIWindowsForms</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Palaso\Palaso.csproj">
+    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
       <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
-      <Name>Palaso</Name>
+      <Name>SIL.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Palaso.TestUtilities\Palaso.TestUtilities.csproj">
       <Project>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</Project>

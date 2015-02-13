@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Xml;
 using Commons.Xml.Relaxng;
 using Palaso.Lift.Parsing;
-using Palaso.Progress;
+using SIL.Progress;
 
 namespace Palaso.Lift.Validation
 {

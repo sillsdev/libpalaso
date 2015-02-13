@@ -6,14 +6,14 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Xml;
-using Palaso.Annotations;
 using Palaso.DictionaryServices.Model;
-using Palaso.Extensions;
 using Palaso.Lift;
 using Palaso.Lift.Options;
 using Palaso.Lift.Validation;
-using Palaso.Text;
-using Palaso.Xml;
+using SIL.Annotations;
+using SIL.Extensions;
+using SIL.Text;
+using SIL.Xml;
 
 namespace Palaso.DictionaryServices.Lift
 {

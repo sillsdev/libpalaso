@@ -3,11 +3,11 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using Palaso.Email;
-using Palaso.Reporting;
 using System.Threading;
 using System.Collections.Generic;
 using System.Text;
+using SIL.Email;
+using SIL.Reporting;
 
 namespace Palaso.UI.WindowsForms.Reporting
 {

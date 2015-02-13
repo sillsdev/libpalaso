@@ -3,15 +3,14 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using L10NSharp;
-using Palaso.Code;
-using Palaso.IO;
 using Palaso.UI.WindowsForms.ClearShare;
 using Palaso.UI.WindowsForms.ClearShare.WinFormsUI;
 using Palaso.UI.WindowsForms.ImageToolbox.Cropping;
-
 #if !MONO
 
 #endif
+using SIL.Code;
+using SIL.Reporting;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
 {
@@ -87,7 +86,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				}
 				catch (Exception e)
 				{
-					Palaso.Reporting.ErrorReport.NotifyUserOfProblem(e, "Sorry, something went wrong while getting the image.".Localize("ImageToolbox.GenericGettingImageProblem"));
+					ErrorReport.NotifyUserOfProblem(e, "Sorry, something went wrong while getting the image.".Localize("ImageToolbox.GenericGettingImageProblem"));
 				}
 			}
 		}
@@ -220,7 +219,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			}
 			catch (Exception error)
 			{
-				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(error,
+				ErrorReport.NotifyUserOfProblem(error,
 																 "Sorry, something went wrong with the ImageToolbox".Localize("ImageToolbox.GenericProblem"));
 			}
 			finally

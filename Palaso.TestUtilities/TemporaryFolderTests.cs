@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using System.IO;
-using Palaso.IO;
 using Palaso.TestUtilities;
+using SIL.IO;
 
 
 namespace Palaso.TestUtilities {

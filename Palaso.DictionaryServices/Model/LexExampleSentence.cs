@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Palaso.Code;
 using Palaso.Lift;
-using Palaso.ObjectModel;
+using SIL.ObjectModel;
 
 namespace Palaso.DictionaryServices.Model
 {

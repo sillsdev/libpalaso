@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using NUnit.Framework;
-using Palaso.IO;
 using Palaso.Media.Tests.Properties;
-using Palaso.Progress;
+using SIL.IO;
+using SIL.Progress;
 
 namespace Palaso.Media.Tests
 {

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Windows.Forms;
 using L10NSharp;
 using Palaso.UI.WindowsForms.ImageGallery;
+using SIL.Reporting;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
 {
@@ -138,7 +139,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				}
 				catch (Exception error)
 				{
-					Palaso.Reporting.ErrorReport.ReportNonFatalExceptionWithMessage(error, "There was a problem choosing that image.");
+					ErrorReport.ReportNonFatalExceptionWithMessage(error, "There was a problem choosing that image.");
 					return _previousImage;
 				}
 			}

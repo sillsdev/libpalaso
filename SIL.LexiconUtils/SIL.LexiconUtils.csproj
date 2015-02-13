@@ -104,9 +104,9 @@
     <Compile Include="UserSettingsWritingSystemDataMapper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Palaso\Palaso.csproj">
+    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
       <Project>{3527da1d-1e25-48be-a71e-9ebf7f9208d4}</Project>
-      <Name>Palaso</Name>
+      <Name>SIL.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj">
       <Project>{52a93c63-08f4-4527-8e6e-ac2adeba6e2d}</Project>

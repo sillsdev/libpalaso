@@ -1,6 +1,6 @@
 using System.IO;
 using NUnit.Framework;
-using Palaso.IO;
+using SIL.IO;
 
 namespace Palaso.DictionaryServices.Tests
 {

@@ -5,11 +5,10 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using Palaso.Code;
 using Palaso.Lift.Options;
-using Palaso.ObjectModel;
-using Palaso.Reporting;
-using Palaso.Text;
+using SIL.ObjectModel;
+using SIL.Reporting;
+using SIL.Text;
 
 namespace Palaso.Lift
 {

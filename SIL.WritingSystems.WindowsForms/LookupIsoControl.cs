@@ -5,7 +5,7 @@ using System.ComponentModel.Design;
 using System.Linq;
 using System.Windows.Forms;
 using L10NSharp;
-using Palaso.Extensions;
+using SIL.Extensions;
 
 namespace SIL.WritingSystems.WindowsForms
 {

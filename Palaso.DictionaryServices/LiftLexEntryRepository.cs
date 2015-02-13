@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Palaso.Code;
-using Palaso.Data;
 using Palaso.DictionaryServices.Lift;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.Lift.Options;
-using Palaso.UiBindings;
-using Palaso.Progress;
-using Palaso.Text;
+using SIL.Code;
+using SIL.Data;
+using SIL.Progress;
+using SIL.Text;
+using SIL.UiBindings;
 using SIL.WritingSystems;
 
 #if MONO

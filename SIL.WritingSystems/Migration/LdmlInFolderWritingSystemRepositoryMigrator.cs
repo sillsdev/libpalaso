@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Palaso.Migration;
+using SIL.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration;
 

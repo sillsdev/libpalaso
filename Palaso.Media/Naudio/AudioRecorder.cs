@@ -7,7 +7,7 @@ using System.Threading;
 using NAudio;
 using NAudio.Wave;
 using NAudio.Mixer;
-using Palaso.Reporting;
+using SIL.Reporting;
 
 namespace Palaso.Media.Naudio
 {

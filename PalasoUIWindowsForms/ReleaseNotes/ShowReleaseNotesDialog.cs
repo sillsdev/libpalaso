@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using Palaso.IO;
+using SIL.IO;
 
 namespace Palaso.UI.WindowsForms.ReleaseNotes
 {

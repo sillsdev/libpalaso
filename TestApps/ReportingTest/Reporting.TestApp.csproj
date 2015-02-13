@@ -222,9 +222,9 @@
       <Project>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</Project>
       <Name>PalasoUIWindowsForms</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Palaso\Palaso.csproj">
+    <ProjectReference Include="..\..\SIL.Core\SIL.Core.csproj">
       <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
-      <Name>Palaso</Name>
+      <Name>SIL.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SIL.WritingSystems.WindowsForms\SIL.WritingSystems.WindowsForms.csproj">
       <Project>{f7df58e2-5b67-498a-9f64-b5f1584a5ab9}</Project>

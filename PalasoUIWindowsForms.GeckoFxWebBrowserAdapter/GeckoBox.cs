@@ -7,8 +7,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using Palaso.Text;
 using Palaso.UI.WindowsForms.Widgets;
+using SIL.Text;
 using SIL.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.GeckoBasedControls

@@ -245,9 +245,9 @@
     <None Include="artwork\playDisabled14x16.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Palaso\Palaso.csproj">
+    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
       <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
-      <Name>Palaso</Name>
+      <Name>SIL.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

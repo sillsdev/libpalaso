@@ -5,7 +5,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
-using Palaso.Network;
+using SIL.Network;
 
 namespace Palaso.UI.WindowsForms.Proxy
 {

@@ -6,7 +6,7 @@ using NUnit.Framework;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.TestUtilities;
-using Palaso.Text;
+using SIL.Text;
 
 namespace Palaso.DictionaryServices.Tests.Model
 {

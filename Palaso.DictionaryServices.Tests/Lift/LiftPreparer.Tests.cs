@@ -4,10 +4,9 @@ using Palaso.DictionaryServices.Lift;
 using Palaso.Lift;
 using Palaso.Lift.Migration;
 using Palaso.Lift.Validation;
-using Palaso.Progress;
-using Palaso.Reporting;
-
 using NUnit.Framework;
+using SIL.Progress;
+using SIL.Reporting;
 
 namespace Palaso.DictionaryServices.Tests.Lift
 {

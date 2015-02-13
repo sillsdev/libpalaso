@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+using SIL.PlatformUtilities;
 
 namespace Palaso.UI.WindowsForms.HtmlBrowser
 {
@@ -61,7 +62,7 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 			{
 				case BrowserType.Default:
 				case BrowserType.WinForms:
-					if (PlatformUtilities.Platform.IsWindows)
+					if (Platform.IsWindows)
 						return new WinFormsBrowserAdapter(this);
 					// The WinForms adapter works only on Windows. On Linux we fall through to
 					// the geckofx case instead.
@@ -93,7 +94,7 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 					goto case BrowserType.Fallback;
 				case BrowserType.Fallback:
 				default:
-					if (PlatformUtilities.Platform.IsWindows)
+					if (Platform.IsWindows)
 						return CreateBrowser(BrowserType.WinForms);
 					return null;
 			}

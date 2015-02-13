@@ -3,8 +3,8 @@ using System.Text;
 using System.Xml;
 using NUnit.Framework;
 using Palaso.TestUtilities;
-using Palaso.Xml;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using SIL.Xml;
 
 namespace SIL.WritingSystems.Tests.Migration
 {

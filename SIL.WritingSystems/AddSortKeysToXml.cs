@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 using System.Xml.XPath;
-using Palaso.Base32;
+using SIL.Base32;
 
 namespace SIL.WritingSystems
 {

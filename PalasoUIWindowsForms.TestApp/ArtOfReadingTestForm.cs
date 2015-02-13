@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Windows.Forms;
 
 using Palaso.UI.WindowsForms.ImageGallery;
-using Palaso.PlatformUtilities;
+using SIL.PlatformUtilities;
 
 namespace PalasoUIWindowsForms.TestApp
 {

@@ -11,8 +11,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
-using Palaso.ObjectModel;
-using Palaso.Reporting;
+using SIL.ObjectModel;
+using SIL.Reporting;
 #if __MonoCS__
 using SIL.WritingSystems.WindowsForms.Keyboarding.Linux;
 #else

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
-using Palaso.Code;
-using Palaso.IO.FileLock;
-using Palaso.Reporting;
+using SIL.Code;
+using SIL.IO.FileLock;
+using SIL.Reporting;
 
 namespace Palaso.UI.WindowsForms.UniqueToken
 {

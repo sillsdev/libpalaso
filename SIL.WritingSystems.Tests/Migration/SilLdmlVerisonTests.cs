@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using Palaso.IO;
+using SIL.IO;
 using SIL.WritingSystems.Migration;
 
 namespace SIL.WritingSystems.Tests.Migration

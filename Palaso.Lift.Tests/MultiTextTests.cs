@@ -6,7 +6,7 @@ using Palaso.Lift.Parsing;
 using NUnit.Framework;
 using Palaso.Lift.Tests;
 using Palaso.TestUtilities;
-using Palaso.Text;
+using SIL.Text;
 
 namespace WeSay.LexicalModel.Tests.Foundation
 {

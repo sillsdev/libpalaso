@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
-using Palaso.Reporting;
+using SIL.Reporting;
 
 namespace Palaso.UI.WindowsForms.Reporting
 {

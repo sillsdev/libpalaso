@@ -2,8 +2,8 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Xml;
-using Palaso.IO;
-using Palaso.Xml;
+using SIL.IO;
+using SIL.Xml;
 
 namespace Palaso.TestUtilities
 {

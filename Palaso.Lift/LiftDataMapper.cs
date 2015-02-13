@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using Palaso.Code;
-using Palaso.Data;
 using Palaso.Lift.Merging;
 using Palaso.Lift.Migration;
-using Palaso.Progress;
-using Palaso.Reporting;
 
 //using WeSay.LexicalModel.Migration;
+using SIL.Code;
+using SIL.Data;
+using SIL.Progress;
+using SIL.Reporting;
 
 namespace Palaso.Lift
 {

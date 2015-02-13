@@ -1,10 +1,10 @@
 using System;
 using System.ComponentModel;
 using System.Windows.Forms;
-using Palaso.Email;
-using Palaso.Reporting;
 
 // TODO: Ideally we wouldn't need this here in the UI.
+using SIL.Email;
+using SIL.Reporting;
 
 namespace Palaso.UI.WindowsForms.Miscellaneous
 {

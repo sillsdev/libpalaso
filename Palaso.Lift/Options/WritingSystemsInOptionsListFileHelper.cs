@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Xml;
 using SIL.WritingSystems;
-using Palaso.Xml;
+using SIL.Xml;
 
 namespace Palaso.Lift.Options
 {

@@ -8,12 +8,12 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using NUnit.Framework;
-using Palaso.Data;
-using Palaso.IO;
 using Palaso.TestUtilities;
-using Palaso.Xml;
+using SIL.Data;
+using SIL.IO;
 using SIL.WritingSystems.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using SIL.Xml;
 
 namespace SIL.WritingSystems.Tests
 {

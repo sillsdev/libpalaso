@@ -1,6 +1,6 @@
 using System;
 using System.Windows.Forms;
-using Palaso.Code;
+using SIL.Code;
 
 namespace SIL.WritingSystems.WindowsForms
 {

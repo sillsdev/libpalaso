@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using Palaso.Text;
+using SIL.Text;
 using SIL.WritingSystems;
 
 namespace Palaso.UI.WindowsForms.Widgets

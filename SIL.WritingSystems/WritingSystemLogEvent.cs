@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Reflection;
-using Palaso.Reporting;
+using SIL.Reporting;
 
 namespace SIL.WritingSystems
 {

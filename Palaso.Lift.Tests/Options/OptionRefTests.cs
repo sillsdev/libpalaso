@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Palaso.Annotations;
 using Palaso.Lift.Options;
 
 using NUnit.Framework;
 using Palaso.TestUtilities;
+using SIL.Annotations;
 
 namespace Palaso.Lift.Tests
 {

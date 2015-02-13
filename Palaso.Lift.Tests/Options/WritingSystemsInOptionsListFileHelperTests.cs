@@ -16,7 +16,7 @@ namespace Palaso.Lift.Tests.Options
 		private class TestEnvironment : IDisposable
 		{
 			private readonly TemporaryFolder _folder;
-			private readonly IO.TempFile _optionListFile;
+			private readonly SIL.IO.TempFile _optionListFile;
 
 			public TestEnvironment(string rfctag)
 				: this(rfctag, "x-dontcare")
@@ -27,7 +27,7 @@ namespace Palaso.Lift.Tests.Options
 			{
 				_folder = new TemporaryFolder("WritingSystemsInoptionListFileHelper");
 				var pathtoOptionsListFile1 = Path.Combine(_folder.Path, "test1.xml");
-				_optionListFile = new IO.TempFile(String.Format(_optionListFileContent, rfctag, rfctag2));
+				_optionListFile = new SIL.IO.TempFile(String.Format(_optionListFileContent, rfctag, rfctag2));
 				_optionListFile.MoveTo(pathtoOptionsListFile1);
 			}
 

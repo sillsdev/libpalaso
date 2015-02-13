@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
 using NUnit.Framework;
-using Palaso.Progress;
 using Palaso.UI.WindowsForms.Progress;
+using SIL.Progress;
 
 namespace PalasoUIWindowsForms.Tests.Progress
 {

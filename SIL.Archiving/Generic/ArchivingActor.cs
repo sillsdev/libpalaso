@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Palaso.Extensions;
+using SIL.Extensions;
 
 namespace SIL.Archiving.Generic
 {

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Palaso.Code;
+using SIL.Code;
 
 namespace SIL.WritingSystems
 {

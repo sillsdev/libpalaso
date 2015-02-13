@@ -2,10 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Palaso.Extensions;
 using SIL.Archiving.Generic;
 using SIL.Archiving.IMDI.Lists;
 using SIL.Archiving.IMDI.Schema;
+using SIL.Extensions;
 
 namespace SIL.Archiving.IMDI
 {

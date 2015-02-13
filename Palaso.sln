@@ -2,9 +2,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso", "Palaso\Palaso.csproj", "{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Core", "SIL.Core\SIL.Core.csproj", "{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Tests", "Palaso.Tests\Palaso.Tests.csproj", "{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Core.Tests", "SIL.Core.Tests\SIL.Core.Tests.csproj", "{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PalasoUIWindowsForms", "PalasoUIWindowsForms\PalasoUIWindowsForms.csproj", "{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}"
 EndProject

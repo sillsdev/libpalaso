@@ -6,7 +6,8 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
-using Palaso.Progress;
+using SIL.Progress;
+using SIL.Reporting;
 using Timer=System.Windows.Forms.Timer;
 
 namespace Palaso.UI.WindowsForms.Progress
@@ -49,7 +50,7 @@ namespace Palaso.UI.WindowsForms.Progress
 			_progressLabel.BackColor = Color.Transparent;
 			_overviewLabel.BackColor = Color.Transparent;
 			_startTime = default(DateTime);
-			Text = Palaso.Reporting.UsageReporter.AppNameToUseInDialogs;
+			Text = UsageReporter.AppNameToUseInDialogs;
 
 			_statusLabel.Font = SystemFonts.MessageBoxFont;
 			_progressLabel.Font = SystemFonts.MessageBoxFont;

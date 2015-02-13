@@ -4,11 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
-using Palaso.IO;
-using Palaso.Reporting;
+using SIL.IO;
 using SIL.WritingSystems;
-using Palaso.Xml;
-using Palaso.Extensions;
+using SIL.Xml;
 
 namespace Palaso.Lift
 {
@@ -47,9 +45,9 @@ namespace Palaso.Lift
 
 		public void DeleteWritingSystemId(string id)
 		{
-			var fileToBeWrittenTo = new IO.TempFile();
-			var reader = XmlReader.Create(_liftFilePath, Xml.CanonicalXmlSettings.CreateXmlReaderSettings());
-			var writer = XmlWriter.Create(fileToBeWrittenTo.Path, Xml.CanonicalXmlSettings.CreateXmlWriterSettings());
+			var fileToBeWrittenTo = new TempFile();
+			var reader = XmlReader.Create(_liftFilePath, CanonicalXmlSettings.CreateXmlReaderSettings());
+			var writer = XmlWriter.Create(fileToBeWrittenTo.Path, CanonicalXmlSettings.CreateXmlWriterSettings());
 			//System.Diagnostics.Process.Start(fileToBeWrittenTo.Path);
 			try
 			{
@@ -108,9 +106,9 @@ namespace Palaso.Lift
 
 		public void ReplaceWritingSystemId(string oldId, string newId)
 		{
-			var fileToBeWrittenTo = new IO.TempFile();
-			var reader = XmlReader.Create(_liftFilePath, Xml.CanonicalXmlSettings.CreateXmlReaderSettings());
-			var writer = XmlWriter.Create(fileToBeWrittenTo.Path, Xml.CanonicalXmlSettings.CreateXmlWriterSettings());
+			var fileToBeWrittenTo = new TempFile();
+			var reader = XmlReader.Create(_liftFilePath, CanonicalXmlSettings.CreateXmlReaderSettings());
+			var writer = XmlWriter.Create(fileToBeWrittenTo.Path, CanonicalXmlSettings.CreateXmlWriterSettings());
 			//System.Diagnostics.Process.Start(fileToBeWrittenTo.Path);
 			try
 			{

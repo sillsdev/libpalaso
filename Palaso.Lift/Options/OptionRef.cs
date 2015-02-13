@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using Palaso.Annotations;
-using Palaso.Code;
-using Palaso.UiBindings;
+using SIL.Annotations;
+using SIL.UiBindings;
 
 namespace Palaso.Lift.Options
 {

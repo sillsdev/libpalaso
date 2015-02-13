@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 using L10NSharp;
+using SIL.PlatformUtilities;
 
 namespace Palaso.UI.WindowsForms.SIL
 {
@@ -139,7 +140,7 @@ namespace Palaso.UI.WindowsForms.SIL
 		private string GetBuiltOnDate()
 		{
 			var file = _assembly.CodeBase.Replace("file://", string.Empty);
-			if (PlatformUtilities.Platform.IsWindows)
+			if (Platform.IsWindows)
 				file = file.TrimStart('/');
 			var fi = new FileInfo(file);
 

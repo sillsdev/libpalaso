@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
-using Palaso.IO;
 using Palaso.Media.Tests.Properties;
+using SIL.IO;
 
 namespace Palaso.Media.Tests
 {

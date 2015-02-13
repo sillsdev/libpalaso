@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
-using Palaso.Annotations;
 using Palaso.Lift.Options;
+using SIL.Annotations;
 
 namespace Palaso.Lift.Options
 {

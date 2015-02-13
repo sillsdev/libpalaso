@@ -4,14 +4,13 @@ using System.IO;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using Palaso.Code;
 using Palaso.Lift.Parsing;
-using Palaso.Text;
-using Palaso.Extensions;
 using System.Linq;
 
 //using Exortech.NetReflector;
 //using Exortech.NetReflector.Util;
+using SIL.Extensions;
+using SIL.Text;
 
 namespace Palaso.Lift
 {

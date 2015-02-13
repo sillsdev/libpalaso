@@ -2,8 +2,8 @@
 using System.Diagnostics;
 using System.IO;
 using System.Xml;
-using Palaso.Extensions;
-using Palaso.Xml;
+using SIL.Extensions;
+using SIL.Xml;
 
 namespace SIL.WritingSystems
 {

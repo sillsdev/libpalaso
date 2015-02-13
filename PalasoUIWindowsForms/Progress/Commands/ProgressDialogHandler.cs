@@ -1,10 +1,10 @@
 using System;
 using System.Diagnostics;
 using System.Windows.Forms;
-using Palaso.Progress;
-using Palaso.Reporting;
 
 //For UML diagram, see ProgressSystem.uml (done in StarUML)
+using SIL.Progress.Commands;
+using SIL.Reporting;
 
 namespace Palaso.UI.WindowsForms.Progress.Commands
 {

@@ -28,7 +28,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-using Palaso.Xml;
+using SIL.Xml;
 
 namespace Palaso.UI.WindowsForms.PortableSettingsProvider
 {

@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Icu;
-using Palaso.Data;
-using Palaso.Extensions;
+using SIL.Data;
+using SIL.Extensions;
 
 namespace SIL.WritingSystems
 {

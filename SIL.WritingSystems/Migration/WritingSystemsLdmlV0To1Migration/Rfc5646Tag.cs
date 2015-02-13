@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Palaso.Code;
-using Palaso.Data;
-using Palaso.ObjectModel;
+using SIL.Data;
+using SIL.ObjectModel;
 
 namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {

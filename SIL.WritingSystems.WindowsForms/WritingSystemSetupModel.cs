@@ -8,12 +8,12 @@ using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using Enchant;
-using Palaso.Code;
-using Palaso.Data;
+using SIL.Code;
+using SIL.Data;
+using SIL.Extensions;
+using SIL.i18n;
+using SIL.Reporting;
 using SIL.WritingSystems.WindowsForms.Keyboarding;
-using Palaso.i18n;
-using Palaso.Reporting;
-using Palaso.Extensions;
 using SIL.WritingSystems.WindowsForms.WSTree;
 
 namespace SIL.WritingSystems.WindowsForms

@@ -3,6 +3,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using SIL.Reporting;
 
 namespace Palaso.UI.WindowsForms.Widgets
 {
@@ -46,7 +47,7 @@ namespace Palaso.UI.WindowsForms.Widgets
 				}
 				catch(Exception)
 				{
-					Palaso.Reporting.ErrorReport.NotifyUserOfProblem(string.Format("Could not follow that link to {0}. Your computer is not set up to follow links of that kind, but you can try typing it into your web browser.",URL));
+					ErrorReport.NotifyUserOfProblem(string.Format("Could not follow that link to {0}. Your computer is not set up to follow links of that kind, but you can try typing it into your web browser.",URL));
 				}
 			}
 			else if (LinkClicked != null)

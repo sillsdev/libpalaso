@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
-using Palaso.Code;
-using Palaso.IO;
-using Palaso.Xml;
+using SIL.Code;
+using SIL.IO;
+using SIL.Xml;
 
 namespace Palaso.Lift
 {
