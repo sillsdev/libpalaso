@@ -33,7 +33,7 @@ namespace Palaso.DictionaryServices.Processors
 					continue;
 				alreadyProcessed.Add(id);
 				var entry = repo.GetItem(id);
-				var writingSystemForMatching = new WritingSystemDefinition(writingSystemIdForMatching);
+				var writingSystemForMatching = new WritingSystemDefinition(writingSystemIdForMatching) {DefaultCollation = new CollationDefinition("standard")};
 				var matches = repo.GetEntriesWithMatchingLexicalForm(
 					entry.LexicalForm.GetExactAlternative(writingSystemIdForMatching), writingSystemForMatching
 					);

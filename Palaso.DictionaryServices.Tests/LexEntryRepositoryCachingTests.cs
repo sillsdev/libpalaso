@@ -62,7 +62,8 @@ namespace Palaso.DictionaryServices.Tests
 			{
 				Language = languageIso,
 				DefaultFont = new FontDefinition(font.Name),
-				DefaultFontSize = font.Size
+				DefaultFontSize = font.Size,
+				DefaultCollation = new CollationDefinition("standard")
 			};
 		}
 
