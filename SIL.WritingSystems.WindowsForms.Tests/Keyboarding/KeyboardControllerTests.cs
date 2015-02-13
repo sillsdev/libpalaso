@@ -6,7 +6,6 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
-using Palaso.Extensions;
 using SIL.WritingSystems.WindowsForms.Keyboarding;
 #if __MonoCS__
 using SIL.WritingSystems.WindowsForms.Keyboarding.Linux;
@@ -139,7 +138,7 @@ namespace SIL.WritingSystems.WindowsForms.Tests.Keyboarding
 		public void DefaultForWritingSystem_OldPalasoKeymanKeyboard()
 		{
 			KeyboardDescription expectedKeyboard;
-			if (!KeyboardController.Instance.Keyboards.TryGetItem("IPA Unicode 1.1.1", out expectedKeyboard))
+			if (!KeyboardController.Instance.Keyboards.TryGet("IPA Unicode 1.1.1", out expectedKeyboard))
 			{
 				expectedKeyboard = new KeyboardDescription("IPA Unicode 1.1.1", "IPA Unicode 1.1.1 - English (US)", "IPA Unicode 1.1.1", string.Empty, true,
 					KeyboardController.Instance.Adaptors[0]);

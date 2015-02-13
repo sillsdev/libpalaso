@@ -50,7 +50,7 @@
 				return null;
 
 			LanguageSubtag subtag;
-			if (!StandardSubtags.Iso639Languages.TryGetItem(code, out subtag))
+			if (!StandardSubtags.Iso639Languages.TryGet(code, out subtag))
 				subtag = new LanguageSubtag(code, true);
 			return subtag;
 		}

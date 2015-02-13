@@ -144,7 +144,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				if (!string.IsNullOrEmpty(_languageName))
 					return _languageName;
 				LanguageSubtag languageSubtag;
-				if (StandardSubtags.Iso639Languages.TryGetItem(Language, out languageSubtag))
+				if (StandardSubtags.Iso639Languages.TryGet(Language, out languageSubtag))
 					return languageSubtag.Name;
 				return "Unknown Language";
 			}

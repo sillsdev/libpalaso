@@ -1,23 +1,24 @@
 ﻿using System.Collections.Specialized;
+using Palaso.ObjectModel;
 
 namespace SIL.WritingSystems
 {
 	public class CharacterSetDefinition : DefinitionBase<CharacterSetDefinition>
 	{
 		private readonly string _type;
-		private readonly ObservableSet<string> _characters; 
+		private readonly ObservableHashSet<string> _characters; 
 
 		public CharacterSetDefinition(string type)
 		{
 			_type = type;
-			_characters = new ObservableSet<string>();
+			_characters = new ObservableHashSet<string>();
 			SetupCollectionChangeListeners();
 		}
 
 		public CharacterSetDefinition(CharacterSetDefinition csd)
 		{
 			_type = csd._type;
-			_characters = new ObservableSet<string>(csd._characters);
+			_characters = new ObservableHashSet<string>(csd._characters);
 			SetupCollectionChangeListeners();
 		}
 
@@ -36,7 +37,7 @@ namespace SIL.WritingSystems
 			get { return _type; }
 		}
 
-		public ObservableSet<string> Characters
+		public IObservableSet<string> Characters
 		{
 			get { return _characters; }
 		}

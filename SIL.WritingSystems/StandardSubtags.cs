@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Palaso.ObjectModel;
 
 namespace SIL.WritingSystems
 {
@@ -12,21 +12,6 @@ namespace SIL.WritingSystems
 	/// </summary>
 	public class StandardSubtags
 	{
-		private class SubtagCollection<T> : KeyedCollection<string, T> where T : Subtag
-		{
-			public SubtagCollection(IEnumerable<T> items)
-				: base(StringComparer.InvariantCultureIgnoreCase)
-			{
-				foreach (T item in items)
-					Add(item);
-			}
-
-			protected override string GetKeyForItem(T item)
-			{
-				return item.Code;
-			}
-		}
-
 		static StandardSubtags()
 		{
 			// JohnT: can't find anywhere else to document this, so here goes: TwoToThreeMap is a file adapted from
@@ -111,28 +96,29 @@ namespace SIL.WritingSystems
 			//variants.Add(new VariantSubtag("x-pyn", "Pinyin Numbered", false, null));
 			//variants.Add(new VariantSubtag("x-audio", "Audio", false, null));
 
-			Iso639Languages = new ReadOnlyKeyedCollection<string, LanguageSubtag>(new SubtagCollection<LanguageSubtag>(languages.OrderBy(l => Regex.Replace(l.Name, @"[^\w]", ""))
-				.Concat(new[] {new LanguageSubtag(WellKnownSubtags.UnlistedLanguage, "Language Not Listed", false, string.Empty)})));
-			Iso15924Scripts = new ReadOnlyKeyedCollection<string, ScriptSubtag>(new SubtagCollection<ScriptSubtag>(scripts.OrderBy(s => s.Name)));
-			Iso3166Regions = new ReadOnlyKeyedCollection<string, RegionSubtag>(new SubtagCollection<RegionSubtag>(regions.OrderBy(r => r.Name)));
-			RegisteredVariants = new ReadOnlyKeyedCollection<string, VariantSubtag>(new SubtagCollection<VariantSubtag>(variants.OrderBy(v => v.Name)));
-			CommonPrivateUseVariants = new ReadOnlyKeyedCollection<string, VariantSubtag>(new SubtagCollection<VariantSubtag>(new[]
+			IEnumerable<LanguageSubtag> sortedLanguages = languages.OrderBy(l => Regex.Replace(l.Name, @"[^\w]", ""))
+				.Concat(new[] {new LanguageSubtag(WellKnownSubtags.UnlistedLanguage, "Language Not Listed", false, string.Empty)});
+			Iso639Languages = new ReadOnlyKeyedCollection<string, LanguageSubtag>(new KeyedList<string, LanguageSubtag>(sortedLanguages, l => l.Code, StringComparer.InvariantCultureIgnoreCase));
+			Iso15924Scripts = new ReadOnlyKeyedCollection<string, ScriptSubtag>(new KeyedList<string, ScriptSubtag>(scripts.OrderBy(s => s.Name), s => s.Code, StringComparer.InvariantCultureIgnoreCase));
+			Iso3166Regions = new ReadOnlyKeyedCollection<string, RegionSubtag>(new KeyedList<string, RegionSubtag>(regions.OrderBy(r => r.Name), r => r.Code, StringComparer.InvariantCultureIgnoreCase));
+			RegisteredVariants = new ReadOnlyKeyedCollection<string, VariantSubtag>(new KeyedList<string, VariantSubtag>(variants.OrderBy(v => v.Name), v => v.Code, StringComparer.InvariantCultureIgnoreCase));
+			CommonPrivateUseVariants = new ReadOnlyKeyedCollection<string, VariantSubtag>(new KeyedList<string, VariantSubtag>(new[]
 			{
 				new VariantSubtag(WellKnownSubtags.IpaPhoneticPrivateUse, "Phonetic", true, null),
 				new VariantSubtag(WellKnownSubtags.IpaPhonemicPrivateUse, "Phonemic", true, null),
 				new VariantSubtag(WellKnownSubtags.AudioPrivateUse, "Audio", true, null)
-			}));
+			}, v => v.Code, StringComparer.InvariantCultureIgnoreCase));
 		}
 
-		public static ReadOnlyKeyedCollection<string, ScriptSubtag> Iso15924Scripts { get; private set; }
+		public static IReadOnlyKeyedCollection<string, ScriptSubtag> Iso15924Scripts { get; private set; }
 
-		public static ReadOnlyKeyedCollection<string, LanguageSubtag> Iso639Languages { get; private set; }
+		public static IReadOnlyKeyedCollection<string, LanguageSubtag> Iso639Languages { get; private set; }
 
-		public static ReadOnlyKeyedCollection<string, RegionSubtag> Iso3166Regions { get; private set; }
+		public static IReadOnlyKeyedCollection<string, RegionSubtag> Iso3166Regions { get; private set; }
 
-		public static ReadOnlyKeyedCollection<string, VariantSubtag> RegisteredVariants { get; private set; }
+		public static IReadOnlyKeyedCollection<string, VariantSubtag> RegisteredVariants { get; private set; }
 
-		public static ReadOnlyKeyedCollection<string, VariantSubtag> CommonPrivateUseVariants { get; private set; }
+		public static IReadOnlyKeyedCollection<string, VariantSubtag> CommonPrivateUseVariants { get; private set; }
 
 		private static IEnumerable<string> GetVariantPrefixes(string[] subTagComponents)
 		{

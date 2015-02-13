@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Xml.Linq;
-using Palaso.Extensions;
 using SIL.WritingSystems;
 
 namespace SIL.LexiconUtils
@@ -28,14 +27,14 @@ namespace SIL.LexiconUtils
 			if (!string.IsNullOrEmpty(keyboardId))
 			{
 				IKeyboardDefinition keyboard;
-				ws.LocalKeyboard = ws.KnownKeyboards.TryGetItem(keyboardId, out keyboard) ? keyboard
+				ws.LocalKeyboard = ws.KnownKeyboards.TryGet(keyboardId, out keyboard) ? keyboard
 					: Keyboard.Controller.CreateKeyboardDefinition(keyboardId, KeyboardFormat.Unknown, Enumerable.Empty<string>());
 			}
 			var defaultFontName = (string) wsElem.Element("DefaultFontName");
 			if (!string.IsNullOrEmpty(defaultFontName))
 			{
 				FontDefinition font;
-				ws.DefaultFont = ws.Fonts.TryGetItem(defaultFontName, out font) ? font : new FontDefinition(defaultFontName);
+				ws.DefaultFont = ws.Fonts.TryGet(defaultFontName, out font) ? font : new FontDefinition(defaultFontName);
 			}
 			ws.DefaultFontSize = (float?) wsElem.Element("DefaultFontSize") ?? 0f;
 			ws.IsGraphiteEnabled = (bool?) wsElem.Element("IsGraphiteEnabled") ?? true;

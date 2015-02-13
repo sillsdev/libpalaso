@@ -29,7 +29,7 @@ namespace SIL.WritingSystems
 			get { return _icuRules ?? string.Empty; }
 			set
 			{
-				if (UpdateString(() => IcuRules, ref _icuRules, value))
+				if (Set(() => IcuRules, ref _icuRules, value))
 					ResetCollator();
 			}
 		}

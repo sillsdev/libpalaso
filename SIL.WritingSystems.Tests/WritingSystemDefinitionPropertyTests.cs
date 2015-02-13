@@ -26,7 +26,7 @@ namespace SIL.WritingSystems.Tests
 		public override string ExceptionList
 		{
 			// We do want to clone KnownKeyboards, but I don't think the automatic cloneable test for it can handle a list.
-			get { return "|MarkedForDeletion|StoreID|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionaries|IsChanged|_matchedPairs|_punctuationPatterns|_quotationMarks|_defaultCollation|_collations|_characterSets|_variants|_language|_script|_region|_ignoreVariantChanges|PropertyChanged|"; }
+			get { return "|MarkedForDeletion|StoreID|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionaries|IsChanged|_matchedPairs|_punctuationPatterns|_quotationMarks|_defaultCollation|_collations|_characterSets|_variants|_language|_script|_region|_ignoreVariantChanges|PropertyChanged|PropertyChanging|"; }
 		}
 
 		protected override List<ValuesToSet> DefaultValuesForTypes
@@ -168,8 +168,7 @@ namespace SIL.WritingSystems.Tests
 		public void CloneCopiesVariants()
 		{
 			var original = new WritingSystemDefinition();
-			original.Variants.Add("1901");
-			original.Variants.Add("biske");
+			original.Variants.AddRange(new VariantSubtag[] {"1901", "biske"});
 			WritingSystemDefinition copy = original.Clone();
 			Assert.That(copy.Variants, Is.EqualTo(new VariantSubtag[] {"1901", "biske"}));
 		}
@@ -377,8 +376,7 @@ namespace SIL.WritingSystems.Tests
 		public void ValueEqualsComparesVariants()
 		{
 			var first = new WritingSystemDefinition();
-			first.Variants.Add("1901");
-			first.Variants.Add("biske");
+			first.Variants.AddRange(new VariantSubtag[] {"1901", "biske"});
 			var second = new WritingSystemDefinition();
 
 			Assert.That(first.ValueEquals(second), Is.False, "ws with empty variants should not equal one with some");
@@ -387,9 +385,7 @@ namespace SIL.WritingSystems.Tests
 			second.Variants.Add("biske");
 			Assert.That(first.ValueEquals(second), Is.True, "ws's with same variant lists should be equal");
 
-			second.Variants.Clear();
-			second.Variants.Add("1901");
-			second.Variants.Add("fonipa");
+			second.Variants.ReplaceAll(new VariantSubtag[] {"1901", "fonipa"});
 			Assert.That(first.ValueEquals(second), Is.False, "ws with same-length lists of different variants should not be equal");
 		}
 	}
@@ -614,8 +610,7 @@ namespace SIL.WritingSystems.Tests
 		public void Variant_ConsistsOfBothRfc5646VariantandprivateUse_VariantIsSetCorrectly()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.Variants.Add("fonipa");
-			ws.Variants.Add("etic");
+			ws.Variants.AddRange(new VariantSubtag[] {"fonipa", "etic"});
 			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"fonipa", "etic"}));
 		}
 
@@ -633,8 +628,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			ws.RequiresValidLanguageTag = false;
-			ws.Variants.Add("nong");
-			ws.Variants.Add("nong");
+			ws.Variants.AddRange(new VariantSubtag[] {"nong", "nong"});
 			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"nong", "nong"}));
 		}
 
@@ -652,8 +646,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			ws.RequiresValidLanguageTag = false;
-			ws.Variants.Add("nong");
-			ws.Variants.Add("nong");
+			ws.Variants.AddRange(new VariantSubtag[] {"nong", "nong"});
 			Assert.Throws<ValidationException>(() => ws.RequiresValidLanguageTag = true);
 		}
 
@@ -902,8 +895,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			ws.IsVoice = true;
-			ws.Variants.Clear();
-			ws.Variants.Add("1901");
+			ws.Variants.ReplaceAll(new VariantSubtag[] {"1901"});
 			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"1901"}));
 			Assert.That(ws.IsVoice, Is.False);
 		}
@@ -1436,8 +1428,7 @@ namespace SIL.WritingSystems.Tests
 		public void Variant_Set_Idchanged()
 		{
 			var writingSystem = new WritingSystemDefinition("en", "Zxxx", "", "1901-x-bogus");
-			writingSystem.Variants.Clear();
-			writingSystem.Variants.Add("audio");
+			writingSystem.Variants.ReplaceAll(new VariantSubtag[] {"audio"});
 			Assert.AreEqual("en-Zxxx-x-audio", writingSystem.Id);
 		}
 
@@ -1729,8 +1720,7 @@ namespace SIL.WritingSystems.Tests
 			newWs.Region = "US";
 			newWs.Script = "Armi";
 			newWs.IpaStatus = IpaStatusChoices.IpaPhonetic;
-			newWs.Variants.Add("garble");
-			newWs.Variants.Add("1901");
+			newWs.Variants.AddRange(new VariantSubtag[] {"garble", "1901"});
 			Assert.That(newWs.ListLabel, Is.EqualTo("German (IPA-etic-Copy-Copy1-Armi-US-1901-x-garble)"));
 		}
 
@@ -1857,7 +1847,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void SettingLocalKeyboard_AddsToKnownKeyboards()
+		public void LocalKeyboard_Set_AddsToKnownKeyboards()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
 			var kbd1 = new DefaultKeyboardDefinition("something", "en-US");
@@ -1868,26 +1858,8 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(ws.KnownKeyboards, Has.Member(kbd1));
 		}
 
-		/// <summary>
-		/// This incidentally tests that AddKnownKeyboard sets the Modified flag when it DOES change something.
-		/// </summary>
 		[Test]
-		public void AddKnownKeyboard_DoesNotMakeDuplicates()
-		{
-			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var kbd1 = new DefaultKeyboardDefinition("something", "en-US");
-
-			ws.KnownKeyboards.Add(kbd1);
-			Assert.That(ws.IsChanged, Is.True);
-			ws.AcceptChanges();
-			ws.KnownKeyboards.Add(kbd1);
-			Assert.That(ws.IsChanged, Is.False);
-
-			Assert.That(ws.KnownKeyboards.Count, Is.EqualTo(1));
-		}
-
-		[Test]
-		public void SetLocalKeyboard_ToAlreadyKnownKeyboard_SetsModifiedFlag()
+		public void LocalKeyboard_SetToAlreadyKnownKeyboard_SetsModifiedFlag()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
 			var kbd1 = new DefaultKeyboardDefinition("something", "en-US");
@@ -1986,6 +1958,20 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void DefaultFont_SetToFontWithSameNameAsExistingFont_ReplacesExistingFont()
+		{
+			var ws = new WritingSystemDefinition();
+			var fd1 = new FontDefinition("font1");
+			var fd2 = new FontDefinition("font2");
+			ws.Fonts.Add(fd1);
+			ws.Fonts.Add(fd2);
+			ws.DefaultFont = fd1;
+			var newFD2 = new FontDefinition("font2");
+			ws.DefaultFont = newFD2;
+			Assert.That(ws.Fonts[1], Is.EqualTo(newFD2));
+		}
+
+		[Test]
 		public void DefaultCollation_DefaultsToFirstCollation()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
@@ -2014,6 +2000,22 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(ws.DefaultCollation, Is.EqualTo(cd1));
 			ws.Collations.Clear();
 			Assert.That(ws.DefaultCollation, Is.Not.EqualTo(cd1));
+		}
+
+		[Test]
+		public void DefaultCollation_SetToCollationWithSameTypeAsExistingCollation_ReplacesExistingCollation()
+		{
+			var ws = new WritingSystemDefinition();
+			var cd1 = new CollationDefinition("other");
+			var cd2 = new CollationDefinition("standard");
+
+			ws.Collations.Add(cd1);
+			ws.Collations.Add(cd2);
+			ws.DefaultCollation = cd2;
+
+			var newCD2 = new CollationDefinition("standard");
+			ws.DefaultCollation = newCD2;
+			Assert.That(ws.Collations[1], Is.EqualTo(newCD2));
 		}
 
 		private void VerifySubtagCodes(WritingSystemDefinition ws, string langCode, string scriptCode, string regionCode, string variantCode, string id)
@@ -2102,9 +2104,7 @@ namespace SIL.WritingSystems.Tests
 			VerifySubtagCodes(ws, "kal", "Zfdr", "ZD", "fonipa", "qaa-Qaaa-QM-fonipa-x-kal-Zfdr-ZD");
 
 			// Change it to a combination one
-			ws.Variants.Clear();
-			ws.Variants.Add("fonipa");
-			ws.Variants.Add("etic");
+			ws.Variants.ReplaceAll(new VariantSubtag[] {"fonipa", "etic"});
 			VerifySubtagCodes(ws, "kal", "Zfdr", "ZD", "fonipa-x-etic", "qaa-Qaaa-QM-fonipa-x-kal-Zfdr-ZD-etic");
 
 			// Back to no variant.
@@ -2112,28 +2112,19 @@ namespace SIL.WritingSystems.Tests
 			VerifySubtagCodes(ws, "kal", "Zfdr", "ZD", null, "qaa-Qaaa-QM-x-kal-Zfdr-ZD");
 
 			// Try a double combination
-			ws.Variants.Clear();
-			ws.Variants.Add("fonipa");
-			ws.Variants.Add("1996");
-			ws.Variants.Add("etic");
-			ws.Variants.Add("emic");
+			ws.Variants.ReplaceAll(new VariantSubtag[] {"fonipa", "1996", "etic", "emic"});
 			VerifySubtagCodes(ws, "kal", "Zfdr", "ZD", "fonipa-1996-x-etic-emic", "qaa-Qaaa-QM-fonipa-1996-x-kal-Zfdr-ZD-etic-emic");
 
 			// Drop a piece out of each
-			ws.Variants.Clear();
-			ws.Variants.Add("fonipa");
-			ws.Variants.Add("etic");
+			ws.Variants.ReplaceAll(new VariantSubtag[] {"fonipa", "etic"});
 			VerifySubtagCodes(ws, "kal", "Zfdr", "ZD", "fonipa-x-etic", "qaa-Qaaa-QM-fonipa-x-kal-Zfdr-ZD-etic");
 
 			// Soemthing totally unknown
-			ws.Variants.Clear();
-			ws.Variants.Add("fonipa");
-			ws.Variants.Add("blah");
+			ws.Variants.ReplaceAll(new VariantSubtag[] {"fonipa", "blah"});
 			VerifySubtagCodes(ws, "kal", "Zfdr", "ZD", "fonipa-x-blah", "qaa-Qaaa-QM-fonipa-x-kal-Zfdr-ZD-blah");
 
 			// Drop just the standard part
-			ws.Variants.Clear();
-			ws.Variants.Add("blah");
+			ws.Variants.ReplaceAll(new VariantSubtag[] {"blah"});
 			VerifySubtagCodes(ws, "kal", "Zfdr", "ZD", "x-blah", "qaa-Qaaa-QM-x-kal-Zfdr-ZD-blah");
 
 			// No longer a custom language

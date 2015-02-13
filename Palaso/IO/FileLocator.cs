@@ -69,7 +69,7 @@ namespace Palaso.IO
 			{
 				ErrorReport.NotifyUserOfProblem(
 					"{0} could not find the {1}.  It expected to find it in one of these locations: {2}",
-					UsageReporter.AppNameToUseInDialogs, descriptionForErrorMessage, GetSearchPaths().Concat(", ")
+					UsageReporter.AppNameToUseInDialogs, descriptionForErrorMessage, string.Join(", ", GetSearchPaths())
 					);
 			}
 			return path;
@@ -93,7 +93,7 @@ namespace Palaso.IO
 			{
 				ErrorReport.NotifyUserOfProblem(
 					"{0} could not find the {1}.  It expected to find it in one of these locations: {2}",
-					UsageReporter.AppNameToUseInDialogs, descriptionForErrorMessage, _searchPaths.Concat(", ")
+					UsageReporter.AppNameToUseInDialogs, descriptionForErrorMessage, string.Join(", ", _searchPaths)
 					);
 			}
 			return path;
@@ -104,7 +104,7 @@ namespace Palaso.IO
 			if (string.IsNullOrEmpty(path) || !Directory.Exists(path))
 			{
 				throw new ApplicationException(String.Format("Could not find {0}.  It expected to find it in one of these locations: {1}",
-					directoryName, _searchPaths.Concat(Environment.NewLine)));
+					directoryName, string.Join(Environment.NewLine, _searchPaths)));
 			}
 			return path;
 		}
@@ -132,7 +132,7 @@ namespace Palaso.IO
 			var path = LocateFile(fileName);
 			if (string.IsNullOrEmpty(path) || !File.Exists(path))
 			{
-				throw new ApplicationException("Could not find " + fileName + ". It expected to find it in one of these locations: " + Environment.NewLine + _searchPaths.Concat(Environment.NewLine));
+				throw new ApplicationException("Could not find " + fileName + ". It expected to find it in one of these locations: " + Environment.NewLine + string.Join(Environment.NewLine, _searchPaths));
 			}
 			return path;
 		}

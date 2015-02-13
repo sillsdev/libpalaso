@@ -57,11 +57,7 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 				return null;
 			IEnumerable<VariantSubtag> variantSubtags;
 			if (IetfLanguageTag.TryGetVariantSubtags(WritingSystemDefinitionVariantHelper.ValidVariantString(dlg.DialectName), out variantSubtags))
-			{
-				TemplateDefinition.Variants.Clear();
-				foreach (VariantSubtag variantSubtag in variantSubtags)
-					TemplateDefinition.Variants.Add(variantSubtag);
-			}
+				TemplateDefinition.Variants.ReplaceAll(variantSubtags);
 			return TemplateDefinition;
 		}
 	}
@@ -86,8 +82,7 @@ namespace SIL.WritingSystems.WindowsForms.WSTree
 										  DefaultFontSize = primary.DefaultFontSize,
 										  IpaStatus = IpaStatusChoices.Ipa
 									  };
-			foreach (VariantSubtag variantSubtag in primary.Variants)
-				TemplateDefinition.Variants.Add(variantSubtag);
+			TemplateDefinition.Variants.AddRange(primary.Variants);
 			var ipaKeyboard = Keyboard.Controller.AllAvailableKeyboards.FirstOrDefault(k => k.Id.ToLower().Contains("ipa"));
 			if (ipaKeyboard != null)
 				TemplateDefinition.Keyboard = ipaKeyboard.Id;

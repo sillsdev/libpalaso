@@ -23,7 +23,7 @@
 				return null;
 
 			RegionSubtag subtag;
-			if (!StandardSubtags.Iso3166Regions.TryGetItem(code, out subtag))
+			if (!StandardSubtags.Iso3166Regions.TryGet(code, out subtag))
 				subtag = new RegionSubtag(code, true);
 			return subtag;
 		}

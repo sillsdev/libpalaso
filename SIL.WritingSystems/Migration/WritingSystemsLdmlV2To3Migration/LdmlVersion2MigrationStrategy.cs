@@ -188,7 +188,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 					AddCharacterSet(validCharsElem, ws, "Numeric", "numeric");
 					AddCharacterSet(validCharsElem, ws, "Other", "punctuation");
 				}
-				catch (XmlException e)
+				catch (XmlException)
 				{
 					// Move on if fw:validChars contains invalid XML
 				}

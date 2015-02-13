@@ -4,39 +4,40 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using Palaso.Code;
 
-namespace SIL.WritingSystems
+namespace Palaso.ObjectModel
 {
-	public class ObservableSet<T> : ISet<T>, INotifyCollectionChanged, INotifyPropertyChanged
+	public class ObservableHashSet<T> : IObservableSet<T>
 	{
-		public event NotifyCollectionChangedEventHandler CollectionChanged;
+		public virtual event NotifyCollectionChangedEventHandler CollectionChanged;
 		event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
 		{
 			add { PropertyChanged += value; }
 			remove { PropertyChanged -= value; }
 		}
 
-		protected event PropertyChangedEventHandler PropertyChanged;
+		protected virtual event PropertyChangedEventHandler PropertyChanged;
 
 		private readonly SimpleMonitor _reentrancyMonitor = new SimpleMonitor();
 		private readonly HashSet<T> _set;
  
-		public ObservableSet()
+		public ObservableHashSet()
 		{
 			_set = new HashSet<T>();
 		}
 
-		public ObservableSet(IEqualityComparer<T> comparer)
+		public ObservableHashSet(IEqualityComparer<T> comparer)
 		{
 			_set = new HashSet<T>(comparer);
 		}
 
-		public ObservableSet(IEnumerable<T> items)
+		public ObservableHashSet(IEnumerable<T> items)
 		{
 			_set = new HashSet<T>(items);
 		}
 
-		public ObservableSet(IEnumerable<T> items, IEqualityComparer<T> comparer)
+		public ObservableHashSet(IEnumerable<T> items, IEqualityComparer<T> comparer)
 		{
 			_set = new HashSet<T>(items, comparer);
 		}
@@ -211,7 +212,7 @@ namespace SIL.WritingSystems
 		{
 			if (CollectionChanged != null)
 			{
-				using (BlockReentrancy())
+				using (_reentrancyMonitor.Enter())
 					CollectionChanged(this, e);
 			}
 		}
@@ -220,7 +221,7 @@ namespace SIL.WritingSystems
 		{
 			if (PropertyChanged != null)
 			{
-				using (BlockReentrancy())
+				using (_reentrancyMonitor.Enter())
 					PropertyChanged(this, e);
 			}
 		}

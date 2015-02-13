@@ -1,4 +1,4 @@
-﻿namespace Palaso.Code
+﻿namespace Palaso.ObjectModel
 {
 	/// <summary>
 	/// A generic, deep cloneable interface.

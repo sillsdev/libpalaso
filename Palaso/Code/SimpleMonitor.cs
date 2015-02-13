@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace SIL.WritingSystems
+namespace Palaso.Code
 {
-	internal class SimpleMonitor : IDisposable
+	public class SimpleMonitor : IDisposable
 	{
 		private bool _busy;
 

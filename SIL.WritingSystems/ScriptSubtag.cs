@@ -34,7 +34,7 @@
 				return null;
 
 			ScriptSubtag subtag;
-			if (!StandardSubtags.Iso15924Scripts.TryGetItem(code, out subtag))
+			if (!StandardSubtags.Iso15924Scripts.TryGet(code, out subtag))
 				subtag = new ScriptSubtag(code, true);
 			return subtag;
 		}

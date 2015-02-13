@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using Palaso.Code;
 using Palaso.Lift;
+using Palaso.ObjectModel;
 using Palaso.Reporting;
 
 namespace Palaso.DictionaryServices.Model

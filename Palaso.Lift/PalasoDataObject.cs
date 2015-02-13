@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using Palaso.Code;
 using Palaso.Lift.Options;
+using Palaso.ObjectModel;
 using Palaso.Reporting;
 using Palaso.Text;
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using Palaso.Code;
+using Palaso.ObjectModel;
 
 namespace Palaso.TestUtilities
 {

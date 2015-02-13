@@ -593,7 +593,7 @@ namespace SIL.WritingSystems.WindowsForms
 				if (CurrentDefinition.DefaultFont == null || CurrentDefinition.DefaultFont.Name != value)
 				{
 					FontDefinition font;
-					if (!CurrentDefinition.Fonts.TryGetItem(value, out font))
+					if (!CurrentDefinition.Fonts.TryGet(value, out font))
 						font = new FontDefinition(value);
 					CurrentDefinition.DefaultFont = font;
 					OnCurrentItemUpdated();
@@ -751,16 +751,12 @@ namespace SIL.WritingSystems.WindowsForms
 						VariantSubtag[] originalVariantSubtags = CurrentDefinition.Variants.ToArray();
 						try
 						{
-							CurrentDefinition.Variants.Clear();
-							foreach (VariantSubtag variantSubtag in variantSubtags)
-								CurrentDefinition.Variants.Add(variantSubtag);
+							CurrentDefinition.Variants.ReplaceAll(variantSubtags);
 							OnCurrentItemUpdated();
 						}
 						catch (ValidationException e)
 						{
-							CurrentDefinition.Variants.Clear();
-							foreach (VariantSubtag variantSubtag in originalVariantSubtags)
-								CurrentDefinition.Variants.Add(variantSubtag);
+							CurrentDefinition.Variants.ReplaceAll(originalVariantSubtags);
 							ErrorReport.NotifyUserOfProblem(e.Message);
 						}
 					}
@@ -1436,9 +1432,7 @@ namespace SIL.WritingSystems.WindowsForms
 				unsettableWs.Language = uniqueWs.Language;
 				unsettableWs.Script = uniqueWs.Script;
 				unsettableWs.Region = uniqueWs.Region;
-				unsettableWs.Variants.Clear();
-				foreach (VariantSubtag variantSubtag in uniqueWs.Variants)
-					unsettableWs.Variants.Add(variantSubtag);
+				unsettableWs.Variants.ReplaceAll(uniqueWs.Variants);
 				OnAddOrDelete();
 				_writingSystemRepository.Set(unsettableWs);
 			}

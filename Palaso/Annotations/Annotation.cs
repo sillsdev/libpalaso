@@ -1,6 +1,7 @@
 using System;
 using System.Xml.Serialization;
 using Palaso.Code;
+using Palaso.ObjectModel;
 
 namespace Palaso.Annotations
 {

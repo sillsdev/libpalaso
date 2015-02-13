@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Palaso.Code;
 using Palaso.Data;
+using Palaso.ObjectModel;
 
 namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {

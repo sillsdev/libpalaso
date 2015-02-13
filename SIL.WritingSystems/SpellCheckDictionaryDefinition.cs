@@ -1,6 +1,6 @@
-﻿using System.Collections.ObjectModel;
-using System.Collections.Specialized;
+﻿using System.Collections.Specialized;
 using System.Linq;
+using Palaso.ObjectModel;
 
 namespace SIL.WritingSystems
 {
@@ -15,7 +15,7 @@ namespace SIL.WritingSystems
 	public class SpellCheckDictionaryDefinition : DefinitionBase<SpellCheckDictionaryDefinition>
 	{
 		private readonly SpellCheckDictionaryFormat _format;
-		private readonly ObservableCollection<string> _urls;
+		private readonly ObservableList<string> _urls;
 
 		private void SetupCollectionChangeListeners()
 		{
@@ -30,16 +30,14 @@ namespace SIL.WritingSystems
 		public SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat format)
 		{
 			_format = format;
-			_urls = new ObservableCollection<string>();
+			_urls = new ObservableList<string>();
 			SetupCollectionChangeListeners();
 		}
 
 		public SpellCheckDictionaryDefinition(SpellCheckDictionaryDefinition other)
 		{
 			_format = other._format;
-			_urls = new ObservableCollection<string>();
-			foreach (string url in other._urls)
-				_urls.Add(url);
+			_urls = new ObservableList<string>(other._urls);
 			SetupCollectionChangeListeners();
 		}
 
@@ -48,7 +46,7 @@ namespace SIL.WritingSystems
 			get { return _format; }
 		}
 
-		public ObservableCollection<string> Urls
+		public IObservableList<string> Urls
 		{
 			get { return _urls; }
 		}

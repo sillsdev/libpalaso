@@ -68,9 +68,9 @@ namespace SIL.WritingSystems
 				return null;
 
 			VariantSubtag subtag;
-			if (!StandardSubtags.RegisteredVariants.TryGetItem(code, out subtag))
+			if (!StandardSubtags.RegisteredVariants.TryGet(code, out subtag))
 			{
-				if (!StandardSubtags.CommonPrivateUseVariants.TryGetItem(code, out subtag))
+				if (!StandardSubtags.CommonPrivateUseVariants.TryGet(code, out subtag))
 					subtag = new VariantSubtag(code, true);
 			}
 			return subtag;

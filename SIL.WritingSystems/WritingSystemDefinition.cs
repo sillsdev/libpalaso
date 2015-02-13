@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Palaso.Code;
 using Palaso.Data;
 using Palaso.Extensions;
+using Palaso.ObjectModel;
 
 namespace SIL.WritingSystems
 {
@@ -69,7 +70,7 @@ namespace SIL.WritingSystems
 		private LanguageSubtag _language;
 		private ScriptSubtag _script;
 		private RegionSubtag _region;
-		private readonly ObservableCollection<VariantSubtag> _variants = new ObservableCollection<VariantSubtag>();
+		private readonly BulkObservableList<VariantSubtag> _variants;
 		private string _abbreviation;
 		private string _versionNumber;
 		private string _versionDescription;
@@ -85,53 +86,25 @@ namespace SIL.WritingSystems
 		private string _spellCheckingId;
 		private CollationDefinition _defaultCollation;
 		private QuotationParagraphContinueType _quotationParagraphContinueType;
-		private readonly ObservableKeyedCollection<string, FontDefinition> _fonts = new ObservableKeyedCollection<string, FontDefinition>(fd => fd.Name);
-		private readonly ObservableKeyedCollection<string, IKeyboardDefinition> _knownKeyboards = new ObservableKeyedCollection<string, IKeyboardDefinition>(kd => kd.Id);
-		private readonly ObservableKeyedCollection<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition> _spellCheckDictionaries = new ObservableKeyedCollection<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition>(scdd => scdd.Format);
-		private readonly ObservableKeyedCollection<string, CollationDefinition> _collations = new ObservableKeyedCollection<string, CollationDefinition>(cd => cd.Type);
-		private readonly ObservableSet<MatchedPair> _matchedPairs;
-		private readonly ObservableSet<PunctuationPattern> _punctuationPatterns;
-		private readonly ObservableCollection<QuotationMark> _quotationMarks = new ObservableCollection<QuotationMark>();
-		private readonly ObservableKeyedCollection<string, CharacterSetDefinition> _characterSets = new ObservableKeyedCollection<string, CharacterSetDefinition>(csd => csd.Type);
+		private readonly KeyedBulkObservableList<string, FontDefinition> _fonts;
+		private readonly KeyedBulkObservableList<string, IKeyboardDefinition> _knownKeyboards;
+		private readonly KeyedBulkObservableList<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition> _spellCheckDictionaries;
+		private readonly KeyedBulkObservableList<string, CollationDefinition> _collations;
+		private readonly ObservableHashSet<MatchedPair> _matchedPairs;
+		private readonly ObservableHashSet<PunctuationPattern> _punctuationPatterns;
+		private readonly BulkObservableList<QuotationMark> _quotationMarks;
+		private readonly KeyedBulkObservableList<string, CharacterSetDefinition> _characterSets;
 		private readonly SimpleMonitor _ignoreVariantChanges = new SimpleMonitor();
 		private bool _requiresValidLanguageTag = true;
 		private string _legacyMapping;
 		private bool _isGraphiteEnabled = true;
 
 		/// <summary>
-		/// Creates a new WritingSystemDefinition with Language subtag set to "qaa"
+		/// Creates a new WritingSystemDefinition with Language subtag set to "qaa".
 		/// </summary>
 		public WritingSystemDefinition()
+			: this(WellKnownSubtags.UnlistedLanguage)
 		{
-			_language = WellKnownSubtags.UnlistedLanguage;
-			_matchedPairs = new ObservableSet<MatchedPair>();
-			_punctuationPatterns = new ObservableSet<PunctuationPattern>();
-			_defaultCollation = new CollationDefinition("standard");
-			_collations.Add(_defaultCollation);
-			_languageTag = IetfLanguageTag.ToLanguageTag(_language, _script, _region, _variants);
-			_id = _languageTag;
-			SetupCollectionChangeListeners();
-		}
-
-		/// <summary>
-		/// Creates a new WritingSystemDefinition by parsing a valid BCP47 tag
-		/// </summary>
-		/// <param name="languageTag">A valid BCP47 tag</param>
-		public WritingSystemDefinition(string languageTag)
-		{
-			_languageTag = languageTag;
-			IEnumerable<VariantSubtag> variantSubtags;
-			if (!IetfLanguageTag.TryGetSubtags(languageTag, out _language, out _script, out _region, out variantSubtags))
-				throw new ArgumentException("The language tag is invalid.", "languageTag");
-			foreach (VariantSubtag variantSubtag in variantSubtags)
-				_variants.Add(variantSubtag);
-			CheckVariantAndScriptRules();
-			_id = _languageTag;
-			_matchedPairs = new ObservableSet<MatchedPair>();
-			_punctuationPatterns = new ObservableSet<PunctuationPattern>();
-			_defaultCollation = new CollationDefinition("standard");
-			_collations.Add(_defaultCollation);
-			SetupCollectionChangeListeners();
 		}
 
 		public WritingSystemDefinition(string language, string script, string region, string variant)
@@ -140,14 +113,8 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// Creates a new WritingSystemDefinition
+		/// Creates a new WritingSystemDefinition.
 		/// </summary>
-		/// <param name="language">A valid BCP47 language subtag</param>
-		/// <param name="script">A valid BCP47 script subtag</param>
-		/// <param name="region">A valid BCP47 region subtag</param>
-		/// <param name="variant">A valid BCP47 variant subtag</param>
-		/// <param name="abbreviation">The desired abbreviation for this writing system definition</param>
-		/// <param name="rightToLeftScript">Indicates whether this writing system uses a right to left script</param>
 		public WritingSystemDefinition(string language, string script, string region, string variant, string abbreviation, bool rightToLeftScript)
 			: this(IetfLanguageTag.ToLanguageTag(language, script, region, variant))
 		{
@@ -156,49 +123,63 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
+		/// Creates a new WritingSystemDefinition by parsing a valid IETF language tag.
+		/// </summary>
+		public WritingSystemDefinition(string languageTag)
+		{
+			_languageTag = languageTag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			if (!IetfLanguageTag.TryGetSubtags(languageTag, out _language, out _script, out _region, out variantSubtags))
+				throw new ArgumentException("The language tag is invalid.", "languageTag");
+			_variants = new BulkObservableList<VariantSubtag>(variantSubtags);
+			CheckVariantAndScriptRules();
+			_id = _languageTag;
+			_fonts = new KeyedBulkObservableList<string, FontDefinition>(fd => fd.Name);
+			_knownKeyboards = new KeyedBulkObservableList<string, IKeyboardDefinition>(kd => kd.Id);
+			_spellCheckDictionaries = new KeyedBulkObservableList<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition>(scdd => scdd.Format);
+			_collations = new KeyedBulkObservableList<string, CollationDefinition>(cd => cd.Type);
+			_matchedPairs = new ObservableHashSet<MatchedPair>();
+			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>();
+			_quotationMarks = new BulkObservableList<QuotationMark>();
+			_characterSets = new KeyedBulkObservableList<string, CharacterSetDefinition>(csd => csd.Type);
+			SetupCollectionChangeListeners();
+		}
+
+		/// <summary>
 		/// Copy constructor.
 		/// </summary>
-		/// <param name="ws">The ws.</param>
 		public WritingSystemDefinition(WritingSystemDefinition ws)
 		{
 			_language = ws._language;
 			_script = ws._script;
 			_region = ws._region;
-			_variants = new ObservableCollection<VariantSubtag>();
-			foreach (VariantSubtag variantSubtag in ws._variants)
-				_variants.Add(variantSubtag);
+			_variants = new BulkObservableList<VariantSubtag>(ws._variants);
 			_abbreviation = ws._abbreviation;
 			_rightToLeftScript = ws._rightToLeftScript;
-			foreach (FontDefinition fd in ws._fonts)
-				_fonts.Add(fd.Clone());
+			_fonts = new KeyedBulkObservableList<string, FontDefinition>(ws._fonts.CloneItems(), fd => fd.Name);
 			if (ws._defaultFont != null)
 				_defaultFont = _fonts[ws._fonts.IndexOf(ws._defaultFont)];
 			_keyboard = ws._keyboard;
 			_versionNumber = ws._versionNumber;
 			_versionDescription = ws._versionDescription;
 			_spellCheckingId = ws._spellCheckingId;
-			foreach (SpellCheckDictionaryDefinition scdd in ws._spellCheckDictionaries)
-				_spellCheckDictionaries.Add(scdd.Clone());
+			_spellCheckDictionaries = new KeyedBulkObservableList<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition>(ws._spellCheckDictionaries.CloneItems(), scdd => scdd.Format);
 			_dateModified = ws._dateModified;
 			_languageTag = ws._languageTag;
 			_localKeyboard = ws._localKeyboard;
 			_windowsLcid = ws._windowsLcid;
 			_defaultRegion = ws._defaultRegion;
 			_defaultFontSize = ws._defaultFontSize;
-			foreach (IKeyboardDefinition kbd in ws._knownKeyboards)
-				_knownKeyboards.Add(kbd);
-			_matchedPairs = new ObservableSet<MatchedPair>(ws._matchedPairs);
-			_punctuationPatterns = new ObservableSet<PunctuationPattern>(ws._punctuationPatterns);
-			foreach (QuotationMark qm in ws.QuotationMarks)
-				_quotationMarks.Add(qm);
+			_knownKeyboards = new KeyedBulkObservableList<string, IKeyboardDefinition>(ws._knownKeyboards, kd => kd.Id);
+			_matchedPairs = new ObservableHashSet<MatchedPair>(ws._matchedPairs);
+			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>(ws._punctuationPatterns);
+			_quotationMarks = new BulkObservableList<QuotationMark>(ws._quotationMarks);
 			_quotationParagraphContinueType = ws._quotationParagraphContinueType;
 			_id = ws._id;
-			foreach (CollationDefinition cd in ws._collations)
-				_collations.Add(cd.Clone());
+			_collations = new KeyedBulkObservableList<string, CollationDefinition>(ws._collations.CloneItems(), cd => cd.Type);
 			if (ws._defaultCollation != null)
 				_defaultCollation = _collations[ws._collations.IndexOf(ws._defaultCollation)];
-			foreach (CharacterSetDefinition csd in ws._characterSets)
-				_characterSets.Add(csd.Clone());
+			_characterSets = new KeyedBulkObservableList<string, CharacterSetDefinition>(ws._characterSets.CloneItems(), csd => csd.Type);
 			_requiresValidLanguageTag = ws._requiresValidLanguageTag;
 			_isGraphiteEnabled = ws._isGraphiteEnabled;
 			_legacyMapping = ws._legacyMapping;
@@ -219,12 +200,18 @@ namespace SIL.WritingSystems
 
 		private void _variants_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			if (!_ignoreVariantChanges.Busy && (e.Action != NotifyCollectionChangedAction.Replace || ((VariantSubtag) e.OldItems[0]).Code != ((VariantSubtag) e.NewItems[0]).Code))
+			if (_ignoreVariantChanges.Busy)
+				return;
+
+			// if the variant codes haven't changed, then no need to update language tag
+			if (e.Action != NotifyCollectionChangedAction.Replace
+			    || !e.OldItems.Cast<VariantSubtag>().Select(v => v.Code).SequenceEqual(e.NewItems.Cast<VariantSubtag>().Select(v => v.Code)))
 			{
 				CheckVariantAndScriptRules();
 				UpdateLanguageTag();
-				IsChanged = true;
 			}
+
+			IsChanged = true;
 		}
 
 		private void _quotationMarks_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -276,7 +263,7 @@ namespace SIL.WritingSystems
 		public string VersionNumber
 		{
 			get { return _versionNumber ?? string.Empty; }
-			set { UpdateString(() => VersionNumber, ref _versionNumber, value); }
+			set { Set(() => VersionNumber, ref _versionNumber, value); }
 		}
 
 		/// <summary>
@@ -285,7 +272,7 @@ namespace SIL.WritingSystems
 		public string VersionDescription
 		{
 			get { return _versionDescription ?? string.Empty; }
-			set { UpdateString(() => VersionDescription, ref _versionDescription, value); }
+			set { Set(() => VersionDescription, ref _versionDescription, value); }
 		}
 
 		/// <summary>
@@ -437,7 +424,7 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// Sets all BCP47 language tag components at once.
+		/// Sets all parts of the IETF language tag at once.
 		/// This method is useful for avoiding invalid intermediate states when switching from one valid tag to another.
 		/// </summary>
 		/// <param name="language">A valid BCP47 language subtag.</param>
@@ -471,7 +458,7 @@ namespace SIL.WritingSystems
 			set
 			{
 				string oldCode = _language == null ? string.Empty : _language.Code;
-				UpdateField(() => Language, ref _language, value);
+				Set(() => Language, ref _language, value);
 				if (oldCode != (_language == null ? string.Empty : _language.Code))
 					UpdateLanguageTag();
 			}
@@ -483,7 +470,7 @@ namespace SIL.WritingSystems
 			set
 			{
 				string oldCode = _script == null ? string.Empty : _script.Code;
-				UpdateField(() => Script, ref _script, value);
+				Set(() => Script, ref _script, value);
 				if (oldCode != (_script == null ? string.Empty : _script.Code))
 				{
 					CheckVariantAndScriptRules();
@@ -498,7 +485,7 @@ namespace SIL.WritingSystems
 			set
 			{
 				string oldCode = _region == null ? string.Empty : _region.Code;
-				UpdateField(() => Region, ref _region, value);
+				Set(() => Region, ref _region, value);
 				if (oldCode != (_region == null ? string.Empty : _region.Code))
 					UpdateLanguageTag();
 			}
@@ -507,7 +494,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// The variant and private use subtags.
 		/// </summary>
-		public ObservableCollection<VariantSubtag> Variants
+		public BulkObservableList<VariantSubtag> Variants
 		{
 			get { return _variants; }
 		}
@@ -539,7 +526,7 @@ namespace SIL.WritingSystems
 				}
 				return _abbreviation;
 			}
-			set { UpdateString(() => Abbreviation, ref _abbreviation, value); }
+			set { Set(() => Abbreviation, ref _abbreviation, value); }
 		}
 
 		/// <summary>
@@ -564,7 +551,7 @@ namespace SIL.WritingSystems
 				string currentToAppend = string.Format("dupl{0}", duplicateNumber);
 				if (!newWs._variants.Contains(currentToAppend))
 				{
-					newWs.Variants.Add(new VariantSubtag(currentToAppend, null, true, null));
+					newWs.Variants.Add(new VariantSubtag(currentToAppend, true));
 					lastAppended = currentToAppend;
 				}
 				duplicateNumber++;
@@ -778,7 +765,7 @@ namespace SIL.WritingSystems
 		public virtual string Keyboard
 		{
 			get { return _keyboard ?? string.Empty; }
-			set { UpdateString(() => Keyboard, ref _keyboard, value); }
+			set { Set(() => Keyboard, ref _keyboard, value); }
 		}
 
 		/// <summary>
@@ -790,7 +777,7 @@ namespace SIL.WritingSystems
 		public virtual string WindowsLcid
 		{
 			get { return _windowsLcid ?? string.Empty; }
-			set { UpdateString(() => WindowsLcid, ref _windowsLcid, value); }
+			set { Set(() => WindowsLcid, ref _windowsLcid, value); }
 		}
 
 		/// <summary>
@@ -799,7 +786,7 @@ namespace SIL.WritingSystems
 		public virtual bool RightToLeftScript
 		{
 			get { return _rightToLeftScript; }
-			set { UpdateField(() => RightToLeftScript, ref _rightToLeftScript, value); }
+			set { Set(() => RightToLeftScript, ref _rightToLeftScript, value); }
 		}
 
 		public virtual CollationDefinition DefaultCollation
@@ -807,20 +794,32 @@ namespace SIL.WritingSystems
 			get { return _defaultCollation ?? _collations.FirstOrDefault(); }
 			set
 			{
-				if (UpdateField(() => DefaultCollation, ref _defaultCollation, value))
+				if (Set(() => DefaultCollation, ref _defaultCollation, value) && value != null)
 				{
-					if (value != null && !_collations.Contains(value))
+					CollationDefinition cd;
+					if (_collations.TryGet(value.Type, out cd))
+					{
+						if (cd == value)
+							return;
+
+						// if a collation with the same type already exists, replace it
+						int index = _collations.IndexOf(cd);
+						_collations[index] = value;
+					}
+					else
+					{
 						_collations.Add(value);
+					}
 				}
 			}
 		}
 
-		public ObservableKeyedCollection<string, CollationDefinition> Collations
+		public KeyedBulkObservableList<string, CollationDefinition> Collations
 		{
 			get { return _collations; }
 		}
 
-		public ObservableKeyedCollection<string, CharacterSetDefinition> CharacterSets
+		public KeyedBulkObservableList<string, CharacterSetDefinition> CharacterSets
 		{
 			get { return _characterSets; }
 		}
@@ -851,11 +850,8 @@ namespace SIL.WritingSystems
 			}
 			set
 			{
-				if (UpdateField(() => LocalKeyboard, ref _localKeyboard, value))
-				{
-					if (value != null)
-						_knownKeyboards.Add(value);
-				}
+				if (Set(() => LocalKeyboard, ref _localKeyboard, value) && value != null && !_knownKeyboards.Contains(value.Id))
+					_knownKeyboards.Add(value);
 			}
 		}
 
@@ -868,7 +864,7 @@ namespace SIL.WritingSystems
 		/// Keyboards known to have been used with this writing system. Not all may be available on this system.
 		/// Enhance: document (or add to this class?) a way of getting available keyboards.
 		/// </summary>
-		public ObservableKeyedCollection<string, IKeyboardDefinition> KnownKeyboards
+		public KeyedBulkObservableList<string, IKeyboardDefinition> KnownKeyboards
 		{
 			get { return _knownKeyboards; }
 		}
@@ -895,7 +891,7 @@ namespace SIL.WritingSystems
 				if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
 					throw new ArgumentOutOfRangeException("value");
 
-				UpdateField(() => DefaultFontSize, ref _defaultFontSize, value);
+				Set(() => DefaultFontSize, ref _defaultFontSize, value);
 			}
 		}
 
@@ -926,15 +922,27 @@ namespace SIL.WritingSystems
 			}
 			set
 			{
-				if (UpdateField(() => DefaultFont, ref _defaultFont, value))
+				if (Set(() => DefaultFont, ref _defaultFont, value) && value != null)
 				{
-					if (value != null && !_fonts.Contains(value))
+					FontDefinition fd;
+					if (_fonts.TryGet(value.Name, out fd))
+					{
+						if (fd == value)
+							return;
+
+						// if a font with the same name already exists, replace it
+						int index = _fonts.IndexOf(fd);
+						_fonts[index] = value;
+					}
+					else
+					{
 						_fonts.Add(value);
+					}
 				}
 			}
 		}
 
-		public ObservableKeyedCollection<string, FontDefinition> Fonts
+		public KeyedBulkObservableList<string, FontDefinition> Fonts
 		{
 			get { return _fonts; }
 		}
@@ -945,10 +953,10 @@ namespace SIL.WritingSystems
 		public virtual string SpellCheckingId
 		{
 			get { return _spellCheckingId ?? string.Empty; }
-			set { UpdateString(() => SpellCheckingId, ref _spellCheckingId, value); }
+			set { Set(() => SpellCheckingId, ref _spellCheckingId, value); }
 		}
 
-		public ObservableKeyedCollection<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition> SpellCheckDictionaries
+		public KeyedBulkObservableList<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition> SpellCheckDictionaries
 		{
 			get { return _spellCheckDictionaries; }
 		}
@@ -956,20 +964,20 @@ namespace SIL.WritingSystems
 		public virtual string DefaultRegion
 		{
 			get { return _defaultRegion ?? string.Empty; }
-			set { UpdateString(() => DefaultRegion, ref _defaultRegion, value); }
+			set { Set(() => DefaultRegion, ref _defaultRegion, value); }
 		}
 
-		public ObservableSet<MatchedPair> MatchedPairs
+		public IObservableSet<MatchedPair> MatchedPairs
 		{
 			get { return _matchedPairs; }
 		}
 
-		public ObservableSet<PunctuationPattern> PunctuationPatterns
+		public IObservableSet<PunctuationPattern> PunctuationPatterns
 		{
 			get { return _punctuationPatterns; }
 		}
 
-		public ObservableCollection<QuotationMark> QuotationMarks
+		public BulkObservableList<QuotationMark> QuotationMarks
 		{
 			get { return _quotationMarks; }
 		}
@@ -977,7 +985,7 @@ namespace SIL.WritingSystems
 		public QuotationParagraphContinueType QuotationParagraphContinueType
 		{
 			get { return _quotationParagraphContinueType; }
-			set { UpdateField(() => QuotationParagraphContinueType, ref _quotationParagraphContinueType, value); }
+			set { Set(() => QuotationParagraphContinueType, ref _quotationParagraphContinueType, value); }
 		}
 
 		/// <summary>
@@ -987,7 +995,7 @@ namespace SIL.WritingSystems
 		public string LegacyMapping
 		{
 			get { return _legacyMapping ?? string.Empty; }
-			set { UpdateString(() => LegacyMapping, ref _legacyMapping, value); }
+			set { Set(() => LegacyMapping, ref _legacyMapping, value); }
 		}
 
 		/// <summary>
@@ -997,7 +1005,7 @@ namespace SIL.WritingSystems
 		public bool IsGraphiteEnabled
 		{
 			get { return _isGraphiteEnabled; }
-			set { UpdateField(() => IsGraphiteEnabled, ref _isGraphiteEnabled, value); }
+			set { Set(() => IsGraphiteEnabled, ref _isGraphiteEnabled, value); }
 		}
 
 		public override string ToString()
@@ -1125,7 +1133,7 @@ namespace SIL.WritingSystems
 			foreach (CharacterSetDefinition csd in _characterSets)
 			{
 				CharacterSetDefinition otherCsd;
-				if (!other._characterSets.TryGetItem(csd.Type, out otherCsd) || !csd.ValueEquals(otherCsd))
+				if (!other._characterSets.TryGet(csd.Type, out otherCsd) || !csd.ValueEquals(otherCsd))
 					return false;
 			}
 

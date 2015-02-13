@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Xml.Linq;
 using NUnit.Framework;
 using Palaso.Data;
 using Palaso.IO;
@@ -748,10 +750,20 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Write_LdmlIsNicelyFormatted()
 		{
-#if MONO
-				// mono inserts \r\n\t before xmlns where windows doesn't
-			string expectedFileContent =
-#region filecontent
+			using (var file = new TempFile())
+			{
+				//Create an ldml file to read
+				var adaptor = new LdmlDataMapper();
+				var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
+				adaptor.Write(file.Path, ws, null);
+
+				//change the read writing system and write it out again
+				var ws2 = new WritingSystemDefinition();
+				adaptor.Read(file.Path, ws2);
+				ws2.Region = "US";
+				ws2.DefaultCollation = new CollationDefinition("standard");
+				adaptor.Write(file.Path, ws2, new MemoryStream(File.ReadAllBytes(file.Path)));
+				Assert.That(XElement.Load(file.Path), Is.EqualTo(XElement.Parse(
 @"<?xml version='1.0' encoding='utf-8'?>
 <ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
 	<identity>
@@ -774,52 +786,8 @@ namespace SIL.WritingSystems.Tests
 		<defaultCollation>standard</defaultCollation>
 		<collation type='standard' />
 	</collations>
-</ldml>".Replace("'", "\"").Replace("\n", "\r\n");
-#endregion
-
-#else
-			string expectedFileContent =
-#region filecontent
- @"<?xml version='1.0' encoding='utf-8'?>
-<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
-	<identity>
-		<version number='' />
-		<generation date='0001-01-01T00:00:00' />
-		<language type='en' />
-		<script type='Zxxx' />
-		<territory type='US' />
-		<variant type='x-audio' />
-		<special>
-			<sil:identity variantName='Audio' />
-		</special>
-	</identity>
-	<layout>
-		<orientation>
-			<characterOrder>left-to-right</characterOrder>
-		</orientation>
-	</layout>
-	<collations>
-		<defaultCollation>standard</defaultCollation>
-		<collation type='standard' />
-	</collations>
-</ldml>".Replace("'", "\"").Replace("\n", "\r\n").Replace("\r\r\n", "\r\n");
-
-#endregion
-
-#endif
-			using (var file = new TempFile())
-			{
-				//Create an ldml file to read
-				var adaptor = new LdmlDataMapper();
-				var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
-				adaptor.Write(file.Path, ws, null);
-
-				//change the read writing system and write it out again
-				var ws2 = new WritingSystemDefinition();
-				adaptor.Read(file.Path, ws2);
-				ws2.Region = "US";
-				adaptor.Write(file.Path, ws2, new MemoryStream(File.ReadAllBytes(file.Path)));
-				Assert.That(File.ReadAllText(file.Path), Is.EqualTo(expectedFileContent));
+</ldml>"
+)).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 			}
 		}
 

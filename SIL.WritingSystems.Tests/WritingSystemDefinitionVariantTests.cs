@@ -22,9 +22,7 @@ namespace SIL.WritingSystems.Tests
 		public void IpaStatus_SetToIpaWasAlreadyIpaWithOtherVariants_NoChange()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.Variants.Add("1901");
-			ws.Variants.Add("biske");
-			ws.Variants.Add("fonipa");
+			ws.Variants.AddRange(new VariantSubtag[] {"1901", "biske", "fonipa"});
 			ws.IpaStatus = IpaStatusChoices.Ipa;
 			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"1901", "biske", "fonipa"}));
 		}
@@ -69,8 +67,7 @@ namespace SIL.WritingSystems.Tests
 		public void IpaStatus_SetToIpaWhenVariantHasContents_FonIpaAtEnd()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.Variants.Add("1901");
-			ws.Variants.Add("biske");
+			ws.Variants.AddRange(new VariantSubtag[] {"1901", "biske"});
 			ws.IpaStatus = IpaStatusChoices.Ipa;
 			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"1901", "biske", "fonipa"}));
 		}
@@ -96,8 +93,7 @@ namespace SIL.WritingSystems.Tests
 		public void IpaStatus_SetToNotIpaWhenVariantNotEmpty_NothingChanges()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.Variants.Add("1901");
-			ws.Variants.Add("biske");
+			ws.Variants.AddRange(new VariantSubtag[] {"1901", "biske"});
 			ws.IpaStatus = IpaStatusChoices.NotIpa;
 			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"1901", "biske"}));
 		}
@@ -106,9 +102,7 @@ namespace SIL.WritingSystems.Tests
 		public void IpaStatus_SetToNotIpaWhenVariantHasContents_FonIpaRemoved()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.Variants.Add("1901");
-			ws.Variants.Add("biske");
-			ws.Variants.Add("fonipa");
+			ws.Variants.AddRange(new VariantSubtag[] {"1901", "biske", "fonipa"});
 			ws.IpaStatus = IpaStatusChoices.NotIpa;
 			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"1901", "biske"}));
 		}
@@ -118,10 +112,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			//this is actually a bad tag as of 2009, fonipa can't be extended
-			ws.Variants.Add("1901");
-			ws.Variants.Add("biske");
-			ws.Variants.Add("fonipa");
-			ws.Variants.Add("bauddha");
+			ws.Variants.AddRange(new VariantSubtag[] {"1901", "biske", "fonipa", "bauddha"});
 			ws.IpaStatus = IpaStatusChoices.NotIpa;
 			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"1901", "biske", "bauddha"}));
 		}
@@ -130,8 +121,7 @@ namespace SIL.WritingSystems.Tests
 		public void IpaStatus_IpaPhonetic_RoundTrips()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.Variants.Add("1901");
-			ws.Variants.Add("biske");
+			ws.Variants.AddRange(new VariantSubtag[] {"1901", "biske"});
 			ws.IpaStatus = IpaStatusChoices.IpaPhonetic;
 			Assert.That(ws.IpaStatus, Is.EqualTo(IpaStatusChoices.IpaPhonetic));
 			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"1901", "biske", "fonipa", "etic"}));
@@ -141,8 +131,7 @@ namespace SIL.WritingSystems.Tests
 		public void IpaStatus_IpaPhonemic_RoundTrips()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.Variants.Add("1901");
-			ws.Variants.Add("biske");
+			ws.Variants.AddRange(new VariantSubtag[] {"1901", "biske"});
 			ws.IpaStatus = IpaStatusChoices.IpaPhonemic;
 			Assert.That(ws.IpaStatus, Is.EqualTo(IpaStatusChoices.IpaPhonemic));
 			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"1901", "biske", "fonipa", "emic"}));
@@ -152,8 +141,7 @@ namespace SIL.WritingSystems.Tests
 		public void IpaStatus_IpaPhoneticToPhonemic_MakesChange()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.Variants.Add("1901");
-			ws.Variants.Add("biske");
+			ws.Variants.AddRange(new VariantSubtag[] {"1901", "biske"});
 			ws.IpaStatus = IpaStatusChoices.IpaPhonetic;
 			ws.IpaStatus = IpaStatusChoices.IpaPhonemic;
 			Assert.That(ws.IpaStatus, Is.EqualTo(IpaStatusChoices.IpaPhonemic));
@@ -164,8 +152,7 @@ namespace SIL.WritingSystems.Tests
 		public void SetIpaStatus_SetIpaWasVoice_RemovesVoice()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.Variants.Add("1901");
-			ws.Variants.Add("biske");
+			ws.Variants.AddRange(new VariantSubtag[] {"1901", "biske"});
 			ws.IsVoice = true;
 			ws.IpaStatus = IpaStatusChoices.Ipa;
 			Assert.IsFalse(ws.IsVoice);
@@ -175,8 +162,7 @@ namespace SIL.WritingSystems.Tests
 		public void IpaStatus_PrivateUseSetToPrefixEticPostfix_ReturnsIpa()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.Variants.Add("fonipa");
-			ws.Variants.Add("pEticp");
+			ws.Variants.AddRange(new VariantSubtag[] {"fonipa", "pEticp"});
 			Assert.That(ws.IpaStatus, Is.EqualTo(IpaStatusChoices.Ipa));
 		}
 
@@ -184,8 +170,7 @@ namespace SIL.WritingSystems.Tests
 		public void IpaStatus_VariantSetTofonipaDashXDashetic_ReturnsIpaPhonetic()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.Variants.Add("fonipa");
-			ws.Variants.Add("etic");
+			ws.Variants.AddRange(new VariantSubtag[] {"fonipa", "etic"});
 			Assert.That(ws.IpaStatus, Is.EqualTo(IpaStatusChoices.IpaPhonetic));
 		}
 
@@ -193,8 +178,7 @@ namespace SIL.WritingSystems.Tests
 		public void IpaStatus_VariantSetTofonipaDashXDashemic_ReturnsIpaPhonemic()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.Variants.Add("fonipa");
-			ws.Variants.Add("emic");
+			ws.Variants.AddRange(new VariantSubtag[] {"fonipa", "emic"});
 			Assert.That(ws.IpaStatus, Is.EqualTo(IpaStatusChoices.IpaPhonemic));
 		}
 

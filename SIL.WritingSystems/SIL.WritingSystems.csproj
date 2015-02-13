@@ -160,18 +160,14 @@
     <Compile Include="Migration\WritingSystemsLdmlV2To3Migration\LdmlAdaptorV3.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV2To3Migration\LdmlVersion2MigrationStrategy.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV2To3Migration\WritingSystemDefinitionV3.cs" />
-    <Compile Include="ObservableSet.cs" />
     <Compile Include="PunctuationPattern.cs" />
     <Compile Include="QuotationMark.cs" />
-    <Compile Include="ReadOnlyKeyedCollection.cs" />
     <Compile Include="RegionSubtag.cs" />
     <Compile Include="ScriptSubtag.cs" />
     <Compile Include="SimpleRulesParser.cs" />
-    <Compile Include="SimpleMonitor.cs" />
     <Compile Include="SimpleCollationDefinition.cs" />
     <Compile Include="Sldr.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\LdmlCollationParserV1.cs" />
-    <Compile Include="ObservableKeyedCollection.cs" />
     <Compile Include="LanguageRegistryResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

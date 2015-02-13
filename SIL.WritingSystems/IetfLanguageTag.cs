@@ -76,7 +76,7 @@ namespace SIL.WritingSystems
 			foreach (string standardCode in standardVariantCodes.Split(new[] {'-'}, StringSplitOptions.RemoveEmptyEntries))
 			{
 				VariantSubtag variantSubtag;
-				if (StandardSubtags.RegisteredVariants.TryGetItem(standardCode, out variantSubtag))
+				if (StandardSubtags.RegisteredVariants.TryGet(standardCode, out variantSubtag))
 				{
 					variantSubtagsList.Add(variantSubtag);
 				}
@@ -90,7 +90,7 @@ namespace SIL.WritingSystems
 			foreach (string privateUseCode in privateUseVariantCodes.Split(new[] { '-' }, StringSplitOptions.RemoveEmptyEntries))
 			{
 				VariantSubtag variantSubtag;
-				if (!StandardSubtags.CommonPrivateUseVariants.TryGetItem(privateUseCode, out variantSubtag))
+				if (!StandardSubtags.CommonPrivateUseVariants.TryGet(privateUseCode, out variantSubtag))
 					variantSubtag = new VariantSubtag(privateUseCode, true);
 				variantSubtagsList.Add(variantSubtag);
 			}
@@ -821,7 +821,7 @@ namespace SIL.WritingSystems
 				foreach (string variantCode in variantGroup.Value.Split(new[] {'-'}, StringSplitOptions.RemoveEmptyEntries))
 				{
 					VariantSubtag variantSubtag;
-					if (!StandardSubtags.RegisteredVariants.TryGetItem(variantCode, out variantSubtag))
+					if (!StandardSubtags.RegisteredVariants.TryGet(variantCode, out variantSubtag))
 						return false;
 					variantSubtagsList.Add(variantSubtag);
 				}
@@ -830,7 +830,7 @@ namespace SIL.WritingSystems
 			foreach (string privateUseCode in privateUseCodes.Where(c => !c.Equals("x", StringComparison.InvariantCultureIgnoreCase)))
 			{
 				VariantSubtag variantSubtag;
-				if (!StandardSubtags.CommonPrivateUseVariants.TryGetItem(privateUseCode, out variantSubtag))
+				if (!StandardSubtags.CommonPrivateUseVariants.TryGet(privateUseCode, out variantSubtag))
 					variantSubtag = new VariantSubtag(privateUseCode, true);
 				variantSubtagsList.Add(variantSubtag);
 			}

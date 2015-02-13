@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Palaso.Code;
 using Palaso.Lift;
+using Palaso.ObjectModel;
 
 namespace Palaso.DictionaryServices.Model
 {

@@ -83,50 +83,50 @@ namespace SIL.WritingSystems
 			{
 				if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
 					throw new ArgumentOutOfRangeException("value");
-				UpdateField(() => RelativeSize, ref _relativeSize, value);
+				Set(() => RelativeSize, ref _relativeSize, value);
 			}
 		}
 
 		public string Features
 		{
 			get { return _features ?? string.Empty; }
-			set { UpdateString(() => Features, ref _features, value); }
+			set { Set(() => Features, ref _features, value); }
 		}
 
 		public string Language
 		{
 			get { return _language ?? string.Empty; }
-			set { UpdateString(() => Language, ref _language, value); }
+			set { Set(() => Language, ref _language, value); }
 		}
 
 		public string OpenTypeLanguage
 		{
 			get { return _openTypeLanguage ?? string.Empty; }
-			set { UpdateString(() => OpenTypeLanguage, ref _openTypeLanguage, value); }
+			set { Set(() => OpenTypeLanguage, ref _openTypeLanguage, value); }
 		}
 
 		public string MinVersion
 		{
 			get { return _minVersion ?? string.Empty; }
-			set { UpdateString(() => MinVersion, ref _minVersion, value); }
+			set { Set(() => MinVersion, ref _minVersion, value); }
 		}
 
 		public FontRoles Roles
 		{
 			get { return _roles; }
-			set { UpdateField(() => Roles, ref _roles, value); }
+			set { Set(() => Roles, ref _roles, value); }
 		}
 
 		public FontEngines Engines
 		{
 			get { return _engines; }
-			set { UpdateField(() => Engines, ref _engines, value); }
+			set { Set(() => Engines, ref _engines, value); }
 		}
 
 		public string Subset
 		{
 			get { return _subset ?? string.Empty; }
-			set { UpdateString(() => Subset, ref _subset, value); }
+			set { Set(() => Subset, ref _subset, value); }
 		}
 
 		public ObservableCollection<string> Urls
