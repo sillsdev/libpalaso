@@ -6,15 +6,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Core", "SIL.Core\SIL.Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Core.Tests", "SIL.Core.Tests\SIL.Core.Tests.csproj", "{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PalasoUIWindowsForms", "PalasoUIWindowsForms\PalasoUIWindowsForms.csproj", "{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.WindowsForms", "SIL.WindowsForms\SIL.WindowsForms.csproj", "{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddSortKey", "AddSortKey\AddSortKey.csproj", "{3D4F73A8-DB05-4580-98A0-DEE34C010636}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PalasoUIWindowsForms.Tests", "PalasoUIWindowsForms.Tests\PalasoUIWindowsForms.Tests.csproj", "{6E16866F-FF8D-4136-AD67-36AFE3626432}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.WindowsForms.Tests", "SIL.WindowsForms.Tests\SIL.WindowsForms.Tests.csproj", "{6E16866F-FF8D-4136-AD67-36AFE3626432}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.BuildTasks", "Palaso.MSBuildTasks\Palaso.BuildTasks.csproj", "{1B4E2E6B-4424-4560-97E0-B0BD34BF85D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PalasoUIWindowsForms.TestApp", "PalasoUIWindowsForms.TestApp\PalasoUIWindowsForms.TestApp.csproj", "{24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.WindowsForms.TestApp", "SIL.WindowsForms.TestApp\SIL.WindowsForms.TestApp.csproj", "{24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Media", "Palaso.Media\Palaso.Media.csproj", "{66B3504A-3B4E-45CB-903A-A9A75B22EF68}"
 EndProject
@@ -59,7 +59,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.ScriptureUtils.Tests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppKeyboard", "TestApps\TestAppKeyboard\TestAppKeyboard.csproj", "{776BECCD-102A-4C69-A478-4A4A6F695019}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PalasoUIWindowsForms.GeckoFxWebBrowserAdapter", "PalasoUIWindowsForms.GeckoFxWebBrowserAdapter\PalasoUIWindowsForms.GeckoFxWebBrowserAdapter.csproj", "{D000879E-9AA6-4811-A6F0-80DF6119FB08}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.WindowsForms.GeckoBrowserAdapter", "SIL.WindowsForms.GeckoBrowserAdapter\SIL.WindowsForms.GeckoBrowserAdapter.csproj", "{D000879E-9AA6-4811-A6F0-80DF6119FB08}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.ScriptureControls", "SIL.ScriptureControls\SIL.ScriptureControls.csproj", "{6CA85A3E-4AB3-4BBC-861F-0C68F018868B}"
 EndProject

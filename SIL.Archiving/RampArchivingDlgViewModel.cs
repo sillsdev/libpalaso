@@ -12,10 +12,10 @@ using System.Threading;
 using System.Windows.Forms;
 using Ionic.Zip;
 using L10NSharp;
-using Palaso.UI.WindowsForms.ClearShare;
 using SIL.Archiving.Generic;
 using SIL.Archiving.Properties;
 using SIL.IO;
+using SIL.WindowsForms.ClearShare;
 using Timer = System.Threading.Timer;
 
 namespace SIL.Archiving

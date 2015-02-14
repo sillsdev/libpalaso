@@ -1,4 +1,6 @@
-﻿﻿namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
+﻿﻿using SIL.WindowsForms.Widgets;
+
+namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
 {
 	partial class VoiceIdentifierView
 	{
@@ -28,7 +30,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
+			this.betterLabel1 = new BetterLabel();
 			this.SuspendLayout();
 			//
 			// betterLabel1
@@ -59,6 +61,6 @@
 
 		#endregion
 
-		private Palaso.UI.WindowsForms.Widgets.BetterLabel betterLabel1;
+		private BetterLabel betterLabel1;
 	}
 }

@@ -1,3 +1,5 @@
+using SIL.WindowsForms.Widgets;
+
 namespace TestApp
 {
 	partial class Form1
@@ -43,7 +45,7 @@ namespace TestApp
 			this._probWithExitButton = new System.Windows.Forms.Button();
 			this.button8 = new System.Windows.Forms.Button();
 			this.button9 = new System.Windows.Forms.Button();
-			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
+			this.betterLabel1 = new BetterLabel();
 			this.button10 = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			//
@@ -263,7 +265,7 @@ namespace TestApp
 		private System.Windows.Forms.Button _probWithExitButton;
 		private System.Windows.Forms.Button button8;
 		private System.Windows.Forms.Button button9;
-		private Palaso.UI.WindowsForms.Widgets.BetterLabel betterLabel1;
+		private BetterLabel betterLabel1;
 		private System.Windows.Forms.Button button10;
 	}
 }

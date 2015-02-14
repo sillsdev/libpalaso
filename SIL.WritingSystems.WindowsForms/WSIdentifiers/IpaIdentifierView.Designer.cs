@@ -1,4 +1,5 @@
 ﻿using System;
+using SIL.WindowsForms.Widgets;
 
 namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
 {
@@ -32,7 +33,7 @@ namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
 		{
 			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
 			this.comboBox1 = new System.Windows.Forms.ComboBox();
-			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
+			this.betterLabel1 = new BetterLabel();
 			this.SuspendLayout();
 			//
 			// linkLabel1
@@ -92,7 +93,7 @@ namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
 
 		#endregion
 
-		private Palaso.UI.WindowsForms.Widgets.BetterLabel betterLabel1;
+		private BetterLabel betterLabel1;
 		private System.Windows.Forms.LinkLabel linkLabel1;
 		private System.Windows.Forms.ComboBox comboBox1;
 	}

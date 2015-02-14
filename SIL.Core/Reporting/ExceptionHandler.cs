@@ -32,7 +32,7 @@ namespace SIL.Reporting
 			if (_singleton == null)
 			{
 				//If we can't find the WinFormsExceptionHandler we'll use the Console
-				_singleton = GetObjectFromPalasoUiWindowsForms<ExceptionHandler>() ?? new ConsoleExceptionHandler();
+				_singleton = GetObjectFromSilWindowsForms<ExceptionHandler>() ?? new ConsoleExceptionHandler();
 			}
 			else { throw new InvalidOperationException("An ExceptionHandler has already been set."); }
 		}
@@ -73,16 +73,16 @@ namespace SIL.Reporting
 			return types;
 		}
 
-		internal static T GetObjectFromPalasoUiWindowsForms<T>() where T : class
+		internal static T GetObjectFromSilWindowsForms<T>() where T : class
 		{
-			const string palasoUiWindowsFormsAssemblyName = "PalasoUIWindowsForms";
+			const string silWindowsFormsAssemblyName = "SIL.WindowsForms";
 
 			var topMostAssembly = Assembly.GetEntryAssembly();
 			if (topMostAssembly != null)
 			{
 				var referencedAssemblies = topMostAssembly.GetReferencedAssemblies();
 				var palasoUiWindowsFormsInitializeAssemblyName =
-					referencedAssemblies.FirstOrDefault(a => a.Name.Contains(palasoUiWindowsFormsAssemblyName));
+					referencedAssemblies.FirstOrDefault(a => a.Name.Contains(silWindowsFormsAssemblyName));
 				if (palasoUiWindowsFormsInitializeAssemblyName != null)
 				{
 					var toInitializeAssembly = Assembly.Load(palasoUiWindowsFormsInitializeAssemblyName);
@@ -102,7 +102,7 @@ namespace SIL.Reporting
 							// (Nor is just this check enough...GetTypes() indeed throws also.
 							return interfaceToFind.IsAssignableFrom(t);
 						}
-						catch(System.TypeLoadException)
+						catch (TypeLoadException)
 						{
 							return false;
 						}

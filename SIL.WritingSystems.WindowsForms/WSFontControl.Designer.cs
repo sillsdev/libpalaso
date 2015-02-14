@@ -1,3 +1,5 @@
+using SIL.WindowsForms.Widgets;
+
 namespace SIL.WritingSystems.WindowsForms
 {
 	partial class WSFontControl
@@ -37,7 +39,7 @@ namespace SIL.WritingSystems.WindowsForms
 			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
 			this._rightToLeftCheckBox = new System.Windows.Forms.CheckBox();
-			this._promptForFontTestArea = new Palaso.UI.WindowsForms.Widgets.Prompt();
+			this._promptForFontTestArea = new Prompt();
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
@@ -219,6 +221,6 @@ namespace SIL.WritingSystems.WindowsForms
 		private System.Windows.Forms.SplitContainer splitContainer1;
 		private System.Windows.Forms.SplitContainer splitContainer2;
 		private System.Windows.Forms.CheckBox _rightToLeftCheckBox;
-		private Palaso.UI.WindowsForms.Widgets.Prompt _promptForFontTestArea;
+		private Prompt _promptForFontTestArea;
 	}
 }

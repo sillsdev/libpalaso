@@ -1,4 +1,6 @@
-﻿namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
+﻿using SIL.WindowsForms.Widgets;
+
+namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
 {
 	partial class WSIdentifierView
 	{
@@ -33,8 +35,8 @@
 			this._abbreviation = new System.Windows.Forms.TextBox();
 			this._detailPanel = new System.Windows.Forms.Panel();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-			this.betterLabel5 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
-			this.betterLabel4 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
+			this.betterLabel5 = new BetterLabel();
+			this.betterLabel4 = new BetterLabel();
 			this.SuspendLayout();
 			//
 			// comboBox1
@@ -112,8 +114,8 @@
 
 		#endregion
 
-		private Palaso.UI.WindowsForms.Widgets.BetterLabel betterLabel4;
-		private Palaso.UI.WindowsForms.Widgets.BetterLabel betterLabel5;
+		private BetterLabel betterLabel4;
+		private BetterLabel betterLabel5;
 		private System.Windows.Forms.ComboBox comboBox1;
 		private System.Windows.Forms.TextBox _abbreviation;
 		private System.Windows.Forms.Panel _detailPanel;

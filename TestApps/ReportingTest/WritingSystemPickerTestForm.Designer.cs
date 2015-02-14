@@ -1,6 +1,4 @@
-﻿using Palaso.UI.WindowsForms.SIL;
-
-namespace TestApp
+﻿namespace TestApp
 {
 	partial class WritingSystemPickerTestForm
 	{

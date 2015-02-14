@@ -1,4 +1,6 @@
-﻿namespace SIL.WritingSystems.WindowsForms
+﻿using SIL.WindowsForms.Widgets;
+
+namespace SIL.WritingSystems.WindowsForms
 {
 	partial class CannotFindMyLanguageDialog
 	{
@@ -32,9 +34,9 @@
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CannotFindMyLanguageDialog));
 			this._okButton = new System.Windows.Forms.Button();
 			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
-			this.betterLinkLabel3 = new Palaso.UI.WindowsForms.Widgets.BetterLinkLabel();
-			this.betterLinkLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLinkLabel();
-			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
+			this.betterLinkLabel3 = new BetterLinkLabel();
+			this.betterLinkLabel1 = new BetterLinkLabel();
+			this.betterLabel1 = new BetterLabel();
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).BeginInit();
 			this.SuspendLayout();
 			//
@@ -145,9 +147,9 @@
 
 		#endregion
 
-		private Palaso.UI.WindowsForms.Widgets.BetterLabel betterLabel1;
-		private Palaso.UI.WindowsForms.Widgets.BetterLinkLabel betterLinkLabel1;
-		private Palaso.UI.WindowsForms.Widgets.BetterLinkLabel betterLinkLabel3;
+		private BetterLabel betterLabel1;
+		private BetterLinkLabel betterLinkLabel1;
+		private BetterLinkLabel betterLinkLabel3;
 		private System.Windows.Forms.Button _okButton;
 		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
 	}

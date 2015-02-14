@@ -1,5 +1,6 @@
+using SIL.WindowsForms.i18n;
+using SIL.WindowsForms.Widgets;
 using SIL.WritingSystems.WindowsForms.WSTree;
-using Palaso.UI.WindowsForms.i18n;
 
 namespace SIL.WritingSystems.WindowsForms
 {
@@ -36,11 +37,11 @@ namespace SIL.WritingSystems.WindowsForms
 			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
 			this._treeView = new WritingSystemTreeView();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-			this._languageName = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
-			this._rfc4646 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
+			this._languageName = new BetterLabel();
+			this._rfc4646 = new BetterLabel();
 			this._propertiesTabControl = new WSPropertiesTabControl();
 			this._buttonBar = new WSAddDuplicateMoreButtonBar();
-			this.localizationHelper1 = new Palaso.UI.WindowsForms.i18n.LocalizationHelper(this.components);
+			this.localizationHelper1 = new LocalizationHelper(this.components);
 			this.splitContainer1.Panel1.SuspendLayout();
 			this.splitContainer1.Panel2.SuspendLayout();
 			this.splitContainer1.SuspendLayout();
@@ -199,10 +200,10 @@ namespace SIL.WritingSystems.WindowsForms
 		private System.Windows.Forms.SplitContainer splitContainer2;
 		private WSPropertiesTabControl _propertiesTabControl;
 		private WSTree.WritingSystemTreeView _treeView;
-		private Palaso.UI.WindowsForms.Widgets.BetterLabel _rfc4646;
-		private Palaso.UI.WindowsForms.Widgets.BetterLabel _languageName;
+		private BetterLabel _rfc4646;
+		private BetterLabel _languageName;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-		private Palaso.UI.WindowsForms.i18n.LocalizationHelper localizationHelper1;
+		private LocalizationHelper localizationHelper1;
 
 	}
 }

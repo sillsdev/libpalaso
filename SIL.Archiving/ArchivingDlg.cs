@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Palaso.UI.WindowsForms;
-using Palaso.UI.WindowsForms.Miscellaneous;
-using Palaso.UI.WindowsForms.PortableSettingsProvider;
+using SIL.WindowsForms;
+using SIL.WindowsForms.Miscellaneous;
+using SIL.WindowsForms.PortableSettingsProvider;
 
 namespace SIL.Archiving
 {

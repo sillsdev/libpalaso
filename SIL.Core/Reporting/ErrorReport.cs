@@ -48,7 +48,7 @@ namespace SIL.Reporting
 		//error reporter
 		static ErrorReport()
 		{
-			_errorReporter = ExceptionHandler.GetObjectFromPalasoUiWindowsForms<IErrorReporter>() ?? new ConsoleErrorReporter();
+			_errorReporter = ExceptionHandler.GetObjectFromSilWindowsForms<IErrorReporter>() ?? new ConsoleErrorReporter();
 		}
 
 		/// <summary>

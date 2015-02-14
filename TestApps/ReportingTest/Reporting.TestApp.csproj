@@ -218,9 +218,9 @@
       <Project>{66B3504A-3B4E-45CB-903A-A9A75B22EF68}</Project>
       <Name>Palaso.Media</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\PalasoUIWindowsForms\PalasoUIWindowsForms.csproj">
+    <ProjectReference Include="..\..\SIL.WindowsForms\SIL.WindowsForms.csproj">
       <Project>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</Project>
-      <Name>PalasoUIWindowsForms</Name>
+      <Name>SIL.WindowsForms</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SIL.Core\SIL.Core.csproj">
       <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>

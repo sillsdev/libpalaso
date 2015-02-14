@@ -20,10 +20,10 @@ using System.Media;
 using System.Windows.Forms;
 using System.ComponentModel;
 using System.Windows.Forms.VisualStyles;
-using Palaso.UI.WindowsForms;
-using Palaso.UI.WindowsForms.Extensions;
-using Palaso.UI.WindowsForms.FileDialogExtender;
 using SIL.ScriptureUtils;
+using SIL.WindowsForms;
+using SIL.WindowsForms.Extensions;
+using SIL.WindowsForms.FileDialogExtender;
 
 namespace SIL.ScriptureControls
 {

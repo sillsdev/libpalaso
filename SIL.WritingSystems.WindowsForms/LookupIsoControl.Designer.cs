@@ -119,7 +119,7 @@ namespace SIL.WritingSystems.WindowsForms
 			// pictureBox1
 			// 
 			this.pictureBox1.BackColor = System.Drawing.Color.White;
-			this.pictureBox1.Image = global::Palaso.UI.WindowsForms.Properties.Resources.search18x18;
+			this.pictureBox1.Image = global::SIL.WindowsForms.Properties.Resources.search18x18;
 			this._L10NSharpExtender.SetLocalizableToolTip(this.pictureBox1, null);
 			this._L10NSharpExtender.SetLocalizationComment(this.pictureBox1, null);
 			this._L10NSharpExtender.SetLocalizingId(this.pictureBox1, "LanguageLookup.LookupISOControl.pictureBox1");

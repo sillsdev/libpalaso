@@ -1,4 +1,6 @@
-﻿namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
+﻿using SIL.WindowsForms.Widgets;
+
+namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
 {
 	partial class UnlistedLanguageView
 	{
@@ -29,7 +31,7 @@
 		private void InitializeComponent()
 		{
 			this.nonStandardLanguageName = new System.Windows.Forms.TextBox();
-			this.betterLabel2 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
+			this.betterLabel2 = new BetterLabel();
 			this.SuspendLayout();
 			//
 			// nonStandardLanguageName
@@ -73,6 +75,6 @@
 		#endregion
 
 		private System.Windows.Forms.TextBox nonStandardLanguageName;
-		private Palaso.UI.WindowsForms.Widgets.BetterLabel betterLabel2;
+		private BetterLabel betterLabel2;
 	}
 }

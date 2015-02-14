@@ -1,4 +1,6 @@
-﻿namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
+﻿using SIL.WindowsForms.Widgets;
+
+namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
 {
 	partial class ScriptRegionVariantView
 	{
@@ -32,12 +34,12 @@
 			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
 			this._scriptCombo = new System.Windows.Forms.ComboBox();
 			this._variant = new System.Windows.Forms.TextBox();
-			this.betterLabel3 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
-			this.betterLabel2 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
-			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
+			this.betterLabel3 = new BetterLabel();
+			this.betterLabel2 = new BetterLabel();
+			this.betterLabel1 = new BetterLabel();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
 			this._regionCombo = new System.Windows.Forms.ComboBox();
-			this._warningLabel = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
+			this._warningLabel = new BetterLabel();
 			this.SuspendLayout();
 			//
 			// linkLabel1
@@ -166,14 +168,14 @@
 
 		#endregion
 
-		private Palaso.UI.WindowsForms.Widgets.BetterLabel betterLabel1;
+		private BetterLabel betterLabel1;
 		private System.Windows.Forms.LinkLabel linkLabel1;
-		private Palaso.UI.WindowsForms.Widgets.BetterLabel betterLabel2;
-		private Palaso.UI.WindowsForms.Widgets.BetterLabel betterLabel3;
+		private BetterLabel betterLabel2;
+		private BetterLabel betterLabel3;
 		private System.Windows.Forms.ComboBox _scriptCombo;
 		private System.Windows.Forms.TextBox _variant;
 		private System.Windows.Forms.ToolTip toolTip1;
 		private System.Windows.Forms.ComboBox _regionCombo;
-		private Palaso.UI.WindowsForms.Widgets.BetterLabel _warningLabel;
+		private BetterLabel _warningLabel;
 	}
 }

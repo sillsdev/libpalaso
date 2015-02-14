@@ -1,4 +1,4 @@
-﻿using Palaso.UI.WindowsForms.Widgets;
+﻿using SIL.WindowsForms.Widgets;
 
 namespace Palaso.Media.Tests
 {

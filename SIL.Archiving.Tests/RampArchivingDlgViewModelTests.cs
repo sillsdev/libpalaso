@@ -6,10 +6,10 @@ using System.Text;
 using Ionic.Zip;
 using NUnit.Framework;
 using Palaso.TestUtilities;
-using Palaso.UI.WindowsForms.ClearShare;
 using SIL.Archiving.Generic;
 using SIL.IO;
 using SIL.Reporting;
+using SIL.WindowsForms.ClearShare;
 
 namespace SIL.Archiving.Tests
 {

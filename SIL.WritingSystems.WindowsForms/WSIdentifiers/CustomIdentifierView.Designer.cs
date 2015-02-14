@@ -1,4 +1,6 @@
-﻿namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
+﻿using SIL.WindowsForms.Widgets;
+
+namespace SIL.WritingSystems.WindowsForms.WSIdentifiers
 {
 	partial class CustomIdentifierView
 	{
@@ -30,7 +32,7 @@
 		{
 			this._languageTag = new System.Windows.Forms.TextBox();
 			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
-			this.betterLabel1 = new Palaso.UI.WindowsForms.Widgets.BetterLabel();
+			this.betterLabel1 = new BetterLabel();
 			this.SuspendLayout();
 			//
 			// _languageTag
@@ -82,7 +84,7 @@
 
 		#endregion
 
-		private Palaso.UI.WindowsForms.Widgets.BetterLabel betterLabel1;
+		private BetterLabel betterLabel1;
 		private System.Windows.Forms.TextBox _languageTag;
 		private System.Windows.Forms.LinkLabel linkLabel1;
 	}

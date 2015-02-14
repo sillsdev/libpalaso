@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.Design;
 using System.Windows.Forms;
-using Palaso.UI.WindowsForms.i18n;
+using SIL.WindowsForms.i18n;
 
 namespace PalsoUIWindowsFormsDesign
 {
