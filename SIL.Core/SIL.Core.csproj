@@ -141,7 +141,6 @@
     <Reference Include="System.Management" />
     <Reference Include="System.Security" />
     <Reference Include="System.Xml" />
-    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -256,7 +255,7 @@
     <Compile Include="ObjectModel\ReadOnlyObservableCollection.cs" />
     <Compile Include="ObjectModel\ReadOnlyObservableList.cs" />
     <Compile Include="ObjectModel\ReadOnlySet.cs" />
-    <Compile Include="PalasoSetup.cs" />
+    <Compile Include="CoreSetup.cs" />
     <Compile Include="Progress\Commands\AsyncCommand.cs" />
     <Compile Include="Progress\BackgroundWorkerState.cs" />
     <Compile Include="Progress\Commands\BasicCommand.cs" />

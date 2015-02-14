@@ -2,22 +2,22 @@ using System;
 
 namespace SIL
 {	/// <summary>
-	/// Provide global setup and shutdown for the Palaso assembly.
+	/// Provide global setup and shutdown for the SIL.Core assembly.
 	/// </summary>
 	/// <remarks>
 	/// This should be used something like the following in a program's Main() method:
-	/// using (new PalasoSetup())
+	/// using (new CoreSetup())
 	/// {
 	/// 	Application.Run(new MainWindow(args));
 	/// }
 	/// </remarks>
 	/// <remarks>
 	/// At the moment, this is needed only if the program implicitly or explicitly
-	/// uses Palaso.UsbDrive on Linux/Mono.
+	/// uses SIL.UsbDrive on Linux/Mono.
 	/// </remarks>
-	public class PalasoSetup : IDisposable
+	public class CoreSetup : IDisposable
 	{
-		public PalasoSetup()
+		public CoreSetup()
 		{
 		}
 		private bool disposed = false;
