@@ -22,7 +22,7 @@ namespace SIL.WindowsForms.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace SIL.WindowsForms.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SIL.WindowsForms.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace SIL.WindowsForms.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace SIL.WindowsForms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap DeleteMessageBoxButtonImage {
+        public static System.Drawing.Bitmap DeleteMessageBoxButtonImage {
             get {
                 object obj = ResourceManager.GetObject("DeleteMessageBoxButtonImage", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -73,7 +73,7 @@ namespace SIL.WindowsForms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap lockClosed16x16 {
+        public static System.Drawing.Bitmap lockClosed16x16 {
             get {
                 object obj = ResourceManager.GetObject("lockClosed16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -83,7 +83,7 @@ namespace SIL.WindowsForms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap lockClosed48x48 {
+        public static System.Drawing.Bitmap lockClosed48x48 {
             get {
                 object obj = ResourceManager.GetObject("lockClosed48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -93,7 +93,7 @@ namespace SIL.WindowsForms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap lockOpen16x16 {
+        public static System.Drawing.Bitmap lockOpen16x16 {
             get {
                 object obj = ResourceManager.GetObject("lockOpen16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -103,7 +103,7 @@ namespace SIL.WindowsForms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap lockOpen48x48 {
+        public static System.Drawing.Bitmap lockOpen48x48 {
             get {
                 object obj = ResourceManager.GetObject("lockOpen48x48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -113,7 +113,7 @@ namespace SIL.WindowsForms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap MenuButtonArrow {
+        public static System.Drawing.Bitmap MenuButtonArrow {
             get {
                 object obj = ResourceManager.GetObject("MenuButtonArrow", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -135,7 +135,7 @@ namespace SIL.WindowsForms.Properties {
         ///	  Core now discourages the use of the Creator element, recommending that all Role information be
         ///	  associated with C [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string OlacRoles {
+        public static string OlacRoles {
             get {
                 return ResourceManager.GetString("OlacRoles", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace SIL.WindowsForms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap RecycleBin {
+        public static System.Drawing.Bitmap RecycleBin {
             get {
                 object obj = ResourceManager.GetObject("RecycleBin", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -154,7 +154,7 @@ namespace SIL.WindowsForms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap RemoveGridRowHot {
+        public static System.Drawing.Bitmap RemoveGridRowHot {
             get {
                 object obj = ResourceManager.GetObject("RemoveGridRowHot", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -164,7 +164,7 @@ namespace SIL.WindowsForms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap RemoveGridRowNormal {
+        public static System.Drawing.Bitmap RemoveGridRowNormal {
             get {
                 object obj = ResourceManager.GetObject("RemoveGridRowNormal", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -174,7 +174,7 @@ namespace SIL.WindowsForms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap search18x18 {
+        public static System.Drawing.Bitmap search18x18 {
             get {
                 object obj = ResourceManager.GetObject("search18x18", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -184,7 +184,7 @@ namespace SIL.WindowsForms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap search22x22 {
+        public static System.Drawing.Bitmap search22x22 {
             get {
                 object obj = ResourceManager.GetObject("search22x22", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -194,7 +194,7 @@ namespace SIL.WindowsForms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap settings16x16 {
+        public static System.Drawing.Bitmap settings16x16 {
             get {
                 object obj = ResourceManager.GetObject("settings16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -204,7 +204,7 @@ namespace SIL.WindowsForms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap SILLogoBlue132x184 {
+        public static System.Drawing.Bitmap SILLogoBlue132x184 {
             get {
                 object obj = ResourceManager.GetObject("SILLogoBlue132x184", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -214,7 +214,7 @@ namespace SIL.WindowsForms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap spy16x16 {
+        public static System.Drawing.Bitmap spy16x16 {
             get {
                 object obj = ResourceManager.GetObject("spy16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
