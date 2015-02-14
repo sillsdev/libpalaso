@@ -36,4 +36,4 @@ using System.Runtime.InteropServices;
 [assembly: System.CLSCompliant(true)]
 [assembly: InternalsVisibleTo("SIL.WindowsForms.Tests")]
 [assembly: InternalsVisibleTo("SIL.WritingSystems")]
-[assembly: InternalsVisibleTo("SIL.WritingSystems.WindowsForms")]
+[assembly: InternalsVisibleTo("SIL.WindowsForms.WritingSystems")]

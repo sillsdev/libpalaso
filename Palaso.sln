@@ -69,9 +69,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.WritingSystems", "SIL.W
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.WritingSystems.Tests", "SIL.WritingSystems.Tests\SIL.WritingSystems.Tests.csproj", "{641EB241-BF16-4A5F-89BD-54411F9AC973}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.WritingSystems.WindowsForms", "SIL.WritingSystems.WindowsForms\SIL.WritingSystems.WindowsForms.csproj", "{F7DF58E2-5B67-498A-9F64-B5F1584A5AB9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.WindowsForms.WritingSystems", "SIL.WindowsForms.WritingSystems\SIL.WindowsForms.WritingSystems.csproj", "{F7DF58E2-5B67-498A-9F64-B5F1584A5AB9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.WritingSystems.WindowsForms.Tests", "SIL.WritingSystems.WindowsForms.Tests\SIL.WritingSystems.WindowsForms.Tests.csproj", "{24E0B3A0-EE71-48CE-82F9-549F1F47322F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.WindowsForms.WritingSystems.Tests", "SIL.WindowsForms.WritingSystems.Tests\SIL.WindowsForms.WritingSystems.Tests.csproj", "{24E0B3A0-EE71-48CE-82F9-549F1F47322F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.LexiconUtils", "SIL.LexiconUtils\SIL.LexiconUtils.csproj", "{FAD20DE2-D5BB-4D9D-AEEF-61F02663105F}"
 EndProject

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
+using SIL.WindowsForms.WritingSystems.Keyboarding;
 using SIL.WritingSystems;
-using SIL.WritingSystems.WindowsForms.Keyboarding;
 
 namespace TestAppKeyboard
 {

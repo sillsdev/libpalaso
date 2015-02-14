@@ -1,4 +1,4 @@
-﻿using SIL.WritingSystems.WindowsForms.Keyboarding;
+﻿using SIL.WindowsForms.WritingSystems.Keyboarding;
 
 namespace TestAppKeyboard
 {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using SIL.WindowsForms.WritingSystems;
 using SIL.WritingSystems;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
-using SIL.WritingSystems.WindowsForms;
 
 namespace TestApp
 {
