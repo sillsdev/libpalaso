@@ -6,7 +6,7 @@ using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
 using SIL.Reporting;
-using SIL.WindowsForms.WritingSystems.Keyboarding;
+using SIL.WindowsForms.Keyboarding;
 using SIL.WritingSystems;
 
 namespace SIL.WindowsForms.WritingSystems.Tests

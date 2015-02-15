@@ -6,6 +6,7 @@ using System.Linq;
 using System.Xml;
 using NUnit.Framework;
 using Palaso.TestUtilities;
+using SIL.Keyboarding;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace SIL.WritingSystems.Tests

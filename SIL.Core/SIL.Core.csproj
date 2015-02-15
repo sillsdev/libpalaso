@@ -203,6 +203,12 @@
     <Compile Include="EventsAndDelegates\GenericEventArgs.cs" />
     <Compile Include="IO\DirectoryUtilities.cs" />
     <Compile Include="IO\TempFile.cs" />
+    <Compile Include="Keyboarding\DefaultKeyboardController.cs" />
+    <Compile Include="Keyboarding\DefaultKeyboardDefinition.cs" />
+    <Compile Include="Keyboarding\IInputLanguage.cs" />
+    <Compile Include="Keyboarding\IKeyboardController.cs" />
+    <Compile Include="Keyboarding\IKeyboardDefinition.cs" />
+    <Compile Include="Keyboarding\Keyboard.cs" />
     <Compile Include="Linq\MiscOperators.cs" />
     <Compile Include="Code\Detect.cs" />
     <Compile Include="Code\Guard.cs" />

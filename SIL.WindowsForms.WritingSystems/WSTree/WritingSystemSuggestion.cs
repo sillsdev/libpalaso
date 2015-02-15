@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using SIL.Keyboarding;
 using SIL.WritingSystems;
 
 namespace SIL.WindowsForms.WritingSystems.WSTree
@@ -84,7 +85,7 @@ namespace SIL.WindowsForms.WritingSystems.WSTree
 										  IpaStatus = IpaStatusChoices.Ipa
 									  };
 			TemplateDefinition.Variants.AddRange(primary.Variants);
-			var ipaKeyboard = Keyboard.Controller.AllAvailableKeyboards.FirstOrDefault(k => k.Id.ToLower().Contains("ipa"));
+			var ipaKeyboard = Keyboard.Controller.AvailableKeyboards.FirstOrDefault(k => k.Id.ToLower().Contains("ipa"));
 			if (ipaKeyboard != null)
 				TemplateDefinition.Keyboard = ipaKeyboard.Id;
 			Label = string.Format("IPA input system for {0}", TemplateDefinition.Language.Name);

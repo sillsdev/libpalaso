@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Windows.Forms;
-using SIL.WindowsForms.WritingSystems.Keyboarding;
+using SIL.WindowsForms.Keyboarding;
 
 namespace SIL.WindowsForms.WritingSystems
 {

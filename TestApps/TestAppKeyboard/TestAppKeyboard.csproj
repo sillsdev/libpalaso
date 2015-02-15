@@ -239,6 +239,10 @@
       <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
       <Name>SIL.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\SIL.WindowsForms.Keyboarding\SIL.WindowsForms.Keyboarding.csproj">
+      <Project>{0580ed5f-6274-4928-83ee-175f01ad052d}</Project>
+      <Name>SIL.WindowsForms.Keyboarding</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SIL.WindowsForms.WritingSystems\SIL.WindowsForms.WritingSystems.csproj">
       <Project>{f7df58e2-5b67-498a-9f64-b5f1584a5ab9}</Project>
       <Name>SIL.WindowsForms.WritingSystems</Name>

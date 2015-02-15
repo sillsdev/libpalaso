@@ -59,20 +59,6 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
   </PropertyGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName'">
-    <Reference Include="Keyman7Interop.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Debug\Keyman7Interop.dll</HintPath>
-    </Reference>
-    <Reference Include="KeymanLink.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Debug\KeymanLink.dll</HintPath>
-    </Reference>
-    <Reference Include="L10NSharp.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Debug\L10NSharp.dll</HintPath>
-    </Reference>
-  </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\output\DebugMonoStrongName\</OutputPath>
@@ -110,58 +96,34 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName'">
+    <Reference Include="L10NSharp.dll">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Debug\L10NSharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
-    <Reference Include="Keyman7Interop.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Release\Keyman7Interop.dll</HintPath>
-    </Reference>
-    <Reference Include="KeymanLink.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Release\KeymanLink.dll</HintPath>
-    </Reference>
     <Reference Include="L10NSharp.dll">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Release\L10NSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'DebugMonoStrongName'">
-    <Reference Include="icu.net">
-      <HintPath>..\lib\DebugMono\icu.net.dll</HintPath>
-    </Reference>
     <Reference Include="L10NSharp.dll">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\DebugMono\L10NSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'ReleaseMono' Or '$(Configuration)' == 'ReleaseMonoStrongName'">
-    <Reference Include="icu.net">
-      <HintPath>..\lib\ReleaseMono\icu.net.dll</HintPath>
-    </Reference>
-    <None Include="..\lib\ReleaseMono\icu.net.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <Reference Include="L10NSharp.dll">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\ReleaseMono\L10NSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Enchant.Net">
       <HintPath>..\lib\common\Enchant.Net.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'DebugMonoStrongName' Or '$(Configuration)' == 'ReleaseMono' Or '$(Configuration)' == 'ReleaseMonoStrongName'">
-    <Reference Include="NDesk.DBus">
-      <HintPath>..\lib\commonMono\NDesk.DBus.dll</HintPath>
-    </Reference>
-    <Reference Include="ibusdotnet">
-      <HintPath>..\lib\commonMono\ibusdotnet.dll</HintPath>
-    </Reference>
-    <None Include="..\lib\commonMono\NDesk.DBus.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="sysglobl" />
@@ -186,35 +148,6 @@
     <Compile Include="DeleteInputSystemDialog.Designer.cs">
       <DependentUpon>DeleteInputSystemDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Keyboarding\IKeyboardAdaptor.cs" />
-    <Compile Include="Keyboarding\InputLanguageWrapper.cs" />
-    <Compile Include="Keyboarding\KeyboardController.cs" />
-    <Compile Include="Keyboarding\KeyboardDescription.cs" />
-    <Compile Include="Keyboarding\KeyboardDescriptionNull.cs" />
-    <Compile Include="Keyboarding\Linux\CinnamonIbusAdaptor.cs" />
-    <Compile Include="Keyboarding\Linux\CombinedKeyboardAdaptor.cs" />
-    <Compile Include="Keyboarding\Linux\CommonBaseAdaptor.cs" />
-    <Compile Include="Keyboarding\Linux\GlobalCachedInputContext.cs" />
-    <Compile Include="Keyboarding\Linux\IbusCommunicator.cs" />
-    <Compile Include="Keyboarding\Linux\IbusDefaultEventHandler.cs" />
-    <Compile Include="Keyboarding\Linux\IbusKeyboardAdaptor.cs" />
-    <Compile Include="Keyboarding\Linux\IbusKeyboardDescription.cs" />
-    <Compile Include="Keyboarding\Linux\IIbusCommunicator.cs" />
-    <Compile Include="Keyboarding\Linux\IIbusEventHandler.cs" />
-    <Compile Include="Keyboarding\Linux\IXklEngine.cs" />
-    <Compile Include="Keyboarding\Linux\X11.cs" />
-    <Compile Include="Keyboarding\Linux\X11KeyConverter.cs" />
-    <Compile Include="Keyboarding\Linux\XkbKeyboardAdaptor.cs" />
-    <Compile Include="Keyboarding\Linux\XkbKeyboardDescription.cs" />
-    <Compile Include="Keyboarding\Linux\XklConfigRegistry.cs" />
-    <Compile Include="Keyboarding\Linux\XklEngine.cs" />
-    <Compile Include="Keyboarding\RegisterEventArgs.cs" />
-    <Compile Include="Keyboarding\Windows\KeymanKeyboardAdaptor.cs" />
-    <Compile Include="Keyboarding\Windows\KeymanKeyboardDescription.cs" />
-    <Compile Include="Keyboarding\Windows\MsTsfInterfaces.cs" />
-    <Compile Include="Keyboarding\Windows\Win32.cs" />
-    <Compile Include="Keyboarding\Windows\WinKeyboardAdaptor.cs" />
-    <Compile Include="Keyboarding\Windows\WinKeyboardDescription.cs" />
     <Compile Include="LookupIsoCodeDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -352,6 +285,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SIL.WindowsForms.Keyboarding\SIL.WindowsForms.Keyboarding.csproj">
+      <Project>{0580ed5f-6274-4928-83ee-175f01ad052d}</Project>
+      <Name>SIL.WindowsForms.Keyboarding</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SIL.WindowsForms\SIL.WindowsForms.csproj">
       <Project>{db44f49c-d8c6-434f-81ed-28ea5c9e8195}</Project>
       <Name>SIL.WindowsForms</Name>
@@ -435,9 +372,6 @@
     <EmbeddedResource Include="WSTree\WritingSystemTreeView.resx">
       <DependentUpon>WritingSystemTreeView.cs</DependentUpon>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

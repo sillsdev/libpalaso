@@ -175,8 +175,6 @@
     <Compile Include="AddSortKeysToXml.cs" />
     <Compile Include="CharacterSetDefinition.cs" />
     <Compile Include="CollationDefinition.cs" />
-    <Compile Include="DefaultKeyboardController.cs" />
-    <Compile Include="DefaultKeyboardDefinition.cs" />
     <Compile Include="EthnologueLookup.cs" />
     <Compile Include="FlexConformPrivateUseRfc5646TagInterpreter.cs" />
     <Compile Include="FontDefinition.cs" />
@@ -184,12 +182,8 @@
     <Compile Include="ICustomDataMapper.cs" />
     <Compile Include="ICollator.cs" />
     <Compile Include="IcuRulesCollator.cs" />
-    <Compile Include="IInputLanguage.cs" />
-    <Compile Include="IKeyboardController.cs" />
-    <Compile Include="IKeyboardDefinition.cs" />
     <Compile Include="InheritedCollationDefinition.cs" />
     <Compile Include="IWritingSystemRepository.cs" />
-    <Compile Include="Keyboard.cs" />
     <Compile Include="LanguageSubtag.cs" />
     <Compile Include="IetfLanguageTag.cs" />
     <Compile Include="LdmlCollationParser.cs" />

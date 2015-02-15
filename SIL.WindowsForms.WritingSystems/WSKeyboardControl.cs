@@ -5,8 +5,8 @@ using System.IO;
 using System.Windows.Forms;
 using L10NSharp;
 using Microsoft.Win32;
-using SIL.WindowsForms.WritingSystems.Keyboarding;
-using SIL.WritingSystems;
+using SIL.Keyboarding;
+using SIL.WindowsForms.Keyboarding;
 
 namespace SIL.WindowsForms.WritingSystems
 {

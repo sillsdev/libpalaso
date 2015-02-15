@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using Palaso.TestUtilities;
 using SIL.Data;
+using SIL.Keyboarding;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace SIL.WritingSystems.Tests
@@ -1727,123 +1729,28 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void OtherAvailableKeyboards_DefaultsToAllAvailable()
 		{
+			Keyboard.Controller = new DefaultKeyboardController();
+
+			IKeyboardDefinition kbd1 = Keyboard.Controller.CreateKeyboard("en-US_English-IPA", KeyboardFormat.Unknown, Enumerable.Empty<string>());
+			IKeyboardDefinition kbd2 = Keyboard.Controller.CreateKeyboard("en-GB_English", KeyboardFormat.Unknown, Enumerable.Empty<string>());
+
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var kbd1 = new DefaultKeyboardDefinition("something", "en-US");
-			var kbd2 = new DefaultKeyboardDefinition("somethingElse", "en-GB");
-			var controller = new MockKeyboardController();
-			var keyboardList = new List<IKeyboardDefinition> {kbd1, kbd2};
-			controller.AllAvailableKeyboards = keyboardList;
-			Keyboard.Controller = controller;
 
-			var result = ws.OtherAvailableKeyboards;
-
-			Assert.That(result, Has.Member(kbd1));
-			Assert.That(result, Has.Member(kbd2));
+			Assert.That(ws.OtherAvailableKeyboards, Is.EquivalentTo(new[] {kbd1, kbd2}));
 		}
 
 		[Test]
 		public void OtherAvailableKeyboards_OmitsKnownKeyboards()
 		{
+			Keyboard.Controller = new DefaultKeyboardController();
+
+			IKeyboardDefinition kbd1 = Keyboard.Controller.CreateKeyboard("en-US_English-IPA", KeyboardFormat.Unknown, Enumerable.Empty<string>());
+			IKeyboardDefinition kbd2 = Keyboard.Controller.CreateKeyboard("en-GB_English", KeyboardFormat.Unknown, Enumerable.Empty<string>());
+
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var kbd1 = new DefaultKeyboardDefinition("something", "en-US");
-			var kbd2 = new DefaultKeyboardDefinition("somethingElse", "en-GB");
-			Keyboard.Controller = new MockKeyboardController {AllAvailableKeyboards = new[] {kbd1, kbd2}};
 			ws.KnownKeyboards.Add(kbd1);
 
-			List<IKeyboardDefinition> result = ws.OtherAvailableKeyboards.ToList();
-
-			Assert.That(result, Has.Member(kbd2));
-			Assert.That(result, Has.No.Member(kbd1));
-		}
-
-		private class MockKeyboardController : IKeyboardController
-		{
-			public IKeyboardDefinition GetKeyboard(string layoutName)
-			{
-				throw new NotImplementedException();
-			}
-
-			public bool TryGetKeyboard(string id, out IKeyboardDefinition keyboard)
-			{
-				throw new NotImplementedException();
-			}
-
-			public IKeyboardDefinition GetKeyboard(string layoutName, string locale)
-			{
-				throw new NotImplementedException();
-			}
-
-			public IKeyboardDefinition GetKeyboard(WritingSystemDefinition writingSystem)
-			{
-				throw new NotImplementedException();
-			}
-
-			public IKeyboardDefinition GetKeyboard(IInputLanguage language)
-			{
-				throw new NotImplementedException();
-			}
-
-			public void SetKeyboard(IKeyboardDefinition keyboard)
-			{
-				throw new NotImplementedException();
-			}
-
-			public void SetKeyboard(string layoutName)
-			{
-				throw new NotImplementedException();
-			}
-
-			public void SetKeyboard(string layoutName, string locale)
-			{
-				throw new NotImplementedException();
-			}
-
-			public void SetKeyboard(WritingSystemDefinition writingSystem)
-			{
-				throw new NotImplementedException();
-			}
-
-			public void SetKeyboard(IInputLanguage language)
-			{
-				throw new NotImplementedException();
-			}
-
-			public void ActivateDefaultKeyboard()
-			{
-				throw new NotImplementedException();
-			}
-
-			public IEnumerable<IKeyboardDefinition> AllAvailableKeyboards { get; set; }
-
-			public IKeyboardDefinition Default;
-			public WritingSystemDefinition ArgumentPassedToDefault;
-			public void UpdateAvailableKeyboards()
-			{
-				throw new NotImplementedException();
-			}
-
-			public IKeyboardDefinition DefaultForWritingSystem(WritingSystemDefinition ws)
-			{
-				ArgumentPassedToDefault = ws;
-				return Default;
-			}
-
-			public IKeyboardDefinition LegacyForWritingSystem(WritingSystemDefinition ws)
-			{
-				throw new NotImplementedException();
-			}
-
-			public IKeyboardDefinition CreateKeyboardDefinition(string id, KeyboardFormat format, IEnumerable<string> urls)
-			{
-				throw new NotImplementedException();
-			}
-
-			public IKeyboardDefinition ActiveKeyboard { get; set; }
-
-			public void Dispose()
-			{
-				GC.SuppressFinalize(this);
-			}
+			Assert.That(ws.OtherAvailableKeyboards, Is.EquivalentTo(new[] {kbd2}));
 		}
 
 		[Test]
@@ -1876,14 +1783,15 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void LocalKeyboard_DefaultsToFirstKnownAvailable()
 		{
+			Keyboard.Controller = new DefaultKeyboardController();
+
+			IKeyboardDefinition kbd1 = new DefaultKeyboardDefinition("en-US_English-IPA", "English-IPA");
+			IKeyboardDefinition kbd2 = Keyboard.Controller.CreateKeyboard("en-GB_English", KeyboardFormat.Unknown, Enumerable.Empty<string>());
+
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var kbd1 = new DefaultKeyboardDefinition("something", "en-US");
-			var kbd2 = new DefaultKeyboardDefinition("somethingElse", "en-US");
 
 			ws.KnownKeyboards.Add(kbd1);
 			ws.KnownKeyboards.Add(kbd2);
-
-			Keyboard.Controller = new MockKeyboardController {AllAvailableKeyboards = new[] {kbd2}};
 
 			Assert.That(ws.LocalKeyboard, Is.EqualTo(kbd2));
 		}
@@ -1892,16 +1800,8 @@ namespace SIL.WritingSystems.Tests
 		public void LocalKeyboard_DefersToController_WhenNoKnownAvailable()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var kbd1 = new DefaultKeyboardDefinition("something", "en-US");
 
-			var controller = new MockKeyboardController();
-			var keyboardList = new List<IKeyboardDefinition>();
-			controller.AllAvailableKeyboards = keyboardList;
-			controller.Default = kbd1;
-			Keyboard.Controller = controller;
-
-			Assert.That(ws.LocalKeyboard, Is.EqualTo(kbd1));
-			Assert.That(controller.ArgumentPassedToDefault, Is.EqualTo(ws));
+			Assert.That(ws.LocalKeyboard, Is.EqualTo(Keyboard.Controller.DefaultKeyboard));
 		}
 
 		[Test]
@@ -1910,10 +1810,6 @@ namespace SIL.WritingSystems.Tests
 			var ws = new WritingSystemDefinition("de-x-dupl0");
 			var kbd1 = new DefaultKeyboardDefinition("something", "en-US");
 			var kbd2 = new DefaultKeyboardDefinition("somethingElse", "en-US");
-			var kbd3 = new DefaultKeyboardDefinition("somethingEntirelyElse", "en-US");
-
-			var controller = new MockKeyboardController {AllAvailableKeyboards = new[] {kbd1, kbd2, kbd3}, Default = kbd3};
-			Keyboard.Controller = controller;
 
 			ws.KnownKeyboards.Add(kbd1);
 			ws.KnownKeyboards.Add(kbd2);
@@ -1923,7 +1819,7 @@ namespace SIL.WritingSystems.Tests
 			ws.KnownKeyboards.RemoveAt(1);
 			Assert.That(ws.LocalKeyboard, Is.EqualTo(kbd1));
 			ws.KnownKeyboards.Clear();
-			Assert.That(ws.LocalKeyboard, Is.EqualTo(kbd3));
+			Assert.That(ws.LocalKeyboard, Is.EqualTo(Keyboard.Controller.DefaultKeyboard));
 		}
 
 		[Test]
@@ -2142,6 +2038,78 @@ namespace SIL.WritingSystems.Tests
 			// No more variant
 			ws.Variants.Clear();
 			VerifySubtagCodes(ws, "en", null, null, null, "en");
+		}
+
+		[Test]
+		public void DefaultForWritingSystem_NoLegacyKeyboardSet_ReturnsSystemDefault()
+		{
+			var ws = new WritingSystemDefinition();
+			Assert.That(ws.LocalKeyboard, Is.EqualTo(Keyboard.Controller.DefaultKeyboard));
+		}
+
+		[Test]
+		public void LocalKeyboard_OldPalasoWinIMEKeyboard_ReturnsCorrectKeyboard()
+		{
+			Keyboard.Controller = new DefaultKeyboardController();
+			IKeyboardDefinition expectedKeyboard = Keyboard.Controller.CreateKeyboard("en-US_foo", KeyboardFormat.Unknown, Enumerable.Empty<string>());
+
+			// Palaso sets the keyboard property for Windows system keyboards to <layoutname>-<locale>
+			var ws = new WritingSystemDefinition {Keyboard = "foo-en-US"};
+			Assert.That(ws.LocalKeyboard, Is.EqualTo(expectedKeyboard));
+		}
+
+		[Test]
+		public void LocalKeyboard_OldPalasoKeymanKeyboard_ReturnsCorrectKeyboard()
+		{
+			Keyboard.Controller = new DefaultKeyboardController();
+			IKeyboardDefinition expectedKeyboard = Keyboard.Controller.CreateKeyboard("IPA Unicode 1.1.1", KeyboardFormat.Unknown, Enumerable.Empty<string>());
+
+			// Palaso sets the keyboard property for Keyman keyboards to <layoutname>
+			var ws = new WritingSystemDefinition {Keyboard = "IPA Unicode 1.1.1"};
+			Assert.That(ws.LocalKeyboard, Is.EqualTo(expectedKeyboard));
+		}
+
+		[Test]
+		public void LocalKeyboard_OldPalasoIbusKeyboard_ReturnsCorrectKeyboard()
+		{
+			Keyboard.Controller = new DefaultKeyboardController();
+			IKeyboardDefinition expectedKeyboard = Keyboard.Controller.CreateKeyboard("m17n:da:post", KeyboardFormat.Unknown, Enumerable.Empty<string>());
+
+			// Palaso sets the keyboard property for Ibus keyboards to <ibus longname>
+			var ws = new WritingSystemDefinition {Keyboard = "m17n:da:post"};
+			Assert.That(ws.LocalKeyboard, Is.EqualTo(expectedKeyboard));
+		}
+
+		[Test]
+		public void LocalKeyboard_OldFWSystemKeyboard_ReturnsCorrectKeyboard()
+		{
+			Keyboard.Controller = new DefaultKeyboardController();
+			IKeyboardDefinition expectedKeyboard = Keyboard.Controller.CreateKeyboard("sq-AL_Albanian", KeyboardFormat.Unknown, Enumerable.Empty<string>());
+
+			// FieldWorks sets the WindowsLcid property for System keyboards to <lcid>
+			var ws = new WritingSystemDefinition {WindowsLcid = 0x041C.ToString(CultureInfo.InvariantCulture)};
+			Assert.That(ws.LocalKeyboard, Is.EqualTo(expectedKeyboard));
+		}
+
+		[Test]
+		public void LocalKeyboard_OldNonexistentFWSystemKeyboard_ReturnsDefaultKeyboard()
+		{
+			Keyboard.Controller = new DefaultKeyboardController();
+
+			// FieldWorks sets the WindowsLcid property for System keyboards to <lcid>
+			var ws = new WritingSystemDefinition {WindowsLcid = 0x041C.ToString(CultureInfo.InvariantCulture)};
+			Assert.That(ws.LocalKeyboard, Is.EqualTo(Keyboard.Controller.DefaultKeyboard));
+		}
+
+		[Test]
+		public void LocalKeyboard_OldFWKeymanKeyboard_ReturnsCorrectKeyboard()
+		{
+			Keyboard.Controller = new DefaultKeyboardController();
+			IKeyboardDefinition expectedKeyboard = Keyboard.Controller.CreateKeyboard("en-US_IPA Unicode 1.1.1", KeyboardFormat.Unknown, Enumerable.Empty<string>());
+
+			// FieldWorks sets the keyboard property for Keyman keyboards to <layoutname> and WindowsLcid to <lcid>
+			var ws = new WritingSystemDefinition {Keyboard = "IPA Unicode 1.1.1", WindowsLcid = 0x409.ToString(CultureInfo.InvariantCulture)};
+			Assert.That(ws.LocalKeyboard, Is.EqualTo(expectedKeyboard));
 		}
 	}
 }

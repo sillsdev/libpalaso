@@ -11,6 +11,7 @@ using NUnit.Framework;
 using Palaso.TestUtilities;
 using SIL.Data;
 using SIL.IO;
+using SIL.Keyboarding;
 using SIL.WritingSystems.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 using SIL.Xml;
@@ -711,7 +712,7 @@ namespace SIL.WritingSystems.Tests
 				List<string>urls = new List<string>();
 				urls.Add("http://wirl.scripts.sil.org/keyman");
 				urls.Add("http://scripts.sil.org/cms/scripts/page.php?item_id=keyman9");
-				IKeyboardDefinition other = Keyboard.Controller.CreateKeyboardDefinition("Compiled Keyman9", KeyboardFormat.CompiledKeyman, urls);
+				IKeyboardDefinition other = Keyboard.Controller.CreateKeyboard("Compiled Keyman9", KeyboardFormat.CompiledKeyman, urls);
 
 				Assert.That(ws.KnownKeyboards.First(), Is.EqualTo(other));
 			}

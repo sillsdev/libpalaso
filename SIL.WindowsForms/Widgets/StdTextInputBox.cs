@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using SIL.Keyboarding;
 using SIL.Text;
 using SIL.WindowsForms.Spelling;
 using SIL.WritingSystems;

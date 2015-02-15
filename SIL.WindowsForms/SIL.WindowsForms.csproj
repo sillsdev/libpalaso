@@ -120,18 +120,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName'">
-    <None Include="..\lib\Debug\icudt40.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\lib\Debug\icuin40.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\lib\Debug\icuuc40.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\lib\Debug\icu.net.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <Reference Include="L10NSharp.dll">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Debug\L10NSharp.dll</HintPath>
@@ -143,14 +131,6 @@
     <Reference Include="NAudio, Version=1.5.3.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Debug\NAudio.dll</HintPath>
-    </Reference>
-    <Reference Include="Keyman7Interop">
-      <HintPath>..\lib\Debug\Keyman7Interop.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="KeymanLink">
-      <HintPath>..\lib\Debug\KeymanLink.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <!-- this is the Microsoft WIndows Image Acquisition COM library, for scanner and camera control-->
     <Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
@@ -164,18 +144,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
-    <None Include="..\lib\Release\icudt40.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\lib\Release\icuin40.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\lib\Release\icuuc40.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\lib\Release\icu.net.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <Reference Include="L10NSharp.dll">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Release\L10NSharp.dll</HintPath>
@@ -187,14 +155,6 @@
     <Reference Include="NAudio, Version=1.5.3.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Release\NAudio.dll</HintPath>
-    </Reference>
-    <Reference Include="Keyman7Interop">
-      <HintPath>..\lib\Release\Keyman7Interop.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="KeymanLink">
-      <HintPath>..\lib\Release\KeymanLink.dll</HintPath>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <!-- this is the Microsoft WIndows Image Acquisition COM library, for scanner and camera control-->
     <Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
@@ -208,23 +168,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'DebugMonoStrongName'">
-    <None Include="..\lib\DebugMono\icu.net.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <Reference Include="L10NSharp.dll">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\DebugMono\L10NSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Posix" />
     <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\DebugMono\taglib-sharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'ReleaseMono' Or '$(Configuration)' == 'ReleaseMonoStrongName'">
-    <None Include="..\lib\ReleaseMono\icu.net.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <Reference Include="L10NSharp.dll">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\ReleaseMono\L10NSharp.dll</HintPath>

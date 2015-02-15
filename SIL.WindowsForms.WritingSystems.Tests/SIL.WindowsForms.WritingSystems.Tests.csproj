@@ -112,18 +112,6 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Keyboarding\IBusAdaptorTestsWithIBus.cs" />
-    <Compile Include="Keyboarding\IBusAdaptorTestsWithoutIBus.cs" />
-    <Compile Include="Keyboarding\IbusDefaultEventHandlerTests.cs" />
-    <Compile Include="Keyboarding\IBusEnvironmentForTest.cs" />
-    <Compile Include="Keyboarding\IbusKeyboardAdaptorTests.cs" />
-    <Compile Include="Keyboarding\InputLanguageWrapperTests.cs" />
-    <Compile Include="Keyboarding\KeyboardControllerTests.cs" />
-    <Compile Include="Keyboarding\LinuxKeyboardControllerTests.cs" />
-    <Compile Include="Keyboarding\WindowsKeyboardControllerTests.cs" />
-    <Compile Include="Keyboarding\WinKeyboardAdaptorTests.cs" />
-    <Compile Include="Keyboarding\XkbKeyboardAdapterTests.cs" />
-    <Compile Include="Keyboarding\XklEngineTests.cs" />
     <Compile Include="LookupIsoCodeModelTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tree\WritingSystemTreeItemTests.cs" />
@@ -142,6 +130,10 @@
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
       <Project>{3527da1d-1e25-48be-a71e-9ebf7f9208d4}</Project>
       <Name>SIL.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SIL.WindowsForms.Keyboarding\SIL.WindowsForms.Keyboarding.csproj">
+      <Project>{0580ed5f-6274-4928-83ee-175f01ad052d}</Project>
+      <Name>SIL.WindowsForms.Keyboarding</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.WindowsForms.WritingSystems\SIL.WindowsForms.WritingSystems.csproj">
       <Project>{f7df58e2-5b67-498a-9f64-b5f1584a5ab9}</Project>

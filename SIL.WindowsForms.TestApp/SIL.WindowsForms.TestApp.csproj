@@ -152,6 +152,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SIL.WindowsForms.Keyboarding\SIL.WindowsForms.Keyboarding.csproj">
+      <Project>{0580ed5f-6274-4928-83ee-175f01ad052d}</Project>
+      <Name>SIL.WindowsForms.Keyboarding</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SIL.WindowsForms\SIL.WindowsForms.csproj">
       <Project>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</Project>
       <Name>SIL.WindowsForms</Name>

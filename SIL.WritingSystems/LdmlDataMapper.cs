@@ -9,6 +9,7 @@ using System.Xml;
 using System.Xml.Linq;
 using Icu;
 using SIL.Extensions;
+using SIL.Keyboarding;
 using SIL.Xml;
 
 namespace SIL.WritingSystems
@@ -430,7 +431,7 @@ namespace SIL.WritingSystems
 				if (!string.IsNullOrEmpty(id))
 				{
 					KeyboardFormat format = KeyboardToKeyboardFormat[(string) kbdElem.Attribute("type")];
-					IKeyboardDefinition keyboard = Keyboard.Controller.CreateKeyboardDefinition(id, format, kbdElem.Elements(Sil + "url").Select(u => (string) u));
+					IKeyboardDefinition keyboard = Keyboard.Controller.CreateKeyboard(id, format, kbdElem.Elements(Sil + "url").Select(u => (string) u));
 					ws.KnownKeyboards.Add(keyboard);
 				}
 			}

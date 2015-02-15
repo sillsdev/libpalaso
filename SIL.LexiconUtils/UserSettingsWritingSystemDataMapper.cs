@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Xml.Linq;
+using SIL.Keyboarding;
 using SIL.WritingSystems;
 
 namespace SIL.LexiconUtils
@@ -28,7 +29,7 @@ namespace SIL.LexiconUtils
 			{
 				IKeyboardDefinition keyboard;
 				ws.LocalKeyboard = ws.KnownKeyboards.TryGet(keyboardId, out keyboard) ? keyboard
-					: Keyboard.Controller.CreateKeyboardDefinition(keyboardId, KeyboardFormat.Unknown, Enumerable.Empty<string>());
+					: Keyboard.Controller.CreateKeyboard(keyboardId, KeyboardFormat.Unknown, Enumerable.Empty<string>());
 			}
 			var defaultFontName = (string) wsElem.Element("DefaultFontName");
 			if (!string.IsNullOrEmpty(defaultFontName))

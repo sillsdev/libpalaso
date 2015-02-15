@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
+using SIL.Keyboarding;
 using SIL.WindowsForms.Widgets;
 using SIL.WritingSystems;
 

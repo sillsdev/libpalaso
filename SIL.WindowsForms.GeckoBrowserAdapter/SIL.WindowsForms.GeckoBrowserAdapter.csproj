@@ -19,6 +19,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +30,7 @@
     <ConsolePause>false</ConsolePause>
     <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
     <DebugSymbols>true</DebugSymbols>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
     <Optimize>false</Optimize>
@@ -37,6 +39,7 @@
     <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
     <DebugSymbols>true</DebugSymbols>
     <DefineConstants>DEBUG;</DefineConstants>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
     <Optimize>true</Optimize>
@@ -45,13 +48,14 @@
     <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\output\DebugStrongName\</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
@@ -60,7 +64,7 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\output\DebugMonoStrongName\</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
   </PropertyGroup>
@@ -69,7 +73,7 @@
     <OutputPath>..\output\ReleaseStrongName\</OutputPath>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
@@ -79,7 +83,7 @@
     <OutputPath>..\output\ReleaseMonoStrongName\</OutputPath>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
   </PropertyGroup>

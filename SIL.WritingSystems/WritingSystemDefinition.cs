@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using SIL.Code;
 using SIL.Data;
 using SIL.Extensions;
+using SIL.Keyboarding;
 using SIL.ObjectModel;
 
 namespace SIL.WritingSystems
@@ -841,11 +843,11 @@ namespace SIL.WritingSystems
 				IKeyboardDefinition keyboard = _localKeyboard;
 				if (keyboard == null)
 				{
-					var available = new HashSet<IKeyboardDefinition>(WritingSystems.Keyboard.Controller.AllAvailableKeyboards);
+					var available = new HashSet<IKeyboardDefinition>(Keyboarding.Keyboard.Controller.AvailableKeyboards);
 					keyboard = _knownKeyboards.FirstOrDefault(available.Contains);
 				}
 				if (keyboard == null)
-					keyboard = WritingSystems.Keyboard.Controller.DefaultForWritingSystem(this);
+					keyboard = LegacyKeyboard ?? Keyboarding.Keyboard.Controller.DefaultKeyboard;
 				return keyboard;
 			}
 			set
@@ -853,6 +855,113 @@ namespace SIL.WritingSystems
 				if (Set(() => LocalKeyboard, ref _localKeyboard, value) && value != null && !_knownKeyboards.Contains(value.Id))
 					_knownKeyboards.Add(value);
 			}
+		}
+
+		/// <summary>
+		/// Finds a keyboard specified using one of the legacy fields. If such a keyboard is found, it is appropriate to
+		/// automatically add it to KnownKeyboards. If one is not, a general DefaultKeyboard should NOT be added.
+		/// </summary>
+		public IKeyboardDefinition LegacyKeyboard
+		{
+			get
+			{
+				if (!string.IsNullOrEmpty(WindowsLcid))
+				{
+					IKeyboardDefinition keyboard = GetFWLegacyKeyboard();
+					if (keyboard != null)
+						return keyboard;
+				}
+
+				if (!string.IsNullOrEmpty(Keyboard))
+				{
+					IKeyboardDefinition keyboard = GetPalasoLegacyKeyboard();
+					if (keyboard != null)
+						return keyboard;
+				}
+
+				return null;
+			}
+		}
+
+		private IKeyboardDefinition GetFWLegacyKeyboard()
+		{
+			int lcid;
+			if (int.TryParse(WindowsLcid, out lcid))
+			{
+				if (string.IsNullOrEmpty(Keyboard))
+				{
+					// FW system keyboard
+					IKeyboardDefinition keyboard;
+					if (Keyboarding.Keyboard.Controller.TryGetKeyboard(lcid, out keyboard))
+						return keyboard;
+				}
+				else
+				{
+					try
+					{
+						// FW keyman keyboard
+						var culture = new CultureInfo(lcid);
+						IKeyboardDefinition keyboard;
+						if (Keyboarding.Keyboard.Controller.TryGetKeyboard(Keyboard, culture.Name, out keyboard))
+							return keyboard;
+					}
+					catch (CultureNotFoundException)
+					{
+						// Culture specified by LCID is not supported on current system. Just ignore.
+					}
+				}
+			}
+			return null;
+		}
+
+		private IKeyboardDefinition GetPalasoLegacyKeyboard()
+		{
+			IKeyboardDefinition keyboard;
+			if (Keyboarding.Keyboard.Controller.TryGetKeyboard(Keyboard, out keyboard))
+				return keyboard;
+
+			// Palaso WinIME keyboard
+			string locale = GetLocaleName(Keyboard);
+			string layout = GetLayoutName(Keyboard);
+			if (Keyboarding.Keyboard.Controller.TryGetKeyboard(layout, locale, out keyboard))
+				return keyboard;
+
+			// Palaso Keyman or Ibus keyboard
+			if (Keyboarding.Keyboard.Controller.TryGetKeyboard(layout, out keyboard))
+				return keyboard;
+
+			return null;
+		}
+
+		private static string GetLocaleName(string name)
+		{
+			var split = name.Split(new[] { '-' });
+			string localeName;
+			if (split.Length <= 1)
+			{
+				localeName = string.Empty;
+			}
+			else if (split.Length > 1 && split.Length <= 3)
+			{
+				localeName = string.Join("-", split.Skip(1).ToArray());
+			}
+			else
+			{
+				localeName = string.Join("-", split.Skip(split.Length - 2).ToArray());
+			}
+			return localeName;
+		}
+
+		private static string GetLayoutName(string name)
+		{
+			//Just cut off the length of the locale + 1 for the dash
+			var locale = GetLocaleName(name);
+			if (string.IsNullOrEmpty(locale))
+			{
+				return name;
+			}
+			var layoutName = name.Substring(0, name.Length - (locale.Length + 1));
+			return layoutName;
 		}
 
 		internal IKeyboardDefinition RawLocalKeyboard
@@ -876,7 +985,7 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				return WritingSystems.Keyboard.Controller.AllAvailableKeyboards.Except(KnownKeyboards);
+				return Keyboarding.Keyboard.Controller.AvailableKeyboards.Except(KnownKeyboards);
 			}
 		}
 

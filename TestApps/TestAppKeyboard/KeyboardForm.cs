@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
-using SIL.WindowsForms.WritingSystems.Keyboarding;
-using SIL.WritingSystems;
+using SIL.Keyboarding;
+using SIL.WindowsForms.Keyboarding;
 
 namespace TestAppKeyboard
 {
@@ -25,7 +25,7 @@ namespace TestAppKeyboard
 
 		public void LoadKeyboards(ComboBox comboBox)
 		{
-			var keyboards = Keyboard.Controller.AllAvailableKeyboards;
+			var keyboards = Keyboard.Controller.AvailableKeyboards;
 			foreach (var keyboard in keyboards)
 			{
 				comboBox.Items.Add(keyboard);
@@ -38,9 +38,9 @@ namespace TestAppKeyboard
 		{
 			if (cbOnEnter.Checked)
 			{
-				var wantKeyboard = (IKeyboardDefinition)keyboardsA.SelectedItem;
+				var wantKeyboard = (IKeyboardDefinition) keyboardsA.SelectedItem;
 				Console.WriteLine("Enter A: Set to {0}", wantKeyboard);
-				Keyboard.Controller.SetKeyboard(wantKeyboard);
+				wantKeyboard.Activate();
 			} else {
 				Console.WriteLine("Enter A");
 			}
@@ -50,9 +50,9 @@ namespace TestAppKeyboard
 		{
 			if (cbOnEnter.Checked)
 			{
-				var wantKeyboard = (IKeyboardDefinition)keyboardsB.SelectedItem;
+				var wantKeyboard = (IKeyboardDefinition) keyboardsB.SelectedItem;
 				Console.WriteLine("Enter B: Set to {0}", wantKeyboard);
-				Keyboard.Controller.SetKeyboard(wantKeyboard);
+				wantKeyboard.Activate();
 			} else {
 				Console.WriteLine("Enter B");
 			}
@@ -64,7 +64,7 @@ namespace TestAppKeyboard
 			{
 				var wantKeyboard = (IKeyboardDefinition) keyboardsC.SelectedItem;
 				Console.WriteLine("Enter C: Set to {0}", wantKeyboard);
-				Keyboard.Controller.SetKeyboard(wantKeyboard);
+				wantKeyboard.Activate();
 			} else {
 				Console.WriteLine("Enter C");
 			}

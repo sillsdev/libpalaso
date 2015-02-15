@@ -12,8 +12,9 @@ using SIL.Code;
 using SIL.Data;
 using SIL.Extensions;
 using SIL.i18n;
+using SIL.Keyboarding;
 using SIL.Reporting;
-using SIL.WindowsForms.WritingSystems.Keyboarding;
+using SIL.WindowsForms.Keyboarding;
 using SIL.WindowsForms.WritingSystems.WSTree;
 using SIL.WritingSystems;
 
@@ -139,7 +140,7 @@ namespace SIL.WindowsForms.WritingSystems
 					// if the user does not confirm it.
 					if (_currentWritingSystem != null && _currentWritingSystem.KnownKeyboards.Count == 0)
 					{
-						IKeyboardDefinition legacyKeyboard = Keyboard.Controller.LegacyForWritingSystem(_currentWritingSystem);
+						IKeyboardDefinition legacyKeyboard = _currentWritingSystem.LegacyKeyboard;
 						if (legacyKeyboard != null)
 							yield return legacyKeyboard;
 					}
@@ -162,7 +163,7 @@ namespace SIL.WindowsForms.WritingSystems
 					{
 						// If there's a legacy keyboard and no known keyboards, we move the legacy one to 'known';
 						// so don't show it here.
-						IKeyboardDefinition legacyKeyboard = Keyboard.Controller.LegacyForWritingSystem(_currentWritingSystem);
+						IKeyboardDefinition legacyKeyboard = _currentWritingSystem.LegacyKeyboard;
 						if (legacyKeyboard != null)
 							result.Remove(legacyKeyboard);
 					}
@@ -183,10 +184,10 @@ namespace SIL.WindowsForms.WritingSystems
 			get
 			{
 				// Returns default keyboard if there are no keyboards
-				if (!Keyboard.Controller.AllAvailableKeyboards.Any())
+				if (!Keyboard.Controller.AvailableKeyboards.Any())
 					yield return KeyboardController.NullKeyboard;
 
-				foreach (IKeyboardDefinition keyboard in Keyboard.Controller.AllAvailableKeyboards)
+				foreach (IKeyboardDefinition keyboard in Keyboard.Controller.AvailableKeyboards)
 					yield return keyboard;
 			}
 		}

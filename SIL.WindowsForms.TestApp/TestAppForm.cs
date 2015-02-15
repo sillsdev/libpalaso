@@ -12,11 +12,11 @@ using SIL.LexiconUtils;
 using SIL.WindowsForms.ClearShare;
 using SIL.WindowsForms.ClearShare.WinFormsUI;
 using SIL.WindowsForms.HtmlBrowser;
+using SIL.WindowsForms.Keyboarding;
 using SIL.WindowsForms.Miscellaneous;
 using SIL.WindowsForms.ReleaseNotes;
 using SIL.WindowsForms.SettingProtection;
 using SIL.WindowsForms.WritingSystems;
-using SIL.WindowsForms.WritingSystems.Keyboarding;
 using SIL.WritingSystems;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
