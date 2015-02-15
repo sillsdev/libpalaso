@@ -128,7 +128,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				string parentLayout = keyboard.ParentLayout;
 				if (parentLayout == "en")
 					parentLayout = "us";
-				IKeyboardDefinition xkbKeyboard = Keyboard.Controller.AllAvailableKeyboards.FirstOrDefault(kbd => kbd.Layout == parentLayout);
+				IKeyboardDefinition xkbKeyboard = Keyboard.Controller.AvailableKeyboards.FirstOrDefault(kbd => kbd.Layout == parentLayout);
 				if (xkbKeyboard != null)
 					xkbKeyboard.Activate();
 				// Then set the IBus keyboard

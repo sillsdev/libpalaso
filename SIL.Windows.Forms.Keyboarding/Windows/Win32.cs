@@ -4,6 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Reflection;
 
 namespace SIL.Windows.Forms.Keyboarding.Windows
 {

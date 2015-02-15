@@ -7,10 +7,8 @@ using System.Windows.Forms;
 using L10NSharp;
 using SIL.IO;
 using SIL.Reporting;
-using WIA;
-
 #if !MONO
-
+using WIA;
 #endif
 
 namespace SIL.Windows.Forms.ImageToolbox

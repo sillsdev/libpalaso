@@ -7,6 +7,7 @@ using System.Threading;
 using System.Windows.Forms;
 using SIL.Email;
 using SIL.Reporting;
+using System.Runtime.InteropServices;
 
 namespace SIL.Windows.Forms.Reporting
 {

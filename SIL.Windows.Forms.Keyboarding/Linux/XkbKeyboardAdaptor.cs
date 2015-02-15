@@ -210,7 +210,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			get
 			{
-				return Keyboard.Controller.AllAvailableKeyboards.OfType<XkbKeyboardDescription>().FirstOrDefault(kbd => kbd.GroupIndex == 0);
+				return Keyboard.Controller.AvailableKeyboards.OfType<XkbKeyboardDescription>().FirstOrDefault(kbd => kbd.GroupIndex == 0);
 			}
 		}
 			

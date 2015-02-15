@@ -482,7 +482,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 					var pattern = String.Format("[^A-Za-z]{0}[^A-Za-z]|^{0}[^A-Za-z]|.*[^A-Za-z]{0}$", _defaultLayout);
 					var regex = new System.Text.RegularExpressions.Regex(pattern);
 					KeyboardDescription first = null;
-					foreach (KeyboardDescription kbd in Keyboard.Controller.AllAvailableKeyboards)
+					foreach (KeyboardDescription kbd in Keyboard.Controller.AvailableKeyboards)
 					{
 						if (first == null)
 							first = kbd;	// last-ditch value if all else fails

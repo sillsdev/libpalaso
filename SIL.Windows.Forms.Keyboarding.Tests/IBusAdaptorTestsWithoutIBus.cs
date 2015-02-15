@@ -1,11 +1,12 @@
 ﻿#if __MonoCS__
+#if WANT_PORT
 using System;
 using NUnit.Framework;
 using SIL.Reporting;
 using SIL.Windows.Forms.Keyboarding;
 using System.Windows.Forms;
 using System.Collections.Generic;
-#if WANT_PORT
+
 namespace SIL.Windows.Forms.Keyboarding.Tests
 {
 

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using NDesk.DBus;
+using org.freedesktop.DBus;
 
 namespace SIL.UsbDrive.Linux
 {

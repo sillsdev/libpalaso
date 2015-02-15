@@ -1,11 +1,10 @@
-﻿using System;
+﻿#if !MONO
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using SIL.Reporting;
 using WIA;
-
-#if !MONO
 
 namespace SIL.Windows.Forms.ImageToolbox
 {

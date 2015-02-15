@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SIL.Reporting;
+using NDesk.DBus;
 
 namespace SIL.UsbDrive.Linux
 {

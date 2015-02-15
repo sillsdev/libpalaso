@@ -2,7 +2,6 @@
 // Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
 
 #if __MonoCS__
-using SIL.Windows.Forms.Extensions;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -174,7 +173,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 			if (m_TextBox.InvokeRequired)
 			{
-				m_TextBox.BeginInvoke(() => OnCommitText(ibusText));
+				m_TextBox.BeginInvoke((Action) (() => OnCommitText(ibusText)));
 				return;
 			}
 
@@ -197,7 +196,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			if (m_TextBox.InvokeRequired)
 			{
-				m_TextBox.BeginInvoke(() => OnUpdatePreeditText(obj, cursorPos));
+				m_TextBox.BeginInvoke((Action) (() => OnUpdatePreeditText(obj, cursorPos)));
 				return;
 			}
 
@@ -255,7 +254,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			if (m_TextBox.InvokeRequired)
 			{
-				m_TextBox.BeginInvoke(() => OnDeleteSurroundingText(offset, nChars));
+				m_TextBox.BeginInvoke((Action) (() => OnDeleteSurroundingText(offset, nChars)));
 				return;
 			}
 
@@ -288,7 +287,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			if (m_TextBox.InvokeRequired)
 			{
-				m_TextBox.BeginInvoke(OnHidePreeditText);
+				m_TextBox.BeginInvoke((Action) OnHidePreeditText);
 				return;
 			}
 			if (!m_TextBox.Focused)
@@ -311,7 +310,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			if (m_TextBox.InvokeRequired)
 			{
-				m_TextBox.BeginInvoke(() => OnIbusKeyPress(keySym, scanCode, index));
+				m_TextBox.BeginInvoke((Action) (() => OnIbusKeyPress(keySym, scanCode, index)));
 				return;
 			}
 			if (!m_TextBox.Focused)

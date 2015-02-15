@@ -7,10 +7,6 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------
 
-#if __MonoCS__
-using SIL.WritingSystems.WindowsForms.Keyboarding.Linux;
-#else
-#endif
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -18,7 +14,11 @@ using System.Linq;
 using System.Windows.Forms;
 using SIL.Keyboarding;
 using SIL.ObjectModel;
+#if __MonoCS__
+using SIL.Windows.Forms.Keyboarding.Linux;
+#else
 using SIL.Windows.Forms.Keyboarding.Windows;
+#endif
 
 namespace SIL.Windows.Forms.Keyboarding
 {

@@ -12,12 +12,6 @@ using SIL.Text;
 using SIL.UiBindings;
 using SIL.WritingSystems;
 
-#if MONO
-using Palaso.Linq;
-#else
-
-#endif
-
 namespace Palaso.DictionaryServices
 {
 	public class LiftLexEntryRepository : IDataMapper<LexEntry>, ICountGiver

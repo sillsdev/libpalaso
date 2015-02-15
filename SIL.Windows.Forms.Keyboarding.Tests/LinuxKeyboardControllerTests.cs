@@ -1,5 +1,4 @@
 #if __MonoCS__
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
@@ -61,33 +60,8 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		[Test]
 		public void GetAllKeyboards_GivesSeveral()
 		{
-			IKeyboardDefinition[] keyboards = Keyboard.Controller.AllAvailableKeyboards.ToArray();
+			IKeyboardDefinition[] keyboards = Keyboard.Controller.AvailableKeyboards.ToArray();
 			Assert.Greater(keyboards.Length, 1, "This test requires that the Windows IME has at least two languages installed.");
-		}
-
-		[Test]
-		public void ActivateKeyboard_BogusName_RaisesMessageBox()
-		{
-			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
-				() => Keyboard.Controller.SetKeyboard("foobar")
-			);
-		}
-
-		[Test]
-		public void ActivateKeyboard_BogusName_SecondTimeNoLongerRaisesMessageBox()
-		{
-			// the keyboardName for this test and above need to be different
-			const string keyboardName = "This should never be the same as the name of an installed keyboard";
-			try
-			{
-				Keyboard.Controller.SetKeyboard(keyboardName);
-				Assert.Fail("Should have thrown exception but didn't.");
-			}
-			catch (ErrorReport.ProblemNotificationSentToUserException)
-			{
-
-			}
-			Keyboard.Controller.SetKeyboard(keyboardName);
 		}
 
 #if WANT_PORT
@@ -202,13 +176,13 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		[Category("IBus")]
 		public void Deactivate_IBusIsRunning_GetCurrentKeyboardReturnsEnglishKeyboard()
 		{
-			if (Keyboard.Controller.AllAvailableKeyboards.Count(kbd => kbd.Layout == "m17n:am:sera") <= 0)
+			if (Keyboard.Controller.AvailableKeyboards.Count(kbd => kbd.Layout == "m17n:am:sera") <= 0)
 				Assert.Ignore("Can't run this test without ibus keyboard 'm17n:am:sera' being installed.");
 
 			// needed for focus
 			RequiresWindowForFocus();
 
-			Keyboard.Controller.SetKeyboard("m17n:am:sera");
+			Keyboard.Controller.GetKeyboard("m17n:am:sera").Activate();
 			Keyboard.Controller.ActivateDefaultKeyboard();
 			Assert.AreEqual("m17n:am:sera", Keyboard.Controller.ActiveKeyboard);
 		}
@@ -217,34 +191,23 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		[Category("IBus")]
 		public void ActivateKeyBoard_IBusHasKeyboard_GetCurrentKeyboardReturnsActivatedKeyboard()
 		{
-			if (Keyboard.Controller.AllAvailableKeyboards.Count(kbd => kbd.Layout == "m17n:am:sera") <= 0)
+			if (Keyboard.Controller.AvailableKeyboards.Count(kbd => kbd.Layout == "m17n:am:sera") <= 0)
 				Assert.Ignore("Can't run this test without ibus keyboard 'm17n:am:sera' being installed.");
 
 			// needed for focus
 			RequiresWindowForFocus();
 
 			Keyboard.Controller.ActivateDefaultKeyboard();
-			Keyboard.Controller.SetKeyboard("m17n:am:sera");
+			Keyboard.Controller.GetKeyboard("m17n:am:sera").Activate();
 			Assert.AreEqual("m17n:am:sera", Keyboard.Controller.ActiveKeyboard);
 			Keyboard.Controller.ActivateDefaultKeyboard();
-		}
-
-		[Test]
-		[Category("IBus")]
-		public void ActivateKeyBoard_IBusDoesNotHaveKeyboard_Throws()
-		{
-			// needed for focus
-			RequiresWindowForFocus();
-			Assert.Throws<ErrorReport.ProblemNotificationSentToUserException>(
-				() => Keyboard.Controller.SetKeyboard("Nonexistent Keyboard")
-			);
 		}
 
 		[Test]
 		public void CreateKeyboardDefinition_NewKeyboard_ReturnsNewObject()
 		{
 			// REVIEW: adjust this test
-			IKeyboardDefinition keyboard = Keyboard.Controller.CreateKeyboardDefinition("en-US_foo", KeyboardFormat.Unknown, null);
+			IKeyboardDefinition keyboard = Keyboard.Controller.CreateKeyboard("en-US_foo", KeyboardFormat.Unknown, Enumerable.Empty<string>());
 			Assert.That(keyboard, Is.Not.Null);
 			Assert.That(keyboard, Is.TypeOf<XkbKeyboardDescription>());
 		}

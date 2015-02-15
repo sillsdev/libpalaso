@@ -9,8 +9,6 @@
 
 #if __MonoCS__
 using System;
-using System.Diagnostics;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using X11;
 using Mono.Unix;

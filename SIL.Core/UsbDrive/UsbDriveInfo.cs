@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 #if MONO
-using Palaso.UsbDrive.Linux;
+using SIL.UsbDrive.Linux;
 #else
-#endif
 using SIL.UsbDrive.Windows;
+#endif
 
 namespace SIL.UsbDrive
 {
