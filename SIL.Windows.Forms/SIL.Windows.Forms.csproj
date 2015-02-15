@@ -129,10 +129,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\$(Configuration)\irrKlang.NET4.dll</HintPath>
     </Reference>
-    <Reference Include="NAudio, Version=1.5.3.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Debug\NAudio.dll</HintPath>
-    </Reference>
     <!-- this is the Microsoft WIndows Image Acquisition COM library, for scanner and camera control-->
     <Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
@@ -152,10 +148,6 @@
     <Reference Include="irrKlang.NET4">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Release\irrKlang.NET4.dll</HintPath>
-    </Reference>
-    <Reference Include="NAudio, Version=1.5.3.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Release\NAudio.dll</HintPath>
     </Reference>
     <!-- this is the Microsoft WIndows Image Acquisition COM library, for scanner and camera control-->
     <Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
@@ -192,17 +184,6 @@
     <Reference Include="Enchant.Net">
       <HintPath>..\lib\common\Enchant.Net.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'DebugMonoStrongName' Or '$(Configuration)' == 'ReleaseMono' Or '$(Configuration)' == 'ReleaseMonoStrongName'">
-    <Reference Include="NDesk.DBus">
-      <HintPath>..\lib\commonMono\NDesk.DBus.dll</HintPath>
-    </Reference>
-    <Reference Include="ibusdotnet">
-      <HintPath>..\lib\commonMono\ibusdotnet.dll</HintPath>
-    </Reference>
-    <None Include="..\lib\commonMono\NDesk.DBus.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="Progress\LogBoxSettings.settings">
