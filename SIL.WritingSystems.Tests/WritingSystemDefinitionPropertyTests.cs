@@ -1732,11 +1732,10 @@ namespace SIL.WritingSystems.Tests
 			Keyboard.Controller = new DefaultKeyboardController();
 
 			IKeyboardDefinition kbd1 = Keyboard.Controller.CreateKeyboard("en-US_English-IPA", KeyboardFormat.Unknown, Enumerable.Empty<string>());
-			IKeyboardDefinition kbd2 = Keyboard.Controller.CreateKeyboard("en-GB_English", KeyboardFormat.Unknown, Enumerable.Empty<string>());
 
 			var ws = new WritingSystemDefinition("de-x-dupl0");
 
-			Assert.That(ws.OtherAvailableKeyboards, Is.EquivalentTo(new[] {kbd1, kbd2}));
+			Assert.That(ws.OtherAvailableKeyboards, Is.EquivalentTo(new[] {kbd1, Keyboard.Controller.DefaultKeyboard}));
 		}
 
 		[Test]
@@ -1745,12 +1744,11 @@ namespace SIL.WritingSystems.Tests
 			Keyboard.Controller = new DefaultKeyboardController();
 
 			IKeyboardDefinition kbd1 = Keyboard.Controller.CreateKeyboard("en-US_English-IPA", KeyboardFormat.Unknown, Enumerable.Empty<string>());
-			IKeyboardDefinition kbd2 = Keyboard.Controller.CreateKeyboard("en-GB_English", KeyboardFormat.Unknown, Enumerable.Empty<string>());
 
 			var ws = new WritingSystemDefinition("de-x-dupl0");
 			ws.KnownKeyboards.Add(kbd1);
 
-			Assert.That(ws.OtherAvailableKeyboards, Is.EquivalentTo(new[] {kbd2}));
+			Assert.That(ws.OtherAvailableKeyboards, Is.EquivalentTo(new[] {Keyboard.Controller.DefaultKeyboard}));
 		}
 
 		[Test]
@@ -1808,8 +1806,8 @@ namespace SIL.WritingSystems.Tests
 		public void LocalKeyboard_ResetWhenRemovedFromKnownKeyboards()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var kbd1 = new DefaultKeyboardDefinition("something", "en-US");
-			var kbd2 = new DefaultKeyboardDefinition("somethingElse", "en-US");
+			var kbd1 = new DefaultKeyboardDefinition("something", "en-US", null, null, true);
+			var kbd2 = new DefaultKeyboardDefinition("somethingElse", "en-US", null, null, true);
 
 			ws.KnownKeyboards.Add(kbd1);
 			ws.KnownKeyboards.Add(kbd2);

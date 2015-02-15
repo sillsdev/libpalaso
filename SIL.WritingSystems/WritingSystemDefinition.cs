@@ -842,10 +842,7 @@ namespace SIL.WritingSystems
 			{
 				IKeyboardDefinition keyboard = _localKeyboard;
 				if (keyboard == null)
-				{
-					var available = new HashSet<IKeyboardDefinition>(Keyboarding.Keyboard.Controller.AvailableKeyboards);
-					keyboard = _knownKeyboards.FirstOrDefault(available.Contains);
-				}
+					keyboard = _knownKeyboards.FirstOrDefault(k => k.IsAvailable);
 				if (keyboard == null)
 					keyboard = LegacyKeyboard ?? Keyboarding.Keyboard.Controller.DefaultKeyboard;
 				return keyboard;

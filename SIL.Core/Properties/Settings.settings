@@ -1,9 +1,9 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Palaso.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SIL.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-	<Setting Name="AudioFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
-	  <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+    <Setting Name="AudioFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;string&gt;.mp3&lt;/string&gt;
   &lt;string&gt;.wav&lt;/string&gt;
@@ -12,9 +12,9 @@
   &lt;string&gt;.ogg&lt;/string&gt;
   &lt;string&gt;.flac&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
-	</Setting>
-	<Setting Name="VideoFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
-	  <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+    </Setting>
+    <Setting Name="VideoFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;string&gt;.wmv&lt;/string&gt;
   &lt;string&gt;.avi&lt;/string&gt;
@@ -28,9 +28,9 @@
   &lt;string&gt;.m4v&lt;/string&gt;
   &lt;string&gt;.m2v&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
-	</Setting>
-	<Setting Name="TextFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
-	  <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+    </Setting>
+    <Setting Name="TextFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;string&gt;.txt&lt;/string&gt;
   &lt;string&gt;.doc&lt;/string&gt;
@@ -40,10 +40,11 @@
   &lt;string&gt;.htm&lt;/string&gt;
   &lt;string&gt;.html&lt;/string&gt;
   &lt;string&gt;.pdf&lt;/string&gt;
+  &lt;string&gt;.fwdata&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
-	</Setting>
-	<Setting Name="ImageFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
-	  <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+    </Setting>
+    <Setting Name="ImageFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;string&gt;.jpg&lt;/string&gt;
   &lt;string&gt;.jpeg&lt;/string&gt;
@@ -53,9 +54,9 @@
   &lt;string&gt;.bmp&lt;/string&gt;
   &lt;string&gt;.dib&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
-	</Setting>
-	<Setting Name="MusicalNotationFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
-	  <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+    </Setting>
+    <Setting Name="MusicalNotationFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;string&gt;.tab&lt;/string&gt;
   &lt;string&gt;.btab&lt;/string&gt;
@@ -73,9 +74,9 @@
   &lt;string&gt;.mdx&lt;/string&gt;
   &lt;string&gt;.xmf&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
-	</Setting>
-	<Setting Name="DatasetFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
-	  <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+    </Setting>
+    <Setting Name="DatasetFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;string&gt;.fwdata&lt;/string&gt;
   &lt;string&gt;.mdf&lt;/string&gt;
@@ -94,9 +95,9 @@
   &lt;string&gt;.db&lt;/string&gt;
   &lt;string&gt;.uml&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
-	</Setting>
-	<Setting Name="SoftwareAndFontFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
-	  <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+    </Setting>
+    <Setting Name="SoftwareAndFontFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;string&gt;.ttf&lt;/string&gt;
   &lt;string&gt;.map&lt;/string&gt;
@@ -128,9 +129,9 @@
   &lt;string&gt;.vbs&lt;/string&gt;
   &lt;string&gt;.xaml&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
-	</Setting>
-	<Setting Name="PresentationFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
-	  <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+    </Setting>
+    <Setting Name="PresentationFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;string&gt;.ppt&lt;/string&gt;
   &lt;string&gt;.pptx&lt;/string&gt;
@@ -143,13 +144,13 @@
   &lt;string&gt;.ppsx&lt;/string&gt;
   &lt;string&gt;.ppsm&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
-	</Setting>
-	<Setting Name="ZipFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
-	  <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+    </Setting>
+    <Setting Name="ZipFileExtensions" Type="System.Collections.Specialized.StringCollection" Scope="Application">
+      <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
   &lt;string&gt;.zip&lt;/string&gt;
   &lt;string&gt;.fwbackup&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
-	</Setting>
+    </Setting>
   </Settings>
 </SettingsFile>
