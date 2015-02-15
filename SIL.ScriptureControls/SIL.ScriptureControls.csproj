@@ -209,9 +209,9 @@
     <None Include="Properties\DropDownArrowWide.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SIL.WindowsForms\SIL.WindowsForms.csproj">
+    <ProjectReference Include="..\SIL.Windows.Forms\SIL.Windows.Forms.csproj">
       <Project>{db44f49c-d8c6-434f-81ed-28ea5c9e8195}</Project>
-      <Name>SIL.WindowsForms</Name>
+      <Name>SIL.Windows.Forms</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.ScriptureUtils\SIL.ScriptureUtils.csproj">
       <Project>{f71ba7b9-d9dc-4f8c-a307-87b503d0e05b}</Project>

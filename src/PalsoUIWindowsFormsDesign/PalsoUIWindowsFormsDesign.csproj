@@ -108,9 +108,9 @@
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SIL.WindowsForms\SIL.WindowsForms.csproj">
+    <ProjectReference Include="..\..\SIL.Windows.Forms\SIL.Windows.Forms.csproj">
       <Project>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</Project>
-      <Name>SIL.WindowsForms</Name>
+      <Name>SIL.Windows.Forms</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

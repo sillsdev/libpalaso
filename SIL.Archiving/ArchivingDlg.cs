@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using SIL.WindowsForms;
-using SIL.WindowsForms.Miscellaneous;
-using SIL.WindowsForms.PortableSettingsProvider;
+using SIL.Windows.Forms;
+using SIL.Windows.Forms.Miscellaneous;
+using SIL.Windows.Forms.PortableSettingsProvider;
 
 namespace SIL.Archiving
 {

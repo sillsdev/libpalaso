@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using SIL.WindowsForms.WritingSystems;
+using SIL.Windows.Forms.WritingSystems;
 using SIL.WritingSystems;
 
 namespace TestApp

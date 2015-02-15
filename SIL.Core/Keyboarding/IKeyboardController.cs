@@ -7,7 +7,7 @@ namespace SIL.Keyboarding
 	/// This interface defines the functions of a keyboard controller.
 	/// Various classes obtain one of these when needed by reading Keyboard.Controller.
 	/// The default implementation of this in the core SIL.Core DLL has minimal functionality.
-	/// Typically clients will set Keyboard.Controller to some more useful class, such as SIL.WindowsForms.Keyboarding.KeyboardController.
+	/// Typically clients will set Keyboard.Controller to some more useful class, such as SIL.Windows.Forms.Keyboarding.KeyboardController.
 	/// </summary>
 	public interface IKeyboardController: IDisposable
 	{

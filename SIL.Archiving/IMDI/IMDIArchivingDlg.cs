@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using L10NSharp;
-using SIL.WindowsForms.PortableSettingsProvider;
+using SIL.Windows.Forms.PortableSettingsProvider;
 
 namespace SIL.Archiving.IMDI
 {

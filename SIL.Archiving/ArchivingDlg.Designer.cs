@@ -1,4 +1,4 @@
-﻿using SIL.WindowsForms.Progress;
+﻿using SIL.Windows.Forms.Progress;
 
 namespace SIL.Archiving
 {

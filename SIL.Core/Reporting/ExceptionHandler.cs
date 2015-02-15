@@ -75,7 +75,7 @@ namespace SIL.Reporting
 
 		internal static T GetObjectFromSilWindowsForms<T>() where T : class
 		{
-			const string silWindowsFormsAssemblyName = "SIL.WindowsForms";
+			const string silWindowsFormsAssemblyName = "SIL.Windows.Forms";
 
 			var topMostAssembly = Assembly.GetEntryAssembly();
 			if (topMostAssembly != null)

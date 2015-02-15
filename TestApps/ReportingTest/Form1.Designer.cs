@@ -1,4 +1,4 @@
-using SIL.WindowsForms.Widgets;
+using SIL.Windows.Forms.Widgets;
 
 namespace TestApp
 {

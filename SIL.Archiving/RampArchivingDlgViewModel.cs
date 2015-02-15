@@ -15,7 +15,7 @@ using L10NSharp;
 using SIL.Archiving.Generic;
 using SIL.Archiving.Properties;
 using SIL.IO;
-using SIL.WindowsForms.ClearShare;
+using SIL.Windows.Forms.ClearShare;
 using Timer = System.Threading.Timer;
 
 namespace SIL.Archiving

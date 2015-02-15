@@ -1,4 +1,4 @@
-﻿using SIL.WindowsForms.WritingSystems;
+﻿using SIL.Windows.Forms.WritingSystems;
 
 namespace TestApp
 {

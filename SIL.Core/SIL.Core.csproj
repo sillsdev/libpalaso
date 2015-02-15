@@ -149,7 +149,6 @@
       <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>ErrorReportSettings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Reporting\app.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Base32\Base32Convert.cs" />

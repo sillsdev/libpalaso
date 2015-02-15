@@ -21,9 +21,9 @@ using System.Windows.Forms;
 using System.ComponentModel;
 using System.Windows.Forms.VisualStyles;
 using SIL.ScriptureUtils;
-using SIL.WindowsForms;
-using SIL.WindowsForms.Extensions;
-using SIL.WindowsForms.FileDialogExtender;
+using SIL.Windows.Forms;
+using SIL.Windows.Forms.Extensions;
+using SIL.Windows.Forms.FileDialogExtender;
 
 namespace SIL.ScriptureControls
 {
