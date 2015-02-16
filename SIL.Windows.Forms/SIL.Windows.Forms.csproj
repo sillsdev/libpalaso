@@ -186,6 +186,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Progress\LogBoxSettings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>LogBoxSettings.Designer.cs</LastGenOutput>
