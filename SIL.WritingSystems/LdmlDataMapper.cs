@@ -38,11 +38,9 @@ namespace SIL.WritingSystems
 
 		/// <summary>
 		/// Mapping of font engine attribute to FontEngines enumeration.
-		/// If this attribute is missing, the engines are assumed to be "gr ot"
 		/// </summary>
 		private static readonly Dictionary<string, FontEngines> EngineToFontEngines = new Dictionary<string, FontEngines>
 		{
-			{string.Empty, FontEngines.OpenType | FontEngines.Graphite },
 			{"ot", FontEngines.OpenType},
 			{"gr", FontEngines.Graphite}
 		};
@@ -273,13 +271,15 @@ namespace SIL.WritingSystems
 			Debug.Assert(element != null);
 			Debug.Assert(ws != null);
 			if (element.Name != "ldml")
-			{
 				throw new ApplicationException("Unable to load writing system definition: Missing <ldml> tag.");
-			}
 
 			XElement identityElem = element.Element("identity");
 			if (identityElem != null)
 				ReadIdentityElement(identityElem, ws);
+
+			// Check for the proper LDML version after reading identity element so that we have the proper language tag if an error occurs
+			foreach (XElement specialElem in element.Elements("special"))
+				CheckVersion(specialElem, ws);
 
 			XElement charactersElem = element.Element("characters");
 			if (charactersElem != null)
@@ -302,27 +302,19 @@ namespace SIL.WritingSystems
 				ReadCollationsElement(collationsElem, ws);
 
 			foreach (XElement specialElem in element.Elements("special"))
-			{
 				ReadTopLevelSpecialElement(specialElem, ws);
-			}
+
 			ws.StoreID = "";
 			ws.AcceptChanges();
 		}
 
-		private void ReadTopLevelSpecialElement(XElement specialElem, WritingSystemDefinition ws)
+		private void CheckVersion(XElement specialElem, WritingSystemDefinition ws)
 		{
-			XElement externalResourcesElem = specialElem.Element(Sil + "external-resources");
-			if (externalResourcesElem != null)
-			{
-				ReadFontElement(externalResourcesElem, ws);
-				ReadSpellcheckElement(externalResourcesElem, ws);
-				ReadKeyboardElement(externalResourcesElem, ws);
-			}
-
 			// Flag invalid versions (0-2 inclusive) from reading legacy LDML files
-			// We're intentionally not using WritingSystemLDmlVerisonGetter and the
+			// We're intentionally not using WritingSystemLDmlVersionGetter and the
 			// cheeck for Flex7V0Compatible because the migrator will have handled that.
-			if (!string.IsNullOrEmpty((string)specialElem.Attribute(XNamespace.Xmlns + "palaso")))
+			if (!string.IsNullOrEmpty((string)specialElem.Attribute(XNamespace.Xmlns + "fw")) ||
+				!string.IsNullOrEmpty((string)specialElem.Attribute(XNamespace.Xmlns + "palaso")))
 			{
 				string version = "0";
 				// Palaso namespace
@@ -338,6 +330,17 @@ namespace SIL.WritingSystems
 					version,
 					WritingSystemDefinition.LatestWritingSystemDefinitionVersion
 					));
+			}
+		}
+
+		private void ReadTopLevelSpecialElement(XElement specialElem, WritingSystemDefinition ws)
+		{
+			XElement externalResourcesElem = specialElem.Element(Sil + "external-resources");
+			if (externalResourcesElem != null)
+			{
+				ReadFontElement(externalResourcesElem, ws);
+				ReadSpellcheckElement(externalResourcesElem, ws);
+				ReadKeyboardElement(externalResourcesElem, ws);
 			}
 		}
 
@@ -381,15 +384,11 @@ namespace SIL.WritingSystems
 					fd.OpenTypeLanguage = (string) fontElem.Attribute("otlang");
 
 					// Font Engine (space separated list) supercedes legacy isGraphite flag
-					var engines = (string) fontElem.Attribute("engines");
-					if (!String.IsNullOrEmpty(engines))
-					{
-						IEnumerable<string> engineList = engines.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
-						foreach (string engineEntry in engineList)
-						{
-							fd.Engines |= (EngineToFontEngines[engineEntry]);
-						}
-					}
+					// If attribute is missing it is assumed to be "gr ot"
+					var engines = (string) fontElem.Attribute("engines") ?? "gr ot";
+					IEnumerable<string> engineList = engines.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
+					foreach (string engineEntry in engineList)
+						fd.Engines |= (EngineToFontEngines[engineEntry]);
 
 					// Subset
 					fd.Subset = (string) fontElem.Attribute("subset");
@@ -585,7 +584,8 @@ namespace SIL.WritingSystems
 				XElement quotationsElem = specialElem.Element(Sil + "quotation-marks");
 				if (quotationsElem != null)
 				{
-					ws.QuotationParagraphContinueType = QuotationToQuotationParagraphContinueTypes[(string) quotationsElem.Attribute("paraContinueType")];
+					string paraContinueType = (string)quotationsElem.Attribute("paraContinueType") ?? string.Empty;
+					ws.QuotationParagraphContinueType = QuotationToQuotationParagraphContinueTypes[paraContinueType];
 
 					foreach (XElement quotationElem in quotationsElem.Elements(Sil + "quotation"))
 					{
@@ -902,6 +902,8 @@ namespace SIL.WritingSystems
 			// Version is required.  If VersionNumber is blank, the empty attribute is still written
 			XElement versionElem = identityElem.GetOrCreateElement("version");
 			versionElem.SetAttributeValue("number", ws.VersionNumber);
+			if (!string.IsNullOrEmpty(ws.VersionDescription))
+				versionElem.SetValue(ws.VersionDescription);
 
 			identityElem.SetAttributeValue("generation", "date", String.Format("{0:s}", ws.DateModified));
 			// TODO: Keeping this block until we sort out migration
@@ -1136,7 +1138,7 @@ namespace SIL.WritingSystems
 					quotationElem.SetOptionalAttributeValue("continue", qm.Continue);
 					quotationElem.SetAttributeValue("level", qm.Level);
 					// normal quotation mark can have no attribute defined.  Narrative --> "narrative"
-					quotationElem.SetAttributeValue("type", QuotationMarkingSystemTypesToQuotation[qm.Type]);
+					quotationElem.SetOptionalAttributeValue("type", QuotationMarkingSystemTypesToQuotation[qm.Type]);
 
 					specialElem = delimitersElem.GetOrCreateElement("special");
 					quotationmarksElem = specialElem.GetOrCreateElement(Sil + "quotation-marks");
@@ -1241,6 +1243,9 @@ namespace SIL.WritingSystems
 				collationElem = new XElement("collation", new XAttribute("type", collation.Type));
 				collationsElem.Add(collationElem);
 			}
+			// SLDR generally doesn't include needsCompiling if false
+			collationElem.SetAttributeValue(Sil + "needsCompiling", collation.IsValid ? null : "true");
+
 			// If collation valid and icu rules exist, populate icu rules
 			if (!string.IsNullOrEmpty(collation.IcuRules))
 			{
@@ -1248,8 +1253,6 @@ namespace SIL.WritingSystems
 				// Remove existing Icu rule
 				crElem.RemoveAll();
 				crElem.Add(new XCData(collation.IcuRules));
-				// SLDR generally doesn't include needsCompiling if false
-				collationElem.SetAttributeValue(Sil + "needsCompiling", collation.IsValid ? null : "true");
 			}
 			var inheritedCollation = collation as InheritedCollationDefinition;
 			if (inheritedCollation != null)
@@ -1299,7 +1302,7 @@ namespace SIL.WritingSystems
 			Debug.Assert(externalResourcesElem != null);
 			Debug.Assert(ws != null);
 
-			// Remove sil:fonts elements to repopulate later
+			// Remove sil:font elements to repopulate later
 			externalResourcesElem.Elements(Sil + "font").Remove();
 			foreach (var font in ws.Fonts)
 			{
@@ -1319,11 +1322,9 @@ namespace SIL.WritingSystems
 				}
 
 				if (font.RelativeSize != 1.0f)
-				{
 					fontElem.SetAttributeValue("size", font.RelativeSize);
-				}
 
-				fontElem.SetOptionalAttributeValue("minverison", font.MinVersion);
+				fontElem.SetOptionalAttributeValue("minversion", font.MinVersion);
 				fontElem.SetOptionalAttributeValue("features", font.Features);
 				fontElem.SetOptionalAttributeValue("lang", font.Language);
 				fontElem.SetOptionalAttributeValue("otlang", font.OpenTypeLanguage);
@@ -1340,6 +1341,8 @@ namespace SIL.WritingSystems
 					}
 					fontElem.SetAttributeValue("engines", string.Join(" ", fontEngineList));
 				}
+				foreach (var url in font.Urls)
+					fontElem.Add(new XElement(Sil + "url", url));
 
 				externalResourcesElem.Add(fontElem);
 			}

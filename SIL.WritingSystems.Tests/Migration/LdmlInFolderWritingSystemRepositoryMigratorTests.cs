@@ -1156,7 +1156,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.EnglishVersion(0));
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en", "", "", ""));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 				var versionGetter = new WritingSystemLdmlVersionGetter();

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -23,6 +22,31 @@ namespace SIL.WritingSystems.Tests
 	{
 		private LdmlDataMapper _adaptor;
 		private WritingSystemDefinition _ws;
+		private static readonly XNamespace Sil = "urn://www.sil.org/ldml/0.1";
+
+		private class TestEnvironment : IDisposable
+		{
+			public TestEnvironment()
+			{
+				FolderContainingLdml = new TemporaryFolder("LdmlDataMapperTests");
+				NamespaceManager = new XmlNamespaceManager(new NameTable());
+				NamespaceManager.AddNamespace("sil", "urn://www.sil.org/ldml/0.1");
+			}
+
+			public XmlNamespaceManager NamespaceManager { get; private set; }
+
+			private TemporaryFolder FolderContainingLdml { get; set; }
+
+			public void Dispose()
+			{
+				FolderContainingLdml.Dispose();
+			}
+
+			public string FilePath(string fileName)
+			{
+				return Path.Combine(FolderContainingLdml.Path, fileName);
+			}
+		}
 
 		[SetUp]
 		public void SetUp()
@@ -117,6 +141,7 @@ namespace SIL.WritingSystems.Tests
 			AssertThatXmlIn.String(sw.ToString()).HasAtLeastOneMatchForXpath("/ldml/special[text()=\"hey\"]");
 		}
 
+		#region Roundtrip
 		[Test]
 		public void RoundtripSimpleCustomSortRules_WS33715()
 		{
@@ -174,549 +199,435 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Read_LdmlIdentity()
+		public void Roundtrip_LdmlIdentity()
 		{
-			var ldmlAdaptor = new LdmlDataMapper();
-			var wsFromLdml = new WritingSystemDefinition();
-			using (var tempFile = new TempFile())
+			using (var environment = new TestEnvironment())
 			{
-				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
+				var wsToLdml = new WritingSystemDefinition("en", "Latn", "GB", "x-test")
 				{
-					writer.Write(
-@"<?xml version='1.0' encoding='utf-8'?>
-<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
-	<identity>
-		<version number='$Revision$'>Identity version description</version>
-		<generation date='$Date$'/>
-		<!-- name.en(en)='English' -->
-		<language type='en'/>
-		<script type='Latn'/>
-		<variant type='x-test'/>
-		<special>
-			<sil:identity windowsLCID='1036' defaultRegion='US' variantName='1996'>
-			</sil:identity>
-		</special>
-	</identity>
-</ldml>".Replace("'", "\""));
-				}
-				ldmlAdaptor.Read(tempFile.Path, wsFromLdml);
+					VersionNumber = "$Revision$",
+					VersionDescription = "Identity version description",
+					WindowsLcid = "1036",
+					DefaultRegion = "US"
+				};
+				wsToLdml.Variants[0] = new VariantSubtag(wsToLdml.Variants[0], "1996");
+				var ldmlAdaptor = new LdmlDataMapper();
+
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Latn']");
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/territory[@type='GB']");
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-test']");
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/version['Identity version description' and @number='$Revision$']");
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[@windowsLCID='1036' and @defaultRegion='US' and @variantName='1996']", environment.NamespaceManager);
+
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
+				Assert.That(wsFromLdml.VersionNumber, Is.EqualTo("$Revision$"));
+				Assert.That(wsFromLdml.VersionDescription, Is.EqualTo("Identity version description"));
+				Assert.That(wsFromLdml.Id, Is.EqualTo("en-Latn-GB-x-test"));
+				Assert.That(wsFromLdml.WindowsLcid, Is.EqualTo("1036"));
+				Assert.That(wsFromLdml.DefaultRegion, Is.EqualTo("US"));
+				Assert.That(wsFromLdml.Variants[0].Name, Is.EqualTo("1996"));
 			}
-			Assert.That(wsFromLdml.VersionNumber, Is.EqualTo("$Revision$"));
-			Assert.That(wsFromLdml.VersionDescription, Is.EqualTo("Identity version description"));
-			Assert.That(wsFromLdml.Id, Is.EqualTo("en-Latn-x-test"));
-			Assert.That(wsFromLdml.WindowsLcid, Is.EqualTo("1036"));
-			Assert.That(wsFromLdml.DefaultRegion, Is.EqualTo("US"));
-			Assert.That(wsFromLdml.Variants[0].Name, Is.EqualTo("1996"));
+		}
+
+		[Test]
+		public void Roundtrip_LdmlLayout()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				// Write/Read RightToLeftScript is false
+				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "")
+				{
+					RightToLeftScript = false
+				};
+				var ldmlAdaptor = new LdmlDataMapper();
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/layout/orientation/characterOrder['left-to-right']");
+
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
+				Assert.That(wsFromLdml.RightToLeftScript, Is.False);
+
+				// Write/Read RightToLeftScript is true
+				wsToLdml.RightToLeftScript = true;
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/layout/orientation/characterOrder['right-to-left']");
+
+				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
+				Assert.That(wsFromLdml.RightToLeftScript, Is.True);
+			}
 		}
 
 		// This tests characters and numbers elements
 		[Test]
-		public void Read_LdmlCharacters()
+		public void Roundtrip_LdmlCharacters()
 		{
-			var ldmlAdaptor = new LdmlDataMapper();
-			var wsFromLdml = new WritingSystemDefinition();
-			using (var tempFile = new TempFile())
+			using (var environment = new TestEnvironment())
 			{
-				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
-				{
-					writer.Write(
-// ldml string is split to handle special escaped punctuation in footnotes type
-#region filecontent
-@"<?xml version='1.0' encoding='utf-8'?>
-<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
-	<identity>
-		<version number='$Revision$'/>
-		<generation date='$Date$'/>
-		<!-- name.en(en)='English' -->
-		<language type='en'/>
-		<script type='Latn'/>
-	</identity>
-	<characters>
-		<exemplarCharacters type='index'>[A-G H-N O P Q R S T U V W X Y Z {AZ}]</exemplarCharacters>
-		<exemplarCharacters>[a b c d e f g h i j k l m n o p q r s t u v w x y z]</exemplarCharacters>
-		<special>".Replace("'", "\"") +
-			@"<sil:exemplarCharacters type=\quot;footnotes\quot;>[\- ‐ – — , ; \: ! ? . … ' ‘ ’ \quot; “ ” ( ) \[ \] § @ * / \&amp; # † ‡ ′ ″]</sil:exemplarCharacters>".Replace("\\quot;", "\"")+
-		@"</special>
-	</characters>
-	<numbers>
-		<defaultNumberingSystem>thai</defaultNumberingSystem>
-		<numberingSystem id='thai' type='numeric' digits='๐๑๒๓๔๕๖๗๘๙' />
-	</numbers>
-</ldml>".Replace("'", "\""));
-#endregion
-				}
-				ldmlAdaptor.Read(tempFile.Path, wsFromLdml);
-			}
-			var index = new CharacterSetDefinition("index");
-			for (int i = 'A'; i <= (int) 'Z'; i++)
-				index.Characters.Add(((char) i).ToString(CultureInfo.InvariantCulture));
-			index.Characters.Add("AZ");
+				var index = new CharacterSetDefinition("index");
+				for (int i = 'A'; i <= (int) 'Z'; i++)
+					index.Characters.Add(((char) i).ToString(CultureInfo.InvariantCulture));
+				index.Characters.Add("AZ");
 
-			var footnotes = new CharacterSetDefinition("footnotes");
-			const string footnotesString = "- ‐ – — , ; : ! ? . … ' ‘ ’ \" “ ” ( ) [ ] § @ * / & # † ‡ ′ ″";
-			foreach (string str in footnotesString.Split(' '))
-			{
-				footnotes.Characters.Add(str);
-			}
+				var main = new CharacterSetDefinition("main");
+				for (int i = 'a'; i <= (int) 'z'; i++)
+					main.Characters.Add(((char) i).ToString(CultureInfo.InvariantCulture));
+				main.Characters.Add("az");
 
-			var numeric = new CharacterSetDefinition("numeric");
-			const string numericString = "๐ ๑ ๒ ๓ ๔ ๕ ๖ ๗ ๘ ๙";
-			foreach (string str in numericString.Split(' '))
-			{
-				numeric.Characters.Add(str);
+				var footnotes = new CharacterSetDefinition("footnotes");
+				const string footnotesString = "- ‐ – — , ; : ! ? . … ' ‘ ’ \" “ ” ( ) [ ] § @ * / & # † ‡ ′ ″";
+				foreach (string str in footnotesString.Split(' '))
+					footnotes.Characters.Add(str);
+
+				var numeric = new CharacterSetDefinition("numeric");
+				const string numericString = "๐ ๑ ๒ ๓ ๔ ๕ ๖ ๗ ๘ ๙";
+				foreach (string str in numericString.Split(' '))
+					numeric.Characters.Add(str);
+
+				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
+				wsToLdml.CharacterSets.Add(index);
+				wsToLdml.CharacterSets.Add(main);
+				wsToLdml.CharacterSets.Add(footnotes);
+				wsToLdml.CharacterSets.Add(numeric);
+
+				var ldmlAdaptor = new LdmlDataMapper();
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/characters/exemplarCharacters['[A-Z{AZ}]' and @type='index']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/characters/exemplarCharacters['[a-z{az}]']", environment.NamespaceManager);
+				// Character set in XPath is escaped differently from the actual file
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/characters/special/sil:exemplarCharacters['[!-#&-*,-/:;?@[]\u00A7\u2010\u2013\u2014\u2018\u2019\u201C\u201D\u2020\u2021\u2026\u2032\u2033]' and @type='footnotes']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/numbers/defaultNumberingSystem['standard']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/numbers/numberingSystem[@id='standard' and @type='numeric' and @digits='๐๑๒๓๔๕๖๗๘๙']", environment.NamespaceManager);
+
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
+				Assert.That(wsFromLdml.CharacterSets["index"].ValueEquals(index));
+				Assert.That(wsFromLdml.CharacterSets["main"].ValueEquals(main));
+				Assert.That(wsFromLdml.CharacterSets["footnotes"].ValueEquals(footnotes));
+				Assert.That(wsFromLdml.CharacterSets["numeric"].ValueEquals(numeric));
 			}
-			Assert.That(wsFromLdml.CharacterSets["index"].ValueEquals(index));
-			Assert.That(wsFromLdml.CharacterSets["footnotes"].ValueEquals(footnotes));
-			Assert.That(wsFromLdml.CharacterSets["numeric"].ValueEquals(numeric));
 		}
 
 		[Test]
-		public void Read_LdmlDelimiters()
+		public void Roundtrip_LdmlDelimiters()
 		{
-			var ldmlAdaptor = new LdmlDataMapper();
-			var wsFromLdml = new WritingSystemDefinition();
-			using (var tempFile = new TempFile())
+			using (var environment = new TestEnvironment())
 			{
-				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
-				{
-					writer.Write(
-#region filecontent
-@"<?xml version='1.0' encoding='utf-8'?>
-<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
-	<identity>
-		<version number='$Revision$'/>
-		<generation date='$Date$'/>
-		<!-- name.en(en)='English' -->
-		<language type='en'/>
-		<script type='Latn'/>
-	</identity>
-	<delimiters>
-		<quotationStart>'</quotationStart>
-		<quotationEnd>'</quotationEnd>
-		<alternateQuotationStart>{</alternateQuotationStart>
-		<alternateQuotationEnd>}</alternateQuotationEnd>
-		<special>
-			<sil:matched-pairs>
-				<sil:matched-pair open='mpOpen1' close='mpClose2' paraClose='false'></sil:matched-pair>
-			</sil:matched-pairs>
-			<sil:punctuation-patterns>
-				<sil:punctuation-pattern pattern='pattern1' context='medial'></sil:punctuation-pattern>
-			</sil:punctuation-patterns>
-			<sil:quotation-marks paraContinueType='outer'>
-				<!-- Currently parser doesn't do anything with quotationContinue or alternateQuotationContinue -->
-				<sil:quotationContinue>quoteContinue1</sil:quotationContinue>
-				<sil:alternateQuotationContinue>altQuoteContinue2</sil:alternateQuotationContinue>
-				<sil:quotation open='open1' close='close2' continue='cont3' level='3'/>
-				<sil:quotation type='narrative' level='1' open='' />
-			</sil:quotation-marks>
-		</special>
-	</delimiters>
-</ldml>".Replace("'", "\""));
-#endregion
-				}
-				ldmlAdaptor.Read(tempFile.Path, wsFromLdml);
-			}
-			var mp = new MatchedPair("mpOpen1", "mpClose2", false);
-			Assert.That(wsFromLdml.MatchedPairs.FirstOrDefault(), Is.EqualTo(mp));
-			var pp = new PunctuationPattern("pattern1", PunctuationPatternContext.Medial);
-			Assert.That(wsFromLdml.PunctuationPatterns.FirstOrDefault(), Is.EqualTo(pp));
-			Assert.That(wsFromLdml.QuotationParagraphContinueType, Is.EqualTo(QuotationParagraphContinueType.Outermost));
-			// Verify Level 1 normal quotation marks (quotationStart and quotationEnd)
-			var qm1 = new QuotationMark("\"", "\"", null, 1, QuotationMarkingSystemType.Normal);
-			Assert.That(wsFromLdml.QuotationMarks[0], Is.EqualTo(qm1));
-			// Verify Level 2 normal quotation marks (alternateQuotationStart and alternateQuotationEnd)
-			var qm2 = new QuotationMark("{", "}", null, 2, QuotationMarkingSystemType.Normal);
-			Assert.That(wsFromLdml.QuotationMarks[1], Is.EqualTo(qm2));
-			// Verify Level 3 normal quotation marks (special: sil:quotation-marks)
-			var qm3 = new QuotationMark("open1", "close2", "cont3", 3, QuotationMarkingSystemType.Normal);
-			Assert.That(wsFromLdml.QuotationMarks[2], Is.EqualTo(qm3));
-			// Verify Level 1 narrative quotation marks (special: sil:quotation-marks)
-			var qm4 = new QuotationMark("", null, null, 1, QuotationMarkingSystemType.Narrative);
-			Assert.That(wsFromLdml.QuotationMarks[3], Is.EqualTo(qm4));
+				var mp = new MatchedPair("mpOpen1", "mpClose2", false);
+				var pp = new PunctuationPattern("pattern1", PunctuationPatternContext.Medial);
+				// Quotation Marks:
+				// Level 1 normal quotation marks (quotationStart and quotationEnd)
+				// Level 2 normal quotation marks (alternateQuotationStart and alternateQuotationEnd)
+				// Level 3 normal quotation marks (special: sil:quotation-marks)
+				// Level 1 narrative quotation marks (special: sil:quotation-marks)
+				var qm1 = new QuotationMark("\"", "\"", null, 1, QuotationMarkingSystemType.Normal);
+				var qm2 = new QuotationMark("{", "}", null, 2, QuotationMarkingSystemType.Normal);
+				var qm3 = new QuotationMark("open1", "close2", "cont3", 3, QuotationMarkingSystemType.Normal);
+				var qm4 = new QuotationMark("", null, null, 1, QuotationMarkingSystemType.Narrative);
 
+				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
+				wsToLdml.MatchedPairs.Add(mp);
+				wsToLdml.PunctuationPatterns.Add(pp);
+				wsToLdml.QuotationMarks.Add(qm1);
+				wsToLdml.QuotationMarks.Add(qm2);
+				wsToLdml.QuotationMarks.Add(qm3);
+				wsToLdml.QuotationMarks.Add(qm4);
+				wsToLdml.QuotationParagraphContinueType = QuotationParagraphContinueType.Outermost;
+	
+				var ldmlAdaptor = new LdmlDataMapper();
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/delimiters/special/sil:matched-pairs/sil:matched-pair[@open='mpOpen1' and @close='mpClose2' and @paraClose='false']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/delimiters/special/sil:punctuation-patterns/sil:punctuation-pattern[@pattern='pattern1' and @context='medial']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/delimiters/quotationStart['\"']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/delimiters/quotationEnd['\"']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/delimiters/alternateQuotationStart['{']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/delimiters/alternateQuotationEnd['}']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/delimiters/special/sil:quotation-marks/sil:quotation[@open='open1' and @close='close2' and @continue='cont3' and @level='3']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/delimiters/special/sil:quotation-marks/sil:quotation[@open and string-length(@open)=0 and @level='1' and @type='narrative']", environment.NamespaceManager);
+
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
+				Assert.That(wsFromLdml.MatchedPairs.FirstOrDefault(), Is.EqualTo(mp));
+				Assert.That(wsFromLdml.PunctuationPatterns.FirstOrDefault(), Is.EqualTo(pp));
+				Assert.That(wsFromLdml.QuotationParagraphContinueType, Is.EqualTo(QuotationParagraphContinueType.Outermost));
+				Assert.That(wsFromLdml.QuotationMarks[0], Is.EqualTo(qm1));
+				Assert.That(wsFromLdml.QuotationMarks[1], Is.EqualTo(qm2));
+				Assert.That(wsFromLdml.QuotationMarks[2], Is.EqualTo(qm3));
+				Assert.That(wsFromLdml.QuotationMarks[3], Is.EqualTo(qm4));
+			}
 		}
 
 		//WS-33992 : Test removed since empty collations are removed
 
+		// For the collation tests below, we use XElement load to verify the LDML write
+		// of icu rules because Xpath is inadequate for checking CDATA sections
+
 		[Test]
-		public void Read_LdmlStandardCollation()
+		public void Roundtrip_LdmlStandardCollation()
 		{
-			using (var tempFile = new TempFile())
+			using (var environment = new TestEnvironment())
 			{
-				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
-				{
-					writer.Write(
-#region filecontent
-@"<?xml version='1.0' encoding='utf-8'?>
-<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
-	<identity>
-		<version number='$Revision$'/>
-		<generation date='$Date$'/>
-		<!-- name.en(aa)='Afar' -->
-		<language type='aa'/>
-		<script type='Latn'/>
-	</identity>
-	<collations>
-		<defaultCollation>standard</defaultCollation>
-		<collation type='standard'>
-			<cr><![CDATA[
-				&B<t<<<T<s<<<S<e<<<E
-				&C<k<<<K<x<<<X<i<<<I
-				&D<q<<<Q<r<<<R
-				&G<o<<<O
-				&W<h<<<H
-			]]></cr>
-		</collation>
-	</collations>
-</ldml>".Replace("'", "\""));
-#endregion
-				}
-				var wsFromLdml = new WritingSystemDefinition();
-				var dataMapper = new LdmlDataMapper();
-
-				dataMapper.Read(tempFile.Path, wsFromLdml);
-
-				CollationDefinition cd = new CollationDefinition("standard");
-				cd.IcuRules =
+				const string icuRules =
 					"&B<t<<<T<s<<<S<e<<<E\r\n\t\t\t\t&C<k<<<K<x<<<X<i<<<I\r\n\t\t\t\t&D<q<<<Q<r<<<R\r\n\t\t\t\t&G<o<<<O\r\n\t\t\t\t&W<h<<<H";
+				var cd = new CollationDefinition("standard")
+				{
+					IcuRules = icuRules,
+					IsValid = true
+				};
+
+				var wsToLdml = new WritingSystemDefinition("aa", "Latn", "", "");
+				wsToLdml.Collations.Add(cd);
+				var ldmlAdaptor = new LdmlDataMapper();
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+
+				XElement ldmlElem = XElement.Load(environment.FilePath("test.ldml"));
+				XElement collationsElem = ldmlElem.Element("collations");
+				XElement defaultCollationElem = collationsElem.Element("defaultCollation");
+				XElement collationElem = collationsElem.Element("collation");
+				Assert.That((string)defaultCollationElem, Is.EqualTo("standard"));
+				Assert.That((string) collationElem.Attribute("type"), Is.EqualTo("standard"));
+				Assert.That((string) collationElem, Is.EqualTo(icuRules.Replace("\r\n", "\n")));
+				
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
 				Assert.That(wsFromLdml.Collations.First().ValueEquals(cd));
 			}
 		}
 
 		[Test]
-		public void Read_LdmlSimpleCollation()
+		public void Roundtrip_LdmlSimpleCollation()
 		{
-			using (var tempFile = new TempFile())
+			using (var environment = new TestEnvironment())
 			{
-				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
-				{
-					writer.Write(
-#region filecontent
-@"<?xml version='1.0' encoding='utf-8'?>
-<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
-	<identity>
-		<version number='$Revision$'/>
-		<generation date='$Date$'/>
-		<!-- name.en(aa)='Afar' -->
-		<language type='aa'/>
-		<script type='Latn'/>
-	</identity>
-	<collations>
-		<defaultCollation>standard</defaultCollation>
-		<collation type='standard'>
-			<cr><![CDATA[
-				&B<t<<<T<s<<<S<e<<<E
-				&C<k<<<K<x<<<X<i<<<I
-				&D<q<<<Q<r<<<R
-				&G<o<<<O
-				&W<h<<<H
-			]]></cr>
-			<special>
-				<sil:simple><![CDATA[
-					a/A
-					b/B
-					t/T
-					s/S
-					c/C
-					k/K
-					x/X
-					i/I
-					d/D
-					q/Q
-					r/R
-					e/E
-					f/F
-					g/G
-					o/O
-					j/J
-					l/L
-					m/M
-					n/N
-					p/P
-					u/U
-					v/V
-					w/W
-					h/H
-					y/Y
-					z/Z
-				]]></sil:simple>
-			</special>
-		</collation>
-	</collations>
-</ldml>".Replace("'", "\""));
-					#endregion
-				}
-				var wsFromLdml = new WritingSystemDefinition();
-				var dataMapper = new LdmlDataMapper();
-
-				dataMapper.Read(tempFile.Path, wsFromLdml);
-
-				SimpleCollationDefinition cd = new SimpleCollationDefinition("standard");
-				cd.SimpleRules =
+				const string simpleRules =
 					"\r\n\t\t\t\t\ta/A\r\n\t\t\t\t\tb/B\r\n\t\t\t\t\tt/T\r\n\t\t\t\t\ts/S\r\n\t\t\t\t\tc/C\r\n\t\t\t\t\tk/K\r\n\t\t\t\t\tx/X\r\n\t\t\t\t\ti/I\r\n\t\t\t\t\td/D\r\n\t\t\t\t\tq/Q\r\n\t\t\t\t\tr/R\r\n\t\t\t\t\te/E\r\n\t\t\t\t\tf/F\r\n\t\t\t\t\tg/G\r\n\t\t\t\t\to/O\r\n\t\t\t\t\tj/J\r\n\t\t\t\t\tl/L\r\n\t\t\t\t\tm/M\r\n\t\t\t\t\tn/N\r\n\t\t\t\t\tp/P\r\n\t\t\t\t\tu/U\r\n\t\t\t\t\tv/V\r\n\t\t\t\t\tw/W\r\n\t\t\t\t\th/H\r\n\t\t\t\t\ty/Y\r\n\t\t\t\t\tz/Z\r\n\t\t\t\t";
-				cd.IcuRules =
+				const string icuRules =
 					"&[before 1] [first regular]  < a\\/A < b\\/B < t\\/T < s\\/S < c\\/C < k\\/K < x\\/X < i\\/I < d\\/D < q\\/Q < r\\/R < e\\/E < f\\/F < g\\/G < o\\/O < j\\/J < l\\/L < m\\/M < n\\/N < p\\/P < u\\/U < v\\/V < w\\/W < h\\/H < y\\/Y < z\\/Z";
+				var cd = new SimpleCollationDefinition("standard")
+				{
+					SimpleRules = simpleRules,
+					IcuRules = icuRules,
+					IsValid = true
+				};
+				var wsToLdml = new WritingSystemDefinition("aa", "Latn", "", "");
+				wsToLdml.Collations.Add(cd);
+
+				var ldmlAdaptor = new LdmlDataMapper();
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+				XElement ldmlElem = XElement.Load(environment.FilePath("test.ldml"));
+				XElement collationsElem = ldmlElem.Element("collations");
+				XElement defaultCollationElem = collationsElem.Element("defaultCollation");
+				XElement collationElem = collationsElem.Element("collation");
+				XElement crElem = collationElem.Element("cr");
+				XElement simpleElem = collationElem.Element("special").Element(Sil + "simple");
+				Assert.That((string)defaultCollationElem, Is.EqualTo("standard"));
+				Assert.That((string)collationElem.Attribute("type"), Is.EqualTo("standard"));
+				Assert.That((string)crElem, Is.EqualTo(icuRules.Replace("\r\n", "\n")));
+				Assert.That((string)simpleElem, Is.EqualTo(simpleRules.Replace("\r\n", "\n")));
+
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
+
 				Assert.That(wsFromLdml.Collations.First().ValueEquals(cd));
 				Assert.That(wsFromLdml.DefaultCollation.ValueEquals(cd));
 			}
 		}
 
 		[Test]
-		public void Read_LdmlSimpleCollationNeedsCompiling()
+		public void Roundtrip_LdmlSimpleCollationNeedsCompiling()
 		{
-			using (var tempFile = new TempFile())
+			using (var environment = new TestEnvironment())
 			{
-				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
-				{
-					writer.Write(
-					#region filecontent
-@"<?xml version='1.0' encoding='utf-8'?>
-<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
-	<identity>
-		<version number='$Revision$'/>
-		<generation date='$Date$'/>
-		<!-- name.en(aa)='Afar' -->
-		<language type='aa'/>
-		<script type='Latn'/>
-	</identity>
-	<collations>
-		<defaultCollation>standard</defaultCollation>
-		<collation type='standard' sil:needscompiling='true'>
-			<special>
-				<sil:simple><![CDATA[
-					a/A
-					b/B
-					t/T
-					s/S
-					c/C
-					k/K
-					x/X
-					i/I
-					d/D
-					q/Q
-					r/R
-					e/E
-					f/F
-					g/G
-					o/O
-					j/J
-					l/L
-					m/M
-					n/N
-					p/P
-					u/U
-					v/V
-					w/W
-					h/H
-					y/Y
-					z/Z
-				]]></sil:simple>
-			</special>
-		</collation>
-	</collations>
-</ldml>".Replace("'", "\""));
-					#endregion
-				}
-				var wsFromLdml = new WritingSystemDefinition();
-				var dataMapper = new LdmlDataMapper();
-
-				dataMapper.Read(tempFile.Path, wsFromLdml);
-
-				SimpleCollationDefinition cd = new SimpleCollationDefinition("standard");
-				cd.SimpleRules =
+				const string simpleRules =
 					"\r\n\t\t\t\t\ta/A\r\n\t\t\t\t\tb/B\r\n\t\t\t\t\tt/T\r\n\t\t\t\t\ts/S\r\n\t\t\t\t\tc/C\r\n\t\t\t\t\tk/K\r\n\t\t\t\t\tx/X\r\n\t\t\t\t\ti/I\r\n\t\t\t\t\td/D\r\n\t\t\t\t\tq/Q\r\n\t\t\t\t\tr/R\r\n\t\t\t\t\te/E\r\n\t\t\t\t\tf/F\r\n\t\t\t\t\tg/G\r\n\t\t\t\t\to/O\r\n\t\t\t\t\tj/J\r\n\t\t\t\t\tl/L\r\n\t\t\t\t\tm/M\r\n\t\t\t\t\tn/N\r\n\t\t\t\t\tp/P\r\n\t\t\t\t\tu/U\r\n\t\t\t\t\tv/V\r\n\t\t\t\t\tw/W\r\n\t\t\t\t\th/H\r\n\t\t\t\t\ty/Y\r\n\t\t\t\t\tz/Z\r\n\t\t\t\t";
-				cd.IcuRules =
+				const string icuRules =
 					"&[before 1] [first regular]  < a\\/A < b\\/B < t\\/T < s\\/S < c\\/C < k\\/K < x\\/X < i\\/I < d\\/D < q\\/Q < r\\/R < e\\/E < f\\/F < g\\/G < o\\/O < j\\/J < l\\/L < m\\/M < n\\/N < p\\/P < u\\/U < v\\/V < w\\/W < h\\/H < y\\/Y < z\\/Z";
-				Assert.That(wsFromLdml.Collations.First().ValueEquals(cd));
-				Assert.That(wsFromLdml.DefaultCollation.ValueEquals(cd));
+				var cd = new SimpleCollationDefinition("standard")
+				{
+					SimpleRules = simpleRules,
+				};
+				var wsToLdml = new WritingSystemDefinition("aa", "Latn", "", "");
+				wsToLdml.Collations.Add(cd);
+
+				var ldmlAdaptor = new LdmlDataMapper();
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+				XElement ldmlElem = XElement.Load(environment.FilePath("test.ldml"));
+				XElement collationsElem = ldmlElem.Element("collations");
+				XElement defaultCollationElem = collationsElem.Element("defaultCollation");
+				XElement collationElem = collationsElem.Element("collation");
+				XElement crElem = collationElem.Element("cr");
+				XElement simpleElem = collationElem.Element("special").Element(Sil + "simple");
+				Assert.That((string)defaultCollationElem, Is.EqualTo("standard"));
+				Assert.That((string)collationElem.Attribute("type"), Is.EqualTo("standard"));
+				Assert.That((string)collationElem.Attribute(Sil + "needsCompiling"), Is.EqualTo("true"));
+				Assert.That((string)simpleElem, Is.EqualTo(simpleRules.Replace("\r\n", "\n")));
+
+				var validatedCd = new SimpleCollationDefinition("standard")
+				{
+					SimpleRules = simpleRules,
+					IcuRules = icuRules,
+					IsValid = true
+				};
+				// When the LDML reader parses the invalid rules, it will validate and regenerate icu rules
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
+
+				Assert.That(wsFromLdml.Collations.First().ValueEquals(validatedCd));
+				Assert.That(wsFromLdml.DefaultCollation.ValueEquals(validatedCd));
 			}
 		}
 
 		[Test]
-		public void Read_LdmlInheritedCollation()
+		public void Roundtrip_LdmlInheritedCollation()
 		{
-			using (var tempFile = new TempFile())
+			using (var environment = new TestEnvironment())
 			{
-				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
-				{
-					writer.Write(
-					#region filecontent
-@"<?xml version='1.0' encoding='utf-8'?>
-<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
-	<identity>
-		<version number='$Revision$'/>
-		<generation date='$Date$'/>
-		<!-- name.en(aa)='Afar' -->
-		<language type='aa'/>
-		<script type='Latn'/>
-	</identity>
-	<collations>
-		<defaultCollation>standard</defaultCollation>
-		<collation type='standard'>
-			<cr><![CDATA[
-				&B<t<<<T<s<<<S<e<<<E
-				&C<k<<<K<x<<<X<i<<<I
-				&D<q<<<Q<r<<<R
-				&G<o<<<O
-				&W<h<<<H
-			]]></cr>
-			<special>
-				<sil:inherited base='my' type='standard'/>
-			</special>
-		</collation>
-	</collations>
-</ldml>".Replace("'", "\""));
-					#endregion
-				}
-				var wsFromLdml = new WritingSystemDefinition();
-				var dataMapper = new LdmlDataMapper();
-
-				dataMapper.Read(tempFile.Path, wsFromLdml);
-
-				InheritedCollationDefinition cd = new InheritedCollationDefinition("standard");
-				cd.BaseLanguageTag = "my";
-				cd.BaseType = "standard";
-				cd.IcuRules =
+				const string icuRules =
 					"&B<t<<<T<s<<<S<e<<<E\n\t\t\t\t&C<k<<<K<x<<<X<i<<<I\n\t\t\t\t&D<q<<<Q<r<<<R\n\t\t\t\t&G<o<<<O\n\t\t\t\t&W<h<<<H";
+				var cd = new InheritedCollationDefinition("standard")
+				{
+					BaseLanguageTag = "my",
+					BaseType = "standard",
+					IcuRules = icuRules,
+					IsValid = true
+				};
+
+				var wsToLdml = new WritingSystemDefinition("aa", "Latn", "", "");
+				wsToLdml.Collations.Add(cd);
+
+				var ldmlAdaptor = new LdmlDataMapper();
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+				XElement ldmlElem = XElement.Load(environment.FilePath("test.ldml"));
+				XElement collationsElem = ldmlElem.Element("collations");
+				XElement defaultCollationElem = collationsElem.Element("defaultCollation");
+				XElement collationElem = collationsElem.Element("collation");
+				XElement crElem = collationElem.Element("cr");
+				XElement inheritedElem = collationElem.Element("special").Element(Sil + "inherited");
+				Assert.That((string)defaultCollationElem, Is.EqualTo("standard"));
+				Assert.That((string)collationElem.Attribute("type"), Is.EqualTo("standard"));
+				Assert.That((string)crElem, Is.EqualTo(icuRules.Replace("\r\n", "\n")));
+				Assert.That((string)inheritedElem.Attribute("base"), Is.EqualTo("my"));
+				Assert.That((string)inheritedElem.Attribute("type"), Is.EqualTo("standard"));
+
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
+
 				Assert.That(wsFromLdml.Collations.First().ValueEquals(cd));
 				Assert.That(wsFromLdml.DefaultCollation.ValueEquals(cd));
 			}
 		}
 
 		[Test]
-		public void Read_LdmlFont()
+		public void Roundtrip_LdmlFont()
 		{
-			using (var tempFile = new TempFile())
+			using (var environment = new TestEnvironment())
 			{
-				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
+				var fd = new FontDefinition("Padauk")
 				{
-					writer.Write(
-#region filecontent
-@"<?xml version='1.0' encoding='utf-8'?>
-<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
-	<identity>
-		<version number='$Revision$'/>
-		<generation date='$Date$'/>
-		<!-- name.en(en)='English' -->
-		<language type='en'/>
-		<script type='Latn'/>
-	</identity>
-	<special>
-		<sil:external-resources>
-			<sil:font types='default emphasis' name='Padauk' size='2.1' minversion='3.1.4' features='order=3 children=2 color=red createDate=1996' lang='en' engines='gr ot' otlang='abcd' subset='unknown' >
-				<sil:url>http://wirl.scripts.sil.org/padauk</sil:url>
-				<sil:url>http://scripts.sil.org/cms/scripts/page.php?item_id=padauk</sil:url>
-			</sil:font>
-		</sil:external-resources>
-	</special>
-</ldml>".Replace("'", "\""));
-					#endregion
-				}
-				var ws = new WritingSystemDefinition();
-				var dataMapper = new LdmlDataMapper();
+					RelativeSize = 2.1f,
+					MinVersion = "3.1.4",
+					Features = "order=3 children=2 color=red createDate=1996",
+					Language = "en",
+					Engines = FontEngines.Graphite | FontEngines.OpenType,
+					OpenTypeLanguage = "abcd",
+					Roles = FontRoles.Default | FontRoles.Emphasis,
+					Subset = "unknown"
+				};
+				fd.Urls.Add("http://wirl.scripts.sil.org/padauk");
+				fd.Urls.Add("http://scripts.sil.org/cms/scripts/page.php?item_id=padauk");
 
-				dataMapper.Read(tempFile.Path, ws);
+				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
+				wsToLdml.Fonts.Add(fd);
 
-				var other = new FontDefinition("Padauk");
-				other.RelativeSize = 2.1f;
-				other.MinVersion = "3.1.4";
-				other.Features = "order=3 children=2 color=red createDate=1996";
-				other.Language = "en";
-				other.Engines = FontEngines.Graphite | FontEngines.OpenType;
-				other.OpenTypeLanguage = "abcd";
-				other.Roles = FontRoles.Default | FontRoles.Emphasis;
-				other.Subset = "unknown";
-				other.Urls.Add("http://wirl.scripts.sil.org/padauk");
-				other.Urls.Add("http://scripts.sil.org/cms/scripts/page.php?item_id=padauk");
+				var ldmlAdaptor = new LdmlDataMapper();
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:font[@name='Padauk' and @types='default emphasis' and @size='2.1' and @minversion='3.1.4' and @features='order=3 children=2 color=red createDate=1996' and @lang='en' and @otlang='abcd' and @subset='unknown']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:font/sil:url['http://wirl.scripts.sil.org/padauk']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:font/sil:url['http://scripts.sil.org/cms/scripts/page.php?item_id=padauk']", environment.NamespaceManager);
 
-				Assert.That(ws.Fonts.First().ValueEquals(other));
+
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
+
+				Assert.That(wsFromLdml.Fonts.First().ValueEquals(fd));
 			}
 		}
 
 		[Test]
-		public void Read_LdmlSpellChecker()
+		public void Roundtrip_LdmlSpellChecker()
 		{
-			using (var tempFile = new TempFile())
+			using (var environment = new TestEnvironment())
 			{
-				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
-				{
-					writer.Write(
-					#region filecontent
-@"<?xml version='1.0' encoding='utf-8'?>
-<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
-	<identity>
-		<version number='$Revision$'/>
-		<generation date='$Date$'/>
-		<!-- name.en(en)='English' -->
-		<language type='en'/>
-		<script type='Latn'/>
-	</identity>
-	<special>
-		<sil:external-resources>
-			<sil:spellcheck type='hunspell'>
-				<sil:url>http://wirl.scripts.sil.org/hunspell</sil:url>
-				<sil:url>http://scripts.sil.org/cms/scripts/page.php?item_id=hunspell</sil:url>
-			</sil:spellcheck>
-		</sil:external-resources>
-	</special>
-</ldml>".Replace("'", "\""));
-					#endregion
-				}
-				var ws = new WritingSystemDefinition();
-				var dataMapper = new LdmlDataMapper();
+				var scd = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
+				scd.Urls.Add("http://wirl.scripts.sil.org/hunspell");
+				scd.Urls.Add("http://scripts.sil.org/cms/scripts/page.php?item_id=hunspell");
 
-				dataMapper.Read(tempFile.Path, ws);
+				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
+				wsToLdml.SpellCheckDictionaries.Add(scd);
 
-				var other = new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Hunspell);
-				other.Urls.Add("http://wirl.scripts.sil.org/hunspell");
-				other.Urls.Add("http://scripts.sil.org/cms/scripts/page.php?item_id=hunspell");
+				var ldmlAdaptor = new LdmlDataMapper();
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:spellcheck[@type='hunspell']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:spellcheck/sil:url['http://wirl.scripts.sil.org/hunspell']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:spellcheck/sil:url['http://scripts.sil.org/cms/scripts/page.php?item_id=hunspell']", environment.NamespaceManager);
 
-				Assert.That(ws.SpellCheckDictionaries.First().ValueEquals(other));
+
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
+
+				Assert.That(wsFromLdml.SpellCheckDictionaries.First().ValueEquals(scd));
 			}
 		}
 
 		[Test]
-		public void Read_LdmlKeyboard()
+		public void Roundtrip_LdmlKeyboard()
 		{
-			using (var tempFile = new TempFile())
+			using (var environment = new TestEnvironment())
 			{
-				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
-				{
-					writer.Write(
-					#region filecontent
-@"<?xml version='1.0' encoding='utf-8'?>
-<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
-	<identity>
-		<version number='$Revision$'/>
-		<generation date='$Date$'/>
-		<!-- name.en(en)='English' -->
-		<language type='en'/>
-		<script type='Latn'/>
-	</identity>
-	<special>
-		<sil:external-resources>
-			<sil:kbd id='Compiled Keyman9' type='kmx'>
-				<sil:url>http://wirl.scripts.sil.org/keyman</sil:url>
-				<sil:url>http://scripts.sil.org/cms/scripts/page.php?item_id=keyman9</sil:url>
-			</sil:kbd>
-		</sil:external-resources>
-	</special>
-</ldml>".Replace("'", "\""));
-					#endregion
-				}
-				var ws = new WritingSystemDefinition();
-				var dataMapper = new LdmlDataMapper();
-
-				dataMapper.Read(tempFile.Path, ws);
-
-				List<string>urls = new List<string>();
+				List<string> urls = new List<string>();
 				urls.Add("http://wirl.scripts.sil.org/keyman");
 				urls.Add("http://scripts.sil.org/cms/scripts/page.php?item_id=keyman9");
-				IKeyboardDefinition other = Keyboard.Controller.CreateKeyboard("Compiled Keyman9", KeyboardFormat.CompiledKeyman, urls);
+				IKeyboardDefinition kbd = Keyboard.Controller.CreateKeyboard("Compiled Keyman9", KeyboardFormat.CompiledKeyman, urls);
 
-				Assert.That(ws.KnownKeyboards.First(), Is.EqualTo(other));
+				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
+				wsToLdml.KnownKeyboards.Add(kbd);
+				var ldmlAdaptor = new LdmlDataMapper();
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:kbd['Compiled Keyman9' and @type='kmx']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:kbd/sil:url['http://wirl.scripts.sil.org/keyman']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:kbd/sil:url['http://scripts.sil.org/cms/scripts/page.php?item_id=keyman9']", environment.NamespaceManager);
+
+
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
+				Assert.That(wsFromLdml.KnownKeyboards.First(), Is.EqualTo(kbd));
 			}
 		}
+		#endregion
 
 		[Test]
 		public void Read_LdmlContainsOnlyPrivateUse_IsoAndprivateUseSetCorrectly()
@@ -727,20 +638,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
 				{
-					writer.Write(
-#region filecontent
-@"<?xml version='1.0' encoding='utf-8'?>
-<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
-	<identity>
-		<version number='$Revision$'/>
-		<generation date='$Date$'/>
-		<variant type='x-private-use'/>
-	</identity>
-	<special>
-		<sil:special />
-	</special>
-</ldml>".Replace("'", "\""));
-#endregion
+					writer.Write(LdmlContentForTests.PrivateUse("", "", "", "x-private-use"));
 				}
 				adaptor.Read(tempFile.Path, wsFromLdml);
 				Assert.That(wsFromLdml.Language, Is.EqualTo((LanguageSubtag) "private"));
@@ -748,6 +646,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+		#region Write_Ldml
 		[Test]
 		public void Write_LdmlIsNicelyFormatted()
 		{
@@ -762,7 +661,6 @@ namespace SIL.WritingSystems.Tests
 				var ws2 = new WritingSystemDefinition();
 				adaptor.Read(file.Path, ws2);
 				ws2.Region = "US";
-				ws2.DefaultCollation = new CollationDefinition("standard");
 				adaptor.Write(file.Path, ws2, new MemoryStream(File.ReadAllBytes(file.Path)));
 				Assert.That(XElement.Load(file.Path), Is.EqualTo(XElement.Parse(
 @"<?xml version='1.0' encoding='utf-8'?>
@@ -783,10 +681,6 @@ namespace SIL.WritingSystems.Tests
 			<characterOrder>left-to-right</characterOrder>
 		</orientation>
 	</layout>
-	<collations>
-		<defaultCollation>standard</defaultCollation>
-		<collation type='standard' />
-	</collations>
 </ldml>"
 )).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 			}
@@ -812,17 +706,8 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		[Test]
-		public void Read_ValidLanguageTagStartingWithXButVersion0_Throws()
-		{
-			using (var file = new TempFile())
-			{
-				WriteVersion0Ldml("xh", "", "", "", file);
-				var adaptor = new LdmlAdaptorV1();
-				Assert.That(() => adaptor.Read(file.Path, new WritingSystemDefinitionV1()), Throws.Exception.TypeOf<ApplicationException>());
-			}
-		}
-
+		#endregion
+		
 // Add these when FlexPrivateUseFormat is migrated
 #if WS_FIX
 		[Test]
@@ -1022,7 +907,7 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(() => dataMapper.Read(file.Path, ws),
 								Throws.Exception.TypeOf<ApplicationException>()
 										.With.Property("Message")
-										.EqualTo(String.Format("The LDML tag 'en' is version 0.  Version {0} was expected.", 
+										.EqualTo(String.Format("The LDML tag 'en' is version 0.  Version {0} was expected.",
 										WritingSystemDefinition.LatestWritingSystemDefinitionVersion)));
 			}
 		}
@@ -1047,33 +932,14 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void RoundTrippingLdmlDoesNotDuplicateSections()
 		{
-			using(var roundTripOut2 = new TempFile())
-			using(var roundTripOut = new TempFile())
-			using(var tempFile = new TempFile())
+			using (var roundTripOut2 = new TempFile())
+			using (var roundTripOut = new TempFile())
+			using (var tempFile = new TempFile())
 			{
 
-				using(var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
+				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
 				{
-					writer.Write(
-						@"<?xml version='1.0' encoding='utf-8'?>
-<ldml>
-	<identity>
-		<version
-			number='' />
-		<language
-			type='qaa' />
-		<variant
-			type='x-lel' />
-	</identity>
-	<collations />
-
-	<special xmlns:fw='urn://fieldworks.sil.org/ldmlExtensions/v1'>
-		<fw:graphiteEnabled
-			value='False' />
-		<fw:windowsLCID
-			value='1036' />
-	</special>
-</ldml>".Replace("'", "\""));
+					writer.Write(LdmlContentForTests.CurrentVersion("qaa", "", "", "x-lel"));
 				}
 				var ws = new WritingSystemDefinition();
 				var dataMapper = new LdmlDataMapper();
@@ -1081,21 +947,21 @@ namespace SIL.WritingSystems.Tests
 				dataMapper.Read(tempFile.Path, ws);
 				var keyboard1 = new DefaultKeyboardDefinition("MyFavoriteKeyboard", string.Empty);
 				ws.KnownKeyboards.Add(keyboard1);
-				using(var fileStream = new FileStream(tempFile.Path, FileMode.Open))
+				using (var fileStream = new FileStream(tempFile.Path, FileMode.Open))
 				{
 					dataMapper.Write(roundTripOut.Path, ws, fileStream);
 				}
-				AssertThatXmlIn.File(roundTripOut.Path).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/*[local-name()='windowsLCID']", 1);
+				AssertThatXmlIn.File(roundTripOut.Path).HasSpecifiedNumberOfMatchesForXpath("/ldml/identity/special/*[local-name()='identity']", 1);
 				var secondTripMapper = new LdmlDataMapper();
 				var secondTripWs = new WritingSystemDefinition();
 				secondTripMapper.Read(roundTripOut.Path, secondTripWs);
 				secondTripWs.KnownKeyboards.Add(new DefaultKeyboardDefinition("x-tel", string.Empty));
 				secondTripWs.WindowsLcid = "1037";
-				using(var fileStream = new FileStream(roundTripOut.Path, FileMode.Open))
+				using (var fileStream = new FileStream(roundTripOut.Path, FileMode.Open))
 				{
 					secondTripMapper.Write(roundTripOut2.Path, secondTripWs, fileStream);
 				}
-				AssertThatXmlIn.File(roundTripOut2.Path).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/*[local-name()='windowsLCID']", 1); //Element duplicated on round trip
+				AssertThatXmlIn.File(roundTripOut2.Path).HasSpecifiedNumberOfMatchesForXpath("/ldml/identity/special/*[local-name()='identity']", 1);
 			}
 		}
 

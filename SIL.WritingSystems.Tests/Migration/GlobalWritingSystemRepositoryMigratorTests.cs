@@ -21,37 +21,6 @@ namespace SIL.WritingSystems.Tests.Migration
 
 			private readonly TemporaryFolder _baseFolder = new TemporaryFolder("GlobalWritingSystemRepositoryMigratorTests");
 
-			public static readonly string LdmlV0 = @"<?xml version='1.0' encoding='utf-8'?>
-<ldml>
-	<identity>
-		<version number='' />
-		<generation date='0001-01-01T00:00:00' />
-		<language type='{0}' />
-	</identity>
-	<collations />
-	<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
-		<palaso:abbreviation value='{1}' />
-		<palaso:defaultFontFamily value='Arial' />
-		<palaso:defaultFontSize value='12' />
-	</special>
-</ldml>".Replace('\'', '"');
-
-			public static readonly string LdmlV1 = @"<?xml version='1.0' encoding='utf-8'?>
-<ldml>
-	<identity>
-		<version number='' />
-		<generation date='0001-01-01T00:00:00' />
-		<language type='{0}' />
-	</identity>
-	<collations />
-	<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
-		<palaso:abbreviation value='{1}' />
-		<palaso:defaultFontFamily value='Arial' />
-		<palaso:defaultFontSize value='12' />
-		<palaso:version value='1' />
-	</special>
-</ldml>".Replace('\'', '"');
-
 			public TestEnvironment()
 			{
 				_palasoFileNames = Directory.GetFiles(GlobalWritingSystemRepositoryMigrator.PalasoLdmlPathPre0);
@@ -72,18 +41,23 @@ namespace SIL.WritingSystems.Tests.Migration
 
 			public IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> MigrationInfo { get; private set; }
 
-			public static void WriteFlexFile(string language, string abbreviation, string template)
+			public static void WriteFlexFile(string language, string abbreviation, int version)
 			{
 				string filePath = GlobalWritingSystemRepositoryMigrator.FlexLdmlPathPre0;
 				filePath = Path.Combine(filePath, String.Format("{0}.ldml", language));
-				File.WriteAllText(filePath, String.Format(template, language, abbreviation));
+				string content = string.Empty;
+				if (version == 0)
+					content = LdmlContentForTests.Version0(language, "", "", "", abbreviation);
+				else if (version == 1)
+					content = LdmlContentForTests.Version1(language, "", "", "", abbreviation);
+				File.WriteAllText(filePath, content);
 			}
 
-			public static void WritePalasoFile(string language, string abbreviation, string template)
+			public static void WritePalasoFile(string language, string abbreviation)
 			{
 				string filePath = GlobalWritingSystemRepositoryMigrator.PalasoLdmlPathPre0;
 				filePath = Path.Combine(filePath, String.Format("{0}.ldml", language));
-				File.WriteAllText(filePath, String.Format(template, language, abbreviation));
+				File.WriteAllText(filePath, LdmlContentForTests.Version0(language, "", "", "", abbreviation));
 			}
 
 			private string MigratedLdmlFolder
@@ -138,7 +112,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		{
 			using (var e = new TestEnvironment())
 			{
-				TestEnvironment.WritePalasoFile("qaa-x-bogus", "bogus", TestEnvironment.LdmlV0);
+				TestEnvironment.WritePalasoFile("qaa-x-bogus", "bogus");
 				var m = new GlobalWritingSystemRepositoryMigrator(e.BasePath, e.OnMigrateCallback);
 				m.Migrate();
 
@@ -151,7 +125,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		{
 			using (var e = new TestEnvironment())
 			{
-				TestEnvironment.WriteFlexFile("qaa-x-bogus", "bogus", TestEnvironment.LdmlV0);
+				TestEnvironment.WriteFlexFile("qaa-x-bogus", "bogus", 0);
 				var m = new GlobalWritingSystemRepositoryMigrator(e.BasePath, e.OnMigrateCallback);
 				m.Migrate();
 
@@ -164,7 +138,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		{
 			using (var e = new TestEnvironment())
 			{
-				TestEnvironment.WriteFlexFile("qaa-x-bogus", "bogus", TestEnvironment.LdmlV1);
+				TestEnvironment.WriteFlexFile("qaa-x-bogus", "bogus", 1);
 				var m = new GlobalWritingSystemRepositoryMigrator(e.BasePath, e.OnMigrateCallback);
 				m.Migrate();
 

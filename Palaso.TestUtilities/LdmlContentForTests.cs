@@ -6,51 +6,11 @@ namespace Palaso.TestUtilities
 {
 	public class LdmlContentForTests
 	{
-		/// <summary>
-		/// Return LDML for English language formatted according to the version
-		/// </summary>
-		/// <param name="version">Version of LDML to return</param>
-		/// <returns>LDML contents.  Empty string if invalid version passed in</returns>
-		public static string EnglishVersion(int version)
-		{
-			switch (version)
-			{
-				case 0:
-					return Version0("en", String.Empty, String.Empty, String.Empty);
-					break;
-				case 1:
-					return Version1("en", String.Empty, String.Empty, String.Empty);
-					break;
-				case 2:
-					return Version2("en", String.Empty, String.Empty, String.Empty);
-					break;
-				case 3:
-					return Version3("en", String.Empty, String.Empty, String.Empty);
-					break;
-				default:
-					return String.Empty;
-			}
-		}
-
-		static public string Version0WithLanguageSubtagAndName(string languageSubtag, string languageName)
-		{
-			return String.Format(
-				@"<?xml version='1.0' encoding='utf-8'?>
+		static public string VersionInvalid = @"<?xml version='1.0' encoding='UTF-8' ?>
 <ldml>
-<identity>
-	<version number='' />
-	<generation date='0001-01-01T00:00:00' />
-	<language type='{0}' />
-</identity>
-<collations />
-<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
-	<palaso:languageName value='{1}' />
-	<palaso:defaultFontFamily value='Arial' />
-	<palaso:defaultFontSize value='12' />
-</special>
-</ldml>".Replace('\'', '"'), languageSubtag, languageName);
-		}
-
+</ldml>
+".Replace("'", "\"");
+		
 		static public string Version99Default()
 		{
 			return
@@ -69,6 +29,8 @@ namespace Palaso.TestUtilities
 </special>
 </ldml>".Replace('\'', '"');
 		}
+
+		#region Version 0 Ldml
 
 		static public string Version0WithAllSortsOfDatathatdoesNotNeedSpecialAttention(string language, string script, string region, string variant)
 		{
@@ -259,6 +221,28 @@ namespace Palaso.TestUtilities
 </ldml>".Replace('\'', '"'), language, script, region, variant);
 		}
 
+		static public string Version0(string language, string script, string region, string variant, string abbreviation)
+		{
+			return String.Format(
+				@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+<identity>
+	<version number='' />
+	<generation date='0001-01-01T00:00:00' />
+	<language type='{0}' />
+	<script type='{1}' />
+	<territory type='{2}' />
+	<variant type='{3}' />
+</identity>
+<collations />
+<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
+	<palaso:abbreviation value='{4}' />
+	<palaso:defaultFontFamily value='Arial' />
+	<palaso:defaultFontSize value='12' />
+</special>
+</ldml>".Replace('\'', '"'), language, script, region, variant, abbreviation);
+		}
+
 		static public string Version0(string language, string script, string region, string variant)
 		{
 			return String.Format(
@@ -278,6 +262,30 @@ namespace Palaso.TestUtilities
 	<palaso:defaultFontSize value='12' />
 </special>
 </ldml>".Replace('\'', '"'), language, script, region, variant);
+		}
+		#endregion
+
+		static public string Version1(string language, string script, string region, string variant, string abbreviation)
+		{
+			return
+				String.Format(@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+<identity>
+	<version number='' />
+	<generation date='0001-01-01T00:00:00' />
+	<language type='{0}' />
+	<script type='{1}' />
+	<territory type='{2}' />
+	<variant type='{3}' />
+</identity>
+<collations />
+<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
+	<palaso:abbreviation value='{4}' />
+	<palaso:version value='1' />
+	<palaso:defaultFontFamily value='Arial' />
+	<palaso:defaultFontSize value='12' />
+</special>
+</ldml>".Replace('\'', '"'), language, script, region, variant, abbreviation);
 		}
 
 		static public string Version1(string language, string script, string region, string variant)
@@ -324,28 +332,213 @@ namespace Palaso.TestUtilities
 </ldml>".Replace('\'', '"'), language, script, region, variant);
 		}
 
-		static public string Version3(string language, string script, string region, string variant)
+		#region Version 3 
+
+		/// <summary>
+		/// Returns the string form of a collation element according to sortType
+		/// </summary>
+		/// <param name="sortType">Type of collation to use in the element: "standard", "simple", "simpleNeedsCompiling", "inherited"</param>
+		/// <returns></returns>
+		static public string CollationElem(string sortType)
+		{
+			string collationString = string.Empty;
+			switch (sortType)
+			{
+				case "standard" :
+					collationString = @"
+	<collations>
+		<defaultCollation>standard</defaultCollation>
+		<collation type='standard'>
+			<cr><![CDATA[
+				&B<t<<<T<s<<<S<e<<<E
+				&C<k<<<K<x<<<X<i<<<I
+				&D<q<<<Q<r<<<R
+				&G<o<<<O
+				&W<h<<<H
+			]]></cr>
+		</collation>
+	</collations>".Replace("'", "\"");
+				break;
+				case "simple" :
+					collationString = @"
+	<collations>
+		<defaultCollation>standard</defaultCollation>
+		<collation type='standard'>
+			<cr><![CDATA[
+				&B<t<<<T<s<<<S<e<<<E
+				&C<k<<<K<x<<<X<i<<<I
+				&D<q<<<Q<r<<<R
+				&G<o<<<O
+				&W<h<<<H
+			]]></cr>
+			<special>
+				<sil:simple><![CDATA[
+					a/A
+					b/B
+					t/T
+					s/S
+					c/C
+					k/K
+					x/X
+					i/I
+					d/D
+					q/Q
+					r/R
+					e/E
+					f/F
+					g/G
+					o/O
+					j/J
+					l/L
+					m/M
+					n/N
+					p/P
+					u/U
+					v/V
+					w/W
+					h/H
+					y/Y
+					z/Z
+				]]></sil:simple>
+			</special>
+		</collation>
+	</collations>".Replace("'", "\"");
+				break;
+				case "simpleNeedsCompiling" :
+					collationString = @"
+	<collations>
+		<defaultCollation>standard</defaultCollation>
+		<collation type='standard' sil:needscompiling='true'>
+			<special>
+				<sil:simple><![CDATA[
+					a/A
+					b/B
+					t/T
+					s/S
+					c/C
+					k/K
+					x/X
+					i/I
+					d/D
+					q/Q
+					r/R
+					e/E
+					f/F
+					g/G
+					o/O
+					j/J
+					l/L
+					m/M
+					n/N
+					p/P
+					u/U
+					v/V
+					w/W
+					h/H
+					y/Y
+					z/Z
+				]]></sil:simple>
+			</special>
+		</collation>
+	</collations>".Replace("'", "\"");
+				break;
+				case "inherited" :
+					collationString = @"
+	<collations>
+		<defaultCollation>standard</defaultCollation>
+		<collation type='standard'>
+			<cr><![CDATA[
+				&B<t<<<T<s<<<S<e<<<E
+				&C<k<<<K<x<<<X<i<<<I
+				&D<q<<<Q<r<<<R
+				&G<o<<<O
+				&W<h<<<H
+			]]></cr>
+			<special>
+				<sil:inherited base='my' type='standard'/>
+			</special>
+		</collation>
+	</collations>".Replace("'", "\"");
+				break;
+				default :
+				break;
+			}
+			return collationString;
+		}
+		
+		static public string FontElem = @"
+	<special>
+		<sil:external-resources>
+			<sil:font types='default emphasis' name='Padauk' size='2.1' minversion='3.1.4' features='order=3 children=2 color=red createDate=1996' lang='en' engines='gr ot' otlang='abcd' subset='unknown' >
+				<sil:url>http://wirl.scripts.sil.org/padauk</sil:url>
+				<sil:url>http://scripts.sil.org/cms/scripts/page.php?item_id=padauk</sil:url>
+			</sil:font>
+		</sil:external-resources>
+	</special>".Replace("'", "\"");
+		
+		static public string SpellCheckerElem = @"
+	<special>
+		<sil:external-resources>
+			<sil:spellcheck type='hunspell'>
+				<sil:url>http://wirl.scripts.sil.org/hunspell</sil:url>
+				<sil:url>http://scripts.sil.org/cms/scripts/page.php?item_id=hunspell</sil:url>
+			</sil:spellcheck>
+		</sil:external-resources>
+	</special>".Replace("'", "\"");
+		
+		static public string KeyboardElem = @"
+	<special>
+		<sil:external-resources>
+			<sil:kbd id='Compiled Keyman9' type='kmx'>
+				<sil:url>http://wirl.scripts.sil.org/keyman</sil:url>
+				<sil:url>http://scripts.sil.org/cms/scripts/page.php?item_id=keyman9</sil:url>
+			</sil:kbd>
+		</sil:external-resources>
+	</special>".Replace("'", "\"");
+		
+		static public string Version3(string language, string script, string region, string variant, string otherElement = null)
 		{
 			return
 				String.Format(@"<?xml version='1.0' encoding='utf-8'?>
 <ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
 	<identity>
-		<version number='$Revision$' />
+		<version number='$Revision$'>Identity version description</version>
 		<generation date='$Date$' />
 		<language type='{0}' />
 		<script type='{1}' />
 		<territory type='{2}' />
 		<variant type='{3}' />
 		<special>
-			<sil:identity />
+			<sil:identity uid='fdc3d74c' windowsLCID='1036' defaultRegion='US' variantName='1996'></sil:identity>
+		</special>
+	</identity>{4}
+</ldml>".Replace("'", "\""), language, script, region, variant, otherElement);
+		}
+		
+		#endregion
+
+		static public string PrivateUse(string language, string script, string region, string variant)
+		{
+			return
+				String.Format(@"<?xml version='1.0' encoding='utf-8'?>
+<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
+	<identity>
+		<version number='$Revision$'>Identity version description</version>
+		<generation date='$Date$' />
+		<language type='{0}' />
+		<script type='{1}' />
+		<territory type='{2}' />
+		<variant type='{3}' />
+		<special>
+			<sil:identity uid='fdc3d74c' />
 		</special>
 	</identity>
 </ldml>".Replace("'", "\""), language, script, region, variant);
 		}
 
-		static public string CurrentVersion(string language, string script, string region, string variant)
+		static public string CurrentVersion(string language, string script, string region, string variant, string otherElement = null)
 		{
-			return Version3(language, script, region, variant);
+			return Version3(language, script, region, variant, otherElement);
 		}
 
 		static public string CurrentVersion(string languageTag)

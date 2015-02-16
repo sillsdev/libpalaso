@@ -14,6 +14,21 @@ namespace SIL.WritingSystems.Tests.Migration
 	public class LdmlAdaptorV1Tests
 	{
 		[Test]
+		public void Read_ValidLanguageTagStartingWithXButVersion0_Throws()
+		{
+			using (TempFile version0Ldml = new TempFile())
+			{
+				using (var writer = new StreamWriter(version0Ldml.Path, false, Encoding.UTF8))
+				{
+					writer.Write(LdmlContentForTests.Version0("xh", "", "", ""));
+				}
+				var wsV1 = new WritingSystemDefinitionV1();
+				var adaptor = new LdmlAdaptorV1();
+				Assert.Throws<ApplicationException>(() => adaptor.Read(version0Ldml.Path, wsV1));
+			}
+		}
+
+		[Test]
 		public void Read_ReadPrivateUseWsFromFieldWorksLdmlThenNormalLdmlMissingVersion1Element_Throws()
 		{
 			using (TempFile badFlexLdml = new TempFile(),

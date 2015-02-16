@@ -825,7 +825,7 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			{
 				var pathToFlexprivateUseLdml = Path.Combine(environment.TestPath, "x-Zxxx-x-audio.ldml");
-				File.WriteAllText(pathToFlexprivateUseLdml, LdmlContentForTests.Version3("xh", "", "", ""));
+				File.WriteAllText(pathToFlexprivateUseLdml, LdmlContentForTests.CurrentVersion("xh", "", "", ""));
 				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
 				Assert.That(File.Exists(Path.Combine(environment.TestPath, "xh.ldml")));
 			}

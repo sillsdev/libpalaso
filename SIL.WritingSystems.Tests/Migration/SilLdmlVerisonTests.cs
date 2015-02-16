@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using Palaso.TestUtilities;
 using SIL.IO;
 using SIL.WritingSystems.Migration;
 
@@ -59,10 +60,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void GetFileVersion_NoVersion_ReturnsBadVersion()
 		{
-			string xml = @"<?xml version='1.0' encoding='UTF-8' ?>
-<ldml>
-</ldml>
-".Replace("'", "\"");
+			string xml = LdmlContentForTests.VersionInvalid;
 
 			using (var file = new TempFile(xml))
 			{
