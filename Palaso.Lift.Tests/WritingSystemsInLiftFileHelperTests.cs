@@ -89,8 +89,7 @@ namespace Palaso.Lift.Tests
 						WritingSystemsPath,
 						Enumerable.Empty<ICustomDataMapper>(),
 						OnWritingSystemMigration,
-						OnWritingSystemLoadProblem,
-						WritingSystemCompatibility.Flex7V0Compatible
+						OnWritingSystemLoadProblem
 					));
 				}
 			}
@@ -194,46 +193,6 @@ namespace Palaso.Lift.Tests
 				AssertThatXmlIn.File(e.GetLdmlFileforWs("de")).HasNoMatchForXpath("/ldml/identity/script");
 				AssertThatXmlIn.File(e.GetLdmlFileforWs("de")).HasNoMatchForXpath("/ldml/identity/territory");
 				AssertThatXmlIn.File(e.GetLdmlFileforWs("de")).HasNoMatchForXpath("/ldml/identity/variant");
-			}
-		}
-
-		[Test]
-		//This test makes sure that existing Flex private use tags are not changed
-		public void CreateNonExistentWritingSystemsFoundInLift_LiftFileContainsEntirelyPrivateUseRfcTagThatExistsInRepo_RfcTagIsMigrated()
-		{
-			using (var e = new TestEnvironment(String.Format(TestEnvironment.LiftFile1Content, "x-custom-Zxxx-x-audio", "x-dontcare")))
-			{
-				e.WriteContentToLdmlFileInWritingSystemFolderWithName("x-custom-Zxxx-x-audio", LdmlContentForTests.Version0("x-custom", "Zxxx", "", "x-audio"));
-				e.Helper.CreateNonExistentWritingSystemsFoundInFile();
-				Assert.That(File.Exists(e.GetLdmlFileforWs("x-custom-Zxxx-x-audio")), Is.True);
-				Assert.That(File.Exists(e.GetLdmlFileforWs("en-Zxxx-x-audio")), Is.False);
-				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='x-custom-Zxxx-audio']");
-				AssertThatXmlIn.File(e.PathToLiftFile).HasNoMatchForXpath("/lift/entry/lexical-unit/form[@lang='custom-Zxxx-x-audio']");
-			}
-		}
-
-		[Test]
-		public void CreateNonExistentWritingSystemsFoundInLift_LiftFileContainsEntirelyPrivateUseRfcTagThatDoesNotExistInRepo_RfcTagIsMigrated()
-		{
-			using (var e = new TestEnvironment(String.Format(TestEnvironment.LiftFile1Content, "x-blah", "x-dontcare")))
-			{
-				e.Helper.CreateNonExistentWritingSystemsFoundInFile();
-				Assert.That(File.Exists(e.GetLdmlFileforWs("x-blah")), Is.True);
-				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='x-blah']");
-			}
-		}
-
-		[Test]
-		//This test makes sure that nonexisting private use tags are migrated if necessary
-		public void CreateNonExistentWritingSystemsFoundInLift_LiftFileContainsAudioTagThatDoesNotExistInRepo_RfcTagIsMigrated()
-		{
-			using (var e = new TestEnvironment(String.Format(TestEnvironment.LiftFile1Content, "x-audio", "x-dontcare")))
-			{
-				e.Helper.CreateNonExistentWritingSystemsFoundInFile();
-				Assert.That(File.Exists(e.GetLdmlFileforWs("x-audio")), Is.True);
-				Assert.That(File.Exists(e.GetLdmlFileforWs("qaa-Zxxx-x-audio")), Is.False);
-				AssertThatXmlIn.File(e.PathToLiftFile).HasAtLeastOneMatchForXpath("/lift/entry/lexical-unit/form[@lang='x-audio']");
-				AssertThatXmlIn.File(e.PathToLiftFile).HasNoMatchForXpath("/lift/entry/lexical-unit/form[@lang='qaa-Zxxx-x-audio']");
 			}
 		}
 

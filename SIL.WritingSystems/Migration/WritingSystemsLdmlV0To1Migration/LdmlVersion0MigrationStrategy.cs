@@ -29,17 +29,6 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		private readonly Dictionary<string, WritingSystemDefinitionV1> _writingSystemsV1;
 		private readonly MigrationHandler _migrationHandler;
 		private readonly IAuditTrail _auditLog;
-		private readonly WritingSystemCompatibility _roundTripBogusFlex70PrivateUse;
-
-		public LdmlVersion0MigrationStrategy(
-			MigrationHandler migrationHandler,
-			IAuditTrail auditLog,
-			int fromVersion,
-			WritingSystemCompatibility roundtripBogusFlex70PrivateUse) :
-			this(migrationHandler, auditLog, fromVersion)
-		{
-			_roundTripBogusFlex70PrivateUse = roundtripBogusFlex70PrivateUse;
-		}
 
 		public LdmlVersion0MigrationStrategy(MigrationHandler migrationHandler, IAuditTrail auditLog, int fromVersion) :
 			base(fromVersion, 2)
@@ -149,7 +138,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			using (Stream sourceStream = new FileStream(sourceFilePath, FileMode.Open))
 			{
 				var ldmlDataMapper = new LdmlAdaptorV1();
-				ldmlDataMapper.Write(destinationFilePath, writingSystemDefinitionV1, sourceStream, _roundTripBogusFlex70PrivateUse);
+				ldmlDataMapper.Write(destinationFilePath, writingSystemDefinitionV1, sourceStream);
 				sourceStream.Close();
 			}
 		}

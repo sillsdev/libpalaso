@@ -11,14 +11,6 @@ namespace SIL.WritingSystems
 	public class LdmlInXmlWritingSystemRepository : WritingSystemRepositoryBase
 	{
 		/// <summary>
-		/// Use the default repository
-		/// </summary>
-		public LdmlInXmlWritingSystemRepository() :
-			base(WritingSystemCompatibility.Strict)
-		{
-		}
-
-		/// <summary>
 		/// Saves all writing system definitions.
 		/// </summary>
 		public void SaveAllDefinitions(XmlWriter xmlWriter)

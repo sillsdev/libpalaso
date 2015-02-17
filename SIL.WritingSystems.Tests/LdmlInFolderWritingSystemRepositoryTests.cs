@@ -783,7 +783,7 @@ namespace SIL.WritingSystems.Tests
 				var ldmlPath = Path.Combine(environment.TestPath, "x-en-Zxxx.ldml");
 				File.WriteAllText(ldmlPath, LdmlContentForTests.Version0("x-en", "Zxxx", "", ""));
 				LdmlInFolderWritingSystemRepository repo = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, Enumerable.Empty<ICustomDataMapper>(),
-					DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem, WritingSystemCompatibility.Strict);
+					DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
 
 				// Now try to load up.
 				Assert.That(repo.Get("qaa-Zxxx-x-en").Language, Is.EqualTo(new LanguageSubtag("en", true)));

@@ -13,7 +13,6 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 	{
 		private readonly XmlNamespaceManager _nameSpaceManager;
 		private bool _wsIsFlexPrivateUse;
-		private WritingSystemCompatibility _compatibilityMode;
 
 		public LdmlAdaptorV1()
 		{
@@ -406,21 +405,14 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			ReadCollationRulesForCustomICU(collationXml, ws);
 		}
 
-		public void Write(string filePath, WritingSystemDefinitionV1 ws, Stream oldFile)
-		{
-			Write(filePath, ws, oldFile, WritingSystemCompatibility.Strict);
-		}
-
 		/// <summary>
 		/// The "oldFile" parameter allows the LdmldataMapper to allow data that it doesn't understand to be roundtripped.
 		/// </summary>
 		/// <param name="filePath"></param>
 		/// <param name="ws"></param>
 		/// <param name="oldFile"></param>
-		/// <param name="compatibilityMode"></param>
-		public void Write(string filePath, WritingSystemDefinitionV1 ws, Stream oldFile, WritingSystemCompatibility compatibilityMode)
+		public void Write(string filePath, WritingSystemDefinitionV1 ws, Stream oldFile)
 		{
-			_compatibilityMode = compatibilityMode;
 			if (filePath == null)
 			{
 				throw new ArgumentNullException("filePath");
@@ -459,20 +451,14 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			}
 		}
 
-		public void Write(XmlWriter xmlWriter, WritingSystemDefinitionV1 ws, XmlReader oldFileReader)
-		{
-			Write(xmlWriter, ws, oldFileReader, WritingSystemCompatibility.Strict);
-		}
-
 		/// <summary>
 		/// The "oldFileReader" parameter allows the LdmldataMapper to allow data that it doesn't understand to be roundtripped.
 		/// </summary>
 		/// <param name="filePath"></param>
 		/// <param name="ws"></param>
 		/// <param name="oldFile"></param>
-		public void Write(XmlWriter xmlWriter, WritingSystemDefinitionV1 ws, XmlReader oldFileReader, WritingSystemCompatibility compatibilityMode)
+		public void Write(XmlWriter xmlWriter, WritingSystemDefinitionV1 ws, XmlReader oldFileReader)
 		{
-			_compatibilityMode = compatibilityMode;
 			if (xmlWriter == null)
 			{
 				throw new ArgumentNullException("xmlWriter");
@@ -705,17 +691,6 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 							break;
 					}
 					reader.Read();
-				}
-				if (_compatibilityMode == WritingSystemCompatibility.Flex7V0Compatible)
-				{
-					var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
-					interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, territory, variant);
-					if ((language.StartsWith("x-", StringComparison.OrdinalIgnoreCase) ||  language.Equals("x", StringComparison.OrdinalIgnoreCase))&&
-						interpreter.Rfc5646Tag == ws.Bcp47Tag)
-					{
-						copyFlexFormat = true;
-						_wsIsFlexPrivateUse = true;
-					}
 				}
 			}
 			if (copyFlexFormat)

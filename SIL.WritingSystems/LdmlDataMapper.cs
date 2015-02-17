@@ -30,9 +30,6 @@ namespace SIL.WritingSystems
 	/// </summary>
 	public class LdmlDataMapper
 	{
-#if WS_FIX
-		private WritingSystemCompatibility _compatibilityMode;
-#endif
 		private static readonly XNamespace Palaso = "urn://palaso.org/ldmlExtensions/v1";
 		private static readonly XNamespace Sil = "urn://www.sil.org/ldml/0.1";
 
@@ -753,9 +750,6 @@ namespace SIL.WritingSystems
 		/// <param name="oldFile"></param>
 		public void Write(string filePath, WritingSystemDefinition ws, Stream oldFile)
 		{
-#if WS_FIX
-			_compatibilityMode = compatibilityMode;
-#endif
 			if (filePath == null)
 			{
 				throw new ArgumentNullException("filePath");
@@ -816,9 +810,6 @@ namespace SIL.WritingSystems
 		/// <param name="oldFileReader"></param>
 		public void Write(XmlWriter xmlWriter, WritingSystemDefinition ws, XmlReader oldFileReader)
 		{
-#if WS_FIX
-			_compatibilityMode = compatibilityMode;
-#endif
 			if (xmlWriter == null)
 			{
 				throw new ArgumentNullException("xmlWriter");
@@ -906,59 +897,8 @@ namespace SIL.WritingSystems
 				versionElem.SetValue(ws.VersionDescription);
 
 			identityElem.SetAttributeValue("generation", "date", String.Format("{0:s}", ws.DateModified));
-			// TODO: Keeping this block until we sort out migration
-#if WS_FIX
-			bool copyFlexFormat = false;
-			string language = String.Empty;
-			string script = String.Empty;
-			string territory = String.Empty;
-			string variant = String.Empty;
-			bool readerIsOnIdentityElement = IsReaderOnElementNodeNamed(reader, "identity");
-			if (readerIsOnIdentityElement && !reader.IsEmptyElement)
-			{
-				reader.ReadToDescendant("language");
-				while(!IsReaderOnElementNodeNamed(reader, "special") && !IsReaderOnEndElementNodeNamed(reader, "identity"))
-				{
-					switch(reader.Name)
-					{
-						case "language":
-							language = reader.GetAttribute("type");
-							break;
-						case "script":
-							script = reader.GetAttribute("type");
-							break;
-						case "territory":
-							territory = reader.GetAttribute("type");
-							break;
-						case "variant":
-							variant = reader.GetAttribute("type");
-							break;
-					}
-					reader.Read();
-				}
-				if (_compatibilityMode == WritingSystemCompatibility.Flex7V0Compatible)
-				{
-					var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
-					interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, territory, variant);
-					if ((language.StartsWith("x-", StringComparison.OrdinalIgnoreCase) ||  language.Equals("x", StringComparison.OrdinalIgnoreCase))&&
-						interpreter.Rfc5646Tag == ws.Bcp47Tag)
-					{
-						copyFlexFormat = true;
-						_wsIsFlexPrivateUse = true;
-					}
-				}
-			}
-			if (copyFlexFormat)
-			{
-				WriteRFC5646TagElements(writer, language, script, territory, variant);
-			}
-			else
-			{
-				WriteRFC5646TagElements(writer, ws.Language, ws.Script, ws.Region, ws.Variant);
-			}
-#else
 			WriteLanguageTagElements(identityElem, ws.LanguageTag);
-#endif
+
 			// Create special element if data needs to be written
 			if (!string.IsNullOrEmpty(ws.WindowsLcid) || !string.IsNullOrEmpty(ws.DefaultRegion) || (ws.Variants.Count > 0))
 			{

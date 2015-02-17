@@ -18,7 +18,7 @@ namespace SIL.WritingSystems.Tests
 
 			public TestEnvironment(string id1, string id2)
 			{
-				WritingSystemRepository = new LdmlInFolderWritingSystemRepository(WritingSystemsPath, new List<ICustomDataMapper>(), WritingSystemCompatibility.Flex7V0Compatible);
+				WritingSystemRepository = new LdmlInFolderWritingSystemRepository(WritingSystemsPath, new List<ICustomDataMapper>());
 				_file = _folder.GetNewTempFile(true);
 				File.WriteAllText(_file.Path, String.Format("|{0}||{0}||{1}|", id1, id2));
 			}
@@ -141,20 +141,5 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		[Test]
-		/* Ideally we would be able to preserve the 2 x's in compatibility mode. However we stopped short
-		 * of requiring the WritingSystemDefinition to hold info about malformed tags. So, in this case
-		 * it gets cleaned up (due to the call to parse in FindOrphans.
-		 */
-		public void FindOrphans_FileContainsEntirelyPrivateUseRfcTagWithFlexStyleTwoX_RfcTagIsMigrated()
-		{
-			using (var e = new TestEnvironment("x-custom-Zxxx-x-audio", "x-dontcare"))
-			{
-				var wss = new List<string>(e.GetIdsFromFile);
-				WritingSystemOrphanFinder.FindOrphans(wss, e.ReplaceIdInFile, e.WritingSystemRepository);
-				Assert.That(e.FileContent, Is.EqualTo("|x-custom-Zxxx-audio||x-custom-Zxxx-audio||x-dontcare|"));
-				Assert.That(e.WritingSystemRepository.Count, Is.EqualTo(2));
-			}
-		}
 	}
 }

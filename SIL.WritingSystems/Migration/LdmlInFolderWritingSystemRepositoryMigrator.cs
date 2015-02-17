@@ -15,7 +15,6 @@ namespace SIL.WritingSystems.Migration
 			string ldmlPath,
 			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
 			IEnumerable<ICustomDataMapper> customDataMappers = null,
-			WritingSystemCompatibility compatibilityMode = WritingSystemCompatibility.Strict,
 			int versionToMigrateTo = WritingSystemDefinition.LatestWritingSystemDefinitionVersion
 		) : base(versionToMigrateTo, ldmlPath)
 		{
@@ -23,15 +22,15 @@ namespace SIL.WritingSystems.Migration
 
 			//The first versiongetter checks for the palaso:version node.
 			//The DefaultVersion is a catchall that identifies any file as version 0 that the first version getter can't identify
-			AddVersionStrategy(new WritingSystemLdmlVersionGetter(compatibilityMode));
+			AddVersionStrategy(new WritingSystemLdmlVersionGetter());
 			AddVersionStrategy(new DefaultVersion(0, 0));
 
 			var auditLog = new WritingSystemChangeLog(
 				new WritingSystemChangeLogDataMapper(Path.Combine(ldmlPath, "idchangelog.xml"))
 			);
-			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(migrationHandler, auditLog, 0, compatibilityMode));
+			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(migrationHandler, auditLog, 0));
 			// Version 0 strategy has been enhanced to also migrate version 1.
-			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(migrationHandler, auditLog, 1, compatibilityMode));
+			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(migrationHandler, auditLog, 1));
 			AddMigrationStrategy(new LdmlVersion2MigrationStrategy(customDataMappers ?? Enumerable.Empty<ICustomDataMapper>()));
 		}
 

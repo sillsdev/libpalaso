@@ -35,11 +35,9 @@ namespace SIL.WritingSystems
 		protected bool Conflating { get; private set; }
 
 		/// <summary>
-		/// Constructor, set the CompatibilityMode
 		/// </summary>
-		protected WritingSystemRepositoryBase(WritingSystemCompatibility compatibilityMode)
+		protected WritingSystemRepositoryBase()
 		{
-			CompatibilityMode = compatibilityMode;
 			_writingSystems = new Dictionary<string, WritingSystemDefinition>(StringComparer.OrdinalIgnoreCase);
 			_writingSystemsToIgnore = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
 			_idChangeMap = new Dictionary<string, string>();
@@ -334,8 +332,6 @@ namespace SIL.WritingSystems
 			var textIds = TextWritingSystems.Select(ws => ws.Id);
 			return idsToFilter.Where(id => textIds.Contains(id));
 		}
-
-		public WritingSystemCompatibility CompatibilityMode { get; private set; }
 
 		/// <summary>
 		/// Get the writing system that is most probably intended by the user, when input language changes to the specified layout and cultureInfo,

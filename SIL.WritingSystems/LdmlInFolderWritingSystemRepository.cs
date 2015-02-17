@@ -13,13 +13,12 @@ namespace SIL.WritingSystems
 	public class LdmlInFolderWritingSystemRepository : WritingSystemRepositoryBase
 	{
 		/// <summary>
-		/// Returns an instance of an ldml in folder writing system reposistory.
+		///  Returns an instance of an ldml in folder writing system reposistory.
 		/// </summary>
 		/// <param name="basePath">base location of the global writing system repository</param>
 		/// <param name="customDataMappers">The custom data mappers.</param>
 		/// <param name="migrationHandler">Callback if during the initialization any writing system id's are changed</param>
 		/// <param name="loadProblemHandler">Callback if during the initialization any writing systems cannot be loaded</param>
-		/// <returns></returns>
 		public static LdmlInFolderWritingSystemRepository Initialize(
 			string basePath,
 			IEnumerable<ICustomDataMapper> customDataMappers,
@@ -27,30 +26,11 @@ namespace SIL.WritingSystems
 			Action<IEnumerable<WritingSystemRepositoryProblem>> loadProblemHandler
 		)
 		{
-			return Initialize(basePath, customDataMappers, migrationHandler, loadProblemHandler, WritingSystemCompatibility.Strict);
-		}
-
-		/// <summary>
-		///  Returns an instance of an ldml in folder writing system reposistory.
-		/// </summary>
-		/// <param name="basePath">base location of the global writing system repository</param>
-		/// <param name="customDataMappers">The custom data mappers.</param>
-		/// <param name="migrationHandler">Callback if during the initialization any writing system id's are changed</param>
-		/// <param name="loadProblemHandler">Callback if during the initialization any writing systems cannot be loaded</param>
-		/// <param name="compatibilityMode"></param>
-		public static LdmlInFolderWritingSystemRepository Initialize(
-			string basePath,
-			IEnumerable<ICustomDataMapper> customDataMappers,
-			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
-			Action<IEnumerable<WritingSystemRepositoryProblem>> loadProblemHandler,
-			WritingSystemCompatibility compatibilityMode
-		)
-		{
 			ICustomDataMapper[] customDataMappersArray = customDataMappers.ToArray();
-			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(basePath, migrationHandler, customDataMappersArray, compatibilityMode);
+			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(basePath, migrationHandler, customDataMappersArray);
 			migrator.Migrate();
 
-			var instance = new LdmlInFolderWritingSystemRepository(basePath, customDataMappersArray, compatibilityMode);
+			var instance = new LdmlInFolderWritingSystemRepository(basePath, customDataMappersArray);
 			instance.LoadAllDefinitions();
 
 			// Call the loadProblemHandler with both migration problems and load problems
@@ -77,15 +57,14 @@ namespace SIL.WritingSystems
 		/// </summary>
 		/// <param name="basePath"></param>
 		protected internal LdmlInFolderWritingSystemRepository(string basePath) :
-			this(basePath, new List<ICustomDataMapper>(), WritingSystemCompatibility.Strict)
+			this(basePath, new List<ICustomDataMapper>())
 		{
 		}
 
 		/// <summary>
 		/// use a special path for the repository
 		/// </summary>
-		protected internal LdmlInFolderWritingSystemRepository(string basePath, IList<ICustomDataMapper> customDataMappers, WritingSystemCompatibility compatibilityMode)
-			: base(compatibilityMode)
+		protected internal LdmlInFolderWritingSystemRepository(string basePath, IList<ICustomDataMapper> customDataMappers)
 		{
 			_customDataMappers = customDataMappers;
 			PathToWritingSystems = basePath;

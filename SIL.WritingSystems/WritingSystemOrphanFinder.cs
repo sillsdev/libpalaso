@@ -55,29 +55,10 @@ namespace SIL.WritingSystems
 				else
 				{
 					// It's an orphan
-					// Check for the writing system repository compatibility mode
-					if (writingSystemRepository.CompatibilityMode == WritingSystemCompatibility.Flex7V0Compatible)
-					{
-						if (!wsId.StartsWith("x-"))
-						{
-							// Clean it
-							var rfcTagCleaner = new IetfLanguageTagCleaner(wsId);
-							rfcTagCleaner.Clean();
-							newId = rfcTagCleaner.GetCompleteTag();
-						}
-						else
-						{
-							// remove any extra "x"s
-							newId = wsId.Replace("-x", "");
-						}
-					}
-					else
-					{
-						// Clean it
-						var rfcTagCleaner = new IetfLanguageTagCleaner(wsId);
-						rfcTagCleaner.Clean();
-						newId = rfcTagCleaner.GetCompleteTag();
-					}
+					// Clean it
+					var rfcTagCleaner = new IetfLanguageTagCleaner(wsId);
+					rfcTagCleaner.Clean();
+					newId = rfcTagCleaner.GetCompleteTag();
 				}
 				var conformantWritingSystem = new WritingSystemDefinition(newId);
 				// If it changed, then change

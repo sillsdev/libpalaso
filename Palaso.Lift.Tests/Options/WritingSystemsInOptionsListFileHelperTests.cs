@@ -74,13 +74,7 @@ namespace Palaso.Lift.Tests.Options
 			public void CreateWritingSystemRepository()
 			{
 				WritingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(WritingSystemsPath, Enumerable.Empty<ICustomDataMapper>(),
-					onMigration, onLoadProblem, WritingSystemCompatibility.Strict);
-			}
-
-			public void CreateLegacyFriendlyWritingSystemRepository()
-			{
-				WritingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(WritingSystemsPath, Enumerable.Empty<ICustomDataMapper>(),
-					onMigration, onLoadProblem, WritingSystemCompatibility.Flex7V0Compatible);
+					onMigration, onLoadProblem);
 			}
 
 			private static void onMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
@@ -202,22 +196,6 @@ namespace Palaso.Lift.Tests.Options
 				AssertThatXmlIn.File(e.GetLdmlFileforWs("de")).HasNoMatchForXpath("/ldml/identity/script");
 				AssertThatXmlIn.File(e.GetLdmlFileforWs("de")).HasNoMatchForXpath("/ldml/identity/territory");
 				AssertThatXmlIn.File(e.GetLdmlFileforWs("de")).HasNoMatchForXpath("/ldml/identity/variant");
-			}
-		}
-
-		[Test]
-		//This test makes sure that existing Flex private use tags are not changed
-		public void CreateNonExistentWritingSystemsFoundInOptionsList_OptionsListFileContainsEntirelyPrivateUseRfcTagThatExistsInRepo_RfcTagIsNotMigrated()
-		{
-			using (var e = new TestEnvironment("x-blah"))
-			{
-				e.WriteContentToLdmlFileInWritingSystemFolderWithName("x-blah", LdmlContentForTests.Version0("x-blah", "", "", ""));
-				e.CreateLegacyFriendlyWritingSystemRepository();
-				e.Helper.CreateNonExistentWritingSystemsFoundInFile();
-				Assert.That(File.Exists(e.GetLdmlFileforWs("x-blah")), Is.True);
-				Assert.That(File.Exists(e.GetLdmlFileforWs("qaa-x-blah")), Is.False);
-				AssertThatXmlIn.File(e.PathToOptionsListFile).HasAtLeastOneMatchForXpath("/optionsList/options/option/name/form[@lang='x-blah']");
-				AssertThatXmlIn.File(e.PathToOptionsListFile).HasNoMatchForXpath("/optionsList/options/option/name/form[@lang='qaa-x-blah']");
 			}
 		}
 
