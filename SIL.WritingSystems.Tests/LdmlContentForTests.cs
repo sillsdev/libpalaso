@@ -1,8 +1,7 @@
 ﻿using System;
-using SIL.WritingSystems;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
-namespace Palaso.TestUtilities
+namespace SIL.WritingSystems.Tests
 {
 	public class LdmlContentForTests
 	{
@@ -459,8 +458,6 @@ namespace Palaso.TestUtilities
 			</special>
 		</collation>
 	</collations>".Replace("'", "\"");
-				break;
-				default :
 				break;
 			}
 			return collationString;
