@@ -14,7 +14,6 @@
 		<ApplicationName>PalasoLibrary</ApplicationName>
 		<ApplicationNameLC>libpalaso</ApplicationNameLC>
 		<Configuration>ReleaseMonoStrongName</Configuration>
-		<Platform>AnyCPU</Platform>
 	</PropertyGroup>
 
 	<Import Project="$(RootDir)/build/build.common.proj" />
@@ -47,7 +46,7 @@
 		<MSBuild
 			Projects="$(RootDir)\$(Solution)"
 			Targets="Build"
-			Properties="Configuration=$(Configuration);Platform=$(Platform)" />
+			Properties="Configuration=$(Configuration)" />
 	</Target>
 
 	<Target Name="Test" DependsOnTargets="Build">
