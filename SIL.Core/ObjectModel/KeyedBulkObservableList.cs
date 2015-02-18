@@ -167,10 +167,10 @@ namespace SIL.ObjectModel
 
 		protected override void ClearItems()
 		{
-			base.ClearItems();
 			if (_dict != null)
 				_dict.Clear();
 			_keyCount = 0;
+			base.ClearItems();
 		}
 
 		protected override void RemoveItem(int index)
