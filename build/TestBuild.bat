@@ -21,7 +21,7 @@ if "%INCLUDE%%LIB%" == "" (
 )
 :build
 if "%~1" == "" (
-	SET BUILD=Release
+	SET BUILD=ReleaseStrongName
 ) else (
 	SET BUILD=%~1
 )
