@@ -52,7 +52,7 @@ namespace SIL.LexiconUtils.Tests
 
 			Assert.That(ws2.Abbreviation, Is.EqualTo("fr"));
 			Assert.That(ws2.Language.Name, Is.EqualTo("French"));
-			Assert.That(ws2.Script, Is.Null);
+			Assert.That(ws2.Script.Name, Is.EqualTo("Latin"));
 			Assert.That(ws2.Region.Name, Is.EqualTo("France"));
 			Assert.That(ws2.Variants, Is.Empty);
 			Assert.That(ws2.SpellCheckingId, Is.EqualTo("fr_FR"));
@@ -82,7 +82,7 @@ namespace SIL.LexiconUtils.Tests
 
 			Assert.That(ws1.Abbreviation, Is.EqualTo("en"));
 			Assert.That(ws1.Language.Name, Is.EqualTo("English"));
-			Assert.That(ws1.Script, Is.Null);
+			Assert.That(ws1.Script.Name, Is.EqualTo("Latin"));
 			Assert.That(ws1.Region.Name, Is.EqualTo("United States"));
 			Assert.That(ws1.Variants, Is.Empty);
 			Assert.That(ws1.SpellCheckingId, Is.EqualTo(string.Empty));
