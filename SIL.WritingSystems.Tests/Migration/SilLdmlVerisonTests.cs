@@ -10,12 +10,9 @@ namespace SIL.WritingSystems.Tests.Migration
 	public class SilLdmlVersionTests
 	{
 		[Test]
-		public void GetFileVersion_WithVersionAttribute_LatestVersion()
+		public void GetFileVersion_StandardLdml_LatestVersion()
 		{
-			string xml = @"<?xml version='1.0' encoding='UTF-8' ?>
-<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
-</ldml>
-".Replace("'", "\"");
+			string xml = LdmlContentForTests.Version3("en", "Latn", "", "");
 
 			using (var file = new TempFile(xml))
 			{
@@ -26,41 +23,48 @@ namespace SIL.WritingSystems.Tests.Migration
 		}
 
 		[Test]
+		public void GetFileVersion_SilIdentity_LatestVersion()
+		{
+			string xml = LdmlContentForTests.Version3Identity("en", "Latn", "", "", "123456", "abcd", "US", "LatestAndGreatest");
+
+			using (var file = new TempFile(xml))
+			{
+				var silLdmlVersion = new SilLdmlVersion();
+				int result = silLdmlVersion.GetFileVersion(file.Path);
+				Assert.That(result, Is.EqualTo(WritingSystemDefinition.LatestWritingSystemDefinitionVersion));
+			}
+		}
+
+		[Test]
+		public void GetFileVersion_V0_ReturnsBadVersion()
+		{
+			string xml = LdmlContentForTests.Version0("en", "", "", "");
+
+			using (var file = new TempFile(xml))
+			{
+				var silLdmlVersion = new SilLdmlVersion();
+				int result = silLdmlVersion.GetFileVersion(file.Path);
+				Assert.That(result, Is.EqualTo(SilLdmlVersion.BadVersion));
+			}
+		}
+
+		[Test]
+		public void GetFileVersion_V1_ReturnsBadVersion()
+		{
+			string xml = LdmlContentForTests.Version1("en", "", "", "");
+
+			using (var file = new TempFile(xml))
+			{
+				var silLdmlVersion = new SilLdmlVersion();
+				int result = silLdmlVersion.GetFileVersion(file.Path);
+				Assert.That(result, Is.EqualTo(SilLdmlVersion.BadVersion));
+			}
+		}
+
+		[Test]
 		public void GetFileVersion_WithoutLdml_ReturnsBadVersion()
 		{
-			string xml = @"<?xml version='1.0' encoding='UTF-8' ?>
-<something>
-</something>
-".Replace("'", "\"");
-
-			using (var file = new TempFile(xml))
-			{
-				var silLdmlVersion = new SilLdmlVersion();
-				int result = silLdmlVersion.GetFileVersion(file.Path);
-				Assert.That(result, Is.EqualTo(SilLdmlVersion.BadVersion));
-			}
-		}
-
-		[Test]
-		public void GetFileVersion_WithInvalidVerisonAttribute_ReturnsBadVersion()
-		{
-			string xml = @"<?xml version='1.0' encoding='UTF-8' ?>
-<ldml xmlns:sil='urn://www.invalid.uri'>
-</ldml>
-".Replace("'", "\"");
-
-			using (var file = new TempFile(xml))
-			{
-				var silLdmlVersion = new SilLdmlVersion();
-				int result = silLdmlVersion.GetFileVersion(file.Path);
-				Assert.That(result, Is.EqualTo(SilLdmlVersion.BadVersion));
-			}
-		}
-
-		[Test]
-		public void GetFileVersion_NoVersion_ReturnsBadVersion()
-		{
-			string xml = LdmlContentForTests.VersionInvalid;
+			string xml = LdmlContentForTests.NoLdml;
 
 			using (var file = new TempFile(xml))
 			{

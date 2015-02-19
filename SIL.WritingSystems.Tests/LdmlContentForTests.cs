@@ -5,9 +5,9 @@ namespace SIL.WritingSystems.Tests
 {
 	public class LdmlContentForTests
 	{
-		static public string VersionInvalid = @"<?xml version='1.0' encoding='UTF-8' ?>
-<ldml>
-</ldml>
+		static public string NoLdml = @"<?xml version='1.0' encoding='UTF-8' ?>
+<noLdml>
+</noLdml>
 ".Replace("'", "\"");
 		
 		static public string Version99Default()
@@ -370,7 +370,7 @@ namespace SIL.WritingSystems.Tests
 				&G<o<<<O
 				&W<h<<<H
 			]]></cr>
-			<special>
+			<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
 				<sil:simple><![CDATA[
 					a/A
 					b/B
@@ -407,8 +407,8 @@ namespace SIL.WritingSystems.Tests
 					collationString = @"
 	<collations>
 		<defaultCollation>standard</defaultCollation>
-		<collation type='standard' sil:needscompiling='true'>
-			<special>
+		<collation type='standard'>
+			<special xmlns:sil='urn://www.sil.org/ldml/0.1' sil:needscompiling='true'>
 				<sil:simple><![CDATA[
 					a/A
 					b/B
@@ -453,7 +453,7 @@ namespace SIL.WritingSystems.Tests
 				&G<o<<<O
 				&W<h<<<H
 			]]></cr>
-			<special>
+			<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
 				<sil:inherited base='my' type='standard'/>
 			</special>
 		</collation>
@@ -464,7 +464,7 @@ namespace SIL.WritingSystems.Tests
 		}
 		
 		static public string FontElem = @"
-	<special>
+	<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
 		<sil:external-resources>
 			<sil:font types='default emphasis' name='Padauk' size='2.1' minversion='3.1.4' features='order=3 children=2 color=red createDate=1996' lang='en' engines='gr ot' otlang='abcd' subset='unknown' >
 				<sil:url>http://wirl.scripts.sil.org/padauk</sil:url>
@@ -474,7 +474,7 @@ namespace SIL.WritingSystems.Tests
 	</special>".Replace("'", "\"");
 		
 		static public string SpellCheckerElem = @"
-	<special>
+	<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
 		<sil:external-resources>
 			<sil:spellcheck type='hunspell'>
 				<sil:url>http://wirl.scripts.sil.org/hunspell</sil:url>
@@ -484,7 +484,7 @@ namespace SIL.WritingSystems.Tests
 	</special>".Replace("'", "\"");
 		
 		static public string KeyboardElem = @"
-	<special>
+	<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
 		<sil:external-resources>
 			<sil:kbd id='Compiled Keyman9' type='kmx'>
 				<sil:url>http://wirl.scripts.sil.org/keyman</sil:url>
@@ -493,11 +493,20 @@ namespace SIL.WritingSystems.Tests
 		</sil:external-resources>
 	</special>".Replace("'", "\"");
 		
+		/// <summary>
+		/// Minimal LDML for version 3
+		/// </summary>
+		/// <param name="language"></param>
+		/// <param name="script"></param>
+		/// <param name="region"></param>
+		/// <param name="variant"></param>
+		/// <param name="otherElement"></param>
+		/// <returns></returns>
 		static public string Version3(string language, string script, string region, string variant, string otherElement = null)
 		{
 			return
 				String.Format(@"<?xml version='1.0' encoding='utf-8'?>
-<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
+<ldml>
 	<identity>
 		<version number='$Revision$'>Identity version description</version>
 		<generation date='$Date$' />
@@ -505,20 +514,28 @@ namespace SIL.WritingSystems.Tests
 		<script type='{1}' />
 		<territory type='{2}' />
 		<variant type='{3}' />
-		<special>
-			<sil:identity uid='fdc3d74c' windowsLCID='1036' defaultRegion='US' variantName='1996'></sil:identity>
-		</special>
 	</identity>{4}
 </ldml>".Replace("'", "\""), language, script, region, variant, otherElement);
 		}
-		
-		#endregion
 
-		static public string PrivateUse(string language, string script, string region, string variant)
+		/// <summary>
+		/// Minimal LDML for version 3 along with sil:identity element
+		/// </summary>
+		/// <param name="language"></param>
+		/// <param name="script"></param>
+		/// <param name="region"></param>
+		/// <param name="variant"></param>
+		/// <param name="uid"></param>
+		/// <param name="windowsLCID"></param>
+		/// <param name="defaultRegion"></param>
+		/// <param name="variantName"></param>
+		/// <returns></returns>
+		static public string Version3Identity(string language, string script, string region, string variant,
+											string uid, string windowsLCID, string defaultRegion, string variantName)
 		{
 			return
 				String.Format(@"<?xml version='1.0' encoding='utf-8'?>
-<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
+<ldml>
 	<identity>
 		<version number='$Revision$'>Identity version description</version>
 		<generation date='$Date$' />
@@ -526,12 +543,13 @@ namespace SIL.WritingSystems.Tests
 		<script type='{1}' />
 		<territory type='{2}' />
 		<variant type='{3}' />
-		<special>
-			<sil:identity uid='fdc3d74c' />
+		<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
+			<sil:identity uid='{4}' windowsLCID='{5}' defaultRegion='{6}' variantName='{7}'></sil:identity>
 		</special>
 	</identity>
-</ldml>".Replace("'", "\""), language, script, region, variant);
+</ldml>".Replace("'", "\""), language, script, region, variant, uid, windowsLCID, defaultRegion, variantName );
 		}
+		 #endregion
 
 		static public string CurrentVersion(string language, string script, string region, string variant, string otherElement = null)
 		{

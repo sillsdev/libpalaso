@@ -729,6 +729,19 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
+		/// Utility to get or create the special element with SIL namespace
+		/// </summary>
+		/// <param name="element">parent element of the special element</param>
+		/// <returns></returns>
+		private XElement GetOrCreateSpecialElement(XElement element)
+		{
+			// Create element
+			XElement specialElem = element.GetOrCreateElement("special");
+			specialElem.SetAttributeValue(XNamespace.Xmlns + "sil", Sil);
+			return specialElem;
+		}
+
+		/// <summary>
 		/// Utility to remove empty elements. Since isEmpty is true for <element /> 
 		/// but false for <element></element>, we have to check both cases
 		/// </summary>
@@ -787,8 +800,6 @@ namespace SIL.WritingSystems
 				writerSettings.NewLineOnAttributes = false;
 				using (var writer = XmlWriter.Create(filePath, writerSettings))
 				{
-					// Assign SIL namespace
-					element.SetAttributeValue(XNamespace.Xmlns + "sil", Sil);
 					WriteLdml(writer, element, ws);
 					writer.Close();
 				}
@@ -859,13 +870,14 @@ namespace SIL.WritingSystems
 			WriteCollationsElement(collationsElem, ws);
 			RemoveIfEmpty(collationsElem);
 
-			// TODO: Can have multiple specials.  Find the one with external-resources.  Also handle case where we
-			// create special because writingsystem has entries to write
-			XElement specialElem = element.Elements("special").FirstOrDefault(e => e.Element(Sil + "external-resources") != null);
+			// Can have multiple specials.  Find the one with SIL namespace and external-resources.
+			// Also handle case where we create special because writingsystem has entries to write
+			XElement specialElem = element.Elements("special").FirstOrDefault(
+				e => !string.IsNullOrEmpty((string)e.Attribute(XNamespace.Xmlns+"sil")) && e.Element(Sil + "external-resources") != null);
 			if (specialElem == null && (ws.Fonts.Count > 0 || ws.KnownKeyboards.Count > 0 || ws.SpellCheckDictionaries.Count > 0))
 			{
-				// Create element
-				specialElem = element.GetOrCreateElement("special");
+				// Create special element
+				specialElem = GetOrCreateSpecialElement(element);
 			}
 			if (specialElem != null)
 			{
@@ -881,14 +893,9 @@ namespace SIL.WritingSystems
 			Debug.Assert(identityElem != null);
 			Debug.Assert(ws != null);
 
-			// Remove non-special elements and special sil:identity elements to repopulate later
+			// Remove non-special elements to repopulate later
+			// Preserve special because we don't recreate all its contents
 			identityElem.Elements().Where(e => e.Name != "special").Remove();
-			XElement specialElem = identityElem.Element("special");
-			if (specialElem != null)
-			{
-				specialElem.Elements().Where(e => e.Name == Sil + "identity").Remove();
-				RemoveIfEmpty(specialElem);
-			}
 
 			// Version is required.  If VersionNumber is blank, the empty attribute is still written
 			XElement versionElem = identityElem.GetOrCreateElement("version");
@@ -902,7 +909,7 @@ namespace SIL.WritingSystems
 			// Create special element if data needs to be written
 			if (!string.IsNullOrEmpty(ws.WindowsLcid) || !string.IsNullOrEmpty(ws.DefaultRegion) || (ws.Variants.Count > 0))
 			{
-				specialElem = identityElem.GetOrCreateElement("special");
+				XElement specialElem = GetOrCreateSpecialElement(identityElem);
 				XElement silIdentityElem = specialElem.GetOrCreateElement(Sil + "identity");
 
 				// TODO: how do we recover uid attribute?
@@ -912,6 +919,10 @@ namespace SIL.WritingSystems
 				// TODO: For now, use the first variant as the variantName
 				if (ws.Variants.Count > 0)
 					silIdentityElem.SetOptionalAttributeValue("variantName", ws.Variants.First().Name);
+					
+				// Move special to the end of the identity block (preserving order)
+				specialElem.Remove();
+				identityElem.Add(specialElem);
 			}
 		}
 
@@ -969,7 +980,7 @@ namespace SIL.WritingSystems
 					default :
 						exemplarCharactersElem = new XElement(Sil + "exemplarCharacters", UnicodeSet.ToPattern(csd.Characters));
 						exemplarCharactersElem.SetAttributeValue("type", csd.Type);
-						specialElem = charactersElem.GetOrCreateElement("special");
+						specialElem = GetOrCreateSpecialElement(charactersElem);
 						specialElem.Add(exemplarCharactersElem);
 						break;
 				}
@@ -1023,7 +1034,7 @@ namespace SIL.WritingSystems
 				matchedPairElem.SetAttributeValue("open", mp.Open);
 				matchedPairElem.SetAttributeValue("close", mp.Close);
 				matchedPairElem.SetAttributeValue("paraClose", mp.ParagraphClose ); // optional, default to false?
-				specialElem = delimitersElem.GetOrCreateElement("special");
+				specialElem = GetOrCreateSpecialElement(delimitersElem);
 				matchedPairsElem = specialElem.GetOrCreateElement(Sil + "matched-pairs");
 				matchedPairsElem.Add(matchedPairElem);
 			}
@@ -1046,7 +1057,7 @@ namespace SIL.WritingSystems
 				// text is required
 				punctuationPatternElem.SetAttributeValue("pattern", pp.Pattern);
 				punctuationPatternElem.SetAttributeValue("context", PunctuationPatternContextToContext[pp.Context]);
-				specialElem = delimitersElem.GetOrCreateElement("special");
+				specialElem = GetOrCreateSpecialElement(delimitersElem);
 				punctuationPatternsElem = specialElem.GetOrCreateElement(Sil + "punctuation-patterns");
 				punctuationPatternsElem.Add(punctuationPatternElem);
 			}
@@ -1080,7 +1091,7 @@ namespace SIL.WritingSystems
 					// normal quotation mark can have no attribute defined.  Narrative --> "narrative"
 					quotationElem.SetOptionalAttributeValue("type", QuotationMarkingSystemTypesToQuotation[qm.Type]);
 
-					specialElem = delimitersElem.GetOrCreateElement("special");
+					specialElem = GetOrCreateSpecialElement(delimitersElem);
 					quotationmarksElem = specialElem.GetOrCreateElement(Sil + "quotation-marks");
 					quotationmarksElem.Add(quotationElem);
 				}
@@ -1183,8 +1194,6 @@ namespace SIL.WritingSystems
 				collationElem = new XElement("collation", new XAttribute("type", collation.Type));
 				collationsElem.Add(collationElem);
 			}
-			// SLDR generally doesn't include needsCompiling if false
-			collationElem.SetAttributeValue(Sil + "needsCompiling", collation.IsValid ? null : "true");
 
 			// If collation valid and icu rules exist, populate icu rules
 			if (!string.IsNullOrEmpty(collation.IcuRules))
@@ -1197,14 +1206,18 @@ namespace SIL.WritingSystems
 			var inheritedCollation = collation as InheritedCollationDefinition;
 			if (inheritedCollation != null)
 			{
-				XElement specialElem = collationElem.GetOrCreateElement("special");
+				XElement specialElem = GetOrCreateSpecialElement(collationElem);
+				// SLDR generally doesn't include needsCompiling if false
+				specialElem.SetAttributeValue(Sil + "needsCompiling", collation.IsValid ? null : "true");
 				collationElem = specialElem.GetOrCreateElement(Sil + "inherited");
 				WriteCollationRulesFromOtherLanguage(collationElem, (InheritedCollationDefinition)collation);
 			}
 			var simpleCollation = collation as SimpleCollationDefinition;
 			if (simpleCollation != null)
 			{
-				XElement specialElem = collationElem.GetOrCreateElement("special");
+				XElement specialElem = GetOrCreateSpecialElement(collationElem);
+				// SLDR generally doesn't include needsCompiling if false
+				specialElem.SetAttributeValue(Sil + "needsCompiling", collation.IsValid ? null : "true");			
 				collationElem = specialElem.GetOrCreateElement(Sil + "simple");
 				WriteCollationRulesFromCustomSimple(collationElem, (SimpleCollationDefinition)collation);
 			}

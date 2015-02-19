@@ -85,12 +85,9 @@ namespace SIL.WritingSystems
 					File.Delete(filename);
 				File.Move(tempFilename, filename);
 
-				// the SLDR currently has a bug where the SIL namespace is not properly defined, so we add it manually
+				// the SLDR currently has a bug where the SIL namespace is not properly defined
+				// TODO: Add it manually to the special blocks
 				// TODO: remove this when the SLDR fixes this bug
-				string text = File.ReadAllText(filename);
-				int index = text.IndexOf("<ldml>", StringComparison.Ordinal);
-				if (index != -1)
-					File.WriteAllText(filename, string.Format("{0}<ldml xmlns:sil=\"{1}\">{2}", text.Substring(0, index), Sil, text.Substring(index + 6)));
 			}
 			catch (Exception)
 			{

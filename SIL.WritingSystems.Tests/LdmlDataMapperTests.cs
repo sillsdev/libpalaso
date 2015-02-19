@@ -470,11 +470,11 @@ namespace SIL.WritingSystems.Tests
 				XElement collationsElem = ldmlElem.Element("collations");
 				XElement defaultCollationElem = collationsElem.Element("defaultCollation");
 				XElement collationElem = collationsElem.Element("collation");
-				XElement crElem = collationElem.Element("cr");
-				XElement simpleElem = collationElem.Element("special").Element(Sil + "simple");
+				XElement specialElem = collationElem.Element("special");
+				XElement simpleElem = specialElem.Element(Sil + "simple");
 				Assert.That((string)defaultCollationElem, Is.EqualTo("standard"));
 				Assert.That((string)collationElem.Attribute("type"), Is.EqualTo("standard"));
-				Assert.That((string)collationElem.Attribute(Sil + "needsCompiling"), Is.EqualTo("true"));
+				Assert.That((string)specialElem.Attribute(Sil + "needsCompiling"), Is.EqualTo("true"));
 				Assert.That((string)simpleElem, Is.EqualTo(simpleRules.Replace("\r\n", "\n")));
 
 				var validatedCd = new SimpleCollationDefinition("standard")
@@ -638,7 +638,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
 				{
-					writer.Write(LdmlContentForTests.PrivateUse("", "", "", "x-private-use"));
+					writer.Write(LdmlContentForTests.Version3Identity("", "", "", "x-private-use", "abcdefg", "123456", "", ""));
 				}
 				adaptor.Read(tempFile.Path, wsFromLdml);
 				Assert.That(wsFromLdml.Language, Is.EqualTo((LanguageSubtag) "private"));
@@ -664,7 +664,7 @@ namespace SIL.WritingSystems.Tests
 				adaptor.Write(file.Path, ws2, new MemoryStream(File.ReadAllBytes(file.Path)));
 				Assert.That(XElement.Load(file.Path), Is.EqualTo(XElement.Parse(
 @"<?xml version='1.0' encoding='utf-8'?>
-<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
+<ldml>
 	<identity>
 		<version number='' />
 		<generation date='0001-01-01T00:00:00' />
@@ -672,7 +672,7 @@ namespace SIL.WritingSystems.Tests
 		<script type='Zxxx' />
 		<territory type='US' />
 		<variant type='x-audio' />
-		<special>
+		<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
 			<sil:identity variantName='Audio' />
 		</special>
 	</identity>
@@ -951,26 +951,17 @@ namespace SIL.WritingSystems.Tests
 				{
 					dataMapper.Write(roundTripOut.Path, ws, fileStream);
 				}
-				AssertThatXmlIn.File(roundTripOut.Path).HasSpecifiedNumberOfMatchesForXpath("/ldml/identity/special/*[local-name()='identity']", 1);
+				AssertThatXmlIn.File(roundTripOut.Path).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/*[local-name()='external-resources']", 1);
 				var secondTripMapper = new LdmlDataMapper();
 				var secondTripWs = new WritingSystemDefinition();
 				secondTripMapper.Read(roundTripOut.Path, secondTripWs);
 				secondTripWs.KnownKeyboards.Add(new DefaultKeyboardDefinition("x-tel", string.Empty));
-				secondTripWs.WindowsLcid = "1037";
 				using (var fileStream = new FileStream(roundTripOut.Path, FileMode.Open))
 				{
 					secondTripMapper.Write(roundTripOut2.Path, secondTripWs, fileStream);
 				}
-				AssertThatXmlIn.File(roundTripOut2.Path).HasSpecifiedNumberOfMatchesForXpath("/ldml/identity/special/*[local-name()='identity']", 1);
+				AssertThatXmlIn.File(roundTripOut2.Path).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/*[local-name()='external-resources']", 1);
 			}
-		}
-
-		private static void AssertThatRfcTagComponentsOnWritingSystemAreEqualTo(WritingSystemDefinition ws, LanguageSubtag language, ScriptSubtag script, RegionSubtag territory, IEnumerable<VariantSubtag> variants)
-		{
-			Assert.That(ws.Language, Is.EqualTo(language));
-			Assert.That(ws.Script, Is.EqualTo(script));
-			Assert.That(ws.Region, Is.EqualTo(territory));
-			Assert.That(ws.Variants, Is.EqualTo(variants));
 		}
 
 		private static void WriteVersion0Ldml(string language, string script, string territory, string variant, TempFile file)

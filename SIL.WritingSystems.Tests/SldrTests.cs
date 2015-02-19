@@ -78,6 +78,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		[Category("SkipOnTeamCity")]
 		public void Get_Validate()
 		{
 			using (var environment = new TestEnvironment())

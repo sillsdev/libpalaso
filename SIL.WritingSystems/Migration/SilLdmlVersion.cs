@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Xml.Linq;
 using SIL.Migration;
 
@@ -9,14 +7,6 @@ namespace SIL.WritingSystems.Migration
 	public class SilLdmlVersion : IFileVersion
 	{
 		public const int BadVersion = -1;
-
-		/// <summary>
-		/// Mapping of Sil namespace URI to LDML version
-		/// </summary>
-		private static readonly Dictionary<string, int> UriToVersion = new Dictionary<string, int>
-		{
-			{"urn://www.sil.org/ldml/0.1", WritingSystemDefinition.LatestWritingSystemDefinitionVersion},
-		};
 
 		public int GetFileVersion(string filePath)
 		{
@@ -28,19 +18,26 @@ namespace SIL.WritingSystems.Migration
 			XElement ldmlElem = XElement.Load(filePath);
 			if (ldmlElem.Name == "ldml")
 			{
-				int result;
-				string uri = (string)ldmlElem.Attribute(XNamespace.Xmlns + "sil");
-				if (!string.IsNullOrEmpty(uri) && UriToVersion.TryGetValue(uri, out result))
+				// The exisitence of any other special namespace means invalid version
+				foreach (var elem in ldmlElem.Elements("special"))
 				{
-					return result;
+					if (!string.IsNullOrEmpty((string)elem.Attribute(XNamespace.Xmlns+"palaso")) || 
+						!string.IsNullOrEmpty((string)elem.Attribute(XNamespace.Xmlns+"palaso2")) ||
+						!string.IsNullOrEmpty((string)elem.Attribute(XNamespace.Xmlns+"fw")))
+					{
+						return BadVersion;
+					}
 				}
+				// Otherwise assume good current version
+				return WritingSystemDefinition.LatestWritingSystemDefinitionVersion;
 			}
+
 			return BadVersion;
 		}
 
 		public int StrategyGoodToVersion
 		{
-			get { return UriToVersion.Max(kvp => kvp.Value); }
+			get { return WritingSystemDefinition.LatestWritingSystemDefinitionVersion; }
 		}
 
 	}
