@@ -209,7 +209,8 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			{
 				return;
 			}
-			_defaultKeyboard.Activate();
+			if (_defaultKeyboard != null)
+				_defaultKeyboard.Activate();
 		}
 
 		private void RightToLeftCheckBox_CheckedChanged(object sender, EventArgs e)
