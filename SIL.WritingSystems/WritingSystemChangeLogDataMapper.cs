@@ -9,25 +9,25 @@ namespace SIL.WritingSystems
 {
 	public class WritingSystemChangeLogDataMapper : IWritingSystemChangeLogDataMapper
 	{
-		///<summary>
-		/// The WritingSystemChangeLogDataMapper reads a change log having the following typical XML structure:
-		///
-		/// <WritingSystemChangeLog version='1'>
-		//  <Changes>
-		//      <Change Producer='WeSay' ProducerVersion='1.1' TimeStamp='1994-11-05T13:15:30Z'>
-		//          <From>aaa</from>
-		//          <To>ccc</to>
-		//      </Change>
-		//      <Delete Producer='WeSay' ProducerVersion='1.1' TimeStamp='1994-11-05T13:15:30Z'>
-		//          <Id>bbb</Id>
-		//      </Delete>
-		//      <Add Producer='WeSay' ProducerVersion='1.1' TimeStamp='1994-11-05T13:15:30Z'>
-		//          <Id>ddd</Id>
-		//      </Add>
-		//  </Changes>
-		//  </WritingSystemsChangeLog>
-
-		///</summary>
+		/// <summary>
+		///  The WritingSystemChangeLogDataMapper reads a change log having the following typical XML structure:
+		///  <![CDATA[
+		///  <WritingSystemChangeLog version='1'>
+		///  <Changes>
+		///      <Change Producer='WeSay' ProducerVersion='1.1' TimeStamp='1994-11-05T13:15:30Z'>
+		///          <From>aaa</from>
+		///          <To>ccc</to>
+		///      </Change>
+		///      <Delete Producer='WeSay' ProducerVersion='1.1' TimeStamp='1994-11-05T13:15:30Z'>
+		///          <Id>bbb</Id>
+		///      </Delete>
+		///      <Add Producer='WeSay' ProducerVersion='1.1' TimeStamp='1994-11-05T13:15:30Z'>
+		///          <Id>ddd</Id>
+		///      </Add>
+		///  </Changes>
+		///  </WritingSystemsChangeLog>
+		///  ]]>
+		/// </summary>
 		public WritingSystemChangeLogDataMapper(string filePath)
 		{
 			if (filePath == null)

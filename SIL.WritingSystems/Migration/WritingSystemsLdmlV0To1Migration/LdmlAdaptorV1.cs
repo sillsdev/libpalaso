@@ -454,9 +454,6 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		/// <summary>
 		/// The "oldFileReader" parameter allows the LdmldataMapper to allow data that it doesn't understand to be roundtripped.
 		/// </summary>
-		/// <param name="filePath"></param>
-		/// <param name="ws"></param>
-		/// <param name="oldFile"></param>
 		public void Write(XmlWriter xmlWriter, WritingSystemDefinitionV1 ws, XmlReader oldFileReader)
 		{
 			if (xmlWriter == null)
