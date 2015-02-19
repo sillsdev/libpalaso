@@ -76,7 +76,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 			{
 				foreach (WritingSystemDefinition language in OtherKnownWritingSystems)
 				{
-					if (!existingDefinitions.Any(def => def.LanguageTag == language.LanguageTag))
+					if (!existingDefinitions.Any(def => def.IetfLanguageTag == language.IetfLanguageTag))
 						yield return new LanguageSuggestion(language);
 				}
 			}

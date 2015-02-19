@@ -22,14 +22,14 @@ namespace SIL.WritingSystems
 			_baseType = icrd._baseType;
 		}
 
-		public string BaseLanguageTag
+		public string BaseIetfLanguageTag
 		{
 			get { return _baseLanguageTag; }
 			set
 			{
-				if (!IetfLanguageTag.IsValid(value))
+				if (!IetfLanguageTagHelper.IsValid(value))
 					throw new ArgumentException("A valid language tag is required.", "value");
-				if (Set(() => BaseLanguageTag, ref _baseLanguageTag, value))
+				if (Set(() => BaseIetfLanguageTag, ref _baseLanguageTag, value))
 					ResetCollator();
 			}
 		}
@@ -95,7 +95,7 @@ namespace SIL.WritingSystems
 		public override bool ValueEquals(CollationDefinition other)
 		{
 			var icrd = other as InheritedCollationDefinition;
-			return icrd != null && Type == icrd.Type && BaseLanguageTag == icrd.BaseLanguageTag && BaseType == icrd.BaseType;
+			return icrd != null && Type == icrd.Type && BaseIetfLanguageTag == icrd.BaseIetfLanguageTag && BaseType == icrd.BaseType;
 		}
 
 		public override CollationDefinition Clone()

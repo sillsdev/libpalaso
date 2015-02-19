@@ -225,7 +225,7 @@ namespace SIL.WritingSystems.Tests
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
 				Assert.That(wsFromLdml.VersionNumber, Is.EqualTo("$Revision$"));
 				Assert.That(wsFromLdml.VersionDescription, Is.EqualTo("Identity version description"));
-				Assert.That(wsFromLdml.Id, Is.EqualTo("en-Latn-GB-x-test"));
+				Assert.That(wsFromLdml.Id, Is.EqualTo("en-GB-x-test"));
 				Assert.That(wsFromLdml.WindowsLcid, Is.EqualTo("1036"));
 				Assert.That(wsFromLdml.DefaultRegion, Is.EqualTo("US"));
 				Assert.That(wsFromLdml.Variants[0].Name, Is.EqualTo("1996"));
@@ -501,7 +501,7 @@ namespace SIL.WritingSystems.Tests
 					"&B<t<<<T<s<<<S<e<<<E\n\t\t\t\t&C<k<<<K<x<<<X<i<<<I\n\t\t\t\t&D<q<<<Q<r<<<R\n\t\t\t\t&G<o<<<O\n\t\t\t\t&W<h<<<H";
 				var cd = new InheritedCollationDefinition("standard")
 				{
-					BaseLanguageTag = "my",
+					BaseIetfLanguageTag = "my",
 					BaseType = "standard",
 					IcuRules = icuRules,
 					IsValid = true
@@ -763,7 +763,7 @@ namespace SIL.WritingSystems.Tests
 				var ws = new WritingSystemDefinition();
 				adaptor.Read(file.Path, ws);
 				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path), true));
-				AssertThatLdmlMatches("xh", "", "", "", file);
+				AssertThatLdmlMatches("xh", "Latn", "", "", file);
 				var versionReader = new WritingSystemLdmlVersionGetter();
 				Assert.That(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, Is.EqualTo(versionReader.GetFileVersion(file.Path)));
 			}
@@ -984,7 +984,7 @@ namespace SIL.WritingSystems.Tests
 		private static void WriteCurrentVersionLdml(string language, string script, string territory, string variant, TempFile file)
 		{
 			var ws = new WritingSystemDefinition();
-			ws.SetAllComponents(language, script, territory, variant);
+			ws.SetIetfLanguageTag(language, script, territory, variant);
 			new LdmlDataMapper().Write(file.Path, ws, null);
 		}
 

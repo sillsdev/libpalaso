@@ -2,12 +2,17 @@
 {
 	public class ScriptSubtag : Subtag
 	{
-		public ScriptSubtag(string code, bool isPrivateUse)
-			: base(code, isPrivateUse)
+		/// <summary>
+		/// Initializes a new private-use instance of the <see cref="ScriptSubtag"/> class.
+		/// </summary>
+		/// <param name="code">The code.</param>
+		/// <param name="name">The name.</param>
+		public ScriptSubtag(string code, string name = null)
+			: base(code, name, true)
 		{
 		}
 
-		public ScriptSubtag(string code, string name, bool isPrivateUse)
+		internal ScriptSubtag(string code, string name, bool isPrivateUse)
 			: base(code, name, isPrivateUse)
 		{
 		}
@@ -35,7 +40,7 @@
 
 			ScriptSubtag subtag;
 			if (!StandardSubtags.Iso15924Scripts.TryGet(code, out subtag))
-				subtag = new ScriptSubtag(code, true);
+				subtag = new ScriptSubtag(code);
 			return subtag;
 		}
 	}

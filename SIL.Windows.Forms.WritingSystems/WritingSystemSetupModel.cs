@@ -240,7 +240,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		/// <returns>false if the code wasn't found</returns>
 		public virtual bool SetCurrentIndexFromRfc46464(string rfc4646)
 		{
-			var index = WritingSystemDefinitions.FindIndex(d => d.LanguageTag == rfc4646);
+			var index = WritingSystemDefinitions.FindIndex(d => d.IetfLanguageTag == rfc4646);
 			if(index<0)
 			{
 				return false;
@@ -463,10 +463,10 @@ namespace SIL.Windows.Forms.WritingSystems
 				// create a list of languages we have to disallow to prevent a cycle
 				// in the sort options
 				var prohibitedList = new List<string>();
-				if (CurrentDefinition != null && !string.IsNullOrEmpty(CurrentDefinition.LanguageTag))
+				if (CurrentDefinition != null && !string.IsNullOrEmpty(CurrentDefinition.IetfLanguageTag))
 				{
 					// don't allow the current language to be picked
-					prohibitedList.Add(CurrentDefinition.LanguageTag);
+					prohibitedList.Add(CurrentDefinition.IetfLanguageTag);
 				}
 				for (int i = 0; i < WritingSystemDefinitions.Count; i++)
 				{
@@ -475,10 +475,10 @@ namespace SIL.Windows.Forms.WritingSystems
 					// don't allow if it references another language on our prohibited list and this one
 					// isn't already on the prohibited list
 					if (inheritedCollation != null
-						&& !string.IsNullOrEmpty(ws.LanguageTag) && prohibitedList.Contains(inheritedCollation.BaseLanguageTag)
-						&& !prohibitedList.Contains(ws.LanguageTag))
+						&& !string.IsNullOrEmpty(ws.IetfLanguageTag) && prohibitedList.Contains(inheritedCollation.BaseIetfLanguageTag)
+						&& !prohibitedList.Contains(ws.IetfLanguageTag))
 					{
-						prohibitedList.Add(ws.LanguageTag);
+						prohibitedList.Add(ws.IetfLanguageTag);
 						// Restart the scan through all the writing systems every time we add a prohibited one.
 						// This ensuers that we catch all possible cycles.
 						i = -1;
@@ -682,7 +682,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				}
 				else
 				{
-					return CurrentDefinition.LanguageTag ?? string.Empty;
+					return CurrentDefinition.IetfLanguageTag ?? string.Empty;
 				}
 			}
 //            set
@@ -738,17 +738,17 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		public string CurrentVariant
 		{
-			get { return IetfLanguageTag.GetVariantCodes(CurrentDefinition.Variants) ?? string.Empty; }
+			get { return IetfLanguageTagHelper.GetVariantCodes(CurrentDefinition.Variants) ?? string.Empty; }
 			set
 			{
-				if (IetfLanguageTag.GetVariantCodes(CurrentDefinition.Variants) != value)
+				if (IetfLanguageTagHelper.GetVariantCodes(CurrentDefinition.Variants) != value)
 				{
 					string fixedVariant = WritingSystemDefinitionVariantHelper.ValidVariantString(value);
 					if (string.IsNullOrEmpty(CurrentDefinition.Language) && !fixedVariant.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
 						CurrentDefinition.Language = WellKnownSubtags.UnlistedLanguage;
 
 					IEnumerable<VariantSubtag> variantSubtags;
-					if (IetfLanguageTag.TryGetVariantSubtags(value, out variantSubtags))
+					if (IetfLanguageTagHelper.TryGetVariantSubtags(value, out variantSubtags))
 					{
 						VariantSubtag[] originalVariantSubtags = CurrentDefinition.Variants.ToArray();
 						try
@@ -785,10 +785,10 @@ namespace SIL.Windows.Forms.WritingSystems
 			summary.AppendFormat(" {0}", writingSystem.Language.Name);
 			if (writingSystem.Region != null)
 				summary.AppendFormat(" in {0}", writingSystem.Region.Code);
-			if (writingSystem.Script != null)
+			if (writingSystem.Script != null && writingSystem.Language.ImplicitScriptCode != writingSystem.Script.Code)
 				summary.AppendFormat(" written in {0} script", CurrentIso15924Script.ShortName);
 
-			summary.AppendFormat(". ({0})", writingSystem.LanguageTag);
+			summary.AppendFormat(". ({0})", writingSystem.IetfLanguageTag);
 			return summary.ToString().Trim();
 		}
 
@@ -888,7 +888,7 @@ namespace SIL.Windows.Forms.WritingSystems
 						return simpleCollation.SimpleRules == string.Empty ? DefaultCustomSimpleSortRules : simpleCollation.SimpleRules;
 					case CollationRulesType.OtherLanguage:
 						var inheritedCollation = (InheritedCollationDefinition) CurrentDefinition.DefaultCollation;
-						return inheritedCollation.BaseLanguageTag;
+						return inheritedCollation.BaseIetfLanguageTag;
 				}
 				return string.Empty;
 			}
@@ -913,9 +913,9 @@ namespace SIL.Windows.Forms.WritingSystems
 						break;
 					case CollationRulesType.OtherLanguage:
 						var inheritedCollation = (InheritedCollationDefinition) CurrentDefinition.DefaultCollation;
-						if (inheritedCollation.BaseLanguageTag != value)
+						if (inheritedCollation.BaseIetfLanguageTag != value)
 						{
-							inheritedCollation.BaseLanguageTag = value;
+							inheritedCollation.BaseIetfLanguageTag = value;
 							OnCurrentItemUpdated();
 						}
 						break;
@@ -1600,7 +1600,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			if (CurrentDefinition != null)
 			{
-				CurrentVariant = IetfLanguageTag.GetVariantCodes(CurrentDefinition.Variants);
+				CurrentVariant = IetfLanguageTagHelper.GetVariantCodes(CurrentDefinition.Variants);
 				CurrentRegion = CurrentDefinition.Region;
 				CurrentScriptCode = CurrentDefinition.Script;
 				CurrentIsVoice = CurrentDefinition.IsVoice;

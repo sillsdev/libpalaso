@@ -58,7 +58,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 			if (DialogResult.OK != dlg.ShowDialog())
 				return null;
 			IEnumerable<VariantSubtag> variantSubtags;
-			if (IetfLanguageTag.TryGetVariantSubtags(WritingSystemDefinitionVariantHelper.ValidVariantString(dlg.DialectName), out variantSubtags))
+			if (IetfLanguageTagHelper.TryGetVariantSubtags(WritingSystemDefinitionVariantHelper.ValidVariantString(dlg.DialectName), out variantSubtags))
 				TemplateDefinition.Variants.ReplaceAll(variantSubtags);
 			return TemplateDefinition;
 		}

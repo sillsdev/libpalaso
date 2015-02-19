@@ -62,15 +62,15 @@ namespace SIL.WritingSystems
 				}
 				var conformantWritingSystem = new WritingSystemDefinition(newId);
 				// If it changed, then change
-				if (conformantWritingSystem.LanguageTag != wsId)
+				if (conformantWritingSystem.IetfLanguageTag != wsId)
 				{
 					conformantWritingSystem = WritingSystemDefinition.CreateCopyWithUniqueId(conformantWritingSystem, updatedIds);
-					replaceIdsInFile(wsId, conformantWritingSystem.LanguageTag);
+					replaceIdsInFile(wsId, conformantWritingSystem.IetfLanguageTag);
 					updatedIds.Remove(wsId);
-					updatedIds.Add(conformantWritingSystem.LanguageTag);
+					updatedIds.Add(conformantWritingSystem.IetfLanguageTag);
 				}
 				// Check if it's in the repo
-				if (writingSystemRepository.Contains(conformantWritingSystem.LanguageTag))
+				if (writingSystemRepository.Contains(conformantWritingSystem.IetfLanguageTag))
 				{
 					continue;
 				}

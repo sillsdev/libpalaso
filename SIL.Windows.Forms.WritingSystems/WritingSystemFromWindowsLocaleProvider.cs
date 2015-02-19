@@ -66,7 +66,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			IEnumerable<WritingSystemDefinition> defs = GetLanguageAndKeyboardCombinations();
 			//now just return the unique ones (Works because no keyboard in the rfc4646)
-			IEnumerable<WritingSystemDefinition> unique = defs.GroupBy(d => d.LanguageTag)
+			IEnumerable<WritingSystemDefinition> unique = defs.GroupBy(d => d.IetfLanguageTag)
 				.Select(g => g.First());
 			return unique.GetEnumerator();
 		}
@@ -104,11 +104,11 @@ namespace SIL.Windows.Forms.WritingSystems
 					cleaner.Language,
 					cleaner.Script,
 					cleaner.Region,
-					IetfLanguageTag.ConcatenateVariantAndPrivateUse(cleaner.Variant, cleaner.PrivateUse),
+					IetfLanguageTagHelper.ConcatenateVariantAndPrivateUse(cleaner.Variant, cleaner.PrivateUse),
 					culture.ThreeLetterISOLanguageName,
 					culture.TextInfo.IsRightToLeft);
 				def.Keyboard = language.LayoutName;
-				def.DefaultCollation = new InheritedCollationDefinition("standard") { BaseLanguageTag = culture.IetfLanguageTag };
+				def.DefaultCollation = new InheritedCollationDefinition("standard") { BaseIetfLanguageTag = culture.IetfLanguageTag };
 				def.DefaultFontSize = 12;
 
 				yield return def;

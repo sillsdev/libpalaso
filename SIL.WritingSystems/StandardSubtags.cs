@@ -75,7 +75,7 @@ namespace SIL.WritingSystems
 						string iso3Code;
 						if (!twoToThreeMap.TryGetValue(subtag, out iso3Code))
 							iso3Code = String.Empty;
-						languages.Add(new LanguageSubtag(subtag, description, false, iso3Code));
+						languages.Add(new LanguageSubtag(subtag, description, false, iso3Code, GetImplicitScriptCode(subTagComponents)));
 						break;
 					case "script":
 						scripts.Add(new ScriptSubtag(subtag, description, false));
@@ -97,7 +97,7 @@ namespace SIL.WritingSystems
 			//variants.Add(new VariantSubtag("x-audio", "Audio", false, null));
 
 			IEnumerable<LanguageSubtag> sortedLanguages = languages.OrderBy(l => Regex.Replace(l.Name, @"[^\w]", ""))
-				.Concat(new[] {new LanguageSubtag(WellKnownSubtags.UnlistedLanguage, "Language Not Listed", false, string.Empty)});
+				.Concat(new[] {new LanguageSubtag(WellKnownSubtags.UnlistedLanguage, "Language Not Listed", false, string.Empty, string.Empty)});
 			Iso639Languages = new ReadOnlyKeyedCollection<string, LanguageSubtag>(new KeyedList<string, LanguageSubtag>(sortedLanguages, l => l.Code, StringComparer.InvariantCultureIgnoreCase));
 			Iso15924Scripts = new ReadOnlyKeyedCollection<string, ScriptSubtag>(new KeyedList<string, ScriptSubtag>(scripts.OrderBy(s => s.Name), s => s.Code, StringComparer.InvariantCultureIgnoreCase));
 			Iso3166Regions = new ReadOnlyKeyedCollection<string, RegionSubtag>(new KeyedList<string, RegionSubtag>(regions.OrderBy(r => r.Name), r => r.Code, StringComparer.InvariantCultureIgnoreCase));
@@ -122,11 +122,18 @@ namespace SIL.WritingSystems
 
 		private static IEnumerable<string> GetVariantPrefixes(string[] subTagComponents)
 		{
-			foreach (var line in subTagComponents)
+			foreach (string line in subTagComponents)
 			{
 				if (line.StartsWith("Prefix: "))
 					yield return line.Substring("Prefix: ".Length).Trim();
 			}
+		}
+
+		private static string GetImplicitScriptCode(string[] subTagComponents)
+		{
+			if (subTagComponents.Length >= 5 && subTagComponents[4].StartsWith("Suppress-Script: "))
+				return subTagComponents[4].Substring("Suppress-Script: ".Length).Trim();
+			return string.Empty;
 		}
 
 		internal static string SubTagComponentDescription(string component)

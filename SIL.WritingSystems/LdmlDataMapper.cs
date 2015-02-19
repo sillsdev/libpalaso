@@ -323,7 +323,7 @@ namespace SIL.WritingSystems
 				}
 				throw new ApplicationException(String.Format(
 					"The LDML tag '{0}' is version {1}.  Version {2} was expected.",
-					ws.LanguageTag,
+					ws.IetfLanguageTag,
 					version,
 					WritingSystemDefinition.LatestWritingSystemDefinitionVersion
 					));
@@ -468,15 +468,12 @@ namespace SIL.WritingSystems
 			{
 				var flexRfcTagInterpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 				flexRfcTagInterpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, region, variant);
-				ws.SetAllComponents(flexRfcTagInterpreter.Language, flexRfcTagInterpreter.Script, flexRfcTagInterpreter.Region, flexRfcTagInterpreter.Variant);
+				ws.SetIetfLanguageTag(flexRfcTagInterpreter.Language, flexRfcTagInterpreter.Script, flexRfcTagInterpreter.Region, flexRfcTagInterpreter.Variant);
 			}
 			else
 			{
-				ws.SetAllComponents(language, script, region, variant);
+				ws.SetIetfLanguageTag(language, script, region, variant);
 			}
-
-			//Set the id simply as the concatenation of whatever was in the ldml file.
-			ws.Id = String.Join("-", new[] {language, script, region, variant}.Where(subtag => !String.IsNullOrEmpty(subtag)).ToArray());
 
 			// TODO: Parse rest of special element.  Currently only handling a subset
 			XElement specialElem = identityElem.Element("special");
@@ -718,7 +715,7 @@ namespace SIL.WritingSystems
 			var baseLanguageTag = (string) inheritedElem.Attribute("base");
 			var baseType = (string) inheritedElem.Attribute("type");
 
-			return new InheritedCollationDefinition(collationType) {BaseLanguageTag = baseLanguageTag, BaseType = baseType};
+			return new InheritedCollationDefinition(collationType) {BaseIetfLanguageTag = baseLanguageTag, BaseType = baseType};
 		}
 
 		private CollationDefinition ReadCollationRulesForCustomSimple(XElement simpleElem, string collationType)
@@ -904,7 +901,7 @@ namespace SIL.WritingSystems
 				versionElem.SetValue(ws.VersionDescription);
 
 			identityElem.SetAttributeValue("generation", "date", String.Format("{0:s}", ws.DateModified));
-			WriteLanguageTagElements(identityElem, ws.LanguageTag);
+			WriteLanguageTagElements(identityElem, ws.IetfLanguageTag);
 
 			// Create special element if data needs to be written
 			if (!string.IsNullOrEmpty(ws.WindowsLcid) || !string.IsNullOrEmpty(ws.DefaultRegion) || (ws.Variants.Count > 0))
@@ -929,7 +926,7 @@ namespace SIL.WritingSystems
 		private void WriteLanguageTagElements(XElement identityElem, string languageTag) 
 		{
 			string language, script, region, variant;
-			IetfLanguageTag.GetParts(languageTag, out language, out script, out region, out variant);
+			IetfLanguageTagHelper.GetParts(languageTag, out language, out script, out region, out variant);
 			
 			// language element is required
 			identityElem.SetAttributeValue("language", "type", language);
@@ -1230,7 +1227,7 @@ namespace SIL.WritingSystems
 			Debug.Assert(cd != null);
 			
 			// base and type are required attributes
-			collationElement.SetAttributeValue("base", cd.BaseLanguageTag);
+			collationElement.SetAttributeValue("base", cd.BaseIetfLanguageTag);
 			collationElement.SetAttributeValue("type", cd.BaseType);
 		}
 

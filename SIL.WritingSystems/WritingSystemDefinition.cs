@@ -110,7 +110,7 @@ namespace SIL.WritingSystems
 		}
 
 		public WritingSystemDefinition(string language, string script, string region, string variant)
-			: this(IetfLanguageTag.ToLanguageTag(language, script, region, variant))
+			: this(IetfLanguageTagHelper.ToIetfLanguageTag(language, script, region, variant))
 		{
 		}
 
@@ -118,7 +118,7 @@ namespace SIL.WritingSystems
 		/// Creates a new WritingSystemDefinition.
 		/// </summary>
 		public WritingSystemDefinition(string language, string script, string region, string variant, string abbreviation, bool rightToLeftScript)
-			: this(IetfLanguageTag.ToLanguageTag(language, script, region, variant))
+			: this(IetfLanguageTagHelper.ToIetfLanguageTag(language, script, region, variant))
 		{
 			_abbreviation = abbreviation;
 			_rightToLeftScript = rightToLeftScript;
@@ -131,7 +131,7 @@ namespace SIL.WritingSystems
 		{
 			_languageTag = languageTag;
 			IEnumerable<VariantSubtag> variantSubtags;
-			if (!IetfLanguageTag.TryGetSubtags(languageTag, out _language, out _script, out _region, out variantSubtags))
+			if (!IetfLanguageTagHelper.TryGetSubtags(languageTag, out _language, out _script, out _region, out variantSubtags))
 				throw new ArgumentException("The language tag is invalid.", "languageTag");
 			_variants = new BulkObservableList<VariantSubtag>(variantSubtags);
 			CheckVariantAndScriptRules();
@@ -210,7 +210,7 @@ namespace SIL.WritingSystems
 			    || !e.OldItems.Cast<VariantSubtag>().Select(v => v.Code).SequenceEqual(e.NewItems.Cast<VariantSubtag>().Select(v => v.Code)))
 			{
 				CheckVariantAndScriptRules();
-				UpdateLanguageTag();
+				UpdateIetfLanguageTag();
 			}
 
 			IsChanged = true;
@@ -300,7 +300,7 @@ namespace SIL.WritingSystems
 				{
 					_requiresValidLanguageTag = value;
 					CheckVariantAndScriptRules();
-					UpdateLanguageTag();
+					UpdateIetfLanguageTag();
 				}
 			}
 		}
@@ -332,7 +332,7 @@ namespace SIL.WritingSystems
 					if (_language == null)
 						_language = WellKnownSubtags.UnlistedLanguage;
 
-					int index = IetfLanguageTag.GetIndexOfFirstPrivateUseVariant(_variants);
+					int index = IetfLanguageTagHelper.GetIndexOfFirstPrivateUseVariant(_variants);
 
 					switch (value)
 					{
@@ -433,15 +433,15 @@ namespace SIL.WritingSystems
 		/// <param name="script">A valid BCP47 script subtag.</param>
 		/// <param name="region">A valid BCP47 region subtag.</param>
 		/// <param name="variant">A valid BCP47 variant subtag.</param>
-		public void SetAllComponents(string language, string script, string region, string variant)
+		public void SetIetfLanguageTag(string language, string script, string region, string variant)
 		{
 			_requiresValidLanguageTag = true;
 			string oldId = _languageTag;
-			_languageTag = IetfLanguageTag.ToLanguageTag(language, script, region, variant);
+			_languageTag = IetfLanguageTagHelper.ToIetfLanguageTag(language, script, region, variant);
 			if (oldId != _languageTag)
 			{
 				IEnumerable<VariantSubtag> variantSubtags;
-				IetfLanguageTag.TryGetSubtags(_languageTag, out _language, out _script, out _region, out variantSubtags);
+				IetfLanguageTagHelper.TryGetSubtags(_languageTag, out _language, out _script, out _region, out variantSubtags);
 				using (_ignoreVariantChanges.Enter())
 				{
 					_variants.Clear();
@@ -462,13 +462,18 @@ namespace SIL.WritingSystems
 				string oldCode = _language == null ? string.Empty : _language.Code;
 				Set(() => Language, ref _language, value);
 				if (oldCode != (_language == null ? string.Empty : _language.Code))
-					UpdateLanguageTag();
+					UpdateIetfLanguageTag();
 			}
 		}
 
 		public ScriptSubtag Script
 		{
-			get { return _script; }
+			get
+			{
+				if (_script == null && _language != null)
+					return _language.ImplicitScriptCode;
+				return _script;
+			}
 			set
 			{
 				string oldCode = _script == null ? string.Empty : _script.Code;
@@ -476,7 +481,7 @@ namespace SIL.WritingSystems
 				if (oldCode != (_script == null ? string.Empty : _script.Code))
 				{
 					CheckVariantAndScriptRules();
-					UpdateLanguageTag();
+					UpdateIetfLanguageTag();
 				}
 			}
 		}
@@ -489,7 +494,7 @@ namespace SIL.WritingSystems
 				string oldCode = _region == null ? string.Empty : _region.Code;
 				Set(() => Region, ref _region, value);
 				if (oldCode != (_region == null ? string.Empty : _region.Code))
-					UpdateLanguageTag();
+					UpdateIetfLanguageTag();
 			}
 		}
 
@@ -553,7 +558,7 @@ namespace SIL.WritingSystems
 				string currentToAppend = string.Format("dupl{0}", duplicateNumber);
 				if (!newWs._variants.Contains(currentToAppend))
 				{
-					newWs.Variants.Add(new VariantSubtag(currentToAppend, true));
+					newWs.Variants.Add(new VariantSubtag(currentToAppend));
 					lastAppended = currentToAppend;
 				}
 				duplicateNumber++;
@@ -582,10 +587,10 @@ namespace SIL.WritingSystems
 			{
 				//jh (Oct 2010) made it start with RFC5646 because all ws's in a lang start with the
 				//same abbreviation, making imppossible to see (in SOLID for example) which you chose.
-				bool languageIsUnknown = LanguageTag.Equals(WellKnownSubtags.UnlistedLanguage, StringComparison.OrdinalIgnoreCase);
-				if (!string.IsNullOrEmpty(LanguageTag) && !languageIsUnknown)
+				bool languageIsUnknown = IetfLanguageTag.Equals(WellKnownSubtags.UnlistedLanguage, StringComparison.OrdinalIgnoreCase);
+				if (!string.IsNullOrEmpty(IetfLanguageTag) && !languageIsUnknown)
 				{
-					return LanguageTag;
+					return IetfLanguageTag;
 				}
 				if (languageIsUnknown)
 				{
@@ -643,7 +648,7 @@ namespace SIL.WritingSystems
 					}
 				}
 
-				if (_script != null && !IsVoice)
+				if (_script != null && !IsVoice && _language.ImplicitScriptCode != _script.Code)
 					details.AppendFormat("{0}-", _script.Code);
 				if (_region != null)
 					details.AppendFormat("{0}-", _region.Code);
@@ -709,14 +714,14 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// The current IETF language tag which is a concatenation of the Language, Script, Region and Variant properties.
 		/// </summary>
-		public string LanguageTag
+		public string IetfLanguageTag
 		{
 			get { return _languageTag; }
 		}
 
 		/// <summary>
 		/// The identifier for this writing syetm definition. Use this in files and as a key to the IWritingSystemRepository.
-		/// Note that this is usually identical to the Bcp47 tag and should rarely differ.
+		/// Note that this is usually identical to the IETF language tag and should rarely differ.
 		/// </summary>
 		public string Id
 		{
@@ -826,9 +831,9 @@ namespace SIL.WritingSystems
 			get { return _characterSets; }
 		}
 
-		protected virtual void UpdateLanguageTag()
+		protected virtual void UpdateIetfLanguageTag()
 		{
-			_languageTag = IetfLanguageTag.ToLanguageTag(_language, _script, _region, _variants, _requiresValidLanguageTag);
+			_languageTag = IetfLanguageTagHelper.ToIetfLanguageTag(_language, _script, _region, _variants, _requiresValidLanguageTag);
 			_id = _languageTag;
 		}
 

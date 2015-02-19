@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using NUnit.Framework;
 
 namespace SIL.WritingSystems.Tests
@@ -27,26 +26,33 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void ValidIso639LanguageCodes_HasISO3CodeForEnglish()
+		public void Iso639LanguageCodes_HasIso3CodeForEnglish()
 		{
 			LanguageSubtag english = StandardSubtags.Iso639Languages["en"];
 			Assert.That(english.Iso3Code, Is.EqualTo("eng"));
 		}
 
 		[Test]
-		public void ValidIso639LanguageCodes_HasFonipa_False()
+		public void Iso639LanguageCodes_HasImplicitScriptCodeForEnglish()
+		{
+			LanguageSubtag english = StandardSubtags.Iso639Languages["en"];
+			Assert.That(english.ImplicitScriptCode, Is.EqualTo("Latn"));
+		}
+
+		[Test]
+		public void Iso639LanguageCodes_HasFonipa_False()
 		{
 			Assert.That(StandardSubtags.Iso639Languages.Contains("fonipa"), Is.False);
 		}
 
 		[Test]
-		public void ValidIso15924Scripts_HasLatn_True()
+		public void Iso15924Scripts_HasLatn_True()
 		{
 			Assert.That(StandardSubtags.Iso15924Scripts.Contains("Latn"), Is.True);
 		}
 
         [Test]
-		public void ValidIso15924Scripts_HasOldItalic_True()
+		public void Iso15924Scripts_HasOldItalic_True()
 		{
 			Assert.That(StandardSubtags.Iso15924Scripts.Any(code => code.Name == "Old Italic (Etruscan, Oscan, etc.)"), Is.True);
 		}
@@ -80,55 +86,55 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void ValidIso15924Scripts_HasLatinFraktur_True()
+		public void Iso15924Scripts_HasLatinFraktur_True()
 		{
 			Assert.That(StandardSubtags.Iso15924Scripts.Any(code => code.Name == "Latin (Fraktur variant)"), Is.True);
 		}
 
 		[Test]
-		public void ValidIso15924Scripts_HasHiraganaKatakana_True()
+		public void Iso15924Scripts_HasHiraganaKatakana_True()
 		{
             Assert.That(StandardSubtags.Iso15924Scripts.Any(code => code.Name == "Japanese syllabaries (Hiragana + Katakana)"), Is.True);
 		}
 
 		[Test]
-		public void ValidIso15924Scripts_HasFonipa_False()
+		public void Iso15924Scripts_HasFonipa_False()
 		{
 			Assert.That(StandardSubtags.Iso15924Scripts.Contains("fonipa"), Is.False);
 		}
 
 		[Test]
-		public void ValidIso15924Scripts_HasSome()
+		public void Iso15924Scripts_HasSome()
 		{
 			Assert.That(StandardSubtags.Iso15924Scripts.Count, Is.GreaterThan(4));
 		}
 
 		[Test]
-		public void ValidIso3166Regions_HasUS_True()
+		public void Iso3166Regions_HasUS_True()
 		{
 			Assert.That(StandardSubtags.Iso3166Regions.Contains("US"), Is.True);
 		}
 
 		[Test]
-		public void ValidIso3166Regions_HasFonipa_False()
+		public void Iso3166Regions_HasFonipa_False()
 		{
 			Assert.That(StandardSubtags.Iso3166Regions.Contains("fonipa"), Is.False);
 		}
 
 		[Test]
-		public void ValidRegisteredVariants_HasFonipa_True()
+		public void RegisteredVariants_HasFonipa_True()
 		{
 			Assert.That(StandardSubtags.RegisteredVariants.Contains("fonipa"), Is.True);
 		}
 
 		[Test]
-		public void ValidRegisteredVariants_HasBiske_True()
+		public void RegisteredVariants_HasBiske_True()
 		{
 			Assert.That(StandardSubtags.RegisteredVariants.Contains("biske"), Is.True);
 		}
 
 		[Test]
-		public void ValidRegisteredVariants_HasEn_False()
+		public void RegisteredVariants_HasEn_False()
 		{
 			Assert.That(StandardSubtags.RegisteredVariants.Contains("en"), Is.False);
 		}
@@ -225,7 +231,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void ValidIso639LanguageCodes_DoesNotContainCodeRanges()
+		public void Iso639LanguageCodes_DoesNotContainCodeRanges()
 		{
 			Assert.That(StandardSubtags.Iso639Languages.Where(iso639 => iso639.Code.Contains("..")), Is.Empty);
 		}

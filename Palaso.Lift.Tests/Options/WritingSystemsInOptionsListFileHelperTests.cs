@@ -194,7 +194,7 @@ namespace Palaso.Lift.Tests.Options
 				AssertThatXmlIn.File(e.PathToOptionsListFile).HasAtLeastOneMatchForXpath("/optionsList/options/option/name/form[@lang='de']");
 				Assert.That(File.Exists(e.GetLdmlFileforWs("de")), Is.True);
 				AssertThatXmlIn.File(e.GetLdmlFileforWs("de")).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='de']");
-				AssertThatXmlIn.File(e.GetLdmlFileforWs("de")).HasNoMatchForXpath("/ldml/identity/script");
+				AssertThatXmlIn.File(e.GetLdmlFileforWs("de")).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Latn']");
 				AssertThatXmlIn.File(e.GetLdmlFileforWs("de")).HasNoMatchForXpath("/ldml/identity/territory");
 				AssertThatXmlIn.File(e.GetLdmlFileforWs("de")).HasNoMatchForXpath("/ldml/identity/variant");
 			}

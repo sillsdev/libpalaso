@@ -273,7 +273,7 @@
     <Compile Include="InheritedCollationDefinition.cs" />
     <Compile Include="IWritingSystemRepository.cs" />
     <Compile Include="LanguageSubtag.cs" />
-    <Compile Include="IetfLanguageTag.cs" />
+    <Compile Include="IetfLanguageTagHelper.cs" />
     <Compile Include="LdmlCollationParser.cs" />
     <Compile Include="MatchedPair.cs" />
     <Compile Include="DefinitionBase.cs" />

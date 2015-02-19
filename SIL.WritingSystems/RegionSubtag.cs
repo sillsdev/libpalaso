@@ -2,12 +2,17 @@
 {
 	public class RegionSubtag : Subtag
 	{
-		public RegionSubtag(string code, bool isPrivateUse)
-			: base(code, isPrivateUse)
+		/// <summary>
+		/// Initializes a new private-use instance of the <see cref="RegionSubtag"/> class.
+		/// </summary>
+		/// <param name="code">The code.</param>
+		/// <param name="name">The name.</param>
+		public RegionSubtag(string code, string name = null)
+			: base(code, name, true)
 		{
 		}
 
-		public RegionSubtag(string code, string name, bool isPrivateUse)
+		internal RegionSubtag(string code, string name, bool isPrivateUse)
 			: base(code, name, isPrivateUse)
 		{
 		}
@@ -24,7 +29,7 @@
 
 			RegionSubtag subtag;
 			if (!StandardSubtags.Iso3166Regions.TryGet(code, out subtag))
-				subtag = new RegionSubtag(code, true);
+				subtag = new RegionSubtag(code);
 			return subtag;
 		}
 	}

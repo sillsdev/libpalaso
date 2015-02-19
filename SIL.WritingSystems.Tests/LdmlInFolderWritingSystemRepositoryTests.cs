@@ -154,7 +154,7 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			{
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				environment.AssertWritingSystemFileExists(environment.WritingSystem.LanguageTag);
+				environment.AssertWritingSystemFileExists(environment.WritingSystem.IetfLanguageTag);
 			}
 		}
 
@@ -182,7 +182,7 @@ namespace SIL.WritingSystems.Tests
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				var ws2 = environment.Collection.Get(environment.WritingSystem.StoreID);
 				environment.Collection.SaveDefinition(ws2);
-				environment.AssertWritingSystemFileExists(environment.WritingSystem.LanguageTag);
+				environment.AssertWritingSystemFileExists(environment.WritingSystem.IetfLanguageTag);
 			}
 		}
 
@@ -195,7 +195,7 @@ namespace SIL.WritingSystems.Tests
 				LdmlInFolderWritingSystemRepository newRepository = LdmlInFolderWritingSystemRepository.Initialize(newRepoPath, Enumerable.Empty<ICustomDataMapper>(),
 					DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
 				newRepository.SaveDefinition(environment.WritingSystem);
-				Assert.That(File.Exists(Path.Combine(newRepoPath, environment.WritingSystem.LanguageTag + ".ldml")));
+				Assert.That(File.Exists(Path.Combine(newRepoPath, environment.WritingSystem.IetfLanguageTag + ".ldml")));
 			}
 		}
 
@@ -309,7 +309,7 @@ namespace SIL.WritingSystems.Tests
 
 				environment.WritingSystem.Language = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.LanguageTag)).HasAtLeastOneMatchForXpath("ldml/identity/language[@type='en']");
+				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.IetfLanguageTag)).HasAtLeastOneMatchForXpath("ldml/identity/language[@type='en']");
 			}
 		}
 
@@ -321,7 +321,7 @@ namespace SIL.WritingSystems.Tests
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				environment.WritingSystem.Variants.Add("1901");
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.LanguageTag)).HasAtLeastOneMatchForXpath("ldml/identity/variant[@type='1901']");
+				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.IetfLanguageTag)).HasAtLeastOneMatchForXpath("ldml/identity/variant[@type='1901']");
 			}
 		}
 
@@ -332,6 +332,7 @@ namespace SIL.WritingSystems.Tests
 			{
 
 				environment.WritingSystem.Language = "en";
+				environment.WritingSystem.Script = "Latn";
 				environment.WritingSystem.Abbreviation = "bl";
 					//crucially, abbreviation isn't part of the name of the file
 				environment.Collection.SaveDefinition(environment.WritingSystem);
@@ -342,7 +343,7 @@ namespace SIL.WritingSystems.Tests
 				ws2.Variants.Add("piglatin");
 				environment.Collection.SaveDefinition(ws2);
 				string path = Path.Combine(environment.Collection.PathToWritingSystems,
-										   environment.GetPathForWsId(ws2.LanguageTag));
+										   environment.GetPathForWsId(ws2.IetfLanguageTag));
 				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath("ldml/identity/variant[@type='x-piglatin']");
 
 				// TODO: Add this back when Abbreviation is written to application-specific namespace
@@ -451,12 +452,12 @@ namespace SIL.WritingSystems.Tests
 				environment.WritingSystem.Language = "en";
 				environment.WritingSystem.Variants.Add("piglatin");
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				string path = environment.GetPathForWsId(environment.WritingSystem.LanguageTag);
+				string path = environment.GetPathForWsId(environment.WritingSystem.IetfLanguageTag);
 
 				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath("ldml/identity/variant");
 				environment.WritingSystem.Variants.Clear();
 				environment.Collection.SaveDefinition(environment.WritingSystem);
-				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.LanguageTag)).HasNoMatchForXpath("ldml/identity/variant");
+				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.IetfLanguageTag)).HasNoMatchForXpath("ldml/identity/variant");
 			}
 		}
 
@@ -507,7 +508,7 @@ namespace SIL.WritingSystems.Tests
 				environment.WritingSystem.Language = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				string path = Path.Combine(environment.Collection.PathToWritingSystems,
-										   environment.GetPathForWsId(environment.WritingSystem.LanguageTag));
+										   environment.GetPathForWsId(environment.WritingSystem.IetfLanguageTag));
 				Assert.IsTrue(File.Exists(path));
 				environment.Collection.Remove(environment.WritingSystem.Language);
 				Assert.IsFalse(File.Exists(path));
@@ -518,7 +519,7 @@ namespace SIL.WritingSystems.Tests
 		private static void AssertFileIsInTrash(TestEnvironment environment)
 		{
 			string path = Path.Combine(environment.Collection.PathToWritingSystems, "trash");
-			path = Path.Combine(path,environment.WritingSystem.LanguageTag + ".ldml");
+			path = Path.Combine(path,environment.WritingSystem.IetfLanguageTag + ".ldml");
 			Assert.IsTrue(File.Exists(path));
 		}
 
@@ -535,7 +536,7 @@ namespace SIL.WritingSystems.Tests
 				environment.Collection.SaveDefinition(ws2);
 				environment.Collection.Remove(ws2.StoreID);
 				string path = Path.Combine(environment.Collection.PathToWritingSystems,
-										   environment.GetPathForWsId(environment.WritingSystem.LanguageTag));
+										   environment.GetPathForWsId(environment.WritingSystem.IetfLanguageTag));
 				Assert.IsFalse(File.Exists(path));
 				AssertFileIsInTrash(environment);
 			}
@@ -692,8 +693,8 @@ namespace SIL.WritingSystems.Tests
 		{
 			using (var environment = new TestEnvironment())
 			{
-				File.WriteAllText(Path.Combine(environment.TestPath, "tpi-latn.ldml"),
-								  LdmlContentForTests.CurrentVersion("tpi", "Latn", "", ""));
+				File.WriteAllText(Path.Combine(environment.TestPath, "aa-latn.ldml"),
+								  LdmlContentForTests.CurrentVersion("aa", "Latn", "", ""));
 
 				var repository = new LdmlInFolderWritingSystemRepository(environment.TestPath);
 				var problems = repository.LoadProblems;
@@ -755,7 +756,7 @@ namespace SIL.WritingSystems.Tests
 				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, Enumerable.Empty<ICustomDataMapper>(),
 					DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
 				var ws = environment.Collection.Get("en");
-				Assert.That(ws.LanguageTag, Is.EqualTo("en"));
+				Assert.That(ws.IetfLanguageTag, Is.EqualTo("en"));
 			}
 		}
 
@@ -786,7 +787,7 @@ namespace SIL.WritingSystems.Tests
 					DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
 
 				// Now try to load up.
-				Assert.That(repo.Get("qaa-Zxxx-x-en").Language, Is.EqualTo(new LanguageSubtag("en", true)));
+				Assert.That(repo.Get("qaa-Zxxx-x-en").Language, Is.EqualTo(new LanguageSubtag("en")));
 			}
 		}
 
@@ -799,7 +800,7 @@ namespace SIL.WritingSystems.Tests
 				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, Enumerable.Empty<ICustomDataMapper>(),
 					DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
 				environment.Collection.Set(ws);
-				Assert.That(environment.Collection.Get("en").LanguageTag, Is.EqualTo("en"));
+				Assert.That(environment.Collection.Get("en").IetfLanguageTag, Is.EqualTo("en"));
 			}
 		}
 

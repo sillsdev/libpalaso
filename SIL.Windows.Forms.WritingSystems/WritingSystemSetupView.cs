@@ -121,7 +121,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			}
 			else
 			{
-				_rfc4646.Text = _model.CurrentDefinition.LanguageTag;
+				_rfc4646.Text = _model.CurrentDefinition.IetfLanguageTag;
 				_languageName.Text = _model.CurrentDefinition.ListLabel;
 				_languageName.Font = SystemFonts.MessageBoxFont;
 				_rfc4646.Font = SystemFonts.MessageBoxFont;

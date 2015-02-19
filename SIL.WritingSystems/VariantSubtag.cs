@@ -10,8 +10,13 @@ namespace SIL.WritingSystems
 	{
 		private readonly HashSet<string> _prefixes;
 
-		public VariantSubtag(string code, bool isPrivateUse)
-			: this(code, null, isPrivateUse, null)
+		/// <summary>
+		/// Initializes a new private-use instance of the <see cref="VariantSubtag"/> class.
+		/// </summary>
+		/// <param name="code">The code.</param>
+		/// <param name="name">The name.</param>
+		public VariantSubtag(string code, string name = null)
+			: base(code, name, true)
 		{
 		}
 
@@ -22,7 +27,7 @@ namespace SIL.WritingSystems
 		/// <param name="name">The name.</param>
 		/// <param name="isPrivateUse">if set to <c>true</c> this is a private use subtag.</param>
 		/// <param name="prefixes">The prefixes.</param>
-		public VariantSubtag(string code, string name, bool isPrivateUse, IEnumerable<string> prefixes)
+		internal VariantSubtag(string code, string name, bool isPrivateUse, IEnumerable<string> prefixes)
 			: base(code, name, isPrivateUse)
 		{
 			_prefixes = new HashSet<string>(prefixes ?? Enumerable.Empty<string>());
@@ -71,7 +76,7 @@ namespace SIL.WritingSystems
 			if (!StandardSubtags.RegisteredVariants.TryGet(code, out subtag))
 			{
 				if (!StandardSubtags.CommonPrivateUseVariants.TryGet(code, out subtag))
-					subtag = new VariantSubtag(code, true);
+					subtag = new VariantSubtag(code);
 			}
 			return subtag;
 		}

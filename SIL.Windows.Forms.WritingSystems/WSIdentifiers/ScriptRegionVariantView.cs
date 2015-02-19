@@ -20,10 +20,10 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 				model.SelectionChanged += UpdateDisplayFromModel;
 			}
 
-			_scriptCombo.Items.Add(new ScriptSubtag("blank", "", true)); // add a blank item at the top of the list
+			_scriptCombo.Items.Add(new ScriptSubtag("blank")); // add a blank item at the top of the list
 			_scriptCombo.Items.AddRange(StandardSubtags.Iso15924Scripts.Cast<object>().ToArray());
 			_scriptCombo.DisplayMember = "Name";
-			_regionCombo.Items.Add(new RegionSubtag("blank", "", true));  // add a blank item at the top of the list
+			_regionCombo.Items.Add(new RegionSubtag("blank"));  // add a blank item at the top of the list
 			_regionCombo.Items.AddRange(StandardSubtags.Iso3166Regions.Cast<object>().ToArray());
 			_regionCombo.DisplayMember = "Name";
 		}

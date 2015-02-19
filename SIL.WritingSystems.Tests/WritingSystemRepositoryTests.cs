@@ -154,9 +154,9 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.Set(_writingSystem);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
 			Assert.AreNotEqual("lang1", _writingSystem.Language.Name);
-			_writingSystem.Language = new LanguageSubtag("two", "lang1");
+			_writingSystem.Language = new LanguageSubtag((LanguageSubtag) "two", "lang1");
 			RepositoryUnderTest.Set(_writingSystem);
-			var ws2 = RepositoryUnderTest.Get("two");
+			WritingSystemDefinition ws2 = RepositoryUnderTest.Get("two");
 			Assert.AreEqual("lang1", ws2.Language.Name);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
 		}
@@ -182,8 +182,8 @@ namespace SIL.WritingSystems.Tests
 		public void Get_StoredWithLowerCaseButRequestedUsingUpperCase_Finds()
 		{
 
-			_writingSystem.Language = new LanguageSubtag("sR", false);
-			_writingSystem.Script = new ScriptSubtag("LaTn", false);
+			_writingSystem.Language = "sR";
+			_writingSystem.Script = "LaTn";
 			_writingSystem.Variants.Add("rs");
 			RepositoryUnderTest.Set(_writingSystem);
 			Assert.IsNotNull(RepositoryUnderTest.Get("sr-Latn-x-RS"));
@@ -270,10 +270,10 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws1 = new WritingSystemDefinition();
 			ws1.Language = "en";
-			Assert.AreEqual("en", ws1.LanguageTag);
+			Assert.AreEqual("en", ws1.IetfLanguageTag);
 			WritingSystemDefinition ws2 = ws1.Clone();
 			ws2.Variants.Add("1901");
-			Assert.AreEqual("en-1901", ws2.LanguageTag);
+			Assert.AreEqual("en-1901", ws2.IetfLanguageTag);
 
 			RepositoryUnderTest.Set(ws1);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
@@ -448,6 +448,7 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.Set(ws);
 			Assert.IsTrue(RepositoryUnderTest.Contains("fr"));
 			ws.Language = "th";
+			ws.Script = "Thai";
 			RepositoryUnderTest.OnWritingSystemIDChange(ws, "fr");
 			Assert.IsFalse(RepositoryUnderTest.Contains("fr"));
 			Assert.IsTrue(RepositoryUnderTest.Contains("th"));

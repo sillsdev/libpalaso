@@ -72,7 +72,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 					cd = new SimpleCollationDefinition("standard") { SimpleRules = writingSystemDefinitionV1.SortRules };
 					break;
 				case WritingSystemDefinitionV1.SortRulesType.OtherLanguage:
-					cd = new InheritedCollationDefinition("standard") { BaseLanguageTag = writingSystemDefinitionV1.Bcp47Tag, BaseType = "standard"};
+					cd = new InheritedCollationDefinition("standard") { BaseIetfLanguageTag = writingSystemDefinitionV1.Bcp47Tag, BaseType = "standard"};
 					break;
 				case WritingSystemDefinitionV1.SortRulesType.CustomICU:
 					cd = new CollationDefinition("standard") { IcuRules = writingSystemDefinitionV1.SortRules };
@@ -83,7 +83,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			}
 			writingSystemDefinitionV3.Collations.Add(cd);
 
-			writingSystemDefinitionV3.SetAllComponents(
+			writingSystemDefinitionV3.SetIetfLanguageTag(
 				writingSystemDefinitionV1.Language,
 				writingSystemDefinitionV1.Script,
 				writingSystemDefinitionV1.Region,

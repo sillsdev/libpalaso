@@ -696,7 +696,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var ws = new WritingSystemDefinition();
 				environment.ReadLdmlFile(environment.MappedFilePath("test.ldml"), ws);
 				ws.Language = "de";
-				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.LanguageTag));
+				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.IetfLanguageTag));
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='de']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='']");
 			}
@@ -716,7 +716,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var ws = new WritingSystemDefinition();
 				environment.ReadLdmlFile(environment.MappedFilePath("test.ldml"), ws);
 				ws.Script = "Latn";
-				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.LanguageTag));
+				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.IetfLanguageTag));
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Latn']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-en']");
@@ -737,7 +737,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var ws = new WritingSystemDefinition();
 				environment.ReadLdmlFile(environment.MappedFilePath("test.ldml"), ws);
 				ws.Region = "GB";
-				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.LanguageTag));
+				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.IetfLanguageTag));
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='GB']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-en']");
@@ -758,7 +758,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				environment.ReadLdmlFile(environment.MappedFilePath("test.ldml"), ws);
 				ws.Variants.Clear();
 				ws.Variants.Add("1901");
-				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.LanguageTag));
+				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.IetfLanguageTag));
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='1901-x-en']");
 			}
@@ -778,7 +778,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				environment.ReadLdmlFile(environment.MappedFilePath("test.ldml"), ws);
 				ws.Variants.Clear();
 				ws.Variants.Add("changed");
-				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.LanguageTag));
+				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.IetfLanguageTag));
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-en-changed']");
 			}
@@ -968,7 +968,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var wsV3 = new WritingSystemDefinitionV3();
 				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
 				var cdV3 = (InheritedCollationDefinition)wsV3.Collations.FirstOrDefault();
-				Assert.AreEqual(wsV0.SortRules, cdV3.BaseLanguageTag);
+				Assert.AreEqual(wsV0.SortRules, cdV3.BaseIetfLanguageTag);
 			}
 		}
 
@@ -1398,7 +1398,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='DE']");
-				AssertLdmlHasNoXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Latn']");
 				AssertLdmlHasNoXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory");
 				AssertLdmlHasNoXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant");
 			}
@@ -1413,7 +1413,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='de']");
-				AssertLdmlHasNoXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Latn']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='DE']");
 				AssertLdmlHasNoXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant");
 			}
@@ -1428,7 +1428,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='de']");
-				AssertLdmlHasNoXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Latn']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='de']");
 				AssertLdmlHasNoXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant");
 			}
