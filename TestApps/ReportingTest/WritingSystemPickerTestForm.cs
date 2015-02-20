@@ -31,7 +31,7 @@ namespace TestApp
 			{
 				if (_wsModel.HasCurrentSelection)
 				{
-					d.ShowDialog(_wsModel.CurrentRFC4646);
+					d.ShowDialog(_wsModel.CurrentIetfLanguageTag);
 				}
 				else
 				{

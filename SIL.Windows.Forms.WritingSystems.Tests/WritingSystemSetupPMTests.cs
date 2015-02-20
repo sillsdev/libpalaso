@@ -165,23 +165,23 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		}
 
 		[Test]
-		public void SetCurrentIndexFromRfc4646_NotFound_ReturnsFalse()
+		public void SetCurrentIndexFromIetfLanguageTag_NotFound_ReturnsFalse()
 		{
-			Assert.IsFalse(_model.SetCurrentIndexFromRfc46464("bogus"));
+			Assert.IsFalse(_model.SetCurrentIndexFromIetfLanguageTag("bogus"));
 		}
 
 		[Test]
-		public void SetCurrentIndexFromRfc4646_NotFound_ReturnsTrueAndCurrentIsChanged()
+		public void SetCurrentIndexFromIetfLanguageTag_NotFound_ReturnsTrueAndCurrentIsChanged()
 		{
 			_model.AddNew();
 			_model.CurrentIso = "pt";
 			_model.CurrentRegion = "BR";
 			_model.AddNew();
 			_model.CurrentIso = "de";
-			Assert.IsTrue(_model.SetCurrentIndexFromRfc46464("de"));
+			Assert.IsTrue(_model.SetCurrentIndexFromIetfLanguageTag("de"));
 			Assert.AreEqual(1, _model.CurrentIndex);
 			Assert.AreEqual("de", _model.CurrentIso);
-			Assert.IsTrue(_model.SetCurrentIndexFromRfc46464("pt-BR"));
+			Assert.IsTrue(_model.SetCurrentIndexFromIetfLanguageTag("pt-BR"));
 			Assert.AreEqual("pt", _model.CurrentIso);
 			Assert.AreEqual(0, _model.CurrentIndex);
 
@@ -451,7 +451,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 			_model.CurrentIso = "pt";
 			foreach (KeyValuePair<string, string> languageOption in _model.SortLanguageOptions)
 			{
-				Assert.AreNotEqual(_model.CurrentRFC4646, languageOption.Key);
+				Assert.AreNotEqual(_model.CurrentIetfLanguageTag, languageOption.Key);
 			}
 		}
 
@@ -461,7 +461,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		{
 			_model.AddNew();
 			_model.CurrentIso = "pt";
-			string key = _model.CurrentRFC4646;
+			string key = _model.CurrentIetfLanguageTag;
 			_model.AddNew();
 			_model.CurrentIso = "de";
 			bool found = false;
@@ -477,12 +477,12 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		{
 			_model.AddNew();
 			_model.CurrentIso = "pt";
-			string key = _model.CurrentRFC4646;
+			string key = _model.CurrentIetfLanguageTag;
 			_model.AddNew();
 			_model.CurrentIso = "de";
 			_model.CurrentCollationRulesType = "OtherLanguage";
 			_model.CurrentCollationRules = key;
-			key = _model.CurrentRFC4646;
+			key = _model.CurrentIetfLanguageTag;
 			_model.CurrentIndex = 0;
 			foreach (KeyValuePair<string, string> languageOption in _model.SortLanguageOptions)
 			{

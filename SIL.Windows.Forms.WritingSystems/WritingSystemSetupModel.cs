@@ -236,12 +236,12 @@ namespace SIL.Windows.Forms.WritingSystems
 		/// <summary>
 		///
 		/// </summary>
-		/// <param name="rfc4646"></param>
+		/// <param name="languageTag"></param>
 		/// <returns>false if the code wasn't found</returns>
-		public virtual bool SetCurrentIndexFromRfc46464(string rfc4646)
+		public virtual bool SetCurrentIndexFromIetfLanguageTag(string languageTag)
 		{
-			var index = WritingSystemDefinitions.FindIndex(d => d.IetfLanguageTag == rfc4646);
-			if(index<0)
+			var index = WritingSystemDefinitions.FindIndex(d => d.IetfLanguageTag == languageTag);
+			if (index < 0)
 			{
 				return false;
 			}
@@ -672,7 +672,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			}
 		}
 
-		public string CurrentRFC4646
+		public string CurrentIetfLanguageTag
 		{
 			get
 			{

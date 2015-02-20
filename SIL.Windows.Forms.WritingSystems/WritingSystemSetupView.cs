@@ -17,11 +17,13 @@ namespace SIL.Windows.Forms.WritingSystems
 			InitializeComponent();
 			_propertiesTabControl.UserWantsHelpWithCustomSorting += OnHelpWithCustomSorting;
 		}
+
 		public WritingSystemSetupView(WritingSystemSetupModel model)
 			: this()
 		{
 			BindToModel(model);
 		}
+
 		public void BindToModel(WritingSystemSetupModel model)
 		{
 			_model = model;
@@ -45,8 +47,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			bool showHelpButton = UserWantsHelpWithDeletingWritingSystems != null;
 			using (var deleteDialog = new DeleteInputSystemDialog(args.WritingSystemIdToDelete, _model.WritingSystemDefinitions, showHelpButton))
 			{
-				deleteDialog.HelpWithDeletingWritingSystemsButtonClickedEvent +=
-					OnHelpWithDeletingWritingSystemsButtonClicked;
+				deleteDialog.HelpWithDeletingWritingSystemsButtonClickedEvent += OnHelpWithDeletingWritingSystemsButtonClicked;
 				var dialogResult = deleteDialog.ShowDialog();
 
 				if (dialogResult != DialogResult.OK)
@@ -74,10 +75,8 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		private void OnHelpWithDeletingWritingSystemsButtonClicked(object sender, EventArgs e)
 		{
-			if(UserWantsHelpWithDeletingWritingSystems != null)
-			{
+			if (UserWantsHelpWithDeletingWritingSystems != null)
 				UserWantsHelpWithDeletingWritingSystems(sender, e);
-			}
 		}
 
 		private void OnHelpWithCustomSorting(object sender, EventArgs e)
@@ -114,23 +113,23 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		private void UpdateHeaders(object sender, EventArgs e)
 		{
-			if(_model.CurrentDefinition ==null)
+			if (_model.CurrentDefinition == null)
 			{
-				_rfc4646.Text = "";
+				_ietfLanguageTag.Text = "";
 				_languageName.Text = "";
 			}
 			else
 			{
-				_rfc4646.Text = _model.CurrentDefinition.IetfLanguageTag;
+				_ietfLanguageTag.Text = _model.CurrentDefinition.IetfLanguageTag;
 				_languageName.Text = _model.CurrentDefinition.ListLabel;
 				_languageName.Font = SystemFonts.MessageBoxFont;
-				_rfc4646.Font = SystemFonts.MessageBoxFont;
+				_ietfLanguageTag.Font = SystemFonts.MessageBoxFont;
 			}
 		}
 
 		private static WritingSystemDefinition ShowCreateNewWritingSystemDialog()
 		{
-			using (var dlg = new LookupIsoCodeDialog() { ShowDesiredLanguageNameField =false})
+			using (var dlg = new LookupIsoCodeDialog {ShowDesiredLanguageNameField = false})
 			{
 				dlg.ShowDialog();
 				if (dlg.DialogResult != DialogResult.OK)

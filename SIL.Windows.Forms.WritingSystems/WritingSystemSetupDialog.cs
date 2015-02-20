@@ -57,9 +57,9 @@ namespace SIL.Windows.Forms.WritingSystems
 			get { return _model.WritingSystems; }
 		}
 
-		public DialogResult ShowDialog(string initiallySelectWritingSystemBcp47)
+		public DialogResult ShowDialog(string initiallySelectWritingSystemLanguageTag)
 		{
-			_model.SetCurrentIndexFromRfc46464(initiallySelectWritingSystemBcp47);
+			_model.SetCurrentIndexFromIetfLanguageTag(initiallySelectWritingSystemLanguageTag);
 			return ShowDialog();
 		}
 

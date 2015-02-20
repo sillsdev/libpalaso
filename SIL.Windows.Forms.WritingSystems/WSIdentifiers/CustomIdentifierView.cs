@@ -24,7 +24,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 			if (_model.CurrentDefinition != null)
 			{
 				_updatingFromModel = true;
-				_languageTag.Text = _model.CurrentRFC4646;
+				_languageTag.Text = _model.CurrentIetfLanguageTag;
 				_updatingFromModel = false;
 			}
 		}
