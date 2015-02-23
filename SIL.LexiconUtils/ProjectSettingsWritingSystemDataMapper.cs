@@ -58,7 +58,7 @@ namespace SIL.LexiconUtils
 
 			var spellCheckingId = (string) wsElem.Element("SpellCheckingId");
 			if (!string.IsNullOrEmpty(spellCheckingId))
-				ws.SpellCheckingId = spellCheckingId;
+				ws.SpellCheckingID = spellCheckingId;
 
 			var legacyMapping = (string) wsElem.Element("LegacyMapping");
 			if (!string.IsNullOrEmpty(legacyMapping))
@@ -98,8 +98,8 @@ namespace SIL.LexiconUtils
 			string[] variantNames = ws.Variants.Where(v => v.IsPrivateUse).Select(v => v.Name).ToArray();
 			if (variantNames.Length > 0)
 				wsElem.Add(new XElement("VariantNames", variantNames.Select(n => string.IsNullOrEmpty(n) ? new XElement("VariantName") : new XElement("VariantName", n))));
-			if (!string.IsNullOrEmpty(ws.SpellCheckingId))
-				wsElem.Add(new XElement("SpellCheckingId", ws.SpellCheckingId));
+			if (!string.IsNullOrEmpty(ws.SpellCheckingID))
+				wsElem.Add(new XElement("SpellCheckingId", ws.SpellCheckingID));
 			if (!string.IsNullOrEmpty(ws.LegacyMapping))
 				wsElem.Add(new XElement("LegacyMapping", ws.LegacyMapping));
 			if (!string.IsNullOrEmpty(ws.Keyboard))

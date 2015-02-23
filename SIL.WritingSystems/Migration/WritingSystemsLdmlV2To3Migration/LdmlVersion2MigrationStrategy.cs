@@ -51,7 +51,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				DefaultFontSize = writingSystemDefinitionV1.DefaultFontSize,
 				Keyboard = writingSystemDefinitionV1.Keyboard,
 				RightToLeftScript = writingSystemDefinitionV1.RightToLeftScript,
-				SpellCheckingId = writingSystemDefinitionV1.SpellCheckingId,
+				SpellCheckingID = writingSystemDefinitionV1.SpellCheckingId,
 				VersionDescription = writingSystemDefinitionV1.VersionDescription,
 				DateModified = DateTime.Now,
 				WindowsLcid = writingSystemDefinitionV1.WindowsLcid

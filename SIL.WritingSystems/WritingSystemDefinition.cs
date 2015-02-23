@@ -85,7 +85,7 @@ namespace SIL.WritingSystems
 		private string _id;
 		private string _defaultRegion;
 		private string _windowsLcid;
-		private string _spellCheckingId;
+		private string _spellCheckingID;
 		private CollationDefinition _defaultCollation;
 		private QuotationParagraphContinueType _quotationParagraphContinueType;
 		private readonly KeyedBulkObservableList<string, FontDefinition> _fonts;
@@ -164,7 +164,7 @@ namespace SIL.WritingSystems
 			_keyboard = ws._keyboard;
 			_versionNumber = ws._versionNumber;
 			_versionDescription = ws._versionDescription;
-			_spellCheckingId = ws._spellCheckingId;
+			_spellCheckingID = ws._spellCheckingID;
 			_spellCheckDictionaries = new KeyedBulkObservableList<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition>(ws._spellCheckDictionaries.CloneItems(), scdd => scdd.Format);
 			_dateModified = ws._dateModified;
 			_languageTag = ws._languageTag;
@@ -1065,12 +1065,12 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// The id used to select the spell checker.
+		/// The ID used to select the spell checker.
 		/// </summary>
-		public virtual string SpellCheckingId
+		public virtual string SpellCheckingID
 		{
-			get { return _spellCheckingId ?? string.Empty; }
-			set { Set(() => SpellCheckingId, ref _spellCheckingId, value); }
+			get { return _spellCheckingID ?? string.Empty; }
+			set { Set(() => SpellCheckingID, ref _spellCheckingID, value); }
 		}
 
 		public KeyedBulkObservableList<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition> SpellCheckDictionaries
@@ -1189,7 +1189,7 @@ namespace SIL.WritingSystems
 				return false;
 			if (LegacyMapping != other.LegacyMapping)
 				return false;
-			if (SpellCheckingId != other.SpellCheckingId)
+			if (SpellCheckingID != other.SpellCheckingID)
 				return false;
 			if (_defaultFontSize != other._defaultFontSize)
 				return false;

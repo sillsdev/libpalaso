@@ -260,7 +260,7 @@ namespace SIL.Windows.Forms.Widgets
 			set
 			{
 				_isSpellCheckingEnabled = value;
-				if (_isSpellCheckingEnabled && _writingSystem != null && _writingSystem.SpellCheckingId != "none")
+				if (_isSpellCheckingEnabled && _writingSystem != null && _writingSystem.SpellCheckingID != "none")
 				{
 					OnSpellCheckingEnabled();
 				}
@@ -279,7 +279,7 @@ namespace SIL.Windows.Forms.Widgets
 		private void OnSpellCheckingEnabled()
 		{
 			if (_writingSystem != null)
-				TextBoxSpellChecker.SetLanguageForSpellChecking(this, _writingSystem.SpellCheckingId);
+				TextBoxSpellChecker.SetLanguageForSpellChecking(this, _writingSystem.SpellCheckingID);
 		}
 
 		private static TextBoxSpellChecker TextBoxSpellChecker

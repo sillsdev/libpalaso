@@ -1013,13 +1013,13 @@ namespace SIL.Windows.Forms.WritingSystems
 			{
 				if (CurrentDefinition == null)
 					return string.Empty;
-				return CurrentDefinition.SpellCheckingId;
+				return CurrentDefinition.SpellCheckingID;
 			}
 			set
 			{
-				if (CurrentDefinition.SpellCheckingId != value)
+				if (CurrentDefinition.SpellCheckingID != value)
 				{
-					CurrentDefinition.SpellCheckingId = value;
+					CurrentDefinition.SpellCheckingID = value;
 					OnCurrentItemUpdated();
 				}
 			}
