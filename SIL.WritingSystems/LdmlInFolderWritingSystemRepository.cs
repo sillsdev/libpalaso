@@ -260,9 +260,8 @@ namespace SIL.WritingSystems
 			string writingSystemFilePath = GetFilePathFromIdentifier(ws.StoreID);
 			MemoryStream oldData = null;
 			if (!ws.IsChanged && File.Exists(writingSystemFilePath))
-			{
 				return; // no need to save (better to preserve the modified date)
-			}
+			ws.DateModified = DateTime.UtcNow;
 			if (File.Exists(writingSystemFilePath))
 			{
 				// load old data to preserve stuff in LDML that we don't use, but don't throw up an error if it fails

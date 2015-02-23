@@ -18,6 +18,7 @@ namespace SIL.WritingSystems
 			xmlWriter.WriteStartElement("writingsystems");
 			foreach (WritingSystemDefinition ws in AllWritingSystems)
 			{
+				ws.DateModified = DateTime.UtcNow;
 				var ldmlDataMapper = new LdmlDataMapper();
 				ldmlDataMapper.Write(xmlWriter, ws, null);
 			}
