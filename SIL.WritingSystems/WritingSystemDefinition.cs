@@ -137,7 +137,7 @@ namespace SIL.WritingSystems
 			CheckVariantAndScriptRules();
 			_id = _languageTag;
 			_fonts = new KeyedBulkObservableList<string, FontDefinition>(fd => fd.Name);
-			_knownKeyboards = new KeyedBulkObservableList<string, IKeyboardDefinition>(kd => kd.Id);
+			_knownKeyboards = new KeyedBulkObservableList<string, IKeyboardDefinition>(kd => kd.ID);
 			_spellCheckDictionaries = new KeyedBulkObservableList<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition>(scdd => scdd.Format);
 			_collations = new KeyedBulkObservableList<string, CollationDefinition>(cd => cd.Type);
 			_matchedPairs = new ObservableHashSet<MatchedPair>();
@@ -172,7 +172,7 @@ namespace SIL.WritingSystems
 			_windowsLcid = ws._windowsLcid;
 			_defaultRegion = ws._defaultRegion;
 			_defaultFontSize = ws._defaultFontSize;
-			_knownKeyboards = new KeyedBulkObservableList<string, IKeyboardDefinition>(ws._knownKeyboards, kd => kd.Id);
+			_knownKeyboards = new KeyedBulkObservableList<string, IKeyboardDefinition>(ws._knownKeyboards, kd => kd.ID);
 			_matchedPairs = new ObservableHashSet<MatchedPair>(ws._matchedPairs);
 			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>(ws._punctuationPatterns);
 			_quotationMarks = new BulkObservableList<QuotationMark>(ws._quotationMarks);
@@ -525,10 +525,10 @@ namespace SIL.WritingSystems
 					// If it's an unlisted language, use the private use area language subtag.
 					if (_language == WellKnownSubtags.UnlistedLanguage)
 					{
-						int idx = Id.IndexOf("-x-", StringComparison.Ordinal);
-						if (idx > 0 && Id.Length > idx + 3)
+						int idx = ID.IndexOf("-x-", StringComparison.Ordinal);
+						if (idx > 0 && ID.Length > idx + 3)
 						{
-							var abbr = Id.Substring(idx + 3);
+							var abbr = ID.Substring(idx + 3);
 							idx = abbr.IndexOf('-');
 							if (idx > 0)
 								abbr = abbr.Substring(0, idx);
@@ -557,7 +557,7 @@ namespace SIL.WritingSystems
 			var lastAppended = string.Empty;
 			int duplicateNumber = 0;
 			string[] wsIds = otherWritingsystemIds.ToArray();
-			while (wsIds.Any(id => id.Equals(newWs.Id, StringComparison.OrdinalIgnoreCase)))
+			while (wsIds.Any(id => id.Equals(newWs.ID, StringComparison.OrdinalIgnoreCase)))
 			{
 				if (!string.IsNullOrEmpty(lastAppended))
 					newWs.RemoveVariants(lastAppended);
@@ -729,7 +729,7 @@ namespace SIL.WritingSystems
 		/// The identifier for this writing syetm definition. Use this in files and as a key to the IWritingSystemRepository.
 		/// Note that this is usually identical to the IETF language tag and should rarely differ.
 		/// </summary>
-		public string Id
+		public string ID
 		{
 			get { return _id; }
 
@@ -860,7 +860,7 @@ namespace SIL.WritingSystems
 			}
 			set
 			{
-				if (Set(() => LocalKeyboard, ref _localKeyboard, value) && value != null && !_knownKeyboards.Contains(value.Id))
+				if (Set(() => LocalKeyboard, ref _localKeyboard, value) && value != null && !_knownKeyboards.Contains(value.ID))
 					_knownKeyboards.Add(value);
 			}
 		}

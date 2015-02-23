@@ -68,12 +68,12 @@ namespace SIL.WritingSystems
 
 	public class WritingSystemLogDeleteEvent : WritingSystemLogEvent
 	{
-		public string Id { get; set; }
+		public string ID { get; set; }
 
 		public WritingSystemLogDeleteEvent(string id)
 			: base("Delete")
 		{
-			Id = id;
+			ID = id;
 		}
 
 		/*
@@ -87,12 +87,12 @@ namespace SIL.WritingSystems
 
 	public class WritingSystemLogAddEvent : WritingSystemLogEvent
 	{
-		public string Id { get; set; }
+		public string ID { get; set; }
 
 		public WritingSystemLogAddEvent(string id)
 			: base("Add")
 		{
-			Id = id;
+			ID = id;
 		}
 
 

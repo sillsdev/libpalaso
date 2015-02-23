@@ -48,9 +48,9 @@ namespace SIL.WritingSystems
 					continue;
 				}
 				string newId;
-				if (writingSystemRepository.WritingSystemIdHasChanged(wsId))
+				if (writingSystemRepository.WritingSystemIDHasChanged(wsId))
 				{
-					newId = writingSystemRepository.WritingSystemIdHasChangedTo(wsId);
+					newId = writingSystemRepository.WritingSystemIDHasChangedTo(wsId);
 				}
 				else
 				{

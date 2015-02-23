@@ -175,7 +175,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				// Windows XP
 				imes = GetInputMethodsThroughWinApi();
 
-			Dictionary<string, WinKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<WinKeyboardDescription>().ToDictionary(kd => kd.Id);
+			Dictionary<string, WinKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<WinKeyboardDescription>().ToDictionary(kd => kd.ID);
 			foreach (Tuple<TfInputProcessorProfile, ushort, IntPtr> ime in imes)
 			{
 				TfInputProcessorProfile profile = ime.Item1;

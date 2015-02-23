@@ -369,14 +369,14 @@ namespace SIL.WritingSystems
 				File.Move(GetFilePathFromIdentifier(oldStoreId), GetFilePathFromIdentifier(ws.StoreID));
 		}
 
-		public override bool WritingSystemIdHasChanged(string id)
+		public override bool WritingSystemIDHasChanged(string id)
 		{
 			return _changeLog.HasChangeFor(id);
 		}
 
-		public override string WritingSystemIdHasChangedTo(string id)
+		public override string WritingSystemIDHasChangedTo(string id)
 		{
-			return AllWritingSystems.Any(ws => ws.Id.Equals(id)) ? id : _changeLog.GetChangeFor(id);
+			return AllWritingSystems.Any(ws => ws.ID.Equals(id)) ? id : _changeLog.GetChangeFor(id);
 		}
 	}
 }

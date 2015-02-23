@@ -6,13 +6,13 @@ namespace SIL.WritingSystems
 {
 	public class WritingSystemIdChangedEventArgs : EventArgs
 	{
-		public WritingSystemIdChangedEventArgs(string oldId, string newId)
+		public WritingSystemIdChangedEventArgs(string oldID, string newID)
 		{
-			OldId = oldId;
-			NewId = newId;
+			OldID = oldID;
+			NewID = newID;
 		}
-		public string OldId { get; private set; }
-		public string NewId { get; private set; }
+		public string OldID { get; private set; }
+		public string NewID { get; private set; }
 	}
 
 	public class WritingSystemConflatedEventArgs : WritingSystemIdChangedEventArgs
@@ -27,9 +27,9 @@ namespace SIL.WritingSystems
 	{
 		public WritingSystemDeletedEventArgs(string id)
 		{
-			Id = id;
+			ID = id;
 		}
-		public string Id { get; private set; }
+		public string ID { get; private set; }
 	}
 
 	/// <summary>
@@ -124,14 +124,14 @@ namespace SIL.WritingSystems
 
 		/// <summary>
 		/// If a consumer has a writingSystemId that is not contained in the
-		/// repository he can query the repository as to whether the id was once
+		/// repository he can query the repository as to whether the ID was once
 		/// contained and has since changed.
 		/// Note that changes are only logged on Save() i.e. changes made between
 		/// saves are not tracked
-		/// Use WritingSystemIdHasChangedTo to determine the new Id if there has
+		/// Use WritingSystemIDHasChangedTo to determine the new ID if there has
 		/// been a change
 		/// </summary>
-		bool WritingSystemIdHasChanged(string id);
+		bool WritingSystemIDHasChanged(string id);
 
 		/// <summary>
 		/// If a consumer has a writing system ID that was once contained in this
@@ -142,10 +142,10 @@ namespace SIL.WritingSystems
 		/// repo it will return the ID.
 		/// Note that changes are only logged on Save() i.e. changes made between
 		/// saves are not tracked
-		/// Use WritingSystemIdHasChanged to determine whether an Id has changed
+		/// Use WritingSystemIDHasChanged to determine whether an ID has changed
 		/// at all
 		/// </summary>
-		string WritingSystemIdHasChangedTo(string id);
+		string WritingSystemIDHasChangedTo(string id);
 
 		/// <summary>
 		/// 
@@ -174,7 +174,7 @@ namespace SIL.WritingSystems
 		///</summary>
 		///<param name="idsToFilter"></param>
 		///<returns></returns>
-		IEnumerable<string> FilterForTextIds(IEnumerable<string> idsToFilter);
+		IEnumerable<string> FilterForTextIDs(IEnumerable<string> idsToFilter);
 
 		/// <summary>
 		/// Get the writing system that is most probably intended by the user, when input language changes to the specified layout and cultureInfo,

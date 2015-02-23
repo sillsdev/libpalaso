@@ -67,12 +67,12 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		public override bool WritingSystemIdHasChanged(string id)
+		public override bool WritingSystemIDHasChanged(string id)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override string WritingSystemIdHasChangedTo(string id)
+		public override string WritingSystemIDHasChangedTo(string id)
 		{
 			throw new NotImplementedException();
 		}

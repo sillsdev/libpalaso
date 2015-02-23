@@ -45,7 +45,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		private static string DisplayName(WritingSystemDefinition ws)
 		{
-			return String.Format("\"{0}\" ({1})", ws.ListLabel, ws.Id);
+			return String.Format("\"{0}\" ({1})", ws.ListLabel, ws.ID);
 		}
 
 		private void OnCustomHelpButtonClicked(object sender, EventArgs e)

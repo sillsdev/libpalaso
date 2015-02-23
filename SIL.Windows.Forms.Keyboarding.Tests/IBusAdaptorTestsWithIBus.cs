@@ -32,7 +32,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 				Console.WriteLine("ListAllKeyboards");
 				foreach (var keyboard in IBusAdaptor.KeyboardDescriptors)
 				{
-					Console.WriteLine("Name {0}, Id {1}", keyboard.ShortName, keyboard.Id);
+					Console.WriteLine("Name {0}, ID {1}", keyboard.ShortName, keyboard.ID);
 				}
 			}
 		}

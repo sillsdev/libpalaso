@@ -20,7 +20,7 @@ namespace SIL.LexiconUtils
 			if (projectSettingsElem == null)
 				return;
 
-			XElement wsElem = projectSettingsElem.Elements("WritingSystems").Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.Id);
+			XElement wsElem = projectSettingsElem.Elements("WritingSystems").Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.ID);
 			if (wsElem == null)
 				return;
 
@@ -78,11 +78,11 @@ namespace SIL.LexiconUtils
 				wssElem = new XElement("WritingSystems");
 				projectSettingsElem.Add(wssElem);
 			}
-			XElement wsElem = wssElem.Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.Id);
+			XElement wsElem = wssElem.Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.ID);
 
 			if (wsElem == null)
 			{
-				wsElem = new XElement("WritingSystem", new XAttribute("id", ws.Id));
+				wsElem = new XElement("WritingSystem", new XAttribute("id", ws.ID));
 				wssElem.Add(wsElem);
 			}
 			wsElem.RemoveNodes();

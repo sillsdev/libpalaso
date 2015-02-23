@@ -40,7 +40,7 @@ namespace Palaso.DictionaryServices.Processors
 
 				//at this point we have entries which match along a single ws axis. We may or may not be able to merge them...
 
-				var lexicalForm = entry.LexicalForm.GetExactAlternative(writingSystemForMatching.Id);
+				var lexicalForm = entry.LexicalForm.GetExactAlternative(writingSystemForMatching.ID);
 				if (matches.Count > 1) //>1 becuase each will match itself
 				{
 					progress.WriteMessageWithColor("gray", "Found {0} homograph(s) for {1}", matches.Count, lexicalForm);

@@ -319,11 +319,11 @@ namespace SIL.WritingSystems
 					break;
 				case "Delete":
 					var deleteEvent = (WritingSystemLogDeleteEvent)logEvent;
-					writer.WriteElementString("Id", deleteEvent.Id);
+					writer.WriteElementString("Id", deleteEvent.ID);
 					break;
 				case "Add":
 					var addEvent = (WritingSystemLogAddEvent)logEvent;
-					writer.WriteElementString("Id", addEvent.Id);
+					writer.WriteElementString("Id", addEvent.ID);
 					break;
 			}
 			writer.WriteEndElement();

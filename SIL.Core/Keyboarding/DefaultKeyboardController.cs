@@ -16,7 +16,7 @@ namespace SIL.Keyboarding
 
 		public DefaultKeyboardController()
 		{
-			_keyboards[_defaultKeyboard.Id] = _defaultKeyboard;
+			_keyboards[_defaultKeyboard.ID] = _defaultKeyboard;
 		}
 
 		public IKeyboardDefinition DefaultKeyboard
@@ -152,7 +152,7 @@ namespace SIL.Keyboarding
 		public void Reset()
 		{
 			_keyboards.Clear();
-			_keyboards[_defaultKeyboard.Id] = _defaultKeyboard;
+			_keyboards[_defaultKeyboard.ID] = _defaultKeyboard;
 		}
 
 		#region Implementation of IDisposable

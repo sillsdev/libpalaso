@@ -1332,8 +1332,8 @@ namespace SIL.WritingSystems
 			{
 				var kbdElem = new XElement(Sil + "kbd");
 				// id required
-				kbdElem.SetAttributeValue("id", keyboard.Id);
-				if (!string.IsNullOrEmpty(keyboard.Id))
+				kbdElem.SetAttributeValue("id", keyboard.ID);
+				if (!string.IsNullOrEmpty(keyboard.ID))
 				{
 					kbdElem.SetAttributeValue("type", KeyboardFormatToKeyboard[keyboard.Format]);
 					foreach (var url in keyboard.Urls)

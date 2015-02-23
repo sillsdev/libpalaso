@@ -371,7 +371,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				bool[] canSave = new bool[WritingSystemDefinitions.Count];
 				for (int i = 0; i < WritingSystemDefinitions.Count; i++)
 				{
-					string id = WritingSystemDefinitions[i].Id;
+					string id = WritingSystemDefinitions[i].ID;
 					if (idList.ContainsKey(id))
 					{
 						canSave[i] = false;
@@ -1233,8 +1233,8 @@ namespace SIL.Windows.Forms.WritingSystems
 						return;
 				case WhatToDos.Conflate:
 					var wsToConflateWith = whatToDo.WritingSystemIdToConflateWith;
-						var okToConflateEventArgs = new AskIfOkToConflateEventArgs(CurrentDefinition.Id,
-																					wsToConflateWith.Id);
+						var okToConflateEventArgs = new AskIfOkToConflateEventArgs(CurrentDefinition.ID,
+																					wsToConflateWith.ID);
 						if (AskIfOkToConflateWritingSystems != null)
 						{
 							AskIfOkToConflateWritingSystems(this, okToConflateEventArgs);
@@ -1244,20 +1244,20 @@ namespace SIL.Windows.Forms.WritingSystems
 							string message = okToConflateEventArgs.ErrorMessage ?? String.Empty;
 							ErrorReport.NotifyUserOfProblem(
 								String.Format("Can not conflate the input system {0} to {1}. {2}",
-												CurrentDefinition.Id,
+												CurrentDefinition.ID,
 												wsToConflateWith, message));
 							return;
 						}
-						if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.Id))
+						if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.ID))
 						{
 							if (wsToConflateWith != null)
 							{
-								_writingSystemRepository.Conflate(CurrentDefinition.Id, wsToConflateWith.Id);
+								_writingSystemRepository.Conflate(CurrentDefinition.ID, wsToConflateWith.ID);
 							}
 						}
 					break;
 				case WhatToDos.Delete:
-					var okToDeleteEventArgs = new AskIfOkToDeleteEventArgs(CurrentDefinition.Id);
+					var okToDeleteEventArgs = new AskIfOkToDeleteEventArgs(CurrentDefinition.ID);
 					if (AskIfOkToDeleteWritingSystems != null)
 					{
 						AskIfOkToDeleteWritingSystems(this, okToDeleteEventArgs);
@@ -1267,7 +1267,7 @@ namespace SIL.Windows.Forms.WritingSystems
 						string message = okToDeleteEventArgs.ErrorMessage ?? String.Empty;
 						ErrorReport.NotifyUserOfProblem(
 							String.Format("Can not delete the input system {0}. {1}",
-											CurrentDefinition.Id, message));
+											CurrentDefinition.ID, message));
 						return;
 					}
 					// If you play around with renaming/revising writing systems, the Id assigned to
@@ -1311,9 +1311,9 @@ namespace SIL.Windows.Forms.WritingSystems
 			// replacing/deleting them unknowingly.
 			var wsIds = new List<string>();
 			foreach (var wsT in _writingSystemRepository.AllWritingSystems)
-				wsIds.Add(wsT.Id);
+				wsIds.Add(wsT.ID);
 			foreach (var wsT in WritingSystemDefinitions)
-				wsIds.Add(wsT.Id);
+				wsIds.Add(wsT.ID);
 			var ws = WritingSystemDefinition.CreateCopyWithUniqueId(CurrentDefinition, wsIds);
 			WritingSystemDefinitions.Insert(CurrentIndex+1, ws);
 			OnAddOrDelete();
@@ -1430,7 +1430,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			{
 				//create a writing system just to get the unique id, then copy that id to the writing system that we want to set
 				var uniqueWs = WritingSystemDefinition.CreateCopyWithUniqueId(unsettableWs,
-						_writingSystemRepository.AllWritingSystems.Select(ws => ws.Id));
+						_writingSystemRepository.AllWritingSystems.Select(ws => ws.ID));
 				unsettableWs.Language = uniqueWs.Language;
 				unsettableWs.Script = uniqueWs.Script;
 				unsettableWs.Region = uniqueWs.Region;

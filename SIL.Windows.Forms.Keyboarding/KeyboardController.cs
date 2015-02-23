@@ -140,7 +140,7 @@ namespace SIL.Windows.Forms.Keyboarding
 
 		private KeyboardController()
 		{
-			_keyboards = new KeyedList<string, KeyboardDescription>(kd => kd.Id);
+			_keyboards = new KeyedList<string, KeyboardDescription>(kd => kd.ID);
 			_eventHandlers = new Dictionary<Control, object>();
 			_adaptors = new List<IKeyboardAdaptor>();
 		}

@@ -28,7 +28,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		public void UpdateAvailableKeyboards()
 		{
 			CheckDisposed();
-			Dictionary<string, KeymanKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<KeymanKeyboardDescription>().ToDictionary(kd => kd.Id);
+			Dictionary<string, KeymanKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<KeymanKeyboardDescription>().ToDictionary(kd => kd.ID);
 			// Try the Keyman 7/8 interface
 			try
 			{
@@ -91,7 +91,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 						ErrorReport.NotifyUserOfProblem("Keyman6 could not be activated.");
 						return false;
 					}
-					keymanLink.SelectKeymanKeyboard(keyboard.Id);
+					keymanLink.SelectKeymanKeyboard(keyboard.ID);
 				}
 				catch (Exception)
 				{
@@ -103,12 +103,12 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				try
 				{
 					var keyman = new TavultesoftKeymanClass();
-					int oneBasedIndex = keyman.Keyboards.IndexOf(keyboard.Id);
+					int oneBasedIndex = keyman.Keyboards.IndexOf(keyboard.ID);
 
 					if (oneBasedIndex < 1)
 					{
 						ErrorReport.NotifyUserOfProblem("The keyboard '{0}' could not be activated using Keyman 7.",
-							keyboard.Id);
+							keyboard.ID);
 						return false;
 					}
 					keyman.Control.ActiveKeyboard = keyman.Keyboards[oneBasedIndex];

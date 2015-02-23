@@ -8,13 +8,13 @@ namespace SIL.WritingSystems
 {
 	/// <summary>
 	/// This class forms the bases for managing collections of WritingSystemDefinitions. WritingSystemDefinitions
-	/// can be registered and then retrieved and deleted by Id. The preferred use when editting a WritingSystemDefinition stored
+	/// can be registered and then retrieved and deleted by ID. The preferred use when editting a WritingSystemDefinition stored
 	/// in the WritingSystemRepository is to Get the WritingSystemDefinition in question and then to clone it either via the
 	/// Clone method on WritingSystemDefinition or via the MakeDuplicate method on the WritingSystemRepository. This allows
 	/// changes made to a WritingSystemDefinition to be registered back with the WritingSystemRepository via the Set method,
 	/// or to be discarded by simply discarding the object.
 	/// Internally the WritingSystemRepository uses the WritingSystemDefinition's StoreId property to establish the identity of
-	/// a WritingSystemDefinition. This allows the user to change the Rfc646Tag components and thereby the Id of a
+	/// a WritingSystemDefinition. This allows the user to change the IETF language tag components and thereby the ID of a
 	/// WritingSystemDefinition and the WritingSystemRepository to update itself and the underlying store correctly.
 	/// </summary>
 	abstract public class WritingSystemRepositoryBase : IWritingSystemRepository
@@ -99,7 +99,7 @@ namespace SIL.WritingSystems
 				throw new ArgumentOutOfRangeException("identifier");
 			}
 			// Remove() uses the StoreID field, but file storage and UI use the Id field.
-			string realId = _writingSystems[identifier].Id;
+			string realId = _writingSystems[identifier].ID;
 			// Delete from us
 			//??? Do we really delete or just mark for deletion?
 
@@ -116,7 +116,7 @@ namespace SIL.WritingSystems
 			//TODO: This may be useful if writing systems were reference counted.
 		}
 
-		abstract public string WritingSystemIdHasChangedTo(string id);
+		abstract public string WritingSystemIDHasChangedTo(string id);
 
 		virtual public void LastChecked(string identifier, DateTime dateModified)
 		{
@@ -147,7 +147,7 @@ namespace SIL.WritingSystems
 			return definition.Clone();
 		}
 
-		public abstract bool WritingSystemIdHasChanged(string id);
+		public abstract bool WritingSystemIDHasChanged(string id);
 
 		public bool Contains(string identifier)
 		{
@@ -162,8 +162,8 @@ namespace SIL.WritingSystems
 			{
 				return false;
 			}
-			return !(_writingSystems.Keys.Any(id => id.Equals(ws.Id, StringComparison.OrdinalIgnoreCase)) &&
-				ws.StoreID != _writingSystems[ws.Id].StoreID);
+			return !(_writingSystems.Keys.Any(id => id.Equals(ws.ID, StringComparison.OrdinalIgnoreCase)) &&
+				ws.StoreID != _writingSystems[ws.ID].StoreID);
 		}
 
 		public virtual void Set(WritingSystemDefinition ws)
@@ -176,7 +176,7 @@ namespace SIL.WritingSystems
 			//Check if this is a new writing system with a conflicting id
 			if (!CanSet(ws))
 			{
-				throw new ArgumentException(String.Format("Unable to set writing system '{0}' because this id already exists. Please change this writing system id before setting it.", ws.Id));
+				throw new ArgumentException(String.Format("Unable to set writing system '{0}' because this id already exists. Please change this writing system id before setting it.", ws.ID));
 			}
 			string oldId = _writingSystems.Where(kvp => kvp.Value.StoreID == ws.StoreID).Select(kvp => kvp.Key).FirstOrDefault();
 			//??? How do we update
@@ -186,18 +186,18 @@ namespace SIL.WritingSystems
 			{
 				_writingSystems.Remove(oldId);
 			}
-			_writingSystems[ws.Id] = ws;
+			_writingSystems[ws.ID] = ws;
 
-			if (!String.IsNullOrEmpty(oldId) && (oldId != ws.Id))
+			if (!String.IsNullOrEmpty(oldId) && (oldId != ws.ID))
 			{
-				UpdateChangedIDs(oldId, ws.Id);
+				UpdateChangedIDs(oldId, ws.ID);
 				if (WritingSystemIdChanged != null)
 				{
-					WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.Id));
+					WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.ID));
 				}
 			}
 
-			ws.StoreID = ws.Id;
+			ws.StoreID = ws.ID;
 		}
 
 		/// <summary>
@@ -236,7 +236,7 @@ namespace SIL.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			return String.IsNullOrEmpty(ws.StoreID) ? ws.Id : ws.StoreID;
+			return String.IsNullOrEmpty(ws.StoreID) ? ws.ID : ws.StoreID;
 		}
 
 		public WritingSystemDefinition Get(string identifier)
@@ -267,8 +267,8 @@ namespace SIL.WritingSystems
 		virtual protected void OnChangeNotifySharedStore(WritingSystemDefinition ws)
 		{
 			DateTime lastDateModified;
-			if (_writingSystemsToIgnore.TryGetValue(ws.Id, out lastDateModified) && ws.DateModified > lastDateModified)
-				_writingSystemsToIgnore.Remove(ws.Id);
+			if (_writingSystemsToIgnore.TryGetValue(ws.ID, out lastDateModified) && ws.DateModified > lastDateModified)
+				_writingSystemsToIgnore.Remove(ws.ID);
 		}
 
 		virtual protected void OnRemoveNotifySharedStore()
@@ -318,7 +318,7 @@ namespace SIL.WritingSystems
 
 		public virtual void OnWritingSystemIDChange(WritingSystemDefinition ws, string oldId)
 		{
-			_writingSystems[ws.Id] = ws;
+			_writingSystems[ws.ID] = ws;
 			_writingSystems.Remove(oldId);
 		}
 
@@ -327,9 +327,9 @@ namespace SIL.WritingSystems
 		/// </summary>
 		/// <param name="idsToFilter"></param>
 		/// <returns></returns>
-		public IEnumerable<string> FilterForTextIds(IEnumerable<string> idsToFilter)
+		public IEnumerable<string> FilterForTextIDs(IEnumerable<string> idsToFilter)
 		{
-			var textIds = TextWritingSystems.Select(ws => ws.Id);
+			var textIds = TextWritingSystems.Select(ws => ws.ID);
 			return idsToFilter.Where(id => textIds.Contains(id));
 		}
 

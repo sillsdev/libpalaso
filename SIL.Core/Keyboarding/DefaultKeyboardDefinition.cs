@@ -37,7 +37,7 @@ namespace SIL.Keyboarding
 		/// <summary>
 		/// Gets an identifier of the language/keyboard layout
 		/// </summary>
-		public string Id
+		public string ID
 		{
 			get { return _id; }
 		}

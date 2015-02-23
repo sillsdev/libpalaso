@@ -244,7 +244,7 @@ namespace SIL.WritingSystems.Tests
 				repo.Set(ws2);
 				repo.Save();
 
-				repo.Conflate(ws.Id, ws2.Id);
+				repo.Conflate(ws.ID, ws2.ID);
 				repo.Save();
 
 				string logFilePath = Path.Combine(repo.PathToWritingSystems, "idchangelog.xml");
@@ -290,7 +290,7 @@ namespace SIL.WritingSystems.Tests
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				string path = Path.Combine(environment.Collection.PathToWritingSystems, "en.ldml");
 				Assert.IsTrue(File.Exists(path));
-				var ws2 = environment.Collection.Get(environment.WritingSystem.Id);
+				var ws2 = environment.Collection.Get(environment.WritingSystem.ID);
 				ws2.Language = "de";
 				Assert.AreEqual("en", ws2.StoreID);
 				environment.Collection.SaveDefinition(ws2);
@@ -402,7 +402,7 @@ namespace SIL.WritingSystems.Tests
 				LdmlInFolderWritingSystemRepository newCollection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, Enumerable.Empty<ICustomDataMapper>(),
 					DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
 				WritingSystemDefinition ws2 = newCollection.Get("en");
-				Assert.AreEqual("Thai", ws2.KnownKeyboards[0].Id);
+				Assert.AreEqual("Thai", ws2.KnownKeyboards[0].ID);
 			}
 		}
 
@@ -661,7 +661,7 @@ namespace SIL.WritingSystems.Tests
 				e.Collection.Set(new WritingSystemDefinition("de"));
 				e.Collection.Set(new WritingSystemDefinition("en"));
 				e.Collection.Conflate("de", "en");
-				Assert.That(e.Collection.WritingSystemIdHasChangedTo("de"), Is.EqualTo("en"));
+				Assert.That(e.Collection.WritingSystemIDHasChangedTo("de"), Is.EqualTo("en"));
 			}
 		}
 
@@ -838,7 +838,7 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			{
 				//Add a writing system to the repo
-				Assert.That(environment.Collection.WritingSystemIdHasChanged("en"), Is.False);
+				Assert.That(environment.Collection.WritingSystemIDHasChanged("en"), Is.False);
 			}
 		}
 
@@ -854,7 +854,7 @@ namespace SIL.WritingSystems.Tests
 				//Now change the Id
 				ws.Variants.Add("bogus");
 				environment.Collection.Save();
-				Assert.That(environment.Collection.WritingSystemIdHasChanged("en"), Is.True);
+				Assert.That(environment.Collection.WritingSystemIDHasChanged("en"), Is.True);
 			}
 		}
 
@@ -877,7 +877,7 @@ namespace SIL.WritingSystems.Tests
 				wsEnDup.Variants.Add("bogus2");
 				environment.Collection.Set(wsEnDup);
 				environment.Collection.Save();
-				Assert.That(environment.Collection.WritingSystemIdHasChanged("en"), Is.True);
+				Assert.That(environment.Collection.WritingSystemIDHasChanged("en"), Is.True);
 			}
 		}
 
@@ -890,7 +890,7 @@ namespace SIL.WritingSystems.Tests
 				var ws = new WritingSystemDefinition("en");
 				environment.Collection.Set(ws);
 				environment.Collection.Save();
-				Assert.That(environment.Collection.WritingSystemIdHasChanged("en"), Is.False);
+				Assert.That(environment.Collection.WritingSystemIDHasChanged("en"), Is.False);
 			}
 		}
 
@@ -900,7 +900,7 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			{
 				//Add a writing system to the repo
-				Assert.That(environment.Collection.WritingSystemIdHasChangedTo("en"), Is.Null);
+				Assert.That(environment.Collection.WritingSystemIDHasChangedTo("en"), Is.Null);
 			}
 		}
 
@@ -916,7 +916,7 @@ namespace SIL.WritingSystems.Tests
 				//Now change the Id
 				ws.Variants.Add("bogus");
 				environment.Collection.Save();
-				Assert.That(environment.Collection.WritingSystemIdHasChangedTo("en"), Is.EqualTo("en-x-bogus"));
+				Assert.That(environment.Collection.WritingSystemIDHasChangedTo("en"), Is.EqualTo("en-x-bogus"));
 			}
 		}
 
@@ -939,7 +939,7 @@ namespace SIL.WritingSystems.Tests
 				wsEnDup.Variants.Add("bogus2");
 				environment.Collection.Set(wsEnDup);
 				environment.Collection.Save();
-				Assert.That(environment.Collection.WritingSystemIdHasChangedTo("en"), Is.Null);
+				Assert.That(environment.Collection.WritingSystemIDHasChangedTo("en"), Is.Null);
 			}
 		}
 
@@ -952,7 +952,7 @@ namespace SIL.WritingSystems.Tests
 				var ws = new WritingSystemDefinition("en");
 				environment.Collection.Set(ws);
 				environment.Collection.Save();
-				Assert.That(environment.Collection.WritingSystemIdHasChangedTo("en"), Is.EqualTo("en"));
+				Assert.That(environment.Collection.WritingSystemIDHasChangedTo("en"), Is.EqualTo("en"));
 			}
 		}
 
