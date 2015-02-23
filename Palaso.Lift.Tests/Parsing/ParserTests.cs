@@ -194,7 +194,7 @@ namespace Palaso.Lift.Tests.Parsing
 		public void NotifyOfDeletedEntry()
 		{
 			DateTime now = DateTime.UtcNow;
-			string when = now.ToString(Extensible.LiftTimeFormatNoTimeZone);
+			string when = now.ToString(Extensible.LiftTimeFormatWithUTC);
 			ExpectEntryWasDeleted();            //todo expect more!
 			_doc.LoadXml(String.Format("<entry dateDeleted='{0}'/>", when));
 			_parser.ReadEntry(_doc.FirstChild);
@@ -692,7 +692,7 @@ namespace Palaso.Lift.Tests.Parsing
 			ExpectGetOrMakeEntry();
 			//ExpectMergeInLexemeForm(Is.Anything);
 			ExpectGetOrMakeSense();
-			string when= new DateTime(2000,1,1).ToUniversalTime().ToString(Extensible.LiftTimeFormatNoTimeZone);
+			string when= new DateTime(2000,1,1).ToUniversalTime().ToString(Extensible.LiftTimeFormatWithUTC);
 			ExpectMultiTextMergeIn("Definition", new LiftMultiTextAnnotationMatcher(1, "x", "flag", "1", "john", DateTime.Parse(when).ToUniversalTime()));
 
 			ParseEntryAndCheck(string.Format(@"
@@ -716,7 +716,7 @@ namespace Palaso.Lift.Tests.Parsing
 			ExpectGetOrMakeEntry();
 			//ExpectMergeInLexemeForm(Is.Anything);
 			ExpectGetOrMakeSense();
-			string when= new DateTime(2000,1,1).ToUniversalTime().ToString(Extensible.LiftTimeFormatNoTimeZone);
+			string when= new DateTime(2000,1,1).ToUniversalTime().ToString(Extensible.LiftTimeFormatWithUTC);
 			ExpectMergeInTrait(new TraitMatcher("dummy", "blah", 2));
 			//ExpectMergeDefinition();
 
@@ -866,9 +866,9 @@ namespace Palaso.Lift.Tests.Parsing
 
 			ExpectEmptyEntry();
 			DateTime creat = new DateTime(2000,1,1).ToUniversalTime();
-			string createdTime = creat.ToString(Extensible.LiftTimeFormatNoTimeZone);
+			string createdTime = creat.ToString(Extensible.LiftTimeFormatWithUTC);
 			DateTime mod = new DateTime(2000, 1, 2).ToUniversalTime();
-			string modifiedTime = mod.ToString(Extensible.LiftTimeFormatNoTimeZone);
+			string modifiedTime = mod.ToString(Extensible.LiftTimeFormatWithUTC);
 			ExpectMergeInField(
 				Is.EqualTo("color"),
 				Is.EqualTo(creat),

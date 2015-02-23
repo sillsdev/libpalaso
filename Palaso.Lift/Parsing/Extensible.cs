@@ -23,7 +23,7 @@ namespace Palaso.Lift.Parsing
 		///<summary></summary>
 		public const string LiftTimeFormatWithTimeZone = DateTimeExtensions.ISO8601TimeFormatWithTimeZone;
 		///<summary></summary>
-		public const string LiftTimeFormatNoTimeZone = DateTimeExtensions.ISO8601TimeFormatNoTimeZone;
+		public const string LiftTimeFormatWithUTC = DateTimeExtensions.ISO8601TimeFormatWithUTC;
 		///<summary></summary>
 		public const string LiftDateOnlyFormat = DateTimeExtensions.ISO8601TimeFormatDateOnly;
 
@@ -57,7 +57,7 @@ namespace Palaso.Lift.Parsing
 		{
 			var formats = new[]
 								  {
-									  LiftTimeFormatNoTimeZone, LiftTimeFormatWithTimeZone,
+									  LiftTimeFormatWithUTC, LiftTimeFormatWithTimeZone,
 									  LiftDateOnlyFormat
 								  };
 			try
@@ -142,12 +142,12 @@ namespace Palaso.Lift.Parsing
 
 			if (default(DateTime) != _creationTime)
 			{
-				s += _creationTime.ToString(LiftTimeFormatNoTimeZone);
+				s += _creationTime.ToString(LiftTimeFormatWithUTC);
 			}
 			s += ";";
 			if (default(DateTime) != _modificationTime)
 			{
-				s += _modificationTime.ToString(LiftTimeFormatNoTimeZone);
+				s += _modificationTime.ToString(LiftTimeFormatWithUTC);
 			}
 			s += ";";
 
