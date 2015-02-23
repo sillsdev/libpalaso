@@ -198,6 +198,12 @@ namespace SIL.WritingSystems
 			_quotationMarks.CollectionChanged += _quotationMarks_CollectionChanged;
 			_collations.CollectionChanged += _collations_CollectionChanged;
 			_variants.CollectionChanged += _variants_CollectionChanged;
+			_characterSets.CollectionChanged += _characterSets_CollectionChanged;
+		}
+
+		private void _characterSets_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			IsChanged = true;
 		}
 
 		private void _variants_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
