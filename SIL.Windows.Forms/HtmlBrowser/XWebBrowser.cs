@@ -71,13 +71,13 @@ namespace SIL.Windows.Forms.HtmlBrowser
 				case BrowserType.GeckoFx:
 					var path = Path.Combine(Path.GetDirectoryName(
 						new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath),
-						"PalasoUIWindowsForms.GeckoBrowserAdapter.dll");
+						"SIL.Windows.Forms.GeckoBrowserAdapter.dll");
 					if (File.Exists(path))
 					{
 						var assembly = Assembly.LoadFile(path);
 						if (assembly != null)
 						{
-							var browser = assembly.GetType("Palaso.UI.WindowsForms.HtmlBrowser.GeckoFxWebBrowserAdapter");
+							var browser = assembly.GetType("SIL.Windows.Forms.GeckoBrowserAdapter.GeckoFxWebBrowserAdapter");
 							if (browser != null)
 							{
 								try
