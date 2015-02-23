@@ -136,77 +136,80 @@ namespace SIL.WritingSystems
 		{
 			Clear();
 			foreach (string filePath in Directory.GetFiles(_path, "*.ldml"))
-			{
-				WritingSystemDefinition wsFromFile;
-				try
-				{
-					wsFromFile = CreateNew();
-					var ldmlDataMapper = new LdmlDataMapper();
-					if (File.Exists(filePath))
-					{
-						ldmlDataMapper.Read(filePath, wsFromFile);
-						foreach (ICustomDataMapper customDataMapper in _customDataMappers)
-							customDataMapper.Read(wsFromFile);
-						wsFromFile.StoreID = Path.GetFileNameWithoutExtension(filePath);
-					}
-				}
-				catch (Exception e)
-				{
-					// Add the exception to our list of problems and continue loading
-					var problem = new WritingSystemRepositoryProblem
-						{
-							Consequence = WritingSystemRepositoryProblem.ConsequenceType.WSWillNotBeAvailable,
-							Exception = e,
-							FilePath = filePath
-						};
-					_loadProblems.Add(problem);
-					continue;
-				}
+				LoadDefinition(filePath);
 
-				if (string.Compare(wsFromFile.StoreID, wsFromFile.IetfLanguageTag, StringComparison.OrdinalIgnoreCase) != 0)
+			LoadChangedIDsFromExistingWritingSystems();
+		}
+
+		protected virtual void LoadDefinition(string filePath)
+		{
+			WritingSystemDefinition wsFromFile;
+			try
+			{
+				wsFromFile = CreateNew();
+				var ldmlDataMapper = new LdmlDataMapper();
+				if (File.Exists(filePath))
 				{
-					bool badFileName = true;
-					if (wsFromFile.StoreID != null && wsFromFile.StoreID.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
-					{
-						var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
-						interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(wsFromFile.StoreID);
-						if (interpreter.Rfc5646Tag.Equals(wsFromFile.IetfLanguageTag, StringComparison.OrdinalIgnoreCase))
-						{
-							badFileName = false;
-						}
-					}
-					if (badFileName)
-					{// Add the exception to our list of problems and continue loading
-						var problem = new WritingSystemRepositoryProblem
-						{
-							Consequence = WritingSystemRepositoryProblem.ConsequenceType.WSWillNotBeAvailable,
-							Exception = new ApplicationException(
-								String.Format(
-									"The writing system file {0} seems to be named inconsistently. It contains the Rfc5646 tag: '{1}'. The name should have been made consistent with its content upon migration of the writing systems.",
-									filePath, wsFromFile.IetfLanguageTag)),
-							FilePath = filePath
-						};
-						_loadProblems.Add(problem);
-					}
+					ldmlDataMapper.Read(filePath, wsFromFile);
+					foreach (ICustomDataMapper customDataMapper in _customDataMappers)
+						customDataMapper.Read(wsFromFile);
+					wsFromFile.StoreID = Path.GetFileNameWithoutExtension(filePath);
 				}
-				try
-				{
-					Set(wsFromFile);
-				}
-				catch (Exception e)
-				{
-					// Add the exception to our list of problems and continue loading
-					var problem = new WritingSystemRepositoryProblem
+			}
+			catch (Exception e)
+			{
+				// Add the exception to our list of problems and continue loading
+				var problem = new WritingSystemRepositoryProblem
 					{
 						Consequence = WritingSystemRepositoryProblem.ConsequenceType.WSWillNotBeAvailable,
 						Exception = e,
 						FilePath = filePath
 					};
+				_loadProblems.Add(problem);
+				return;
+			}
+
+			if (string.Compare(wsFromFile.StoreID, wsFromFile.IetfLanguageTag, StringComparison.OrdinalIgnoreCase) != 0)
+			{
+				bool badFileName = true;
+				if (wsFromFile.StoreID != null && wsFromFile.StoreID.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
+				{
+					var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
+					interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(wsFromFile.StoreID);
+					if (interpreter.Rfc5646Tag.Equals(wsFromFile.IetfLanguageTag, StringComparison.OrdinalIgnoreCase))
+					{
+						badFileName = false;
+					}
+				}
+				if (badFileName)
+				{// Add the exception to our list of problems and continue loading
+					var problem = new WritingSystemRepositoryProblem
+					{
+						Consequence = WritingSystemRepositoryProblem.ConsequenceType.WSWillNotBeAvailable,
+						Exception = new ApplicationException(
+							String.Format(
+								"The writing system file {0} seems to be named inconsistently. It contains the Rfc5646 tag: '{1}'. The name should have been made consistent with its content upon migration of the writing systems.",
+								filePath, wsFromFile.IetfLanguageTag)),
+						FilePath = filePath
+					};
 					_loadProblems.Add(problem);
 				}
 			}
-
-			LoadChangedIDsFromExistingWritingSystems();
+			try
+			{
+				Set(wsFromFile);
+			}
+			catch (Exception e)
+			{
+				// Add the exception to our list of problems and continue loading
+				var problem = new WritingSystemRepositoryProblem
+				{
+					Consequence = WritingSystemRepositoryProblem.ConsequenceType.WSWillNotBeAvailable,
+					Exception = e,
+					FilePath = filePath
+				};
+				_loadProblems.Add(problem);
+			}
 		}
 
 		private bool HaveMatchingDefinitionInTrash(string identifier)
@@ -251,7 +254,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Saves a writing system definition.
 		/// </summary>
-		public void SaveDefinition(WritingSystemDefinition ws)
+		protected internal virtual void SaveDefinition(WritingSystemDefinition ws)
 		{
 			Set(ws);
 			string writingSystemFilePath = GetFilePathFromIdentifier(ws.StoreID);
@@ -335,24 +338,13 @@ namespace SIL.WritingSystems
 			//delete anything we're going to delete first, to prevent losing
 			//a WS we want by having it deleted by an old WS we don't want
 			//(but which has the same identifier)
-			var idsToRemove = new List<string>();
-			foreach (WritingSystemDefinition ws in AllWritingSystems)
-			{
-				if (ws.MarkedForDeletion)
-				{
-					idsToRemove.Add(ws.StoreID);//nb: purposefully not removing from our list, for fear of leading to bugs in the UI. If we did this, we'd want to require the UI to reload the WS list after a save.
-				}
-			}
-			foreach (string id in idsToRemove)
-			{
+			foreach (string id in AllWritingSystems.Where(ws => ws.MarkedForDeletion).Select(ws => ws.StoreID).ToArray())
 				Remove(id);
-			}
 
 			// make a copy and then go through that list - SaveDefinition calls Set which
 			// may delete and then insert the same writing system - which would change WritingSystemDefinitions
 			// and not be allowed in a foreach loop
-			List<WritingSystemDefinition> allDefs = AllWritingSystems.Where(CanSet).ToList();
-			foreach (WritingSystemDefinition ws in allDefs)
+			foreach (WritingSystemDefinition ws in AllWritingSystems.Where(CanSet).ToArray())
 			{
 				SaveDefinition(ws);
 				OnChangeNotifySharedStore(ws);
@@ -375,9 +367,7 @@ namespace SIL.WritingSystems
 			//identical with the old id of another writing sytsem. This could otherwise lead to dataloss.
 			//The inconsistency is resolved on Save()
 			if (oldStoreId != ws.StoreID && File.Exists(GetFilePathFromIdentifier(oldStoreId)))
-			{
 				File.Move(GetFilePathFromIdentifier(oldStoreId), GetFilePathFromIdentifier(ws.StoreID));
-			}
 		}
 
 		public override bool WritingSystemIdHasChanged(string id)
