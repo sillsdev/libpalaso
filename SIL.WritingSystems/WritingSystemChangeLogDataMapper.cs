@@ -304,7 +304,7 @@ namespace SIL.WritingSystems
 			writer.WriteStartElement(logEvent.Type);
 			writer.WriteAttributeString("Producer", logEvent.Producer);
 			writer.WriteAttributeString("ProducerVersion", logEvent.ProducerVersion);
-			writer.WriteAttributeString("TimeStamp", logEvent.DateTime.ToISO8601DateAndUTCTimeString());
+			writer.WriteAttributeString("TimeStamp", logEvent.DateTime.ToISO8601TimeFormatWithUTCString());
 			switch (logEvent.Type)
 			{
 				case "Change":

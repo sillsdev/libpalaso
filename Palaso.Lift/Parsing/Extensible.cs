@@ -21,11 +21,11 @@ namespace Palaso.Lift.Parsing
 		//private List<Annotation> _annotations;
 
 		///<summary></summary>
-		public const string LiftTimeFormatWithTimeZone = DateTimeExtensions.TimeFormatWithTimeZone;
+		public const string LiftTimeFormatWithTimeZone = DateTimeExtensions.ISO8601TimeFormatWithTimeZone;
 		///<summary></summary>
-		public const string LiftTimeFormatNoTimeZone = DateTimeExtensions.TimeFormatNoTimeZone;
+		public const string LiftTimeFormatNoTimeZone = DateTimeExtensions.ISO8601TimeFormatNoTimeZone;
 		///<summary></summary>
-		public const string LiftDateOnlyFormat = "yyyy-MM-dd";
+		public const string LiftDateOnlyFormat = DateTimeExtensions.ISO8601TimeFormatDateOnly;
 
 		///<summary>
 		/// Constructor.

@@ -104,7 +104,7 @@ namespace SIL.Archiving.IMDI
 			{
 				Name = Name + " Catalogue",
 				Title = Title,
-				Date = DateTime.Today.ToISO8601DateOnlyString(),
+				Date = DateTime.Today.ToISO8601TimeFormatDateOnlyString(),
 			};
 
 			foreach (var language in MetadataIso3Languages)

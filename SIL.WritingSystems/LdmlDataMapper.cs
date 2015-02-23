@@ -448,12 +448,11 @@ namespace SIL.WritingSystems
 			{
 				string dateTime = (string) generationElem.Attribute("date") ?? string.Empty;
 				DateTime modified = DateTime.UtcNow;
-				const string dateUninitialized = "$Date$";
-				if (!string.Equals(dateTime, dateUninitialized) && (!string.IsNullOrEmpty(dateTime.Trim()) && !DateTime.TryParse(dateTime, out modified)))
+				// Previous versions of LDML Data Mapper allowed generation date to be in CVS format
+				// This is deprecated so we only handle ISO 8601 format
+				if (DateTimeExtensions.IsISO8601DateTime(dateTime))
 				{
-					//CVS format:    "$Date: 2008/06/18 22:52:35 $"
-					modified = DateTime.ParseExact(dateTime, "'$Date: 'yyyy/MM/dd HH:mm:ss $", null,
-						DateTimeStyles.AssumeUniversal);
+					modified = DateTimeExtensions.ParseISO8601DateTime(dateTime);
 				}
 
 				ws.DateModified = modified;
@@ -900,7 +899,8 @@ namespace SIL.WritingSystems
 			if (!string.IsNullOrEmpty(ws.VersionDescription))
 				versionElem.SetValue(ws.VersionDescription);
 
-			identityElem.SetAttributeValue("generation", "date", String.Format("{0:s}", ws.DateModified));
+			// Write generation date with UTC so no more ambiguity on timezone
+			identityElem.SetAttributeValue("generation", "date", ws.DateModified.ToISO8601TimeFormatWithUTCString());
 			WriteLanguageTagElements(identityElem, ws.IetfLanguageTag);
 
 			// Create special element if data needs to be written

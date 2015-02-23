@@ -9,34 +9,47 @@ using System.Threading;
 namespace SIL.Extensions
 {
 	public static class DateTimeExtensions
-	{
-		public const string TimeFormatWithTimeZone = "yyyy-MM-ddTHH:mm:sszzzz";
-		public const string TimeFormatNoTimeZone = "yyyy-MM-ddTHH:mm:ssZ";
-		public const string DateOnlyFormat = "yyyy-MM-dd";
-
+	{	
+		/// <summary>
+		/// We expect to handle ISO 8601 format.  CVS format is deprecated
+		/// </summary>
+		public const string ISO8601TimeFormatWithTimeZone = "yyyy-MM-ddTHH:mm:sszzzz";
+		public const string ISO8601TimeFormatWithUTC = "yyyy-MM-ddTHH:mm:ssZ";
+		public const string ISO8601TimeFormatNoTimeZone = "yyyy-MM-ddTHH:mm:ss";
+		public const string ISO8601TimeFormatDateOnly = "yyyy-MM-dd";
 
 		public static string ToLiftDateTimeFormat(this DateTime when)
 		{
-			return when.ToISO8601DateAndUTCTimeString();
+			return when.ToISO8601TimeFormatWithUTCString();
 		}
 
-		public static string ToISO8601DateAndUTCTimeString(this DateTime  when)
+		// No method for ToISO8601TimeFormatWithTimeZoneString
+
+		//the invariantCulture here ensures we get what we asked for. Else, we can actually get '.' instead of ':' in the time separators.
+
+		public static string ToISO8601TimeFormatWithUTCString(this DateTime when)
 		{
-			//the invariantCulture here ensures we get what we asked for. Else, we can actually get '.' instead of ':' in the time separators.
-			return when.ToString(TimeFormatNoTimeZone, CultureInfo.InvariantCulture);
+			return when.ToString(ISO8601TimeFormatWithUTC, CultureInfo.InvariantCulture);
 		}
 
-		public static string ToISO8601DateOnlyString(this DateTime when)
+		public static string ToISO8601TimeFormatNoTimeZoneString(this DateTime when)
 		{
-			return when.ToString(DateOnlyFormat, CultureInfo.InvariantCulture);
+			return when.ToString(ISO8601TimeFormatNoTimeZone, CultureInfo.InvariantCulture);
+		}
+
+		public static string ToISO8601TimeFormatDateOnlyString(this DateTime when)
+		{
+			return when.ToString(ISO8601TimeFormatDateOnly, CultureInfo.InvariantCulture);
 		}
 
 		public static DateTime ParseISO8601DateTime(string when)
 		{
 			var formats = new string[]
 								  {
-									  TimeFormatNoTimeZone, TimeFormatWithTimeZone,
-									  DateOnlyFormat
+									  ISO8601TimeFormatNoTimeZone, 
+									  ISO8601TimeFormatWithTimeZone, 
+									  ISO8601TimeFormatWithUTC, 
+									  ISO8601TimeFormatDateOnly
 								  };
 			try
 			{
@@ -135,7 +148,7 @@ namespace SIL.Extensions
 		}
 
 		/// <summary />
-		public static bool IsISO8601Date(this string value)
+		public static bool IsISO8601Date(string value)
 		{
 			if (string.IsNullOrEmpty(value))
 				return false;
@@ -144,6 +157,27 @@ namespace SIL.Extensions
 			var m = rx.Match(value);
 
 			if (!m.Success) return false;
+
+			DateTime testDate;
+			return (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out testDate));
+		}
+
+		/// <summary>
+		/// Check if a date time string is of the following valid ISO 8601 formats:
+		/// yyyy-MM-ddTHH:mm:ssZ
+		/// yyyy-MM-ddTHH:mm:ss
+		/// yyyy-MM-ddTHH:mm:sszzzz
+		/// </summary>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public static bool IsISO8601DateTime(string value)
+		{
+			if (string.IsNullOrEmpty(value))
+				return false;
+
+			if (!Regex.IsMatch(value, @"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z?$") && 
+				!Regex.IsMatch(value, @"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{4}$"))
+				return false;
 
 			DateTime testDate;
 			return (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out testDate));
