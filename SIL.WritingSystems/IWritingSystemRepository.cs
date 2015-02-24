@@ -4,9 +4,9 @@ using System.Globalization;
 
 namespace SIL.WritingSystems
 {
-	public class WritingSystemIdChangedEventArgs : EventArgs
+	public class WritingSystemIDChangedEventArgs : EventArgs
 	{
-		public WritingSystemIdChangedEventArgs(string oldID, string newID)
+		public WritingSystemIDChangedEventArgs(string oldID, string newID)
 		{
 			OldID = oldID;
 			NewID = newID;
@@ -15,7 +15,7 @@ namespace SIL.WritingSystems
 		public string NewID { get; private set; }
 	}
 
-	public class WritingSystemConflatedEventArgs : WritingSystemIdChangedEventArgs
+	public class WritingSystemConflatedEventArgs : WritingSystemIDChangedEventArgs
 	{
 		public WritingSystemConflatedEventArgs(string oldId, string newId)
 			: base(oldId, newId)
@@ -40,7 +40,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Notifies a consuming class of a changed writing system id on Set()
 		/// </summary>
-		event EventHandler<WritingSystemIdChangedEventArgs> WritingSystemIdChanged;
+		event EventHandler<WritingSystemIDChangedEventArgs> WritingSystemIDChanged;
 
 		/// <summary>
 		/// Notifies a consuming class of a deleted writing system
@@ -67,7 +67,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Gets the writing system object for the given Store ID
 		/// </summary>
-		WritingSystemDefinition Get(string identifier);
+		WritingSystemDefinition Get(string id);
 
 		/// <summary>
 		/// If the given writing system were passed to Set, this function returns the
@@ -99,7 +99,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Removes the writing system with the specified Store ID from the store.
 		/// </summary>
-		void Remove(string identifier);
+		void Remove(string id);
 
 		/// <summary>
 		/// Returns a list of all writing system definitions in the store.
@@ -150,7 +150,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// 
 		/// </summary>
-		void LastChecked(string identifier, DateTime dateModified);
+		void LastChecked(string id, DateTime dateModified);
 
 		/// <summary>
 		/// Writes the store to a persistable medium, if applicable.
@@ -166,7 +166,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Event Handler that updates the store when a writing system id has changed
 		/// </summary>
-		void OnWritingSystemIDChange(WritingSystemDefinition ws, string oldId);
+		void OnWritingSystemIDChange(WritingSystemDefinition ws, string oldID);
 
 		///<summary>
 		/// Returns a list of writing system tags that apply only to text based writing systems.

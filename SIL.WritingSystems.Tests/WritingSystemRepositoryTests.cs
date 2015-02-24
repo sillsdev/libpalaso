@@ -11,7 +11,7 @@ namespace SIL.WritingSystems.Tests
 	{
 		private IWritingSystemRepository _repositoryUnderTest;
 		private WritingSystemDefinition _writingSystem;
-		private WritingSystemIdChangedEventArgs _writingSystemIdChangedEventArgs;
+		private WritingSystemIDChangedEventArgs _writingSystemIdChangedEventArgs;
 		private WritingSystemDeletedEventArgs _writingSystemDeletedEventArgs;
 		private WritingSystemConflatedEventArgs _writingSystemConflatedEventArgs;
 
@@ -553,7 +553,7 @@ namespace SIL.WritingSystems.Tests
 			Assert.AreEqual("en", textIds[2]);
 		}
 
-		private void OnWritingSystemIdChanged(object sender, WritingSystemIdChangedEventArgs e)
+		private void OnWritingSystemIdChanged(object sender, WritingSystemIDChangedEventArgs e)
 		{
 			_writingSystemIdChangedEventArgs = e;
 		}
@@ -561,7 +561,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Set_IdOfWritingSystemChanged_EventArgsAreCorrect()
 		{
-			RepositoryUnderTest.WritingSystemIdChanged += OnWritingSystemIdChanged;
+			RepositoryUnderTest.WritingSystemIDChanged += OnWritingSystemIdChanged;
 			var ws = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(ws);
 			ws.Language = "de";
@@ -586,7 +586,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Set_IdOfWritingSystemIsUnChanged_EventIsNotFired()
 		{
-			RepositoryUnderTest.WritingSystemIdChanged += OnWritingSystemIdChanged;
+			RepositoryUnderTest.WritingSystemIDChanged += OnWritingSystemIdChanged;
 			var ws = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(ws);
 			ws.Language = "en";
@@ -597,7 +597,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Set_NewWritingSystem_EventIsNotFired()
 		{
-			RepositoryUnderTest.WritingSystemIdChanged += OnWritingSystemIdChanged;
+			RepositoryUnderTest.WritingSystemIDChanged += OnWritingSystemIdChanged;
 			var ws = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(ws);
 			Assert.That(_writingSystemIdChangedEventArgs, Is.Null);

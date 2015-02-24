@@ -25,7 +25,7 @@ namespace SIL.WritingSystems
 
 		private readonly Dictionary<string, string> _idChangeMap;
 
-		public event EventHandler<WritingSystemIdChangedEventArgs> WritingSystemIdChanged;
+		public event EventHandler<WritingSystemIDChangedEventArgs> WritingSystemIDChanged;
 		public event EventHandler<WritingSystemDeletedEventArgs> WritingSystemDeleted;
 		public event EventHandler<WritingSystemConflatedEventArgs> WritingSystemConflated;
 
@@ -82,30 +82,30 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Remove the specified WritingSystemDefinition.
 		/// </summary>
-		/// <param name="identifier">the StoreID of the WritingSystemDefinition</param>
+		/// <param name="id">the StoreID of the WritingSystemDefinition</param>
 		/// <remarks>
 		/// Note that ws.StoreID may differ from ws.Id.  The former is the key into the
 		/// dictionary, but the latter is what gets persisted to disk (and shown to the
 		/// user).
 		/// </remarks>
-		virtual public void Remove(string identifier)
+		virtual public void Remove(string id)
 		{
-			if (identifier == null)
+			if (id == null)
 			{
-				throw new ArgumentNullException("identifier");
+				throw new ArgumentNullException("id");
 			}
-			if (!_writingSystems.ContainsKey(identifier))
+			if (!_writingSystems.ContainsKey(id))
 			{
-				throw new ArgumentOutOfRangeException("identifier");
+				throw new ArgumentOutOfRangeException("id");
 			}
 			// Remove() uses the StoreID field, but file storage and UI use the Id field.
-			string realId = _writingSystems[identifier].ID;
+			string realId = _writingSystems[id].ID;
 			// Delete from us
 			//??? Do we really delete or just mark for deletion?
 
-			_writingSystems.Remove(identifier);
-			if (_writingSystemsToIgnore.ContainsKey(identifier))
-				_writingSystemsToIgnore.Remove(identifier);
+			_writingSystems.Remove(id);
+			if (_writingSystemsToIgnore.ContainsKey(id))
+				_writingSystemsToIgnore.Remove(id);
 			if (_writingSystemsToIgnore.ContainsKey(realId))
 				_writingSystemsToIgnore.Remove(realId);
 			if (!Conflating && WritingSystemDeleted != null)
@@ -118,15 +118,15 @@ namespace SIL.WritingSystems
 
 		abstract public string WritingSystemIDHasChangedTo(string id);
 
-		virtual public void LastChecked(string identifier, DateTime dateModified)
+		virtual public void LastChecked(string id, DateTime dateModified)
 		{
-			if (_writingSystemsToIgnore.ContainsKey(identifier))
+			if (_writingSystemsToIgnore.ContainsKey(id))
 			{
-				_writingSystemsToIgnore[identifier] = dateModified;
+				_writingSystemsToIgnore[id] = dateModified;
 			}
 			else
 			{
-				_writingSystemsToIgnore.Add(identifier, dateModified);
+				_writingSystemsToIgnore.Add(id, dateModified);
 			}
 		}
 
@@ -191,9 +191,9 @@ namespace SIL.WritingSystems
 			if (!String.IsNullOrEmpty(oldId) && (oldId != ws.ID))
 			{
 				UpdateChangedIDs(oldId, ws.ID);
-				if (WritingSystemIdChanged != null)
+				if (WritingSystemIDChanged != null)
 				{
-					WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.ID));
+					WritingSystemIDChanged(this, new WritingSystemIDChangedEventArgs(oldId, ws.ID));
 				}
 			}
 
@@ -239,17 +239,17 @@ namespace SIL.WritingSystems
 			return String.IsNullOrEmpty(ws.StoreID) ? ws.ID : ws.StoreID;
 		}
 
-		public WritingSystemDefinition Get(string identifier)
+		public WritingSystemDefinition Get(string id)
 		{
-			if (identifier == null)
+			if (id == null)
 			{
-				throw new ArgumentNullException("identifier");
+				throw new ArgumentNullException("id");
 			}
-			if (!_writingSystems.ContainsKey(identifier))
+			if (!_writingSystems.ContainsKey(id))
 			{
-				throw new ArgumentOutOfRangeException("identifier", String.Format("Writing system id '{0}' does not exist.", identifier));
+				throw new ArgumentOutOfRangeException("id", String.Format("Writing system id '{0}' does not exist.", id));
 			}
-			return _writingSystems[identifier];
+			return _writingSystems[id];
 		}
 
 		public int Count
@@ -316,10 +316,10 @@ namespace SIL.WritingSystems
 			get { return _writingSystems.Values.Where(ws => ws.IsVoice); }
 		}
 
-		public virtual void OnWritingSystemIDChange(WritingSystemDefinition ws, string oldId)
+		public virtual void OnWritingSystemIDChange(WritingSystemDefinition ws, string oldID)
 		{
 			_writingSystems[ws.ID] = ws;
-			_writingSystems.Remove(oldId);
+			_writingSystems.Remove(oldID);
 		}
 
 		/// <summary>

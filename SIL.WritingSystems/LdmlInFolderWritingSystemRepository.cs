@@ -299,32 +299,32 @@ namespace SIL.WritingSystems
 			_changeLog.LogConflate(wsToConflate, wsToConflateWith);
 		}
 
-		override public void Remove(string identifier)
+		override public void Remove(string id)
 		{
 			//we really need to get it in the trash, else, if was auto-provided,
 			//it'll keep coming back!
-			if (!File.Exists(GetFilePathFromIdentifier(identifier)) && Contains(identifier))
+			if (!File.Exists(GetFilePathFromIdentifier(id)) && Contains(id))
 			{
-				var ws = Get(identifier);
+				var ws = Get(id);
 				SaveDefinition(ws);
 			}
 
-			if (File.Exists(GetFilePathFromIdentifier(identifier)))
+			if (File.Exists(GetFilePathFromIdentifier(id)))
 			{
 				Directory.CreateDirectory(PathToWritingSystemTrash());
-				string destination = Path.Combine(PathToWritingSystemTrash(), GetFileNameFromIdentifier(identifier));
+				string destination = Path.Combine(PathToWritingSystemTrash(), GetFileNameFromIdentifier(id));
 				//clear out any old on already in the trash
 				if (File.Exists(destination))
 				{
 					File.Delete(destination);
 				}
-				File.Move(GetFilePathFromIdentifier(identifier), destination);
+				File.Move(GetFilePathFromIdentifier(id), destination);
 			}
-			base.Remove(identifier);
+			base.Remove(id);
 			foreach (ICustomDataMapper customDataMapper in _customDataMappers)
-				customDataMapper.Remove(identifier);
+				customDataMapper.Remove(id);
 			if (!Conflating)
-				_changeLog.LogDelete(identifier);
+				_changeLog.LogDelete(id);
 			}
 
 		private string PathToWritingSystemTrash()
