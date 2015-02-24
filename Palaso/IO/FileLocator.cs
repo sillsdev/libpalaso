@@ -207,7 +207,7 @@ namespace Palaso.IO
 		public static string LocateExecutable(bool throwExceptionIfNotFound, params string[] partsOfTheSubPath)
 		{
 			var exe = LocateExecutableDistributedWithApplication(partsOfTheSubPath);
-			if (string.IsNullOrEmpty(exe) && Platform.IsLinux)
+			if (string.IsNullOrEmpty(exe) && Platform.IsUnix)
 			{
 				var newParts = new List<string>(partsOfTheSubPath);
 				newParts[newParts.Count - 1] = Path.GetFileNameWithoutExtension(newParts.Last());
@@ -221,7 +221,7 @@ namespace Palaso.IO
 				newParts.Remove(exeFileName);
 				exe = LocateInProgramFiles(exeFileName, true, newParts.ToArray());
 
-				if (string.IsNullOrEmpty(exe) && Platform.IsLinux)
+				if (string.IsNullOrEmpty(exe) && Platform.IsUnix)
 				{
 					exeFileName = Path.GetFileNameWithoutExtension(exeFileName);
 					exe = LocateInProgramFiles(exeFileName, true, newParts.ToArray());

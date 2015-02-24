@@ -17,7 +17,7 @@ namespace Palaso.Tests.IO
 		[TestFixtureSetUp]
 		public void FixtureSetUp()
 		{
-			if (Palaso.PlatformUtilities.Platform.IsLinux)
+			if (Palaso.PlatformUtilities.Platform.IsUnix)
 				TmpAndRootOnDifferentPartitions = StatFile("/tmp") != StatFile("/");
 		}
 
@@ -213,9 +213,10 @@ namespace Palaso.Tests.IO
 		{
 			using (var process = new Process())
 			{
+				var statFlags = Palaso.PlatformUtilities.Platform.IsMac ? "-f" : "-c";
 				process.StartInfo = new ProcessStartInfo {
 					FileName = "stat",
-					Arguments = string.Format("-c %d {0}", path),
+					Arguments = string.Format("{0} %d {1}", statFlags, path),
 					UseShellExecute = false,
 					RedirectStandardOutput = true,
 					CreateNoWindow = true
