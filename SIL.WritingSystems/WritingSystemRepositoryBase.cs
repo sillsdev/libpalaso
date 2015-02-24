@@ -285,11 +285,11 @@ namespace SIL.WritingSystems
 			foreach (WritingSystemDefinition ws in rhs)
 			{
 				Guard.AgainstNull(ws, "ws in rhs");
-				if (_writingSystems.ContainsKey(ws.IetfLanguageTag))
+				if (_writingSystems.ContainsKey(ws.ID))
 				{
 					DateTime lastDateModified;
-					if ((!_writingSystemsToIgnore.TryGetValue(ws.IetfLanguageTag, out lastDateModified) || ws.DateModified > lastDateModified)
-						&& (ws.DateModified > _writingSystems[ws.IetfLanguageTag].DateModified))
+					if ((!_writingSystemsToIgnore.TryGetValue(ws.ID, out lastDateModified) || ws.DateModified > lastDateModified)
+						&& (ws.DateModified > _writingSystems[ws.ID].DateModified))
 					{
 						newerWritingSystems.Add(ws.Clone());
 					}

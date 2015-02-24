@@ -240,7 +240,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		/// <returns>false if the code wasn't found</returns>
 		public virtual bool SetCurrentIndexFromIetfLanguageTag(string languageTag)
 		{
-			var index = WritingSystemDefinitions.FindIndex(d => d.IetfLanguageTag == languageTag);
+			var index = WritingSystemDefinitions.FindIndex(d => d.ID == languageTag);
 			if (index < 0)
 			{
 				return false;
@@ -463,10 +463,10 @@ namespace SIL.Windows.Forms.WritingSystems
 				// create a list of languages we have to disallow to prevent a cycle
 				// in the sort options
 				var prohibitedList = new List<string>();
-				if (CurrentDefinition != null && !string.IsNullOrEmpty(CurrentDefinition.IetfLanguageTag))
+				if (CurrentDefinition != null && !string.IsNullOrEmpty(CurrentDefinition.ID))
 				{
 					// don't allow the current language to be picked
-					prohibitedList.Add(CurrentDefinition.IetfLanguageTag);
+					prohibitedList.Add(CurrentDefinition.ID);
 				}
 				for (int i = 0; i < WritingSystemDefinitions.Count; i++)
 				{
@@ -475,10 +475,10 @@ namespace SIL.Windows.Forms.WritingSystems
 					// don't allow if it references another language on our prohibited list and this one
 					// isn't already on the prohibited list
 					if (inheritedCollation != null
-						&& !string.IsNullOrEmpty(ws.IetfLanguageTag) && prohibitedList.Contains(inheritedCollation.BaseIetfLanguageTag)
-						&& !prohibitedList.Contains(ws.IetfLanguageTag))
+						&& !string.IsNullOrEmpty(ws.ID) && prohibitedList.Contains(inheritedCollation.BaseIetfLanguageTag)
+						&& !prohibitedList.Contains(ws.ID))
 					{
-						prohibitedList.Add(ws.IetfLanguageTag);
+						prohibitedList.Add(ws.ID);
 						// Restart the scan through all the writing systems every time we add a prohibited one.
 						// This ensuers that we catch all possible cycles.
 						i = -1;
@@ -677,19 +677,9 @@ namespace SIL.Windows.Forms.WritingSystems
 			get
 			{
 				if (CurrentDefinition == null)
-				{
 					return string.Empty;
-				}
-				else
-				{
-					return CurrentDefinition.IetfLanguageTag ?? string.Empty;
-				}
+				return CurrentDefinition.ID ?? string.Empty;
 			}
-//            set
-//            {
-//                Palaso.Code.Guard.AgainstNull(CurrentDefinition, "CurrentDefinition");
-//                CurrentDefinition.RFC5646 = value;
-//            }
 		}
 
 		public bool CurrentRightToLeftScript
@@ -788,7 +778,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			if (writingSystem.Script != null && writingSystem.Language.ImplicitScriptCode != writingSystem.Script.Code)
 				summary.AppendFormat(" written in {0} script", CurrentIso15924Script.ShortName);
 
-			summary.AppendFormat(". ({0})", writingSystem.IetfLanguageTag);
+			summary.AppendFormat(". ({0})", writingSystem.ID);
 			return summary.ToString().Trim();
 		}
 

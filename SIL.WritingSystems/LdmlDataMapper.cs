@@ -323,7 +323,7 @@ namespace SIL.WritingSystems
 				}
 				throw new ApplicationException(String.Format(
 					"The LDML tag '{0}' is version {1}.  Version {2} was expected.",
-					ws.IetfLanguageTag,
+					ws.ID,
 					version,
 					WritingSystemDefinition.LatestWritingSystemDefinitionVersion
 					));
@@ -467,11 +467,11 @@ namespace SIL.WritingSystems
 			{
 				var flexRfcTagInterpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 				flexRfcTagInterpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, region, variant);
-				ws.SetIetfLanguageTag(flexRfcTagInterpreter.Language, flexRfcTagInterpreter.Script, flexRfcTagInterpreter.Region, flexRfcTagInterpreter.Variant);
+				ws.SetIetfLanguageTagComponents(flexRfcTagInterpreter.Language, flexRfcTagInterpreter.Script, flexRfcTagInterpreter.Region, flexRfcTagInterpreter.Variant);
 			}
 			else
 			{
-				ws.SetIetfLanguageTag(language, script, region, variant);
+				ws.SetIetfLanguageTagComponents(language, script, region, variant);
 			}
 
 			// TODO: Parse rest of special element.  Currently only handling a subset
@@ -901,7 +901,7 @@ namespace SIL.WritingSystems
 
 			// Write generation date with UTC so no more ambiguity on timezone
 			identityElem.SetAttributeValue("generation", "date", ws.DateModified.ToISO8601TimeFormatWithUTCString());
-			WriteLanguageTagElements(identityElem, ws.IetfLanguageTag);
+			WriteLanguageTagElements(identityElem, ws.ID);
 
 			// Create special element if data needs to be written
 			if (!string.IsNullOrEmpty(ws.WindowsLcid) || !string.IsNullOrEmpty(ws.DefaultRegion) || (ws.Variants.Count > 0))

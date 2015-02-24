@@ -270,10 +270,10 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws1 = new WritingSystemDefinition();
 			ws1.Language = "en";
-			Assert.AreEqual("en", ws1.IetfLanguageTag);
+			Assert.AreEqual("en", ws1.ID);
 			WritingSystemDefinition ws2 = ws1.Clone();
 			ws2.Variants.Add("1901");
-			Assert.AreEqual("en-1901", ws2.IetfLanguageTag);
+			Assert.AreEqual("en-1901", ws2.ID);
 
 			RepositoryUnderTest.Set(ws1);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);

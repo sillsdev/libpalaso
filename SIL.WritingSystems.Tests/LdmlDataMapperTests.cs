@@ -984,7 +984,7 @@ namespace SIL.WritingSystems.Tests
 		private static void WriteCurrentVersionLdml(string language, string script, string territory, string variant, TempFile file)
 		{
 			var ws = new WritingSystemDefinition();
-			ws.SetIetfLanguageTag(language, script, territory, variant);
+			ws.SetIetfLanguageTagComponents(language, script, territory, variant);
 			new LdmlDataMapper().Write(file.Path, ws, null);
 		}
 

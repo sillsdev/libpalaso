@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using SIL.WritingSystems.Migration;
 
 namespace SIL.WritingSystems
@@ -36,41 +37,41 @@ namespace SIL.WritingSystems
 		public static void FindOrphans(
 			IEnumerable<string> idsInFile,
 			IdReplacementStrategy replaceIdsInFile,
-			IWritingSystemRepository writingSystemRepository
-		) {
-			var originalIds = new List<string>(idsInFile);
-			var updatedIds = new List<string>(idsInFile);
-			foreach (var wsId in originalIds)
+			IWritingSystemRepository writingSystemRepository)
+		{
+			List<string> originalIds = idsInFile.ToList();
+			List<string> updatedIds = originalIds.ToList();
+			foreach (string wsID in originalIds)
 			{
 				// Check if it's in the repo
-				if (writingSystemRepository.Contains(wsId))
+				if (writingSystemRepository.Contains(wsID))
 				{
 					continue;
 				}
 				string newId;
-				if (writingSystemRepository.WritingSystemIDHasChanged(wsId))
+				if (writingSystemRepository.WritingSystemIDHasChanged(wsID))
 				{
-					newId = writingSystemRepository.WritingSystemIDHasChangedTo(wsId);
+					newId = writingSystemRepository.WritingSystemIDHasChangedTo(wsID);
 				}
 				else
 				{
 					// It's an orphan
 					// Clean it
-					var rfcTagCleaner = new IetfLanguageTagCleaner(wsId);
+					var rfcTagCleaner = new IetfLanguageTagCleaner(wsID);
 					rfcTagCleaner.Clean();
 					newId = rfcTagCleaner.GetCompleteTag();
 				}
 				var conformantWritingSystem = new WritingSystemDefinition(newId);
 				// If it changed, then change
-				if (conformantWritingSystem.IetfLanguageTag != wsId)
+				if (conformantWritingSystem.ID != wsID)
 				{
 					conformantWritingSystem = WritingSystemDefinition.CreateCopyWithUniqueId(conformantWritingSystem, updatedIds);
-					replaceIdsInFile(wsId, conformantWritingSystem.IetfLanguageTag);
-					updatedIds.Remove(wsId);
-					updatedIds.Add(conformantWritingSystem.IetfLanguageTag);
+					replaceIdsInFile(wsID, conformantWritingSystem.ID);
+					updatedIds.Remove(wsID);
+					updatedIds.Add(conformantWritingSystem.ID);
 				}
 				// Check if it's in the repo
-				if (writingSystemRepository.Contains(conformantWritingSystem.IetfLanguageTag))
+				if (writingSystemRepository.Contains(conformantWritingSystem.ID))
 				{
 					continue;
 				}

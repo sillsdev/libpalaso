@@ -83,7 +83,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			}
 			writingSystemDefinitionV3.Collations.Add(cd);
 
-			writingSystemDefinitionV3.SetIetfLanguageTag(
+			writingSystemDefinitionV3.SetIetfLanguageTagComponents(
 				writingSystemDefinitionV1.Language,
 				writingSystemDefinitionV1.Script,
 				writingSystemDefinitionV1.Region,
