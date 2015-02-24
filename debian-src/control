@@ -2,7 +2,7 @@ Source: libpalaso-cil
 Section: libs
 Priority: optional
 Maintainer: Martin Hosken <mhosken@sil.org>
-Build-Depends: debhelper (>=5), mono-gmcs, nant, mono-gac, libmono-nunit2.2-cil, libmono1.0-cil, libmono2.0-cil, libmono-winforms2.0-cil, libmono-system-runtime2.0-cil
+Build-Depends: debhelper (>=5), mono-gmcs, nant, mono-gac, libmono-nunit2.2-cil, libmono1.0-cil, libmono2.0-cil, libmono-winforms2.0-cil, libmono-system-runtime2.0-cil, wget
 Standards-Version: 3.7.3
 
 Package: libpalaso-cil
