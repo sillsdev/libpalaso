@@ -166,7 +166,7 @@ namespace SIL.Extensions
 		/// Check if a date time string is of the following valid ISO 8601 formats:
 		/// yyyy-MM-ddTHH:mm:ssZ
 		/// yyyy-MM-ddTHH:mm:ss
-		/// yyyy-MM-ddTHH:mm:sszzzz
+		/// yyyy-MM-ddTHH:mm:sszzzz (equivalent with) yyyy-MM-ddTHH:mm:sszz:zz
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
@@ -176,7 +176,7 @@ namespace SIL.Extensions
 				return false;
 
 			if (!Regex.IsMatch(value, @"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z?$") && 
-				!Regex.IsMatch(value, @"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{4}$"))
+				!Regex.IsMatch(value, @"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:?\d{2}$"))
 				return false;
 
 			DateTime testDate;

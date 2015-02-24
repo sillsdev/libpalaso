@@ -50,14 +50,14 @@ namespace SIL.Tests.Extensions
 			Assert.True(DateTimeExtensions.IsISO8601DateTime("2014-12-31T13:56:29-2000"));
 			Assert.True(DateTimeExtensions.IsISO8601DateTime("2014-12-31T13:56:29Z"));
 			Assert.True(DateTimeExtensions.IsISO8601DateTime("2014-12-31T13:56:29"));
+			Assert.True(DateTimeExtensions.IsISO8601DateTime("2014-12-31T13:56:29-20:00"));
+			Assert.True(DateTimeExtensions.IsISO8601DateTime("2014-12-31T13:56:29+20:00"));
 			Assert.False(DateTimeExtensions.IsISO8601DateTime("2014/12/31T13:56:29-2000"));
-			Assert.False(DateTimeExtensions.IsISO8601DateTime("2014-12-31T13:56:29-20:00"));
 			Assert.False(DateTimeExtensions.IsISO8601DateTime("2014-12-31 13:56:29-2000"));
 			Assert.False(DateTimeExtensions.IsISO8601DateTime("2014-12-31T13:56:29 0000"));
 			Assert.False(DateTimeExtensions.IsISO8601DateTime("2014-12-31T13:56:29ZZ"));
 			Assert.False(DateTimeExtensions.IsISO8601DateTime("2014-12-31T13:56:29Z0000"));
 			Assert.False(DateTimeExtensions.IsISO8601DateTime("2014-12-31T13:56:29 0000"));
-			Assert.False(DateTimeExtensions.IsISO8601DateTime("2014-12-31T13:56:29+20:00"));
 			Assert.False(DateTimeExtensions.IsISO8601DateTime("2014-12-31 04:45:29"));
 			Assert.False(DateTimeExtensions.IsISO8601DateTime("2014/12/32T04:45:29"));
 			Assert.False(DateTimeExtensions.IsISO8601DateTime("2014-13-01T04:45:29"));
@@ -69,6 +69,7 @@ namespace SIL.Tests.Extensions
 		public void ParseISO8601DateTime()
 		{
 			var defaultTime = new DateTime();
+			Assert.That(DateTimeExtensions.ParseISO8601DateTime("0001-01-01T00:00:00+00:00"), Is.EqualTo(defaultTime));
 			Assert.That(DateTimeExtensions.ParseISO8601DateTime("0001-01-01T00:00:00+0000"), Is.EqualTo(defaultTime));
 			Assert.That(DateTimeExtensions.ParseISO8601DateTime("0001-01-01T00:00:00Z"), Is.EqualTo(defaultTime));
 			Assert.That(DateTimeExtensions.ParseISO8601DateTime("0001-01-01T00:00:00"), Is.EqualTo(defaultTime));
@@ -76,8 +77,9 @@ namespace SIL.Tests.Extensions
 
 			var expectedTime = new DateTime(2012, 02, 29, 12, 30, 45);
 			Assert.That(DateTimeExtensions.ParseISO8601DateTime("2012-02-29T12:30:45+0000"), Is.EqualTo(expectedTime));
+			Assert.That(DateTimeExtensions.ParseISO8601DateTime("2012-02-29T12:30:45+00:00"), Is.EqualTo(expectedTime));
 			Assert.That(DateTimeExtensions.ParseISO8601DateTime("2012-02-29T00:30:45-1200"), Is.EqualTo(expectedTime));
-
+			Assert.That(DateTimeExtensions.ParseISO8601DateTime("2012-02-29T00:30:45-12:00"), Is.EqualTo(expectedTime));
 		}
 
 	}
