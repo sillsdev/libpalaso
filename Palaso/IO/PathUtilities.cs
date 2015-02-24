@@ -102,10 +102,11 @@ namespace Palaso.IO
 
 			using (var process = new Process())
 			{
+				var statFlags = Palaso.PlatformUtilities.Platform.IsMac ? "-f" : "-c";
 				process.StartInfo = new ProcessStartInfo
 				{
 					FileName = "stat",
-					Arguments = string.Format("-c %d \"{0}\"", pathToCheck),
+					Arguments = string.Format("{0} %d \"{1}\"", statFlags, pathToCheck),
 					UseShellExecute = false,
 					RedirectStandardOutput = true,
 					CreateNoWindow = true
