@@ -6,7 +6,6 @@ namespace SIL.WritingSystems
 {
 	public enum SpellCheckDictionaryFormat
 	{
-		Unknown,
 		Hunspell,
 		Wordlist,
 		Lift

@@ -210,7 +210,6 @@ namespace SIL.WritingSystems.Tests
 					WindowsLcid = "1036",
 					DefaultRegion = "US"
 				};
-				wsToLdml.Variants[0] = new VariantSubtag(wsToLdml.Variants[0], "1996");
 				var ldmlAdaptor = new LdmlDataMapper();
 
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
@@ -219,7 +218,7 @@ namespace SIL.WritingSystems.Tests
 				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/territory[@type='GB']");
 				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-test']");
 				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/version['Identity version description' and @number='$Revision$']");
-				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[@windowsLCID='1036' and @defaultRegion='US' and @variantName='1996']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[@windowsLCID='1036' and @defaultRegion='US']", environment.NamespaceManager);
 
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
@@ -228,7 +227,6 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(wsFromLdml.ID, Is.EqualTo("en-GB-x-test"));
 				Assert.That(wsFromLdml.WindowsLcid, Is.EqualTo("1036"));
 				Assert.That(wsFromLdml.DefaultRegion, Is.EqualTo("US"));
-				Assert.That(wsFromLdml.Variants[0].Name, Is.EqualTo("1996"));
 			}
 		}
 
@@ -312,6 +310,39 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(wsFromLdml.CharacterSets["main"].ValueEquals(main));
 				Assert.That(wsFromLdml.CharacterSets["footnotes"].ValueEquals(footnotes));
 				Assert.That(wsFromLdml.CharacterSets["numeric"].ValueEquals(numeric));
+			}
+		}
+
+		[Test]
+		public void Roundtrip_LdmlAlternateCharacters()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var altMain = new CharacterSetDefinition("main\ufdd0capital");
+				for (int i = 'A'; i <= (int) 'Z'; i++)
+					altMain.Characters.Add(((char) i).ToString(CultureInfo.InvariantCulture));
+				altMain.Characters.Add("AZ");
+
+				var main = new CharacterSetDefinition("main");
+				for (int i = 'a'; i <= (int) 'z'; i++)
+					main.Characters.Add(((char) i).ToString(CultureInfo.InvariantCulture));
+				main.Characters.Add("az");
+
+				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
+				wsToLdml.CharacterSets.Add(altMain);
+				wsToLdml.CharacterSets.Add(main);
+
+				var ldmlAdaptor = new LdmlDataMapper();
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/characters/exemplarCharacters['[A-Z{AZ}]' and @alt='capital']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/characters/exemplarCharacters['[a-z{az}]']", environment.NamespaceManager);
+
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
+				Assert.That(wsFromLdml.CharacterSets["main\ufdd0capital"].ValueEquals(altMain));
+				Assert.That(wsFromLdml.CharacterSets["main"].ValueEquals(main));
 			}
 		}
 
@@ -406,6 +437,55 @@ namespace SIL.WritingSystems.Tests
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
 				Assert.That(wsFromLdml.Collations.First().ValueEquals(cd));
+			}
+		}
+
+		[Test]
+		public void Roundtrip_LdmlAlternateCollation()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				const string icuRules =
+					"&B<t<<<T<s<<<S<e<<<E\r\n\t\t\t\t&C<k<<<K<x<<<X<i<<<I\r\n\t\t\t\t&D<q<<<Q<r<<<R\r\n\t\t\t\t&G<o<<<O\r\n\t\t\t\t&W<h<<<H";
+				var cd = new CollationDefinition("standard")
+				{
+					IcuRules = icuRules,
+					IsValid = true
+				};
+
+				const string altIcuRules =
+					"&B<t<<<T<s<<<S<e<<<E";
+				var altCD = new CollationDefinition("standard\ufdd0short")
+				{
+					IcuRules = altIcuRules,
+					IsValid = true
+				};
+
+				var wsToLdml = new WritingSystemDefinition("aa", "Latn", "", "");
+				wsToLdml.Collations.Add(cd);
+				wsToLdml.Collations.Add(altCD);
+				wsToLdml.DefaultCollation = cd;
+				var ldmlAdaptor = new LdmlDataMapper();
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+
+				XElement ldmlElem = XElement.Load(environment.FilePath("test.ldml"));
+				XElement collationsElem = ldmlElem.Element("collations");
+				XElement defaultCollationElem = collationsElem.Element("defaultCollation");
+				Assert.That((string) defaultCollationElem, Is.EqualTo("standard"));
+
+				XElement[] collationElems = collationsElem.Elements("collation").ToArray();
+				Assert.That((string) collationElems[0].Attribute("type"), Is.EqualTo("standard"));
+				Assert.That((string) collationElems[0].Attribute("alt"), Is.Null);
+				Assert.That((string) collationElems[0], Is.EqualTo(icuRules.Replace("\r\n", "\n")));
+
+				Assert.That((string) collationElems[1].Attribute("type"), Is.EqualTo("standard"));
+				Assert.That((string) collationElems[1].Attribute("alt"), Is.EqualTo("short"));
+				Assert.That((string) collationElems[1], Is.EqualTo(altIcuRules.Replace("\r\n", "\n")));
+				
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
+				Assert.That(wsFromLdml.Collations[0].ValueEquals(cd), Is.True);
+				Assert.That(wsFromLdml.Collations[1].ValueEquals(altCD), Is.True);
 			}
 		}
 
