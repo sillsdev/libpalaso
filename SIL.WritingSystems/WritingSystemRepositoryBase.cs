@@ -63,18 +63,21 @@ namespace SIL.WritingSystems
 			get { return _idChangeMap; }
 		}
 
-		virtual public WritingSystemDefinition CreateNew()
+		public virtual WritingSystemDefinition CreateNew()
 		{
 			return new WritingSystemDefinition();
+		}
+
+		public virtual WritingSystemDefinition CreateNew(string id)
+		{
+			return new WritingSystemDefinition(id);
 		}
 
 		virtual public void Conflate(string wsToConflate, string wsToConflateWith)
 		{
 			Conflating = true;
 			if (WritingSystemConflated != null)
-			{
 				WritingSystemConflated(this, new WritingSystemConflatedEventArgs(wsToConflate, wsToConflateWith));
-			}
 			Remove(wsToConflate);
 			Conflating = false;
 		}

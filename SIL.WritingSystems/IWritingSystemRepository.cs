@@ -78,7 +78,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Returns true if a writing system with the given Store ID exists in the store
 		/// </summary>
-		bool Contains(string identifier);
+		bool Contains(string id);
 
 		/// <summary>
 		/// Gives the total number of writing systems in the store
@@ -90,6 +90,13 @@ namespace SIL.WritingSystems
 		/// once identifying information has been changed in order to save it in the store.
 		/// </summary>
 		WritingSystemDefinition CreateNew();
+
+		/// <summary>
+		/// Creates a new writing system object using the specified language tag and returns it.
+		/// Set will need to be called once identifying information has been changed in order to
+		/// save it in the store.
+		/// </summary>
+		WritingSystemDefinition CreateNew(string id);
 
 		/// <summary>
 		/// Merges two writing systems into one.

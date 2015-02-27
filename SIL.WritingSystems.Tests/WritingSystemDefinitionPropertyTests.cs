@@ -28,7 +28,7 @@ namespace SIL.WritingSystems.Tests
 		public override string ExceptionList
 		{
 			// We do want to clone KnownKeyboards, but I don't think the automatic cloneable test for it can handle a list.
-			get { return "|MarkedForDeletion|StoreID|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionaries|IsChanged|_matchedPairs|_punctuationPatterns|_quotationMarks|_defaultCollation|_collations|_characterSets|_variants|_language|_script|_region|_ignoreVariantChanges|PropertyChanged|PropertyChanging|"; }
+			get { return "|MarkedForDeletion|StoreID|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionaries|IsChanged|_matchedPairs|_punctuationPatterns|_quotationMarks|_defaultCollation|_collations|_characterSets|_variants|_language|_script|_region|_ignoreVariantChanges|PropertyChanged|PropertyChanging|Template|"; }
 		}
 
 		protected override List<ValuesToSet> DefaultValuesForTypes
@@ -739,7 +739,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			// Put any properties to ignore in this string surrounded by "|"
 			// ObsoleteWindowsLcid has no public setter; it only gets a value by reading from an old file.
-			const string ignoreProperties = "|MarkedForDeletion|StoreID|DateModified|RequiresValidLanguageTag|";
+			const string ignoreProperties = "|MarkedForDeletion|StoreID|DateModified|RequiresValidLanguageTag|Template|";
 			// special test values to use for properties that are particular
 			var firstValueSpecial = new Dictionary<string, object>();
 			var secondValueSpecial = new Dictionary<string, object>();

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using SIL.WritingSystems.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
@@ -236,7 +237,8 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Provides writing systems from a repository that comes, for example, with the OS
 		/// </summary>
-		public IEnumerable<WritingSystemDefinition> SystemWritingSystemProvider {
+		public IEnumerable<WritingSystemDefinition> SystemWritingSystemProvider
+		{
 			get{ return _systemWritingSystemProvider;}
 			set
 			{
@@ -257,7 +259,15 @@ namespace SIL.WritingSystems
 		protected internal virtual void SaveDefinition(WritingSystemDefinition ws)
 		{
 			Set(ws);
+
 			string writingSystemFilePath = GetFilePathFromIdentifier(ws.StoreID);
+			if (!File.Exists(writingSystemFilePath) && !string.IsNullOrEmpty(ws.Template))
+			{
+				// this is a new writing system that was generated from a template, so copy the template over before saving
+				File.Copy(ws.Template, writingSystemFilePath);
+				ws.Template = null;
+			}
+
 			MemoryStream oldData = null;
 			if (!ws.IsChanged && File.Exists(writingSystemFilePath))
 				return; // no need to save (better to preserve the modified date)
@@ -292,6 +302,80 @@ namespace SIL.WritingSystems
 			}
 		}
 
+		public override WritingSystemDefinition CreateNew(string id)
+		{
+			string templatePath = null;
+			// check local repo for template
+			if (Contains(id))
+			{
+				WritingSystemDefinition existingWS = Get(id);
+				templatePath = GetFilePathFromIdentifier(existingWS.StoreID);
+				if (!File.Exists(templatePath))
+					templatePath = null;
+			}
+
+			// TODO (WS_FIX): check global repo for template
+
+			// check SLDR for template
+			if (string.IsNullOrEmpty(templatePath))
+			{
+				string sldrCachePath = Path.Combine(Path.GetTempPath(), "SldrCache");
+				Directory.CreateDirectory(sldrCachePath);
+				templatePath = Path.Combine(sldrCachePath, id + ".ldml");
+				if (!GetLdmlFromSldr(templatePath, id))
+				{
+					// check SLDR cache for template
+					if (!File.Exists(templatePath))
+						templatePath = null;
+				}
+			}
+
+			// check template folder for template
+			if (string.IsNullOrEmpty(templatePath) && !string.IsNullOrEmpty(TemplateFolder))
+			{
+				templatePath = Path.Combine(TemplateFolder, id + ".ldml");
+				if (!File.Exists(templatePath))
+					templatePath = null;
+			}
+
+			WritingSystemDefinition ws;
+			if (!string.IsNullOrEmpty(templatePath))
+			{
+				ws = CreateNew();
+				var loader = new LdmlDataMapper();
+				loader.Read(templatePath, ws);
+				ws.Template = templatePath;
+			}
+			else
+			{
+				ws = base.CreateNew(id);
+			}
+
+			return ws;
+		}
+
+		/// <summary>
+		/// Gets the a LDML file from the SLDR.
+		/// </summary>
+		protected virtual bool GetLdmlFromSldr(string path, string id)
+		{
+			try
+			{
+				Sldr.GetLdmlFile(path, id);
+				return true;
+			}
+			catch (WebException)
+			{
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// The folder in which the repository looks for template LDML files when a writing system is wanted
+		/// that cannot be found in the local store, global store, or SLDR.
+		/// </summary>
+		public string TemplateFolder { get; set; }
+
 		public override void Conflate(string wsToConflate, string wsToConflateWith)
 		{
 			//conflation involves deleting the old writing system. That deletion should not appear int he log. which is what the "_conflating" is used for
@@ -299,13 +383,13 @@ namespace SIL.WritingSystems
 			_changeLog.LogConflate(wsToConflate, wsToConflateWith);
 		}
 
-		override public void Remove(string id)
+		public override void Remove(string id)
 		{
 			//we really need to get it in the trash, else, if was auto-provided,
 			//it'll keep coming back!
 			if (!File.Exists(GetFilePathFromIdentifier(id)) && Contains(id))
 			{
-				var ws = Get(id);
+				WritingSystemDefinition ws = Get(id);
 				SaveDefinition(ws);
 			}
 
@@ -315,9 +399,7 @@ namespace SIL.WritingSystems
 				string destination = Path.Combine(PathToWritingSystemTrash(), GetFileNameFromIdentifier(id));
 				//clear out any old on already in the trash
 				if (File.Exists(destination))
-				{
 					File.Delete(destination);
-				}
 				File.Move(GetFilePathFromIdentifier(id), destination);
 			}
 			base.Remove(id);
@@ -332,7 +414,7 @@ namespace SIL.WritingSystems
 			return Path.Combine(_path, "trash");
 		}
 
-		override public void Save()
+		public override void Save()
 		{
 			//delete anything we're going to delete first, to prevent losing
 			//a WS we want by having it deleted by an old WS we don't want

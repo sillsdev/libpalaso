@@ -102,10 +102,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			var writerSettings = CanonicalXmlSettings.CreateXmlWriterSettings();
 			writerSettings.NewLineOnAttributes = false;
 			using (var writer = XmlWriter.Create(sourceFilePath, writerSettings))
-			{
 				ldmlElem.WriteTo(writer);
-				writer.Close();
-			}
 
 			var ldmlDataMapper = new LdmlAdaptorV3();
 			using (Stream sourceStream = new FileStream(sourceFilePath, FileMode.Open))

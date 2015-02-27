@@ -126,14 +126,14 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Creates a new WritingSystemDefinition by parsing a valid IETF language tag.
 		/// </summary>
-		public WritingSystemDefinition(string languageTag)
+		public WritingSystemDefinition(string id)
 		{
 			IEnumerable<VariantSubtag> variantSubtags;
-			if (!IetfLanguageTagHelper.TryGetSubtags(languageTag, out _language, out _script, out _region, out variantSubtags))
-				throw new ArgumentException("The language tag is invalid.", "languageTag");
+			if (!IetfLanguageTagHelper.TryGetSubtags(id, out _language, out _script, out _region, out variantSubtags))
+				throw new ArgumentException("The language tag is invalid.", "id");
 			_variants = new BulkObservableList<VariantSubtag>(variantSubtags);
 			CheckVariantAndScriptRules();
-			_id = languageTag;
+			_id = id;
 			_fonts = new KeyedBulkObservableList<string, FontDefinition>(fd => fd.Name);
 			_knownKeyboards = new KeyedBulkObservableList<string, IKeyboardDefinition>(kd => kd.ID);
 			_spellCheckDictionaries = new KeyedBulkObservableList<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition>(scdd => scdd.Format);
@@ -1104,6 +1104,12 @@ namespace SIL.WritingSystems
 			get { return _isGraphiteEnabled; }
 			set { Set(() => IsGraphiteEnabled, ref _isGraphiteEnabled, value); }
 		}
+
+		/// <summary>
+		/// Gets or sets the template that was used to create this writing system.
+		/// This is not persisted and only used by repositories.
+		/// </summary>
+		public string Template { get; set; }
 
 		public override string ToString()
 		{

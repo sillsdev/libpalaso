@@ -222,6 +222,7 @@
     <Compile Include="SortingTests.cs" />
     <Compile Include="SpellCheckDictionaryDefinitionCloneableTests.cs" />
     <Compile Include="SystemCollatorTests.cs" />
+    <Compile Include="TestLdmlInFolderWritingSystemRepository.cs" />
     <Compile Include="WritingSystemRepositoryTests.cs" />
     <Compile Include="LdmlDataMapperTests.cs" />
     <Compile Include="LdmlInFolderWritingSystemRepositoryTests.cs" />

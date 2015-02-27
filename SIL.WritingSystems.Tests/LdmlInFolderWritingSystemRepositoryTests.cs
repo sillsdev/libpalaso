@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
+using System.Xml.Linq;
 using NUnit.Framework;
 using Palaso.TestUtilities;
 using SIL.Keyboarding;
@@ -53,11 +54,12 @@ namespace SIL.WritingSystems.Tests
 	[TestFixture]
 	public class LdmlInFolderWritingSystemRepositoryTests
 	{
-
 		private class TestEnvironment : IDisposable
 		{
 			private readonly TemporaryFolder _tempFolder;
 			private readonly WritingSystemDefinition _writingSystem;
+			private readonly TemporaryFolder _sldrCacheFolder;
+			private readonly TemporaryFolder _templateFolder;
 
 			public TestEnvironment()
 			{
@@ -65,34 +67,35 @@ namespace SIL.WritingSystems.Tests
 				NamespaceManager = new XmlNamespaceManager(new NameTable());
 				NamespaceManager.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
 				if (Directory.Exists(TestPath))
-				{
 					Directory.Delete(TestPath, true);
-				}
+				_sldrCacheFolder = new TemporaryFolder("SldrCache");
+				_templateFolder = new TemporaryFolder("Templates");
 				_writingSystem = new WritingSystemDefinition();
-				Collection = LdmlInFolderWritingSystemRepository.Initialize(TestPath, Enumerable.Empty<ICustomDataMapper>(), DummyWritingSystemHandler.OnMigration, onLoadProblem);
+				Reset();
 			}
 
-			private void onLoadProblem(IEnumerable<WritingSystemRepositoryProblem> problems)
+			public void Reset()
 			{
-				throw new ApplicationException("Unexpected Writing System load problem in test.");
-				// Currently there are no tests that expect load problems. If there are then we can
-				// make the TestEnvironment suppress the exception above and make the problems available
-				// to the test.
-				//LoadProblems = problems;
+				Collection = new TestLdmlInFolderWritingSystemRepository(TestPath) {TemplateFolder = _templateFolder.Path};
 			}
-
-			//public IEnumerable<WritingSystemRepositoryProblem> LoadProblems { get; private set; }
 
 			public void Dispose()
 			{
+				_sldrCacheFolder.Dispose();
+				_templateFolder.Dispose();
 				_tempFolder.Dispose();
 			}
 
-			public LdmlInFolderWritingSystemRepository Collection { get; set; }
+			public TestLdmlInFolderWritingSystemRepository Collection { get; set; }
 
 			public string TestPath
 			{
 				get { return _tempFolder.Path; }
+			}
+
+			public string SldrCachePath
+			{
+				get { return _sldrCacheFolder.Path; }
 			}
 
 			public WritingSystemDefinition WritingSystem
@@ -727,15 +730,12 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			{
 				//Make the filepath inconsistant
-				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, Enumerable.Empty<ICustomDataMapper>(),
-					DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
 				environment.WritingSystem.Language = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				File.Move(Path.Combine(environment.TestPath, "en.ldml"), Path.Combine(environment.TestPath, "de.ldml"));
 
 				// Now try to load up.
-				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, Enumerable.Empty<ICustomDataMapper>(),
-					DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
+				environment.Reset();
 				Assert.That(environment.Collection.Contains("en"));
 			}
 		}
@@ -746,15 +746,12 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			{
 				//Make the filepath inconsistant
-				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, Enumerable.Empty<ICustomDataMapper>(),
-					DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
 				environment.WritingSystem.Language = "en";
 				environment.Collection.SaveDefinition(environment.WritingSystem);
 				File.Move(Path.Combine(environment.TestPath, "en.ldml"), Path.Combine(environment.TestPath, "de.ldml"));
 
 				// Now try to load up.
-				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, Enumerable.Empty<ICustomDataMapper>(),
-					DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
+				environment.Reset();
 				var ws = environment.Collection.Get("en");
 				Assert.That(ws.ID, Is.EqualTo("en"));
 			}
@@ -797,8 +794,6 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			{
 				var ws = new WritingSystemDefinition("en");
-				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, Enumerable.Empty<ICustomDataMapper>(),
-					DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
 				environment.Collection.Set(ws);
 				Assert.That(environment.Collection.Get("en").ID, Is.EqualTo("en"));
 			}
@@ -827,7 +822,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				var pathToFlexprivateUseLdml = Path.Combine(environment.TestPath, "x-Zxxx-x-audio.ldml");
 				File.WriteAllText(pathToFlexprivateUseLdml, LdmlContentForTests.CurrentVersion("xh", "", "", ""));
-				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
+				environment.Reset();
 				Assert.That(File.Exists(Path.Combine(environment.TestPath, "xh.ldml")));
 			}
 		}
@@ -987,7 +982,6 @@ namespace SIL.WritingSystems.Tests
 </ldml>".Replace("'", "\"");
 #endregion
 				var pathForFlexGerman = Path.Combine(environment.TestPath, "de.ldml");
-				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
 				var ws1 = new WritingSystemDefinition("en");
 				var ws2 = new WritingSystemDefinition("de");
 				//Create repo with english and flex german
@@ -1017,7 +1011,6 @@ namespace SIL.WritingSystems.Tests
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
 				var ws1 = new WritingSystemDefinition("en");
 				var ws2 = new WritingSystemDefinition("de");
 				environment.Collection.Set(ws1);
@@ -1029,7 +1022,7 @@ namespace SIL.WritingSystems.Tests
 				environment.Collection.Set(ws2);
 				environment.Collection.Set(ws1);
 				environment.Collection.Save();
-				environment.Collection = new LdmlInFolderWritingSystemRepository(environment.TestPath);
+				environment.Reset();
 				Assert.That(environment.Collection.Count, Is.EqualTo(2));
 			}
 		}
@@ -1076,6 +1069,117 @@ namespace SIL.WritingSystems.Tests
 						WritingSystemDefinition.LatestWritingSystemDefinitionVersion
 					))
 				);
+			}
+		}
+
+		[Test]
+		public void CreateNew_TemplateAvailableInLocalRepo_UsedTemplateFromLocalRepo()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				File.WriteAllText(environment.GetPathForWsID("en"), @"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+	<identity>
+		<version number='1.0'>From Repo</version>
+		<generation date='0001-01-01T00:00:00' />
+		<language type='en' />
+		<script type='Latn' />
+	</identity>
+	<layout>
+		<orientation>
+			<characterOrder>left-to-right</characterOrder>
+			<lineOrder>top-to-bottom</lineOrder>
+		</orientation>
+	</layout>
+</ldml>
+");
+				environment.Reset();
+				WritingSystemDefinition enWs = environment.Collection.CreateNew("en");
+				Assert.That(enWs.Language, Is.EqualTo((LanguageSubtag) "en"));
+				Assert.That(enWs.Script, Is.EqualTo((ScriptSubtag) "Latn"));
+				Assert.That(enWs.VersionDescription, Is.EqualTo("From Repo"));
+				Assert.That(enWs.Template, Is.EqualTo(environment.GetPathForWsID("en")));
+
+				// ensure that the template is used when the writing system is saved
+				enWs.Region = "US";
+				environment.Collection.Set(enWs);
+				environment.Collection.Save();
+				XElement ldmlElem = XElement.Load(environment.GetPathForWsID("en-US"));
+				Assert.That((string) ldmlElem.Elements("layout").Elements("orientation").Elements("lineOrder").First(), Is.EqualTo("top-to-bottom"));
+			}
+		}
+
+		[Test]
+		public void CreateNew_TemplateAvailableInSldr_UsedTemplateFromSldr()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.Collection.SldrLdmls["en"] = @"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+	<identity>
+		<version number='1.0'>From SLDR</version>
+		<generation date='0001-01-01T00:00:00' />
+		<language type='en' />
+		<script type='Latn' />
+	</identity>
+	<layout>
+		<orientation>
+			<characterOrder>left-to-right</characterOrder>
+			<lineOrder>top-to-bottom</lineOrder>
+		</orientation>
+	</layout>
+</ldml>
+";
+
+				WritingSystemDefinition enWs = environment.Collection.CreateNew("en");
+				Assert.That(enWs.Language, Is.EqualTo((LanguageSubtag) "en"));
+				Assert.That(enWs.Script, Is.EqualTo((ScriptSubtag) "Latn"));
+				Assert.That(enWs.VersionDescription, Is.EqualTo("From SLDR"));
+				Assert.That(enWs.Template, Is.EqualTo(Path.Combine(environment.SldrCachePath, "en.ldml")));
+
+				// ensure that the template is used when the writing system is saved
+				environment.Collection.Set(enWs);
+				environment.Collection.Save();
+				XElement ldmlElem = XElement.Load(environment.GetPathForWsID("en"));
+				Assert.That((string) ldmlElem.Elements("layout").Elements("orientation").Elements("lineOrder").First(), Is.EqualTo("top-to-bottom"));
+			}
+		}
+
+		[Test]
+		public void CreateNew_TemplateNotAvailableInSldr_UsedTemplateFromTemplateFolder()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				File.WriteAllText(Path.Combine(environment.Collection.TemplateFolder, "zh-Hans-CN.ldml"), @"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+	<identity>
+		<version number='1.0'>From Templates</version>
+		<generation date='0001-01-01T00:00:00' />
+		<language type='zh' />
+		<script type='Hans' />
+		<territory type='CN' />
+	</identity>
+	<layout>
+		<orientation>
+			<characterOrder>left-to-right</characterOrder>
+			<lineOrder>top-to-bottom</lineOrder>
+		</orientation>
+	</layout>
+</ldml>
+");
+
+				WritingSystemDefinition chWs = environment.Collection.CreateNew("zh-Hans-CN");
+				Assert.That(chWs.Language, Is.EqualTo((LanguageSubtag) "zh"));
+				Assert.That(chWs.Script, Is.EqualTo((ScriptSubtag) "Hans"));
+				Assert.That(chWs.Region, Is.EqualTo((RegionSubtag) "CN"));
+				Assert.That(chWs.VersionDescription, Is.EqualTo("From Templates"));
+				Assert.That(chWs.Template, Is.EqualTo(Path.Combine(environment.Collection.TemplateFolder, "zh-Hans-CN.ldml")));
+
+				// ensure that the template is used when the writing system is saved
+				environment.Collection.Set(chWs);
+				environment.Collection.Save();
+				XElement ldmlElem = XElement.Load(environment.GetPathForWsID("zh-Hans-CN"));
+				Assert.That((string) ldmlElem.Elements("layout").Elements("orientation").Elements("lineOrder").First(), Is.EqualTo("top-to-bottom"));
 			}
 		}
 
