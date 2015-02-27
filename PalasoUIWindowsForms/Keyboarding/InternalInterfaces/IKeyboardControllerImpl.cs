@@ -1,11 +1,6 @@
-// --------------------------------------------------------------------------------------------
-// <copyright from='2012' to='2012' company='SIL International'>
-// 	Copyright (c) 2012, SIL International. All Rights Reserved.
-//
-// 	Distributable under the terms of either the Common Public License or the
-// 	GNU Lesser General Public License, as specified in the LICENSING.txt file.
-// </copyright>
-// --------------------------------------------------------------------------------------------
+// Copyright (c) 2012-2015 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -34,12 +29,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces
 		/// </summary>
 		IKeyboardDefinition ActiveKeyboard { get; set; }
 
-        /// <summary>
-        /// Gets the default system keyboard.
-        /// </summary>
-        IKeyboardDefinition DefaultKeyboard { get; }
-        
-        /// <summary>
+		/// <summary>
+		/// Gets the default system keyboard.
+		/// </summary>
+		IKeyboardDefinition DefaultKeyboard { get; }
+
+		/// <summary>
 		/// Registers the control for keyboarding. Called by KeyboardController when the
 		/// application registers a control by calling KeyboardController.Register.
 		/// </summary>
