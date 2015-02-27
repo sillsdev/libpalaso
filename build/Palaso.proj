@@ -22,13 +22,13 @@
 	<Import Project="NuGet.targets"/>
 
 	<PropertyGroup>
-		<LargeFilesDir Condition="'$(OS)'=='Windows_NT'">c:\builddownloads</LargeFilesDir>
+		<LargeFilesDir Condition="'$(OS)'=='Windows_NT' And '$(LargeFilesDir)'==''">c:\builddownloads</LargeFilesDir>
 		<Solution>Palaso.sln</Solution>
 		<SolutionPath>$(RootDir)/$(Solution)</SolutionPath>
 		<ApplicationName>PalasoLibrary</ApplicationName>
 		<ApplicationNameLC>libpalaso</ApplicationNameLC>
-		<Configuration Condition="'$(OS)'!='Windows_NT'">ReleaseMono</Configuration>
-		<Configuration Condition="'$(OS)'=='Windows_NT'">Release</Configuration>
+		<Configuration Condition="'$(OS)'!='Windows_NT' And '$(Configuration)'==''">ReleaseMono</Configuration>
+		<Configuration Condition="'$(OS)'=='Windows_NT' And '$(Configuration)'==''">Release</Configuration>
 		<ExtraExcludeCategories Condition="'$(OS)'!='Windows_NT'">KnownMonoIssue</ExtraExcludeCategories>
 		<useNUnit-x86 Condition="'$(OS)'=='Windows_NT'">true</useNUnit-x86>
 		<useNUnit-x86 Condition="'$(OS)'!='Windows_NT'">false</useNUnit-x86>
