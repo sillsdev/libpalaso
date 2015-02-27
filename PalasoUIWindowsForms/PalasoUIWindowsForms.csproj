@@ -453,6 +453,7 @@
     </Compile>
     <Compile Include="ImageToolbox\ImageAcquisitionService.cs" />
     <Compile Include="Keyboarding\Interfaces\IKeyboardErrorDescription.cs" />
+    <Compile Include="Keyboarding\Interfaces\IWindowsLanguageProfileSink.cs" />
     <Compile Include="Keyboarding\InternalInterfaces\IKeyboardAdaptor.cs" />
     <Compile Include="Keyboarding\InternalInterfaces\IKeyboardControllerImpl.cs" />
     <Compile Include="Keyboarding\KeyboardDescription.cs" />

@@ -217,6 +217,29 @@ namespace Palaso.WritingSystems
 		///			ActiveWritingSystem, wsRepo.AllWritingSystems.ToArray())
 		/// }
 		/// Linux usage will have to be determined, no InputLangChanged event gets raised in Mono.
-		IWritingSystemDefinition GetWsForInputLanguage(string layoutName, CultureInfo cultureInfo, IWritingSystemDefinition wsCurrent, IWritingSystemDefinition[] candidates);
+		IWritingSystemDefinition GetWsForInputLanguage(string layoutName, CultureInfo cultureInfo,
+			IWritingSystemDefinition wsCurrent, IWritingSystemDefinition[] candidates);
+
+		/// <summary>
+		/// Get the writing system that is most probably intended by the user, when the input
+		/// method changes to the specified <paramref name="inputMethod"/>, given the indicated
+		/// candidates, and that <paramref name="wsCurrent"/> is the preferred result if it is
+		/// a possible WS for the specified input method. wsCurrent is also returned if none
+		/// of the <paramref name="candidates"/> is found to match the specified inputs.
+		/// </summary>
+		/// <param name="inputMethod">The input method or keyboard</param>
+		/// <param name="wsCurrent">The writing system that is currently active in the form.
+		/// This serves as a default that will be returned if no writing system can be
+		/// determined from the first argument. It may be null. Also, if there is more than
+		/// one equally promising match in candidates, and wsCurrent is one of them, it will
+		/// be preferred. This ensures that we don't change WS on the user unless the keyboard
+		/// they have selected definitely indicates a different WS.</param>
+		/// <param name="candidates">The writing systems that should be considered as possible
+		/// return values.</param>
+		/// <returns>The best writing system for <paramref name="inputMethod"/>.</returns>
+		/// <remarks>This method replaces IWritingSystemRepository.GetWsForInputLanguage and
+		/// should preferably be used.</remarks>
+		IWritingSystemDefinition GetWsForInputMethod(IKeyboardDefinition inputMethod,
+			IWritingSystemDefinition wsCurrent, IWritingSystemDefinition[] candidates);
 	}
 }
