@@ -222,6 +222,16 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 		}
 
+		/// <summary>
+		/// Implementation is not required because the default implementation of KeyboardController
+		/// is sufficient.
+		/// </summary>
+		public IKeyboardDefinition ActiveKeyboard
+		{
+			get { return null; }
+		}
+
+
 		private string _missingKeyboardFmt;
 		/// <summary>
 		/// Creates and returns a keyboard definition object based on the layout and locale.

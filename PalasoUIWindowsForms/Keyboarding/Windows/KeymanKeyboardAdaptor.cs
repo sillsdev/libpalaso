@@ -158,6 +158,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 		}
 
 		/// <summary>
+		/// Implementation is not required because this is not the primary (Type System) adapter.
+		/// </summary>
+		public IKeyboardDefinition ActiveKeyboard
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		/// <summary>
 		/// The type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
 		/// </summary>
 		public KeyboardType Type

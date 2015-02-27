@@ -77,44 +77,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 
 			public void OnLanguageChanged()
 			{
-				var winKeyboard = KeyboardForCurrentInputProfile;
+				var winKeyboard = _keyboardAdaptor.ActiveKeyboard;
 				Debug.WriteLine("Language changed from {0} to {1}",
 					Keyboard.Controller.ActiveKeyboard != null ? Keyboard.Controller.ActiveKeyboard.Layout : "<null>",
 					winKeyboard != null ? winKeyboard.Layout : "<null>");
 
 				_keyboardAdaptor.m_windowsLanguageProfileSinks.ForEach(
 					(sink) => sink.OnInputLanguageChanged(Keyboard.Controller.ActiveKeyboard, winKeyboard));
-			}
-
-			private WinKeyboardDescription KeyboardForCurrentInputProfile
-			{
-				get
-				{
-					if (_keyboardAdaptor.ProfileMgr != null)
-					{
-						var profile = _keyboardAdaptor.ProfileMgr.GetActiveProfile(Guids.TfcatTipKeyboard);
-						return Keyboard.Controller.AllAvailableKeyboards.OfType<WinKeyboardDescription>()
-							.FirstOrDefault(winKeybd => InputProcessorProfilesEqual(profile, winKeybd.InputProcessorProfile));
-					}
-
-					// Probably Windows XP where we don't have ProfileMgr
-					var lang = _keyboardAdaptor.ProcessorProfiles.GetCurrentLanguage();
-					return Keyboard.Controller.AllAvailableKeyboards.OfType<WinKeyboardDescription>()
-						.FirstOrDefault(winKeybd => winKeybd.InputProcessorProfile.LangId == lang);
-				}
-			}
-
-			private static bool InputProcessorProfilesEqual(TfInputProcessorProfile profile1, TfInputProcessorProfile profile2)
-			{
-				// Don't compare Flags - they can be different and it's still the same profile
-				return profile1.ProfileType == profile2.ProfileType &&
-					profile1.LangId == profile2.LangId &&
-					profile1.ClsId == profile2.ClsId &&
-					profile1.GuidProfile == profile2.GuidProfile &&
-					profile1.CatId == profile2.CatId &&
-					profile1.HklSubstitute == profile2.HklSubstitute &&
-					profile1.Caps == profile2.Caps &&
-					profile1.Hkl == profile2.Hkl;
 			}
 			#endregion
 
@@ -484,7 +453,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			if (m_ExpectedKeyboard == null || !m_fSwitchedLanguages)
 				return;
 
-			if (InputLanguage.CurrentInputLanguage.Culture.KeyboardLayoutId == m_ExpectedKeyboard.InputLanguage.Culture.KeyboardLayoutId)
+			// This code gets only called if TSF is not available(e.g. Windows XP)
+			if (InputLanguage.CurrentInputLanguage.Culture.KeyboardLayoutId ==
+				m_ExpectedKeyboard.InputLanguage.Culture.KeyboardLayoutId)
 			{
 				m_ExpectedKeyboard = null;
 				m_fSwitchedLanguages = false;
@@ -653,6 +624,19 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			RestoreImeConversionStatus(GetKeyboardDescription(inputLanguageChangedEventArgs.InputLanguage.Interface()));
 		}
 
+		private static bool InputProcessorProfilesEqual(TfInputProcessorProfile profile1, TfInputProcessorProfile profile2)
+		{
+			// Don't compare Flags - they can be different and it's still the same profile
+			return profile1.ProfileType == profile2.ProfileType &&
+				profile1.LangId == profile2.LangId &&
+				profile1.ClsId == profile2.ClsId &&
+				profile1.GuidProfile == profile2.GuidProfile &&
+				profile1.CatId == profile2.CatId &&
+				profile1.HklSubstitute == profile2.HklSubstitute &&
+				profile1.Caps == profile2.Caps &&
+				profile1.Hkl == profile2.Hkl;
+		}
+
 		#region IKeyboardAdaptor Members
 
 		[SuppressMessage("Gendarme.Rules.Correctness", "EnsureLocalDisposalRule",
@@ -730,6 +714,27 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 		public IKeyboardDefinition DefaultKeyboard
 		{
 			get { return GetKeyboardDescription(InputLanguage.DefaultInputLanguage.Interface()); }
+		}
+
+		/// <summary>
+		///  Gets the currently active keyboard.
+		/// </summary>
+		public IKeyboardDefinition ActiveKeyboard
+		{
+			get
+			{
+				if (ProfileMgr != null)
+				{
+					var profile = ProfileMgr.GetActiveProfile(Guids.TfcatTipKeyboard);
+					return Keyboard.Controller.AllAvailableKeyboards.OfType<WinKeyboardDescription>()
+						.FirstOrDefault(winKeybd => InputProcessorProfilesEqual(profile, winKeybd.InputProcessorProfile));
+				}
+
+				// Probably Windows XP where we don't have ProfileMgr
+				var lang = ProcessorProfiles.GetCurrentLanguage();
+				return Keyboard.Controller.AllAvailableKeyboards.OfType<WinKeyboardDescription>()
+					.FirstOrDefault(winKeybd => winKeybd.InputProcessorProfile.LangId == lang);
+			}
 		}
 
 		/// <summary>
