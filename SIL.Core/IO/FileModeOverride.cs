@@ -4,8 +4,6 @@
 using System;
 
 #if __MonoCS__
-using System.IO;
-using System.Security;
 using Mono.Unix.Native;
 #endif
 

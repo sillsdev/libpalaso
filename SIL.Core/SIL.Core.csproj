@@ -130,6 +130,7 @@
     <None Include="..\lib\commonMono\NDesk.DBus.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Configuration" />
