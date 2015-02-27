@@ -1,3 +1,5 @@
+using System;
+
 namespace SIL.Windows.Forms.WritingSystems
 {
 	partial class WritingSystemSetupDialog
@@ -16,6 +18,12 @@ namespace SIL.Windows.Forms.WritingSystems
 			if (disposing && (components != null))
 			{
 				components.Dispose();
+				if (DisposeRepository)
+				{
+					var diposable = _model.WritingSystems as IDisposable;
+					if (diposable != null)
+						diposable.Dispose();
+				}
 			}
 			base.Dispose(disposing);
 		}

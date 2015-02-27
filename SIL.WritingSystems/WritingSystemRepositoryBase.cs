@@ -17,7 +17,7 @@ namespace SIL.WritingSystems
 	/// a WritingSystemDefinition. This allows the user to change the IETF language tag components and thereby the ID of a
 	/// WritingSystemDefinition and the WritingSystemRepository to update itself and the underlying store correctly.
 	/// </summary>
-	abstract public class WritingSystemRepositoryBase : IWritingSystemRepository
+	public abstract class WritingSystemRepositoryBase : IWritingSystemRepository
 	{
 
 		private readonly Dictionary<string, WritingSystemDefinition> _writingSystems;
@@ -73,7 +73,7 @@ namespace SIL.WritingSystems
 			return new WritingSystemDefinition(id);
 		}
 
-		virtual public void Conflate(string wsToConflate, string wsToConflateWith)
+		public virtual void Conflate(string wsToConflate, string wsToConflateWith)
 		{
 			Conflating = true;
 			if (WritingSystemConflated != null)
@@ -91,7 +91,7 @@ namespace SIL.WritingSystems
 		/// dictionary, but the latter is what gets persisted to disk (and shown to the
 		/// user).
 		/// </remarks>
-		virtual public void Remove(string id)
+		public virtual void Remove(string id)
 		{
 			if (id == null)
 			{
@@ -119,9 +119,9 @@ namespace SIL.WritingSystems
 			//TODO: This may be useful if writing systems were reference counted.
 		}
 
-		abstract public string WritingSystemIDHasChangedTo(string id);
+		public abstract string WritingSystemIDHasChangedTo(string id);
 
-		virtual public void LastChecked(string id, DateTime dateModified)
+		public virtual void LastChecked(string id, DateTime dateModified)
 		{
 			if (_writingSystemsToIgnore.ContainsKey(id))
 			{
@@ -131,6 +131,12 @@ namespace SIL.WritingSystems
 			{
 				_writingSystemsToIgnore.Add(id, dateModified);
 			}
+		}
+
+		public virtual bool CanSave(WritingSystemDefinition ws, out string path)
+		{
+			path = string.Empty;
+			return true;
 		}
 
 		/// <summary>
@@ -152,11 +158,11 @@ namespace SIL.WritingSystems
 
 		public abstract bool WritingSystemIDHasChanged(string id);
 
-		public bool Contains(string identifier)
+		public bool Contains(string id)
 		{
 			// identifier should not be null, but some unit tests never define StoreID
 			// on their temporary WritingSystemDefinition objects.
-			return identifier != null && _writingSystems.ContainsKey(identifier);
+			return id != null && _writingSystems.ContainsKey(id);
 		}
 
 		public bool CanSet(WritingSystemDefinition ws)
@@ -233,6 +239,18 @@ namespace SIL.WritingSystems
 			}
 		}
 
+		public bool TryGet(string identifier, out WritingSystemDefinition ws)
+		{
+			if (Contains(identifier))
+			{
+				ws = Get(identifier);
+				return true;
+			}
+
+			ws = null;
+			return false;
+		}
+
 		public string GetNewStoreIDWhenSet(WritingSystemDefinition ws)
 		{
 			if (ws == null)
@@ -263,22 +281,22 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		virtual public void Save()
+		public virtual void Save()
 		{
 		}
 
-		virtual protected void OnChangeNotifySharedStore(WritingSystemDefinition ws)
+		protected virtual void OnChangeNotifySharedStore(WritingSystemDefinition ws)
 		{
 			DateTime lastDateModified;
 			if (_writingSystemsToIgnore.TryGetValue(ws.ID, out lastDateModified) && ws.DateModified > lastDateModified)
 				_writingSystemsToIgnore.Remove(ws.ID);
 		}
 
-		virtual protected void OnRemoveNotifySharedStore()
+		protected virtual void OnRemoveNotifySharedStore()
 		{
 		}
 
-		virtual public IEnumerable<WritingSystemDefinition> WritingSystemsNewerIn(IEnumerable<WritingSystemDefinition> rhs)
+		public virtual IEnumerable<WritingSystemDefinition> WritingSystemsNewerIn(IEnumerable<WritingSystemDefinition> rhs)
 		{
 			if (rhs == null)
 			{

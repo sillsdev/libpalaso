@@ -36,6 +36,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 						//that constructor is now obsolete, create repo first
 						var repository = LdmlInFolderWritingSystemRepository.Initialize(folder.Path,
 							Enumerable.Empty<ICustomDataMapper>(),
+							null,
 							DummyWritingSystemHandler.onMigration,
 							DummyWritingSystemHandler.onLoadProblem);
 						var dlg = new WritingSystemSetupDialog(repository);
@@ -56,7 +57,8 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 					{
 						var f = new Form();
 						f.Size = new Size(800, 600);
-						var repository = LdmlInFolderWritingSystemRepository.Initialize(folder.Path, Enumerable.Empty<ICustomDataMapper>(), DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem);
+						var repository = LdmlInFolderWritingSystemRepository.Initialize(folder.Path, Enumerable.Empty<ICustomDataMapper>(), null,
+							DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem);
 						var model = new WritingSystemSetupModel(repository);
 						var v = new WritingSystemSetupView(model);
 						var combo = new WSPickerUsingComboBox(model);

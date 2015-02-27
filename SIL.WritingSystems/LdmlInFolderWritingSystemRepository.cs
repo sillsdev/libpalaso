@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Xml.Linq;
 using SIL.WritingSystems.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
@@ -14,15 +16,18 @@ namespace SIL.WritingSystems
 	public class LdmlInFolderWritingSystemRepository : WritingSystemRepositoryBase
 	{
 		/// <summary>
-		///  Returns an instance of an ldml in folder writing system reposistory.
+		/// Returns an instance of an ldml in folder writing system reposistory.
 		/// </summary>
 		/// <param name="basePath">base location of the global writing system repository</param>
 		/// <param name="customDataMappers">The custom data mappers.</param>
+		/// <param name="globalRepository">The global repository.</param>
 		/// <param name="migrationHandler">Callback if during the initialization any writing system id's are changed</param>
 		/// <param name="loadProblemHandler">Callback if during the initialization any writing systems cannot be loaded</param>
+		/// <returns></returns>
 		public static LdmlInFolderWritingSystemRepository Initialize(
 			string basePath,
 			IEnumerable<ICustomDataMapper> customDataMappers,
+			GlobalWritingSystemRepository globalRepository,
 			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
 			Action<IEnumerable<WritingSystemRepositoryProblem>> loadProblemHandler
 		)
@@ -31,7 +36,7 @@ namespace SIL.WritingSystems
 			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(basePath, migrationHandler, customDataMappersArray);
 			migrator.Migrate();
 
-			var instance = new LdmlInFolderWritingSystemRepository(basePath, customDataMappersArray);
+			var instance = new LdmlInFolderWritingSystemRepository(basePath, customDataMappersArray, globalRepository);
 			instance.LoadAllDefinitions();
 
 			// Call the loadProblemHandler with both migration problems and load problems
@@ -51,7 +56,8 @@ namespace SIL.WritingSystems
 		private IEnumerable<WritingSystemDefinition> _systemWritingSystemProvider;
 		private readonly WritingSystemChangeLog _changeLog;
 		private readonly IList<WritingSystemRepositoryProblem> _loadProblems = new List<WritingSystemRepositoryProblem>();
-		private readonly IList<ICustomDataMapper> _customDataMappers; 
+		private readonly IList<ICustomDataMapper> _customDataMappers;
+		private readonly GlobalWritingSystemRepository _globalRepository;
 
 		/// <summary>
 		/// use a special path for the repository
@@ -65,11 +71,13 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// use a special path for the repository
 		/// </summary>
-		protected internal LdmlInFolderWritingSystemRepository(string basePath, IList<ICustomDataMapper> customDataMappers)
+		protected internal LdmlInFolderWritingSystemRepository(string basePath, IList<ICustomDataMapper> customDataMappers, GlobalWritingSystemRepository globalRepository = null)
 		{
 			_customDataMappers = customDataMappers;
+			_globalRepository = globalRepository;
 			PathToWritingSystems = basePath;
 			_changeLog = new WritingSystemChangeLog(new WritingSystemChangeLogDataMapper(Path.Combine(PathToWritingSystems, "idchangelog.xml")));
+			ReadGlobalWritingSystemsToIgnore();
 		}
 
 		/// <summary>
@@ -85,10 +93,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public string PathToWritingSystems
 		{
-			get
-			{
-				return _path;
-			}
+			get { return _path; }
 			set
 			{
 				_path = value;
@@ -115,19 +120,19 @@ namespace SIL.WritingSystems
 		///<summary>
 		/// Returns the full path to the underlying store for this writing system.
 		///</summary>
-		///<param name="identifier"></param>
+		///<param name="id"></param>
 		///<returns>FilePath</returns>
-		public string GetFilePathFromIdentifier(string identifier)
+		public string GetFilePathFromIdentifier(string id)
 		{
-			return Path.Combine(PathToWritingSystems, GetFileNameFromIdentifier(identifier));
+			return Path.Combine(PathToWritingSystems, GetFileNameFromIdentifier(id));
 		}
 
 		/// <summary>
 		/// Gets the file name from the specified identifier.
 		/// </summary>
-		protected static string GetFileNameFromIdentifier(string identifier)
+		protected static string GetFileNameFromIdentifier(string id)
 		{
-			return identifier + Extension;
+			return id + Extension;
 		}
 
 		/// <summary>
@@ -189,7 +194,7 @@ namespace SIL.WritingSystems
 						Consequence = WritingSystemRepositoryProblem.ConsequenceType.WSWillNotBeAvailable,
 						Exception = new ApplicationException(
 							String.Format(
-								"The writing system file {0} seems to be named inconsistently. It contains the Rfc5646 tag: '{1}'. The name should have been made consistent with its content upon migration of the writing systems.",
+								"The writing system file {0} seems to be named inconsistently. It contains the IETF language tag: '{1}'. The name should have been made consistent with its content upon migration of the writing systems.",
 								filePath, wsFromFile.ID)),
 						FilePath = filePath
 					};
@@ -306,15 +311,21 @@ namespace SIL.WritingSystems
 		{
 			string templatePath = null;
 			// check local repo for template
-			if (Contains(id))
+			WritingSystemDefinition existingWS;
+			if (TryGet(id, out existingWS))
 			{
-				WritingSystemDefinition existingWS = Get(id);
 				templatePath = GetFilePathFromIdentifier(existingWS.StoreID);
 				if (!File.Exists(templatePath))
 					templatePath = null;
 			}
 
-			// TODO (WS_FIX): check global repo for template
+			// check global repo for template
+			if (string.IsNullOrEmpty(templatePath) && _globalRepository != null && _globalRepository.TryGet(id, out existingWS))
+			{
+				templatePath = _globalRepository.GetFilePathFromIdentifier(existingWS.StoreID);
+				if (!File.Exists(templatePath))
+					templatePath = null;
+			}
 
 			// check SLDR for template
 			if (string.IsNullOrEmpty(templatePath))
@@ -385,6 +396,8 @@ namespace SIL.WritingSystems
 
 		public override void Remove(string id)
 		{
+			int wsIgnoreCount = WritingSystemsToIgnore.Count;
+
 			//we really need to get it in the trash, else, if was auto-provided,
 			//it'll keep coming back!
 			if (!File.Exists(GetFilePathFromIdentifier(id)) && Contains(id))
@@ -407,15 +420,77 @@ namespace SIL.WritingSystems
 				customDataMapper.Remove(id);
 			if (!Conflating)
 				_changeLog.LogDelete(id);
-			}
+
+			if (wsIgnoreCount != WritingSystemsToIgnore.Count)
+				WriteGlobalWritingSystemsToIgnore();
+		}
 
 		private string PathToWritingSystemTrash()
 		{
 			return Path.Combine(_path, "trash");
 		}
 
+		/// <summary>
+		/// Return true if it will be possible (absent someone changing permissions while we aren't looking)
+		/// to save changes to the specified writing system.
+		/// </summary>
+		public override bool CanSave(WritingSystemDefinition ws, out string filePath)
+		{
+			string folderPath = PathToWritingSystems;
+			string filename = GetFileNameFromIdentifier(ws.StoreID);
+			filePath = Path.Combine(folderPath, filename);
+			if (File.Exists(filePath))
+			{
+				try
+				{
+					using (FileStream stream = File.Open(filePath, FileMode.Open))
+						stream.Close();
+					// don't really want to change anything
+				}
+				catch (UnauthorizedAccessException)
+				{
+					return false;
+				}
+			}
+
+			else if (Directory.Exists(folderPath))
+			{
+				try
+				{
+					// See whether we're allowed to create the file (but if so, get rid of it).
+					// Pathologically we might have create but not delete permission...if so,
+					// we'll create an empty file and report we can't save. I don't see how to
+					// do better.
+					using (FileStream stream = File.Create(filePath))
+						stream.Close();
+					File.Delete(filePath);
+				}
+				catch (UnauthorizedAccessException)
+				{
+					return false;
+				}
+			}
+			else
+			{
+				try
+				{
+					Directory.CreateDirectory(folderPath);
+					// Don't try to clean it up again. This is a vanishingly rare case,
+					// I don't think it's even possible to create a writing system store without
+					// the directory existing.
+				}
+				catch (UnauthorizedAccessException)
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
 		public override void Save()
 		{
+			int wsIgnoreCount = WritingSystemsToIgnore.Count;
+
 			//delete anything we're going to delete first, to prevent losing
 			//a WS we want by having it deleted by an old WS we don't want
 			//(but which has the same identifier)
@@ -432,6 +507,11 @@ namespace SIL.WritingSystems
 			}
 
 			LoadChangedIDsFromExistingWritingSystems();
+
+			if (wsIgnoreCount != WritingSystemsToIgnore.Count)
+				WriteGlobalWritingSystemsToIgnore();
+			if (_globalRepository != null)
+				_globalRepository.Save();
 		}
 
 		public override void Set(WritingSystemDefinition ws)
@@ -459,6 +539,80 @@ namespace SIL.WritingSystems
 		public override string WritingSystemIDHasChangedTo(string id)
 		{
 			return AllWritingSystems.Any(ws => ws.ID.Equals(id)) ? id : _changeLog.GetChangeFor(id);
+		}
+
+		public override void LastChecked(string identifier, DateTime dateModified)
+		{
+			base.LastChecked(identifier, dateModified);
+			WriteGlobalWritingSystemsToIgnore();
+		}
+
+		protected override void OnChangeNotifySharedStore(WritingSystemDefinition ws)
+		{
+			base.OnChangeNotifySharedStore(ws);
+
+			if (_globalRepository != null)
+			{
+				WritingSystemDefinition globalWs;
+				if (_globalRepository.TryGet(ws.ID, out globalWs))
+				{
+					if (ws.DateModified > globalWs.DateModified)
+					{
+						WritingSystemDefinition newWs = ws.Clone();
+						try
+						{
+							_globalRepository.Remove(ws.ID);
+							_globalRepository.Set(newWs);
+						}
+						catch (UnauthorizedAccessException)
+						{
+							// Live with it if we can't update the global store. In a CS world we might
+							// well not have permission.
+						}
+					}
+				}
+
+				else
+				{
+					_globalRepository.Set(ws.Clone());
+				}
+			}
+		}
+
+		private void WriteGlobalWritingSystemsToIgnore()
+		{
+			if (_globalRepository == null)
+				return;
+
+			string path = Path.Combine(PathToWritingSystems, "WritingSystemsToIgnore.xml");
+
+			if (WritingSystemsToIgnore.Count == 0)
+			{
+				if (File.Exists(path))
+					File.Delete(path);
+			}
+
+			else
+			{
+				var doc = new XDocument(new XDeclaration("1.0", "utf-8", "yes"),
+					new XElement("WritingSystems",
+						WritingSystemsToIgnore.Select(ignoredWs => new XElement("WritingSystem", new XAttribute("id", ignoredWs.Key), new XAttribute("dateModified", ignoredWs.Value.ToString("s"))))));
+				doc.Save(path);
+			}
+		}
+
+		private void ReadGlobalWritingSystemsToIgnore()
+		{
+			string path = Path.Combine(PathToWritingSystems, "WritingSystemsToIgnore.xml");
+			if (_globalRepository == null || !File.Exists(path))
+				return;
+
+			XElement wssElem = XElement.Load(path);
+			foreach (XElement wsElem in wssElem.Elements("WritingSystem"))
+			{
+				DateTime dateModified = DateTime.ParseExact((string) wsElem.Attribute("dateModified"), "s", null, DateTimeStyles.AdjustToUniversal);
+				WritingSystemsToIgnore[(string)wsElem.Attribute("id")] = dateModified;
+			}
 		}
 	}
 }

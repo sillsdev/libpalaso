@@ -104,7 +104,7 @@ namespace SIL.WritingSystems.Migration
 		{
 			get {
 				string result = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL");
-				result = Path.Combine(result, "WritingSystemRepository");
+				result = Path.Combine(result, "WritingSystemStore");
 				if (!Directory.Exists(result))
 					Directory.CreateDirectory(result);
 				return result;

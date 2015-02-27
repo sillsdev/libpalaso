@@ -7,8 +7,8 @@ namespace SIL.WritingSystems.Tests
 	{
 		private readonly Dictionary<string, string> _sldrLdmls; 
 
-		public TestLdmlInFolderWritingSystemRepository(string basePath)
-			: base(basePath)
+		public TestLdmlInFolderWritingSystemRepository(string basePath, GlobalWritingSystemRepository globalRepository = null)
+			: base(basePath, new List<ICustomDataMapper>(), globalRepository)
 		{
 			_sldrLdmls = new Dictionary<string, string>();
 		}

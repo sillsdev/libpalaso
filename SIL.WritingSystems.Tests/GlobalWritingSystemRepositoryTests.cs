@@ -17,7 +17,7 @@ namespace SIL.WritingSystems.Tests
 		[Platform(Exclude = "Linux", Reason="Test tries to create directory under /var/lib where user doesn't have write permissions by default")]
 		public void DefaultInitializer_HasCorrectPath()
 		{
-			var repo = GlobalWritingSystemRepository.Initialize(OnMigration);
+			GlobalWritingSystemRepository repo = GlobalWritingSystemRepository.Initialize(OnMigration);
 			string expectedPath = string.Format(".*SIL.WritingSystemRepository.{0}", 
 				WritingSystemDefinition.LatestWritingSystemDefinitionVersion);
 			Assert.That(repo.PathToWritingSystems, Is.StringMatching(expectedPath));

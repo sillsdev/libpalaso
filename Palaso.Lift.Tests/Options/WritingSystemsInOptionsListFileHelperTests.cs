@@ -7,7 +7,6 @@ using Palaso.Lift.Options;
 using Palaso.TestUtilities;
 using SIL.WritingSystems;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
-using SIL.WritingSystems.Tests;
 
 namespace Palaso.Lift.Tests.Options
 {
@@ -74,7 +73,7 @@ namespace Palaso.Lift.Tests.Options
 
 			public void CreateWritingSystemRepository()
 			{
-				WritingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(WritingSystemsPath, Enumerable.Empty<ICustomDataMapper>(),
+				WritingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(WritingSystemsPath, Enumerable.Empty<ICustomDataMapper>(), null,
 					onMigration, onLoadProblem);
 			}
 

@@ -28,6 +28,8 @@ namespace SIL.Windows.Forms.WritingSystems
 			get { return _model.WritingSystemSuggestor; }
 		}
 
+		private bool DisposeRepository { get; set; }
+
    /* turned out to be hard... so many events are bound to the model, when the dlg
 	* closes we'd need to carefully unsubscribe them alll.
 	* Better to try again with a weak event model (JH)
@@ -113,6 +115,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 				LdmlInFolderWritingSystemRepository repository = LdmlInFolderWritingSystemRepository.Initialize(newDir,
 					customDataMappers,
+					null,
 					DummyWritingSystemHandler.onMigration,
 					DummyWritingSystemHandler.onLoadProblem);
 				var dlg = new WritingSystemSetupDialog(repository);
@@ -127,9 +130,10 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		private void _openGlobal_Click(object sender, EventArgs e)
 		{
-			var dlg = new WritingSystemSetupDialog(GlobalWritingSystemRepository.Instance);
+			var dlg = new WritingSystemSetupDialog(GlobalWritingSystemRepository.Initialize(DummyWritingSystemHandler.onMigration));
 			dlg.WritingSystemSuggestor.SuggestVoice = true;
 			dlg.WritingSystemSuggestor.OtherKnownWritingSystems = null;
+			dlg.DisposeRepository = true;
 			dlg.Text = String.Format("Writing Systems for all users of this computer");
 
 			dlg.Show();

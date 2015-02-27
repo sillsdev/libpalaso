@@ -201,6 +201,7 @@
     <Compile Include="IO\FileLock\IFileLock.cs" />
     <Compile Include="IO\FileLock\FileSys\LockIO.cs" />
     <Compile Include="IO\FileLock\SimpleFileLock.cs" />
+    <Compile Include="IO\FileModeOverride.cs" />
     <Compile Include="IO\FileUtils.cs" />
     <Compile Include="EventsAndDelegates\GenericEventArgs.cs" />
     <Compile Include="IO\DirectoryUtilities.cs" />

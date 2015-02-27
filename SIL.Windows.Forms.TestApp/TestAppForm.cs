@@ -78,7 +78,7 @@ namespace SIL.Windows.Forms.TestApp
 					new UserSettingsWritingSystemDataMapper(new ApplicationSettingsStore(Properties.Settings.Default, "UserSettings")),
 					new ProjectSettingsWritingSystemDataMapper(new ApplicationSettingsStore(Properties.Settings.Default, "ProjectSettings"))
 				};
-				LdmlInFolderWritingSystemRepository wsRepo = LdmlInFolderWritingSystemRepository.Initialize(tempPath, customDataMappers, onMigration, onLoadProblem);
+				LdmlInFolderWritingSystemRepository wsRepo = LdmlInFolderWritingSystemRepository.Initialize(tempPath, customDataMappers, null, onMigration, onLoadProblem);
 				using (var dialog = new WritingSystemSetupDialog(wsRepo))
 					dialog.ShowDialog();
 			}

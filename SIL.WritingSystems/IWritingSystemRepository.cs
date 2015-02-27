@@ -70,6 +70,14 @@ namespace SIL.WritingSystems
 		WritingSystemDefinition Get(string id);
 
 		/// <summary>
+		/// Gets the specified writing system if it exists.
+		/// </summary>
+		/// <param name="identifier">The identifier.</param>
+		/// <param name="ws">The writing system.</param>
+		/// <returns></returns>
+		bool TryGet(string identifier, out WritingSystemDefinition ws);
+
+		/// <summary>
 		/// If the given writing system were passed to Set, this function returns the
 		/// new StoreID that would be assigned.
 		/// </summary>
@@ -158,6 +166,11 @@ namespace SIL.WritingSystems
 		/// 
 		/// </summary>
 		void LastChecked(string id, DateTime dateModified);
+
+		/// <summary>
+		/// True if it is capable of saving changes to the specified WS.
+		/// </summary>
+		bool CanSave(WritingSystemDefinition ws, out string path);
 
 		/// <summary>
 		/// Writes the store to a persistable medium, if applicable.
