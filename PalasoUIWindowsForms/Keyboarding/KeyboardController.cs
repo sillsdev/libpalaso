@@ -561,12 +561,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		/// <summary>
 		/// Flag that Linux is using the combined keyboard handling (Ubuntu saucy/trusty/later?)
 		/// </summary>
-		public static bool CombinedKeyboardHandling { get; internal set; }
+		internal static bool CombinedKeyboardHandling { get; set; }
 #endif
+
 		/// <summary>
 		/// Flag that Linux is Wasta-14 (Mint 17/Cinnamon) using IBus for keyboarding.
 		/// </summary>
-		public static bool CinnamonKeyboardHandling { get;	internal set; }
+		internal static bool CinnamonKeyboardHandling { get; set; }
 
 		/// <summary>
 		/// Gets the currently active keyboard
