@@ -1,11 +1,6 @@
-// --------------------------------------------------------------------------------------------
-// <copyright from='2011' to='2011' company='SIL International'>
-// 	Copyright (c) 2011, SIL International. All Rights Reserved.
-//
-// 	Distributable under the terms of either the Common Public License or the
-// 	GNU Lesser General Public License, as specified in the LICENSING.txt file.
-// </copyright>
-// --------------------------------------------------------------------------------------------
+// Copyright (c) 2011-2015 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
 #if __MonoCS__
 using System;
 using System.Diagnostics;
