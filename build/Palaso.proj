@@ -1,0 +1,163 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<RootDir Condition="'$(teamcity_build_checkoutDir)' == '' And '$(RootDir)'==''">$(MSBuildProjectDirectory)/..</RootDir>
+		<RootDir Condition="'$(teamcity_build_checkoutDir)' != ''">$(teamcity_build_checkoutDir)</RootDir>
+		<BUILD_NUMBER Condition="'$(BUILD_NUMBER)'==''">1.2.3.4</BUILD_NUMBER>
+		<!-- Note, after some thought, we've decided this is the best place to keep the version number (not on TeamCity, not in the assemblies). -->
+		<Version>2.6</Version>
+	</PropertyGroup>
+
+	<UsingTask TaskName="StampAssemblies" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
+	<UsingTask TaskName="Archive" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
+	<UsingTask TaskName="Split" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
+	<UsingTask TaskName="FileUpdate" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
+	<UsingTask TaskName="NUnit" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
+	<UsingTask TaskName="NUnitTeamCity"
+		AssemblyFile="$(agent_home_dir)/plugins/dotnetPlugin/bin/JetBrains.BuildServer.MSBuildLoggers.dll"
+		Condition=" '$(teamcity_version)' != ''"/>
+
+	<Import Project="NuGet.targets"/>
+
+	<PropertyGroup>
+		<LargeFilesDir Condition="'$(OS)'=='Windows_NT'">c:\builddownloads</LargeFilesDir>
+		<Solution>Palaso.sln</Solution>
+		<SolutionPath>$(RootDir)/$(Solution)</SolutionPath>
+		<ApplicationName>PalasoLibrary</ApplicationName>
+		<ApplicationNameLC>libpalaso</ApplicationNameLC>
+		<Configuration Condition="'$(OS)'!='Windows_NT'">ReleaseMono</Configuration>
+		<Configuration Condition="'$(OS)'=='Windows_NT'">Release</Configuration>
+		<ExtraExcludeCategories Condition="'$(OS)'!='Windows_NT'">KnownMonoIssue</ExtraExcludeCategories>
+		<useNUnit-x86 Condition="'$(OS)'=='Windows_NT'">true</useNUnit-x86>
+		<useNUnit-x86 Condition="'$(OS)'!='Windows_NT'">false</useNUnit-x86>
+	</PropertyGroup>
+
+	<Target Name="VersionNumbers">
+		<Message Text="BUILD_NUMBER: $(BUILD_NUMBER)" Importance="high"/>
+
+		<Split Input="$(BUILD_NUMBER)" Delimiter="." OutputSubString="2">
+			<Output TaskParameter="ReturnValue" PropertyName="BuildCounter" />
+		</Split>
+
+		<Message Text="BuildCounter: $(BuildCounter)" Importance="high"/>
+
+		<CreateProperty Value="$(Version).$(BuildCounter).0">
+			<Output PropertyName="FileVersion" TaskParameter="Value"/>
+		</CreateProperty>
+
+		<Message Text="Version: $(FileVersion)" Importance="high"/>
+	</Target>
+
+	<ItemGroup>
+		<AssemblyInfoFiles Include="$(RootDir)/**/AssemblyInfo.cs"/>
+	</ItemGroup>
+
+	<Target Name="SetAssemblyVersion" DependsOnTargets="VersionNumbers">
+	  <StampAssemblies Version="$(Version).0.0" FileVersion="$(FileVersion)" InputAssemblyPaths="@(AssemblyInfoFiles)" />
+	</Target>
+
+	<PropertyGroup>
+		<OutputDir>$(RootDir)/output/$(Configuration)</OutputDir>
+	</PropertyGroup>
+
+	<Target Name="Build">
+		<CallTarget Targets="Clean"/>
+		<CallTarget Targets="SetAssemblyVersion"/>
+		<CallTarget Targets="Compile"/>
+		<Message Text="Build Complete"/>
+	</Target>
+
+
+	<ItemGroup>
+		<ExistingObjectFiles
+			Include="$(RootDir)/output/$(Configuration)/**/*"
+			Exclude="$(RootDir)/.hg/**/*;$(RootDir)/.git/**/*"
+		/>
+	</ItemGroup>
+
+	<Target Name="Clean">
+		<Delete Files="@(ExistingObjectFiles)" />
+		<Delete Condition="'$(OS)'=='Windows_NT'"
+			 Files="$(RootDir)/**/obj/**/*" />
+		<Exec Condition="'$(OS)'!='Windows_NT'"
+			Command="find . %5c( -name obj -o -name bin -o -name test-results %5c) -type d -print0 | xargs -0 rm -rf"
+			WorkingDirectory="$(RootDir)" />
+	</Target>
+
+	<Target Name="Compile" DependsOnTargets="RestorePackages">
+		<MSBuild
+			Projects="$(SolutionPath)"
+			Targets="Build"
+			Properties="Configuration=$(Configuration)" />
+	</Target>
+
+	<ItemGroup>
+		<TestAssemblies Include="$(RootDir)/output/$(Configuration)/*.Tests.dll"/>
+	</ItemGroup>
+
+	<Target Name="Test" DependsOnTargets="Build">
+		<CallTarget Targets="TestOnly"/>
+	</Target>
+
+	<Target Name="TestOnly" DependsOnTargets="RunNUnitTC;RunNUnit"/>
+
+	<Target Name="RunNUnitTC" Condition="'$(teamcity_version)' != ''">
+		<NUnitTeamCity
+			Assemblies="@(TestAssemblies)"
+			ExcludeCategory="SkipOnTeamCity;$(excludedCategories);$(ExtraExcludeCategories)"
+			NUnitVersion="NUnit-2.6.3" />
+	</Target>
+
+	<Target Name="RunNUnit" Condition="'$(teamcity_version)' == ''">
+		<NUnit Assemblies="@(TestAssemblies)"
+			ToolPath="$(RootDir)/packages/NUnit.Runners.Net4.2.6.4/tools"
+			TestInNewThread="false"
+			ExcludeCategory="$(excludedCategories);$(ExtraExcludeCategories)"
+			WorkingDirectory="$(RootDir)/output/$(Configuration)"
+			Force32Bit="$(useNUnit-x86)"
+			Verbose="true"
+			OutputXmlFile="$(RootDir)/output/$(Configuration)/TestResults.xml"/>
+	</Target>
+
+	<!-- Source Package - used by wesay -->
+	<ItemGroup>
+		<ExistingPackageFiles Include="$(OutputDir)/$(ApplicationNameLC)*.tar.gz" />
+		<ExistingPackageFiles Include="$(OutputDir)/$(ApplicationNameLC)-*" />
+		<ExistingPackageBuildFiles Include="$(OutputDir)/Package/**/*" />
+		<ExistingPackageBuildFiles Include="$(OutputDir)/Package/**" />
+	</ItemGroup>
+	<Target Name="PackageClean">
+		<Delete Files="@(ExistingPackageFiles)" />
+		<Delete Files="@(ExistingPackageBuildFiles)" />
+	</Target>
+
+	<ItemGroup>
+		<Source Include="$(RootDir)/**/*" Exclude="$(RootDir)/output/**/*;$(RootDir)/.hg/**/*;$(RootDir)/.git/**/*;$(RootDir)/lib/Debug/**/*;$(RootDir)/lib/Release/**/*;$(RootDir)/lib/*Configuration*/**/*;$(RootDir)/**/*~" />
+	</ItemGroup>
+
+	<Target Name="SourcePackage" DependsOnTargets="Clean;PackageClean;SetAssemblyVersion"
+		Condition="'$(OS)'!='Windows_NT'">
+		<CreateProperty Value="$(OutputDir)/$(ApplicationNameLC)-$(Version).tar.gz">
+			<Output TaskParameter="Value" PropertyName="SourcePackageFileName" />
+		</CreateProperty>
+		<CreateProperty Value="$(OutputDir)/$(ApplicationNameLC)-$(Version)">
+			<Output TaskParameter="Value" PropertyName="TarBaseDir" />
+		</CreateProperty>
+		<Message Text="Archive source to '$(SourcePackageFileName)'" />
+		<Archive
+			Command="Tar"
+			InputFilePaths="@(Source)"
+			OutputFileName="$(SourcePackageFileName)"
+			BasePath="$(RootDir)"
+			WorkingDir="$(RootDir)"
+		/>
+		<MakeDir Directories="$(TarBaseDir)" />
+		<Exec
+			Command="tar -xzf $(SourcePackageFileName)"
+			WorkingDirectory="$(TarBaseDir)"
+		/>
+		<Exec
+			Command="tar -czf $(SourcePackageFileName) $(ApplicationNameLC)-$(Version)"
+			WorkingDirectory="$(OutputDir)"
+		/>
+	</Target>
+</Project>
