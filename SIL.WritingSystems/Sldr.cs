@@ -37,7 +37,8 @@ namespace SIL.WritingSystems
 		/// If null, the default list of {"characters", "delimiters", "layout", "numbers", "collations", "special"} will be requested.</param>
 		/// <param name="flatten">Currently not supported.  Indicates whether or not you want to include all the data 
 		/// inherited from a more general file.  SLDR currently defaults to true (1)</param>
-		public static void GetLdmlFile(string filename, string bcp47Tag, IEnumerable<string> topLevelElements, Boolean flatten = true)
+		/// <returns>Boolean status if the LDML file was successfully retrieved</returns>
+		public static bool GetLdmlFile(string filename, string bcp47Tag, IEnumerable<string> topLevelElements, Boolean flatten = true)
 		{
 			if (String.IsNullOrEmpty(filename))
 			{
@@ -84,17 +85,22 @@ namespace SIL.WritingSystems
 				if (File.Exists(filename))
 					File.Delete(filename);
 				File.Move(tempFilename, filename);
-
-				// the SLDR currently has a bug where the SIL namespace is not properly defined
-				// TODO: Add it manually to the special blocks
-				// TODO: remove this when the SLDR fixes this bug
+				return true;
 			}
-			catch (Exception)
+			catch (WebException we)
+			{
+				// Return from 404 error
+				var errorResponse = we.Response as HttpWebResponse;
+				if ((errorResponse != null) && (errorResponse.StatusCode == HttpStatusCode.NotFound))
+					return false;
+
+				throw;
+			}
+			finally
 			{
 				// Cleanup temp file
 				if (File.Exists(tempFilename))
 					File.Delete(tempFilename);
-				throw;
 			}
 		}
 
@@ -103,9 +109,10 @@ namespace SIL.WritingSystems
 		/// </summary>
 		/// <param name="filename">Full filename to save the requested LDML file</param>
 		/// <param name="bcp47Tag">Current BCP47 tag which is a concatenation of the Language, Script, Region and Variant properties</param>
-		public static void GetLdmlFile(string filename, string bcp47Tag)
+		/// <returns>Boolean status if the LDML file was successfully retrieved</returns>
+		public static bool GetLdmlFile(string filename, string bcp47Tag)
 		{
-			GetLdmlFile(filename, bcp47Tag, DefaultTopElements);
+			return GetLdmlFile(filename, bcp47Tag, DefaultTopElements);
 		}
 	}
 }

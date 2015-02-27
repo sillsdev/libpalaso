@@ -8,6 +8,7 @@ using Palaso.TestUtilities;
 namespace SIL.WritingSystems.Tests
 {
 	[TestFixture]
+	[Category("SkipOnTeamCity")]
 	public class SldrTests
 	{
 		private class TestEnvironment : IDisposable
@@ -19,13 +20,13 @@ namespace SIL.WritingSystems.Tests
 
 			private TemporaryFolder FolderContainingLdml { get; set; }
 
-			public void GetLdmlFile(string fileName, string bcp47Tag)
+			public bool GetLdmlFile(string fileName, string bcp47Tag)
 			{
 				string filePath = Path.Combine(FolderContainingLdml.Path, fileName);
 				if (File.Exists(filePath))
 					File.Delete(filePath);
 
-				Sldr.GetLdmlFile(filePath, bcp47Tag);
+				return Sldr.GetLdmlFile(filePath, bcp47Tag);
 			}
 
 			public XElement ReadLdmlFile(string fileName)
@@ -63,16 +64,14 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Get_BadBcp47Tag_Throws()
+		public void Get_BadBcp47Tag_Fails()
 		{
 			using (var environment = new TestEnvironment())
 			{
 				const string filename = "en.ldml";
 				const string bcp47Tag = "!@#";
 
-				Assert.Throws<System.Net.WebException>(
-					() => environment.GetLdmlFile(filename, bcp47Tag)
-				);
+				Assert.That(environment.GetLdmlFile(filename, bcp47Tag), Is.False);
 			}
 		}
 
@@ -89,7 +88,7 @@ namespace SIL.WritingSystems.Tests
 				const string expectedScript = "Latn";
 				const string expectedTerritory = "GB";
 
-				environment.GetLdmlFile(filename, bcp47Tag);
+				Assert.That(environment.GetLdmlFile(filename, bcp47Tag), Is.True);
 
 				// Parse the LDML file
 				XElement element = environment.ReadLdmlFile(filename);

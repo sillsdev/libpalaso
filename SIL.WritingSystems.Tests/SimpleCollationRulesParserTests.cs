@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using Spart;
 
@@ -617,27 +618,39 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void ConvertToIcuRules_UnicodeCharacterReference_SurrogateLowBound()
+		public void ConvertToIcuRules_UnicodeCharacterReference_SurrogateLowBound_Throws()
 		{
-			VerifyExpectedIcuFromActualSimple(IcuStart + "\\ud800", "\\ud800");
+			Assert.Throws<ApplicationException>(
+				// Invalid unicode character escape sequence: 
+				() => VerifyExpectedIcuFromActualSimple(IcuStart + "\\ud800", "\\ud800")
+			);
 		}
 
 		[Test]
-		public void ConvertToIcuRules_SurrogateCharacterLowBound()
+		public void ConvertToIcuRules_SurrogateCharacterLowBound_Throws()
 		{
-			VerifyExpectedIcuFromActualSimple(IcuStart + "\ud800", "\ud800");
+			Assert.Throws<ApplicationException>(
+				// Invalid unicode character escape sequence: 
+				() => VerifyExpectedIcuFromActualSimple(IcuStart + "\ud800", "\ud800")
+			);
 		}
 
 		[Test]
-		public void ConvertToIcuRules_UnicodeCharacterReference_SurrogateHighBounds()
+		public void ConvertToIcuRules_UnicodeCharacterReference_SurrogateHighBounds_Throws()
 		{
-			VerifyExpectedIcuFromActualSimple(IcuStart + "\\udfff", "\\udfff");
+			Assert.Throws<ApplicationException>(
+				// Invalid unicode character escape sequence: 
+				() => VerifyExpectedIcuFromActualSimple(IcuStart + "\\udfff", "\\udfff")
+			);
 		}
 
 		[Test]
-		public void ConvertToIcuRules_SurrogateCharacterHighBound()
+		public void ConvertToIcuRules_SurrogateCharacterHighBound_Throws()
 		{
-			VerifyExpectedIcuFromActualSimple(IcuStart + "\udfff", "\udfff");
+			Assert.Throws<ApplicationException>(
+				// Invalid unicode character escape sequence: 
+				() => VerifyExpectedIcuFromActualSimple(IcuStart + "\udfff", "\udfff")
+			);
 		}
 
 		[Test]
@@ -653,19 +666,21 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void ConvertToIcuRules_UnicodeCharacterReference_SurrogatesOutOfOrder()
+		public void ConvertToIcuRules_UnicodeCharacterReference_SurrogatesOutOfOrder_Throws()
 		{
-			//I would have thought that this would not be legal from ICU but there
-			//is no error message now
-			VerifyExpectedIcuFromActualSimple(IcuStart + "a << \\udc00\\ud800", "a \\udc00\\ud800");
+			Assert.Throws<ApplicationException>(
+				// Invalid unicode character escape sequence: 
+				() => VerifyExpectedIcuFromActualSimple(IcuStart + "a << \\udc00\\ud800", "a \\udc00\\ud800")
+			);
 		}
 
 		[Test]
-		public void ConvertToIcuRules_SurrogateCharactersOutOfOrder()
+		public void ConvertToIcuRules_SurrogateCharactersOutOfOrder_Throws()
 		{
-			//I would have thought that this would not be legal from ICU but there
-			//is no error message now
-			VerifyExpectedIcuFromActualSimple(IcuStart + "a << \udc00\ud800", "a \udc00\ud800");
+			Assert.Throws<ApplicationException>(
+				// Invalid unicode character escape sequence: 
+				() => VerifyExpectedIcuFromActualSimple(IcuStart + "a << \udc00\ud800", "a \udc00\ud800")
+			);
 		}
 
 
