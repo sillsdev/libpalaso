@@ -224,7 +224,7 @@ namespace SIL.WritingSystems.Tests
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
 				Assert.That(wsFromLdml.VersionNumber, Is.EqualTo("$Revision$"));
 				Assert.That(wsFromLdml.VersionDescription, Is.EqualTo("Identity version description"));
-				Assert.That(wsFromLdml.ID, Is.EqualTo("en-GB-x-test"));
+				Assert.That(wsFromLdml.Id, Is.EqualTo("en-GB-x-test"));
 				Assert.That(wsFromLdml.WindowsLcid, Is.EqualTo("1036"));
 				Assert.That(wsFromLdml.DefaultRegion, Is.EqualTo("US"));
 			}
@@ -972,7 +972,7 @@ namespace SIL.WritingSystems.Tests
 				WriteCurrentVersionLdml("en", "Zxxx", "US", "1901-x-audio", file);
 				var ws = new WritingSystemDefinition();
 				new LdmlDataMapper().Read(file.Path, ws);
-				Assert.That(ws.ID, Is.EqualTo("en-Zxxx-US-1901-x-audio"));
+				Assert.That(ws.Id, Is.EqualTo("en-Zxxx-US-1901-x-audio"));
 			}
 		}
 

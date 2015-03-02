@@ -20,7 +20,7 @@ namespace SIL.LexiconUtils
 			if (projectSettingsElem == null)
 				return;
 
-			XElement wsElem = projectSettingsElem.Elements("WritingSystems").Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.ID);
+			XElement wsElem = projectSettingsElem.Elements("WritingSystems").Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.Id);
 			if (wsElem == null)
 				return;
 
@@ -58,7 +58,7 @@ namespace SIL.LexiconUtils
 
 			var spellCheckingId = (string) wsElem.Element("SpellCheckingId");
 			if (!string.IsNullOrEmpty(spellCheckingId))
-				ws.SpellCheckingID = spellCheckingId;
+				ws.SpellCheckingId = spellCheckingId;
 
 			var legacyMapping = (string) wsElem.Element("LegacyMapping");
 			if (!string.IsNullOrEmpty(legacyMapping))
@@ -78,11 +78,11 @@ namespace SIL.LexiconUtils
 				wssElem = new XElement("WritingSystems");
 				projectSettingsElem.Add(wssElem);
 			}
-			XElement wsElem = wssElem.Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.ID);
+			XElement wsElem = wssElem.Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.Id);
 
 			if (wsElem == null)
 			{
-				wsElem = new XElement("WritingSystem", new XAttribute("id", ws.ID));
+				wsElem = new XElement("WritingSystem", new XAttribute("id", ws.Id));
 				wssElem.Add(wsElem);
 			}
 			wsElem.RemoveNodes();
@@ -98,8 +98,8 @@ namespace SIL.LexiconUtils
 			string[] variantNames = ws.Variants.Where(v => v.IsPrivateUse).Select(v => v.Name).ToArray();
 			if (variantNames.Length > 0)
 				wsElem.Add(new XElement("VariantNames", variantNames.Select(n => string.IsNullOrEmpty(n) ? new XElement("VariantName") : new XElement("VariantName", n))));
-			if (!string.IsNullOrEmpty(ws.SpellCheckingID))
-				wsElem.Add(new XElement("SpellCheckingId", ws.SpellCheckingID));
+			if (!string.IsNullOrEmpty(ws.SpellCheckingId))
+				wsElem.Add(new XElement("SpellCheckingId", ws.SpellCheckingId));
 			if (!string.IsNullOrEmpty(ws.LegacyMapping))
 				wsElem.Add(new XElement("LegacyMapping", ws.LegacyMapping));
 			if (!string.IsNullOrEmpty(ws.Keyboard))

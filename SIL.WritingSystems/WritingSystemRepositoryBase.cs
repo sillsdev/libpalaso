@@ -25,7 +25,7 @@ namespace SIL.WritingSystems
 
 		private readonly Dictionary<string, string> _idChangeMap;
 
-		public event EventHandler<WritingSystemIDChangedEventArgs> WritingSystemIDChanged;
+		public event EventHandler<WritingSystemIdChangedEventArgs> WritingSystemIdChanged;
 		public event EventHandler<WritingSystemDeletedEventArgs> WritingSystemDeleted;
 		public event EventHandler<WritingSystemConflatedEventArgs> WritingSystemConflated;
 
@@ -53,7 +53,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Gets the changed IDs mapping.
 		/// </summary>
-		protected IDictionary<string, string> ChangedIDs
+		protected IDictionary<string, string> ChangedIds
 		{
 			get { return _idChangeMap; }
 		}
@@ -79,9 +79,9 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Remove the specified WritingSystemDefinition.
 		/// </summary>
-		/// <param name="id">the StoreID of the WritingSystemDefinition</param>
+		/// <param name="id">the StoreId of the WritingSystemDefinition</param>
 		/// <remarks>
-		/// Note that ws.StoreID may differ from ws.Id.  The former is the key into the
+		/// Note that ws.StoreId may differ from ws.Id.  The former is the key into the
 		/// dictionary, but the latter is what gets persisted to disk (and shown to the
 		/// user).
 		/// </remarks>
@@ -102,14 +102,14 @@ namespace SIL.WritingSystems
 
 		protected virtual void RemoveDefinition(WritingSystemDefinition ws)
 		{
-			_writingSystems.Remove(ws.StoreID);
-			if (_writingSystemsToIgnore.ContainsKey(ws.StoreID))
-				_writingSystemsToIgnore.Remove(ws.StoreID);
-			if (_writingSystemsToIgnore.ContainsKey(ws.ID))
-				_writingSystemsToIgnore.Remove(ws.ID);
+			_writingSystems.Remove(ws.StoreId);
+			if (_writingSystemsToIgnore.ContainsKey(ws.StoreId))
+				_writingSystemsToIgnore.Remove(ws.StoreId);
+			if (_writingSystemsToIgnore.ContainsKey(ws.Id))
+				_writingSystemsToIgnore.Remove(ws.Id);
 		}
 
-		public abstract string WritingSystemIDHasChangedTo(string id);
+		public abstract string WritingSystemIdHasChangedTo(string id);
 
 		public virtual void LastChecked(string id, DateTime dateModified)
 		{
@@ -139,11 +139,11 @@ namespace SIL.WritingSystems
 			return definition.Clone();
 		}
 
-		public abstract bool WritingSystemIDHasChanged(string id);
+		public abstract bool WritingSystemIdHasChanged(string id);
 
 		public bool Contains(string id)
 		{
-			// identifier should not be null, but some unit tests never define StoreID
+			// identifier should not be null, but some unit tests never define StoreId
 			// on their temporary WritingSystemDefinition objects.
 			return id != null && _writingSystems.ContainsKey(id);
 		}
@@ -154,8 +154,8 @@ namespace SIL.WritingSystems
 			{
 				return false;
 			}
-			return !(_writingSystems.Keys.Any(id => id.Equals(ws.ID, StringComparison.OrdinalIgnoreCase)) &&
-				ws.StoreID != _writingSystems[ws.ID].StoreID);
+			return !(_writingSystems.Keys.Any(id => id.Equals(ws.Id, StringComparison.OrdinalIgnoreCase)) &&
+				ws.StoreId != _writingSystems[ws.Id].StoreId);
 		}
 
 		public virtual void Set(WritingSystemDefinition ws)
@@ -168,9 +168,9 @@ namespace SIL.WritingSystems
 			//Check if this is a new writing system with a conflicting id
 			if (!CanSet(ws))
 			{
-				throw new ArgumentException(String.Format("Unable to set writing system '{0}' because this id already exists. Please change this writing system id before setting it.", ws.ID));
+				throw new ArgumentException(String.Format("Unable to set writing system '{0}' because this id already exists. Please change this writing system id before setting it.", ws.Id));
 			}
-			string oldId = _writingSystems.Where(kvp => kvp.Value.StoreID == ws.StoreID).Select(kvp => kvp.Key).FirstOrDefault();
+			string oldId = _writingSystems.Where(kvp => kvp.Value.StoreId == ws.StoreId).Select(kvp => kvp.Key).FirstOrDefault();
 			//??? How do we update
 			//??? Is it sufficient to just set it, or can we not change the reference in case someone else has it too
 			//??? i.e. Do we need a ws.Copy(WritingSystemDefinition)?
@@ -178,24 +178,22 @@ namespace SIL.WritingSystems
 			{
 				_writingSystems.Remove(oldId);
 			}
-			_writingSystems[ws.ID] = ws;
+			_writingSystems[ws.Id] = ws;
 
-			if (!String.IsNullOrEmpty(oldId) && (oldId != ws.ID))
+			if (!String.IsNullOrEmpty(oldId) && (oldId != ws.Id))
 			{
-				UpdateChangedIDs(oldId, ws.ID);
-				if (WritingSystemIDChanged != null)
-				{
-					WritingSystemIDChanged(this, new WritingSystemIDChangedEventArgs(oldId, ws.ID));
-				}
+				UpdateChangedIds(oldId, ws.Id);
+				if (WritingSystemIdChanged != null)
+					WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.Id));
 			}
 
-			ws.StoreID = ws.ID;
+			ws.StoreId = ws.Id;
 		}
 
 		/// <summary>
 		/// Updates the changed IDs mapping.
 		/// </summary>
-		protected void UpdateChangedIDs(string oldId, string newId)
+		protected void UpdateChangedIds(string oldId, string newId)
 		{
 			if (_idChangeMap.ContainsValue(oldId))
 			{
@@ -213,20 +211,18 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Loads the changed IDs mapping from the existing writing systems.
 		/// </summary>
-		protected void LoadChangedIDsFromExistingWritingSystems()
+		protected void LoadChangedIdsFromExistingWritingSystems()
 		{
 			_idChangeMap.Clear();
 			foreach (var pair in _writingSystems)
-			{
 				_idChangeMap[pair.Key] = pair.Key;
-			}
 		}
 
-		public bool TryGet(string identifier, out WritingSystemDefinition ws)
+		public bool TryGet(string id, out WritingSystemDefinition ws)
 		{
-			if (Contains(identifier))
+			if (Contains(id))
 			{
-				ws = Get(identifier);
+				ws = Get(id);
 				return true;
 			}
 
@@ -234,13 +230,13 @@ namespace SIL.WritingSystems
 			return false;
 		}
 
-		public string GetNewStoreIDWhenSet(WritingSystemDefinition ws)
+		public string GetNewStoreIdWhenSet(WritingSystemDefinition ws)
 		{
 			if (ws == null)
 			{
 				throw new ArgumentNullException("ws");
 			}
-			return String.IsNullOrEmpty(ws.StoreID) ? ws.ID : ws.StoreID;
+			return String.IsNullOrEmpty(ws.StoreId) ? ws.Id : ws.StoreId;
 		}
 
 		public WritingSystemDefinition Get(string id)
@@ -271,8 +267,8 @@ namespace SIL.WritingSystems
 		protected virtual void OnChangeNotifySharedStore(WritingSystemDefinition ws)
 		{
 			DateTime lastDateModified;
-			if (_writingSystemsToIgnore.TryGetValue(ws.ID, out lastDateModified) && ws.DateModified > lastDateModified)
-				_writingSystemsToIgnore.Remove(ws.ID);
+			if (_writingSystemsToIgnore.TryGetValue(ws.Id, out lastDateModified) && ws.DateModified > lastDateModified)
+				_writingSystemsToIgnore.Remove(ws.Id);
 		}
 
 		protected virtual void OnRemoveNotifySharedStore()
@@ -289,11 +285,11 @@ namespace SIL.WritingSystems
 			foreach (WritingSystemDefinition ws in rhs)
 			{
 				Guard.AgainstNull(ws, "ws in rhs");
-				if (_writingSystems.ContainsKey(ws.ID))
+				if (_writingSystems.ContainsKey(ws.Id))
 				{
 					DateTime lastDateModified;
-					if ((!_writingSystemsToIgnore.TryGetValue(ws.ID, out lastDateModified) || ws.DateModified > lastDateModified)
-						&& (ws.DateModified > _writingSystems[ws.ID].DateModified))
+					if ((!_writingSystemsToIgnore.TryGetValue(ws.Id, out lastDateModified) || ws.DateModified > lastDateModified)
+						&& (ws.DateModified > _writingSystems[ws.Id].DateModified))
 					{
 						newerWritingSystems.Add(ws.Clone());
 					}
@@ -320,10 +316,10 @@ namespace SIL.WritingSystems
 			get { return _writingSystems.Values.Where(ws => ws.IsVoice); }
 		}
 
-		public virtual void OnWritingSystemIDChange(WritingSystemDefinition ws, string oldID)
+		public virtual void OnWritingSystemIdChange(WritingSystemDefinition ws, string oldId)
 		{
-			_writingSystems[ws.ID] = ws;
-			_writingSystems.Remove(oldID);
+			_writingSystems[ws.Id] = ws;
+			_writingSystems.Remove(oldId);
 		}
 
 		/// <summary>
@@ -331,9 +327,9 @@ namespace SIL.WritingSystems
 		/// </summary>
 		/// <param name="idsToFilter"></param>
 		/// <returns></returns>
-		public IEnumerable<string> FilterForTextIDs(IEnumerable<string> idsToFilter)
+		public IEnumerable<string> FilterForTextIds(IEnumerable<string> idsToFilter)
 		{
-			var textIds = TextWritingSystems.Select(ws => ws.ID);
+			var textIds = TextWritingSystems.Select(ws => ws.Id);
 			return idsToFilter.Where(id => textIds.Contains(id));
 		}
 

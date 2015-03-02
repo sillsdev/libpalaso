@@ -85,9 +85,9 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 										  IpaStatus = IpaStatusChoices.Ipa
 									  };
 			TemplateDefinition.Variants.AddRange(primary.Variants);
-			var ipaKeyboard = Keyboard.Controller.AvailableKeyboards.FirstOrDefault(k => k.ID.ToLower().Contains("ipa"));
+			var ipaKeyboard = Keyboard.Controller.AvailableKeyboards.FirstOrDefault(k => k.Id.ToLower().Contains("ipa"));
 			if (ipaKeyboard != null)
-				TemplateDefinition.Keyboard = ipaKeyboard.ID;
+				TemplateDefinition.Keyboard = ipaKeyboard.Id;
 			Label = string.Format("IPA input system for {0}", TemplateDefinition.Language.Name);
 		}
 		public override WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()
@@ -112,7 +112,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 	{
 		public OtherSuggestion(WritingSystemDefinition primary, IEnumerable<WritingSystemDefinition> exisitingWritingSystemsForLanguage)
 		{
-			TemplateDefinition = WritingSystemDefinition.CreateCopyWithUniqueId(primary, exisitingWritingSystemsForLanguage.Select(ws=>ws.ID));
+			TemplateDefinition = WritingSystemDefinition.CreateCopyWithUniqueId(primary, exisitingWritingSystemsForLanguage.Select(ws=>ws.Id));
 			Label = string.Format("other input system for {0}", TemplateDefinition.Language.Name);
 		}
 		public override WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()

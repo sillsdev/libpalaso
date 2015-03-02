@@ -258,14 +258,14 @@ namespace Palaso.DictionaryServices
 				throw new ArgumentNullException("writingSystemDefinition");
 			}
 
-			string cacheName = String.Format("sortedByHeadWord_{0}", writingSystemDefinition.ID);
+			string cacheName = String.Format("sortedByHeadWord_{0}", writingSystemDefinition.Id);
 			if (_caches[cacheName] == null)
 			{
 				var headWordQuery = new DelegateQuery<LexEntry>(
 					delegate(LexEntry entryToQuery)
 						{
 							IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
-							string headWord = entryToQuery.VirtualHeadWord[writingSystemDefinition.ID];
+							string headWord = entryToQuery.VirtualHeadWord[writingSystemDefinition.Id];
 							if (String.IsNullOrEmpty(headWord))
 							{
 								headWord = null;
@@ -345,18 +345,18 @@ namespace Palaso.DictionaryServices
 			{
 				throw new ArgumentNullException("writingSystemDefinition");
 			}
-			string cacheName = String.Format("sortedByLexicalFormOrAlternative_{0}", writingSystemDefinition.ID);
+			string cacheName = String.Format("sortedByLexicalFormOrAlternative_{0}", writingSystemDefinition.Id);
 			if (_caches[cacheName] == null)
 			{
 				var lexicalFormWithAlternativeQuery = new DelegateQuery<LexEntry>(
 					delegate(LexEntry entryToQuery)
 						{
 							IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
-							string lexicalform = entryToQuery.LexicalForm[writingSystemDefinition.ID];
-							string writingSystemOfForm = writingSystemDefinition.ID;
+							string lexicalform = entryToQuery.LexicalForm[writingSystemDefinition.Id];
+							string writingSystemOfForm = writingSystemDefinition.Id;
 							if (lexicalform == "")
 							{
-								lexicalform = entryToQuery.LexicalForm.GetBestAlternative(writingSystemDefinition.ID);
+								lexicalform = entryToQuery.LexicalForm.GetBestAlternative(writingSystemDefinition.Id);
 								foreach (LanguageForm form in entryToQuery.LexicalForm.Forms)
 								{
 									if(form.Form == lexicalform)
@@ -397,14 +397,14 @@ namespace Palaso.DictionaryServices
 			{
 				throw new ArgumentNullException("writingSystemDefinition");
 			}
-			string cacheName = String.Format("sortedByLexicalForm_{0}", writingSystemDefinition.ID);
+			string cacheName = String.Format("sortedByLexicalForm_{0}", writingSystemDefinition.Id);
 			if (_caches[cacheName] == null)
 			{
 				var lexicalFormQuery = new DelegateQuery<LexEntry>(
 					delegate(LexEntry entryToQuery)
 						{
 							var tokenFieldsAndValues = new Dictionary<string, object>();
-							string headWord = entryToQuery.LexicalForm[writingSystemDefinition.ID];
+							string headWord = entryToQuery.LexicalForm[writingSystemDefinition.Id];
 							if (String.IsNullOrEmpty(headWord)){
 								headWord = null;
 							}
@@ -485,7 +485,7 @@ namespace Palaso.DictionaryServices
 				throw new ArgumentNullException("writingSystemDefinition");
 			}
 
-			string cacheName = String.Format("SortByDefinition_{0}", writingSystemDefinition.ID);
+			string cacheName = String.Format("SortByDefinition_{0}", writingSystemDefinition.Id);
 			if (_caches[cacheName] == null)
 			{
 				var definitionQuery = new DelegateQuery<LexEntry>(
@@ -496,10 +496,10 @@ namespace Palaso.DictionaryServices
 							int senseNumber = 0;
 							foreach (LexSense sense in entryToQuery.Senses)
 							{
-								var rawDefinition = sense.Definition[writingSystemDefinition.ID];
+								var rawDefinition = sense.Definition[writingSystemDefinition.Id];
 								var definitions = GetTrimmedElementsSeperatedBySemiColon(rawDefinition);
 
-								var rawGloss = sense.Gloss[writingSystemDefinition.ID];
+								var rawGloss = sense.Gloss[writingSystemDefinition.Id];
 								var glosses = GetTrimmedElementsSeperatedBySemiColon(rawGloss);
 
 								var definitionAndGlosses = MergeListsWhileExcludingDoublesAndEmptyStrings(definitions, glosses);
@@ -662,7 +662,7 @@ namespace Palaso.DictionaryServices
 								foreach (LanguageForm form in sense.Gloss.Forms)
 								{
 									IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
-									string lexicalForm = entry.LexicalForm[lexicalUnitWritingSystemDefinition.ID];
+									string lexicalForm = entry.LexicalForm[lexicalUnitWritingSystemDefinition.Id];
 									if (String.IsNullOrEmpty(lexicalForm))
 									{
 										lexicalForm = null;

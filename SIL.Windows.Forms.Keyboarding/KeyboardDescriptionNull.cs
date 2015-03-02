@@ -35,7 +35,7 @@ namespace SIL.Windows.Forms.Keyboarding
 			get { return null; }
 		}
 
-		public string ID
+		public string Id
 		{
 			get { return string.Empty; }
 		}

@@ -696,7 +696,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var ws = new WritingSystemDefinition();
 				environment.ReadLdmlFile(environment.MappedFilePath("test.ldml"), ws);
 				ws.Language = "de";
-				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.ID));
+				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.Id));
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='de']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='']");
 			}
@@ -716,7 +716,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var ws = new WritingSystemDefinition();
 				environment.ReadLdmlFile(environment.MappedFilePath("test.ldml"), ws);
 				ws.Script = "Latn";
-				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.ID));
+				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.Id));
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Latn']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-en']");
@@ -737,7 +737,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var ws = new WritingSystemDefinition();
 				environment.ReadLdmlFile(environment.MappedFilePath("test.ldml"), ws);
 				ws.Region = "GB";
-				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.ID));
+				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.Id));
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='GB']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-en']");
@@ -758,7 +758,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				environment.ReadLdmlFile(environment.MappedFilePath("test.ldml"), ws);
 				ws.Variants.Clear();
 				ws.Variants.Add("1901");
-				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.ID));
+				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.Id));
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='1901-x-en']");
 			}
@@ -778,7 +778,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				environment.ReadLdmlFile(environment.MappedFilePath("test.ldml"), ws);
 				ws.Variants.Clear();
 				ws.Variants.Add("changed");
-				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.ID));
+				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.Id));
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-en-changed']");
 			}

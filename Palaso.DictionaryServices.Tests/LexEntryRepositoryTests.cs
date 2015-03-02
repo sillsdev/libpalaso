@@ -979,7 +979,7 @@ namespace WeSay.LexicalModel.Tests
 		[Test]
 		public void GetHomographNumber_OnlyOneEntry_Returns0()
 		{
-			LexEntry entry1 = MakeEntryWithLexemeForm(_headwordWritingSystem.ID, "blue");
+			LexEntry entry1 = MakeEntryWithLexemeForm(_headwordWritingSystem.Id, "blue");
 			Assert.AreEqual(0,
 							_repository.GetHomographNumber(entry1, _headwordWritingSystem));
 		}
@@ -987,8 +987,8 @@ namespace WeSay.LexicalModel.Tests
 		[Test]
 		public void GetHomographNumber_FirstEntryWithFollowingHomograph_Returns1()
 		{
-			LexEntry entry1 = MakeEntryWithLexemeForm(_headwordWritingSystem.ID, "blue");
-			MakeEntryWithLexemeForm(_headwordWritingSystem.ID, "blue");
+			LexEntry entry1 = MakeEntryWithLexemeForm(_headwordWritingSystem.Id, "blue");
+			MakeEntryWithLexemeForm(_headwordWritingSystem.Id, "blue");
 			Assert.AreEqual(1,
 							_repository.GetHomographNumber(entry1, _headwordWritingSystem));
 		}
@@ -996,8 +996,8 @@ namespace WeSay.LexicalModel.Tests
 		[Test]
 		public void GetHomographNumber_SecondEntry_Returns2()
 		{
-			MakeEntryWithLexemeForm(_headwordWritingSystem.ID, "blue");
-			LexEntry entry2 = MakeEntryWithLexemeForm(_headwordWritingSystem.ID, "blue");
+			MakeEntryWithLexemeForm(_headwordWritingSystem.Id, "blue");
+			LexEntry entry2 = MakeEntryWithLexemeForm(_headwordWritingSystem.Id, "blue");
 			Assert.AreEqual(2,
 							_repository.GetHomographNumber(entry2, _headwordWritingSystem));
 		}
@@ -1006,11 +1006,11 @@ namespace WeSay.LexicalModel.Tests
 		public void GetHomographNumber_AssignesUniqueNumbers()
 		{
 			LexEntry entryOther = MakeEntryWithLexemeForm("en", "blue");
-			Assert.AreNotEqual("en", _headwordWritingSystem.ID);
+			Assert.AreNotEqual("en", _headwordWritingSystem.Id);
 			LexEntry[] entries = new LexEntry[3];
-			entries[0] = MakeEntryWithLexemeForm(_headwordWritingSystem.ID, "blue");
-			entries[1] = MakeEntryWithLexemeForm(_headwordWritingSystem.ID, "blue");
-			entries[2] = MakeEntryWithLexemeForm(_headwordWritingSystem.ID, "blue");
+			entries[0] = MakeEntryWithLexemeForm(_headwordWritingSystem.Id, "blue");
+			entries[1] = MakeEntryWithLexemeForm(_headwordWritingSystem.Id, "blue");
+			entries[2] = MakeEntryWithLexemeForm(_headwordWritingSystem.Id, "blue");
 			List<int> ids = new List<int>(entries.Length);
 			foreach (LexEntry entry in entries)
 			{
@@ -1025,10 +1025,10 @@ namespace WeSay.LexicalModel.Tests
 		public void GetHomographNumber_ThirdEntry_Returns3()
 		{
 			LexEntry entryOther = MakeEntryWithLexemeForm("en", "blue");
-			Assert.AreNotEqual("en", _headwordWritingSystem.ID);
-			LexEntry entry1 = MakeEntryWithLexemeForm(_headwordWritingSystem.ID, "blue");
-			LexEntry entry2 = MakeEntryWithLexemeForm(_headwordWritingSystem.ID, "blue");
-			LexEntry entry3 = MakeEntryWithLexemeForm(_headwordWritingSystem.ID, "blue");
+			Assert.AreNotEqual("en", _headwordWritingSystem.Id);
+			LexEntry entry1 = MakeEntryWithLexemeForm(_headwordWritingSystem.Id, "blue");
+			LexEntry entry2 = MakeEntryWithLexemeForm(_headwordWritingSystem.Id, "blue");
+			LexEntry entry3 = MakeEntryWithLexemeForm(_headwordWritingSystem.Id, "blue");
 			Assert.AreEqual(3,
 							_repository.GetHomographNumber(entry3, _headwordWritingSystem));
 			Assert.AreEqual(2,
@@ -1040,9 +1040,9 @@ namespace WeSay.LexicalModel.Tests
 		[Test]
 		public void GetHomographNumber_3SameLexicalForms_Returns123()
 		{
-			LexEntry entry1 = MakeEntryWithLexemeForm(_headwordWritingSystem.ID, "blue");
-			LexEntry entry2 = MakeEntryWithLexemeForm(_headwordWritingSystem.ID, "blue");
-			LexEntry entry3 = MakeEntryWithLexemeForm(_headwordWritingSystem.ID, "blue");
+			LexEntry entry1 = MakeEntryWithLexemeForm(_headwordWritingSystem.Id, "blue");
+			LexEntry entry2 = MakeEntryWithLexemeForm(_headwordWritingSystem.Id, "blue");
+			LexEntry entry3 = MakeEntryWithLexemeForm(_headwordWritingSystem.Id, "blue");
 			Assert.AreEqual(1,
 							_repository.GetHomographNumber(entry1, _headwordWritingSystem));
 			Assert.AreEqual(3,
@@ -1054,12 +1054,12 @@ namespace WeSay.LexicalModel.Tests
 		[Test]
 		public void GetHomographNumber_3SameLexicalFormsAnd3OtherLexicalForms_Returns123()
 		{
-			LexEntry red1 = MakeEntryWithLexemeForm(_headwordWritingSystem.ID, "red");
-			LexEntry blue1 = MakeEntryWithLexemeForm(_headwordWritingSystem.ID, "blue");
-			LexEntry red2 = MakeEntryWithLexemeForm(_headwordWritingSystem.ID, "red");
-			LexEntry blue2 = MakeEntryWithLexemeForm(_headwordWritingSystem.ID, "blue");
-			LexEntry red3 = MakeEntryWithLexemeForm(_headwordWritingSystem.ID, "red");
-			LexEntry blue3 = MakeEntryWithLexemeForm(_headwordWritingSystem.ID, "blue");
+			LexEntry red1 = MakeEntryWithLexemeForm(_headwordWritingSystem.Id, "red");
+			LexEntry blue1 = MakeEntryWithLexemeForm(_headwordWritingSystem.Id, "blue");
+			LexEntry red2 = MakeEntryWithLexemeForm(_headwordWritingSystem.Id, "red");
+			LexEntry blue2 = MakeEntryWithLexemeForm(_headwordWritingSystem.Id, "blue");
+			LexEntry red3 = MakeEntryWithLexemeForm(_headwordWritingSystem.Id, "red");
+			LexEntry blue3 = MakeEntryWithLexemeForm(_headwordWritingSystem.Id, "blue");
 			Assert.AreEqual(1, _repository.GetHomographNumber(blue1, _headwordWritingSystem));
 			Assert.AreEqual(3, _repository.GetHomographNumber(blue3, _headwordWritingSystem));
 			Assert.AreEqual(2, _repository.GetHomographNumber(blue2, _headwordWritingSystem));
@@ -1084,17 +1084,17 @@ namespace WeSay.LexicalModel.Tests
 		public void GetAllEntriesSortedByHeadword_3EntriesWithLexemeForms_TokensAreSorted()
 		{
 			LexEntry e1 = _repository.CreateItem();
-			e1.LexicalForm.SetAlternative(_headwordWritingSystem.ID, "bank");
+			e1.LexicalForm.SetAlternative(_headwordWritingSystem.Id, "bank");
 			_repository.SaveItem(e1);
 			RepositoryId bankId = _repository.GetId(e1);
 
 			LexEntry e2 = _repository.CreateItem();
-			e2.LexicalForm.SetAlternative(_headwordWritingSystem.ID, "apple");
+			e2.LexicalForm.SetAlternative(_headwordWritingSystem.Id, "apple");
 			_repository.SaveItem(e2);
 			RepositoryId appleId = _repository.GetId(e2);
 
 			LexEntry e3 = _repository.CreateItem();
-			e3.LexicalForm.SetAlternative(_headwordWritingSystem.ID, "xa");
+			e3.LexicalForm.SetAlternative(_headwordWritingSystem.Id, "xa");
 			//has to be something low in the alphabet to test a bug we had
 			_repository.SaveItem(e3);
 			RepositoryId xaId = _repository.GetId(e3);

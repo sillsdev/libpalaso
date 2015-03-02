@@ -123,13 +123,13 @@ namespace SIL.WritingSystems
 			MemoryStream oldData = null;
 			try
 			{
-				string writingSystemFileName = GetFileNameFromIdentifier(ws.ID);
-				string writingSystemFilePath = GetFilePathFromIdentifier(ws.ID);
+				string writingSystemFileName = GetFileNameFromIdentifier(ws.Id);
+				string writingSystemFilePath = GetFilePathFromIdentifier(ws.Id);
 				if (!ws.IsChanged && File.Exists(writingSystemFilePath))
 					return; // no need to save (better to preserve the modified date)
-				string oldID = ws.StoreID;
-				string incomingFileName = GetFileNameFromIdentifier(oldID);
-				string incomingFilePath = GetFilePathFromIdentifier(oldID);
+				string oldId = ws.StoreId;
+				string incomingFileName = GetFileNameFromIdentifier(oldId);
+				string incomingFilePath = GetFilePathFromIdentifier(oldId);
 				if (!string.IsNullOrEmpty(incomingFileName))
 				{
 					if (File.Exists(incomingFilePath))
@@ -148,8 +148,8 @@ namespace SIL.WritingSystems
 							// JohnT: Added this without fully understanding, to get things to compile. I don't fully
 							// know when this event should be raised, nor am I sure I am building the argument correctly.
 							// However, I don't think anything (at least in our code) actually uses it.
-							if (WritingSystemIDChanged != null)
-								WritingSystemIDChanged(this, new WritingSystemIDChangedEventArgs(oldID, ws.ID));
+							if (WritingSystemIdChanged != null)
+								WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.Id));
 						}
 					}
 				}
@@ -213,12 +213,12 @@ namespace SIL.WritingSystems
 		/// If the given writing system were passed to Set, this function returns the
 		/// new StoreID that would be assigned.
 		/// </summary>
-		public string GetNewStoreIDWhenSet(WritingSystemDefinition ws)
+		public string GetNewStoreIdWhenSet(WritingSystemDefinition ws)
 		{
 			if (ws == null)
 				throw new ArgumentNullException("ws");
 
-			return ws.ID;
+			return ws.Id;
 		}
 
 		/// <summary>
@@ -242,9 +242,9 @@ namespace SIL.WritingSystems
 		/// </summary>
 		/// <param name="idsToFilter"></param>
 		/// <returns></returns>
-		public IEnumerable<string> FilterForTextIDs(IEnumerable<string> idsToFilter)
+		public IEnumerable<string> FilterForTextIds(IEnumerable<string> idsToFilter)
 		{
-			return TextWritingSystems.Where(ws => idsToFilter.Contains(ws.ID)).Select(ws => ws.ID);
+			return TextWritingSystems.Where(ws => idsToFilter.Contains(ws.Id)).Select(ws => ws.Id);
 		}
 
 		/// <summary>
@@ -360,7 +360,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Event raised when writing system ID is changed. Required for interface defn, dubious implementstion.
 		/// </summary>
-		public event EventHandler<WritingSystemIDChangedEventArgs> WritingSystemIDChanged;
+		public event EventHandler<WritingSystemIdChangedEventArgs> WritingSystemIdChanged;
 		/// <summary>
 		/// Event raised when writing system is deleted. Required for interface defn,  dubious implementstion.
 		/// </summary>
@@ -386,7 +386,7 @@ namespace SIL.WritingSystems
 		/// current change log, a writing system ID has changed to something else...call WritingSystemIdHasChangedTo
 		/// to find out what.
 		/// </summary>
-		public bool WritingSystemIDHasChanged(string id)
+		public bool WritingSystemIdHasChanged(string id)
 		{
 			throw new NotImplementedException();
 		}
@@ -395,7 +395,7 @@ namespace SIL.WritingSystems
 		/// This is used by the orphan finder, which we don't use (yet). It tells what, typically in the scope of some
 		/// current change log, a writing system ID has changed to.
 		/// </summary>
-		public string WritingSystemIDHasChangedTo(string id)
+		public string WritingSystemIdHasChangedTo(string id)
 		{
 			throw new NotImplementedException();
 		}
@@ -438,24 +438,24 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Added to satisfy definition of IWritingSystemRepository...do we need to do anything?
 		/// </summary>
-		public void OnWritingSystemIDChange(WritingSystemDefinition ws, string oldId)
+		public void OnWritingSystemIdChange(WritingSystemDefinition ws, string oldId)
 		{
 		}
 
 		/// <summary>
 		/// Gets the specified writing system if it exists.
 		/// </summary>
-		/// <param name="identifier">The identifier.</param>
+		/// <param name="id">The identifier.</param>
 		/// <param name="ws">The writing system.</param>
 		/// <returns></returns>
-		public bool TryGet(string identifier, out WritingSystemDefinition ws)
+		public bool TryGet(string id, out WritingSystemDefinition ws)
 		{
 			_mutex.WaitOne();
 			try
 			{
-				if (Contains(identifier))
+				if (Contains(id))
 				{
-					ws = Get(identifier);
+					ws = Get(id);
 					return true;
 				}
 
@@ -475,7 +475,7 @@ namespace SIL.WritingSystems
 				WritingSystemDefinition ws = CreateNew();
 				var ldmlDataMapper = new LdmlDataMapper();
 				ldmlDataMapper.Read(filePath, ws);
-				ws.StoreID = ws.ID;
+				ws.StoreId = ws.Id;
 				ws.AcceptChanges();
 				return ws;
 			}

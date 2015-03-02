@@ -300,7 +300,7 @@ namespace SIL.WritingSystems
 			foreach (XElement specialElem in element.Elements("special"))
 				ReadTopLevelSpecialElement(specialElem, ws);
 
-			ws.StoreID = string.Empty;
+			ws.StoreId = string.Empty;
 			ws.AcceptChanges();
 		}
 
@@ -322,7 +322,7 @@ namespace SIL.WritingSystems
 				}
 				throw new ApplicationException(String.Format(
 					"The LDML tag '{0}' is version {1}.  Version {2} was expected.",
-					ws.ID,
+					ws.Id,
 					version,
 					WritingSystemDefinition.LatestWritingSystemDefinitionVersion
 					));
@@ -684,9 +684,9 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private string ReadIdentifierAttribute(XElement elem, string attributeName, string defaultID = null)
+		private string ReadIdentifierAttribute(XElement elem, string attributeName, string defaultId = null)
 		{
-			var identifier = (string) elem.Attribute(attributeName) ?? defaultID;
+			var identifier = (string) elem.Attribute(attributeName) ?? defaultId;
 			var alt = (string) elem.Attribute("alt");
 			if (!string.IsNullOrEmpty(alt))
 				return identifier + IdentifierDelimiter + alt;
@@ -886,7 +886,7 @@ namespace SIL.WritingSystems
 
 			// Write generation date with UTC so no more ambiguity on timezone
 			identityElem.SetAttributeValue("generation", "date", ws.DateModified.ToISO8601TimeFormatWithUTCString());
-			WriteLanguageTagElements(identityElem, ws.ID);
+			WriteLanguageTagElements(identityElem, ws.Id);
 
 			// Create special element if data needs to be written
 			if (!string.IsNullOrEmpty(ws.WindowsLcid) || !string.IsNullOrEmpty(ws.DefaultRegion) || (ws.Variants.Count > 0))
@@ -1320,8 +1320,8 @@ namespace SIL.WritingSystems
 			{
 				var kbdElem = new XElement(Sil + "kbd");
 				// id required
-				kbdElem.SetAttributeValue("id", keyboard.ID);
-				if (!string.IsNullOrEmpty(keyboard.ID))
+				kbdElem.SetAttributeValue("id", keyboard.Id);
+				if (!string.IsNullOrEmpty(keyboard.Id))
 				{
 					kbdElem.SetAttributeValue("type", KeyboardFormatToKeyboard[keyboard.Format]);
 					foreach (var url in keyboard.Urls)
@@ -1334,17 +1334,17 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private void ParseIdentifier(string id, out string ldmlID, out string alt)
+		private void ParseIdentifier(string id, out string ldmlId, out string alt)
 		{
 			int index = id.IndexOf(IdentifierDelimiter, StringComparison.Ordinal);
 			if (index == -1)
 			{
-				ldmlID = id;
+				ldmlId = id;
 				alt = null;
 			}
 			else
 			{
-				ldmlID = id.Substring(0, index);
+				ldmlId = id.Substring(0, index);
 				alt = id.Substring(index + 1);
 			}
 		}

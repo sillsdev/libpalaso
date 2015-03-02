@@ -29,7 +29,7 @@ namespace TestAppKeyboard
 			foreach (var keyboard in keyboards)
 			{
 				comboBox.Items.Add(keyboard);
-				Console.WriteLine("added keyboard id: {0}, name: {1}", keyboard.ID, keyboard.Name);
+				Console.WriteLine("added keyboard id: {0}, name: {1}", keyboard.Id, keyboard.Name);
 			}
 			comboBox.SelectedIndex = 0;
 		}

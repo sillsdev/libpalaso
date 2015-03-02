@@ -11,7 +11,7 @@ namespace SIL.WritingSystems.Tests
 	[TestFixture]
 	public class WritingSystemOrphanFinderTests
 	{
-		private class TestEnvironment:IDisposable
+		private class TestEnvironment : IDisposable
 		{
 			private readonly TemporaryFolder _folder = new TemporaryFolder("WritingSystemOrphanFinderTests");
 			private readonly TempFile _file;

@@ -43,7 +43,7 @@ namespace SIL.LexiconUtils.Tests
 			Assert.That(ws1.Script.Name, Is.EqualTo("Fake"));
 			Assert.That(ws1.Region.Name, Is.EqualTo("Zolrog"));
 			Assert.That(ws1.Variants.Select(v => v.Name), Is.EqualTo(new[] {"Custom 1", "Custom 2"}));
-			Assert.That(ws1.SpellCheckingID, Is.EqualTo(string.Empty));
+			Assert.That(ws1.SpellCheckingId, Is.EqualTo(string.Empty));
 			Assert.That(ws1.LegacyMapping, Is.EqualTo(string.Empty));
 			Assert.That(ws1.Keyboard, Is.EqualTo(string.Empty));
 
@@ -55,7 +55,7 @@ namespace SIL.LexiconUtils.Tests
 			Assert.That(ws2.Script.Name, Is.EqualTo("Latin"));
 			Assert.That(ws2.Region.Name, Is.EqualTo("France"));
 			Assert.That(ws2.Variants, Is.Empty);
-			Assert.That(ws2.SpellCheckingID, Is.EqualTo("fr_FR"));
+			Assert.That(ws2.SpellCheckingId, Is.EqualTo("fr_FR"));
 			Assert.That(ws2.LegacyMapping, Is.EqualTo("converter"));
 			Assert.That(ws2.Keyboard, Is.EqualTo("Old Keyboard"));
 
@@ -67,7 +67,7 @@ namespace SIL.LexiconUtils.Tests
 			Assert.That(ws3.Script, Is.Null);
 			Assert.That(ws3.Region, Is.Null);
 			Assert.That(ws3.Variants, Is.Empty);
-			Assert.That(ws3.SpellCheckingID, Is.EqualTo(string.Empty));
+			Assert.That(ws3.SpellCheckingId, Is.EqualTo(string.Empty));
 			Assert.That(ws3.LegacyMapping, Is.EqualTo(string.Empty));
 			Assert.That(ws3.Keyboard, Is.EqualTo(string.Empty));
 		}
@@ -85,7 +85,7 @@ namespace SIL.LexiconUtils.Tests
 			Assert.That(ws1.Script.Name, Is.EqualTo("Latin"));
 			Assert.That(ws1.Region.Name, Is.EqualTo("United States"));
 			Assert.That(ws1.Variants, Is.Empty);
-			Assert.That(ws1.SpellCheckingID, Is.EqualTo(string.Empty));
+			Assert.That(ws1.SpellCheckingId, Is.EqualTo(string.Empty));
 			Assert.That(ws1.LegacyMapping, Is.EqualTo(string.Empty));
 			Assert.That(ws1.Keyboard, Is.EqualTo(string.Empty));
 		}
@@ -147,7 +147,7 @@ namespace SIL.LexiconUtils.Tests
 			ws1.Abbreviation = "ka";
 			ws1.Variants[0] = new VariantSubtag(ws1.Variants[0], "Custom 1");
 			ws1.Variants[2] = new VariantSubtag(ws1.Variants[2], "Custom 3");
-			ws1.SpellCheckingID = "en_US";
+			ws1.SpellCheckingId = "en_US";
 			ws1.LegacyMapping = "converter";
 			ws1.Keyboard = "Old Keyboard";
 			projectSettingsDataMapper.Write(ws1);

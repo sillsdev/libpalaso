@@ -46,7 +46,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		protected virtual void InitKeyboards()
 		{
-			Dictionary<string, IbusKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<IbusKeyboardDescription>().ToDictionary(kd => kd.ID);
+			Dictionary<string, IbusKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<IbusKeyboardDescription>().ToDictionary(kd => kd.Id);
 			foreach (IBusEngineDesc ibusKeyboard in GetIBusKeyboards())
 			{
 				string id = string.Format("{0}_{1}", ibusKeyboard.Language, ibusKeyboard.LongName);

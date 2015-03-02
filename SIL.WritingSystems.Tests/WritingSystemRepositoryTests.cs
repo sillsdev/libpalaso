@@ -11,7 +11,7 @@ namespace SIL.WritingSystems.Tests
 	{
 		private IWritingSystemRepository _repositoryUnderTest;
 		private WritingSystemDefinition _writingSystem;
-		private WritingSystemIDChangedEventArgs _writingSystemIdChangedEventArgs;
+		private WritingSystemIdChangedEventArgs _writingSystemIdChangedEventArgs;
 		private WritingSystemDeletedEventArgs _writingSystemDeletedEventArgs;
 		private WritingSystemConflatedEventArgs _writingSystemConflatedEventArgs;
 
@@ -78,8 +78,8 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(RepositoryUnderTest.Contains("de"), Is.True);
 			Assert.That(RepositoryUnderTest.Contains("en"), Is.False);
 			Assert.That(_writingSystemConflatedEventArgs, Is.Not.Null);
-			Assert.That(_writingSystemConflatedEventArgs.OldID, Is.EqualTo("en"));
-			Assert.That(_writingSystemConflatedEventArgs.NewID, Is.EqualTo("de"));
+			Assert.That(_writingSystemConflatedEventArgs.OldId, Is.EqualTo("en"));
+			Assert.That(_writingSystemConflatedEventArgs.NewId, Is.EqualTo("de"));
 		}
 
 		[Test]
@@ -122,7 +122,7 @@ namespace SIL.WritingSystems.Tests
 			_writingSystem.Language = "one";
 			RepositoryUnderTest.Set(_writingSystem);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
-			var ws = new WritingSystemDefinition {StoreID = _writingSystem.StoreID};
+			var ws = new WritingSystemDefinition {StoreId = _writingSystem.StoreId};
 			RepositoryUnderTest.Set(ws);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
 		}
@@ -137,7 +137,7 @@ namespace SIL.WritingSystems.Tests
 			ws.Language = "de";
 			RepositoryUnderTest.Set(ws);
 			Assert.AreEqual(2, RepositoryUnderTest.Count);
-			Assert.AreEqual("de", ws.ID);
+			Assert.AreEqual("de", ws.Id);
 		}
 
 		[Test]
@@ -204,7 +204,7 @@ namespace SIL.WritingSystems.Tests
 			_writingSystem.Language = "one";
 			RepositoryUnderTest.Set(_writingSystem);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
-			RepositoryUnderTest.Remove(_writingSystem.ID);
+			RepositoryUnderTest.Remove(_writingSystem.Id);
 			Assert.AreEqual(0, RepositoryUnderTest.Count);
 		}
 
@@ -270,10 +270,10 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws1 = new WritingSystemDefinition();
 			ws1.Language = "en";
-			Assert.AreEqual("en", ws1.ID);
+			Assert.AreEqual("en", ws1.Id);
 			WritingSystemDefinition ws2 = ws1.Clone();
 			ws2.Variants.Add("1901");
-			Assert.AreEqual("en-1901", ws2.ID);
+			Assert.AreEqual("en-1901", ws2.Id);
 
 			RepositoryUnderTest.Set(ws1);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
@@ -293,30 +293,30 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		 [Test]
-		public void GetNewStoreIDWhenSet_Null_Throws()
+		public void GetNewStoreIdWhenSet_Null_Throws()
 		{
 			Assert.Throws<ArgumentNullException>(
-				() => RepositoryUnderTest.GetNewStoreIDWhenSet(null)
+				() => RepositoryUnderTest.GetNewStoreIdWhenSet(null)
 			);
 		}
 
 		[Test]
-		public void GetNewStoreIDWhenSet_NewWritingSystem_ReturnsSameStoreIDAsSet()
+		public void GetNewStoreIdWhenSet_NewWritingSystem_ReturnsSameStoreIdAsSet()
 		{
 			var ws = new WritingSystemDefinition("de");
-			string newID = RepositoryUnderTest.GetNewStoreIDWhenSet(ws);
+			string newId = RepositoryUnderTest.GetNewStoreIdWhenSet(ws);
 			RepositoryUnderTest.Set(ws);
-			Assert.AreEqual(ws.StoreID, newID);
+			Assert.AreEqual(ws.StoreId, newId);
 		}
 
 		[Test]
-		public void GetNewStoreIDWhenSet_WritingSystemIsAlreadyRegisteredWithRepo_ReturnsSameStoreIDAsSet()
+		public void GetNewStoreIdWhenSet_WritingSystemIsAlreadyRegisteredWithRepo_ReturnsSameStoreIdAsSet()
 		{
 			var ws = new WritingSystemDefinition("de");
 			RepositoryUnderTest.Set(ws);
 			ws.Language = "en";
-			string newID = RepositoryUnderTest.GetNewStoreIDWhenSet(ws);
-			Assert.AreEqual(ws.StoreID, newID);
+			string newId = RepositoryUnderTest.GetNewStoreIdWhenSet(ws);
+			Assert.AreEqual(ws.StoreId, newId);
 		}
 
 		[Test]
@@ -442,14 +442,14 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void OnWritingSystemIDChange_DifferentId_OldIdIsRemoved()
+		public void OnWritingSystemIdChange_DifferentId_OldIdIsRemoved()
 		{
 			var ws = new WritingSystemDefinition("fr");
 			RepositoryUnderTest.Set(ws);
 			Assert.IsTrue(RepositoryUnderTest.Contains("fr"));
 			ws.Language = "th";
 			ws.Script = "Thai";
-			RepositoryUnderTest.OnWritingSystemIDChange(ws, "fr");
+			RepositoryUnderTest.OnWritingSystemIdChange(ws, "fr");
 			Assert.IsFalse(RepositoryUnderTest.Contains("fr"));
 			Assert.IsTrue(RepositoryUnderTest.Contains("th"));
 		}
@@ -493,8 +493,8 @@ namespace SIL.WritingSystems.Tests
 			var ws = new WritingSystemDefinition("en");
 			ws.IsVoice = true;
 			RepositoryUnderTest.Set(ws);
-			var wsIdsToFilter = new List<string> {ws.ID};
-			var textIds = new List<string> (RepositoryUnderTest.FilterForTextIDs(wsIdsToFilter));
+			var wsIdsToFilter = new List<string> {ws.Id};
+			var textIds = new List<string> (RepositoryUnderTest.FilterForTextIds(wsIdsToFilter));
 			Assert.IsEmpty(textIds);
 		}
 
@@ -503,8 +503,8 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(ws);
-			var wsIdsToFilter = new List<string> {ws.ID};
-			var textIds = new List<string>(RepositoryUnderTest.FilterForTextIDs(wsIdsToFilter));
+			var wsIdsToFilter = new List<string> {ws.Id};
+			var textIds = new List<string>(RepositoryUnderTest.FilterForTextIds(wsIdsToFilter));
 			Assert.AreEqual(1, textIds.Count);
 			Assert.AreEqual("en", textIds[0]);
 		}
@@ -524,9 +524,9 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.Set(ws2);
 			RepositoryUnderTest.Set(ws3);
 
-			var wsIdsToFilter = RepositoryUnderTest.AllWritingSystems.Select(wsinRepo => wsinRepo.ID);
+			var wsIdsToFilter = RepositoryUnderTest.AllWritingSystems.Select(wsinRepo => wsinRepo.Id);
 
-			var textIds = new List<string>(RepositoryUnderTest.FilterForTextIDs(wsIdsToFilter));
+			var textIds = new List<string>(RepositoryUnderTest.FilterForTextIds(wsIdsToFilter));
 
 			Assert.AreEqual(2, textIds.Count);
 			Assert.AreEqual("en", textIds[0]);
@@ -540,20 +540,20 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.Set(new WritingSystemDefinition("en"));
 			RepositoryUnderTest.Set(new WritingSystemDefinition("th"));
 
-			var textIds = new List<string>(RepositoryUnderTest.FilterForTextIDs(new []{"en","ar","th"}));
+			var textIds = new List<string>(RepositoryUnderTest.FilterForTextIds(new []{"en","ar","th"}));
 
 			Assert.AreEqual("en", textIds[0]);
 			Assert.AreEqual("ar", textIds[1]);
 			Assert.AreEqual("th", textIds[2]);
 
-			 textIds = new List<string>(RepositoryUnderTest.FilterForTextIDs(new[] { "th", "ar", "en" }));
+			 textIds = new List<string>(RepositoryUnderTest.FilterForTextIds(new[] { "th", "ar", "en" }));
 
 			Assert.AreEqual("th", textIds[0]);
 			Assert.AreEqual("ar", textIds[1]);
 			Assert.AreEqual("en", textIds[2]);
 		}
 
-		private void OnWritingSystemIdChanged(object sender, WritingSystemIDChangedEventArgs e)
+		private void OnWritingSystemIdChanged(object sender, WritingSystemIdChangedEventArgs e)
 		{
 			_writingSystemIdChangedEventArgs = e;
 		}
@@ -561,13 +561,13 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Set_IdOfWritingSystemChanged_EventArgsAreCorrect()
 		{
-			RepositoryUnderTest.WritingSystemIDChanged += OnWritingSystemIdChanged;
+			RepositoryUnderTest.WritingSystemIdChanged += OnWritingSystemIdChanged;
 			var ws = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(ws);
 			ws.Language = "de";
 			RepositoryUnderTest.Set(ws);
-			Assert.That(_writingSystemIdChangedEventArgs.OldID, Is.EqualTo("en"));
-			Assert.That(_writingSystemIdChangedEventArgs.NewID, Is.EqualTo("de"));
+			Assert.That(_writingSystemIdChangedEventArgs.OldId, Is.EqualTo("en"));
+			Assert.That(_writingSystemIdChangedEventArgs.NewId, Is.EqualTo("de"));
 		}
 
 		[Test]
@@ -586,7 +586,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Set_IdOfWritingSystemIsUnChanged_EventIsNotFired()
 		{
-			RepositoryUnderTest.WritingSystemIDChanged += OnWritingSystemIdChanged;
+			RepositoryUnderTest.WritingSystemIdChanged += OnWritingSystemIdChanged;
 			var ws = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(ws);
 			ws.Language = "en";
@@ -597,7 +597,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Set_NewWritingSystem_EventIsNotFired()
 		{
-			RepositoryUnderTest.WritingSystemIDChanged += OnWritingSystemIdChanged;
+			RepositoryUnderTest.WritingSystemIdChanged += OnWritingSystemIdChanged;
 			var ws = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(ws);
 			Assert.That(_writingSystemIdChangedEventArgs, Is.Null);
@@ -619,8 +619,8 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.WritingSystemDeleted += OnWritingsystemDeleted;
 			var ws = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(ws);
-			RepositoryUnderTest.Remove(ws.ID);
-			Assert.That(_writingSystemDeletedEventArgs.ID, Is.EqualTo(ws.ID));
+			RepositoryUnderTest.Remove(ws.Id);
+			Assert.That(_writingSystemDeletedEventArgs.Id, Is.EqualTo(ws.Id));
 		}
 
 
@@ -635,7 +635,7 @@ namespace SIL.WritingSystems.Tests
 			//Now change the Id
 			ws.Variants.Add("bogus");
 			RepositoryUnderTest.Save();
-			Assert.That(RepositoryUnderTest.WritingSystemIDHasChanged("en"), Is.True);
+			Assert.That(RepositoryUnderTest.WritingSystemIdHasChanged("en"), Is.True);
 		}
 
 		[Test]
@@ -656,7 +656,7 @@ namespace SIL.WritingSystems.Tests
 			wsEnDup.Variants.Add("bogus2");
 			RepositoryUnderTest.Set(wsEnDup);
 			RepositoryUnderTest.Save();
-			Assert.That(RepositoryUnderTest.WritingSystemIDHasChanged("en"), Is.True);
+			Assert.That(RepositoryUnderTest.WritingSystemIdHasChanged("en"), Is.True);
 		}
 
 		[Test]
@@ -667,7 +667,7 @@ namespace SIL.WritingSystems.Tests
 			var ws = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(ws);
 			RepositoryUnderTest.Save();
-			Assert.That(RepositoryUnderTest.WritingSystemIDHasChanged("en"), Is.False);
+			Assert.That(RepositoryUnderTest.WritingSystemIdHasChanged("en"), Is.False);
 		}
 
 		[Test]
@@ -675,7 +675,7 @@ namespace SIL.WritingSystems.Tests
 		public void WritingSystemIdHasChangedTo_IdNeverExisted_ReturnsNull()
 		{
 			//Add a writing system to the repo
-			Assert.That(RepositoryUnderTest.WritingSystemIDHasChangedTo("en"), Is.Null);
+			Assert.That(RepositoryUnderTest.WritingSystemIdHasChangedTo("en"), Is.Null);
 		}
 
 		[Test]
@@ -689,7 +689,7 @@ namespace SIL.WritingSystems.Tests
 			//Now change the Id
 			ws.Variants.Add("bogus");
 			RepositoryUnderTest.Save();
-			Assert.That(RepositoryUnderTest.WritingSystemIDHasChangedTo("en"), Is.EqualTo("en-x-bogus"));
+			Assert.That(RepositoryUnderTest.WritingSystemIdHasChangedTo("en"), Is.EqualTo("en-x-bogus"));
 		}
 
 		[Test]
@@ -710,7 +710,7 @@ namespace SIL.WritingSystems.Tests
 			wsEnDup.Variants.Add("bogus2");
 			RepositoryUnderTest.Set(wsEnDup);
 			RepositoryUnderTest.Save();
-			Assert.That(RepositoryUnderTest.WritingSystemIDHasChangedTo("en"), Is.Null);
+			Assert.That(RepositoryUnderTest.WritingSystemIdHasChangedTo("en"), Is.Null);
 		}
 
 		[Test]
@@ -721,7 +721,7 @@ namespace SIL.WritingSystems.Tests
 			var ws = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(ws);
 			RepositoryUnderTest.Save();
-			Assert.That(RepositoryUnderTest.WritingSystemIDHasChangedTo("en"), Is.EqualTo("en"));
+			Assert.That(RepositoryUnderTest.WritingSystemIdHasChangedTo("en"), Is.EqualTo("en"));
 		}
 
 		[Test]

@@ -28,7 +28,7 @@ namespace SIL.WritingSystems.Tests
 		public override string ExceptionList
 		{
 			// We do want to clone KnownKeyboards, but I don't think the automatic cloneable test for it can handle a list.
-			get { return "|MarkedForDeletion|StoreID|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionaries|IsChanged|_matchedPairs|_punctuationPatterns|_quotationMarks|_defaultCollation|_collations|_characterSets|_variants|_language|_script|_region|_ignoreVariantChanges|PropertyChanged|PropertyChanging|Template|"; }
+			get { return "|MarkedForDeletion|StoreId|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionaries|IsChanged|_matchedPairs|_punctuationPatterns|_quotationMarks|_defaultCollation|_collations|_characterSets|_variants|_language|_script|_region|_ignoreVariantChanges|PropertyChanged|PropertyChanging|Template|"; }
 		}
 
 		protected override List<ValuesToSet> DefaultValuesForTypes
@@ -676,50 +676,50 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void ID_HasOnlyAbbreviation_ReturnsQaa()
+		public void Id_HasOnlyAbbreviation_ReturnsQaa()
 		{
 			var ws = new WritingSystemDefinition {Abbreviation = "hello"};
-			Assert.AreEqual("qaa", ws.ID);
+			Assert.AreEqual("qaa", ws.Id);
 		}
 
 		[Test]
-		public void ID_WhenJustIso()
+		public void Id_WhenJustIso()
 		{
 			var ws = new WritingSystemDefinition("en","","","");
-			Assert.AreEqual("en", ws.ID);
+			Assert.AreEqual("en", ws.Id);
 		}
 		[Test]
-		public void ID_WhenIsoAndScript()
+		public void Id_WhenIsoAndScript()
 		{
 			var ws = new WritingSystemDefinition("en", "Zxxx", "", "");
-			Assert.AreEqual("en-Zxxx", ws.ID);
+			Assert.AreEqual("en-Zxxx", ws.Id);
 		}
 
 		[Test]
-		public void ID_WhenIsoAndRegion()
+		public void Id_WhenIsoAndRegion()
 		{
 			var ws = new WritingSystemDefinition("en", "", "US", "");
-			Assert.AreEqual("en-US", ws.ID);
+			Assert.AreEqual("en-US", ws.Id);
 		}
 		[Test]
-		public void ID_WhenIsoScriptRegionVariant()
+		public void Id_WhenIsoScriptRegionVariant()
 		{
 			var ws = new WritingSystemDefinition("en", "Zxxx", "US", "1901");
-			Assert.AreEqual("en-Zxxx-US-1901", ws.ID);
+			Assert.AreEqual("en-Zxxx-US-1901", ws.Id);
 		}
 
 		[Test]
-		public void Constructor_OnlyVariantContainingOnlyPrivateUseisPassedIn_IDConsistsOfOnlyPrivateUse()
+		public void Constructor_OnlyVariantContainingOnlyPrivateUseisPassedIn_IdConsistsOfOnlyPrivateUse()
 		{
 			var ws = new WritingSystemDefinition("", "", "", "x-private");
-			Assert.That(ws.ID, Is.EqualTo("x-private"));
+			Assert.That(ws.Id, Is.EqualTo("x-private"));
 		}
 
 		[Test]
-		public void Constructor_OnlyPrivateUseIsPassedIn_IDConsistsOfOnlyPrivateUse()
+		public void Constructor_OnlyPrivateUseIsPassedIn_IdConsistsOfOnlyPrivateUse()
 		{
 			var ws = new WritingSystemDefinition("x-private");
-			Assert.AreEqual("x-private", ws.ID);
+			Assert.AreEqual("x-private", ws.Id);
 		}
 
 		[Test]
@@ -739,7 +739,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			// Put any properties to ignore in this string surrounded by "|"
 			// ObsoleteWindowsLcid has no public setter; it only gets a value by reading from an old file.
-			const string ignoreProperties = "|MarkedForDeletion|StoreID|DateModified|RequiresValidLanguageTag|Template|";
+			const string ignoreProperties = "|MarkedForDeletion|StoreId|DateModified|RequiresValidLanguageTag|Template|";
 			// special test values to use for properties that are particular
 			var firstValueSpecial = new Dictionary<string, object>();
 			var secondValueSpecial = new Dictionary<string, object>();
@@ -831,7 +831,7 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(ws.Script, Is.EqualTo((ScriptSubtag) WellKnownSubtags.AudioScript));
 			Assert.That(ws.Region, Is.EqualTo((RegionSubtag) "US"));
 			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"1901", "audio"}));
-			Assert.AreEqual("qaa-Zxxx-US-1901-x-audio", ws.ID);
+			Assert.AreEqual("qaa-Zxxx-US-1901-x-audio", ws.Id);
 		}
 
 		[Test]
@@ -1376,7 +1376,7 @@ namespace SIL.WritingSystems.Tests
 			var writingSystem = new WritingSystemDefinition("x-bogus");
 			writingSystem.IpaStatus = IpaStatusChoices.Ipa;
 			Assert.That(writingSystem.Language, Is.EqualTo((LanguageSubtag) "bogus"));
-			Assert.That(writingSystem.ID, Is.EqualTo("qaa-fonipa-x-bogus"));
+			Assert.That(writingSystem.Id, Is.EqualTo("qaa-fonipa-x-bogus"));
 		}
 
 		[Test]
@@ -1384,7 +1384,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var writingSystem = new WritingSystemDefinition("x-bogus") {IpaStatus = IpaStatusChoices.IpaPhonetic};
 			Assert.That(writingSystem.Language, Is.EqualTo((LanguageSubtag) "bogus"));
-			Assert.That(writingSystem.ID, Is.EqualTo("qaa-fonipa-x-bogus-etic"));
+			Assert.That(writingSystem.Id, Is.EqualTo("qaa-fonipa-x-bogus-etic"));
 		}
 
 		[Test]
@@ -1392,14 +1392,14 @@ namespace SIL.WritingSystems.Tests
 		{
 			var writingSystem = new WritingSystemDefinition("x-bogus") {IpaStatus = IpaStatusChoices.IpaPhonemic};
 			Assert.That(writingSystem.Language, Is.EqualTo((LanguageSubtag) "bogus"));
-			Assert.That(writingSystem.ID, Is.EqualTo("qaa-fonipa-x-bogus-emic"));
+			Assert.That(writingSystem.Id, Is.EqualTo("qaa-fonipa-x-bogus-emic"));
 		}
 
 		[Test]
 		public void CloneContructor_VariantStartsWithxDash_VariantIsCopied()
 		{
 			var writingSystem = new WritingSystemDefinition(new WritingSystemDefinition("x-bogus"));
-			Assert.AreEqual("x-bogus", writingSystem.ID);
+			Assert.AreEqual("x-bogus", writingSystem.Id);
 		}
 
 		[Test]
@@ -1407,7 +1407,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var writingSystem = new WritingSystemDefinition("en", "Zxxx", "", "1901-x-audio");
 			writingSystem.Language = "de";
-			Assert.AreEqual("de-Zxxx-1901-x-audio", writingSystem.ID);
+			Assert.AreEqual("de-Zxxx-1901-x-audio", writingSystem.Id);
 		}
 
 		[Test]
@@ -1415,7 +1415,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var writingSystem = new WritingSystemDefinition("en", "Zxxx", "", "1901-x-bogus");
 			writingSystem.Script = "Armi";
-			Assert.AreEqual("en-Armi-1901-x-bogus", writingSystem.ID);
+			Assert.AreEqual("en-Armi-1901-x-bogus", writingSystem.Id);
 		}
 
 		[Test]
@@ -1431,7 +1431,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var writingSystem = new WritingSystemDefinition("en", "Zxxx", "", "1901-x-bogus");
 			writingSystem.Region = "US";
-			Assert.AreEqual("en-Zxxx-US-1901-x-bogus", writingSystem.ID);
+			Assert.AreEqual("en-Zxxx-US-1901-x-bogus", writingSystem.Id);
 		}
 
 		[Test]
@@ -1439,56 +1439,56 @@ namespace SIL.WritingSystems.Tests
 		{
 			var writingSystem = new WritingSystemDefinition("en", "Zxxx", "", "1901-x-bogus");
 			writingSystem.Variants.ReplaceAll(new VariantSubtag[] {"audio"});
-			Assert.AreEqual("en-Zxxx-x-audio", writingSystem.ID);
+			Assert.AreEqual("en-Zxxx-x-audio", writingSystem.Id);
 		}
 
 		[Test]
 		public void Ctor1_IdIsSet()
 		{
 			var writingSystem = new WritingSystemDefinition();
-			Assert.AreEqual("qaa", writingSystem.ID);
+			Assert.AreEqual("qaa", writingSystem.Id);
 		}
 
 		[Test]
 		public void Ctor2_IdIsSet()
 		{
 			var writingSystem = new WritingSystemDefinition("en","Zxxx","","1901-x-audio","abb",true);
-			Assert.AreEqual("en-Zxxx-1901-x-audio", writingSystem.ID);
+			Assert.AreEqual("en-Zxxx-1901-x-audio", writingSystem.Id);
 		}
 
 		[Test]
 		public void Ctor3_IdIsSet()
 		{
 			var writingSystem = new WritingSystemDefinition("en-Zxxx-1901-x-audio");
-			Assert.AreEqual("en-Zxxx-1901-x-audio", writingSystem.ID);
+			Assert.AreEqual("en-Zxxx-1901-x-audio", writingSystem.Id);
 		}
 
 		[Test]
 		public void Ctor4_IdIsSet()
 		{
 			var writingSystem = new WritingSystemDefinition(new WritingSystemDefinition("en-Zxxx-1901-x-audio"));
-			Assert.AreEqual("en-Zxxx-1901-x-audio", writingSystem.ID);
+			Assert.AreEqual("en-Zxxx-1901-x-audio", writingSystem.Id);
 		}
 
 		[Test]
 		public void Parse_IdIsSet()
 		{
 			var writingSystem = new WritingSystemDefinition("en-Zxxx-1901-x-audio");
-			Assert.AreEqual("en-Zxxx-1901-x-audio", writingSystem.ID);
+			Assert.AreEqual("en-Zxxx-1901-x-audio", writingSystem.Id);
 		}
 
 		[Test]
 		public void FromLanguage_IdIsSet()
 		{
 			var writingSystem = new WritingSystemDefinition("en-Zxxx-1901-x-audio");
-			Assert.AreEqual("en-Zxxx-1901-x-audio", writingSystem.ID);
+			Assert.AreEqual("en-Zxxx-1901-x-audio", writingSystem.Id);
 		}
 
 		[Test]
 		public void FromRfc5646Subtags_IdIsSet()
 		{
 			var writingSystem = new WritingSystemDefinition("en", "Zxxx", "", "1901-x-audio");
-			Assert.AreEqual("en-Zxxx-1901-x-audio", writingSystem.ID);
+			Assert.AreEqual("en-Zxxx-1901-x-audio", writingSystem.Id);
 		}
 
 		[Test]
@@ -1496,7 +1496,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var writingSystem = new WritingSystemDefinition("en", "Zxxx", "", "1901-x-audio");
 			writingSystem.IpaStatus = IpaStatusChoices.IpaPhonetic;
-			Assert.AreEqual("en-Zxxx-1901-fonipa-x-etic", writingSystem.ID);
+			Assert.AreEqual("en-Zxxx-1901-fonipa-x-etic", writingSystem.Id);
 		}
 
 		[Test]
@@ -1504,7 +1504,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var writingSystem = new WritingSystemDefinition("en", "Zxxx", "", "1901-x-audio");
 			writingSystem.IsVoice = false;
-			Assert.AreEqual("en-1901", writingSystem.ID);
+			Assert.AreEqual("en-1901", writingSystem.Id);
 		}
 
 		[Test]
@@ -1512,7 +1512,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var writingSystem = new WritingSystemDefinition("en", "Zxxx", "", "1901-x-audio");
 			writingSystem.Variants.Add("bauddha");
-			Assert.AreEqual("en-Zxxx-1901-bauddha-x-audio", writingSystem.ID);
+			Assert.AreEqual("en-Zxxx-1901-bauddha-x-audio", writingSystem.Id);
 		}
 
 		[Test]
@@ -1520,7 +1520,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var writingSystem = new WritingSystemDefinition("en", "Zxxx", "", "1901-x-audio");
 			writingSystem.Variants.Add("bogus");
-			Assert.AreEqual("en-Zxxx-1901-x-audio-bogus", writingSystem.ID);
+			Assert.AreEqual("en-Zxxx-1901-x-audio-bogus", writingSystem.Id);
 		}
 
 		[Test]
@@ -1528,7 +1528,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var writingSystem = new WritingSystemDefinition("en", "Zxxx", "", "1901-x-audio");
 			writingSystem.SetIetfLanguageTagComponents("de","Armi","US","fonipa-x-etic");
-			Assert.AreEqual("de-Armi-US-fonipa-x-etic", writingSystem.ID);
+			Assert.AreEqual("de-Armi-US-fonipa-x-etic", writingSystem.Id);
 		}
 
 		[Test]
@@ -1553,7 +1553,7 @@ namespace SIL.WritingSystems.Tests
 			var existingTags = new[] {"en-Zxxx-x-audio"};
 			var ws = new WritingSystemDefinition("de");
 			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, existingTags);
-			Assert.That(newWs.ID, Is.EqualTo("de"));
+			Assert.That(newWs.Id, Is.EqualTo("de"));
 		}
 
 		[Test]
@@ -1562,7 +1562,7 @@ namespace SIL.WritingSystems.Tests
 			var existingTags = new[] { "en-Zxxx-x-audio" };
 			var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
 			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, existingTags);
-			Assert.That(newWs.ID, Is.EqualTo("en-Zxxx-x-audio-dupl0"));
+			Assert.That(newWs.Id, Is.EqualTo("en-Zxxx-x-audio-dupl0"));
 		}
 
 		[Test]
@@ -1571,7 +1571,7 @@ namespace SIL.WritingSystems.Tests
 			var existingTags = new[] { "en-Zxxx-x-audio", "en-Zxxx-x-audio-dupl0" };
 			var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
 			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, existingTags);
-			Assert.That(newWs.ID, Is.EqualTo("en-Zxxx-x-audio-dupl1"));
+			Assert.That(newWs.Id, Is.EqualTo("en-Zxxx-x-audio-dupl1"));
 		}
 
 		[Test]
@@ -1580,7 +1580,7 @@ namespace SIL.WritingSystems.Tests
 			var existingTags = new[] { "en-Zxxx-x-audio", "en-Zxxx-x-audio-dupl1" };
 			var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
 			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, existingTags);
-			Assert.That(newWs.ID, Is.EqualTo("en-Zxxx-x-audio-dupl0"));
+			Assert.That(newWs.Id, Is.EqualTo("en-Zxxx-x-audio-dupl0"));
 		}
 
 		[Test]
@@ -1589,7 +1589,7 @@ namespace SIL.WritingSystems.Tests
 			var existingTags = new[] { "en-Zxxx-x-audio" };
 			var ws = new WritingSystemDefinition("de");
 			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, existingTags);
-			Assert.That(newWs.StoreID, Is.Null);
+			Assert.That(newWs.StoreId, Is.Null);
 		}
 
 		[Test]
@@ -1598,7 +1598,7 @@ namespace SIL.WritingSystems.Tests
 			var existingTags = new[] { "en-Zxxx-x-dupl0-audio", "en-Zxxx-x-audio-dupl1" };
 			var ws = new WritingSystemDefinition("en-Zxxx-x-dupl0-audio");
 			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, existingTags);
-			Assert.That(newWs.ID, Is.EqualTo("en-Zxxx-x-dupl0-audio-dupl1"));
+			Assert.That(newWs.Id, Is.EqualTo("en-Zxxx-x-dupl0-audio-dupl1"));
 		}
 
 		[Test]
@@ -1936,7 +1936,7 @@ namespace SIL.WritingSystems.Tests
 			else
 				Assert.That(IetfLanguageTagHelper.GetVariantCodes(ws.Variants), Is.EqualTo(variantCode));
 
-			// Now check that we can get the same tags by parsing the ID.
+			// Now check that we can get the same tags by parsing the Id.
 			LanguageSubtag languageSubtag;
 			ScriptSubtag scriptSubtag;
 			RegionSubtag regionSubtag;

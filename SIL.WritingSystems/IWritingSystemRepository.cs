@@ -4,18 +4,18 @@ using System.Globalization;
 
 namespace SIL.WritingSystems
 {
-	public class WritingSystemIDChangedEventArgs : EventArgs
+	public class WritingSystemIdChangedEventArgs : EventArgs
 	{
-		public WritingSystemIDChangedEventArgs(string oldID, string newID)
+		public WritingSystemIdChangedEventArgs(string oldId, string newId)
 		{
-			OldID = oldID;
-			NewID = newID;
+			OldId = oldId;
+			NewId = newId;
 		}
-		public string OldID { get; private set; }
-		public string NewID { get; private set; }
+		public string OldId { get; private set; }
+		public string NewId { get; private set; }
 	}
 
-	public class WritingSystemConflatedEventArgs : WritingSystemIDChangedEventArgs
+	public class WritingSystemConflatedEventArgs : WritingSystemIdChangedEventArgs
 	{
 		public WritingSystemConflatedEventArgs(string oldId, string newId)
 			: base(oldId, newId)
@@ -27,9 +27,9 @@ namespace SIL.WritingSystems
 	{
 		public WritingSystemDeletedEventArgs(string id)
 		{
-			ID = id;
+			Id = id;
 		}
-		public string ID { get; private set; }
+		public string Id { get; private set; }
 	}
 
 	/// <summary>
@@ -40,7 +40,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Notifies a consuming class of a changed writing system id on Set()
 		/// </summary>
-		event EventHandler<WritingSystemIDChangedEventArgs> WritingSystemIDChanged;
+		event EventHandler<WritingSystemIdChangedEventArgs> WritingSystemIdChanged;
 
 		/// <summary>
 		/// Notifies a consuming class of a deleted writing system
@@ -72,16 +72,16 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Gets the specified writing system if it exists.
 		/// </summary>
-		/// <param name="identifier">The identifier.</param>
+		/// <param name="id">The identifier.</param>
 		/// <param name="ws">The writing system.</param>
 		/// <returns></returns>
-		bool TryGet(string identifier, out WritingSystemDefinition ws);
+		bool TryGet(string id, out WritingSystemDefinition ws);
 
 		/// <summary>
 		/// If the given writing system were passed to Set, this function returns the
-		/// new StoreID that would be assigned.
+		/// new StoreId that would be assigned.
 		/// </summary>
-		string GetNewStoreIDWhenSet(WritingSystemDefinition ws);
+		string GetNewStoreIdWhenSet(WritingSystemDefinition ws);
 
 		/// <summary>
 		/// Returns true if a writing system with the given Store ID exists in the store
@@ -138,7 +138,7 @@ namespace SIL.WritingSystems
 		WritingSystemDefinition MakeDuplicate(WritingSystemDefinition definition);
 
 		/// <summary>
-		/// If a consumer has a writingSystemId that is not contained in the
+		/// If a consumer has a writingSystem ID that is not contained in the
 		/// repository he can query the repository as to whether the ID was once
 		/// contained and has since changed.
 		/// Note that changes are only logged on Save() i.e. changes made between
@@ -146,7 +146,7 @@ namespace SIL.WritingSystems
 		/// Use WritingSystemIDHasChangedTo to determine the new ID if there has
 		/// been a change
 		/// </summary>
-		bool WritingSystemIDHasChanged(string id);
+		bool WritingSystemIdHasChanged(string id);
 
 		/// <summary>
 		/// If a consumer has a writing system ID that was once contained in this
@@ -160,7 +160,7 @@ namespace SIL.WritingSystems
 		/// Use WritingSystemIDHasChanged to determine whether an ID has changed
 		/// at all
 		/// </summary>
-		string WritingSystemIDHasChangedTo(string id);
+		string WritingSystemIdHasChangedTo(string id);
 
 		/// <summary>
 		/// 
@@ -186,7 +186,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Event Handler that updates the store when a writing system id has changed
 		/// </summary>
-		void OnWritingSystemIDChange(WritingSystemDefinition ws, string oldID);
+		void OnWritingSystemIdChange(WritingSystemDefinition ws, string oldId);
 
 		///<summary>
 		/// Returns a list of writing system tags that apply only to text based writing systems.
@@ -194,7 +194,7 @@ namespace SIL.WritingSystems
 		///</summary>
 		///<param name="idsToFilter"></param>
 		///<returns></returns>
-		IEnumerable<string> FilterForTextIDs(IEnumerable<string> idsToFilter);
+		IEnumerable<string> FilterForTextIds(IEnumerable<string> idsToFilter);
 
 		/// <summary>
 		/// Get the writing system that is most probably intended by the user, when input language changes to the specified layout and cultureInfo,

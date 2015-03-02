@@ -107,7 +107,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			if (_ibusKeyboards.Count == 0)
 				return;
 
-			Dictionary<string, IbusKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<IbusKeyboardDescription>().ToDictionary(kd => kd.ID);
+			Dictionary<string, IbusKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<IbusKeyboardDescription>().ToDictionary(kd => kd.Id);
 			foreach (IBusEngineDesc ibusKeyboard in _ibusAdaptor.GetAllIBusKeyboards())
 			{
 				if (_ibusKeyboards.ContainsKey(ibusKeyboard.LongName)

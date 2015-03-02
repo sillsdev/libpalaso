@@ -94,7 +94,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				
 			var configRegistry = XklConfigRegistry.Create(_xkbAdaptor.XklEngine);
 			Dictionary<string, List<XklConfigRegistry.LayoutDescription>> layouts = configRegistry.Layouts;
-			Dictionary<string, XkbKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<XkbKeyboardDescription>().ToDictionary(kd => kd.ID);
+			Dictionary<string, XkbKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<XkbKeyboardDescription>().ToDictionary(kd => kd.Id);
 			foreach (KeyValuePair<string, List<XklConfigRegistry.LayoutDescription>> kvp in layouts)
 			{
 				foreach (XklConfigRegistry.LayoutDescription layout in kvp.Value)
@@ -119,7 +119,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			if (_ibusKeyboards.Count == 0)
 				return;
 
-			Dictionary<string, IbusKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<IbusKeyboardDescription>().ToDictionary(kd => kd.ID);
+			Dictionary<string, IbusKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<IbusKeyboardDescription>().ToDictionary(kd => kd.Id);
 			foreach (IBusEngineDesc ibusKeyboard in _ibusAdaptor.GetAllIBusKeyboards())
 			{
 				if (_ibusKeyboards.ContainsKey(ibusKeyboard.LongName))

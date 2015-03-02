@@ -38,7 +38,7 @@ namespace SIL.Keyboarding
 		/// <summary>
 		/// Gets an identifier of the language/keyboard layout
 		/// </summary>
-		string ID { get; }
+		string Id { get; }
 
 		/// <summary>
 		/// Gets a human-readable (unlocalized) name of the input language.

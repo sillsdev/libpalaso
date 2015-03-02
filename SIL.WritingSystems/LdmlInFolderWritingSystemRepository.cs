@@ -144,7 +144,7 @@ namespace SIL.WritingSystems
 			foreach (string filePath in Directory.GetFiles(_path, "*.ldml"))
 				LoadDefinition(filePath);
 
-			LoadChangedIDsFromExistingWritingSystems();
+			LoadChangedIdsFromExistingWritingSystems();
 		}
 
 		protected virtual void LoadDefinition(string filePath)
@@ -159,7 +159,7 @@ namespace SIL.WritingSystems
 					ldmlDataMapper.Read(filePath, wsFromFile);
 					foreach (ICustomDataMapper customDataMapper in _customDataMappers)
 						customDataMapper.Read(wsFromFile);
-					wsFromFile.StoreID = Path.GetFileNameWithoutExtension(filePath);
+					wsFromFile.StoreId = Path.GetFileNameWithoutExtension(filePath);
 				}
 			}
 			catch (Exception e)
@@ -175,14 +175,14 @@ namespace SIL.WritingSystems
 				return;
 			}
 
-			if (string.Compare(wsFromFile.StoreID, wsFromFile.ID, StringComparison.OrdinalIgnoreCase) != 0)
+			if (string.Compare(wsFromFile.StoreId, wsFromFile.Id, StringComparison.OrdinalIgnoreCase) != 0)
 			{
 				bool badFileName = true;
-				if (wsFromFile.StoreID != null && wsFromFile.StoreID.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
+				if (wsFromFile.StoreId != null && wsFromFile.StoreId.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
 				{
 					var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
-					interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(wsFromFile.StoreID);
-					if (interpreter.Rfc5646Tag.Equals(wsFromFile.ID, StringComparison.OrdinalIgnoreCase))
+					interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(wsFromFile.StoreId);
+					if (interpreter.Rfc5646Tag.Equals(wsFromFile.Id, StringComparison.OrdinalIgnoreCase))
 					{
 						badFileName = false;
 					}
@@ -195,7 +195,7 @@ namespace SIL.WritingSystems
 						Exception = new ApplicationException(
 							String.Format(
 								"The writing system file {0} seems to be named inconsistently. It contains the IETF language tag: '{1}'. The name should have been made consistent with its content upon migration of the writing systems.",
-								filePath, wsFromFile.ID)),
+								filePath, wsFromFile.Id)),
 						FilePath = filePath
 					};
 					_loadProblems.Add(problem);
@@ -229,9 +229,9 @@ namespace SIL.WritingSystems
 		{
 			foreach (WritingSystemDefinition ws in _systemWritingSystemProvider)
 			{
-				if (null == FindAlreadyLoadedWritingSystem(ws.ID))
+				if (null == FindAlreadyLoadedWritingSystem(ws.Id))
 				{
-					if (!HaveMatchingDefinitionInTrash(ws.ID))
+					if (!HaveMatchingDefinitionInTrash(ws.Id))
 					{
 						Set(ws);
 					}
@@ -255,7 +255,7 @@ namespace SIL.WritingSystems
 
 		private WritingSystemDefinition FindAlreadyLoadedWritingSystem(string wsID)
 		{
-			return AllWritingSystems.FirstOrDefault(ws => ws.ID == wsID);
+			return AllWritingSystems.FirstOrDefault(ws => ws.Id == wsID);
 		}
 
 		/// <summary>
@@ -265,7 +265,7 @@ namespace SIL.WritingSystems
 		{
 			Set(ws);
 
-			string writingSystemFilePath = GetFilePathFromIdentifier(ws.ID);
+			string writingSystemFilePath = GetFilePathFromIdentifier(ws.Id);
 			if (!File.Exists(writingSystemFilePath) && !string.IsNullOrEmpty(ws.Template))
 			{
 				// this is a new writing system that was generated from a template, so copy the template over before saving
@@ -294,16 +294,16 @@ namespace SIL.WritingSystems
 				customDataMapper.Write(ws);
 			ws.AcceptChanges();
 
-			if (ChangedIDs.Any(p => p.Value == ws.StoreID))
+			if (ChangedIds.Any(p => p.Value == ws.StoreId))
 			{
 				// log this id change to the writing system change log
-				KeyValuePair<string, string> pair = ChangedIDs.First(p => p.Value == ws.StoreID);
+				KeyValuePair<string, string> pair = ChangedIds.First(p => p.Value == ws.StoreId);
 				_changeLog.LogChange(pair.Key, pair.Value);
 			}
 			else
 			{
 				// log this addition
-				_changeLog.LogAdd(ws.StoreID);
+				_changeLog.LogAdd(ws.StoreId);
 			}
 		}
 
@@ -314,7 +314,7 @@ namespace SIL.WritingSystems
 			WritingSystemDefinition existingWS;
 			if (TryGet(id, out existingWS))
 			{
-				templatePath = GetFilePathFromIdentifier(existingWS.ID);
+				templatePath = GetFilePathFromIdentifier(existingWS.Id);
 				if (!File.Exists(templatePath))
 					templatePath = null;
 			}
@@ -322,7 +322,7 @@ namespace SIL.WritingSystems
 			// check global repo for template
 			if (string.IsNullOrEmpty(templatePath) && _globalRepository != null && _globalRepository.TryGet(id, out existingWS))
 			{
-				templatePath = _globalRepository.GetFilePathFromIdentifier(existingWS.ID);
+				templatePath = _globalRepository.GetFilePathFromIdentifier(existingWS.Id);
 				if (!File.Exists(templatePath))
 					templatePath = null;
 			}
@@ -406,21 +406,21 @@ namespace SIL.WritingSystems
 
 			//we really need to get it in the trash, else, if was auto-provided,
 			//it'll keep coming back!
-			if (!File.Exists(GetFilePathFromIdentifier(ws.ID)))
+			if (!File.Exists(GetFilePathFromIdentifier(ws.Id)))
 				SaveDefinition(ws);
 
-			if (File.Exists(GetFilePathFromIdentifier(ws.ID)))
+			if (File.Exists(GetFilePathFromIdentifier(ws.Id)))
 			{
 				Directory.CreateDirectory(PathToWritingSystemTrash());
-				string destination = Path.Combine(PathToWritingSystemTrash(), GetFileNameFromIdentifier(ws.ID));
+				string destination = Path.Combine(PathToWritingSystemTrash(), GetFileNameFromIdentifier(ws.Id));
 				//clear out any old on already in the trash
 				if (File.Exists(destination))
 					File.Delete(destination);
-				File.Move(GetFilePathFromIdentifier(ws.ID), destination);
+				File.Move(GetFilePathFromIdentifier(ws.Id), destination);
 			}
 			base.RemoveDefinition(ws);
 			foreach (ICustomDataMapper customDataMapper in _customDataMappers)
-				customDataMapper.Remove(ws.ID);
+				customDataMapper.Remove(ws.Id);
 
 			if (wsIgnoreCount != WritingSystemsToIgnore.Count)
 				WriteGlobalWritingSystemsToIgnore();
@@ -438,7 +438,7 @@ namespace SIL.WritingSystems
 		public override bool CanSave(WritingSystemDefinition ws, out string filePath)
 		{
 			string folderPath = PathToWritingSystems;
-			string filename = GetFileNameFromIdentifier(ws.ID);
+			string filename = GetFileNameFromIdentifier(ws.Id);
 			filePath = Path.Combine(folderPath, filename);
 			if (File.Exists(filePath))
 			{
@@ -495,7 +495,7 @@ namespace SIL.WritingSystems
 			//delete anything we're going to delete first, to prevent losing
 			//a WS we want by having it deleted by an old WS we don't want
 			//(but which has the same identifier)
-			foreach (string id in AllWritingSystems.Where(ws => ws.MarkedForDeletion).Select(ws => ws.StoreID).ToArray())
+			foreach (string id in AllWritingSystems.Where(ws => ws.MarkedForDeletion).Select(ws => ws.StoreId).ToArray())
 				Remove(id);
 
 			// make a copy and then go through that list - SaveDefinition calls Set which
@@ -507,7 +507,7 @@ namespace SIL.WritingSystems
 				OnChangeNotifySharedStore(ws);
 			}
 
-			LoadChangedIDsFromExistingWritingSystems();
+			LoadChangedIdsFromExistingWritingSystems();
 
 			if (wsIgnoreCount != WritingSystemsToIgnore.Count)
 				WriteGlobalWritingSystemsToIgnore();
@@ -521,25 +521,25 @@ namespace SIL.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			string oldStoreId = ws.StoreID;
+			string oldStoreId = ws.StoreId;
 			base.Set(ws);
 			//Renaming the file here is a bit ugly as the content has not yet been updated. Thus there
 			//may be a mismatch between the filename and the contained rfc5646 tag. Doing it here however
 			//helps us avoid having to deal with situations where a writing system id is changed to be
 			//identical with the old id of another writing sytsem. This could otherwise lead to dataloss.
 			//The inconsistency is resolved on Save()
-			if (oldStoreId != ws.StoreID && File.Exists(GetFilePathFromIdentifier(oldStoreId)))
-				File.Move(GetFilePathFromIdentifier(oldStoreId), GetFilePathFromIdentifier(ws.StoreID));
+			if (oldStoreId != ws.StoreId && File.Exists(GetFilePathFromIdentifier(oldStoreId)))
+				File.Move(GetFilePathFromIdentifier(oldStoreId), GetFilePathFromIdentifier(ws.StoreId));
 		}
 
-		public override bool WritingSystemIDHasChanged(string id)
+		public override bool WritingSystemIdHasChanged(string id)
 		{
 			return _changeLog.HasChangeFor(id);
 		}
 
-		public override string WritingSystemIDHasChangedTo(string id)
+		public override string WritingSystemIdHasChangedTo(string id)
 		{
-			return AllWritingSystems.Any(ws => ws.ID.Equals(id)) ? id : _changeLog.GetChangeFor(id);
+			return AllWritingSystems.Any(ws => ws.Id.Equals(id)) ? id : _changeLog.GetChangeFor(id);
 		}
 
 		public override void LastChecked(string identifier, DateTime dateModified)
@@ -555,14 +555,14 @@ namespace SIL.WritingSystems
 			if (_globalRepository != null)
 			{
 				WritingSystemDefinition globalWs;
-				if (_globalRepository.TryGet(ws.ID, out globalWs))
+				if (_globalRepository.TryGet(ws.Id, out globalWs))
 				{
 					if (ws.DateModified > globalWs.DateModified)
 					{
 						WritingSystemDefinition newWs = ws.Clone();
 						try
 						{
-							_globalRepository.Remove(ws.ID);
+							_globalRepository.Remove(ws.Id);
 							_globalRepository.Set(newWs);
 						}
 						catch (UnauthorizedAccessException)

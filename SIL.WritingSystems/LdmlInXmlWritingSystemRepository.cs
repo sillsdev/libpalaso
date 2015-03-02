@@ -42,7 +42,7 @@ namespace SIL.WritingSystems
 				WritingSystemDefinition ws = CreateNew();
 				XmlReader xmlReader = nav.ReadSubtree();
 				ldmlDataMapper.Read(xmlReader, ws);
-				ws.StoreID = ws.ID;
+				ws.StoreId = ws.Id;
 				Set(ws);
 			}
 		}
@@ -60,19 +60,19 @@ namespace SIL.WritingSystems
 				{
 					WritingSystemDefinition ws = CreateNew();
 					ldmlDataMapper.Read(xmlReader.ReadSubtree(), ws);
-					ws.StoreID = ws.ID;
+					ws.StoreId = ws.Id;
 					Set(ws);
 				}
 
 			}
 		}
 
-		public override bool WritingSystemIDHasChanged(string id)
+		public override bool WritingSystemIdHasChanged(string id)
 		{
 			throw new NotImplementedException();
 		}
 
-		public override string WritingSystemIDHasChangedTo(string id)
+		public override string WritingSystemIdHasChangedTo(string id)
 		{
 			throw new NotImplementedException();
 		}

@@ -49,9 +49,9 @@ namespace SIL.WritingSystems
 					continue;
 				}
 				string newId;
-				if (writingSystemRepository.WritingSystemIDHasChanged(wsID))
+				if (writingSystemRepository.WritingSystemIdHasChanged(wsID))
 				{
-					newId = writingSystemRepository.WritingSystemIDHasChangedTo(wsID);
+					newId = writingSystemRepository.WritingSystemIdHasChangedTo(wsID);
 				}
 				else
 				{
@@ -63,15 +63,15 @@ namespace SIL.WritingSystems
 				}
 				var conformantWritingSystem = new WritingSystemDefinition(newId);
 				// If it changed, then change
-				if (conformantWritingSystem.ID != wsID)
+				if (conformantWritingSystem.Id != wsID)
 				{
 					conformantWritingSystem = WritingSystemDefinition.CreateCopyWithUniqueId(conformantWritingSystem, updatedIds);
-					replaceIdsInFile(wsID, conformantWritingSystem.ID);
+					replaceIdsInFile(wsID, conformantWritingSystem.Id);
 					updatedIds.Remove(wsID);
-					updatedIds.Add(conformantWritingSystem.ID);
+					updatedIds.Add(conformantWritingSystem.Id);
 				}
 				// Check if it's in the repo
-				if (writingSystemRepository.Contains(conformantWritingSystem.ID))
+				if (writingSystemRepository.Contains(conformantWritingSystem.Id))
 				{
 					continue;
 				}

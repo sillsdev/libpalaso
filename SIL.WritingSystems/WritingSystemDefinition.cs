@@ -84,7 +84,7 @@ namespace SIL.WritingSystems
 		private string _id;
 		private string _defaultRegion;
 		private string _windowsLcid;
-		private string _spellCheckingID;
+		private string _spellCheckingId;
 		private CollationDefinition _defaultCollation;
 		private QuotationParagraphContinueType _quotationParagraphContinueType;
 		private readonly KeyedBulkObservableList<string, FontDefinition> _fonts;
@@ -135,7 +135,7 @@ namespace SIL.WritingSystems
 			CheckVariantAndScriptRules();
 			_id = id;
 			_fonts = new KeyedBulkObservableList<string, FontDefinition>(fd => fd.Name);
-			_knownKeyboards = new KeyedBulkObservableList<string, IKeyboardDefinition>(kd => kd.ID);
+			_knownKeyboards = new KeyedBulkObservableList<string, IKeyboardDefinition>(kd => kd.Id);
 			_spellCheckDictionaries = new KeyedBulkObservableList<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition>(scdd => scdd.Format);
 			_collations = new KeyedBulkObservableList<string, CollationDefinition>(cd => cd.Type);
 			_matchedPairs = new ObservableHashSet<MatchedPair>();
@@ -162,14 +162,14 @@ namespace SIL.WritingSystems
 			_keyboard = ws._keyboard;
 			_versionNumber = ws._versionNumber;
 			_versionDescription = ws._versionDescription;
-			_spellCheckingID = ws._spellCheckingID;
+			_spellCheckingId = ws._spellCheckingId;
 			_spellCheckDictionaries = new KeyedBulkObservableList<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition>(ws._spellCheckDictionaries.CloneItems(), scdd => scdd.Format);
 			_dateModified = ws._dateModified;
 			_localKeyboard = ws._localKeyboard;
 			_windowsLcid = ws._windowsLcid;
 			_defaultRegion = ws._defaultRegion;
 			_defaultFontSize = ws._defaultFontSize;
-			_knownKeyboards = new KeyedBulkObservableList<string, IKeyboardDefinition>(ws._knownKeyboards, kd => kd.ID);
+			_knownKeyboards = new KeyedBulkObservableList<string, IKeyboardDefinition>(ws._knownKeyboards, kd => kd.Id);
 			_matchedPairs = new ObservableHashSet<MatchedPair>(ws._matchedPairs);
 			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>(ws._punctuationPatterns);
 			_quotationMarks = new BulkObservableList<QuotationMark>(ws._quotationMarks);
@@ -521,10 +521,10 @@ namespace SIL.WritingSystems
 					// If it's an unlisted language, use the private use area language subtag.
 					if (_language == WellKnownSubtags.UnlistedLanguage)
 					{
-						int idx = ID.IndexOf("-x-", StringComparison.Ordinal);
-						if (idx > 0 && ID.Length > idx + 3)
+						int idx = Id.IndexOf("-x-", StringComparison.Ordinal);
+						if (idx > 0 && Id.Length > idx + 3)
 						{
-							var abbr = ID.Substring(idx + 3);
+							var abbr = Id.Substring(idx + 3);
 							idx = abbr.IndexOf('-');
 							if (idx > 0)
 								abbr = abbr.Substring(0, idx);
@@ -553,7 +553,7 @@ namespace SIL.WritingSystems
 			var lastAppended = string.Empty;
 			int duplicateNumber = 0;
 			string[] wsIds = otherWritingsystemIds.ToArray();
-			while (wsIds.Any(id => id.Equals(newWs.ID, StringComparison.OrdinalIgnoreCase)))
+			while (wsIds.Any(id => id.Equals(newWs.Id, StringComparison.OrdinalIgnoreCase)))
 			{
 				if (!string.IsNullOrEmpty(lastAppended))
 					newWs.RemoveVariants(lastAppended);
@@ -578,7 +578,7 @@ namespace SIL.WritingSystems
 		/// **make changes to ws**
 		/// repo.Set(ws);
 		/// </summary>
-		public string StoreID { get; set; }
+		public string StoreId { get; set; }
 
 		/// <summary>
 		/// A automatically generated descriptive label for the writing system definition.
@@ -713,10 +713,10 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// The identifier for this writing syetm definition. Use this in files and as a key to the IWritingSystemRepository.
-		/// Note that this is the IETF language tag for this writing system.
+		/// The identifier for this writing syetm definition. This is used in files, but not as the key for IWritingSystemRepository.
+		/// StoreId serves that purpose. Note that this is the IETF language tag for this writing system.
 		/// </summary>
-		public string ID
+		public string Id
 		{
 			get { return _id; }
 		}
@@ -840,7 +840,7 @@ namespace SIL.WritingSystems
 			}
 			set
 			{
-				if (Set(() => LocalKeyboard, ref _localKeyboard, value) && value != null && !_knownKeyboards.Contains(value.ID))
+				if (Set(() => LocalKeyboard, ref _localKeyboard, value) && value != null && !_knownKeyboards.Contains(value.Id))
 					_knownKeyboards.Add(value);
 			}
 		}
@@ -1045,12 +1045,12 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// The ID used to select the spell checker.
+		/// The Id used to select the spell checker.
 		/// </summary>
-		public virtual string SpellCheckingID
+		public virtual string SpellCheckingId
 		{
-			get { return _spellCheckingID ?? string.Empty; }
-			set { Set(() => SpellCheckingID, ref _spellCheckingID, value); }
+			get { return _spellCheckingId ?? string.Empty; }
+			set { Set(() => SpellCheckingId, ref _spellCheckingId, value); }
 		}
 
 		public KeyedBulkObservableList<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition> SpellCheckDictionaries
@@ -1118,7 +1118,7 @@ namespace SIL.WritingSystems
 
 		/// <summary>
 		/// Creates a clone of the current writing system.
-		/// Note that this excludes the properties: Modified, MarkedForDeletion and StoreID
+		/// Note that this excludes the properties: Modified, MarkedForDeletion and StoreId
 		/// </summary>
 		/// <returns></returns>
 		public override WritingSystemDefinition Clone()
@@ -1173,7 +1173,7 @@ namespace SIL.WritingSystems
 				return false;
 			if (LegacyMapping != other.LegacyMapping)
 				return false;
-			if (SpellCheckingID != other.SpellCheckingID)
+			if (SpellCheckingId != other.SpellCheckingId)
 				return false;
 			if (_defaultFontSize != other._defaultFontSize)
 				return false;

@@ -20,7 +20,7 @@ namespace SIL.LexiconUtils
 			if (userSettingsElem == null)
 				return;
 
-			XElement wsElem = userSettingsElem.Elements("WritingSystems").Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.ID);
+			XElement wsElem = userSettingsElem.Elements("WritingSystems").Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.Id);
 			if (wsElem == null)
 				return;
 
@@ -50,16 +50,16 @@ namespace SIL.LexiconUtils
 				wssElem = new XElement("WritingSystems");
 				userSettingsElem.Add(wssElem);
 			}
-			XElement wsElem = wssElem.Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.ID);
+			XElement wsElem = wssElem.Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.Id);
 			if (wsElem == null)
 			{
-				wsElem = new XElement("WritingSystem", new XAttribute("id", ws.ID));
+				wsElem = new XElement("WritingSystem", new XAttribute("id", ws.Id));
 				wssElem.Add(wsElem);
 			}
 			wsElem.RemoveNodes();
 
 			if (ws.LocalKeyboard != null)
-				wsElem.Add(new XElement("LocalKeyboard", ws.LocalKeyboard.ID));
+				wsElem.Add(new XElement("LocalKeyboard", ws.LocalKeyboard.Id));
 			if (ws.DefaultFont != null)
 				wsElem.Add(new XElement("DefaultFontName", ws.DefaultFont.Name));
 			if (ws.DefaultFontSize != 0)

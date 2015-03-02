@@ -32,7 +32,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Palaso.UI.WindowsForms.Keyboarding.Linux.XkbKeyboardAdaptor"/> class.
+		/// Initializes a new instance of the <see cref="SIL.Windows.Forms.Keyboarding.Linux.XkbKeyboardAdaptor"/> class.
 		/// This overload is used in unit tests.
 		/// </summary>
 		public XkbKeyboardAdaptor(IXklEngine engine)
@@ -85,7 +85,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			var configRegistry = XklConfigRegistry.Create(_engine);
 			Dictionary<string, List<XklConfigRegistry.LayoutDescription>> layouts = configRegistry.Layouts;
 
-			Dictionary<string, XkbKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<XkbKeyboardDescription>().ToDictionary(kd => kd.ID);
+			Dictionary<string, XkbKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<XkbKeyboardDescription>().ToDictionary(kd => kd.Id);
 			for (int iGroup = 0; iGroup < _engine.GroupNames.Length; iGroup++)
 			{
 				// a group in a xkb keyboard is a keyboard layout. This can be used with

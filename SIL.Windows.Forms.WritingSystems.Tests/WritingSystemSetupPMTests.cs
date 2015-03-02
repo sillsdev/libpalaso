@@ -902,9 +902,9 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 				_model.AskIfOkToDeleteWritingSystems += e.OnAskIfOkToDeleteWritingSystem_Yes;
 				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
 				_model.Save();
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.ID == "pt"), Is.True);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.True);
 				_model.DeleteCurrent();
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.ID == "pt"), Is.False);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.False);
 			}
 		}
 
@@ -946,9 +946,9 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Conflate;
 				_model.AskIfOkToConflateWritingSystems += e.OnAskIfOkToConflateWritingSystems_Yes;
 				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.ID == "pt"), Is.True);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.True);
 				_model.DeleteCurrent();
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.ID == "pt"), Is.False);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.False);
 			}
 		}
 
@@ -960,9 +960,9 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
 					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Conflate;
 				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.ID == "pt"), Is.True);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.True);
 				_model.DeleteCurrent();
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.ID == "pt"), Is.False);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.False);
 			}
 		}
 
@@ -991,9 +991,9 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Delete;
 				_model.AskIfOkToDeleteWritingSystems += e.OnAskIfOkToDeleteWritingSystem_Yes;
 				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.ID == "pt"), Is.True);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.True);
 				_model.DeleteCurrent();
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.ID == "pt"), Is.False);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.False);
 			}
 		}
 
@@ -1005,9 +1005,9 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
 					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Delete;
 				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.ID == "pt"), Is.True);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.True);
 				_model.DeleteCurrent();
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.ID == "pt"), Is.False);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.False);
 			}
 		}
 
@@ -1019,9 +1019,9 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
 					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Nothing;
 				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.ID == "pt"), Is.True);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.True);
 				_model.DeleteCurrent();
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.ID == "pt"), Is.True);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.Id == "pt"), Is.True);
 			}
 		}
 
@@ -1030,7 +1030,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		{
 			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
 			Assert.That(_model.WritingSystemCount, Is.EqualTo(1));
-			Assert.That("pt", Is.EqualTo(_model.CurrentDefinition.ID));
+			Assert.That("pt", Is.EqualTo(_model.CurrentDefinition.Id));
 			_model.DeleteCurrent();
 			Assert.That(_model.WritingSystemCount, Is.EqualTo(0));
 		}

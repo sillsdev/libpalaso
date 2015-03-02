@@ -107,13 +107,13 @@ namespace SIL.WritingSystems.Tests
 				get { return _writingSystem; }
 			}
 
-			public string GetPathForLocalWsID(string id)
+			public string GetPathForLocalWSId(string id)
 			{
 				string path = Path.Combine(_localRepoFolder.Path, id + ".ldml");
 				return path;
 			}
 
-			public string GetPathForGlobalWsID(string id)
+			public string GetPathForGlobalWSId(string id)
 			{
 				string path = Path.Combine(GlobalWritingSystemRepository.CurrentVersionPath(_globalRepoFolder.Path), id + ".ldml");
 				return path;
@@ -121,7 +121,7 @@ namespace SIL.WritingSystems.Tests
 
 			public void AssertWritingSystemFileExists(string id)
 			{
-				Assert.IsTrue(File.Exists(GetPathForLocalWsID(id)));
+				Assert.IsTrue(File.Exists(GetPathForLocalWSId(id)));
 			}
 		}
 
@@ -165,7 +165,7 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			{
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
-				environment.AssertWritingSystemFileExists(environment.WritingSystem.ID);
+				environment.AssertWritingSystemFileExists(environment.WritingSystem.Id);
 			}
 		}
 
@@ -191,9 +191,9 @@ namespace SIL.WritingSystems.Tests
 			{
 				environment.WritingSystem.Language = "qaa";
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
-				var ws2 = environment.LocalRepository.Get(environment.WritingSystem.StoreID);
+				var ws2 = environment.LocalRepository.Get(environment.WritingSystem.StoreId);
 				environment.LocalRepository.SaveDefinition(ws2);
-				environment.AssertWritingSystemFileExists(environment.WritingSystem.ID);
+				environment.AssertWritingSystemFileExists(environment.WritingSystem.Id);
 			}
 		}
 
@@ -205,7 +205,7 @@ namespace SIL.WritingSystems.Tests
 				string newRepoPath = Path.Combine(environment.LocalRepositoryPath, "newguy");
 				var newRepository = new TestLdmlInFolderWritingSystemRepository(newRepoPath);
 				newRepository.SaveDefinition(environment.WritingSystem);
-				Assert.That(File.Exists(Path.Combine(newRepoPath, environment.WritingSystem.ID + ".ldml")));
+				Assert.That(File.Exists(Path.Combine(newRepoPath, environment.WritingSystem.Id + ".ldml")));
 			}
 		}
 
@@ -254,7 +254,7 @@ namespace SIL.WritingSystems.Tests
 				repo.Set(ws2);
 				repo.Save();
 
-				repo.Conflate(ws.ID, ws2.ID);
+				repo.Conflate(ws.Id, ws2.Id);
 				repo.Save();
 
 				string logFilePath = Path.Combine(repo.PathToWritingSystems, "idchangelog.xml");
@@ -265,18 +265,18 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void StoreIDAfterSave_SameAsFileNameWithoutExtension()
+		public void StoreIdAfterSave_SameAsFileNameWithoutExtension()
 		{
 			using (var environment = new TestEnvironment())
 			{
 				environment.WritingSystem.Language = "en";
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
-				Assert.AreEqual("en", environment.WritingSystem.StoreID);
+				Assert.AreEqual("en", environment.WritingSystem.StoreId);
 			}
 		}
 
 		[Test]
-		public void StoreIDAfterLoad_SameAsFileNameWithoutExtension()
+		public void StoreIdAfterLoad_SameAsFileNameWithoutExtension()
 		{
 			using (var environment = new TestEnvironment())
 			{
@@ -286,7 +286,7 @@ namespace SIL.WritingSystems.Tests
 				environment.Reset();
 				WritingSystemDefinition ws2 = environment.LocalRepository.Get("en");
 				Assert.AreEqual(
-					Path.GetFileNameWithoutExtension(Directory.GetFiles(environment.LocalRepositoryPath, "*.ldml")[0]), ws2.StoreID);
+					Path.GetFileNameWithoutExtension(Directory.GetFiles(environment.LocalRepositoryPath, "*.ldml")[0]), ws2.StoreId);
 			}
 		}
 
@@ -299,11 +299,11 @@ namespace SIL.WritingSystems.Tests
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
 				string path = Path.Combine(environment.LocalRepository.PathToWritingSystems, "en.ldml");
 				Assert.IsTrue(File.Exists(path));
-				var ws2 = environment.LocalRepository.Get(environment.WritingSystem.ID);
+				var ws2 = environment.LocalRepository.Get(environment.WritingSystem.Id);
 				ws2.Language = "de";
-				Assert.AreEqual("en", ws2.StoreID);
+				Assert.AreEqual("en", ws2.StoreId);
 				environment.LocalRepository.SaveDefinition(ws2);
-				Assert.AreEqual("de", ws2.StoreID);
+				Assert.AreEqual("de", ws2.StoreId);
 				Assert.IsFalse(File.Exists(path));
 				path = Path.Combine(environment.LocalRepository.PathToWritingSystems, "de.ldml");
 				Assert.IsTrue(File.Exists(path));
@@ -318,7 +318,7 @@ namespace SIL.WritingSystems.Tests
 
 				environment.WritingSystem.Language = "en";
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
-				AssertThatXmlIn.File(environment.GetPathForLocalWsID(environment.WritingSystem.ID)).HasAtLeastOneMatchForXpath("ldml/identity/language[@type='en']");
+				AssertThatXmlIn.File(environment.GetPathForLocalWSId(environment.WritingSystem.Id)).HasAtLeastOneMatchForXpath("ldml/identity/language[@type='en']");
 			}
 		}
 
@@ -330,7 +330,7 @@ namespace SIL.WritingSystems.Tests
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
 				environment.WritingSystem.Variants.Add("1901");
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
-				AssertThatXmlIn.File(environment.GetPathForLocalWsID(environment.WritingSystem.ID)).HasAtLeastOneMatchForXpath("ldml/identity/variant[@type='1901']");
+				AssertThatXmlIn.File(environment.GetPathForLocalWSId(environment.WritingSystem.Id)).HasAtLeastOneMatchForXpath("ldml/identity/variant[@type='1901']");
 			}
 		}
 
@@ -347,11 +347,11 @@ namespace SIL.WritingSystems.Tests
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
 
 				environment.Reset();
-				WritingSystemDefinition ws2 = environment.LocalRepository.Get(environment.WritingSystem.StoreID);
+				WritingSystemDefinition ws2 = environment.LocalRepository.Get(environment.WritingSystem.StoreId);
 				ws2.Variants.Add("piglatin");
 				environment.LocalRepository.SaveDefinition(ws2);
 				string path = Path.Combine(environment.LocalRepository.PathToWritingSystems,
-										   environment.GetPathForLocalWsID(ws2.ID));
+										   environment.GetPathForLocalWSId(ws2.Id));
 				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath("ldml/identity/variant[@type='x-piglatin']");
 
 				// TODO: Add this back when Abbreviation is written to application-specific namespace
@@ -372,7 +372,7 @@ namespace SIL.WritingSystems.Tests
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
 
 				environment.Reset();
-				WritingSystemDefinition ws2 = environment.LocalRepository.Get(environment.WritingSystem.StoreID);
+				WritingSystemDefinition ws2 = environment.LocalRepository.Get(environment.WritingSystem.StoreId);
 				Assert.That(ws2.Variants, Is.EqualTo(new VariantSubtag[] {"piglatin"}));
 			}
 		}
@@ -408,7 +408,7 @@ namespace SIL.WritingSystems.Tests
 
 				environment.Reset();
 				WritingSystemDefinition ws2 = environment.LocalRepository.Get("en");
-				Assert.AreEqual("Thai", ws2.KnownKeyboards[0].ID);
+				Assert.AreEqual("Thai", ws2.KnownKeyboards[0].Id);
 			}
 		}
 
@@ -457,12 +457,12 @@ namespace SIL.WritingSystems.Tests
 				environment.WritingSystem.Language = "en";
 				environment.WritingSystem.Variants.Add("piglatin");
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
-				string path = environment.GetPathForLocalWsID(environment.WritingSystem.ID);
+				string path = environment.GetPathForLocalWSId(environment.WritingSystem.Id);
 
 				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath("ldml/identity/variant");
 				environment.WritingSystem.Variants.Clear();
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
-				AssertThatXmlIn.File(environment.GetPathForLocalWsID(environment.WritingSystem.ID)).HasNoMatchForXpath("ldml/identity/variant");
+				AssertThatXmlIn.File(environment.GetPathForLocalWSId(environment.WritingSystem.Id)).HasNoMatchForXpath("ldml/identity/variant");
 			}
 		}
 
@@ -513,7 +513,7 @@ namespace SIL.WritingSystems.Tests
 				environment.WritingSystem.Language = "en";
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
 				string path = Path.Combine(environment.LocalRepository.PathToWritingSystems,
-										   environment.GetPathForLocalWsID(environment.WritingSystem.ID));
+										   environment.GetPathForLocalWSId(environment.WritingSystem.Id));
 				Assert.IsTrue(File.Exists(path));
 				environment.LocalRepository.Remove(environment.WritingSystem.Language);
 				Assert.IsFalse(File.Exists(path));
@@ -524,7 +524,7 @@ namespace SIL.WritingSystems.Tests
 		private static void AssertFileIsInTrash(TestEnvironment environment)
 		{
 			string path = Path.Combine(environment.LocalRepository.PathToWritingSystems, "trash");
-			path = Path.Combine(path,environment.WritingSystem.ID + ".ldml");
+			path = Path.Combine(path,environment.WritingSystem.Id + ".ldml");
 			Assert.IsTrue(File.Exists(path));
 		}
 
@@ -535,13 +535,13 @@ namespace SIL.WritingSystems.Tests
 			{
 				environment.WritingSystem.Language = "en";
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
-				environment.LocalRepository.Remove(environment.WritingSystem.StoreID);
+				environment.LocalRepository.Remove(environment.WritingSystem.StoreId);
 				AssertFileIsInTrash(environment);
 				var ws2 = new WritingSystemDefinition {Language = "en"};
 				environment.LocalRepository.SaveDefinition(ws2);
-				environment.LocalRepository.Remove(ws2.StoreID);
+				environment.LocalRepository.Remove(ws2.StoreId);
 				string path = Path.Combine(environment.LocalRepository.PathToWritingSystems,
-										   environment.GetPathForLocalWsID(environment.WritingSystem.ID));
+										   environment.GetPathForLocalWSId(environment.WritingSystem.Id));
 				Assert.IsFalse(File.Exists(path));
 				AssertFileIsInTrash(environment);
 			}
@@ -575,7 +575,7 @@ namespace SIL.WritingSystems.Tests
 				environment.WritingSystem.Language = "en";
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
 				environment.Reset();
-				WritingSystemDefinition ws2 = environment.LocalRepository.Get(environment.WritingSystem.StoreID);
+				WritingSystemDefinition ws2 = environment.LocalRepository.Get(environment.WritingSystem.StoreId);
 				Assert.IsFalse(ws2.IsChanged);
 			}
 		}
@@ -664,7 +664,7 @@ namespace SIL.WritingSystems.Tests
 				e.LocalRepository.Set(new WritingSystemDefinition("de"));
 				e.LocalRepository.Set(new WritingSystemDefinition("en"));
 				e.LocalRepository.Conflate("de", "en");
-				Assert.That(e.LocalRepository.WritingSystemIDHasChangedTo("de"), Is.EqualTo("en"));
+				Assert.That(e.LocalRepository.WritingSystemIdHasChangedTo("de"), Is.EqualTo("en"));
 			}
 		}
 
@@ -753,7 +753,7 @@ namespace SIL.WritingSystems.Tests
 				// Now try to load up.
 				environment.Reset();
 				var ws = environment.LocalRepository.Get("en");
-				Assert.That(ws.ID, Is.EqualTo("en"));
+				Assert.That(ws.Id, Is.EqualTo("en"));
 			}
 		}
 
@@ -795,7 +795,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				var ws = new WritingSystemDefinition("en");
 				environment.LocalRepository.Set(ws);
-				Assert.That(environment.LocalRepository.Get("en").ID, Is.EqualTo("en"));
+				Assert.That(environment.LocalRepository.Get("en").Id, Is.EqualTo("en"));
 			}
 		}
 
@@ -833,7 +833,7 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			{
 				//Add a writing system to the repo
-				Assert.That(environment.LocalRepository.WritingSystemIDHasChanged("en"), Is.False);
+				Assert.That(environment.LocalRepository.WritingSystemIdHasChanged("en"), Is.False);
 			}
 		}
 
@@ -849,7 +849,7 @@ namespace SIL.WritingSystems.Tests
 				//Now change the Id
 				ws.Variants.Add("bogus");
 				environment.LocalRepository.Save();
-				Assert.That(environment.LocalRepository.WritingSystemIDHasChanged("en"), Is.True);
+				Assert.That(environment.LocalRepository.WritingSystemIdHasChanged("en"), Is.True);
 			}
 		}
 
@@ -872,7 +872,7 @@ namespace SIL.WritingSystems.Tests
 				wsEnDup.Variants.Add("bogus2");
 				environment.LocalRepository.Set(wsEnDup);
 				environment.LocalRepository.Save();
-				Assert.That(environment.LocalRepository.WritingSystemIDHasChanged("en"), Is.True);
+				Assert.That(environment.LocalRepository.WritingSystemIdHasChanged("en"), Is.True);
 			}
 		}
 
@@ -885,7 +885,7 @@ namespace SIL.WritingSystems.Tests
 				var ws = new WritingSystemDefinition("en");
 				environment.LocalRepository.Set(ws);
 				environment.LocalRepository.Save();
-				Assert.That(environment.LocalRepository.WritingSystemIDHasChanged("en"), Is.False);
+				Assert.That(environment.LocalRepository.WritingSystemIdHasChanged("en"), Is.False);
 			}
 		}
 
@@ -895,7 +895,7 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			{
 				//Add a writing system to the repo
-				Assert.That(environment.LocalRepository.WritingSystemIDHasChangedTo("en"), Is.Null);
+				Assert.That(environment.LocalRepository.WritingSystemIdHasChangedTo("en"), Is.Null);
 			}
 		}
 
@@ -911,7 +911,7 @@ namespace SIL.WritingSystems.Tests
 				//Now change the Id
 				ws.Variants.Add("bogus");
 				environment.LocalRepository.Save();
-				Assert.That(environment.LocalRepository.WritingSystemIDHasChangedTo("en"), Is.EqualTo("en-x-bogus"));
+				Assert.That(environment.LocalRepository.WritingSystemIdHasChangedTo("en"), Is.EqualTo("en-x-bogus"));
 			}
 		}
 
@@ -934,7 +934,7 @@ namespace SIL.WritingSystems.Tests
 				wsEnDup.Variants.Add("bogus2");
 				environment.LocalRepository.Set(wsEnDup);
 				environment.LocalRepository.Save();
-				Assert.That(environment.LocalRepository.WritingSystemIDHasChangedTo("en"), Is.Null);
+				Assert.That(environment.LocalRepository.WritingSystemIdHasChangedTo("en"), Is.Null);
 			}
 		}
 
@@ -947,7 +947,7 @@ namespace SIL.WritingSystems.Tests
 				var ws = new WritingSystemDefinition("en");
 				environment.LocalRepository.Set(ws);
 				environment.LocalRepository.Save();
-				Assert.That(environment.LocalRepository.WritingSystemIDHasChangedTo("en"), Is.EqualTo("en"));
+				Assert.That(environment.LocalRepository.WritingSystemIdHasChangedTo("en"), Is.EqualTo("en"));
 			}
 		}
 
@@ -1077,7 +1077,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			using (var environment = new TestEnvironment())
 			{
-				File.WriteAllText(environment.GetPathForLocalWsID("en"), @"<?xml version='1.0' encoding='utf-8'?>
+				File.WriteAllText(environment.GetPathForLocalWSId("en"), @"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 	<identity>
 		<version number='1.0'>From Repo</version>
@@ -1098,13 +1098,13 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(enWs.Language, Is.EqualTo((LanguageSubtag) "en"));
 				Assert.That(enWs.Script, Is.EqualTo((ScriptSubtag) "Latn"));
 				Assert.That(enWs.VersionDescription, Is.EqualTo("From Repo"));
-				Assert.That(enWs.Template, Is.EqualTo(environment.GetPathForLocalWsID("en")));
+				Assert.That(enWs.Template, Is.EqualTo(environment.GetPathForLocalWSId("en")));
 
 				// ensure that the template is used when the writing system is saved
 				enWs.Region = "US";
 				environment.LocalRepository.Set(enWs);
 				environment.LocalRepository.Save();
-				XElement ldmlElem = XElement.Load(environment.GetPathForLocalWsID("en-US"));
+				XElement ldmlElem = XElement.Load(environment.GetPathForLocalWSId("en-US"));
 				Assert.That((string) ldmlElem.Elements("layout").Elements("orientation").Elements("lineOrder").First(), Is.EqualTo("top-to-bottom"));
 			}
 		}
@@ -1140,7 +1140,7 @@ namespace SIL.WritingSystems.Tests
 				// ensure that the template is used when the writing system is saved
 				environment.LocalRepository.Set(enWs);
 				environment.LocalRepository.Save();
-				XElement ldmlElem = XElement.Load(environment.GetPathForLocalWsID("en"));
+				XElement ldmlElem = XElement.Load(environment.GetPathForLocalWSId("en"));
 				Assert.That((string) ldmlElem.Elements("layout").Elements("orientation").Elements("lineOrder").First(), Is.EqualTo("top-to-bottom"));
 			}
 		}
@@ -1178,7 +1178,7 @@ namespace SIL.WritingSystems.Tests
 				// ensure that the template is used when the writing system is saved
 				environment.LocalRepository.Set(chWs);
 				environment.LocalRepository.Save();
-				XElement ldmlElem = XElement.Load(environment.GetPathForLocalWsID("zh-Hans-CN"));
+				XElement ldmlElem = XElement.Load(environment.GetPathForLocalWSId("zh-Hans-CN"));
 				Assert.That((string) ldmlElem.Elements("layout").Elements("orientation").Elements("lineOrder").First(), Is.EqualTo("top-to-bottom"));
 			}
 		}
@@ -1193,17 +1193,17 @@ namespace SIL.WritingSystems.Tests
 				environment.LocalRepository.Set(ws);
 				ws.RightToLeftScript = true;
 				environment.LocalRepository.Save();
-				Assert.IsTrue(File.Exists(environment.GetPathForLocalWsID("en-US")));
-				Assert.IsTrue(File.Exists(environment.GetPathForGlobalWsID("en-US")));
+				Assert.IsTrue(File.Exists(environment.GetPathForLocalWSId("en-US")));
+				Assert.IsTrue(File.Exists(environment.GetPathForGlobalWSId("en-US")));
 
-				DateTime lastModified = File.GetLastWriteTime(environment.GetPathForGlobalWsID("en-US"));
+				DateTime lastModified = File.GetLastWriteTime(environment.GetPathForGlobalWSId("en-US"));
 				Thread.Sleep(1000);
 				var localRepo2 = new TestLdmlInFolderWritingSystemRepository(testFolder2.Path, environment.GlobalRepository);
 				ws = new WritingSystemDefinition("en-US");
 				localRepo2.Set(ws);
 				ws.RightToLeftScript = false;
 				localRepo2.Save();
-				Assert.Less(lastModified, File.GetLastWriteTime(environment.GetPathForGlobalWsID("en-US")));
+				Assert.Less(lastModified, File.GetLastWriteTime(environment.GetPathForGlobalWSId("en-US")));
 			}
 		}
 
