@@ -542,10 +542,29 @@ namespace SIL.WritingSystems
 			return AllWritingSystems.Any(ws => ws.Id.Equals(id)) ? id : _changeLog.GetChangeFor(id);
 		}
 
-		public override void LastChecked(string identifier, DateTime dateModified)
+		protected override void LastChecked(string identifier, DateTime dateModified)
 		{
 			base.LastChecked(identifier, dateModified);
 			WriteGlobalWritingSystemsToIgnore();
+		}
+
+		/// <summary>
+		/// Gets all newer shared writing systems.
+		/// </summary>
+		/// <value>The newer shared writing systems.</value>
+		public IEnumerable<WritingSystemDefinition> CheckForNewerGlobalWritingSystems()
+		{
+			if (_globalRepository != null)
+			{
+				var results = new List<WritingSystemDefinition>();
+				foreach (WritingSystemDefinition wsDef in WritingSystemsNewerIn(_globalRepository.AllWritingSystems))
+				{
+					LastChecked(wsDef.Id, wsDef.DateModified);
+					results.Add(wsDef); // REVIEW Hasso 2013.12: add only if not equal?
+				}
+				return results;
+			}
+			return Enumerable.Empty<WritingSystemDefinition>();
 		}
 
 		protected override void OnChangeNotifySharedStore(WritingSystemDefinition ws)

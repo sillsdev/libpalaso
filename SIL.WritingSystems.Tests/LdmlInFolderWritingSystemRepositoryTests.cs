@@ -71,17 +71,20 @@ namespace SIL.WritingSystems.Tests
 				_templateFolder = new TemporaryFolder("Templates");
 				_globalRepoFolder = new TemporaryFolder("GlobalWritingSystemRepository");
 				_writingSystem = new WritingSystemDefinition();
-				Reset();
+				ResetRepositories();
 			}
 
-			public void Reset()
+			public void ResetRepositories()
 			{
+				if (GlobalRepository != null)
+					GlobalRepository.Dispose();
 				GlobalRepository = new GlobalWritingSystemRepository(_globalRepoFolder.Path);
 				LocalRepository = new TestLdmlInFolderWritingSystemRepository(_localRepoFolder.Path, GlobalRepository) {TemplateFolder = _templateFolder.Path};
 			}
 
 			public void Dispose()
 			{
+				GlobalRepository.Dispose();
 				_globalRepoFolder.Dispose();
 				_sldrCacheFolder.Dispose();
 				_templateFolder.Dispose();
@@ -283,7 +286,7 @@ namespace SIL.WritingSystems.Tests
 				environment.WritingSystem.Language = "en";
 				Assert.AreNotEqual(0, Directory.GetFiles(environment.LocalRepositoryPath, "*.ldml"));
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
-				environment.Reset();
+				environment.ResetRepositories();
 				WritingSystemDefinition ws2 = environment.LocalRepository.Get("en");
 				Assert.AreEqual(
 					Path.GetFileNameWithoutExtension(Directory.GetFiles(environment.LocalRepositoryPath, "*.ldml")[0]), ws2.StoreId);
@@ -346,7 +349,7 @@ namespace SIL.WritingSystems.Tests
 					//crucially, abbreviation isn't part of the name of the file
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
 
-				environment.Reset();
+				environment.ResetRepositories();
 				WritingSystemDefinition ws2 = environment.LocalRepository.Get(environment.WritingSystem.StoreId);
 				ws2.Variants.Add("piglatin");
 				environment.LocalRepository.SaveDefinition(ws2);
@@ -371,7 +374,7 @@ namespace SIL.WritingSystems.Tests
 				environment.WritingSystem.Variants.Add("piglatin");
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
 
-				environment.Reset();
+				environment.ResetRepositories();
 				WritingSystemDefinition ws2 = environment.LocalRepository.Get(environment.WritingSystem.StoreId);
 				Assert.That(ws2.Variants, Is.EqualTo(new VariantSubtag[] {"piglatin"}));
 			}
@@ -406,7 +409,7 @@ namespace SIL.WritingSystems.Tests
 				environment.WritingSystem.KnownKeyboards.Add(kbd1);
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
 
-				environment.Reset();
+				environment.ResetRepositories();
 				WritingSystemDefinition ws2 = environment.LocalRepository.Get("en");
 				Assert.AreEqual("Thai", ws2.KnownKeyboards[0].Id);
 			}
@@ -423,7 +426,7 @@ namespace SIL.WritingSystems.Tests
 				Assert.IsTrue(environment.WritingSystem.RightToLeftScript);
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
 
-				environment.Reset();
+				environment.ResetRepositories();
 				WritingSystemDefinition ws2 = environment.LocalRepository.Get("en");
 				Assert.IsTrue(ws2.RightToLeftScript);
 			}
@@ -574,7 +577,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				environment.WritingSystem.Language = "en";
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
-				environment.Reset();
+				environment.ResetRepositories();
 				WritingSystemDefinition ws2 = environment.LocalRepository.Get(environment.WritingSystem.StoreId);
 				Assert.IsFalse(ws2.IsChanged);
 			}
@@ -617,7 +620,7 @@ namespace SIL.WritingSystems.Tests
 				WritingSystemDefinition ws2 = list2[0];
 				environment.LocalRepository.Remove(ws2.Language);
 
-				environment.Reset();
+				environment.ResetRepositories();
 				//  repository.DontAddDefaultDefinitions = false;
 				environment.LocalRepository.SystemWritingSystemProvider = new DummyWritingSystemProvider();
 				Assert.IsFalse(ContainsLanguageWithName(environment.LocalRepository.AllWritingSystems, "English"));
@@ -635,7 +638,7 @@ namespace SIL.WritingSystems.Tests
 				File.WriteAllText(Path.Combine(environment.LocalRepositoryPath, "inconsistent-filename.ldml"),
 								  LdmlContentForTests.CurrentVersion("de", WellKnownSubtags.UnwrittenScript, "", "x-audio"));
 
-				environment.Reset();
+				environment.ResetRepositories();
 				IList<WritingSystemRepositoryProblem> problems = environment.LocalRepository.LoadProblems;
 
 				Assert.That(problems.Count, Is.EqualTo(2));
@@ -677,7 +680,7 @@ namespace SIL.WritingSystems.Tests
 				File.WriteAllText(Path.Combine(environment.LocalRepositoryPath, "tpi-Zxxx-x-audio.ldml"),
 								  LdmlContentForTests.CurrentVersion("de", "latn", "ch", "1901"));
 
-				environment.Reset();
+				environment.ResetRepositories();
 				IList<WritingSystemRepositoryProblem> problems = environment.LocalRepository.LoadProblems;
 				Assert.That(problems.Count, Is.EqualTo(1));
 				Assert.That(
@@ -699,7 +702,7 @@ namespace SIL.WritingSystems.Tests
 				File.WriteAllText(Path.Combine(environment.LocalRepositoryPath, "aa-latn.ldml"),
 								  LdmlContentForTests.CurrentVersion("aa", "Latn", "", ""));
 
-				environment.Reset();
+				environment.ResetRepositories();
 				IList<WritingSystemRepositoryProblem> problems = environment.LocalRepository.LoadProblems;
 				Assert.That(problems.Count, Is.EqualTo(0));
 			}
@@ -735,7 +738,7 @@ namespace SIL.WritingSystems.Tests
 				File.Move(Path.Combine(environment.LocalRepositoryPath, "en.ldml"), Path.Combine(environment.LocalRepositoryPath, "de.ldml"));
 
 				// Now try to load up.
-				environment.Reset();
+				environment.ResetRepositories();
 				Assert.That(environment.LocalRepository.Contains("en"));
 			}
 		}
@@ -751,7 +754,7 @@ namespace SIL.WritingSystems.Tests
 				File.Move(Path.Combine(environment.LocalRepositoryPath, "en.ldml"), Path.Combine(environment.LocalRepositoryPath, "de.ldml"));
 
 				// Now try to load up.
-				environment.Reset();
+				environment.ResetRepositories();
 				var ws = environment.LocalRepository.Get("en");
 				Assert.That(ws.Id, Is.EqualTo("en"));
 			}
@@ -822,7 +825,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				var pathToFlexprivateUseLdml = Path.Combine(environment.LocalRepositoryPath, "x-Zxxx-x-audio.ldml");
 				File.WriteAllText(pathToFlexprivateUseLdml, LdmlContentForTests.CurrentVersion("xh", "", "", ""));
-				environment.Reset();
+				environment.ResetRepositories();
 				Assert.That(File.Exists(Path.Combine(environment.LocalRepositoryPath, "xh.ldml")));
 			}
 		}
@@ -1022,7 +1025,7 @@ namespace SIL.WritingSystems.Tests
 				environment.LocalRepository.Set(ws2);
 				environment.LocalRepository.Set(ws1);
 				environment.LocalRepository.Save();
-				environment.Reset();
+				environment.ResetRepositories();
 				Assert.That(environment.LocalRepository.Count, Is.EqualTo(2));
 			}
 		}
@@ -1093,7 +1096,7 @@ namespace SIL.WritingSystems.Tests
 	</layout>
 </ldml>
 ");
-				environment.Reset();
+				environment.ResetRepositories();
 				WritingSystemDefinition enWs = environment.LocalRepository.CreateNew("en");
 				Assert.That(enWs.Language, Is.EqualTo((LanguageSubtag) "en"));
 				Assert.That(enWs.Script, Is.EqualTo((ScriptSubtag) "Latn"));
@@ -1196,14 +1199,83 @@ namespace SIL.WritingSystems.Tests
 				Assert.IsTrue(File.Exists(environment.GetPathForLocalWSId("en-US")));
 				Assert.IsTrue(File.Exists(environment.GetPathForGlobalWSId("en-US")));
 
-				DateTime lastModified = File.GetLastWriteTime(environment.GetPathForGlobalWSId("en-US"));
+				// ensure that the date modified actually changes
 				Thread.Sleep(1000);
+
+				DateTime lastModified = File.GetLastWriteTime(environment.GetPathForGlobalWSId("en-US"));
 				var localRepo2 = new TestLdmlInFolderWritingSystemRepository(testFolder2.Path, environment.GlobalRepository);
 				ws = new WritingSystemDefinition("en-US");
 				localRepo2.Set(ws);
 				ws.RightToLeftScript = false;
 				localRepo2.Save();
 				Assert.Less(lastModified, File.GetLastWriteTime(environment.GetPathForGlobalWSId("en-US")));
+
+				lastModified = File.GetLastWriteTime(environment.GetPathForLocalWSId("en-US"));
+				environment.ResetRepositories();
+				ws = environment.LocalRepository.Get("en-US");
+				Assert.That(ws.RightToLeftScript, Is.True);
+				WritingSystemDefinition[] sharedWSs = environment.LocalRepository.CheckForNewerGlobalWritingSystems().ToArray();
+				Assert.That(sharedWSs.Select(sharedWS => sharedWS.Id), Is.EqualTo(new[] {"en-US"}));
+				environment.LocalRepository.Remove(sharedWSs[0].Id);
+				environment.LocalRepository.Set(sharedWSs[0]);
+				environment.LocalRepository.Save();
+
+				ws = environment.LocalRepository.Get("en-US");
+				Assert.That(ws.RightToLeftScript, Is.False);
+				Assert.Less(lastModified, File.GetLastWriteTime(environment.GetPathForLocalWSId("en-US")));
+			}
+		}
+
+		[Test]
+		public void Save_UpdatesWritingSystemsToIgnore()
+		{
+			using (var environment = new TestEnvironment())
+			using (var testFolder2 = new TemporaryFolder("LdmlInFolderWritingSystemRepositoryTests2"))
+			{
+				var ws = new WritingSystemDefinition("en-US");
+				environment.LocalRepository.Set(ws);
+				ws.RightToLeftScript = true;
+				environment.LocalRepository.Save();
+
+				// ensure that the date modified actually changes
+				Thread.Sleep(1000);
+
+				var localRepo2 = new TestLdmlInFolderWritingSystemRepository(testFolder2.Path, environment.GlobalRepository);
+				ws = new WritingSystemDefinition("en-US");
+				localRepo2.Set(ws);
+				ws.RightToLeftScript = false;
+				localRepo2.Save();
+
+				environment.ResetRepositories();
+				ws = environment.LocalRepository.Get("en-US");
+				Assert.That(ws.RightToLeftScript, Is.True);
+				WritingSystemDefinition[] sharedWSs = environment.LocalRepository.CheckForNewerGlobalWritingSystems().ToArray();
+				Assert.That(sharedWSs.Select(sharedWS => sharedWS.Id), Is.EqualTo(new[] {"en-US"}));
+				environment.LocalRepository.Save();
+
+				environment.ResetRepositories();
+				Assert.That(environment.LocalRepository.CheckForNewerGlobalWritingSystems(), Is.Empty);
+				environment.LocalRepository.Save();
+
+				// ensure that the date modified actually changes
+				Thread.Sleep(1000);
+
+				localRepo2 = new TestLdmlInFolderWritingSystemRepository(testFolder2.Path, environment.GlobalRepository);
+				ws = localRepo2.Get("en-US");
+				ws.CharacterSets.Add(new CharacterSetDefinition("main"));
+				localRepo2.Save();
+
+				environment.ResetRepositories();
+				ws = environment.LocalRepository.Get("en-US");
+				Assert.That(ws.CharacterSets, Is.Empty);
+				sharedWSs = environment.LocalRepository.CheckForNewerGlobalWritingSystems().ToArray();
+				Assert.That(sharedWSs.Select(sharedWS => sharedWS.Id), Is.EqualTo(new[] {"en-US"}));
+				environment.LocalRepository.Remove(sharedWSs[0].Id);
+				environment.LocalRepository.Set(sharedWSs[0]);
+				environment.LocalRepository.Save();
+				ws = environment.LocalRepository.Get("en-US");
+				Assert.That(ws.CharacterSets.Count, Is.EqualTo(1));
+				Assert.That(ws.CharacterSets[0].Type, Is.EqualTo("main"));
 			}
 		}
 

@@ -163,11 +163,6 @@ namespace SIL.WritingSystems
 		string WritingSystemIdHasChangedTo(string id);
 
 		/// <summary>
-		/// 
-		/// </summary>
-		void LastChecked(string id, DateTime dateModified);
-
-		/// <summary>
 		/// True if it is capable of saving changes to the specified WS.
 		/// </summary>
 		bool CanSave(WritingSystemDefinition ws, out string path);
@@ -176,12 +171,6 @@ namespace SIL.WritingSystems
 		/// Writes the store to a persistable medium, if applicable.
 		/// </summary>
 		void Save();
-
-		/// <summary>
-		/// Returns a list of writing systems from rhs which are newer than ones in the store.
-		/// </summary>
-		// TODO: Maybe this should be IEnumerable<string> .... which returns the identifiers.
-		IEnumerable<WritingSystemDefinition> WritingSystemsNewerIn(IEnumerable<WritingSystemDefinition> rhs);
 
 		/// <summary>
 		/// Event Handler that updates the store when a writing system id has changed

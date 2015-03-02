@@ -111,7 +111,7 @@ namespace SIL.WritingSystems
 
 		public abstract string WritingSystemIdHasChangedTo(string id);
 
-		public virtual void LastChecked(string id, DateTime dateModified)
+		protected virtual void LastChecked(string id, DateTime dateModified)
 		{
 			_writingSystemsToIgnore[id] = dateModified;
 		}
@@ -275,7 +275,7 @@ namespace SIL.WritingSystems
 		{
 		}
 
-		public virtual IEnumerable<WritingSystemDefinition> WritingSystemsNewerIn(IEnumerable<WritingSystemDefinition> rhs)
+		protected virtual IEnumerable<WritingSystemDefinition> WritingSystemsNewerIn(IEnumerable<WritingSystemDefinition> rhs)
 		{
 			if (rhs == null)
 			{

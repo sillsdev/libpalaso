@@ -209,63 +209,6 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void NewerThanEmpty_ReturnsNoneNewer()
-		{
-			var ws1 = new WritingSystemDefinition {Language = "en"};
-			RepositoryUnderTest.Set(ws1);
-
-			IWritingSystemRepository repository = CreateNewStore();
-			int count = repository.WritingSystemsNewerIn(RepositoryUnderTest.AllWritingSystems).Count();
-			Assert.AreEqual(0, count);
-		}
-
-		[Test]
-		public void NewerThanOlder_ReturnsOneNewer()
-		{
-			var ws1 = new WritingSystemDefinition {Language = "en", DateModified = new DateTime(2008, 1, 15)};
-			RepositoryUnderTest.Set(ws1);
-
-			IWritingSystemRepository repository = CreateNewStore();
-			var ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
-			ws2.DateModified = new DateTime(2008, 1, 14);
-			repository.Set(ws2);
-
-			int count = repository.WritingSystemsNewerIn(RepositoryUnderTest.AllWritingSystems).Count();
-			Assert.AreEqual(1, count);
-		}
-
-		[Test]
-		public void NewerThanNewer_ReturnsNoneNewer()
-		{
-			var ws1 = new WritingSystemDefinition {Language = "en", DateModified = new DateTime(2008, 1, 15)};
-			RepositoryUnderTest.Set(ws1);
-
-			IWritingSystemRepository repository = CreateNewStore();
-			var ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
-			ws2.DateModified = new DateTime(2008, 1, 16);
-			repository.Set(ws2);
-
-			int count = repository.WritingSystemsNewerIn(RepositoryUnderTest.AllWritingSystems).Count();
-			Assert.AreEqual(0, count);
-		}
-
-		[Test]
-		public void NewerThanCheckedAlready_ReturnsNoneNewer()
-		{
-			var ws1 = new WritingSystemDefinition {Language = "en", DateModified = new DateTime(2008, 1, 15)};
-			RepositoryUnderTest.Set(ws1);
-
-			IWritingSystemRepository repository = CreateNewStore();
-			var ws2 = RepositoryUnderTest.MakeDuplicate(ws1);
-			ws2.DateModified = new DateTime(2008, 1, 14);
-			repository.Set(ws2);
-			repository.LastChecked("en", new DateTime(2008, 1, 16));
-
-			int count = repository.WritingSystemsNewerIn(RepositoryUnderTest.AllWritingSystems).Count();
-			Assert.AreEqual(0, count);
-		}
-
-		[Test]
 		public void CanStoreVariants_CountTwo()
 		{
 			var ws1 = new WritingSystemDefinition();
@@ -389,23 +332,6 @@ namespace SIL.WritingSystems.Tests
 		{
 			Assert.Throws<ArgumentOutOfRangeException>(
 				() => RepositoryUnderTest.Get("I sure hope this isn't in the store.")
-			);
-		}
-
-		[Test]
-		public void NewerInNull_Throws()
-		{
-			Assert.Throws<ArgumentNullException>(
-				() => RepositoryUnderTest.WritingSystemsNewerIn(null)
-			);
-		}
-
-		[Test]
-		public void NewerInNullDefinition_Throws()
-		{
-			var list = new WritingSystemDefinition[] {null};
-			Assert.Throws<ArgumentNullException>(
-				() => RepositoryUnderTest.WritingSystemsNewerIn(list)
 			);
 		}
 
