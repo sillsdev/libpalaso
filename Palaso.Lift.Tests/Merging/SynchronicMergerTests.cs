@@ -366,6 +366,7 @@ namespace Palaso.Lift.Tests.Merging
 
 
 		[Test]
+		[Category("SkipOnTeamCity")] // on TC the files don't get set to read-only
 		public void ReadOnlyBaseFile_DoesNothing()
 		{
 			string baseFilePath = Path.Combine(this._directory, _baseLiftFileName);
@@ -387,6 +388,7 @@ namespace Palaso.Lift.Tests.Merging
 		}
 
 		[Test]
+		[Category("SkipOnTeamCity")] // on TC the files don't get set to read-only
 		public void ReadOnlyUpdate_DoesNothing()
 		{
 			string updateFilePath = Path.Combine(this._directory, GetNextUpdateFileName());
@@ -460,8 +462,8 @@ namespace Palaso.Lift.Tests.Merging
 				throw ex;
 		}
 
-
 		[Test]
+		[Category("SkipOnTeamCity")] // on TC the files don't get set to read-only
 		public void ReadOnlyBackupFile_StillMakesBackup()
 		{
 			string backupFilePath = Path.Combine(this._directory, _baseLiftFileName + ".bak");
