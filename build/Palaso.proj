@@ -29,11 +29,9 @@
 		<ApplicationNameLC>libpalaso</ApplicationNameLC>
 		<Configuration Condition="'$(OS)'!='Windows_NT' And '$(Configuration)'==''">ReleaseMono</Configuration>
 		<Configuration Condition="'$(OS)'=='Windows_NT' And '$(Configuration)'==''">Release</Configuration>
-		<ExtraExcludeCategories Condition="'$(OS)'!='Windows_NT'">KnownMonoIssue</ExtraExcludeCategories>
+		<ExtraExcludeCategories Condition="'$(OS)'!='Windows_NT'">;KnownMonoIssue</ExtraExcludeCategories>
 		<useNUnit-x86 Condition="'$(OS)'=='Windows_NT'">true</useNUnit-x86>
 		<useNUnit-x86 Condition="'$(OS)'!='Windows_NT'">false</useNUnit-x86>
-		<excludedCategories Condition="'$(teamcity_version)' != '' And '$(OS)'=='Windows_NT'">SkipOnTeamCity</excludedCategories>
-		<excludedCategories Condition="'$(teamcity_version)' != '' And '$(OS)'!='Windows_NT'">SkipOnTeamCity;$(ExtraExcludeCategories)</excludedCategories>
 	</PropertyGroup>
 
 	<Target Name="VersionNumbers">
@@ -106,10 +104,9 @@
 	<Target Name="TestOnly" DependsOnTargets="RunNUnitTC;RunNUnit"/>
 
 	<Target Name="RunNUnitTC" Condition="'$(teamcity_version)' != ''">
-		<Message Text="TestAssemblies=@(TestAssemblies)"/>
 		<NUnitTeamCity
 			Assemblies="@(TestAssemblies)"
-			ExcludeCategory="$(excludedCategories)"
+			ExcludeCategory="SkipOnTeamCity$(ExtraExcludeCategories)"
 			NUnitVersion="NUnit-2.6.3" />
 	</Target>
 
@@ -117,7 +114,7 @@
 		<NUnit Assemblies="@(TestAssemblies)"
 			ToolPath="$(RootDir)/packages/NUnit.Runners.Net4.2.6.4/tools"
 			TestInNewThread="false"
-			ExcludeCategory="$(excludedCategories);$(ExtraExcludeCategories)"
+			ExcludeCategory="$(excludedCategories)$(ExtraExcludeCategories)"
 			WorkingDirectory="$(RootDir)/output/$(Configuration)"
 			Force32Bit="$(useNUnit-x86)"
 			Verbose="true"
