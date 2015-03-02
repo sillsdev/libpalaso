@@ -32,6 +32,8 @@
 		<ExtraExcludeCategories Condition="'$(OS)'!='Windows_NT'">KnownMonoIssue</ExtraExcludeCategories>
 		<useNUnit-x86 Condition="'$(OS)'=='Windows_NT'">true</useNUnit-x86>
 		<useNUnit-x86 Condition="'$(OS)'!='Windows_NT'">false</useNUnit-x86>
+		<excludedCategories Condition="'$(teamcity_version)' != '' And '$(OS)'=='Windows_NT'">SkipOnTeamCity</excludedCategories>
+		<excludedCategories Condition="'$(teamcity_version)' != '' And '$(OS)'!='Windows_NT'">SkipOnTeamCity;$(ExtraExcludeCategories)</excludedCategories>
 	</PropertyGroup>
 
 	<Target Name="VersionNumbers">
@@ -104,9 +106,10 @@
 	<Target Name="TestOnly" DependsOnTargets="RunNUnitTC;RunNUnit"/>
 
 	<Target Name="RunNUnitTC" Condition="'$(teamcity_version)' != ''">
+		<Message Text="TestAssemblies=@(TestAssemblies)"/>
 		<NUnitTeamCity
 			Assemblies="@(TestAssemblies)"
-			ExcludeCategory="SkipOnTeamCity;$(excludedCategories);$(ExtraExcludeCategories)"
+			ExcludeCategory="$(excludedCategories)"
 			NUnitVersion="NUnit-2.6.3" />
 	</Target>
 
