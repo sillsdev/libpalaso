@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using NUnit.Framework;
@@ -1196,6 +1197,7 @@ namespace SIL.WritingSystems.Tests
 				Assert.IsTrue(File.Exists(environment.GetPathForGlobalWsID("en-US")));
 
 				DateTime lastModified = File.GetLastWriteTime(environment.GetPathForGlobalWsID("en-US"));
+				Thread.Sleep(1000);
 				var localRepo2 = new TestLdmlInFolderWritingSystemRepository(testFolder2.Path, environment.GlobalRepository);
 				ws = new WritingSystemDefinition("en-US");
 				localRepo2.Set(ws);
