@@ -69,6 +69,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces
 		IKeyboardDefinition DefaultKeyboard { get; }
 
 		/// <summary>
+		/// Gets the currently active keyboard. This only needs to be implemented by the (first) adapter of
+		/// type system, and only if the implementation in KeyboardControllerImpl (which uses layoutname
+		/// and culturename based on the current input language) isn't sufficient.
+		/// </summary>
+		IKeyboardDefinition ActiveKeyboard { get; }
+
+		/// <summary>
 		/// Gets the type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
 		/// </summary>
 		KeyboardType Type { get; }

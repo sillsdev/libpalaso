@@ -186,6 +186,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 		}
 
+		public virtual IKeyboardDefinition ActiveKeyboard
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+		}
+
 		public KeyboardType Type
 		{
 			get

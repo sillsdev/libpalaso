@@ -7,11 +7,12 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using Palaso.UI.WindowsForms.Keyboarding;
+using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
 using Palaso.WritingSystems;
 
 namespace TestAppKeyboard
 {
-	public partial class KeyboardForm : Form
+	public partial class KeyboardForm : Form, IWindowsLanguageProfileSink
 	{
 		public KeyboardForm()
 		{
@@ -20,9 +21,9 @@ namespace TestAppKeyboard
 				return;
 
 			KeyboardController.Initialize();
-			KeyboardController.Register(testAreaA);
-			KeyboardController.Register(testAreaB);
-			KeyboardController.Register(testAreaC);
+			KeyboardController.Register(testAreaA, this);
+			KeyboardController.Register(testAreaB, this);
+			KeyboardController.Register(testAreaC, this);
 			LoadKeyboards(this.keyboardsA);
 			LoadKeyboards(this.keyboardsB);
 			LoadKeyboards(this.keyboardsC);
@@ -76,5 +77,17 @@ namespace TestAppKeyboard
 			}
 		}
 
+
+		#region IWindowsLanguageProfileSink Members
+
+		public void OnInputLanguageChanged(IKeyboardDefinition previousKeyboard, IKeyboardDefinition newKeyboard)
+		{
+			Console.WriteLine("TestAppKeyboard.OnLanguageChanged: previous {0}, new {1}",
+				previousKeyboard != null ? previousKeyboard.Layout : "<null>",
+				newKeyboard != null ? newKeyboard.Layout : "<null>");
+			lblCurrentKeyboard.Text = newKeyboard.Layout;
+		}
+
+		#endregion
 	}
 }

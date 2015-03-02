@@ -159,7 +159,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			}
 			#endregion
 
-		    public IKeyboardDefinition DefaultKeyboard
+			public IKeyboardDefinition DefaultKeyboard
 			{
 				get
 				{
@@ -328,13 +328,17 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				{
 					if (m_ActiveKeyboard == null)
 					{
-						try
+						m_ActiveKeyboard = Adaptors.First(adaptor => adaptor.Type == KeyboardType.System).ActiveKeyboard;
+						if (m_ActiveKeyboard == null)
 						{
-							var lang = InputLanguage.CurrentInputLanguage;
-							m_ActiveKeyboard = GetKeyboard(lang.LayoutName, lang.Culture.Name);
-						}
-						catch (CultureNotFoundException)
-						{
+							try
+							{
+								var lang = InputLanguage.CurrentInputLanguage;
+								m_ActiveKeyboard = GetKeyboard(lang.LayoutName, lang.Culture.Name);
+							}
+							catch (CultureNotFoundException)
+							{
+							}
 						}
 						if (m_ActiveKeyboard == null)
 							m_ActiveKeyboard = KeyboardDescription.Zero;

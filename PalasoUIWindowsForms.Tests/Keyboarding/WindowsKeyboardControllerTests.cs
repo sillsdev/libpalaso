@@ -1,4 +1,4 @@
-#if !MONO
+#if !__MonoCS__
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -182,17 +182,6 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			Assert.Greater(keyboards.Count(), 1, "This test requires that the Windows IME has at least two languages installed.");
 
 			Assert.That(keyboards.Select(keyboard => ((KeyboardDescription)keyboard).Engine), Is.All.TypeOf<WinKeyboardAdaptor>());
-		}
-
-		[Test]
-		public void CheckWindowsAssumptions()
-		{
-			// For Windows we expect to have exactly one keyboard adaptor. If we implement
-			// additional ones, e.g. for Keyman, we might need to change some methods, e.g.
-			// ActivateDefaultKeyboard, DefaultForWritingSystem and CreateKeyboardDefinition.
-			Assert.That(KeyboardController.Adaptors.Length, Is.EqualTo(1));
-			Assert.That(KeyboardController.Adaptors.Select(adaptor => adaptor.Type),
-				Has.All.EqualTo(KeyboardType.System));
 		}
 
 		[Test]

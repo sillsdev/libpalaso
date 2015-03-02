@@ -484,9 +484,17 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		}
 
 		/// <summary>
-		/// Implemenation is not required because this is not the primary (Type System) adapter.
+		/// Implementation is not required because this is not the primary (Type System) adapter.
 		/// </summary>
 		public IKeyboardDefinition DefaultKeyboard
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		/// <summary>
+		/// Implementation is not required because this is not the primary (Type System) adapter.
+		/// </summary>
+		public IKeyboardDefinition ActiveKeyboard
 		{
 			get { throw new NotImplementedException(); }
 		}
