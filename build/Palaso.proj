@@ -93,10 +93,6 @@
 			Properties="Configuration=$(Configuration)" />
 	</Target>
 
-	<ItemGroup>
-		<TestAssemblies Include="$(RootDir)/output/$(Configuration)/*.Tests.dll"/>
-	</ItemGroup>
-
 	<Target Name="Test" DependsOnTargets="Build">
 		<CallTarget Targets="TestOnly"/>
 	</Target>
@@ -104,6 +100,10 @@
 	<Target Name="TestOnly" DependsOnTargets="RunNUnitTC;RunNUnit"/>
 
 	<Target Name="RunNUnitTC" Condition="'$(teamcity_version)' != ''">
+		<ItemGroup>
+			<TestAssemblies Include="$(RootDir)/output/$(Configuration)/*.Tests.dll"/>
+		</ItemGroup>
+
 		<NUnitTeamCity
 			Assemblies="@(TestAssemblies)"
 			ExcludeCategory="SkipOnTeamCity$(ExtraExcludeCategories)"
@@ -111,6 +111,10 @@
 	</Target>
 
 	<Target Name="RunNUnit" Condition="'$(teamcity_version)' == ''">
+		<ItemGroup>
+			<TestAssemblies Include="$(RootDir)/output/$(Configuration)/*.Tests.dll"/>
+		</ItemGroup>
+
 		<NUnit Assemblies="@(TestAssemblies)"
 			ToolPath="$(RootDir)/packages/NUnit.Runners.Net4.2.6.4/tools"
 			TestInNewThread="false"
