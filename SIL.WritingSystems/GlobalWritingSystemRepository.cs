@@ -372,14 +372,6 @@ namespace SIL.WritingSystems
 #pragma warning restore 67
 
 		/// <summary>
-		/// Returns a list of all writing system definitions in the store. (Obsolete)
-		/// </summary>
-		public IEnumerable<WritingSystemDefinition> WritingSystemDefinitions
-		{
-			get { return AllWritingSystems; }
-		}
-
-		/// <summary>
 		/// Makes a duplicate of an existing writing system definition.  Set will need
 		/// to be called with this new duplicate once identifying information has been changed
 		/// in order to place the new definition in the store.

@@ -1589,7 +1589,7 @@ namespace SIL.WritingSystems.Tests
 			var existingTags = new[] { "en-Zxxx-x-audio" };
 			var ws = new WritingSystemDefinition("de");
 			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, existingTags);
-			Assert.That(newWs.StoreID, Is.EqualTo(null));
+			Assert.That(newWs.StoreID, Is.Null);
 		}
 
 		[Test]

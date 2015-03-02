@@ -265,7 +265,7 @@ namespace SIL.WritingSystems
 		{
 			Set(ws);
 
-			string writingSystemFilePath = GetFilePathFromIdentifier(ws.StoreID);
+			string writingSystemFilePath = GetFilePathFromIdentifier(ws.ID);
 			if (!File.Exists(writingSystemFilePath) && !string.IsNullOrEmpty(ws.Template))
 			{
 				// this is a new writing system that was generated from a template, so copy the template over before saving
@@ -314,7 +314,7 @@ namespace SIL.WritingSystems
 			WritingSystemDefinition existingWS;
 			if (TryGet(id, out existingWS))
 			{
-				templatePath = GetFilePathFromIdentifier(existingWS.StoreID);
+				templatePath = GetFilePathFromIdentifier(existingWS.ID);
 				if (!File.Exists(templatePath))
 					templatePath = null;
 			}
@@ -322,7 +322,7 @@ namespace SIL.WritingSystems
 			// check global repo for template
 			if (string.IsNullOrEmpty(templatePath) && _globalRepository != null && _globalRepository.TryGet(id, out existingWS))
 			{
-				templatePath = _globalRepository.GetFilePathFromIdentifier(existingWS.StoreID);
+				templatePath = _globalRepository.GetFilePathFromIdentifier(existingWS.ID);
 				if (!File.Exists(templatePath))
 					templatePath = null;
 			}
@@ -396,30 +396,31 @@ namespace SIL.WritingSystems
 
 		public override void Remove(string id)
 		{
+			base.Remove(id);
+			_changeLog.LogDelete(id);
+		}
+
+		protected override void RemoveDefinition(WritingSystemDefinition ws)
+		{
 			int wsIgnoreCount = WritingSystemsToIgnore.Count;
 
 			//we really need to get it in the trash, else, if was auto-provided,
 			//it'll keep coming back!
-			if (!File.Exists(GetFilePathFromIdentifier(id)) && Contains(id))
-			{
-				WritingSystemDefinition ws = Get(id);
+			if (!File.Exists(GetFilePathFromIdentifier(ws.ID)))
 				SaveDefinition(ws);
-			}
 
-			if (File.Exists(GetFilePathFromIdentifier(id)))
+			if (File.Exists(GetFilePathFromIdentifier(ws.ID)))
 			{
 				Directory.CreateDirectory(PathToWritingSystemTrash());
-				string destination = Path.Combine(PathToWritingSystemTrash(), GetFileNameFromIdentifier(id));
+				string destination = Path.Combine(PathToWritingSystemTrash(), GetFileNameFromIdentifier(ws.ID));
 				//clear out any old on already in the trash
 				if (File.Exists(destination))
 					File.Delete(destination);
-				File.Move(GetFilePathFromIdentifier(id), destination);
+				File.Move(GetFilePathFromIdentifier(ws.ID), destination);
 			}
-			base.Remove(id);
+			base.RemoveDefinition(ws);
 			foreach (ICustomDataMapper customDataMapper in _customDataMappers)
-				customDataMapper.Remove(id);
-			if (!Conflating)
-				_changeLog.LogDelete(id);
+				customDataMapper.Remove(ws.ID);
 
 			if (wsIgnoreCount != WritingSystemsToIgnore.Count)
 				WriteGlobalWritingSystemsToIgnore();
@@ -437,7 +438,7 @@ namespace SIL.WritingSystems
 		public override bool CanSave(WritingSystemDefinition ws, out string filePath)
 		{
 			string folderPath = PathToWritingSystems;
-			string filename = GetFileNameFromIdentifier(ws.StoreID);
+			string filename = GetFileNameFromIdentifier(ws.ID);
 			filePath = Path.Combine(folderPath, filename);
 			if (File.Exists(filePath))
 			{

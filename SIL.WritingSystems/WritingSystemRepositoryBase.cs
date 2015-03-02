@@ -30,11 +30,6 @@ namespace SIL.WritingSystems
 		public event EventHandler<WritingSystemConflatedEventArgs> WritingSystemConflated;
 
 		/// <summary>
-		/// Indicates that writing systems are merging.
-		/// </summary>
-		protected bool Conflating { get; private set; }
-
-		/// <summary>
 		/// </summary>
 		protected WritingSystemRepositoryBase()
 		{
@@ -75,11 +70,10 @@ namespace SIL.WritingSystems
 
 		public virtual void Conflate(string wsToConflate, string wsToConflateWith)
 		{
-			Conflating = true;
+			WritingSystemDefinition ws = _writingSystems[wsToConflate];
+			RemoveDefinition(ws);
 			if (WritingSystemConflated != null)
 				WritingSystemConflated(this, new WritingSystemConflatedEventArgs(wsToConflate, wsToConflateWith));
-			Remove(wsToConflate);
-			Conflating = false;
 		}
 
 		/// <summary>
@@ -94,43 +88,32 @@ namespace SIL.WritingSystems
 		public virtual void Remove(string id)
 		{
 			if (id == null)
-			{
 				throw new ArgumentNullException("id");
-			}
 			if (!_writingSystems.ContainsKey(id))
-			{
 				throw new ArgumentOutOfRangeException("id");
-			}
-			// Remove() uses the StoreID field, but file storage and UI use the Id field.
-			string realId = _writingSystems[id].ID;
-			// Delete from us
-			//??? Do we really delete or just mark for deletion?
 
-			_writingSystems.Remove(id);
-			if (_writingSystemsToIgnore.ContainsKey(id))
-				_writingSystemsToIgnore.Remove(id);
-			if (_writingSystemsToIgnore.ContainsKey(realId))
-				_writingSystemsToIgnore.Remove(realId);
-			if (!Conflating && WritingSystemDeleted != null)
-			{
-				WritingSystemDeleted(this, new WritingSystemDeletedEventArgs(realId));
-			}
+			WritingSystemDefinition ws = _writingSystems[id];
+			RemoveDefinition(ws);
+			if (WritingSystemDeleted != null)
+				WritingSystemDeleted(this, new WritingSystemDeletedEventArgs(id));
 			//TODO: Could call the shared store to advise that one has been removed.
 			//TODO: This may be useful if writing systems were reference counted.
+		}
+
+		protected virtual void RemoveDefinition(WritingSystemDefinition ws)
+		{
+			_writingSystems.Remove(ws.StoreID);
+			if (_writingSystemsToIgnore.ContainsKey(ws.StoreID))
+				_writingSystemsToIgnore.Remove(ws.StoreID);
+			if (_writingSystemsToIgnore.ContainsKey(ws.ID))
+				_writingSystemsToIgnore.Remove(ws.ID);
 		}
 
 		public abstract string WritingSystemIDHasChangedTo(string id);
 
 		public virtual void LastChecked(string id, DateTime dateModified)
 		{
-			if (_writingSystemsToIgnore.ContainsKey(id))
-			{
-				_writingSystemsToIgnore[id] = dateModified;
-			}
-			else
-			{
-				_writingSystemsToIgnore.Add(id, dateModified);
-			}
+			_writingSystemsToIgnore[id] = dateModified;
 		}
 
 		public virtual bool CanSave(WritingSystemDefinition ws, out string path)
