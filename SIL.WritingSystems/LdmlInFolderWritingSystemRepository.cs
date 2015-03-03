@@ -159,7 +159,7 @@ namespace SIL.WritingSystems
 					ldmlDataMapper.Read(filePath, wsFromFile);
 					foreach (ICustomDataMapper customDataMapper in _customDataMappers)
 						customDataMapper.Read(wsFromFile);
-					wsFromFile.StoreId = Path.GetFileNameWithoutExtension(filePath);
+					wsFromFile.Id = Path.GetFileNameWithoutExtension(filePath);
 				}
 			}
 			catch (Exception e)
@@ -175,14 +175,14 @@ namespace SIL.WritingSystems
 				return;
 			}
 
-			if (string.Compare(wsFromFile.StoreId, wsFromFile.Id, StringComparison.OrdinalIgnoreCase) != 0)
+			if (string.Compare(wsFromFile.Id, wsFromFile.IetfLanguageTag, StringComparison.OrdinalIgnoreCase) != 0)
 			{
 				bool badFileName = true;
-				if (wsFromFile.StoreId != null && wsFromFile.StoreId.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
+				if (wsFromFile.Id != null && wsFromFile.Id.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
 				{
 					var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
-					interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(wsFromFile.StoreId);
-					if (interpreter.Rfc5646Tag.Equals(wsFromFile.Id, StringComparison.OrdinalIgnoreCase))
+					interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(wsFromFile.Id);
+					if (interpreter.Rfc5646Tag.Equals(wsFromFile.IetfLanguageTag, StringComparison.OrdinalIgnoreCase))
 					{
 						badFileName = false;
 					}
@@ -195,7 +195,7 @@ namespace SIL.WritingSystems
 						Exception = new ApplicationException(
 							String.Format(
 								"The writing system file {0} seems to be named inconsistently. It contains the IETF language tag: '{1}'. The name should have been made consistent with its content upon migration of the writing systems.",
-								filePath, wsFromFile.Id)),
+								filePath, wsFromFile.IetfLanguageTag)),
 						FilePath = filePath
 					};
 					_loadProblems.Add(problem);
@@ -229,9 +229,9 @@ namespace SIL.WritingSystems
 		{
 			foreach (WritingSystemDefinition ws in _systemWritingSystemProvider)
 			{
-				if (null == FindAlreadyLoadedWritingSystem(ws.Id))
+				if (null == FindAlreadyLoadedWritingSystem(ws.IetfLanguageTag))
 				{
-					if (!HaveMatchingDefinitionInTrash(ws.Id))
+					if (!HaveMatchingDefinitionInTrash(ws.IetfLanguageTag))
 					{
 						Set(ws);
 					}
@@ -255,7 +255,7 @@ namespace SIL.WritingSystems
 
 		private WritingSystemDefinition FindAlreadyLoadedWritingSystem(string wsID)
 		{
-			return AllWritingSystems.FirstOrDefault(ws => ws.Id == wsID);
+			return AllWritingSystems.FirstOrDefault(ws => ws.IetfLanguageTag == wsID);
 		}
 
 		/// <summary>
@@ -265,7 +265,7 @@ namespace SIL.WritingSystems
 		{
 			Set(ws);
 
-			string writingSystemFilePath = GetFilePathFromIdentifier(ws.Id);
+			string writingSystemFilePath = GetFilePathFromIdentifier(ws.IetfLanguageTag);
 			if (!File.Exists(writingSystemFilePath) && !string.IsNullOrEmpty(ws.Template))
 			{
 				// this is a new writing system that was generated from a template, so copy the template over before saving
@@ -294,35 +294,35 @@ namespace SIL.WritingSystems
 				customDataMapper.Write(ws);
 			ws.AcceptChanges();
 
-			if (ChangedIds.Any(p => p.Value == ws.StoreId))
+			if (ChangedIds.Any(p => p.Value == ws.Id))
 			{
 				// log this id change to the writing system change log
-				KeyValuePair<string, string> pair = ChangedIds.First(p => p.Value == ws.StoreId);
+				KeyValuePair<string, string> pair = ChangedIds.First(p => p.Value == ws.Id);
 				_changeLog.LogChange(pair.Key, pair.Value);
 			}
 			else
 			{
 				// log this addition
-				_changeLog.LogAdd(ws.StoreId);
+				_changeLog.LogAdd(ws.Id);
 			}
 		}
 
-		public override WritingSystemDefinition CreateNew(string id)
+		public override WritingSystemDefinition CreateNew(string ietfLanguageTag)
 		{
 			string templatePath = null;
 			// check local repo for template
 			WritingSystemDefinition existingWS;
-			if (TryGet(id, out existingWS))
+			if (TryGet(ietfLanguageTag, out existingWS))
 			{
-				templatePath = GetFilePathFromIdentifier(existingWS.Id);
+				templatePath = GetFilePathFromIdentifier(existingWS.IetfLanguageTag);
 				if (!File.Exists(templatePath))
 					templatePath = null;
 			}
 
 			// check global repo for template
-			if (string.IsNullOrEmpty(templatePath) && _globalRepository != null && _globalRepository.TryGet(id, out existingWS))
+			if (string.IsNullOrEmpty(templatePath) && _globalRepository != null && _globalRepository.TryGet(ietfLanguageTag, out existingWS))
 			{
-				templatePath = _globalRepository.GetFilePathFromIdentifier(existingWS.Id);
+				templatePath = _globalRepository.GetFilePathFromIdentifier(existingWS.IetfLanguageTag);
 				if (!File.Exists(templatePath))
 					templatePath = null;
 			}
@@ -332,8 +332,8 @@ namespace SIL.WritingSystems
 			{
 				string sldrCachePath = Path.Combine(Path.GetTempPath(), "SldrCache");
 				Directory.CreateDirectory(sldrCachePath);
-				templatePath = Path.Combine(sldrCachePath, id + ".ldml");
-				if (!GetLdmlFromSldr(templatePath, id))
+				templatePath = Path.Combine(sldrCachePath, ietfLanguageTag + ".ldml");
+				if (!GetLdmlFromSldr(templatePath, ietfLanguageTag))
 				{
 					// check SLDR cache for template
 					if (!File.Exists(templatePath))
@@ -344,7 +344,7 @@ namespace SIL.WritingSystems
 			// check template folder for template
 			if (string.IsNullOrEmpty(templatePath) && !string.IsNullOrEmpty(TemplateFolder))
 			{
-				templatePath = Path.Combine(TemplateFolder, id + ".ldml");
+				templatePath = Path.Combine(TemplateFolder, ietfLanguageTag + ".ldml");
 				if (!File.Exists(templatePath))
 					templatePath = null;
 			}
@@ -359,7 +359,7 @@ namespace SIL.WritingSystems
 			}
 			else
 			{
-				ws = base.CreateNew(id);
+				ws = base.CreateNew(ietfLanguageTag);
 			}
 
 			return ws;
@@ -406,21 +406,21 @@ namespace SIL.WritingSystems
 
 			//we really need to get it in the trash, else, if was auto-provided,
 			//it'll keep coming back!
-			if (!File.Exists(GetFilePathFromIdentifier(ws.Id)))
+			if (!File.Exists(GetFilePathFromIdentifier(ws.IetfLanguageTag)))
 				SaveDefinition(ws);
 
-			if (File.Exists(GetFilePathFromIdentifier(ws.Id)))
+			if (File.Exists(GetFilePathFromIdentifier(ws.IetfLanguageTag)))
 			{
 				Directory.CreateDirectory(PathToWritingSystemTrash());
-				string destination = Path.Combine(PathToWritingSystemTrash(), GetFileNameFromIdentifier(ws.Id));
+				string destination = Path.Combine(PathToWritingSystemTrash(), GetFileNameFromIdentifier(ws.IetfLanguageTag));
 				//clear out any old on already in the trash
 				if (File.Exists(destination))
 					File.Delete(destination);
-				File.Move(GetFilePathFromIdentifier(ws.Id), destination);
+				File.Move(GetFilePathFromIdentifier(ws.IetfLanguageTag), destination);
 			}
 			base.RemoveDefinition(ws);
 			foreach (ICustomDataMapper customDataMapper in _customDataMappers)
-				customDataMapper.Remove(ws.Id);
+				customDataMapper.Remove(ws.IetfLanguageTag);
 
 			if (wsIgnoreCount != WritingSystemsToIgnore.Count)
 				WriteGlobalWritingSystemsToIgnore();
@@ -438,7 +438,7 @@ namespace SIL.WritingSystems
 		public override bool CanSave(WritingSystemDefinition ws, out string filePath)
 		{
 			string folderPath = PathToWritingSystems;
-			string filename = GetFileNameFromIdentifier(ws.Id);
+			string filename = GetFileNameFromIdentifier(ws.IetfLanguageTag);
 			filePath = Path.Combine(folderPath, filename);
 			if (File.Exists(filePath))
 			{
@@ -495,7 +495,7 @@ namespace SIL.WritingSystems
 			//delete anything we're going to delete first, to prevent losing
 			//a WS we want by having it deleted by an old WS we don't want
 			//(but which has the same identifier)
-			foreach (string id in AllWritingSystems.Where(ws => ws.MarkedForDeletion).Select(ws => ws.StoreId).ToArray())
+			foreach (string id in AllWritingSystems.Where(ws => ws.MarkedForDeletion).Select(ws => ws.Id).ToArray())
 				Remove(id);
 
 			// make a copy and then go through that list - SaveDefinition calls Set which
@@ -521,15 +521,15 @@ namespace SIL.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			string oldStoreId = ws.StoreId;
+			string oldStoreId = ws.Id;
 			base.Set(ws);
 			//Renaming the file here is a bit ugly as the content has not yet been updated. Thus there
 			//may be a mismatch between the filename and the contained rfc5646 tag. Doing it here however
 			//helps us avoid having to deal with situations where a writing system id is changed to be
 			//identical with the old id of another writing sytsem. This could otherwise lead to dataloss.
 			//The inconsistency is resolved on Save()
-			if (oldStoreId != ws.StoreId && File.Exists(GetFilePathFromIdentifier(oldStoreId)))
-				File.Move(GetFilePathFromIdentifier(oldStoreId), GetFilePathFromIdentifier(ws.StoreId));
+			if (oldStoreId != ws.Id && File.Exists(GetFilePathFromIdentifier(oldStoreId)))
+				File.Move(GetFilePathFromIdentifier(oldStoreId), GetFilePathFromIdentifier(ws.Id));
 		}
 
 		public override bool WritingSystemIdHasChanged(string id)
@@ -539,7 +539,7 @@ namespace SIL.WritingSystems
 
 		public override string WritingSystemIdHasChangedTo(string id)
 		{
-			return AllWritingSystems.Any(ws => ws.Id.Equals(id)) ? id : _changeLog.GetChangeFor(id);
+			return AllWritingSystems.Any(ws => ws.IetfLanguageTag.Equals(id)) ? id : _changeLog.GetChangeFor(id);
 		}
 
 		protected override void LastChecked(string identifier, DateTime dateModified)
@@ -559,7 +559,7 @@ namespace SIL.WritingSystems
 				var results = new List<WritingSystemDefinition>();
 				foreach (WritingSystemDefinition wsDef in WritingSystemsNewerIn(_globalRepository.AllWritingSystems))
 				{
-					LastChecked(wsDef.Id, wsDef.DateModified);
+					LastChecked(wsDef.IetfLanguageTag, wsDef.DateModified);
 					results.Add(wsDef); // REVIEW Hasso 2013.12: add only if not equal?
 				}
 				return results;
@@ -574,14 +574,14 @@ namespace SIL.WritingSystems
 			if (_globalRepository != null)
 			{
 				WritingSystemDefinition globalWs;
-				if (_globalRepository.TryGet(ws.Id, out globalWs))
+				if (_globalRepository.TryGet(ws.IetfLanguageTag, out globalWs))
 				{
 					if (ws.DateModified > globalWs.DateModified)
 					{
 						WritingSystemDefinition newWs = ws.Clone();
 						try
 						{
-							_globalRepository.Remove(ws.Id);
+							_globalRepository.Remove(ws.IetfLanguageTag);
 							_globalRepository.Set(newWs);
 						}
 						catch (UnauthorizedAccessException)

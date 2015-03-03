@@ -123,11 +123,11 @@ namespace SIL.WritingSystems
 			MemoryStream oldData = null;
 			try
 			{
-				string writingSystemFileName = GetFileNameFromIdentifier(ws.Id);
-				string writingSystemFilePath = GetFilePathFromIdentifier(ws.Id);
+				string writingSystemFileName = GetFileNameFromIdentifier(ws.IetfLanguageTag);
+				string writingSystemFilePath = GetFilePathFromIdentifier(ws.IetfLanguageTag);
 				if (!ws.IsChanged && File.Exists(writingSystemFilePath))
 					return; // no need to save (better to preserve the modified date)
-				string oldId = ws.StoreId;
+				string oldId = ws.Id;
 				string incomingFileName = GetFileNameFromIdentifier(oldId);
 				string incomingFilePath = GetFilePathFromIdentifier(oldId);
 				if (!string.IsNullOrEmpty(incomingFileName))
@@ -149,7 +149,7 @@ namespace SIL.WritingSystems
 							// know when this event should be raised, nor am I sure I am building the argument correctly.
 							// However, I don't think anything (at least in our code) actually uses it.
 							if (WritingSystemIdChanged != null)
-								WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.Id));
+								WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.IetfLanguageTag));
 						}
 					}
 				}
@@ -213,12 +213,12 @@ namespace SIL.WritingSystems
 		/// If the given writing system were passed to Set, this function returns the
 		/// new StoreID that would be assigned.
 		/// </summary>
-		public string GetNewStoreIdWhenSet(WritingSystemDefinition ws)
+		public string GetNewIdWhenSet(WritingSystemDefinition ws)
 		{
 			if (ws == null)
 				throw new ArgumentNullException("ws");
 
-			return ws.Id;
+			return ws.IetfLanguageTag;
 		}
 
 		/// <summary>
@@ -235,30 +235,6 @@ namespace SIL.WritingSystems
 			{
 				_mutex.ReleaseMutex();
 			}
-		}
-
-		/// <summary>
-		/// Added to satisfy IWritingSystemRepository definition...implementation copied from WritingSystemRepositoryBase
-		/// </summary>
-		/// <param name="idsToFilter"></param>
-		/// <returns></returns>
-		public IEnumerable<string> FilterForTextIds(IEnumerable<string> idsToFilter)
-		{
-			return TextWritingSystems.Where(ws => idsToFilter.Contains(ws.Id)).Select(ws => ws.Id);
-		}
-
-		/// <summary>
-		/// Only needed in local store
-		/// </summary>
-		/// <param name="layoutName"></param>
-		/// <param name="cultureInfo"></param>
-		/// <param name="wsCurrent"></param>
-		/// <param name="candidates"></param>
-		/// <returns></returns>
-		public WritingSystemDefinition GetWsForInputLanguage(string layoutName, CultureInfo cultureInfo,
-			WritingSystemDefinition wsCurrent, WritingSystemDefinition[] candidates)
-		{
-			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -289,9 +265,9 @@ namespace SIL.WritingSystems
 			return new WritingSystemDefinition();
 		}
 
-		public WritingSystemDefinition CreateNew(string id)
+		public WritingSystemDefinition CreateNew(string ietfLanguageTag)
 		{
-			return new WritingSystemDefinition(id);
+			return new WritingSystemDefinition(ietfLanguageTag);
 		}
 
 		/// <summary>
@@ -342,22 +318,6 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// Added to satisfy definition of IWritingSystemRepository...implementation adapted from WritingSystemRepositoryBase
-		/// </summary>
-		public IEnumerable<WritingSystemDefinition> TextWritingSystems
-		{
-			get { return AllWritingSystems.Where(ws => !ws.IsVoice); }
-		}
-
-		/// <summary>
-		/// Added to satisfy definition of IWritingSystemRepository...implementation adapted from WritingSystemRepositoryBase
-		/// </summary>
-		public IEnumerable<WritingSystemDefinition> VoiceWritingSystems
-		{
-			get { return AllWritingSystems.Where(ws => ws.IsVoice); }
-		}
-
-		/// <summary>
 		/// Event raised when writing system ID is changed. Required for interface defn, dubious implementstion.
 		/// </summary>
 		public event EventHandler<WritingSystemIdChangedEventArgs> WritingSystemIdChanged;
@@ -370,16 +330,6 @@ namespace SIL.WritingSystems
 		/// <summary/>
 		public event EventHandler<WritingSystemConflatedEventArgs> WritingSystemConflated;
 #pragma warning restore 67
-
-		/// <summary>
-		/// Makes a duplicate of an existing writing system definition.  Set will need
-		/// to be called with this new duplicate once identifying information has been changed
-		/// in order to place the new definition in the store.
-		/// </summary>
-		public WritingSystemDefinition MakeDuplicate(WritingSystemDefinition definition)
-		{
-			return definition.Clone();
-		}
 
 		/// <summary>
 		/// This is used by the orphan finder, which we don't use (yet). It tells whether, typically in the scope of some
@@ -401,16 +351,6 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		///
-		/// </summary>
-		/// <param name="identifier">The identifier.</param>
-		/// <param name="dateModified">The date modified.</param>
-		public void LastChecked(string identifier, DateTime dateModified)
-		{
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
 		/// Writes the store to a persistable medium, if applicable.
 		/// </summary>
 		public void Save()
@@ -424,15 +364,6 @@ namespace SIL.WritingSystems
 		{
 			path = "";
 			return true;
-		}
-
-		/// <summary>
-		/// Returns a list of writing systems from rhs which are newer than ones in the store.
-		/// </summary>
-		// TODO: Maybe this should be IEnumerable<string> .... which returns the identifiers.
-		public IEnumerable<WritingSystemDefinition> WritingSystemsNewerIn(IEnumerable<WritingSystemDefinition> rhs)
-		{
-			throw new NotImplementedException();
 		}
 
 		/// <summary>
@@ -475,7 +406,7 @@ namespace SIL.WritingSystems
 				WritingSystemDefinition ws = CreateNew();
 				var ldmlDataMapper = new LdmlDataMapper();
 				ldmlDataMapper.Read(filePath, ws);
-				ws.StoreId = ws.Id;
+				ws.Id = ws.IetfLanguageTag;
 				ws.AcceptChanges();
 				return ws;
 			}

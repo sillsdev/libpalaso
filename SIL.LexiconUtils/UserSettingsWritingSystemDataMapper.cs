@@ -20,7 +20,7 @@ namespace SIL.LexiconUtils
 			if (userSettingsElem == null)
 				return;
 
-			XElement wsElem = userSettingsElem.Elements("WritingSystems").Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.Id);
+			XElement wsElem = userSettingsElem.Elements("WritingSystems").Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.IetfLanguageTag);
 			if (wsElem == null)
 				return;
 
@@ -50,10 +50,10 @@ namespace SIL.LexiconUtils
 				wssElem = new XElement("WritingSystems");
 				userSettingsElem.Add(wssElem);
 			}
-			XElement wsElem = wssElem.Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.Id);
+			XElement wsElem = wssElem.Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.IetfLanguageTag);
 			if (wsElem == null)
 			{
-				wsElem = new XElement("WritingSystem", new XAttribute("id", ws.Id));
+				wsElem = new XElement("WritingSystem", new XAttribute("id", ws.IetfLanguageTag));
 				wssElem.Add(wsElem);
 			}
 			wsElem.RemoveNodes();

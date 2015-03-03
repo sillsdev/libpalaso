@@ -81,7 +81,7 @@ namespace SIL.WritingSystems
 		private string _keyboard;
 		private bool _rightToLeftScript;
 		private IKeyboardDefinition _localKeyboard;
-		private string _id;
+		private string _ietfLanguageTag;
 		private string _defaultRegion;
 		private string _windowsLcid;
 		private string _spellCheckingId;
@@ -126,14 +126,14 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Creates a new WritingSystemDefinition by parsing a valid IETF language tag.
 		/// </summary>
-		public WritingSystemDefinition(string id)
+		public WritingSystemDefinition(string ietfLanguageTag)
 		{
 			IEnumerable<VariantSubtag> variantSubtags;
-			if (!IetfLanguageTagHelper.TryGetSubtags(id, out _language, out _script, out _region, out variantSubtags))
-				throw new ArgumentException("The language tag is invalid.", "id");
+			if (!IetfLanguageTagHelper.TryGetSubtags(ietfLanguageTag, out _language, out _script, out _region, out variantSubtags))
+				throw new ArgumentException("The language tag is invalid.", "ietfLanguageTag");
 			_variants = new BulkObservableList<VariantSubtag>(variantSubtags);
 			CheckVariantAndScriptRules();
-			_id = id;
+			_ietfLanguageTag = ietfLanguageTag;
 			_fonts = new KeyedBulkObservableList<string, FontDefinition>(fd => fd.Name);
 			_knownKeyboards = new KeyedBulkObservableList<string, IKeyboardDefinition>(kd => kd.Id);
 			_spellCheckDictionaries = new KeyedBulkObservableList<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition>(scdd => scdd.Format);
@@ -174,7 +174,7 @@ namespace SIL.WritingSystems
 			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>(ws._punctuationPatterns);
 			_quotationMarks = new BulkObservableList<QuotationMark>(ws._quotationMarks);
 			_quotationParagraphContinueType = ws._quotationParagraphContinueType;
-			_id = ws._id;
+			_ietfLanguageTag = ws._ietfLanguageTag;
 			_collations = new KeyedBulkObservableList<string, CollationDefinition>(ws._collations.CloneItems(), cd => cd.Type);
 			if (ws._defaultCollation != null)
 				_defaultCollation = _collations[ws._collations.IndexOf(ws._defaultCollation)];
@@ -439,12 +439,12 @@ namespace SIL.WritingSystems
 		public void SetIetfLanguageTagComponents(string language, string script, string region, string variant)
 		{
 			_requiresValidLanguageTag = true;
-			string oldId = _id;
-			_id = IetfLanguageTagHelper.ToIetfLanguageTag(language, script, region, variant);
-			if (oldId != _id)
+			string oldId = _ietfLanguageTag;
+			_ietfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag(language, script, region, variant);
+			if (oldId != _ietfLanguageTag)
 			{
 				IEnumerable<VariantSubtag> variantSubtags;
-				IetfLanguageTagHelper.TryGetSubtags(_id, out _language, out _script, out _region, out variantSubtags);
+				IetfLanguageTagHelper.TryGetSubtags(_ietfLanguageTag, out _language, out _script, out _region, out variantSubtags);
 				using (_ignoreVariantChanges.Enter())
 				{
 					_variants.Clear();
@@ -521,10 +521,10 @@ namespace SIL.WritingSystems
 					// If it's an unlisted language, use the private use area language subtag.
 					if (_language == WellKnownSubtags.UnlistedLanguage)
 					{
-						int idx = Id.IndexOf("-x-", StringComparison.Ordinal);
-						if (idx > 0 && Id.Length > idx + 3)
+						int idx = IetfLanguageTag.IndexOf("-x-", StringComparison.Ordinal);
+						if (idx > 0 && IetfLanguageTag.Length > idx + 3)
 						{
-							var abbr = Id.Substring(idx + 3);
+							var abbr = IetfLanguageTag.Substring(idx + 3);
 							idx = abbr.IndexOf('-');
 							if (idx > 0)
 								abbr = abbr.Substring(0, idx);
@@ -539,21 +539,18 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// This method will make a copy of the given writing system and
-		/// then make the Id unique compared to list of Ids passed in by
+		/// This method will make a copy of this writing system and
+		/// then make the IetfLanguageTag unique compared to list of language tags passed in by
 		/// appending dupl# where # is a digit that increases with the
 		/// number of duplicates found.
 		/// </summary>
-		/// <param name="writingSystemToCopy"></param>
-		/// <param name="otherWritingsystemIds"></param>
-		/// <returns></returns>
-		public static WritingSystemDefinition CreateCopyWithUniqueId(WritingSystemDefinition writingSystemToCopy, IEnumerable<string> otherWritingsystemIds)
+		public WritingSystemDefinition CloneWithUniqueIetfLanguageTag(IEnumerable<string> otherWSLangTags)
 		{
-			WritingSystemDefinition newWs = writingSystemToCopy.Clone();
+			WritingSystemDefinition newWs = Clone();
 			var lastAppended = string.Empty;
 			int duplicateNumber = 0;
-			string[] wsIds = otherWritingsystemIds.ToArray();
-			while (wsIds.Any(id => id.Equals(newWs.Id, StringComparison.OrdinalIgnoreCase)))
+			string[] wsLangTags = otherWSLangTags.ToArray();
+			while (wsLangTags.Any(id => id.Equals(newWs.IetfLanguageTag, StringComparison.OrdinalIgnoreCase)))
 			{
 				if (!string.IsNullOrEmpty(lastAppended))
 					newWs.RemoveVariants(lastAppended);
@@ -569,16 +566,18 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// Used by IWritingSystemRepository to identify writing systems. Only change this if you would like to replace a writing system with the same StoreId
-		/// already contained in the repo. This is useful creating a temporary copy of a writing system that you may or may not care to persist to the
-		/// IWritingSystemRepository.
-		/// Typical use would therefor be:
+		/// Used by IWritingSystemRepository to identify writing systems. This is an IETF language tag, but does not necessarily
+		/// correspond to the writing system's current language tag. Id and IetfLanguageTag can be different if the language
+		/// tag has changed, but IWritingSystemRepository.Set() hasn't been called on it yet. Only change this if you would like
+		/// to replace a writing system with the same Id already contained in the repo. This is useful creating a temporary copy
+		/// of a writing system that you may or may not care to persist to the IWritingSystemRepository.
+		/// Typical use would therefore be:
 		/// ws.Clone(wsorig);
-		/// ws.StoreId=wsOrig.StoreId;
+		/// ws.Id = wsOrig.Id;
 		/// **make changes to ws**
 		/// repo.Set(ws);
 		/// </summary>
-		public string StoreId { get; set; }
+		public string Id { get; set; }
 
 		/// <summary>
 		/// A automatically generated descriptive label for the writing system definition.
@@ -589,10 +588,10 @@ namespace SIL.WritingSystems
 			{
 				//jh (Oct 2010) made it start with RFC5646 because all ws's in a lang start with the
 				//same abbreviation, making imppossible to see (in SOLID for example) which you chose.
-				bool languageIsUnknown = _id.Equals(WellKnownSubtags.UnlistedLanguage, StringComparison.OrdinalIgnoreCase);
-				if (!string.IsNullOrEmpty(_id) && !languageIsUnknown)
+				bool languageIsUnknown = _ietfLanguageTag.Equals(WellKnownSubtags.UnlistedLanguage, StringComparison.OrdinalIgnoreCase);
+				if (!string.IsNullOrEmpty(_ietfLanguageTag) && !languageIsUnknown)
 				{
-					return _id;
+					return _ietfLanguageTag;
 				}
 				if (languageIsUnknown)
 				{
@@ -713,12 +712,11 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// The identifier for this writing syetm definition. This is used in files, but not as the key for IWritingSystemRepository.
-		/// StoreId serves that purpose. Note that this is the IETF language tag for this writing system.
+		/// The IETF language tag for this writing system.
 		/// </summary>
-		public string Id
+		public string IetfLanguageTag
 		{
-			get { return _id; }
+			get { return _ietfLanguageTag; }
 		}
 
 		/// <summary>
@@ -820,7 +818,7 @@ namespace SIL.WritingSystems
 
 		protected virtual void UpdateIetfLanguageTag()
 		{
-			_id = IetfLanguageTagHelper.ToIetfLanguageTag(_language, _script, _region, _variants, _requiresValidLanguageTag);
+			_ietfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag(_language, _script, _region, _variants, _requiresValidLanguageTag);
 		}
 
 		/// <summary>
@@ -952,7 +950,7 @@ namespace SIL.WritingSystems
 			return layoutName;
 		}
 
-		internal IKeyboardDefinition RawLocalKeyboard
+		public IKeyboardDefinition RawLocalKeyboard
 		{
 			get { return _localKeyboard; }
 		}
@@ -1113,12 +1111,12 @@ namespace SIL.WritingSystems
 
 		public override string ToString()
 		{
-			return _id;
+			return _ietfLanguageTag;
 		}
 
 		/// <summary>
 		/// Creates a clone of the current writing system.
-		/// Note that this excludes the properties: Modified, MarkedForDeletion and StoreId
+		/// Note that this excludes the properties: Modified, MarkedForDeletion and Id
 		/// </summary>
 		/// <returns></returns>
 		public override WritingSystemDefinition Clone()
@@ -1149,7 +1147,7 @@ namespace SIL.WritingSystems
 				return false;
 			if (Keyboard != other.Keyboard)
 				return false;
-			if (_id != other._id)
+			if (_ietfLanguageTag != other._ietfLanguageTag)
 				return false;
 			if (_dateModified != other._dateModified)
 				return false;

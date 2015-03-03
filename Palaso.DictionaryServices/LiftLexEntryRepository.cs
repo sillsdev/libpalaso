@@ -258,14 +258,14 @@ namespace Palaso.DictionaryServices
 				throw new ArgumentNullException("writingSystemDefinition");
 			}
 
-			string cacheName = String.Format("sortedByHeadWord_{0}", writingSystemDefinition.Id);
+			string cacheName = String.Format("sortedByHeadWord_{0}", writingSystemDefinition.IetfLanguageTag);
 			if (_caches[cacheName] == null)
 			{
 				var headWordQuery = new DelegateQuery<LexEntry>(
 					delegate(LexEntry entryToQuery)
 						{
 							IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
-							string headWord = entryToQuery.VirtualHeadWord[writingSystemDefinition.Id];
+							string headWord = entryToQuery.VirtualHeadWord[writingSystemDefinition.IetfLanguageTag];
 							if (String.IsNullOrEmpty(headWord))
 							{
 								headWord = null;
@@ -345,18 +345,18 @@ namespace Palaso.DictionaryServices
 			{
 				throw new ArgumentNullException("writingSystemDefinition");
 			}
-			string cacheName = String.Format("sortedByLexicalFormOrAlternative_{0}", writingSystemDefinition.Id);
+			string cacheName = String.Format("sortedByLexicalFormOrAlternative_{0}", writingSystemDefinition.IetfLanguageTag);
 			if (_caches[cacheName] == null)
 			{
 				var lexicalFormWithAlternativeQuery = new DelegateQuery<LexEntry>(
 					delegate(LexEntry entryToQuery)
 						{
 							IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
-							string lexicalform = entryToQuery.LexicalForm[writingSystemDefinition.Id];
-							string writingSystemOfForm = writingSystemDefinition.Id;
+							string lexicalform = entryToQuery.LexicalForm[writingSystemDefinition.IetfLanguageTag];
+							string writingSystemOfForm = writingSystemDefinition.IetfLanguageTag;
 							if (lexicalform == "")
 							{
-								lexicalform = entryToQuery.LexicalForm.GetBestAlternative(writingSystemDefinition.Id);
+								lexicalform = entryToQuery.LexicalForm.GetBestAlternative(writingSystemDefinition.IetfLanguageTag);
 								foreach (LanguageForm form in entryToQuery.LexicalForm.Forms)
 								{
 									if(form.Form == lexicalform)
@@ -397,14 +397,14 @@ namespace Palaso.DictionaryServices
 			{
 				throw new ArgumentNullException("writingSystemDefinition");
 			}
-			string cacheName = String.Format("sortedByLexicalForm_{0}", writingSystemDefinition.Id);
+			string cacheName = String.Format("sortedByLexicalForm_{0}", writingSystemDefinition.IetfLanguageTag);
 			if (_caches[cacheName] == null)
 			{
 				var lexicalFormQuery = new DelegateQuery<LexEntry>(
 					delegate(LexEntry entryToQuery)
 						{
 							var tokenFieldsAndValues = new Dictionary<string, object>();
-							string headWord = entryToQuery.LexicalForm[writingSystemDefinition.Id];
+							string headWord = entryToQuery.LexicalForm[writingSystemDefinition.IetfLanguageTag];
 							if (String.IsNullOrEmpty(headWord)){
 								headWord = null;
 							}
@@ -485,7 +485,7 @@ namespace Palaso.DictionaryServices
 				throw new ArgumentNullException("writingSystemDefinition");
 			}
 
-			string cacheName = String.Format("SortByDefinition_{0}", writingSystemDefinition.Id);
+			string cacheName = String.Format("SortByDefinition_{0}", writingSystemDefinition.IetfLanguageTag);
 			if (_caches[cacheName] == null)
 			{
 				var definitionQuery = new DelegateQuery<LexEntry>(
@@ -496,10 +496,10 @@ namespace Palaso.DictionaryServices
 							int senseNumber = 0;
 							foreach (LexSense sense in entryToQuery.Senses)
 							{
-								var rawDefinition = sense.Definition[writingSystemDefinition.Id];
+								var rawDefinition = sense.Definition[writingSystemDefinition.IetfLanguageTag];
 								var definitions = GetTrimmedElementsSeperatedBySemiColon(rawDefinition);
 
-								var rawGloss = sense.Gloss[writingSystemDefinition.Id];
+								var rawGloss = sense.Gloss[writingSystemDefinition.IetfLanguageTag];
 								var glosses = GetTrimmedElementsSeperatedBySemiColon(rawGloss);
 
 								var definitionAndGlosses = MergeListsWhileExcludingDoublesAndEmptyStrings(definitions, glosses);
@@ -662,7 +662,7 @@ namespace Palaso.DictionaryServices
 								foreach (LanguageForm form in sense.Gloss.Forms)
 								{
 									IDictionary<string, object> tokenFieldsAndValues = new Dictionary<string, object>();
-									string lexicalForm = entry.LexicalForm[lexicalUnitWritingSystemDefinition.Id];
+									string lexicalForm = entry.LexicalForm[lexicalUnitWritingSystemDefinition.IetfLanguageTag];
 									if (String.IsNullOrEmpty(lexicalForm))
 									{
 										lexicalForm = null;

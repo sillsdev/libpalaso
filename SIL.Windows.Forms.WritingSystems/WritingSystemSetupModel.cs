@@ -240,7 +240,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		/// <returns>false if the code wasn't found</returns>
 		public virtual bool SetCurrentIndexFromIetfLanguageTag(string languageTag)
 		{
-			var index = WritingSystemDefinitions.FindIndex(d => d.Id == languageTag);
+			var index = WritingSystemDefinitions.FindIndex(d => d.IetfLanguageTag == languageTag);
 			if (index < 0)
 			{
 				return false;
@@ -371,7 +371,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				bool[] canSave = new bool[WritingSystemDefinitions.Count];
 				for (int i = 0; i < WritingSystemDefinitions.Count; i++)
 				{
-					string id = WritingSystemDefinitions[i].Id;
+					string id = WritingSystemDefinitions[i].IetfLanguageTag;
 					if (idList.ContainsKey(id))
 					{
 						canSave[i] = false;
@@ -463,10 +463,10 @@ namespace SIL.Windows.Forms.WritingSystems
 				// create a list of languages we have to disallow to prevent a cycle
 				// in the sort options
 				var prohibitedList = new List<string>();
-				if (CurrentDefinition != null && !string.IsNullOrEmpty(CurrentDefinition.Id))
+				if (CurrentDefinition != null && !string.IsNullOrEmpty(CurrentDefinition.IetfLanguageTag))
 				{
 					// don't allow the current language to be picked
-					prohibitedList.Add(CurrentDefinition.Id);
+					prohibitedList.Add(CurrentDefinition.IetfLanguageTag);
 				}
 				for (int i = 0; i < WritingSystemDefinitions.Count; i++)
 				{
@@ -475,10 +475,10 @@ namespace SIL.Windows.Forms.WritingSystems
 					// don't allow if it references another language on our prohibited list and this one
 					// isn't already on the prohibited list
 					if (inheritedCollation != null
-						&& !string.IsNullOrEmpty(ws.Id) && prohibitedList.Contains(inheritedCollation.BaseIetfLanguageTag)
-						&& !prohibitedList.Contains(ws.Id))
+						&& !string.IsNullOrEmpty(ws.IetfLanguageTag) && prohibitedList.Contains(inheritedCollation.BaseIetfLanguageTag)
+						&& !prohibitedList.Contains(ws.IetfLanguageTag))
 					{
-						prohibitedList.Add(ws.Id);
+						prohibitedList.Add(ws.IetfLanguageTag);
 						// Restart the scan through all the writing systems every time we add a prohibited one.
 						// This ensuers that we catch all possible cycles.
 						i = -1;
@@ -678,7 +678,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			{
 				if (CurrentDefinition == null)
 					return string.Empty;
-				return CurrentDefinition.Id ?? string.Empty;
+				return CurrentDefinition.IetfLanguageTag ?? string.Empty;
 			}
 		}
 
@@ -778,7 +778,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			if (writingSystem.Script != null && writingSystem.Language.ImplicitScriptCode != writingSystem.Script.Code)
 				summary.AppendFormat(" written in {0} script", CurrentIso15924Script.ShortName);
 
-			summary.AppendFormat(". ({0})", writingSystem.Id);
+			summary.AppendFormat(". ({0})", writingSystem.IetfLanguageTag);
 			return summary.ToString().Trim();
 		}
 
@@ -1223,8 +1223,8 @@ namespace SIL.Windows.Forms.WritingSystems
 						return;
 				case WhatToDos.Conflate:
 					var wsToConflateWith = whatToDo.WritingSystemIdToConflateWith;
-						var okToConflateEventArgs = new AskIfOkToConflateEventArgs(CurrentDefinition.Id,
-																					wsToConflateWith.Id);
+						var okToConflateEventArgs = new AskIfOkToConflateEventArgs(CurrentDefinition.IetfLanguageTag,
+																					wsToConflateWith.IetfLanguageTag);
 						if (AskIfOkToConflateWritingSystems != null)
 						{
 							AskIfOkToConflateWritingSystems(this, okToConflateEventArgs);
@@ -1234,20 +1234,20 @@ namespace SIL.Windows.Forms.WritingSystems
 							string message = okToConflateEventArgs.ErrorMessage ?? String.Empty;
 							ErrorReport.NotifyUserOfProblem(
 								String.Format("Can not conflate the input system {0} to {1}. {2}",
-												CurrentDefinition.Id,
+												CurrentDefinition.IetfLanguageTag,
 												wsToConflateWith, message));
 							return;
 						}
-						if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.Id))
+						if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.IetfLanguageTag))
 						{
 							if (wsToConflateWith != null)
 							{
-								_writingSystemRepository.Conflate(CurrentDefinition.Id, wsToConflateWith.Id);
+								_writingSystemRepository.Conflate(CurrentDefinition.IetfLanguageTag, wsToConflateWith.IetfLanguageTag);
 							}
 						}
 					break;
 				case WhatToDos.Delete:
-					var okToDeleteEventArgs = new AskIfOkToDeleteEventArgs(CurrentDefinition.Id);
+					var okToDeleteEventArgs = new AskIfOkToDeleteEventArgs(CurrentDefinition.IetfLanguageTag);
 					if (AskIfOkToDeleteWritingSystems != null)
 					{
 						AskIfOkToDeleteWritingSystems(this, okToDeleteEventArgs);
@@ -1257,7 +1257,7 @@ namespace SIL.Windows.Forms.WritingSystems
 						string message = okToDeleteEventArgs.ErrorMessage ?? String.Empty;
 						ErrorReport.NotifyUserOfProblem(
 							String.Format("Can not delete the input system {0}. {1}",
-											CurrentDefinition.Id, message));
+											CurrentDefinition.IetfLanguageTag, message));
 						return;
 					}
 					// If you play around with renaming/revising writing systems, the Id assigned to
@@ -1267,9 +1267,9 @@ namespace SIL.Windows.Forms.WritingSystems
 					// However, not calling _writingSystemRepository.Remove() can cause problems
 					// with data getting out of sync.  (See https://jira.sil.org/browse/WS-281 for
 					// an example of such problems.)
-					if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.StoreId))
+					if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.Id))
 					{
-						_writingSystemRepository.Remove(CurrentDefinition.StoreId);
+						_writingSystemRepository.Remove(CurrentDefinition.Id);
 					}
 					break;
 			}
@@ -1300,12 +1300,12 @@ namespace SIL.Windows.Forms.WritingSystems
 			// Get list of existing known ids, both permanent and temporary so that we don't risk
 			// replacing/deleting them unknowingly.
 			var wsIds = new List<string>();
-			foreach (var wsT in _writingSystemRepository.AllWritingSystems)
-				wsIds.Add(wsT.Id);
-			foreach (var wsT in WritingSystemDefinitions)
-				wsIds.Add(wsT.Id);
-			var ws = WritingSystemDefinition.CreateCopyWithUniqueId(CurrentDefinition, wsIds);
-			WritingSystemDefinitions.Insert(CurrentIndex+1, ws);
+			foreach (WritingSystemDefinition wsT in _writingSystemRepository.AllWritingSystems)
+				wsIds.Add(wsT.IetfLanguageTag);
+			foreach (WritingSystemDefinition wsT in WritingSystemDefinitions)
+				wsIds.Add(wsT.IetfLanguageTag);
+			WritingSystemDefinition ws = CurrentDefinition.CloneWithUniqueIetfLanguageTag(wsIds);
+			WritingSystemDefinitions.Insert(CurrentIndex + 1, ws);
 			OnAddOrDelete();
 			CurrentDefinition = ws;
 		}
@@ -1396,8 +1396,8 @@ namespace SIL.Windows.Forms.WritingSystems
 			if (!HasCurrentSelection) {
 				throw new InvalidOperationException ("Unable to export current selection when there is no current selection.");
 			}
-			LdmlDataMapper adaptor = new LdmlDataMapper ();
-			adaptor.Write (filePath, (WritingSystemDefinition)_currentWritingSystem, null);
+			var adaptor = new LdmlDataMapper();
+			adaptor.Write(filePath, _currentWritingSystem, null);
 		}
 
 		public void SetAllPossibleAndRemoveOthers()
@@ -1419,8 +1419,8 @@ namespace SIL.Windows.Forms.WritingSystems
 			foreach (WritingSystemDefinition unsettableWs in unsettableWritingSystems)
 			{
 				//create a writing system just to get the unique id, then copy that id to the writing system that we want to set
-				var uniqueWs = WritingSystemDefinition.CreateCopyWithUniqueId(unsettableWs,
-						_writingSystemRepository.AllWritingSystems.Select(ws => ws.Id));
+				WritingSystemDefinition uniqueWs = unsettableWs.CloneWithUniqueIetfLanguageTag(
+						_writingSystemRepository.AllWritingSystems.Select(ws => ws.IetfLanguageTag));
 				unsettableWs.Language = uniqueWs.Language;
 				unsettableWs.Script = uniqueWs.Script;
 				unsettableWs.Region = uniqueWs.Region;
@@ -1450,7 +1450,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			if (CurrentDefinition == null)
 				return testString;
 			if (testString == null)
-				return testString;
+				return null;
 			if (CurrentDefinition.DefaultCollation.Collator == null)
 				return testString;
 			var stringList = new List<SortKey>();

@@ -481,7 +481,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 			// Add in the ISO language code in case font supports multiple regions
 			if (ws != null)
 			{
-				String lang = ws.Id.IndexOf('-') == -1 ? ws.Id : ws.Id.Substring(0, ws.Id.IndexOf('-'));
+				String lang = ws.IetfLanguageTag.IndexOf('-') == -1 ? ws.IetfLanguageTag : ws.IetfLanguageTag.Substring(0, ws.IetfLanguageTag.IndexOf('-'));
 				langName = "lang='" + lang + "' ";
 			}
 			return langName;

@@ -42,7 +42,7 @@ namespace SIL.WritingSystems
 				WritingSystemDefinition ws = CreateNew();
 				XmlReader xmlReader = nav.ReadSubtree();
 				ldmlDataMapper.Read(xmlReader, ws);
-				ws.StoreId = ws.Id;
+				ws.Id = ws.IetfLanguageTag;
 				Set(ws);
 			}
 		}
@@ -60,7 +60,7 @@ namespace SIL.WritingSystems
 				{
 					WritingSystemDefinition ws = CreateNew();
 					ldmlDataMapper.Read(xmlReader.ReadSubtree(), ws);
-					ws.StoreId = ws.Id;
+					ws.Id = ws.IetfLanguageTag;
 					Set(ws);
 				}
 

@@ -66,7 +66,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			IEnumerable<WritingSystemDefinition> defs = GetLanguageAndKeyboardCombinations();
 			//now just return the unique ones (Works because no keyboard in the IETF language tag)
-			IEnumerable<WritingSystemDefinition> unique = defs.GroupBy(d => d.Id)
+			IEnumerable<WritingSystemDefinition> unique = defs.GroupBy(d => d.IetfLanguageTag)
 				.Select(g => g.First());
 			return unique.GetEnumerator();
 		}

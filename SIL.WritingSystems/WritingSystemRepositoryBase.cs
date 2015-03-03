@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using SIL.Code;
 
@@ -63,9 +62,9 @@ namespace SIL.WritingSystems
 			return new WritingSystemDefinition();
 		}
 
-		public virtual WritingSystemDefinition CreateNew(string id)
+		public virtual WritingSystemDefinition CreateNew(string ietfLanguageTag)
 		{
-			return new WritingSystemDefinition(id);
+			return new WritingSystemDefinition(ietfLanguageTag);
 		}
 
 		public virtual void Conflate(string wsToConflate, string wsToConflateWith)
@@ -102,11 +101,11 @@ namespace SIL.WritingSystems
 
 		protected virtual void RemoveDefinition(WritingSystemDefinition ws)
 		{
-			_writingSystems.Remove(ws.StoreId);
-			if (_writingSystemsToIgnore.ContainsKey(ws.StoreId))
-				_writingSystemsToIgnore.Remove(ws.StoreId);
+			_writingSystems.Remove(ws.Id);
 			if (_writingSystemsToIgnore.ContainsKey(ws.Id))
 				_writingSystemsToIgnore.Remove(ws.Id);
+			if (_writingSystemsToIgnore.ContainsKey(ws.IetfLanguageTag))
+				_writingSystemsToIgnore.Remove(ws.IetfLanguageTag);
 		}
 
 		public abstract string WritingSystemIdHasChangedTo(string id);
@@ -130,15 +129,6 @@ namespace SIL.WritingSystems
 			_writingSystems.Clear();
 		}
 
-		public WritingSystemDefinition MakeDuplicate(WritingSystemDefinition definition)
-		{
-			if (definition == null)
-			{
-				throw new ArgumentNullException("definition");
-			}
-			return definition.Clone();
-		}
-
 		public abstract bool WritingSystemIdHasChanged(string id);
 
 		public bool Contains(string id)
@@ -154,8 +144,8 @@ namespace SIL.WritingSystems
 			{
 				return false;
 			}
-			return !(_writingSystems.Keys.Any(id => id.Equals(ws.Id, StringComparison.OrdinalIgnoreCase)) &&
-				ws.StoreId != _writingSystems[ws.Id].StoreId);
+			return !(_writingSystems.Keys.Any(id => id.Equals(ws.IetfLanguageTag, StringComparison.OrdinalIgnoreCase)) &&
+				ws.Id != _writingSystems[ws.IetfLanguageTag].Id);
 		}
 
 		public virtual void Set(WritingSystemDefinition ws)
@@ -167,27 +157,24 @@ namespace SIL.WritingSystems
 
 			//Check if this is a new writing system with a conflicting id
 			if (!CanSet(ws))
-			{
-				throw new ArgumentException(String.Format("Unable to set writing system '{0}' because this id already exists. Please change this writing system id before setting it.", ws.Id));
-			}
-			string oldId = _writingSystems.Where(kvp => kvp.Value.StoreId == ws.StoreId).Select(kvp => kvp.Key).FirstOrDefault();
+				throw new ArgumentException(String.Format("Unable to set writing system '{0}' because this id already exists. Please change this writing system id before setting it.", ws.IetfLanguageTag));
+
+			string oldId = _writingSystems.Where(kvp => kvp.Value.Id == ws.Id).Select(kvp => kvp.Key).FirstOrDefault();
 			//??? How do we update
 			//??? Is it sufficient to just set it, or can we not change the reference in case someone else has it too
 			//??? i.e. Do we need a ws.Copy(WritingSystemDefinition)?
-			if (!String.IsNullOrEmpty(oldId) && _writingSystems.ContainsKey(oldId))
-			{
+			if (!string.IsNullOrEmpty(oldId) && _writingSystems.ContainsKey(oldId))
 				_writingSystems.Remove(oldId);
-			}
-			_writingSystems[ws.Id] = ws;
+			_writingSystems[ws.IetfLanguageTag] = ws;
 
-			if (!String.IsNullOrEmpty(oldId) && (oldId != ws.Id))
+			if (!string.IsNullOrEmpty(oldId) && (oldId != ws.IetfLanguageTag))
 			{
-				UpdateChangedIds(oldId, ws.Id);
+				UpdateChangedIds(oldId, ws.IetfLanguageTag);
 				if (WritingSystemIdChanged != null)
-					WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.Id));
+					WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.IetfLanguageTag));
 			}
 
-			ws.StoreId = ws.Id;
+			ws.Id = ws.IetfLanguageTag;
 		}
 
 		/// <summary>
@@ -230,25 +217,21 @@ namespace SIL.WritingSystems
 			return false;
 		}
 
-		public string GetNewStoreIdWhenSet(WritingSystemDefinition ws)
+		public string GetNewIdWhenSet(WritingSystemDefinition ws)
 		{
 			if (ws == null)
 			{
 				throw new ArgumentNullException("ws");
 			}
-			return String.IsNullOrEmpty(ws.StoreId) ? ws.Id : ws.StoreId;
+			return String.IsNullOrEmpty(ws.Id) ? ws.IetfLanguageTag : ws.Id;
 		}
 
 		public WritingSystemDefinition Get(string id)
 		{
 			if (id == null)
-			{
 				throw new ArgumentNullException("id");
-			}
 			if (!_writingSystems.ContainsKey(id))
-			{
 				throw new ArgumentOutOfRangeException("id", String.Format("Writing system id '{0}' does not exist.", id));
-			}
 			return _writingSystems[id];
 		}
 
@@ -267,8 +250,8 @@ namespace SIL.WritingSystems
 		protected virtual void OnChangeNotifySharedStore(WritingSystemDefinition ws)
 		{
 			DateTime lastDateModified;
-			if (_writingSystemsToIgnore.TryGetValue(ws.Id, out lastDateModified) && ws.DateModified > lastDateModified)
-				_writingSystemsToIgnore.Remove(ws.Id);
+			if (_writingSystemsToIgnore.TryGetValue(ws.IetfLanguageTag, out lastDateModified) && ws.DateModified > lastDateModified)
+				_writingSystemsToIgnore.Remove(ws.IetfLanguageTag);
 		}
 
 		protected virtual void OnRemoveNotifySharedStore()
@@ -285,11 +268,11 @@ namespace SIL.WritingSystems
 			foreach (WritingSystemDefinition ws in rhs)
 			{
 				Guard.AgainstNull(ws, "ws in rhs");
-				if (_writingSystems.ContainsKey(ws.Id))
+				if (_writingSystems.ContainsKey(ws.IetfLanguageTag))
 				{
 					DateTime lastDateModified;
-					if ((!_writingSystemsToIgnore.TryGetValue(ws.Id, out lastDateModified) || ws.DateModified > lastDateModified)
-						&& (ws.DateModified > _writingSystems[ws.Id].DateModified))
+					if ((!_writingSystemsToIgnore.TryGetValue(ws.IetfLanguageTag, out lastDateModified) || ws.DateModified > lastDateModified)
+						&& (ws.DateModified > _writingSystems[ws.IetfLanguageTag].DateModified))
 					{
 						newerWritingSystems.Add(ws.Clone());
 					}
@@ -304,86 +287,6 @@ namespace SIL.WritingSystems
 			{
 				return _writingSystems.Values;
 			}
-		}
-
-		public IEnumerable<WritingSystemDefinition> TextWritingSystems
-		{
-			get { return _writingSystems.Values.Where(ws => !ws.IsVoice); }
-		}
-
-		public IEnumerable<WritingSystemDefinition> VoiceWritingSystems
-		{
-			get { return _writingSystems.Values.Where(ws => ws.IsVoice); }
-		}
-
-		public virtual void OnWritingSystemIdChange(WritingSystemDefinition ws, string oldId)
-		{
-			_writingSystems[ws.Id] = ws;
-			_writingSystems.Remove(oldId);
-		}
-
-		/// <summary>
-		/// filters the list down to those that are texts (not audio), while preserving their order
-		/// </summary>
-		/// <param name="idsToFilter"></param>
-		/// <returns></returns>
-		public IEnumerable<string> FilterForTextIds(IEnumerable<string> idsToFilter)
-		{
-			var textIds = TextWritingSystems.Select(ws => ws.Id);
-			return idsToFilter.Where(id => textIds.Contains(id));
-		}
-
-		/// <summary>
-		/// Get the writing system that is most probably intended by the user, when input language changes to the specified layout and cultureInfo,
-		/// given the indicated candidates, and that wsCurrent is the preferred result if it is a possible WS for the specified culture.
-		/// wsCurrent is also returned if none of the candidates is found to match the specified inputs.
-		/// See interface comment for intended usage information.
-		/// Enhance JohnT: it may be helpful, if no WS has an exact match, to look for one where the culture prefix (before hyphen) matches,
-		/// thus finding a WS that has a keyboard for the same language as the one the user selected.
-		/// Could similarly match against WS ID's language ID, for WS's with no RawLocalKeyboard.
-		/// Could use LocalKeyboard instead of RawLocalKeyboard, thus allowing us to find keyboards for writing systems where the
-		/// local keyboard has not yet been determined. However, this would potentially establish a particular local keyboard for
-		/// a user who has never typed in that writing system or configured a keyboard for it, nor even selected any text in it.
-		/// In the expected usage of this library, there will be a RawLocalKeyboard for every writing system in which the user has
-		/// ever typed or selected text. That should have a high probability of catching anything actually useful.
-		/// </summary>
-		/// <param name="layoutName"></param>
-		/// <param name="cultureInfo"></param>
-		/// <param name="wsCurrent"></param>
-		/// <param name="options"></param>
-		/// <returns></returns>
-		public WritingSystemDefinition GetWsForInputLanguage(string layoutName, CultureInfo cultureInfo, WritingSystemDefinition wsCurrent,
-			WritingSystemDefinition[] options)
-		{
-			// See if the default is suitable.
-			if (WsMatchesLayout(layoutName, wsCurrent) && WsMatchesCulture(cultureInfo, wsCurrent))
-				return wsCurrent;
-			WritingSystemDefinition layoutMatch = null;
-			WritingSystemDefinition cultureMatch = null;
-			foreach (WritingSystemDefinition ws in options)
-			{
-				bool matchesCulture = WsMatchesCulture(cultureInfo, ws);
-				if (WsMatchesLayout(layoutName, ws))
-				{
-					if (matchesCulture)
-						return ws;
-					if (layoutMatch == null || ws.Equals(wsCurrent))
-						layoutMatch = ws;
-				}
-				if (matchesCulture && (cultureMatch == null || ws.Equals(wsCurrent)))
-					cultureMatch = ws;
-			}
-			return layoutMatch ?? cultureMatch ?? wsCurrent;
-		}
-
-		private bool WsMatchesLayout(string layoutName, WritingSystemDefinition ws)
-		{
-			return ws != null && ws.RawLocalKeyboard != null && ws.RawLocalKeyboard.Layout == layoutName;
-		}
-
-		private bool WsMatchesCulture(CultureInfo cultureInfo, WritingSystemDefinition ws)
-		{
-			return ws != null && ws.RawLocalKeyboard != null && ws.RawLocalKeyboard.Locale == cultureInfo.Name;
 		}
 	}
 }

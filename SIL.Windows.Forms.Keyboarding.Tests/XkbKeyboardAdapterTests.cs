@@ -44,7 +44,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		/// <remarks>A different, probably cleaner approach, would be to derive a class from
 		/// NUnit's ActionAttribute. However, this currently doesn't work when running the tests
 		/// in MonoDevelop (at least up to version 4.3).</remarks>
-		class LanguageHelper: IDisposable
+		class LanguageHelper : IDisposable
 		{
 			private string OldLanguage { get; set; }
 			public LanguageHelper(string language)
@@ -221,7 +221,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			KeyboardController.Initialize(new XkbKeyboardAdaptor(new XklEngineResponder()));
 			IKeyboardDefinition[] keyboards = Keyboard.Controller.AvailableKeyboards.ToArray();
 			Assert.AreEqual(1, keyboards.Length);
-			Assert.AreEqual("en-US_us", keyboards[0].ID);
+			Assert.AreEqual("en-US_us", keyboards[0].Id);
 			Assert.AreEqual(ExpectedKeyboardUSA, keyboards[0].Name);
 			KeyboardController.Shutdown();
 		}
@@ -234,7 +234,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			KeyboardController.Initialize(new XkbKeyboardAdaptor(new XklEngineResponder()));
 			IKeyboardDefinition[] keyboards = Keyboard.Controller.AvailableKeyboards.ToArray();
 			Assert.AreEqual(1, keyboards.Length);
-			Assert.AreEqual("de-DE_de", keyboards[0].ID);
+			Assert.AreEqual("de-DE_de", keyboards[0].Id);
 			Assert.AreEqual(ExpectedKeyboardGermany, keyboards[0].Name);
 			KeyboardController.Shutdown();
 		}
@@ -259,7 +259,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			KeyboardController.Initialize(new XkbKeyboardAdaptor(new XklEngineResponder()));
 			IKeyboardDefinition[] keyboards = Keyboard.Controller.AvailableKeyboards.ToArray();
 			Assert.AreEqual(1, keyboards.Length);
-			Assert.AreEqual("en-GB_gb", keyboards[0].ID);
+			Assert.AreEqual("en-GB_gb", keyboards[0].Id);
 			Assert.AreEqual(ExpectedKeyboardUK, keyboards[0].Name);
 			KeyboardController.Shutdown();
 		}
@@ -275,17 +275,17 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardBelgium };
 
 			KeyboardController.Initialize(new XkbKeyboardAdaptor(new XklEngineResponder()));
-			var keyboards = Keyboard.Controller.AvailableKeyboards.OrderBy(kbd => kbd.ID).ToArray();
+			var keyboards = Keyboard.Controller.AvailableKeyboards.OrderBy(kbd => kbd.Id).ToArray();
 			// It seems that Dutch (Belgium) got added recently, so some machines are missing
 			// this.
 			Assert.That(keyboards.Length == 3 || keyboards.Length == 2);
-			var expectedKeyboardIDs = new List<string>()
+			var expectedKeyboardIds = new List<string>()
 				{ "de-BE_be", "fr-BE_be" };
 
 			if (keyboards.Length > 2)
-				expectedKeyboardIDs.Add("nl-BE_be");
+				expectedKeyboardIds.Add("nl-BE_be");
 
-			Assert.That(keyboards.Select(kbd => kbd.ID), Is.EquivalentTo(expectedKeyboardIDs));
+			Assert.That(keyboards.Select(kbd => kbd.Id), Is.EquivalentTo(expectedKeyboardIds));
 			KeyboardController.Shutdown();
 		}
 
@@ -297,9 +297,9 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			KeyboardController.Initialize(new XkbKeyboardAdaptor(new XklEngineResponder()));
 			var keyboards = Keyboard.Controller.AvailableKeyboards.ToArray();
 			Assert.AreEqual(2, keyboards.Length);
-			Assert.AreEqual("en-US_us", keyboards[0].ID);
+			Assert.AreEqual("en-US_us", keyboards[0].Id);
 			Assert.AreEqual(ExpectedKeyboardUSA, keyboards[0].Name);
-			Assert.AreEqual("de-DE_de", keyboards[1].ID);
+			Assert.AreEqual("de-DE_de", keyboards[1].Id);
 			Assert.AreEqual(ExpectedKeyboardGermany, keyboards[1].Name);
 			KeyboardController.Shutdown();
 		}
@@ -316,7 +316,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			KeyboardController.Initialize(new XkbKeyboardAdaptor(new XklEngineResponder()));
 			var keyboards = Keyboard.Controller.AvailableKeyboards;
 			Assert.AreEqual(1, keyboards.Count());
-			Assert.AreEqual("de-DE_de", keyboards.First().ID);
+			Assert.AreEqual("de-DE_de", keyboards.First().Id);
 			Assert.AreEqual("German - Deutsch (Deutschland)", keyboards.First().Name);
 			KeyboardController.Shutdown();
 		}
@@ -336,7 +336,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 				KeyboardController.Initialize(new XkbKeyboardAdaptor(new XklEngineResponder()));
 				IKeyboardDefinition[] keyboards = Keyboard.Controller.AvailableKeyboards.ToArray();
 				Assert.AreEqual(1, keyboards.Length);
-				Assert.AreEqual("de-DE_de", keyboards[0].ID);
+				Assert.AreEqual("de-DE_de", keyboards[0].Id);
 				Assert.AreEqual("Deutsch - Deutsch (Deutschland)", keyboards[0].Name);
 				KeyboardController.Shutdown();
 			}

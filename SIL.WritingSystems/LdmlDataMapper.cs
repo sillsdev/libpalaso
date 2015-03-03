@@ -300,7 +300,7 @@ namespace SIL.WritingSystems
 			foreach (XElement specialElem in element.Elements("special"))
 				ReadTopLevelSpecialElement(specialElem, ws);
 
-			ws.StoreId = string.Empty;
+			ws.Id = string.Empty;
 			ws.AcceptChanges();
 		}
 
@@ -322,7 +322,7 @@ namespace SIL.WritingSystems
 				}
 				throw new ApplicationException(String.Format(
 					"The LDML tag '{0}' is version {1}.  Version {2} was expected.",
-					ws.Id,
+					ws.IetfLanguageTag,
 					version,
 					WritingSystemDefinition.LatestWritingSystemDefinitionVersion
 					));
@@ -886,7 +886,7 @@ namespace SIL.WritingSystems
 
 			// Write generation date with UTC so no more ambiguity on timezone
 			identityElem.SetAttributeValue("generation", "date", ws.DateModified.ToISO8601TimeFormatWithUTCString());
-			WriteLanguageTagElements(identityElem, ws.Id);
+			WriteLanguageTagElements(identityElem, ws.IetfLanguageTag);
 
 			// Create special element if data needs to be written
 			if (!string.IsNullOrEmpty(ws.WindowsLcid) || !string.IsNullOrEmpty(ws.DefaultRegion) || (ws.Variants.Count > 0))
