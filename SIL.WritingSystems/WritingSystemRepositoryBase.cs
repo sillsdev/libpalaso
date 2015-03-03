@@ -49,10 +49,28 @@ namespace SIL.WritingSystems
 
 		public virtual WritingSystemDefinition CreateNew()
 		{
-			return new WritingSystemDefinition();
+			return ConstructDefinition();
 		}
 
 		public virtual WritingSystemDefinition CreateNew(string ietfLanguageTag)
+		{
+			return ConstructDefinition(ietfLanguageTag);
+		}
+
+		/// <summary>
+		/// Creates an empty writing system. This can be overridden by subclasses to allow the use
+		/// subclasses of WritingSystemDefinition.
+		/// </summary>
+		protected virtual WritingSystemDefinition ConstructDefinition()
+		{
+			return new WritingSystemDefinition();
+		}
+
+		/// <summary>
+		/// Creates an empty writing system with the specified language tag. This can be overridden
+		/// by subclasses to allow the use subclasses of WritingSystemDefinition.
+		/// </summary>
+		protected virtual WritingSystemDefinition ConstructDefinition(string ietfLanguageTag)
 		{
 			return new WritingSystemDefinition(ietfLanguageTag);
 		}

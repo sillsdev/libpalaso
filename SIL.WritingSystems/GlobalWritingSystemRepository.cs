@@ -264,12 +264,12 @@ namespace SIL.WritingSystems
 		/// Creates a new writing system object and returns it.  Set will need to be called
 		/// once identifying information has been changed in order to save it in the store.
 		/// </summary>
-		public WritingSystemDefinition CreateNew()
+		public virtual WritingSystemDefinition CreateNew()
 		{
 			return new WritingSystemDefinition();
 		}
 
-		public WritingSystemDefinition CreateNew(string ietfLanguageTag)
+		public virtual WritingSystemDefinition CreateNew(string ietfLanguageTag)
 		{
 			return new WritingSystemDefinition(ietfLanguageTag);
 		}

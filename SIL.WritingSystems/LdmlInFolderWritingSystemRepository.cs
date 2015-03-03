@@ -353,14 +353,14 @@ namespace SIL.WritingSystems
 			WritingSystemDefinition ws;
 			if (!string.IsNullOrEmpty(templatePath))
 			{
-				ws = CreateNew();
+				ws = ConstructDefinition();
 				var loader = new LdmlDataMapper();
 				loader.Read(templatePath, ws);
 				ws.Template = templatePath;
 			}
 			else
 			{
-				ws = base.CreateNew(ietfLanguageTag);
+				ws = ConstructDefinition(ietfLanguageTag);
 			}
 
 			return ws;
