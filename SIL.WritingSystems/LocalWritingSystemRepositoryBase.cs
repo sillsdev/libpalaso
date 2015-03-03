@@ -1,0 +1,106 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace SIL.WritingSystems
+{
+	public abstract class LocalWritingSystemRepositoryBase : WritingSystemRepositoryBase, ILocalWritingSystemRepository
+	{
+		private readonly Dictionary<string, DateTime> _writingSystemsToIgnore;
+		private readonly IWritingSystemRepository _globalRepository;
+
+		protected LocalWritingSystemRepositoryBase(IWritingSystemRepository globalRepository)
+		{
+			_globalRepository = globalRepository;
+			_writingSystemsToIgnore = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
+		}
+
+		protected IDictionary<string, DateTime> WritingSystemsToIgnore
+		{
+			get { return _writingSystemsToIgnore; }
+		}
+
+		protected override void RemoveDefinition(WritingSystemDefinition ws)
+		{
+			base.RemoveDefinition(ws);
+			if (_writingSystemsToIgnore.ContainsKey(ws.Id))
+				_writingSystemsToIgnore.Remove(ws.Id);
+			if (_writingSystemsToIgnore.ContainsKey(ws.IetfLanguageTag))
+				_writingSystemsToIgnore.Remove(ws.IetfLanguageTag);
+		}
+
+		protected virtual void LastChecked(string id, DateTime dateModified)
+		{
+			_writingSystemsToIgnore[id] = dateModified;
+		}
+
+		protected virtual void OnChangeNotifySharedStore(WritingSystemDefinition ws)
+		{
+			DateTime lastDateModified;
+			if (_writingSystemsToIgnore.TryGetValue(ws.IetfLanguageTag, out lastDateModified) && ws.DateModified > lastDateModified)
+				_writingSystemsToIgnore.Remove(ws.IetfLanguageTag);
+
+			if (_globalRepository != null)
+			{
+				WritingSystemDefinition globalWs;
+				if (_globalRepository.TryGet(ws.IetfLanguageTag, out globalWs))
+				{
+					if (ws.DateModified > globalWs.DateModified)
+					{
+						WritingSystemDefinition newWs = ws.Clone();
+						try
+						{
+							_globalRepository.Remove(ws.IetfLanguageTag);
+							_globalRepository.Set(newWs);
+						}
+						catch (Exception)
+						{
+							// Live with it if we can't update the global store. In a CS world we might
+							// well not have permission.
+						}
+					}
+				}
+
+				else
+				{
+					_globalRepository.Set(ws.Clone());
+				}
+			}
+		}
+
+		protected virtual void OnRemoveNotifySharedStore()
+		{
+		}
+
+		private IEnumerable<WritingSystemDefinition> WritingSystemsNewerInGlobalRepository()
+		{
+			foreach (WritingSystemDefinition ws in _globalRepository.AllWritingSystems)
+			{
+				if (WritingSystems.ContainsKey(ws.IetfLanguageTag))
+				{
+					DateTime lastDateModified;
+					if ((!_writingSystemsToIgnore.TryGetValue(ws.IetfLanguageTag, out lastDateModified) || ws.DateModified > lastDateModified)
+						&& (ws.DateModified > WritingSystems[ws.IetfLanguageTag].DateModified))
+					{
+						yield return ws.Clone();
+					}
+				}
+			}
+		}
+
+		public IEnumerable<WritingSystemDefinition> CheckForNewerGlobalWritingSystems()
+		{
+			if (_globalRepository != null)
+			{
+				var results = new List<WritingSystemDefinition>();
+				foreach (WritingSystemDefinition wsDef in WritingSystemsNewerInGlobalRepository())
+				{
+					LastChecked(wsDef.IetfLanguageTag, wsDef.DateModified);
+					results.Add(wsDef); // REVIEW Hasso 2013.12: add only if not equal?
+				}
+				return results;
+			}
+			return Enumerable.Empty<WritingSystemDefinition>();
+		}
+	}
+}

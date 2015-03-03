@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SIL.Code;
 
 namespace SIL.WritingSystems
 {
@@ -20,7 +19,6 @@ namespace SIL.WritingSystems
 	{
 
 		private readonly Dictionary<string, WritingSystemDefinition> _writingSystems;
-		private readonly Dictionary<string, DateTime> _writingSystemsToIgnore;
 
 		private readonly Dictionary<string, string> _idChangeMap;
 
@@ -33,20 +31,7 @@ namespace SIL.WritingSystems
 		protected WritingSystemRepositoryBase()
 		{
 			_writingSystems = new Dictionary<string, WritingSystemDefinition>(StringComparer.OrdinalIgnoreCase);
-			_writingSystemsToIgnore = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
 			_idChangeMap = new Dictionary<string, string>();
-			//_sharedStore = LdmlSharedWritingSystemRepository.Singleton;
-		}
-
-		/// <summary>
-		/// Gets the writing systems to ignore.
-		/// </summary>
-		protected IDictionary<string, DateTime> WritingSystemsToIgnore
-		{
-			get
-			{
-				return _writingSystemsToIgnore;
-			}
 		}
 
 		/// <summary>
@@ -55,6 +40,11 @@ namespace SIL.WritingSystems
 		protected IDictionary<string, string> ChangedIds
 		{
 			get { return _idChangeMap; }
+		}
+
+		protected IDictionary<string, WritingSystemDefinition> WritingSystems
+		{
+			get { return _writingSystems; }
 		}
 
 		public virtual WritingSystemDefinition CreateNew()
@@ -102,18 +92,9 @@ namespace SIL.WritingSystems
 		protected virtual void RemoveDefinition(WritingSystemDefinition ws)
 		{
 			_writingSystems.Remove(ws.Id);
-			if (_writingSystemsToIgnore.ContainsKey(ws.Id))
-				_writingSystemsToIgnore.Remove(ws.Id);
-			if (_writingSystemsToIgnore.ContainsKey(ws.IetfLanguageTag))
-				_writingSystemsToIgnore.Remove(ws.IetfLanguageTag);
 		}
 
 		public abstract string WritingSystemIdHasChangedTo(string id);
-
-		protected virtual void LastChecked(string id, DateTime dateModified)
-		{
-			_writingSystemsToIgnore[id] = dateModified;
-		}
 
 		public virtual bool CanSave(WritingSystemDefinition ws, out string path)
 		{
@@ -247,46 +228,9 @@ namespace SIL.WritingSystems
 		{
 		}
 
-		protected virtual void OnChangeNotifySharedStore(WritingSystemDefinition ws)
-		{
-			DateTime lastDateModified;
-			if (_writingSystemsToIgnore.TryGetValue(ws.IetfLanguageTag, out lastDateModified) && ws.DateModified > lastDateModified)
-				_writingSystemsToIgnore.Remove(ws.IetfLanguageTag);
-		}
-
-		protected virtual void OnRemoveNotifySharedStore()
-		{
-		}
-
-		protected virtual IEnumerable<WritingSystemDefinition> WritingSystemsNewerIn(IEnumerable<WritingSystemDefinition> rhs)
-		{
-			if (rhs == null)
-			{
-				throw new ArgumentNullException("rhs");
-			}
-			var newerWritingSystems = new List<WritingSystemDefinition>();
-			foreach (WritingSystemDefinition ws in rhs)
-			{
-				Guard.AgainstNull(ws, "ws in rhs");
-				if (_writingSystems.ContainsKey(ws.IetfLanguageTag))
-				{
-					DateTime lastDateModified;
-					if ((!_writingSystemsToIgnore.TryGetValue(ws.IetfLanguageTag, out lastDateModified) || ws.DateModified > lastDateModified)
-						&& (ws.DateModified > _writingSystems[ws.IetfLanguageTag].DateModified))
-					{
-						newerWritingSystems.Add(ws.Clone());
-					}
-				}
-			}
-			return newerWritingSystems;
-		}
-
 		public IEnumerable<WritingSystemDefinition> AllWritingSystems
 		{
-			get
-			{
-				return _writingSystems.Values;
-			}
+			get { return _writingSystems.Values; }
 		}
 	}
 }

@@ -13,7 +13,7 @@ namespace SIL.WritingSystems
 	/// <summary>
 	/// A folder-based, LDML writing system repository.
 	/// </summary>
-	public class LdmlInFolderWritingSystemRepository : WritingSystemRepositoryBase
+	public class LdmlInFolderWritingSystemRepository : LocalWritingSystemRepositoryBase
 	{
 		/// <summary>
 		/// Returns an instance of an ldml in folder writing system reposistory.
@@ -72,6 +72,7 @@ namespace SIL.WritingSystems
 		/// use a special path for the repository
 		/// </summary>
 		protected internal LdmlInFolderWritingSystemRepository(string basePath, IList<ICustomDataMapper> customDataMappers, GlobalWritingSystemRepository globalRepository = null)
+			: base(globalRepository)
 		{
 			_customDataMappers = customDataMappers;
 			_globalRepository = globalRepository;
@@ -546,57 +547,6 @@ namespace SIL.WritingSystems
 		{
 			base.LastChecked(identifier, dateModified);
 			WriteGlobalWritingSystemsToIgnore();
-		}
-
-		/// <summary>
-		/// Gets all newer shared writing systems.
-		/// </summary>
-		/// <value>The newer shared writing systems.</value>
-		public IEnumerable<WritingSystemDefinition> CheckForNewerGlobalWritingSystems()
-		{
-			if (_globalRepository != null)
-			{
-				var results = new List<WritingSystemDefinition>();
-				foreach (WritingSystemDefinition wsDef in WritingSystemsNewerIn(_globalRepository.AllWritingSystems))
-				{
-					LastChecked(wsDef.IetfLanguageTag, wsDef.DateModified);
-					results.Add(wsDef); // REVIEW Hasso 2013.12: add only if not equal?
-				}
-				return results;
-			}
-			return Enumerable.Empty<WritingSystemDefinition>();
-		}
-
-		protected override void OnChangeNotifySharedStore(WritingSystemDefinition ws)
-		{
-			base.OnChangeNotifySharedStore(ws);
-
-			if (_globalRepository != null)
-			{
-				WritingSystemDefinition globalWs;
-				if (_globalRepository.TryGet(ws.IetfLanguageTag, out globalWs))
-				{
-					if (ws.DateModified > globalWs.DateModified)
-					{
-						WritingSystemDefinition newWs = ws.Clone();
-						try
-						{
-							_globalRepository.Remove(ws.IetfLanguageTag);
-							_globalRepository.Set(newWs);
-						}
-						catch (UnauthorizedAccessException)
-						{
-							// Live with it if we can't update the global store. In a CS world we might
-							// well not have permission.
-						}
-					}
-				}
-
-				else
-				{
-					_globalRepository.Set(ws.Clone());
-				}
-			}
 		}
 
 		private void WriteGlobalWritingSystemsToIgnore()

@@ -270,11 +270,13 @@
     <Compile Include="ICustomDataMapper.cs" />
     <Compile Include="ICollator.cs" />
     <Compile Include="IcuRulesCollator.cs" />
+    <Compile Include="ILocalWritingSystemRepository.cs" />
     <Compile Include="InheritedCollationDefinition.cs" />
     <Compile Include="IWritingSystemRepository.cs" />
     <Compile Include="LanguageSubtag.cs" />
     <Compile Include="IetfLanguageTagHelper.cs" />
     <Compile Include="LdmlCollationParser.cs" />
+    <Compile Include="LocalWritingSystemRepositoryBase.cs" />
     <Compile Include="MatchedPair.cs" />
     <Compile Include="DefinitionBase.cs" />
     <Compile Include="Migration\SilLdmlVersion.cs" />

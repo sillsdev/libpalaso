@@ -14,11 +14,15 @@ using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 namespace SIL.WritingSystems
 {
 	///<summary>
-	/// A system wide writing system repoistory
+	/// A system wide writing system repository.
 	///</summary>
 	public class GlobalWritingSystemRepository : IWritingSystemRepository, IDisposable
 	{
 		private const string Extension = ".ldml";
+
+		public event EventHandler<WritingSystemIdChangedEventArgs> WritingSystemIdChanged;
+		public event EventHandler<WritingSystemDeletedEventArgs> WritingSystemDeleted;
+		public event EventHandler<WritingSystemConflatedEventArgs> WritingSystemConflated;
 
 		private readonly string _path;
 		/// <summary>Reference to a mutex. The owner of the mutex is the SingletonContainer</summary>
@@ -115,7 +119,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Adds the writing system to the store or updates the store information about
 		/// an already-existing writing system.  Set should be called when there is a change
-		/// that updates the RFC5646 information.
+		/// that updates the IETF language tag information.
 		/// </summary>
 		public void Set(WritingSystemDefinition ws)
 		{
@@ -277,7 +281,17 @@ namespace SIL.WritingSystems
 		/// <param name="wsToConflateWith"></param>
 		public void Conflate(string wsToConflate, string wsToConflateWith)
 		{
-			throw new NotImplementedException();
+			_mutex.WaitOne();
+			try
+			{
+				File.Delete(GetFilePathFromIdentifier(wsToConflate));
+				if (WritingSystemConflated != null)
+					WritingSystemConflated(this, new WritingSystemConflatedEventArgs(wsToConflate, wsToConflateWith));
+			}
+			finally
+			{
+				_mutex.ReleaseMutex();
+			}
 		}
 
 		/// <summary>
@@ -318,20 +332,6 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// Event raised when writing system ID is changed. Required for interface defn, dubious implementstion.
-		/// </summary>
-		public event EventHandler<WritingSystemIdChangedEventArgs> WritingSystemIdChanged;
-		/// <summary>
-		/// Event raised when writing system is deleted. Required for interface defn,  dubious implementstion.
-		/// </summary>
-		public event EventHandler<WritingSystemDeletedEventArgs> WritingSystemDeleted;
-
-#pragma warning disable 67	// WritingSystemConflated is never used, but part of interface IWritingSystemRepository
-		/// <summary/>
-		public event EventHandler<WritingSystemConflatedEventArgs> WritingSystemConflated;
-#pragma warning restore 67
-
-		/// <summary>
 		/// This is used by the orphan finder, which we don't use (yet). It tells whether, typically in the scope of some
 		/// current change log, a writing system ID has changed to something else...call WritingSystemIdHasChangedTo
 		/// to find out what.
@@ -364,13 +364,6 @@ namespace SIL.WritingSystems
 		{
 			path = "";
 			return true;
-		}
-
-		/// <summary>
-		/// Added to satisfy definition of IWritingSystemRepository...do we need to do anything?
-		/// </summary>
-		public void OnWritingSystemIdChange(WritingSystemDefinition ws, string oldId)
-		{
 		}
 
 		/// <summary>
