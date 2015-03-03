@@ -53,7 +53,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GlobalWritingSystemRepository"/> class.
 		/// </summary>
-		internal GlobalWritingSystemRepository(string basePath)
+		protected internal GlobalWritingSystemRepository(string basePath)
 		{
 			_path = CurrentVersionPath(basePath);
 			if (!Directory.Exists(_path))
