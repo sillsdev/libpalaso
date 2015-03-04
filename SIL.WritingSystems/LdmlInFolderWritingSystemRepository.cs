@@ -512,8 +512,8 @@ namespace SIL.WritingSystems
 
 			if (wsIgnoreCount != WritingSystemsToIgnore.Count)
 				WriteGlobalWritingSystemsToIgnore();
-			if (_globalRepository != null)
-				_globalRepository.Save();
+
+			base.Save();
 		}
 
 		public override void Set(WritingSystemDefinition ws)

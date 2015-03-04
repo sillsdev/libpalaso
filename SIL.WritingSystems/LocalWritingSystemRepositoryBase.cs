@@ -102,5 +102,11 @@ namespace SIL.WritingSystems
 			}
 			return Enumerable.Empty<WritingSystemDefinition>();
 		}
+
+		public override void Save()
+		{
+			if (_globalRepository != null)
+				_globalRepository.Save();
+		}
 	}
 }
