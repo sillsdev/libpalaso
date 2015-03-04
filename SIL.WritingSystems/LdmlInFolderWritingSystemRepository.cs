@@ -13,7 +13,7 @@ namespace SIL.WritingSystems
 	/// <summary>
 	/// A folder-based, LDML writing system repository.
 	/// </summary>
-	public class LdmlInFolderWritingSystemRepository : LocalWritingSystemRepositoryBase
+	public class LdmlInFolderWritingSystemRepository : LdmlInFolderWritingSystemRepository<WritingSystemDefinition>
 	{
 		/// <summary>
 		/// Returns an instance of an ldml in folder writing system reposistory.
@@ -51,13 +51,44 @@ namespace SIL.WritingSystems
 			return instance;
 		}
 
+		protected internal LdmlInFolderWritingSystemRepository(string basePath)
+			: base(basePath)
+		{
+		}
+
+		protected internal LdmlInFolderWritingSystemRepository(string basePath, IList<ICustomDataMapper> customDataMappers, GlobalWritingSystemRepository globalRepository = null)
+			: base(basePath, customDataMappers, globalRepository)
+		{
+		}
+
+		protected override WritingSystemDefinition ConstructDefinition()
+		{
+			return new WritingSystemDefinition();
+		}
+
+		protected override WritingSystemDefinition ConstructDefinition(string ietfLanguageTag)
+		{
+			return new WritingSystemDefinition(ietfLanguageTag);
+		}
+
+		protected override WritingSystemDefinition CloneDefinition(WritingSystemDefinition ws)
+		{
+			return ws.Clone();
+		}
+	}
+
+	/// <summary>
+	/// A folder-based, LDML writing system repository.
+	/// </summary>
+	public abstract class LdmlInFolderWritingSystemRepository<T> : LocalWritingSystemRepositoryBase<T> where T : WritingSystemDefinition
+	{
 		private const string Extension = ".ldml";
 		private string _path;
-		private IEnumerable<WritingSystemDefinition> _systemWritingSystemProvider;
+		private IEnumerable<T> _systemWritingSystemProvider;
 		private readonly WritingSystemChangeLog _changeLog;
 		private readonly IList<WritingSystemRepositoryProblem> _loadProblems = new List<WritingSystemRepositoryProblem>();
 		private readonly IList<ICustomDataMapper> _customDataMappers;
-		private readonly GlobalWritingSystemRepository _globalRepository;
+		private readonly GlobalWritingSystemRepository<T> _globalRepository;
 
 		/// <summary>
 		/// use a special path for the repository
@@ -71,7 +102,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// use a special path for the repository
 		/// </summary>
-		protected internal LdmlInFolderWritingSystemRepository(string basePath, IList<ICustomDataMapper> customDataMappers, GlobalWritingSystemRepository globalRepository = null)
+		protected internal LdmlInFolderWritingSystemRepository(string basePath, IList<ICustomDataMapper> customDataMappers, GlobalWritingSystemRepository<T> globalRepository = null)
 			: base(globalRepository)
 		{
 			_customDataMappers = customDataMappers;
@@ -150,7 +181,7 @@ namespace SIL.WritingSystems
 
 		protected virtual void LoadDefinition(string filePath)
 		{
-			WritingSystemDefinition wsFromFile;
+			T wsFromFile;
 			try
 			{
 				wsFromFile = CreateNew();
@@ -228,7 +259,7 @@ namespace SIL.WritingSystems
 
 		private void AddActiveOSLanguages()
 		{
-			foreach (WritingSystemDefinition ws in _systemWritingSystemProvider)
+			foreach (T ws in _systemWritingSystemProvider)
 			{
 				if (null == FindAlreadyLoadedWritingSystem(ws.IetfLanguageTag))
 				{
@@ -243,7 +274,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Provides writing systems from a repository that comes, for example, with the OS
 		/// </summary>
-		public IEnumerable<WritingSystemDefinition> SystemWritingSystemProvider
+		public IEnumerable<T> SystemWritingSystemProvider
 		{
 			get{ return _systemWritingSystemProvider;}
 			set
@@ -254,7 +285,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private WritingSystemDefinition FindAlreadyLoadedWritingSystem(string wsID)
+		private T FindAlreadyLoadedWritingSystem(string wsID)
 		{
 			return AllWritingSystems.FirstOrDefault(ws => ws.IetfLanguageTag == wsID);
 		}
@@ -262,7 +293,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Saves a writing system definition.
 		/// </summary>
-		protected internal virtual void SaveDefinition(WritingSystemDefinition ws)
+		protected internal virtual void SaveDefinition(T ws)
 		{
 			Set(ws);
 
@@ -308,11 +339,11 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		public override WritingSystemDefinition CreateNew(string ietfLanguageTag)
+		public override T CreateNew(string ietfLanguageTag)
 		{
 			string templatePath = null;
 			// check local repo for template
-			WritingSystemDefinition existingWS;
+			T existingWS;
 			if (TryGet(ietfLanguageTag, out existingWS))
 			{
 				templatePath = GetFilePathFromIdentifier(existingWS.IetfLanguageTag);
@@ -350,7 +381,7 @@ namespace SIL.WritingSystems
 					templatePath = null;
 			}
 
-			WritingSystemDefinition ws;
+			T ws;
 			if (!string.IsNullOrEmpty(templatePath))
 			{
 				ws = ConstructDefinition();
@@ -401,7 +432,7 @@ namespace SIL.WritingSystems
 			_changeLog.LogDelete(id);
 		}
 
-		protected override void RemoveDefinition(WritingSystemDefinition ws)
+		protected override void RemoveDefinition(T ws)
 		{
 			int wsIgnoreCount = WritingSystemsToIgnore.Count;
 
@@ -436,7 +467,7 @@ namespace SIL.WritingSystems
 		/// Return true if it will be possible (absent someone changing permissions while we aren't looking)
 		/// to save changes to the specified writing system.
 		/// </summary>
-		public override bool CanSave(WritingSystemDefinition ws, out string filePath)
+		public override bool CanSave(T ws, out string filePath)
 		{
 			string folderPath = PathToWritingSystems;
 			string filename = GetFileNameFromIdentifier(ws.IetfLanguageTag);
@@ -502,7 +533,7 @@ namespace SIL.WritingSystems
 			// make a copy and then go through that list - SaveDefinition calls Set which
 			// may delete and then insert the same writing system - which would change WritingSystemDefinitions
 			// and not be allowed in a foreach loop
-			foreach (WritingSystemDefinition ws in AllWritingSystems.Where(CanSet).ToArray())
+			foreach (T ws in AllWritingSystems.Where(CanSet).ToArray())
 			{
 				SaveDefinition(ws);
 				OnChangeNotifySharedStore(ws);
@@ -516,7 +547,7 @@ namespace SIL.WritingSystems
 			base.Save();
 		}
 
-		public override void Set(WritingSystemDefinition ws)
+		public override void Set(T ws)
 		{
 			if (ws == null)
 			{

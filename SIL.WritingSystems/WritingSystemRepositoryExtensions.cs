@@ -15,6 +15,16 @@ namespace SIL.WritingSystems
 			return repo.AllWritingSystems.Where(ws => ws.IsVoice);
 		}
 
+		public static IEnumerable<T> TextWritingSystems<T>(this IWritingSystemRepository<T> repo) where T : WritingSystemDefinition
+		{
+			return repo.AllWritingSystems.Where(ws => !ws.IsVoice);
+		}
+
+		public static IEnumerable<T> VoiceWritingSystems<T>(this IWritingSystemRepository<T> repo) where T : WritingSystemDefinition
+		{
+			return repo.AllWritingSystems.Where(ws => ws.IsVoice);
+		}
+
 		public static IEnumerable<string> FilterForTextIetfLanguageTags(this IWritingSystemRepository repo, IEnumerable<string> langTagsToFilter)
 		{
 			var set = new HashSet<string>(repo.TextWritingSystems().Select(ws => ws.IetfLanguageTag));

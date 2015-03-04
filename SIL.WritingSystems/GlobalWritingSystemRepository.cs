@@ -16,18 +16,8 @@ namespace SIL.WritingSystems
 	///<summary>
 	/// A system wide writing system repository.
 	///</summary>
-	public class GlobalWritingSystemRepository : IWritingSystemRepository, IDisposable
+	public class GlobalWritingSystemRepository : GlobalWritingSystemRepository<WritingSystemDefinition>
 	{
-		private const string Extension = ".ldml";
-
-		public event EventHandler<WritingSystemIdChangedEventArgs> WritingSystemIdChanged;
-		public event EventHandler<WritingSystemDeletedEventArgs> WritingSystemDeleted;
-		public event EventHandler<WritingSystemConflatedEventArgs> WritingSystemConflated;
-
-		private readonly string _path;
-		/// <summary>Reference to a mutex. The owner of the mutex is the SingletonContainer</summary>
-		private readonly Mutex _mutex;
-
 		///<summary>
 		/// Initializes the global writing system repository.  Migrates any ldml files if required,
 		/// notifying of any changes of writing system id that occured during migration.
@@ -50,9 +40,37 @@ namespace SIL.WritingSystems
 			return new GlobalWritingSystemRepository(basePath);
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="GlobalWritingSystemRepository"/> class.
-		/// </summary>
+		protected internal GlobalWritingSystemRepository(string basePath)
+			: base(basePath)
+		{
+		}
+
+		public override WritingSystemDefinition CreateNew()
+		{
+			return new WritingSystemDefinition();
+		}
+
+		public override WritingSystemDefinition CreateNew(string ietfLanguageTag)
+		{
+			return new WritingSystemDefinition(ietfLanguageTag);
+		}
+	}
+
+	///<summary>
+	/// A system wide writing system repository.
+	///</summary>
+	public abstract class GlobalWritingSystemRepository<T> : IWritingSystemRepository<T>, IDisposable where T : WritingSystemDefinition
+	{
+		private const string Extension = ".ldml";
+
+		public event EventHandler<WritingSystemIdChangedEventArgs> WritingSystemIdChanged;
+		public event EventHandler<WritingSystemDeletedEventArgs> WritingSystemDeleted;
+		public event EventHandler<WritingSystemConflatedEventArgs> WritingSystemConflated;
+
+		private readonly string _path;
+		/// <summary>Reference to a mutex. The owner of the mutex is the SingletonContainer</summary>
+		private readonly Mutex _mutex;
+
 		protected internal GlobalWritingSystemRepository(string basePath)
 		{
 			_path = CurrentVersionPath(basePath);
@@ -121,7 +139,7 @@ namespace SIL.WritingSystems
 		/// an already-existing writing system.  Set should be called when there is a change
 		/// that updates the IETF language tag information.
 		/// </summary>
-		public void Set(WritingSystemDefinition ws)
+		public void Set(T ws)
 		{
 			_mutex.WaitOne();
 			MemoryStream oldData = null;
@@ -189,7 +207,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Returns true if a call to Set should succeed, false if a call to Set would throw
 		/// </summary>
-		public bool CanSet(WritingSystemDefinition ws)
+		public bool CanSet(T ws)
 		{
 			return true;
 		}
@@ -197,7 +215,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Gets the writing system object for the given Store ID
 		/// </summary>
-		public WritingSystemDefinition Get(string id)
+		public T Get(string id)
 		{
 			_mutex.WaitOne();
 			try
@@ -217,7 +235,7 @@ namespace SIL.WritingSystems
 		/// If the given writing system were passed to Set, this function returns the
 		/// new StoreID that would be assigned.
 		/// </summary>
-		public string GetNewIdWhenSet(WritingSystemDefinition ws)
+		public string GetNewIdWhenSet(T ws)
 		{
 			if (ws == null)
 				throw new ArgumentNullException("ws");
@@ -264,15 +282,9 @@ namespace SIL.WritingSystems
 		/// Creates a new writing system object and returns it.  Set will need to be called
 		/// once identifying information has been changed in order to save it in the store.
 		/// </summary>
-		public virtual WritingSystemDefinition CreateNew()
-		{
-			return new WritingSystemDefinition();
-		}
+		public abstract T CreateNew();
 
-		public virtual WritingSystemDefinition CreateNew(string ietfLanguageTag)
-		{
-			return new WritingSystemDefinition(ietfLanguageTag);
-		}
+		public abstract T CreateNew(string ietfLanguageTag);
 
 		/// <summary>
 		/// This is a new required interface member. We don't use it, and I hope we don't use anything which uses it!
@@ -315,7 +327,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Returns a list of all writing system definitions in the store.
 		/// </summary>
-		public IEnumerable<WritingSystemDefinition> AllWritingSystems
+		public IEnumerable<T> AllWritingSystems
 		{
 			get
 			{
@@ -360,7 +372,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Since the current implementation of Save does nothing, it's always possible.
 		/// </summary>
-		public bool CanSave(WritingSystemDefinition ws, out string path)
+		public bool CanSave(T ws, out string path)
 		{
 			path = "";
 			return true;
@@ -372,7 +384,7 @@ namespace SIL.WritingSystems
 		/// <param name="id">The identifier.</param>
 		/// <param name="ws">The writing system.</param>
 		/// <returns></returns>
-		public bool TryGet(string id, out WritingSystemDefinition ws)
+		public bool TryGet(string id, out T ws)
 		{
 			_mutex.WaitOne();
 			try
@@ -392,11 +404,64 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private WritingSystemDefinition GetFromFilePath(string filePath)
+		WritingSystemDefinition IWritingSystemRepository.CreateNew(string ietfLanguageTag)
+		{
+			return CreateNew(ietfLanguageTag);
+		}
+
+		WritingSystemDefinition IWritingSystemRepository.CreateNew()
+		{
+			return CreateNew();
+		}
+
+		bool IWritingSystemRepository.CanSet(WritingSystemDefinition ws)
+		{
+			return CanSet((T) ws);
+		}
+
+		void IWritingSystemRepository.Set(WritingSystemDefinition ws)
+		{
+			Set((T) ws);
+		}
+
+		WritingSystemDefinition IWritingSystemRepository.Get(string id)
+		{
+			return Get(id);
+		}
+
+		bool IWritingSystemRepository.TryGet(string id, out WritingSystemDefinition ws)
+		{
+			T result;
+			if (TryGet(id, out result))
+			{
+				ws = result;
+				return true;
+			}
+
+			ws = null;
+			return false;
+		}
+
+		string IWritingSystemRepository.GetNewIdWhenSet(WritingSystemDefinition ws)
+		{
+			return GetNewIdWhenSet((T) ws);
+		}
+
+		bool IWritingSystemRepository.CanSave(WritingSystemDefinition ws, out string path)
+		{
+			return CanSave((T) ws, out path);
+		}
+
+		IEnumerable<WritingSystemDefinition> IWritingSystemRepository.AllWritingSystems
+		{
+			get { return AllWritingSystems; }
+		}
+
+		private T GetFromFilePath(string filePath)
 		{
 			try
 			{
-				WritingSystemDefinition ws = CreateNew();
+				T ws = CreateNew();
 				var ldmlDataMapper = new LdmlDataMapper();
 				ldmlDataMapper.Read(filePath, ws);
 				ws.Id = ws.IetfLanguageTag;

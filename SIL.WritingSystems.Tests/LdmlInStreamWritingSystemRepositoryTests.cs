@@ -19,12 +19,10 @@ namespace SIL.WritingSystems.Tests
 	{
 		private string _testFilePath;
 		private LdmlInXmlWritingSystemRepository _writingSystemRepository;
-		private WritingSystemDefinition _writingSystem;
 
 		[SetUp]
 		public void Setup()
 		{
-			_writingSystem = new WritingSystemDefinition();
 			_testFilePath = Path.GetTempFileName();
 			_writingSystemRepository = new LdmlInXmlWritingSystemRepository();
 		}

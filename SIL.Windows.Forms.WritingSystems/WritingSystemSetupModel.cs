@@ -1304,7 +1304,8 @@ namespace SIL.Windows.Forms.WritingSystems
 				wsIds.Add(wsT.IetfLanguageTag);
 			foreach (WritingSystemDefinition wsT in WritingSystemDefinitions)
 				wsIds.Add(wsT.IetfLanguageTag);
-			WritingSystemDefinition ws = CurrentDefinition.CloneWithUniqueIetfLanguageTag(wsIds);
+			WritingSystemDefinition ws = CurrentDefinition.Clone();
+			ws.MakeIetfLanguageTagUnique(wsIds);
 			WritingSystemDefinitions.Insert(CurrentIndex + 1, ws);
 			OnAddOrDelete();
 			CurrentDefinition = ws;
@@ -1418,13 +1419,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			}
 			foreach (WritingSystemDefinition unsettableWs in unsettableWritingSystems)
 			{
-				//create a writing system just to get the unique id, then copy that id to the writing system that we want to set
-				WritingSystemDefinition uniqueWs = unsettableWs.CloneWithUniqueIetfLanguageTag(
-						_writingSystemRepository.AllWritingSystems.Select(ws => ws.IetfLanguageTag));
-				unsettableWs.Language = uniqueWs.Language;
-				unsettableWs.Script = uniqueWs.Script;
-				unsettableWs.Region = uniqueWs.Region;
-				unsettableWs.Variants.ReplaceAll(uniqueWs.Variants);
+				unsettableWs.MakeIetfLanguageTagUnique(_writingSystemRepository.AllWritingSystems.Select(ws => ws.IetfLanguageTag));
 				OnAddOrDelete();
 				_writingSystemRepository.Set(unsettableWs);
 			}

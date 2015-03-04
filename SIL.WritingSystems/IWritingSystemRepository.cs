@@ -155,4 +155,21 @@ namespace SIL.WritingSystems
 		/// </summary>
 		void Save();
 	}
+
+	/// <summary>
+	/// The generic writing system repository interface. This interface allows writing system repositories
+	/// to subclass the WritingSystemDefinition class.
+	/// </summary>
+	public interface IWritingSystemRepository<T> : IWritingSystemRepository where T : WritingSystemDefinition
+	{
+		void Set(T ws);
+		bool CanSet(T ws);
+		new T Get(string id);
+		bool TryGet(string id, out T ws);
+		string GetNewIdWhenSet(T ws);
+		new T CreateNew();
+		new T CreateNew(string ietfLanguageTag);
+		new IEnumerable<T> AllWritingSystems { get; }
+		bool CanSave(T ws, out string path);
+	}
 }

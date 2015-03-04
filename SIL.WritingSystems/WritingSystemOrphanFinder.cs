@@ -41,40 +41,41 @@ namespace SIL.WritingSystems
 		{
 			List<string> originalIds = idsInFile.ToList();
 			List<string> updatedIds = originalIds.ToList();
-			foreach (string wsID in originalIds)
+			foreach (string wsId in originalIds)
 			{
 				// Check if it's in the repo
-				if (writingSystemRepository.Contains(wsID))
+				if (writingSystemRepository.Contains(wsId))
 				{
 					continue;
 				}
 				string newId;
-				if (writingSystemRepository.WritingSystemIdHasChanged(wsID))
+				if (writingSystemRepository.WritingSystemIdHasChanged(wsId))
 				{
-					newId = writingSystemRepository.WritingSystemIdHasChangedTo(wsID);
+					newId = writingSystemRepository.WritingSystemIdHasChangedTo(wsId);
 				}
 				else
 				{
 					// It's an orphan
 					// Clean it
-					var rfcTagCleaner = new IetfLanguageTagCleaner(wsID);
+					var rfcTagCleaner = new IetfLanguageTagCleaner(wsId);
 					rfcTagCleaner.Clean();
 					newId = rfcTagCleaner.GetCompleteTag();
 				}
-				var conformantWritingSystem = new WritingSystemDefinition(newId);
+
+				WritingSystemDefinition conformantWritingSystem = writingSystemRepository.CreateNew(newId);
 				// If it changed, then change
-				if (conformantWritingSystem.IetfLanguageTag != wsID)
+				if (newId != wsId)
 				{
-					conformantWritingSystem = conformantWritingSystem.CloneWithUniqueIetfLanguageTag(updatedIds);
-					replaceIdsInFile(wsID, conformantWritingSystem.IetfLanguageTag);
-					updatedIds.Remove(wsID);
+					conformantWritingSystem.MakeIetfLanguageTagUnique(updatedIds);
+					replaceIdsInFile(wsId, conformantWritingSystem.IetfLanguageTag);
+					updatedIds.Remove(wsId);
 					updatedIds.Add(conformantWritingSystem.IetfLanguageTag);
 				}
+
 				// Check if it's in the repo
 				if (writingSystemRepository.Contains(conformantWritingSystem.IetfLanguageTag))
-				{
 					continue;
-				}
+
 				// It's not in the repo so set it
 				writingSystemRepository.Set(conformantWritingSystem);
 			}

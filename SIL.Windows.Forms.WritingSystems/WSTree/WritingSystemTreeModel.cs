@@ -41,7 +41,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 		/// <summary>
 		/// Given some existing writiting system definitions for a language, what other ones might they want ot add?
 		/// </summary>
-		public WritingSystemSuggestor Suggestor{get; set;}
+		public WritingSystemSuggestor Suggestor { get; set; }
 
 
 		public WritingSystemTreeItem GetSelectedItem(IEnumerable<WritingSystemTreeItem> items)

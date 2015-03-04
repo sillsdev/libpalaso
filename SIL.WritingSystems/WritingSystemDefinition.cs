@@ -539,30 +539,26 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// This method will make a copy of this writing system and
-		/// then make the IetfLanguageTag unique compared to list of language tags passed in by
-		/// appending dupl# where # is a digit that increases with the
-		/// number of duplicates found.
+		/// This method will make the IetfLanguageTag unique compared to list of language tags passed in by
+		/// appending dupl# where # is a digit that increases with the number of duplicates found.
 		/// </summary>
-		public WritingSystemDefinition CloneWithUniqueIetfLanguageTag(IEnumerable<string> otherWSLangTags)
+		public void MakeIetfLanguageTagUnique(IEnumerable<string> otherWSLangTags)
 		{
-			WritingSystemDefinition newWs = Clone();
 			var lastAppended = string.Empty;
 			int duplicateNumber = 0;
 			string[] wsLangTags = otherWSLangTags.ToArray();
-			while (wsLangTags.Any(id => id.Equals(newWs.IetfLanguageTag, StringComparison.OrdinalIgnoreCase)))
+			while (wsLangTags.Any(id => id.Equals(IetfLanguageTag, StringComparison.OrdinalIgnoreCase)))
 			{
 				if (!string.IsNullOrEmpty(lastAppended))
-					newWs.RemoveVariants(lastAppended);
+					RemoveVariants(lastAppended);
 				string currentToAppend = string.Format("dupl{0}", duplicateNumber);
-				if (!newWs._variants.Contains(currentToAppend))
+				if (!_variants.Contains(currentToAppend))
 				{
-					newWs.Variants.Add(new VariantSubtag(currentToAppend));
+					Variants.Add(new VariantSubtag(currentToAppend));
 					lastAppended = currentToAppend;
 				}
 				duplicateNumber++;
 			}
-			return newWs;
 		}
 
 		/// <summary>

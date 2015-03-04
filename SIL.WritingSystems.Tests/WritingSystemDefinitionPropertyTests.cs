@@ -1527,57 +1527,57 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void MakeUnique_IsAlreadyUnique_NothingChanges()
+		public void MakeIetfLanguageTagUnique_IsAlreadyUnique_NothingChanges()
 		{
 			var existingTags = new[] {"en-Zxxx-x-audio"};
 			var ws = new WritingSystemDefinition("de");
-			var newWs = ws.CloneWithUniqueIetfLanguageTag(existingTags);
-			Assert.That(newWs.IetfLanguageTag, Is.EqualTo("de"));
+			ws.MakeIetfLanguageTagUnique(existingTags);
+			Assert.That(ws.IetfLanguageTag, Is.EqualTo("de"));
 		}
 
 		[Test]
-		public void MakeUnique_IsNotUnique_DuplicateMarkerIsAppended()
+		public void MakeIetfLanguageTagUnique_IsNotUnique_DuplicateMarkerIsAppended()
 		{
 			var existingTags = new[] { "en-Zxxx-x-audio" };
 			var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
-			var newWs = ws.CloneWithUniqueIetfLanguageTag(existingTags);
-			Assert.That(newWs.IetfLanguageTag, Is.EqualTo("en-Zxxx-x-audio-dupl0"));
+			ws.MakeIetfLanguageTagUnique(existingTags);
+			Assert.That(ws.IetfLanguageTag, Is.EqualTo("en-Zxxx-x-audio-dupl0"));
 		}
 
 		[Test]
-		public void MakeUnique_ADuplicateAlreadyExists_DuplicatemarkerWithHigherNumberIsAppended()
+		public void MakeIetfLanguageTagUnique_ADuplicateAlreadyExists_DuplicatemarkerWithHigherNumberIsAppended()
 		{
 			var existingTags = new[] { "en-Zxxx-x-audio", "en-Zxxx-x-audio-dupl0" };
 			var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
-			var newWs = ws.CloneWithUniqueIetfLanguageTag(existingTags);
-			Assert.That(newWs.IetfLanguageTag, Is.EqualTo("en-Zxxx-x-audio-dupl1"));
+			ws.MakeIetfLanguageTagUnique(existingTags);
+			Assert.That(ws.IetfLanguageTag, Is.EqualTo("en-Zxxx-x-audio-dupl1"));
 		}
 
 		[Test]
-		public void MakeUnique_ADuplicatewithHigherNumberAlreadyExists_DuplicateMarkerWithLowNumberIsAppended()
+		public void MakeIetfLanguageTagUnique_ADuplicatewithHigherNumberAlreadyExists_DuplicateMarkerWithLowNumberIsAppended()
 		{
 			var existingTags = new[] { "en-Zxxx-x-audio", "en-Zxxx-x-audio-dupl1" };
 			var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
-			var newWs = ws.CloneWithUniqueIetfLanguageTag(existingTags);
-			Assert.That(newWs.IetfLanguageTag, Is.EqualTo("en-Zxxx-x-audio-dupl0"));
+			ws.MakeIetfLanguageTagUnique(existingTags);
+			Assert.That(ws.IetfLanguageTag, Is.EqualTo("en-Zxxx-x-audio-dupl0"));
 		}
 
 		[Test]
-		public void MakeUnique_IdIsNull()
+		public void MakeIetfLanguageTagUnique_IdIsNull()
 		{
 			var existingTags = new[] { "en-Zxxx-x-audio" };
 			var ws = new WritingSystemDefinition("de");
-			var newWs = ws.CloneWithUniqueIetfLanguageTag(existingTags);
-			Assert.That(newWs.Id, Is.Null);
+			ws.MakeIetfLanguageTagUnique(existingTags);
+			Assert.That(ws.Id, Is.Null);
 		}
 
 		[Test]
-		public void MakeUnique_IetfLanguageTagAlreadyContainsADuplicateMarker_DuplicateNumberIsMaintainedAndNewOneIsIntroduced()
+		public void MakeIetfLanguageTagUnique_IetfLanguageTagAlreadyContainsADuplicateMarker_DuplicateNumberIsMaintainedAndNewOneIsIntroduced()
 		{
 			var existingTags = new[] { "en-Zxxx-x-dupl0-audio", "en-Zxxx-x-audio-dupl1" };
 			var ws = new WritingSystemDefinition("en-Zxxx-x-dupl0-audio");
-			var newWs = ws.CloneWithUniqueIetfLanguageTag(existingTags);
-			Assert.That(newWs.IetfLanguageTag, Is.EqualTo("en-Zxxx-x-dupl0-audio-dupl1"));
+			ws.MakeIetfLanguageTagUnique(existingTags);
+			Assert.That(ws.IetfLanguageTag, Is.EqualTo("en-Zxxx-x-dupl0-audio-dupl1"));
 		}
 
 		[Test]
@@ -1673,24 +1673,24 @@ namespace SIL.WritingSystems.Tests
 		public void ListLabel_VariantContainsDuplwithNumber_LabelIsLanguageWithCopyAndNumberInBrackets()
 		{
 			var ws = new WritingSystemDefinition("de");
-			var newWs = ws.CloneWithUniqueIetfLanguageTag(new[]{"de", "de-x-dupl0"});
-			Assert.That(newWs.ListLabel, Is.EqualTo("German (Copy1)"));
+			ws.MakeIetfLanguageTagUnique(new[]{"de", "de-x-dupl0"});
+			Assert.That(ws.ListLabel, Is.EqualTo("German (Copy1)"));
 		}
 
 		[Test]
 		public void ListLabel_VariantContainsDuplwithZero_LabelIsLanguageWithCopyAndNoNumberInBrackets()
 		{
 			var ws = new WritingSystemDefinition("de");
-			var newWs = ws.CloneWithUniqueIetfLanguageTag(new[] {"de"});
-			Assert.That(newWs.ListLabel, Is.EqualTo("German (Copy)"));
+			ws.MakeIetfLanguageTagUnique(new[] {"de"});
+			Assert.That(ws.ListLabel, Is.EqualTo("German (Copy)"));
 		}
 
 		[Test]
 		public void ListLabel_VariantContainsmulitpleDuplswithNumber_LabelIsLanguageWithCopyAndNumbersInBrackets()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var newWs = ws.CloneWithUniqueIetfLanguageTag(new[] {"de", "de-x-dupl0"});
-			Assert.That(newWs.ListLabel, Is.EqualTo("German (Copy-Copy1)"));
+			ws.MakeIetfLanguageTagUnique(new[] {"de", "de-x-dupl0"});
+			Assert.That(ws.ListLabel, Is.EqualTo("German (Copy-Copy1)"));
 		}
 
 		[Test]
@@ -1705,12 +1705,12 @@ namespace SIL.WritingSystems.Tests
 		public void ListLabel_AllSortsOfThingsSet_LabelIsCorrect()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var newWs = ws.CloneWithUniqueIetfLanguageTag(new[] {"de", "de-x-dupl0"});
-			newWs.Region = "US";
-			newWs.Script = "Armi";
-			newWs.IpaStatus = IpaStatusChoices.IpaPhonetic;
-			newWs.Variants.AddRange(new VariantSubtag[] {"garble", "1901"});
-			Assert.That(newWs.ListLabel, Is.EqualTo("German (IPA-etic-Copy-Copy1-Armi-US-1901-x-garble)"));
+			ws.MakeIetfLanguageTagUnique(new[] {"de", "de-x-dupl0"});
+			ws.Region = "US";
+			ws.Script = "Armi";
+			ws.IpaStatus = IpaStatusChoices.IpaPhonetic;
+			ws.Variants.AddRange(new VariantSubtag[] {"garble", "1901"});
+			Assert.That(ws.ListLabel, Is.EqualTo("German (IPA-etic-Copy-Copy1-Armi-US-1901-x-garble)"));
 		}
 
 		[Test]

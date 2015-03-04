@@ -21,7 +21,6 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 
 		public IEnumerable<WritingSystemDefinition> OtherKnownWritingSystems { get; set; }
 
-
 		public WritingSystemSuggestor()
 		{
 			OtherKnownWritingSystems =
@@ -48,12 +47,14 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 			   && new[]{"en", "th", "es", "fr", "de", "hi", "id", "vi","my","pt", "fi", "ar", "it","sv", "ja", "ko", "ch", "nl", "ru"}.Contains((string) primary.Language))
 				yield break;
 
-			if (SuggestIpa && IpaSuggestion.ShouldSuggest(existingWritingSystemsForLanguage))
+			WritingSystemDefinition[] existingWSs = existingWritingSystemsForLanguage.ToArray();
+
+			if (SuggestIpa && IpaSuggestion.ShouldSuggest(existingWSs))
 			{
 				yield return new IpaSuggestion(primary);
 			}
 
-			if (SuggestVoice && VoiceSuggestion.ShouldSuggest(existingWritingSystemsForLanguage))
+			if (SuggestVoice && VoiceSuggestion.ShouldSuggest(existingWSs))
 			{
 				yield return new VoiceSuggestion(primary);
 			}
@@ -65,7 +66,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 
 			if (SuggestOther)
 			{
-				yield return new OtherSuggestion(primary, existingWritingSystemsForLanguage);
+				yield return new OtherSuggestion(primary, existingWSs);
 			}
 		}
 

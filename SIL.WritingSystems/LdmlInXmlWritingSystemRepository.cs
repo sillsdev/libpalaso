@@ -8,7 +8,28 @@ namespace SIL.WritingSystems
 	/// <summary>
 	/// A writing system repository where all LDML defintions are stored in a single XML file.
 	/// </summary>
-	public class LdmlInXmlWritingSystemRepository : WritingSystemRepositoryBase
+	public class LdmlInXmlWritingSystemRepository : LdmlInXmlWritingSystemRepository<WritingSystemDefinition>
+	{
+		protected override WritingSystemDefinition ConstructDefinition()
+		{
+			return new WritingSystemDefinition();
+		}
+
+		protected override WritingSystemDefinition ConstructDefinition(string ietfLanguageTag)
+		{
+			return new WritingSystemDefinition(ietfLanguageTag);
+		}
+
+		protected override WritingSystemDefinition CloneDefinition(WritingSystemDefinition ws)
+		{
+			return ws.Clone();
+		}
+	}
+
+	/// <summary>
+	/// A writing system repository where all LDML defintions are stored in a single XML file.
+	/// </summary>
+	public abstract class LdmlInXmlWritingSystemRepository<T> : WritingSystemRepositoryBase<T> where T : WritingSystemDefinition
 	{
 		/// <summary>
 		/// Saves all writing system definitions.
@@ -16,7 +37,7 @@ namespace SIL.WritingSystems
 		public void SaveAllDefinitions(XmlWriter xmlWriter)
 		{
 			xmlWriter.WriteStartElement("writingsystems");
-			foreach (WritingSystemDefinition ws in AllWritingSystems)
+			foreach (T ws in AllWritingSystems)
 			{
 				ws.DateModified = DateTime.UtcNow;
 				var ldmlDataMapper = new LdmlDataMapper();
@@ -39,7 +60,7 @@ namespace SIL.WritingSystems
 			var ldmlDataMapper = new LdmlDataMapper();
 			foreach (XPathNavigator nav in nodes)
 			{
-				WritingSystemDefinition ws = CreateNew();
+				T ws = ConstructDefinition();
 				XmlReader xmlReader = nav.ReadSubtree();
 				ldmlDataMapper.Read(xmlReader, ws);
 				ws.Id = ws.IetfLanguageTag;
@@ -58,7 +79,7 @@ namespace SIL.WritingSystems
 			{
 				while (xmlReader.ReadToFollowing("ldml"))
 				{
-					WritingSystemDefinition ws = CreateNew();
+					T ws = ConstructDefinition();
 					ldmlDataMapper.Read(xmlReader.ReadSubtree(), ws);
 					ws.Id = ws.IetfLanguageTag;
 					Set(ws);

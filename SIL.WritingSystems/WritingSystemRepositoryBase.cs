@@ -7,18 +7,17 @@ namespace SIL.WritingSystems
 	/// <summary>
 	/// This class forms the bases for managing collections of WritingSystemDefinitions. WritingSystemDefinitions
 	/// can be registered and then retrieved and deleted by ID. The preferred use when editting a WritingSystemDefinition stored
-	/// in the WritingSystemRepository is to Get the WritingSystemDefinition in question and then to clone it either via the
-	/// Clone method on WritingSystemDefinition or via the MakeDuplicate method on the WritingSystemRepository. This allows
+	/// in the WritingSystemRepository is to Get the WritingSystemDefinition in question and then to clone it via the
+	/// Clone method on WritingSystemDefinition. This allows
 	/// changes made to a WritingSystemDefinition to be registered back with the WritingSystemRepository via the Set method,
 	/// or to be discarded by simply discarding the object.
 	/// Internally the WritingSystemRepository uses the WritingSystemDefinition's StoreId property to establish the identity of
 	/// a WritingSystemDefinition. This allows the user to change the IETF language tag components and thereby the ID of a
 	/// WritingSystemDefinition and the WritingSystemRepository to update itself and the underlying store correctly.
 	/// </summary>
-	public abstract class WritingSystemRepositoryBase : IWritingSystemRepository
+	public abstract class WritingSystemRepositoryBase<T> : IWritingSystemRepository<T> where T : WritingSystemDefinition
 	{
-
-		private readonly Dictionary<string, WritingSystemDefinition> _writingSystems;
+		private readonly Dictionary<string, T> _writingSystems;
 
 		private readonly Dictionary<string, string> _idChangeMap;
 
@@ -30,7 +29,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		protected WritingSystemRepositoryBase()
 		{
-			_writingSystems = new Dictionary<string, WritingSystemDefinition>(StringComparer.OrdinalIgnoreCase);
+			_writingSystems = new Dictionary<string, T>(StringComparer.OrdinalIgnoreCase);
 			_idChangeMap = new Dictionary<string, string>();
 		}
 
@@ -42,42 +41,42 @@ namespace SIL.WritingSystems
 			get { return _idChangeMap; }
 		}
 
-		protected IDictionary<string, WritingSystemDefinition> WritingSystems
+		protected IDictionary<string, T> WritingSystems
 		{
 			get { return _writingSystems; }
 		}
 
-		public virtual WritingSystemDefinition CreateNew()
+		public virtual T CreateNew()
 		{
 			return ConstructDefinition();
 		}
 
-		public virtual WritingSystemDefinition CreateNew(string ietfLanguageTag)
+		public virtual T CreateNew(string ietfLanguageTag)
 		{
 			return ConstructDefinition(ietfLanguageTag);
 		}
 
 		/// <summary>
-		/// Creates an empty writing system. This can be overridden by subclasses to allow the use
+		/// Creates an empty writing system. This is implemented by subclasses to allow the use
 		/// subclasses of WritingSystemDefinition.
 		/// </summary>
-		protected virtual WritingSystemDefinition ConstructDefinition()
-		{
-			return new WritingSystemDefinition();
-		}
+		protected abstract T ConstructDefinition();
 
 		/// <summary>
-		/// Creates an empty writing system with the specified language tag. This can be overridden
+		/// Creates an empty writing system with the specified language tag. This is implemented
 		/// by subclasses to allow the use subclasses of WritingSystemDefinition.
 		/// </summary>
-		protected virtual WritingSystemDefinition ConstructDefinition(string ietfLanguageTag)
-		{
-			return new WritingSystemDefinition(ietfLanguageTag);
-		}
+		protected abstract T ConstructDefinition(string ietfLanguageTag);
+
+		/// <summary>
+		/// Clones the specified writing system. This is implemented by subclasses to allow the
+		/// use subclasses of WritingSystemDefinition.
+		/// </summary>
+		protected abstract T CloneDefinition(T ws);
 
 		public virtual void Conflate(string wsToConflate, string wsToConflateWith)
 		{
-			WritingSystemDefinition ws = _writingSystems[wsToConflate];
+			T ws = _writingSystems[wsToConflate];
 			RemoveDefinition(ws);
 			if (WritingSystemConflated != null)
 				WritingSystemConflated(this, new WritingSystemConflatedEventArgs(wsToConflate, wsToConflateWith));
@@ -99,7 +98,7 @@ namespace SIL.WritingSystems
 			if (!_writingSystems.ContainsKey(id))
 				throw new ArgumentOutOfRangeException("id");
 
-			WritingSystemDefinition ws = _writingSystems[id];
+			T ws = _writingSystems[id];
 			RemoveDefinition(ws);
 			if (WritingSystemDeleted != null)
 				WritingSystemDeleted(this, new WritingSystemDeletedEventArgs(id));
@@ -107,14 +106,19 @@ namespace SIL.WritingSystems
 			//TODO: This may be useful if writing systems were reference counted.
 		}
 
-		protected virtual void RemoveDefinition(WritingSystemDefinition ws)
+		public IEnumerable<T> AllWritingSystems
+		{
+			get { return _writingSystems.Values; }
+		}
+
+		protected virtual void RemoveDefinition(T ws)
 		{
 			_writingSystems.Remove(ws.Id);
 		}
 
 		public abstract string WritingSystemIdHasChangedTo(string id);
 
-		public virtual bool CanSave(WritingSystemDefinition ws, out string path)
+		public virtual bool CanSave(T ws, out string path)
 		{
 			path = string.Empty;
 			return true;
@@ -137,7 +141,7 @@ namespace SIL.WritingSystems
 			return id != null && _writingSystems.ContainsKey(id);
 		}
 
-		public bool CanSet(WritingSystemDefinition ws)
+		public bool CanSet(T ws)
 		{
 			if (ws == null)
 			{
@@ -147,7 +151,7 @@ namespace SIL.WritingSystems
 				ws.Id != _writingSystems[ws.IetfLanguageTag].Id);
 		}
 
-		public virtual void Set(WritingSystemDefinition ws)
+		public virtual void Set(T ws)
 		{
 			if (ws == null)
 			{
@@ -204,7 +208,7 @@ namespace SIL.WritingSystems
 				_idChangeMap[pair.Key] = pair.Key;
 		}
 
-		public bool TryGet(string id, out WritingSystemDefinition ws)
+		public bool TryGet(string id, out T ws)
 		{
 			if (Contains(id))
 			{
@@ -216,7 +220,7 @@ namespace SIL.WritingSystems
 			return false;
 		}
 
-		public string GetNewIdWhenSet(WritingSystemDefinition ws)
+		public string GetNewIdWhenSet(T ws)
 		{
 			if (ws == null)
 			{
@@ -225,7 +229,7 @@ namespace SIL.WritingSystems
 			return String.IsNullOrEmpty(ws.Id) ? ws.IetfLanguageTag : ws.Id;
 		}
 
-		public WritingSystemDefinition Get(string id)
+		public T Get(string id)
 		{
 			if (id == null)
 				throw new ArgumentNullException("id");
@@ -246,9 +250,57 @@ namespace SIL.WritingSystems
 		{
 		}
 
-		public IEnumerable<WritingSystemDefinition> AllWritingSystems
+		WritingSystemDefinition IWritingSystemRepository.CreateNew(string ietfLanguageTag)
 		{
-			get { return _writingSystems.Values; }
+			return CreateNew(ietfLanguageTag);
+		}
+
+		WritingSystemDefinition IWritingSystemRepository.CreateNew()
+		{
+			return CreateNew();
+		}
+
+		void IWritingSystemRepository.Set(WritingSystemDefinition ws)
+		{
+			Set((T) ws);
+		}
+
+		bool IWritingSystemRepository.CanSet(WritingSystemDefinition ws)
+		{
+			return CanSet((T) ws);
+		}
+
+		WritingSystemDefinition IWritingSystemRepository.Get(string id)
+		{
+			return Get(id);
+		}
+
+		bool IWritingSystemRepository.TryGet(string id, out WritingSystemDefinition ws)
+		{
+			T result;
+			if (TryGet(id, out result))
+			{
+				ws = result;
+				return true;
+			}
+
+			ws = null;
+			return false;
+		}
+
+		string IWritingSystemRepository.GetNewIdWhenSet(WritingSystemDefinition ws)
+		{
+			return GetNewIdWhenSet((T) ws);
+		}
+
+		bool IWritingSystemRepository.CanSave(WritingSystemDefinition ws, out string path)
+		{
+			return CanSave((T) ws, out path);
+		}
+
+		IEnumerable<WritingSystemDefinition> IWritingSystemRepository.AllWritingSystems
+		{
+			get { return AllWritingSystems; }
 		}
 	}
 }

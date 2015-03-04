@@ -4,12 +4,12 @@ using System.Linq;
 
 namespace SIL.WritingSystems
 {
-	public abstract class LocalWritingSystemRepositoryBase : WritingSystemRepositoryBase, ILocalWritingSystemRepository
+	public abstract class LocalWritingSystemRepositoryBase<T> : WritingSystemRepositoryBase<T>, ILocalWritingSystemRepository<T> where T : WritingSystemDefinition
 	{
 		private readonly Dictionary<string, DateTime> _writingSystemsToIgnore;
-		private readonly IWritingSystemRepository _globalRepository;
+		private readonly IWritingSystemRepository<T> _globalRepository;
 
-		protected LocalWritingSystemRepositoryBase(IWritingSystemRepository globalRepository)
+		protected LocalWritingSystemRepositoryBase(IWritingSystemRepository<T> globalRepository)
 		{
 			_globalRepository = globalRepository;
 			_writingSystemsToIgnore = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
@@ -20,7 +20,7 @@ namespace SIL.WritingSystems
 			get { return _writingSystemsToIgnore; }
 		}
 
-		protected override void RemoveDefinition(WritingSystemDefinition ws)
+		protected override void RemoveDefinition(T ws)
 		{
 			base.RemoveDefinition(ws);
 			if (_writingSystemsToIgnore.ContainsKey(ws.Id))
@@ -34,7 +34,7 @@ namespace SIL.WritingSystems
 			_writingSystemsToIgnore[id] = dateModified;
 		}
 
-		protected virtual void OnChangeNotifySharedStore(WritingSystemDefinition ws)
+		protected virtual void OnChangeNotifySharedStore(T ws)
 		{
 			DateTime lastDateModified;
 			if (_writingSystemsToIgnore.TryGetValue(ws.IetfLanguageTag, out lastDateModified) && ws.DateModified > lastDateModified)
@@ -42,12 +42,12 @@ namespace SIL.WritingSystems
 
 			if (_globalRepository != null)
 			{
-				WritingSystemDefinition globalWs;
+				T globalWs;
 				if (_globalRepository.TryGet(ws.IetfLanguageTag, out globalWs))
 				{
 					if (ws.DateModified > globalWs.DateModified)
 					{
-						WritingSystemDefinition newWs = ws.Clone();
+						T newWs = CloneDefinition(ws);
 						try
 						{
 							_globalRepository.Remove(ws.IetfLanguageTag);
@@ -63,7 +63,7 @@ namespace SIL.WritingSystems
 
 				else
 				{
-					_globalRepository.Set(ws.Clone());
+					_globalRepository.Set(CloneDefinition(ws));
 				}
 			}
 		}
@@ -72,9 +72,9 @@ namespace SIL.WritingSystems
 		{
 		}
 
-		private IEnumerable<WritingSystemDefinition> WritingSystemsNewerInGlobalRepository()
+		private IEnumerable<T> WritingSystemsNewerInGlobalRepository()
 		{
-			foreach (WritingSystemDefinition ws in _globalRepository.AllWritingSystems)
+			foreach (T ws in _globalRepository.AllWritingSystems)
 			{
 				if (WritingSystems.ContainsKey(ws.IetfLanguageTag))
 				{
@@ -82,31 +82,36 @@ namespace SIL.WritingSystems
 					if ((!_writingSystemsToIgnore.TryGetValue(ws.IetfLanguageTag, out lastDateModified) || ws.DateModified > lastDateModified)
 						&& (ws.DateModified > WritingSystems[ws.IetfLanguageTag].DateModified))
 					{
-						yield return ws.Clone();
+						yield return CloneDefinition(ws);
 					}
 				}
 			}
 		}
 
-		public IEnumerable<WritingSystemDefinition> CheckForNewerGlobalWritingSystems()
+		public IEnumerable<T> CheckForNewerGlobalWritingSystems()
 		{
 			if (_globalRepository != null)
 			{
-				var results = new List<WritingSystemDefinition>();
-				foreach (WritingSystemDefinition wsDef in WritingSystemsNewerInGlobalRepository())
+				var results = new List<T>();
+				foreach (T wsDef in WritingSystemsNewerInGlobalRepository())
 				{
 					LastChecked(wsDef.IetfLanguageTag, wsDef.DateModified);
 					results.Add(wsDef); // REVIEW Hasso 2013.12: add only if not equal?
 				}
 				return results;
 			}
-			return Enumerable.Empty<WritingSystemDefinition>();
+			return Enumerable.Empty<T>();
 		}
 
 		public override void Save()
 		{
 			if (_globalRepository != null)
 				_globalRepository.Save();
+		}
+
+		IEnumerable<WritingSystemDefinition> ILocalWritingSystemRepository.CheckForNewerGlobalWritingSystems()
+		{
+			return CheckForNewerGlobalWritingSystems();
 		}
 	}
 }
