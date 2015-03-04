@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Xml;
 using NUnit.Framework;
 using Palaso.TestUtilities;
 using SIL.WritingSystems;
-using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using SIL.WritingSystems.Tests;
 
 namespace Palaso.Lift.Tests
 {
@@ -17,10 +16,12 @@ namespace Palaso.Lift.Tests
 		{
 			private readonly TemporaryFolder _folder;
 			private readonly SIL.IO.TempFile _liftFile1;
+			private readonly TemporaryFolder _sldrCacheFolder;
 
 			public TestEnvironment(string liftFileContent)
 			{
 				_folder = new TemporaryFolder("WritingSystemsInLiftFileHelper");
+				_sldrCacheFolder = new TemporaryFolder("SldrCache");
 				var pathtoLiftFile1 = Path.Combine(_folder.Path, "test1.lift");
 				_liftFile1 = new SIL.IO.TempFile(liftFileContent);
 				_liftFile1.MoveTo(pathtoLiftFile1);
@@ -77,32 +78,14 @@ namespace Palaso.Lift.Tests
 
 			public void Dispose()
 			{
+				_sldrCacheFolder.Dispose();
 				_liftFile1.Dispose();
 				_folder.Dispose();
 			}
 
 			private IWritingSystemRepository WritingSystems
 			{
-				get
-				{
-					return _writingSystems ?? (_writingSystems = LdmlInFolderWritingSystemRepository.Initialize(
-						WritingSystemsPath,
-						Enumerable.Empty<ICustomDataMapper>(),
-						null,
-						OnWritingSystemMigration,
-						OnWritingSystemLoadProblem
-					));
-				}
-			}
-
-			private static void OnWritingSystemLoadProblem(IEnumerable<WritingSystemRepositoryProblem> problems)
-			{
-				throw new ApplicationException("Unexpected Writing System load problem during test.");
-			}
-
-			private static void OnWritingSystemMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationinfo)
-			{
-				throw new ApplicationException("Unexpected Writing System migration during test.");
+				get { return _writingSystems ?? (_writingSystems = new TestLdmlInFolderWritingSystemRepository(WritingSystemsPath)); }
 			}
 
 			public string WritingSystemsPath
@@ -118,15 +101,6 @@ namespace Palaso.Lift.Tests
 			public string GetLdmlFileforWs(string id)
 			{
 				return Path.Combine(WritingSystemsPath, String.Format("{0}.ldml", id));
-			}
-
-			public void WriteContentToLdmlFileInWritingSystemFolderWithName(string name, string content)
-			{
-				if (!Directory.Exists(WritingSystemsPath))
-				{
-					Directory.CreateDirectory(WritingSystemsPath);
-				}
-				File.WriteAllText(Path.Combine(WritingSystemsPath, name + ".ldml"), content);
 			}
 		}
 
