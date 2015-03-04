@@ -137,6 +137,7 @@
     <Compile Include="SubString\Split.cs" />
     <Compile Include="UnitTestTasks\TestTask.cs" />
     <Compile Include="UnitTestTasks\NUnit.cs" />
+    <Compile Include="UnixName.cs" />
     <Compile Include="UpdateBuildTypeFile\UpdateBuildTypeFile.cs" />
   </ItemGroup>
   <ItemGroup>
