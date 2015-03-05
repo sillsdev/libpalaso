@@ -508,23 +508,13 @@ namespace SIL.WritingSystems
 
 		private void ReadDelimitersElement(XElement delimitersElem, WritingSystemDefinition ws)
 		{
-			// level 1: quotationStart, quotationEnd
-			var open = (string) delimitersElem.Element("quotationStart");
-			var close = (string) delimitersElem.Element("quotationEnd");
-			if (!string.IsNullOrEmpty(open) || (!string.IsNullOrEmpty(close)))
-			{
-				var qm = new QuotationMark(open, close, null, 1, QuotationMarkingSystemType.Normal);
-				ws.QuotationMarks.Add(qm);
-			}
+			string open, close;
+			string level1Continue = null;
+			string level2Continue = null;
 
-			// level 2: alternateQuotationStart, alternateQuotationEnd
-			open = (string) delimitersElem.Element("alternateQuotationStart");
-			close = (string) delimitersElem.Element("alternateQuotationEnd");
-			if (!string.IsNullOrEmpty(open) || (!string.IsNullOrEmpty(close)))
-			{
-				var qm = new QuotationMark(open, close, null, 2, QuotationMarkingSystemType.Normal);
-				ws.QuotationMarks.Add(qm);
-			}
+			// A bit strange, but we need to read the special element first to get everything we need to write 
+			// level 1 and 2. So we just store everything but 1 and 2 in a list and add them after we add 1 and 2.
+			var specialQuotationMarks = new List<QuotationMark>();
 
 			XElement specialElem = delimitersElem.Element("special");
 			if (specialElem != null)
@@ -560,6 +550,9 @@ namespace SIL.WritingSystems
 					string paraContinueType = (string)quotationsElem.Attribute("paraContinueType") ?? string.Empty;
 					ws.QuotationParagraphContinueType = QuotationToQuotationParagraphContinueTypes[paraContinueType];
 
+					level1Continue = (string)quotationsElem.Element(Sil + "quotationContinue");
+					level2Continue = (string)quotationsElem.Element(Sil + "alternateQuotationContinue");
+
 					foreach (XElement quotationElem in quotationsElem.Elements(Sil + "quotation"))
 					{
 						open = (string) quotationElem.Attribute("open");
@@ -570,10 +563,30 @@ namespace SIL.WritingSystems
 						QuotationMarkingSystemType qmType = !string.IsNullOrEmpty(type) ? QuotationToQuotationMarkingSystemTypes[type] : QuotationMarkingSystemType.Normal;
 						
 						var qm = new QuotationMark(open, close, cont, level, qmType);
-						ws.QuotationMarks.Add(qm);
+						specialQuotationMarks.Add(qm);
 					}
 				}
 			}
+
+			// level 1: quotationStart, quotationEnd
+			open = (string)delimitersElem.Element("quotationStart");
+			close = (string)delimitersElem.Element("quotationEnd");
+			if (!string.IsNullOrEmpty(open) || !string.IsNullOrEmpty(close) || !string.IsNullOrEmpty(level1Continue))
+			{
+				var qm = new QuotationMark(open, close, level1Continue, 1, QuotationMarkingSystemType.Normal);
+				ws.QuotationMarks.Add(qm);
+			}
+
+			// level 2: alternateQuotationStart, alternateQuotationEnd
+			open = (string)delimitersElem.Element("alternateQuotationStart");
+			close = (string)delimitersElem.Element("alternateQuotationEnd");
+			if (!string.IsNullOrEmpty(open) || !string.IsNullOrEmpty(close) || !string.IsNullOrEmpty(level2Continue))
+			{
+				var qm = new QuotationMark(open, close, level2Continue, 2, QuotationMarkingSystemType.Normal);
+				ws.QuotationMarks.Add(qm);
+			}
+
+			ws.QuotationMarks.AddRange(specialQuotationMarks);
 		}
 
 		private void ReadLayoutElement(XElement layoutElem, WritingSystemDefinition ws)
@@ -1061,6 +1074,21 @@ namespace SIL.WritingSystems
 					RemoveIfEmpty(quotationmarksElem);
 				}
 				RemoveIfEmpty(specialElem);
+			}
+
+			if (qm1 != null)
+			{
+				var level1ContinuerElem = new XElement(Sil + "quotationContinue", qm1.Continue);
+				specialElem = GetOrCreateSpecialElement(delimitersElem);
+				quotationmarksElem = specialElem.GetOrCreateElement(Sil + "quotation-marks");
+				quotationmarksElem.Add(level1ContinuerElem);
+			}
+			if (qm2 != null)
+			{
+				var level2ContinuerElem = new XElement(Sil + "alternateQuotationContinue", qm2.Continue);
+				specialElem = GetOrCreateSpecialElement(delimitersElem);
+				quotationmarksElem = specialElem.GetOrCreateElement(Sil + "quotation-marks");
+				quotationmarksElem.Add(level2ContinuerElem);
 			}
 
 			foreach (QuotationMark qm in ws.QuotationMarks)
