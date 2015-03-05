@@ -4,25 +4,6 @@ using System;
 using NUnit.Framework;
 using Palaso.PlatformUtilities;
 
-// For code shipped with products, please try to use runtime checks to select code to run.
-// There are cases that require compile-time conditionals (e.g. when testing the runtime or
-// referencing platform specific imported assemblies like MonoMac.dll).  In this case, do
-// The following:
-// 1) include the following PropertyGroup in the .csproj after all of the DefineConstants
-//    elements.  [Note: _system_name and _system_type are defined by xbuild in later 
-//    versions of Mono.  We tested with Mono 3.12 that comes with Xamarin Studio for 
-//    Mac.  To verify, add /verbosity:diag to xbuild command-line. YMMV.]
-//
-// <PropertyGroup Condition= " '$(_system_name)' != '' ">
-//   <DefineConstants>$(DefineConstants);SYSTEM_$(_system_name)</DefineConstants>
-// </PropertyGroup>
-//
-// 2) In code use a conditional based on the desired platform.
-// 
-// #if SYSTEM_OSX
-// using MonoMac.Foundation;
-// #endif
-
 namespace Palaso.Tests.PlatformUtilities
 {
 	[TestFixture]
@@ -56,7 +37,7 @@ namespace Palaso.Tests.PlatformUtilities
 			Assert.That(Platform.IsDotNet, Is.True);
 		}
 
-#if SYSTEM_OSX
+#if SYSTEM_MAC
 		[Test]
 		public void IsLinux_Mac()
 		{
@@ -78,7 +59,7 @@ namespace Palaso.Tests.PlatformUtilities
 			Assert.That(Platform.IsLinux, Is.False);
 		}
 
-#if SYSTEM_OSX
+#if SYSTEM_MAC
 		[Test]
 		public void IsWindows_Mac()
 		{
@@ -100,7 +81,7 @@ namespace Palaso.Tests.PlatformUtilities
 			Assert.That(Platform.IsWindows, Is.True);
 		}
 
-#if SYSTEM_OSX
+#if SYSTEM_MAC
 		[Test]
 		public void IsMac_Mac()
 		{
@@ -122,7 +103,7 @@ namespace Palaso.Tests.PlatformUtilities
 			Assert.That(Platform.IsMac, Is.False);
 		}
 
-#if SYSTEM_OSX
+#if SYSTEM_MAC
 		[Test]
 		public void IsUnix_Mac()
 		{
