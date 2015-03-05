@@ -85,7 +85,7 @@ namespace TestAppKeyboard
 			Console.WriteLine("TestAppKeyboard.OnLanguageChanged: previous {0}, new {1}",
 				previousKeyboard != null ? previousKeyboard.Layout : "<null>",
 				newKeyboard != null ? newKeyboard.Layout : "<null>");
-			lblCurrentKeyboard.Text = newKeyboard.Layout;
+			lblCurrentKeyboard.Text = newKeyboard != null ? newKeyboard.Layout : "<null>";
 		}
 
 		#endregion

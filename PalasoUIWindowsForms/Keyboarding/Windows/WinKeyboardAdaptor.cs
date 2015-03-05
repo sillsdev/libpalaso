@@ -418,10 +418,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 		/// <summary>
 		/// Gets the keyboard description for the layout of <paramref name="inputLanguage"/>.
 		/// </summary>
-		private static KeyboardDescription GetKeyboardDescription(IInputLanguage inputLanguage)
+		private static IKeyboardDefinition GetKeyboardDescription(IInputLanguage inputLanguage)
 		{
-			KeyboardDescription sameLayout = null;
-			KeyboardDescription sameCulture = null;
+			IKeyboardDefinition sameLayout = KeyboardDescription.Zero;
+			IKeyboardDefinition sameCulture = KeyboardDescription.Zero;
 			// TODO: write some tests
 			var requestedLayout = GetLayoutNameEx(inputLanguage.Handle).Name;
 			foreach (KeyboardDescription keyboardDescription in Keyboard.Controller.AllAvailableKeyboards)
@@ -590,7 +590,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 		/// we activated this keyboard (unless we never activated this keyboard since the app
 		/// got started, in which case we use sensible default values).
 		/// </summary>
-		private void RestoreImeConversionStatus(KeyboardDescription keyboard)
+		private void RestoreImeConversionStatus(IKeyboardDefinition keyboard)
 		{
 			var winKeyboard = keyboard as WinKeyboardDescription;
 			if (winKeyboard == null)
