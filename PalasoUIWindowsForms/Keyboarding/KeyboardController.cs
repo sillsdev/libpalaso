@@ -278,7 +278,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 			public void SetKeyboard(IKeyboardDefinition keyboard)
 			{
-				keyboard.Activate();
+				if (keyboard != null) // This should prevent the crash from LT-15498
+					keyboard.Activate();
 			}
 
 			/// <summary>
