@@ -26,17 +26,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.KeyboardDescription"/> class.
 		/// </summary>
 		internal KeyboardDescription(string name, string layout, string locale,
-			IInputLanguage language, IKeyboardAdaptor engine)
-			: this(name, layout, locale, language, engine, KeyboardType.System)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the
-		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.KeyboardDescription"/> class.
-		/// </summary>
-		internal KeyboardDescription(string name, string layout, string locale,
-			IInputLanguage language, IKeyboardAdaptor engine, KeyboardType type)
+			IInputLanguage language, IKeyboardAdaptor engine, KeyboardType type = KeyboardType.System)
 		{
 			InternalName = name;
 			Layout = layout;
