@@ -217,7 +217,7 @@ namespace SIL.WritingSystems.Tests
 				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Latn']");
 				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/territory[@type='GB']");
 				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-test']");
-				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/version['Identity version description' and @number='$Revision$']");
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/version[@number='$Revision$' and text()='Identity version description']");
 				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[@windowsLCID='1036' and @defaultRegion='US']", environment.NamespaceManager);
 
 				var wsFromLdml = new WritingSystemDefinition();
@@ -242,7 +242,7 @@ namespace SIL.WritingSystems.Tests
 				};
 				var ldmlAdaptor = new LdmlDataMapper();
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
-				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/layout/orientation/characterOrder['left-to-right']");
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/layout/orientation/characterOrder[text()='left-to-right']");
 
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
@@ -251,7 +251,7 @@ namespace SIL.WritingSystems.Tests
 				// Write/Read RightToLeftScript is true
 				wsToLdml.RightToLeftScript = true;
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
-				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/layout/orientation/characterOrder['right-to-left']");
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/layout/orientation/characterOrder[text()='right-to-left']");
 
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
 				Assert.That(wsFromLdml.RightToLeftScript, Is.True);
@@ -293,14 +293,14 @@ namespace SIL.WritingSystems.Tests
 				var ldmlAdaptor = new LdmlDataMapper();
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/characters/exemplarCharacters['[A-Z{AZ}]' and @type='index']", environment.NamespaceManager);
+					.HasAtLeastOneMatchForXpath("/ldml/characters/exemplarCharacters[@type='index' and text()='[A-Z{AZ}]']", environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/characters/exemplarCharacters['[a-z{az}]']", environment.NamespaceManager);
+					.HasAtLeastOneMatchForXpath("/ldml/characters/exemplarCharacters[text()='[a-z{az}]']", environment.NamespaceManager);
 				// Character set in XPath is escaped differently from the actual file
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/characters/special/sil:exemplarCharacters['[!-#&-*,-/:;?@[]\u00A7\u2010\u2013\u2014\u2018\u2019\u201C\u201D\u2020\u2021\u2026\u2032\u2033]' and @type='footnotes']", environment.NamespaceManager);
+					.HasAtLeastOneMatchForXpath("/ldml/characters/special/sil:exemplarCharacters[@type='footnotes' and text()='[!-#\\&-*,-/\\:;?@\\[\\]\\u00A7\\u2010\\u2013\\u2014\\u2018\\u2019\\u201C\\u201D\\u2020\\u2021\\u2026\\u2032\\u2033]']", environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/numbers/defaultNumberingSystem['standard']", environment.NamespaceManager);
+					.HasAtLeastOneMatchForXpath("/ldml/numbers/defaultNumberingSystem[text()='standard']", environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
 					.HasAtLeastOneMatchForXpath("/ldml/numbers/numberingSystem[@id='standard' and @type='numeric' and @digits='๐๑๒๓๔๕๖๗๘๙']", environment.NamespaceManager);
 
@@ -335,9 +335,9 @@ namespace SIL.WritingSystems.Tests
 				var ldmlAdaptor = new LdmlDataMapper();
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/characters/exemplarCharacters['[A-Z{AZ}]' and @alt='capital']", environment.NamespaceManager);
+					.HasAtLeastOneMatchForXpath("/ldml/characters/exemplarCharacters[@alt='capital' and text()='[A-Z{AZ}]']", environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/characters/exemplarCharacters['[a-z{az}]']", environment.NamespaceManager);
+					.HasAtLeastOneMatchForXpath("/ldml/characters/exemplarCharacters[text()='[a-z{az}]']", environment.NamespaceManager);
 
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
@@ -379,13 +379,13 @@ namespace SIL.WritingSystems.Tests
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
 					.HasAtLeastOneMatchForXpath("/ldml/delimiters/special/sil:punctuation-patterns/sil:punctuation-pattern[@pattern='pattern1' and @context='medial']", environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/delimiters/quotationStart['\"']", environment.NamespaceManager);
+					.HasAtLeastOneMatchForXpath("/ldml/delimiters/quotationStart[text()='\"']", environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/delimiters/quotationEnd['\"']", environment.NamespaceManager);
+					.HasAtLeastOneMatchForXpath("/ldml/delimiters/quotationEnd[text()='\"']", environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/delimiters/alternateQuotationStart['{']", environment.NamespaceManager);
+					.HasAtLeastOneMatchForXpath("/ldml/delimiters/alternateQuotationStart[text()='{']", environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/delimiters/alternateQuotationEnd['}']", environment.NamespaceManager);
+					.HasAtLeastOneMatchForXpath("/ldml/delimiters/alternateQuotationEnd[text()='}']", environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
 					.HasAtLeastOneMatchForXpath("/ldml/delimiters/special/sil:quotation-marks/sil:quotation[@open='open1' and @close='close2' and @continue='cont3' and @level='3']", environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
@@ -637,11 +637,9 @@ namespace SIL.WritingSystems.Tests
 				var ldmlAdaptor = new LdmlDataMapper();
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:font[@name='Padauk' and @types='default emphasis' and @size='2.1' and @minversion='3.1.4' and @features='order=3 children=2 color=red createDate=1996' and @lang='en' and @otlang='abcd' and @subset='unknown']", environment.NamespaceManager);
+					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:font[@name='Padauk' and @types='default emphasis' and @size='2.1' and @minversion='3.1.4' and @features='order=3 children=2 color=red createDate=1996' and @lang='en' and @otlang='abcd' and @subset='unknown']/sil:url[text()='http://wirl.scripts.sil.org/padauk']", environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:font/sil:url['http://wirl.scripts.sil.org/padauk']", environment.NamespaceManager);
-				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:font/sil:url['http://scripts.sil.org/cms/scripts/page.php?item_id=padauk']", environment.NamespaceManager);
+					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:font[@name='Padauk' and @types='default emphasis' and @size='2.1' and @minversion='3.1.4' and @features='order=3 children=2 color=red createDate=1996' and @lang='en' and @otlang='abcd' and @subset='unknown']/sil:url[text()='http://scripts.sil.org/cms/scripts/page.php?item_id=padauk']", environment.NamespaceManager);
 
 
 				var wsFromLdml = new WritingSystemDefinition();
@@ -666,11 +664,9 @@ namespace SIL.WritingSystems.Tests
 				var ldmlAdaptor = new LdmlDataMapper();
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:spellcheck[@type='hunspell']", environment.NamespaceManager);
+					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:spellcheck[@type='hunspell']/sil:url[text()='http://wirl.scripts.sil.org/hunspell']", environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:spellcheck/sil:url['http://wirl.scripts.sil.org/hunspell']", environment.NamespaceManager);
-				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:spellcheck/sil:url['http://scripts.sil.org/cms/scripts/page.php?item_id=hunspell']", environment.NamespaceManager);
+					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:spellcheck[@type='hunspell']/sil:url[text()='http://scripts.sil.org/cms/scripts/page.php?item_id=hunspell']", environment.NamespaceManager);
 
 
 				var wsFromLdml = new WritingSystemDefinition();
@@ -695,11 +691,9 @@ namespace SIL.WritingSystems.Tests
 				var ldmlAdaptor = new LdmlDataMapper();
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:kbd['Compiled Keyman9' and @type='kmx']", environment.NamespaceManager);
+					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:kbd[@id='Compiled Keyman9' and @type='kmx']/sil:url[text()='http://wirl.scripts.sil.org/keyman']", environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:kbd/sil:url['http://wirl.scripts.sil.org/keyman']", environment.NamespaceManager);
-				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:kbd/sil:url['http://scripts.sil.org/cms/scripts/page.php?item_id=keyman9']", environment.NamespaceManager);
+					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:kbd[@id='Compiled Keyman9' and @type='kmx']/sil:url[text()='http://scripts.sil.org/cms/scripts/page.php?item_id=keyman9']", environment.NamespaceManager);
 
 
 				var wsFromLdml = new WritingSystemDefinition();
