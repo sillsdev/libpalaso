@@ -12,6 +12,11 @@ namespace SIL.WritingSystems
 		/// Gets all newer shared writing systems.
 		/// </summary>
 		IEnumerable<WritingSystemDefinition> CheckForNewerGlobalWritingSystems();
+
+		/// <summary>
+		/// Gets the global writing system repository.
+		/// </summary>
+		IWritingSystemRepository GlobalWritingSystemRepository { get; }
 	}
 
 	/// <summary>
@@ -20,5 +25,6 @@ namespace SIL.WritingSystems
 	public interface ILocalWritingSystemRepository<T> : ILocalWritingSystemRepository, IWritingSystemRepository<T> where T : WritingSystemDefinition
 	{
 		new IEnumerable<T> CheckForNewerGlobalWritingSystems();
+		new IWritingSystemRepository<T> GlobalWritingSystemRepository { get; } 
 	}
 }

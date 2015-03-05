@@ -103,6 +103,11 @@ namespace SIL.WritingSystems
 			return Enumerable.Empty<T>();
 		}
 
+		public IWritingSystemRepository<T> GlobalWritingSystemRepository
+		{
+			get { return _globalRepository; }
+		}
+
 		public override void Save()
 		{
 			if (_globalRepository != null)
@@ -112,6 +117,11 @@ namespace SIL.WritingSystems
 		IEnumerable<WritingSystemDefinition> ILocalWritingSystemRepository.CheckForNewerGlobalWritingSystems()
 		{
 			return CheckForNewerGlobalWritingSystems();
+		}
+
+		IWritingSystemRepository ILocalWritingSystemRepository.GlobalWritingSystemRepository
+		{
+			get { return GlobalWritingSystemRepository; }
 		}
 	}
 }
