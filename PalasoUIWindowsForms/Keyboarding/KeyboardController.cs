@@ -3,18 +3,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using Palaso.Reporting;
 using Palaso.WritingSystems;
-using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
 using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
 #if __MonoCS__
 using Palaso.UI.WindowsForms.Keyboarding.Linux;
 #else
 using Palaso.UI.WindowsForms.Keyboarding.Windows;
+using Microsoft.Unmanaged.TSF;
 #endif
 using Palaso.UI.WindowsForms.Keyboarding.Types;
 
@@ -613,6 +612,58 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		internal static IKeyboardControllerImpl EventProvider
 		{
 			get { return Instance; }
+		}
+
+		// delegate used to detect input processor, like KeyMan
+		private delegate bool IsUsingInputProcessorDelegate();
+		private static IsUsingInputProcessorDelegate _isUsingInputProcessor;
+
+		/// <summary>
+		/// Returns true if the current input device is an Input Processor, like KeyMan.
+		/// </summary>
+		public static bool IsFormUsingInputProcessor(Form frm)
+		{
+			bool usingIP;
+			if (frm.InvokeRequired)
+			{
+				// Set up a delegate for the invoke
+				if (_isUsingInputProcessor == null)
+					_isUsingInputProcessor = IsUsingInputProcessor;
+
+				usingIP = (bool)frm.Invoke(_isUsingInputProcessor);
+			}
+			else
+			{
+				usingIP = IsUsingInputProcessor();
+			}
+
+			return usingIP;
+		}
+
+		
+		private static bool IsUsingInputProcessor()
+		{
+#if __MonoCS__
+			// not yet implemented on Linux
+			return false;
+#else
+			TfInputProcessorProfilesClass inputProcessor;
+			try
+			{
+				inputProcessor = new TfInputProcessorProfilesClass();
+			}
+			catch (InvalidCastException)
+			{
+				return false;
+			}
+
+			var profileMgr = inputProcessor as ITfInputProcessorProfileMgr;
+
+			if (profileMgr == null) return false;
+
+			var profile = profileMgr.GetActiveProfile(Guids.TfcatTipKeyboard);
+			return profile.ProfileType == TfProfileType.InputProcessor;
+#endif
 		}
 		#endregion
 
