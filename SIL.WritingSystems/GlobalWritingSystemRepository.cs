@@ -145,13 +145,13 @@ namespace SIL.WritingSystems
 			MemoryStream oldData = null;
 			try
 			{
-				string writingSystemFileName = GetFileNameFromIdentifier(ws.IetfLanguageTag);
-				string writingSystemFilePath = GetFilePathFromIdentifier(ws.IetfLanguageTag);
+				string writingSystemFileName = GetFileNameFromIetfLanguageTag(ws.IetfLanguageTag);
+				string writingSystemFilePath = GetFilePathFromIetfLanguageTag(ws.IetfLanguageTag);
 				if (!ws.IsChanged && File.Exists(writingSystemFilePath))
 					return; // no need to save (better to preserve the modified date)
 				string oldId = ws.Id;
-				string incomingFileName = GetFileNameFromIdentifier(oldId);
-				string incomingFilePath = GetFilePathFromIdentifier(oldId);
+				string incomingFileName = GetFileNameFromIetfLanguageTag(oldId);
+				string incomingFilePath = GetFilePathFromIetfLanguageTag(oldId);
 				if (!string.IsNullOrEmpty(incomingFileName))
 				{
 					if (File.Exists(incomingFilePath))
@@ -220,7 +220,7 @@ namespace SIL.WritingSystems
 			_mutex.WaitOne();
 			try
 			{
-				string filePath = GetFilePathFromIdentifier(id);
+				string filePath = GetFilePathFromIetfLanguageTag(id);
 				if (!File.Exists(filePath))
 					throw new ArgumentOutOfRangeException("Missing file for writing system code: " + id);
 				return GetFromFilePath(filePath);
@@ -251,7 +251,7 @@ namespace SIL.WritingSystems
 			_mutex.WaitOne();
 			try
 			{
-				return File.Exists(GetFilePathFromIdentifier(id));
+				return File.Exists(GetFilePathFromIetfLanguageTag(id));
 			}
 			finally
 			{
@@ -296,7 +296,7 @@ namespace SIL.WritingSystems
 			_mutex.WaitOne();
 			try
 			{
-				File.Delete(GetFilePathFromIdentifier(wsToConflate));
+				File.Delete(GetFilePathFromIetfLanguageTag(wsToConflate));
 				if (WritingSystemConflated != null)
 					WritingSystemConflated(this, new WritingSystemConflatedEventArgs(wsToConflate, wsToConflateWith));
 			}
@@ -314,7 +314,7 @@ namespace SIL.WritingSystems
 			_mutex.WaitOne();
 			try
 			{
-				File.Delete(GetFilePathFromIdentifier(id));
+				File.Delete(GetFilePathFromIetfLanguageTag(id));
 				if (WritingSystemDeleted != null)
 					WritingSystemDeleted(this, new WritingSystemDeletedEventArgs(id));
 			}
@@ -372,9 +372,53 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Since the current implementation of Save does nothing, it's always possible.
 		/// </summary>
-		public bool CanSave(T ws, out string path)
+		public bool CanSave(T ws)
 		{
-			path = "";
+			string filePath = GetFilePathFromIetfLanguageTag(ws.Id);
+			if (File.Exists(filePath))
+			{
+				try
+				{
+					using (FileStream stream = File.Open(filePath, FileMode.Open))
+						stream.Close();
+					// don't really want to change anything
+				}
+				catch (UnauthorizedAccessException)
+				{
+					return false;
+				}
+			}
+			else if (Directory.Exists(PathToWritingSystems))
+			{
+				try
+				{
+					// See whether we're allowed to create the file (but if so, get rid of it).
+					// Pathologically we might have create but not delete permission...if so,
+					// we'll create an empty file and report we can't save. I don't see how to
+					// do better.
+					using (FileStream stream = File.Create(filePath))
+						stream.Close();
+					File.Delete(filePath);
+				}
+				catch (UnauthorizedAccessException)
+				{
+					return false;
+				}
+			}
+			else
+			{
+				try
+				{
+					Directory.CreateDirectory(PathToWritingSystems);
+					// Don't try to clean it up again. This is a vanishingly rare case,
+					// I don't think it's even possible to create a writing system store without
+					// the directory existing.
+				}
+				catch (UnauthorizedAccessException)
+				{
+					return false;
+				}
+			}
 			return true;
 		}
 
@@ -447,9 +491,9 @@ namespace SIL.WritingSystems
 			return GetNewIdWhenSet((T) ws);
 		}
 
-		bool IWritingSystemRepository.CanSave(WritingSystemDefinition ws, out string path)
+		bool IWritingSystemRepository.CanSave(WritingSystemDefinition ws)
 		{
-			return CanSave((T) ws, out path);
+			return CanSave((T) ws);
 		}
 
 		IEnumerable<WritingSystemDefinition> IWritingSystemRepository.AllWritingSystems
@@ -477,19 +521,17 @@ namespace SIL.WritingSystems
 		///<summary>
 		/// Returns the full path to the underlying store for this writing system.
 		///</summary>
-		///<param name="id"></param>
-		///<returns>FilePath</returns>
-		public string GetFilePathFromIdentifier(string id)
+		public string GetFilePathFromIetfLanguageTag(string langTag)
 		{
-			return Path.Combine(PathToWritingSystems, GetFileNameFromIdentifier(id));
+			return Path.Combine(PathToWritingSystems, GetFileNameFromIetfLanguageTag(langTag));
 		}
 
 		/// <summary>
 		/// Gets the file name from the specified identifier.
 		/// </summary>
-		protected static string GetFileNameFromIdentifier(string id)
+		protected static string GetFileNameFromIetfLanguageTag(string langTag)
 		{
-			return id + Extension;
+			return langTag + Extension;
 		}
 
 		~GlobalWritingSystemRepository()

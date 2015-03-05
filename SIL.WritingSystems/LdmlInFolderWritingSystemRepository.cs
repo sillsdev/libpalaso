@@ -152,19 +152,17 @@ namespace SIL.WritingSystems
 		///<summary>
 		/// Returns the full path to the underlying store for this writing system.
 		///</summary>
-		///<param name="id"></param>
-		///<returns>FilePath</returns>
-		public string GetFilePathFromIdentifier(string id)
+		public string GetFilePathFromIetfLanguageTag(string langTag)
 		{
-			return Path.Combine(PathToWritingSystems, GetFileNameFromIdentifier(id));
+			return Path.Combine(PathToWritingSystems, GetFileNameFromIetfLanguageTag(langTag));
 		}
 
 		/// <summary>
 		/// Gets the file name from the specified identifier.
 		/// </summary>
-		protected static string GetFileNameFromIdentifier(string id)
+		protected static string GetFileNameFromIetfLanguageTag(string langTag)
 		{
-			return id + Extension;
+			return langTag + Extension;
 		}
 
 		/// <summary>
@@ -253,7 +251,7 @@ namespace SIL.WritingSystems
 		private bool HaveMatchingDefinitionInTrash(string identifier)
 		{
 			string path = PathToWritingSystemTrash();
-			path = Path.Combine(path, GetFileNameFromIdentifier(identifier));
+			path = Path.Combine(path, GetFileNameFromIetfLanguageTag(identifier));
 			return File.Exists(path);
 		}
 
@@ -297,7 +295,7 @@ namespace SIL.WritingSystems
 		{
 			Set(ws);
 
-			string writingSystemFilePath = GetFilePathFromIdentifier(ws.IetfLanguageTag);
+			string writingSystemFilePath = GetFilePathFromIetfLanguageTag(ws.IetfLanguageTag);
 			if (!File.Exists(writingSystemFilePath) && !string.IsNullOrEmpty(ws.Template))
 			{
 				// this is a new writing system that was generated from a template, so copy the template over before saving
@@ -346,7 +344,7 @@ namespace SIL.WritingSystems
 			T existingWS;
 			if (TryGet(ietfLanguageTag, out existingWS))
 			{
-				templatePath = GetFilePathFromIdentifier(existingWS.IetfLanguageTag);
+				templatePath = GetFilePathFromIetfLanguageTag(existingWS.IetfLanguageTag);
 				if (!File.Exists(templatePath))
 					templatePath = null;
 			}
@@ -354,7 +352,7 @@ namespace SIL.WritingSystems
 			// check global repo for template
 			if (string.IsNullOrEmpty(templatePath) && _globalRepository != null && _globalRepository.TryGet(ietfLanguageTag, out existingWS))
 			{
-				templatePath = _globalRepository.GetFilePathFromIdentifier(existingWS.IetfLanguageTag);
+				templatePath = _globalRepository.GetFilePathFromIetfLanguageTag(existingWS.IetfLanguageTag);
 				if (!File.Exists(templatePath))
 					templatePath = null;
 			}
@@ -438,17 +436,17 @@ namespace SIL.WritingSystems
 
 			//we really need to get it in the trash, else, if was auto-provided,
 			//it'll keep coming back!
-			if (!File.Exists(GetFilePathFromIdentifier(ws.IetfLanguageTag)))
+			if (!File.Exists(GetFilePathFromIetfLanguageTag(ws.IetfLanguageTag)))
 				SaveDefinition(ws);
 
-			if (File.Exists(GetFilePathFromIdentifier(ws.IetfLanguageTag)))
+			if (File.Exists(GetFilePathFromIetfLanguageTag(ws.IetfLanguageTag)))
 			{
 				Directory.CreateDirectory(PathToWritingSystemTrash());
-				string destination = Path.Combine(PathToWritingSystemTrash(), GetFileNameFromIdentifier(ws.IetfLanguageTag));
+				string destination = Path.Combine(PathToWritingSystemTrash(), GetFileNameFromIetfLanguageTag(ws.IetfLanguageTag));
 				//clear out any old on already in the trash
 				if (File.Exists(destination))
 					File.Delete(destination);
-				File.Move(GetFilePathFromIdentifier(ws.IetfLanguageTag), destination);
+				File.Move(GetFilePathFromIetfLanguageTag(ws.IetfLanguageTag), destination);
 			}
 			base.RemoveDefinition(ws);
 			foreach (ICustomDataMapper customDataMapper in _customDataMappers)
@@ -467,11 +465,9 @@ namespace SIL.WritingSystems
 		/// Return true if it will be possible (absent someone changing permissions while we aren't looking)
 		/// to save changes to the specified writing system.
 		/// </summary>
-		public override bool CanSave(T ws, out string filePath)
+		public override bool CanSave(T ws)
 		{
-			string folderPath = PathToWritingSystems;
-			string filename = GetFileNameFromIdentifier(ws.IetfLanguageTag);
-			filePath = Path.Combine(folderPath, filename);
+			string filePath = GetFilePathFromIetfLanguageTag(ws.IetfLanguageTag);
 			if (File.Exists(filePath))
 			{
 				try
@@ -485,8 +481,7 @@ namespace SIL.WritingSystems
 					return false;
 				}
 			}
-
-			else if (Directory.Exists(folderPath))
+			else if (Directory.Exists(PathToWritingSystems))
 			{
 				try
 				{
@@ -507,7 +502,7 @@ namespace SIL.WritingSystems
 			{
 				try
 				{
-					Directory.CreateDirectory(folderPath);
+					Directory.CreateDirectory(PathToWritingSystems);
 					// Don't try to clean it up again. This is a vanishingly rare case,
 					// I don't think it's even possible to create a writing system store without
 					// the directory existing.
@@ -560,8 +555,8 @@ namespace SIL.WritingSystems
 			//helps us avoid having to deal with situations where a writing system id is changed to be
 			//identical with the old id of another writing sytsem. This could otherwise lead to dataloss.
 			//The inconsistency is resolved on Save()
-			if (oldStoreId != ws.Id && File.Exists(GetFilePathFromIdentifier(oldStoreId)))
-				File.Move(GetFilePathFromIdentifier(oldStoreId), GetFilePathFromIdentifier(ws.Id));
+			if (oldStoreId != ws.Id && File.Exists(GetFilePathFromIetfLanguageTag(oldStoreId)))
+				File.Move(GetFilePathFromIetfLanguageTag(oldStoreId), GetFilePathFromIetfLanguageTag(ws.Id));
 		}
 
 		public override bool WritingSystemIdHasChanged(string id)

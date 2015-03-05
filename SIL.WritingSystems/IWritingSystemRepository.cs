@@ -148,7 +148,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// True if it is capable of saving changes to the specified WS.
 		/// </summary>
-		bool CanSave(WritingSystemDefinition ws, out string path);
+		bool CanSave(WritingSystemDefinition ws);
 
 		/// <summary>
 		/// Writes the store to a persistable medium, if applicable.
@@ -170,6 +170,6 @@ namespace SIL.WritingSystems
 		new T CreateNew();
 		new T CreateNew(string ietfLanguageTag);
 		new IEnumerable<T> AllWritingSystems { get; }
-		bool CanSave(T ws, out string path);
+		bool CanSave(T ws);
 	}
 }

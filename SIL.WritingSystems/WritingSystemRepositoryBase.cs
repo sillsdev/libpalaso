@@ -118,9 +118,8 @@ namespace SIL.WritingSystems
 
 		public abstract string WritingSystemIdHasChangedTo(string id);
 
-		public virtual bool CanSave(T ws, out string path)
+		public virtual bool CanSave(T ws)
 		{
-			path = string.Empty;
 			return true;
 		}
 
@@ -293,9 +292,9 @@ namespace SIL.WritingSystems
 			return GetNewIdWhenSet((T) ws);
 		}
 
-		bool IWritingSystemRepository.CanSave(WritingSystemDefinition ws, out string path)
+		bool IWritingSystemRepository.CanSave(WritingSystemDefinition ws)
 		{
-			return CanSave((T) ws, out path);
+			return CanSave((T) ws);
 		}
 
 		IEnumerable<WritingSystemDefinition> IWritingSystemRepository.AllWritingSystems
