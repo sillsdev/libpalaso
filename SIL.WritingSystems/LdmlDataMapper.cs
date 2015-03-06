@@ -1083,7 +1083,7 @@ namespace SIL.WritingSystems
 				quotationmarksElem = specialElem.GetOrCreateElement(Sil + "quotation-marks");
 				quotationmarksElem.Add(level1ContinuerElem);
 			}
-			if (qm2 != null)
+			if (qm2 != null && !string.IsNullOrEmpty(qm2.Continue))
 			{
 				var level2ContinuerElem = new XElement(Sil + "alternateQuotationContinue", qm2.Continue);
 				specialElem = GetOrCreateSpecialElement(delimitersElem);
