@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using SIL.Windows.Forms.WritingSystems.WSTree;
 using SIL.WritingSystems;
+using SIL.WritingSystems.Tests;
 
 namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 {
@@ -14,7 +15,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 		{
 			var etr = new WritingSystemDefinition("etr", string.Empty, "region", "variant", "edo", true) {DefaultFont = new FontDefinition("font"), DefaultFontSize = 33};
 			var list = new List<WritingSystemDefinition>(new[] {etr });
-			var suggestor = new WritingSystemSuggestor();
+			var suggestor = new WritingSystemSuggestor(new TestWritingSystemFactory());
 			var suggestions = suggestor.GetSuggestions(etr, list);
 
 			WritingSystemDefinition ipa = ((WritingSystemSuggestion)suggestions.First(defn => ((WritingSystemSuggestion)defn).TemplateDefinition.Script == "ipa")).TemplateDefinition;
@@ -34,7 +35,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 			var etr = new WritingSystemDefinition("etr", string.Empty, string.Empty, string.Empty, "edo", false);
 			var etrIpa = new WritingSystemDefinition("etr", string.Empty, string.Empty,  "fonipa", "edo", false);
 			var list = new List<WritingSystemDefinition>(new[] { etr, etrIpa });
-			var suggestor = new WritingSystemSuggestor();
+			var suggestor = new WritingSystemSuggestor(new TestWritingSystemFactory());
 			var suggestions = suggestor.GetSuggestions(etr, list);
 
 			Assert.That(suggestions.Any(defn => ((WritingSystemSuggestion) defn).TemplateDefinition.Variants.Contains("fonipa")), Is.False);
@@ -43,7 +44,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 		[Test]
 		public void OtherKnownWritingSystems_TokPisinDoesNotAlreadyExist_HasTokPisin()
 		{
-			var suggestor = new WritingSystemSuggestor();
+			var suggestor = new WritingSystemSuggestor(new TestWritingSystemFactory());
 
 			var existingWritingSystems = new List<WritingSystemDefinition>();
 			Assert.That(suggestor.GetOtherLanguageSuggestions(existingWritingSystems).Any(ws=>ws.Label == "Tok Pisin"), Is.True);
@@ -52,7 +53,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 		[Test]
 		public void OtherKnownWritingSystems_TokPisinAlreadyExists_DoesNotHaveTokPisin()
 		{
-			var suggestor = new WritingSystemSuggestor();
+			var suggestor = new WritingSystemSuggestor(new TestWritingSystemFactory());
 
 			var existingWritingSystems = new List<WritingSystemDefinition>{new WritingSystemDefinition("tpi")};
 			Assert.That(suggestor.GetOtherLanguageSuggestions(existingWritingSystems).Any(ws => ws.Label == "Tok Pisin"), Is.False);
@@ -67,7 +68,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 		{
 			var english = new WritingSystemDefinition("en", string.Empty, string.Empty, string.Empty, "eng", false);
 			var list = new List<WritingSystemDefinition>(new[] { english });
-			var suggestor = new WritingSystemSuggestor();
+			var suggestor = new WritingSystemSuggestor(new TestWritingSystemFactory());
 			suggestor.SuppressSuggestionsForMajorWorldLanguages =false;
 			var suggestions = suggestor.GetSuggestions(english, list);
 			Assert.That(suggestions.Any(defn => ((WritingSystemSuggestion) defn).TemplateDefinition.Variants.Contains("fonipa")), Is.True);

@@ -8,7 +8,7 @@ namespace SIL.WritingSystems
 {
 	/// <summary>
 	/// This class parses the IANA subtag registry in order to provide a list of valid language, script, region and variant subtags
-	/// for use by the Rfc5646Tag and other classes.
+	/// for use by the IetfLanguageTagHelper and other classes.
 	/// </summary>
 	public class StandardSubtags
 	{
@@ -88,13 +88,6 @@ namespace SIL.WritingSystems
 						break;
 				}
 			}
-
-			// These ones are considered non-private in that the user can't edit the code, but they already contain needed X's.
-			//variants.Add(new VariantSubtag("fonipa-x-etic", "Phonetic", false, null));
-			//variants.Add(new VariantSubtag("fonipa-x-emic", "Phonemic", false, null));
-			//variants.Add(new VariantSubtag("x-py", "Pinyin", false, null));
-			//variants.Add(new VariantSubtag("x-pyn", "Pinyin Numbered", false, null));
-			//variants.Add(new VariantSubtag("x-audio", "Audio", false, null));
 
 			IEnumerable<LanguageSubtag> sortedLanguages = languages.OrderBy(l => Regex.Replace(l.Name, @"[^\w]", ""))
 				.Concat(new[] {new LanguageSubtag(WellKnownSubtags.UnlistedLanguage, "Language Not Listed", false, string.Empty, string.Empty)});

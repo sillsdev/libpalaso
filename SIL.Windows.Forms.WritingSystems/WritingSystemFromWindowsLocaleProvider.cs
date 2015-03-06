@@ -15,6 +15,13 @@ namespace SIL.Windows.Forms.WritingSystems
 	/// </summary>
 	public class WritingSystemFromWindowsLocaleProvider : IEnumerable<WritingSystemDefinition>
 	{
+		private readonly IWritingSystemFactory _writingSystemFactory;
+
+		public WritingSystemFromWindowsLocaleProvider(IWritingSystemFactory writingSystemFactory)
+		{
+			_writingSystemFactory = writingSystemFactory;
+		}
+
 //        public static Palaso.WritingSystems.WritingSystemDefinition Get(string rfc4646)
 //        {
 //            foreach (InputLanguage language in InputLanguage.InstalledInputLanguages)
@@ -100,18 +107,10 @@ namespace SIL.Windows.Forms.WritingSystems
 				var cleaner = new IetfLanguageTagCleaner(culture.TwoLetterISOLanguageName, "", region, "", "");
 				cleaner.Clean();
 
-				var def = new WritingSystemDefinition(
-					cleaner.Language,
-					cleaner.Script,
-					cleaner.Region,
-					IetfLanguageTagHelper.ConcatenateVariantAndPrivateUse(cleaner.Variant, cleaner.PrivateUse),
-					culture.ThreeLetterISOLanguageName,
-					culture.TextInfo.IsRightToLeft);
-				def.Keyboard = language.LayoutName;
-				def.DefaultCollation = new InheritedCollationDefinition("standard") { BaseIetfLanguageTag = culture.IetfLanguageTag };
-				def.DefaultFontSize = 12;
-
-				yield return def;
+				WritingSystemDefinition ws = _writingSystemFactory.Create(cleaner.GetCompleteTag());
+				ws.Keyboard = language.LayoutName;
+				ws.DefaultFontSize = 12;
+				yield return ws;
 			}
 		}
 

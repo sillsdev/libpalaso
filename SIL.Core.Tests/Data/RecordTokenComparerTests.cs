@@ -69,14 +69,12 @@ namespace SIL.Tests.Data
 			}
 		}
 
-		// Needs to pull down a LDML file from the SLDR which can take time, so skip on TeamCity
 		[Test]
-		[Category("SkipOnTeamCity")]
-		public void Compare_KhmerWordsUsingWritingSystemSameAsOtherLanguage_ComparesNotEqual()
+		public void Compare_KhmerWordsUsingDefaultCollation_ComparesNotEqual()
 		{
 			using (var e = new TestEnvironment())
 			{
-				var ws = new WritingSystemDefinition("en") {DefaultCollation = new InheritedCollationDefinition("standard") {BaseIetfLanguageTag = "km-KH"}};
+				var ws = new WritingSystemDefinition("en") {DefaultCollation = new IcuCollationDefinition("standard")};
 				var sd1 = new SortDefinition("Form", ws.DefaultCollation.Collator);
 				var results1 = new Dictionary<string, object> {{"Form", "សង្ឃនៃអំបូរអឺរ៉ុន"}};
 				var results2 = new Dictionary<string, object> {{"Form", "បូជាចារ្យនៃអំបូរអឺរ៉ុន"}};

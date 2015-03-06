@@ -79,7 +79,8 @@ namespace SIL.WritingSystems.Tests
 				if (GlobalRepository != null)
 					GlobalRepository.Dispose();
 				GlobalRepository = new GlobalWritingSystemRepository(_globalRepoFolder.Path);
-				LocalRepository = new TestLdmlInFolderWritingSystemRepository(_localRepoFolder.Path, GlobalRepository) {TemplateFolder = _templateFolder.Path};
+				LocalRepository = new TestLdmlInFolderWritingSystemRepository(_localRepoFolder.Path, GlobalRepository);
+				LocalRepository.WritingSystemFactory.TemplateFolder = _templateFolder.Path;
 			}
 
 			public void Dispose()
@@ -155,10 +156,9 @@ namespace SIL.WritingSystems.Tests
 						Language = "two"
 					};
 				environment.LocalRepository.SaveDefinition(ws2);
-				LdmlInFolderWritingSystemRepository newStore = LdmlInFolderWritingSystemRepository.Initialize(environment.LocalRepositoryPath, Enumerable.Empty<ICustomDataMapper>(),
-					null, DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
+				environment.ResetRepositories();
 
-				Assert.AreEqual(2, newStore.Count);
+				Assert.AreEqual(2, environment.LocalRepository.Count);
 			}
 		}
 
@@ -206,7 +206,7 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			{
 				string newRepoPath = Path.Combine(environment.LocalRepositoryPath, "newguy");
-				var newRepository = new TestLdmlInFolderWritingSystemRepository(newRepoPath);
+				var newRepository = new LdmlInFolderWritingSystemRepository(newRepoPath);
 				newRepository.SaveDefinition(environment.WritingSystem);
 				Assert.That(File.Exists(Path.Combine(newRepoPath, environment.WritingSystem.IetfLanguageTag + ".ldml")));
 			}
@@ -431,26 +431,6 @@ namespace SIL.WritingSystems.Tests
 				Assert.IsTrue(ws2.RightToLeftScript);
 			}
 		}
-
-		// TODO: Does IsUnicodeEncoded go away or get put in application-specific?
-#if WS_FIX
-		[Test]
-		public void CanSaveAndReadIsUnicode()
-		{
-			using (var environment = new TestEnvironment())
-			{
-				environment.WritingSystem.Language = "en";
-				Assert.IsTrue(environment.WritingSystem.IsUnicodeEncoded);
-				environment.WritingSystem.IsUnicodeEncoded = false;
-				Assert.IsFalse(environment.WritingSystem.IsUnicodeEncoded);
-				environment.Collection.SaveDefinition(environment.WritingSystem);
-
-				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
-				var ws2 = newCollection.Get("en");
-				Assert.IsFalse(ws2.IsUnicodeEncoded);
-			}
-		}
-#endif
 
 		[Test]
 		public void CanRemoveVariant()
@@ -1076,7 +1056,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void CreateNew_TemplateAvailableInLocalRepo_UsedTemplateFromLocalRepo()
+		public void FactoryCreate_TemplateAvailableInLocalRepo_UsedTemplateFromLocalRepo()
 		{
 			using (var environment = new TestEnvironment())
 			{
@@ -1097,7 +1077,7 @@ namespace SIL.WritingSystems.Tests
 </ldml>
 ");
 				environment.ResetRepositories();
-				WritingSystemDefinition enWs = environment.LocalRepository.CreateNew("en");
+				WritingSystemDefinition enWs = environment.LocalRepository.WritingSystemFactory.Create("en");
 				Assert.That(enWs.Language, Is.EqualTo((LanguageSubtag) "en"));
 				Assert.That(enWs.Script, Is.EqualTo((ScriptSubtag) "Latn"));
 				Assert.That(enWs.VersionDescription, Is.EqualTo("From Repo"));
@@ -1113,11 +1093,11 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void CreateNew_TemplateAvailableInSldr_UsedTemplateFromSldr()
+		public void FactoryCreate_TemplateAvailableInSldr_UsedTemplateFromSldr()
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.LocalRepository.SldrLdmls["en"] = @"<?xml version='1.0' encoding='utf-8'?>
+				environment.LocalRepository.WritingSystemFactory.SldrLdmls["en"] = @"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 	<identity>
 		<version number='1.0'>From SLDR</version>
@@ -1134,7 +1114,7 @@ namespace SIL.WritingSystems.Tests
 </ldml>
 ";
 
-				WritingSystemDefinition enWs = environment.LocalRepository.CreateNew("en");
+				WritingSystemDefinition enWs = environment.LocalRepository.WritingSystemFactory.Create("en");
 				Assert.That(enWs.Language, Is.EqualTo((LanguageSubtag) "en"));
 				Assert.That(enWs.Script, Is.EqualTo((ScriptSubtag) "Latn"));
 				Assert.That(enWs.VersionDescription, Is.EqualTo("From SLDR"));
@@ -1149,11 +1129,11 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void CreateNew_TemplateNotAvailableInSldr_UsedTemplateFromTemplateFolder()
+		public void FactoryCreate_TemplateNotAvailableInSldr_UsedTemplateFromTemplateFolder()
 		{
 			using (var environment = new TestEnvironment())
 			{
-				File.WriteAllText(Path.Combine(environment.LocalRepository.TemplateFolder, "zh-Hans-CN.ldml"), @"<?xml version='1.0' encoding='utf-8'?>
+				File.WriteAllText(Path.Combine(environment.LocalRepository.WritingSystemFactory.TemplateFolder, "zh-Hans-CN.ldml"), @"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 	<identity>
 		<version number='1.0'>From Templates</version>
@@ -1171,12 +1151,12 @@ namespace SIL.WritingSystems.Tests
 </ldml>
 ");
 
-				WritingSystemDefinition chWs = environment.LocalRepository.CreateNew("zh-Hans-CN");
+				WritingSystemDefinition chWs = environment.LocalRepository.WritingSystemFactory.Create("zh-Hans-CN");
 				Assert.That(chWs.Language, Is.EqualTo((LanguageSubtag) "zh"));
 				Assert.That(chWs.Script, Is.EqualTo((ScriptSubtag) "Hans"));
 				Assert.That(chWs.Region, Is.EqualTo((RegionSubtag) "CN"));
 				Assert.That(chWs.VersionDescription, Is.EqualTo("From Templates"));
-				Assert.That(chWs.Template, Is.EqualTo(Path.Combine(environment.LocalRepository.TemplateFolder, "zh-Hans-CN.ldml")));
+				Assert.That(chWs.Template, Is.EqualTo(Path.Combine(environment.LocalRepository.WritingSystemFactory.TemplateFolder, "zh-Hans-CN.ldml")));
 
 				// ensure that the template is used when the writing system is saved
 				environment.LocalRepository.Set(chWs);
@@ -1203,7 +1183,7 @@ namespace SIL.WritingSystems.Tests
 				Thread.Sleep(1000);
 
 				DateTime lastModified = File.GetLastWriteTime(environment.GetPathForGlobalWSId("en-US"));
-				var localRepo2 = new TestLdmlInFolderWritingSystemRepository(testFolder2.Path, environment.GlobalRepository);
+				var localRepo2 = new LdmlInFolderWritingSystemRepository(testFolder2.Path, environment.GlobalRepository);
 				ws = new WritingSystemDefinition("en-US");
 				localRepo2.Set(ws);
 				ws.RightToLeftScript = false;
@@ -1240,7 +1220,7 @@ namespace SIL.WritingSystems.Tests
 				// ensure that the date modified actually changes
 				Thread.Sleep(1000);
 
-				var localRepo2 = new TestLdmlInFolderWritingSystemRepository(testFolder2.Path, environment.GlobalRepository);
+				var localRepo2 = new LdmlInFolderWritingSystemRepository(testFolder2.Path, environment.GlobalRepository);
 				ws = new WritingSystemDefinition("en-US");
 				localRepo2.Set(ws);
 				ws.RightToLeftScript = false;
@@ -1260,7 +1240,7 @@ namespace SIL.WritingSystems.Tests
 				// ensure that the date modified actually changes
 				Thread.Sleep(1000);
 
-				localRepo2 = new TestLdmlInFolderWritingSystemRepository(testFolder2.Path, environment.GlobalRepository);
+				localRepo2 = new LdmlInFolderWritingSystemRepository(testFolder2.Path, environment.GlobalRepository);
 				ws = localRepo2.Get("en-US");
 				ws.CharacterSets.Add(new CharacterSetDefinition("main"));
 				localRepo2.Save();

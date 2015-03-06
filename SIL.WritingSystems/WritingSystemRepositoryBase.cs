@@ -20,6 +20,7 @@ namespace SIL.WritingSystems
 		private readonly Dictionary<string, T> _writingSystems;
 
 		private readonly Dictionary<string, string> _idChangeMap;
+		private IWritingSystemFactory<T> _writingSystemFactory;
 
 		public event EventHandler<WritingSystemIdChangedEventArgs> WritingSystemIdChanged;
 		public event EventHandler<WritingSystemDeletedEventArgs> WritingSystemDeleted;
@@ -45,34 +46,6 @@ namespace SIL.WritingSystems
 		{
 			get { return _writingSystems; }
 		}
-
-		public virtual T CreateNew()
-		{
-			return ConstructDefinition();
-		}
-
-		public virtual T CreateNew(string ietfLanguageTag)
-		{
-			return ConstructDefinition(ietfLanguageTag);
-		}
-
-		/// <summary>
-		/// Creates an empty writing system. This is implemented by subclasses to allow the use
-		/// subclasses of WritingSystemDefinition.
-		/// </summary>
-		protected abstract T ConstructDefinition();
-
-		/// <summary>
-		/// Creates an empty writing system with the specified language tag. This is implemented
-		/// by subclasses to allow the use subclasses of WritingSystemDefinition.
-		/// </summary>
-		protected abstract T ConstructDefinition(string ietfLanguageTag);
-
-		/// <summary>
-		/// Clones the specified writing system. This is implemented by subclasses to allow the
-		/// use subclasses of WritingSystemDefinition.
-		/// </summary>
-		protected abstract T CloneDefinition(T ws);
 
 		public virtual void Conflate(string wsToConflate, string wsToConflateWith)
 		{
@@ -122,6 +95,18 @@ namespace SIL.WritingSystems
 		{
 			return true;
 		}
+
+		public IWritingSystemFactory<T> WritingSystemFactory
+		{
+			get
+			{
+				if (_writingSystemFactory == null)
+					_writingSystemFactory = CreateDefaultWritingSystemFactory();
+				return _writingSystemFactory;
+			}
+		}
+
+		protected abstract IWritingSystemFactory<T> CreateDefaultWritingSystemFactory();
 
 		/// <summary>
 		/// Removes all writing systems.
@@ -249,16 +234,6 @@ namespace SIL.WritingSystems
 		{
 		}
 
-		WritingSystemDefinition IWritingSystemRepository.CreateNew(string ietfLanguageTag)
-		{
-			return CreateNew(ietfLanguageTag);
-		}
-
-		WritingSystemDefinition IWritingSystemRepository.CreateNew()
-		{
-			return CreateNew();
-		}
-
 		void IWritingSystemRepository.Set(WritingSystemDefinition ws)
 		{
 			Set((T) ws);
@@ -300,6 +275,11 @@ namespace SIL.WritingSystems
 		IEnumerable<WritingSystemDefinition> IWritingSystemRepository.AllWritingSystems
 		{
 			get { return AllWritingSystems; }
+		}
+
+		IWritingSystemFactory IWritingSystemRepository.WritingSystemFactory
+		{
+			get { return WritingSystemFactory; }
 		}
 	}
 }

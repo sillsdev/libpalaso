@@ -19,7 +19,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 			_setupModel = setupModel;
 			_setupModel.ItemAddedOrDeleted += OnSetupModel_ItemAddedOrDeleted;
 			_setupModel.CurrentItemUpdated += OnCurrentItemUpdated;
-			Suggestor = new WritingSystemSuggestor();
+			Suggestor = new WritingSystemSuggestor(_setupModel.WritingSystemFactory);
 		}
 
 		void OnCurrentItemUpdated(object sender, EventArgs e)

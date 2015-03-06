@@ -6,10 +6,5 @@
 		{
 			return new SimpleCollationDefinition("standard");
 		}
-
-		public override string EqualsExceptionList
-		{
-			get { return "|_icuRules|"; }
-		}
 	}
 }

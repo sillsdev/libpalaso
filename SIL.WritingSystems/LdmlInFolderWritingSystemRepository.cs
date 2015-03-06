@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Xml.Linq;
 using SIL.WritingSystems.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
@@ -37,7 +36,6 @@ namespace SIL.WritingSystems
 			migrator.Migrate();
 
 			var instance = new LdmlInFolderWritingSystemRepository(basePath, customDataMappersArray, globalRepository);
-			instance.LoadAllDefinitions();
 
 			// Call the loadProblemHandler with both migration problems and load problems
 			var loadProblems = new List<WritingSystemRepositoryProblem>();
@@ -51,29 +49,20 @@ namespace SIL.WritingSystems
 			return instance;
 		}
 
-		protected internal LdmlInFolderWritingSystemRepository(string basePath)
-			: base(basePath)
+		protected internal LdmlInFolderWritingSystemRepository(string basePath, GlobalWritingSystemRepository<WritingSystemDefinition> globalRepository = null)
+			: base(basePath, globalRepository)
 		{
 		}
 
-		protected internal LdmlInFolderWritingSystemRepository(string basePath, IList<ICustomDataMapper> customDataMappers, GlobalWritingSystemRepository globalRepository = null)
+		protected internal LdmlInFolderWritingSystemRepository(string basePath, IEnumerable<ICustomDataMapper> customDataMappers,
+			GlobalWritingSystemRepository globalRepository = null)
 			: base(basePath, customDataMappers, globalRepository)
 		{
 		}
 
-		protected override WritingSystemDefinition ConstructDefinition()
+		protected override IWritingSystemFactory<WritingSystemDefinition> CreateDefaultWritingSystemFactory()
 		{
-			return new WritingSystemDefinition();
-		}
-
-		protected override WritingSystemDefinition ConstructDefinition(string ietfLanguageTag)
-		{
-			return new WritingSystemDefinition(ietfLanguageTag);
-		}
-
-		protected override WritingSystemDefinition CloneDefinition(WritingSystemDefinition ws)
-		{
-			return ws.Clone();
+			return new LdmlInFolderWritingSystemFactory(this);
 		}
 	}
 
@@ -87,25 +76,19 @@ namespace SIL.WritingSystems
 		private IEnumerable<T> _systemWritingSystemProvider;
 		private readonly WritingSystemChangeLog _changeLog;
 		private readonly IList<WritingSystemRepositoryProblem> _loadProblems = new List<WritingSystemRepositoryProblem>();
-		private readonly IList<ICustomDataMapper> _customDataMappers;
+		private readonly ICustomDataMapper[] _customDataMappers;
 		private readonly GlobalWritingSystemRepository<T> _globalRepository;
 
-		/// <summary>
-		/// use a special path for the repository
-		/// </summary>
-		/// <param name="basePath"></param>
-		protected internal LdmlInFolderWritingSystemRepository(string basePath) :
-			this(basePath, new List<ICustomDataMapper>())
+		protected internal LdmlInFolderWritingSystemRepository(string basePath, GlobalWritingSystemRepository<T> globalRepository = null) :
+			this(basePath, Enumerable.Empty<ICustomDataMapper>(), globalRepository)
 		{
 		}
 
-		/// <summary>
-		/// use a special path for the repository
-		/// </summary>
-		protected internal LdmlInFolderWritingSystemRepository(string basePath, IList<ICustomDataMapper> customDataMappers, GlobalWritingSystemRepository<T> globalRepository = null)
+		protected internal LdmlInFolderWritingSystemRepository(string basePath, IEnumerable<ICustomDataMapper> customDataMappers,
+			GlobalWritingSystemRepository<T> globalRepository = null)
 			: base(globalRepository)
 		{
-			_customDataMappers = customDataMappers;
+			_customDataMappers = customDataMappers.ToArray();
 			_globalRepository = globalRepository;
 			PathToWritingSystems = basePath;
 			_changeLog = new WritingSystemChangeLog(new WritingSystemChangeLogDataMapper(Path.Combine(PathToWritingSystems, "idchangelog.xml")));
@@ -118,6 +101,11 @@ namespace SIL.WritingSystems
 		public IList<WritingSystemRepositoryProblem> LoadProblems
 		{
 			get { return _loadProblems; }
+		}
+
+		public new GlobalWritingSystemRepository<T> GlobalWritingSystemRepository
+		{
+			get { return _globalRepository; }
 		}
 
 		/// <summary>
@@ -170,6 +158,8 @@ namespace SIL.WritingSystems
 		/// </summary>
 		protected void LoadAllDefinitions()
 		{
+			_loadProblems.Clear();
+			ChangedIds.Clear();
 			Clear();
 			foreach (string filePath in Directory.GetFiles(_path, "*.ldml"))
 				LoadDefinition(filePath);
@@ -182,8 +172,8 @@ namespace SIL.WritingSystems
 			T wsFromFile;
 			try
 			{
-				wsFromFile = CreateNew();
-				var ldmlDataMapper = new LdmlDataMapper();
+				wsFromFile = WritingSystemFactory.Create();
+				var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
 				if (File.Exists(filePath))
 				{
 					ldmlDataMapper.Read(filePath, wsFromFile);
@@ -318,7 +308,7 @@ namespace SIL.WritingSystems
 				// What to do?  Assume that the UI has already checked for existing, asked, and allowed the overwrite.
 				File.Delete(writingSystemFilePath); //!!! Should this be move to trash?
 			}
-			var ldmlDataMapper = new LdmlDataMapper();
+			var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
 			ldmlDataMapper.Write(writingSystemFilePath, ws, oldData);
 			foreach (ICustomDataMapper customDataMapper in _customDataMappers)
 				customDataMapper.Write(ws);
@@ -336,86 +326,6 @@ namespace SIL.WritingSystems
 				_changeLog.LogAdd(ws.Id);
 			}
 		}
-
-		public override T CreateNew(string ietfLanguageTag)
-		{
-			string templatePath = null;
-			// check local repo for template
-			T existingWS;
-			if (TryGet(ietfLanguageTag, out existingWS))
-			{
-				templatePath = GetFilePathFromIetfLanguageTag(existingWS.IetfLanguageTag);
-				if (!File.Exists(templatePath))
-					templatePath = null;
-			}
-
-			// check global repo for template
-			if (string.IsNullOrEmpty(templatePath) && _globalRepository != null && _globalRepository.TryGet(ietfLanguageTag, out existingWS))
-			{
-				templatePath = _globalRepository.GetFilePathFromIetfLanguageTag(existingWS.IetfLanguageTag);
-				if (!File.Exists(templatePath))
-					templatePath = null;
-			}
-
-			// check SLDR for template
-			if (string.IsNullOrEmpty(templatePath))
-			{
-				string sldrCachePath = Path.Combine(Path.GetTempPath(), "SldrCache");
-				Directory.CreateDirectory(sldrCachePath);
-				templatePath = Path.Combine(sldrCachePath, ietfLanguageTag + ".ldml");
-				if (!GetLdmlFromSldr(templatePath, ietfLanguageTag))
-				{
-					// check SLDR cache for template
-					if (!File.Exists(templatePath))
-						templatePath = null;
-				}
-			}
-
-			// check template folder for template
-			if (string.IsNullOrEmpty(templatePath) && !string.IsNullOrEmpty(TemplateFolder))
-			{
-				templatePath = Path.Combine(TemplateFolder, ietfLanguageTag + ".ldml");
-				if (!File.Exists(templatePath))
-					templatePath = null;
-			}
-
-			T ws;
-			if (!string.IsNullOrEmpty(templatePath))
-			{
-				ws = ConstructDefinition();
-				var loader = new LdmlDataMapper();
-				loader.Read(templatePath, ws);
-				ws.Template = templatePath;
-			}
-			else
-			{
-				ws = ConstructDefinition(ietfLanguageTag);
-			}
-
-			return ws;
-		}
-
-		/// <summary>
-		/// Gets the a LDML file from the SLDR.
-		/// </summary>
-		protected virtual bool GetLdmlFromSldr(string path, string id)
-		{
-			try
-			{
-				Sldr.GetLdmlFile(path, id);
-				return true;
-			}
-			catch (WebException)
-			{
-				return false;
-			}
-		}
-
-		/// <summary>
-		/// The folder in which the repository looks for template LDML files when a writing system is wanted
-		/// that cannot be found in the local store, global store, or SLDR.
-		/// </summary>
-		public string TemplateFolder { get; set; }
 
 		public override void Conflate(string wsToConflate, string wsToConflateWith)
 		{

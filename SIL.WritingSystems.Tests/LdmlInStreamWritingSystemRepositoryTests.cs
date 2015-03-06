@@ -40,7 +40,7 @@ namespace SIL.WritingSystems.Tests
 
 			xmlWriter.WriteStartElement("someroot");
 			xmlWriter.WriteStartElement("writingsystems");
-			LdmlDataMapper adaptor = new LdmlDataMapper();
+			var adaptor = new LdmlDataMapper(_writingSystemRepository.WritingSystemFactory);
 			foreach (WritingSystemDefinition ws in writingSystems)
 			{
 				adaptor.Write(xmlWriter, ws, null);

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SIL.WritingSystems;
+using SIL.WritingSystems.Tests;
 
 namespace SIL.Windows.Forms.WritingSystems.Tests
 {
@@ -16,7 +17,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 #endif
 		public void ActiveIncludesAtLeastOneLanguage()
 		{
-			IEnumerable<WritingSystemDefinition> provider = new WritingSystemFromWindowsLocaleProvider();
+			IEnumerable<WritingSystemDefinition> provider = new WritingSystemFromWindowsLocaleProvider(new TestWritingSystemFactory());
 			Assert.IsNotNull(provider.First());
 		}
 
@@ -31,7 +32,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 #endif
 		public void GetEnumerator_IfHaveMultipleSystemKeyboardsForSameLanguage_OnlyReturnsOneForEachLanguage()
 		{
-			IEnumerable<WritingSystemDefinition> provider = new WritingSystemFromWindowsLocaleProvider();
+			IEnumerable<WritingSystemDefinition> provider = new WritingSystemFromWindowsLocaleProvider(new TestWritingSystemFactory());
 			Assert.IsNotNull(provider.First());
 			foreach (var group in provider.GroupBy(d => d.IetfLanguageTag))
 				Assert.AreEqual(1, group.Count());

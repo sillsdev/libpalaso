@@ -36,11 +36,11 @@
 			var parser = new SimpleRulesParser();
 			if (parser.ValidateSimpleRules(SimpleRules, out message))
 			{
-				IcuRules = parser.ConvertToIcuRules(SimpleRules);
+				CollationRules = parser.ConvertToIcuRules(SimpleRules);
 				IsValid = true;
 				return true;
 			}
-			IcuRules = string.Empty;
+			CollationRules = string.Empty;
 			IsValid = false;
 			return false;
 		}
@@ -54,11 +54,6 @@
 		public override CollationDefinition Clone()
 		{
 			return new SimpleCollationDefinition(this);
-		}
-
-		public override string ToString()
-		{
-			return _simpleRules;
 		}
 	}
 }

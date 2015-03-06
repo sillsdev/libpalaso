@@ -32,19 +32,19 @@ namespace SIL.WritingSystems
 		/// API request to return an LDML file and save it
 		/// </summary>
 		/// <param name="filename">Full filename to save the requested LDML file</param>
-		/// <param name="bcp47Tag">Current BCP47 tag which is a concatenation of the Language, Script, Region and Variant properties</param>
+		/// <param name="ietfLanguageTag">Current IETF language tag which is a concatenation of the Language, Script, Region and Variant properties</param>
 		/// <param name="topLevelElements">List of top level element names to request. SLDR will always publish identity, so it doesn't need to be requested.
 		/// If null, the default list of {"characters", "delimiters", "layout", "numbers", "collations", "special"} will be requested.</param>
 		/// <param name="flatten">Currently not supported.  Indicates whether or not you want to include all the data 
 		/// inherited from a more general file.  SLDR currently defaults to true (1)</param>
 		/// <returns>Boolean status if the LDML file was successfully retrieved</returns>
-		public static bool GetLdmlFile(string filename, string bcp47Tag, IEnumerable<string> topLevelElements, Boolean flatten = true)
+		public static bool GetLdmlFile(string filename, string ietfLanguageTag, IEnumerable<string> topLevelElements, Boolean flatten = true)
 		{
 			if (String.IsNullOrEmpty(filename))
 			{
 				throw new ArgumentException("filename");
 			}
-			if (String.IsNullOrEmpty(bcp47Tag))
+			if (String.IsNullOrEmpty(ietfLanguageTag))
 			{
 				throw new ArgumentException("bcp47Tag");
 			}
@@ -73,8 +73,11 @@ namespace SIL.WritingSystems
 			string requestedElements = string.Join("&inc[]=", topLevelElements);
 
 			// Concatenate url string
-			string url = string.Format("{0}{1}?uid={2}&ext={3}&inc[]={4}&flatten={5}", SldrRepository, bcp47Tag, userId, DefaultExtension, requestedElements, Convert.ToInt32(flatten));
-			string tempFilename = filename + ".tmp";
+			string url = string.Format("{0}{1}?uid={2}&ext={3}&inc[]={4}&flatten={5}", SldrRepository, ietfLanguageTag, userId, DefaultExtension, requestedElements, Convert.ToInt32(flatten));
+			string sldrCachePath = Path.Combine(Path.GetTempPath(), "SldrCache");
+			Directory.CreateDirectory(sldrCachePath);
+			string sldrCacheFilename = Path.Combine(sldrCachePath, ietfLanguageTag + "." + DefaultExtension);
+			string tempFilename = sldrCacheFilename + ".tmp";
 			try
 			{
 				// Download the LDML file to a temp file in case the transfer gets interrupted
@@ -82,9 +85,10 @@ namespace SIL.WritingSystems
 				webClient.DownloadFile(Uri.EscapeUriString(url), tempFilename);
 
 				// Move the completed temp file to filename
-				if (File.Exists(filename))
-					File.Delete(filename);
-				File.Move(tempFilename, filename);
+				if (File.Exists(sldrCacheFilename))
+					File.Delete(sldrCacheFilename);
+				File.Move(tempFilename, sldrCacheFilename);
+				File.Copy(sldrCacheFilename, filename, true);
 				return true;
 			}
 			catch (WebException we)
@@ -93,6 +97,13 @@ namespace SIL.WritingSystems
 				var errorResponse = we.Response as HttpWebResponse;
 				if ((errorResponse != null) && (errorResponse.StatusCode == HttpStatusCode.NotFound))
 					return false;
+
+				// use the cached version if it exists
+				if (File.Exists(sldrCacheFilename))
+				{
+					File.Copy(sldrCacheFilename, filename, true);
+					return true;
+				}
 
 				throw;
 			}
@@ -108,11 +119,11 @@ namespace SIL.WritingSystems
 		/// API request to return an LDML file and save it
 		/// </summary>
 		/// <param name="filename">Full filename to save the requested LDML file</param>
-		/// <param name="bcp47Tag">Current BCP47 tag which is a concatenation of the Language, Script, Region and Variant properties</param>
+		/// <param name="ietfLanguageTag">Current BCP47 tag which is a concatenation of the Language, Script, Region and Variant properties</param>
 		/// <returns>Boolean status if the LDML file was successfully retrieved</returns>
-		public static bool GetLdmlFile(string filename, string bcp47Tag)
+		public static bool GetLdmlFile(string filename, string ietfLanguageTag)
 		{
-			return GetLdmlFile(filename, bcp47Tag, DefaultTopElements);
+			return GetLdmlFile(filename, ietfLanguageTag, DefaultTopElements);
 		}
 	}
 }

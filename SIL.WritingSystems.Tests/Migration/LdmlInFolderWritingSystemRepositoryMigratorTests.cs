@@ -37,7 +37,7 @@ namespace SIL.WritingSystems.Tests.Migration
 
 			public void ReadLdmlFile(string filePath, WritingSystemDefinition ws)
 			{
-				var adaptor = new LdmlDataMapper();
+				var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				adaptor.Read(filePath, ws);
 			}
 
@@ -946,7 +946,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
 				CollationDefinition cdV3 = wsV3.Collations.FirstOrDefault();
 				Assert.IsNullOrEmpty(wsV0.SortRules);
-				Assert.IsNullOrEmpty(cdV3.IcuRules);
+				Assert.IsNullOrEmpty(cdV3.CollationRules);
 				Assert.That(cdV3.Type, Is.EqualTo("standard"));
 			}
 		}
@@ -966,9 +966,9 @@ namespace SIL.WritingSystems.Tests.Migration
 				migrator.Migrate();
 
 				var wsV3 = new WritingSystemDefinitionV3();
-				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
-				var cdV3 = (InheritedCollationDefinition)wsV3.Collations.FirstOrDefault();
-				Assert.AreEqual(wsV0.SortRules, cdV3.BaseIetfLanguageTag);
+				new LdmlAdaptorV3(new TestWritingSystemFactory()).Read(environment.MappedFilePath("test.ldml"), wsV3);
+				var cdV3 = (IcuCollationDefinition) wsV3.Collations.First();
+				Assert.That(cdV3.Imports, Is.EqualTo(new[] {new IcuCollationImport(wsV0.SortRules)}));
 			}
 		}
 
@@ -1010,7 +1010,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var wsV3 = new WritingSystemDefinitionV3();
 				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
 				CollationDefinition cdV3 = wsV3.Collations.FirstOrDefault();
-				Assert.AreEqual(wsV0.SortRules, cdV3.IcuRules);
+				Assert.AreEqual(wsV0.SortRules, cdV3.CollationRules);
 			}
 		}
 
@@ -1104,8 +1104,8 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				var wsV3= new WritingSystemDefinitionV3();
-				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
+				var wsV3 = new WritingSystemDefinitionV3();
+				new LdmlAdaptorV3(new TestWritingSystemFactory()).Read(environment.MappedFilePath("test.ldml"), wsV3);
 				DateTime dateAfterMigration = wsV3.DateModified;
 				Assert.IsTrue(dateAfterMigration > dateBeforeMigration);
 			}

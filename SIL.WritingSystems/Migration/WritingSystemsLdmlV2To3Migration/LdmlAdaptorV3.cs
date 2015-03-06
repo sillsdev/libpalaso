@@ -2,5 +2,9 @@
 {
 	internal class LdmlAdaptorV3 : LdmlDataMapper
 	{
+		public LdmlAdaptorV3(IWritingSystemFactory writingSystemFactory = null)
+			: base(writingSystemFactory)
+		{
+		}
 	}
 }

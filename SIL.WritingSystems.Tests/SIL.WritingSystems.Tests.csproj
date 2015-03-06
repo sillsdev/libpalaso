@@ -205,7 +205,7 @@
     <Compile Include="CollationDefinitionCloneableTests.cs" />
     <Compile Include="FlexConformPrivateUseRfc5646TagInterpreterTests.cs" />
     <Compile Include="IetfLanguageTagHelperTests.cs" />
-    <Compile Include="InheritedCollationDefinitionCloneableTests.cs" />
+    <Compile Include="IcuCollationDefinitionCloneableTests.cs" />
     <Compile Include="LdmlCollationParserTests.cs" />
     <Compile Include="LdmlContentForTests.cs" />
     <Compile Include="Migration\IcuRulesParserTests.cs" />
@@ -222,7 +222,10 @@
     <Compile Include="SortingTests.cs" />
     <Compile Include="SpellCheckDictionaryDefinitionCloneableTests.cs" />
     <Compile Include="SystemCollatorTests.cs" />
+    <Compile Include="TestLdmlInXmlWritingSystemRepository.cs" />
+    <Compile Include="TestLdmlInFolderWritingSystemFactory.cs" />
     <Compile Include="TestLdmlInFolderWritingSystemRepository.cs" />
+    <Compile Include="TestWritingSystemFactory.cs" />
     <Compile Include="WritingSystemRepositoryTests.cs" />
     <Compile Include="LdmlDataMapperTests.cs" />
     <Compile Include="LdmlInFolderWritingSystemRepositoryTests.cs" />

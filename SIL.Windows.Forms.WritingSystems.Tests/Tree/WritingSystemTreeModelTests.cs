@@ -35,7 +35,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 			public WritingSystemTreeModel CreateModel()
 			{
 				var model = new WritingSystemTreeModel(MockSetupModel.Object);
-				model.Suggestor = new WritingSystemSuggestor
+				model.Suggestor = new WritingSystemSuggestor(MockSetupModel.Object.WritingSystemFactory)
 				{
 					SuggestIpa = false,
 					SuggestOther = false,

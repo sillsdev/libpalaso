@@ -20,7 +20,6 @@ namespace SIL.WritingSystems.Tests
 	[TestFixture]
 	public class LdmlDataMapperTests
 	{
-		private LdmlDataMapper _adaptor;
 		private WritingSystemDefinition _ws;
 		private static readonly XNamespace Sil = "urn://www.sil.org/ldml/0.1";
 
@@ -51,71 +50,78 @@ namespace SIL.WritingSystems.Tests
 		[SetUp]
 		public void SetUp()
 		{
-			_adaptor = new LdmlDataMapper();
 			_ws = new WritingSystemDefinition("en", "Latn", "US", string.Empty, "eng", false);
 		}
 
 		[Test]
 		public void ReadFromFile_NullFileName_Throws()
 		{
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			Assert.Throws<ArgumentNullException>(
-				() => _adaptor.Read((string)null, _ws)
+				() => adaptor.Read((string)null, _ws)
 			);
 		}
 
 		[Test]
 		public void ReadFromFile_NullWritingSystem_Throws()
 		{
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			Assert.Throws<ArgumentNullException>(
-				() => _adaptor.Read("foo.ldml", null)
+				() => adaptor.Read("foo.ldml", null)
 			);
 		}
 
 		[Test]
 		public void ReadFromXmlReader_NullXmlReader_Throws()
 		{
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			Assert.Throws<ArgumentNullException>(
-				() => _adaptor.Read((XmlReader)null, _ws)
+				() => adaptor.Read((XmlReader)null, _ws)
 			);
 		}
 
 		[Test]
 		public void ReadFromXmlReader_NullWritingSystem_Throws()
 		{
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			Assert.Throws<ArgumentNullException>(
-				() => _adaptor.Read(XmlReader.Create(new StringReader("<ldml/>")), null)
+				() => adaptor.Read(XmlReader.Create(new StringReader("<ldml/>")), null)
 			);
 		}
 
 		[Test]
 		public void WriteToFile_NullFileName_Throws()
 		{
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			Assert.Throws<ArgumentNullException>(
-				() => _adaptor.Write((string)null, _ws, null)
+				() => adaptor.Write((string)null, _ws, null)
 			);
 		}
 
 		[Test]
 		public void WriteToFile_NullWritingSystem_Throws()
 		{
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			Assert.Throws<ArgumentNullException>(
-				() => _adaptor.Write("foo.ldml", null, null)
+				() => adaptor.Write("foo.ldml", null, null)
 			);
 		}
 
 		[Test]
 		public void WriteToXmlWriter_NullXmlReader_Throws()
 		{
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			Assert.Throws<ArgumentNullException>(
-				() => _adaptor.Write((XmlWriter)null, _ws, null)
+				() => adaptor.Write((XmlWriter)null, _ws, null)
 			);
 		}
 
 		[Test]
 		public void WriteToXmlWriter_NullWritingSystem_Throws()
 		{
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			Assert.Throws<ArgumentNullException>(
-				() => _adaptor.Write(XmlWriter.Create(new MemoryStream()), null, null)
+				() => adaptor.Write(XmlWriter.Create(new MemoryStream()), null, null)
 			);
 		}
 
@@ -125,18 +131,20 @@ namespace SIL.WritingSystems.Tests
 			var ws = new WritingSystemDefinition();
 			ws.RequiresValidLanguageTag = false;
 			ws.Language = "InvalidLanguage";
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			var sw = new StringWriter();
 			var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
-			Assert.Throws<ValidationException>(() => _adaptor.Write(writer, ws, null));
+			Assert.Throws<ValidationException>(() => adaptor.Write(writer, ws, null));
 		}
 
 		[Test]
 		public void ExistingUnusedLdml_Write_PreservesData()
 		{
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			var sw = new StringWriter();
 			var ws = new WritingSystemDefinition("en");
 			var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
-			_adaptor.Write(writer, ws, XmlReader.Create(new StringReader("<ldml><!--Comment--><dates/><special>hey</special></ldml>")));
+			adaptor.Write(writer, ws, XmlReader.Create(new StringReader("<ldml><!--Comment--><dates/><special>hey</special></ldml>")));
 			writer.Close();
 			AssertThatXmlIn.String(sw.ToString()).HasAtLeastOneMatchForXpath("/ldml/special[text()=\"hey\"]");
 		}
@@ -145,10 +153,10 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void RoundtripSimpleCustomSortRules_WS33715()
 		{
-			var ldmlAdaptor = new LdmlDataMapper();
+			var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 
 			const string sortRules = "(A̍ a̍)";
-			var cd = new SimpleCollationDefinition("standard") { SimpleRules = sortRules };
+			var cd = new SimpleCollationDefinition("standard") {SimpleRules = sortRules};
 			var wsWithSimpleCustomSortRules = new WritingSystemDefinition();
 			wsWithSimpleCustomSortRules.Collations.Add(cd);
 
@@ -159,14 +167,14 @@ namespace SIL.WritingSystems.Tests
 				ldmlAdaptor.Read(tempFile.Path, wsFromLdml);
 			}
 
-			var cdFromLdml = (SimpleCollationDefinition)(wsFromLdml.Collations.FirstOrDefault());
+			var cdFromLdml = (SimpleCollationDefinition) wsFromLdml.Collations.First();
 			Assert.AreEqual(sortRules, cdFromLdml.SimpleRules);
 		}
 
 		[Test]
 		public void RoundtripKnownKeyboards()
 		{
-			var ldmlAdaptor = new LdmlDataMapper();
+			var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 
 			//Keyboard.Controller = new MyKeyboardController();
 
@@ -210,7 +218,7 @@ namespace SIL.WritingSystems.Tests
 					WindowsLcid = "1036",
 					DefaultRegion = "US"
 				};
-				var ldmlAdaptor = new LdmlDataMapper();
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
@@ -240,7 +248,7 @@ namespace SIL.WritingSystems.Tests
 				{
 					RightToLeftScript = false
 				};
-				var ldmlAdaptor = new LdmlDataMapper();
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/layout/orientation/characterOrder[text()='left-to-right']");
 
@@ -290,7 +298,7 @@ namespace SIL.WritingSystems.Tests
 				wsToLdml.CharacterSets.Add(footnotes);
 				wsToLdml.CharacterSets.Add(numeric);
 
-				var ldmlAdaptor = new LdmlDataMapper();
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
 					.HasAtLeastOneMatchForXpath("/ldml/characters/exemplarCharacters[@type='index' and text()='[A-Z{AZ}]']", environment.NamespaceManager);
@@ -332,7 +340,7 @@ namespace SIL.WritingSystems.Tests
 				wsToLdml.CharacterSets.Add(altMain);
 				wsToLdml.CharacterSets.Add(main);
 
-				var ldmlAdaptor = new LdmlDataMapper();
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
 					.HasAtLeastOneMatchForXpath("/ldml/characters/exemplarCharacters[@alt='capital' and text()='[A-Z{AZ}]']", environment.NamespaceManager);
@@ -372,7 +380,7 @@ namespace SIL.WritingSystems.Tests
 				wsToLdml.QuotationMarks.Add(qm4);
 				wsToLdml.QuotationParagraphContinueType = QuotationParagraphContinueType.Outermost;
 	
-				var ldmlAdaptor = new LdmlDataMapper();
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
 					.HasAtLeastOneMatchForXpath("/ldml/delimiters/special/sil:matched-pairs/sil:matched-pair[@open='mpOpen1' and @close='mpClose2' and @paraClose='false']", environment.NamespaceManager);
@@ -415,15 +423,16 @@ namespace SIL.WritingSystems.Tests
 			{
 				const string icuRules =
 					"&B<t<<<T<s<<<S<e<<<E\r\n\t\t\t\t&C<k<<<K<x<<<X<i<<<I\r\n\t\t\t\t&D<q<<<Q<r<<<R\r\n\t\t\t\t&G<o<<<O\r\n\t\t\t\t&W<h<<<H";
-				var cd = new CollationDefinition("standard")
+				var cd = new IcuCollationDefinition("standard")
 				{
 					IcuRules = icuRules,
+					CollationRules = icuRules,
 					IsValid = true
 				};
 
 				var wsToLdml = new WritingSystemDefinition("aa", "Latn", "", "");
 				wsToLdml.Collations.Add(cd);
-				var ldmlAdaptor = new LdmlDataMapper();
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 
 				XElement ldmlElem = XElement.Load(environment.FilePath("test.ldml"));
@@ -447,17 +456,19 @@ namespace SIL.WritingSystems.Tests
 			{
 				const string icuRules =
 					"&B<t<<<T<s<<<S<e<<<E\r\n\t\t\t\t&C<k<<<K<x<<<X<i<<<I\r\n\t\t\t\t&D<q<<<Q<r<<<R\r\n\t\t\t\t&G<o<<<O\r\n\t\t\t\t&W<h<<<H";
-				var cd = new CollationDefinition("standard")
+				var cd = new IcuCollationDefinition("standard")
 				{
 					IcuRules = icuRules,
+					CollationRules = icuRules,
 					IsValid = true
 				};
 
 				const string altIcuRules =
 					"&B<t<<<T<s<<<S<e<<<E";
-				var altCD = new CollationDefinition("standard\ufdd0short")
+				var altCD = new IcuCollationDefinition("standard\ufdd0short")
 				{
 					IcuRules = altIcuRules,
+					CollationRules = altIcuRules,
 					IsValid = true
 				};
 
@@ -465,7 +476,7 @@ namespace SIL.WritingSystems.Tests
 				wsToLdml.Collations.Add(cd);
 				wsToLdml.Collations.Add(altCD);
 				wsToLdml.DefaultCollation = cd;
-				var ldmlAdaptor = new LdmlDataMapper();
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 
 				XElement ldmlElem = XElement.Load(environment.FilePath("test.ldml"));
@@ -501,13 +512,13 @@ namespace SIL.WritingSystems.Tests
 				var cd = new SimpleCollationDefinition("standard")
 				{
 					SimpleRules = simpleRules,
-					IcuRules = icuRules,
+					CollationRules = icuRules,
 					IsValid = true
 				};
 				var wsToLdml = new WritingSystemDefinition("aa", "Latn", "", "");
 				wsToLdml.Collations.Add(cd);
 
-				var ldmlAdaptor = new LdmlDataMapper();
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				XElement ldmlElem = XElement.Load(environment.FilePath("test.ldml"));
 				XElement collationsElem = ldmlElem.Element("collations");
@@ -544,7 +555,7 @@ namespace SIL.WritingSystems.Tests
 				var wsToLdml = new WritingSystemDefinition("aa", "Latn", "", "");
 				wsToLdml.Collations.Add(cd);
 
-				var ldmlAdaptor = new LdmlDataMapper();
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				XElement ldmlElem = XElement.Load(environment.FilePath("test.ldml"));
 				XElement collationsElem = ldmlElem.Element("collations");
@@ -560,7 +571,7 @@ namespace SIL.WritingSystems.Tests
 				var validatedCd = new SimpleCollationDefinition("standard")
 				{
 					SimpleRules = simpleRules,
-					IcuRules = icuRules,
+					CollationRules = icuRules,
 					IsValid = true
 				};
 				// When the LDML reader parses the invalid rules, it will validate and regenerate icu rules
@@ -573,36 +584,42 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Roundtrip_LdmlInheritedCollation()
+		public void Roundtrip_LdmlIcuCollationWithImports()
 		{
 			using (var environment = new TestEnvironment())
 			{
 				const string icuRules =
 					"&B<t<<<T<s<<<S<e<<<E\n\t\t\t\t&C<k<<<K<x<<<X<i<<<I\n\t\t\t\t&D<q<<<Q<r<<<R\n\t\t\t\t&G<o<<<O\n\t\t\t\t&W<h<<<H";
-				var cd = new InheritedCollationDefinition("standard")
+				var cd = new IcuCollationDefinition("standard")
 				{
-					BaseIetfLanguageTag = "my",
-					BaseType = "standard",
-					IcuRules = icuRules,
+					Imports = {new IcuCollationImport("my", "standard")},
+					CollationRules = icuRules,
 					IsValid = true
 				};
 
 				var wsToLdml = new WritingSystemDefinition("aa", "Latn", "", "");
 				wsToLdml.Collations.Add(cd);
 
-				var ldmlAdaptor = new LdmlDataMapper();
+				var wsFactory = new TestWritingSystemFactory {WritingSystems =
+				{
+					new WritingSystemDefinition("my")
+					{
+						Collations = {new IcuCollationDefinition("standard") {IcuRules = icuRules, CollationRules = icuRules, IsValid = true}}
+					}
+				}};
+				var ldmlAdaptor = new LdmlDataMapper(wsFactory);
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				XElement ldmlElem = XElement.Load(environment.FilePath("test.ldml"));
 				XElement collationsElem = ldmlElem.Element("collations");
 				XElement defaultCollationElem = collationsElem.Element("defaultCollation");
 				XElement collationElem = collationsElem.Element("collation");
 				XElement crElem = collationElem.Element("cr");
-				XElement inheritedElem = collationElem.Element("special").Element(Sil + "inherited");
-				Assert.That((string)defaultCollationElem, Is.EqualTo("standard"));
-				Assert.That((string)collationElem.Attribute("type"), Is.EqualTo("standard"));
-				Assert.That((string)crElem, Is.EqualTo(icuRules.Replace("\r\n", "\n")));
-				Assert.That((string)inheritedElem.Attribute("base"), Is.EqualTo("my"));
-				Assert.That((string)inheritedElem.Attribute("type"), Is.EqualTo("standard"));
+				XElement importElem = collationElem.Element("import");
+				Assert.That((string) defaultCollationElem, Is.EqualTo("standard"));
+				Assert.That((string) collationElem.Attribute("type"), Is.EqualTo("standard"));
+				Assert.That(crElem, Is.Null);
+				Assert.That((string) importElem.Attribute("source"), Is.EqualTo("my"));
+				Assert.That((string) importElem.Attribute("type"), Is.EqualTo("standard"));
 
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
@@ -634,7 +651,7 @@ namespace SIL.WritingSystems.Tests
 				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
 				wsToLdml.Fonts.Add(fd);
 
-				var ldmlAdaptor = new LdmlDataMapper();
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
 					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:font[@name='Padauk' and @types='default emphasis' and @size='2.1' and @minversion='3.1.4' and @features='order=3 children=2 color=red createDate=1996' and @lang='en' and @otlang='abcd' and @subset='unknown']/sil:url[text()='http://wirl.scripts.sil.org/padauk']", environment.NamespaceManager);
@@ -661,7 +678,7 @@ namespace SIL.WritingSystems.Tests
 				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
 				wsToLdml.SpellCheckDictionaries.Add(scd);
 
-				var ldmlAdaptor = new LdmlDataMapper();
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
 					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:spellcheck[@type='hunspell']/sil:url[text()='http://wirl.scripts.sil.org/hunspell']", environment.NamespaceManager);
@@ -688,7 +705,7 @@ namespace SIL.WritingSystems.Tests
 
 				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
 				wsToLdml.KnownKeyboards.Add(kbd);
-				var ldmlAdaptor = new LdmlDataMapper();
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
 					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:kbd[@id='Compiled Keyman9' and @type='kmx']/sil:url[text()='http://wirl.scripts.sil.org/keyman']", environment.NamespaceManager);
@@ -706,7 +723,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Read_LdmlContainsOnlyPrivateUse_IsoAndprivateUseSetCorrectly()
 		{
-			var adaptor = new LdmlDataMapper();
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			var wsFromLdml = new WritingSystemDefinition();
 			using (var tempFile = new TempFile())
 			{
@@ -727,7 +744,7 @@ namespace SIL.WritingSystems.Tests
 			using (var file = new TempFile())
 			{
 				//Create an ldml file to read
-				var adaptor = new LdmlDataMapper();
+				var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
 				adaptor.Write(file.Path, ws, null);
 
@@ -766,7 +783,7 @@ namespace SIL.WritingSystems.Tests
 			using (var file = new TempFile())
 			{
 				//create an ldml file to read that contains layout info
-				var adaptor = new LdmlDataMapper();
+				var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
 				ws.RightToLeftScript = true;
 				adaptor.Write(file.Path, ws, null);
@@ -833,7 +850,7 @@ namespace SIL.WritingSystems.Tests
 			using (var file = new TempFile())
 			{
 				WriteCurrentVersionLdml("xh", "", "", "", file);
-				var adaptor = new LdmlDataMapper();
+				var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				var ws = new WritingSystemDefinition();
 				adaptor.Read(file.Path, ws);
 				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path), true));
@@ -965,7 +982,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				WriteCurrentVersionLdml("en", "Zxxx", "US", "1901-x-audio", file);
 				var ws = new WritingSystemDefinition();
-				new LdmlDataMapper().Read(file.Path, ws);
+				new LdmlDataMapper(new TestWritingSystemFactory()).Read(file.Path, ws);
 				Assert.That(ws.IetfLanguageTag, Is.EqualTo("en-Zxxx-US-1901-x-audio"));
 			}
 		}
@@ -977,7 +994,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				WriteVersion0Ldml("en", "", "", "", file);
 				var ws = new WritingSystemDefinition();
-				var dataMapper = new LdmlDataMapper();
+				var dataMapper = new LdmlDataMapper(new TestWritingSystemFactory());
 				Assert.That(() => dataMapper.Read(file.Path, ws),
 								Throws.Exception.TypeOf<ApplicationException>()
 										.With.Property("Message")
@@ -994,7 +1011,7 @@ namespace SIL.WritingSystems.Tests
 				// Note: Version 1 Ldml is written with Version 2
 				WriteVersion1Ldml("en", "", "", "", file);
 				var ws = new WritingSystemDefinition();
-				var dataMapper = new LdmlDataMapper();
+				var dataMapper = new LdmlDataMapper(new TestWritingSystemFactory());
 				Assert.That(() => dataMapper.Read(file.Path, ws),
 								Throws.Exception.TypeOf<ApplicationException>()
 										.With.Property("Message")
@@ -1016,7 +1033,7 @@ namespace SIL.WritingSystems.Tests
 					writer.Write(LdmlContentForTests.CurrentVersion("qaa", "", "", "x-lel"));
 				}
 				var ws = new WritingSystemDefinition();
-				var dataMapper = new LdmlDataMapper();
+				var dataMapper = new LdmlDataMapper(new TestWritingSystemFactory());
 
 				dataMapper.Read(tempFile.Path, ws);
 				var keyboard1 = new DefaultKeyboardDefinition("MyFavoriteKeyboard", string.Empty);
@@ -1026,7 +1043,7 @@ namespace SIL.WritingSystems.Tests
 					dataMapper.Write(roundTripOut.Path, ws, fileStream);
 				}
 				AssertThatXmlIn.File(roundTripOut.Path).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/*[local-name()='external-resources']", 1);
-				var secondTripMapper = new LdmlDataMapper();
+				var secondTripMapper = new LdmlDataMapper(new TestWritingSystemFactory());
 				var secondTripWs = new WritingSystemDefinition();
 				secondTripMapper.Read(roundTripOut.Path, secondTripWs);
 				secondTripWs.KnownKeyboards.Add(new DefaultKeyboardDefinition("x-tel", string.Empty));
@@ -1059,7 +1076,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws = new WritingSystemDefinition();
 			ws.SetIetfLanguageTagComponents(language, script, territory, variant);
-			new LdmlDataMapper().Write(file.Path, ws, null);
+			new LdmlDataMapper(new TestWritingSystemFactory()).Write(file.Path, ws, null);
 		}
 
 		private static void AssertThatLdmlMatches(string language, string script, string territory, string variant, TempFile file)

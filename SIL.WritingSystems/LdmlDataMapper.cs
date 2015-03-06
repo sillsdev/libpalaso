@@ -188,6 +188,13 @@ namespace SIL.WritingSystems
 			{QuotationMarkingSystemType.Narrative, "narrative"}
 		};
 
+		private readonly IWritingSystemFactory _writingSystemFactory;
+
+		public LdmlDataMapper(IWritingSystemFactory writingSystemFactory)
+		{
+			_writingSystemFactory = writingSystemFactory;
+		}
+
 		public void Read(string filePath, WritingSystemDefinition ws)
 		{
 			if (filePath == null)
@@ -618,7 +625,6 @@ namespace SIL.WritingSystems
 
 		private void ReadCollationsElement(XElement collationsElem, WritingSystemDefinition ws)
 		{
-			Debug.Assert(collationsElem.Name == "collations");
 			ws.Collations.Clear();
 			XElement defaultCollationElem = collationsElem.Element("defaultCollation");
 			string defaultCollation = (string) defaultCollationElem ?? "standard";
@@ -628,14 +634,9 @@ namespace SIL.WritingSystems
 
 		private void ReadCollationElement(XElement collationElem, WritingSystemDefinition ws, string defaultCollation)
 		{
-			Debug.Assert(collationElem != null);
-			Debug.Assert(ws != null);
-
 			string collationType = ReadIdentifierAttribute(collationElem, "type");
 			if (!string.IsNullOrEmpty(collationType))
 			{
-				bool needsCompiling = (bool?) collationElem.Attribute(Sil + "needscompiling") ?? false;
-
 				CollationDefinition cd = null;
 				XElement specialElem = collationElem.Element("special");
 				if ((specialElem != null) && (specialElem.HasElements))
@@ -643,13 +644,8 @@ namespace SIL.WritingSystems
 					string specialType = (specialElem.Elements().First().Name.LocalName);
 					switch (specialType)
 					{
-						case "inherited":
-							XElement inheritedElem = specialElem.Element(Sil + "inherited");
-							cd = ReadCollationRulesForOtherLanguage(inheritedElem, collationType);
-							break;
 						case "simple":
-							XElement simpleElem = specialElem.Element(Sil + "simple");
-							cd = ReadCollationRulesForCustomSimple(simpleElem, collationType);
+							cd = ReadCollationRulesForCustomSimple(collationElem, specialElem, collationType);
 							break;
 						case "reordered":
 							// Skip for now
@@ -658,25 +654,12 @@ namespace SIL.WritingSystems
 				}
 				else
 				{
-					cd = new CollationDefinition(collationType);
+					cd = ReadCollationRulesForCustomIcu(collationElem, collationType);
 				}
 
 				// Only add collation definition if it's been set
 				if (cd != null)
 				{
-					// If ICU rules are out of sync, re-compile
-					if (needsCompiling)
-					{
-						string errorMsg;
-						cd.Validate(out errorMsg);
-						// TODO: Throw exception with ErrorMsg?
-					}
-					else
-					{
-						cd.IcuRules = LdmlCollationParser.GetIcuRulesFromCollationNode(collationElem);
-						cd.IsValid = true;
-					}
-
 					ws.Collations.Add(cd);
 					if (collationType == defaultCollation)
 						ws.DefaultCollation = cd;
@@ -693,20 +676,32 @@ namespace SIL.WritingSystems
 			return identifier;
 		}
 
-		private CollationDefinition ReadCollationRulesForOtherLanguage(XElement inheritedElem, string collationType)
+		private SimpleCollationDefinition ReadCollationRulesForCustomSimple(XElement collationElem, XElement specialElem, string collationType)
 		{
-			Debug.Assert(inheritedElem != null);
-			var baseLanguageTag = (string) inheritedElem.Attribute("base");
-			var baseType = (string) inheritedElem.Attribute("type");
-
-			return new InheritedCollationDefinition(collationType) {BaseIetfLanguageTag = baseLanguageTag, BaseType = baseType};
+			XElement simpleElem = specialElem.Element(Sil + "simple");
+			bool needsCompiling = (bool?) specialElem.Attribute(Sil + "needscompiling") ?? false;
+			var scd = new SimpleCollationDefinition(collationType) {SimpleRules = ((string) simpleElem).Replace("\n", "\r\n")};
+			if (needsCompiling)
+			{
+				string errorMsg;
+				scd.Validate(out errorMsg);
+			}
+			else
+			{
+				scd.CollationRules = LdmlCollationParser.GetIcuRulesFromCollationNode(collationElem);
+				scd.IsValid = true;
+			}
+			return scd;
 		}
 
-		private CollationDefinition ReadCollationRulesForCustomSimple(XElement simpleElem, string collationType)
+		private IcuCollationDefinition ReadCollationRulesForCustomIcu(XElement collationElem, string collationType)
 		{
-			Debug.Assert(simpleElem != null);
-
-			return new SimpleCollationDefinition(collationType) {SimpleRules = ((string) simpleElem).Replace("\n", "\r\n")};
+			var icd = new IcuCollationDefinition(collationType) {WritingSystemFactory = _writingSystemFactory};
+			icd.Imports.AddRange(collationElem.Elements("import").Select(ie => new IcuCollationImport((string) ie.Attribute("source"), (string) ie.Attribute("type"))));
+			icd.IcuRules = LdmlCollationParser.GetIcuRulesFromCollationNode(collationElem);
+			string errorMsg;
+			icd.Validate(out errorMsg);
+			return icd;
 		}
 
 		/// <summary>
@@ -1145,13 +1140,9 @@ namespace SIL.WritingSystems
 
 		private void WriteCollationsElement(XElement collationsElem, WritingSystemDefinition ws)
 		{
-			Debug.Assert(collationsElem != null);
-			Debug.Assert(ws != null);
-
 			// Preserve exisiting collations since we don't process them all
-			// Remove only the special collations we can repopulate from the writing system
-			collationsElem.Descendants("special").Where(e => e.Name != (Sil + "reordered")).Remove();
-			collationsElem.Descendants("special").Where(e => e.IsEmpty).Remove();
+			// Remove only the collations we can repopulate from the writing system
+			collationsElem.Elements("collation").Where(ce => ce.Elements("special").Elements().All(se => se.Name != (Sil + "reordered"))).Remove();
 
 			if (ws.DefaultCollation != null)
 			{
@@ -1171,60 +1162,44 @@ namespace SIL.WritingSystems
 			string type, alt;
 			ParseIdentifier(collation.Type, out type, out alt);
 
-			// Find the collation with the matching attribute Type
-			XElement collationElem = collationsElem.Elements("collation").FirstOrDefault(e => (string) e.Attribute("type") == type && (string) e.Attribute("alt") == alt);
-			if (collationElem == null)
+			var collationElem = new XElement("collation", new XAttribute("type", type));
+			collationElem.SetAttributeValue("alt", alt);
+			collationsElem.Add(collationElem);
+
+			var icuCollation = collation as IcuCollationDefinition;
+			if (icuCollation != null)
+				WriteCollationRulesFromCustomIcu(collationElem, icuCollation);
+
+			var simpleCollation = collation as SimpleCollationDefinition;
+			if (simpleCollation != null)
+				WriteCollationRulesFromCustomSimple(collationElem, simpleCollation);
+		}
+
+		private void WriteCollationRulesFromCustomIcu(XElement collationElem, IcuCollationDefinition icd)
+		{
+			foreach (IcuCollationImport import in icd.Imports)
 			{
-				collationElem = new XElement("collation", new XAttribute("type", type));
-				collationElem.SetAttributeValue("alt", alt);
-				collationsElem.Add(collationElem);
+				var importElem = new XElement("import", new XAttribute("source", import.IetfLanguageTag));
+				if (!string.IsNullOrEmpty(import.Type))
+					importElem.Add(new XAttribute("type", import.Type));
+				collationElem.Add(importElem);
 			}
 
 			// If collation valid and icu rules exist, populate icu rules
-			if (!string.IsNullOrEmpty(collation.IcuRules))
-			{
-				XElement crElem = collationElem.GetOrCreateElement("cr");
-				// Remove existing Icu rule
-				crElem.RemoveAll();
-				crElem.Add(new XCData(collation.IcuRules));
-			}
-			var inheritedCollation = collation as InheritedCollationDefinition;
-			if (inheritedCollation != null)
-			{
-				XElement specialElem = GetOrCreateSpecialElement(collationElem);
-				// SLDR generally doesn't include needsCompiling if false
-				specialElem.SetAttributeValue(Sil + "needsCompiling", collation.IsValid ? null : "true");
-				collationElem = specialElem.GetOrCreateElement(Sil + "inherited");
-				WriteCollationRulesFromOtherLanguage(collationElem, (InheritedCollationDefinition)collation);
-			}
-			var simpleCollation = collation as SimpleCollationDefinition;
-			if (simpleCollation != null)
-			{
-				XElement specialElem = GetOrCreateSpecialElement(collationElem);
-				// SLDR generally doesn't include needsCompiling if false
-				specialElem.SetAttributeValue(Sil + "needsCompiling", collation.IsValid ? null : "true");			
-				collationElem = specialElem.GetOrCreateElement(Sil + "simple");
-				WriteCollationRulesFromCustomSimple(collationElem, (SimpleCollationDefinition)collation);
-			}
-			
+			if (!string.IsNullOrEmpty(icd.IcuRules))
+				collationElem.Add(new XElement("cr", new XCData(icd.IcuRules)));
 		}
 
-		private void WriteCollationRulesFromOtherLanguage(XElement collationElement, InheritedCollationDefinition cd)
+		private void WriteCollationRulesFromCustomSimple(XElement collationElem, SimpleCollationDefinition scd)
 		{
-			Debug.Assert(collationElement != null);
-			Debug.Assert(cd != null);
-			
-			// base and type are required attributes
-			collationElement.SetAttributeValue("base", cd.BaseIetfLanguageTag);
-			collationElement.SetAttributeValue("type", cd.BaseType);
-		}
+			// If collation valid and icu rules exist, populate icu rules
+			if (!string.IsNullOrEmpty(scd.CollationRules))
+				collationElem.Add(new XElement("cr", new XCData(scd.CollationRules)));
 
-		private void WriteCollationRulesFromCustomSimple(XElement collationElement, SimpleCollationDefinition cd)
-		{
-			Debug.Assert(collationElement != null);
-			Debug.Assert(cd != null);
-
-			collationElement.Add(new XCData(cd.SimpleRules));
+			XElement specialElem = GetOrCreateSpecialElement(collationElem);
+			// SLDR generally doesn't include needsCompiling if false
+			specialElem.SetAttributeValue(Sil + "needsCompiling", scd.IsValid ? null : "true");
+			specialElem.Add(new XElement(Sil + "simple", new XCData(scd.SimpleRules)));
 		}
 		
 		private void WriteTopLevelSpecialElements(XElement specialElem, WritingSystemDefinition ws)

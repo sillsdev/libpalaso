@@ -58,7 +58,7 @@ namespace SIL.WritingSystems.Tests
 			const string filename = "/dev/null/foo";
 			const string bcp47Tag = "en";
 
-			Assert.Throws<System.Net.WebException>(
+			Assert.Throws<DirectoryNotFoundException>(
 				() => Sldr.GetLdmlFile(filename, bcp47Tag)
 			);
 		}

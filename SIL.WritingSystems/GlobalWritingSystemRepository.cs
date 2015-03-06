@@ -45,14 +45,9 @@ namespace SIL.WritingSystems
 		{
 		}
 
-		public override WritingSystemDefinition CreateNew()
+		protected override IWritingSystemFactory<WritingSystemDefinition> CreateDefaultWritingSystemFactory()
 		{
-			return new WritingSystemDefinition();
-		}
-
-		public override WritingSystemDefinition CreateNew(string ietfLanguageTag)
-		{
-			return new WritingSystemDefinition(ietfLanguageTag);
+			return new SldrWritingSystemFactory();
 		}
 	}
 
@@ -70,6 +65,7 @@ namespace SIL.WritingSystems
 		private readonly string _path;
 		/// <summary>Reference to a mutex. The owner of the mutex is the SingletonContainer</summary>
 		private readonly Mutex _mutex;
+		private IWritingSystemFactory<T> _writingSystemFactory;
 
 		protected internal GlobalWritingSystemRepository(string basePath)
 		{
@@ -175,7 +171,7 @@ namespace SIL.WritingSystems
 						}
 					}
 				}
-				var ldmlDataMapper = new LdmlDataMapper();
+				var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
 				try
 				{
 					// Provides FW on Linux multi-user access. Overrides the system
@@ -279,14 +275,6 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// Creates a new writing system object and returns it.  Set will need to be called
-		/// once identifying information has been changed in order to save it in the store.
-		/// </summary>
-		public abstract T CreateNew();
-
-		public abstract T CreateNew(string ietfLanguageTag);
-
-		/// <summary>
 		/// This is a new required interface member. We don't use it, and I hope we don't use anything which uses it!
 		/// </summary>
 		/// <param name="wsToConflate"></param>
@@ -369,6 +357,18 @@ namespace SIL.WritingSystems
 		{
 		}
 
+		public IWritingSystemFactory<T> WritingSystemFactory
+		{
+			get
+			{
+				if (_writingSystemFactory == null)
+					_writingSystemFactory = CreateDefaultWritingSystemFactory();
+				return _writingSystemFactory;
+			}
+		}
+
+		protected abstract IWritingSystemFactory<T> CreateDefaultWritingSystemFactory();
+
 		/// <summary>
 		/// Since the current implementation of Save does nothing, it's always possible.
 		/// </summary>
@@ -448,16 +448,6 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		WritingSystemDefinition IWritingSystemRepository.CreateNew(string ietfLanguageTag)
-		{
-			return CreateNew(ietfLanguageTag);
-		}
-
-		WritingSystemDefinition IWritingSystemRepository.CreateNew()
-		{
-			return CreateNew();
-		}
-
 		bool IWritingSystemRepository.CanSet(WritingSystemDefinition ws)
 		{
 			return CanSet((T) ws);
@@ -501,12 +491,17 @@ namespace SIL.WritingSystems
 			get { return AllWritingSystems; }
 		}
 
+		IWritingSystemFactory IWritingSystemRepository.WritingSystemFactory
+		{
+			get { return WritingSystemFactory; }
+		}
+
 		private T GetFromFilePath(string filePath)
 		{
 			try
 			{
-				T ws = CreateNew();
-				var ldmlDataMapper = new LdmlDataMapper();
+				T ws = WritingSystemFactory.Create();
+				var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
 				ldmlDataMapper.Read(filePath, ws);
 				ws.Id = ws.IetfLanguageTag;
 				ws.AcceptChanges();

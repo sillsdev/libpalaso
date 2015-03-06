@@ -69,16 +69,16 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			switch (writingSystemDefinitionV1.SortUsing)
 			{
 				case WritingSystemDefinitionV1.SortRulesType.CustomSimple:
-					cd = new SimpleCollationDefinition("standard") { SimpleRules = writingSystemDefinitionV1.SortRules };
+					cd = new SimpleCollationDefinition("standard") {SimpleRules = writingSystemDefinitionV1.SortRules};
 					break;
 				case WritingSystemDefinitionV1.SortRulesType.OtherLanguage:
-					cd = new InheritedCollationDefinition("standard") { BaseIetfLanguageTag = writingSystemDefinitionV1.Bcp47Tag, BaseType = "standard"};
+					cd = new IcuCollationDefinition("standard") {Imports = {new IcuCollationImport(writingSystemDefinitionV1.Bcp47Tag)}};
 					break;
 				case WritingSystemDefinitionV1.SortRulesType.CustomICU:
-					cd = new CollationDefinition("standard") { IcuRules = writingSystemDefinitionV1.SortRules };
+					cd = new IcuCollationDefinition("standard") {IcuRules = writingSystemDefinitionV1.SortRules};
 					break;
 				default:
-					cd = new CollationDefinition("standard");
+					cd = new IcuCollationDefinition("standard");
 					break;
 			}
 			writingSystemDefinitionV3.Collations.Add(cd);

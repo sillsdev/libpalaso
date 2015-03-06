@@ -1,33 +1,20 @@
-﻿using System.Collections.Generic;
-using System.IO;
-
-namespace SIL.WritingSystems.Tests
+﻿namespace SIL.WritingSystems.Tests
 {
 	public class TestLdmlInFolderWritingSystemRepository : LdmlInFolderWritingSystemRepository
 	{
-		private readonly Dictionary<string, string> _sldrLdmls; 
-
 		public TestLdmlInFolderWritingSystemRepository(string basePath, GlobalWritingSystemRepository globalRepository = null)
-			: base(basePath, new List<ICustomDataMapper>(), globalRepository)
+			: base(basePath, globalRepository)
 		{
-			_sldrLdmls = new Dictionary<string, string>();
 		}
 
-		public IDictionary<string, string> SldrLdmls
+		protected override IWritingSystemFactory<WritingSystemDefinition> CreateDefaultWritingSystemFactory()
 		{
-			get { return _sldrLdmls; }
+			return new TestLdmlInFolderWritingSystemFactory(this);
 		}
 
-		protected override bool GetLdmlFromSldr(string path, string id)
+		public new TestLdmlInFolderWritingSystemFactory WritingSystemFactory
 		{
-			string contents;
-			if (_sldrLdmls.TryGetValue(id, out contents))
-			{
-				File.WriteAllText(path, contents);
-				return true;
-			}
-
-			return false;
+			get { return (TestLdmlInFolderWritingSystemFactory) base.WritingSystemFactory; }
 		}
 	}
 }

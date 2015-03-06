@@ -93,19 +93,6 @@ namespace SIL.WritingSystems
 		int Count { get; }
 
 		/// <summary>
-		/// Creates a new writing system object and returns it.  Set will need to be called
-		/// once identifying information has been changed in order to save it in the store.
-		/// </summary>
-		WritingSystemDefinition CreateNew();
-
-		/// <summary>
-		/// Creates a new writing system object using the specified language tag and returns it.
-		/// Set will need to be called once identifying information has been changed in order to
-		/// save it in the store.
-		/// </summary>
-		WritingSystemDefinition CreateNew(string ietfLanguageTag);
-
-		/// <summary>
 		/// Merges two writing systems into one.
 		/// </summary>
 		void Conflate(string wsToConflate, string wsToConflateWith);
@@ -154,6 +141,8 @@ namespace SIL.WritingSystems
 		/// Writes the store to a persistable medium, if applicable.
 		/// </summary>
 		void Save();
+
+		IWritingSystemFactory WritingSystemFactory { get; }
 	}
 
 	/// <summary>
@@ -167,9 +156,8 @@ namespace SIL.WritingSystems
 		new T Get(string id);
 		bool TryGet(string id, out T ws);
 		string GetNewIdWhenSet(T ws);
-		new T CreateNew();
-		new T CreateNew(string ietfLanguageTag);
 		new IEnumerable<T> AllWritingSystems { get; }
 		bool CanSave(T ws);
+		new IWritingSystemFactory<T> WritingSystemFactory { get; } 
 	}
 }

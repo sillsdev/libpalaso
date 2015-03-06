@@ -10,19 +10,9 @@ namespace SIL.WritingSystems
 	/// </summary>
 	public class LdmlInXmlWritingSystemRepository : LdmlInXmlWritingSystemRepository<WritingSystemDefinition>
 	{
-		protected override WritingSystemDefinition ConstructDefinition()
+		protected override IWritingSystemFactory<WritingSystemDefinition> CreateDefaultWritingSystemFactory()
 		{
-			return new WritingSystemDefinition();
-		}
-
-		protected override WritingSystemDefinition ConstructDefinition(string ietfLanguageTag)
-		{
-			return new WritingSystemDefinition(ietfLanguageTag);
-		}
-
-		protected override WritingSystemDefinition CloneDefinition(WritingSystemDefinition ws)
-		{
-			return ws.Clone();
+			return new SldrWritingSystemFactory();
 		}
 	}
 
@@ -40,7 +30,7 @@ namespace SIL.WritingSystems
 			foreach (T ws in AllWritingSystems)
 			{
 				ws.DateModified = DateTime.UtcNow;
-				var ldmlDataMapper = new LdmlDataMapper();
+				var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
 				ldmlDataMapper.Write(xmlWriter, ws, null);
 			}
 			xmlWriter.WriteEndElement();
@@ -57,10 +47,10 @@ namespace SIL.WritingSystems
 			var xpDoc = new XPathDocument(new StreamReader(filePath));
 			XPathNavigator xpNav = xpDoc.CreateNavigator();
 			XPathNodeIterator nodes = xpNav.Select("//writingsystems/ldml");
-			var ldmlDataMapper = new LdmlDataMapper();
+			var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
 			foreach (XPathNavigator nav in nodes)
 			{
-				T ws = ConstructDefinition();
+				T ws = WritingSystemFactory.Create();
 				XmlReader xmlReader = nav.ReadSubtree();
 				ldmlDataMapper.Read(xmlReader, ws);
 				ws.Id = ws.IetfLanguageTag;
@@ -73,13 +63,13 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public void LoadAllDefinitions(XmlReader xmlReader)
 		{
-			var ldmlDataMapper = new LdmlDataMapper();
+			var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
 			// Check the current node, it should be 'writingsystems'
 			if ("writingsystems" == xmlReader.Name)
 			{
 				while (xmlReader.ReadToFollowing("ldml"))
 				{
-					T ws = ConstructDefinition();
+					T ws = WritingSystemFactory.Create();
 					ldmlDataMapper.Read(xmlReader.ReadSubtree(), ws);
 					ws.Id = ws.IetfLanguageTag;
 					Set(ws);

@@ -8,6 +8,7 @@ using NUnit.Framework;
 using SIL.Reporting;
 using SIL.Windows.Forms.Keyboarding;
 using SIL.WritingSystems;
+using SIL.WritingSystems.Tests;
 
 namespace SIL.Windows.Forms.WritingSystems.Tests
 {
@@ -15,7 +16,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 	public class WritingSystemSetupPMTests
 	{
 		WritingSystemSetupModel _model;
-		IWritingSystemRepository _writingSystemRepository;
+		TestLdmlInXmlWritingSystemRepository _writingSystemRepository;
 		string _testFilePath;
 
 		private class DeleteCurrentTestEnvironment : IDisposable
@@ -92,7 +93,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 			ShowOncePerSessionBasedOnExactMessagePolicy.Reset();
 
 			_testFilePath = Path.GetTempFileName();
-			_writingSystemRepository = new LdmlInXmlWritingSystemRepository();
+			_writingSystemRepository = new TestLdmlInXmlWritingSystemRepository();
 			_model = new WritingSystemSetupModel(_writingSystemRepository);
 		}
 
@@ -643,17 +644,21 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 			Assert.IsFalse(_model.ValidateCurrentSortRules(out message));
 		}
 
-		// Needs to pull down a LDML file from the SLDR which can take time, so skip on TeamCity
 		[Test]
-		[Category("SkipOnTeamCity")]
 		public void ValidateSortRules_ValidOtherLanguage_IsTrue()
 		{
+			var enWS = new WritingSystemDefinition("en");
+			var cd = new IcuCollationDefinition("standard") {IcuRules = "&b<a<c"};
 			string message;
+			Assert.That(cd.Validate(out message), Is.True);
+			enWS.DefaultCollation = cd;
+			_writingSystemRepository.WritingSystemFactory.WritingSystems.Add(enWS);
+
 			_model.AddNew();
 			_model.CurrentIso = "pt";
 			_model.CurrentCollationRulesType = "OtherLanguage";
 			_model.CurrentCollationRules = "en";
-			Assert.IsTrue(_model.ValidateCurrentSortRules(out message));
+			Assert.That(_model.ValidateCurrentSortRules(out message), Is.True);
 		}
 
 		[Test]

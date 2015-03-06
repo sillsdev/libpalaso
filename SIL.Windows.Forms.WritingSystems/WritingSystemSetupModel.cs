@@ -65,6 +65,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		private WritingSystemDefinition _currentWritingSystem;
 		private int _currentIndex;
 		private readonly IWritingSystemRepository _writingSystemRepository;
+		private readonly IWritingSystemFactory _writingSystemFactory;
 		private readonly List<WritingSystemDefinition> _writingSystemDefinitions;
 		private readonly List<WritingSystemDefinition> _deletedWritingSystemDefinitions;
 		private CollationRulesType _currentCollationRulesType;
@@ -79,6 +80,11 @@ namespace SIL.Windows.Forms.WritingSystems
 		public WritingSystemSuggestor WritingSystemSuggestor { get; private set; }
 
 		public IWritingSystemRepository WritingSystems { get { return _writingSystemRepository; } }
+
+		public IWritingSystemFactory WritingSystemFactory
+		{
+			get { return _writingSystemFactory; }
+		}
 
 		/// <summary>
 		/// UI layer can set this to something which shows a dialog to get the basic info
@@ -96,7 +102,8 @@ namespace SIL.Windows.Forms.WritingSystems
 			{
 				throw new ArgumentNullException("writingSystemRepository");
 			}
-			WritingSystemSuggestor = new WritingSystemSuggestor();
+			_writingSystemFactory = writingSystemRepository.WritingSystemFactory;
+			WritingSystemSuggestor = new WritingSystemSuggestor(_writingSystemFactory);
 
 			_writingSystemRepository = writingSystemRepository;
 			_writingSystemDefinitions = new List<WritingSystemDefinition>(_writingSystemRepository.AllWritingSystems);
@@ -116,7 +123,8 @@ namespace SIL.Windows.Forms.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			WritingSystemSuggestor = new WritingSystemSuggestor();
+			_writingSystemFactory = new SldrWritingSystemFactory();
+			WritingSystemSuggestor = new WritingSystemSuggestor(_writingSystemFactory);
 
 			_currentWritingSystem = ws;
 			_currentIndex = 0;
@@ -295,15 +303,23 @@ namespace SIL.Windows.Forms.WritingSystems
 		private void SetCurrentCollationRulesTypeFromDefinition()
 		{
 			if (CurrentDefinition == null || CurrentDefinition.DefaultCollation == null)
+			{
 				_currentCollationRulesType = CollationRulesType.DefaultOrdering;
+			}
 			else if (CurrentDefinition.DefaultCollation is SimpleCollationDefinition)
+			{
 				_currentCollationRulesType = CollationRulesType.CustomSimple;
-			else if (CurrentDefinition.DefaultCollation is InheritedCollationDefinition)
-				_currentCollationRulesType = CollationRulesType.OtherLanguage;
-			else if (CurrentDefinition.DefaultCollation.IcuRules != string.Empty)
-				_currentCollationRulesType = CollationRulesType.CustomIcu;
-			else
-				_currentCollationRulesType = CollationRulesType.DefaultOrdering;
+			}
+			else if (CurrentDefinition.DefaultCollation is IcuCollationDefinition)
+			{
+				var icuCollation = (IcuCollationDefinition) CurrentDefinition.DefaultCollation;
+				if (string.IsNullOrEmpty(icuCollation.IcuRules) && icuCollation.Imports.Count == 1 && icuCollation.Imports[0].IetfLanguageTag != CurrentIetfLanguageTag)
+					_currentCollationRulesType = CollationRulesType.OtherLanguage;
+				else if (!string.IsNullOrEmpty(icuCollation.IcuRules))
+					_currentCollationRulesType = CollationRulesType.CustomIcu;
+				else
+					_currentCollationRulesType = CollationRulesType.DefaultOrdering;
+			}
 		}
 
 //        public WritingSystemDefinition CurrentDefinition
@@ -471,11 +487,11 @@ namespace SIL.Windows.Forms.WritingSystems
 				for (int i = 0; i < WritingSystemDefinitions.Count; i++)
 				{
 					WritingSystemDefinition ws = WritingSystemDefinitions[i];
-					var inheritedCollation = ws.DefaultCollation as InheritedCollationDefinition;
+					var icuCollation = ws.DefaultCollation as IcuCollationDefinition;
 					// don't allow if it references another language on our prohibited list and this one
 					// isn't already on the prohibited list
-					if (inheritedCollation != null
-						&& !string.IsNullOrEmpty(ws.IetfLanguageTag) && prohibitedList.Contains(inheritedCollation.BaseIetfLanguageTag)
+					if (icuCollation != null && string.IsNullOrEmpty(icuCollation.IcuRules) && icuCollation.Imports.Count == 1
+						&& !string.IsNullOrEmpty(ws.IetfLanguageTag) && prohibitedList.Contains(icuCollation.Imports[0].IetfLanguageTag)
 						&& !prohibitedList.Contains(ws.IetfLanguageTag))
 					{
 						prohibitedList.Add(ws.IetfLanguageTag);
@@ -845,15 +861,12 @@ namespace SIL.Windows.Forms.WritingSystems
 						{
 							case CollationRulesType.DefaultOrdering:
 							case CollationRulesType.CustomIcu:
-								CurrentDefinition.DefaultCollation = new CollationDefinition(defType);
+							case CollationRulesType.OtherLanguage:
+								CurrentDefinition.DefaultCollation = new IcuCollationDefinition(defType) {WritingSystemFactory = _writingSystemFactory};
 								break;
 
 							case CollationRulesType.CustomSimple:
 								CurrentDefinition.DefaultCollation = new SimpleCollationDefinition(defType);
-								break;
-
-							case CollationRulesType.OtherLanguage:
-								CurrentDefinition.DefaultCollation = new InheritedCollationDefinition(defType);
 								break;
 						}
 						_currentCollationRulesType = type;
@@ -872,13 +885,13 @@ namespace SIL.Windows.Forms.WritingSystems
 					case CollationRulesType.DefaultOrdering:
 						return string.Empty;
 					case CollationRulesType.CustomIcu:
-						return CurrentDefinition.DefaultCollation.IcuRules;
+						return CurrentDefinition.DefaultCollation.CollationRules;
 					case CollationRulesType.CustomSimple:
 						var simpleCollation = (SimpleCollationDefinition) CurrentDefinition.DefaultCollation;
 						return simpleCollation.SimpleRules == string.Empty ? DefaultCustomSimpleSortRules : simpleCollation.SimpleRules;
 					case CollationRulesType.OtherLanguage:
-						var inheritedCollation = (InheritedCollationDefinition) CurrentDefinition.DefaultCollation;
-						return inheritedCollation.BaseIetfLanguageTag;
+						var otherLangCollation = (IcuCollationDefinition) CurrentDefinition.DefaultCollation;
+						return otherLangCollation.Imports.Count == 0 ? string.Empty : otherLangCollation.Imports[0].IetfLanguageTag;
 				}
 				return string.Empty;
 			}
@@ -887,9 +900,11 @@ namespace SIL.Windows.Forms.WritingSystems
 				switch (_currentCollationRulesType)
 				{
 					case CollationRulesType.CustomIcu:
-						if (CurrentDefinition.DefaultCollation.IcuRules != value)
+						var icuCollation = (IcuCollationDefinition) CurrentDefinition.DefaultCollation;
+						if (icuCollation.IcuRules != value || icuCollation.Imports.Count > 0)
 						{
-							CurrentDefinition.DefaultCollation.IcuRules = value;
+							icuCollation.Imports.Clear();
+							icuCollation.IcuRules = value;
 							OnCurrentItemUpdated();
 						}
 						break;
@@ -902,10 +917,14 @@ namespace SIL.Windows.Forms.WritingSystems
 						}
 						break;
 					case CollationRulesType.OtherLanguage:
-						var inheritedCollation = (InheritedCollationDefinition) CurrentDefinition.DefaultCollation;
-						if (inheritedCollation.BaseIetfLanguageTag != value)
+						var otherLangCollation = (IcuCollationDefinition) CurrentDefinition.DefaultCollation;
+						if (otherLangCollation.Imports.Count == 0 || otherLangCollation.Imports[0].IetfLanguageTag != value)
 						{
-							inheritedCollation.BaseIetfLanguageTag = value;
+							var import = new IcuCollationImport(value);
+							if (otherLangCollation.Imports.Count == 0)
+								otherLangCollation.Imports.Add(import);
+							else
+								otherLangCollation.Imports[0] = import;
 							OnCurrentItemUpdated();
 						}
 						break;
@@ -1324,7 +1343,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			WritingSystemDefinition ws;
 			if (MethodToShowUiToBootstrapNewDefinition == null)
 			{
-				ws = _writingSystemRepository.CreateNew();
+				ws = _writingSystemFactory.Create();
 				ws.Abbreviation = "New";
 			}
 			else
@@ -1397,7 +1416,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			if (!HasCurrentSelection) {
 				throw new InvalidOperationException ("Unable to export current selection when there is no current selection.");
 			}
-			var adaptor = new LdmlDataMapper();
+			var adaptor = new LdmlDataMapper(_writingSystemFactory);
 			adaptor.Write(filePath, _currentWritingSystem, null);
 		}
 
@@ -1493,8 +1512,8 @@ namespace SIL.Windows.Forms.WritingSystems
 			{
 				throw new ArgumentException("File does not exist.", "fileName");
 			}
-			var adaptor = new LdmlDataMapper();
-			var ws = _writingSystemRepository.CreateNew();
+			var adaptor = new LdmlDataMapper(_writingSystemFactory);
+			WritingSystemDefinition ws = _writingSystemFactory.Create();
 			adaptor.Read(fileName, ws);
 			WritingSystemDefinitions.Add(ws);
 			OnAddOrDelete();

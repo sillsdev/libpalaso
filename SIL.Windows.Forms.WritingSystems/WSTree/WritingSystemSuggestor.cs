@@ -21,10 +21,10 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 
 		public IEnumerable<WritingSystemDefinition> OtherKnownWritingSystems { get; set; }
 
-		public WritingSystemSuggestor()
+		public WritingSystemSuggestor(IWritingSystemFactory writingSystemFactory)
 		{
 			OtherKnownWritingSystems =
-				new WritingSystemFromWindowsLocaleProvider().Union(new List<WritingSystemDefinition> {new WritingSystemDefinition("tpi")});
+				new WritingSystemFromWindowsLocaleProvider(writingSystemFactory).Union(new List<WritingSystemDefinition> {new WritingSystemDefinition("tpi")});
 			SuppressSuggestionsForMajorWorldLanguages = true;
 			SuggestIpa = true;
 			SuggestDialects = true;

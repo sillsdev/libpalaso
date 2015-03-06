@@ -110,7 +110,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void CreateNewDefinition_CountEquals0()
 		{
-			RepositoryUnderTest.CreateNew();
+			RepositoryUnderTest.WritingSystemFactory.Create();
 			Assert.AreEqual(0, RepositoryUnderTest.Count);
 		}
 
@@ -141,7 +141,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void CreateNewDefinitionThenSet_CountEquals1()
 		{
-			RepositoryUnderTest.Set(RepositoryUnderTest.CreateNew());
+			RepositoryUnderTest.Set(RepositoryUnderTest.WritingSystemFactory.Create());
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
 		}
 
@@ -277,7 +277,7 @@ namespace SIL.WritingSystems.Tests
 		public void CanSetSecondNew_False()
 		{
 			RepositoryUnderTest.Set(_writingSystem);
-			_writingSystem = RepositoryUnderTest.CreateNew();
+			_writingSystem = RepositoryUnderTest.WritingSystemFactory.Create();
 			Assert.IsFalse(RepositoryUnderTest.CanSet(_writingSystem));
 		}
 

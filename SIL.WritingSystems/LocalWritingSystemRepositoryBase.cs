@@ -47,7 +47,7 @@ namespace SIL.WritingSystems
 				{
 					if (ws.DateModified > globalWs.DateModified)
 					{
-						T newWs = CloneDefinition(ws);
+						T newWs = WritingSystemFactory.Create(ws);
 						try
 						{
 							_globalRepository.Remove(ws.IetfLanguageTag);
@@ -63,13 +63,9 @@ namespace SIL.WritingSystems
 
 				else
 				{
-					_globalRepository.Set(CloneDefinition(ws));
+					_globalRepository.Set(WritingSystemFactory.Create(ws));
 				}
 			}
-		}
-
-		protected virtual void OnRemoveNotifySharedStore()
-		{
 		}
 
 		private IEnumerable<T> WritingSystemsNewerInGlobalRepository()
@@ -82,7 +78,7 @@ namespace SIL.WritingSystems
 					if ((!_writingSystemsToIgnore.TryGetValue(ws.IetfLanguageTag, out lastDateModified) || ws.DateModified > lastDateModified)
 						&& (ws.DateModified > WritingSystems[ws.IetfLanguageTag].DateModified))
 					{
-						yield return CloneDefinition(ws);
+						yield return WritingSystemFactory.Create(ws);
 					}
 				}
 			}

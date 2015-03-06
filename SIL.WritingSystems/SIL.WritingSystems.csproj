@@ -267,15 +267,18 @@
     <Compile Include="FlexConformPrivateUseRfc5646TagInterpreter.cs" />
     <Compile Include="FontDefinition.cs" />
     <Compile Include="GlobalWritingSystemRepository.cs" />
+    <Compile Include="IcuCollationDefinition.cs" />
+    <Compile Include="IcuCollationImport.cs" />
     <Compile Include="ICustomDataMapper.cs" />
     <Compile Include="ICollator.cs" />
     <Compile Include="IcuRulesCollator.cs" />
     <Compile Include="ILocalWritingSystemRepository.cs" />
-    <Compile Include="InheritedCollationDefinition.cs" />
+    <Compile Include="IWritingSystemFactory.cs" />
     <Compile Include="IWritingSystemRepository.cs" />
     <Compile Include="LanguageSubtag.cs" />
     <Compile Include="IetfLanguageTagHelper.cs" />
     <Compile Include="LdmlCollationParser.cs" />
+    <Compile Include="LdmlInFolderWritingSystemFactory.cs" />
     <Compile Include="LocalWritingSystemRepositoryBase.cs" />
     <Compile Include="MatchedPair.cs" />
     <Compile Include="DefinitionBase.cs" />
@@ -315,6 +318,7 @@
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\WritingSystemDefinitionV0.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\WritingSystemDefinitionV1.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\XmlHelpersV0.cs" />
+    <Compile Include="SldrWritingSystemFactory.cs" />
     <Compile Include="SpellCheckDictionaryDefinition.cs" />
     <Compile Include="StandardSubtags.cs" />
     <Compile Include="Subtag.cs" />

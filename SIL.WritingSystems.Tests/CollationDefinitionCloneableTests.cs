@@ -1,16 +1,10 @@
 ﻿using System.Collections.Generic;
 using Palaso.TestUtilities;
-using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace SIL.WritingSystems.Tests
 {
-	public class CollationDefinitionCloneableTests : CloneableTests<CollationDefinition>
+	public abstract class CollationDefinitionCloneableTests : CloneableTests<CollationDefinition>
 	{
-		public override CollationDefinition CreateNewCloneable()
-		{
-			return new CollationDefinition("standard");
-		}
-
 		protected override bool Equals(CollationDefinition x, CollationDefinition y)
 		{
 			if (x == null)
@@ -23,14 +17,18 @@ namespace SIL.WritingSystems.Tests
 			get { return "|IsChanged|_collator|IsValid|PropertyChanged|PropertyChanging|"; }
 		}
 
+		public override string EqualsExceptionList
+		{
+			get { return "|_collationRules|"; }
+		}
+
 		protected override List<ValuesToSet> DefaultValuesForTypes
 		{
 			get
 			{
 				return new List<ValuesToSet>
 				{
-					new ValuesToSet("to be", "!(to be)"),
-					new ValuesToSet(new Rfc5646Tag("en", "Latn", "US", "1901", "test"), Rfc5646Tag.Parse("de"))
+					new ValuesToSet("to be", "!(to be)")
 				};
 			}
 		}
