@@ -244,7 +244,6 @@
     <Compile Include="Migration\XslMigratorTests.cs" />
     <Compile Include="Misc\GuardAgainstReentry.cs" />
     <Compile Include="Network\RobustNetworkOperation.Tests.cs" />
-    <Compile Include="Progress\CommandLineRunnerTests.cs" />
     <Compile Include="Progress\MultiProgressTests.cs" />
     <Compile Include="Progress\Commands\CommandTests.cs" />
     <Compile Include="Progress\ConsoleProgressTests.cs" />
@@ -314,6 +313,7 @@
     <Compile Include="PlatformUtilities\PlatformTests.cs" />
     <Compile Include="IO\PathUtilitiesTests.cs" />
     <Compile Include="SetupFixture.cs" />
+    <Compile Include="CommandLineProcessing\CommandLineRunnerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Palaso\Palaso.csproj">
@@ -358,5 +358,8 @@
   <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CommandLineProcessing\" />
   </ItemGroup>
 </Project>
