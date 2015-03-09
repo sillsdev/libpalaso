@@ -47,7 +47,7 @@ namespace SIL.WritingSystems
 
 		protected override IWritingSystemFactory<WritingSystemDefinition> CreateWritingSystemFactory()
 		{
-			return new DefaultWritingSystemFactory();
+			return new SldrWritingSystemFactory();
 		}
 	}
 

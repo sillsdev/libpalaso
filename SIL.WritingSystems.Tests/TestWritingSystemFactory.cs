@@ -2,7 +2,7 @@
 
 namespace SIL.WritingSystems.Tests
 {
-	public class TestWritingSystemFactory : IWritingSystemFactory<WritingSystemDefinition>
+	public class TestWritingSystemFactory : DefaultWritingSystemFactory
 	{
 		private readonly KeyedList<string, WritingSystemDefinition> _writingSystems; 
 
@@ -16,23 +16,13 @@ namespace SIL.WritingSystems.Tests
 			get { return _writingSystems; }
 		}
 
-		public WritingSystemDefinition Create()
-		{
-			return new WritingSystemDefinition();
-		}
-
-		public WritingSystemDefinition Create(string ietfLanguageTag)
+		public override WritingSystemDefinition Create(string ietfLanguageTag)
 		{
 			WritingSystemDefinition ws;
 			if (_writingSystems.TryGet(ietfLanguageTag, out ws))
 				return ws;
 
-			return new WritingSystemDefinition(ietfLanguageTag);
-		}
-
-		public WritingSystemDefinition Create(WritingSystemDefinition ws)
-		{
-			return new WritingSystemDefinition(ws);
+			return ConstructDefinition(ietfLanguageTag);
 		}
 	}
 }
