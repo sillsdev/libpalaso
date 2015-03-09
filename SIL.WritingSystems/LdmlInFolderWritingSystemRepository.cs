@@ -60,7 +60,7 @@ namespace SIL.WritingSystems
 		{
 		}
 
-		protected override IWritingSystemFactory<WritingSystemDefinition> CreateDefaultWritingSystemFactory()
+		protected override IWritingSystemFactory<WritingSystemDefinition> CreateWritingSystemFactory()
 		{
 			return new LdmlInFolderWritingSystemFactory(this);
 		}

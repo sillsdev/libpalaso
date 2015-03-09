@@ -10,7 +10,7 @@ namespace SIL.WritingSystems
 	/// </summary>
 	public class LdmlInXmlWritingSystemRepository : LdmlInXmlWritingSystemRepository<WritingSystemDefinition>
 	{
-		protected override IWritingSystemFactory<WritingSystemDefinition> CreateDefaultWritingSystemFactory()
+		protected override IWritingSystemFactory<WritingSystemDefinition> CreateWritingSystemFactory()
 		{
 			return new SldrWritingSystemFactory();
 		}

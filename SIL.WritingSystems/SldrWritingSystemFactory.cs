@@ -21,14 +21,9 @@ namespace SIL.WritingSystems
 		}
 	}
 
-	public abstract class SldrWritingSystemFactory<T> : IWritingSystemFactory<T> where T : WritingSystemDefinition
+	public abstract class SldrWritingSystemFactory<T> : WritingSystemFactoryBase<T> where T : WritingSystemDefinition
 	{
-		public T Create()
-		{
-			return ConstructDefinition();
-		}
-
-		public virtual T Create(string ietfLanguageTag)
+		public override T Create(string ietfLanguageTag)
 		{
 			// check SLDR for template
 			string sldrCachePath = Path.Combine(Path.GetTempPath(), "SldrCache");
@@ -65,34 +60,11 @@ namespace SIL.WritingSystems
 			return ws;
 		}
 
-		public T Create(T ws)
-		{
-			return ConstructDefinition(ws);
-		}
-
 		/// <summary>
 		/// The folder in which the repository looks for template LDML files when a writing system is wanted
 		/// that cannot be found in the local store, global store, or SLDR.
 		/// </summary>
 		public string TemplateFolder { get; set; }
-
-		/// <summary>
-		/// Creates an empty writing system. This is implemented by subclasses to allow the use
-		/// subclasses of WritingSystemDefinition.
-		/// </summary>
-		protected abstract T ConstructDefinition();
-
-		/// <summary>
-		/// Creates an empty writing system with the specified language tag. This is implemented
-		/// by subclasses to allow the use subclasses of WritingSystemDefinition.
-		/// </summary>
-		protected abstract T ConstructDefinition(string ietfLanguageTag);
-
-		/// <summary>
-		/// Clones the specified writing system. This is implemented by subclasses to allow the
-		/// use subclasses of WritingSystemDefinition.
-		/// </summary>
-		protected abstract T ConstructDefinition(T ws);
 
 		/// <summary>
 		/// Gets the a LDML file from the SLDR.
@@ -108,21 +80,6 @@ namespace SIL.WritingSystems
 			{
 				return false;
 			}
-		}
-
-		WritingSystemDefinition IWritingSystemFactory.Create()
-		{
-			return Create();
-		}
-
-		WritingSystemDefinition IWritingSystemFactory.Create(string ietfLanguageTag)
-		{
-			return Create(ietfLanguageTag);
-		}
-
-		WritingSystemDefinition IWritingSystemFactory.Create(WritingSystemDefinition ws)
-		{
-			return Create((T) ws);
 		}
 	}
 }

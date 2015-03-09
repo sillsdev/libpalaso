@@ -101,12 +101,12 @@ namespace SIL.WritingSystems
 			get
 			{
 				if (_writingSystemFactory == null)
-					_writingSystemFactory = CreateDefaultWritingSystemFactory();
+					_writingSystemFactory = CreateWritingSystemFactory();
 				return _writingSystemFactory;
 			}
 		}
 
-		protected abstract IWritingSystemFactory<T> CreateDefaultWritingSystemFactory();
+		protected abstract IWritingSystemFactory<T> CreateWritingSystemFactory();
 
 		/// <summary>
 		/// Removes all writing systems.

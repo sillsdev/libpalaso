@@ -263,6 +263,8 @@
     <Compile Include="AddSortKeysToXml.cs" />
     <Compile Include="CharacterSetDefinition.cs" />
     <Compile Include="CollationDefinition.cs" />
+    <Compile Include="DefaultWritingSystemFactory.cs" />
+    <Compile Include="WritingSystemFactoryBase.cs" />
     <Compile Include="EthnologueLookup.cs" />
     <Compile Include="FlexConformPrivateUseRfc5646TagInterpreter.cs" />
     <Compile Include="FontDefinition.cs" />
