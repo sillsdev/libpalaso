@@ -6,7 +6,6 @@ using System.Xml;
 using NUnit.Framework;
 using Palaso.TestUtilities;
 using SIL.WritingSystems.Migration;
-using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace SIL.WritingSystems.Tests.Migration
 {
@@ -34,12 +33,12 @@ namespace SIL.WritingSystems.Tests.Migration
 
 			public string BasePath { get { return _baseFolder.Path; } }
 
-			public void OnMigrateCallback(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
+			public void OnMigrateCallback(int toVersion, IEnumerable<MigrationInfo> migrationInfo)
 			{
-				MigrationInfo = new List<LdmlVersion0MigrationStrategy.MigrationInfo>(migrationInfo);
+				MigrationInfo = new List<MigrationInfo>(migrationInfo);
 			}
 
-			public IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> MigrationInfo { get; private set; }
+			public IEnumerable<MigrationInfo> MigrationInfo { get; private set; }
 
 			public static void WriteFlexFile(string language, string abbreviation, int version)
 			{

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace SIL.WritingSystems.Migration
 
 		public LdmlInFolderWritingSystemRepositoryMigrator(
 			string ldmlPath,
-			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
+			Action<int, IEnumerable<MigrationInfo>> migrationHandler,
 			IEnumerable<ICustomDataMapper> customDataMappers = null,
 			int versionToMigrateTo = WritingSystemDefinition.LatestWritingSystemDefinitionVersion
 		) : base(versionToMigrateTo, ldmlPath)
@@ -31,7 +32,7 @@ namespace SIL.WritingSystems.Migration
 			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(migrationHandler, auditLog, 0));
 			// Version 0 strategy has been enhanced to also migrate version 1.
 			AddMigrationStrategy(new LdmlVersion0MigrationStrategy(migrationHandler, auditLog, 1));
-			AddMigrationStrategy(new LdmlVersion2MigrationStrategy(customDataMappers ?? Enumerable.Empty<ICustomDataMapper>()));
+			AddMigrationStrategy(new LdmlVersion2MigrationStrategy(migrationHandler, auditLog, customDataMappers ?? Enumerable.Empty<ICustomDataMapper>()));
 		}
 
 		public IEnumerable<WritingSystemRepositoryProblem> MigrationProblems

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 using SIL.Windows.Forms.WritingSystems.WSTree;
 using SIL.WritingSystems;
-using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using SIL.WritingSystems.Migration;
 
 namespace SIL.Windows.Forms.WritingSystems
 {
@@ -83,7 +83,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		internal class DummyWritingSystemHandler
 		{
-			public static void onMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
+			public static void onMigration(int toVersion, IEnumerable<MigrationInfo> migrationInfo)
 			{
 			}
 

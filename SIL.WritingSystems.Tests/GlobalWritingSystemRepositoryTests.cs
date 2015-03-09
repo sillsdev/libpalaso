@@ -2,14 +2,14 @@
 using System.IO;
 using NUnit.Framework;
 using Palaso.TestUtilities;
-using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using SIL.WritingSystems.Migration;
 
 namespace SIL.WritingSystems.Tests
 {
 	[TestFixture]
 	public class GlobalWritingSystemRepositoryTests
 	{
-		private void OnMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
+		private void OnMigration(int toVersion, IEnumerable<MigrationInfo> migrationInfo)
 		{
 		}
 

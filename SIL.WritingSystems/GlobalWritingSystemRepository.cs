@@ -9,7 +9,6 @@ using System.Threading;
 using SIL.IO;
 using SIL.PlatformUtilities;
 using SIL.WritingSystems.Migration;
-using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace SIL.WritingSystems
 {
@@ -22,7 +21,7 @@ namespace SIL.WritingSystems
 		/// Initializes the global writing system repository.  Migrates any ldml files if required,
 		/// notifying of any changes of writing system id that occured during migration.
 		///</summary>
-		public static GlobalWritingSystemRepository Initialize(LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler)
+		public static GlobalWritingSystemRepository Initialize(Action<int, IEnumerable<MigrationInfo>> migrationHandler)
 		{
 			return InitializeWithBasePath(DefaultBasePath, migrationHandler);
 		}
@@ -31,7 +30,7 @@ namespace SIL.WritingSystems
 		/// This initializer is intended for tests as it allows setting of the basePath explicitly.
 		///</summary>
 		internal static GlobalWritingSystemRepository InitializeWithBasePath(string basePath,
-			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler)
+			Action<int, IEnumerable<MigrationInfo>> migrationHandler)
 		{
 			var migrator = new GlobalWritingSystemRepositoryMigrator(basePath, migrationHandler);
 			if (migrator.NeedsMigration())

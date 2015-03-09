@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using SIL.IO;
-using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace SIL.WritingSystems.Migration
 {
@@ -22,7 +22,7 @@ namespace SIL.WritingSystems.Migration
 		/// should ensure that all writing systems tags they store are updated accordingly when the callback
 		/// is called.
 		///</summary>
-		public GlobalWritingSystemRepositoryMigrator(string basePath, LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler)
+		public GlobalWritingSystemRepositoryMigrator(string basePath, Action<int, IEnumerable<MigrationInfo>> migrationHandler)
 			: base(Path.Combine(basePath, WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString(CultureInfo.InvariantCulture)), migrationHandler)
 		{
 			_basePath = basePath;

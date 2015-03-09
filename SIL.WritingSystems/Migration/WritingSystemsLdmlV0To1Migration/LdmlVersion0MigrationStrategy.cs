@@ -16,21 +16,12 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 	/// </summary>
 	public class LdmlVersion0MigrationStrategy : MigrationStrategyBase
 	{
-		public class MigrationInfo
-		{
-			public string FileName;
-			public string RfcTagBeforeMigration;
-			public string RfcTagAfterMigration;
-		}
-
-		public delegate void MigrationHandler(IEnumerable<MigrationInfo> migrationInfo);
-
 		private readonly List<MigrationInfo> _migrationInfo;
 		private readonly Dictionary<string, WritingSystemDefinitionV1> _writingSystemsV1;
-		private readonly MigrationHandler _migrationHandler;
+		private readonly Action<int, IEnumerable<MigrationInfo>> _migrationHandler;
 		private readonly IAuditTrail _auditLog;
 
-		public LdmlVersion0MigrationStrategy(MigrationHandler migrationHandler, IAuditTrail auditLog, int fromVersion) :
+		public LdmlVersion0MigrationStrategy(Action<int, IEnumerable<MigrationInfo>> migrationHandler, IAuditTrail auditLog, int fromVersion) :
 			base(fromVersion, 2)
 		{
 			Guard.AgainstNull(migrationHandler, "migrationCallback must be set");
@@ -86,8 +77,8 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			var migrationInfo = new MigrationInfo
 				{
 					FileName = sourceFileName,
-					RfcTagBeforeMigration = writingSystemDefinitionV0.Rfc5646,
-					RfcTagAfterMigration = writingSystemDefinitionV1.Bcp47Tag
+					IetfLanguageTagBeforeMigration = writingSystemDefinitionV0.Rfc5646,
+					IetfLanguageTagAfterMigration = writingSystemDefinitionV1.Bcp47Tag
 				};
 			_migrationInfo.Add(migrationInfo);
 		}
@@ -120,16 +111,16 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			{
 				var writingSystemDefinitionV1 = _writingSystemsV1[migrationInfo.FileName];
 				string sourceFilePath = Path.Combine(sourcePath, migrationInfo.FileName);
-				string destinationFilePath = Path.Combine(destinationPath, migrationInfo.RfcTagAfterMigration + ".ldml");
-				if (migrationInfo.RfcTagBeforeMigration != migrationInfo.RfcTagAfterMigration)
+				string destinationFilePath = Path.Combine(destinationPath, migrationInfo.IetfLanguageTagAfterMigration + ".ldml");
+				if (migrationInfo.IetfLanguageTagBeforeMigration != migrationInfo.IetfLanguageTagAfterMigration)
 				{
-					_auditLog.LogChange(migrationInfo.RfcTagBeforeMigration, migrationInfo.RfcTagAfterMigration);
+					_auditLog.LogChange(migrationInfo.IetfLanguageTagBeforeMigration, migrationInfo.IetfLanguageTagAfterMigration);
 				}
 				WriteLdml(writingSystemDefinitionV1, sourceFilePath, destinationFilePath);
 			}
 			if (_migrationHandler != null)
 			{
-				_migrationHandler(_migrationInfo);
+				_migrationHandler(ToVersion, _migrationInfo);
 			}
 		}
 
@@ -149,30 +140,30 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			foreach (var info in migrationInfo)
 			{
 				MigrationInfo currentInfo = info;
-				if (uniqueRfcTags.Any(rfcTag => rfcTag.Equals(currentInfo.RfcTagAfterMigration, StringComparison.OrdinalIgnoreCase)))
+				if (uniqueRfcTags.Any(rfcTag => rfcTag.Equals(currentInfo.IetfLanguageTagAfterMigration, StringComparison.OrdinalIgnoreCase)))
 				{
-					if (currentInfo.RfcTagBeforeMigration.Equals(currentInfo.RfcTagAfterMigration, StringComparison.OrdinalIgnoreCase))
+					if (currentInfo.IetfLanguageTagBeforeMigration.Equals(currentInfo.IetfLanguageTagAfterMigration, StringComparison.OrdinalIgnoreCase))
 					{
 						// We want to change the other, because we are the same. Even if the other is the same, we'll change it anyway.
 						MigrationInfo otherInfo = _migrationInfo.First(
-							i => i.RfcTagAfterMigration.Equals(currentInfo.RfcTagAfterMigration, StringComparison.OrdinalIgnoreCase)
+							i => i.IetfLanguageTagAfterMigration.Equals(currentInfo.IetfLanguageTagAfterMigration, StringComparison.OrdinalIgnoreCase)
 						);
-						otherInfo.RfcTagAfterMigration = UniqueTagForDuplicate(otherInfo.RfcTagAfterMigration, uniqueRfcTags);
-						uniqueRfcTags.Add(otherInfo.RfcTagAfterMigration);
+						otherInfo.IetfLanguageTagAfterMigration = UniqueTagForDuplicate(otherInfo.IetfLanguageTagAfterMigration, uniqueRfcTags);
+						uniqueRfcTags.Add(otherInfo.IetfLanguageTagAfterMigration);
 						var writingSystemV1 = _writingSystemsV1[otherInfo.FileName];
-						writingSystemV1.SetTagFromString(otherInfo.RfcTagAfterMigration);
+						writingSystemV1.SetTagFromString(otherInfo.IetfLanguageTagAfterMigration);
 					}
 					else
 					{
-						currentInfo.RfcTagAfterMigration = UniqueTagForDuplicate(currentInfo.RfcTagAfterMigration, uniqueRfcTags);
-						uniqueRfcTags.Add(currentInfo.RfcTagAfterMigration);
+						currentInfo.IetfLanguageTagAfterMigration = UniqueTagForDuplicate(currentInfo.IetfLanguageTagAfterMigration, uniqueRfcTags);
+						uniqueRfcTags.Add(currentInfo.IetfLanguageTagAfterMigration);
 						var writingSystemV1 = _writingSystemsV1[currentInfo.FileName];
-						writingSystemV1.SetTagFromString(currentInfo.RfcTagAfterMigration);
+						writingSystemV1.SetTagFromString(currentInfo.IetfLanguageTagAfterMigration);
 					}
 				}
 				else
 				{
-					uniqueRfcTags.Add(currentInfo.RfcTagAfterMigration);
+					uniqueRfcTags.Add(currentInfo.IetfLanguageTagAfterMigration);
 				}
 			}
 		}
@@ -184,9 +175,9 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			int duplicateNumber = 0;
 			do
 			{
-				duplicateNumber++;
 				tag.PrivateUse = originalPrivateUse;
 				tag.AddToPrivateUse(String.Format("dupl{0}", duplicateNumber));
+				duplicateNumber++;
 			} while (uniqueRfcTags.Any(s => s.Equals(tag.CompleteTag, StringComparison.OrdinalIgnoreCase)));
 			return tag.CompleteTag;
 		}

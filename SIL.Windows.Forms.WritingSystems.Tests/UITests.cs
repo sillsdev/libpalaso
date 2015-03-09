@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using NUnit.Framework;
 using Palaso.TestUtilities;
 using SIL.WritingSystems;
-using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using SIL.WritingSystems.Migration;
 
 namespace SIL.Windows.Forms.WritingSystems.Tests
 {
@@ -128,7 +128,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 
   internal class DummyWritingSystemHandler
   {
-	  public static void onMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
+	  public static void onMigration(int toVersion, IEnumerable<MigrationInfo> migrationInfo)
 	  {
 	  }
 

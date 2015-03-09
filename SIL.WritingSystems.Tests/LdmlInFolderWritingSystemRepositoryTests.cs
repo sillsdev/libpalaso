@@ -9,7 +9,7 @@ using System.Xml.Linq;
 using NUnit.Framework;
 using Palaso.TestUtilities;
 using SIL.Keyboarding;
-using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using SIL.WritingSystems.Migration;
 
 namespace SIL.WritingSystems.Tests
 {
@@ -1283,7 +1283,7 @@ namespace SIL.WritingSystems.Tests
 
 	internal class DummyWritingSystemHandler
 	{
-		public static void OnMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
+		public static void OnMigration(int toVersion, IEnumerable<MigrationInfo> migrationInfo)
 		{
 		}
 

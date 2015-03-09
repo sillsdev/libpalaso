@@ -6,7 +6,7 @@ using NUnit.Framework;
 using Palaso.TestUtilities;
 using SIL.Windows.Forms.WritingSystems.WSTree;
 using SIL.WritingSystems;
-using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using SIL.WritingSystems.Migration;
 
 namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 {
@@ -57,7 +57,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 			}
 		}
 
-		private static void OnMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
+		private static void OnMigration(int toVersion, IEnumerable<MigrationInfo> migrationInfo)
 		{
 		}
 

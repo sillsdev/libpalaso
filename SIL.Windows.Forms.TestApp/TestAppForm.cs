@@ -18,7 +18,7 @@ using SIL.Windows.Forms.ReleaseNotes;
 using SIL.Windows.Forms.SettingProtection;
 using SIL.Windows.Forms.WritingSystems;
 using SIL.WritingSystems;
-using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using SIL.WritingSystems.Migration;
 
 namespace SIL.Windows.Forms.TestApp
 {
@@ -94,7 +94,7 @@ namespace SIL.Windows.Forms.TestApp
 				dlg.ShowDialog();
 		}
 
-		private static void onMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
+		private static void onMigration(int toVersion, IEnumerable<MigrationInfo> migrationInfo)
 		{
 		}
 

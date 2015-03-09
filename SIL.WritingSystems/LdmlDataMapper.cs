@@ -468,11 +468,11 @@ namespace SIL.WritingSystems
 			{
 				var flexRfcTagInterpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
 				flexRfcTagInterpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, region, variant);
-				ws.SetIetfLanguageTagComponents(flexRfcTagInterpreter.Language, flexRfcTagInterpreter.Script, flexRfcTagInterpreter.Region, flexRfcTagInterpreter.Variant);
+				ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag(flexRfcTagInterpreter.Language, flexRfcTagInterpreter.Script, flexRfcTagInterpreter.Region, flexRfcTagInterpreter.Variant);
 			}
 			else
 			{
-				ws.SetIetfLanguageTagComponents(language, script, region, variant);
+				ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag(language, script, region, variant);
 			}
 
 			// TODO: Parse rest of special element.  Currently only handling a subset

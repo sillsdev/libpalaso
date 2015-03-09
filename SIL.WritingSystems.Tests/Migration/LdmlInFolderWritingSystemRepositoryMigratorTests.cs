@@ -41,13 +41,20 @@ namespace SIL.WritingSystems.Tests.Migration
 				adaptor.Read(filePath, ws);
 			}
 
-			public void OnMigrateCallback(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
-			{
-				MigrationInfo = new List<LdmlVersion0MigrationStrategy.MigrationInfo>(migrationInfo);
+			/// <summary>
+			/// Dictionary to map original filename the final post-migrated IETF language tag.
+			/// </summary>
+			private readonly Dictionary<string, string> _oldNameToIetfLanguageTag = new Dictionary<string, string>(); 
+
+			public void OnMigrateCallback(int toVersion, IEnumerable<MigrationInfo> migrationInfo)
+			{			
+				foreach (MigrationInfo info in migrationInfo)
+				{
+					KeyValuePair<string, string> entry = _oldNameToIetfLanguageTag.FirstOrDefault(e => e.Value == info.IetfLanguageTagBeforeMigration);
+					_oldNameToIetfLanguageTag[entry.Key ?? info.FileName] = info.IetfLanguageTagAfterMigration;
+				}
 			}
-
-			public IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> MigrationInfo { get; private set; }
-
+			
 			public string LdmlPath
 			{
 				get { return FolderContainingLdml.Path; }
@@ -67,12 +74,7 @@ namespace SIL.WritingSystems.Tests.Migration
 
 			public string MappedFilePath(string sourceFileName)
 			{
-				string filename = sourceFileName;
-				if (MigrationInfo != null)
-				{
-					var migrationInfo = MigrationInfo.First(info => info.FileName == sourceFileName);
-					filename = migrationInfo.RfcTagAfterMigration + ".ldml";
-				}
+				string filename = _oldNameToIetfLanguageTag[sourceFileName] + ".ldml";
 				return Path.Combine(FolderContainingLdml.Path, filename);
 			}
 
@@ -117,7 +119,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				AssertLdmlHasXpath(environment.MappedFilePath("en-Zxxx-x-audio.ldml"), "/ldml/identity/variant[@type='x-audio']");
 				AssertLdmlHasXpath(environment.MappedFilePath("en-x-audio.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasXpath(environment.MappedFilePath("en-x-audio.ldml"), "/ldml/identity/script[@type='Zxxx']");
-				AssertLdmlHasXpath(environment.MappedFilePath("en-x-audio.ldml"), "/ldml/identity/variant[@type='x-audio-dupl1']");
+				AssertLdmlHasXpath(environment.MappedFilePath("en-x-audio.ldml"), "/ldml/identity/variant[@type='x-audio-dupl0']");
 			}
 		}
 
@@ -140,7 +142,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				AssertLdmlHasXpath(environment.MappedFilePath("en-Zxxx-x-audio.ldml"), "/ldml/identity/variant[@type='x-audio']");
 				AssertLdmlHasXpath(environment.MappedFilePath("en-x-audio.ldml"), "/ldml/identity/language[@type='eN']");
 				AssertLdmlHasXpath(environment.MappedFilePath("en-x-audio.ldml"), "/ldml/identity/script[@type='Zxxx']");
-				AssertLdmlHasXpath(environment.MappedFilePath("en-x-audio.ldml"), "/ldml/identity/variant[@type='x-AuDio-dupl1']");
+				AssertLdmlHasXpath(environment.MappedFilePath("en-x-audio.ldml"), "/ldml/identity/variant[@type='x-AuDio-dupl0']");
 			}
 		}
 
@@ -162,7 +164,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				AssertLdmlHasXpath(environment.MappedFilePath("bogus.ldml"), "/ldml/identity/variant[@type='x-AuDio']");
 				AssertLdmlHasXpath(environment.MappedFilePath("en-Zxxx-x-audio.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasXpath(environment.MappedFilePath("en-Zxxx-x-audio.ldml"), "/ldml/identity/script[@type='Zxxx']");
-				AssertLdmlHasXpath(environment.MappedFilePath("en-Zxxx-x-audio.ldml"), "/ldml/identity/variant[@type='x-audio-dupl1']");
+				AssertLdmlHasXpath(environment.MappedFilePath("en-Zxxx-x-audio.ldml"), "/ldml/identity/variant[@type='x-audio-dupl0']");
 			}
 		}
 
@@ -186,18 +188,67 @@ namespace SIL.WritingSystems.Tests.Migration
 				AssertLdmlHasXpath(environment.MappedFilePath("bogus.ldml"), "/ldml/identity/variant[@type='x-audio']");
 				AssertLdmlHasXpath(environment.MappedFilePath("bogus1.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasXpath(environment.MappedFilePath("bogus1.ldml"), "/ldml/identity/script[@type='Zxxx']");
-				AssertLdmlHasXpath(environment.MappedFilePath("bogus1.ldml"), "/ldml/identity/variant[@type='x-audio-dupl1']");
+				AssertLdmlHasXpath(environment.MappedFilePath("bogus1.ldml"), "/ldml/identity/variant[@type='x-audio-dupl0']");
 				AssertLdmlHasXpath(environment.MappedFilePath("bogus2.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasXpath(environment.MappedFilePath("bogus2.ldml"), "/ldml/identity/script[@type='Zxxx']");
-				AssertLdmlHasXpath(environment.MappedFilePath("bogus2.ldml"), "/ldml/identity/variant[@type='x-audio-dupl2']");
+				AssertLdmlHasXpath(environment.MappedFilePath("bogus2.ldml"), "/ldml/identity/variant[@type='x-audio-dupl1']");
 			}
 		}
 
-		private static void AssertMigrationInfoContains(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo, string tagBefore, string tagAfter)
+		[Test]
+		public void Migrate_RepoContainsMultipleDuplicatesV1_DuplicatesAreRenamedAndMarkedCorrectly()
 		{
-			var info = migrationInfo.First(tag => tag.RfcTagBeforeMigration == tagBefore);
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile("bogus.ldml", LdmlContentForTests.Version1("en", "Zxxx", "", "x-audio"));
+				environment.WriteLdmlFile("bogus1.ldml", LdmlContentForTests.Version1("en", "", "", "x-audio"));
+				environment.WriteLdmlFile("bogus2.ldml", LdmlContentForTests.Version1("en-x-audio", "", "", ""));
+
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+
+				Assert.True(File.Exists(environment.MappedFilePath("bogus.ldml")));
+				Assert.True(File.Exists(environment.MappedFilePath("bogus1.ldml")));
+				Assert.True(File.Exists(environment.MappedFilePath("bogus2.ldml")));
+				AssertLdmlHasXpath(environment.MappedFilePath("bogus.ldml"), "/ldml/identity/language[@type='en']");
+				AssertLdmlHasXpath(environment.MappedFilePath("bogus.ldml"), "/ldml/identity/script[@type='Zxxx']");
+				AssertLdmlHasXpath(environment.MappedFilePath("bogus.ldml"), "/ldml/identity/variant[@type='x-audio']");
+				AssertLdmlHasXpath(environment.MappedFilePath("bogus1.ldml"), "/ldml/identity/language[@type='en']");
+				AssertLdmlHasXpath(environment.MappedFilePath("bogus1.ldml"), "/ldml/identity/script[@type='Zxxx']");
+				AssertLdmlHasXpath(environment.MappedFilePath("bogus1.ldml"), "/ldml/identity/variant[@type='x-audio-dupl0']");
+				AssertLdmlHasXpath(environment.MappedFilePath("bogus2.ldml"), "/ldml/identity/language[@type='en']");
+				AssertLdmlHasXpath(environment.MappedFilePath("bogus2.ldml"), "/ldml/identity/script[@type='Zxxx']");
+				AssertLdmlHasXpath(environment.MappedFilePath("bogus2.ldml"), "/ldml/identity/variant[@type='x-audio-dupl1']");
+			}
+		}
+
+		[Test]
+		public void Migrate_RepoContainsMultipleDuplicatesEn_DuplicatesAreRenamedAndMarkedCorrectly()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile("bogus.ldml", LdmlContentForTests.Version1("en", "", "", ""));
+				environment.WriteLdmlFile("bogus1.ldml", LdmlContentForTests.Version1("en", "Latn", "", ""));
+
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+
+				Assert.True(File.Exists(environment.MappedFilePath("bogus.ldml")));
+				Assert.True(File.Exists(environment.MappedFilePath("bogus1.ldml")));
+				AssertLdmlHasXpath(environment.MappedFilePath("bogus.ldml"), "/ldml/identity/language[@type='en']");
+				AssertLdmlHasXpath(environment.MappedFilePath("bogus.ldml"), "/ldml/identity/script[@type='Latn']");
+				AssertLdmlHasXpath(environment.MappedFilePath("bogus1.ldml"), "/ldml/identity/language[@type='en']");
+				AssertLdmlHasXpath(environment.MappedFilePath("bogus1.ldml"), "/ldml/identity/script[@type='Latn']");
+				AssertLdmlHasXpath(environment.MappedFilePath("bogus1.ldml"), "/ldml/identity/variant[@type='x-dupl0']");
+			}
+			
+		}
+
+		private static void AssertMigrationInfoContains(IEnumerable<MigrationInfo> migrationInfo, string tagBefore, string tagAfter)
+		{
+			var info = migrationInfo.First(tag => tag.IetfLanguageTagBeforeMigration == tagBefore);
 			Assert.IsNotNull(info, String.Format("'{0}' not found", tagBefore));
-			Assert.AreEqual(tagAfter, info.RfcTagAfterMigration);
+			Assert.AreEqual(tagAfter, info.IetfLanguageTagAfterMigration);
 		}
 
 		[Test]
@@ -211,14 +262,22 @@ namespace SIL.WritingSystems.Tests.Migration
 				environment.WriteLdmlFile("bogus3.ldml", LdmlContentForTests.Version0("zh", "", "CN", ""));
 				environment.WriteLdmlFile("bogus4.ldml", LdmlContentForTests.Version0("cmn", "", "", ""));
 
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				var migrationInfo = new Dictionary<int, MigrationInfo[]>();
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath,
+					(toVersion, infos) => migrationInfo[toVersion] = infos.ToArray());
 				migrator.Migrate();
 
-				AssertMigrationInfoContains(environment.MigrationInfo, "de-bogus-stuff", "de-Qaaa-QM-x-bogus-stuff");
-				AssertMigrationInfoContains(environment.MigrationInfo, "en-Zxxx-x-audio", "en-Zxxx-x-audio");
-				AssertMigrationInfoContains(environment.MigrationInfo, "en-x-audio", "en-Zxxx-x-audio-dupl1");
-				AssertMigrationInfoContains(environment.MigrationInfo, "zh-CN", "zh-CN");
-				AssertMigrationInfoContains(environment.MigrationInfo, "cmn", "zh-CN-x-dupl1");
+				AssertMigrationInfoContains(migrationInfo[2], "de-bogus-stuff", "de-Qaaa-QM-x-bogus-stuff");
+				AssertMigrationInfoContains(migrationInfo[2], "en-Zxxx-x-audio", "en-Zxxx-x-audio");
+				AssertMigrationInfoContains(migrationInfo[2], "en-x-audio", "en-Zxxx-x-audio-dupl0");
+				AssertMigrationInfoContains(migrationInfo[2], "zh-CN", "zh-CN");
+				AssertMigrationInfoContains(migrationInfo[2], "cmn", "zh-CN-x-dupl0");
+
+				AssertMigrationInfoContains(migrationInfo[3], "de-Qaaa-QM-x-bogus-stuff", "de-Qaaa-QM-x-bogus-stuff");
+				AssertMigrationInfoContains(migrationInfo[3], "en-Zxxx-x-audio", "en-Zxxx-x-audio");
+				AssertMigrationInfoContains(migrationInfo[3], "en-Zxxx-x-audio-dupl0", "en-Zxxx-x-audio-dupl0");
+				AssertMigrationInfoContains(migrationInfo[3], "zh-CN", "zh-CN");
+				AssertMigrationInfoContains(migrationInfo[3], "zh-CN-x-dupl0", "zh-CN-x-dupl0");
 			}
 		}
 
@@ -944,7 +1003,7 @@ namespace SIL.WritingSystems.Tests.Migration
 
 				var wsV3 = new WritingSystemDefinitionV3();
 				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
-				CollationDefinition cdV3 = wsV3.Collations.FirstOrDefault();
+				CollationDefinition cdV3 = wsV3.Collations.First();
 				Assert.IsNullOrEmpty(wsV0.SortRules);
 				Assert.IsNullOrEmpty(cdV3.CollationRules);
 				Assert.That(cdV3.Type, Is.EqualTo("standard"));

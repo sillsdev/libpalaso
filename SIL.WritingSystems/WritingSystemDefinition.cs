@@ -428,34 +428,6 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		/// <summary>
-		/// Sets all parts of the IETF language tag at once.
-		/// This method is useful for avoiding invalid intermediate states when switching from one valid tag to another.
-		/// </summary>
-		/// <param name="language">A valid language subtag.</param>
-		/// <param name="script">A valid script subtag.</param>
-		/// <param name="region">A valid region subtag.</param>
-		/// <param name="variant">A valid variant subtag.</param>
-		public void SetIetfLanguageTagComponents(string language, string script, string region, string variant)
-		{
-			_requiresValidLanguageTag = true;
-			string oldId = _ietfLanguageTag;
-			_ietfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag(language, script, region, variant);
-			if (oldId != _ietfLanguageTag)
-			{
-				IEnumerable<VariantSubtag> variantSubtags;
-				IetfLanguageTagHelper.TryGetSubtags(_ietfLanguageTag, out _language, out _script, out _region, out variantSubtags);
-				using (_ignoreVariantChanges.Enter())
-				{
-					_variants.Clear();
-					foreach (VariantSubtag variantSubtag in variantSubtags)
-						_variants.Add(variantSubtag);
-				}
-				CheckVariantAndScriptRules();
-				IsChanged = true;
-			}
-		}
-
 		public LanguageSubtag Language
 		{
 			get { return _language; }
@@ -713,6 +685,20 @@ namespace SIL.WritingSystems
 		public string IetfLanguageTag
 		{
 			get { return _ietfLanguageTag; }
+			set
+			{
+				if (value != _ietfLanguageTag)
+				{
+					_ietfLanguageTag = value;
+					IEnumerable<VariantSubtag> variantSubtags;
+					IetfLanguageTagHelper.TryGetSubtags(_ietfLanguageTag, out _language, out _script, out _region, out variantSubtags);
+					using (_ignoreVariantChanges.Enter())
+						if (variantSubtags != null)
+							_variants.ReplaceAll(variantSubtags);
+					CheckVariantAndScriptRules();
+					IsChanged = true;
+				}
+			}
 		}
 
 		/// <summary>

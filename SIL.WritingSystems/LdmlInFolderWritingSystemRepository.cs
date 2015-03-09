@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using SIL.WritingSystems.Migration;
-using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace SIL.WritingSystems
 {
@@ -27,7 +26,7 @@ namespace SIL.WritingSystems
 			string basePath,
 			IEnumerable<ICustomDataMapper> customDataMappers,
 			GlobalWritingSystemRepository globalRepository,
-			LdmlVersion0MigrationStrategy.MigrationHandler migrationHandler,
+			Action<int, IEnumerable<MigrationInfo>> migrationHandler,
 			Action<IEnumerable<WritingSystemRepositoryProblem>> loadProblemHandler
 		)
 		{

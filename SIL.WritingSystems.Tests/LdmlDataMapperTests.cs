@@ -1079,7 +1079,7 @@ namespace SIL.WritingSystems.Tests
 		private static void WriteCurrentVersionLdml(string language, string script, string territory, string variant, TempFile file)
 		{
 			var ws = new WritingSystemDefinition();
-			ws.SetIetfLanguageTagComponents(language, script, territory, variant);
+			ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag(language, script, territory, variant);
 			new LdmlDataMapper(new TestWritingSystemFactory()).Write(file.Path, ws, null);
 		}
 
