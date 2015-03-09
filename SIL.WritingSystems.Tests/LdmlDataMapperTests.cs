@@ -366,8 +366,8 @@ namespace SIL.WritingSystems.Tests
 				// Level 2 normal quotation marks (alternateQuotationStart and alternateQuotationEnd)
 				// Level 3 normal quotation marks (special: sil:quotation-marks)
 				// Level 1 narrative quotation marks (special: sil:quotation-marks)
-				var qm1 = new QuotationMark("\"", "\"", null, 1, QuotationMarkingSystemType.Normal);
-				var qm2 = new QuotationMark("{", "}", null, 2, QuotationMarkingSystemType.Normal);
+				var qm1 = new QuotationMark("\"", "\"", "\"", 1, QuotationMarkingSystemType.Normal);
+				var qm2 = new QuotationMark("{", "}", "{", 2, QuotationMarkingSystemType.Normal);
 				var qm3 = new QuotationMark("open1", "close2", "cont3", 3, QuotationMarkingSystemType.Normal);
 				var qm4 = new QuotationMark("", null, null, 1, QuotationMarkingSystemType.Narrative);
 
@@ -394,6 +394,10 @@ namespace SIL.WritingSystems.Tests
 					.HasAtLeastOneMatchForXpath("/ldml/delimiters/alternateQuotationStart[text()='{']", environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
 					.HasAtLeastOneMatchForXpath("/ldml/delimiters/alternateQuotationEnd[text()='}']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/delimiters/special/sil:quotation-marks/sil:quotationContinue[text()='\"']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/delimiters/special/sil:quotation-marks/sil:alternateQuotationContinue[text()='{']", environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
 					.HasAtLeastOneMatchForXpath("/ldml/delimiters/special/sil:quotation-marks/sil:quotation[@open='open1' and @close='close2' and @continue='cont3' and @level='3']", environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
