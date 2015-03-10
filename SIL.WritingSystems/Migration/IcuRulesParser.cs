@@ -10,9 +10,9 @@ using Spart.Parsers;
 using Spart.Scanners;
 using Debugger = Spart.Debug.Debugger;
 
-namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
+namespace SIL.WritingSystems.Migration
 {
-	internal class IcuRulesParser
+	public class IcuRulesParser
 	{
 		private XmlWriter _writer;
 		private Debugger _debugger;
