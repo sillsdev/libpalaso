@@ -21,7 +21,7 @@ namespace SIL.WritingSystems
 		/// Initializes the global writing system repository.  Migrates any ldml files if required,
 		/// notifying of any changes of writing system id that occured during migration.
 		///</summary>
-		public static GlobalWritingSystemRepository Initialize(Action<int, IEnumerable<MigrationInfo>> migrationHandler)
+		public static GlobalWritingSystemRepository Initialize(Action<int, IEnumerable<LdmlMigrationInfo>> migrationHandler = null)
 		{
 			return InitializeWithBasePath(DefaultBasePath, migrationHandler);
 		}
@@ -30,13 +30,17 @@ namespace SIL.WritingSystems
 		/// This initializer is intended for tests as it allows setting of the basePath explicitly.
 		///</summary>
 		internal static GlobalWritingSystemRepository InitializeWithBasePath(string basePath,
-			Action<int, IEnumerable<MigrationInfo>> migrationHandler)
+			Action<int, IEnumerable<LdmlMigrationInfo>> migrationHandler)
 		{
 			var migrator = new GlobalWritingSystemRepositoryMigrator(basePath, migrationHandler);
 			if (migrator.NeedsMigration())
 				migrator.Migrate();
 
-			return new GlobalWritingSystemRepository(basePath);
+			var globalRepo = new GlobalWritingSystemRepository(basePath);
+
+			migrator.ResetRemovedProperties(globalRepo);
+
+			return globalRepo;
 		}
 
 		protected internal GlobalWritingSystemRepository(string basePath)

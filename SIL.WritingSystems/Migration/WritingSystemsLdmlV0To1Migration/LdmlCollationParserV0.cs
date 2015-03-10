@@ -8,7 +8,7 @@ using System.Xml;
 
 namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
-	public class LdmlCollationParserV0
+	internal class LdmlCollationParserV0
 	{
 		private const string NewLine = "\r\n";
 

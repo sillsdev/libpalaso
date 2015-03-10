@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SIL.Code;
 using SIL.Migration;
 
 namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
@@ -14,18 +13,17 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 	/// Also note that the files are not written until all writing systems have been migrated in order to deal correctly
 	/// with duplicate Rfc5646 tags that might result from migration.
 	/// </summary>
-	public class LdmlVersion0MigrationStrategy : MigrationStrategyBase
+	internal class LdmlVersion0MigrationStrategy : MigrationStrategyBase
 	{
-		private readonly List<MigrationInfo> _migrationInfo;
+		private readonly List<LdmlMigrationInfo> _migrationInfo;
 		private readonly Dictionary<string, WritingSystemDefinitionV1> _writingSystemsV1;
-		private readonly Action<int, IEnumerable<MigrationInfo>> _migrationHandler;
+		private readonly Action<int, IEnumerable<LdmlMigrationInfo>> _migrationHandler;
 		private readonly IAuditTrail _auditLog;
 
-		public LdmlVersion0MigrationStrategy(Action<int, IEnumerable<MigrationInfo>> migrationHandler, IAuditTrail auditLog, int fromVersion) :
+		public LdmlVersion0MigrationStrategy(Action<int, IEnumerable<LdmlMigrationInfo>> migrationHandler, IAuditTrail auditLog, int fromVersion) :
 			base(fromVersion, 2)
 		{
-			Guard.AgainstNull(migrationHandler, "migrationCallback must be set");
-			_migrationInfo = new List<MigrationInfo>();
+			_migrationInfo = new List<LdmlMigrationInfo>();
 			_writingSystemsV1 = new Dictionary<string, WritingSystemDefinitionV1>();
 			_migrationHandler = migrationHandler;
 			_auditLog = auditLog;
@@ -74,9 +72,8 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			//_migratedWs.NativeName //not written out by LdmlAdaptorV1 - flex?);
 
 			// Record the details for use in PostMigrate where we change the file name to match the rfc tag where we can.
-			var migrationInfo = new MigrationInfo
+			var migrationInfo = new LdmlMigrationInfo(sourceFileName)
 				{
-					FileName = sourceFileName,
 					IetfLanguageTagBeforeMigration = writingSystemDefinitionV0.Rfc5646,
 					IetfLanguageTagAfterMigration = writingSystemDefinitionV1.Bcp47Tag
 				};
@@ -113,15 +110,11 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				string sourceFilePath = Path.Combine(sourcePath, migrationInfo.FileName);
 				string destinationFilePath = Path.Combine(destinationPath, migrationInfo.IetfLanguageTagAfterMigration + ".ldml");
 				if (migrationInfo.IetfLanguageTagBeforeMigration != migrationInfo.IetfLanguageTagAfterMigration)
-				{
 					_auditLog.LogChange(migrationInfo.IetfLanguageTagBeforeMigration, migrationInfo.IetfLanguageTagAfterMigration);
-				}
 				WriteLdml(writingSystemDefinitionV1, sourceFilePath, destinationFilePath);
 			}
 			if (_migrationHandler != null)
-			{
 				_migrationHandler(ToVersion, _migrationInfo);
-			}
 		}
 
 		private void WriteLdml(WritingSystemDefinitionV1 writingSystemDefinitionV1, string sourceFilePath, string destinationFilePath)
@@ -134,18 +127,18 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			}
 		}
 
-		internal void EnsureRfcTagsUnique(IEnumerable<MigrationInfo> migrationInfo)
+		internal void EnsureRfcTagsUnique(IEnumerable<LdmlMigrationInfo> migrationInfo)
 		{
 			var uniqueRfcTags = new HashSet<string>();
 			foreach (var info in migrationInfo)
 			{
-				MigrationInfo currentInfo = info;
+				LdmlMigrationInfo currentInfo = info;
 				if (uniqueRfcTags.Any(rfcTag => rfcTag.Equals(currentInfo.IetfLanguageTagAfterMigration, StringComparison.OrdinalIgnoreCase)))
 				{
 					if (currentInfo.IetfLanguageTagBeforeMigration.Equals(currentInfo.IetfLanguageTagAfterMigration, StringComparison.OrdinalIgnoreCase))
 					{
 						// We want to change the other, because we are the same. Even if the other is the same, we'll change it anyway.
-						MigrationInfo otherInfo = _migrationInfo.First(
+						LdmlMigrationInfo otherInfo = _migrationInfo.First(
 							i => i.IetfLanguageTagAfterMigration.Equals(currentInfo.IetfLanguageTagAfterMigration, StringComparison.OrdinalIgnoreCase)
 						);
 						otherInfo.IetfLanguageTagAfterMigration = UniqueTagForDuplicate(otherInfo.IetfLanguageTagAfterMigration, uniqueRfcTags);

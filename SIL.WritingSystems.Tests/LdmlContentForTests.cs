@@ -31,6 +31,25 @@ namespace SIL.WritingSystems.Tests
 
 		#region Version 0 Ldml
 
+		static public string Version0WithLanguageSubtagAndName(string languageSubtag, string languageName)
+		{
+			return String.Format(
+				@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+<identity>
+	<version number='' />
+	<generation date='0001-01-01T00:00:00' />
+	<language type='{0}' />
+</identity>
+<collations />
+<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
+	<palaso:languageName value='{1}' />
+	<palaso:defaultFontFamily value='Arial' />
+	<palaso:defaultFontSize value='12' />
+</special>
+</ldml>".Replace('\'', '"'), languageSubtag, languageName);
+		}
+
 		static public string Version0WithAllSortsOfDatathatdoesNotNeedSpecialAttention(string language, string script, string region, string variant)
 		{
 			return String.Format(
@@ -69,7 +88,7 @@ namespace SIL.WritingSystems.Tests
 </ldml>".Replace('\'', '"'), language, script, region, variant);
 		}
 
-		static public string Version0WithCollationInfo(WritingSystemDefinitionV0.SortRulesType sortType)
+		internal static string Version0WithCollationInfo(WritingSystemDefinitionV0.SortRulesType sortType)
 		{
 			string collationelement = GetCollationElementXml(sortType);
 
@@ -170,11 +189,8 @@ namespace SIL.WritingSystems.Tests
 					collationelement =
 						@"<collation>
 		<base>
-			<alias source='en'/>
+			<alias source='de'/>
 		</base>
-		<rules>
-			<reset before='primary'><first_non_ignorable /></reset><p>a</p><s>A</s><p>b</p><s>B</s><p>o</p><s>O</s><p>m</p><s>M</s>
-		</rules>
 		<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
 			<palaso:sortRulesType value='OtherLanguage' />
 		</special>

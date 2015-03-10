@@ -9,7 +9,6 @@ using System.Xml.Linq;
 using NUnit.Framework;
 using Palaso.TestUtilities;
 using SIL.Keyboarding;
-using SIL.WritingSystems.Migration;
 
 namespace SIL.WritingSystems.Tests
 {
@@ -46,8 +45,7 @@ namespace SIL.WritingSystems.Tests
 				Directory.Delete(testPath, true);
 			}
 			_testPaths.Add(testPath);
-			LdmlInFolderWritingSystemRepository repository = LdmlInFolderWritingSystemRepository.Initialize(testPath, Enumerable.Empty<ICustomDataMapper>(),
-				null, DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
+			LdmlInFolderWritingSystemRepository repository = LdmlInFolderWritingSystemRepository.Initialize(testPath);
 			//repository.DontAddDefaultDefinitions = true;
 			return repository;
 		}
@@ -217,8 +215,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			using (var e = new TestEnvironment())
 			{
-				LdmlInFolderWritingSystemRepository repo = LdmlInFolderWritingSystemRepository.Initialize(Path.Combine(e.LocalRepositoryPath, "idchangedtest1"), Enumerable.Empty<ICustomDataMapper>(),
-					null, DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
+				LdmlInFolderWritingSystemRepository repo = LdmlInFolderWritingSystemRepository.Initialize(Path.Combine(e.LocalRepositoryPath, "idchangedtest1"));
 				var ws = new WritingSystemDefinition("en");
 				repo.Set(ws);
 				repo.Save();
@@ -247,8 +244,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			using (var e = new TestEnvironment())
 			{
-				LdmlInFolderWritingSystemRepository repo = LdmlInFolderWritingSystemRepository.Initialize(Path.Combine(e.LocalRepositoryPath, "idchangedtest1"), Enumerable.Empty<ICustomDataMapper>(),
-					null, DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
+				LdmlInFolderWritingSystemRepository repo = LdmlInFolderWritingSystemRepository.Initialize(Path.Combine(e.LocalRepositoryPath, "idchangedtest1"));
 				var ws = new WritingSystemDefinition("en");
 				repo.Set(ws);
 				repo.Save();
@@ -761,13 +757,12 @@ namespace SIL.WritingSystems.Tests
 		{
 			using (var environment = new TestEnvironment())
 			{
-				var ldmlPath = Path.Combine(environment.LocalRepositoryPath, "x-en-Zxxx.ldml");
-				File.WriteAllText(ldmlPath, LdmlContentForTests.Version0("x-en", "Zxxx", "", ""));
-				LdmlInFolderWritingSystemRepository repo = LdmlInFolderWritingSystemRepository.Initialize(environment.LocalRepositoryPath, Enumerable.Empty<ICustomDataMapper>(),
-					null, DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
+				var ldmlPath = Path.Combine(environment.LocalRepositoryPath, "x-kal-Zxxx.ldml");
+				File.WriteAllText(ldmlPath, LdmlContentForTests.Version0("x-kal", "Zxxx", "", ""));
+				LdmlInFolderWritingSystemRepository repo = LdmlInFolderWritingSystemRepository.Initialize(environment.LocalRepositoryPath);
 
 				// Now try to load up.
-				Assert.That(repo.Get("qaa-Zxxx-x-en").Language, Is.EqualTo(new LanguageSubtag("en")));
+				Assert.That(repo.Get("qaa-Zxxx-x-kal").Language, Is.EqualTo(new LanguageSubtag("kal")));
 			}
 		}
 
@@ -1280,17 +1275,4 @@ namespace SIL.WritingSystems.Tests
 		}
 
 	}
-
-	internal class DummyWritingSystemHandler
-	{
-		public static void OnMigration(int toVersion, IEnumerable<MigrationInfo> migrationInfo)
-		{
-		}
-
-		public static void OnLoadProblem(IEnumerable<WritingSystemRepositoryProblem> problems)
-		{
-		}
-
-	}
-
 }

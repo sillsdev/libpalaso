@@ -10,7 +10,7 @@ using SIL.Xml;
 
 namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
-	public class LdmlCollationParserV1
+	internal class LdmlCollationParserV1
 	{
 		private const string NewLine = "\r\n";
 		private static readonly Regex UnicodeEscape4Digit = new Regex(@"\\[u]([0-9A-F]{4})", RegexOptions.IgnoreCase);

@@ -13,6 +13,11 @@ namespace SIL.WritingSystems
 	/// </summary>
 	public class LdmlInFolderWritingSystemRepository : LdmlInFolderWritingSystemRepository<WritingSystemDefinition>
 	{
+		public static LdmlInFolderWritingSystemRepository Initialize(string basePath)
+		{
+			return Initialize(basePath, Enumerable.Empty<ICustomDataMapper<WritingSystemDefinition>>());
+		}
+
 		/// <summary>
 		/// Returns an instance of an ldml in folder writing system reposistory.
 		/// </summary>
@@ -24,17 +29,18 @@ namespace SIL.WritingSystems
 		/// <returns></returns>
 		public static LdmlInFolderWritingSystemRepository Initialize(
 			string basePath,
-			IEnumerable<ICustomDataMapper> customDataMappers,
-			GlobalWritingSystemRepository globalRepository,
-			Action<int, IEnumerable<MigrationInfo>> migrationHandler,
-			Action<IEnumerable<WritingSystemRepositoryProblem>> loadProblemHandler
+			IEnumerable<ICustomDataMapper<WritingSystemDefinition>> customDataMappers,
+			GlobalWritingSystemRepository globalRepository = null,
+			Action<int, IEnumerable<LdmlMigrationInfo>> migrationHandler = null,
+			Action<IEnumerable<WritingSystemRepositoryProblem>> loadProblemHandler = null
 		)
 		{
-			ICustomDataMapper[] customDataMappersArray = customDataMappers.ToArray();
-			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(basePath, migrationHandler, customDataMappersArray);
+			var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(basePath, migrationHandler);
 			migrator.Migrate();
 
-			var instance = new LdmlInFolderWritingSystemRepository(basePath, customDataMappersArray, globalRepository);
+			var instance = new LdmlInFolderWritingSystemRepository(basePath, customDataMappers, globalRepository);
+
+			migrator.ResetRemovedProperties(instance);
 
 			// Call the loadProblemHandler with both migration problems and load problems
 			var loadProblems = new List<WritingSystemRepositoryProblem>();
@@ -53,7 +59,7 @@ namespace SIL.WritingSystems
 		{
 		}
 
-		protected internal LdmlInFolderWritingSystemRepository(string basePath, IEnumerable<ICustomDataMapper> customDataMappers,
+		protected internal LdmlInFolderWritingSystemRepository(string basePath, IEnumerable<ICustomDataMapper<WritingSystemDefinition>> customDataMappers,
 			GlobalWritingSystemRepository globalRepository = null)
 			: base(basePath, customDataMappers, globalRepository)
 		{
@@ -75,15 +81,15 @@ namespace SIL.WritingSystems
 		private IEnumerable<T> _systemWritingSystemProvider;
 		private readonly WritingSystemChangeLog _changeLog;
 		private readonly IList<WritingSystemRepositoryProblem> _loadProblems = new List<WritingSystemRepositoryProblem>();
-		private readonly ICustomDataMapper[] _customDataMappers;
+		private readonly ICustomDataMapper<T>[] _customDataMappers;
 		private readonly GlobalWritingSystemRepository<T> _globalRepository;
 
 		protected internal LdmlInFolderWritingSystemRepository(string basePath, GlobalWritingSystemRepository<T> globalRepository = null) :
-			this(basePath, Enumerable.Empty<ICustomDataMapper>(), globalRepository)
+			this(basePath, Enumerable.Empty<ICustomDataMapper<T>>(), globalRepository)
 		{
 		}
 
-		protected internal LdmlInFolderWritingSystemRepository(string basePath, IEnumerable<ICustomDataMapper> customDataMappers,
+		protected internal LdmlInFolderWritingSystemRepository(string basePath, IEnumerable<ICustomDataMapper<T>> customDataMappers,
 			GlobalWritingSystemRepository<T> globalRepository = null)
 			: base(globalRepository)
 		{
@@ -131,7 +137,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		public IEnumerable<ICustomDataMapper> CustomDataMappers
+		public IEnumerable<ICustomDataMapper<T>> CustomDataMappers
 		{
 			get { return _customDataMappers; }
 		}
@@ -176,7 +182,7 @@ namespace SIL.WritingSystems
 				if (File.Exists(filePath))
 				{
 					ldmlDataMapper.Read(filePath, wsFromFile);
-					foreach (ICustomDataMapper customDataMapper in _customDataMappers)
+					foreach (ICustomDataMapper<T> customDataMapper in _customDataMappers)
 						customDataMapper.Read(wsFromFile);
 					wsFromFile.Id = Path.GetFileNameWithoutExtension(filePath);
 				}
@@ -266,9 +272,11 @@ namespace SIL.WritingSystems
 			get{ return _systemWritingSystemProvider;}
 			set
 			{
-				if(_systemWritingSystemProvider == value){ return;}
-				_systemWritingSystemProvider = value;
-				AddActiveOSLanguages();
+				if (_systemWritingSystemProvider != value)
+				{
+					_systemWritingSystemProvider = value;
+					AddActiveOSLanguages();
+				}
 			}
 		}
 
@@ -309,7 +317,7 @@ namespace SIL.WritingSystems
 			}
 			var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
 			ldmlDataMapper.Write(writingSystemFilePath, ws, oldData);
-			foreach (ICustomDataMapper customDataMapper in _customDataMappers)
+			foreach (ICustomDataMapper<T> customDataMapper in _customDataMappers)
 				customDataMapper.Write(ws);
 			ws.AcceptChanges();
 
@@ -358,7 +366,7 @@ namespace SIL.WritingSystems
 				File.Move(GetFilePathFromIetfLanguageTag(ws.IetfLanguageTag), destination);
 			}
 			base.RemoveDefinition(ws);
-			foreach (ICustomDataMapper customDataMapper in _customDataMappers)
+			foreach (ICustomDataMapper<T> customDataMapper in _customDataMappers)
 				customDataMapper.Remove(ws.IetfLanguageTag);
 
 			if (wsIgnoreCount != WritingSystemsToIgnore.Count)

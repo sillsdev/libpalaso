@@ -6,7 +6,6 @@ using SIL.IO;
 
 namespace SIL.WritingSystems.Migration
 {
-
 	///<summary>
 	/// This migrates the global writing system repository. This migrator will not remove older versions of the repository, rather
 	/// it leaves the older versions behind for apps that may be running older versions of the palaso library.
@@ -22,7 +21,7 @@ namespace SIL.WritingSystems.Migration
 		/// should ensure that all writing systems tags they store are updated accordingly when the callback
 		/// is called.
 		///</summary>
-		public GlobalWritingSystemRepositoryMigrator(string basePath, Action<int, IEnumerable<MigrationInfo>> migrationHandler)
+		public GlobalWritingSystemRepositoryMigrator(string basePath, Action<int, IEnumerable<LdmlMigrationInfo>> migrationHandler)
 			: base(Path.Combine(basePath, WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString(CultureInfo.InvariantCulture)), migrationHandler)
 		{
 			_basePath = basePath;

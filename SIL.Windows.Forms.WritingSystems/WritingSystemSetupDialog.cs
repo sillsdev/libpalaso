@@ -4,7 +4,6 @@ using System.Linq;
 using System.Windows.Forms;
 using SIL.Windows.Forms.WritingSystems.WSTree;
 using SIL.WritingSystems;
-using SIL.WritingSystems.Migration;
 
 namespace SIL.Windows.Forms.WritingSystems
 {
@@ -81,17 +80,6 @@ namespace SIL.Windows.Forms.WritingSystems
 			}
 		}
 
-		internal class DummyWritingSystemHandler
-		{
-			public static void onMigration(int toVersion, IEnumerable<MigrationInfo> migrationInfo)
-			{
-			}
-
-			public static void onLoadProblem(IEnumerable<WritingSystemRepositoryProblem> problems)
-			{
-			}
-		}
-
 		private void _openDirectory_Click(object sender, EventArgs e)
 		{
 			var openDir = new FolderBrowserDialog();
@@ -111,13 +99,8 @@ namespace SIL.Windows.Forms.WritingSystems
 			{
 				string newDir = openDir.SelectedPath;
 				var ldmlRepo = _model.WritingSystems as LdmlInFolderWritingSystemRepository;
-				IEnumerable<ICustomDataMapper> customDataMappers = ldmlRepo != null ? ldmlRepo.CustomDataMappers : Enumerable.Empty<ICustomDataMapper>();
-
-				LdmlInFolderWritingSystemRepository repository = LdmlInFolderWritingSystemRepository.Initialize(newDir,
-					customDataMappers,
-					null,
-					DummyWritingSystemHandler.onMigration,
-					DummyWritingSystemHandler.onLoadProblem);
+				IEnumerable<ICustomDataMapper<WritingSystemDefinition>> customDataMappers = ldmlRepo != null ? ldmlRepo.CustomDataMappers : Enumerable.Empty<ICustomDataMapper<WritingSystemDefinition>>();
+				LdmlInFolderWritingSystemRepository repository = LdmlInFolderWritingSystemRepository.Initialize(newDir, customDataMappers);
 				var dlg = new WritingSystemSetupDialog(repository);
 
 				dlg.WritingSystemSuggestor.SuggestVoice = true;
@@ -130,7 +113,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		private void _openGlobal_Click(object sender, EventArgs e)
 		{
-			var dlg = new WritingSystemSetupDialog(GlobalWritingSystemRepository.Initialize(DummyWritingSystemHandler.onMigration));
+			var dlg = new WritingSystemSetupDialog(GlobalWritingSystemRepository.Initialize());
 			dlg.WritingSystemSuggestor.SuggestVoice = true;
 			dlg.WritingSystemSuggestor.OtherKnownWritingSystems = null;
 			dlg.DisposeRepository = true;

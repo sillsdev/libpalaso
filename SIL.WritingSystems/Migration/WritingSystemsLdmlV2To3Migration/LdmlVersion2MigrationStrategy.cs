@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
-using SIL.Code;
+using SIL.Extensions;
 using SIL.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 using SIL.Xml;
@@ -16,25 +16,22 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 	/// Also note that the files are not written until all writing systems have been migrated in order to deal correctly
 	/// with duplicate Ieft Language tags that might result from migration.
 	/// </summary>
-	public class LdmlVersion2MigrationStrategy : MigrationStrategyBase
+	internal class LdmlVersion2MigrationStrategy : MigrationStrategyBase
 	{
-		private readonly List<MigrationInfo> _migrationInfo;
+		private readonly List<LdmlMigrationInfo> _migrationInfo;
 		private readonly Dictionary<string, WritingSystemDefinitionV3> _writingSystemsV3;
-		private readonly Action<int, IEnumerable<MigrationInfo>> _migrationHandler;
+		private readonly Action<int, IEnumerable<LdmlMigrationInfo>> _migrationHandler;
 		private readonly IAuditTrail _auditLog;
 
-		private static readonly XNamespace Fw = "urn://fieldworks.sil.org/ldmlExtensions/v1";
-		private readonly List<ICustomDataMapper> _customDataMappers;
+		private static readonly XNamespace FW = "urn://fieldworks.sil.org/ldmlExtensions/v1";
 
-		public LdmlVersion2MigrationStrategy(Action<int, IEnumerable<MigrationInfo>> migrationHandler, IAuditTrail auditLog, IEnumerable<ICustomDataMapper> customDataMappers) :
+		public LdmlVersion2MigrationStrategy(Action<int, IEnumerable<LdmlMigrationInfo>> migrationHandler, IAuditTrail auditLog) :
 			base(2, 3)
 		{
-			Guard.AgainstNull(migrationHandler, "migrationCallback must be set");
-			_migrationInfo = new List<MigrationInfo>();
+			_migrationInfo = new List<LdmlMigrationInfo>();
 			_writingSystemsV3 = new Dictionary<string, WritingSystemDefinitionV3>();
 			_migrationHandler = migrationHandler;
 			_auditLog = auditLog;
-			_customDataMappers = customDataMappers.ToList();
 		}
 
 		public override void Migrate(string sourceFilePath, string destinationFilePath)
@@ -43,10 +40,57 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 
 			var writingSystemDefinitionV1 = new WritingSystemDefinitionV1();
 			new LdmlAdaptorV1().Read(sourceFilePath, writingSystemDefinitionV1);
-
 			XElement ldmlElem = XElement.Load(sourceFilePath);
-			XElement fwElem =
-				ldmlElem.Elements("special").FirstOrDefault(e => !string.IsNullOrEmpty((string) e.Attribute(XNamespace.Xmlns + "fw")));
+
+			string abbreviation = writingSystemDefinitionV1.Abbreviation;
+			float defaultFontSize = writingSystemDefinitionV1.DefaultFontSize;
+			string keyboard = writingSystemDefinitionV1.Keyboard;
+			string spellCheckingId = writingSystemDefinitionV1.SpellCheckingId;
+			string defaultFontName = writingSystemDefinitionV1.DefaultFontName;
+			string languageName = writingSystemDefinitionV1.LanguageName.IsOneOf("Unknown Language", "Language Not Listed") ? string.Empty : writingSystemDefinitionV1.LanguageName;
+			string langTag = IetfLanguageTagHelper.ToIetfLanguageTag(writingSystemDefinitionV1.Language, writingSystemDefinitionV1.Script,
+				writingSystemDefinitionV1.Region, writingSystemDefinitionV1.Variant);
+			bool isGraphiteEnabled = false;
+			string legacyMapping = string.Empty;
+			string scriptName = string.Empty;
+			string regionName = string.Empty;
+			string variantName = string.Empty;
+
+			XElement fwElem = ldmlElem.Elements("special").FirstOrDefault(e => !string.IsNullOrEmpty((string) e.Attribute(XNamespace.Xmlns + "fw")));
+
+			// Migrate fields from legacy fw namespace, and then remove fw namespace
+			if (fwElem != null)
+			{
+				XElement graphiteEnabledElem = fwElem.Element(FW + "graphiteEnabled");
+				if (graphiteEnabledElem != null)
+				{
+					if (!bool.TryParse((string) graphiteEnabledElem.Attribute("value"), out isGraphiteEnabled))
+						isGraphiteEnabled = false;
+				}
+
+				// LegacyMapping
+				XElement legacyMappingElem = fwElem.Element(FW + "legacyMapping");
+				if (legacyMappingElem != null)
+					legacyMapping = (string) legacyMappingElem.Attribute("value");
+
+				// ScriptName
+				XElement scriptNameElem = fwElem.Element(FW + "scriptName");
+				if (scriptNameElem != null)
+					scriptName = (string) scriptNameElem.Attribute("value");
+
+				// RegionName
+				XElement regionNameElem = fwElem.Element(FW + "regionName");
+				if (regionNameElem != null)
+					regionName = (string) regionNameElem.Attribute("value");
+
+				// VariantName
+				// Intentionally only checking the first variant
+				XElement variantNameElem = fwElem.Element(FW + "variantName");
+				if (variantNameElem != null)
+					variantName = (string) variantNameElem.Attribute("value");
+
+				fwElem.Remove();
+			}
 			
 			// Remove legacy palaso namespace from sourceFilePath
 			ldmlElem.Elements("special").Where(e => !string.IsNullOrEmpty((string)e.Attribute(XNamespace.Xmlns + "palaso"))).Remove();
@@ -59,76 +103,117 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				.Remove();
 			ldmlElem.Elements("collations").Elements("collation").Where(e => e.Descendants("special") != null).Remove();
 
+			var writerSettings = CanonicalXmlSettings.CreateXmlWriterSettings();
+			writerSettings.NewLineOnAttributes = false;
+			using (var writer = XmlWriter.Create(sourceFilePath, writerSettings))
+				ldmlElem.WriteTo(writer);
+
+			// Record the details for use in PostMigrate where we change the file name to match the ieft language tag where we can.
+			var migrationInfo = new LdmlMigrationInfo(sourceFileName)
+				{
+					IetfLanguageTagBeforeMigration = writingSystemDefinitionV1.Bcp47Tag,
+					IetfLanguageTagAfterMigration = langTag,
+					RemovedPropertiesSetter = ws =>
+					{
+						if (!string.IsNullOrEmpty(abbreviation))
+							ws.Abbreviation = abbreviation;
+						if (defaultFontSize != 0)
+							ws.DefaultFontSize = defaultFontSize;
+						if (!string.IsNullOrEmpty(keyboard))
+							ws.Keyboard = keyboard;
+						if (!string.IsNullOrEmpty(spellCheckingId))
+							ws.SpellCheckingId = spellCheckingId;
+						if (!string.IsNullOrEmpty(defaultFontName))
+							ws.DefaultFont = ws.Fonts[defaultFontName];
+						if (!string.IsNullOrEmpty(languageName))
+							ws.Language = new LanguageSubtag(ws.Language, languageName);
+						ws.IsGraphiteEnabled = isGraphiteEnabled;
+						if (!string.IsNullOrEmpty(legacyMapping))
+							ws.LegacyMapping = legacyMapping;
+						if (!string.IsNullOrEmpty(scriptName) && ws.Script != null && ws.Script.IsPrivateUse)
+							ws.Script = new ScriptSubtag(ws.Script, scriptName);
+						if (!string.IsNullOrEmpty(regionName) && ws.Region != null && ws.Region.IsPrivateUse)
+							ws.Region = new RegionSubtag(ws.Region, regionName);
+						if (!string.IsNullOrEmpty(variantName))
+						{
+							int index = ws.Variants.IndexOf(v => v.IsPrivateUse);
+							if (index > -1)
+								ws.Variants[index] = new VariantSubtag(ws.Variants[index], variantName);
+						}
+					}
+				};
+
+			_migrationInfo.Add(migrationInfo);
+
+			// misc properties
 			var writingSystemDefinitionV3 = new WritingSystemDefinitionV3
 			{
-				Abbreviation = writingSystemDefinitionV1.Abbreviation,
-				DefaultFontSize = writingSystemDefinitionV1.DefaultFontSize,
-				Keyboard = writingSystemDefinitionV1.Keyboard,
 				RightToLeftScript = writingSystemDefinitionV1.RightToLeftScript,
-				SpellCheckingId = writingSystemDefinitionV1.SpellCheckingId,
 				VersionDescription = writingSystemDefinitionV1.VersionDescription,
+				WindowsLcid = writingSystemDefinitionV1.WindowsLcid,
 				DateModified = DateTime.Now,
-				WindowsLcid = writingSystemDefinitionV1.WindowsLcid
 			};
 
-			if (!string.IsNullOrEmpty(writingSystemDefinitionV1.DefaultFontName))
+			// font
+			FontDefinition fd = null;
+			if (!string.IsNullOrEmpty(defaultFontName))
 			{
-				var fd = new FontDefinition(writingSystemDefinitionV1.DefaultFontName);
+				fd = new FontDefinition(writingSystemDefinitionV1.DefaultFontName);
 				writingSystemDefinitionV3.Fonts.Add(fd);
-				writingSystemDefinitionV3.DefaultFont = fd;
 			}
 
 			// Convert sort rules to collation definition of standard type
-			CollationDefinition cd;
+			CollationDefinition cd = null;
 			switch (writingSystemDefinitionV1.SortUsing)
 			{
 				case WritingSystemDefinitionV1.SortRulesType.CustomSimple:
 					cd = new SimpleCollationDefinition("standard") {SimpleRules = writingSystemDefinitionV1.SortRules};
 					break;
 				case WritingSystemDefinitionV1.SortRulesType.OtherLanguage:
-					cd = new IcuCollationDefinition("standard") {Imports = {new IcuCollationImport(writingSystemDefinitionV1.Bcp47Tag)}};
+					if (!string.IsNullOrEmpty(writingSystemDefinitionV1.SortRules) && writingSystemDefinitionV1.SortRules != langTag)
+						cd = new IcuCollationDefinition("standard") {Imports = {new IcuCollationImport(writingSystemDefinitionV1.SortRules)}};
 					break;
 				case WritingSystemDefinitionV1.SortRulesType.CustomICU:
 					cd = new IcuCollationDefinition("standard") {IcuRules = writingSystemDefinitionV1.SortRules};
 					break;
-				default:
+				case WritingSystemDefinitionV1.SortRulesType.DefaultOrdering:
 					cd = new IcuCollationDefinition("standard");
 					break;
 			}
-			writingSystemDefinitionV3.Collations.Add(cd);
+			if (cd != null)
+				writingSystemDefinitionV3.DefaultCollation = cd;
 
-			writingSystemDefinitionV3.IetfLanguageTag = 
-				IetfLanguageTagHelper.ToIetfLanguageTag(
-				writingSystemDefinitionV1.Language,
-				writingSystemDefinitionV1.Script,
-				writingSystemDefinitionV1.Region,
-				writingSystemDefinitionV1.Variant);
+			// IETF language tag
+			writingSystemDefinitionV3.IetfLanguageTag = langTag;
 
-			if (!string.IsNullOrEmpty(writingSystemDefinitionV1.LanguageName))
-				writingSystemDefinitionV3.Language = new LanguageSubtag(writingSystemDefinitionV3.Language, writingSystemDefinitionV1.LanguageName);
-
-			// Migrate fields from legacy fw namespace, and then remove fw namespace
 			if (fwElem != null)
 			{
-				ReadFwSpecialElem(fwElem, writingSystemDefinitionV3);
-				fwElem.Remove();
+				// DefaultFontFeatures
+				XElement fontFeatsElem = fwElem.Element(FW + "defaultFontFeatures");
+				if (fontFeatsElem != null && fd != null)
+					fd.Features = (string) fontFeatsElem.Attribute("value");
+
+				//MatchedPairs, PunctuationPatterns, QuotationMarks deprecated
+
+				// Valid Chars
+				XElement validCharsElem = fwElem.Element(FW + "validChars");
+				if (validCharsElem != null)
+				{
+					try
+					{
+						var fwValidCharsElem = XElement.Parse((string) validCharsElem.Attribute("value"));
+						AddCharacterSet(fwValidCharsElem, writingSystemDefinitionV3, "WordForming", "main");
+						AddCharacterSet(fwValidCharsElem, writingSystemDefinitionV3, "Numeric", "numeric");
+						AddCharacterSet(fwValidCharsElem, writingSystemDefinitionV3, "Other", "punctuation");
+					}
+					catch (XmlException)
+					{
+						// Move on if fw:validChars contains invalid XML
+					}
+				}
 			}
 
-			var writerSettings = CanonicalXmlSettings.CreateXmlWriterSettings();
-			writerSettings.NewLineOnAttributes = false;
-			using (var writer = XmlWriter.Create(sourceFilePath, writerSettings))
-				ldmlElem.WriteTo(writer);
-
 			_writingSystemsV3[sourceFileName] = writingSystemDefinitionV3;
-
-			// Record the details for use in PostMigrate where we change the file name to match the ieft language tag where we can.
-			var migrationInfo = new MigrationInfo
-				{
-					FileName = sourceFileName,
-					IetfLanguageTagBeforeMigration = writingSystemDefinitionV1.Bcp47Tag,
-					IetfLanguageTagAfterMigration = writingSystemDefinitionV3.IetfLanguageTag
-				};
-			_migrationInfo.Add(migrationInfo);
 		}
 
 		/// <summary>
@@ -153,64 +238,6 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			}
 		}
 
-		public void ReadFwSpecialElem(XElement fwElem, WritingSystemDefinition ws)
-		{
-			// DefaultFontFeatures
-			XElement elem = fwElem.Element(Fw + "defaultFontFeatures");
-			if ((elem != null) && ws.DefaultFont != null)
-				ws.DefaultFont.Features = (string)elem.Attribute("value");
-
-			elem = fwElem.Element(Fw + "graphiteEnabled");
-			if (elem != null)
-			{
-				bool graphiteEnabled;
-				if (bool.TryParse((string)elem.Attribute("value"), out graphiteEnabled))
-					ws.IsGraphiteEnabled = graphiteEnabled;
-			}
-
-			//MatchedPairs, PunctuationPatterns, QuotationMarks deprecated
-
-			// LegacyMapping
-			elem = fwElem.Element(Fw + "legacyMapping");
-			if (elem != null)
-			{
-				ws.LegacyMapping = (string) elem.Attribute("value");
-			}
-
-			// RegionName
-			elem = fwElem.Element(Fw + "regionName");
-			if (!string.IsNullOrEmpty(ws.Region) && (elem != null) && ws.Region.IsPrivateUse)
-				ws.Region = new RegionSubtag(ws.Region, (string) elem.Attribute("value"));
-
-			// ScriptName
-			elem = fwElem.Element(Fw + "scriptName");
-			if (!string.IsNullOrEmpty(ws.Script) && (elem != null) && ws.Script.IsPrivateUse)
-				ws.Script = new ScriptSubtag(ws.Script, (string) elem.Attribute("value"));
-
-			// VariantName
-			// Intentionally only checking the first variant
-			elem = fwElem.Element(Fw + "variantName");
-			if (ws.Variants.Count > 0 && (elem != null) && ws.Variants[0].IsPrivateUse)
-				ws.Variants[0] = new VariantSubtag(ws.Variants[0], (string) elem.Attribute("value"));
-
-			// Valid Chars
-			elem = fwElem.Element(Fw + "validChars");
-			if (elem != null)
-			{
-				try
-				{
-					var validCharsElem = XElement.Parse((string) elem.Attribute("value"));
-					AddCharacterSet(validCharsElem, ws, "WordForming", "main");
-					AddCharacterSet(validCharsElem, ws, "Numeric", "numeric");
-					AddCharacterSet(validCharsElem, ws, "Other", "punctuation");
-				}
-				catch (XmlException)
-				{
-					// Move on if fw:validChars contains invalid XML
-				}
-			}
-		}
-
 #region FolderMigrationCode
 
 		public override void PostMigrate(string sourcePath, string destinationPath)
@@ -218,23 +245,17 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			EnsureIeftLanguageTagsUnique(_migrationInfo);
 
 			// Write them back, with their new file name.
-			foreach (var migrationInfo in _migrationInfo)
+			foreach (LdmlMigrationInfo migrationInfo in _migrationInfo)
 			{
 				var writingSystemDefinitionV3 = _writingSystemsV3[migrationInfo.FileName];
 				string sourceFilePath = Path.Combine(sourcePath, migrationInfo.FileName);
 				string destinationFilePath = Path.Combine(destinationPath, migrationInfo.IetfLanguageTagAfterMigration + ".ldml");
 				if (migrationInfo.IetfLanguageTagBeforeMigration != migrationInfo.IetfLanguageTagAfterMigration)
-				{
 					_auditLog.LogChange(migrationInfo.IetfLanguageTagBeforeMigration, migrationInfo.IetfLanguageTagAfterMigration);
-				}
 				WriteLdml(writingSystemDefinitionV3, sourceFilePath, destinationFilePath);
-				foreach (ICustomDataMapper customDataMapper in _customDataMappers)
-					customDataMapper.Write(writingSystemDefinitionV3);
 			}
 			if (_migrationHandler != null)
-			{
 				_migrationHandler(ToVersion, _migrationInfo);
-			}
 		}
 
 		private void WriteLdml(WritingSystemDefinitionV3 writingSystemDefinitionV3, string sourceFilePath, string destinationFilePath)
@@ -246,18 +267,18 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			}
 		}
 
-		internal void EnsureIeftLanguageTagsUnique(IEnumerable<MigrationInfo> migrationInfo)
+		internal void EnsureIeftLanguageTagsUnique(IEnumerable<LdmlMigrationInfo> migrationInfo)
 		{
 			var uniqueIeftLanguageTag = new HashSet<string>();
-			foreach (var info in migrationInfo)
+			foreach (LdmlMigrationInfo info in migrationInfo)
 			{
-				MigrationInfo currentInfo = info;
+				LdmlMigrationInfo currentInfo = info;
 				if (uniqueIeftLanguageTag.Any(ieftLanguageTag => ieftLanguageTag.Equals(currentInfo.IetfLanguageTagAfterMigration, StringComparison.OrdinalIgnoreCase)))
 				{
 					if (currentInfo.IetfLanguageTagBeforeMigration.Equals(currentInfo.IetfLanguageTagAfterMigration, StringComparison.OrdinalIgnoreCase))
 					{
 						// We want to change the other, because we are the same. Even if the other is the same, we'll change it anyway.
-						MigrationInfo otherInfo = _migrationInfo.First(
+						LdmlMigrationInfo otherInfo = _migrationInfo.First(
 							i => i.IetfLanguageTagAfterMigration.Equals(currentInfo.IetfLanguageTagAfterMigration, StringComparison.OrdinalIgnoreCase)
 						);
 						var writingSystemV3 = _writingSystemsV3[otherInfo.FileName];

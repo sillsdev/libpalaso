@@ -4,7 +4,7 @@ using System.Xml;
 
 namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
-	public class XmlHelpersV0
+	internal class XmlHelpersV0
 	{
 		public static void AddOrUpdateAttribute(XmlNode node, string attributeName, string value)
 		{

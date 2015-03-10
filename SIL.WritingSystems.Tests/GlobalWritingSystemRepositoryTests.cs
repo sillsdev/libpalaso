@@ -9,7 +9,7 @@ namespace SIL.WritingSystems.Tests
 	[TestFixture]
 	public class GlobalWritingSystemRepositoryTests
 	{
-		private void OnMigration(int toVersion, IEnumerable<MigrationInfo> migrationInfo)
+		private void OnMigration(int toVersion, IEnumerable<LdmlMigrationInfo> migrationInfo)
 		{
 		}
 

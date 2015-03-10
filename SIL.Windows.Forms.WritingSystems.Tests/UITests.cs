@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
@@ -9,18 +8,15 @@ using System.Windows.Forms;
 using NUnit.Framework;
 using Palaso.TestUtilities;
 using SIL.WritingSystems;
-using SIL.WritingSystems.Migration;
 
 namespace SIL.Windows.Forms.WritingSystems.Tests
 {
 	[TestFixture]
 	public class UITests
 	{
-
 		//NB: in Mar 2011, I couldn't get these to run in vs 2010 with resharper, because
 		// of the need to be in single apartment thread mode. The app.config is there, requesting
 		// it, but it doesn't work. So I had to plug in this CrossThreadTestRunner thing
-
 		[Test, Ignore("By hand only")]
 		public void WritingSystemSetupDialog()
 		{
@@ -34,11 +30,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 						//	DummyWritingSystemHandler.onMigration,
 						//	DummyWritingSystemHandler.onLoadProblem);
 						//that constructor is now obsolete, create repo first
-						var repository = LdmlInFolderWritingSystemRepository.Initialize(folder.Path,
-							Enumerable.Empty<ICustomDataMapper>(),
-							null,
-							DummyWritingSystemHandler.onMigration,
-							DummyWritingSystemHandler.onLoadProblem);
+						var repository = LdmlInFolderWritingSystemRepository.Initialize(folder.Path);
 						var dlg = new WritingSystemSetupDialog(repository);
 						dlg.WritingSystemSuggestor.SuggestVoice = true;
 						dlg.ShowDialog();
@@ -57,8 +49,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 					{
 						var f = new Form();
 						f.Size = new Size(800, 600);
-						var repository = LdmlInFolderWritingSystemRepository.Initialize(folder.Path, Enumerable.Empty<ICustomDataMapper>(), null,
-							DummyWritingSystemHandler.onMigration, DummyWritingSystemHandler.onLoadProblem);
+						var repository = LdmlInFolderWritingSystemRepository.Initialize(folder.Path);
 						var model = new WritingSystemSetupModel(repository);
 						var v = new WritingSystemSetupView(model);
 						var combo = new WSPickerUsingComboBox(model);
@@ -71,71 +62,58 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 	}
 
 
-  public class CrossThreadTestRunner
-  {
-	private Exception _lastException;
-
-	public void RunInMTA(ThreadStart userDelegate)
+	public class CrossThreadTestRunner
 	{
-	  Run(userDelegate, ApartmentState.MTA);
-	}
+		private Exception _lastException;
 
-	public void RunInSTA(ThreadStart userDelegate)
-	{
-	  Run(userDelegate, ApartmentState.STA);
-	}
-
-	private void Run(ThreadStart userDelegate, ApartmentState apartmentState)
-	{
-	  _lastException = null;
-
-	  var thread = new Thread(
-		delegate()
+		public void RunInMTA(ThreadStart userDelegate)
 		{
-		  try
-		  {
-			userDelegate.Invoke();
-		  }
-		  catch (Exception e)
-		  {
-			_lastException = e;
-		  }
-		});
-	  thread.SetApartmentState(apartmentState);
+			Run(userDelegate, ApartmentState.MTA);
+		}
 
-	  thread.Start();
-	  thread.Join();
+		public void RunInSTA(ThreadStart userDelegate)
+		{
+			Run(userDelegate, ApartmentState.STA);
+		}
 
-	  if (ExceptionWasThrown())
-		ThrowExceptionPreservingStack(_lastException);
+		private void Run(ThreadStart userDelegate, ApartmentState apartmentState)
+		{
+			_lastException = null;
+
+			var thread = new Thread(
+				delegate()
+				{
+					try
+					{
+						userDelegate.Invoke();
+					}
+					catch (Exception e)
+					{
+						_lastException = e;
+					}
+				});
+			thread.SetApartmentState(apartmentState);
+
+			thread.Start();
+			thread.Join();
+
+			if (ExceptionWasThrown())
+				ThrowExceptionPreservingStack(_lastException);
+		}
+
+		private bool ExceptionWasThrown()
+		{
+			return _lastException != null;
+		}
+
+		[ReflectionPermission(SecurityAction.Demand)]
+		private static void ThrowExceptionPreservingStack(Exception exception)
+		{
+			FieldInfo remoteStackTraceString = typeof (Exception).GetField(
+				"_remoteStackTraceString",
+				BindingFlags.Instance | BindingFlags.NonPublic);
+			remoteStackTraceString.SetValue(exception, exception.StackTrace + Environment.NewLine);
+			throw exception;
+		}
 	}
-
-	private bool ExceptionWasThrown()
-	{
-	  return _lastException != null;
-	}
-
-	[ReflectionPermission(SecurityAction.Demand)]
-	private static void ThrowExceptionPreservingStack(Exception exception)
-	{
-	  FieldInfo remoteStackTraceString = typeof(Exception).GetField(
-		"_remoteStackTraceString",
-		BindingFlags.Instance | BindingFlags.NonPublic);
-	  remoteStackTraceString.SetValue(exception, exception.StackTrace + Environment.NewLine);
-	  throw exception;
-	}
-  }
-
-  internal class DummyWritingSystemHandler
-  {
-	  public static void onMigration(int toVersion, IEnumerable<MigrationInfo> migrationInfo)
-	  {
-	  }
-
-	  public static void onLoadProblem(IEnumerable<WritingSystemRepositoryProblem> problems)
-	  {
-	  }
-
-  }
-
 }

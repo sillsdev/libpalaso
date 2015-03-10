@@ -12,7 +12,7 @@ using Debugger = Spart.Debug.Debugger;
 
 namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
-	public class IcuRulesParser
+	internal class IcuRulesParser
 	{
 		private XmlWriter _writer;
 		private Debugger _debugger;

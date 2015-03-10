@@ -27,7 +27,7 @@ namespace TestApp
 			_wsModel.Save();
 		}
 
-		public void MigrationHandler(int toVersion, IEnumerable<MigrationInfo> migrationInfo)
+		public void MigrationHandler(int toVersion, IEnumerable<LdmlMigrationInfo> migrationInfo)
 		{
 		}
 	}

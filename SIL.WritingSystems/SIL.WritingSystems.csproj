@@ -263,7 +263,7 @@
     <Compile Include="AddSortKeysToXml.cs" />
     <Compile Include="CharacterSetDefinition.cs" />
     <Compile Include="CollationDefinition.cs" />
-    <Compile Include="DefaultWritingSystemFactory.cs" />
+    <Compile Include="WritingSystemFactory.cs" />
     <Compile Include="WritingSystemFactoryBase.cs" />
     <Compile Include="EthnologueLookup.cs" />
     <Compile Include="FlexConformPrivateUseRfc5646TagInterpreter.cs" />
@@ -284,7 +284,7 @@
     <Compile Include="LocalWritingSystemRepositoryBase.cs" />
     <Compile Include="MatchedPair.cs" />
     <Compile Include="DefinitionBase.cs" />
-    <Compile Include="Migration\MigrationInfo.cs" />
+    <Compile Include="Migration\LdmlMigrationInfo.cs" />
     <Compile Include="Migration\SilLdmlVersion.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\IcuRulesParser.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\Rfc5646Tag.cs" />

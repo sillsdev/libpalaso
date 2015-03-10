@@ -16,16 +16,19 @@ namespace SIL.WritingSystems.Tests.Migration
 	{
 		private class TestEnvironment : IDisposable
 		{
+			private readonly TemporaryFolder _sldrCacheFolder;
+
 			public TestEnvironment()
 			{
 				FolderContainingLdml = new TemporaryFolder("LdmlInFolderMigratorTests");
+				_sldrCacheFolder = new TemporaryFolder("SldrCache");
 				NamespaceManager = new XmlNamespaceManager(new NameTable());
 				NamespaceManager.AddNamespace("sil", "urn://www.sil.org/ldml/0.1");
 				NamespaceManager.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
 				NamespaceManager.AddNamespace("palaso2", "urn://palaso.org/ldmlExtensions/v2");
 			}
 
-			public XmlNamespaceManager NamespaceManager { get; private set; }
+			private XmlNamespaceManager NamespaceManager { get; set; }
 
 			private TemporaryFolder FolderContainingLdml { get; set; }
 
@@ -46,9 +49,9 @@ namespace SIL.WritingSystems.Tests.Migration
 			/// </summary>
 			private readonly Dictionary<string, string> _oldNameToIetfLanguageTag = new Dictionary<string, string>(); 
 
-			public void OnMigrateCallback(int toVersion, IEnumerable<MigrationInfo> migrationInfo)
+			public void OnMigrateCallback(int toVersion, IEnumerable<LdmlMigrationInfo> migrationInfo)
 			{			
-				foreach (MigrationInfo info in migrationInfo)
+				foreach (LdmlMigrationInfo info in migrationInfo)
 				{
 					KeyValuePair<string, string> entry = _oldNameToIetfLanguageTag.FirstOrDefault(e => e.Value == info.IetfLanguageTagBeforeMigration);
 					_oldNameToIetfLanguageTag[entry.Key ?? info.FileName] = info.IetfLanguageTagAfterMigration;
@@ -63,6 +66,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			public void Dispose()
 			{
 				FolderContainingLdml.Dispose();
+				_sldrCacheFolder.Dispose();
 			}
 
 			public int GetFileVersion(string fileName)
@@ -244,7 +248,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			
 		}
 
-		private static void AssertMigrationInfoContains(IEnumerable<MigrationInfo> migrationInfo, string tagBefore, string tagAfter)
+		private static void AssertMigrationInfoContains(IEnumerable<LdmlMigrationInfo> migrationInfo, string tagBefore, string tagAfter)
 		{
 			var info = migrationInfo.First(tag => tag.IetfLanguageTagBeforeMigration == tagBefore);
 			Assert.IsNotNull(info, String.Format("'{0}' not found", tagBefore));
@@ -262,7 +266,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				environment.WriteLdmlFile("bogus3.ldml", LdmlContentForTests.Version0("zh", "", "CN", ""));
 				environment.WriteLdmlFile("bogus4.ldml", LdmlContentForTests.Version0("cmn", "", "", ""));
 
-				var migrationInfo = new Dictionary<int, MigrationInfo[]>();
+				var migrationInfo = new Dictionary<int, LdmlMigrationInfo[]>();
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath,
 					(toVersion, infos) => migrationInfo[toVersion] = infos.ToArray());
 				migrator.Migrate();
@@ -958,34 +962,6 @@ namespace SIL.WritingSystems.Tests.Migration
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/references/testing[text()='references']");
 			}
 		}
-		// Move to application-configuration
-#if WS_FIX
-
-		[Test]
-		public void Migrate_OriginalFileContainsAllSortsOfDataThatShouldJustBeCopiedOver_DataIsMigrated()
-		{
-			using (var environment = new TestEnvironment())
-			{
-				environment.WriteLdmlFile(
-					"test.ldml",
-					LdmlContentForTests.Version0WithAllSortsOfDatathatdoesNotNeedSpecialAttention("", "", "", ""));
-				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
-				migrator.Migrate();
-				AssertThatXmlIn.File(environment.MappedFilePath("test.ldml")).
-					HasAtLeastOneMatchForXpath("/ldml/special/palaso:defaultFontFamily[@value='Arial']", environment.NamespaceManager);
-				AssertThatXmlIn.File(environment.MappedFilePath("test.ldml")).
-					HasAtLeastOneMatchForXpath("/ldml/special/palaso:defaultFontSize[@value='12']", environment.NamespaceManager);
-				AssertThatXmlIn.File(environment.MappedFilePath("test.ldml")).
-					HasAtLeastOneMatchForXpath("/ldml/special/palaso:abbreviation[@value='la']", environment.NamespaceManager);
-				AssertThatXmlIn.File(environment.MappedFilePath("test.ldml")).
-					HasAtLeastOneMatchForXpath("/ldml/special/palaso:isLegacyEncoded[@value='True']", environment.NamespaceManager);
-				AssertThatXmlIn.File(environment.MappedFilePath("test.ldml")).
-					HasAtLeastOneMatchForXpath("/ldml/special/palaso:defaultKeyboard[@value='bogusKeyboard']", environment.NamespaceManager);
-				AssertThatXmlIn.File(environment.MappedFilePath("test.ldml")).
-					HasAtLeastOneMatchForXpath("/ldml/special/palaso:spellCheckingId[@value='ol']", environment.NamespaceManager);
-			}
-		}
-#endif
 
 		[Test]
 		public void Migrate_OriginalFileContainsNoCollationInfo_StandardCollationInfoIsMigrated()
@@ -1047,7 +1023,7 @@ namespace SIL.WritingSystems.Tests.Migration
 
 				var wsV3 = new WritingSystemDefinitionV3();
 				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
-				var cdV3 = (SimpleCollationDefinition) (wsV3.Collations.FirstOrDefault());
+				var cdV3 = (SimpleCollationDefinition) wsV3.Collations.First();
 				Assert.AreEqual(wsV0.SortRules, cdV3.SimpleRules);
 			}
 		}
@@ -1068,7 +1044,7 @@ namespace SIL.WritingSystems.Tests.Migration
 
 				var wsV3 = new WritingSystemDefinitionV3();
 				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
-				CollationDefinition cdV3 = wsV3.Collations.FirstOrDefault();
+				CollationDefinition cdV3 = wsV3.Collations.First();
 				Assert.AreEqual(wsV0.SortRules, cdV3.CollationRules);
 			}
 		}
@@ -1081,71 +1057,69 @@ namespace SIL.WritingSystems.Tests.Migration
 			{
 				environment.WriteLdmlFile(
 					"test.ldml",
-					LdmlContentForTests.Version0WithFw("en", "Zxxx", "GB", "1996-x-myOwnVariant"));
+					LdmlContentForTests.Version0WithFw("en", "x-Kala", "x-AP", "1996-x-myOwnVariant"));
+
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				var other = new FontDefinition("Arial");
-				other.Features = "order=3 children=2 color=red createDate=1996";
-				other.Roles = FontRoles.Default;
+				var repo = new TestLdmlInFolderWritingSystemRepository(environment.LdmlPath);
+				migrator.ResetRemovedProperties(repo);
 
-				var wsV3 = new WritingSystemDefinitionV3();
-				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
+				var other = new FontDefinition("Arial") {Features = "order=3 children=2 color=red createDate=1996", Roles = FontRoles.Default};
 
-				var main = new CharacterSetDefinition("main");
 				const string mainString = "α￼Α￼ά￼ὰ￼ᾷ￼ἀ￼Ἀ￼ἁ￼Ἁ￼ἄ￼Ἄ￼ἂ￼ἅ￼Ἅ￼ἃ￼Ἃ￼ᾶ￼ᾳ￼ᾴ￼ἆ￼Ἆ￼ᾄ￼ᾅ￼β￼Β￼γ￼Γ￼δ￼Δ￼ε￼Ε￼έ￼ὲ￼ἐ￼Ἐ￼ἑ￼Ἑ￼ἔ￼Ἔ￼ἕ￼Ἕ￼ἓ￼Ἓ￼ζ￼Ζ￼η￼Η￼ή￼ὴ￼ῇ￼ἠ￼Ἠ￼ἡ￼Ἡ￼ἤ￼Ἤ￼ἢ￼ἥ￼Ἥ￼Ἢ￼ἣ￼ᾗ￼ῆ￼ῃ￼ῄ￼ἦ￼Ἦ￼ᾖ￼ἧ￼ᾐ￼ᾑ￼ᾔ￼θ￼Θ￼ι￼ί￼ὶ￼ϊ￼ΐ￼ῒ￼ἰ￼Ἰ￼ἱ￼Ἱ￼ἴ￼Ἴ￼ἵ￼Ἵ￼ἳ￼ῖ￼ἶ￼ἷ￼κ￼Κ￼λ￼Λ￼μ￼Μ￼ν￼Ν￼ξ￼Ξ￼ο￼Ο￼ό￼ὸ￼ὀ￼Ὀ￼ὁ￼Ὁ￼ὄ￼Ὄ￼ὅ￼ὂ￼Ὅ￼ὃ￼Ὃ￼π￼Π￼ρ￼Ρ￼ῥ￼Ῥ￼σ￼ς￼Σ￼τ￼Τ￼υ￼Υ￼ύ￼ὺ￼ϋ￼ΰ￼ῢ￼ὐ￼ὑ￼Ὑ￼ὔ￼ὕ￼ὒ￼Ὕ￼ὓ￼ῦ￼ὖ￼ὗ￼Ὗ￼φ￼Φ￼χ￼Χ￼ψ￼Ψ￼ω￼ώ￼ὼ￼ῷ￼ὠ￼ὡ￼Ὡ￼ὤ￼Ὤ￼ὢ￼ὥ￼Ὥ￼ᾧ￼ῶ￼ῳ￼ῴ￼ὦ￼Ὦ￼ὧ￼Ὧ￼ᾠ";
-				foreach (var str in mainString.Split(fwDelimiter))
-					main.Characters.Add(str);
+				var main = new CharacterSetDefinition("main");
+				main.Characters.UnionWith(mainString.Split(fwDelimiter));
 
-				var numeric = new CharacterSetDefinition("numeric");
 				const string numericString = "๐￼๑￼๒￼๓￼๔￼๕￼๖￼๗￼๘￼๙";
-				foreach (var str in numericString.Split(fwDelimiter))
-					numeric.Characters.Add(str);
+				var numeric = new CharacterSetDefinition("numeric");
+				numeric.Characters.UnionWith(numericString.Split(fwDelimiter));
 
-				var punctuation = new CharacterSetDefinition("punctuation");
 				const string punctuationString = "U+0020￼-￼,￼.￼’￼«￼»￼(￼)￼[￼]";
-				foreach (var str in punctuationString.Split(fwDelimiter))
-					punctuation.Characters.Add(str);
+				var punctuation = new CharacterSetDefinition("punctuation");
+				punctuation.Characters.UnionWith(punctuationString.Split(fwDelimiter));
 
-				Assert.That(wsV3.Fonts.First().ValueEquals(other));
-				Assert.That(wsV3.WindowsLcid, Is.EqualTo("4321"));
-				Assert.That(wsV3.CharacterSets["main"].ValueEquals(main));
-				Assert.That(wsV3.CharacterSets["numeric"].ValueEquals(numeric));
-				Assert.That(wsV3.CharacterSets["punctuation"].ValueEquals(punctuation));
+				WritingSystemDefinition ws = repo.Get("en-Qaaa-QM-1996-x-Kala-AP-myOwnVar");
 
-				// Add these when written to application-specific
-#if WS_FIX
+				Assert.That(ws.DefaultFont.ValueEquals(other));
+				Assert.That(ws.WindowsLcid, Is.EqualTo("4321"));
+				Assert.That(ws.CharacterSets["main"].ValueEquals(main));
+				Assert.That(ws.CharacterSets["numeric"].ValueEquals(numeric));
+				Assert.That(ws.CharacterSets["punctuation"].ValueEquals(punctuation));
+
 				// ScriptName, RegionName, VariantName, LegacyMapping, IsGraphiteEnabled
-				Assert.That(wsV3.LegacyMapping, Is.EqualTo("SomeMapper"));
-				Assert.That(wsV3.IsGraphiteEnabled, Is.True);
-#endif
+				Assert.That(ws.LegacyMapping, Is.EqualTo("SomeMapper"));
+				Assert.That(ws.IsGraphiteEnabled, Is.True);
+				Assert.That(ws.Script.Name, Is.EqualTo("scriptName"));
+				Assert.That(ws.Region.Name, Is.EqualTo("regionName"));
+				Assert.That(ws.Variants[1].Name, Is.EqualTo("aVarName"));
 			}
 		}
 
-		// Add when SpellCheckingId is written in application-specific
-#if WS_FIX
 		[Test]
-		public void Migrate_OriginalFileContainsSpellcheckId_SpellcheckIsMigrated()
+		public void Migrate_OriginalFileContainsPalasoNamespace_InfoIsMigrated()
 		{
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile(
 					"test.ldml",
-					LdmlContentForTests.Version0WithCollationInfo(WritingSystemDefinitionV0.SortRulesType.DefaultOrdering));
-
-				var wsV0 = new WritingSystemDefinitionV0();
-				new LdmlAdaptorV0().Read(environment.FilePath("test.ldml"), wsV0);
-				var spellcheckId = wsV0.SpellCheckingId;
+					LdmlContentForTests.Version0WithAllSortsOfDatathatdoesNotNeedSpecialAttention("x-kal", "", "", ""));
 
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
-				
-				var wsV3 = new WritingSystemDefinitionV3();
-				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
-				Assert.That(wsV3.SpellCheckingId, Is.EqualTo(spellcheckId));
+
+				var repo = new TestLdmlInFolderWritingSystemRepository(environment.LdmlPath);
+				migrator.ResetRemovedProperties(repo);
+
+				WritingSystemDefinition ws = repo.Get("qaa-x-kal");
+				Assert.That(ws.SpellCheckingId, Is.EqualTo("ol"));
+				Assert.That(ws.Abbreviation, Is.EqualTo("la"));
+				Assert.That(ws.DefaultFontSize, Is.EqualTo(12));
+				Assert.That(ws.Language.Name, Is.EqualTo("language"));
+				Assert.That(ws.DefaultFont.Name, Is.EqualTo("Arial"));
+				Assert.That(ws.Keyboard, Is.EqualTo("bogusKeyboard"));
 			}
 		}
-#endif
 
 		[Test]
 		public void Migrate_DateModified_IsLaterThanBeforeMigration()
@@ -1181,8 +1155,6 @@ namespace SIL.WritingSystems.Tests.Migration
 			}
 		}
 
-// Move to application-configuration
-#if WS_FIX
 		[Test]
 		public void Migrate_LanguageNameIsSetTootherThanWhatIanaSubtagRegistrySays_LanguageNameIsMaintained()
 		{
@@ -1191,8 +1163,12 @@ namespace SIL.WritingSystems.Tests.Migration
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0WithLanguageSubtagAndName("en", "German"));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
-				AssertThatXmlIn.File(environment.MappedFilePath("test.ldml")).
-					HasAtLeastOneMatchForXpath("/ldml/special/palaso:languageName[@value='German']", environment.NamespaceManager);
+
+				var repo = new TestLdmlInFolderWritingSystemRepository(environment.LdmlPath);
+				migrator.ResetRemovedProperties(repo);
+
+				WritingSystemDefinition ws = repo.Get("en");
+				Assert.That(ws.Language.Name, Is.EqualTo("German"));
 			}
 		}
 
@@ -1204,11 +1180,14 @@ namespace SIL.WritingSystems.Tests.Migration
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0WithLanguageSubtagAndName("en", String.Empty));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
-				AssertThatXmlIn.File(environment.MappedFilePath("test.ldml")).
-					HasAtLeastOneMatchForXpath("/ldml/special/palaso:languageName[@value = 'English']", environment.NamespaceManager);
+
+				var repo = new TestLdmlInFolderWritingSystemRepository(environment.LdmlPath);
+				migrator.ResetRemovedProperties(repo);
+
+				WritingSystemDefinition ws = repo.Get("en");
+				Assert.That(ws.Language.Name, Is.EqualTo("English"));
 			}
 		}
-#endif
 
 		[Test]
 		public void Migrate_LdmlIsVersion0_IsLatestVersion()

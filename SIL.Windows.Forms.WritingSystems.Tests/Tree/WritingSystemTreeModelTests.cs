@@ -6,7 +6,6 @@ using NUnit.Framework;
 using Palaso.TestUtilities;
 using SIL.Windows.Forms.WritingSystems.WSTree;
 using SIL.WritingSystems;
-using SIL.WritingSystems.Migration;
 
 namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 {
@@ -19,13 +18,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 
 			public TestEnvironment()
 			{
-				var writingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(
-					_folder.Path,
-					Enumerable.Empty<ICustomDataMapper>(),
-					null,
-					OnMigration,
-					OnLoadProblem
-				);
+				var writingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(_folder.Path);
 				MockSetupModel = new Mock<WritingSystemSetupModel>(writingSystemRepository);
 				SetDefinitionsInStore(new WritingSystemDefinition[] { });
 			}
@@ -55,14 +48,6 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 			{
 				_folder.Dispose();
 			}
-		}
-
-		private static void OnMigration(int toVersion, IEnumerable<MigrationInfo> migrationInfo)
-		{
-		}
-
-		private static void OnLoadProblem(IEnumerable<WritingSystemRepositoryProblem> problems)
-		{
 		}
 
 		[Test] // ok

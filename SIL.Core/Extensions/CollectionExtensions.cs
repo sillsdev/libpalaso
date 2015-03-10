@@ -157,15 +157,18 @@ namespace SIL.Extensions
 
 		public static int IndexOf<T>(this IEnumerable<T> source, T value)
 		{
-			return source.IndexOf(value, null);
+			return source.IndexOf(value, EqualityComparer<T>.Default);
 		}
 
 		public static int IndexOf<T>(this IEnumerable<T> source, T value, IEqualityComparer<T> comparer)
 		{
-			comparer = comparer ?? EqualityComparer<T>.Default;
-			var found = source
-				.Select((a, i) => new { a, i })
-				.FirstOrDefault(x => comparer.Equals(x.a, value));
+			var found = source.Select((a, i) => new { a, i }).FirstOrDefault(x => comparer.Equals(x.a, value));
+			return found == null ? -1 : found.i;
+		}
+
+		public static int IndexOf<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
+		{
+			var found = source.Select((a, i) => new { a, i }).FirstOrDefault(x => predicate(x.a));
 			return found == null ? -1 : found.i;
 		}
 

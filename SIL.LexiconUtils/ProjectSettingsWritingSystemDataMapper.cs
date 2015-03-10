@@ -5,7 +5,15 @@ using SIL.WritingSystems;
 
 namespace SIL.LexiconUtils
 {
-	public class ProjectSettingsWritingSystemDataMapper : ICustomDataMapper
+	public class ProjectSettingsWritingSystemDataMapper : ProjectSettingsWritingSystemDataMapper<WritingSystemDefinition>
+	{
+		public ProjectSettingsWritingSystemDataMapper(ISettingsStore settingsStore)
+			: base(settingsStore)
+		{
+		}
+	}
+
+	public class ProjectSettingsWritingSystemDataMapper<T> : ICustomDataMapper<T> where T : WritingSystemDefinition
 	{
 		private readonly ISettingsStore _settingsStore;
 
@@ -14,7 +22,7 @@ namespace SIL.LexiconUtils
 			_settingsStore = settingsStore;
 		}
 
-		public void Read(WritingSystemDefinition ws)
+		public virtual void Read(T ws)
 		{
 			XElement projectSettingsElem = _settingsStore.GetSettings();
 			if (projectSettingsElem == null)
@@ -69,7 +77,7 @@ namespace SIL.LexiconUtils
 				ws.Keyboard = keyboard;
 		}
 
-		public void Write(WritingSystemDefinition ws)
+		public virtual void Write(T ws)
 		{
 			XElement projectSettingsElem = _settingsStore.GetSettings() ?? new XElement("LexiconProjectSettings");
 			XElement wssElem = projectSettingsElem.Element("WritingSystems");

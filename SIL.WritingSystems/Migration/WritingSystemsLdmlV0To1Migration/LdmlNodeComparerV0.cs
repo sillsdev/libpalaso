@@ -10,7 +10,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 	/// The supplemental metadata shipped with the current CLDR release will have more complete
 	/// element and attribute order data.
 	/// </summary>
-	class LdmlNodeComparerV0 : IComparer<XmlNode>
+	internal class LdmlNodeComparerV0 : IComparer<XmlNode>
 	{
 		public static LdmlNodeComparerV0 Singleton
 		{

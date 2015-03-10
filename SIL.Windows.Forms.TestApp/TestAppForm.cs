@@ -73,12 +73,12 @@ namespace SIL.Windows.Forms.TestApp
 			KeyboardController.Initialize();
 			try
 			{
-				ICustomDataMapper[] customDataMappers =
+				ICustomDataMapper<WritingSystemDefinition>[] customDataMappers =
 				{
 					new UserSettingsWritingSystemDataMapper(new ApplicationSettingsStore(Properties.Settings.Default, "UserSettings")),
 					new ProjectSettingsWritingSystemDataMapper(new ApplicationSettingsStore(Properties.Settings.Default, "ProjectSettings"))
 				};
-				LdmlInFolderWritingSystemRepository wsRepo = LdmlInFolderWritingSystemRepository.Initialize(tempPath, customDataMappers, null, onMigration, onLoadProblem);
+				LdmlInFolderWritingSystemRepository wsRepo = LdmlInFolderWritingSystemRepository.Initialize(tempPath, customDataMappers);
 				using (var dialog = new WritingSystemSetupDialog(wsRepo))
 					dialog.ShowDialog();
 			}
@@ -92,14 +92,6 @@ namespace SIL.Windows.Forms.TestApp
 		{
 			using (var dlg = new ArtOfReadingTestForm())
 				dlg.ShowDialog();
-		}
-
-		private static void onMigration(int toVersion, IEnumerable<MigrationInfo> migrationInfo)
-		{
-		}
-
-		private static void onLoadProblem(IEnumerable<WritingSystemRepositoryProblem> migrationInfo)
-		{
 		}
 
 		private void OnSilAboutBoxClicked(object sender, EventArgs e)

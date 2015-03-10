@@ -1,6 +1,6 @@
 ﻿namespace SIL.WritingSystems
 {
-	public class DefaultWritingSystemFactory : WritingSystemFactoryBase<WritingSystemDefinition>
+	public class WritingSystemFactory : WritingSystemFactoryBase<WritingSystemDefinition>
 	{
 		protected override WritingSystemDefinition ConstructDefinition()
 		{

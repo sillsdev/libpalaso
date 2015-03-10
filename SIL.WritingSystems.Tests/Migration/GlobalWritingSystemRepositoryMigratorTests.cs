@@ -33,12 +33,12 @@ namespace SIL.WritingSystems.Tests.Migration
 
 			public string BasePath { get { return _baseFolder.Path; } }
 
-			public void OnMigrateCallback(int toVersion, IEnumerable<MigrationInfo> migrationInfo)
+			public void OnMigrateCallback(int toVersion, IEnumerable<LdmlMigrationInfo> migrationInfo)
 			{
-				MigrationInfo = new List<MigrationInfo>(migrationInfo);
+				MigrationInfo = new List<LdmlMigrationInfo>(migrationInfo);
 			}
 
-			public IEnumerable<MigrationInfo> MigrationInfo { get; private set; }
+			public IEnumerable<LdmlMigrationInfo> MigrationInfo { get; private set; }
 
 			public static void WriteFlexFile(string language, string abbreviation, int version)
 			{

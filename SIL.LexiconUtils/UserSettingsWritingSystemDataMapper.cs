@@ -5,7 +5,15 @@ using SIL.WritingSystems;
 
 namespace SIL.LexiconUtils
 {
-	public class UserSettingsWritingSystemDataMapper : ICustomDataMapper
+	public class UserSettingsWritingSystemDataMapper : UserSettingsWritingSystemDataMapper<WritingSystemDefinition>
+	{
+		public UserSettingsWritingSystemDataMapper(ISettingsStore settingsStore)
+			: base(settingsStore)
+		{
+		}
+	}
+
+	public class UserSettingsWritingSystemDataMapper<T> : ICustomDataMapper<T> where T : WritingSystemDefinition
 	{
 		private readonly ISettingsStore _settingsStore;
 
@@ -14,7 +22,7 @@ namespace SIL.LexiconUtils
 			_settingsStore = settingsStore;
 		}
 
-		public void Read(WritingSystemDefinition ws)
+		public virtual void Read(T ws)
 		{
 			XElement userSettingsElem = _settingsStore.GetSettings();
 			if (userSettingsElem == null)
@@ -41,7 +49,7 @@ namespace SIL.LexiconUtils
 			ws.IsGraphiteEnabled = (bool?) wsElem.Element("IsGraphiteEnabled") ?? true;
 		}
 
-		public void Write(WritingSystemDefinition ws)
+		public virtual void Write(T ws)
 		{
 			XElement userSettingsElem = _settingsStore.GetSettings() ?? new XElement("LexiconUserSettings");
 			XElement wssElem = userSettingsElem.Element("WritingSystems");

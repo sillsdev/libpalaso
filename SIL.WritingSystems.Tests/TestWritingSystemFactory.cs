@@ -2,7 +2,7 @@
 
 namespace SIL.WritingSystems.Tests
 {
-	public class TestWritingSystemFactory : DefaultWritingSystemFactory
+	public class TestWritingSystemFactory : WritingSystemFactory
 	{
 		private readonly KeyedList<string, WritingSystemDefinition> _writingSystems; 
 

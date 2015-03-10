@@ -315,7 +315,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				var icuCollation = (IcuCollationDefinition) CurrentDefinition.DefaultCollation;
 				if (string.IsNullOrEmpty(icuCollation.IcuRules) && icuCollation.Imports.Count == 1 && icuCollation.Imports[0].IetfLanguageTag != CurrentIetfLanguageTag)
 					_currentCollationRulesType = CollationRulesType.OtherLanguage;
-				else if (!string.IsNullOrEmpty(icuCollation.IcuRules))
+				else if (!string.IsNullOrEmpty(icuCollation.IcuRules) || icuCollation.Imports.Count > 0)
 					_currentCollationRulesType = CollationRulesType.CustomIcu;
 				else
 					_currentCollationRulesType = CollationRulesType.DefaultOrdering;
@@ -920,11 +920,9 @@ namespace SIL.Windows.Forms.WritingSystems
 						var otherLangCollation = (IcuCollationDefinition) CurrentDefinition.DefaultCollation;
 						if (otherLangCollation.Imports.Count == 0 || otherLangCollation.Imports[0].IetfLanguageTag != value)
 						{
-							var import = new IcuCollationImport(value);
-							if (otherLangCollation.Imports.Count == 0)
-								otherLangCollation.Imports.Add(import);
-							else
-								otherLangCollation.Imports[0] = import;
+							otherLangCollation.Imports.Clear();
+							otherLangCollation.Imports.Add(new IcuCollationImport(value));
+							otherLangCollation.IcuRules = string.Empty;
 							OnCurrentItemUpdated();
 						}
 						break;
