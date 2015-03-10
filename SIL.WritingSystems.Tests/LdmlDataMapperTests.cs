@@ -454,6 +454,43 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void Roundtrip_LdmlInvalidStandardCollation()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				const string icuRules =
+					"&B<t<<<T<s<<<S<e<<<E\r\n\t\t\t\t&C<k<<<K<x<<<X<i<<<I\r\n\t\t\t\t&D<q<<<Q<r<<<R\r\n\t\t\t\t&G<o<<<O\r\n\t\t\t\t&W<h<<<H";
+				var cd = new IcuCollationDefinition("standard")
+				{
+					IcuRules = icuRules,
+					CollationRules = icuRules,
+					IsValid = false
+				};
+
+				var wsToLdml = new WritingSystemDefinition("aa", "Latn", "", "");
+				wsToLdml.Collations.Add(cd);
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+
+				XElement ldmlElem = XElement.Load(environment.FilePath("test.ldml"));
+				XElement collationsElem = ldmlElem.Element("collations");
+				XElement defaultCollationElem = collationsElem.Element("defaultCollation");
+				XElement collationElem = collationsElem.Element("collation");
+				Assert.That((string)defaultCollationElem, Is.EqualTo("standard"));
+				Assert.That((string)collationElem.Attribute("type"), Is.EqualTo("standard"));
+				Assert.That((string)collationElem, Is.EqualTo(icuRules.Replace("\r\n", "\n")));
+				// Verify comment written about being unable to parse ICU rule
+				const string expectedComment = "'Unable to parse the ICU rules with ICU version'";
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath(string.Format("/ldml/collations/collation/comment()[contains(.,{0})]", expectedComment));
+
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
+				Assert.That(wsFromLdml.Collations.First().ValueEquals(cd));
+			}
+		}
+
+		[Test]
 		public void Roundtrip_LdmlAlternateCollation()
 		{
 			using (var environment = new TestEnvironment())

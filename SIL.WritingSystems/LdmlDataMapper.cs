@@ -1213,6 +1213,12 @@ namespace SIL.WritingSystems
 				collationElem.Add(importElem);
 			}
 
+			// If collation invalid because we couldn't parse the icu rules, write a comment to send back to SLDR
+			if (!icd.IsValid)
+			{
+				collationElem.Add(new XComment(string.Format("Unable to parse the ICU rules with ICU version {0}", Wrapper.IcuVersion)));
+			}
+
 			// If collation valid and icu rules exist, populate icu rules
 			if (!string.IsNullOrEmpty(icd.IcuRules))
 				collationElem.Add(new XElement("cr", new XCData(icd.IcuRules)));
