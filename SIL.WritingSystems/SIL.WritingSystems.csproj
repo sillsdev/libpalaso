@@ -336,6 +336,7 @@
     <Compile Include="WritingSystemRepositoryBase.cs" />
     <Compile Include="WritingSystemRepositoryProblem.cs" />
     <Compile Include="WritingSystemRepositoryExtensions.cs" />
+    <Compile Include="XElementExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">

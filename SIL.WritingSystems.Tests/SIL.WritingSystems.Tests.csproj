@@ -244,6 +244,7 @@
     <Compile Include="WritingSystemDefinitionPropertyTests.cs" />
     <Compile Include="WritingSystemDefinitionVariantTests.cs" />
     <Compile Include="WritingSystemOrphanFinderTests.cs" />
+    <Compile Include="XElementExtensionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Palaso.TestUtilities\Palaso.TestUtilities.csproj">

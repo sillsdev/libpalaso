@@ -195,7 +195,6 @@
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\ProcessExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Extensions\XElementExtensions.cs" />
     <Compile Include="i18n\StringCatalog.cs" />
     <Compile Include="CommandLineProcessing\CommandLineRunner.cs" />
     <Compile Include="IO\FileLock\FileLockContent.cs" />

@@ -1,9 +1,8 @@
 ﻿using System.Linq;
 using System.Xml.Linq;
 using NUnit.Framework;
-using SIL.Extensions;
 
-namespace SIL.Tests.Extensions
+namespace SIL.WritingSystems.Tests
 {
 	[TestFixture]
 	public class XElementExtensionTests
@@ -12,16 +11,56 @@ namespace SIL.Tests.Extensions
 
 		private static readonly string Contents =
 @"<?xml version='1.0' encoding='utf-8'?>
-<ldml xmlns:sil='urn://www.sil.org/ldml/0.1'>
-	<identity version='3.14' sil:date='Jan 1, 2015'>Identity description</identity>
-	<sil:special version='10'>Special description</sil:special>
+<ldml>
+	<identity version='5.43' alt='draft'>Alt Identity description</identity>
+	<identity version='3.14' date='Jan 1, 2015'>Identity description</identity>
+	<special xmlns:sil='urn://www.sil.org/ldml/0.1' status='released'>
+		<sil:identity version='33' alt='draft'>Alternate special description</sil:identity>
+		<sil:identity version='10'>Special description</sil:identity>
+	</special>
+	<special xmlns:sil='urn://www.sil.org/ldml/0.1' alt='draft'>
+		<sil:identity version='44' alt='draft'>Will never parse this</sil:identity>
+	</special>
 </ldml>".Replace("'", "\"");
+
+		[Test]
+		public void NonAltElement()
+		{
+			XElement root = XElement.Parse(Contents);
+			XElement identityElem = root.NonAltElement("identity");
+			Assert.That((string)identityElem.Attribute("version"), Is.EqualTo("3.14"));
+			Assert.That((string)identityElem, Is.EqualTo("Identity description"));
+		}
+
+		[Test]
+		public void NonAltElements()
+		{
+			XElement root = XElement.Parse(Contents);
+			foreach (var elem in root.NonAltElements("identity"))
+			{
+				Assert.That((string)elem.Attribute("version"), Is.EqualTo("3.14"));
+				Assert.That((string)elem, Is.EqualTo("Identity description"));
+			}
+			foreach (var elem in root.NonAltElements())
+			{
+				if (elem.Name == "identity")
+				{
+					Assert.That((string) elem.Attribute("version"), Is.EqualTo("3.14"));
+					Assert.That((string)elem, Is.EqualTo("Identity description"));
+				}
+				else if (elem.Name == "special")
+				{
+					Assert.That((string) elem.Attribute(XNamespace.Xmlns + "sil"), Is.EqualTo(Sil.ToString()));
+					Assert.That((string)elem.Attribute("status"), Is.EqualTo("released"));
+				}
+			}
+		}
 
 		[Test]
 		public void GetChildNullAttribute()
 		{
 			XElement root = XElement.Parse(Contents);
-			Assert.That(root.GetAttributeValue("identity", "date"), Is.Null);
+			Assert.That(root.GetAttributeValue("identity", "year"), Is.Null);
 		}
 
 		[Test]
@@ -54,12 +93,13 @@ namespace SIL.Tests.Extensions
 		public void SetNewChildNamespaceAttribute()
 		{
 			XElement root = XElement.Parse(Contents);
+			XElement specialElem = root.NonAltElement("special");
 			// Assert child element exists, but attribute does not
-			Assert.That(root.Elements(Sil + "special").Any(), Is.True);
-			Assert.That(root.GetAttributeValue(Sil + "special", "color"), Is.Null);
+			Assert.That(specialElem.NonAltElement(Sil + "identity"), Is.Not.EqualTo(null));
+			Assert.That(specialElem.GetAttributeValue(Sil + "identity", "color"), Is.Null);
 			// Set the attribute
-			root.SetAttributeValue(Sil + "special", "color", "blue");
-			Assert.That(root.GetAttributeValue(Sil + "special", "color").Equals("blue"));
+			specialElem.SetAttributeValue(Sil + "identity", "color", "blue");
+			Assert.That(specialElem.GetAttributeValue(Sil + "identity", "color").Equals("blue"));
 		}
 
 		[Test]
@@ -78,11 +118,11 @@ namespace SIL.Tests.Extensions
 			Assert.That(string.IsNullOrEmpty(root.GetAttributeValue("identity", "color")));
 			// Remove the version attribute with empty string
 			root.SetAttributeValue("identity", "version", "");
-			XAttribute attr = root.Element("identity").Attribute("version");
+			XAttribute attr = root.NonAltElement("identity").Attribute("version");
 			Assert.That(attr, Is.Null);
 			// Attempt to remove the version attribute again
 			root.SetAttributeValue("identity", "version", null);
-			attr = root.Element("identity").Attribute("version");
+			attr = root.NonAltElement("identity").Attribute("version");
 			Assert.That(attr, Is.Null);
 		}
 
@@ -99,23 +139,24 @@ namespace SIL.Tests.Extensions
 		public void GetAndSetChildNamespaceAttribute()
 		{
 			XElement root = XElement.Parse(Contents);
-			string attribute = root.GetAttributeValue(Sil + "special", "version");
+			XElement specialElem = root.NonAltElement("special");
+			string attribute = specialElem.GetAttributeValue(Sil + "identity", "version");
 			Assert.That(attribute.Equals("10"));
 			// Modify and verify version attribute
-			root.SetAttributeValue(Sil + "special", "version", "4.0");
-			Assert.That(root.GetAttributeValue(Sil + "special", "version"), Is.EqualTo("4.0"));
+			specialElem.SetAttributeValue(Sil + "identity", "version", "4.0");
+			Assert.That(specialElem.GetAttributeValue(Sil + "identity", "version"), Is.EqualTo("4.0"));
 			// Set color attribute and remove with null
-			root.SetAttributeValue(Sil + "special", "color", "blue");
-			Assert.That(root.GetAttributeValue(Sil + "special", "color"), Is.EqualTo("blue"));
-			root.SetAttributeValue(Sil + "special", "color", null);
-			Assert.That(string.IsNullOrEmpty(root.GetAttributeValue(Sil + "special", "color")));
+			specialElem.SetAttributeValue(Sil + "identity", "color", "blue");
+			Assert.That(specialElem.GetAttributeValue(Sil + "identity", "color"), Is.EqualTo("blue"));
+			specialElem.SetAttributeValue(Sil + "identity", "color", null);
+			Assert.That(string.IsNullOrEmpty(specialElem.GetAttributeValue(Sil + "identity", "color")));
 			// Remove the version attribute with empty string
-			root.SetAttributeValue(Sil + "special", "version", "");
-			XAttribute attr = root.Element(Sil + "special").Attribute("version");
+			specialElem.SetAttributeValue(Sil + "identity", "version", "");
+			XAttribute attr = specialElem.NonAltElement(Sil + "identity").Attribute("version");
 			Assert.That(attr, Is.Null);
 			// Attempt to remove the version attribute again
-			root.SetAttributeValue(Sil + "special", "version", null);
-			attr = root.Element(Sil + "special").Attribute("version");
+			specialElem.SetAttributeValue(Sil + "identity", "version", null);
+			attr = specialElem.NonAltElement(Sil + "identity").Attribute("version");
 			Assert.That(attr, Is.Null);
 		}
 
@@ -123,7 +164,7 @@ namespace SIL.Tests.Extensions
 		public void SetOptionalAttribute()
 		{
 			XElement root = XElement.Parse(Contents);
-			XElement identityElem = root.Element("identity");
+			XElement identityElem = root.NonAltElement("identity");
 			identityElem.SetOptionalAttributeValue("color", "blue");
 			Assert.That(root.GetAttributeValue("identity", "color"), Is.EqualTo("blue"));
 			// Remove the color attribute with empty string

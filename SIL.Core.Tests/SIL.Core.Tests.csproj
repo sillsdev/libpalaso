@@ -229,7 +229,6 @@
     <Compile Include="Extensions\ByteArrayExtensionTests.cs" />
     <Compile Include="Extensions\DateTimeExtensionTests.cs" />
     <Compile Include="Extensions\StringExtensionTests.cs" />
-    <Compile Include="Extensions\XElementExtensionTests.cs" />
     <Compile Include="i18n\StringCatalogTests.cs" />
     <Compile Include="IO\DirectoryUtilitiesTests.cs" />
     <Compile Include="IO\FileLocatorTests.cs" />
