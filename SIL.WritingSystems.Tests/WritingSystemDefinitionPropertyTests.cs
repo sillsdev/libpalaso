@@ -419,14 +419,14 @@ namespace SIL.WritingSystems.Tests
 		public void Constructor_HasOnlyPrivateUse_WritingSystemHasExpectedFields()
 		{
 			var tag = new WritingSystemDefinition("x-privuse");
-			AssertWritingSystem(tag, "privuse", string.Empty, string.Empty, string.Empty);
+			AssertWritingSystem(tag, string.Empty, string.Empty, string.Empty, "x-privuse");
 		}
 
 		[Test]
 		public void Constructor_HasMultiplePrivateUse_WritingSystemHasExpectedFields()
 		{
 			var tag = new WritingSystemDefinition("x-private-use");
-			AssertWritingSystem(tag, "private", string.Empty, string.Empty, "x-use");
+			AssertWritingSystem(tag, string.Empty, string.Empty, string.Empty, "x-private-use");
 		}
 
 		[Test]
@@ -749,6 +749,8 @@ namespace SIL.WritingSystems.Tests
 			secondValueSpecial.Add("DuplicateNumber", 1);
 			firstValueSpecial.Add("LocalKeyboard", new DefaultKeyboardDefinition("mine", string.Empty));
 			secondValueSpecial.Add("LocalKeyboard", new DefaultKeyboardDefinition("yours", string.Empty));
+			firstValueSpecial.Add("IetfLanguageTag", "en");
+			secondValueSpecial.Add("IetfLanguageTag", "de");
 			//firstValueSpecial.Add("SortUsing", "CustomSimple");
 			//secondValueSpecial.Add("SortUsing", "CustomICU");
 			// test values to use based on type
@@ -762,7 +764,6 @@ namespace SIL.WritingSystems.Tests
 			secondValueToSet.Add(typeof (string), "Y");
 			firstValueToSet.Add(typeof (DateTime), new DateTime(2007, 12, 31));
 			secondValueToSet.Add(typeof (DateTime), new DateTime(2008, 1, 1));
-			firstValueToSet.Add(typeof(Rfc5646Tag), new Rfc5646Tag("de", "Latn", "", "1901","audio"));
 			firstValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.IpaPhonemic);
 			secondValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.NotIpa);
 			firstValueToSet.Add(typeof(FontDefinition), new FontDefinition("font1"));
@@ -779,6 +780,7 @@ namespace SIL.WritingSystems.Tests
 			secondValueToSet.Add(typeof(ScriptSubtag), (ScriptSubtag) "Armi");
 			firstValueToSet.Add(typeof(RegionSubtag), (RegionSubtag) "US");
 			secondValueToSet.Add(typeof(RegionSubtag), (RegionSubtag) "GB");
+
 
 			foreach (PropertyInfo propertyInfo in typeof(WritingSystemDefinition).GetProperties(BindingFlags.Public | BindingFlags.Instance))
 			{
@@ -1139,12 +1141,12 @@ namespace SIL.WritingSystems.Tests
 		public void IsVoice_SetToTrueOnEntirelyPrivateUseLanguageTag_markerForUnlistedLanguageIsInserted()
 		{
 			var ws = new WritingSystemDefinition("x-private");
-			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) "private"));
+			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"private"}));
 			ws.IsVoice = true;
-			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) "private"));
+			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) WellKnownSubtags.UnlistedLanguage));
 			Assert.That(ws.Script, Is.EqualTo((ScriptSubtag) WellKnownSubtags.UnwrittenScript));
 			Assert.That(ws.Region, Is.Null);
-			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"audio"}));
+			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"private", WellKnownSubtags.AudioPrivateUse}));
 		}
 
 		[Test]
@@ -1375,7 +1377,8 @@ namespace SIL.WritingSystems.Tests
 		{
 			var writingSystem = new WritingSystemDefinition("x-bogus");
 			writingSystem.IpaStatus = IpaStatusChoices.Ipa;
-			Assert.That(writingSystem.Language, Is.EqualTo((LanguageSubtag) "bogus"));
+			Assert.That(writingSystem.Language, Is.EqualTo((LanguageSubtag) WellKnownSubtags.UnlistedLanguage));
+			Assert.That(writingSystem.Variants, Is.EqualTo(new VariantSubtag[] {WellKnownSubtags.IpaVariant, "bogus"}));
 			Assert.That(writingSystem.IetfLanguageTag, Is.EqualTo("qaa-fonipa-x-bogus"));
 		}
 
@@ -1383,16 +1386,18 @@ namespace SIL.WritingSystems.Tests
 		public void IpaStatus_SetToPhoneticLangTagStartsWithxDash_InsertsUnknownlanguagemarkerAsLanguageSubtag()
 		{
 			var writingSystem = new WritingSystemDefinition("x-bogus") {IpaStatus = IpaStatusChoices.IpaPhonetic};
-			Assert.That(writingSystem.Language, Is.EqualTo((LanguageSubtag) "bogus"));
-			Assert.That(writingSystem.IetfLanguageTag, Is.EqualTo("qaa-fonipa-x-bogus-etic"));
+			Assert.That(writingSystem.Language, Is.EqualTo((LanguageSubtag) WellKnownSubtags.UnlistedLanguage));
+			Assert.That(writingSystem.Variants, Is.EqualTo(new VariantSubtag[] {WellKnownSubtags.IpaVariant, WellKnownSubtags.IpaPhoneticPrivateUse, "bogus"}));
+			Assert.That(writingSystem.IetfLanguageTag, Is.EqualTo("qaa-fonipa-x-etic-bogus"));
 		}
 
 		[Test]
 		public void IpaStatus_SetToPhonemicLangTagStartsWithxDash_InsertsUnknownlanguagemarkerAsLanguageSubtag()
 		{
 			var writingSystem = new WritingSystemDefinition("x-bogus") {IpaStatus = IpaStatusChoices.IpaPhonemic};
-			Assert.That(writingSystem.Language, Is.EqualTo((LanguageSubtag) "bogus"));
-			Assert.That(writingSystem.IetfLanguageTag, Is.EqualTo("qaa-fonipa-x-bogus-emic"));
+			Assert.That(writingSystem.Language, Is.EqualTo((LanguageSubtag) WellKnownSubtags.UnlistedLanguage));
+			Assert.That(writingSystem.Variants, Is.EqualTo(new VariantSubtag[] {WellKnownSubtags.IpaVariant, WellKnownSubtags.IpaPhonemicPrivateUse, "bogus"}));
+			Assert.That(writingSystem.IetfLanguageTag, Is.EqualTo("qaa-fonipa-x-emic-bogus"));
 		}
 
 		[Test]

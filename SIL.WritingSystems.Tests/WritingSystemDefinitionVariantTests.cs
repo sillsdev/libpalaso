@@ -31,36 +31,39 @@ namespace SIL.WritingSystems.Tests
 		public void IpaStatus_SetToPhoneticOnEntirelyPrivateUseWritingSystem_MarkerForUnlistedLanguageIsInserted()
 		{
 			var ws = new WritingSystemDefinition("x-private");
-			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) "private"));
+			Assert.That(ws.Language, Is.Null);
+			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"private"}));
 			ws.IpaStatus = IpaStatusChoices.IpaPhonetic;
-			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) "private"));
+			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) WellKnownSubtags.UnlistedLanguage));
 			Assert.That(ws.Script, Is.Null);
 			Assert.That(ws.Region, Is.Null);
-			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"fonipa", "etic"}));
+			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {WellKnownSubtags.IpaVariant, WellKnownSubtags.IpaPhoneticPrivateUse, "private"}));
 		}
 
 		[Test]
 		public void IpaStatus_SetToIpaOnEntirelyPrivateUseWritingSystem_MarkerForUnlistedLanguageIsInserted()
 		{
 			var ws = new WritingSystemDefinition("x-private");
-			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) "private"));
+			Assert.That(ws.Language, Is.Null);
+			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"private"}));
 			ws.IpaStatus = IpaStatusChoices.Ipa;
-			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) "private"));
+			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) WellKnownSubtags.UnlistedLanguage));
 			Assert.That(ws.Script, Is.Null);
 			Assert.That(ws.Region, Is.Null);
-			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"fonipa"}));
+			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {WellKnownSubtags.IpaVariant, "private"}));
 		}
 
 		[Test]
 		public void IpaStatus_SetToPhonemicOnEntirelyPrivateUseWritingSystem_MarkerForUnlistedLanguageIsInserted()
 		{
 			var ws = new WritingSystemDefinition("x-private");
-			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) "private"));
+			Assert.That(ws.Language, Is.Null);
+			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"private"}));
 			ws.IpaStatus = IpaStatusChoices.IpaPhonemic;
-			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) "private"));
+			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) WellKnownSubtags.UnlistedLanguage));
 			Assert.That(ws.Script, Is.Null);
 			Assert.That(ws.Region, Is.Null);
-			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"fonipa", "emic"}));
+			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {WellKnownSubtags.IpaVariant, WellKnownSubtags.IpaPhonemicPrivateUse, "private"}));
 		}
 
 		[Test]

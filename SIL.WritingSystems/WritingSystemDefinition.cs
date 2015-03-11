@@ -128,12 +128,11 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public WritingSystemDefinition(string ietfLanguageTag)
 		{
+			_ietfLanguageTag = IetfLanguageTagHelper.Canonicalize(ietfLanguageTag);
 			IEnumerable<VariantSubtag> variantSubtags;
-			if (!IetfLanguageTagHelper.TryGetSubtags(ietfLanguageTag, out _language, out _script, out _region, out variantSubtags))
-				throw new ArgumentException("The language tag is invalid.", "ietfLanguageTag");
+			IetfLanguageTagHelper.TryGetSubtags(ietfLanguageTag, out _language, out _script, out _region, out variantSubtags);
 			_variants = new BulkObservableList<VariantSubtag>(variantSubtags);
 			CheckVariantAndScriptRules();
-			_ietfLanguageTag = ietfLanguageTag;
 			_fonts = new KeyedBulkObservableList<string, FontDefinition>(fd => fd.Name);
 			_knownKeyboards = new KeyedBulkObservableList<string, IKeyboardDefinition>(kd => kd.Id);
 			_spellCheckDictionaries = new KeyedBulkObservableList<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition>(scdd => scdd.Format);
@@ -330,26 +329,26 @@ namespace SIL.WritingSystems
 			{
 				if (IpaStatus != value)
 				{
-					RemoveVariants(WellKnownSubtags.IpaVariant, WellKnownSubtags.IpaPhonemicPrivateUse, WellKnownSubtags.IpaPhoneticPrivateUse, WellKnownSubtags.AudioPrivateUse);
-
-					if (_language == null)
-						_language = WellKnownSubtags.UnlistedLanguage;
-
-					int index = IetfLanguageTagHelper.GetIndexOfFirstPrivateUseVariant(_variants);
-
-					switch (value)
+					using (_variants.BulkUpdate())
 					{
-						case IpaStatusChoices.Ipa:
-							_variants.Insert(index, WellKnownSubtags.IpaVariant);
-							break;
-						case IpaStatusChoices.IpaPhonemic:
-							_variants.Insert(index, WellKnownSubtags.IpaVariant);
-							_variants.Insert(index + 1, WellKnownSubtags.IpaPhonemicPrivateUse);
-							break;
-						case IpaStatusChoices.IpaPhonetic:
-							_variants.Insert(index, WellKnownSubtags.IpaVariant);
-							_variants.Insert(index + 1, WellKnownSubtags.IpaPhoneticPrivateUse);
-							break;
+						RemoveVariants(WellKnownSubtags.IpaVariant, WellKnownSubtags.IpaPhonemicPrivateUse, WellKnownSubtags.IpaPhoneticPrivateUse, WellKnownSubtags.AudioPrivateUse);
+
+						int index = IetfLanguageTagHelper.GetIndexOfFirstPrivateUseVariant(_variants);
+
+						switch (value)
+						{
+							case IpaStatusChoices.Ipa:
+								_variants.Insert(index, WellKnownSubtags.IpaVariant);
+								break;
+							case IpaStatusChoices.IpaPhonemic:
+								_variants.Insert(index, WellKnownSubtags.IpaVariant);
+								_variants.Insert(index + 1, WellKnownSubtags.IpaPhonemicPrivateUse);
+								break;
+							case IpaStatusChoices.IpaPhonetic:
+								_variants.Insert(index, WellKnownSubtags.IpaVariant);
+								_variants.Insert(index + 1, WellKnownSubtags.IpaPhoneticPrivateUse);
+								break;
+						}
 					}
 				}
 			}
@@ -386,16 +385,14 @@ namespace SIL.WritingSystems
 
 				if (value)
 				{
-					if (_language == null)
-						_language = WellKnownSubtags.UnlistedLanguage;
 					IpaStatus = IpaStatusChoices.NotIpa;
 					Keyboard = string.Empty;
-					_script = StandardSubtags.Iso15924Scripts[WellKnownSubtags.AudioScript];
-					_variants.Add(StandardSubtags.CommonPrivateUseVariants[WellKnownSubtags.AudioPrivateUse]);
+					Set(() => Script, ref _script, WellKnownSubtags.AudioScript);
+					_variants.Add(WellKnownSubtags.AudioPrivateUse);
 				}
 				else
 				{
-					_script = null;
+					Set(() => Script, ref _script, null);
 					RemoveVariants(WellKnownSubtags.AudioPrivateUse);
 				}
 			}
@@ -491,12 +488,12 @@ namespace SIL.WritingSystems
 				{
 					// Use the language subtag unless it's an unlisted language.
 					// If it's an unlisted language, use the private use area language subtag.
-					if (_language == WellKnownSubtags.UnlistedLanguage)
+					if (_language == null || _language == WellKnownSubtags.UnlistedLanguage)
 					{
-						int idx = IetfLanguageTag.IndexOf("-x-", StringComparison.Ordinal);
-						if (idx > 0 && IetfLanguageTag.Length > idx + 3)
+						int idx = IetfLanguageTag.IndexOf("x-", StringComparison.Ordinal);
+						if (idx > 0 && IetfLanguageTag.Length > idx + 2)
 						{
-							var abbr = IetfLanguageTag.Substring(idx + 3);
+							var abbr = IetfLanguageTag.Substring(idx + 2);
 							idx = abbr.IndexOf('-');
 							if (idx > 0)
 								abbr = abbr.Substring(0, idx);
@@ -567,7 +564,7 @@ namespace SIL.WritingSystems
 					{
 						return _abbreviation;
 					}
-					if (_language != WellKnownSubtags.UnlistedLanguage && !string.IsNullOrEmpty(_language.Name))
+					if (_language != null && _language != WellKnownSubtags.UnlistedLanguage && !string.IsNullOrEmpty(_language.Name))
 					{
 						string n = _language.Name;
 						return n.Substring(0, n.Length > 4 ? 4 : n.Length);
@@ -617,7 +614,7 @@ namespace SIL.WritingSystems
 					}
 				}
 
-				if (_script != null && !IsVoice && _language.ImplicitScriptCode != _script.Code)
+				if (_script != null && !IsVoice && (_language == null || _language.ImplicitScriptCode != _script.Code))
 					details.AppendFormat("{0}-", _script.Code);
 				if (_region != null)
 					details.AppendFormat("{0}-", _region.Code);
@@ -649,7 +646,7 @@ namespace SIL.WritingSystems
 					details.AppendFormat("{0}-", variantSubtag.Code);
 				}
 
-				string name = !string.IsNullOrEmpty(_language.Name) ? _language.Name : DisplayLabel;
+				string name = _language != null && !string.IsNullOrEmpty(_language.Name) ? _language.Name : DisplayLabel;
 				if (details.Length > 0)
 				{
 					// remove trailing dash
@@ -687,14 +684,17 @@ namespace SIL.WritingSystems
 			get { return _ietfLanguageTag; }
 			set
 			{
-				if (value != _ietfLanguageTag)
+				string newLangTag = IetfLanguageTagHelper.Canonicalize(value);
+				if (newLangTag != _ietfLanguageTag)
 				{
-					_ietfLanguageTag = value;
+					_ietfLanguageTag = newLangTag;
 					IEnumerable<VariantSubtag> variantSubtags;
 					IetfLanguageTagHelper.TryGetSubtags(_ietfLanguageTag, out _language, out _script, out _region, out variantSubtags);
 					using (_ignoreVariantChanges.Enter())
+					{
 						if (variantSubtags != null)
 							_variants.ReplaceAll(variantSubtags);
+					}
 					CheckVariantAndScriptRules();
 					IsChanged = true;
 				}
@@ -800,6 +800,8 @@ namespace SIL.WritingSystems
 
 		protected virtual void UpdateIetfLanguageTag()
 		{
+			if (_language == null && (_script != null || _region != null || _variants.Any(v => !v.IsPrivateUse)))
+				Set(() => Language, ref _language, WellKnownSubtags.UnlistedLanguage);
 			_ietfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag(_language, _script, _region, _variants, _requiresValidLanguageTag);
 		}
 

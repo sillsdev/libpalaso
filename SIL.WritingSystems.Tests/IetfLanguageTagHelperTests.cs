@@ -188,6 +188,12 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(IetfLanguageTagHelper.ToIetfLanguageTag("en", "Latn", "US", Enumerable.Empty<VariantSubtag>()), Is.EqualTo("en-US"));
 		}
 
+		[Test]
+		public void Canonicalize_ImplicitScript_SuppressesScript()
+		{
+			Assert.That(IetfLanguageTagHelper.Canonicalize("en-Latn-US"), Is.EqualTo("en-US"));
+		}
+
 		/// <summary>
 		/// Tests the ToIcuLocale() method which converts a language tag to an ICU locale.
 		/// </summary>

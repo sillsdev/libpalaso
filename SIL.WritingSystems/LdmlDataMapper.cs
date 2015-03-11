@@ -921,7 +921,7 @@ namespace SIL.WritingSystems
 		private void WriteLanguageTagElements(XElement identityElem, string languageTag) 
 		{
 			string language, script, region, variant;
-			IetfLanguageTagHelper.GetParts(languageTag, out language, out script, out region, out variant);
+			IetfLanguageTagHelper.TryGetParts(languageTag, out language, out script, out region, out variant);
 			
 			// language element is required
 			identityElem.SetAttributeValue("language", "type", language);

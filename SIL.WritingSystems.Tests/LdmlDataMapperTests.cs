@@ -732,12 +732,9 @@ namespace SIL.WritingSystems.Tests
 			using (var tempFile = new TempFile())
 			{
 				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
-				{
 					writer.Write(LdmlContentForTests.Version3Identity("", "", "", "x-private-use", "abcdefg", "123456", "", ""));
-				}
 				adaptor.Read(tempFile.Path, wsFromLdml);
-				Assert.That(wsFromLdml.Language, Is.EqualTo((LanguageSubtag) "private"));
-				Assert.That(wsFromLdml.Variants, Is.EqualTo(new VariantSubtag[] {"use"}));
+				Assert.That(wsFromLdml.Variants, Is.EqualTo(new VariantSubtag[] {"private", "use"}));
 			}
 		}
 

@@ -550,7 +550,7 @@ namespace SIL.WritingSystems
 			RegionSubtag regionSubtag;
 			IEnumerable<VariantSubtag> variantSubtags;
 			if (!TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
-				throw new ValidationException("The language tag is invalid.");
+				throw new ValidationException("The IETF language tag is invalid.");
 			return ToIcuLocale(languageSubtag, scriptSubtag, regionSubtag, variantSubtags);
 		}
 
@@ -627,7 +627,7 @@ namespace SIL.WritingSystems
 		/// <param name="region">The region part.</param>
 		/// <param name="variant">The variant part.</param>
 		/// <returns></returns>
-		public static bool GetParts(string langTag, out string language, out string script, out string region, out string variant)
+		public static bool TryGetParts(string langTag, out string language, out string script, out string region, out string variant)
 		{
 			language = null;
 			script = null;
@@ -762,26 +762,6 @@ namespace SIL.WritingSystems
 					languageSubtag = languageCode;
 				}
 			}
-			else if (LangPattern.IsMatch(privateUseCodes[0]))
-			{
-				// in this case, the language subtag should always be private use
-				languageSubtag = new LanguageSubtag(privateUseCodes[0]);
-				privateUseCodes.RemoveAt(0);
-				if (privateUseCodes.Count > 0 && ScriptPattern.IsMatch(privateUseCodes[0]))
-				{
-					scriptSubtag = privateUseCodes[0];
-					privateUseCodes.RemoveAt(0);
-				}
-				if (privateUseCodes.Count > 0 && RegionPattern.IsMatch(privateUseCodes[0]))
-				{
-					regionSubtag = privateUseCodes[0];
-					privateUseCodes.RemoveAt(0);
-				}
-			}
-			else
-			{
-				return false;
-			}
 
 			Group scriptGroup = match.Groups["script"];
 			if (scriptGroup.Success)
@@ -800,7 +780,7 @@ namespace SIL.WritingSystems
 					scriptSubtag = scriptCode;
 				}
 			}
-			else if (!string.IsNullOrEmpty(languageSubtag.ImplicitScriptCode))
+			else if (languageSubtag != null && !string.IsNullOrEmpty(languageSubtag.ImplicitScriptCode))
 			{
 				scriptSubtag = languageSubtag.ImplicitScriptCode;
 			}
@@ -850,17 +830,21 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Determines whether the specified language tag is valid.
 		/// </summary>
-		/// <param name="langTag">The language tag.</param>
-		/// <returns>
-		/// 	<c>true</c> if the specified language tag is valid; otherwise, <c>false</c>.
-		/// </returns>
 		public static bool IsValid(string langTag)
 		{
-			LanguageSubtag languageSubtag;
-			ScriptSubtag scriptSubtag;
-			RegionSubtag regionSubtag;
-			IEnumerable<VariantSubtag> variantSubtags;
-			return TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags);
+			string language, script, region, variant;
+			return TryGetParts(langTag, out language, out script, out region, out variant);
+		}
+
+		/// <summary>
+		/// Canonicalizes the specified language tag.
+		/// </summary>
+		public static string Canonicalize(string langTag)
+		{
+			string language, script, region, variant; 
+			if (!TryGetParts(langTag, out language, out script, out region, out variant))
+				throw new ValidationException("The IETF language tag is invalid.");
+			return ToIetfLanguageTag(language, script, region, variant);
 		}
 	}
 }
