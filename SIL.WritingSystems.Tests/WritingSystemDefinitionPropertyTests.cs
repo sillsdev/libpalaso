@@ -502,7 +502,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Constructor_HasBadSubtag_Throws()
 		{
-			Assert.Throws<ArgumentException>(() => new WritingSystemDefinition("qaa-dupl1"));
+			Assert.Throws<ValidationException>(() => new WritingSystemDefinition("qaa-dupl1"));
 		}
 
 		[Test]
