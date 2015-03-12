@@ -21,20 +21,20 @@ namespace SIL.WritingSystems
 		/// Returns a collection of the child elements of this element.  Only elements that have
 		/// a matching XName and don't have an "alt" attribute are included in the collection
 		/// </summary>
-		/// <param name="element"></param>
-		/// <param name="name">The XName to match</param>
-		/// <returns>An IEnumerable<typeparam name=">of XElement"></typeparam></returns>
+		/// <param name="element">The element.</param>
+		/// <param name="name">The name.</param>
+		/// <returns></returns>
 		public static IEnumerable<XElement> NonAltElements(this XElement element, XName name)
 		{
 			return element.Elements(name).Where(e => e.Attribute("alt") == null);
 		}
 
 		/// <summary>
-		/// Returns a collection of the child elements of this element.  Only elements that 
+		/// Returns a collection of the child elements of this element.  Only elements that
 		/// don't have an "alt" attribute are included in the collection
 		/// </summary>
-		/// <param name="element"></param>
-		/// <returns>An IEnumerable<typeparam name=">of XElement"></typeparam></returns>
+		/// <param name="element">The element.</param>
+		/// <returns></returns>
 		public static IEnumerable<XElement> NonAltElements(this XElement element)
 		{
 			return element.Elements().Where(e => e.Attribute("alt") == null);

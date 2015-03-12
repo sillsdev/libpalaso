@@ -474,16 +474,7 @@ namespace SIL.WritingSystems
 			string region = identityElem.GetAttributeValue("territory", "type");
 			string variant = identityElem.GetAttributeValue("variant", "type");
 
-			if (!string.IsNullOrEmpty(language) && (language.StartsWith("x-", StringComparison.OrdinalIgnoreCase) || language.Equals("x", StringComparison.OrdinalIgnoreCase)))
-			{
-				var flexRfcTagInterpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
-				flexRfcTagInterpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, region, variant);
-				ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag(flexRfcTagInterpreter.Language, flexRfcTagInterpreter.Script, flexRfcTagInterpreter.Region, flexRfcTagInterpreter.Variant);
-			}
-			else
-			{
-				ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag(language, script, region, variant);
-			}
+			ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag(language, script, region, variant);
 
 			// TODO: Parse rest of special element.  Currently only handling a subset
 			XElement specialElem = identityElem.NonAltElement("special");
@@ -949,7 +940,6 @@ namespace SIL.WritingSystems
 
 			foreach (CharacterSetDefinition csd in ws.CharacterSets)
 			{
-				string type, alt;
 				XElement exemplarCharactersElem;
 				switch (csd.Type)
 				{

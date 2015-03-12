@@ -200,31 +200,19 @@ namespace SIL.WritingSystems
 				return;
 			}
 
-			if (string.Compare(wsFromFile.Id, wsFromFile.IetfLanguageTag, StringComparison.OrdinalIgnoreCase) != 0)
+			if (!StringComparer.InvariantCultureIgnoreCase.Equals(wsFromFile.Id, wsFromFile.IetfLanguageTag))
 			{
-				bool badFileName = true;
-				if (wsFromFile.Id != null && wsFromFile.Id.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
+				// Add the exception to our list of problems and continue loading
+				var problem = new WritingSystemRepositoryProblem
 				{
-					var interpreter = new FlexConformPrivateUseRfc5646TagInterpreter();
-					interpreter.ConvertToPalasoConformPrivateUseRfc5646Tag(wsFromFile.Id);
-					if (interpreter.Rfc5646Tag.Equals(wsFromFile.IetfLanguageTag, StringComparison.OrdinalIgnoreCase))
-					{
-						badFileName = false;
-					}
-				}
-				if (badFileName)
-				{// Add the exception to our list of problems and continue loading
-					var problem = new WritingSystemRepositoryProblem
-					{
-						Consequence = WritingSystemRepositoryProblem.ConsequenceType.WSWillNotBeAvailable,
-						Exception = new ApplicationException(
-							String.Format(
-								"The writing system file {0} seems to be named inconsistently. It contains the IETF language tag: '{1}'. The name should have been made consistent with its content upon migration of the writing systems.",
-								filePath, wsFromFile.IetfLanguageTag)),
-						FilePath = filePath
-					};
-					_loadProblems.Add(problem);
-				}
+					Consequence = WritingSystemRepositoryProblem.ConsequenceType.WSWillNotBeAvailable,
+					Exception = new ApplicationException(
+						String.Format(
+							"The writing system file {0} seems to be named inconsistently. It contains the IETF language tag: '{1}'. The name should have been made consistent with its content upon migration of the writing systems.",
+							filePath, wsFromFile.IetfLanguageTag)),
+					FilePath = filePath
+				};
+				_loadProblems.Add(problem);
 			}
 			try
 			{

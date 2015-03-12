@@ -1,7 +1,8 @@
 ﻿using NUnit.Framework;
 using SIL.Data;
+using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
-namespace SIL.WritingSystems.Tests
+namespace SIL.WritingSystems.Tests.Migration
 {
 	[TestFixture]
 	public class FlexConformPrivateUseRfc5646TagInterpreterTests

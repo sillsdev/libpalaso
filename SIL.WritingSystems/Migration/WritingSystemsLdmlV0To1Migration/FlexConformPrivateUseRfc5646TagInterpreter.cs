@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SIL.Data;
 
-namespace SIL.WritingSystems
+namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
 	/// <summary>
 	/// This is different from the algorithm used by the RfcTagCleaner because Flex puts Wellknown Scripts, Regions and Properties behind
@@ -12,7 +12,7 @@ namespace SIL.WritingSystems
 	/// Also this class tries to move any private use language subtag (starts with "x-" as per flex) to be the first private use tag when
 	/// rearranged
 	/// </summary>
-	public class FlexConformPrivateUseRfc5646TagInterpreter
+	internal class FlexConformPrivateUseRfc5646TagInterpreter
 	{
 		private string _language = String.Empty;
 		private string _script = String.Empty;
