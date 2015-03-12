@@ -334,7 +334,6 @@ namespace SIL.WritingSystems.Tests
 <ldml>
 	<identity>
 		<version number='' />
-		<generation date='0001-01-01T00:00:00Z' />
 		<language type='en' />
 		<script type='Latn' />
 	</identity>

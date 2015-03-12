@@ -458,17 +458,16 @@ namespace SIL.WritingSystems
 			}
 
 			XElement generationElem = identityElem.Element("generation");
+			DateTime modified = DateTime.UtcNow;
 			if (generationElem != null)
 			{
 				string dateTime = (string) generationElem.Attribute("date") ?? string.Empty;
-				DateTime modified = DateTime.UtcNow;
 				// Previous versions of LDML Data Mapper allowed generation date to be in CVS format
 				// This is deprecated so we only handle ISO 8601 format
 				if (DateTimeExtensions.IsISO8601DateTime(dateTime))
 					modified = DateTimeExtensions.ParseISO8601DateTime(dateTime);
-
-				ws.DateModified = modified;
 			}
+			ws.DateModified = modified;
 
 			string language = identityElem.GetAttributeValue("language", "type");
 			string script = identityElem.GetAttributeValue("script", "type");
