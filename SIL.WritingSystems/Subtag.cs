@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace SIL.WritingSystems
 {
@@ -25,8 +26,10 @@ namespace SIL.WritingSystems
 		/// <param name="isPrivateUse">if set to <c>true</c> this is a private use subtag.</param>
 		protected Subtag(string code, string name, bool isPrivateUse)
 		{
-			if (string.IsNullOrEmpty(code))
+			if (code == null)
 				throw new ArgumentNullException("code");
+			if (code.Any(c => !IsValidChar(c)))
+				throw new ArgumentException("The code contains invalid characters.", "code");
 
 			_code = code;
 			_name = name;
@@ -36,6 +39,13 @@ namespace SIL.WritingSystems
 			_hashCode = _hashCode * 31 + _code.ToLowerInvariant().GetHashCode();
 			_hashCode = _hashCode * 31 + Name.GetHashCode();
 			_hashCode = _hashCode * 31 + _isPrivateUse.GetHashCode();
+		}
+
+		private static bool IsValidChar(char c)
+		{
+			return (c >= 'a' && c <= 'z')
+				|| (c >= 'A' && c <= 'Z')
+				|| (c >= '0' && c <= '9');
 		}
 
 		/// <summary>

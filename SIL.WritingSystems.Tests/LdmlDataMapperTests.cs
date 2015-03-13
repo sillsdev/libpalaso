@@ -126,15 +126,13 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void WriteSetsRequiresValidTagToTrue()
+		public void Write_InvalidLanguageTag_Throws()
 		{
-			var ws = new WritingSystemDefinition();
-			ws.RequiresValidLanguageTag = false;
-			ws.Language = "InvalidLanguage";
+			var ws = new WritingSystemDefinition {Language = "InvalidLanguage"};
 			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			var sw = new StringWriter();
 			var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
-			Assert.Throws<ValidationException>(() => adaptor.Write(writer, ws, null));
+			Assert.Throws<ArgumentException>(() => adaptor.Write(writer, ws, null));
 		}
 
 		[Test]
@@ -472,7 +470,7 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			{
 				const string icuRules =
-					"&B<t<<<T<s<<<S<e<<<E\r\n\t\t\t\t&C<k<<<K<x<<<X<i<<<I\r\n\t\t\t\t&D<q<<<Q<r<<<R\r\n\t\t\t\t&G<o<<<O\r\n\t\t\t\t&W<h<<<H";
+					"&&&B<t<<<T<s<<<S<e<<<E\r\n\t\t\t\t&C<k<<<K<x<<<X<i<<<I\r\n\t\t\t\t&D<q<<<Q<r<<<R\r\n\t\t\t\t&G<o<<<O\r\n\t\t\t\t&W<h<<<H";
 				var cd = new IcuCollationDefinition("standard")
 				{
 					IcuRules = icuRules,
@@ -548,9 +546,7 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			{
 				const string simpleRules =
-					"\r\n\t\t\t\t\ta/A\r\n\t\t\t\t\tb/B\r\n\t\t\t\t\tt/T\r\n\t\t\t\t\ts/S\r\n\t\t\t\t\tc/C\r\n\t\t\t\t\tk/K\r\n\t\t\t\t\tx/X\r\n\t\t\t\t\ti/I\r\n\t\t\t\t\td/D\r\n\t\t\t\t\tq/Q\r\n\t\t\t\t\tr/R\r\n\t\t\t\t\te/E\r\n\t\t\t\t\tf/F\r\n\t\t\t\t\tg/G\r\n\t\t\t\t\to/O\r\n\t\t\t\t\tj/J\r\n\t\t\t\t\tl/L\r\n\t\t\t\t\tm/M\r\n\t\t\t\t\tn/N\r\n\t\t\t\t\tp/P\r\n\t\t\t\t\tu/U\r\n\t\t\t\t\tv/V\r\n\t\t\t\t\tw/W\r\n\t\t\t\t\th/H\r\n\t\t\t\t\ty/Y\r\n\t\t\t\t\tz/Z\r\n\t\t\t\t";
-				const string icuRules =
-					"&[before 1] [first regular]  < a\\/A < b\\/B < t\\/T < s\\/S < c\\/C < k\\/K < x\\/X < i\\/I < d\\/D < q\\/Q < r\\/R < e\\/E < f\\/F < g\\/G < o\\/O < j\\/J < l\\/L < m\\/M < n\\/N < p\\/P < u\\/U < v\\/V < w\\/W < h\\/H < y\\/Y < z\\/Z";
+					"\r\n\t\t\t\t\t\\!/A\r\n\t\t\t\t\tb/B\r\n\t\t\t\t\tt/T\r\n\t\t\t\t\ts/S\r\n\t\t\t\t\tc/C\r\n\t\t\t\t\tk/K\r\n\t\t\t\t\tx/X\r\n\t\t\t\t\ti/I\r\n\t\t\t\t\td/D\r\n\t\t\t\t\tq/Q\r\n\t\t\t\t\tr/R\r\n\t\t\t\t\te/E\r\n\t\t\t\t\tf/F\r\n\t\t\t\t\tg/G\r\n\t\t\t\t\to/O\r\n\t\t\t\t\tj/J\r\n\t\t\t\t\tl/L\r\n\t\t\t\t\tm/M\r\n\t\t\t\t\tn/N\r\n\t\t\t\t\tp/P\r\n\t\t\t\t\tu/U\r\n\t\t\t\t\tv/V\r\n\t\t\t\t\tw/W\r\n\t\t\t\t\th/H\r\n\t\t\t\t\ty/Y\r\n\t\t\t\t\tz/Z\r\n\t\t\t\t";
 				var cd = new SimpleCollationDefinition("standard")
 				{
 					SimpleRules = simpleRules,
@@ -573,9 +569,7 @@ namespace SIL.WritingSystems.Tests
 
 				var validatedCd = new SimpleCollationDefinition("standard")
 				{
-					SimpleRules = simpleRules,
-					CollationRules = icuRules,
-					IsValid = true
+					SimpleRules = simpleRules
 				};
 				// When the LDML reader parses the invalid rules, it will validate and regenerate icu rules
 				var wsFromLdml = new WritingSystemDefinition();
@@ -1075,7 +1069,7 @@ namespace SIL.WritingSystems.Tests
 		private static void WriteCurrentVersionLdml(string language, string script, string territory, string variant, TempFile file)
 		{
 			var ws = new WritingSystemDefinition();
-			ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag(language, script, territory, variant);
+			ws.IetfLanguageTag = IetfLanguageTagHelper.CreateIetfLanguageTag(language, script, territory, variant);
 			new LdmlDataMapper(new TestWritingSystemFactory()).Write(file.Path, ws, null);
 		}
 

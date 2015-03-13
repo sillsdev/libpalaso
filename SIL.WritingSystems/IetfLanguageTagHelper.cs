@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Icu;
-using SIL.Data;
 using SIL.Extensions;
 
 namespace SIL.WritingSystems
@@ -206,9 +205,9 @@ namespace SIL.WritingSystems
 				languageSubtag = new LanguageSubtag(languageCode);
 			}
 			if (icuLanguageCode == icuLocale)
-				return ToIetfLanguageTag(languageSubtag, null, null, Enumerable.Empty<VariantSubtag>());
+				return CreateIetfLanguageTag(languageSubtag, null, null, Enumerable.Empty<VariantSubtag>());
 
-			return ToIetfLanguageTag(languageSubtag, locale.Script, locale.Country, TranslateVariantCode(locale.Variant));
+			return CreateIetfLanguageTag(languageSubtag, locale.Script, locale.Country, TranslateVariantCode(locale.Variant));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -336,15 +335,54 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// Generates a language tag from the specified subtags.
+		/// Tries to create a language tag from the specified subtags.
 		/// </summary>
-		public static string ToIetfLanguageTag(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag, RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags, bool validate = true)
+		public static bool TryCreateIetfLanguageTag(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag, RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags, out string langTag)
 		{
+			string message, paramName;
+			if (!TryCreateIetfLanguageTag(languageSubtag, scriptSubtag, regionSubtag, variantSubtags, out langTag, out message, out paramName))
+			{
+				langTag = null;
+				return false;
+			}
+			return true;
+		}
+
+		/// <summary>
+		/// Creates a language tag from the specified subtags.
+		/// </summary>
+		public static string CreateIetfLanguageTag(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag, RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags, bool validate = true)
+		{
+			string langTag, message, paramName;
+			if (!TryCreateIetfLanguageTag(languageSubtag, scriptSubtag, regionSubtag, variantSubtags, out langTag, out message, out paramName))
+			{
+				if (validate)
+					throw new ArgumentException(message, paramName);
+			}
+
+			return langTag;
+		}
+
+		/// <summary>
+		/// Validates the creation of an IETF language tag.
+		/// </summary>
+		public static bool Validate(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag, RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags, out string message)
+		{
+			string langTag, paramName;
+			return TryCreateIetfLanguageTag(languageSubtag, scriptSubtag, regionSubtag, variantSubtags, out langTag, out message, out paramName);
+		}
+
+		private static bool TryCreateIetfLanguageTag(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag, RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags, out string langTag,
+			out string message, out string paramName)
+		{
+			message = null;
+			paramName = null;
 			VariantSubtag[] variantSubtagsArray = variantSubtags.ToArray();
-			if (validate && languageSubtag == null && (scriptSubtag != null || regionSubtag != null || variantSubtagsArray.Any(v => !v.IsPrivateUse)))
-				throw new ValidationException("A language subtag is required.");
-			if (validate && languageSubtag == null && variantSubtagsArray.Length == 0)
-				throw new ValidationException("A language subtag is required.");
+			if (languageSubtag == null && (scriptSubtag != null || regionSubtag != null || variantSubtagsArray.Length == 0 || variantSubtagsArray.Any(v => !v.IsPrivateUse)))
+			{
+				message = "A language subtag is required.";
+				paramName = "languageSubtag";
+			}
 
 			var sb = new StringBuilder();
 
@@ -354,8 +392,11 @@ namespace SIL.WritingSystems
 				// Insert non-custom language, script, region into main part of code.
 				if (languageSubtag.IsPrivateUse && languageSubtag.Code != WellKnownSubtags.UnlistedLanguage)
 				{
-					if (validate && !LangPattern.IsMatch(languageSubtag.Code))
-						throw new ValidationException("The private use language code is invalid.");
+					if (!LangPattern.IsMatch(languageSubtag.Code))
+					{
+						message = "The private use language code is invalid.";
+						paramName = "languageSubtag";
+					}
 					sb.Append("qaa");
 					isCustomLanguage = true;
 				}
@@ -374,8 +415,11 @@ namespace SIL.WritingSystems
 				// so we don't confuse some other private-use tag with a custom script.
 				if (scriptSubtag.IsPrivateUse && !StandardSubtags.IsPrivateUseScriptCode(scriptSubtag.Code))
 				{
-					if (validate && !ScriptPattern.IsMatch(scriptSubtag.Code))
-						throw new ValidationException("The private use script code is invalid.");
+					if (message == null && !ScriptPattern.IsMatch(scriptSubtag.Code))
+					{
+						message = "The private use script code is invalid.";
+						paramName = "scriptSubtag";
+					}
 					sb.Append("Qaaa");
 					isCustomScript = true;
 				}
@@ -394,8 +438,11 @@ namespace SIL.WritingSystems
 				// so we don't confuse some other private-use tag with a custom region.
 				if (regionSubtag.IsPrivateUse && !StandardSubtags.IsPrivateUseRegionCode(regionSubtag.Code))
 				{
-					if (validate && !RegionPattern.IsMatch(regionSubtag.Code))
-						throw new ValidationException("The private use region code is invalid.");
+					if (message == null && !RegionPattern.IsMatch(regionSubtag.Code))
+					{
+						message = "The private use region code is invalid.";
+						paramName = "regionSubtag";
+					}
 					sb.Append("QM");
 					isCustomRegion = true;
 				}
@@ -405,11 +452,14 @@ namespace SIL.WritingSystems
 				}
 			}
 
-			var variants = new HashSet<string>();
+			var variants = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 			foreach (VariantSubtag variantSubtag in variantSubtagsArray.Where(vs => !vs.IsPrivateUse))
 			{
-				if (validate && variants.Contains(variantSubtag.Code))
-					throw new ValidationException("Duplicate variants are not allowed.");
+				if (message == null && variants.Contains(variantSubtag.Code))
+				{
+					message = "Duplicate variants are not allowed.";
+					paramName = "variantSubtags";
+				}
 				if (sb.Length > 0)
 					sb.Append("-");
 				sb.Append(variantSubtag.Code);
@@ -460,10 +510,16 @@ namespace SIL.WritingSystems
 			variants.Clear();
 			foreach (VariantSubtag variantSubtag in variantSubtagsArray.Where(vs => vs.IsPrivateUse))
 			{
-				if (validate && !PrivateUsePattern.IsMatch(variantSubtag.Code))
-					throw new ValidationException("The private use subtags contains an invalid subtag.");
-				if (validate && variants.Contains(variantSubtag.Code))
-					throw new ValidationException("Duplicate private use subtags are not allowed.");
+				if (message == null && !PrivateUsePattern.IsMatch(variantSubtag.Code))
+				{
+					message = "The private use subtags contains an invalid subtag.";
+					paramName = "variantSubtags";
+				}
+				if (message == null && variants.Contains(variantSubtag.Code))
+				{
+					message = "Duplicate private use subtags are not allowed.";
+					paramName = "variantSubtags";
+				}
 
 				if (sb.Length > 0)
 					sb.Append("-");
@@ -476,28 +532,71 @@ namespace SIL.WritingSystems
 				variants.Add(variantSubtag.Code);
 			}
 
-			return sb.ToString();
+			langTag = sb.ToString();
+			return message == null;
 		}
 
 		/// <summary>
-		/// Generates a language tag from the specified codes.
+		/// Tries to create a language tag from the specified subtag codes.
 		/// </summary>
-		public static string ToIetfLanguageTag(string languageCode, string scriptCode, string regionCode, string variantCodes, bool validate = true)
+		public static bool TryCreateIetfLanguageTag(string languageCode, string scriptCode, string regionCode, string variantCodes, out string langTag)
 		{
+			string message, paramName;
+			return TryCreateIetfLanguageTag(languageCode, scriptCode, regionCode, variantCodes, out langTag, out message, out paramName);
+		}
+
+		/// <summary>
+		/// Creates a language tag from the specified subtag codes.
+		/// </summary>
+		public static string CreateIetfLanguageTag(string languageCode, string scriptCode, string regionCode, string variantCodes, bool validate = true)
+		{
+			string langTag, message, paramName;
+			if (!TryCreateIetfLanguageTag(languageCode, scriptCode, regionCode, variantCodes, out langTag, out message, out paramName))
+			{
+				if (validate)
+					throw new ArgumentException(message, paramName);
+			}
+			return langTag;
+		}
+
+		/// <summary>
+		/// Validates the creation of an IETF language tag.
+		/// </summary>
+		public static bool Validate(string languageCode, string scriptCode, string regionCode, string variantCodes, out string message)
+		{
+			string langTag, paramName;
+			return TryCreateIetfLanguageTag(languageCode, scriptCode, regionCode, variantCodes, out langTag, out message, out paramName);
+		}
+
+		private static bool TryCreateIetfLanguageTag(string languageCode, string scriptCode, string regionCode, string variantCodes, out string langTag, out string message, out string paramName)
+		{
+			message = null;
+			paramName = null;
+			if (string.IsNullOrEmpty(languageCode) && (!string.IsNullOrEmpty(scriptCode) || !string.IsNullOrEmpty(regionCode)
+				|| (!string.IsNullOrEmpty(variantCodes) && !variantCodes.StartsWith("x-", StringComparison.InvariantCultureIgnoreCase))))
+			{
+				message = "A language code is required.";
+				paramName = "languageCode";
+			}
+
 			var sb = new StringBuilder();
 			if (!string.IsNullOrEmpty(languageCode))
 			{
-				if (validate && !StandardSubtags.IsValidIso639LanguageCode(languageCode))
-					throw new ValidationException("The language code is invalid.");
+				if (!StandardSubtags.IsValidIso639LanguageCode(languageCode))
+				{
+					message = "The language code is invalid.";
+					paramName = "languageCode";
+				}
 				sb.Append(languageCode);
 			}
 
 			if (!string.IsNullOrEmpty(scriptCode))
 			{
-				if (validate && string.IsNullOrEmpty(languageCode))
-					throw new ValidationException("A language code is required.");
-				if (validate && !StandardSubtags.IsValidIso15924ScriptCode(scriptCode))
-					throw new ValidationException("The script code is invalid.");
+				if (message == null && !StandardSubtags.IsValidIso15924ScriptCode(scriptCode))
+				{
+					message = "The script code is invalid.";
+					paramName = "scriptCode";
+				}
 				// do not include implicit script codes in the language tag
 				LanguageSubtag language;
 				if (string.IsNullOrEmpty(languageCode) || !StandardSubtags.Iso639Languages.TryGet(languageCode, out language) || language.ImplicitScriptCode != scriptCode)
@@ -510,10 +609,11 @@ namespace SIL.WritingSystems
 
 			if (!string.IsNullOrEmpty(regionCode))
 			{
-				if (validate && string.IsNullOrEmpty(languageCode))
-					throw new ValidationException("A language code is required.");
-				if (validate && !StandardSubtags.IsValidIso3166RegionCode(regionCode))
-					throw new ValidationException("The region code is invaild.");
+				if (message == null && !StandardSubtags.IsValidIso3166RegionCode(regionCode))
+				{
+					message = "The region code is invaild.";
+					paramName = "regionCode";
+				}
 				if (sb.Length > 0)
 					sb.Append("-");
 				sb.Append(regionCode);
@@ -521,28 +621,56 @@ namespace SIL.WritingSystems
 
 			if (!string.IsNullOrEmpty(variantCodes))
 			{
-				if (validate && string.IsNullOrEmpty(languageCode) && !variantCodes.StartsWith("x-", StringComparison.InvariantCultureIgnoreCase))
-					throw new ValidationException("A language code is required.");
-				foreach (string variantCode in variantCodes.Split(new[] {'-'}, StringSplitOptions.RemoveEmptyEntries))
+				if (message == null)
 				{
-					if (variantCode.Equals("x", StringComparison.InvariantCultureIgnoreCase))
-						break;
-					if (validate && !StandardSubtags.IsValidRegisteredVariantCode(variantCode))
-						throw new ValidationException("A variant code is invalid.");
+					bool inPrivateUse = false;
+					var variants = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+					foreach (string variantCode in variantCodes.Split(new[] {'-'}, StringSplitOptions.RemoveEmptyEntries))
+					{
+						if (variants.Contains(variantCode))
+						{
+							message = "Duplicate private use codes are not allowed.";
+							paramName = "variantCodes";
+							break;
+						}
+						if (variantCode.Equals("x", StringComparison.InvariantCultureIgnoreCase))
+						{
+							if (inPrivateUse)
+							{
+								message = "Duplicate x codes are not allowed.";
+								paramName = "variantCodes";
+								break;
+							}
+							inPrivateUse = true;
+							variants.Clear();
+							continue;
+						}
+						if (!inPrivateUse && !StandardSubtags.IsValidRegisteredVariantCode(variantCode))
+						{
+							message = "A variant code is invalid.";
+							paramName = "variantCodes";
+							break;
+						}
+						if (inPrivateUse && !PrivateUsePattern.IsMatch(variantCode))
+						{
+							message = "A private use code is invalid.";
+							paramName = "variantCodes";
+						}
+						variants.Add(variantCode);
+					}
 				}
 				if (sb.Length > 0)
 					sb.Append("-");
 				sb.Append(variantCodes);
 			}
 
-			return sb.ToString();
+			langTag = sb.ToString();
+			return message == null;
 		}
 
 		/// <summary>
 		/// Converts the specified language tag to an ICU locale.
 		/// </summary>
-		/// <param name="langTag">The language tag.</param>
-		/// <returns></returns>
 		public static string ToIcuLocale(string langTag)
 		{
 			LanguageSubtag languageSubtag;
@@ -550,22 +678,17 @@ namespace SIL.WritingSystems
 			RegionSubtag regionSubtag;
 			IEnumerable<VariantSubtag> variantSubtags;
 			if (!TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
-				throw new ValidationException("The IETF language tag is invalid.");
-			return ToIcuLocale(languageSubtag, scriptSubtag, regionSubtag, variantSubtags);
+				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+			return CreateIcuLocale(languageSubtag, scriptSubtag, regionSubtag, variantSubtags);
 		}
 
 		/// <summary>
-		/// Generates an ICU locale from the specified language tag subtags.
+		/// Creates an ICU locale from the specified language tag subtags.
 		/// </summary>
-		/// <param name="languageSubtag">The language subtag.</param>
-		/// <param name="scriptSubtag">The script subtag.</param>
-		/// <param name="regionSubtag">The region subtag.</param>
-		/// <param name="variantSubtags">The variant subtag.</param>
-		/// <returns></returns>
-		public static string ToIcuLocale(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag, RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags)
+		public static string CreateIcuLocale(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag, RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags)
 		{
 			if (languageSubtag == null)
-				throw new ValidationException("A language subtag is required.");
+				throw new ArgumentException("A language subtag is required.", "languageSubtag");
 
 			var sb = new StringBuilder();
 			//start with the LanguageCode
@@ -612,9 +735,9 @@ namespace SIL.WritingSystems
 		/// <param name="regionCode">The region code.</param>
 		/// <param name="variantCodes">The variant code.</param>
 		/// <returns></returns>
-		public static string ToIcuLocale(string languageCode, string scriptCode, string regionCode, string variantCodes)
+		public static string CreateIcuLocale(string languageCode, string scriptCode, string regionCode, string variantCodes)
 		{
-			string langTag = ToIetfLanguageTag(languageCode, scriptCode, regionCode, variantCodes);
+			string langTag = CreateIetfLanguageTag(languageCode, scriptCode, regionCode, variantCodes);
 			return ToIcuLocale(langTag);
 		}
 
@@ -675,29 +798,42 @@ namespace SIL.WritingSystems
 				region = regionGroup.Value;
 			}
 
-			string variantCodes;
+			var variants = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 			Group variantGroup = match.Groups["variant"];
 			if (variantGroup.Success)
 			{
-				if (variantGroup.Value.Split(new[] {'-'}, StringSplitOptions.RemoveEmptyEntries).Any(v => !StandardSubtags.IsValidRegisteredVariantCode(v)))
+				foreach (string variantCode in variantGroup.Value.Split(new[] {'-'}, StringSplitOptions.RemoveEmptyEntries))
 				{
-					language = null;
-					script = null;
-					region = null;
-					return false;
+					if (variants.Contains(variantCode) || !StandardSubtags.IsValidRegisteredVariantCode(variantCode))
+					{
+						language = null;
+						script = null;
+						region = null;
+						return false;
+					}
+					variants.Add(variantCode);
 				}
-				variantCodes = variantGroup.Value;
-			}
-			else
-			{
-				variantCodes = string.Empty;
 			}
 
+			variants.Clear();
 			Group privateUseGroup = match.Groups["privateuse"];
-			string privateUseCodes = privateUseGroup.Success ? privateUseGroup.Value : string.Empty;
+			if (privateUseGroup.Success)
+			{
+				foreach (string privateUseCode in privateUseGroup.Value.Split(new[] {'-'}, StringSplitOptions.RemoveEmptyEntries).Skip(1))
+				{
+					if (variants.Contains(privateUseCode) || privateUseCode.Equals("x", StringComparison.InvariantCultureIgnoreCase) || !PrivateUsePattern.IsMatch(privateUseCode))
+					{
+						language = null;
+						script = null;
+						region = null;
+						return false;
+					}
+					variants.Add(privateUseCode);
+				}
+			}
 
-			if (!string.IsNullOrEmpty(variantCodes) || !string.IsNullOrEmpty(privateUseCodes))
-				variant = ConcatenateVariantAndPrivateUse(variantCodes, privateUseCodes);
+			if (variantGroup.Success || privateUseGroup.Success)
+				variant = ConcatenateVariantAndPrivateUse(variantGroup.Value, privateUseGroup.Value);
 
 			return true;
 		}
@@ -714,7 +850,7 @@ namespace SIL.WritingSystems
 		public static bool TryGetSubtags(string langTag, out LanguageSubtag languageSubtag, out ScriptSubtag scriptSubtag,
 			out RegionSubtag regionSubtag, out IEnumerable<VariantSubtag> variantSubtags)
 		{
-			if (string.IsNullOrEmpty(langTag))
+			if (langTag == null)
 				throw new ArgumentNullException("langTag");
 
 			languageSubtag = null;
@@ -729,7 +865,7 @@ namespace SIL.WritingSystems
 			var privateUseCodes = new List<string>();
 			Group privateUseGroup = match.Groups["privateuse"];
 			if (privateUseGroup.Success)
-				privateUseCodes.AddRange(privateUseGroup.Value.Substring(2).Split(new[] {'-'}, StringSplitOptions.RemoveEmptyEntries));
+				privateUseCodes.AddRange(privateUseGroup.Value.Split(new[] {'-'}, StringSplitOptions.RemoveEmptyEntries).Skip(1));
 
 			Group languageGroup = match.Groups["language"];
 			if (languageGroup.Success)
@@ -744,7 +880,8 @@ namespace SIL.WritingSystems
 					// program. Treating it as a language code will fail if we try to create such a writing system,
 					// since we will detect the invalid language code. So only interpret the first element
 					// after the x as a language code if it is a valid one. Otherwise, we just let qaa be the language.
-					if (privateUseCodes.Count > 0 && LangPattern.IsMatch(privateUseCodes[0]))
+					if (privateUseCodes.Count > 0 && LangPattern.IsMatch(privateUseCodes[0])
+						&& !StandardSubtags.CommonPrivateUseVariants.Contains(privateUseCodes[0]))
 					{
 						languageSubtag = new LanguageSubtag(privateUseCodes[0]);
 						privateUseCodes.RemoveAt(0);
@@ -767,8 +904,10 @@ namespace SIL.WritingSystems
 			if (scriptGroup.Success)
 			{
 				string scriptCode = scriptGroup.Value;
-				if (scriptCode.Equals("Qaaa", StringComparison.OrdinalIgnoreCase) && privateUseCodes.Count > 0)
+				if (scriptCode.Equals("Qaaa", StringComparison.OrdinalIgnoreCase) && privateUseCodes.Count > 0
+					&& ScriptPattern.IsMatch(privateUseCodes[0]))
 				{
+
 					scriptSubtag = new ScriptSubtag(privateUseCodes[0]);
 					privateUseCodes.RemoveAt(0);
 				}
@@ -789,7 +928,8 @@ namespace SIL.WritingSystems
 			if (regionGroup.Success)
 			{
 				string regionCode = regionGroup.Value;
-				if (regionCode.Equals("QM", StringComparison.OrdinalIgnoreCase) && privateUseCodes.Count > 0)
+				if (regionCode.Equals("QM", StringComparison.OrdinalIgnoreCase) && privateUseCodes.Count > 0
+					&& RegionPattern.IsMatch(privateUseCodes[0]))
 				{
 					regionSubtag = new RegionSubtag(privateUseCodes[0]);
 					privateUseCodes.RemoveAt(0);
@@ -803,25 +943,33 @@ namespace SIL.WritingSystems
 				}
 			}
 
+			var variants = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 			var variantSubtagsList = new List<VariantSubtag>();
 			Group variantGroup = match.Groups["variant"];
 			if (variantGroup.Success)
 			{
 				foreach (string variantCode in variantGroup.Value.Split(new[] {'-'}, StringSplitOptions.RemoveEmptyEntries))
 				{
+					if (variants.Contains(variantCode))
+						return false;
 					VariantSubtag variantSubtag;
 					if (!StandardSubtags.RegisteredVariants.TryGet(variantCode, out variantSubtag))
 						return false;
 					variantSubtagsList.Add(variantSubtag);
+					variants.Add(variantCode);
 				}
 			}
 
-			foreach (string privateUseCode in privateUseCodes.Where(c => !c.Equals("x", StringComparison.InvariantCultureIgnoreCase)))
+			variants.Clear();
+			foreach (string privateUseCode in privateUseCodes)
 			{
+				if (variants.Contains(privateUseCode) || privateUseCode.Equals("x", StringComparison.InvariantCultureIgnoreCase))
+					return false;
 				VariantSubtag variantSubtag;
 				if (!StandardSubtags.CommonPrivateUseVariants.TryGet(privateUseCode, out variantSubtag))
 					variantSubtag = new VariantSubtag(privateUseCode);
 				variantSubtagsList.Add(variantSubtag);
+				variants.Add(privateUseCode);
 			}
 			variantSubtags = variantSubtagsList;
 			return true;
@@ -841,10 +989,13 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public static string Canonicalize(string langTag)
 		{
-			string language, script, region, variant; 
-			if (!TryGetParts(langTag, out language, out script, out region, out variant))
-				throw new ValidationException("The IETF language tag is invalid.");
-			return ToIetfLanguageTag(language, script, region, variant);
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			if (!TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
+				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+			return CreateIetfLanguageTag(languageSubtag, scriptSubtag, regionSubtag, variantSubtags);
 		}
 	}
 }

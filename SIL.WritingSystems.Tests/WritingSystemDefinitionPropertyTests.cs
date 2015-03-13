@@ -501,7 +501,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Constructor_HasBadSubtag_Throws()
 		{
-			Assert.Throws<ValidationException>(() => new WritingSystemDefinition("qaa-dupl1"));
+			Assert.Throws<ArgumentException>(() => new WritingSystemDefinition("qaa-dupl1"));
 		}
 
 		[Test]
@@ -592,7 +592,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Variant_ConsistsOnlyOfRfc5646Variant_VariantIsSetCorrectly()
+		public void Variants_ConsistsOnlyOfRfc5646Variant_VariantsIsSetCorrectly()
 		{
 			var ws = new WritingSystemDefinition();
 			ws.Variants.Add("fonipa");
@@ -600,7 +600,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Variant_ConsistsOnlyOfRfc5646PrivateUse_VariantIsSetCorrectly()
+		public void Variants_ConsistsOnlyOfRfc5646PrivateUse_VariantsIsSetCorrectly()
 		{
 			var ws = new WritingSystemDefinition();
 			ws.Variants.Add("test");
@@ -608,7 +608,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Variant_ConsistsOfBothRfc5646VariantandprivateUse_VariantIsSetCorrectly()
+		public void Variants_ConsistsOfBothRfc5646VariantandprivateUse_VariantsIsSetCorrectly()
 		{
 			var ws = new WritingSystemDefinition();
 			ws.Variants.AddRange(new VariantSubtag[] {"fonipa", "etic"});
@@ -616,39 +616,37 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void InvalidTagOkWhenRequiresValidTagFalse()
+		public void Language_InvalidLanguageSubtag_LanguageIsSetCorrectly()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.RequiresValidLanguageTag = false;
 			ws.Language = "Kalaba";
 			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) "Kalaba"));
 		}
 
 		[Test]
-		public void DuplicatePrivateUseOkWhenRequiresValidTagFalse()
+		public void Variants_DuplicatePrivateUse_VariantsIsSetCorrectly()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.RequiresValidLanguageTag = false;
 			ws.Variants.AddRange(new VariantSubtag[] {"nong", "nong"});
 			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"nong", "nong"}));
 		}
 
 		[Test]
-		public void InvalidTagThrowsWhenRequiresValidTagSetToTrue()
+		public void ValidateIetfLanguageTag_InvalidLanguageTag_IsFalse()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.RequiresValidLanguageTag = false;
 			ws.Language = "InvalidLanguage";
-			Assert.Throws<ValidationException>(() => ws.RequiresValidLanguageTag = true);
+			string message;
+			Assert.That(ws.ValidateIetfLanguageTag(out message), Is.False);
 		}
 
 		[Test]
-		public void DuplicatePrivateUseThrowsWhenRequiresValidTagSetToTrue()
+		public void ValidateIetfLanguageTag_DuplicatePrivateUse_IsFalse()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.RequiresValidLanguageTag = false;
 			ws.Variants.AddRange(new VariantSubtag[] {"nong", "nong"});
-			Assert.Throws<ValidationException>(() => ws.RequiresValidLanguageTag = true);
+			string message;
+			Assert.That(ws.ValidateIetfLanguageTag(out message), Is.False);
 		}
 
 		[Test]
@@ -724,7 +722,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Constructor_OnlyVariantIsPassedIn_Throws()
 		{
-			Assert.Throws<ValidationException>(() => new WritingSystemDefinition("", "", "", "bogus"));
+			Assert.Throws<ArgumentException>(() => new WritingSystemDefinition("", "", "", "bogus"));
 		}
 
 		[Test]
@@ -858,20 +856,19 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Script_ChangedToSomethingOtherThanZxxxWhileIsVoiceIsTrue_Throws()
+		public void ValidateIetfLanguageTag_ScriptChangedToSomethingOtherThanZxxxWhileIsVoiceIsTrue_IsFalse()
 		{
-			var ws = new WritingSystemDefinition
-			{
-				IsVoice = true
-			};
-			Assert.Throws<ValidationException>(() => ws.Script = "change!");
+			var ws = new WritingSystemDefinition {IsVoice = true};
+			ws.Script = "change";
+			string message;
+			Assert.That(ws.ValidateIetfLanguageTag(out message), Is.False);
 		}
 
 		[Test]
-		public void SetIetfLanguageTag_ScriptSetToZxxxAndVariantSetToXDashAudio_SetsIsVoiceToTrue()
+		public void IetfLanguageTag_ScriptSetToZxxxAndVariantSetToXDashAudio_SetsIsVoiceToTrue()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag(
+			ws.IetfLanguageTag = IetfLanguageTagHelper.CreateIetfLanguageTag(
 				"th",
 				WellKnownSubtags.AudioScript,
 				"",
@@ -881,10 +878,10 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void SetIetfLanguageTag_ScriptSetToZxXxAndVariantSetToXDashAuDiO_SetsIsVoiceToTrue()
+		public void IetfLanguageTag_ScriptSetToZxXxAndVariantSetToXDashAuDiO_SetsIsVoiceToTrue()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag(
+			ws.IetfLanguageTag = IetfLanguageTagHelper.CreateIetfLanguageTag(
 				"th",
 				"ZxXx",
 				"",
@@ -894,7 +891,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Variant_ChangedToSomethingOtherThanXDashAudioWhileIsVoiceIsTrue_IsVoiceIsChangedToFalse()
+		public void Variants_ChangedToSomethingOtherThanXDashAudioWhileIsVoiceIsTrue_IsVoiceIsChangedToFalse()
 		{
 			var ws = new WritingSystemDefinition();
 			ws.IsVoice = true;
@@ -904,7 +901,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Iso639_SetValidLanguage_IsSet()
+		public void Language_SetValidLanguage_IsSet()
 		{
 			var ws = new WritingSystemDefinition {Language = "th"};
 			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) "th"));
@@ -969,41 +966,30 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Variant_IsSetWithDuplicateTags_DontKnowWhatToDo()
+		public void ValidateIetfLanguageTag_VariantsIsSetWithDuplicateTags_IsFalse()
 		{
 			var ws = new WritingSystemDefinition();
 			ws.Language = "en";
 			ws.Variants.Add("1901");
-			Assert.Throws<ValidationException>(
-				() => ws.Variants.Add("1901")
-			);
+			ws.Variants.Add("1901");
+			string message;
+			Assert.That(ws.ValidateIetfLanguageTag(out message), Is.False);
 		}
 
 		[Test]
-		public void Variant_SetToXDashAudioWhileScriptIsNotZxxx_Throws()
+		public void ValidateIetfLanguageTag_ScriptSetToOtherThanZxxxWhileVariantIsXDashAudio_IsFalse()
 		{
-			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.Variants.Add(WellKnownSubtags.AudioPrivateUse));
+			var ws = new WritingSystemDefinition("th", WellKnownSubtags.AudioScript, string.Empty, "x-audio");
+			ws.Script = "Latin";
+			string message;
+			Assert.That(ws.ValidateIetfLanguageTag(out message), Is.False);
 		}
 
 		[Test]
-		public void Script_SetToOtherThanZxxxWhileVariantIsXDashAudio_Throws()
+		public void IetfLanguageTag_VariantSetToPrivateUseOnly_VariantIsSet()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag(
-				"th",
-				WellKnownSubtags.AudioScript,
-				"",
-				"x-audio"
-			);
-			Assert.Throws<ValidationException>(() => ws.Script = "Ltn");
-		}
-
-		[Test]
-		public void SetIetfLanguageTag_VariantSetToPrivateUseOnly_VariantIsSet()
-		{
-			var ws = new WritingSystemDefinition();
-			ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag(
+			ws.IetfLanguageTag = IetfLanguageTagHelper.CreateIetfLanguageTag(
 				"th",
 				WellKnownSubtags.AudioScript,
 				"",
@@ -1013,38 +999,18 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Variant_SetToxDashCapitalAUDIOWhileScriptIsNotZxxx_Throws()
-		{
-			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.Variants.Add("AUDIO"));
-		}
-
-		[Test]
-		public void Script_SetToOtherThanZxxxWhileVariantIsxDashCapitalAUDIO_Throws()
-		{
-			var ws = new WritingSystemDefinition();
-			ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag(
-				"th",
-				WellKnownSubtags.AudioScript,
-				"",
-				"x-AUDIO"
-			);
-			Assert.Throws<ValidationException>(() => ws.Script = "Ltn");
-		}
-
-		[Test]
 		public void IsVoice_VariantIsxDashPrefixaudioPostfix_ReturnsFalse()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag("th", WellKnownSubtags.AudioScript, "", "x-paudiop");
+			ws.IetfLanguageTag = IetfLanguageTagHelper.CreateIetfLanguageTag("th", WellKnownSubtags.AudioScript, "", "x-paudiop");
 			Assert.IsFalse(ws.IsVoice);
 		}
 
 		[Test]
-		public void Variant_ContainsXDashAudioDashFake_VariantIsSet()
+		public void Variants_ContainsXDashAudioDashFake_VariantsIsSet()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag(
+			ws.IetfLanguageTag = IetfLanguageTagHelper.CreateIetfLanguageTag(
 				"th",
 				WellKnownSubtags.AudioScript,
 				"",
@@ -1054,59 +1020,52 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Variant_ContainsXDashAudioAndFonipa_Throws()
+		public void IetfLanguageTag_ContainsXDashAudioAndFonipa_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(
-				() => ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag("qaa", WellKnownSubtags.AudioScript, "", WellKnownSubtags.IpaVariant + "-" + WellKnownSubtags.AudioPrivateUse));
+			Assert.Throws<ArgumentException>(() => ws.IetfLanguageTag = "qaa-Zxxx-fonipa-x-audio");
 		}
 
 		[Test]
-		public void Variant_ContainsXDashEticAndNotFonipaInVariant_Throws()
+		public void IetfLanguageTag_ContainsXDashEticAndNotFonipaInVariant_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(
-				() => ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag("qaa", "", "", WellKnownSubtags.IpaPhoneticPrivateUse));
+			Assert.Throws<ArgumentException>(() => ws.IetfLanguageTag = "qaa-x-etic");
 		}
 
 		[Test]
-		public void Variant_ContainsXDashEmicAndNotFonipaInVariant_Throws()
+		public void IetfLanguageTag_ContainsXDashEmicAndNotFonipaInVariant_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(
-				() => ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag("qaa", "", "", WellKnownSubtags.IpaPhonemicPrivateUse));
+			Assert.Throws<ArgumentException>(() => ws.IetfLanguageTag = "qaa-x-emic");
 		}
 
 		[Test]
-		public void Variant_ContainsXDashEticAndFonipaInPrivateUse_Throws()
+		public void IetfLanguageTag_ContainsXDashEticAndFonipaInPrivateUse_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(
-				() => ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag("qaa", "", "", WellKnownSubtags.IpaPhoneticPrivateUse + '-' + WellKnownSubtags.IpaVariant));
+			Assert.Throws<ArgumentException>(() => ws.IetfLanguageTag = "qaa-x-etic-fonipa");
 		}
 
 		[Test]
-		public void Variant_ContainsXDashEmicAndAndFonipaInPrivateUse_Throws()
+		public void IetfLanguageTag_ContainsXDashEmicAndAndFonipaInPrivateUse_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(
-				() => ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag("qaa", "", "", WellKnownSubtags.IpaPhonemicPrivateUse + '-' + WellKnownSubtags.IpaVariant));
+			Assert.Throws<ArgumentException>(() => ws.IetfLanguageTag = "qaa-x-emic-fonipa");
 		}
 
 		[Test]
-		public void Variant_ContainsXDashAudioAndPhoneticMarker_Throws()
+		public void IetfLanguageTag_ContainsXDashAudioAndPhoneticMarker_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(
-				() => ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag("qaa", WellKnownSubtags.AudioScript, "", WellKnownSubtags.AudioPrivateUse + "-" + "etic"));
+			Assert.Throws<ArgumentException>(() => ws.IetfLanguageTag = "qaa-Zxxx-x-audio-etic");
 		}
 
 		[Test]
-		public void Variant_ContainsXDashAudioAndPhonemicMarker_Throws()
+		public void IetfLanguageTag_ContainsXDashAudioAndPhonemicMarker_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(
-				() => ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag("qaa", WellKnownSubtags.AudioScript, "", WellKnownSubtags.AudioPrivateUse + "-" + "emic"));
+			Assert.Throws<ArgumentException>(() => ws.IetfLanguageTag = "qaa-Zxxx-x-audio-emic");
 		}
 
 		[Test]
@@ -1194,90 +1153,80 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Language_SetEmpty_ThrowsException()
+		public void ValidateIetfLanguageTag_NullLanguage_IsFalse()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.Language = null);
+			ws.Language = null;
+			string message;
+			Assert.That(ws.ValidateIetfLanguageTag(out message), Is.False);
 		}
 
 		[Test]
-		public void Variants_ContainsUnderscore_Throws()
+		public void IsVoice_UnwrittenScriptAndAudioPrivateUse_ReturnsTrue()
 		{
 			var ws = new WritingSystemDefinition();
 			ws.Language = "de";
-			Assert.Throws<ValidationException>(() => ws.Variants.Add("x_audio"));
-		}
-
-		[Test]
-		public void Variants_ContainsxDashCapitalAUDIOAndScriptIsNotZxxx_Throws()
-		{
-			var ws = new WritingSystemDefinition();
-			ws.Language = "de";
-			ws.Script = "Latn";
-			Assert.Throws<ValidationException>(() => ws.Variants.Add("AUDIO"));
-		}
-
-		[Test]
-		public void Variants_IndicatesThatWsIsAudioAndScriptIsCapitalZXXX_ReturnsTrue()
-		{
-			var ws = new WritingSystemDefinition();
-			ws.Language = "de";
-			ws.Script = "ZXXX";
+			ws.Script = WellKnownSubtags.UnwrittenScript;
 			ws.Variants.Add(WellKnownSubtags.AudioPrivateUse);
 			Assert.IsTrue(ws.IsVoice);
 		}
 
 		[Test]
-		public void Variants_VariantIndicatesThatWsIsAudioButContainsotherThanJustTheNecassaryXDashAudioTagAndScriptIsNotZxxx_Throws()
+		public void ValidateIetfLanguageTag_NonUnwrittenScriptAndAudioPrivateUse_IsFalse()
 		{
 			var ws = new WritingSystemDefinition();
 			ws.Language = "de";
 			ws.Script = "latn";
 			ws.Variants.Add("private");
-			Assert.Throws<ValidationException>(() => ws.Variants.Add("audio"));
+			ws.Variants.Add(WellKnownSubtags.AudioPrivateUse);
+			string message;
+			Assert.That(ws.ValidateIetfLanguageTag(out message), Is.False);
 		}
 
 		[Test]
-		public void Language_ContainsXDashAudio_Throws()
+		public void ValidateIetfLanguageTag_UnwrittenScript_IsTrue()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.Language = "de-x-audio");
+			ws.Language = "de";
+			ws.Script = WellKnownSubtags.UnwrittenScript;
+			string message;
+			Assert.That(ws.ValidateIetfLanguageTag(out message), Is.True);
 		}
 
 		[Test]
-		public void Language_ContainsZxxx_Throws()
+		public void ValidateIetfLanguageTag_VariantsContainsAudio_IsFalse()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.Language = "de-Zxxx");
-		}
-
-		[Test]
-		public void Language_ContainsCapitalXDashAudio_Throws()
-		{
-			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.Language = "de-X-AuDiO");
+			ws.Language = "de";
+			ws.Variants.Add(WellKnownSubtags.AudioPrivateUse);
+			string message;
+			Assert.That(ws.ValidateIetfLanguageTag(out message), Is.False);
 		}
 
 		public void Language_SetWithInvalidLanguageTag_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(() => ws.Language = "bogus");
+			Assert.Throws<ArgumentException>(() => ws.Language = "bogus");
 		}
 
 		[Test]
-		public void Script_SetWithInvalidScriptTag_Throws()
+		public void ValidateIetfLanguageTag_InvalidScript_IsFalse()
 		{
 			var ws = new WritingSystemDefinition();
 			ws.Language = "en";
-			Assert.Throws<ValidationException>(() => ws.Script = "xbogustag");
+			ws.Script = "xbogustag";
+			string message;
+			Assert.That(ws.ValidateIetfLanguageTag(out message), Is.False);
 		}
 
 		[Test]
-		public void Region_SetWithInvalidRegionTag_Throws()
+		public void ValidateIetfLanguageTag_InvalidRegion_IsFalse()
 		{
 			var ws = new WritingSystemDefinition();
 			ws.Language = "en";
-			Assert.Throws<ValidationException>(() => ws.Region = "xbogustag");
+			ws.Region = "xbogustag";
+			string message;
+			Assert.That(ws.ValidateIetfLanguageTag(out message), Is.False);
 		}
 
 		[Test]
@@ -1289,71 +1238,63 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void SetIetfLanguageTag_Language_IsSet()
+		public void IetfLanguageTag_Language_IsSet()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag("th", "", "", "");
+			ws.IetfLanguageTag = IetfLanguageTagHelper.CreateIetfLanguageTag("th", "", "", "");
 			Assert.That(ws.Language, Is.EqualTo((LanguageSubtag) "th"));
 		}
 
 		[Test]
-		public void SetIetfLanguageTag_PrivateUseLanguage_IsSet()
+		public void IetfLanguageTag_BadLanguage_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(
-				() => ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag("BadLanguage", "", "", "")
-			);
+			Assert.Throws<ArgumentException>(() => ws.IetfLanguageTag = "badlang");
 		}
 
 		[Test]
-		public void SetIetfLanguageTag_Script_IsSet()
+		public void IetfLanguageTag_Script_IsSet()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag("th", "Thai", "", "");
+			ws.IetfLanguageTag = "th-Thai";
 			Assert.That(ws.Script, Is.EqualTo((ScriptSubtag) "Thai"));
 		}
 
 		[Test]
-		public void SetIetfLanguageTag_BadScript_Throws()
+		public void IetfLanguageTag_BadScript_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(
-				() => ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag("th", "BadScript", "", "")
-			);
+			Assert.Throws<ArgumentException>(() => ws.IetfLanguageTag = "th-BadScript");
 		}
 
 		[Test]
-		public void SetIetfLanguageTag_Region_IsSet()
+		public void IetfLanguageTag_Region_IsSet()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag("th", "Thai", "TH", "");
+			ws.IetfLanguageTag = IetfLanguageTagHelper.CreateIetfLanguageTag("th", "Thai", "TH", "");
 			Assert.That(ws.Region, Is.EqualTo((RegionSubtag) "TH"));
 		}
 
 		[Test]
-		public void SetIetfLanguageTag_BadRegion_Throws()
+		public void IetfLanguageTag_BadRegion_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(
-				() => ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag("th", "Thai", "BadRegion", "")
-			);
+			Assert.Throws<ArgumentException>(() => ws.IetfLanguageTag = "th-Thai-BadRegion");
 		}
 
 		[Test]
-		public void SetIetfLanguageTag_Variant_IsSet()
+		public void IetfLanguageTag_Variant_IsSet()
 		{
 			var ws = new WritingSystemDefinition();
-			ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag("th", "Thai", "TH", "1901");
+			ws.IetfLanguageTag = IetfLanguageTagHelper.CreateIetfLanguageTag("th", "Thai", "TH", "1901");
 			Assert.That(ws.Variants, Is.EqualTo(new VariantSubtag[] {"1901"}));
 		}
 
 		[Test]
-		public void SetIetfLanguageTag_BadVariant_Throws()
+		public void IetfLanguageTag_BadVariant_Throws()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(
-				() => ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag("th", "Thai", "TH", "BadVariant")
-			);
+			Assert.Throws<ArgumentException>(() => ws.IetfLanguageTag = "th-Thai-TH-BadVariant");
 		}
 
 		[Test]
@@ -1407,7 +1348,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Language_Set_IetfLanguageTagchanged()
+		public void Language_Set_IetfLanguageTagChanged()
 		{
 			var writingSystem = new WritingSystemDefinition("en", "Zxxx", "", "1901-x-audio");
 			writingSystem.Language = "de";
@@ -1431,7 +1372,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Region_Set_IetfLanguageTagchanged()
+		public void Region_Set_IetfLanguageTagChanged()
 		{
 			var writingSystem = new WritingSystemDefinition("en", "Zxxx", "", "1901-x-bogus");
 			writingSystem.Region = "US";
@@ -1439,7 +1380,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Variant_Set_IetfLanguageTagchanged()
+		public void Variants_Set_IetfLanguageTagChanged()
 		{
 			var writingSystem = new WritingSystemDefinition("en", "Zxxx", "", "1901-x-bogus");
 			writingSystem.Variants.ReplaceAll(new VariantSubtag[] {"audio"});
@@ -1491,7 +1432,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void AddToVariant_IetfLanguageTagIsSet()
+		public void Variants_IetfLanguageTagIsSet()
 		{
 			var writingSystem = new WritingSystemDefinition("en", "Zxxx", "", "1901-x-audio");
 			writingSystem.Variants.Add("bauddha");
@@ -1499,7 +1440,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void AddToVariant_NonRegisteredVariant_IetfLanguageTagIsSet()
+		public void Variants_NonRegisteredVariant_IetfLanguageTagIsSet()
 		{
 			var writingSystem = new WritingSystemDefinition("en", "Zxxx", "", "1901-x-audio");
 			writingSystem.Variants.Add("bogus");
@@ -1507,27 +1448,27 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void SetIetfLanguageTag_IetfLanguageTagIsSet()
+		public void IetfLanguageTag_IetfLanguageTagIsSet()
 		{
 			var writingSystem = new WritingSystemDefinition("en", "Zxxx", "", "1901-x-audio");
-			writingSystem.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag("de","Armi","US","fonipa-x-etic");
+			writingSystem.IetfLanguageTag = IetfLanguageTagHelper.CreateIetfLanguageTag("de","Armi","US","fonipa-x-etic");
 			Assert.AreEqual("de-Armi-US-fonipa-x-etic", writingSystem.IetfLanguageTag);
 		}
 
 		[Test]
-		public void SetIetfLanguageTag_IetfLanguageTagChanged_ModifiedisTrue()
+		public void IetfLanguageTag_IetfLanguageTagChanged_ModifiedisTrue()
 		{
 			var writingSystem = new WritingSystemDefinition("en", "Zxxx", "", "1901-x-audio");
-			writingSystem.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag("de", "Latn", "US", "fonipa-x-etic");
+			writingSystem.IetfLanguageTag = IetfLanguageTagHelper.CreateIetfLanguageTag("de", "Latn", "US", "fonipa-x-etic");
 			Assert.AreEqual(writingSystem.IsChanged, true);
 		}
 
 		[Test]
-		public void SetIetfLanguageTag_IetfLanguageTagUnchanged_ModifiedisTrue()
+		public void IetfLanguageTag_IetfLanguageTagUnchanged_IsChangedIsFalse()
 		{
 			var writingSystem = new WritingSystemDefinition("en", "Zxxx", "", "1901-x-audio");
-			writingSystem.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag("en", "Zxxx", "", "1901-x-audio");
-			Assert.AreEqual(writingSystem.IsChanged, false);
+			writingSystem.IetfLanguageTag = IetfLanguageTagHelper.CreateIetfLanguageTag("en", "Zxxx", "", "1901-x-audio");
+			Assert.That(writingSystem.IsChanged, Is.False);
 		}
 
 		[Test]
@@ -2032,7 +1973,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void DefaultForWritingSystem_NoLegacyKeyboardSet_ReturnsSystemDefault()
+		public void LocalKeyboard_NoLegacyKeyboardSet_ReturnsSystemDefault()
 		{
 			var ws = new WritingSystemDefinition();
 			Assert.That(ws.LocalKeyboard, Is.EqualTo(Keyboard.Controller.DefaultKeyboard));

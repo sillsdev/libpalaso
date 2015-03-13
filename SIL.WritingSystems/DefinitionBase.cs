@@ -36,13 +36,16 @@ namespace SIL.WritingSystems
 
 		protected static void ChildrenAcceptChanges(IEnumerable<IChangeTracking> children)
 		{
+			if (children == null)
+				return;
+
 			foreach (IChangeTracking child in children)
 				child.AcceptChanges();
 		}
 
 		protected static bool ChildrenIsChanged(IEnumerable<IChangeTracking> children)
 		{
-			return children.Any(child => child.IsChanged);
+			return children != null && children.Any(child => child.IsChanged);
 		}
 	}
 }

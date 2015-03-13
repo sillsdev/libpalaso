@@ -663,7 +663,7 @@ namespace SIL.WritingSystems.Tests
 					problems[0].Exception,
 					Is.TypeOf<ApplicationException>().With.Property("Message").
 					ContainsSubstring(String.Format(
-						@"The writing system file {0} seems to be named inconsistently. It contains the IETF language tag: 'de-latn-ch-1901'. The name should have been made consistent with its content upon migration of the writing systems.",
+						@"The writing system file {0} seems to be named inconsistently. It contains the IETF language tag: 'de-CH-1901'. The name should have been made consistent with its content upon migration of the writing systems.",
 						Path.Combine(environment.LocalRepositoryPath, "tpi-Zxxx-x-audio.ldml")
 					))
 				);

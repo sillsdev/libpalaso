@@ -1,4 +1,4 @@
-﻿using System;
+﻿using SIL.Data;
 
 namespace SIL.WritingSystems
 {
@@ -71,8 +71,8 @@ namespace SIL.WritingSystems
 		private ICollator CreateCollator()
 		{
 			string message;
-			if (!IsValid && !Validate(out message))
-				throw new InvalidOperationException(message);
+			if (!Validate(out message))
+				throw new ValidationException(message);
 			return new IcuRulesCollator(CollationRules);
 		}
 

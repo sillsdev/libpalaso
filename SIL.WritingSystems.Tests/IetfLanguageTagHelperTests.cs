@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using SIL.Data;
 
 namespace SIL.WritingSystems.Tests
 {
@@ -182,16 +181,22 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void ToIetfLanguageTag_ImplicitScript_SuppressesScript()
+		public void CreateIetfLanguageTag_ImplicitScript_SuppressesScript()
 		{
-			Assert.That(IetfLanguageTagHelper.ToIetfLanguageTag("en", "Latn", "US", string.Empty), Is.EqualTo("en-US"));
-			Assert.That(IetfLanguageTagHelper.ToIetfLanguageTag("en", "Latn", "US", Enumerable.Empty<VariantSubtag>()), Is.EqualTo("en-US"));
+			Assert.That(IetfLanguageTagHelper.CreateIetfLanguageTag("en", "Latn", "US", string.Empty), Is.EqualTo("en-US"));
+			Assert.That(IetfLanguageTagHelper.CreateIetfLanguageTag("en", "Latn", "US", Enumerable.Empty<VariantSubtag>()), Is.EqualTo("en-US"));
 		}
 
 		[Test]
 		public void Canonicalize_ImplicitScript_SuppressesScript()
 		{
 			Assert.That(IetfLanguageTagHelper.Canonicalize("en-Latn-US"), Is.EqualTo("en-US"));
+		}
+
+		[Test]
+		public void Canonicalize_NonStandardCapitalization_StandardCapitalization()
+		{
+			Assert.That(IetfLanguageTagHelper.Canonicalize("zH-latn-cn-FonIpa-X-Etic"), Is.EqualTo("zh-Latn-CN-fonipa-x-etic"));
 		}
 
 		/// <summary>
@@ -232,7 +237,7 @@ namespace SIL.WritingSystems.Tests
 		/// Tests the ToIcuLocale method with an invalid language tag.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(ValidationException))]
+		[ExpectedException(typeof(ArgumentException))]
 		public void ToIcuLocale_InvalidLangTag()
 		{
 			IetfLanguageTagHelper.ToIcuLocale("en_Latn_US_X_ETIC");

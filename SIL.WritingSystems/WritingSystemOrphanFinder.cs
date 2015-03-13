@@ -64,7 +64,7 @@ namespace SIL.WritingSystems
 
 				WritingSystemDefinition conformantWritingSystem = writingSystemRepository.WritingSystemFactory.Create(newId);
 				// If it changed, then change
-				if (newId != wsId)
+				if (conformantWritingSystem.IetfLanguageTag != wsId)
 				{
 					conformantWritingSystem.MakeIetfLanguageTagUnique(updatedIds);
 					replaceIdsInFile(wsId, conformantWritingSystem.IetfLanguageTag);

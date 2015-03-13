@@ -48,7 +48,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			string spellCheckingId = writingSystemDefinitionV1.SpellCheckingId;
 			string defaultFontName = writingSystemDefinitionV1.DefaultFontName;
 			string languageName = writingSystemDefinitionV1.LanguageName.IsOneOf("Unknown Language", "Language Not Listed") ? string.Empty : writingSystemDefinitionV1.LanguageName;
-			string langTag = IetfLanguageTagHelper.ToIetfLanguageTag(writingSystemDefinitionV1.Language, writingSystemDefinitionV1.Script,
+			string langTag = IetfLanguageTagHelper.CreateIetfLanguageTag(writingSystemDefinitionV1.Language, writingSystemDefinitionV1.Script,
 				writingSystemDefinitionV1.Region, writingSystemDefinitionV1.Variant);
 			bool isGraphiteEnabled = false;
 			string legacyMapping = string.Empty;

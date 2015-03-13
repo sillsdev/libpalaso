@@ -474,7 +474,7 @@ namespace SIL.WritingSystems
 			string region = identityElem.GetAttributeValue("territory", "type");
 			string variant = identityElem.GetAttributeValue("variant", "type");
 
-			ws.IetfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag(language, script, region, variant);
+			ws.IetfLanguageTag = IetfLanguageTagHelper.CreateIetfLanguageTag(language, script, region, variant);
 
 			// TODO: Parse rest of special element.  Currently only handling a subset
 			XElement specialElem = identityElem.NonAltElement("special");
@@ -753,7 +753,9 @@ namespace SIL.WritingSystems
 				throw new ArgumentNullException("ws");
 			}
 			// We don't want to run any risk of persisting an invalid writing system in an LDML.
-			ws.RequiresValidLanguageTag = true;
+			string message;
+			if (!ws.ValidateIetfLanguageTag(out message))
+				throw new ArgumentException(string.Format("The writing system's IETF language tag is invalid: {0}", message), "ws");
 			XmlReader reader = null;
 			try
 			{
@@ -811,7 +813,9 @@ namespace SIL.WritingSystems
 				throw new ArgumentNullException("ws");
 			}
 			// We don't want to run any risk of persisting an invalid writing system in an LDML.
-			ws.RequiresValidLanguageTag = true;
+			string message;
+			if (!ws.ValidateIetfLanguageTag(out message))
+				throw new ArgumentException(string.Format("The writing system's IETF language tag is invalid: {0}", message), "ws");
 			XElement element = oldFileReader != null ? XElement.Load(oldFileReader) : new XElement("ldml");
 			WriteLdml(xmlWriter, element, ws);
 		}
@@ -1178,6 +1182,9 @@ namespace SIL.WritingSystems
 			var collationElem = new XElement("collation", new XAttribute("type", collation.Type));
 			collationsElem.Add(collationElem);
 
+			string message;
+			collation.Validate(out message);
+
 			var icuCollation = collation as IcuCollationDefinition;
 			if (icuCollation != null)
 				WriteCollationRulesFromCustomIcu(collationElem, icuCollation);
@@ -1199,9 +1206,7 @@ namespace SIL.WritingSystems
 
 			// If collation invalid because we couldn't parse the icu rules, write a comment to send back to SLDR
 			if (!icd.IsValid)
-			{
 				collationElem.Add(new XComment(string.Format("Unable to parse the ICU rules with ICU version {0}", Wrapper.IcuVersion)));
-			}
 
 			// If collation valid and icu rules exist, populate icu rules
 			if (!string.IsNullOrEmpty(icd.IcuRules))

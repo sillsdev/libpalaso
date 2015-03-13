@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using SIL.Code;
-using SIL.Data;
 using SIL.Extensions;
 using SIL.Keyboarding;
 using SIL.ObjectModel;
@@ -45,11 +44,9 @@ namespace SIL.WritingSystems
 	}
 
 	/// <summary>
-	/// This class stores the information used to define various writing system properties. The Language, Script, Region and Variant
-	/// properties conform to the subtags of the same name defined in BCP47 (Rfc5646) and are enforced by the Rfc5646Tag class. it is worth
-	/// noting that for historical reasons this class does not provide seperate fields for variant and private use components as
-	/// defined in BCP47. Instead the ConcatenateVariantAndPrivateUse and SplitVariantAndPrivateUse methods are provided for consumers
-	/// to generate a single variant subtag that contains both fields seperated by "-x-".
+	/// This class stores the information used to define various writing system properties. The Language, Script, Region, and Variants
+	/// properties conform to the subtags of the same name defined in BCP 47 (RFC 5646). It is worth noting that any of these properties
+	/// can contain private use subtags. Regardless, a valid IETF language tag is generated.
 	/// Furthermore the WritingSystemDefinition.WellknownSubtags class provides certain well defined Subtags that carry special meaning
 	/// apart from the IANA subtag registry. In particular this class defines "qaa" as the default "unlisted language" language subtag.
 	/// It should be used when there is no match for a language in the IANA subtag registry. Private use properties are "emic" and "etic"
@@ -109,7 +106,7 @@ namespace SIL.WritingSystems
 		}
 
 		public WritingSystemDefinition(string language, string script, string region, string variant)
-			: this(IetfLanguageTagHelper.ToIetfLanguageTag(language, script, region, variant))
+			: this(IetfLanguageTagHelper.CreateIetfLanguageTag(language, script, region, variant))
 		{
 		}
 
@@ -117,7 +114,7 @@ namespace SIL.WritingSystems
 		/// Creates a new WritingSystemDefinition.
 		/// </summary>
 		public WritingSystemDefinition(string language, string script, string region, string variant, string abbreviation, bool rightToLeftScript)
-			: this(IetfLanguageTagHelper.ToIetfLanguageTag(language, script, region, variant))
+			: this(IetfLanguageTagHelper.CreateIetfLanguageTag(language, script, region, variant))
 		{
 			_abbreviation = abbreviation;
 			_rightToLeftScript = rightToLeftScript;
@@ -128,11 +125,16 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public WritingSystemDefinition(string ietfLanguageTag)
 		{
+			if (!IetfLanguageTagHelper.IsValid(ietfLanguageTag))
+				throw new ArgumentException("The IETF language is invalid.", ietfLanguageTag);
+
 			_ietfLanguageTag = IetfLanguageTagHelper.Canonicalize(ietfLanguageTag);
 			IEnumerable<VariantSubtag> variantSubtags;
-			IetfLanguageTagHelper.TryGetSubtags(ietfLanguageTag, out _language, out _script, out _region, out variantSubtags);
+			IetfLanguageTagHelper.TryGetSubtags(_ietfLanguageTag, out _language, out _script, out _region, out variantSubtags);
 			_variants = new BulkObservableList<VariantSubtag>(variantSubtags);
-			CheckVariantAndScriptRules();
+			string message;
+			if (!ValidateIetfLanguageTag(out message))
+				throw new ArgumentException(message, "ietfLanguageTag");
 			_fonts = new KeyedBulkObservableList<string, FontDefinition>(fd => fd.Name);
 			_knownKeyboards = new KeyedBulkObservableList<string, IKeyboardDefinition>(kd => kd.Id);
 			_spellCheckDictionaries = new KeyedBulkObservableList<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition>(scdd => scdd.Format);
@@ -211,7 +213,6 @@ namespace SIL.WritingSystems
 			if (e.Action != NotifyCollectionChangedAction.Replace
 			    || !e.OldItems.Cast<VariantSubtag>().Select(v => v.Code).SequenceEqual(e.NewItems.Cast<VariantSubtag>().Select(v => v.Code)))
 			{
-				CheckVariantAndScriptRules();
 				UpdateIetfLanguageTag();
 			}
 
@@ -289,26 +290,7 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// True when the validity of the writing system defn's tag is being enforced. This is the normal and default state.
-		/// Setting this true will throw unless the tag has previously been put into a valid state.
-		/// Attempting to Save the writing system defn will set this true (and may throw).
-		/// </summary>
-		public bool RequiresValidLanguageTag
-		{
-			get { return _requiresValidLanguageTag; }
-			set
-			{
-				if (_requiresValidLanguageTag != value)
-				{
-					_requiresValidLanguageTag = value;
-					CheckVariantAndScriptRules();
-					UpdateIetfLanguageTag();
-				}
-			}
-		}
-
-		/// <summary>
-		/// Adjusts the BCP47 tag to indicate the desired form of Ipa by inserting fonipa in the variant and emic or etic in private use where necessary.
+		/// Adjusts the IETF language tag to indicate the desired form of Ipa by inserting fonipa in the variant and emic or etic in private use where necessary.
 		/// </summary>
 		public IpaStatusChoices IpaStatus
 		{
@@ -370,7 +352,7 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// Adjusts the BCP47 tag to indicate that this is an "audio writing system" by inserting "audio" in the private use and "Zxxx" in the script
+		/// Adjusts the IETF language tag to indicate that this is an "audio writing system" by inserting "audio" in the private use and "Zxxx" in the script
 		/// </summary>
 		public bool IsVoice
 		{
@@ -403,26 +385,32 @@ namespace SIL.WritingSystems
 			get { return _script != null && _script.Code.Equals(WellKnownSubtags.AudioScript, StringComparison.OrdinalIgnoreCase); }
 		}
 
-		private void CheckVariantAndScriptRules()
+		public bool ValidateIetfLanguageTag(out string message)
 		{
-			if (!_requiresValidLanguageTag)
-				return;
+			if (!IetfLanguageTagHelper.Validate(_language, _script, _region, _variants, out message))
+				return false;
 
 			if (_variants.Contains(WellKnownSubtags.AudioPrivateUse) && !ScriptSubTagIsAudio)
 			{
-				throw new ValidationException("The script subtag must be set to " + WellKnownSubtags.AudioScript + " when the variant tag indicates an audio writing system.");
+				message = "The script subtag must be set to Zxxx when the variant tag indicates an audio writing system.";
+				return false;
 			}
 			bool rfcTagHasAnyIpa = _variants.Contains(WellKnownSubtags.IpaVariant)
 				|| _variants.Contains(WellKnownSubtags.IpaPhonemicPrivateUse) || _variants.Contains(WellKnownSubtags.IpaPhoneticPrivateUse);
 			if (_variants.Contains(WellKnownSubtags.AudioPrivateUse) && rfcTagHasAnyIpa)
 			{
-				throw new ValidationException("A writing system may not be marked as audio and ipa at the same time.");
+				message = "A writing system may not be marked as audio and ipa at the same time.";
+				return false;
 			}
 			if ((_variants.Contains(WellKnownSubtags.IpaPhonemicPrivateUse) || _variants.Contains(WellKnownSubtags.IpaPhoneticPrivateUse))
 				&& !_variants.Contains(WellKnownSubtags.IpaVariant))
 			{
-				throw new ValidationException("A writing system may not be marked as phonetic (x-etic) or phonemic (x-emic) and lack the variant marker fonipa.");
+				message = "A writing system may not be marked as phonetic (x-etic) or phonemic (x-emic) and lack the variant marker fonipa.";
+				return false;
 			}
+
+			message = null;
+			return true;
 		}
 
 		public LanguageSubtag Language
@@ -450,10 +438,7 @@ namespace SIL.WritingSystems
 				string oldCode = _script == null ? string.Empty : _script.Code;
 				Set(() => Script, ref _script, value);
 				if (oldCode != (_script == null ? string.Empty : _script.Code))
-				{
-					CheckVariantAndScriptRules();
 					UpdateIetfLanguageTag();
-				}
 			}
 		}
 
@@ -684,19 +669,28 @@ namespace SIL.WritingSystems
 			get { return _ietfLanguageTag; }
 			set
 			{
+				if (value == null)
+					throw new ArgumentNullException("value");
+				if (!IetfLanguageTagHelper.IsValid(value))
+					throw new ArgumentException("The IETF language tag is invalid.", "value");
+
 				string newLangTag = IetfLanguageTagHelper.Canonicalize(value);
-				if (newLangTag != _ietfLanguageTag)
+				if (!newLangTag.Equals(_ietfLanguageTag, StringComparison.InvariantCultureIgnoreCase))
 				{
-					_ietfLanguageTag = newLangTag;
+					LanguageSubtag language;
+					ScriptSubtag script;
+					RegionSubtag region;
 					IEnumerable<VariantSubtag> variantSubtags;
-					IetfLanguageTagHelper.TryGetSubtags(_ietfLanguageTag, out _language, out _script, out _region, out variantSubtags);
+					IetfLanguageTagHelper.TryGetSubtags(newLangTag, out language, out script, out region, out variantSubtags);
+					Set(() => Language, ref _language, language);
+					Set(() => Script, ref _script, script);
+					Set(() => Region, ref _region, region);
 					using (_ignoreVariantChanges.Enter())
-					{
-						if (variantSubtags != null)
-							_variants.ReplaceAll(variantSubtags);
-					}
-					CheckVariantAndScriptRules();
-					IsChanged = true;
+						_variants.ReplaceAll(variantSubtags);
+					string message;
+					if (!ValidateIetfLanguageTag(out message))
+						throw new ArgumentException(message, "value");
+					Set(() => IetfLanguageTag, ref _ietfLanguageTag, newLangTag);
 				}
 			}
 		}
@@ -802,7 +796,7 @@ namespace SIL.WritingSystems
 		{
 			if (_language == null && (_script != null || _region != null || _variants.Any(v => !v.IsPrivateUse)))
 				Set(() => Language, ref _language, WellKnownSubtags.UnlistedLanguage);
-			_ietfLanguageTag = IetfLanguageTagHelper.ToIetfLanguageTag(_language, _script, _region, _variants, _requiresValidLanguageTag);
+			Set(() => IetfLanguageTag, ref _ietfLanguageTag, IetfLanguageTagHelper.CreateIetfLanguageTag(_language, _script, _region, _variants, false));
 		}
 
 		/// <summary>

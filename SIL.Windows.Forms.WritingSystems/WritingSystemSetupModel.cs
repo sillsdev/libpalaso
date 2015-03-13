@@ -9,7 +9,6 @@ using System.Text;
 using System.Windows.Forms;
 using Enchant;
 using SIL.Code;
-using SIL.Data;
 using SIL.Extensions;
 using SIL.i18n;
 using SIL.Keyboarding;
@@ -757,15 +756,16 @@ namespace SIL.Windows.Forms.WritingSystems
 					if (IetfLanguageTagHelper.TryGetVariantSubtags(value, out variantSubtags))
 					{
 						VariantSubtag[] originalVariantSubtags = CurrentDefinition.Variants.ToArray();
-						try
+						CurrentDefinition.Variants.ReplaceAll(variantSubtags);
+						string message;
+						if (CurrentDefinition.ValidateIetfLanguageTag(out message))
 						{
-							CurrentDefinition.Variants.ReplaceAll(variantSubtags);
 							OnCurrentItemUpdated();
 						}
-						catch (ValidationException e)
+						else
 						{
 							CurrentDefinition.Variants.ReplaceAll(originalVariantSubtags);
-							ErrorReport.NotifyUserOfProblem(e.Message);
+							ErrorReport.NotifyUserOfProblem(message);
 						}
 					}
 					else

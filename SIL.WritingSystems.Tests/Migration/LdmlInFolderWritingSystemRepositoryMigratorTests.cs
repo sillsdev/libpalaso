@@ -144,9 +144,9 @@ namespace SIL.WritingSystems.Tests.Migration
 				AssertLdmlHasXpath(environment.MappedFilePath("en-Zxxx-x-audio.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasXpath(environment.MappedFilePath("en-Zxxx-x-audio.ldml"), "/ldml/identity/script[@type='Zxxx']");
 				AssertLdmlHasXpath(environment.MappedFilePath("en-Zxxx-x-audio.ldml"), "/ldml/identity/variant[@type='x-audio']");
-				AssertLdmlHasXpath(environment.MappedFilePath("en-x-audio.ldml"), "/ldml/identity/language[@type='eN']");
+				AssertLdmlHasXpath(environment.MappedFilePath("en-x-audio.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasXpath(environment.MappedFilePath("en-x-audio.ldml"), "/ldml/identity/script[@type='Zxxx']");
-				AssertLdmlHasXpath(environment.MappedFilePath("en-x-audio.ldml"), "/ldml/identity/variant[@type='x-AuDio-dupl0']");
+				AssertLdmlHasXpath(environment.MappedFilePath("en-x-audio.ldml"), "/ldml/identity/variant[@type='x-audio-dupl0']");
 			}
 		}
 
@@ -163,9 +163,9 @@ namespace SIL.WritingSystems.Tests.Migration
 
 				Assert.True(File.Exists(environment.MappedFilePath("bogus.ldml")));
 				Assert.True(File.Exists(environment.MappedFilePath("en-Zxxx-x-audio.ldml")));
-				AssertLdmlHasXpath(environment.MappedFilePath("bogus.ldml"), "/ldml/identity/language[@type='eN']");
-				AssertLdmlHasXpath(environment.MappedFilePath("bogus.ldml"), "/ldml/identity/script[@type='ZxXx']");
-				AssertLdmlHasXpath(environment.MappedFilePath("bogus.ldml"), "/ldml/identity/variant[@type='x-AuDio']");
+				AssertLdmlHasXpath(environment.MappedFilePath("bogus.ldml"), "/ldml/identity/language[@type='en']");
+				AssertLdmlHasXpath(environment.MappedFilePath("bogus.ldml"), "/ldml/identity/script[@type='Zxxx']");
+				AssertLdmlHasXpath(environment.MappedFilePath("bogus.ldml"), "/ldml/identity/variant[@type='x-audio']");
 				AssertLdmlHasXpath(environment.MappedFilePath("en-Zxxx-x-audio.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasXpath(environment.MappedFilePath("en-Zxxx-x-audio.ldml"), "/ldml/identity/script[@type='Zxxx']");
 				AssertLdmlHasXpath(environment.MappedFilePath("en-Zxxx-x-audio.ldml"), "/ldml/identity/variant[@type='x-audio-dupl0']");
@@ -624,7 +624,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en", "", "Us-US", ""));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
-				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='Us']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='US']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-US']");
 			}
 		}
@@ -1283,7 +1283,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("", "x-latn", "", ""));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
-				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='latn']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Latn']");
 			}
 		}
 
@@ -1383,7 +1383,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en", "", "U.!$%^S-gb", ""));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
-				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='gb']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='GB']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-US']");
 			}
 		}
@@ -1435,7 +1435,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("DE", "","",""));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
-				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='DE']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='de']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Latn']");
 				AssertLdmlHasNoXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory");
 				AssertLdmlHasNoXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant");
@@ -1467,7 +1467,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				migrator.Migrate();
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='de']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Latn']");
-				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='de']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='DE']");
 				AssertLdmlHasNoXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant");
 			}
 		}

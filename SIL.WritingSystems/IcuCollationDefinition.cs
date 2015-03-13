@@ -14,6 +14,7 @@ namespace SIL.WritingSystems
 			: base(type)
 		{
 			_imports = new BulkObservableList<IcuCollationImport>();
+			IsValid = true;
 			SetupCollectionChangeListeners();
 		}
 
@@ -65,6 +66,12 @@ namespace SIL.WritingSystems
 			var sb = new StringBuilder();
 			foreach (IcuCollationImport import in _imports)
 			{
+				if (WritingSystemFactory == null)
+				{
+					message = string.Format("Unable to import the {0} collation rules from {1}.", string.IsNullOrEmpty(import.Type) ? "default" : import.Type, import.IetfLanguageTag);
+					return false;
+				}
+
 				WritingSystemDefinition ws = WritingSystemFactory.Create(import.IetfLanguageTag);
 				CollationDefinition cd;
 				if (string.IsNullOrEmpty(import.Type))
