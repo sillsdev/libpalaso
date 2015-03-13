@@ -19,6 +19,7 @@ namespace SIL.Archiving.Tests
 	{
 		private RampArchivingDlgViewModel _helper;
 		private Dictionary<string, Tuple<IEnumerable<string>, string>> _filesToAdd;
+		private bool? _isRampInstalled;
 
 		/// ------------------------------------------------------------------------------------
 		[SetUp]
@@ -436,6 +437,8 @@ namespace SIL.Archiving.Tests
 		[Category("RampRequired")]
 		public void SetContentLanguages_TwoLanguages_IncludedInMetsData()
 		{
+			IgnoreTestIfRampIsNotInstalled();
+
 			_helper.SetContentLanguages("eng", "fra");
 			var data = _helper.GetMetadata();
 			Assert.AreEqual("{\"dc.title\":\"Test Title\",\"" +
@@ -449,6 +452,8 @@ namespace SIL.Archiving.Tests
 		[Category("RampRequired")]
 		public void SetContentLanguages_SetTwice_ThrowsInvalidOperationException()
 		{
+			IgnoreTestIfRampIsNotInstalled();
+
 			_helper.SetContentLanguages("eng", "fra");
 			Assert.Throws<InvalidOperationException>(() => _helper.SetContentLanguages("spa", "fra"));
 		}
@@ -616,6 +621,8 @@ namespace SIL.Archiving.Tests
 		[Category("RampRequired")]
 		public void GetLanguageName_English_ReturnsEnglish()
 		{
+			IgnoreTestIfRampIsNotInstalled();
+
 			var langName = _helper.GetLanguageName("eng");
 			Assert.AreEqual(langName, "English");
 		}
@@ -626,6 +633,8 @@ namespace SIL.Archiving.Tests
 		[Category("RampRequired")]
 		public void GetLanguageName_Gibberish_ReturnsNull()
 		{
+			IgnoreTestIfRampIsNotInstalled();
+
 			var langName = _helper.GetLanguageName("z23");
 			Assert.IsNull(langName);
 		}
@@ -635,6 +644,8 @@ namespace SIL.Archiving.Tests
 		[Category("RampRequired")]
 		public void GetLanguageName_ArchivingLanguage_ReturnsCorrectName()
 		{
+			IgnoreTestIfRampIsNotInstalled();
+
 			// FieldWorks associates the name "Chinese" with the ISO3 Code "cmn"
 			ArchivingLanguage lang = new ArchivingLanguage("cmn", "Chinese");
 
@@ -648,6 +659,8 @@ namespace SIL.Archiving.Tests
 		[Category("RampRequired")]
 		public void GetRAMPFileLocation_RAMPInstalled_ReturnsFileLocation()
 		{
+			IgnoreTestIfRampIsNotInstalled();
+
 			var fileName = RampArchivingDlgViewModel.GetExeFileLocation();
 			Assert.IsTrue(File.Exists(fileName), "RAMP executable file not found.");
 		}
@@ -680,6 +693,19 @@ namespace SIL.Archiving.Tests
 		{
 			if (key != string.Empty)
 				bldr.Insert(0, "__AppSpecific__");
+		}
+
+		private void IgnoreTestIfRampIsNotInstalled()
+		{
+			if (!_isRampInstalled.HasValue)
+			{
+				// we remember the value so that we check only once. This won't change within
+				// a test run.
+				_isRampInstalled = !string.IsNullOrEmpty(RampArchivingDlgViewModel.GetExeFileLocation());
+			}
+
+			if (!_isRampInstalled.Value)
+				Assert.Ignore("This test requires RAMP");
 		}
 		#endregion
 	}

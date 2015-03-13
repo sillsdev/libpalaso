@@ -1,11 +1,5 @@
-// --------------------------------------------------------------------------------------------
-// <copyright from='2011' to='2011' company='SIL International'>
-// 	Copyright (c) 2011, SIL International. All Rights Reserved.
-//
-// 	Distributable under the terms of either the Common Public License or the
-// 	GNU Lesser General Public License, as specified in the LICENSING.txt file.
-// </copyright>
-// --------------------------------------------------------------------------------------------
+// Copyright (c) 2011-2015 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
 using SIL.Keyboarding;
@@ -55,8 +49,6 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// <param name="keyboard"></param>
 		void DeactivateKeyboard(KeyboardDescription keyboard);
 
-		KeyboardDescription GetKeyboardForInputLanguage(IInputLanguage inputLanguage);
-
 		/// <summary>
 		/// Creates and returns a keyboard definition object of the type needed by this adapter (and hooked to it)
 		/// based on the ID. However, since this method is used (at least by external code) to create
@@ -76,6 +68,13 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// Gets the default keyboard of the system. This only needs to be implemented by the (first) adapter of type system.
 		/// </summary>
 		KeyboardDescription DefaultKeyboard { get; }
+
+		/// <summary>
+		/// Gets the currently active keyboard. This only needs to be implemented by the (first) adapter of
+		/// type system, and only if the implementation in KeyboardControllerImpl (which uses layoutname
+		/// and culturename based on the current input language) isn't sufficient.
+		/// </summary>
+		KeyboardDescription ActiveKeyboard { get; }
 
 		/// <summary>
 		/// Gets the type of keyboards this adaptor handles: system or other (like Keyman, ibus...)

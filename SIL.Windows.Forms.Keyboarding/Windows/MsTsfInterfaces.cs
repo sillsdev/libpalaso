@@ -125,7 +125,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
 		[return: MarshalAs(UnmanagedType.Interface)]
-		IEnumTfLanguageProfiles EnumLanguageProfiles(short langid);
+		IEnumTfLanguageProfiles EnumLanguageProfiles(ushort langid);
 
 		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
 		void EnableLanguageProfile(ref Guid rclsid, ushort langid, ref Guid guidProfile, [MarshalAs(UnmanagedType.VariantBool)] bool fEnable);
@@ -197,7 +197,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
 		[return: MarshalAs(UnmanagedType.Interface)]
-		public virtual extern IEnumTfLanguageProfiles EnumLanguageProfiles(short langid);
+		public virtual extern IEnumTfLanguageProfiles EnumLanguageProfiles(ushort langid);
 
 		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
 		public virtual extern void EnableLanguageProfile(ref Guid rclsid, ushort langid, ref Guid guidProfile, [MarshalAs(UnmanagedType.VariantBool)] bool fEnable);
@@ -305,6 +305,38 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 	}
 	#endregion
 
+	#region ITfLanguageProfileNotifySink
+	[ComImport]
+	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+	[Guid("43c9fe15-f494-4c17-9de2-b8a4ac350aa8")]
+	internal interface ITfLanguageProfileNotifySink
+	{
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		//[return: MarshalAs(UnmanagedType.Bool)]
+		bool OnLanguageChange(ushort langid);
+
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		void OnLanguageChanged();
+	}
+	#endregion
+
+	#region ITfSource
+	[ComImport]
+	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+	[Guid("4ea48a35-60ae-446f-8fd6-e6a8d82459f7")]
+	internal interface ITfSource
+	{
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		[return: MarshalAs(UnmanagedType.U2)]
+		ushort AdviseSink(ref Guid riid,
+			[MarshalAs(UnmanagedType.Interface)]
+			object punk);
+
+		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+		void UnadviseSink(ushort dwCookie);
+	}
+	#endregion
+
 	#region GUIDs
 	internal class Guids
 	{
@@ -313,6 +345,8 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		public static readonly Guid TfcatTipSpeech = new Guid(0xB5A73CD1, 0x8355, 0x426B, 0xA1, 0x61, 0x25, 0x98, 0x08, 0xF2, 0x6B, 0x14);
 		public static readonly Guid TfcatTipHandwriting = new Guid(0x246ecb87, 0xc2f2, 0x4abe, 0x90, 0x5b, 0xc8, 0xb3, 0x8a, 0xdd, 0x2c, 0x43);
 		public static readonly Guid TfcatDisplayAttributeProvider = new Guid(0x046B8C80, 0x1647, 0x40F7, 0x9B, 0x21, 0xB9, 0x3B, 0x81, 0xAA, 0xBC, 0x1B);
+
+		public static readonly Guid ITfLanguageProfileNotifySink = new Guid("43c9fe15-f494-4c17-9de2-b8a4ac350aa8");
 	}
 	#endregion
 }

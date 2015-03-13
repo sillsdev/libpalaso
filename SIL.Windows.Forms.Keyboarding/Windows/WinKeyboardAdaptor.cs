@@ -43,13 +43,100 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			public string LocalizedName;
 		}
 
+		/// <summary>
+		/// This class receives notifications from TSF when the input method changes.
+		/// It also implements a fallback to Windows messages if TSF isn't available,
+		/// e.g. on Windows XP.
+		/// </summary>
+		private class TfLanguageProfileNotifySink : ITfLanguageProfileNotifySink
+		{
+			private readonly WinKeyboardAdaptor _keyboardAdaptor;
+			private readonly List<Form> _toplevelForms = new List<Form>();
+
+			public TfLanguageProfileNotifySink(WinKeyboardAdaptor keyboardAdaptor)
+			{
+				_keyboardAdaptor = keyboardAdaptor;
+			}
+
+			#region ITfLanguageProfileNotifySink Members
+
+			public bool OnLanguageChange(ushort langid)
+			{
+				// In my tests we never hit this method (Windows 8.1). I don't know if the
+				// method signature is wrong or why that is.
+
+				// Return true to allow the language profile change
+				return true;
+			}
+
+			public void OnLanguageChanged()
+			{
+				IKeyboardDefinition winKeyboard = _keyboardAdaptor.ActiveKeyboard;
+				Debug.WriteLine("Language changed from {0} to {1}",
+					Keyboard.Controller.ActiveKeyboard != null ? Keyboard.Controller.ActiveKeyboard.Layout : "<null>",
+					winKeyboard != null ? winKeyboard.Layout : "<null>");
+
+				_keyboardAdaptor._windowsLanguageProfileSinks.ForEach(
+					sink => sink.OnInputLanguageChanged(Keyboard.Controller.ActiveKeyboard, winKeyboard));
+			}
+			#endregion
+
+			#region Fallback if TSF isn't available
+
+			// The WinKeyboardAdaptor will subscribe to the Form's InputLanguageChanged event
+			// only if TSF is not available. Otherwise this code won't be executed.
+
+			private void OnWindowsMessageInputLanguageChanged(object sender,
+				InputLanguageChangedEventArgs inputLanguageChangedEventArgs)
+			{
+				Debug.Assert(_keyboardAdaptor._profileNotifySinkCookie == 0);
+
+				KeyboardDescription winKeyboard = _keyboardAdaptor.GetKeyboardForInputLanguage(
+					inputLanguageChangedEventArgs.InputLanguage.Interface());
+
+				_keyboardAdaptor._windowsLanguageProfileSinks.ForEach(
+					sink => sink.OnInputLanguageChanged(Keyboard.Controller.ActiveKeyboard, winKeyboard));
+			}
+
+			public void RegisterWindowsMessageHandler(Control control)
+			{
+				Debug.Assert(_keyboardAdaptor._profileNotifySinkCookie == 0);
+
+				var topForm = control.FindForm();
+				if (topForm == null || _toplevelForms.Contains(topForm))
+					return;
+
+				_toplevelForms.Add(topForm);
+				topForm.InputLanguageChanged += OnWindowsMessageInputLanguageChanged;
+			}
+
+			public void UnregisterWindowsMessageHandler(Control control)
+			{
+				var topForm = control.FindForm();
+				if (topForm == null || !_toplevelForms.Contains(topForm))
+					return;
+
+				topForm.InputLanguageChanged -= OnWindowsMessageInputLanguageChanged;
+				_toplevelForms.Remove(topForm);
+			}
+			#endregion
+
+		}
+
 		private Timer _timer;
 		private WinKeyboardDescription _expectedKeyboard;
 		private bool _fSwitchedLanguages;
 		/// <summary>Used to prevent re-entrancy. <c>true</c> while we're in the middle of switching keyboards.</summary>
 		private bool _fSwitchingKeyboards;
+
+		private ushort _profileNotifySinkCookie;
+		private readonly TfLanguageProfileNotifySink _tfLanguageProfileNotifySink;
+
+		private readonly List<IWindowsLanguageProfileSink> _windowsLanguageProfileSinks = new List<IWindowsLanguageProfileSink>();
+
 		internal ITfInputProcessorProfiles ProcessorProfiles { get; private set; }
 		internal ITfInputProcessorProfileMgr ProfileMgr { get; private set; }
+		internal ITfSource TfSource { get; private set; }
 
 		public WinKeyboardAdaptor()
 		{
@@ -65,6 +152,43 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 			// ProfileMgr will be null on Windows XP - the interface got introduced in Vista
 			ProfileMgr = ProcessorProfiles as ITfInputProcessorProfileMgr;
+
+			_tfLanguageProfileNotifySink = new TfLanguageProfileNotifySink(this);
+
+			TfSource = ProcessorProfiles as ITfSource;
+			if (TfSource != null)
+			{
+				_profileNotifySinkCookie = TfSource.AdviseSink(Guids.ITfLanguageProfileNotifySink,
+					_tfLanguageProfileNotifySink);
+			}
+
+			if (KeyboardController.Instance != null)
+			{
+				KeyboardController.Instance.ControlAdded += OnControlRegistered;
+				KeyboardController.Instance.ControlRemoving += OnControlRemoving;
+			}
+		}
+
+		private void OnControlRegistered(object sender, RegisterEventArgs e)
+		{
+			var windowsLanguageProfileSink = e.EventHandler as IWindowsLanguageProfileSink;
+			if (windowsLanguageProfileSink != null && !_windowsLanguageProfileSinks.Contains(windowsLanguageProfileSink))
+				_windowsLanguageProfileSinks.Add(windowsLanguageProfileSink);
+
+			if (_profileNotifySinkCookie != 0)
+				return;
+
+			// TSF disabled, so we have to fall back to Windows messages
+			_tfLanguageProfileNotifySink.RegisterWindowsMessageHandler(e.Control);
+		}
+
+		private void OnControlRemoving(object sender, ControlEventArgs e)
+		{
+			if (_profileNotifySinkCookie != 0)
+				return;
+
+			// TSF disabled, so we have to fall back to Windows messages
+			_tfLanguageProfileNotifySink.UnregisterWindowsMessageHandler(e.Control);
 		}
 
 		protected short[] Languages
@@ -351,8 +475,8 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		/// </summary>
 		private static KeyboardDescription GetKeyboardDescription(IInputLanguage inputLanguage)
 		{
-			KeyboardDescription sameLayout = null;
-			KeyboardDescription sameCulture = null;
+			KeyboardDescription sameLayout = KeyboardController.NullKeyboard;
+			KeyboardDescription sameCulture = KeyboardController.NullKeyboard;
 			// TODO: write some tests
 			string requestedLayout = GetLayoutNameEx(inputLanguage.Handle).Name;
 			foreach (WinKeyboardDescription keyboardDescription in KeyboardController.Instance.AvailableKeyboards.OfType<WinKeyboardDescription>())
@@ -384,6 +508,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			if (_expectedKeyboard == null || !_fSwitchedLanguages)
 				return;
 
+			// This code gets only called if TSF is not available(e.g. Windows XP)
 			if (InputLanguage.CurrentInputLanguage.Culture.KeyboardLayoutId == _expectedKeyboard.InputLanguage.Culture.KeyboardLayoutId)
 			{
 				_expectedKeyboard = null;
@@ -519,7 +644,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		/// we activated this keyboard (unless we never activated this keyboard since the app
 		/// got started, in which case we use sensible default values).
 		/// </summary>
-		private void RestoreImeConversionStatus(KeyboardDescription keyboard)
+		private void RestoreImeConversionStatus(IKeyboardDefinition keyboard)
 		{
 			var winKeyboard = keyboard as WinKeyboardDescription;
 			if (winKeyboard == null)
@@ -551,6 +676,19 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		private void ActiveFormOnInputLanguageChanged(object sender, InputLanguageChangedEventArgs inputLanguageChangedEventArgs)
 		{
 			RestoreImeConversionStatus(GetKeyboardDescription(inputLanguageChangedEventArgs.InputLanguage.Interface()));
+		}
+
+		private static bool InputProcessorProfilesEqual(TfInputProcessorProfile profile1, TfInputProcessorProfile profile2)
+		{
+			// Don't compare Flags - they can be different and it's still the same profile
+			return profile1.ProfileType == profile2.ProfileType &&
+				profile1.LangId == profile2.LangId &&
+				profile1.ClsId == profile2.ClsId &&
+				profile1.GuidProfile == profile2.GuidProfile &&
+				profile1.CatId == profile2.CatId &&
+				profile1.HklSubstitute == profile2.HklSubstitute &&
+				profile1.Caps == profile2.Caps &&
+				profile1.Hkl == profile2.Hkl;
 		}
 
 		#region IKeyboardAdaptor Members
@@ -587,9 +725,8 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			SaveImeConversionStatus((WinKeyboardDescription) keyboard);
 		}
 
-		public KeyboardDescription GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
+		private KeyboardDescription GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
 		{
-			CheckDisposed();
 			return GetKeyboardDescription(inputLanguage);
 		}
 
@@ -635,6 +772,27 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			{
 				CheckDisposed();
 				return GetKeyboardDescription(InputLanguage.DefaultInputLanguage.Interface());
+			}
+		}
+
+		/// <summary>
+		///  Gets the currently active keyboard.
+		/// </summary>
+		public KeyboardDescription ActiveKeyboard
+		{
+			get
+			{
+				if (ProfileMgr != null)
+				{
+					var profile = ProfileMgr.GetActiveProfile(Guids.TfcatTipKeyboard);
+					return Keyboard.Controller.AvailableKeyboards.OfType<WinKeyboardDescription>()
+						.FirstOrDefault(winKeybd => InputProcessorProfilesEqual(profile, winKeybd.InputProcessorProfile));
+				}
+
+				// Probably Windows XP where we don't have ProfileMgr
+				var lang = ProcessorProfiles.GetCurrentLanguage();
+				return Keyboard.Controller.AvailableKeyboards.OfType<WinKeyboardDescription>()
+					.FirstOrDefault(winKeybd => winKeybd.InputProcessorProfile.LangId == lang);
 			}
 		}
 
@@ -746,6 +904,13 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				{
 					_timer.Dispose();
 					_timer = null;
+				}
+
+				if (_profileNotifySinkCookie > 0)
+				{
+					if (TfSource != null)
+						TfSource.UnadviseSink(_profileNotifySinkCookie);
+					_profileNotifySinkCookie = 0;
 				}
 			}
 

@@ -2,10 +2,11 @@
 using System.Windows.Forms;
 using SIL.Keyboarding;
 using SIL.Windows.Forms.Keyboarding;
+using SIL.Windows.Forms.Keyboarding.Windows;
 
 namespace TestAppKeyboard
 {
-	public partial class KeyboardForm : Form
+	public partial class KeyboardForm : Form, IWindowsLanguageProfileSink
 	{
 		public KeyboardForm()
 		{
@@ -14,9 +15,9 @@ namespace TestAppKeyboard
 				return;
 
 			KeyboardController.Initialize();
-			KeyboardController.RegisterControl(testAreaA);
-			KeyboardController.RegisterControl(testAreaB);
-			KeyboardController.RegisterControl(testAreaC);
+			KeyboardController.RegisterControl(testAreaA, this);
+			KeyboardController.RegisterControl(testAreaB, this);
+			KeyboardController.RegisterControl(testAreaC, this);
 			LoadKeyboards(keyboardsA);
 			LoadKeyboards(keyboardsB);
 			LoadKeyboards(keyboardsC);
@@ -70,5 +71,17 @@ namespace TestAppKeyboard
 			}
 		}
 
+
+		#region IWindowsLanguageProfileSink Members
+
+		public void OnInputLanguageChanged(IKeyboardDefinition previousKeyboard, IKeyboardDefinition newKeyboard)
+		{
+			Console.WriteLine("TestAppKeyboard.OnLanguageChanged: previous {0}, new {1}",
+				previousKeyboard != null ? previousKeyboard.Layout : "<null>",
+				newKeyboard != null ? newKeyboard.Layout : "<null>");
+			lblCurrentKeyboard.Text = newKeyboard != null ? newKeyboard.Layout : "<null>";
+		}
+
+		#endregion
 	}
 }

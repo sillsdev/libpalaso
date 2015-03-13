@@ -1,6 +1,7 @@
 using System;
 using NUnit.Framework;
 using SIL.Code;
+using Guard = SIL.Code.Guard;
 
 namespace SIL.Tests.Misc
 {
@@ -11,11 +12,6 @@ namespace SIL.Tests.Misc
 		private class TestSession
 		{
 			private int _workCount;
-
-			public TestSession()
-			{
-
-			}
 
 			public void DoWork()
 			{

@@ -19,7 +19,7 @@ namespace SIL.Tests.IO
 		[TestFixtureSetUp]
 		public void FixtureSetUp()
 		{
-			if (Platform.IsLinux)
+			if (Platform.IsUnix)
 				TmpAndRootOnDifferentPartitions = StatFile("/tmp") != StatFile("/");
 		}
 
@@ -215,9 +215,10 @@ namespace SIL.Tests.IO
 		{
 			using (var process = new Process())
 			{
+				var statFlags = Platform.IsMac ? "-f" : "-c";
 				process.StartInfo = new ProcessStartInfo {
 					FileName = "stat",
-					Arguments = string.Format("-c %d {0}", path),
+					Arguments = string.Format("{0} %d {1}", statFlags, path),
 					UseShellExecute = false,
 					RedirectStandardOutput = true,
 					CreateNoWindow = true

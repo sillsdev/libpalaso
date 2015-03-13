@@ -147,11 +147,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			}
 		}
 
-		public KeyboardDescription GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
-		{
-			throw new NotImplementedException("Keyman keyboards that are not associated with a language cannot be looked up by language.");
-		}
-
 		/// <summary>
 		/// Creates and returns a keyboard definition object based on the ID.
 		/// Note that this method is used when we do NOT have a matching available keyboard.
@@ -173,6 +168,14 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				throw new NotImplementedException(
 					"Keyman keyboards that are not associated with a language are never the system default.");
 			}
+		}
+
+		/// <summary>
+		/// Implementation is not required because this is not the primary (Type System) adapter.
+		/// </summary>
+		public KeyboardDescription ActiveKeyboard
+		{
+			get { throw new NotImplementedException(); }
 		}
 
 		/// <summary>

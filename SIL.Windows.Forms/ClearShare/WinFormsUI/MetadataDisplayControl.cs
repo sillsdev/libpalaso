@@ -65,7 +65,10 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 					PictureBox pictureBox = null;
 					if (licenseImage != null)
 					{
-						pictureBox = new PictureBox() {Image = licenseImage};
+						pictureBox = new PictureBox();
+						pictureBox.Size = new System.Drawing.Size(124, 40);
+						pictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+						pictureBox.Image = licenseImage;
 						_table.Controls.Add(pictureBox);
 					}
 					if (!string.IsNullOrEmpty(metaData.License.RightsStatement))

@@ -186,11 +186,6 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 		}
 
-		public KeyboardDescription GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
-		{
-			throw new NotImplementedException();
-		}
-
 		/// <summary>
 		/// The type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
 		/// </summary>
@@ -212,6 +207,15 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			{
 				return Keyboard.Controller.AvailableKeyboards.OfType<XkbKeyboardDescription>().FirstOrDefault(kbd => kbd.GroupIndex == 0);
 			}
+		}
+
+		/// <summary>
+		/// Implementation is not required because the default implementation of KeyboardController
+		/// is sufficient.
+		/// </summary>
+		public KeyboardDescription ActiveKeyboard
+		{
+			get { return null; }
 		}
 			
 		/// <summary>

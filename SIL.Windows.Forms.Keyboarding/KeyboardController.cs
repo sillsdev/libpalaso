@@ -1,11 +1,5 @@
-// --------------------------------------------------------------------------------------------
-// <copyright from='2011' to='2011' company='SIL International'>
-// 	Copyright (c) 2011, SIL International. All Rights Reserved.
-//
-// 	Distributable under the terms of either the Common Public License or the
-// 	GNU Lesser General Public License, as specified in the LICENSING.txt file.
-// </copyright>
-// --------------------------------------------------------------------------------------------
+// Copyright (c) 2011-2015 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
 using System.Collections.Generic;
@@ -36,7 +30,7 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// <summary>
 		/// The null keyboard description
 		/// </summary>
-		public static readonly IKeyboardDefinition NullKeyboard = new KeyboardDescriptionNull();
+		public static readonly KeyboardDescription NullKeyboard = new KeyboardDescriptionNull();
 
 		private static KeyboardController _instance;
 
@@ -117,16 +111,68 @@ namespace SIL.Windows.Forms.Keyboarding
 		}
 
 		#if __MonoCS__
-		public static bool CombinedKeyboardHandling
+		internal static bool CombinedKeyboardHandling
 		{
 			get { return _instance.Adaptors.Any(a => a is CombinedKeyboardAdaptor); }
 		}
 
-		public static bool CinnamonKeyboardHandling
+		internal static bool CinnamonKeyboardHandling
 		{
 			get { return _instance.Adaptors.Any(a => a is CinnamonIbusAdaptor); }
 		}
 		#endif
+
+		// delegate used to detect input processor, like KeyMan
+		private delegate bool IsUsingInputProcessorDelegate();
+		private static IsUsingInputProcessorDelegate _isUsingInputProcessor;
+
+		/// <summary>
+		/// Returns true if the current input device is an Input Processor, like KeyMan.
+		/// </summary>
+		public static bool IsFormUsingInputProcessor(Form frm)
+		{
+			bool usingIP;
+			if (frm.InvokeRequired)
+			{
+				// Set up a delegate for the invoke
+				if (_isUsingInputProcessor == null)
+					_isUsingInputProcessor = IsUsingInputProcessor;
+
+				usingIP = (bool)frm.Invoke(_isUsingInputProcessor);
+			}
+			else
+			{
+				usingIP = IsUsingInputProcessor();
+			}
+
+			return usingIP;
+		}
+
+		
+		private static bool IsUsingInputProcessor()
+		{
+#if __MonoCS__
+			// not yet implemented on Linux
+			return false;
+#else
+			TfInputProcessorProfilesClass inputProcessor;
+			try
+			{
+				inputProcessor = new TfInputProcessorProfilesClass();
+			}
+			catch (InvalidCastException)
+			{
+				return false;
+			}
+
+			var profileMgr = inputProcessor as ITfInputProcessorProfileMgr;
+
+			if (profileMgr == null) return false;
+
+			var profile = profileMgr.GetActiveProfile(Guids.TfcatTipKeyboard);
+			return profile.ProfileType == TfProfileType.InputProcessor;
+#endif
+		}
 
 		#endregion
 
@@ -293,7 +339,7 @@ namespace SIL.Windows.Forms.Keyboarding
 			{
 				for (int i = 1; i < parts.Length; i++)
 				{
-					keyboard = GetKeyboard(string.Join((string) "-", (IEnumerable<string>) parts.Take(i)), string.Join((string) "-", (IEnumerable<string>) parts.Skip(i)));
+					keyboard = GetKeyboard(string.Join("-", parts.Take(i)), string.Join("-", parts.Skip(i)));
 					if (keyboard != NullKeyboard)
 						return true;
 				}
@@ -416,14 +462,19 @@ namespace SIL.Windows.Forms.Keyboarding
 			{
 				if (_activeKeyboard == null)
 				{
-					try
+					_activeKeyboard = Adaptors.First(adaptor => adaptor.Type == KeyboardAdaptorType.System).ActiveKeyboard;
+					if (_activeKeyboard == null)
 					{
-						InputLanguage lang = InputLanguage.CurrentInputLanguage;
-						_activeKeyboard = GetKeyboard(lang.LayoutName, lang.Culture.Name);
+						try
+						{
+							var lang = InputLanguage.CurrentInputLanguage;
+							_activeKeyboard = GetKeyboard(lang.LayoutName, lang.Culture.Name);
+						}
+						catch (CultureNotFoundException)
+						{
+						}
 					}
-					catch (CultureNotFoundException)
-					{
-					}
+
 					if (_activeKeyboard == null)
 						_activeKeyboard = NullKeyboard;
 				}

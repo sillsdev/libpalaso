@@ -241,6 +241,7 @@
   <ItemGroup>
     <Compile Include="IKeyboardAdaptor.cs" />
     <Compile Include="InputLanguageWrapper.cs" />
+    <Compile Include="IWindowsLanguageProfileSink.cs" />
     <Compile Include="KeyboardController.cs" />
     <Compile Include="KeyboardDescription.cs" />
     <Compile Include="KeyboardDescriptionNull.cs" />

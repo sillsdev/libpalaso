@@ -121,16 +121,19 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		public abstract void DeactivateKeyboard(KeyboardDescription keyboard);
 
-		public KeyboardDescription GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
-		{
-			throw new NotImplementedException();
-		}
-
 		public abstract KeyboardDescription CreateKeyboardDefinition(string id);
 
 		public abstract KeyboardDescription DefaultKeyboard
 		{
 			get;
+		}
+
+		public virtual KeyboardDescription ActiveKeyboard
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
 		}
 
 		public KeyboardAdaptorType Type

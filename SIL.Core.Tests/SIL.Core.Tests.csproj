@@ -208,7 +208,7 @@
       <HintPath>..\lib\commonMono\NDesk.DBus.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
-      <HintPath>..\lib\common\nunit.framework.dll</HintPath>
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -241,7 +241,6 @@
     <Compile Include="Migration\XslMigratorTests.cs" />
     <Compile Include="Misc\GuardAgainstReentry.cs" />
     <Compile Include="Network\RobustNetworkOperation.Tests.cs" />
-    <Compile Include="Progress\CommandLineRunnerTests.cs" />
     <Compile Include="Progress\MultiProgressTests.cs" />
     <Compile Include="Progress\Commands\CommandTests.cs" />
     <Compile Include="Progress\ConsoleProgressTests.cs" />
@@ -267,6 +266,7 @@
     <Compile Include="PlatformUtilities\PlatformTests.cs" />
     <Compile Include="IO\PathUtilitiesTests.cs" />
     <Compile Include="SetupFixture.cs" />
+    <Compile Include="CommandLineProcessing\CommandLineRunnerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
@@ -300,6 +300,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\build\platform.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
 	   Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -312,4 +313,10 @@
     </PreBuildEvent>
   </PropertyGroup>
   <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CommandLineProcessing\" />
+  </ItemGroup>
 </Project>

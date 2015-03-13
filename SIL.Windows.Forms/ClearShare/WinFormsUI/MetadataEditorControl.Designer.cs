@@ -54,7 +54,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._copyrightYear = new System.Windows.Forms.TextBox();
 			this._copyrightBy = new System.Windows.Forms.TextBox();
 			this._copyrightHolderLabel = new System.Windows.Forms.Label();
-			this._linkToDefintionOfNonCommercial = new BetterLinkLabel();
+			this._linkToDefinitionOfNonCommercial = new BetterLinkLabel();
 			this._linkToRefinedCreativeCommonsWarning = new BetterLinkLabel();
 			this._additionalRequestsLabel = new BetterLabel();
 			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -381,24 +381,24 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._copyrightHolderLabel.TabIndex = 28;
 			this._copyrightHolderLabel.Text = "Copyright Holder";
 			// 
-			// _linkToDefintionOfNonCommercial
+			// _linkToDefinitionOfNonCommercial
 			// 
-			this._linkToDefintionOfNonCommercial.BackColor = System.Drawing.SystemColors.Control;
-			this._linkToDefintionOfNonCommercial.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this._linkToDefintionOfNonCommercial.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Underline);
-			this._linkToDefintionOfNonCommercial.ForeColor = System.Drawing.Color.Blue;
-			this._L10NSharpExtender.SetLocalizableToolTip(this._linkToDefintionOfNonCommercial, null);
-			this._L10NSharpExtender.SetLocalizationComment(this._linkToDefintionOfNonCommercial, "The meaning of  \"non-commercial\" is vague but important. This hyperlink takes you" +
-        " somewhere tha defines it.");
-			this._L10NSharpExtender.SetLocalizingId(this._linkToDefintionOfNonCommercial, "MetadataEditor.betterLinkLabel1");
-			this._linkToDefintionOfNonCommercial.Location = new System.Drawing.Point(272, 172);
-			this._linkToDefintionOfNonCommercial.Multiline = true;
-			this._linkToDefintionOfNonCommercial.Name = "_linkToDefintionOfNonCommercial";
-			this._linkToDefintionOfNonCommercial.Size = new System.Drawing.Size(61, 16);
-			this._linkToDefintionOfNonCommercial.TabIndex = 28;
-			this._linkToDefintionOfNonCommercial.TabStop = false;
-			this._linkToDefintionOfNonCommercial.Text = "more info";
-			this._linkToDefintionOfNonCommercial.URL = "http://creativecommons.org/licenses/by-nc/4.0/legalcode#s1i";
+			this._linkToDefinitionOfNonCommercial.BackColor = System.Drawing.SystemColors.Control;
+			this._linkToDefinitionOfNonCommercial.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this._linkToDefinitionOfNonCommercial.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Underline);
+			this._linkToDefinitionOfNonCommercial.ForeColor = System.Drawing.Color.Blue;
+			this._L10NSharpExtender.SetLocalizableToolTip(this._linkToDefinitionOfNonCommercial, null);
+			this._L10NSharpExtender.SetLocalizationComment(this._linkToDefinitionOfNonCommercial, "The meaning of  \"non-commercial\" is vague but important. This hyperlink takes you" +
+        " somewhere that defines it.");
+			this._L10NSharpExtender.SetLocalizingId(this._linkToDefinitionOfNonCommercial, "MetadataEditor.betterLinkLabel1");
+			this._linkToDefinitionOfNonCommercial.Location = new System.Drawing.Point(272, 172);
+			this._linkToDefinitionOfNonCommercial.Multiline = true;
+			this._linkToDefinitionOfNonCommercial.Name = "_linkToDefinitionOfNonCommercial";
+			this._linkToDefinitionOfNonCommercial.Size = new System.Drawing.Size(61, 16);
+			this._linkToDefinitionOfNonCommercial.TabIndex = 28;
+			this._linkToDefinitionOfNonCommercial.TabStop = false;
+			this._linkToDefinitionOfNonCommercial.Text = "more info";
+			this._linkToDefinitionOfNonCommercial.URL = "http://creativecommons.org/licenses/by-nc/4.0/legalcode#s1i";
 			// 
 			// _linkToRefinedCreativeCommonsWarning
 			// 
@@ -463,7 +463,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this._additionalRequestsLabel);
 			this.Controls.Add(this._linkToRefinedCreativeCommonsWarning);
-			this.Controls.Add(this._linkToDefintionOfNonCommercial);
+			this.Controls.Add(this._linkToDefinitionOfNonCommercial);
 			this.Controls.Add(this.tableLayoutPanel1);
 			this.Controls.Add(this._customRightsStatement);
 			this.Controls.Add(this._customLicense);
@@ -515,7 +515,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		private System.Windows.Forms.TextBox _copyrightYear;
 		private System.Windows.Forms.TextBox _copyrightBy;
 		private System.Windows.Forms.Label _copyrightHolderLabel;
-		private Widgets.BetterLinkLabel _linkToDefintionOfNonCommercial;
+		private Widgets.BetterLinkLabel _linkToDefinitionOfNonCommercial;
 		private Widgets.BetterLinkLabel _linkToRefinedCreativeCommonsWarning;
 		private Widgets.BetterLabel _additionalRequestsLabel;
 		private System.Windows.Forms.Label label2;
