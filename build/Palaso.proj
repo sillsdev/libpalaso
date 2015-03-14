@@ -33,7 +33,7 @@
 		<useNUnit-x86 Condition="'$(OS)'=='Windows_NT'">true</useNUnit-x86>
 		<useNUnit-x86 Condition="'$(OS)'!='Windows_NT'">false</useNUnit-x86>
 		<Platform Condition="'$(OS)'!='Windows_NT' And '$(Platform)'==''">Any CPU</Platform>
-		<Platform Condition="'$(OS)'='Windows_NT' And '$(Platform)'==''">Mixed Platforms</Platform>
+		<Platform Condition="'$(OS)'=='Windows_NT' And '$(Platform)'==''">Mixed Platforms</Platform>
 	</PropertyGroup>
 
 	<Target Name="VersionNumbers">
