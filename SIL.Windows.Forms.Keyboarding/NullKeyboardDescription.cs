@@ -16,10 +16,6 @@ namespace SIL.Windows.Forms.Keyboarding
 			
 		}
 
-		/// <summary>
-		/// Returns a <see cref="T:System.String"/> that represents the current
-		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.KeyboardDescriptionNull"/>.
-		/// </summary>
 		public override string ToString()
 		{
 			return "<no keyboard>";

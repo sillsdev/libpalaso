@@ -88,7 +88,8 @@ namespace SIL.WritingSystems
 				if (File.Exists(sldrCacheFilename))
 					File.Delete(sldrCacheFilename);
 				File.Move(tempFilename, sldrCacheFilename);
-				File.Copy(sldrCacheFilename, filename, true);
+				if (Path.GetFullPath(sldrCacheFilename) != Path.GetFullPath(filename))
+					File.Copy(sldrCacheFilename, filename, true);
 				return true;
 			}
 			catch (WebException we)

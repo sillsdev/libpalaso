@@ -73,8 +73,7 @@ namespace SIL.WritingSystems
 		{
 			try
 			{
-				Sldr.GetLdmlFile(path, id);
-				return true;
+				return Sldr.GetLdmlFile(path, id);
 			}
 			catch (WebException)
 			{
