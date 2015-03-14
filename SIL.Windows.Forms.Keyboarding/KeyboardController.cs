@@ -30,7 +30,7 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// <summary>
 		/// The null keyboard description
 		/// </summary>
-		public static readonly KeyboardDescription NullKeyboard = new KeyboardDescriptionNull();
+		public static readonly KeyboardDescription NullKeyboard = new NullKeyboardDescription();
 
 		private static KeyboardController _instance;
 
@@ -111,12 +111,12 @@ namespace SIL.Windows.Forms.Keyboarding
 		}
 
 		#if __MonoCS__
-		internal static bool CombinedKeyboardHandling
+		public static bool CombinedKeyboardHandling
 		{
 			get { return _instance.Adaptors.Any(a => a is CombinedKeyboardAdaptor); }
 		}
 
-		internal static bool CinnamonKeyboardHandling
+		public static bool CinnamonKeyboardHandling
 		{
 			get { return _instance.Adaptors.Any(a => a is CinnamonIbusAdaptor); }
 		}

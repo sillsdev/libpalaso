@@ -244,7 +244,7 @@
     <Compile Include="IWindowsLanguageProfileSink.cs" />
     <Compile Include="KeyboardController.cs" />
     <Compile Include="KeyboardDescription.cs" />
-    <Compile Include="KeyboardDescriptionNull.cs" />
+    <Compile Include="NullKeyboardDescription.cs" />
     <Compile Include="Linux\CinnamonIbusAdaptor.cs" />
     <Compile Include="Linux\CombinedKeyboardAdaptor.cs" />
     <Compile Include="Linux\CommonBaseAdaptor.cs" />

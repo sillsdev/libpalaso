@@ -6,11 +6,11 @@ namespace SIL.Windows.Forms.Keyboarding
 	/// <summary>
 	/// This implements a no-op keyboard that can be used where we don't know what keyboard to use
 	/// </summary>
-	internal class KeyboardDescriptionNull : KeyboardDescription
+	internal class NullKeyboardDescription : KeyboardDescription
 	{
 		private const string DefaultKeyboardName = "(default)";
 
-		public KeyboardDescriptionNull()
+		public NullKeyboardDescription()
 			: base(string.Empty, DefaultKeyboardName, DefaultKeyboardName, string.Empty, false, null)
 		{
 			
