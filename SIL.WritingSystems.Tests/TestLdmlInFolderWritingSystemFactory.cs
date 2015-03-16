@@ -21,14 +21,15 @@ namespace SIL.WritingSystems.Tests
 		protected override SldrStatus GetLdmlFromSldr(string path, string id, out string filename)
 		{
 			string contents;
-			filename = string.Empty;
 			if (_sldrLdmls.TryGetValue(id, out contents))
 			{
-				File.WriteAllText(path, contents);
+
 				filename = id + ".ldml";
+				File.WriteAllText(Path.Combine(path, filename), contents);
 				return SldrStatus.FileFromSldr;
 			}
 
+			filename = null;
 			return SldrStatus.FileNotFound;
 		}
 	}
