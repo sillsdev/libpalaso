@@ -8,7 +8,6 @@ using System.Xml;
 using System.Xml.Linq;
 using NUnit.Framework;
 using Palaso.TestUtilities;
-using SIL.Data;
 using SIL.IO;
 using SIL.Keyboarding;
 using SIL.WritingSystems.Migration;

@@ -29,7 +29,8 @@ namespace SIL.WritingSystems
 			string sldrCachePath = Path.Combine(Path.GetTempPath(), "SldrCache");
 			Directory.CreateDirectory(sldrCachePath);
 			string templatePath = Path.Combine(sldrCachePath, ietfLanguageTag + ".ldml");
-			if (!GetLdmlFromSldr(templatePath, ietfLanguageTag))
+			string filename;
+			if (GetLdmlFromSldr(templatePath, ietfLanguageTag, out filename) == SldrStatus.FileNotFound)
 			{
 				// check SLDR cache for template
 				if (!File.Exists(templatePath))
@@ -69,16 +70,10 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Gets the a LDML file from the SLDR.
 		/// </summary>
-		protected virtual bool GetLdmlFromSldr(string path, string id)
+		protected virtual SldrStatus GetLdmlFromSldr(string path, string id, out string filename)
 		{
-			try
-			{
-				return Sldr.GetLdmlFile(path, id);
-			}
-			catch (WebException)
-			{
-				return false;
-			}
+			
+				return Sldr.GetLdmlFile(path, id, out filename);
 		}
 	}
 }

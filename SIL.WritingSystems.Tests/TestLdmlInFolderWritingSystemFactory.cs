@@ -18,16 +18,18 @@ namespace SIL.WritingSystems.Tests
 			get { return _sldrLdmls; }
 		}
 
-		protected override bool GetLdmlFromSldr(string path, string id)
+		protected override SldrStatus GetLdmlFromSldr(string path, string id, out string filename)
 		{
 			string contents;
+			filename = string.Empty;
 			if (_sldrLdmls.TryGetValue(id, out contents))
 			{
 				File.WriteAllText(path, contents);
-				return true;
+				filename = id + ".ldml";
+				return SldrStatus.FileFromSldr;
 			}
 
-			return false;
+			return SldrStatus.FileNotFound;
 		}
 	}
 }

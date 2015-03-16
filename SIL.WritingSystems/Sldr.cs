@@ -1,21 +1,54 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Xml;
 using System.Xml.Linq;
 using System;
 using System.Net;
+using SIL.Xml;
 
 namespace SIL.WritingSystems
 {
+	/// <summary>
+	/// Status for the source of the returned LDML file
+	/// </summary>
+	public enum SldrStatus
+	{
+		/// <summary>
+		/// LDML file not found in the SLDR or SLDR cache
+		/// </summary>
+		FileNotFound,
+		/// <summary>
+		/// Unable to connect to SLDR and LDML file not found in SLDR cache
+		/// </summary>
+		UnableToConnectToSldr,
+		/// <summary>
+		/// LDML file from SLDR
+		/// </summary>
+		FileFromSldr,
+		/// <summary>
+		/// LDML file not found in SLDR, but in SLDR cache
+		/// </summary>
+		FileFromSldrCache
+	};
+
 	public static class Sldr
 	{
 		public static XNamespace Sil = "urn://www.sil.org/ldml/0.1";
-		private const string SldrRepository = "https://ldml.api.sil.org/";
-		private const string DefaultExtension = "ldml";
+
+		// SLDR is hosted on two sites.  Generally we will use the production (public) site.
+		private const string ProductionSldrRepository = "https://ldml.api.sil.org/";
+		// Staging site listed here for developmental testing
+		// private const string StagingSldrRepository = "http://staging.scriptsource.org/ldml/";
+
+		private const string SldrCacheDir = "SldrCache";
+		private const string TmpExtension = "tmp";
+
+		// Default parameters for querying the SLDR
+		private const string LdmlExtension = "ldml";
 
 		// Default list of elements to request from the SLDR.
 		// Identity is always published, so we don't need it on the list.
-		private static readonly IEnumerable<string> DefaultTopElements = new List<string>
+		public static readonly IEnumerable<string> DefaultTopElements = new List<string>
 		{
 			"characters",
 			"delimiters",
@@ -26,105 +59,201 @@ namespace SIL.WritingSystems
 		};
  
 		// If the user wants to request a new UID, you use "uid=unknown" and that will create a new random identifier
-		public const string UnknownUserId = "unknown";
+		public const string DefaultUserId = "unknown";
 
 		/// <summary>
-		/// API request to return an LDML file and save it
+		/// API to query the SLDR for an LDML file and save it locally in the SLDR cache and specified directories
 		/// </summary>
-		/// <param name="filename">Full filename to save the requested LDML file</param>
-		/// <param name="ietfLanguageTag">Current IETF language tag which is a concatenation of the Language, Script, Region and Variant properties</param>
+		/// <param name="destinationPath">Destination path to save the requested LDML file</param>
+		/// <param name="ietfLanguageTag">Current IETF language tag</param>
 		/// <param name="topLevelElements">List of top level element names to request. SLDR will always publish identity, so it doesn't need to be requested.
 		/// If null, the default list of {"characters", "delimiters", "layout", "numbers", "collations", "special"} will be requested.</param>
-		/// <param name="flatten">Currently not supported.  Indicates whether or not you want to include all the data 
-		/// inherited from a more general file.  SLDR currently defaults to true (1)</param>
-		/// <returns>Boolean status if the LDML file was successfully retrieved</returns>
-		public static bool GetLdmlFile(string filename, string ietfLanguageTag, IEnumerable<string> topLevelElements, Boolean flatten = true)
+		/// <param name="filename">Saved filename</param>
+		/// <returns>Enum status SldrStatus if file could be retrieved and the source</returns>
+		public static SldrStatus GetLdmlFile(string destinationPath, string ietfLanguageTag, IEnumerable<string> topLevelElements, out string filename)
 		{
-			if (String.IsNullOrEmpty(filename))
-			{
-				throw new ArgumentException("filename");
-			}
-			if (String.IsNullOrEmpty(ietfLanguageTag))
-			{
-				throw new ArgumentException("bcp47Tag");
-			}
+			if (String.IsNullOrEmpty(destinationPath))
+				throw new ArgumentException("destinationPath");
+			if (!Directory.Exists(destinationPath))
+				throw new DirectoryNotFoundException("destinationPath");
+			if (String.IsNullOrEmpty(ietfLanguageTag) || (!IetfLanguageTagHelper.IsValid(ietfLanguageTag)))
+				throw new ArgumentException("ietfLanguageTag");
 			if (topLevelElements == null)
-			{
 				throw new ArgumentException("topLevelElements");
-			}
 
-			// Random 8-character identifier.  This marks various bits of information as alternatives that have been suggested by that specific user.
-			string userId = UnknownUserId;
+			SldrStatus status;
 
-			// If the LDML file already exists, attempt to extract userId
-			if (File.Exists(filename))
-			{
-				var fi = new FileInfo(filename);
-				if (fi.Length > 0)
-				{
-					XElement element = XElement.Load(filename);
-					XElement identityElem = element.Descendants(Sil + "identity").First();
-					if (identityElem != null)
-						userId = (string) identityElem.Attribute("uid") ?? UnknownUserId;
-				}
-			}
+			const Boolean flatten = true;
+			filename = ietfLanguageTag + "." + LdmlExtension;
+			string revid, uid;
 
-			// Concatenate requested top level elements
+			// Check if LDML file already exists in destination and read revid and uid
+			if (!ReadSilIdentity(Path.Combine(destinationPath, filename), out revid, out uid))
+				uid = DefaultUserId;
+
+			// Concatenate parameters for url string
 			string requestedElements = string.Join("&inc[]=", topLevelElements);
+			string requestedUserId = !String.IsNullOrEmpty(uid) ? String.Format("&uid={0}", uid) : String.Empty;
+			string url = string.Format("{0}{1}?ext={2}&inc[]={3}&flatten={4}{5}",
+				ProductionSldrRepository, ietfLanguageTag, LdmlExtension,
+				requestedElements, Convert.ToInt32(flatten), requestedUserId);
 
-			// Concatenate url string
-			string url = string.Format("{0}{1}?uid={2}&ext={3}&inc[]={4}&flatten={5}", SldrRepository, ietfLanguageTag, userId, DefaultExtension, requestedElements, Convert.ToInt32(flatten));
-			string sldrCachePath = Path.Combine(Path.GetTempPath(), "SldrCache");
+			string sldrCachePath = Path.Combine(Path.GetTempPath(), SldrCacheDir);
 			Directory.CreateDirectory(sldrCachePath);
-			string sldrCacheFilename = Path.Combine(sldrCachePath, ietfLanguageTag + "." + DefaultExtension);
-			string tempFilename = sldrCacheFilename + ".tmp";
+			string sldrCacheFilename = Path.Combine(sldrCachePath, filename + "." + LdmlExtension);
+			string tempFilename = sldrCacheFilename + "." + TmpExtension;
+
 			try
 			{
 				// Download the LDML file to a temp file in case the transfer gets interrupted
 				var webClient = new WebClient();
 				webClient.DownloadFile(Uri.EscapeUriString(url), tempFilename);
+				status = SldrStatus.FileFromSldr;
 
-				// Move the completed temp file to filename
-				if (File.Exists(sldrCacheFilename))
-					File.Delete(sldrCacheFilename);
-				File.Move(tempFilename, sldrCacheFilename);
-				if (Path.GetFullPath(sldrCacheFilename) != Path.GetFullPath(filename))
-					File.Copy(sldrCacheFilename, filename, true);
-				return true;
+				sldrCacheFilename = MoveTmpToCache(tempFilename, uid);
 			}
 			catch (WebException we)
 			{
 				// Return from 404 error
 				var errorResponse = we.Response as HttpWebResponse;
 				if ((errorResponse != null) && (errorResponse.StatusCode == HttpStatusCode.NotFound))
-					return false;
+					return SldrStatus.FileNotFound;
 
-				// use the cached version if it exists
+				// Download failed so check SLDR cache
+				if (!string.IsNullOrEmpty(uid) && (uid != DefaultUserId))
+					filename = string.Format("{0}-{1}.{2}", ietfLanguageTag, uid, LdmlExtension);
+				else
+					filename = string.Format("{0}.{1}", ietfLanguageTag, LdmlExtension);
+				sldrCacheFilename = Path.Combine(sldrCachePath, filename);
 				if (File.Exists(sldrCacheFilename))
-				{
-					File.Copy(sldrCacheFilename, filename, true);
-					return true;
-				}
+					status = SldrStatus.FileFromSldrCache;
+				else
+					return SldrStatus.UnableToConnectToSldr;
+			}
 
-				throw;
-			}
-			finally
-			{
-				// Cleanup temp file
-				if (File.Exists(tempFilename))
-					File.Delete(tempFilename);
-			}
+			// Copy from Cache to destination (w/o uid in filename), overwriting whatever used to be there
+			filename = ietfLanguageTag + "." + LdmlExtension;
+			File.Copy(sldrCacheFilename, Path.Combine(destinationPath, filename), true);
+
+			return status;
 		}
 
 		/// <summary>
 		/// API request to return an LDML file and save it
 		/// </summary>
-		/// <param name="filename">Full filename to save the requested LDML file</param>
-		/// <param name="ietfLanguageTag">Current BCP47 tag which is a concatenation of the Language, Script, Region and Variant properties</param>
-		/// <returns>Boolean status if the LDML file was successfully retrieved</returns>
-		public static bool GetLdmlFile(string filename, string ietfLanguageTag)
+		/// <param name="destinationPath">Destination path to save the requested LDML file</param>
+		/// <param name="ietfLanguageTag">Current IETF language tag</param>
+		/// <param name="filename">Saved filename</param>
+		/// <returns>Enum status SldrStatus if file could be retrieved and the source</returns>
+		public static SldrStatus GetLdmlFile(string destinationPath, string ietfLanguageTag, out string filename)
 		{
-			return GetLdmlFile(filename, ietfLanguageTag, DefaultTopElements);
+			return GetLdmlFile(destinationPath, ietfLanguageTag, DefaultTopElements, out filename);
+		}
+
+		/// <summary>
+		/// Utility to read the SIL:Identity element and return the values to the revid and uid attributes.
+		/// Returns boolean if the LDML file exists.
+		/// </summary>
+		/// <param name="filePath">Full path to the LDML file to parse</param>
+		/// <param name="revid">This contains the SHA of the git revision that was current when the user pulled the LDML file. 
+		/// This attribute is stripped from files before inclusion in the SLDR</param>
+		/// <param name="uid">This holds a unique id that identifies a particular editor of a file. Notice that no two uids will be the same even across LDML files. 
+		/// Thus the uid is a unique identifier for an LDML file as edited by a user. If a user downloads a file and they don't already have a 
+		/// uid for that file then they should use the given uid. On subsequent downloads they must update the uid to the existing uid for that file.
+		/// In implementation terms the UID is calculated as the 32-bit timestamp of the file request from the server, 
+		/// with another 16-bit collision counter appended and represented in MIME64 as 8 characters. 
+		/// This attribute is stripped from files before inclusion in the SLDR.</param>
+		/// <returns>Boolean if the LDML file exists</returns>
+		internal static bool ReadSilIdentity(string filePath, out string revid, out string uid)
+		{
+			revid = String.Empty;
+			uid = String.Empty;
+
+			if (String.IsNullOrEmpty(filePath))
+				throw new ArgumentNullException("filePath");
+			if (!File.Exists(filePath))
+				return false;
+			XElement element = XElement.Load(filePath);
+			if (element.Name != "ldml")
+				throw new ApplicationException("Unable to load writing system definition: Missing <ldml> tag.");
+
+			XElement identityElem = element.Element("identity");
+			if (identityElem != null)
+			{
+				XElement specialElem = identityElem.NonAltElement("special");
+				if (specialElem != null)
+				{
+					XElement silIdentityElem = specialElem.Element(Sil + "identity");
+					if (silIdentityElem != null)
+					{
+						revid = (string) silIdentityElem.Attribute("revid") ?? string.Empty;
+						uid = (string) silIdentityElem.Attribute("uid") ?? string.Empty;
+					}
+				}
+			}
+			return true;
+		}
+
+		/// <summary>
+		/// Process the tmp file and move to Sldr cache.  First, check the LDML tmp file to see if draft attribute is "approved".
+		/// If approved: uid attribute is removed. tmp file is saved to cache as "filename", and delete "filename + uid" in cache
+		/// Otherwise, tmp file is saved to cache as "filename + uid"
+		/// </summary>
+		/// <param name="filePath">Full path to the tmp LDML file</param>
+		/// <param name="originalUid">Uid read from the exisiting LDML file, before the SLDR query</param>
+		/// <returns>Path to the LDML file in SLDR cache</returns>
+		internal static string MoveTmpToCache(string filePath, string originalUid)
+		{
+			XElement element = XElement.Load(filePath);
+			if (element.Name != "ldml")
+				throw new ApplicationException("Unable to load writing system definition: Missing <ldml> tag.");
+
+			string uid = string.Empty;
+			string sldrCacheFilePath = filePath.Replace("." + TmpExtension, "");
+
+			XElement identityElem = element.Element("identity");
+			if (identityElem != null)
+			{
+				XElement specialElem = identityElem.NonAltElement("special");
+				if (specialElem != null)
+				{
+					XElement silIdentityElem = specialElem.Element(Sil + "identity");
+					if (silIdentityElem != null)
+					{
+						if ((string) silIdentityElem.Attribute("draft") == "approved")
+						{
+							// Remove uid attribute
+							uid = string.Empty;
+							silIdentityElem.SetOptionalAttributeValue("uid", uid);
+
+							// Clean out original LDML file that contains uid in cache
+							string originalFile = sldrCacheFilePath.Replace("." + LdmlExtension, "-" + originalUid + "." + LdmlExtension);
+							if (File.Exists(originalFile))
+								File.Delete(originalFile);
+						}
+						else
+							uid = (string) silIdentityElem.Attribute("uid");
+					}
+				}
+			}
+
+			// sldrCache/filename.ldml.tmp
+			// Remove tmp extension and append -uid if needed
+			if (!string.IsNullOrEmpty(uid))
+				sldrCacheFilePath = sldrCacheFilePath.Replace("." + LdmlExtension, "-" + uid + "." + LdmlExtension);
+
+			// Use Canonical xml settings suitable for use in Chorus applications
+			// except NewLineOnAttributes to conform to SLDR files
+			var writerSettings = CanonicalXmlSettings.CreateXmlWriterSettings();
+			writerSettings.NewLineOnAttributes = false;
+
+			using (var writer = XmlWriter.Create(sldrCacheFilePath, writerSettings))
+				element.WriteTo(writer);
+
+			if (filePath != sldrCacheFilePath)
+				File.Delete(filePath);
+				
+			return sldrCacheFilePath;	
 		}
 	}
 }
