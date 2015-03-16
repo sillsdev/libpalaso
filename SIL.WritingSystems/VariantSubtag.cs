@@ -16,7 +16,7 @@ namespace SIL.WritingSystems
 		/// <param name="code">The code.</param>
 		/// <param name="name">The name.</param>
 		public VariantSubtag(string code, string name = null)
-			: base(code, name, true)
+			: this(code, name, true, Enumerable.Empty<string>())
 		{
 		}
 
@@ -30,7 +30,7 @@ namespace SIL.WritingSystems
 		internal VariantSubtag(string code, string name, bool isPrivateUse, IEnumerable<string> prefixes)
 			: base(code, name, isPrivateUse)
 		{
-			_prefixes = new HashSet<string>(prefixes ?? Enumerable.Empty<string>());
+			_prefixes = new HashSet<string>(prefixes);
 		}
 
 		/// <summary>
