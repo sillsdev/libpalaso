@@ -70,7 +70,7 @@ namespace SIL.WritingSystems
 			//Why just this small set? Only out of convenience. Ideally we'd have a db of all languages as they write it in their literature.
 			CodeToLanguageIndex["fr"].LocalName =  "français";
 			CodeToLanguageIndex["es"].LocalName =  "español";
-			CodeToLanguageIndex["zho"].LocalName =  "中文"; //chinese
+			CodeToLanguageIndex["zh"].LocalName =  "中文"; //chinese
 			CodeToLanguageIndex["hi"].LocalName =  "हिन्दी"; //hindi
 			CodeToLanguageIndex["bn"].LocalName =  "বাংলা"; //bengali
 			CodeToLanguageIndex["te"].LocalName =  "తెలుగు"; //telugu

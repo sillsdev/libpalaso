@@ -13,14 +13,14 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void CodeFaHasIso3Pes()
+		public void RegisteredLanguages_CodeFaHasIso3Fas()
 		{
 			LanguageSubtag target = StandardSubtags.RegisteredLanguages["fa"];
-			Assert.That(target.Iso3Code, Is.EqualTo("pes"));
+			Assert.That(target.Iso3Code, Is.EqualTo("fas"));
 		}
 
 		[Test]
-		public void CodeAqtHasIso3Angaite() // Updated to the 2014 version of the subtag registry
+		public void RegisteredLanguages_CodeAqtHasIso3Angaite() // Updated to the 2014 version of the subtag registry
 		{
 			Assert.That(StandardSubtags.RegisteredLanguages.Contains("aqt"), Is.True);
 		}

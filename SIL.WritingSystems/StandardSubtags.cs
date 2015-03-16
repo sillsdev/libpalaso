@@ -74,7 +74,7 @@ namespace SIL.WritingSystems
 					case "language":
 						string iso3Code;
 						if (!twoToThreeMap.TryGetValue(subtag, out iso3Code))
-							iso3Code = String.Empty;
+							iso3Code = subtag;
 						languages.Add(new LanguageSubtag(subtag, description, false, iso3Code, GetImplicitScriptCode(subTagComponents)));
 						break;
 					case "script":
@@ -90,22 +90,22 @@ namespace SIL.WritingSystems
 			}
 
 			IEnumerable<LanguageSubtag> sortedLanguages = languages.OrderBy(l => Regex.Replace(l.Name, @"[^\w]", ""))
-				.Concat(new[] {new LanguageSubtag(WellKnownSubtags.UnlistedLanguage, "Language Not Listed", false, string.Empty, string.Empty)});
+				.Concat(new[] {new LanguageSubtag(WellKnownSubtags.UnlistedLanguage, "Language Not Listed", true, string.Empty, string.Empty)});
 			RegisteredLanguages = new ReadOnlyKeyedCollection<string, LanguageSubtag>(new KeyedList<string, LanguageSubtag>(sortedLanguages, l => l.Code, StringComparer.InvariantCultureIgnoreCase));
 			RegisteredScripts = new ReadOnlyKeyedCollection<string, ScriptSubtag>(new KeyedList<string, ScriptSubtag>(scripts.OrderBy(s => s.Name), s => s.Code, StringComparer.InvariantCultureIgnoreCase));
 			RegisteredRegions = new ReadOnlyKeyedCollection<string, RegionSubtag>(new KeyedList<string, RegionSubtag>(regions.OrderBy(r => r.Name), r => r.Code, StringComparer.InvariantCultureIgnoreCase));
 			RegisteredVariants = new ReadOnlyKeyedCollection<string, VariantSubtag>(new KeyedList<string, VariantSubtag>(variants.OrderBy(v => v.Name), v => v.Code, StringComparer.InvariantCultureIgnoreCase));
 			CommonPrivateUseVariants = new ReadOnlyKeyedCollection<string, VariantSubtag>(new KeyedList<string, VariantSubtag>(new[]
 			{
-				new VariantSubtag(WellKnownSubtags.IpaPhoneticPrivateUse, "Phonetic", true, null),
-				new VariantSubtag(WellKnownSubtags.IpaPhonemicPrivateUse, "Phonemic", true, null),
-				new VariantSubtag(WellKnownSubtags.AudioPrivateUse, "Audio", true, null)
+				new VariantSubtag(WellKnownSubtags.IpaPhoneticPrivateUse, "Phonetic"),
+				new VariantSubtag(WellKnownSubtags.IpaPhonemicPrivateUse, "Phonemic"),
+				new VariantSubtag(WellKnownSubtags.AudioPrivateUse, "Audio")
 			}, v => v.Code, StringComparer.InvariantCultureIgnoreCase));
 
-			_iso3LanguageSubtags = RegisteredLanguages.Where(l => !string.IsNullOrEmpty(l.Iso3Code)).ToDictionary(l => l.Iso3Code);
+			Iso3Languages = RegisteredLanguages.Where(l => !string.IsNullOrEmpty(l.Iso3Code)).ToDictionary(l => l.Iso3Code, StringComparer.InvariantCultureIgnoreCase);
 		}
 
-		private static readonly Dictionary<string, LanguageSubtag> _iso3LanguageSubtags; 
+		private static readonly Dictionary<string, LanguageSubtag> Iso3Languages; 
 
 		public static IReadOnlyKeyedCollection<string, ScriptSubtag> RegisteredScripts { get; private set; }
 
@@ -175,7 +175,7 @@ namespace SIL.WritingSystems
 
 		public static bool TryGetLanguageFromIso3Code(string iso3Code, out LanguageSubtag languageSubtag)
 		{
-			return _iso3LanguageSubtags.TryGetValue(iso3Code, out languageSubtag);
+			return Iso3Languages.TryGetValue(iso3Code, out languageSubtag);
 		}
 
 		public static bool IsValidIso639LanguageCode(string languageCodeToCheck)

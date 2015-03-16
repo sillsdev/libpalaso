@@ -391,7 +391,22 @@ namespace SIL.WritingSystems.Tests.Migration
 		{
 			using (var environment = new TestEnvironment())
 			{
-				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-Latn", String.Empty, String.Empty, String.Empty));
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("en-Thai", String.Empty, String.Empty, String.Empty));
+
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='en']");
+				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Thai']");
+			}
+		}
+
+		[Test]
+		public void Migrate_LanguageSubtagIsIso3Code_UseIso1Code()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0("eng", String.Empty, String.Empty, String.Empty));
 
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();

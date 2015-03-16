@@ -48,8 +48,12 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			string spellCheckingId = writingSystemDefinitionV1.SpellCheckingId;
 			string defaultFontName = writingSystemDefinitionV1.DefaultFontName;
 			string languageName = writingSystemDefinitionV1.LanguageName.IsOneOf("Unknown Language", "Language Not Listed") ? string.Empty : writingSystemDefinitionV1.LanguageName;
-			string langTag = IetfLanguageTagHelper.CreateIetfLanguageTag(writingSystemDefinitionV1.Language, writingSystemDefinitionV1.Script,
-				writingSystemDefinitionV1.Region, writingSystemDefinitionV1.Variant);
+			string variant, privateUse;
+			IetfLanguageTagHelper.SplitVariantAndPrivateUse(writingSystemDefinitionV1.Variant, out variant, out privateUse);
+			var langTagCleaner = new IetfLanguageTagCleaner(writingSystemDefinitionV1.Language, writingSystemDefinitionV1.Script, writingSystemDefinitionV1.Region,
+				variant, privateUse);
+			langTagCleaner.Clean();
+			string langTag = IetfLanguageTagHelper.Canonicalize(langTagCleaner.GetCompleteTag());
 			bool isGraphiteEnabled = false;
 			string legacyMapping = string.Empty;
 			string scriptName = string.Empty;

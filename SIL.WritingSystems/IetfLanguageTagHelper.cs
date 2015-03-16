@@ -500,12 +500,6 @@ namespace SIL.WritingSystems
 				}
 				sb.Append(regionSubtag.Code);
 			}
-			else if (languageSubtag != null && languageSubtag.Code == "zh" && languageSubtag.Iso3Code == "cmn" && regionSubtag == null)
-			{
-				if (sb.Length > 0)
-					sb.Append("-");
-				sb.Append("CN");
-			}
 
 			variants.Clear();
 			foreach (VariantSubtag variantSubtag in variantSubtagsArray.Where(vs => vs.IsPrivateUse))

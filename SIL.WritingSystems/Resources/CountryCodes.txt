@@ -1,4 +1,4 @@
-﻿CountryID	Name	Area
+CountryID	Name	Area
 AD	Andorra	Europe
 AE	United Arab Emirates	Asia
 AF	Afghanistan	Asia
@@ -38,7 +38,7 @@ CD	Democratic Republic of the Congo	Africa
 CF	Central African Republic	Africa
 CG	Congo	Africa
 CH	Switzerland	Europe
-CI	Côte d'Ivoire	Africa
+CI	Côte d’Ivoire	Africa
 CK	Cook Islands	Pacific
 CL	Chile	Americas
 CM	Cameroon	Africa
@@ -72,6 +72,7 @@ GB	United Kingdom	Europe
 GD	Grenada	Americas
 GE	Georgia	Asia
 GF	French Guiana	Americas
+GG	Guernsey	Europe
 GH	Ghana	Africa
 GI	Gibraltar	Europe
 GL	Greenland	Americas
@@ -84,7 +85,7 @@ GT	Guatemala	Americas
 GU	Guam	Pacific
 GW	Guinea-Bissau	Africa
 GY	Guyana	Americas
-HK	Hong Kong	Asia
+HK	China–Hong Kong	Asia
 HN	Honduras	Americas
 HR	Croatia	Europe
 HT	Haiti	Americas
@@ -99,6 +100,7 @@ IQ	Iraq	Asia
 IR	Iran	Asia
 IS	Iceland	Europe
 IT	Italy	Europe
+JE	Jersey	Europe
 JM	Jamaica	Americas
 JO	Jordan	Asia
 JP	Japan	Asia
@@ -135,7 +137,7 @@ MK	Macedonia	Europe
 ML	Mali	Africa
 MM	Myanmar	Asia
 MN	Mongolia	Asia
-MO	Macao	Asia
+MO	China–Macao	Asia
 MP	Northern Mariana Islands	Pacific
 MQ	Martinique	Americas
 MR	Mauritania	Africa
@@ -212,7 +214,7 @@ TO	Tonga	Pacific
 TR	Turkey	Asia
 TT	Trinidad and Tobago	Americas
 TV	Tuvalu	Pacific
-TW	Taiwan	Asia
+TW	China–Taiwan	Asia
 TZ	Tanzania	Africa
 UA	Ukraine	Europe
 UG	Uganda	Africa

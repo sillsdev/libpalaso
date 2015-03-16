@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using SIL.WritingSystems;
 
 namespace SIL.Windows.Forms.WritingSystems
@@ -24,7 +22,10 @@ namespace SIL.Windows.Forms.WritingSystems
 		/// <returns></returns>
 		public LanguageSubtag GetExactLanguageMatch(string iso639Code)
 		{
-			return StandardSubtags.RegisteredLanguages.FirstOrDefault(code => code.Iso3Code != null && code.Iso3Code.Equals(iso639Code, StringComparison.InvariantCultureIgnoreCase));
+			LanguageSubtag language;
+			if (StandardSubtags.TryGetLanguageFromIso3Code(iso639Code, out language) && language.Code != language.Iso3Code)
+				return language;
+			return null;
 		}
 
 		public IEnumerable<LanguageInfo> GetMatchingLanguages(string typedText)

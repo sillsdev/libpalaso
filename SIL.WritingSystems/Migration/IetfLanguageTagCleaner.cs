@@ -269,8 +269,8 @@ namespace SIL.WritingSystems.Migration
 
 					if (string.IsNullOrEmpty(migrateFrom))
 					{
-						LanguageSubtag language = StandardSubtags.RegisteredLanguages.FirstOrDefault(l => l.Iso3Code == part);
-						if (language != null)
+						LanguageSubtag language;
+						if (StandardSubtags.TryGetLanguageFromIso3Code(part, out language) && language.Code != language.Iso3Code)
 						{
 							migrateFrom = part;
 							migrateTo = language.Code;
