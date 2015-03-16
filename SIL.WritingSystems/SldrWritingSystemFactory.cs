@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Net;
 
 namespace SIL.WritingSystems
 {
@@ -27,14 +26,18 @@ namespace SIL.WritingSystems
 		{
 			// check SLDR for template
 			string sldrCachePath = Path.Combine(Path.GetTempPath(), "SldrCache");
-			Directory.CreateDirectory(sldrCachePath);
-			string templatePath = Path.Combine(sldrCachePath, ietfLanguageTag + ".ldml");
+			string templatePath;
 			string filename;
-			if (GetLdmlFromSldr(templatePath, ietfLanguageTag, out filename) == SldrStatus.FileNotFound)
+			switch (GetLdmlFromSldr(sldrCachePath, ietfLanguageTag, out filename))
 			{
-				// check SLDR cache for template
-				if (!File.Exists(templatePath))
+				case SldrStatus.FileFromSldr:
+				case SldrStatus.FileFromSldrCache:
+					templatePath = Path.Combine(sldrCachePath, filename);
+					break;
+
+				default:
 					templatePath = null;
+					break;
 			}
 
 			// check template folder for template
@@ -72,8 +75,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		protected virtual SldrStatus GetLdmlFromSldr(string path, string id, out string filename)
 		{
-			
-				return Sldr.GetLdmlFile(path, id, out filename);
+			return Sldr.GetLdmlFile(path, id, out filename);
 		}
 	}
 }
