@@ -7,54 +7,54 @@ namespace SIL.WritingSystems.Tests
 	public class StandardSubtagsTests
 	{
 		[Test]
-		public void ValidIso639LanguageCodes_HasEnglish_True()
+		public void RegisteredLanguages_HasEnglish_True()
 		{
-			Assert.That(StandardSubtags.Iso639Languages.Contains("en"), Is.True);
+			Assert.That(StandardSubtags.RegisteredLanguages.Contains("en"), Is.True);
 		}
 
 		[Test]
 		public void CodeFaHasIso3Pes()
 		{
-			LanguageSubtag target = StandardSubtags.Iso639Languages["fa"];
+			LanguageSubtag target = StandardSubtags.RegisteredLanguages["fa"];
 			Assert.That(target.Iso3Code, Is.EqualTo("pes"));
 		}
 
 		[Test]
 		public void CodeAqtHasIso3Angaite() // Updated to the 2014 version of the subtag registry
 		{
-			Assert.That(StandardSubtags.Iso639Languages.Contains("aqt"), Is.True);
+			Assert.That(StandardSubtags.RegisteredLanguages.Contains("aqt"), Is.True);
 		}
 
 		[Test]
-		public void Iso639LanguageCodes_HasIso3CodeForEnglish()
+		public void RegisteredLanguages_HasIso3CodeForEnglish()
 		{
-			LanguageSubtag english = StandardSubtags.Iso639Languages["en"];
+			LanguageSubtag english = StandardSubtags.RegisteredLanguages["en"];
 			Assert.That(english.Iso3Code, Is.EqualTo("eng"));
 		}
 
 		[Test]
-		public void Iso639LanguageCodes_HasImplicitScriptCodeForEnglish()
+		public void RegisteredLanguages_HasImplicitScriptCodeForEnglish()
 		{
-			LanguageSubtag english = StandardSubtags.Iso639Languages["en"];
+			LanguageSubtag english = StandardSubtags.RegisteredLanguages["en"];
 			Assert.That(english.ImplicitScriptCode, Is.EqualTo("Latn"));
 		}
 
 		[Test]
-		public void Iso639LanguageCodes_HasFonipa_False()
+		public void RegisteredLanguages_HasFonipa_False()
 		{
-			Assert.That(StandardSubtags.Iso639Languages.Contains("fonipa"), Is.False);
+			Assert.That(StandardSubtags.RegisteredLanguages.Contains("fonipa"), Is.False);
 		}
 
 		[Test]
-		public void Iso15924Scripts_HasLatn_True()
+		public void RegisteredScripts_HasLatn_True()
 		{
-			Assert.That(StandardSubtags.Iso15924Scripts.Contains("Latn"), Is.True);
+			Assert.That(StandardSubtags.RegisteredScripts.Contains("Latn"), Is.True);
 		}
 
         [Test]
-		public void Iso15924Scripts_HasOldItalic_True()
+		public void RegisteredScripts_HasOldItalic_True()
 		{
-			Assert.That(StandardSubtags.Iso15924Scripts.Any(code => code.Name == "Old Italic (Etruscan, Oscan, etc.)"), Is.True);
+			Assert.That(StandardSubtags.RegisteredScripts.Any(code => code.Name == "Old Italic (Etruscan, Oscan, etc.)"), Is.True);
 		}
 
 		[Test]
@@ -86,39 +86,39 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Iso15924Scripts_HasLatinFraktur_True()
+		public void RegisteredScripts_HasLatinFraktur_True()
 		{
-			Assert.That(StandardSubtags.Iso15924Scripts.Any(code => code.Name == "Latin (Fraktur variant)"), Is.True);
+			Assert.That(StandardSubtags.RegisteredScripts.Any(code => code.Name == "Latin (Fraktur variant)"), Is.True);
 		}
 
 		[Test]
-		public void Iso15924Scripts_HasHiraganaKatakana_True()
+		public void RegisteredScripts_HasHiraganaKatakana_True()
 		{
-            Assert.That(StandardSubtags.Iso15924Scripts.Any(code => code.Name == "Japanese syllabaries (Hiragana + Katakana)"), Is.True);
+            Assert.That(StandardSubtags.RegisteredScripts.Any(code => code.Name == "Japanese syllabaries (Hiragana + Katakana)"), Is.True);
 		}
 
 		[Test]
-		public void Iso15924Scripts_HasFonipa_False()
+		public void RegisteredScripts_HasFonipa_False()
 		{
-			Assert.That(StandardSubtags.Iso15924Scripts.Contains("fonipa"), Is.False);
+			Assert.That(StandardSubtags.RegisteredScripts.Contains("fonipa"), Is.False);
 		}
 
 		[Test]
-		public void Iso15924Scripts_HasSome()
+		public void RegisteredScripts_HasSome()
 		{
-			Assert.That(StandardSubtags.Iso15924Scripts.Count, Is.GreaterThan(4));
+			Assert.That(StandardSubtags.RegisteredScripts.Count, Is.GreaterThan(4));
 		}
 
 		[Test]
-		public void Iso3166Regions_HasUS_True()
+		public void RegisteredRegions_HasUS_True()
 		{
-			Assert.That(StandardSubtags.Iso3166Regions.Contains("US"), Is.True);
+			Assert.That(StandardSubtags.RegisteredRegions.Contains("US"), Is.True);
 		}
 
 		[Test]
-		public void Iso3166Regions_HasFonipa_False()
+		public void RegisteredRegions_HasFonipa_False()
 		{
-			Assert.That(StandardSubtags.Iso3166Regions.Contains("fonipa"), Is.False);
+			Assert.That(StandardSubtags.RegisteredRegions.Contains("fonipa"), Is.False);
 		}
 
 		[Test]
@@ -233,7 +233,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Iso639LanguageCodes_DoesNotContainCodeRanges()
 		{
-			Assert.That(StandardSubtags.Iso639Languages.Where(iso639 => iso639.Code.Contains("..")), Is.Empty);
+			Assert.That(StandardSubtags.RegisteredLanguages.Where(iso639 => iso639.Code.Contains("..")), Is.Empty);
 		}
 
 		[Test]

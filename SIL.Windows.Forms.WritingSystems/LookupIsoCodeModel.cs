@@ -24,7 +24,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		/// <returns></returns>
 		public LanguageSubtag GetExactLanguageMatch(string iso639Code)
 		{
-			return StandardSubtags.Iso639Languages.FirstOrDefault(code => code.Iso3Code != null && code.Iso3Code.Equals(iso639Code, StringComparison.InvariantCultureIgnoreCase));
+			return StandardSubtags.RegisteredLanguages.FirstOrDefault(code => code.Iso3Code != null && code.Iso3Code.Equals(iso639Code, StringComparison.InvariantCultureIgnoreCase));
 		}
 
 		public IEnumerable<LanguageInfo> GetMatchingLanguages(string typedText)

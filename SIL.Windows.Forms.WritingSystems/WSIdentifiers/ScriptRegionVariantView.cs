@@ -21,10 +21,10 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 			}
 
 			_scriptCombo.Items.Add(new ScriptSubtag("blank")); // add a blank item at the top of the list
-			_scriptCombo.Items.AddRange(StandardSubtags.Iso15924Scripts.Cast<object>().ToArray());
+			_scriptCombo.Items.AddRange(StandardSubtags.RegisteredScripts.Cast<object>().ToArray());
 			_scriptCombo.DisplayMember = "Name";
 			_regionCombo.Items.Add(new RegionSubtag("blank"));  // add a blank item at the top of the list
-			_regionCombo.Items.AddRange(StandardSubtags.Iso3166Regions.Cast<object>().ToArray());
+			_regionCombo.Items.AddRange(StandardSubtags.RegisteredRegions.Cast<object>().ToArray());
 			_regionCombo.DisplayMember = "Name";
 		}
 

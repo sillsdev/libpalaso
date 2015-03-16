@@ -269,7 +269,7 @@ namespace SIL.WritingSystems.Migration
 
 					if (string.IsNullOrEmpty(migrateFrom))
 					{
-						LanguageSubtag language = StandardSubtags.Iso639Languages.FirstOrDefault(l => l.Iso3Code == part);
+						LanguageSubtag language = StandardSubtags.RegisteredLanguages.FirstOrDefault(l => l.Iso3Code == part);
 						if (language != null)
 						{
 							migrateFrom = part;

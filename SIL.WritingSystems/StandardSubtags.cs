@@ -91,9 +91,9 @@ namespace SIL.WritingSystems
 
 			IEnumerable<LanguageSubtag> sortedLanguages = languages.OrderBy(l => Regex.Replace(l.Name, @"[^\w]", ""))
 				.Concat(new[] {new LanguageSubtag(WellKnownSubtags.UnlistedLanguage, "Language Not Listed", false, string.Empty, string.Empty)});
-			Iso639Languages = new ReadOnlyKeyedCollection<string, LanguageSubtag>(new KeyedList<string, LanguageSubtag>(sortedLanguages, l => l.Code, StringComparer.InvariantCultureIgnoreCase));
-			Iso15924Scripts = new ReadOnlyKeyedCollection<string, ScriptSubtag>(new KeyedList<string, ScriptSubtag>(scripts.OrderBy(s => s.Name), s => s.Code, StringComparer.InvariantCultureIgnoreCase));
-			Iso3166Regions = new ReadOnlyKeyedCollection<string, RegionSubtag>(new KeyedList<string, RegionSubtag>(regions.OrderBy(r => r.Name), r => r.Code, StringComparer.InvariantCultureIgnoreCase));
+			RegisteredLanguages = new ReadOnlyKeyedCollection<string, LanguageSubtag>(new KeyedList<string, LanguageSubtag>(sortedLanguages, l => l.Code, StringComparer.InvariantCultureIgnoreCase));
+			RegisteredScripts = new ReadOnlyKeyedCollection<string, ScriptSubtag>(new KeyedList<string, ScriptSubtag>(scripts.OrderBy(s => s.Name), s => s.Code, StringComparer.InvariantCultureIgnoreCase));
+			RegisteredRegions = new ReadOnlyKeyedCollection<string, RegionSubtag>(new KeyedList<string, RegionSubtag>(regions.OrderBy(r => r.Name), r => r.Code, StringComparer.InvariantCultureIgnoreCase));
 			RegisteredVariants = new ReadOnlyKeyedCollection<string, VariantSubtag>(new KeyedList<string, VariantSubtag>(variants.OrderBy(v => v.Name), v => v.Code, StringComparer.InvariantCultureIgnoreCase));
 			CommonPrivateUseVariants = new ReadOnlyKeyedCollection<string, VariantSubtag>(new KeyedList<string, VariantSubtag>(new[]
 			{
@@ -101,13 +101,17 @@ namespace SIL.WritingSystems
 				new VariantSubtag(WellKnownSubtags.IpaPhonemicPrivateUse, "Phonemic", true, null),
 				new VariantSubtag(WellKnownSubtags.AudioPrivateUse, "Audio", true, null)
 			}, v => v.Code, StringComparer.InvariantCultureIgnoreCase));
+
+			_iso3LanguageSubtags = RegisteredLanguages.Where(l => !string.IsNullOrEmpty(l.Iso3Code)).ToDictionary(l => l.Iso3Code);
 		}
 
-		public static IReadOnlyKeyedCollection<string, ScriptSubtag> Iso15924Scripts { get; private set; }
+		private static readonly Dictionary<string, LanguageSubtag> _iso3LanguageSubtags; 
 
-		public static IReadOnlyKeyedCollection<string, LanguageSubtag> Iso639Languages { get; private set; }
+		public static IReadOnlyKeyedCollection<string, ScriptSubtag> RegisteredScripts { get; private set; }
 
-		public static IReadOnlyKeyedCollection<string, RegionSubtag> Iso3166Regions { get; private set; }
+		public static IReadOnlyKeyedCollection<string, LanguageSubtag> RegisteredLanguages { get; private set; }
+
+		public static IReadOnlyKeyedCollection<string, RegionSubtag> RegisteredRegions { get; private set; }
 
 		public static IReadOnlyKeyedCollection<string, VariantSubtag> RegisteredVariants { get; private set; }
 
@@ -169,14 +173,19 @@ namespace SIL.WritingSystems
 			}
 		}
 
+		public static bool TryGetLanguageFromIso3Code(string iso3Code, out LanguageSubtag languageSubtag)
+		{
+			return _iso3LanguageSubtags.TryGetValue(iso3Code, out languageSubtag);
+		}
+
 		public static bool IsValidIso639LanguageCode(string languageCodeToCheck)
 		{
-			return Iso639Languages.Contains(languageCodeToCheck);
+			return RegisteredLanguages.Contains(languageCodeToCheck);
 		}
 
 		public static bool IsValidIso15924ScriptCode(string scriptTagToCheck)
 		{
-			return Iso15924Scripts.Contains(scriptTagToCheck) || IsPrivateUseScriptCode(scriptTagToCheck);
+			return RegisteredScripts.Contains(scriptTagToCheck) || IsPrivateUseScriptCode(scriptTagToCheck);
 		}
 
 		public static bool IsPrivateUseScriptCode(string scriptCode)
@@ -187,7 +196,7 @@ namespace SIL.WritingSystems
 
 		public static bool IsValidIso3166RegionCode(string regionCodeToCheck)
 		{
-			return Iso3166Regions.Contains(regionCodeToCheck) || IsPrivateUseRegionCode(regionCodeToCheck);
+			return RegisteredRegions.Contains(regionCodeToCheck) || IsPrivateUseRegionCode(regionCodeToCheck);
 		}
 
 		/// <summary>

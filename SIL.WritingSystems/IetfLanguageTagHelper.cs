@@ -599,7 +599,7 @@ namespace SIL.WritingSystems
 				}
 				// do not include implicit script codes in the language tag
 				LanguageSubtag language;
-				if (string.IsNullOrEmpty(languageCode) || !StandardSubtags.Iso639Languages.TryGet(languageCode, out language) || language.ImplicitScriptCode != scriptCode)
+				if (string.IsNullOrEmpty(languageCode) || !StandardSubtags.RegisteredLanguages.TryGet(languageCode, out language) || language.ImplicitScriptCode != scriptCode)
 				{
 					if (sb.Length > 0)
 						sb.Append("-");
@@ -782,7 +782,7 @@ namespace SIL.WritingSystems
 			else if (!string.IsNullOrEmpty(language))
 			{
 				LanguageSubtag langSubtag;
-				if (StandardSubtags.Iso639Languages.TryGet(language, out langSubtag) && !string.IsNullOrEmpty(langSubtag.ImplicitScriptCode))
+				if (StandardSubtags.RegisteredLanguages.TryGet(language, out langSubtag) && !string.IsNullOrEmpty(langSubtag.ImplicitScriptCode))
 					script = langSubtag.ImplicitScriptCode;
 			}
 

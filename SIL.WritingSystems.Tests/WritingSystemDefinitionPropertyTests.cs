@@ -728,7 +728,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void ReadsIsoRegistry()
 		{
-			Assert.Greater(StandardSubtags.Iso639Languages.Count, 100);
+			Assert.Greater(StandardSubtags.RegisteredLanguages.Count, 100);
 		}
 
 		[Test]
