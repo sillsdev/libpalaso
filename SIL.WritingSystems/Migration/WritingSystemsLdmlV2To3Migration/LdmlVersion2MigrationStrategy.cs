@@ -174,7 +174,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 					cd = new SimpleCollationDefinition("standard") {SimpleRules = writingSystemDefinitionV1.SortRules};
 					break;
 				case WritingSystemDefinitionV1.SortRulesType.OtherLanguage:
-					if (!string.IsNullOrEmpty(writingSystemDefinitionV1.SortRules) && writingSystemDefinitionV1.SortRules != langTag)
+					if (!string.IsNullOrEmpty(writingSystemDefinitionV1.SortRules))
 						cd = new IcuCollationDefinition("standard") {Imports = {new IcuCollationImport(writingSystemDefinitionV1.SortRules)}};
 					break;
 				case WritingSystemDefinitionV1.SortRulesType.CustomICU:
