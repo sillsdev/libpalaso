@@ -21,7 +21,7 @@ namespace SIL.WritingSystems.Migration
 		/// should ensure that all writing systems tags they store are updated accordingly when the callback
 		/// is called.
 		///</summary>
-		public GlobalWritingSystemRepositoryMigrator(string basePath, Action<int, IEnumerable<LdmlMigrationInfo>> migrationHandler,
+		public GlobalWritingSystemRepositoryMigrator(string basePath, Action<int, IEnumerable<LdmlMigrationInfo>> migrationHandler = null,
 			int versionToMigrateTo = WritingSystemDefinition.LatestWritingSystemDefinitionVersion)
 			: base(Path.Combine(basePath, versionToMigrateTo.ToString(CultureInfo.InvariantCulture)), migrationHandler, versionToMigrateTo)
 		{

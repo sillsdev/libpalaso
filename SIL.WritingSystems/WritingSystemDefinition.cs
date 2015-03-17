@@ -93,7 +93,6 @@ namespace SIL.WritingSystems
 		private readonly BulkObservableList<QuotationMark> _quotationMarks;
 		private readonly KeyedBulkObservableList<string, CharacterSetDefinition> _characterSets;
 		private readonly SimpleMonitor _ignoreVariantChanges = new SimpleMonitor();
-		private bool _requiresValidLanguageTag = true;
 		private string _legacyMapping;
 		private bool _isGraphiteEnabled = true;
 
@@ -180,7 +179,6 @@ namespace SIL.WritingSystems
 			if (ws._defaultCollation != null)
 				_defaultCollation = _collations[ws._collations.IndexOf(ws._defaultCollation)];
 			_characterSets = new KeyedBulkObservableList<string, CharacterSetDefinition>(ws._characterSets.CloneItems(), csd => csd.Type);
-			_requiresValidLanguageTag = ws._requiresValidLanguageTag;
 			_isGraphiteEnabled = ws._isGraphiteEnabled;
 			_legacyMapping = ws._legacyMapping;
 			SetupCollectionChangeListeners();
@@ -1142,8 +1140,6 @@ namespace SIL.WritingSystems
 			if (!_quotationMarks.SequenceEqual(other._quotationMarks))
 				return false;
 			if (_quotationParagraphContinueType != other._quotationParagraphContinueType)
-				return false;
-			if (_requiresValidLanguageTag != other._requiresValidLanguageTag)
 				return false;
 			if (_isGraphiteEnabled != other._isGraphiteEnabled)
 				return false;
