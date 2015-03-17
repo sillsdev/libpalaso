@@ -107,7 +107,7 @@ namespace SIL.WritingSystems
 		{
 			{string.Empty, KeyboardFormat.Unknown},
 			{"kmn", KeyboardFormat.Keyman },
-			{"kmx", KeyboardFormat.CompiledKeyman },
+			{"kmx", KeyboardFormat.CompiledKeyman},
 			{"msklc", KeyboardFormat.Msklc},
 			{"ldml", KeyboardFormat.Ldml},
 			{"keylayout", KeyboardFormat.Keylayout}
@@ -118,7 +118,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		private static readonly Dictionary<KeyboardFormat, string> KeyboardFormatToKeyboard = new Dictionary<KeyboardFormat, string>
 		{
-			{KeyboardFormat.Unknown, string.Empty},
+			{KeyboardFormat.Unknown, null},
 			{KeyboardFormat.Keyman, "kmn"},
 			{KeyboardFormat.CompiledKeyman, "kmx"},
 			{KeyboardFormat.Msklc, "msklc"},
@@ -440,7 +440,7 @@ namespace SIL.WritingSystems
 				var id = (string) kbdElem.Attribute("id");
 				if (!string.IsNullOrEmpty(id))
 				{
-					KeyboardFormat format = KeyboardToKeyboardFormat[(string) kbdElem.Attribute("type")];
+					KeyboardFormat format = KeyboardToKeyboardFormat[(string) kbdElem.Attribute("type") ?? string.Empty];
 					IKeyboardDefinition keyboard = Keyboard.Controller.CreateKeyboard(id, format, kbdElem.NonAltElements(Sil + "url").Select(u => (string) u));
 					ws.KnownKeyboards.Add(keyboard);
 				}
@@ -1275,7 +1275,7 @@ namespace SIL.WritingSystems
 						if ((font.Engines & fontEngine) != 0)
 							fontEngineList.Add(FontEnginesToEngine[fontEngine]);
 					}
-					fontElem.SetAttributeValue("engines", string.Join(" ", fontEngineList));
+					fontElem.SetAttributeValue("engines", fontEngineList.Count == 0 ? null : string.Join(" ", fontEngineList));
 				}
 				foreach (var url in font.Urls)
 					fontElem.Add(new XElement(Sil + "url", url));

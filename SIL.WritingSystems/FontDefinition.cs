@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using SIL.ObjectModel;
 
 namespace SIL.WritingSystems
 {
@@ -33,7 +33,7 @@ namespace SIL.WritingSystems
 		private FontRoles _roles;
 		private FontEngines _engines;
 		private string _subset;
-		private readonly ObservableCollection<string> _urls;
+		private readonly ObservableList<string> _urls;
 
 		private void SetupCollectionChangeListeners()
 		{
@@ -48,7 +48,10 @@ namespace SIL.WritingSystems
 		public FontDefinition(string name)
 		{
 			_name = name;
-			_urls = new ObservableCollection<string>();
+			_relativeSize = 1.0f;
+			_engines = FontEngines.Graphite | FontEngines.OpenType;
+			_roles = FontRoles.Default;
+			_urls = new ObservableList<string>();
 			SetupCollectionChangeListeners();
 		}
 
@@ -63,11 +66,7 @@ namespace SIL.WritingSystems
 			_roles = fd._roles;
 			_engines = fd._engines;
 			_subset = fd._subset;
-			_urls = new ObservableCollection<string>();
-			foreach (string url in fd._urls)
-			{
-				_urls.Add(url);
-			}
+			_urls = new ObservableList<string>(fd._urls);
 			SetupCollectionChangeListeners();
 		}
 
@@ -129,7 +128,7 @@ namespace SIL.WritingSystems
 			set { Set(() => Subset, ref _subset, value); }
 		}
 
-		public ObservableCollection<string> Urls
+		public IObservableList<string> Urls
 		{
 			get { return _urls; }
 		}
