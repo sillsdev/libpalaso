@@ -1058,6 +1058,8 @@ namespace SIL.WritingSystems
 				{
 					quotationmarksElem.NonAltElements(Sil + "quotation").Where(e => string.IsNullOrEmpty((string) e.Attribute("type"))).Remove();
 					quotationmarksElem.NonAltElements(Sil + "quotation").Where(e => (string) e.Attribute("type") == "narrative").Remove();
+					quotationmarksElem.NonAltElements(Sil + "quotationContinue").Remove();
+					quotationmarksElem.NonAltElements(Sil + "alternateQuotationContinue").Remove();
 					RemoveIfEmpty(quotationmarksElem);
 				}
 				RemoveIfEmpty(specialElem);
