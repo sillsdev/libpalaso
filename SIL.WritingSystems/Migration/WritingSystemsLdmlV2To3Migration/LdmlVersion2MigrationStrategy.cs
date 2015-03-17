@@ -41,7 +41,6 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 
 			var writingSystemDefinitionV1 = new WritingSystemDefinitionV1();
 			new LdmlAdaptorV1().Read(sourceFilePath, writingSystemDefinitionV1);
-			XElement ldmlElem = XElement.Load(sourceFilePath);
 
 			string abbreviation = writingSystemDefinitionV1.Abbreviation;
 			float defaultFontSize = writingSystemDefinitionV1.DefaultFontSize;
@@ -61,9 +60,9 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			string regionName = string.Empty;
 			string variantName = string.Empty;
 
-			XElement fwElem = ldmlElem.Elements("special").FirstOrDefault(e => !string.IsNullOrEmpty((string) e.Attribute(XNamespace.Xmlns + "fw")));
-
 			// Migrate fields from legacy fw namespace, and then remove fw namespace
+			XElement ldmlElem = XElement.Load(sourceFilePath);
+			XElement fwElem = ldmlElem.Elements("special").FirstOrDefault(e => !string.IsNullOrEmpty((string) e.Attribute(XNamespace.Xmlns + "fw")));
 			if (fwElem != null)
 			{
 				XElement graphiteEnabledElem = fwElem.Element(FW + "graphiteEnabled");
@@ -93,25 +92,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				XElement variantNameElem = fwElem.Element(FW + "variantName");
 				if (variantNameElem != null)
 					variantName = (string) variantNameElem.Attribute("value");
-
-				fwElem.Remove();
 			}
-			
-			// Remove legacy palaso namespace from sourceFilePath
-			ldmlElem.Elements("special").Where(e => !string.IsNullOrEmpty((string)e.Attribute(XNamespace.Xmlns + "palaso"))).Remove();
-			ldmlElem.Elements("special").Where(e => !string.IsNullOrEmpty((string)e.Attribute(XNamespace.Xmlns + "palaso2"))).Remove();
-
-			// Remove empty collations and collations that contain special
-			ldmlElem.Elements("collations")
-				.Elements("collation")
-				.Where(e => e.IsEmpty || (string.IsNullOrEmpty((string) e) && !e.HasElements && !e.HasAttributes))
-				.Remove();
-			ldmlElem.Elements("collations").Elements("collation").Where(e => e.Descendants("special") != null).Remove();
-
-			var writerSettings = CanonicalXmlSettings.CreateXmlWriterSettings();
-			writerSettings.NewLineOnAttributes = false;
-			using (var writer = XmlWriter.Create(sourceFilePath, writerSettings))
-				ldmlElem.WriteTo(writer);
 
 			// Record the details for use in PostMigrate where we change the file name to match the ieft language tag where we can.
 			var migrationInfo = new LdmlMigrationInfo(sourceFileName)
@@ -259,24 +240,42 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			// Write them back, with their new file name.
 			foreach (LdmlMigrationInfo migrationInfo in _migrationInfo)
 			{
-				var writingSystemDefinitionV3 = _writingSystemsV3[migrationInfo.FileName];
+				WritingSystemDefinitionV3 writingSystemDefinitionV3 = _writingSystemsV3[migrationInfo.FileName];
 				string sourceFilePath = Path.Combine(sourcePath, migrationInfo.FileName);
 				string destinationFilePath = Path.Combine(destinationPath, migrationInfo.IetfLanguageTagAfterMigration + ".ldml");
+
+				XElement ldmlElem = XElement.Load(sourceFilePath);
+				// Remove legacy palaso namespace from sourceFilePath
+				ldmlElem.Elements("special").Where(e => !string.IsNullOrEmpty((string) e.Attribute(XNamespace.Xmlns + "palaso"))).Remove();
+				ldmlElem.Elements("special").Where(e => !string.IsNullOrEmpty((string) e.Attribute(XNamespace.Xmlns + "palaso2"))).Remove();
+				ldmlElem.Elements("special").Where(e => !string.IsNullOrEmpty((string) e.Attribute(XNamespace.Xmlns + "fw"))).Remove();
+
+				// Remove empty collations and collations that contain special
+				ldmlElem.Elements("collations")
+					.Elements("collation")
+					.Where(e => e.IsEmpty || (string.IsNullOrEmpty((string) e) && !e.HasElements && !e.HasAttributes))
+					.Remove();
+				ldmlElem.Elements("collations").Elements("collation").Where(e => e.Descendants("special") != null).Remove();
+
+				var writerSettings = CanonicalXmlSettings.CreateXmlWriterSettings();
+				writerSettings.NewLineOnAttributes = false;
+				using (var writer = XmlWriter.Create(destinationFilePath, writerSettings))
+					ldmlElem.WriteTo(writer);
+
 				if (migrationInfo.IetfLanguageTagBeforeMigration != migrationInfo.IetfLanguageTagAfterMigration)
 					_auditLog.LogChange(migrationInfo.IetfLanguageTagBeforeMigration, migrationInfo.IetfLanguageTagAfterMigration);
-				WriteLdml(writingSystemDefinitionV3, sourceFilePath, destinationFilePath);
+				WriteLdml(writingSystemDefinitionV3, destinationFilePath);
 			}
 			if (_migrationHandler != null)
 				_migrationHandler(ToVersion, _migrationInfo);
 		}
 
-		private void WriteLdml(WritingSystemDefinitionV3 writingSystemDefinitionV3, string sourceFilePath, string destinationFilePath)
+		private void WriteLdml(WritingSystemDefinitionV3 writingSystemDefinitionV3, string filePath)
 		{
-			using (Stream sourceStream = new FileStream(sourceFilePath, FileMode.Open))
-			{
-				var ldmlDataMapper = new LdmlAdaptorV3();
-				ldmlDataMapper.Write(destinationFilePath, writingSystemDefinitionV3, sourceStream);
-			}
+			// load old data to preserve stuff in LDML that we don't use
+			var oldData = new MemoryStream(File.ReadAllBytes(filePath), false);
+			var ldmlDataMapper = new LdmlAdaptorV3();
+			ldmlDataMapper.Write(filePath, writingSystemDefinitionV3, oldData);
 		}
 
 		internal void EnsureIeftLanguageTagsUnique(IEnumerable<LdmlMigrationInfo> migrationInfo)
