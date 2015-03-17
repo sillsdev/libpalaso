@@ -81,59 +81,91 @@ namespace SIL.WritingSystems
 			if (topLevelElements == null)
 				throw new ArgumentException("topLevelElements");
 
-			SldrStatus status;
-
-			const Boolean flatten = true;
-			filename = ietfLanguageTag + "." + LdmlExtension;
-			string revid, uid;
-
-			// Check if LDML file already exists in destination and read revid and uid
-			if (!ReadSilIdentity(Path.Combine(destinationPath, filename), out revid, out uid))
-				uid = DefaultUserId;
-
-			// Concatenate parameters for url string
-			string requestedElements = string.Join("&inc[]=", topLevelElements);
-			string requestedUserId = !String.IsNullOrEmpty(uid) ? String.Format("&uid={0}", uid) : String.Empty;
-			string url = string.Format("{0}{1}?ext={2}&inc[]={3}&flatten={4}{5}",
-				ProductionSldrRepository, ietfLanguageTag, LdmlExtension,
-				requestedElements, Convert.ToInt32(flatten), requestedUserId);
-
+			var status = SldrStatus.FileNotFound;
 			string sldrCachePath = Path.Combine(Path.GetTempPath(), SldrCacheDir);
 			Directory.CreateDirectory(sldrCachePath);
-			string sldrCacheFilename = Path.Combine(sldrCachePath, filename + "." + LdmlExtension);
-			string tempFilename = sldrCacheFilename + "." + TmpExtension;
-
-			try
+			string sldrCacheFilePath;
+			bool redirected;
+			const Boolean flatten = true;
+			do
 			{
-				// Download the LDML file to a temp file in case the transfer gets interrupted
-				var webClient = new WebClient();
-				webClient.DownloadFile(Uri.EscapeUriString(url), tempFilename);
-				status = SldrStatus.FileFromSldr;
+				filename = ietfLanguageTag + "." + LdmlExtension;
+				string revid, uid;
 
-				sldrCacheFilename = MoveTmpToCache(tempFilename, uid);
-			}
-			catch (WebException we)
-			{
-				// Return from 404 error
-				var errorResponse = we.Response as HttpWebResponse;
-				if ((errorResponse != null) && (errorResponse.StatusCode == HttpStatusCode.NotFound))
-					return SldrStatus.FileNotFound;
+				// Check if LDML file already exists in destination and read revid and uid
+				if (!ReadSilIdentity(Path.Combine(destinationPath, filename), out revid, out uid))
+					uid = DefaultUserId;
 
-				// Download failed so check SLDR cache
-				if (!string.IsNullOrEmpty(uid) && (uid != DefaultUserId))
-					filename = string.Format("{0}-{1}.{2}", ietfLanguageTag, uid, LdmlExtension);
-				else
-					filename = string.Format("{0}.{1}", ietfLanguageTag, LdmlExtension);
-				sldrCacheFilename = Path.Combine(sldrCachePath, filename);
-				if (File.Exists(sldrCacheFilename))
-					status = SldrStatus.FileFromSldrCache;
-				else
-					return SldrStatus.UnableToConnectToSldr;
-			}
+				// Concatenate parameters for url string
+				string requestedElements = string.Join("&inc[]=", topLevelElements);
+				string requestedUserId = !String.IsNullOrEmpty(uid) ? String.Format("&uid={0}", uid) : String.Empty;
+				string url = string.Format("{0}{1}?ext={2}&inc[]={3}&flatten={4}{5}",
+					ProductionSldrRepository, ietfLanguageTag, LdmlExtension,
+					requestedElements, Convert.ToInt32(flatten), requestedUserId);
+
+				sldrCacheFilePath = Path.Combine(sldrCachePath, filename);
+				string tempFilePath = sldrCacheFilePath + "." + TmpExtension;
+
+				// Using WebRequest instead of WebClient so we have access to disable AllowAutoRedirect
+				var webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(url));
+				webRequest.AllowAutoRedirect = false;
+				webRequest.Timeout = 10000;
+
+				try
+				{
+					// Check the response header to see if the requested LDML file got redirected
+					using (var webResponse = (HttpWebResponse) webRequest.GetResponse())
+					{
+						if (webResponse.StatusCode == HttpStatusCode.MovedPermanently)
+						{
+							ietfLanguageTag = webResponse.Headers["Location"].Replace(ProductionSldrRepository, "");
+							redirected = true;
+						}
+						else
+						{
+							// Download the LDML file to a temp file in case the transfer gets interrupted
+							using (Stream responseStream = webResponse.GetResponseStream())
+							using (var fs = new FileStream(tempFilePath, FileMode.OpenOrCreate, FileAccess.Write))
+							{
+								var buff = new byte[102400];
+								int c;
+								while ((c = responseStream.Read(buff, 0, buff.Length)) > 0)
+								{
+									fs.Write(buff, 0, c);
+									fs.Flush();
+								}
+							}
+
+							status = SldrStatus.FileFromSldr;
+							sldrCacheFilePath = MoveTmpToCache(tempFilePath, uid);
+							redirected = false;
+						}
+					}
+				}
+				catch (WebException we)
+				{
+					// Return from 404 error
+					var errorResponse = we.Response as HttpWebResponse;
+					if ((errorResponse != null) && (errorResponse.StatusCode == HttpStatusCode.NotFound))
+						return SldrStatus.FileNotFound;
+
+					string sldrCacheFilename;
+					// Download failed so check SLDR cache
+					if (!string.IsNullOrEmpty(uid) && (uid != DefaultUserId))
+						sldrCacheFilename = string.Format("{0}-{1}.{2}", ietfLanguageTag, uid, LdmlExtension);
+					else
+						sldrCacheFilename = string.Format("{0}.{1}", ietfLanguageTag, LdmlExtension);
+					sldrCacheFilePath = Path.Combine(sldrCachePath, sldrCacheFilename);
+					if (File.Exists(sldrCacheFilePath))
+						status = SldrStatus.FileFromSldrCache;
+					else
+						return SldrStatus.UnableToConnectToSldr;
+					redirected = false;
+				}
+			} while (redirected);
 
 			// Copy from Cache to destination (w/o uid in filename), overwriting whatever used to be there
-			filename = ietfLanguageTag + "." + LdmlExtension;
-			File.Copy(sldrCacheFilename, Path.Combine(destinationPath, filename), true);
+			File.Copy(sldrCacheFilePath, Path.Combine(destinationPath, filename), true);
 
 			return status;
 		}

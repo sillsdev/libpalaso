@@ -280,5 +280,19 @@ namespace SIL.WritingSystems.Tests
 				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[not(@uid)]", environment.NamespaceManager);
 			}
 		}
+
+		[Test]
+		[Category("SkipOnTeamCity")]
+		public void Redirect()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				string filename;
+				const string ietfLanguageTag = "en-Latn";
+				const string redirectedIetfLanguageTag = "en-US";
+				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FileFromSldr));
+				Assert.That(filename, Is.EqualTo(redirectedIetfLanguageTag + ".ldml"));
+			}
+		}
 	}
 }
