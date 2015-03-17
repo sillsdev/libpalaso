@@ -40,23 +40,29 @@ namespace SIL.WritingSystems.Tests.Migration
 
 			public IEnumerable<LdmlMigrationInfo> MigrationInfo { get; private set; }
 
-			public static void WriteFlexFile(string language, string abbreviation, int version)
+			public static void WriteFlexFile(string language, string bogus, int version)
 			{
 				string filePath = GlobalWritingSystemRepositoryMigrator.FlexLdmlPathPre0;
 				filePath = Path.Combine(filePath, String.Format("{0}.ldml", language));
 				string content = string.Empty;
 				if (version == 0)
-					content = LdmlContentForTests.Version0(language, "", "", "", abbreviation);
-				else if (version == 1)
-					content = LdmlContentForTests.Version1(language, "", "", "", abbreviation);
+					content = LdmlContentForTests.Version0Bogus(language, "", "", "", bogus);
+				else if (version == WritingSystemDefinition.LatestWritingSystemDefinitionVersion)
+					// Make up a custom element
+					content = LdmlContentForTests.CurrentVersion(language, "", "", "", string.Format("\n\t<{0} />",bogus));
 				File.WriteAllText(filePath, content);
 			}
 
-			public static void WritePalasoFile(string language, string abbreviation)
+			public static void WritePalasoFile(string language, string bogus, int version)
 			{
 				string filePath = GlobalWritingSystemRepositoryMigrator.PalasoLdmlPathPre0;
 				filePath = Path.Combine(filePath, String.Format("{0}.ldml", language));
-				File.WriteAllText(filePath, LdmlContentForTests.Version0(language, "", "", "", abbreviation));
+				string content = string.Empty;
+				if (version == 0)
+					content = LdmlContentForTests.Version0Bogus(language, "", "", "", bogus);
+				if (version == WritingSystemDefinition.LatestWritingSystemDefinitionVersion)
+					content = LdmlContentForTests.CurrentVersion(language, "", "", "", string.Format("\n\t<{0} />",bogus));
+				File.WriteAllText(filePath, content);
 			}
 
 			private string MigratedLdmlFolder
@@ -111,7 +117,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		{
 			using (var e = new TestEnvironment())
 			{
-				TestEnvironment.WritePalasoFile("qaa-x-bogus", "bogus");
+				TestEnvironment.WritePalasoFile("qaa-x-bogus", "bogus", 0);
 				var m = new GlobalWritingSystemRepositoryMigrator(e.BasePath, e.OnMigrateCallback);
 				m.Migrate();
 
@@ -137,7 +143,7 @@ namespace SIL.WritingSystems.Tests.Migration
 		{
 			using (var e = new TestEnvironment())
 			{
-				TestEnvironment.WriteFlexFile("qaa-x-bogus", "bogus", 1);
+				TestEnvironment.WriteFlexFile("qaa-x-bogus", "bogus", WritingSystemDefinition.LatestWritingSystemDefinitionVersion);
 				var m = new GlobalWritingSystemRepositoryMigrator(e.BasePath, e.OnMigrateCallback);
 				m.Migrate();
 
@@ -145,26 +151,22 @@ namespace SIL.WritingSystems.Tests.Migration
 			}
 		}
 
-// Does this test go away now?  abbreviation isn't written to ldml anymore
-#if WS_FIX
 		[Test]
 		public void Migrate_PalsoAndFlexHaveSameFileName_PrefersFlex()
 		{
 			using (var e = new TestEnvironment())
 			{
-				TestEnvironment.WritePalasoFile("qaa-x-bogus", "bogusPalaso", TestEnvironment.LdmlV0);
-				TestEnvironment.WriteFlexFile("qaa-x-bogus", "bogusFlex", TestEnvironment.LdmlV0);
+				TestEnvironment.WritePalasoFile("qaa-x-bogus", "bogusPalaso", 0);
+				TestEnvironment.WriteFlexFile("qaa-x-bogus", "bogusFlex", 0);
 				var m = new GlobalWritingSystemRepositoryMigrator(e.BasePath, e.OnMigrateCallback);
 				m.Migrate();
 
 				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, e.GetFileVersion("qaa-x-bogus.ldml"));
 				AssertThatXmlIn.String(e.MigratedLdml("qaa-x-bogus.ldml")).HasAtLeastOneMatchForXpath(
-					"ldml/special/palaso:abbreviation[@value='bogusFlex']",
-					e.NamespaceManager
-				);
+					"ldml[not(bogusPalaso)]", e.NamespaceManager);
+				AssertThatXmlIn.String(e.MigratedLdml("qaa-x-bogus.ldml")).HasAtLeastOneMatchForXpath(
+					"ldml/bogusFlex", e.NamespaceManager);
 			}
 		}
-#endif
-
 	}
 }

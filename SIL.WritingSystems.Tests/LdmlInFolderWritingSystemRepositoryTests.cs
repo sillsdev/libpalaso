@@ -341,8 +341,7 @@ namespace SIL.WritingSystems.Tests
 
 				environment.WritingSystem.Language = "en";
 				environment.WritingSystem.Script = "Latn";
-				environment.WritingSystem.Abbreviation = "bl";
-					//crucially, abbreviation isn't part of the name of the file
+				environment.WritingSystem.WindowsLcid = "12345";
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
 
 				environment.ResetRepositories();
@@ -352,12 +351,9 @@ namespace SIL.WritingSystems.Tests
 				string path = Path.Combine(environment.LocalRepository.PathToWritingSystems,
 										   environment.GetPathForLocalWSId(ws2.IetfLanguageTag));
 				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath("ldml/identity/variant[@type='x-piglatin']");
-
-				// TODO: Add this back when Abbreviation is written to application-specific namespace
-#if WS_FIX
-				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath("ldml/special/palaso:abbreviation[@value='bl']",
-																	  environment.NamespaceManager);
-#endif
+				var manager = new XmlNamespaceManager(new NameTable());
+				manager.AddNamespace("sil", "urn://www.sil.org/ldml/0.1");
+				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath("ldml/identity/special/sil:identity[@windowsLCID='12345']", manager);
 			}
 		}
 
@@ -375,24 +371,6 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(ws2.Variants, Is.EqualTo(new VariantSubtag[] {"piglatin"}));
 			}
 		}
-
-		// TODO: Add this when DefaultFontName is written to application-specific
-#if WS_FIX
-		[Test]
-		public void CanSaveAndReadDefaultFont()
-		{
-			using (var environment = new TestEnvironment())
-			{
-				environment.WritingSystem.Language = "en";
-				environment.WritingSystem.DefaultFontName = "Courier";
-				environment.Collection.SaveDefinition(environment.WritingSystem);
-
-				var newCollection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem);
-				var ws2 = newCollection.Get("en");
-				Assert.AreEqual("Courier", ws2.DefaultFontName);
-			}
-		}
-#endif
 
 		[Test]
 		public void CanSaveAndReadKeyboardId()
@@ -444,45 +422,6 @@ namespace SIL.WritingSystems.Tests
 				AssertThatXmlIn.File(environment.GetPathForLocalWSId(environment.WritingSystem.IetfLanguageTag)).HasNoMatchForXpath("ldml/identity/variant");
 			}
 		}
-
-		// TODO: Abbreviation to go in application-specific
-#if WS_FIX
-		[Test]
-		public void CanRemoveAbbreviation()
-		{
-			using (var environment = new TestEnvironment())
-			{
-				environment.WritingSystem.Language = "en";
-				environment.WritingSystem.Abbreviation = "abbrev";
-				environment.Collection.SaveDefinition(environment.WritingSystem);
-				string path = environment.GetPathForWsId(environment.WritingSystem.LanguageTag);
-				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath(
-					"ldml/special/palaso:abbreviation[@value='abbrev']",
-					environment.NamespaceManager
-				);
-				environment.WritingSystem.Abbreviation = string.Empty;
-				environment.Collection.SaveDefinition(environment.WritingSystem);
-				AssertThatXmlIn.File(path).HasAtLeastOneMatchForXpath(
-					"ldml/special/palaso:abbreviation[@value='en']",
-					environment.NamespaceManager
-				);
-			}
-		}
-
-		[Test]
-		public void WritesAbbreviationToLdml()
-		{
-
-			using (var environment = new TestEnvironment())
-			{
-				environment.WritingSystem.Language = "en";
-				environment.WritingSystem.Abbreviation = "bl";
-				environment.Collection.SaveDefinition(environment.WritingSystem);
-				AssertThatXmlIn.File(environment.GetPathForWsId(environment.WritingSystem.LanguageTag)).HasAtLeastOneMatchForXpath(
-					"ldml/special/palaso:abbreviation[@value='bl']", environment.NamespaceManager);
-			}
-		}
-#endif
 
 		[Test]
 		public void CanDeleteFileThatIsNotInTrash()
@@ -684,24 +623,6 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		// TODO: Add when migrating FlexPrivateUse
-#if WS_FIX
-		[Test]
-		public void Set_WritingSystemWasLoadedFromFlexPrivateUseLdmlAndRearranged_DoesNotChangeFileName()
-		{
-			using (var environment = new TestEnvironment())
-			{
-				var pathToFlexprivateUseLdml = Path.Combine(environment.TestPath, "x-en-Zxxx-x-audio.ldml");
-				File.WriteAllText(pathToFlexprivateUseLdml,
-								  LdmlContentForTests.Version0("x-en", "Zxxx", "", "x-audio"));
-				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem, WritingSystemCompatibility.Flex7V0Compatible);
-				var ws = environment.Collection.Get("x-en-Zxxx-x-audio");
-				environment.Collection.Set(ws);
-				Assert.That(File.Exists(pathToFlexprivateUseLdml), Is.True);
-			}
-		}
-#endif
-
 		[Test]
 		//this used to throw
 		public void LoadAllDefinitions_FilenameDoesNotMatchRfc5646Tag_NoProblem()
@@ -736,22 +657,6 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-#if WS_FIX
-		[Test]
-		public void LoadAllDefinitions_FilenameIsFlexConformPrivateUseAndDoesNotMatchRfc5646TagWithLegacySupport_DoesNotThrow()
-		{
-			using (var environment = new TestEnvironment())
-			{
-				var ldmlPath = Path.Combine(environment.TestPath, "x-en-Zxxx.ldml");
-				File.WriteAllText(ldmlPath, LdmlContentForTests.Version0("x-en", "Zxxx", "", ""));
-				var repo = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem, WritingSystemCompatibility.Flex7V0Compatible);
-
-				// Now try to load up.
-				Assert.That(repo.Get("x-en-Zxxx").Language, Is.EqualTo(new LanguageSubtag("en", true)));
-			}
-		}
-#endif
-
 		[Test]
 		public void LoadAllDefinitions_FilenameIsFlexConformPrivateUseAndDoesNotMatchRfc5646Tag_Migrates()
 		{
@@ -776,22 +681,6 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(environment.LocalRepository.Get("en").IetfLanguageTag, Is.EqualTo("en"));
 			}
 		}
-
-#if WS_FIX
-		[Test]
-		public void SaveDefinition_WritingSystemCameFromFlexPrivateUseLdml_FileNameIsRetained()
-		{
-			using (var environment = new TestEnvironment())
-			{
-				var pathToFlexprivateUseLdml = Path.Combine(environment.TestPath, "x-Zxxx-x-audio.ldml");
-				File.WriteAllText(pathToFlexprivateUseLdml, LdmlContentForTests.Version0("x", "Zxxx", "", "x-audio"));
-				environment.Collection = LdmlInFolderWritingSystemRepository.Initialize(environment.TestPath, DummyWritingSystemHandler.OnMigration, DummyWritingSystemHandler.OnLoadProblem, WritingSystemCompatibility.Flex7V0Compatible);
-				var ws = environment.Collection.Get("x-Zxxx-x-audio");
-				environment.Collection.SaveDefinition(ws);
-				Assert.That(File.Exists(pathToFlexprivateUseLdml));
-			}
-		}
-#endif
 
 		[Test]
 		public void SaveDefinition_WritingSystemCameFromValidRfc5646WritingSystemStartingWithX_FileNameIsChanged()
