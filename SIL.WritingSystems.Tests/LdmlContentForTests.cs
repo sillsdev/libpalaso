@@ -339,9 +339,9 @@ namespace SIL.WritingSystems.Tests
 </identity>
 <collations />
 <special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
-	<palaso:version value='1' />
 	<palaso:defaultFontFamily value='Arial' />
 	<palaso:defaultFontSize value='12' />
+	<palaso:version value='1' />
 </special>
 </ldml>".Replace('\'', '"'), language, script, region, variant);
 		}
@@ -361,9 +361,14 @@ namespace SIL.WritingSystems.Tests
 </identity>
 <collations />
 <special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
-	<palaso:version value='2' />
 	<palaso:defaultFontFamily value='Arial' />
 	<palaso:defaultFontSize value='12' />
+	<palaso:version value='2' />
+</special>
+<special xmlns:palaso2='urn://palaso.org/ldmlExtensions/v2'>
+	<palaso2:knownKeyboards>
+		<palaso2:keyboard layout='English' locale='en-US' os='Win32NT' />
+	</palaso2:knownKeyboards>
 </special>
 </ldml>".Replace('\'', '"'), language, script, region, variant);
 		}

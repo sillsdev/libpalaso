@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
@@ -169,6 +171,26 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		{
 			_rfcTag = Rfc5646Tag.Parse(completeTag);
 			_id = Bcp47Tag;
+		}
+
+		readonly List<KeyboardDefinitionV1> _knownKeyboards = new List<KeyboardDefinitionV1>();
+
+		public IEnumerable<KeyboardDefinitionV1> KnownKeyboards
+		{
+			get { return _knownKeyboards; }
+		}
+
+		public void AddKnownKeyboard(KeyboardDefinitionV1 newKeyboard)
+		{
+			if (newKeyboard == null)
+				return;
+			// Review JohnT: how should this affect order?
+			// e.g.: last added should be first?
+			// Current algorithm keeps them in the order added, hopefully meaning the most likely one, added first,
+			// remains the default.
+			if (KnownKeyboards.Contains(newKeyboard))
+				return;
+			_knownKeyboards.Add(newKeyboard);
 		}
 	}
 }

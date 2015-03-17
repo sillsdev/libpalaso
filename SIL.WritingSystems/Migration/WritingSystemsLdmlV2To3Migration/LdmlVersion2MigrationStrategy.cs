@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using SIL.Extensions;
+using SIL.Keyboarding;
 using SIL.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 using SIL.Xml;
@@ -164,6 +165,13 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			{
 				fd = new FontDefinition(writingSystemDefinitionV1.DefaultFontName);
 				writingSystemDefinitionV3.Fonts.Add(fd);
+			}
+
+			// known keyboards
+			foreach (KeyboardDefinitionV1 kd in writingSystemDefinitionV1.KnownKeyboards)
+			{
+				string id = string.IsNullOrEmpty(kd.Locale) ? kd.Layout : string.Format("{0}_{1}", kd.Locale, kd.Layout);
+				writingSystemDefinitionV3.KnownKeyboards.Add(Keyboard.Controller.CreateKeyboard(id, KeyboardFormat.Unknown, Enumerable.Empty<string>()));
 			}
 
 			// Convert sort rules to collation definition of standard type

@@ -171,6 +171,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			else if (reader.GetAttribute("xmlns:palaso2") != null)
 			{
 				reader.ReadStartElement("special");
+				GetKnownKeyboards(reader, ws);
 				ReadSpecialEndElement(reader);
 			}
 			else if (reader.GetAttribute("xmlns:fw") != null)
@@ -202,6 +203,31 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				lcidReader.ReadStartElement("special");
 				lcidReader.MoveToContent();
 				return GetSpecialValue(lcidReader, "fw", "windowsLCID", "urn://fieldworks.sil.org/ldmlExtensions/v1");
+			}
+		}
+
+		private void GetKnownKeyboards(XmlReader reader, WritingSystemDefinitionV1 ws)
+		{
+			reader.MoveToContent();
+			Debug.Assert(reader.NodeType == XmlNodeType.Element && reader.Name == Palaso2NamespaceName+ ":" + KnownKeyboardsElementName);
+			using (var knownKeyboardsReader = reader.ReadSubtree())
+			{
+				knownKeyboardsReader.MoveToContent();
+				knownKeyboardsReader.ReadStartElement(Palaso2NamespaceName + ":" + KnownKeyboardsElementName);
+				knownKeyboardsReader.MoveToContent();
+				while (knownKeyboardsReader.NodeType == XmlNodeType.Element && knownKeyboardsReader.Name == Palaso2NamespaceName + ":" + KeyboardElementName)
+				{
+					var keyboard = new KeyboardDefinitionV1(knownKeyboardsReader.GetAttribute(LayoutAttrName),
+						knownKeyboardsReader.GetAttribute(LocaleAttrName));
+					// Review EberhardB (JohnT): do we actually want to store OS in the LDML, or at all? If not, get rid of this.
+					// If so, we need to make sure it can be loaded into the objects made by the real KeyboardController.
+					PlatformID id;
+					if (Enum.TryParse(knownKeyboardsReader.GetAttribute(OSAttrName), out id))
+						keyboard.OperatingSystem = id;
+					knownKeyboardsReader.Read();
+					FindElement(knownKeyboardsReader, KeyboardElementName);
+					ws.AddKnownKeyboard(keyboard);
+				}
 			}
 		}
 
@@ -793,6 +819,12 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			writer.WriteAttributeString("xmlns", ns, null, _nameSpaceManager.LookupNamespace(ns));
 		}
 
+		private const string KnownKeyboardsElementName = "knownKeyboards";
+		private const string Palaso2NamespaceName = "palaso2";
+		private const string KeyboardElementName = "keyboard";
+		private const string LayoutAttrName = "layout";
+		private const string LocaleAttrName = "locale";
+		private const string OSAttrName = "os";
 		protected virtual void WriteTopLevelSpecialElements(XmlWriter writer, XmlReader reader, WritingSystemDefinitionV1 ws)
 		{
 			// Note. As per appendix L2 'Canonical Form' of the LDML specification elements are ordered alphabetically.
@@ -816,6 +848,25 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			// V1 only migrates to version 2
 			WriteFlexOrPalasoConformElement(writer, reader, "palaso", "version", "2");
 			writer.WriteEndElement();
+
+			if (ws.KnownKeyboards.Any())
+			{
+				var p2Namespace = _nameSpaceManager.LookupNamespace(Palaso2NamespaceName);
+				WriteBeginSpecialElement(writer, Palaso2NamespaceName);
+				writer.WriteStartElement(KnownKeyboardsElementName, p2Namespace);
+				foreach (var keyboard in ws.KnownKeyboards)
+				{
+					writer.WriteStartElement(KeyboardElementName, p2Namespace);
+					writer.WriteAttributeString(LayoutAttrName, keyboard.Layout);
+					writer.WriteAttributeString(LocaleAttrName, keyboard.Locale);
+					writer.WriteAttributeString(OSAttrName, keyboard.OperatingSystem.ToString());
+					writer.WriteEndElement(); // Keyboard
+				}
+				writer.WriteEndElement(); // KnownKeyboards
+				WriteFlexOrPalasoConformElement(writer, reader, Palaso2NamespaceName, "version",
+					WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString());
+				writer.WriteEndElement(); // Special
+			}
 		}
 
 		private void WriteFlexOrPalasoConformElement(XmlWriter writer, XmlReader reader, string nameSpaceName, string nodeName, string value)

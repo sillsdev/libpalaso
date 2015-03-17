@@ -1137,6 +1137,26 @@ namespace SIL.WritingSystems.Tests.Migration
 		}
 
 		[Test]
+		public void Migrate_OriginalFileContainsPalaso2Namespace_InfoIsMigrated()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version2("qaa", "", "", "x-kal"));
+
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+
+				var repo = new TestLdmlInFolderWritingSystemRepository(environment.LdmlPath);
+				migrator.ResetRemovedProperties(repo);
+
+				WritingSystemDefinition ws = repo.Get("qaa-x-kal");
+				Assert.That(ws.DefaultFontSize, Is.EqualTo(12));
+				Assert.That(ws.DefaultFont.Name, Is.EqualTo("Arial"));
+				Assert.That(ws.KnownKeyboards.Select(kd => kd.Id), Is.EqualTo(new[] {"en-US_English"}));
+			}
+		}
+
+		[Test]
 		public void Migrate_DateModified_IsLaterThanBeforeMigration()
 		{
 			using (var environment = new TestEnvironment())
