@@ -166,6 +166,15 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Debug\taglib-sharp.dll</HintPath>
     </Reference>
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" Condition="'$(OS)'=='Unix'">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" Condition="'$(OS)'=='Unix'">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" Condition="'$(OS)'=='Unix'">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
     <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
@@ -214,6 +223,15 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Release\taglib-sharp.dll</HintPath>
     </Reference>
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" Condition="'$(OS)'=='Unix'">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" Condition="'$(OS)'=='Unix'">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" Condition="'$(OS)'=='Unix'">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'DebugMonoStrongName'">
     <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
@@ -232,6 +250,15 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\DebugMono\taglib-sharp.dll</HintPath>
     </Reference>
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" Condition="'$(OS)'=='Unix'">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" Condition="'$(OS)'=='Unix'">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" Condition="'$(OS)'=='Unix'">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'ReleaseMono' Or '$(Configuration)' == 'ReleaseMonoStrongName'">
     <Reference Include="icu.net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
@@ -249,6 +276,15 @@
     <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\ReleaseMono\taglib-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" Condition="'$(OS)'=='Unix'">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" Condition="'$(OS)'=='Unix'">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" Condition="'$(OS)'=='Unix'">
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -332,6 +368,30 @@
     <Compile Include="ColorHelper.cs" />
     <Compile Include="Extensions\ControlExtensions.cs" />
     <Compile Include="Extensions\FormExtensions.cs" />
+
+    <Compile Include="FileDialogAdapter\FileDialogStrings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FileDialogStrings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="FileDialogAdapter\OpenFileDialogAdapter.cs" />
+    <Compile Include="FileDialogAdapter\Manager.cs" />
+    <Compile Include="FileDialogAdapter\FileDialogAdapter.cs" />
+    <Compile Include="FileDialogAdapter\SaveFileDialogAdapter.cs" />
+    <Compile Include="FileDialogAdapter\FolderBrowserDialogAdapter.cs" />
+    <None Include="FileDialogAdapter\readme.txt" />
+    <Compile Include="FileDialogAdapter\Linux\FileDialogLinux.cs" />
+    <Compile Include="FileDialogAdapter\Linux\OpenFileDialogLinux.cs" />
+    <Compile Include="FileDialogAdapter\Linux\SaveFileDialogLinux.cs" />
+    <Compile Include="FileDialogAdapter\Windows\FileDialogWindows.cs" />
+    <Compile Include="FileDialogAdapter\Windows\OpenFileDialogWindows.cs" />
+    <Compile Include="FileDialogAdapter\Windows\SaveFileDialogWindows.cs" />
+    <Compile Include="FileDialogAdapter\Interfaces\IFileDialog.cs" />
+    <Compile Include="FileDialogAdapter\Interfaces\IFolderBrowserDialog.cs" />
+    <Compile Include="FileDialogAdapter\Interfaces\IOpenFileDialog.cs" />
+    <Compile Include="FileDialogAdapter\Interfaces\ISaveFileDialog.cs" />
+    <Compile Include="FileDialogAdapter\Windows\FolderBrowserDialogWindows.cs" />
+    <Compile Include="FileDialogAdapter\Linux\FolderBrowserDialogLinux.cs" />
     <Compile Include="FileDialogExtender\Enums.cs" />
     <Compile Include="FileDialogExtender\Extensions.cs" />
     <Compile Include="FileDialogExtender\FileDialogControlBase.cs">
@@ -890,6 +950,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ClearShare\WinFormsUI\MetadataEditorDialog.resx">
       <DependentUpon>MetadataEditorDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FileDialogAdapter\FileDialogStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileDialogStrings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="FileDialogExtender\FileDialogControlBase.resx">
       <DependentUpon>FileDialogControlBase.cs</DependentUpon>
