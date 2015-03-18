@@ -26,6 +26,8 @@ namespace SIL.WritingSystems
 		{
 			// check SLDR for template
 			string sldrCachePath = Path.Combine(Path.GetTempPath(), "SldrCache");
+			if (!Directory.Exists(sldrCachePath))
+				Directory.CreateDirectory(sldrCachePath);
 			string templatePath;
 			string filename;
 			switch (GetLdmlFromSldr(sldrCachePath, ietfLanguageTag, out filename))
