@@ -149,10 +149,13 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			}
 
 			// known keyboards
-			foreach (KeyboardDefinitionV1 kd in writingSystemDefinitionV1.KnownKeyboards)
+			foreach (KeyboardDefinitionV1 keyboardV1 in writingSystemDefinitionV1.KnownKeyboards)
 			{
-				string id = string.IsNullOrEmpty(kd.Locale) ? kd.Layout : string.Format("{0}_{1}", kd.Locale, kd.Layout);
-				writingSystemDefinitionV3.KnownKeyboards.Add(Keyboard.Controller.CreateKeyboard(id, KeyboardFormat.Unknown, Enumerable.Empty<string>()));
+				string id = string.IsNullOrEmpty(keyboardV1.Locale) ? keyboardV1.Layout : string.Format("{0}_{1}", keyboardV1.Locale, keyboardV1.Layout);
+				IKeyboardDefinition keyboardV3;
+				if (!Keyboard.Controller.TryGetKeyboard(id, out keyboardV3))
+					keyboardV3 = Keyboard.Controller.CreateKeyboard(id, KeyboardFormat.Unknown, Enumerable.Empty<string>());
+				writingSystemDefinitionV3.KnownKeyboards.Add(keyboardV3);
 			}
 
 			// Convert sort rules to collation definition of standard type
