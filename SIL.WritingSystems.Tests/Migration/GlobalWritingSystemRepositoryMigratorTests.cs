@@ -47,7 +47,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				string content = string.Empty;
 				if (version == 0)
 					content = LdmlContentForTests.Version0Bogus(language, "", "", "", bogus);
-				else if (version == WritingSystemDefinition.LatestWritingSystemDefinitionVersion)
+				else if (version == LdmlDataMapper.CurrentLdmlVersion)
 					// Make up a custom element
 					content = LdmlContentForTests.CurrentVersion(language, "", "", "", string.Format("\n\t<{0} />",bogus));
 				File.WriteAllText(filePath, content);
@@ -60,7 +60,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				string content = string.Empty;
 				if (version == 0)
 					content = LdmlContentForTests.Version0Bogus(language, "", "", "", bogus);
-				if (version == WritingSystemDefinition.LatestWritingSystemDefinitionVersion)
+				if (version == LdmlDataMapper.CurrentLdmlVersion)
 					content = LdmlContentForTests.CurrentVersion(language, "", "", "", string.Format("\n\t<{0} />",bogus));
 				File.WriteAllText(filePath, content);
 			}
@@ -72,7 +72,7 @@ namespace SIL.WritingSystems.Tests.Migration
 					string filePath = _baseFolder.Path;
 					filePath = Path.Combine(
 						filePath,
-						WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString()
+						LdmlDataMapper.CurrentLdmlVersion.ToString()
 					);
 					return filePath;
 				}
@@ -121,7 +121,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var m = new GlobalWritingSystemRepositoryMigrator(e.BasePath, e.OnMigrateCallback);
 				m.Migrate();
 
-				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, e.GetFileVersion("qaa-x-bogus.ldml"));
+				Assert.AreEqual(LdmlDataMapper.CurrentLdmlVersion, e.GetFileVersion("qaa-x-bogus.ldml"));
 			}
 		}
 
@@ -134,7 +134,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var m = new GlobalWritingSystemRepositoryMigrator(e.BasePath, e.OnMigrateCallback);
 				m.Migrate();
 
-				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, e.GetFileVersion("qaa-x-bogus.ldml"));
+				Assert.AreEqual(LdmlDataMapper.CurrentLdmlVersion, e.GetFileVersion("qaa-x-bogus.ldml"));
 			}
 		}
 
@@ -143,11 +143,11 @@ namespace SIL.WritingSystems.Tests.Migration
 		{
 			using (var e = new TestEnvironment())
 			{
-				TestEnvironment.WriteFlexFile("qaa-x-bogus", "bogus", WritingSystemDefinition.LatestWritingSystemDefinitionVersion);
+				TestEnvironment.WriteFlexFile("qaa-x-bogus", "bogus", LdmlDataMapper.CurrentLdmlVersion);
 				var m = new GlobalWritingSystemRepositoryMigrator(e.BasePath, e.OnMigrateCallback);
 				m.Migrate();
 
-				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, e.GetFileVersion("qaa-x-bogus.ldml"));
+				Assert.AreEqual(LdmlDataMapper.CurrentLdmlVersion, e.GetFileVersion("qaa-x-bogus.ldml"));
 			}
 		}
 
@@ -161,7 +161,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var m = new GlobalWritingSystemRepositoryMigrator(e.BasePath, e.OnMigrateCallback);
 				m.Migrate();
 
-				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, e.GetFileVersion("qaa-x-bogus.ldml"));
+				Assert.AreEqual(LdmlDataMapper.CurrentLdmlVersion, e.GetFileVersion("qaa-x-bogus.ldml"));
 				AssertThatXmlIn.String(e.MigratedLdml("qaa-x-bogus.ldml")).HasAtLeastOneMatchForXpath(
 					"ldml[not(bogusPalaso)]", e.NamespaceManager);
 				AssertThatXmlIn.String(e.MigratedLdml("qaa-x-bogus.ldml")).HasAtLeastOneMatchForXpath(

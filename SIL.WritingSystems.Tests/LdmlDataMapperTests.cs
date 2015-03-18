@@ -804,7 +804,7 @@ namespace SIL.WritingSystems.Tests
 				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path), true));
 				AssertThatLdmlMatches("xh", "Latn", "", "", file);
 				var versionReader = new WritingSystemLdmlVersionGetter();
-				Assert.That(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, Is.EqualTo(versionReader.GetFileVersion(file.Path)));
+				Assert.That(LdmlDataMapper.CurrentLdmlVersion, Is.EqualTo(versionReader.GetFileVersion(file.Path)));
 			}
 		}
 
@@ -832,7 +832,7 @@ namespace SIL.WritingSystems.Tests
 								Throws.Exception.TypeOf<ApplicationException>()
 										.With.Property("Message")
 										.EqualTo(String.Format("The LDML tag 'en' is version 0.  Version {0} was expected.",
-										WritingSystemDefinition.LatestWritingSystemDefinitionVersion)));
+										LdmlDataMapper.CurrentLdmlVersion)));
 			}
 		}
 
@@ -849,7 +849,7 @@ namespace SIL.WritingSystems.Tests
 								Throws.Exception.TypeOf<ApplicationException>()
 										.With.Property("Message")
 										.EqualTo(String.Format("The LDML tag 'en' is version 2.  Version {0} was expected.",
-										WritingSystemDefinition.LatestWritingSystemDefinitionVersion)));
+										LdmlDataMapper.CurrentLdmlVersion)));
 			}
 		}
 

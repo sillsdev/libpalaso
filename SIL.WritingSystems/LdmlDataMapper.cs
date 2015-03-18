@@ -33,6 +33,13 @@ namespace SIL.WritingSystems
 	/// </remarks>
 	public class LdmlDataMapper
 	{
+		/// <summary>
+		/// This is the current version of the LDML data and is mostly used for migration purposes.
+		/// This should not be confused with the version of the locale data contained in this writing system.
+		/// That information is stored in the "VersionNumber" property.
+		/// </summary>
+		public const int CurrentLdmlVersion = 3;
+
 		private static readonly XNamespace Palaso = "urn://palaso.org/ldmlExtensions/v1";
 		private static readonly XNamespace Sil = "urn://www.sil.org/ldml/0.1";
 
@@ -342,7 +349,7 @@ namespace SIL.WritingSystems
 					"The LDML tag '{0}' is version {1}.  Version {2} was expected.",
 					ws.IetfLanguageTag,
 					version,
-					WritingSystemDefinition.LatestWritingSystemDefinitionVersion
+					CurrentLdmlVersion
 					));
 			}
 		}

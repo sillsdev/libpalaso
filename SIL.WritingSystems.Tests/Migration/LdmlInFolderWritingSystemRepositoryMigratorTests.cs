@@ -101,7 +101,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, environment.GetFileVersion(fileName));
+				Assert.AreEqual(LdmlDataMapper.CurrentLdmlVersion, environment.GetFileVersion(fileName));
 			}
 		}
 
@@ -1233,7 +1233,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 				var versionGetter = new WritingSystemLdmlVersionGetter();
-				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, versionGetter.GetFileVersion(environment.MappedFilePath("test.ldml")));
+				Assert.AreEqual(LdmlDataMapper.CurrentLdmlVersion, versionGetter.GetFileVersion(environment.MappedFilePath("test.ldml")));
 			}
 		}
 
@@ -1545,7 +1545,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, environment.GetFileVersion(environment.MappedFilePath("test.ldml")));
+				Assert.AreEqual(LdmlDataMapper.CurrentLdmlVersion, environment.GetFileVersion(environment.MappedFilePath("test.ldml")));
 			}
 		}
 

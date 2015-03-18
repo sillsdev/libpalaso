@@ -6,12 +6,6 @@ namespace SIL.WritingSystems.Tests
 	public class WritingSystemDefinitionVariantTests
 	{
 		[Test]
-		public void LatestVersion()
-		{
-			Assert.AreEqual(WritingSystemDefinition.LatestWritingSystemDefinitionVersion, WritingSystemDefinition.LatestWritingSystemDefinitionVersion);
-		}
-
-		[Test]
 		public void IpaStatus_SetToIpaWhenVariantIsEmpty_VariantNowFonIpa()
 		{
 			var ws = new WritingSystemDefinition {IpaStatus = IpaStatusChoices.Ipa};

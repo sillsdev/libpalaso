@@ -120,12 +120,12 @@ namespace SIL.WritingSystems
 		}
 
 		///<summary>
-		/// The CurrentVersionPath is %CommonApplicationData%\SIL\WritingSystemRepository\LatestVersion
+		/// The CurrentVersionPath is %CommonApplicationData%\SIL\WritingSystemRepository\[CurrentLdmlVersion]
 		/// e.g. On Windows 7 this is \ProgramData\SIL\WritingSystemRepository\1
 		///</summary>
 		public static string CurrentVersionPath(string basePath)
 		{
-			return Path.Combine(basePath, WritingSystemDefinition.LatestWritingSystemDefinitionVersion.ToString(CultureInfo.InvariantCulture));
+			return Path.Combine(basePath, LdmlDataMapper.CurrentLdmlVersion.ToString(CultureInfo.InvariantCulture));
 		}
 
 		public string PathToWritingSystems

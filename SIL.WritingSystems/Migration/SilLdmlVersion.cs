@@ -29,7 +29,7 @@ namespace SIL.WritingSystems.Migration
 					}
 				}
 				// Otherwise assume good current version
-				return WritingSystemDefinition.LatestWritingSystemDefinitionVersion;
+				return LdmlDataMapper.CurrentLdmlVersion;
 			}
 
 			return BadVersion;
@@ -37,7 +37,7 @@ namespace SIL.WritingSystems.Migration
 
 		public int StrategyGoodToVersion
 		{
-			get { return WritingSystemDefinition.LatestWritingSystemDefinitionVersion; }
+			get { return LdmlDataMapper.CurrentLdmlVersion; }
 		}
 
 	}

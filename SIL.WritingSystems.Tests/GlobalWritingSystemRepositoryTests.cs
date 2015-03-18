@@ -19,7 +19,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			GlobalWritingSystemRepository repo = GlobalWritingSystemRepository.Initialize(OnMigration);
 			string expectedPath = string.Format(".*SIL.WritingSystemRepository.{0}", 
-				WritingSystemDefinition.LatestWritingSystemDefinitionVersion);
+				LdmlDataMapper.CurrentLdmlVersion);
 			Assert.That(repo.PathToWritingSystems, Is.StringMatching(expectedPath));
 		}
 
@@ -30,7 +30,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				var repo = new GlobalWritingSystemRepository(e.Path);
 				string expectedPath = string.Format(".*GlobalWritingSystemRepositoryTests.{0}",
-					WritingSystemDefinition.LatestWritingSystemDefinitionVersion);
+					LdmlDataMapper.CurrentLdmlVersion);
 				Assert.That(repo.PathToWritingSystems, Is.StringMatching(expectedPath));
 			}
 		}

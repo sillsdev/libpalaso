@@ -58,12 +58,6 @@ namespace SIL.WritingSystems
 	{
 		private const int MinimumFontSize = 7;
 		private const int DefaultSizeIfWeDontKnow = 10;
-		/// <summary>
-		/// This is the version of our writingsystemDefinition implementation and is mostly used for migration purposes.
-		/// This should not be confused with the version of the locale data contained in this writing system.
-		/// That information is stored in the "VersionNumber" property.
-		/// </summary>
-		public const int LatestWritingSystemDefinitionVersion = 3;
 
 		private LanguageSubtag _language;
 		private ScriptSubtag _script;
