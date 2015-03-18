@@ -1048,8 +1048,8 @@ namespace SIL.WritingSystems
 				punctuationPatternsElem.Add(punctuationPatternElem);
 			}
 
-			// Preserve existing special sil:quotation-marks that aren't narrative or blank.
-			// Remove the rest to repopulate later
+			// Remove sil:quotation elements where type is blank or narrative. Also remove quotation continue elements.
+			// These will be repopulated later
 			XElement quotationmarksElem = null;
 			if (specialElem != null)
 			{
