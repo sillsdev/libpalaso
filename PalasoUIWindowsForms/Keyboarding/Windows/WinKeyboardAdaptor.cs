@@ -261,6 +261,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 						// ignore if we can't find a culture (this can happen e.g. when a language gets
 						// removed that was previously assigned to a WS) - see LT-15333
 					}
+					catch (COMException)
+					{
+						// this can happen when the user changes the language associated with a
+						// Keyman keyboard (LT-16172)
+					}
 				}
 			}
 		}
