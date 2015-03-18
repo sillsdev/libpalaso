@@ -20,7 +20,7 @@ namespace SIL.WritingSystems
 		}
 	}
 
-	public abstract class SldrWritingSystemFactory<T> : WritingSystemFactoryBase<T> where T : WritingSystemDefinition
+	public abstract class SldrWritingSystemFactory<T> : WritingSystemFactory<T> where T : WritingSystemDefinition
 	{
 		public override T Create(string ietfLanguageTag)
 		{
@@ -42,14 +42,6 @@ namespace SIL.WritingSystems
 					break;
 			}
 
-			// check template folder for template
-			if (string.IsNullOrEmpty(templatePath) && !string.IsNullOrEmpty(TemplateFolder))
-			{
-				templatePath = Path.Combine(TemplateFolder, ietfLanguageTag + ".ldml");
-				if (!File.Exists(templatePath))
-					templatePath = null;
-			}
-
 			T ws;
 			if (!string.IsNullOrEmpty(templatePath))
 			{
@@ -60,17 +52,11 @@ namespace SIL.WritingSystems
 			}
 			else
 			{
-				ws = ConstructDefinition(ietfLanguageTag);
+				ws = base.Create(ietfLanguageTag);
 			}
 
 			return ws;
 		}
-
-		/// <summary>
-		/// The folder in which the repository looks for template LDML files when a writing system is wanted
-		/// that cannot be found in the local store, global store, or SLDR.
-		/// </summary>
-		public string TemplateFolder { get; set; }
 
 		/// <summary>
 		/// Gets the a LDML file from the SLDR.
