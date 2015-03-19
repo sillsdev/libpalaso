@@ -36,11 +36,6 @@ namespace SIL.WritingSystems.Tests
 				return FolderContainingLdml.Path;
 			}
 
-			public string SldrCacheFilePath()
-			{
-				return FolderContainingSldrCache.Path;
-			}
-
 			public void Dispose()
 			{
 				FolderContainingLdml.Dispose();
@@ -90,7 +85,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				string filename;
 				const string ietfLanguageTag = "en-US";
-				Assert.That(Sldr.GetLdmlFile(environment.FilePath(), ietfLanguageTag, null, out filename), Is.EqualTo(SldrStatus.FileFromSldr));
+				Assert.That(Sldr.GetLdmlFile(environment.FilePath(), ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FileFromSldr));
 				AssertThatXmlIn.File(Path.Combine(environment.FilePath(), filename)).HasAtLeastOneMatchForXpath("/ldml[identity]", environment.NamespaceManager);
 				AssertThatXmlIn.File(Path.Combine(environment.FilePath(), filename)).HasAtLeastOneMatchForXpath("/ldml[localeDisplayNames]", environment.NamespaceManager);
 				AssertThatXmlIn.File(Path.Combine(environment.FilePath(), filename)).HasAtLeastOneMatchForXpath("/ldml[layout]", environment.NamespaceManager);
@@ -142,7 +137,7 @@ namespace SIL.WritingSystems.Tests
 				const string ietfLanguageTag = "qaa";
 				// File exists in destination and cache, so uid will be checked
 				File.WriteAllText(Path.Combine(environment.FilePath(), ietfLanguageTag + ".ldml"), content);
-				string filename = Path.Combine(environment.SldrCacheFilePath(), ietfLanguageTag + "-e2ccb575.ldml");
+				string filename = Path.Combine(Sldr.SldrCachePath, ietfLanguageTag + "-e2ccb575.ldml");
 				File.WriteAllText(filename, content);
 
 				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FileFromSldrCache));
@@ -169,7 +164,7 @@ namespace SIL.WritingSystems.Tests
 	</identity>
 </ldml>".Replace("\'", "\"");
 				const string ietfLanguageTag = "qaa";
-				string filename = Path.Combine(environment.SldrCacheFilePath(), ietfLanguageTag + ".ldml");
+				string filename = Path.Combine(Sldr.SldrCachePath, ietfLanguageTag + ".ldml");
 				// File only exists in cache so uid unknown
 				File.WriteAllText(filename, content);
 
@@ -208,6 +203,28 @@ namespace SIL.WritingSystems.Tests
 
 		[Test]
 		[Category("SkipOnTeamCity")]
+		public void GetLdmlFile_SldrCacheDestinationPath_ReturnsCacheFile()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				string filename;
+				const string ietfLanguageTag = "en-GB";
+
+				Assert.That(Sldr.GetLdmlFile(Sldr.SldrCachePath, ietfLanguageTag, new[] {"characters"}, out filename), Is.EqualTo(SldrStatus.FileFromSldr));
+
+				string filePath = Path.Combine(Sldr.SldrCachePath, filename);
+				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']", environment.NamespaceManager);
+				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Latn']", environment.NamespaceManager);
+				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/territory[@type='GB']", environment.NamespaceManager);
+
+				// Verify draft is approved and uid doesn't exist
+				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[@draft='approved']", environment.NamespaceManager);
+				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[not(@uid)]", environment.NamespaceManager);
+			}
+		}
+
+		[Test]
+		[Category("SkipOnTeamCity")]
 		public void GetLdmlFile_Redirect_DownloadsDifferentTag()
 		{
 			using (var environment = new TestEnvironment())
@@ -232,7 +249,7 @@ namespace SIL.WritingSystems.Tests
 
 				// Write content to destination and cache
 				File.WriteAllText(Path.Combine(environment.FilePath(), ietfLanguageTag + ".ldml"), content);
-				File.WriteAllText(Path.Combine(environment.SldrCacheFilePath(), ietfLanguageTag + ".ldml"), content);
+				File.WriteAllText(Path.Combine(Sldr.SldrCachePath, ietfLanguageTag + ".ldml"), content);
 
 				string filename;
 				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FileFromSldr));
@@ -293,10 +310,10 @@ namespace SIL.WritingSystems.Tests
 				string filename = Path.Combine(environment.FilePath(), ietfLanguageTag + ".ldml");
 				// LDML in destination to get uid.
 				File.WriteAllText(filename, content);
-				string cacheFilename = Path.Combine(environment.SldrCacheFilePath(), ietfLanguageTag + "-e2ccb575.ldml");
+				string cacheFilename = Path.Combine(Sldr.SldrCachePath, ietfLanguageTag + "-e2ccb575.ldml");
 				// Tmp and "filename + uid" in cache
 				File.WriteAllText(cacheFilename, content);
-				string tempFilename = Path.Combine(environment.SldrCacheFilePath(), ietfLanguageTag + ".ldml.tmp");
+				string tempFilename = Path.Combine(Sldr.SldrCachePath, ietfLanguageTag + ".ldml.tmp");
 				File.WriteAllText(tempFilename, content);
 				Assert.True(File.Exists(cacheFilename));
 
