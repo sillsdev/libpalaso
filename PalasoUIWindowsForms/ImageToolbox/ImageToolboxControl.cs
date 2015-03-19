@@ -4,14 +4,9 @@ using System.IO;
 using System.Windows.Forms;
 using L10NSharp;
 using Palaso.Code;
-using Palaso.IO;
 using Palaso.UI.WindowsForms.ClearShare;
 using Palaso.UI.WindowsForms.ClearShare.WinFormsUI;
 using Palaso.UI.WindowsForms.ImageToolbox.Cropping;
-
-#if !MONO
-
-#endif
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
 {
@@ -163,23 +158,26 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			return item;
 		}
 
-		bool _inIndexChanging	;
+		// Changed this to remember the selected index because something is causing the SelectedIndexChanged
+		// event to fire twice each time an icon is clicked.
+		int _previousSelectedIndex = -1;
 
 		private void listView1_SelectedIndexChanged(object sender, EventArgs e)
 		{
-
-			if (_inIndexChanging)
-				return;
-
 			try
 			{
-				_inIndexChanging = true;
-
 				if (_toolListView.SelectedItems.Count == 0)
+				{
+					_previousSelectedIndex = -1;
+					return;
+				}
+
+				if (_previousSelectedIndex == _toolListView.SelectedIndices[0])
 					return;
 
-				ListViewItem selectedItem = _toolListView.SelectedItems[0];
+				_previousSelectedIndex = _toolListView.SelectedIndices[0];
 
+				ListViewItem selectedItem = _toolListView.SelectedItems[0];
 
 				if (selectedItem.Tag == _currentControl)
 					return;
@@ -222,10 +220,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				Palaso.Reporting.ErrorReport.NotifyUserOfProblem(error,
 																 "Sorry, something went wrong with the ImageToolbox".Localize("ImageToolbox.GenericProblem"));
-			}
-			finally
-			{
-				_inIndexChanging = false;
 			}
 		}
 
