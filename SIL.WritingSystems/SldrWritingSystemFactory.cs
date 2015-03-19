@@ -25,16 +25,15 @@ namespace SIL.WritingSystems
 		public override T Create(string ietfLanguageTag)
 		{
 			// check SLDR for template
-			string sldrCachePath = Path.Combine(Path.GetTempPath(), "SldrCache");
-			if (!Directory.Exists(sldrCachePath))
-				Directory.CreateDirectory(sldrCachePath);
+			if (!Directory.Exists(Sldr.SldrCachePath))
+				Directory.CreateDirectory(Sldr.SldrCachePath);
 			string templatePath;
 			string filename;
-			switch (GetLdmlFromSldr(sldrCachePath, ietfLanguageTag, out filename))
+			switch (GetLdmlFromSldr(Sldr.SldrCachePath, ietfLanguageTag, out filename))
 			{
 				case SldrStatus.FileFromSldr:
 				case SldrStatus.FileFromSldrCache:
-					templatePath = Path.Combine(sldrCachePath, filename);
+					templatePath = Path.Combine(Sldr.SldrCachePath, filename);
 					break;
 
 				default:

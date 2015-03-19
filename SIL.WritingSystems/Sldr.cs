@@ -62,6 +62,14 @@ namespace SIL.WritingSystems
 		public const string DefaultUserId = "unknown";
 
 		/// <summary>
+		/// Gets the SLDR cache path.
+		/// </summary>
+		public static string SldrCachePath
+		{
+			get { return Path.Combine(Path.GetTempPath(), SldrCacheDir); }
+		}
+
+		/// <summary>
 		/// API to query the SLDR for an LDML file and save it locally in the SLDR cache and specified directories
 		/// </summary>
 		/// <param name="destinationPath">Destination path to save the requested LDML file</param>
@@ -82,8 +90,7 @@ namespace SIL.WritingSystems
 				throw new ArgumentException("topLevelElements");
 
 			var status = SldrStatus.FileNotFound;
-			string sldrCachePath = Path.Combine(Path.GetTempPath(), SldrCacheDir);
-			Directory.CreateDirectory(sldrCachePath);
+			Directory.CreateDirectory(SldrCachePath);
 			string sldrCacheFilePath;
 			bool redirected;
 			const Boolean flatten = true;
@@ -103,7 +110,7 @@ namespace SIL.WritingSystems
 					ProductionSldrRepository, ietfLanguageTag, LdmlExtension,
 					requestedElements, Convert.ToInt32(flatten), requestedUserId);
 
-				sldrCacheFilePath = Path.Combine(sldrCachePath, filename);
+				sldrCacheFilePath = Path.Combine(SldrCachePath, filename);
 				string tempFilePath = sldrCacheFilePath + "." + TmpExtension;
 
 				// Using WebRequest instead of WebClient so we have access to disable AllowAutoRedirect
@@ -155,7 +162,7 @@ namespace SIL.WritingSystems
 						sldrCacheFilename = string.Format("{0}-{1}.{2}", ietfLanguageTag, uid, LdmlExtension);
 					else
 						sldrCacheFilename = string.Format("{0}.{1}", ietfLanguageTag, LdmlExtension);
-					sldrCacheFilePath = Path.Combine(sldrCachePath, sldrCacheFilename);
+					sldrCacheFilePath = Path.Combine(SldrCachePath, sldrCacheFilename);
 					if (File.Exists(sldrCacheFilePath))
 						status = SldrStatus.FileFromSldrCache;
 					else
@@ -164,8 +171,11 @@ namespace SIL.WritingSystems
 				}
 			} while (redirected);
 
-			// Copy from Cache to destination (w/o uid in filename), overwriting whatever used to be there
-			File.Copy(sldrCacheFilePath, Path.Combine(destinationPath, filename), true);
+			if (destinationPath != SldrCachePath)
+			{
+				// Copy from Cache to destination (w/o uid in filename), overwriting whatever used to be there
+				File.Copy(sldrCacheFilePath, Path.Combine(destinationPath, filename), true);
+			}
 
 			return status;
 		}
