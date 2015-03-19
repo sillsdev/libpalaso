@@ -25,7 +25,8 @@ namespace SIL.WritingSystems.Tests.Migration
 		[Test]
 		public void GetFileVersion_SilIdentity_LatestVersion()
 		{
-			string xml = LdmlContentForTests.Version3Identity("en", "Latn", "", "", "123456", "abcd", "US", "LatestAndGreatest");
+			string xml = LdmlContentForTests.Version3Identity("en", "Latn", "", "", "123456", "abcd", "US", 
+				"53d542ba498f40f437f7723e69dcf64dab6c9794");
 
 			using (var file = new TempFile(xml))
 			{

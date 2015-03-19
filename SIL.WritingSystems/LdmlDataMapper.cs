@@ -900,18 +900,15 @@ namespace SIL.WritingSystems
 			WriteLanguageTagElements(identityElem, ws.IetfLanguageTag);
 
 			// Create special element if data needs to be written
-			if (!string.IsNullOrEmpty(ws.WindowsLcid) || !string.IsNullOrEmpty(ws.DefaultRegion) || (ws.Variants.Count > 0))
+			if (!string.IsNullOrEmpty(ws.WindowsLcid) || !string.IsNullOrEmpty(ws.DefaultRegion))
 			{
 				XElement specialElem = GetOrCreateSpecialElement(identityElem);
 				XElement silIdentityElem = specialElem.GetOrCreateElement(Sil + "identity");
 
-				// TODO: how do we recover uid attribute?
+				// uid and revid attributes are left intact
 
 				silIdentityElem.SetOptionalAttributeValue("windowsLCID", ws.WindowsLcid);
 				silIdentityElem.SetOptionalAttributeValue("defaultRegion", ws.DefaultRegion);
-				// TODO: For now, use the first variant as the variantName
-				if (ws.Variants.Count > 0)
-					silIdentityElem.SetOptionalAttributeValue("variantName", ws.Variants.First().Name);
 					
 				// Move special to the end of the identity block (preserving order)
 				specialElem.Remove();

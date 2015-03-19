@@ -570,10 +570,10 @@ namespace SIL.WritingSystems.Tests
 		/// <param name="uid"></param>
 		/// <param name="windowsLCID"></param>
 		/// <param name="defaultRegion"></param>
-		/// <param name="variantName"></param>
+		/// <param name="revid"></param>
 		/// <returns></returns>
 		static public string Version3Identity(string language, string script, string region, string variant,
-											string uid, string windowsLCID, string defaultRegion, string variantName)
+											string uid, string windowsLCID, string defaultRegion, string revid)
 		{
 			return
 				String.Format(@"<?xml version='1.0' encoding='utf-8'?>
@@ -586,10 +586,10 @@ namespace SIL.WritingSystems.Tests
 		<territory type='{2}' />
 		<variant type='{3}' />
 		<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
-			<sil:identity uid='{4}' windowsLCID='{5}' defaultRegion='{6}' variantName='{7}'></sil:identity>
+			<sil:identity uid='{4}' windowsLCID='{5}' defaultRegion='{6}' revid='{7}'></sil:identity>
 		</special>
 	</identity>
-</ldml>".Replace("'", "\""), language, script, region, variant, uid, windowsLCID, defaultRegion, variantName );
+</ldml>".Replace("'", "\""), language, script, region, variant, uid, windowsLCID, defaultRegion, revid );
 		}
 		 #endregion
 

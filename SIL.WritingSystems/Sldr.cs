@@ -46,18 +46,6 @@ namespace SIL.WritingSystems
 		// Default parameters for querying the SLDR
 		private const string LdmlExtension = "ldml";
 
-		// Default list of elements to request from the SLDR.
-		// Identity is always published, so we don't need it on the list.
-		public static readonly IEnumerable<string> DefaultTopElements = new List<string>
-		{
-			"characters",
-			"delimiters",
-			"layout",
-			"numbers",
-			"collations",
-			"special"
-		};
- 
 		// If the user wants to request a new UID, you use "uid=unknown" and that will create a new random identifier
 		public const string DefaultUserId = "unknown";
 
@@ -75,7 +63,7 @@ namespace SIL.WritingSystems
 		/// <param name="destinationPath">Destination path to save the requested LDML file</param>
 		/// <param name="ietfLanguageTag">Current IETF language tag</param>
 		/// <param name="topLevelElements">List of top level element names to request. SLDR will always publish identity, so it doesn't need to be requested.
-		/// If null, the default list of {"characters", "delimiters", "layout", "numbers", "collations", "special"} will be requested.</param>
+		/// If null, the entire LDML file will be requested.</param>
 		/// <param name="filename">Saved filename</param>
 		/// <returns>Enum status SldrStatus if file could be retrieved and the source</returns>
 		public static SldrStatus GetLdmlFile(string destinationPath, string ietfLanguageTag, IEnumerable<string> topLevelElements, out string filename)
@@ -86,8 +74,6 @@ namespace SIL.WritingSystems
 				throw new DirectoryNotFoundException("destinationPath");
 			if (String.IsNullOrEmpty(ietfLanguageTag) || (!IetfLanguageTagHelper.IsValid(ietfLanguageTag)))
 				throw new ArgumentException("ietfLanguageTag");
-			if (topLevelElements == null)
-				throw new ArgumentException("topLevelElements");
 
 			var status = SldrStatus.FileNotFound;
 			Directory.CreateDirectory(SldrCachePath);
@@ -97,18 +83,29 @@ namespace SIL.WritingSystems
 			do
 			{
 				filename = ietfLanguageTag + "." + LdmlExtension;
-				string revid, uid;
+				string revid, uid, tempString;
 
-				// Check if LDML file already exists in destination and read revid and uid
-				if (!ReadSilIdentity(Path.Combine(destinationPath, filename), out revid, out uid))
+				// Read uid from destination file
+				if (!ReadSilIdentity(Path.Combine(destinationPath, filename), out tempString, out uid))
 					uid = DefaultUserId;
 
+				// Read revid from cache file
+				if (!string.IsNullOrEmpty(uid) && (uid != DefaultUserId))
+					ReadSilIdentity(
+						Path.Combine(SldrCachePath, filename.Replace("." + LdmlExtension, "-" + uid + "." + LdmlExtension)), out revid,
+						out tempString);
+				else
+					ReadSilIdentity(Path.Combine(SldrCachePath, filename), out revid, out tempString);
+
 				// Concatenate parameters for url string
-				string requestedElements = string.Join("&inc[]=", topLevelElements);
-				string requestedUserId = !String.IsNullOrEmpty(uid) ? String.Format("&uid={0}", uid) : String.Empty;
-				string url = string.Format("{0}{1}?ext={2}&inc[]={3}&flatten={4}{5}",
-					ProductionSldrRepository, ietfLanguageTag, LdmlExtension,
-					requestedElements, Convert.ToInt32(flatten), requestedUserId);
+				string requestedElements = string.Empty;
+				if (topLevelElements != null)
+					requestedElements = string.Format("&inc[]={0}", string.Join("&inc[]=", topLevelElements));
+				string requestedUserId = !string.IsNullOrEmpty(uid) ? string.Format("&uid={0}", uid) : string.Empty;
+				string requestedRevid = !string.IsNullOrEmpty(revid) ? string.Format("&revid={0}", revid) : string.Empty;
+				string url = string.Format("{0}{1}?ext={2}&flatten={3}{4}{5}{6}",
+					ProductionSldrRepository, ietfLanguageTag, LdmlExtension, Convert.ToInt32(flatten),
+					requestedElements, requestedUserId, requestedRevid);
 
 				sldrCacheFilePath = Path.Combine(SldrCachePath, filename);
 				string tempFilePath = sldrCacheFilePath + "." + TmpExtension;
@@ -123,7 +120,13 @@ namespace SIL.WritingSystems
 					// Check the response header to see if the requested LDML file got redirected
 					using (var webResponse = (HttpWebResponse) webRequest.GetResponse())
 					{
-						if (webResponse.StatusCode == HttpStatusCode.MovedPermanently)
+						if (webResponse.StatusCode == HttpStatusCode.NotModified)
+						{
+							// Report status that file is the most current from SLDR
+							status = SldrStatus.FileFromSldr;
+							redirected = false;
+						}
+						else if (webResponse.StatusCode == HttpStatusCode.MovedPermanently)
 						{
 							ietfLanguageTag = webResponse.Headers["Location"].Replace(ProductionSldrRepository, "");
 							redirected = true;
@@ -189,7 +192,7 @@ namespace SIL.WritingSystems
 		/// <returns>Enum status SldrStatus if file could be retrieved and the source</returns>
 		public static SldrStatus GetLdmlFile(string destinationPath, string ietfLanguageTag, out string filename)
 		{
-			return GetLdmlFile(destinationPath, ietfLanguageTag, DefaultTopElements, out filename);
+			return GetLdmlFile(destinationPath, ietfLanguageTag, null, out filename);
 		}
 
 		/// <summary>
@@ -269,7 +272,9 @@ namespace SIL.WritingSystems
 							silIdentityElem.SetOptionalAttributeValue("uid", uid);
 
 							// Clean out original LDML file that contains uid in cache
-							string originalFile = sldrCacheFilePath.Replace("." + LdmlExtension, "-" + originalUid + "." + LdmlExtension);
+							string originalFile = string.Empty;
+							if (!string.IsNullOrEmpty(originalUid) && (originalUid != DefaultUserId))
+								originalFile = sldrCacheFilePath.Replace("." + LdmlExtension, "-" + originalUid + "." + LdmlExtension);
 							if (File.Exists(originalFile))
 								File.Delete(originalFile);
 						}

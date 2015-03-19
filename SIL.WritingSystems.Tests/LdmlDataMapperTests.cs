@@ -756,9 +756,6 @@ namespace SIL.WritingSystems.Tests
 		<script type='Zxxx' />
 		<territory type='US' />
 		<variant type='x-audio' />
-		<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
-			<sil:identity variantName='Audio' />
-		</special>
 	</identity>
 	<layout>
 		<orientation>
