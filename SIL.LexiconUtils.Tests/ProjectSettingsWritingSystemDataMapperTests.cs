@@ -64,7 +64,7 @@ namespace SIL.LexiconUtils.Tests
 
 			Assert.That(ws3.Abbreviation, Is.EqualTo("es"));
 			Assert.That(ws3.Language.Name, Is.EqualTo("Spanish"));
-			Assert.That(ws3.Script, Is.Null);
+			Assert.That(ws3.Script.Name, Is.EqualTo("Latin"));
 			Assert.That(ws3.Region, Is.Null);
 			Assert.That(ws3.Variants, Is.Empty);
 			Assert.That(ws3.SpellCheckingId, Is.EqualTo(string.Empty));
