@@ -51,6 +51,12 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(StandardSubtags.RegisteredScripts.Contains("Latn"), Is.True);
 		}
 
+		[Test]
+		public void RegisteredLanguages_Spanish_HasLatinImplicitScriptCode()
+		{
+			Assert.That(StandardSubtags.RegisteredLanguages["es"].ImplicitScriptCode, Is.EqualTo("Latn"));
+		}
+
         [Test]
 		public void RegisteredScripts_HasOldItalic_True()
 		{

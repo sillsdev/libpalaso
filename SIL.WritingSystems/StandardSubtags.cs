@@ -128,8 +128,11 @@ namespace SIL.WritingSystems
 
 		private static string GetImplicitScriptCode(string[] subTagComponents)
 		{
-			if (subTagComponents.Length >= 5 && subTagComponents[4].StartsWith("Suppress-Script: "))
-				return subTagComponents[4].Substring("Suppress-Script: ".Length).Trim();
+			foreach (string line in subTagComponents)
+			{
+				if (line.StartsWith("Suppress-Script: "))
+					return line.Substring("Suppress-Script: ".Length).Trim();
+			}
 			return string.Empty;
 		}
 
