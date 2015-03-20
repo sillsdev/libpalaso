@@ -5,19 +5,19 @@ using SIL.WritingSystems;
 
 namespace SIL.LexiconUtils
 {
-	public class ProjectSettingsWritingSystemDataMapper : ProjectSettingsWritingSystemDataMapper<WritingSystemDefinition>
+	public class LexiconProjectSettingsWritingSystemDataMapper : LexiconProjectSettingsWritingSystemDataMapper<WritingSystemDefinition>
 	{
-		public ProjectSettingsWritingSystemDataMapper(ISettingsStore settingsStore)
+		public LexiconProjectSettingsWritingSystemDataMapper(ISettingsStore settingsStore)
 			: base(settingsStore)
 		{
 		}
 	}
 
-	public class ProjectSettingsWritingSystemDataMapper<T> : ICustomDataMapper<T> where T : WritingSystemDefinition
+	public class LexiconProjectSettingsWritingSystemDataMapper<T> : ICustomDataMapper<T> where T : WritingSystemDefinition
 	{
 		private readonly ISettingsStore _settingsStore;
 
-		public ProjectSettingsWritingSystemDataMapper(ISettingsStore settingsStore)
+		public LexiconProjectSettingsWritingSystemDataMapper(ISettingsStore settingsStore)
 		{
 			_settingsStore = settingsStore;
 		}

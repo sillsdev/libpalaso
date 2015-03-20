@@ -172,10 +172,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ProjectSettingsWritingSystemDataMapperTests.cs" />
+    <Compile Include="LexiconProjectSettingsDataMapperTests.cs" />
+    <Compile Include="LexiconProjectSettingsWritingSystemDataMapperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestSettingsStore.cs" />
-    <Compile Include="UserSettingsWritingSystemDataMapperTests.cs" />
+    <Compile Include="LexiconUserSettingsWritingSystemDataMapperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">

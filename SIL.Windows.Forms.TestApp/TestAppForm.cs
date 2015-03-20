@@ -75,8 +75,8 @@ namespace SIL.Windows.Forms.TestApp
 			{
 				ICustomDataMapper<WritingSystemDefinition>[] customDataMappers =
 				{
-					new UserSettingsWritingSystemDataMapper(new ApplicationSettingsStore(Properties.Settings.Default, "UserSettings")),
-					new ProjectSettingsWritingSystemDataMapper(new ApplicationSettingsStore(Properties.Settings.Default, "ProjectSettings"))
+					new LexiconUserSettingsWritingSystemDataMapper(new ApplicationSettingsStore(Properties.Settings.Default, "UserSettings")),
+					new LexiconProjectSettingsWritingSystemDataMapper(new ApplicationSettingsStore(Properties.Settings.Default, "ProjectSettings"))
 				};
 				LdmlInFolderWritingSystemRepository wsRepo = LdmlInFolderWritingSystemRepository.Initialize(tempPath, customDataMappers);
 				using (var dialog = new WritingSystemSetupDialog(wsRepo))

@@ -7,7 +7,7 @@ using SIL.WritingSystems;
 namespace SIL.LexiconUtils.Tests
 {
 	[TestFixture]
-	public class ProjectSettingsWritingSystemDataMapperTests
+	public class LexiconProjectSettingsWritingSystemDataMapperTests
 	{
 		[Test]
 		public void Read_ValidXml_SetsAllProperties()
@@ -33,7 +33,7 @@ namespace SIL.LexiconUtils.Tests
   </WritingSystems>
 </LexiconProjectSettings>";
 
-			var projectSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(new TestSettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)});
+			var projectSettingsDataMapper = new LexiconProjectSettingsWritingSystemDataMapper(new TestSettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)});
 
 			var ws1 = new WritingSystemDefinition("qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2");
 			projectSettingsDataMapper.Read(ws1);
@@ -75,7 +75,7 @@ namespace SIL.LexiconUtils.Tests
 		[Test]
 		public void Read_EmptyXml_NothingSet()
 		{
-			var projectSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(new TestSettingsStore());
+			var projectSettingsDataMapper = new LexiconProjectSettingsWritingSystemDataMapper(new TestSettingsStore());
 
 			var ws1 = new WritingSystemDefinition("en-US");
 			projectSettingsDataMapper.Read(ws1);
@@ -94,7 +94,7 @@ namespace SIL.LexiconUtils.Tests
 		public void Write_EmptyXml_XmlUpdated()
 		{
 			var settingsStore = new TestSettingsStore();
-			var projectSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(settingsStore);
+			var projectSettingsDataMapper = new LexiconProjectSettingsWritingSystemDataMapper(settingsStore);
 
 			var ws1 = new WritingSystemDefinition("qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2");
 			ws1.Language = new LanguageSubtag(ws1.Language, "Kalaba");
@@ -142,7 +142,7 @@ namespace SIL.LexiconUtils.Tests
 </LexiconProjectSettings>";
 
 			var settingsStore = new TestSettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
-			var projectSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(settingsStore);
+			var projectSettingsDataMapper = new LexiconProjectSettingsWritingSystemDataMapper(settingsStore);
 			var ws1 = new WritingSystemDefinition("qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2-var3");
 			ws1.Abbreviation = "ka";
 			ws1.Variants[0] = new VariantSubtag(ws1.Variants[0], "Custom 1");
@@ -195,7 +195,7 @@ namespace SIL.LexiconUtils.Tests
 </LexiconProjectSettings>";
 
 			var settingsStore = new TestSettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
-			var projectSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(settingsStore);
+			var projectSettingsDataMapper = new LexiconProjectSettingsWritingSystemDataMapper(settingsStore);
 			projectSettingsDataMapper.Remove("fr-FR");
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
 @"<LexiconProjectSettings>
@@ -237,7 +237,7 @@ namespace SIL.LexiconUtils.Tests
 </LexiconProjectSettings>";
 
 			var settingsStore = new TestSettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
-			var projectSettingsDataMapper = new ProjectSettingsWritingSystemDataMapper(settingsStore);
+			var projectSettingsDataMapper = new LexiconProjectSettingsWritingSystemDataMapper(settingsStore);
 			projectSettingsDataMapper.Remove("fr-FR");
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
 @"<LexiconProjectSettings>
