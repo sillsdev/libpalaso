@@ -208,6 +208,7 @@
     </Compile>
     <Compile Include="UniqueToken\UniqueTokenTests.cs" />
     <Compile Include="Widgets\PromptTests.cs" />
+    <Compile Include="WritingSystems\LookupIsoControlTests.cs" />
     <Compile Include="WritingSystems\LookupIsoCodeModelTests.cs" />
     <Compile Include="WritingSystems\UITests.cs" />
     <Compile Include="WritingSystems\Tree\WritingSystemTreeItemTests.cs" />
