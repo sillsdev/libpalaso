@@ -66,7 +66,8 @@ namespace SIL.WritingSystems
 				// If it changed, then change
 				if (conformantWritingSystem.IetfLanguageTag != wsId)
 				{
-					conformantWritingSystem.MakeIetfLanguageTagUnique(updatedIds);
+					conformantWritingSystem.IetfLanguageTag = IetfLanguageTagHelper.ToUniqueIetfLanguageTag(
+						conformantWritingSystem.IetfLanguageTag, updatedIds);
 					replaceIdsInFile(wsId, conformantWritingSystem.IetfLanguageTag);
 					updatedIds.Remove(wsId);
 					updatedIds.Add(conformantWritingSystem.IetfLanguageTag);

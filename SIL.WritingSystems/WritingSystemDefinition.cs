@@ -485,29 +485,6 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// This method will make the IetfLanguageTag unique compared to list of language tags passed in by
-		/// appending dupl# where # is a digit that increases with the number of duplicates found.
-		/// </summary>
-		public void MakeIetfLanguageTagUnique(IEnumerable<string> otherWSLangTags)
-		{
-			var lastAppended = string.Empty;
-			int duplicateNumber = 0;
-			string[] wsLangTags = otherWSLangTags.ToArray();
-			while (wsLangTags.Any(id => id.Equals(IetfLanguageTag, StringComparison.OrdinalIgnoreCase)))
-			{
-				if (!string.IsNullOrEmpty(lastAppended))
-					RemoveVariants(lastAppended);
-				string currentToAppend = string.Format("dupl{0}", duplicateNumber);
-				if (!_variants.Contains(currentToAppend))
-				{
-					Variants.Add(new VariantSubtag(currentToAppend));
-					lastAppended = currentToAppend;
-				}
-				duplicateNumber++;
-			}
-		}
-
-		/// <summary>
 		/// Used by IWritingSystemRepository to identify writing systems. This is an IETF language tag, but does not necessarily
 		/// correspond to the writing system's current language tag. Id and IetfLanguageTag can be different if the language
 		/// tag has changed, but IWritingSystemRepository.Set() hasn't been called on it yet. Only change this if you would like

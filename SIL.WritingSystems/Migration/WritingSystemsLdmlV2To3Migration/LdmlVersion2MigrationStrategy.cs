@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
+using Icu;
 using SIL.Extensions;
-using SIL.Keyboarding;
 using SIL.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 using SIL.Xml;
@@ -20,17 +20,18 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 	internal class LdmlVersion2MigrationStrategy : MigrationStrategyBase
 	{
 		private readonly List<LdmlMigrationInfo> _migrationInfo;
-		private readonly Dictionary<string, WritingSystemDefinitionV3> _writingSystemsV3;
+		private readonly Dictionary<string, Staging> _staging;
 		private readonly Action<int, IEnumerable<LdmlMigrationInfo>> _migrationHandler;
 		private readonly IAuditTrail _auditLog;
 
 		private static readonly XNamespace FW = "urn://fieldworks.sil.org/ldmlExtensions/v1";
+		private static readonly XNamespace Sil = "urn://www.sil.org/ldml/0.1";
 
 		public LdmlVersion2MigrationStrategy(Action<int, IEnumerable<LdmlMigrationInfo>> migrationHandler, IAuditTrail auditLog) :
 			base(2, 3)
 		{
 			_migrationInfo = new List<LdmlMigrationInfo>();
-			_writingSystemsV3 = new Dictionary<string, WritingSystemDefinitionV3>();
+			_staging = new Dictionary<string, Staging>();
 			_migrationHandler = migrationHandler;
 			_auditLog = auditLog;
 		}
@@ -131,63 +132,31 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 
 			_migrationInfo.Add(migrationInfo);
 
-			// misc properties
-			var writingSystemDefinitionV3 = new WritingSystemDefinitionV3
-			{
-				RightToLeftScript = writingSystemDefinitionV1.RightToLeftScript,
-				VersionDescription = writingSystemDefinitionV1.VersionDescription,
-				WindowsLcid = writingSystemDefinitionV1.WindowsLcid,
-				DateModified = DateTime.Now,
-			};
+			// Store things that stay in ldml but are being moved: WindowsLcid, font, known keyboards, collations, font features, character sets
 
-			// font
-			FontDefinition fd = null;
-			if (!string.IsNullOrEmpty(defaultFontName))
+			// misc properties
+			var staging = new Staging
 			{
-				fd = new FontDefinition(writingSystemDefinitionV1.DefaultFontName);
-				writingSystemDefinitionV3.Fonts.Add(fd);
-			}
+				WindowsLcid = writingSystemDefinitionV1.WindowsLcid,
+				DefaultFontName = writingSystemDefinitionV1.DefaultFontName,
+				SortUsing = writingSystemDefinitionV1.SortUsing,
+				SortRules = writingSystemDefinitionV1.SortRules,
+			};
 
 			// known keyboards
 			foreach (KeyboardDefinitionV1 keyboardV1 in writingSystemDefinitionV1.KnownKeyboards)
 			{
 				string id = string.IsNullOrEmpty(keyboardV1.Locale) ? keyboardV1.Layout : string.Format("{0}_{1}", keyboardV1.Locale, keyboardV1.Layout);
-				IKeyboardDefinition keyboardV3;
-				if (!Keyboard.Controller.TryGetKeyboard(id, out keyboardV3))
-					keyboardV3 = Keyboard.Controller.CreateKeyboard(id, KeyboardFormat.Unknown, Enumerable.Empty<string>());
-				writingSystemDefinitionV3.KnownKeyboards.Add(keyboardV3);
+				staging.KnownKeyboardIds.Add(id);
 			}
-
-			// Convert sort rules to collation definition of standard type
-			CollationDefinition cd = null;
-			switch (writingSystemDefinitionV1.SortUsing)
-			{
-				case WritingSystemDefinitionV1.SortRulesType.CustomSimple:
-					cd = new SimpleCollationDefinition("standard") {SimpleRules = writingSystemDefinitionV1.SortRules};
-					break;
-				case WritingSystemDefinitionV1.SortRulesType.OtherLanguage:
-					if (!string.IsNullOrEmpty(writingSystemDefinitionV1.SortRules))
-						cd = new IcuCollationDefinition("standard") {Imports = {new IcuCollationImport(writingSystemDefinitionV1.SortRules)}};
-					break;
-				case WritingSystemDefinitionV1.SortRulesType.CustomICU:
-					cd = new IcuCollationDefinition("standard") {IcuRules = writingSystemDefinitionV1.SortRules};
-					break;
-				case WritingSystemDefinitionV1.SortRulesType.DefaultOrdering:
-					cd = new IcuCollationDefinition("standard");
-					break;
-			}
-			if (cd != null)
-				writingSystemDefinitionV3.DefaultCollation = cd;
 
 			// IETF language tag
-			writingSystemDefinitionV3.IetfLanguageTag = langTag;
-
 			if (fwElem != null)
 			{
 				// DefaultFontFeatures
 				XElement fontFeatsElem = fwElem.Element(FW + "defaultFontFeatures");
-				if (fontFeatsElem != null && fd != null)
-					fd.Features = (string) fontFeatsElem.Attribute("value");
+				if (fontFeatsElem != null && !string.IsNullOrEmpty(staging.DefaultFontName))
+					staging.DefaultFontFeatures = (string) fontFeatsElem.Attribute("value");
 
 				//MatchedPairs, PunctuationPatterns, QuotationMarks deprecated
 
@@ -198,9 +167,9 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 					try
 					{
 						var fwValidCharsElem = XElement.Parse((string) validCharsElem.Attribute("value"));
-						AddCharacterSet(fwValidCharsElem, writingSystemDefinitionV3, "WordForming", "main");
-						AddCharacterSet(fwValidCharsElem, writingSystemDefinitionV3, "Numeric", "numeric");
-						AddCharacterSet(fwValidCharsElem, writingSystemDefinitionV3, "Other", "punctuation");
+						AddCharacterSet(fwValidCharsElem, staging, "WordForming", "main");
+						AddCharacterSet(fwValidCharsElem, staging, "Numeric", "numeric");
+						AddCharacterSet(fwValidCharsElem, staging, "Other", "punctuation");
 					}
 					catch (XmlException)
 					{
@@ -209,17 +178,17 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				}
 			}
 
-			_writingSystemsV3[sourceFileName] = writingSystemDefinitionV3;
+			_staging[sourceFileName] = staging;
 		}
 
 		/// <summary>
-		/// Parse a character set from the Fw:validChars element and add it to the writing system definition
+		/// Parse a character set from the Fw:validChars element and add it to the staging definition
 		/// </summary>
 		/// <param name="validCharsElem">XElement of Fw:validChars</param>
-		/// <param name="ws">writing system definition where the character set definition will be added</param>
+		/// <param name="s">staging definition where the character set definition will be added</param>
 		/// <param name="elementName">name of the character set to read</param>
 		/// <param name="type">character set definition type</param>
-		private void AddCharacterSet(XElement validCharsElem, WritingSystemDefinition ws, string elementName, string type)
+		private void AddCharacterSet(XElement validCharsElem, Staging s, string elementName, string type)
 		{
 			const char fwDelimiter = '\uFFFC';
 
@@ -227,14 +196,182 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			if ((elem != null) && !string.IsNullOrEmpty(type)) 
 			{
 				var characterString = (string)elem;
-				var csd = new CharacterSetDefinition(type);
-				foreach (var c in characterString.Split(fwDelimiter))
-					csd.Characters.Add(c);
-				ws.CharacterSets.Add(csd);
+				var characters = characterString.Split(fwDelimiter).ToList();
+				String characterSet;
+				if (type != "numeric")
+					characterSet = UnicodeSet.ToPattern(characters);
+				else
+					characterSet = string.Join("", characters);
+				s.CharacterSets.Add(type, characterSet);
 			}
 		}
 
 #region FolderMigrationCode
+
+		/// <summary>
+		/// Utility to create the special element with SIL namespace
+		/// </summary>
+		/// <param name="element">parent element of the special element</param>
+		/// <returns>XElement special</returns>
+		private XElement CreateSpecialElement(XElement element)
+		{
+			// Create element
+			var specialElem = new XElement("special");
+			specialElem.SetAttributeValue(XNamespace.Xmlns + "sil", Sil);
+			element.Add(specialElem);
+			return specialElem;
+		}
+
+		private void WriteIdentityElement(XElement identityElem, Staging s, string ietfLanguageTagAfterMigration)
+		{
+			WriteLanguageTagElements(identityElem, ietfLanguageTagAfterMigration);
+
+			// Write generation date with UTC so no more ambiguity on timezone
+			identityElem.SetAttributeValue("generation", "date", DateTime.UtcNow.ToISO8601TimeFormatWithUTCString());
+
+			// Create special element if data needs to be written
+			if (!string.IsNullOrEmpty(s.WindowsLcid))
+			{
+				XElement specialElem = CreateSpecialElement(identityElem);
+				XElement silIdentityElem = specialElem.GetOrCreateElement(Sil + "identity");
+
+				silIdentityElem.SetOptionalAttributeValue("windowsLCID", s.WindowsLcid);
+			}
+		}
+
+		private void WriteLanguageTagElements(XElement identityElem, string languageTag)
+		{
+			string language, script, region, variant;
+			IetfLanguageTagHelper.TryGetParts(languageTag, out language, out script, out region, out variant);
+
+			// language element is required
+			identityElem.SetAttributeValue("language", "type", language);
+			// write the rest if they have contents
+			if (!string.IsNullOrEmpty(script))
+				identityElem.SetAttributeValue("script", "type", script);
+			else
+				identityElem.Elements("script").Remove();
+			if (!string.IsNullOrEmpty(region))
+				identityElem.SetAttributeValue("territory", "type", region);
+			else
+				identityElem.Elements("territory").Remove();
+			if (!string.IsNullOrEmpty(variant))
+				identityElem.SetAttributeValue("variant", "type", variant);
+			else
+				identityElem.Elements("variant").Remove();
+		}
+
+		private void WriteCharactersElement(XElement charactersElem, Staging s)
+		{
+			// Convert each key value pair into character elements
+			foreach (var kvp in s.CharacterSets.Where(kvp => kvp.Key != "numeric"))
+			{
+				// These character sets go to the normal LDML exemplarCharacters space
+				// http://unicode.org/reports/tr35/tr35-general.html#Exemplars
+				var exemplarCharactersElem = new XElement("exemplarCharacters", kvp.Value);
+				// Assume main set doesn't have an attribute type
+				if (kvp.Key != "main")
+					exemplarCharactersElem.SetAttributeValue("type", kvp.Key);
+				charactersElem.Add(exemplarCharactersElem);
+			}
+		}
+
+		private void WriteNumbersElement(XElement numbersElem, Staging s)
+		{
+			// Create defaultNumberingSystem element and add as the first child
+			const string defaultNumberingSystem = "standard";
+			var defaultNumberingSystemElem = new XElement("defaultNumberingSystem", defaultNumberingSystem);
+			numbersElem.AddFirst(defaultNumberingSystemElem);
+
+			// Populate numbering system element
+			var numberingSystemsElem = new XElement("numberingSystem");
+			numberingSystemsElem.SetAttributeValue("id", defaultNumberingSystem);
+			numberingSystemsElem.SetAttributeValue("type", "numeric");
+			numberingSystemsElem.SetAttributeValue("digits", s.CharacterSets["numeric"]);
+			numbersElem.Add(numberingSystemsElem);
+		}
+
+		private void WriteCollationsElement(XElement collationsElem, Staging s)
+		{
+			var defaultCollationElem = new XElement("defaultCollation", "standard");
+			collationsElem.Add(defaultCollationElem);
+
+			WriteCollationElement(collationsElem, s);
+		}
+
+		private void WriteCollationElement(XElement collationsElem, Staging s)
+		{
+			var collationElem = new XElement("collation", new XAttribute("type", "standard"));
+			collationsElem.Add(collationElem);
+
+			// Convert sort rules to collation definition of standard type
+			switch (s.SortUsing)
+			{
+				case WritingSystemDefinitionV1.SortRulesType.CustomSimple:
+					WriteCollationRulesFromCustomSimple(collationElem, s.SortRules);
+					break;
+				case WritingSystemDefinitionV1.SortRulesType.OtherLanguage:
+					// SortRules will contain the language tag to import
+					if (!string.IsNullOrEmpty(s.SortRules))
+						WriteImportElement(collationElem, s.SortRules);
+					break;
+				case WritingSystemDefinitionV1.SortRulesType.CustomICU:
+					WriteCollationRulesFromCustomIcu(collationElem, s.SortRules);
+					break;
+				case WritingSystemDefinitionV1.SortRulesType.DefaultOrdering:
+					break;
+			}
+		}
+
+		private void WriteImportElement(XElement collationElem, string tag)
+		{
+			var importElem = new XElement("import", new XAttribute("source", tag));
+			// Leave type blank.  Implied to be "standard"
+			collationElem.Add(importElem);
+		}
+
+		private void WriteCollationRulesFromCustomIcu(XElement collationElem, string icuRules)
+		{
+			// If collation valid and icu rules exist, populate icu rules
+			if (!string.IsNullOrEmpty(icuRules))
+				collationElem.Add(new XElement("cr", new XCData(icuRules)));
+		}
+
+		private void WriteCollationRulesFromCustomSimple(XElement collationElem, string sortRules)
+		{
+			XElement specialElem = CreateSpecialElement(collationElem);
+			// When migrating, set needsCompiling to true
+			specialElem.SetAttributeValue(Sil + "needsCompiling", "true");
+			specialElem.Add(new XElement(Sil + "simple", new XCData(sortRules)));
+		}
+
+		private void WriteTopLevelSpecialElements(XElement specialElem, Staging s)
+		{
+			XElement externalResourcesElem = specialElem.GetOrCreateElement(Sil + "external-resources");
+			if (!string.IsNullOrEmpty(s.DefaultFontName))
+				WriteFontElement(externalResourcesElem, s);
+			WriteKeyboardElement(externalResourcesElem, s);
+		}
+
+		private void WriteFontElement(XElement externalResourcesElem, Staging s)
+		{
+			var fontElem = new XElement(Sil + "font");
+			fontElem.SetAttributeValue("name", s.DefaultFontName);
+			fontElem.SetOptionalAttributeValue("features", s.DefaultFontFeatures);
+
+			externalResourcesElem.Add(fontElem);
+		}
+
+		private void WriteKeyboardElement(XElement externalResourcesElem, Staging s)
+		{
+			foreach (string id in s.KnownKeyboardIds)
+			{
+				var kbdElem = new XElement(Sil + "kbd");
+				// id required
+				kbdElem.SetAttributeValue("id", id);
+				externalResourcesElem.Add(kbdElem);
+			}
+		}
 
 		public override void PostMigrate(string sourcePath, string destinationPath)
 		{
@@ -243,7 +380,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			// Write them back, with their new file name.
 			foreach (LdmlMigrationInfo migrationInfo in _migrationInfo)
 			{
-				WritingSystemDefinitionV3 writingSystemDefinitionV3 = _writingSystemsV3[migrationInfo.FileName];
+				Staging staging = _staging[migrationInfo.FileName];
 				string sourceFilePath = Path.Combine(sourcePath, migrationInfo.FileName);
 				string destinationFilePath = Path.Combine(destinationPath, migrationInfo.IetfLanguageTagAfterMigration + ".ldml");
 
@@ -253,12 +390,35 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				ldmlElem.Elements("special").Where(e => !string.IsNullOrEmpty((string) e.Attribute(XNamespace.Xmlns + "palaso2"))).Remove();
 				ldmlElem.Elements("special").Where(e => !string.IsNullOrEmpty((string) e.Attribute(XNamespace.Xmlns + "fw"))).Remove();
 
-				// Remove empty collations and collations that contain special
-				ldmlElem.Elements("collations")
-					.Elements("collation")
-					.Where(e => e.IsEmpty || (string.IsNullOrEmpty((string) e) && !e.HasElements && !e.HasAttributes))
-					.Remove();
-				ldmlElem.Elements("collations").Elements("collation").Where(e => e.Descendants("special") != null).Remove();
+				// Remove collations to repopulate later
+				ldmlElem.Elements("collations").Remove();
+
+				// Write out the elements.
+				XElement identityElem = ldmlElem.Element("identity");
+				WriteIdentityElement(identityElem, staging, migrationInfo.IetfLanguageTagAfterMigration);
+
+				if (staging.CharacterSets.ContainsKey("numeric"))
+				{
+					XElement numbersElem = ldmlElem.GetOrCreateElement("numbers");
+					WriteNumbersElement(numbersElem, staging);
+				}
+
+				if (staging.CharacterSets.ContainsKey("main") || staging.CharacterSets.ContainsKey("punctuation"))
+				{
+					XElement charactersElem = ldmlElem.GetOrCreateElement("characters");
+					WriteCharactersElement(charactersElem, staging);
+				}
+
+				XElement collationsElem = ldmlElem.GetOrCreateElement("collations");
+				WriteCollationsElement(collationsElem, staging);
+
+				// If needed, create top level special for external resources
+				if (!string.IsNullOrEmpty(staging.DefaultFontName) || (staging.KnownKeyboardIds.Count > 0))
+				{
+					// Create special element
+					XElement specialElem = CreateSpecialElement(ldmlElem);
+					WriteTopLevelSpecialElements(specialElem, staging);
+				}
 
 				var writerSettings = CanonicalXmlSettings.CreateXmlWriterSettings();
 				writerSettings.NewLineOnAttributes = false;
@@ -267,50 +427,39 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 
 				if (migrationInfo.IetfLanguageTagBeforeMigration != migrationInfo.IetfLanguageTagAfterMigration)
 					_auditLog.LogChange(migrationInfo.IetfLanguageTagBeforeMigration, migrationInfo.IetfLanguageTagAfterMigration);
-				WriteLdml(writingSystemDefinitionV3, destinationFilePath);
 			}
 			if (_migrationHandler != null)
 				_migrationHandler(ToVersion, _migrationInfo);
 		}
 
-		private void WriteLdml(WritingSystemDefinitionV3 writingSystemDefinitionV3, string filePath)
-		{
-			// load old data to preserve stuff in LDML that we don't use
-			var oldData = new MemoryStream(File.ReadAllBytes(filePath), false);
-			var ldmlDataMapper = new LdmlAdaptorV3();
-			ldmlDataMapper.Write(filePath, writingSystemDefinitionV3, oldData);
-		}
-
 		internal void EnsureIeftLanguageTagsUnique(IEnumerable<LdmlMigrationInfo> migrationInfo)
 		{
-			var uniqueIeftLanguageTag = new HashSet<string>();
+			var uniqueIeftLanguageTags = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 			foreach (LdmlMigrationInfo info in migrationInfo)
 			{
 				LdmlMigrationInfo currentInfo = info;
-				if (uniqueIeftLanguageTag.Any(ieftLanguageTag => ieftLanguageTag.Equals(currentInfo.IetfLanguageTagAfterMigration, StringComparison.OrdinalIgnoreCase)))
+				if (uniqueIeftLanguageTags.Contains(currentInfo.IetfLanguageTagAfterMigration))
 				{
-					if (currentInfo.IetfLanguageTagBeforeMigration.Equals(currentInfo.IetfLanguageTagAfterMigration, StringComparison.OrdinalIgnoreCase))
+					if (currentInfo.IetfLanguageTagBeforeMigration.Equals(currentInfo.IetfLanguageTagAfterMigration, StringComparison.InvariantCultureIgnoreCase))
 					{
 						// We want to change the other, because we are the same. Even if the other is the same, we'll change it anyway.
 						LdmlMigrationInfo otherInfo = _migrationInfo.First(
-							i => i.IetfLanguageTagAfterMigration.Equals(currentInfo.IetfLanguageTagAfterMigration, StringComparison.OrdinalIgnoreCase)
+							i => i.IetfLanguageTagAfterMigration.Equals(currentInfo.IetfLanguageTagAfterMigration, StringComparison.InvariantCultureIgnoreCase)
 						);
-						var writingSystemV3 = _writingSystemsV3[otherInfo.FileName];
-						writingSystemV3.MakeIetfLanguageTagUnique(uniqueIeftLanguageTag);
-						otherInfo.IetfLanguageTagAfterMigration = writingSystemV3.IetfLanguageTag;
-						uniqueIeftLanguageTag.Add(otherInfo.IetfLanguageTagAfterMigration);
+						otherInfo.IetfLanguageTagAfterMigration = IetfLanguageTagHelper.ToUniqueIetfLanguageTag(
+							otherInfo.IetfLanguageTagAfterMigration, uniqueIeftLanguageTags);
+						uniqueIeftLanguageTags.Add(otherInfo.IetfLanguageTagAfterMigration);
 					}
 					else
 					{
-						var writingSystemV3 = _writingSystemsV3[currentInfo.FileName];
-						writingSystemV3.MakeIetfLanguageTagUnique(uniqueIeftLanguageTag);
-						currentInfo.IetfLanguageTagAfterMigration = writingSystemV3.IetfLanguageTag;
-						uniqueIeftLanguageTag.Add(currentInfo.IetfLanguageTagAfterMigration);
+						currentInfo.IetfLanguageTagAfterMigration = IetfLanguageTagHelper.ToUniqueIetfLanguageTag(
+							currentInfo.IetfLanguageTagAfterMigration, uniqueIeftLanguageTags);
+						uniqueIeftLanguageTags.Add(currentInfo.IetfLanguageTagAfterMigration);
 					}
 				}
 				else
 				{
-					uniqueIeftLanguageTag.Add(currentInfo.IetfLanguageTagAfterMigration);
+					uniqueIeftLanguageTags.Add(currentInfo.IetfLanguageTagAfterMigration);
 				}
 			}
 		}

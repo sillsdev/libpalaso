@@ -991,5 +991,41 @@ namespace SIL.WritingSystems
 				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
 			return CreateIetfLanguageTag(languageSubtag, scriptSubtag, regionSubtag, variantSubtags);
 		}
+
+		/// <summary>
+		/// This method will make the IetfLanguageTag unique compared to list of language tags passed in by
+		/// appending dupl# where # is a digit that increases with the number of duplicates found.
+		/// </summary>
+		/// <param name="ietfLanguageTag"></param>
+		/// <param name="otherLangTags"></param>
+		public static string ToUniqueIetfLanguageTag(string ietfLanguageTag, IEnumerable<string> otherLangTags)
+		{
+			// Parse for variants
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			if (!TryGetSubtags(ietfLanguageTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
+				throw new ArgumentException("The IETF language tag is invalid.", "ietfLanguageTag");
+			List<VariantSubtag> variants = variantSubtags.ToList();
+
+			VariantSubtag lastDuplSubtag = null;
+			int duplicateNumber = 0;
+			var wsLangTags = new HashSet<string>(otherLangTags, StringComparer.InvariantCultureIgnoreCase);
+			while (wsLangTags.Contains(ietfLanguageTag))
+			{
+				if (lastDuplSubtag != null)
+					variants.Remove(lastDuplSubtag);
+				var curDuplStubtag = new VariantSubtag(string.Format("dupl{0}", duplicateNumber));
+				if (!variants.Contains(curDuplStubtag))
+				{
+					variants.Add(curDuplStubtag);
+					lastDuplSubtag = curDuplStubtag;
+				}
+				duplicateNumber++;
+				ietfLanguageTag = CreateIetfLanguageTag(languageSubtag, scriptSubtag, regionSubtag, variants);
+			}
+			return ietfLanguageTag;
+		}
 	}
 }

@@ -1322,7 +1322,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			foreach (WritingSystemDefinition wsT in WritingSystemDefinitions)
 				wsIds.Add(wsT.IetfLanguageTag);
 			WritingSystemDefinition ws = CurrentDefinition.Clone();
-			ws.MakeIetfLanguageTagUnique(wsIds);
+			ws.IetfLanguageTag = IetfLanguageTagHelper.ToUniqueIetfLanguageTag(ws.IetfLanguageTag, wsIds);
 			WritingSystemDefinitions.Insert(CurrentIndex + 1, ws);
 			OnAddOrDelete();
 			CurrentDefinition = ws;
@@ -1436,7 +1436,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			}
 			foreach (WritingSystemDefinition unsettableWs in unsettableWritingSystems)
 			{
-				unsettableWs.MakeIetfLanguageTagUnique(_writingSystemRepository.AllWritingSystems.Select(ws => ws.IetfLanguageTag));
+				unsettableWs.IetfLanguageTag = IetfLanguageTagHelper.ToUniqueIetfLanguageTag(unsettableWs.IetfLanguageTag, _writingSystemRepository.AllWritingSystems.Select(ws => ws.IetfLanguageTag));
 				OnAddOrDelete();
 				_writingSystemRepository.Set(unsettableWs);
 			}

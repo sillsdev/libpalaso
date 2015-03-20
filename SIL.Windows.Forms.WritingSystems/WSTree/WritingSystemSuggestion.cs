@@ -113,7 +113,8 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 		public OtherSuggestion(WritingSystemDefinition primary, IEnumerable<WritingSystemDefinition> exisitingWritingSystemsForLanguage)
 		{
 			TemplateDefinition = primary.Clone();
-			TemplateDefinition.MakeIetfLanguageTagUnique(exisitingWritingSystemsForLanguage.Select(ws => ws.IetfLanguageTag));
+			TemplateDefinition.IetfLanguageTag = IetfLanguageTagHelper.ToUniqueIetfLanguageTag(
+				TemplateDefinition.IetfLanguageTag, exisitingWritingSystemsForLanguage.Select(ws => ws.IetfLanguageTag));
 			Label = string.Format("other input system for {0}", TemplateDefinition.Language.Name);
 		}
 		public override WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()
