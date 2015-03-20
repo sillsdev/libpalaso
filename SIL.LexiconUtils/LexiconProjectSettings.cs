@@ -5,12 +5,12 @@ namespace SIL.LexiconUtils
 {
 	public class LexiconProjectSettings : ObservableObject, IChangeTracking
 	{
-		private bool _allowAddWritingSystemsToSldr;
+		private bool _addWritingSystemsToSldr;
 
-		public bool AllowAddWritingSystemsToSldr
+		public bool AddWritingSystemsToSldr
 		{
-			get { return _allowAddWritingSystemsToSldr; }
-			set { Set(() => AllowAddWritingSystemsToSldr, ref _allowAddWritingSystemsToSldr, value); }
+			get { return _addWritingSystemsToSldr; }
+			set { Set(() => AddWritingSystemsToSldr, ref _addWritingSystemsToSldr, value); }
 		}
 
 		protected override void OnPropertyChanged(PropertyChangedEventArgs e)

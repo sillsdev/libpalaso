@@ -19,7 +19,7 @@ namespace SIL.LexiconUtils
 
 			XElement wssElem = settingsElem.Element("WritingSystems");
 			if (wssElem != null)
-				settings.AllowAddWritingSystemsToSldr = (bool?) wssElem.Attribute("allowAddToSldr") ?? false;
+				settings.AddWritingSystemsToSldr = (bool?) wssElem.Attribute("addToSldr") ?? false;
 
 			settings.AcceptChanges();
 		}
@@ -37,7 +37,7 @@ namespace SIL.LexiconUtils
 				wssElem = new XElement("WritingSystems");
 				settingsElem.Add(wssElem);
 			}
-			wssElem.SetAttributeValue("allowAddToSldr", settings.AllowAddWritingSystemsToSldr);
+			wssElem.SetAttributeValue("addToSldr", settings.AddWritingSystemsToSldr);
 			_settingsStore.SaveSettings(settingsElem);
 			settings.AcceptChanges();
 		}

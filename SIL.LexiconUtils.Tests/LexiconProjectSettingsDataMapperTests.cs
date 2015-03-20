@@ -12,7 +12,7 @@ namespace SIL.LexiconUtils.Tests
 		{
 			const string projectSettingsXml =
 @"<LexiconProjectSettings>
-  <WritingSystems allowAddToSldr=""true"">
+  <WritingSystems addToSldr=""true"">
     <WritingSystem id=""fr-FR"">
       <SpellCheckingId>fr_FR</SpellCheckingId>
       <LegacyMapping>converter</LegacyMapping>
@@ -25,7 +25,7 @@ namespace SIL.LexiconUtils.Tests
 
 			var settings = new LexiconProjectSettings();
 			projectSettingsDataMapper.Read(settings);
-			Assert.That(settings.AllowAddWritingSystemsToSldr, Is.True);
+			Assert.That(settings.AddWritingSystemsToSldr, Is.True);
 		}
 
 		[Test]
@@ -36,7 +36,7 @@ namespace SIL.LexiconUtils.Tests
 			var settings = new LexiconProjectSettings();
 			projectSettingsDataMapper.Read(settings);
 
-			Assert.That(settings.AllowAddWritingSystemsToSldr, Is.False);
+			Assert.That(settings.AddWritingSystemsToSldr, Is.False);
 		}
 
 		[Test]
@@ -45,12 +45,12 @@ namespace SIL.LexiconUtils.Tests
 			var settingsStore = new MemorySettingsStore();
 			var projectSettingsDataMapper = new LexiconProjectSettingsDataMapper(settingsStore);
 
-			var settings = new LexiconProjectSettings {AllowAddWritingSystemsToSldr = true};
+			var settings = new LexiconProjectSettings {AddWritingSystemsToSldr = true};
 			projectSettingsDataMapper.Write(settings);
 
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
 @"<LexiconProjectSettings>
-  <WritingSystems allowAddToSldr=""true"" />
+  <WritingSystems addToSldr=""true"" />
 </LexiconProjectSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 		}
 
@@ -59,7 +59,7 @@ namespace SIL.LexiconUtils.Tests
 		{
 			const string projectSettingsXml =
 @"<LexiconProjectSettings>
-  <WritingSystems allowAddToSldr=""false"">
+  <WritingSystems addToSldr=""false"">
     <WritingSystem id=""fr-FR"">
       <SpellCheckingId>fr_FR</SpellCheckingId>
       <LegacyMapping>converter</LegacyMapping>
@@ -70,12 +70,12 @@ namespace SIL.LexiconUtils.Tests
 
 			var settingsStore = new MemorySettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
 			var projectSettingsDataMapper = new LexiconProjectSettingsDataMapper(settingsStore);
-			var settings = new LexiconProjectSettings {AllowAddWritingSystemsToSldr = true};
+			var settings = new LexiconProjectSettings {AddWritingSystemsToSldr = true};
 			projectSettingsDataMapper.Write(settings);
 
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
 @"<LexiconProjectSettings>
-  <WritingSystems allowAddToSldr=""true"">
+  <WritingSystems addToSldr=""true"">
     <WritingSystem id=""fr-FR"">
       <SpellCheckingId>fr_FR</SpellCheckingId>
       <LegacyMapping>converter</LegacyMapping>
