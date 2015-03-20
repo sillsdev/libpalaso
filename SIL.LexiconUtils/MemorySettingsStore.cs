@@ -1,8 +1,8 @@
 ﻿using System.Xml.Linq;
 
-namespace SIL.LexiconUtils.Tests
+namespace SIL.LexiconUtils
 {
-	public class TestSettingsStore : ISettingsStore
+	public class MemorySettingsStore : ISettingsStore
 	{
 		public XElement SettingsElement { get; set; }
 

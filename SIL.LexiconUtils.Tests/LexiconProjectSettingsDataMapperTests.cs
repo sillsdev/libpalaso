@@ -21,7 +21,7 @@ namespace SIL.LexiconUtils.Tests
   </WritingSystems>
 </LexiconProjectSettings>";
 
-			var projectSettingsDataMapper = new LexiconProjectSettingsDataMapper(new TestSettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)});
+			var projectSettingsDataMapper = new LexiconProjectSettingsDataMapper(new MemorySettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)});
 
 			var settings = new LexiconProjectSettings();
 			projectSettingsDataMapper.Read(settings);
@@ -31,7 +31,7 @@ namespace SIL.LexiconUtils.Tests
 		[Test]
 		public void Read_EmptyXml_NothingSet()
 		{
-			var projectSettingsDataMapper = new LexiconProjectSettingsDataMapper(new TestSettingsStore());
+			var projectSettingsDataMapper = new LexiconProjectSettingsDataMapper(new MemorySettingsStore());
 
 			var settings = new LexiconProjectSettings();
 			projectSettingsDataMapper.Read(settings);
@@ -42,7 +42,7 @@ namespace SIL.LexiconUtils.Tests
 		[Test]
 		public void Write_EmptyXml_XmlUpdated()
 		{
-			var settingsStore = new TestSettingsStore();
+			var settingsStore = new MemorySettingsStore();
 			var projectSettingsDataMapper = new LexiconProjectSettingsDataMapper(settingsStore);
 
 			var settings = new LexiconProjectSettings {AllowAddWritingSystemsToSldr = true};
@@ -68,7 +68,7 @@ namespace SIL.LexiconUtils.Tests
   </WritingSystems>
 </LexiconProjectSettings>";
 
-			var settingsStore = new TestSettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
+			var settingsStore = new MemorySettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
 			var projectSettingsDataMapper = new LexiconProjectSettingsDataMapper(settingsStore);
 			var settings = new LexiconProjectSettings {AllowAddWritingSystemsToSldr = true};
 			projectSettingsDataMapper.Write(settings);

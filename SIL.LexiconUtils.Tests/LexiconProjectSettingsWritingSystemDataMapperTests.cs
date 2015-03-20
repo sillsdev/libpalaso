@@ -33,7 +33,7 @@ namespace SIL.LexiconUtils.Tests
   </WritingSystems>
 </LexiconProjectSettings>";
 
-			var projectSettingsDataMapper = new LexiconProjectSettingsWritingSystemDataMapper(new TestSettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)});
+			var projectSettingsDataMapper = new LexiconProjectSettingsWritingSystemDataMapper(new MemorySettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)});
 
 			var ws1 = new WritingSystemDefinition("qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2");
 			projectSettingsDataMapper.Read(ws1);
@@ -75,7 +75,7 @@ namespace SIL.LexiconUtils.Tests
 		[Test]
 		public void Read_EmptyXml_NothingSet()
 		{
-			var projectSettingsDataMapper = new LexiconProjectSettingsWritingSystemDataMapper(new TestSettingsStore());
+			var projectSettingsDataMapper = new LexiconProjectSettingsWritingSystemDataMapper(new MemorySettingsStore());
 
 			var ws1 = new WritingSystemDefinition("en-US");
 			projectSettingsDataMapper.Read(ws1);
@@ -93,7 +93,7 @@ namespace SIL.LexiconUtils.Tests
 		[Test]
 		public void Write_EmptyXml_XmlUpdated()
 		{
-			var settingsStore = new TestSettingsStore();
+			var settingsStore = new MemorySettingsStore();
 			var projectSettingsDataMapper = new LexiconProjectSettingsWritingSystemDataMapper(settingsStore);
 
 			var ws1 = new WritingSystemDefinition("qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2");
@@ -141,7 +141,7 @@ namespace SIL.LexiconUtils.Tests
   </WritingSystems>
 </LexiconProjectSettings>";
 
-			var settingsStore = new TestSettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
+			var settingsStore = new MemorySettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
 			var projectSettingsDataMapper = new LexiconProjectSettingsWritingSystemDataMapper(settingsStore);
 			var ws1 = new WritingSystemDefinition("qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2-var3");
 			ws1.Abbreviation = "ka";
@@ -194,7 +194,7 @@ namespace SIL.LexiconUtils.Tests
   </WritingSystems>
 </LexiconProjectSettings>";
 
-			var settingsStore = new TestSettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
+			var settingsStore = new MemorySettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
 			var projectSettingsDataMapper = new LexiconProjectSettingsWritingSystemDataMapper(settingsStore);
 			projectSettingsDataMapper.Remove("fr-FR");
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
@@ -236,7 +236,7 @@ namespace SIL.LexiconUtils.Tests
   </WritingSystems>
 </LexiconProjectSettings>";
 
-			var settingsStore = new TestSettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
+			var settingsStore = new MemorySettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
 			var projectSettingsDataMapper = new LexiconProjectSettingsWritingSystemDataMapper(settingsStore);
 			projectSettingsDataMapper.Remove("fr-FR");
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(

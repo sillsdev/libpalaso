@@ -27,7 +27,7 @@ namespace SIL.LexiconUtils.Tests
   </WritingSystems>
 </LexiconUserSettings>";
 
-			var userSettingsDataMapper = new LexiconUserSettingsWritingSystemDataMapper(new TestSettingsStore {SettingsElement = XElement.Parse(userSettingsXml)});
+			var userSettingsDataMapper = new LexiconUserSettingsWritingSystemDataMapper(new MemorySettingsStore {SettingsElement = XElement.Parse(userSettingsXml)});
 
 			var ws1 = new WritingSystemDefinition("en-US");
 			userSettingsDataMapper.Read(ws1);
@@ -57,7 +57,7 @@ namespace SIL.LexiconUtils.Tests
 		[Test]
 		public void Read_EmptyXml_NothingSet()
 		{
-			var userSettingsDataMapper = new LexiconUserSettingsWritingSystemDataMapper(new TestSettingsStore());
+			var userSettingsDataMapper = new LexiconUserSettingsWritingSystemDataMapper(new MemorySettingsStore());
 
 			var ws1 = new WritingSystemDefinition("en-US");
 			userSettingsDataMapper.Read(ws1);
@@ -71,7 +71,7 @@ namespace SIL.LexiconUtils.Tests
 		[Test]
 		public void Write_EmptyXml_XmlUpdated()
 		{
-			var settingsStore = new TestSettingsStore();
+			var settingsStore = new MemorySettingsStore();
 			var userSettingsDataMapper = new LexiconUserSettingsWritingSystemDataMapper(settingsStore);
 
 			var ws1 = new WritingSystemDefinition("en-US");
@@ -103,7 +103,7 @@ namespace SIL.LexiconUtils.Tests
   </WritingSystems>
 </LexiconUserSettings>";
 
-			var settingsStore = new TestSettingsStore {SettingsElement = XElement.Parse(userSettingsXml)};
+			var settingsStore = new MemorySettingsStore {SettingsElement = XElement.Parse(userSettingsXml)};
 			var userSettingsDataMapper = new LexiconUserSettingsWritingSystemDataMapper(settingsStore);
 			var ws1 = new WritingSystemDefinition("en-US");
 			ws1.LocalKeyboard = Keyboard.Controller.CreateKeyboard("en-US_English", KeyboardFormat.Unknown, Enumerable.Empty<string>());
@@ -141,7 +141,7 @@ namespace SIL.LexiconUtils.Tests
   </WritingSystems>
 </LexiconUserSettings>";
 
-			var settingsStore = new TestSettingsStore {SettingsElement = XElement.Parse(userSettingsXml)};
+			var settingsStore = new MemorySettingsStore {SettingsElement = XElement.Parse(userSettingsXml)};
 			var userSettingsDataMapper = new LexiconUserSettingsWritingSystemDataMapper(settingsStore);
 			userSettingsDataMapper.Remove("fr-FR");
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
@@ -171,7 +171,7 @@ namespace SIL.LexiconUtils.Tests
   </WritingSystems>
 </LexiconUserSettings>";
 
-			var settingsStore = new TestSettingsStore {SettingsElement = XElement.Parse(userSettingsXml)};
+			var settingsStore = new MemorySettingsStore {SettingsElement = XElement.Parse(userSettingsXml)};
 			var userSettingsDataMapper = new LexiconUserSettingsWritingSystemDataMapper(settingsStore);
 			userSettingsDataMapper.Remove("fr-FR");
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
