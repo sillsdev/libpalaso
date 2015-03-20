@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using SIL.Code;
+using SIL.IO;
 using SIL.Reporting;
 
 namespace SIL.Windows.Forms.ImageToolbox.Cropping
@@ -29,8 +30,9 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 		private Point _startOfDrag = default(Point);
 
 		//we will be cropping the image, so we need to keep the original lest we be cropping the crop, so to speak
-		private Image _originalImage;
 		private ImageFormat _originalFormat;
+		private TempFile _savedOriginalImage;
+		private Image _croppingImage;
 
 		private const int MarginAroundPicture = GripThickness;
 		private const int MinDistanceBetweenGrips = 20;
@@ -57,7 +59,6 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				DoGripDrag();
 			}
 			Invalidate();
-			CheckForInvalidImage();
 		}
 
 		private void DoGripDrag()
@@ -142,7 +143,29 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 
 				//other code changes the image of this palaso image, at which time the PI disposes of its copy,
 				//so we better keep our own.
-				_originalImage = (Image) value.Image.Clone();
+
+				// save the original in a temp file instead of an Image object to free up memory
+				_savedOriginalImage = TempFile.CreateAndGetPathButDontMakeTheFile();
+				value.Image.Save(_savedOriginalImage.Path, ImageFormat.Png);
+				
+				// make a reasonable sized copy to crop
+				if ((value.Image.Width > 1000) || (value.Image.Width > 1000))
+				{
+					_croppingImage = CreateCroppingImage(value.Image.Height, value.Image.Width);
+					
+					var srcRect = new Rectangle(0, 0, value.Image.Width, value.Image.Height);
+					var destRect = new Rectangle(0, 0, _croppingImage.Width, _croppingImage.Height);
+
+					using (var g = Graphics.FromImage(_croppingImage))
+					{
+						g.DrawImage(value.Image, destRect, srcRect, GraphicsUnit.Pixel);
+					}
+				}
+				else
+				{
+					_croppingImage = (Image)value.Image.Clone();
+				}
+
 				_image = value;
 
 				CalculateSourceImageArea();
@@ -154,8 +177,32 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				}
 
 				Invalidate();
-				CheckForInvalidImage();
 			}
+		}
+
+		/// <summary>
+		/// To conserve memory we will shrink large images before cropping 
+		/// </summary>
+		/// <param name="oldHeight"></param>
+		/// <param name="oldWidth"></param>
+		/// <returns></returns>
+		private static Image CreateCroppingImage(int oldHeight, int oldWidth)
+		{
+			int newHeight;
+			int newWidth;
+
+			if (oldHeight > oldWidth)
+			{
+				newHeight = 800;
+				newWidth = newHeight * oldWidth / oldHeight;
+			}
+			else
+			{
+				newWidth = 800;
+				newHeight = newWidth * oldHeight / oldWidth;
+			}
+
+			return new Bitmap(newWidth, newHeight);
 		}
 
 		private void CreateGrips()
@@ -216,45 +263,23 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 
 		private void CalculateSourceImageArea()
 		{
-			float imageToCanvaseScaleFactor = GetImageToCanvasScaleFactor();
+			float imageToCanvaseScaleFactor = GetImageToCanvasScaleFactor(_croppingImage);
 			_sourceImageArea = new Rectangle(GripThickness, GripThickness,
-											 (int) (_originalImage.Width*imageToCanvaseScaleFactor),
-											 (int) (_originalImage.Height*imageToCanvaseScaleFactor));
+											 (int)(_croppingImage.Width*imageToCanvaseScaleFactor),
+											 (int)(_croppingImage.Height*imageToCanvaseScaleFactor));
 		}
 
-		private float GetImageToCanvasScaleFactor()
+		private float GetImageToCanvasScaleFactor(Image img)
 		{
 			var availArea = new Rectangle(BorderSize, BorderSize, Width - (2*BorderSize), Height - (2*BorderSize));
-			float hProportion = (float) availArea.Width/((float) _originalImage.Width);
-			float vProportion = (float) availArea.Height/((float) _originalImage.Height);
+			float hProportion = (float)availArea.Width / ((float)img.Width);
+			float vProportion = (float)availArea.Height / ((float)img.Height);
 			return Math.Min(hProportion, vProportion);
-		}
-
-		/// <summary>
-		/// this came out of a long debugging session, decided to leave it around in case of regression
-		/// </summary>
-		/// <returns>false unless there's a problem</returns>
-		protected bool CheckForInvalidImage()
-		{
-			try
-			{
-				var test = _originalImage.Height;
-			}
-			catch (Exception e)
-			{
-				ErrorReport.ReportNonFatalExceptionWithMessage(e,
-																				"Regression: ImageCropper: originalImage is hosed.");
-				return true;
-			}
-			return false;
 		}
 
 		protected override void OnPaint(PaintEventArgs e)
 		{
-			if (_image == null || _sourceImageArea.Width == 0)
-				return;
-
-			if (CheckForInvalidImage())
+			if (_croppingImage == null || _sourceImageArea.Width == 0)
 				return;
 
 			try
@@ -262,11 +287,11 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 
 				e.Graphics.FillRectangle(Brushes.Gray, ClientRectangle);
 				e.Graphics.DrawImage(
-					_originalImage,
+					_croppingImage,
 					_sourceImageArea,
 					new Rectangle( // Source
 						0, 0,
-						_originalImage.Width, _originalImage.Height),
+						_croppingImage.Width, _croppingImage.Height),
 					GraphicsUnit.Pixel);
 
 				using (Brush brush = new Pen(Color.FromArgb(150, Color.LightBlue)).Brush)
@@ -333,8 +358,6 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 			_startOfDrag = default(Point);
 			if (ImageChanged != null)
 				ImageChanged.Invoke(this, null);
-
-			CheckForInvalidImage();
 		}
 
 //        public void CheckBug()
@@ -357,24 +380,8 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 
 			try
 			{
-				double z = 1.0/GetImageToCanvasScaleFactor();
-
-
-				int width = Math.Max(1, _rightGrip.Value - _leftGrip.Value);
-				int height = Math.Max(1, _bottomGrip.Value - _topGrip.Value);
-				var selection = new Rectangle((int) Math.Round(z*_leftGrip.Value),
-											  (int) Math.Round(z*_topGrip.Value),
-											  (int) Math.Round(z*width),
-											  (int) Math.Round(z*height));
-
 				//jpeg = b96b3c  *AE* -0728-11d3-9d7b-0000f81ef32e
 				//bitmap = b96b3c  *AA* -0728-11d3-9d7b-0000f81ef32e
-
-				Bitmap bmp = _originalImage as Bitmap;
-				if (bmp == null)
-					throw new ArgumentException("No valid bitmap");
-
-				CheckForInvalidImage();
 
 				//NB: this worked for tiff and png, but would crash with Out Of Memory for jpegs.
 				//This may be because I closed the stream? THe doc says you have to keep that stream open.
@@ -382,15 +389,25 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				//          return bmp.Clone(selection, _image.PixelFormat);
 				//So now, I first copy it, then clone with the bounds of our crop:
 
-				using (var copy = new Bitmap(_originalImage)) //**** here we lose the jpeg rawimageformat, if it's a jpeg. Grrr.
+				using (var originalImage = new Bitmap(_savedOriginalImage.Path)) //**** here we lose the jpeg rawimageformat, if it's a jpeg. Grrr.
 				{
-					var cropped = copy.Clone(selection, copy.PixelFormat); //do the actual cropping
+					double z = 1.0 / GetImageToCanvasScaleFactor(originalImage);
+
+					int width = Math.Max(1, _rightGrip.Value - _leftGrip.Value);
+					int height = Math.Max(1, _bottomGrip.Value - _topGrip.Value);
+					var selection = new Rectangle((int)Math.Round(z * _leftGrip.Value),
+												  (int)Math.Round(z * _topGrip.Value),
+												  (int)Math.Round(z * width),
+												  (int)Math.Round(z * height));
+
+					var cropped = originalImage.Clone(selection, originalImage.PixelFormat); //do the actual cropping
+
 					if (_originalFormat.Guid == ImageFormat.Jpeg.Guid)
 					{
 						//We've sadly lost our jpeg formatting, so now we encode a new image in jpeg
 						using (var stream = new MemoryStream())
 						{
-							cropped.Save(stream, System.Drawing.Imaging.ImageFormat.Jpeg);
+							cropped.Save(stream, ImageFormat.Jpeg);
 							var oldCropped = cropped;
 							cropped = System.Drawing.Image.FromStream(stream) as Bitmap;
 							oldCropped.Dispose();
@@ -418,23 +435,49 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 			{
 				_originalFormat = image.Image.RawFormat;
 				Image = image;
-				CheckForInvalidImage();
 			}
 		}
 
 		public PalasoImage GetImage()
 		{
-			CheckForInvalidImage();
 			Image x = GetCroppedImage();
 			if (x == null)
 				return null;
 			//we want to retain the metdata of the PalasoImage we started with; we just want to update its actual image
 			_image.Image = x;
 
-			CheckForInvalidImage();
 			return _image;
 		}
 
 		public event EventHandler ImageChanged;
+
+		/// <summary>
+		/// Clean up any resources being used.
+		/// </summary>
+		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				if (components != null)
+				{
+					components.Dispose();
+					components = null;
+				}
+
+				if (_savedOriginalImage != null)
+				{
+					_savedOriginalImage.Dispose();
+					_savedOriginalImage = null;
+				}
+
+				if (_croppingImage != null)
+				{
+					_croppingImage.Dispose();
+					_croppingImage = null;
+				}
+			}
+			base.Dispose(disposing);
+		}
 	}
 }

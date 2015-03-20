@@ -323,33 +323,41 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					locale = "en-US";
 				}
 
-				LayoutName layoutName;
-				if (profile.Hkl == IntPtr.Zero && profile.ProfileType != TfProfileType.Illegal)
+				try
 				{
-					layoutName = new LayoutName(ProcessorProfiles.GetLanguageProfileDescription(
-						ref profile.ClsId, profile.LangId, ref profile.GuidProfile));
-				}
-				else
-				{
-					layoutName = GetLayoutNameEx(hkl);
-				}
-
-				string id = GetId(layoutName.Name, locale);
-				WinKeyboardDescription existingKeyboard;
-				if (curKeyboards.TryGetValue(id, out existingKeyboard))
-				{
-					if (!existingKeyboard.IsAvailable)
+					LayoutName layoutName;
+					if (profile.Hkl == IntPtr.Zero && profile.ProfileType != TfProfileType.Illegal)
 					{
-						existingKeyboard.SetIsAvailable(true);
-						existingKeyboard.InputProcessorProfile = profile;
-						existingKeyboard.SetLocalizedName(GetDisplayName(layoutName.LocalizedName, cultureName));
+						layoutName = new LayoutName(ProcessorProfiles.GetLanguageProfileDescription(
+							ref profile.ClsId, profile.LangId, ref profile.GuidProfile));
 					}
-					curKeyboards.Remove(id);
+					else
+					{
+						layoutName = GetLayoutNameEx(hkl);
+					}
+
+					string id = GetId(layoutName.Name, locale);
+					WinKeyboardDescription existingKeyboard;
+					if (curKeyboards.TryGetValue(id, out existingKeyboard))
+					{
+						if (!existingKeyboard.IsAvailable)
+						{
+							existingKeyboard.SetIsAvailable(true);
+							existingKeyboard.InputProcessorProfile = profile;
+							existingKeyboard.SetLocalizedName(GetDisplayName(layoutName.LocalizedName, cultureName));
+						}
+						curKeyboards.Remove(id);
+					}
+					else
+					{
+						KeyboardController.Instance.Keyboards.Add(new WinKeyboardDescription(GetId(layoutName.Name, locale), GetDisplayName(layoutName.Name, cultureName),
+							layoutName.Name, locale, true, new InputLanguageWrapper(culture, hkl, layoutName.Name), this, GetDisplayName(layoutName.LocalizedName, cultureName), profile));
+					}
 				}
-				else
+				catch (COMException)
 				{
-					KeyboardController.Instance.Keyboards.Add(new WinKeyboardDescription(GetId(layoutName.Name, locale), GetDisplayName(layoutName.Name, cultureName),
-						layoutName.Name, locale, true, new InputLanguageWrapper(culture, hkl, layoutName.Name), this, GetDisplayName(layoutName.LocalizedName, cultureName), profile));
+					// this can happen when the user changes the language associated with a
+					// Keyman keyboard (LT-16172)
 				}
 			}
 
