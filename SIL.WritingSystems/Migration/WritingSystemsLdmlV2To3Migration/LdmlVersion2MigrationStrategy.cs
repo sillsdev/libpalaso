@@ -206,7 +206,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			}
 		}
 
-#region FolderMigrationCode
+		#region FolderMigrationCode
 
 		/// <summary>
 		/// Utility to create the special element with SIL namespace
@@ -291,15 +291,15 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			numbersElem.Add(numberingSystemsElem);
 		}
 
-		private void WriteCollationsElement(XElement collationsElem, Staging s)
+		private void WriteCollationsElement(XElement collationsElem, Staging s, string langTag)
 		{
 			var defaultCollationElem = new XElement("defaultCollation", "standard");
 			collationsElem.Add(defaultCollationElem);
 
-			WriteCollationElement(collationsElem, s);
+			WriteCollationElement(collationsElem, s, langTag);
 		}
 
-		private void WriteCollationElement(XElement collationsElem, Staging s)
+		private void WriteCollationElement(XElement collationsElem, Staging s, string langTag)
 		{
 			var collationElem = new XElement("collation", new XAttribute("type", "standard"));
 			collationsElem.Add(collationElem);
@@ -312,7 +312,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 					break;
 				case WritingSystemDefinitionV1.SortRulesType.OtherLanguage:
 					// SortRules will contain the language tag to import
-					if (!string.IsNullOrEmpty(s.SortRules))
+					if (!string.IsNullOrEmpty(s.SortRules) && s.SortRules != langTag)
 						WriteImportElement(collationElem, s.SortRules);
 					break;
 				case WritingSystemDefinitionV1.SortRulesType.CustomICU:
@@ -410,7 +410,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				}
 
 				XElement collationsElem = ldmlElem.GetOrCreateElement("collations");
-				WriteCollationsElement(collationsElem, staging);
+				WriteCollationsElement(collationsElem, staging, migrationInfo.IetfLanguageTagAfterMigration);
 
 				// If needed, create top level special for external resources
 				if (!string.IsNullOrEmpty(staging.DefaultFontName) || (staging.KnownKeyboardIds.Count > 0))
