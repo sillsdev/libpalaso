@@ -197,15 +197,15 @@ namespace Palaso.WritingSystems
 			{
 				if (x.Code == y.Code)
 					return 0;
-				if (x.Code == _searchString || x.Names[0].ToLowerInvariant() == _searchString)
-				{
+				// Favor ones where some language matches to solve BL-1141
+				if (x.Names[0].ToLowerInvariant() == _searchString)
 					return -1;
-				}
-				if (y.Code == _searchString || y.Names[0].ToLowerInvariant() == _searchString)
-				{
+				if (y.Names[0].ToLowerInvariant() == _searchString)
 					return 1;
-				}
-				//enhance we could favor ones where some language matches
+				if (x.Code == _searchString)
+					return -1;
+				if (y.Code == _searchString)
+					return 1;
 				return 0;
 			}
 		}
