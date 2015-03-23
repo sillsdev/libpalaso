@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Reflection;
 using System.Windows.Forms;
 using NUnit.Framework;
 using Palaso.UI.WindowsForms.ClearShare;
@@ -79,7 +80,30 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 				{
 					dlg.ShowDialog();
 					Assert.AreEqual(ImageFormat.Jpeg.Guid, dlg.ImageInfo.Image.RawFormat.Guid);
-	}
-}
+				}
+		}
+
+		[Test]
+		[Platform(Exclude="Windows", Reason="applies only to Mono")]
+		public void CheckMonoForSelectLargeIconView()
+		{
+			using (var dlg = new OpenFileDialog ())
+			{
+				Assert.IsTrue(dlg is FileDialog, "OpenFileDialog no longer inherits from FileDialog");
+				Type dlgType = typeof(FileDialog);
+				var dlgViewField = dlgType.GetField("mwfFileView", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+				Assert.IsNotNull(dlgViewField, "FileDialog no longer has an mwfFileView field");
+				var fileView = dlgViewField.GetValue(dlg);
+				Assert.IsNotNull(fileView, "FileDialog has not yet set the mwfFileView value");
+				var viewType = fileView.GetType();
+				var viewItemField = viewType.GetField("largeIconMenutItem", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+				Assert.IsNotNull(viewItemField, "MWFFileView no longer has a largeIconMenutItem field");
+				var largeIcon = viewItemField.GetValue(fileView) as MenuItem;
+				Assert.IsNotNull(largeIcon, "MWFFileView has not yet set the largeIconMenutItem value");
+				var viewOnClickMethod = viewType.GetMethod("OnClickViewMenuSubItem", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public,
+					null, new Type[] { typeof(Object), typeof(EventArgs) }, null);
+				Assert.IsNotNull(viewOnClickMethod, "MWFFileView no longer has an OnClickViewMenuSubItem(object, EventArgs) method");
+			}
+		}
 	}
 }
