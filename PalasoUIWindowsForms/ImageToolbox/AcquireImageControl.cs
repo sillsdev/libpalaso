@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Reflection;
 using System.Windows.Forms;
 using L10NSharp;
 using Palaso.IO;
@@ -30,7 +31,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			#if MONO
 			_scannerButton.Enabled =  _cameraButton.Enabled = false;
 			// Mono layout doesn't always handle Anchor point properly.  Fix it.
-			fixMyLayoutForMono();
+			FixMyLayoutForMono();
 			#endif
 
 			_galleryControl.ImageChanged += new EventHandler(_galleryControl_ImageChanged);
@@ -46,43 +47,19 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		private void OnGetFromFileSystemClick(object sender, EventArgs e)
 		{
 			SetMode(Modes.SingleImage);
-//#if MONO
-//			            using (var dlg = new OpenFileDialog())
-//            {
-//                if (string.IsNullOrEmpty(ImageToolboxSettings.Default.LastImageFolder))
-//                {
-//                    dlg.InitialDirectory = System.Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-//                }
-//                else
-//                {
-//                    dlg.InitialDirectory = ImageToolboxSettings.Default.LastImageFolder;
-//                }
-//
-//                dlg.Filter = "picture files|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
-//                dlg.Multiselect = false;
-//                dlg.AutoUpgradeEnabled = true;
-//				if (DialogResult.OK == dlg.ShowDialog())
-//                {
-//                    _currentImage = PalasoImage.FromFile(dlg.FileName);
-//                    _pictureBox.Image = _currentImage.Image;
-//                    ImageToolboxSettings.Default.LastImageFolder = Path.GetDirectoryName(dlg.FileName);
-//                    ImageToolboxSettings.Default.Save();
-//                    if (ImageChanged != null)
-//                        ImageChanged.Invoke(this, null);
-//                }
-//			}
-//#else
 #if MONO
 			using (var dlg = new OpenFileDialog())
 #else
-			//The primary thing this OpenFileDialogEx buys us is that with the standard one, there's
-			//no way pre-set, what "view" the user gets. With the standard dialog,
-			//we had complaints that a user had to change the view to show icons *each time* they used this.
-			//Now, OpenFileDialogWithViews still doesn't let us read (and thus remember) the selected view.
-
+			// The primary thing that OpenFileDialogWithViews buys us is the ability to default to large icons.
+			// OpenFileDialogWithViews still doesn't let us read (and thus remember) the selected view.
 			using (var dlg = new OpenFileDialogWithViews(OpenFileDialogWithViews.DialogViewTypes.Large_Icons))
 #endif
 			{
+#if __MonoCS__
+				// OpenFileDialogWithViews is Windows-only.  Until we need more of its functionality elsewhere,
+				// it's much simpler to implement the one method we need here for Mono/Linux.
+				SelectLargeIconView(dlg);
+#endif
 				if (string.IsNullOrEmpty(ImageToolboxSettings.Default.LastImageFolder))
 				{
 					dlg.InitialDirectory = System.Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
@@ -115,6 +92,42 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				}
 			}
 		}
+
+#if __MonoCS__
+		/// <summary>
+		/// Select the large icon view in the open file dialog.
+		/// </summary>
+		/// <remarks>
+		/// This totally depends on the internal implementation of the file dialogs in Mono.  Since that has
+		/// remained stable for several years, it should work for us.  The worst that can happen for a new
+		/// version of Mono is that it silently stops working.
+		/// </remarks>
+		static void SelectLargeIconView(OpenFileDialog dlg)
+		{
+			// Accessing a private member variable of FileDialog, so if the
+			// implementation changes, give up immediately.
+			if (!(dlg is FileDialog))
+				return;
+			Type dlgType = typeof(FileDialog);
+			var dlgViewField = dlgType.GetField("mwfFileView", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+			if (dlgViewField == null)
+				return;
+			var fileView = dlgViewField.GetValue(dlg);
+			if (fileView == null)
+				return;
+			var viewType = fileView.GetType();
+			var viewItemField = viewType.GetField("largeIconMenutItem", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+			if (viewItemField == null)
+				return;
+			var largeIcon = viewItemField.GetValue(fileView) as MenuItem;
+			if (largeIcon == null)
+				return;
+			var viewOnClickMethod = viewType.GetMethod("OnClickViewMenuSubItem", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public,
+				null, new Type[] { typeof(Object), typeof(EventArgs) }, null);
+			if (viewOnClickMethod != null)
+				viewOnClickMethod.Invoke(fileView, new Object[] { largeIcon, new EventArgs() });
+		}
+#endif
 
 		private void OpenFileFromDrag(string path)
 		{
@@ -442,7 +455,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		/// this bug is worth spending much more time on.  (https://jira.sil.org/browse/BL-778 "[Linux]
 		/// Image Toolbox only displays 2 columns of AoR images (Windows does 3)")
 		/// </remarks>
-		protected void fixMyLayoutForMono()
+		protected void FixMyLayoutForMono()
 		{
 			// The numbers used here come from comparing the Size assignments of the various
 			// controls in the .Designer.cs file, taking into account also the Location
