@@ -47,6 +47,9 @@ namespace SIL.WritingSystems
 		// Default parameters for querying the SLDR
 		private const string LdmlExtension = "ldml";
 
+		// Mode to test when the SLDR is unavailable.  Default to false
+		public static bool OfflineMode { get; set; }
+
 		// If the user wants to request a new UID, you use "uid=unknown" and that will create a new random identifier
 		public const string DefaultUserId = "unknown";
 
@@ -56,6 +59,32 @@ namespace SIL.WritingSystems
 		public static string SldrCachePath
 		{
 			get { return Path.Combine(Path.GetTempPath(), SldrCacheDir); }
+		}
+
+		internal static Dictionary<string, string> LikelySubtags = null;
+
+		static Sldr()
+		{
+			OfflineMode = false;
+			InitializeLikelySubtags();
+		}
+
+		private static void InitializeLikelySubtags()
+		{
+			XElement supplementalElem = XElement.Parse(LanguageRegistryResources.likelySubtags);
+			if (supplementalElem.Name != "supplementalData")
+				throw new ApplicationException("Unable to load likelySubtags.xml: Missing <supplementalData> tag.");
+
+			LikelySubtags = new Dictionary<string, string>();
+			XElement likelySubtagsElem = supplementalElem.Element("likelySubtags");
+			if (likelySubtagsElem != null)
+			{
+				foreach (XElement likelySubtag in likelySubtagsElem.Elements("likelySubtag"))
+				{
+					LikelySubtags.Add(IetfLanguageTagHelper.Canonicalize(((string) likelySubtag.Attribute("from")).Replace("_", "-")),
+						IetfLanguageTagHelper.Canonicalize(((string) likelySubtag.Attribute("to")).Replace("_", "-")));
+				}
+			}
 		}
 
 		/// <summary>
@@ -119,6 +148,9 @@ namespace SIL.WritingSystems
 
 				try
 				{
+					if (OfflineMode)
+						throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
+
 					// Check the response header to see if the requested LDML file got redirected
 					using (var webResponse = (HttpWebResponse) webRequest.GetResponse())
 					{
@@ -157,9 +189,17 @@ namespace SIL.WritingSystems
 				catch (WebException we)
 				{
 					// Return from 404 error
-					var errorResponse = we.Response as HttpWebResponse;
-					if ((errorResponse != null) && (errorResponse.StatusCode == HttpStatusCode.NotFound))
+					var errorResponse = (HttpWebResponse)we.Response;
+					if ((we.Status == WebExceptionStatus.ProtocolError) && (errorResponse.StatusCode == HttpStatusCode.NotFound))
 						return SldrStatus.FileNotFound;
+
+					// Lookup the likely subtag 
+					string toLikelySubtag;
+					if (LikelySubtags.TryGetValue(ietfLanguageTag, out toLikelySubtag))
+					{
+						ietfLanguageTag = toLikelySubtag;
+						filename = ietfLanguageTag + "." + LdmlExtension;
+					}
 
 					string sldrCacheFilename;
 					// Download failed so check SLDR cache

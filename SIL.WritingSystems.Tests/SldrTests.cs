@@ -8,7 +8,6 @@ using Palaso.TestUtilities;
 namespace SIL.WritingSystems.Tests
 {
 	[TestFixture]
-	[Category("SkipOnTeamCity")]
 	public class SldrTests
 	{
 		private class TestEnvironment : IDisposable
@@ -40,6 +39,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				FolderContainingLdml.Dispose();
 				FolderContainingSldrCache.Dispose();
+				Sldr.OfflineMode = false;
 			}
 		}
 
@@ -116,7 +116,37 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		[Test, Ignore("Run by hand when offline")]
+		#region SLDR cache
+		[Test]
+		public void GetLdml_CacheFileUsesLikelySubtag()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				string content =
+					@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+	<identity>
+		<version number='$Revision: 11161 $'/>
+		<generation date='$Date: 2015-01-30 22:33 +0000 $'/>
+		<language type='en'/>
+		<script type='Latn'/>
+		<region type='US'/>
+		<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
+			<sil:identity source='cldr' draft='approved'/>
+		</special>
+	</identity>
+</ldml>".Replace("\'", "\"");
+				const string ietfLanguageTag = "en";
+				const string likelySubtag = "en-US";
+				Sldr.OfflineMode = true;
+				File.WriteAllText(Path.Combine(Sldr.SldrCachePath, likelySubtag + ".ldml"), content);
+				string filename;
+				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FileFromSldrCache));
+				Assert.That(filename, Is.EqualTo(likelySubtag + ".ldml"));
+			}
+		}
+
+		[Test]
 		public void GetLdmlFile_CacheFileWithUid_StatusFileFromSldrCache()
 		{
 			using (var environment = new TestEnvironment())
@@ -135,6 +165,7 @@ namespace SIL.WritingSystems.Tests
 	</identity>
 </ldml>".Replace("\'", "\"");
 				const string ietfLanguageTag = "qaa";
+				Sldr.OfflineMode = true;
 				// File exists in destination and cache, so uid will be checked
 				File.WriteAllText(Path.Combine(environment.FilePath(), ietfLanguageTag + ".ldml"), content);
 				string filename = Path.Combine(Sldr.SldrCachePath, ietfLanguageTag + "-e2ccb575.ldml");
@@ -145,7 +176,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		[Test, Ignore("Run by hand when offline")]
+		[Test]
 		public void GetLdmlFile_CacheFileWithUidUnknown_StatusFileFromSldrCache()
 		{
 			using (var environment = new TestEnvironment())
@@ -168,6 +199,7 @@ namespace SIL.WritingSystems.Tests
 				// File only exists in cache so uid unknown
 				File.WriteAllText(filename, content);
 
+				Sldr.OfflineMode = true;
 				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FileFromSldrCache));
 				string filePath = Path.Combine(environment.FilePath(), filename);
 				Assert.That(filename, Is.EqualTo(ietfLanguageTag + ".ldml"));
@@ -175,9 +207,10 @@ namespace SIL.WritingSystems.Tests
 				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Latn']", environment.NamespaceManager);
 				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[@draft='proposed']", environment.NamespaceManager);
 				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[not(@uid)]", environment.NamespaceManager);
-
 			}
 		}
+
+		#endregion
 
 		[Test]
 		[Category("SkipOnTeamCity")]
@@ -237,7 +270,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		[Test, Ignore("Run by hand")]
+		[Test, Ignore("SkipOnTeamCity")]
 		// This depends on when SLDR updates "en-US.ldml" with the revid 
 		public void GetLdmlFile_NotModified_DoesntDownloadNewFile()
 		{
@@ -259,6 +292,19 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		#region internal methods
+
+		[Test]
+		public void IntializeLikelySubtags_ParsesResource()
+		{
+			// Verify the first and last likely subtags are added to the dictionary
+			Assert.That(Sldr.LikelySubtags["aa"], Is.EqualTo("aa-Latn-ET"));
+			Assert.That(Sldr.LikelySubtags["und-Yiii"], Is.EqualTo("ii-Yiii-CN"));
+			Assert.That(Sldr.LikelySubtags.Count, Is.EqualTo(989));
+			
+			// Verify en-Latn-US was canonicalized
+			Assert.That(Sldr.LikelySubtags["en"], Is.EqualTo("en-US"));
+		}
+
 		[Test]
 		public void ReadSilIdentity_GetsRevidAndUid()
 		{

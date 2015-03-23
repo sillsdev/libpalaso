@@ -345,6 +345,7 @@
     <Content Include="Resources\ianaSubtagRegistry.txt" />
     <Content Include="Resources\LanguageCodes.txt" />
     <Content Include="Resources\LanguageIndex.txt" />
+    <Content Include="Resources\likelySubtags.xml" />
     <Content Include="Resources\TwoToThreeCodes.txt" />
   </ItemGroup>
   <ItemGroup>
