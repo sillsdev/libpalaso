@@ -8,6 +8,7 @@ namespace SIL.WritingSystems.Tests
 	[TestFixture]
 	public class IetfLanguageTagHelperTests
 	{
+		#region ConcatenateVariantAndPrivateUse
 		[Test]
 		public void ConcatenateVariantAndPrivateUse_VariantOnly_ReturnsVariant()
 		{
@@ -64,8 +65,9 @@ namespace SIL.WritingSystems.Tests
 			string concatenatedVariantAndPrivateUse = IetfLanguageTagHelper.ConcatenateVariantAndPrivateUse("bogusvariant", "etic-emic-audio");
 			Assert.That(concatenatedVariantAndPrivateUse, Is.EqualTo("bogusvariant-x-etic-emic-audio"));
 		}
+		#endregion
 
-		//Split
+		#region SplitVariantAndPrivateUse
 		[Test]
 		public void SplitVariantAndPrivateUse_VariantOnly_ReturnsVariant()
 		{
@@ -136,12 +138,14 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(variant, Is.EqualTo("bogusVariant"));
 			Assert.That(privateUse, Is.EqualTo("audio-emic-etic"));
 		}
+		#endregion
 
+		#region ToIetfLanguageTag
 		/// <summary>
 		/// Tests the ToLanguageTag() method which converts an ICU locale to a language tag.
 		/// </summary>
 		[Test]
-		public void ToIetfLanguageTag()
+		public void ToIetfLanguageTag_EnglishIcuLocales_ReturnsEnglishLanguageTags()
 		{
 			// language
 			Assert.AreEqual("en", IetfLanguageTagHelper.ToIetfLanguageTag("en"));
@@ -153,8 +157,18 @@ namespace SIL.WritingSystems.Tests
 			Assert.AreEqual("en-US-fonipa-x-etic", IetfLanguageTagHelper.ToIetfLanguageTag("en_Latn_US_X_ETIC"));
 			// language, ICU variant
 			Assert.AreEqual("en-fonipa-x-emic", IetfLanguageTagHelper.ToIetfLanguageTag("en__X_EMIC"));
+		}
+
+		[Test]
+		public void ToIetfLanguageTag_ChinesePinyinIcuLocale_ReturnsChineseLanguageTag()
+		{
 			// language, region, ICU variant
 			Assert.AreEqual("zh-CN-pinyin", IetfLanguageTagHelper.ToIetfLanguageTag("zh_CN_X_PY"));
+		}
+
+		[Test]
+		public void ToIetfLanguageTag_PrivateUseIcuLocales_ReturnsPrivateUseLanguageTags()
+		{
 			// private use language
 			Assert.AreEqual("qaa-x-kal", IetfLanguageTagHelper.ToIetfLanguageTag("xkal"));
 			// private use language, custom ICU variant
@@ -169,15 +183,87 @@ namespace SIL.WritingSystems.Tests
 			Assert.AreEqual("en-Qaaa-QM-x-Fake-QD", IetfLanguageTagHelper.ToIetfLanguageTag("en_Fake_QD"));
 			// private use language, script
 			Assert.AreEqual("qaa-Latn-x-zzz", IetfLanguageTagHelper.ToIetfLanguageTag("zzz_Latn"));
+		}
+
+		[Test]
+		public void ToIetfLanguageTag_FWIcuLocales_ReturnsLanguageTags()
+		{
 			// convert older FW language tags
 			Assert.AreEqual("slu", IetfLanguageTagHelper.ToIetfLanguageTag("eslu"));
 			// other possibilities from FW6.0.6
 			Assert.AreEqual("qaa-x-bcd", IetfLanguageTagHelper.ToIetfLanguageTag("x123"));
 			Assert.AreEqual("qaa-x-kac", IetfLanguageTagHelper.ToIetfLanguageTag("xka2"));
+		}
 
+		[Test]
+		public void ToIetfLanguageTag_AlreadyLanguageTag_NoChange()
+		{
 			// following are already lang tags
 			Assert.AreEqual("en-US", IetfLanguageTagHelper.ToIetfLanguageTag("en-US"));
 			Assert.AreEqual("en-Latn-US-fonipa-x-etic", IetfLanguageTagHelper.ToIetfLanguageTag("en-Latn-US-fonipa-x-etic"));
+		}
+		#endregion
+
+		#region  GetIndexOfFirstPrivateUseVariant
+		[Test]
+		public void GetIndexOfFirstPrivateUseVariant_PrivateUseAtHead_Returns0()
+		{
+			Assert.That(IetfLanguageTagHelper.GetIndexOfFirstPrivateUseVariant(new[]
+			{
+				new VariantSubtag(WellKnownSubtags.AudioPrivateUse, "AudioPrivateUse" , true, new List<string>()),
+				new VariantSubtag("variant0", "Variant0", false, new List<string> ()),
+				new VariantSubtag("variant1", "Variant1", false, new List<string> ())
+			}), Is.EqualTo(0));
+			Assert.That(IetfLanguageTagHelper.GetIndexOfFirstPrivateUseVariant(new[]
+			{
+				new VariantSubtag(WellKnownSubtags.AudioScript, "AudioScript" , true, new List<string>()),
+				new VariantSubtag("variant0", "Variant0", false, new List<string> ()),
+				new VariantSubtag("variant1", "Variant1", false, new List<string> ())
+			}), Is.EqualTo(0));
+			Assert.That(IetfLanguageTagHelper.GetIndexOfFirstPrivateUseVariant(new[] 
+			{
+				new VariantSubtag(WellKnownSubtags.IpaPhonemicPrivateUse, "IPA-Phonemic-PrivateUse" , true, new List<string>()),
+				new VariantSubtag("variant0", "Variant0", false, new List<string> ()),
+				new VariantSubtag("variant1", "Variant1", false, new List<string> ())
+			}), Is.EqualTo(0));
+		}
+		[Test]
+		public void GetIndexOfFirstPrivateUseVariant_PrivateUseAt2_Returns2()
+		{
+			// WellKnownSubtags.IpaVariant and PinyinVariant are not PrivateUse
+			Assert.That(IetfLanguageTagHelper.GetIndexOfFirstPrivateUseVariant(new []
+			{
+				new VariantSubtag("variant0", "Variant0", false, new List<string>()),
+				new VariantSubtag("variant1", "Variant1", false, new List<string>()),
+				new VariantSubtag(WellKnownSubtags.IpaPhoneticPrivateUse, "IPA" , true, new List<string>())
+			}), Is.EqualTo(2));
+			Assert.That(IetfLanguageTagHelper.GetIndexOfFirstPrivateUseVariant(new []
+			{
+				new VariantSubtag("variant0", "Variant0", false, new List<string>()),
+				new VariantSubtag("variant1", "Variant1", false, new List<string>()),
+				new VariantSubtag(WellKnownSubtags.UnlistedLanguage, "IPA" , true, new List<string>())
+			}), Is.EqualTo(2));
+			Assert.That(IetfLanguageTagHelper.GetIndexOfFirstPrivateUseVariant(new []
+			{
+				new VariantSubtag("variant0", "Variant0", false, new List<string>()),
+				new VariantSubtag("variant1", "Variant1", false, new List<string>()),
+				new VariantSubtag(WellKnownSubtags.UnwrittenScript, "IPA" , true, new List<string>())
+			}), Is.EqualTo(2));
+		}
+		#endregion
+
+		#region CreateIetfLanguageTag
+		[Test]
+		[ExpectedException(typeof(ArgumentException))]
+		public void CreateIetfLanguageTag_InvalidTag_Throws()
+		{
+			IetfLanguageTagHelper.CreateIetfLanguageTag("a", "", "", string.Empty);
+		}
+
+		[Test]
+		public void CreateIetfLanguageTag_InvalidTagValidateDisabled_DoesNotThrow()
+		{
+			Assert.That(IetfLanguageTagHelper.CreateIetfLanguageTag("a", "", "", string.Empty, false), Is.EqualTo("a"));
 		}
 
 		[Test]
@@ -187,6 +273,41 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(IetfLanguageTagHelper.CreateIetfLanguageTag("en", "Latn", "US", Enumerable.Empty<VariantSubtag>()), Is.EqualTo("en-US"));
 		}
 
+		[Test]
+		public void CreateIetfLanguageTag_ValidTag_ReturnsTag()
+		{
+			Assert.That(IetfLanguageTagHelper.CreateIetfLanguageTag("en", "Arab", "GB", "1996"), Is.EqualTo("en-Arab-GB-1996"));
+		}
+
+		[Test]
+		public void CreateIetfLanguageTag_ValidPrivateUseTag_ReturnsTag()
+		{
+			Assert.That(IetfLanguageTagHelper.CreateIetfLanguageTag("qaa", "Zxxx", "GB", "fonipa-x-emic-Jimmy"), Is.EqualTo("qaa-Zxxx-GB-fonipa-x-emic-Jimmy"));
+		}
+		#endregion
+
+		#region Validate
+
+		[Test]
+		public void Validate_InvalidTag_ReturnsFalse()
+		{
+			string message;
+			Assert.That(
+				IetfLanguageTagHelper.Validate(new LanguageSubtag("a"), new ScriptSubtag(""), new RegionSubtag(""),
+					new List<VariantSubtag>(), out message), Is.False);
+		}
+
+		[Test]
+		public void Validate_ValidTag_ReturnsTrue()
+		{
+			string message;
+			Assert.That(
+				IetfLanguageTagHelper.Validate(new LanguageSubtag("en"), new ScriptSubtag("Latn"), new RegionSubtag("US"),
+					new List<VariantSubtag>(), out message), Is.True);
+		}
+		#endregion
+
+		#region Canonicalize
 		[Test]
 		public void Canonicalize_ImplicitScript_SuppressesScript()
 		{
@@ -198,12 +319,14 @@ namespace SIL.WritingSystems.Tests
 		{
 			Assert.That(IetfLanguageTagHelper.Canonicalize("zH-latn-cn-FonIpa-X-Etic"), Is.EqualTo("zh-Latn-CN-fonipa-x-etic"));
 		}
+		#endregion
 
+		#region ToICuLocale
 		/// <summary>
 		/// Tests the ToIcuLocale() method which converts a language tag to an ICU locale.
 		/// </summary>
 		[Test]
-		public void ToIcuLocale()
+		public void ToIcuLocale_EnglishLanguageTags_ReturnsEnglishIcuLocales()
 		{
 			// language
 			Assert.AreEqual("en", IetfLanguageTagHelper.ToIcuLocale("en"));
@@ -215,8 +338,18 @@ namespace SIL.WritingSystems.Tests
 			Assert.AreEqual("en_US_X_ETIC", IetfLanguageTagHelper.ToIcuLocale("en-Latn-US-fonipa-x-etic"));
 			// language, ICU variant
 			Assert.AreEqual("en__X_EMIC", IetfLanguageTagHelper.ToIcuLocale("en-fonipa-x-emic"));
+		}
+
+		[Test]
+		public void ToIcuLocale_ChineseLanguageTag_ReturnsChineseIcuLocale()
+		{
 			// language, region, ICU variant
 			Assert.AreEqual("zh_CN_X_PY", IetfLanguageTagHelper.ToIcuLocale("zh-CN-pinyin"));
+		}
+
+		[Test]
+		public void ToIcuLocale_PrivateUseLanguageTags_ReturnsPrivateUseIcuLocales()
+		{
 			// private use language
 			Assert.AreEqual("xkal", IetfLanguageTagHelper.ToIcuLocale("qaa-x-kal"));
 			// private use language, ICU variant
@@ -225,6 +358,11 @@ namespace SIL.WritingSystems.Tests
 			Assert.AreEqual("xkal_XA", IetfLanguageTagHelper.ToIcuLocale("qaa-QM-x-kal-XA"));
 			// private use language, private use script
 			Assert.AreEqual("xkal_Fake", IetfLanguageTagHelper.ToIcuLocale("qaa-Qaaa-x-kal-Fake"));
+		}
+
+		[Test]
+		public void ToIcuLocale_UnknownLanguageTags_ReturnsIcuLocales()
+		{
 			// language, private use script
 			Assert.AreEqual("en_Fake", IetfLanguageTagHelper.ToIcuLocale("en-Qaaa-x-Fake"));
 			// language, private use script, private use region
@@ -238,71 +376,165 @@ namespace SIL.WritingSystems.Tests
 		/// </summary>
 		[Test]
 		[ExpectedException(typeof(ArgumentException))]
-		public void ToIcuLocale_InvalidLangTag()
+		public void ToIcuLocale_InvalidLangTag_Throws()
 		{
 			IetfLanguageTagHelper.ToIcuLocale("en_Latn_US_X_ETIC");
 		}
+		#endregion
+
+		#region TryGetSubtags
 
 		/// <summary>
 		/// Tests the TryGetSubtags() method.
 		/// </summary>
 		[Test]
-		public void TryGetSubtags()
+		public void TryGetSubtags_En_ReturnsEnLatn()
 		{
 			LanguageSubtag languageSubtag;
 			ScriptSubtag scriptSubtag;
 			RegionSubtag regionSubtag;
 			IEnumerable<VariantSubtag> variantSubtags;
-			Assert.That(IetfLanguageTagHelper.TryGetSubtags("en", out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags), Is.True);
+			Assert.That(
+				IetfLanguageTagHelper.TryGetSubtags("en", out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags),
+				Is.True);
 			Assert.That(languageSubtag, Is.EqualTo((LanguageSubtag) "en"));
 			Assert.That(scriptSubtag, Is.EqualTo((ScriptSubtag) "Latn"));
 			Assert.That(regionSubtag, Is.Null);
 			Assert.That(variantSubtags, Is.Empty);
+		}
 
-			Assert.That(IetfLanguageTagHelper.TryGetSubtags("en-Latn", out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags), Is.True);
+		[Test]
+		public void TryGetSubtags_EmptyVariant1_ReturnsEmpty()
+		{
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			Assert.That(
+				IetfLanguageTagHelper.TryGetSubtags("en-Latn", out languageSubtag, out scriptSubtag, out regionSubtag,
+					out variantSubtags), Is.True);
 			Assert.That(languageSubtag, Is.EqualTo((LanguageSubtag) "en"));
 			Assert.That(scriptSubtag, Is.EqualTo((ScriptSubtag) "Latn"));
 			Assert.That(regionSubtag, Is.Null);
 			Assert.That(variantSubtags, Is.Empty);
+		}
 
-			Assert.That(IetfLanguageTagHelper.TryGetSubtags("en-US", out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags), Is.True);
+		[Test]
+		public void TryGetSubtags_EmptyVariant2_ReturnsEmpty()
+		{
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			Assert.That(
+				IetfLanguageTagHelper.TryGetSubtags("en-US", out languageSubtag, out scriptSubtag, out regionSubtag,
+					out variantSubtags), Is.True);
 			Assert.That(languageSubtag, Is.EqualTo((LanguageSubtag) "en"));
 			Assert.That(scriptSubtag, Is.EqualTo((ScriptSubtag) "Latn"));
 			Assert.That(regionSubtag, Is.EqualTo((RegionSubtag) "US"));
 			Assert.That(variantSubtags, Is.Empty);
+		}
 
-			Assert.That(IetfLanguageTagHelper.TryGetSubtags("en-Latn-US-fonipa-x-etic", out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags), Is.True);
+		[Test]
+		public void TryGetSubtags_FonipaXEtic_ReturnsFonipaEtic()
+		{
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			Assert.That(
+				IetfLanguageTagHelper.TryGetSubtags("en-Latn-US-fonipa-x-etic", out languageSubtag, out scriptSubtag,
+					out regionSubtag, out variantSubtags), Is.True);
 			Assert.That(languageSubtag, Is.EqualTo((LanguageSubtag) "en"));
 			Assert.That(scriptSubtag, Is.EqualTo((ScriptSubtag) "Latn"));
 			Assert.That(regionSubtag, Is.EqualTo((RegionSubtag) "US"));
 			Assert.That(variantSubtags, Is.EqualTo(new VariantSubtag[] {"fonipa", "etic"}));
+		}
 
-			Assert.That(IetfLanguageTagHelper.TryGetSubtags("qaa-x-kal", out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags), Is.True);
+		[Test]
+		public void TryGetSubtags_XKal_ReturnsKal()
+		{
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			Assert.That(
+				IetfLanguageTagHelper.TryGetSubtags("qaa-x-kal", out languageSubtag, out scriptSubtag, out regionSubtag,
+					out variantSubtags), Is.True);
 			Assert.That(languageSubtag, Is.EqualTo((LanguageSubtag) "kal"));
 			Assert.That(scriptSubtag, Is.Null);
 			Assert.That(regionSubtag, Is.Null);
 			Assert.That(variantSubtags, Is.Empty);
+		}
 
-			Assert.That(IetfLanguageTagHelper.TryGetSubtags("qaa-Qaaa-x-kal-Fake", out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags), Is.True);
+
+		[Test]
+		public void TryGetSubtags_XKalFake_ReturnsKalFake()
+		{
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			Assert.That(
+				IetfLanguageTagHelper.TryGetSubtags("qaa-Qaaa-x-kal-Fake", out languageSubtag, out scriptSubtag, out regionSubtag,
+					out variantSubtags), Is.True);
 			Assert.That(languageSubtag, Is.EqualTo((LanguageSubtag) "kal"));
 			Assert.That(scriptSubtag, Is.EqualTo((ScriptSubtag) "Fake"));
 			Assert.That(regionSubtag, Is.Null);
 			Assert.That(variantSubtags, Is.Empty);
+		}
 
-			Assert.That(IetfLanguageTagHelper.TryGetSubtags("qaa-QM-x-kal-XA", out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags), Is.True);
+		[Test]
+		public void TryGetSubtags_XKalXA_ReturnsEmptyScriptSubtag()
+		{
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			Assert.That(
+				IetfLanguageTagHelper.TryGetSubtags("qaa-QM-x-kal-XA", out languageSubtag, out scriptSubtag, out regionSubtag,
+					out variantSubtags), Is.True);
 			Assert.That(languageSubtag, Is.EqualTo((LanguageSubtag) "kal"));
 			Assert.That(scriptSubtag, Is.Null);
 			Assert.That(regionSubtag, Is.EqualTo((RegionSubtag) "XA"));
 			Assert.That(variantSubtags, Is.Empty);
+		}
 
-			Assert.That(IetfLanguageTagHelper.TryGetSubtags("en-Qaaa-QM-x-Fake-QD", out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags), Is.True);
+		[Test]
+		public void TryGetSubtags_XFakeQD_ReturnsEmptyVariantSubtags()
+		{
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			Assert.That(
+				IetfLanguageTagHelper.TryGetSubtags("en-Qaaa-QM-x-Fake-QD", out languageSubtag, out scriptSubtag, out regionSubtag,
+					out variantSubtags), Is.True);
 			Assert.That(languageSubtag, Is.EqualTo((LanguageSubtag) "en"));
 			Assert.That(scriptSubtag, Is.EqualTo((ScriptSubtag) "Fake"));
 			Assert.That(regionSubtag, Is.EqualTo((RegionSubtag) "QD"));
 			Assert.That(variantSubtags, Is.Empty);
+		}
 
-			Assert.That(IetfLanguageTagHelper.TryGetSubtags("en_Latn_US_X_ETIC", out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags), Is.False);
+		[Test]
+		public void TryGetSubtags_XETIC_ReturnsFalse()
+		{
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			Assert.That(
+				IetfLanguageTagHelper.TryGetSubtags("en_Latn_US_X_ETIC", out languageSubtag, out scriptSubtag, out regionSubtag,
+					out variantSubtags), Is.False);
+		}
 
+		[Test]
+		public void TryGetSubtags_XDupl0_ReturnsDupl0VariantSubtag()
+		{
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
 			// Although dupl0 is in a position where it would normally be interpreted as a private language code, since it isn't a valid one,
 			// we instead interpret it as simply a variant of qaa, the unknown language.
 			Assert.That(IetfLanguageTagHelper.TryGetSubtags("qaa-x-dupl0", out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags), Is.True);
@@ -311,7 +543,108 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(regionSubtag, Is.Null);
 			Assert.That(variantSubtags, Is.EqualTo(new VariantSubtag[] {"dupl0"}));
 		}
+		#endregion
 
+		#region GetVariantCodes
+		[Test]
+		public void GetVariantCodes_EmptyVariants_ReturnsEmpty()
+		{
+			IEnumerable<VariantSubtag> variantSubtags = new VariantSubtag[] {};
+			Assert.That(IetfLanguageTagHelper.GetVariantCodes(variantSubtags), Is.Null);
+			
+		}
+
+		[Test]
+		public void GetVariantCodes_VariantsSet_ReturnsString()
+		{
+			IEnumerable<VariantSubtag> variantSubtags = new VariantSubtag[] { "fonipa", "etic" };
+			Assert.That(IetfLanguageTagHelper.GetVariantCodes(variantSubtags), Is.EqualTo("fonipa-x-etic"));
+		}
+		#endregion
+
+		#region IsValidLanguageCode
+		[Test]
+		public void IsValidLanguageCode_InvalidLanguageCode_ReturnsFalse()
+		{
+			Assert.That(IetfLanguageTagHelper.IsValidLanguageCode("a"), Is.False);
+			Assert.That(IetfLanguageTagHelper.IsValidLanguageCode("0"), Is.False);
+			Assert.That(IetfLanguageTagHelper.IsValidLanguageCode("abcdefghi"), Is.False);
+			Assert.That(IetfLanguageTagHelper.IsValidLanguageCode("123456789"), Is.False);
+			Assert.That(IetfLanguageTagHelper.IsValidLanguageCode("abcdefgh-abc-def-ghi-jkl"), Is.False);
+		}
+
+		[Test]
+		public void IsValidLanguageCode_ValidLanguageCode_ReturnsTrue()
+		{
+			Assert.That(IetfLanguageTagHelper.IsValidLanguageCode("ab"), Is.True);
+			Assert.That(IetfLanguageTagHelper.IsValidLanguageCode("abcdefgh"), Is.True);
+			Assert.That(IetfLanguageTagHelper.IsValidLanguageCode("abcdefgh-abc"), Is.True);
+			Assert.That(IetfLanguageTagHelper.IsValidLanguageCode("abcdefgh-abc-def"), Is.True);
+			Assert.That(IetfLanguageTagHelper.IsValidLanguageCode("abcdefgh-abc-def-ghi"), Is.True);
+
+		}
+		#endregion
+
+		#region IsValidScriptCode
+		[Test]
+		public void IsValidScriptCode_InvalidScriptCode_ReturnsFalse()
+		{
+			Assert.That(IetfLanguageTagHelper.IsValidScriptCode("abc"), Is.False);
+			Assert.That(IetfLanguageTagHelper.IsValidScriptCode("abc1"), Is.False);
+			Assert.That(IetfLanguageTagHelper.IsValidScriptCode("abcde"), Is.False);
+		}
+
+		[Test]
+		public void IsValidScriptCode_ValidScriptCode_ReturnsTrue()
+		{
+			Assert.That(IetfLanguageTagHelper.IsValidScriptCode("abcd"), Is.True);
+			Assert.That(IetfLanguageTagHelper.IsValidScriptCode("ABCD"), Is.True);
+			
+		}
+		#endregion
+
+		#region IsValidRegionCode
+		[Test]
+		public void IsValidRegionCode_InvlidRegionCode_ReturnsFalse()
+		{
+			Assert.That(IetfLanguageTagHelper.IsValidRegionCode("a"), Is.False);
+			Assert.That(IetfLanguageTagHelper.IsValidRegionCode("abc"), Is.False);
+			Assert.That(IetfLanguageTagHelper.IsValidRegionCode("12"), Is.False);
+			Assert.That(IetfLanguageTagHelper.IsValidRegionCode("1234"), Is.False);
+		}
+
+		[Test]
+		public void IsValidRegionCode_ValidRegionCode_ReturnsTrue()
+		{
+			Assert.That(IetfLanguageTagHelper.IsValidRegionCode("ab"), Is.True);
+			Assert.That(IetfLanguageTagHelper.IsValidRegionCode("AB"), Is.True);
+			Assert.That(IetfLanguageTagHelper.IsValidRegionCode("123"), Is.True);
+		}
+		#endregion
+
+		#region IsValidPrivateUseCode
+		[Test]
+		public void IsValidPrivateUseCode_InvalidPrivateUseCode_ReturnsFalse()
+		{
+			Assert.That(IetfLanguageTagHelper.IsValidPrivateUseCode(""), Is.False);
+			Assert.That(IetfLanguageTagHelper.IsValidPrivateUseCode("abcdefghi"), Is.False);
+			Assert.That(IetfLanguageTagHelper.IsValidPrivateUseCode("123456789"), Is.False);
+
+		}
+
+		[Test]
+		public void IsValidPrivateUseCode_ValidPrivateUseCode_Returns_True()
+		{
+			Assert.That(IetfLanguageTagHelper.IsValidPrivateUseCode("a"), Is.True);
+			Assert.That(IetfLanguageTagHelper.IsValidPrivateUseCode("A"), Is.True);
+			Assert.That(IetfLanguageTagHelper.IsValidPrivateUseCode("1"), Is.True);
+			Assert.That(IetfLanguageTagHelper.IsValidPrivateUseCode("abcdefgh"), Is.True);
+			Assert.That(IetfLanguageTagHelper.IsValidPrivateUseCode("12345678"), Is.True);
+			
+		}
+		#endregion
+
+		#region ToUniqueIetfLanguageTag
 		[Test]
 		public void ToUniqueIetfLanguageTag_IsAlreadyUnique_NothingChanges()
 		{
@@ -365,41 +698,6 @@ namespace SIL.WritingSystems.Tests
 			ws.IetfLanguageTag = IetfLanguageTagHelper.ToUniqueIetfLanguageTag(ws.IetfLanguageTag, existingTags);
 			Assert.That(ws.IetfLanguageTag, Is.EqualTo("en-Zxxx-x-dupl0-audio-dupl1"));
 		}
-
-		[Test]
-		public void ListLabel_VariantContainsDuplwithNumber_LabelIsLanguageWithCopyAndNumberInBrackets()
-		{
-			var ws = new WritingSystemDefinition("de");
-			ws.IetfLanguageTag = IetfLanguageTagHelper.ToUniqueIetfLanguageTag(ws.IetfLanguageTag, new[] { "de", "de-x-dupl0" });
-			Assert.That(ws.ListLabel, Is.EqualTo("German (Copy1)"));
-		}
-
-		[Test]
-		public void ListLabel_VariantContainsDuplwithZero_LabelIsLanguageWithCopyAndNoNumberInBrackets()
-		{
-			var ws = new WritingSystemDefinition("de");
-			ws.IetfLanguageTag = IetfLanguageTagHelper.ToUniqueIetfLanguageTag(ws.IetfLanguageTag, new[] { "de" });
-			Assert.That(ws.ListLabel, Is.EqualTo("German (Copy)"));
-		}
-
-		[Test]
-		public void ListLabel_VariantContainsmulitpleDuplswithNumber_LabelIsLanguageWithCopyAndNumbersInBrackets()
-		{
-			var ws = new WritingSystemDefinition("de-x-dupl0");
-			ws.IetfLanguageTag = IetfLanguageTagHelper.ToUniqueIetfLanguageTag(ws.IetfLanguageTag, new[] { "de", "de-x-dupl0" });
-			Assert.That(ws.ListLabel, Is.EqualTo("German (Copy-Copy1)"));
-		}
-
-		[Test]
-		public void ListLabel_AllSortsOfThingsSet_LabelIsCorrect()
-		{
-			var ws = new WritingSystemDefinition("de-x-dupl0");
-			ws.IetfLanguageTag = IetfLanguageTagHelper.ToUniqueIetfLanguageTag(ws.IetfLanguageTag, new[] { "de", "de-x-dupl0" });
-			ws.Region = "US";
-			ws.Script = "Armi";
-			ws.IpaStatus = IpaStatusChoices.IpaPhonetic;
-			ws.Variants.AddRange(new VariantSubtag[] { "garble", "1901" });
-			Assert.That(ws.ListLabel, Is.EqualTo("German (IPA-etic-Copy-Copy1-Armi-US-1901-x-garble)"));
-		}
+		#endregion
 	}
 }
