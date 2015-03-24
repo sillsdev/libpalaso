@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using Palaso.TestUtilities;
-using SIL.Data;
 using SIL.Keyboarding;
 
 namespace SIL.WritingSystems.Tests
@@ -1484,6 +1483,7 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(ws.GetDefaultFontSizeOrMinimum(), Is.GreaterThan(6));
 		}
 
+		#region ListLabel
 		[Test]
 		public void ListLabel_ScriptRegionVariantEmpty_LabelIsLanguage()
 		{
@@ -1497,7 +1497,6 @@ namespace SIL.WritingSystems.Tests
 			var ws = new WritingSystemDefinition("de") {Script = "Armi"};
 			Assert.That(ws.ListLabel, Is.EqualTo("German (Armi)"));
 		}
-
 
 		[Test]
 		public void ListLabel_RegionSet_LabelIsLanguageWithRegionInBrackets()
@@ -1567,6 +1566,43 @@ namespace SIL.WritingSystems.Tests
 			ws.Variants.Add("garble");
 			Assert.That(ws.ListLabel, Is.EqualTo("German (x-garble)"));
 		}
+
+		[Test]
+		public void ListLabel_VariantContainsDuplwithNumber_LabelIsLanguageWithCopyAndNumberInBrackets()
+		{
+			var ws = new WritingSystemDefinition("de");
+			ws.IetfLanguageTag = IetfLanguageTagHelper.ToUniqueIetfLanguageTag(ws.IetfLanguageTag, new[] { "de", "de-x-dupl0" });
+			Assert.That(ws.ListLabel, Is.EqualTo("German (Copy1)"));
+		}
+
+		[Test]
+		public void ListLabel_VariantContainsDuplwithZero_LabelIsLanguageWithCopyAndNoNumberInBrackets()
+		{
+			var ws = new WritingSystemDefinition("de");
+			ws.IetfLanguageTag = IetfLanguageTagHelper.ToUniqueIetfLanguageTag(ws.IetfLanguageTag, new[] { "de" });
+			Assert.That(ws.ListLabel, Is.EqualTo("German (Copy)"));
+		}
+
+		[Test]
+		public void ListLabel_VariantContainsmulitpleDuplswithNumber_LabelIsLanguageWithCopyAndNumbersInBrackets()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+			ws.IetfLanguageTag = IetfLanguageTagHelper.ToUniqueIetfLanguageTag(ws.IetfLanguageTag, new[] { "de", "de-x-dupl0" });
+			Assert.That(ws.ListLabel, Is.EqualTo("German (Copy-Copy1)"));
+		}
+
+		[Test]
+		public void ListLabel_AllSortsOfThingsSet_LabelIsCorrect()
+		{
+			var ws = new WritingSystemDefinition("de-x-dupl0");
+			ws.IetfLanguageTag = IetfLanguageTagHelper.ToUniqueIetfLanguageTag(ws.IetfLanguageTag, new[] { "de", "de-x-dupl0" });
+			ws.Region = "US";
+			ws.Script = "Armi";
+			ws.IpaStatus = IpaStatusChoices.IpaPhonetic;
+			ws.Variants.AddRange(new VariantSubtag[] { "garble", "1901" });
+			Assert.That(ws.ListLabel, Is.EqualTo("German (IPA-etic-Copy-Copy1-Armi-US-1901-x-garble)"));
+		}
+		#endregion
 
 		[Test]
 		public void OtherAvailableKeyboards_DefaultsToAllAvailable()
@@ -1702,9 +1738,9 @@ namespace SIL.WritingSystems.Tests
 			ws.Fonts.Add(fd1);
 			ws.Fonts.Add(fd2);
 			ws.DefaultFont = fd1;
-			var newFD2 = new FontDefinition("font2");
-			ws.DefaultFont = newFD2;
-			Assert.That(ws.Fonts[1], Is.EqualTo(newFD2));
+			var newFd2 = new FontDefinition("font2");
+			ws.DefaultFont = newFd2;
+			Assert.That(ws.Fonts[1], Is.EqualTo(newFd2));
 		}
 
 		[Test]
@@ -1749,9 +1785,9 @@ namespace SIL.WritingSystems.Tests
 			ws.Collations.Add(cd2);
 			ws.DefaultCollation = cd2;
 
-			var newCD2 = new IcuCollationDefinition("standard");
-			ws.DefaultCollation = newCD2;
-			Assert.That(ws.Collations[1], Is.EqualTo(newCD2));
+			var newCd2 = new IcuCollationDefinition("standard");
+			ws.DefaultCollation = newCd2;
+			Assert.That(ws.Collations[1], Is.EqualTo(newCd2));
 		}
 
 		private void VerifySubtagCodes(WritingSystemDefinition ws, string langCode, string scriptCode, string regionCode, string variantCode, string id)
