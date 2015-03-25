@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using SIL.Keyboarding;
@@ -49,6 +50,18 @@ namespace SIL.Windows.Forms.WritingSystems
 			PopulateFontList();
 			UpdateFromModel();
 			this.Disposed += OnDisposed;
+		}
+
+		public string TestAreaText
+		{
+			get { return _testArea.Text; }
+			set { _testArea.Text = value; }
+		}
+
+		public ComboBoxStyle DropDownStyle
+		{
+			get { return _fontComboBox.DropDownStyle; }
+			set { _fontComboBox.DropDownStyle = _fontSizeComboBox.DropDownStyle = value; }
 		}
 
 		void OnDisposed(object sender, EventArgs e)
