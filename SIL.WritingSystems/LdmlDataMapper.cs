@@ -125,7 +125,6 @@ namespace SIL.WritingSystems
 		/// </summary>
 		private static readonly Dictionary<KeyboardFormat, string> KeyboardFormatToKeyboard = new Dictionary<KeyboardFormat, string>
 		{
-			{KeyboardFormat.Unknown, null},
 			{KeyboardFormat.Keyman, "kmn"},
 			{KeyboardFormat.CompiledKeyman, "kmx"},
 			{KeyboardFormat.Msklc, "msklc"},
@@ -1320,7 +1319,8 @@ namespace SIL.WritingSystems
 			// Remove sil:keyboard elements to repopulate later
 			externalResourcesElem.NonAltElements(Sil + "keyboard").Remove();
 
-			foreach (IKeyboardDefinition keyboard in ws.KnownKeyboards)
+			// Don't include unknown system keyboard definitions
+			foreach (IKeyboardDefinition keyboard in ws.KnownKeyboards.Where(kbd=>kbd.Format != KeyboardFormat.Unknown))
 			{
 				var kbdElem = new XElement(Sil + "kbd");
 				// id required

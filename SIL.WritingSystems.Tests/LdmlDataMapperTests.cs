@@ -694,9 +694,11 @@ namespace SIL.WritingSystems.Tests
 		{
 			using (var environment = new TestEnvironment())
 			{
-				List<string> urls = new List<string>();
-				urls.Add("http://wirl.scripts.sil.org/keyman");
-				urls.Add("http://scripts.sil.org/cms/scripts/page.php?item_id=keyman9");
+				var urls = new List<string>
+				{
+					"http://wirl.scripts.sil.org/keyman",
+					"http://scripts.sil.org/cms/scripts/page.php?item_id=keyman9"
+				};
 				IKeyboardDefinition kbd = Keyboard.Controller.CreateKeyboard("Compiled Keyman9", KeyboardFormat.CompiledKeyman, urls);
 
 				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
@@ -731,6 +733,44 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		#region Write_Ldml
+		[Test]
+		public void Write_UnknownKeyboard_NotWrittenToLdml()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var urls = new List<string>
+				{
+					"http://wirl.scripts.sil.org/keyman",
+					"http://scripts.sil.org/cms/scripts/page.php?item_id=keyman9"
+				};
+				IKeyboardDefinition kbd1 = Keyboard.Controller.CreateKeyboard("Compiled Keyman9", KeyboardFormat.CompiledKeyman, urls);
+				IKeyboardDefinition kbd2 = Keyboard.Controller.CreateKeyboard("Unknown System Keyboard", KeyboardFormat.Unknown, urls);
+
+				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
+				wsToLdml.KnownKeyboards.Add(kbd1);
+				wsToLdml.KnownKeyboards.Add(kbd2);
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath(
+						"/ldml/special/sil:external-resources/sil:kbd[@id='Compiled Keyman9' and @type='kmx']/sil:url[text()='http://wirl.scripts.sil.org/keyman']",
+						environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath(
+						"/ldml/special/sil:external-resources/sil:kbd[@id='Compiled Keyman9' and @type='kmx']/sil:url[text()='http://scripts.sil.org/cms/scripts/page.php?item_id=keyman9']",
+						environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasNoMatchForXpath(
+						"/ldml/special/sil:external-resources/sil:kbd[@id='Unknown System Keyboard']",
+						environment.NamespaceManager);
+
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
+				Assert.That(wsFromLdml.KnownKeyboards.First(), Is.EqualTo(kbd1));
+				Assert.That(wsFromLdml.KnownKeyboards.Count, Is.EqualTo(1));
+			}
+		}
+
 		[Test]
 		public void Write_LdmlIsNicelyFormatted()
 		{
@@ -774,8 +814,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				//create an ldml file to read that contains layout info
 				var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
-				var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
-				ws.RightToLeftScript = true;
+				var ws = new WritingSystemDefinition("en-Zxxx-x-audio") {RightToLeftScript = true};
 				adaptor.Write(file.Path, ws, null);
 
 				//read the file and write it out unchanged
@@ -890,8 +929,7 @@ namespace SIL.WritingSystems.Tests
 			//using a writing system V0 here because the real writing system can't cope with the way
 			//flex encodes private-use language and shouldn't. But using a writing system + ldml adaptor
 			//is the quickest way to generate ldml so I'm using it here.
-			var ws = new WritingSystemDefinitionV0()
-				{ISO639 = language, Script = script, Region = territory, Variant = variant};
+			var ws = new WritingSystemDefinitionV0 {ISO639 = language, Script = script, Region = territory, Variant = variant};
 			new LdmlAdaptorV0().Write(file.Path, ws, null);
 		}
 
