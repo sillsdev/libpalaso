@@ -18,6 +18,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 		}
 
 		public string WindowsLcid { get; set; }
+		public string VariantName { get; set; }
 
 		public string DefaultFontName { get; set; }
 		public string DefaultFontFeatures { get; set; }

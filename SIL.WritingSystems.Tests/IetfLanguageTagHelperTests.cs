@@ -204,54 +204,6 @@ namespace SIL.WritingSystems.Tests
 		}
 		#endregion
 
-		#region  GetIndexOfFirstPrivateUseVariant
-		[Test]
-		public void GetIndexOfFirstPrivateUseVariant_PrivateUseAtHead_Returns0()
-		{
-			Assert.That(IetfLanguageTagHelper.GetIndexOfFirstPrivateUseVariant(new[]
-			{
-				new VariantSubtag(WellKnownSubtags.AudioPrivateUse, "AudioPrivateUse" , true, new List<string>()),
-				new VariantSubtag("variant0", "Variant0", false, new List<string> ()),
-				new VariantSubtag("variant1", "Variant1", false, new List<string> ())
-			}), Is.EqualTo(0));
-			Assert.That(IetfLanguageTagHelper.GetIndexOfFirstPrivateUseVariant(new[]
-			{
-				new VariantSubtag(WellKnownSubtags.AudioScript, "AudioScript" , true, new List<string>()),
-				new VariantSubtag("variant0", "Variant0", false, new List<string> ()),
-				new VariantSubtag("variant1", "Variant1", false, new List<string> ())
-			}), Is.EqualTo(0));
-			Assert.That(IetfLanguageTagHelper.GetIndexOfFirstPrivateUseVariant(new[] 
-			{
-				new VariantSubtag(WellKnownSubtags.IpaPhonemicPrivateUse, "IPA-Phonemic-PrivateUse" , true, new List<string>()),
-				new VariantSubtag("variant0", "Variant0", false, new List<string> ()),
-				new VariantSubtag("variant1", "Variant1", false, new List<string> ())
-			}), Is.EqualTo(0));
-		}
-		[Test]
-		public void GetIndexOfFirstPrivateUseVariant_PrivateUseAt2_Returns2()
-		{
-			// WellKnownSubtags.IpaVariant and PinyinVariant are not PrivateUse
-			Assert.That(IetfLanguageTagHelper.GetIndexOfFirstPrivateUseVariant(new []
-			{
-				new VariantSubtag("variant0", "Variant0", false, new List<string>()),
-				new VariantSubtag("variant1", "Variant1", false, new List<string>()),
-				new VariantSubtag(WellKnownSubtags.IpaPhoneticPrivateUse, "IPA" , true, new List<string>())
-			}), Is.EqualTo(2));
-			Assert.That(IetfLanguageTagHelper.GetIndexOfFirstPrivateUseVariant(new []
-			{
-				new VariantSubtag("variant0", "Variant0", false, new List<string>()),
-				new VariantSubtag("variant1", "Variant1", false, new List<string>()),
-				new VariantSubtag(WellKnownSubtags.UnlistedLanguage, "IPA" , true, new List<string>())
-			}), Is.EqualTo(2));
-			Assert.That(IetfLanguageTagHelper.GetIndexOfFirstPrivateUseVariant(new []
-			{
-				new VariantSubtag("variant0", "Variant0", false, new List<string>()),
-				new VariantSubtag("variant1", "Variant1", false, new List<string>()),
-				new VariantSubtag(WellKnownSubtags.UnwrittenScript, "IPA" , true, new List<string>())
-			}), Is.EqualTo(2));
-		}
-		#endregion
-
 		#region CreateIetfLanguageTag
 		[Test]
 		[ExpectedException(typeof(ArgumentException))]

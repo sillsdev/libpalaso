@@ -89,7 +89,6 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 					regionName = (string) regionNameElem.Attribute("value");
 
 				// VariantName
-				// Intentionally only checking the first variant
 				XElement variantNameElem = fwElem.Element(FW + "variantName");
 				if (variantNameElem != null)
 					variantName = (string) variantNameElem.Attribute("value");
@@ -121,18 +120,12 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 							ws.Script = new ScriptSubtag(ws.Script, scriptName);
 						if (!string.IsNullOrEmpty(regionName) && ws.Region != null && ws.Region.IsPrivateUse)
 							ws.Region = new RegionSubtag(ws.Region, regionName);
-						if (!string.IsNullOrEmpty(variantName))
-						{
-							int index = ws.Variants.IndexOf(v => v.IsPrivateUse);
-							if (index > -1)
-								ws.Variants[index] = new VariantSubtag(ws.Variants[index], variantName);
-						}
 					}
 				};
 
 			_migrationInfo.Add(migrationInfo);
 
-			// Store things that stay in ldml but are being moved: WindowsLcid, font, known keyboards, collations, font features, character sets
+			// Store things that stay in ldml but are being moved: WindowsLcid, variantName, font, known keyboards, collations, font features, character sets
 
 			// misc properties
 			var staging = new Staging
@@ -142,6 +135,20 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				SortUsing = writingSystemDefinitionV1.SortUsing,
 				SortRules = writingSystemDefinitionV1.SortRules,
 			};
+
+			// Determine if variantName is non-common private use before preserving it
+			if (!string.IsNullOrEmpty(variantName))
+			{
+				// Parse language tag to obtain variant subtags
+				string language, script, region, variants;
+				IetfLanguageTagHelper.TryGetParts(migrationInfo.IetfLanguageTagAfterMigration, out language, out script, out region,
+					out variants);
+				IEnumerable<VariantSubtag> variantSubtags;
+				IetfLanguageTagHelper.TryGetVariantSubtags(variants, out variantSubtags);
+				int index = IetfLanguageTagHelper.GetIndexOfFirstNonCommonPrivateUseVariant(variantSubtags);
+				if (index > -1)
+					staging.VariantName = variantName;
+			}
 
 			// known keyboards
 			foreach (KeyboardDefinitionV1 keyboardV1 in writingSystemDefinitionV1.KnownKeyboards)
@@ -230,12 +237,13 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			identityElem.SetAttributeValue("generation", "date", DateTime.UtcNow.ToISO8601TimeFormatWithUTCString());
 
 			// Create special element if data needs to be written
-			if (!string.IsNullOrEmpty(s.WindowsLcid))
+			if (!string.IsNullOrEmpty(s.WindowsLcid) || !string.IsNullOrEmpty(s.VariantName))
 			{
 				XElement specialElem = CreateSpecialElement(identityElem);
 				XElement silIdentityElem = specialElem.GetOrCreateElement(Sil + "identity");
 
 				silIdentityElem.SetOptionalAttributeValue("windowsLCID", s.WindowsLcid);
+				silIdentityElem.SetOptionalAttributeValue("variantName", s.VariantName);
 			}
 		}
 

@@ -491,6 +491,13 @@ namespace SIL.WritingSystems
 				{
 					ws.WindowsLcid = (string) silIdentityElem.Attribute("windowsLCID");
 					ws.DefaultRegion = (string) silIdentityElem.Attribute("defaultRegion");
+					// Update the variant name if a non-wellknown private use variant exists
+					var variantName = (string) silIdentityElem.Attribute("variantName") ?? String.Empty;
+					int index = IetfLanguageTagHelper.GetIndexOfFirstNonCommonPrivateUseVariant(ws.Variants);
+					if (!string.IsNullOrEmpty(variantName) && (index != -1))
+					{
+						ws.Variants[index] = new VariantSubtag(ws.Variants[index], variantName);
+					}
 				}
 			}
 		}
@@ -899,7 +906,11 @@ namespace SIL.WritingSystems
 			WriteLanguageTagElements(identityElem, ws.IetfLanguageTag);
 
 			// Create special element if data needs to be written
-			if (!string.IsNullOrEmpty(ws.WindowsLcid) || !string.IsNullOrEmpty(ws.DefaultRegion))
+			int index = IetfLanguageTagHelper.GetIndexOfFirstNonCommonPrivateUseVariant(ws.Variants);
+			string variantName = string.Empty;
+			if (index != -1)
+				variantName = ws.Variants[index].Name;
+			if (!string.IsNullOrEmpty(ws.WindowsLcid) || !string.IsNullOrEmpty(ws.DefaultRegion) || !string.IsNullOrEmpty(variantName))
 			{
 				XElement specialElem = GetOrCreateSpecialElement(identityElem);
 				XElement silIdentityElem = specialElem.GetOrCreateElement(Sil + "identity");
@@ -908,6 +919,7 @@ namespace SIL.WritingSystems
 
 				silIdentityElem.SetOptionalAttributeValue("windowsLCID", ws.WindowsLcid);
 				silIdentityElem.SetOptionalAttributeValue("defaultRegion", ws.DefaultRegion);
+				silIdentityElem.SetOptionalAttributeValue("variantName", variantName);
 					
 				// Move special to the end of the identity block (preserving order)
 				specialElem.Remove();

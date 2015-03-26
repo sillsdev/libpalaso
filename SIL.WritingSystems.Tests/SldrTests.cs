@@ -277,7 +277,7 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			{
 				// Write 
-				string content = LdmlContentForTests.Version3Identity("en", "", "US", "", "", "12345", "", "53d542ba498f40f437f7723e69dcf64dab6c9794");
+				string content = LdmlContentForTests.Version3Identity("en", "", "US", "", "", "12345", "variantName", "", "53d542ba498f40f437f7723e69dcf64dab6c9794");
 				const string ietfLanguageTag = "en-US";
 
 				// Write content to destination and cache

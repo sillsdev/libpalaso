@@ -258,16 +258,16 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		public static int GetIndexOfFirstPrivateUseVariant(IEnumerable<VariantSubtag> variantSubtags)
+		internal static int GetIndexOfFirstNonCommonPrivateUseVariant(IEnumerable<VariantSubtag> variantSubtags)
 		{
 			int i = 0;
 			foreach (VariantSubtag variantSubtag in variantSubtags)
 			{
-				if (variantSubtag.IsPrivateUse)
-					break;
+				if ((variantSubtag.IsPrivateUse) && (!StandardSubtags.CommonPrivateUseVariants.Contains(variantSubtag.Name)))
+					return i;
 				i++;
 			}
-			return i;
+			return -1;
 		}
 
 		/// <summary>

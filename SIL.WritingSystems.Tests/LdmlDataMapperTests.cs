@@ -223,7 +223,7 @@ namespace SIL.WritingSystems.Tests
 				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/territory[@type='GB']");
 				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-test']");
 				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/version[@number='$Revision$' and text()='Identity version description']");
-				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[@windowsLCID='1036' and @defaultRegion='US']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[@windowsLCID='1036' and @defaultRegion='US' and not(@variantName)]", environment.NamespaceManager);
 
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
@@ -232,6 +232,45 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(wsFromLdml.IetfLanguageTag, Is.EqualTo("en-GB-x-test"));
 				Assert.That(wsFromLdml.WindowsLcid, Is.EqualTo("1036"));
 				Assert.That(wsFromLdml.DefaultRegion, Is.EqualTo("US"));
+				int index = IetfLanguageTagHelper.GetIndexOfFirstNonCommonPrivateUseVariant(wsFromLdml.Variants);
+				Assert.That(index, Is.EqualTo(0));
+				Assert.That(wsFromLdml.Variants[index].Name, Is.EqualTo(string.Empty));
+			}
+		}
+
+		[Test]
+		public void Roundtrip_VariantName()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var wsToLdml = new WritingSystemDefinition("en", "Latn", "GB", "x-test")
+				{
+					VersionNumber = "$Revision$",
+					VersionDescription = "Identity version description",
+					WindowsLcid = "1036",
+					DefaultRegion = "US"
+				};
+				wsToLdml.Variants[0] = new VariantSubtag(wsToLdml.Variants[0], "test0");
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Latn']");
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/territory[@type='GB']");
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-test']");
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/version[@number='$Revision$' and text()='Identity version description']");
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[@windowsLCID='1036' and @defaultRegion='US' and @variantName='test0']", environment.NamespaceManager);
+
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
+				Assert.That(wsFromLdml.VersionNumber, Is.EqualTo("$Revision$"));
+				Assert.That(wsFromLdml.VersionDescription, Is.EqualTo("Identity version description"));
+				Assert.That(wsFromLdml.IetfLanguageTag, Is.EqualTo("en-GB-x-test"));
+				Assert.That(wsFromLdml.WindowsLcid, Is.EqualTo("1036"));
+				Assert.That(wsFromLdml.DefaultRegion, Is.EqualTo("US"));
+				int index = IetfLanguageTagHelper.GetIndexOfFirstNonCommonPrivateUseVariant(wsFromLdml.Variants);
+				Assert.That(index, Is.EqualTo(0));
+				Assert.That(wsFromLdml.Variants[index].Name, Is.EqualTo("test0"));
 			}
 		}
 
@@ -726,9 +765,13 @@ namespace SIL.WritingSystems.Tests
 			using (var tempFile = new TempFile())
 			{
 				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
-					writer.Write(LdmlContentForTests.Version3Identity("", "", "", "x-private-use", "abcdefg", "123456", "", ""));
+					writer.Write(LdmlContentForTests.Version3Identity("", "", "", "x-private-use", "abcdefg", "123456", "private", "", ""));
 				adaptor.Read(tempFile.Path, wsFromLdml);
-				Assert.That(wsFromLdml.Variants, Is.EqualTo(new VariantSubtag[] {"private", "use"}));
+				Assert.That(wsFromLdml.Variants, Is.EqualTo(new VariantSubtag[]
+				{
+					new VariantSubtag("private", "private", true, new List<string>()),
+					new VariantSubtag("use", "", true, new List<string>())
+				}));
 			}
 		}
 

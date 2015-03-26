@@ -281,6 +281,18 @@ namespace SIL.WritingSystems
 			set { _dateModified = value; }
 		}
 
+		private static int GetIndexOfFirstPrivateUseVariant(IEnumerable<VariantSubtag> variantSubtags)
+		{
+			int i = 0;
+			foreach (VariantSubtag variantSubtag in variantSubtags)
+			{
+				if (variantSubtag.IsPrivateUse)
+					break;
+				i++;
+			}
+			return i;
+		}
+
 		/// <summary>
 		/// Adjusts the IETF language tag to indicate the desired form of Ipa by inserting fonipa in the variant and emic or etic in private use where necessary.
 		/// </summary>
@@ -307,7 +319,7 @@ namespace SIL.WritingSystems
 					{
 						RemoveVariants(WellKnownSubtags.IpaVariant, WellKnownSubtags.IpaPhonemicPrivateUse, WellKnownSubtags.IpaPhoneticPrivateUse, WellKnownSubtags.AudioPrivateUse);
 
-						int index = IetfLanguageTagHelper.GetIndexOfFirstPrivateUseVariant(_variants);
+						int index = GetIndexOfFirstPrivateUseVariant(_variants);
 
 						switch (value)
 						{
