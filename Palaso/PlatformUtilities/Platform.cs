@@ -11,6 +11,7 @@ namespace Palaso.PlatformUtilities
 		private static readonly string UnixNameLinux = "Linux";
 		private static bool? m_isMono;
 		private static string m_unixName;
+		private static string m_sessionManager;
 
 		public static bool IsUnix
 		{
@@ -76,7 +77,52 @@ namespace Palaso.PlatformUtilities
 			}
 		}
 
+
+		public static bool IsWasta
+		{
+			get { return IsUnix && System.IO.File.Exists("/etc/wasta-release"); }
+		}
+
+		public static bool IsCinnamon
+		{
+			get { return IsUnix && SessionManager.StartsWith("/usr/bin/cinnamon-session"); }
+		}
+
+		private static string SessionManager
+		{
+			get
+			{
+				if (m_sessionManager == null)
+				{
+					IntPtr buf = IntPtr.Zero;
+					try
+					{
+						// This is the only way I've figured out to get the session manager.
+						buf = System.Runtime.InteropServices.Marshal.AllocHGlobal(8192);
+						var len = readlink("/etc/alternatives/x-session-manager", buf, 8192);
+						if (len > 0)
+							m_sessionManager = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(buf);
+						else
+							m_sessionManager = String.Empty;
+					}
+					catch
+					{
+						m_sessionManager = String.Empty;
+					}
+					finally
+					{
+						if (buf != IntPtr.Zero)
+							System.Runtime.InteropServices.Marshal.FreeHGlobal(buf);
+					}
+				}
+				return m_sessionManager;
+			}
+		}
+
 		[System.Runtime.InteropServices.DllImport ("libc")]
 		static extern int uname (IntPtr buf);
+
+		[System.Runtime.InteropServices.DllImport ("libc")]
+		static extern int readlink(string path, IntPtr buf, int bufsiz);
 	}
 }
