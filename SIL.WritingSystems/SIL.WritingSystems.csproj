@@ -267,12 +267,14 @@
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\FlexConformPrivateUseRfc5646TagInterpreter.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\KeyboardDefinitionV1.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV2To3Migration\Staging.cs" />
+    <Compile Include="RulesCollationDefinition.cs" />
+    <Compile Include="SystemCollationDefinition.cs" />
     <Compile Include="WritingSystemFactory.cs" />
     <Compile Include="WritingSystemFactoryBase.cs" />
     <Compile Include="EthnologueLookup.cs" />
     <Compile Include="FontDefinition.cs" />
     <Compile Include="GlobalWritingSystemRepository.cs" />
-    <Compile Include="IcuCollationDefinition.cs" />
+    <Compile Include="IcuRulesCollationDefinition.cs" />
     <Compile Include="IcuCollationImport.cs" />
     <Compile Include="ICustomDataMapper.cs" />
     <Compile Include="ICollator.cs" />
@@ -298,7 +300,7 @@
     <Compile Include="RegionSubtag.cs" />
     <Compile Include="ScriptSubtag.cs" />
     <Compile Include="SimpleRulesParser.cs" />
-    <Compile Include="SimpleCollationDefinition.cs" />
+    <Compile Include="SimpleRulesCollationDefinition.cs" />
     <Compile Include="Sldr.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\LdmlCollationParserV1.cs" />
     <Compile Include="LanguageRegistryResources.Designer.cs">

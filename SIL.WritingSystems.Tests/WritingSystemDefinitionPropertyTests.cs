@@ -136,8 +136,8 @@ namespace SIL.WritingSystems.Tests
 		public void CloneCopiesCollations()
 		{
 			var original = new WritingSystemDefinition();
-			var cd1 = new IcuCollationDefinition("standard");
-			var cd2 = new IcuCollationDefinition("other");
+			var cd1 = new IcuRulesCollationDefinition("standard");
+			var cd2 = new IcuRulesCollationDefinition("other");
 			original.Collations.Add(cd1);
 			original.Collations.Add(cd2);
 			original.DefaultCollation = cd2;
@@ -324,13 +324,13 @@ namespace SIL.WritingSystems.Tests
 		public void ValueEqualsComparesCollations()
 		{
 			var first = new WritingSystemDefinition();
-			var cd1 = new IcuCollationDefinition("standard");
-			var cd2 = new IcuCollationDefinition("other1");
+			var cd1 = new IcuRulesCollationDefinition("standard");
+			var cd2 = new IcuRulesCollationDefinition("other1");
 			first.Collations.Add(cd1);
 			first.Collations.Add(cd2);
 			var second = new WritingSystemDefinition();
-			var cd3 = new IcuCollationDefinition("standard");
-			var cd4 = new IcuCollationDefinition("other2");
+			var cd3 = new IcuRulesCollationDefinition("standard");
+			var cd4 = new IcuRulesCollationDefinition("other2");
 
 			Assert.That(first.ValueEquals(second), Is.False, "ws with empty collations should not equal one with some");
 			second.Collations.Add(cd3);
@@ -768,8 +768,8 @@ namespace SIL.WritingSystems.Tests
 			secondValueToSet.Add(typeof(SpellCheckDictionaryDefinition), new SpellCheckDictionaryDefinition(SpellCheckDictionaryFormat.Lift));
 			firstValueToSet.Add(typeof(QuotationParagraphContinueType), QuotationParagraphContinueType.None);
 			secondValueToSet.Add(typeof(QuotationParagraphContinueType), QuotationParagraphContinueType.All);
-			firstValueToSet.Add(typeof(CollationDefinition), new IcuCollationDefinition("standard"));
-			secondValueToSet.Add(typeof(CollationDefinition), new SimpleCollationDefinition("standard"));
+			firstValueToSet.Add(typeof(CollationDefinition), new IcuRulesCollationDefinition("standard"));
+			secondValueToSet.Add(typeof(CollationDefinition), new SimpleRulesCollationDefinition("standard"));
 			firstValueToSet.Add(typeof(LanguageSubtag), (LanguageSubtag) "en");
 			secondValueToSet.Add(typeof(LanguageSubtag), (LanguageSubtag) "de");
 			firstValueToSet.Add(typeof(ScriptSubtag), (ScriptSubtag) "Latn");
@@ -1747,8 +1747,8 @@ namespace SIL.WritingSystems.Tests
 		public void DefaultCollation_DefaultsToFirstCollation()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var cd1 = new IcuCollationDefinition("standard");
-			var cd2 = new IcuCollationDefinition("other");
+			var cd1 = new IcuRulesCollationDefinition("standard");
+			var cd2 = new IcuRulesCollationDefinition("other");
 
 			ws.Collations.Add(cd1);
 			ws.Collations.Add(cd2);
@@ -1760,8 +1760,8 @@ namespace SIL.WritingSystems.Tests
 		public void DefaultCollation_ResetWhenRemovedFromCollations()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var cd1 = new IcuCollationDefinition("standard");
-			var cd2 = new IcuCollationDefinition("other");
+			var cd1 = new IcuRulesCollationDefinition("standard");
+			var cd2 = new IcuRulesCollationDefinition("other");
 
 			ws.Collations.Add(cd1);
 			ws.Collations.Add(cd2);
@@ -1778,14 +1778,14 @@ namespace SIL.WritingSystems.Tests
 		public void DefaultCollation_SetToCollationWithSameTypeAsExistingCollation_ReplacesExistingCollation()
 		{
 			var ws = new WritingSystemDefinition();
-			var cd1 = new IcuCollationDefinition("other");
-			var cd2 = new IcuCollationDefinition("standard");
+			var cd1 = new IcuRulesCollationDefinition("other");
+			var cd2 = new IcuRulesCollationDefinition("standard");
 
 			ws.Collations.Add(cd1);
 			ws.Collations.Add(cd2);
 			ws.DefaultCollation = cd2;
 
-			var newCd2 = new IcuCollationDefinition("standard");
+			var newCd2 = new IcuRulesCollationDefinition("standard");
 			ws.DefaultCollation = newCd2;
 			Assert.That(ws.Collations[1], Is.EqualTo(newCd2));
 		}

@@ -1,18 +1,18 @@
 ﻿namespace SIL.WritingSystems
 {
-	public class SimpleCollationDefinition : CollationDefinition
+	public class SimpleRulesCollationDefinition : RulesCollationDefinition
 	{
 		private string _simpleRules;
 
-		public SimpleCollationDefinition(string type)
+		public SimpleRulesCollationDefinition(string type)
 			: base(type)
 		{
 		}
 
-		public SimpleCollationDefinition(SimpleCollationDefinition scrd)
-			: base(scrd)
+		public SimpleRulesCollationDefinition(SimpleRulesCollationDefinition srcd)
+			: base(srcd)
 		{
-			_simpleRules = scrd._simpleRules;
+			_simpleRules = srcd._simpleRules;
 		}
 
 		public string SimpleRules
@@ -47,13 +47,13 @@
 
 		public override bool ValueEquals(CollationDefinition other)
 		{
-			var scrd = other as SimpleCollationDefinition;
-			return scrd != null && Type == scrd.Type && SimpleRules == scrd.SimpleRules;
+			var srcd = other as SimpleRulesCollationDefinition;
+			return srcd != null && base.ValueEquals(other) && SimpleRules == srcd.SimpleRules;
 		}
 
 		public override CollationDefinition Clone()
 		{
-			return new SimpleCollationDefinition(this);
+			return new SimpleRulesCollationDefinition(this);
 		}
 	}
 }

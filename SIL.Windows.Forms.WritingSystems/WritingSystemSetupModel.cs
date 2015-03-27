@@ -128,8 +128,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			_currentWritingSystem = ws;
 			_currentIndex = 0;
 			_writingSystemRepository = null;
-			_writingSystemDefinitions = new List<WritingSystemDefinition>(1);
-			WritingSystemDefinitions.Add(ws);
+			_writingSystemDefinitions = new List<WritingSystemDefinition> {ws};
 			_deletedWritingSystemDefinitions = null;
 			_usingRepository = false;
 		}
@@ -305,19 +304,21 @@ namespace SIL.Windows.Forms.WritingSystems
 			{
 				_currentCollationRulesType = CollationRulesType.DefaultOrdering;
 			}
-			else if (CurrentDefinition.DefaultCollation is SimpleCollationDefinition)
+			else if (CurrentDefinition.DefaultCollation is SimpleRulesCollationDefinition)
 			{
 				_currentCollationRulesType = CollationRulesType.CustomSimple;
 			}
-			else if (CurrentDefinition.DefaultCollation is IcuCollationDefinition)
+			else if (CurrentDefinition.DefaultCollation is IcuRulesCollationDefinition)
 			{
-				var icuCollation = (IcuCollationDefinition) CurrentDefinition.DefaultCollation;
-				if (string.IsNullOrEmpty(icuCollation.IcuRules) && icuCollation.Imports.Count == 1 && icuCollation.Imports[0].IetfLanguageTag != CurrentIetfLanguageTag)
-					_currentCollationRulesType = CollationRulesType.OtherLanguage;
-				else if (!string.IsNullOrEmpty(icuCollation.IcuRules) || icuCollation.Imports.Count > 0)
+				var icuCollation = (IcuRulesCollationDefinition) CurrentDefinition.DefaultCollation;
+				if (!string.IsNullOrEmpty(icuCollation.IcuRules) || icuCollation.Imports.Count > 0)
 					_currentCollationRulesType = CollationRulesType.CustomIcu;
 				else
 					_currentCollationRulesType = CollationRulesType.DefaultOrdering;
+			}
+			else if (CurrentDefinition.DefaultCollation is SystemCollationDefinition)
+			{
+				_currentCollationRulesType = CollationRulesType.OtherLanguage;
 			}
 		}
 
@@ -486,11 +487,11 @@ namespace SIL.Windows.Forms.WritingSystems
 				for (int i = 0; i < WritingSystemDefinitions.Count; i++)
 				{
 					WritingSystemDefinition ws = WritingSystemDefinitions[i];
-					var icuCollation = ws.DefaultCollation as IcuCollationDefinition;
+					var systemCollation = ws.DefaultCollation as SystemCollationDefinition;
 					// don't allow if it references another language on our prohibited list and this one
 					// isn't already on the prohibited list
-					if (icuCollation != null && string.IsNullOrEmpty(icuCollation.IcuRules) && icuCollation.Imports.Count == 1
-						&& !string.IsNullOrEmpty(ws.IetfLanguageTag) && prohibitedList.Contains(icuCollation.Imports[0].IetfLanguageTag)
+					if (systemCollation != null && !string.IsNullOrEmpty(ws.IetfLanguageTag)
+						&& prohibitedList.Contains(systemCollation.CultureId)
 						&& !prohibitedList.Contains(ws.IetfLanguageTag))
 					{
 						prohibitedList.Add(ws.IetfLanguageTag);
@@ -520,12 +521,9 @@ namespace SIL.Windows.Forms.WritingSystems
 				// populate the rest of the list with all languages from the OS
 				foreach (CultureInfo cultureInfo in CultureInfo.GetCultures(CultureTypes.AllCultures).OrderBy(info => info.IetfLanguageTag))
 				{
-					if(prohibitedList.Contains(cultureInfo.IetfLanguageTag, StringComparison.OrdinalIgnoreCase))
-					{
+					if (prohibitedList.Contains(cultureInfo.IetfLanguageTag, StringComparison.OrdinalIgnoreCase))
 						continue;
-					}
-					yield return
-						new KeyValuePair<string, string>(cultureInfo.IetfLanguageTag, cultureInfo.DisplayName);
+					yield return new KeyValuePair<string, string>(cultureInfo.IetfLanguageTag, cultureInfo.DisplayName);
 				}
 			}
 		}
@@ -729,7 +727,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		public bool CurrentIsVoice
 		{
-			get { return CurrentDefinition==null ? false : _currentWritingSystem.IsVoice; }
+			get { return CurrentDefinition != null && _currentWritingSystem.IsVoice; }
 			set
 			{
 				Guard.AgainstNull(CurrentDefinition,"CurrentDefinition");
@@ -856,17 +854,19 @@ namespace SIL.Windows.Forms.WritingSystems
 					var type = (CollationRulesType) Enum.Parse(typeof(CollationRulesType), value);
 					if (type != _currentCollationRulesType)
 					{
-						string defType = CurrentDefinition.DefaultCollation == null ? "standard" : CurrentDefinition.DefaultCollation.Type;
 						switch (type)
 						{
 							case CollationRulesType.DefaultOrdering:
 							case CollationRulesType.CustomIcu:
-							case CollationRulesType.OtherLanguage:
-								CurrentDefinition.DefaultCollation = new IcuCollationDefinition(defType) {WritingSystemFactory = _writingSystemFactory};
+								CurrentDefinition.DefaultCollation = new IcuRulesCollationDefinition(CurrentDefinition.DefaultCollationType) {WritingSystemFactory = _writingSystemFactory};
 								break;
 
 							case CollationRulesType.CustomSimple:
-								CurrentDefinition.DefaultCollation = new SimpleCollationDefinition(defType);
+								CurrentDefinition.DefaultCollation = new SimpleRulesCollationDefinition(CurrentDefinition.DefaultCollationType);
+								break;
+
+							case CollationRulesType.OtherLanguage:
+								CurrentDefinition.DefaultCollation = new SystemCollationDefinition();
 								break;
 						}
 						_currentCollationRulesType = type;
@@ -885,13 +885,12 @@ namespace SIL.Windows.Forms.WritingSystems
 					case CollationRulesType.DefaultOrdering:
 						return string.Empty;
 					case CollationRulesType.CustomIcu:
-						return CurrentDefinition.DefaultCollation.CollationRules;
+						return ((IcuRulesCollationDefinition) CurrentDefinition.DefaultCollation).CollationRules;
 					case CollationRulesType.CustomSimple:
-						var simpleCollation = (SimpleCollationDefinition) CurrentDefinition.DefaultCollation;
+						var simpleCollation = (SimpleRulesCollationDefinition) CurrentDefinition.DefaultCollation;
 						return simpleCollation.SimpleRules == string.Empty ? DefaultCustomSimpleSortRules : simpleCollation.SimpleRules;
 					case CollationRulesType.OtherLanguage:
-						var otherLangCollation = (IcuCollationDefinition) CurrentDefinition.DefaultCollation;
-						return otherLangCollation.Imports.Count == 0 ? string.Empty : otherLangCollation.Imports[0].IetfLanguageTag;
+						return ((SystemCollationDefinition) CurrentDefinition.DefaultCollation).CultureId;
 				}
 				return string.Empty;
 			}
@@ -900,7 +899,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				switch (_currentCollationRulesType)
 				{
 					case CollationRulesType.CustomIcu:
-						var icuCollation = (IcuCollationDefinition) CurrentDefinition.DefaultCollation;
+						var icuCollation = (IcuRulesCollationDefinition) CurrentDefinition.DefaultCollation;
 						if (icuCollation.IcuRules != value || icuCollation.Imports.Count > 0)
 						{
 							icuCollation.Imports.Clear();
@@ -909,7 +908,7 @@ namespace SIL.Windows.Forms.WritingSystems
 						}
 						break;
 					case CollationRulesType.CustomSimple:
-						var simpleCollation = (SimpleCollationDefinition) CurrentDefinition.DefaultCollation;
+						var simpleCollation = (SimpleRulesCollationDefinition) CurrentDefinition.DefaultCollation;
 						if (simpleCollation.SimpleRules != value)
 						{
 							simpleCollation.SimpleRules = value;
@@ -917,12 +916,10 @@ namespace SIL.Windows.Forms.WritingSystems
 						}
 						break;
 					case CollationRulesType.OtherLanguage:
-						var otherLangCollation = (IcuCollationDefinition) CurrentDefinition.DefaultCollation;
-						if (otherLangCollation.Imports.Count == 0 || otherLangCollation.Imports[0].IetfLanguageTag != value)
+						var systemCollation = (SystemCollationDefinition) CurrentDefinition.DefaultCollation;
+						if (systemCollation.CultureId != value)
 						{
-							otherLangCollation.Imports.Clear();
-							otherLangCollation.Imports.Add(new IcuCollationImport(value));
-							otherLangCollation.IcuRules = string.Empty;
+							systemCollation.CultureId = value;
 							OnCurrentItemUpdated();
 						}
 						break;

@@ -25,7 +25,7 @@ namespace WeSay.LexicalModel.Tests
 			_temporaryFolder = new TemporaryFolder();
 			string filePath = _temporaryFolder.GetTemporaryFile();
 			_repository = new LiftLexEntryRepository(filePath);
-			_headwordWritingSystem = new WritingSystemDefinition("th") {DefaultCollation = new IcuCollationDefinition("standard")};
+			_headwordWritingSystem = new WritingSystemDefinition("th") {DefaultCollation = new IcuRulesCollationDefinition("standard")};
 		}
 
 		[TearDown]
@@ -71,7 +71,7 @@ namespace WeSay.LexicalModel.Tests
 		{
 			var retval = new WritingSystemDefinition();
 			retval.Language = languageISO;
-			retval.DefaultCollation = new IcuCollationDefinition("standard");
+			retval.DefaultCollation = new IcuRulesCollationDefinition("standard");
 			return retval;
 		}
 

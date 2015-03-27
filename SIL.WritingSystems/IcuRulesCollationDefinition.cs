@@ -5,12 +5,12 @@ using SIL.ObjectModel;
 
 namespace SIL.WritingSystems
 {
-	public class IcuCollationDefinition : CollationDefinition
+	public class IcuRulesCollationDefinition : RulesCollationDefinition
 	{
 		private readonly BulkObservableList<IcuCollationImport> _imports;
 		private string _icuRules;
 
-		public IcuCollationDefinition(string type)
+		public IcuRulesCollationDefinition(string type)
 			: base(type)
 		{
 			_imports = new BulkObservableList<IcuCollationImport>();
@@ -18,12 +18,12 @@ namespace SIL.WritingSystems
 			SetupCollectionChangeListeners();
 		}
 
-		public IcuCollationDefinition(IcuCollationDefinition icd)
-			: base(icd)
+		public IcuRulesCollationDefinition(IcuRulesCollationDefinition ircd)
+			: base(ircd)
 		{
-			WritingSystemFactory = icd.WritingSystemFactory;
-			_imports = new BulkObservableList<IcuCollationImport>(icd._imports);
-			_icuRules = icd._icuRules;
+			WritingSystemFactory = ircd.WritingSystemFactory;
+			_imports = new BulkObservableList<IcuCollationImport>(ircd._imports);
+			_icuRules = ircd._icuRules;
 			SetupCollectionChangeListeners();
 		}
 
@@ -66,23 +66,23 @@ namespace SIL.WritingSystems
 			var sb = new StringBuilder();
 			foreach (IcuCollationImport import in _imports)
 			{
-				if (WritingSystemFactory == null)
+				bool importSuccessful = false;
+				if (WritingSystemFactory != null)
 				{
-					message = string.Format("Unable to import the {0} collation rules from {1}.", string.IsNullOrEmpty(import.Type) ? "default" : import.Type, import.IetfLanguageTag);
-					return false;
+					WritingSystemDefinition ws = WritingSystemFactory.Create(import.IetfLanguageTag);
+					CollationDefinition cd;
+					if (ws.Collations.TryGet(import.Type, out cd))
+					{
+						var rcd = cd as RulesCollationDefinition;
+						if (rcd != null && rcd.IsValid)
+						{
+							sb.Append(rcd.CollationRules);
+							importSuccessful = true;
+						}
+					}
 				}
 
-				WritingSystemDefinition ws = WritingSystemFactory.Create(import.IetfLanguageTag);
-				CollationDefinition cd;
-				if (string.IsNullOrEmpty(import.Type))
-					cd = ws.DefaultCollation;
-				else if (!ws.Collations.TryGet(import.Type, out cd))
-					cd = null;
-				if (cd != null && cd.IsValid)
-				{
-					sb.Append(cd.CollationRules);
-				}
-				else
+				if (!importSuccessful)
 				{
 					message = string.Format("Unable to import the {0} collation rules from {1}.", string.IsNullOrEmpty(import.Type) ? "default" : import.Type, import.IetfLanguageTag);
 					return false;
@@ -98,13 +98,13 @@ namespace SIL.WritingSystems
 
 		public override bool ValueEquals(CollationDefinition other)
 		{
-			var icd = other as IcuCollationDefinition;
-			return icd != null && base.ValueEquals(icd) && IcuRules == icd.IcuRules && _imports.SequenceEqual(icd._imports);
+			var ircd = other as IcuRulesCollationDefinition;
+			return ircd != null && base.ValueEquals(ircd) && IcuRules == ircd.IcuRules && _imports.SequenceEqual(ircd._imports);
 		}
 
 		public override CollationDefinition Clone()
 		{
-			return new IcuCollationDefinition(this);
+			return new IcuRulesCollationDefinition(this);
 		}
 	}
 }

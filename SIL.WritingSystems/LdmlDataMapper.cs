@@ -694,11 +694,11 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		private SimpleCollationDefinition ReadCollationRulesForCustomSimple(XElement collationElem, XElement specialElem, string collationType)
+		private SimpleRulesCollationDefinition ReadCollationRulesForCustomSimple(XElement collationElem, XElement specialElem, string collationType)
 		{
 			XElement simpleElem = specialElem.Element(Sil + "simple");
 			bool needsCompiling = (bool?) specialElem.Attribute(Sil + "needscompiling") ?? false;
-			var scd = new SimpleCollationDefinition(collationType) {SimpleRules = ((string) simpleElem).Replace("\n", "\r\n")};
+			var scd = new SimpleRulesCollationDefinition(collationType) {SimpleRules = ((string) simpleElem).Replace("\n", "\r\n")};
 			if (needsCompiling)
 			{
 				string errorMsg;
@@ -712,9 +712,9 @@ namespace SIL.WritingSystems
 			return scd;
 		}
 
-		private IcuCollationDefinition ReadCollationRulesForCustomIcu(XElement collationElem, string collationType)
+		private IcuRulesCollationDefinition ReadCollationRulesForCustomIcu(XElement collationElem, string collationType)
 		{
-			var icd = new IcuCollationDefinition(collationType) {WritingSystemFactory = _writingSystemFactory};
+			var icd = new IcuRulesCollationDefinition(collationType) {WritingSystemFactory = _writingSystemFactory};
 			icd.Imports.AddRange(collationElem.NonAltElements("import").Select(ie => new IcuCollationImport((string) ie.Attribute("source"), (string) ie.Attribute("type"))));
 			icd.IcuRules = LdmlCollationParser.GetIcuRulesFromCollationNode(collationElem);
 			string errorMsg;
@@ -1202,16 +1202,16 @@ namespace SIL.WritingSystems
 			string message;
 			collation.Validate(out message);
 
-			var icuCollation = collation as IcuCollationDefinition;
+			var icuCollation = collation as IcuRulesCollationDefinition;
 			if (icuCollation != null)
 				WriteCollationRulesFromCustomIcu(collationElem, icuCollation);
 
-			var simpleCollation = collation as SimpleCollationDefinition;
+			var simpleCollation = collation as SimpleRulesCollationDefinition;
 			if (simpleCollation != null)
 				WriteCollationRulesFromCustomSimple(collationElem, simpleCollation);
 		}
 
-		private void WriteCollationRulesFromCustomIcu(XElement collationElem, IcuCollationDefinition icd)
+		private void WriteCollationRulesFromCustomIcu(XElement collationElem, IcuRulesCollationDefinition icd)
 		{
 			foreach (IcuCollationImport import in icd.Imports)
 			{
@@ -1230,7 +1230,7 @@ namespace SIL.WritingSystems
 				collationElem.Add(new XElement("cr", new XCData(icd.IcuRules)));
 		}
 
-		private void WriteCollationRulesFromCustomSimple(XElement collationElem, SimpleCollationDefinition scd)
+		private void WriteCollationRulesFromCustomSimple(XElement collationElem, SimpleRulesCollationDefinition scd)
 		{
 			// If collation valid and icu rules exist, populate icu rules
 			if (!string.IsNullOrEmpty(scd.CollationRules))

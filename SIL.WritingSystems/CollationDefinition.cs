@@ -5,7 +5,6 @@ namespace SIL.WritingSystems
 	public abstract class CollationDefinition : DefinitionBase<CollationDefinition>
 	{
 		private readonly string _type;
-		private string _collationRules;
 		private ICollator _collator;
 
 		protected CollationDefinition(string type)
@@ -13,25 +12,14 @@ namespace SIL.WritingSystems
 			_type = type;
 		}
 
-		protected CollationDefinition(CollationDefinition crd)
+		protected CollationDefinition(CollationDefinition cd)
 		{
-			_type = crd._type;
-			_collationRules = crd._collationRules;
+			_type = cd._type;
 		}
 
 		public string Type
 		{
 			get { return _type; }
-		}
-
-		public string CollationRules
-		{
-			get { return _collationRules ?? string.Empty; }
-			protected internal set
-			{
-				if (Set(() => CollationRules, ref _collationRules, value))
-					ResetCollator();
-			}
 		}
 
 		/// <summary>
@@ -43,22 +31,17 @@ namespace SIL.WritingSystems
 			get
 			{
 				if (_collator == null)
+				{
+					string message;
+					if (!Validate(out message))
+						throw new ValidationException(message);
 					_collator = CreateCollator();
+				}
 				return _collator;
 			}
 		}
 
-		public virtual bool Validate(out string message)
-		{
-			if (IsValid)
-			{
-				message = null;
-				return true;
-			}
-
-			IsValid = IcuRulesCollator.ValidateSortRules(CollationRules, out message);
-			return IsValid;
-		}
+		public abstract bool Validate(out string message);
 
 		public bool IsValid { get; set; }
 
@@ -68,13 +51,7 @@ namespace SIL.WritingSystems
 			IsValid = false;
 		}
 
-		private ICollator CreateCollator()
-		{
-			string message;
-			if (!Validate(out message))
-				throw new ValidationException(message);
-			return new IcuRulesCollator(CollationRules);
-		}
+		protected abstract ICollator CreateCollator();
 
 		public override bool ValueEquals(CollationDefinition other)
 		{

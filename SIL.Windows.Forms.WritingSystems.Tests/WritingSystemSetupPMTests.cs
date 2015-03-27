@@ -648,7 +648,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		public void ValidateSortRules_ValidOtherLanguage_IsTrue()
 		{
 			var enWS = new WritingSystemDefinition("en");
-			var cd = new IcuCollationDefinition("standard") {IcuRules = "&b<a<c"};
+			var cd = new IcuRulesCollationDefinition("standard") {IcuRules = "&b<a<c"};
 			string message;
 			Assert.That(cd.Validate(out message), Is.True);
 			enWS.DefaultCollation = cd;

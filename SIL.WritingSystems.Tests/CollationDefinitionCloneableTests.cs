@@ -17,11 +17,6 @@ namespace SIL.WritingSystems.Tests
 			get { return "|IsChanged|_collator|IsValid|PropertyChanged|PropertyChanging|"; }
 		}
 
-		public override string EqualsExceptionList
-		{
-			get { return "|_collationRules|"; }
-		}
-
 		protected override List<ValuesToSet> DefaultValuesForTypes
 		{
 			get

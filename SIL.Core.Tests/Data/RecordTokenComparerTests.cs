@@ -74,7 +74,7 @@ namespace SIL.Tests.Data
 		{
 			using (var e = new TestEnvironment())
 			{
-				var ws = new WritingSystemDefinition("en") {DefaultCollation = new IcuCollationDefinition("standard")};
+				var ws = new WritingSystemDefinition("en") {DefaultCollation = new IcuRulesCollationDefinition("standard")};
 				var sd1 = new SortDefinition("Form", ws.DefaultCollation.Collator);
 				var results1 = new Dictionary<string, object> {{"Form", "សង្ឃនៃអំបូរអឺរ៉ុន"}};
 				var results2 = new Dictionary<string, object> {{"Form", "បូជាចារ្យនៃអំបូរអឺរ៉ុន"}};

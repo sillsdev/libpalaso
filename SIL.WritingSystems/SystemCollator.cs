@@ -10,14 +10,10 @@ namespace SIL.WritingSystems
 		public SystemCollator(string cultureId)
 		{
 			_cultureInfo = null;
-			if (!String.IsNullOrEmpty(cultureId))
-			{
-				_cultureInfo = GetCultureInfoFromWritingSystemId(cultureId);
-			}
+			if (!string.IsNullOrEmpty(cultureId))
+				_cultureInfo = GetCultureInfo(cultureId);
 			if (_cultureInfo == null)
-			{
 				_cultureInfo = CultureInfo.InvariantCulture;
-			}
 		}
 
 		public SortKey GetSortKey(string source)
@@ -54,12 +50,12 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Validates the specified culture ID.
 		/// </summary>
-		public static bool ValidateCultureID(string cultureId, out string message)
+		public static bool ValidateCultureId(string cultureId, out string message)
 		{
 			try
 			{
 				if (!String.IsNullOrEmpty(cultureId))
-					GetCultureInfoFromWritingSystemId(cultureId);
+					GetCultureInfo(cultureId);
 			}
 			catch (Exception e)
 			{
@@ -70,7 +66,7 @@ namespace SIL.WritingSystems
 			return true;
 		}
 
-		private static CultureInfo GetCultureInfoFromWritingSystemId(string cultureId)
+		private static CultureInfo GetCultureInfo(string cultureId)
 		{
 			CultureInfo ci;
 			try

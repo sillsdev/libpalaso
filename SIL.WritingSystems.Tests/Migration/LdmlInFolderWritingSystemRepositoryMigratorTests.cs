@@ -994,7 +994,7 @@ namespace SIL.WritingSystems.Tests.Migration
 
 				var wsV3 = new WritingSystemDefinitionV3();
 				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
-				CollationDefinition cdV3 = wsV3.Collations.First();
+				var cdV3 = (IcuRulesCollationDefinition) wsV3.Collations.First();
 				Assert.IsNullOrEmpty(wsV0.SortRules);
 				Assert.IsNullOrEmpty(cdV3.CollationRules);
 				Assert.That(cdV3.Type, Is.EqualTo("standard"));
@@ -1017,7 +1017,7 @@ namespace SIL.WritingSystems.Tests.Migration
 
 				var wsV3 = new WritingSystemDefinitionV3();
 				new LdmlAdaptorV3(new TestWritingSystemFactory()).Read(environment.MappedFilePath("test.ldml"), wsV3);
-				var cdV3 = (IcuCollationDefinition) wsV3.Collations.First();
+				var cdV3 = (IcuRulesCollationDefinition) wsV3.Collations.First();
 				Assert.That(cdV3.Imports, Is.EqualTo(new[] {new IcuCollationImport(wsV0.SortRules)}));
 			}
 		}
@@ -1038,7 +1038,7 @@ namespace SIL.WritingSystems.Tests.Migration
 
 				var wsV3 = new WritingSystemDefinitionV3();
 				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
-				var cdV3 = (SimpleCollationDefinition) wsV3.Collations.First();
+				var cdV3 = (SimpleRulesCollationDefinition) wsV3.Collations.First();
 				Assert.AreEqual(wsV0.SortRules, cdV3.SimpleRules);
 			}
 		}
@@ -1059,7 +1059,7 @@ namespace SIL.WritingSystems.Tests.Migration
 
 				var wsV3 = new WritingSystemDefinitionV3();
 				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
-				CollationDefinition cdV3 = wsV3.Collations.First();
+				var cdV3 = (IcuRulesCollationDefinition) wsV3.Collations.First();
 				Assert.AreEqual(wsV0.SortRules, cdV3.CollationRules);
 			}
 		}

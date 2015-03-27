@@ -76,6 +76,7 @@ namespace SIL.WritingSystems
 		private string _defaultRegion;
 		private string _windowsLcid;
 		private string _spellCheckingId;
+		private string _defaultCollationType;
 		private CollationDefinition _defaultCollation;
 		private QuotationParagraphContinueType _quotationParagraphContinueType;
 		private readonly KeyedBulkObservableList<string, FontDefinition> _fonts;
@@ -169,6 +170,7 @@ namespace SIL.WritingSystems
 			_quotationMarks = new BulkObservableList<QuotationMark>(ws._quotationMarks);
 			_quotationParagraphContinueType = ws._quotationParagraphContinueType;
 			_ietfLanguageTag = ws._ietfLanguageTag;
+			_defaultCollationType = ws._defaultCollationType;
 			_collations = new KeyedBulkObservableList<string, CollationDefinition>(ws._collations.CloneItems(), cd => cd.Type);
 			if (ws._defaultCollation != null)
 				_defaultCollation = _collations[ws._collations.IndexOf(ws._defaultCollation)];
@@ -738,9 +740,23 @@ namespace SIL.WritingSystems
 			set { Set(() => RightToLeftScript, ref _rightToLeftScript, value); }
 		}
 
+		public virtual string DefaultCollationType
+		{
+			get { return _defaultCollationType ?? "standard"; }
+			set { Set(() => DefaultCollationType, ref _defaultCollationType, value); }
+		}
+
 		public virtual CollationDefinition DefaultCollation
 		{
-			get { return _defaultCollation ?? _collations.FirstOrDefault(); }
+			get
+			{
+				if (_defaultCollation != null)
+					return _defaultCollation;
+				CollationDefinition cd;
+				if (_collations.TryGet(DefaultCollationType, out cd))
+					return cd;
+				return _collations.FirstOrDefault();
+			}
 			set
 			{
 				if (Set(() => DefaultCollation, ref _defaultCollation, value) && value != null)
@@ -1131,6 +1147,8 @@ namespace SIL.WritingSystems
 			if (SpellCheckingId != other.SpellCheckingId)
 				return false;
 			if (_defaultFontSize != other._defaultFontSize)
+				return false;
+			if (DefaultCollationType != other.DefaultCollationType)
 				return false;
 			// fonts
 			if (_fonts.Count != other._fonts.Count)

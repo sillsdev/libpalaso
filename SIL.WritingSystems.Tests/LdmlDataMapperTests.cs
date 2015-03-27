@@ -153,7 +153,7 @@ namespace SIL.WritingSystems.Tests
 			var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 
 			const string sortRules = "(A̍ a̍)";
-			var cd = new SimpleCollationDefinition("standard") {SimpleRules = sortRules};
+			var cd = new SimpleRulesCollationDefinition("standard") {SimpleRules = sortRules};
 			var wsWithSimpleCustomSortRules = new WritingSystemDefinition();
 			wsWithSimpleCustomSortRules.Collations.Add(cd);
 
@@ -164,7 +164,7 @@ namespace SIL.WritingSystems.Tests
 				ldmlAdaptor.Read(tempFile.Path, wsFromLdml);
 			}
 
-			var cdFromLdml = (SimpleCollationDefinition) wsFromLdml.Collations.First();
+			var cdFromLdml = (SimpleRulesCollationDefinition) wsFromLdml.Collations.First();
 			Assert.AreEqual(sortRules, cdFromLdml.SimpleRules);
 		}
 
@@ -476,7 +476,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				const string icuRules =
 					"&B<t<<<T<s<<<S<e<<<E\r\n\t\t\t\t&C<k<<<K<x<<<X<i<<<I\r\n\t\t\t\t&D<q<<<Q<r<<<R\r\n\t\t\t\t&G<o<<<O\r\n\t\t\t\t&W<h<<<H";
-				var cd = new IcuCollationDefinition("standard")
+				var cd = new IcuRulesCollationDefinition("standard")
 				{
 					IcuRules = icuRules,
 					CollationRules = icuRules,
@@ -509,7 +509,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				const string icuRules =
 					"&&&B<t<<<T<s<<<S<e<<<E\r\n\t\t\t\t&C<k<<<K<x<<<X<i<<<I\r\n\t\t\t\t&D<q<<<Q<r<<<R\r\n\t\t\t\t&G<o<<<O\r\n\t\t\t\t&W<h<<<H";
-				var cd = new IcuCollationDefinition("standard")
+				var cd = new IcuRulesCollationDefinition("standard")
 				{
 					IcuRules = icuRules,
 					CollationRules = icuRules,
@@ -548,7 +548,7 @@ namespace SIL.WritingSystems.Tests
 					"\r\n\t\t\t\t\ta/A\r\n\t\t\t\t\tb/B\r\n\t\t\t\t\tt/T\r\n\t\t\t\t\ts/S\r\n\t\t\t\t\tc/C\r\n\t\t\t\t\tk/K\r\n\t\t\t\t\tx/X\r\n\t\t\t\t\ti/I\r\n\t\t\t\t\td/D\r\n\t\t\t\t\tq/Q\r\n\t\t\t\t\tr/R\r\n\t\t\t\t\te/E\r\n\t\t\t\t\tf/F\r\n\t\t\t\t\tg/G\r\n\t\t\t\t\to/O\r\n\t\t\t\t\tj/J\r\n\t\t\t\t\tl/L\r\n\t\t\t\t\tm/M\r\n\t\t\t\t\tn/N\r\n\t\t\t\t\tp/P\r\n\t\t\t\t\tu/U\r\n\t\t\t\t\tv/V\r\n\t\t\t\t\tw/W\r\n\t\t\t\t\th/H\r\n\t\t\t\t\ty/Y\r\n\t\t\t\t\tz/Z\r\n\t\t\t\t";
 				const string icuRules =
 					"&[before 1] [first regular]  < a\\/A < b\\/B < t\\/T < s\\/S < c\\/C < k\\/K < x\\/X < i\\/I < d\\/D < q\\/Q < r\\/R < e\\/E < f\\/F < g\\/G < o\\/O < j\\/J < l\\/L < m\\/M < n\\/N < p\\/P < u\\/U < v\\/V < w\\/W < h\\/H < y\\/Y < z\\/Z";
-				var cd = new SimpleCollationDefinition("standard")
+				var cd = new SimpleRulesCollationDefinition("standard")
 				{
 					SimpleRules = simpleRules,
 					CollationRules = icuRules,
@@ -585,7 +585,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				const string simpleRules =
 					"\r\n\t\t\t\t\t\\!/A\r\n\t\t\t\t\tb/B\r\n\t\t\t\t\tt/T\r\n\t\t\t\t\ts/S\r\n\t\t\t\t\tc/C\r\n\t\t\t\t\tk/K\r\n\t\t\t\t\tx/X\r\n\t\t\t\t\ti/I\r\n\t\t\t\t\td/D\r\n\t\t\t\t\tq/Q\r\n\t\t\t\t\tr/R\r\n\t\t\t\t\te/E\r\n\t\t\t\t\tf/F\r\n\t\t\t\t\tg/G\r\n\t\t\t\t\to/O\r\n\t\t\t\t\tj/J\r\n\t\t\t\t\tl/L\r\n\t\t\t\t\tm/M\r\n\t\t\t\t\tn/N\r\n\t\t\t\t\tp/P\r\n\t\t\t\t\tu/U\r\n\t\t\t\t\tv/V\r\n\t\t\t\t\tw/W\r\n\t\t\t\t\th/H\r\n\t\t\t\t\ty/Y\r\n\t\t\t\t\tz/Z\r\n\t\t\t\t";
-				var cd = new SimpleCollationDefinition("standard")
+				var cd = new SimpleRulesCollationDefinition("standard")
 				{
 					SimpleRules = simpleRules,
 				};
@@ -605,7 +605,7 @@ namespace SIL.WritingSystems.Tests
 				Assert.That((string)specialElem.Attribute(Sil + "needsCompiling"), Is.EqualTo("true"));
 				Assert.That((string)simpleElem, Is.EqualTo(simpleRules.Replace("\r\n", "\n")));
 
-				var validatedCd = new SimpleCollationDefinition("standard")
+				var validatedCd = new SimpleRulesCollationDefinition("standard")
 				{
 					SimpleRules = simpleRules
 				};
@@ -625,7 +625,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				const string icuRules =
 					"&B<t<<<T<s<<<S<e<<<E\n\t\t\t\t&C<k<<<K<x<<<X<i<<<I\n\t\t\t\t&D<q<<<Q<r<<<R\n\t\t\t\t&G<o<<<O\n\t\t\t\t&W<h<<<H";
-				var cd = new IcuCollationDefinition("standard")
+				var cd = new IcuRulesCollationDefinition("standard")
 				{
 					Imports = {new IcuCollationImport("my", "standard")},
 					CollationRules = icuRules,
@@ -639,7 +639,7 @@ namespace SIL.WritingSystems.Tests
 				{
 					new WritingSystemDefinition("my")
 					{
-						Collations = {new IcuCollationDefinition("standard") {IcuRules = icuRules, CollationRules = icuRules, IsValid = true}}
+						Collations = {new IcuRulesCollationDefinition("standard") {IcuRules = icuRules, CollationRules = icuRules, IsValid = true}}
 					}
 				}};
 				var ldmlAdaptor = new LdmlDataMapper(wsFactory);
