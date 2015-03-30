@@ -845,6 +845,9 @@ namespace SIL.WritingSystems.Tests
 			<characterOrder>left-to-right</characterOrder>
 		</orientation>
 	</layout>
+	<collations>
+		<defaultCollation>standard</defaultCollation>
+	</collations>
 </ldml>"
 )).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 			}

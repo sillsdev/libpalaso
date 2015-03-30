@@ -655,11 +655,12 @@ namespace SIL.WritingSystems
 			ws.Collations.Clear();
 			XElement defaultCollationElem = collationsElem.Element("defaultCollation");
 			string defaultCollation = (string) defaultCollationElem ?? "standard";
+			ws.DefaultCollationType = defaultCollation;
 			foreach (XElement collationElem in collationsElem.NonAltElements("collation"))
-				ReadCollationElement(collationElem, ws, defaultCollation);
+				ReadCollationElement(collationElem, ws);
 		}
 
-		private void ReadCollationElement(XElement collationElem, WritingSystemDefinition ws, string defaultCollation)
+		private void ReadCollationElement(XElement collationElem, WritingSystemDefinition ws)
 		{
 			var collationType = (string)collationElem.Attribute("type");
 			if (!string.IsNullOrEmpty(collationType))
@@ -686,11 +687,7 @@ namespace SIL.WritingSystems
 
 				// Only add collation definition if it's been set
 				if (cd != null)
-				{
 					ws.Collations.Add(cd);
-					if (collationType == defaultCollation)
-						ws.DefaultCollation = cd;
-				}
 			}
 		}
 
@@ -1181,11 +1178,8 @@ namespace SIL.WritingSystems
 			// Remove only the collations we can repopulate from the writing system
 			collationsElem.NonAltElements("collation").Where(ce => ce.NonAltElements("special").Elements().All(se => se.Name != (Sil + "reordered"))).Remove();
 
-			if (ws.DefaultCollation != null)
-			{
-				XElement defaultCollationElem = collationsElem.GetOrCreateElement("defaultCollation");
-				defaultCollationElem.SetValue(ws.DefaultCollation.Type);
-			}
+			XElement defaultCollationElem = collationsElem.GetOrCreateElement("defaultCollation");
+			defaultCollationElem.SetValue(ws.DefaultCollationType);
 			
 			foreach (CollationDefinition collation in ws.Collations)
 				WriteCollationElement(collationsElem, collation);
@@ -1209,6 +1203,8 @@ namespace SIL.WritingSystems
 			var simpleCollation = collation as SimpleRulesCollationDefinition;
 			if (simpleCollation != null)
 				WriteCollationRulesFromCustomSimple(collationElem, simpleCollation);
+
+			// SystemCollationDefinition is application-specific and not written to LDML
 		}
 
 		private void WriteCollationRulesFromCustomIcu(XElement collationElem, IcuRulesCollationDefinition icd)

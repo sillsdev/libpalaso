@@ -1002,23 +1002,24 @@ namespace SIL.WritingSystems.Tests.Migration
 		}
 
 		[Test]
-		public void Migrate_OriginalFileContainsOtherLanguageCollationInfo_CollationInfoIsMigrated()
+		public void Migrate_OriginalFileContainsSystemCollationInfo_CollationInfoIsMigrated()
 		{
 			using (var environment = new TestEnvironment())
 			{
 				environment.WriteLdmlFile(
 					"test.ldml",
-					LdmlContentForTests.Version0WithCollationInfo(WritingSystemDefinitionV0.SortRulesType.OtherLanguage));
+					LdmlContentForTests.Version0WithSystemCollationInfo());
 				var wsV0 = new WritingSystemDefinitionV0();
 				new LdmlAdaptorV0().Read(environment.FilePath("test.ldml"), wsV0);
 
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
+				var repo = new TestLdmlInFolderWritingSystemRepository(environment.LdmlPath);
+				migrator.ResetRemovedProperties(repo);
 
-				var wsV3 = new WritingSystemDefinitionV3();
-				new LdmlAdaptorV3(new TestWritingSystemFactory()).Read(environment.MappedFilePath("test.ldml"), wsV3);
-				var cdV3 = (IcuRulesCollationDefinition) wsV3.Collations.First();
-				Assert.That(cdV3.Imports, Is.EqualTo(new[] {new IcuCollationImport(wsV0.SortRules)}));
+				WritingSystemDefinition ws = repo.Get("de");
+				var scd = new SystemCollationDefinition {CultureId = "de"};
+				Assert.That(ws.DefaultCollation.ValueEquals(scd), Is.True);
 			}
 		}
 

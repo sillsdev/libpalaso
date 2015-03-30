@@ -60,6 +60,11 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			string scriptName = string.Empty;
 			string regionName = string.Empty;
 			string variantName = string.Empty;
+			SystemCollationDefinition scd = null;
+
+			// Create system collation definition if applicable
+			if ((writingSystemDefinitionV1.SortUsing == WritingSystemDefinitionV1.SortRulesType.OtherLanguage) && (!string.IsNullOrEmpty(writingSystemDefinitionV1.SortRules)))
+				scd = new SystemCollationDefinition { CultureId = writingSystemDefinitionV1.SortRules };
 
 			// Migrate fields from legacy fw namespace, and then remove fw namespace
 			XElement ldmlElem = XElement.Load(sourceFilePath);
@@ -120,6 +125,8 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 							ws.Script = new ScriptSubtag(ws.Script, scriptName);
 						if (!string.IsNullOrEmpty(regionName) && ws.Region != null && ws.Region.IsPrivateUse)
 							ws.Region = new RegionSubtag(ws.Region, regionName);
+						if (scd != null)
+							ws.DefaultCollation = scd;
 					}
 				};
 
@@ -318,24 +325,12 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				case WritingSystemDefinitionV1.SortRulesType.CustomSimple:
 					WriteCollationRulesFromCustomSimple(collationElem, s.SortRules);
 					break;
-				case WritingSystemDefinitionV1.SortRulesType.OtherLanguage:
-					// SortRules will contain the language tag to import
-					if (!string.IsNullOrEmpty(s.SortRules) && s.SortRules != langTag)
-						WriteImportElement(collationElem, s.SortRules);
-					break;
 				case WritingSystemDefinitionV1.SortRulesType.CustomICU:
 					WriteCollationRulesFromCustomIcu(collationElem, s.SortRules);
 					break;
 				case WritingSystemDefinitionV1.SortRulesType.DefaultOrdering:
 					break;
 			}
-		}
-
-		private void WriteImportElement(XElement collationElem, string tag)
-		{
-			var importElem = new XElement("import", new XAttribute("source", tag));
-			// Leave type blank.  Implied to be "standard"
-			collationElem.Add(importElem);
 		}
 
 		private void WriteCollationRulesFromCustomIcu(XElement collationElem, string icuRules)
@@ -417,8 +412,11 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 					WriteCharactersElement(charactersElem, staging);
 				}
 
-				XElement collationsElem = ldmlElem.GetOrCreateElement("collations");
-				WriteCollationsElement(collationsElem, staging, migrationInfo.IetfLanguageTagAfterMigration);
+				if (staging.SortUsing != WritingSystemDefinitionV1.SortRulesType.OtherLanguage)
+				{
+					XElement collationsElem = ldmlElem.GetOrCreateElement("collations");
+					WriteCollationsElement(collationsElem, staging, migrationInfo.IetfLanguageTagAfterMigration);
+				}
 
 				// If needed, create top level special for external resources
 				if (!string.IsNullOrEmpty(staging.DefaultFontName) || (staging.KnownKeyboardIds.Count > 0))
