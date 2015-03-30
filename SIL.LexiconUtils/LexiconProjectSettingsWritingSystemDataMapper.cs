@@ -48,22 +48,6 @@ namespace SIL.LexiconUtils
 			if (!string.IsNullOrEmpty(regionName) && ws.Region != null && ws.Region.IsPrivateUse)
 				ws.Region = new RegionSubtag(ws.Region, regionName);
 
-			XElement[] variantNameElems = wsElem.Elements("VariantNames").Elements("VariantName").ToArray();
-			if (variantNameElems.Length > 0)
-			{
-				int nameIndex = 0;
-				for (int i = 0; i < ws.Variants.Count; i++)
-				{
-					if (ws.Variants[i].IsPrivateUse)
-					{
-						ws.Variants[i] = new VariantSubtag(ws.Variants[i], (string) variantNameElems[nameIndex]);
-						nameIndex++;
-						if (nameIndex == variantNameElems.Length)
-							break;
-					}
-				}
-			}
-
 			var spellCheckingId = (string) wsElem.Element("SpellCheckingId");
 			if (!string.IsNullOrEmpty(spellCheckingId))
 				ws.SpellCheckingId = spellCheckingId;
@@ -75,6 +59,13 @@ namespace SIL.LexiconUtils
 			var keyboard = (string) wsElem.Element("Keyboard");
 			if (!string.IsNullOrEmpty(keyboard))
 				ws.Keyboard = keyboard;
+
+			var systemCollationElem = wsElem.Element("SystemCollation");
+			if (systemCollationElem != null)
+			{
+				var scd = new SystemCollationDefinition { CultureId = (string) systemCollationElem };
+				ws.DefaultCollation = scd;
+			}
 		}
 
 		public virtual void Write(T ws)
@@ -104,15 +95,17 @@ namespace SIL.LexiconUtils
 			if (ws.Region != null && ws.Region.IsPrivateUse && !string.IsNullOrEmpty(ws.Region.Name))
 				wsElem.Add(new XElement("RegionName", ws.Region.Name));
 			string[] variantNames = ws.Variants.Where(v => v.IsPrivateUse).Select(v => v.Name).ToArray();
-			if (variantNames.Length > 0)
-				wsElem.Add(new XElement("VariantNames", variantNames.Select(n => string.IsNullOrEmpty(n) ? new XElement("VariantName") : new XElement("VariantName", n))));
 			if (!string.IsNullOrEmpty(ws.SpellCheckingId))
 				wsElem.Add(new XElement("SpellCheckingId", ws.SpellCheckingId));
 			if (!string.IsNullOrEmpty(ws.LegacyMapping))
 				wsElem.Add(new XElement("LegacyMapping", ws.LegacyMapping));
 			if (!string.IsNullOrEmpty(ws.Keyboard))
 				wsElem.Add(new XElement("Keyboard", ws.Keyboard));
-
+			var sysCollation = ws.DefaultCollation as SystemCollationDefinition;
+			if (sysCollation != null)
+			{
+				wsElem.Add(new XElement("SystemCollation", sysCollation.CultureId));
+			}
 			_settingsStore.SaveSettings(projectSettingsElem);
 		}
 

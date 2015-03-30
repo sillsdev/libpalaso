@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Xml.Linq;
 using NUnit.Framework;
 using SIL.WritingSystems;
@@ -20,10 +19,7 @@ namespace SIL.LexiconUtils.Tests
       <LanguageName>Kalaba</LanguageName>
       <ScriptName>Fake</ScriptName>
       <RegionName>Zolrog</RegionName>
-      <VariantNames>
-        <VariantName>Custom 1</VariantName>
-        <VariantName>Custom 2</VariantName>
-      </VariantNames>
+      <SystemCollation>snarf</SystemCollation>
     </WritingSystem>
     <WritingSystem id=""fr-FR"">
       <SpellCheckingId>fr_FR</SpellCheckingId>
@@ -42,10 +38,11 @@ namespace SIL.LexiconUtils.Tests
 			Assert.That(ws1.Language.Name, Is.EqualTo("Kalaba"));
 			Assert.That(ws1.Script.Name, Is.EqualTo("Fake"));
 			Assert.That(ws1.Region.Name, Is.EqualTo("Zolrog"));
-			Assert.That(ws1.Variants.Select(v => v.Name), Is.EqualTo(new[] {"Custom 1", "Custom 2"}));
 			Assert.That(ws1.SpellCheckingId, Is.EqualTo(string.Empty));
 			Assert.That(ws1.LegacyMapping, Is.EqualTo(string.Empty));
 			Assert.That(ws1.Keyboard, Is.EqualTo(string.Empty));
+			var scd = new SystemCollationDefinition {CultureId = "snarf"};
+			Assert.That(ws1.DefaultCollation.ValueEquals(scd), Is.True);
 
 			var ws2 = new WritingSystemDefinition("fr-FR");
 			projectSettingsDataMapper.Read(ws2);
@@ -112,10 +109,6 @@ namespace SIL.LexiconUtils.Tests
       <LanguageName>Kalaba</LanguageName>
       <ScriptName>Fake</ScriptName>
       <RegionName>Zolrog</RegionName>
-      <VariantNames>
-        <VariantName>Custom 1</VariantName>
-        <VariantName>Custom 2</VariantName>
-      </VariantNames>
     </WritingSystem>
   </WritingSystems>
 </LexiconProjectSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
@@ -132,11 +125,6 @@ namespace SIL.LexiconUtils.Tests
       <LanguageName>Kalaba</LanguageName>
       <ScriptName>Fake</ScriptName>
       <RegionName>Zolrog</RegionName>
-      <VariantNames>
-        <VariantName>Custom 1</VariantName>
-		<VariantName>Custom 2</VariantName>
-        <VariantName>Custom 3</VariantName>
-      </VariantNames>
     </WritingSystem>
   </WritingSystems>
 </LexiconProjectSettings>";
@@ -145,11 +133,11 @@ namespace SIL.LexiconUtils.Tests
 			var projectSettingsDataMapper = new LexiconProjectSettingsWritingSystemDataMapper(settingsStore);
 			var ws1 = new WritingSystemDefinition("qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2-var3");
 			ws1.Abbreviation = "ka";
-			ws1.Variants[0] = new VariantSubtag(ws1.Variants[0], "Custom 1");
-			ws1.Variants[2] = new VariantSubtag(ws1.Variants[2], "Custom 3");
 			ws1.SpellCheckingId = "en_US";
 			ws1.LegacyMapping = "converter";
 			ws1.Keyboard = "Old Keyboard";
+			var scd = new SystemCollationDefinition {CultureId = "snarf"};
+			ws1.DefaultCollation = scd;
 			projectSettingsDataMapper.Write(ws1);
 
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
@@ -157,14 +145,10 @@ namespace SIL.LexiconUtils.Tests
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2-var3"">
       <Abbreviation>ka</Abbreviation>
-      <VariantNames>
-        <VariantName>Custom 1</VariantName>
-        <VariantName />
-        <VariantName>Custom 3</VariantName>
-      </VariantNames>
       <SpellCheckingId>en_US</SpellCheckingId>
       <LegacyMapping>converter</LegacyMapping>
       <Keyboard>Old Keyboard</Keyboard>
+      <SystemCollation>snarf</SystemCollation>
     </WritingSystem>
   </WritingSystems>
 </LexiconProjectSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
