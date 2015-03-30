@@ -1,7 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using Palaso.Reporting;
 using System.Windows.Forms;
+using Palaso.UI.WindowsForms.Reporting;
 
 namespace PalasoUIWindowsForms.Tests.ErrorReporting
 {
@@ -67,6 +71,57 @@ namespace PalasoUIWindowsForms.Tests.ErrorReporting
 			ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), message);
 
 			ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), message);
+		}
+
+		[Test]
+		public void CheckMemory_NotMuchUsed_ReturnsFalse()
+		{
+			GC.Collect(); // In case another test (e.g, CheckMemory_1GUsed_ReturnsTrue) just used a lot
+			Assert.That(MemoryManagement.CheckMemory(true, "not much done", false), Is.False);
+		}
+
+		[Test]
+		public void CheckMemory_1GUsed_ReturnsTrue()
+		{
+			// We'll grab some big chunks but not demand we can get it all. Keep them small enough to stay out of Large Object Heap
+			var chunks = new List<byte[]>();
+			for (int i = 0; i < 21000; i++)
+				chunks.Add(new byte[50000]);
+			Assert.That(MemoryManagement.CheckMemory(true, "not much done", false), Is.True);
+		}
+
+		[Test, Ignore("By hand only")]
+		public void CheckMemory_1GUsed_DisplaysDialogOnlyOnce()
+		{
+			// We'll grab some big chunks but not demand we can get it all. Keep them small enough to stay out of Large Object Heap
+			var chunks = new List<byte[]>();
+			for (int i = 0; i < 21000; i++)
+				chunks.Add(new byte[50000]);
+			Assert.That(MemoryManagement.CheckMemory(true, "not much done", true), Is.True);
+			// Doing it again should still return true, but you should NOT see the dialog twice.
+			Assert.That(MemoryManagement.CheckMemory(true, "not much done", true), Is.True);
+		}
+
+		[Test]
+		public void CheckMemory_WritesPlausibleNumbersToLogger()
+		{
+			Logger.Init();
+			var dummy = Logger.LogText; // counter-intuitive, but the only way I can find to clear out minor events, in case anything else used logger
+			MemoryManagement.CheckMemory(true, "this is a test", false); // since not doing GC we really can't predict the return value
+			var result = Logger.MinorEventsLog;
+			Assert.That(result, Is.StringContaining("this is a test"));
+			var re = new Regex(@"\d+,\d+K");
+			var matches = re.Matches(result).Cast<Match>().ToArray();
+			// This is a pretty weak test; just proves we're outputting at least 3 numbers over 1000K. (Heap memory is sometimes <1M; virtual is unknown on Linux)
+			Assert.That(matches, Has.Length.AtLeast(3));
+			Logger.ShutDown();
+			Logger.Init();
+			MemoryManagement.CheckMemory(false, "this is a test", false); // since not doing GC we really can't predict the return value
+			result = Logger.LogText;
+			Assert.That(result, Is.StringContaining("this is a test"));
+			matches = re.Matches(result).Cast<Match>().ToArray();
+			// Using WriteEvent means out data is in the eventual output twice.
+			Assert.That(matches, Has.Length.AtLeast(6));
 		}
 	}
 }
