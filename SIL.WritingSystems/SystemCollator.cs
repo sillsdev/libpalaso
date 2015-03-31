@@ -7,11 +7,19 @@ namespace SIL.WritingSystems
 	{
 		private readonly CultureInfo _cultureInfo;
 
-		public SystemCollator(string cultureId)
+		public SystemCollator(string ietfLanguageTag)
 		{
 			_cultureInfo = null;
-			if (!string.IsNullOrEmpty(cultureId))
-				_cultureInfo = GetCultureInfo(cultureId);
+			if (!string.IsNullOrEmpty(ietfLanguageTag))
+			{
+				try
+				{
+					_cultureInfo = CultureInfo.GetCultureInfo(ietfLanguageTag);
+				}
+				catch (CultureNotFoundException)
+				{
+				}
+			}
 			if (_cultureInfo == null)
 				_cultureInfo = CultureInfo.InvariantCulture;
 		}
@@ -48,57 +56,22 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// Validates the specified culture ID.
+		/// Validates the specified IETF language tag.
 		/// </summary>
-		public static bool ValidateCultureId(string cultureId, out string message)
+		public static bool ValidateIetfLanguageTag(string ietfLanguageTag, out string message)
 		{
 			try
 			{
-				if (!String.IsNullOrEmpty(cultureId))
-					GetCultureInfo(cultureId);
+				if (!String.IsNullOrEmpty(ietfLanguageTag))
+					CultureInfo.GetCultureInfo(ietfLanguageTag);
 			}
-			catch (Exception e)
+			catch (CultureNotFoundException)
 			{
-				message = String.Format("Error while validating sorting rules: {0}", e.Message);
+				message = String.Format("The locale, {0}, is not available on this machine.", ietfLanguageTag);
 				return false;
 			}
 			message = null;
 			return true;
-		}
-
-		private static CultureInfo GetCultureInfo(string cultureId)
-		{
-			CultureInfo ci;
-			try
-			{
-				ci = CultureInfo.GetCultureInfo(cultureId);
-			}
-			catch (ArgumentException e)
-			{
-				if (e is ArgumentNullException || e is ArgumentOutOfRangeException)
-				{
-					throw;
-				}
-				ci = TryGetCultureInfoByIetfLanguageTag(cultureId);
-			}
-			return ci;
-		}
-
-		private static CultureInfo TryGetCultureInfoByIetfLanguageTag(string ietfLanguageTag)
-		{
-			CultureInfo ci = null;
-			try
-			{
-				ci = CultureInfo.GetCultureInfoByIetfLanguageTag(ietfLanguageTag);
-			}
-			catch (ArgumentException ex)
-			{
-				if (ex is ArgumentNullException || ex is ArgumentOutOfRangeException)
-				{
-					throw;
-				}
-			}
-			return ci;
 		}
 	}
 }

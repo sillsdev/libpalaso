@@ -491,7 +491,7 @@ namespace SIL.Windows.Forms.WritingSystems
 					// don't allow if it references another language on our prohibited list and this one
 					// isn't already on the prohibited list
 					if (systemCollation != null && !string.IsNullOrEmpty(ws.IetfLanguageTag)
-						&& prohibitedList.Contains(systemCollation.CultureId)
+						&& prohibitedList.Contains(systemCollation.IetfLanguageTag)
 						&& !prohibitedList.Contains(ws.IetfLanguageTag))
 					{
 						prohibitedList.Add(ws.IetfLanguageTag);
@@ -890,7 +890,7 @@ namespace SIL.Windows.Forms.WritingSystems
 						var simpleCollation = (SimpleRulesCollationDefinition) CurrentDefinition.DefaultCollation;
 						return simpleCollation.SimpleRules == string.Empty ? DefaultCustomSimpleSortRules : simpleCollation.SimpleRules;
 					case CollationRulesType.OtherLanguage:
-						return ((SystemCollationDefinition) CurrentDefinition.DefaultCollation).CultureId;
+						return ((SystemCollationDefinition) CurrentDefinition.DefaultCollation).IetfLanguageTag;
 				}
 				return string.Empty;
 			}
@@ -917,9 +917,9 @@ namespace SIL.Windows.Forms.WritingSystems
 						break;
 					case CollationRulesType.OtherLanguage:
 						var systemCollation = (SystemCollationDefinition) CurrentDefinition.DefaultCollation;
-						if (systemCollation.CultureId != value)
+						if (systemCollation.IetfLanguageTag != value)
 						{
-							systemCollation.CultureId = value;
+							systemCollation.IetfLanguageTag = value;
 							OnCurrentItemUpdated();
 						}
 						break;

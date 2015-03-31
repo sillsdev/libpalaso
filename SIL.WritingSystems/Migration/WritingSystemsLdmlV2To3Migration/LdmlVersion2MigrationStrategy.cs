@@ -64,7 +64,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 
 			// Create system collation definition if applicable
 			if ((writingSystemDefinitionV1.SortUsing == WritingSystemDefinitionV1.SortRulesType.OtherLanguage) && (!string.IsNullOrEmpty(writingSystemDefinitionV1.SortRules)))
-				scd = new SystemCollationDefinition { CultureId = writingSystemDefinitionV1.SortRules };
+				scd = new SystemCollationDefinition { IetfLanguageTag = writingSystemDefinitionV1.SortRules };
 
 			// Migrate fields from legacy fw namespace, and then remove fw namespace
 			XElement ldmlElem = XElement.Load(sourceFilePath);

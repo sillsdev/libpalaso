@@ -1018,7 +1018,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				migrator.ResetRemovedProperties(repo);
 
 				WritingSystemDefinition ws = repo.Get("de");
-				var scd = new SystemCollationDefinition {CultureId = "de"};
+				var scd = new SystemCollationDefinition {IetfLanguageTag = "de"};
 				Assert.That(ws.DefaultCollation.ValueEquals(scd), Is.True);
 			}
 		}

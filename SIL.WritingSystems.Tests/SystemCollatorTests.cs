@@ -37,6 +37,20 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void ValidateIetfLanguageTag_Valid_ReturnsTrue()
+		{
+			string message;
+			Assert.That(SystemCollator.ValidateIetfLanguageTag("en-US", out message), Is.True);
+		}
+
+		[Test]
+		public void ValidateIetfLanguageTag_InValid_ReturnsFalse()
+		{
+			string message;
+			Assert.That(SystemCollator.ValidateIetfLanguageTag("invalid", out message), Is.False);
+		}
+
+		[Test]
 		public void Compare_EnglishCultureEnglishStrings_AreNotSame()
 		{
 			string a = "an english sentence";

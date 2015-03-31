@@ -63,7 +63,7 @@ namespace SIL.LexiconUtils
 			var systemCollationElem = wsElem.Element("SystemCollation");
 			if (systemCollationElem != null)
 			{
-				var scd = new SystemCollationDefinition { CultureId = (string) systemCollationElem };
+				var scd = new SystemCollationDefinition { IetfLanguageTag = (string) systemCollationElem };
 				ws.DefaultCollation = scd;
 			}
 		}
@@ -104,7 +104,7 @@ namespace SIL.LexiconUtils
 			var sysCollation = ws.DefaultCollation as SystemCollationDefinition;
 			if (sysCollation != null)
 			{
-				wsElem.Add(new XElement("SystemCollation", sysCollation.CultureId));
+				wsElem.Add(new XElement("SystemCollation", sysCollation.IetfLanguageTag));
 			}
 			_settingsStore.SaveSettings(projectSettingsElem);
 		}
