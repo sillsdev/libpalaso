@@ -37,7 +37,9 @@ namespace Palaso.UI.WindowsForms.Reporting
 		public static bool CheckMemory(bool minor, string eventDescription, bool okToBotherUser)
 		{
 			var heapMem = GC.GetTotalMemory(true); // first, as it may reduce other numbers
+			var is64BitProcess = IntPtr.Size == 8; // according to MSDN
 			long memorySize64;
+			long workingSet64;
 			string message;
 			ulong totalPhysicalMemory = 0;
 			string totalVirtualMemory = "unknown";
@@ -52,30 +54,58 @@ namespace Palaso.UI.WindowsForms.Reporting
 				var meminfo = File.ReadAllText("/proc/meminfo");
 				var match = new Regex(@"MemTotal:\s+(\d+) kB").Match(meminfo);
 				if (match.Success)
-				{
 					totalPhysicalMemory = ulong.Parse(match.Groups[1].Value) * 1024;
+				ulong totalSwapMemory = 0;
+				var match2 = new Regex(@"SwapTotal:\s+(\d+) kB").Match(meminfo);
+				if (match2.Success)
+					totalSwapMemory = ulong.Parse(match2.Groups [1].Value) * 1024;
+				var availableMemory = totalPhysicalMemory + totalSwapMemory;
+				if (is64BitProcess)
+				{
+					totalVirtualMemory = (availableMemory / 1024).ToString ("N0");
 				}
-				// So far we have no way to get anything corresponding to Windows's idea of the total virtual memory
-				// the process can use.
+				else
+				{
+					// Googling indicates that 32-bit Mono programs attempting to allocate more than
+					// about 1.4 GB start running into OutOfMemory errors.  So 2GB is probably the
+					// right virtual memory limit for 32-bit processes.
+					ulong twoGB = 2147483648L;
+					totalVirtualMemory = ((availableMemory > twoGB ? twoGB : availableMemory) / 1024).ToString("N0");
+				}
 			}
 			using (var proc = Process.GetCurrentProcess())
 			{
 				memorySize64 = proc.PrivateMemorySize64;
+				workingSet64 = proc.WorkingSet64;
 				message =
 					string.Format(
-						"{0}: total memory {1:N0}K, working set {2:N0}K, heap {3:N0}K, system physical {4:N0}K, system virtual {5}K",
+						"{0}: total memory {1:N0}K, working set {2:N0}K, heap {3:N0}K, system physical {4:N0}K, system virtual {5}K; {6}-bit process",
 						eventDescription,
 						memorySize64/1024,
-						proc.WorkingSet64/1024,
+						workingSet64/1024,
 						heapMem/1024,
 						totalPhysicalMemory/1024,
-						totalVirtualMemory);
+						totalVirtualMemory,
+						is64BitProcess ? 64 : 32);
 			}
 			if (minor)
 				Logger.WriteMinorEvent(message);
 			else
 				Logger.WriteEvent(message);
-			var danger = memorySize64 > 1000000000;
+			// Limit memory below 1GB unless we have a 64-bit process with lots of physical memory.
+			// In that case, still limit memory to well under 2GB before warning.
+			long safelimit = 1000000000;
+			if (is64BitProcess && totalPhysicalMemory >= 8192000000L)
+				safelimit = 2000000000;
+			bool danger = false;
+			// In Windows/.Net, Process.PrivateMemorySize64 seems to give a reasonable value for current
+			// memory usage.  In Linux/Mono, Process.PrivateMemorySize64 gives what seems to be a virtual
+			// memory limit or some some value.  In that context, Process.WorkingSet64 appears to be the
+			// best bet for approximating how much memory the process is currently using.
+			if (Platform.IsWindows)
+				danger = memorySize64 > safelimit;
+			else
+				danger = workingSet64 > safelimit;
 			if (danger && okToBotherUser && !s_warningShown)
 			{
 				s_warningShown = true;
