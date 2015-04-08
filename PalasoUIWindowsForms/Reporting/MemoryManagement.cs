@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// Copyright (c) 2014 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using L10NSharp;
-using Microsoft.VisualBasic.Devices;
 using Palaso.PlatformUtilities;
 using Palaso.Reporting;
+#if !__MonoCS__ // This is not needed on Linux, and can causes extra dependancy trouble if it is compiled in
+using Microsoft.VisualBasic.Devices;
+#else
+using System.IO;
+using System.Text.RegularExpressions;
+#endif
 
 namespace Palaso.UI.WindowsForms.Reporting
 {
@@ -43,14 +44,12 @@ namespace Palaso.UI.WindowsForms.Reporting
 			string message;
 			ulong totalPhysicalMemory = 0;
 			string totalVirtualMemory = "unknown";
-			if (Platform.IsWindows)
-			{
+
+#if !__MonoCS__ // There are completely different dependencies and code per platform for finding the memory information
 				var computerInfo = new Computer().Info;
 				totalPhysicalMemory = computerInfo.TotalPhysicalMemory;
 				totalVirtualMemory = (computerInfo.TotalVirtualMemory / 1024).ToString("N0");
-			}
-			else if (Platform.IsLinux)
-			{
+#else
 				var meminfo = File.ReadAllText("/proc/meminfo");
 				var match = new Regex(@"MemTotal:\s+(\d+) kB").Match(meminfo);
 				if (match.Success)
@@ -72,7 +71,7 @@ namespace Palaso.UI.WindowsForms.Reporting
 					ulong twoGB = 2147483648L;
 					totalVirtualMemory = ((availableMemory > twoGB ? twoGB : availableMemory) / 1024).ToString("N0");
 				}
-			}
+#endif
 			using (var proc = Process.GetCurrentProcess())
 			{
 				memorySize64 = proc.PrivateMemorySize64;
