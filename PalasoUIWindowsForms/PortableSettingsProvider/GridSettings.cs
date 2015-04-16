@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using System.Xml.Serialization;
@@ -99,6 +100,9 @@ namespace Palaso.UI.WindowsForms.PortableSettingsProvider
 				else
 					grid.Columns[col.Id].DisplayIndex = col.DisplayIndex;
 			}
+
+			if (!string.IsNullOrEmpty(SortedColumn) && grid.Columns.Contains(SortedColumn))
+				grid.Sort(grid.Columns[SortedColumn], SortOrder == SortOrder.Descending ? ListSortDirection.Descending : ListSortDirection.Ascending);
 
 			// If the column header height or the former dpi settings are different,
 			// then auto. calculate the height of the column headings.
