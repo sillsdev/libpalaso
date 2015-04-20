@@ -162,7 +162,9 @@ namespace SIL.WritingSystems
 						}
 						else if (webResponse.StatusCode == HttpStatusCode.MovedPermanently)
 						{
-							ietfLanguageTag = webResponse.Headers["Location"].Replace(ProductionSldrRepository, "");
+							// Extract ietfLanguageTag from the response header
+							string responseString = webResponse.Headers["Location"].Replace(ProductionSldrRepository, "");
+							ietfLanguageTag = responseString.Split('?')[0];
 							redirected = true;
 						}
 						else

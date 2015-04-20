@@ -267,6 +267,8 @@ namespace SIL.WritingSystems.Tests
 				const string redirectedIetfLanguageTag = "en-US";
 				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FileFromSldr));
 				Assert.That(filename, Is.EqualTo(redirectedIetfLanguageTag + ".ldml"));
+				string filePath = Path.Combine(Sldr.SldrCachePath, filename);
+				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/characters", environment.NamespaceManager);
 			}
 		}
 
