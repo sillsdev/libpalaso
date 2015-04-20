@@ -108,7 +108,7 @@
 
 		<NUnitTeamCity
 			Assemblies="@(TestAssemblies)"
-			ExcludeCategory="SkipOnTeamCity$(ExtraExcludeCategories)"
+			ExcludeCategory="SkipOnTeamCity;ByHand$(ExtraExcludeCategories)"
 			NUnitVersion="NUnit-2.6.3" />
 	</Target>
 

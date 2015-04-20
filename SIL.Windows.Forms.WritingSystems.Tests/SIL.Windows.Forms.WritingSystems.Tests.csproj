@@ -185,6 +185,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LookupIsoCodeModelTests.cs" />
+    <Compile Include="LookupIsoControlTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tree\WritingSystemTreeItemTests.cs" />
     <Compile Include="Tree\WritingSystemTreeModelTests.cs" />

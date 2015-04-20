@@ -136,5 +136,24 @@ namespace SIL.WritingSystems.Tests
 			Assert.True(languages.Any(l => l.Names.Contains("Andaki")));
 			Assert.True(languages.Any(l => l.Names.Contains("Churuba")));
 		}
+
+		[Test]
+		public void SuggestLanguages_Akan_DoesnotCrash()
+		{
+			var languages = _ethnologue.SuggestLanguages("a");
+			Assert.True(languages.Any(l => l.Code == "ak"));
+			Assert.True(languages.Any(l => l.Code == "akq"));
+			Assert.True(languages.Any(l => l.Names.Contains("Akuapem")));
+			Assert.True(languages.Any(l => l.Names.Contains("Ak")));
+			Assert.True(languages.Any(l => l.Names.Contains("Akan")));
+			Assert.True(languages.Any(l => l.Names.Contains("Fanti")));
+			languages = _ethnologue.SuggestLanguages("ak");
+			Assert.True(languages.Any(l => l.Code == "ak"));
+			Assert.True(languages.Any(l => l.Code == "akq"));
+			Assert.True(languages.Any(l => l.Names.Contains("Asante")));
+			Assert.True(languages.Any(l => l.Names.Contains("Ak")));
+			Assert.True(languages.Any(l => l.Names.Contains("Akan")));
+			Assert.True(languages.Any(l => l.Names.Contains("Fanti")));
+		}
 	}
 }

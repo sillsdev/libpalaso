@@ -332,13 +332,22 @@ namespace SIL.Windows.Forms.Widgets
 		{
 			// This call is required by the Windows.Forms Form Designer.
 			InitializeComponent();
-			// TODO: Add any initialization after the InitComponent call
-
-			//LoadGraphics();
+			// These buttons usually don't want to be selected when clicked, they
+			// just want to trigger the associated action.  For example, see
+			// https://jira.sil.org/browse/BL-824.
+			SetSelectable(false);
 
 			ImageAttributes = new ImageAttributes();
 			DisabledTextColor = System.Drawing.Color.DimGray;
 		}
+
+		// Expose the protected method in case some user wants to change the
+		// behavior.
+		public void SetSelectable(bool canSelect)
+		{
+			SetStyle(ControlStyles.Selectable, canSelect);
+		}
+
 		/// <summary>
 		/// Clean up any resources being used.
 		/// </summary>

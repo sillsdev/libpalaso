@@ -291,6 +291,7 @@
     <None Include="..\lib\common\Enchant.Net.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Reference Include="Microsoft.VisualBasic" Condition="'$(OS)'=='Windows_NT'"/>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Drawing" />
@@ -470,6 +471,7 @@
       <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Miscellaneous\WaitCursor.cs" />
+    <Compile Include="Reporting\MemoryManagement.cs" />
     <Compile Include="ScreenHelper.cs" />
     <Compile Include="SimpleMessageDialog.cs">
       <SubType>Form</SubType>
