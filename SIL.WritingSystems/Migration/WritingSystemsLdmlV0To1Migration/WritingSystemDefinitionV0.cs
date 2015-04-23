@@ -5,8 +5,10 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
 	/// <summary>
 	/// This class stores the information used to define various writing system properties.
+	/// Normally this would be internal, but some applications need visibility to migrate 
+	/// legacy files to this version of the writing system definition.
 	/// </summary>
-	internal class WritingSystemDefinitionV0
+	public class WritingSystemDefinitionV0
 	{
 		public WritingSystemDefinitionV0()
 		{
