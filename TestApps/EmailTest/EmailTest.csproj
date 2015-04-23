@@ -81,11 +81,11 @@
 	<Reference Include="System.Windows.Forms" />
 	<Reference Include="System.Xml" />
 	<Reference Include="Palaso, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-	  <HintPath>..\..\output\$(Configuration)\Palaso.dll</HintPath>
+	  <HintPath>..\..\output\$(Configuration)\SIL.Core.dll</HintPath>
 	  <SpecificVersion>False</SpecificVersion>
 	</Reference>
-	<Reference Include="PalasoUIWindowsForms, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-	  <HintPath>..\..\output\$(Configuration)\PalasoUIWindowsForms.dll</HintPath>
+	<Reference Include="SIL.Windows.Forms, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+	  <HintPath>..\..\output\$(Configuration)\SIL.Windows.Forms.dll</HintPath>
 	  <SpecificVersion>False</SpecificVersion>
 	</Reference>
   </ItemGroup>
