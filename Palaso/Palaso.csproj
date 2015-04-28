@@ -119,13 +119,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Debug\icu.net.dll</HintPath>
     </Reference>
-    <None Include="..\lib\Debug\icudt40.dll">
+    <None Include="..\lib\Debug\icudt54.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\lib\Debug\icuin40.dll">
+    <None Include="..\lib\Debug\icuin54.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\lib\Debug\icuuc40.dll">
+    <None Include="..\lib\Debug\icuuc54.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\lib\Debug\icu.net.dll.config">
@@ -137,13 +137,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Release\icu.net.dll</HintPath>
     </Reference>
-    <None Include="..\lib\Release\icudt40.dll">
+    <None Include="..\lib\Release\icudt54.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\lib\Release\icuin40.dll">
+    <None Include="..\lib\Release\icuin54.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\lib\Release\icuuc40.dll">
+    <None Include="..\lib\Release\icuuc54.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="..\lib\Release\icu.net.dll.config">

@@ -5,6 +5,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso", "Palaso\Palaso.csproj", "{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Tests", "Palaso.Tests\Palaso.Tests.csproj", "{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}"
+	ProjectSection(ProjectDependencies) = postProject
+		{24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4} = {24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PalasoUIWindowsForms", "PalasoUIWindowsForms\PalasoUIWindowsForms.csproj", "{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}"
 EndProject
