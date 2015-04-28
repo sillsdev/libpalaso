@@ -61,11 +61,13 @@ namespace PalasoUIWindowsForms.Tests
 				Directory.CreateDirectory(firstDirPath);
 				Directory.CreateDirectory(secondDirPath);
 				File.WriteAllText(firstConfigFile, @"nonsense");
+				Thread.Sleep(100); // May help ensure write times are sufficiently different on TeamCity.
 				File.WriteAllText(secondConfigFile, @"nonsense"); // second is newer
 
 				var result = TestCrossPlatformSettingsProvider.VersionDirectoryComparison(firstDirPath, secondDirPath);
 				Assert.That(result, Is.GreaterThan(0));
 
+				Thread.Sleep(100); // May help ensure write times are sufficiently different on TeamCity.
 				File.WriteAllText(firstConfigFile, @"nonsense"); // now first is newer
 				result = TestCrossPlatformSettingsProvider.VersionDirectoryComparison(firstDirPath, secondDirPath);
 				Assert.That(result, Is.LessThan(0));
