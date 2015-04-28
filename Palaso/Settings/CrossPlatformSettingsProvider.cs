@@ -14,8 +14,8 @@ namespace Palaso.Settings
 	/// </summary>
 	public class CrossPlatformSettingsProvider : SettingsProvider, IApplicationSettingsProvider
 	{
-		//Public only for unit testing. I can't get InternalsVisibleTo to work, possibly because of strong naming.
-		public const string UserConfigFileName = "user.config";
+		//Protected only for unit testing. I can't get InternalsVisibleTo to work, possibly because of strong naming.
+		protected const string UserConfigFileName = "user.config";
 		private static readonly object LockObject = new Object();
 
 		protected string UserRoamingLocation = null;
@@ -32,9 +32,9 @@ namespace Palaso.Settings
 		public bool IsRoaming = false;
 
 		/// <summary>
-		/// Where we expect to find the config file. Public mainly for unit testing.
+		/// Where we expect to find the config file. Protected for unit testing.
 		/// </summary>
-		public string UserConfigLocation { get { return IsRoaming ? UserRoamingLocation : UserLocalLocation; } }
+		protected string UserConfigLocation { get { return IsRoaming ? UserRoamingLocation : UserLocalLocation; } }
 
 		/// <summary>
 		/// Default constructor for this provider class
@@ -315,11 +315,11 @@ namespace Palaso.Settings
 		/// different version number sequences, and still a new install will get the most recent settings from any
 		/// previous versions. It works even if the version numbers are not in a consistent order.
 		/// </summary>
-		/// <remarks>Public only for unit testing. I can't get InternalsVisibleTo to work, possibly because of strong naming.</remarks>
+		/// <remarks>Protected only for unit testing. I can't get InternalsVisibleTo to work, possibly because of strong naming.</remarks>
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns></returns>
-		public static int VersionDirectoryComparison(string first, string second)
+		protected static int VersionDirectoryComparison(string first, string second)
 		{
 			var firstConfigPath = Path.Combine(first, UserConfigFileName);
 			var secondConfigPath = Path.Combine(second, UserConfigFileName);
