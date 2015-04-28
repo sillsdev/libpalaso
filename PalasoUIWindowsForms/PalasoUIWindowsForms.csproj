@@ -487,7 +487,6 @@
       <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Miscellaneous\WaitCursor.cs" />
-    <Compile Include="Registration\RegistrationSettingsProvider.cs" />
     <Compile Include="Reporting\MemoryManagement.cs" />
     <Compile Include="ScreenHelper.cs" />
     <Compile Include="SimpleMessageDialog.cs">

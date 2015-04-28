@@ -113,7 +113,6 @@
       <HintPath>..\lib\common\Moq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -199,7 +198,6 @@
       <DependentUpon>DialogWithSomeSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="SettingsProtection\SettingsProtectionUITests.cs" />
-    <Compile Include="SettingsProviderTests.cs" />
     <Compile Include="SimpleMessageDialogTests.cs" />
     <Compile Include="SpellChecking\TextBoxSpellChecker.cs" />
     <Compile Include="SuperToolTip\SuperToolTipTestForm.cs">
