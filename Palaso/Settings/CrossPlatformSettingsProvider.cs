@@ -14,17 +14,27 @@ namespace Palaso.Settings
 	/// </summary>
 	public class CrossPlatformSettingsProvider : SettingsProvider, IApplicationSettingsProvider
 	{
+		//Protected only for unit testing. I can't get InternalsVisibleTo to work, possibly because of strong naming.
+		protected const string UserConfigFileName = "user.config";
 		private static readonly object LockObject = new Object();
 
 		protected string UserRoamingLocation = null;
 		protected string UserLocalLocation = null;
 		private static string CompanyAndProductPath;
+
+		// May be overridden in a derived class to control where settings are looked for
+		// when that class is used as the provider. Must do any initialization before calls to GetCompanyAndProductPath,
+		// that is, before trying to use instances of the relevant settings.
+		protected virtual string ProductName {get { return null; }}
 		/// <summary>
 		/// Indicates if the settings should be saved in roaming or local location, defaulted to false;
 		/// </summary>
 		public bool IsRoaming = false;
 
-		private string UserConfigLocation { get { return IsRoaming ? UserRoamingLocation : UserLocalLocation; } }
+		/// <summary>
+		/// Where we expect to find the config file. Protected for unit testing.
+		/// </summary>
+		protected string UserConfigLocation { get { return IsRoaming ? UserRoamingLocation : UserLocalLocation; } }
 
 		/// <summary>
 		/// Default constructor for this provider class
@@ -53,7 +63,7 @@ namespace Palaso.Settings
 			}
 		}
 
-		private static string GetFullSettingsPath()
+		private string GetFullSettingsPath()
 		{
 			var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
 			var basePath = GetCompanyAndProductPath(assembly);
@@ -61,7 +71,7 @@ namespace Palaso.Settings
 			return Path.Combine(basePath, assembly.GetName().Version.ToString());
 		}
 
-		private static string GetCompanyAndProductPath(Assembly assembly)
+		private string GetCompanyAndProductPath(Assembly assembly)
 		{
 			var companyAttributes =
 				(AssemblyCompanyAttribute[])assembly.GetCustomAttributes(typeof(AssemblyCompanyAttribute), true);
@@ -71,12 +81,17 @@ namespace Palaso.Settings
 			{
 				companyName = companyAttributes[0].Company;
 			}
+			if (ProductName != null)
+				productName = ProductName;
+			else
+			{
 			var productAttributes =
 					(AssemblyProductAttribute[])assembly.GetCustomAttributes(typeof(AssemblyProductAttribute), true);
 				if(productAttributes.Length > 0)
 				{
 					productName = productAttributes[0].Product;
 				}
+			}
 			return Path.Combine(companyName, productName);
 		}
 
@@ -103,6 +118,12 @@ namespace Palaso.Settings
 		{
 			lock(LockObject)
 			{
+				// We need to forget any cached version of the XML. Otherwise, when more than one lot of settings
+				// is saved in the same file, the provider that is doing the save for one of them may have stale
+				// (or missing) settings for the other. We want to write the dirty properties over a current
+				// version of everything else that has been saved in the file.
+				_settingsXml = null;
+
 				//Iterate through the settings to be stored, only dirty settings for this provider are in collection
 				foreach(SettingsPropertyValue propval in collection)
 				{
@@ -126,7 +147,7 @@ namespace Palaso.Settings
 					SetValue(groupNode, propval);
 				}
 				Directory.CreateDirectory(UserConfigLocation);
-				SettingsXml.Save(Path.Combine(UserConfigLocation, "user.config"));
+				SettingsXml.Save(Path.Combine(UserConfigLocation, UserConfigFileName));
 			}
 		}
 
@@ -271,7 +292,7 @@ namespace Palaso.Settings
 						}
 						previousDirectory = directoryList[1];
 					}
-					var settingsLocation = Path.Combine(previousDirectory, "user.config");
+					var settingsLocation = Path.Combine(previousDirectory, UserConfigFileName);
 					if(File.Exists(settingsLocation))
 					{
 						document = new XmlDocument();
@@ -292,31 +313,33 @@ namespace Palaso.Settings
 		}
 
 		/// <summary>
-		/// Returns the directories in order of decreasing versions with non version named directories at the end.
+		/// Returns the directories in order based on finding the most recently modified user.config file (putting that first).
+		/// More specifically, a folder with a config file is 'less than' one that has none; if both have config files,
+		/// the most recently modified is less than the other.
+		/// This allows a new install to inherit settings from whatever pre-existing settings were last modified.
+		/// This in turn allows settings to be inherited across channels (like BloomAlpha and BloomSHRP) that may have
+		/// different version number sequences, and still a new install will get the most recent settings from any
+		/// previous versions. It works even if the version numbers are not in a consistent order.
 		/// </summary>
+		/// <remarks>Protected only for unit testing. I can't get InternalsVisibleTo to work, possibly because of strong naming.</remarks>
 		/// <param name="first"></param>
 		/// <param name="second"></param>
 		/// <returns></returns>
-		private static int VersionDirectoryComparison(string first, string second)
+		protected static int VersionDirectoryComparison(string first, string second)
 		{
-			Version firstVersion = null;
-			Version secondVersion = null;
-			Version.TryParse(first.Substring(first.LastIndexOf(Path.DirectorySeparatorChar) + 1), out firstVersion);
-			Version.TryParse(second.Substring(second.LastIndexOf(Path.DirectorySeparatorChar) + 1), out secondVersion);
-			if(firstVersion != null && secondVersion != null)
+			var firstConfigPath = Path.Combine(first, UserConfigFileName);
+			var secondConfigPath = Path.Combine(second, UserConfigFileName);
+			if (!File.Exists(firstConfigPath))
 			{
-				return secondVersion.CompareTo(firstVersion);
+				if (File.Exists(secondConfigPath))
+					return 1; // second is 'less' (comes first)
+				return first.CompareTo(second); // arbitrary since neither is any use, but give a consistent result.
 			}
-			//Some user may be messing with us, but one of these doesn't have settings.
-			if(firstVersion != null)
-			{
-				return -1;
-			}
-			if(secondVersion != null)
-			{
-				return 1;
-			}
-			return String.Compare(first, second, StringComparison.Ordinal);
+			if (!File.Exists(secondConfigPath))
+				return -1; // first is less (comes first).
+
+			// Reversing the arguments like this means that second comes before first if it has a LARGER mod time.
+			return new FileInfo(secondConfigPath).LastWriteTimeUtc.CompareTo(new FileInfo(firstConfigPath).LastWriteTimeUtc);
 		}
 
 		public void Reset(SettingsContext context)
@@ -324,7 +347,7 @@ namespace Palaso.Settings
 			lock(LockObject)
 			{
 				_settingsXml = null;
-				File.Delete(Path.Combine(UserConfigLocation, "user.config"));
+				File.Delete(Path.Combine(UserConfigLocation, UserConfigFileName));
 			}
 		}
 
@@ -336,7 +359,7 @@ namespace Palaso.Settings
 				if(oldDoc != null)
 				{
 					Directory.CreateDirectory(UserConfigLocation);
-					oldDoc.Save(Path.Combine(UserConfigLocation, "user.config"));
+					oldDoc.Save(Path.Combine(UserConfigLocation, UserConfigFileName));
 					_settingsXml = oldDoc;
 				}
 			}
@@ -373,12 +396,12 @@ namespace Palaso.Settings
 					if(_settingsXml == null)
 					{
 						_settingsXml = new XmlDocument();
-						var userConfigFilePath = Path.Combine(UserConfigLocation, "user.config");
+						var userConfigFilePath = Path.Combine(UserConfigLocation, UserConfigFileName);
 						if(File.Exists(userConfigFilePath))
 						{
 							try
 							{
-								_settingsXml.Load(Path.Combine(UserConfigLocation, "user.config"));
+								_settingsXml.Load(Path.Combine(UserConfigLocation, UserConfigFileName));
 								return _settingsXml;
 							}
 							catch(XmlException e)

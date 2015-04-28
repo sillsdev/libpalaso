@@ -9,6 +9,7 @@ using Palaso.IO;
 using Palaso.Settings;
 using Palaso.TestUtilities;
 using Palaso.UI.WindowsForms.Registration;
+using PalasoUIWindowsForms.Tests.Properties;
 
 namespace PalasoUIWindowsForms.Tests
 {
@@ -113,6 +114,37 @@ namespace PalasoUIWindowsForms.Tests
 				var email = regSettings.Email;
 				Assert.That(email, Is.EqualTo("someone@somewhere.org"));
 			}
+		}
+
+		[Test]
+		public void CanSaveBothRegularAndRegistrationSettings()
+		{
+			// We need to START with a file that has no Registration settings.
+			// (Note that we do NOT set a special location for the registration settings in this test.
+			// For this text, we are interested in what happens when the two lots of settings are saved in the SAME file.
+			// This can happen, even when the registration location is being customized; for example, all channels of
+			// Bloom save Registration settings under the product name "Bloom", but the main stable release build will also
+			// save its regular settings there.
+			var provider = new TestCrossPlatformSettingsProvider();
+			var settingsFilePath = Path.Combine(provider.UserConfigLocation, TestCrossPlatformSettingsProvider.UserConfigFileName);
+			if (File.Exists(settingsFilePath))
+				File.Delete(settingsFilePath);
+
+			Settings.Default.TestString = "hello world";
+			Settings.Default.Save();
+			Settings.Default.AnotherTest = "another";
+			Settings.Default.Save();
+			Registration.Default.FirstName = "John";
+			Registration.Default.Save();
+
+			// This line was a problem in one version of the code, where Settings saved a version of the XML without the Registration stuff.
+			// The thing this test is mainly about is that this subsequent Save() does not discard the registration settings.
+			Settings.Default.Save();
+
+			// Somehow a Reload() at this point does NOT detect that the registration settings are missing (if they are).
+			string fileContent = File.ReadAllText(settingsFilePath);
+			Assert.That(fileContent, Is.StringContaining("Registration"));
+			Assert.That(fileContent, Is.StringContaining("John"));
 		}
 
 		/// <summary>
