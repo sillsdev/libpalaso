@@ -414,6 +414,13 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void Constructor_IsVoice_SetToFalse()
+		{
+			var writingSystem = new WritingSystemDefinition("th");
+			Assert.IsFalse(writingSystem.IsVoice);
+		}
+
+		[Test]
 		public void Constructor_HasOnlyPrivateUse_WritingSystemHasExpectedFields()
 		{
 			var tag = new WritingSystemDefinition("x-privuse");

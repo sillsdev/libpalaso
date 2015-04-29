@@ -7,7 +7,7 @@ using SIL.Xml;
 
 namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 {
-	internal class LdmlAdaptorV0
+	public class LdmlAdaptorV0
 	{
 		private readonly XmlNamespaceManager _nameSpaceManager;
 
