@@ -18,6 +18,9 @@ namespace SIL.LexiconUtils.Tests
   <WritingSystems>
     <WritingSystem id=""en-US"">
       <LocalKeyboard>en-US_English-IPA</LocalKeyboard>
+      <KnownKeyboards>
+        <KnownKeyboard id=""en-US_English"" />
+      </KnownKeyboards>
       <DefaultFontName>Times New Roman</DefaultFontName>
     </WritingSystem>
     <WritingSystem id=""fr-FR"">
@@ -33,6 +36,7 @@ namespace SIL.LexiconUtils.Tests
 			userSettingsDataMapper.Read(ws1);
 
 			Assert.That(ws1.LocalKeyboard.Id, Is.EqualTo("en-US_English-IPA"));
+			Assert.That(ws1.KnownKeyboards[1].Id, Is.EqualTo("en-US_English"));
 			Assert.That(ws1.DefaultFont.Name, Is.EqualTo("Times New Roman"));
 			Assert.That(ws1.DefaultFontSize, Is.EqualTo(0));
 			Assert.That(ws1.IsGraphiteEnabled, Is.True);
@@ -84,6 +88,9 @@ namespace SIL.LexiconUtils.Tests
   <WritingSystems>
     <WritingSystem id=""en-US"">
       <LocalKeyboard>en-US_English-IPA</LocalKeyboard>
+      <KnownKeyboards>
+        <KnownKeyboard id=""en-US_English-IPA"" />
+      </KnownKeyboards>
       <DefaultFontName>Times New Roman</DefaultFontName>
     </WritingSystem>
   </WritingSystems>
@@ -98,6 +105,9 @@ namespace SIL.LexiconUtils.Tests
   <WritingSystems>
     <WritingSystem id=""en-US"">
       <LocalKeyboard>en-US_English-IPA</LocalKeyboard>
+      <KnownKeyboards>
+        <KnownKeyboard id=""en-US_English-IPA"" />
+      </KnownKeyboards>
       <DefaultFontName>Times New Roman</DefaultFontName>
     </WritingSystem>
   </WritingSystems>
@@ -117,6 +127,9 @@ namespace SIL.LexiconUtils.Tests
   <WritingSystems>
     <WritingSystem id=""en-US"">
       <LocalKeyboard>en-US_English</LocalKeyboard>
+      <KnownKeyboards>
+        <KnownKeyboard id=""en-US_English"" />
+      </KnownKeyboards>
       <DefaultFontSize>12</DefaultFontSize>
       <IsGraphiteEnabled>false</IsGraphiteEnabled>
     </WritingSystem>
