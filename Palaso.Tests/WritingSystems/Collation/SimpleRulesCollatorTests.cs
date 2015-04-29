@@ -615,6 +615,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
+		[Category("ICU54OrHigher")]
 		public void ConvertToIcuRules_UnicodeCharacterReference_SurrogateLowBound_Throws()
 		{
 			Assert.Throws<ApplicationException>(
@@ -624,6 +625,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
+		[Category("ICU54OrHigher")]
 		public void ConvertToIcuRules_SurrogateCharacterLowBound_Throws()
 		{
 			Assert.Throws<ApplicationException>(
@@ -633,6 +635,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
+		[Category("ICU54OrHigher")]
 		public void ConvertToIcuRules_UnicodeCharacterReference_SurrogateHighBounds_Throws()
 		{
 			Assert.Throws<ApplicationException>(
@@ -642,6 +645,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
+		[Category("ICU54OrHigher")]
 		public void ConvertToIcuRules_SurrogateCharacterHighBound_Throws()
 		{
 			Assert.Throws<ApplicationException>(
@@ -663,6 +667,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
+		[Category("ICU54OrHigher")]
 		public void ConvertToIcuRules_UnicodeCharacterReference_SurrogatesOutOfOrder_Throws()
 		{
 			Assert.Throws<ApplicationException>(
@@ -672,6 +677,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		}
 
 		[Test]
+		[Category("ICU54OrHigher")]
 		public void ConvertToIcuRules_SurrogateCharactersOutOfOrder_Throws()
 		{
 			Assert.Throws<ApplicationException>(

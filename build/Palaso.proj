@@ -29,7 +29,7 @@
 		<ApplicationNameLC>libpalaso</ApplicationNameLC>
 		<Configuration Condition="'$(OS)'!='Windows_NT' And '$(Configuration)'==''">ReleaseMono</Configuration>
 		<Configuration Condition="'$(OS)'=='Windows_NT' And '$(Configuration)'==''">Release</Configuration>
-		<ExtraExcludeCategories Condition="'$(OS)'!='Windows_NT'">;KnownMonoIssue</ExtraExcludeCategories>
+		<ExtraExcludeCategories Condition="'$(OS)'!='Windows_NT'">;KnownMonoIssue;ICU54OrHigher</ExtraExcludeCategories>
 		<useNUnit-x86 Condition="'$(OS)'=='Windows_NT'">true</useNUnit-x86>
 		<useNUnit-x86 Condition="'$(OS)'!='Windows_NT'">false</useNUnit-x86>
 	</PropertyGroup>
