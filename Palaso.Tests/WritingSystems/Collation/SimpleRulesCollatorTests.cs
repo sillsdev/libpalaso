@@ -8,7 +8,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 	[TestFixture]
 	public class SimpleRulesCollatorTests
 	{
-		private const string ICUstart = "&[before 1] [first regular] < ";
+		private const string IcuStart = "&[before 1] [first regular] < ";
 		static private void VerifyIcuRules(string icuRules)
 		{
 			new IcuRulesCollator(icuRules);
@@ -75,34 +75,34 @@ namespace Palaso.Tests.WritingSystems.Collation
 		[Test]
 		public void ConvertToIcuRules_Digraph()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "n < ng", "n\nng");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "n < ng", "n\nng");
 		}
 
 		[Test]
 		public void ConvertToIcuRules_SecondarySegments()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "b << B < a << A", "b B\na A");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "b << B < a << A", "b B\na A");
 		}
 
 		[Test]
 		public void ConvertToIcuRules_SegmentsWithinParenthesis_ConsideredTertiary()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "b << B < \u0101 << a <<< A", "b B\n\\u0101 (a A)");
-			VerifyExpectedIcuFromActualSimple(ICUstart + "b << B < \u0101 <<< a << A", "b B\n(\\u0101 a) A");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "b << B < \u0101 << a <<< A", "b B\n\\u0101 (a A)");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "b << B < \u0101 <<< a << A", "b B\n(\\u0101 a) A");
 		}
 
 
 		[Test]
 		public void ConvertToIcuRules_PaddedWithWhiteSpace()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "b <<< B < \u0101 <<< a <<< A", "(b  \t B \t ) \n (\t\\u0101   \ta  A\t)\t");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "b <<< B < \u0101 <<< a <<< A", "(b  \t B \t ) \n (\t\\u0101   \ta  A\t)\t");
 		}
 
 		[Test]
 		public void ConvertToIcuRules_Parse()
 		{
 			VerifyExpectedIcuFromActualSimple(
-				ICUstart + "a <<< A << \u3022 <<< \u3064 < b << B < c <<< C < e <<< E << e\u3000 <<< E\u3000 < ng << Ng << NG < \u1234\u1234\u1234",
+				IcuStart + "a <<< A << \u3022 <<< \u3064 < b << B < c <<< C < e <<< E << e\u3000 <<< E\u3000 < ng << Ng << NG < \u1234\u1234\u1234",
 				"   \n   ( a   A ) (\\u3022 \\u3064)\n\nb B\n(c C)\n(e E)(e\\u3000 E\\u3000)\n   \n ng Ng NG\n\\u1234\\u1234\\u1234");
 
 		}
@@ -111,7 +111,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		[Test]
 		public void ConvertToIcuRules_SingleElement()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a", "a");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a", "a");
 		}
 
 
@@ -119,7 +119,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		public void ConvertToIcuRules_NoHyphenInRules_HasIgnoreHyphen()
 		{
 			//&[last primary ignorable] <<< '-' <<<
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a", "a");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a", "a");
 		}
 
 
@@ -167,7 +167,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		[Test]
 		public void ConvertToIcuRules_SingleUnicodeEscChar()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a", "\\u0061");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a", "\\u0061");
 		}
 
 		[Test]
@@ -211,7 +211,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		public void ConvertToIcuRules_TwoSingleElements()
 		{
 			string result = SimpleRulesCollator.ConvertToIcuRules("a A");
-			Assert.AreEqual(ICUstart + "a << A", result);
+			Assert.AreEqual(IcuStart + "a << A", result);
 		}
 
 		[Test]
@@ -246,7 +246,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		[Test]
 		public void ConvertToIcuRules_TwoSingleElementsInGroup()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a <<< A", "(a A)");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a <<< A", "(a A)");
 		}
 
 		[Test]
@@ -292,7 +292,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		[Test]
 		public void ConvertToIcuRules_TwoSingleElementsOnSeparateLines()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a < A", "a\nA");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a < A", "a\nA");
 		}
 
 		[Test]
@@ -338,32 +338,32 @@ namespace Palaso.Tests.WritingSystems.Collation
 		[Test]
 		public void ConvertToIcuRules_ThreeSingleElementsOnSeparateLines()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "c < b < a", "c\nb\na");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "c < b < a", "c\nb\na");
 		}
 
 		[Test]
 		public void ConvertToIcuRules_TwoSingleElementsOnSeparateLinesWithBlankLines()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a < b", "\n a \n \n b  \n");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a < b", "\n a \n \n b  \n");
 		}
 
 
 		[Test]
 		public void ConvertToIcuRules_ThreeSingleCharactersOnSameLine()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a << A << \u0301", "a A \\u0301");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a << A << \u0301", "a A \\u0301");
 		}
 
 		[Test]
 		public void ConvertToIcuRules_ThreeSingleCharactersInParenthesis()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a <<< A <<< \u0301", "(a A \\u0301)");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a <<< A <<< \u0301", "(a A \\u0301)");
 		}
 
 		[Test]
 		public void ConvertToIcuRules_GroupFollowedBySingleCharacter()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a <<< A << \u0301", "(a A)\\u0301");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a <<< A << \u0301", "(a A)\\u0301");
 		}
 
 		[Test]
@@ -377,7 +377,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		[Test]
 		public void ConvertToIcuRules_SingleCharacterFollowedByGroup()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a << A <<< \u0301", "a(A \\u0301)");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a << A <<< \u0301", "a(A \\u0301)");
 		}
 
 		[Test]
@@ -391,7 +391,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		[Test]
 		public void ConvertToIcuRules_MultipleCharactersFormingCollationElement()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "abcd << ab\u1234cd", "abcd ab\\u1234cd");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "abcd << ab\u1234cd", "abcd ab\\u1234cd");
 		}
 
 		[Test]
@@ -605,65 +605,79 @@ namespace Palaso.Tests.WritingSystems.Collation
 		[Test]
 		public void ConvertToIcuRules_UnicodeCharacterReferenceWithFiveHexDigits_LastDigitTreatedAsCharacter()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "\u12345", "\\u12345");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "\u12345", "\\u12345");
 		}
 
 		[Test]
 		public void ConvertToIcuRules_UnicodeCharacterReference_VerifyUnsigned()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "\uA123", "\\uA123");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "\uA123", "\\uA123");
 		}
 
 		[Test]
-		public void ConvertToIcuRules_UnicodeCharacterReference_SurrogateLowBound()
+		public void ConvertToIcuRules_UnicodeCharacterReference_SurrogateLowBound_Throws()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "\\ud800", "\\ud800");
+			Assert.Throws<ApplicationException>(
+				// Invalid unicode character escape sequence: 
+				() => VerifyExpectedIcuFromActualSimple(IcuStart + "\\ud800", "\\ud800")
+			);
 		}
 
 		[Test]
-		public void ConvertToIcuRules_SurrogateCharacterLowBound()
+		public void ConvertToIcuRules_SurrogateCharacterLowBound_Throws()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "\ud800", "\ud800");
+			Assert.Throws<ApplicationException>(
+				// Invalid unicode character escape sequence: 
+				() => VerifyExpectedIcuFromActualSimple(IcuStart + "\ud800", "\ud800")
+			);
 		}
 
 		[Test]
-		public void ConvertToIcuRules_UnicodeCharacterReference_SurrogateHighBounds()
+		public void ConvertToIcuRules_UnicodeCharacterReference_SurrogateHighBounds_Throws()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "\\udfff", "\\udfff");
+			Assert.Throws<ApplicationException>(
+				// Invalid unicode character escape sequence: 
+				() => VerifyExpectedIcuFromActualSimple(IcuStart + "\\udfff", "\\udfff")
+			);
 		}
 
 		[Test]
-		public void ConvertToIcuRules_SurrogateCharacterHighBound()
+		public void ConvertToIcuRules_SurrogateCharacterHighBound_Throws()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "\udfff", "\udfff");
+			Assert.Throws<ApplicationException>(
+				// Invalid unicode character escape sequence: 
+				() => VerifyExpectedIcuFromActualSimple(IcuStart + "\udfff", "\udfff")
+			);
 		}
 
 		[Test]
 		public void ConvertToIcuRules_UnicodeCharacterReference_Surrogates()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a << \\ud800\\udc00", "a \\ud800\\udc00");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a << \\ud800\\udc00", "a \\ud800\\udc00");
 		}
 
 		[Test]
 		public void ConvertToIcuRules_SurrogateCharacters()
 		{
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a << \ud800\udc00", "a \ud800\udc00");
+			VerifyExpectedIcuFromActualSimple(IcuStart + "a << \ud800\udc00", "a \ud800\udc00");
 		}
 
 		[Test]
-		public void ConvertToIcuRules_UnicodeCharacterReference_SurrogatesOutOfOrder()
+		public void ConvertToIcuRules_UnicodeCharacterReference_SurrogatesOutOfOrder_Throws()
 		{
-			//I would have thought that this would not be legal from ICU but there
-			//is no error message now
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a << \\udc00\\ud800", "a \\udc00\\ud800");
+			Assert.Throws<ApplicationException>(
+				// Invalid unicode character escape sequence: 
+				() => VerifyExpectedIcuFromActualSimple(IcuStart + "a << \\udc00\\ud800", "a \\udc00\\ud800")
+			);
 		}
 
 		[Test]
-		public void ConvertToIcuRules_SurrogateCharactersOutOfOrder()
+		public void ConvertToIcuRules_SurrogateCharactersOutOfOrder_Throws()
 		{
-			//I would have thought that this would not be legal from ICU but there
-			//is no error message now
-			VerifyExpectedIcuFromActualSimple(ICUstart + "a << \udc00\ud800", "a \udc00\ud800");
+			Assert.Throws<ApplicationException>(
+				// Invalid unicode character escape sequence: 
+				() => VerifyExpectedIcuFromActualSimple(IcuStart + "a << \udc00\ud800", "a \udc00\ud800")
+			);
 		}
 
 
@@ -680,7 +694,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		public void ConvertToIcuRules_AsciiCharacterNotLetterOrDigit_RequiresIcuEscaping()
 		{
 			VerifyExpectedIcuFromActualSimple(
-				ICUstart + "\\\\ << \\< << \\<\\< << \\<\\<\\< << \\= << \\&",
+				IcuStart + "\\\\ << \\< << \\<\\< << \\<\\<\\< << \\= << \\&",
 				"\\u005c < << <<< = &");
 		}
 
