@@ -324,6 +324,12 @@ namespace SIL.WritingSystems
 			foreach (XElement specialElem in element.NonAltElements("special"))
 				ReadTopLevelSpecialElement(specialElem, ws);
 
+			// Validate collations after all of them have been read in (for self-referencing imports)
+			foreach (var cd in ws.Collations)
+			{
+				string message;
+				cd.Validate(out message);
+			}
 			ws.Id = string.Empty;
 			ws.AcceptChanges();
 		}
@@ -682,7 +688,7 @@ namespace SIL.WritingSystems
 				}
 				else
 				{
-					cd = ReadCollationRulesForCustomIcu(collationElem, collationType);
+					cd = ReadCollationRulesForCustomIcu(collationElem, ws, collationType);
 				}
 
 				// Only add collation definition if it's been set
@@ -696,12 +702,7 @@ namespace SIL.WritingSystems
 			XElement simpleElem = specialElem.Element(Sil + "simple");
 			bool needsCompiling = (bool?) specialElem.Attribute(Sil + "needscompiling") ?? false;
 			var scd = new SimpleRulesCollationDefinition(collationType) {SimpleRules = ((string) simpleElem).Replace("\n", "\r\n")};
-			if (needsCompiling)
-			{
-				string errorMsg;
-				scd.Validate(out errorMsg);
-			}
-			else
+			if (!needsCompiling)
 			{
 				scd.CollationRules = LdmlCollationParser.GetIcuRulesFromCollationNode(collationElem);
 				scd.IsValid = true;
@@ -709,13 +710,11 @@ namespace SIL.WritingSystems
 			return scd;
 		}
 
-		private IcuRulesCollationDefinition ReadCollationRulesForCustomIcu(XElement collationElem, string collationType)
+		private IcuRulesCollationDefinition ReadCollationRulesForCustomIcu(XElement collationElem, WritingSystemDefinition ws, string collationType)
 		{
-			var icd = new IcuRulesCollationDefinition(collationType) {WritingSystemFactory = _writingSystemFactory};
+			var icd = new IcuRulesCollationDefinition(collationType) {WritingSystemFactory = _writingSystemFactory, OwningWritingSystemDefinition = ws};
 			icd.Imports.AddRange(collationElem.NonAltElements("import").Select(ie => new IcuCollationImport((string) ie.Attribute("source"), (string) ie.Attribute("type"))));
 			icd.IcuRules = LdmlCollationParser.GetIcuRulesFromCollationNode(collationElem);
-			string errorMsg;
-			icd.Validate(out errorMsg);
 			return icd;
 		}
 

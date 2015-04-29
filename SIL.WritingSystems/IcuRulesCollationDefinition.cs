@@ -22,6 +22,7 @@ namespace SIL.WritingSystems
 			: base(ircd)
 		{
 			WritingSystemFactory = ircd.WritingSystemFactory;
+			OwningWritingSystemDefinition = ircd.OwningWritingSystemDefinition;
 			_imports = new BulkObservableList<IcuCollationImport>(ircd._imports);
 			_icuRules = ircd._icuRules;
 			SetupCollectionChangeListeners();
@@ -54,6 +55,7 @@ namespace SIL.WritingSystems
 		}
 
 		public IWritingSystemFactory WritingSystemFactory { get; set; }
+		public WritingSystemDefinition OwningWritingSystemDefinition { get; set; }
 
 		public override bool Validate(out string message)
 		{
@@ -69,7 +71,11 @@ namespace SIL.WritingSystems
 				bool importSuccessful = false;
 				if (WritingSystemFactory != null)
 				{
-					WritingSystemDefinition ws = WritingSystemFactory.Create(import.IetfLanguageTag);
+					WritingSystemDefinition ws;
+					if (import.IetfLanguageTag == OwningWritingSystemDefinition.IetfLanguageTag)
+						ws = OwningWritingSystemDefinition;
+					else
+						ws = WritingSystemFactory.Create(import.IetfLanguageTag);
 					CollationDefinition cd;
 					if (ws.Collations.TryGet(import.Type, out cd))
 					{

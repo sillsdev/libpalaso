@@ -11,7 +11,7 @@ namespace SIL.WritingSystems.Tests
 
 		public override string ExceptionList
 		{
-			get { return base.ExceptionList + "_imports|WritingSystemFactory|"; }
+			get { return base.ExceptionList + "_imports|WritingSystemFactory|OwningWritingSystemDefinition|"; }
 		}
 
 		public override string EqualsExceptionList
