@@ -113,6 +113,7 @@
       <HintPath>..\lib\common\Moq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -184,6 +185,11 @@
       <DependentUpon>SuperToolTipTestForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="ScreenHelperTests.cs" />
     <Compile Include="SettingsProtection\DialogWithLinkToSettings.cs">
       <SubType>Form</SubType>
@@ -198,6 +204,7 @@
       <DependentUpon>DialogWithSomeSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="SettingsProtection\SettingsProtectionUITests.cs" />
+    <Compile Include="SettingsProviderTests.cs" />
     <Compile Include="SimpleMessageDialogTests.cs" />
     <Compile Include="SpellChecking\TextBoxSpellChecker.cs" />
     <Compile Include="SuperToolTip\SuperToolTipTestForm.cs">
@@ -245,6 +252,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="ImageGallery\ArtOfReadingIndexV3_en.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -268,6 +276,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Resources\logo.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

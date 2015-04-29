@@ -17,9 +17,15 @@ namespace Palaso.UI.WindowsForms.Registration
 	/// </summary>
 	public class RegistrationSettingsProvider : CrossPlatformSettingsProvider
 	{
+		private static string _productName ;
 		public static void SetProductName(string product)
 		{
-			ProductName = product;
+			_productName = product;
+		}
+
+		protected override string ProductName
+		{
+			get { return _productName; }
 		}
 	}
 }
