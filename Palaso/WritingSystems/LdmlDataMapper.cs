@@ -521,6 +521,9 @@ namespace Palaso.WritingSystems
 						File.Copy(backupFilePath, filePath);
 					throw;
 				}
+
+				if (backupFilePath != null)
+					File.Delete(backupFilePath);
 			}
 			finally
 			{
