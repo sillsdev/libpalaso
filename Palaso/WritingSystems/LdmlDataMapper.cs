@@ -518,7 +518,7 @@ namespace Palaso.WritingSystems
 				catch (Exception)
 				{
 					if (backupFilePath != null)
-						File.Copy(backupFilePath, filePath);
+						File.Copy(backupFilePath, filePath, true);
 					throw;
 				}
 
