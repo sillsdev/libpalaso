@@ -2,25 +2,25 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SIL.Windows.Forms.Registration" GeneratedClassName="Registration">
   <Profiles />
   <Settings>
-    <Setting Name="FirstName" Type="System.String" Scope="User">
+    <Setting Name="FirstName" Provider="SIL.Windows.Forms.Registration.RegistrationSettingsProvider" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="Surname" Type="System.String" Scope="User">
+    <Setting Name="Surname" Provider="SIL.Windows.Forms.Registration.RegistrationSettingsProvider" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="Email" Type="System.String" Scope="User">
+    <Setting Name="Email" Provider="SIL.Windows.Forms.Registration.RegistrationSettingsProvider" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="Organization" Type="System.String" Scope="User">
+    <Setting Name="Organization" Provider="SIL.Windows.Forms.Registration.RegistrationSettingsProvider" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="HowUsing" Type="System.String" Scope="User">
+    <Setting Name="HowUsing" Provider="SIL.Windows.Forms.Registration.RegistrationSettingsProvider" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="LaunchCount" Type="System.Int32" Scope="User">
+    <Setting Name="LaunchCount" Provider="SIL.Windows.Forms.Registration.RegistrationSettingsProvider" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="NeedUpgrade" Type="System.Boolean" Scope="User">
+    <Setting Name="NeedUpgrade" Provider="SIL.Windows.Forms.Registration.RegistrationSettingsProvider" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
