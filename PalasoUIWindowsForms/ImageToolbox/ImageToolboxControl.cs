@@ -31,6 +31,29 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		}
 
 		/// <summary>
+		/// Clean up any resources being used.
+		/// </summary>
+		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				_toolImages.Dispose();
+				if (_imageInfo!=null)
+				{
+					_imageInfo.Dispose();
+					_imageInfo = null;
+				}
+				if (components != null)
+				{
+					components.Dispose();
+					components = null;
+				}
+			}
+			base.Dispose(disposing);
+		}
+
+		/// <summary>
 		/// This is the main input/output of this dialog
 		/// </summary>
 		public PalasoImage ImageInfo
