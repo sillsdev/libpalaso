@@ -49,7 +49,8 @@ namespace SIL.LexiconUtils
 					IKeyboardDefinition keyboard;
 					if (!Keyboard.Controller.TryGetKeyboard(id, out keyboard))
 						keyboard = Keyboard.Controller.CreateKeyboard(id, KeyboardFormat.Unknown, Enumerable.Empty<string>());
-					ws.KnownKeyboards.Add(keyboard);
+					if (!ws.KnownKeyboards.Contains(keyboard))
+						ws.KnownKeyboards.Add(keyboard);
 				}
 			}
 
