@@ -6,6 +6,7 @@ using System.Xml;
 using System.Xml.Linq;
 using Icu;
 using SIL.Extensions;
+using SIL.Keyboarding;
 using SIL.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 using SIL.Xml;
@@ -55,6 +56,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				variant, privateUse);
 			langTagCleaner.Clean();
 			string langTag = IetfLanguageTagHelper.Normalize(langTagCleaner.GetCompleteTag(), IetfLanguageTagNormalizationMode.SilCompatible);
+			List<string> knownKeyboards = writingSystemDefinitionV1.KnownKeyboards.Select(k => string.IsNullOrEmpty(k.Locale) ? k.Layout : string.Format("{0}_{1}", k.Locale, k.Layout)).ToList();
 			bool isGraphiteEnabled = false;
 			string legacyMapping = string.Empty;
 			string scriptName = string.Empty;
@@ -127,6 +129,13 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 							ws.Region = new RegionSubtag(ws.Region, regionName);
 						if (scd != null)
 							ws.DefaultCollation = scd;
+						foreach (string keyboardId in knownKeyboards)
+						{
+							IKeyboardDefinition kd;
+							if (!Keyboard.Controller.TryGetKeyboard(keyboardId, out kd))
+								kd = Keyboard.Controller.CreateKeyboard(keyboardId, KeyboardFormat.Unknown, Enumerable.Empty<string>());
+							ws.KnownKeyboards.Add(kd);
+						}
 					}
 				};
 
@@ -155,13 +164,6 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				int index = IetfLanguageTagHelper.GetIndexOfFirstNonCommonPrivateUseVariant(variantSubtags);
 				if (index > -1)
 					staging.VariantName = variantName;
-			}
-
-			// known keyboards
-			foreach (KeyboardDefinitionV1 keyboardV1 in writingSystemDefinitionV1.KnownKeyboards)
-			{
-				string id = string.IsNullOrEmpty(keyboardV1.Locale) ? keyboardV1.Layout : string.Format("{0}_{1}", keyboardV1.Locale, keyboardV1.Layout);
-				staging.KnownKeyboardIds.Add(id);
 			}
 
 			// IETF language tag
@@ -353,7 +355,6 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			XElement externalResourcesElem = specialElem.GetOrCreateElement(Sil + "external-resources");
 			if (!string.IsNullOrEmpty(s.DefaultFontName))
 				WriteFontElement(externalResourcesElem, s);
-			WriteKeyboardElement(externalResourcesElem, s);
 		}
 
 		private void WriteFontElement(XElement externalResourcesElem, Staging s)
@@ -363,17 +364,6 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			fontElem.SetOptionalAttributeValue("features", s.DefaultFontFeatures);
 
 			externalResourcesElem.Add(fontElem);
-		}
-
-		private void WriteKeyboardElement(XElement externalResourcesElem, Staging s)
-		{
-			foreach (string id in s.KnownKeyboardIds)
-			{
-				var kbdElem = new XElement(Sil + "kbd");
-				// id required
-				kbdElem.SetAttributeValue("id", id);
-				externalResourcesElem.Add(kbdElem);
-			}
 		}
 
 		public override void PostMigrate(string sourcePath, string destinationPath)
@@ -419,7 +409,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				}
 
 				// If needed, create top level special for external resources
-				if (!string.IsNullOrEmpty(staging.DefaultFontName) || (staging.KnownKeyboardIds.Count > 0))
+				if (!string.IsNullOrEmpty(staging.DefaultFontName))
 				{
 					// Create special element
 					XElement specialElem = CreateSpecialElement(ldmlElem);
