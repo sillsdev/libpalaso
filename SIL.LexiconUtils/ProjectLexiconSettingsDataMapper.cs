@@ -2,16 +2,16 @@
 
 namespace SIL.LexiconUtils
 {
-	public class LexiconProjectSettingsDataMapper
+	public class ProjectLexiconSettingsDataMapper
 	{
 		private readonly ISettingsStore _settingsStore;
 
-		public LexiconProjectSettingsDataMapper(ISettingsStore settingsStore)
+		public ProjectLexiconSettingsDataMapper(ISettingsStore settingsStore)
 		{
 			_settingsStore = settingsStore;
 		}
 
-		public void Read(LexiconProjectSettings settings)
+		public void Read(ProjectLexiconSettings settings)
 		{
 			XElement settingsElem = _settingsStore.GetSettings();
 			if (settingsElem == null)
@@ -24,12 +24,12 @@ namespace SIL.LexiconUtils
 			settings.AcceptChanges();
 		}
 
-		public void Write(LexiconProjectSettings settings)
+		public void Write(ProjectLexiconSettings settings)
 		{
 			if (!settings.IsChanged)
 				return;
 
-			XElement settingsElem = _settingsStore.GetSettings() ?? new XElement("LexiconProjectSettings");
+			XElement settingsElem = _settingsStore.GetSettings() ?? new XElement("ProjectLexiconSettings");
 			_settingsStore.SaveSettings(settingsElem);
 			XElement wssElem = settingsElem.Element("WritingSystems");
 			if (wssElem == null)

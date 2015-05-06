@@ -8,13 +8,13 @@ using SIL.WritingSystems;
 namespace SIL.LexiconUtils.Tests
 {
 	[TestFixture]
-	public class LexiconUserSettingsWritingSystemDataMapperTests
+	public class UserLexiconSettingsWritingSystemDataMapperTests
 	{
 		[Test]
 		public void Read_ValidXml_SetsAllProperties()
 		{
 			const string userSettingsXml =
-@"<LexiconUserSettings>
+@"<UserLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""en-US"">
       <LocalKeyboard>en-US_English-IPA</LocalKeyboard>
@@ -28,9 +28,9 @@ namespace SIL.LexiconUtils.Tests
       <IsGraphiteEnabled>false</IsGraphiteEnabled>
     </WritingSystem>
   </WritingSystems>
-</LexiconUserSettings>";
+</UserLexiconSettings>";
 
-			var userSettingsDataMapper = new LexiconUserSettingsWritingSystemDataMapper(new MemorySettingsStore {SettingsElement = XElement.Parse(userSettingsXml)});
+			var userSettingsDataMapper = new UserLexiconSettingsWritingSystemDataMapper(new MemorySettingsStore {SettingsElement = XElement.Parse(userSettingsXml)});
 
 			var ws1 = new WritingSystemDefinition("en-US");
 			userSettingsDataMapper.Read(ws1);
@@ -61,7 +61,7 @@ namespace SIL.LexiconUtils.Tests
 		[Test]
 		public void Read_EmptyXml_NothingSet()
 		{
-			var userSettingsDataMapper = new LexiconUserSettingsWritingSystemDataMapper(new MemorySettingsStore());
+			var userSettingsDataMapper = new UserLexiconSettingsWritingSystemDataMapper(new MemorySettingsStore());
 
 			var ws1 = new WritingSystemDefinition("en-US");
 			userSettingsDataMapper.Read(ws1);
@@ -76,7 +76,7 @@ namespace SIL.LexiconUtils.Tests
 		public void Write_EmptyXml_XmlUpdated()
 		{
 			var settingsStore = new MemorySettingsStore();
-			var userSettingsDataMapper = new LexiconUserSettingsWritingSystemDataMapper(settingsStore);
+			var userSettingsDataMapper = new UserLexiconSettingsWritingSystemDataMapper(settingsStore);
 
 			var ws1 = new WritingSystemDefinition("en-US");
 			ws1.LocalKeyboard = Keyboard.Controller.CreateKeyboard("en-US_English-IPA", KeyboardFormat.Unknown, Enumerable.Empty<string>());
@@ -84,7 +84,7 @@ namespace SIL.LexiconUtils.Tests
 			userSettingsDataMapper.Write(ws1);
 
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
-@"<LexiconUserSettings>
+@"<UserLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""en-US"">
       <LocalKeyboard>en-US_English-IPA</LocalKeyboard>
@@ -94,14 +94,14 @@ namespace SIL.LexiconUtils.Tests
       <DefaultFontName>Times New Roman</DefaultFontName>
     </WritingSystem>
   </WritingSystems>
-</LexiconUserSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+</UserLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 		}
 
 		[Test]
 		public void Write_ValidXml_XmlUpdated()
 		{
 			const string userSettingsXml =
-@"<LexiconUserSettings>
+@"<UserLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""en-US"">
       <LocalKeyboard>en-US_English-IPA</LocalKeyboard>
@@ -111,10 +111,10 @@ namespace SIL.LexiconUtils.Tests
       <DefaultFontName>Times New Roman</DefaultFontName>
     </WritingSystem>
   </WritingSystems>
-</LexiconUserSettings>";
+</UserLexiconSettings>";
 
 			var settingsStore = new MemorySettingsStore {SettingsElement = XElement.Parse(userSettingsXml)};
-			var userSettingsDataMapper = new LexiconUserSettingsWritingSystemDataMapper(settingsStore);
+			var userSettingsDataMapper = new UserLexiconSettingsWritingSystemDataMapper(settingsStore);
 			var ws1 = new WritingSystemDefinition("en-US");
 			ws1.LocalKeyboard = Keyboard.Controller.CreateKeyboard("en-US_English", KeyboardFormat.Unknown, Enumerable.Empty<string>());
 			ws1.DefaultFont = null;
@@ -123,7 +123,7 @@ namespace SIL.LexiconUtils.Tests
 			userSettingsDataMapper.Write(ws1);
 
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
-@"<LexiconUserSettings>
+@"<UserLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""en-US"">
       <LocalKeyboard>en-US_English</LocalKeyboard>
@@ -134,14 +134,14 @@ namespace SIL.LexiconUtils.Tests
       <IsGraphiteEnabled>false</IsGraphiteEnabled>
     </WritingSystem>
   </WritingSystems>
-</LexiconUserSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+</UserLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 		}
 
 		[Test]
 		public void Remove_ExistingWritingSystem_UpdatesXml()
 		{
 			const string userSettingsXml =
-@"<LexiconUserSettings>
+@"<UserLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""en-US"">
       <LocalKeyboard>en-US_English-IPA</LocalKeyboard>
@@ -152,50 +152,50 @@ namespace SIL.LexiconUtils.Tests
       <IsGraphiteEnabled>false</IsGraphiteEnabled>
     </WritingSystem>
   </WritingSystems>
-</LexiconUserSettings>";
+</UserLexiconSettings>";
 
 			var settingsStore = new MemorySettingsStore {SettingsElement = XElement.Parse(userSettingsXml)};
-			var userSettingsDataMapper = new LexiconUserSettingsWritingSystemDataMapper(settingsStore);
+			var userSettingsDataMapper = new UserLexiconSettingsWritingSystemDataMapper(settingsStore);
 			userSettingsDataMapper.Remove("fr-FR");
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
-@"<LexiconUserSettings>
+@"<UserLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""en-US"">
       <LocalKeyboard>en-US_English-IPA</LocalKeyboard>
       <DefaultFontName>Times New Roman</DefaultFontName>
     </WritingSystem>
   </WritingSystems>
-</LexiconUserSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+</UserLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 
 			userSettingsDataMapper.Remove("en-US");
-			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse("<LexiconUserSettings />")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse("<UserLexiconSettings />")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 		}
 
 		[Test]
 		public void Remove_NonexistentWritingSystem_DoesNotUpdateXml()
 		{
 			const string userSettingsXml =
-@"<LexiconUserSettings>
+@"<UserLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""en-US"">
       <LocalKeyboard>en-US_English-IPA</LocalKeyboard>
       <DefaultFontName>Times New Roman</DefaultFontName>
     </WritingSystem>
   </WritingSystems>
-</LexiconUserSettings>";
+</UserLexiconSettings>";
 
 			var settingsStore = new MemorySettingsStore {SettingsElement = XElement.Parse(userSettingsXml)};
-			var userSettingsDataMapper = new LexiconUserSettingsWritingSystemDataMapper(settingsStore);
+			var userSettingsDataMapper = new UserLexiconSettingsWritingSystemDataMapper(settingsStore);
 			userSettingsDataMapper.Remove("fr-FR");
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
-@"<LexiconUserSettings>
+@"<UserLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""en-US"">
       <LocalKeyboard>en-US_English-IPA</LocalKeyboard>
       <DefaultFontName>Times New Roman</DefaultFontName>
     </WritingSystem>
   </WritingSystems>
-</LexiconUserSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+</UserLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 		}
 	}
 }

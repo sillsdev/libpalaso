@@ -8,24 +8,24 @@ namespace SIL.LexiconUtils
 	/// </summary>
 	public static class LexiconSettingsFileHelper
 	{
-		public const string LexiconProjectSettingsExtension = ".lpsx";
-		public const string LexiconUserSettingsExtension = ".lusx";
+		public const string ProjectLexiconSettingsExtension = ".plsx";
+		public const string UserLexiconSettingsExtension = ".ulsx";
 		public const string SharedSettingsFolder = "SharedSettings";
-		public const string LexiconProjectSettingsFilename = "LexiconProjectSettings" + LexiconProjectSettingsExtension;
+		public const string ProjectLexiconSettingsFilename = "LexiconSettings" + ProjectLexiconSettingsExtension;
 
 		public static string GetSharedSettingsPath(string basePath)
 		{
 			return Path.Combine(basePath, SharedSettingsFolder);
 		}
 
-		public static string GetLexiconProjectSettingsPath(string basePath)
+		public static string GetProjectLexiconSettingsPath(string basePath)
 		{
-			return Path.Combine(GetSharedSettingsPath(basePath), LexiconProjectSettingsFilename);
+			return Path.Combine(GetSharedSettingsPath(basePath), ProjectLexiconSettingsFilename);
 		}
 
-		public static string GetLexiconUserSettingsPath(string basePath)
+		public static string GetUserLexiconSettingsPath(string basePath)
 		{
-			return Path.Combine(GetSharedSettingsPath(basePath), Environment.UserName + LexiconUserSettingsExtension);
+			return Path.Combine(GetSharedSettingsPath(basePath), Environment.UserName + UserLexiconSettingsExtension);
 		}
 	}
 }

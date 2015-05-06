@@ -5,19 +5,19 @@ using SIL.WritingSystems;
 
 namespace SIL.LexiconUtils
 {
-	public class LexiconProjectSettingsWritingSystemDataMapper : LexiconProjectSettingsWritingSystemDataMapper<WritingSystemDefinition>
+	public class ProjectLexiconSettingsWritingSystemDataMapper : ProjectLexiconSettingsWritingSystemDataMapper<WritingSystemDefinition>
 	{
-		public LexiconProjectSettingsWritingSystemDataMapper(ISettingsStore settingsStore)
+		public ProjectLexiconSettingsWritingSystemDataMapper(ISettingsStore settingsStore)
 			: base(settingsStore)
 		{
 		}
 	}
 
-	public class LexiconProjectSettingsWritingSystemDataMapper<T> : ICustomDataMapper<T> where T : WritingSystemDefinition
+	public class ProjectLexiconSettingsWritingSystemDataMapper<T> : ICustomDataMapper<T> where T : WritingSystemDefinition
 	{
 		private readonly ISettingsStore _settingsStore;
 
-		public LexiconProjectSettingsWritingSystemDataMapper(ISettingsStore settingsStore)
+		public ProjectLexiconSettingsWritingSystemDataMapper(ISettingsStore settingsStore)
 		{
 			_settingsStore = settingsStore;
 		}
@@ -70,7 +70,7 @@ namespace SIL.LexiconUtils
 
 		public virtual void Write(T ws)
 		{
-			XElement projectSettingsElem = _settingsStore.GetSettings() ?? new XElement("LexiconProjectSettings");
+			XElement projectSettingsElem = _settingsStore.GetSettings() ?? new XElement("ProjectLexiconSettings");
 			XElement wssElem = projectSettingsElem.Element("WritingSystems");
 			if (wssElem == null)
 			{
@@ -94,7 +94,6 @@ namespace SIL.LexiconUtils
 				wsElem.Add(new XElement("ScriptName", ws.Script.Name));
 			if (ws.Region != null && ws.Region.IsPrivateUse && !string.IsNullOrEmpty(ws.Region.Name))
 				wsElem.Add(new XElement("RegionName", ws.Region.Name));
-			string[] variantNames = ws.Variants.Where(v => v.IsPrivateUse).Select(v => v.Name).ToArray();
 			if (!string.IsNullOrEmpty(ws.SpellCheckingId))
 				wsElem.Add(new XElement("SpellCheckingId", ws.SpellCheckingId));
 			if (!string.IsNullOrEmpty(ws.LegacyMapping))

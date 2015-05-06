@@ -6,13 +6,13 @@ using SIL.WritingSystems;
 namespace SIL.LexiconUtils.Tests
 {
 	[TestFixture]
-	public class LexiconProjectSettingsWritingSystemDataMapperTests
+	public class ProjectLexiconSettingsWritingSystemDataMapperTests
 	{
 		[Test]
 		public void Read_ValidXml_SetsAllProperties()
 		{
 			const string projectSettingsXml =
-@"<LexiconProjectSettings>
+@"<ProjectLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2"">
       <Abbreviation>kal</Abbreviation>
@@ -27,9 +27,9 @@ namespace SIL.LexiconUtils.Tests
       <Keyboard>Old Keyboard</Keyboard>
     </WritingSystem>
   </WritingSystems>
-</LexiconProjectSettings>";
+</ProjectLexiconSettings>";
 
-			var projectSettingsDataMapper = new LexiconProjectSettingsWritingSystemDataMapper(new MemorySettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)});
+			var projectSettingsDataMapper = new ProjectLexiconSettingsWritingSystemDataMapper(new MemorySettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)});
 
 			var ws1 = new WritingSystemDefinition("qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2");
 			projectSettingsDataMapper.Read(ws1);
@@ -72,7 +72,7 @@ namespace SIL.LexiconUtils.Tests
 		[Test]
 		public void Read_EmptyXml_NothingSet()
 		{
-			var projectSettingsDataMapper = new LexiconProjectSettingsWritingSystemDataMapper(new MemorySettingsStore());
+			var projectSettingsDataMapper = new ProjectLexiconSettingsWritingSystemDataMapper(new MemorySettingsStore());
 
 			var ws1 = new WritingSystemDefinition("en-US");
 			projectSettingsDataMapper.Read(ws1);
@@ -91,7 +91,7 @@ namespace SIL.LexiconUtils.Tests
 		public void Write_EmptyXml_XmlUpdated()
 		{
 			var settingsStore = new MemorySettingsStore();
-			var projectSettingsDataMapper = new LexiconProjectSettingsWritingSystemDataMapper(settingsStore);
+			var projectSettingsDataMapper = new ProjectLexiconSettingsWritingSystemDataMapper(settingsStore);
 
 			var ws1 = new WritingSystemDefinition("qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2");
 			ws1.Language = new LanguageSubtag(ws1.Language, "Kalaba");
@@ -102,7 +102,7 @@ namespace SIL.LexiconUtils.Tests
 			projectSettingsDataMapper.Write(ws1);
 
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
-@"<LexiconProjectSettings>
+@"<ProjectLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2"">
       <Abbreviation>kal</Abbreviation>
@@ -111,14 +111,14 @@ namespace SIL.LexiconUtils.Tests
       <RegionName>Zolrog</RegionName>
     </WritingSystem>
   </WritingSystems>
-</LexiconProjectSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+</ProjectLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 		}
 
 		[Test]
 		public void Write_ValidXml_XmlUpdated()
 		{
 			const string projectSettingsXml =
-@"<LexiconProjectSettings>
+@"<ProjectLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2-var3"">
       <Abbreviation>kal</Abbreviation>
@@ -127,10 +127,10 @@ namespace SIL.LexiconUtils.Tests
       <RegionName>Zolrog</RegionName>
     </WritingSystem>
   </WritingSystems>
-</LexiconProjectSettings>";
+</ProjectLexiconSettings>";
 
 			var settingsStore = new MemorySettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
-			var projectSettingsDataMapper = new LexiconProjectSettingsWritingSystemDataMapper(settingsStore);
+			var projectSettingsDataMapper = new ProjectLexiconSettingsWritingSystemDataMapper(settingsStore);
 			var ws1 = new WritingSystemDefinition("qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2-var3");
 			ws1.Abbreviation = "ka";
 			ws1.SpellCheckingId = "en_US";
@@ -141,7 +141,7 @@ namespace SIL.LexiconUtils.Tests
 			projectSettingsDataMapper.Write(ws1);
 
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
-@"<LexiconProjectSettings>
+@"<ProjectLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2-var3"">
       <Abbreviation>ka</Abbreviation>
@@ -151,14 +151,14 @@ namespace SIL.LexiconUtils.Tests
       <SystemCollation>snarf</SystemCollation>
     </WritingSystem>
   </WritingSystems>
-</LexiconProjectSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+</ProjectLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 		}
 
 		[Test]
 		public void Remove_ExistingWritingSystem_UpdatesXml()
 		{
 			const string projectSettingsXml =
-@"<LexiconProjectSettings>
+@"<ProjectLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2"">
       <Abbreviation>kal</Abbreviation>
@@ -176,13 +176,13 @@ namespace SIL.LexiconUtils.Tests
       <Keyboard>Old Keyboard</Keyboard>
     </WritingSystem>
   </WritingSystems>
-</LexiconProjectSettings>";
+</ProjectLexiconSettings>";
 
 			var settingsStore = new MemorySettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
-			var projectSettingsDataMapper = new LexiconProjectSettingsWritingSystemDataMapper(settingsStore);
+			var projectSettingsDataMapper = new ProjectLexiconSettingsWritingSystemDataMapper(settingsStore);
 			projectSettingsDataMapper.Remove("fr-FR");
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
-@"<LexiconProjectSettings>
+@"<ProjectLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2"">
       <Abbreviation>kal</Abbreviation>
@@ -195,17 +195,17 @@ namespace SIL.LexiconUtils.Tests
       </VariantNames>
     </WritingSystem>
   </WritingSystems>
-</LexiconProjectSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+</ProjectLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 
 			projectSettingsDataMapper.Remove("qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2");
-			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse("<LexiconProjectSettings />")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse("<ProjectLexiconSettings />")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 		}
 
 		[Test]
 		public void Remove_NonexistentWritingSystem_DoesNotUpdateFile()
 		{
 			const string projectSettingsXml =
-@"<LexiconProjectSettings>
+@"<ProjectLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2"">
       <Abbreviation>kal</Abbreviation>
@@ -218,13 +218,13 @@ namespace SIL.LexiconUtils.Tests
       </VariantNames>
     </WritingSystem>
   </WritingSystems>
-</LexiconProjectSettings>";
+</ProjectLexiconSettings>";
 
 			var settingsStore = new MemorySettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
-			var projectSettingsDataMapper = new LexiconProjectSettingsWritingSystemDataMapper(settingsStore);
+			var projectSettingsDataMapper = new ProjectLexiconSettingsWritingSystemDataMapper(settingsStore);
 			projectSettingsDataMapper.Remove("fr-FR");
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
-@"<LexiconProjectSettings>
+@"<ProjectLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2"">
       <Abbreviation>kal</Abbreviation>
@@ -237,7 +237,7 @@ namespace SIL.LexiconUtils.Tests
       </VariantNames>
     </WritingSystem>
   </WritingSystems>
-</LexiconProjectSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+</ProjectLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 		}
 	}
 }
