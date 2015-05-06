@@ -190,6 +190,7 @@
     <Compile Include="LexiconProjectSettings.cs" />
     <Compile Include="LexiconProjectSettingsDataMapper.cs" />
     <Compile Include="LexiconProjectSettingsWritingSystemDataMapper.cs" />
+    <Compile Include="LexiconSettingsFileHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LexiconUserSettingsWritingSystemDataMapper.cs" />
     <Compile Include="MemorySettingsStore.cs" />
