@@ -33,6 +33,10 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Ionic.Zip, Version=1.9.1.8, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Ionic.Zip.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -59,7 +63,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Resources\TestTextBundle.zip" />
+    <None Include="Resources\TestBundleFiles\English.lds" />
+    <None Include="Resources\TestBundleFiles\USX_0\MAT.usx" />
+    <None Include="Resources\TestBundleFiles\versification.vrs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Palaso.TestUtilities\Palaso.TestUtilities.csproj">
@@ -79,7 +85,14 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TestBundleFiles\metadata.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TestBundleFiles\styles.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using System.IO;
+using Ionic.Zip;
+using NUnit.Framework;
 using SIL.DblBundle.Tests.Properties;
 using SIL.DblBundle.Text;
 using SIL.DblBundle.Usx;
@@ -9,23 +11,19 @@ namespace SIL.DblBundle.Tests.Text
 	[TestFixture]
 	public class TextBundleTests
 	{
-		private TempFile m_zippedBundle;
 		private TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage> m_bundle;
 
 		[TestFixtureSetUp]
 		public void TestFixtureSetup()
 		{
-			m_zippedBundle = TempFile.FromResource(Resources.TestTextBundle, DblBundleFileUtils.kDblBundleExtension);
-			m_bundle = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(m_zippedBundle.Path);
+			using (var zippedBundle = CreateZippedTextBundleFromResources())
+				m_bundle = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
 		}
 
 		[TestFixtureTearDown]
 		public void TestFixtureTearDown()
 		{
-			if (m_bundle != null)
-				m_bundle.Dispose();
-			if (m_zippedBundle != null)
-				m_zippedBundle.Dispose();
+			m_bundle.Dispose();
 		}
 
 		[Test]
@@ -52,6 +50,33 @@ namespace SIL.DblBundle.Tests.Text
 			UsxDocument book;
 			Assert.IsTrue(m_bundle.TryGetBook("MAT", out book));
 			Assert.AreEqual("MAT", book.BookId);
+		}
+
+		private TempFile CreateZippedTextBundleFromResources()
+		{
+			TempFile bundle = TempFile.WithExtension(DblBundleFileUtils.kDblBundleExtension);
+
+			using (var englishLds = TempFile.WithFilename("English.lds"))
+			using (var metadataXml = TempFile.WithFilename("metadata.xml"))
+			using (var stylesXml = TempFile.WithFilename("styles.xml"))
+			using (var versificationVrs = TempFile.WithFilename("versification.vrs"))
+			using (var matUsx = TempFile.WithFilename("MAT.usx"))
+			using (var zip = new ZipFile())
+			{
+				File.WriteAllBytes(englishLds.Path, Resources.English_lds);
+				zip.AddFile(englishLds.Path, string.Empty);
+				File.WriteAllText(metadataXml.Path, Resources.metadata_xml);
+				zip.AddFile(metadataXml.Path, string.Empty);
+				File.WriteAllText(stylesXml.Path, Resources.styles_xml);
+				zip.AddFile(stylesXml.Path, string.Empty);
+				File.WriteAllBytes(versificationVrs.Path, Resources.versification_vrs);
+				zip.AddFile(versificationVrs.Path, string.Empty);
+				File.WriteAllBytes(matUsx.Path, Resources.MAT_usx);
+				zip.AddFile(matUsx.Path, "USX_0");
+				zip.Save(bundle.Path);
+			}
+
+			return bundle;
 		}
 	}
 }

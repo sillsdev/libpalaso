@@ -1,4 +1,9 @@
-﻿using NUnit.Framework;
+﻿using System;
+using System.IO;
+using System.Linq;
+using NUnit.Framework;
+using SIL.DblBundle.Tests.Properties;
+using SIL.IO;
 using SIL.Xml;
 
 namespace SIL.DblBundle.Tests
@@ -7,6 +12,7 @@ namespace SIL.DblBundle.Tests
 	class StylesheetTests
 	{
 		private Stylesheet m_stylesheet;
+		private Stylesheet m_stylesheetFromXml;
 
 		private const string kXml = @"
 <?xml version=""1.0"" encoding=""utf-8""?>
@@ -29,30 +35,65 @@ namespace SIL.DblBundle.Tests
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
 		{
-			m_stylesheet = XmlSerializationHelper.DeserializeFromString<Stylesheet>(kXml);
+			using (var stylesheetFile = TempFile.WithExtension(".xml"))
+			{
+				File.WriteAllText(stylesheetFile.Path, Resources.styles_xml);
+				Exception e;
+				m_stylesheet = Stylesheet.Load(stylesheetFile.Path, out e);
+				Assert.IsNull(e);
+			}
+
+			m_stylesheetFromXml = XmlSerializationHelper.DeserializeFromString<Stylesheet>(kXml);
 		}
 
 		[Test]
 		public void Deserialize_FontFamilyAndFontSize()
 		{
-			Assert.AreEqual("Charis SIL", m_stylesheet.FontFamily);
-			Assert.AreEqual(12, m_stylesheet.FontSizeInPoints);
+			Assert.AreEqual("Charis SIL", m_stylesheetFromXml.FontFamily);
+			Assert.AreEqual(12, m_stylesheetFromXml.FontSizeInPoints);
 		}
 
 		[Test]
 		public void Deserialize_Styles()
 		{
-			Assert.AreEqual(2, m_stylesheet.Styles.Count);
-			Assert.AreEqual("h", m_stylesheet.Styles[0].Id);
-			Assert.AreEqual("p", m_stylesheet.Styles[1].Id);
+			Assert.AreEqual(2, m_stylesheetFromXml.Styles.Count);
+			Assert.AreEqual("h", m_stylesheetFromXml.Styles[0].Id);
+			Assert.AreEqual("p", m_stylesheetFromXml.Styles[1].Id);
 		}
 
 		[Test]
-		public void GetStyle()
+		public void Deserialize_GetStyle()
 		{
-			IStyle headerStyle = m_stylesheet.GetStyle("h");
+			IStyle headerStyle = m_stylesheetFromXml.GetStyle("h");
 			Assert.NotNull(headerStyle);
 			Assert.AreEqual("h", headerStyle.Id);
+			Assert.IsTrue(headerStyle.IsPublishable);
+			Assert.IsFalse(headerStyle.IsVerseText);
+		}
+
+		[Test]
+		public void Load_FontFamilyAndFontSize()
+		{
+			Assert.AreEqual("Cambria", m_stylesheet.FontFamily);
+			Assert.AreEqual(14, m_stylesheet.FontSizeInPoints);
+		}
+
+		[Test]
+		public void Load_Styles()
+		{
+			Assert.AreEqual(10, m_stylesheet.Styles.Count);
+			Assert.Contains("h", m_stylesheet.Styles.Select(s => s.Id).ToList());
+			Assert.Contains("p", m_stylesheet.Styles.Select(s => s.Id).ToList());
+		}
+
+		[Test]
+		public void Load_GetStyle()
+		{
+			IStyle style = m_stylesheetFromXml.GetStyle("p");
+			Assert.NotNull(style);
+			Assert.AreEqual("p", style.Id);
+			Assert.IsTrue(style.IsPublishable);
+			Assert.IsTrue(style.IsVerseText);
 		}
 	}
 }

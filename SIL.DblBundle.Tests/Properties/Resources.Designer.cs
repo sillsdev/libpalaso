@@ -63,9 +63,70 @@ namespace SIL.DblBundle.Tests.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] TestTextBundle {
+        internal static byte[] English_lds {
             get {
-                object obj = ResourceManager.GetObject("TestTextBundle", resourceCulture);
+                object obj = ResourceManager.GetObject("English_lds", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] MAT_usx {
+            get {
+                object obj = ResourceManager.GetObject("MAT_usx", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+        ///&lt;DBLMetadata type=&quot;text&quot; typeVersion=&quot;1.4&quot; id=&quot;ce61dd3decd6b8a8&quot; revision=&quot;0&quot;&gt;
+        ///  &lt;identification&gt;
+        ///    &lt;name&gt;Test Bundle Publication&lt;/name&gt;
+        ///    &lt;nameLocal&gt;&lt;/nameLocal&gt;
+        ///    &lt;abbreviation&gt;&lt;/abbreviation&gt;
+        ///    &lt;abbreviationLocal&gt;&lt;/abbreviationLocal&gt;
+        ///    &lt;scope&gt;&lt;/scope&gt;
+        ///    &lt;description&gt;&lt;/description&gt;
+        ///    &lt;dateCompleted&gt;&lt;/dateCompleted&gt;
+        ///    &lt;systemId type=&quot;gbc&quot;&gt;&lt;/systemId&gt;
+        ///    &lt;systemId type=&quot;tms&quot;&gt;&lt;/systemId&gt;
+        ///    &lt;systemId type=&quot;reap&quot;&gt;&lt;/systemId&gt;
+        ///    &lt;systemId t [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string metadata_xml {
+            get {
+                return ResourceManager.GetString("metadata_xml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+        ///&lt;stylesheet&gt;
+        ///  &lt;property name=&quot;font-family&quot;&gt;Cambria&lt;/property&gt;
+        ///  &lt;property name=&quot;font-size&quot; unit=&quot;pt&quot;&gt;14&lt;/property&gt;
+        ///  &lt;style id=&quot;id&quot; publishable=&quot;false&quot; versetext=&quot;false&quot;&gt;
+        ///    &lt;name&gt;id - File - Identification&lt;/name&gt;
+        ///    &lt;description&gt;File identification information (BOOKID, FILENAME, EDITOR, MODIFICATION DATE)&lt;/description&gt;
+        ///    &lt;property name=&quot;text-align&quot;&gt;left&lt;/property&gt;
+        ///  &lt;/style&gt;
+        ///  &lt;style id=&quot;h&quot; publishable=&quot;true&quot; versetext=&quot;false&quot;&gt;
+        ///    &lt;name&gt;h - File - Head [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string styles_xml {
+            get {
+                return ResourceManager.GetString("styles_xml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] versification_vrs {
+            get {
+                object obj = ResourceManager.GetObject("versification_vrs", resourceCulture);
                 return ((byte[])(obj));
             }
         }
