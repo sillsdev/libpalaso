@@ -1017,7 +1017,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			using (var environment = new TestEnvironment())
 			{
-				File.WriteAllText(Path.Combine(environment.LocalRepository.WritingSystemFactory.TemplateFolder, "zh-Hans-CN.ldml"), @"<?xml version='1.0' encoding='utf-8'?>
+				File.WriteAllText(Path.Combine(environment.LocalRepository.WritingSystemFactory.TemplateFolder, "zh-CN.ldml"), @"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 	<identity>
 		<version number='1.0'>From Templates</version>
@@ -1035,17 +1035,17 @@ namespace SIL.WritingSystems.Tests
 </ldml>
 ");
 
-				WritingSystemDefinition chWs = environment.LocalRepository.WritingSystemFactory.Create("zh-Hans-CN");
+				WritingSystemDefinition chWs = environment.LocalRepository.WritingSystemFactory.Create("zh-CN");
 				Assert.That(chWs.Language, Is.EqualTo((LanguageSubtag) "zh"));
 				Assert.That(chWs.Script, Is.EqualTo((ScriptSubtag) "Hans"));
 				Assert.That(chWs.Region, Is.EqualTo((RegionSubtag) "CN"));
 				Assert.That(chWs.VersionDescription, Is.EqualTo("From Templates"));
-				Assert.That(chWs.Template, Is.EqualTo(Path.Combine(environment.LocalRepository.WritingSystemFactory.TemplateFolder, "zh-Hans-CN.ldml")));
+				Assert.That(chWs.Template, Is.EqualTo(Path.Combine(environment.LocalRepository.WritingSystemFactory.TemplateFolder, "zh-CN.ldml")));
 
 				// ensure that the template is used when the writing system is saved
 				environment.LocalRepository.Set(chWs);
 				environment.LocalRepository.Save();
-				XElement ldmlElem = XElement.Load(environment.GetPathForLocalWSId("zh-Hans-CN"));
+				XElement ldmlElem = XElement.Load(environment.GetPathForLocalWSId("zh-CN"));
 				Assert.That((string) ldmlElem.Elements("layout").Elements("orientation").Elements("lineOrder").First(), Is.EqualTo("top-to-bottom"));
 			}
 		}

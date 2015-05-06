@@ -54,7 +54,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			var langTagCleaner = new IetfLanguageTagCleaner(writingSystemDefinitionV1.Language, writingSystemDefinitionV1.Script, writingSystemDefinitionV1.Region,
 				variant, privateUse);
 			langTagCleaner.Clean();
-			string langTag = IetfLanguageTagHelper.Canonicalize(langTagCleaner.GetCompleteTag());
+			string langTag = IetfLanguageTagHelper.Normalize(langTagCleaner.GetCompleteTag(), IetfLanguageTagNormalizationMode.SilCompatible);
 			bool isGraphiteEnabled = false;
 			string legacyMapping = string.Empty;
 			string scriptName = string.Empty;
@@ -306,15 +306,15 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			numbersElem.Add(numberingSystemsElem);
 		}
 
-		private void WriteCollationsElement(XElement collationsElem, Staging s, string langTag)
+		private void WriteCollationsElement(XElement collationsElem, Staging s)
 		{
 			var defaultCollationElem = new XElement("defaultCollation", "standard");
 			collationsElem.Add(defaultCollationElem);
 
-			WriteCollationElement(collationsElem, s, langTag);
+			WriteCollationElement(collationsElem, s);
 		}
 
-		private void WriteCollationElement(XElement collationsElem, Staging s, string langTag)
+		private void WriteCollationElement(XElement collationsElem, Staging s)
 		{
 			var collationElem = new XElement("collation", new XAttribute("type", "standard"));
 			collationsElem.Add(collationElem);
@@ -415,7 +415,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				if (staging.SortUsing != WritingSystemDefinitionV1.SortRulesType.OtherLanguage)
 				{
 					XElement collationsElem = ldmlElem.GetOrCreateElement("collations");
-					WriteCollationsElement(collationsElem, staging, migrationInfo.IetfLanguageTagAfterMigration);
+					WriteCollationsElement(collationsElem, staging);
 				}
 
 				// If needed, create top level special for external resources

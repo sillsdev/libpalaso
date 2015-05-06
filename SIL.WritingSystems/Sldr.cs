@@ -61,30 +61,9 @@ namespace SIL.WritingSystems
 			get { return Path.Combine(Path.GetTempPath(), SldrCacheDir); }
 		}
 
-		internal static Dictionary<string, string> LikelySubtags = null;
-
 		static Sldr()
 		{
 			OfflineMode = false;
-			InitializeLikelySubtags();
-		}
-
-		private static void InitializeLikelySubtags()
-		{
-			XElement supplementalElem = XElement.Parse(LanguageRegistryResources.likelySubtags);
-			if (supplementalElem.Name != "supplementalData")
-				throw new ApplicationException("Unable to load likelySubtags.xml: Missing <supplementalData> tag.");
-
-			LikelySubtags = new Dictionary<string, string>();
-			XElement likelySubtagsElem = supplementalElem.Element("likelySubtags");
-			if (likelySubtagsElem != null)
-			{
-				foreach (XElement likelySubtag in likelySubtagsElem.Elements("likelySubtag"))
-				{
-					LikelySubtags.Add(IetfLanguageTagHelper.Canonicalize(((string) likelySubtag.Attribute("from")).Replace("_", "-")),
-						IetfLanguageTagHelper.Canonicalize(((string) likelySubtag.Attribute("to")).Replace("_", "-")));
-				}
-			}
 		}
 
 		/// <summary>
@@ -107,7 +86,7 @@ namespace SIL.WritingSystems
 			if (topLevelElements == null)
 				throw new ArgumentNullException("topLevelElements");
 
-			ietfLanguageTag = IetfLanguageTagHelper.Canonicalize(ietfLanguageTag);
+			ietfLanguageTag = IetfLanguageTagHelper.Normalize(ietfLanguageTag, IetfLanguageTagNormalizationMode.Canonical);
 			string[] topLevelElementsArray = topLevelElements.ToArray();
 
 			var status = SldrStatus.FileNotFound;
@@ -116,16 +95,21 @@ namespace SIL.WritingSystems
 			bool redirected;
 			do
 			{
-				filename = ietfLanguageTag + "." + LdmlExtension;
 				string revid, uid = "", tempString;
-				if (destinationPath != SldrCachePath)
+				if (destinationPath == SldrCachePath)
 				{
+					filename = string.Format("{0}.{1}", ietfLanguageTag, LdmlExtension);
+				}
+				else
+				{
+					filename = string.Format("{0}.{1}", IetfLanguageTagHelper.Normalize(ietfLanguageTag, IetfLanguageTagNormalizationMode.SilCompatible), LdmlExtension);
 					// Check if LDML file already exists in destination and read revid and uid
 					if (!ReadSilIdentity(Path.Combine(destinationPath, filename), out tempString, out uid))
 						uid = DefaultUserId;
 				}
 
-				sldrCacheFilePath = Path.Combine(SldrCachePath, !string.IsNullOrEmpty(uid) && uid != DefaultUserId ? string.Format("{0}-{1}.{2}", ietfLanguageTag, uid, LdmlExtension) : filename);
+				sldrCacheFilePath = Path.Combine(SldrCachePath, !string.IsNullOrEmpty(uid) && uid != DefaultUserId ? string.Format("{0}-{1}.{2}", ietfLanguageTag, uid, LdmlExtension)
+					: string.Format("{0}.{1}", ietfLanguageTag, LdmlExtension));
 				// Read revid from cache file
 				ReadSilIdentity(sldrCacheFilePath, out revid, out tempString);
 
@@ -194,14 +178,6 @@ namespace SIL.WritingSystems
 					var errorResponse = (HttpWebResponse)we.Response;
 					if ((we.Status == WebExceptionStatus.ProtocolError) && (errorResponse.StatusCode == HttpStatusCode.NotFound))
 						return SldrStatus.FileNotFound;
-
-					// Lookup the likely subtag 
-					string toLikelySubtag;
-					if (LikelySubtags.TryGetValue(ietfLanguageTag, out toLikelySubtag))
-					{
-						ietfLanguageTag = toLikelySubtag;
-						filename = ietfLanguageTag + "." + LdmlExtension;
-					}
 
 					string sldrCacheFilename;
 					// Download failed so check SLDR cache
