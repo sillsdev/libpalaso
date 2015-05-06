@@ -5,8 +5,14 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Core", "SIL.Core\SIL.Core.csproj", "{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Core.Tests", "SIL.Core.Tests\SIL.Core.Tests.csproj", "{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}"
+	ProjectSection(ProjectDependencies) = postProject
+		{24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4} = {24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms", "SIL.Windows.Forms\SIL.Windows.Forms.csproj", "{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}"
+	ProjectSection(ProjectDependencies) = postProject
+		{52A93C63-08F4-4527-8E6E-AC2ADEBA6E2D} = {52A93C63-08F4-4527-8E6E-AC2ADEBA6E2D}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddSortKey", "AddSortKey\AddSortKey.csproj", "{3D4F73A8-DB05-4580-98A0-DEE34C010636}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -18,6 +24,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.BuildTasks", "Palaso.MSBuildTasks\Palaso.BuildTasks.csproj", "{1B4E2E6B-4424-4560-97E0-B0BD34BF85D8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.TestApp", "SIL.Windows.Forms.TestApp\SIL.Windows.Forms.TestApp.csproj", "{24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0580ED5F-6274-4928-83EE-175F01AD052D} = {0580ED5F-6274-4928-83EE-175F01AD052D}
+		{F7DF58E2-5B67-498A-9F64-B5F1584A5AB9} = {F7DF58E2-5B67-498A-9F64-B5F1584A5AB9}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.Media", "Palaso.Media\Palaso.Media.csproj", "{66B3504A-3B4E-45CB-903A-A9A75B22EF68}"
 EndProject

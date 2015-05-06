@@ -3,7 +3,7 @@ using SIL.ObjectModel;
 
 namespace SIL.LexiconUtils
 {
-	public class LexiconProjectSettings : ObservableObject, IChangeTracking
+	public class ProjectLexiconSettings : ObservableObject, IChangeTracking
 	{
 		private bool _addWritingSystemsToSldr;
 

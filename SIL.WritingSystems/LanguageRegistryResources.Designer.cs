@@ -61,6 +61,16 @@ namespace SIL.WritingSystems {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to zh-Hans-CN	zh-CN
+        ///zh-Hant-TW	zh-TW.
+        /// </summary>
+        internal static string CanonicalToSilCompatible {
+            get {
+                return ResourceManager.GetString("CanonicalToSilCompatible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CountryID	Name	Area
         ///AD	Andorra	Europe
         ///AE	United Arab Emirates	Asia
@@ -196,27 +206,6 @@ namespace SIL.WritingSystems {
         internal static string LanguageIndex {
             get {
                 return ResourceManager.GetString("LanguageIndex", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
-        ///&lt;!DOCTYPE supplementalData SYSTEM &quot;../../common/dtd/ldmlSupplemental.dtd&quot;&gt;
-        ///&lt;!--
-        ///Copyright © 1991-2014 Unicode, Inc.
-        ///CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
-        ///For terms of use, see http://www.unicode.org/copyright.html
-        ///--&gt;
-        ///&lt;supplementalData&gt;
-        ///    &lt;version number=&quot;$Revision$&quot;/&gt;
-        ///    &lt;generation date=&quot;$Date$&quot;/&gt;
-        ///    &lt;likelySubtags&gt;
-        ///		&lt;likelySubtag from=&quot;aa&quot; to=&quot;aa_Latn_ET&quot;/&gt;
-        ///		&lt;!--{ Afar; ?; ? } =&gt; { A [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string likelySubtags {
-            get {
-                return ResourceManager.GetString("likelySubtags", resourceCulture);
             }
         }
         

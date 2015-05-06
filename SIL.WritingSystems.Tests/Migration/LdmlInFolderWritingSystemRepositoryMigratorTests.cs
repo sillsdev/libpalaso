@@ -7,7 +7,6 @@ using NUnit.Framework;
 using Palaso.TestUtilities;
 using SIL.WritingSystems.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
-using SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration;
 
 namespace SIL.WritingSystems.Tests.Migration
 {
@@ -992,8 +991,8 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				var wsV3 = new WritingSystemDefinitionV3();
-				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
+				var wsV3 = new WritingSystemDefinition();
+				new LdmlDataMapper(null).Read(environment.MappedFilePath("test.ldml"), wsV3);
 				var cdV3 = (IcuRulesCollationDefinition) wsV3.Collations.First();
 				Assert.IsNullOrEmpty(wsV0.SortRules);
 				Assert.IsNullOrEmpty(cdV3.CollationRules);
@@ -1037,8 +1036,8 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				var wsV3 = new WritingSystemDefinitionV3();
-				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
+				var wsV3 = new WritingSystemDefinition();
+				new LdmlDataMapper(null).Read(environment.MappedFilePath("test.ldml"), wsV3);
 				var cdV3 = (SimpleRulesCollationDefinition) wsV3.Collations.First();
 				Assert.AreEqual(wsV0.SortRules, cdV3.SimpleRules);
 			}
@@ -1058,8 +1057,8 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				var wsV3 = new WritingSystemDefinitionV3();
-				new LdmlAdaptorV3().Read(environment.MappedFilePath("test.ldml"), wsV3);
+				var wsV3 = new WritingSystemDefinition();
+				new LdmlDataMapper(null).Read(environment.MappedFilePath("test.ldml"), wsV3);
 				var cdV3 = (IcuRulesCollationDefinition) wsV3.Collations.First();
 				Assert.AreEqual(wsV0.SortRules, cdV3.CollationRules);
 			}
@@ -1173,8 +1172,8 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				var wsV3 = new WritingSystemDefinitionV3();
-				new LdmlAdaptorV3(new TestWritingSystemFactory()).Read(environment.MappedFilePath("test.ldml"), wsV3);
+				var wsV3 = new WritingSystemDefinition();
+				new LdmlDataMapper(new TestWritingSystemFactory()).Read(environment.MappedFilePath("test.ldml"), wsV3);
 				DateTime dateAfterMigration = wsV3.DateModified;
 				Assert.IsTrue(dateAfterMigration > dateBeforeMigration);
 			}

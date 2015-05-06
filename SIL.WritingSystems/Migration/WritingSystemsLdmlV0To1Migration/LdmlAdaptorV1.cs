@@ -461,12 +461,37 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 					readerSettings.DtdProcessing = DtdProcessing.Parse;
 					reader = XmlReader.Create(oldFile, readerSettings);
 				}
-				using (var writer = XmlWriter.Create(filePath, CanonicalXmlSettings.CreateXmlWriterSettings()))
+				
+				string backupFilePath = null;
+				if (File.Exists(filePath))
 				{
-					writer.WriteStartDocument();
-					WriteLdml(writer, reader, ws);
-					writer.Close();
+					try
+					{
+						backupFilePath = Path.ChangeExtension(Path.GetTempFileName(), Path.GetExtension(filePath));
+						File.Copy(filePath, backupFilePath);
+					}
+					catch (Exception)
+					{
+						backupFilePath = null;
+					}
 				}
+				try
+				{
+					using (var writer = XmlWriter.Create(filePath, CanonicalXmlSettings.CreateXmlWriterSettings()))
+					{
+						writer.WriteStartDocument();
+						WriteLdml(writer, reader, ws);
+					}
+				}
+				catch (Exception)
+				{
+					if (backupFilePath != null)
+						File.Copy(backupFilePath, filePath, true);
+					throw;
+				}
+
+				if (backupFilePath != null)
+					File.Delete(backupFilePath);
 			}
 			finally
 			{

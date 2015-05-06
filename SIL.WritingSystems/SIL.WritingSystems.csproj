@@ -292,9 +292,7 @@
     <Compile Include="Migration\LdmlMigrationInfo.cs" />
     <Compile Include="Migration\SilLdmlVersion.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\Rfc5646Tag.cs" />
-    <Compile Include="Migration\WritingSystemsLdmlV2To3Migration\LdmlAdaptorV3.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV2To3Migration\LdmlVersion2MigrationStrategy.cs" />
-    <Compile Include="Migration\WritingSystemsLdmlV2To3Migration\WritingSystemDefinitionV3.cs" />
     <Compile Include="PunctuationPattern.cs" />
     <Compile Include="QuotationMark.cs" />
     <Compile Include="RegionSubtag.cs" />
@@ -347,7 +345,7 @@
     <Content Include="Resources\ianaSubtagRegistry.txt" />
     <Content Include="Resources\LanguageCodes.txt" />
     <Content Include="Resources\LanguageIndex.txt" />
-    <Content Include="Resources\likelySubtags.xml" />
+    <Content Include="Resources\CanonicalToSilCompatible.txt" />
     <Content Include="Resources\TwoToThreeCodes.txt" />
   </ItemGroup>
   <ItemGroup>

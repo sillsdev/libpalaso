@@ -5,13 +5,13 @@ using NUnit.Framework;
 namespace SIL.LexiconUtils.Tests
 {
 	[TestFixture]
-	public class LexiconProjectSettingsDataMapperTests
+	public class ProjectLexiconSettingsDataMapperTests
 	{
 		[Test]
 		public void Read_ValidXml_SetsAllProperties()
 		{
 			const string projectSettingsXml =
-@"<LexiconProjectSettings>
+@"<ProjectLexiconSettings>
   <WritingSystems addToSldr=""true"">
     <WritingSystem id=""fr-FR"">
       <SpellCheckingId>fr_FR</SpellCheckingId>
@@ -19,11 +19,11 @@ namespace SIL.LexiconUtils.Tests
       <Keyboard>Old Keyboard</Keyboard>
     </WritingSystem>
   </WritingSystems>
-</LexiconProjectSettings>";
+</ProjectLexiconSettings>";
 
-			var projectSettingsDataMapper = new LexiconProjectSettingsDataMapper(new MemorySettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)});
+			var projectSettingsDataMapper = new ProjectLexiconSettingsDataMapper(new MemorySettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)});
 
-			var settings = new LexiconProjectSettings();
+			var settings = new ProjectLexiconSettings();
 			projectSettingsDataMapper.Read(settings);
 			Assert.That(settings.AddWritingSystemsToSldr, Is.True);
 		}
@@ -31,9 +31,9 @@ namespace SIL.LexiconUtils.Tests
 		[Test]
 		public void Read_EmptyXml_NothingSet()
 		{
-			var projectSettingsDataMapper = new LexiconProjectSettingsDataMapper(new MemorySettingsStore());
+			var projectSettingsDataMapper = new ProjectLexiconSettingsDataMapper(new MemorySettingsStore());
 
-			var settings = new LexiconProjectSettings();
+			var settings = new ProjectLexiconSettings();
 			projectSettingsDataMapper.Read(settings);
 
 			Assert.That(settings.AddWritingSystemsToSldr, Is.False);
@@ -43,22 +43,22 @@ namespace SIL.LexiconUtils.Tests
 		public void Write_EmptyXml_XmlUpdated()
 		{
 			var settingsStore = new MemorySettingsStore();
-			var projectSettingsDataMapper = new LexiconProjectSettingsDataMapper(settingsStore);
+			var projectSettingsDataMapper = new ProjectLexiconSettingsDataMapper(settingsStore);
 
-			var settings = new LexiconProjectSettings {AddWritingSystemsToSldr = true};
+			var settings = new ProjectLexiconSettings {AddWritingSystemsToSldr = true};
 			projectSettingsDataMapper.Write(settings);
 
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
-@"<LexiconProjectSettings>
+@"<ProjectLexiconSettings>
   <WritingSystems addToSldr=""true"" />
-</LexiconProjectSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+</ProjectLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 		}
 
 		[Test]
 		public void Write_ValidXml_XmlUpdated()
 		{
 			const string projectSettingsXml =
-@"<LexiconProjectSettings>
+@"<ProjectLexiconSettings>
   <WritingSystems addToSldr=""false"">
     <WritingSystem id=""fr-FR"">
       <SpellCheckingId>fr_FR</SpellCheckingId>
@@ -66,15 +66,15 @@ namespace SIL.LexiconUtils.Tests
       <Keyboard>Old Keyboard</Keyboard>
     </WritingSystem>
   </WritingSystems>
-</LexiconProjectSettings>";
+</ProjectLexiconSettings>";
 
 			var settingsStore = new MemorySettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
-			var projectSettingsDataMapper = new LexiconProjectSettingsDataMapper(settingsStore);
-			var settings = new LexiconProjectSettings {AddWritingSystemsToSldr = true};
+			var projectSettingsDataMapper = new ProjectLexiconSettingsDataMapper(settingsStore);
+			var settings = new ProjectLexiconSettings {AddWritingSystemsToSldr = true};
 			projectSettingsDataMapper.Write(settings);
 
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
-@"<LexiconProjectSettings>
+@"<ProjectLexiconSettings>
   <WritingSystems addToSldr=""true"">
     <WritingSystem id=""fr-FR"">
       <SpellCheckingId>fr_FR</SpellCheckingId>
@@ -82,7 +82,7 @@ namespace SIL.LexiconUtils.Tests
       <Keyboard>Old Keyboard</Keyboard>
     </WritingSystem>
   </WritingSystems>
-</LexiconProjectSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+</ProjectLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 		}
 	}
 }

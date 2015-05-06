@@ -13,7 +13,6 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 	{
 		public Staging()
 		{
-			KnownKeyboardIds = new List<string>();
 			CharacterSets = new Dictionary<string, string>();
 		}
 
@@ -22,8 +21,6 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 
 		public string DefaultFontName { get; set; }
 		public string DefaultFontFeatures { get; set; }
-
-		public List<string> KnownKeyboardIds { get; private set; }
 
 		// Will only have 1 collation to migrate from legacy files
 		public WritingSystemDefinitionV1.SortRulesType SortUsing { get; set; }

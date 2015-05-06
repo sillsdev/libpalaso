@@ -122,7 +122,7 @@ namespace SIL.WritingSystems
 			if (!IetfLanguageTagHelper.IsValid(ietfLanguageTag))
 				throw new ArgumentException("The IETF language is invalid.", ietfLanguageTag);
 
-			_ietfLanguageTag = IetfLanguageTagHelper.Canonicalize(ietfLanguageTag);
+			_ietfLanguageTag = IetfLanguageTagHelper.Normalize(ietfLanguageTag, IetfLanguageTagNormalizationMode.SilCompatible);
 			IEnumerable<VariantSubtag> variantSubtags;
 			IetfLanguageTagHelper.TryGetSubtags(_ietfLanguageTag, out _language, out _script, out _region, out variantSubtags);
 			_variants = new BulkObservableList<VariantSubtag>(variantSubtags);
@@ -657,7 +657,7 @@ namespace SIL.WritingSystems
 				if (!IetfLanguageTagHelper.IsValid(value))
 					throw new ArgumentException("The IETF language tag is invalid.", "value");
 
-				string newLangTag = IetfLanguageTagHelper.Canonicalize(value);
+				string newLangTag = IetfLanguageTagHelper.Normalize(value, IetfLanguageTagNormalizationMode.SilCompatible);
 				if (!newLangTag.Equals(_ietfLanguageTag, StringComparison.InvariantCultureIgnoreCase))
 				{
 					LanguageSubtag language;

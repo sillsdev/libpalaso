@@ -2,6 +2,7 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Diagnostics;
+using System.Text;
 using System.Windows.Forms;
 using L10NSharp;
 using SIL.PlatformUtilities;
@@ -37,6 +38,7 @@ namespace SIL.WindowsForms.Reporting
 		/// <returns>true if total memory in use is more than 1G (whether or not we bothered the user)</returns>
 		public static bool CheckMemory(bool minor, string eventDescription, bool okToBotherUser)
 		{
+			// the best available approximation of the number of bytes currently allocated in managed memory.
 			var heapMem = GC.GetTotalMemory(true); // first, as it may reduce other numbers
 			var is64BitProcess = IntPtr.Size == 8; // according to MSDN
 			long memorySize64;
@@ -74,23 +76,32 @@ namespace SIL.WindowsForms.Reporting
 #endif
 			using (var proc = Process.GetCurrentProcess())
 			{
+				// the current size of the process memory that cannot be shared with other processes.
 				memorySize64 = proc.PrivateMemorySize64;
+				// the current size of the process memory currently in physical RAM memory.
 				workingSet64 = proc.WorkingSet64;
-				message =
-					string.Format(
-						"{0}: total memory {1:N0}K, working set {2:N0}K, heap {3:N0}K, system physical {4:N0}K, system virtual {5}K; {6}-bit process",
-						eventDescription,
-						memorySize64/1024,
-						workingSet64/1024,
-						heapMem/1024,
-						totalPhysicalMemory/1024,
-						totalVirtualMemory,
-						is64BitProcess ? 64 : 32);
+				// the current size of all memory used by the process, split between pages loaded in physical memory and pages stored on disk.
+				long virtualMemory64 = proc.VirtualMemorySize64;
+				// the maximum amount of physical memory allocated for the process since it was started.
+				long peakWorkingSet64 = proc.PeakWorkingSet64;
+				// the maximum amount of virtual memory allocated for the process since it was started.
+				long peakVirtualMemory64 = proc.PeakVirtualMemorySize64;
+				StringBuilder bldr = new StringBuilder();
+				bldr.AppendFormat("{0}:", eventDescription);
+				bldr.AppendFormat(" Memory Use ({0}-bit process): private {1:N0}K, virtual {2:N0}K,", is64BitProcess ? 64 : 32, memorySize64/1024, virtualMemory64/1024);
+				bldr.AppendFormat(" physical {0:N0}K,", workingSet64/1024);
+				bldr.AppendFormat(" managed heap {0:N0}K,", heapMem/1024);
+				bldr.AppendLine();
+				bldr.AppendFormat("        peak virtual {0:N0}K, peak physical {1:N0}K;", peakVirtualMemory64/1024, peakWorkingSet64/1024);
+				bldr.AppendFormat(" system virtual {0}K, system physical (RAM) {1:N0}K", totalVirtualMemory, totalPhysicalMemory/1024);
+				bldr.AppendLine();
+				message = bldr.ToString();
 			}
 			if (minor)
 				Logger.WriteMinorEvent(message);
 			else
 				Logger.WriteEvent(message);
+			Debug.Write("DEBUG: " + message);
 			// Limit memory below 1GB unless we have a 64-bit process with lots of physical memory.
 			// In that case, still limit memory to well under 2GB before warning.
 			long safelimit = 1000000000;
@@ -98,9 +109,10 @@ namespace SIL.WindowsForms.Reporting
 				safelimit = 2000000000;
 			bool danger = false;
 			// In Windows/.Net, Process.PrivateMemorySize64 seems to give a reasonable value for current
-			// memory usage.  In Linux/Mono, Process.PrivateMemorySize64 gives what seems to be a virtual
-			// memory limit or some some value.  In that context, Process.WorkingSet64 appears to be the
-			// best bet for approximating how much memory the process is currently using.
+			// memory usage.  In Linux/Mono, Process.PrivateMemorySize64 seems to include a large amount
+			// of virtual memory.  In that context, Process.WorkingSet64 appears to be the best bet for
+			// approximating how much memory the process is currently using.  (It may be that this would
+			// be a better value for Windows as well, but we'll leave it as it is for now.)
 			if (Platform.IsWindows)
 				danger = memorySize64 > safelimit;
 			else

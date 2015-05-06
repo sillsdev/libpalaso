@@ -5,19 +5,19 @@ using SIL.WritingSystems;
 
 namespace SIL.LexiconUtils
 {
-	public class LexiconUserSettingsWritingSystemDataMapper : LexiconUserSettingsWritingSystemDataMapper<WritingSystemDefinition>
+	public class UserLexiconSettingsWritingSystemDataMapper : UserLexiconSettingsWritingSystemDataMapper<WritingSystemDefinition>
 	{
-		public LexiconUserSettingsWritingSystemDataMapper(ISettingsStore settingsStore)
+		public UserLexiconSettingsWritingSystemDataMapper(ISettingsStore settingsStore)
 			: base(settingsStore)
 		{
 		}
 	}
 
-	public class LexiconUserSettingsWritingSystemDataMapper<T> : ICustomDataMapper<T> where T : WritingSystemDefinition
+	public class UserLexiconSettingsWritingSystemDataMapper<T> : ICustomDataMapper<T> where T : WritingSystemDefinition
 	{
 		private readonly ISettingsStore _settingsStore;
 
-		public LexiconUserSettingsWritingSystemDataMapper(ISettingsStore settingsStore)
+		public UserLexiconSettingsWritingSystemDataMapper(ISettingsStore settingsStore)
 		{
 			_settingsStore = settingsStore;
 		}
@@ -49,7 +49,8 @@ namespace SIL.LexiconUtils
 					IKeyboardDefinition keyboard;
 					if (!Keyboard.Controller.TryGetKeyboard(id, out keyboard))
 						keyboard = Keyboard.Controller.CreateKeyboard(id, KeyboardFormat.Unknown, Enumerable.Empty<string>());
-					ws.KnownKeyboards.Add(keyboard);
+					if (!ws.KnownKeyboards.Contains(keyboard))
+						ws.KnownKeyboards.Add(keyboard);
 				}
 			}
 
@@ -65,7 +66,7 @@ namespace SIL.LexiconUtils
 
 		public virtual void Write(T ws)
 		{
-			XElement userSettingsElem = _settingsStore.GetSettings() ?? new XElement("LexiconUserSettings");
+			XElement userSettingsElem = _settingsStore.GetSettings() ?? new XElement("UserLexiconSettings");
 			XElement wssElem = userSettingsElem.Element("WritingSystems");
 			if (wssElem == null)
 			{

@@ -226,6 +226,13 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void CreateIetfLanguageTag_SimplifiedChinese_SuppressesScript()
+		{
+			Assert.That(IetfLanguageTagHelper.CreateIetfLanguageTag("zh", "Hans", "CN", string.Empty), Is.EqualTo("zh-CN"));
+			Assert.That(IetfLanguageTagHelper.CreateIetfLanguageTag("zh", "Hans", "CN", Enumerable.Empty<VariantSubtag>()), Is.EqualTo("zh-CN"));
+		}
+
+		[Test]
 		public void CreateIetfLanguageTag_ValidTag_ReturnsTag()
 		{
 			Assert.That(IetfLanguageTagHelper.CreateIetfLanguageTag("en", "Arab", "GB", "1996"), Is.EqualTo("en-Arab-GB-1996"));
@@ -259,17 +266,31 @@ namespace SIL.WritingSystems.Tests
 		}
 		#endregion
 
-		#region Canonicalize
+		#region Normalize
 		[Test]
-		public void Canonicalize_ImplicitScript_SuppressesScript()
+		public void Normalize_ImplicitScript_SuppressesScript()
 		{
-			Assert.That(IetfLanguageTagHelper.Canonicalize("en-Latn-US"), Is.EqualTo("en-US"));
+			Assert.That(IetfLanguageTagHelper.Normalize("en-Latn-US", IetfLanguageTagNormalizationMode.Canonical), Is.EqualTo("en-US"));
 		}
 
 		[Test]
-		public void Canonicalize_NonStandardCapitalization_StandardCapitalization()
+		public void Normalize_NonStandardCapitalization_StandardCapitalization()
 		{
-			Assert.That(IetfLanguageTagHelper.Canonicalize("zH-latn-cn-FonIpa-X-Etic"), Is.EqualTo("zh-Latn-CN-fonipa-x-etic"));
+			Assert.That(IetfLanguageTagHelper.Normalize("zH-latn-cn-FonIpa-X-Etic", IetfLanguageTagNormalizationMode.Canonical), Is.EqualTo("zh-Latn-CN-fonipa-x-etic"));
+		}
+
+		[Test]
+		public void Normalize_CanonicalForm_CompatibleForm()
+		{
+			Assert.That(IetfLanguageTagHelper.Normalize("zh-hans-Cn-x-stuff", IetfLanguageTagNormalizationMode.SilCompatible), Is.EqualTo("zh-CN-x-stuff"));
+			Assert.That(IetfLanguageTagHelper.Normalize("zH-hans-Cn", IetfLanguageTagNormalizationMode.SilCompatible), Is.EqualTo("zh-CN"));
+		}
+
+		[Test]
+		public void Normalize_CompatibleForm_CanonicalForm()
+		{
+			Assert.That(IetfLanguageTagHelper.Normalize("zH-tW-x-stuff", IetfLanguageTagNormalizationMode.Canonical), Is.EqualTo("zh-Hant-TW-x-stuff"));
+			Assert.That(IetfLanguageTagHelper.Normalize("Zh-Tw", IetfLanguageTagNormalizationMode.Canonical), Is.EqualTo("zh-Hant-TW"));
 		}
 		#endregion
 
@@ -296,7 +317,7 @@ namespace SIL.WritingSystems.Tests
 		public void ToIcuLocale_ChineseLanguageTag_ReturnsChineseIcuLocale()
 		{
 			// language, region, ICU variant
-			Assert.AreEqual("zh_CN_X_PY", IetfLanguageTagHelper.ToIcuLocale("zh-CN-pinyin"));
+			Assert.AreEqual("zh_Latn_CN_X_PY", IetfLanguageTagHelper.ToIcuLocale("zh-Latn-CN-pinyin"));
 		}
 
 		[Test]
@@ -494,6 +515,22 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(scriptSubtag, Is.Null);
 			Assert.That(regionSubtag, Is.Null);
 			Assert.That(variantSubtags, Is.EqualTo(new VariantSubtag[] {"dupl0"}));
+		}
+
+		[Test]
+		public void TryGetSubtags_CompatibleForm_ReturnsScript()
+		{
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			Assert.That(
+				IetfLanguageTagHelper.TryGetSubtags("zh-cN-fonipa-x-etic", out languageSubtag, out scriptSubtag,
+					out regionSubtag, out variantSubtags), Is.True);
+			Assert.That(languageSubtag, Is.EqualTo((LanguageSubtag)"zh"));
+			Assert.That(scriptSubtag, Is.EqualTo((ScriptSubtag)"Hans"));
+			Assert.That(regionSubtag, Is.EqualTo((RegionSubtag)"CN"));
+			Assert.That(variantSubtags, Is.EqualTo(new VariantSubtag[] { "fonipa", "etic" }));
 		}
 		#endregion
 

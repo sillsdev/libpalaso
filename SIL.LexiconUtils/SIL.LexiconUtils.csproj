@@ -187,11 +187,12 @@
     <Compile Include="ApplicationSettingsStore.cs" />
     <Compile Include="FileSettingsStore.cs" />
     <Compile Include="ISettingsStore.cs" />
-    <Compile Include="LexiconProjectSettings.cs" />
-    <Compile Include="LexiconProjectSettingsDataMapper.cs" />
-    <Compile Include="LexiconProjectSettingsWritingSystemDataMapper.cs" />
+    <Compile Include="ProjectLexiconSettings.cs" />
+    <Compile Include="ProjectLexiconSettingsDataMapper.cs" />
+    <Compile Include="ProjectLexiconSettingsWritingSystemDataMapper.cs" />
+    <Compile Include="LexiconSettingsFileHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="LexiconUserSettingsWritingSystemDataMapper.cs" />
+    <Compile Include="UserLexiconSettingsWritingSystemDataMapper.cs" />
     <Compile Include="MemorySettingsStore.cs" />
   </ItemGroup>
   <ItemGroup>
