@@ -767,7 +767,7 @@ namespace SIL.WritingSystems.Tests
 				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
 					writer.Write(LdmlContentForTests.Version3Identity("", "", "", "x-private-use", "abcdefg", "123456", "private", "", ""));
 				adaptor.Read(tempFile.Path, wsFromLdml);
-				Assert.That(wsFromLdml.Variants, Is.EqualTo(new VariantSubtag[]
+				Assert.That(wsFromLdml.Variants, Is.EqualTo(new[]
 				{
 					new VariantSubtag("private", "private", true, new List<string>()),
 					new VariantSubtag("use", "", true, new List<string>())
@@ -815,6 +815,43 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void Write_SystemCollationDefinition_NotWrittenToLdml()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
+				wsToLdml.DefaultCollation = new SystemCollationDefinition { IetfLanguageTag = "en-US" };
+				wsToLdml.Collations.Add(new IcuRulesCollationDefinition("standard"));
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath(
+						"/ldml/collations/collation[@type='standard']",
+						environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasNoMatchForXpath(
+						"/ldml/collations/collation[@type='system']",
+						environment.NamespaceManager);
+			}
+		}
+
+		[Test]
+		public void Write_NoLdmlCollations_CollationsNotWrittenToLdml()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
+				wsToLdml.DefaultCollation = new SystemCollationDefinition {IetfLanguageTag = "en-US"};
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasNoMatchForXpath(
+						"/ldml/collations",
+						environment.NamespaceManager);
+			}
+		}
+
+		[Test]
 		public void Write_LdmlIsNicelyFormatted()
 		{
 			using (var file = new TempFile())
@@ -845,9 +882,6 @@ namespace SIL.WritingSystems.Tests
 			<characterOrder>left-to-right</characterOrder>
 		</orientation>
 	</layout>
-	<collations>
-		<defaultCollation>standard</defaultCollation>
-	</collations>
 </ldml>"
 )).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 			}
@@ -891,7 +925,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Read_NonDescriptLdml_WritingSystemIdIsSameAsRfc5646Tag()
+		public void Read_NonDescriptLdml_WritingSystemIdIsSameAsIetfLanguageTag()
 		{
 			using (var file = new TempFile())
 			{
