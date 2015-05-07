@@ -64,10 +64,8 @@ namespace SIL.DblBundle.Tests.Text
 			File.WriteAllBytes(Path.Combine(dirContainingContentsForZipping, "versification.vrs"), Resources.versification_vrs);
 			Directory.CreateDirectory(Path.Combine(dirContainingContentsForZipping, "USX_0"));
 			File.WriteAllBytes(Path.Combine(dirContainingContentsForZipping, "USX_0", "MAT.usx"), Resources.MAT_usx);
-			Directory.CreateDirectory(Path.Combine(dirContainingContentsForZipping, "empty"));
 
 			var zipFile = new FastZip();
-			zipFile.CreateEmptyDirectories = true;
 			zipFile.CreateZip(bundle.Path, dirContainingContentsForZipping, true, null);
 
 			DirectoryUtilities.DeleteDirectoryRobust(dirContainingContentsForZipping);
