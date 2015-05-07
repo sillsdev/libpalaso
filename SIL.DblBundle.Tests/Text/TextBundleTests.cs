@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using Ionic.Zip;
+using ICSharpCode.SharpZipLib.Zip;
 using NUnit.Framework;
 using SIL.DblBundle.Tests.Properties;
 using SIL.DblBundle.Text;
@@ -56,25 +56,19 @@ namespace SIL.DblBundle.Tests.Text
 		{
 			TempFile bundle = TempFile.WithExtension(DblBundleFileUtils.kDblBundleExtension);
 
-			using (var englishLds = TempFile.WithFilename("English.lds"))
-			using (var metadataXml = TempFile.WithFilename("metadata.xml"))
-			using (var stylesXml = TempFile.WithFilename("styles.xml"))
-			using (var versificationVrs = TempFile.WithFilename("versification.vrs"))
-			using (var matUsx = TempFile.WithFilename("MAT.usx"))
-			using (var zip = new ZipFile())
-			{
-				File.WriteAllBytes(englishLds.Path, Resources.English_lds);
-				zip.AddFile(englishLds.Path, string.Empty);
-				File.WriteAllText(metadataXml.Path, Resources.metadata_xml);
-				zip.AddFile(metadataXml.Path, string.Empty);
-				File.WriteAllText(stylesXml.Path, Resources.styles_xml);
-				zip.AddFile(stylesXml.Path, string.Empty);
-				File.WriteAllBytes(versificationVrs.Path, Resources.versification_vrs);
-				zip.AddFile(versificationVrs.Path, string.Empty);
-				File.WriteAllBytes(matUsx.Path, Resources.MAT_usx);
-				zip.AddFile(matUsx.Path, "USX_0");
-				zip.Save(bundle.Path);
-			}
+			string dirContainingContentsForZipping = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+			Directory.CreateDirectory(dirContainingContentsForZipping);
+			File.WriteAllBytes(Path.Combine(dirContainingContentsForZipping, "English.lds"), Resources.English_lds);
+			File.WriteAllText(Path.Combine(dirContainingContentsForZipping, "metadata.xml"), Resources.metadata_xml);
+			File.WriteAllText(Path.Combine(dirContainingContentsForZipping, "styles.xml"), Resources.styles_xml);
+			File.WriteAllBytes(Path.Combine(dirContainingContentsForZipping, "versification.vrs"), Resources.versification_vrs);
+			Directory.CreateDirectory(Path.Combine(dirContainingContentsForZipping, "USX_0"));
+			File.WriteAllBytes(Path.Combine(dirContainingContentsForZipping, "USX_0", "MAT.usx"), Resources.MAT_usx);
+
+			var zipFile = new FastZip();
+			zipFile.CreateZip(bundle.Path, dirContainingContentsForZipping, true, null);
+
+			DirectoryUtilities.DeleteDirectoryRobust(dirContainingContentsForZipping);
 
 			return bundle;
 		}
