@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Zip;
 using L10NSharp;
 using SIL.DblBundle.Text;
@@ -21,7 +22,31 @@ namespace SIL.DblBundle
 			string tempPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 			Directory.CreateDirectory(tempPath);
 
-			new FastZip().ExtractZip(zipFilePath, tempPath, null);
+			Console.WriteLine("Items in zip file ({0}):", zipFilePath);
+			using (ZipFile zipFile = new ZipFile(zipFilePath))
+			{
+				if (zipFile.Count == 0)
+				{
+					Console.WriteLine("None");
+				}
+				else
+				{
+					for (int i = 0; i < zipFile.Count; ++i)
+					{
+						ZipEntry e = zipFile[i];
+						Console.WriteLine("   {0}", e.Name);
+					}
+				}
+			}
+
+			var fastZip = new FastZip();
+			fastZip.CreateEmptyDirectories = true;
+
+			fastZip.ExtractZip(zipFilePath, tempPath, null);
+
+			Console.WriteLine("Items in Unzipped Directory ({0}):", tempPath);
+			foreach (var item in Directory.EnumerateFileSystemEntries(tempPath, "*", SearchOption.AllDirectories))
+				Console.WriteLine("   {0}", item);
 
 			return tempPath;
 		}
