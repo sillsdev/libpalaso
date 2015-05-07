@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Ionic.Zip;
+using ICSharpCode.SharpZipLib.Zip;
 using L10NSharp;
 using SIL.DblBundle.Text;
 using SIL.Reporting;
@@ -16,20 +16,12 @@ namespace SIL.DblBundle
 		public const string kDblBundleExtension = ".zip";
 		public const string kVersificationFileName = "versification.vrs";
 
-		/// <summary>
-		/// Note: There is some reason to believe that the DotNetZip (Ionic) library is not portable to mono/Linux.
-		/// See BL-496, BL-498, BL-504 and https://trello.com/c/PYYhpsUm/26-fix-dotnetzip-reduced.
-		/// The problem (which no one seems to remember for sure) may be that subdirectories are not unzipped correctly.
-		/// If problems occur, consider switching out DotNetZip for SharpZipLib (and do so for all of libpalaso).
-		/// </summary>
 		public static string ExtractToTempDirectory(string zipFilePath)
 		{
 			string tempPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 			Directory.CreateDirectory(tempPath);
 
-			using (ZipFile zip1 = ZipFile.Read(zipFilePath))
-				foreach (ZipEntry e in zip1)
-					e.Extract(tempPath, ExtractExistingFileAction.OverwriteSilently);
+			new FastZip().ExtractZip(zipFilePath, tempPath, null);
 
 			return tempPath;
 		}
