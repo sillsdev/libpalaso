@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using NUnit.Framework;
+using Palaso.Extensions;
 using Palaso.Linq;
 
 namespace Palaso.Lift.Tests
@@ -1566,7 +1567,7 @@ namespace Palaso.Lift.Tests
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
-				Assert.That(doc.Root.Attributes().Select(s => s.ToString()), Is.EqualTo(new[]
+				Assert.That(doc.Root.Attributes().Select(s => s.ToStringMonoWorkaround()), Is.EqualTo(new[]
 				{
 					"producer=\"SIL.FLEx 3.0.0.40042\"",
 					"version=\"0.13\"",
@@ -1575,7 +1576,7 @@ namespace Palaso.Lift.Tests
 
 				var element = doc.Root.Element("entry");
 				Assert.That(element, Is.Not.Null);
-				Assert.That(element.Attributes().Select(s => s.ToString()), Is.EqualTo(new[]
+				Assert.That(element.Attributes().Select(s => s.ToStringMonoWorkaround()), Is.EqualTo(new[]
 				{
 					"dateCreated=\"2008-08-09T05:17:10Z\"",
 					"dateModified=\"2010-11-17T08:14:31Z\"",
@@ -1585,7 +1586,7 @@ namespace Palaso.Lift.Tests
 
 				element = element.Element("trait");
 				Assert.That(element, Is.Not.Null);
-				Assert.That(element.Attributes().Select(s => s.ToString()), Is.EqualTo(new[]
+				Assert.That(element.Attributes().Select(s => s.ToStringMonoWorkaround()), Is.EqualTo(new[]
 				{
 					"name=\"morph-type\"",
 					"value=\"stem\""
