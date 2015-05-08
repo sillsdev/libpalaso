@@ -78,7 +78,11 @@ namespace Palaso.Lift
 
 					foreach (var rootAttributeKvp in sortedRootAttributes)
 					{
-						writer.WriteAttributeString(rootAttributeKvp.Key, rootAttributeKvp.Value);
+						var keyParts = rootAttributeKvp.Key.Split(':');
+						if (keyParts.Length > 1)
+							writer.WriteAttributeString(keyParts[0], keyParts[1], null, rootAttributeKvp.Value);
+						else
+							writer.WriteAttributeString(rootAttributeKvp.Key, rootAttributeKvp.Value);
 					}
 
 					if (header != null)
@@ -228,7 +232,7 @@ namespace Palaso.Lift
 				for (var i = 0; i < tempReader.AttributeCount; ++i)
 				{
 					tempReader.MoveToAttribute(i);
-					sortedRootAttributes.Add(GetUniqueKey(sortedRootAttributes.Keys, tempReader.LocalName), tempReader.Value);
+					sortedRootAttributes.Add(GetUniqueKey(sortedRootAttributes.Keys, tempReader.Name), tempReader.Value);
 				}
 			}
 			return sortedRootAttributes;

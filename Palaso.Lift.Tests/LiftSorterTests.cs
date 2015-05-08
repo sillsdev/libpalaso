@@ -1556,7 +1556,7 @@ namespace Palaso.Lift.Tests
 		{
 			const string liftData =
 @"<?xml version='1.0' encoding='utf-8'?>
-<lift version='0.13' producer='SIL.FLEx 3.0.0.40042'>
+<lift xmlns:flex='http://fieldworks.sil.org' version='0.13' producer='SIL.FLEx 3.0.0.40042'>
 <entry guid='1' id='x_1' dateModified='2010-11-17T08:14:31Z' dateCreated='2008-08-09T05:17:10Z' >
 <trait value='stem' name='morph-type' />
 </entry>
@@ -1569,7 +1569,8 @@ namespace Palaso.Lift.Tests
 				Assert.That(doc.Root.Attributes().Select(s => s.ToString()), Is.EqualTo(new[]
 				{
 					"producer=\"SIL.FLEx 3.0.0.40042\"",
-					"version=\"0.13\""
+					"version=\"0.13\"",
+					"xmlns:flex=\"http://fieldworks.sil.org\""
 				}));
 
 				var element = doc.Root.Element("entry");
