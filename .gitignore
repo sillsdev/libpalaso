@@ -33,3 +33,4 @@ build/NuGet.exe
 Download/
 *.nupkg
 packages/
+lib/xulrunner/

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using NUnit.Framework;
+using Palaso.Linq;
 
 namespace Palaso.Lift.Tests
 {
@@ -1555,7 +1556,7 @@ namespace Palaso.Lift.Tests
 		{
 			const string liftData =
 @"<?xml version='1.0' encoding='utf-8'?>
-<lift version='0.13' producer='SIL.FLEx 3.0.0.40042'>
+<lift xmlns:flex='http://fieldworks.sil.org' version='0.13' producer='SIL.FLEx 3.0.0.40042'>
 <entry guid='1' id='x_1' dateModified='2010-11-17T08:14:31Z' dateCreated='2008-08-09T05:17:10Z' >
 <trait value='stem' name='morph-type' />
 </entry>
@@ -1565,32 +1566,30 @@ namespace Palaso.Lift.Tests
 				File.WriteAllText(liftFile.Path, liftData);
 				LiftSorter.SortLiftFile(liftFile.Path);
 				var doc = XDocument.Load(liftFile.Path);
-				var attributes = doc.Root.Attributes().ToList();
-				Assert.IsTrue(attributes.Count == 2);
-				Assert.IsTrue(attributes[0].Name == "producer");
-				Assert.IsTrue(attributes[0].Value == "SIL.FLEx 3.0.0.40042");
-				Assert.IsTrue(attributes[1].Name == "version");
-				Assert.IsTrue(attributes[1].Value == "0.13");
+				Assert.That(doc.Root.Attributes().Select(s => s.ToString()), Is.EqualTo(new[]
+				{
+					"producer=\"SIL.FLEx 3.0.0.40042\"",
+					"version=\"0.13\"",
+					"xmlns:flex=\"http://fieldworks.sil.org\""
+				}));
 
 				var element = doc.Root.Element("entry");
-				attributes = element.Attributes().ToList();
-				Assert.IsTrue(attributes.Count == 4);
-				Assert.IsTrue(attributes[0].Name == "dateCreated");
-				Assert.IsTrue(attributes[0].Value == "2008-08-09T05:17:10Z");
-				Assert.IsTrue(attributes[1].Name == "dateModified");
-				Assert.IsTrue(attributes[1].Value == "2010-11-17T08:14:31Z");
-				Assert.IsTrue(attributes[2].Name == "guid");
-				Assert.IsTrue(attributes[2].Value == "1");
-				Assert.IsTrue(attributes[3].Name == "id");
-				Assert.IsTrue(attributes[3].Value == "x_1");
+				Assert.That(element, Is.Not.Null);
+				Assert.That(element.Attributes().Select(s => s.ToString()), Is.EqualTo(new[]
+				{
+					"dateCreated=\"2008-08-09T05:17:10Z\"",
+					"dateModified=\"2010-11-17T08:14:31Z\"",
+					"guid=\"1\"",
+					"id=\"x_1\""
+				}));
 
 				element = element.Element("trait");
-				attributes = element.Attributes().ToList();
-				Assert.IsTrue(attributes.Count == 2);
-				Assert.IsTrue(attributes[0].Name == "name");
-				Assert.IsTrue(attributes[0].Value == "morph-type");
-				Assert.IsTrue(attributes[1].Name == "value");
-				Assert.IsTrue(attributes[1].Value == "stem");
+				Assert.That(element, Is.Not.Null);
+				Assert.That(element.Attributes().Select(s => s.ToString()), Is.EqualTo(new[]
+				{
+					"name=\"morph-type\"",
+					"value=\"stem\""
+				}));
 			}
 		}
 
