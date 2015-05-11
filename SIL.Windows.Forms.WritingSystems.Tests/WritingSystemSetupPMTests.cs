@@ -166,23 +166,23 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		}
 
 		[Test]
-		public void SetCurrentIndexFromIetfLanguageTag_NotFound_ReturnsFalse()
+		public void SetCurrentIndexFromLanguageTag_NotFound_ReturnsFalse()
 		{
-			Assert.IsFalse(_model.SetCurrentIndexFromIetfLanguageTag("bogus"));
+			Assert.IsFalse(_model.SetCurrentIndexFromLanguageTag("bogus"));
 		}
 
 		[Test]
-		public void SetCurrentIndexFromIetfLanguageTag_NotFound_ReturnsTrueAndCurrentIsChanged()
+		public void SetCurrentIndexFromLanguageTag_NotFound_ReturnsTrueAndCurrentIsChanged()
 		{
 			_model.AddNew();
 			_model.CurrentIso = "pt";
 			_model.CurrentRegion = "BR";
 			_model.AddNew();
 			_model.CurrentIso = "de";
-			Assert.IsTrue(_model.SetCurrentIndexFromIetfLanguageTag("de"));
+			Assert.IsTrue(_model.SetCurrentIndexFromLanguageTag("de"));
 			Assert.AreEqual(1, _model.CurrentIndex);
 			Assert.AreEqual("de", _model.CurrentIso);
-			Assert.IsTrue(_model.SetCurrentIndexFromIetfLanguageTag("pt-BR"));
+			Assert.IsTrue(_model.SetCurrentIndexFromLanguageTag("pt-BR"));
 			Assert.AreEqual("pt", _model.CurrentIso);
 			Assert.AreEqual(0, _model.CurrentIndex);
 
@@ -452,7 +452,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 			_model.CurrentIso = "pt";
 			foreach (KeyValuePair<string, string> languageOption in _model.SortLanguageOptions)
 			{
-				Assert.AreNotEqual(_model.CurrentIetfLanguageTag, languageOption.Key);
+				Assert.AreNotEqual(_model.CurrentLanguageTag, languageOption.Key);
 			}
 		}
 
@@ -462,7 +462,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		{
 			_model.AddNew();
 			_model.CurrentIso = "pt";
-			string key = _model.CurrentIetfLanguageTag;
+			string key = _model.CurrentLanguageTag;
 			_model.AddNew();
 			_model.CurrentIso = "de";
 			bool found = false;
@@ -478,12 +478,12 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		{
 			_model.AddNew();
 			_model.CurrentIso = "pt";
-			string key = _model.CurrentIetfLanguageTag;
+			string key = _model.CurrentLanguageTag;
 			_model.AddNew();
 			_model.CurrentIso = "de";
 			_model.CurrentCollationRulesType = "OtherLanguage";
 			_model.CurrentCollationRules = key;
-			key = _model.CurrentIetfLanguageTag;
+			key = _model.CurrentLanguageTag;
 			_model.CurrentIndex = 0;
 			foreach (KeyValuePair<string, string> languageOption in _model.SortLanguageOptions)
 			{
@@ -907,9 +907,9 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 				_model.AskIfOkToDeleteWritingSystems += e.OnAskIfOkToDeleteWritingSystem_Yes;
 				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
 				_model.Save();
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.IetfLanguageTag == "pt"), Is.True);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.LanguageTag == "pt"), Is.True);
 				_model.DeleteCurrent();
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.IetfLanguageTag == "pt"), Is.False);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.LanguageTag == "pt"), Is.False);
 			}
 		}
 
@@ -951,9 +951,9 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Conflate;
 				_model.AskIfOkToConflateWritingSystems += e.OnAskIfOkToConflateWritingSystems_Yes;
 				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.IetfLanguageTag == "pt"), Is.True);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.LanguageTag == "pt"), Is.True);
 				_model.DeleteCurrent();
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.IetfLanguageTag == "pt"), Is.False);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.LanguageTag == "pt"), Is.False);
 			}
 		}
 
@@ -965,9 +965,9 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
 					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Conflate;
 				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.IetfLanguageTag == "pt"), Is.True);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.LanguageTag == "pt"), Is.True);
 				_model.DeleteCurrent();
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.IetfLanguageTag == "pt"), Is.False);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.LanguageTag == "pt"), Is.False);
 			}
 		}
 
@@ -996,9 +996,9 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Delete;
 				_model.AskIfOkToDeleteWritingSystems += e.OnAskIfOkToDeleteWritingSystem_Yes;
 				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.IetfLanguageTag == "pt"), Is.True);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.LanguageTag == "pt"), Is.True);
 				_model.DeleteCurrent();
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.IetfLanguageTag == "pt"), Is.False);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.LanguageTag == "pt"), Is.False);
 			}
 		}
 
@@ -1010,9 +1010,9 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
 					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Delete;
 				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.IetfLanguageTag == "pt"), Is.True);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.LanguageTag == "pt"), Is.True);
 				_model.DeleteCurrent();
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.IetfLanguageTag == "pt"), Is.False);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.LanguageTag == "pt"), Is.False);
 			}
 		}
 
@@ -1024,9 +1024,9 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 				_model.AskUserWhatToDoWithDataInWritingSystemToBeDeleted +=
 					e.OnAskUserWhatToDoWithDataInWritingSystemToBeDeleted_Nothing;
 				_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.IetfLanguageTag == "pt"), Is.True);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.LanguageTag == "pt"), Is.True);
 				_model.DeleteCurrent();
-				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.IetfLanguageTag == "pt"), Is.True);
+				Assert.That(_model.WritingSystemDefinitions.Any(ws => ws.LanguageTag == "pt"), Is.True);
 			}
 		}
 
@@ -1035,7 +1035,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		{
 			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
 			Assert.That(_model.WritingSystemCount, Is.EqualTo(1));
-			Assert.That("pt", Is.EqualTo(_model.CurrentDefinition.IetfLanguageTag));
+			Assert.That("pt", Is.EqualTo(_model.CurrentDefinition.LanguageTag));
 			_model.DeleteCurrent();
 			Assert.That(_model.WritingSystemCount, Is.EqualTo(0));
 		}

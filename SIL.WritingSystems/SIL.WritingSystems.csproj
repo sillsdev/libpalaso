@@ -283,7 +283,7 @@
     <Compile Include="IWritingSystemFactory.cs" />
     <Compile Include="IWritingSystemRepository.cs" />
     <Compile Include="LanguageSubtag.cs" />
-    <Compile Include="IetfLanguageTagHelper.cs" />
+    <Compile Include="IetfLanguageTag.cs" />
     <Compile Include="LdmlCollationParser.cs" />
     <Compile Include="LdmlInFolderWritingSystemFactory.cs" />
     <Compile Include="LocalWritingSystemRepositoryBase.cs" />

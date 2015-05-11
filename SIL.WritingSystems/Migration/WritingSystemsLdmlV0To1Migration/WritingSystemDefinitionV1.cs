@@ -83,7 +83,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 		public string Variant
 		{
-			get { return IetfLanguageTagHelper.ConcatenateVariantAndPrivateUse(_rfcTag.Variant, _rfcTag.PrivateUse); }
+			get { return IetfLanguageTag.ConcatenateVariantAndPrivateUse(_rfcTag.Variant, _rfcTag.PrivateUse); }
 		}
 
 		public string StoreID { get; set; }
@@ -162,7 +162,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 		{
 			string variantPart;
 			string privateUsePart;
-			IetfLanguageTagHelper.SplitVariantAndPrivateUse(variant, out variantPart, out privateUsePart);
+			IetfLanguageTag.SplitVariantAndPrivateUse(variant, out variantPart, out privateUsePart);
 			_rfcTag = new Rfc5646Tag(language, script, region, variantPart, privateUsePart);
 			_id = Bcp47Tag;
 		}

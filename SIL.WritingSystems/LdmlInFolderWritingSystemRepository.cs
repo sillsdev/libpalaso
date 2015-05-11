@@ -145,15 +145,15 @@ namespace SIL.WritingSystems
 		///<summary>
 		/// Returns the full path to the underlying store for this writing system.
 		///</summary>
-		public string GetFilePathFromIetfLanguageTag(string langTag)
+		public string GetFilePathFromLanguageTag(string langTag)
 		{
-			return Path.Combine(PathToWritingSystems, GetFileNameFromIetfLanguageTag(langTag));
+			return Path.Combine(PathToWritingSystems, GetFileNameFromLanguageTag(langTag));
 		}
 
 		/// <summary>
 		/// Gets the file name from the specified identifier.
 		/// </summary>
-		protected static string GetFileNameFromIetfLanguageTag(string langTag)
+		protected static string GetFileNameFromLanguageTag(string langTag)
 		{
 			return langTag + Extension;
 		}
@@ -200,7 +200,7 @@ namespace SIL.WritingSystems
 				return;
 			}
 
-			if (!StringComparer.InvariantCultureIgnoreCase.Equals(wsFromFile.Id, wsFromFile.IetfLanguageTag))
+			if (!StringComparer.InvariantCultureIgnoreCase.Equals(wsFromFile.Id, wsFromFile.LanguageTag))
 			{
 				// Add the exception to our list of problems and continue loading
 				var problem = new WritingSystemRepositoryProblem
@@ -209,7 +209,7 @@ namespace SIL.WritingSystems
 					Exception = new ApplicationException(
 						String.Format(
 							"The writing system file {0} seems to be named inconsistently. It contains the IETF language tag: '{1}'. The name should have been made consistent with its content upon migration of the writing systems.",
-							filePath, wsFromFile.IetfLanguageTag)),
+							filePath, wsFromFile.LanguageTag)),
 					FilePath = filePath
 				};
 				_loadProblems.Add(problem);
@@ -234,7 +234,7 @@ namespace SIL.WritingSystems
 		private bool HaveMatchingDefinitionInTrash(string identifier)
 		{
 			string path = PathToWritingSystemTrash();
-			path = Path.Combine(path, GetFileNameFromIetfLanguageTag(identifier));
+			path = Path.Combine(path, GetFileNameFromLanguageTag(identifier));
 			return File.Exists(path);
 		}
 
@@ -242,9 +242,9 @@ namespace SIL.WritingSystems
 		{
 			foreach (T ws in _systemWritingSystemProvider)
 			{
-				if (null == FindAlreadyLoadedWritingSystem(ws.IetfLanguageTag))
+				if (null == FindAlreadyLoadedWritingSystem(ws.LanguageTag))
 				{
-					if (!HaveMatchingDefinitionInTrash(ws.IetfLanguageTag))
+					if (!HaveMatchingDefinitionInTrash(ws.LanguageTag))
 					{
 						Set(ws);
 					}
@@ -270,7 +270,7 @@ namespace SIL.WritingSystems
 
 		private T FindAlreadyLoadedWritingSystem(string wsID)
 		{
-			return AllWritingSystems.FirstOrDefault(ws => ws.IetfLanguageTag == wsID);
+			return AllWritingSystems.FirstOrDefault(ws => ws.LanguageTag == wsID);
 		}
 
 		/// <summary>
@@ -280,7 +280,7 @@ namespace SIL.WritingSystems
 		{
 			Set(ws);
 
-			string writingSystemFilePath = GetFilePathFromIetfLanguageTag(ws.IetfLanguageTag);
+			string writingSystemFilePath = GetFilePathFromLanguageTag(ws.LanguageTag);
 			if (!File.Exists(writingSystemFilePath) && !string.IsNullOrEmpty(ws.Template))
 			{
 				// this is a new writing system that was generated from a template, so copy the template over before saving
@@ -341,21 +341,21 @@ namespace SIL.WritingSystems
 
 			//we really need to get it in the trash, else, if was auto-provided,
 			//it'll keep coming back!
-			if (!File.Exists(GetFilePathFromIetfLanguageTag(ws.IetfLanguageTag)))
+			if (!File.Exists(GetFilePathFromLanguageTag(ws.LanguageTag)))
 				SaveDefinition(ws);
 
-			if (File.Exists(GetFilePathFromIetfLanguageTag(ws.IetfLanguageTag)))
+			if (File.Exists(GetFilePathFromLanguageTag(ws.LanguageTag)))
 			{
 				Directory.CreateDirectory(PathToWritingSystemTrash());
-				string destination = Path.Combine(PathToWritingSystemTrash(), GetFileNameFromIetfLanguageTag(ws.IetfLanguageTag));
+				string destination = Path.Combine(PathToWritingSystemTrash(), GetFileNameFromLanguageTag(ws.LanguageTag));
 				//clear out any old on already in the trash
 				if (File.Exists(destination))
 					File.Delete(destination);
-				File.Move(GetFilePathFromIetfLanguageTag(ws.IetfLanguageTag), destination);
+				File.Move(GetFilePathFromLanguageTag(ws.LanguageTag), destination);
 			}
 			base.RemoveDefinition(ws);
 			foreach (ICustomDataMapper<T> customDataMapper in _customDataMappers)
-				customDataMapper.Remove(ws.IetfLanguageTag);
+				customDataMapper.Remove(ws.LanguageTag);
 
 			if (wsIgnoreCount != WritingSystemsToIgnore.Count)
 				WriteGlobalWritingSystemsToIgnore();
@@ -372,7 +372,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public override bool CanSave(T ws)
 		{
-			string filePath = GetFilePathFromIetfLanguageTag(ws.IetfLanguageTag);
+			string filePath = GetFilePathFromLanguageTag(ws.LanguageTag);
 			if (File.Exists(filePath))
 			{
 				try
@@ -460,8 +460,8 @@ namespace SIL.WritingSystems
 			//helps us avoid having to deal with situations where a writing system id is changed to be
 			//identical with the old id of another writing sytsem. This could otherwise lead to dataloss.
 			//The inconsistency is resolved on Save()
-			if (oldStoreId != ws.Id && File.Exists(GetFilePathFromIetfLanguageTag(oldStoreId)))
-				File.Move(GetFilePathFromIetfLanguageTag(oldStoreId), GetFilePathFromIetfLanguageTag(ws.Id));
+			if (oldStoreId != ws.Id && File.Exists(GetFilePathFromLanguageTag(oldStoreId)))
+				File.Move(GetFilePathFromLanguageTag(oldStoreId), GetFilePathFromLanguageTag(ws.Id));
 		}
 
 		public override bool WritingSystemIdHasChanged(string id)
@@ -471,7 +471,7 @@ namespace SIL.WritingSystems
 
 		public override string WritingSystemIdHasChangedTo(string id)
 		{
-			return AllWritingSystems.Any(ws => ws.IetfLanguageTag.Equals(id)) ? id : _changeLog.GetChangeFor(id);
+			return AllWritingSystems.Any(ws => ws.LanguageTag.Equals(id)) ? id : _changeLog.GetChangeFor(id);
 		}
 
 		protected override void LastChecked(string identifier, DateTime dateModified)

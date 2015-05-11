@@ -25,8 +25,8 @@ namespace SIL.WritingSystems
 			base.RemoveDefinition(ws);
 			if (_writingSystemsToIgnore.ContainsKey(ws.Id))
 				_writingSystemsToIgnore.Remove(ws.Id);
-			if (_writingSystemsToIgnore.ContainsKey(ws.IetfLanguageTag))
-				_writingSystemsToIgnore.Remove(ws.IetfLanguageTag);
+			if (_writingSystemsToIgnore.ContainsKey(ws.LanguageTag))
+				_writingSystemsToIgnore.Remove(ws.LanguageTag);
 		}
 
 		protected virtual void LastChecked(string id, DateTime dateModified)
@@ -37,20 +37,20 @@ namespace SIL.WritingSystems
 		protected virtual void OnChangeNotifySharedStore(T ws)
 		{
 			DateTime lastDateModified;
-			if (_writingSystemsToIgnore.TryGetValue(ws.IetfLanguageTag, out lastDateModified) && ws.DateModified > lastDateModified)
-				_writingSystemsToIgnore.Remove(ws.IetfLanguageTag);
+			if (_writingSystemsToIgnore.TryGetValue(ws.LanguageTag, out lastDateModified) && ws.DateModified > lastDateModified)
+				_writingSystemsToIgnore.Remove(ws.LanguageTag);
 
 			if (_globalRepository != null)
 			{
 				T globalWs;
-				if (_globalRepository.TryGet(ws.IetfLanguageTag, out globalWs))
+				if (_globalRepository.TryGet(ws.LanguageTag, out globalWs))
 				{
 					if (ws.DateModified > globalWs.DateModified)
 					{
 						T newWs = WritingSystemFactory.Create(ws);
 						try
 						{
-							_globalRepository.Remove(ws.IetfLanguageTag);
+							_globalRepository.Remove(ws.LanguageTag);
 							_globalRepository.Set(newWs);
 						}
 						catch (Exception)
@@ -72,11 +72,11 @@ namespace SIL.WritingSystems
 		{
 			foreach (T ws in _globalRepository.AllWritingSystems)
 			{
-				if (WritingSystems.ContainsKey(ws.IetfLanguageTag))
+				if (WritingSystems.ContainsKey(ws.LanguageTag))
 				{
 					DateTime lastDateModified;
-					if ((!_writingSystemsToIgnore.TryGetValue(ws.IetfLanguageTag, out lastDateModified) || ws.DateModified > lastDateModified)
-						&& (ws.DateModified > WritingSystems[ws.IetfLanguageTag].DateModified))
+					if ((!_writingSystemsToIgnore.TryGetValue(ws.LanguageTag, out lastDateModified) || ws.DateModified > lastDateModified)
+						&& (ws.DateModified > WritingSystems[ws.LanguageTag].DateModified))
 					{
 						yield return WritingSystemFactory.Create(ws);
 					}
@@ -91,7 +91,7 @@ namespace SIL.WritingSystems
 				var results = new List<T>();
 				foreach (T wsDef in WritingSystemsNewerInGlobalRepository())
 				{
-					LastChecked(wsDef.IetfLanguageTag, wsDef.DateModified);
+					LastChecked(wsDef.LanguageTag, wsDef.DateModified);
 					results.Add(wsDef); // REVIEW Hasso 2013.12: add only if not equal?
 				}
 				return results;

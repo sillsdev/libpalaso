@@ -41,7 +41,7 @@ namespace SIL.WritingSystems
 			if (_writingSystemRepository.TryGet(ietfLanguageTag, out existingWS))
 			{
 				T newWS = ConstructDefinition(existingWS);
-				string templatePath = _writingSystemRepository.GetFilePathFromIetfLanguageTag(existingWS.IetfLanguageTag);
+				string templatePath = _writingSystemRepository.GetFilePathFromLanguageTag(existingWS.LanguageTag);
 				if (File.Exists(templatePath))
 					newWS.Template = templatePath;
 				return newWS;
@@ -52,7 +52,7 @@ namespace SIL.WritingSystems
 				&& _writingSystemRepository.GlobalWritingSystemRepository.TryGet(ietfLanguageTag, out existingWS))
 			{
 				T newWS = ConstructDefinition(existingWS);
-				string templatePath = _writingSystemRepository.GlobalWritingSystemRepository.GetFilePathFromIetfLanguageTag(existingWS.IetfLanguageTag);
+				string templatePath = _writingSystemRepository.GlobalWritingSystemRepository.GetFilePathFromLanguageTag(existingWS.LanguageTag);
 				if (File.Exists(templatePath))
 					newWS.Template = templatePath;
 				return newWS;

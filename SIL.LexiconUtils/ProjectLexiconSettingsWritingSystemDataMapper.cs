@@ -28,7 +28,7 @@ namespace SIL.LexiconUtils
 			if (projectSettingsElem == null)
 				return;
 
-			XElement wsElem = projectSettingsElem.Elements("WritingSystems").Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.IetfLanguageTag);
+			XElement wsElem = projectSettingsElem.Elements("WritingSystems").Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.LanguageTag);
 			if (wsElem == null)
 				return;
 
@@ -63,7 +63,7 @@ namespace SIL.LexiconUtils
 			var systemCollationElem = wsElem.Element("SystemCollation");
 			if (systemCollationElem != null)
 			{
-				var scd = new SystemCollationDefinition { IetfLanguageTag = (string) systemCollationElem };
+				var scd = new SystemCollationDefinition { LanguageTag = (string) systemCollationElem };
 				ws.DefaultCollation = scd;
 			}
 		}
@@ -77,11 +77,11 @@ namespace SIL.LexiconUtils
 				wssElem = new XElement("WritingSystems");
 				projectSettingsElem.Add(wssElem);
 			}
-			XElement wsElem = wssElem.Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.IetfLanguageTag);
+			XElement wsElem = wssElem.Elements("WritingSystem").FirstOrDefault(e => (string) e.Attribute("id") == ws.LanguageTag);
 
 			if (wsElem == null)
 			{
-				wsElem = new XElement("WritingSystem", new XAttribute("id", ws.IetfLanguageTag));
+				wsElem = new XElement("WritingSystem", new XAttribute("id", ws.LanguageTag));
 				wssElem.Add(wsElem);
 			}
 			wsElem.RemoveNodes();
@@ -103,7 +103,7 @@ namespace SIL.LexiconUtils
 			var sysCollation = ws.DefaultCollation as SystemCollationDefinition;
 			if (sysCollation != null)
 			{
-				wsElem.Add(new XElement("SystemCollation", sysCollation.IetfLanguageTag));
+				wsElem.Add(new XElement("SystemCollation", sysCollation.LanguageTag));
 			}
 			_settingsStore.SaveSettings(projectSettingsElem);
 		}

@@ -7,14 +7,14 @@ namespace SIL.WritingSystems
 	{
 		private readonly CultureInfo _cultureInfo;
 
-		public SystemCollator(string ietfLanguageTag)
+		public SystemCollator(string languageTag)
 		{
 			_cultureInfo = null;
-			if (!string.IsNullOrEmpty(ietfLanguageTag))
+			if (!string.IsNullOrEmpty(languageTag))
 			{
 				try
 				{
-					_cultureInfo = CultureInfo.GetCultureInfo(ietfLanguageTag);
+					_cultureInfo = CultureInfo.GetCultureInfo(languageTag);
 				}
 				catch (CultureNotFoundException)
 				{
@@ -58,16 +58,16 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Validates the specified IETF language tag.
 		/// </summary>
-		public static bool ValidateIetfLanguageTag(string ietfLanguageTag, out string message)
+		public static bool ValidateLanguageTag(string languageTag, out string message)
 		{
 			try
 			{
-				if (!String.IsNullOrEmpty(ietfLanguageTag))
-					CultureInfo.GetCultureInfo(ietfLanguageTag);
+				if (!String.IsNullOrEmpty(languageTag))
+					CultureInfo.GetCultureInfo(languageTag);
 			}
 			catch (CultureNotFoundException)
 			{
-				message = String.Format("The locale, {0}, is not available on this machine.", ietfLanguageTag);
+				message = String.Format("The locale, {0}, is not available on this machine.", languageTag);
 				return false;
 			}
 			message = null;

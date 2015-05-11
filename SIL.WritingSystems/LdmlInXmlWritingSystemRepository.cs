@@ -53,7 +53,7 @@ namespace SIL.WritingSystems
 				T ws = WritingSystemFactory.Create();
 				XmlReader xmlReader = nav.ReadSubtree();
 				ldmlDataMapper.Read(xmlReader, ws);
-				ws.Id = ws.IetfLanguageTag;
+				ws.Id = ws.LanguageTag;
 				Set(ws);
 			}
 		}
@@ -71,7 +71,7 @@ namespace SIL.WritingSystems
 				{
 					T ws = WritingSystemFactory.Create();
 					ldmlDataMapper.Read(xmlReader.ReadSubtree(), ws);
-					ws.Id = ws.IetfLanguageTag;
+					ws.Id = ws.LanguageTag;
 					Set(ws);
 				}
 

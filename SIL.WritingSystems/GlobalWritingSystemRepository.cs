@@ -144,13 +144,13 @@ namespace SIL.WritingSystems
 			MemoryStream oldData = null;
 			try
 			{
-				string writingSystemFileName = GetFileNameFromIetfLanguageTag(ws.IetfLanguageTag);
-				string writingSystemFilePath = GetFilePathFromIetfLanguageTag(ws.IetfLanguageTag);
+				string writingSystemFileName = GetFileNameFromLanguageTag(ws.LanguageTag);
+				string writingSystemFilePath = GetFilePathFromLanguageTag(ws.LanguageTag);
 				if (!ws.IsChanged && File.Exists(writingSystemFilePath))
 					return; // no need to save (better to preserve the modified date)
 				string oldId = ws.Id;
-				string incomingFileName = GetFileNameFromIetfLanguageTag(oldId);
-				string incomingFilePath = GetFilePathFromIetfLanguageTag(oldId);
+				string incomingFileName = GetFileNameFromLanguageTag(oldId);
+				string incomingFilePath = GetFilePathFromLanguageTag(oldId);
 				if (!string.IsNullOrEmpty(incomingFileName))
 				{
 					if (File.Exists(incomingFilePath))
@@ -170,7 +170,7 @@ namespace SIL.WritingSystems
 							// know when this event should be raised, nor am I sure I am building the argument correctly.
 							// However, I don't think anything (at least in our code) actually uses it.
 							if (WritingSystemIdChanged != null)
-								WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.IetfLanguageTag));
+								WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.LanguageTag));
 						}
 					}
 				}
@@ -219,7 +219,7 @@ namespace SIL.WritingSystems
 			_mutex.WaitOne();
 			try
 			{
-				string filePath = GetFilePathFromIetfLanguageTag(id);
+				string filePath = GetFilePathFromLanguageTag(id);
 				if (!File.Exists(filePath))
 					throw new ArgumentOutOfRangeException("Missing file for writing system code: " + id);
 				return GetFromFilePath(filePath);
@@ -239,7 +239,7 @@ namespace SIL.WritingSystems
 			if (ws == null)
 				throw new ArgumentNullException("ws");
 
-			return ws.IetfLanguageTag;
+			return ws.LanguageTag;
 		}
 
 		/// <summary>
@@ -250,7 +250,7 @@ namespace SIL.WritingSystems
 			_mutex.WaitOne();
 			try
 			{
-				return File.Exists(GetFilePathFromIetfLanguageTag(id));
+				return File.Exists(GetFilePathFromLanguageTag(id));
 			}
 			finally
 			{
@@ -287,7 +287,7 @@ namespace SIL.WritingSystems
 			_mutex.WaitOne();
 			try
 			{
-				File.Delete(GetFilePathFromIetfLanguageTag(wsToConflate));
+				File.Delete(GetFilePathFromLanguageTag(wsToConflate));
 				if (WritingSystemConflated != null)
 					WritingSystemConflated(this, new WritingSystemConflatedEventArgs(wsToConflate, wsToConflateWith));
 			}
@@ -305,7 +305,7 @@ namespace SIL.WritingSystems
 			_mutex.WaitOne();
 			try
 			{
-				File.Delete(GetFilePathFromIetfLanguageTag(id));
+				File.Delete(GetFilePathFromLanguageTag(id));
 				if (WritingSystemDeleted != null)
 					WritingSystemDeleted(this, new WritingSystemDeletedEventArgs(id));
 			}
@@ -377,7 +377,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public bool CanSave(T ws)
 		{
-			string filePath = GetFilePathFromIetfLanguageTag(ws.Id);
+			string filePath = GetFilePathFromLanguageTag(ws.Id);
 			if (File.Exists(filePath))
 			{
 				try
@@ -506,7 +506,7 @@ namespace SIL.WritingSystems
 				T ws = WritingSystemFactory.Create();
 				var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
 				ldmlDataMapper.Read(filePath, ws);
-				ws.Id = ws.IetfLanguageTag;
+				ws.Id = ws.LanguageTag;
 				ws.AcceptChanges();
 				return ws;
 			}
@@ -519,15 +519,15 @@ namespace SIL.WritingSystems
 		///<summary>
 		/// Returns the full path to the underlying store for this writing system.
 		///</summary>
-		public string GetFilePathFromIetfLanguageTag(string langTag)
+		public string GetFilePathFromLanguageTag(string langTag)
 		{
-			return Path.Combine(PathToWritingSystems, GetFileNameFromIetfLanguageTag(langTag));
+			return Path.Combine(PathToWritingSystems, GetFileNameFromLanguageTag(langTag));
 		}
 
 		/// <summary>
 		/// Gets the file name from the specified identifier.
 		/// </summary>
-		protected static string GetFileNameFromIetfLanguageTag(string langTag)
+		protected static string GetFileNameFromLanguageTag(string langTag)
 		{
 			return langTag + Extension;
 		}

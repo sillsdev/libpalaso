@@ -44,11 +44,11 @@ namespace SIL.WritingSystems.Migration
 			foreach (LdmlMigrationInfo mi in infosArray)
 			{
 				List<Action<WritingSystemDefinition>> setters;
-				if (!_removedPropertiesSetters.TryGetValue(mi.IetfLanguageTagBeforeMigration, out setters))
+				if (!_removedPropertiesSetters.TryGetValue(mi.LanguageTagBeforeMigration, out setters))
 					setters = new List<Action<WritingSystemDefinition>>();
 				if (mi.RemovedPropertiesSetter != null)
 					setters.Add(mi.RemovedPropertiesSetter);
-				_removedPropertiesSetters[mi.IetfLanguageTagAfterMigration] = setters;
+				_removedPropertiesSetters[mi.LanguageTagAfterMigration] = setters;
 			}
 			if (_migrationHandler != null)
 				_migrationHandler(toVersion, infosArray);

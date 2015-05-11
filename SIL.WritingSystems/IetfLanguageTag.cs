@@ -9,26 +9,25 @@ using SIL.Extensions;
 namespace SIL.WritingSystems
 {
 	/// <summary>
-	/// IETF language tag normalization mode
+	/// IETF language tag normalization form
 	/// </summary>
-	public enum IetfLanguageTagNormalizationMode
+	public enum IetfLanguageTagNormalizationForm
 	{
 		/// <summary>
-		/// Canonical mode
+		/// Canonical form
 		/// </summary>
 		Canonical,
 		/// <summary>
-		/// SIL-compatible mode
+		/// SIL-compatible form
 		/// </summary>
 		SilCompatible
 	}
 
 	/// <summary>
-	/// This static utility class contains various methods for processing IETF language tags. The methods
-	/// defined in this class can currently only support language tags with a single variant subtag and no
-	/// extensions.
+	/// This static utility class contains various methods for processing IETF language tags. Currently,
+	/// there are no methods for accessing extended language and extension subtags.
 	/// </summary>
-	public static class IetfLanguageTagHelper
+	public static class IetfLanguageTag
 	{
 		private const string PrivateUseExpr = "[xX](-" + PrivateUseSubExpr + ")+";
 		private const string PrivateUseSubExpr = "[a-zA-Z0-9]{1,8}";
@@ -68,7 +67,7 @@ namespace SIL.WritingSystems
 
 		private static readonly Dictionary<string, string> CanonicalToSilCompatible;
 
-		static IetfLanguageTagHelper()
+		static IetfLanguageTag()
 		{
 			CanonicalToSilCompatible = new Dictionary<string, string>();
 
@@ -179,7 +178,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		/// <param name="icuLocale">The ICU locale.</param>
 		/// <returns></returns>
-		public static string ToIetfLanguageTag(string icuLocale)
+		public static string ToLanguageTag(string icuLocale)
 		{
 			if (string.IsNullOrEmpty(icuLocale))
 				throw new ArgumentNullException("icuLocale");
@@ -251,9 +250,9 @@ namespace SIL.WritingSystems
 				languageSubtag = new LanguageSubtag(languageCode);
 			}
 			if (icuLanguageCode == icuLocale)
-				return CreateIetfLanguageTag(languageSubtag, null, null, Enumerable.Empty<VariantSubtag>());
+				return Create(languageSubtag, null, null, Enumerable.Empty<VariantSubtag>());
 
-			return CreateIetfLanguageTag(languageSubtag, locale.Script, locale.Country, TranslateVariantCode(locale.Variant));
+			return Create(languageSubtag, locale.Script, locale.Country, TranslateVariantCode(locale.Variant));
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -383,11 +382,11 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Tries to create a language tag from the specified subtags.
 		/// </summary>
-		public static bool TryCreateIetfLanguageTag(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag, RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags,
+		public static bool TryCreate(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag, RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags,
 			out string langTag)
 		{
 			string message, paramName;
-			if (!TryCreateIetfLanguageTag(languageSubtag, scriptSubtag, regionSubtag, variantSubtags, IetfLanguageTagNormalizationMode.SilCompatible, out langTag, out message, out paramName))
+			if (!TryCreate(languageSubtag, scriptSubtag, regionSubtag, variantSubtags, IetfLanguageTagNormalizationForm.SilCompatible, out langTag, out message, out paramName))
 			{
 				langTag = null;
 				return false;
@@ -398,11 +397,11 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Creates a language tag from the specified subtags.
 		/// </summary>
-		public static string CreateIetfLanguageTag(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag, RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags,
+		public static string Create(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag, RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags,
 			bool validate = true)
 		{
 			string langTag, message, paramName;
-			if (!TryCreateIetfLanguageTag(languageSubtag, scriptSubtag, regionSubtag, variantSubtags, IetfLanguageTagNormalizationMode.SilCompatible, out langTag, out message, out paramName))
+			if (!TryCreate(languageSubtag, scriptSubtag, regionSubtag, variantSubtags, IetfLanguageTagNormalizationForm.SilCompatible, out langTag, out message, out paramName))
 			{
 				if (validate)
 					throw new ArgumentException(message, paramName);
@@ -417,11 +416,11 @@ namespace SIL.WritingSystems
 		public static bool Validate(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag, RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags, out string message)
 		{
 			string langTag, paramName;
-			return TryCreateIetfLanguageTag(languageSubtag, scriptSubtag, regionSubtag, variantSubtags, IetfLanguageTagNormalizationMode.Canonical, out langTag, out message, out paramName);
+			return TryCreate(languageSubtag, scriptSubtag, regionSubtag, variantSubtags, IetfLanguageTagNormalizationForm.Canonical, out langTag, out message, out paramName);
 		}
 
-		private static bool TryCreateIetfLanguageTag(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag, RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags,
-			IetfLanguageTagNormalizationMode mode, out string langTag, out string message, out string paramName)
+		private static bool TryCreate(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag, RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags,
+			IetfLanguageTagNormalizationForm form, out string langTag, out string message, out string paramName)
 		{
 			message = null;
 			paramName = null;
@@ -575,7 +574,7 @@ namespace SIL.WritingSystems
 			}
 
 			langTag = sb.ToString();
-			if (mode == IetfLanguageTagNormalizationMode.SilCompatible)
+			if (form == IetfLanguageTagNormalizationForm.SilCompatible)
 				langTag = ConvertToSilCompatibleForm(langTag);
 			return message == null;
 		}
@@ -583,19 +582,19 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Tries to create a language tag from the specified subtag codes.
 		/// </summary>
-		public static bool TryCreateIetfLanguageTag(string languageCode, string scriptCode, string regionCode, string variantCodes, out string langTag)
+		public static bool TryCreate(string languageCode, string scriptCode, string regionCode, string variantCodes, out string langTag)
 		{
 			string message, paramName;
-			return TryCreateIetfLanguageTag(languageCode, scriptCode, regionCode, variantCodes, IetfLanguageTagNormalizationMode.SilCompatible, out langTag, out message, out paramName);
+			return TryCreate(languageCode, scriptCode, regionCode, variantCodes, IetfLanguageTagNormalizationForm.SilCompatible, out langTag, out message, out paramName);
 		}
 
 		/// <summary>
 		/// Creates a language tag from the specified subtag codes.
 		/// </summary>
-		public static string CreateIetfLanguageTag(string languageCode, string scriptCode, string regionCode, string variantCodes, bool validate = true)
+		public static string Create(string languageCode, string scriptCode, string regionCode, string variantCodes, bool validate = true)
 		{
 			string langTag, message, paramName;
-			if (!TryCreateIetfLanguageTag(languageCode, scriptCode, regionCode, variantCodes, IetfLanguageTagNormalizationMode.SilCompatible, out langTag, out message, out paramName))
+			if (!TryCreate(languageCode, scriptCode, regionCode, variantCodes, IetfLanguageTagNormalizationForm.SilCompatible, out langTag, out message, out paramName))
 			{
 				if (validate)
 					throw new ArgumentException(message, paramName);
@@ -609,11 +608,11 @@ namespace SIL.WritingSystems
 		public static bool Validate(string languageCode, string scriptCode, string regionCode, string variantCodes, out string message)
 		{
 			string langTag, paramName;
-			return TryCreateIetfLanguageTag(languageCode, scriptCode, regionCode, variantCodes, IetfLanguageTagNormalizationMode.Canonical, out langTag, out message, out paramName);
+			return TryCreate(languageCode, scriptCode, regionCode, variantCodes, IetfLanguageTagNormalizationForm.Canonical, out langTag, out message, out paramName);
 		}
 
-		private static bool TryCreateIetfLanguageTag(string languageCode, string scriptCode, string regionCode, string variantCodes,
-			IetfLanguageTagNormalizationMode mode, out string langTag, out string message, out string paramName)
+		private static bool TryCreate(string languageCode, string scriptCode, string regionCode, string variantCodes,
+			IetfLanguageTagNormalizationForm form, out string langTag, out string message, out string paramName)
 		{
 			message = null;
 			paramName = null;
@@ -710,7 +709,7 @@ namespace SIL.WritingSystems
 			}
 
 			langTag = sb.ToString();
-			if (mode == IetfLanguageTagNormalizationMode.SilCompatible)
+			if (form == IetfLanguageTagNormalizationForm.SilCompatible)
 				langTag = ConvertToSilCompatibleForm(langTag);
 			return message == null;
 		}
@@ -726,16 +725,6 @@ namespace SIL.WritingSystems
 			IEnumerable<VariantSubtag> variantSubtags;
 			if (!TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
 				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
-			return CreateIcuLocale(languageSubtag, scriptSubtag, regionSubtag, variantSubtags);
-		}
-
-		/// <summary>
-		/// Creates an ICU locale from the specified language tag subtags.
-		/// </summary>
-		public static string CreateIcuLocale(LanguageSubtag languageSubtag, ScriptSubtag scriptSubtag, RegionSubtag regionSubtag, IEnumerable<VariantSubtag> variantSubtags)
-		{
-			if (languageSubtag == null)
-				throw new ArgumentException("A language subtag is required.", "languageSubtag");
 
 			var sb = new StringBuilder();
 			//start with the LanguageCode
@@ -772,22 +761,6 @@ namespace SIL.WritingSystems
 				sb.AppendFormat(regionSubtag == null ? "__{0}" : "_{0}", icuVariant);
 
 			return sb.ToString();
-		}
-
-		/// <summary>
-		/// Generates an ICU locale from the specified language tag codes.
-		/// </summary>
-		/// <param name="languageCode">The language code.</param>
-		/// <param name="scriptCode">The script code.</param>
-		/// <param name="regionCode">The region code.</param>
-		/// <param name="variantCodes">The variant code.</param>
-		/// <returns></returns>
-		public static string CreateIcuLocale(string languageCode, string scriptCode, string regionCode, string variantCodes)
-		{
-			string langTag, message, paramName;
-			if (!TryCreateIetfLanguageTag(languageCode, scriptCode, regionCode, variantCodes, IetfLanguageTagNormalizationMode.Canonical, out langTag, out message, out paramName))
-				throw new ArgumentException(message, paramName);
-			return ToIcuLocale(langTag);
 		}
 
 		/// <summary>
@@ -1043,7 +1016,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Normalizes the specified language tag using the specified mode.
 		/// </summary>
-		public static string Normalize(string langTag, IetfLanguageTagNormalizationMode mode)
+		public static string Normalize(string langTag, IetfLanguageTagNormalizationForm form)
 		{
 			LanguageSubtag languageSubtag;
 			ScriptSubtag scriptSubtag;
@@ -1052,7 +1025,7 @@ namespace SIL.WritingSystems
 			if (!TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
 				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
 			string newLangTag, message, paramName;
-			if (!TryCreateIetfLanguageTag(languageSubtag, scriptSubtag, regionSubtag, variantSubtags, mode, out newLangTag, out message, out paramName))
+			if (!TryCreate(languageSubtag, scriptSubtag, regionSubtag, variantSubtags, form, out newLangTag, out message, out paramName))
 				throw new ArgumentException(message, "langTag");
 			return newLangTag;
 		}
@@ -1063,7 +1036,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		/// <param name="ietfLanguageTag"></param>
 		/// <param name="otherLangTags"></param>
-		public static string ToUniqueIetfLanguageTag(string ietfLanguageTag, IEnumerable<string> otherLangTags)
+		public static string ToUniqueLanguageTag(string ietfLanguageTag, IEnumerable<string> otherLangTags)
 		{
 			// Parse for variants
 			LanguageSubtag languageSubtag;
@@ -1088,7 +1061,7 @@ namespace SIL.WritingSystems
 					lastDuplSubtag = curDuplStubtag;
 				}
 				duplicateNumber++;
-				ietfLanguageTag = CreateIetfLanguageTag(languageSubtag, scriptSubtag, regionSubtag, variants);
+				ietfLanguageTag = Create(languageSubtag, scriptSubtag, regionSubtag, variants);
 			}
 			return ietfLanguageTag;
 		}

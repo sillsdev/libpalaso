@@ -19,9 +19,9 @@ namespace SIL.WritingSystems.Migration
 			get { return _fileName; }
 		}
 
-		public string IetfLanguageTagBeforeMigration { get; set; }
+		public string LanguageTagBeforeMigration { get; set; }
 
-		public string IetfLanguageTagAfterMigration { get; set; }
+		public string LanguageTagAfterMigration { get; set; }
 
 		internal Action<WritingSystemDefinition> RemovedPropertiesSetter { get; set; } 
 	}

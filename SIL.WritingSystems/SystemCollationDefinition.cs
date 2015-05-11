@@ -2,7 +2,7 @@
 {
 	public class SystemCollationDefinition : CollationDefinition
 	{
-		private string _ietfLanguageTag;
+		private string _languageTag;
 
 		public SystemCollationDefinition()
 			: base("system")
@@ -12,15 +12,15 @@
 		public SystemCollationDefinition(SystemCollationDefinition scd)
 			: base(scd)
 		{
-			_ietfLanguageTag = scd._ietfLanguageTag;
+			_languageTag = scd._languageTag;
 		}
 
-		public string IetfLanguageTag
+		public string LanguageTag
 		{
-			get { return _ietfLanguageTag; }
+			get { return _languageTag; }
 			set
 			{
-				if (Set(() => IetfLanguageTag, ref _ietfLanguageTag, value))
+				if (Set(() => LanguageTag, ref _languageTag, value))
 					ResetCollator();
 			}
 		}
@@ -33,13 +33,13 @@
 				return true;
 			}
 
-			IsValid = SystemCollator.ValidateIetfLanguageTag(_ietfLanguageTag, out message);
+			IsValid = SystemCollator.ValidateLanguageTag(_languageTag, out message);
 			return IsValid;
 		}
 
 		protected override ICollator CreateCollator()
 		{
-			return new SystemCollator(_ietfLanguageTag);
+			return new SystemCollator(_languageTag);
 		}
 
 		public override CollationDefinition Clone()
@@ -50,7 +50,7 @@
 		public override bool ValueEquals(CollationDefinition other)
 		{
 			var scd = other as SystemCollationDefinition;
-			return scd != null && base.ValueEquals(other) && _ietfLanguageTag == scd._ietfLanguageTag;
+			return scd != null && base.ValueEquals(other) && _languageTag == scd._languageTag;
 		}
 	}
 }

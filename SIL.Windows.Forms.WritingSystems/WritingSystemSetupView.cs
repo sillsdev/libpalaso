@@ -120,7 +120,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			}
 			else
 			{
-				_ietfLanguageTag.Text = _model.CurrentDefinition.IetfLanguageTag;
+				_ietfLanguageTag.Text = _model.CurrentDefinition.LanguageTag;
 				_languageName.Text = _model.CurrentDefinition.ListLabel;
 				_languageName.Font = SystemFonts.MessageBoxFont;
 				_ietfLanguageTag.Font = SystemFonts.MessageBoxFont;

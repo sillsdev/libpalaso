@@ -45,7 +45,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		private static string DisplayName(WritingSystemDefinition ws)
 		{
-			return String.Format("\"{0}\" ({1})", ws.ListLabel, ws.IetfLanguageTag);
+			return String.Format("\"{0}\" ({1})", ws.ListLabel, ws.LanguageTag);
 		}
 
 		private void OnCustomHelpButtonClicked(object sender, EventArgs e)

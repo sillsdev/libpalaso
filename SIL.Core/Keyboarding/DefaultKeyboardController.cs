@@ -68,7 +68,7 @@ namespace SIL.Keyboarding
 
 		public bool TryGetKeyboard(IInputLanguage language, out IKeyboardDefinition keyboard)
 		{
-			return TryGetKeyboard(language.LayoutName, language.Culture.IetfLanguageTag, out keyboard);
+			return TryGetKeyboard(language.LayoutName, language.Culture.Name, out keyboard);
 		}
 
 		public IKeyboardDefinition GetKeyboard(int windowsLcid)
@@ -84,7 +84,7 @@ namespace SIL.Keyboarding
 			try
 			{
 				CultureInfo ci = CultureInfo.GetCultureInfo(windowsLcid);
-				keyboard = _keyboards.Values.FirstOrDefault(k => k.Locale == ci.IetfLanguageTag);
+				keyboard = _keyboards.Values.FirstOrDefault(k => k.Locale == ci.Name);
 			}
 			catch (CultureNotFoundException)
 			{

@@ -637,7 +637,7 @@ namespace SIL.WritingSystems.Tests
 		static public string CurrentVersion(string languageTag)
 		{
 			string language, script, region, variant;
-			IetfLanguageTagHelper.TryGetParts(languageTag, out language, out script, out region, out variant);
+			IetfLanguageTag.TryGetParts(languageTag, out language, out script, out region, out variant);
 			return CurrentVersion(language, script, region, variant);
 			
 		}

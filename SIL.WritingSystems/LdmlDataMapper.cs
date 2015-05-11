@@ -352,7 +352,7 @@ namespace SIL.WritingSystems
 				}
 				throw new ApplicationException(String.Format(
 					"The LDML tag '{0}' is version {1}.  Version {2} was expected.",
-					ws.IetfLanguageTag,
+					ws.LanguageTag,
 					version,
 					CurrentLdmlVersion
 					));
@@ -486,7 +486,7 @@ namespace SIL.WritingSystems
 			string region = identityElem.GetAttributeValue("territory", "type");
 			string variant = identityElem.GetAttributeValue("variant", "type");
 
-			ws.IetfLanguageTag = IetfLanguageTagHelper.CreateIetfLanguageTag(language, script, region, variant);
+			ws.LanguageTag = IetfLanguageTag.Create(language, script, region, variant);
 
 			// TODO: Parse rest of special element.  Currently only handling a subset
 			XElement specialElem = identityElem.NonAltElement("special");
@@ -499,7 +499,7 @@ namespace SIL.WritingSystems
 					ws.DefaultRegion = (string) silIdentityElem.Attribute("defaultRegion");
 					// Update the variant name if a non-wellknown private use variant exists
 					var variantName = (string) silIdentityElem.Attribute("variantName") ?? String.Empty;
-					int index = IetfLanguageTagHelper.GetIndexOfFirstNonCommonPrivateUseVariant(ws.Variants);
+					int index = IetfLanguageTag.GetIndexOfFirstNonCommonPrivateUseVariant(ws.Variants);
 					if (!string.IsNullOrEmpty(variantName) && (index != -1))
 					{
 						ws.Variants[index] = new VariantSubtag(ws.Variants[index], variantName);
@@ -762,7 +762,7 @@ namespace SIL.WritingSystems
 			}
 			// We don't want to run any risk of persisting an invalid writing system in an LDML.
 			string message;
-			if (!ws.ValidateIetfLanguageTag(out message))
+			if (!ws.ValidateLanguageTag(out message))
 				throw new ArgumentException(string.Format("The writing system's IETF language tag is invalid: {0}", message), "ws");
 			XmlReader reader = null;
 			try
@@ -822,7 +822,7 @@ namespace SIL.WritingSystems
 			}
 			// We don't want to run any risk of persisting an invalid writing system in an LDML.
 			string message;
-			if (!ws.ValidateIetfLanguageTag(out message))
+			if (!ws.ValidateLanguageTag(out message))
 				throw new ArgumentException(string.Format("The writing system's IETF language tag is invalid: {0}", message), "ws");
 			XElement element = oldFileReader != null ? XElement.Load(oldFileReader) : new XElement("ldml");
 			WriteLdml(xmlWriter, element, ws);
@@ -898,10 +898,10 @@ namespace SIL.WritingSystems
 
 			// Write generation date with UTC so no more ambiguity on timezone
 			identityElem.SetAttributeValue("generation", "date", ws.DateModified.ToISO8601TimeFormatWithUTCString());
-			WriteLanguageTagElements(identityElem, ws.IetfLanguageTag);
+			WriteLanguageTagElements(identityElem, ws.LanguageTag);
 
 			// Create special element if data needs to be written
-			int index = IetfLanguageTagHelper.GetIndexOfFirstNonCommonPrivateUseVariant(ws.Variants);
+			int index = IetfLanguageTag.GetIndexOfFirstNonCommonPrivateUseVariant(ws.Variants);
 			string variantName = string.Empty;
 			if (index != -1)
 				variantName = ws.Variants[index].Name;
@@ -925,7 +925,7 @@ namespace SIL.WritingSystems
 		private void WriteLanguageTagElements(XElement identityElem, string languageTag) 
 		{
 			string language, script, region, variant;
-			IetfLanguageTagHelper.TryGetParts(languageTag, out language, out script, out region, out variant);
+			IetfLanguageTag.TryGetParts(languageTag, out language, out script, out region, out variant);
 			
 			// language element is required
 			identityElem.SetAttributeValue("language", "type", language);
@@ -1215,7 +1215,7 @@ namespace SIL.WritingSystems
 		{
 			foreach (IcuCollationImport import in icd.Imports)
 			{
-				var importElem = new XElement("import", new XAttribute("source", import.IetfLanguageTag));
+				var importElem = new XElement("import", new XAttribute("source", import.LanguageTag));
 				if (!string.IsNullOrEmpty(import.Type))
 					importElem.Add(new XAttribute("type", import.Type));
 				collationElem.Add(importElem);

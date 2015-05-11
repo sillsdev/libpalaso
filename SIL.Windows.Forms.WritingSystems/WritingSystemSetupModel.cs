@@ -244,9 +244,9 @@ namespace SIL.Windows.Forms.WritingSystems
 		/// </summary>
 		/// <param name="languageTag"></param>
 		/// <returns>false if the code wasn't found</returns>
-		public virtual bool SetCurrentIndexFromIetfLanguageTag(string languageTag)
+		public virtual bool SetCurrentIndexFromLanguageTag(string languageTag)
 		{
-			var index = WritingSystemDefinitions.FindIndex(d => d.IetfLanguageTag == languageTag);
+			var index = WritingSystemDefinitions.FindIndex(d => d.LanguageTag == languageTag);
 			if (index < 0)
 			{
 				return false;
@@ -387,7 +387,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				bool[] canSave = new bool[WritingSystemDefinitions.Count];
 				for (int i = 0; i < WritingSystemDefinitions.Count; i++)
 				{
-					string id = WritingSystemDefinitions[i].IetfLanguageTag;
+					string id = WritingSystemDefinitions[i].LanguageTag;
 					if (idList.ContainsKey(id))
 					{
 						canSave[i] = false;
@@ -479,10 +479,10 @@ namespace SIL.Windows.Forms.WritingSystems
 				// create a list of languages we have to disallow to prevent a cycle
 				// in the sort options
 				var prohibitedList = new List<string>();
-				if (CurrentDefinition != null && !string.IsNullOrEmpty(CurrentDefinition.IetfLanguageTag))
+				if (CurrentDefinition != null && !string.IsNullOrEmpty(CurrentDefinition.LanguageTag))
 				{
 					// don't allow the current language to be picked
-					prohibitedList.Add(CurrentDefinition.IetfLanguageTag);
+					prohibitedList.Add(CurrentDefinition.LanguageTag);
 				}
 				for (int i = 0; i < WritingSystemDefinitions.Count; i++)
 				{
@@ -490,11 +490,11 @@ namespace SIL.Windows.Forms.WritingSystems
 					var systemCollation = ws.DefaultCollation as SystemCollationDefinition;
 					// don't allow if it references another language on our prohibited list and this one
 					// isn't already on the prohibited list
-					if (systemCollation != null && !string.IsNullOrEmpty(ws.IetfLanguageTag)
-						&& prohibitedList.Contains(systemCollation.IetfLanguageTag)
-						&& !prohibitedList.Contains(ws.IetfLanguageTag))
+					if (systemCollation != null && !string.IsNullOrEmpty(ws.LanguageTag)
+						&& prohibitedList.Contains(systemCollation.LanguageTag)
+						&& !prohibitedList.Contains(ws.LanguageTag))
 					{
-						prohibitedList.Add(ws.IetfLanguageTag);
+						prohibitedList.Add(ws.LanguageTag);
 						// Restart the scan through all the writing systems every time we add a prohibited one.
 						// This ensuers that we catch all possible cycles.
 						i = -1;
@@ -519,11 +519,11 @@ namespace SIL.Windows.Forms.WritingSystems
 					yield return new KeyValuePair<string, string>(string.Empty, "-----");
 				}
 				// populate the rest of the list with all languages from the OS
-				foreach (CultureInfo cultureInfo in CultureInfo.GetCultures(CultureTypes.AllCultures).OrderBy(info => info.IetfLanguageTag))
+				foreach (CultureInfo cultureInfo in CultureInfo.GetCultures(CultureTypes.AllCultures).OrderBy(info => info.Name))
 				{
-					if (prohibitedList.Contains(cultureInfo.IetfLanguageTag, StringComparison.OrdinalIgnoreCase))
+					if (prohibitedList.Contains(cultureInfo.Name, StringComparison.OrdinalIgnoreCase))
 						continue;
-					yield return new KeyValuePair<string, string>(cultureInfo.IetfLanguageTag, cultureInfo.DisplayName);
+					yield return new KeyValuePair<string, string>(cultureInfo.Name, cultureInfo.DisplayName);
 				}
 			}
 		}
@@ -685,13 +685,13 @@ namespace SIL.Windows.Forms.WritingSystems
 			}
 		}
 
-		public string CurrentIetfLanguageTag
+		public string CurrentLanguageTag
 		{
 			get
 			{
 				if (CurrentDefinition == null)
 					return string.Empty;
-				return CurrentDefinition.IetfLanguageTag ?? string.Empty;
+				return CurrentDefinition.LanguageTag ?? string.Empty;
 			}
 		}
 
@@ -741,22 +741,22 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		public string CurrentVariant
 		{
-			get { return IetfLanguageTagHelper.GetVariantCodes(CurrentDefinition.Variants) ?? string.Empty; }
+			get { return IetfLanguageTag.GetVariantCodes(CurrentDefinition.Variants) ?? string.Empty; }
 			set
 			{
-				if (IetfLanguageTagHelper.GetVariantCodes(CurrentDefinition.Variants) != value)
+				if (IetfLanguageTag.GetVariantCodes(CurrentDefinition.Variants) != value)
 				{
 					string fixedVariant = WritingSystemDefinitionVariantHelper.ValidVariantString(value);
 					if (string.IsNullOrEmpty(CurrentDefinition.Language) && !fixedVariant.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
 						CurrentDefinition.Language = WellKnownSubtags.UnlistedLanguage;
 
 					IEnumerable<VariantSubtag> variantSubtags;
-					if (IetfLanguageTagHelper.TryGetVariantSubtags(value, out variantSubtags))
+					if (IetfLanguageTag.TryGetVariantSubtags(value, out variantSubtags))
 					{
 						VariantSubtag[] originalVariantSubtags = CurrentDefinition.Variants.ToArray();
 						CurrentDefinition.Variants.ReplaceAll(variantSubtags);
 						string message;
-						if (CurrentDefinition.ValidateIetfLanguageTag(out message))
+						if (CurrentDefinition.ValidateLanguageTag(out message))
 						{
 							OnCurrentItemUpdated();
 						}
@@ -792,7 +792,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			if (writingSystem.Script != null && writingSystem.Language.ImplicitScriptCode != writingSystem.Script.Code)
 				summary.AppendFormat(" written in {0} script", CurrentIso15924Script.ShortName);
 
-			summary.AppendFormat(". ({0})", writingSystem.IetfLanguageTag);
+			summary.AppendFormat(". ({0})", writingSystem.LanguageTag);
 			return summary.ToString().Trim();
 		}
 
@@ -890,7 +890,7 @@ namespace SIL.Windows.Forms.WritingSystems
 						var simpleCollation = (SimpleRulesCollationDefinition) CurrentDefinition.DefaultCollation;
 						return simpleCollation.SimpleRules == string.Empty ? DefaultCustomSimpleSortRules : simpleCollation.SimpleRules;
 					case CollationRulesType.OtherLanguage:
-						return ((SystemCollationDefinition) CurrentDefinition.DefaultCollation).IetfLanguageTag;
+						return ((SystemCollationDefinition) CurrentDefinition.DefaultCollation).LanguageTag;
 				}
 				return string.Empty;
 			}
@@ -917,9 +917,9 @@ namespace SIL.Windows.Forms.WritingSystems
 						break;
 					case CollationRulesType.OtherLanguage:
 						var systemCollation = (SystemCollationDefinition) CurrentDefinition.DefaultCollation;
-						if (systemCollation.IetfLanguageTag != value)
+						if (systemCollation.LanguageTag != value)
 						{
-							systemCollation.IetfLanguageTag = value;
+							systemCollation.LanguageTag = value;
 							OnCurrentItemUpdated();
 						}
 						break;
@@ -1114,7 +1114,7 @@ namespace SIL.Windows.Forms.WritingSystems
 					try
 					{
 						string id = _info.Language.Replace('_', '-');
-						CultureInfo cultureInfo = CultureInfo.GetCultureInfoByIetfLanguageTag(id);
+						CultureInfo cultureInfo = CultureInfo.GetCultureInfo(id);
 						return _info.Language + " (" + cultureInfo.NativeName + ")";
 					}
 					catch
@@ -1237,8 +1237,8 @@ namespace SIL.Windows.Forms.WritingSystems
 						return;
 				case WhatToDos.Conflate:
 					var wsToConflateWith = whatToDo.WritingSystemIdToConflateWith;
-						var okToConflateEventArgs = new AskIfOkToConflateEventArgs(CurrentDefinition.IetfLanguageTag,
-																					wsToConflateWith.IetfLanguageTag);
+						var okToConflateEventArgs = new AskIfOkToConflateEventArgs(CurrentDefinition.LanguageTag,
+																					wsToConflateWith.LanguageTag);
 						if (AskIfOkToConflateWritingSystems != null)
 						{
 							AskIfOkToConflateWritingSystems(this, okToConflateEventArgs);
@@ -1248,20 +1248,20 @@ namespace SIL.Windows.Forms.WritingSystems
 							string message = okToConflateEventArgs.ErrorMessage ?? String.Empty;
 							ErrorReport.NotifyUserOfProblem(
 								String.Format("Can not conflate the input system {0} to {1}. {2}",
-												CurrentDefinition.IetfLanguageTag,
+												CurrentDefinition.LanguageTag,
 												wsToConflateWith, message));
 							return;
 						}
-						if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.IetfLanguageTag))
+						if (CurrentDefinition != null && _writingSystemRepository.Contains(CurrentDefinition.LanguageTag))
 						{
 							if (wsToConflateWith != null)
 							{
-								_writingSystemRepository.Conflate(CurrentDefinition.IetfLanguageTag, wsToConflateWith.IetfLanguageTag);
+								_writingSystemRepository.Conflate(CurrentDefinition.LanguageTag, wsToConflateWith.LanguageTag);
 							}
 						}
 					break;
 				case WhatToDos.Delete:
-					var okToDeleteEventArgs = new AskIfOkToDeleteEventArgs(CurrentDefinition.IetfLanguageTag);
+					var okToDeleteEventArgs = new AskIfOkToDeleteEventArgs(CurrentDefinition.LanguageTag);
 					if (AskIfOkToDeleteWritingSystems != null)
 					{
 						AskIfOkToDeleteWritingSystems(this, okToDeleteEventArgs);
@@ -1271,7 +1271,7 @@ namespace SIL.Windows.Forms.WritingSystems
 						string message = okToDeleteEventArgs.ErrorMessage ?? String.Empty;
 						ErrorReport.NotifyUserOfProblem(
 							String.Format("Can not delete the input system {0}. {1}",
-											CurrentDefinition.IetfLanguageTag, message));
+											CurrentDefinition.LanguageTag, message));
 						return;
 					}
 					// If you play around with renaming/revising writing systems, the Id assigned to
@@ -1315,11 +1315,11 @@ namespace SIL.Windows.Forms.WritingSystems
 			// replacing/deleting them unknowingly.
 			var wsIds = new List<string>();
 			foreach (WritingSystemDefinition wsT in _writingSystemRepository.AllWritingSystems)
-				wsIds.Add(wsT.IetfLanguageTag);
+				wsIds.Add(wsT.LanguageTag);
 			foreach (WritingSystemDefinition wsT in WritingSystemDefinitions)
-				wsIds.Add(wsT.IetfLanguageTag);
+				wsIds.Add(wsT.LanguageTag);
 			WritingSystemDefinition ws = CurrentDefinition.Clone();
-			ws.IetfLanguageTag = IetfLanguageTagHelper.ToUniqueIetfLanguageTag(ws.IetfLanguageTag, wsIds);
+			ws.LanguageTag = IetfLanguageTag.ToUniqueLanguageTag(ws.LanguageTag, wsIds);
 			WritingSystemDefinitions.Insert(CurrentIndex + 1, ws);
 			OnAddOrDelete();
 			CurrentDefinition = ws;
@@ -1433,7 +1433,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			}
 			foreach (WritingSystemDefinition unsettableWs in unsettableWritingSystems)
 			{
-				unsettableWs.IetfLanguageTag = IetfLanguageTagHelper.ToUniqueIetfLanguageTag(unsettableWs.IetfLanguageTag, _writingSystemRepository.AllWritingSystems.Select(ws => ws.IetfLanguageTag));
+				unsettableWs.LanguageTag = IetfLanguageTag.ToUniqueLanguageTag(unsettableWs.LanguageTag, _writingSystemRepository.AllWritingSystems.Select(ws => ws.LanguageTag));
 				OnAddOrDelete();
 				_writingSystemRepository.Set(unsettableWs);
 			}
@@ -1599,7 +1599,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			if (CurrentDefinition != null)
 			{
-				CurrentVariant = IetfLanguageTagHelper.GetVariantCodes(CurrentDefinition.Variants);
+				CurrentVariant = IetfLanguageTag.GetVariantCodes(CurrentDefinition.Variants);
 				CurrentRegion = CurrentDefinition.Region;
 				CurrentScriptCode = CurrentDefinition.Script;
 				CurrentIsVoice = CurrentDefinition.IsVoice;

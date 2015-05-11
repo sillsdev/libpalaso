@@ -46,14 +46,14 @@ namespace SIL.WritingSystems.Tests.Migration
 			/// <summary>
 			/// Dictionary to map original filename the final post-migrated IETF language tag.
 			/// </summary>
-			private readonly Dictionary<string, string> _oldNameToIetfLanguageTag = new Dictionary<string, string>(); 
+			private readonly Dictionary<string, string> _oldNameToLanguageTag = new Dictionary<string, string>(); 
 
 			public void OnMigrateCallback(int toVersion, IEnumerable<LdmlMigrationInfo> migrationInfo)
 			{			
 				foreach (LdmlMigrationInfo info in migrationInfo)
 				{
-					KeyValuePair<string, string> entry = _oldNameToIetfLanguageTag.FirstOrDefault(e => e.Value == info.IetfLanguageTagBeforeMigration);
-					_oldNameToIetfLanguageTag[entry.Key ?? info.FileName] = info.IetfLanguageTagAfterMigration;
+					KeyValuePair<string, string> entry = _oldNameToLanguageTag.FirstOrDefault(e => e.Value == info.LanguageTagBeforeMigration);
+					_oldNameToLanguageTag[entry.Key ?? info.FileName] = info.LanguageTagAfterMigration;
 				}
 			}
 			
@@ -77,7 +77,7 @@ namespace SIL.WritingSystems.Tests.Migration
 
 			public string MappedFilePath(string sourceFileName)
 			{
-				string filename = _oldNameToIetfLanguageTag[sourceFileName] + ".ldml";
+				string filename = _oldNameToLanguageTag[sourceFileName] + ".ldml";
 				return Path.Combine(FolderContainingLdml.Path, filename);
 			}
 
@@ -249,9 +249,9 @@ namespace SIL.WritingSystems.Tests.Migration
 
 		private static void AssertMigrationInfoContains(IEnumerable<LdmlMigrationInfo> migrationInfo, string tagBefore, string tagAfter)
 		{
-			var info = migrationInfo.First(tag => tag.IetfLanguageTagBeforeMigration == tagBefore);
+			var info = migrationInfo.First(tag => tag.LanguageTagBeforeMigration == tagBefore);
 			Assert.IsNotNull(info, String.Format("'{0}' not found", tagBefore));
-			Assert.AreEqual(tagAfter, info.IetfLanguageTagAfterMigration);
+			Assert.AreEqual(tagAfter, info.LanguageTagAfterMigration);
 		}
 
 		[Test]
@@ -773,7 +773,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var ws = new WritingSystemDefinition();
 				environment.ReadLdmlFile(environment.MappedFilePath("test.ldml"), ws);
 				ws.Language = "de";
-				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.IetfLanguageTag));
+				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.LanguageTag));
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='de']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='']");
 			}
@@ -793,7 +793,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var ws = new WritingSystemDefinition();
 				environment.ReadLdmlFile(environment.MappedFilePath("test.ldml"), ws);
 				ws.Script = "Latn";
-				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.IetfLanguageTag));
+				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.LanguageTag));
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/script[@type='Latn']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-en']");
@@ -814,7 +814,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var ws = new WritingSystemDefinition();
 				environment.ReadLdmlFile(environment.MappedFilePath("test.ldml"), ws);
 				ws.Region = "GB";
-				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.IetfLanguageTag));
+				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.LanguageTag));
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/territory[@type='GB']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-en']");
@@ -835,7 +835,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				environment.ReadLdmlFile(environment.MappedFilePath("test.ldml"), ws);
 				ws.Variants.Clear();
 				ws.Variants.Add("1901");
-				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.IetfLanguageTag));
+				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.LanguageTag));
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='1901-x-en']");
 			}
@@ -855,7 +855,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				environment.ReadLdmlFile(environment.MappedFilePath("test.ldml"), ws);
 				ws.Variants.Clear();
 				ws.Variants.Add("changed");
-				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.IetfLanguageTag));
+				environment.WriteLdmlFile(environment.MappedFilePath("test.ldml"), LdmlContentForTests.CurrentVersion(ws.LanguageTag));
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/language[@type='qaa']");
 				AssertLdmlHasXpath(environment.MappedFilePath("test.ldml"), "/ldml/identity/variant[@type='x-en-changed']");
 			}
@@ -1017,7 +1017,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				migrator.ResetRemovedProperties(repo);
 
 				WritingSystemDefinition ws = repo.Get("de");
-				var scd = new SystemCollationDefinition {IetfLanguageTag = "de"};
+				var scd = new SystemCollationDefinition {LanguageTag = "de"};
 				Assert.That(ws.DefaultCollation.ValueEquals(scd), Is.True);
 			}
 		}

@@ -58,7 +58,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 			if (DialogResult.OK != dlg.ShowDialog())
 				return null;
 			IEnumerable<VariantSubtag> variantSubtags;
-			if (IetfLanguageTagHelper.TryGetVariantSubtags(WritingSystemDefinitionVariantHelper.ValidVariantString(dlg.DialectName), out variantSubtags))
+			if (IetfLanguageTag.TryGetVariantSubtags(WritingSystemDefinitionVariantHelper.ValidVariantString(dlg.DialectName), out variantSubtags))
 				TemplateDefinition.Variants.ReplaceAll(variantSubtags);
 			return TemplateDefinition;
 		}
@@ -113,8 +113,8 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 		public OtherSuggestion(WritingSystemDefinition primary, IEnumerable<WritingSystemDefinition> exisitingWritingSystemsForLanguage)
 		{
 			TemplateDefinition = primary.Clone();
-			TemplateDefinition.IetfLanguageTag = IetfLanguageTagHelper.ToUniqueIetfLanguageTag(
-				TemplateDefinition.IetfLanguageTag, exisitingWritingSystemsForLanguage.Select(ws => ws.IetfLanguageTag));
+			TemplateDefinition.LanguageTag = IetfLanguageTag.ToUniqueLanguageTag(
+				TemplateDefinition.LanguageTag, exisitingWritingSystemsForLanguage.Select(ws => ws.LanguageTag));
 			Label = string.Format("other input system for {0}", TemplateDefinition.Language.Name);
 		}
 		public override WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()

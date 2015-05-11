@@ -135,7 +135,7 @@ namespace SIL.WritingSystems.Tests
 			ws.Language = "de";
 			RepositoryUnderTest.Set(ws);
 			Assert.AreEqual(2, RepositoryUnderTest.Count);
-			Assert.AreEqual("de", ws.IetfLanguageTag);
+			Assert.AreEqual("de", ws.LanguageTag);
 		}
 
 		[Test]
@@ -202,7 +202,7 @@ namespace SIL.WritingSystems.Tests
 			_writingSystem.Language = "one";
 			RepositoryUnderTest.Set(_writingSystem);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
-			RepositoryUnderTest.Remove(_writingSystem.IetfLanguageTag);
+			RepositoryUnderTest.Remove(_writingSystem.LanguageTag);
 			Assert.AreEqual(0, RepositoryUnderTest.Count);
 		}
 
@@ -211,10 +211,10 @@ namespace SIL.WritingSystems.Tests
 		{
 			var ws1 = new WritingSystemDefinition();
 			ws1.Language = "en";
-			Assert.AreEqual("en", ws1.IetfLanguageTag);
+			Assert.AreEqual("en", ws1.LanguageTag);
 			WritingSystemDefinition ws2 = ws1.Clone();
 			ws2.Variants.Add("1901");
-			Assert.AreEqual("en-1901", ws2.IetfLanguageTag);
+			Assert.AreEqual("en-1901", ws2.LanguageTag);
 
 			RepositoryUnderTest.Set(ws1);
 			Assert.AreEqual(1, RepositoryUnderTest.Count);
@@ -361,23 +361,23 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void TextWritingSystems_IetfLanguageTagIsNotText_ReturnsEmpty()
+		public void FilterForTextLanguageTags_LanguageTagIsNotText_ReturnsEmpty()
 		{
 			var ws = new WritingSystemDefinition("en") {IsVoice = true};
 			RepositoryUnderTest.Set(ws);
-			Assert.That(RepositoryUnderTest.FilterForTextIetfLanguageTags(new[] {ws.IetfLanguageTag}), Is.Empty);
+			Assert.That(RepositoryUnderTest.FilterForTextLanguageTags(new[] {ws.LanguageTag}), Is.Empty);
 		}
 
 		[Test]
-		public void TextWritingSystems_IetfLanguageTagIsText_ReturnsIetfLanguageTag()
+		public void FilterForTextLanguageTags_LanguageTagIsText_ReturnsIetfLanguageTag()
 		{
 			var ws = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(ws);
-			Assert.That(RepositoryUnderTest.FilterForTextIetfLanguageTags(new[] {ws.IetfLanguageTag}), Is.EqualTo(new[] {"en"}));
+			Assert.That(RepositoryUnderTest.FilterForTextLanguageTags(new[] {ws.LanguageTag}), Is.EqualTo(new[] {"en"}));
 		}
 
 		[Test]
-		public void TextWritingSystems_IetfLanguageTagsAreMixOfTextAndNotText_ReturnsOnlyTextIetfLanguageTags()
+		public void FilterForTextLanguageTags_LanguageTagsAreMixOfTextAndNotText_ReturnsOnlyTextLanguageTags()
 		{
 			var ws = new WritingSystemDefinition("en");
 			var ws1 = new WritingSystemDefinition("de");
@@ -391,8 +391,8 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.Set(ws2);
 			RepositoryUnderTest.Set(ws3);
 
-			IEnumerable<string> langTagsToFilter = RepositoryUnderTest.AllWritingSystems.Select(wsinRepo => wsinRepo.IetfLanguageTag);
-			Assert.That(RepositoryUnderTest.FilterForTextIetfLanguageTags(langTagsToFilter), Is.EqualTo(new[] {"en", "de"}));
+			IEnumerable<string> langTagsToFilter = RepositoryUnderTest.AllWritingSystems.Select(wsinRepo => wsinRepo.LanguageTag);
+			Assert.That(RepositoryUnderTest.FilterForTextLanguageTags(langTagsToFilter), Is.EqualTo(new[] {"en", "de"}));
 		}
 
 		[Test]
@@ -403,10 +403,10 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.Set(new WritingSystemDefinition("th"));
 
 			string[] langTags = {"en", "ar", "th"};
-			Assert.That(RepositoryUnderTest.FilterForTextIetfLanguageTags(langTags), Is.EqualTo(langTags));
+			Assert.That(RepositoryUnderTest.FilterForTextLanguageTags(langTags), Is.EqualTo(langTags));
 
 			langTags = new[] {"th", "ar", "en"};
-			Assert.That(RepositoryUnderTest.FilterForTextIetfLanguageTags(langTags), Is.EqualTo(langTags));
+			Assert.That(RepositoryUnderTest.FilterForTextLanguageTags(langTags), Is.EqualTo(langTags));
 		}
 
 		private void OnWritingSystemIdChanged(object sender, WritingSystemIdChangedEventArgs e)
@@ -475,8 +475,8 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.WritingSystemDeleted += OnWritingsystemDeleted;
 			var ws = new WritingSystemDefinition("en");
 			RepositoryUnderTest.Set(ws);
-			RepositoryUnderTest.Remove(ws.IetfLanguageTag);
-			Assert.That(_writingSystemDeletedEventArgs.Id, Is.EqualTo(ws.IetfLanguageTag));
+			RepositoryUnderTest.Remove(ws.LanguageTag);
+			Assert.That(_writingSystemDeletedEventArgs.Id, Is.EqualTo(ws.LanguageTag));
 		}
 
 

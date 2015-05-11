@@ -72,10 +72,10 @@ namespace SIL.WritingSystems
 				if (WritingSystemFactory != null)
 				{
 					WritingSystemDefinition ws;
-					if (import.IetfLanguageTag == OwningWritingSystemDefinition.IetfLanguageTag)
+					if (import.LanguageTag == OwningWritingSystemDefinition.LanguageTag)
 						ws = OwningWritingSystemDefinition;
 					else
-						ws = WritingSystemFactory.Create(import.IetfLanguageTag);
+						ws = WritingSystemFactory.Create(import.LanguageTag);
 					CollationDefinition cd;
 					if (ws.Collations.TryGet(import.Type, out cd))
 					{
@@ -90,7 +90,7 @@ namespace SIL.WritingSystems
 
 				if (!importSuccessful)
 				{
-					message = string.Format("Unable to import the {0} collation rules from {1}.", string.IsNullOrEmpty(import.Type) ? "default" : import.Type, import.IetfLanguageTag);
+					message = string.Format("Unable to import the {0} collation rules from {1}.", string.IsNullOrEmpty(import.Type) ? "default" : import.Type, import.LanguageTag);
 					return false;
 				}
 			}

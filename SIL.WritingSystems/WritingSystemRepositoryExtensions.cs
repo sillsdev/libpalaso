@@ -25,9 +25,9 @@ namespace SIL.WritingSystems
 			return repo.AllWritingSystems.Where(ws => ws.IsVoice);
 		}
 
-		public static IEnumerable<string> FilterForTextIetfLanguageTags(this IWritingSystemRepository repo, IEnumerable<string> langTagsToFilter)
+		public static IEnumerable<string> FilterForTextLanguageTags(this IWritingSystemRepository repo, IEnumerable<string> langTagsToFilter)
 		{
-			var set = new HashSet<string>(repo.TextWritingSystems().Select(ws => ws.IetfLanguageTag));
+			var set = new HashSet<string>(repo.TextWritingSystems().Select(ws => ws.LanguageTag));
 			return langTagsToFilter.Where(set.Contains);
 		}
 	}

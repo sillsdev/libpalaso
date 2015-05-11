@@ -78,7 +78,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 				WritingSystemDefinition[] wsArray = existingDefinitions.ToArray();
 				foreach (WritingSystemDefinition language in OtherKnownWritingSystems)
 				{
-					if (wsArray.All(def => def.IetfLanguageTag != language.IetfLanguageTag))
+					if (wsArray.All(def => def.LanguageTag != language.LanguageTag))
 						yield return new LanguageSuggestion(language);
 				}
 			}

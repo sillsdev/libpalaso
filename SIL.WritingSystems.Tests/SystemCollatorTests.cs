@@ -37,17 +37,17 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void ValidateIetfLanguageTag_Valid_ReturnsTrue()
+		public void ValidateLanguageTag_Valid_ReturnsTrue()
 		{
 			string message;
-			Assert.That(SystemCollator.ValidateIetfLanguageTag("en-US", out message), Is.True);
+			Assert.That(SystemCollator.ValidateLanguageTag("en-US", out message), Is.True);
 		}
 
 		[Test]
-		public void ValidateIetfLanguageTag_InValid_ReturnsFalse()
+		public void ValidateLanguageTag_InValid_ReturnsFalse()
 		{
 			string message;
-			Assert.That(SystemCollator.ValidateIetfLanguageTag("invalid", out message), Is.False);
+			Assert.That(SystemCollator.ValidateLanguageTag("invalid", out message), Is.False);
 		}
 
 		[Test]

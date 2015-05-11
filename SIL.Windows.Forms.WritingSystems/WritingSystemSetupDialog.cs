@@ -60,7 +60,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		public DialogResult ShowDialog(string initiallySelectWritingSystemLanguageTag)
 		{
-			_model.SetCurrentIndexFromIetfLanguageTag(initiallySelectWritingSystemLanguageTag);
+			_model.SetCurrentIndexFromLanguageTag(initiallySelectWritingSystemLanguageTag);
 			return ShowDialog();
 		}
 

@@ -4,21 +4,21 @@ namespace SIL.WritingSystems
 {
 	public class IcuCollationImport : IEquatable<IcuCollationImport>
 	{
-		private readonly string _ietfLanguageTag;
+		private readonly string _languageTag;
 		private readonly string _type;
 
-		public IcuCollationImport(string ietfLanguageTag, string type = null)
+		public IcuCollationImport(string languageTag, string type = null)
 		{
-			if (string.IsNullOrEmpty(ietfLanguageTag))
-				throw new ArgumentNullException("ietfLanguageTag");
+			if (string.IsNullOrEmpty(languageTag))
+				throw new ArgumentNullException("languageTag");
 
-			_ietfLanguageTag = ietfLanguageTag;
+			_languageTag = languageTag;
 			_type = type ?? string.Empty;
 		}
 
-		public string IetfLanguageTag
+		public string LanguageTag
 		{
-			get { return _ietfLanguageTag; }
+			get { return _languageTag; }
 		}
 
 		public string Type
@@ -36,13 +36,13 @@ namespace SIL.WritingSystems
 			if (other == null)
 				return false;
 
-			return _ietfLanguageTag == other._ietfLanguageTag && _type == other._type;
+			return _languageTag == other._languageTag && _type == other._type;
 		}
 
 		public override int GetHashCode()
 		{
 			int code = 23;
-			code = code * 31 + _ietfLanguageTag.GetHashCode();
+			code = code * 31 + _languageTag.GetHashCode();
 			code = code * 31 + _type.GetHashCode();
 			return code;
 		}

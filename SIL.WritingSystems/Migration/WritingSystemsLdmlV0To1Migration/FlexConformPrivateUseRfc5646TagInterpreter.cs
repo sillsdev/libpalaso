@@ -29,13 +29,13 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 
 			if (!String.IsNullOrEmpty(variant))
 			{
-				IetfLanguageTagHelper.SplitVariantAndPrivateUse(variant, out newVariant, out newPrivateUse);
+				IetfLanguageTag.SplitVariantAndPrivateUse(variant, out newVariant, out newPrivateUse);
 			}
 			IEnumerable<string> privateUseSubtagsWithoutXs = StripXs(newPrivateUse);
 			IEnumerable<string> languageSubtagsWithoutXs = StripXs(language);
 			newPrivateUse = String.Join("-", (languageSubtagsWithoutXs.Union(privateUseSubtagsWithoutXs)).Where(str=>!String.IsNullOrEmpty(str)).ToArray());
 
-			_variant = IetfLanguageTagHelper.ConcatenateVariantAndPrivateUse(newVariant, newPrivateUse);
+			_variant = IetfLanguageTag.ConcatenateVariantAndPrivateUse(newVariant, newPrivateUse);
 
 			if (!string.IsNullOrEmpty(script) || !string.IsNullOrEmpty(region) || !string.IsNullOrEmpty(newVariant))
 				_language = "qaa";
@@ -102,7 +102,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 					privateUse = String.IsNullOrEmpty(privateUse) ? currentToken : privateUse + '-' + currentToken;
 				}
 			}
-			variant = IetfLanguageTagHelper.ConcatenateVariantAndPrivateUse(variant, privateUse);
+			variant = IetfLanguageTag.ConcatenateVariantAndPrivateUse(variant, privateUse);
 			ConvertToPalasoConformPrivateUseRfc5646Tag(language, script, region, variant);
 		}
 

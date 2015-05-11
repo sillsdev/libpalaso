@@ -72,7 +72,7 @@ namespace SIL.WritingSystems
 		private string _keyboard;
 		private bool _rightToLeftScript;
 		private IKeyboardDefinition _localKeyboard;
-		private string _ietfLanguageTag;
+		private string _languageTag;
 		private string _defaultRegion;
 		private string _windowsLcid;
 		private string _spellCheckingId;
@@ -92,7 +92,7 @@ namespace SIL.WritingSystems
 		private bool _isGraphiteEnabled = true;
 
 		/// <summary>
-		/// Creates a new WritingSystemDefinition with Language subtag set to "qaa".
+		/// Creates a new WritingSystemDefinition with language tag set to "qaa".
 		/// </summary>
 		public WritingSystemDefinition()
 			: this(WellKnownSubtags.UnlistedLanguage)
@@ -100,15 +100,12 @@ namespace SIL.WritingSystems
 		}
 
 		public WritingSystemDefinition(string language, string script, string region, string variant)
-			: this(IetfLanguageTagHelper.CreateIetfLanguageTag(language, script, region, variant))
+			: this(IetfLanguageTag.Create(language, script, region, variant))
 		{
 		}
 
-		/// <summary>
-		/// Creates a new WritingSystemDefinition.
-		/// </summary>
 		public WritingSystemDefinition(string language, string script, string region, string variant, string abbreviation, bool rightToLeftScript)
-			: this(IetfLanguageTagHelper.CreateIetfLanguageTag(language, script, region, variant))
+			: this(IetfLanguageTag.Create(language, script, region, variant))
 		{
 			_abbreviation = abbreviation;
 			_rightToLeftScript = rightToLeftScript;
@@ -117,18 +114,18 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Creates a new WritingSystemDefinition by parsing a valid IETF language tag.
 		/// </summary>
-		public WritingSystemDefinition(string ietfLanguageTag)
+		public WritingSystemDefinition(string languageTag)
 		{
-			if (!IetfLanguageTagHelper.IsValid(ietfLanguageTag))
-				throw new ArgumentException("The IETF language is invalid.", ietfLanguageTag);
+			if (!IetfLanguageTag.IsValid(languageTag))
+				throw new ArgumentException("The language tag is invalid.", languageTag);
 
-			_ietfLanguageTag = IetfLanguageTagHelper.Normalize(ietfLanguageTag, IetfLanguageTagNormalizationMode.SilCompatible);
+			_languageTag = IetfLanguageTag.Normalize(languageTag, IetfLanguageTagNormalizationForm.SilCompatible);
 			IEnumerable<VariantSubtag> variantSubtags;
-			IetfLanguageTagHelper.TryGetSubtags(_ietfLanguageTag, out _language, out _script, out _region, out variantSubtags);
+			IetfLanguageTag.TryGetSubtags(_languageTag, out _language, out _script, out _region, out variantSubtags);
 			_variants = new BulkObservableList<VariantSubtag>(variantSubtags);
 			string message;
-			if (!ValidateIetfLanguageTag(out message))
-				throw new ArgumentException(message, "ietfLanguageTag");
+			if (!ValidateLanguageTag(out message))
+				throw new ArgumentException(message, "languageTag");
 			_fonts = new KeyedBulkObservableList<string, FontDefinition>(fd => fd.Name);
 			_knownKeyboards = new KeyedBulkObservableList<string, IKeyboardDefinition>(kd => kd.Id);
 			_spellCheckDictionaries = new KeyedBulkObservableList<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition>(scdd => scdd.Format);
@@ -169,7 +166,7 @@ namespace SIL.WritingSystems
 			_punctuationPatterns = new ObservableHashSet<PunctuationPattern>(ws._punctuationPatterns);
 			_quotationMarks = new BulkObservableList<QuotationMark>(ws._quotationMarks);
 			_quotationParagraphContinueType = ws._quotationParagraphContinueType;
-			_ietfLanguageTag = ws._ietfLanguageTag;
+			_languageTag = ws._languageTag;
 			_defaultCollationType = ws._defaultCollationType;
 			_collations = new KeyedBulkObservableList<string, CollationDefinition>(ws._collations.CloneItems(), cd => cd.Type);
 			if (ws._defaultCollation != null)
@@ -207,7 +204,7 @@ namespace SIL.WritingSystems
 			if (e.Action != NotifyCollectionChangedAction.Replace
 			    || !e.OldItems.Cast<VariantSubtag>().Select(v => v.Code).SequenceEqual(e.NewItems.Cast<VariantSubtag>().Select(v => v.Code)))
 			{
-				UpdateIetfLanguageTag();
+				UpdateLanguageTag();
 			}
 
 			IsChanged = true;
@@ -391,9 +388,9 @@ namespace SIL.WritingSystems
 			get { return _script != null && _script.Code.Equals(WellKnownSubtags.AudioScript, StringComparison.OrdinalIgnoreCase); }
 		}
 
-		public bool ValidateIetfLanguageTag(out string message)
+		public bool ValidateLanguageTag(out string message)
 		{
-			if (!IetfLanguageTagHelper.Validate(_language, _script, _region, _variants, out message))
+			if (!IetfLanguageTag.Validate(_language, _script, _region, _variants, out message))
 				return false;
 
 			if (_variants.Contains(WellKnownSubtags.AudioPrivateUse) && !ScriptSubTagIsAudio)
@@ -427,7 +424,7 @@ namespace SIL.WritingSystems
 				string oldCode = _language == null ? string.Empty : _language.Code;
 				Set(() => Language, ref _language, value);
 				if (oldCode != (_language == null ? string.Empty : _language.Code))
-					UpdateIetfLanguageTag();
+					UpdateLanguageTag();
 			}
 		}
 
@@ -444,7 +441,7 @@ namespace SIL.WritingSystems
 				string oldCode = _script == null ? string.Empty : _script.Code;
 				Set(() => Script, ref _script, value);
 				if (oldCode != (_script == null ? string.Empty : _script.Code))
-					UpdateIetfLanguageTag();
+					UpdateLanguageTag();
 			}
 		}
 
@@ -456,7 +453,7 @@ namespace SIL.WritingSystems
 				string oldCode = _region == null ? string.Empty : _region.Code;
 				Set(() => Region, ref _region, value);
 				if (oldCode != (_region == null ? string.Empty : _region.Code))
-					UpdateIetfLanguageTag();
+					UpdateLanguageTag();
 			}
 		}
 
@@ -481,10 +478,10 @@ namespace SIL.WritingSystems
 					// If it's an unlisted language, use the private use area language subtag.
 					if (_language == null || _language == WellKnownSubtags.UnlistedLanguage)
 					{
-						int idx = IetfLanguageTag.IndexOf("x-", StringComparison.Ordinal);
-						if (idx > 0 && IetfLanguageTag.Length > idx + 2)
+						int idx = LanguageTag.IndexOf("x-", StringComparison.Ordinal);
+						if (idx > 0 && LanguageTag.Length > idx + 2)
 						{
-							var abbr = IetfLanguageTag.Substring(idx + 2);
+							var abbr = LanguageTag.Substring(idx + 2);
 							idx = abbr.IndexOf('-');
 							if (idx > 0)
 								abbr = abbr.Substring(0, idx);
@@ -500,7 +497,7 @@ namespace SIL.WritingSystems
 
 		/// <summary>
 		/// Used by IWritingSystemRepository to identify writing systems. This is an IETF language tag, but does not necessarily
-		/// correspond to the writing system's current language tag. Id and IetfLanguageTag can be different if the language
+		/// correspond to the writing system's current language tag. Id and LanguageTag can be different if the language
 		/// tag has changed, but IWritingSystemRepository.Set() hasn't been called on it yet. Only change this if you would like
 		/// to replace a writing system with the same Id already contained in the repo. This is useful creating a temporary copy
 		/// of a writing system that you may or may not care to persist to the IWritingSystemRepository.
@@ -521,10 +518,10 @@ namespace SIL.WritingSystems
 			{
 				//jh (Oct 2010) made it start with RFC5646 because all ws's in a lang start with the
 				//same abbreviation, making imppossible to see (in SOLID for example) which you chose.
-				bool languageIsUnknown = _ietfLanguageTag.Equals(WellKnownSubtags.UnlistedLanguage, StringComparison.OrdinalIgnoreCase);
-				if (!string.IsNullOrEmpty(_ietfLanguageTag) && !languageIsUnknown)
+				bool languageIsUnknown = _languageTag.Equals(WellKnownSubtags.UnlistedLanguage, StringComparison.OrdinalIgnoreCase);
+				if (!string.IsNullOrEmpty(_languageTag) && !languageIsUnknown)
 				{
-					return _ietfLanguageTag;
+					return _languageTag;
 				}
 				if (languageIsUnknown)
 				{
@@ -647,33 +644,33 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// The IETF language tag for this writing system.
 		/// </summary>
-		public string IetfLanguageTag
+		public string LanguageTag
 		{
-			get { return _ietfLanguageTag; }
+			get { return _languageTag; }
 			set
 			{
 				if (value == null)
 					throw new ArgumentNullException("value");
-				if (!IetfLanguageTagHelper.IsValid(value))
-					throw new ArgumentException("The IETF language tag is invalid.", "value");
+				if (!IetfLanguageTag.IsValid(value))
+					throw new ArgumentException("The language tag is invalid.", "value");
 
-				string newLangTag = IetfLanguageTagHelper.Normalize(value, IetfLanguageTagNormalizationMode.SilCompatible);
-				if (!newLangTag.Equals(_ietfLanguageTag, StringComparison.InvariantCultureIgnoreCase))
+				string newLangTag = IetfLanguageTag.Normalize(value, IetfLanguageTagNormalizationForm.SilCompatible);
+				if (!newLangTag.Equals(_languageTag, StringComparison.InvariantCultureIgnoreCase))
 				{
 					LanguageSubtag language;
 					ScriptSubtag script;
 					RegionSubtag region;
 					IEnumerable<VariantSubtag> variantSubtags;
-					IetfLanguageTagHelper.TryGetSubtags(newLangTag, out language, out script, out region, out variantSubtags);
+					IetfLanguageTag.TryGetSubtags(newLangTag, out language, out script, out region, out variantSubtags);
 					Set(() => Language, ref _language, language);
 					Set(() => Script, ref _script, script);
 					Set(() => Region, ref _region, region);
 					using (_ignoreVariantChanges.Enter())
 						_variants.ReplaceAll(variantSubtags);
 					string message;
-					if (!ValidateIetfLanguageTag(out message))
+					if (!ValidateLanguageTag(out message))
 						throw new ArgumentException(message, "value");
-					Set(() => IetfLanguageTag, ref _ietfLanguageTag, newLangTag);
+					Set(() => LanguageTag, ref _languageTag, newLangTag);
 				}
 			}
 		}
@@ -789,11 +786,11 @@ namespace SIL.WritingSystems
 			get { return _characterSets; }
 		}
 
-		protected virtual void UpdateIetfLanguageTag()
+		protected virtual void UpdateLanguageTag()
 		{
 			if (_language == null && (_script != null || _region != null || _variants.Any(v => !v.IsPrivateUse)))
 				Set(() => Language, ref _language, WellKnownSubtags.UnlistedLanguage);
-			Set(() => IetfLanguageTag, ref _ietfLanguageTag, IetfLanguageTagHelper.CreateIetfLanguageTag(_language, _script, _region, _variants, false));
+			Set(() => LanguageTag, ref _languageTag, IetfLanguageTag.Create(_language, _script, _region, _variants, false));
 		}
 
 		/// <summary>
@@ -1086,7 +1083,7 @@ namespace SIL.WritingSystems
 
 		public override string ToString()
 		{
-			return _ietfLanguageTag;
+			return _languageTag;
 		}
 
 		/// <summary>
@@ -1122,7 +1119,7 @@ namespace SIL.WritingSystems
 				return false;
 			if (Keyboard != other.Keyboard)
 				return false;
-			if (_ietfLanguageTag != other._ietfLanguageTag)
+			if (_languageTag != other._languageTag)
 				return false;
 			if (_dateModified != other._dateModified)
 				return false;

@@ -74,8 +74,8 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			// Record the details for use in PostMigrate where we change the file name to match the rfc tag where we can.
 			var migrationInfo = new LdmlMigrationInfo(sourceFileName)
 				{
-					IetfLanguageTagBeforeMigration = writingSystemDefinitionV0.Rfc5646,
-					IetfLanguageTagAfterMigration = writingSystemDefinitionV1.Bcp47Tag
+					LanguageTagBeforeMigration = writingSystemDefinitionV0.Rfc5646,
+					LanguageTagAfterMigration = writingSystemDefinitionV1.Bcp47Tag
 				};
 			_migrationInfo.Add(migrationInfo);
 		}
@@ -108,9 +108,9 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			{
 				var writingSystemDefinitionV1 = _writingSystemsV1[migrationInfo.FileName];
 				string sourceFilePath = Path.Combine(sourcePath, migrationInfo.FileName);
-				string destinationFilePath = Path.Combine(destinationPath, migrationInfo.IetfLanguageTagAfterMigration + ".ldml");
-				if (migrationInfo.IetfLanguageTagBeforeMigration != migrationInfo.IetfLanguageTagAfterMigration)
-					_auditLog.LogChange(migrationInfo.IetfLanguageTagBeforeMigration, migrationInfo.IetfLanguageTagAfterMigration);
+				string destinationFilePath = Path.Combine(destinationPath, migrationInfo.LanguageTagAfterMigration + ".ldml");
+				if (migrationInfo.LanguageTagBeforeMigration != migrationInfo.LanguageTagAfterMigration)
+					_auditLog.LogChange(migrationInfo.LanguageTagBeforeMigration, migrationInfo.LanguageTagAfterMigration);
 				WriteLdml(writingSystemDefinitionV1, sourceFilePath, destinationFilePath);
 			}
 			if (_migrationHandler != null)
@@ -133,30 +133,30 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 			foreach (var info in migrationInfo)
 			{
 				LdmlMigrationInfo currentInfo = info;
-				if (uniqueRfcTags.Any(rfcTag => rfcTag.Equals(currentInfo.IetfLanguageTagAfterMigration, StringComparison.OrdinalIgnoreCase)))
+				if (uniqueRfcTags.Any(rfcTag => rfcTag.Equals(currentInfo.LanguageTagAfterMigration, StringComparison.OrdinalIgnoreCase)))
 				{
-					if (currentInfo.IetfLanguageTagBeforeMigration.Equals(currentInfo.IetfLanguageTagAfterMigration, StringComparison.OrdinalIgnoreCase))
+					if (currentInfo.LanguageTagBeforeMigration.Equals(currentInfo.LanguageTagAfterMigration, StringComparison.OrdinalIgnoreCase))
 					{
 						// We want to change the other, because we are the same. Even if the other is the same, we'll change it anyway.
 						LdmlMigrationInfo otherInfo = _migrationInfo.First(
-							i => i.IetfLanguageTagAfterMigration.Equals(currentInfo.IetfLanguageTagAfterMigration, StringComparison.OrdinalIgnoreCase)
+							i => i.LanguageTagAfterMigration.Equals(currentInfo.LanguageTagAfterMigration, StringComparison.OrdinalIgnoreCase)
 						);
-						otherInfo.IetfLanguageTagAfterMigration = UniqueTagForDuplicate(otherInfo.IetfLanguageTagAfterMigration, uniqueRfcTags);
-						uniqueRfcTags.Add(otherInfo.IetfLanguageTagAfterMigration);
+						otherInfo.LanguageTagAfterMigration = UniqueTagForDuplicate(otherInfo.LanguageTagAfterMigration, uniqueRfcTags);
+						uniqueRfcTags.Add(otherInfo.LanguageTagAfterMigration);
 						var writingSystemV1 = _writingSystemsV1[otherInfo.FileName];
-						writingSystemV1.SetTagFromString(otherInfo.IetfLanguageTagAfterMigration);
+						writingSystemV1.SetTagFromString(otherInfo.LanguageTagAfterMigration);
 					}
 					else
 					{
-						currentInfo.IetfLanguageTagAfterMigration = UniqueTagForDuplicate(currentInfo.IetfLanguageTagAfterMigration, uniqueRfcTags);
-						uniqueRfcTags.Add(currentInfo.IetfLanguageTagAfterMigration);
+						currentInfo.LanguageTagAfterMigration = UniqueTagForDuplicate(currentInfo.LanguageTagAfterMigration, uniqueRfcTags);
+						uniqueRfcTags.Add(currentInfo.LanguageTagAfterMigration);
 						var writingSystemV1 = _writingSystemsV1[currentInfo.FileName];
-						writingSystemV1.SetTagFromString(currentInfo.IetfLanguageTagAfterMigration);
+						writingSystemV1.SetTagFromString(currentInfo.LanguageTagAfterMigration);
 					}
 				}
 				else
 				{
-					uniqueRfcTags.Add(currentInfo.IetfLanguageTagAfterMigration);
+					uniqueRfcTags.Add(currentInfo.LanguageTagAfterMigration);
 				}
 			}
 		}

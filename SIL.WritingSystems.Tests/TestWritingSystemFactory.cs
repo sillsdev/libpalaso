@@ -8,7 +8,7 @@ namespace SIL.WritingSystems.Tests
 
 		public TestWritingSystemFactory()
 		{
-			_writingSystems = new KeyedList<string, WritingSystemDefinition>(ws => ws.IetfLanguageTag);
+			_writingSystems = new KeyedList<string, WritingSystemDefinition>(ws => ws.LanguageTag);
 		}
 
 		public IKeyedCollection<string, WritingSystemDefinition> WritingSystems

@@ -70,23 +70,23 @@ namespace SIL.WritingSystems
 		/// API to query the SLDR for an LDML file and save it locally in the SLDR cache and specified directories
 		/// </summary>
 		/// <param name="destinationPath">Destination path to save the requested LDML file</param>
-		/// <param name="ietfLanguageTag">Current IETF language tag</param>
+		/// <param name="languageTag">Current IETF language tag</param>
 		/// <param name="topLevelElements">List of top level element names to request. SLDR will always publish identity, so it doesn't need to be requested.
 		/// If null, the entire LDML file will be requested.</param>
 		/// <param name="filename">Saved filename</param>
 		/// <returns>Enum status SldrStatus if file could be retrieved and the source</returns>
-		public static SldrStatus GetLdmlFile(string destinationPath, string ietfLanguageTag, IEnumerable<string> topLevelElements, out string filename)
+		public static SldrStatus GetLdmlFile(string destinationPath, string languageTag, IEnumerable<string> topLevelElements, out string filename)
 		{
 			if (String.IsNullOrEmpty(destinationPath))
 				throw new ArgumentException("destinationPath");
 			if (!Directory.Exists(destinationPath))
 				throw new DirectoryNotFoundException("destinationPath");
-			if (String.IsNullOrEmpty(ietfLanguageTag) || (!IetfLanguageTagHelper.IsValid(ietfLanguageTag)))
+			if (String.IsNullOrEmpty(languageTag) || (!IetfLanguageTag.IsValid(languageTag)))
 				throw new ArgumentException("ietfLanguageTag");
 			if (topLevelElements == null)
 				throw new ArgumentNullException("topLevelElements");
 
-			ietfLanguageTag = IetfLanguageTagHelper.Normalize(ietfLanguageTag, IetfLanguageTagNormalizationMode.Canonical);
+			languageTag = IetfLanguageTag.Normalize(languageTag, IetfLanguageTagNormalizationForm.Canonical);
 			string[] topLevelElementsArray = topLevelElements.ToArray();
 
 			var status = SldrStatus.FileNotFound;
@@ -98,18 +98,18 @@ namespace SIL.WritingSystems
 				string revid, uid = "", tempString;
 				if (destinationPath == SldrCachePath)
 				{
-					filename = string.Format("{0}.{1}", ietfLanguageTag, LdmlExtension);
+					filename = string.Format("{0}.{1}", languageTag, LdmlExtension);
 				}
 				else
 				{
-					filename = string.Format("{0}.{1}", IetfLanguageTagHelper.Normalize(ietfLanguageTag, IetfLanguageTagNormalizationMode.SilCompatible), LdmlExtension);
+					filename = string.Format("{0}.{1}", IetfLanguageTag.Normalize(languageTag, IetfLanguageTagNormalizationForm.SilCompatible), LdmlExtension);
 					// Check if LDML file already exists in destination and read revid and uid
 					if (!ReadSilIdentity(Path.Combine(destinationPath, filename), out tempString, out uid))
 						uid = DefaultUserId;
 				}
 
-				sldrCacheFilePath = Path.Combine(SldrCachePath, !string.IsNullOrEmpty(uid) && uid != DefaultUserId ? string.Format("{0}-{1}.{2}", ietfLanguageTag, uid, LdmlExtension)
-					: string.Format("{0}.{1}", ietfLanguageTag, LdmlExtension));
+				sldrCacheFilePath = Path.Combine(SldrCachePath, !string.IsNullOrEmpty(uid) && uid != DefaultUserId ? string.Format("{0}-{1}.{2}", languageTag, uid, LdmlExtension)
+					: string.Format("{0}.{1}", languageTag, LdmlExtension));
 				// Read revid from cache file
 				ReadSilIdentity(sldrCacheFilePath, out revid, out tempString);
 
@@ -120,7 +120,7 @@ namespace SIL.WritingSystems
 				string requestedUserId = !string.IsNullOrEmpty(uid) ? string.Format("&uid={0}", uid) : string.Empty;
 				string requestedRevid = !string.IsNullOrEmpty(revid) ? string.Format("&revid={0}", revid) : string.Empty;
 				string url = string.Format("{0}{1}?ext={2}&flatten=1{3}{4}{5}",
-					ProductionSldrRepository, ietfLanguageTag, LdmlExtension,
+					ProductionSldrRepository, languageTag, LdmlExtension,
 					requestedElements, requestedUserId, requestedRevid);
 
 				string tempFilePath = sldrCacheFilePath + "." + TmpExtension;
@@ -148,7 +148,7 @@ namespace SIL.WritingSystems
 						{
 							// Extract ietfLanguageTag from the response header
 							string responseString = webResponse.Headers["Location"].Replace(ProductionSldrRepository, "");
-							ietfLanguageTag = responseString.Split('?')[0];
+							languageTag = responseString.Split('?')[0];
 							redirected = true;
 						}
 						else
@@ -182,9 +182,9 @@ namespace SIL.WritingSystems
 					string sldrCacheFilename;
 					// Download failed so check SLDR cache
 					if (!string.IsNullOrEmpty(uid) && (uid != DefaultUserId))
-						sldrCacheFilename = string.Format("{0}-{1}.{2}", ietfLanguageTag, uid, LdmlExtension);
+						sldrCacheFilename = string.Format("{0}-{1}.{2}", languageTag, uid, LdmlExtension);
 					else
-						sldrCacheFilename = string.Format("{0}.{1}", ietfLanguageTag, LdmlExtension);
+						sldrCacheFilename = string.Format("{0}.{1}", languageTag, LdmlExtension);
 					sldrCacheFilePath = Path.Combine(SldrCachePath, sldrCacheFilename);
 					if (File.Exists(sldrCacheFilePath))
 						status = SldrStatus.FileFromSldrCache;
@@ -212,12 +212,12 @@ namespace SIL.WritingSystems
 		/// API request to return an LDML file and save it
 		/// </summary>
 		/// <param name="destinationPath">Destination path to save the requested LDML file</param>
-		/// <param name="ietfLanguageTag">Current IETF language tag</param>
+		/// <param name="languageTag">Current IETF language tag</param>
 		/// <param name="filename">Saved filename</param>
 		/// <returns>Enum status SldrStatus if file could be retrieved and the source</returns>
-		public static SldrStatus GetLdmlFile(string destinationPath, string ietfLanguageTag, out string filename)
+		public static SldrStatus GetLdmlFile(string destinationPath, string languageTag, out string filename)
 		{
-			return GetLdmlFile(destinationPath, ietfLanguageTag, Enumerable.Empty<string>(), out filename);
+			return GetLdmlFile(destinationPath, languageTag, Enumerable.Empty<string>(), out filename);
 		}
 
 		/// <summary>

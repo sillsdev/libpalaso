@@ -64,17 +64,17 @@ namespace SIL.WritingSystems
 
 				WritingSystemDefinition conformantWritingSystem = writingSystemRepository.WritingSystemFactory.Create(newId);
 				// If it changed, then change
-				if (conformantWritingSystem.IetfLanguageTag != wsId)
+				if (conformantWritingSystem.LanguageTag != wsId)
 				{
-					conformantWritingSystem.IetfLanguageTag = IetfLanguageTagHelper.ToUniqueIetfLanguageTag(
-						conformantWritingSystem.IetfLanguageTag, updatedIds);
-					replaceIdsInFile(wsId, conformantWritingSystem.IetfLanguageTag);
+					conformantWritingSystem.LanguageTag = IetfLanguageTag.ToUniqueLanguageTag(
+						conformantWritingSystem.LanguageTag, updatedIds);
+					replaceIdsInFile(wsId, conformantWritingSystem.LanguageTag);
 					updatedIds.Remove(wsId);
-					updatedIds.Add(conformantWritingSystem.IetfLanguageTag);
+					updatedIds.Add(conformantWritingSystem.LanguageTag);
 				}
 
 				// Check if it's in the repo
-				if (writingSystemRepository.Contains(conformantWritingSystem.IetfLanguageTag))
+				if (writingSystemRepository.Contains(conformantWritingSystem.LanguageTag))
 					continue;
 
 				// It's not in the repo so set it

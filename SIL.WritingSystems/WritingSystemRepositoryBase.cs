@@ -131,8 +131,8 @@ namespace SIL.WritingSystems
 			{
 				return false;
 			}
-			return !(_writingSystems.Keys.Any(id => id.Equals(ws.IetfLanguageTag, StringComparison.OrdinalIgnoreCase)) &&
-				ws.Id != _writingSystems[ws.IetfLanguageTag].Id);
+			return !(_writingSystems.Keys.Any(id => id.Equals(ws.LanguageTag, StringComparison.OrdinalIgnoreCase)) &&
+				ws.Id != _writingSystems[ws.LanguageTag].Id);
 		}
 
 		public virtual void Set(T ws)
@@ -144,7 +144,7 @@ namespace SIL.WritingSystems
 
 			//Check if this is a new writing system with a conflicting id
 			if (!CanSet(ws))
-				throw new ArgumentException(String.Format("Unable to set writing system '{0}' because this id already exists. Please change this writing system id before setting it.", ws.IetfLanguageTag));
+				throw new ArgumentException(String.Format("Unable to set writing system '{0}' because this id already exists. Please change this writing system id before setting it.", ws.LanguageTag));
 
 			string oldId = _writingSystems.Where(kvp => kvp.Value.Id == ws.Id).Select(kvp => kvp.Key).FirstOrDefault();
 			//??? How do we update
@@ -152,16 +152,16 @@ namespace SIL.WritingSystems
 			//??? i.e. Do we need a ws.Copy(WritingSystemDefinition)?
 			if (!string.IsNullOrEmpty(oldId) && _writingSystems.ContainsKey(oldId))
 				_writingSystems.Remove(oldId);
-			_writingSystems[ws.IetfLanguageTag] = ws;
+			_writingSystems[ws.LanguageTag] = ws;
 
-			if (!string.IsNullOrEmpty(oldId) && (oldId != ws.IetfLanguageTag))
+			if (!string.IsNullOrEmpty(oldId) && (oldId != ws.LanguageTag))
 			{
-				UpdateChangedIds(oldId, ws.IetfLanguageTag);
+				UpdateChangedIds(oldId, ws.LanguageTag);
 				if (WritingSystemIdChanged != null)
-					WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.IetfLanguageTag));
+					WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.LanguageTag));
 			}
 
-			ws.Id = ws.IetfLanguageTag;
+			ws.Id = ws.LanguageTag;
 		}
 
 		/// <summary>
@@ -210,7 +210,7 @@ namespace SIL.WritingSystems
 			{
 				throw new ArgumentNullException("ws");
 			}
-			return String.IsNullOrEmpty(ws.Id) ? ws.IetfLanguageTag : ws.Id;
+			return String.IsNullOrEmpty(ws.Id) ? ws.LanguageTag : ws.Id;
 		}
 
 		public T Get(string id)

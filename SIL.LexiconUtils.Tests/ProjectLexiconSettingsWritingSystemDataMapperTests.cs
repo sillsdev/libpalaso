@@ -41,7 +41,7 @@ namespace SIL.LexiconUtils.Tests
 			Assert.That(ws1.SpellCheckingId, Is.EqualTo(string.Empty));
 			Assert.That(ws1.LegacyMapping, Is.EqualTo(string.Empty));
 			Assert.That(ws1.Keyboard, Is.EqualTo(string.Empty));
-			var scd = new SystemCollationDefinition {IetfLanguageTag = "snarf"};
+			var scd = new SystemCollationDefinition {LanguageTag = "snarf"};
 			Assert.That(ws1.DefaultCollation.ValueEquals(scd), Is.True);
 
 			var ws2 = new WritingSystemDefinition("fr-FR");
@@ -136,7 +136,7 @@ namespace SIL.LexiconUtils.Tests
 			ws1.SpellCheckingId = "en_US";
 			ws1.LegacyMapping = "converter";
 			ws1.Keyboard = "Old Keyboard";
-			var scd = new SystemCollationDefinition {IetfLanguageTag = "snarf"};
+			var scd = new SystemCollationDefinition {LanguageTag = "snarf"};
 			ws1.DefaultCollation = scd;
 			projectSettingsDataMapper.Write(ws1);
 

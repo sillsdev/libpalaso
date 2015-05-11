@@ -51,11 +51,11 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			string defaultFontName = writingSystemDefinitionV1.DefaultFontName;
 			string languageName = writingSystemDefinitionV1.LanguageName.IsOneOf("Unknown Language", "Language Not Listed") ? string.Empty : writingSystemDefinitionV1.LanguageName;
 			string variant, privateUse;
-			IetfLanguageTagHelper.SplitVariantAndPrivateUse(writingSystemDefinitionV1.Variant, out variant, out privateUse);
+			IetfLanguageTag.SplitVariantAndPrivateUse(writingSystemDefinitionV1.Variant, out variant, out privateUse);
 			var langTagCleaner = new IetfLanguageTagCleaner(writingSystemDefinitionV1.Language, writingSystemDefinitionV1.Script, writingSystemDefinitionV1.Region,
 				variant, privateUse);
 			langTagCleaner.Clean();
-			string langTag = IetfLanguageTagHelper.Normalize(langTagCleaner.GetCompleteTag(), IetfLanguageTagNormalizationMode.SilCompatible);
+			string langTag = IetfLanguageTag.Normalize(langTagCleaner.GetCompleteTag(), IetfLanguageTagNormalizationForm.SilCompatible);
 			List<string> knownKeyboards = writingSystemDefinitionV1.KnownKeyboards.Select(k => string.IsNullOrEmpty(k.Locale) ? k.Layout : string.Format("{0}_{1}", k.Locale, k.Layout)).ToList();
 			bool isGraphiteEnabled = false;
 			string legacyMapping = string.Empty;
@@ -66,7 +66,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 
 			// Create system collation definition if applicable
 			if ((writingSystemDefinitionV1.SortUsing == WritingSystemDefinitionV1.SortRulesType.OtherLanguage) && (!string.IsNullOrEmpty(writingSystemDefinitionV1.SortRules)))
-				scd = new SystemCollationDefinition { IetfLanguageTag = writingSystemDefinitionV1.SortRules };
+				scd = new SystemCollationDefinition { LanguageTag = writingSystemDefinitionV1.SortRules };
 
 			// Migrate fields from legacy fw namespace, and then remove fw namespace
 			XElement ldmlElem = XElement.Load(sourceFilePath);
@@ -104,8 +104,8 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			// Record the details for use in PostMigrate where we change the file name to match the ieft language tag where we can.
 			var migrationInfo = new LdmlMigrationInfo(sourceFileName)
 				{
-					IetfLanguageTagBeforeMigration = writingSystemDefinitionV1.Bcp47Tag,
-					IetfLanguageTagAfterMigration = langTag,
+					LanguageTagBeforeMigration = writingSystemDefinitionV1.Bcp47Tag,
+					LanguageTagAfterMigration = langTag,
 					RemovedPropertiesSetter = ws =>
 					{
 						if (!string.IsNullOrEmpty(abbreviation))
@@ -157,11 +157,11 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			{
 				// Parse language tag to obtain variant subtags
 				string language, script, region, variants;
-				IetfLanguageTagHelper.TryGetParts(migrationInfo.IetfLanguageTagAfterMigration, out language, out script, out region,
+				IetfLanguageTag.TryGetParts(migrationInfo.LanguageTagAfterMigration, out language, out script, out region,
 					out variants);
 				IEnumerable<VariantSubtag> variantSubtags;
-				IetfLanguageTagHelper.TryGetVariantSubtags(variants, out variantSubtags);
-				int index = IetfLanguageTagHelper.GetIndexOfFirstNonCommonPrivateUseVariant(variantSubtags);
+				IetfLanguageTag.TryGetVariantSubtags(variants, out variantSubtags);
+				int index = IetfLanguageTag.GetIndexOfFirstNonCommonPrivateUseVariant(variantSubtags);
 				if (index > -1)
 					staging.VariantName = variantName;
 			}
@@ -259,7 +259,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 		private void WriteLanguageTagElements(XElement identityElem, string languageTag)
 		{
 			string language, script, region, variant;
-			IetfLanguageTagHelper.TryGetParts(languageTag, out language, out script, out region, out variant);
+			IetfLanguageTag.TryGetParts(languageTag, out language, out script, out region, out variant);
 
 			// language element is required
 			identityElem.SetAttributeValue("language", "type", language);
@@ -375,7 +375,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			{
 				Staging staging = _staging[migrationInfo.FileName];
 				string sourceFilePath = Path.Combine(sourcePath, migrationInfo.FileName);
-				string destinationFilePath = Path.Combine(destinationPath, migrationInfo.IetfLanguageTagAfterMigration + ".ldml");
+				string destinationFilePath = Path.Combine(destinationPath, migrationInfo.LanguageTagAfterMigration + ".ldml");
 
 				XElement ldmlElem = XElement.Load(sourceFilePath);
 				// Remove legacy palaso namespace from sourceFilePath
@@ -388,7 +388,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 
 				// Write out the elements.
 				XElement identityElem = ldmlElem.Element("identity");
-				WriteIdentityElement(identityElem, staging, migrationInfo.IetfLanguageTagAfterMigration);
+				WriteIdentityElement(identityElem, staging, migrationInfo.LanguageTagAfterMigration);
 
 				if (staging.CharacterSets.ContainsKey("numeric"))
 				{
@@ -421,8 +421,8 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				using (var writer = XmlWriter.Create(destinationFilePath, writerSettings))
 					ldmlElem.WriteTo(writer);
 
-				if (migrationInfo.IetfLanguageTagBeforeMigration != migrationInfo.IetfLanguageTagAfterMigration)
-					_auditLog.LogChange(migrationInfo.IetfLanguageTagBeforeMigration, migrationInfo.IetfLanguageTagAfterMigration);
+				if (migrationInfo.LanguageTagBeforeMigration != migrationInfo.LanguageTagAfterMigration)
+					_auditLog.LogChange(migrationInfo.LanguageTagBeforeMigration, migrationInfo.LanguageTagAfterMigration);
 			}
 			if (_migrationHandler != null)
 				_migrationHandler(ToVersion, _migrationInfo);
@@ -430,32 +430,32 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 
 		internal void EnsureIeftLanguageTagsUnique(IEnumerable<LdmlMigrationInfo> migrationInfo)
 		{
-			var uniqueIeftLanguageTags = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
+			var uniqueLanguageTags = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
 			foreach (LdmlMigrationInfo info in migrationInfo)
 			{
 				LdmlMigrationInfo currentInfo = info;
-				if (uniqueIeftLanguageTags.Contains(currentInfo.IetfLanguageTagAfterMigration))
+				if (uniqueLanguageTags.Contains(currentInfo.LanguageTagAfterMigration))
 				{
-					if (currentInfo.IetfLanguageTagBeforeMigration.Equals(currentInfo.IetfLanguageTagAfterMigration, StringComparison.InvariantCultureIgnoreCase))
+					if (currentInfo.LanguageTagBeforeMigration.Equals(currentInfo.LanguageTagAfterMigration, StringComparison.InvariantCultureIgnoreCase))
 					{
 						// We want to change the other, because we are the same. Even if the other is the same, we'll change it anyway.
 						LdmlMigrationInfo otherInfo = _migrationInfo.First(
-							i => i.IetfLanguageTagAfterMigration.Equals(currentInfo.IetfLanguageTagAfterMigration, StringComparison.InvariantCultureIgnoreCase)
+							i => i.LanguageTagAfterMigration.Equals(currentInfo.LanguageTagAfterMigration, StringComparison.InvariantCultureIgnoreCase)
 						);
-						otherInfo.IetfLanguageTagAfterMigration = IetfLanguageTagHelper.ToUniqueIetfLanguageTag(
-							otherInfo.IetfLanguageTagAfterMigration, uniqueIeftLanguageTags);
-						uniqueIeftLanguageTags.Add(otherInfo.IetfLanguageTagAfterMigration);
+						otherInfo.LanguageTagAfterMigration = IetfLanguageTag.ToUniqueLanguageTag(
+							otherInfo.LanguageTagAfterMigration, uniqueLanguageTags);
+						uniqueLanguageTags.Add(otherInfo.LanguageTagAfterMigration);
 					}
 					else
 					{
-						currentInfo.IetfLanguageTagAfterMigration = IetfLanguageTagHelper.ToUniqueIetfLanguageTag(
-							currentInfo.IetfLanguageTagAfterMigration, uniqueIeftLanguageTags);
-						uniqueIeftLanguageTags.Add(currentInfo.IetfLanguageTagAfterMigration);
+						currentInfo.LanguageTagAfterMigration = IetfLanguageTag.ToUniqueLanguageTag(
+							currentInfo.LanguageTagAfterMigration, uniqueLanguageTags);
+						uniqueLanguageTags.Add(currentInfo.LanguageTagAfterMigration);
 					}
 				}
 				else
 				{
-					uniqueIeftLanguageTags.Add(currentInfo.IetfLanguageTagAfterMigration);
+					uniqueLanguageTags.Add(currentInfo.LanguageTagAfterMigration);
 				}
 			}
 		}

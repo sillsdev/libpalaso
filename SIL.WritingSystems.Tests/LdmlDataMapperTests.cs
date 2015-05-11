@@ -229,10 +229,10 @@ namespace SIL.WritingSystems.Tests
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
 				Assert.That(wsFromLdml.VersionNumber, Is.EqualTo("$Revision$"));
 				Assert.That(wsFromLdml.VersionDescription, Is.EqualTo("Identity version description"));
-				Assert.That(wsFromLdml.IetfLanguageTag, Is.EqualTo("en-GB-x-test"));
+				Assert.That(wsFromLdml.LanguageTag, Is.EqualTo("en-GB-x-test"));
 				Assert.That(wsFromLdml.WindowsLcid, Is.EqualTo("1036"));
 				Assert.That(wsFromLdml.DefaultRegion, Is.EqualTo("US"));
-				int index = IetfLanguageTagHelper.GetIndexOfFirstNonCommonPrivateUseVariant(wsFromLdml.Variants);
+				int index = IetfLanguageTag.GetIndexOfFirstNonCommonPrivateUseVariant(wsFromLdml.Variants);
 				Assert.That(index, Is.EqualTo(0));
 				Assert.That(wsFromLdml.Variants[index].Name, Is.EqualTo(string.Empty));
 			}
@@ -265,10 +265,10 @@ namespace SIL.WritingSystems.Tests
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
 				Assert.That(wsFromLdml.VersionNumber, Is.EqualTo("$Revision$"));
 				Assert.That(wsFromLdml.VersionDescription, Is.EqualTo("Identity version description"));
-				Assert.That(wsFromLdml.IetfLanguageTag, Is.EqualTo("en-GB-x-test"));
+				Assert.That(wsFromLdml.LanguageTag, Is.EqualTo("en-GB-x-test"));
 				Assert.That(wsFromLdml.WindowsLcid, Is.EqualTo("1036"));
 				Assert.That(wsFromLdml.DefaultRegion, Is.EqualTo("US"));
-				int index = IetfLanguageTagHelper.GetIndexOfFirstNonCommonPrivateUseVariant(wsFromLdml.Variants);
+				int index = IetfLanguageTag.GetIndexOfFirstNonCommonPrivateUseVariant(wsFromLdml.Variants);
 				Assert.That(index, Is.EqualTo(0));
 				Assert.That(wsFromLdml.Variants[index].Name, Is.EqualTo("test0"));
 			}
@@ -820,7 +820,7 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			{
 				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
-				wsToLdml.DefaultCollation = new SystemCollationDefinition { IetfLanguageTag = "en-US" };
+				wsToLdml.DefaultCollation = new SystemCollationDefinition { LanguageTag = "en-US" };
 				wsToLdml.Collations.Add(new IcuRulesCollationDefinition("standard"));
 				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
@@ -841,7 +841,7 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			{
 				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
-				wsToLdml.DefaultCollation = new SystemCollationDefinition {IetfLanguageTag = "en-US"};
+				wsToLdml.DefaultCollation = new SystemCollationDefinition {LanguageTag = "en-US"};
 				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
@@ -932,7 +932,7 @@ namespace SIL.WritingSystems.Tests
 				WriteCurrentVersionLdml("en", "Zxxx", "US", "1901-x-audio", file);
 				var ws = new WritingSystemDefinition();
 				new LdmlDataMapper(new TestWritingSystemFactory()).Read(file.Path, ws);
-				Assert.That(ws.IetfLanguageTag, Is.EqualTo("en-Zxxx-US-1901-x-audio"));
+				Assert.That(ws.LanguageTag, Is.EqualTo("en-Zxxx-US-1901-x-audio"));
 			}
 		}
 
@@ -1023,7 +1023,7 @@ namespace SIL.WritingSystems.Tests
 		private static void WriteCurrentVersionLdml(string language, string script, string territory, string variant, TempFile file)
 		{
 			var ws = new WritingSystemDefinition();
-			ws.IetfLanguageTag = IetfLanguageTagHelper.CreateIetfLanguageTag(language, script, territory, variant);
+			ws.LanguageTag = IetfLanguageTag.Create(language, script, territory, variant);
 			new LdmlDataMapper(new TestWritingSystemFactory()).Write(file.Path, ws, null);
 		}
 
