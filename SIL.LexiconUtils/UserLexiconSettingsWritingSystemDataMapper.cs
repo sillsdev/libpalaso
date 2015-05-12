@@ -43,9 +43,9 @@ namespace SIL.LexiconUtils
 			XElement knownKeyboardsElem = wsElem.Element("KnownKeyboards");
 			if (knownKeyboardsElem != null)
 			{
-				foreach (var knownKeyboard in knownKeyboardsElem.Elements("KnownKeyboard"))
+				foreach (XElement knownKeyboard in knownKeyboardsElem.Elements("KnownKeyboard"))
 				{
-					var id = (string) knownKeyboard.Attribute("id");
+					var id = (string) knownKeyboard;
 					IKeyboardDefinition keyboard;
 					if (!Keyboard.Controller.TryGetKeyboard(id, out keyboard))
 						keyboard = Keyboard.Controller.CreateKeyboard(id, KeyboardFormat.Unknown, Enumerable.Empty<string>());
@@ -84,7 +84,7 @@ namespace SIL.LexiconUtils
 			if (ws.LocalKeyboard != null)
 				wsElem.Add(new XElement("LocalKeyboard", ws.LocalKeyboard.Id));
 			if (ws.KnownKeyboards.Count > 0)
-				wsElem.Add(new XElement("KnownKeyboards", ws.KnownKeyboards.Select(k => new XElement("KnownKeyboard", new XAttribute("id", k.Id)))));
+				wsElem.Add(new XElement("KnownKeyboards", ws.KnownKeyboards.Select(k => new XElement("KnownKeyboard", k.Id))));
 			if (ws.DefaultFont != null)
 				wsElem.Add(new XElement("DefaultFontName", ws.DefaultFont.Name));
 			if (ws.DefaultFontSize != 0)

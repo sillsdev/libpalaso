@@ -19,7 +19,7 @@ namespace SIL.LexiconUtils.Tests
     <WritingSystem id=""en-US"">
       <LocalKeyboard>en-US_English-IPA</LocalKeyboard>
       <KnownKeyboards>
-        <KnownKeyboard id=""en-US_English"" />
+        <KnownKeyboard>en-US_English</KnownKeyboard>
       </KnownKeyboards>
       <DefaultFontName>Times New Roman</DefaultFontName>
     </WritingSystem>
@@ -89,7 +89,7 @@ namespace SIL.LexiconUtils.Tests
     <WritingSystem id=""en-US"">
       <LocalKeyboard>en-US_English-IPA</LocalKeyboard>
       <KnownKeyboards>
-        <KnownKeyboard id=""en-US_English-IPA"" />
+        <KnownKeyboard>en-US_English-IPA</KnownKeyboard>
       </KnownKeyboards>
       <DefaultFontName>Times New Roman</DefaultFontName>
     </WritingSystem>
@@ -106,7 +106,7 @@ namespace SIL.LexiconUtils.Tests
     <WritingSystem id=""en-US"">
       <LocalKeyboard>en-US_English-IPA</LocalKeyboard>
       <KnownKeyboards>
-        <KnownKeyboard id=""en-US_English-IPA"" />
+        <KnownKeyboard>en-US_English-IPA</KnownKeyboard>
       </KnownKeyboards>
       <DefaultFontName>Times New Roman</DefaultFontName>
     </WritingSystem>
@@ -128,7 +128,7 @@ namespace SIL.LexiconUtils.Tests
     <WritingSystem id=""en-US"">
       <LocalKeyboard>en-US_English</LocalKeyboard>
       <KnownKeyboards>
-        <KnownKeyboard id=""en-US_English"" />
+        <KnownKeyboard>en-US_English</KnownKeyboard>
       </KnownKeyboards>
       <DefaultFontSize>12</DefaultFontSize>
       <IsGraphiteEnabled>false</IsGraphiteEnabled>
