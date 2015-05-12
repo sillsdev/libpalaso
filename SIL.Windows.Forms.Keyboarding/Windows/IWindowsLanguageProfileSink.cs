@@ -1,6 +1,7 @@
-﻿using SIL.Keyboarding;
+﻿#if !__MonoCS__
+using SIL.Keyboarding;
 
-namespace SIL.Windows.Forms.Keyboarding
+namespace SIL.Windows.Forms.Keyboarding.Windows
 {
 	/// <summary>
 	/// Events for switching keyboards
@@ -28,3 +29,4 @@ namespace SIL.Windows.Forms.Keyboarding
 		void OnInputLanguageChanged(IKeyboardDefinition previousKeyboard, IKeyboardDefinition newKeyboard);
 	}
 }
+#endif

@@ -241,7 +241,6 @@
   <ItemGroup>
     <Compile Include="IKeyboardAdaptor.cs" />
     <Compile Include="InputLanguageWrapper.cs" />
-    <Compile Include="IWindowsLanguageProfileSink.cs" />
     <Compile Include="KeyboardController.cs" />
     <Compile Include="KeyboardDescription.cs" />
     <Compile Include="NullKeyboardDescription.cs" />
@@ -264,6 +263,7 @@
     <Compile Include="Linux\XklEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegisterEventArgs.cs" />
+    <Compile Include="Windows\IWindowsLanguageProfileSink.cs" />
     <Compile Include="Windows\KeymanKeyboardAdaptor.cs" />
     <Compile Include="Windows\KeymanKeyboardDescription.cs" />
     <Compile Include="Windows\MsTsfInterfaces.cs" />
