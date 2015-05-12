@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 using SIL.Keyboarding;
 using SIL.WritingSystems;
+using SIL.WritingSystems.Migration;
 
 namespace SIL.Windows.Forms.WritingSystems.WSTree
 {
@@ -67,7 +69,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 	public class IpaSuggestion : WritingSystemSuggestion
 	{
 		/// <summary>
-		/// these are ordered in terms of perference, so the last one is just the fallback
+		/// these are ordered in terms of preference, so the last one is just the fallback
 		/// </summary>
 		private readonly string[] _fontsForIpa = { "arial unicode ms", "lucinda sans unicode", "doulous sil", FontFamily.GenericSansSerif.Name };
 
@@ -127,16 +129,44 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 	/// used to suggest languages not yet represented. Contrast with the other classes here,
 	/// which are use to suggest new writing systems based on already in-use languages
 	/// </summary>
-	public class LanguageSuggestion : WritingSystemSuggestion
+	public class LanguageSuggestion : IWritingSystemDefinitionSuggestion
 	{
-		public LanguageSuggestion(WritingSystemDefinition definition)
+		private readonly IWritingSystemFactory _wsFactory;
+
+		public LanguageSuggestion(string languageTag, string keyboardLayout, IWritingSystemFactory wsFactory)
 		{
-			TemplateDefinition = definition;
-			Label = string.Format(TemplateDefinition.ListLabel);
+			LanguageTag = languageTag;
+			KeyboardLayout = keyboardLayout;
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			IetfLanguageTag.TryGetSubtags(languageTag, out languageSubtag, out scriptSubtag, out regionSubtag,
+				out variantSubtags);
+
+			var s = new StringBuilder();
+			if (!string.IsNullOrEmpty(languageSubtag.Name))
+				s.Append(languageSubtag.Name);
+			if (!string.IsNullOrEmpty(scriptSubtag.Name) && (languageSubtag.ImplicitScriptCode != scriptSubtag.Code))
+				s.AppendFormat("-{0}", scriptSubtag.Name);
+			if (regionSubtag != null && !string.IsNullOrEmpty(regionSubtag.Name))
+				s.AppendFormat("-{0}", regionSubtag.Name);
+			Label = s.ToString();
+
+			_wsFactory = wsFactory;
 		}
-		public override WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()
+
+		public string LanguageTag { get; private set; }
+		public string KeyboardLayout { get; private set; }
+		public string Label { get; private set; }
+
+		public WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()
 		{
-			return TemplateDefinition;
+			WritingSystemDefinition ws = _wsFactory.Create(LanguageTag);
+			ws.Keyboard = KeyboardLayout;
+			ws.DefaultFontSize = 12;
+
+			return ws;
 		}
 	}
 }

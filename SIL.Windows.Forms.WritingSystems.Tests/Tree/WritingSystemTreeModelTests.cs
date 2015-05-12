@@ -6,6 +6,7 @@ using NUnit.Framework;
 using Palaso.TestUtilities;
 using SIL.Windows.Forms.WritingSystems.WSTree;
 using SIL.WritingSystems;
+using SIL.WritingSystems.Tests;
 
 namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 {
@@ -15,10 +16,12 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 		private class TestEnvironment : IDisposable
 		{
 			private readonly TemporaryFolder _folder = new TemporaryFolder("WritingSystemTreeModelTests");
+			private readonly TestWritingSystemFactory _testWritingSystemFactory;
 
 			public TestEnvironment()
 			{
-				var writingSystemRepository = LdmlInFolderWritingSystemRepository.Initialize(_folder.Path);
+				var writingSystemRepository = new TestLdmlInFolderWritingSystemRepository(_folder.Path);
+				_testWritingSystemFactory = new TestWritingSystemFactory();
 				MockSetupModel = new Mock<WritingSystemSetupModel>(writingSystemRepository);
 				SetDefinitionsInStore(new WritingSystemDefinition[] { });
 			}
@@ -28,7 +31,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 			public WritingSystemTreeModel CreateModel()
 			{
 				var model = new WritingSystemTreeModel(MockSetupModel.Object);
-				model.Suggestor = new WritingSystemSuggestor(MockSetupModel.Object.WritingSystemFactory)
+				model.Suggestor = new WritingSystemSuggestor(_testWritingSystemFactory)
 				{
 					SuggestIpa = false,
 					SuggestOther = false,
@@ -37,6 +40,11 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 					OtherKnownWritingSystems = null
 				};
 				return model;
+			}
+
+			public TestWritingSystemFactory TestWritingSystemFactory
+			{
+				get { return _testWritingSystemFactory; }
 			}
 
 			public void SetDefinitionsInStore(IEnumerable<WritingSystemDefinition> defs)
@@ -70,7 +78,10 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 			{
 				e.SetDefinitionsInStore(new WritingSystemDefinition[] {});
 				var model = e.CreateModel();
-				model.Suggestor.OtherKnownWritingSystems = new List<WritingSystemDefinition>(new[] {new WritingSystemDefinition("en")});
+				model.Suggestor.OtherKnownWritingSystems = new List<Tuple<string, string>>()
+				{
+					new Tuple<string, string>("en", string.Empty)
+				};
 				AssertTreeNodeLabels(model, "Add Language", "", "Other Languages", "+Add English");
 			}
 		}
@@ -85,9 +96,12 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 			{
 				var en = new WritingSystemDefinition("en");
 				var de = new WritingSystemDefinition("de");
-				var green = new WritingSystemDefinition("fr");
 				var model = e.CreateModel();
-				model.Suggestor.OtherKnownWritingSystems = new[] {de, green};
+				model.Suggestor.OtherKnownWritingSystems = new List<Tuple<string, string>>()
+				{
+					new Tuple<string, string>("de", string.Empty),
+					new Tuple<string, string>("fr", string.Empty)
+				};
 				e.SetDefinitionsInStore(new[] {en, de});
 				AssertTreeNodeLabels(
 					model,
@@ -104,7 +118,10 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 				var en = new WritingSystemDefinition("en");
 				var de = new WritingSystemDefinition("de");
 				var model = e.CreateModel();
-				model.Suggestor.OtherKnownWritingSystems = new[] {de};
+				model.Suggestor.OtherKnownWritingSystems = new List<Tuple<string, string>>()
+				{
+					new Tuple<string, string>("de", string.Empty)
+				};
 				e.SetDefinitionsInStore(new[] {en, de});
 				AssertTreeNodeLabels(model, "English", "German", "", "Add Language");
 			}
@@ -238,7 +255,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 		}
 
 		[Test] // ok
-		public void ClickAddPredifinedLanguage_AddNewCalledOnSetupModel()
+		public void ClickAddPredefinedLanguage_AddNewCalledOnSetupModel()
 		{
 			/* the tree would look like this:
 				Add Language
@@ -248,9 +265,16 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 
 			using (var e = new TestEnvironment())
 			{
-				var def = new WritingSystemDefinition("en");
+				var def = new WritingSystemDefinition("en")
+				{
+					DefaultFontSize = 12
+				};
+				e.TestWritingSystemFactory.WritingSystems.Add(def);
 				var model = e.CreateModel();
-				model.Suggestor.OtherKnownWritingSystems = new List<WritingSystemDefinition>(new[] {def});
+				model.Suggestor.OtherKnownWritingSystems = new List<Tuple<string, string>>()
+				{
+					new Tuple<string, string>("en", string.Empty)
+				};
 				var items = model.GetTreeItems();
 				e.MockSetupModel.Setup(m => m.AddPredefinedDefinition(def));
 

@@ -168,7 +168,9 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 		private void AddOtherLanguages(List<WritingSystemTreeItem> items)
 		{
 			var item = new WritingSystemTreeItem("Other Languages", null);
-			item.Children = new List<WritingSystemTreeItem>(from suggestion in Suggestor.GetOtherLanguageSuggestions(_setupModel.WritingSystemDefinitions)
+			item.Children = new List<WritingSystemTreeItem>(
+							from suggestion in Suggestor.GetOtherLanguageSuggestions(
+								_setupModel.WritingSystemDefinitions)
 							select (WritingSystemTreeItem) new WritingSystemCreationTreeItem(suggestion, OnClickAddCertainDefinition));
 			if(item.Children.Count()>0)
 				items.Add(item );

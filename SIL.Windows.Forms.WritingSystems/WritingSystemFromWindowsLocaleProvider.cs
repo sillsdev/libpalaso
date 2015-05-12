@@ -11,9 +11,9 @@ using SIL.WritingSystems.Migration;
 namespace SIL.Windows.Forms.WritingSystems
 {
 	/// <summary>
-	/// This class gets a writing system for each installed input language.
+	/// This class gets a combination of writing system label and keyboard layout for each installed input language.
 	/// </summary>
-	public class WritingSystemFromWindowsLocaleProvider : IEnumerable<WritingSystemDefinition>
+	public class WritingSystemFromWindowsLocaleProvider : IEnumerable<Tuple<string, string>>
 	{
 		private readonly IWritingSystemFactory _writingSystemFactory;
 
@@ -48,7 +48,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			return string.Empty;
 #else
 			//  http://jira.palaso.org/issues/browse/WS-34216 has KonKani, which is a "macro language", as causing a crash here, on computers
-			// with that locale installed (India). It dies when it looks like we're trying to make a new versionf of it, becuase the
+			// with that locale installed (India). It dies when it looks like we're trying to make a new version of it, because the
 			// CultureAndRegionModifiers flag here is "none". Someone in ChiangMai please review: should this be changed to "Replacement"
 			// to avoid this?  Do we need an
 			try
@@ -69,16 +69,16 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		#region Implementation of IEnumerable
 
-		public IEnumerator<WritingSystemDefinition> GetEnumerator()
+		public IEnumerator<Tuple<string, string>> GetEnumerator()
 		{
-			IEnumerable<WritingSystemDefinition> defs = GetLanguageAndKeyboardCombinations();
-			//now just return the unique ones (Works because no keyboard in the IETF language tag)
-			IEnumerable<WritingSystemDefinition> unique = defs.GroupBy(d => d.LanguageTag)
+			IEnumerable<Tuple<string, string>> combos = GetLanguageAndKeyboardCombinations();
+			//now just return the unique ones (Works because no keyboard in the language tag)
+			IEnumerable<Tuple<string, string>> unique = combos.GroupBy(c => c.Item1)
 				.Select(g => g.First());
 			return unique.GetEnumerator();
 		}
 
-		private IEnumerable<WritingSystemDefinition> GetLanguageAndKeyboardCombinations()
+		private IEnumerable<Tuple<string, string>> GetLanguageAndKeyboardCombinations()
 		{
 			foreach (InputLanguage language in InputLanguage.InstalledInputLanguages)
 			{
@@ -107,10 +107,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				var cleaner = new IetfLanguageTagCleaner(culture.TwoLetterISOLanguageName, "", region, "", "");
 				cleaner.Clean();
 
-				WritingSystemDefinition ws = _writingSystemFactory.Create(cleaner.GetCompleteTag());
-				ws.Keyboard = language.LayoutName;
-				ws.DefaultFontSize = 12;
-				yield return ws;
+				yield return Tuple.Create(cleaner.GetCompleteTag(), language.LayoutName);
 			}
 		}
 

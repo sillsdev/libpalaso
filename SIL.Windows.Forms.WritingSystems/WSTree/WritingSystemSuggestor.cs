@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SIL.WritingSystems;
@@ -19,12 +20,19 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 
 		public bool SuggestOther { get; set; }
 
-		public IEnumerable<WritingSystemDefinition> OtherKnownWritingSystems { get; set; }
+		public IEnumerable<Tuple<string, string>> OtherKnownWritingSystems { get; set; }
+
+		private readonly IWritingSystemFactory _writingSystemFactory;
 
 		public WritingSystemSuggestor(IWritingSystemFactory writingSystemFactory)
 		{
 			OtherKnownWritingSystems =
-				new WritingSystemFromWindowsLocaleProvider(writingSystemFactory).Union(new List<WritingSystemDefinition> {new WritingSystemDefinition("tpi")});
+				new WritingSystemFromWindowsLocaleProvider(writingSystemFactory).Union(new List<Tuple<string, string>>()
+			{
+				new Tuple<string, string>("tpi", string.Empty)
+			});
+
+			_writingSystemFactory = writingSystemFactory;
 			SuppressSuggestionsForMajorWorldLanguages = true;
 			SuggestIpa = true;
 			SuggestDialects = true;
@@ -76,10 +84,10 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 			if (OtherKnownWritingSystems != null)
 			{
 				WritingSystemDefinition[] wsArray = existingDefinitions.ToArray();
-				foreach (WritingSystemDefinition language in OtherKnownWritingSystems)
+				foreach (var tuple in OtherKnownWritingSystems)
 				{
-					if (wsArray.All(def => def.LanguageTag != language.LanguageTag))
-						yield return new LanguageSuggestion(language);
+					if (wsArray.All(def => def.LanguageTag != tuple.Item1))
+						yield return new LanguageSuggestion(tuple.Item1, tuple.Item2, _writingSystemFactory);
 				}
 			}
 		}
