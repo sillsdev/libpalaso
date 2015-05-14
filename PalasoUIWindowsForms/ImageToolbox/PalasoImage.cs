@@ -7,14 +7,14 @@ using System.IO;
 using Palaso.Code;
 using Palaso.IO;
 using Palaso.UI.WindowsForms.ClearShare;
-using System.Linq;
 
 namespace Palaso.UI.WindowsForms.ImageToolbox
 {
 	public class PalasoImage : IDisposable
-
 	{
 		private Metadata _metadata;
+
+		private string _tempFilePath;
 
 		public Metadata Metadata
 		{
@@ -216,7 +216,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			Metadata.Write(_pathForSavingMetadataChanges);
 		}
 
-		private static Image LoadImageWithoutLocking(string path)
+		private static Image LoadImageWithoutLocking(string path, out string tempPath)
 		{
 			/*          1) Naïve approach:  locks until the image is dispose of some day, which is counter-intuitive to me
 							  return Image.FromFile(path);
@@ -238,20 +238,23 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				var leakMe = TempFile.WithExtension(Path.GetExtension(path));
 				File.Delete(leakMe.Path);
 				File.Copy(path, leakMe.Path);
-				return Image.FromFile(leakMe.Path);
+				tempPath = leakMe.Path;
+				return Image.FromFile(leakMe.Path); ;
 			}
 		}
 
 
 		public static PalasoImage FromFile(string path)
 		{
+			string tempPath;
 			var i = new PalasoImage
 			{
-				Image = LoadImageWithoutLocking(path),
+				Image = LoadImageWithoutLocking(path, out tempPath),
 				FileName = Path.GetFileName(path),
 				_originalFilePath = path,
 				_pathForSavingMetadataChanges = path,
-				Metadata = Metadata.FromFile(path)
+				Metadata = Metadata.FromFile(path),
+				_tempFilePath = tempPath
 			};
 			return i;
 		}
@@ -347,6 +350,18 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				{
 					Image.Dispose();
 					Image = null;
+				}
+
+				if (!string.IsNullOrEmpty(_tempFilePath))
+				{
+					try
+					{
+						File.Delete(_tempFilePath);
+					}
+					catch (Exception e)
+					{
+						Debug.Fail("Not able to delete image temp file.", e.ToString());
+					}
 				}
 				Disposed = true;
 			}
