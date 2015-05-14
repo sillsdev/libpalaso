@@ -43,7 +43,7 @@ namespace SIL.WritingSystems
 
 		public abstract bool Validate(out string message);
 
-		public bool IsValid { get; set; }
+		public bool IsValid { get; protected internal set; }
 
 		protected void ResetCollator()
 		{
