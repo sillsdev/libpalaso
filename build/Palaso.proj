@@ -4,7 +4,7 @@
 		<RootDir Condition="'$(teamcity_build_checkoutDir)' != ''">$(teamcity_build_checkoutDir)</RootDir>
 		<BUILD_NUMBER Condition="'$(BUILD_NUMBER)'==''">1.2.3.4</BUILD_NUMBER>
 		<!-- Note, after some thought, we've decided this is the best place to keep the version number (not on TeamCity, not in the assemblies). -->
-		<Version>2.6</Version>
+		<Version>3.0</Version>
 	</PropertyGroup>
 
 	<UsingTask TaskName="StampAssemblies" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
