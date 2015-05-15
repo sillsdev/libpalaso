@@ -155,13 +155,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			// Determine if variantName is non-common private use before preserving it
 			if (!string.IsNullOrEmpty(variantName))
 			{
-				// Parse language tag to obtain variant subtags
-				string language, script, region, variants;
-				IetfLanguageTag.TryGetParts(migrationInfo.LanguageTagAfterMigration, out language, out script, out region,
-					out variants);
-				IEnumerable<VariantSubtag> variantSubtags;
-				IetfLanguageTag.TryGetVariantSubtags(variants, out variantSubtags);
-				int index = IetfLanguageTag.GetIndexOfFirstNonCommonPrivateUseVariant(variantSubtags);
+				int index = IetfLanguageTag.GetIndexOfFirstNonCommonPrivateUseVariant(IetfLanguageTag.GetVariantSubtags(migrationInfo.LanguageTagAfterMigration));
 				if (index > -1)
 					staging.VariantName = variantName;
 			}

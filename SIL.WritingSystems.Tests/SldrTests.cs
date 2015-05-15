@@ -85,7 +85,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				string filename;
 				const string ietfLanguageTag = "en-US";
-				Assert.That(Sldr.GetLdmlFile(environment.FilePath(), ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FileFromSldr));
+				Assert.That(Sldr.GetLdmlFile(environment.FilePath(), ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FromSldr));
 				AssertThatXmlIn.File(Path.Combine(environment.FilePath(), filename)).HasAtLeastOneMatchForXpath("/ldml[identity]", environment.NamespaceManager);
 				AssertThatXmlIn.File(Path.Combine(environment.FilePath(), filename)).HasAtLeastOneMatchForXpath("/ldml[localeDisplayNames]", environment.NamespaceManager);
 				AssertThatXmlIn.File(Path.Combine(environment.FilePath(), filename)).HasAtLeastOneMatchForXpath("/ldml[layout]", environment.NamespaceManager);
@@ -112,7 +112,7 @@ namespace SIL.WritingSystems.Tests
 				string filename;
 				const string ietfLanguageTag = "qaa";
 
-				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FileNotFound));
+				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.NotFound));
 			}
 		}
 
@@ -142,7 +142,7 @@ namespace SIL.WritingSystems.Tests
 				string filename = Path.Combine(Sldr.SldrCachePath, ietfLanguageTag + "-e2ccb575.ldml");
 				File.WriteAllText(filename, content);
 
-				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FileFromSldrCache));
+				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FromCache));
 				Assert.That(filename, Is.EqualTo(ietfLanguageTag + ".ldml"));
 			}
 		}
@@ -171,7 +171,7 @@ namespace SIL.WritingSystems.Tests
 				File.WriteAllText(filename, content);
 
 				Sldr.OfflineMode = true;
-				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FileFromSldrCache));
+				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FromCache));
 				string filePath = Path.Combine(environment.FilePath(), filename);
 				Assert.That(filename, Is.EqualTo(ietfLanguageTag + ".ldml"));
 				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='qaa']", environment.NamespaceManager);
@@ -192,7 +192,7 @@ namespace SIL.WritingSystems.Tests
 				string filename;
 				const string ietfLanguageTag = "en-GB";
 
-				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FileFromSldr));
+				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FromSldr));
 
 				string filePath = Path.Combine(environment.FilePath(), filename);
 				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']", environment.NamespaceManager);
@@ -214,7 +214,7 @@ namespace SIL.WritingSystems.Tests
 				string filename;
 				const string ietfLanguageTag = "en-GB";
 
-				Assert.That(Sldr.GetLdmlFile(Sldr.SldrCachePath, ietfLanguageTag, new[] {"characters"}, out filename), Is.EqualTo(SldrStatus.FileFromSldr));
+				Assert.That(Sldr.GetLdmlFile(Sldr.SldrCachePath, ietfLanguageTag, new[] {"characters"}, out filename), Is.EqualTo(SldrStatus.FromSldr));
 
 				string filePath = Path.Combine(Sldr.SldrCachePath, filename);
 				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']", environment.NamespaceManager);
@@ -236,7 +236,7 @@ namespace SIL.WritingSystems.Tests
 				string filename;
 				const string ietfLanguageTag = "en-Latn";
 				const string redirectedIetfLanguageTag = "en-US";
-				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FileFromSldr));
+				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FromSldr));
 				Assert.That(filename, Is.EqualTo(redirectedIetfLanguageTag + ".ldml"));
 				string filePath = Path.Combine(Sldr.SldrCachePath, filename);
 				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/characters", environment.NamespaceManager);
@@ -258,7 +258,7 @@ namespace SIL.WritingSystems.Tests
 				File.WriteAllText(Path.Combine(Sldr.SldrCachePath, ietfLanguageTag + ".ldml"), content);
 
 				string filename;
-				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FileFromSldr));
+				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FromSldr));
 				string filePath = Path.Combine(environment.FilePath(), filename);
 				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[@windowsLCID='12345']", environment.NamespaceManager);
 			}

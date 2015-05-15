@@ -26,11 +26,11 @@ namespace SIL.WritingSystems.Tests
 
 				filename = id + ".ldml";
 				File.WriteAllText(Path.Combine(path, filename), contents);
-				return SldrStatus.FileFromSldr;
+				return SldrStatus.FromSldr;
 			}
 
 			filename = null;
-			return SldrStatus.FileNotFound;
+			return SldrStatus.NotFound;
 		}
 	}
 }

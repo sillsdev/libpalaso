@@ -3,17 +3,9 @@ using SIL.WritingSystems;
 
 namespace SIL.Windows.Forms.WritingSystems
 {
-	public class LookupIsoCodeModel
+	public class LookupLanguageModel
 	{
-		private EthnologueLookup _ethnologueLookup;
-
-		/// <summary>Force the dialog to return 3 letter iso codes even if a 2 letter code is available</summary>
-		public bool Force3LetterCodes { get; set; }
-
-		public LookupIsoCodeModel()
-		{
-			Force3LetterCodes = false;
-		}
+		private LanguageLookup _languageLookup;
 
 		/// <summary>
 		/// Maybe this doesn't belong here... using it in Bloom which is more concerned with language than writing system
@@ -30,21 +22,21 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		public IEnumerable<LanguageInfo> GetMatchingLanguages(string typedText)
 		{
-			if (_ethnologueLookup == null)
-				_ethnologueLookup = new EthnologueLookup { Force3LetterCodes = Force3LetterCodes };
+			if (_languageLookup == null)
+				_languageLookup = new LanguageLookup();
 
-			return _ethnologueLookup.SuggestLanguages(typedText);
+			return _languageLookup.SuggestLanguages(typedText);
 		}
 
 		public LanguageInfo LanguageInfo;
 
-		public string IsoCode
+		public string LanguageTag
 		{
 			get
 			{
 				if (LanguageInfo == null)
 					return string.Empty;
-				return LanguageInfo.Code;
+				return LanguageInfo.LanguageTag;
 			}
 		}
 	}

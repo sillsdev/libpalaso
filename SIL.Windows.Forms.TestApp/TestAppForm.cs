@@ -2,7 +2,6 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -18,7 +17,6 @@ using SIL.Windows.Forms.ReleaseNotes;
 using SIL.Windows.Forms.SettingProtection;
 using SIL.Windows.Forms.WritingSystems;
 using SIL.WritingSystems;
-using SIL.WritingSystems.Migration;
 
 namespace SIL.Windows.Forms.TestApp
 {
@@ -62,7 +60,7 @@ namespace SIL.Windows.Forms.TestApp
 
 		private void OnLookupISOCodeDialogClicked(object sender, EventArgs e)
 		{
-			using (var dialog = new LookupIsoCodeDialog())
+			using (var dialog = new LookupLanguageDialog())
 				dialog.ShowDialog();
 		}
 

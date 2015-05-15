@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using SIL.Windows.Forms.Miscellaneous;
 using SIL.Windows.Forms.WritingSystems.WSTree;
 using SIL.WritingSystems;
 
@@ -127,19 +128,23 @@ namespace SIL.Windows.Forms.WritingSystems
 			}
 		}
 
-		private static WritingSystemDefinition ShowCreateNewWritingSystemDialog()
+		private WritingSystemDefinition ShowCreateNewWritingSystemDialog()
 		{
-			using (var dlg = new LookupIsoCodeDialog {ShowDesiredLanguageNameField = false})
+			using (var dlg = new LookupLanguageDialog {ShowDesiredLanguageNameField = false})
 			{
 				dlg.ShowDialog();
 				if (dlg.DialogResult != DialogResult.OK)
 					return null;
-				var variant = String.Empty;
-				if (dlg.SelectedLanguage.Code == WellKnownSubtags.UnlistedLanguage)
+
+				WaitCursor.Show();
+				try
 				{
-					variant = "x-" + "Unlisted";
+					return _model.WritingSystemFactory.Create(dlg.SelectedLanguage.LanguageTag);
 				}
-				return new WritingSystemDefinition(dlg.SelectedLanguage.Code, string.Empty, string.Empty, variant, dlg.SelectedLanguage.Code, false);
+				finally
+				{
+					WaitCursor.Hide();
+				}
 			}
 		}
 

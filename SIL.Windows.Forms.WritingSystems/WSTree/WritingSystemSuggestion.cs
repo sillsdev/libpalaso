@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using SIL.Keyboarding;
+using SIL.Windows.Forms.Miscellaneous;
 using SIL.WritingSystems;
-using SIL.WritingSystems.Migration;
 
 namespace SIL.Windows.Forms.WritingSystems.WSTree
 {
@@ -162,11 +162,19 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 
 		public WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()
 		{
-			WritingSystemDefinition ws = _wsFactory.Create(LanguageTag);
-			ws.Keyboard = KeyboardLayout;
-			ws.DefaultFontSize = 12;
+			WaitCursor.Show();
+			try
+			{
+				WritingSystemDefinition ws = _wsFactory.Create(LanguageTag);
+				ws.Keyboard = KeyboardLayout;
+				ws.DefaultFontSize = 12;
 
-			return ws;
+				return ws;
+			}
+			finally
+			{
+				WaitCursor.Hide();
+			}
 		}
 	}
 }

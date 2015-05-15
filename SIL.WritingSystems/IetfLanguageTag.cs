@@ -770,7 +770,7 @@ namespace SIL.WritingSystems
 		/// <param name="language">The language part.</param>
 		/// <param name="script">The script part.</param>
 		/// <param name="region">The region part.</param>
-		/// <param name="variant">The variant part.</param>
+		/// <param name="variant">The variant and private-use part.</param>
 		/// <returns></returns>
 		public static bool TryGetParts(string langTag, out string language, out string script, out string region, out string variant)
 		{
@@ -779,6 +779,20 @@ namespace SIL.WritingSystems
 
 			langTag = ConvertToCanonicalForm(langTag);
 
+			if (!TryParse(langTag, out language, out script, out region, out variant))
+				return false;
+
+			if (!string.IsNullOrEmpty(language) && string.IsNullOrEmpty(script))
+			{
+				LanguageSubtag langSubtag;
+				if (StandardSubtags.RegisteredLanguages.TryGet(language, out langSubtag) && !string.IsNullOrEmpty(langSubtag.ImplicitScriptCode))
+					script = langSubtag.ImplicitScriptCode;
+			}
+			return true;
+		}
+
+		private static bool TryParse(string langTag, out string language, out string script, out string region, out string variant)
+		{
 			language = null;
 			script = null;
 			region = null;
@@ -806,12 +820,6 @@ namespace SIL.WritingSystems
 				}
 				script = scriptGroup.Value;
 			}
-			else if (!string.IsNullOrEmpty(language))
-			{
-				LanguageSubtag langSubtag;
-				if (StandardSubtags.RegisteredLanguages.TryGet(language, out langSubtag) && !string.IsNullOrEmpty(langSubtag.ImplicitScriptCode))
-					script = langSubtag.ImplicitScriptCode;
-			}
 
 			Group regionGroup = match.Groups["region"];
 			if (regionGroup.Success)
@@ -829,7 +837,7 @@ namespace SIL.WritingSystems
 			Group variantGroup = match.Groups["variant"];
 			if (variantGroup.Success)
 			{
-				foreach (string variantCode in variantGroup.Value.Split(new[] {'-'}, StringSplitOptions.RemoveEmptyEntries))
+				foreach (string variantCode in variantGroup.Value.Split(new[] { '-' }, StringSplitOptions.RemoveEmptyEntries))
 				{
 					if (variants.Contains(variantCode) || !StandardSubtags.IsValidRegisteredVariantCode(variantCode))
 					{
@@ -846,7 +854,7 @@ namespace SIL.WritingSystems
 			Group privateUseGroup = match.Groups["privateuse"];
 			if (privateUseGroup.Success)
 			{
-				foreach (string privateUseCode in privateUseGroup.Value.Split(new[] {'-'}, StringSplitOptions.RemoveEmptyEntries).Skip(1))
+				foreach (string privateUseCode in privateUseGroup.Value.Split(new[] { '-' }, StringSplitOptions.RemoveEmptyEntries).Skip(1))
 				{
 					if (variants.Contains(privateUseCode) || privateUseCode.Equals("x", StringComparison.InvariantCultureIgnoreCase) || !PrivateUsePattern.IsMatch(privateUseCode))
 					{
@@ -872,7 +880,7 @@ namespace SIL.WritingSystems
 		/// <param name="languageSubtag">The language subtag.</param>
 		/// <param name="scriptSubtag">The script subtag.</param>
 		/// <param name="regionSubtag">The region subtag.</param>
-		/// <param name="variantSubtags">The variant subtag.</param>
+		/// <param name="variantSubtags">The variant and private-use subtags.</param>
 		/// <returns></returns>
 		public static bool TryGetSubtags(string langTag, out LanguageSubtag languageSubtag, out ScriptSubtag scriptSubtag,
 			out RegionSubtag regionSubtag, out IEnumerable<VariantSubtag> variantSubtags)
@@ -1002,6 +1010,159 @@ namespace SIL.WritingSystems
 			}
 			variantSubtags = variantSubtagsList;
 			return true;
+		}
+
+		/// <summary>
+		/// Determines whether the script of the specified language tag is implied.
+		/// </summary>
+		public static bool IsScriptImplied(string langTag)
+		{
+			string language, script, region, variant;
+			if (!TryParse(langTag, out language, out script, out region, out variant))
+				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+
+			if (string.IsNullOrEmpty(script))
+			{
+				if (!string.IsNullOrEmpty(language))
+				{
+					LanguageSubtag langSubtag;
+					if (StandardSubtags.RegisteredLanguages.TryGet(language, out langSubtag) && !string.IsNullOrEmpty(langSubtag.ImplicitScriptCode))
+						return true;
+				}
+
+				string canonicalLangTag = ConvertToCanonicalForm(langTag);
+				if (canonicalLangTag != langTag)
+				{
+					string canonicalLanguage, canonicalScript, canonicalRegion, canonicalVariant;
+					TryParse(canonicalLangTag, out canonicalLanguage, out canonicalScript, out canonicalRegion, out canonicalVariant);
+					if (!string.IsNullOrEmpty(canonicalScript))
+						return true;
+				}
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Determines whether the region of the specified language tag is implied.
+		/// </summary>
+		public static bool IsRegionImplied(string langTag)
+		{
+			string language, script, region, variant;
+			if (!TryParse(langTag, out language, out script, out region, out variant))
+				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+
+			if (string.IsNullOrEmpty(region))
+			{
+				string canonicalLangTag = ConvertToCanonicalForm(langTag);
+				if (canonicalLangTag != langTag)
+				{
+					string canonicalLanguage, canonicalScript, canonicalRegion, canonicalVariant;
+					TryParse(canonicalLangTag, out canonicalLanguage, out canonicalScript, out canonicalRegion, out canonicalVariant);
+					if (!string.IsNullOrEmpty(canonicalRegion))
+						return true;
+				}
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Gets the language subtag of the specified language tag.
+		/// </summary>
+		public static LanguageSubtag GetLanguageSubtag(string langTag)
+		{
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			if (!TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
+				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+			return languageSubtag;
+		}
+
+		/// <summary>
+		/// Gets the script subtag of the specified language tag.
+		/// </summary>
+		public static ScriptSubtag GetScriptSubtag(string langTag)
+		{
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			if (!TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
+				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+			return scriptSubtag;
+		}
+
+		/// <summary>
+		/// Gets the region subtag of the specified language tag.
+		/// </summary>
+		public static RegionSubtag GetRegionSubtag(string langTag)
+		{
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			if (!TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
+				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+			return regionSubtag;
+		}
+
+		/// <summary>
+		/// Gets the variant and private-use subtags of the specified language tag.
+		/// </summary>
+		public static IEnumerable<VariantSubtag> GetVariantSubtags(string langTag)
+		{
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			if (!TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
+				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+			return variantSubtags;
+		}
+
+		/// <summary>
+		/// Gets the language part of the specified language tag.
+		/// </summary>
+		public static string GetLanguagePart(string langTag)
+		{
+			string language, script, region, variant;
+			if (!TryGetParts(langTag, out language, out script, out region, out variant))
+				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+			return language;
+		}
+
+		/// <summary>
+		/// Gets the script part of the specified language tag.
+		/// </summary>
+		public static string GetScriptPart(string langTag)
+		{
+			string language, script, region, variant;
+			if (!TryGetParts(langTag, out language, out script, out region, out variant))
+				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+			return script;
+		}
+
+		/// <summary>
+		/// Gets the region part of the specified language tag.
+		/// </summary>
+		public static string GetRegionPart(string langTag)
+		{
+			string language, script, region, variant;
+			if (!TryGetParts(langTag, out language, out script, out region, out variant))
+				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+			return region;
+		}
+
+		/// <summary>
+		/// Gets the variant and private-use part of the specified language tag.
+		/// </summary>
+		public static string GetVariantPart(string langTag)
+		{
+			string language, script, region, variant;
+			if (!TryGetParts(langTag, out language, out script, out region, out variant))
+				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
+			return variant;
 		}
 
 		/// <summary>

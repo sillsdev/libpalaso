@@ -216,7 +216,7 @@
     <Compile Include="SimpleRulesCollationDefinitionCloneableTests.cs" />
     <Compile Include="SimpleCollationRulesParserTests.cs" />
     <Compile Include="SldrTests.cs" />
-    <Compile Include="EthnologueLookupTests.cs" />
+    <Compile Include="LanguageLookupTests.cs" />
     <Compile Include="FontDefinitionCloneableTests.cs" />
     <Compile Include="GlobalWritingSystemRepositoryTests.cs" />
     <Compile Include="SortingTests.cs" />

@@ -31,8 +31,8 @@ namespace SIL.WritingSystems
 			string filename;
 			switch (GetLdmlFromSldr(Sldr.SldrCachePath, ietfLanguageTag, out filename))
 			{
-				case SldrStatus.FileFromSldr:
-				case SldrStatus.FileFromSldrCache:
+				case SldrStatus.FromSldr:
+				case SldrStatus.FromCache:
 					templatePath = Path.Combine(Sldr.SldrCachePath, filename);
 					break;
 

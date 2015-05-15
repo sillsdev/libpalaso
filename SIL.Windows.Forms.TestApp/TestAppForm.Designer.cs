@@ -46,15 +46,15 @@ namespace SIL.Windows.Forms.TestApp
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			SuperToolTipInfoWrapper superToolTipInfoWrapper1 = new SuperToolTipInfoWrapper();
-			SuperToolTipInfo superToolTipInfo1 = new SuperToolTipInfo();
+			SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper superToolTipInfoWrapper1 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfoWrapper();
+			SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo superToolTipInfo1 = new SIL.Windows.Forms.SuperToolTip.SuperToolTipInfo();
 			this.btnFolderBrowserControl = new System.Windows.Forms.Button();
 			this.btnLookupISOCodeDialog = new System.Windows.Forms.Button();
 			this.btnWritingSystemSetupDialog = new System.Windows.Forms.Button();
 			this.btnArtOfReading = new System.Windows.Forms.Button();
 			this.btnSilAboutBox = new System.Windows.Forms.Button();
 			this.btnShowReleaseNotes = new System.Windows.Forms.Button();
-			this.superToolTip1 = new SuperToolTip.SuperToolTip(this.components);
+			this.superToolTip1 = new SIL.Windows.Forms.SuperToolTip.SuperToolTip(this.components);
 			this.label1 = new System.Windows.Forms.Label();
 			this.btnMetaDataEditor = new System.Windows.Forms.Button();
 			this.btnSelectFile = new System.Windows.Forms.Button();
@@ -78,7 +78,7 @@ namespace SIL.Windows.Forms.TestApp
 			this.btnLookupISOCodeDialog.Name = "btnLookupISOCodeDialog";
 			this.btnLookupISOCodeDialog.Size = new System.Drawing.Size(157, 23);
 			this.btnLookupISOCodeDialog.TabIndex = 0;
-			this.btnLookupISOCodeDialog.Text = "LookupISOCodeDialog";
+			this.btnLookupISOCodeDialog.Text = "LookupLanguageDialog";
 			this.btnLookupISOCodeDialog.UseVisualStyleBackColor = true;
 			this.btnLookupISOCodeDialog.Click += new System.EventHandler(this.OnLookupISOCodeDialogClicked);
 			// 

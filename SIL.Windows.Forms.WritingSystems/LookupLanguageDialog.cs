@@ -4,19 +4,12 @@ using SIL.WritingSystems;
 
 namespace SIL.Windows.Forms.WritingSystems
 {
-	public partial class LookupIsoCodeDialog : Form
+	public partial class LookupLanguageDialog : Form
 	{
-		public LookupIsoCodeDialog()
+		public LookupLanguageDialog()
 		{
 			InitializeComponent();
 			ShowDesiredLanguageNameField = true;
-		}
-
-		/// <summary>Force the dialog to return 3 letter iso codes even if a 2 letter code is available</summary>
-		public bool Force3LetterCodes
-		{
-			get { return _lookupISOControl.Force3LetterCodes; }
-			set { _lookupISOControl.Force3LetterCodes = value; }
 		}
 
 		/// <summary>
@@ -24,7 +17,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		/// </summary>
 		public string DesiredLanguageName
 		{
-			get { return _lookupISOControl.DesiredLanguageName; }
+			get { return _lookupLanguageControl.DesiredLanguageName; }
 		}
 
 		/// <summary>
@@ -33,12 +26,12 @@ namespace SIL.Windows.Forms.WritingSystems
 		/// </summary>
 		public bool ShowDesiredLanguageNameField
 		{
-			set { _lookupISOControl.ShowDesiredLanguageNameField = value; }
+			set { _lookupLanguageControl.ShowDesiredLanguageNameField = value; }
 		}
 
 		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
 		{
-			_lookupISOControl.StopTimer();
+			_lookupLanguageControl.StopTimer();
 			base.OnClosing(e);
 		}
 
@@ -61,10 +54,10 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		public LanguageInfo SelectedLanguage
 		{
-			set { _lookupISOControl.LanguageInfo = value; }
+			set { _lookupLanguageControl.LanguageInfo = value; }
 			get
 			{
-				return _lookupISOControl.LanguageInfo;
+				return _lookupLanguageControl.LanguageInfo;
 			}
 		}
 
@@ -76,7 +69,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		private void _lookupISOControl_Changed(object sender, EventArgs e)
 		{
-			_okButton.Enabled = _lookupISOControl.HaveSufficientInformation;
+			_okButton.Enabled = _lookupLanguageControl.HaveSufficientInformation;
 		}
 
 		private void _cancelButton_Click(object sender, EventArgs e)

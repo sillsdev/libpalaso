@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using System;
@@ -15,21 +16,21 @@ namespace SIL.WritingSystems
 	public enum SldrStatus
 	{
 		/// <summary>
-		/// LDML file not found in the SLDR or SLDR cache
+		/// Data not found in the SLDR
 		/// </summary>
-		FileNotFound,
+		NotFound,
 		/// <summary>
-		/// Unable to connect to SLDR and LDML file not found in SLDR cache
+		/// Unable to connect to SLDR and data not found in SLDR cache
 		/// </summary>
 		UnableToConnectToSldr,
 		/// <summary>
-		/// LDML file from SLDR
+		/// Data retrieved from SLDR
 		/// </summary>
-		FileFromSldr,
+		FromSldr,
 		/// <summary>
-		/// LDML file not found in SLDR, but in SLDR cache
+		/// Unable to connect to SLDR, but data retrieved from SLDR cache
 		/// </summary>
-		FileFromSldrCache
+		FromCache
 	};
 
 	public static class Sldr
@@ -89,7 +90,7 @@ namespace SIL.WritingSystems
 			languageTag = IetfLanguageTag.Normalize(languageTag, IetfLanguageTagNormalizationForm.Canonical);
 			string[] topLevelElementsArray = topLevelElements.ToArray();
 
-			var status = SldrStatus.FileNotFound;
+			var status = SldrStatus.NotFound;
 			Directory.CreateDirectory(SldrCachePath);
 			string sldrCacheFilePath;
 			bool redirected;
@@ -141,7 +142,7 @@ namespace SIL.WritingSystems
 						if (webResponse.StatusCode == HttpStatusCode.NotModified)
 						{
 							// Report status that file is the most current from SLDR
-							status = SldrStatus.FileFromSldr;
+							status = SldrStatus.FromSldr;
 							redirected = false;
 						}
 						else if (webResponse.StatusCode == HttpStatusCode.MovedPermanently)
@@ -166,7 +167,7 @@ namespace SIL.WritingSystems
 								}
 							}
 
-							status = SldrStatus.FileFromSldr;
+							status = SldrStatus.FromSldr;
 							sldrCacheFilePath = MoveTmpToCache(tempFilePath, uid);
 							redirected = false;
 						}
@@ -177,7 +178,7 @@ namespace SIL.WritingSystems
 					// Return from 404 error
 					var errorResponse = (HttpWebResponse)we.Response;
 					if ((we.Status == WebExceptionStatus.ProtocolError) && (errorResponse.StatusCode == HttpStatusCode.NotFound))
-						return SldrStatus.FileNotFound;
+						return SldrStatus.NotFound;
 
 					string sldrCacheFilename;
 					// Download failed so check SLDR cache
@@ -187,7 +188,7 @@ namespace SIL.WritingSystems
 						sldrCacheFilename = string.Format("{0}.{1}", languageTag, LdmlExtension);
 					sldrCacheFilePath = Path.Combine(SldrCachePath, sldrCacheFilename);
 					if (File.Exists(sldrCacheFilePath))
-						status = SldrStatus.FileFromSldrCache;
+						status = SldrStatus.FromCache;
 					else
 						return SldrStatus.UnableToConnectToSldr;
 					redirected = false;
@@ -218,6 +219,50 @@ namespace SIL.WritingSystems
 		public static SldrStatus GetLdmlFile(string destinationPath, string languageTag, out string filename)
 		{
 			return GetLdmlFile(destinationPath, languageTag, Enumerable.Empty<string>(), out filename);
+		}
+
+		/// <summary>
+		/// Gets the language tags of the available LDML files in the SLDR.
+		/// </summary>
+		public static SldrStatus GetAvailableLanguageTags(out IEnumerable<string> langTags)
+		{
+			string[] allTags = LanguageRegistryResources.alltags.Replace("\r\n", "\n").Split(new[] {"\n"}, StringSplitOptions.RemoveEmptyEntries);
+			var tags = new HashSet<string>();
+			foreach (string line in allTags)
+			{
+				var tag = new StringBuilder();
+				bool available = false;
+				foreach (char ch in line)
+				{
+					switch (ch)
+					{
+						case '*':
+							available = true;
+							break;
+
+						case '|':
+						case '=':
+						case '>':
+							if (available)
+								tags.Add(tag.ToString());
+							tag = new StringBuilder();
+							available = false;
+							break;
+
+						case ' ':
+							break;
+
+						default:
+							tag.Append(ch);
+							break;
+					}
+				}
+				if (available)
+					tags.Add(tag.ToString());
+			}
+
+			langTags = tags;
+			return SldrStatus.FromCache;
 		}
 
 		/// <summary>

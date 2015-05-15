@@ -325,7 +325,7 @@ namespace SIL.WritingSystems
 				ReadTopLevelSpecialElement(specialElem, ws);
 
 			// Validate collations after all of them have been read in (for self-referencing imports)
-			foreach (var cd in ws.Collations)
+			foreach (CollationDefinition cd in ws.Collations)
 			{
 				string message;
 				cd.Validate(out message);
@@ -339,8 +339,8 @@ namespace SIL.WritingSystems
 			// Flag invalid versions (0-2 inclusive) from reading legacy LDML files
 			// We're intentionally not using WritingSystemLDmlVersionGetter and the
 			// cheeck for Flex7V0Compatible because the migrator will have handled that.
-			if (!string.IsNullOrEmpty((string)specialElem.Attribute(XNamespace.Xmlns + "fw")) ||
-				!string.IsNullOrEmpty((string)specialElem.Attribute(XNamespace.Xmlns + "palaso")))
+			if (!string.IsNullOrEmpty((string) specialElem.Attribute(XNamespace.Xmlns + "fw")) ||
+				!string.IsNullOrEmpty((string) specialElem.Attribute(XNamespace.Xmlns + "palaso")))
 			{
 				string version = "0";
 				// Palaso namespace

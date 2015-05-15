@@ -61,44 +61,53 @@ namespace SIL.WritingSystems {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to *aa = aa-Latn | *aa-ET = aa-Latn-ET
+        ///*aa-DJ = aa-Latn-DJ
+        ///*aa-ER = aa-Latn-ER
+        ///*aai-Latn
+        ///*aak-Latn
+        ///*aau-Latn
+        ///ab = ab-Cyrl
+        ///ab-GE = ab-Cyrl-GE
+        ///ab-TR = ab-Cyrl-TR
+        ///*abi-Latn
+        ///*abq-Latn
+        ///abr-GH
+        ///*abt-Latn
+        ///*aby-Latn
+        ///*acd-Latn
+        ///ace-Latn = ace
+        ///ace-Latn-ID = ace-ID
+        ///*ada-Latn
+        ///*ade-Latn
+        ///*adj-Latn
+        ///ady-Cyrl = ady
+        ///ady-Cyrl-RU = ady-RU
+        ///ady-Cyrl-TR = ady-TR
+        ///*adz-Latn
+        ///*aey-Latn
+        ///*af = af-BW = af-Latn-BW
+        ///*af = af-Latn | *af-ZA = af-Latn-ZA
+        ///*af-NA = af-Latn-NA
+        ///*agc-Latn
+        ///*agd-Latn
+        ///*agg-Latn
+        ///*agm-Latn
+        ///*a [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string alltags {
+            get {
+                return ResourceManager.GetString("alltags", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to zh-Hans-CN	zh-CN
         ///zh-Hant-TW	zh-TW.
         /// </summary>
         internal static string CanonicalToSilCompatible {
             get {
                 return ResourceManager.GetString("CanonicalToSilCompatible", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CountryID	Name	Area
-        ///AD	Andorra	Europe
-        ///AE	United Arab Emirates	Asia
-        ///AF	Afghanistan	Asia
-        ///AG	Antigua and Barbuda	Americas
-        ///AI	Anguilla	Americas
-        ///AL	Albania	Europe
-        ///AM	Armenia	Asia
-        ///AO	Angola	Africa
-        ///AR	Argentina	Americas
-        ///AS	American Samoa	Pacific
-        ///AT	Austria	Europe
-        ///AU	Australia	Pacific
-        ///AW	Aruba	Americas
-        ///AZ	Azerbaijan	Asia
-        ///BA	Bosnia and Herzegovina	Europe
-        ///BB	Barbados	Americas
-        ///BD	Bangladesh	Asia
-        ///BE	Belgium	Europe
-        ///BF	Burkina Faso	Africa
-        ///BG	Bulgaria	Europe
-        ///BH	Bahrain	Asia
-        ///BI	Burundi	Africa
-        ///BJ	Beni [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string CountryCodes {
-            get {
-                return ResourceManager.GetString("CountryCodes", resourceCulture);
             }
         }
         

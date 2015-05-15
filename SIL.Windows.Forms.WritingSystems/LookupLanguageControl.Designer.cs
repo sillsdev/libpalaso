@@ -1,6 +1,6 @@
 ﻿namespace SIL.Windows.Forms.WritingSystems
 {
-	partial class LookupIsoControl
+	partial class LookupLanguageControl
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -29,6 +29,7 @@
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LookupLanguageControl));
 			this._listView = new System.Windows.Forms.ListView();
 			this.PrimaryNameHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.codeHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -66,7 +67,6 @@
 			this._listView.View = System.Windows.Forms.View.Details;
 			this._listView.SelectedIndexChanged += new System.EventHandler(this.OnSelectedIndexChanged);
 			this._listView.DoubleClick += new System.EventHandler(this.listView1_DoubleClick);
-			this._listView.Sorting = System.Windows.Forms.SortOrder.Ascending;
 			// 
 			// PrimaryNameHeader
 			// 
@@ -82,7 +82,7 @@
 			this._L10NSharpExtender.SetLocalizationComment(this.codeHeader, null);
 			this._L10NSharpExtender.SetLocalizingId(this.codeHeader, "LanguageLookup.CodeHeader");
 			this.codeHeader.Text = "Code";
-			this.codeHeader.Width = 57;
+			this.codeHeader.Width = 72;
 			// 
 			// countryHeader
 			// 
@@ -117,7 +117,7 @@
 			// pictureBox1
 			// 
 			this.pictureBox1.BackColor = System.Drawing.Color.White;
-			this.pictureBox1.Image = global::SIL.Windows.Forms.Properties.Resources.search18x18;
+			this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
 			this._L10NSharpExtender.SetLocalizableToolTip(this.pictureBox1, null);
 			this._L10NSharpExtender.SetLocalizationComment(this.pictureBox1, null);
 			this._L10NSharpExtender.SetLocalizingId(this.pictureBox1, "LanguageLookup.LookupISOControl.pictureBox1");
@@ -186,7 +186,7 @@
 			this._L10NSharpExtender.LocalizationManagerId = "Palaso";
 			this._L10NSharpExtender.PrefixForNewItems = "LanguageLookup";
 			// 
-			// LookupISOControl
+			// LookupLanguageControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -200,7 +200,7 @@
 			this._L10NSharpExtender.SetLocalizableToolTip(this, null);
 			this._L10NSharpExtender.SetLocalizationComment(this, null);
 			this._L10NSharpExtender.SetLocalizingId(this, "LanguageLookup.LookupISOControl.LookupISOControl");
-			this.Name = "LookupIsoControl";
+			this.Name = "LookupLanguageControl";
 			this.Size = new System.Drawing.Size(758, 343);
 			this.Load += new System.EventHandler(this.OnLoad);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();

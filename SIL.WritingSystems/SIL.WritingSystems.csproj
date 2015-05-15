@@ -263,6 +263,7 @@
     <Compile Include="AddSortKeysToXml.cs" />
     <Compile Include="CharacterSetDefinition.cs" />
     <Compile Include="CollationDefinition.cs" />
+    <Compile Include="LanguageInfo.cs" />
     <Compile Include="Migration\IcuRulesParser.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\FlexConformPrivateUseRfc5646TagInterpreter.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\KeyboardDefinitionV1.cs" />
@@ -271,7 +272,7 @@
     <Compile Include="SystemCollationDefinition.cs" />
     <Compile Include="WritingSystemFactory.cs" />
     <Compile Include="WritingSystemFactoryBase.cs" />
-    <Compile Include="EthnologueLookup.cs" />
+    <Compile Include="LanguageLookup.cs" />
     <Compile Include="FontDefinition.cs" />
     <Compile Include="GlobalWritingSystemRepository.cs" />
     <Compile Include="IcuRulesCollationDefinition.cs" />
@@ -341,7 +342,7 @@
     <Compile Include="XElementExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\CountryCodes.txt" />
+    <Content Include="Resources\alltags.txt" />
     <Content Include="Resources\ianaSubtagRegistry.txt" />
     <Content Include="Resources\LanguageCodes.txt" />
     <Content Include="Resources\LanguageIndex.txt" />

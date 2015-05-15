@@ -579,9 +579,9 @@ namespace SIL.WritingSystems
 					}
 				}
 
-				if (_script != null && !IsVoice && (_language == null || _language.ImplicitScriptCode != _script.Code))
+				if (_script != null && !IsVoice && !IetfLanguageTag.IsScriptImplied(_languageTag))
 					details.AppendFormat("{0}-", _script.Code);
-				if (_region != null)
+				if (_region != null && !IetfLanguageTag.IsRegionImplied(_languageTag))
 					details.AppendFormat("{0}-", _region.Code);
 				foreach (VariantSubtag variantSubtag in _variants.Where(v => !v.IsPrivateUse))
 				{

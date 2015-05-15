@@ -236,18 +236,18 @@
     <Compile Include="DeleteInputSystemDialog.Designer.cs">
       <DependentUpon>DeleteInputSystemDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="LookupIsoCodeDialog.cs">
+    <Compile Include="LookupLanguageDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LookupIsoCodeDialog.Designer.cs">
-      <DependentUpon>LookupIsoCodeDialog.cs</DependentUpon>
+    <Compile Include="LookupLanguageDialog.Designer.cs">
+      <DependentUpon>LookupLanguageDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="LookupIsoCodeModel.cs" />
-    <Compile Include="LookupIsoControl.cs">
+    <Compile Include="LookupLanguageModel.cs" />
+    <Compile Include="LookupLanguageControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="LookupIsoControl.Designer.cs">
-      <DependentUpon>LookupIsoControl.cs</DependentUpon>
+    <Compile Include="LookupLanguageControl.Designer.cs">
+      <DependentUpon>LookupLanguageControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WritingSystemDefinitionVariantHelper.cs" />
@@ -397,11 +397,11 @@
     <EmbeddedResource Include="DeleteInputSystemDialog.resx">
       <DependentUpon>DeleteInputSystemDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LookupIsoCodeDialog.resx">
-      <DependentUpon>LookupIsoCodeDialog.cs</DependentUpon>
+    <EmbeddedResource Include="LookupLanguageDialog.resx">
+      <DependentUpon>LookupLanguageDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LookupIsoControl.resx">
-      <DependentUpon>LookupIsoControl.cs</DependentUpon>
+    <EmbeddedResource Include="LookupLanguageControl.resx">
+      <DependentUpon>LookupLanguageControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="WritingSystemSetupDialog.resx">
       <DependentUpon>WritingSystemSetupDialog.cs</DependentUpon>

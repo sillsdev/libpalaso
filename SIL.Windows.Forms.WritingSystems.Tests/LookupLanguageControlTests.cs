@@ -5,9 +5,9 @@ using NUnit.Framework;
 namespace SIL.Windows.Forms.WritingSystems.Tests
 {
 	[TestFixture]
-	public class LookupIsoControlTests
+	public class LookupLanguageControlTests
 	{
-		private LookupIsoControl _control;
+		private LookupLanguageControl _control;
 		private bool _ready;
 		private Form _testForm;
 
@@ -15,7 +15,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		public void Setup()
 		{
 			_ready = false;
-			_control = new LookupIsoControl();
+			_control = new LookupLanguageControl();
 			_control.ReadinessChanged += _control_ReadinessChanged;
 			_testForm = new Form();
 			_testForm.Controls.Add(_control);
@@ -39,16 +39,16 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		[Test]
 		public void LookupIsoControl_AkanSearchDoesNotCrash()
 		{
-			_control.ISOCode = "a";
+			_control.LanguageTag = "a";
 			_testForm.Show();
 			WaitForControl();
-			_control.ISOCode = "ak";
+			_control.LanguageTag = "ak";
 			WaitForControl();
-			Assert.AreEqual("akq", _control.ISOCode);
+			Assert.AreEqual("akq", _control.LanguageTag);
 			Assert.AreEqual("Ak", _control.DesiredLanguageName);
-			_control.ISOCode = "akq";
+			_control.LanguageTag = "akq";
 			WaitForControl();
-			Assert.AreEqual("akq", _control.ISOCode);
+			Assert.AreEqual("akq", _control.LanguageTag);
 			Assert.AreEqual("Ak", _control.DesiredLanguageName);
 		}
 	}
