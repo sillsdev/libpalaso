@@ -1,6 +1,6 @@
 ﻿using System.Xml.Linq;
 
-namespace SIL.LexiconUtils
+namespace SIL.Lexicon
 {
 	public interface ISettingsStore
 	{

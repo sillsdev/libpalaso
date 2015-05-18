@@ -7,8 +7,8 @@
     <ProjectGuid>{67C6AD7F-B1AC-46E1-90C7-E4E2B416AEBD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SIL.LexiconUtils.Tests</RootNamespace>
-    <AssemblyName>SIL.LexiconUtils.Tests</AssemblyName>
+    <RootNamespace>SIL.Lexicon.Tests</RootNamespace>
+    <AssemblyName>SIL.Lexicon.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
@@ -182,9 +182,9 @@
       <Project>{3527da1d-1e25-48be-a71e-9ebf7f9208d4}</Project>
       <Name>SIL.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SIL.LexiconUtils\SIL.LexiconUtils.csproj">
+    <ProjectReference Include="..\SIL.Lexicon\SIL.Lexicon.csproj">
       <Project>{fad20de2-d5bb-4d9d-aeef-61f02663105f}</Project>
-      <Name>SIL.LexiconUtils</Name>
+      <Name>SIL.Lexicon</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj">
       <Project>{52a93c63-08f4-4527-8e6e-ac2adeba6e2d}</Project>

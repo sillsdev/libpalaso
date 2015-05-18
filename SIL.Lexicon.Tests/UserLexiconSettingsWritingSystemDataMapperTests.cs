@@ -5,7 +5,7 @@ using NUnit.Framework;
 using SIL.Keyboarding;
 using SIL.WritingSystems;
 
-namespace SIL.LexiconUtils.Tests
+namespace SIL.Lexicon.Tests
 {
 	[TestFixture]
 	public class UserLexiconSettingsWritingSystemDataMapperTests

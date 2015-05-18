@@ -1,7 +1,7 @@
 ﻿using System.Configuration;
 using System.Xml.Linq;
 
-namespace SIL.LexiconUtils
+namespace SIL.Lexicon
 {
 	public class ApplicationSettingsStore : ISettingsStore
 	{

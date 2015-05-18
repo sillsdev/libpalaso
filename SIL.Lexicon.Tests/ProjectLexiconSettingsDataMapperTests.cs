@@ -2,7 +2,7 @@
 using System.Xml.Linq;
 using NUnit.Framework;
 
-namespace SIL.LexiconUtils.Tests
+namespace SIL.Lexicon.Tests
 {
 	[TestFixture]
 	public class ProjectLexiconSettingsDataMapperTests

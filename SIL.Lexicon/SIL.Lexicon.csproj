@@ -7,8 +7,8 @@
     <ProjectGuid>{FAD20DE2-D5BB-4D9D-AEEF-61F02663105F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SIL.LexiconUtils</RootNamespace>
-    <AssemblyName>SIL.LexiconUtils</AssemblyName>
+    <RootNamespace>SIL.Lexicon</RootNamespace>
+    <AssemblyName>SIL.Lexicon</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
@@ -23,7 +23,7 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <NoWarn>1591</NoWarn>
-    <DocumentationFile>..\output\Debug\SIL.LexiconUtils.XML</DocumentationFile>
+    <DocumentationFile>..\output\Debug\SIL.Lexicon.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -43,7 +43,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1591</NoWarn>
-    <DocumentationFile>..\output\DebugMono\SIL.LexiconUtils.XML</DocumentationFile>
+    <DocumentationFile>..\output\DebugMono\SIL.Lexicon.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU'">
     <OutputPath>..\output\ReleaseMono\</OutputPath>
@@ -63,7 +63,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1591</NoWarn>
-    <DocumentationFile>..\output\DebugMonoStrongName\SIL.LexiconUtils.XML</DocumentationFile>
+    <DocumentationFile>..\output\DebugMonoStrongName\SIL.Lexicon.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -73,7 +73,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>..\output\DebugStrongName\SIL.LexiconUtils.XML</DocumentationFile>
+    <DocumentationFile>..\output\DebugStrongName\SIL.Lexicon.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|AnyCPU'">
@@ -103,7 +103,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1591</NoWarn>
-    <DocumentationFile>..\output\Debug\SIL.LexiconUtils.XML</DocumentationFile>
+    <DocumentationFile>..\output\Debug\SIL.Lexicon.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>..\output\Release\</OutputPath>
@@ -123,7 +123,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1591</NoWarn>
-    <DocumentationFile>..\output\DebugMono\SIL.LexiconUtils.XML</DocumentationFile>
+    <DocumentationFile>..\output\DebugMono\SIL.Lexicon.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMono|x86'">
     <OutputPath>..\output\ReleaseMono\</OutputPath>
@@ -143,7 +143,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1591</NoWarn>
-    <DocumentationFile>..\output\DebugMonoStrongName\SIL.LexiconUtils.XML</DocumentationFile>
+    <DocumentationFile>..\output\DebugMonoStrongName\SIL.Lexicon.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -153,7 +153,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>..\output\DebugStrongName\SIL.LexiconUtils.XML</DocumentationFile>
+    <DocumentationFile>..\output\DebugStrongName\SIL.Lexicon.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|x86'">

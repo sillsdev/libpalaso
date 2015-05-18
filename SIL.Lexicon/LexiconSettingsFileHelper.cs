@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace SIL.LexiconUtils
+namespace SIL.Lexicon
 {
 	/// <summary>
 	/// Provides utility functions for generating the lexicon settings filenames.

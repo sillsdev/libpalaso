@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Xml.Linq;
 
-namespace SIL.LexiconUtils
+namespace SIL.Lexicon
 {
 	public class FileSettingsStore : ISettingsStore
 	{

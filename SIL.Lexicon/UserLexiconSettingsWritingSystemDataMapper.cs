@@ -3,7 +3,7 @@ using System.Xml.Linq;
 using SIL.Keyboarding;
 using SIL.WritingSystems;
 
-namespace SIL.LexiconUtils
+namespace SIL.Lexicon
 {
 	public class UserLexiconSettingsWritingSystemDataMapper : UserLexiconSettingsWritingSystemDataMapper<WritingSystemDefinition>
 	{

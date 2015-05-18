@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using SIL.ObjectModel;
 
-namespace SIL.LexiconUtils
+namespace SIL.Lexicon
 {
 	public class ProjectLexiconSettings : ObservableObject, IChangeTracking
 	{

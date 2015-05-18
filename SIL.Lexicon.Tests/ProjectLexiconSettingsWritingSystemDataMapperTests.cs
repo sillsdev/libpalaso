@@ -3,7 +3,7 @@ using System.Xml.Linq;
 using NUnit.Framework;
 using SIL.WritingSystems;
 
-namespace SIL.LexiconUtils.Tests
+namespace SIL.Lexicon.Tests
 {
 	[TestFixture]
 	public class ProjectLexiconSettingsWritingSystemDataMapperTests

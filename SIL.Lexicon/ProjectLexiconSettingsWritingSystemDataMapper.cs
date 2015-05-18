@@ -3,7 +3,7 @@ using System.Linq;
 using System.Xml.Linq;
 using SIL.WritingSystems;
 
-namespace SIL.LexiconUtils
+namespace SIL.Lexicon
 {
 	public class ProjectLexiconSettingsWritingSystemDataMapper : ProjectLexiconSettingsWritingSystemDataMapper<WritingSystemDefinition>
 	{
