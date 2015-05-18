@@ -61,6 +61,11 @@ namespace SIL.Windows.Forms.WritingSystems
 		public string LanguageTag
 		{
 			get { return _model.LanguageTag; }
+		}
+
+		public string SearchText
+		{
+			get { return _searchText.Text; }
 			set { _searchText.Text = value; }
 		}
 

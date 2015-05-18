@@ -37,16 +37,16 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		}
 
 		[Test]
-		public void LookupIsoControl_AkanSearchDoesNotCrash()
+		public void AkanSearchDoesNotCrash()
 		{
-			_control.LanguageTag = "a";
+			_control.SearchText = "a";
 			_testForm.Show();
 			WaitForControl();
-			_control.LanguageTag = "ak";
+			_control.SearchText = "ak";
 			WaitForControl();
 			Assert.AreEqual("akq", _control.LanguageTag);
 			Assert.AreEqual("Ak", _control.DesiredLanguageName);
-			_control.LanguageTag = "akq";
+			_control.SearchText = "akq";
 			WaitForControl();
 			Assert.AreEqual("akq", _control.LanguageTag);
 			Assert.AreEqual("Ak", _control.DesiredLanguageName);

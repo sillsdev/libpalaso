@@ -41,33 +41,24 @@ namespace SIL.Windows.Forms.WritingSystems
 			Close();
 		}
 
-//        public Iso639LanguageCode ISOCodeAndName
-//        {
-//            get
-//            {
-//				if( DialogResult != DialogResult.OK)
-//					return null;
-//	            return new Iso639LanguageCode(_lookupISOControl.LanguageInfo.Code, _lookupISOControl.LanguageInfo.Names[0],
-//	                                          _lookupISOControl.LanguageInfo.Code);//review: it's not clear which codes these are supposed to be. As is, they are 639-1 if it exists, else 639-3
-//            }
-//        }
-
 		public LanguageInfo SelectedLanguage
 		{
 			set { _lookupLanguageControl.LanguageInfo = value; }
-			get
-			{
-				return _lookupLanguageControl.LanguageInfo;
-			}
+			get { return _lookupLanguageControl.LanguageInfo; }
 		}
 
+		public string SearchText
+		{
+			get { return _lookupLanguageControl.SearchText; }
+			set { _lookupLanguageControl.SearchText = value; }
+		}
 
 		private void OnChooserDoubleClicked(object sender, EventArgs e)
 		{
 			_okButton_Click(sender, e);
 		}
 
-		private void _lookupISOControl_Changed(object sender, EventArgs e)
+		private void _lookupLanguageControl_Changed(object sender, EventArgs e)
 		{
 			_okButton.Enabled = _lookupLanguageControl.HaveSufficientInformation;
 		}

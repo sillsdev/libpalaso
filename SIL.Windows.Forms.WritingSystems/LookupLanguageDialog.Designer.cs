@@ -75,7 +75,6 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._lookupLanguageControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 			| System.Windows.Forms.AnchorStyles.Left)
 			| System.Windows.Forms.AnchorStyles.Right)));
-			this._lookupLanguageControl.LanguageTag = "";
 			this._L10NSharpExtender.SetLocalizableToolTip(this._lookupLanguageControl, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._lookupLanguageControl, null);
 			this._L10NSharpExtender.SetLocalizingId(this._lookupLanguageControl, "LanguageLookup.LookupISOControl");
@@ -83,7 +82,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._lookupLanguageControl.Name = "_lookupLanguageControl";
 			this._lookupLanguageControl.Size = new System.Drawing.Size(645, 289);
 			this._lookupLanguageControl.TabIndex = 0;
-			this._lookupLanguageControl.ReadinessChanged += new System.EventHandler(this._lookupISOControl_Changed);
+			this._lookupLanguageControl.ReadinessChanged += new System.EventHandler(this._lookupLanguageControl_Changed);
 			this._lookupLanguageControl.DoubleClick += new System.EventHandler(this.OnChooserDoubleClicked);
 			//
 			// LookupISOCodeDialog
