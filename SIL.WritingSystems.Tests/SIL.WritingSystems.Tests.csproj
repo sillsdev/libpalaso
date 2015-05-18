@@ -203,6 +203,7 @@
     <Compile Include="AddSortKeysToXmlTests.cs" />
     <Compile Include="CharacterSetDefinitionCloneableTests.cs" />
     <Compile Include="CollationDefinitionCloneableTests.cs" />
+    <Compile Include="IcuRulesCollationDefinitionTests.cs" />
     <Compile Include="IetfLanguageTagTests.cs" />
     <Compile Include="IcuRulesCollationDefinitionCloneableTests.cs" />
     <Compile Include="LdmlCollationParserTests.cs" />

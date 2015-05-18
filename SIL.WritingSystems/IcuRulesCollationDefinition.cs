@@ -69,22 +69,20 @@ namespace SIL.WritingSystems
 			foreach (IcuCollationImport import in _imports)
 			{
 				bool importSuccessful = false;
-				if (WritingSystemFactory != null)
+				WritingSystemDefinition ws = null;
+				if (OwningWritingSystemDefinition != null && OwningWritingSystemDefinition.LanguageTag.StartsWith(import.LanguageTag) && OwningWritingSystemDefinition.Collations.Contains(import.Type))
+					ws = OwningWritingSystemDefinition;
+				else if (WritingSystemFactory != null && (OwningWritingSystemDefinition == null || OwningWritingSystemDefinition.LanguageTag != import.LanguageTag))
+					ws = WritingSystemFactory.Create(import.LanguageTag);
+				CollationDefinition cd;
+				if (ws != null && ws.Collations.TryGet(import.Type, out cd))
 				{
-					WritingSystemDefinition ws = null;
-					if (OwningWritingSystemDefinition.LanguageTag.StartsWith(import.LanguageTag) && OwningWritingSystemDefinition.Collations.Contains(import.Type))
-						ws = OwningWritingSystemDefinition;
-					else if (OwningWritingSystemDefinition.LanguageTag != import.LanguageTag)
-						ws = WritingSystemFactory.Create(import.LanguageTag);
-					CollationDefinition cd;
-					if (ws != null && ws.Collations.TryGet(import.Type, out cd))
+					var rcd = cd as RulesCollationDefinition;
+					string importMessage;
+					if (rcd != null && rcd.Validate(out importMessage))
 					{
-						var rcd = cd as RulesCollationDefinition;
-						if (rcd != null && rcd.IsValid)
-						{
-							sb.Append(rcd.CollationRules);
-							importSuccessful = true;
-						}
+						sb.Append(rcd.CollationRules);
+						importSuccessful = true;
 					}
 				}
 
