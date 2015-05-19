@@ -111,26 +111,55 @@ namespace SIL.WritingSystems
 				}
 			}
 
-			//Why just this small set? Only out of convenience. Ideally we'd have a db of all languages as they write it in their literature.
-			_codeToLanguageIndex["fr"].LocalName =  "français";
-			_codeToLanguageIndex["es"].LocalName =  "español";
-			_codeToLanguageIndex["zh"].LocalName =  "中文"; //chinese
-			_codeToLanguageIndex["hi"].LocalName =  "हिन्दी"; //hindi
-			_codeToLanguageIndex["bn"].LocalName =  "বাংলা"; //bengali
-			_codeToLanguageIndex["te"].LocalName =  "తెలుగు"; //telugu
-			_codeToLanguageIndex["ta"].LocalName =  "தமிழ்"; //tamil
-			_codeToLanguageIndex["ur"].LocalName =  "اُردُو"; //urdu
-			_codeToLanguageIndex["ar"].LocalName =  "العربية/عربي"; //arabic
-			_codeToLanguageIndex["th"].LocalName = "ภาษาไทย"; //thai
-			_codeToLanguageIndex["id"].LocalName = "Bahasa Indonesia"; //indonesian
-
-
 			foreach (LanguageInfo languageInfo in _codeToLanguageIndex.Values)
 			{
 				foreach (string name in languageInfo.Names)
 					GetOrCreateListFromName(name).Add(languageInfo);
-				if (!string.IsNullOrEmpty(languageInfo.LocalName))
-					GetOrCreateListFromName(languageInfo.LocalName).Add(languageInfo);
+
+				//Why just this small set? Only out of convenience. Ideally we'd have a db of all languages as they write it in their literature.
+				string localName = null;
+				switch (languageInfo.Names[0])
+				{
+					case "French":
+						localName = "français";
+						break;
+					case "Spanish":
+						localName = "español";
+						break;
+					case "Chinese":
+						localName = "中文";
+						break;
+					case "Hindi":
+						localName = "हिन्दी";
+						break;
+					case "Bengali":
+						localName = "বাংলা";
+						break;
+					case "Telugu":
+						localName = "తెలుగు";
+						break;
+					case "Tamil":
+						localName = "தமிழ்";
+						break;
+					case "Urdu":
+						localName = "اُردُو";
+						break;
+					case "Arabic":
+						localName = "العربية/عربي";
+						break;
+					case "Thai":
+						localName = "ภาษาไทย";
+						break;
+					case "Indonesian":
+						localName = "Bahasa Indonesia";
+						break;
+				}
+				if (!string.IsNullOrEmpty(localName))
+				{
+					languageInfo.LocalName = localName;
+					languageInfo.Names.Remove(localName);
+					GetOrCreateListFromName(localName).Add(languageInfo);
+				}
 			}
 		}
 
