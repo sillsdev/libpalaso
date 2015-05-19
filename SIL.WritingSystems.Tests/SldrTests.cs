@@ -235,7 +235,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				string filename;
 				const string ietfLanguageTag = "en-Latn";
-				const string redirectedIetfLanguageTag = "en-US";
+				const string redirectedIetfLanguageTag = "en";
 				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FromSldr));
 				Assert.That(filename, Is.EqualTo(redirectedIetfLanguageTag + ".ldml"));
 				string filePath = Path.Combine(Sldr.SldrCachePath, filename);

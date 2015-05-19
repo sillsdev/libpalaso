@@ -37,10 +37,14 @@ namespace SIL.WritingSystems
 	{
 		public static XNamespace Sil = "urn://www.sil.org/ldml/0.1";
 
-		// SLDR is hosted on two sites.  Generally we will use the production (public) site.
-		private const string ProductionSldrRepository = "https://ldml.api.sil.org/";
+		// SLDR is hosted on two sites.
+#if DEBUG
 		// Staging site listed here for developmental testing
-		// private const string StagingSldrRepository = "http://staging.scriptsource.org/ldml/";
+		private const string SldrRepository = "http://staging.scriptsource.org/ldml/";
+#else
+		// Generally we will use the production (public) site.
+		private const string SldrRepository = "https://ldml.api.sil.org/";
+#endif
 
 		private const string SldrCacheDir = "SldrCache";
 		private const string TmpExtension = "tmp";
@@ -121,7 +125,7 @@ namespace SIL.WritingSystems
 				string requestedUserId = !string.IsNullOrEmpty(uid) ? string.Format("&uid={0}", uid) : string.Empty;
 				string requestedRevid = !string.IsNullOrEmpty(revid) ? string.Format("&revid={0}", revid) : string.Empty;
 				string url = string.Format("{0}{1}?ext={2}&flatten=1{3}{4}{5}",
-					ProductionSldrRepository, languageTag, LdmlExtension,
+					SldrRepository, languageTag, LdmlExtension,
 					requestedElements, requestedUserId, requestedRevid);
 
 				string tempFilePath = sldrCacheFilePath + "." + TmpExtension;
@@ -148,7 +152,7 @@ namespace SIL.WritingSystems
 						else if (webResponse.StatusCode == HttpStatusCode.MovedPermanently)
 						{
 							// Extract ietfLanguageTag from the response header
-							string responseString = webResponse.Headers["Location"].Replace(ProductionSldrRepository, "");
+							string responseString = webResponse.Headers["Location"].Replace(SldrRepository, "");
 							languageTag = responseString.Split('?')[0];
 							redirected = true;
 						}
