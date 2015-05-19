@@ -109,6 +109,7 @@
 			this._searchText.Name = "_searchText";
 			this._searchText.Size = new System.Drawing.Size(228, 20);
 			this._searchText.TabIndex = 0;
+			this._searchText.TextChanged += new System.EventHandler(this._searchText_TextChanged);
 			// 
 			// _searchTimer
 			// 
@@ -186,7 +187,7 @@
 			this._L10NSharpExtender.LocalizationManagerId = "Palaso";
 			this._L10NSharpExtender.PrefixForNewItems = "LanguageLookup";
 			// 
-			// LookupLanguageControl
+			// LanguageLookupControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;

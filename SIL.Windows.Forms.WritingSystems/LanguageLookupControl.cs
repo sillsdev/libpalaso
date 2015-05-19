@@ -15,8 +15,6 @@ namespace SIL.Windows.Forms.WritingSystems
 	{
 		private readonly LanguageLookupModel _model;
 		private string _lastSearchedForText;
-		private readonly string _unlistedLanguageName;
-		private LanguageInfo _incomingLanguageInfo;
 
 		public event EventHandler ReadinessChanged;
 
@@ -34,7 +32,6 @@ namespace SIL.Windows.Forms.WritingSystems
 			InitializeComponent();
 			ShowDesiredLanguageNameField = true;
 			_model = new LanguageLookupModel();
-			_unlistedLanguageName = LocalizationManager.GetString("LanguageLookup.UnlistedLanguage", "Unlisted Language");
 		}
 
 		public bool ShowDesiredLanguageNameField
@@ -42,54 +39,27 @@ namespace SIL.Windows.Forms.WritingSystems
 			set { _desiredLanguageDisplayName.Visible = _desiredLanguageLabel.Visible = value; }
 		}
 
-		public LanguageInfo LanguageInfo
+		public LanguageInfo SelectedLanguage
 		{
-			get { return _model.LanguageInfo; }
-			set { _model.LanguageInfo = value; }
+			get { return _model.SelectedLanguage; }
 		}
 
 		public bool HaveSufficientInformation
 		{
-			get
-			{
-				return LanguageInfo != null &&
-				_desiredLanguageDisplayName.Text != _unlistedLanguageName &&
-					_desiredLanguageDisplayName.Text.Trim().Length > 0;
-			}
-		}
-
-		public string LanguageTag
-		{
-			get { return _model.LanguageTag; }
+			get { return _model.HaveSufficientInformation; }
 		}
 
 		public string SearchText
 		{
-			get { return _searchText.Text; }
+			get { return _model.SearchText; }
 			set { _searchText.Text = value; }
-		}
-
-		/// <summary>
-		/// Get the desired name of the language found.
-		/// </summary>
-		public string DesiredLanguageName
-		{
-			get { return _desiredLanguageDisplayName.Text.Trim(); }
 		}
 
 		private void OnLoad(object sender, EventArgs e)
 		{
 			if (DesignMode)
 				return;
-			if (_model.LanguageInfo != null)
-			{
-				_searchText.Text = _model.LanguageInfo.LanguageTag;
-				if (!string.IsNullOrEmpty(_model.LanguageInfo.DesiredName))
-				{
-					_incomingLanguageInfo = _model.LanguageInfo;
-					_desiredLanguageDisplayName.Text = _model.LanguageInfo.DesiredName;
-				}
-			}
+
 			if (_desiredLanguageDisplayName.Visible)
 				AdjustDesiredLanguageNameFieldLocations();
 			AdjustCannotFindLanguageLocation();
@@ -150,28 +120,8 @@ namespace SIL.Windows.Forms.WritingSystems
 			if(_listView.SelectedIndices != null && _listView.SelectedIndices.Count > 0)
 			{
 				ListViewItem item = _listView.Items[_listView.SelectedIndices[0]];
-				_model.LanguageInfo = (LanguageInfo) item.Tag;
-
-				if (_incomingLanguageInfo != null && _incomingLanguageInfo.LanguageTag == _model.LanguageInfo.LanguageTag && !string.IsNullOrEmpty(_incomingLanguageInfo.DesiredName))
-				{
-					_desiredLanguageDisplayName.Text = _incomingLanguageInfo.DesiredName;
-				}
-				else if (_model.LanguageTag == "qaa")
-				{
-					if (_searchText.Text != "?")
-					{
-						_failedSearchText = _searchText.Text.ToUpperFirstLetter();
-						_desiredLanguageDisplayName.Text = _failedSearchText;
-						_model.LanguageInfo.Names.Insert(0, _failedSearchText);
-						_model.LanguageInfo.DesiredName = _failedSearchText;
-					}
-				}
-				else
-				{
-					IList<string> names = _model.LanguageInfo.Names;
-					//now if they were typing another form, well then that form makes a better default "Desired Name" than the official primary name
-					_desiredLanguageDisplayName.Text = names.FirstOrDefault(n => n.StartsWith(_searchText.Text, StringComparison.InvariantCultureIgnoreCase)) ?? names[0];
-				}
+				_model.SelectedLanguage = (LanguageInfo) item.Tag;
+				_desiredLanguageDisplayName.Text = _model.DesiredLanguageName;
 			}
 			if (_model.LanguageTag != oldLangTag)
 				UpdateReadiness();
@@ -189,12 +139,10 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		private void _searchTimer_Tick(object sender, EventArgs e)
 		{
-			string typedText = _searchText.Text.Trim();
-			if (typedText == _lastSearchedForText)
-			{
+			if (_model.SearchText == _lastSearchedForText)
 				return;
-			}
-			_lastSearchedForText = typedText;
+
+			_lastSearchedForText = _model.SearchText;
 			_listView.SuspendLayout();
 
 			_listView.Items.Clear();
@@ -203,73 +151,45 @@ namespace SIL.Windows.Forms.WritingSystems
 
 			string multipleCountriesLabel = LocalizationManager.GetString("LanguageLookup.CountryCount", "{0} Countries", "Shown when there are multiple countries and it is just confusing to list them all.");
 
-			if (_searchText.Text == "?")
+			var itemSelected = false;
+			foreach (LanguageInfo lang in _model.MatchingLanguages)
 			{
-				var description = LocalizationManager.GetString("LanguageLookup.UnlistedLanguage", "Unlisted Language");
-				var names = new List<string>(new[] { description });
-				var unlistedLocale = new LanguageInfo {LanguageTag = "qaa"};
-				unlistedLocale.Names.AddRange(names);
-				var item = new ListViewItem(description);
-				item.SubItems.Add("qaa");
-				item.Tag = unlistedLocale;
-				item.Selected = true;
-				_listView.Items.Add(item);
-			}
-			else
-			{
-				var itemSelected = false;
-				foreach (LanguageInfo lang in _model.GetMatchingLanguages(typedText))
-				{
-					var item = new ListViewItem(lang.Names[0]);
-					item.SubItems.Add(lang.LanguageTag);
+				var item = new ListViewItem(lang.Names[0]);
+				item.SubItems.Add(lang.LanguageTag);
 
-					// Users were having problems when they looked up things like "English" and were presented with "United Arab Emirates"
-					// and such, as these colonial languages are spoken in so many countries. So this just displays the number of countries.
-					// 3 or more was chosen because generally 2 languages fit in the space allowed
-					string country = lang.Countries.Count > 2 ? string.Format(multipleCountriesLabel, lang.Countries.Count) : string.Join(", ", lang.Countries);
-					item.SubItems.Add(country);
-					item.SubItems.Add(string.Join(", ", lang.Names.Skip(1)));
-					item.Tag = lang;
-					toShow.Add(item);
+				// Users were having problems when they looked up things like "English" and were presented with "United Arab Emirates"
+				// and such, as these colonial languages are spoken in so many countries. So this just displays the number of countries.
+				// 3 or more was chosen because generally 2 languages fit in the space allowed
+				string country = lang.Countries.Count > 2 ? string.Format(multipleCountriesLabel, lang.Countries.Count) : string.Join(", ", lang.Countries);
+				item.SubItems.Add(country);
+				item.SubItems.Add(string.Join(", ", lang.Names.Skip(1)));
+				item.Tag = lang;
+				toShow.Add(item);
 
-					//					if (!itemSelected && typedText.Length > 1 &&
-					//					    (lang.Code.ToLower() == typedText || lang.Names[0].ToLower().StartsWith(typedText.ToLower())))
-					if (!itemSelected)
-					{
-						item.Selected = true;
-						itemSelected = true; //we only want to select the first one
-					}
-				}
 				if (!itemSelected)
 				{
-					_model.LanguageInfo = null;
-					//_desiredLanguageDisplayName.Text = _searchText.Text;
-				}
-				_desiredLanguageDisplayName.Enabled = itemSelected;
-				_listView.Items.AddRange(toShow.ToArray());
-				//scroll down to the selected item
-				if (_listView.SelectedItems.Count > 0)
-				{
-					_listView.SelectedItems[0].EnsureVisible();
+					item.Selected = true;
+					itemSelected = true; //we only want to select the first one
 				}
 			}
+			if (!itemSelected)
+				_model.SelectedLanguage = null;
+
+			_desiredLanguageDisplayName.Enabled = itemSelected;
+			_listView.Items.AddRange(toShow.ToArray());
+			//scroll down to the selected item
+			if (_listView.SelectedItems.Count > 0)
+				_listView.SelectedItems[0].EnsureVisible();
+
 			_listView.ResumeLayout();
-			//            if (_listView.Items.Count > 0)
-			//            {
-			//                _listView.SelectedIndices.Add(0);
-			//            }			if(_model.ISOCode != oldIso)
 			UpdateReadiness();
 		}
 
 		private void listView1_DoubleClick(object sender, EventArgs e)
 		{
 			if (DoubleClicked != null)
-			{
 				DoubleClicked(this, null);
-			}
 		}
-
-		private string _failedSearchText;
 
 		private void _cannotFindLanguageLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
@@ -278,7 +198,6 @@ namespace SIL.Windows.Forms.WritingSystems
 				dlg.ShowDialog();
 
 				_desiredLanguageDisplayName.Text = _searchText.Text.ToUpperFirstLetter();
-				_failedSearchText = _searchText.Text.ToUpperFirstLetter();
 				_searchText.Text = "?";
 				if (_desiredLanguageDisplayName.Visible)
 				{
@@ -290,9 +209,13 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		private void _desiredLanguageDisplayName_TextChanged(object sender, EventArgs e)
 		{
-			if (_model.LanguageInfo != null)
-				_model.LanguageInfo.DesiredName = _desiredLanguageDisplayName.Text;
+			_model.DesiredLanguageName = _desiredLanguageDisplayName.Text;
 			UpdateReadiness();
+		}
+
+		private void _searchText_TextChanged(object sender, EventArgs e)
+		{
+			_model.SearchText = _searchText.Text;
 		}
 	}
 }

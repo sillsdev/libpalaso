@@ -13,14 +13,6 @@ namespace SIL.Windows.Forms.WritingSystems
 		}
 
 		/// <summary>
-		/// Get the name of the desired language to search for.
-		/// </summary>
-		public string DesiredLanguageName
-		{
-			get { return _languageLookupControl.DesiredLanguageName; }
-		}
-
-		/// <summary>
 		/// If you wouldn't be paying attention to their requested name, and are only going to look at the code, then
 		/// set this to default so that they aren't fooled into thinking they can modify the name they'll see in your application.
 		/// </summary>
@@ -43,8 +35,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		public LanguageInfo SelectedLanguage
 		{
-			set { _languageLookupControl.LanguageInfo = value; }
-			get { return _languageLookupControl.LanguageInfo; }
+			get { return _languageLookupControl.SelectedLanguage; }
 		}
 
 		public string SearchText

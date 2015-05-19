@@ -23,7 +23,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 
 		private void _control_ReadinessChanged(object sender, EventArgs e)
 		{
-			if (_control.LanguageInfo != null)
+			if (_control.SelectedLanguage != null)
 				_ready = true;
 		}
 
@@ -44,12 +44,12 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 			WaitForControl();
 			_control.SearchText = "ak";
 			WaitForControl();
-			Assert.AreEqual("akq", _control.LanguageTag);
-			Assert.AreEqual("Ak", _control.DesiredLanguageName);
+			Assert.AreEqual("akq", _control.SelectedLanguage.LanguageTag);
+			Assert.AreEqual("Ak", _control.SelectedLanguage.DesiredName);
 			_control.SearchText = "akq";
 			WaitForControl();
-			Assert.AreEqual("akq", _control.LanguageTag);
-			Assert.AreEqual("Ak", _control.DesiredLanguageName);
+			Assert.AreEqual("akq", _control.SelectedLanguage.LanguageTag);
+			Assert.AreEqual("Ak", _control.SelectedLanguage.DesiredName);
 		}
 	}
 }
