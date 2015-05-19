@@ -156,9 +156,9 @@ namespace SIL.WritingSystems
 				}
 				if (!string.IsNullOrEmpty(localName))
 				{
-					languageInfo.LocalName = localName;
-					languageInfo.Names.Remove(localName);
-					GetOrCreateListFromName(localName).Add(languageInfo);
+					if (!languageInfo.Names.Remove(localName))
+						GetOrCreateListFromName(localName).Add(languageInfo);
+					languageInfo.Names.Insert(0, localName);
 				}
 			}
 		}
@@ -253,7 +253,12 @@ namespace SIL.WritingSystems
 						return -1;
 					if (y.Names[0].Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
 						return 1;
+					if (x.Names.Count > 1 && x.Names[1].Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
+						return -1;
+					if (y.Names.Count > 1 && y.Names[1].Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
+						return 1;
 				}
+
 				if (x.LanguageTag.Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
 					return -1;
 				if (y.LanguageTag.Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))

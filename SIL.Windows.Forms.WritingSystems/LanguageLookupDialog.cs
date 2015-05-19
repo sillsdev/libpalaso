@@ -4,9 +4,9 @@ using SIL.WritingSystems;
 
 namespace SIL.Windows.Forms.WritingSystems
 {
-	public partial class LookupLanguageDialog : Form
+	public partial class LanguageLookupDialog : Form
 	{
-		public LookupLanguageDialog()
+		public LanguageLookupDialog()
 		{
 			InitializeComponent();
 			ShowDesiredLanguageNameField = true;
@@ -17,7 +17,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		/// </summary>
 		public string DesiredLanguageName
 		{
-			get { return _lookupLanguageControl.DesiredLanguageName; }
+			get { return _languageLookupControl.DesiredLanguageName; }
 		}
 
 		/// <summary>
@@ -26,12 +26,12 @@ namespace SIL.Windows.Forms.WritingSystems
 		/// </summary>
 		public bool ShowDesiredLanguageNameField
 		{
-			set { _lookupLanguageControl.ShowDesiredLanguageNameField = value; }
+			set { _languageLookupControl.ShowDesiredLanguageNameField = value; }
 		}
 
 		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
 		{
-			_lookupLanguageControl.StopTimer();
+			_languageLookupControl.StopTimer();
 			base.OnClosing(e);
 		}
 
@@ -43,14 +43,14 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		public LanguageInfo SelectedLanguage
 		{
-			set { _lookupLanguageControl.LanguageInfo = value; }
-			get { return _lookupLanguageControl.LanguageInfo; }
+			set { _languageLookupControl.LanguageInfo = value; }
+			get { return _languageLookupControl.LanguageInfo; }
 		}
 
 		public string SearchText
 		{
-			get { return _lookupLanguageControl.SearchText; }
-			set { _lookupLanguageControl.SearchText = value; }
+			get { return _languageLookupControl.SearchText; }
+			set { _languageLookupControl.SearchText = value; }
 		}
 
 		private void OnChooserDoubleClicked(object sender, EventArgs e)
@@ -60,7 +60,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		private void _lookupLanguageControl_Changed(object sender, EventArgs e)
 		{
-			_okButton.Enabled = _lookupLanguageControl.HaveSufficientInformation;
+			_okButton.Enabled = _languageLookupControl.HaveSufficientInformation;
 		}
 
 		private void _cancelButton_Click(object sender, EventArgs e)

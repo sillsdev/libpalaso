@@ -5,9 +5,9 @@ using NUnit.Framework;
 namespace SIL.Windows.Forms.WritingSystems.Tests
 {
 	[TestFixture]
-	public class LookupLanguageControlTests
+	public class LanguageLookupControlTests
 	{
-		private LookupLanguageControl _control;
+		private LanguageLookupControl _control;
 		private bool _ready;
 		private Form _testForm;
 
@@ -15,7 +15,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		public void Setup()
 		{
 			_ready = false;
-			_control = new LookupLanguageControl();
+			_control = new LanguageLookupControl();
 			_control.ReadinessChanged += _control_ReadinessChanged;
 			_testForm = new Form();
 			_testForm.Controls.Add(_control);

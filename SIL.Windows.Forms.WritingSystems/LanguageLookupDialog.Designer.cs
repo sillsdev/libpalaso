@@ -1,6 +1,6 @@
 namespace SIL.Windows.Forms.WritingSystems
 {
-	partial class LookupLanguageDialog
+	partial class LanguageLookupDialog
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -32,7 +32,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._okButton = new System.Windows.Forms.Button();
 			this._cancelButton = new System.Windows.Forms.Button();
 			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
-			this._lookupLanguageControl = new LookupLanguageControl();
+			this._languageLookupControl = new LanguageLookupControl();
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).BeginInit();
 			this.SuspendLayout();
 			//
@@ -72,18 +72,18 @@ namespace SIL.Windows.Forms.WritingSystems
 			//
 			// _lookupISOControl
 			//
-			this._lookupLanguageControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			this._languageLookupControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 			| System.Windows.Forms.AnchorStyles.Left)
 			| System.Windows.Forms.AnchorStyles.Right)));
-			this._L10NSharpExtender.SetLocalizableToolTip(this._lookupLanguageControl, null);
-			this._L10NSharpExtender.SetLocalizationComment(this._lookupLanguageControl, null);
-			this._L10NSharpExtender.SetLocalizingId(this._lookupLanguageControl, "LanguageLookup.LookupISOControl");
-			this._lookupLanguageControl.Location = new System.Drawing.Point(21, 16);
-			this._lookupLanguageControl.Name = "_lookupLanguageControl";
-			this._lookupLanguageControl.Size = new System.Drawing.Size(645, 289);
-			this._lookupLanguageControl.TabIndex = 0;
-			this._lookupLanguageControl.ReadinessChanged += new System.EventHandler(this._lookupLanguageControl_Changed);
-			this._lookupLanguageControl.DoubleClick += new System.EventHandler(this.OnChooserDoubleClicked);
+			this._L10NSharpExtender.SetLocalizableToolTip(this._languageLookupControl, null);
+			this._L10NSharpExtender.SetLocalizationComment(this._languageLookupControl, null);
+			this._L10NSharpExtender.SetLocalizingId(this._languageLookupControl, "LanguageLookup.LookupISOControl");
+			this._languageLookupControl.Location = new System.Drawing.Point(21, 16);
+			this._languageLookupControl.Name = "_languageLookupControl";
+			this._languageLookupControl.Size = new System.Drawing.Size(645, 289);
+			this._languageLookupControl.TabIndex = 0;
+			this._languageLookupControl.ReadinessChanged += new System.EventHandler(this._lookupLanguageControl_Changed);
+			this._languageLookupControl.DoubleClick += new System.EventHandler(this.OnChooserDoubleClicked);
 			//
 			// LookupISOCodeDialog
 			//
@@ -92,7 +92,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this._cancelButton;
 			this.ClientSize = new System.Drawing.Size(686, 349);
-			this.Controls.Add(this._lookupLanguageControl);
+			this.Controls.Add(this._languageLookupControl);
 			this.Controls.Add(this._cancelButton);
 			this.Controls.Add(this._okButton);
 			this._L10NSharpExtender.SetLocalizableToolTip(this, null);
@@ -100,7 +100,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._L10NSharpExtender.SetLocalizingId(this, "LanguageLookup.LanguageLookupDialogWindowTitle");
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "LookupLanguageDialog";
+			this.Name = "LanguageLookupDialog";
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
 			this.Text = "Lookup Language Code...";
@@ -113,7 +113,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		private System.Windows.Forms.Button _okButton;
 		private System.Windows.Forms.Button _cancelButton;
-		private LookupLanguageControl _lookupLanguageControl;
+		private LanguageLookupControl _languageLookupControl;
 		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
 	}
 }

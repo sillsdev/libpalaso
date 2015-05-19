@@ -6,34 +6,29 @@ namespace SIL.WritingSystems.Tests
 	[TestFixture]
 	public class LanguageLookupTests
 	{
-		private LanguageLookup _language;
-
-		[SetUp]
-		public void Setup()
-		{
-			_language = new LanguageLookup();
-		}
-
 		[Test]
 		public void SuggestLanguages_EmptyString_ReturnsNothing()
 		{
-			Assert.AreEqual(0,_language.SuggestLanguages("").Count());
+			var lookup = new LanguageLookup();
+			Assert.That(lookup.SuggestLanguages("").Count(), Is.EqualTo(0));
 		}
 
 		[Test]
 		public void SuggestLanguages_Asterisk_ReturnsEverything()
 		{
-			Assert.Greater(_language.SuggestLanguages("*").Count(), 1000);
+			var lookup = new LanguageLookup();
+			Assert.Greater(lookup.SuggestLanguages("*").Count(), 1000);
 		}
 
 		[Test]
 		public void SuggestLanguages_LargeMispelling_StillFinds()
 		{
-			Assert.That(_language.SuggestLanguages("angrish").Any(), Is.True);
+			var lookup = new LanguageLookup();
+			Assert.That(lookup.SuggestLanguages("angrish").Any(), Is.True);
 		}
 
 		[Test]
-		public void SuggestLanguages_Thai_ReturnsThaiAsFirstChoiceLanguage()
+		public void SuggestLanguages_Thai_ReturnsLocalizedNameAsFirstChoiceLanguage()
 		{
 			/*	tha	KH 	D	Thai Koh Kong
 				tha	KH 	D	Thai Norkor Raja
@@ -49,7 +44,10 @@ namespace SIL.WritingSystems.Tests
 				tha	TH 	LA	Standard Thai
 				tha	TH 	LA	Thaiklang
 			*/
-			Assert.AreEqual("Thai",_language.SuggestLanguages("thai").First().Names[0]);
+			var lookup = new LanguageLookup();
+			LanguageInfo thai = lookup.SuggestLanguages("thai").First();
+			Assert.That(thai.Names[0], Is.EqualTo("ภาษาไทย"));
+			Assert.That(thai.Names[1], Is.EqualTo("Thai"));
 		}
 
 		[Test]
@@ -69,8 +67,9 @@ namespace SIL.WritingSystems.Tests
 				tha	TH 	LA	Standard Thai
 				tha	TH 	LA	Thaiklang
 			*/
-			var languageInfo = _language.SuggestLanguages("thai").First();
-			Assert.AreEqual("th", languageInfo.LanguageTag);
+			var lookup = new LanguageLookup();
+			LanguageInfo languageInfo = lookup.SuggestLanguages("thai").First();
+			Assert.That(languageInfo.LanguageTag, Is.EqualTo("th"));
 			Assert.That(languageInfo.Countries, Is.EqualTo(new[] {"Cambodia", "Thailand"}));
 		}
 
@@ -80,8 +79,9 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void SuggestLanguages_Thai_CodeIsJustTwoLetters()
 		{
-			var languageInfo = _language.SuggestLanguages("thai").First();
-			Assert.AreEqual("th", languageInfo.LanguageTag);
+			var lookup = new LanguageLookup();
+			LanguageInfo languageInfo = lookup.SuggestLanguages("thai").First();
+			Assert.That(languageInfo.LanguageTag, Is.EqualTo("th"));
 		}
 
 		/// <summary>
@@ -90,37 +90,42 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void SuggestLanguages_English_EnglishNotInTheAlternativeNames()
 		{
+			var lookup = new LanguageLookup();
 			//messed up case is intentional
-			Assert.AreEqual(1,_language.SuggestLanguages("english").First().Names.Where(s => s == "English").Count());
+			Assert.That(lookup.SuggestLanguages("english").First().Names.Count(s => s == "English"), Is.EqualTo(1));
 		}
 
 
 		[Test]
 		public void SuggestLanguages_GivenUnambigous3LetterCode_ReturnsLanguage()
 		{
+			var lookup = new LanguageLookup();
 			//messed up case is intentional
-			Assert.True(_language.SuggestLanguages("eTR").First().Names.First().Contains("Edolo"));
+			Assert.That(lookup.SuggestLanguages("eTR").First().Names.First().Contains("Edolo"), Is.True);
 		}
 
 		[Test]
 		public void SuggestLanguages_GivenPNGLanguage_ReturnsPNGCountryName()
 		{
+			var lookup = new LanguageLookup();
 			//messed up case is intentional
-			Assert.That(_language.SuggestLanguages("eTR").First().Countries, Is.EqualTo(new [] {"Papua New Guinea"}));
+			Assert.That(lookup.SuggestLanguages("eTR").First().Countries, Is.EqualTo(new [] {"Papua New Guinea"}));
 		}
 
 		[Test]
 		public void SuggestLanguages_StartOfName_ReturnsManyLanguages()
 		{
+			var lookup = new LanguageLookup();
 			//messed up case is intentional
-			Assert.Greater(1000, _language.SuggestLanguages("eastern").Count());
+			Assert.Greater(1000, lookup.SuggestLanguages("eastern").Count());
 		}
 
 
 		[Test]
 		public void SuggestLanguages_3LetterCode_ResultIncludesAlternateLanguageNames()
 		{
-			var languages = _language.SuggestLanguages("ana");
+			var lookup = new LanguageLookup();
+			LanguageInfo[] languages = lookup.SuggestLanguages("ana").ToArray();
 			Assert.True(languages.Any(l => l.LanguageTag == "ana"));
 			Assert.True(languages.Any(l => l.Names.Contains("Aguanunga")));
 			Assert.True(languages.Any(l => l.Names.Contains("Andaki")));
@@ -129,8 +134,9 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void SuggestLanguages_NonPrimary_ResultIncludesAlternateLanguageNames()
 		{
+			var lookup = new LanguageLookup();
 			//messed up case and extra spaces are is intentional
-			var languages = _language.SuggestLanguages("  ChuRUba  ");
+			LanguageInfo[] languages = lookup.SuggestLanguages("  ChuRUba  ").ToArray();
 			Assert.True(languages.Any(l => l.LanguageTag == "ana"));
 			Assert.True(languages.Any(l => l.Names.Contains("Aguanunga")));
 			Assert.True(languages.Any(l => l.Names.Contains("Andaki")));
@@ -140,14 +146,15 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void SuggestLanguages_Akan_DoesnotCrash()
 		{
-			var languages = _language.SuggestLanguages("a");
+			var lookup = new LanguageLookup();
+			LanguageInfo[] languages = lookup.SuggestLanguages("a").ToArray();
 			Assert.True(languages.Any(l => l.LanguageTag == "ak"));
 			Assert.True(languages.Any(l => l.LanguageTag == "akq"));
 			Assert.True(languages.Any(l => l.Names.Contains("Akuapem")));
 			Assert.True(languages.Any(l => l.Names.Contains("Ak")));
 			Assert.True(languages.Any(l => l.Names.Contains("Akan")));
 			Assert.True(languages.Any(l => l.Names.Contains("Fanti")));
-			languages = _language.SuggestLanguages("ak");
+			languages = lookup.SuggestLanguages("ak").ToArray();
 			Assert.True(languages.Any(l => l.LanguageTag == "ak"));
 			Assert.True(languages.Any(l => l.LanguageTag == "akq"));
 			Assert.True(languages.Any(l => l.Names.Contains("Asante")));

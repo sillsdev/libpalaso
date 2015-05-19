@@ -78,9 +78,9 @@ namespace SIL.Windows.Forms.TestApp
 			this.btnLookupISOCodeDialog.Name = "btnLookupISOCodeDialog";
 			this.btnLookupISOCodeDialog.Size = new System.Drawing.Size(157, 23);
 			this.btnLookupISOCodeDialog.TabIndex = 0;
-			this.btnLookupISOCodeDialog.Text = "LookupLanguageDialog";
+			this.btnLookupISOCodeDialog.Text = "LanguageLookupDialog";
 			this.btnLookupISOCodeDialog.UseVisualStyleBackColor = true;
-			this.btnLookupISOCodeDialog.Click += new System.EventHandler(this.OnLookupISOCodeDialogClicked);
+			this.btnLookupISOCodeDialog.Click += new System.EventHandler(this.OnLanguageLookupDialogClicked);
 			// 
 			// btnWritingSystemSetupDialog
 			// 

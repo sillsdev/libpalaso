@@ -3,7 +3,7 @@ using SIL.WritingSystems;
 
 namespace SIL.Windows.Forms.WritingSystems
 {
-	public class LookupLanguageModel
+	public class LanguageLookupModel
 	{
 		private LanguageLookup _languageLookup;
 
@@ -28,7 +28,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			return _languageLookup.SuggestLanguages(typedText);
 		}
 
-		public LanguageInfo LanguageInfo;
+		public LanguageInfo LanguageInfo { get; set; }
 
 		public string LanguageTag
 		{

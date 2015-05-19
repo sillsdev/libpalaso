@@ -11,9 +11,9 @@ using SIL.WritingSystems;
 
 namespace SIL.Windows.Forms.WritingSystems
 {
-	public partial class LookupLanguageControl : UserControl
+	public partial class LanguageLookupControl : UserControl
 	{
-		private readonly LookupLanguageModel _model;
+		private readonly LanguageLookupModel _model;
 		private string _lastSearchedForText;
 		private readonly string _unlistedLanguageName;
 		private LanguageInfo _incomingLanguageInfo;
@@ -29,11 +29,11 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		public event EventHandler DoubleClicked;
 
-		public LookupLanguageControl()
+		public LanguageLookupControl()
 		{
 			InitializeComponent();
 			ShowDesiredLanguageNameField = true;
-			_model = new LookupLanguageModel();
+			_model = new LanguageLookupModel();
 			_unlistedLanguageName = LocalizationManager.GetString("LanguageLookup.UnlistedLanguage", "Unlisted Language");
 		}
 
@@ -156,11 +156,6 @@ namespace SIL.Windows.Forms.WritingSystems
 				{
 					_desiredLanguageDisplayName.Text = _incomingLanguageInfo.DesiredName;
 				}
-				// for names like "Chinese", we're going to assume they want the displayed name to be "中文" (and French/français, etc.)
-				else if (!string.IsNullOrEmpty(_model.LanguageInfo.LocalName))
-				{
-					_desiredLanguageDisplayName.Text = _model.LanguageInfo.LocalName;
-				}
 				else if (_model.LanguageTag == "qaa")
 				{
 					if (_searchText.Text != "?")
@@ -173,16 +168,9 @@ namespace SIL.Windows.Forms.WritingSystems
 				}
 				else
 				{
-					_desiredLanguageDisplayName.Text = _model.LanguageInfo.Names[0];
+					IList<string> names = _model.LanguageInfo.Names;
 					//now if they were typing another form, well then that form makes a better default "Desired Name" than the official primary name
-					foreach (var name in _model.LanguageInfo.Names)
-					{
-						if (name.ToLowerInvariant().StartsWith(_searchText.Text.ToLowerInvariant()))
-						{
-							_desiredLanguageDisplayName.Text = name;
-							break;
-						}
-					}
+					_desiredLanguageDisplayName.Text = names.FirstOrDefault(n => n.StartsWith(_searchText.Text, StringComparison.InvariantCultureIgnoreCase)) ?? names[0];
 				}
 			}
 			if (_model.LanguageTag != oldLangTag)
@@ -232,8 +220,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				var itemSelected = false;
 				foreach (LanguageInfo lang in _model.GetMatchingLanguages(typedText))
 				{
-					var mainName = string.IsNullOrEmpty(lang.LocalName) ? lang.Names[0] : lang.LocalName;
-					var item = new ListViewItem(mainName);
+					var item = new ListViewItem(lang.Names[0]);
 					item.SubItems.Add(lang.LanguageTag);
 
 					// Users were having problems when they looked up things like "English" and were presented with "United Arab Emirates"
@@ -241,8 +228,7 @@ namespace SIL.Windows.Forms.WritingSystems
 					// 3 or more was chosen because generally 2 languages fit in the space allowed
 					string country = lang.Countries.Count > 2 ? string.Format(multipleCountriesLabel, lang.Countries.Count) : string.Join(", ", lang.Countries);
 					item.SubItems.Add(country);
-					var numberOfNamesAlreadyUsed = string.IsNullOrEmpty(lang.LocalName) ? 1 : 0;
-					item.SubItems.Add(string.Join(", ", lang.Names.Skip(numberOfNamesAlreadyUsed)));
+					item.SubItems.Add(string.Join(", ", lang.Names.Skip(1)));
 					item.Tag = lang;
 					toShow.Add(item);
 

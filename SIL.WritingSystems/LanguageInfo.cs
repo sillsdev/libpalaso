@@ -22,11 +22,6 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// Currently, we only have English names in our database. This holds the language name in the language, when we know it
-		/// </summary>
-		public string LocalName { get; set; }
-
-		/// <summary>
 		/// People sometimes don't want use the Ethnologue-supplied name
 		/// </summary>
 		public string DesiredName

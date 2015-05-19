@@ -58,9 +58,9 @@ namespace SIL.Windows.Forms.TestApp
 #endif
 		}
 
-		private void OnLookupISOCodeDialogClicked(object sender, EventArgs e)
+		private void OnLanguageLookupDialogClicked(object sender, EventArgs e)
 		{
-			using (var dialog = new LookupLanguageDialog())
+			using (var dialog = new LanguageLookupDialog())
 				dialog.ShowDialog();
 		}
 

@@ -184,8 +184,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LookupLanguageModelTests.cs" />
-    <Compile Include="LookupLanguageControlTests.cs" />
+    <Compile Include="LanguageLookupControlTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tree\WritingSystemTreeItemTests.cs" />
     <Compile Include="Tree\WritingSystemTreeModelTests.cs" />
