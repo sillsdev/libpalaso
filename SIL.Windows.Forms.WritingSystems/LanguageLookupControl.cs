@@ -44,6 +44,11 @@ namespace SIL.Windows.Forms.WritingSystems
 			get { return _model.SelectedLanguage; }
 		}
 
+		public string DesiredLanguageName
+		{
+			get { return _model.DesiredLanguageName; }
+		}
+
 		public bool HaveSufficientInformation
 		{
 			get { return _model.HaveSufficientInformation; }

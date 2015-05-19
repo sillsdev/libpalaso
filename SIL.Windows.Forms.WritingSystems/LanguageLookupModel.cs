@@ -9,10 +9,12 @@ namespace SIL.Windows.Forms.WritingSystems
 {
 	public class LanguageLookupModel
 	{
+		private static readonly string UnlistedLanguageName = LocalizationManager.GetString("LanguageLookup.UnlistedLanguage", "Unlisted Language");
+
 		private LanguageLookup _languageLookup;
 		private string _searchText;
 		private LanguageInfo _selectedLanguage;
-		private static readonly string UnlistedLanguageName = LocalizationManager.GetString("LanguageLookup.UnlistedLanguage", "Unlisted Language");
+		private string _desiredLanguageName;
 
 		/// <summary>
 		/// Maybe this doesn't belong here... using it in Bloom which is more concerned with language than writing system
@@ -37,8 +39,8 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			get
 			{
-				return SelectedLanguage != null && _selectedLanguage.DesiredName != UnlistedLanguageName
-					&& _selectedLanguage.DesiredName.Length > 0;
+				return SelectedLanguage != null && _desiredLanguageName != UnlistedLanguageName
+					&& _desiredLanguageName.Length > 0;
 			}
 		}
 
@@ -46,11 +48,9 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			get
 			{
-				if (_selectedLanguage == null || _selectedLanguage.DesiredName == null)
-					return string.Empty;
-				return _selectedLanguage.DesiredName;
+				return _desiredLanguageName ?? string.Empty;
 			}
-			set { _selectedLanguage.DesiredName = value.Trim(); }
+			set { _desiredLanguageName = value == null ? null : value.Trim(); }
 		}
 
 		public IEnumerable<LanguageInfo> MatchingLanguages
@@ -85,7 +85,7 @@ namespace SIL.Windows.Forms.WritingSystems
 					if (_searchText != "?")
 					{
 						string failedSearchText = _searchText.ToUpperFirstLetter();
-						_selectedLanguage.DesiredName = failedSearchText;
+						_desiredLanguageName = failedSearchText;
 						_selectedLanguage.Names.Insert(0, failedSearchText);
 					}
 				}
@@ -93,7 +93,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				{
 					IList<string> names = _selectedLanguage.Names;
 					//now if they were typing another form, well then that form makes a better default "Desired Name" than the official primary name
-					_selectedLanguage.DesiredName = names.FirstOrDefault(n => n.StartsWith(_searchText, StringComparison.InvariantCultureIgnoreCase)) ?? names[0];
+					_desiredLanguageName = names.FirstOrDefault(n => n.StartsWith(_searchText, StringComparison.InvariantCultureIgnoreCase)) ?? names[0];
 				}
 			}
 		}

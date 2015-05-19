@@ -45,11 +45,11 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 			_control.SearchText = "ak";
 			WaitForControl();
 			Assert.AreEqual("akq", _control.SelectedLanguage.LanguageTag);
-			Assert.AreEqual("Ak", _control.SelectedLanguage.DesiredName);
+			Assert.AreEqual("Ak", _control.DesiredLanguageName);
 			_control.SearchText = "akq";
 			WaitForControl();
 			Assert.AreEqual("akq", _control.SelectedLanguage.LanguageTag);
-			Assert.AreEqual("Ak", _control.SelectedLanguage.DesiredName);
+			Assert.AreEqual("Ak", _control.DesiredLanguageName);
 		}
 	}
 }

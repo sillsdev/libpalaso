@@ -38,6 +38,11 @@ namespace SIL.Windows.Forms.WritingSystems
 			get { return _languageLookupControl.SelectedLanguage; }
 		}
 
+		public string DesiredLanguageName
+		{
+			get { return _languageLookupControl.DesiredLanguageName; }
+		}
+
 		public string SearchText
 		{
 			get { return _languageLookupControl.SearchText; }

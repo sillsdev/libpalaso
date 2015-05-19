@@ -164,7 +164,6 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._propertiesTabControl.Name = "_propertiesTabControl";
 			this._propertiesTabControl.Size = new System.Drawing.Size(609, 392);
 			this._propertiesTabControl.TabIndex = 0;
-			this._propertiesTabControl.Load += new System.EventHandler(this._propertiesTabControl_Load);
 			// 
 			// _buttonBar
 			// 

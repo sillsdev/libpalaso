@@ -33,8 +33,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			_buttonBar.BindToModel(_model);
 			_propertiesTabControl.BindToModel(_model);
 
-			var treeModel = new WritingSystemTreeModel(_model);
-			treeModel.Suggestor = model.WritingSystemSuggestor;
+			var treeModel = new WritingSystemTreeModel(_model) {Suggestor = model.WritingSystemSuggestor};
 			_treeView.BindToModel(treeModel);
 			_model.SelectionChanged += UpdateHeaders;
 			_model.CurrentItemUpdated += UpdateHeaders;
@@ -146,11 +145,6 @@ namespace SIL.Windows.Forms.WritingSystems
 					WaitCursor.Hide();
 				}
 			}
-		}
-
-		private void _propertiesTabControl_Load(object sender, EventArgs e)
-		{
-
 		}
 	}
 }
