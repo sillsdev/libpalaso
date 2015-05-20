@@ -21,6 +21,11 @@ namespace SIL.Windows.Forms.WritingSystems
 			set { _languageLookupControl.ShowDesiredLanguageNameField = value; }
 		}
 
+		public Func<LanguageInfo, bool> MatchingLanguageFilter
+		{
+			set { _languageLookupControl.MatchingLanguageFilter = value; }
+		}
+
 		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
 		{
 			_languageLookupControl.StopTimer();

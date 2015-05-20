@@ -29,6 +29,8 @@ namespace SIL.Windows.Forms.WritingSystems
 			return null;
 		}
 
+		public Func<LanguageInfo, bool> MatchingLanguageFilter { get; set; }
+
 		public string SearchText
 		{
 			get { return _searchText; }
@@ -66,7 +68,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				if (_languageLookup == null)
 					_languageLookup = new LanguageLookup();
 
-				foreach (LanguageInfo li in _languageLookup.SuggestLanguages(_searchText))
+				foreach (LanguageInfo li in _languageLookup.SuggestLanguages(_searchText).Where(li => MatchingLanguageFilter(li)))
 					yield return li;
 			}
 		}

@@ -39,6 +39,11 @@ namespace SIL.Windows.Forms.WritingSystems
 			set { _desiredLanguageDisplayName.Visible = _desiredLanguageLabel.Visible = value; }
 		}
 
+		public Func<LanguageInfo, bool> MatchingLanguageFilter
+		{
+			set { _model.MatchingLanguageFilter = value; }
+		}
+
 		public LanguageInfo SelectedLanguage
 		{
 			get { return _model.SelectedLanguage; }
