@@ -68,7 +68,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				if (_languageLookup == null)
 					_languageLookup = new LanguageLookup();
 
-				foreach (LanguageInfo li in _languageLookup.SuggestLanguages(_searchText).Where(li => MatchingLanguageFilter(li)))
+				foreach (LanguageInfo li in _languageLookup.SuggestLanguages(_searchText).Where(li => MatchingLanguageFilter == null || MatchingLanguageFilter(li)))
 					yield return li;
 			}
 		}
