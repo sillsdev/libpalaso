@@ -201,17 +201,14 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 		private void AddCharacterSet(XElement validCharsElem, Staging s, string elementName, string type)
 		{
 			const char fwDelimiter = '\uFFFC';
+			const string spaceReplacement = "U+0020";
 
 			XElement elem = validCharsElem.Element(elementName);
 			if ((elem != null) && !string.IsNullOrEmpty(type)) 
 			{
-				var characterString = (string)elem;
-				var characters = characterString.Split(fwDelimiter).ToList();
-				String characterSet;
-				if (type != "numeric")
-					characterSet = UnicodeSet.ToPattern(characters);
-				else
-					characterSet = string.Join("", characters);
+				var characterString = (string) elem;
+				string[] characters = characterString.Replace(spaceReplacement, " ").Split(fwDelimiter);
+				string characterSet = type != "numeric" ? UnicodeSet.ToPattern(characters) : string.Join("", characters);
 				s.CharacterSets.Add(type, characterSet);
 			}
 		}
