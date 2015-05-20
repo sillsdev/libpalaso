@@ -14,6 +14,8 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 	{
 		private Metadata _metadata;
 
+		private string _tempFilePath;
+
 		public Metadata Metadata
 		{
 			get { return _metadata; }
@@ -214,7 +216,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			Metadata.Write(_pathForSavingMetadataChanges);
 		}
 
-		private static Image LoadImageWithoutLocking(string path)
+		private static Image LoadImageWithoutLocking(string path, out string tempPath)
 		{
 			/*          1) Naïve approach:  locks until the image is dispose of some day, which is counter-intuitive to me
 							  return Image.FromFile(path);
@@ -228,32 +230,32 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			*/
 
 			//But note, it's not clear if (2) will very occasionally die with "out of memory": http://jira.palaso.org/issues/browse/BL-199
-			//Note: an "out of memory" error occurs if the FileStream is closed and you try to modify the image.
+			// Note: if the FileStream is closed, attempts to modify the image result in an "out of memory" error.
 
-			//3) Just leak a temp file.  (or create a temp file and delete it in Dispose).
+			//3) Use a temp file.
 
-			//4) http://stackoverflow.com/questions/16055667/graphics-drawimage-out-of-memory-exception suggests a variation on 2) which
-			//   removes the need for temp files while not suffering from misleading "out of memory" errors.  This is the code below.
-
-			using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+			//if(Path.GetExtension(path)==".jpg")
 			{
-				using (var image = new Bitmap(fs))
-				{
-					return new Bitmap(image);
-				}
+				var leakMe = TempFile.WithExtension(Path.GetExtension(path));
+				File.Delete(leakMe.Path);
+				File.Copy(path, leakMe.Path);
+				tempPath = leakMe.Path;
+				return Image.FromFile(leakMe.Path); ;
 			}
 		}
 
 
 		public static PalasoImage FromFile(string path)
 		{
+			string tempPath;
 			var i = new PalasoImage
 			{
-				Image = LoadImageWithoutLocking(path),
+				Image = LoadImageWithoutLocking(path, out tempPath),
 				FileName = Path.GetFileName(path),
 				_originalFilePath = path,
 				_pathForSavingMetadataChanges = path,
 				Metadata = Metadata.FromFile(path),
+				_tempFilePath = tempPath
 			};
 			return i;
 		}
@@ -349,6 +351,18 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				{
 					Image.Dispose();
 					Image = null;
+				}
+
+				if (!string.IsNullOrEmpty(_tempFilePath))
+				{
+					try
+					{
+						File.Delete(_tempFilePath);
+					}
+					catch (Exception e)
+					{
+						Debug.Fail("Not able to delete image temp file.", e.ToString());
+					}
 				}
 				Disposed = true;
 			}
