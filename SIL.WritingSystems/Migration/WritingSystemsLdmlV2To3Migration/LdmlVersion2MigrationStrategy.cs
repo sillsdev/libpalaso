@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Xml;
 using System.Xml.Linq;
 using Icu;
 using SIL.Extensions;
+using SIL.IO;
 using SIL.Keyboarding;
 using SIL.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
@@ -160,7 +163,6 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 					staging.VariantName = variantName;
 			}
 
-			// IETF language tag
 			if (fwElem != null)
 			{
 				// DefaultFontFeatures
@@ -183,12 +185,34 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 					}
 					catch (XmlException)
 					{
-						// Move on if fw:validChars contains invalid XML
+						ParseLegacyWordformingCharOverridesFile(staging);
 					}
 				}
 			}
 
 			_staging[sourceFileName] = staging;
+		}
+
+		private static void ParseLegacyWordformingCharOverridesFile(Staging staging)
+		{
+			string legacyOverridesFile = FileLocator.GetFileDistributedWithApplication(true, "WordFormingCharOverrides.xml");
+			if (!string.IsNullOrEmpty(legacyOverridesFile))
+			{
+				XElement rootElem = XElement.Load(legacyOverridesFile);
+				var characters = new HashSet<string>();
+				foreach (XElement charElem in rootElem.Elements("wordForming"))
+				{
+					var codepointStr = (string)charElem.Attribute("val");
+					if (!string.IsNullOrEmpty(codepointStr))
+					{
+						int codepoint = Convert.ToInt32(codepointStr, 16);
+						var c = (char)codepoint;
+						characters.Add(c.ToString(CultureInfo.InvariantCulture));
+					}
+				}
+				if (characters.Count > 0)
+					staging.CharacterSets.Add("main", UnicodeSet.ToPattern(characters));
+			}
 		}
 
 		/// <summary>

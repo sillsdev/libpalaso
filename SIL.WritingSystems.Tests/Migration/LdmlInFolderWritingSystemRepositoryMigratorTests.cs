@@ -1108,6 +1108,32 @@ namespace SIL.WritingSystems.Tests.Migration
 		}
 
 		[Test]
+		public void Migrate_OriginalFileContainsFwNamespaceWithOldValidChars_ValidCharsIsMigratedFromLegacyOverridesFile()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile(
+					"test.ldml",
+					LdmlContentForTests.Version0WithOldFwValidChars("en", "", "US", ""));
+
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+
+				var repo = new TestLdmlInFolderWritingSystemRepository(environment.LdmlPath);
+				migrator.ResetRemovedProperties(repo);
+
+				var main = new CharacterSetDefinition("main");
+				main.Characters.UnionWith(new[] {"x", "y", "z"});
+
+				WritingSystemDefinition ws = repo.Get("en-US");
+
+				Assert.That(ws.CharacterSets["main"].ValueEquals(main));
+				Assert.That(ws.CharacterSets.Contains("numeric"), Is.False);
+				Assert.That(ws.CharacterSets.Contains("punctuation"), Is.False);
+			}
+		}
+
+		[Test]
 		public void Migrate_OriginalFileContainsPalasoNamespace_InfoIsMigrated()
 		{
 			using (var environment = new TestEnvironment())

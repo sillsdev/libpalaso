@@ -271,6 +271,36 @@ namespace SIL.WritingSystems.Tests
 </ldml>".Replace('\'', '"'), language, script, region, variant);
 		}
 
+		static public string Version0WithOldFwValidChars(string language, string script, string region, string variant)
+		{
+			return String.Format(
+				@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+<identity>
+	<version number='' />
+	<generation date='0001-01-01T00:00:00' />
+	<language type='{0}' />
+	<script type='{1}' />
+	<territory type='{2}' />
+	<variant type='{3}' />
+</identity>
+<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
+	<palaso:defaultFontFamily value='Arial' />
+	<palaso:defaultFontSize value='12' />
+</special>
+<special xmlns:fw='urn://fieldworks.sil.org/ldmlExtensions/v1'>
+		<fw:graphiteEnabled value='True' />
+		<fw:validChars value='a b c d e f g' />
+		<fw:defaultFontFeatures value='order=3 children=2 color=red createDate=1996' />
+		<fw:legacyMapping value='SomeMapper' />
+		<fw:scriptName value='scriptName' />
+		<fw:regionName value='regionName' />
+		<fw:variantName value='aVarName' />
+		<fw:windowsLCID value='4321' />
+</special>
+</ldml>".Replace('\'', '"'), language, script, region, variant);
+		}
+
 		static public string Version0Bogus(string language, string script, string region, string variant, string bogus)
 		{
 			return String.Format(
