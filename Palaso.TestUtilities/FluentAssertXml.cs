@@ -170,9 +170,9 @@ namespace Palaso.TestUtilities
 		/// <summary>
 		/// Will honor default namespace
 		/// </summary>
-		public void HasSpecifiedNumberOfMatchesForXpath(string xpath, int count)
+		public void HasSpecifiedNumberOfMatchesForXpath(string xpath, int count, XmlNamespaceManager nameSpaceManager = null)
 		{
-			var nodes = NodeOrDom.SafeSelectNodes(xpath);
+			var nodes = nameSpaceManager == null ? NodeOrDom.SafeSelectNodes(xpath) : NodeOrDom.SafeSelectNodes(xpath, nameSpaceManager);
 			if (nodes==null)
 			{
 				Console.WriteLine("Expected {0} but got 0 matches for {1}",count,  xpath);
