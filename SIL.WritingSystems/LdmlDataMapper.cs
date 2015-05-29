@@ -527,9 +527,10 @@ namespace SIL.WritingSystems
 
 		private void ReadExemplarCharactersElem(XElement exemplarCharactersElem, WritingSystemDefinition ws)
 		{
-			string type = (string)exemplarCharactersElem.Attribute("type") ?? "main";
+			string type = (string) exemplarCharactersElem.Attribute("type") ?? "main";
 			var csd = new CharacterSetDefinition(type);
-			csd.Characters.UnionWith(UnicodeSet.ToCharacters((string) exemplarCharactersElem));
+			var unicodeSet = (string) exemplarCharactersElem;
+			csd.Characters.AddRange(type == "footnotes" ? unicodeSet.Trim('[', ']').Split(' ').Select(c => c.Trim('{', '}')) : UnicodeSet.ToCharacters(unicodeSet));
 			ws.CharacterSets.Add(csd);
 		}
 
@@ -973,8 +974,10 @@ namespace SIL.WritingSystems
 					case "numeric":
 						break;
 					// All others go to special Sil:exemplarCharacters
-					default :
-						exemplarCharactersElem = new XElement(Sil + "exemplarCharacters", UnicodeSet.ToPattern(csd.Characters));
+					default:
+						string unicodeSet = csd.Type == "footnotes" ? string.Format("[{0}]", string.Join(" ", csd.Characters.Select(c => c.Length > 1 ? string.Format("{{{0}}}", c) : c)))
+							: UnicodeSet.ToPattern(csd.Characters);
+						exemplarCharactersElem = new XElement(Sil + "exemplarCharacters", unicodeSet);
 						exemplarCharactersElem.SetAttributeValue("type", csd.Type);
 						specialElem = GetOrCreateSpecialElement(charactersElem);
 						specialElem.Add(exemplarCharactersElem);

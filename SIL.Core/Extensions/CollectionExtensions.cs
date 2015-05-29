@@ -172,6 +172,17 @@ namespace SIL.Extensions
 			return found == null ? -1 : found.i;
 		}
 
+		public static bool SetEquals<T>(this IEnumerable<T> first, IEnumerable<T> second)
+		{
+			return SetEquals(first, second, EqualityComparer<T>.Default);
+		}
+
+		public static bool SetEquals<T>(this IEnumerable<T> first, IEnumerable<T> second, IEqualityComparer<T> comparer)
+		{
+			var set = new HashSet<T>(first, comparer);
+			return set.SetEquals(second);
+		}
+
 		#endregion
 
 		#region IList

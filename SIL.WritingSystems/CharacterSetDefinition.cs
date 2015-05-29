@@ -1,4 +1,6 @@
 ﻿using System.Collections.Specialized;
+using System.Linq;
+using SIL.Extensions;
 using SIL.ObjectModel;
 
 namespace SIL.WritingSystems
@@ -6,19 +8,19 @@ namespace SIL.WritingSystems
 	public class CharacterSetDefinition : DefinitionBase<CharacterSetDefinition>
 	{
 		private readonly string _type;
-		private readonly ObservableHashSet<string> _characters; 
+		private readonly ObservableList<string> _characters; 
 
 		public CharacterSetDefinition(string type)
 		{
 			_type = type;
-			_characters = new ObservableHashSet<string>();
+			_characters = new ObservableList<string>();
 			SetupCollectionChangeListeners();
 		}
 
 		public CharacterSetDefinition(CharacterSetDefinition csd)
 		{
 			_type = csd._type;
-			_characters = new ObservableHashSet<string>(csd._characters);
+			_characters = new ObservableList<string>(csd._characters);
 			SetupCollectionChangeListeners();
 		}
 
@@ -37,14 +39,18 @@ namespace SIL.WritingSystems
 			get { return _type; }
 		}
 
-		public IObservableSet<string> Characters
+		public IObservableList<string> Characters
 		{
 			get { return _characters; }
 		}
 
 		public override bool ValueEquals(CharacterSetDefinition other)
 		{
-			return other != null && _type == other._type && _characters.SetEquals(other._characters);
+			if (other == null || _type != other._type)
+				return false;
+			if (_type == "footnotes")
+				return _characters.SequenceEqual(other._characters);
+			return _characters.SetEquals(other._characters);
 		}
 
 		public override CharacterSetDefinition Clone()

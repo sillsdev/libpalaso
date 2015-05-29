@@ -318,15 +318,9 @@ namespace SIL.WritingSystems.Tests
 					main.Characters.Add(((char) i).ToString(CultureInfo.InvariantCulture));
 				main.Characters.Add("az");
 
-				var footnotes = new CharacterSetDefinition("footnotes");
-				const string footnotesString = "- ‐ – — , ; : ! ? . … ' ‘ ’ \" “ ” ( ) [ ] § @ * / & # † ‡ ′ ″";
-				foreach (string str in footnotesString.Split(' '))
-					footnotes.Characters.Add(str);
+				var footnotes = new CharacterSetDefinition("footnotes") {Characters = {"¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹", "¹⁰"}};
 
-				var numeric = new CharacterSetDefinition("numeric");
-				const string numericString = "๐ ๑ ๒ ๓ ๔ ๕ ๖ ๗ ๘ ๙";
-				foreach (string str in numericString.Split(' '))
-					numeric.Characters.Add(str);
+				var numeric = new CharacterSetDefinition("numeric") {Characters = {"๐", "๑", "๒", "๓", "๔", "๕", "๖", "๗", "๘", "๙"}};
 
 				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
 				wsToLdml.CharacterSets.Add(index);
@@ -342,7 +336,7 @@ namespace SIL.WritingSystems.Tests
 					.HasAtLeastOneMatchForXpath("/ldml/characters/exemplarCharacters[text()='[a-z{az}]']", environment.NamespaceManager);
 				// Character set in XPath is escaped differently from the actual file
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/characters/special/sil:exemplarCharacters[@type='footnotes' and text()='[!-#\\&-*,-/\\:;?@\\[\\]\\u00A7\\u2010\\u2013\\u2014\\u2018\\u2019\\u201C\\u201D\\u2020\\u2021\\u2026\\u2032\\u2033]']", environment.NamespaceManager);
+					.HasAtLeastOneMatchForXpath("/ldml/characters/special/sil:exemplarCharacters[@type='footnotes' and text()='[¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ {¹⁰}]']", environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
 					.HasAtLeastOneMatchForXpath("/ldml/numbers/defaultNumberingSystem[text()='standard']", environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
@@ -350,10 +344,10 @@ namespace SIL.WritingSystems.Tests
 
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
-				Assert.That(wsFromLdml.CharacterSets["index"].ValueEquals(index));
-				Assert.That(wsFromLdml.CharacterSets["main"].ValueEquals(main));
-				Assert.That(wsFromLdml.CharacterSets["footnotes"].ValueEquals(footnotes));
-				Assert.That(wsFromLdml.CharacterSets["numeric"].ValueEquals(numeric));
+				Assert.That(wsFromLdml.CharacterSets["index"].ValueEquals(index), Is.True);
+				Assert.That(wsFromLdml.CharacterSets["main"].ValueEquals(main), Is.True);
+				Assert.That(wsFromLdml.CharacterSets["footnotes"].ValueEquals(footnotes), Is.True);
+				Assert.That(wsFromLdml.CharacterSets["numeric"].ValueEquals(numeric), Is.True);
 			}
 		}
 
