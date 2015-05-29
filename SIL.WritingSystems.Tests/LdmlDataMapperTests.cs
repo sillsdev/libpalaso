@@ -432,25 +432,25 @@ namespace SIL.WritingSystems.Tests
 				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/delimiters/special/sil:matched-pairs/sil:matched-pair[@open='mpOpen1' and @close='mpClose2' and @paraClose='false']", environment.NamespaceManager);
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/delimiters/special/sil:matched-pairs/sil:matched-pair[@open='mpOpen1' and @close='mpClose2' and @paraClose='false']", 1, environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/delimiters/special/sil:punctuation-patterns/sil:punctuation-pattern[@pattern='pattern1' and @context='medial']", environment.NamespaceManager);
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/delimiters/special/sil:punctuation-patterns/sil:punctuation-pattern[@pattern='pattern1' and @context='medial']", 1, environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/delimiters/quotationStart[text()='\"']", environment.NamespaceManager);
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/delimiters/quotationStart[text()='\"']", 1, environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/delimiters/quotationEnd[text()='\"']", environment.NamespaceManager);
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/delimiters/quotationEnd[text()='\"']", 1, environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/delimiters/alternateQuotationStart[text()='{']", environment.NamespaceManager);
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/delimiters/alternateQuotationStart[text()='{']", 1, environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/delimiters/alternateQuotationEnd[text()='}']", environment.NamespaceManager);
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/delimiters/alternateQuotationEnd[text()='}']", 1, environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/delimiters/special/sil:quotation-marks/sil:quotationContinue[text()='\"']", environment.NamespaceManager);
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/delimiters/special/sil:quotation-marks/sil:quotationContinue[text()='\"']", 1, environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/delimiters/special/sil:quotation-marks/sil:alternateQuotationContinue[text()='{']", environment.NamespaceManager);
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/delimiters/special/sil:quotation-marks/sil:alternateQuotationContinue[text()='{']", 1, environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/delimiters/special/sil:quotation-marks/sil:quotation[@open='open1' and @close='close2' and @continue='cont3' and @level='3']", environment.NamespaceManager);
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/delimiters/special/sil:quotation-marks/sil:quotation[@open='open1' and @close='close2' and @continue='cont3' and @level='3']", 1, environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/delimiters/special/sil:quotation-marks/sil:quotation[@open and string-length(@open)=0 and @level='1' and @type='narrative']", environment.NamespaceManager);
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/delimiters/special/sil:quotation-marks/sil:quotation[@open and string-length(@open)=0 and @level='1' and @type='narrative']", 1, environment.NamespaceManager);
 
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
@@ -461,6 +461,30 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(wsFromLdml.QuotationMarks[1], Is.EqualTo(qm2));
 				Assert.That(wsFromLdml.QuotationMarks[2], Is.EqualTo(qm3));
 				Assert.That(wsFromLdml.QuotationMarks[3], Is.EqualTo(qm4));
+			
+				// Test rewriting the loaded file while using the original version as a base to make sure 
+				// no duplicate elements are created
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsFromLdml, new MemoryStream(File.ReadAllBytes(environment.FilePath("test.ldml"))));
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/delimiters/special/sil:matched-pairs/sil:matched-pair[@open='mpOpen1' and @close='mpClose2' and @paraClose='false']", 1, environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/delimiters/special/sil:punctuation-patterns/sil:punctuation-pattern[@pattern='pattern1' and @context='medial']", 1, environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/delimiters/quotationStart[text()='\"']", 1, environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/delimiters/quotationEnd[text()='\"']", 1, environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/delimiters/alternateQuotationStart[text()='{']", 1, environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/delimiters/alternateQuotationEnd[text()='}']", 1, environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/delimiters/special/sil:quotation-marks/sil:quotationContinue[text()='\"']", 1, environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/delimiters/special/sil:quotation-marks/sil:alternateQuotationContinue[text()='{']", 1, environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/delimiters/special/sil:quotation-marks/sil:quotation[@open='open1' and @close='close2' and @continue='cont3' and @level='3']", 1, environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/delimiters/special/sil:quotation-marks/sil:quotation[@open and string-length(@open)=0 and @level='1' and @type='narrative']", 1, environment.NamespaceManager);
 			}
 		}
 

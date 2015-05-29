@@ -1042,7 +1042,7 @@ namespace SIL.WritingSystems
 				punctuationPatternsElem = specialElem.NonAltElement(Sil + "punctuation-patterns");
 				if (punctuationPatternsElem != null)
 				{
-					punctuationPatternsElem.NonAltElements(Sil + "punctuation-patterns").Remove();
+					punctuationPatternsElem.NonAltElements(Sil + "punctuation-pattern").Remove();
 					RemoveIfEmpty(punctuationPatternsElem);
 				}
 				RemoveIfEmpty(specialElem);
