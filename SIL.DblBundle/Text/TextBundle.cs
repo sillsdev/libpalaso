@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using L10NSharp;
 using SIL.DblBundle.Usx;
+using SIL.Reporting;
 
 namespace SIL.DblBundle.Text
 {
@@ -121,6 +122,27 @@ namespace SIL.DblBundle.Text
 					string.Format("Attempted to copy {0} from the bundle but {0} does not exist in this bundle.", DblBundleFileUtils.kVersificationFileName));
 
 			File.Copy(versificationPath, destinationPath, true);
+		}
+
+		/// <summary>
+		/// Copies any font files (*.ttf) in the bundle to the given destination directory
+		/// </summary>
+		public void CopyFontFiles(string destinationDir)
+		{
+			foreach (var ttfFile in Directory.GetFiles(PathToUnzippedDirectory, "*.ttf"))
+			{
+				string newPath = Path.Combine(destinationDir, Path.GetFileName(ttfFile));
+				try
+				{
+					if (!File.Exists(newPath))
+						File.Copy(ttfFile, newPath, true);
+				}
+				catch (IOException e)
+				{
+					ErrorReport.ReportNonFatalExceptionWithMessage(e,
+						LocalizationManager.GetString("DblBundle.FontFileCopyFailed", "An attempt to copy font file {0} from the bundle to {1} failed."), Path.GetFileName(ttfFile), destinationDir);
+				}
+			}
 		}
 
 		/// <summary>
