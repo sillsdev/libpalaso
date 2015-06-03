@@ -120,6 +120,7 @@ namespace Palaso.UI.WindowsForms.Reporting
 			if (match2.Success)
 				totalSwapMemory = ulong.Parse(match2.Groups [1].Value) * 1024;
 			var availableMemory = returnVal.TotalPhysicalMemory + totalSwapMemory;
+			var is64BitProcess = IntPtr.Size == 8; // according to MSDN
 			if (is64BitProcess)
 			{
 				returnVal.TotalVirtualMemory = availableMemory;
