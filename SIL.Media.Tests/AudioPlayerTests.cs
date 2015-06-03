@@ -1,13 +1,13 @@
-﻿#if !MONO
-using SIL.Media.Tests.Properties;
-#endif
-using System;
+﻿using System;
 using System.IO;
 using System.Threading;
-using NAudio.Wave;
 using NUnit.Framework;
 using SIL.IO;
+using SIL.Media.Tests.Properties;
+#if !MONO
 using SIL.Media.Naudio;
+using NAudio.Wave;
+#endif
 
 namespace SIL.Media.Tests
 {
@@ -26,7 +26,6 @@ namespace SIL.Media.Tests
 		   Assert.DoesNotThrow(() => File.Delete(file.Path));
 #endif
 		}
-
 
 	   /// <summary>
 	   /// This test shows what caused hearthis to abandon the naudio; previous to a change to this class in 2/2012, it is believed that all was ok.
