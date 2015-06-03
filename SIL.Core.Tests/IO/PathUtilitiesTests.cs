@@ -5,9 +5,9 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.IO;
 using SIL.PlatformUtilities;
+using SIL.TestUtilities;
 
 namespace SIL.Tests.IO
 {

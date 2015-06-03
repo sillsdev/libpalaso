@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace Palaso.TestUtilities
+namespace SIL.TestUtilities
 {
 	[TestFixture]
 	class CanonicalXmlTests

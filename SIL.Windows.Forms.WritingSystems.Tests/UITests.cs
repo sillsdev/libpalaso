@@ -6,7 +6,7 @@ using System.Security.Permissions;
 using System.Threading;
 using System.Windows.Forms;
 using NUnit.Framework;
-using Palaso.TestUtilities;
+using SIL.TestUtilities;
 using SIL.WritingSystems;
 
 namespace SIL.Windows.Forms.WritingSystems.Tests

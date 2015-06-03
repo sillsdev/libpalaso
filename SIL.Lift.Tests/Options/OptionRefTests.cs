@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.Annotations;
 using SIL.Lift.Options;
+using SIL.TestUtilities;
 
 namespace SIL.Lift.Tests.Options
 {

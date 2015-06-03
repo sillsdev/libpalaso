@@ -1,8 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using NUnit.Framework.Constraints;
 
-namespace Palaso.TestUtilities
+namespace SIL.TestUtilities
 {
 
 	///<summary>

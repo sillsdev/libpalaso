@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.Data;
 using SIL.DictionaryServices.Model;
 using SIL.IO;
+using SIL.TestUtilities;
 using SIL.WritingSystems;
 
 namespace SIL.DictionaryServices.Tests

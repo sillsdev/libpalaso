@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.Lift.Parsing;
+using SIL.TestUtilities;
 using SIL.Text;
 
 namespace SIL.Lift.Tests

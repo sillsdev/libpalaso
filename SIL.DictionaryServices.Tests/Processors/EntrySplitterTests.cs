@@ -2,9 +2,9 @@
 using System.IO;
 using System.Xml;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.DictionaryServices.Processors;
 using SIL.Progress;
+using SIL.TestUtilities;
 
 namespace SIL.DictionaryServices.Tests.Processors
 {

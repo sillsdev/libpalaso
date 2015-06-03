@@ -230,9 +230,9 @@
       <Project>{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}</Project>
       <Name>SIL.Core.Tests</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Palaso.TestUtilities\Palaso.TestUtilities.csproj">
+    <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj">
       <Project>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</Project>
-      <Name>Palaso.TestUtilities</Name>
+      <Name>SIL.TestUtilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
       <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>

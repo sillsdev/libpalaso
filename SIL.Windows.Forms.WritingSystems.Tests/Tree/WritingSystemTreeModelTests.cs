@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Moq;
 using NUnit.Framework;
-using Palaso.TestUtilities;
+using SIL.TestUtilities;
 using SIL.Windows.Forms.WritingSystems.WSTree;
 using SIL.WritingSystems;
 using SIL.WritingSystems.Tests;

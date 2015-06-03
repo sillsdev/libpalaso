@@ -4,10 +4,10 @@ using System.Globalization;
 using System.IO;
 using System.Threading;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.DictionaryServices.Model;
 using SIL.Extensions;
 using SIL.Tests.Data;
+using SIL.TestUtilities;
 
 namespace SIL.DictionaryServices.Tests
 {

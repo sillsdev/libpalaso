@@ -195,9 +195,9 @@
     <Compile Include="WritingSystemSetupPMTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Palaso.TestUtilities\Palaso.TestUtilities.csproj">
+    <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj">
       <Project>{d74ce910-d44a-44f5-8c0f-f5e50b26f85d}</Project>
-      <Name>Palaso.TestUtilities</Name>
+      <Name>SIL.TestUtilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
       <Project>{3527da1d-1e25-48be-a71e-9ebf7f9208d4}</Project>

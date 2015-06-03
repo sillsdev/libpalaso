@@ -274,9 +274,9 @@
     <Compile Include="Progress\LogBox\LogBoxTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Palaso.TestUtilities\Palaso.TestUtilities.csproj">
+    <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj">
       <Project>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</Project>
-      <Name>Palaso.TestUtilities</Name>
+      <Name>SIL.TestUtilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.Windows.Forms\SIL.Windows.Forms.csproj">
       <Project>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</Project>

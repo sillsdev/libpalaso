@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
 using System.Xml;
 using SIL.Xml;
 
-namespace Palaso.TestUtilities
+namespace SIL.TestUtilities
 {
 	///<summary>
 	/// Assorted static methods for working with Canonical XML

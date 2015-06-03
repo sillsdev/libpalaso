@@ -2,8 +2,8 @@ using System;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.Lift.Options;
+using SIL.TestUtilities;
 using SIL.WritingSystems;
 using SIL.WritingSystems.Tests;
 

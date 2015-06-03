@@ -2,9 +2,9 @@
 using System.IO;
 using System.Threading;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.IO;
 using SIL.Settings;
+using SIL.TestUtilities;
 using SIL.Windows.Forms.Registration;
 
 namespace SIL.Windows.Forms.Tests

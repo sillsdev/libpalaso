@@ -5,7 +5,7 @@ using System.Xml;
 using SIL.IO;
 using SIL.Xml;
 
-namespace Palaso.TestUtilities
+namespace SIL.TestUtilities
 {
 	public class TempLiftFile : TempFile
 	{

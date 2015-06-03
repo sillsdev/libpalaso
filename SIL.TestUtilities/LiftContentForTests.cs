@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Palaso.TestUtilities
+namespace SIL.TestUtilities
 {
 	public class LiftContentForTests
 	{

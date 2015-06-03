@@ -1,7 +1,7 @@
 using System.IO;
 using System.Xml;
 using NUnit.Framework;
-using Palaso.TestUtilities;
+using SIL.TestUtilities;
 using SIL.WritingSystems;
 using SIL.Xml;
 

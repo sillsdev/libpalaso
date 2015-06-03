@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.IO;
 using SIL.Reporting;
+using SIL.TestUtilities;
 using SIL.UsbDrive;
 
 namespace SIL.Tests.IO

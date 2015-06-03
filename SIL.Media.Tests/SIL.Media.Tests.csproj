@@ -233,9 +233,9 @@
       <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
       <Name>SIL.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Palaso.TestUtilities\Palaso.TestUtilities.csproj">
+    <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj">
       <Project>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</Project>
-      <Name>Palaso.TestUtilities</Name>
+      <Name>SIL.TestUtilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj">
       <Project>{52a93c63-08f4-4527-8e6e-ac2adeba6e2d}</Project>

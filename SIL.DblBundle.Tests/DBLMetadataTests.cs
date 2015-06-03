@@ -3,8 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.DblBundle.Text;
+using SIL.TestUtilities;
 
 namespace SIL.DblBundle.Tests
 {

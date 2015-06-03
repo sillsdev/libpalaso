@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.Migration;
+using SIL.TestUtilities;
 
 namespace SIL.Tests.Migration
 {

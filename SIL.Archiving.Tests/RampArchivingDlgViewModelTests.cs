@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using Ionic.Zip;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.Archiving.Generic;
 using SIL.IO;
 using SIL.Reporting;
+using SIL.TestUtilities;
 using SIL.Windows.Forms.ClearShare;
 
 namespace SIL.Archiving.Tests

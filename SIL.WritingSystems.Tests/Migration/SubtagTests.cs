@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
-using Palaso.TestUtilities;
+using SIL.TestUtilities;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace SIL.WritingSystems.Tests.Migration

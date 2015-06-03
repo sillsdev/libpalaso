@@ -4,8 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.Keyboarding;
+using SIL.TestUtilities;
 
 namespace SIL.WritingSystems.Tests
 {

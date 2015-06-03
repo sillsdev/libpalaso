@@ -4,9 +4,9 @@ using System.IO;
 using System.Media;
 using System.Threading;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.IO;
 using SIL.Media.Tests.Properties;
+using SIL.TestUtilities;
 
 namespace SIL.Media.Tests
 {

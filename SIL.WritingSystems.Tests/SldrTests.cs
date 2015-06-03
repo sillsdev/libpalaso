@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using NUnit.Framework;
-using Palaso.TestUtilities;
+using SIL.TestUtilities;
 
 namespace SIL.WritingSystems.Tests
 {

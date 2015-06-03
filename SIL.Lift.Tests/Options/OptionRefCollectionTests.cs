@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.Lift.Options;
+using SIL.TestUtilities;
 
 namespace SIL.Lift.Tests.Options
 {

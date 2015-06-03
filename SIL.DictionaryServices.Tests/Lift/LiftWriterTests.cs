@@ -6,12 +6,12 @@ using System.Text;
 using System.Threading;
 using System.Xml;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.DictionaryServices.Lift;
 using SIL.DictionaryServices.Model;
 using SIL.Lift;
 using SIL.Lift.Options;
 using SIL.Lift.Validation;
+using SIL.TestUtilities;
 
 namespace SIL.DictionaryServices.Tests.Lift
 {

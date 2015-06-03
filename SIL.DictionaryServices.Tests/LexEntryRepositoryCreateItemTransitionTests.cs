@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.DictionaryServices.Model;
 using SIL.Tests.Data;
+using SIL.TestUtilities;
 
 namespace SIL.DictionaryServices.Tests
 {

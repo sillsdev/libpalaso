@@ -2,9 +2,9 @@
 using System.IO;
 using System.Xml;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.IO;
 using SIL.Migration;
+using SIL.TestUtilities;
 
 namespace SIL.Tests.Migration
 {

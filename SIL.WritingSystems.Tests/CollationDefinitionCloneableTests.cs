@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Palaso.TestUtilities;
+using SIL.TestUtilities;
 
 namespace SIL.WritingSystems.Tests
 {

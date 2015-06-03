@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.DictionaryServices.Model;
 using SIL.Lift;
 using SIL.Lift.Options;
+using SIL.TestUtilities;
 using SIL.Text;
 
 namespace SIL.DictionaryServices.Tests.Model

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.DictionaryServices.Model;
 using SIL.Lift;
+using SIL.TestUtilities;
 
 namespace SIL.DictionaryServices.Tests.Model
 {

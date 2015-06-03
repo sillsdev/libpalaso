@@ -1,6 +1,6 @@
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.DictionaryServices.Model;
+using SIL.TestUtilities;
 
 namespace SIL.DictionaryServices.Tests
 {

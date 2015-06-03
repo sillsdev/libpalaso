@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using NUnit.Framework;
 using SIL.Xml;
 
-namespace Palaso.TestUtilities
+namespace SIL.TestUtilities
 {
 	//NB: if c# ever allows us to add static exension methods,
 	//then all this could be an extension on nunit's Assert class.

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
-using Palaso.TestUtilities;
+using SIL.TestUtilities;
 
 namespace SIL.WritingSystems.Tests
 {

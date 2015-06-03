@@ -1,10 +1,8 @@
-using NUnit.Framework;
 using System.IO;
-using Palaso.TestUtilities;
+using NUnit.Framework;
 using SIL.IO;
 
-
-namespace Palaso.TestUtilities {
+namespace SIL.TestUtilities {
 	[TestFixture]
 	public class TemporaryFolderTests
 	{

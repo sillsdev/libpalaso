@@ -1,11 +1,11 @@
 using System.IO;
 using System.Xml;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.DictionaryServices.Lift;
 using SIL.DictionaryServices.Model;
 using SIL.Progress;
 using SIL.Tests.Data;
+using SIL.TestUtilities;
 
 namespace SIL.DictionaryServices.Tests.Lift
 {

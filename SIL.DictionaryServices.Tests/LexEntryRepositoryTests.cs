@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.Data;
 using SIL.DictionaryServices.Model;
 using SIL.Lift;
 using SIL.Lift.Options;
+using SIL.TestUtilities;
 using SIL.Text;
 using SIL.WritingSystems;
 

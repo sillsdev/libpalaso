@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.IO;
+using SIL.TestUtilities;
 using SIL.Windows.Forms.ClearShare;
 
 namespace SIL.Windows.Forms.Tests.ClearShare

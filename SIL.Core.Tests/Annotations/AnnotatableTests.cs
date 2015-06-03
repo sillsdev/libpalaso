@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
-using Palaso.TestUtilities;
 using SIL.Annotations;
+using SIL.TestUtilities;
 
 namespace SIL.Tests.Annotations
 {

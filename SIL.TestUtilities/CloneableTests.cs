@@ -5,7 +5,7 @@ using System.Reflection;
 using NUnit.Framework;
 using SIL.ObjectModel;
 
-namespace Palaso.TestUtilities
+namespace SIL.TestUtilities
 {
 	/// <summary>
 	/// Generic test that a cloneable object clones all required fields and uses them in equality testing.
