@@ -123,5 +123,13 @@ namespace PalasoUIWindowsForms.Tests.ErrorReporting
 			// Using WriteEvent means out data is in the eventual output twice.
 			Assert.That(matches, Has.Length.AtLeast(6));
 		}
+
+		[Test]
+		public void GetMemoryInformation_ReturnsMemoryInformation()
+		{
+			var memInfo = MemoryManagement.GetMemoryInformation();
+			Assert.Greater(memInfo.TotalPhysicalMemory, 0);
+			Assert.Greater(memInfo.TotalVirtualMemory, 0);
+		}
 	}
 }
