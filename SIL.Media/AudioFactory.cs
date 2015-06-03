@@ -1,4 +1,7 @@
 using System;
+#if MONO
+using SIL.Media.AlsaAudio;
+#endif
 
 namespace SIL.Media
 {
@@ -7,8 +10,8 @@ namespace SIL.Media
 		public static ISimpleAudioSession CreateAudioSession(string filePath)
 		{
 #if MONO
-				//return new AudioGStreamerSession(filePath);
-				return new AudioAlsaSession(filePath);
+			//return new AudioGStreamerSession(filePath);
+			return new AudioAlsaSession(filePath);
 #else
 			return new AudioIrrKlangSession(filePath);
 #endif
