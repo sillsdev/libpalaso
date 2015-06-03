@@ -181,7 +181,7 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Mapping of quotation marking system attribute to QuotationMarkingSystemType enumeration
 		/// </summary>
-		private static readonly Dictionary<string, QuotationMarkingSystemType>QuotationToQuotationMarkingSystemTypes = new Dictionary<string, QuotationMarkingSystemType>
+		private static readonly Dictionary<string, QuotationMarkingSystemType> QuotationToQuotationMarkingSystemTypes = new Dictionary<string, QuotationMarkingSystemType>
 		{
 			{string.Empty, QuotationMarkingSystemType.Normal},
 			{"narrative", QuotationMarkingSystemType.Narrative}

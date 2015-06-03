@@ -1,21 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{13B5E313-1B26-4DAE-9E96-133768B62FD2}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <ProjectGuid>{66B3504A-3B4E-45CB-903A-A9A75B22EF68}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestApp</RootNamespace>
-    <AssemblyName>TestApp</AssemblyName>
+    <RootNamespace>SIL.Media</RootNamespace>
+    <AssemblyName>SIL.Media</AssemblyName>
+    <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
     <OldToolsVersion>3.5</OldToolsVersion>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <UpgradeBackupLocation />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -33,91 +32,82 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\output\$(Configuration)</OutputPath>
+    <Optimize>False</Optimize>
+    <OutputPath>..\output\Debug</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <OutputType>WinExe</OutputType>
-    <RootNamespace>TestApp</RootNamespace>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <LangVersion>default</LangVersion>
+    <DocumentationFile>..\output\Debug\SIL.Media.xml</DocumentationFile>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>default</LangVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\output\$(Configuration)</OutputPath>
+    <Optimize>True</Optimize>
+    <OutputPath>..\output\Release</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <OutputType>WinExe</OutputType>
-    <DebugSymbols>true</DebugSymbols>
-    <RootNamespace>TestApp</RootNamespace>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\output\$(Configuration)</OutputPath>
-    <DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
+    <DebugSymbols>True</DebugSymbols>
+    <OutputPath>..\output\DebugMono</OutputPath>
+    <DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
+    <DocumentationFile>..\output\DebugMono\SIL.Media.xml</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>default</LangVersion>
     <ErrorReport>prompt</ErrorReport>
-    <OutputType>WinExe</OutputType>
-    <RootNamespace>TestApp</RootNamespace>
-    <Optimize>true</Optimize>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <WarningLevel>4</WarningLevel>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>False</Optimize>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
-    <OutputPath>..\..\output\$(Configuration)</OutputPath>
+    <OutputPath>..\output\ReleaseMono</OutputPath>
     <DefineConstants>TRACE;MONO</DefineConstants>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
-    <OutputType>WinExe</OutputType>
-    <DebugSymbols>true</DebugSymbols>
-    <RootNamespace>TestApp</RootNamespace>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <WarningLevel>4</WarningLevel>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\output\DebugStrongName\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <DocumentationFile>..\output\DebugStrongName\SIL.Media.xml</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>default</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\output\DebugMonoStrongName\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <Optimize>true</Optimize>
+    <DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
+    <DocumentationFile>..\output\DebugMonoStrongName\SIL.Media.xml</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>default</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseStrongName|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\output\ReleaseStrongName\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -125,10 +115,8 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\output\ReleaseMonoStrongName\</OutputPath>
     <DefineConstants>TRACE;MONO</DefineConstants>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -137,20 +125,19 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\output\Debug\</OutputPath>
+    <OutputPath>..\output\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <DocumentationFile>..\output\Debug\SIL.Media.xml</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <LangVersion>default</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\output\Release\</OutputPath>
+    <OutputPath>..\output\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -159,20 +146,19 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMono|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\output\DebugMono\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <Optimize>true</Optimize>
+    <OutputPath>..\output\DebugMono\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
+    <DocumentationFile>..\output\DebugMono\SIL.Media.xml</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>default</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMono|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\output\ReleaseMono\</OutputPath>
+    <OutputPath>..\output\ReleaseMono\</OutputPath>
     <DefineConstants>TRACE;MONO</DefineConstants>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -183,29 +169,29 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\output\DebugStrongName\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <DocumentationFile>..\output\DebugStrongName\SIL.Media.xml</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <LangVersion>default</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|x86'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\output\DebugMonoStrongName\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <Optimize>true</Optimize>
+    <DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
+    <DocumentationFile>..\output\DebugMonoStrongName\SIL.Media.xml</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>default</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseStrongName|x86'">
-    <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\output\ReleaseStrongName\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -213,114 +199,143 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|x86'">
-    <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\output\ReleaseMonoStrongName\</OutputPath>
     <DefineConstants>TRACE;MONO</DefineConstants>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="irrKlang.NET4, Version=1.0.4534.25937, Culture=neutral, PublicKeyToken=a854741bd80517c7, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\$(Configuration)\irrKlang.NET4.dll</HintPath>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName'">
+    <Reference Include="irrKlang.NET4">
+      <HintPath>..\lib\Debug\irrKlang.NET4.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.configuration" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    <Reference Include="NAudio">
+      <HintPath>..\lib\Debug\NAudio.dll</HintPath>
     </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
+    <Reference Include="irrKlang.NET4">
+      <HintPath>..\lib\Release\irrKlang.NET4.dll</HintPath>
+    </Reference>
+    <Reference Include="NAudio">
+      <HintPath>..\lib\Release\NAudio.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FastXmlSplitterTestForm.cs">
-      <SubType>Form</SubType>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName' Or '$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
+    <Compile Include="AudioIrrKlangSession.cs" />
+    <Compile Include="Naudio\AudioPlayer.cs" />
+    <Compile Include="Naudio\AudioRecorder.cs" />
+    <Compile Include="Naudio\FileWriterThread.cs" />
+    <Compile Include="Naudio\IAudioPlayer.cs" />
+    <Compile Include="Naudio\RecordingDevice.cs" />
+    <Compile Include="Naudio\TrimWaveStream.cs" />
+    <Compile Include="Naudio\UI\AudioDeviceIcons.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AudioDeviceIcons.resx</DependentUpon>
     </Compile>
-    <Compile Include="FastXmlSplitterTestForm.Designer.cs">
-      <DependentUpon>FastXmlSplitterTestForm.cs</DependentUpon>
+    <Compile Include="Naudio\UI\PeakMeterCtrl.cs">
+      <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Form1.cs">
-      <SubType>Form</SubType>
+    <Compile Include="Naudio\UI\PeakMeterCtrl.designer.cs">
+      <DependentUpon>PeakMeterCtrl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="Naudio\UI\RecordingDeviceIndicator.cs">
+      <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Program.cs" />
+    <Compile Include="Naudio\UI\RecordingDeviceIndicator.designer.cs">
+      <DependentUpon>RecordingDeviceIndicator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Naudio\RecordingState.cs" />
+    <Compile Include="Naudio\SampleAggregator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AlsaAudio\AlsaAudioDevice.cs" />
+    <Compile Include="AlsaAudio\AudioAlsaSession.cs" />
+    <Compile Include="AudioFactory.cs" />
+    <Compile Include="AudioNullSession.cs" />
+    <Compile Include="FFmpegRunner.cs" />
+    <Compile Include="ISimpleAudioSession.cs" />
+    <Compile Include="MediaInfo.cs" />
+    <Compile Include="ShortSoundFieldControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ShortSoundFieldControl.Designer.cs">
+      <DependentUpon>ShortSoundFieldControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="FastXmlSplitterTestForm.resx">
-      <DependentUpon>FastXmlSplitterTestForm.cs</DependentUpon>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="SoundFieldControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SoundFieldControl.Designer.cs">
+      <DependentUpon>SoundFieldControl.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName' Or '$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
+    <EmbeddedResource Include="Naudio\UI\AudioDeviceIcons.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AudioDeviceIcons.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="Naudio\UI\RecordingDeviceIndicator.resx">
+      <DependentUpon>RecordingDeviceIndicator.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ShortSoundFieldControl.resx">
+      <DependentUpon>ShortSoundFieldControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystemPickerTestForm.resx">
-      <DependentUpon>WritingSystemPickerTestForm.cs</DependentUpon>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="WritingSystemTest.resx">
-      <DependentUpon>WritingSystemTest.cs</DependentUpon>
+    <EmbeddedResource Include="SoundFieldControl.resx">
+      <DependentUpon>SoundFieldControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <None Include="app.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings1.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings1.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="Settings.cs" />
-    <Compile Include="WritingSystemPickerTestForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="WritingSystemPickerTestForm.Designer.cs">
-      <DependentUpon>WritingSystemPickerTestForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="WritingSystemTest.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="WritingSystemTest.Designer.cs">
-      <DependentUpon>WritingSystemTest.cs</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SIL.Media\SIL.Media.csproj">
-      <Project>{66B3504A-3B4E-45CB-903A-A9A75B22EF68}</Project>
-      <Name>SIL.Media</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SIL.Windows.Forms\SIL.Windows.Forms.csproj">
-      <Project>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</Project>
-      <Name>SIL.Windows.Forms</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SIL.Core\SIL.Core.csproj">
+    <None Include="artwork\stop15x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="artwork\record16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="artwork\play14x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DeleteHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="artwork\recordDisabled16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="artwork\playDisabled14x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
       <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
       <Name>SIL.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SIL.Windows.Forms.WritingSystems\SIL.Windows.Forms.WritingSystems.csproj">
-      <Project>{f7df58e2-5b67-498a-9f64-b5f1584a5ab9}</Project>
-      <Name>SIL.Windows.Forms.WritingSystems</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SIL.WritingSystems\SIL.WritingSystems.csproj">
-      <Project>{52a93c63-08f4-4527-8e6e-ac2adeba6e2d}</Project>
-      <Name>SIL.WritingSystems</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -340,7 +355,22 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="Resources\Microphone.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\NOTEBOOK.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Recorder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\HeadSet.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ExternalAudioDevice.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
 	   Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
