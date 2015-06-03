@@ -235,24 +235,24 @@
     <Compile Include="Parsing\Extensible.cs" />
     <Compile Include="Parsing\ILexiconMerger.cs" />
     <Compile Include="Parsing\ILiftMergerTestSuite.cs" />
-    <Compile Include="Parsing\Objects\LiftAnnotation.cs" />
-    <Compile Include="Parsing\Objects\LiftEntry.cs" />
-    <Compile Include="Parsing\Objects\LiftEtymology.cs" />
-    <Compile Include="Parsing\Objects\LiftExample.cs" />
-    <Compile Include="Parsing\Objects\LiftField.cs" />
+    <Compile Include="Parsing\LiftAnnotation.cs" />
+    <Compile Include="Parsing\LiftEntry.cs" />
+    <Compile Include="Parsing\LiftEtymology.cs" />
+    <Compile Include="Parsing\LiftExample.cs" />
+    <Compile Include="Parsing\LiftField.cs" />
+    <Compile Include="Parsing\LiftGrammaticalInfo.cs" />
+    <Compile Include="Parsing\LiftNote.cs" />
+    <Compile Include="Parsing\LiftObject.cs" />
+    <Compile Include="Parsing\LiftPhonetic.cs" />
+    <Compile Include="Parsing\LiftRelation.cs" />
+    <Compile Include="Parsing\LiftReversal.cs" />
+    <Compile Include="Parsing\LiftSense.cs" />
+    <Compile Include="Parsing\LiftTrait.cs" />
+    <Compile Include="Parsing\LiftTranslation.cs" />
+    <Compile Include="Parsing\LiftUrlRef.cs" />
+    <Compile Include="Parsing\LiftVariant.cs" />
     <Compile Include="Parsing\LiftMultiText.cs" />
-    <Compile Include="Parsing\Objects\LiftGrammaticalInfo.cs" />
-    <Compile Include="Parsing\Objects\LiftNote.cs" />
-    <Compile Include="Parsing\Objects\LiftObject.cs" />
     <Compile Include="Parsing\LiftParser.cs" />
-    <Compile Include="Parsing\Objects\LiftPhonetic.cs" />
-    <Compile Include="Parsing\Objects\LiftRelation.cs" />
-    <Compile Include="Parsing\Objects\LiftReversal.cs" />
-    <Compile Include="Parsing\Objects\LiftSense.cs" />
-    <Compile Include="Parsing\Objects\LiftTrait.cs" />
-    <Compile Include="Parsing\Objects\LiftTranslation.cs" />
-    <Compile Include="Parsing\Objects\LiftUrlRef.cs" />
-    <Compile Include="Parsing\Objects\LiftVariant.cs" />
     <Compile Include="Parsing\Trait.cs" />
     <Compile Include="PictureRef.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -325,6 +325,7 @@
   <ItemGroup>
     <EmbeddedResource Include="canonicalizeLift.xsl" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
 	   Other similar extension points exist, see Microsoft.Common.targets.

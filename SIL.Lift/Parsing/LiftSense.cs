@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SIL.Lift.Parsing.Objects
+namespace SIL.Lift.Parsing
 {
 	/// <summary>
 	/// This class implements "sense" from the LIFT standard.

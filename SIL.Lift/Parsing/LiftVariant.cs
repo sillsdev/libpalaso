@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SIL.Lift.Parsing.Objects
+namespace SIL.Lift.Parsing
 {
 	/// <summary>
 	/// This class implements "variant" from the LIFT standard.  (It represents an allomorph, not what

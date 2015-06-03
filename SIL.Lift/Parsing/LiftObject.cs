@@ -1,35 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SIL.Lift.Parsing.Objects
+namespace SIL.Lift.Parsing
 {
 	/// <summary>
-	/// This class implements "field" from the LIFT standard.
+	/// This class implements "extensible" from the LIFT standard.
 	/// </summary>
-	public class LiftField
+	public abstract class LiftObject
 	{
-		///<summary>
-		/// Default Constructor.
-		///</summary>
-		public LiftField()
-		{
-			Annotations = new List<LiftAnnotation>();
-			Traits = new List<LiftTrait>();
-		}
-
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public LiftField(string type, LiftMultiText contents)
+		protected LiftObject()
 		{
 			Annotations = new List<LiftAnnotation>();
 			Traits = new List<LiftTrait>();
-			Type = type;
-			Content = contents;
+			Fields = new List<LiftField>();
+			DateCreated = DateTime.MinValue;
+			DateModified = DateTime.MinValue;
 		}
 
 		///<summary></summary>
-		public string Type { get; set; }
+		public string Id { get; set; }
+
+		///<summary></summary>
+		public Guid Guid { get; set; }
 
 		///<summary></summary>
 		public DateTime DateCreated { get; set; }
@@ -38,12 +33,15 @@ namespace SIL.Lift.Parsing.Objects
 		public DateTime DateModified { get; set; }
 
 		///<summary></summary>
+		public List<LiftField> Fields { get; private set; }
+
+		///<summary></summary>
 		public List<LiftTrait> Traits { get; private set; }
 
 		///<summary></summary>
 		public List<LiftAnnotation> Annotations { get; private set; }
 
 		///<summary></summary>
-		public LiftMultiText Content { get; set; }
+		public abstract string XmlTag { get; }
 	}
 }

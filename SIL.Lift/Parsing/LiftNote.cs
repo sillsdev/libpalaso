@@ -1,4 +1,4 @@
-﻿namespace SIL.Lift.Parsing.Objects
+﻿namespace SIL.Lift.Parsing
 {
 	/// <summary>
 	/// This class implements "note" from the LIFT standard.
