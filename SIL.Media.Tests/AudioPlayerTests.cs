@@ -11,7 +11,7 @@ using NAudio.Wave;
 
 namespace SIL.Media.Tests
 {
-   [TestFixture]
+	[TestFixture]
 	public class AudioPlayerTests
 	{
 	   [Test]
