@@ -67,12 +67,14 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					{
 						existingKeyboard.SetIsAvailable(true);
 						existingKeyboard.IsKeyman6 = isKeyman6;
+						if (existingKeyboard.Format == KeyboardFormat.Unknown)
+							existingKeyboard.Format = KeyboardFormat.CompiledKeyman;
 					}
 					curKeyboards.Remove(keyboardName);
 				}
 				else
 				{
-					KeyboardController.Instance.Keyboards.Add(new KeymanKeyboardDescription(keyboardName, isKeyman6, this, true));
+					KeyboardController.Instance.Keyboards.Add(new KeymanKeyboardDescription(keyboardName, isKeyman6, this, true) {Format = KeyboardFormat.CompiledKeyman});
 				}
 			}
 		}
