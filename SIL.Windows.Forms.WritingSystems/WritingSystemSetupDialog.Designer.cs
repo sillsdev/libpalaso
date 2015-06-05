@@ -53,8 +53,9 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._writingSystemSetupView.Size = new System.Drawing.Size(841, 461);
 			this._writingSystemSetupView.TabIndex = 0;
 			//
+			// 
 			// _closeButton
-			//
+			// 
 			this._closeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this._closeButton.Location = new System.Drawing.Point(767, 444);
 			this._closeButton.Name = "_closeButton";
@@ -63,9 +64,9 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._closeButton.Text = "Close";
 			this._closeButton.UseVisualStyleBackColor = true;
 			this._closeButton.Click += new System.EventHandler(this._closeButton_Click);
-			//
+			// 
 			// _openGlobal
-			//
+			// 
 			this._openGlobal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this._openGlobal.Location = new System.Drawing.Point(521, 444);
 			this._openGlobal.Name = "_openGlobal";
@@ -74,9 +75,9 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._openGlobal.Text = "Computer";
 			this._openGlobal.UseVisualStyleBackColor = true;
 			this._openGlobal.Click += new System.EventHandler(this._openGlobal_Click);
-			//
+			// 
 			// _openDirectory
-			//
+			// 
 			this._openDirectory.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this._openDirectory.Location = new System.Drawing.Point(602, 444);
 			this._openDirectory.Name = "_openDirectory";
@@ -85,18 +86,19 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._openDirectory.Text = "Directory";
 			this._openDirectory.UseVisualStyleBackColor = true;
 			this._openDirectory.Click += new System.EventHandler(this._openDirectory_Click);
-			//
+			// 
 			// _openLabel
-			//
+			// 
+			this._openLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this._openLabel.AutoSize = true;
 			this._openLabel.Location = new System.Drawing.Point(380, 448);
 			this._openLabel.Name = "_openLabel";
 			this._openLabel.Size = new System.Drawing.Size(36, 13);
 			this._openLabel.TabIndex = 10;
 			this._openLabel.Text = "Open Writing Systems:";
-			//
+			// 
 			// WritingSystemSetupDialog
-			//
+			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(855, 479);
@@ -108,6 +110,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this.Name = "WritingSystemSetupDialog";
 			this.Text = "Writing Systems";
 			this.ResumeLayout(false);
+			this.PerformLayout();
 
 		}
 
