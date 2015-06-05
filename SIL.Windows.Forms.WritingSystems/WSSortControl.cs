@@ -156,7 +156,7 @@ namespace SIL.Windows.Forms.WritingSystems
 					_languageComboBox.SelectedIndex = (int)_languageOptionMap[_model.CurrentCollationRules];
 				}
 			}
-			else if (newValue == "CustomSimple" || newValue == "CustomICU")
+			else if (newValue == "CustomSimple" || newValue == "CustomIcu")
 			{
 				_sortrules_panel.Visible = true;
 				_sortRulesTextBox.Text = _model.CurrentCollationRules;
