@@ -1139,5 +1139,26 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 			Assert.That(_model.CurrentCollationRules, Is.Empty);
 		}
 
+		[Test]
+		public void CurrentDefaultFontName_SetSameFontDifferentCase_NotUpdated()
+		{
+			var font = new FontDefinition("Test");
+			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt") {DefaultFont = font});
+			_model.CurrentDefaultFontName = "test";
+			Assert.That(_model.CurrentDefaultFontName, Is.EqualTo("Test"));
+		}
+
+		[Test]
+		public void CurrentDefaultFontName_DifferentFontName_DefaultFontNotUpdatedUntilSave()
+		{
+			var font = new FontDefinition("Test");
+			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt") {DefaultFont = font});
+			_model.CurrentDefaultFontName = "NewFont";
+			Assert.That(_model.CurrentDefaultFontName, Is.EqualTo("NewFont"));
+			Assert.That(_model.CurrentDefinition.DefaultFont, Is.EqualTo(font));
+			_model.Save();
+			Assert.That(_model.CurrentDefinition.DefaultFont.Name, Is.EqualTo("NewFont"));
+			Assert.That(_model.CurrentDefinition.Fonts.Count, Is.EqualTo(2));
+		}
 	}
 }

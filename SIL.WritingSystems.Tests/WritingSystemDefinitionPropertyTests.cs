@@ -1751,6 +1751,15 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void DefaultFont_SameFontNameDifferentCase_FontIsReplacedInFonts()
+		{
+			var ws = new WritingSystemDefinition {DefaultFont = new FontDefinition("font")};
+			var fd = new FontDefinition("Font");
+			ws.DefaultFont = fd;
+			Assert.That(ws.Fonts, Is.EqualTo(new[] {fd}));
+		}
+
+		[Test]
 		public void DefaultCollation_DefaultsToFirstCollation()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");

@@ -242,13 +242,13 @@
       <Project>{f7df58e2-5b67-498a-9f64-b5f1584a5ab9}</Project>
       <Name>SIL.Windows.Forms.WritingSystems</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SIL.WritingSystems\SIL.WritingSystems.csproj">
-      <Project>{52A93C63-08F4-4527-8E6E-AC2ADEBA6E2D}</Project>
-      <Name>SIL.WritingSystems</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SIL.Core\SIL.Core.csproj">
       <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
       <Name>SIL.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SIL.WritingSystems\SIL.WritingSystems.csproj">
+      <Project>{52a93c63-08f4-4527-8e6e-ac2adeba6e2d}</Project>
+      <Name>SIL.WritingSystems</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj">
       <Project>{52a93c63-08f4-4527-8e6e-ac2adeba6e2d}</Project>

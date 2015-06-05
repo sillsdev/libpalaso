@@ -126,7 +126,7 @@ namespace SIL.WritingSystems
 			string message;
 			if (!ValidateLanguageTag(out message))
 				throw new ArgumentException(message, "languageTag");
-			_fonts = new KeyedBulkObservableList<string, FontDefinition>(fd => fd.Name);
+			_fonts = new KeyedBulkObservableList<string, FontDefinition>(fd => fd.Name, StringComparer.InvariantCultureIgnoreCase);
 			_knownKeyboards = new KeyedBulkObservableList<string, IKeyboardDefinition>(kd => kd.Id);
 			_spellCheckDictionaries = new KeyedBulkObservableList<SpellCheckDictionaryFormat, SpellCheckDictionaryDefinition>(scdd => scdd.Format);
 			_collations = new KeyedBulkObservableList<string, CollationDefinition>(cd => cd.Type);
@@ -148,7 +148,7 @@ namespace SIL.WritingSystems
 			_variants = new BulkObservableList<VariantSubtag>(ws._variants);
 			_abbreviation = ws._abbreviation;
 			_rightToLeftScript = ws._rightToLeftScript;
-			_fonts = new KeyedBulkObservableList<string, FontDefinition>(ws._fonts.CloneItems(), fd => fd.Name);
+			_fonts = new KeyedBulkObservableList<string, FontDefinition>(ws._fonts.CloneItems(), fd => fd.Name, StringComparer.InvariantCultureIgnoreCase);
 			if (ws._defaultFont != null)
 				_defaultFont = _fonts[ws._fonts.IndexOf(ws._defaultFont)];
 			_keyboard = ws._keyboard;
