@@ -1131,7 +1131,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		}
 
 		[Test]
-		public void SortRules_RulesAreEmptyAndSortTypeIsCustomICU_StillEmpty()
+		public void SortRules_RulesAreEmptyAndSortTypeIsCustomIcu_StillEmpty()
 		{
 			_model.AddPredefinedDefinition(new WritingSystemDefinition("pt"));
 			Assert.That(_model.CurrentCollationRulesType, Is.EqualTo("DefaultOrdering"));

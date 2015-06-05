@@ -18,7 +18,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 			var suggestor = new WritingSystemSuggestor(new TestWritingSystemFactory());
 			var suggestions = suggestor.GetSuggestions(etr, list);
 
-			WritingSystemDefinition ipa = ((WritingSystemSuggestion)suggestions.First(defn => ((WritingSystemSuggestion)defn).TemplateDefinition.Script == "ipa")).TemplateDefinition;
+			WritingSystemDefinition ipa = suggestions.First(defn => defn is IpaSuggestion).ShowDialogIfNeededAndGetDefinition();
 
 			Assert.That(ipa.Language, Is.EqualTo(new LanguageSubtag("etr", "Edolo")));
 			Assert.That(ipa.Variants, Is.EqualTo(new VariantSubtag[] {"fonipa"}));
@@ -36,18 +36,16 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 			var etrIpa = new WritingSystemDefinition("etr", string.Empty, string.Empty,  "fonipa", "edo", false);
 			var list = new List<WritingSystemDefinition>(new[] { etr, etrIpa });
 			var suggestor = new WritingSystemSuggestor(new TestWritingSystemFactory());
-			var suggestions = suggestor.GetSuggestions(etr, list);
+			IEnumerable<IWritingSystemDefinitionSuggestion> suggestions = suggestor.GetSuggestions(etr, list);
 
-			Assert.That(suggestions.Any(defn => ((WritingSystemSuggestion) defn).TemplateDefinition.Variants.Contains("fonipa")), Is.False);
+			Assert.That(suggestions.Any(defn => defn is IpaSuggestion), Is.False);
 		}
 
 		[Test]
 		public void OtherKnownWritingSystems_TokPisinDoesNotAlreadyExist_HasTokPisin()
 		{
 			var suggestor = new WritingSystemSuggestor(new TestWritingSystemFactory());
-
-			var existingWritingSystems = new List<WritingSystemDefinition>();
-			Assert.That(suggestor.GetOtherLanguageSuggestions(existingWritingSystems).Any(ws=>ws.Label == "Tok Pisin"), Is.True);
+			Assert.That(suggestor.GetOtherLanguageSuggestions(Enumerable.Empty<WritingSystemDefinition>()).Any(ws => ws.Label == "Tok Pisin"), Is.True);
 		}
 
 		[Test]
@@ -69,13 +67,13 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 			var english = new WritingSystemDefinition("en", string.Empty, string.Empty, string.Empty, "eng", false);
 			var list = new List<WritingSystemDefinition>(new[] { english });
 			var suggestor = new WritingSystemSuggestor(new TestWritingSystemFactory());
-			suggestor.SuppressSuggestionsForMajorWorldLanguages =false;
+			suggestor.SuppressSuggestionsForMajorWorldLanguages = false;
 			var suggestions = suggestor.GetSuggestions(english, list);
-			Assert.That(suggestions.Any(defn => ((WritingSystemSuggestion) defn).TemplateDefinition.Variants.Contains("fonipa")), Is.True);
+			Assert.That(suggestions.Any(defn => defn is IpaSuggestion), Is.True);
 
-			suggestor.SuppressSuggestionsForMajorWorldLanguages =true;
+			suggestor.SuppressSuggestionsForMajorWorldLanguages = true;
 			suggestions = suggestor.GetSuggestions(english, list);
-			Assert.That(suggestions.Any(defn => ((WritingSystemSuggestion) defn).TemplateDefinition.Variants.Contains("fonipa")), Is.False);
+			Assert.That(suggestions.Any(defn => defn is IpaSuggestion), Is.False);
 		}
 	}
 }

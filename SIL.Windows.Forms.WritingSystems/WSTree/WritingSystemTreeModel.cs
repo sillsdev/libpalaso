@@ -83,9 +83,9 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 		{
 			var x = new List<WritingSystemDefinition>(_setupModel.WritingSystemDefinitions);
 
-			var systemsOfSameLanguage = x.GroupBy(def=>def.Language.Name);
+			IEnumerable<IGrouping<string, WritingSystemDefinition>> systemsOfSameLanguage = x.GroupBy(def=>def.Language.Name);
 
-			foreach (var defsOfSameLanguage in systemsOfSameLanguage)
+			foreach (IGrouping<string, WritingSystemDefinition> defsOfSameLanguage in systemsOfSameLanguage)
 			{
 				WritingSystemTreeItem parent;
 				WritingSystemDefinition itemToUseForSuggestions;

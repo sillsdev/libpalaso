@@ -59,22 +59,22 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 
 			if (SuggestIpa && IpaSuggestion.ShouldSuggest(existingWSs))
 			{
-				yield return new IpaSuggestion(primary);
+				yield return new IpaSuggestion(_writingSystemFactory, primary);
 			}
 
 			if (SuggestVoice && VoiceSuggestion.ShouldSuggest(existingWSs))
 			{
-				yield return new VoiceSuggestion(primary);
+				yield return new VoiceSuggestion(_writingSystemFactory, primary);
 			}
 
 			if (SuggestDialects)
 			{
-				yield return new DialectSuggestion(primary);
+				yield return new DialectSuggestion(_writingSystemFactory, primary);
 			}
 
 			if (SuggestOther)
 			{
-				yield return new OtherSuggestion(primary, existingWSs);
+				yield return new OtherSuggestion(_writingSystemFactory, primary, existingWSs);
 			}
 		}
 
@@ -87,7 +87,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 				foreach (var tuple in OtherKnownWritingSystems)
 				{
 					if (wsArray.All(def => def.LanguageTag != tuple.Item1))
-						yield return new LanguageSuggestion(tuple.Item1, tuple.Item2, _writingSystemFactory);
+						yield return new LanguageSuggestion(_writingSystemFactory, tuple.Item1, tuple.Item2);
 				}
 			}
 		}
