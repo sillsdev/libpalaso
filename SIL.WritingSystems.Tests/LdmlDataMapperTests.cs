@@ -219,7 +219,7 @@ namespace SIL.WritingSystems.Tests
 
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
-				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Latn']");
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasNoMatchForXpath("/ldml/identity/script");
 				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/territory[@type='GB']");
 				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-test']");
 				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/version[@number='$Revision$' and text()='Identity version description']");
@@ -255,7 +255,7 @@ namespace SIL.WritingSystems.Tests
 
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']");
-				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Latn']");
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasNoMatchForXpath("/ldml/identity/script");
 				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/territory[@type='GB']");
 				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/variant[@type='x-test']");
 				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasAtLeastOneMatchForXpath("/ldml/identity/version[@number='$Revision$' and text()='Identity version description']");
@@ -936,7 +936,7 @@ namespace SIL.WritingSystems.Tests
 				var ws = new WritingSystemDefinition();
 				adaptor.Read(file.Path, ws);
 				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path), true));
-				AssertThatLdmlMatches("xh", "Latn", "", "", file);
+				AssertThatLdmlMatches("xh", "", "", "", file);
 				var versionReader = new WritingSystemLdmlVersionGetter();
 				Assert.That(LdmlDataMapper.CurrentLdmlVersion, Is.EqualTo(versionReader.GetFileVersion(file.Path)));
 			}

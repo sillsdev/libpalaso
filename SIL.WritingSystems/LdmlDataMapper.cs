@@ -931,7 +931,7 @@ namespace SIL.WritingSystems
 			// language element is required
 			identityElem.SetAttributeValue("language", "type", language);
 			// write the rest if they have contents
-			if (!string.IsNullOrEmpty(script))
+			if (!string.IsNullOrEmpty(script) && ((LanguageSubtag) language).ImplicitScriptCode != script)
 				identityElem.SetAttributeValue("script", "type", script);
 			if (!string.IsNullOrEmpty(region))
 				identityElem.SetAttributeValue("territory", "type", region);

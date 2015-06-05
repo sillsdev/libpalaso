@@ -15,7 +15,7 @@ namespace SIL.Lift.Tests.Options
 		private class TestEnvironment : IDisposable
 		{
 			private readonly TemporaryFolder _folder;
-			private readonly SIL.IO.TempFile _optionListFile;
+			private readonly IO.TempFile _optionListFile;
 			private readonly TemporaryFolder _sldrCacheFolder;
 
 			public TestEnvironment(string rfctag)
@@ -28,7 +28,7 @@ namespace SIL.Lift.Tests.Options
 				_folder = new TemporaryFolder("WritingSystemsInoptionListFileHelper");
 				_sldrCacheFolder = new TemporaryFolder("SldrCache");
 				var pathtoOptionsListFile1 = Path.Combine(_folder.Path, "test1.xml");
-				_optionListFile = new SIL.IO.TempFile(String.Format(_optionListFileContent, rfctag, rfctag2));
+				_optionListFile = new IO.TempFile(String.Format(_optionListFileContent, rfctag, rfctag2));
 				_optionListFile.MoveTo(pathtoOptionsListFile1);
 			}
 
@@ -177,7 +177,7 @@ namespace SIL.Lift.Tests.Options
 				AssertThatXmlIn.File(e.PathToOptionsListFile).HasAtLeastOneMatchForXpath("/optionsList/options/option/name/form[@lang='de']");
 				Assert.That(File.Exists(e.GetLdmlFileforWs("de")), Is.True);
 				AssertThatXmlIn.File(e.GetLdmlFileforWs("de")).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='de']");
-				AssertThatXmlIn.File(e.GetLdmlFileforWs("de")).HasAtLeastOneMatchForXpath("/ldml/identity/script[@type='Latn']");
+				AssertThatXmlIn.File(e.GetLdmlFileforWs("de")).HasNoMatchForXpath("/ldml/identity/script");
 				AssertThatXmlIn.File(e.GetLdmlFileforWs("de")).HasNoMatchForXpath("/ldml/identity/territory");
 				AssertThatXmlIn.File(e.GetLdmlFileforWs("de")).HasNoMatchForXpath("/ldml/identity/variant");
 			}
