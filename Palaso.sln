@@ -53,6 +53,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppKeyboard", "TestApps\TestAppKeyboard\TestAppKeyboard.csproj", "{776BECCD-102A-4C69-A478-4A4A6F695019}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.GeckoBrowserAdapter", "SIL.Windows.Forms.GeckoBrowserAdapter\SIL.Windows.Forms.GeckoBrowserAdapter.csproj", "{D000879E-9AA6-4811-A6F0-80DF6119FB08}"
+	ProjectSection(ProjectDependencies) = postProject
+		{52A93C63-08F4-4527-8E6E-AC2ADEBA6E2D} = {52A93C63-08F4-4527-8E6E-AC2ADEBA6E2D}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.Scripture", "SIL.Windows.Forms.Scripture\SIL.Windows.Forms.Scripture.csproj", "{6CA85A3E-4AB3-4BBC-861F-0C68F018868B}"
 EndProject
@@ -63,6 +66,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.WritingSystems.Tests", "SIL.WritingSystems.Tests\SIL.WritingSystems.Tests.csproj", "{641EB241-BF16-4A5F-89BD-54411F9AC973}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.WritingSystems", "SIL.Windows.Forms.WritingSystems\SIL.Windows.Forms.WritingSystems.csproj", "{F7DF58E2-5B67-498A-9F64-B5F1584A5AB9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0580ED5F-6274-4928-83EE-175F01AD052D} = {0580ED5F-6274-4928-83EE-175F01AD052D}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.WritingSystems.Tests", "SIL.Windows.Forms.WritingSystems.Tests\SIL.Windows.Forms.WritingSystems.Tests.csproj", "{24E0B3A0-EE71-48CE-82F9-549F1F47322F}"
 EndProject
@@ -91,6 +97,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Email.TestApp", "TestApps\SIL.Email.TestApp\SIL.Email.TestApp.csproj", "{2A206833-C713-4ACB-ACD3-EB971415119E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.TestApp", "TestApps\SIL.Windows.Forms.TestApp\SIL.Windows.Forms.TestApp.csproj", "{24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D000879E-9AA6-4811-A6F0-80DF6119FB08} = {D000879E-9AA6-4811-A6F0-80DF6119FB08}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastSplitterTest", "TestApps\FastSplitterTest\FastSplitterTest.csproj", "{CA8F3657-3D85-4C97-81A6-5C212627B2F6}"
 EndProject
