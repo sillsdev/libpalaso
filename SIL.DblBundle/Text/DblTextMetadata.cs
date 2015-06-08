@@ -144,6 +144,10 @@ namespace SIL.DblBundle.Text
 		[XmlAttribute("type")]
 		public string Type { get; set; }
 
+		// This attribute is probably only relevant to ad-hoc bundles created by Paratext.
+		[XmlAttribute("csetid")]
+		public string ChangeSetId { get; set; }
+
 		[XmlText]
 		public string Id { get; set; }
 	}
