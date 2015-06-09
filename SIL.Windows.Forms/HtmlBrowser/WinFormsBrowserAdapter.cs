@@ -8,7 +8,7 @@ namespace SIL.Windows.Forms.HtmlBrowser
 {
 	/// <summary>
 	/// This class is an adapter for System.Windows.Forms.WebBrowser class. It is used by
-	/// Palaso.UI.WindowsForms.HtmlBrowser.XWebBrowser.
+	/// SIL.Windows.Forms.HtmlBrowser.XWebBrowser.
 	///
 	/// Clients should NOT use this class directly. Instead they should use the XWebBrowser
 	/// class.

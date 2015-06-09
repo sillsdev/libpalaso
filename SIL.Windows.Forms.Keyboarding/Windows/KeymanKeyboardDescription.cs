@@ -68,7 +68,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 		/// <summary>
 		/// Initializes a new instance of the
-		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.Windows.KeymanKeyboardDescription"/> class.
+		/// <see cref="T:SIL.Windows.Forms.Keyboarding.Windows.KeymanKeyboardDescription"/> class.
 		/// </summary>
 		internal KeymanKeyboardDescription(string layout, bool isKeyman6, KeymanKeyboardAdaptor engine, bool isAvailable)
 			: base(layout, layout, layout, string.Empty, isAvailable, engine)

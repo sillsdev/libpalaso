@@ -27,7 +27,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// when registering the control (<see cref="KeyboardController.Register"/>).
 	///
 	/// If the application doesn't implement this interface a default event handler
-	/// (<see cref="Palaso.UI.WindowsForms.Keyboarding.Linux.IbusDefaultEventHandler"/>) will
+	/// (<see cref="SIL.Windows.Forms.Keyboarding.Linux.IbusDefaultEventHandler"/>) will
 	/// be used that works with a WinForms TextBox.
 	/// </summary>
 	public interface IIbusEventHandler

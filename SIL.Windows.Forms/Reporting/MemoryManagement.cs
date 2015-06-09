@@ -14,7 +14,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 #endif
 
-namespace SIL.WindowsForms.Reporting
+namespace SIL.Windows.Forms.Reporting
 {
 	/// <summary>
 	/// This class contains methods useful for logging and warning the user about possible problems

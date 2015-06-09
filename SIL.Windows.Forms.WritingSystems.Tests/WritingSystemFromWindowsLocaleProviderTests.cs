@@ -43,7 +43,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 //        public void GetGoodPropertiesOutOfCulture()
 //        {
 //            IEnumerable<WritingSystemDefinition> provider =
-//                new Palaso.UI.WindowsForms.WritingSystems.WritingSystemFromWindowsLocaleProvider();
+//                new SIL.Windows.Forms.WritingSystems.WritingSystemFromWindowsLocaleProvider();
 //            foreach (WritingSystemDefinition language in provider.WritingSystems)
 //            {
 ////                if (language.Language == "eng")

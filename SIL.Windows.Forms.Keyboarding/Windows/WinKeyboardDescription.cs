@@ -26,7 +26,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 		/// <summary>
 		/// Initializes a new instance of the
-		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.Windows.WinKeyboardDescription"/> class.
+		/// <see cref="T:SIL.Windows.Forms.Keyboarding.Windows.WinKeyboardDescription"/> class.
 		/// </summary>
 		internal WinKeyboardDescription(string id, string name, string layout, string locale, bool isAvailable,
 			IInputLanguage inputLanguage, WinKeyboardAdaptor engine, string localizedName, TfInputProcessorProfile profile)

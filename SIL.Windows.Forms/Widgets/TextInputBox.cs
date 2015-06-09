@@ -11,7 +11,7 @@ namespace SIL.Windows.Forms.Widgets
 {
 	/// <summary>
 	/// TextInputBox is a wrapper around either a TextBox or a GeckoBox
-	/// (implemented in PalasoUiWindowsForms.GeckoFxWebBrowserAdapter), which must be used by clients
+	/// (implemented in SIL.Windows.Forms.GeckoFxWebBrowserAdapter), which must be used by clients
 	/// that are using GeckoFx.
 	/// </summary>
 	public class TextInputBox : UserControl

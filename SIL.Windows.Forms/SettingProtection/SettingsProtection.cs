@@ -33,7 +33,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			ConfigurationSectionGroup sectionGroup = userConfig.SectionGroups["userSettings"];
 			if (sectionGroup != null)
 			{
-				var oldSection = sectionGroup.Sections["Palaso.UI.WindowsForms.SettingProtection.SettingsProtectionSettings"] as ClientSettingsSection;
+				var oldSection = sectionGroup.Sections["SIL.Windows.Forms.SettingProtection.SettingsProtectionSettings"] as ClientSettingsSection;
 				if (oldSection != null)
 				{
 					SettingElement normallyHiddenSetting = oldSection.Settings.Get("NormallyHidden");
@@ -44,7 +44,7 @@ namespace SIL.Windows.Forms.SettingProtection
 					bool requirePassword;
 					if (requirePasswordSetting != null && bool.TryParse(requirePasswordSetting.Value.ValueXml.InnerText, out requirePassword))
 						config.RequirePassword = requirePassword;
-					sectionGroup.Sections.Remove("Palaso.UI.WindowsForms.SettingProtection.SettingsProtectionSettings");
+					sectionGroup.Sections.Remove("SIL.Windows.Forms.SettingProtection.SettingsProtectionSettings");
 					userConfig.Save();
 					return true;
 				}

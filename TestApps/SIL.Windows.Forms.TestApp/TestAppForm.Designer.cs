@@ -206,7 +206,7 @@ namespace SIL.Windows.Forms.TestApp
 			this.Controls.Add(this.btnLookupISOCodeDialog);
 			this.Controls.Add(this.btnFolderBrowserControl);
 			this.Name = "TestAppForm";
-			this.Text = "PalasoUIWindowsForms.TestApp";
+			this.Text = "SIL.Windows.Forms.TestApp";
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

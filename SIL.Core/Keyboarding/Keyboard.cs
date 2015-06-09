@@ -12,7 +12,7 @@ namespace SIL.Keyboarding
 		/// <summary>
 		/// The active instance of keyboard controller which is used by various writing system methods.
 		/// This may be set to a stub for testing, or by clients to a useful controller such as
-		/// Palaso.UI.WindowsForms.KeyboardController. If not otherwise set, it returns a
+		/// SIL.Windows.Forms.Keyboarding.KeyboardController. If not otherwise set, it returns a
 		/// DefaultKeyboardController.
 		/// </summary>
 		public static IKeyboardController Controller

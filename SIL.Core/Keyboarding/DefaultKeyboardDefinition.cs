@@ -7,7 +7,7 @@ namespace SIL.Keyboarding
 	/// writing system methods and properties.
 	/// </summary>
 	/// <remarks>This is a not-fully-functional base class. Apps that make use of keyboard switching functionality will use
-	/// the implementations of IKeyboardDefinition from SIL.WritingSystems.WindowsForms or some similar library.
+	/// the implementations of IKeyboardDefinition from SIL.Windows.Forms.WritingSystems or some similar library.
 	/// In particular while this class can store various data it does nothing about actually activating a keyboard.
 	/// Review: possibly that method and this class should be made abstract?</remarks>
 	public class DefaultKeyboardDefinition : IKeyboardDefinition
@@ -101,7 +101,7 @@ namespace SIL.Keyboarding
 
 		/// <summary>
 		/// Returns a <see cref="T:System.String"/> that represents the current
-		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.KeyboardDescription"/>.
+		/// <see cref="T:SIL.Windows.Forms.Keyboarding.KeyboardDescription"/>.
 		/// </summary>
 		public override string ToString()
 		{

@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using NUnit.Framework;
 using SIL.Reporting;
-using SIL.WindowsForms.Reporting;
+using SIL.Windows.Forms.Reporting;
 
 namespace SIL.Windows.Forms.Tests.ErrorReporting
 {

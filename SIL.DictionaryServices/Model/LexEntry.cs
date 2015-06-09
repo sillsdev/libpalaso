@@ -1,4 +1,3 @@
-//using Palaso.UI.WindowsForms.i18n;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

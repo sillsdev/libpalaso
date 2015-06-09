@@ -13,7 +13,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 {
 	/// <summary>
 	/// This class is an adapter for GeckoFx' GeckoWebBrowser class used by
-	/// Palaso.UI.WindowsForms.GeckoBasedControls.
+	/// SIL.Windows.Forms.GeckoBasedControls.
 	///
 	/// Clients can use this class instead of accessing Gecko.GeckoWebBrowser
 	/// directly.

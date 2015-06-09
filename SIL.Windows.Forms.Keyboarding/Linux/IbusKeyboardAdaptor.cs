@@ -25,7 +25,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		/// <summary>
 		/// Initializes a new instance of the
-		/// <see cref="SIL.WritingSystems.WindowsForms.Keyboarding.Linux.IbusKeyboardAdaptor"/> class.
+		/// <see cref="SIL.WritingSystems.Windows.Forms.Keyboarding.Linux.IbusKeyboardAdaptor"/> class.
 		/// </summary>
 		public IbusKeyboardAdaptor(): this(new IbusCommunicator())
 		{
