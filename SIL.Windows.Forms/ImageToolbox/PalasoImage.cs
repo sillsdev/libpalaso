@@ -11,9 +11,10 @@ using SIL.Windows.Forms.ClearShare;
 namespace SIL.Windows.Forms.ImageToolbox
 {
 	public class PalasoImage : IDisposable
-
 	{
 		private Metadata _metadata;
+
+		private string _tempFilePath;
 
 		public Metadata Metadata
 		{
@@ -215,10 +216,10 @@ namespace SIL.Windows.Forms.ImageToolbox
 			Metadata.Write(_pathForSavingMetadataChanges);
 		}
 
-		private static Image LoadImageWithoutLocking(string path)
+		private static Image LoadImageWithoutLocking(string path, out string tempPath)
 		{
-			/*          1) Naïve approach:  locks until the image is dispose of some day, which is counter-intuitive to me
-							  return Image.FromFile(path);
+			/*			1) Naïve approach:  locks until the image is dispose of some day, which is counter-intuitive to me
+							return Image.FromFile(path);
 
 						2) Contrary to the docs on Image.FromStream ("You must keep the stream open for the lifetime of the Image."),
 							MSDN http://support.microsoft.com/kb/309482 suggests the following work-around
@@ -229,28 +230,32 @@ namespace SIL.Windows.Forms.ImageToolbox
 			*/
 
 			//But note, it's not clear if (2) will very occasionally die with "out of memory": http://jira.palaso.org/issues/browse/BL-199
+			// Note: if the FileStream is closed, attempts to modify the image result in an "out of memory" error.
 
-			//3) Just leak a temp file.
+			//3) Use a temp file.
 
 			//if(Path.GetExtension(path)==".jpg")
 			{
 				var leakMe = TempFile.WithExtension(Path.GetExtension(path));
 				File.Delete(leakMe.Path);
 				File.Copy(path, leakMe.Path);
-				return Image.FromFile(leakMe.Path);
+				tempPath = leakMe.Path;
+				return Image.FromFile(leakMe.Path); ;
 			}
 		}
 
 
 		public static PalasoImage FromFile(string path)
 		{
+			string tempPath;
 			var i = new PalasoImage
 			{
-				Image = LoadImageWithoutLocking(path),
+				Image = LoadImageWithoutLocking(path, out tempPath),
 				FileName = Path.GetFileName(path),
 				_originalFilePath = path,
 				_pathForSavingMetadataChanges = path,
-				Metadata = Metadata.FromFile(path)
+				Metadata = Metadata.FromFile(path),
+				_tempFilePath = tempPath
 			};
 			return i;
 		}
@@ -346,6 +351,18 @@ namespace SIL.Windows.Forms.ImageToolbox
 				{
 					Image.Dispose();
 					Image = null;
+				}
+
+				if (!string.IsNullOrEmpty(_tempFilePath))
+				{
+					try
+					{
+						File.Delete(_tempFilePath);
+					}
+					catch (Exception e)
+					{
+						Debug.Fail("Not able to delete image temp file.", e.ToString());
+					}
 				}
 				Disposed = true;
 			}

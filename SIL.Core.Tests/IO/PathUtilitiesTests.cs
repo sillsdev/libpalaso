@@ -287,6 +287,42 @@ namespace SIL.Tests.IO
 			}
 		}
 
+		//See http://stackoverflow.com/a/30405340/723299
+		[Test, Ignore("By Hand")]
+		public void SelectFileInExplorer_PathHasCombiningCharacters_StillOpensAndSelects()
+		{
+			var path = Path.Combine(Path.GetTempPath(), "ปู  should select this file");
+			if (!File.Exists(path))
+			{
+				File.WriteAllText(path, "");
+			}
+			PathUtilities.SelectFileInExplorer(path);
+		}
+		//See http://stackoverflow.com/a/30405340/723299
+		[Test, Ignore("By Hand")]
+		public void SelectFileInExplorer_PathIsADirectoryHasCombiningCharacters_StillOpensAndSelects()
+		{
+			var path = Path.Combine(Path.GetTempPath(), "ปู  should select this directory");
+			if(!Directory.Exists(path))
+			{
+				Directory.CreateDirectory(path);
+			}
+			PathUtilities.SelectFileInExplorer(path);
+		}
+
+		//See http://stackoverflow.com/a/30405340/723299
+		[Test, Ignore("By Hand")]
+		public void OpenDirectoryInExplorer_PathIsADirectoryHasCombiningCharacters_StillOpens()
+		{
+			//as of May 27 2015, this is expected to fail on Windows. See enhancment note 
+			//in the OpenDirectoryInExplorer() code.
+			var path = Path.Combine(Path.GetTempPath(), "ปู should select this directory");
+			if(!Directory.Exists(path))
+			{
+				Directory.CreateDirectory(path);
+			}
+			PathUtilities.OpenDirectoryInExplorer(path);
+		}
 	}
 }
 

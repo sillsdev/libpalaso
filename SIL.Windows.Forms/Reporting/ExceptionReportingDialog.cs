@@ -864,17 +864,18 @@ namespace SIL.Windows.Forms.Reporting
 			set { _methodCombo.SelectedItem = value; }
 		}
 
-		private void _privacyNoticeButton_Click(object sender, EventArgs e)
-		{
-			MessageBox.Show(
-				@"If you don't care who reads your bug report, you can skip this notice.
+		public static string PrivacyNotice = @"If you don't care who reads your bug report, you can skip this notice.
 
 When you submit a crash report or other issue, the contents of your email go in our issue tracking system, ""jira"", which is available via the web at http://jira.palaso.org/issues. This is the normal way to handle issues in an open-source project.
 
 Our issue-tracking system is not searchable by those without an account. Therefore, someone searching via Google will not find your bug reports.
 
 However, anyone can make an account and then read what you sent us. So if you have something private to say, please send it to one of the developers privately with a note that you don't want the issue in our issue tracking system. If need be, we'll make some kind of sanitized place-holder for your issue so that we don't lose it.
-", "Privacy Notice");
+";
+
+		private void _privacyNoticeButton_Click(object sender, EventArgs e)
+		{
+			MessageBox.Show(PrivacyNotice, "Privacy Notice");
 		}
 
 		private void ExceptionReportingDialog_KeyPress(object sender, KeyPressEventArgs e)

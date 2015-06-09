@@ -44,36 +44,9 @@ namespace SIL.Windows.Forms.Reporting
 			long memorySize64;
 			long workingSet64;
 			string message;
-			ulong totalPhysicalMemory = 0;
-			string totalVirtualMemory = "unknown";
 
-#if !__MonoCS__ // There are completely different dependencies and code per platform for finding the memory information
-				var computerInfo = new Computer().Info;
-				totalPhysicalMemory = computerInfo.TotalPhysicalMemory;
-				totalVirtualMemory = (computerInfo.TotalVirtualMemory / 1024).ToString("N0");
-#else
-				var meminfo = File.ReadAllText("/proc/meminfo");
-				var match = new Regex(@"MemTotal:\s+(\d+) kB").Match(meminfo);
-				if (match.Success)
-					totalPhysicalMemory = ulong.Parse(match.Groups[1].Value) * 1024;
-				ulong totalSwapMemory = 0;
-				var match2 = new Regex(@"SwapTotal:\s+(\d+) kB").Match(meminfo);
-				if (match2.Success)
-					totalSwapMemory = ulong.Parse(match2.Groups [1].Value) * 1024;
-				var availableMemory = totalPhysicalMemory + totalSwapMemory;
-				if (is64BitProcess)
-				{
-					totalVirtualMemory = (availableMemory / 1024).ToString ("N0");
-				}
-				else
-				{
-					// Googling indicates that 32-bit Mono programs attempting to allocate more than
-					// about 1.4 GB start running into OutOfMemory errors.  So 2GB is probably the
-					// right virtual memory limit for 32-bit processes.
-					ulong twoGB = 2147483648L;
-					totalVirtualMemory = ((availableMemory > twoGB ? twoGB : availableMemory) / 1024).ToString("N0");
-				}
-#endif
+			var memInfo = GetMemoryInformation();
+
 			using (var proc = Process.GetCurrentProcess())
 			{
 				// the current size of the process memory that cannot be shared with other processes.
@@ -93,7 +66,7 @@ namespace SIL.Windows.Forms.Reporting
 				bldr.AppendFormat(" managed heap {0:N0}K,", heapMem/1024);
 				bldr.AppendLine();
 				bldr.AppendFormat("        peak virtual {0:N0}K, peak physical {1:N0}K;", peakVirtualMemory64/1024, peakWorkingSet64/1024);
-				bldr.AppendFormat(" system virtual {0}K, system physical (RAM) {1:N0}K", totalVirtualMemory, totalPhysicalMemory/1024);
+				bldr.AppendFormat(" system virtual {0}K, system physical (RAM) {1:N0}K", (memInfo.TotalVirtualMemory / 1024).ToString("N0"), memInfo.TotalPhysicalMemory / 1024);
 				bldr.AppendLine();
 				message = bldr.ToString();
 			}
@@ -105,9 +78,9 @@ namespace SIL.Windows.Forms.Reporting
 			// Limit memory below 1GB unless we have a 64-bit process with lots of physical memory.
 			// In that case, still limit memory to well under 2GB before warning.
 			long safelimit = 1000000000;
-			if (is64BitProcess && totalPhysicalMemory >= 8192000000L)
+			if (is64BitProcess && memInfo.TotalPhysicalMemory >= 8192000000L)
 				safelimit = 2000000000;
-			bool danger = false;
+			bool danger;
 			// In Windows/.Net, Process.PrivateMemorySize64 seems to give a reasonable value for current
 			// memory usage.  In Linux/Mono, Process.PrivateMemorySize64 seems to include a large amount
 			// of virtual memory.  In that context, Process.WorkingSet64 appears to be the best bet for
@@ -128,5 +101,46 @@ namespace SIL.Windows.Forms.Reporting
 			}
 			return danger;
 		}
+
+		public static MemoryInformation GetMemoryInformation()
+		{
+			var returnVal = new MemoryInformation();
+
+#if !__MonoCS__ // There are completely different dependencies and code per platform for finding the memory information
+			var computerInfo = new Computer().Info;
+			returnVal.TotalPhysicalMemory = computerInfo.TotalPhysicalMemory;
+			returnVal.TotalVirtualMemory = computerInfo.TotalVirtualMemory;
+#else
+			var meminfo = File.ReadAllText("/proc/meminfo");
+			var match = new Regex(@"MemTotal:\s+(\d+) kB").Match(meminfo);
+			if (match.Success)
+				returnVal.TotalPhysicalMemory = ulong.Parse(match.Groups[1].Value) * 1024;
+			ulong totalSwapMemory = 0;
+			var match2 = new Regex(@"SwapTotal:\s+(\d+) kB").Match(meminfo);
+			if (match2.Success)
+				totalSwapMemory = ulong.Parse(match2.Groups [1].Value) * 1024;
+			var availableMemory = returnVal.TotalPhysicalMemory + totalSwapMemory;
+			var is64BitProcess = IntPtr.Size == 8; // according to MSDN
+			if (is64BitProcess)
+			{
+				returnVal.TotalVirtualMemory = availableMemory;
+			}
+			else
+			{
+				// Googling indicates that 32-bit Mono programs attempting to allocate more than
+				// about 1.4 GB start running into OutOfMemory errors.  So 2GB is probably the
+				// right virtual memory limit for 32-bit processes.
+				const ulong twoGB = 2147483648L;
+				returnVal.TotalVirtualMemory = availableMemory > twoGB ? twoGB : availableMemory;
+			}
+#endif
+			return returnVal;
+		}
+	}
+
+	public struct MemoryInformation
+	{
+		public ulong TotalPhysicalMemory;
+		public ulong TotalVirtualMemory;
 	}
 }

@@ -1,6 +1,5 @@
 // Copyright (c) 2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -78,7 +77,7 @@ namespace SIL.IO
 				return driveInfo.Name.ToUpper()[0] - 'A' + 1;
 			}
 
-			// filePath can mean a file or a directory.  Get the directory
+			// path can mean a file or a directory.  Get the directory
 			// so that our device number cache can work better.  (fewer
 			// unique directory names than filenames)
 			var pathToCheck = filePath;
@@ -235,31 +234,70 @@ namespace SIL.IO
 			return false;
 		}
 
+		[DllImport("shell32.dll", ExactSpelling = true)]
+		public static extern void ILFree(IntPtr pidlList);
+
+		[DllImport("shell32.dll", CharSet = CharSet.Unicode, ExactSpelling = true)]
+		public static extern IntPtr ILCreateFromPathW(string pszPath);
+
+		[DllImport("shell32.dll", ExactSpelling = true)]
+		public static extern int SHOpenFolderAndSelectItems(IntPtr pidlList, uint cild, IntPtr children, uint dwFlags);
+
+		public static void SelectItemInExplorerEx(string path)
+		{
+			var pidlList = ILCreateFromPathW(path);
+			if(pidlList == IntPtr.Zero)
+				throw new Exception(string.Format("ILCreateFromPathW({0}) failed", path));
+			try
+			{
+				Marshal.ThrowExceptionForHR(SHOpenFolderAndSelectItems(pidlList, 0, IntPtr.Zero, 0));
+			}
+			finally
+			{
+				ILFree(pidlList);
+			}
+		}
+
 		/// <summary>
-		/// On Windows this selects the file in Windows Explorer; on Linux it selects the file
+		/// On Windows this selects the file or directory in Windows Explorer; on Linux it selects the file
 		/// in the default file manager if that supports selecting a file and we know it,
 		/// otherwise we fall back to xdg-open and open the directory that contains that file.
 		/// </summary>
-		/// <param name="filePath">File path.</param>
-		public static void SelectFileInExplorer(string filePath)
+		/// <param name="path">File or directory path.</param>
+		public static void SelectFileInExplorer(string path)
 		{
-			var fileManager = DefaultFileManager;
-			string arguments;
-			switch (fileManager)
+			if (Platform.IsWindows)
 			{
-				case "explorer.exe":
-					arguments = string.Format("/select, \"{0}\"", filePath);
-					break;
-				case "nautilus":
-				case "nemo":
-					arguments = string.Format("\"{0}\"", filePath);
-					break;
-				default:
-					fileManager = "xdg-open";
-					arguments = string.Format("\"{0}\"", Path.GetDirectoryName(filePath));
-					break;
+				//we need to use this becuase of a bug in windows that strips composed characters before trying to find the target path (http://stackoverflow.com/a/30405340/723299)
+				var pidlList = ILCreateFromPathW(path);
+				if(pidlList == IntPtr.Zero)
+					throw new Exception(string.Format("ILCreateFromPathW({0}) failed", path));
+				try
+				{
+					Marshal.ThrowExceptionForHR(SHOpenFolderAndSelectItems(pidlList, 0, IntPtr.Zero, 0));
+				}
+				finally
+				{
+					ILFree(pidlList);
+				}
 			}
-			Process.Start(fileManager, arguments);
+			else
+			{
+				var fileManager = DefaultFileManager;
+				string arguments;
+				switch (fileManager)
+				{
+					case "nautilus":
+					case "nemo":
+						arguments = string.Format("\"{0}\"", path);
+						break;
+					default:
+						fileManager = "xdg-open";
+						arguments = string.Format("\"{0}\"", Path.GetDirectoryName(path));
+						break;
+				}
+				Process.Start(fileManager, arguments);
+			}
 		}
 
 		/// <summary>
@@ -268,6 +306,10 @@ namespace SIL.IO
 		/// <param name="directory">Full path of the directory</param>
 		public static void OpenDirectoryInExplorer(string directory)
 		{
+			//Enhance: on Windows, use ShellExecuteExW instead, as it will probably be able to 
+			//handle languages with combining characters (diactrics), whereas this explorer 
+			//approach will fail (at least as of windows 8.1)
+
 			var fileManager = DefaultFileManager;
 			var arguments = "\"{0}\"";
 
