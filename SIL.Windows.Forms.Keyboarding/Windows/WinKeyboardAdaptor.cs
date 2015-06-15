@@ -299,7 +299,8 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				// Windows XP
 				imes = GetInputMethodsThroughWinApi();
 
-			Dictionary<string, WinKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<WinKeyboardDescription>().ToDictionary(kd => kd.Id);
+			var allKeyboards = KeyboardController.Instance.Keyboards;
+			Dictionary<string, WinKeyboardDescription> curKeyboards = allKeyboards.OfType<WinKeyboardDescription>().ToDictionary(kd => kd.Id);
 			foreach (Tuple<TfInputProcessorProfile, ushort, IntPtr> ime in imes)
 			{
 				TfInputProcessorProfile profile = ime.Item1;
@@ -350,8 +351,19 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					}
 					else
 					{
-						KeyboardController.Instance.Keyboards.Add(new WinKeyboardDescription(GetId(layoutName.Name, locale), GetDisplayName(layoutName.Name, cultureName),
-							layoutName.Name, locale, true, new InputLanguageWrapper(culture, hkl, layoutName.Name), this, GetDisplayName(layoutName.LocalizedName, cultureName), profile));
+						// Prevent a keyboard with this id from being registered again.
+						// Potentially, id's are duplicated. e.g. A Keyman keyboard linked to a windows one.
+						// For now we simply ignore this second registration.
+						// A future enhancement would be to include knowledge of the driver in the Keyboard definition so
+						// we could choose the best one to register.
+						KeyboardDescription keyboard;
+						if (!allKeyboards.TryGet(id, out keyboard))
+						{
+							KeyboardController.Instance.Keyboards.Add(
+								new WinKeyboardDescription(id, GetDisplayName(layoutName.Name, cultureName),
+									layoutName.Name, locale, true, new InputLanguageWrapper(culture, hkl, layoutName.Name), this,
+									GetDisplayName(layoutName.LocalizedName, cultureName), profile));
+						}
 					}
 				}
 				catch (COMException)
@@ -363,6 +375,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 			foreach (WinKeyboardDescription existingKeyboard in curKeyboards.Values)
 				existingKeyboard.SetIsAvailable(false);
+
 		}
 
 		internal static LayoutName GetLayoutNameEx(IntPtr handle)
