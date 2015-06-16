@@ -833,6 +833,34 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void Write_KeyboardInfoIsOnlyWrittenOnce()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
+				var keyboard1 = new DefaultKeyboardDefinition("en-US_MyFavoriteKeyboard", "MyFavoriteKeyboard", "MyFavoriteKeyboard", "en-US", true);
+				keyboard1.Format = KeyboardFormat.Msklc;
+				ws.KnownKeyboards.Add(keyboard1);
+				var keyboard2 = new DefaultKeyboardDefinition("en-GB_SusannasFavoriteKeyboard", "SusannasFavoriteKeyboard", "SusannasFavoriteKeyboard", "en-GB", true);
+				keyboard2.Format = KeyboardFormat.Msklc;
+				ws.KnownKeyboards.Add(keyboard2);
+
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+
+
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), ws, null);
+
+				//read the file and write it out unchanged
+				var ws2 = new WritingSystemDefinition();
+				ldmlAdaptor.Read(environment.FilePath("test.ldml"), ws2);
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), ws2, new MemoryStream(File.ReadAllBytes(environment.FilePath("test.ldml"))));
+
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:kbd[@id='en-US_MyFavoriteKeyboard' and @type='msklc']", 1, environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml")).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:kbd[@id='en-GB_SusannasFavoriteKeyboard' and @type='msklc']", 1, environment.NamespaceManager);
+			}
+		}
+
+		[Test]
 		public void Write_SystemCollationDefinition_NotWrittenToLdml()
 		{
 			using (var environment = new TestEnvironment())

@@ -1331,8 +1331,8 @@ namespace SIL.WritingSystems
 			Debug.Assert(externalResourcesElem != null);
 			Debug.Assert(ws != null);
 			
-			// Remove sil:keyboard elements to repopulate later
-			externalResourcesElem.NonAltElements(Sil + "keyboard").Remove();
+			// Remove sil:kbd elements to repopulate later
+			externalResourcesElem.NonAltElements(Sil + "kbd").Remove();
 
 			// Don't include unknown system keyboard definitions
 			foreach (IKeyboardDefinition keyboard in ws.KnownKeyboards.Where(kbd=>kbd.Format != KeyboardFormat.Unknown))
