@@ -6,6 +6,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System;
 using System.Net;
+using System.Text.RegularExpressions;
 using SIL.Xml;
 
 namespace SIL.WritingSystems
@@ -111,6 +112,12 @@ namespace SIL.WritingSystems
 					// Check if LDML file already exists in destination and read revid and uid
 					if (!ReadSilIdentity(Path.Combine(destinationPath, filename), out tempString, out uid))
 						uid = DefaultUserId;
+				}
+
+				// If languageTag contains fonipa, don't bother trying to access the SLDR
+				if (Regex.Match(languageTag, @"fonipa").Success)
+				{
+					return SldrStatus.NotFound;
 				}
 
 				sldrCacheFilePath = Path.Combine(SldrCachePath, !string.IsNullOrEmpty(uid) && uid != DefaultUserId ? string.Format("{0}-{1}.{2}", languageTag, uid, LdmlExtension)

@@ -116,6 +116,20 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+		[Test]
+		[Category("SkipOnTeamCity")]
+		public void GetLdmlFile_Fonipa_StatusFileNotFound()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				string filename;
+				const string ietfLanguageTag = "lo-LA-fonipa";
+
+				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.NotFound));
+			}
+		}
+
+
 		#region SLDR cache
 		[Test]
 		public void GetLdmlFile_CacheFileWithUid_StatusFileFromSldrCache()

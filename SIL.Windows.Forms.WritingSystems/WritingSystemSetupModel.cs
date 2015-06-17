@@ -758,7 +758,7 @@ namespace SIL.Windows.Forms.WritingSystems
 						CurrentDefinition.Language = WellKnownSubtags.UnlistedLanguage;
 
 					IEnumerable<VariantSubtag> variantSubtags;
-					if (IetfLanguageTag.TryGetVariantSubtags(value, out variantSubtags))
+					if (IetfLanguageTag.TryGetVariantSubtags(fixedVariant, out variantSubtags))
 					{
 						VariantSubtag[] originalVariantSubtags = CurrentDefinition.Variants.ToArray();
 						CurrentDefinition.Variants.ReplaceAll(variantSubtags);
