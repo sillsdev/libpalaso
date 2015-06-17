@@ -6,6 +6,7 @@ using SIL.DblBundle.Tests.Properties;
 using SIL.DblBundle.Tests.Text;
 using SIL.DblBundle.Text;
 using SIL.IO;
+using SIL.WritingSystems;
 
 namespace SIL.DblBundle.Tests
 {
@@ -36,17 +37,19 @@ namespace SIL.DblBundle.Tests
 		[Test]
 		public void LanguageIso_LanguageCodeSpecifiedInMetadata_ReturnsLanguageCode()
 		{
+			Bundle<TestMetadata, DblMetadataLanguage>.DefaultLanguageIsoCode = WellKnownSubtags.UnlistedLanguage;
 			m_bundle.Metadata.Language.Iso = "ach";
 			Assert.AreEqual("ach", m_bundle.LanguageIso);
 		}
 
 		[Test]
-		public void LanguageIso_NoLanguageCodeSpecified_ReturnsCodeForUnknown()
+		public void LanguageIso_NoLanguageCodeSpecified_ReturnsCodeForUnlistedLanguage()
 		{
+			Bundle<TestMetadata, DblMetadataLanguage>.DefaultLanguageIsoCode = WellKnownSubtags.UnlistedLanguage;
 			m_bundle.Metadata.Language.Iso = null;
-			Assert.AreEqual("qaa", m_bundle.LanguageIso);
+			Assert.AreEqual(WellKnownSubtags.UnlistedLanguage, m_bundle.LanguageIso);
 			m_bundle.Metadata.Language.Iso = String.Empty;
-			Assert.AreEqual("qaa", m_bundle.LanguageIso);
+			Assert.AreEqual(WellKnownSubtags.UnlistedLanguage, m_bundle.LanguageIso);
 		}
 
 		private static TempFile CreateZippedTestBundleFromResources()

@@ -81,6 +81,13 @@ namespace SIL.DblBundle
 
 		#region Public properties
 		/// <summary>
+		/// Typically, this should be set to SIL.WritingSystems.WellKnownSubtags.UnlistedLanguage by the client.
+		/// We would have probably just hard-coded to that, but we didn't want to have to refernce SIL.WritingSystems
+		/// just for that. Anyway, this gives a bit more versatility.
+		/// </summary>
+		public static string DefaultLanguageIsoCode { get; set; }
+
+		/// <summary>
 		/// Path to the original (unzipped) DBL bundle
 		/// </summary>
 		public string BundlePath { get { return m_pathToZippedBundle; } }
@@ -104,7 +111,7 @@ namespace SIL.DblBundle
 			get
 			{
 				var isoCode = m_dblMetadata.Language.Iso;
-				return String.IsNullOrEmpty(isoCode) ? "qaa" : isoCode;
+				return String.IsNullOrEmpty(isoCode) ? DefaultLanguageIsoCode : isoCode;
 			}
 		}
 
