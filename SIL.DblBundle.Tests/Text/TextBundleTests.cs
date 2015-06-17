@@ -52,7 +52,7 @@ namespace SIL.DblBundle.Tests.Text
 			Assert.AreEqual("MAT", book.BookId);
 		}
 
-		private TempFile CreateZippedTextBundleFromResources()
+		private static TempFile CreateZippedTextBundleFromResources()
 		{
 			TempFile bundle = TempFile.WithExtension(DblBundleFileUtils.kDblBundleExtension);
 

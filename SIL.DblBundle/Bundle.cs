@@ -96,9 +96,17 @@ namespace SIL.DblBundle
 		public string Id { get { return m_dblMetadata.Id; } }
 
 		/// <summary>
-		/// 3-letter ISO 639-2 code for the language of the DBL bundle
+		/// 3-letter ISO 639-2 code for the language of the DBL bundle. If the metadata's language does
+		/// not identify an ISO 639-2 code, this returns "qaa", which is the code indicating "unknown".
 		/// </summary>
-		public string LanguageIso { get { return m_dblMetadata.Language.Iso; } }
+		public string LanguageIso
+		{
+			get
+			{
+				var isoCode = m_dblMetadata.Language.Iso;
+				return String.IsNullOrEmpty(isoCode) ? "qaa" : isoCode;
+			}
+		}
 
 		/// <summary>
 		/// The name of the publication
