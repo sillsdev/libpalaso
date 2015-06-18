@@ -81,6 +81,13 @@ namespace SIL.DblBundle
 
 		#region Public properties
 		/// <summary>
+		/// Typically, this should be set to SIL.WritingSystems.WellKnownSubtags.UnlistedLanguage by the client.
+		/// We would have probably just hard-coded to that, but we didn't want to have to reference SIL.WritingSystems
+		/// just for that. Anyway, this gives a bit more versatility.
+		/// </summary>
+		public static string DefaultLanguageIsoCode { get; set; }
+
+		/// <summary>
 		/// Path to the original (unzipped) DBL bundle
 		/// </summary>
 		public string BundlePath { get { return m_pathToZippedBundle; } }
@@ -96,9 +103,19 @@ namespace SIL.DblBundle
 		public string Id { get { return m_dblMetadata.Id; } }
 
 		/// <summary>
-		/// 3-letter ISO 639-2 code for the language of the DBL bundle
+		/// 3-letter ISO 639-2 code for the language of the DBL bundle. If the metadata's language does
+		/// not identify an ISO 639-2 code, this returns the default language ISO code, which clients
+		/// are encouraged to set to "qaa" or some other value that will allow it to be properly
+		/// treated as "unknown".
 		/// </summary>
-		public string LanguageIso { get { return m_dblMetadata.Language.Iso; } }
+		public string LanguageIso
+		{
+			get
+			{
+				var isoCode = m_dblMetadata.Language.Iso;
+				return String.IsNullOrEmpty(isoCode) ? DefaultLanguageIsoCode : isoCode;
+			}
+		}
 
 		/// <summary>
 		/// The name of the publication
