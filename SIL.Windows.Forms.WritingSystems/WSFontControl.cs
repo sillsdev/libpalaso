@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using SIL.Keyboarding;
+using SIL.Windows.Forms.Extensions;
 using SIL.Windows.Forms.Keyboarding;
 
 namespace SIL.Windows.Forms.WritingSystems
@@ -11,8 +11,8 @@ namespace SIL.Windows.Forms.WritingSystems
 	public partial class WSFontControl : UserControl
 	{
 		private WritingSystemSetupModel _model;
-		private string _defaultFontName;
-		private float _defaultFontSize;
+		private readonly string _defaultFontName;
+		private readonly float _defaultFontSize;
 		private IKeyboardDefinition _defaultKeyboard;
 
 		public WSFontControl()
@@ -25,6 +25,8 @@ namespace SIL.Windows.Forms.WritingSystems
 			_promptForFontTestArea.SetPrompt(_testArea, "Use this area to type something to test out your font.");
 			if (KeyboardController.IsInitialized)
 				KeyboardController.RegisterControl(_testArea);
+
+			_fontNotAvailableLabel.Visible = false; // Setting this here rather than in the designer so devs will see it (for layout purposes)
 		}
 
 		public bool ReadOnly
@@ -62,6 +64,11 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			get { return _fontComboBox.DropDownStyle; }
 			set { _fontComboBox.DropDownStyle = _fontSizeComboBox.DropDownStyle = value; }
+		}
+
+		public bool IsSelectedFontAvailable
+		{
+			get { return _fontComboBox.Contains(_fontComboBox.Text, StringComparison.OrdinalIgnoreCase); }
 		}
 
 		void OnDisposed(object sender, EventArgs e)
@@ -162,15 +169,17 @@ namespace SIL.Windows.Forms.WritingSystems
 				fontSize = _defaultFontSize;
 			}
 			string fontName = _fontComboBox.Text;
-			if (!_fontComboBox.Items.Contains(fontName))
+			if (!IsSelectedFontAvailable)
 			{
 				fontName = _defaultFontName;
 			}
 			_testArea.Font = new Font(fontName, fontSize);
 			_testArea.ForeColor = Color.Black;
-			if (_testArea.Font.Name != _fontComboBox.Text.Trim())
+			_fontNotAvailableLabel.Visible = false;
+			if (!_testArea.Font.Name.Equals(_fontComboBox.Text.Trim(), StringComparison.OrdinalIgnoreCase))
 			{
 				_testArea.ForeColor = Color.Gray;
+				_fontNotAvailableLabel.Visible = true;
 			}
 			_testArea.RightToLeft = _model.CurrentRightToLeftScript ? RightToLeft.Yes : RightToLeft.No;
 		}

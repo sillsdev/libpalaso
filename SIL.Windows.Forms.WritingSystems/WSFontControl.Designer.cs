@@ -37,9 +37,12 @@ namespace SIL.Windows.Forms.WritingSystems
 			this.label3 = new System.Windows.Forms.Label();
 			this._testArea = new System.Windows.Forms.TextBox();
 			this._rightToLeftCheckBox = new System.Windows.Forms.CheckBox();
-			this._promptForFontTestArea = new Prompt();
 			this._tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+			this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+			this._fontNotAvailableLabel = new System.Windows.Forms.Label();
+			this._promptForFontTestArea = new SIL.Windows.Forms.Widgets.Prompt();
 			this._tableLayoutPanel.SuspendLayout();
+			this.tableLayoutPanel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// _fontComboBox
@@ -90,7 +93,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._fontSizeComboBox.Location = new System.Drawing.Point(301, 19);
 			this._fontSizeComboBox.Name = "_fontSizeComboBox";
 			this._fontSizeComboBox.Size = new System.Drawing.Size(174, 143);
-			this._fontSizeComboBox.TabIndex = 1;
+			this._fontSizeComboBox.TabIndex = 2;
 			this._fontSizeComboBox.TextChanged += new System.EventHandler(this.FontSizeComboBox_TextChanged);
 			// 
 			// label1
@@ -113,10 +116,12 @@ namespace SIL.Windows.Forms.WritingSystems
 			// 
 			// label3
 			// 
-			this._tableLayoutPanel.SetColumnSpan(this.label3, 2);
-			this.label3.Location = new System.Drawing.Point(3, 195);
+			this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.label3.AutoSize = true;
+			this.label3.Location = new System.Drawing.Point(3, 0);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(472, 14);
+			this.label3.Size = new System.Drawing.Size(56, 13);
 			this.label3.TabIndex = 1;
 			this.label3.Text = "&Test Area:";
 			// 
@@ -127,11 +132,11 @@ namespace SIL.Windows.Forms.WritingSystems
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this._tableLayoutPanel.SetColumnSpan(this._testArea, 2);
-			this._testArea.Location = new System.Drawing.Point(3, 212);
+			this._testArea.Location = new System.Drawing.Point(3, 218);
 			this._testArea.Multiline = true;
 			this._testArea.Name = "_testArea";
-			this._testArea.Size = new System.Drawing.Size(472, 88);
-			this._testArea.TabIndex = 2;
+			this._testArea.Size = new System.Drawing.Size(472, 82);
+			this._testArea.TabIndex = 4;
 			this._testArea.Enter += new System.EventHandler(this._testArea_Enter);
 			this._testArea.Leave += new System.EventHandler(this._testArea_Leave);
 			// 
@@ -141,7 +146,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._rightToLeftCheckBox.Location = new System.Drawing.Point(3, 168);
 			this._rightToLeftCheckBox.Name = "_rightToLeftCheckBox";
 			this._rightToLeftCheckBox.Size = new System.Drawing.Size(472, 24);
-			this._rightToLeftCheckBox.TabIndex = 0;
+			this._rightToLeftCheckBox.TabIndex = 3;
 			this._rightToLeftCheckBox.Text = "This is a &right to left writing system.";
 			this._rightToLeftCheckBox.UseVisualStyleBackColor = false;
 			this._rightToLeftCheckBox.CheckedChanged += new System.EventHandler(this.RightToLeftCheckBox_CheckedChanged);
@@ -151,24 +156,52 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._tableLayoutPanel.ColumnCount = 2;
 			this._tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 298F));
 			this._tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-			this._tableLayoutPanel.Controls.Add(this._testArea, 0, 4);
+			this._tableLayoutPanel.Controls.Add(this._testArea, 0, 5);
 			this._tableLayoutPanel.Controls.Add(this._rightToLeftCheckBox, 0, 2);
-			this._tableLayoutPanel.Controls.Add(this.label3, 0, 3);
 			this._tableLayoutPanel.Controls.Add(this._fontSizeComboBox, 1, 1);
 			this._tableLayoutPanel.Controls.Add(this._fontComboBox, 0, 1);
 			this._tableLayoutPanel.Controls.Add(this.label1, 0, 0);
 			this._tableLayoutPanel.Controls.Add(this.label2, 1, 0);
+			this._tableLayoutPanel.Controls.Add(this.tableLayoutPanel1, 0, 4);
 			this._tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
 			this._tableLayoutPanel.Location = new System.Drawing.Point(0, 0);
 			this._tableLayoutPanel.Name = "_tableLayoutPanel";
-			this._tableLayoutPanel.RowCount = 5;
+			this._tableLayoutPanel.RowCount = 6;
 			this._tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this._tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this._tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this._tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this._tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this._tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
 			this._tableLayoutPanel.Size = new System.Drawing.Size(478, 303);
 			this._tableLayoutPanel.TabIndex = 7;
+			// 
+			// tableLayoutPanel1
+			// 
+			this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.tableLayoutPanel1.ColumnCount = 2;
+			this._tableLayoutPanel.SetColumnSpan(this.tableLayoutPanel1, 2);
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel1.Controls.Add(this.label3, 0, 0);
+			this.tableLayoutPanel1.Controls.Add(this._fontNotAvailableLabel, 1, 0);
+			this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 198);
+			this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+			this.tableLayoutPanel1.RowCount = 1;
+			this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+			this.tableLayoutPanel1.Size = new System.Drawing.Size(472, 14);
+			this.tableLayoutPanel1.TabIndex = 3;
+			// 
+			// _fontNotAvailableLabel
+			// 
+			this._fontNotAvailableLabel.AutoSize = true;
+			this._fontNotAvailableLabel.ForeColor = System.Drawing.Color.Red;
+			this._fontNotAvailableLabel.Location = new System.Drawing.Point(65, 0);
+			this._fontNotAvailableLabel.Name = "_fontNotAvailableLabel";
+			this._fontNotAvailableLabel.Size = new System.Drawing.Size(317, 13);
+			this._fontNotAvailableLabel.TabIndex = 2;
+			this._fontNotAvailableLabel.Text = "(The selected font is not available on this machine. Using default.)";
 			// 
 			// WSFontControl
 			// 
@@ -179,6 +212,8 @@ namespace SIL.Windows.Forms.WritingSystems
 			this.Size = new System.Drawing.Size(478, 303);
 			this._tableLayoutPanel.ResumeLayout(false);
 			this._tableLayoutPanel.PerformLayout();
+			this.tableLayoutPanel1.ResumeLayout(false);
+			this.tableLayoutPanel1.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -194,5 +229,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		private System.Windows.Forms.CheckBox _rightToLeftCheckBox;
 		private Prompt _promptForFontTestArea;
 		private System.Windows.Forms.TableLayoutPanel _tableLayoutPanel;
+		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+		private System.Windows.Forms.Label _fontNotAvailableLabel;
 	}
 }

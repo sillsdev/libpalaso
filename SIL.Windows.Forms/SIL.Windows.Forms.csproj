@@ -331,6 +331,7 @@
     </Compile>
     <Compile Include="ClearShare\Work.cs" />
     <Compile Include="ColorHelper.cs" />
+    <Compile Include="Extensions\ComboBoxExtensions.cs" />
     <Compile Include="Extensions\ControlExtensions.cs" />
     <Compile Include="Extensions\FormExtensions.cs" />
     <Compile Include="FileDialogExtender\Enums.cs" />
