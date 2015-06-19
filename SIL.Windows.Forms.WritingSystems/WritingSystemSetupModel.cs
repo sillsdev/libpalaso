@@ -897,7 +897,7 @@ namespace SIL.Windows.Forms.WritingSystems
 						var simpleCollation = (SimpleRulesCollationDefinition) CurrentDefinition.DefaultCollation;
 						return simpleCollation.SimpleRules == string.Empty ? DefaultCustomSimpleSortRules : simpleCollation.SimpleRules;
 					case CollationRulesType.OtherLanguage:
-						return ((SystemCollationDefinition) CurrentDefinition.DefaultCollation).LanguageTag;
+						return ((SystemCollationDefinition) CurrentDefinition.DefaultCollation).LanguageTag ?? string.Empty;
 				}
 				return string.Empty;
 			}
