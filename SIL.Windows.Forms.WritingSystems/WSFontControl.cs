@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using SIL.Keyboarding;
+using SIL.Windows.Forms.Extensions;
 using SIL.Windows.Forms.Keyboarding;
 
 namespace SIL.Windows.Forms.WritingSystems
@@ -11,8 +11,8 @@ namespace SIL.Windows.Forms.WritingSystems
 	public partial class WSFontControl : UserControl
 	{
 		private WritingSystemSetupModel _model;
-		private string _defaultFontName;
-		private float _defaultFontSize;
+		private readonly string _defaultFontName;
+		private readonly float _defaultFontSize;
 		private IKeyboardDefinition _defaultKeyboard;
 
 		public WSFontControl()
@@ -62,6 +62,11 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			get { return _fontComboBox.DropDownStyle; }
 			set { _fontComboBox.DropDownStyle = _fontSizeComboBox.DropDownStyle = value; }
+		}
+
+		public bool IsSelectedFontAvailable
+		{
+			get { return _fontComboBox.Contains(_fontComboBox.Text, StringComparison.OrdinalIgnoreCase); }
 		}
 
 		void OnDisposed(object sender, EventArgs e)
@@ -153,25 +158,24 @@ namespace SIL.Windows.Forms.WritingSystems
 		private void SetTestAreaFont()
 		{
 			float fontSize;
-			if (!float.TryParse(_fontSizeComboBox.Text, out fontSize))
+			if (!float.TryParse(_fontSizeComboBox.Text, out fontSize) || fontSize <= 0 || float.IsNaN(fontSize) || float.IsInfinity(fontSize))
 			{
 				fontSize = _defaultFontSize;
 			}
-			if (fontSize <= 0 || float.IsNaN(fontSize) || float.IsInfinity(fontSize))
+			string fontName;
+			if (IsSelectedFontAvailable)
 			{
-				fontSize = _defaultFontSize;
+				fontName = _fontComboBox.Text;
+				_testArea.ForeColor = Color.Black;
+				_fontNotAvailableLabel.Visible = false;
 			}
-			string fontName = _fontComboBox.Text;
-			if (!_fontComboBox.Items.Contains(fontName))
+			else
 			{
 				fontName = _defaultFontName;
+				_testArea.ForeColor = Color.Gray;
+				_fontNotAvailableLabel.Visible = true;
 			}
 			_testArea.Font = new Font(fontName, fontSize);
-			_testArea.ForeColor = Color.Black;
-			if (_testArea.Font.Name != _fontComboBox.Text.Trim())
-			{
-				_testArea.ForeColor = Color.Gray;
-			}
 			_testArea.RightToLeft = _model.CurrentRightToLeftScript ? RightToLeft.Yes : RightToLeft.No;
 		}
 
