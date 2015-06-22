@@ -25,8 +25,6 @@ namespace SIL.Windows.Forms.WritingSystems
 			_promptForFontTestArea.SetPrompt(_testArea, "Use this area to type something to test out your font.");
 			if (KeyboardController.IsInitialized)
 				KeyboardController.RegisterControl(_testArea);
-
-			_fontNotAvailableLabel.Visible = false; // Setting this here rather than in the designer so devs will see it (for layout purposes)
 		}
 
 		public bool ReadOnly
@@ -160,27 +158,24 @@ namespace SIL.Windows.Forms.WritingSystems
 		private void SetTestAreaFont()
 		{
 			float fontSize;
-			if (!float.TryParse(_fontSizeComboBox.Text, out fontSize))
+			if (!float.TryParse(_fontSizeComboBox.Text, out fontSize) || fontSize <= 0 || float.IsNaN(fontSize) || float.IsInfinity(fontSize))
 			{
 				fontSize = _defaultFontSize;
 			}
-			if (fontSize <= 0 || float.IsNaN(fontSize) || float.IsInfinity(fontSize))
+			string fontName;
+			if (IsSelectedFontAvailable)
 			{
-				fontSize = _defaultFontSize;
+				fontName = _fontComboBox.Text;
+				_testArea.ForeColor = Color.Black;
+				_fontNotAvailableLabel.Visible = false;
 			}
-			string fontName = _fontComboBox.Text;
-			if (!IsSelectedFontAvailable)
+			else
 			{
 				fontName = _defaultFontName;
-			}
-			_testArea.Font = new Font(fontName, fontSize);
-			_testArea.ForeColor = Color.Black;
-			_fontNotAvailableLabel.Visible = false;
-			if (!_testArea.Font.Name.Equals(_fontComboBox.Text.Trim(), StringComparison.OrdinalIgnoreCase))
-			{
 				_testArea.ForeColor = Color.Gray;
 				_fontNotAvailableLabel.Visible = true;
 			}
+			_testArea.Font = new Font(fontName, fontSize);
 			_testArea.RightToLeft = _model.CurrentRightToLeftScript ? RightToLeft.Yes : RightToLeft.No;
 		}
 

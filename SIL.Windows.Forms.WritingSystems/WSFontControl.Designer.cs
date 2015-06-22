@@ -202,6 +202,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._fontNotAvailableLabel.Size = new System.Drawing.Size(317, 13);
 			this._fontNotAvailableLabel.TabIndex = 2;
 			this._fontNotAvailableLabel.Text = "(The selected font is not available on this machine. Using default.)";
+			this._fontNotAvailableLabel.Visible = false;
 			// 
 			// WSFontControl
 			// 
