@@ -68,7 +68,6 @@ namespace SIL.Windows.Forms.WritingSystems
 		private readonly List<WritingSystemDefinition> _writingSystemDefinitions;
 		private readonly List<WritingSystemDefinition> _deletedWritingSystemDefinitions;
 		private CollationRulesType _currentCollationRulesType;
-		private readonly Dictionary<WritingSystemDefinition, string> _defaultFontNames = new Dictionary<WritingSystemDefinition, string>(); 
 
 		internal string DefaultCustomSimpleSortRules = "A a-B b-C c-D d-E e-F f-G g-H h-I i-J j-K k-L l-M m-N n-O o-P p-Q q-R r-S s-T t-U u-V v-W w-X x-Y y-Z z".Replace("-", "\r\n");
 
@@ -605,19 +604,18 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			get
 			{
-				if (CurrentDefinition == null)
-					return string.Empty;
-
-				string defaultFontName;
-				if (!_defaultFontNames.TryGetValue(CurrentDefinition, out defaultFontName))
-					defaultFontName = CurrentDefinition.DefaultFont == null ? string.Empty : CurrentDefinition.DefaultFont.Name;
-				return defaultFontName;
+				return (CurrentDefinition == null || CurrentDefinition.DefaultFont == null)
+					? string.Empty
+					: CurrentDefinition.DefaultFont.Name;
 			}
 			set
 			{
 				if (CurrentDefinition != null && !CurrentDefaultFontName.Equals(value, StringComparison.InvariantCultureIgnoreCase))
 				{
-					_defaultFontNames[CurrentDefinition] = value;
+					FontDefinition font;
+					if (!CurrentDefinition.Fonts.TryGet(value, out font))
+						font = new FontDefinition(value);
+					CurrentDefinition.DefaultFont = font;
 					OnCurrentItemUpdated();
 				}
 			}
@@ -1406,18 +1404,6 @@ namespace SIL.Windows.Forms.WritingSystems
 				throw new InvalidOperationException("Unable to save when there is no writing system store.");
 			}
 
-			// update fonts
-			foreach (WritingSystemDefinition ws in _writingSystemDefinitions)
-			{
-				string defaultFontName;
-				if (_defaultFontNames.TryGetValue(ws, out defaultFontName))
-				{
-					FontDefinition font;
-					if (!ws.Fonts.TryGet(defaultFontName, out font))
-						font = new FontDefinition(defaultFontName);
-					ws.DefaultFont = font;
-				}
-			}
 			SetAllPossibleAndRemoveOthers();
 			_writingSystemRepository.Save();
 		}

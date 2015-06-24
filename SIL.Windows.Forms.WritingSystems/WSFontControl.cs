@@ -98,7 +98,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			{
 				currentSize = float.NaN;
 			}
-			if (_model.CurrentDefaultFontName != _fontComboBox.Text)
+			if (!_model.CurrentDefaultFontName.Equals(_fontComboBox.Text, StringComparison.InvariantCultureIgnoreCase))
 			{
 				if (string.IsNullOrEmpty(_model.CurrentDefaultFontName))
 				{
@@ -185,7 +185,8 @@ namespace SIL.Windows.Forms.WritingSystems
 			{
 				return;
 			}
-			if (_model.HasCurrentSelection && _model.CurrentDefaultFontName != _fontComboBox.Text)
+			if (_model.HasCurrentSelection && IsSelectedFontAvailable &&
+				!_model.CurrentDefaultFontName.Equals(_fontComboBox.Text, StringComparison.InvariantCultureIgnoreCase))
 			{
 				_model.CurrentDefaultFontName = _fontComboBox.Text;
 			}

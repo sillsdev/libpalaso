@@ -1148,6 +1148,9 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 			Assert.That(_model.CurrentDefaultFontName, Is.EqualTo("Test"));
 		}
 
+// TODO: DDW - If WritingSystemSetupModel doesn't update the default font until Save, WeSay wasn't allowing the user to change the default font.
+// Undoing this feature for now
+#if WS_FIX
 		[Test]
 		public void CurrentDefaultFontName_DifferentFontName_DefaultFontNotUpdatedUntilSave()
 		{
@@ -1160,5 +1163,6 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 			Assert.That(_model.CurrentDefinition.DefaultFont.Name, Is.EqualTo("NewFont"));
 			Assert.That(_model.CurrentDefinition.Fonts.Count, Is.EqualTo(2));
 		}
+#endif
 	}
 }
