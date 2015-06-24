@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Xml.Serialization;
 using SIL.DblBundle.Text;
 using SIL.Xml;
@@ -28,7 +29,7 @@ namespace SIL.DblBundle
 	/// itself cannot be abstract because in the event of a loading error, we need to deserialize it
 	/// to properly report the situation to the user.
 	/// </summary>
-	public abstract class DblMetadataBase<TL> : DblMetadata where TL: DblMetadataLanguage, new()
+	public abstract class DblMetadataBase<TL> : DblMetadata, IProjectInfo where TL: DblMetadataLanguage, new()
 	{
 		public static T Load<T>(string projectFilePath, out Exception exception) where T : DblMetadataBase<TL>
 		{
@@ -49,5 +50,14 @@ namespace SIL.DblBundle
 		/// </summary>
 		[XmlElement("language")]
 		public virtual TL Language { get; set; }
+
+		#region IProjectInfo Members
+		public abstract string Name { get; }
+
+		DblMetadataLanguage IProjectInfo.Language
+		{
+			get { return Language; }
+		}
+		#endregion
 	}
 }
