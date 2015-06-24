@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using Palaso.UI.WindowsForms.Keyboarding;
-using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
-using Palaso.WritingSystems;
+using SIL.Keyboarding;
+using SIL.Windows.Forms.Keyboarding;
+using SIL.Windows.Forms.Keyboarding.Windows;
 
 namespace TestAppKeyboard
 {
-	public partial class KeyboardForm : Form, IWindowsLanguageProfileSink
+	public partial class KeyboardForm : Form
 	{
 		public KeyboardForm()
 		{
@@ -21,19 +16,26 @@ namespace TestAppKeyboard
 				return;
 
 			KeyboardController.Initialize();
-			KeyboardController.Register(testAreaA, this);
-			KeyboardController.Register(testAreaB, this);
-			KeyboardController.Register(testAreaC, this);
-			LoadKeyboards(this.keyboardsA);
-			LoadKeyboards(this.keyboardsB);
-			LoadKeyboards(this.keyboardsC);
-			LoadKeyboards(this.currentKeyboard);
+#if __MonoCS__
+			KeyboardController.RegisterControl(testAreaA);
+			KeyboardController.RegisterControl(testAreaB);
+			KeyboardController.RegisterControl(testAreaC);
+#else
+			var eventHandler = new TestWindowsLanguageProfileSink(this);
+			KeyboardController.RegisterControl(testAreaA, eventHandler);
+			KeyboardController.RegisterControl(testAreaB, eventHandler);
+			KeyboardController.RegisterControl(testAreaC, eventHandler);
+#endif
+			LoadKeyboards(keyboardsA);
+			LoadKeyboards(keyboardsB);
+			LoadKeyboards(keyboardsC);
+			LoadKeyboards(currentKeyboard);
 		}
 
 		public void LoadKeyboards(ComboBox comboBox)
 		{
-			var keyboards = Keyboard.Controller.AllAvailableKeyboards;
-			foreach (var keyboard in keyboards)
+			IEnumerable<IKeyboardDefinition> keyboards = Keyboard.Controller.AvailableKeyboards;
+			foreach (IKeyboardDefinition keyboard in keyboards)
 			{
 				comboBox.Items.Add(keyboard);
 				Console.WriteLine("added keyboard id: {0}, name: {1}", keyboard.Id, keyboard.Name);
@@ -45,9 +47,9 @@ namespace TestAppKeyboard
 		{
 			if (cbOnEnter.Checked)
 			{
-				var wantKeyboard = (KeyboardDescription)keyboardsA.SelectedItem;
+				var wantKeyboard = (IKeyboardDefinition) keyboardsA.SelectedItem;
 				Console.WriteLine("Enter A: Set to {0}", wantKeyboard);
-				Keyboard.Controller.SetKeyboard(wantKeyboard);
+				wantKeyboard.Activate();
 			} else {
 				Console.WriteLine("Enter A");
 			}
@@ -57,9 +59,9 @@ namespace TestAppKeyboard
 		{
 			if (cbOnEnter.Checked)
 			{
-				var wantKeyboard = (KeyboardDescription)keyboardsB.SelectedItem;
+				var wantKeyboard = (IKeyboardDefinition) keyboardsB.SelectedItem;
 				Console.WriteLine("Enter B: Set to {0}", wantKeyboard);
-				Keyboard.Controller.SetKeyboard(wantKeyboard);
+				wantKeyboard.Activate();
 			} else {
 				Console.WriteLine("Enter B");
 			}
@@ -69,25 +71,32 @@ namespace TestAppKeyboard
 		{
 			if (cbOnEnter.Checked)
 			{
-				var wantKeyboard = (KeyboardDescription)keyboardsC.SelectedItem;
+				var wantKeyboard = (IKeyboardDefinition) keyboardsC.SelectedItem;
 				Console.WriteLine("Enter C: Set to {0}", wantKeyboard);
-				Keyboard.Controller.SetKeyboard(wantKeyboard);
+				wantKeyboard.Activate();
 			} else {
 				Console.WriteLine("Enter C");
 			}
 		}
 
-
-		#region IWindowsLanguageProfileSink Members
-
-		public void OnInputLanguageChanged(IKeyboardDefinition previousKeyboard, IKeyboardDefinition newKeyboard)
+#if !__MonoCS__
+		private class TestWindowsLanguageProfileSink : IWindowsLanguageProfileSink
 		{
-			Console.WriteLine("TestAppKeyboard.OnLanguageChanged: previous {0}, new {1}",
-				previousKeyboard != null ? previousKeyboard.Layout : "<null>",
-				newKeyboard != null ? newKeyboard.Layout : "<null>");
-			lblCurrentKeyboard.Text = newKeyboard != null ? newKeyboard.Layout : "<null>";
-		}
+			private readonly KeyboardForm _form;
 
-		#endregion
+			public TestWindowsLanguageProfileSink(KeyboardForm form)
+			{
+				_form = form;
+			}
+
+			public void OnInputLanguageChanged(IKeyboardDefinition previousKeyboard, IKeyboardDefinition newKeyboard)
+			{
+				Console.WriteLine("TestAppKeyboard.OnLanguageChanged: previous {0}, new {1}",
+					previousKeyboard != null ? previousKeyboard.Layout : "<null>",
+					newKeyboard != null ? newKeyboard.Layout : "<null>");
+				_form.lblCurrentKeyboard.Text = newKeyboard != null ? newKeyboard.Layout : "<null>";
+			}
+		}
+#endif
 	}
 }

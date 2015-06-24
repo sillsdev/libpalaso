@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using Palaso.UI.WindowsForms.WritingSystems;
-using Palaso.WritingSystems;
-using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using SIL.Windows.Forms.WritingSystems;
+using SIL.WritingSystems;
+using SIL.WritingSystems.Migration;
 
 namespace TestApp
 {
@@ -27,7 +27,7 @@ namespace TestApp
 			_wsModel.Save();
 		}
 
-		public void MigrationHandler(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
+		public void MigrationHandler(int toVersion, IEnumerable<LdmlMigrationInfo> migrationInfo)
 		{
 		}
 	}

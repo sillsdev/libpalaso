@@ -21,6 +21,7 @@ lib/*/icu*5*.dll
 lib/*/icu.net.dll
 lib/*/icu.net.dll.config
 lib/*/taglib-sharp.dll
+lib/*/Spart.dll
 *.lnk
 CopyTo*.bat
 *.orig

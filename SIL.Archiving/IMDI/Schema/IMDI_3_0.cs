@@ -8,10 +8,10 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 using System.Diagnostics;
-using Palaso.Extensions;
 using SIL.Archiving.Generic;
 using SIL.Archiving.Generic.AccessProtocol;
 using SIL.Archiving.IMDI.Lists;
+using SIL.Extensions;
 
 namespace SIL.Archiving.IMDI.Schema
 {
@@ -1315,7 +1315,7 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public void SetBirthDate(DateTime birthDate)
 		{
-			BirthDate = birthDate.ToISO8601DateOnlyString();
+			BirthDate = birthDate.ToISO8601TimeFormatDateOnlyString();
 		}
 
 		/// <remarks/>
@@ -1735,7 +1735,7 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <summary>Set session date with DateTime object</summary>
 		public void SetDate(DateTime date)
 		{
-			Date = date.ToISO8601DateOnlyString();
+			Date = date.ToISO8601TimeFormatDateOnlyString();
 		}
 
 		/// <summary>Set session date with a string. Can be a date range</summary>

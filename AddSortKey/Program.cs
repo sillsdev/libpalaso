@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.Xml;
 using System.Xml.XPath;
-using Palaso.WritingSystems.Collation;
+using SIL.WritingSystems;
 
 namespace AddSortKey
 {
@@ -30,7 +30,7 @@ namespace AddSortKey
 				return (1);
 			}
 
-			XmlDocument document = new XmlDocument();
+			var document = new XmlDocument();
 			document.PreserveWhitespace = true;
 			document.Load(args[0]);
 			XPathNavigator navigator = document.CreateNavigator();
@@ -51,14 +51,20 @@ namespace AddSortKey
 
 		private static AddSortKeysToXml.SortKeyGenerator GetSortKeyGeneratorFromArgument(string s)
 		{
-			if(s.StartsWith("icu:", StringComparison.CurrentCultureIgnoreCase))
+			string icuRules = null;
+			if (s.StartsWith("icu:", StringComparison.CurrentCultureIgnoreCase))
 			{
-				IcuRulesCollator collator = new IcuRulesCollator(s.Substring(4));
-				return collator.GetSortKey;
+				icuRules = s.Substring(4);
 			}
-			if(s.StartsWith("simple:", StringComparison.CurrentCultureIgnoreCase))
+			else if (s.StartsWith("simple:", StringComparison.CurrentCultureIgnoreCase))
 			{
-				SimpleRulesCollator collator = new SimpleRulesCollator(s.Substring(7));
+				var parser = new SimpleRulesParser();
+				icuRules = parser.ConvertToIcuRules(s.Substring(7));
+			}
+
+			if (icuRules != null)
+			{
+				var collator = new IcuRulesCollator(icuRules);
 				return collator.GetSortKey;
 			}
 			return CultureInfo.GetCultureInfo(s).CompareInfo.GetSortKey;

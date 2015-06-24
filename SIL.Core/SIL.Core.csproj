@@ -1,0 +1,387 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SIL</RootNamespace>
+    <AssemblyName>SIL.Core</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\output\Debug</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\output\Debug\SIL.Core.XML</DocumentationFile>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>default</LangVersion>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\output\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\output\DebugMono</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+    <DocumentationFile>..\output\DebugMono\SIL.Core.XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
+    <OutputPath>..\output\ReleaseMono</OutputPath>
+    <DefineConstants>TRACE;MONO</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\output\DebugStrongName\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;STRONG_NAME</DefineConstants>
+    <DocumentationFile>..\output\DebugStrongName\SIL.Core.XML</DocumentationFile>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>default</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>1699,1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\output\DebugMonoStrongName\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MONO;STRONG_NAME</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
+    <NoWarn>1699,1591</NoWarn>
+    <DocumentationFile>..\output\DebugMonoStrongName\SIL.Core.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseStrongName|AnyCPU'">
+    <OutputPath>..\output\ReleaseStrongName\</OutputPath>
+    <DefineConstants>TRACE;STRONG_NAME</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>1699</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|AnyCPU'">
+    <OutputPath>..\output\ReleaseMonoStrongName\</OutputPath>
+    <DefineConstants>TRACE;MONO;STRONG_NAME</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
+    <NoWarn>1699</NoWarn>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'DebugMonoStrongName' Or '$(Configuration)' == 'ReleaseMono' Or '$(Configuration)' == 'ReleaseMonoStrongName'">
+    <Reference Include="NDesk.DBus, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f6716e4f9b2ed099, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\commonMono\NDesk.DBus.dll</HintPath>
+    </Reference>
+    <None Include="..\lib\commonMono\NDesk.DBus.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <Reference Include="Mono.Posix" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml" />
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Reporting\ErrorReportSettings.settings">
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
+      <LastGenOutput>ErrorReportSettings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Base32\Base32Convert.cs" />
+    <Compile Include="Base32\Base32ConvertBase.cs" />
+    <Compile Include="Base32\Base32FormattingOptions.cs" />
+    <Compile Include="Base32\Base32HexConvert.cs" />
+    <Compile Include="Code\Require.cs" />
+    <Compile Include="Code\RequireThat.cs" />
+    <Compile Include="Code\SimpleMonitor.cs" />
+    <Compile Include="CommandLineProcessing\AsyncProcessOutputReader.cs" />
+    <Compile Include="CommandLineProcessing\SynchronousProcessOutputReader.cs" />
+    <Compile Include="Data\DelegateQuery.cs" />
+    <Compile Include="Data\DictionaryEqualityComparer.cs" />
+    <Compile Include="Data\IDataMapper.cs" />
+    <Compile Include="Data\MemoryDataMapper.cs" />
+    <Compile Include="Data\PreciseDateTime.cs" />
+    <Compile Include="Data\RecordToken.cs" />
+    <Compile Include="Data\RecordTokenComparer.cs" />
+    <Compile Include="Data\RecordTokenToStringAdapter.cs" />
+    <Compile Include="Data\RepositoryId.cs" />
+    <Compile Include="Data\ResultSet.cs" />
+    <Compile Include="Data\ResultSetCache.cs" />
+    <Compile Include="Data\ResultSetCacheManager.cs" />
+    <Compile Include="Data\ValidationException.cs" />
+    <Compile Include="Email\EmailMessage.cs" />
+    <Compile Include="Email\EmailProviderFactory.cs" />
+    <Compile Include="Email\IEmailMessage.cs" />
+    <Compile Include="Email\IEmailProvider.cs" />
+    <Compile Include="Email\MailToEmailProvider.cs" />
+    <Compile Include="Email\MapiEmailProvider.cs" />
+    <Compile Include="Email\MAPIHelper.cs" />
+    <Compile Include="Email\LinuxEmailProvider.cs" />
+    <Compile Include="Email\ThunderbirdEmailProvider.cs" />
+    <Compile Include="EventsAndDelegates\DelegateDefinitions.cs" />
+    <Compile Include="EventsAndDelegates\DisposableAction.cs" />
+    <Compile Include="EntryAssembly.cs" />
+    <Compile Include="Extensions\ByteArrayExtensions.cs" />
+    <Compile Include="Extensions\CollectionExtensions.cs" />
+    <Compile Include="Extensions\DateTimeExtensions.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
+    <Compile Include="Extensions\ProcessExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="i18n\StringCatalog.cs" />
+    <Compile Include="CommandLineProcessing\CommandLineRunner.cs" />
+    <Compile Include="IO\FileLock\FileLockContent.cs" />
+    <Compile Include="IO\FileLock\IFileLock.cs" />
+    <Compile Include="IO\FileLock\FileSys\LockIO.cs" />
+    <Compile Include="IO\FileLock\SimpleFileLock.cs" />
+    <Compile Include="IO\FileModeOverride.cs" />
+    <Compile Include="IO\FileUtils.cs" />
+    <Compile Include="EventsAndDelegates\GenericEventArgs.cs" />
+    <Compile Include="IO\DirectoryUtilities.cs" />
+    <Compile Include="IO\TempFile.cs" />
+    <Compile Include="Keyboarding\DefaultKeyboardController.cs" />
+    <Compile Include="Keyboarding\DefaultKeyboardDefinition.cs" />
+    <Compile Include="Keyboarding\IInputLanguage.cs" />
+    <Compile Include="Keyboarding\IKeyboardController.cs" />
+    <Compile Include="Keyboarding\IKeyboardDefinition.cs" />
+    <Compile Include="Keyboarding\Keyboard.cs" />
+    <Compile Include="Linq\MiscOperators.cs" />
+    <Compile Include="Code\Detect.cs" />
+    <Compile Include="Code\Guard.cs" />
+    <Compile Include="IO\FileLocator.cs" />
+    <Compile Include="Code\GuardAgainstReentry.cs" />
+    <Compile Include="Migration\DefaultVersion.cs" />
+    <Compile Include="Migration\DelegateMigrationStrategy.cs" />
+    <Compile Include="Migration\FolderMigrator.cs" />
+    <Compile Include="Migration\IMigrationStrategy.cs" />
+    <Compile Include="Migration\IFileVersion.cs" />
+    <Compile Include="Migration\MigrationStrategyBase.cs" />
+    <Compile Include="Migration\FileMigrator.cs" />
+    <Compile Include="Migration\MigratorBase.cs" />
+    <Compile Include="Migration\XmlReaderWriterMigrationStrategy.cs" />
+    <Compile Include="Migration\XPathVersion.cs" />
+    <Compile Include="Migration\XslMigrationStrategy.cs" />
+    <Compile Include="Network\HttpEncoderFromMono.cs" />
+    <Compile Include="Network\HttpUtilityFromMono.cs" />
+    <Compile Include="Network\ProxyCredentialSettings.Designer.cs" />
+    <Compile Include="Network\RobustNetworkOperation.cs" />
+    <Compile Include="ObjectModel\BulkObservableList.cs" />
+    <Compile Include="ObjectModel\Freezable.cs" />
+    <Compile Include="ObjectModel\FreezableEqualityComparer.cs" />
+    <Compile Include="ObjectModel\FreezableList.cs" />
+    <Compile Include="ObjectModel\ICloneable.cs" />
+    <Compile Include="ObjectModel\IFreezable.cs" />
+    <Compile Include="ObjectModel\IKeyedCollection.cs" />
+    <Compile Include="ObjectModel\IObservableCollection.cs" />
+    <Compile Include="ObjectModel\IObservableDictionary.cs" />
+    <Compile Include="ObjectModel\IObservableList.cs" />
+    <Compile Include="ObjectModel\IObservableSet.cs" />
+    <Compile Include="ObjectModel\IReadOnlyCollection.cs" />
+    <Compile Include="ObjectModel\IReadOnlyDictionary.cs" />
+    <Compile Include="ObjectModel\IReadOnlyKeyedCollection.cs" />
+    <Compile Include="ObjectModel\IReadOnlyList.cs" />
+    <Compile Include="ObjectModel\IReadOnlyObservableCollection.cs" />
+    <Compile Include="ObjectModel\IReadOnlyObservableList.cs" />
+    <Compile Include="ObjectModel\IReadOnlySet.cs" />
+    <Compile Include="ObjectModel\IValueEquatable.cs" />
+    <Compile Include="ObjectModel\KeyedBulkObservableList.cs" />
+    <Compile Include="ObjectModel\KeyedList.cs" />
+    <Compile Include="ObjectModel\ObservableDictionary.cs" />
+    <Compile Include="ObjectModel\ObservableHashSet.cs" />
+    <Compile Include="ObjectModel\ObservableList.cs" />
+    <Compile Include="ObjectModel\ObservableObject.cs" />
+    <Compile Include="ObjectModel\ReadOnlyCollection.cs" />
+    <Compile Include="ObjectModel\ReadOnlyDictionary.cs" />
+    <Compile Include="ObjectModel\ReadOnlyKeyedCollection.cs" />
+    <Compile Include="ObjectModel\ReadOnlyList.cs" />
+    <Compile Include="ObjectModel\ReadOnlyObservableCollection.cs" />
+    <Compile Include="ObjectModel\ReadOnlyObservableList.cs" />
+    <Compile Include="ObjectModel\ReadOnlySet.cs" />
+    <Compile Include="CoreSetup.cs" />
+    <Compile Include="Progress\Commands\AsyncCommand.cs" />
+    <Compile Include="Progress\BackgroundWorkerState.cs" />
+    <Compile Include="Progress\Commands\BasicCommand.cs" />
+    <Compile Include="Progress\ConsoleProgressState.cs" />
+    <Compile Include="Progress\IProgressIndicator.cs" />
+    <Compile Include="Progress\Progress.cs" />
+    <Compile Include="Progress\NullProgressState.cs" />
+    <Compile Include="Progress\ProgressState.cs" />
+    <Compile Include="Progress\XslTransformWithProgress.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Reporting\AnalyticsEventSender.cs" />
+    <Compile Include="Reporting\ConfigurationException.cs" />
+    <Compile Include="Reporting\ConsoleErrorReporter.cs" />
+    <Compile Include="Reporting\ConsoleExceptionHandler.cs" />
+    <Compile Include="Reporting\ErrorReport.cs" />
+    <Compile Include="Reporting\ErrorReportSettings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ErrorReportSettings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Reporting\ExceptionHandler.cs" />
+    <Compile Include="Reporting\ExceptionHelper.cs" />
+    <Compile Include="Reporting\Logger.cs" />
+    <Compile Include="Reporting\ReportingSettings.cs" />
+    <Compile Include="Reporting\UsageReporter.cs" />
+    <Compile Include="IO\SFMReader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Settings\CrossPlatformSettingsProvider.cs" />
+    <Compile Include="Annotations\Annotation.cs" />
+    <Compile Include="Annotations\IAnnotatable.cs" />
+    <Compile Include="Spelling\WordTokenizer.cs" />
+    <Compile Include="IO\TempFileForSafeWriting.cs" />
+    <Compile Include="Text\ApproximateMatcher.cs" />
+    <Compile Include="Text\LanguageForm.cs" />
+    <Compile Include="Text\MultiTextBase.cs" />
+    <Compile Include="UiBindings\IBindableControl.cs" />
+    <Compile Include="UiBindings\ICountGiver.cs" />
+    <Compile Include="UiBindings\IDisplayStringAdaptor.cs" />
+    <Compile Include="UsbDrive\UsbDriveInfo.cs" />
+    <Compile Include="IO\FileRelatedStrings.Designer.cs">
+      <DependentUpon>FileRelatedStrings.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Xml\CanonicalXmlSettings.cs" />
+    <Compile Include="Xml\FastXmlElementSplitter.cs" />
+    <Compile Include="Xml\XmlDomExtensions.cs" />
+    <Compile Include="Xml\XmlHelpers.cs" />
+    <Compile Include="Xml\XmlNodeExtensions.cs" />
+    <Compile Include="Xml\XmlSerializationHelper.cs" />
+    <Compile Include="Xml\XmlUtils.cs" />
+    <Compile Include="Xml\XmlWriterExtensions.cs" />
+    <Compile Include="PlatformUtilities\Platform.cs" />
+    <Compile Include="IO\PathUtilities.cs" />
+    <Compile Include="Extensions\XAttributeExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName' Or '$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
+    <Compile Include="UsbDrive\Windows\UsbDriveInfoWindows.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'DebugMonoStrongName' Or '$(Configuration)' == 'ReleaseMono' Or '$(Configuration)' == 'ReleaseMonoStrongName'">
+    <Compile Include="UsbDrive\Linux\IUDiskDevice.cs" />
+    <Compile Include="UsbDrive\Linux\IUDisks.cs" />
+    <Compile Include="UsbDrive\Linux\UDiskDevice.cs" />
+    <Compile Include="UsbDrive\Linux\UDisks.cs" />
+    <Compile Include="UsbDrive\Linux\UsbDriveInfoUDisks.cs" />
+    <Compile Include="UsbDrive\Linux\UsbDriveInfoHAL.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IO\FileRelatedStrings.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FileRelatedStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Reporting\Usage.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
