@@ -79,5 +79,6 @@ namespace SIL.DblBundle.Tests
 			Language = new DblMetadataLanguage();
 		}
 
+		public override string Name { get { return "Test"; } }
 	}
 }

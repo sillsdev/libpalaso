@@ -302,6 +302,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbstractControlDescriptionProvider.cs" />
     <Compile Include="ClearShare\ClearShareResources.Designer.cs" />
     <Compile Include="ClearShare\Contribution.cs" />
     <Compile Include="ClearShare\ContributionCollection.cs" />

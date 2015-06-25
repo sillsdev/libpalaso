@@ -33,6 +33,8 @@ namespace SIL.DblBundle.Text
 			return XmlSerializationHelper.SerializeToString(this);
 		}
 
+		public override string Name { get { return Identification.Name; } }
+
 		public override string ToString()
 		{
 			if (Language.Iso == "sample")
@@ -87,7 +89,7 @@ namespace SIL.DblBundle.Text
 
 		public override string ToString()
 		{
-			return string.IsNullOrEmpty(Name) ? Iso : string.Format("{0} ({1})", Name, Iso);
+			return string.IsNullOrEmpty(Name) ? Iso : (string.IsNullOrEmpty(Iso) ? Name : string.Format("{0} ({1})", Name, Iso));
 		}
 	}
 

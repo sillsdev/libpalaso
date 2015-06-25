@@ -211,6 +211,7 @@
   <ItemGroup>
     <Compile Include="Bundle.cs" />
     <Compile Include="DblMetadata.cs" />
+    <Compile Include="IProjectInfo.cs" />
     <Compile Include="IStylesheet.cs" />
     <Compile Include="Style.cs" />
     <Compile Include="Stylesheet.cs" />
