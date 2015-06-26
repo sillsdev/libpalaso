@@ -31,6 +31,8 @@ namespace PalasoUIWindowsForms.TestApp
 	/// ----------------------------------------------------------------------------------------
 	public partial class TestAppForm : Form
 	{
+		private bool _KeyboardControllerInitialized;
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Default c'tor
@@ -72,25 +74,18 @@ namespace PalasoUIWindowsForms.TestApp
 		{
 			string tempPath = Path.GetTempPath() + "WS-Test";
 			Directory.CreateDirectory(tempPath);
-			KeyboardController.Initialize();
-			try
+			if (!_KeyboardControllerInitialized)
 			{
-				var wsRepo = LdmlInFolderWritingSystemRepository.Initialize(tempPath, onMigration, onLoadProblem);
-				using (var dialog = new WritingSystemSetupDialog(wsRepo))
-				{
-					dialog.WritingSystems.LocalKeyboardSettings = Settings.Default.LocalKeyboards;
-					dialog.ShowDialog();
-					Settings.Default.LocalKeyboards = dialog.WritingSystems.LocalKeyboardSettings;
-					Settings.Default.Save();
-				}
+				KeyboardController.Initialize();
+				_KeyboardControllerInitialized = true;
 			}
-			catch (Exception)
+			var wsRepo = LdmlInFolderWritingSystemRepository.Initialize(tempPath, onMigration, onLoadProblem);
+			using (var dialog = new WritingSystemSetupDialog(wsRepo))
 			{
-				throw;
-			}
-			finally
-			{
-				KeyboardController.Shutdown();
+				dialog.WritingSystems.LocalKeyboardSettings = Settings.Default.LocalKeyboards;
+				dialog.ShowDialog();
+				Settings.Default.LocalKeyboards = dialog.WritingSystems.LocalKeyboardSettings;
+				Settings.Default.Save();
 			}
 		}
 

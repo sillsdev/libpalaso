@@ -1,4 +1,7 @@
 // ---------------------------------------------------------------------------------------------
+using Palaso.UI.WindowsForms.Keyboarding;
+
+
 #region // Copyright (c) 2013, SIL International. All Rights Reserved.
 // <copyright from='2013' to='2013' company='SIL International'>
 //		Copyright (c) 2013, SIL International. All Rights Reserved.
@@ -28,9 +31,16 @@ namespace PalasoUIWindowsForms.TestApp
 		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && (components != null))
+			if (disposing)
 			{
-				components.Dispose();
+				if (_KeyboardControllerInitialized)
+				{
+					KeyboardController.Shutdown();
+					_KeyboardControllerInitialized = false;
+				}
+
+				if (components != null)
+					components.Dispose();
 			}
 			base.Dispose(disposing);
 		}
