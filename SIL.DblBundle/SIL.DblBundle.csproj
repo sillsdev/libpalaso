@@ -226,6 +226,10 @@
       <Project>{3527da1d-1e25-48be-a71e-9ebf7f9208d4}</Project>
       <Name>SIL.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SIL.Scripture\SIL.Scripture.csproj">
+      <Project>{f71ba7b9-d9dc-4f8c-a307-87b503d0e05b}</Project>
+      <Name>SIL.Scripture</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

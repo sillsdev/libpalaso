@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
+using SIL.ObjectModel;
+using SIL.Scripture;
 using SIL.Xml;
 
 namespace SIL.DblBundle.Text
@@ -23,6 +26,18 @@ namespace SIL.DblBundle.Text
 		[XmlArray("bookNames")]
 		[XmlArrayItem("book")]
 		public List<Book> AvailableBooks { get; set; }
+
+		public IReadOnlyList<Book> AvailableBibleBooks
+		{
+			get
+			{
+				return new ReadOnlyList<Book>(AvailableBooks.Where(b =>
+				{
+					var bookNum = BCVRef.BookToNumber(b.Code);
+					return bookNum >= 1 && bookNum <= BCVRef.LastBook;
+				}).ToList());
+			}
+		}
 
 		[XmlArray("contents")]
 		[XmlArrayItem("bookList")]
