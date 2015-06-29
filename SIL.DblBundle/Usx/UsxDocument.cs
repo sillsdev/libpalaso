@@ -30,5 +30,7 @@ namespace SIL.DblBundle.Usx
 		{
 			return m_document.SelectNodes("//para | //chapter");
 		}
+
+		public XmlDocument XmlDocument { get { return m_document; } }
 	}
 }

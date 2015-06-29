@@ -23,6 +23,8 @@ namespace SIL.DblBundle.Text
 		/// </summary>
 		/// <returns>True if the book exists, false otherwise</returns>
 		bool TryGetBook(string bookId, out UsxDocument book);
+
+		IEnumerable<UsxDocument> UsxBooksToInclude { get; }
 	}
 
 	/// <summary>
@@ -54,9 +56,22 @@ namespace SIL.DblBundle.Text
 		/// The name of the publication
 		/// </summary>
 		public override string Name { get { return Metadata.Identification.Name; } }
+
+		public IEnumerable<UsxDocument> UsxBooksToInclude
+		{
+			get
+			{
+				foreach (var book in Metadata.AvailableBibleBooks.Where(b => b.IncludeInScript))
+				{
+					UsxDocument usxBook;
+					if (TryGetBook(book.Code, out usxBook))
+						yield return usxBook;
+				}
+			}
+		}
 		#endregion
 
-		#region Private methods
+		#region Private methods/properties
 		private Stylesheet LoadStylesheet()
 		{
 			const string filename = "styles.xml";

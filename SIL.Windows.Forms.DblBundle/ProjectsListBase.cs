@@ -69,6 +69,11 @@ namespace SIL.Windows.Forms.DblBundle
 
 		protected virtual DataGridViewColumn InactiveColumn { get { return null; } }
 
+		protected void OverrideColumnHeaderText(int columnIndex, string displayName)
+		{
+			m_list.Columns[columnIndex].HeaderText = displayName;
+		}
+
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool HiddenProjectsExist
 		{
@@ -126,13 +131,19 @@ namespace SIL.Windows.Forms.DblBundle
 					var path = Directory.GetFiles(recordingProjectFolder, "*" + ProjectFileExtension).FirstOrDefault();
 					if (path != null)
 					{
-						Exception exception;
-						var metadata = DblMetadataBase<TL>.Load<TM>(path, out exception);
-						if (exception == null)
-							yield return new Tuple<string, IProjectInfo>(path, metadata);
+						var projectInfo = GetProjectInfo(path);
+						if (projectInfo != null)
+							yield return new Tuple<string, IProjectInfo>(path, projectInfo);
 					}
 				}
 			}
+		}
+
+		protected virtual IProjectInfo GetProjectInfo(string path)
+		{
+			Exception exception;
+			var metadata = DblMetadataBase<TL>.Load<TM>(path, out exception);
+			return exception == null ? metadata : null;
 		}
 
 		protected virtual string GetRecordingProjectName(Tuple<string, IProjectInfo> project)
@@ -234,6 +245,8 @@ namespace SIL.Windows.Forms.DblBundle
 
 		private void HandleCellValueChanged(object sender, DataGridViewCellEventArgs e)
 		{
+			if (e.RowIndex == -1)
+				return; // Heading Text changed
 			if (InactiveColumn == null || e.ColumnIndex != InactiveColumn.Index)
 				throw new InvalidOperationException("Unexpected change in read-only column!");
 
