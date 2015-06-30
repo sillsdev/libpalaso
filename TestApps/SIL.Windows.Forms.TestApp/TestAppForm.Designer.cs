@@ -1,4 +1,6 @@
 // ---------------------------------------------------------------------------------------------
+using SIL.Windows.Forms.Keyboarding;
+
 #region // Copyright (c) 2013, SIL International. All Rights Reserved.
 // <copyright from='2013' to='2013' company='SIL International'>
 //		Copyright (c) 2013, SIL International. All Rights Reserved.
@@ -30,8 +32,15 @@ namespace SIL.Windows.Forms.TestApp
 		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && (components != null))
+			if (disposing)
 			{
+				if (_KeyboardControllerInitialized)
+				{
+					KeyboardController.Shutdown();
+					_KeyboardControllerInitialized = false;
+				}
+
+				if (components != null)
 				components.Dispose();
 			}
 			base.Dispose(disposing);

@@ -27,6 +27,8 @@ namespace SIL.Windows.Forms.TestApp
 	/// ----------------------------------------------------------------------------------------
 	public partial class TestAppForm : Form
 	{
+		private bool _KeyboardControllerInitialized;
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Default c'tor
@@ -68,22 +70,19 @@ namespace SIL.Windows.Forms.TestApp
 		{
 			string tempPath = Path.GetTempPath() + "WS-Test";
 			Directory.CreateDirectory(tempPath);
-			KeyboardController.Initialize();
-			try
+			if (!_KeyboardControllerInitialized)
 			{
-				ICustomDataMapper<WritingSystemDefinition>[] customDataMappers =
-				{
-					new UserLexiconSettingsWritingSystemDataMapper(new ApplicationSettingsStore(Properties.Settings.Default, "UserSettings")),
-					new ProjectLexiconSettingsWritingSystemDataMapper(new ApplicationSettingsStore(Properties.Settings.Default, "ProjectSettings"))
-				};
-				LdmlInFolderWritingSystemRepository wsRepo = LdmlInFolderWritingSystemRepository.Initialize(tempPath, customDataMappers);
-				using (var dialog = new WritingSystemSetupDialog(wsRepo))
-					dialog.ShowDialog();
+				KeyboardController.Initialize();
+				_KeyboardControllerInitialized = true;
 			}
-			finally
+			ICustomDataMapper<WritingSystemDefinition>[] customDataMappers =
 			{
-				KeyboardController.Shutdown();
-			}
+				new UserLexiconSettingsWritingSystemDataMapper(new ApplicationSettingsStore(Properties.Settings.Default, "UserSettings")),
+				new ProjectLexiconSettingsWritingSystemDataMapper(new ApplicationSettingsStore(Properties.Settings.Default, "ProjectSettings"))
+			};
+			LdmlInFolderWritingSystemRepository wsRepo = LdmlInFolderWritingSystemRepository.Initialize(tempPath, customDataMappers);
+			using (var dialog = new WritingSystemSetupDialog(wsRepo))
+				dialog.ShowDialog();
 		}
 
 		private void OnArtOfReadingClicked(object sender, EventArgs e)
