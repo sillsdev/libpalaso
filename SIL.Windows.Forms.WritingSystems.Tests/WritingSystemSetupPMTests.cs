@@ -218,6 +218,18 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		}
 
 		[Test]
+		public void Add_DuplicateInList()
+		{
+			for (_model.CurrentIndex = _model.WritingSystemCount - 1; _model.HasCurrentSelection; _model.CurrentIndex--)
+			{
+				Assert.AreNotEqual("New", _model.CurrentAbbreviation);
+			}
+			_model.AddNew();
+			_model.AddNew();
+			Assert.That(_model.CurrentDefinition.LanguageTag, Is.EqualTo("qaa-x-dupl0"));
+		}
+
+		[Test]
 		public void Event_Add_TriggersOnAddDelete()
 		{
 			bool eventTriggered = false;

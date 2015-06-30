@@ -1302,6 +1302,19 @@ namespace SIL.Windows.Forms.WritingSystems
 		}
 
 		/// <summary>
+		/// Get list of existing known ids, both permanent and temporary and determine a unique language tag
+		/// </summary>
+		private string ToUniqueLanguageTag(string ietfLanguageTag)
+		{
+			var wsIds = new List<string>();
+			foreach (WritingSystemDefinition wsT in _writingSystemRepository.AllWritingSystems)
+				wsIds.Add(wsT.LanguageTag);
+			foreach (WritingSystemDefinition wsT in WritingSystemDefinitions)
+				wsIds.Add(wsT.LanguageTag);
+			return IetfLanguageTag.ToUniqueLanguageTag(ietfLanguageTag, wsIds);
+		}
+
+		/// <summary>
 		/// Makes a copy of the currently selected writing system and selects the new copy.
 		/// </summary>
 		public void DuplicateCurrent()
@@ -1318,13 +1331,8 @@ namespace SIL.Windows.Forms.WritingSystems
 			// existing writing systems unknowingly, thus deleting data in those writing systems.
 			// Get list of existing known ids, both permanent and temporary so that we don't risk
 			// replacing/deleting them unknowingly.
-			var wsIds = new List<string>();
-			foreach (WritingSystemDefinition wsT in _writingSystemRepository.AllWritingSystems)
-				wsIds.Add(wsT.LanguageTag);
-			foreach (WritingSystemDefinition wsT in WritingSystemDefinitions)
-				wsIds.Add(wsT.LanguageTag);
 			WritingSystemDefinition ws = CurrentDefinition.Clone();
-			ws.LanguageTag = IetfLanguageTag.ToUniqueLanguageTag(ws.LanguageTag, wsIds);
+			ws.LanguageTag = ToUniqueLanguageTag(ws.LanguageTag);
 			WritingSystemDefinitions.Insert(CurrentIndex + 1, ws);
 			OnAddOrDelete();
 			CurrentDefinition = ws;
@@ -1357,6 +1365,8 @@ namespace SIL.Windows.Forms.WritingSystems
 			{
 				ws.Abbreviation = "v"; // TODO magic string!!! UnlistedLanguageView.DefaultAbbreviation;
 			}
+			// Make sure new writing system is unique before adding
+			ws.LanguageTag = ToUniqueLanguageTag(ws.LanguageTag);
 			WritingSystemDefinitions.Add(ws);
 			CurrentDefinition = ws;
 			OnAddOrDelete();
