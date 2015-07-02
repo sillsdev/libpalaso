@@ -75,7 +75,7 @@ namespace SIL.Windows.Forms.DblBundle
 			// colLanguage
 			// 
 			this.colLanguage.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-			this.colLanguage.HeaderText = "Language";
+			this.colLanguage.HeaderText = "_L10N_:ProjectsList.Language!Language";
 			this.colLanguage.MinimumWidth = 50;
 			this.colLanguage.Name = "colLanguage";
 			this.colLanguage.ReadOnly = true;
@@ -84,7 +84,7 @@ namespace SIL.Windows.Forms.DblBundle
 			// colRecordingProjectName
 			// 
 			this.colRecordingProjectName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-			this.colRecordingProjectName.HeaderText = "Recording Project";
+			this.colRecordingProjectName.HeaderText = "_L10N_:ProjectsList.RecordingProject!Recording Project";
 			this.colRecordingProjectName.MinimumWidth = 50;
 			this.colRecordingProjectName.Name = "colRecordingProjectName";
 			this.colRecordingProjectName.ReadOnly = true;
