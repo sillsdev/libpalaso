@@ -265,6 +265,7 @@
     <Compile Include="ObjectModel\ReadOnlyObservableList.cs" />
     <Compile Include="ObjectModel\ReadOnlySet.cs" />
     <Compile Include="CoreSetup.cs" />
+    <Compile Include="ObjectModel\SortableBindingList.cs" />
     <Compile Include="Progress\Commands\AsyncCommand.cs" />
     <Compile Include="Progress\BackgroundWorkerState.cs" />
     <Compile Include="Progress\Commands\BasicCommand.cs" />
