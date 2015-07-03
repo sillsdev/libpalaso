@@ -1545,6 +1545,8 @@ namespace SIL.Windows.Forms.WritingSystems
 			{
 				throw new InvalidOperationException("Unable to add new writing system definition when there is no store.");
 			}
+			// Make sure new writing system is unique before adding
+			definition.LanguageTag = ToUniqueLanguageTag(definition.LanguageTag);
 			WritingSystemDefinitions.Add(definition);
 			CurrentDefinition = definition;
 			OnAddOrDelete();
