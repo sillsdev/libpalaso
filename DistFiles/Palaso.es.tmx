@@ -37,6 +37,31 @@
 		<seg>Aceptar</seg>
 	  </tuv>
 	</tu>
+	<tu tuid="DialogBoxes.FileDlg.AllFilesLabel">
+      <tuv xml:lang="en">
+        <seg>All Files</seg>
+      </tuv>
+      <tuv xml:lang="es">
+        <seg>Todos los archivos</seg>
+      </tuv>
+    </tu>
+    <tu tuid="DialogBoxes.SelectProjectDlg.ProjectFilesLabel">
+      <note>{0} is the product name</note>
+      <tuv xml:lang="en">
+        <seg>{0} Project Files</seg>
+      </tuv>
+      <tuv xml:lang="es">
+        <seg>Archivos de proyecto de {0}</seg>
+      </tuv>
+    </tu>
+    <tu tuid="DialogBoxes.SelectProjectDlg.ResourceBundleFileTypeLabel">
+      <tuv xml:lang="en">
+        <seg>Text Resource Bundle files</seg>
+      </tuv>
+      <tuv xml:lang="es">
+        <seg>Paquetes de descarga de texto</seg>
+      </tuv>
+    </tu>
 	<tu tuid="Common.Yes">
 	  <tuv xml:lang="en">
 		<seg>Yes</seg>
@@ -182,13 +207,21 @@
 		<seg>Otros nombres</seg>
 	  </tuv>
 	</tu>
+    <tu tuid="LanguageLookup.CannotFindMyLanguage.LanguageLookup.CannotFindMyLanguageExplanation2">
+      <tuv xml:lang="en">
+        <seg>This list should include all the ISO-639 languages, including all the alternative names known to ethnologue.com.\n\nIf necessary, use the "Unlisted Language" option, which will be selected for you now.</seg>
+      </tuv>
+      <tuv xml:lang="es">
+        <seg>Esta lista debe incluir todos los idiomas ISO, incluyendo todos los nombres alternativos registrado en ethnologue.com\n\nSi no se encuentra el idioma deseado, se puede usar la opción "Idioma no enumerado", la cual será selecionada ahora como opción predeterminada.</seg>
+      </tuv>
+    </tu>
 	<tu tuid="LanguageLookup.CannotFindMyLanguage.LinkToEthnologue">
 	  <note>It's ok to change what this shows; the underlying destination will remain ethnologue.com</note>
 	  <tuv xml:lang="en">
 		<seg>Ethnologue.com</seg>
 	  </tuv>
 	  <tuv xml:lang="es">
-		<seg>Ethnologue.com</seg>
+		<seg>ethnologue.com</seg>
 	  </tuv>
 	</tu>
 	<tu tuid="LanguageLookup.CannotFindMyLanguage.LinkToSILInformationAboutLanguageCodes">
@@ -215,6 +248,15 @@
 		<seg>Código</seg>
 	  </tuv>
 	</tu>
+    <tu tuid="LanguageLookup.CountryCount">
+      <note>Shown when there are multiple countries and it is just confusing to list them all.</note>
+      <tuv xml:lang="en">
+        <seg>{0} Countries</seg>
+      </tuv>
+      <tuv xml:lang="es">
+        <seg>{0} países</seg>
+      </tuv>
+    </tu>
 	<tu tuid="LanguageLookup.CountryHeader">
 	  <tuv xml:lang="en">
 		<seg>Country</seg>
@@ -391,6 +433,38 @@
 		<seg>Sí, mientras otros comparten por igual</seg>
 	  </tuv>
 	</tu>
+    <tu tuid="Project.CannotRemove">
+      <tuv xml:lang="en">
+        <seg>Cannot remove the selected project because it is currently open</seg>
+      </tuv>
+      <tuv xml:lang="es">
+        <seg>No se puede quitar el proyecto seleccionado porque está actualmente abierto.</seg>
+      </tuv>
+    </tu>
+    <tu tuid="Project.CannotRemoveCaption">
+      <tuv xml:lang="en">
+        <seg>Cannot Remove from List</seg>
+      </tuv>
+      <tuv xml:lang="es">
+        <seg>No se puede quitar de la lista</seg>
+      </tuv>
+    </tu>
+    <tu tuid="ProjectsList.Language">
+      <tuv xml:lang="en">
+        <seg>Language</seg>
+      </tuv>
+      <tuv xml:lang="es">
+        <seg>Idioma</seg>
+      </tuv>
+    </tu>
+    <tu tuid="ProjectsList.RecordingProject">
+      <tuv xml:lang="en">
+        <seg>Recording Project</seg>
+      </tuv>
+      <tuv xml:lang="es">
+        <seg>Proyecto de grabación</seg>
+      </tuv>
+    </tu>
 	<tu tuid="SettingsProtection.AlsoHideOthersNotice">
 	  <tuv xml:lang="en">
 		<seg>This may also hide other buttons which are not needed by the non-advanced user.</seg>
@@ -486,6 +560,45 @@
 	  <tuv xml:lang="es">
 		<seg>ImageToolbox.CopyExemplarMetadata</seg>
 	  </tuv>
-	</tu>
+    <tu tuid="WSFontControl.Font">
+      <tuv xml:lang="en">
+        <seg>&amp;Font:</seg>
+      </tuv>
+      <tuv xml:lang="es">
+        <seg>&amp;Fuente:</seg>
+      </tuv>
+    </tu>
+    <tu tuid="WSFontControl.FontNotAvailable">
+      <tuv xml:lang="en">
+        <seg>(The selected font is not available on this machine. Using default.)</seg>
+      </tuv>
+      <tuv xml:lang="es">
+        <seg>(La fuente seleccionada no está disponible en esta computadora. Se usará la fuente predeterminada.)</seg>
+      </tuv>
+    </tu>
+    <tu tuid="WSFontControl.RightToLeftWS">
+      <tuv xml:lang="en">
+        <seg>This is a &amp;right to left writing system.</seg>
+      </tuv>
+      <tuv xml:lang="es">
+        <seg>Este sistema de escritura se escribe de derecha a izquierda .</seg>
+      </tuv>
+    </tu>
+    <tu tuid="WSFontControl.Size">
+      <tuv xml:lang="en">
+        <seg>&amp;Size:</seg>
+      </tuv>
+      <tuv xml:lang="es">
+        <seg>&amp;Tamaño:</seg>
+      </tuv>
+    </tu>
+    <tu tuid="WSFontControl.TestArea">
+      <tuv xml:lang="en">
+        <seg>&amp;Test Area:</seg>
+      </tuv>
+      <tuv xml:lang="es">
+        <seg>Area de prueba:</seg>
+      </tuv>
+    </tu>
   </body>
 </tmx>
