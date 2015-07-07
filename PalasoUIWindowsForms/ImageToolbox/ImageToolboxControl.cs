@@ -181,9 +181,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				ListViewItem selectedItem = _toolListView.SelectedItems[0];
 
 
-				if (selectedItem.Tag == _currentControl)
-					return;
-
 				bool haveImage = !(ImageInfo == null || ImageInfo.Image == null);
 
 				//don't let them select crop (don't have a cheap way of 'disabling' a list item, sigh)
@@ -197,11 +194,9 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 				if (_currentControl != null)
 				{
-					GetImageFromCurrentControl();
-
 					_panelForControls.Controls.Remove(_currentControl);
 					((IImageToolboxControl) _currentControl).ImageChanged -= new EventHandler(imageToolboxControl_ImageChanged);
-					_currentControl.Dispose();
+					_currentControl = null;
 				}
 				System.Func<PalasoImage, Control> fun =
 					(System.Func<PalasoImage, Control>) selectedItem.Tag;
