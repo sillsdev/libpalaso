@@ -175,12 +175,15 @@ namespace SIL.Windows.Forms.ImageToolbox
 			_previousImage = image;
 			_scannerButton.Checked = _cameraButton.Checked = false;
 			_currentImage = image;
-			if (image == null)
-				_pictureBox.Image = null;
-			else
-				_pictureBox.Image = image.Image;
-
 			SetMode(Modes.SingleImage);
+			if (image == null)
+			{
+				_pictureBox.Image = null;
+			}
+			else
+			{
+				_pictureBox.Image = image.Image;
+			}
 		}
 
 		public PalasoImage GetImage()
@@ -204,7 +207,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 			#if !MONO
 			_scannerButton.Checked = true;
 			SetImage(null);
-			SetMode(Modes.SingleImage);
 			UsageReporter.SendNavigationNotice("ImageToolbox:GetFromScanner");
 			GetFromDevice(ImageAcquisitionService.DeviceKind.Scanner);
 			#endif
@@ -212,7 +214,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 		private void OnCameraClick(object sender, EventArgs e)
 		{
 			#if !MONO
-			SetMode(Modes.SingleImage);
 			SetImage(null);
 			_cameraButton.Checked = true;
 			UsageReporter.SendNavigationNotice("ImageToolbox:GetFromCamera");

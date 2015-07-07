@@ -192,7 +192,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			{
 				if (_toolListView.SelectedItems.Count == 0)
 				{
-					_previousSelectedIndex = -1;
+					// Just return. This causes the 'click off a control' to have no effect at all. CP 2015-07
 					return;
 				}
 
@@ -202,9 +202,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 				_previousSelectedIndex = _toolListView.SelectedIndices[0];
 
 				ListViewItem selectedItem = _toolListView.SelectedItems[0];
-
-				if (selectedItem.Tag == _currentControl)
-					return;
 
 				bool haveImage = !(ImageInfo == null || ImageInfo.Image == null);
 
@@ -219,11 +216,9 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 				if (_currentControl != null)
 				{
-					GetImageFromCurrentControl();
-
 					_panelForControls.Controls.Remove(_currentControl);
 					((IImageToolboxControl) _currentControl).ImageChanged -= new EventHandler(imageToolboxControl_ImageChanged);
-					_currentControl.Dispose();
+					_currentControl = null;
 				}
 				System.Func<PalasoImage, Control> fun =
 					(System.Func<PalasoImage, Control>) selectedItem.Tag;
