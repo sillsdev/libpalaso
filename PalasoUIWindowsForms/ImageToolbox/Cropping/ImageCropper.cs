@@ -64,6 +64,9 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 
 		private void DoGripDrag()
 		{
+			if (_image == null)
+				return;
+
 			Point mouse = PointToClient(MousePosition);
 			if (_gripperBeingDragged.MovesVertically)
 			{
@@ -134,13 +137,11 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 			return _topGrip.Bottom + ((_bottomGrip.Top - _topGrip.Bottom)/2);
 		}
 
-		public PalasoImage Image
+		private PalasoImage Image
 		{
-			get { return _image; }
 			set
 			{
-				if (value == null)
-					return;
+				_originalFormat = value.Image.RawFormat;
 
 				//other code changes the image of this palaso image, at which time the PI disposes of its copy,
 				//so we better keep our own.
@@ -340,10 +341,12 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 
 		private void ImageCropper_MouseDown(object sender, MouseEventArgs e)
 		{
+			if (_image == null)
+				return;
 
 			foreach (var grip in Grips)
 			{
-				if (grip.Contains(e.Location))
+				if (grip != null && grip.Contains(e.Location))
 				{
 					_gripperBeingDragged = grip;
 					return;
@@ -428,15 +431,19 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 
 		public void SetImage(PalasoImage image)
 		{
+			/* While working on https://jira.sil.org/browse/WS-334 it seems that this class is not well designed
+			 * to handle removing the image that is being cropped. In the current dialog removing the cropped image
+			 * isn't desirable anyway so we prohibit it here. CP 2015-07
+			 */
+#if DEBUG
+			Guard.AgainstNull(image, "image");
+#else
 			if (image == null)
 			{
-				Image = null;
+				return;
 			}
-			else
-			{
-				_originalFormat = image.Image.RawFormat;
-				Image = image;
-			}
+#endif
+			Image = image;
 		}
 
 		public PalasoImage GetImage()
