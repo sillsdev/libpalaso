@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
+using SIL.Extensions;
 
 namespace SIL.ObjectModel
 {
@@ -11,7 +12,7 @@ namespace SIL.ObjectModel
 
 	/// <summary>
 	/// Sortable version of BindingList. (Can be used to allow sorting in DataGridViews.)
-	///  </summary>
+	/// </summary>
 	public class SortableBindingList<T> : BindingList<T>
 	{
 		private readonly Dictionary<Type, PropertyComparer<T>> _comparers;
@@ -20,13 +21,12 @@ namespace SIL.ObjectModel
 		private PropertyDescriptor _propertyDescriptor;
 
 		public SortableBindingList()
-			: base(new List<T>())
 		{
 			_comparers = new Dictionary<Type, PropertyComparer<T>>();
 		}
 
-		public SortableBindingList(IEnumerable<T> enumeration)
-			: base(new List<T>(enumeration))
+		public SortableBindingList(IList<T> list)
+			: base(list)
 		{
 			_comparers = new Dictionary<Type, PropertyComparer<T>>();
 		}
@@ -58,8 +58,6 @@ namespace SIL.ObjectModel
 
 		protected override void ApplySortCore(PropertyDescriptor property, ListSortDirection direction)
 		{
-			List<T> itemsList = (List<T>)Items;
-
 			Type propertyType = property.PropertyType;
 			PropertyComparer<T> comparer;
 			if (!_comparers.TryGetValue(propertyType, out comparer))
@@ -69,7 +67,7 @@ namespace SIL.ObjectModel
 			}
 
 			comparer.SetPropertyAndDirection(property, direction);
-			itemsList.Sort(comparer);
+			Items.Sort(comparer);
 
 			_propertyDescriptor = property;
 			_listSortDirection = direction;
