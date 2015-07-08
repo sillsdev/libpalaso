@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using SIL.ObjectModel;
@@ -240,6 +241,65 @@ namespace SIL.Extensions
 		public static ReadOnlyList<T> ToReadOnlyList<T>(this IList<T> list)
 		{
 			return new ReadOnlyList<T>(list);
+		}
+
+		//  Sorts an IList<T> in place.
+		public static void Sort<T>(this IList<T> list, Comparison<T> comparison)
+		{
+			ArrayList.Adapter((IList)list).Sort(new ComparisonComparer<T>(comparison));
+		}
+
+		//  Sorts an IList<T> in place.
+		public static void Sort<T>(this IList<T> list, IComparer<T> comparer)
+		{
+			ArrayList.Adapter((IList)list).Sort(new ComparerComparer<T>(comparer));
+		}
+
+		#endregion
+
+		#region IList private helper classes
+
+		// Wraps a generic Comparison<T> delegate in an IComparer to make it easy
+		// to use a lambda expression for methods that take an IComparer or IComparer<T>
+		private class ComparisonComparer<T> : IComparer<T>, IComparer
+		{
+			private readonly Comparison<T> _comparison;
+
+			public ComparisonComparer(Comparison<T> comparison)
+			{
+				_comparison = comparison;
+			}
+
+			public int Compare(T x, T y)
+			{
+				return _comparison(x, y);
+			}
+
+			public int Compare(object o1, object o2)
+			{
+				return _comparison((T)o1, (T)o2);
+			}
+		}
+
+		// Allows IComparer<T> to be used as an IComparer
+		private class ComparerComparer<T> : IComparer<T>, IComparer
+		{
+			private readonly IComparer<T> _comparer;
+
+			public ComparerComparer(IComparer<T> comparer)
+			{
+				_comparer = comparer;
+			}
+
+			public int Compare(T x, T y)
+			{
+				return _comparer.Compare(x, y);
+			}
+
+			public int Compare(object x, object y)
+			{
+				return _comparer.Compare((T)x, (T)y);
+			}
 		}
 
 		#endregion

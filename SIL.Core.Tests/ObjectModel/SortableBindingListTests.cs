@@ -272,6 +272,18 @@ namespace SIL.Tests.ObjectModel
 			Assert.IsNull(bindingList.SortProperty);
 		}
 		#endregion
+
+		#region other tests
+		[Test]
+		public void ChangingBindingListChangesUnderlyingList()
+		{
+			IList<string> underlyingList = new List<string> { "A" };
+			SortableBindingList<string> sortableBindingList = new SortableBindingList<string>(underlyingList);
+			sortableBindingList.Add("B");
+			Assert.AreEqual(2, underlyingList.Count);
+			Assert.AreEqual("B", underlyingList[1]);
+		}
+		#endregion
 	}
 
 	#region Supporting classes for tests
