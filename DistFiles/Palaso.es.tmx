@@ -581,7 +581,7 @@
         <seg>This is a &amp;right to left writing system.</seg>
       </tuv>
       <tuv xml:lang="es">
-        <seg>Este sistema de escritura se escribe de derecha a izquierda.</seg>
+        <seg>Este sistema de escritura se escribe de &amp;derecha a izquierda.</seg>
       </tuv>
     </tu>
     <tu tuid="WSFontControl.Size">
