@@ -37,7 +37,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this.label3 = new System.Windows.Forms.Label();
 			this._testArea = new System.Windows.Forms.TextBox();
 			this._rightToLeftCheckBox = new System.Windows.Forms.CheckBox();
-			this._promptForFontTestArea = new Prompt();
+			this._promptForFontTestArea = new SIL.Windows.Forms.Widgets.Prompt();
 			this._tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
 			this._tableLayoutPanel.SuspendLayout();
 			this.SuspendLayout();
@@ -90,7 +90,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._fontSizeComboBox.Location = new System.Drawing.Point(301, 19);
 			this._fontSizeComboBox.Name = "_fontSizeComboBox";
 			this._fontSizeComboBox.Size = new System.Drawing.Size(174, 143);
-			this._fontSizeComboBox.TabIndex = 1;
+			this._fontSizeComboBox.TabIndex = 3;
 			this._fontSizeComboBox.TextChanged += new System.EventHandler(this.FontSizeComboBox_TextChanged);
 			// 
 			// label1
@@ -108,7 +108,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this.label2.Location = new System.Drawing.Point(301, 0);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(170, 14);
-			this.label2.TabIndex = 0;
+			this.label2.TabIndex = 2;
 			this.label2.Text = "&Size:";
 			// 
 			// label3
@@ -117,7 +117,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this.label3.Location = new System.Drawing.Point(3, 195);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(472, 14);
-			this.label3.TabIndex = 1;
+			this.label3.TabIndex = 5;
 			this.label3.Text = "&Test Area:";
 			// 
 			// _testArea
@@ -131,7 +131,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._testArea.Multiline = true;
 			this._testArea.Name = "_testArea";
 			this._testArea.Size = new System.Drawing.Size(472, 88);
-			this._testArea.TabIndex = 2;
+			this._testArea.TabIndex = 6;
 			this._testArea.Enter += new System.EventHandler(this._testArea_Enter);
 			this._testArea.Leave += new System.EventHandler(this._testArea_Leave);
 			// 
@@ -141,7 +141,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._rightToLeftCheckBox.Location = new System.Drawing.Point(3, 168);
 			this._rightToLeftCheckBox.Name = "_rightToLeftCheckBox";
 			this._rightToLeftCheckBox.Size = new System.Drawing.Size(472, 24);
-			this._rightToLeftCheckBox.TabIndex = 0;
+			this._rightToLeftCheckBox.TabIndex = 4;
 			this._rightToLeftCheckBox.Text = "This is a &right to left writing system.";
 			this._rightToLeftCheckBox.UseVisualStyleBackColor = false;
 			this._rightToLeftCheckBox.CheckedChanged += new System.EventHandler(this.RightToLeftCheckBox_CheckedChanged);
