@@ -1,6 +1,6 @@
 using System;
 using System.Windows.Forms;
-using Palaso.Reporting;
+using SIL.Reporting;
 using TestApp.Properties;
 
 namespace TestApp
@@ -13,6 +13,7 @@ namespace TestApp
 		[STAThread]
 		static void Main()
 		{
+			Application.SetCompatibleTextRenderingDefault(false);
 			if(Settings.Default.NeedsUpgrade)
 			{
 				Settings.Default.Upgrade();
@@ -27,7 +28,6 @@ namespace TestApp
 			SetupErrorHandling();
 
 			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
 			//Application.Run(new FastXmlSplitterTestForm());
 			Application.Run(new Form1());
 		}

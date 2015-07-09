@@ -1,12 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using Palaso.Reporting;
-using Palaso.UI.WindowsForms.Keyboarding;
+using SIL.Reporting;
 
 namespace TestApp
 {
@@ -87,7 +82,7 @@ namespace TestApp
 
 		private void button7_Click(object sender, EventArgs e)
 		{
-			Palaso.Reporting.ErrorReport.NotifyUserOfProblem(@"Should see 11 lines or a scroll following:
+			ErrorReport.NotifyUserOfProblem(@"Should see 11 lines or a scroll following:
 1
 2
 3
@@ -114,7 +109,7 @@ the end.");
 
 		private void _probWithExitButton_Click(object sender, EventArgs e)
 		{
-			Palaso.Reporting.ErrorReport.NotifyUserOfProblem(new ShowAlwaysPolicy(), "Foobar", DialogResult.No,
+			ErrorReport.NotifyUserOfProblem(new ShowAlwaysPolicy(), "Foobar", DialogResult.No,
 															 "Notice, you can click Foobar.");
 		}
 

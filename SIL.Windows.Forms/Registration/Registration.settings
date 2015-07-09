@@ -1,0 +1,27 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SIL.Windows.Forms.Registration" GeneratedClassName="Registration">
+  <Profiles />
+  <Settings>
+    <Setting Name="FirstName" Provider="SIL.Windows.Forms.Registration.RegistrationSettingsProvider" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Surname" Provider="SIL.Windows.Forms.Registration.RegistrationSettingsProvider" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Email" Provider="SIL.Windows.Forms.Registration.RegistrationSettingsProvider" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="Organization" Provider="SIL.Windows.Forms.Registration.RegistrationSettingsProvider" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="HowUsing" Provider="SIL.Windows.Forms.Registration.RegistrationSettingsProvider" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="LaunchCount" Provider="SIL.Windows.Forms.Registration.RegistrationSettingsProvider" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="NeedUpgrade" Provider="SIL.Windows.Forms.Registration.RegistrationSettingsProvider" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

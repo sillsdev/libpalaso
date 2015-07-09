@@ -1,0 +1,285 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace SIL.WritingSystems
+{
+	/// <summary>
+	/// This class forms the bases for managing collections of WritingSystemDefinitions. WritingSystemDefinitions
+	/// can be registered and then retrieved and deleted by ID. The preferred use when editting a WritingSystemDefinition stored
+	/// in the WritingSystemRepository is to Get the WritingSystemDefinition in question and then to clone it via the
+	/// Clone method on WritingSystemDefinition. This allows
+	/// changes made to a WritingSystemDefinition to be registered back with the WritingSystemRepository via the Set method,
+	/// or to be discarded by simply discarding the object.
+	/// Internally the WritingSystemRepository uses the WritingSystemDefinition's StoreId property to establish the identity of
+	/// a WritingSystemDefinition. This allows the user to change the IETF language tag components and thereby the ID of a
+	/// WritingSystemDefinition and the WritingSystemRepository to update itself and the underlying store correctly.
+	/// </summary>
+	public abstract class WritingSystemRepositoryBase<T> : IWritingSystemRepository<T> where T : WritingSystemDefinition
+	{
+		private readonly Dictionary<string, T> _writingSystems;
+
+		private readonly Dictionary<string, string> _idChangeMap;
+		private IWritingSystemFactory<T> _writingSystemFactory;
+
+		public event EventHandler<WritingSystemIdChangedEventArgs> WritingSystemIdChanged;
+		public event EventHandler<WritingSystemDeletedEventArgs> WritingSystemDeleted;
+		public event EventHandler<WritingSystemConflatedEventArgs> WritingSystemConflated;
+
+		/// <summary>
+		/// </summary>
+		protected WritingSystemRepositoryBase()
+		{
+			_writingSystems = new Dictionary<string, T>(StringComparer.OrdinalIgnoreCase);
+			_idChangeMap = new Dictionary<string, string>();
+		}
+
+		/// <summary>
+		/// Gets the changed IDs mapping.
+		/// </summary>
+		protected IDictionary<string, string> ChangedIds
+		{
+			get { return _idChangeMap; }
+		}
+
+		protected IDictionary<string, T> WritingSystems
+		{
+			get { return _writingSystems; }
+		}
+
+		public virtual void Conflate(string wsToConflate, string wsToConflateWith)
+		{
+			T ws = _writingSystems[wsToConflate];
+			RemoveDefinition(ws);
+			if (WritingSystemConflated != null)
+				WritingSystemConflated(this, new WritingSystemConflatedEventArgs(wsToConflate, wsToConflateWith));
+		}
+
+		/// <summary>
+		/// Remove the specified WritingSystemDefinition.
+		/// </summary>
+		/// <param name="id">the StoreId of the WritingSystemDefinition</param>
+		/// <remarks>
+		/// Note that ws.StoreId may differ from ws.Id.  The former is the key into the
+		/// dictionary, but the latter is what gets persisted to disk (and shown to the
+		/// user).
+		/// </remarks>
+		public virtual void Remove(string id)
+		{
+			if (id == null)
+				throw new ArgumentNullException("id");
+			if (!_writingSystems.ContainsKey(id))
+				throw new ArgumentOutOfRangeException("id");
+
+			T ws = _writingSystems[id];
+			RemoveDefinition(ws);
+			if (WritingSystemDeleted != null)
+				WritingSystemDeleted(this, new WritingSystemDeletedEventArgs(id));
+			//TODO: Could call the shared store to advise that one has been removed.
+			//TODO: This may be useful if writing systems were reference counted.
+		}
+
+		public IEnumerable<T> AllWritingSystems
+		{
+			get { return _writingSystems.Values; }
+		}
+
+		protected virtual void RemoveDefinition(T ws)
+		{
+			_writingSystems.Remove(ws.Id);
+		}
+
+		public abstract string WritingSystemIdHasChangedTo(string id);
+
+		public virtual bool CanSave(T ws)
+		{
+			return true;
+		}
+
+		public IWritingSystemFactory<T> WritingSystemFactory
+		{
+			get
+			{
+				if (_writingSystemFactory == null)
+					_writingSystemFactory = CreateWritingSystemFactory();
+				return _writingSystemFactory;
+			}
+		}
+
+		protected abstract IWritingSystemFactory<T> CreateWritingSystemFactory();
+
+		/// <summary>
+		/// Removes all writing systems.
+		/// </summary>
+		protected void Clear()
+		{
+			_writingSystems.Clear();
+		}
+
+		public abstract bool WritingSystemIdHasChanged(string id);
+
+		public bool Contains(string id)
+		{
+			// identifier should not be null, but some unit tests never define StoreId
+			// on their temporary WritingSystemDefinition objects.
+			return id != null && _writingSystems.ContainsKey(id);
+		}
+
+		public bool CanSet(T ws)
+		{
+			if (ws == null)
+			{
+				return false;
+			}
+			return !(_writingSystems.Keys.Any(id => id.Equals(ws.LanguageTag, StringComparison.OrdinalIgnoreCase)) &&
+				ws.Id != _writingSystems[ws.LanguageTag].Id);
+		}
+
+		public virtual void Set(T ws)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException("ws");
+			}
+
+			//Check if this is a new writing system with a conflicting id
+			if (!CanSet(ws))
+				throw new ArgumentException(String.Format("Unable to set writing system '{0}' because this id already exists. Please change this writing system id before setting it.", ws.LanguageTag));
+
+			string oldId = _writingSystems.Where(kvp => kvp.Value.Id == ws.Id).Select(kvp => kvp.Key).FirstOrDefault();
+			//??? How do we update
+			//??? Is it sufficient to just set it, or can we not change the reference in case someone else has it too
+			//??? i.e. Do we need a ws.Copy(WritingSystemDefinition)?
+			if (!string.IsNullOrEmpty(oldId) && _writingSystems.ContainsKey(oldId))
+				_writingSystems.Remove(oldId);
+			_writingSystems[ws.LanguageTag] = ws;
+
+			if (!string.IsNullOrEmpty(oldId) && (oldId != ws.LanguageTag))
+			{
+				UpdateChangedIds(oldId, ws.LanguageTag);
+				if (WritingSystemIdChanged != null)
+					WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.LanguageTag));
+			}
+
+			ws.Id = ws.LanguageTag;
+		}
+
+		/// <summary>
+		/// Updates the changed IDs mapping.
+		/// </summary>
+		protected void UpdateChangedIds(string oldId, string newId)
+		{
+			if (_idChangeMap.ContainsValue(oldId))
+			{
+				// if the oldid is in the value of key/value, then we can update the cooresponding key with the newId
+				string keyToChange = _idChangeMap.First(pair => pair.Value == oldId).Key;
+				_idChangeMap[keyToChange] = newId;
+			}
+			else if (_idChangeMap.ContainsKey(oldId))
+			{
+				// if oldId is already in the dictionary, set the result to be newId
+				_idChangeMap[oldId] = newId;
+			}
+		}
+
+		/// <summary>
+		/// Loads the changed IDs mapping from the existing writing systems.
+		/// </summary>
+		protected void LoadChangedIdsFromExistingWritingSystems()
+		{
+			_idChangeMap.Clear();
+			foreach (var pair in _writingSystems)
+				_idChangeMap[pair.Key] = pair.Key;
+		}
+
+		public bool TryGet(string id, out T ws)
+		{
+			if (Contains(id))
+			{
+				ws = Get(id);
+				return true;
+			}
+
+			ws = null;
+			return false;
+		}
+
+		public string GetNewIdWhenSet(T ws)
+		{
+			if (ws == null)
+			{
+				throw new ArgumentNullException("ws");
+			}
+			return String.IsNullOrEmpty(ws.Id) ? ws.LanguageTag : ws.Id;
+		}
+
+		public T Get(string id)
+		{
+			if (id == null)
+				throw new ArgumentNullException("id");
+			if (!_writingSystems.ContainsKey(id))
+				throw new ArgumentOutOfRangeException("id", String.Format("Writing system id '{0}' does not exist.", id));
+			return _writingSystems[id];
+		}
+
+		public int Count
+		{
+			get
+			{
+				return _writingSystems.Count;
+			}
+		}
+
+		public virtual void Save()
+		{
+		}
+
+		void IWritingSystemRepository.Set(WritingSystemDefinition ws)
+		{
+			Set((T) ws);
+		}
+
+		bool IWritingSystemRepository.CanSet(WritingSystemDefinition ws)
+		{
+			return CanSet((T) ws);
+		}
+
+		WritingSystemDefinition IWritingSystemRepository.Get(string id)
+		{
+			return Get(id);
+		}
+
+		bool IWritingSystemRepository.TryGet(string id, out WritingSystemDefinition ws)
+		{
+			T result;
+			if (TryGet(id, out result))
+			{
+				ws = result;
+				return true;
+			}
+
+			ws = null;
+			return false;
+		}
+
+		string IWritingSystemRepository.GetNewIdWhenSet(WritingSystemDefinition ws)
+		{
+			return GetNewIdWhenSet((T) ws);
+		}
+
+		bool IWritingSystemRepository.CanSave(WritingSystemDefinition ws)
+		{
+			return CanSave((T) ws);
+		}
+
+		IEnumerable<WritingSystemDefinition> IWritingSystemRepository.AllWritingSystems
+		{
+			get { return AllWritingSystems; }
+		}
+
+		IWritingSystemFactory IWritingSystemRepository.WritingSystemFactory
+		{
+			get { return WritingSystemFactory; }
+		}
+	}
+}

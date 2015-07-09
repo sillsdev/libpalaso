@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
-using Palaso.UI.WindowsForms.WritingSystems;
-using Palaso.WritingSystems;
+using SIL.Windows.Forms.WritingSystems;
+using SIL.WritingSystems;
 
 namespace TestApp
 {
@@ -31,7 +31,7 @@ namespace TestApp
 			{
 				if (_wsModel.HasCurrentSelection)
 				{
-					d.ShowDialog(_wsModel.CurrentRFC4646);
+					d.ShowDialog(_wsModel.CurrentLanguageTag);
 				}
 				else
 				{

@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<stylesheet>
+  <property name="font-family">Cambria</property>
+  <property name="font-size" unit="pt">14</property>
+  <style id="id" publishable="false" versetext="false">
+    <name>id - File - Identification</name>
+    <description>File identification information (BOOKID, FILENAME, EDITOR, MODIFICATION DATE)</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="h" publishable="true" versetext="false">
+    <name>h - File - Header</name>
+    <description>Running header text for a book (basic)</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="toc1" publishable="true" versetext="false">
+    <name>toc1 - File - Long Table of Contents Text</name>
+    <description>Long table of contents text</description>
+    <property name="font-weight">bold</property>
+    <property name="color">#004000</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="toc2" publishable="true" versetext="false">
+    <name>toc2 - File - Short Table of Contents Text</name>
+    <description>Short table of contents text</description>
+    <property name="color">#004000</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="toc3" publishable="true" versetext="false">
+    <name>toc3 - File - Book Abbreviation</name>
+    <description>Book Abbreviation</description>
+    <property name="font-weight">bold</property>
+    <property name="color">#800000</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="c" publishable="true" versetext="false">
+    <name>c - Chapter Number</name>
+    <description>Chapter number (necessary for normal Paratext operation)</description>
+    <property name="font-weight">bold</property>
+    <property name="font-size" unit="%">150</property>
+    <property name="text-align">left</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">8</property>
+  </style>
+  <style id="v" publishable="true" versetext="true">
+    <name>v - Verse Number</name>
+    <description>A verse number (Necessary for normal paratext operation) (basic)</description>
+    <property name="text-align">left</property>
+    <property name="vertical-align">text-top</property>
+    <property name="font-size" unit="%">66</property>
+    <property name="white-space">nowrap</property>
+  </style>
+  <style id="p" publishable="true" versetext="true">
+    <name>p - Paragraph - Normal - First Line Indent</name>
+    <description>Paragraph text, with first line indent (basic)</description>
+    <property name="text-indent" unit="in">0.125</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="mt1" publishable="true" versetext="false">
+    <name>mt1 - Title - Major Title Level 1</name>
+    <description>The main title of the book (if multiple levels) (basic)</description>
+    <property name="font-weight">bold</property>
+    <property name="font-size" unit="%">166</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">2</property>
+  </style>
+  <style id="s" publishable="true" versetext="false">
+    <name>s - Heading - Section Level 1</name>
+    <description>A section heading, level 1 (if single level) (basic)</description>
+    <property name="font-weight">bold</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">8</property>
+  </style>
+</stylesheet>

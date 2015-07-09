@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Palaso.Extensions;
+using SIL.Extensions;
 
 namespace SIL.Archiving.Generic
 {
@@ -69,7 +69,7 @@ namespace SIL.Archiving.Generic
 			set
 			{
 				if (value is DateTime)
-					_birthDate = ((DateTime) value).ToISO8601DateOnlyString();
+					_birthDate = ((DateTime) value).ToISO8601TimeFormatDateOnlyString();
 				else
 					_birthDate = value.ToString();
 			}

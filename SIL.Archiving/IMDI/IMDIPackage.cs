@@ -2,10 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Palaso.Extensions;
 using SIL.Archiving.Generic;
 using SIL.Archiving.IMDI.Lists;
 using SIL.Archiving.IMDI.Schema;
+using SIL.Extensions;
 
 namespace SIL.Archiving.IMDI
 {
@@ -104,7 +104,7 @@ namespace SIL.Archiving.IMDI
 			{
 				Name = Name + " Catalogue",
 				Title = Title,
-				Date = DateTime.Today.ToISO8601DateOnlyString(),
+				Date = DateTime.Today.ToISO8601TimeFormatDateOnlyString(),
 			};
 
 			foreach (var language in MetadataIso3Languages)
