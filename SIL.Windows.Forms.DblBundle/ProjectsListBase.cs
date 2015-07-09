@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using L10NSharp;
 using SIL.DblBundle;
@@ -26,6 +28,8 @@ namespace SIL.Windows.Forms.DblBundle
 		private bool m_hiddenProjectsExist;
 		private bool m_gridInitializedFromSettings;
 		private readonly List<string> m_readOnlyProjects = new List<string>();
+		private bool m_projectSelected; // The value of this boolean is only reliable if m_sorting is true.
+		private bool m_sorting;
 
 		public ProjectsListBase()
 		{
@@ -89,9 +93,21 @@ namespace SIL.Windows.Forms.DblBundle
 				if (value == null)
 					return;
 
+				// InitializeGrid might cause the list to be sorted, but we don't want it to result in
+				// selecting a row if none was selected initially.
+				PrepareToSort();
 				value.InitializeGrid(m_list);
+				m_sorting = false; // Clear this in case InitializeGrid didn't result in a call to Sort.
 				m_gridInitializedFromSettings = true;
 			}
+		}
+
+		private void PrepareToSort()
+		{
+			Debug.Assert(!m_sorting, "PrepareToSort should only be called once before Sort is called. If Sort is not called, the m_sorting flag needs to be cleared. If " +
+				"a sort is in progress, m_list.SelectedRows is not reliable because Sort will select a row if none is selected.");
+			m_sorting = true;
+			m_projectSelected = m_list.SelectedRows.Count > 0;
 		}
 
 		protected override void OnLoad(EventArgs e)
@@ -175,6 +191,7 @@ namespace SIL.Windows.Forms.DblBundle
 
 			m_list.Rows.Clear();
 			m_hiddenProjectsExist = false;
+			bool selectedProjectWasSelected = false;
 			foreach (var project in Projects)
 			{
 				if (IsInactive(project.Item2))
@@ -196,14 +213,27 @@ namespace SIL.Windows.Forms.DblBundle
 				int iRow = m_list.Rows.Add(rowData.ToArray());
 
 				if (SelectedProject == project.Item1)
+				{
 					m_list.Rows[iRow].Selected = true;
+					selectedProjectWasSelected = true;
+				}
 			}
+
+			PrepareToSort();
 
 			m_list.Sort(m_list.SortedColumn ?? colLanguage,
 				m_list.SortOrder == SortOrder.Descending ? ListSortDirection.Descending : ListSortDirection.Ascending);
 
-			if (SelectedProject == null)
+			if (SelectedProject == null || !selectedProjectWasSelected)
+			{
 				m_list.ClearSelection();
+				if (SelectedProject != null)
+				{
+					SelectedProject = null;
+					if (SelectedProjectChanged != null)
+						SelectedProjectChanged(this, new EventArgs());
+				}
+			}
 			else
 				m_list.FirstDisplayedScrollingRowIndex = m_list.SelectedRows[0].Index;
 
@@ -224,6 +254,13 @@ namespace SIL.Windows.Forms.DblBundle
 
 		private void HandleSelectionChanged(object sender, EventArgs e)
 		{
+			// If the selection changed as a result of sorting (i.e., a row got selected because none was
+			// selected previously), HandleProjectListSorted will clear the selection (which will result
+			// in this handler getting called a second time). The net effect should be no change, so don't
+			// do anything.
+			if (m_sorting)
+				return;
+
 			if (DesignMode || m_list.SelectedRows.Count < 1 || m_list.SelectedRows[0].Index < 0)
 				SelectedProject = null;
 			else
@@ -233,9 +270,32 @@ namespace SIL.Windows.Forms.DblBundle
 				SelectedProjectChanged(this, new EventArgs());
 		}
 
+		/// <summary>
+		/// See https://stackoverflow.com/questions/1407195/prevent-datagridview-selecting-a-row-when-sorted-if-none-was-previously-selected/1407261#1407261
+		/// </summary>
+		void HandleProjectListSorted(object sender, System.EventArgs e)
+		{
+			if (m_sorting)
+			{
+				if (!m_projectSelected)
+					m_list.ClearSelection();
+				m_sorting = false;
+			}
+			else
+				Debug.Fail("PrepareToSort should have been called before sorting.");
+		}
+
 		private void HandleDoubleClick(object sender, EventArgs e)
 		{
 			OnDoubleClick(new EventArgs());
+		}
+
+		private void HandleListCellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+		{
+			if ((e.Button == MouseButtons.Left) && (e.RowIndex == -1))
+			{
+				PrepareToSort();
+			}
 		}
 
 		protected virtual void SetHiddenFlag(bool inactive)

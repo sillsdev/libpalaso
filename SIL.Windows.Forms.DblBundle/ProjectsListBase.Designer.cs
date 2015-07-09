@@ -1,4 +1,6 @@
-﻿using System.Security.AccessControl;
+﻿using System;
+using System.Security.AccessControl;
+using System.Windows.Forms;
 using SIL.DblBundle;
 using SIL.DblBundle.Text;
 
@@ -71,6 +73,8 @@ namespace SIL.Windows.Forms.DblBundle
 			this.m_list.Size = new System.Drawing.Size(368, 147);
 			this.m_list.TabIndex = 0;
 			this.m_list.DoubleClick += new System.EventHandler(this.HandleDoubleClick);
+			this.m_list.Sorted += new System.EventHandler(this.HandleProjectListSorted);
+			this.m_list.CellMouseDown += HandleListCellMouseDown;
 			// 
 			// colLanguage
 			// 
@@ -109,7 +113,6 @@ namespace SIL.Windows.Forms.DblBundle
 			this.ResumeLayout(false);
 
 		}
-
 		#endregion
 
 		protected System.Windows.Forms.DataGridView m_list;
