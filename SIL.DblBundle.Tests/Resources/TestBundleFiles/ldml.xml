@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ldml>
+	<identity>
+		<version number="" />
+		<generation date="2015-07-09T20:55:53Z" />
+		<language type="qaa" />
+	</identity>
+	<delimiters>
+		<quotationStart>“</quotationStart>
+		<quotationEnd>”</quotationEnd>
+		<alternateQuotationStart>‘</alternateQuotationStart>
+		<alternateQuotationEnd>’</alternateQuotationEnd>
+		<special xmlns:sil="urn://www.sil.org/ldml/0.1">
+			<sil:quotation-marks>
+				<sil:quotationContinue>“</sil:quotationContinue>
+				<sil:alternateQuotationContinue>“‘</sil:alternateQuotationContinue>
+				<sil:quotation open="“" close="”" continue="“‘“" level="3" />
+				<sil:quotation open="―" level="1" type="narrative" />
+			</sil:quotation-marks>
+		</special>
+	</delimiters>
+	<layout>
+		<orientation>
+			<characterOrder>left-to-right</characterOrder>
+		</orientation>
+	</layout>
+	<collations>
+		<defaultCollation>standard</defaultCollation>
+	</collations>
+	<special xmlns:sil="urn://www.sil.org/ldml/0.1">
+		<sil:external-resources>
+			<sil:font name="Cambria" />
+		</sil:external-resources>
+	</special>
+</ldml>

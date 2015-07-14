@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 using L10NSharp;
 using SIL.DblBundle.Usx;
+using SIL.IO;
 using SIL.Reporting;
+using SIL.WritingSystems;
 
 namespace SIL.DblBundle.Text
 {
@@ -17,6 +19,11 @@ namespace SIL.DblBundle.Text
 		/// Defines the styles for this bundle
 		/// </summary>
 		Stylesheet Stylesheet { get; }
+
+		/// <summary>
+		/// Defines the writing system definition for this bundle
+		/// </summary>
+		WritingSystemDefinition WritingSystemDefinition { get; }
 
 		/// <summary>
 		/// Try to get the book as a UsxDocument
@@ -36,6 +43,7 @@ namespace SIL.DblBundle.Text
 	{
 		protected readonly IDictionary<string, UsxDocument> m_books = new Dictionary<string, UsxDocument>();
 		private readonly Stylesheet m_stylesheet;
+		private readonly WritingSystemDefinition m_ws;
 
 		/// <summary>
 		/// Create a new DBL Text Release Bundle from the given zip file
@@ -44,6 +52,7 @@ namespace SIL.DblBundle.Text
 		{
 			ExtractBooks();
 			m_stylesheet = LoadStylesheet();
+			m_ws = LoadWritingSystemDefinition();
 		}
 
 		#region Public properties
@@ -51,6 +60,11 @@ namespace SIL.DblBundle.Text
 		/// Defines the styles for this bundle
 		/// </summary>
 		public Stylesheet Stylesheet { get { return m_stylesheet; } }
+
+		/// <summary>
+		/// Defines the writing system definition for this bundle
+		/// </summary>
+		public WritingSystemDefinition WritingSystemDefinition { get { return m_ws; } }
 
 		/// <summary>
 		/// The name of the publication
@@ -72,6 +86,11 @@ namespace SIL.DblBundle.Text
 		#endregion
 
 		#region Private methods/properties
+		private string LdmlFilePath
+		{
+			get { return Path.Combine(PathToUnzippedDirectory, DblBundleFileUtils.kLdmlFileName); }
+		}
+
 		private Stylesheet LoadStylesheet()
 		{
 			const string filename = "styles.xml";
@@ -96,6 +115,19 @@ namespace SIL.DblBundle.Text
 			}
 
 			return stylesheet;
+		}
+
+		private WritingSystemDefinition LoadWritingSystemDefinition()
+		{
+			if (!ContainsLdmlFile())
+				return null;
+
+			var ldmlAdaptor = new LdmlDataMapper(new WritingSystemFactory());
+
+			var wsFromLdml = new WritingSystemDefinition();
+			ldmlAdaptor.Read(LdmlFilePath, wsFromLdml);
+
+			return wsFromLdml;
 		}
 
 		private void ExtractBooks()
@@ -158,6 +190,28 @@ namespace SIL.DblBundle.Text
 						LocalizationManager.GetString("DblBundle.FontFileCopyFailed", "An attempt to copy font file {0} from the bundle to {1} failed."), Path.GetFileName(ttfFile), destinationDir);
 				}
 			}
+		}
+
+		/// <summary>
+		/// <returns>true if an LDML file exists in the bundle, false otherwise</returns>
+		/// </summary>
+		public bool ContainsLdmlFile()
+		{
+			return File.Exists(LdmlFilePath);
+		}
+
+		/// <summary>
+		/// Copies ldml.xml from the text bundle to the destinationPath (if it exists)
+		/// </summary>
+		public bool CopyLdmlFile(string destinationDir)
+		{
+			if (ContainsLdmlFile())
+			{
+				string newPath = Path.Combine(destinationDir, LanguageIso + DblBundleFileUtils.kUnzippedLdmlFileExtension);
+				File.Copy(LdmlFilePath, newPath, true);
+				return true;
+			}
+			return false;
 		}
 
 		/// <summary>

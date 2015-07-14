@@ -5,6 +5,7 @@ using SIL.DblBundle.Tests.Properties;
 using SIL.DblBundle.Text;
 using SIL.DblBundle.Usx;
 using SIL.IO;
+using SIL.WritingSystems;
 
 namespace SIL.DblBundle.Tests.Text
 {
@@ -12,18 +13,22 @@ namespace SIL.DblBundle.Tests.Text
 	public class TextBundleTests
 	{
 		private TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage> m_bundle;
+		private TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage> m_bundleWithoutLdml;
 
 		[TestFixtureSetUp]
 		public void TestFixtureSetup()
 		{
 			using (var zippedBundle = CreateZippedTextBundleFromResources())
 				m_bundle = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
+			using (var zippedBundle = CreateZippedTextBundleFromResources(false))
+				m_bundleWithoutLdml = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
 		}
 
 		[TestFixtureTearDown]
 		public void TestFixtureTearDown()
 		{
 			m_bundle.Dispose();
+			m_bundleWithoutLdml.Dispose();
 		}
 
 		[Test]
@@ -45,6 +50,25 @@ namespace SIL.DblBundle.Tests.Text
 		}
 
 		[Test]
+		public void CreateBundle_ProperlyLoadsWritingSystemDefinition()
+		{
+			var ws = m_bundle.WritingSystemDefinition;
+			Assert.NotNull(ws);
+
+			Assert.AreEqual(WellKnownSubtags.UnlistedLanguage, ws.LanguageTag);
+
+			// Quotation Marks
+			Assert.AreEqual(4, ws.QuotationMarks.Count);
+			Assert.AreEqual("“", ws.QuotationMarks[0].Open);
+			Assert.AreEqual("”", ws.QuotationMarks[0].Close);
+			Assert.AreEqual("―", ws.QuotationMarks[3].Open);
+			Assert.AreEqual(QuotationMarkingSystemType.Narrative, ws.QuotationMarks[3].Type);
+
+			Assert.AreEqual("Cambria", ws.DefaultFont.Name);
+			Assert.IsFalse(ws.RightToLeftScript);
+		}
+
+		[Test]
 		public void TryGetBook()
 		{
 			UsxDocument book;
@@ -52,14 +76,27 @@ namespace SIL.DblBundle.Tests.Text
 			Assert.AreEqual("MAT", book.BookId);
 		}
 
-		private static TempFile CreateZippedTextBundleFromResources()
+		[Test]
+		public void ContainsLdmlFile_FileExists_ReturnsTrue()
+		{
+			Assert.IsTrue(m_bundle.ContainsLdmlFile());
+		}
+
+		[Test]
+		public void ContainsLdmlFile_FileDoesNotExist_ReturnsFalse()
+		{
+			Assert.False(m_bundleWithoutLdml.ContainsLdmlFile());
+		}
+
+		public static TempFile CreateZippedTextBundleFromResources(bool includeLdml = true)
 		{
 			TempFile bundle = TempFile.WithExtension(DblBundleFileUtils.kDblBundleExtension);
 
 			using (var englishLds = TempFile.WithFilename("English.lds"))
 			using (var metadataXml = TempFile.WithFilename("metadata.xml"))
 			using (var stylesXml = TempFile.WithFilename("styles.xml"))
-			using (var versificationVrs = TempFile.WithFilename("versification.vrs"))
+			using (var versificationVrs = TempFile.WithFilename(DblBundleFileUtils.kVersificationFileName))
+			using (var ldmlXml = TempFile.WithFilename(DblBundleFileUtils.kLdmlFileName))
 			using (var matUsx = TempFile.WithFilename("MAT.usx"))
 			using (var zip = new ZipFile())
 			{
@@ -71,6 +108,11 @@ namespace SIL.DblBundle.Tests.Text
 				zip.AddFile(stylesXml.Path, string.Empty);
 				File.WriteAllBytes(versificationVrs.Path, Resources.versification_vrs);
 				zip.AddFile(versificationVrs.Path, string.Empty);
+				if (includeLdml)
+				{
+					File.WriteAllText(ldmlXml.Path, Resources.ldml_xml);
+					zip.AddFile(ldmlXml.Path, string.Empty);
+				}
 				File.WriteAllBytes(matUsx.Path, Resources.MAT_usx);
 				zip.AddFile(matUsx.Path, "USX_0");
 				zip.Save(bundle.Path);

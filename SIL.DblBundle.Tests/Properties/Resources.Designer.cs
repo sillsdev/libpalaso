@@ -71,6 +71,30 @@ namespace SIL.DblBundle.Tests.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+        ///&lt;ldml&gt;
+        ///	&lt;identity&gt;
+        ///		&lt;version number=&quot;&quot; /&gt;
+        ///		&lt;generation date=&quot;2015-07-09T20:55:53Z&quot; /&gt;
+        ///		&lt;language type=&quot;qaa&quot; /&gt;
+        ///	&lt;/identity&gt;
+        ///	&lt;delimiters&gt;
+        ///		&lt;quotationStart&gt;“&lt;/quotationStart&gt;
+        ///		&lt;quotationEnd&gt;”&lt;/quotationEnd&gt;
+        ///		&lt;alternateQuotationStart&gt;‘&lt;/alternateQuotationStart&gt;
+        ///		&lt;alternateQuotationEnd&gt;’&lt;/alternateQuotationEnd&gt;
+        ///		&lt;special xmlns:sil=&quot;urn://www.sil.org/ldml/0.1&quot;&gt;
+        ///			&lt;sil:quotation-marks&gt;
+        ///				&lt;sil:quotationContinue&gt;“&lt;/sil:quotationContinue&gt;
+        ///				&lt;sil:alt [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ldml_xml {
+            get {
+                return ResourceManager.GetString("ldml_xml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] MAT_usx {
