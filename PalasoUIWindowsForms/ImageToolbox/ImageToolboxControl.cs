@@ -166,6 +166,25 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				var s = LocalizationManager.GetString("ImageToolbox.CopyExemplarMetadata", "Use {0}", "Used to copy a previous metadata set to the current image. The  {0} will be replaced with the name of the exemplar image.");
 				_copyExemplarMetadata.Text = string.Format(s, Metadata.GetStoredExemplarSummaryString(Metadata.FileCategory.Image));
 			}
+#if __MonoCS__
+			// Ensure that the metadata gets fully displayed if at all possible.
+			// See https://silbloom.myjetbrains.com/youtrack/issue/BL-2354 for what can happen otherwise.
+			// The need for this appears to be a bug in the Mono library that allows _metadataDisplayControl
+			// to grow taller as its internal content exceeds its initial external size.  (Any difference
+			// from Windows/.Net behavior is by definition a bug.)
+			if (_metadataDisplayControl.Visible)
+			{
+				var heightClipped = (_metadataDisplayControl.Location.Y + _metadataDisplayControl.Height) - panel1.Height;
+				if (_editLink.Visible)
+					heightClipped = (_metadataDisplayControl.Location.Y + _metadataDisplayControl.Height) - _editLink.Location.Y;
+				if (heightClipped != 0)
+				{
+					var yNew = _metadataDisplayControl.Location.Y - heightClipped;
+					var loc = new Point(_metadataDisplayControl.Location.X, yNew < 0 ? 0 : yNew);
+					_metadataDisplayControl.Location = loc;
+				}
+			}
+#endif
 		}
 
 		private ListViewItem AddControl(string label, Bitmap bitmap, string imageKey, System.Func<PalasoImage, Control> makeControl)
