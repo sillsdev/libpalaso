@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Configuration;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace Palaso.UI.WindowsForms.SettingProtection
@@ -62,8 +63,27 @@ namespace Palaso.UI.WindowsForms.SettingProtection
 
 		public static string FactoryPassword
 		{
-			get { return  (Application.ProductName.Substring(0, 1) + "7" + Application.ProductName.Substring(1, Application.ProductName.Length-1)).ToLower(); }
+			get
+			{
+				var productName = CoreProductName;
+				return productName.Insert(1, "7").ToLower();
+			}
 
+		}
+
+		/// <summary>
+		/// Use the CoreProductName value from the AppSettings in the application config file, if present
+		/// </summary>
+		internal static string CoreProductName
+		{
+			get
+			{
+				var productName = ConfigurationManager.AppSettings["CoreProductName"];
+				if (string.IsNullOrEmpty(productName))
+					productName = Application.ProductName;
+
+				return productName;
+			}
 		}
 	}
 }
