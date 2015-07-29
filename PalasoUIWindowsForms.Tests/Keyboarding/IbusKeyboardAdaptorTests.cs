@@ -121,7 +121,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			engineDescMock.Setup(x => x.Name).Returns(name);
 			engineDescMock.Setup(x => x.Language).Returns(language);
 			engineDescMock.Setup(x => x.Layout).Returns(layout);
-			var keyboard = new IbusKeyboardDescription(ibusKeyboardAdapter, engineDescMock.Object);
+			var keyboard = new IbusKeyboardDescription(ibusKeyboardAdapter, engineDescMock.Object, 3);
 			KeyboardController.Manager.RegisterKeyboard(keyboard);
 			return keyboard;
 		}

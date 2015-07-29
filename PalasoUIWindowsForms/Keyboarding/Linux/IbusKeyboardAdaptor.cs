@@ -56,7 +56,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		{
 			foreach (var ibusKeyboard in GetIBusKeyboards())
 			{
-				var keyboard = new IbusKeyboardDescription(this, ibusKeyboard);
+				var keyboard = new IbusKeyboardDescription(this, ibusKeyboard, -1);
 				KeyboardController.Manager.RegisterKeyboard(keyboard);
 			}
 		}

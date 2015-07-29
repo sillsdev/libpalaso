@@ -12,13 +12,19 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 {
 	internal class IbusKeyboardDescription: KeyboardDescription
 	{
+		private const string OtherLanguage = "Other Language";
+
 		public IBusEngineDesc IBusKeyboardEngine { get; private set;}
 
-		public IbusKeyboardDescription(IKeyboardAdaptor engine, IBusEngineDesc ibusKeyboard):
+		internal int SystemIndex { get; private set; }
+
+		public IbusKeyboardDescription(IKeyboardAdaptor engine, IBusEngineDesc ibusKeyboard,
+			int systemIndex):
 			base(FormatKeyboardIdentifier(ibusKeyboard), ibusKeyboard.LongName, ibusKeyboard.Language,
 			null, engine, KeyboardType.OtherIm)
 		{
 			IBusKeyboardEngine = ibusKeyboard;
+			SystemIndex = systemIndex;
 		}
 
 		internal IbusKeyboardDescription(IbusKeyboardDescription other): base(other)
@@ -30,8 +36,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		{
 			return new IbusKeyboardDescription(this);
 		}
-
-		private const string OtherLanguage = "Other Language";
 
 		/// <summary>
 		/// Produce IBus keyboard identifier which is similar to the actual ibus switcher menu.
@@ -50,8 +54,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		{
 			get { return IBusKeyboardEngine.Layout; }
 		}
-
-		internal int SystemIndex { get; set; }
 	}
 }
 #endif
