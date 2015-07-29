@@ -15,7 +15,11 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void KeyboardsDontEqualNull()
 		{
-			var keyboard1 = new DefaultKeyboardDefinition() { Layout = "layout1", Locale = "en-US", OperatingSystem = PlatformID.MacOSX };
+			var keyboard1 = new DefaultKeyboardDefinition() {
+				Layout = "layout1",
+				Locale = "en-US",
+				OperatingSystem = PlatformID.MacOSX
+			};
 			DefaultKeyboardDefinition keyboard2 = null;
 			Assert.That(keyboard1 == keyboard2, Is.False);
 			Assert.That(keyboard2 == keyboard1, Is.False);
@@ -26,8 +30,16 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void KeyboardEqualityDependsOnExpectedProperties()
 		{
-			var keyboard1 = new DefaultKeyboardDefinition() { Layout = "layout1", Locale = "en-US", OperatingSystem = PlatformID.MacOSX };
-			var keyboard2 = new DefaultKeyboardDefinition() { Layout = "layout1", Locale = "en-US", OperatingSystem = PlatformID.MacOSX };
+			var keyboard1 = new DefaultKeyboardDefinition() {
+				Layout = "layout1",
+				Locale = "en-US",
+				OperatingSystem = PlatformID.MacOSX
+			};
+			var keyboard2 = new DefaultKeyboardDefinition() {
+				Layout = "layout1",
+				Locale = "en-US",
+				OperatingSystem = PlatformID.MacOSX
+			};
 			Assert.That(keyboard1 == keyboard2, Is.True);
 			Assert.That(keyboard1.GetHashCode() == keyboard2.GetHashCode());
 			Assert.That(keyboard1 != keyboard2, Is.False);
@@ -90,13 +102,12 @@ namespace Palaso.Tests.WritingSystems
 		{
 			get
 			{
-				return new List<ValuesToSet>
-					{
-						new ValuesToSet(false, true),
-						new ValuesToSet("to be", "!(to be)"),
-						new ValuesToSet(PlatformID.Win32NT, PlatformID.Unix),
-						new ValuesToSet(KeyboardType.System, KeyboardType.OtherIm)
-					};
+				return new List<ValuesToSet> {
+					new ValuesToSet(false, true),
+					new ValuesToSet("to be", "!(to be)"),
+					new ValuesToSet(PlatformID.Win32NT, PlatformID.Unix),
+					new ValuesToSet(KeyboardType.OtherIm, KeyboardType.System)
+				};
 			}
 		}
 	}

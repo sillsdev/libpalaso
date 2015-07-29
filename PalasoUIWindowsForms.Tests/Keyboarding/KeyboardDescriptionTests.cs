@@ -1,16 +1,5 @@
-// ---------------------------------------------------------------------------------------------
-#region // Copyright (c) 2013, SIL International. All Rights Reserved.
-// <copyright from='2013' to='2013' company='SIL International'>
-//		Copyright (c) 2013, SIL International. All Rights Reserved.
-//
-//		Distributable under the terms of either the Common Public License or the
-//		GNU Lesser General Public License, as specified in the LICENSING.txt file.
-// </copyright>
-#endregion
-//
-// File: KeyboardDescriptionTests.cs
-// Responsibility: eberhard
-// ---------------------------------------------------------------------------------------------
+// Copyright (c) 2013-2015, SIL International.
+// Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
@@ -43,13 +32,12 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		{
 			get
 			{
-				return new List<ValuesToSet>
-					{
-						new ValuesToSet(false, true),
-						new ValuesToSet("to be", "!(to be)"),
-						new ValuesToSet(PlatformID.Win32NT, PlatformID.Unix),
-						new ValuesToSet(KeyboardType.System, KeyboardType.OtherIm)
-					};
+				return new List<ValuesToSet> {
+					new ValuesToSet(true, false),
+					new ValuesToSet("to be", "!(to be)"),
+					new ValuesToSet(PlatformID.Win32NT, PlatformID.Unix),
+					new ValuesToSet(KeyboardType.OtherIm, KeyboardType.System)
+				};
 			}
 		}
 

@@ -58,7 +58,7 @@ namespace Palaso.Tests.WritingSystems
 							 {
 								 new ValuesToSet("to be", "!(to be)"),
 								 new ValuesToSet(subtag, unEqualSubtag),
-								 new ValuesToSet(false, true)
+								 new ValuesToSet(true, false)
 							 }; }
 		}
 	}

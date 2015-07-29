@@ -920,7 +920,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 		{
 			 get
 			{
-				if(_currentWritingSystem==null  )
+				if(_currentWritingSystem == null)
 					return IpaStatusChoices.NotIpa;
 				return _currentWritingSystem.IpaStatus;
 			}
