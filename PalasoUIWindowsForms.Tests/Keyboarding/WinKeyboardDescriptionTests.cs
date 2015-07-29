@@ -41,10 +41,10 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 				{
 					return new List<ValuesToSet>
 					{
-						new ValuesToSet(false, true),
+						new ValuesToSet(true, false),
 						new ValuesToSet("to be", "!(to be)"),
 						new ValuesToSet(PlatformID.Win32NT, PlatformID.Unix),
-						new ValuesToSet(KeyboardType.System, KeyboardType.OtherIm),
+						new ValuesToSet(KeyboardType.OtherIm, KeyboardType.System),
 						new ValuesToSet(1, 100),
 						new ValuesToSet((IntPtr)1, (IntPtr)2),
 						new ValuesToSet(new TfInputProcessorProfile { Flags = TfIppFlags.Enabled | TfIppFlags.Active},

@@ -26,6 +26,7 @@ namespace Palaso.WritingSystems
 			Layout = kd.Layout;
 			Locale = kd.Locale;
 			OperatingSystem = kd.OperatingSystem;
+			IsAvailable = kd.IsAvailable;
 		}
 
 		/// <summary>

@@ -232,6 +232,7 @@
     <Compile Include="Keyboarding\IbusKeyboardAdaptorTests.cs" />
     <Compile Include="Keyboarding\WinKeyboardAdaptorTests.cs" />
     <Compile Include="Keyboarding\WinKeyboardDescriptionTests.cs" />
+    <Compile Include="Keyboarding\IbusKeyboardDescriptionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Palaso.Tests\Palaso.Tests.csproj">

@@ -1,4 +1,4 @@
-// Copyright (c) 2013, SIL International.
+// Copyright (c) 2013-2015, SIL International.
 // Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
 #if __MonoCS__
 using System;
@@ -30,6 +30,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		internal IbusKeyboardDescription(IbusKeyboardDescription other): base(other)
 		{
 			IBusKeyboardEngine = other.IBusKeyboardEngine;
+			SystemIndex = other.SystemIndex;
 		}
 
 		public override IKeyboardDefinition Clone()
