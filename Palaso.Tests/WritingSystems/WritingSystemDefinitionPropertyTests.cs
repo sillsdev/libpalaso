@@ -27,16 +27,19 @@ namespace Palaso.Tests.WritingSystems
 		{
 			get
 			{
-				return new List<ValuesToSet>
-							 {
-								 new ValuesToSet(3.14f, 2.72f),
-								 new ValuesToSet(false, true),
-								 new ValuesToSet("to be", "!(to be)"),
-								 new ValuesToSet(DateTime.Now, DateTime.MinValue),
-								 new ValuesToSet(WritingSystemDefinition.SortRulesType.CustomICU, WritingSystemDefinition.SortRulesType.DefaultOrdering),
-								 new ValuesToSet(new RFC5646Tag("en", "Latn", "US", "1901", "test"), RFC5646Tag.Parse("de")),
-								 new SubclassValuesToSet<IKeyboardDefinition>(new DefaultKeyboardDefinition() {Layout="mine"}, new DefaultKeyboardDefinition(){Layout="theirs"})
-							 };
+				return new List<ValuesToSet> {
+					new ValuesToSet(3.14f, 2.72f),
+					new ValuesToSet(true, false),
+					new ValuesToSet("to be", "!(to be)"),
+					new ValuesToSet(DateTime.Now, DateTime.MinValue),
+					new ValuesToSet(WritingSystemDefinition.SortRulesType.CustomICU,
+						WritingSystemDefinition.SortRulesType.DefaultOrdering),
+					new ValuesToSet(new RFC5646Tag("en", "Latn", "US", "1901", "test"),
+						RFC5646Tag.Parse("de")),
+					new SubclassValuesToSet<IKeyboardDefinition>(
+						new DefaultKeyboardDefinition { Layout = "mine" },
+						new DefaultKeyboardDefinition { Layout = "theirs" })
+				};
 			}
 		}
 
@@ -47,8 +50,8 @@ namespace Palaso.Tests.WritingSystems
 		public void CloneCopiesKnownKeyboards()
 		{
 			var original = new WritingSystemDefinition();
-			var kbd1 = new DefaultKeyboardDefinition() {Layout = "mine"};
-			var kbd2 = new DefaultKeyboardDefinition() {Layout = "yours"};
+			var kbd1 = new DefaultKeyboardDefinition() { Layout = "mine" };
+			var kbd2 = new DefaultKeyboardDefinition() { Layout = "yours" };
 			original.AddKnownKeyboard(kbd1);
 			original.AddKnownKeyboard(kbd2);
 			var copy = original.Clone();
@@ -70,7 +73,7 @@ namespace Palaso.Tests.WritingSystems
 			first.AddKnownKeyboard(kbd2);
 			var second = new WritingSystemDefinition();
 			var kbd3 = new DefaultKeyboardDefinition() { Layout = "mine" }; // equal to kbd1
-			var kbd4 = new DefaultKeyboardDefinition() {Layout = "theirs"};
+			var kbd4 = new DefaultKeyboardDefinition() { Layout = "theirs" };
 
 			Assert.That(first.Equals(second), Is.False, "ws with empty known keyboards should not equal one with some");
 			second.AddKnownKeyboard(kbd3);
@@ -315,7 +318,7 @@ namespace Palaso.Tests.WritingSystems
 			var ws = new WritingSystemDefinition();
 			ws.RequiresValidTag = false;
 			ws.Language = "Kalaba";
-			Assert.Throws(typeof (ValidationException), () => ws.RequiresValidTag = true);
+			Assert.Throws(typeof(ValidationException), () => ws.RequiresValidTag = true);
 		}
 
 		[Test]
@@ -377,16 +380,17 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Rfc5646_HasOnlyAbbreviation_ReturnsQaa()
 		{
-			var ws = new WritingSystemDefinition {Abbreviation = "hello"};
+			var ws = new WritingSystemDefinition { Abbreviation = "hello" };
 			Assert.AreEqual("qaa", ws.Bcp47Tag);
 		}
 
 		[Test]
 		public void Rfc5646WhenJustISO()
 		{
-			var ws = new WritingSystemDefinition("en","","","","", false);
+			var ws = new WritingSystemDefinition("en", "", "", "", "", false);
 			Assert.AreEqual("en", ws.Bcp47Tag);
 		}
+
 		[Test]
 		public void Rfc5646WhenIsoAndScript()
 		{
@@ -400,6 +404,7 @@ namespace Palaso.Tests.WritingSystems
 			var ws = new WritingSystemDefinition("en", "", "US", "", "", false);
 			Assert.AreEqual("en-US", ws.Bcp47Tag);
 		}
+
 		[Test]
 		public void Rfc5646WhenIsoScriptRegionVariant()
 		{
@@ -431,7 +436,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Constructor_OnlyVariantIsPassedIn_Throws()
 		{
-			Assert.Throws<ValidationException>(()=>new WritingSystemDefinition("", "", "", "bogus", "", false));
+			Assert.Throws<ValidationException>(() => new WritingSystemDefinition("", "", "", "bogus", "", false));
 		}
 
 		[Test]
@@ -463,24 +468,24 @@ namespace Palaso.Tests.WritingSystems
 			secondValueSpecial.Add("Script", "Latn");
 			firstValueSpecial.Add("DuplicateNumber", 0);
 			secondValueSpecial.Add("DuplicateNumber", 1);
-			firstValueSpecial.Add("LocalKeyboard", new DefaultKeyboardDefinition() {Layout="mine"});
+			firstValueSpecial.Add("LocalKeyboard", new DefaultKeyboardDefinition() { Layout = "mine" });
 			secondValueSpecial.Add("LocalKeyboard", new DefaultKeyboardDefinition() { Layout = "yours" });
 			//firstValueSpecial.Add("SortUsing", "CustomSimple");
 			//secondValueSpecial.Add("SortUsing", "CustomICU");
 			// test values to use based on type
 			Dictionary<Type, object> firstValueToSet = new Dictionary<Type, object>();
 			Dictionary<Type, object> secondValueToSet = new Dictionary<Type, object>();
-			firstValueToSet.Add(typeof (float), 2.18281828459045f);
-			secondValueToSet.Add(typeof (float), 3.141592653589f);
-			firstValueToSet.Add(typeof (bool), true);
-			secondValueToSet.Add(typeof (bool), false);
-			firstValueToSet.Add(typeof (string), "X");
-			secondValueToSet.Add(typeof (string), "Y");
-			firstValueToSet.Add(typeof (DateTime), new DateTime(2007, 12, 31));
-			secondValueToSet.Add(typeof (DateTime), new DateTime(2008, 1, 1));
+			firstValueToSet.Add(typeof(float), 2.18281828459045f);
+			secondValueToSet.Add(typeof(float), 3.141592653589f);
+			firstValueToSet.Add(typeof(bool), true);
+			secondValueToSet.Add(typeof(bool), false);
+			firstValueToSet.Add(typeof(string), "X");
+			secondValueToSet.Add(typeof(string), "Y");
+			firstValueToSet.Add(typeof(DateTime), new DateTime(2007, 12, 31));
+			secondValueToSet.Add(typeof(DateTime), new DateTime(2008, 1, 1));
 			firstValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU);
 			secondValueToSet.Add(typeof(WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomSimple);
-			firstValueToSet.Add(typeof(RFC5646Tag), new RFC5646Tag("de", "Latn", "", "1901","audio"));
+			firstValueToSet.Add(typeof(RFC5646Tag), new RFC5646Tag("de", "Latn", "", "1901", "audio"));
 
 			firstValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.IpaPhonemic);
 			secondValueToSet.Add(typeof(IpaStatusChoices), IpaStatusChoices.NotIpa);
@@ -512,10 +517,10 @@ namespace Palaso.Tests.WritingSystems
 					else
 					{
 						Assert.Fail("Unhandled property type - please update the test to handle type {0}",
-									propertyInfo.PropertyType.Name);
+							propertyInfo.PropertyType.Name);
 					}
 				}
-				catch(Exception error)
+				catch (Exception error)
 				{
 					Assert.Fail("Error setting property WritingSystemDefinition.{0},{1}", propertyInfo.Name, error.ToString());
 				}
@@ -532,21 +537,22 @@ namespace Palaso.Tests.WritingSystems
 			// confirms something subtly different.
 			const string ignoreFields = "|Modified|MarkedForDeletion|StoreID|_collator|_knownKeyboards|_localKeyboard|";
 			// values to use for testing different types
-			var valuesToSet = new Dictionary<Type, object>
-			{
-				{typeof (float), 3.14f},
-				{typeof (bool), true},
-				{typeof (string), "Foo"},
-				{typeof (DateTime), DateTime.Now},
-				{typeof (WritingSystemDefinition.SortRulesType), WritingSystemDefinition.SortRulesType.CustomICU},
-				{typeof (RFC5646Tag), new RFC5646Tag("en", "Latn", "US", "1901", "test")}
+			var valuesToSet = new Dictionary<Type, object> {
+				{ typeof(float), 3.14f },
+				{ typeof(bool), true },
+				{ typeof(string), "Foo" },
+				{ typeof(DateTime), DateTime.Now }, {
+					typeof(WritingSystemDefinition.SortRulesType),
+					WritingSystemDefinition.SortRulesType.CustomICU
+				},
+				{ typeof(RFC5646Tag), new RFC5646Tag("en", "Latn", "US", "1901", "test") }
 			};
 			foreach (var fieldInfo in typeof(WritingSystemDefinition).GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public))
 			{
 				var fieldName = fieldInfo.Name;
 				if (fieldInfo.Name.Contains("<"))
 				{
-					var splitResult = fieldInfo.Name.Split(new[] {'<', '>'});
+					var splitResult = fieldInfo.Name.Split(new[] { '<', '>' });
 					fieldName = splitResult[1];
 				}
 				if (ignoreFields.Contains("|" + fieldName + "|"))
@@ -563,10 +569,10 @@ namespace Palaso.Tests.WritingSystems
 					Assert.Fail("Unhandled field type - please update the test to handle type {0}. The field that uses this type is {1}.", fieldInfo.FieldType.Name, fieldName);
 				}
 				var theClone = ws.Clone();
-				if(fieldInfo.GetValue(ws).GetType() != typeof(string))  //strings are special in .net so we won't worry about checking them here.
+				if (fieldInfo.GetValue(ws).GetType() != typeof(string))  //strings are special in .net so we won't worry about checking them here.
 				{
 					Assert.AreNotSame(fieldInfo.GetValue(ws), fieldInfo.GetValue(theClone),
-									  "The field {0} refers to the same object, it was not copied.", fieldName);
+						"The field {0} refers to the same object, it was not copied.", fieldName);
 				}
 				Assert.AreEqual(valuesToSet[fieldInfo.FieldType], fieldInfo.GetValue(theClone), "Field {0} not copied on WritingSystemDefinition.Clone()", fieldName);
 			}
@@ -606,13 +612,12 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void SetIsVoice_SetToTrue_SetsScriptRegionAndVariantCorrectly()
 		{
-			var ws = new WritingSystemDefinition
-					 {
-						 Script = "Latn",
-						 Region = "US",
-						 Variant = "1901",
-						 IsVoice = true
-					 };
+			var ws = new WritingSystemDefinition {
+				Script = "Latn",
+				Region = "US",
+				Variant = "1901",
+				IsVoice = true
+			};
 			Assert.AreEqual(WellKnownSubTags.Audio.Script, ws.Script);
 			Assert.AreEqual("US", ws.Region);
 			Assert.AreEqual("1901-x-audio", ws.Variant);
@@ -622,11 +627,10 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void SetIsVoice_ToTrue_LeavesIsoCodeAlone()
 		{
-			var ws = new WritingSystemDefinition
-					 {
-						 Language = "en",
-						 IsVoice = true
-					 };
+			var ws = new WritingSystemDefinition {
+				Language = "en",
+				IsVoice = true
+			};
 			Assert.AreEqual("en", ws.Language);
 		}
 
@@ -644,8 +648,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Script_ChangedToSomethingOtherThanZxxxWhileIsVoiceIsTrue_Throws()
 		{
-			var ws = new WritingSystemDefinition
-			{
+			var ws = new WritingSystemDefinition {
 				IsVoice = true
 			};
 			Assert.Throws<ValidationException>(() => ws.Script = "change!");
@@ -705,11 +708,10 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void IsVoice_ToggledAfterVariantHasBeenSet_DoesNotRemoveVariant()
 		{
-			var ws = new WritingSystemDefinition
-					 {
-						 Variant = "1901",
-						 IsVoice = true
-					 };
+			var ws = new WritingSystemDefinition {
+				Variant = "1901",
+				IsVoice = true
+			};
 			ws.IsVoice = false;
 			Assert.AreEqual("1901", ws.Variant);
 		}
@@ -717,8 +719,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void IsVoice_ToggledAfterRegionHasBeenSet_DoesNotRemoveRegion()
 		{
-			var ws = new WritingSystemDefinition()
-			{
+			var ws = new WritingSystemDefinition() {
 				Region = "US"
 			};
 			ws.IsVoice = true;
@@ -729,8 +730,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void IsVoice_ToggledAfterScriptHasBeenSet_ScriptIsCleared()
 		{
-			var ws = new WritingSystemDefinition()
-			{
+			var ws = new WritingSystemDefinition() {
 				Script = "Latn"
 			};
 			ws.IsVoice = true;
@@ -741,22 +741,20 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void IsVoice_SetToTrueWhileIpaStatusIsIpa_IpaStatusIsSetToNotIpa()
 		{
-			var ws = new WritingSystemDefinition
-					 {
-						 IpaStatus = IpaStatusChoices.Ipa,
-						 IsVoice = true
-					 };
+			var ws = new WritingSystemDefinition {
+				IpaStatus = IpaStatusChoices.Ipa,
+				IsVoice = true
+			};
 			Assert.AreEqual(IpaStatusChoices.NotIpa, ws.IpaStatus);
 		}
 
 		[Test]
 		public void IsVoice_SetToTrueWhileIpaStatusIsIpaPhontetic_IpaStatusIsSetToNotIpa()
 		{
-			var ws = new WritingSystemDefinition
-					 {
-						 IpaStatus = IpaStatusChoices.IpaPhonetic,
-						 IsVoice = true
-					 };
+			var ws = new WritingSystemDefinition {
+				IpaStatus = IpaStatusChoices.IpaPhonetic,
+				IsVoice = true
+			};
 			Assert.AreEqual(IpaStatusChoices.NotIpa, ws.IpaStatus);
 		}
 
@@ -817,7 +815,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Variant_IsSetWithDuplicateTags_DontKnowWhatToDo()
 		{
 			Assert.Throws<ValidationException>(
-				() => new WritingSystemDefinition {Variant = "duplicate-duplicate"}
+				() => new WritingSystemDefinition { Variant = "duplicate-duplicate" }
 			);
 		}
 
@@ -877,7 +875,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void IsVoice_VariantIsxDashPrefixaudioPostFix_ReturnsFalse()
 		{
-			var ws = new WritingSystemDefinition ();
+			var ws = new WritingSystemDefinition();
 			ws.SetAllComponents(
 				"th",
 				WellKnownSubTags.Audio.Script,
@@ -1044,7 +1042,7 @@ namespace Palaso.Tests.WritingSystems
 		public void Iso639_SetEmpty_ThrowsValidationException()
 		{
 			var ws = new WritingSystemDefinition();
-			Assert.Throws<ValidationException>(()=>ws.Language = String.Empty);
+			Assert.Throws<ValidationException>(() => ws.Language = String.Empty);
 		}
 
 		[Test]
@@ -1080,7 +1078,7 @@ namespace Palaso.Tests.WritingSystems
 			var ws = new WritingSystemDefinition();
 			ws.Language = "de";
 			ws.Script = "latn";
-			Assert.Throws<ArgumentException>(()=>ws.Variant = "x-private-audio");
+			Assert.Throws<ArgumentException>(() => ws.Variant = "x-private-audio");
 		}
 
 		[Test]
@@ -1294,7 +1292,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void Ctor2_IdIsSet()
 		{
-			var writingSystem = new WritingSystemDefinition("en","Zxxx","","1901-x-audio","abb",true);
+			var writingSystem = new WritingSystemDefinition("en", "Zxxx", "", "1901-x-audio", "abb", true);
 			Assert.AreEqual("en-Zxxx-1901-x-audio", writingSystem.Id);
 		}
 
@@ -1369,7 +1367,7 @@ namespace Palaso.Tests.WritingSystems
 		public void SetAllRfc5646LanguageTagComponents_IdIsSet()
 		{
 			var writingSystem = WritingSystemDefinition.FromSubtags("en", "Zxxx", "", "1901-x-audio");
-			writingSystem.SetAllComponents("de","Latn","US","fonipa-x-etic");
+			writingSystem.SetAllComponents("de", "Latn", "US", "fonipa-x-etic");
 			Assert.AreEqual("de-Latn-US-fonipa-x-etic", writingSystem.Id);
 		}
 
@@ -1400,7 +1398,7 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void MakeUnique_IsAlreadyUnique_NothingChanges()
 		{
-			var existingTags = new[] {"en-Zxxx-x-audio"};
+			var existingTags = new[] { "en-Zxxx-x-audio" };
 			var ws = new WritingSystemDefinition("de");
 			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, existingTags);
 			Assert.That(newWs.Id, Is.EqualTo("de"));
@@ -1454,15 +1452,15 @@ namespace Palaso.Tests.WritingSystems
 		[Test]
 		public void GetDefaultFontSizeOrMinimum_DefaultConstructor_GreaterThanSix()
 		{
-			Assert.Greater(new WritingSystemDefinition().GetDefaultFontSizeOrMinimum(),6);
+			Assert.Greater(new WritingSystemDefinition().GetDefaultFontSizeOrMinimum(), 6);
 		}
+
 		[Test]
 		public void GetDefaultFontSizeOrMinimum_SetAt0_GreaterThanSix()
 		{
-			var ws = new WritingSystemDefinition()
-						 {
-							 DefaultFontSize = 0
-						 };
+			var ws = new WritingSystemDefinition() {
+				DefaultFontSize = 0
+			};
 			Assert.Greater(ws.GetDefaultFontSizeOrMinimum(), 6);
 		}
 
@@ -1553,7 +1551,7 @@ namespace Palaso.Tests.WritingSystems
 		public void ListLabel_VariantContainsDuplwithNumber_LabelIsLanguageWithCopyAndNumberInBrackets()
 		{
 			var ws = new WritingSystemDefinition("de");
-			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, new[]{"de", "de-x-dupl0"});
+			var newWs = WritingSystemDefinition.CreateCopyWithUniqueId(ws, new[]{ "de", "de-x-dupl0" });
 			Assert.That(newWs.ListLabel, Is.EqualTo("German (Copy1)"));
 		}
 
@@ -1598,7 +1596,7 @@ namespace Palaso.Tests.WritingSystems
 		public void OtherAvailableKeyboards_DefaultsToAllAvailable()
 		{
 			var ws = new WritingSystemDefinition("de-x-dupl0");
-			var kbd1 = new DefaultKeyboardDefinition() {Layout = "something", Locale="en-US"};
+			var kbd1 = new DefaultKeyboardDefinition() { Layout = "something", Locale = "en-US" };
 			var kbd2 = new DefaultKeyboardDefinition() { Layout = "somethingElse", Locale = "en-GB" };
 			var controller = new MockKeyboardController();
 			var keyboardList = new List<IKeyboardDefinition>();
@@ -1708,6 +1706,7 @@ namespace Palaso.Tests.WritingSystems
 
 			public IKeyboardDefinition Default;
 			public IWritingSystemDefinition ArgumentPassedToDefault;
+
 			public void UpdateAvailableKeyboards()
 			{
 				throw new NotImplementedException();
@@ -1740,6 +1739,7 @@ namespace Palaso.Tests.WritingSystems
 			public IKeyboardDefinition ActiveKeyboard { get; set; }
 
 			#region Implementation of IDisposable
+
 			/// <summary>
 			/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 			/// </summary>
@@ -1747,6 +1747,7 @@ namespace Palaso.Tests.WritingSystems
 			{
 				GC.SuppressFinalize(this);
 			}
+
 			#endregion
 		}
 
