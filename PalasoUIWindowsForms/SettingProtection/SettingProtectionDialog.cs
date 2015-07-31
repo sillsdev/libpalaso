@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Palaso.UI.WindowsForms.SettingProtection
@@ -22,7 +16,7 @@ namespace Palaso.UI.WindowsForms.SettingProtection
 			_didHavePasswordSet = SettingsProtectionSingleton.Settings.RequirePassword;
 
 			_passwordNotice.Text = string.Format(_passwordNotice.Text, SettingsProtectionSingleton.FactoryPassword,
-												 Application.ProductName);
+												 SettingsProtectionSingleton.CoreProductName);
 		}
 
 		private void OnNormallHidden_CheckedChanged(object sender, EventArgs e)
