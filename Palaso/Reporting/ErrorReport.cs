@@ -354,6 +354,26 @@ namespace Palaso.Reporting
 			AddProperty("Culture", CultureInfo.CurrentCulture.ToString());
 		}
 
+		/// <summary>
+		/// Get the standard properties in a form suitable for other uses
+		/// (such as analytics).
+		/// </summary>
+		public static Dictionary<string, string> GetStandardProperties()
+		{
+			var props = new Dictionary<string,string>();
+			props.Add("Version", ErrorReport.GetVersionForErrorReporting());
+			props.Add("CommandLine", Environment.CommandLine);
+			props.Add("CurrentDirectory", Environment.CurrentDirectory);
+			props.Add("MachineName", Environment.MachineName);
+			props.Add("OSVersion", GetOperatingSystemLabel());
+			props.Add("DotNetVersion", Environment.Version.ToString());
+			props.Add("WorkingSet", Environment.WorkingSet.ToString());
+			props.Add("UserDomainName", Environment.UserDomainName);
+			props.Add("UserName", Environment.UserName);
+			props.Add("Culture", CultureInfo.CurrentCulture.ToString());
+			return props;
+		}
+
 		class Version
 		{
 			private readonly PlatformID _platform;
