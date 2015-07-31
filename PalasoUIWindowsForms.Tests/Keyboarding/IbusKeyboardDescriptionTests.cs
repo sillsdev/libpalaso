@@ -11,6 +11,11 @@ using Palaso.Tests.Code;
 
 namespace PalasoUIWindowsForms.Tests.Keyboarding
 {
+	/// <summary>
+	/// This class tests that the Clone method of IbusKeyboardDescription clones all required
+	/// fields and uses them in equality testing.
+	/// </summary>
+	/// <remarks>All the tests are in the base class!</remarks>
 	class IbusKeyboardDescriptionIClonableGenericTests :
 		IClonableGenericTests<IbusKeyboardDescription, IKeyboardDefinition>
 	{

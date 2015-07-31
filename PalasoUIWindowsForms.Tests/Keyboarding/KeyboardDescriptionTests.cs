@@ -10,8 +10,14 @@ using Palaso.Tests.Code;
 
 namespace PalasoUIWindowsForms.Tests.Keyboarding
 {
+	/// <summary>
+	/// This class tests that the Clone method of KeyboardDescription clones all required
+	/// fields and uses them in equality testing.
+	/// </summary>
+	/// <remarks>Most tests are in the base class!</remarks>
 	[TestFixture]
-	public class KeyboardDescriptionIClonableGenericTests : IClonableGenericTests<KeyboardDescription, IKeyboardDefinition>
+	public class KeyboardDescriptionIClonableGenericTests :
+		IClonableGenericTests<KeyboardDescription, IKeyboardDefinition>
 	{
 		public override KeyboardDescription CreateNewClonable()
 		{
