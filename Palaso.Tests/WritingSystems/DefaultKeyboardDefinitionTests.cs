@@ -103,7 +103,7 @@ namespace Palaso.Tests.WritingSystems
 			get
 			{
 				return new List<ValuesToSet> {
-					new ValuesToSet(false, true),
+					new ValuesToSet(true, false),
 					new ValuesToSet("to be", "!(to be)"),
 					new ValuesToSet(PlatformID.Win32NT, PlatformID.Unix),
 					new ValuesToSet(KeyboardType.OtherIm, KeyboardType.System)

@@ -72,8 +72,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				if (IbusKeyboards.ContainsKey(ibusKeyboard.LongName))
 				{
 					missingLayouts.Remove(ibusKeyboard.LongName);
-					var keyboard = new IbusKeyboardDescription(this, ibusKeyboard);
-					keyboard.SystemIndex = IbusKeyboards[ibusKeyboard.LongName];
+					var keyboard = new IbusKeyboardDescription(this, ibusKeyboard,
+						IbusKeyboards[ibusKeyboard.LongName]);
 					KeyboardController.Manager.RegisterKeyboard(keyboard);
 				}
 			}
