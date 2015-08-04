@@ -1,5 +1,8 @@
 // Copyright (c) 2013, SIL International.
 // Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
+using Palaso.WritingSystems;
+
+
 #if __MonoCS__
 using System;
 using System.Windows.Forms;
@@ -217,8 +220,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 			try
 			{
-				// m_inputContext.IsEnabled() throws an exception for IBus 1.5.
-				if (!KeyboardController.CombinedKeyboardHandling && !KeyboardController.CinnamonKeyboardHandling && !m_inputContext.IsEnabled())
+				// m_inputContext.IsEnabled() is no longer contained in IBus 1.5. However,
+				// ibusdotnet >= 1.9.1 deals with that and always returns true so that we still
+				// can use this method.
+				if (!m_inputContext.IsEnabled())
 					return false;
 
 				var modifiers = ConvertToIbusModifiers(state, (char)keySym);
@@ -290,12 +295,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		{
 			ProtectedIBusInvoke(() => 
 			{
+				context.SetCapabilities(Capabilities.Focus | Capabilities.PreeditText | Capabilities.SurroundingText);
 				context.CommitText += OnCommitText;
 				context.UpdatePreeditText += OnUpdatePreeditText;
 				context.HidePreeditText += OnHidePreeditText;
 				context.ForwardKeyEvent += OnKeyEvent;
 				context.DeleteSurroundingText += OnDeleteSurroundingText;
-				context.SetCapabilities(Capabilities.Focus | Capabilities.PreeditText | Capabilities.SurroundingText);
 				context.Enable();	// not needed for IBus 1.5, but doesn't hurt.
 			});
 		}

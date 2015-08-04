@@ -26,7 +26,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.KeyboardDescription"/> class.
 		/// </summary>
 		internal KeyboardDescription(string name, string layout, string locale,
-			IInputLanguage language, IKeyboardAdaptor engine, KeyboardType type = KeyboardType.System)
+			IInputLanguage language, IKeyboardSwitchingAdaptor engine, KeyboardType type = KeyboardType.System)
 		{
 			InternalName = name;
 			Layout = layout;
@@ -38,7 +38,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			InputLanguage = language;
 		}
 
-		internal KeyboardDescription(IKeyboardAdaptor engine, KeyboardType type)
+		internal KeyboardDescription(IKeyboardSwitchingAdaptor engine, KeyboardType type)
 		{
 			Engine = engine;
 			Type = type;
@@ -58,7 +58,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		/// <summary>
 		/// Gets the keyboard adaptor that handles this keyboard.
 		/// </summary>
-		internal IKeyboardAdaptor Engine { get; private set; }
+		internal IKeyboardSwitchingAdaptor Engine { get; private set; }
 
 		/// <summary>
 		/// Deactivate this keyboard.
@@ -115,7 +115,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		protected virtual bool DeactivatePreviousKeyboard(IKeyboardDefinition keyboardToActivate)
 		{
-			return true;
+			return (keyboardToActivate as KeyboardDescription) != this;
 		}
 
 		#region IKeyboardDefinition Members

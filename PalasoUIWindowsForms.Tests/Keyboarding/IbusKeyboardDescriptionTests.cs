@@ -68,7 +68,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 					new ValuesToSet("to be", "!(to be)"),
 					new ValuesToSet(PlatformID.Win32NT, PlatformID.Unix),
 					new ValuesToSet(KeyboardType.OtherIm, KeyboardType.System),
-					new ValuesToSet(5, 4)
+					new ValuesToSet(UInt32.MaxValue, UInt32.MinValue)
 				};
 			}
 		}

@@ -71,7 +71,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			get { return false; }
 		}
 
-		public IKeyboardAdaptor Engine
+		public IKeyboardSwitchingAdaptor Engine
 		{
 			get
 			{

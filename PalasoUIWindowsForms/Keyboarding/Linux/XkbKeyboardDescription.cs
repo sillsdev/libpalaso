@@ -24,7 +24,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// <param name='engine'>The keyboard adaptor that will handle this keyboard</param>
 		/// <param name='groupIndex'>The group index of this xkb keyboard</param>
 		internal XkbKeyboardDescription(string name, string layout, string locale,
-			IInputLanguage language, IKeyboardAdaptor engine, int groupIndex)
+			IInputLanguage language, IKeyboardSwitchingAdaptor engine, int groupIndex)
 			: base(name, layout, locale, language, engine)
 		{
 			GroupIndex = groupIndex;

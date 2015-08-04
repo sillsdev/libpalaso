@@ -455,14 +455,11 @@
     <Compile Include="ImageToolbox\ImageAcquisitionService.cs" />
     <Compile Include="Keyboarding\Interfaces\IKeyboardErrorDescription.cs" />
     <Compile Include="Keyboarding\Interfaces\IWindowsLanguageProfileSink.cs" />
-    <Compile Include="Keyboarding\InternalInterfaces\IKeyboardAdaptor.cs" />
     <Compile Include="Keyboarding\InternalInterfaces\IKeyboardControllerImpl.cs" />
     <Compile Include="Keyboarding\KeyboardDescription.cs" />
     <Compile Include="Keyboarding\KeyboardDescriptionNull.cs" />
     <Compile Include="Keyboarding\KeyboardErrorDescription.cs" />
-    <Compile Include="Keyboarding\Linux\IbusKeyboardAdaptor.cs" />
     <Compile Include="Keyboarding\Linux\X11.cs" />
-    <Compile Include="Keyboarding\Linux\XkbKeyboardAdaptor.cs" />
     <Compile Include="Keyboarding\Linux\XkbKeyboardDescription.cs" />
     <Compile Include="Keyboarding\Linux\XklConfigRegistry.cs" />
     <Compile Include="Keyboarding\Linux\XklEngine.cs" />
@@ -872,9 +869,6 @@
     <Compile Include="Keyboarding\Linux\X11KeyConverter.cs" />
     <Compile Include="Keyboarding\InternalInterfaces\IXklEngine.cs" />
     <Compile Include="Keyboarding\Windows\MsTsfInterfaces.cs" />
-    <Compile Include="Keyboarding\Linux\CommonBaseAdaptor.cs" />
-    <Compile Include="Keyboarding\Linux\CombinedKeyboardAdaptor.cs" />
-    <Compile Include="Keyboarding\Linux\CinnamonIbusAdaptor.cs" />
     <Compile Include="HtmlBrowser\IWebBrowser.cs" />
     <Compile Include="HtmlBrowser\IWebBrowserCallbacks.cs" />
     <Compile Include="HtmlBrowser\WinFormsBrowserAdapter.cs" />
@@ -882,6 +876,21 @@
     <Compile Include="HtmlBrowser\XWebBrowser.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Keyboarding\Types\Unmanaged.cs" />
+    <Compile Include="Keyboarding\InternalInterfaces\IKeyboardSwitchingAdaptor.cs" />
+    <Compile Include="Keyboarding\InternalInterfaces\IKeyboardRetrievingAdaptor.cs" />
+    <Compile Include="Keyboarding\Linux\CinnamonKeyboardSwitchingAdaptor.cs" />
+    <Compile Include="Keyboarding\Linux\CinnamonKeyboardRetrievingAdaptor.cs" />
+    <Compile Include="Keyboarding\Linux\IbusKeyboardSwitchingAdaptor.cs" />
+    <Compile Include="Keyboarding\Linux\IbusKeyboardRetrievingAdaptor.cs" />
+    <Compile Include="Keyboarding\Linux\KeyboardRetrievingHelper.cs" />
+    <Compile Include="Keyboarding\Linux\UnityIbusKeyboardRetrievingAdaptor.cs" />
+    <Compile Include="Keyboarding\Linux\UnityIbusKeyboardSwitchingAdaptor.cs" />
+    <Compile Include="Keyboarding\Linux\UnityKeyboardRetrievingHelper.cs" />
+    <Compile Include="Keyboarding\Linux\UnityXkbKeyboardRetrievingAdaptor.cs" />
+    <Compile Include="Keyboarding\Linux\UnityXkbKeyboardSwitchingAdaptor.cs" />
+    <Compile Include="Keyboarding\Linux\XkbKeyboardRetrievingAdaptor.cs" />
+    <Compile Include="Keyboarding\Linux\XkbKeyboardSwitchingAdaptor.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ClearShare\ClearShareResources.resx">

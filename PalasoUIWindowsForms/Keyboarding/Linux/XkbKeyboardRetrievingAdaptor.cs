@@ -1,40 +1,42 @@
-// Copyright (c) 2011-2015 SIL International
+﻿// Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-
 #if __MonoCS__
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using X11.XKlavier;
-using Palaso.Reporting;
-using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
 using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
-using Palaso.UI.WindowsForms.Keyboarding.Types;
+using X11.XKlavier;
+using System.Collections.Generic;
+using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
 using Palaso.WritingSystems;
+using Palaso.Reporting;
+using System.Globalization;
+using Palaso.UI.WindowsForms.Keyboarding.Types;
 
 namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 {
 	/// <summary>
-	/// Class for handling xkb keyboards on Linux
+	/// Class for retrieving Xkb keyboards on Linux
 	/// </summary>
-	public class XkbKeyboardAdaptor: IKeyboardAdaptor
+	[CLSCompliant(false)]
+	public class XkbKeyboardRetrievingAdaptor: IKeyboardRetrievingAdaptor
 	{
-		protected List<IKeyboardErrorDescription> m_BadLocales;
-		private IXklEngine m_engine;
+		protected List<IKeyboardErrorDescription> BadLocales;
+		protected IXklEngine _engine;
+		protected IKeyboardSwitchingAdaptor _adaptor;
+		protected string _missingKeyboardFmt;
+		protected static HashSet<string> _knownCultures;
 
-		public XkbKeyboardAdaptor(): this(new XklEngine())
+		public XkbKeyboardRetrievingAdaptor(): this(new XklEngine())
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="Palaso.UI.WindowsForms.Keyboarding.Linux.XkbKeyboardAdaptor"/> class.
+		/// Initializes a new instance of the
+		/// <see cref="Palaso.UI.WindowsForms.Keyboarding.Linux.XkbKeyboardRetriever"/> class.
 		/// This overload is used in unit tests.
 		/// </summary>
-		public XkbKeyboardAdaptor(IXklEngine engine)
+		public XkbKeyboardRetrievingAdaptor(IXklEngine engine)
 		{
-			m_engine = engine;
+			_engine = engine;
 		}
 
 		private string GetLanguageCountry(Icu.Locale locale)
@@ -74,19 +76,19 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 		protected virtual void InitLocales()
 		{
-			if (m_BadLocales != null)
+			if (BadLocales != null)
 				return;
 			ReinitLocales();
 		}
 
-		private void ReinitLocales()
+		protected virtual void ReinitLocales()
 		{
-			m_BadLocales = new List<IKeyboardErrorDescription>();
+			BadLocales = new List<IKeyboardErrorDescription>();
 
-			var configRegistry = XklConfigRegistry.Create(m_engine);
+			var configRegistry = XklConfigRegistry.Create(_engine);
 			var layouts = configRegistry.Layouts;
 
-			for (int iGroup = 0; iGroup < m_engine.GroupNames.Length; iGroup++)
+			for (uint iGroup = 0; iGroup < _engine.GroupNames.Length; iGroup++)
 			{
 				// a group in a xkb keyboard is a keyboard layout. This can be used with
 				// multiple languages - which language is ambigious. Here we just add all
@@ -94,12 +96,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				// m_engine.GroupNames are not localized, but the layouts are. Before we try
 				// to compare them we better localize the group name as well, or we won't find
 				// much (FWNX-1388)
-				var groupName = m_engine.LocalizedGroupNames[iGroup];
+				var groupName = _engine.LocalizedGroupNames[iGroup];
 				List<XklConfigRegistry.LayoutDescription> layoutList;
 				if (!layouts.TryGetValue(groupName, out layoutList))
 				{
 					// No language in layouts uses the groupName keyboard layout.
-					m_BadLocales.Add(new KeyboardErrorDescription(groupName));
+					BadLocales.Add(new KeyboardErrorDescription(groupName));
 					Console.WriteLine("WARNING: Couldn't find layout for {0}.", groupName);
 					Logger.WriteEvent("WARNING: Couldn't find layout for {0}.", groupName);
 					continue;
@@ -113,12 +115,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 		}
 
-		private void AddKeyboardForLayout(XklConfigRegistry.LayoutDescription layout, int iGroup)
+		private void AddKeyboardForLayout(XklConfigRegistry.LayoutDescription layout, uint iGroup)
 		{
-			AddKeyboardForLayout(layout, iGroup, this);
+			AddKeyboardForLayout(layout, iGroup, _adaptor);
 		}
 
-		internal void AddKeyboardForLayout(XklConfigRegistry.LayoutDescription layout, int iGroup, IKeyboardAdaptor engine)
+		internal void AddKeyboardForLayout(XklConfigRegistry.LayoutDescription layout, uint iGroup,
+			IKeyboardSwitchingAdaptor engine)
 		{
 			var description = GetDescription(layout);
 			CultureInfo culture = null;
@@ -134,100 +137,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 			var inputLanguage = new InputLanguageWrapper(culture, IntPtr.Zero, layout.Language);
 			var keyboard = new XkbKeyboardDescription(description, layout.LayoutId, layout.LocaleId,
-				inputLanguage, engine, iGroup);
+				inputLanguage, engine, (int)iGroup);
 			KeyboardController.Manager.RegisterKeyboard(keyboard);
 		}
 
-		internal IXklEngine XklEngine
-		{
-			get { return m_engine; }
-		}
-
-		public List<IKeyboardErrorDescription> ErrorKeyboards
-		{
-			get
-			{
-				InitLocales();
-				return m_BadLocales;
-			}
-		}
-
-		public void Initialize()
-		{
-			InitLocales();
-		}
-
-		public void UpdateAvailableKeyboards()
-		{
-			ReinitLocales();
-		}
-
-		public void Close()
-		{
-			m_engine.Close();
-			m_engine = null;
-		}
-
-		public bool ActivateKeyboard(IKeyboardDefinition keyboard)
-		{
-			Debug.Assert(keyboard is KeyboardDescription);
-			Debug.Assert(((KeyboardDescription)keyboard).Engine == this);
-			Debug.Assert(keyboard is XkbKeyboardDescription);
-			var xkbKeyboard = keyboard as XkbKeyboardDescription;
-			if (xkbKeyboard == null)
-				throw new ArgumentException();
-
-			if (xkbKeyboard.GroupIndex >= 0)
-			{
-				m_engine.SetGroup(xkbKeyboard.GroupIndex);
-			}
-			return true;
-		}
-
-		public void DeactivateKeyboard(IKeyboardDefinition keyboard)
-		{
-		}
-
-		public IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
-		{
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
-		/// The type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
-		/// </summary>
-		public KeyboardType Type
-		{
-			get { return KeyboardType.System; }
-		}
-
-		/// <summary>
-		/// Gets the default keyboard of the system.
-		/// </summary>
-		/// <remarks>
-		/// For Xkb the default keyboard has GroupIndex set to zero.
-		/// Wasta/Cinnamon keyboarding doesn't use XkbKeyboardDescription objects.
-		/// </remarks>
-		public IKeyboardDefinition DefaultKeyboard
-		{
-			get
-			{
-				return Keyboard.Controller.AllAvailableKeyboards.Where (kbd => kbd.Type == KeyboardType.System)
-					.FirstOrDefault (x => x is XkbKeyboardDescription && ((XkbKeyboardDescription)x).GroupIndex == 0);
-			}
-		}
-
-		/// <summary>
-		/// Implementation is not required because the default implementation of KeyboardController
-		/// is sufficient.
-		/// </summary>
-		public IKeyboardDefinition ActiveKeyboard
-		{
-			get { return null; }
-		}
-
-
-		private string _missingKeyboardFmt;
 		/// <summary>
 		/// Creates and returns a keyboard definition object based on the layout and locale.
 		/// Note that this method is used when we do NOT have a matching available keyboard.
@@ -249,14 +162,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			// as missing, but create an English (US) keyboard underneath.
 			if (IsLocaleKnown(realLocale))
 				return new XkbKeyboardDescription(string.Format("{0} ({1})", locale, layout), layout, locale,
-					new InputLanguageWrapper(realLocale, IntPtr.Zero, layout), this, -1) {IsAvailable = false};
+					new InputLanguageWrapper(realLocale, IntPtr.Zero, layout), _adaptor, -1) {IsAvailable = false};
 			if (_missingKeyboardFmt == null)
 				_missingKeyboardFmt = L10NSharp.LocalizationManager.GetString("XkbKeyboardAdaptor.MissingKeyboard", "[Missing] {0} ({1})");
 			return new XkbKeyboardDescription(String.Format(_missingKeyboardFmt, locale, layout), layout, locale,
-				new InputLanguageWrapper("en", IntPtr.Zero, "US"), this, -1) {IsAvailable = false};
+				new InputLanguageWrapper("en", IntPtr.Zero, "US"), _adaptor, -1) {IsAvailable = false};
 		}
 
-		private static HashSet<string> _knownCultures;
 		/// <summary>
 		/// Check whether the locale is known to the system.
 		/// </summary>
@@ -270,6 +182,68 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 			return _knownCultures.Contains(locale);
 		}
+		#region IKeyboardRetriever implementation
+
+		/// <summary>
+		/// The type of keyboards this retriever handles: system or other (like Keyman, ibus...)
+		/// </summary>
+		public KeyboardType Type
+		{
+			get { return KeyboardType.System; }
+		}
+
+		public virtual bool IsApplicable
+		{
+			get
+			{
+				return true;
+			}
+		}
+
+		/// <summary>
+		/// Gets the keyboard adaptor that deals with keyboards that this class retrieves.
+		/// </summary>
+		public IKeyboardSwitchingAdaptor Adaptor { get { return _adaptor; } }
+
+		public virtual void Initialize()
+		{
+			_adaptor = new XkbKeyboardSwitchingAdaptor(_engine);
+		}
+
+		public virtual void RegisterAvailableKeyboards()
+		{
+			InitLocales();
+		}
+
+		public virtual void UpdateAvailableKeyboards()
+		{
+			ReinitLocales();
+		}
+
+		public List<IKeyboardErrorDescription> ErrorKeyboards
+		{
+			get
+			{
+				InitLocales();
+				return BadLocales;
+			}
+		}
+
+		// Currently we expect this to only be useful on Windows.
+		public IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
+		{
+			throw new NotImplementedException();
+		}
+
+		public virtual void Close()
+		{
+			_engine.Close();
+			_engine = null;
+
+			_adaptor = null;
+		}
+
+		#endregion
 	}
 }
 #endif

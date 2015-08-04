@@ -10,16 +10,16 @@ using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
 
 namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 {
-	internal class IbusKeyboardDescription: KeyboardDescription
+	class IbusKeyboardDescription: KeyboardDescription
 	{
 		private const string OtherLanguage = "Other Language";
 
 		public IBusEngineDesc IBusKeyboardEngine { get; private set;}
 
-		internal int SystemIndex { get; private set; }
+		internal uint SystemIndex { get; private set; }
 
-		public IbusKeyboardDescription(IKeyboardAdaptor engine, IBusEngineDesc ibusKeyboard,
-			int systemIndex):
+		public IbusKeyboardDescription(IKeyboardSwitchingAdaptor engine, IBusEngineDesc ibusKeyboard,
+			uint systemIndex):
 			base(FormatKeyboardIdentifier(ibusKeyboard), ibusKeyboard.LongName, ibusKeyboard.Language,
 			null, engine, KeyboardType.OtherIm)
 		{
