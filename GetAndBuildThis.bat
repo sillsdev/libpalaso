@@ -6,6 +6,7 @@ IF "%1"=="" (
 	set BUILD_CONFIG=%1
 )
 
+REM Presence of a second argument indicates that the caller has already run vsvars32.bat
 IF "%2"=="" (
 	if not "%VS120COMNTOOLS%" == "" (
 		echo Setting up Visual Studio Pro 2013 Tools...
