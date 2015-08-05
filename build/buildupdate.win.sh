@@ -109,10 +109,18 @@ cd -
 #     revision: latest.lastSuccessful
 #     paths: {"taglib-sharp.dll"=>"lib/Debug"}
 #     VCS: https://github.com/sillsdev/taglib-sharp.git [develop]
+# [6] build: Spart Continuous (bt439)
+#     project: Spart
+#     URL: http://build.palaso.org/viewType.html?buildTypeId=bt439
+#     clean: false
+#     revision: latest.lastSuccessful
+#     paths: {"Spart.dll"=>"lib/common"}
+#     VCS: https://github.com/sillsdev/spart.git [master]
 
 # make sure output directories exist
 mkdir -p ../lib/Debug
 mkdir -p ../lib/Release
+mkdir -p ../lib/common
 
 # download artifact dependencies
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt196/latest.lastSuccessful/L10NSharp.dll ../lib/Release/L10NSharp.dll
@@ -131,4 +139,5 @@ copy_auto http://build.palaso.org/guestAuth/repository/download/bt14/latest.last
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt14/latest.lastSuccessful/icu.net.dll.config ../lib/Debug/icu.net.dll.config
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt411/latest.lastSuccessful/taglib-sharp.dll ../lib/Release/taglib-sharp.dll
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt411/latest.lastSuccessful/taglib-sharp.dll ../lib/Debug/taglib-sharp.dll
+copy_auto http://build.palaso.org/guestAuth/repository/download/bt439/latest.lastSuccessful/Spart.dll ../lib/common/Spart.dll
 # End of script
