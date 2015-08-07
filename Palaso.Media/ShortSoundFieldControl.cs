@@ -250,6 +250,7 @@ namespace Palaso.Media
 
 				SetPathToAvailableFilenameInDefaultDir(dlg.FileName);
 				// *Always* make a copy, since the only way to change the recording is to delete the old one, and there is no delete confirmation.
+				// (We don't want to make it that easy to delete a file that somebody else might be using)
 				File.Copy(dlg.FileName, Path);
 			}
 			catch (Exception error)
