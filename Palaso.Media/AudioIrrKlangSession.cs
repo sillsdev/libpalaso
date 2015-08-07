@@ -1,7 +1,8 @@
-﻿using System;
+﻿// Copyright (c) 2015 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+using System;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
 using IrrKlang;
 
 namespace Palaso.Media
@@ -93,20 +94,6 @@ namespace Palaso.Media
 			}
 		}
 
-		private byte[] GetRecordedAudioDataSafely()
-		{
-				//TODO: reportedly fixed in  irrKlang 1.1.3
-			//there is a bug (which I've reported) that we need to step carefully around
-			try
-			{
-				return _recorder.RecordedAudioData;// will through if there's no data
-			}
-			catch (Exception) // review (CP): Throws what?
-			{
-				return null;
-			}
-		}
-
 		public bool IsPlaying
 		{
 			get { return (_sound !=null && !_sound.Finished); }
@@ -152,11 +139,14 @@ namespace Palaso.Media
 			// because the built-in Irrklang play from file function keeps
 			// the file open and locked
 			byte[] audioData = File.ReadAllBytes(_path);	//REVIEW: will this leak?
-			 _soundSource = engine.AddSoundSourceFromMemory(audioData, _path);
+			_soundSource = engine.AddSoundSourceFromMemory(audioData, _path);
 			if (_sound != null)
 				_sound.Dispose();
-			_sound = engine.Play2D(_soundSource, false, false, false);
-			_sound.setSoundStopEventReceiver(_irrklangEventProxy,engine);
+			_sound = engine.Play2D(_soundSource, false, false, false); // REVIEW (Hasso) 2015.08: check _soundSource.AudioFormat.BytesPerSecond first?
+			if (_sound != null)
+				_sound.setSoundStopEventReceiver(_irrklangEventProxy, engine);
+			else // if _sound is null, it's probably a format we don't recognize. See if the OS knows how to play it.
+				Process.Start(_path);
 		}
 
 		/// <summary>
@@ -179,40 +169,18 @@ namespace Palaso.Media
 		}
 
 		private void OnSoundStopped(ISound sound, StopEventCause reason, object userData)
-					{
-			if (_soundSource != null)
+		{
+			if(_soundSource != null)
 				_soundSource.Dispose();
 			_soundSource = null;
 
 			//this dispose is here because sometimes sounds (over 4 seconds) were getting left in a locked state
 			//but this didn't actually help.
-			((IrrKlang.ISoundEngine)userData).Dispose();
+			((IrrKlang.ISoundEngine) userData).Dispose();
 
 
 			var handler = PlaybackStopped;
-			if (handler != null) handler(this, EventArgs.Empty);
-					}
-
-
-		/// <summary>
-		/// this version of irrklang can't play if there's non-latin in there
-		/// see http://www.ambiera.com/forum.php?t=601
-		/// </summary>
-		/// <returns>true if you need to use the provided temp file</returns>
-		private bool MakeTempCopyIfNeededBecauseOfUnicode(string path, out string tempPath)
-		{
-			var x = path.ToCharArray();
-			foreach (char c in x)
-			{
-				if(c > 128)
-				{
-					tempPath = Path.GetTempFileName();
-					File.Copy(path, tempPath, true);
-					return true;
-				}
-			}
-			tempPath = null;
-			return false;
+			if(handler != null) handler(this, EventArgs.Empty);
 		}
 
 		public void SaveAsWav(string path)
