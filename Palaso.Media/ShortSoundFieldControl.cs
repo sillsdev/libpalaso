@@ -1,8 +1,9 @@
-﻿using System;
+﻿// Copyright (c) 2015 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
-using Palaso.IO;
 using Palaso.Reporting;
 
 namespace Palaso.Media
@@ -233,12 +234,13 @@ namespace Palaso.Media
 		{
 			try
 			{
-				var dlg = new OpenFileDialog();
-				dlg.DefaultExt = ".wav";
-				dlg.Multiselect = false;
-				dlg.RestoreDirectory = true;
-				dlg.AutoUpgradeEnabled = true;
-				dlg.Filter = "sound files (*.wav)|*.wav";
+				var dlg = new OpenFileDialog
+				{
+					Multiselect = false,
+					RestoreDirectory = true,
+					AutoUpgradeEnabled = true,
+					Filter = "sound files (*.wav, *.mp3)|*.wav;*.mp3"
+				};
 				if (DialogResult.OK != dlg.ShowDialog())
 				{
 					return false;
@@ -246,14 +248,9 @@ namespace Palaso.Media
 				if (File.Exists(Path))
 					File.Delete(Path);
 
-				if (AreFilesInSameDirectory(dlg.FileName, Path))
-				{
-					// LT-15375 Don't copy the file to some weird name if the user wants to use their pre-existing
-					// file that's already in the right directory.
-					Path = dlg.FileName;
-				}
-				else
-					File.Copy(dlg.FileName, Path);
+				SetPathToAvailableFilenameInDefaultDir(dlg.FileName);
+				// *Always* make a copy, since the only way to change the recording is to delete the old one, and there is no delete confirmation.
+				File.Copy(dlg.FileName, Path);
 			}
 			catch (Exception error)
 			{
@@ -263,11 +260,26 @@ namespace Palaso.Media
 			return true;
 		}
 
-		private bool AreFilesInSameDirectory(string dlgPath, string newFilePath)
+		/// <summary>
+		/// LT-15375 Don't copy the file to some weird name.
+		/// Use the filename that the user selected (or filename_#.ext if there is a conflict) in the default directory.
+		/// </summary>
+		private void SetPathToAvailableFilenameInDefaultDir(string dlgPath)
 		{
-			var dlgDir = System.IO.Path.GetDirectoryName(dlgPath);
-			var newDir = System.IO.Path.GetDirectoryName(newFilePath);
-			return DirectoryUtilities.AreDirectoriesEquivalent(dlgDir, newDir);
+			var defaultDir = System.IO.Path.GetDirectoryName(Path);
+			var dlgName = System.IO.Path.GetFileName(dlgPath);
+			var newPath = System.IO.Path.Combine(defaultDir, dlgName);
+			if(File.Exists(newPath))
+			{
+				var newPathNoExt = System.IO.Path.ChangeExtension(newPath, null); // Get the path without an extension
+				var dlgExt = System.IO.Path.GetExtension(dlgPath);
+				var disambiguation = 1; // add a number at the end of the filename to disambiguate between new and pre-existing files
+				while(File.Exists(newPath))
+				{
+					newPath = string.Format("{0}_{1}{2}", newPathNoExt, disambiguation++, dlgExt);
+				}
+			}
+			Path = newPath;
 		}
 
 		private void OnClickPlay(object sender, MouseEventArgs e)
