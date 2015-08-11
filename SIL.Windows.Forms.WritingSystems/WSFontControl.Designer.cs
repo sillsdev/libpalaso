@@ -37,15 +37,15 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._sizeLabel = new System.Windows.Forms.Label();
 			this._rightToLeftCheckBox = new System.Windows.Forms.CheckBox();
 			this._tableLayoutPanelMain = new System.Windows.Forms.TableLayoutPanel();
+			this.tableLayoutPanelTestArea = new System.Windows.Forms.TableLayoutPanel();
+			this._testArea = new System.Windows.Forms.TextBox();
+			this._testAreaLabel = new System.Windows.Forms.Label();
+			this._fontNotAvailableLabel = new System.Windows.Forms.Label();
 			this._promptForFontTestArea = new SIL.Windows.Forms.Widgets.Prompt();
 			this._l10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
-			this._testArea = new System.Windows.Forms.TextBox();
-			this._fontNotAvailableLabel = new System.Windows.Forms.Label();
-			this._testAreaLabel = new System.Windows.Forms.Label();
-			this.tableLayoutPanelTestArea = new System.Windows.Forms.TableLayoutPanel();
 			this._tableLayoutPanelMain.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this._l10NSharpExtender)).BeginInit();
 			this.tableLayoutPanelTestArea.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this._l10NSharpExtender)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// _fontComboBox
@@ -158,67 +158,16 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._tableLayoutPanelMain.Controls.Add(this._fontComboBox, 0, 1);
 			this._tableLayoutPanelMain.Controls.Add(this._fontLabel, 0, 0);
 			this._tableLayoutPanelMain.Controls.Add(this._sizeLabel, 1, 0);
-			this._tableLayoutPanelMain.Controls.Add(this.tableLayoutPanelTestArea, 1, 3);
+			this._tableLayoutPanelMain.Controls.Add(this.tableLayoutPanelTestArea, 0, 3);
 			this._tableLayoutPanelMain.Location = new System.Drawing.Point(0, 0);
 			this._tableLayoutPanelMain.Name = "_tableLayoutPanelMain";
-			this._tableLayoutPanelMain.RowCount = 3;
+			this._tableLayoutPanelMain.RowCount = 4;
 			this._tableLayoutPanelMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this._tableLayoutPanelMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this._tableLayoutPanelMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this._tableLayoutPanelMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this._tableLayoutPanelMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
 			this._tableLayoutPanelMain.Size = new System.Drawing.Size(478, 303);
 			this._tableLayoutPanelMain.TabIndex = 0;
-			// 
-			// _l10NSharpExtender
-			// 
-			this._l10NSharpExtender.LocalizationManagerId = "Palaso";
-			this._l10NSharpExtender.PrefixForNewItems = "WSFontControl";
-			// 
-			// _testArea
-			// 
-			this._testArea.AcceptsReturn = true;
-			this._testArea.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.tableLayoutPanelTestArea.SetColumnSpan(this._testArea, 2);
-			this._l10NSharpExtender.SetLocalizableToolTip(this._testArea, null);
-			this._l10NSharpExtender.SetLocalizationComment(this._testArea, null);
-			this._l10NSharpExtender.SetLocalizationPriority(this._testArea, L10NSharp.LocalizationPriority.NotLocalizable);
-			this._l10NSharpExtender.SetLocalizingId(this._testArea, "WSFontControl._testArea");
-			this._testArea.Location = new System.Drawing.Point(3, 16);
-			this._testArea.Multiline = true;
-			this._testArea.Name = "_testArea";
-			this._testArea.Size = new System.Drawing.Size(466, 83);
-			this._testArea.TabIndex = 5;
-			this._testArea.Enter += new System.EventHandler(this._testArea_Enter);
-			this._testArea.Leave += new System.EventHandler(this._testArea_Leave);
-			// 
-			// _fontNotAvailableLabel
-			// 
-			this._fontNotAvailableLabel.AutoSize = true;
-			this._fontNotAvailableLabel.ForeColor = System.Drawing.Color.Red;
-			this._l10NSharpExtender.SetLocalizableToolTip(this._fontNotAvailableLabel, null);
-			this._l10NSharpExtender.SetLocalizationComment(this._fontNotAvailableLabel, null);
-			this._l10NSharpExtender.SetLocalizingId(this._fontNotAvailableLabel, "WSFontControl.FontNotAvailable");
-			this._fontNotAvailableLabel.Location = new System.Drawing.Point(65, 0);
-			this._fontNotAvailableLabel.Name = "_fontNotAvailableLabel";
-			this._fontNotAvailableLabel.Size = new System.Drawing.Size(317, 13);
-			this._fontNotAvailableLabel.TabIndex = 1;
-			this._fontNotAvailableLabel.Text = "(The selected font is not available on this machine. Using default.)";
-			this._fontNotAvailableLabel.Visible = false;
-			// 
-			// _testAreaLabel
-			// 
-			this._testAreaLabel.AutoSize = true;
-			this._l10NSharpExtender.SetLocalizableToolTip(this._testAreaLabel, null);
-			this._l10NSharpExtender.SetLocalizationComment(this._testAreaLabel, null);
-			this._l10NSharpExtender.SetLocalizingId(this._testAreaLabel, "WSFontControl.TestArea");
-			this._testAreaLabel.Location = new System.Drawing.Point(3, 0);
-			this._testAreaLabel.Name = "_testAreaLabel";
-			this._testAreaLabel.Size = new System.Drawing.Size(56, 13);
-			this._testAreaLabel.TabIndex = 0;
-			this._testAreaLabel.Text = "&Test Area:";
 			// 
 			// tableLayoutPanelTestArea
 			// 
@@ -241,6 +190,56 @@ namespace SIL.Windows.Forms.WritingSystems
 			this.tableLayoutPanelTestArea.Size = new System.Drawing.Size(472, 102);
 			this.tableLayoutPanelTestArea.TabIndex = 4;
 			// 
+			// _testArea
+			// 
+			this._testArea.AcceptsReturn = true;
+			this._testArea.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.tableLayoutPanelTestArea.SetColumnSpan(this._testArea, 2);
+			this._l10NSharpExtender.SetLocalizableToolTip(this._testArea, null);
+			this._l10NSharpExtender.SetLocalizationComment(this._testArea, null);
+			this._l10NSharpExtender.SetLocalizationPriority(this._testArea, L10NSharp.LocalizationPriority.NotLocalizable);
+			this._l10NSharpExtender.SetLocalizingId(this._testArea, "WSFontControl._testArea");
+			this._testArea.Location = new System.Drawing.Point(3, 16);
+			this._testArea.Multiline = true;
+			this._testArea.Name = "_testArea";
+			this._testArea.Size = new System.Drawing.Size(466, 83);
+			this._testArea.TabIndex = 5;
+			this._testArea.Enter += new System.EventHandler(this._testArea_Enter);
+			this._testArea.Leave += new System.EventHandler(this._testArea_Leave);
+			// 
+			// _testAreaLabel
+			// 
+			this._testAreaLabel.AutoSize = true;
+			this._l10NSharpExtender.SetLocalizableToolTip(this._testAreaLabel, null);
+			this._l10NSharpExtender.SetLocalizationComment(this._testAreaLabel, null);
+			this._l10NSharpExtender.SetLocalizingId(this._testAreaLabel, "WSFontControl.TestArea");
+			this._testAreaLabel.Location = new System.Drawing.Point(3, 0);
+			this._testAreaLabel.Name = "_testAreaLabel";
+			this._testAreaLabel.Size = new System.Drawing.Size(56, 13);
+			this._testAreaLabel.TabIndex = 0;
+			this._testAreaLabel.Text = "&Test Area:";
+			// 
+			// _fontNotAvailableLabel
+			// 
+			this._fontNotAvailableLabel.AutoSize = true;
+			this._fontNotAvailableLabel.ForeColor = System.Drawing.Color.Red;
+			this._l10NSharpExtender.SetLocalizableToolTip(this._fontNotAvailableLabel, null);
+			this._l10NSharpExtender.SetLocalizationComment(this._fontNotAvailableLabel, null);
+			this._l10NSharpExtender.SetLocalizingId(this._fontNotAvailableLabel, "WSFontControl.FontNotAvailable");
+			this._fontNotAvailableLabel.Location = new System.Drawing.Point(65, 0);
+			this._fontNotAvailableLabel.Name = "_fontNotAvailableLabel";
+			this._fontNotAvailableLabel.Size = new System.Drawing.Size(317, 13);
+			this._fontNotAvailableLabel.TabIndex = 1;
+			this._fontNotAvailableLabel.Text = "(The selected font is not available on this machine. Using default.)";
+			this._fontNotAvailableLabel.Visible = false;
+			// 
+			// _l10NSharpExtender
+			// 
+			this._l10NSharpExtender.LocalizationManagerId = "Palaso";
+			this._l10NSharpExtender.PrefixForNewItems = "WSFontControl";
+			// 
 			// WSFontControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -254,9 +253,9 @@ namespace SIL.Windows.Forms.WritingSystems
 			this.Size = new System.Drawing.Size(478, 303);
 			this._tableLayoutPanelMain.ResumeLayout(false);
 			this._tableLayoutPanelMain.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this._l10NSharpExtender)).EndInit();
 			this.tableLayoutPanelTestArea.ResumeLayout(false);
 			this.tableLayoutPanelTestArea.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this._l10NSharpExtender)).EndInit();
 			this.ResumeLayout(false);
 
 		}
