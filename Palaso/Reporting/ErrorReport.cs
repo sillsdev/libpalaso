@@ -346,6 +346,8 @@ namespace Palaso.Reporting
 			AddProperty("CurrentDirectory", Environment.CurrentDirectory);
 			AddProperty("MachineName", Environment.MachineName);
 			AddProperty("OSVersion", GetOperatingSystemLabel());
+			if (Palaso.PlatformUtilities.Platform.IsUnix)
+				AddProperty("DesktopEnvironment", GetDesktopEnvironment());
 			AddProperty("DotNetVersion", Environment.Version.ToString());
 			AddProperty("WorkingSet", Environment.WorkingSet.ToString());
 			AddProperty("UserDomainName", Environment.UserDomainName);
@@ -365,6 +367,8 @@ namespace Palaso.Reporting
 			props.Add("CurrentDirectory", Environment.CurrentDirectory);
 			props.Add("MachineName", Environment.MachineName);
 			props.Add("OSVersion", GetOperatingSystemLabel());
+			if (Palaso.PlatformUtilities.Platform.IsUnix)
+				props.Add("DesktopEnvironment", GetDesktopEnvironment());
 			props.Add("DotNetVersion", Environment.Version.ToString());
 			props.Add("WorkingSet", Environment.WorkingSet.ToString());
 			props.Add("UserDomainName", Environment.UserDomainName);
@@ -417,7 +421,7 @@ namespace Palaso.Reporting
 				}
 				catch (Exception)
 				{
-					/*lsb_release should work on all supported versions but fall back to the OSVersion.VersionString */
+					// lsb_release should work on all supported versions but fall back to the OSVersion.VersionString
 				}
 			}
 			else
@@ -437,8 +441,39 @@ namespace Palaso.Reporting
 			return Environment.OSVersion.VersionString;
 		}
 
+		/// <summary>
+		/// Get the currently running desktop environment (like Unity, Gnome shell etc)
+		/// </summary>
+		private static string GetDesktopEnvironment()
+		{
+			if (!Palaso.PlatformUtilities.Platform.IsUnix)
+				return string.Empty;
+
+			// see http://unix.stackexchange.com/a/116694
+			// and http://askubuntu.com/a/227669
+			var currentDesktop = Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP");
+			if (string.IsNullOrEmpty(currentDesktop))
+			{
+				var dataDirs = Environment.GetEnvironmentVariable("XDG_DATA_DIRS");
+				if (dataDirs != null)
+				{
+					dataDirs = dataDirs.ToLowerInvariant();
+					if (dataDirs.Contains("xfce"))
+						currentDesktop = "XFCE";
+					else if (dataDirs.Contains("kde"))
+						currentDesktop = "KDE";
+					else if (dataDirs.Contains("gnome"))
+						currentDesktop = "Gnome";
+				}
+				if (string.IsNullOrEmpty(currentDesktop))
+					return string.Empty;
 			}
-			return System.Environment.OSVersion.VersionString;
+			var mirSession = Environment.GetEnvironmentVariable("MIR_SERVER_NAME");
+			var additionalInfo = string.Empty;
+			if (!string.IsNullOrEmpty(mirSession))
+				additionalInfo = " [display server: Mir]";
+			var gdmSession = Environment.GetEnvironmentVariable("GDMSESSION");
+			return string.Format("{0} ({1}{2})", currentDesktop, gdmSession, additionalInfo);
 		}
 
 		/// ------------------------------------------------------------------------------------
