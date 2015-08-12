@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -91,28 +90,29 @@ namespace Palaso.Reporting
 		/// ------------------------------------------------------------------------------------
 		public static string GetExceptionText(Exception error)
 		{
-			StringBuilder subject = new StringBuilder();
+			var subject = new StringBuilder();
 			subject.AppendFormat("Exception: {0}", error.Message);
 
-			StringBuilder txt = new StringBuilder();
+			var txt = new StringBuilder();
 
 			txt.Append("Msg: ");
-			txt.Append(error.Message);
+			txt.AppendLine(error.Message);
 
 			try
 			{
-				if (error is COMException)
+				var cOMException = error as COMException;
+				if (cOMException != null)
 				{
-					txt.Append("\r\nCOM message: ");
-					txt.Append(new Win32Exception(((COMException) error).ErrorCode).Message);
+					txt.Append("COM message: ");
+					txt.AppendLine(new Win32Exception(cOMException.ErrorCode).Message);
 				}
 			}
 			catch {}
 
 			try
 			{
-				txt.Append("\r\nSource: ");
-				txt.Append(error.Source);
+				txt.Append("Source: ");
+				txt.AppendLine(error.Source);
 				subject.AppendFormat(" in {0}", error.Source);
 			}
 			catch {}
@@ -121,22 +121,21 @@ namespace Palaso.Reporting
 			{
 				if (error.TargetSite != null)
 				{
-					txt.Append("\r\nAssembly: ");
-					txt.Append(error.TargetSite.DeclaringType.Assembly.FullName);
+					txt.Append("Assembly: ");
+					txt.AppendLine(error.TargetSite.DeclaringType.Assembly.FullName);
 				}
 			}
 			catch {}
 
 			try
 			{
-				txt.Append("\r\nStack: ");
-				txt.Append(error.StackTrace);
+				txt.Append("Stack: ");
+				txt.AppendLine(error.StackTrace);
 			}
 			catch {}
 
 			s_emailSubject = subject.ToString();
 
-			txt.Append("\r\n");
 			return txt.ToString();
 		}
 
@@ -398,7 +397,7 @@ namespace Palaso.Reporting
 
 		public static string GetOperatingSystemLabel()
 		{
-			if(Environment.OSVersion.Platform == PlatformID.Unix)
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
 			{
 				var startInfo = new ProcessStartInfo("lsb_release", "-si -sr -sc");
 				startInfo.RedirectStandardOutput = true;
@@ -416,22 +415,28 @@ namespace Palaso.Reporting
 						return String.Format("{0} {1} {2}", si, sr, sc);
 					}
 				}
-				catch(Exception)
-				{ /*lsb_release should work on all supported versions but fall back to the OSVersion.VersionString */ }
+				catch (Exception)
+				{
+					/*lsb_release should work on all supported versions but fall back to the OSVersion.VersionString */
+				}
 			}
 			else
 			{
-			var list = new List<Version>();
-			list.Add(new Version(System.PlatformID.Win32NT,0,5, "Windows 2000"));
-			list.Add(new Version(System.PlatformID.Win32NT, 1, 5, "Windows XP"));
-			list.Add(new Version(System.PlatformID.Win32NT, 0, 6, "Vista"));
-			list.Add(new Version(System.PlatformID.Win32NT, 1, 6, "Windows 7"));
-			list.Add(new Version(System.PlatformID.Win32NT, 2, 6, "Windows 8"));
-			foreach (var version in list)
-			{
-				if(version.Match(System.Environment.OSVersion))
-					return version.Label + " " + Environment.OSVersion.ServicePack;
+				var list = new List<Version>();
+				list.Add(new Version(PlatformID.Win32NT,0,5, "Windows 2000"));
+				list.Add(new Version(PlatformID.Win32NT, 1, 5, "Windows XP"));
+				list.Add(new Version(PlatformID.Win32NT, 0, 6, "Vista"));
+				list.Add(new Version(PlatformID.Win32NT, 1, 6, "Windows 7"));
+				list.Add(new Version(PlatformID.Win32NT, 2, 6, "Windows 8"));
+				foreach (var version in list)
+				{
+					if(version.Match(Environment.OSVersion))
+						return version.Label + " " + Environment.OSVersion.ServicePack;
+				}
 			}
+			return Environment.OSVersion.VersionString;
+		}
+
 			}
 			return System.Environment.OSVersion.VersionString;
 		}
@@ -450,7 +455,7 @@ namespace Palaso.Reporting
 			{
 				innerMostException = error.InnerException;
 
-				x += "**Inner Exception:\r\n";
+				x += "**Inner Exception:" + Environment.NewLine;
 				x += GetHiearchicalExceptionInfo(error.InnerException, ref innerMostException);
 			}
 			return x;
