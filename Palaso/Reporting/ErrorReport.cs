@@ -384,7 +384,7 @@ namespace Palaso.Reporting
 			private readonly int _minor;
 			public string Label { get; private set; }
 
-			public Version(PlatformID platform, int minor, int major,  string label)
+			public Version(PlatformID platform, int major, int minor, string label)
 			{
 				_platform = platform;
 				_major = major;
@@ -426,15 +426,23 @@ namespace Palaso.Reporting
 			}
 			else
 			{
+				// https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832%28v=vs.85%29.aspx
 				var list = new List<Version>();
-				list.Add(new Version(PlatformID.Win32NT,0,5, "Windows 2000"));
-				list.Add(new Version(PlatformID.Win32NT, 1, 5, "Windows XP"));
-				list.Add(new Version(PlatformID.Win32NT, 0, 6, "Vista"));
-				list.Add(new Version(PlatformID.Win32NT, 1, 6, "Windows 7"));
-				list.Add(new Version(PlatformID.Win32NT, 2, 6, "Windows 8"));
+				list.Add(new Version(PlatformID.Win32NT, 5, 0, "Windows 2000"));
+				list.Add(new Version(PlatformID.Win32NT, 5, 1, "Windows XP"));
+				list.Add(new Version(PlatformID.Win32NT, 6, 0, "Vista"));
+				list.Add(new Version(PlatformID.Win32NT, 6, 1, "Windows 7"));
+				list.Add(new Version(PlatformID.Win32NT, 6, 2, "Windows 8"));
+
+				// Note: Windows might not report Windows 8.1 or 10 unless the app has
+				// "...been manifested for Windows 8.1 or Windows 10" (see remark in
+				// https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832%28v=vs.85%29.aspx)
+				list.Add(new Version(PlatformID.Win32NT, 6, 3, "Windows 8.1"));
+				list.Add(new Version(PlatformID.Win32NT, 10, 0, "Windows 10"));
+
 				foreach (var version in list)
 				{
-					if(version.Match(Environment.OSVersion))
+					if (version.Match(Environment.OSVersion))
 						return version.Label + " " + Environment.OSVersion.ServicePack;
 				}
 			}
