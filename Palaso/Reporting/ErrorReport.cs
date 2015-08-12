@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -91,28 +90,29 @@ namespace Palaso.Reporting
 		/// ------------------------------------------------------------------------------------
 		public static string GetExceptionText(Exception error)
 		{
-			StringBuilder subject = new StringBuilder();
+			var subject = new StringBuilder();
 			subject.AppendFormat("Exception: {0}", error.Message);
 
-			StringBuilder txt = new StringBuilder();
+			var txt = new StringBuilder();
 
 			txt.Append("Msg: ");
-			txt.Append(error.Message);
+			txt.AppendLine(error.Message);
 
 			try
 			{
-				if (error is COMException)
+				var cOMException = error as COMException;
+				if (cOMException != null)
 				{
-					txt.Append("\r\nCOM message: ");
-					txt.Append(new Win32Exception(((COMException) error).ErrorCode).Message);
+					txt.Append("COM message: ");
+					txt.AppendLine(new Win32Exception(cOMException.ErrorCode).Message);
 				}
 			}
 			catch {}
 
 			try
 			{
-				txt.Append("\r\nSource: ");
-				txt.Append(error.Source);
+				txt.Append("Source: ");
+				txt.AppendLine(error.Source);
 				subject.AppendFormat(" in {0}", error.Source);
 			}
 			catch {}
@@ -121,22 +121,21 @@ namespace Palaso.Reporting
 			{
 				if (error.TargetSite != null)
 				{
-					txt.Append("\r\nAssembly: ");
-					txt.Append(error.TargetSite.DeclaringType.Assembly.FullName);
+					txt.Append("Assembly: ");
+					txt.AppendLine(error.TargetSite.DeclaringType.Assembly.FullName);
 				}
 			}
 			catch {}
 
 			try
 			{
-				txt.Append("\r\nStack: ");
-				txt.Append(error.StackTrace);
+				txt.Append("Stack: ");
+				txt.AppendLine(error.StackTrace);
 			}
 			catch {}
 
 			s_emailSubject = subject.ToString();
 
-			txt.Append("\r\n");
 			return txt.ToString();
 		}
 
@@ -347,6 +346,8 @@ namespace Palaso.Reporting
 			AddProperty("CurrentDirectory", Environment.CurrentDirectory);
 			AddProperty("MachineName", Environment.MachineName);
 			AddProperty("OSVersion", GetOperatingSystemLabel());
+			if (Palaso.PlatformUtilities.Platform.IsUnix)
+				AddProperty("DesktopEnvironment", GetDesktopEnvironment());
 			AddProperty("DotNetVersion", Environment.Version.ToString());
 			AddProperty("WorkingSet", Environment.WorkingSet.ToString());
 			AddProperty("UserDomainName", Environment.UserDomainName);
@@ -366,6 +367,8 @@ namespace Palaso.Reporting
 			props.Add("CurrentDirectory", Environment.CurrentDirectory);
 			props.Add("MachineName", Environment.MachineName);
 			props.Add("OSVersion", GetOperatingSystemLabel());
+			if (Palaso.PlatformUtilities.Platform.IsUnix)
+				props.Add("DesktopEnvironment", GetDesktopEnvironment());
 			props.Add("DotNetVersion", Environment.Version.ToString());
 			props.Add("WorkingSet", Environment.WorkingSet.ToString());
 			props.Add("UserDomainName", Environment.UserDomainName);
@@ -381,7 +384,7 @@ namespace Palaso.Reporting
 			private readonly int _minor;
 			public string Label { get; private set; }
 
-			public Version(PlatformID platform, int minor, int major,  string label)
+			public Version(PlatformID platform, int major, int minor, string label)
 			{
 				_platform = platform;
 				_major = major;
@@ -398,7 +401,7 @@ namespace Palaso.Reporting
 
 		public static string GetOperatingSystemLabel()
 		{
-			if(Environment.OSVersion.Platform == PlatformID.Unix)
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
 			{
 				var startInfo = new ProcessStartInfo("lsb_release", "-si -sr -sc");
 				startInfo.RedirectStandardOutput = true;
@@ -416,24 +419,69 @@ namespace Palaso.Reporting
 						return String.Format("{0} {1} {2}", si, sr, sc);
 					}
 				}
-				catch(Exception)
-				{ /*lsb_release should work on all supported versions but fall back to the OSVersion.VersionString */ }
+				catch (Exception)
+				{
+					// lsb_release should work on all supported versions but fall back to the OSVersion.VersionString
+				}
 			}
 			else
 			{
-			var list = new List<Version>();
-			list.Add(new Version(System.PlatformID.Win32NT,0,5, "Windows 2000"));
-			list.Add(new Version(System.PlatformID.Win32NT, 1, 5, "Windows XP"));
-			list.Add(new Version(System.PlatformID.Win32NT, 0, 6, "Vista"));
-			list.Add(new Version(System.PlatformID.Win32NT, 1, 6, "Windows 7"));
-			list.Add(new Version(System.PlatformID.Win32NT, 2, 6, "Windows 8"));
-			foreach (var version in list)
+				// https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832%28v=vs.85%29.aspx
+				var list = new List<Version>();
+				list.Add(new Version(PlatformID.Win32NT, 5, 0, "Windows 2000"));
+				list.Add(new Version(PlatformID.Win32NT, 5, 1, "Windows XP"));
+				list.Add(new Version(PlatformID.Win32NT, 6, 0, "Vista"));
+				list.Add(new Version(PlatformID.Win32NT, 6, 1, "Windows 7"));
+				list.Add(new Version(PlatformID.Win32NT, 6, 2, "Windows 8"));
+
+				// Note: Windows might not report Windows 8.1 or 10 unless the app has
+				// "...been manifested for Windows 8.1 or Windows 10" (see remark in
+				// https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832%28v=vs.85%29.aspx)
+				list.Add(new Version(PlatformID.Win32NT, 6, 3, "Windows 8.1"));
+				list.Add(new Version(PlatformID.Win32NT, 10, 0, "Windows 10"));
+
+				foreach (var version in list)
+				{
+					if (version.Match(Environment.OSVersion))
+						return version.Label + " " + Environment.OSVersion.ServicePack;
+				}
+			}
+			return Environment.OSVersion.VersionString;
+		}
+
+		/// <summary>
+		/// Get the currently running desktop environment (like Unity, Gnome shell etc)
+		/// </summary>
+		private static string GetDesktopEnvironment()
+		{
+			if (!Palaso.PlatformUtilities.Platform.IsUnix)
+				return string.Empty;
+
+			// see http://unix.stackexchange.com/a/116694
+			// and http://askubuntu.com/a/227669
+			var currentDesktop = Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP");
+			if (string.IsNullOrEmpty(currentDesktop))
 			{
-				if(version.Match(System.Environment.OSVersion))
-					return version.Label + " " + Environment.OSVersion.ServicePack;
+				var dataDirs = Environment.GetEnvironmentVariable("XDG_DATA_DIRS");
+				if (dataDirs != null)
+				{
+					dataDirs = dataDirs.ToLowerInvariant();
+					if (dataDirs.Contains("xfce"))
+						currentDesktop = "XFCE";
+					else if (dataDirs.Contains("kde"))
+						currentDesktop = "KDE";
+					else if (dataDirs.Contains("gnome"))
+						currentDesktop = "Gnome";
+				}
+				if (string.IsNullOrEmpty(currentDesktop))
+					return string.Empty;
 			}
-			}
-			return System.Environment.OSVersion.VersionString;
+			var mirSession = Environment.GetEnvironmentVariable("MIR_SERVER_NAME");
+			var additionalInfo = string.Empty;
+			if (!string.IsNullOrEmpty(mirSession))
+				additionalInfo = " [display server: Mir]";
+			var gdmSession = Environment.GetEnvironmentVariable("GDMSESSION");
+			return string.Format("{0} ({1}{2})", currentDesktop, gdmSession, additionalInfo);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -450,7 +498,7 @@ namespace Palaso.Reporting
 			{
 				innerMostException = error.InnerException;
 
-				x += "**Inner Exception:\r\n";
+				x += "**Inner Exception:" + Environment.NewLine;
 				x += GetHiearchicalExceptionInfo(error.InnerException, ref innerMostException);
 			}
 			return x;
