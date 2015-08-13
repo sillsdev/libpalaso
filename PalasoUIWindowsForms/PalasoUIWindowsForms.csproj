@@ -891,6 +891,7 @@
     <Compile Include="Keyboarding\Linux\UnityXkbKeyboardSwitchingAdaptor.cs" />
     <Compile Include="Keyboarding\Linux\XkbKeyboardRetrievingAdaptor.cs" />
     <Compile Include="Keyboarding\Linux\XkbKeyboardSwitchingAdaptor.cs" />
+    <Compile Include="Keyboarding\Types\AlternateLanguageCodes.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ClearShare\ClearShareResources.resx">

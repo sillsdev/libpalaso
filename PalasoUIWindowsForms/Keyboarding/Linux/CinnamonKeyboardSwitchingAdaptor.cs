@@ -26,9 +26,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		internal static string DefaultOption { get; set; }
 		internal static string[] LatinLayouts { get; set; }
 		internal static bool UseXmodmap { get; set; }
+		private static readonly string[] knownXModMapFiles = {".xmodmap", ".xmodmaprc", ".Xmodmap", ".Xmodmaprc"};
 
 		private IKeyboardDefinition _defaultKeyboard;
-		private static string[] knownXModMapFiles = {".xmodmap", ".xmodmaprc", ".Xmodmap", ".Xmodmaprc"};
 
 		public CinnamonKeyboardSwitchingAdaptor(IIbusCommunicator ibusCommunicator): base(ibusCommunicator)
 		{
@@ -40,7 +40,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// <remarks>
 		/// This mimics the behavior of the ibus panel applet code.
 		/// </remarks>
-		private static void SetLayout(string layout, string variant, string option)
+		private static void SetXkbLayout(string layout, string variant, string option)
 		{
 			var startInfo = new ProcessStartInfo();
 			startInfo.FileName = "/usr/bin/setxkbmap";
@@ -92,6 +92,19 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 		}
 
+		internal override bool IBusKeyboardAlreadySet(IbusKeyboardDescription keyboard)
+		{
+			if (keyboard == null || keyboard.IBusKeyboardEngine == null)
+			{
+				UnsetKeyboard();
+				return true;
+			}
+
+			// Even when GlobalCachedInputContext.Keyboard is already set to keyboard we still
+			// want to set the keyboard again
+			return false;
+		}
+
 		/// <summary>
 		/// Set the XKB layout from the IBus keyboard.
 		/// </summary>
@@ -101,33 +114,32 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		protected override void SelectKeyboard(IKeyboardDefinition keyboard)
 		{
 			var ibusKeyboard = keyboard as IbusKeyboardDescription;
-			var systemIndex = ibusKeyboard.SystemIndex;
 
-			var layout = ibusKeyboard.ParentLayout;
-			if (layout == "en")
-				layout = "us";	// layout is a country code, not a language code!
+			var parentLayout = ibusKeyboard.ParentLayout;
+			if (parentLayout == "en")
+				parentLayout = "us";	// layout is a country code, not a language code!
 			var variant = ibusKeyboard.IBusKeyboardEngine.LayoutVariant;
 			var option = ibusKeyboard.IBusKeyboardEngine.LayoutOption;
-			Debug.Assert(layout != null);
+			Debug.Assert(parentLayout != null);
 
 			bool need_us_layout = false;
 			foreach (string latinLayout in LatinLayouts)
 			{
-				if (layout == latinLayout && variant != "eng")
+				if (parentLayout == latinLayout && variant != "eng")
 				{
 					need_us_layout = true;
 					break;
 				}
-				if (!String.IsNullOrEmpty(variant) && String.Format("{0}({1})", layout, variant) == latinLayout)
+				if (!String.IsNullOrEmpty(variant) && String.Format("{0}({1})", parentLayout, variant) == latinLayout)
 				{
 					need_us_layout = true;
 					break;
 				}
 			}
 
-			if (String.IsNullOrEmpty(layout) || layout == "default")
+			if (String.IsNullOrEmpty(parentLayout) || parentLayout == "default")
 			{
-				layout = DefaultLayout;
+				parentLayout = DefaultLayout;
 				variant = DefaultVariant;
 			}
 			if (String.IsNullOrEmpty(variant) || variant == "default")
@@ -146,14 +158,21 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 			if (need_us_layout)
 			{
-				layout = layout + ",us";
+				parentLayout = parentLayout + ",us";
 				// If we have a variant, we need to indicate an empty variant to
 				// match the "us" layout.
 				if (!String.IsNullOrEmpty(variant))
 					variant = variant + ",";
 			}
 
-			SetLayout(layout, variant, option);
+			SetXkbLayout(parentLayout, variant, option);
+
+			if (!ibusKeyboard.Name.StartsWith("xkb:", StringComparison.InvariantCulture))
+			{
+				// Set the IBus keyboard
+				var context = GlobalCachedInputContext.InputContext;
+				context.SetEngine(ibusKeyboard.IBusKeyboardEngine.LongName);
+			}
 		}
 
 		/// <summary>

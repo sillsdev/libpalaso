@@ -57,7 +57,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			IBusCommunicator.FocusOut();
 		}
 
-		internal bool CanSetIbusKeyboard()
+		protected bool CanSetIbusKeyboard()
 		{
 			if (!IBusCommunicator.Connected)
 				return false;
@@ -65,17 +65,17 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			return GlobalCachedInputContext.InputContext != null;
 		}
 
-		internal bool IBusKeyboardAlreadySet(IbusKeyboardDescription keyboard)
+		// Has to be internal because IbusKeyboardDescription is only internal
+		internal virtual bool IBusKeyboardAlreadySet(IbusKeyboardDescription keyboard)
 		{
-			// check our cached value
-			if (GlobalCachedInputContext.Keyboard == keyboard)
-				return true;
 			if (keyboard == null || keyboard.IBusKeyboardEngine == null)
 			{
 				UnsetKeyboard();
 				return true;
 			}
-			return false;
+
+			// check our cached value
+			return GlobalCachedInputContext.Keyboard == keyboard;
 		}
 
 		protected static void UnsetKeyboard()

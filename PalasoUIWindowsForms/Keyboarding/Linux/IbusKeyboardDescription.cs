@@ -7,6 +7,7 @@ using IBusDotNet;
 using Icu;
 using Palaso.WritingSystems;
 using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
+using Palaso.UI.WindowsForms.Keyboarding.Types;
 
 namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 {
@@ -43,10 +44,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// </summary>
 		private static string FormatKeyboardIdentifier(IBusEngineDesc engineDesc)
 		{
-			string id = engineDesc.Language;
-			string languageName = string.IsNullOrEmpty(id) ? OtherLanguage :
-				new Locale(id).GetDisplayName(new Locale(Application.CurrentCulture.TwoLetterISOLanguageName));
-			if (id != null && id.ToLowerInvariant() == languageName.ToLowerInvariant())
+			string languageCode = AlternateLanguageCodes.GetLanguageCode(engineDesc.Language);
+			string languageName = string.IsNullOrEmpty(languageCode) ? OtherLanguage :
+				new Locale(languageCode).GetDisplayName(new Locale(Application.CurrentCulture.TwoLetterISOLanguageName));
+			if (languageCode != null && languageCode.ToLowerInvariant() == languageName.ToLowerInvariant())
 				languageName = OtherLanguage;
 			return String.Format("{0} - {1}", languageName, engineDesc.Name);
 		}
