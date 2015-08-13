@@ -174,7 +174,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 		public override void Initialize()
 		{
-			_adaptor = new CinnamonKeyboardSwitchingAdaptor(_IBusCommunicator);
+			// We come here twice, for both KeyboardType.System and KeyboardType.OtherIm.
+			// We want to create a new switching adaptor only the first time otherwise we're
+			// getting into trouble
+			if (_adaptor == null)
+				_adaptor = new CinnamonKeyboardSwitchingAdaptor(_IBusCommunicator);
 		}
 		#endregion
 
