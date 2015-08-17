@@ -97,7 +97,7 @@ namespace Palaso.Media
 			set
 			{
 				_path = value;
-				_recorder = AudioFactory.AudioSession(Path);
+				_recorder = AudioFactory.CreateAudioSession(Path);
 				toolTip1.SetToolTip(_deleteButton, _deleteButtonInstructions +"\r\n"+_path);
 				UpdateScreen();
 			}

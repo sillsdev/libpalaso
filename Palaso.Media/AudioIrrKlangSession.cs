@@ -142,11 +142,17 @@ namespace Palaso.Media
 			_soundSource = engine.AddSoundSourceFromMemory(audioData, _path);
 			if (_sound != null)
 				_sound.Dispose();
-			_sound = engine.Play2D(_soundSource, false, false, false); // REVIEW (Hasso) 2015.08: check _soundSource.AudioFormat.BytesPerSecond first?
-			if (_sound != null)
-				_sound.setSoundStopEventReceiver(_irrklangEventProxy, engine);
-			else // if _sound is null, it's probably a format we don't recognize. See if the OS knows how to play it.
-				Process.Start(_path);
+			if (_soundSource.AudioFormat.BytesPerSecond != 0)
+			{
+				_sound = engine.Play2D(_soundSource, false, false, false);
+				if (_sound != null)
+				{
+					_sound.setSoundStopEventReceiver(_irrklangEventProxy, engine);
+					return;
+				}
+			}
+			// if BytesPerSecond is 0 or _sound is null, it's probably a format we don't recognize. See if the OS knows how to play it.
+			Process.Start(_path);
 		}
 
 		/// <summary>
