@@ -41,6 +41,7 @@ namespace PalasoUIWindowsForms.TestApp
 		public TestAppForm()
 		{
 			InitializeComponent();
+			Text = Palaso.PlatformUtilities.Platform.DesktopEnvironmentInfoString;
 		}
 
 		private void OnFolderBrowserControlClicked(object sender, EventArgs e)

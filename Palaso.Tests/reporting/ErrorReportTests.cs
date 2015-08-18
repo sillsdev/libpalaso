@@ -77,34 +77,5 @@ namespace Palaso.Tests.reporting
 			// Verify
 			Assert.That(props.Keys, Has.Member("DesktopEnvironment"));
 		}
-
-		[Test]
-		[Platform(Include = "Linux", Reason = "Linux specific test")]
-		[TestCase("Unity", null, "ubuntu", null, Result = "Unity (ubuntu)", TestName = "Unity")]
-		[TestCase("Unity", "/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/",
-			"ubuntu", null, Result = "Unity (ubuntu)", TestName = "Unity with dataDir")]
-		[TestCase("Unity", null, "ubuntu", "session-1",
-			Result = "Unity (ubuntu [display server: Mir])", TestName = "Unity with Mir")]
-		[TestCase("GNOME", null, "gnome-shell", null, Result = "GNOME (gnome-shell)"
-			, TestName = "Gnome shell")]
-		[TestCase(null, "/usr/share/ubuntu:/usr/share/kde:/usr/local/share/:/usr/share/",
-			"kde-plasma", null, Result = "KDE (kde-plasma)", TestName = "KDE on Ubuntu 12_04")]
-		public string GetStandardProperties_SimulateDesktopEnvironments(string currDesktop,
-			string dataDirs, string gdmSession, string mirServerName)
-		{
-			// See http://askubuntu.com/a/227669 for actual values on different systems
-
-			// Setup
-			Environment.SetEnvironmentVariable("XDG_CURRENT_DESKTOP", currDesktop);
-			Environment.SetEnvironmentVariable("XDG_DATA_DIRS", dataDirs);
-			Environment.SetEnvironmentVariable("GDMSESSION", gdmSession);
-			Environment.SetEnvironmentVariable("MIR_SERVER_NAME", mirServerName);
-
-			// SUT
-			var props = ErrorReport.GetStandardProperties();
-
-			// Verify
-			return props["DesktopEnvironment"];
-		}
 	}
 }
