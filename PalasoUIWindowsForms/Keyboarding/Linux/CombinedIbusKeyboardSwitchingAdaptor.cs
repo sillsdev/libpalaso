@@ -15,9 +15,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 	/// Wasta 14 without IBus appears to also work the same as Precise with XKB keyboards only.
 	/// Starting with Wasta 14, if IBus is used for keyboard inputs, things are joined together,
 	/// but not the same as the combined keyboard processing in Trusty (Ubuntu 14.04).
+	/// It also works for other desktop environments that use combined ibus keyboards, e.g.
+	/// XFCE.
 	/// </summary>
 	[CLSCompliant(false)]
-	public class CinnamonKeyboardSwitchingAdaptor: IbusKeyboardSwitchingAdaptor
+	public class CombinedIbusKeyboardSwitchingAdaptor: IbusKeyboardSwitchingAdaptor
 	{
 		// These should not change while the program is running, and they're expensive to obtain.
 		// So we've made them static.
@@ -30,7 +32,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 		private IKeyboardDefinition _defaultKeyboard;
 
-		public CinnamonKeyboardSwitchingAdaptor(IIbusCommunicator ibusCommunicator): base(ibusCommunicator)
+		public CombinedIbusKeyboardSwitchingAdaptor(IIbusCommunicator ibusCommunicator): base(ibusCommunicator)
 		{
 		}
 
