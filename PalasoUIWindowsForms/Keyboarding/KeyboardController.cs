@@ -68,7 +68,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 #if __MonoCS__
 					new XkbKeyboardRetrievingAdaptor(), new IbusKeyboardRetrievingAdaptor(),
 					new UnityXkbKeyboardRetrievingAdaptor(), new UnityIbusKeyboardRetrievingAdaptor(),
-					new CinnamonKeyboardRetrievingAdaptor()
+					new CombinedIbusKeyboardRetrievingAdaptor()
 #else
 					new WinKeyboardAdaptor(), new KeymanKeyboardAdaptor(),
 #endif

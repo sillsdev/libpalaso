@@ -879,8 +879,6 @@
     <Compile Include="Keyboarding\Types\Unmanaged.cs" />
     <Compile Include="Keyboarding\InternalInterfaces\IKeyboardSwitchingAdaptor.cs" />
     <Compile Include="Keyboarding\InternalInterfaces\IKeyboardRetrievingAdaptor.cs" />
-    <Compile Include="Keyboarding\Linux\CinnamonKeyboardSwitchingAdaptor.cs" />
-    <Compile Include="Keyboarding\Linux\CinnamonKeyboardRetrievingAdaptor.cs" />
     <Compile Include="Keyboarding\Linux\IbusKeyboardSwitchingAdaptor.cs" />
     <Compile Include="Keyboarding\Linux\IbusKeyboardRetrievingAdaptor.cs" />
     <Compile Include="Keyboarding\Linux\KeyboardRetrievingHelper.cs" />
@@ -892,6 +890,8 @@
     <Compile Include="Keyboarding\Linux\XkbKeyboardRetrievingAdaptor.cs" />
     <Compile Include="Keyboarding\Linux\XkbKeyboardSwitchingAdaptor.cs" />
     <Compile Include="Keyboarding\Types\AlternateLanguageCodes.cs" />
+    <Compile Include="Keyboarding\Linux\CombinedIbusKeyboardRetrievingAdaptor.cs" />
+    <Compile Include="Keyboarding\Linux\CombinedIbusKeyboardSwitchingAdaptor.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ClearShare\ClearShareResources.resx">

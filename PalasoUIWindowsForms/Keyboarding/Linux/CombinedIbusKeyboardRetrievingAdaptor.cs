@@ -7,6 +7,7 @@ using Palaso.UI.WindowsForms.Keyboarding.Types;
 using System.IO;
 using System.Diagnostics;
 using Palaso.WritingSystems;
+using Palaso.PlatformUtilities;
 
 namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 {
@@ -16,13 +17,15 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 	/// Wasta 14 without IBus appears to also work the same as Precise with XKB keyboards only.
 	/// Starting with Wasta 14, if IBus is used for keyboard inputs, things are joined together,
 	/// but not the same as the combined keyboard processing in Trusty (Ubuntu 14.04).
+	/// It also works for other desktop environments that use combined ibus keyboards, e.g.
+	/// XFCE.
 	/// </summary>
 	[CLSCompliant(false)]
-	public class CinnamonKeyboardRetrievingAdaptor: IbusKeyboardRetrievingAdaptor
+	public class CombinedIbusKeyboardRetrievingAdaptor: IbusKeyboardRetrievingAdaptor
 	{
 		private IntPtr _settingsGeneral;
 
-		public CinnamonKeyboardRetrievingAdaptor()
+		public CombinedIbusKeyboardRetrievingAdaptor()
 		{
 			KeyboardRetrievingHelper.InitGlib();
 		}
@@ -39,15 +42,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 		protected string[] GetMyKeyboards(IntPtr settingsGeneral)
 		{
-			if (!KeyboardRetrievingHelper.SchemaIsInstalled("org.cinnamon"))
-				return null;
-
-			// This tells us whether we're running under Wasta 14 (Mint 17/Cinnamon).
-			var orgCinnamonSettings = Unmanaged.g_settings_new("org.cinnamon");
-			if (orgCinnamonSettings == IntPtr.Zero ||
-				Unmanaged.g_settings_get_int(orgCinnamonSettings, "number-workspaces") <= 0)
-				return null;
-
 			// This is the proper path for the combined keyboard handling on Cinnamon with IBus.
 			var sources = Unmanaged.g_settings_get_value(settingsGeneral, "preload-engines");
 			if (sources == IntPtr.Zero)
@@ -55,19 +49,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			var list = KeyboardRetrievingHelper.GetStringArrayFromGVariantArray(sources);
 			Unmanaged.g_variant_unref(sources);
 
-			// Maybe the user experimented with cinnamon, but isn't really using it?
-			var desktop = Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP");
-			if (!String.IsNullOrEmpty(desktop) && !desktop.ToLowerInvariant().Contains("cinnamon"))
-				return null;
-
-			// Maybe the user experimented with ibus, then removed it??
-			if (!File.Exists("/usr/bin/ibus-setup"))
-				return null;
-
 			// Call these only once per run of the program.
-			if (CinnamonKeyboardSwitchingAdaptor.DefaultLayout == null)
+			if (CombinedIbusKeyboardSwitchingAdaptor.DefaultLayout == null)
 				LoadDefaultXkbSettings();
-			if (CinnamonKeyboardSwitchingAdaptor.LatinLayouts == null)
+			if (CombinedIbusKeyboardSwitchingAdaptor.LatinLayouts == null)
 				LoadLatinLayouts(settingsGeneral);
 
 			return list;
@@ -102,13 +87,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 					switch (parts[0])
 					{
 						case "layout":
-							CinnamonKeyboardSwitchingAdaptor.DefaultLayout = parts[1].Trim();
+							CombinedIbusKeyboardSwitchingAdaptor.DefaultLayout = parts[1].Trim();
 							break;
 						case "variant":
-							CinnamonKeyboardSwitchingAdaptor.DefaultVariant = parts[1].Trim();
+							CombinedIbusKeyboardSwitchingAdaptor.DefaultVariant = parts[1].Trim();
 							break;
 						case "options":
-							CinnamonKeyboardSwitchingAdaptor.DefaultOption = parts[1].Trim();
+							CombinedIbusKeyboardSwitchingAdaptor.DefaultOption = parts[1].Trim();
 							break;
 					}
 				}
@@ -124,11 +109,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		private static void LoadLatinLayouts(IntPtr settingsGeneral)
 		{
 			IntPtr value = Unmanaged.g_settings_get_value(settingsGeneral, "xkb-latin-layouts");
-			CinnamonKeyboardSwitchingAdaptor.LatinLayouts =
+			CombinedIbusKeyboardSwitchingAdaptor.LatinLayouts =
 				KeyboardRetrievingHelper.GetStringArrayFromGVariantArray(value);
 			Unmanaged.g_variant_unref(value);
 
-			CinnamonKeyboardSwitchingAdaptor.UseXmodmap = Unmanaged.g_settings_get_boolean(
+			CombinedIbusKeyboardSwitchingAdaptor.UseXmodmap = Unmanaged.g_settings_get_boolean(
 				settingsGeneral, "use-xmodmap");
 			//Console.WriteLine("DEBUG use-xmodmap = {0}", _use_xmodmap);
 			//Console.Write("DEBUG xkb-latin-layouts =");
@@ -137,7 +122,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			//Console.WriteLine();
 		}
 
-		private CinnamonKeyboardSwitchingAdaptor Adaptor { get { return _adaptor as CinnamonKeyboardSwitchingAdaptor; }}
+		private CombinedIbusKeyboardSwitchingAdaptor Adaptor { get { return _adaptor as CombinedIbusKeyboardSwitchingAdaptor; }}
 
 		#region Specific implementations of IKeyboardRetriever
 
@@ -163,7 +148,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 					return false;
 				}
 				var list = GetMyKeyboards(_settingsGeneral);
-				return list != null && list.Length > 0;
+				return list != null && list.Length > 0 && Platform.DesktopEnvironment != "unity"
+					&& Platform.DesktopEnvironment != "gnome";
 			}
 		}
 
@@ -178,7 +164,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			// We want to create a new switching adaptor only the first time otherwise we're
 			// getting into trouble
 			if (_adaptor == null)
-				_adaptor = new CinnamonKeyboardSwitchingAdaptor(_IBusCommunicator);
+				_adaptor = new CombinedIbusKeyboardSwitchingAdaptor(_IBusCommunicator);
 		}
 		#endregion
 
