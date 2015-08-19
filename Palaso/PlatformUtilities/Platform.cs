@@ -88,6 +88,62 @@ namespace Palaso.PlatformUtilities
 			get { return IsUnix && SessionManager.StartsWith("/usr/bin/cinnamon-session"); }
 		}
 
+		/// <summary>
+		/// On a Unix machine this gets the current desktop environment (gnome/xfce/...), on
+		/// non-Unix machines the platform name.
+		/// </summary>
+		public static string DesktopEnvironment
+		{
+			get
+			{
+				if (!Platform.IsUnix)
+					return Environment.OSVersion.Platform.ToString();
+
+				// see http://unix.stackexchange.com/a/116694
+				// and http://askubuntu.com/a/227669
+				var currentDesktop = Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP");
+				if (string.IsNullOrEmpty(currentDesktop))
+				{
+					var dataDirs = Environment.GetEnvironmentVariable("XDG_DATA_DIRS");
+					if (dataDirs != null)
+					{
+						dataDirs = dataDirs.ToLowerInvariant();
+						if (dataDirs.Contains("xfce"))
+							currentDesktop = "XFCE";
+						else if (dataDirs.Contains("kde"))
+							currentDesktop = "KDE";
+						else if (dataDirs.Contains("gnome"))
+							currentDesktop = "Gnome";
+					}
+					if (string.IsNullOrEmpty(currentDesktop))
+						currentDesktop = Environment.GetEnvironmentVariable("GDMSESSION");
+				}
+				return currentDesktop.ToLowerInvariant();
+			}
+		}
+
+		/// <summary>
+		/// Get the currently running desktop environment (like Unity, Gnome shell etc)
+		/// </summary>
+		public static string DesktopEnvironmentInfoString
+		{
+			get
+			{
+				if (!Platform.IsUnix)
+					return string.Empty;
+
+				// see http://unix.stackexchange.com/a/116694
+				// and http://askubuntu.com/a/227669
+				var currentDesktop = Platform.DesktopEnvironment;
+				var mirSession = Environment.GetEnvironmentVariable("MIR_SERVER_NAME");
+				var additionalInfo = string.Empty;
+				if (!string.IsNullOrEmpty(mirSession))
+					additionalInfo = " [display server: Mir]";
+				var gdmSession = Environment.GetEnvironmentVariable("GDMSESSION");
+				return string.Format("{0} ({1}{2})", currentDesktop, gdmSession, additionalInfo);
+			}
+		}
+
 		private static string SessionManager
 		{
 			get
