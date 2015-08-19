@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+using System.IO;
+
+
 #if __MonoCS__
 using System;
 using System.Collections.Generic;
@@ -154,6 +157,18 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 			_adaptor = null;
 		}
+
+		public virtual string GetKeyboardSetupApplication(out string arguments)
+		{
+			arguments = null;
+			return File.Exists("/usr/bin/ibus-setup") ? "/usr/bin/ibus-setup" : null;
+		}
+
+		public bool IsSecondaryKeyboardSetupApplication
+		{
+			get { return false; }
+		}
+
 		#endregion
 	}
 }

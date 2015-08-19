@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+using System.IO;
+
+
 #if __MonoCS__
 using System;
 using System.Collections.Generic;
@@ -38,6 +41,16 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				AddKeyboard(list[i], ref kbdIndex, keyboards, keyboardTypeMatches);
 
 			registerKeyboards(keyboards);
+		}
+
+		public string GetKeyboardSetupApplication(out string arguments)
+		{
+			arguments = "region layouts";
+			if (File.Exists("/usr/bin/unity-control-center"))
+				return "/usr/bin/unity-control-center";
+			if (File.Exists("/usr/bin/gnome-control-center"))
+				return "/usr/bin/gnome-control-center";
+			return null;
 		}
 		#endregion
 

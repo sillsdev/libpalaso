@@ -684,6 +684,18 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			}
 		}
 
+		public string GetKeyboardSetupApplication(out string arguments)
+		{
+			arguments = @"input.dll";
+			return Path.Combine(
+				Environment.GetFolderPath(Environment.SpecialFolder.System), @"control.exe");
+		}
+
+		public bool IsSecondaryKeyboardSetupApplication
+		{
+			get { return false; }
+		}
+
 		public List<IKeyboardErrorDescription> ErrorKeyboards
 		{
 			get { return m_BadLocales; }

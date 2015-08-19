@@ -563,16 +563,41 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 
 		internal static Dictionary<KeyboardType, IKeyboardRetrievingAdaptor> KeyboardRetrievers { get; private set; }
 
-		#if __MonoCS__
-		/// <summary>
-		/// Returns <c>true</c> if Linux is using the combined keyboard handling
-		/// (Ubuntu saucy/trusty/later?)
-		/// </summary>
-		internal static bool CombinedKeyboardHandling
+		internal static string GetKeyboardSetupApplication(out string arguments)
 		{
-			get { return KeyboardRetrievers[KeyboardType.System].GetType() == typeof(UnityXkbKeyboardRetrievingAdaptor); }
+			string program = null;
+			arguments = null;
+			if (!HasSecondaryKeyboardSetupApplication && KeyboardRetrievers.ContainsKey(KeyboardType.OtherIm))
+				program = KeyboardRetrievers[KeyboardType.OtherIm].GetKeyboardSetupApplication(out arguments);
+
+			if (string.IsNullOrEmpty(program))
+				program = KeyboardRetrievers[KeyboardType.System].GetKeyboardSetupApplication(out arguments);
+
+			return program;
 		}
-		#endif
+
+		internal static string GetSecondaryKeyboardSetupApplication(out string arguments)
+		{
+			string program = null;
+			arguments = null;
+			if (HasSecondaryKeyboardSetupApplication && KeyboardRetrievers.ContainsKey(KeyboardType.OtherIm))
+				program = KeyboardRetrievers[KeyboardType.OtherIm].GetKeyboardSetupApplication(out arguments);
+
+			return program;
+		}
+
+		/// <summary>
+		/// Returns <c>true</c> if there is a secondary keyboard application available, e.g.
+		/// Keyman setup dialog on Windows.
+		/// </summary>
+		internal static bool HasSecondaryKeyboardSetupApplication
+		{
+			get
+			{
+				return KeyboardRetrievers.ContainsKey(KeyboardType.OtherIm) &&
+					KeyboardRetrievers[KeyboardType.OtherIm].IsSecondaryKeyboardSetupApplication;
+			}
+		}
 
 		/// <summary>
 		/// Gets the currently active keyboard
