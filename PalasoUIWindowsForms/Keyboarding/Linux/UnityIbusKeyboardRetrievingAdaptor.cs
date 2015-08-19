@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+using System.IO;
+
+
 #if __MonoCS__
 using System;
 using System.Collections.Generic;
@@ -28,6 +31,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		public override void Initialize()
 		{
 			_adaptor = new UnityIbusKeyboardSwitchingAdaptor(_IBusCommunicator);
+		}
+
+		public override string GetKeyboardSetupApplication(out string arguments)
+		{
+			var program = _helper.GetKeyboardSetupApplication(out arguments);
+			return string.IsNullOrEmpty(program) ? base.GetKeyboardSetupApplication(out arguments) : program;
 		}
 		#endregion
 

@@ -79,6 +79,17 @@ namespace Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces
 		/// Shutdown this instance and prevent futher use
 		/// </summary>
 		void Close();
+
+		/// <summary>
+		/// Gets the keyboard setup application and the arguments needed to call it.
+		/// </summary>
+		string GetKeyboardSetupApplication(out string arguments);
+
+		/// <summary>
+		/// Returns <c>true</c> if this is the secondary keyboard application, e.g.
+		/// Keyman setup dialog on Windows.
+		/// </summary>
+		bool IsSecondaryKeyboardSetupApplication { get; }
 	}
 }
 

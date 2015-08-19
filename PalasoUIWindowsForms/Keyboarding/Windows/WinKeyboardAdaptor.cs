@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -690,6 +691,18 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 					TfSource.UnadviseSink(m_profileNotifySinkCookie);
 				m_profileNotifySinkCookie = 0;
 			}
+		}
+
+		public string GetKeyboardSetupApplication(out string arguments)
+		{
+			arguments = @"input.dll";
+			return Path.Combine(
+				Environment.GetFolderPath(Environment.SpecialFolder.System), @"control.exe");
+		}
+
+		public bool IsSecondaryKeyboardSetupApplication
+		{
+			get { return false; }
 		}
 
 		public List<IKeyboardErrorDescription> ErrorKeyboards

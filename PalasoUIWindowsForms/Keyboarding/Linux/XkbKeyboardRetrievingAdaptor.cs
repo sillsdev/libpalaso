@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+using System.IO;
+
+
 #if __MonoCS__
 using System;
 using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
@@ -243,7 +246,43 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			_adaptor = null;
 		}
 
+		public virtual string GetKeyboardSetupApplication(out string arguments)
+		{
+			// NOTE: if we get false results (e.g. because the user has installed multiple
+			// desktop environments) we could check for the currently running desktop
+			// (Platform.DesktopEnvironment) and return the matching program
+			arguments = null;
+			// XFCE
+			if (File.Exists("/usr/bin/xfce4-keyboard-settings"))
+				return "/usr/bin/xfce4-keyboard-settings";
+			// GNOME
+			if (File.Exists("/usr/bin/gnome-control-center"))
+			{
+				arguments = "region layouts";
+				return "/usr/bin/gnome-control-center";
+			}
+			// Cinnamon
+			if (File.Exists("/usr/lib/cinnamon-settings/cinnamon-settings.py") && File.Exists("/usr/bin/python"))
+			{
+				arguments = "/usr/lib/cinnamon-settings/cinnamon-settings.py keyboard";
+				return "/usr/bin/python";
+			}
+			// KDE
+			if (File.Exists("/usr/bin/kcmshell4"))
+			{
+				arguments = "kcm_keyboard";
+				return "/usr/bin/kcmshell4";
+			}
+			return null;
+		}
+
+		public bool IsSecondaryKeyboardSetupApplication
+		{
+			get { return false; }
+		}
+
 		#endregion
+
 	}
 }
 #endif

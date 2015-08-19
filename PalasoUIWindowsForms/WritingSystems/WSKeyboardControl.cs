@@ -56,9 +56,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_defaultFontSize = _testArea.Font.SizeInPoints;
 			_defaultFontName = _testArea.Font.Name;
 			_possibleKeyboardsList.ShowItemToolTips = true;
+			_keymanConfigurationLink.Visible &= KeyboardController.HasSecondaryKeyboardSetupApplication;
+
 #if __MonoCS__
 	// Keyman is not supported, setup link should not say "Windows".
-			_keymanConfigurationLink.Visible = false;
 			_keyboardSettingsLink.Text = L10NSharp.LocalizationManager.GetString("WSKeyboardControl.SetupKeyboards", "Set up keyboards");
 
 			// The sequence of Events in Mono dictate using GotFocus instead of Enter as the point
@@ -137,10 +138,10 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private ListViewItem MakeLabelItem(string text)
 		{
-			var label1 = new ListViewItem(text);
-			label1.BackColor = _labelColor;
-			label1.Font = new Font(_possibleKeyboardsList.Font, FontStyle.Bold);
-			return label1;
+			var label = new ListViewItem(text);
+			label.BackColor = _labelColor;
+			label.Font = new Font(_possibleKeyboardsList.Font, FontStyle.Bold);
+			return label;
 		}
 
 		private bool IsItemLabel(ListViewItem item)
@@ -266,7 +267,6 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_possibleKeyboardsList.Focus(); // allows the user to use arrows to select, also makes selection more conspicuous
 		}
 
-		private string _previousKeyboard;
 		private int _previousTime;
 
 		private void _possibleKeyboardsList_SelectedIndexChanged(object sender, EventArgs e)
@@ -325,40 +325,16 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void _windowsKeyboardSettingsLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			string program = null;
-			string arguments = null;
+			string arguments;
 
-#if __MonoCS__
-			// Try for the most likely keyboard setup programs.  If none found,
-			// inform the user.
-			if (KeyboardController.CombinedKeyboardHandling)
-			{
-				if (File.Exists("/usr/bin/unity-control-center"))
-				{
-					program = "/usr/bin/unity-control-center";
-					arguments = "region layouts";
-				}
-				else if (File.Exists("/usr/bin/gnome-control-center"))
-				{
-					program = "/usr/bin/gnome-control-center";
-					arguments = "region layouts";
-				}
-			}
-			else
-			{
-				if (File.Exists("/usr/bin/ibus-setup"))
-					program = "/usr/bin/ibus-setup";
-			}
-			if (String.IsNullOrEmpty(program))
+			string program = KeyboardController.GetKeyboardSetupApplication(out arguments);
+
+			if (string.IsNullOrEmpty(program))
 			{
 				MessageBox.Show("Cannot open keyboard setup program", "Information");
 				return;
 			}
-#else
-			program = Path.Combine(
-				Environment.GetFolderPath(Environment.SpecialFolder.System), @"control.exe");
-			arguments = @"input.dll";
-#endif
+
 			var processInfo = new ProcessStartInfo(program, arguments);
 			using (Process.Start(processInfo))
 			{
@@ -367,80 +343,21 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 
 		private void _keymanConfigurationLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			int version = 0;
-			string keymanPath = GetKeymanRegistryValue(@"root path", ref version);
-			if (keymanPath != null)
-			{
-				string keyman = Path.Combine(keymanPath, @"kmshell.exe");
-				if (File.Exists(keyman))
-				{
-					// From Marc Durdin (7/16/09):
-					// Re LT-9902, in Keyman 6, you could launch the configuration dialog reliably by running kmshell.exe.
-					// However, Keyman 7 works slightly differently.  The recommended approach is to use the COM API:
-					// http://www.tavultesoft.com/keymandev/documentation/70/comapi_interface_IKeymanProduct_OpenConfiguration.html
-					// Sample code:
-					//	dim kmcom, product
-					//	Set kmcom = CreateObject("kmcomapi.TavultesoftKeyman")
-					//	rem  Pro = ProductID 1; Light = ProductID 8
-					//	rem  Following line will raise exception if product is not installed, so try/catch it
-					//	Set product = kmcom.Products.ItemsByProductID(1)
-					//	Product.OpenConfiguration
-					// But if that is not going to be workable for you, then use the parameter  "-c" to start configuration.
-					// Without a parameter, the action is to start Keyman Desktop itself; v7.0 would fire configuration if restarted,
-					// v7.1 just flags to the user that Keyman is running and where to find it.  This change was due to feedback that
-					// users would repeatedly try to start Keyman when it was already running, and get confused when they got the
-					// Configuration dialog.  Sorry for the unannounced change... 9
-					// The -c parameter will not work with Keyman 6, so you would need to test for the specific version.  For what it's worth, the
-					// COM API is static and should not change, while the command line parameters are not guaranteed to change from version to version.
-					string param = @"";
-					if (version > 6)
-						param = @"-c";
-					using (Process.Start(keyman, param))
-					{
-						return;
-					}
-				}
-			}
-			MessageBox.Show(LocalizationManager.GetString("WSKeyboardControl.KeymanNotInstalled", "Keyman 5.0 or later is not Installed."));
-		}
+			string arguments;
+			var program = KeyboardController.GetSecondaryKeyboardSetupApplication(out arguments);
 
-		/// <summary>
-		/// This method returns the path to Keyman Configuration if it is installed. Otherwise it returns null.
-		/// It also sets the version of Keyman that it found.
-		/// </summary>
-		/// <param name="key">The key.</param>
-		/// <param name="version">The version.</param>
-		/// <returns></returns>
-		private static string GetKeymanRegistryValue(string key, ref int version)
-		{
-			using (var rkKeyman = Registry.LocalMachine.OpenSubKey(@"Software\Tavultesoft\Keyman", false))
+			if (string.IsNullOrEmpty(program))
 			{
-				if (rkKeyman == null)
-					return null;
-
-				//May 2008 version 7.0 is the lastest version. The others are here for
-				//future versions.
-				int[] versions = {10, 9, 8, 7, 6, 5};
-				foreach (int vers in versions)
-				{
-					using (var rkApplication = rkKeyman.OpenSubKey(vers + @".0", false))
-					{
-						if (rkApplication != null)
-						{
-							foreach (string sKey in rkApplication.GetValueNames())
-							{
-								if (sKey == key)
-								{
-									version = vers;
-									return (string) rkApplication.GetValue(sKey);
-								}
-							}
-						}
-					}
-				}
+				MessageBox.Show(LocalizationManager.GetString("WSKeyboardControl.KeymanNotInstalled",
+					"Keyman 5.0 or later is not Installed."));
+				return;
 			}
 
-			return null;
+			var processInfo = new ProcessStartInfo(program, arguments);
+			using (Process.Start(processInfo))
+			{
+			}
 		}
+
 	}
 }
