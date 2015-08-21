@@ -314,6 +314,7 @@
     <Compile Include="IO\PathUtilitiesTests.cs" />
     <Compile Include="SetupFixture.cs" />
     <Compile Include="CommandLineProcessing\CommandLineRunnerTests.cs" />
+    <Compile Include="Email\LinuxEmailProviderTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Palaso\Palaso.csproj">
@@ -361,5 +362,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CommandLineProcessing\" />
+    <Folder Include="Email\" />
   </ItemGroup>
 </Project>

@@ -12,17 +12,33 @@ namespace Palaso.Email
 			return new EmailMessage();
 		}
 
-	static string ToLiteral(string input)
-	{
-		var writer = new System.IO.StringWriter();
-		Microsoft.CSharp.CSharpCodeProvider provider = new Microsoft.CSharp.CSharpCodeProvider();
-		provider.GenerateCodeFromExpression(new System.CodeDom.CodePrimitiveExpression(input), writer, null);
-		return writer.GetStringBuilder().ToString();
-	}
+		static string ToLiteral(string input)
+		{
+			var writer = new System.IO.StringWriter();
+			Microsoft.CSharp.CSharpCodeProvider provider = new Microsoft.CSharp.CSharpCodeProvider();
+			provider.GenerateCodeFromExpression(new System.CodeDom.CodePrimitiveExpression(input), writer, null);
+			return writer.GetStringBuilder().ToString();
+		}
+
+		/// <summary>Prepare strings that will later be surrounded in single quotes to be passed to xdg-email via Process.Start in Mono/Linux.</summary>
+		public static string EscapeString(string input)
+		{
+			// Escape backslashes to prevent user from defeating the single-quote-escape below with \', to prevent
+			// problems with a backslash at the end of a string (which would result in a backslash escaping the
+			// closing quote when the string is later surrounded in single quotes), and also add enough backslashes
+			// so they get through to Thunderbird as entered by the user, and sequences like \t\n\0 don't do anything unexpected.
+			// 8 backslashes are needed because Process.Start loses 4 of them before calling xdg-email, and then
+			// xdg-email loses 3 of them before calling gvfs-open.
+			input = input.Replace(@"\", @"\\\\\\\\"); // !
+			// Prevent unescaped single quotes from crashing Process.Start().
+			input = input.Replace("'", @"\'");
+			return input;
+		}
+
 		public bool SendMessage(IEmailMessage message)
 		{
-			string body = message.Body;
-			string subject = message.Subject;
+			string body = EscapeString(message.Body);
+			string subject = EscapeString(message.Subject);
 			var recipientTo = message.To;
 			var toBuilder = new StringBuilder();
 
@@ -47,7 +63,7 @@ namespace Palaso.Email
 				// DG: attachments untested with xdg-email
 				// review CP: throw if AttachmentFilePath.Count > 0 ?
 				// review CP: throw if file not present?
-				string attachments = String.Format(FormatStringAttachFile, message.AttachmentFilePath[0]);
+				string attachments = EscapeString(String.Format(FormatStringAttachFile, message.AttachmentFilePath[0]));
 				commandLine = String.Format(
 					FormatStringWithAttachments,
 					toBuilder, subject, attachments, body
