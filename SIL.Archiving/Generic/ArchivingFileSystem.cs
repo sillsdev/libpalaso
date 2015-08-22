@@ -12,7 +12,14 @@ namespace SIL.Archiving.Generic
 		/// <summary />
 		public static string SilCommonDataFolder
 		{
-			get { return CheckFolder(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "SIL")); }
+			get
+			{
+				// On Linux we have to use /var/lib (instead of CommonApplicationData which
+				// translates to /usr/share and isn't writable by default)
+				string folder = Palaso.PlatformUtilities.Platform.IsLinux ? "/var/lib" :
+					Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+				return CheckFolder(Path.Combine(folder, "SIL"));
+			}
 		}
 
 		/// <summary />
@@ -30,7 +37,30 @@ namespace SIL.Archiving.Generic
 		/// <summary />
 		public static string CheckFolder(string folderName)
 		{
-			if (!Directory.Exists(folderName)) Directory.CreateDirectory(folderName);
+			if (!Directory.Exists(folderName))
+			{
+				try
+				{
+					Directory.CreateDirectory(folderName);
+				}
+				catch (UnauthorizedAccessException)
+				{
+					if (Palaso.PlatformUtilities.Platform.IsLinux)
+					{
+						if (folderName.StartsWith("/var/lib/SIL/"))
+						{
+							// by default /var/lib isn't writable on Linux, so we can't create a new
+							// directory. Create a folder in the user's home directory instead.
+							var endFolder = folderName.Substring("/var/lib/SIL/".Length);
+							folderName = Path.Combine(
+								Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+								"SIL", endFolder);
+							return CheckFolder(folderName);
+						}
+					}
+					throw;
+				}
+			}
 			return folderName;
 		}
 	}
