@@ -355,6 +355,8 @@ namespace Palaso.UI.WindowsForms.Widgets
 		{
 			if( disposing )
 			{
+				if(ImageInactive != null)
+					ImageInactive.Dispose();
 				if( components != null )
 					components.Dispose();
 			}
@@ -746,31 +748,30 @@ namespace Palaso.UI.WindowsForms.Widgets
 				//
 				// create brush and pens
 				//
-				System.Drawing.Drawing2D.LinearGradientBrush brush = new System.Drawing.Drawing2D.LinearGradientBrush(rect, this.BackColor,Blend(this.BackColor,this.BackColor,10), System.Drawing.Drawing2D.LinearGradientMode.Vertical);
-				brush.InterpolationColors = blend;
-				System.Drawing.Pen pen0 = new System.Drawing.Pen(brush,1);
-				System.Drawing.Pen pen1 = new System.Drawing.Pen(System.Drawing.Color.Black);
-				//
-				// calculate points to draw line
-				//
-				rect.Inflate(1,1);
-				Point[] pts = border_Get(rect.Left,rect.Top,rect.Width,rect.Height);
-				this.border_Contract(1,ref pts);
-				//
-				// draw line 0
-				//
-				g.DrawLines(pen1,pts);
-				//
-				// draw line 1
-				//
-				this.border_Contract(1,ref pts);
-				g.DrawLines(pen0,pts);
-				//
-				// release resources
-				//
-				pen1.Dispose();
-				pen0.Dispose();
-				brush.Dispose();
+				using(var brush = new System.Drawing.Drawing2D.LinearGradientBrush(rect, BackColor,
+					Blend(BackColor, BackColor, 10), System.Drawing.Drawing2D.LinearGradientMode.Vertical))
+				{
+					brush.InterpolationColors = blend;
+					using(var pen0 = new Pen(brush, 1))
+					using(var pen1 = new Pen(Color.Black))
+					{
+						//
+						// calculate points to draw line
+						//
+						rect.Inflate(1, 1);
+						var pts = border_Get(rect.Left, rect.Top, rect.Width, rect.Height);
+						border_Contract(1, ref pts);
+						//
+						// draw line 0
+						//
+						g.DrawLines(pen1, pts);
+						//
+						// draw line 1
+						//
+						border_Contract(1, ref pts);
+						g.DrawLines(pen0, pts);
+					}
+				}
 			}
 		}
 
@@ -929,7 +930,10 @@ namespace Palaso.UI.WindowsForms.Widgets
 					{
 						if(image != null)
 						{
-							ImageInactive = ConvertToGrayscale( new Bitmap(ImageNormal));
+							using(var tempNormalImage = new Bitmap(ImageNormal))
+							{
+								ImageInactive = ConvertToGrayscale(tempNormalImage);
+							}
 						}
 						image = ImageNormal;
 					}
