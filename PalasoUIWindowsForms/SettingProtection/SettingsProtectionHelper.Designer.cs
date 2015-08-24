@@ -1,4 +1,6 @@
-﻿namespace Palaso.UI.WindowsForms.SettingProtection
+﻿using System;
+
+namespace Palaso.UI.WindowsForms.SettingProtection
 {
 	partial class SettingsProtectionHelper
 	{
@@ -17,7 +19,14 @@
 			{
 				components.Dispose();
 			}
-			base.Dispose(disposing);
+			base.Dispose(disposing); 
+			_checkForCtrlKeyTimer.Dispose();
+			if(!_isDisposed)
+			{
+				_isDisposed = true;
+				_controlIsUnderSettingsProtection.Clear();
+				Disposed(this, new EventArgs());
+			}
 		}
 
 		#region Component Designer generated code
