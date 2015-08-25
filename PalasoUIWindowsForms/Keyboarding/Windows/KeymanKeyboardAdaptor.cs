@@ -18,7 +18,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 	/// </summary>
 	internal class KeymanKeyboardAdaptor: IKeyboardRetrievingAdaptor, IKeyboardSwitchingAdaptor
 	{
-		#region IKeyboardAdaptor Members
+		#region IKeyboardRetrievingAdaptor Members
+		/// <summary>
+		/// The type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
+		/// </summary>
+		public KeyboardType Type
+		{
+			get { return KeyboardType.OtherIm; }
+		}
 
 		public bool IsApplicable
 		{
@@ -83,7 +90,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 					KeyboardController.Manager.RegisterKeyboard(new KeymanKeyboardDescription(keyboard.Name, false, this));
 			}
 			catch (Exception)
-			{				
+			{
 				// Keyman 7 isn't installed or whatever.
 			}
 
@@ -101,6 +108,26 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			{
 				// Keyman 6 isn't installed or whatever.
 			}
+		}
+
+		public List<IKeyboardErrorDescription> ErrorKeyboards
+		{
+			get { return null; }
+		}
+
+		public IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
+		{
+			throw new NotImplementedException("Keyman keyboards that are not associated with a language cannot be looked up by language.");
+		}
+
+		/// <summary>
+		/// Creates and returns a keyboard definition object based on the layout and locale.
+		/// Note that this method is used when we do NOT have a matching available keyboard.
+		/// Therefore we can presume that the created one is NOT available.
+		/// </summary>
+		public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
+		{
+			return new KeymanKeyboardDescription(layout, false, this) { IsAvailable = false };
 		}
 
 		public void Close()
@@ -150,10 +177,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			get { return true; }
 		}
 
-		public List<IKeyboardErrorDescription> ErrorKeyboards
-		{
-			get { return null; }
-		}
+		#endregion
+
+		#region IKeyboardSwitchingAdaptor Members
 
 		public bool ActivateKeyboard(IKeyboardDefinition keyboard)
 		{
@@ -162,7 +188,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			{
 				try
 				{
-					KeymanLink.KeymanLink keymanLink = new KeymanLink.KeymanLink();
+					var keymanLink = new KeymanLink.KeymanLink();
 					if (!keymanLink.Initialize())
 					{
 						Palaso.Reporting.ErrorReport.NotifyUserOfProblem("Keyman6 could not be activated.");
@@ -223,21 +249,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			}
 		}
 
-		public IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
-		{
-			throw new NotImplementedException("Keyman keyboards that are not associated with a language cannot be looked up by language.");
-		}
-
-		/// <summary>
-		/// Creates and returns a keyboard definition object based on the layout and locale.
-		/// Note that this method is used when we do NOT have a matching available keyboard.
-		/// Therefore we can presume that the created one is NOT available.
-		/// </summary>
-		public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
-		{
-			return new KeymanKeyboardDescription(layout, false, this) {IsAvailable = false};
-		}
-
 		/// <summary>
 		/// Gets the default keyboard of the system.
 		/// </summary>
@@ -258,13 +269,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			get { throw new NotImplementedException(); }
 		}
 
-		/// <summary>
-		/// The type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
-		/// </summary>
-		public KeyboardType Type
-		{
-			get { return KeyboardType.OtherIm; }
-		}
 		#endregion
 
 		/// <summary>
@@ -305,6 +309,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 
 			return null;
 		}
+
 	}
 }
 #endif

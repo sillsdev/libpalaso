@@ -643,7 +643,15 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 				profile1.Hkl == profile2.Hkl;
 		}
 
-		#region IKeyboardAdaptor Members
+		#region IKeyboardRetrievingAdaptor Members
+
+		/// <summary>
+		/// The type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
+		/// </summary>
+		public KeyboardType Type
+		{
+			get { return KeyboardType.System; }
+		}
 
 		public bool IsApplicable
 		{
@@ -677,6 +685,26 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			GetInputMethods();
 		}
 
+		public List<IKeyboardErrorDescription> ErrorKeyboards
+		{
+			get { return m_BadLocales; }
+		}
+
+		public IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
+		{
+			return GetKeyboardDescription(inputLanguage);
+		}
+
+		/// <summary>
+		/// Creates and returns a keyboard definition object based on the layout and locale.
+		/// Note that this method is used when we do NOT have a matching available keyboard.
+		/// Therefore we can presume that the created one is NOT available.
+		/// </summary>
+		public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
+		{
+			return new WinKeyboardDescription(locale, layout, this) { IsAvailable = false };
+		}
+
 		public void Close()
 		{
 			if (m_Timer != null)
@@ -705,10 +733,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			get { return false; }
 		}
 
-		public List<IKeyboardErrorDescription> ErrorKeyboards
-		{
-			get { return m_BadLocales; }
-		}
+		#endregion
+
+		#region IKeyboardSwitchingAdaptor Members
 
 		public bool ActivateKeyboard(IKeyboardDefinition keyboard)
 		{
@@ -722,21 +749,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			Debug.Assert(winKeyboard != null);
 
 			SaveImeConversionStatus(winKeyboard);
-		}
-
-		public IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
-		{
-			return GetKeyboardDescription(inputLanguage);
-		}
-
-		/// <summary>
-		/// Creates and returns a keyboard definition object based on the layout and locale.
-		/// Note that this method is used when we do NOT have a matching available keyboard.
-		/// Therefore we can presume that the created one is NOT available.
-		/// </summary>
-		public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
-		{
-			return new WinKeyboardDescription(locale, layout, this) {IsAvailable = false};
 		}
 
 		/// <summary>
@@ -768,14 +780,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			}
 		}
 
-		/// <summary>
-		/// The type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
-		/// </summary>
-		public KeyboardType Type
-		{
-			get { return KeyboardType.System; }
-		}
 		#endregion
+
 	}
 }
 #endif
