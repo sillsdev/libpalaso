@@ -140,7 +140,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// Only the primary (Type=System) adapter is required to implement this method. This one makes keyboards
 		/// during Initialize, but is not used to make an unavailable keyboard to match an LDML file.
 		/// </summary>
-		public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
+		public virtual IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
 		{
 			throw new NotImplementedException();
 		}

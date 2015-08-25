@@ -25,7 +25,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		protected List<IKeyboardErrorDescription> BadLocales;
 		protected IXklEngine _engine;
 		protected IKeyboardSwitchingAdaptor _adaptor;
-		protected string _missingKeyboardFmt;
+		protected static string _missingKeyboardFmt;
 		protected static HashSet<string> _knownCultures;
 
 		public XkbKeyboardRetrievingAdaptor(): this(new XklEngine())
@@ -151,6 +151,17 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// </summary>
 		public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
 		{
+			return CreateKeyboardDefinition(layout, locale, _adaptor);
+		}
+
+		/// <summary>
+		/// Creates and returns a keyboard definition object based on the layout and locale.
+		/// Note that this method is used when we do NOT have a matching available keyboard.
+		/// Therefore we can presume that the created one is NOT available.
+		/// </summary>
+		internal static IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale,
+			IKeyboardSwitchingAdaptor adaptor)
+		{
 			var realLocale = locale;
 			if (locale == "zh")
 			{
@@ -165,11 +176,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			// as missing, but create an English (US) keyboard underneath.
 			if (IsLocaleKnown(realLocale))
 				return new XkbKeyboardDescription(string.Format("{0} ({1})", locale, layout), layout, locale,
-					new InputLanguageWrapper(realLocale, IntPtr.Zero, layout), _adaptor, -1) {IsAvailable = false};
+					new InputLanguageWrapper(realLocale, IntPtr.Zero, layout), adaptor, -1) {IsAvailable = false};
 			if (_missingKeyboardFmt == null)
-				_missingKeyboardFmt = L10NSharp.LocalizationManager.GetString("XkbKeyboardAdaptor.MissingKeyboard", "[Missing] {0} ({1})");
+			{
+				_missingKeyboardFmt = L10NSharp.LocalizationManager.GetString("XkbKeyboardAdaptor.MissingKeyboard",
+					"[Missing] {0} ({1})");
+			}
 			return new XkbKeyboardDescription(String.Format(_missingKeyboardFmt, locale, layout), layout, locale,
-				new InputLanguageWrapper("en", IntPtr.Zero, "US"), _adaptor, -1) {IsAvailable = false};
+				new InputLanguageWrapper("en", IntPtr.Zero, "US"), adaptor, -1) {IsAvailable = false};
 		}
 
 		/// <summary>

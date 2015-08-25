@@ -166,6 +166,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			if (_adaptor == null)
 				_adaptor = new CombinedIbusKeyboardSwitchingAdaptor(_IBusCommunicator);
 		}
+
+		public override IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
+		{
+			return XkbKeyboardRetrievingAdaptor.CreateKeyboardDefinition(layout, locale, _adaptor);
+		}
 		#endregion
 
 		protected override void InitKeyboards()
