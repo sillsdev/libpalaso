@@ -87,10 +87,16 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			}
 		}
 
-		class XkbKeyboardAdaptorDouble: XkbKeyboardAdaptor
+		class XkbKeyboardRetrievingAdaptorDouble: XkbKeyboardRetrievingAdaptor
 		{
-			public XkbKeyboardAdaptorDouble(IXklEngine engine): base(engine)
+			public XkbKeyboardRetrievingAdaptorDouble(IXklEngine engine): base(engine)
 			{
+			}
+
+			public override bool IsApplicable
+			{
+				// No matter what we want this to be active
+				get { return true; }
 			}
 
 			protected override void InitLocales()
@@ -98,10 +104,16 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			}
 		}
 
-		class IbusKeyboardAdaptorDouble: IbusKeyboardAdaptor
+		class IbusKeyboardRetrievingAdaptorDouble: IbusKeyboardRetrievingAdaptor
 		{
-			public IbusKeyboardAdaptorDouble(IIbusCommunicator ibusCommunicator): base(ibusCommunicator)
+			public IbusKeyboardRetrievingAdaptorDouble(IIbusCommunicator ibusCommunicator): base(ibusCommunicator)
 			{
+			}
+
+			public override bool IsApplicable
+			{
+				// No matter what we want this to be active
+				get { return true; }
 			}
 
 			protected override void InitKeyboards()
@@ -114,7 +126,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			}
 		}
 
-		private static IbusKeyboardDescription CreateMockIbusKeyboard(IbusKeyboardAdaptor ibusKeyboardAdapter,
+		private static IbusKeyboardDescription CreateMockIbusKeyboard(IKeyboardSwitchingAdaptor ibusKeyboardAdapter,
 			string name, string language, string layout)
 		{
 			var engineDescMock = new Mock<IBusEngineDesc>();
@@ -127,7 +139,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		}
 
 		private static XkbKeyboardDescription CreateMockXkbKeyboard(string name, string layout, string locale,
-			string layoutName, int group, XkbKeyboardAdaptor adapter)
+			string layoutName, int group, IKeyboardSwitchingAdaptor adapter)
 		{
 			var keyboard = new XkbKeyboardDescription(name, layout, locale,
 				new InputLanguageWrapper(locale, IntPtr.Zero, layoutName), adapter, group);
@@ -154,15 +166,15 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			const int FrKeyboardGroup = 3;
 
 			// Setup
-			var ibusKeyboardAdapter = new IbusKeyboardAdaptorDouble(new DoNothingIbusCommunicator());
+			var ibusKeyboardAdapter = new IbusKeyboardRetrievingAdaptorDouble(new DoNothingIbusCommunicator());
 			var xklEngineMock = new Mock<IXklEngine>();
-			var xkbKeyboardAdapter = new XkbKeyboardAdaptorDouble(xklEngineMock.Object);
-			KeyboardController.Manager.SetKeyboardAdaptors(new IKeyboardAdaptor[] { xkbKeyboardAdapter, ibusKeyboardAdapter});
+			var xkbKeyboardAdapter = new XkbKeyboardRetrievingAdaptorDouble(xklEngineMock.Object);
+			KeyboardController.Manager.SetKeyboardRetrievers(new IKeyboardRetrievingAdaptor[] { xkbKeyboardAdapter, ibusKeyboardAdapter});
 
-			var ibusKeyboard = CreateMockIbusKeyboard(ibusKeyboardAdapter, name, language, layout);
-			var deKeyboard = CreateMockXkbKeyboard("German - German (Germany)", "de", "de-DE", "German", DeKeyboardGroup, xkbKeyboardAdapter);
-			CreateMockXkbKeyboard("English (US) - English (United States)", "us", "en-US", "English", EnKeyboardGroup, xkbKeyboardAdapter);
-			CreateMockXkbKeyboard("French - French (France)", "fr", "fr-FR", "French", FrKeyboardGroup, xkbKeyboardAdapter);
+			var ibusKeyboard = CreateMockIbusKeyboard(ibusKeyboardAdapter.Adaptor, name, language, layout);
+			var deKeyboard = CreateMockXkbKeyboard("German - German (Germany)", "de", "de-DE", "German", DeKeyboardGroup, xkbKeyboardAdapter.Adaptor);
+			CreateMockXkbKeyboard("English (US) - English (United States)", "us", "en-US", "English", EnKeyboardGroup, xkbKeyboardAdapter.Adaptor);
+			CreateMockXkbKeyboard("French - French (France)", "fr", "fr-FR", "French", FrKeyboardGroup, xkbKeyboardAdapter.Adaptor);
 
 			deKeyboard.Activate();
 

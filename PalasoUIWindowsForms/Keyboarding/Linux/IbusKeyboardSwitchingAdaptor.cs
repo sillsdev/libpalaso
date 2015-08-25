@@ -1,6 +1,5 @@
 // Copyright (c) 2011-2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-
 #if __MonoCS__
 using System;
 using System.Collections.Generic;
@@ -19,64 +18,43 @@ using Palaso.WritingSystems;
 namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 {
 	/// <summary>
-	/// Class for handling ibus keyboards on Linux. Currently just a wrapper for KeyboardSwitcher.
+	/// Class for handling ibus keyboards on Linux.
 	/// </summary>
 	[CLSCompliant(false)]
-	public class IbusKeyboardAdaptor: IKeyboardAdaptor
+	public class IbusKeyboardSwitchingAdaptor: IKeyboardSwitchingAdaptor
 	{
-		private IIbusCommunicator IBusCommunicator;
+		private readonly IIbusCommunicator IBusCommunicator;
 		private bool m_needIMELocation;
 
-		/// <summary>
-		/// Initializes a new instance of the
-		/// <see cref="Palaso.UI.WindowsForms.Keyboard.Linux.IbusKeyboardAdaptor"/> class.
-		/// </summary>
-		public IbusKeyboardAdaptor(): this(new IbusCommunicator())
-		{
-		}
-
-		/// <summary>
-		/// Used in unit tests
-		/// </summary>
-		public IbusKeyboardAdaptor(IIbusCommunicator ibusCommunicator)
+		public IbusKeyboardSwitchingAdaptor(IIbusCommunicator ibusCommunicator)
 		{
 			IBusCommunicator = ibusCommunicator;
-
-			if (!IBusCommunicator.Connected)
-				return;
 
 			if (KeyboardController.EventProvider != null)
 			{
 				KeyboardController.EventProvider.ControlAdded += OnControlRegistered;
 				KeyboardController.EventProvider.ControlRemoving += OnControlRemoving;
 			}
-		}
 
-		protected virtual void InitKeyboards()
-		{
-			foreach (var ibusKeyboard in GetIBusKeyboards())
+			// Don't turn on any Ibus IME keyboard until requested explicitly.
+			// If we do nothing, the first Ibus IME keyboard is automatically activated.
+			IBusCommunicator.FocusIn();
+			if (GlobalCachedInputContext.InputContext != null)
 			{
-				var keyboard = new IbusKeyboardDescription(this, ibusKeyboard, -1);
-				KeyboardController.Manager.RegisterKeyboard(keyboard);
+				try
+				{
+					var context = GlobalCachedInputContext.InputContext;
+					context.Reset();
+					GlobalCachedInputContext.Keyboard = null;
+					context.SetEngine("");
+					context.Disable();
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e);
+				}
 			}
-		}
-
-		protected virtual IBusEngineDesc[] GetIBusKeyboards()
-		{
-			if (!IBusCommunicator.Connected)
-				return new IBusEngineDesc[0];
-
-			var ibusWrapper = new InputBus(IBusCommunicator.Connection);
-			return ibusWrapper.ListActiveEngines();
-		}
-
-		internal IBusEngineDesc[] GetAllIBusKeyboards()
-		{
-			if (!IBusCommunicator.Connected)
-				return new IBusEngineDesc[0];
-
-			var ibusWrapper = new InputBus(IBusCommunicator.Connection);
-			return ibusWrapper.ListEngines();
+			IBusCommunicator.FocusOut();
 		}
 
 		internal bool CanSetIbusKeyboard()
@@ -84,9 +62,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			if (!IBusCommunicator.Connected)
 				return false;
 			IBusCommunicator.FocusIn();
-			if (GlobalCachedInputContext.InputContext == null)
-				return false;
-			return true;
+			return GlobalCachedInputContext.InputContext != null;
 		}
 
 		internal bool IBusKeyboardAlreadySet(IbusKeyboardDescription keyboard)
@@ -96,43 +72,44 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				return true;
 			if (keyboard == null || keyboard.IBusKeyboardEngine == null)
 			{
-				var context = GlobalCachedInputContext.InputContext;
-				context.Reset();
-				GlobalCachedInputContext.Keyboard = null;
-				context.Disable();
+				UnsetKeyboard();
 				return true;
 			}
 			return false;
 		}
 
-		private bool SetIMEKeyboard(IbusKeyboardDescription keyboard)
+		protected static void UnsetKeyboard()
 		{
-			try
-			{
-				if (!CanSetIbusKeyboard())
-					return false;
-				if (IBusKeyboardAlreadySet(keyboard))
-					return true;
+			if (GlobalCachedInputContext.Keyboard == null)
+				return;
 
-				// Set the associated XKB keyboard
-				var parentLayout = keyboard.ParentLayout;
-				if (parentLayout == "en")
-					parentLayout = "us";
-				var xkbKeyboard = Keyboard.Controller.AllAvailableKeyboards.FirstOrDefault(kbd => kbd.Layout == parentLayout);
-				if (xkbKeyboard != null)
-					xkbKeyboard.Activate();
-				// Then set the IBus keyboard
-				var context = GlobalCachedInputContext.InputContext;
-				context.SetEngine(keyboard.IBusKeyboardEngine.LongName);
-
-				GlobalCachedInputContext.Keyboard = keyboard;
-				return true;
-			}
-			catch (Exception e)
+			var context = GlobalCachedInputContext.InputContext;
+			if (context != null)
 			{
-				Debug.WriteLine(string.Format("Changing keyboard failed, is kfml/ibus running? {0}", e));
-				return false;
+				context.Reset();
+				context.Disable();
 			}
+			GlobalCachedInputContext.Keyboard = null;
+		}
+
+		/// <summary>
+		/// Activate the ibus keyboard
+		/// </summary>
+		/// <remarks>This method will have a different implementation depending on how ibus
+		/// keyboards are implemented.</remarks>
+		protected virtual void SelectKeyboard(IKeyboardDefinition keyboard)
+		{
+			var ibusKeyboard = keyboard as IbusKeyboardDescription;
+			// Set the associated XKB keyboard
+			var parentLayout = ibusKeyboard.ParentLayout;
+			if (parentLayout == "en")
+				parentLayout = "us";
+			var xkbKeyboard = Keyboard.Controller.AllAvailableKeyboards.FirstOrDefault(kbd => kbd.Layout == parentLayout);
+			if (xkbKeyboard != null)
+				xkbKeyboard.Activate();
+			// Then set the IBus keyboard
+			var context = GlobalCachedInputContext.InputContext;
+			context.SetEngine(ibusKeyboard.IBusKeyboardEngine.LongName);
 		}
 
 		private void SetImePreeditWindowLocationAndSize(Control control)
@@ -177,6 +154,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		}
 
 		#region KeyboardController events
+
 		private void OnControlRegistered(object sender, RegisterEventArgs e)
 		{
 			if (e.Control != null)
@@ -236,6 +214,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 			}
 		}
+
 		#endregion
 
 		private bool PassKeyEventToIbus(Control control, Keys keyChar, Keys modifierKeys)
@@ -274,6 +253,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		}
 
 		#region Event Handler for control
+
 		private void HandleGotFocus(object sender, EventArgs e)
 		{
 			if (!IBusCommunicator.Connected)
@@ -345,7 +325,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// Handles a key down. While a preedit is active we don't want the control to handle
 		/// any of the keys that IBus deals with.
 		/// </summary>
-		private void HandleKeyDown (object sender, KeyEventArgs e)
+		private void HandleKeyDown(object sender, KeyEventArgs e)
 		{
 			switch (e.KeyCode)
 			{
@@ -408,44 +388,27 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		#endregion
 
 		#region IKeyboardAdaptor implementation
-		/// <summary>
-		/// Initialize the installed keyboards
-		/// </summary>
-		public void Initialize()
-		{
-			InitKeyboards();
-			// Don't turn on any Ibus IME keyboard until requested explicitly.
-			// If we do nothing, the first Ibus IME keyboard is automatically activated.
-			IBusCommunicator.FocusIn();
-			if (GlobalCachedInputContext.InputContext != null && GetIBusKeyboards().Length > 0)
-			{
-				var context = GlobalCachedInputContext.InputContext;
-				context.Reset();
-				GlobalCachedInputContext.Keyboard = null;
-				context.SetEngine("");
-				context.Disable();
-			}
-			IBusCommunicator.FocusOut();
-		}
-
-		public void UpdateAvailableKeyboards()
-		{
-			InitKeyboards();
-		}
-
-		/// <summary/>
-		public void Close()
-		{
-			if (!IBusCommunicator.IsDisposed)
-			{
-				IBusCommunicator.Dispose();
-			}
-		}
 
 		public bool ActivateKeyboard(IKeyboardDefinition keyboard)
 		{
 			var ibusKeyboard = keyboard as IbusKeyboardDescription;
-			return SetIMEKeyboard(ibusKeyboard);
+			try
+			{
+				if (!CanSetIbusKeyboard())
+					return false;
+				if (IBusKeyboardAlreadySet(ibusKeyboard))
+					return true;
+
+				SelectKeyboard(ibusKeyboard);
+
+				GlobalCachedInputContext.Keyboard = ibusKeyboard;
+				return true;
+			}
+			catch (Exception e)
+			{
+				Debug.WriteLine(string.Format("Changing keyboard failed, is kfml/ibus running? {0}", e));
+				return false;
+			}
 		}
 
 		/// <summary>
@@ -453,32 +416,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// </summary>
 		public void DeactivateKeyboard(IKeyboardDefinition keyboard)
 		{
-			SetIMEKeyboard(null);
-		}
-
-		/// <summary>
-		/// List of keyboard layouts that either gave an exception or other error trying to
-		/// get more information. We don't have enough information for these keyboard layouts
-		/// to include them in the list of installed keyboards.
-		/// </summary>
-		public List<IKeyboardErrorDescription> ErrorKeyboards
-		{
-			get
-			{
-				return new List<IKeyboardErrorDescription>();
-			}
-		}
-
-		// Currently we expect this to only be useful on Windows.
-		public IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
-		{
-			throw new NotImplementedException();
+			UnsetKeyboard();
 		}
 
 		/// <summary>
 		/// The type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
 		/// </summary>
-		public KeyboardType Type
+		public virtual KeyboardType Type
 		{
 			get { return KeyboardType.OtherIm; }
 		}
@@ -486,7 +430,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// <summary>
 		/// Implementation is not required because this is not the primary (Type System) adapter.
 		/// </summary>
-		public IKeyboardDefinition DefaultKeyboard
+		public virtual IKeyboardDefinition DefaultKeyboard
 		{
 			get { throw new NotImplementedException(); }
 		}
@@ -494,18 +438,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// <summary>
 		/// Implementation is not required because this is not the primary (Type System) adapter.
 		/// </summary>
-		public IKeyboardDefinition ActiveKeyboard
+		public virtual IKeyboardDefinition ActiveKeyboard
 		{
 			get { throw new NotImplementedException(); }
-		}
-
-		/// <summary>
-		/// Only the primary (Type=System) adapter is required to implement this method. This one makes keyboards
-		/// during Initialize, but is not used to make an unavailable keyboard to match an LDML file.
-		/// </summary>
-		public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
-		{
-			throw new NotImplementedException();
 		}
 
 		#endregion

@@ -56,7 +56,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			_defaultFontSize = _testArea.Font.SizeInPoints;
 			_defaultFontName = _testArea.Font.Name;
 			_possibleKeyboardsList.ShowItemToolTips = true;
-#if MONO
+#if __MonoCS__
 	// Keyman is not supported, setup link should not say "Windows".
 			_keymanConfigurationLink.Visible = false;
 			_keyboardSettingsLink.Text = L10NSharp.LocalizationManager.GetString("WSKeyboardControl.SetupKeyboards", "Set up keyboards");
@@ -328,7 +328,7 @@ namespace Palaso.UI.WindowsForms.WritingSystems
 			string program = null;
 			string arguments = null;
 
-#if MONO
+#if __MonoCS__
 			// Try for the most likely keyboard setup programs.  If none found,
 			// inform the user.
 			if (KeyboardController.CombinedKeyboardHandling)

@@ -31,7 +31,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 		/// Initializes a new instance of the
 		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.Windows.KeymanKeyboardDescription"/> class.
 		/// </summary>
-		public KeymanKeyboardDescription(string layout, bool isKeyman6, IKeyboardAdaptor engine)
+		public KeymanKeyboardDescription(string layout, bool isKeyman6, IKeyboardSwitchingAdaptor engine)
 			: base(engine, KeyboardType.OtherIm)
 		{
 			InternalName = layout;

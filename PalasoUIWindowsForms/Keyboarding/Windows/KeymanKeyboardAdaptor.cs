@@ -14,11 +14,59 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 	/// <summary>
 	/// Class for handling Keyman keyboards not associated with a Windows language
 	/// </summary>
-	internal class KeymanKeyboardAdaptor: IKeyboardAdaptor
+	internal class KeymanKeyboardAdaptor: IKeyboardRetrievingAdaptor, IKeyboardSwitchingAdaptor
 	{
 		#region IKeyboardAdaptor Members
 
+		public bool IsApplicable
+		{
+			get
+			{
+				// Try the Keyman 7/8 interface
+				try
+				{
+					var keyman = new TavultesoftKeymanClass();
+					if (keyman.Keyboards != null && keyman.Keyboards.Count > 0)
+					{
+						return true;
+					}
+				}
+				catch (Exception)
+				{
+					// Keyman 7 isn't installed or whatever.
+				}
+
+				// Try the Keyman 6 interface
+				try
+				{
+					var keymanLink = new KeymanLink.KeymanLink();
+					if (keymanLink.Initialize())
+					{
+						if (keymanLink.Keyboards != null && keymanLink.Keyboards.Length > 0)
+						{
+							return true;
+						}
+					}
+				}
+				catch (Exception)
+				{
+					// Keyman 6 isn't installed or whatever.
+				}
+				return false;
+			}
+		}
+
+		public IKeyboardSwitchingAdaptor Adaptor
+		{
+			get { return this; }
+		}
+
 		public void Initialize()
+		{
+			// nothing to do
+		}
+
+		public void RegisterAvailableKeyboards()
 		{
 			UpdateAvailableKeyboards();
 		}

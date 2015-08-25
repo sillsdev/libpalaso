@@ -25,7 +25,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 	/// </summary>
 	[SuppressMessage("Gendarme.Rules.Design", "TypesWithDisposableFieldsShouldBeDisposableRule",
 		Justification = "m_Timer gets disposed in Close() which gets called from KeyboardControllerImpl.Dispose")]
-	internal class WinKeyboardAdaptor: IKeyboardAdaptor
+	internal class WinKeyboardAdaptor: IKeyboardRetrievingAdaptor, IKeyboardSwitchingAdaptor
 	{
 		internal class LayoutName
 		{
@@ -644,6 +644,16 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 
 		#region IKeyboardAdaptor Members
 
+		public bool IsApplicable
+		{
+			get { return true; }
+		}
+
+		public IKeyboardSwitchingAdaptor Adaptor
+		{
+			get { return this; }
+		}
+
 		[SuppressMessage("Gendarme.Rules.Correctness", "EnsureLocalDisposalRule",
 			Justification = "m_Timer gets disposed in Close() which gets called from KeyboardControllerImpl.Dispose")]
 		public void Initialize()
@@ -651,11 +661,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			m_Timer = new Timer { Interval = 500 };
 			m_Timer.Tick += OnTimerTick;
 
-			GetInputMethods();
-
 			// Form.ActiveForm can be null when running unit tests
 			if (Form.ActiveForm != null)
 				Form.ActiveForm.InputLanguageChanged += ActiveFormOnInputLanguageChanged;
+		}
+
+		public void RegisterAvailableKeyboards()
+		{
+			GetInputMethods();
 		}
 
 		public void UpdateAvailableKeyboards()
