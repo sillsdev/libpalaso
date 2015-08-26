@@ -41,7 +41,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			/// pass retriever instances that have been previously passed. At least one retriever
 			/// must be of type System.
 			/// </summary>
-			public static void SetKeyboardRetrievers(IKeyboardRetrievingAdaptor[] retrievers)
+			internal static void SetKeyboardRetrievers(IKeyboardRetrievingAdaptor[] retrievers)
 			{
 				if (!(Keyboard.Controller is IKeyboardControllerImpl))
 					Keyboard.Controller = new KeyboardControllerImpl();
@@ -62,7 +62,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			/// <summary>
 			/// Resets the keyboard adaptors to the default ones.
 			/// </summary>
-			public static void Reset()
+			internal static void Reset()
 			{
 				SetKeyboardRetrievers(new IKeyboardRetrievingAdaptor[] {
 #if __MonoCS__
@@ -75,7 +75,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				});
 			}
 
-			public static void RegisterAvailableKeyboardRetrievers(IKeyboardRetrievingAdaptor[] retrievers)
+			private static void RegisterAvailableKeyboardRetrievers(IKeyboardRetrievingAdaptor[] retrievers)
 			{
 				foreach (var retriever in retrievers)
 				{

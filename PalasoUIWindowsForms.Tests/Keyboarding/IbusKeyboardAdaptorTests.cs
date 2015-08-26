@@ -18,7 +18,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 	[TestFixture]
 	public class IbusKeyboardAdaptorTests
 	{
-		class DoNothingIbusCommunicator: IIbusCommunicator
+		public class DoNothingIbusCommunicator: IIbusCommunicator
 		{
 			public event Action<object> CommitText;
 

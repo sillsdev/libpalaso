@@ -214,6 +214,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 							_defaultKeyboard = kbd;
 							break;
 						}
+						// REVIEW (EberhardB): it is unclear if we can ever get into a situation
+						// where regex would match. That would require an xkb keyboard reported by
+						// ibus that doesn't start with 'xkb:'. Can this happen? If it can, do we
+						// have to take DefaultVariant into account as well?
 						if (regex.IsMatch(kbd.Layout))
 						{
 							_defaultKeyboard = kbd;

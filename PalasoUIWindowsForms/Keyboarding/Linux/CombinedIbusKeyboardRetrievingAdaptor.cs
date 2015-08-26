@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
+
+
 #if __MonoCS__
 using System;
 using System.Collections.Generic;
@@ -28,6 +31,16 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		public CombinedIbusKeyboardRetrievingAdaptor()
 		{
 			KeyboardRetrievingHelper.InitGlib();
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the
+		/// <see cref="Palaso.UI.WindowsForms.Keyboarding.Linux.CombinedIbusKeyboardRetrievingAdaptor"/> class.
+		/// Used in unit tests
+		/// </summary>
+		/// <param name="ibusCommunicator">Ibus communicator.</param>
+		public CombinedIbusKeyboardRetrievingAdaptor(IIbusCommunicator ibusCommunicator): base(ibusCommunicator)
+		{
 		}
 
 		private static string GSettingsSchema { get { return "org.freedesktop.ibus.general"; } }
