@@ -5,16 +5,17 @@ namespace Palaso.WritingSystems
 	/// <summary>
 	/// The different keyboard types we're supporting.
 	/// </summary>
+	[Flags]
 	public enum KeyboardType
 	{
 		/// <summary>
 		/// System keyboard like Windows API or xkb
 		/// </summary>
-		System,
+		System = 1,
 		/// <summary>
 		/// Other input method like Keyman, InKey or ibus
 		/// </summary>
-		OtherIm
+		OtherIm = 2
 	}
 
 	/// <summary>

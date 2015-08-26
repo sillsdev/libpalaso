@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -25,7 +26,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 	/// </summary>
 	[SuppressMessage("Gendarme.Rules.Design", "TypesWithDisposableFieldsShouldBeDisposableRule",
 		Justification = "m_Timer gets disposed in Close() which gets called from KeyboardControllerImpl.Dispose")]
-	internal class WinKeyboardAdaptor: IKeyboardAdaptor
+	internal class WinKeyboardAdaptor: IKeyboardRetrievingAdaptor, IKeyboardSwitchingAdaptor
 	{
 		internal class LayoutName
 		{
@@ -642,7 +643,25 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 				profile1.Hkl == profile2.Hkl;
 		}
 
-		#region IKeyboardAdaptor Members
+		#region IKeyboardRetrievingAdaptor Members
+
+		/// <summary>
+		/// The type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
+		/// </summary>
+		public KeyboardType Type
+		{
+			get { return KeyboardType.System; }
+		}
+
+		public bool IsApplicable
+		{
+			get { return true; }
+		}
+
+		public IKeyboardSwitchingAdaptor Adaptor
+		{
+			get { return this; }
+		}
 
 		[SuppressMessage("Gendarme.Rules.Correctness", "EnsureLocalDisposalRule",
 			Justification = "m_Timer gets disposed in Close() which gets called from KeyboardControllerImpl.Dispose")]
@@ -651,16 +670,39 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			m_Timer = new Timer { Interval = 500 };
 			m_Timer.Tick += OnTimerTick;
 
-			GetInputMethods();
-
 			// Form.ActiveForm can be null when running unit tests
 			if (Form.ActiveForm != null)
 				Form.ActiveForm.InputLanguageChanged += ActiveFormOnInputLanguageChanged;
 		}
 
+		public void RegisterAvailableKeyboards()
+		{
+			GetInputMethods();
+		}
+
 		public void UpdateAvailableKeyboards()
 		{
 			GetInputMethods();
+		}
+
+		public List<IKeyboardErrorDescription> ErrorKeyboards
+		{
+			get { return m_BadLocales; }
+		}
+
+		public IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
+		{
+			return GetKeyboardDescription(inputLanguage);
+		}
+
+		/// <summary>
+		/// Creates and returns a keyboard definition object based on the layout and locale.
+		/// Note that this method is used when we do NOT have a matching available keyboard.
+		/// Therefore we can presume that the created one is NOT available.
+		/// </summary>
+		public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
+		{
+			return new WinKeyboardDescription(locale, layout, this) { IsAvailable = false };
 		}
 
 		public void Close()
@@ -679,10 +721,21 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			}
 		}
 
-		public List<IKeyboardErrorDescription> ErrorKeyboards
+		public string GetKeyboardSetupApplication(out string arguments)
 		{
-			get { return m_BadLocales; }
+			arguments = @"input.dll";
+			return Path.Combine(
+				Environment.GetFolderPath(Environment.SpecialFolder.System), @"control.exe");
 		}
+
+		public bool IsSecondaryKeyboardSetupApplication
+		{
+			get { return false; }
+		}
+
+		#endregion
+
+		#region IKeyboardSwitchingAdaptor Members
 
 		public bool ActivateKeyboard(IKeyboardDefinition keyboard)
 		{
@@ -696,21 +749,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			Debug.Assert(winKeyboard != null);
 
 			SaveImeConversionStatus(winKeyboard);
-		}
-
-		public IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
-		{
-			return GetKeyboardDescription(inputLanguage);
-		}
-
-		/// <summary>
-		/// Creates and returns a keyboard definition object based on the layout and locale.
-		/// Note that this method is used when we do NOT have a matching available keyboard.
-		/// Therefore we can presume that the created one is NOT available.
-		/// </summary>
-		public IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
-		{
-			return new WinKeyboardDescription(locale, layout, this) {IsAvailable = false};
 		}
 
 		/// <summary>
@@ -742,14 +780,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			}
 		}
 
-		/// <summary>
-		/// The type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
-		/// </summary>
-		public KeyboardType Type
-		{
-			get { return KeyboardType.System; }
-		}
 		#endregion
+
 	}
 }
 #endif

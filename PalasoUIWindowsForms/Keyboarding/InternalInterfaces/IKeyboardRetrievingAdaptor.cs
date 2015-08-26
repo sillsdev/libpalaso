@@ -1,4 +1,4 @@
-// Copyright (c) 2011-2015 SIL International
+﻿// Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
@@ -9,25 +9,46 @@ namespace Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces
 {
 	/// <summary>
 	/// Interface implemented by some helper classes used by KeyboardController, which
-	/// maintains a list of keyboard adapters, one for each type of keyboard on the current platform
-	/// which require different treatment.  In particular a keyboard adapter is responsible to figure out which keyboards of the type
-	/// it handles are installed, and to activate one of them when we think the user wants to type with it.
+	/// maintains a list of keyboard retriever adapters, one for each type of keyboard on the
+	/// current platform which require different treatment.  In particular a keyboard retrieving
+	/// adapter is responsible to figure out which keyboards of the type it handles are
+	/// installed.
 	/// </summary>
-	public interface IKeyboardAdaptor
+	public interface IKeyboardRetrievingAdaptor
 	{
 		/// <summary>
-		/// Initialize the installed keyboards: add to the master list the available keyboards recognized by this adapter.
+		/// Gets the type of keyboards this retriever handles: system or other (like Keyman, ibus...)
+		/// or both.
+		/// </summary>
+		KeyboardType Type { get; }
+
+		/// <summary>
+		/// Checks whether this keyboard retriever can get keyboards. Different desktop
+		/// environments use differing APIs to get the available keyboards. If this class is
+		/// able to find the available keyboards this property will return <c>true</c>,
+		/// otherwise <c>false</c>.
+		/// </summary>
+		bool IsApplicable { get; }
+
+		/// <summary>
+		/// Gets the keyboard adaptor that deals with keyboards that this class retrieves.
+		/// </summary>
+		IKeyboardSwitchingAdaptor Adaptor { get; }
+
+		/// <summary>
+		/// Initialize this keyboard retriever
 		/// </summary>
 		void Initialize();
 
 		/// <summary>
-		/// Add to the master list the (currently) available keyboards recognized by this adapter. This is called when
-		/// we need the list to be up-to-date (e.g., when displaying a chooser). The controller first empties the list.
+		/// Retrieve and register the available keyboards
+		/// </summary>
+		void RegisterAvailableKeyboards();
+
+		/// <summary>
+		/// Update the available keyboards
 		/// </summary>
 		void UpdateAvailableKeyboards();
-
-		/// <summary/>
-		void Close();
 
 		/// <summary>
 		/// List of keyboard layouts that either gave an exception or other error trying to
@@ -36,15 +57,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces
 		/// </summary>
 		/// <returns>List of IKeyboardErrorDescription objects, or an empty list.</returns>
 		List<IKeyboardErrorDescription> ErrorKeyboards { get; }
-
-		bool ActivateKeyboard(IKeyboardDefinition keyboard);
-
-		/// <summary>
-		/// Called to allow state to be saved when a different keyboard is being activated or the window is being deactivated.
-		/// Does not change the active keyboard.
-		/// </summary>
-		/// <param name="keyboard"></param>
-		void DeactivateKeyboard(IKeyboardDefinition keyboard);
 
 		IKeyboardDefinition GetKeyboardForInputLanguage(IInputLanguage inputLanguage);
 
@@ -64,20 +76,20 @@ namespace Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces
 		IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale);
 
 		/// <summary>
-		/// Gets the default keyboard of the system. This only needs to be implemented by the (first) adapter of type system.
+		/// Shutdown this instance and prevent futher use
 		/// </summary>
-		IKeyboardDefinition DefaultKeyboard { get; }
+		void Close();
 
 		/// <summary>
-		/// Gets the currently active keyboard. This only needs to be implemented by the (first) adapter of
-		/// type system, and only if the implementation in KeyboardControllerImpl (which uses layoutname
-		/// and culturename based on the current input language) isn't sufficient.
+		/// Gets the keyboard setup application and the arguments needed to call it.
 		/// </summary>
-		IKeyboardDefinition ActiveKeyboard { get; }
+		string GetKeyboardSetupApplication(out string arguments);
 
 		/// <summary>
-		/// Gets the type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
+		/// Returns <c>true</c> if this is the secondary keyboard application, e.g.
+		/// Keyman setup dialog on Windows.
 		/// </summary>
-		KeyboardType Type { get; }
+		bool IsSecondaryKeyboardSetupApplication { get; }
 	}
 }
+

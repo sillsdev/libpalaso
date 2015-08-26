@@ -36,25 +36,27 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		public static class Manager
 		{
 			/// <summary>
-			/// Sets the available keyboard adaptors. Note that if this is called more than once, the adapters
-			/// installed previously will be closed and no longer useable. Do not pass adapter instances that have been
-			/// previously passed. At least one adapter must be of type System.
+			/// Sets the available keyboard retrievers. Note that if this is called more than once,
+			/// the retrievers installed previously will be closed and no longer useable. Do not
+			/// pass retriever instances that have been previously passed. At least one retriever
+			/// must be of type System.
 			/// </summary>
-			public static void SetKeyboardAdaptors(IKeyboardAdaptor[] adaptors)
+			public static void SetKeyboardRetrievers(IKeyboardRetrievingAdaptor[] retrievers)
 			{
 				if (!(Keyboard.Controller is IKeyboardControllerImpl))
 					Keyboard.Controller = new KeyboardControllerImpl();
 
 				Instance.Keyboards.Clear(); // InitializeAdaptors below will fill it in again.
-				if (Adaptors != null)
-				{
-					foreach (var adaptor in Adaptors)
-						adaptor.Close();
-				}
 
-				Adaptors = adaptors;
+				if (KeyboardRetrievers == null)
+					KeyboardRetrievers = new Dictionary<KeyboardType, IKeyboardRetrievingAdaptor>();
 
-				InitializeAdaptors();
+				foreach (var retriever in KeyboardRetrievers.Values)
+					retriever.Close();
+
+				KeyboardRetrievers.Clear();
+
+				RegisterAvailableKeyboardRetrievers(retrievers);
 			}
 
 			/// <summary>
@@ -62,21 +64,43 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			/// </summary>
 			public static void Reset()
 			{
-				SetKeyboardAdaptors(new IKeyboardAdaptor[] {
+				SetKeyboardRetrievers(new IKeyboardRetrievingAdaptor[] {
 #if __MonoCS__
-					new XkbKeyboardAdaptor(), new IbusKeyboardAdaptor(), new CombinedKeyboardAdaptor(),
-					new CinnamonIbusAdaptor()
+					new XkbKeyboardRetrievingAdaptor(), new IbusKeyboardRetrievingAdaptor(),
+					new UnityXkbKeyboardRetrievingAdaptor(), new UnityIbusKeyboardRetrievingAdaptor(),
+					new CombinedIbusKeyboardRetrievingAdaptor()
 #else
 					new WinKeyboardAdaptor(), new KeymanKeyboardAdaptor(),
 #endif
 				});
 			}
 
-			public static void InitializeAdaptors()
+			public static void RegisterAvailableKeyboardRetrievers(IKeyboardRetrievingAdaptor[] retrievers)
 			{
-				// this will also populate m_keyboards
-				foreach (var adaptor in Adaptors)
-					adaptor.Initialize();
+				foreach (var retriever in retrievers)
+				{
+					if (retriever.IsApplicable)
+					{
+						if ((retriever.Type & KeyboardType.System) == KeyboardType.System)
+							KeyboardRetrievers[KeyboardType.System] = retriever;
+						if ((retriever.Type & KeyboardType.OtherIm) == KeyboardType.OtherIm)
+							KeyboardRetrievers[KeyboardType.OtherIm] = retriever;
+					}
+				}
+
+				foreach (var retriever in retrievers)
+				{
+					if (!KeyboardRetrievers.ContainsValue(retriever))
+						retriever.Close();
+				}
+
+				// Now that we know who can deal with the keyboards we can retrieve all available
+				// keyboards
+				foreach (var retriever in KeyboardRetrievers.Values)
+				{
+					retriever.Initialize();
+					retriever.RegisterAvailableKeyboards();
+				}
 			}
 
 			/// <summary>
@@ -116,8 +140,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			public void UpdateAvailableKeyboards()
 			{
 				Keyboards.Clear();
-				foreach (var adapter in Adaptors)
-					adapter.UpdateAvailableKeyboards();
+				foreach (var retriever in KeyboardRetrievers.Values)
+					retriever.UpdateAvailableKeyboards();
 			}
 
 			#region Disposable stuff
@@ -147,11 +171,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				if (fDisposing && !IsDisposed)
 				{
 					// dispose managed and unmanaged objects
-					if (Adaptors != null)
+					if (KeyboardRetrievers != null)
 					{
-						foreach (var adaptor in Adaptors)
-							adaptor.Close();
-						Adaptors = null;
+						foreach (var retriever in KeyboardRetrievers.Values)
+							retriever.Close();
+						KeyboardRetrievers = null;
 					}
 				}
 				IsDisposed = true;
@@ -162,15 +186,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				get
 				{
-					var defaultKbd = Adaptors.First(adaptor => adaptor.Type == KeyboardType.System).DefaultKeyboard;
-#if __MonoCS__
-					if (defaultKbd == null && CinnamonKeyboardHandling)
-					{
-						CinnamonIbusAdaptor cinn = Adaptors.First(adaptor => adaptor is CinnamonIbusAdaptor) as CinnamonIbusAdaptor;
-						defaultKbd = cinn.DefaultKeyboard;
-					}
-#endif
-					return defaultKbd;
+					return KeyboardRetrievers[KeyboardType.System].Adaptor.DefaultKeyboard;
 				}
 			}
 
@@ -286,17 +302,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			/// </summary>
 			public void ActivateDefaultKeyboard()
 			{
-				if (CinnamonKeyboardHandling)
-				{
-#if __MonoCS__
-					CinnamonIbusAdaptor cinn = Adaptors.First(adaptor => adaptor is CinnamonIbusAdaptor) as CinnamonIbusAdaptor;
-					cinn.ActivateDefaultKeyboard();
-#endif
-				}
-				else
-				{
-					SetKeyboard(DefaultKeyboard);
-				}
+				SetKeyboard(DefaultKeyboard);
 			}
 
 			/// <summary>
@@ -315,8 +321,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			{
 				var existingKeyboard = AllAvailableKeyboards.FirstOrDefault(keyboard => keyboard.Layout == layout && keyboard.Locale == locale);
 				return existingKeyboard ??
-					Adaptors.First(adaptor => adaptor.Type == KeyboardType.System)
-						.CreateKeyboardDefinition(layout, locale);
+					KeyboardRetrievers[KeyboardType.System].CreateKeyboardDefinition(layout, locale);
 			}
 
 			/// <summary>
@@ -328,7 +333,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				{
 					if (m_ActiveKeyboard == null)
 					{
-						m_ActiveKeyboard = Adaptors.First(adaptor => adaptor.Type == KeyboardType.System).ActiveKeyboard;
+						m_ActiveKeyboard = KeyboardRetrievers[KeyboardType.System].Adaptor.ActiveKeyboard;
 						if (m_ActiveKeyboard == null)
 						{
 							try
@@ -556,22 +561,43 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			Keyboard.Controller = null;
 		}
 
-		/// <summary>
-		/// Gets or sets the available keyboard adaptors.
-		/// </summary>
-		internal static IKeyboardAdaptor[] Adaptors { get; private set; }
+		internal static Dictionary<KeyboardType, IKeyboardRetrievingAdaptor> KeyboardRetrievers { get; private set; }
 
-#if __MonoCS__
-		/// <summary>
-		/// Flag that Linux is using the combined keyboard handling (Ubuntu saucy/trusty/later?)
-		/// </summary>
-		internal static bool CombinedKeyboardHandling { get; set; }
-#endif
+		internal static string GetKeyboardSetupApplication(out string arguments)
+		{
+			string program = null;
+			arguments = null;
+			if (!HasSecondaryKeyboardSetupApplication && KeyboardRetrievers.ContainsKey(KeyboardType.OtherIm))
+				program = KeyboardRetrievers[KeyboardType.OtherIm].GetKeyboardSetupApplication(out arguments);
+
+			if (string.IsNullOrEmpty(program))
+				program = KeyboardRetrievers[KeyboardType.System].GetKeyboardSetupApplication(out arguments);
+
+			return program;
+		}
+
+		internal static string GetSecondaryKeyboardSetupApplication(out string arguments)
+		{
+			string program = null;
+			arguments = null;
+			if (HasSecondaryKeyboardSetupApplication && KeyboardRetrievers.ContainsKey(KeyboardType.OtherIm))
+				program = KeyboardRetrievers[KeyboardType.OtherIm].GetKeyboardSetupApplication(out arguments);
+
+			return program;
+		}
 
 		/// <summary>
-		/// Flag that Linux is Wasta-14 (Mint 17/Cinnamon) using IBus for keyboarding.
+		/// Returns <c>true</c> if there is a secondary keyboard application available, e.g.
+		/// Keyman setup dialog on Windows.
 		/// </summary>
-		internal static bool CinnamonKeyboardHandling { get; set; }
+		internal static bool HasSecondaryKeyboardSetupApplication
+		{
+			get
+			{
+				return KeyboardRetrievers.ContainsKey(KeyboardType.OtherIm) &&
+					KeyboardRetrievers[KeyboardType.OtherIm].IsSecondaryKeyboardSetupApplication;
+			}
+		}
 
 		/// <summary>
 		/// Gets the currently active keyboard

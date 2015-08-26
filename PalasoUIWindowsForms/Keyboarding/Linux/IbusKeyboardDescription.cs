@@ -7,19 +7,20 @@ using IBusDotNet;
 using Icu;
 using Palaso.WritingSystems;
 using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
+using Palaso.UI.WindowsForms.Keyboarding.Types;
 
 namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 {
-	internal class IbusKeyboardDescription: KeyboardDescription
+	class IbusKeyboardDescription: KeyboardDescription
 	{
 		private const string OtherLanguage = "Other Language";
 
 		public IBusEngineDesc IBusKeyboardEngine { get; private set;}
 
-		internal int SystemIndex { get; private set; }
+		internal uint SystemIndex { get; private set; }
 
-		public IbusKeyboardDescription(IKeyboardAdaptor engine, IBusEngineDesc ibusKeyboard,
-			int systemIndex):
+		public IbusKeyboardDescription(IKeyboardSwitchingAdaptor engine, IBusEngineDesc ibusKeyboard,
+			uint systemIndex):
 			base(FormatKeyboardIdentifier(ibusKeyboard), ibusKeyboard.LongName, ibusKeyboard.Language,
 			null, engine, KeyboardType.OtherIm)
 		{
@@ -43,10 +44,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		/// </summary>
 		private static string FormatKeyboardIdentifier(IBusEngineDesc engineDesc)
 		{
-			string id = engineDesc.Language;
-			string languageName = string.IsNullOrEmpty(id) ? OtherLanguage :
-				new Locale(id).GetDisplayName(new Locale(Application.CurrentCulture.TwoLetterISOLanguageName));
-			if (id != null && id.ToLowerInvariant() == languageName.ToLowerInvariant())
+			string languageCode = AlternateLanguageCodes.GetLanguageCode(engineDesc.Language);
+			string languageName = string.IsNullOrEmpty(languageCode) ? OtherLanguage :
+				new Locale(languageCode).GetDisplayName(new Locale(Application.CurrentCulture.TwoLetterISOLanguageName));
+			if (languageCode != null && languageCode.ToLowerInvariant() == languageName.ToLowerInvariant())
 				languageName = OtherLanguage;
 			return String.Format("{0} - {1}", languageName, engineDesc.Name);
 		}

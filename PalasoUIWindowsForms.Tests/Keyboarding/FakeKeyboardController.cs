@@ -57,7 +57,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 		public override IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
 		{
 			var inputLanguage = new InputLanguageWrapper(new CultureInfo(locale), IntPtr.Zero, layout);
-			return new KeyboardDescription(layout, layout, locale, inputLanguage,  KeyboardController.Adaptors[0]);
+			return new KeyboardDescription(layout, layout, locale, inputLanguage,  KeyboardController.KeyboardRetrievers[0].Adaptor);
 		}
 
 		public KeyboardCollection Keyboards

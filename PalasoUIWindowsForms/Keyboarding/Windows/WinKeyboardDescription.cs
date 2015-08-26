@@ -30,17 +30,17 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 		/// Initializes a new instance of the
 		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.Windows.WinKeyboardDescription"/> class.
 		/// </summary>
-		public WinKeyboardDescription(TfInputProcessorProfile profile, IKeyboardAdaptor engine)
+		public WinKeyboardDescription(TfInputProcessorProfile profile, IKeyboardSwitchingAdaptor engine)
 			: this(profile, profile.LangId, profile.Hkl, engine)
 		{
 		}
 
-		public WinKeyboardDescription(IntPtr hkl, IKeyboardAdaptor engine)
+		public WinKeyboardDescription(IntPtr hkl, IKeyboardSwitchingAdaptor engine)
 			: this(new TfInputProcessorProfile(), HklToLangId(hkl), hkl, engine)
 		{
 		}
 
-		private WinKeyboardDescription(TfInputProcessorProfile profile, ushort langId, IntPtr hkl, IKeyboardAdaptor engine)
+		private WinKeyboardDescription(TfInputProcessorProfile profile, ushort langId, IntPtr hkl, IKeyboardSwitchingAdaptor engine)
 			: base(engine, KeyboardType.System)
 		{
 			var winEngine = engine as WinKeyboardAdaptor;
@@ -77,7 +77,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 				new InputLanguageWrapper(culture, hkl, layoutName.Name));
 		}
 
-		public WinKeyboardDescription(string locale, string layout, IKeyboardAdaptor engine)
+		public WinKeyboardDescription(string locale, string layout, IKeyboardSwitchingAdaptor engine)
 			: base(engine, KeyboardType.System)
 		{
 			InputLanguageWrapper inputLanguage = null;
