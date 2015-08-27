@@ -116,7 +116,7 @@ namespace Palaso.PlatformUtilities
 							currentDesktop = "Gnome";
 					}
 					if (string.IsNullOrEmpty(currentDesktop))
-						currentDesktop = Environment.GetEnvironmentVariable("GDMSESSION");
+						currentDesktop = Environment.GetEnvironmentVariable("GDMSESSION") ?? string.Empty;
 				}
 				return currentDesktop.ToLowerInvariant();
 			}
@@ -139,7 +139,7 @@ namespace Palaso.PlatformUtilities
 				var additionalInfo = string.Empty;
 				if (!string.IsNullOrEmpty(mirSession))
 					additionalInfo = " [display server: Mir]";
-				var gdmSession = Environment.GetEnvironmentVariable("GDMSESSION");
+				var gdmSession = Environment.GetEnvironmentVariable("GDMSESSION") ?? "not set";
 				return string.Format("{0} ({1}{2})", currentDesktop, gdmSession, additionalInfo);
 			}
 		}
