@@ -147,6 +147,7 @@ namespace Palaso.Tests.PlatformUtilities
 		[TestCase(null, "/usr/share/ubuntu:/usr/share/kde:/usr/local/share/:/usr/share/", null,
 			Result = "kde", TestName = "Only XDG_DATA_DIRS set")]
 		[TestCase(null, null, "something", Result = "something", TestName = "Only GDMSESSION set")]
+		[TestCase(null, null, null, Result = "", TestName = "Nothing set")]
 		public string DesktopEnvironment_SimulateDesktops(string currDesktop,
 			string dataDirs, string gdmSession)
 		{
@@ -180,6 +181,7 @@ namespace Palaso.Tests.PlatformUtilities
 			TestName = "Gnome shell")]
 		[TestCase(null, "/usr/share/ubuntu:/usr/share/kde:/usr/local/share/:/usr/share/",
 			"kde-plasma", null, Result = "kde (kde-plasma)", TestName = "KDE on Ubuntu 12_04")]
+		[TestCase(null, null, null, null, Result = " (not set)", TestName = "Nothing set")]
 		public string DesktopEnvironmentInfoString_SimulateDesktopEnvironments(string currDesktop,
 			string dataDirs, string gdmSession, string mirServerName)
 		{
