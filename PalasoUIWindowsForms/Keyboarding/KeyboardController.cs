@@ -33,6 +33,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 		/// Allows setting different keyboard adapters which is needed for tests. Also allows
 		/// registering keyboard layouts.
 		/// </summary>
+		/// <remarks>Beware that the public methods of this class get called by unit tests (e.g.
+		/// SIL.FieldWorks.Common.RootSites.SimpleRootSiteTests.IbusRootSiteEventHandlerTests), so
+		/// don't change the visibility of these methods without discussing this on the sil-lsdev
+		/// mailing list.
+		/// </remarks>
 		public static class Manager
 		{
 			/// <summary>
@@ -75,7 +80,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				});
 			}
 
-			public static void RegisterAvailableKeyboardRetrievers(IKeyboardRetrievingAdaptor[] retrievers)
+			private static void RegisterAvailableKeyboardRetrievers(IKeyboardRetrievingAdaptor[] retrievers)
 			{
 				foreach (var retriever in retrievers)
 				{
