@@ -9,6 +9,9 @@ using System.Windows.Forms;
 using Palaso.Reporting;
 using Palaso.WritingSystems;
 using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
+using System.Diagnostics;
+
+
 #if __MonoCS__
 using Palaso.UI.WindowsForms.Keyboarding.Linux;
 #else
@@ -547,8 +550,15 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				Keyboard.Controller = new KeyboardControllerImpl();
 				Manager.Reset();
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
+				Console.WriteLine("Got exception {0} initalizing keyboard controller", e.GetType());
+				Console.WriteLine(e.StackTrace);
+				Logger.WriteEvent("Got exception {0} initalizing keyboard controller", e.GetType());
+				Logger.WriteEvent(e.StackTrace);
+
+				if (Keyboard.Controller != null)
+					Keyboard.Controller.Dispose();
 				Keyboard.Controller = null;
 				throw;
 			}
