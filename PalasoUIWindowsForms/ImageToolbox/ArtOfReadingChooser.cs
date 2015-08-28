@@ -31,6 +31,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				this.betterLinkLabel1.URL = null;
 				this.betterLinkLabel1.LinkClicked += InstallLinkClicked;
 			}
+			SearchLanguage = "en";	// until/unless the owner specifies otherwise explicitly
 		}
 
 		public void Dispose()
@@ -46,6 +47,11 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		{
 			_searchTermsBox.Text = searchTerm;
 		}
+
+		/// <summary>
+		/// Gets or sets the language used in searching for an image by words.
+		/// </summary>
+		public string SearchLanguage { internal get; set; }
 
 		void _thumbnailViewer_SelectedIndexChanged(object sender, EventArgs e)
 		{
@@ -178,7 +184,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			if (DesignMode)
 				return;
 
-			_imageCollection = ArtOfReadingImageCollection.FromStandardLocations();
+			_imageCollection = ArtOfReadingImageCollection.FromStandardLocations(SearchLanguage);
 			if (_imageCollection == null)
 			{
 				//label1.Visible = _searchTermsBox.Visible = _searchButton.Visible = _thumbnailViewer.Visible = false;

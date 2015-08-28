@@ -16,8 +16,14 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			 InitializeComponent();
 			imageToolboxControl1.ImageInfo = imageInfo;
 			imageToolboxControl1.InitialSearchString = initialSearchString;
+			SearchLanguage = "en";	// unless the caller specifies otherwise explicitly
 		}
 		public PalasoImage ImageInfo { get { return imageToolboxControl1.ImageInfo; } }
+
+		/// <summary>
+		/// Sets the language used in searching for an image by words.
+		/// </summary>
+		public string SearchLanguage { set { imageToolboxControl1.SearchLanguage = value; } }
 
 		private void _okButton_Click(object sender, EventArgs e)
 		{
