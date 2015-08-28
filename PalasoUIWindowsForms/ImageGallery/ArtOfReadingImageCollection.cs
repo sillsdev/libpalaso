@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Palaso.Extensions;
 using Palaso.IO;
 using Palaso.Linq;
@@ -15,11 +16,15 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 	{
 		private Dictionary<string, List<string>> _wordToPartialPathIndex;
 		private Dictionary<string, string> _partialPathToWordsIndex;
+		private static readonly object _padlock = new object();
+		public string SearchLanguage { get; set; }
+
 
 		public ArtOfReadingImageCollection()
 		{
-		   _wordToPartialPathIndex = new Dictionary<string, List<string>>();
-		   _partialPathToWordsIndex = new Dictionary<string, string>();
+			_wordToPartialPathIndex = new Dictionary<string, List<string>>();
+			_partialPathToWordsIndex = new Dictionary<string, string>();
+			SearchLanguage = "en";	// until told otherwise...
 		}
 
 		public string RootImagePath { get; set; }
@@ -37,13 +42,81 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 						continue;
 					var partialPath = parts[0];
 					var keyString = parts[1].Trim(new char[] { ' ', '"' });//some have quotes, some don't
-					_partialPathToWordsIndex.Add(partialPath, keyString);
+					lock (_padlock)
+						_partialPathToWordsIndex.Add(partialPath, keyString);
 					var keys = keyString.SplitTrimmed(',');
 					foreach (var key in keys)
 					{
-						_wordToPartialPathIndex.GetOrCreate(key).Add(partialPath);
+						lock (_padlock)
+							_wordToPartialPathIndex.GetOrCreate(key).Add(partialPath);
 					}
 				}
+			}
+		}
+
+		/// <summary>
+		/// Load the multilingual index of the images.
+		/// </summary>
+		/// <returns>number of index lines successfully loaded</returns>
+		public int LoadMultilingualIndex(string pathToIndexFile)
+		{
+			var defaultLang = "en";
+			using (var f = File.OpenText(pathToIndexFile))
+			{
+				// The file starts with a line that looks like the following:
+				//order	filename	artist	country	en	id	fr	es	ar	hi	bn	pt	th	sw	zh
+				var header = f.ReadLine();
+				var columns = header.Split(new char[]{'\t'});
+				if (columns.Length < 5 ||
+					columns[0] != "order" ||
+					columns[1] != "filename" ||
+					columns[2] != "artist" ||
+					columns[3] != "country")
+				{
+					return 0;
+				}
+				int desiredColumn = -1;
+				int defaultColumn = -1;
+				for (int i = 4; i < columns.Length; ++i)
+				{
+					if (columns[i] == SearchLanguage)
+						desiredColumn = i;
+					if (columns[i] == defaultLang)
+						defaultColumn = i;
+				}
+				if (desiredColumn == -1)
+					desiredColumn = defaultColumn;
+				if (defaultColumn == -1)
+					return 0;		// we must have English!!?
+				int count = 0;
+				while (!f.EndOfStream)
+				{
+					var line = f.ReadLine();
+					var parts = line.Split(new char[]{'\t'});
+					Debug.Assert(parts.Length > defaultColumn);
+					if (parts.Length <= defaultColumn)
+						continue;
+					var partialPath = String.Format("{0}:AOR_{1}.png", parts[3], parts[1]);
+					string keyString;
+					if (parts.Length > desiredColumn)
+						keyString = parts[desiredColumn];
+					else if (parts.Length > defaultColumn)
+						keyString = parts[defaultColumn];
+					else
+						keyString = String.Empty;
+					if (String.IsNullOrWhiteSpace (keyString))
+						continue;
+					lock (_padlock)
+						_partialPathToWordsIndex.Add(partialPath, keyString.Replace(",", ", "));
+					var keys = keyString.Split(',');
+					foreach (var key in keys)
+					{
+						lock (_padlock)
+							_wordToPartialPathIndex.GetOrCreate(key).Add(partialPath);
+					}
+					++count;
+				}
+				return count;
 			}
 		}
 
@@ -80,7 +153,8 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 				var partialPath = path.Replace(RootImagePath, "");
 				partialPath = partialPath.Replace(Path.DirectorySeparatorChar, ':');
 				partialPath = partialPath.Trim(new char[] {':'});
-				return _partialPathToWordsIndex[partialPath];
+				lock (_padlock)
+					return _partialPathToWordsIndex[partialPath];
 			}
 			catch (Exception)
 			{
@@ -144,31 +218,33 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 				List<string> picturesForThisKey;
 
 				//first, try for exact matches
-				if (_wordToPartialPathIndex.TryGetValue(term, out picturesForThisKey))
+				lock (_padlock)
 				{
-					pictures.AddRange(picturesForThisKey);
-					foundExactMatches = true;
-				}
-				//then look  for approximate matches
-				else
-				{
-					foundExactMatches = false;
-					var kMaxEditDistance = 1;
-					var itemFormExtractor = new ApproximateMatcher.GetStringDelegate<KeyValuePair<string, List<string>>>(pair => pair.Key);
-					var matches = ApproximateMatcher.FindClosestForms<KeyValuePair<string, List<string>>>(_wordToPartialPathIndex, itemFormExtractor,
-																										  term,
-																										  ApproximateMatcherOptions.None,
-																										  kMaxEditDistance);
-
-					if (matches != null && matches.Count > 0)
+					if (_wordToPartialPathIndex.TryGetValue(term, out picturesForThisKey))
 					{
-						foreach (var keyValuePair in matches)
+						pictures.AddRange(picturesForThisKey);
+						foundExactMatches = true;
+					}
+					//then look  for approximate matches
+					else
+					{
+						foundExactMatches = false;
+						var kMaxEditDistance = 1;
+						var itemFormExtractor = new ApproximateMatcher.GetStringDelegate<KeyValuePair<string, List<string>>>(pair => pair.Key);
+						var matches = ApproximateMatcher.FindClosestForms<KeyValuePair<string, List<string>>>(_wordToPartialPathIndex, itemFormExtractor,
+							             term,
+							             ApproximateMatcherOptions.None,
+							             kMaxEditDistance);
+
+						if (matches != null && matches.Count > 0)
 						{
-							pictures.AddRange(keyValuePair.Value);
+							foreach (var keyValuePair in matches)
+							{
+								pictures.AddRange(keyValuePair.Value);
+							}
 						}
 					}
 				}
-
 			}
 			var results = new List<object>();
 			pictures.Distinct().ForEach(p => results.Add(p));
@@ -183,8 +259,11 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			var words = stringWhichMayContainKeywords.SplitTrimmed(' ');
 			foreach (var key in words)
 			{
-				if (_wordToPartialPathIndex.ContainsKey(key))
-					result += " " + key;
+				lock (_padlock)
+				{
+					if (_wordToPartialPathIndex.ContainsKey(key))
+						result += " " + key;
+				}
 			}
 			return result.Trim();
 		}
@@ -263,6 +342,11 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 		public static IImageCollection FromStandardLocations()
 		{
+			return FromStandardLocations("en");
+		}
+
+		public static IImageCollection FromStandardLocations(string lang)
+		{
 			string path = TryToGetRootImageCatalogPath();
 			if (DoNotFindArtOfReading_Test)
 				path = null;
@@ -273,10 +357,41 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			var c = new ArtOfReadingImageCollection();
 
 			c.RootImagePath = path;
+			c.SearchLanguage = lang;
 
-			string pathToIndexFile = TryToGetPathToIndex(path);
-			c.LoadIndex(pathToIndexFile);
+			// Load the index information asynchronously so as not to delay displaying
+			// the parent dialog.  Loading the file takes a second or two, but should
+			// be done before the user finishes typing a search string.
+			var thr = new Thread(new ThreadStart(c.LoadImageIndex));
+			thr.Name = "LoadArtOfReadingIndex";
+			thr.Start();
+
 			return c;
+		}
+
+		void LoadImageIndex()
+		{
+			int countMulti = 0;
+			string pathToIndexFile = TryToGetPathToMultilingualIndex(RootImagePath);
+			if (!String.IsNullOrEmpty(pathToIndexFile))
+			{
+				countMulti = LoadMultilingualIndex(pathToIndexFile);
+			}
+			if (countMulti == 0)
+			{
+				pathToIndexFile = TryToGetPathToIndex(RootImagePath);
+				LoadIndex(pathToIndexFile);
+			}
+		}
+
+		public static string TryToGetPathToMultilingualIndex(string imagesPath)
+		{
+			if (String.IsNullOrEmpty(imagesPath) || !Directory.Exists(imagesPath))
+				return null;
+			var path = Directory.GetParent(imagesPath).FullName.CombineForPath("ArtOfReadingMultilingualIndex.txt");
+			if (File.Exists(path))
+				return path;
+			return null;
 		}
 
 		public static string TryToGetPathToIndex(string imagesPath)

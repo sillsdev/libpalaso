@@ -28,6 +28,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			_toolImages = new ImageList();
 			ImageInfo = new PalasoImage();
 			_copyExemplarMetadata.Font = _editMetadataLink.Font;
+			SearchLanguage = "en";	// unless/until the owner specifies otherwise explicitly
 		}
 
 		/// <summary>
@@ -109,6 +110,11 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				}
 			}
 		}
+
+		/// <summary>
+		/// Gets or sets the language used in searching for an image by words.
+		/// </summary>
+		public string SearchLanguage { protected get; set; }
 
 		private void SetCurrentImageToolTip(PalasoImage image)
 		{
@@ -335,6 +341,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			{
 				var c = new AcquireImageControl();
 				c.SetIntialSearchString(InitialSearchString);
+				c.SearchLanguage = SearchLanguage;
 				return c;
 			});
 			_cropToolListItem = AddControl("Crop".Localize("ImageToolbox.Crop"), ImageToolboxButtons.crop, "crop", (x) => new ImageCropper());

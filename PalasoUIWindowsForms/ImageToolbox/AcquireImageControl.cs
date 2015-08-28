@@ -266,6 +266,15 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			_galleryControl.SetIntialSearchTerm(searchTerm);
 		}
 
+		/// <summary>
+		/// Gets or sets the language used in searching for an image by words.
+		/// </summary>
+		public string SearchLanguage
+		{
+			get { return _galleryControl.SearchLanguage; }
+			set { _galleryControl.SearchLanguage = value; }
+		}
+
 		/*
 		/// <summary>
 		/// Bitmaps --> PNG, JPEGs stay as jpegs.
