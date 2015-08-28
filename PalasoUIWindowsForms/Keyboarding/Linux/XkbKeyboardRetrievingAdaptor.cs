@@ -1,18 +1,17 @@
 ﻿// Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-using System.IO;
-
-
 #if __MonoCS__
 using System;
-using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
-using X11.XKlavier;
 using System.Collections.Generic;
-using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
-using Palaso.WritingSystems;
-using Palaso.Reporting;
 using System.Globalization;
+using System.IO;
+using Palaso.PlatformUtilities;
+using Palaso.Reporting;
+using Palaso.UI.WindowsForms.Keyboarding.Interfaces;
+using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
 using Palaso.UI.WindowsForms.Keyboarding.Types;
+using Palaso.WritingSystems;
+using X11.XKlavier;
 
 namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 {
@@ -199,8 +198,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 			return _knownCultures.Contains(locale);
 		}
-		#region IKeyboardRetriever implementation
 
+		#region IKeyboardRetriever implementation
 		/// <summary>
 		/// The type of keyboards this retriever handles: system or other (like Keyman, ibus...)
 		/// </summary>
@@ -269,17 +268,20 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			// XFCE
 			if (File.Exists("/usr/bin/xfce4-keyboard-settings"))
 				return "/usr/bin/xfce4-keyboard-settings";
+			// Cinnamon
+			if (File.Exists("/usr/lib/cinnamon-settings/cinnamon-settings.py") && File.Exists("/usr/bin/python"))
+			{
+				arguments = "/usr/lib/cinnamon-settings/cinnamon-settings.py " +
+					Platform.DesktopEnvironment == "cinnamon"
+						? "region layouts" // Wasta 12
+						: "keyboard"; // Wasta 14;
+				return "/usr/bin/python";
+			}
 			// GNOME
 			if (File.Exists("/usr/bin/gnome-control-center"))
 			{
 				arguments = "region layouts";
 				return "/usr/bin/gnome-control-center";
-			}
-			// Cinnamon
-			if (File.Exists("/usr/lib/cinnamon-settings/cinnamon-settings.py") && File.Exists("/usr/bin/python"))
-			{
-				arguments = "/usr/lib/cinnamon-settings/cinnamon-settings.py keyboard";
-				return "/usr/bin/python";
 			}
 			// KDE
 			if (File.Exists("/usr/bin/kcmshell4"))
