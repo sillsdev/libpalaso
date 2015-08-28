@@ -94,19 +94,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			}
 		}
 
-		internal override bool IBusKeyboardAlreadySet(IbusKeyboardDescription keyboard)
-		{
-			if (keyboard == null || keyboard.IBusKeyboardEngine == null)
-			{
-				UnsetKeyboard();
-				return true;
-			}
-
-			// Even when GlobalCachedInputContext.Keyboard is already set to keyboard we still
-			// want to set the keyboard again
-			return false;
-		}
-
 		/// <summary>
 		/// Set the XKB layout from the IBus keyboard.
 		/// </summary>
