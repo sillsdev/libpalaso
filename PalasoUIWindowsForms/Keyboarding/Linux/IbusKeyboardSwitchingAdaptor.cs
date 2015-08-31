@@ -259,6 +259,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			if (!IBusCommunicator.Connected)
 				return;
 
+			// On FieldWorks we get here twice: once because we intercept the WM_SETFOCUS message
+			// and the other time because we have to call the original window proc. However, only
+			// the second time will the control report as being focused (or when we not intercept
+			// the message then the first time) (see SimpleRootSite.OriginalWndProc).
+			var control = sender as Control;
+			if (control == null || !control.Focused)
+				return;
+
 			IBusCommunicator.FocusIn();
 			m_needIMELocation = true;
 		}
