@@ -118,6 +118,9 @@ namespace Palaso.PlatformUtilities
 					if (string.IsNullOrEmpty(currentDesktop))
 						currentDesktop = Environment.GetEnvironmentVariable("GDMSESSION") ?? string.Empty;
 				}
+				// Special case for Wasta 12
+				else if (currentDesktop == "GNOME" && Environment.GetEnvironmentVariable("GDMSESSION") == "cinnamon")
+					currentDesktop = Environment.GetEnvironmentVariable("GDMSESSION");
 				return currentDesktop.ToLowerInvariant();
 			}
 		}

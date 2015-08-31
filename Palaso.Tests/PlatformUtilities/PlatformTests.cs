@@ -133,13 +133,16 @@ namespace Palaso.Tests.PlatformUtilities
 			Assert.That(Platform.DesktopEnvironment, Is.EqualTo("Win32NT"));
 		}
 
-		[Test]
 		[Platform(Include = "Linux", Reason = "Linux specific test")]
 		[TestCase("Unity", null, "ubuntu", Result = "unity", TestName = "Unity")]
 		[TestCase("Unity", "/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/",
 			"ubuntu", Result = "unity", TestName = "Unity with dataDir")]
 		[TestCase("GNOME", null, "gnome-shell", Result = "gnome",
 			TestName = "Gnome shell")]
+		[TestCase("GNOME", null, "cinnamon", Result = "cinnamon",
+			TestName = "Wasta 12")]
+		[TestCase("x-cinnamon", null, "cinnamon", Result = "x-cinnamon",
+			TestName = "Wasta 14")]
 		[TestCase(null, "/usr/share/ubuntu:/usr/share/kde:/usr/local/share/:/usr/share/",
 			"kde-plasma", Result = "kde", TestName = "KDE on Ubuntu 12_04")]
 		[TestCase("XFCE", null, "xubuntu", Result = "xfce", TestName = "XFCE")]
@@ -170,7 +173,6 @@ namespace Palaso.Tests.PlatformUtilities
 			Assert.That(Platform.DesktopEnvironmentInfoString, Is.Empty);
 		}
 
-		[Test]
 		[Platform(Include = "Linux", Reason = "Linux specific test")]
 		[TestCase("Unity", null, "ubuntu", null, Result = "unity (ubuntu)", TestName = "Unity")]
 		[TestCase("Unity", "/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/",
@@ -179,6 +181,10 @@ namespace Palaso.Tests.PlatformUtilities
 			Result = "unity (ubuntu [display server: Mir])", TestName = "Unity with Mir")]
 		[TestCase("GNOME", null, "gnome-shell", null, Result = "gnome (gnome-shell)",
 			TestName = "Gnome shell")]
+		[TestCase("GNOME", null, "cinnamon", null, Result = "cinnamon (cinnamon)",
+			TestName = "Wasta 12")]
+		[TestCase("x-cinnamon", null, "cinnamon", null, Result = "x-cinnamon (cinnamon)",
+			TestName = "Wasta 14")]
 		[TestCase(null, "/usr/share/ubuntu:/usr/share/kde:/usr/local/share/:/usr/share/",
 			"kde-plasma", null, Result = "kde (kde-plasma)", TestName = "KDE on Ubuntu 12_04")]
 		[TestCase(null, null, null, null, Result = " (not set)", TestName = "Nothing set")]
