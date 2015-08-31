@@ -186,7 +186,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				{
 					var desired = String.Format("xkb:{0}:", DefaultLayout);
 					if (!String.IsNullOrEmpty (DefaultVariant))
-						desired = String.Format ("xkb:{0}\\{1}:", DefaultLayout, DefaultVariant);
+						desired = String.Format ("xkb:{0}:{1}:", DefaultLayout, DefaultVariant);
 					var pattern = String.Format("[^A-Za-z]{0}[^A-Za-z]|^{0}[^A-Za-z]|.*[^A-Za-z]{0}$",
 						DefaultLayout);
 					var regex = new System.Text.RegularExpressions.Regex(pattern);
