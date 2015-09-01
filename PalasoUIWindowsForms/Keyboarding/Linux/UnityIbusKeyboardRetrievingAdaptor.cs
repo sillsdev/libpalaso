@@ -62,7 +62,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				}
 			}
 			foreach (var layout in missingLayouts)
-				Console.WriteLine("Didn't find " + layout);
+				Console.WriteLine("{0}: Didn't find {1}", GetType().Name, layout);
 		}
 	}
 }
