@@ -190,7 +190,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 					var pattern = String.Format("[^A-Za-z]{0}[^A-Za-z]|^{0}[^A-Za-z]|.*[^A-Za-z]{0}$",
 						DefaultLayout);
 					var regex = new System.Text.RegularExpressions.Regex(pattern);
-					IKeyboardDefinition first = null;
+					IKeyboardDefinition first = KeyboardDescription.Zero;
 					foreach (var kbd in Keyboard.Controller.AllAvailableKeyboards)
 					{
 						if (first == null)
