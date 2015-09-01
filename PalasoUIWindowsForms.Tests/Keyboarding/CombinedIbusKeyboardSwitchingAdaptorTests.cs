@@ -109,6 +109,14 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			Assert.That(Adaptor.DefaultKeyboard.Name, Is.EqualTo("English - English (international AltGr dead keys)"));
 		}
 
+		[Test]
+		public void DefaultKeyboard_NoKeyboards()
+		{
+			CombinedIbusKeyboardSwitchingAdaptor.DefaultLayout = "us";
+
+			Assert.That(Adaptor.DefaultKeyboard.Name, Is.EqualTo("(default)"));
+		}
+
 	}
 }
 #endif
