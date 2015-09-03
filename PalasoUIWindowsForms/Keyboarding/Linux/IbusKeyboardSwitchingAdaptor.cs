@@ -217,10 +217,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 
 		#endregion
 
-		private bool PassKeyEventToIbus(Control control, Keys keyChar, Keys modifierKeys)
+		/// <summary>
+		/// Passes the key event to ibus. This method deals with the special keys (Curosr up/down,
+		/// backspace etc) that usually shouldn't cause a commit.
+		/// </summary>
+		private bool PassSpecialKeyEventToIbus(Control control, Keys keyChar, Keys modifierKeys)
 		{
 			var keySym = X11KeyConverter.GetKeySym(keyChar);
-			return PassKeyEventToIbus(control, keySym, modifierKeys);
+			return PassKeyEventToIbus(control, keySym, modifierKeys, false);
 		}
 
 		private bool PassKeyEventToIbus(Control control, char keyChar, Keys modifierKeys)
@@ -228,10 +232,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			if (keyChar == 0x7f) // we get this for Ctrl-Backspace
 				keyChar = '\b';
 
-			return PassKeyEventToIbus(control, (int)keyChar, modifierKeys);
+			return PassKeyEventToIbus(control, (int)keyChar, modifierKeys, true);
 		}
 
-		private bool PassKeyEventToIbus(Control control, int keySym, Keys modifierKeys)
+		private bool PassKeyEventToIbus(Control control, int keySym, Keys modifierKeys,
+			bool resetIfUnhandled)
 		{
 			if (!IBusCommunicator.Connected)
 				return false;
@@ -245,10 +250,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				}
 			}
 
-			// If ProcessKeyEvent doesn't consume the key, we need to kill any preedits and
-			// sync before continuing processing the keypress. We return false so that the
-			// control can process the character.
-			ResetAndWaitForCommit(control);
+			if (resetIfUnhandled)
+			{
+				// If ProcessKeyEvent doesn't consume the key, we need to kill any preedits and
+				// sync before continuing processing the keypress. We return false so that the
+				// control can process the character.
+				ResetAndWaitForCommit(control);
+			}
 			return false;
 		}
 
@@ -321,12 +329,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				case Keys.PageDown:
 				case Keys.Home:
 				case Keys.End:
-					PassKeyEventToIbus(sender as Control, key, e.Modifiers);
+				case Keys.Back:
+					PassSpecialKeyEventToIbus(sender as Control, key, e.Modifiers);
 					return;
 			}
 			// pass function keys onto ibus since they don't appear (on mono at least) as WM_SYSCHAR
 			if (key >= Keys.F1 && key <= Keys.F24)
-				PassKeyEventToIbus(sender as Control, key, e.Modifiers);
+				PassSpecialKeyEventToIbus(sender as Control, key, e.Modifiers);
 		}
 
 		/// <summary>
@@ -346,9 +355,10 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				case Keys.PageDown:
 				case Keys.Home:
 				case Keys.End:
+				case Keys.Back:
 					var eventHandler = GetEventHandlerForControl(sender as Control);
 					if (eventHandler != null)
-						e.Handled = eventHandler.IsPreeditActive;
+						e.SuppressKeyPress = eventHandler.IsPreeditActive;
 					break;
 			}
 		}
