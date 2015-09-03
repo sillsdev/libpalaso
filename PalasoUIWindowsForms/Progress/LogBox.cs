@@ -287,7 +287,7 @@ namespace Palaso.UI.WindowsForms.Progress
 						rtfBoxForDelegate.SelectionColor = color;
 						rtfBoxForDelegate.SelectionFont = fnt;
 #endif
-						rtfBoxForDelegate.AppendText(string.Format(msg + Environment.NewLine, args));
+						rtfBoxForDelegate.AppendText(GenericProgress.SafeFormat(msg + Environment.NewLine, args));
 						rtfBoxForDelegate.SelectionStart = rtfBoxForDelegate.Text.Length;
 						rtfBoxForDelegate.ScrollToCaret();
 #if !MONO

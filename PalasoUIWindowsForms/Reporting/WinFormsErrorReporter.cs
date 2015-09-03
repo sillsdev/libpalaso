@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using Palaso.Extensions;
 using Palaso.Reporting;
 
 namespace Palaso.UI.WindowsForms.Reporting
@@ -64,7 +65,7 @@ namespace Palaso.UI.WindowsForms.Reporting
 		/// </summary>
 		public void ReportNonFatalExceptionWithMessage(Exception error, string message, params object[] args)
 		{
-			var s = string.Format(message, args);
+			var s = message.FormatWithErrorStringInsteadOfException(args);
 			ExceptionReportingDialog.ReportMessage(s, error, false);
 		}
 
@@ -74,14 +75,14 @@ namespace Palaso.UI.WindowsForms.Reporting
 		/// </summary>
 		public void ReportNonFatalMessageWithStackTrace(string message, params object[] args)
 		{
-			var s = string.Format(message, args);
+			var s = message.FormatWithErrorStringInsteadOfException(args);
 			var stack = new System.Diagnostics.StackTrace(true);
 			ExceptionReportingDialog.ReportMessage(s, stack, false);
 		}
 
 		public void ReportFatalMessageWithStackTrace(string message, object[] args)
 		{
-			var s = string.Format(message, args);
+			var s = message.FormatWithErrorStringInsteadOfException(args);
 			var stack = new System.Diagnostics.StackTrace(true);
 			ExceptionReportingDialog.ReportMessage(s, stack, true);
 		}
