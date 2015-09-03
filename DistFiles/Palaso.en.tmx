@@ -105,6 +105,12 @@
         <seg>&amp;Delete</seg>
       </tuv>
     </tu>
+    <tu tuid="ImageToolbox.AlmostMatchingImages">
+      <note>The {0} will be replaced by the number of images found.  The {1} will be replaced with the search string.</note>
+      <tuv xml:lang="en">
+        <seg>Found {0} images with names close to {1}</seg>
+      </tuv>
+    </tu>
     <tu tuid="ImageToolbox.ArtOfReading">
       <tuv xml:lang="en">
         <seg>Art Of Reading</seg>
@@ -126,6 +132,11 @@
         <seg>Crop</seg>
       </tuv>
     </tu>
+    <tu tuid="ImageToolbox.DownloadArtOfReading">
+      <tuv xml:lang="en">
+        <seg>"Download Art Of Reading Installer"</seg>
+      </tuv>
+    </tu>
     <tu tuid="ImageToolbox.EditMetadataLink">
       <tuv xml:lang="en">
         <seg>Edit...</seg>
@@ -133,7 +144,7 @@
     </tu>
     <tu tuid="ImageToolbox.EnterSearchTerms">
       <tuv xml:lang="en">
-        <seg>This is the 'Art Of Reading' gallery. In the box above, type what you are searching for, then press ENTER. You can type words in English and Indonesian.</seg>
+        <seg>In the box above, type what you are searching for, then press ENTER.</seg>
       </tuv>
     </tu>
     <tu tuid="ImageToolbox.FileButton">
@@ -159,6 +170,27 @@
     <tu tuid="ImageToolbox.ImageToolboxWindowTitle">
       <tuv xml:lang="en">
         <seg>Image Toolbox</seg>
+      </tuv>
+    </tu>
+    <tu tuid="ImageToolbox.InstallArtOfReading">
+      <tuv xml:lang="en">
+        <seg>Install the Art Of Reading package (this may be very slow)</seg>
+      </tuv>
+    </tu>
+    <tu tuid="ImageToolbox.MatchingImages">
+      <note>The {0} will be replaced by the number of matching images</note>
+      <tuv xml:lang="en">
+        <seg>Found {0} images</seg>
+      </tuv>
+    </tu>
+    <tu tuid="ImageToolbox.NewMultilingual">
+      <tuv xml:lang="en">
+        <seg>Did you know that there is a new version of this collection which lets you search in Arabic, Bengali, Chinese, English, French, Indonesian, Hindi, Portuguese, Spanish, Thai, or Swahili?  It is free and available for downloading.</seg>
+      </tuv>
+    </tu>
+    <tu tuid="ImageToolbox.NoArtOfReading">
+      <tuv xml:lang="en">
+        <seg>This computer doesn't appear to have the 'Art Of Reading' gallery installed yet.</seg>
       </tuv>
     </tu>
     <tu tuid="ImageToolbox.NoMatchingImages">
@@ -190,6 +222,17 @@
     <tu tuid="ImageToolbox.Scanner">
       <tuv xml:lang="en">
         <seg>Scanner</seg>
+      </tuv>
+    </tu>
+    <tu tuid="ImageToolbox.SearchArtOfReading">
+      <tuv xml:lang="en">
+        <seg>Search the Art of Reading Gallery</seg>
+      </tuv>
+    </tu>
+    <tu tuid="ImageToolbox.SearchLanguage">
+      <note>The {0} will be replaced by the name of the language used in the searches.</note>
+      <tuv xml:lang="en">
+        <seg>The search box is currently set to {0}</seg>
       </tuv>
     </tu>
     <tu tuid="ImageToolbox.SetUpMetadataLink">

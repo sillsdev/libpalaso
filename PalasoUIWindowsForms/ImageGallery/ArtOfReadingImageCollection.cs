@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Windows.Forms;
 using Palaso.Extensions;
 using Palaso.IO;
 using Palaso.Linq;
@@ -18,7 +19,8 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 		private Dictionary<string, string> _partialPathToWordsIndex;
 		private static readonly object _padlock = new object();
 		public string SearchLanguage { get; set; }
-
+		private List<string> _indexLanguages;
+		public IEnumerable<string> IndexLanguageIds { get { return _indexLanguages; } }
 
 		public ArtOfReadingImageCollection()
 		{
@@ -60,23 +62,17 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 		/// <returns>number of index lines successfully loaded</returns>
 		public int LoadMultilingualIndex(string pathToIndexFile)
 		{
-			var defaultLang = "en";
+			const string defaultLang = "en";
 			using (var f = File.OpenText(pathToIndexFile))
 			{
-				// The file starts with a line that looks like the following:
-				//order	filename	artist	country	en	id	fr	es	ar	hi	bn	pt	th	sw	zh
-				var header = f.ReadLine();
-				var columns = header.Split(new char[]{'\t'});
-				if (columns.Length < 5 ||
-					columns[0] != "order" ||
-					columns[1] != "filename" ||
-					columns[2] != "artist" ||
-					columns[3] != "country")
-				{
+				var columns = GetColumnHeadersIfValid(f);
+				if (columns == null)
 					return 0;
-				}
 				int desiredColumn = -1;
 				int defaultColumn = -1;
+				// The first four columns are fixed metadata.  The remaining columns contain
+				// search words for different languages, one language per column.  The header
+				// contains the ISO language codes.
 				for (int i = 4; i < columns.Length; ++i)
 				{
 					if (columns[i] == SearchLanguage)
@@ -276,11 +272,6 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 		public static string TryToGetRootImageCatalogPath()
 		{
-			//look for the cd/dvd
-/* retire this            var cdPath = TryToGetPathToCollectionOnCd();
-			if (!string.IsNullOrEmpty(cdPath))
-				return cdPath;
-*/
 			var distributedWithApp = FileLocator.GetDirectoryDistributedWithApplication(true,"Art Of Reading", "images");
 			if(!string.IsNullOrEmpty(distributedWithApp) && Directory.Exists(distributedWithApp))
 				return distributedWithApp;
@@ -321,23 +312,6 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			return null;
 		}
 
-		private static string TryToGetPathToCollectionOnCd()
-		{
-			//look for CD
-			foreach (var drive in DriveInfo.GetDrives())
-			{
-				try
-				{
-					if(drive.IsReady && drive.VolumeLabel.Contains("Art Of Reading"))
-						return Path.Combine(drive.RootDirectory.FullName, "images");
-				}
-				catch (Exception)
-				{
-				}
-			}
-			return null;
-		}
-
 		public static bool DoNotFindArtOfReading_Test = false;
 
 		public static IImageCollection FromStandardLocations()
@@ -357,16 +331,62 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			var c = new ArtOfReadingImageCollection();
 
 			c.RootImagePath = path;
+			c.GetIndexLanguages();
 			c.SearchLanguage = lang;
 
 			// Load the index information asynchronously so as not to delay displaying
 			// the parent dialog.  Loading the file takes a second or two, but should
 			// be done before the user finishes typing a search string.
-			var thr = new Thread(new ThreadStart(c.LoadImageIndex));
+			var thr = new Thread(c.LoadImageIndex);
 			thr.Name = "LoadArtOfReadingIndex";
 			thr.Start();
 
 			return c;
+		}
+
+		internal void GetIndexLanguages()
+		{
+			_indexLanguages = new List<string>();
+			var pathToIndexFile = TryToGetPathToMultilingualIndex(RootImagePath);
+			if (File.Exists(pathToIndexFile))
+			{
+				using (var f = File.OpenText(pathToIndexFile))
+				{
+					var columns = GetColumnHeadersIfValid(f);
+					if (columns != null)
+					{
+						// The first four columns are meta data about an image.  The remaining
+						// columns are search words in different languages, one language per column.
+						// The header contains the ISO language codes.
+						for (int i = 4; i < columns.Length; ++i)
+							_indexLanguages.Add(columns[i]);
+					}
+					f.Close();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Return the column headers from a multilingual index file, or null if it is not valid.
+		/// </summary>
+		private static string[] GetColumnHeadersIfValid(StreamReader f)
+		{
+			// The file should start with a line that looks like the following:
+			//order	filename	artist	country	en	id	fr	es	ar	hi	bn	pt	th	sw	zh
+			var header = f.ReadLine();
+			if (String.IsNullOrEmpty(header))
+				return null;
+			var columns = header.Split(new[]{'\t'});
+			// Check for the four fixed columns and at least one language.
+			if (columns.Length < 5 ||
+				columns[0] != "order" ||
+				columns[1] != "filename" ||
+				columns[2] != "artist" ||
+				columns[3] != "country")
+			{
+				return null;
+			}
+			return columns;
 		}
 
 		void LoadImageIndex()
@@ -411,6 +431,15 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 			}
 
 			return FileLocator.GetFileDistributedWithApplication(true, "ArtOfReadingIndexV3_en.txt");
+		}
+
+
+		public void ReloadImageIndex(string languageId)
+		{
+			SearchLanguage = languageId;
+			_wordToPartialPathIndex.Clear();
+			_partialPathToWordsIndex.Clear();
+			LoadImageIndex();
 		}
 	}
 }
