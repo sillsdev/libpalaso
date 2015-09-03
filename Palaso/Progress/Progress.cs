@@ -421,13 +421,8 @@ namespace Palaso.Progress
 		public SynchronizationContext SyncContext { get; set; }
 		public void WriteStatus(string message, params object[] args)
 		{
-#if MONO
-			Console.Write("                          ".Substring(0, indent*2));
-			Console.WriteLine(GenericProgress.SafeFormat(message, args));
-#else
 			Console.Write("                          ".Substring(0, indent * 2));
 			Console.WriteLine(GenericProgress.SafeFormat(message, args));
-#endif
 		}
 
 		public void WriteMessage(string message, params object[] args)
