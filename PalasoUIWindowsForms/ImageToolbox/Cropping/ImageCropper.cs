@@ -466,16 +466,27 @@ namespace Palaso.UI.WindowsForms.ImageToolbox.Cropping
 					components = null;
 				}
 
-				if (_savedOriginalImage != null)
+				try
 				{
-					_savedOriginalImage.Dispose();
-					_savedOriginalImage = null;
-				}
+					if (_savedOriginalImage != null)
+					{
+						_savedOriginalImage.Dispose();
+						_savedOriginalImage = null;
+					}
 
-				if (_croppingImage != null)
+					if (_croppingImage != null)
+					{
+						_croppingImage.Dispose();
+						_croppingImage = null;
+					}
+				}
+				// BL-2680, somehow user can get in a state where we CAN'T delete a temp file.
+				// I think we can afford to just ignore it. One temp file will be leaked.
+				catch (IOException)
 				{
-					_croppingImage.Dispose();
-					_croppingImage = null;
+				}
+				catch (UnauthorizedAccessException)
+				{
 				}
 			}
 			base.Dispose(disposing);
