@@ -272,9 +272,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			if (File.Exists("/usr/lib/cinnamon-settings/cinnamon-settings.py") && File.Exists("/usr/bin/python"))
 			{
 				arguments = "/usr/lib/cinnamon-settings/cinnamon-settings.py " +
-					Platform.DesktopEnvironment == "cinnamon"
+					(Platform.DesktopEnvironment == "cinnamon"
 						? "region layouts" // Wasta 12
-						: "keyboard"; // Wasta 14;
+						: "keyboard"); // Wasta 14;
 				return "/usr/bin/python";
 			}
 			// GNOME
