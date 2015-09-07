@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Palaso.IO.FileLock.FileSys;
@@ -130,6 +131,15 @@ namespace Palaso.IO.FileLock
 				throw new ArgumentNullException("lockName", "lockName cannot be null or emtpy.");
 
 			return new SimpleFileLock(lockName, lockTimeout) { LockFilePath = LockIO.GetFilePath(lockName) };
+		}
+
+		public static SimpleFileLock CreateFromFilePath(string lockFilePath, [Optional] TimeSpan lockTimeout)
+		{
+			if (string.IsNullOrEmpty(lockFilePath))
+				throw new ArgumentNullException("lockFilePath");
+
+			string lockName = Path.GetFileName(lockFilePath);
+			return new SimpleFileLock(lockName, lockTimeout) { LockFilePath = lockFilePath };
 		}
 
 		#endregion
