@@ -21,6 +21,7 @@ using Palaso.UI.WindowsForms.WritingSystems;
 using Palaso.WritingSystems;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 using PalasoUIWindowsForms.TestApp.Properties;
+using Palaso.Reporting;
 
 namespace PalasoUIWindowsForms.TestApp
 {
@@ -79,6 +80,9 @@ namespace PalasoUIWindowsForms.TestApp
 			{
 				KeyboardController.Initialize();
 				_KeyboardControllerInitialized = true;
+
+				foreach (string key in ErrorReport.Properties.Keys)
+					Console.WriteLine("{0}: {1}", key, ErrorReport.Properties[key]);
 			}
 			var wsRepo = LdmlInFolderWritingSystemRepository.Initialize(tempPath, onMigration, onLoadProblem);
 			using (var dialog = new WritingSystemSetupDialog(wsRepo))

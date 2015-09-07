@@ -75,6 +75,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				return null;
 			var list = KeyboardRetrievingHelper.GetStringArrayFromGVariantListArray(sources);
 			Unmanaged.g_variant_unref(sources);
+			Unmanaged.g_object_unref(settings);
 
 			return list;
 		}

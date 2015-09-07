@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using Palaso.Reporting;
 using Palaso.UI.WindowsForms.Keyboarding.Types;
 
 namespace Palaso.UI.WindowsForms.Keyboarding.Linux
@@ -26,6 +27,31 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		{
 			return Unmanaged.g_settings_schema_source_lookup(Unmanaged.g_settings_schema_source_get_default(),
 				schema, recursive: true) != IntPtr.Zero;
+		}
+
+		public static void AddIbusVersionAsErrorReportProperty()
+		{
+			var settingsGeneral = IntPtr.Zero;
+			try
+			{
+				const string ibusSchema = "org.freedesktop.ibus.general";
+				if (!SchemaIsInstalled(ibusSchema))
+					return;
+				settingsGeneral = Unmanaged.g_settings_new(ibusSchema);
+				if (settingsGeneral == IntPtr.Zero)
+					return;
+				var version = Unmanaged.g_settings_get_string(settingsGeneral, "version");
+				ErrorReport.AddProperty("IbusVersion", version);
+			}
+			catch
+			{
+				// Ignore any error we might get
+			}
+			finally
+			{
+				if (settingsGeneral != IntPtr.Zero)
+					Unmanaged.g_object_unref(settingsGeneral);
+			}
 		}
 
 		/// <summary>
