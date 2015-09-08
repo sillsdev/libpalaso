@@ -19,5 +19,9 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 		CaptionMethodDelegate CaptionMethod{ get;}
 
 		IEnumerable<string> GetPathsFromResults(IEnumerable<object> results, bool limitToThoseActuallyAvailable);
+
+		IEnumerable<string> IndexLanguageIds { get; }
+
+		void ReloadImageIndex(string languageId);
 	}
 }
