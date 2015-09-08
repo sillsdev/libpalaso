@@ -177,12 +177,25 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			// We want to create a new switching adaptor only the first time otherwise we're
 			// getting into trouble
 			if (_adaptor == null)
+			{
 				_adaptor = new CombinedIbusKeyboardSwitchingAdaptor(_IBusCommunicator);
+				KeyboardRetrievingHelper.AddIbusVersionAsErrorReportProperty();
+			}
 		}
 
 		public override IKeyboardDefinition CreateKeyboardDefinition(string layout, string locale)
 		{
 			return XkbKeyboardRetrievingAdaptor.CreateKeyboardDefinition(layout, locale, _adaptor);
+		}
+
+		public override void Close()
+		{
+			if (_settingsGeneral != IntPtr.Zero)
+			{
+				Unmanaged.g_object_unref(_settingsGeneral);
+				_settingsGeneral = IntPtr.Zero;
+			}
+			base.Close();
 		}
 		#endregion
 

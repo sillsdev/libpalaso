@@ -31,6 +31,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		public override void Initialize()
 		{
 			_adaptor = new UnityIbusKeyboardSwitchingAdaptor(_IBusCommunicator);
+			KeyboardRetrievingHelper.AddIbusVersionAsErrorReportProperty();
 		}
 
 		public override string GetKeyboardSetupApplication(out string arguments)

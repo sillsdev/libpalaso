@@ -10,6 +10,7 @@ using Palaso.Reporting;
 using Palaso.WritingSystems;
 using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
 using System.Diagnostics;
+using System.Text;
 
 
 #if __MonoCS__
@@ -103,12 +104,19 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 				}
 
 				// Now that we know who can deal with the keyboards we can retrieve all available
-				// keyboards
+				// keyboards, as well as add the used keyboard adaptors as error report property.
+				var bldr = new StringBuilder();
 				foreach (var retriever in KeyboardRetrievers.Values)
 				{
 					retriever.Initialize();
 					retriever.RegisterAvailableKeyboards();
+
+					if (bldr.Length > 0)
+						bldr.Append(", ");
+					bldr.Append(retriever.GetType().Name);
 				}
+				ErrorReport.AddProperty("KeyboardAdaptors", bldr.ToString());
+				Logger.WriteEvent("Keyboard adaptors in use: {0}", bldr.ToString());
 			}
 
 			/// <summary>

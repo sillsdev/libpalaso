@@ -39,6 +39,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Types
 		internal extern static bool g_settings_get_boolean(IntPtr settings, string key);
 
 		[DllImport("libgio-2.0.so")]
+		internal extern static string g_settings_get_string(IntPtr settings, string key);
+
+		[DllImport("libgio-2.0.so")]
 		internal extern static bool g_settings_set_uint(IntPtr settings, string key, uint value);
 
 		[DllImport("libglib-2.0.so")]
