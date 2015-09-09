@@ -102,6 +102,7 @@
 			this._searchLanguageMenu.Name = "_searchLanguageMenu";
 			this._searchLanguageMenu.Size = new System.Drawing.Size(107, 19);
 			this._searchLanguageMenu.Text = "Language Name";
+			this._searchLanguageMenu.Visible = false;
 			// 
 			// _downloadInstallerLink
 			// 

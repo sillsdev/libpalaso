@@ -283,13 +283,15 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 		private void SetupSearchLanguageChoice()
 		{
 			var indexLangs = _imageCollection.IndexLanguageIds;
-			if (indexLangs != null)
+			if (indexLangs == null)
 			{
-				var count = 0;
+				_searchLanguageMenu.Visible = false;
+			}
+			else
+			{
+				_searchLanguageMenu.Visible = true;
 				foreach (var id in indexLangs)
 				{
-					if (count == 0)
-						_searchLanguageMenu.Visible = true;	// do this once.
 					var ci = id == "zh" ? new CultureInfo("zh-Hans") : new CultureInfo(id);
 					var choice = new LanguageChoice(ci);
 					var item = _searchLanguageMenu.DropDownItems.Add(choice.ToString());
@@ -300,9 +302,13 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 						_searchLanguageMenu.Text = choice.NativeName;
 						_searchLanguageMenu.ToolTipText = choice.ToString();
 					}
-					++count;
 				}
 			}
+			// The Mono renderer makes the toolstrip stick out.  (This is a Mono bug that
+			// may not be worth spending time on.)  Let's not poke the user in the eye
+			// with an empty toolstrip.
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+				toolStrip1.Visible = _searchLanguageMenu.Visible;
 		}
 
 		void SearchLanguageClick(object sender, EventArgs e)
