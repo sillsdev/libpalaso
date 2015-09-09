@@ -41,7 +41,7 @@ namespace Palaso.Tests.reporting
 
 			// Verify
 			// (ErrorReport.Properties is a string dictionary which converts all keys to lowercase)
-			Assert.That(ErrorReport.Properties.Keys, Has.No.Member("desktopenvironment"));
+			Assert.That(ErrorReport.Properties.Keys, Has.No.Member("DesktopEnvironment"));
 		}
 
 		[Test]
@@ -64,7 +64,7 @@ namespace Palaso.Tests.reporting
 
 			// Verify
 			// (ErrorReport.Properties is a string dictionary which converts all keys to lowercase)
-			Assert.That(ErrorReport.Properties.Keys, Has.Member("desktopenvironment"));
+			Assert.That(ErrorReport.Properties.Keys, Has.Member("DesktopEnvironment"));
 		}
 
 		[Test]
