@@ -346,7 +346,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 
 		internal void GetIndexLanguages()
 		{
-			_indexLanguages = new List<string>();
+			_indexLanguages = null;
 			var pathToIndexFile = TryToGetPathToMultilingualIndex(RootImagePath);
 			if (File.Exists(pathToIndexFile))
 			{
@@ -355,6 +355,7 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 					var columns = GetColumnHeadersIfValid(f);
 					if (columns != null)
 					{
+						_indexLanguages = new List<string>();
 						// The first four columns are meta data about an image.  The remaining
 						// columns are search words in different languages, one language per column.
 						// The header contains the ISO language codes.
