@@ -68,8 +68,8 @@ namespace Palaso.Reporting
 		/// <summary>
 		/// a list of name, string value pairs that will be included in the details of the error report.
 		/// </summary>
-		private static StringDictionary s_properties =
-			new StringDictionary();
+		private static Dictionary<string, string> s_properties =
+			new Dictionary<string, string>();
 
 		private static bool s_isOkToInteractWithUser = true;
 		private static bool s_justRecordNonFatalMessagesForTesting=false;
@@ -299,7 +299,7 @@ namespace Palaso.Reporting
 		/// <summary>
 		/// a list of name, string value pairs that will be included in the details of the error report.
 		/// </summary>
-		public static StringDictionary Properties
+		public static Dictionary<string, string> Properties
 		{
 			get
 			{
