@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -22,6 +23,7 @@ using Palaso.WritingSystems;
 using Palaso.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 using PalasoUIWindowsForms.TestApp.Properties;
 using Palaso.Reporting;
+using Palaso.UI.WindowsForms.ImageToolbox;
 
 namespace PalasoUIWindowsForms.TestApp
 {
@@ -94,10 +96,14 @@ namespace PalasoUIWindowsForms.TestApp
 			}
 		}
 
-		private void OnArtOfReadingClicked(object sender, EventArgs e)
+		private void OnImageToolboxClicked(object sender, EventArgs e)
 		{
-			using (var dlg = new ArtOfReadingTestForm())
+			Application.EnableVisualStyles();
+			ThumbnailViewer.UseWebViewer = true;
+			using (var dlg = new ImageToolboxDialog(new PalasoImage(), null))
+			{
 				dlg.ShowDialog();
+			}
 		}
 
 		private static void onMigration(IEnumerable<LdmlVersion0MigrationStrategy.MigrationInfo> migrationInfo)
