@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IO;
-using ICSharpCode.SharpZipLib.Zip;
+using Ionic.Zip;
 using NUnit.Framework;
-using SIL.DblBundle.Tests.Properties;
-using SIL.DblBundle.Tests.Text;
 using SIL.DblBundle.Text;
 using SIL.IO;
 using SIL.WritingSystems;
@@ -56,21 +54,20 @@ namespace SIL.DblBundle.Tests
 		{
 			TempFile bundle = TempFile.WithExtension(DblBundleFileUtils.kDblBundleExtension);
 
-			string dirContainingContentsForZipping = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-			Directory.CreateDirectory(dirContainingContentsForZipping);
-			File.WriteAllText(Path.Combine(dirContainingContentsForZipping, "metadata.xml"), @"<TestMetadata type=""text""/>");
-
-			var zipFile = new FastZip();
-			zipFile.CreateZip(bundle.Path, dirContainingContentsForZipping, true, null);
-
-			DirectoryUtilities.DeleteDirectoryRobust(dirContainingContentsForZipping);
+			using (var metadataXml = TempFile.WithFilename("metadata.xml"))
+			using (var zip = new ZipFile())
+			{
+				File.WriteAllText(metadataXml.Path, @"<TestMetadata type=""text""/>");
+				zip.AddFile(metadataXml.Path, string.Empty);
+				zip.Save(bundle.Path);
+			}
 
 			return bundle;
 		}
 	}
 
 	/// <summary>
-	/// Version that thwarts normal initlization of metadata
+	/// Version that thwarts normal initialization of metadata
 	/// </summary>
 	public class TestMetadata : DblMetadataBase<DblMetadataLanguage>
 	{

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using ICSharpCode.SharpZipLib.Zip;
+using Ionic.Zip;
 using L10NSharp;
 using SIL.DblBundle.Text;
 using SIL.Reporting;
@@ -18,11 +18,27 @@ namespace SIL.DblBundle
 
 		public static string ExtractToTempDirectory(string zipFilePath)
 		{
+			if (!File.Exists(zipFilePath))
+				throw new ArgumentException("Zip file must exist.", "zipFilePath");
+
 			string tempPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 			Directory.CreateDirectory(tempPath);
 
-			new FastZip().ExtractZip(zipFilePath, tempPath, null);
+			using (ZipFile zipFile = ZipFile.Read(zipFilePath))
+				foreach (ZipEntry entry in zipFile)
+				{
+					byte[] data = new byte[entry.UncompressedSize];
+					using (var stream = entry.OpenReader())
+						stream.Read(data, 0, data.Length);
 
+					string fileName = Path.Combine(tempPath, entry.FileName);
+					string directory = Path.GetDirectoryName(fileName);
+					if (!Directory.Exists(directory))
+						Directory.CreateDirectory(directory);
+
+					using (FileStream output = new FileStream(fileName, FileMode.Create))
+						output.Write(data, 0, data.Length);
+				}
 			return tempPath;
 		}
 	}
