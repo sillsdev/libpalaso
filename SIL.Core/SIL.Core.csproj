@@ -133,6 +133,10 @@
     <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Ionic.Zip, Version=1.9.1.8, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Ionic.Zip.dll</HintPath>
+    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
@@ -206,6 +210,7 @@
     <Compile Include="EventsAndDelegates\GenericEventArgs.cs" />
     <Compile Include="IO\DirectoryUtilities.cs" />
     <Compile Include="IO\TempFile.cs" />
+    <Compile Include="IO\ZipUtilities.cs" />
     <Compile Include="Keyboarding\DefaultKeyboardController.cs" />
     <Compile Include="Keyboarding\DefaultKeyboardDefinition.cs" />
     <Compile Include="Keyboarding\IInputLanguage.cs" />

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using Ionic.Zip;
 using L10NSharp;
 using SIL.DblBundle.Text;
+using SIL.IO;
 using SIL.Reporting;
 using SIL.Xml;
 
@@ -24,21 +24,8 @@ namespace SIL.DblBundle
 			string tempPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 			Directory.CreateDirectory(tempPath);
 
-			using (ZipFile zipFile = ZipFile.Read(zipFilePath))
-				foreach (ZipEntry entry in zipFile)
-				{
-					byte[] data = new byte[entry.UncompressedSize];
-					using (var stream = entry.OpenReader())
-						stream.Read(data, 0, data.Length);
+			ZipUtilities.ExtractToDirectory(zipFilePath, tempPath);
 
-					string fileName = Path.Combine(tempPath, entry.FileName);
-					string directory = Path.GetDirectoryName(fileName);
-					if (!Directory.Exists(directory))
-						Directory.CreateDirectory(directory);
-
-					using (FileStream output = new FileStream(fileName, FileMode.Create))
-						output.Write(data, 0, data.Length);
-				}
 			return tempPath;
 		}
 	}
