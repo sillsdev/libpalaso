@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using ICSharpCode.SharpZipLib.Zip;
 using L10NSharp;
 using SIL.DblBundle.Text;
+using SIL.IO;
 using SIL.Reporting;
 using SIL.Xml;
 
@@ -18,10 +18,13 @@ namespace SIL.DblBundle
 
 		public static string ExtractToTempDirectory(string zipFilePath)
 		{
+			if (!File.Exists(zipFilePath))
+				throw new ArgumentException("Zip file must exist.", "zipFilePath");
+
 			string tempPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 			Directory.CreateDirectory(tempPath);
 
-			new FastZip().ExtractZip(zipFilePath, tempPath, null);
+			ZipUtilities.ExtractToDirectory(zipFilePath, tempPath);
 
 			return tempPath;
 		}
