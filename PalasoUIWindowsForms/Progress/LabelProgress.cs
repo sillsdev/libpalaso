@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Windows.Forms;
+using Palaso.Extensions;
 using Palaso.Progress;
 
 namespace Palaso.UI.WindowsForms.Progress
@@ -35,11 +36,7 @@ namespace Palaso.UI.WindowsForms.Progress
 		{
 			try
 			{
-				_box.Invoke(new Action(() =>
-										   {
-											   _box.Text = GenericProgress.SafeFormat(message + Environment.NewLine,
-																					  args);
-										   }));
+				_box.Invoke(new Action(() => { _box.Text = message.FormatWithErrorStringInsteadOfException(args) + Environment.NewLine; }));
 			}
 			catch (Exception)
 			{

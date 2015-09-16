@@ -238,17 +238,17 @@ namespace Palaso.UI.WindowsForms.Progress
 					if (SynchronizationContext.Current == SyncContext) //we're on the UI thread
 					{
 						action();
-				}
-				else
-				{
+					}
+					else
+					{
 						//NB: if you're getting eratic behavior here, make sure there isn't one of those "access to modified closure" situations in your calling method
-						  SyncContext.Post(state =>
-											 {
-												 //assumption is that since this is run on the UI thread, we can't be disposed in between the check of IsDiposed and the action itself
-												 if (!IsDisposed)
-													 action();
-											 }, null);
-				}
+						SyncContext.Post(state =>
+							{
+								//assumption is that since this is run on the UI thread, we can't be disposed in between the check of IsDiposed and the action itself
+								if(!IsDisposed)
+									action();
+							}, null);
+					}
 				}
 			}
 			catch (Exception)
@@ -287,7 +287,7 @@ namespace Palaso.UI.WindowsForms.Progress
 						rtfBoxForDelegate.SelectionColor = color;
 						rtfBoxForDelegate.SelectionFont = fnt;
 #endif
-						rtfBoxForDelegate.AppendText(string.Format(msg + Environment.NewLine, args));
+						rtfBoxForDelegate.AppendText(msg.FormatWithErrorStringInsteadOfException(args) + Environment.NewLine);
 						rtfBoxForDelegate.SelectionStart = rtfBoxForDelegate.Text.Length;
 						rtfBoxForDelegate.ScrollToCaret();
 #if !MONO
