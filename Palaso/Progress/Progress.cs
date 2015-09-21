@@ -421,13 +421,8 @@ namespace Palaso.Progress
 		public SynchronizationContext SyncContext { get; set; }
 		public void WriteStatus(string message, params object[] args)
 		{
-#if MONO
-			Console.Write("                          ".Substring(0, indent*2));
-			Console.WriteLine(GenericProgress.SafeFormat(message, args));
-#else
 			Console.Write("                          ".Substring(0, indent * 2));
-			Console.WriteLine(GenericProgress.SafeFormat(message, args));
-#endif
+			Console.WriteLine(message.FormatWithErrorStringInsteadOfException(args));
 		}
 
 		public void WriteMessage(string message, params object[] args)
@@ -474,7 +469,7 @@ namespace Palaso.Progress
 		{
 			if(!_verbose)
 				return;
-			var lines = GenericProgress.SafeFormat(message, args);
+			var lines = message.FormatWithErrorStringInsteadOfException(args);
 			foreach (var line in lines.Split('\n'))
 			{
 				WriteStatus("    " + line);
@@ -558,7 +553,7 @@ public class StringBuilderProgress : GenericProgress
 
 		public  void WriteStatus(string message, params object[] args)
 		{
-			LastStatus = GenericProgress.SafeFormat(message, args);
+			LastStatus = message.FormatWithErrorStringInsteadOfException(args);
 		}
 
 		public void WriteMessageWithColor(string colorName, string message, params object[] args)
@@ -568,7 +563,7 @@ public class StringBuilderProgress : GenericProgress
 
 		public void WriteWarning(string message, params object[] args)
 		{
-			LastWarning = GenericProgress.SafeFormat(message, args);
+			LastWarning = message.FormatWithErrorStringInsteadOfException(args);
 			LastStatus = LastWarning;
 		}
 
@@ -579,7 +574,7 @@ public class StringBuilderProgress : GenericProgress
 
 		public void WriteError(string message, params object[] args)
 		{
-			LastError = GenericProgress.SafeFormat(message, args);
+			LastError = message.FormatWithErrorStringInsteadOfException(args);
 			LastStatus = LastError;
 		}
 
@@ -608,15 +603,7 @@ public class StringBuilderProgress : GenericProgress
 
 		public void Clear()
 		{
-			LastError = LastWarning =LastStatus = string.Empty;
-		}
-	}
-
-	public static class SafeFormatString
-	{
-		public static string EscapeThingsThatLookLikeArguments(this string format, params object[] args)
-		{
-			return format.Replace("{", @"\{");
+			LastError = LastWarning = LastStatus = string.Empty;
 		}
 	}
 
@@ -669,7 +656,7 @@ public class StringBuilderProgress : GenericProgress
 		{
 			if(!_verbose)
 				return;
-			var lines = GenericProgress.SafeFormat(message, args);
+			var lines = message.FormatWithErrorStringInsteadOfException(args);
 			foreach (var line in lines.Split('\n'))
 			{
 
@@ -700,7 +687,7 @@ public class StringBuilderProgress : GenericProgress
 
 		public override void WriteMessage(string message, params object[] args)
 		{
-			File.AppendAllText(_path, GenericProgress.SafeFormat(message + Environment.NewLine, args));
+			File.AppendAllText(_path, message.FormatWithErrorStringInsteadOfException(args) + Environment.NewLine);
 		}
 		public override void WriteMessageWithColor(string colorName, string message, params object[] args)
 		{
