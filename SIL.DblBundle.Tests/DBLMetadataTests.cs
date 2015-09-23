@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 using NUnit.Framework;
+using SIL.DblBundle.Tests.Properties;
 using SIL.DblBundle.Text;
+using SIL.IO;
 using SIL.TestUtilities;
 
 namespace SIL.DblBundle.Tests
@@ -96,6 +99,26 @@ namespace SIL.DblBundle.Tests
 		public void GetDateArchived()
 		{
 			Assert.AreEqual("2014-05-28T15:18:31.080800", m_metadata.ArchiveStatus.DateArchived);
+		}
+
+		[Test]
+		public void Load_Successful()
+		{
+			using (var metadataFile = new TempFile())
+			{
+				File.WriteAllText(metadataFile.Path, Resources.metadata_xml);
+				Exception exception;
+				DblTextMetadata<DblMetadataLanguage>.Load<DblTextMetadata<DblMetadataLanguage>>(metadataFile.Path, out exception);
+				Assert.Null(exception);
+			}
+		}
+
+		[Test]
+		public void Load_FileDoesNotExist_HandlesException()
+		{
+			Exception exception;
+			DblTextMetadata<DblMetadataLanguage>.Load<DblTextMetadata<DblMetadataLanguage>>("", out exception);
+			Assert.NotNull(exception);
 		}
 
 		[Test]

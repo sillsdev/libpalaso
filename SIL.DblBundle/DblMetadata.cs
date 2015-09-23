@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Xml.Serialization;
 using SIL.DblBundle.Text;
 using SIL.Xml;
@@ -34,7 +33,20 @@ namespace SIL.DblBundle
 		public static T Load<T>(string projectFilePath, out Exception exception) where T : DblMetadataBase<TL>
 		{
 			var metadata = XmlSerializationHelper.DeserializeFromFile<T>(projectFilePath, out exception);
-			metadata.InitializeMetadata();
+			if (metadata == null)
+			{
+				if (exception == null)
+					exception = new ApplicationException(string.Format("Loading metadata ({0}) was unsuccessful.", projectFilePath));
+				return null;
+			}
+			try
+			{
+				metadata.InitializeMetadata();
+			}
+			catch (Exception e)
+			{
+				exception = e;
+			}
 			return metadata;
 		}
 
