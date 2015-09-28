@@ -25,6 +25,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 	{
 		private readonly IIbusCommunicator IBusCommunicator;
 		private bool m_needIMELocation;
+		private bool m_IbusDidHandleKey;
 
 		public IbusKeyboardSwitchingAdaptor(IIbusCommunicator ibusCommunicator)
 		{
@@ -218,7 +219,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		#endregion
 
 		/// <summary>
-		/// Passes the key event to ibus. This method deals with the special keys (Curosr up/down,
+		/// Passes the key event to ibus. This method deals with the special keys (Cursor up/down,
 		/// backspace etc) that usually shouldn't cause a commit.
 		/// </summary>
 		private bool PassSpecialKeyEventToIbus(Control control, Keys keyChar, Keys modifierKeys)
@@ -330,12 +331,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				case Keys.Home:
 				case Keys.End:
 				case Keys.Back:
-					PassSpecialKeyEventToIbus(sender as Control, key, e.Modifiers);
+					m_IbusDidHandleKey = PassSpecialKeyEventToIbus(sender as Control, key, e.Modifiers);
 					return;
 			}
 			// pass function keys onto ibus since they don't appear (on mono at least) as WM_SYSCHAR
 			if (key >= Keys.F1 && key <= Keys.F24)
-				PassSpecialKeyEventToIbus(sender as Control, key, e.Modifiers);
+				m_IbusDidHandleKey = PassSpecialKeyEventToIbus(sender as Control, key, e.Modifiers);
 		}
 
 		/// <summary>
@@ -356,6 +357,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				case Keys.Home:
 				case Keys.End:
 				case Keys.Back:
+					if (!m_IbusDidHandleKey)
+						break;
+
 					var eventHandler = GetEventHandlerForControl(sender as Control);
 					if (eventHandler != null)
 						e.SuppressKeyPress = eventHandler.IsPreeditActive;
