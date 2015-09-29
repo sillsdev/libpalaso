@@ -178,7 +178,6 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				e.Control.MouseDown += HandleMouseDown;
 				e.Control.PreviewKeyDown += HandlePreviewKeyDown;
 				e.Control.KeyPress += HandleKeyPress;
-				e.Control.KeyDown += HandleKeyDown;
 
 				var scrollableControl = e.Control as ScrollableControl;
 				if (scrollableControl != null)
@@ -195,7 +194,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				e.Control.MouseDown -= HandleMouseDown;
 				e.Control.PreviewKeyDown -= HandlePreviewKeyDown;
 				e.Control.KeyPress -= HandleKeyPress;
-				e.Control.KeyDown -= HandleKeyDown;
+				e.Control.KeyDown -= HandleKeyDownAfterIbusHandledKey;
 
 				var scrollableControl = e.Control as ScrollableControl;
 				if (scrollableControl != null)
@@ -218,7 +217,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 		#endregion
 
 		/// <summary>
-		/// Passes the key event to ibus. This method deals with the special keys (Curosr up/down,
+		/// Passes the key event to ibus. This method deals with the special keys (Cursor up/down,
 		/// backspace etc) that usually shouldn't cause a commit.
 		/// </summary>
 		private bool PassSpecialKeyEventToIbus(Control control, Keys keyChar, Keys modifierKeys)
@@ -302,13 +301,14 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 			if (!IBusCommunicator.Connected)
 				return;
 
-			var eventHandler = GetEventHandlerForControl(sender as Control);
+			var control = sender as Control;
+			var eventHandler = GetEventHandlerForControl(control);
 			if (eventHandler == null)
 				return;
 
 			if (m_needIMELocation)
 			{
-				SetImePreeditWindowLocationAndSize(sender as Control);
+				SetImePreeditWindowLocationAndSize(control);
 				m_needIMELocation = false;
 			}
 
@@ -318,7 +318,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				case Keys.Escape:
 					// These should end a preedit, so wait until that has happened
 					// before allowing the key to be processed.
-					ResetAndWaitForCommit(sender as Control);
+					ResetAndWaitForCommit(control);
 					return;
 				case Keys.Up:
 				case Keys.Down:
@@ -330,19 +330,25 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				case Keys.Home:
 				case Keys.End:
 				case Keys.Back:
-					PassSpecialKeyEventToIbus(sender as Control, key, e.Modifiers);
+					if (PassSpecialKeyEventToIbus(control, key, e.Modifiers))
+					{
+						// If IBus handled the key we don't want the control to get it. However,
+						// we can't do this in PreviewKeyDown, so we temporarily subscribe to
+						// KeyDown and suppress the key event there.
+						control.KeyDown += HandleKeyDownAfterIbusHandledKey;
+					}
 					return;
 			}
 			// pass function keys onto ibus since they don't appear (on mono at least) as WM_SYSCHAR
 			if (key >= Keys.F1 && key <= Keys.F24)
-				PassSpecialKeyEventToIbus(sender as Control, key, e.Modifiers);
+				PassSpecialKeyEventToIbus(control, key, e.Modifiers);
 		}
 
 		/// <summary>
 		/// Handles a key down. While a preedit is active we don't want the control to handle
 		/// any of the keys that IBus deals with.
 		/// </summary>
-		private void HandleKeyDown(object sender, KeyEventArgs e)
+		private void HandleKeyDownAfterIbusHandledKey(object sender, KeyEventArgs e)
 		{
 			switch (e.KeyCode)
 			{
@@ -356,9 +362,11 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				case Keys.Home:
 				case Keys.End:
 				case Keys.Back:
-					var eventHandler = GetEventHandlerForControl(sender as Control);
+					var control = sender as Control;
+					var eventHandler = GetEventHandlerForControl(control);
 					if (eventHandler != null)
 						e.SuppressKeyPress = eventHandler.IsPreeditActive;
+					control.KeyDown -= HandleKeyDownAfterIbusHandledKey;
 					break;
 			}
 		}
