@@ -5,7 +5,7 @@ using System.Windows.Forms;
 namespace Palaso.UI.WindowsForms.Widgets
 {
 	/// <summary>
-	/// Labels are fairly limitted even in .net, but on mono so far, multi-line
+	/// Labels are fairly limited even in .NET, but on mono so far, multi-line
 	/// labels are trouble.  This class uses TextBox to essentially be a better
 	/// cross-platform label.
 	/// </summary>
@@ -13,7 +13,6 @@ namespace Palaso.UI.WindowsForms.Widgets
 	{
 		private Brush _textBrush;
 		private Brush _backgroundBrush;
-		private int _previousWidth=0;
 
 		public BetterLabel()
 		{
@@ -109,6 +108,7 @@ namespace Palaso.UI.WindowsForms.Widgets
 		{
 			using (var g = this.CreateGraphics())
 			{
+				// This may require the use of mono-sil which fixes MeasureString to calculate the correct value to be tall enough.
 				var sz = g.MeasureString(Text, this.Font, Width).ToSize();
 				//leave as fixed width
 				Height = sz.Height;
@@ -135,11 +135,7 @@ namespace Palaso.UI.WindowsForms.Widgets
 
 		protected override void OnSizeChanged(EventArgs e)
 		{
-			if (_previousWidth!=Width)
-			{
-				DetermineHeight();
-				_previousWidth = Width;
-			}
+			DetermineHeight();
 			base.OnSizeChanged(e);
 		}
 
