@@ -46,6 +46,7 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 			AddGeckoDefinedEventHandler(_webBrowser, "Navigating", "NavigatingHandler");
 			AddGeckoDefinedEventHandler(_webBrowser, "CreateWindow2", "CreateWindow2Handler");
 			AddGeckoDefinedEventHandler(_webBrowser, "ProgressChanged", "WebProgressHandler");
+			AddGeckoDefinedEventHandler(_webBrowser, "DomClick", "ClickHandler");
 		}
 
 		private static int XulRunnerVersion
@@ -196,7 +197,8 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 
 		private void CreateWindow2Handler(object sender, EventArgs args)
 		{
-			var callbacks = _webBrowser.Parent as IWebBrowserCallbacks; var ev = new CancelEventArgs();
+			var callbacks = _webBrowser.Parent as IWebBrowserCallbacks;
+			var ev = new CancelEventArgs();
 			callbacks.OnNewWindow(ev);
 			SetCancelEventArgsCancel(args, ev.Cancel);
 		}
@@ -360,7 +362,6 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		{
 			Debug.Assert(_clickHandler == null); // for now we only handle one click handler.
 			_clickHandler = handler;
-			AddGeckoDefinedEventHandler(_webBrowser, "DomClick", "ClickHandler");
 		}
 
 		private object _lastTargetClicked;
@@ -373,55 +374,65 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		/// See the comment on AddDomClickHandler for more.
 		/// </summary>
 		/// <remarks>
-		/// VS thinks this method is unused, but actually it is Gecko can be configured
+		/// VS thinks this method is unused, but actually it is. Gecko can be configured
 		/// to call it when a click happens.
 		/// </remarks>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void ClickHandler(object sender, EventArgs e)
 		{
-			// Here is the non-reflection version of this method; we make all these calls
-			// using reflection following the pre-existing principle that building LibPalaso
-			// should not require an actual reference to GeckoFx.
-			// It may be time to abandon that (and rename this assembly) if we add much more
-			// gecko-specific functionality.
-			//var ge = e as DomEventArgs;
-			//var target = (GeckoHtmlElement)ge.Target.CastToGeckoElement();
-			//while (target != null && target.Attributes["id"] == null)
-			//	target = target.Parent;
-			//if (target == null)
-			//	return;
-			//var id = target.Attributes["id"].NodeValue;
-			// _clickHandler(id);
-			var geckoHtmlEltType = GeckoCoreAssembly.GetType("Gecko.DomEventArgs");
-			var targetProp = geckoHtmlEltType.GetProperty("Target");
-			var targetRaw = targetProp.GetValue(e, new object[0]);
+			// We now have the DomClick in XWebBrowser, although it is (currently) only
+			// implemented in the gecko version. This code now deals with both ways: handling
+			// the events in XWebBrowser or through the means of AddDomClickHandler which of
+			// course is internal to this class.
+			var callbacks = _webBrowser.Parent as IWebBrowserCallbacks;
+			callbacks.OnDomClick(e);
 
-			var domEventTargetType = GeckoCoreAssembly.GetType("Gecko.DOM.DomEventTarget");
-			var castToElementMethod = domEventTargetType.GetMethod("CastToGeckoElement");
-			var target = castToElementMethod.Invoke(targetRaw, new object[0]);
-
-			var elementType = GeckoCoreAssembly.GetType("Gecko.GeckoHtmlElement");
-			var attributesProp = elementType.GetProperty("Attributes");
-			var dictType = GeckoCoreAssembly.GetType("Gecko.DOM.GeckoNamedNodeMap");
-			var itemProp = dictType.GetProperty("Item", new Type[] { typeof(string) });
-			var parentProp = elementType.GetProperty("Parent");
-
-			while (target != null)
+			if (_clickHandler != null)
 			{
-				var attrs = attributesProp.GetValue(target, new object[0]);
-				var idAttr = itemProp.GetValue(attrs, new object[] { "id" });
-				if (idAttr != null)
+				// Here is the non-reflection version of this method; we make all these calls
+				// using reflection following the pre-existing principle that building LibPalaso
+				// should not require an actual reference to GeckoFx.
+				// It may be time to abandon that (and rename this assembly) if we add much more
+				// gecko-specific functionality.
+				//var ge = e as DomEventArgs;
+				//var target = (GeckoHtmlElement)ge.Target.CastToGeckoElement();
+				//while (target != null && target.Attributes["id"] == null)
+				//	target = target.Parent;
+				//if (target == null)
+				//	return;
+				//var id = target.Attributes["id"].NodeValue;
+				// _clickHandler(id);
+				var geckoHtmlEltType = GeckoCoreAssembly.GetType("Gecko.DomEventArgs");
+				var targetProp = geckoHtmlEltType.GetProperty("Target");
+				var targetRaw = targetProp.GetValue(e, new object[0]);
+
+				var domEventTargetType = GeckoCoreAssembly.GetType("Gecko.DOM.DomEventTarget");
+				var castToElementMethod = domEventTargetType.GetMethod("CastToGeckoElement");
+				var target = castToElementMethod.Invoke(targetRaw, new object[0]);
+
+				var elementType = GeckoCoreAssembly.GetType("Gecko.GeckoHtmlElement");
+				var attributesProp = elementType.GetProperty("Attributes");
+				var dictType = GeckoCoreAssembly.GetType("Gecko.DOM.GeckoNamedNodeMap");
+				var itemProp = dictType.GetProperty("Item", new Type[] { typeof(string) });
+				var parentProp = elementType.GetProperty("Parent");
+
+				while (target != null)
 				{
-					var nodeType = GeckoCoreAssembly.GetType("Gecko.GeckoAttribute");
-					var valueProp = nodeType.GetProperty("NodeValue");
-					string id = (string)valueProp.GetValue(idAttr, new object[0]);
-					_lastTargetClicked = _targetClicked;
-					_targetClicked = target;
-					_clickHandler(id);
-					return;
+					var attrs = attributesProp.GetValue(target, new object[0]);
+					var idAttr = itemProp.GetValue(attrs, new object[] { "id" });
+					if (idAttr != null)
+					{
+						var nodeType = GeckoCoreAssembly.GetType("Gecko.GeckoAttribute");
+						var valueProp = nodeType.GetProperty("NodeValue");
+						string id = (string)valueProp.GetValue(idAttr, new object[0]);
+						_lastTargetClicked = _targetClicked;
+						_targetClicked = target;
+						_clickHandler(id);
+						return;
+					}
+					target = parentProp.GetValue(target, new object[0]);
 				}
-				target = parentProp.GetValue(target, new object[0]);
 			}
 		}
 
@@ -480,11 +491,10 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		{
 			set
 			{
-				if(!CallBrowserMethod(_webBrowser, "LoadContent",
-												 new object[] {value, Url != null ? Url.AbsoluteUri : "about:blank", "text/html"}))
-				{
-					CallBrowserMethod(_webBrowser, "LoadHtml", new object[] { value }); //GeckoFx 14 did not have LoadContent
-				}
+				// we used to use LoadContent and fall back to LoadHtml if that method didn't
+				// work. However, I (EB) couldn't get LoadContent to work, so we now always use
+				// LoadHtml which should work in most cases unless it is a complex HTML page.
+				CallBrowserMethod(_webBrowser, "LoadHtml", new object[] { value });
 			}
 		}
 

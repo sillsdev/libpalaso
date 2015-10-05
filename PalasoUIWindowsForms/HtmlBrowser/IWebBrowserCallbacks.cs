@@ -17,5 +17,6 @@ namespace Palaso.UI.WindowsForms.HtmlBrowser
 		void OnNewWindow(CancelEventArgs e);
 		void OnProgressChanged(WebBrowserProgressChangedEventArgs e);
 		void OnStatusTextChanged(EventArgs e);
+		void OnDomClick(EventArgs e);
 	}
 }
