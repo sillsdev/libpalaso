@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -8,12 +7,12 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using Palaso.Reporting;
 using Palaso.PlatformUtilities;
 
 
 namespace Palaso.Reporting
 {
+
 	public interface IErrorReporter
 	{
 		void ReportFatalException(Exception e);
@@ -41,6 +40,63 @@ namespace Palaso.Reporting
 
 	public class ErrorReport
 	{
+
+#region Windows8PlusVersionReportingSupport
+		[DllImport("netapi32.dll", CharSet = CharSet.Auto)]
+		static extern int NetWkstaGetInfo(string server,
+			 int level,
+			 out IntPtr info);
+
+		[DllImport("netapi32.dll")]
+		static extern int NetApiBufferFree(IntPtr pBuf);
+
+		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+		struct MachineInfo
+		{
+			public int platform_id;
+			[MarshalAs(UnmanagedType.LPWStr)]
+			public string _computerName;
+			[MarshalAs(UnmanagedType.LPWStr)]
+			public string _languageGroup;
+			public int _majorVersion;
+			public int _minorVersion;
+		}
+
+		/// <summary>
+		/// An application can avoid the need of this method by adding/modifying the application manifest to declare support for a
+		/// particular windows version. This code is still necessary to report usefully about versions of windows released after
+		/// the application has shipped.
+		/// </summary>
+		public static string GetWindowsVersionInfoFromNetworkAPI()
+		{
+			IntPtr pBuffer;
+			// Get the version information from the network api, passing null to get network info from this machine
+			var retval = NetWkstaGetInfo(null, 100, out pBuffer);
+			if(retval != 0)
+				return "Windows Unknown(unidentifiable)";
+
+			var info = (MachineInfo)Marshal.PtrToStructure(pBuffer, typeof(MachineInfo));
+			string windowsVersion = null;
+			if(info._majorVersion == 6)
+			{
+				if(info._minorVersion == 2)
+					windowsVersion = "Windows 8";
+				else if(info._minorVersion == 3)
+					windowsVersion = "Windows 8.1";
+			}
+			else if(info._majorVersion == 10 && info._minorVersion == 0)
+			{
+				windowsVersion = "Windows 10";
+			}
+			else
+			{
+				windowsVersion = string.Format("Windows Unknown({0}.{1})", info._majorVersion, info._minorVersion);
+			}
+			NetApiBufferFree(pBuffer);
+			return windowsVersion;
+		}
+#endregion
+
 		private static IErrorReporter _errorReporter;
 
 		//We removed all references to Winforms from Palaso.dll but our error reporting relied heavily on it.
@@ -219,35 +275,6 @@ namespace Palaso.Reporting
 				);
 			}
 		}
-
-//        /// ------------------------------------------------------------------------------------
-//        /// <summary>
-//        ///make this false during automated testing
-//        /// </summary>
-//        /// ------------------------------------------------------------------------------------
-//        public static bool OkToInteractWithUser
-//        {
-//            set { s_isOkToInteractWithUser = value; }
-//            get { return s_isOkToInteractWithUser; }
-//        }
-
-		/// <summary>
-		/// this overrides OkToInteractWithUser
-		/// The test can then retrieve from PreviousNonFatalMessage
-		/// </summary>
-//        public static bool JustRecordNonFatalMessagesForTesting
-//        {
-//            set { s_justRecordNonFatalMessagesForTesting = value; }
-//            get { return s_justRecordNonFatalMessagesForTesting; }
-//        }
-
-		/// <summary>
-		/// for unit test
-		/// </summary>
-//        public static string PreviousNonFatalMessage
-//        {
-//            get { return s_previousNonFatalMessage; }
-//        }
 
 		/// <summary>
 		/// use this in unit tests to cleanly check that a message would have been shown.
@@ -433,11 +460,10 @@ namespace Palaso.Reporting
 				list.Add(new Version(PlatformID.Win32NT, 5, 1, "Windows XP"));
 				list.Add(new Version(PlatformID.Win32NT, 6, 0, "Vista"));
 				list.Add(new Version(PlatformID.Win32NT, 6, 1, "Windows 7"));
-				list.Add(new Version(PlatformID.Win32NT, 6, 2, "Windows 8"));
-
-				// Note: Windows might not report Windows 8.1 or 10 unless the app has
-				// "...been manifested for Windows 8.1 or Windows 10" (see remark in
-				// https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832%28v=vs.85%29.aspx)
+				// After Windows 8 the Environment.OSVersion started misreporting information unless
+				// your app has a manifest which says it supports the OS it is running on.  This is not
+				// helpful if someone starts using an app built before the OS is released. Anything that
+				// reports its self as Windows 8 is suspect, and must get the version info another way.
 				list.Add(new Version(PlatformID.Win32NT, 6, 3, "Windows 8.1"));
 				list.Add(new Version(PlatformID.Win32NT, 10, 0, "Windows 10"));
 
@@ -445,6 +471,12 @@ namespace Palaso.Reporting
 				{
 					if (version.Match(Environment.OSVersion))
 						return version.Label + " " + Environment.OSVersion.ServicePack;
+				}
+
+				// Handle any as yet unrecognized (possibly unmanifested) versions, or anything that reported its self as Windows 8.
+				if(Environment.OSVersion.Platform == PlatformID.Win32NT)
+				{
+					return GetWindowsVersionInfoFromNetworkAPI() + " " + Environment.OSVersion.ServicePack;
 				}
 			}
 			return Environment.OSVersion.VersionString;
@@ -458,7 +490,7 @@ namespace Palaso.Reporting
 		/// ------------------------------------------------------------------------------------
 		public static string GetHiearchicalExceptionInfo(Exception error, ref Exception innerMostException)
 		{
-			string x = ErrorReport.GetExceptionText(error);
+			var x = GetExceptionText(error);
 
 			if (error.InnerException != null)
 			{
