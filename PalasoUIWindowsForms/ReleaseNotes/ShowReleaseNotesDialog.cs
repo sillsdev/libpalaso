@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using MarkdownDeep;
 using Palaso.IO;
 
 namespace Palaso.UI.WindowsForms.ReleaseNotes

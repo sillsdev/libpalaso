@@ -268,6 +268,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Progress\LogBoxSettings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>LogBoxSettings.Designer.cs</LastGenOutput>
@@ -287,6 +288,10 @@
     <None Include="..\lib\common\Enchant.Net.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Reference Include="MarkdownDeep, Version=1.5.4615.26275, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MarkdownDeep.NET.1.5\lib\.NetFramework 3.5\MarkdownDeep.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" Condition="'$(OS)'=='Windows_NT'" />
     <Reference Include="sysglobl" />
     <Reference Include="System" />
@@ -527,7 +532,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Registration.settings</DependentUpon>
     </Compile>
-    <Compile Include="ReleaseNotes\MarkdownSharp.cs" />
     <Compile Include="SettingProtection\SettingsProtection1.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

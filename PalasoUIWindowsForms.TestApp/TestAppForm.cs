@@ -148,6 +148,17 @@ Release Notes Dialog
 
 This dialog takes a [markdown](http://en.wikipedia.org/wiki/Markdown) file
 and displays it as HTML.
+
+## 2.0
+* change one
+* change two
+## 1.9
+* big change 
+  + little change
+  - other little change
+## 1.8
+
+* oldest change
 				"))
 			{
 				using (var dlg = new ShowReleaseNotesDialog(SystemIcons.WinLogo, tempFile.Path))
