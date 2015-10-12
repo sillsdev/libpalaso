@@ -58,9 +58,9 @@ namespace Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces
 		/// <remarks>The IBus keyboard will either use the <paramref name="keySym"/> or
 		/// <paramref name="scanCode"/> and <paramref name="state"/>, depending on wether it
 		/// expects a specific keyboard layout or not.
-		/// <see href="http://ibus.googlecode.com/svn/docs/ibus-1.4/IBusInputContext.html#ibus-input-context-process-key-event-async"/>
+		/// <see href="http://ibus.github.io/docs/ibus-1.5/IBusInputContext.html#ibus-input-context-process-key-event-async"/>
 		/// </remarks>
-		/// <seealso cref="IBusKeyboardAdaptor.HandleKeyPress"/>
+		/// <seealso cref="IbusKeyboardSwitchingAdaptor.HandleKeyPress"/>
 		bool ProcessKeyEvent(int keySym, int scanCode, Keys state);
 
 		/// <summary>
@@ -84,7 +84,7 @@ namespace Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces
 
 		/// <summary>IBus raises this event while processing a key event to delete surrounding
 		/// characters (before or after the current cursor position).</summary>
-		/// <seealso href="http://ibus.googlecode.com/svn/docs/ibus-1.5/IBusInputContext.html#IBusInputContext-delete-surrounding-text"/>
+		/// <seealso href="http://ibus.github.io/docs/ibus-1.5/IBusInputContext.html#IBusInputContext-delete-surrounding-text"/>
 		event Action<int, int> DeleteSurroundingText;
 
 		/// <summary>Occurs to remove the temporary composition string without committing it.
