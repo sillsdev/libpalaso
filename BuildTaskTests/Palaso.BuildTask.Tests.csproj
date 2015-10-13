@@ -94,6 +94,10 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MarkdownDeep, Version=1.5.4615.26275, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MarkdownDeep.NET.1.5\lib\.NetFramework 3.5\MarkdownDeep.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Utilities" />
     <Reference Include="System" />
@@ -115,6 +119,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArchiveTests.cs" />
+    <Compile Include="GenerateReleaseArtifactsTests.cs" />
     <Compile Include="UpdateBuildTypeFileTests.cs" />
     <Compile Include="MakePotTests.cs" />
     <Compile Include="MockTaskItem.cs" />
