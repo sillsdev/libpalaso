@@ -11,7 +11,7 @@ namespace SIL.Windows.Forms.Widgets
 {
 	/// <summary>
 	/// TextInputBox is a wrapper around either a TextBox or a GeckoBox
-	/// (implemented in SIL.Windows.Forms.GeckoFxWebBrowserAdapter), which must be used by clients
+	/// (implemented in PalasoUiWindowsForms.GeckoFxWebBrowserAdapter), which must be used by clients
 	/// that are using GeckoFx.
 	/// </summary>
 	public class TextInputBox : UserControl
@@ -23,6 +23,12 @@ namespace SIL.Windows.Forms.Widgets
 		public TextInputBox()
 		{
 			_inputBox = CreateTextBox();
+			// If the inner control is a Gecko-based text box (currently accessed only by
+			// reflection), this doesn't seem to be needed.  If the inner control is a TextBox,
+			// this is the only way to get the inner text box to be as wide as this control is
+			// supposed to be.
+			if (_inputBox.TheControl is TextBox)
+				_inputBox.TheControl.Dock = DockStyle.Fill;	// Make the real inner box match the size of the outer virtual box.
 			this.Controls.Add(_inputBox.TheControl);
 		}
 
@@ -66,6 +72,17 @@ namespace SIL.Windows.Forms.Widgets
 		{
 			get { return _inputBox.Text; }
 			set { _inputBox.Text = value; }
+		}
+
+		protected override void OnSizeChanged(EventArgs e)
+		{
+			// If the inner control is a Gecko-based text box (currently accessed only by
+			// reflection), setting its minimum size like this causes a spurious, useless scrollbar
+			// to appear.  If the inner control is a TextBox, this is the only way to get the visual
+			// affect of the text box being as high as this control is supposed to be.
+			if (_inputBox.TheControl is TextBox)
+				_inputBox.TheControl.MinimumSize = Size;
+			base.OnSizeChanged(e);
 		}
 
 		/// <summary>

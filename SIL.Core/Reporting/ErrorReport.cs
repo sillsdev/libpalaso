@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -10,8 +9,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using SIL.PlatformUtilities;
 
+
 namespace SIL.Reporting
 {
+
 	public interface IErrorReporter
 	{
 		void ReportFatalException(Exception e);
@@ -39,6 +40,63 @@ namespace SIL.Reporting
 
 	public class ErrorReport
 	{
+
+#region Windows8PlusVersionReportingSupport
+		[DllImport("netapi32.dll", CharSet = CharSet.Auto)]
+		static extern int NetWkstaGetInfo(string server,
+			 int level,
+			 out IntPtr info);
+
+		[DllImport("netapi32.dll")]
+		static extern int NetApiBufferFree(IntPtr pBuf);
+
+		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+		struct MachineInfo
+		{
+			public int platform_id;
+			[MarshalAs(UnmanagedType.LPWStr)]
+			public string _computerName;
+			[MarshalAs(UnmanagedType.LPWStr)]
+			public string _languageGroup;
+			public int _majorVersion;
+			public int _minorVersion;
+		}
+
+		/// <summary>
+		/// An application can avoid the need of this method by adding/modifying the application manifest to declare support for a
+		/// particular windows version. This code is still necessary to report usefully about versions of windows released after
+		/// the application has shipped.
+		/// </summary>
+		public static string GetWindowsVersionInfoFromNetworkAPI()
+		{
+			IntPtr pBuffer;
+			// Get the version information from the network api, passing null to get network info from this machine
+			var retval = NetWkstaGetInfo(null, 100, out pBuffer);
+			if(retval != 0)
+				return "Windows Unknown(unidentifiable)";
+
+			var info = (MachineInfo)Marshal.PtrToStructure(pBuffer, typeof(MachineInfo));
+			string windowsVersion = null;
+			if(info._majorVersion == 6)
+			{
+				if(info._minorVersion == 2)
+					windowsVersion = "Windows 8";
+				else if(info._minorVersion == 3)
+					windowsVersion = "Windows 8.1";
+			}
+			else if(info._majorVersion == 10 && info._minorVersion == 0)
+			{
+				windowsVersion = "Windows 10";
+			}
+			else
+			{
+				windowsVersion = string.Format("Windows Unknown({0}.{1})", info._majorVersion, info._minorVersion);
+			}
+			NetApiBufferFree(pBuffer);
+			return windowsVersion;
+		}
+#endregion
+
 		private static IErrorReporter _errorReporter;
 
 		//We removed all references to Winforms from Palaso.dll but our error reporting relied heavily on it.
@@ -66,8 +124,8 @@ namespace SIL.Reporting
 		/// <summary>
 		/// a list of name, string value pairs that will be included in the details of the error report.
 		/// </summary>
-		private static StringDictionary s_properties =
-			new StringDictionary();
+		private static Dictionary<string, string> s_properties =
+			new Dictionary<string, string>();
 
 		private static bool s_isOkToInteractWithUser = true;
 		private static bool s_justRecordNonFatalMessagesForTesting=false;
@@ -89,28 +147,29 @@ namespace SIL.Reporting
 		/// ------------------------------------------------------------------------------------
 		public static string GetExceptionText(Exception error)
 		{
-			StringBuilder subject = new StringBuilder();
+			var subject = new StringBuilder();
 			subject.AppendFormat("Exception: {0}", error.Message);
 
-			StringBuilder txt = new StringBuilder();
+			var txt = new StringBuilder();
 
 			txt.Append("Msg: ");
-			txt.Append(error.Message);
+			txt.AppendLine(error.Message);
 
 			try
 			{
-				if (error is COMException)
+				var cOMException = error as COMException;
+				if (cOMException != null)
 				{
-					txt.Append("\r\nCOM message: ");
-					txt.Append(new Win32Exception(((COMException) error).ErrorCode).Message);
+					txt.Append("COM message: ");
+					txt.AppendLine(new Win32Exception(cOMException.ErrorCode).Message);
 				}
 			}
 			catch {}
 
 			try
 			{
-				txt.Append("\r\nSource: ");
-				txt.Append(error.Source);
+				txt.Append("Source: ");
+				txt.AppendLine(error.Source);
 				subject.AppendFormat(" in {0}", error.Source);
 			}
 			catch {}
@@ -119,22 +178,21 @@ namespace SIL.Reporting
 			{
 				if (error.TargetSite != null)
 				{
-					txt.Append("\r\nAssembly: ");
-					txt.Append(error.TargetSite.DeclaringType.Assembly.FullName);
+					txt.Append("Assembly: ");
+					txt.AppendLine(error.TargetSite.DeclaringType.Assembly.FullName);
 				}
 			}
 			catch {}
 
 			try
 			{
-				txt.Append("\r\nStack: ");
-				txt.Append(error.StackTrace);
+				txt.Append("Stack: ");
+				txt.AppendLine(error.StackTrace);
 			}
 			catch {}
 
 			s_emailSubject = subject.ToString();
 
-			txt.Append("\r\n");
 			return txt.ToString();
 		}
 
@@ -218,35 +276,6 @@ namespace SIL.Reporting
 			}
 		}
 
-//        /// ------------------------------------------------------------------------------------
-//        /// <summary>
-//        ///make this false during automated testing
-//        /// </summary>
-//        /// ------------------------------------------------------------------------------------
-//        public static bool OkToInteractWithUser
-//        {
-//            set { s_isOkToInteractWithUser = value; }
-//            get { return s_isOkToInteractWithUser; }
-//        }
-
-		/// <summary>
-		/// this overrides OkToInteractWithUser
-		/// The test can then retrieve from PreviousNonFatalMessage
-		/// </summary>
-//        public static bool JustRecordNonFatalMessagesForTesting
-//        {
-//            set { s_justRecordNonFatalMessagesForTesting = value; }
-//            get { return s_justRecordNonFatalMessagesForTesting; }
-//        }
-
-		/// <summary>
-		/// for unit test
-		/// </summary>
-//        public static string PreviousNonFatalMessage
-//        {
-//            get { return s_previousNonFatalMessage; }
-//        }
-
 		/// <summary>
 		/// use this in unit tests to cleanly check that a message would have been shown.
 		/// E.g.  using (new Palaso.Reporting.ErrorReport.NonFatalErrorReportExpected()) {...}
@@ -297,7 +326,7 @@ namespace SIL.Reporting
 		/// <summary>
 		/// a list of name, string value pairs that will be included in the details of the error report.
 		/// </summary>
-		public static StringDictionary Properties
+		public static Dictionary<string, string> Properties
 		{
 			get
 			{
@@ -345,11 +374,35 @@ namespace SIL.Reporting
 			AddProperty("CurrentDirectory", Environment.CurrentDirectory);
 			AddProperty("MachineName", Environment.MachineName);
 			AddProperty("OSVersion", GetOperatingSystemLabel());
+			if (Platform.IsUnix)
+				AddProperty("DesktopEnvironment", Platform.DesktopEnvironmentInfoString);
 			AddProperty("DotNetVersion", Environment.Version.ToString());
 			AddProperty("WorkingSet", Environment.WorkingSet.ToString());
 			AddProperty("UserDomainName", Environment.UserDomainName);
 			AddProperty("UserName", Environment.UserName);
 			AddProperty("Culture", CultureInfo.CurrentCulture.ToString());
+		}
+
+		/// <summary>
+		/// Get the standard properties in a form suitable for other uses
+		/// (such as analytics).
+		/// </summary>
+		public static Dictionary<string, string> GetStandardProperties()
+		{
+			var props = new Dictionary<string,string>();
+			props.Add("Version", ErrorReport.GetVersionForErrorReporting());
+			props.Add("CommandLine", Environment.CommandLine);
+			props.Add("CurrentDirectory", Environment.CurrentDirectory);
+			props.Add("MachineName", Environment.MachineName);
+			props.Add("OSVersion", GetOperatingSystemLabel());
+			if (Platform.IsUnix)
+				props.Add("DesktopEnvironment", Platform.DesktopEnvironmentInfoString);
+			props.Add("DotNetVersion", Environment.Version.ToString());
+			props.Add("WorkingSet", Environment.WorkingSet.ToString());
+			props.Add("UserDomainName", Environment.UserDomainName);
+			props.Add("UserName", Environment.UserName);
+			props.Add("Culture", CultureInfo.CurrentCulture.ToString());
+			return props;
 		}
 
 		class Version
@@ -359,7 +412,7 @@ namespace SIL.Reporting
 			private readonly int _minor;
 			public string Label { get; private set; }
 
-			public Version(PlatformID platform, int minor, int major,  string label)
+			public Version(PlatformID platform, int major, int minor, string label)
 			{
 				_platform = platform;
 				_major = major;
@@ -376,7 +429,7 @@ namespace SIL.Reporting
 
 		public static string GetOperatingSystemLabel()
 		{
-			if(Environment.OSVersion.Platform == PlatformID.Unix)
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
 			{
 				var startInfo = new ProcessStartInfo("lsb_release", "-si -sr -sc");
 				startInfo.RedirectStandardOutput = true;
@@ -394,24 +447,39 @@ namespace SIL.Reporting
 						return String.Format("{0} {1} {2}", si, sr, sc);
 					}
 				}
-				catch(Exception)
-				{ /*lsb_release should work on all supported versions but fall back to the OSVersion.VersionString */ }
+				catch (Exception)
+				{
+					// lsb_release should work on all supported versions but fall back to the OSVersion.VersionString
+				}
 			}
 			else
 			{
-			var list = new List<Version>();
-			list.Add(new Version(System.PlatformID.Win32NT,0,5, "Windows 2000"));
-			list.Add(new Version(System.PlatformID.Win32NT, 1, 5, "Windows XP"));
-			list.Add(new Version(System.PlatformID.Win32NT, 0, 6, "Vista"));
-			list.Add(new Version(System.PlatformID.Win32NT, 1, 6, "Windows 7"));
-			list.Add(new Version(System.PlatformID.Win32NT, 2, 6, "Windows 8"));
-			foreach (var version in list)
-			{
-				if(version.Match(System.Environment.OSVersion))
-					return version.Label + " " + Environment.OSVersion.ServicePack;
+				// https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832%28v=vs.85%29.aspx
+				var list = new List<Version>();
+				list.Add(new Version(PlatformID.Win32NT, 5, 0, "Windows 2000"));
+				list.Add(new Version(PlatformID.Win32NT, 5, 1, "Windows XP"));
+				list.Add(new Version(PlatformID.Win32NT, 6, 0, "Vista"));
+				list.Add(new Version(PlatformID.Win32NT, 6, 1, "Windows 7"));
+				// After Windows 8 the Environment.OSVersion started misreporting information unless
+				// your app has a manifest which says it supports the OS it is running on.  This is not
+				// helpful if someone starts using an app built before the OS is released. Anything that
+				// reports its self as Windows 8 is suspect, and must get the version info another way.
+				list.Add(new Version(PlatformID.Win32NT, 6, 3, "Windows 8.1"));
+				list.Add(new Version(PlatformID.Win32NT, 10, 0, "Windows 10"));
+
+				foreach (var version in list)
+				{
+					if (version.Match(Environment.OSVersion))
+						return version.Label + " " + Environment.OSVersion.ServicePack;
+				}
+
+				// Handle any as yet unrecognized (possibly unmanifested) versions, or anything that reported its self as Windows 8.
+				if(Environment.OSVersion.Platform == PlatformID.Win32NT)
+				{
+					return GetWindowsVersionInfoFromNetworkAPI() + " " + Environment.OSVersion.ServicePack;
+				}
 			}
-			}
-			return System.Environment.OSVersion.VersionString;
+			return Environment.OSVersion.VersionString;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -422,13 +490,13 @@ namespace SIL.Reporting
 		/// ------------------------------------------------------------------------------------
 		public static string GetHiearchicalExceptionInfo(Exception error, ref Exception innerMostException)
 		{
-			string x = ErrorReport.GetExceptionText(error);
+			var x = GetExceptionText(error);
 
 			if (error.InnerException != null)
 			{
 				innerMostException = error.InnerException;
 
-				x += "**Inner Exception:\r\n";
+				x += "**Inner Exception:" + Environment.NewLine;
 				x += GetHiearchicalExceptionInfo(error.InnerException, ref innerMostException);
 			}
 			return x;

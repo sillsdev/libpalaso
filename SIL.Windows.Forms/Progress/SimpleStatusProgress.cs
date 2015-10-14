@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Windows.Forms;
+using SIL.Extensions;
 using SIL.Progress;
 
 namespace SIL.Windows.Forms.Progress
@@ -9,7 +10,7 @@ namespace SIL.Windows.Forms.Progress
 	{
 		public void WriteStatus(string message, params object[] args)
 		{
-			string theMessage = GenericProgress.SafeFormat(message, args);
+			string theMessage = message.FormatWithErrorStringInsteadOfException(args);
 			LastStatus = theMessage;
 			if (SyncContext != null)
 			{
@@ -32,7 +33,7 @@ namespace SIL.Windows.Forms.Progress
 		public void WriteWarning(string message, params object[] args)
 		{
 			WarningEncountered = true;
-			LastWarning = GenericProgress.SafeFormat(message, args);
+			LastWarning = message.FormatWithErrorStringInsteadOfException(args);
 			LastStatus = LastWarning;
 		}
 		public void WriteException(Exception error)
@@ -43,7 +44,7 @@ namespace SIL.Windows.Forms.Progress
 		public void WriteError(string message, params object[] args)
 		{
 			ErrorEncountered = true;
-			LastError = GenericProgress.SafeFormat(message, args);
+			LastError = message.FormatWithErrorStringInsteadOfException(args);
 			LastStatus = LastError;
 		}
 		public void WriteVerbose(string message, params object[] args) { }

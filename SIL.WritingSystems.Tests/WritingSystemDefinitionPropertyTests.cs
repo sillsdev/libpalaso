@@ -36,10 +36,10 @@ namespace SIL.WritingSystems.Tests
 				return new List<ValuesToSet>
 							 {
 								 new ValuesToSet(3.14f, 2.72f),
-								 new ValuesToSet(false, true),
+								 new ValuesToSet(true, false),
 								 new ValuesToSet("to be", "!(to be)"),
 								 new ValuesToSet(DateTime.Now, DateTime.MinValue),
-								 new ValuesToSet(QuotationParagraphContinueType.None, QuotationParagraphContinueType.All),
+								 new ValuesToSet(QuotationParagraphContinueType.All, QuotationParagraphContinueType.None),
 							 };
 			}
 		}

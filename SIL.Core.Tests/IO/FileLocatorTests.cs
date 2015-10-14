@@ -152,13 +152,13 @@ namespace SIL.Tests.IO
 		[Test]
 		public void LocateExecutable_NonexistingFile()
 		{
-			Assert.That(FileLocator.LocateExecutable(false, "__nonexisting.exe"), Is.Null);
+			Assert.That(FileLocator.LocateExecutable(false, "dummy", "__nonexisting.exe"), Is.Null);
 		}
 
 		[Test]
 		public void LocateExecutable_NonexistingFileThrows()
 		{
-			Assert.That(() => FileLocator.LocateExecutable("__nonexisting.exe"),
+			Assert.That(() => FileLocator.LocateExecutable("dummy", "__nonexisting.exe"),
 				Throws.Exception.TypeOf<ApplicationException>());
 		}
 

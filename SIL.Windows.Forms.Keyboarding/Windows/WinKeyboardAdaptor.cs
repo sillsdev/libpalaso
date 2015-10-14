@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -19,7 +20,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 	/// <summary>
 	/// Class for handling Windows system keyboards
 	/// </summary>
-	internal class WinKeyboardAdaptor : IKeyboardAdaptor
+	internal class WinKeyboardAdaptor : IKeyboardRetrievingAdaptor, IKeyboardSwitchingAdaptor
 	{
 		internal class LayoutName
 		{
@@ -712,7 +713,29 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				profile1.Hkl == profile2.Hkl;
 		}
 
-		#region IKeyboardAdaptor Members
+		#region IKeyboardRetrievingAdaptor Members
+
+		/// <summary>
+		/// The type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
+		/// </summary>
+		public KeyboardAdaptorType Type
+		{
+			get
+			{
+				CheckDisposed();
+				return KeyboardAdaptorType.System;
+			}
+		}
+
+		public bool IsApplicable
+		{
+			get { return true; }
+		}
+
+		public IKeyboardSwitchingAdaptor SwitchingAdaptor
+		{
+			get { return this; }
+		}
 
 		[SuppressMessage("Gendarme.Rules.Correctness", "EnsureLocalDisposalRule",
 			Justification = "m_Timer gets disposed in Close() which gets called from KeyboardControllerImpl.Dispose")]
@@ -731,19 +754,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		public void UpdateAvailableKeyboards()
 		{
 			GetInputMethods();
-		}
-
-		public bool ActivateKeyboard(KeyboardDescription keyboard)
-		{
-			CheckDisposed();
-			SwitchKeyboard((WinKeyboardDescription) keyboard);
-			return true;
-		}
-
-		public void DeactivateKeyboard(KeyboardDescription keyboard)
-		{
-			CheckDisposed();
-			SaveImeConversionStatus((WinKeyboardDescription) keyboard);
 		}
 
 		private KeyboardDescription GetKeyboardForInputLanguage(IInputLanguage inputLanguage)
@@ -784,6 +794,47 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				GetDisplayName(layout, cultureName), new TfInputProcessorProfile());
 		}
 
+		public bool CanHandleFormat(KeyboardFormat format)
+		{
+			CheckDisposed();
+			switch (format)
+			{
+				case KeyboardFormat.Msklc:
+				case KeyboardFormat.Unknown:
+					return true;
+			}
+			return false;
+		}
+
+		public string GetKeyboardSetupApplication(out string arguments)
+		{
+			arguments = @"input.dll";
+			return Path.Combine(
+				Environment.GetFolderPath(Environment.SpecialFolder.System), @"control.exe");
+		}
+
+		public bool IsSecondaryKeyboardSetupApplication
+		{
+			get { return false; }
+		}
+
+		#endregion
+
+		#region IKeyboardSwitchingAdaptor Members
+
+		public bool ActivateKeyboard(KeyboardDescription keyboard)
+		{
+			CheckDisposed();
+			SwitchKeyboard((WinKeyboardDescription) keyboard);
+			return true;
+		}
+
+		public void DeactivateKeyboard(KeyboardDescription keyboard)
+		{
+			CheckDisposed();
+			SaveImeConversionStatus((WinKeyboardDescription) keyboard);
+		}
+
 		/// <summary>
 		/// Gets the default keyboard of the system.
 		/// </summary>
@@ -815,30 +866,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				return Keyboard.Controller.AvailableKeyboards.OfType<WinKeyboardDescription>()
 					.FirstOrDefault(winKeybd => winKeybd.InputProcessorProfile.LangId == lang);
 			}
-		}
-
-		/// <summary>
-		/// The type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
-		/// </summary>
-		public KeyboardAdaptorType Type
-		{
-			get
-			{
-				CheckDisposed();
-				return KeyboardAdaptorType.System;
-			}
-		}
-
-		public bool CanHandleFormat(KeyboardFormat format)
-		{
-			CheckDisposed();
-			switch (format)
-			{
-				case KeyboardFormat.Msklc:
-				case KeyboardFormat.Unknown:
-					return true;
-			}
-			return false;
 		}
 
 		#endregion

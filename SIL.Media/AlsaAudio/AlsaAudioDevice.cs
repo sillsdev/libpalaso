@@ -238,7 +238,7 @@ namespace SIL.Media.AlsaAudio
 		#region Construction and Destruction
 
 		/// <summary>
-		/// Initialize a new instance of the <see cref="AlsaAudioDevice"/> class.
+		/// Initialize a new instance of the <see cref="SIL.Media.AlsaAudio.AlsaAudioDevice"/> class.
 		/// </summary>
 		public AlsaAudioDevice()
 		{
@@ -783,7 +783,7 @@ namespace SIL.Media.AlsaAudio
 			BinaryWriter _writer;
 
 			/// <summary>
-			/// Initializes a new instance of the <see cref="AlsaAudioDevice.WaveFileWriter"/> class.
+			/// Initializes a new instance of the <see cref="SIL.Media.AlsaAudio.AlsaAudioDevice.WaveFileWriter"/> class.
 			/// </summary>
 			public WaveFileWriter(string filename)
 			{

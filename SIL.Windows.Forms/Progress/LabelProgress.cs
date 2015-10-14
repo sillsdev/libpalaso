@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Windows.Forms;
+using SIL.Extensions;
 using SIL.Progress;
 
 namespace SIL.Windows.Forms.Progress
@@ -35,11 +36,7 @@ namespace SIL.Windows.Forms.Progress
 		{
 			try
 			{
-				_box.Invoke(new Action(() =>
-										   {
-											   _box.Text = GenericProgress.SafeFormat(message + Environment.NewLine,
-																					  args);
-										   }));
+				_box.Invoke(new Action(() => { _box.Text = message.FormatWithErrorStringInsteadOfException(args) + Environment.NewLine; }));
 			}
 			catch (Exception)
 			{

@@ -5,7 +5,7 @@ using System.Windows.Forms;
 namespace SIL.Windows.Forms.Widgets
 {
 	/// <summary>
-	/// Labels are fairly limitted even in .net, but on mono so far, multi-line
+	/// Labels are fairly limited even in .NET, but on mono so far, multi-line
 	/// labels are trouble.  This class uses TextBox to essentially be a better
 	/// cross-platform label.
 	/// </summary>
@@ -13,44 +13,66 @@ namespace SIL.Windows.Forms.Widgets
 	{
 		private Brush _textBrush;
 		private Brush _backgroundBrush;
-		private int _previousWidth=0;
+		private bool _isTextSelectable;
 
 		public BetterLabel()
 		{
 			InitializeComponent();
 			ReadOnly = true;
-			Enabled = false;
+			IsTextSelectable = false;
 			ForeColor = SystemColors.ControlText;
 			SetStyle(ControlStyles.UserPaint,true);
 			_backgroundBrush = new SolidBrush(BackColor);
 			_textBrush = new SolidBrush(ForeColor);
-#if __MonoCS__
-			// These settings (and the overrides below) don't keep the BetterLabel from getting focus in Mono,
-			// but they do keep it from showing highlighted selections within the label.
-			Enabled = true;
-			// These may not work any better than setting UserPaint true, but ...
-			SetStyle(ControlStyles.UserMouse, true);
-			SetStyle(ControlStyles.Selectable | ControlStyles.StandardClick | ControlStyles.StandardDoubleClick, false);
-#endif
+		}
+
+		/// <summary>
+		/// Should the label allow a user to select and copy the text, such as from an error message?
+		/// </summary>
+		public bool IsTextSelectable
+		{
+			get
+			{
+				return _isTextSelectable;
+			}
+			set
+			{
+				_isTextSelectable = value;
+
+				// Always Enabled on Mono so text is black not grey.
+				if (Environment.OSVersion.Platform == PlatformID.Unix)
+				{
+					Enabled = true;
+					return;
+				}
+
+				Enabled = value;
+			}
 		}
 
 #if __MonoCS__
 		protected override void OnMouseDown(MouseEventArgs args)
 		{
-			// ignore the mouse totally.
+			if (IsTextSelectable)
+				base.OnMouseDown(args);
+			// Or ignore the mouse totally.
 		}
 		protected override void OnMouseMove(MouseEventArgs args)
 		{
-			// ignore the mouse totally.
+			if (IsTextSelectable)
+				base.OnMouseMove(args);
+			// Or ignore the mouse totally.
 		}
 		protected override void OnMouseUp(MouseEventArgs args)
 		{
-			// ignore the mouse totally.
+			if (IsTextSelectable)
+				base.OnMouseUp(args);
+			// Or ignore the mouse totally.
 		}
 #endif
 
 		/// <summary>
-		/// we custom draw so that we can be ReadOnly without being necessarily grey
+		/// Custom draw to be ReadOnly without being necessarily grey.
 		/// </summary>
 		/// <param name="e"></param>
 		/// <remarks>
@@ -58,6 +80,7 @@ namespace SIL.Windows.Forms.Widgets
 		/// (A Mono comment claims that MS/.Net doesn't call OnPaint, which it does,
 		/// and it's unclear how to fix the Mono code reliably.)  Mono also seems to
 		/// ignore ControlStyles settings almost totally.
+		/// The text is black in Mono if Enabled is true.
 		/// </remarks>
 		protected override void OnPaint(PaintEventArgs e)
 		{
@@ -109,6 +132,7 @@ namespace SIL.Windows.Forms.Widgets
 		{
 			using (var g = this.CreateGraphics())
 			{
+				// This may require the use of mono-sil which fixes MeasureString to calculate the correct value to be tall enough.
 				var sz = g.MeasureString(Text, this.Font, Width).ToSize();
 				//leave as fixed width
 				Height = sz.Height;
@@ -135,11 +159,7 @@ namespace SIL.Windows.Forms.Widgets
 
 		protected override void OnSizeChanged(EventArgs e)
 		{
-			if (_previousWidth!=Width)
-			{
-				DetermineHeight();
-				_previousWidth = Width;
-			}
+			DetermineHeight();
 			base.OnSizeChanged(e);
 		}
 

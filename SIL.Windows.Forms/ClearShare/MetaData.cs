@@ -14,7 +14,7 @@ using File = System.IO.File;
 namespace SIL.Windows.Forms.ClearShare
 {
 	/// <summary>
-	/// Provides reading and writing of metdata, currently for any file which TagLib can read AND write (images, pdf).
+	/// Provides reading and writing of metadata, currently for any file which TagLib can read AND write (images, pdf).
 	/// Where multiple metadata formats are in a file (XMP, EXIF, IPTC-IIM), we read the first one we find (that has a non-empty value) and write them all.
 	/// Working Group guidelines: http://www.metadataworkinggroup.org/pdf/mwg_guidance.pdf
 	///
@@ -627,6 +627,17 @@ namespace SIL.Windows.Forms.ClearShare
 		static public bool HaveStoredExemplar(FileCategory category)
 		{
 			return File.Exists(GetExemplarPath(category));
+		}
+
+		/// <summary>
+		/// Deletes the stored exemplar (if it exists).  This can be useful if a program
+		/// wants to establish CC-BY as the default license for a new product.
+		/// </summary>
+		static public void DeleteStoredExemplar(FileCategory category)
+		{
+			var path = GetExemplarPath(category);
+			if (File.Exists(path))
+				File.Delete(path);
 		}
 
 		/// <summary>

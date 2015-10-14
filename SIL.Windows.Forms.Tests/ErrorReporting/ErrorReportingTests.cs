@@ -14,6 +14,15 @@ namespace SIL.Windows.Forms.Tests.ErrorReporting
 	[Category("SkipOnTeamCity")]
 	public class ErrorReportingTests
 	{
+		private bool Is64BitProcess;
+		private bool HasLargePhysicalMemory;
+
+		[TestFixtureSetUp]
+		public void FixtureSetUp()
+		{
+			Is64BitProcess = IntPtr.Size == 8;
+			HasLargePhysicalMemory = MemoryManagement.GetMemoryInformation().TotalPhysicalMemory >= 8192000000L;
+		}
 
 		[Test, Ignore("By hand only")]
 		public void NotifyUserOfProblem_Message()
@@ -83,11 +92,14 @@ namespace SIL.Windows.Forms.Tests.ErrorReporting
 		[Test]
 		public void CheckMemory_1GUsed_ReturnsTrue()
 		{
-			// We'll grab some big chunks but not demand we can get it all. Keep them small enough to stay out of Large Object Heap
+			// We'll grab some big chunks but not demand we can get it all. Keep them small enough
+			// to stay out of Large Object Heap
+			var desiredNumberOfChunks = Is64BitProcess && HasLargePhysicalMemory ? 42000 : 21000;
 			var chunks = new List<byte[]>();
-			for (int i = 0; i < 21000; i++)
+			for (int i = 0; i < desiredNumberOfChunks; i++)
 				chunks.Add(new byte[50000]);
-			Assert.That(MemoryManagement.CheckMemory(true, "not much done", false), Is.True);
+			Assert.That(MemoryManagement.CheckMemory(true, "not much done", false), Is.True,
+				"CheckMemory didn't detect danger");
 		}
 
 		[Test, Ignore("By hand only")]

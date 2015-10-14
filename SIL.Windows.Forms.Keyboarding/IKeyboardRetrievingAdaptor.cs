@@ -9,26 +9,46 @@ namespace SIL.Windows.Forms.Keyboarding
 	/// <summary>
 	/// The different keyboard types we're supporting.
 	/// </summary>
+	[Flags]
 	public enum KeyboardAdaptorType
 	{
 		/// <summary>
 		/// System keyboard like Windows API or xkb
 		/// </summary>
-		System,
+		System = 1,
 		/// <summary>
 		/// Other input method like Keyman, InKey or ibus
 		/// </summary>
-		OtherIm
+		OtherIm = 2
 	}
 
 	/// <summary>
 	/// Interface implemented by some helper classes used by KeyboardController, which
-	/// maintains a list of keyboard adapters, one for each type of keyboard on the current platform
-	/// which require different treatment.  In particular a keyboard adapter is responsible to figure out which keyboards of the type
-	/// it handles are installed, and to activate one of them when we think the user wants to type with it.
+	/// maintains a list of keyboard retriever adapters, one for each type of keyboard on the
+	/// current platform which require different treatment.  In particular a keyboard retrieving
+	/// adapter is responsible to figure out which keyboards of the type it handles are
+	/// installed.
 	/// </summary>
-	public interface IKeyboardAdaptor : IDisposable
+	public interface IKeyboardRetrievingAdaptor : IDisposable
 	{
+		/// <summary>
+		/// Gets the type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
+		/// </summary>
+		KeyboardAdaptorType Type { get; }
+
+		/// <summary>
+		/// Checks whether this keyboard retriever can get keyboards. Different desktop
+		/// environments use differing APIs to get the available keyboards. If this class is
+		/// able to find the available keyboards this property will return <c>true</c>,
+		/// otherwise <c>false</c>.
+		/// </summary>
+		bool IsApplicable { get; }
+
+		/// <summary>
+		/// Gets the keyboard adaptor that deals with keyboards that this class retrieves.
+		/// </summary>
+		IKeyboardSwitchingAdaptor SwitchingAdaptor { get; }
+
 		/// <summary>
 		/// Initialize the installed keyboards: add to the master list the available keyboards recognized by this adapter.
 		/// </summary>
@@ -39,15 +59,6 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// we need the list to be up-to-date (e.g., when displaying a chooser). The controller first empties the list.
 		/// </summary>
 		void UpdateAvailableKeyboards();
-
-		bool ActivateKeyboard(KeyboardDescription keyboard);
-
-		/// <summary>
-		/// Called to allow state to be saved when a different keyboard is being activated or the window is being deactivated.
-		/// Does not change the active keyboard.
-		/// </summary>
-		/// <param name="keyboard"></param>
-		void DeactivateKeyboard(KeyboardDescription keyboard);
 
 		/// <summary>
 		/// Creates and returns a keyboard definition object of the type needed by this adapter (and hooked to it)
@@ -65,25 +76,19 @@ namespace SIL.Windows.Forms.Keyboarding
 		KeyboardDescription CreateKeyboardDefinition(string id);
 
 		/// <summary>
-		/// Gets the default keyboard of the system. This only needs to be implemented by the (first) adapter of type system.
-		/// </summary>
-		KeyboardDescription DefaultKeyboard { get; }
-
-		/// <summary>
-		/// Gets the currently active keyboard. This only needs to be implemented by the (first) adapter of
-		/// type system, and only if the implementation in KeyboardControllerImpl (which uses layoutname
-		/// and culturename based on the current input language) isn't sufficient.
-		/// </summary>
-		KeyboardDescription ActiveKeyboard { get; }
-
-		/// <summary>
-		/// Gets the type of keyboards this adaptor handles: system or other (like Keyman, ibus...)
-		/// </summary>
-		KeyboardAdaptorType Type { get; }
-
-		/// <summary>
 		/// Determines whether this adaptor can handle the specified keyboard format.
 		/// </summary>
 		bool CanHandleFormat(KeyboardFormat format);
+
+		/// <summary>
+		/// Gets the keyboard setup application and the arguments needed to call it.
+		/// </summary>
+		string GetKeyboardSetupApplication(out string arguments);
+
+		/// <summary>
+		/// Returns <c>true</c> if this is the secondary keyboard application, e.g.
+		/// Keyman setup dialog on Windows.
+		/// </summary>
+		bool IsSecondaryKeyboardSetupApplication { get; }
 	}
 }

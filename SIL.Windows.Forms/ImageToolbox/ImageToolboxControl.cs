@@ -29,6 +29,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			_toolImages = new ImageList();
 			ImageInfo = new PalasoImage();
 			_copyExemplarMetadata.Font = _editMetadataLink.Font;
+			SearchLanguage = "en";	// unless/until the owner specifies otherwise explicitly
 		}
 
 		/// <summary>
@@ -111,6 +112,11 @@ namespace SIL.Windows.Forms.ImageToolbox
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the language used in searching for an image by words.
+		/// </summary>
+		public string SearchLanguage { protected get; set; }
+
 		private void SetCurrentImageToolTip(PalasoImage image)
 		{
 			_toolTip.SetToolTip(_currentImageBox, "");
@@ -167,6 +173,25 @@ namespace SIL.Windows.Forms.ImageToolbox
 				var s = LocalizationManager.GetString("ImageToolbox.CopyExemplarMetadata", "Use {0}", "Used to copy a previous metadata set to the current image. The  {0} will be replaced with the name of the exemplar image.");
 				_copyExemplarMetadata.Text = string.Format(s, Metadata.GetStoredExemplarSummaryString(Metadata.FileCategory.Image));
 			}
+#if __MonoCS__
+			// Ensure that the metadata gets fully displayed if at all possible.
+			// See https://silbloom.myjetbrains.com/youtrack/issue/BL-2354 for what can happen otherwise.
+			// The need for this appears to be a bug in the Mono library that allows _metadataDisplayControl
+			// to grow taller as its internal content exceeds its initial external size.  (Any difference
+			// from Windows/.Net behavior is by definition a bug.)
+			if (_metadataDisplayControl.Visible)
+			{
+				var heightClipped = (_metadataDisplayControl.Location.Y + _metadataDisplayControl.Height) - panel1.Height;
+				if (_editLink.Visible)
+					heightClipped = (_metadataDisplayControl.Location.Y + _metadataDisplayControl.Height) - _editLink.Location.Y;
+				if (heightClipped != 0)
+				{
+					var yNew = _metadataDisplayControl.Location.Y - heightClipped;
+					var loc = new Point(_metadataDisplayControl.Location.X, yNew < 0 ? 0 : yNew);
+					_metadataDisplayControl.Location = loc;
+				}
+			}
+#endif
 		}
 
 		private ListViewItem AddControl(string label, Bitmap bitmap, string imageKey, System.Func<PalasoImage, Control> makeControl)
@@ -192,7 +217,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			{
 				if (_toolListView.SelectedItems.Count == 0)
 				{
-					// Just return. This causes the 'click off a control' to have no effect at all. CP 2015-07
+					_previousSelectedIndex = -1;
 					return;
 				}
 
@@ -202,6 +227,9 @@ namespace SIL.Windows.Forms.ImageToolbox
 				_previousSelectedIndex = _toolListView.SelectedIndices[0];
 
 				ListViewItem selectedItem = _toolListView.SelectedItems[0];
+
+				if (selectedItem.Tag == _currentControl)
+					return;
 
 				bool haveImage = !(ImageInfo == null || ImageInfo.Image == null);
 
@@ -216,9 +244,11 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 				if (_currentControl != null)
 				{
+					GetImageFromCurrentControl();
+
 					_panelForControls.Controls.Remove(_currentControl);
 					((IImageToolboxControl) _currentControl).ImageChanged -= new EventHandler(imageToolboxControl_ImageChanged);
-					_currentControl = null;
+					_currentControl.Dispose();
 				}
 				System.Func<PalasoImage, Control> fun =
 					(System.Func<PalasoImage, Control>) selectedItem.Tag;
@@ -237,8 +267,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			}
 			catch (Exception error)
 			{
-				ErrorReport.NotifyUserOfProblem(error,
-																 "Sorry, something went wrong with the ImageToolbox".Localize("ImageToolbox.GenericProblem"));
+				ErrorReport.NotifyUserOfProblem(error, "Sorry, something went wrong with the ImageToolbox".Localize("ImageToolbox.GenericProblem"));
 			}
 		}
 
@@ -312,6 +341,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			{
 				var c = new AcquireImageControl();
 				c.SetIntialSearchString(InitialSearchString);
+				c.SearchLanguage = SearchLanguage;
 				return c;
 			});
 			_cropToolListItem = AddControl("Crop".Localize("ImageToolbox.Crop"), ImageToolboxButtons.crop, "crop", (x) => new ImageCropper());

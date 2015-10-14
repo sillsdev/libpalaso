@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Reflection;
 using System.Windows.Forms;
 using L10NSharp;
 using SIL.IO;
@@ -265,6 +264,15 @@ namespace SIL.Windows.Forms.ImageToolbox
 		public void SetIntialSearchString(string searchTerm)
 		{
 			_galleryControl.SetIntialSearchTerm(searchTerm);
+		}
+
+		/// <summary>
+		/// Gets or sets the language used in searching for an image by words.
+		/// </summary>
+		public string SearchLanguage
+		{
+			get { return _galleryControl.SearchLanguage; }
+			set { _galleryControl.SearchLanguage = value; }
 		}
 
 		/*

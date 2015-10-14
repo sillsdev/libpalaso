@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using SIL.Extensions;
 using SIL.IO;
 using SIL.Linq;
@@ -11,15 +12,20 @@ using SIL.Text;
 
 namespace SIL.Windows.Forms.ImageGallery
 {
-	public class ArtOfReadingImageCollection :IImageCollection
+	public class ArtOfReadingImageCollection : IImageCollection
 	{
 		private Dictionary<string, List<string>> _wordToPartialPathIndex;
 		private Dictionary<string, string> _partialPathToWordsIndex;
+		private static readonly object _padlock = new object();
+		public string SearchLanguage { get; set; }
+		private List<string> _indexLanguages;
+		public IEnumerable<string> IndexLanguageIds { get { return _indexLanguages; } }
 
 		public ArtOfReadingImageCollection()
 		{
-		   _wordToPartialPathIndex = new Dictionary<string, List<string>>();
-		   _partialPathToWordsIndex = new Dictionary<string, string>();
+			_wordToPartialPathIndex = new Dictionary<string, List<string>>();
+			_partialPathToWordsIndex = new Dictionary<string, string>();
+			SearchLanguage = "en";	// until told otherwise...
 		}
 
 		public string RootImagePath { get; set; }
@@ -37,13 +43,75 @@ namespace SIL.Windows.Forms.ImageGallery
 						continue;
 					var partialPath = parts[0];
 					var keyString = parts[1].Trim(new char[] { ' ', '"' });//some have quotes, some don't
-					_partialPathToWordsIndex.Add(partialPath, keyString);
+					lock (_padlock)
+						_partialPathToWordsIndex.Add(partialPath, keyString);
 					var keys = keyString.SplitTrimmed(',');
 					foreach (var key in keys)
 					{
-						_wordToPartialPathIndex.GetOrCreate(key).Add(partialPath);
+						lock (_padlock)
+							_wordToPartialPathIndex.GetOrCreate(key).Add(partialPath);
 					}
 				}
+			}
+		}
+
+		/// <summary>
+		/// Load the multilingual index of the images.
+		/// </summary>
+		/// <returns>number of index lines successfully loaded</returns>
+		public int LoadMultilingualIndex(string pathToIndexFile)
+		{
+			const string defaultLang = "en";
+			using (var f = File.OpenText(pathToIndexFile))
+			{
+				var columns = GetColumnHeadersIfValid(f);
+				if (columns == null)
+					return 0;
+				int desiredColumn = -1;
+				int defaultColumn = -1;
+				// The first four columns are fixed metadata.  The remaining columns contain
+				// search words for different languages, one language per column.  The header
+				// contains the ISO language codes.
+				for (int i = 4; i < columns.Length; ++i)
+				{
+					if (columns[i] == SearchLanguage)
+						desiredColumn = i;
+					if (columns[i] == defaultLang)
+						defaultColumn = i;
+				}
+				if (desiredColumn == -1)
+					desiredColumn = defaultColumn;
+				if (defaultColumn == -1)
+					return 0;		// we must have English!!?
+				int count = 0;
+				while (!f.EndOfStream)
+				{
+					var line = f.ReadLine();
+					var parts = line.Split(new char[]{'\t'});
+					Debug.Assert(parts.Length > defaultColumn);
+					if (parts.Length <= defaultColumn)
+						continue;
+					var partialPath = String.Format("{0}:AOR_{1}.png", parts[3], parts[1]);
+					string keyString;
+					if (parts.Length > desiredColumn)
+						keyString = parts[desiredColumn];
+					else if (parts.Length > defaultColumn)
+						keyString = parts[defaultColumn];
+					else
+						keyString = String.Empty;
+					if (String.IsNullOrWhiteSpace (keyString))
+						continue;
+					lock (_padlock)
+						_partialPathToWordsIndex.Add(partialPath, keyString.Replace(",", ", "));
+					var keys = keyString.Split(',');
+					foreach (var key in keys)
+					{
+						lock (_padlock)
+							_wordToPartialPathIndex.GetOrCreate(key).Add(partialPath);
+					}
+					++count;
+				}
+				return count;
 			}
 		}
 
@@ -80,7 +148,8 @@ namespace SIL.Windows.Forms.ImageGallery
 				var partialPath = path.Replace(RootImagePath, "");
 				partialPath = partialPath.Replace(Path.DirectorySeparatorChar, ':');
 				partialPath = partialPath.Trim(new char[] {':'});
-				return _partialPathToWordsIndex[partialPath];
+				lock (_padlock)
+					return _partialPathToWordsIndex[partialPath];
 			}
 			catch (Exception)
 			{
@@ -144,31 +213,33 @@ namespace SIL.Windows.Forms.ImageGallery
 				List<string> picturesForThisKey;
 
 				//first, try for exact matches
-				if (_wordToPartialPathIndex.TryGetValue(term, out picturesForThisKey))
+				lock (_padlock)
 				{
-					pictures.AddRange(picturesForThisKey);
-					foundExactMatches = true;
-				}
-				//then look  for approximate matches
-				else
-				{
-					foundExactMatches = false;
-					var kMaxEditDistance = 1;
-					var itemFormExtractor = new ApproximateMatcher.GetStringDelegate<KeyValuePair<string, List<string>>>(pair => pair.Key);
-					var matches = ApproximateMatcher.FindClosestForms<KeyValuePair<string, List<string>>>(_wordToPartialPathIndex, itemFormExtractor,
-																										  term,
-																										  ApproximateMatcherOptions.None,
-																										  kMaxEditDistance);
-
-					if (matches != null && matches.Count > 0)
+					if (_wordToPartialPathIndex.TryGetValue(term, out picturesForThisKey))
 					{
-						foreach (var keyValuePair in matches)
+						pictures.AddRange(picturesForThisKey);
+						foundExactMatches = true;
+					}
+					//then look  for approximate matches
+					else
+					{
+						foundExactMatches = false;
+						var kMaxEditDistance = 1;
+						var itemFormExtractor = new ApproximateMatcher.GetStringDelegate<KeyValuePair<string, List<string>>>(pair => pair.Key);
+						var matches = ApproximateMatcher.FindClosestForms<KeyValuePair<string, List<string>>>(_wordToPartialPathIndex, itemFormExtractor,
+							             term,
+							             ApproximateMatcherOptions.None,
+							             kMaxEditDistance);
+
+						if (matches != null && matches.Count > 0)
 						{
-							pictures.AddRange(keyValuePair.Value);
+							foreach (var keyValuePair in matches)
+							{
+								pictures.AddRange(keyValuePair.Value);
+							}
 						}
 					}
 				}
-
 			}
 			var results = new List<object>();
 			pictures.Distinct().ForEach(p => results.Add(p));
@@ -183,8 +254,11 @@ namespace SIL.Windows.Forms.ImageGallery
 			var words = stringWhichMayContainKeywords.SplitTrimmed(' ');
 			foreach (var key in words)
 			{
-				if (_wordToPartialPathIndex.ContainsKey(key))
-					result += " " + key;
+				lock (_padlock)
+				{
+					if (_wordToPartialPathIndex.ContainsKey(key))
+						result += " " + key;
+				}
 			}
 			return result.Trim();
 		}
@@ -197,11 +271,6 @@ namespace SIL.Windows.Forms.ImageGallery
 
 		public static string TryToGetRootImageCatalogPath()
 		{
-			//look for the cd/dvd
-/* retire this            var cdPath = TryToGetPathToCollectionOnCd();
-			if (!string.IsNullOrEmpty(cdPath))
-				return cdPath;
-*/
 			var distributedWithApp = FileLocator.GetDirectoryDistributedWithApplication(true,"Art Of Reading", "images");
 			if(!string.IsNullOrEmpty(distributedWithApp) && Directory.Exists(distributedWithApp))
 				return distributedWithApp;
@@ -242,26 +311,14 @@ namespace SIL.Windows.Forms.ImageGallery
 			return null;
 		}
 
-		private static string TryToGetPathToCollectionOnCd()
-		{
-			//look for CD
-			foreach (var drive in DriveInfo.GetDrives())
-			{
-				try
-				{
-					if(drive.IsReady && drive.VolumeLabel.Contains("Art Of Reading"))
-						return Path.Combine(drive.RootDirectory.FullName, "images");
-				}
-				catch (Exception)
-				{
-				}
-			}
-			return null;
-		}
-
 		public static bool DoNotFindArtOfReading_Test = false;
 
 		public static IImageCollection FromStandardLocations()
+		{
+			return FromStandardLocations("en");
+		}
+
+		public static IImageCollection FromStandardLocations(string lang)
 		{
 			string path = TryToGetRootImageCatalogPath();
 			if (DoNotFindArtOfReading_Test)
@@ -273,10 +330,88 @@ namespace SIL.Windows.Forms.ImageGallery
 			var c = new ArtOfReadingImageCollection();
 
 			c.RootImagePath = path;
+			c.GetIndexLanguages();
+			c.SearchLanguage = lang;
 
-			string pathToIndexFile = TryToGetPathToIndex(path);
-			c.LoadIndex(pathToIndexFile);
+			// Load the index information asynchronously so as not to delay displaying
+			// the parent dialog.  Loading the file takes a second or two, but should
+			// be done before the user finishes typing a search string.
+			var thr = new Thread(c.LoadImageIndex);
+			thr.Name = "LoadArtOfReadingIndex";
+			thr.Start();
+
 			return c;
+		}
+
+		internal void GetIndexLanguages()
+		{
+			_indexLanguages = null;
+			var pathToIndexFile = TryToGetPathToMultilingualIndex(RootImagePath);
+			if (File.Exists(pathToIndexFile))
+			{
+				using (var f = File.OpenText(pathToIndexFile))
+				{
+					var columns = GetColumnHeadersIfValid(f);
+					if (columns != null)
+					{
+						_indexLanguages = new List<string>();
+						// The first four columns are meta data about an image.  The remaining
+						// columns are search words in different languages, one language per column.
+						// The header contains the ISO language codes.
+						for (int i = 4; i < columns.Length; ++i)
+							_indexLanguages.Add(columns[i]);
+					}
+					f.Close();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Return the column headers from a multilingual index file, or null if it is not valid.
+		/// </summary>
+		private static string[] GetColumnHeadersIfValid(StreamReader f)
+		{
+			// The file should start with a line that looks like the following:
+			//order	filename	artist	country	en	id	fr	es	ar	hi	bn	pt	th	sw	zh
+			var header = f.ReadLine();
+			if (String.IsNullOrEmpty(header))
+				return null;
+			var columns = header.Split(new[]{'\t'});
+			// Check for the four fixed columns and at least one language.
+			if (columns.Length < 5 ||
+				columns[0] != "order" ||
+				columns[1] != "filename" ||
+				columns[2] != "artist" ||
+				columns[3] != "country")
+			{
+				return null;
+			}
+			return columns;
+		}
+
+		void LoadImageIndex()
+		{
+			int countMulti = 0;
+			string pathToIndexFile = TryToGetPathToMultilingualIndex(RootImagePath);
+			if (!String.IsNullOrEmpty(pathToIndexFile))
+			{
+				countMulti = LoadMultilingualIndex(pathToIndexFile);
+			}
+			if (countMulti == 0)
+			{
+				pathToIndexFile = TryToGetPathToIndex(RootImagePath);
+				LoadIndex(pathToIndexFile);
+			}
+		}
+
+		public static string TryToGetPathToMultilingualIndex(string imagesPath)
+		{
+			if (String.IsNullOrEmpty(imagesPath) || !Directory.Exists(imagesPath))
+				return null;
+			var path = Directory.GetParent(imagesPath).FullName.CombineForPath("ArtOfReadingMultilingualIndex.txt");
+			if (File.Exists(path))
+				return path;
+			return null;
 		}
 
 		public static string TryToGetPathToIndex(string imagesPath)
@@ -296,6 +431,15 @@ namespace SIL.Windows.Forms.ImageGallery
 			}
 
 			return FileLocator.GetFileDistributedWithApplication(true, "ArtOfReadingIndexV3_en.txt");
+		}
+
+
+		public void ReloadImageIndex(string languageId)
+		{
+			SearchLanguage = languageId;
+			_wordToPartialPathIndex.Clear();
+			_partialPathToWordsIndex.Clear();
+			LoadImageIndex();
 		}
 	}
 }

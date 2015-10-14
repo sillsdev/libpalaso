@@ -9,14 +9,14 @@ namespace SIL.TestUtilities
 {
 	/// <summary>
 	/// Generic test that a cloneable object clones all required fields and uses them in equality testing.
-	/// The class we are testing (T) must implement IClonableGeneric<T>.
+	/// The class we are testing (T) must implement <see cref="ICloneable{TClone}"/>.
 	/// However, the Clone() method may not be defined to return type T. For example, DefaultKeyboardDefinition
 	/// has a Clone() method in its interface, which needs to return IKeyboardDefinition.
 	/// Thus, we have two Type parameters, one for the type that Clone() returns.
 	/// </summary>
 	/// <typeparam name="T">Implementation class</typeparam>
 	/// <typeparam name="TClone">Type that Clone() returns</typeparam>
-	public abstract class CloneableTests<T, TClone> where T:ICloneable<TClone>
+	public abstract class CloneableTests<T, TClone> where T : ICloneable<TClone>
 	{
 		public abstract T CreateNewCloneable();
 
@@ -32,19 +32,33 @@ namespace SIL.TestUtilities
 
 		protected class ValuesToSet
 		{
-			public ValuesToSet(object defaultValue, object notEqualDefaultValue)
+			public ValuesToSet(object valueToSet, object notEqualValueToSet)
 			{
-				if(defaultValue.Equals(notEqualDefaultValue))
+				if (valueToSet.Equals(notEqualValueToSet))
 				{
-					throw new ArgumentException("Default values must not be equal!");
+					throw new ArgumentException("Values to set must not be equal!");
 				}
-				ValueToSet = defaultValue;
-				NotEqualValueToSet = notEqualDefaultValue;
+				ValueToSet = valueToSet;
+				NotEqualValueToSet = notEqualValueToSet;
+
+				if (valueToSet.Equals(DefaultValueForValueToSet))
+				{
+					// the valueToSet should be different from the default value so that we can
+					// test that the members actually get copied. Otherwise we don't know if the
+					// member got copied or if the test passed because we just happened to get the
+					// default value.
+					throw new ArgumentException("Value to set should not be the default value", "valueToSet");
+				}
 			}
 
-			public virtual Type TypeOfDefaultValue { get { return ValueToSet.GetType(); } }
+			public virtual Type TypeOfValueToSet { get { return ValueToSet.GetType(); } }
 			public object ValueToSet { get; private set; }
 			public object NotEqualValueToSet { get; private set; }
+
+			private object DefaultValueForValueToSet
+			{
+				get { return TypeOfValueToSet.IsValueType ? Activator.CreateInstance(TypeOfValueToSet) : null; }
+			}
 		}
 
 		/// <summary>
@@ -59,7 +73,7 @@ namespace SIL.TestUtilities
 			{
 			}
 
-			public override Type TypeOfDefaultValue
+			public override Type TypeOfValueToSet
 			{
 				get
 				{
@@ -126,7 +140,7 @@ namespace SIL.TestUtilities
 				object defaultValue = null;
 				try
 				{
-					defaultValue = DefaultValuesForTypes.Single(dv => dv.TypeOfDefaultValue == fieldInfo.FieldType).ValueToSet;
+					defaultValue = DefaultValuesForTypes.Single(dv => dv.TypeOfValueToSet == fieldInfo.FieldType).ValueToSet;
 				}
 				catch (InvalidOperationException)
 				{
@@ -184,7 +198,7 @@ namespace SIL.TestUtilities
 				ValuesToSet valueToSet = null;
 				try
 				{
-					valueToSet = DefaultValuesForTypes.Single(dv => dv.TypeOfDefaultValue == fieldInfo.FieldType);
+					valueToSet = DefaultValuesForTypes.Single(dv => dv.TypeOfValueToSet == fieldInfo.FieldType);
 				}
 				catch (InvalidOperationException)
 				{
@@ -224,7 +238,7 @@ namespace SIL.TestUtilities
 				ValuesToSet valueToSet = null;
 				try
 				{
-					valueToSet = DefaultValuesForTypes.Single(dv => dv.TypeOfDefaultValue == fieldInfo.FieldType);
+					valueToSet = DefaultValuesForTypes.Single(dv => dv.TypeOfValueToSet == fieldInfo.FieldType);
 				}
 				catch (InvalidOperationException)
 				{
@@ -266,7 +280,7 @@ namespace SIL.TestUtilities
 				ValuesToSet valueToSet = null;
 				try
 				{
-					valueToSet = DefaultValuesForTypes.Single(dv => dv.TypeOfDefaultValue == fieldInfo.FieldType);
+					valueToSet = DefaultValuesForTypes.Single(dv => dv.TypeOfValueToSet == fieldInfo.FieldType);
 				}
 				catch (InvalidOperationException)
 				{

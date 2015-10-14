@@ -4,11 +4,13 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using L10NSharp;
 using SIL.Reporting;
+using SIL.Windows.Forms.Extensions;
 using SIL.Windows.Forms.ImageGallery;
 
 namespace SIL.Windows.Forms.ImageToolbox
@@ -28,10 +30,24 @@ namespace SIL.Windows.Forms.ImageToolbox
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
 			{
 				// For Linux, we can install the package if requested.
-				this.betterLinkLabel1.Text = "Install the Art Of Reading package (this may be very slow)";
-				this.betterLinkLabel1.URL = null;
-				this.betterLinkLabel1.LinkClicked += InstallLinkClicked;
+				_downloadInstallerLink.Text = "Install the Art Of Reading package (this may be very slow)".Localize("ImageToolbox.InstallArtOfReading");
+				_downloadInstallerLink.URL = null;
+				_downloadInstallerLink.LinkClicked += InstallLinkClicked;
 			}
+			else
+			{
+				// Ensure that we can get localized text here.
+				_downloadInstallerLink.Text = "Download Art Of Reading Installer".Localize("ImageToolbox.DownloadArtOfReading");
+			}
+			_labelSearchAOR.Text = "Search the Art of Reading Gallery".Localize("ImageToolbox.SearchArtOfReading");
+			SearchLanguage = "en";	// until/unless the owner specifies otherwise explicitly
+			// Get rid of any trace of a border on the toolstrip.
+			toolStrip1.Renderer = new NoBorderToolStripRenderer();
+
+			// For some reason, setting these BackColor values in InitializeComponent() doesn't work.
+			// The BackColor gets set back to the standard control background color somewhere...
+			_downloadInstallerLink.BackColor = Color.White;
+			_messageLabel.BackColor = Color.White;
 		}
 
 		public void Dispose()
@@ -47,6 +63,11 @@ namespace SIL.Windows.Forms.ImageToolbox
 		{
 			_searchTermsBox.Text = searchTerm;
 		}
+
+		/// <summary>
+		/// Gets or sets the language used in searching for an image by words.
+		/// </summary>
+		public string SearchLanguage { internal get; set; }
 
 		void _thumbnailViewer_SelectedIndexChanged(object sender, EventArgs e)
 		{
@@ -72,33 +93,32 @@ namespace SIL.Windows.Forms.ImageToolbox
 			try
 			{
 				_thumbnailViewer.Clear();
-				if (!string.IsNullOrEmpty(_searchTermsBox.Text))
+				if (!string.IsNullOrWhiteSpace(_searchTermsBox.Text))
 				{
 					bool foundExactMatches;
-					IEnumerable<object> results = _imageCollection.GetMatchingPictures(_searchTermsBox.Text, out foundExactMatches);
-					if (results.Count() == 0)
+					// (avoid enumerating the returned IEnumerable<object> more than once by copying to a List.)
+					var results = _imageCollection.GetMatchingPictures(_searchTermsBox.Text, out foundExactMatches).ToList();
+					if (results.Any())
 					{
-						_messageLabel.Visible = true;
-						_searchResultStats.Text = "Found no matching images".Localize("ImageToolbox.NoMatchingImages");
+						_messageLabel.Visible = false;
+						_downloadInstallerLink.Visible = false;
+						_thumbnailViewer.LoadItems(_imageCollection.GetPathsFromResults(results, true));
+						var fmt = "Found {0} images".Localize("ImageToolbox.MatchingImages", "The {0} will be replaced by the number of matching images");
+						if (!foundExactMatches)
+							fmt = "Found {0} images with names close to {1}".Localize("ImageToolbox.AlmostMatchingImages", "The {0} will be replaced by the number of images found.  The {1} will be replaced with the search string.");
+						_searchResultStats.Text = string.Format(fmt, results.Count, _searchTermsBox.Text);
 					}
 					else
 					{
-						_messageLabel.Visible = false;
-						_thumbnailViewer.LoadItems(_imageCollection.GetPathsFromResults(results, true));
-						_searchResultStats.Text = string.Format("Found {0} images", results.Count());
-						if (!foundExactMatches)
-							_searchResultStats.Text += string.Format(" with names close to {0}.", _searchTermsBox.Text);
+						_messageLabel.Visible = true;
+						if (!_searchLanguageMenu.Visible)
+							_downloadInstallerLink.Visible = true;
+						_searchResultStats.Text = "Found no matching images".Localize("ImageToolbox.NoMatchingImages");
 					}
 				}
-				else
-				{
-
-				}
-
 			}
 			catch (Exception error)
 			{
-
 			}
 			_searchButton.Enabled = true;
 			//_okButton.Enabled = false;
@@ -179,32 +199,28 @@ namespace SIL.Windows.Forms.ImageToolbox
 			if (DesignMode)
 				return;
 
-			_imageCollection = ArtOfReadingImageCollection.FromStandardLocations();
+			_imageCollection = ArtOfReadingImageCollection.FromStandardLocations(SearchLanguage);
 			if (_imageCollection == null)
 			{
-				//label1.Visible = _searchTermsBox.Visible = _searchButton.Visible = _thumbnailViewer.Visible = false;
 				_messageLabel.Visible = true;
-				_messageLabel.Font = new Font(SystemFonts.DialogFont.FontFamily, 10);
-				_messageLabel.Text = @"This computer doesn't appear to have the 'International Illustrations: the Art Of Reading' gallery installed yet.";
+				_messageLabel.Text = "This computer doesn't appear to have the 'Art Of Reading' gallery installed yet.".Localize("ImageToolbox.NoArtOfReading");
 				// Adjust size to avoid text truncation
 				_messageLabel.Size = new Size(400,100);
-				betterLinkLabel1.Visible = true;
+				_downloadInstallerLink.Visible = true;
 			}
 			else
 			{
 #if DEBUG
 				//  _searchTermsBox.Text = @"flower";
 #endif
-				if (string.IsNullOrEmpty(_searchTermsBox.Text))
-				{
-					_messageLabel.Visible = true;
-					_messageLabel.Font = new Font(SystemFonts.DialogFont.FontFamily, 10);
-					_messageLabel.Text = "This is the 'Art Of Reading' gallery. In the box above, type what you are searching for, then press ENTER. You can type words in English and Indonesian.".Localize("ImageToolbox.EnterSearchTerms");
-					// Adjust size to avoid text truncation
-					_messageLabel.Height = 100;
-				}
+				SetupSearchLanguageChoice();
+				_messageLabel.Visible = string.IsNullOrEmpty(_searchTermsBox.Text);
+				// Adjust size to avoid text truncation
+				_messageLabel.Height = 200;
+				SetMessageLabelText();
 				_thumbnailViewer.SelectedIndexChanged += new EventHandler(_thumbnailViewer_SelectedIndexChanged);
 			}
+			_messageLabel.Font = new Font(SystemFonts.DialogFont.FontFamily, 10);
 
 #if DEBUG
 			if (!HaveImageCollectionOnThisComputer)
@@ -213,8 +229,104 @@ namespace SIL.Windows.Forms.ImageToolbox
 		   // _searchTermsBox.Text = @"flower";
 			_searchButton_Click(this,null);
 #endif
+		}
 
-			_messageLabel.BackColor = Color.White;
+		private void SetMessageLabelText()
+		{
+			var msg = "In the box above, type what you are searching for, then press ENTER.".Localize("ImageToolbox.EnterSearchTerms");
+			// Allow for the old index that contained English and Indonesian together.
+			var searchLang = "English + Indonesian";
+			// If we have the new multilingual index, _searchLanguageMenu will be visible.  Its tooltip
+			// contains both the native name of the current search language + its English name in
+			// parentheses if its in a nonRoman script or otherwise thought to be unguessable by a
+			// literate speaker of an European language.  (The menu displays only the native name, and
+			// SearchLanguage stores only the ISO code.)
+			if (_searchLanguageMenu.Visible)
+				searchLang = _searchLanguageMenu.ToolTipText;
+			msg += Environment.NewLine + Environment.NewLine +
+					String.Format("The search box is currently set to {0}".Localize("ImageToolbox.SearchLanguage"), searchLang);
+			if (PlatformUtilities.Platform.IsWindows && !_searchLanguageMenu.Visible)
+			{
+				msg += Environment.NewLine + Environment.NewLine +
+						"Did you know that there is a new version of this collection which lets you search in Arabic, Bengali, Chinese, English, French, Indonesian, Hindi, Portuguese, Spanish, Thai, or Swahili?  It is free and available for downloading."
+							.Localize("ImageToolbox.NewMultilingual");
+				_downloadInstallerLink.Visible = true;
+				_downloadInstallerLink.BackColor = Color.White;
+				_downloadInstallerLink.Location = new Point(_downloadInstallerLink.Left, _messageLabel.Bottom + 4);
+			}
+			_messageLabel.Text = msg;
+		}
+
+		protected class LanguageChoice
+		{
+			static readonly List<string> idsOfRecognizableLanguages = new List<string> { "en", "fr", "es", "it", "tpi", "pt", "id" };
+			private readonly CultureInfo _info;
+
+			public LanguageChoice(CultureInfo ci)
+			{
+				_info = ci;
+			}
+
+			public string Id { get { return _info.Name == "zh-Hans" ? "zh" : _info.Name; } }
+
+			public string NativeName { get { return _info.NativeName; } }
+
+			public override string ToString()
+			{
+				if (_info.NativeName == _info.EnglishName)
+					return _info.NativeName;	// English (English) looks rather silly...
+				if (idsOfRecognizableLanguages.Contains(Id))
+					return _info.NativeName;
+				return String.Format("{0} ({1})", _info.NativeName, _info.EnglishName);
+			}
+		}
+
+		private void SetupSearchLanguageChoice()
+		{
+			var indexLangs = _imageCollection.IndexLanguageIds;
+			if (indexLangs == null)
+			{
+				_searchLanguageMenu.Visible = false;
+			}
+			else
+			{
+				_searchLanguageMenu.Visible = true;
+				foreach (var id in indexLangs)
+				{
+					var ci = id == "zh" ? new CultureInfo("zh-Hans") : new CultureInfo(id);
+					var choice = new LanguageChoice(ci);
+					var item = _searchLanguageMenu.DropDownItems.Add(choice.ToString());
+					item.Tag = choice;
+					item.Click += SearchLanguageClick;
+					if (id == SearchLanguage)
+					{
+						_searchLanguageMenu.Text = choice.NativeName;
+						_searchLanguageMenu.ToolTipText = choice.ToString();
+					}
+				}
+			}
+			// The Mono renderer makes the toolstrip stick out.  (This is a Mono bug that
+			// may not be worth spending time on.)  Let's not poke the user in the eye
+			// with an empty toolstrip.
+			if (Environment.OSVersion.Platform == PlatformID.Unix)
+				toolStrip1.Visible = _searchLanguageMenu.Visible;
+		}
+
+		void SearchLanguageClick(object sender, EventArgs e)
+		{
+			var item = sender as ToolStripItem;
+			if (item != null)
+			{
+				var lang = item.Tag as LanguageChoice;
+				if (lang != null && SearchLanguage != lang.Id)
+				{
+					_searchLanguageMenu.Text = lang.NativeName;
+					_searchLanguageMenu.ToolTipText = lang.ToString();
+					SearchLanguage = lang.Id;
+					_imageCollection.ReloadImageIndex(lang.Id);
+					SetMessageLabelText();		// Update with new language name.
+				}
+			}
 		}
 
 		/// <summary>

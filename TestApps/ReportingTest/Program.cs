@@ -13,7 +13,9 @@ namespace TestApp
 		[STAThread]
 		static void Main()
 		{
+			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
+
 			if(Settings.Default.NeedsUpgrade)
 			{
 				Settings.Default.Upgrade();
@@ -26,8 +28,6 @@ namespace TestApp
 				Settings.Default.Save();
 			}
 			SetupErrorHandling();
-
-			Application.EnableVisualStyles();
 			//Application.Run(new FastXmlSplitterTestForm());
 			Application.Run(new Form1());
 		}

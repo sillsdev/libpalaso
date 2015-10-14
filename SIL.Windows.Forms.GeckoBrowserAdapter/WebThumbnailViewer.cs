@@ -159,7 +159,16 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 			// What we want to do here is _browser.NavigateToString(sb.ToString()).
 			// But the Windows.Forms WebBrowser class doesn't have that method.
 			File.WriteAllText(_htmlFile.Path, sb.ToString(), Encoding.UTF8);
+
+			// BL-2729: Hiding the viewer during search prevents a momentary black screen on first query (and only the first).
+			// This problem is hard to reproduce from just libpalaso test apps; for a while I was able to
+			// get it to show using the testapp by opening the image toolbox and then closing it, then 
+			// opening it again and doing a query. But after a while, that stopped working.
+			// But on my Windows machine, it was a 100% reproducible inside Bloom, and this change made
+			// that problem go away.
+			_browser.Visible = false;
 			_browser.Navigate(_htmlFile.Path);
+			_browser.Visible = true;
 		}
 
 		//BL-907: Crashes, probably out-of-memory error

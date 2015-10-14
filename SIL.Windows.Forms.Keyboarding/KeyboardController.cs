@@ -5,9 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 using SIL.Keyboarding;
 using SIL.ObjectModel;
+using SIL.Reporting;
 #if __MonoCS__
 using SIL.Windows.Forms.Keyboarding.Linux;
 #else
@@ -42,7 +44,7 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// <summary>
 		/// Enables keyboarding. This should be called during application startup.
 		/// </summary>
-		public static void Initialize(params IKeyboardAdaptor[] adaptors)
+		public static void Initialize(params IKeyboardRetrievingAdaptor[] adaptors)
 		{
 			// Note: arguably it is undesirable to install this as the public keyboard controller before we initialize it.
 			// However, we have not in general attempted thread safety for the keyboarding code; it seems
@@ -60,8 +62,15 @@ namespace SIL.Windows.Forms.Keyboarding
 				else
 					_instance.SetKeyboardAdaptors(adaptors);
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
+				Console.WriteLine("Got exception {0} initalizing keyboard controller", e.GetType());
+				Console.WriteLine(e.StackTrace);
+				Logger.WriteEvent("Got exception {0} initalizing keyboard controller", e.GetType());
+				Logger.WriteEvent(e.StackTrace);
+
+				if (Keyboard.Controller != null)
+					Keyboard.Controller.Dispose();
 				Keyboard.Controller = null;
 				throw;
 			}
@@ -110,17 +119,41 @@ namespace SIL.Windows.Forms.Keyboarding
 			_instance._eventHandlers.Remove(control);
 		}
 
-		#if __MonoCS__
-		public static bool CombinedKeyboardHandling
+		public static string GetKeyboardSetupApplication(out string arguments)
 		{
-			get { return _instance.Adaptors.Any(a => a is CombinedKeyboardAdaptor); }
+			string program = null;
+			arguments = null;
+			if (!HasSecondaryKeyboardSetupApplication && _instance.Adaptors.ContainsKey(KeyboardAdaptorType.OtherIm))
+				program = _instance.Adaptors[KeyboardAdaptorType.OtherIm].GetKeyboardSetupApplication(out arguments);
+
+			if (string.IsNullOrEmpty(program))
+				program = _instance.Adaptors[KeyboardAdaptorType.System].GetKeyboardSetupApplication(out arguments);
+
+			return program;
 		}
 
-		public static bool CinnamonKeyboardHandling
+		public static string GetSecondaryKeyboardSetupApplication(out string arguments)
 		{
-			get { return _instance.Adaptors.Any(a => a is CinnamonIbusAdaptor); }
+			string program = null;
+			arguments = null;
+			if (HasSecondaryKeyboardSetupApplication && _instance.Adaptors.ContainsKey(KeyboardAdaptorType.OtherIm))
+				program = _instance.Adaptors[KeyboardAdaptorType.OtherIm].GetKeyboardSetupApplication(out arguments);
+
+			return program;
 		}
-		#endif
+
+		/// <summary>
+		/// Returns <c>true</c> if there is a secondary keyboard application available, e.g.
+		/// Keyman setup dialog on Windows.
+		/// </summary>
+		public static bool HasSecondaryKeyboardSetupApplication
+		{
+			get
+			{
+				return _instance.Adaptors.ContainsKey(KeyboardAdaptorType.OtherIm) &&
+					_instance.Adaptors[KeyboardAdaptorType.OtherIm].IsSecondaryKeyboardSetupApplication;
+			}
+		}
 
 		// delegate used to detect input processor, like KeyMan
 		private delegate bool IsUsingInputProcessorDelegate();
@@ -180,7 +213,7 @@ namespace SIL.Windows.Forms.Keyboarding
 		public event ControlEventHandler ControlRemoving;
 
 		private IKeyboardDefinition _activeKeyboard;
-		private readonly List<IKeyboardAdaptor> _adaptors;
+		private readonly Dictionary<KeyboardAdaptorType, IKeyboardRetrievingAdaptor> _adaptors;
 		private readonly KeyedList<string, KeyboardDescription> _keyboards;
 		private readonly Dictionary<Control, object> _eventHandlers;
 
@@ -188,49 +221,65 @@ namespace SIL.Windows.Forms.Keyboarding
 		{
 			_keyboards = new KeyedList<string, KeyboardDescription>(kd => kd.Id);
 			_eventHandlers = new Dictionary<Control, object>();
-			_adaptors = new List<IKeyboardAdaptor>();
+			_adaptors = new Dictionary<KeyboardAdaptorType, IKeyboardRetrievingAdaptor>();
 		}
 
 		private void SetDefaultKeyboardAdaptors()
 		{
-			var adaptors = new List<IKeyboardAdaptor>();
+			SetKeyboardAdaptors(new IKeyboardRetrievingAdaptor[] {
 #if __MonoCS__
-			if (CombinedKeyboardAdaptor.IsRequired)
-			{
-				adaptors.Add(new CombinedKeyboardAdaptor());
-			}
-			else if (CinnamonIbusAdaptor.IsRequired)
-			{
-				adaptors.Add(new CinnamonIbusAdaptor());
-			}
-			else
-			{
-				adaptors.Add(new XkbKeyboardAdaptor());
-				adaptors.Add(new IbusKeyboardAdaptor());
-			}
+				new XkbKeyboardRetrievingAdaptor(), new IbusKeyboardRetrievingAdaptor(),
+				new UnityXkbKeyboardRetrievingAdaptor(), new UnityIbusKeyboardRetrievingAdaptor(),
+				new CombinedIbusKeyboardRetrievingAdaptor()
 #else
-			adaptors.Add(new WinKeyboardAdaptor());
-			adaptors.Add(new KeymanKeyboardAdaptor());
+				new WinKeyboardAdaptor(), new KeymanKeyboardAdaptor()
 #endif
-			SetKeyboardAdaptors(adaptors);
+			});
 		}
 
-		private void SetKeyboardAdaptors(IEnumerable<IKeyboardAdaptor> adaptors)
+		private void SetKeyboardAdaptors(IKeyboardRetrievingAdaptor[] adaptors)
 		{
 			_keyboards.Clear();
-			foreach (IKeyboardAdaptor adaptor in _adaptors)
+			foreach (IKeyboardRetrievingAdaptor adaptor in _adaptors.Values)
 				adaptor.Dispose();
 			_adaptors.Clear();
-			_adaptors.AddRange(adaptors);
-			// this will also populate m_keyboards
-			foreach (IKeyboardAdaptor adaptor in _adaptors)
+
+			foreach (IKeyboardRetrievingAdaptor adaptor in adaptors)
+			{
+				if (adaptor.IsApplicable)
+				{
+					if ((adaptor.Type & KeyboardAdaptorType.System) == KeyboardAdaptorType.System)
+						_adaptors[KeyboardAdaptorType.System] = adaptor;
+					if ((adaptor.Type & KeyboardAdaptorType.OtherIm) == KeyboardAdaptorType.OtherIm)
+						_adaptors[KeyboardAdaptorType.OtherIm] = adaptor;
+				}
+			}
+
+			foreach (IKeyboardRetrievingAdaptor adaptor in adaptors)
+			{
+				if (!_adaptors.ContainsValue(adaptor))
+					adaptor.Dispose();
+			}
+
+			// Now that we know who can deal with the keyboards we can retrieve all available
+			// keyboards, as well as add the used keyboard adaptors as error report property.
+			var bldr = new StringBuilder();
+			foreach (IKeyboardRetrievingAdaptor adaptor in _adaptors.Values)
+			{
 				adaptor.Initialize();
+
+				if (bldr.Length > 0)
+					bldr.Append(", ");
+				bldr.Append(adaptor.GetType().Name);
+			}
+			ErrorReport.AddProperty("KeyboardAdaptors", bldr.ToString());
+			Logger.WriteEvent("Keyboard adaptors in use: {0}", bldr.ToString());
 		}
 
 		public void UpdateAvailableKeyboards()
 		{
-			foreach (IKeyboardAdaptor adapter in _adaptors)
-				adapter.UpdateAvailableKeyboards();
+			foreach (IKeyboardRetrievingAdaptor adaptor in _adaptors.Values)
+				adaptor.UpdateAvailableKeyboards();
 		}
 
 		internal IKeyedCollection<string, KeyboardDescription> Keyboards
@@ -238,7 +287,7 @@ namespace SIL.Windows.Forms.Keyboarding
 			get { return _keyboards; }
 		}
 
-		internal IList<IKeyboardAdaptor> Adaptors
+		internal IDictionary<KeyboardAdaptorType, IKeyboardRetrievingAdaptor> Adaptors
 		{
 			get { return _adaptors; }
 		}
@@ -273,7 +322,7 @@ namespace SIL.Windows.Forms.Keyboarding
 			if (fDisposing && !IsDisposed)
 			{
 				// dispose managed and unmanaged objects
-				foreach (IKeyboardAdaptor adaptor in _adaptors)
+				foreach (IKeyboardRetrievingAdaptor adaptor in _adaptors.Values)
 					adaptor.Dispose();
 				_adaptors.Clear();
 			}
@@ -283,19 +332,7 @@ namespace SIL.Windows.Forms.Keyboarding
 
 		public IKeyboardDefinition DefaultKeyboard
 		{
-			get
-			{
-				KeyboardDescription defaultKeyboard = _adaptors.First(adaptor => adaptor.Type == KeyboardAdaptorType.System).DefaultKeyboard;
-#if __MonoCS__
-				if (defaultKeyboard == null)
-				{
-					CinnamonIbusAdaptor cinnamonAdaptor = _instance.Adaptors.OfType<CinnamonIbusAdaptor>().FirstOrDefault();
-					if (cinnamonAdaptor != null)
-						defaultKeyboard = cinnamonAdaptor.DefaultKeyboard;
-				}
-#endif
-				return defaultKeyboard;
-			}
+			get { return _adaptors[KeyboardAdaptorType.System].SwitchingAdaptor.DefaultKeyboard; }
 		}
 
 		public IKeyboardDefinition GetKeyboard(string id)
@@ -410,14 +447,6 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// </summary>
 		public void ActivateDefaultKeyboard()
 		{
-#if __MonoCS__
-			CinnamonIbusAdaptor cinnamonAdaptor = _instance.Adaptors.OfType<CinnamonIbusAdaptor>().FirstOrDefault();
-			if (cinnamonAdaptor != null)
-			{
-				cinnamonAdaptor.ActivateDefaultKeyboard();
-				return;
-			}
-#endif
 			DefaultKeyboard.Activate();
 		}
 
@@ -438,7 +467,7 @@ namespace SIL.Windows.Forms.Keyboarding
 			KeyboardDescription keyboard;
 			if (!_keyboards.TryGet(id, out keyboard))
 			{
-				keyboard = _adaptors.First(adaptor => adaptor.CanHandleFormat(format)).CreateKeyboardDefinition(id);
+				keyboard = _adaptors.Values.First(adaptor => adaptor.CanHandleFormat(format)).CreateKeyboardDefinition(id);
 				_keyboards.Add(keyboard);
 			}
 
@@ -462,7 +491,7 @@ namespace SIL.Windows.Forms.Keyboarding
 			{
 				if (_activeKeyboard == null)
 				{
-					_activeKeyboard = Adaptors.First(adaptor => adaptor.Type == KeyboardAdaptorType.System).ActiveKeyboard;
+					_activeKeyboard = Adaptors[KeyboardAdaptorType.System].SwitchingAdaptor.ActiveKeyboard;
 					if (_activeKeyboard == null)
 					{
 						try

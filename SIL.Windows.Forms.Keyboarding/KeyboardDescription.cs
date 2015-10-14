@@ -14,14 +14,14 @@ namespace SIL.Windows.Forms.Keyboarding
 	/// </summary>
 	public class KeyboardDescription : DefaultKeyboardDefinition
 	{
-		private readonly IKeyboardAdaptor _engine;
+		private readonly IKeyboardSwitchingAdaptor _engine;
 
 		/// <summary>
 		/// Initializes a new instance of the
 		/// <see cref="KeyboardDescription"/> class.
 		/// </summary>
 		public KeyboardDescription(string id, string name, string layout, string locale, bool isAvailable,
-			IKeyboardAdaptor engine)
+			IKeyboardSwitchingAdaptor engine)
 			: base(id, name, layout, locale, isAvailable)
 		{
 			_engine = engine;
@@ -30,7 +30,7 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// <summary>
 		/// Gets the keyboard adaptor that handles this keyboard.
 		/// </summary>
-		public IKeyboardAdaptor Engine
+		public IKeyboardSwitchingAdaptor Engine
 		{
 			get { return _engine; }
 		}
@@ -48,7 +48,7 @@ namespace SIL.Windows.Forms.Keyboarding
 
 		protected virtual bool DeactivatePreviousKeyboard(IKeyboardDefinition keyboardToActivate)
 		{
-			return true;
+			return keyboardToActivate != this;
 		}
 
 		/// <summary>

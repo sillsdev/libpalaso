@@ -8,9 +8,13 @@ using System.Linq;
 using System.Windows.Forms;
 using SIL.IO;
 using SIL.Lexicon;
+using SIL.PlatformUtilities;
+using SIL.Reporting;
 using SIL.Windows.Forms.ClearShare;
 using SIL.Windows.Forms.ClearShare.WinFormsUI;
 using SIL.Windows.Forms.HtmlBrowser;
+using SIL.Windows.Forms.ImageGallery;
+using SIL.Windows.Forms.ImageToolbox;
 using SIL.Windows.Forms.Keyboarding;
 using SIL.Windows.Forms.Miscellaneous;
 using SIL.Windows.Forms.ReleaseNotes;
@@ -37,6 +41,7 @@ namespace SIL.Windows.Forms.TestApp
 		public TestAppForm()
 		{
 			InitializeComponent();
+			Text = Platform.DesktopEnvironmentInfoString;
 		}
 
 		private void OnFolderBrowserControlClicked(object sender, EventArgs e)
@@ -74,6 +79,9 @@ namespace SIL.Windows.Forms.TestApp
 			{
 				KeyboardController.Initialize();
 				_KeyboardControllerInitialized = true;
+
+				foreach (string key in ErrorReport.Properties.Keys)
+					Console.WriteLine("{0}: {1}", key, ErrorReport.Properties[key]);
 			}
 			ICustomDataMapper<WritingSystemDefinition>[] customDataMappers =
 			{
@@ -85,10 +93,14 @@ namespace SIL.Windows.Forms.TestApp
 				dialog.ShowDialog();
 		}
 
-		private void OnArtOfReadingClicked(object sender, EventArgs e)
+		private void OnImageToolboxClicked(object sender, EventArgs e)
 		{
-			using (var dlg = new ArtOfReadingTestForm())
+			Application.EnableVisualStyles();
+			ThumbnailViewer.UseWebViewer = true;
+			using (var dlg = new ImageToolboxDialog(new PalasoImage(), null))
+			{
 				dlg.ShowDialog();
+			}
 		}
 
 		private void OnSilAboutBoxClicked(object sender, EventArgs e)
@@ -125,6 +137,17 @@ Release Notes Dialog
 
 This dialog takes a [markdown](http://en.wikipedia.org/wiki/Markdown) file
 and displays it as HTML.
+
+## 2.0
+* change one
+* change two
+## 1.9
+* big change 
+  + little change
+  - other little change
+## 1.8
+
+* oldest change
 				"))
 			{
 				using (var dlg = new ShowReleaseNotesDialog(SystemIcons.WinLogo, tempFile.Path))

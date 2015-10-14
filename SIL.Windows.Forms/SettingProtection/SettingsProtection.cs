@@ -33,7 +33,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			ConfigurationSectionGroup sectionGroup = userConfig.SectionGroups["userSettings"];
 			if (sectionGroup != null)
 			{
-				var oldSection = sectionGroup.Sections["SIL.Windows.Forms.SettingProtection.SettingsProtectionSettings"] as ClientSettingsSection;
+				var oldSection = sectionGroup.Sections["Palaso.UI.WindowsForms.SettingProtection.SettingsProtectionSettings"] as ClientSettingsSection;
 				if (oldSection != null)
 				{
 					SettingElement normallyHiddenSetting = oldSection.Settings.Get("NormallyHidden");
@@ -44,7 +44,7 @@ namespace SIL.Windows.Forms.SettingProtection
 					bool requirePassword;
 					if (requirePasswordSetting != null && bool.TryParse(requirePasswordSetting.Value.ValueXml.InnerText, out requirePassword))
 						config.RequirePassword = requirePassword;
-					sectionGroup.Sections.Remove("SIL.Windows.Forms.SettingProtection.SettingsProtectionSettings");
+					sectionGroup.Sections.Remove("Palaso.UI.WindowsForms.SettingProtection.SettingsProtectionSettings");
 					userConfig.Save();
 					return true;
 				}
@@ -92,8 +92,27 @@ namespace SIL.Windows.Forms.SettingProtection
 
 		public static string FactoryPassword
 		{
-			get { return  (Application.ProductName.Substring(0, 1) + "7" + Application.ProductName.Substring(1, Application.ProductName.Length-1)).ToLower(); }
+			get
+			{
+				var productName = CoreProductName;
+				return productName.Insert(1, "7").ToLower();
+			}
 
+		}
+
+		/// <summary>
+		/// Use the CoreProductName value from the AppSettings in the application config file, if present
+		/// </summary>
+		internal static string CoreProductName
+		{
+			get
+			{
+				var productName = ConfigurationManager.AppSettings["CoreProductName"];
+				if (string.IsNullOrEmpty(productName))
+					productName = Application.ProductName;
+
+				return productName;
+			}
 		}
 	}
 }

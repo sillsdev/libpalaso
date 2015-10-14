@@ -275,6 +275,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+	<None Include="packages.config" />
     <None Include="app.config" />
     <None Include="Progress\LogBoxSettings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -291,6 +292,10 @@
     <None Include="..\lib\common\Enchant.Net.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Reference Include="MarkdownDeep, Version=1.5.4615.26275, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MarkdownDeep.NET.1.5\lib\.NetFramework 3.5\MarkdownDeep.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" Condition="'$(OS)'=='Windows_NT'" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -335,6 +340,7 @@
     <Compile Include="Extensions\ComboBoxExtensions.cs" />
     <Compile Include="Extensions\ControlExtensions.cs" />
     <Compile Include="Extensions\FormExtensions.cs" />
+    <Compile Include="Extensions\ToolStripExtensions.cs" />
     <Compile Include="FileDialogExtender\Enums.cs" />
     <Compile Include="FileDialogExtender\Extensions.cs" />
     <Compile Include="FileDialogExtender\FileDialogControlBase.cs">
@@ -515,7 +521,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Registration.settings</DependentUpon>
     </Compile>
-    <Compile Include="ReleaseNotes\MarkdownSharp.cs" />
     <Compile Include="SettingProtection\SettingsProtectionHelper.cs">
       <SubType>Component</SubType>
     </Compile>

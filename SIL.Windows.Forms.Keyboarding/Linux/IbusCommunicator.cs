@@ -216,8 +216,10 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 			try
 			{
-				// m_inputContext.IsEnabled() throws an exception for IBus 1.5.
-				if (!KeyboardController.CombinedKeyboardHandling && !KeyboardController.CinnamonKeyboardHandling && !m_inputContext.IsEnabled())
+				// m_inputContext.IsEnabled() is no longer contained in IBus 1.5. However,
+				// ibusdotnet >= 1.9.1 deals with that and always returns true so that we still
+				// can use this method.
+				if (!m_inputContext.IsEnabled())
 					return false;
 
 				var modifiers = ConvertToIbusModifiers(state, (char)keySym);
@@ -252,16 +254,8 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		private bool m_contextCreated;
 
 		/// <summary>
-		/// Create an input context and setup callback handlers.  This method should be
-		/// called only once, and then after KeyboardController.CombinedKeyboardHandling
-		/// has been set properly.
+		/// Create an input context and setup callback handlers.
 		/// </summary>
-		/// <remarks>
-		/// For IBus 1.5, we must use the current InputContext because there is no
-		/// way to enable one we create ourselves.  (InputContext.Enable() has turned
-		/// into a no-op.)  For IBus 1.4, we must create one ourselves because
-		/// m_ibus.CurrentInputContext() throws an exception.
-		/// </remarks>
 		public void CreateInputContext()
 		{
 			System.Diagnostics.Debug.Assert(!m_contextCreated);
@@ -271,30 +265,41 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				// It also seems that it shouldn't be necessary to run IBus to use Linux keyboarding!
 				return;
 			}
-			if (KeyboardController.CombinedKeyboardHandling)
-			{
-				var path = m_ibus.CurrentInputContext();
-				m_inputContext = new InputContext(m_connection, path);
-			}
-			else
-			{
-				m_inputContext = m_ibus.CreateInputContext("IbusCommunicator");
-			}
+
+			// A previous version of this code that seems to have worked on Saucy had the following
+			// comment: "For IBus 1.5, we must use the current InputContext because there is no
+			// way to enable one we create ourselves.  (InputContext.Enable() has turned
+			// into a no-op.)  For IBus 1.4, we must create one ourselves because
+			// m_ibus.CurrentInputContext() throws an exception."
+			// However as of 2015-08-11 this no longer seems to be true: when we use the existing
+			// input context then typing with an IPA KMFL keyboard doesn't work in the
+			// SIL.Windows.Forms.TestApp on Trusty with unity desktop although the keyboard
+			// indicator correctly shows the IPA keyboard. I don't know what changed or why it is
+			// suddenly behaving differently.
+			//
+			//			if (KeyboardController.CombinedKeyboardHandling)
+			//			{
+			//				var path = m_ibus.CurrentInputContext();
+			//				m_inputContext = new InputContext(m_connection, path);
+			//			}
+			//			else
+
+			m_inputContext = m_ibus.CreateInputContext("IbusCommunicator");
+
 			AttachContextMethods(m_inputContext);
 			m_contextCreated = true;
 		}
-
 
 		private void AttachContextMethods(IInputContext context)
 		{
 			ProtectedIBusInvoke(() => 
 			{
+				context.SetCapabilities(Capabilities.Focus | Capabilities.PreeditText | Capabilities.SurroundingText);
 				context.CommitText += OnCommitText;
 				context.UpdatePreeditText += OnUpdatePreeditText;
 				context.HidePreeditText += OnHidePreeditText;
 				context.ForwardKeyEvent += OnKeyEvent;
 				context.DeleteSurroundingText += OnDeleteSurroundingText;
-				context.SetCapabilities(Capabilities.Focus | Capabilities.PreeditText | Capabilities.SurroundingText);
 				context.Enable();	// not needed for IBus 1.5, but doesn't hurt.
 			});
 		}

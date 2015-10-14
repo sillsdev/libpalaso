@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\output\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -239,25 +239,35 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IKeyboardAdaptor.cs" />
+    <Compile Include="IKeyboardRetrievingAdaptor.cs" />
+    <Compile Include="IKeyboardSwitchingAdaptor.cs" />
     <Compile Include="InputLanguageWrapper.cs" />
     <Compile Include="KeyboardController.cs" />
     <Compile Include="KeyboardDescription.cs" />
+    <Compile Include="Linux\AlternateLanguageCodes.cs" />
+    <Compile Include="Linux\CombinedIbusKeyboardRetrievingAdaptor.cs" />
+    <Compile Include="Linux\CombinedIbusKeyboardSwitchingAdaptor.cs" />
+    <Compile Include="Linux\IbusKeyboardSwitchingAdaptor.cs" />
+    <Compile Include="Linux\KeyboardRetrievingHelper.cs" />
+    <Compile Include="Linux\UnityIbusKeyboardRetrievingAdaptor.cs" />
+    <Compile Include="Linux\UnityIbusKeyboardSwitchingAdaptor.cs" />
+    <Compile Include="Linux\UnityKeyboardRetrievingHelper.cs" />
+    <Compile Include="Linux\UnityXkbKeyboardRetrievingAdaptor.cs" />
+    <Compile Include="Linux\UnityXkbKeyboardSwitchingAdaptor.cs" />
+    <Compile Include="Linux\Unmanaged.cs" />
+    <Compile Include="Linux\XkbKeyboardSwitchingAdaptor.cs" />
     <Compile Include="NullKeyboardDescription.cs" />
-    <Compile Include="Linux\CinnamonIbusAdaptor.cs" />
-    <Compile Include="Linux\CombinedKeyboardAdaptor.cs" />
-    <Compile Include="Linux\CommonBaseAdaptor.cs" />
     <Compile Include="Linux\GlobalCachedInputContext.cs" />
     <Compile Include="Linux\IbusCommunicator.cs" />
     <Compile Include="Linux\IbusDefaultEventHandler.cs" />
-    <Compile Include="Linux\IbusKeyboardAdaptor.cs" />
+    <Compile Include="Linux\IbusKeyboardRetrievingAdaptor.cs" />
     <Compile Include="Linux\IbusKeyboardDescription.cs" />
     <Compile Include="Linux\IIbusCommunicator.cs" />
     <Compile Include="Linux\IIbusEventHandler.cs" />
     <Compile Include="Linux\IXklEngine.cs" />
     <Compile Include="Linux\X11.cs" />
     <Compile Include="Linux\X11KeyConverter.cs" />
-    <Compile Include="Linux\XkbKeyboardAdaptor.cs" />
+    <Compile Include="Linux\XkbKeyboardRetrievingAdaptor.cs" />
     <Compile Include="Linux\XkbKeyboardDescription.cs" />
     <Compile Include="Linux\XklConfigRegistry.cs" />
     <Compile Include="Linux\XklEngine.cs" />

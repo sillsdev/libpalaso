@@ -63,9 +63,6 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 
 		private void DoGripDrag()
 		{
-			if (_image == null)
-				return;
-
 			Point mouse = PointToClient(MousePosition);
 			if (_gripperBeingDragged.MovesVertically)
 			{
@@ -136,11 +133,13 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 			return _topGrip.Bottom + ((_bottomGrip.Top - _topGrip.Bottom)/2);
 		}
 
-		private PalasoImage Image
+		public PalasoImage Image
 		{
+			get { return _image; }
 			set
 			{
-				_originalFormat = value.Image.RawFormat;
+				if (value == null)
+					return;
 
 				//other code changes the image of this palaso image, at which time the PI disposes of its copy,
 				//so we better keep our own.
@@ -340,12 +339,10 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 
 		private void ImageCropper_MouseDown(object sender, MouseEventArgs e)
 		{
-			if (_image == null)
-				return;
 
 			foreach (var grip in Grips)
 			{
-				if (grip != null && grip.Contains(e.Location))
+				if (grip.Contains(e.Location))
 				{
 					_gripperBeingDragged = grip;
 					return;
@@ -430,19 +427,15 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 
 		public void SetImage(PalasoImage image)
 		{
-			/* While working on https://jira.sil.org/browse/WS-334 it seems that this class is not well designed
-			 * to handle removing the image that is being cropped. In the current dialog removing the cropped image
-			 * isn't desirable anyway so we prohibit it here. CP 2015-07
-			 */
-#if DEBUG
-			Guard.AgainstNull(image, "image");
-#else
 			if (image == null)
 			{
-				return;
+				Image = null;
 			}
-#endif
-			Image = image;
+			else
+			{
+				_originalFormat = image.Image.RawFormat;
+				Image = image;
+			}
 		}
 
 		public PalasoImage GetImage()
@@ -472,16 +465,27 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 					components = null;
 				}
 
-				if (_savedOriginalImage != null)
+				try
 				{
-					_savedOriginalImage.Dispose();
-					_savedOriginalImage = null;
-				}
+					if (_savedOriginalImage != null)
+					{
+						_savedOriginalImage.Dispose();
+						_savedOriginalImage = null;
+					}
 
-				if (_croppingImage != null)
+					if (_croppingImage != null)
+					{
+						_croppingImage.Dispose();
+						_croppingImage = null;
+					}
+				}
+				// BL-2680, somehow user can get in a state where we CAN'T delete a temp file.
+				// I think we can afford to just ignore it. One temp file will be leaked.
+				catch (IOException)
 				{
-					_croppingImage.Dispose();
-					_croppingImage = null;
+				}
+				catch (UnauthorizedAccessException)
+				{
 				}
 			}
 			base.Dispose(disposing);

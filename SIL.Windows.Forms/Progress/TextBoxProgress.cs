@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using SIL.Extensions;
 using SIL.Progress;
 
 namespace SIL.Windows.Forms.Progress
@@ -23,7 +24,7 @@ namespace SIL.Windows.Forms.Progress
 				_box.Invoke(new Action(() =>
 				{
 					_box.Text += "                          ".Substring(0, indent * 2);
-					_box.Text += GenericProgress.SafeFormat(message + Environment.NewLine, args);
+					_box.Text += message.FormatWithErrorStringInsteadOfException(args) + Environment.NewLine;
 				}));
 			}
 			catch (Exception)

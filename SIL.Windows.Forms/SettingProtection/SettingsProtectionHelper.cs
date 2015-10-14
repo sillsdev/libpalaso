@@ -21,6 +21,7 @@ namespace SIL.Windows.Forms.SettingProtection
 	public partial class SettingsProtectionHelper : Component, IExtenderProvider
 	{
 		private readonly Dictionary<Component, bool> _controlIsUnderSettingsProtection;
+		private bool _isDisposed;
 
 		public bool CanExtend(object extendee)
 		{
@@ -148,17 +149,6 @@ namespace SIL.Windows.Forms.SettingProtection
 			{
 				VerifyNotDisposed();
 				site = value;
-			}
-		}
-
-		private bool _isDisposed = false;
-		public void Dispose()
-		{
-			if (!_isDisposed)
-			{
-				_isDisposed = true;
-				_controlIsUnderSettingsProtection.Clear();
-				Disposed(this, new EventArgs());
 			}
 		}
 

@@ -7,7 +7,6 @@ using Moq;
 using NUnit.Framework;
 using IBusDotNet;
 using X11.XKlavier;
-using SIL.Windows.Forms.Keyboarding;
 using SIL.Windows.Forms.Keyboarding.Linux;
 
 namespace SIL.Windows.Forms.Keyboarding.Tests
@@ -15,7 +14,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 	[TestFixture]
 	public class IbusKeyboardAdaptorTests
 	{
-		class DoNothingIbusCommunicator: IIbusCommunicator
+		public class DoNothingIbusCommunicator: IIbusCommunicator
 		{
 			public event Action<object> CommitText;
 
@@ -84,10 +83,16 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			}
 		}
 
-		class XkbKeyboardAdaptorDouble: XkbKeyboardAdaptor
+		class XkbKeyboardRetrievingAdaptorDouble : XkbKeyboardRetrievingAdaptor
 		{
-			public XkbKeyboardAdaptorDouble(IXklEngine engine): base(engine)
+			public XkbKeyboardRetrievingAdaptorDouble(IXklEngine engine): base(engine)
 			{
+			}
+
+			public override bool IsApplicable
+			{
+				// No matter what we want this to be active
+				get { return true; }
 			}
 
 			protected override void InitLocales()
@@ -95,10 +100,16 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			}
 		}
 
-		class IbusKeyboardAdaptorDouble: IbusKeyboardAdaptor
+		class IbusKeyboardRetrievingAdaptorDouble : IbusKeyboardRetrievingAdaptor
 		{
-			public IbusKeyboardAdaptorDouble(IIbusCommunicator ibusCommunicator): base(ibusCommunicator)
+			public IbusKeyboardRetrievingAdaptorDouble(IIbusCommunicator ibusCommunicator): base(ibusCommunicator)
 			{
+			}
+
+			public override bool IsApplicable
+			{
+				// No matter what we want this to be active
+				get { return true; }
 			}
 
 			protected override void InitKeyboards()
@@ -111,20 +122,20 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			}
 		}
 
-		private static IbusKeyboardDescription CreateMockIbusKeyboard(IbusKeyboardAdaptor ibusKeyboardAdapter,
+		private static IbusKeyboardDescription CreateMockIbusKeyboard(IKeyboardSwitchingAdaptor ibusKeyboardAdapter,
 			string name, string language, string layout)
 		{
 			var engineDescMock = new Mock<IBusEngineDesc>();
 			engineDescMock.Setup(x => x.Name).Returns(name);
 			engineDescMock.Setup(x => x.Language).Returns(language);
 			engineDescMock.Setup(x => x.Layout).Returns(layout);
-			var keyboard = new IbusKeyboardDescription(string.Format("{0}_{1}", language, name), engineDescMock.Object, ibusKeyboardAdapter);
+			var keyboard = new IbusKeyboardDescription(string.Format("{0}_{1}", language, name), engineDescMock.Object, ibusKeyboardAdapter) {SystemIndex = 3};
 			KeyboardController.Instance.Keyboards.Add(keyboard);
 			return keyboard;
 		}
 
 		private static XkbKeyboardDescription CreateMockXkbKeyboard(string name, string layout, string locale,
-			string layoutName, int group, XkbKeyboardAdaptor adapter)
+			string layoutName, int group, IKeyboardSwitchingAdaptor adapter)
 		{
 			var keyboard = new XkbKeyboardDescription(string.Format("{0}_{1}", layout, locale), name, layout, locale, true,
 				new InputLanguageWrapper(locale, IntPtr.Zero, layoutName), adapter, group);
@@ -151,15 +162,15 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			const int FrKeyboardGroup = 3;
 
 			// Setup
-			var ibusKeyboardAdapter = new IbusKeyboardAdaptorDouble(new DoNothingIbusCommunicator());
+			var ibusKeyboardAdapter = new IbusKeyboardRetrievingAdaptorDouble(new DoNothingIbusCommunicator());
 			var xklEngineMock = new Mock<IXklEngine>();
-			var xkbKeyboardAdapter = new XkbKeyboardAdaptorDouble(xklEngineMock.Object);
+			var xkbKeyboardAdapter = new XkbKeyboardRetrievingAdaptorDouble(xklEngineMock.Object);
 			KeyboardController.Initialize(xkbKeyboardAdapter, ibusKeyboardAdapter);
 
-			var ibusKeyboard = CreateMockIbusKeyboard(ibusKeyboardAdapter, name, language, layout);
-			var deKeyboard = CreateMockXkbKeyboard("German - German (Germany)", "de", "de-DE", "German", DeKeyboardGroup, xkbKeyboardAdapter);
-			CreateMockXkbKeyboard("English (US) - English (United States)", "us", "en-US", "English", EnKeyboardGroup, xkbKeyboardAdapter);
-			CreateMockXkbKeyboard("French - French (France)", "fr", "fr-FR", "French", FrKeyboardGroup, xkbKeyboardAdapter);
+			var ibusKeyboard = CreateMockIbusKeyboard(ibusKeyboardAdapter.SwitchingAdaptor, name, language, layout);
+			var deKeyboard = CreateMockXkbKeyboard("German - German (Germany)", "de", "de-DE", "German", DeKeyboardGroup, xkbKeyboardAdapter.SwitchingAdaptor);
+			CreateMockXkbKeyboard("English (US) - English (United States)", "us", "en-US", "English", EnKeyboardGroup, xkbKeyboardAdapter.SwitchingAdaptor);
+			CreateMockXkbKeyboard("French - French (France)", "fr", "fr-FR", "French", FrKeyboardGroup, xkbKeyboardAdapter.SwitchingAdaptor);
 
 			deKeyboard.Activate();
 

@@ -14,7 +14,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using NUnit.Framework;
-using SIL.Windows.Forms.Keyboarding;
 using SIL.Windows.Forms.Keyboarding.Linux;
 using SIL.Keyboarding;
 using X11.XKlavier;
@@ -218,7 +217,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardUSA };
 
-			KeyboardController.Initialize(new XkbKeyboardAdaptor(new XklEngineResponder()));
+			KeyboardController.Initialize(new XkbKeyboardRetrievingAdaptor(new XklEngineResponder()));
 			IKeyboardDefinition[] keyboards = Keyboard.Controller.AvailableKeyboards.ToArray();
 			Assert.AreEqual(1, keyboards.Length);
 			Assert.AreEqual("en-US_us", keyboards[0].Id);
@@ -231,7 +230,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardGermany };
 
-			KeyboardController.Initialize(new XkbKeyboardAdaptor(new XklEngineResponder()));
+			KeyboardController.Initialize(new XkbKeyboardRetrievingAdaptor(new XklEngineResponder()));
 			IKeyboardDefinition[] keyboards = Keyboard.Controller.AvailableKeyboards.ToArray();
 			Assert.AreEqual(1, keyboards.Length);
 			Assert.AreEqual("de-DE_de", keyboards[0].Id);
@@ -244,7 +243,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardFranceEliminateDeadKeys };
 
-			KeyboardController.Initialize(new XkbKeyboardAdaptor(new XklEngineResponder()));
+			KeyboardController.Initialize(new XkbKeyboardRetrievingAdaptor(new XklEngineResponder()));
 			var keyboards = Keyboard.Controller.AvailableKeyboards;
 			Assert.AreEqual(1, keyboards.Count());
 			Assert.AreEqual(ExpectedKeyboardFranceEliminateDeadKeys, keyboards.First().Name);
@@ -256,7 +255,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardUK };
 
-			KeyboardController.Initialize(new XkbKeyboardAdaptor(new XklEngineResponder()));
+			KeyboardController.Initialize(new XkbKeyboardRetrievingAdaptor(new XklEngineResponder()));
 			IKeyboardDefinition[] keyboards = Keyboard.Controller.AvailableKeyboards.ToArray();
 			Assert.AreEqual(1, keyboards.Length);
 			Assert.AreEqual("en-GB_gb", keyboards[0].Id);
@@ -274,7 +273,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardBelgium };
 
-			KeyboardController.Initialize(new XkbKeyboardAdaptor(new XklEngineResponder()));
+			KeyboardController.Initialize(new XkbKeyboardRetrievingAdaptor(new XklEngineResponder()));
 			var keyboards = Keyboard.Controller.AvailableKeyboards.OrderBy(kbd => kbd.Id).ToArray();
 			// It seems that Dutch (Belgium) got added recently, so some machines are missing
 			// this.
@@ -294,7 +293,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardUSA, KeyboardGermany };
 
-			KeyboardController.Initialize(new XkbKeyboardAdaptor(new XklEngineResponder()));
+			KeyboardController.Initialize(new XkbKeyboardRetrievingAdaptor(new XklEngineResponder()));
 			var keyboards = Keyboard.Controller.AvailableKeyboards.ToArray();
 			Assert.AreEqual(2, keyboards.Length);
 			Assert.AreEqual("en-US_us", keyboards[0].Id);
@@ -313,7 +312,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardGermany };
 
-			KeyboardController.Initialize(new XkbKeyboardAdaptor(new XklEngineResponder()));
+			KeyboardController.Initialize(new XkbKeyboardRetrievingAdaptor(new XklEngineResponder()));
 			var keyboards = Keyboard.Controller.AvailableKeyboards;
 			Assert.AreEqual(1, keyboards.Count());
 			Assert.AreEqual("de-DE_de", keyboards.First().Id);
@@ -333,7 +332,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 
 			using (SetLanguage("de-DE"))
 			{
-				KeyboardController.Initialize(new XkbKeyboardAdaptor(new XklEngineResponder()));
+				KeyboardController.Initialize(new XkbKeyboardRetrievingAdaptor(new XklEngineResponder()));
 				IKeyboardDefinition[] keyboards = Keyboard.Controller.AvailableKeyboards.ToArray();
 				Assert.AreEqual(1, keyboards.Length);
 				Assert.AreEqual("de-DE_de", keyboards[0].Id);
@@ -351,7 +350,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardFinlandNorthernSaami };
 
-			KeyboardController.Initialize(new XkbKeyboardAdaptor(new XklEngineResponder()));
+			KeyboardController.Initialize(new XkbKeyboardRetrievingAdaptor(new XklEngineResponder()));
 			IKeyboardDefinition[] keyboards = Keyboard.Controller.AvailableKeyboards.ToArray();
 			Assert.AreEqual(1, keyboards.Length);
 			Assert.AreEqual(ExpectedKeyboardFinlandNorthernSaami, keyboards[0].Name);
@@ -363,7 +362,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		{
 			XklEngineResponder.SetGroupNames = new string[] { "Fake" };
 
-			KeyboardController.Initialize(new XkbKeyboardAdaptor(new XklEngineResponder()));
+			KeyboardController.Initialize(new XkbKeyboardRetrievingAdaptor(new XklEngineResponder()));
 			IEnumerable<IKeyboardDefinition> keyboards = Keyboard.Controller.AvailableKeyboards;
 			Assert.AreEqual(0, keyboards.Count());
 			//Assert.AreEqual(1, KeyboardController.ErrorKeyboards.Count);
@@ -377,9 +376,9 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardUSA };
 
-			var adaptor = new XkbKeyboardAdaptor(new XklEngineResponder());
+			var adaptor = new XkbKeyboardRetrievingAdaptor(new XklEngineResponder());
 			KeyboardController.Initialize(adaptor);
-			adaptor.ActivateKeyboard(KeyboardController.Instance.Keyboards.First());
+			adaptor.SwitchingAdaptor.ActivateKeyboard(KeyboardController.Instance.Keyboards.First());
 			KeyboardController.Shutdown();
 		}
 
@@ -391,14 +390,14 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		{
 			XklEngineResponder.SetGroupNames = new string[] { KeyboardUSA };
 
-			var adaptor = new XkbKeyboardAdaptor(new XklEngineResponder());
+			var adaptor = new XkbKeyboardRetrievingAdaptor(new XklEngineResponder());
 			KeyboardController.Initialize(adaptor);
-			adaptor.ActivateKeyboard(KeyboardController.Instance.Keyboards.First());
+			adaptor.SwitchingAdaptor.ActivateKeyboard(KeyboardController.Instance.Keyboards.First());
 			KeyboardController.Shutdown();
 
-			adaptor = new XkbKeyboardAdaptor(new XklEngineResponder());
+			adaptor = new XkbKeyboardRetrievingAdaptor(new XklEngineResponder());
 			KeyboardController.Initialize(adaptor);
-			adaptor.ActivateKeyboard(KeyboardController.Instance.Keyboards.First());
+			adaptor.SwitchingAdaptor.ActivateKeyboard(KeyboardController.Instance.Keyboards.First());
 			KeyboardController.Shutdown();
 		}
 	}

@@ -60,7 +60,7 @@ namespace SIL.Windows.Forms.TestApp
 			this.btnFolderBrowserControl = new System.Windows.Forms.Button();
 			this.btnLookupISOCodeDialog = new System.Windows.Forms.Button();
 			this.btnWritingSystemSetupDialog = new System.Windows.Forms.Button();
-			this.btnArtOfReading = new System.Windows.Forms.Button();
+			this.btnImageToolbox = new System.Windows.Forms.Button();
 			this.btnSilAboutBox = new System.Windows.Forms.Button();
 			this.btnShowReleaseNotes = new System.Windows.Forms.Button();
 			this.superToolTip1 = new SIL.Windows.Forms.SuperToolTip.SuperToolTip(this.components);
@@ -101,15 +101,15 @@ namespace SIL.Windows.Forms.TestApp
 			this.btnWritingSystemSetupDialog.UseVisualStyleBackColor = true;
 			this.btnWritingSystemSetupDialog.Click += new System.EventHandler(this.OnWritingSystemSetupDialogClicked);
 			// 
-			// btnArtOfReading
+			// btnImageToolbox
 			// 
-			this.btnArtOfReading.Location = new System.Drawing.Point(12, 99);
-			this.btnArtOfReading.Name = "btnArtOfReading";
-			this.btnArtOfReading.Size = new System.Drawing.Size(157, 23);
-			this.btnArtOfReading.TabIndex = 0;
-			this.btnArtOfReading.Text = "ArtOfReading";
-			this.btnArtOfReading.UseVisualStyleBackColor = true;
-			this.btnArtOfReading.Click += new System.EventHandler(this.OnArtOfReadingClicked);
+			this.btnImageToolbox.Location = new System.Drawing.Point(12, 99);
+			this.btnImageToolbox.Name = "btnImageToolbox";
+			this.btnImageToolbox.Size = new System.Drawing.Size(157, 23);
+			this.btnImageToolbox.TabIndex = 0;
+			this.btnImageToolbox.Text = "Image Toolbox";
+			this.btnImageToolbox.UseVisualStyleBackColor = true;
+			this.btnImageToolbox.Click += new System.EventHandler(this.OnImageToolboxClicked);
 			// 
 			// btnSilAboutBox
 			// 
@@ -210,7 +210,7 @@ namespace SIL.Windows.Forms.TestApp
 			this.Controls.Add(this.btnMetaDataEditor);
 			this.Controls.Add(this.btnShowReleaseNotes);
 			this.Controls.Add(this.btnSilAboutBox);
-			this.Controls.Add(this.btnArtOfReading);
+			this.Controls.Add(this.btnImageToolbox);
 			this.Controls.Add(this.btnWritingSystemSetupDialog);
 			this.Controls.Add(this.btnLookupISOCodeDialog);
 			this.Controls.Add(this.btnFolderBrowserControl);
@@ -226,7 +226,7 @@ namespace SIL.Windows.Forms.TestApp
 		private System.Windows.Forms.Button btnFolderBrowserControl;
 		private System.Windows.Forms.Button btnLookupISOCodeDialog;
 		private System.Windows.Forms.Button btnWritingSystemSetupDialog;
-		private System.Windows.Forms.Button btnArtOfReading;
+		private System.Windows.Forms.Button btnImageToolbox;
 		private System.Windows.Forms.Button btnSilAboutBox;
 		private System.Windows.Forms.Button btnShowReleaseNotes;
 		private SuperToolTip.SuperToolTip superToolTip1;

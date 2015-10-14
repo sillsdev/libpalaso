@@ -30,7 +30,7 @@ namespace SIL.WritingSystems.Tests
 				return new List<ValuesToSet>
 				{
 					new ValuesToSet("to be", "!(to be)"),
-					new ValuesToSet(SpellCheckDictionaryFormat.Hunspell, SpellCheckDictionaryFormat.Wordlist)
+					new ValuesToSet(SpellCheckDictionaryFormat.Wordlist, SpellCheckDictionaryFormat.Hunspell)
 				};
 			}
 		}

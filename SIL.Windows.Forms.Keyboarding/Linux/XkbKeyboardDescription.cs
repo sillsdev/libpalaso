@@ -8,7 +8,6 @@
 // --------------------------------------------------------------------------------------------
 
 #if __MonoCS__
-using SIL.Windows.Forms.Keyboarding;
 using SIL.Keyboarding;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
@@ -20,10 +19,10 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	{
 		/// <summary>
 		/// Initializes a new instance of the
-		/// <see cref="SIL.WritingSystems.WindowsForms.Keyboarding.Linux.XkbKeyboardDescription"/> class.
+		/// <see cref="SIL.Windows.Forms.Keyboarding.Linux.XkbKeyboardDescription"/> class.
 		/// </summary>
 		public XkbKeyboardDescription(string id, string name, string layout, string locale, bool isAvailable,
-			IInputLanguage language, IKeyboardAdaptor engine, int groupIndex)
+			IInputLanguage language, IKeyboardSwitchingAdaptor engine, int groupIndex)
 			: base(id, name, layout, locale, isAvailable, engine)
 		{
 			InputLanguage = language;

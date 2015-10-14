@@ -1,4 +1,7 @@
+// Copyright (c) 2015 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace SIL.Media.AlsaAudio
@@ -125,10 +128,12 @@ namespace SIL.Media.AlsaAudio
 			if (!CanPlay)
 				throw new ApplicationException("AlsaAudioSession: Already recording or playing on the ALSA sound device");
 			if (!File.Exists(FilePath))
-				throw new FileNotFoundException(String.Format("AlsaAudioSession: {0} does not exist", FilePath));
-			bool fOk = _device.StartPlaying(FilePath);
-			if (!fOk)
-				throw new Exception("AlsaAudioSession: Cannot open the ALSA sound device");
+				throw new FileNotFoundException(string.Format("AlsaAudioSession: {0} does not exist", FilePath));
+			if(!_device.StartPlaying(FilePath))
+			{
+				// If the Alsa device can't play the file, it's probably a format we don't recognize. See if the OS knows how to play it.
+				Process.Start(FilePath);
+			}
 		}
 
 		/// <summary>

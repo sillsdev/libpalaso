@@ -16,7 +16,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			_didHavePasswordSet = SettingsProtectionSingleton.Settings.RequirePassword;
 
 			_passwordNotice.Text = string.Format(_passwordNotice.Text, SettingsProtectionSingleton.FactoryPassword,
-												 Application.ProductName);
+												 SettingsProtectionSingleton.CoreProductName);
 		}
 
 		private void OnNormallHidden_CheckedChanged(object sender, EventArgs e)

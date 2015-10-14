@@ -27,7 +27,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		public void CreateKeyboardDefinition_ExistingKeyboard_ReturnsReference()
 		{
 			var expectedKeyboard = new KeyboardDescription("en-US_foo", "foo - English (US)", "foo", "en-US", true,
-				KeyboardController.Instance.Adaptors[0]);
+				KeyboardController.Instance.Adaptors[KeyboardAdaptorType.System].SwitchingAdaptor);
 			KeyboardController.Instance.Keyboards.Add(expectedKeyboard);
 			IKeyboardDefinition keyboard = Keyboard.Controller.CreateKeyboard("en-US_foo", KeyboardFormat.Unknown, null);
 			Assert.That(keyboard, Is.SameAs(expectedKeyboard));

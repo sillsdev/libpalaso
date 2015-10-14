@@ -1,73 +1,38 @@
-// --------------------------------------------------------------------------------------------
-// <copyright from='2011' to='2011' company='SIL International'>
-// 	Copyright (c) 2011, SIL International. All Rights Reserved.
-//
-// 	Distributable under the terms of either the Common Public License or the
-// 	GNU Lesser General Public License, as specified in the LICENSING.txt file.
-// </copyright>
-// --------------------------------------------------------------------------------------------
-
+// Copyright (c) 2015 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 #if __MonoCS__
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
-using Icu;
 using X11.XKlavier;
 using SIL.Reporting;
 using SIL.Keyboarding;
+using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
 {
 	/// <summary>
 	/// Class for handling xkb keyboards on Linux
 	/// </summary>
-	public class XkbKeyboardAdaptor : IKeyboardAdaptor
+	public class XkbKeyboardRetrievingAdaptor : IKeyboardRetrievingAdaptor
 	{
 		private IXklEngine _engine;
+		private static HashSet<string> _knownCultures;
 
-		public XkbKeyboardAdaptor(): this(new XklEngine())
+		public XkbKeyboardRetrievingAdaptor(): this(new XklEngine())
 		{
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="SIL.Windows.Forms.Keyboarding.Linux.XkbKeyboardAdaptor"/> class.
+		/// Initializes a new instance of the <see cref="SIL.Windows.Forms.Keyboarding.Linux.XkbKeyboardRetrievingAdaptor"/> class.
 		/// This overload is used in unit tests.
 		/// </summary>
-		public XkbKeyboardAdaptor(IXklEngine engine)
+		public XkbKeyboardRetrievingAdaptor(IXklEngine engine)
 		{
 			_engine = engine;
-		}
-
-		private string GetLanguageCountry(Icu.Locale locale)
-		{
-			if (string.IsNullOrEmpty(locale.Country) && string.IsNullOrEmpty(locale.Language))
-				return string.Empty;
-			return locale.Language + "_" + locale.Country;
-		}
-
-		/// <summary>
-		/// Gets the IcuLocales by language and country. The 3-letter language and country codes
-		/// are concatenated with an underscore in between, e.g. fra_BEL
-		/// </summary>
-		private Dictionary<string, Icu.Locale> IcuLocalesByLanguageCountry
-		{
-			get
-			{
-				var localesByLanguageCountry = new Dictionary<string, Icu.Locale>();
-				foreach (var locale in Icu.Locale.AvailableLocales)
-				{
-					var languageCountry = GetLanguageCountry(locale);
-					if (string.IsNullOrEmpty(languageCountry) ||
-						localesByLanguageCountry.ContainsKey(languageCountry))
-					{
-						continue;
-					}
-					localesByLanguageCountry[languageCountry] = locale;
-				}
-				return localesByLanguageCountry;
-			}
 		}
 
 		private static string GetDescription(XklConfigRegistry.LayoutDescription layout)
@@ -77,16 +42,11 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		protected virtual void InitLocales()
 		{
-			ReinitLocales();
-		}
-
-		private void ReinitLocales()
-		{
 			var configRegistry = XklConfigRegistry.Create(_engine);
 			Dictionary<string, List<XklConfigRegistry.LayoutDescription>> layouts = configRegistry.Layouts;
 
 			Dictionary<string, XkbKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<XkbKeyboardDescription>().ToDictionary(kd => kd.Id);
-			for (int iGroup = 0; iGroup < _engine.GroupNames.Length; iGroup++)
+			for (uint iGroup = 0; iGroup < _engine.GroupNames.Length; iGroup++)
 			{
 				// a group in a xkb keyboard is a keyboard layout. This can be used with
 				// multiple languages - which language is ambigious. Here we just add all
@@ -107,7 +67,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				for (int iLayout = 0; iLayout < layoutList.Count; iLayout++)
 				{
 					XklConfigRegistry.LayoutDescription layout = layoutList[iLayout];
-					AddKeyboardForLayout(curKeyboards, layout, iGroup, this);
+					AddKeyboardForLayout(curKeyboards, layout, iGroup, SwitchingAdaptor);
 				}
 			}
 
@@ -116,7 +76,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		}
 
 		internal static void AddKeyboardForLayout(IDictionary<string, XkbKeyboardDescription> curKeyboards, XklConfigRegistry.LayoutDescription layout,
-			int iGroup, IKeyboardAdaptor engine)
+			uint iGroup, IKeyboardSwitchingAdaptor engine)
 		{
 			string description = GetDescription(layout);
 			CultureInfo culture = null;
@@ -140,14 +100,14 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 					existingKeyboard.SetIsAvailable(true);
 					existingKeyboard.SetName(description);
 					existingKeyboard.SetInputLanguage(inputLanguage);
-					existingKeyboard.GroupIndex = iGroup;
+					existingKeyboard.GroupIndex = (int) iGroup;
 				}
 				curKeyboards.Remove(id);
 			}
 			else
 			{
 				var keyboard = new XkbKeyboardDescription(id, description, layout.LayoutId, layout.LocaleId, true,
-					inputLanguage, engine, iGroup);
+					inputLanguage, engine, (int) iGroup);
 				KeyboardController.Instance.Keyboards.Add(keyboard);
 			}
 		}
@@ -155,35 +115,6 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		public IXklEngine XklEngine
 		{
 			get { return _engine; }
-		}
-
-		public void Initialize()
-		{
-			InitLocales();
-		}
-
-		public void UpdateAvailableKeyboards()
-		{
-			ReinitLocales();
-		}
-
-		public bool ActivateKeyboard(KeyboardDescription keyboard)
-		{
-			Debug.Assert(keyboard.Engine == this);
-			Debug.Assert(keyboard is XkbKeyboardDescription);
-			var xkbKeyboard = keyboard as XkbKeyboardDescription;
-			if (xkbKeyboard == null)
-				throw new ArgumentException();
-
-			if (xkbKeyboard.GroupIndex >= 0)
-			{
-				_engine.SetGroup(xkbKeyboard.GroupIndex);
-			}
-			return true;
-		}
-
-		public void DeactivateKeyboard(KeyboardDescription keyboard)
-		{
 		}
 
 		/// <summary>
@@ -194,28 +125,25 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			get { return KeyboardAdaptorType.System; }
 		}
 
-		/// <summary>
-		/// Gets the default keyboard of the system.
-		/// </summary>
-		/// <remarks>
-		/// For Xkb the default keyboard has GroupIndex set to zero.
-		/// Wasta/Cinnamon keyboarding doesn't use XkbKeyboardDescription objects.
-		/// </remarks>
-		public KeyboardDescription DefaultKeyboard
+		public virtual bool IsApplicable
 		{
-			get
-			{
-				return Keyboard.Controller.AvailableKeyboards.OfType<XkbKeyboardDescription>().FirstOrDefault(kbd => kbd.GroupIndex == 0);
-			}
+			get { return true; }
 		}
 
 		/// <summary>
-		/// Implementation is not required because the default implementation of KeyboardController
-		/// is sufficient.
+		/// Gets the keyboard adaptor that deals with keyboards that this class retrieves.
 		/// </summary>
-		public KeyboardDescription ActiveKeyboard
+		public IKeyboardSwitchingAdaptor SwitchingAdaptor { get; protected set; }
+
+		public virtual void Initialize()
 		{
-			get { return null; }
+			SwitchingAdaptor = new XkbKeyboardSwitchingAdaptor(_engine);
+			InitLocales();
+		}
+
+		public void UpdateAvailableKeyboards()
+		{
+			InitLocales();
 		}
 			
 		/// <summary>
@@ -225,10 +153,10 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// </summary>
 		public KeyboardDescription CreateKeyboardDefinition(string id)
 		{
-			return CreateKeyboardDefinition(id, this);
+			return CreateKeyboardDefinition(id, SwitchingAdaptor);
 		}
 
-		internal static XkbKeyboardDescription CreateKeyboardDefinition(string id, IKeyboardAdaptor engine)
+		internal static XkbKeyboardDescription CreateKeyboardDefinition(string id, IKeyboardSwitchingAdaptor engine)
 		{
 			string[] parts = id.Split('_');
 			string locale = parts[0];
@@ -255,7 +183,6 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 				new InputLanguageWrapper("en", IntPtr.Zero, "US"), engine, -1);
 		}
 
-		private static HashSet<string> _knownCultures;
 		/// <summary>
 		/// Check whether the locale is known to the system.
 		/// </summary>
@@ -273,6 +200,44 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		public bool CanHandleFormat(KeyboardFormat format)
 		{
 			return format == KeyboardFormat.Unknown;
+		}
+
+		public virtual string GetKeyboardSetupApplication(out string arguments)
+		{
+			// NOTE: if we get false results (e.g. because the user has installed multiple
+			// desktop environments) we could check for the currently running desktop
+			// (Platform.DesktopEnvironment) and return the matching program
+			arguments = null;
+			// XFCE
+			if (File.Exists("/usr/bin/xfce4-keyboard-settings"))
+				return "/usr/bin/xfce4-keyboard-settings";
+			// Cinnamon
+			if (File.Exists("/usr/lib/cinnamon-settings/cinnamon-settings.py") && File.Exists("/usr/bin/python"))
+			{
+				arguments = "/usr/lib/cinnamon-settings/cinnamon-settings.py " +
+					(Platform.DesktopEnvironment == "cinnamon"
+						? "region layouts" // Wasta 12
+						: "keyboard"); // Wasta 14;
+				return "/usr/bin/python";
+			}
+			// GNOME
+			if (File.Exists("/usr/bin/gnome-control-center"))
+			{
+				arguments = "region layouts";
+				return "/usr/bin/gnome-control-center";
+			}
+			// KDE
+			if (File.Exists("/usr/bin/kcmshell4"))
+			{
+				arguments = "kcm_keyboard";
+				return "/usr/bin/kcmshell4";
+			}
+			return null;
+		}
+
+		public bool IsSecondaryKeyboardSetupApplication
+		{
+			get { return false; }
 		}
 
 		#region IDisposable & Co. implementation
@@ -301,7 +266,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// <remarks>
 		/// In case some clients forget to dispose it directly.
 		/// </remarks>
-		~XkbKeyboardAdaptor()
+		~XkbKeyboardRetrievingAdaptor()
 		{
 			Dispose(false);
 			// The base class finalizer is called automatically.

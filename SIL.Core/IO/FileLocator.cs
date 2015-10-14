@@ -249,18 +249,18 @@ namespace SIL.IO
 		}
 
 
-	    /// <summary>
-	    /// Find a file which, on a development machine, lives in [solution]/[distFileFolderName]/[subPath],
-	    /// and when installed, lives in
-	    /// [applicationFolder]/[distFileFolderName]/[subPath1]/[subPathN]  or
-	    /// [applicationFolder]/[subPath]/[subPathN]
-	    /// </summary>
-	    /// <example>GetFileDistributedWithApplication("info", "releaseNotes.htm");</example>
-	    public static string GetFileDistributedWithApplication(bool optional, params string[] partsOfTheSubPath)
-	    {
-	        foreach (var directoryHoldingFiles in new[] {"", "DistFiles", "common" /*for wesay*/, "src" /*for Bloom*/})
+		/// <summary>
+		/// Find a file which, on a development machine, lives in [solution]/[distFileFolderName]/[subPath],
+		/// and when installed, lives in
+		/// [applicationFolder]/[distFileFolderName]/[subPath1]/[subPathN]  or
+		/// [applicationFolder]/[subPath]/[subPathN]
+		/// </summary>
+		/// <example>GetFileDistributedWithApplication("info", "releaseNotes.htm");</example>
+		public static string GetFileDistributedWithApplication(bool optional, params string[] partsOfTheSubPath)
+		{
+			foreach (var directoryHoldingFiles in new[] {"", "DistFiles", "common" /*for wesay*/, "src" /*for Bloom*/})
 			{
-                var path = Path.Combine(FileLocator.DirectoryOfApplicationOrSolution, directoryHoldingFiles);
+				var path = Path.Combine(FileLocator.DirectoryOfApplicationOrSolution, directoryHoldingFiles);
 
 				foreach (var part in partsOfTheSubPath)
 				{
@@ -309,16 +309,16 @@ namespace SIL.IO
 			if (Directory.Exists(path))
 				return path;
 
-		    foreach (var directoryHoldingFiles in new[] {"", "DistFiles", "common" /*for wesay*/, "src" /*for Bloom*/})
-		    {
-		        path = Path.Combine(FileLocator.DirectoryOfApplicationOrSolution, directoryHoldingFiles);
-		        foreach (var part in partsOfTheSubPath)
-		        {
-		            path = System.IO.Path.Combine(path, part);
-		        }
-		        if (Directory.Exists(path))
-		            return path;
-		    }
+			foreach (var directoryHoldingFiles in new[] {"", "DistFiles", "common" /*for wesay*/, "src" /*for Bloom*/})
+			{
+				path = Path.Combine(FileLocator.DirectoryOfApplicationOrSolution, directoryHoldingFiles);
+				foreach (var part in partsOfTheSubPath)
+				{
+					path = System.IO.Path.Combine(path, part);
+				}
+				if (Directory.Exists(path))
+					return path;
+			}
 
 			if (optional && !Directory.Exists(path))
 				return null;
