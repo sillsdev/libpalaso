@@ -7,7 +7,9 @@ using System.Windows.Forms;
 using L10NSharp;
 using SIL.IO;
 using SIL.Reporting;
-#if !MONO
+#if __MonoCS__
+using System.Reflection;
+#else
 using WIA;
 #endif
 
@@ -27,11 +29,11 @@ namespace SIL.Windows.Forms.ImageToolbox
 		{
 			InitializeComponent();
 
-			#if MONO
+#if __MonoCS__
 			_scannerButton.Enabled =  _cameraButton.Enabled = false;
 			// Mono layout doesn't always handle Anchor point properly.  Fix it.
 			FixMyLayoutForMono();
-			#endif
+#endif
 
 			_galleryControl.ImageChanged += new EventHandler(_galleryControl_ImageChanged);
 		}
@@ -46,7 +48,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		private void OnGetFromFileSystemClick(object sender, EventArgs e)
 		{
 			SetMode(Modes.SingleImage);
-#if MONO
+#if __MonoCS__
 			using (var dlg = new OpenFileDialog())
 #else
 			// The primary thing that OpenFileDialogWithViews buys us is the ability to default to large icons.
@@ -203,24 +205,24 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private void OnScannerClick(object sender, EventArgs e)
 		{
-			#if !MONO
+#if !__MonoCS__
 			_scannerButton.Checked = true;
 			SetImage(null);
 			UsageReporter.SendNavigationNotice("ImageToolbox:GetFromScanner");
 			GetFromDevice(ImageAcquisitionService.DeviceKind.Scanner);
-			#endif
+#endif
 		}
 		private void OnCameraClick(object sender, EventArgs e)
 		{
-			#if !MONO
+#if !__MonoCS__
 			SetImage(null);
 			_cameraButton.Checked = true;
 			UsageReporter.SendNavigationNotice("ImageToolbox:GetFromCamera");
 			GetFromDevice(ImageAcquisitionService.DeviceKind.Camera);
-			#endif
+#endif
 
 		}
-	  #if !MONO
+#if !__MonoCS__
 		private void GetFromDevice(ImageAcquisitionService.DeviceKind deviceKind)
 		{
 	  //_pictureBox.Image = SampleImages.sampleScan;
@@ -255,7 +257,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 				ErrorReport.NotifyUserOfProblem(error, "Problem Getting Image".Localize("ImageToolbox.ProblemGettingImageFromDevice"));
 			}
 		}
-		#endif
+#endif
 
 		/// <summary>
 		/// use if the calling app already has some notion of what the user might be looking for (e.g. the definition in a dictionary program)
@@ -317,7 +319,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		}
 		*/
 
-#if !MONO
+#if !__MonoCS__
 		private string ConvertToPngOrJpegIfNotAlready(ImageFile wiaImageFile)
 		{
 			Image acquiredImage;//with my scanner, always a .bmp
