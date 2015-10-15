@@ -7,7 +7,7 @@ using SIL.Email;
 #endif
 using SIL.Reporting;
 
-namespace SIL.Tests.reporting
+namespace SIL.Tests.Reporting
 {
 	[TestFixture]
 	public class ErrorReportTests

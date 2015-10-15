@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using SIL.Reporting;
 
-namespace SIL.Tests.reporting
+namespace SIL.Tests.Reporting
 {
 	[TestFixture]
 	public class AnalyticsEventSenderTests
