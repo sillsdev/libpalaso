@@ -60,18 +60,23 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public static bool ValidateLanguageTag(string languageTag, out string message)
 		{
+			bool valid = true;
 			try
 			{
 				if (!String.IsNullOrEmpty(languageTag))
-					CultureInfo.GetCultureInfo(languageTag);
+				{
+					CultureInfo ci = CultureInfo.GetCultureInfo(languageTag);
+					if ((ci.CultureTypes & CultureTypes.UserCustomCulture) == CultureTypes.UserCustomCulture)
+						valid = false;
+				}
 			}
 			catch (CultureNotFoundException)
 			{
-				message = String.Format("The locale, {0}, is not available on this machine.", languageTag);
-				return false;
+				valid = false;
 			}
-			message = null;
-			return true;
+
+			message = valid ? null : String.Format("The locale, {0}, is not available on this machine.", languageTag);
+			return valid;
 		}
 	}
 }

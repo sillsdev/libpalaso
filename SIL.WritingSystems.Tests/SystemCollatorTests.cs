@@ -51,6 +51,13 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void ValidateLanguageTag_UserCustomCulture_ReturnsFalse()
+		{
+			string message;
+			Assert.That(SystemCollator.ValidateLanguageTag("en-US-fonipa", out message), Is.False);
+		}
+
+		[Test]
 		public void Compare_EnglishCultureEnglishStrings_AreNotSame()
 		{
 			string a = "an english sentence";
