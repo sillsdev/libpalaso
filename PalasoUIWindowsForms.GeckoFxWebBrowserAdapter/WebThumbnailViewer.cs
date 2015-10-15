@@ -21,6 +21,8 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 		public event EventHandler LoadComplete;
 		private TempFile _htmlFile;
 		private string _tempDirectoryName;
+		private object _lastTargetClicked;
+		private object _targetClicked;
 
 		public event EventHandler SelectedIndexChanged;
 
@@ -40,21 +42,94 @@ namespace Palaso.UI.WindowsForms.ImageGallery
 				if (LoadComplete != null)
 					LoadComplete(this, new EventArgs());
 			});
-			var browserAdapter = ((GeckoFxWebBrowserAdapter)_browser.Adapter);
-			browserAdapter.AddDomClickHandler(id =>
-			{
-				HasSelection = true;
-				var path = Uri.UnescapeDataString(id);
-				if (SelectedPath != path)
-				{
-					browserAdapter.SetClassOfLastClickTarget("imageWrap");
-					browserAdapter.SetClassOfClickTarget("imageWrap selected");
-					SelectedPath = path;
-					if (SelectedIndexChanged != null)
-						SelectedIndexChanged(this, new EventArgs());
-				}
-			});
+			_browser.DomClick += OnDomClick;
 		}
+
+		/// <summary>
+		/// Called when the user clicks in the DOM.
+		/// This method figures out the ID of the element clicked or its closest parent that has an ID,
+		/// and retrieves the selected path.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void OnDomClick(object sender, EventArgs e)
+		{
+			// Here is the non-reflection version of this method; we make all these calls
+			// using reflection following the pre-existing principle that building LibPalaso
+			// should not require an actual reference to GeckoFx.
+			// It may be time to abandon that (and rename this assembly) if we add much more
+			// gecko-specific functionality.
+			// REPLY: The advantage of this approach is that it is fairly independent of a
+			// specific Gecko version. Otherwise we might have to create multiple versions
+			// of libpalaso for the various gecko versions in use.
+			//var ge = e as DomEventArgs;
+			//var target = (GeckoHtmlElement)ge.Target.CastToGeckoElement();
+			//while (target != null && target.Attributes["id"] == null)
+			//	target = target.Parent;
+			//if (target == null)
+			//	return;
+			//var id = target.Attributes["id"].NodeValue;
+			// ...
+			var geckoHtmlEltType = GeckoFxWebBrowserAdapter.GeckoCoreAssembly.GetType("Gecko.DomEventArgs");
+			var targetProp = geckoHtmlEltType.GetProperty("Target");
+			var targetRaw = targetProp.GetValue(e, new object[0]);
+
+			var domEventTargetType = GeckoFxWebBrowserAdapter.GeckoCoreAssembly.GetType("Gecko.DOM.DomEventTarget");
+			var castToElementMethod = domEventTargetType.GetMethod("CastToGeckoElement");
+			var target = castToElementMethod.Invoke(targetRaw, new object[0]);
+
+			var elementType = GeckoFxWebBrowserAdapter.GeckoCoreAssembly.GetType("Gecko.GeckoHtmlElement");
+			var attributesProp = elementType.GetProperty("Attributes");
+			var dictType = GeckoFxWebBrowserAdapter.GeckoCoreAssembly.GetType("Gecko.DOM.GeckoNamedNodeMap");
+			var itemProp = dictType.GetProperty("Item", new Type[] { typeof(string) });
+			var parentProp = elementType.GetProperty("Parent");
+
+			while (target != null)
+			{
+				var attrs = attributesProp.GetValue(target, new object[0]);
+				var idAttr = itemProp.GetValue(attrs, new object[] { "id" });
+				if (idAttr != null)
+				{
+					var nodeType = GeckoFxWebBrowserAdapter.GeckoCoreAssembly.GetType("Gecko.GeckoAttribute");
+					var valueProp = nodeType.GetProperty("NodeValue");
+					string id = (string)valueProp.GetValue(idAttr, new object[0]);
+					_lastTargetClicked = _targetClicked;
+					_targetClicked = target;
+					HasSelection = true;
+					var path = Uri.UnescapeDataString(id);
+					if (SelectedPath != path)
+					{
+						SetClassOfLastClickTarget(_lastTargetClicked, "imageWrap");
+						SetClassOfClickTarget(_targetClicked, "imageWrap selected");
+						SelectedPath = path;
+						if (SelectedIndexChanged != null)
+							SelectedIndexChanged(this, new EventArgs());
+					}
+					return;
+				}
+				target = parentProp.GetValue(target, new object[0]);
+			}
+		}
+
+		/// <summary>
+		/// Set the class of the HTML element previously clicked (that is, the one before the most recent click).
+		/// </summary>
+		private void SetClassOfLastClickTarget(object lastTargetClicked, string val)
+		{
+			var browserAdapter = ((GeckoFxWebBrowserAdapter)_browser.Adapter);
+			browserAdapter.SetClass(lastTargetClicked, val);
+		}
+
+		/// <summary>
+		/// Set the class of the HTML element most recently clicked.
+		/// </summary>
+		private void SetClassOfClickTarget(object targetClicked, string val)
+		{
+			var browserAdapter = ((GeckoFxWebBrowserAdapter)_browser.Adapter);
+			browserAdapter.SetClass(targetClicked, val);
+		}
+
+
 
 		public string SelectedPath { get; private set; }
 
