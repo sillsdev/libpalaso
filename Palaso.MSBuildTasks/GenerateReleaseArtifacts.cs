@@ -93,7 +93,9 @@ namespace Palaso.BuildTasks
 				ConvertMarkdownLineToChangelogLine(markdownLines[i], newEntryLines);
 			}
 			newEntryLines.Add(string.Empty);
-			newEntryLines.Add(string.Format(" -- {0} {1:r}", ChangelogAuthorInfo, DateTime.Now));
+			// The debian changelog needs RFC 2822 format (Thu, 15 Oct 2015 08:25:16 -0500), which is not quite what .NET can provide
+			var debianDate = string.Format("{0:ddd, dd MMM yyyy HH'|'mm'|'ss zzz}", DateTime.Now).Replace(":", "").Replace('|', ':');
+			newEntryLines.Add(string.Format(" -- {0}  {1}", ChangelogAuthorInfo, debianDate));
 			newEntryLines.Add(string.Empty);
 			File.AppendAllLines(DebianChangelog, newEntryLines);
 		}
