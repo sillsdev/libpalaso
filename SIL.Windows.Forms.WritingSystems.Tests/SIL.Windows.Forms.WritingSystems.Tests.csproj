@@ -190,7 +190,7 @@
     <Compile Include="Tree\WritingSystemTreeModelTests.cs" />
     <Compile Include="Tree\WritingSystemVariantSuggestorTests.cs" />
     <Compile Include="UITests.cs" />
-    <Compile Include="WritingSystemDefinitionVariantHelperTests.cs" />
+    <Compile Include="ExtensionsTests.cs" />
     <Compile Include="WritingSystemFromWindowsLocaleProviderTests.cs" />
     <Compile Include="WritingSystemSetupPMTests.cs" />
   </ItemGroup>
