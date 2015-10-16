@@ -249,6 +249,8 @@ namespace Palaso.BuildTask.Tests
 				var newContents = File.ReadAllLines(changeLogFile);
 				Assert.AreEqual(newContents.Length, 13, "New changelog entry was not the expected length");
 				Assert.That(newContents[0], Is.StringStarting("myfavoriteapp (2.3.11) unstable; urgency=low"));
+				//Make sure that the author line matches debian standards for time offset and spacing around author name
+				Assert.That(newContents[5], Is.StringMatching(" -- " + testMarkdown.ChangelogAuthorInfo + "  .*[+-]\\d\\d\\d\\d"));
 			}
 		}
 
