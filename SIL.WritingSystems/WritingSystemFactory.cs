@@ -2,7 +2,7 @@
 
 namespace SIL.WritingSystems
 {
-	public class WritingSystemFactory : WritingSystemFactoryBase<WritingSystemDefinition>
+	public class WritingSystemFactory : WritingSystemFactory<WritingSystemDefinition>
 	{
 		protected override WritingSystemDefinition ConstructDefinition()
 		{
@@ -27,7 +27,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public string TemplateFolder { get; set; }
 
-		public override T Create(string ietfLanguageTag)
+		public override bool Create(string ietfLanguageTag, out T ws)
 		{
 			string templatePath = null;
 			// check template folder for template
@@ -38,20 +38,17 @@ namespace SIL.WritingSystems
 					templatePath = null;
 			}
 
-			T ws;
 			if (!string.IsNullOrEmpty(templatePath))
 			{
 				ws = ConstructDefinition();
 				var loader = new LdmlDataMapper(this);
 				loader.Read(templatePath, ws);
 				ws.Template = templatePath;
-			}
-			else
-			{
-				ws = ConstructDefinition(ietfLanguageTag);
+				return true;
 			}
 
-			return ws;
+			ws = ConstructDefinition(ietfLanguageTag);
+			return true;
 		}
 	}
 	 

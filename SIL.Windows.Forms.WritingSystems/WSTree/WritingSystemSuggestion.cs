@@ -76,7 +76,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 
 			WritingSystemDefinition ws = WritingSystemFactory.Create(_templateWritingSystemDefinition);
 			IEnumerable<VariantSubtag> variantSubtags;
-			if (IetfLanguageTag.TryGetVariantSubtags(WritingSystemDefinitionVariantHelper.ValidVariantString(dlg.DialectName), out variantSubtags))
+			if (IetfLanguageTag.TryGetVariantSubtags(dlg.DialectName.ToValidVariantString(), out variantSubtags))
 				ws.Variants.ReplaceAll(variantSubtags);
 			return ws;
 		}
@@ -105,8 +105,9 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 			{
 				var variants = new List<VariantSubtag> {WellKnownSubtags.IpaVariant};
 				variants.AddRange(_templateWritingSystemDefinition.Variants);
-				WritingSystemDefinition ws = WritingSystemFactory.Create(IetfLanguageTag.Create(_templateWritingSystemDefinition.Language, null,
-					_templateWritingSystemDefinition.Region, variants));
+				WritingSystemDefinition ws;
+				WritingSystemFactory.Create(IetfLanguageTag.Create(_templateWritingSystemDefinition.Language, null,
+					_templateWritingSystemDefinition.Region, variants), out ws);
 				string ipaFontName = _fontsForIpa.FirstOrDefault(FontExists);
 				if (!string.IsNullOrEmpty(ipaFontName))
 					ws.DefaultFont = new FontDefinition(ipaFontName);
@@ -190,19 +191,13 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 
 		public override WritingSystemDefinition ShowDialogIfNeededAndGetDefinition()
 		{
-			WaitCursor.Show();
-			try
+			WritingSystemDefinition ws = WritingSystemFactory.CreateAndWarnUserIfOutOfDate(_languageTag);
+			if (ws != null)
 			{
-				WritingSystemDefinition ws = WritingSystemFactory.Create(_languageTag);
 				ws.Keyboard = _keyboardLayout;
 				ws.DefaultFontSize = 12;
-
-				return ws;
 			}
-			finally
-			{
-				WaitCursor.Hide();
-			}
+			return ws;
 		}
 	}
 }

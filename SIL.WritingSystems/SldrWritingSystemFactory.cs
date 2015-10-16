@@ -22,14 +22,15 @@ namespace SIL.WritingSystems
 
 	public abstract class SldrWritingSystemFactory<T> : WritingSystemFactory<T> where T : WritingSystemDefinition
 	{
-		public override T Create(string ietfLanguageTag)
+		public override bool Create(string ietfLanguageTag, out T ws)
 		{
 			// check SLDR for template
 			if (!Directory.Exists(Sldr.SldrCachePath))
 				Directory.CreateDirectory(Sldr.SldrCachePath);
 			string templatePath;
 			string filename;
-			switch (GetLdmlFromSldr(Sldr.SldrCachePath, ietfLanguageTag, out filename))
+			SldrStatus sldrStatus = GetLdmlFromSldr(Sldr.SldrCachePath, ietfLanguageTag, out filename);
+			switch (sldrStatus)
 			{
 				case SldrStatus.FromSldr:
 				case SldrStatus.FromCache:
@@ -41,20 +42,16 @@ namespace SIL.WritingSystems
 					break;
 			}
 
-			T ws;
 			if (!string.IsNullOrEmpty(templatePath))
 			{
 				ws = ConstructDefinition();
 				var loader = new LdmlDataMapper(this);
 				loader.Read(templatePath, ws);
 				ws.Template = templatePath;
-			}
-			else
-			{
-				ws = base.Create(ietfLanguageTag);
+				return sldrStatus == SldrStatus.FromSldr;
 			}
 
-			return ws;
+			return base.Create(ietfLanguageTag, out ws) && sldrStatus == SldrStatus.NotFound;
 		}
 
 		/// <summary>

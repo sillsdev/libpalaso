@@ -34,6 +34,11 @@ namespace SIL.Windows.Forms.WritingSystems
 			_model = new LanguageLookupModel();
 		}
 
+		public void LoadLanguages()
+		{
+			_model.LoadLanguages();
+		}
+
 		public bool ShowDesiredLanguageNameField
 		{
 			set { _desiredLanguageDisplayName.Visible = _desiredLanguageLabel.Visible = value; }

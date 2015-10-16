@@ -30,7 +30,7 @@ namespace SIL.WritingSystems.Tests
 			}
 
 			filename = null;
-			return SldrStatus.NotFound;
+			return SldrStatus.UnableToConnectToSldr;
 		}
 	}
 }

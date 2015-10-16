@@ -28,7 +28,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		public void BindToModel(WritingSystemSetupModel model)
 		{
 			_model = model;
-			_model.MethodToShowUiToBootstrapNewDefinition= ShowCreateNewWritingSystemDialog;
+			_model.MethodToShowUiToBootstrapNewDefinition = ShowCreateNewWritingSystemDialog;
 
 			_buttonBar.BindToModel(_model);
 			_propertiesTabControl.BindToModel(_model);
@@ -131,19 +131,21 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			using (var dlg = new LanguageLookupDialog {ShowDesiredLanguageNameField = false})
 			{
-				dlg.ShowDialog();
-				if (dlg.DialogResult != DialogResult.OK)
-					return null;
-
 				WaitCursor.Show();
 				try
 				{
-					return _model.WritingSystemFactory.Create(dlg.SelectedLanguage.LanguageTag);
+					dlg.LoadLanguages();
 				}
 				finally
 				{
 					WaitCursor.Hide();
 				}
+
+				dlg.ShowDialog();
+				if (dlg.DialogResult != DialogResult.OK)
+					return null;
+
+				return _model.WritingSystemFactory.CreateAndWarnUserIfOutOfDate(dlg.SelectedLanguage.LanguageTag);
 			}
 		}
 	}

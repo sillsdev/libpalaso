@@ -38,6 +38,11 @@ namespace SIL.Windows.Forms.WritingSystems
 			Close();
 		}
 
+		public void LoadLanguages()
+		{
+			_languageLookupControl.LoadLanguages();
+		}
+
 		public LanguageInfo SelectedLanguage
 		{
 			get { return _languageLookupControl.SelectedLanguage; }

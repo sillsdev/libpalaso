@@ -73,7 +73,7 @@ namespace SIL.WritingSystems
 				if (OwningWritingSystemDefinition != null && OwningWritingSystemDefinition.LanguageTag.StartsWith(import.LanguageTag) && OwningWritingSystemDefinition.Collations.Contains(import.Type))
 					ws = OwningWritingSystemDefinition;
 				else if (WritingSystemFactory != null && (OwningWritingSystemDefinition == null || OwningWritingSystemDefinition.LanguageTag != import.LanguageTag))
-					ws = WritingSystemFactory.Create(import.LanguageTag);
+					WritingSystemFactory.Create(import.LanguageTag, out ws);
 				CollationDefinition cd;
 				if (ws != null && ws.Collations.TryGet(import.Type, out cd))
 				{

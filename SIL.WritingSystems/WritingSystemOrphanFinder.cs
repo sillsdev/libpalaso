@@ -62,7 +62,8 @@ namespace SIL.WritingSystems
 					newId = rfcTagCleaner.GetCompleteTag();
 				}
 
-				WritingSystemDefinition conformantWritingSystem = writingSystemRepository.WritingSystemFactory.Create(newId);
+				WritingSystemDefinition conformantWritingSystem;
+				writingSystemRepository.WritingSystemFactory.Create(newId, out conformantWritingSystem);
 				// If it changed, then change
 				if (conformantWritingSystem.LanguageTag != wsId)
 				{

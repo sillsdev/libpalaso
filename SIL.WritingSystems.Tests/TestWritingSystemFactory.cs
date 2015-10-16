@@ -16,13 +16,13 @@ namespace SIL.WritingSystems.Tests
 			get { return _writingSystems; }
 		}
 
-		public override WritingSystemDefinition Create(string ietfLanguageTag)
+		public override bool Create(string ietfLanguageTag, out WritingSystemDefinition ws)
 		{
-			WritingSystemDefinition ws;
 			if (_writingSystems.TryGet(ietfLanguageTag, out ws))
-				return ws;
+				return true;
 
-			return ConstructDefinition(ietfLanguageTag);
+			ws = ConstructDefinition(ietfLanguageTag);
+			return true;
 		}
 	}
 }

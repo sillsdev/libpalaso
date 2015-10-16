@@ -250,7 +250,6 @@
       <DependentUpon>LanguageLookupControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WritingSystemDefinitionVariantHelper.cs" />
     <Compile Include="WritingSystemFromWindowsLocaleProvider.cs" />
     <Compile Include="WritingSystemSetupDialog.cs">
       <SubType>Form</SubType>
@@ -259,6 +258,7 @@
       <DependentUpon>WritingSystemSetupDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="WritingSystemSetupModel.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="WritingSystemSetupView.cs">
       <SubType>UserControl</SubType>
     </Compile>

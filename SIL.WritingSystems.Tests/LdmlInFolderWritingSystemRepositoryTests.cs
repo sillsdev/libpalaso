@@ -961,15 +961,16 @@ namespace SIL.WritingSystems.Tests
 </ldml>
 ");
 				environment.ResetRepositories();
-				WritingSystemDefinition enWs = environment.LocalRepository.WritingSystemFactory.Create("en");
-				Assert.That(enWs.Language, Is.EqualTo((LanguageSubtag) "en"));
-				Assert.That(enWs.Script, Is.EqualTo((ScriptSubtag) "Latn"));
-				Assert.That(enWs.VersionDescription, Is.EqualTo("From Repo"));
-				Assert.That(enWs.Template, Is.EqualTo(environment.GetPathForLocalWSId("en")));
+				WritingSystemDefinition enWS;
+				Assert.That(environment.LocalRepository.WritingSystemFactory.Create("en", out enWS), Is.True);
+				Assert.That(enWS.Language, Is.EqualTo((LanguageSubtag) "en"));
+				Assert.That(enWS.Script, Is.EqualTo((ScriptSubtag) "Latn"));
+				Assert.That(enWS.VersionDescription, Is.EqualTo("From Repo"));
+				Assert.That(enWS.Template, Is.EqualTo(environment.GetPathForLocalWSId("en")));
 
 				// ensure that the template is used when the writing system is saved
-				enWs.Region = "US";
-				environment.LocalRepository.Set(enWs);
+				enWS.Region = "US";
+				environment.LocalRepository.Set(enWS);
 				environment.LocalRepository.Save();
 				XElement ldmlElem = XElement.Load(environment.GetPathForLocalWSId("en-US"));
 				Assert.That((string) ldmlElem.Elements("layout").Elements("orientation").Elements("lineOrder").First(), Is.EqualTo("top-to-bottom"));
@@ -998,14 +999,15 @@ namespace SIL.WritingSystems.Tests
 </ldml>
 ";
 
-				WritingSystemDefinition enWs = environment.LocalRepository.WritingSystemFactory.Create("en");
-				Assert.That(enWs.Language, Is.EqualTo((LanguageSubtag) "en"));
-				Assert.That(enWs.Script, Is.EqualTo((ScriptSubtag) "Latn"));
-				Assert.That(enWs.VersionDescription, Is.EqualTo("From SLDR"));
-				Assert.That(enWs.Template, Is.EqualTo(Path.Combine(environment.SldrCachePath, "en.ldml")));
+				WritingSystemDefinition enWS;
+				Assert.That(environment.LocalRepository.WritingSystemFactory.Create("en", out enWS), Is.True);
+				Assert.That(enWS.Language, Is.EqualTo((LanguageSubtag) "en"));
+				Assert.That(enWS.Script, Is.EqualTo((ScriptSubtag) "Latn"));
+				Assert.That(enWS.VersionDescription, Is.EqualTo("From SLDR"));
+				Assert.That(enWS.Template, Is.EqualTo(Path.Combine(environment.SldrCachePath, "en.ldml")));
 
 				// ensure that the template is used when the writing system is saved
-				environment.LocalRepository.Set(enWs);
+				environment.LocalRepository.Set(enWS);
 				environment.LocalRepository.Save();
 				XElement ldmlElem = XElement.Load(environment.GetPathForLocalWSId("en"));
 				Assert.That((string) ldmlElem.Elements("layout").Elements("orientation").Elements("lineOrder").First(), Is.EqualTo("top-to-bottom"));
@@ -1035,15 +1037,16 @@ namespace SIL.WritingSystems.Tests
 </ldml>
 ");
 
-				WritingSystemDefinition chWs = environment.LocalRepository.WritingSystemFactory.Create("zh-CN");
-				Assert.That(chWs.Language, Is.EqualTo((LanguageSubtag) "zh"));
-				Assert.That(chWs.Script, Is.EqualTo((ScriptSubtag) "Hans"));
-				Assert.That(chWs.Region, Is.EqualTo((RegionSubtag) "CN"));
-				Assert.That(chWs.VersionDescription, Is.EqualTo("From Templates"));
-				Assert.That(chWs.Template, Is.EqualTo(Path.Combine(environment.LocalRepository.WritingSystemFactory.TemplateFolder, "zh-CN.ldml")));
+				WritingSystemDefinition chWS;
+				Assert.That(environment.LocalRepository.WritingSystemFactory.Create("zh-CN", out chWS), Is.False);
+				Assert.That(chWS.Language, Is.EqualTo((LanguageSubtag) "zh"));
+				Assert.That(chWS.Script, Is.EqualTo((ScriptSubtag) "Hans"));
+				Assert.That(chWS.Region, Is.EqualTo((RegionSubtag) "CN"));
+				Assert.That(chWS.VersionDescription, Is.EqualTo("From Templates"));
+				Assert.That(chWS.Template, Is.EqualTo(Path.Combine(environment.LocalRepository.WritingSystemFactory.TemplateFolder, "zh-CN.ldml")));
 
 				// ensure that the template is used when the writing system is saved
-				environment.LocalRepository.Set(chWs);
+				environment.LocalRepository.Set(chWS);
 				environment.LocalRepository.Save();
 				XElement ldmlElem = XElement.Load(environment.GetPathForLocalWSId("zh-CN"));
 				Assert.That((string) ldmlElem.Elements("layout").Elements("orientation").Elements("lineOrder").First(), Is.EqualTo("top-to-bottom"));

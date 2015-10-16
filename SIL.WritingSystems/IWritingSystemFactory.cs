@@ -15,7 +15,7 @@
 		/// Creates a new writing system using the specified language tag. Set will need to be
 		/// called once identifying information has been changed in order to save it in the store.
 		/// </summary>
-		WritingSystemDefinition Create(string ietfLanguageTag);
+		bool Create(string ietfLanguageTag, out WritingSystemDefinition ws);
 
 		/// <summary>
 		/// Creates a duplicate writing system.  Set will need to be called once identifying information
@@ -30,7 +30,7 @@
 	public interface IWritingSystemFactory<T> : IWritingSystemFactory where T : WritingSystemDefinition
 	{
 		new T Create();
-		new T Create(string ietfLanguageTag);
+		bool Create(string ietfLanguageTag, out T ws);
 		T Create(T ws);
 	}
 }

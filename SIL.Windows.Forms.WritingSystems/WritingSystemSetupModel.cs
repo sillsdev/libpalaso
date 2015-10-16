@@ -751,7 +751,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			{
 				if (IetfLanguageTag.GetVariantCodes(CurrentDefinition.Variants) != value)
 				{
-					string fixedVariant = WritingSystemDefinitionVariantHelper.ValidVariantString(value);
+					string fixedVariant = value.ToValidVariantString();
 					if (string.IsNullOrEmpty(CurrentDefinition.Language) && !fixedVariant.StartsWith("x-", StringComparison.OrdinalIgnoreCase))
 						CurrentDefinition.Language = WellKnownSubtags.UnlistedLanguage;
 
@@ -1358,8 +1358,12 @@ namespace SIL.Windows.Forms.WritingSystems
 			{
 				ws = MethodToShowUiToBootstrapNewDefinition();
 			}
-			if(ws==null)//cancelled
+			if (ws == null) //cancelled
+			{
+				// this causes the Add Language item to be unselected
+				OnAddOrDelete();
 				return;
+			}
 
 			if (ws.Abbreviation == WellKnownSubtags.UnlistedLanguage) // special case for Unlisted Language
 			{

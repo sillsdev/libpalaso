@@ -34,31 +34,31 @@ namespace SIL.WritingSystems
 			_writingSystemRepository = writingSystemRepository;
 		}
 
-		public override T Create(string ietfLanguageTag)
+		public override bool Create(string ietfLanguageTag, out T ws)
 		{
 			// check local repo for template
 			T existingWS;
 			if (_writingSystemRepository.TryGet(ietfLanguageTag, out existingWS))
 			{
-				T newWS = ConstructDefinition(existingWS);
+				ws = ConstructDefinition(existingWS);
 				string templatePath = _writingSystemRepository.GetFilePathFromLanguageTag(existingWS.LanguageTag);
 				if (File.Exists(templatePath))
-					newWS.Template = templatePath;
-				return newWS;
+					ws.Template = templatePath;
+				return true;
 			}
 
 			// check global repo for template
 			if (_writingSystemRepository.GlobalWritingSystemRepository != null
 				&& _writingSystemRepository.GlobalWritingSystemRepository.TryGet(ietfLanguageTag, out existingWS))
 			{
-				T newWS = ConstructDefinition(existingWS);
+				ws = ConstructDefinition(existingWS);
 				string templatePath = _writingSystemRepository.GlobalWritingSystemRepository.GetFilePathFromLanguageTag(existingWS.LanguageTag);
 				if (File.Exists(templatePath))
-					newWS.Template = templatePath;
-				return newWS;
+					ws.Template = templatePath;
+				return true;
 			}
 
-			return base.Create(ietfLanguageTag);
+			return base.Create(ietfLanguageTag, out ws);
 		}
 	}
 }

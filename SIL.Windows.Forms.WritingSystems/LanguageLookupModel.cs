@@ -55,6 +55,11 @@ namespace SIL.Windows.Forms.WritingSystems
 			set { _desiredLanguageName = value == null ? null : value.Trim(); }
 		}
 
+		public void LoadLanguages()
+		{
+			_languageLookup = new LanguageLookup();
+		}
+
 		public IEnumerable<LanguageInfo> MatchingLanguages
 		{
 			get
@@ -64,9 +69,6 @@ namespace SIL.Windows.Forms.WritingSystems
 					yield return new LanguageInfo {LanguageTag = "qaa", Names = {UnlistedLanguageName}};
 					yield break;
 				}
-
-				if (_languageLookup == null)
-					_languageLookup = new LanguageLookup();
 
 				foreach (LanguageInfo li in _languageLookup.SuggestLanguages(_searchText).Where(li => MatchingLanguageFilter == null || MatchingLanguageFilter(li)))
 					yield return li;

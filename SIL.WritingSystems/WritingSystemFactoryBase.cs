@@ -2,9 +2,10 @@
 {
 	public abstract class WritingSystemFactoryBase<T> : IWritingSystemFactory<T> where T : WritingSystemDefinition
 	{
-		public virtual T Create(string ietfLanguageTag)
+		public virtual bool Create(string ietfLanguageTag, out T ws)
 		{
-			return ConstructDefinition(ietfLanguageTag);
+			ws = ConstructDefinition(ietfLanguageTag);
+			return false;
 		}
 
 		public virtual T Create(T ws)
@@ -35,9 +36,12 @@
 		/// </summary>
 		protected abstract T ConstructDefinition(T ws);
 
-		WritingSystemDefinition IWritingSystemFactory.Create(string ietfLanguageTag)
+		bool IWritingSystemFactory.Create(string ietfLanguageTag, out WritingSystemDefinition ws)
 		{
-			return Create(ietfLanguageTag);
+			T tempWS;
+			bool res = Create(ietfLanguageTag, out tempWS);
+			ws = tempWS;
+			return res;
 		}
 
 		WritingSystemDefinition IWritingSystemFactory.Create()
