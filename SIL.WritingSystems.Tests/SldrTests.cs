@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using NUnit.Framework;
 using SIL.TestUtilities;
@@ -379,5 +380,91 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 		#endregion
+
+		[Test]
+		[Category("SkipOnTeamCity")]
+		public void GetAvailableLanguageTags_NoCachedAllTags_DownloadsNewAllTags()
+		{
+			using (new TestEnvironment())
+			{
+				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.txt");
+				Assert.That(File.Exists(allTagsPath), Is.False);
+				IEnumerable<string> langTags;
+				Assert.That(Sldr.GetAvailableLanguageTags(out langTags), Is.True);
+				Assert.That(langTags, Is.Not.Empty);
+				Assert.That(File.Exists(allTagsPath), Is.True);
+			}
+		}
+
+		[Test]
+		[Category("SkipOnTeamCity")]
+		public void GetAvailableLanguageTags_OldCachedAllTags_DownloadsNewAllTags()
+		{
+			using (new TestEnvironment())
+			{
+				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.txt");
+
+				File.WriteAllText(allTagsPath, "*en-US");
+				File.SetLastWriteTimeUtc(allTagsPath, new DateTime(2000, 1, 1, 12, 0, 0));
+
+				IEnumerable<string> langTags;
+				Assert.That(Sldr.GetAvailableLanguageTags(out langTags), Is.True);
+				Assert.That(langTags.Count(), Is.GreaterThan(1));
+				Assert.That(File.Exists(allTagsPath), Is.True);
+			}
+		}
+
+		[Test]
+		public void GetAvailableLanguageTags_CachedAllTagsSldrOffline_UseCachedAllTags()
+		{
+			using (new TestEnvironment())
+			{
+				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.txt");
+
+				File.WriteAllText(allTagsPath, "*en-US");
+				File.SetLastWriteTimeUtc(allTagsPath, new DateTime(2000, 1, 1, 12, 0, 0));
+
+				Sldr.OfflineMode = true;
+				IEnumerable<string> langTags;
+				Assert.That(Sldr.GetAvailableLanguageTags(out langTags), Is.False);
+				Assert.That(langTags.Count(), Is.EqualTo(1));
+				Assert.That(File.Exists(allTagsPath), Is.True);
+			}
+		}
+
+		[Test]
+		public void GetAvailableLanguageTags_NoCachedAllTagsSldrOffline_UseBuiltinAllTags()
+		{
+			using (new TestEnvironment())
+			{
+				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.txt");
+				Assert.That(File.Exists(allTagsPath), Is.False);
+
+				Sldr.OfflineMode = true;
+				IEnumerable<string> langTags;
+				Assert.That(Sldr.GetAvailableLanguageTags(out langTags), Is.False);
+				Assert.That(langTags, Is.Not.Empty);
+				Assert.That(File.Exists(allTagsPath), Is.False);
+			}
+		}
+
+		[Test]
+		public void GetAvailableLanguageTags_CachedAllTagsSldrOffline_ReturnsAvailableLangTags()
+		{
+			using (new TestEnvironment())
+			{
+				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.txt");
+
+				File.WriteAllText(allTagsPath, @"*agq = agq-Latn | *agq-CM = agq-Latn-CM
+amo-Latn = amo
+*ar-EG = ar-Arab-EG > *ar
+*en-US");
+
+				Sldr.OfflineMode = true;
+				IEnumerable<string> langTags;
+				Assert.That(Sldr.GetAvailableLanguageTags(out langTags), Is.False);
+				Assert.That(langTags, Is.EquivalentTo(new[] {"agq", "agq-CM", "ar-EG", "ar", "en-US"}));
+			}
+		}
 	}
 }

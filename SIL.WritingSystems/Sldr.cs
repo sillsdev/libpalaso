@@ -7,6 +7,8 @@ using System.Xml.Linq;
 using System;
 using System.Net;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SIL.Xml;
 
 namespace SIL.WritingSystems
@@ -47,11 +49,15 @@ namespace SIL.WritingSystems
 		private const string SldrRepository = "https://ldml.api.sil.org/";
 #endif
 
+		private const string SldrGitHubRepo = "https://api.github.com/repos/silnrsi/sldr/";
+
 		private const string SldrCacheDir = "SldrCache";
 		private const string TmpExtension = "tmp";
 
 		// Default parameters for querying the SLDR
 		private const string LdmlExtension = "ldml";
+
+		private const string UserAgent = "SIL.WritingSystems Library";
 
 		// Mode to test when the SLDR is unavailable.  Default to false
 		public static bool OfflineMode { get; set; }
@@ -140,6 +146,7 @@ namespace SIL.WritingSystems
 				// Using WebRequest instead of WebClient so we have access to disable AllowAutoRedirect
 				var webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(url));
 				webRequest.AllowAutoRedirect = false;
+				webRequest.UserAgent = UserAgent;
 				webRequest.Timeout = 10000;
 
 				try
@@ -187,7 +194,7 @@ namespace SIL.WritingSystems
 				catch (WebException we)
 				{
 					// Return from 404 error
-					var errorResponse = (HttpWebResponse)we.Response;
+					var errorResponse = (HttpWebResponse) we.Response;
 					if ((we.Status == WebExceptionStatus.ProtocolError) && (errorResponse.StatusCode == HttpStatusCode.NotFound))
 						return SldrStatus.NotFound;
 
@@ -235,9 +242,76 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Gets the language tags of the available LDML files in the SLDR.
 		/// </summary>
-		public static SldrStatus GetAvailableLanguageTags(out IEnumerable<string> langTags)
+		public static bool GetAvailableLanguageTags(out IEnumerable<string> langTags)
 		{
-			string[] allTags = LanguageRegistryResources.alltags.Replace("\r\n", "\n").Split(new[] {"\n"}, StringSplitOptions.RemoveEmptyEntries);
+			Directory.CreateDirectory(SldrCachePath);
+
+			string cachedAllTagsPath = Path.Combine(SldrCachePath, "alltags.txt");
+			bool checkedGitHub = true;
+			DateTime latestCommitTime = DateTime.MinValue;
+			try
+			{
+				if (OfflineMode)
+					throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
+
+				string commitUrl = string.Format("{0}commits?path=extras/alltags.txt", SldrGitHubRepo);
+				if (File.Exists(cachedAllTagsPath))
+				{
+					DateTime sinceTime = File.GetLastWriteTimeUtc(cachedAllTagsPath);
+					sinceTime += TimeSpan.FromSeconds(1);
+					commitUrl += string.Format("&since={0:O}", sinceTime);
+				}
+
+				var webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(commitUrl));
+				webRequest.UserAgent = UserAgent;
+				webRequest.Timeout = 10000;
+				using (var webResponse = (HttpWebResponse) webRequest.GetResponse())
+				{
+					Stream stream = webResponse.GetResponseStream();
+					if (stream != null)
+					{
+						using (StreamReader responseReader = new StreamReader(stream))
+						{
+							JArray commits = JArray.Load(new JsonTextReader(responseReader));
+							foreach (JObject commit in commits.Children<JObject>())
+							{
+								DateTime time = DateTime.Parse((string) commit["commit"]["author"]["date"]);
+								if (time > latestCommitTime)
+									latestCommitTime = time;
+							}
+						}
+					}
+				}
+
+				if (latestCommitTime > DateTime.MinValue)
+				{
+					// there is an update to the alltags.txt file
+					string contentsUrl = string.Format("{0}contents/extras/alltags.txt", SldrGitHubRepo);
+					webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(contentsUrl));
+					webRequest.UserAgent = UserAgent;
+					webRequest.Timeout = 10000;
+					using (var webResponse = (HttpWebResponse) webRequest.GetResponse())
+					{
+						Stream stream = webResponse.GetResponseStream();
+						if (stream != null)
+						{
+							using (StreamReader responseReader = new StreamReader(stream))
+							{
+								JObject blob = JObject.Load(new JsonTextReader(responseReader));
+								File.WriteAllBytes(cachedAllTagsPath, Convert.FromBase64String((string) blob["content"]));
+								File.SetLastWriteTimeUtc(cachedAllTagsPath, latestCommitTime);
+							}
+						}
+					}
+				}
+			}
+			catch (WebException)
+			{
+				checkedGitHub = false;
+			}
+
+			string allTagsContents = File.Exists(cachedAllTagsPath) ? File.ReadAllText(cachedAllTagsPath) : LanguageRegistryResources.alltags;
+			string[] allTags = allTagsContents.Replace("\r\n", "\n").Split(new[] {"\n"}, StringSplitOptions.RemoveEmptyEntries);
 			var tags = new HashSet<string>();
 			foreach (string line in allTags)
 			{
@@ -273,7 +347,7 @@ namespace SIL.WritingSystems
 			}
 
 			langTags = tags;
-			return SldrStatus.FromCache;
+			return checkedGitHub;
 		}
 
 		/// <summary>

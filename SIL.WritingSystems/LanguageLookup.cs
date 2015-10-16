@@ -14,7 +14,7 @@ namespace SIL.WritingSystems
 		private readonly Dictionary<string, LanguageInfo> _codeToLanguageIndex = new Dictionary<string, LanguageInfo>();
 		private readonly Dictionary<string, List<LanguageInfo>> _nameToLanguageIndex = new Dictionary<string, List<LanguageInfo>>();
 
-		private readonly bool _isDataStale;
+		private readonly bool _isUpToDate;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LanguageLookup"/> class.
@@ -60,7 +60,7 @@ namespace SIL.WritingSystems
 			}
 
 			IEnumerable<string> availableLangTags;
-			_isDataStale = Sldr.GetAvailableLanguageTags(out availableLangTags) == SldrStatus.FromCache;
+			_isUpToDate = Sldr.GetAvailableLanguageTags(out availableLangTags);
 
 			IEnumerable<IGrouping<string, string>> languageGroups = availableLangTags.Where(IetfLanguageTag.IsValid)
 				.Select(l => IetfLanguageTag.Normalize(l, IetfLanguageTagNormalizationForm.SilCompatible))
@@ -187,9 +187,9 @@ namespace SIL.WritingSystems
 			return language;
 		}
 
-		public bool IsDataStale
+		public bool IsUpToDate
 		{
-			get { return _isDataStale; }
+			get { return _isUpToDate; }
 		}
 
 		/// <summary>
