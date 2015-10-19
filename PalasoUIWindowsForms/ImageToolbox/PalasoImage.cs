@@ -137,23 +137,34 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		private void SaveImageSafely(string path, ImageFormat format)
 		{
-			using (var image = new Bitmap(Image))
-			//nb: there are cases (notibly http://jira.palaso.org/issues/browse/WS-34711, after cropping a jpeg) where we get out of memory if we are not operating on a copy
+			//related to preserving pixelformat (bit depth):
+			//	http://stackoverflow.com/questions/7276212/reading-preserving-a-pixelformat-format48bpprgb-png-bitmap-in-net
+			if (File.Exists(path))
 			{
-				if (File.Exists(path))
+				try
 				{
-					try
-					{
-						File.Delete(path);
-					}
-					catch (System.IO.IOException error)
-					{
-						throw new ApplicationException("The program could not replace the image " + path +
-													   ", perhaps because this program or another locked it. Quit and try again. Then restart your computer and try again."+System.Environment.NewLine+error.Message);
-					}
+					File.Delete(path);
 				}
-
-				image.Save(path, format);
+				catch (System.IO.IOException error)
+				{
+					throw new ApplicationException("The program could not replace the image " + path +
+												   ", perhaps because this program or another locked it. Quit and try again. Then restart your computer and try again." + System.Environment.NewLine + error.Message);
+				}
+			}
+			if (format.Equals(ImageFormat.Png) || format.Equals(ImageFormat.Bmp))
+			{
+				//The JPEG indirect saving below isn't needed for pngs and bmps, and
+				// keeping it simple here prevents us from losing the bit depth of the original
+				//reported in https://silbloom.myjetbrains.com/youtrack/issue/BL-2841
+				Image.Save(path, format);
+			}
+			else
+			{
+				//nb: there are cases (notibly http://jira.palaso.org/issues/browse/WS-34711, after cropping a jpeg) where we get out of memory if we are not operating on a copy
+				using (var image = new Bitmap(Image))
+				{
+					image.Save(path, format);
+				}
 			}
 		}
 
@@ -232,15 +243,22 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			//But note, it's not clear if (2) will very occasionally die with "out of memory": http://jira.palaso.org/issues/browse/BL-199
 			// Note: if the FileStream is closed, attempts to modify the image result in an "out of memory" error.
 
-			//3) Use a temp file.
+			//3) Use a temp file, which remains locked, but no one notices because the original file is unlocked.
 
 			//if(Path.GetExtension(path)==".jpg")
 			{
 				var leakMe = TempFile.WithExtension(Path.GetExtension(path));
 				File.Delete(leakMe.Path);
 				File.Copy(path, leakMe.Path);
+
+				//we output the tempath so that the caller can clean it up later
 				tempPath = leakMe.Path;
-				return Image.FromFile(leakMe.Path); ;
+
+				//Note, Image.FromFile(some 8 bit or 48 bit png) will always give you a 32 bit image.
+				//See http://stackoverflow.com/questions/7276212/reading-preserving-a-pixelformat-format48bpprgb-png-bitmap-in-net
+				//There is a second argument here, useEmbeddedColorManagement, that is said to preserve it if set to true, but it doesn't work.
+
+				return Image.FromFile(leakMe.Path, true);
 			}
 		}
 

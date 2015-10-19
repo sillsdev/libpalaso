@@ -133,6 +133,44 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 		//            }
 		//        }
 
+		[Test]
+		public void Save_1BitPng_SavedAs1Bit()
+		{
+			RoundTripImageThenCheckPixelFormat(".png", ImageFormat.Png, PixelFormat.Format1bppIndexed);
+		}
 
+		[Test, Ignore(".net Image.FromFile just can't do this, would take something more complicated to work around")]
+		public void Save_8BitPng_SavedAs8Bit()
+		{
+			//NB: Image.FromFile(some 8 bit or 48 bit png) will always give you a 32 bit image.
+			//See http://stackoverflow.com/questions/7276212/reading-preserving-a-pixelformat-format48bpprgb-png-bitmap-in-net
+			RoundTripImageThenCheckPixelFormat(".png", ImageFormat.Png, PixelFormat.Format8bppIndexed);
+		}
+
+		[Test]
+		public void Save_32BitPngImage_SavedAs32Bit()
+		{
+			RoundTripImageThenCheckPixelFormat(".png", ImageFormat.Png, PixelFormat.Format32bppArgb);
+		}
+
+		private static void RoundTripImageThenCheckPixelFormat(string  extension, ImageFormat imageFormat, PixelFormat pixelFormat)
+		{
+			using (var originalBitmap = new Bitmap(10, 10, pixelFormat))
+			using (var saved = TempFile.WithExtension(extension))
+			{
+				using (var palasoImageToSave = PalasoImage.FromImage(originalBitmap))
+				{
+					palasoImageToSave.Save(saved.Path);
+				}
+                using (var palasoImageToSave = PalasoImage.FromFile(saved.Path))
+				{
+					Assert.AreEqual(pixelFormat, palasoImageToSave.Image.PixelFormat, "Format was lost when loading into palaso image");
+				}
+				using (var loaded = Image.FromFile(saved.Path))
+				{
+					Assert.AreEqual(pixelFormat, loaded.PixelFormat, "Format was lost when loading into plain .net Image");
+                }
+			}
+		}
 	}
 }
