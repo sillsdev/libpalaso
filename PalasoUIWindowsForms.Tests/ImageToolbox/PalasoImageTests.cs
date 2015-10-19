@@ -1,36 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Text;
 using NUnit.Framework;
 using Palaso.IO;
-using Palaso.UI.WindowsForms.ClearShare;
 using Palaso.UI.WindowsForms.ImageToolbox;
 
 namespace PalasoUIWindowsForms.Tests.ImageToolbox
 {
-	[TestFixture, Ignore("Needs exiftool in the distfiles")]
+	[TestFixture]
 	public class PalasoImageTests
 	{
 		[Test]
 		public void FileName_CreatedWithImageOnly_Null()
 		{
-			var pi = PalasoImage.FromImage(new Bitmap(10,10));
+			var pi = PalasoImage.FromImage(new Bitmap(10, 10));
 			Assert.IsNull(pi.FileName);
-		}
-
-		[Test, Ignore("by hand only")]
-		public void FromFile_HugeJPEG_DoesNotCrash()
-		{
-			//nb: trying to reproduce a problem that came up in bloom with this very image, but
-			//i never did get this to crash here
-				PalasoImage.FromFile(@"C:\Users\John\Desktop\hugetestimage.jpg");
-				PalasoImage.FromFile(@"C:\Users\John\Desktop\hugetestimage.jpg");
-				PalasoImage.FromFile(@"C:\Users\John\Desktop\hugetestimage.jpg");
-				PalasoImage.FromFile(@"C:\Users\John\Desktop\hugetestimage.jpg");
 		}
 
 		/// <summary>
@@ -48,7 +33,7 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 		[Test]
 		public void Image_FromFile_GivesImage()
 		{
-			using(Bitmap bitmap = new Bitmap(10, 10))
+			using (Bitmap bitmap = new Bitmap(10, 10))
 			using (var temp = TempFile.CreateAndGetPathButDontMakeTheFile())
 			{
 				bitmap.Save(temp.Path);
@@ -70,17 +55,17 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 				using (var pi1 = PalasoImage.FromFile(tf1.Path))
 				using (var pi2 = PalasoImage.FromFile(tf2.Path))
 					Assert.AreNotEqual(pi1.OriginalFilePath, pi2.OriginalFilePath);
-					
+
 			}
 		}
 
 		[Test]
 		public void FromFile_DoesNotLockFile()
 		{
-		   using(Bitmap bitmap = new Bitmap(10, 10))
+			using (var bitmap = new Bitmap(10, 10))
 			using (var temp = TempFile.CreateAndGetPathButDontMakeTheFile())
 			{
-				bitmap.Save(temp.Path);
+				bitmap.Save(temp.Path, ImageFormat.Png);
 				PalasoImage.FromFile(temp.Path);
 				Assert.DoesNotThrow(() => File.Delete(temp.Path));
 			}
@@ -105,7 +90,7 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 		public void LoadAndSave_DeleteAfter_NothingLocked()
 		{
 			var png = new Bitmap(10, 10);
-			using (var temp = new TempFile(false))
+			using (var temp =  TempFile.WithExtension(".png"))
 			{
 				png.Save(temp.Path);
 				var pi = PalasoImage.FromFile(temp.Path);
@@ -126,6 +111,7 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 				Assert.IsFalse(pi.MetadataLocked);
 			}
 		}
+
 		[Test]
 		public void Locked_NewOne_False()
 		{
@@ -133,19 +119,20 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 			Assert.IsFalse(pi.MetadataLocked);
 		}
 
-//        [Test]
-//        public void MetadataLocked_IfLoadedWithIllustrator_True()
-//        {
-//            var png = new Bitmap(10, 10);
-//            using (var temp = new TempFile(false))
-//            {
-//                var pi = PalasoImage.FromImage(png);
-//                pi.Metadata.AttributionName = "me";
-//                pi.Save(temp.Path);
-//                var incoming = PalasoImage.FromFile(temp.Path);
-//                Assert.IsTrue(incoming.MetadataLocked);
-//            }
-//        }
+		//        [Test]
+		//        public void MetadataLocked_IfLoadedWithIllustrator_True()
+		//        {
+		//            var png = new Bitmap(10, 10);
+		//            using (var temp = new TempFile(false))
+		//            {
+		//                var pi = PalasoImage.FromImage(png);
+		//                pi.Metadata.AttributionName = "me";
+		//                pi.Save(temp.Path);
+		//                var incoming = PalasoImage.FromFile(temp.Path);
+		//                Assert.IsTrue(incoming.MetadataLocked);
+		//            }
+		//        }
+
 
 	}
 }

@@ -374,7 +374,10 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				!Disposed && LicenseManager.UsageMode != LicenseUsageMode.Designtime)//don't know if this will work here
 			{
 				string imageLabel = _image == null ? "no-image" : "with-image";
-				Debug.Assert(Disposed, "PalasoImage wasn't disposed of properly: " + imageLabel);
+#if DEBUG
+				if(!Disposed)
+					throw new ApplicationException("PalasoImage wasn't disposed of properly: " + imageLabel);
+#endif
 			}
 		}
 	}
