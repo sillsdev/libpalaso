@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.Unmanaged.TSF;
+using Microsoft.Win32;
 using Palaso.UI.WindowsForms.Keyboarding.InternalInterfaces;
 using Palaso.UI.WindowsForms.Keyboarding.Types;
 using Palaso.WritingSystems;
@@ -26,6 +27,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 		Justification = "WindowHandle is a reference to a control")]
 	internal class WinKeyboardDescription : KeyboardDescription
 	{
+		private bool _useNfcContext = true;
+
 		/// <summary>
 		/// Initializes a new instance of the
 		/// <see cref="T:Palaso.UI.WindowsForms.Keyboard.Windows.WinKeyboardDescription"/> class.
@@ -73,6 +76,8 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			else
 				layoutName = WinKeyboardAdaptor.GetLayoutNameEx(hkl);
 
+			_useNfcContext = !IsKeymanKeyboard(profile);
+
 			Initialize(cultureName, layoutName, locale,
 				new InputLanguageWrapper(culture, hkl, layoutName.Name));
 		}
@@ -103,11 +108,28 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			InternalName = other.InternalName;
 			Layout = other.Layout;
 			Locale = other.Locale;
+			_useNfcContext = other._useNfcContext;
 		}
 
 		public override IKeyboardDefinition Clone()
 		{
 			return new WinKeyboardDescription(this);
+		}
+
+		private static bool IsKeymanKeyboard(TfInputProcessorProfile profile)
+		{
+			if (profile.ProfileType != TfProfileType.InputProcessor)
+				return false;
+
+			// check the default key value for profile.ClsId.
+			var subKey = string.Format(@"CLSID\{{{0}}}", profile.ClsId);
+			using (var key = Registry.ClassesRoot.OpenSubKey(subKey))
+			{
+				if (key == null)
+					return false;
+				var value = key.GetValue(null) as string;
+				return value != null && value.Contains("Keyman");
+			}
 		}
 
 		private static ushort HklToLangId(IntPtr hkl)
@@ -133,6 +155,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 		{
 			get { return InternalLocalizedName; }
 		}
+
+		/// <summary>
+		/// Indicates whether we should pass NFC or NFD data to the keyboard. This implementation
+		/// returns <c>false</c> for Keyman keyboards and <c>true</c> for other keyboards.
+		/// </summary>
+		public override bool UseNfcContext { get { return _useNfcContext; } }
+
 		#endregion
 
 		private string InternalLocalizedName { get; set; }

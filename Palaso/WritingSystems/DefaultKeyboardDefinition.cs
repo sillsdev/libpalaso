@@ -89,6 +89,12 @@ namespace Palaso.WritingSystems
 		public PlatformID OperatingSystem { get; set; }
 
 		/// <summary>
+		/// Indicates whether we should pass NFC or NFD data to the keyboard. This implementation
+		/// always returns <c>true</c>.
+		/// </summary>
+		public virtual bool UseNfcContext { get { return true; } }
+
+		/// <summary>
 		/// Answer true if the keyboard is available to use on this system (that is, it can be activated).
 		/// </summary>
 		public bool IsAvailable { get; set; }

@@ -61,6 +61,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding
 			get { return Environment.OSVersion.Platform; }
 		}
 
+		/// <summary>
+		/// Indicates whether we should pass NFC or NFD data to the keyboard. This implementation
+		/// always returns <c>true</c>.
+		/// </summary>
+		public bool UseNfcContext { get { return true; } }
+
 		public string Locale
 		{
 			get { return "en-US"; } // arbitrary but at least a valid locale. Is there something more neutral we could use?
