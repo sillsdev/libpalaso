@@ -34,7 +34,7 @@ namespace PalasoUIWindowsForms.Tests.Keyboarding
 			get
 			{
 				return "|Type|Name|OperatingSystem|IsAvailable|InternalName|InternalLocalizedName|" +
-					"ConversionMode|SentenceMode|WindowHandle|InputProcessorProfile|";
+					"ConversionMode|SentenceMode|WindowHandle|InputProcessorProfile|_useNfcContext|";
 			}
 		}
 
