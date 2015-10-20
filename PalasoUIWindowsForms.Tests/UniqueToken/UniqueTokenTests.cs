@@ -71,8 +71,11 @@ namespace PalasoUIWindowsForms.Tests.UniqueToken
 			bool tokenAcquired = Palaso.UI.WindowsForms.UniqueToken.UniqueToken.AcquireToken(uniqueIdentifier, null, 0);
 			Assert.IsTrue(tokenAcquired);
 
-			tokenAcquired = Palaso.UI.WindowsForms.UniqueToken.UniqueToken.AcquireToken(uniqueIdentifier, null, 0);
-			Assert.IsFalse(tokenAcquired);
+			using (new Palaso.Reporting.ErrorReport.NonFatalErrorReportExpected())
+			{
+				tokenAcquired = Palaso.UI.WindowsForms.UniqueToken.UniqueToken.AcquireToken(uniqueIdentifier, null, 0);
+				Assert.IsFalse(tokenAcquired);
+			}
 
 			Palaso.UI.WindowsForms.UniqueToken.UniqueToken.ReleaseToken();
 
