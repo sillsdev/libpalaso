@@ -72,11 +72,23 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		/// NB: this is used in 2 places; one is loading from the image we are linked to, the other from a sample image we are copying metadata from
 		/// </summary>
 		/// <param name="path"></param>
-		/// <param name="m"></param>
-		private static void LoadProperties(string path, Metadata m)
+		/// <param name="destinationMetadata"></param>
+		private static void LoadProperties(string path, Metadata destinationMetadata)
 		{
-			var file = TagLib.File.Create(path) as TagLib.Image.File;
-			LoadProperties(file.ImageTag, m);
+			TagLib.Image.File file;
+            try
+			{
+				file = TagLib.File.Create(path) as TagLib.Image.File;
+			}
+			catch (TagLib.UnsupportedFormatException)
+			{
+				// TagLib throws this exception when the file doesn't have any metadata, sigh.
+				// So since I don't see a way to differentiate between that case and the case
+				// where something really is wrong, we're just gonna have to swallow this,
+				// even in DEBUG mode, because else a lot of simple image tests fail
+				return;
+			}
+			LoadProperties(file.ImageTag, destinationMetadata);
 		}
 
 		/// <summary>
@@ -89,22 +101,22 @@ namespace Palaso.UI.WindowsForms.ClearShare
 		/// combinedTag that just has an XmpTag inside it (or indeed any way to create any combinedTag except as part of
 		/// reading a real image file).
 		/// </summary>
-		private static void LoadProperties(ImageTag tagMain, Metadata m)
+		private static void LoadProperties(ImageTag tagMain, Metadata destinationMetadata)
 		{
-			m.CopyrightNotice = tagMain.Copyright;
-			m.Creator = tagMain.Creator;
+			destinationMetadata.CopyrightNotice = tagMain.Copyright;
+			destinationMetadata.Creator = tagMain.Creator;
 			XmpTag xmpTag = tagMain as XmpTag;
 			if (xmpTag == null)
 				xmpTag = ((CombinedImageTag) tagMain).Xmp;
 			var licenseProperties = new Dictionary<string, string>();
 			if (xmpTag != null)
 			{
-				m.CollectionUri = xmpTag.GetTextNode(kNsCollections,
+				destinationMetadata.CollectionUri = xmpTag.GetTextNode(kNsCollections,
 					"CollectionURI");
-				m.CollectionName = xmpTag.GetTextNode(
+				destinationMetadata.CollectionName = xmpTag.GetTextNode(
 					kNsCollections,
 					"CollectionName");
-				m.AttributionUrl = xmpTag.GetTextNode(kNsCc, "attributionURL");
+				destinationMetadata.AttributionUrl = xmpTag.GetTextNode(kNsCc, "attributionURL");
 
 				var licenseUrl = xmpTag.GetTextNode(kNsCc, "license");
 				if (!string.IsNullOrWhiteSpace(licenseUrl))
@@ -113,16 +125,16 @@ namespace Palaso.UI.WindowsForms.ClearShare
 				if (rights != null)
 					licenseProperties["rights (en)"] = rights;
 			}
-			m.License = LicenseInfo.FromXmp(licenseProperties);
+			destinationMetadata.License = LicenseInfo.FromXmp(licenseProperties);
 
 			//NB: we're loosing non-ascii somewhere... the copyright symbol is just the most obvious
-			if (!string.IsNullOrEmpty(m.CopyrightNotice))
+			if (!string.IsNullOrEmpty(destinationMetadata.CopyrightNotice))
 			{
-				m.CopyrightNotice = m.CopyrightNotice.Replace("Copyright �", "Copyright ©");
+				destinationMetadata.CopyrightNotice = destinationMetadata.CopyrightNotice.Replace("Copyright �", "Copyright ©");
 			}
 
 			//clear out the change-setting we just caused, because as of right now, we are clean with respect to what is on disk, no need to save.
-			m.HasChanges = false;
+			destinationMetadata.HasChanges = false;
 		}
 
 		private LicenseInfo _license;
