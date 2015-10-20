@@ -44,6 +44,12 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 			IsKeyman6 = other.IsKeyman6;
 		}
 
+		/// <summary>
+		/// Indicates whether we should pass NFC or NFD data to the keyboard. This implementation
+		/// always returns <c>false</c>.
+		/// </summary>
+		public override bool UseNfcContext { get { return false; } }
+
 		public override IKeyboardDefinition Clone()
 		{
 			return new KeymanKeyboardDescription(this);
