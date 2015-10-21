@@ -28,6 +28,18 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 		private string _originalFilePath;
 
+		
+		/// <summary>
+		/// If false, you get a debug.Fail(). If true, you get a throw.
+		/// </summary>
+		public static bool ThrowOnFailureToDisposeAnyPalasoImage = false;
+
+		/// <summary>
+		/// If the object isn't disposed, the resulting message will give this label. 
+		/// This can help trace where it was created.
+		/// </summary>
+		public string LabelForDebugging = "unlabeled";
+		
 		/// <summary>
 		/// Generally, when we load an image, we can happily forget where it came from, because
 		/// the nature of the palaso image system is to deliver images, not file paths, to documents
@@ -68,6 +80,7 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 
 
 		private Image _image;
+
 		public Image Image
 		{
 			get
@@ -392,13 +405,26 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 				!Disposed && LicenseManager.UsageMode != LicenseUsageMode.Designtime)//don't know if this will work here
 			{
 				string imageLabel = _image == null ? "no-image" : "with-image";
-#if DEBUG
-				if(!Disposed)
-					throw new ApplicationException("PalasoImage wasn't disposed of properly: " + imageLabel);
-#endif
+
+				if (!Disposed)
+				{
+					var message = "PalasoImage wasn't disposed of properly: " + imageLabel + ". LabelForDebugging=" + LabelForDebugging;
+					if (ThrowOnFailureToDisposeAnyPalasoImage)
+					{
+						throw new PalsoImageNotDisposed(message);
+					}
+					else
+					{
+						Debug.Fail(message);
+					}
+				}
 			}
 		}
 	}
-
-
+	public class PalsoImageNotDisposed : ApplicationException
+	{
+		public PalsoImageNotDisposed(string message) : base(message)
+		{
+		}
+	}
 }
