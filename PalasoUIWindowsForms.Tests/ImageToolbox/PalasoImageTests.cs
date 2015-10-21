@@ -13,9 +13,11 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 	{
 		[Test]
 		public void FileName_CreatedWithImageOnly_Null()
-		{
-			var pi = PalasoImage.FromImage(new Bitmap(10, 10));
-			Assert.IsNull(pi.FileName);
+		{ 
+			using (var pi = PalasoImage.FromImage(new Bitmap(10, 10)))
+			{
+				Assert.IsNull(pi.FileName);
+			}
 		}
 
 		/// <summary>
@@ -26,8 +28,10 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 		public void Image_CreatedWithImageOnly_GivesSameImage()
 		{
 			Bitmap bitmap = new Bitmap(10, 10);
-			var pi = new PalasoImage(bitmap);
-			Assert.AreEqual(bitmap, pi.Image);
+			using (var pi = new PalasoImage(bitmap))
+			{
+				Assert.AreEqual(bitmap, pi.Image);
+			}
 		}
 
 		[Test]
@@ -37,8 +41,10 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 			using (var temp = TempFile.CreateAndGetPathButDontMakeTheFile())
 			{
 				bitmap.Save(temp.Path);
-				var pi = PalasoImage.FromFile(temp.Path);
-				Assert.AreEqual(10, pi.Image.Width);
+				using (var pi = PalasoImage.FromFile(temp.Path))
+				{
+					Assert.AreEqual(10, pi.Image.Width);
+				}
 			}
 		}
 
@@ -66,8 +72,10 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 			using (var temp = TempFile.CreateAndGetPathButDontMakeTheFile())
 			{
 				bitmap.Save(temp.Path, ImageFormat.Png);
-				PalasoImage.FromFile(temp.Path);
-				Assert.DoesNotThrow(() => File.Delete(temp.Path));
+				using (PalasoImage.FromFile(temp.Path))
+				{
+					Assert.DoesNotThrow(() => File.Delete(temp.Path));
+				}
 			}
 		}
 
@@ -93,10 +101,12 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 			using (var temp =  TempFile.WithExtension(".png"))
 			{
 				png.Save(temp.Path);
-				var pi = PalasoImage.FromFile(temp.Path);
-				pi.Metadata.CopyrightNotice = "Copyright 2011 me";
-				Assert.DoesNotThrow(() => pi.Save(temp.Path));
-				Assert.DoesNotThrow(() => File.Delete(temp.Path));
+				using (var pi = PalasoImage.FromFile(temp.Path))
+				{
+					pi.Metadata.CopyrightNotice = "Copyright 2011 me";
+					Assert.DoesNotThrow(() => pi.Save(temp.Path));
+					Assert.DoesNotThrow(() => File.Delete(temp.Path));
+				}
 			}
 		}
 
@@ -107,16 +117,20 @@ namespace PalasoUIWindowsForms.Tests.ImageToolbox
 			using (var temp = new TempFile(false))
 			{
 				png.Save(temp.Path);
-				var pi = PalasoImage.FromFile(temp.Path);
-				Assert.IsFalse(pi.MetadataLocked);
+				using (var pi = PalasoImage.FromFile(temp.Path))
+				{
+					Assert.IsFalse(pi.MetadataLocked);
+				}
 			}
 		}
 
 		[Test]
 		public void Locked_NewOne_False()
 		{
-			var pi = new PalasoImage();
-			Assert.IsFalse(pi.MetadataLocked);
+			using (var pi = new PalasoImage())
+			{
+				Assert.IsFalse(pi.MetadataLocked);
+			}
 		}
 
 		//        [Test]
