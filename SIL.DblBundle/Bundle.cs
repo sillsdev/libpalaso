@@ -15,6 +15,8 @@ namespace SIL.DblBundle
 	{
 		public const string kDblBundleExtension = ".zip";
 		public const string kVersificationFileName = "versification.vrs";
+		public const string kLdmlFileName = "ldml.xml";
+		public const string kUnzippedLdmlFileExtension = ".ldml";
 
 		public static string ExtractToTempDirectory(string zipFilePath)
 		{
