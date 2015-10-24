@@ -377,7 +377,6 @@ namespace Palaso.UI.WindowsForms.ImageToolbox
 			if (disposing)
 			{
 				string imageLabel = _image==null? "no-image":"with-image";
-				Debug.WriteLine("Disposing PalasoImage "+imageLabel);
 				if (Image != null)
 				{
 					Image.Dispose();
