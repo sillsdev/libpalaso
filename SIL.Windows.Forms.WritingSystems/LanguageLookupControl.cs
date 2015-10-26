@@ -39,6 +39,11 @@ namespace SIL.Windows.Forms.WritingSystems
 			_model.LoadLanguages();
 		}
 
+		public bool AreLanguagesLoaded
+		{
+			get { return _model.AreLanguagesLoaded; }
+		}
+
 		public bool ShowDesiredLanguageNameField
 		{
 			set { _desiredLanguageDisplayName.Visible = _desiredLanguageLabel.Visible = value; }
@@ -75,6 +80,8 @@ namespace SIL.Windows.Forms.WritingSystems
 			if (DesignMode)
 				return;
 
+			if (!_model.AreLanguagesLoaded)
+				_model.LoadLanguages();
 			if (_desiredLanguageDisplayName.Visible)
 				AdjustDesiredLanguageNameFieldLocations();
 			AdjustCannotFindLanguageLocation();

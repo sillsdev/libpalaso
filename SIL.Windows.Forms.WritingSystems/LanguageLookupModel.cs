@@ -60,6 +60,11 @@ namespace SIL.Windows.Forms.WritingSystems
 			_languageLookup = new LanguageLookup();
 		}
 
+		public bool AreLanguagesLoaded
+		{
+			get { return _languageLookup != null; }
+		}
+
 		public IEnumerable<LanguageInfo> MatchingLanguages
 		{
 			get
