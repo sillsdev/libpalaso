@@ -41,7 +41,7 @@ namespace SIL.WritingSystems
 		public static XNamespace Sil = "urn://www.sil.org/ldml/0.1";
 
 		// SLDR is hosted on two sites.
-#if DEBUG
+#if STAGING_SLDR
 		// Staging site listed here for developmental testing
 		private const string SldrRepository = "http://staging.scriptsource.org/ldml/";
 #else
