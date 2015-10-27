@@ -149,6 +149,7 @@ namespace SIL.WritingSystems
 				if (!ws.IsChanged && File.Exists(writingSystemFilePath))
 					return; // no need to save (better to preserve the modified date)
 				string oldId = ws.Id;
+				ws.Id = ws.LanguageTag;
 				string incomingFileName = GetFileNameFromLanguageTag(oldId);
 				string incomingFilePath = GetFilePathFromLanguageTag(oldId);
 				if (!string.IsNullOrEmpty(incomingFileName))

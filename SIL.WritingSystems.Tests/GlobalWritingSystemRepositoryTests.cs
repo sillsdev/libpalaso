@@ -56,5 +56,18 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+		[Test]
+		public void Set_NewWritingSystem_SetsId()
+		{
+			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			{
+				var repo = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				Assert.That(ws.Id, Is.Null);
+				repo.Set(ws);
+				Assert.That(ws.Id, Is.EqualTo("en-US"));
+			}
+		}
+
 	}
 }
