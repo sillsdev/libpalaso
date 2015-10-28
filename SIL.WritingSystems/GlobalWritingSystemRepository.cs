@@ -72,7 +72,9 @@ namespace SIL.WritingSystems
 
 		protected internal GlobalWritingSystemRepository(string basePath)
 		{
-			_path = CreateGlobalWritingSystemRepositoryDirectory(basePath);
+			_path = CurrentVersionPath(basePath);
+			if (!Directory.Exists(_path))
+				CreateGlobalWritingSystemRepositoryDirectory(_path);
 			_mutex = new Mutex(false, _path.Replace('\\', '_').Replace('/', '_'));
 		}
 
@@ -102,36 +104,31 @@ namespace SIL.WritingSystems
 			return Path.Combine(basePath, LdmlDataMapper.CurrentLdmlVersion.ToString(CultureInfo.InvariantCulture));
 		}
 
-		public static string CreateGlobalWritingSystemRepositoryDirectory(string basePath)
+		public static void CreateGlobalWritingSystemRepositoryDirectory(string path)
 		{
-			string path = CurrentVersionPath(basePath);
-			if (!Directory.Exists(path))
+			DirectoryInfo di;
+
+			// Provides FW on Linux multi-user access. Overrides the system
+			// umask and creates the directory with the permissions "775".
+			// The "fieldworks" group was created outside the app during
+			// configuration of the package which allows group access.
+			using (new FileModeOverride())
 			{
-				DirectoryInfo di;
-
-				// Provides FW on Linux multi-user access. Overrides the system
-				// umask and creates the directory with the permissions "775".
-				// The "fieldworks" group was created outside the app during
-				// configuration of the package which allows group access.
-				using (new FileModeOverride())
-				{
-					di = Directory.CreateDirectory(path);
-				}
-
-				if (!Platform.IsLinux)
-				{
-					// NOTE: GetAccessControl/ModifyAccessRule/SetAccessControl is not implemented in Mono
-					DirectorySecurity ds = di.GetAccessControl();
-					var sid = new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null);
-					AccessRule rule = new FileSystemAccessRule(sid, FileSystemRights.Write | FileSystemRights.ReadAndExecute
-						| FileSystemRights.Modify, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit,
-						PropagationFlags.InheritOnly, AccessControlType.Allow);
-					bool modified;
-					ds.ModifyAccessRule(AccessControlModification.Add, rule, out modified);
-					di.SetAccessControl(ds);
-				}
+				di = Directory.CreateDirectory(path);
 			}
-			return path;
+
+			if (!Platform.IsLinux)
+			{
+				// NOTE: GetAccessControl/ModifyAccessRule/SetAccessControl is not implemented in Mono
+				DirectorySecurity ds = di.GetAccessControl();
+				var sid = new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null);
+				AccessRule rule = new FileSystemAccessRule(sid, FileSystemRights.Write | FileSystemRights.ReadAndExecute
+					| FileSystemRights.Modify, InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit,
+					PropagationFlags.InheritOnly, AccessControlType.Allow);
+				bool modified;
+				ds.ModifyAccessRule(AccessControlModification.Add, rule, out modified);
+				di.SetAccessControl(ds);
+			}
 		}
 
 		public string PathToWritingSystems

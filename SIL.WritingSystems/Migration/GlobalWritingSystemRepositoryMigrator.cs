@@ -67,27 +67,26 @@ namespace SIL.WritingSystems.Migration
 				}
 			}
 
-			// 3) Harvest ldml files from %ApplicationData% and the Flex store then migrate
-			bool haveLdmlToCopy = false;
-			string oldPalasoPath = LdmlPathPre0;
-			if (Directory.Exists(oldPalasoPath))
+			// 3) Harvest ldml files from %ApplicationData%, then migrate
+			string oldPath = LdmlPathPre0;
+			if (Directory.Exists(oldPath))
 			{
 				try
 				{
-					CopyLdmlFromFolder(oldPalasoPath);
-					haveLdmlToCopy = true;
+					CopyLdmlFromFolder(oldPath);
 				}
 				catch (IOException)
 				{
+					return;
 				}
-			}
-
-			if (haveLdmlToCopy)
 				base.Migrate();
+			}
 		}
 
 		private void CopyLdmlFromFolder(string sourcePath)
 		{
+			if (!Directory.Exists(SourcePath))
+				GlobalWritingSystemRepository.CreateGlobalWritingSystemRepositoryDirectory(SourcePath);
 			DirectoryUtilities.CopyDirectoryWithException(sourcePath, SourcePath);
 		}
 
@@ -96,10 +95,7 @@ namespace SIL.WritingSystems.Migration
 		///</summary>
 		public static string LdmlPathPre0
 		{
-			get
-			{
-				return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL", "WritingSystemRepository");
-			}
+			get { return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL", "WritingSystemRepository"); }
 		}
 	}
 }
