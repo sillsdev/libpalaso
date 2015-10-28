@@ -69,13 +69,7 @@ namespace SIL.WritingSystems.Migration
 
 			// 3) Harvest ldml files from %ApplicationData% and the Flex store then migrate
 			bool haveLdmlToCopy = false;
-			string oldFlexPath = FlexLdmlPathPre0;
-			if (Directory.Exists(oldFlexPath))
-			{
-				CopyLdmlFromFolder(oldFlexPath);
-				haveLdmlToCopy = true;
-			}
-			string oldPalasoPath = PalasoLdmlPathPre0;
+			string oldPalasoPath = LdmlPathPre0;
 			if (Directory.Exists(oldPalasoPath))
 			{
 				try
@@ -98,30 +92,13 @@ namespace SIL.WritingSystems.Migration
 		}
 
 		///<summary>
-		/// The path to old flex ldml files.
-		///</summary>
-		public static string FlexLdmlPathPre0
-		{
-			get {
-				string result = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL");
-				result = Path.Combine(result, "WritingSystemRepository");
-				if (!Directory.Exists(result))
-					Directory.CreateDirectory(result);
-				return result;
-			}
-		}
-
-		///<summary>
 		/// The path to old palaso ldml files.
 		///</summary>
-		public static string PalasoLdmlPathPre0
+		public static string LdmlPathPre0
 		{
-			get {
-				string result = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL");
-				result = Path.Combine(result, "WritingSystemRepository");
-				if (!Directory.Exists(result))
-					Directory.CreateDirectory(result);
-				return result;
+			get
+			{
+				return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL", "WritingSystemRepository");
 			}
 		}
 	}
