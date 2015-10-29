@@ -28,6 +28,18 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private string _originalFilePath;
 
+		
+		/// <summary>
+		/// If false, you get a debug.Fail(). If true, you get a throw.
+		/// </summary>
+		public static bool ThrowOnFailureToDisposeAnyPalasoImage = false;
+
+		/// <summary>
+		/// If the object isn't disposed, the resulting message will give this label. 
+		/// This can help trace where it was created.
+		/// </summary>
+		public string LabelForDebugging = "unlabeled";
+		
 		/// <summary>
 		/// Generally, when we load an image, we can happily forget where it came from, because
 		/// the nature of the palaso image system is to deliver images, not file paths, to documents
@@ -68,6 +80,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 
 		private Image _image;
+
 		public Image Image
 		{
 			get
@@ -137,23 +150,34 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private void SaveImageSafely(string path, ImageFormat format)
 		{
-			using (var image = new Bitmap(Image))
-			//nb: there are cases (notibly http://jira.palaso.org/issues/browse/WS-34711, after cropping a jpeg) where we get out of memory if we are not operating on a copy
+			//related to preserving pixelformat (bit depth):
+			//	http://stackoverflow.com/questions/7276212/reading-preserving-a-pixelformat-format48bpprgb-png-bitmap-in-net
+			if (File.Exists(path))
 			{
-				if (File.Exists(path))
+				try
 				{
-					try
-					{
-						File.Delete(path);
-					}
-					catch (System.IO.IOException error)
-					{
-						throw new ApplicationException("The program could not replace the image " + path +
-													   ", perhaps because this program or another locked it. Quit and try again. Then restart your computer and try again."+System.Environment.NewLine+error.Message);
-					}
+					File.Delete(path);
 				}
-
-				image.Save(path, format);
+				catch (System.IO.IOException error)
+				{
+					throw new ApplicationException("The program could not replace the image " + path +
+												   ", perhaps because this program or another locked it. Quit and try again. Then restart your computer and try again." + System.Environment.NewLine + error.Message);
+				}
+			}
+			if (format.Equals(ImageFormat.Png) || format.Equals(ImageFormat.Bmp))
+			{
+				//The JPEG indirect saving below isn't needed for pngs and bmps, and
+				// keeping it simple here prevents us from losing the bit depth of the original
+				//reported in https://silbloom.myjetbrains.com/youtrack/issue/BL-2841
+				Image.Save(path, format);
+			}
+			else
+			{
+				//nb: there are cases (notibly http://jira.palaso.org/issues/browse/WS-34711, after cropping a jpeg) where we get out of memory if we are not operating on a copy
+				using (var image = new Bitmap(Image))
+				{
+					image.Save(path, format);
+				}
 			}
 		}
 
@@ -218,8 +242,8 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private static Image LoadImageWithoutLocking(string path, out string tempPath)
 		{
-			/*			1) Naïve approach:  locks until the image is dispose of some day, which is counter-intuitive to me
-							return Image.FromFile(path);
+			/*          1) Naïve approach:  locks until the image is dispose of some day, which is counter-intuitive to me
+							  return Image.FromFile(path);
 
 						2) Contrary to the docs on Image.FromStream ("You must keep the stream open for the lifetime of the Image."),
 							MSDN http://support.microsoft.com/kb/309482 suggests the following work-around
@@ -232,15 +256,22 @@ namespace SIL.Windows.Forms.ImageToolbox
 			//But note, it's not clear if (2) will very occasionally die with "out of memory": http://jira.palaso.org/issues/browse/BL-199
 			// Note: if the FileStream is closed, attempts to modify the image result in an "out of memory" error.
 
-			//3) Use a temp file.
+			//3) Use a temp file, which remains locked, but no one notices because the original file is unlocked.
 
 			//if(Path.GetExtension(path)==".jpg")
 			{
 				var leakMe = TempFile.WithExtension(Path.GetExtension(path));
 				File.Delete(leakMe.Path);
 				File.Copy(path, leakMe.Path);
+
+				//we output the tempath so that the caller can clean it up later
 				tempPath = leakMe.Path;
-				return Image.FromFile(leakMe.Path); ;
+
+				//Note, Image.FromFile(some 8 bit or 48 bit png) will always give you a 32 bit image.
+				//See http://stackoverflow.com/questions/7276212/reading-preserving-a-pixelformat-format48bpprgb-png-bitmap-in-net
+				//There is a second argument here, useEmbeddedColorManagement, that is said to preserve it if set to true, but it doesn't work.
+
+				return Image.FromFile(leakMe.Path, true);
 			}
 		}
 
@@ -346,7 +377,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 			if (disposing)
 			{
 				string imageLabel = _image==null? "no-image":"with-image";
-				Debug.WriteLine("Disposing PalasoImage "+imageLabel);
 				if (Image != null)
 				{
 					Image.Dispose();
@@ -374,10 +404,26 @@ namespace SIL.Windows.Forms.ImageToolbox
 				!Disposed && LicenseManager.UsageMode != LicenseUsageMode.Designtime)//don't know if this will work here
 			{
 				string imageLabel = _image == null ? "no-image" : "with-image";
-				Debug.Assert(Disposed, "PalasoImage wasn't disposed of properly: " + imageLabel);
+
+				if (!Disposed)
+				{
+					var message = "PalasoImage wasn't disposed of properly: " + imageLabel + ". LabelForDebugging=" + LabelForDebugging;
+					if (ThrowOnFailureToDisposeAnyPalasoImage)
+					{
+						throw new PalsoImageNotDisposed(message);
+					}
+					else
+					{
+						Debug.Fail(message);
+					}
+				}
 			}
 		}
 	}
-
-
+	public class PalsoImageNotDisposed : ApplicationException
+	{
+		public PalsoImageNotDisposed(string message) : base(message)
+		{
+		}
+	}
 }

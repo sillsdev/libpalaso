@@ -275,7 +275,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-	<None Include="packages.config" />
+    <None Include="packages.config" />
     <None Include="app.config" />
     <None Include="Progress\LogBoxSettings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -644,6 +644,12 @@
     <Compile Include="Widgets\HeaderLabel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Widgets\HtmlLabel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Widgets\HtmlLabel.designer.cs">
+      <DependentUpon>HtmlLabel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Widgets\Prompt.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -847,6 +853,9 @@
     <EmbeddedResource Include="Widgets\ControlListBox.resx">
       <DependentUpon>ControlListBox.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Widgets\HtmlLabel.resx">
+      <DependentUpon>HtmlLabel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Widgets\StdTextInputBox.resx">
       <DependentUpon>StdTextInputBox.cs</DependentUpon>

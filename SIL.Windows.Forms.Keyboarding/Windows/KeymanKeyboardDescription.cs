@@ -77,6 +77,12 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		}
 
 		internal bool IsKeyman6 { get; set; }
+
+		/// <summary>
+		/// Indicates whether we should pass NFC or NFD data to the keyboard. This implementation
+		/// always returns <c>false</c>.
+		/// </summary>
+		public override bool UseNfcContext { get { return false; } }
 	
 		/// <summary>
 		/// If the new keyboard is the default windows keyboard then we need to deactivate the Keyman 

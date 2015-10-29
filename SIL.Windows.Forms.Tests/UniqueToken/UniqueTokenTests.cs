@@ -71,8 +71,11 @@ namespace SIL.Windows.Forms.Tests.UniqueToken
 			bool tokenAcquired = global::SIL.Windows.Forms.UniqueToken.UniqueToken.AcquireToken(uniqueIdentifier, null, 0);
 			Assert.IsTrue(tokenAcquired);
 
-			tokenAcquired = global::SIL.Windows.Forms.UniqueToken.UniqueToken.AcquireToken(uniqueIdentifier, null, 0);
-			Assert.IsFalse(tokenAcquired);
+			using (new SIL.Reporting.ErrorReport.NonFatalErrorReportExpected())
+			{
+				tokenAcquired = SIL.Windows.Forms.UniqueToken.UniqueToken.AcquireToken(uniqueIdentifier, null, 0);
+				Assert.IsFalse(tokenAcquired);
+			}
 
 			global::SIL.Windows.Forms.UniqueToken.UniqueToken.ReleaseToken();
 

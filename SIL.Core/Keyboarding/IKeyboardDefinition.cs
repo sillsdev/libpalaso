@@ -62,6 +62,12 @@ namespace SIL.Keyboarding
 		string Layout { get; }
 
 		/// <summary>
+		/// Indicates whether we should pass NFC or NFD data to the keyboard. In general this
+		/// will be NFC, but (most?) keyman keyboards need NFD (see LT-16637)
+		/// </summary>
+		bool UseNfcContext { get; }
+
+		/// <summary>
 		/// Answer true if the keyboard is available to use on this system (that is, it can be activated).
 		/// </summary>
 		bool IsAvailable { get; }

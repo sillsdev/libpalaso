@@ -4,6 +4,7 @@
 #if !__MonoCS__
 using System;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Win32;
 using SIL.Keyboarding;
 
 namespace SIL.Windows.Forms.Keyboarding.Windows
@@ -23,6 +24,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 	internal class WinKeyboardDescription : KeyboardDescription
 	{
 		private string _localizedName;
+		private readonly bool _useNfcContext;
 
 		/// <summary>
 		/// Initializes a new instance of the
@@ -36,7 +38,30 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			_localizedName = localizedName;
 			InputProcessorProfile = profile;
 			ConversionMode = (int) (Win32.IME_CMODE.NATIVE | Win32.IME_CMODE.SYMBOL);
+			_useNfcContext = !IsKeymanKeyboard(profile);
 		}
+
+		private static bool IsKeymanKeyboard(TfInputProcessorProfile profile)
+		{
+			if (profile.ProfileType != TfProfileType.InputProcessor)
+				return false;
+
+			// check the default key value for profile.ClsId.
+			var subKey = string.Format(@"CLSID\{{{0}}}", profile.ClsId);
+			using (RegistryKey key = Registry.ClassesRoot.OpenSubKey(subKey))
+			{
+				if (key == null)
+					return false;
+				var value = key.GetValue(null) as string;
+				return value != null && value.Contains("Keyman");
+			}
+		}
+
+		/// <summary>
+		/// Indicates whether we should pass NFC or NFD data to the keyboard. This implementation
+		/// returns <c>false</c> for Keyman keyboards and <c>true</c> for other keyboards.
+		/// </summary>
+		public override bool UseNfcContext { get { return _useNfcContext; } }
 
 		/// <summary>
 		/// Gets a localized human-readable name of the input language.
