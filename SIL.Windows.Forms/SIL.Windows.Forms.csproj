@@ -647,7 +647,7 @@
     <Compile Include="Widgets\HtmlLabel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Widgets\HtmlLabel.designer.cs">
+    <Compile Include="Widgets\HtmlLabel.Designer.cs">
       <DependentUpon>HtmlLabel.cs</DependentUpon>
     </Compile>
     <Compile Include="Widgets\Prompt.cs">
