@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
-using System.Threading;
 using SIL.IO;
 using SIL.PlatformUtilities;
+using SIL.Threading;
 using SIL.WritingSystems.Migration;
 
 namespace SIL.WritingSystems
@@ -57,25 +58,69 @@ namespace SIL.WritingSystems
 	///<summary>
 	/// A system wide writing system repository.
 	///</summary>
-	public abstract class GlobalWritingSystemRepository<T> : IWritingSystemRepository<T>, IDisposable where T : WritingSystemDefinition
+	public abstract class GlobalWritingSystemRepository<T> : WritingSystemRepositoryBase<T>, IDisposable where T : WritingSystemDefinition
 	{
 		private const string Extension = ".ldml";
 
-		public event EventHandler<WritingSystemIdChangedEventArgs> WritingSystemIdChanged;
-		public event EventHandler<WritingSystemDeletedEventArgs> WritingSystemDeleted;
-		public event EventHandler<WritingSystemConflatedEventArgs> WritingSystemConflated;
-
 		private readonly string _path;
-		/// <summary>Reference to a mutex. The owner of the mutex is the SingletonContainer</summary>
-		private readonly Mutex _mutex;
-		private IWritingSystemFactory<T> _writingSystemFactory;
+		private readonly GlobalMutex _mutex;
+		private readonly Dictionary<string, DateTime> _lastModifiedTimes; 
 
 		protected internal GlobalWritingSystemRepository(string basePath)
 		{
+			_lastModifiedTimes = new Dictionary<string, DateTime>();
 			_path = CurrentVersionPath(basePath);
 			if (!Directory.Exists(_path))
 				CreateGlobalWritingSystemRepositoryDirectory(_path);
-			_mutex = new Mutex(false, _path.Replace('\\', '_').Replace('/', '_'));
+			_mutex = new GlobalMutex(_path.Replace('\\', '_').Replace('/', '_'));
+			_mutex.Initialize();
+		}
+
+		private void UpdateDefinitions()
+		{
+			var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
+			var removedIds = new HashSet<string>(WritingSystems.Keys);
+			foreach (string file in Directory.GetFiles(_path, "*.ldml"))
+			{
+				string id = Path.GetFileNameWithoutExtension(file);
+				Debug.Assert(id != null);
+				T ws;
+				if (WritingSystems.TryGetValue(id, out ws))
+				{
+					// existing writing system
+
+					// preserve this repo's changes
+					if (!ws.IsChanged)
+					{
+						DateTime modified = File.GetLastWriteTimeUtc(file);
+						if (_lastModifiedTimes[id] != modified)
+						{
+							// modified writing system
+							ldmlDataMapper.Read(file, ws);
+							ws.AcceptChanges();
+							_lastModifiedTimes[id] = modified;
+						}
+					}
+					removedIds.Remove(id);
+				}
+				else
+				{
+					// new writing system
+					ws = WritingSystemFactory.Create();
+					ldmlDataMapper.Read(file, ws);
+					ws.Id = ws.LanguageTag;
+					ws.AcceptChanges();
+					WritingSystems[id] = ws;
+					_lastModifiedTimes[id] = File.GetLastWriteTimeUtc(file);
+				}
+			}
+
+			foreach (string id in removedIds)
+			{
+				// preserve this repo's changes
+				if (!WritingSystems[id].IsChanged)
+					base.Remove(id);
+			}
 		}
 
 		///<summary>
@@ -141,142 +186,60 @@ namespace SIL.WritingSystems
 		/// an already-existing writing system.  Set should be called when there is a change
 		/// that updates the IETF language tag information.
 		/// </summary>
-		public void Set(T ws)
+		public override void Set(T ws)
 		{
-			_mutex.WaitOne();
-			MemoryStream oldData = null;
-			try
+			using (_mutex.Lock())
 			{
-				string writingSystemFileName = GetFileNameFromLanguageTag(ws.LanguageTag);
-				string writingSystemFilePath = GetFilePathFromLanguageTag(ws.LanguageTag);
-				if (!ws.IsChanged && File.Exists(writingSystemFilePath))
-					return; // no need to save (better to preserve the modified date)
-				string oldId = ws.Id;
-				ws.Id = ws.LanguageTag;
-				string incomingFileName = GetFileNameFromLanguageTag(oldId);
-				string incomingFilePath = GetFilePathFromLanguageTag(oldId);
-				if (!string.IsNullOrEmpty(incomingFileName))
-				{
-					if (File.Exists(incomingFilePath))
-					{
-						// load old data to preserve stuff in LDML that we don't use, but don't throw up an error if it fails
-						try
-						{
-							oldData = new MemoryStream(File.ReadAllBytes(incomingFilePath), false);
-						}
-						catch
-						{
-						}
-						if (writingSystemFileName != incomingFileName)
-						{
-							File.Delete(incomingFilePath);
-							// JohnT: Added this without fully understanding, to get things to compile. I don't fully
-							// know when this event should be raised, nor am I sure I am building the argument correctly.
-							// However, I don't think anything (at least in our code) actually uses it.
-							if (WritingSystemIdChanged != null)
-								WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.LanguageTag));
-						}
-					}
-				}
-				var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
-				try
-				{
-					// Provides FW on Linux multi-user access. Overrides the system
-					// umask and creates the files with the permissions "775".
-					// The "fieldworks" group was created outside the app during
-					// configuration of the package which allows group access.
-					using (new FileModeOverride())
-					{
-						ldmlDataMapper.Write(writingSystemFilePath, ws, oldData);
-					}
-				}
-				catch (UnauthorizedAccessException)
-				{
-					// If we can't save the changes, too bad. Inability to save locally is typically caught
-					// when we go to open the modify dialog. If we can't make the global store consistent,
-					// as we well may not be able to in a client-server mode, too bad.
-				}
+				UpdateDefinitions();
 
-				ws.AcceptChanges();
-			}
-			finally
-			{
-				if (oldData != null)
-					oldData.Dispose();
-				_mutex.ReleaseMutex();
-			}
-		}
+				string oldStoreId = ws.Id;
+				base.Set(ws);
 
-		/// <summary>
-		/// Returns true if a call to Set should succeed, false if a call to Set would throw
-		/// </summary>
-		public bool CanSet(T ws)
-		{
-			return true;
+				//Renaming the file here is a bit ugly as the content has not yet been updated. Thus there
+				//may be a mismatch between the filename and the contained rfc5646 tag. Doing it here however
+				//helps us avoid having to deal with situations where a writing system id is changed to be
+				//identical with the old id of another writing sytsem. This could otherwise lead to dataloss.
+				//The inconsistency is resolved on Save()
+				if (oldStoreId != ws.Id && File.Exists(GetFilePathFromLanguageTag(oldStoreId)))
+					File.Move(GetFilePathFromLanguageTag(oldStoreId), GetFilePathFromLanguageTag(ws.Id));
+			}
 		}
 
 		/// <summary>
 		/// Gets the writing system object for the given Store ID
 		/// </summary>
-		public T Get(string id)
+		public override T Get(string id)
 		{
-			_mutex.WaitOne();
-			try
+			using (_mutex.Lock())
 			{
-				string filePath = GetFilePathFromLanguageTag(id);
-				if (!File.Exists(filePath))
-					throw new ArgumentOutOfRangeException("Missing file for writing system code: " + id);
-				return GetFromFilePath(filePath);
+				UpdateDefinitions();
+				return base.Get(id);
 			}
-			finally
-			{
-				_mutex.ReleaseMutex();
-			}
-		}
-
-		/// <summary>
-		/// If the given writing system were passed to Set, this function returns the
-		/// new StoreID that would be assigned.
-		/// </summary>
-		public string GetNewIdWhenSet(T ws)
-		{
-			if (ws == null)
-				throw new ArgumentNullException("ws");
-
-			return ws.LanguageTag;
 		}
 
 		/// <summary>
 		/// Returns true if a writing system with the given Store ID exists in the store
 		/// </summary>
-		public bool Contains(string id)
+		public override bool Contains(string id)
 		{
-			_mutex.WaitOne();
-			try
+			using (_mutex.Lock())
 			{
-				return File.Exists(GetFilePathFromLanguageTag(id));
-			}
-			finally
-			{
-				_mutex.ReleaseMutex();
+				UpdateDefinitions();
+				return base.Contains(id);
 			}
 		}
 
 		/// <summary>
 		/// Gives the total number of writing systems in the store
 		/// </summary>
-		public int Count
+		public override int Count
 		{
 			get
 			{
-				_mutex.WaitOne();
-				try
+				using (_mutex.Lock())
 				{
-					return Directory.GetFiles(_path, "*.ldml").Length;
-				}
-				finally
-				{
-					_mutex.ReleaseMutex();
+					UpdateDefinitions();
+					return base.Count;
 				}
 			}
 		}
@@ -286,54 +249,38 @@ namespace SIL.WritingSystems
 		/// </summary>
 		/// <param name="wsToConflate"></param>
 		/// <param name="wsToConflateWith"></param>
-		public void Conflate(string wsToConflate, string wsToConflateWith)
+		public override void Conflate(string wsToConflate, string wsToConflateWith)
 		{
-			_mutex.WaitOne();
-			try
+			using (_mutex.Lock())
 			{
-				File.Delete(GetFilePathFromLanguageTag(wsToConflate));
-				if (WritingSystemConflated != null)
-					WritingSystemConflated(this, new WritingSystemConflatedEventArgs(wsToConflate, wsToConflateWith));
-			}
-			finally
-			{
-				_mutex.ReleaseMutex();
+				UpdateDefinitions();
+				base.Conflate(wsToConflate, wsToConflateWith);
 			}
 		}
 
 		/// <summary>
 		/// Removes the writing system with the specified Store ID from the store.
 		/// </summary>
-		public void Remove(string id)
+		public override void Remove(string id)
 		{
-			_mutex.WaitOne();
-			try
+			using (_mutex.Lock())
 			{
-				File.Delete(GetFilePathFromLanguageTag(id));
-				if (WritingSystemDeleted != null)
-					WritingSystemDeleted(this, new WritingSystemDeletedEventArgs(id));
-			}
-			finally
-			{
-				_mutex.ReleaseMutex();
+				UpdateDefinitions();
+				base.Remove(id);
 			}
 		}
 
 		/// <summary>
 		/// Returns a list of all writing system definitions in the store.
 		/// </summary>
-		public IEnumerable<T> AllWritingSystems
+		public override IEnumerable<T> AllWritingSystems
 		{
 			get
 			{
-				_mutex.WaitOne();
-				try
+				using (_mutex.Lock())
 				{
-					return Directory.GetFiles(_path, "*.ldml").Select(GetFromFilePath).ToArray();
-				}
-				finally
-				{
-					_mutex.ReleaseMutex();
+					UpdateDefinitions();
+					return base.AllWritingSystems;
 				}
 			}
 		}
@@ -343,7 +290,7 @@ namespace SIL.WritingSystems
 		/// current change log, a writing system ID has changed to something else...call WritingSystemIdHasChangedTo
 		/// to find out what.
 		/// </summary>
-		public bool WritingSystemIdHasChanged(string id)
+		public override bool WritingSystemIdHasChanged(string id)
 		{
 			throw new NotImplementedException();
 		}
@@ -352,81 +299,146 @@ namespace SIL.WritingSystems
 		/// This is used by the orphan finder, which we don't use (yet). It tells what, typically in the scope of some
 		/// current change log, a writing system ID has changed to.
 		/// </summary>
-		public string WritingSystemIdHasChangedTo(string id)
+		public override string WritingSystemIdHasChangedTo(string id)
 		{
 			throw new NotImplementedException();
+		}
+
+		protected override void RemoveDefinition(T ws)
+		{
+			string file = GetFilePathFromLanguageTag(ws.LanguageTag);
+			if (File.Exists(file))
+				File.Delete(file);
+			base.RemoveDefinition(ws);
+		}
+
+		private void SaveDefinition(T ws)
+		{
+			base.Set(ws);
+
+			string writingSystemFilePath = GetFilePathFromLanguageTag(ws.LanguageTag);
+			if (!File.Exists(writingSystemFilePath) && !string.IsNullOrEmpty(ws.Template))
+			{
+				// this is a new writing system that was generated from a template, so copy the template over before saving
+				File.Copy(ws.Template, writingSystemFilePath);
+				ws.Template = null;
+			}
+
+			if (!ws.IsChanged && File.Exists(writingSystemFilePath))
+				return; // no need to save (better to preserve the modified date)
+
+			ws.DateModified = DateTime.UtcNow;
+			MemoryStream oldData = null;
+			if (File.Exists(writingSystemFilePath))
+			{
+				// load old data to preserve stuff in LDML that we don't use, but don't throw up an error if it fails
+				try
+				{
+					oldData = new MemoryStream(File.ReadAllBytes(writingSystemFilePath), false);
+				}
+				catch {}
+				// What to do?  Assume that the UI has already checked for existing, asked, and allowed the overwrite.
+				File.Delete(writingSystemFilePath); //!!! Should this be move to trash?
+			}
+			var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
+			try
+			{
+				// Provides FW on Linux multi-user access. Overrides the system
+				// umask and creates the files with the permissions "775".
+				// The "fieldworks" group was created outside the app during
+				// configuration of the package which allows group access.
+				using (new FileModeOverride())
+				{
+					ldmlDataMapper.Write(writingSystemFilePath, ws, oldData);
+				}
+				_lastModifiedTimes[ws.Id] = File.GetLastWriteTimeUtc(writingSystemFilePath);
+			}
+			catch (UnauthorizedAccessException)
+			{
+				// If we can't save the changes, too bad. Inability to save locally is typically caught
+				// when we go to open the modify dialog. If we can't make the global store consistent,
+				// as we well may not be able to in a client-server mode, too bad.
+			}
+			ws.AcceptChanges();
 		}
 
 		/// <summary>
 		/// Writes the store to a persistable medium, if applicable.
 		/// </summary>
-		public void Save()
+		public override void Save()
 		{
-		}
-
-		public IWritingSystemFactory<T> WritingSystemFactory
-		{
-			get
+			using (_mutex.Lock())
 			{
-				if (_writingSystemFactory == null)
-					_writingSystemFactory = CreateWritingSystemFactory();
-				return _writingSystemFactory;
+				UpdateDefinitions();
+
+				//delete anything we're going to delete first, to prevent losing
+				//a WS we want by having it deleted by an old WS we don't want
+				//(but which has the same identifier)
+				foreach (string id in AllWritingSystems.Where(ws => ws.MarkedForDeletion).Select(ws => ws.Id).ToArray())
+					base.Remove(id);
+
+				// make a copy and then go through that list - SaveDefinition calls Set which
+				// may delete and then insert the same writing system - which would change WritingSystemDefinitions
+				// and not be allowed in a foreach loop
+				foreach (T ws in AllWritingSystems.Where(CanSet).ToArray())
+					SaveDefinition(ws);
 			}
 		}
-
-		protected abstract IWritingSystemFactory<T> CreateWritingSystemFactory();
 
 		/// <summary>
 		/// Since the current implementation of Save does nothing, it's always possible.
 		/// </summary>
-		public bool CanSave(T ws)
+		public override bool CanSave(T ws)
 		{
-			string filePath = GetFilePathFromLanguageTag(ws.Id);
-			if (File.Exists(filePath))
+			using (_mutex.Lock())
 			{
-				try
+				string filePath = GetFilePathFromLanguageTag(ws.Id);
+				if (File.Exists(filePath))
 				{
-					using (FileStream stream = File.Open(filePath, FileMode.Open))
-						stream.Close();
-					// don't really want to change anything
+					try
+					{
+						using (FileStream stream = File.Open(filePath, FileMode.Open))
+							stream.Close();
+						// don't really want to change anything
+					}
+					catch (UnauthorizedAccessException)
+					{
+						return false;
+					}
 				}
-				catch (UnauthorizedAccessException)
+				else if (Directory.Exists(PathToWritingSystems))
 				{
-					return false;
+					try
+					{
+						// See whether we're allowed to create the file (but if so, get rid of it).
+						// Pathologically we might have create but not delete permission...if so,
+						// we'll create an empty file and report we can't save. I don't see how to
+						// do better.
+						using (FileStream stream = File.Create(filePath))
+							stream.Close();
+						File.Delete(filePath);
+					}
+					catch (UnauthorizedAccessException)
+					{
+						return false;
+					}
 				}
+				else
+				{
+					try
+					{
+						Directory.CreateDirectory(PathToWritingSystems);
+						// Don't try to clean it up again. This is a vanishingly rare case,
+						// I don't think it's even possible to create a writing system store without
+						// the directory existing.
+					}
+					catch (UnauthorizedAccessException)
+					{
+						return false;
+					}
+				}
+				return true;
 			}
-			else if (Directory.Exists(PathToWritingSystems))
-			{
-				try
-				{
-					// See whether we're allowed to create the file (but if so, get rid of it).
-					// Pathologically we might have create but not delete permission...if so,
-					// we'll create an empty file and report we can't save. I don't see how to
-					// do better.
-					using (FileStream stream = File.Create(filePath))
-						stream.Close();
-					File.Delete(filePath);
-				}
-				catch (UnauthorizedAccessException)
-				{
-					return false;
-				}
-			}
-			else
-			{
-				try
-				{
-					Directory.CreateDirectory(PathToWritingSystems);
-					// Don't try to clean it up again. This is a vanishingly rare case,
-					// I don't think it's even possible to create a writing system store without
-					// the directory existing.
-				}
-				catch (UnauthorizedAccessException)
-				{
-					return false;
-				}
-			}
-			return true;
 		}
 
 		/// <summary>
@@ -435,88 +447,12 @@ namespace SIL.WritingSystems
 		/// <param name="id">The identifier.</param>
 		/// <param name="ws">The writing system.</param>
 		/// <returns></returns>
-		public bool TryGet(string id, out T ws)
+		public override bool TryGet(string id, out T ws)
 		{
-			_mutex.WaitOne();
-			try
+			using (_mutex.Lock())
 			{
-				if (Contains(id))
-				{
-					ws = Get(id);
-					return true;
-				}
-
-				ws = null;
-				return false;
-			}
-			finally
-			{
-				_mutex.ReleaseMutex();
-			}
-		}
-
-		bool IWritingSystemRepository.CanSet(WritingSystemDefinition ws)
-		{
-			return CanSet((T) ws);
-		}
-
-		void IWritingSystemRepository.Set(WritingSystemDefinition ws)
-		{
-			Set((T) ws);
-		}
-
-		WritingSystemDefinition IWritingSystemRepository.Get(string id)
-		{
-			return Get(id);
-		}
-
-		bool IWritingSystemRepository.TryGet(string id, out WritingSystemDefinition ws)
-		{
-			T result;
-			if (TryGet(id, out result))
-			{
-				ws = result;
-				return true;
-			}
-
-			ws = null;
-			return false;
-		}
-
-		string IWritingSystemRepository.GetNewIdWhenSet(WritingSystemDefinition ws)
-		{
-			return GetNewIdWhenSet((T) ws);
-		}
-
-		bool IWritingSystemRepository.CanSave(WritingSystemDefinition ws)
-		{
-			return CanSave((T) ws);
-		}
-
-		IEnumerable<WritingSystemDefinition> IWritingSystemRepository.AllWritingSystems
-		{
-			get { return AllWritingSystems; }
-		}
-
-		IWritingSystemFactory IWritingSystemRepository.WritingSystemFactory
-		{
-			get { return WritingSystemFactory; }
-		}
-
-		private T GetFromFilePath(string filePath)
-		{
-			try
-			{
-				T ws = WritingSystemFactory.Create();
-				var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
-				ldmlDataMapper.Read(filePath, ws);
-				ws.Id = ws.LanguageTag;
-				ws.AcceptChanges();
-				return ws;
-			}
-			catch (Exception e)
-			{
-				throw new ArgumentException("GlobalWritingSystemRepository was unable to load the LDML file " + filePath, "filePath", e);
+				UpdateDefinitions();
+				return WritingSystems.TryGetValue(id, out ws);
 			}
 		}
 
@@ -563,7 +499,7 @@ namespace SIL.WritingSystems
 
 		protected virtual void Dispose(bool disposing)
 		{
-			System.Diagnostics.Debug.WriteLineIf(!disposing, "****** Missing Dispose() call for " + GetType().Name + ". ****** ");
+			Debug.WriteLineIf(!disposing, "****** Missing Dispose() call for " + GetType().Name + ". ****** ");
 			// Must not be run more than once.
 			if (IsDisposed)
 				return;

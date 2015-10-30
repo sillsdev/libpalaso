@@ -256,6 +256,7 @@
     <Compile Include="Text\ApproximateMatcherTests.cs" />
     <Compile Include="Text\LanguageFormTest.cs" />
     <Compile Include="Text\MultiTextBase.Tests.cs" />
+    <Compile Include="Threading\GlobalMutexTests.cs" />
     <Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UDiskDeviceTests.cs" />
     <Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UDisksTests.cs" />
     <Compile Include="UsbDrive\UsbDeviceInfoTests.cs" />

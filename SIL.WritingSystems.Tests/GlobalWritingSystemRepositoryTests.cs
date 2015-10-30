@@ -1,23 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using SIL.TestUtilities;
-using SIL.WritingSystems.Migration;
 
 namespace SIL.WritingSystems.Tests
 {
 	[TestFixture]
 	public class GlobalWritingSystemRepositoryTests
 	{
-		private void OnMigration(int toVersion, IEnumerable<LdmlMigrationInfo> migrationInfo)
-		{
-		}
-
 		[Test]
 		[Platform(Exclude = "Linux", Reason="Test tries to create directory under /var/lib where user doesn't have write permissions by default")]
 		public void DefaultInitializer_HasCorrectPath()
 		{
-			GlobalWritingSystemRepository repo = GlobalWritingSystemRepository.Initialize(OnMigration);
+			GlobalWritingSystemRepository repo = GlobalWritingSystemRepository.Initialize();
 			string expectedPath = string.Format(".*SIL.WritingSystemRepository.{0}", 
 				LdmlDataMapper.CurrentLdmlVersion);
 			Assert.That(repo.PathToWritingSystems, Is.StringMatching(expectedPath));
@@ -69,5 +65,218 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+		[Test]
+		public void Save_NewWritingSystem_CreatesLdmlFile()
+		{
+			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			{
+				var repo = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo.Set(ws);
+				repo.Save();
+				Assert.That(File.Exists(repo.GetFilePathFromLanguageTag("en-US")), Is.True);
+			}
+		}
+
+		[Test]
+		public void Save_DeletedWritingSystem_RemovesLdmlFile()
+		{
+			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			{
+				var repo = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo.Set(ws);
+				repo.Save();
+				Assert.That(File.Exists(repo.GetFilePathFromLanguageTag("en-US")), Is.True);
+
+				ws.MarkedForDeletion = true;
+				repo.Save();
+				Assert.That(File.Exists(repo.GetFilePathFromLanguageTag("en-US")), Is.False);
+			}
+		}
+
+		[Test]
+		public void Save_UpdatedWritingSystem_UpdatesLdmlFile()
+		{
+			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			{
+				var repo = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo.Set(ws);
+				repo.Save();
+				DateTime modified = File.GetLastWriteTimeUtc(repo.GetFilePathFromLanguageTag("en-US"));
+				ws.WindowsLcid = "test";
+				repo.Save();
+				Assert.That(File.GetLastWriteTimeUtc(repo.GetFilePathFromLanguageTag("en-US")), Is.Not.EqualTo(modified));
+			}
+		}
+
+		[Test]
+		public void Get_LdmlAddedByAnotherRepo_ReturnsDefinition()
+		{
+			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			{
+				var repo1 = new GlobalWritingSystemRepository(e.Path);
+				var repo2 = new GlobalWritingSystemRepository(e.Path);
+				Assert.That(() => repo2.Get("en-US"), Throws.TypeOf<ArgumentOutOfRangeException>());
+				var ws = new WritingSystemDefinition("en-US");
+				repo1.Set(ws);
+				repo1.Save();
+				Assert.That(File.Exists(repo1.GetFilePathFromLanguageTag("en-US")), Is.True);
+				Assert.That(repo2.Get("en-US").LanguageTag, Is.EqualTo("en-US"));
+			}
+		}
+
+		[Test]
+		public void Get_LdmlRemovedByAnotherRepo_Throws()
+		{
+			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			{
+				var repo1 = new GlobalWritingSystemRepository(e.Path);
+				var repo2 = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo1.Set(ws);
+				repo1.Save();
+				Assert.That(repo1.Get("en-US").LanguageTag, Is.EqualTo("en-US"));
+				repo2.Remove("en-US");
+				Assert.That(() => repo1.Get("en-US"), Throws.TypeOf<ArgumentOutOfRangeException>());
+			}
+		}
+
+		[Test]
+		public void Get_LdmlUpdatedByAnotherRepo_ReturnsUpdatedDefinition()
+		{
+			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			{
+				var repo1 = new GlobalWritingSystemRepository(e.Path);
+				var repo2 = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo1.Set(ws);
+				repo1.Save();
+				Assert.That(ws.WindowsLcid, Is.Empty);
+				ws = repo2.Get("en-US");
+				ws.WindowsLcid = "test";
+				repo2.Save();
+				Assert.That(repo1.Get("en-US").WindowsLcid, Is.EqualTo("test"));
+			}
+		}
+
+		[Test]
+		public void Get_UpdatedLdmlRemovedByAnotherRepo_ReturnUpdatedDefinition()
+		{
+			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			{
+				var repo1 = new GlobalWritingSystemRepository(e.Path);
+				var repo2 = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo1.Set(ws);
+				repo1.Save();
+				Assert.That(repo1.Get("en-US").LanguageTag, Is.EqualTo("en-US"));
+				repo2.Remove("en-US");
+				ws.WindowsLcid = "test";
+				Assert.That(repo1.Get("en-US").WindowsLcid, Is.EqualTo("test"));
+			}
+		}
+
+		[Test]
+		public void Get_UpdatedLdmlUpdatedByAnotherRepo_ReturnLastUpdatedDefinition()
+		{
+			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			{
+				var repo1 = new GlobalWritingSystemRepository(e.Path);
+				var repo2 = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo1.Set(ws);
+				repo1.Save();
+				Assert.That(repo1.Get("en-US").LanguageTag, Is.EqualTo("en-US"));
+				WritingSystemDefinition ws2 = repo2.Get("en-US");
+				ws2.WindowsLcid = "test2";
+				repo2.Save();
+				ws.WindowsLcid = "test1";
+				Assert.That(repo1.Get("en-US").WindowsLcid, Is.EqualTo("test1"));
+			}
+		}
+
+		[Test]
+		public void AllWritingSystems_LdmlAddedByAnotherRepo_ReturnsDefinition()
+		{
+			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			{
+				var repo1 = new GlobalWritingSystemRepository(e.Path);
+				var repo2 = new GlobalWritingSystemRepository(e.Path);
+				Assert.That(repo2.AllWritingSystems, Is.Empty);
+				var ws = new WritingSystemDefinition("en-US");
+				repo1.Set(ws);
+				repo1.Save();
+				Assert.That(File.Exists(repo1.GetFilePathFromLanguageTag("en-US")), Is.True);
+				Assert.That(repo2.AllWritingSystems.First().LanguageTag, Is.EqualTo("en-US"));
+			}
+		}
+
+		[Test]
+		public void AllWritingSystems_LdmlRemovedByAnotherRepo_ReturnsEmpty()
+		{
+			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			{
+				var repo1 = new GlobalWritingSystemRepository(e.Path);
+				var repo2 = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo1.Set(ws);
+				repo1.Save();
+				Assert.That(repo1.AllWritingSystems, Is.Not.Empty);
+				repo2.Remove("en-US");
+				Assert.That(repo1.AllWritingSystems, Is.Empty);
+			}
+		}
+
+		[Test]
+		public void AllWritingSystems_LdmlUpdatedByAnotherRepo_ReturnsUpdatedDefinition()
+		{
+			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			{
+				var repo1 = new GlobalWritingSystemRepository(e.Path);
+				var repo2 = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo1.Set(ws);
+				repo1.Save();
+				Assert.That(ws.WindowsLcid, Is.Empty);
+				ws = repo2.Get("en-US");
+				ws.WindowsLcid = "test";
+				repo2.Save();
+				Assert.That(repo2.AllWritingSystems.First().WindowsLcid, Is.EqualTo("test"));
+			}
+		}
+
+		[Test]
+		public void Count_LdmlAddedByAnotherRepo_ReturnsOne()
+		{
+			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			{
+				var repo1 = new GlobalWritingSystemRepository(e.Path);
+				var repo2 = new GlobalWritingSystemRepository(e.Path);
+				Assert.That(repo2.Count, Is.EqualTo(0));
+				var ws = new WritingSystemDefinition("en-US");
+				repo1.Set(ws);
+				repo1.Save();
+				Assert.That(File.Exists(repo1.GetFilePathFromLanguageTag("en-US")), Is.True);
+				Assert.That(repo2.Count, Is.EqualTo(1));
+			}
+		}
+
+		[Test]
+		public void Count_LdmlRemovedByAnotherRepo_ReturnsZero()
+		{
+			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			{
+				var repo1 = new GlobalWritingSystemRepository(e.Path);
+				var repo2 = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo1.Set(ws);
+				repo1.Save();
+				Assert.That(repo1.Count, Is.EqualTo(1));
+				repo2.Remove("en-US");
+				Assert.That(repo1.Count, Is.EqualTo(0));
+			}
+		}
 	}
 }

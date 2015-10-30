@@ -79,7 +79,7 @@ namespace SIL.WritingSystems
 			//TODO: This may be useful if writing systems were reference counted.
 		}
 
-		public IEnumerable<T> AllWritingSystems
+		public virtual IEnumerable<T> AllWritingSystems
 		{
 			get { return _writingSystems.Values; }
 		}
@@ -118,7 +118,7 @@ namespace SIL.WritingSystems
 
 		public abstract bool WritingSystemIdHasChanged(string id);
 
-		public bool Contains(string id)
+		public virtual bool Contains(string id)
 		{
 			// identifier should not be null, but some unit tests never define StoreId
 			// on their temporary WritingSystemDefinition objects.
@@ -161,6 +161,9 @@ namespace SIL.WritingSystems
 					WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.LanguageTag));
 			}
 
+			// if there is no Id set, this is new, so mark it as changed
+			if (string.IsNullOrEmpty(ws.Id))
+				ws.ForceChanged();
 			ws.Id = ws.LanguageTag;
 		}
 
@@ -192,7 +195,7 @@ namespace SIL.WritingSystems
 				_idChangeMap[pair.Key] = pair.Key;
 		}
 
-		public bool TryGet(string id, out T ws)
+		public virtual bool TryGet(string id, out T ws)
 		{
 			if (Contains(id))
 			{
@@ -213,7 +216,7 @@ namespace SIL.WritingSystems
 			return String.IsNullOrEmpty(ws.Id) ? ws.LanguageTag : ws.Id;
 		}
 
-		public T Get(string id)
+		public virtual T Get(string id)
 		{
 			if (id == null)
 				throw new ArgumentNullException("id");
@@ -222,7 +225,7 @@ namespace SIL.WritingSystems
 			return _writingSystems[id];
 		}
 
-		public int Count
+		public virtual int Count
 		{
 			get
 			{
