@@ -37,13 +37,13 @@ using System.Runtime.Serialization;
 
 namespace SIL.ObjectModel
 {
-    [Serializable]
-    public class ObservableDictionary<TKey, TValue> :
+	[Serializable]
+	public class ObservableDictionary<TKey, TValue> :
 		IObservableDictionary<TKey, TValue>,
 		IDictionary,
 		ISerializable,
 		IDeserializationCallback
-    {
+	{
 		#region constructors
 
 		#region public
@@ -814,5 +814,5 @@ namespace SIL.ObjectModel
 		private readonly SerializationInfo _siInfo;
 
 		#endregion fields
-    }
+	}
 }

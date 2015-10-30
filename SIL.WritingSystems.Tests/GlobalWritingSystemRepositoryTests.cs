@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using NUnit.Framework;
 using SIL.TestUtilities;
 
@@ -104,10 +105,12 @@ namespace SIL.WritingSystems.Tests
 				var ws = new WritingSystemDefinition("en-US");
 				repo.Set(ws);
 				repo.Save();
-				DateTime modified = File.GetLastWriteTimeUtc(repo.GetFilePathFromLanguageTag("en-US"));
+				DateTime modified = File.GetLastWriteTime(repo.GetFilePathFromLanguageTag("en-US"));
+				// ensure that last modified timestamp changes
+				Thread.Sleep(1000);
 				ws.WindowsLcid = "test";
 				repo.Save();
-				Assert.That(File.GetLastWriteTimeUtc(repo.GetFilePathFromLanguageTag("en-US")), Is.Not.EqualTo(modified));
+				Assert.That(File.GetLastWriteTime(repo.GetFilePathFromLanguageTag("en-US")), Is.Not.EqualTo(modified));
 			}
 		}
 
@@ -154,6 +157,8 @@ namespace SIL.WritingSystems.Tests
 				repo1.Set(ws);
 				repo1.Save();
 				Assert.That(ws.WindowsLcid, Is.Empty);
+				// ensure that last modified timestamp changes
+				Thread.Sleep(1000);
 				ws = repo2.Get("en-US");
 				ws.WindowsLcid = "test";
 				repo2.Save();

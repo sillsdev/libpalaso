@@ -64,11 +64,11 @@ namespace SIL.WritingSystems
 
 		private readonly string _path;
 		private readonly GlobalMutex _mutex;
-		private readonly Dictionary<string, DateTime> _lastModifiedTimes; 
+		private readonly Dictionary<string, Tuple<DateTime, long>> _lastFileStats; 
 
 		protected internal GlobalWritingSystemRepository(string basePath)
 		{
-			_lastModifiedTimes = new Dictionary<string, DateTime>();
+			_lastFileStats = new Dictionary<string, Tuple<DateTime, long>>();
 			_path = CurrentVersionPath(basePath);
 			if (!Directory.Exists(_path))
 				CreateGlobalWritingSystemRepositoryDirectory(_path);
@@ -82,6 +82,7 @@ namespace SIL.WritingSystems
 			var removedIds = new HashSet<string>(WritingSystems.Keys);
 			foreach (string file in Directory.GetFiles(_path, "*.ldml"))
 			{
+				var fi = new FileInfo(file);
 				string id = Path.GetFileNameWithoutExtension(file);
 				Debug.Assert(id != null);
 				T ws;
@@ -92,13 +93,14 @@ namespace SIL.WritingSystems
 					// preserve this repo's changes
 					if (!ws.IsChanged)
 					{
-						DateTime modified = File.GetLastWriteTimeUtc(file);
-						if (_lastModifiedTimes[id] != modified)
+						// for performance purposes, we check the last modified timestamp and file size to see if the file has changed
+						// hopefully that is good enough for our purposes here
+						if (_lastFileStats[id].Item1 != fi.LastWriteTime || _lastFileStats[id].Item2 != fi.Length)
 						{
 							// modified writing system
 							ldmlDataMapper.Read(file, ws);
 							ws.AcceptChanges();
-							_lastModifiedTimes[id] = modified;
+							_lastFileStats[id] = Tuple.Create(fi.LastWriteTime, fi.Length);
 						}
 					}
 					removedIds.Remove(id);
@@ -111,7 +113,7 @@ namespace SIL.WritingSystems
 					ws.Id = ws.LanguageTag;
 					ws.AcceptChanges();
 					WritingSystems[id] = ws;
-					_lastModifiedTimes[id] = File.GetLastWriteTimeUtc(file);
+					_lastFileStats[id] = Tuple.Create(fi.LastWriteTime, fi.Length);
 				}
 			}
 
@@ -351,7 +353,8 @@ namespace SIL.WritingSystems
 				{
 					ldmlDataMapper.Write(writingSystemFilePath, ws, oldData);
 				}
-				_lastModifiedTimes[ws.Id] = File.GetLastWriteTimeUtc(writingSystemFilePath);
+				var fi = new FileInfo(writingSystemFilePath);
+				_lastFileStats[ws.Id] = Tuple.Create(fi.LastWriteTime, fi.Length);
 			}
 			catch (UnauthorizedAccessException)
 			{
