@@ -6,6 +6,7 @@ using SIL.ObjectModel;
 using System.IO;
 using System.Runtime.InteropServices;
 using Mono.Unix.Native;
+using SIL.PlatformUtilities;
 #endif
 
 namespace SIL.Threading
@@ -30,7 +31,7 @@ namespace SIL.Threading
 		{
 			_name = name;
 #if __MonoCS__
-			m_adapter = new LinuxGlobalMutexAdapter(name);
+			_adapter = new LinuxGlobalMutexAdapter(name);
 #else
 			_adapter = new WindowsGlobalMutexAdapter(name);
 #endif
