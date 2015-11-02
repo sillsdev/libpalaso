@@ -284,11 +284,17 @@ namespace SIL.IO
 
 		private static void ReportFailedReplacement(string destinationPath, Exception error)
 		{
+			var message = string.Format("{0} was unable to update the file '{1}'.\n"+
+			                                  "Possible causes:\n"+
+			                                  "* Another copy of this program could be running, or some other program might have the file open or locked (including things like Dropbox and antivirus software).\n" +
+			                                  "* The file may be set to 'Read Only'\n"+
+			                                  "* The security permissions of this file may be set to deny you access to it.\n\n" +
+			                                  "The error was: \n{2}",
+				EntryAssembly.ProductName, destinationPath, error.Message);
+			message = message.Replace("\n", Environment.NewLine);
+			//enhance: this would be clearer if the "OK" button read "Retry", but that's not easily changable.
 			var result = ErrorReport.NotifyUserOfProblem(new ShowAlwaysPolicy(), "Give Up", ErrorResult.No,
-				string.Format("{0} was unable to update the file '{1}'.  Please ensure there is not another " +
-					"copy of this program running, nor any other program that might have that file open, " +
-					"then click the 'OK' button below.{3}The error was: {3}{2}",
-					EntryAssembly.ProductName, destinationPath, error.Message, Environment.NewLine));
+				message);
 			if (result == ErrorResult.No)
 			{
 				throw error; // pass it up to the caller
