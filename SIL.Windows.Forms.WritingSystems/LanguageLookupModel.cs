@@ -17,14 +17,19 @@ namespace SIL.Windows.Forms.WritingSystems
 		private string _desiredLanguageName;
 
 		/// <summary>
-		/// Maybe this doesn't belong here... using it in Bloom which is more concerned with language than writing system
+		/// Return a full language subtag given its official iso639 code. Note that this means you must use the 2-letter code
+		/// where it exists; 'ara' and 'eng' will not match.
 		/// </summary>
+		/// <remarks>
+		/// This method may be obsolete...originally for Bloom but now so trivial Bloom just uses StandardSubtags.RegisteredLanguages.
+		/// Leaving it here in case some other client has started using it.
+		/// </remarks>
 		/// <param name="iso639Code"></param>
 		/// <returns></returns>
 		public LanguageSubtag GetExactLanguageMatch(string iso639Code)
 		{
 			LanguageSubtag language;
-			if (StandardSubtags.TryGetLanguageFromIso3Code(iso639Code, out language) && language.Code != language.Iso3Code)
+			if (StandardSubtags.RegisteredLanguages.TryGet(iso639Code.ToLowerInvariant(), out language))
 				return language;
 			return null;
 		}

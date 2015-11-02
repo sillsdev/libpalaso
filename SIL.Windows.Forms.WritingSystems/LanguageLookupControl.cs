@@ -57,6 +57,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		public LanguageInfo SelectedLanguage
 		{
 			get { return _model.SelectedLanguage; }
+			set { _model.SelectedLanguage = value; } // Enhance: if this is changed after we display the control, we may need to update the display.
 		}
 
 		public string DesiredLanguageName
