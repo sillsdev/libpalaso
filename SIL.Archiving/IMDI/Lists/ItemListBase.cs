@@ -5,9 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Xml;
-using Palaso.Extensions;
 using SIL.Archiving.Generic;
 using SIL.Archiving.IMDI.Schema;
+using SIL.Extensions;
 
 namespace SIL.Archiving.IMDI.Lists
 {

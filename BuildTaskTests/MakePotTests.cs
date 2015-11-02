@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
 using Palaso.BuildTasks.MakePot;
 using NUnit.Framework;
-using Palaso.TestUtilities;
+using SIL.TestUtilities;
 
 namespace Palaso.BuildTask.Tests
 {

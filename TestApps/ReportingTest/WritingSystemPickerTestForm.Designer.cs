@@ -1,4 +1,6 @@
-﻿namespace TestApp
+﻿using SIL.Windows.Forms.WritingSystems;
+
+namespace TestApp
 {
 	partial class WritingSystemPickerTestForm
 	{
@@ -28,10 +30,10 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.wsPickerUsingListView1 = new Palaso.UI.WindowsForms.WritingSystems.WSPickerUsingListView();
+			this.wsPickerUsingListView1 = new WSPickerUsingListView();
 			this._currentWsLabel = new System.Windows.Forms.Label();
 			this._editWsLink = new System.Windows.Forms.LinkLabel();
-			this.pickerUsingComboBox1 = new Palaso.UI.WindowsForms.WritingSystems.WSPickerUsingComboBox();
+			this.pickerUsingComboBox1 = new WSPickerUsingComboBox();
 			this.SuspendLayout();
 			//
 			// wsPickerUsingListView1
@@ -92,9 +94,9 @@
 
 		#endregion
 
-		private Palaso.UI.WindowsForms.WritingSystems.WSPickerUsingListView wsPickerUsingListView1;
+		private WSPickerUsingListView wsPickerUsingListView1;
 		private System.Windows.Forms.Label _currentWsLabel;
 		private System.Windows.Forms.LinkLabel _editWsLink;
-		private Palaso.UI.WindowsForms.WritingSystems.WSPickerUsingComboBox pickerUsingComboBox1;
+		private WSPickerUsingComboBox pickerUsingComboBox1;
 	}
 }

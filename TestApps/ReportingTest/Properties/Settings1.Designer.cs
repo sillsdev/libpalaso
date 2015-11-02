@@ -8,6 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using SIL.Settings;
+
 namespace TestApp.Properties {
 
 
@@ -24,7 +26,7 @@ namespace TestApp.Properties {
 		}
 
 		[global::System.Configuration.UserScopedSettingAttribute()]
-		[global::System.Configuration.SettingsProviderAttribute(typeof(Palaso.Settings.CrossPlatformSettingsProvider))]
+		[global::System.Configuration.SettingsProviderAttribute(typeof(CrossPlatformSettingsProvider))]
 		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
 		[global::System.Configuration.DefaultSettingValueAttribute("True")]
 		public bool NeedsUpgrade {
@@ -37,11 +39,11 @@ namespace TestApp.Properties {
 		}
 
 		[global::System.Configuration.UserScopedSettingAttribute()]
-		[global::System.Configuration.SettingsProviderAttribute(typeof(Palaso.Settings.CrossPlatformSettingsProvider))]
+		[global::System.Configuration.SettingsProviderAttribute(typeof(CrossPlatformSettingsProvider))]
 		[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-		public global::Palaso.Reporting.ReportingSettings ReportingSettings {
+		public global::SIL.Reporting.ReportingSettings ReportingSettings {
 			get {
-				return ((global::Palaso.Reporting.ReportingSettings)(this["ReportingSettings"]));
+				return ((global::SIL.Reporting.ReportingSettings)(this["ReportingSettings"]));
 			}
 			set {
 				this["ReportingSettings"] = value;

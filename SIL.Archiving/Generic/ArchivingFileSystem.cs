@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.IO;
+using SIL.PlatformUtilities;
 
 namespace SIL.Archiving.Generic
 {
@@ -16,7 +17,7 @@ namespace SIL.Archiving.Generic
 			{
 				// On Linux we have to use /var/lib (instead of CommonApplicationData which
 				// translates to /usr/share and isn't writable by default)
-				string folder = Palaso.PlatformUtilities.Platform.IsLinux ? "/var/lib" :
+				string folder = Platform.IsLinux ? "/var/lib" :
 					Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
 				return CheckFolder(Path.Combine(folder, "SIL"));
 			}
@@ -45,7 +46,7 @@ namespace SIL.Archiving.Generic
 				}
 				catch (UnauthorizedAccessException)
 				{
-					if (Palaso.PlatformUtilities.Platform.IsLinux)
+					if (Platform.IsLinux)
 					{
 						if (folderName.StartsWith("/var/lib/SIL/"))
 						{

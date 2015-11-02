@@ -2,11 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Microsoft.Build.Framework;
 using NUnit.Framework;
 using Palaso.BuildTasks;
-using Palaso.TestUtilities;
+using SIL.TestUtilities;
 
 namespace Palaso.BuildTask.Tests
 {
@@ -53,7 +52,7 @@ namespace Palaso.BuildTask.Tests
 
 		/// <summary>
 		/// This class is implemented to avoid a dependency on Palaso (which isn't strictly circular, but sure feels like it)
-		/// The TempFile class that lives in Palaso.IO is a more robust and generally preferred implementation.
+		/// The TempFile class that lives in SIL.IO is a more robust and generally preferred implementation.
 		/// </summary>
 		private sealed class TwoTempFilesForTest : IDisposable
 		{

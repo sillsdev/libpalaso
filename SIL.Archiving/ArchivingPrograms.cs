@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
-using Palaso.IO;
+using SIL.IO;
 
 namespace SIL.Archiving
 {

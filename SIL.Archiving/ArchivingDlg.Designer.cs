@@ -1,4 +1,6 @@
-﻿namespace SIL.Archiving
+﻿using SIL.Windows.Forms.Progress;
+
+namespace SIL.Archiving
 {
 	partial class ArchivingDlg
 	{
@@ -33,7 +35,7 @@
 			this._buttonCreatePackage = new System.Windows.Forms.Button();
 			this._linkOverview = new System.Windows.Forms.LinkLabel();
 			this._progressBar = new System.Windows.Forms.ProgressBar();
-			this._logBox = new Palaso.UI.WindowsForms.Progress.LogBox();
+			this._logBox = new LogBox();
 			this._buttonLaunchRamp = new System.Windows.Forms.Button();
 			this._buttonCancel = new System.Windows.Forms.Button();
 			this._flowLayoutExtra = new System.Windows.Forms.FlowLayoutPanel();
@@ -222,7 +224,7 @@
 		private System.Windows.Forms.LinkLabel _linkOverview;
 		private System.Windows.Forms.ProgressBar _progressBar;
 		private L10NSharp.UI.L10NSharpExtender locExtender;
-		private Palaso.UI.WindowsForms.Progress.LogBox _logBox;
+		private LogBox _logBox;
 		protected System.Windows.Forms.TableLayoutPanel _tableLayoutPanel;
 		protected System.Windows.Forms.FlowLayoutPanel _flowLayoutExtra;
 		protected System.Windows.Forms.Button _buttonLaunchRamp;

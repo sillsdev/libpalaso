@@ -1,0 +1,11 @@
+# List of books, chapters, verses
+# One line per book.
+# One entry for each chapter.
+# Verse number is the maximum verse number for that chapter.
+MAT 1:2
+#
+# Mappings from this versification to standard versification
+#
+# Excluded verses
+#
+# Verse segment information

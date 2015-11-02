@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DBLMetadata type="text" typeVersion="1.4" id="ce61dd3decd6b8a8" revision="0">
+  <identification>
+    <name>Test Bundle Publication</name>
+    <nameLocal></nameLocal>
+    <abbreviation></abbreviation>
+    <abbreviationLocal></abbreviationLocal>
+    <scope></scope>
+    <description></description>
+    <dateCompleted></dateCompleted>
+    <systemId type="gbc"></systemId>
+    <systemId type="tms"></systemId>
+    <systemId type="reap"></systemId>
+    <systemId type="paratext" name="TBe" fullname="Test Bundle" csetid="7f9731a92a731beb1075737a2259bdc537970046">ce61dd3decd6b8a8ffca240ec43593f08a721917</systemId>
+    <systemId type="biblica"></systemId>
+    <bundleProducer>Paratext/7.5.100.116</bundleProducer>
+  </identification>
+  <confidential></confidential>
+  <agencies>
+    <etenPartner></etenPartner>
+  </agencies>
+  <language>
+    <iso>eng</iso>
+    <name>English</name>
+    <ldml>en</ldml>
+    <rod></rod>
+    <script></script>
+    <scriptDirection>LTR</scriptDirection>
+    <!-- LTR (Left to Right) or RTL (Right to Left) -->
+    <numerals></numerals>
+  </language>
+  <country>
+    <iso></iso>
+    <name></name>
+  </country>
+  <type>
+    <translationType></translationType>
+    <audience></audience>
+  </type>
+  <bookNames>
+    <book code="MAT">
+      <long>Matthew</long>
+      <short>Matthew</short>
+      <abbr>Mt</abbr>
+    </book>
+  </bookNames>
+  <contents>
+    <bookList id="0" default="true">
+      <name>adhoc generated</name>
+      <nameLocal></nameLocal>
+      <abbreviation></abbreviation>
+      <abbreviationLocal></abbreviationLocal>
+      <description></description>
+      <descriptionLocal></descriptionLocal>
+      <books>
+        <book code="MAT" />
+      </books>
+    </bookList>
+  </contents>
+  <copyright>
+    <!-- Allow XHTML: <h1> <h2> <h3> <p> <blockquote> <ul> <ol> <li> <br> <strong> <em> <a> -->
+    <statement contentType="xhtml"></statement>
+  </copyright>
+  <promotion>
+    <promoVersionInfo contentType="xhtml"></promoVersionInfo>
+  </promotion>
+  <archiveStatus>
+    <archivistName>Andrew Polk</archivistName>
+    <dateArchived>2015-05-04T14:02:48.7723122+00:00</dateArchived>
+    <dateUpdated>2015-05-04T14:02:48.7723122+00:00</dateUpdated>
+    <comments></comments>
+  </archiveStatus>
+  <format>text/xml</format>
+</DBLMetadata>

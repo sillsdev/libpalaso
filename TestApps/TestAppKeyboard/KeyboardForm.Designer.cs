@@ -1,4 +1,4 @@
-﻿using Palaso.UI.WindowsForms.Keyboarding;
+﻿using SIL.Windows.Forms.Keyboarding;
 
 namespace TestAppKeyboard
 {

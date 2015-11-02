@@ -1,22 +1,28 @@
+echo off
+IF "%1"=="" (
+	set BUILD_CONFIG="Debug"
+) ELSE (
+	set BUILD_CONFIG=%1
+)
+
 set chorusDir=..\chorus
-copy /Y output\debug\palaso.dll %chorusDir%\lib\debug
-copy /Y output\debug\palaso.xml %chorusDir%\lib\debug
-copy /Y output\debug\palaso.pdb %chorusDir%\lib\debug
 
-copy /Y output\debug\palasouiwindowsforms.dll  %chorusDir%\lib\debug
-copy /Y output\debug\palasouiwindowsforms.xml  %chorusDir%\lib\debug
-copy /Y output\debug\palasouiwindowsforms.pdb  %chorusDir%\lib\debug
+echo on
+echo Copying some %BUILD_CONFIG% files to Chorus
 
+copy /Y output\%BUILD_CONFIG%StrongName\SIL.Core.dll %chorusDir%\lib\%BUILD_CONFIG%
+copy /Y output\%BUILD_CONFIG%StrongName\SIL.Core.pdb %chorusDir%\lib\%BUILD_CONFIG%
 
-copy /Y output\debug\palaso.testutilities.dll %chorusDir%\lib\debug
-copy /Y output\debug\palaso.testutilities.xml %chorusDir%\lib\debug
-copy /Y output\debug\palaso.testutilities.pdb %chorusDir%\lib\debug
+copy /Y output\%BUILD_CONFIG%StrongName\SIL.Lift.dll %chorusDir%\lib\%BUILD_CONFIG%
+copy /Y output\%BUILD_CONFIG%StrongName\SIL.Lift.pdb %chorusDir%\lib\%BUILD_CONFIG%
 
-copy /Y output\debug\palaso.*  %chorusDir%\output\debug
-copy /Y output\debug\palaso.testutilities.*  %chorusDir%\output\debug
-copy /Y output\debug\palasouiwindowsforms.*  %chorusDir%\output\debug
+copy /Y output\%BUILD_CONFIG%StrongName\SIL.Testutilities.dll %chorusDir%\lib\%BUILD_CONFIG%
+copy /Y output\%BUILD_CONFIG%StrongName\SIL.Testutilities.pdb %chorusDir%\lib\%BUILD_CONFIG%
 
-copy /Y output\debug\palaso*.* %chorusDir%\lib\release
-copy /Y output\debug\palaso*.* %chorusDir%\output\release
+copy /Y output\%BUILD_CONFIG%StrongName\SIL.windows.Forms.dll  %chorusDir%\lib\%BUILD_CONFIG%
+copy /Y output\%BUILD_CONFIG%StrongName\SIL.Windows.Forms.pdb  %chorusDir%\lib\%BUILD_CONFIG%
+
+copy /Y output\%BUILD_CONFIG%StrongName\SIL.windows.Forms.GeckoBrowserAdapter.dll  %chorusDir%\lib\%BUILD_CONFIG%
+copy /Y output\%BUILD_CONFIG%StrongName\SIL.Windows.Forms.GeckoBrowserAdapter.pdb  %chorusDir%\lib\%BUILD_CONFIG%
 
 pause
