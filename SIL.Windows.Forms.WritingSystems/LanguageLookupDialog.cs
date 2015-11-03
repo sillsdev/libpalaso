@@ -46,6 +46,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		public LanguageInfo SelectedLanguage
 		{
 			get { return _languageLookupControl.SelectedLanguage; }
+			set { _languageLookupControl.SelectedLanguage = value; }
 		}
 
 		public string DesiredLanguageName
