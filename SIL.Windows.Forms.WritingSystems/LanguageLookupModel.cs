@@ -57,7 +57,12 @@ namespace SIL.Windows.Forms.WritingSystems
 			{
 				return _desiredLanguageName ?? string.Empty;
 			}
-			set { _desiredLanguageName = value == null ? null : value.Trim(); }
+			set
+			{
+				_desiredLanguageName = value == null ? null : value.Trim();
+				if (SelectedLanguage != null)
+					SelectedLanguage.DesiredName = _desiredLanguageName;
+			}
 		}
 
 		public void LoadLanguages()
@@ -90,6 +95,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			get { return _selectedLanguage; }
 			set
 			{
+				var oldValue = _selectedLanguage;
 				_selectedLanguage = value;
 				if (_selectedLanguage == null)
 					return;
@@ -105,15 +111,25 @@ namespace SIL.Windows.Forms.WritingSystems
 				}
 				else
 				{
-					IList<string> names = _selectedLanguage.Names;
-					if (names.Count == 0)
+					// We set the selected language in two main ways: the client may set it, possibly using a newly created
+					// and incomplete LanguageInfo, partly as a way of passing in the desiredName for the current selection;
+					// It also gets set as we run the initial (or any subsequent) search based on choosing one of the search results.
+					// The search result typically doesn't have a DesiredName set so we can easily overwrite the desired
+					// name sent in by the client.
+					if (oldValue != null && oldValue.LanguageTag == _selectedLanguage.LanguageTag)
 					{
-						_desiredLanguageName = _selectedLanguage.LanguageTag; // best we can do
+						// We're probably just setting the same language as selected earlier, but this time to a languageInfo
+						// selected from our list. We want to update that object, so that (a) if the user switches back to it,
+						// we can reinstate their desired name; and (b) so that if the client retrieves this object, rather
+						// than the one they originally set, after the dialog closes, they will get the original desired name back.
+						// (Unless the user subsequently changes it, of course.)
+						_selectedLanguage.DesiredName = _desiredLanguageName;
 					}
 					else
 					{
-						//now if they were typing another form, well then that form makes a better default "Desired Name" than the official primary name
-						_desiredLanguageName = names.FirstOrDefault(n => n.StartsWith(_searchText, StringComparison.InvariantCultureIgnoreCase)) ?? names[0];
+						// Either setting it for the first time (from client), or something made us really change language.
+						// Either way we need to update _desiredLanguage name; it can't be useful for a different language.
+						_desiredLanguageName = _selectedLanguage.DesiredName;
 					}
 				}
 			}
