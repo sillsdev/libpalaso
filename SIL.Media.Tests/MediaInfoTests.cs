@@ -7,6 +7,13 @@ namespace SIL.Media.Tests
 	[TestFixture]
 	public class MediaInfoTests
 	{
+		[TestFixtureSetUp]
+		public void CheckRequirements()
+		{
+			if (!MediaInfo.HaveNecessaryComponents)
+				Assert.Ignore("These tests require ffmpeg to be installed.");
+		}
+
 		[Test]
 		[Category("RequiresFfmpeg")]
 		public void HaveNecessaryComponents_ReturnsTrue()
@@ -36,7 +43,6 @@ namespace SIL.Media.Tests
 				Assert.AreEqual("mpeg4", info.Video.Encoding);
 			}
 		}
-
 
 		[Test]
 		[Category("RequiresFfmpeg")]
