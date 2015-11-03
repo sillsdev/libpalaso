@@ -106,8 +106,15 @@ namespace SIL.Windows.Forms.WritingSystems
 				else
 				{
 					IList<string> names = _selectedLanguage.Names;
-					//now if they were typing another form, well then that form makes a better default "Desired Name" than the official primary name
-					_desiredLanguageName = names.FirstOrDefault(n => n.StartsWith(_searchText, StringComparison.InvariantCultureIgnoreCase)) ?? names[0];
+					if (names.Count == 0)
+					{
+						_desiredLanguageName = _selectedLanguage.LanguageTag; // best we can do
+					}
+					else
+					{
+						//now if they were typing another form, well then that form makes a better default "Desired Name" than the official primary name
+						_desiredLanguageName = names.FirstOrDefault(n => n.StartsWith(_searchText, StringComparison.InvariantCultureIgnoreCase)) ?? names[0];
+					}
 				}
 			}
 		}
