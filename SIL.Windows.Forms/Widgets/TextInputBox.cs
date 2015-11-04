@@ -11,7 +11,7 @@ namespace SIL.Windows.Forms.Widgets
 {
 	/// <summary>
 	/// TextInputBox is a wrapper around either a TextBox or a GeckoBox
-	/// (implemented in PalasoUiWindowsForms.GeckoFxWebBrowserAdapter), which must be used by clients
+	/// (implemented in SIL.Windows.Forms.GeckoBrowserAdapter), which must be used by clients
 	/// that are using GeckoFx.
 	/// </summary>
 	public class TextInputBox : UserControl
@@ -37,13 +37,13 @@ namespace SIL.Windows.Forms.Widgets
 			if (UseWebTextBox)
 			{
 				var path = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath),
-					"PalasoUIWindowsForms.GeckoBrowserAdapter.dll");
+					"SIL.Windows.Forms.GeckoBrowserAdapter.dll");
 				if (File.Exists(path))
 				{
 					var assembly = Assembly.LoadFile(path);
 					if (assembly != null)
 					{
-						var box = assembly.GetType("Palaso.UI.WindowsForms.GeckoBasedControls.GeckoBox");
+						var box = assembly.GetType("SIL.Windows.Forms.GeckoBrowserAdapter.GeckoBox");
 						if (box != null)
 						{
 							try

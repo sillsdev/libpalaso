@@ -101,7 +101,7 @@ namespace SIL.Reporting
 
 		//We removed all references to Winforms from Palaso.dll but our error reporting relied heavily on it.
 		//Not wanting to break existing applications we have now added this class initializer which will
-		//look for a reference to PalasoUIWindowsForms in the consuming app and if it exists instantiate the
+		//look for a reference to SIL.Windows.Forms in the consuming app and if it exists instantiate the
 		//WinformsErrorReporter from there through Reflection. otherwise we will simply use a console
 		//error reporter
 		static ErrorReport()
