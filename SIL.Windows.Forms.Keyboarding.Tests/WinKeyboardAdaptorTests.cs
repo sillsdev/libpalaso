@@ -32,7 +32,12 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 				if (!lcids.Contains(lang.Culture.LCID))
 					lcids.Add(lang.Culture.LCID);
 			}
-			Assert.That(adaptor.GetLanguages(), Is.EquivalentTo(lcids));
+			// This test can fail if a Keyman keyboard is installed but
+			// keyman is not running
+			Assert.That(adaptor.GetLanguages(), Is.EquivalentTo(lcids),
+				"WinKeyboardAdaptor.GetLanguages returned a different set of languages from what " +
+				"we get from Windows. This can happen if a Keyman keyboard is installed in the " +
+				"system but Keyman is not running.");
 		}
 	}
 }
