@@ -20,12 +20,12 @@ namespace SIL.Reporting
 		/// ------------------------------------------------------------------------------------
 		//We removed all references to Winforms from Palaso.dll but our error reporting relied heavily on it.
 		//Not wanting to break existing applications we have now added this class initializer which will
-		//look for a reference to PalasoUIWindowsForms in the consuming app and if it exists instantiate the
+		//look for a reference to SIL.Windows.Forms in the consuming app and if it exists instantiate the
 		//ExceptionHandler from there through Reflection. Otherwise we will simply use a console
 		//exception handler
 		/// <summary>
 		/// Initialize the ExceptionHandler. By default, the exceptionhandler will be initialized with a ConsoleExceptionHandler
-		/// unless he entry assembly uses a dependency on PalasoUIWinForms.dll. In that case we default to the WinFormsExceptionHandler
+		/// unless he entry assembly uses a dependency on SIL.Windows.Forms.dll. In that case we default to the WinFormsExceptionHandler
 		/// </summary>
 		public static void Init()
 		{
@@ -81,11 +81,11 @@ namespace SIL.Reporting
 			if (topMostAssembly != null)
 			{
 				var referencedAssemblies = topMostAssembly.GetReferencedAssemblies();
-				var palasoUiWindowsFormsInitializeAssemblyName =
+				var silWindowsFormsInitializeAssemblyName =
 					referencedAssemblies.FirstOrDefault(a => a.Name.Contains(silWindowsFormsAssemblyName));
-				if (palasoUiWindowsFormsInitializeAssemblyName != null)
+				if (silWindowsFormsInitializeAssemblyName != null)
 				{
-					var toInitializeAssembly = Assembly.Load(palasoUiWindowsFormsInitializeAssemblyName);
+					var toInitializeAssembly = Assembly.Load(silWindowsFormsInitializeAssemblyName);
 					//TomB: this comment (presumably an idea for future enhancement) was in both versions of the code from which
 					// this method was created, even though it really only seems to apply to the one that was formerly in
 					// ErrorReport: "Make this go find the actual winFormsErrorReporter as opposed to looking for the interface"

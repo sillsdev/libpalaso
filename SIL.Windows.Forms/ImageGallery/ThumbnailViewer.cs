@@ -10,7 +10,7 @@ namespace SIL.Windows.Forms.ImageGallery
 {
 	/// <summary>
 	/// Thumbnail viewer is a this wrapper around either a ListViewThumbnailViewer or a WebThumbnailViewer
-	/// (implemented in PalasoUiWindowsForms.GeckoFxWebBrowserAdapter), which must be used by clients
+	/// (implemented in SIL.Windows.Forms.GeckoBrowserAdapter), which must be used by clients
 	/// that are using GeckoFx.
 	/// </summary>
 	public class ThumbnailViewer : UserControl
