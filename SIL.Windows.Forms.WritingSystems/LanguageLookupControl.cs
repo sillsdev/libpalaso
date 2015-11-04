@@ -62,7 +62,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				string oldLangTag = _model.LanguageTag;
 				_model.SelectedLanguage = value;
 				_desiredLanguageDisplayName.Text = _model.DesiredLanguageName;
-				if(_model.SelectedLanguage.LanguageTag != oldLangTag)
+				if(_model.LanguageTag != oldLangTag)
 					UpdateReadiness();
 			}
 		}
