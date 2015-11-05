@@ -20,7 +20,8 @@ namespace SIL.WritingSystems.Tests.Migration
 
 			public TestEnvironment()
 			{
-				_ldmlFileNames = Directory.GetFiles(GlobalWritingSystemRepositoryMigrator.LdmlPathPre0);
+				_ldmlFileNames = Directory.Exists(GlobalWritingSystemRepositoryMigrator.LdmlPathPre0)
+					? Directory.GetFiles(GlobalWritingSystemRepositoryMigrator.LdmlPathPre0) : new string[0];
 				NamespaceManager = new XmlNamespaceManager(new NameTable());
 				NamespaceManager.AddNamespace("sil", "urn://www.sil.org/ldml/0.1");
 				NamespaceManager.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");

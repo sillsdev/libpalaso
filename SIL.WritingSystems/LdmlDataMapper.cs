@@ -293,6 +293,8 @@ namespace SIL.WritingSystems
 			if (element.Name != "ldml")
 				throw new ApplicationException("Unable to load writing system definition: Missing <ldml> tag.");
 
+			ResetWritingSystemDefinition(ws);
+
 			XElement identityElem = element.Element("identity");
 			if (identityElem != null)
 				ReadIdentityElement(identityElem, ws);
@@ -332,6 +334,28 @@ namespace SIL.WritingSystems
 			}
 			ws.Id = string.Empty;
 			ws.AcceptChanges();
+		}
+
+		/// <summary>
+		/// Resets all of the properties of the writing system definition that might not get set when reading the LDML file.
+		/// </summary>
+		private void ResetWritingSystemDefinition(WritingSystemDefinition ws)
+		{
+			ws.VersionNumber = null;
+			ws.VersionDescription = null;
+			ws.WindowsLcid = null;
+			ws.DefaultRegion = null;
+			ws.CharacterSets.Clear();
+			ws.MatchedPairs.Clear();
+			ws.PunctuationPatterns.Clear();
+			ws.QuotationMarks.Clear();
+			ws.QuotationParagraphContinueType = QuotationParagraphContinueType.None;
+			ws.RightToLeftScript = false;
+			ws.DefaultCollationType = null;
+			ws.Collations.Clear();
+			ws.Fonts.Clear();
+			ws.SpellCheckDictionaries.Clear();
+			ws.KnownKeyboards.Clear();
 		}
 
 		private void CheckVersion(XElement specialElem, WritingSystemDefinition ws)
@@ -659,7 +683,6 @@ namespace SIL.WritingSystems
 
 		private void ReadCollationsElement(XElement collationsElem, WritingSystemDefinition ws)
 		{
-			ws.Collations.Clear();
 			XElement defaultCollationElem = collationsElem.Element("defaultCollation");
 			ws.DefaultCollationType = (string) defaultCollationElem;
 			foreach (XElement collationElem in collationsElem.NonAltElements("collation"))
