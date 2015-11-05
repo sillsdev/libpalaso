@@ -223,12 +223,14 @@ namespace SIL.Windows.Forms.ImageToolbox
 			_messageLabel.Font = new Font(SystemFonts.DialogFont.FontFamily, 10);
 
 #if DEBUG
-			if (!HaveImageCollectionOnThisComputer)
-				return;
+			//if (!HaveImageCollectionOnThisComputer)
+			//	return;
 			//when just testing, I just want to see some choices.
-		   // _searchTermsBox.Text = @"flower";
-			_searchButton_Click(this,null);
+			// _searchTermsBox.Text = @"flower";
 #endif
+			// The following line was traced to be the cause of BL-2901 that only appeared in release versions
+			//   so let's keep it outside of the ifdef.
+			_searchButton_Click(this,null);
 		}
 
 		private void SetMessageLabelText()
