@@ -515,5 +515,17 @@ namespace SIL.WritingSystems
 				WritingSystemsToIgnore[(string)wsElem.Attribute("id")] = dateModified;
 			}
 		}
+
+		public override IEnumerable<T> CheckForNewerGlobalWritingSystems()
+		{
+			foreach (T ws in base.CheckForNewerGlobalWritingSystems())
+			{
+				// load local settings using custom data mappers, so these settings won't be lost if these writing systems are used to
+				// replace the existing local writing systems
+				foreach (ICustomDataMapper<T> customDataMapper in _customDataMappers)
+					customDataMapper.Read(ws);
+				yield return ws;
+			}
+		}
 	}
 }
