@@ -239,6 +239,9 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="IKeyboardRetrievingAdaptor.cs" />
     <Compile Include="IKeyboardSwitchingAdaptor.cs" />
     <Compile Include="InputLanguageWrapper.cs" />

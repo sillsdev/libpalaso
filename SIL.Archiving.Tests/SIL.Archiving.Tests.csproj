@@ -197,6 +197,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="AccessProtocolListTests.cs" />
     <Compile Include="IMDIArchivingDlgViewModelTests.cs" />
     <Compile Include="IMDI30Tests.cs" />

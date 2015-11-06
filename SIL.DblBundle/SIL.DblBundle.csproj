@@ -205,6 +205,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Bundle.cs" />
     <Compile Include="DblMetadata.cs" />
     <Compile Include="IProjectInfo.cs" />
