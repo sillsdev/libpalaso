@@ -62,6 +62,7 @@ namespace SIL.Lexicon
 			}
 			ws.DefaultFontSize = (float?) wsElem.Element("DefaultFontSize") ?? 0f;
 			ws.IsGraphiteEnabled = (bool?) wsElem.Element("IsGraphiteEnabled") ?? true;
+			ws.AcceptChanges();
 		}
 
 		public virtual void Write(T ws)

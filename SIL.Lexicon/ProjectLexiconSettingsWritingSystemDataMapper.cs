@@ -66,6 +66,7 @@ namespace SIL.Lexicon
 				var scd = new SystemCollationDefinition { LanguageTag = (string) systemCollationElem };
 				ws.DefaultCollation = scd;
 			}
+			ws.AcceptChanges();
 		}
 
 		public virtual void Write(T ws)

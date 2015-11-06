@@ -9,7 +9,8 @@ namespace SIL.WritingSystems
 	public interface ILocalWritingSystemRepository : IWritingSystemRepository
 	{
 		/// <summary>
-		/// Gets all newer shared writing systems.
+		/// Returns copies of all of the global writing systems that are newer than their corresponding local writing systems. These
+		/// writing systems can be used to replace the existing local writing systems.
 		/// </summary>
 		IEnumerable<WritingSystemDefinition> CheckForNewerGlobalWritingSystems();
 

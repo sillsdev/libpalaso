@@ -61,6 +61,7 @@ namespace SIL.WritingSystems.Tests
 			private readonly TemporaryFolder _sldrCacheFolder;
 			private readonly TemporaryFolder _templateFolder;
 			private readonly TemporaryFolder _globalRepoFolder;
+			private readonly TestWritingSystemCustomDataMapper _writingSystemCustomDataMapper;
 
 			public TestEnvironment()
 			{
@@ -69,6 +70,7 @@ namespace SIL.WritingSystems.Tests
 				_templateFolder = new TemporaryFolder("Templates");
 				_globalRepoFolder = new TemporaryFolder("GlobalWritingSystemRepository");
 				_writingSystem = new WritingSystemDefinition();
+				_writingSystemCustomDataMapper = new TestWritingSystemCustomDataMapper();
 				ResetRepositories();
 			}
 
@@ -77,7 +79,7 @@ namespace SIL.WritingSystems.Tests
 				if (GlobalRepository != null)
 					GlobalRepository.Dispose();
 				GlobalRepository = new GlobalWritingSystemRepository(_globalRepoFolder.Path);
-				LocalRepository = new TestLdmlInFolderWritingSystemRepository(_localRepoFolder.Path, GlobalRepository);
+				LocalRepository = new TestLdmlInFolderWritingSystemRepository(_localRepoFolder.Path, new[] {_writingSystemCustomDataMapper}, GlobalRepository);
 				LocalRepository.WritingSystemFactory.TemplateFolder = _templateFolder.Path;
 			}
 
@@ -1062,6 +1064,7 @@ namespace SIL.WritingSystems.Tests
 				var ws = new WritingSystemDefinition("en-US");
 				environment.LocalRepository.Set(ws);
 				ws.RightToLeftScript = true;
+				ws.DefaultCollation = new SystemCollationDefinition {LanguageTag = "en-US"};
 				environment.LocalRepository.Save();
 				Assert.IsTrue(File.Exists(environment.GetPathForLocalWSId("en-US")));
 				Assert.IsTrue(File.Exists(environment.GetPathForGlobalWSId("en-US")));
@@ -1089,6 +1092,8 @@ namespace SIL.WritingSystems.Tests
 
 				ws = environment.LocalRepository.Get("en-US");
 				Assert.That(ws.RightToLeftScript, Is.False);
+				// ensure that application-specific settings are preserved
+				Assert.That(ws.DefaultCollation.ValueEquals(new SystemCollationDefinition {LanguageTag = "en-US"}), Is.True);
 				Assert.Less(lastModified, File.GetLastWriteTime(environment.GetPathForLocalWSId("en-US")));
 			}
 		}

@@ -227,6 +227,7 @@
     <Compile Include="TestLdmlInXmlWritingSystemRepository.cs" />
     <Compile Include="TestLdmlInFolderWritingSystemFactory.cs" />
     <Compile Include="TestLdmlInFolderWritingSystemRepository.cs" />
+    <Compile Include="TestWritingSystemCustomDataMapper.cs" />
     <Compile Include="TestWritingSystemFactory.cs" />
     <Compile Include="WritingSystemRepositoryTests.cs" />
     <Compile Include="LdmlDataMapperTests.cs" />
