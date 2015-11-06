@@ -227,10 +227,8 @@ namespace SIL.Windows.Forms.ImageToolbox
 			//	return;
 			//when just testing, I just want to see some choices.
 			// _searchTermsBox.Text = @"flower";
+			//_searchButton_Click(this,null);
 #endif
-			// The following line was traced to be the cause of BL-2901 that only appeared in release versions
-			//   so let's keep it outside of the ifdef.
-			_searchButton_Click(this,null);
 		}
 
 		private void SetMessageLabelText()
