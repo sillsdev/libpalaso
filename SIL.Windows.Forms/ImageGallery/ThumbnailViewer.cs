@@ -34,6 +34,7 @@ namespace SIL.Windows.Forms.ImageGallery
 			};
 			_thumbnailViewer.TheControl.Dock = DockStyle.Fill;
 			Controls.Add(_thumbnailViewer.TheControl);
+			Clear(); // BL-2901 prevents thumbnail viewer from having a black background when displayed
 		}
 
 		public IThumbnailViewer CreateViewer()

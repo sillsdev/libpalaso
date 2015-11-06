@@ -223,11 +223,11 @@ namespace SIL.Windows.Forms.ImageToolbox
 			_messageLabel.Font = new Font(SystemFonts.DialogFont.FontFamily, 10);
 
 #if DEBUG
-			if (!HaveImageCollectionOnThisComputer)
-				return;
+			//if (!HaveImageCollectionOnThisComputer)
+			//	return;
 			//when just testing, I just want to see some choices.
-		   // _searchTermsBox.Text = @"flower";
-			_searchButton_Click(this,null);
+			// _searchTermsBox.Text = @"flower";
+			//_searchButton_Click(this,null);
 #endif
 		}
 
