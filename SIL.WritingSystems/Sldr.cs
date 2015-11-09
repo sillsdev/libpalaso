@@ -275,7 +275,7 @@ namespace SIL.WritingSystems
 							JArray commits = JArray.Load(new JsonTextReader(responseReader));
 							foreach (JObject commit in commits.Children<JObject>())
 							{
-								DateTime time = DateTime.Parse((string) commit["commit"]["author"]["date"]);
+								var time = commit["commit"]["author"]["date"].ToObject<DateTime>();
 								if (time > latestCommitTime)
 									latestCommitTime = time;
 							}

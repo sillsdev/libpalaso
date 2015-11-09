@@ -21,7 +21,13 @@ namespace SIL.Tests.UsbDrive
 		[TestFixtureSetUp]
 		public void TestFixtureSetup()
 		{
-#if MONO
+			var usbDrives = UsbDriveInfo.GetDrives();
+			if (usbDrives == null || usbDrives.Count < 1)
+			{
+				Assert.Ignore("Tests require USB drive");
+				return;
+			}
+#if __MonoCS__
 			_drive0.DriveSize = 256850432;
 			_drive0.Path = new DirectoryInfo("/media/Kingston");
 			_drive1.DriveSize = 1032724480;

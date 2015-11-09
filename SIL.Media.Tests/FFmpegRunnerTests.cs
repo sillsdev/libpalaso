@@ -9,6 +9,13 @@ namespace SIL.Media.Tests
 	[TestFixture]
 	public class FFmpegRunnerTests
 	{
+		[TestFixtureSetUp]
+		public void CheckRequirements()
+		{
+			if (!MediaInfo.HaveNecessaryComponents)
+				Assert.Ignore("These tests require ffmpeg to be installed.");
+		}
+
 		[Test]
 		[Category("RequiresFfmpeg")]
 		public void HaveNecessaryComponents_ReturnsTrue()
