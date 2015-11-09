@@ -212,6 +212,9 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="CommonEnumerations.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="FlagState.cs" />

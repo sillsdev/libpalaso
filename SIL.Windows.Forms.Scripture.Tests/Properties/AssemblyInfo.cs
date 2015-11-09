@@ -4,8 +4,8 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SIL.Windows.Forms.DblBundle")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("SIL.Windows.Forms.Scripture.Tests")]
+[assembly: AssemblyDescription("Unit tests for classes in SIL.Windows.Forms.Scripture")]
 [assembly: AssemblyConfiguration("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -14,4 +14,4 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("d3baca2d-4a51-4267-a2ff-93b7ef5e7bb6")]
+[assembly: Guid("960370f9-0db0-4667-8e0b-db4e0eeba07f")]

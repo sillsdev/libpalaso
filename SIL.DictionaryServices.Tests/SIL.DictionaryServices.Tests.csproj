@@ -180,6 +180,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="LexEntryRepositoryCachingTests.cs" />
     <Compile Include="LexEntryRepositoryCreatedFromPersistedData.cs" />
     <Compile Include="LexEntryRepositoryCreateItemTransitionTests.cs" />

@@ -213,6 +213,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="LiftLexEntryRepository.cs" />
     <Compile Include="Lift\HtmlArticleMaker.cs" />
     <Compile Include="Lift\LexEntryFromLiftBuilder.cs" />

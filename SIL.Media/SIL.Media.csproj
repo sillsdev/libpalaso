@@ -260,6 +260,9 @@
     <Compile Include="Naudio\SampleAggregator.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="AlsaAudio\AlsaAudioDevice.cs" />
     <Compile Include="AlsaAudio\AudioAlsaSession.cs" />
     <Compile Include="AudioFactory.cs" />
