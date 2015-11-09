@@ -43,6 +43,7 @@
 			this._desiredLanguageDisplayName = new System.Windows.Forms.TextBox();
 			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
 			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this._showDialectsCheckBox = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).BeginInit();
 			this.SuspendLayout();
@@ -187,10 +188,25 @@
 			this._L10NSharpExtender.LocalizationManagerId = "Palaso";
 			this._L10NSharpExtender.PrefixForNewItems = "LanguageLookup";
 			// 
+			// _showDialectsCheckBox
+			// 
+			this._showDialectsCheckBox.AutoSize = true;
+			this._L10NSharpExtender.SetLocalizableToolTip(this._showDialectsCheckBox, null);
+			this._L10NSharpExtender.SetLocalizationComment(this._showDialectsCheckBox, null);
+			this._L10NSharpExtender.SetLocalizingId(this._showDialectsCheckBox, "LanguageLookup.ShowDialectsLabel");
+			this._showDialectsCheckBox.Location = new System.Drawing.Point(235, 5);
+			this._showDialectsCheckBox.Name = "_showDialectsCheckBox";
+			this._showDialectsCheckBox.Size = new System.Drawing.Size(105, 17);
+			this._showDialectsCheckBox.TabIndex = 16;
+			this._showDialectsCheckBox.Text = "Show all dialects";
+			this._showDialectsCheckBox.UseVisualStyleBackColor = true;
+			this._showDialectsCheckBox.CheckedChanged += new System.EventHandler(this._showDialectsCheckBox_CheckedChanged);
+			// 
 			// LanguageLookupControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this._showDialectsCheckBox);
 			this.Controls.Add(this._desiredLanguageLabel);
 			this.Controls.Add(this.flowLayoutPanel1);
 			this.Controls.Add(this._desiredLanguageDisplayName);
@@ -226,5 +242,6 @@
 		private System.Windows.Forms.TextBox _desiredLanguageDisplayName;
 		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
 		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+		private System.Windows.Forms.CheckBox _showDialectsCheckBox;
 	}
 }

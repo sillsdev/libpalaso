@@ -247,5 +247,11 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			_model.SearchText = _searchText.Text;
 		}
+
+		private void _showDialectsCheckBox_CheckedChanged(object sender, EventArgs e)
+		{
+			_model.ShowDialects = _showDialectsCheckBox.Checked;
+			_lastSearchedForText = null;
+		}
 	}
 }
