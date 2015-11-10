@@ -129,7 +129,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		private WritingSystemDefinition ShowCreateNewWritingSystemDialog()
 		{
-			using (var dlg = new LanguageLookupDialog {ShowDesiredLanguageNameField = false})
+			using (var dlg = new LanguageLookupDialog {IsDesiredLanguageNameFieldVisible = false, IsShowDialectsCheckBoxVisible = false})
 			{
 				WaitCursor.Show();
 				try

@@ -30,7 +30,6 @@ namespace SIL.Windows.Forms.WritingSystems
 		public LanguageLookupControl()
 		{
 			InitializeComponent();
-			ShowDesiredLanguageNameField = true;
 			_model = new LanguageLookupModel();
 		}
 
@@ -44,9 +43,14 @@ namespace SIL.Windows.Forms.WritingSystems
 			get { return _model.AreLanguagesLoaded; }
 		}
 
-		public bool ShowDesiredLanguageNameField
+		public bool IsDesiredLanguageNameFieldVisible
 		{
 			set { _desiredLanguageDisplayName.Visible = _desiredLanguageLabel.Visible = value; }
+		}
+
+		public bool IsShowDialectsCheckBoxVisible
+		{
+			set { _showDialectsCheckBox.Visible = value; }
 		}
 
 		public Func<LanguageInfo, bool> MatchingLanguageFilter
@@ -250,7 +254,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		private void _showDialectsCheckBox_CheckedChanged(object sender, EventArgs e)
 		{
-			_model.ShowDialects = _showDialectsCheckBox.Checked;
+			_model.IncludeRegionCodes = _showDialectsCheckBox.Checked;
 			_lastSearchedForText = null;
 		}
 	}

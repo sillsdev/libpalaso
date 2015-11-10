@@ -67,17 +67,17 @@ namespace SIL.Windows.Forms.WritingSystems
 					yield break;
 				}
 
-				foreach (LanguageInfo li in _languageLookup.SuggestLanguages(_searchText).Where(li => (MatchingLanguageFilter == null || MatchingLanguageFilter(li)) && ShowDialectsFilter(li)))
+				foreach (LanguageInfo li in _languageLookup.SuggestLanguages(_searchText).Where(li => (MatchingLanguageFilter == null || MatchingLanguageFilter(li)) && RegionCodesFilter(li)))
 					yield return li;
 			}
 		}
 
-		private bool ShowDialectsFilter(LanguageInfo li)
+		private bool RegionCodesFilter(LanguageInfo li)
 		{
-			if (ShowDialects)
+			if (IncludeRegionCodes)
 				return true;
 
-			// always include Chinese langauges with region codes
+			// always include Chinese languages with region codes
 			if (li.LanguageTag.IsOneOf("zh-CN", "zh-TW"))
 				return true;
 
@@ -139,6 +139,6 @@ namespace SIL.Windows.Forms.WritingSystems
 			}
 		}
 
-		public bool ShowDialects { get; set; }
+		public bool IncludeRegionCodes { get; set; }
 	}
 }
