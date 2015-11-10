@@ -48,11 +48,13 @@ namespace SIL.Windows.Forms.ImageToolbox
 			// The BackColor gets set back to the standard control background color somewhere...
 			_downloadInstallerLink.BackColor = Color.White;
 			_messageLabel.BackColor = Color.White;
+			_messageLabel.SizeChanged += MessageLabelSizeChanged;
 		}
 
 		public void Dispose()
 		{
 			_thumbnailViewer.Closing(); //this guy was working away in the background
+			_messageLabel.SizeChanged -= MessageLabelSizeChanged;
 		}
 
 		/// <summary>
@@ -252,9 +254,21 @@ namespace SIL.Windows.Forms.ImageToolbox
 							.Localize("ImageToolbox.NewMultilingual");
 				_downloadInstallerLink.Visible = true;
 				_downloadInstallerLink.BackColor = Color.White;
-				_downloadInstallerLink.Location = new Point(_downloadInstallerLink.Left, _messageLabel.Bottom + 4);
 			}
 			_messageLabel.Text = msg;
+		}
+
+		/// <summary>
+		/// Position the download link label properly whenever the size of the main message label changes,
+		/// whether due to changing its text or changing the overall dialog box size.  (BL-2853)
+		/// </summary>
+		private void MessageLabelSizeChanged(object sender, EventArgs eventArgs)
+		{
+			if (_searchLanguageMenu.Visible || !PlatformUtilities.Platform.IsWindows || !_downloadInstallerLink.Visible)
+				return;
+			_downloadInstallerLink.Width = _messageLabel.Width;		// not sure why this isn't automatic
+			if (_downloadInstallerLink.Location.Y != _messageLabel.Bottom + 5)
+				_downloadInstallerLink.Location = new Point(_downloadInstallerLink.Left, _messageLabel.Bottom + 5);
 		}
 
 		protected class LanguageChoice
