@@ -29,4 +29,4 @@ IF "%2"=="" (
 
 :build
 git pull --rebase
-msbuild "Palaso.sln" /verbosity:quiet /maxcpucount /p:Configuration=%BUILD_CONFIG%
+msbuild "build/Palaso.proj" /target:build /verbosity:quiet /maxcpucount /p:Configuration=%BUILD_CONFIG%
