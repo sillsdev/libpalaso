@@ -20,9 +20,9 @@ namespace SIL.Windows.Forms.WritingSystems
 			set { _languageLookupControl.IsDesiredLanguageNameFieldVisible = value; }
 		}
 
-		public bool IsShowDialectsCheckBoxVisible
+		public bool IsShowRegionalDialectsCheckBoxVisible
 		{
-			set { _languageLookupControl.IsShowDialectsCheckBoxVisible = value; }
+			set { _languageLookupControl.IsShowRegionalDialectsCheckBoxVisible = value; }
 		}
 
 		public Func<LanguageInfo, bool> MatchingLanguageFilter

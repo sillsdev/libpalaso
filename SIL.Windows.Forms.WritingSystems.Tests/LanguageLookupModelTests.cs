@@ -39,7 +39,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		{
 			using (var env = new TestEnvironment())
 			{
-				env.Model.IncludeRegionCodes = false;
+				env.Model.IncludeRegionalDialects = false;
 				env.Model.SearchText = "english";
 				Assert.That(env.Model.MatchingLanguages.Select(li => li.LanguageTag), Has.None.EqualTo("en-US"));
 			}
@@ -50,7 +50,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		{
 			using (var env = new TestEnvironment())
 			{
-				env.Model.IncludeRegionCodes = false;
+				env.Model.IncludeRegionalDialects = false;
 				env.Model.SearchText = "chinese";
 				string[] codes = env.Model.MatchingLanguages.Select(li => li.LanguageTag).ToArray();
 				Assert.That(codes, Contains.Item("zh-CN"));
@@ -63,7 +63,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		{
 			using (var env = new TestEnvironment())
 			{
-				env.Model.IncludeRegionCodes = true;
+				env.Model.IncludeRegionalDialects = true;
 				env.Model.SearchText = "english";
 				Assert.That(env.Model.MatchingLanguages.Select(li => li.LanguageTag), Contains.Item("en-US"));
 			}

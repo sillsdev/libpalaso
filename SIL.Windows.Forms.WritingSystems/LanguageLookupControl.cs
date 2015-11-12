@@ -48,9 +48,9 @@ namespace SIL.Windows.Forms.WritingSystems
 			set { _desiredLanguageDisplayName.Visible = _desiredLanguageLabel.Visible = value; }
 		}
 
-		public bool IsShowDialectsCheckBoxVisible
+		public bool IsShowRegionalDialectsCheckBoxVisible
 		{
-			set { _showDialectsCheckBox.Visible = value; }
+			set { _showRegionalDialectsCheckBox.Visible = value; }
 		}
 
 		public Func<LanguageInfo, bool> MatchingLanguageFilter
@@ -252,9 +252,9 @@ namespace SIL.Windows.Forms.WritingSystems
 			_model.SearchText = _searchText.Text;
 		}
 
-		private void _showDialectsCheckBox_CheckedChanged(object sender, EventArgs e)
+		private void _showRegionalDialectsCheckBox_CheckedChanged(object sender, EventArgs e)
 		{
-			_model.IncludeRegionCodes = _showDialectsCheckBox.Checked;
+			_model.IncludeRegionalDialects = _showRegionalDialectsCheckBox.Checked;
 			_lastSearchedForText = null;
 		}
 	}
