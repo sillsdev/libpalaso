@@ -21,7 +21,7 @@ namespace Palaso.UsbDrive.Linux
 		}
 
 		/// <summary>
-		/// Enumerate the devices on the given interface.
+		/// Enumerate the mounted filesystems on the given interface, returning a set of their mount points.
 		/// </summary>
 		/// <remarks>
 		/// DBus is a bit flakey and subject to random timing problems.  We need to

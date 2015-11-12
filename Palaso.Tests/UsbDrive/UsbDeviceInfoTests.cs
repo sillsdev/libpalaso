@@ -161,5 +161,15 @@ namespace Palaso.Tests.UsbDrive
 					}
 				);
 		}
+
+		[Test]
+		[Category("RequiresUSB")]
+		[Category("SkipOnTeamCity")]
+		public void VolumeLabel_1Drive_GivesInfo()
+		{
+			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			Assert.That(usbDrives.Count, Is.GreaterThan(0));
+			Assert.False(string.IsNullOrEmpty(usbDrives[0].VolumeLabel));
+		}
 	}
 }

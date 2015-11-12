@@ -423,6 +423,7 @@
     <Compile Include="PlatformUtilities\Platform.cs" />
     <Compile Include="IO\PathUtilities.cs" />
     <Compile Include="Extensions\XAttributeExtensions.cs" />
+    <Compile Include="UsbDrive\Linux\UsbDriveInfoUDisks2.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName' Or '$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
     <Compile Include="UsbDrive\Windows\UsbDriveInfoWindows.cs" />

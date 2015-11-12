@@ -106,7 +106,13 @@ namespace Palaso.UsbDrive
 		public static List<IUsbDriveInfo> GetDrives()
 		{
 #if MONO
-			return UsbDriveInfoUDisks.GetDrives(); // Lucid now uses UDisks, HAL use is deprecated.
+			// Ubuntu 12.04 uses udisks. HAL use is deprecated.
+			// Ubuntu 14.04 can use udisks or udisks2.
+			// Ubuntu 16.04 uses udisks2.
+			if (UsbDriveInfoUDisks2.IsUDisks2Available)
+				return UsbDriveInfoUDisks2.GetDrives();
+			else
+				return UsbDriveInfoUDisks.GetDrives();
 #else
 			return UsbDriveInfoWindows.GetDrives();
 #endif
