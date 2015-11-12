@@ -15,11 +15,9 @@ namespace SIL.WritingSystems.Tests
 		{
 			private readonly TemporaryFolder _folder = new TemporaryFolder("WritingSystemOrphanFinderTests");
 			private readonly TempFile _file;
-			private readonly TemporaryFolder _sldrCacheFolder;
 
 			public TestEnvironment(string id1, string id2)
 			{
-				_sldrCacheFolder = new TemporaryFolder("SldrCache");
 				WritingSystemRepository = new TestLdmlInFolderWritingSystemRepository(WritingSystemsPath);
 				_file = _folder.GetNewTempFile(true);
 				File.WriteAllText(_file.Path, String.Format("|{0}||{0}||{1}|", id1, id2));
@@ -34,7 +32,6 @@ namespace SIL.WritingSystems.Tests
 
 			public void Dispose()
 			{
-				_sldrCacheFolder.Dispose();
 				_file.Dispose();
 				_folder.Dispose();
 			}

@@ -134,6 +134,7 @@
     <Compile Include="FluentAssertXmlTests.cs" />
     <Compile Include="CloneableTests.cs" />
     <Compile Include="LiftContentForTests.cs" />
+    <Compile Include="OfflineSldrAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TemporaryFolder.cs" />
     <Compile Include="TemporaryFolderTests.cs" />
@@ -143,6 +144,10 @@
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
       <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
       <Name>SIL.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj">
+      <Project>{52a93c63-08f4-4527-8e6e-ac2adeba6e2d}</Project>
+      <Name>SIL.WritingSystems</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

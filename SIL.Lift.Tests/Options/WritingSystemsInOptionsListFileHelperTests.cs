@@ -10,13 +10,13 @@ using SIL.WritingSystems.Tests;
 namespace SIL.Lift.Tests.Options
 {
 	[TestFixture]
+	[OfflineSldr]
 	public class WritingSystemsInOptionsListFileHelperTests
 	{
 		private class TestEnvironment : IDisposable
 		{
 			private readonly TemporaryFolder _folder;
 			private readonly IO.TempFile _optionListFile;
-			private readonly TemporaryFolder _sldrCacheFolder;
 
 			public TestEnvironment(string rfctag)
 				: this(rfctag, "x-dontcare")
@@ -26,7 +26,6 @@ namespace SIL.Lift.Tests.Options
 			public TestEnvironment(string rfctag, string rfctag2)
 			{
 				_folder = new TemporaryFolder("WritingSystemsInoptionListFileHelper");
-				_sldrCacheFolder = new TemporaryFolder("SldrCache");
 				var pathtoOptionsListFile1 = Path.Combine(_folder.Path, "test1.xml");
 				_optionListFile = new IO.TempFile(String.Format(_optionListFileContent, rfctag, rfctag2));
 				_optionListFile.MoveTo(pathtoOptionsListFile1);
@@ -99,7 +98,6 @@ namespace SIL.Lift.Tests.Options
 
 			public void Dispose()
 			{
-				_sldrCacheFolder.Dispose();
 				_optionListFile.Dispose();
 				_folder.Dispose();
 			}

@@ -1,2 +1,0 @@
-﻿zh-Hans-CN	zh-CN
-zh-Hant-TW	zh-TW

@@ -1374,7 +1374,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var writingSystem = new WritingSystemDefinition();
 			writingSystem.Language = "en";
-			Assert.That(writingSystem.Script, Is.EqualTo((ScriptSubtag) writingSystem.Language.ImplicitScriptCode));
+			Assert.That(writingSystem.Script, Is.EqualTo((ScriptSubtag) "Latn"));
 		}
 
 		[Test]
@@ -1508,8 +1508,8 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void ListLabel_RegionSet_LabelIsLanguageWithRegionInBrackets()
 		{
-			var ws = new WritingSystemDefinition("de") {Region = "US"};
-			Assert.That(ws.ListLabel, Is.EqualTo("German (US)"));
+			var ws = new WritingSystemDefinition("de") {Region = "DE"};
+			Assert.That(ws.ListLabel, Is.EqualTo("German (DE)"));
 		}
 
 		[Test]
@@ -1530,9 +1530,9 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void ListLabel_RegionVariantSet_LabelIsLanguageWithRegionAndVariantInBrackets()
 		{
-			var ws = new WritingSystemDefinition("de") {Region = "US"};
+			var ws = new WritingSystemDefinition("de") {Region = "DE"};
 			ws.Variants.Add("smth");
-			Assert.That(ws.ListLabel, Is.EqualTo("German (US-x-smth)"));
+			Assert.That(ws.ListLabel, Is.EqualTo("German (DE-x-smth)"));
 		}
 
 		[Test]
