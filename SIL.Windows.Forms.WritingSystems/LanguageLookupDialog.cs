@@ -9,16 +9,20 @@ namespace SIL.Windows.Forms.WritingSystems
 		public LanguageLookupDialog()
 		{
 			InitializeComponent();
-			ShowDesiredLanguageNameField = true;
 		}
 
 		/// <summary>
 		/// If you wouldn't be paying attention to their requested name, and are only going to look at the code, then
 		/// set this to default so that they aren't fooled into thinking they can modify the name they'll see in your application.
 		/// </summary>
-		public bool ShowDesiredLanguageNameField
+		public bool IsDesiredLanguageNameFieldVisible
 		{
-			set { _languageLookupControl.ShowDesiredLanguageNameField = value; }
+			set { _languageLookupControl.IsDesiredLanguageNameFieldVisible = value; }
+		}
+
+		public bool IsShowRegionalDialectsCheckBoxVisible
+		{
+			set { _languageLookupControl.IsShowRegionalDialectsCheckBoxVisible = value; }
 		}
 
 		public Func<LanguageInfo, bool> MatchingLanguageFilter
