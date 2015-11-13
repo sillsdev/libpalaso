@@ -312,7 +312,7 @@ namespace SIL.WritingSystems
 					if (OfflineMode)
 						throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
 
-					string commitUrl = string.Format("{0}commits?path=extras/alltags.txt&since={1:O}&client_id=a72889d71c3e57a65d5c&client_secret=c7fc53428dff2108ad7ef47dd74d27bd24ddaea2",
+					string commitUrl = string.Format("{0}commits?path=extras/alltags.txt&since={1:O}",
 						SldrGitHubRepo, sinceTime);
 
 					var webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(commitUrl));
@@ -339,7 +339,7 @@ namespace SIL.WritingSystems
 					if (latestCommitTime > DateTime.MinValue)
 					{
 						// there is an update to the alltags.txt file
-						string contentsUrl = string.Format("{0}contents/extras/alltags.txt?&client_id=a72889d71c3e57a65d5c&client_secret=c7fc53428dff2108ad7ef47dd74d27bd24ddaea2", SldrGitHubRepo);
+						string contentsUrl = string.Format("{0}contents/extras/alltags.txt", SldrGitHubRepo);
 						webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(contentsUrl));
 						webRequest.UserAgent = UserAgent;
 						webRequest.Timeout = 10000;
