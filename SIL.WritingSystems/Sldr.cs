@@ -78,7 +78,8 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				string basePath = Platform.IsLinux ? "/var/cache" : Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+				string basePath = Platform.IsLinux ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".cache")
+					: Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
 				return Path.Combine(basePath, "SIL", "SldrCache");
 			}
 		}
@@ -535,14 +536,8 @@ namespace SIL.WritingSystems
 
 		private static void CreateSldrCacheDirectory()
 		{
-			if (SldrCachePath.StartsWith(Path.GetTempPath()))
-			{
-				Directory.CreateDirectory(SldrCachePath);
-				return;
-			}
-
 			DirectoryInfo di = Directory.CreateDirectory(SldrCachePath);
-			if (!Platform.IsLinux)
+			if (!Platform.IsLinux && !SldrCachePath.StartsWith(Path.GetTempPath()))
 			{
 				// NOTE: GetAccessControl/ModifyAccessRule/SetAccessControl is not implemented in Mono
 				DirectorySecurity ds = di.GetAccessControl();

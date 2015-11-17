@@ -151,7 +151,7 @@ namespace SIL.WritingSystems
 		public static void CreateGlobalWritingSystemRepositoryDirectory(string path)
 		{
 			DirectoryInfo di = Directory.CreateDirectory(path);
-			if (!Platform.IsLinux)
+			if (!Platform.IsLinux && !path.StartsWith(Path.GetTempPath()))
 			{
 				// NOTE: GetAccessControl/ModifyAccessRule/SetAccessControl is not implemented in Mono
 				DirectorySecurity ds = di.GetAccessControl();
