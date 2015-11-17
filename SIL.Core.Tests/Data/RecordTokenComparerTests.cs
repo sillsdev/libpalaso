@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using SIL.Data;
+using SIL.TestUtilities;
 using SIL.WritingSystems;
 
 namespace SIL.Tests.Data
 {
 	[TestFixture]
+	[OfflineSldr]
 	public class RecordTokenComparerTests
 	{
 		[Test]

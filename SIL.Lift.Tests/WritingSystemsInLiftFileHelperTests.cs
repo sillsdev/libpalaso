@@ -10,18 +10,17 @@ using SIL.WritingSystems.Tests;
 namespace SIL.Lift.Tests
 {
 	[TestFixture]
+	[OfflineSldr]
 	public class WritingSystemsInLiftFileHelperTests
 	{
 		private class TestEnvironment : IDisposable
 		{
 			private readonly TemporaryFolder _folder;
 			private readonly SIL.IO.TempFile _liftFile1;
-			private readonly TemporaryFolder _sldrCacheFolder;
 
 			public TestEnvironment(string liftFileContent)
 			{
 				_folder = new TemporaryFolder("WritingSystemsInLiftFileHelper");
-				_sldrCacheFolder = new TemporaryFolder("SldrCache");
 				var pathtoLiftFile1 = Path.Combine(_folder.Path, "test1.lift");
 				_liftFile1 = new SIL.IO.TempFile(liftFileContent);
 				_liftFile1.MoveTo(pathtoLiftFile1);
@@ -78,7 +77,6 @@ namespace SIL.Lift.Tests
 
 			public void Dispose()
 			{
-				_sldrCacheFolder.Dispose();
 				_liftFile1.Dispose();
 				_folder.Dispose();
 			}

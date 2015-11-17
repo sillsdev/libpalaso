@@ -58,7 +58,6 @@ namespace SIL.WritingSystems.Tests
 		{
 			private readonly TemporaryFolder _localRepoFolder;
 			private readonly WritingSystemDefinition _writingSystem;
-			private readonly TemporaryFolder _sldrCacheFolder;
 			private readonly TemporaryFolder _templateFolder;
 			private readonly TemporaryFolder _globalRepoFolder;
 			private readonly TestWritingSystemCustomDataMapper _writingSystemCustomDataMapper;
@@ -66,7 +65,6 @@ namespace SIL.WritingSystems.Tests
 			public TestEnvironment()
 			{
 				_localRepoFolder = new TemporaryFolder("LdmlInFolderWritingSystemRepositoryTests");
-				_sldrCacheFolder = new TemporaryFolder("SldrCache");
 				_templateFolder = new TemporaryFolder("Templates");
 				_globalRepoFolder = new TemporaryFolder("GlobalWritingSystemRepository");
 				_writingSystem = new WritingSystemDefinition();
@@ -87,7 +85,6 @@ namespace SIL.WritingSystems.Tests
 			{
 				GlobalRepository.Dispose();
 				_globalRepoFolder.Dispose();
-				_sldrCacheFolder.Dispose();
 				_templateFolder.Dispose();
 				_localRepoFolder.Dispose();
 			}
@@ -99,11 +96,6 @@ namespace SIL.WritingSystems.Tests
 			public string LocalRepositoryPath
 			{
 				get { return _localRepoFolder.Path; }
-			}
-
-			public string SldrCachePath
-			{
-				get { return _sldrCacheFolder.Path; }
 			}
 
 			public WritingSystemDefinition WritingSystem
@@ -616,8 +608,8 @@ namespace SIL.WritingSystems.Tests
 		{
 			using (var environment = new TestEnvironment())
 			{
-				File.WriteAllText(Path.Combine(environment.LocalRepositoryPath, "aa-latn.ldml"),
-								  LdmlContentForTests.CurrentVersion("aa", "Latn", "", ""));
+				File.WriteAllText(Path.Combine(environment.LocalRepositoryPath, "aa-cyrl.ldml"),
+								  LdmlContentForTests.CurrentVersion("aa", "Cyrl", "", ""));
 
 				environment.ResetRepositories();
 				IList<WritingSystemRepositoryProblem> problems = environment.LocalRepository.LoadProblems;
@@ -1006,7 +998,7 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(enWS.Language, Is.EqualTo((LanguageSubtag) "en"));
 				Assert.That(enWS.Script, Is.EqualTo((ScriptSubtag) "Latn"));
 				Assert.That(enWS.VersionDescription, Is.EqualTo("From SLDR"));
-				Assert.That(enWS.Template, Is.EqualTo(Path.Combine(environment.SldrCachePath, "en.ldml")));
+				Assert.That(enWS.Template, Is.EqualTo(Path.Combine(Sldr.SldrCachePath, "en.ldml")));
 
 				// ensure that the template is used when the writing system is saved
 				environment.LocalRepository.Set(enWS);

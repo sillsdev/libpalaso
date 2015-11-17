@@ -266,31 +266,21 @@ namespace SIL.WritingSystems.Tests
 		}
 		#endregion
 
-		#region Normalize
+		#region Canonicalize
 		[Test]
-		public void Normalize_ImplicitScript_SuppressesScript()
+		public void Canonicalize_ImplicitScript_SuppressesScript()
 		{
-			Assert.That(IetfLanguageTag.Normalize("en-Latn-US", IetfLanguageTagNormalizationForm.Canonical), Is.EqualTo("en-US"));
+			Assert.That(IetfLanguageTag.Canonicalize("en-Latn-US"), Is.EqualTo("en-US"));
+			Assert.That(IetfLanguageTag.Canonicalize("zh-hans-Cn-x-stuff"), Is.EqualTo("zh-CN-x-stuff"));
+			Assert.That(IetfLanguageTag.Canonicalize("zH-hans-Cn"), Is.EqualTo("zh-CN"));
+			Assert.That(IetfLanguageTag.Canonicalize("zH-Hant-tW-x-stuff"), Is.EqualTo("zh-TW-x-stuff"));
+			Assert.That(IetfLanguageTag.Canonicalize("Zh-hant-Tw"), Is.EqualTo("zh-TW"));
 		}
 
 		[Test]
-		public void Normalize_NonStandardCapitalization_StandardCapitalization()
+		public void Canonicalize_NonStandardCapitalization_StandardCapitalization()
 		{
-			Assert.That(IetfLanguageTag.Normalize("zH-latn-cn-FonIpa-X-Etic", IetfLanguageTagNormalizationForm.Canonical), Is.EqualTo("zh-Latn-CN-fonipa-x-etic"));
-		}
-
-		[Test]
-		public void Normalize_CanonicalForm_CompatibleForm()
-		{
-			Assert.That(IetfLanguageTag.Normalize("zh-hans-Cn-x-stuff", IetfLanguageTagNormalizationForm.SilCompatible), Is.EqualTo("zh-CN-x-stuff"));
-			Assert.That(IetfLanguageTag.Normalize("zH-hans-Cn", IetfLanguageTagNormalizationForm.SilCompatible), Is.EqualTo("zh-CN"));
-		}
-
-		[Test]
-		public void Normalize_CompatibleForm_CanonicalForm()
-		{
-			Assert.That(IetfLanguageTag.Normalize("zH-tW-x-stuff", IetfLanguageTagNormalizationForm.Canonical), Is.EqualTo("zh-Hant-TW-x-stuff"));
-			Assert.That(IetfLanguageTag.Normalize("Zh-Tw", IetfLanguageTagNormalizationForm.Canonical), Is.EqualTo("zh-Hant-TW"));
+			Assert.That(IetfLanguageTag.Canonicalize("zH-latn-cn-FonIpa-X-Etic"), Is.EqualTo("zh-Latn-CN-fonipa-x-etic"));
 		}
 		#endregion
 

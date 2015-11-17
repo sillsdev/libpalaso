@@ -19,7 +19,6 @@ namespace SIL.WritingSystems.Tests
 	[TestFixture]
 	public class LdmlDataMapperTests
 	{
-		private WritingSystemDefinition _ws;
 		private static readonly XNamespace Sil = "urn://www.sil.org/ldml/0.1";
 
 		private class TestEnvironment : IDisposable
@@ -46,10 +45,9 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		[SetUp]
-		public void SetUp()
+		private static WritingSystemDefinition CreateWritingSystem()
 		{
-			_ws = new WritingSystemDefinition("en", "Latn", "US", string.Empty, "eng", false);
+			return new WritingSystemDefinition("en", "Latn", "US", string.Empty, "eng", false);
 		}
 
 		[Test]
@@ -57,7 +55,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			Assert.Throws<ArgumentNullException>(
-				() => adaptor.Read((string)null, _ws)
+				() => adaptor.Read((string)null, CreateWritingSystem())
 			);
 		}
 
@@ -75,7 +73,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			Assert.Throws<ArgumentNullException>(
-				() => adaptor.Read((XmlReader)null, _ws)
+				() => adaptor.Read((XmlReader)null, CreateWritingSystem())
 			);
 		}
 
@@ -93,7 +91,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			Assert.Throws<ArgumentNullException>(
-				() => adaptor.Write((string)null, _ws, null)
+				() => adaptor.Write((string)null, CreateWritingSystem(), null)
 			);
 		}
 
@@ -111,7 +109,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			Assert.Throws<ArgumentNullException>(
-				() => adaptor.Write((XmlWriter)null, _ws, null)
+				() => adaptor.Write((XmlWriter)null, CreateWritingSystem(), null)
 			);
 		}
 

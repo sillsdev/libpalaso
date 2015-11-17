@@ -794,7 +794,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			summary.AppendFormat(" {0}", writingSystem.Language.Name);
 			if (writingSystem.Region != null)
 				summary.AppendFormat(" in {0}", writingSystem.Region.Code);
-			if (writingSystem.Script != null && writingSystem.Language.ImplicitScriptCode != writingSystem.Script.Code)
+			if (writingSystem.Script != null && !IetfLanguageTag.IsScriptImplied(writingSystem.LanguageTag))
 				summary.AppendFormat(" written in {0} script", CurrentIso15924Script.ShortName);
 
 			summary.AppendFormat(". ({0})", writingSystem.LanguageTag);

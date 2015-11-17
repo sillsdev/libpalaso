@@ -134,11 +134,8 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				string result = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-				if (result == "/usr/share")
-					result = "/var/lib";
-				result = Path.Combine(result, "SIL", "WritingSystemRepository");
-				return result;
+				string basePath = Platform.IsLinux ? "/var/lib" : Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+				return Path.Combine(basePath, "SIL", "WritingSystemRepository");
 			}
 		}
 
@@ -153,18 +150,8 @@ namespace SIL.WritingSystems
 
 		public static void CreateGlobalWritingSystemRepositoryDirectory(string path)
 		{
-			DirectoryInfo di;
-
-			// Provides FW on Linux multi-user access. Overrides the system
-			// umask and creates the directory with the permissions "775".
-			// The "fieldworks" group was created outside the app during
-			// configuration of the package which allows group access.
-			using (new FileModeOverride())
-			{
-				di = Directory.CreateDirectory(path);
-			}
-
-			if (!Platform.IsLinux)
+			DirectoryInfo di = Directory.CreateDirectory(path);
+			if (!Platform.IsLinux && !path.StartsWith(Path.GetTempPath()))
 			{
 				// NOTE: GetAccessControl/ModifyAccessRule/SetAccessControl is not implemented in Mono
 				DirectorySecurity ds = di.GetAccessControl();

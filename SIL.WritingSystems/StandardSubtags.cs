@@ -75,7 +75,7 @@ namespace SIL.WritingSystems
 						string iso3Code;
 						if (!twoToThreeMap.TryGetValue(subtag, out iso3Code))
 							iso3Code = subtag;
-						languages.Add(new LanguageSubtag(subtag, description, false, iso3Code, GetImplicitScriptCode(subTagComponents)));
+						languages.Add(new LanguageSubtag(subtag, description, false, iso3Code));
 						break;
 					case "script":
 						scripts.Add(new ScriptSubtag(subtag, description, false));
@@ -90,7 +90,7 @@ namespace SIL.WritingSystems
 			}
 
 			IEnumerable<LanguageSubtag> sortedLanguages = languages.OrderBy(l => Regex.Replace(l.Name, @"[^\w]", ""))
-				.Concat(new[] {new LanguageSubtag(WellKnownSubtags.UnlistedLanguage, "Language Not Listed", true, string.Empty, string.Empty)});
+				.Concat(new[] {new LanguageSubtag(WellKnownSubtags.UnlistedLanguage, "Language Not Listed", true, string.Empty)});
 			RegisteredLanguages = new ReadOnlyKeyedCollection<string, LanguageSubtag>(new KeyedList<string, LanguageSubtag>(sortedLanguages, l => l.Code, StringComparer.InvariantCultureIgnoreCase));
 			RegisteredScripts = new ReadOnlyKeyedCollection<string, ScriptSubtag>(new KeyedList<string, ScriptSubtag>(scripts.OrderBy(s => s.Name), s => s.Code, StringComparer.InvariantCultureIgnoreCase));
 			RegisteredRegions = new ReadOnlyKeyedCollection<string, RegionSubtag>(new KeyedList<string, RegionSubtag>(regions.OrderBy(r => r.Name), r => r.Code, StringComparer.InvariantCultureIgnoreCase));
@@ -124,16 +124,6 @@ namespace SIL.WritingSystems
 				if (line.StartsWith("Prefix: "))
 					yield return line.Substring("Prefix: ".Length).Trim();
 			}
-		}
-
-		private static string GetImplicitScriptCode(string[] subTagComponents)
-		{
-			foreach (string line in subTagComponents)
-			{
-				if (line.StartsWith("Suppress-Script: "))
-					return line.Substring("Suppress-Script: ".Length).Trim();
-			}
-			return string.Empty;
 		}
 
 		internal static string SubTagComponentDescription(string component)

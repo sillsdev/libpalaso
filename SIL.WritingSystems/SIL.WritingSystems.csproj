@@ -276,6 +276,7 @@
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\KeyboardDefinitionV1.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV2To3Migration\Staging.cs" />
     <Compile Include="RulesCollationDefinition.cs" />
+    <Compile Include="SldrLanguageTagInfo.cs" />
     <Compile Include="SystemCollationDefinition.cs" />
     <Compile Include="WritingSystemFactory.cs" />
     <Compile Include="WritingSystemFactoryBase.cs" />
@@ -353,13 +354,13 @@
     <Content Include="Resources\ianaSubtagRegistry.txt" />
     <Content Include="Resources\LanguageCodes.txt" />
     <Content Include="Resources\LanguageIndex.txt" />
-    <Content Include="Resources\CanonicalToSilCompatible.txt" />
     <Content Include="Resources\TwoToThreeCodes.txt" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="LanguageRegistryResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>LanguageRegistryResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

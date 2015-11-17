@@ -182,7 +182,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 			var s = new StringBuilder();
 			if (!string.IsNullOrEmpty(languageSubtag.Name))
 				s.Append(languageSubtag.Name);
-			if (!string.IsNullOrEmpty(scriptSubtag.Name) && (languageSubtag.ImplicitScriptCode != scriptSubtag.Code))
+			if (scriptSubtag != null && !string.IsNullOrEmpty(scriptSubtag.Name) && !IetfLanguageTag.IsScriptImplied(languageTag))
 				s.AppendFormat("-{0}", scriptSubtag.Name);
 			if (regionSubtag != null && !string.IsNullOrEmpty(regionSubtag.Name))
 				s.AppendFormat("-{0}", regionSubtag.Name);
