@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using SIL.IO;
+using SIL.PlatformUtilities;
 
 namespace SIL.WritingSystems.Migration
 {
@@ -13,6 +14,25 @@ namespace SIL.WritingSystems.Migration
 	///</summary>
 	public class GlobalWritingSystemRepositoryMigrator : LdmlInFolderWritingSystemRepositoryMigrator
 	{
+		internal static readonly string DefaultLdmlPathVersion0 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL", "WritingSystemRepository");
+		internal const string DefaultLdmlPathLinuxVersion2 = "/var/lib/SIL/WritingSystemRepository";
+
+		static GlobalWritingSystemRepositoryMigrator()
+		{
+			LdmlPathVersion0 = DefaultLdmlPathVersion0;
+			LdmlPathLinuxVersion2 = DefaultLdmlPathLinuxVersion2;
+		}
+
+		///<summary>
+		/// The path to old palaso ldml files.
+		///</summary>
+		internal static string LdmlPathVersion0 { get; set; }
+
+		///<summary>
+		/// The path to old LDML files in "/var/lib" on Linux.
+		///</summary>
+		internal static string LdmlPathLinuxVersion2 { get; set; }
+
 		private readonly string _basePath;
 
 		///<summary>
@@ -67,8 +87,23 @@ namespace SIL.WritingSystems.Migration
 				}
 			}
 
-			// 3) Harvest ldml files from %ApplicationData%, then migrate
-			string oldPath = LdmlPathPre0;
+			// 3) Harvest LDML files from old Linux location in "/var/lib"
+			if (Platform.IsLinux)
+			{
+				for (int version = 2; version >= 0; --version)
+				{
+					string sourceVersionPath = Path.Combine(LdmlPathLinuxVersion2, version.ToString(CultureInfo.InvariantCulture));
+					if (Directory.Exists(sourceVersionPath))
+					{
+						CopyLdmlFromFolder(sourceVersionPath);
+						base.Migrate();
+						return;
+					}
+				}
+			}
+
+			// 4) Harvest ldml files from %ApplicationData%, then migrate
+			string oldPath = LdmlPathVersion0;
 			if (Directory.Exists(oldPath))
 			{
 				try
@@ -88,14 +123,6 @@ namespace SIL.WritingSystems.Migration
 			if (!Directory.Exists(SourcePath))
 				GlobalWritingSystemRepository.CreateGlobalWritingSystemRepositoryDirectory(SourcePath);
 			DirectoryUtilities.CopyDirectoryWithException(sourcePath, SourcePath);
-		}
-
-		///<summary>
-		/// The path to old palaso ldml files.
-		///</summary>
-		public static string LdmlPathPre0
-		{
-			get { return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL", "WritingSystemRepository"); }
 		}
 	}
 }

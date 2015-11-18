@@ -128,13 +128,14 @@ namespace SIL.WritingSystems
 		///<summary>
 		/// The DefaultBasePath is %CommonApplicationData%\SIL\WritingSystemRepository
 		/// On Windows 7 this is \ProgramData\SIL\WritingSystemRepository\
-		/// On Linux this must be in /var/lib so that it may be edited
+		/// On Linux this must be in ~/.local/share so that it may be edited
 		///</summary>
 		public static string DefaultBasePath
 		{
 			get
 			{
-				string basePath = Platform.IsLinux ? "/var/lib" : Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+				string basePath = Platform.IsLinux ? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+					: Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
 				return Path.Combine(basePath, "SIL", "WritingSystemRepository");
 			}
 		}
