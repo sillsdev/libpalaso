@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Xml;
 using SIL.Reporting;
@@ -35,11 +36,14 @@ namespace SIL.Settings
 		/// </summary>
 		protected string UserConfigLocation { get { return IsRoaming ? UserRoamingLocation : UserLocalLocation; } }
 
+		private readonly Dictionary<string, string> _renamedSections; 
+
 		/// <summary>
 		/// Default constructor for this provider class
 		/// </summary>
 		public CrossPlatformSettingsProvider()
 		{
+			_renamedSections = new Dictionary<string, string>();
 			UserRoamingLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), GetFullSettingsPath());
 			UserLocalLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), GetFullSettingsPath());
 			// When running multiple builds in parallel we have to use separate directories for
@@ -50,6 +54,11 @@ namespace SIL.Settings
 				UserRoamingLocation = Path.Combine(UserRoamingLocation, buildagentSubdir);
 				UserLocalLocation = Path.Combine(UserLocalLocation, buildagentSubdir);
 			}
+		}
+
+		public IDictionary<string, string> RenamedSections
+		{
+			get { return _renamedSections; }
 		}
 
 		public override void Initialize(string name, System.Collections.Specialized.NameValueCollection config)
@@ -352,11 +361,29 @@ namespace SIL.Settings
 
 		public void Upgrade(SettingsContext context, SettingsPropertyCollection properties)
 		{
-			lock(LockObject)
+			lock (LockObject)
 			{
-				var oldDoc = GetPreviousSettingsXml();
-				if(oldDoc != null)
+				XmlDocument oldDoc = GetPreviousSettingsXml();
+				if (oldDoc != null)
 				{
+					if (_renamedSections.Count > 0)
+					{
+						XmlNode userSettingsNode = oldDoc.SelectSingleNode("configuration/userSettings");
+						if (userSettingsNode != null)
+						{
+							foreach (XmlElement sectionNode in userSettingsNode.ChildNodes.OfType<XmlElement>())
+							{
+								string newName;
+								if (_renamedSections.TryGetValue(sectionNode.Name, out newName))
+								{
+									XmlElement newSectionNode = oldDoc.CreateElement(newName);
+									foreach (XmlNode child in sectionNode.ChildNodes)
+										newSectionNode.AppendChild(child.CloneNode(true));
+									userSettingsNode.ReplaceChild(newSectionNode, sectionNode);
+								}
+							}
+						}
+					}
 					Directory.CreateDirectory(UserConfigLocation);
 					oldDoc.Save(Path.Combine(UserConfigLocation, UserConfigFileName));
 					_settingsXml = oldDoc;
