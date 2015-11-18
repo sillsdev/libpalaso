@@ -275,6 +275,7 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(IetfLanguageTag.Canonicalize("zH-hans-Cn"), Is.EqualTo("zh-CN"));
 			Assert.That(IetfLanguageTag.Canonicalize("zH-Hant-tW-x-stuff"), Is.EqualTo("zh-TW-x-stuff"));
 			Assert.That(IetfLanguageTag.Canonicalize("Zh-hant-Tw"), Is.EqualTo("zh-TW"));
+			Assert.That(IetfLanguageTag.Canonicalize("oro-Latn"), Is.EqualTo("oro"));
 		}
 
 		[Test]
@@ -282,6 +283,14 @@ namespace SIL.WritingSystems.Tests
 		{
 			Assert.That(IetfLanguageTag.Canonicalize("zH-latn-cn-FonIpa-X-Etic"), Is.EqualTo("zh-Latn-CN-fonipa-x-etic"));
 		}
+
+		[Test]
+		public void Canonicalize_NonImplicitScript_DoesNotSuppressScript()
+		{
+			Assert.That(IetfLanguageTag.Canonicalize("en-Cyrl-US"), Is.EqualTo("en-Cyrl-US"));
+			Assert.That(IetfLanguageTag.Canonicalize("sr-Latn"), Is.EqualTo("sr-Latn"));
+		}
+
 		#endregion
 
 		#region ToICuLocale

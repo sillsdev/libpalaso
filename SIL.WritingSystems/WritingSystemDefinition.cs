@@ -416,6 +416,9 @@ namespace SIL.WritingSystems
 			return true;
 		}
 
+		/// <summary>
+		/// Gets or sets the language.
+		/// </summary>
 		public LanguageSubtag Language
 		{
 			get { return _language; }
@@ -428,6 +431,10 @@ namespace SIL.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the script. If the language tag for the writing system has an implicit script,
+		/// this property will return the implicit script.
+		/// </summary>
 		public ScriptSubtag Script
 		{
 			get { return _script; }
@@ -440,6 +447,9 @@ namespace SIL.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the region.
+		/// </summary>
 		public RegionSubtag Region
 		{
 			get { return _region; }
