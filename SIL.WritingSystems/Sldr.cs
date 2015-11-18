@@ -41,6 +41,9 @@ namespace SIL.WritingSystems
 		FromCache
 	};
 
+	/// <summary>
+	/// This class provides methods for retrieving LDML files and tag data from the SIL Locale Data Repository (SLDR) web service.
+	/// </summary>
 	public static class Sldr
 	{
 		public static XNamespace Sil = "urn://www.sil.org/ldml/0.1";
@@ -64,32 +67,34 @@ namespace SIL.WritingSystems
 		private const string UserAgent = "SIL.WritingSystems Library";
 
 		// Mode to test when the SLDR is unavailable.  Default to false
-		public static bool OfflineMode { get; set; }
+		internal static bool OfflineMode { get; set; }
 
 		// If the user wants to request a new UID, you use "uid=unknown" and that will create a new random identifier
 		public const string DefaultUserId = "unknown";
 
+		// in order to avoid deadlocks, SyncRoot should always be acquired first and then SldrCacheMutex
 		private static readonly object SyncRoot = new object();
 		// multiple applications could read/write to the SLDR cache at the same time, so synchronize access
 		private static readonly GlobalMutex SldrCacheMutex;
+
 		private static IReadOnlyKeyedCollection<string, SldrLanguageTagInfo> _languageTags;
 
-		public static string DefaultSldrCachePath
+		internal static string DefaultSldrCachePath
 		{
 			get
 			{
-				string basePath = Platform.IsLinux ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), ".cache")
+				string basePath = Platform.IsLinux ? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
 					: Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
 				return Path.Combine(basePath, "SIL", "SldrCache");
 			}
 		}
 
 		/// <summary>
-		/// Gets or sets the SLDR cache path.
+		/// Gets the SLDR cache path. The setter should only be used for testing purposes.
 		/// </summary>
-		public static string SldrCachePath { get; set; }
+		public static string SldrCachePath { get; internal set; }
 
-		internal static readonly DateTime DefaultEmbeddedDateTime = DateTime.Parse(LanguageRegistryResources.AllTagsTime, CultureInfo.InvariantCulture);
+		internal static readonly DateTime DefaultEmbeddedAllTagsTime = DateTime.Parse(LanguageRegistryResources.AllTagsTime, CultureInfo.InvariantCulture);
 		internal static DateTime EmbeddedAllTagsTime { get; set; }
 
 		static Sldr()
@@ -97,7 +102,7 @@ namespace SIL.WritingSystems
 			SldrCacheMutex = new GlobalMutex("SldrCache");
 			SldrCacheMutex.Initialize();
 			SldrCachePath = DefaultSldrCachePath;
-			EmbeddedAllTagsTime = DefaultEmbeddedDateTime;
+			EmbeddedAllTagsTime = DefaultEmbeddedAllTagsTime;
 		}
 
 		/// <summary>
@@ -291,7 +296,7 @@ namespace SIL.WritingSystems
 			if (_languageTags != null)
 				return;
 
-			string allTagsContents;
+			string allTagsContent;
 			using (SldrCacheMutex.Lock())
 			{
 				CreateSldrCacheDirectory();
@@ -303,6 +308,9 @@ namespace SIL.WritingSystems
 				{
 					DateTime fileTime = File.GetLastWriteTime(cachedAllTagsPath);
 					if (sinceTime > fileTime)
+						// delete the old alltags.txt file if a newer embedded one is available.
+						// this can happen if the application is upgraded to use a newer version of SIL.WritingySystems
+						// that has an updated embedded alltags.txt file.
 						File.Delete(cachedAllTagsPath);
 					else
 						sinceTime = fileTime;
@@ -313,9 +321,9 @@ namespace SIL.WritingSystems
 					if (OfflineMode)
 						throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
 
+					// query the SLDR Git repo to see if there is an updated version of alltags.txt
 					string commitUrl = string.Format("{0}commits?path=extras/alltags.txt&since={1:O}",
 						SldrGitHubRepo, sinceTime);
-
 					var webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(commitUrl));
 					webRequest.UserAgent = UserAgent;
 					webRequest.Timeout = 10000;
@@ -326,6 +334,7 @@ namespace SIL.WritingSystems
 						{
 							using (StreamReader responseReader = new StreamReader(stream))
 							{
+								// get the timestamp of the most recent commit
 								JArray commits = JArray.Load(new JsonTextReader(responseReader));
 								foreach (JObject commit in commits.Children<JObject>())
 								{
@@ -339,7 +348,7 @@ namespace SIL.WritingSystems
 
 					if (latestCommitTime > DateTime.MinValue)
 					{
-						// there is an update to the alltags.txt file
+						// there is an updated version of the alltags.txt file in the SLDR Git repo, so get it
 						string contentsUrl = string.Format("{0}contents/extras/alltags.txt", SldrGitHubRepo);
 						webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(contentsUrl));
 						webRequest.UserAgent = UserAgent;
@@ -363,29 +372,45 @@ namespace SIL.WritingSystems
 				{
 				}
 
-				allTagsContents = File.Exists(cachedAllTagsPath) ? File.ReadAllText(cachedAllTagsPath) : LanguageRegistryResources.alltags;
+				allTagsContent = File.Exists(cachedAllTagsPath) ? File.ReadAllText(cachedAllTagsPath) : LanguageRegistryResources.alltags;
 			}
-			string[] allTags = allTagsContents.Replace("\r\n", "\n").Split(new[] {"\n"}, StringSplitOptions.RemoveEmptyEntries);
+
+			_languageTags = new ReadOnlyKeyedCollection<string, SldrLanguageTagInfo>(ParseAllTags(allTagsContent));
+		}
+
+		internal static IKeyedCollection<string, SldrLanguageTagInfo> ParseAllTags(string allTagsContent)
+		{
+			string[] allTags = allTagsContent.Replace("\r\n", "\n").Split(new[] {"\n"}, StringSplitOptions.RemoveEmptyEntries);
 			var tags = new KeyedList<string, SldrLanguageTagInfo>(info => info.LanguageTag, StringComparer.InvariantCultureIgnoreCase);
 			foreach (string line in allTags)
 			{
 				string tagsStr = line;
+				// trim off the explicit inheritance relationship information, we don't care about inheritance
 				int index = line.LastIndexOf('>');
 				if (index != -1)
 					tagsStr = line.Substring(0, index).Trim();
+				// split the the line into groups of equivalent language tags
+				// the bar character is used to show implicit inheritance relationships between tags,
+				// we don't care about inheritance
 				string[] equivalentTagsStrs = tagsStr.Split('|');
 				foreach (string equivalentTagsStr in equivalentTagsStrs)
 				{
+					// split each group of equivalent language tags into individual language tags
 					string[] tagStrs = equivalentTagsStr.Split('=');
 					for (int i = 0; i < tagStrs.Length; i++)
 						tagStrs[i] = tagStrs[i].Trim();
+					// check if language tag is available in the SLDR
 					bool isAvailable = tagStrs[0].StartsWith("*");
 					if (isAvailable)
 						tagStrs[0] = tagStrs[0].Substring(1);
 					string sldrLangTag = tagStrs[0];
+					// check if a tag with a script code is equivalent to a tag without a script code
+					// this tells us that the script is implicit
 					string langTag, implicitStringCode;
 					if (equivalentTagsStrs.Length == 1 && tagStrs.Length == 1)
 					{
+						// special case where there is a single tag on a line
+						// if it contains a script code, then the script is implicit
 						string[] components = tagStrs[0].Split('-');
 						if (components.Length == 2 && components[1].Length == 4)
 						{
@@ -403,6 +428,7 @@ namespace SIL.WritingSystems
 						var minTag = tagStrs.Select(t => new {Tag = t, Components = t.Split('-')}).MinBy(t => t.Components.Length);
 						langTag = minTag.Tag;
 						implicitStringCode = null;
+						// only look for an implicit script code if the minimal tag has no script code
 						if (minTag.Components.Length < 2 || minTag.Components[1].Length != 4)
 						{
 							foreach (string tagStr in tagStrs)
@@ -416,6 +442,10 @@ namespace SIL.WritingSystems
 					SldrLanguageTagInfo existingTag;
 					if (tags.TryGet(langTag, out existingTag))
 					{
+						// alltags.txt can contain multiple lines that contain the same language tag.
+						// if one of the lines contains information on an implicit script for a language tag, 
+						// we don't want to lose that information, so we preserve it by not replacing the
+						// SldrLanguageTagInfo object for this language tag.
 						if (existingTag.ImplicitScriptCode != null)
 							continue;
 						tags.Remove(langTag);
@@ -424,7 +454,7 @@ namespace SIL.WritingSystems
 				}
 			}
 
-			_languageTags = new ReadOnlyKeyedCollection<string, SldrLanguageTagInfo>(tags);
+			return tags;
 		}
 
 		/// <summary>

@@ -33,12 +33,6 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void RegisteredLanguages_HasFonipa_False()
-		{
-			Assert.That(StandardSubtags.RegisteredLanguages.Contains("fonipa"), Is.False);
-		}
-
-		[Test]
 		public void RegisteredScripts_HasLatn_True()
 		{
 			Assert.That(StandardSubtags.RegisteredScripts.Contains("Latn"), Is.True);
