@@ -93,10 +93,10 @@ namespace SIL.Windows.Forms.Tests
 				RegistrationSettingsProvider.SetProductName("SettingsProviderTests");
 				var settingsProvider = new TestCrossPlatformSettingsProvider();
 				settingsProvider.Initialize(null, null); // Seems to be what .NET does, despite warnings
-				var dirPath = settingsProvider.UserConfigLocation;
+				string dirPath = settingsProvider.UserConfigLocation;
 				Assert.That(dirPath, Is.StringContaining("SettingsProviderTests"));
 				Directory.CreateDirectory(dirPath);
-				var filePath = Path.Combine(dirPath, TestCrossPlatformSettingsProvider.UserConfigFileName);
+				string filePath = Path.Combine(dirPath, TestCrossPlatformSettingsProvider.UserConfigFileName);
 				using (new TempFile(filePath, true))
 				{
 					File.WriteAllText(filePath,
@@ -111,9 +111,8 @@ namespace SIL.Windows.Forms.Tests
 	</userSettings>
 </configuration>");
 
-					var regSettings = Registration.Registration.Default;
-					var email = regSettings.Email;
-					Assert.That(email, Is.EqualTo("someone@somewhere.org"));
+					Registration.Registration regSettings = Registration.Registration.Default;
+					Assert.That(regSettings.Email, Is.EqualTo("someone@somewhere.org"));
 				}
 			}
 		}
@@ -132,16 +131,16 @@ namespace SIL.Windows.Forms.Tests
 			if (File.Exists(settingsFilePath))
 				File.Delete(settingsFilePath);
 
-			SIL.Windows.Forms.Tests.Properties.Settings.Default.TestString = "hello world";
-			SIL.Windows.Forms.Tests.Properties.Settings.Default.Save();
-			SIL.Windows.Forms.Tests.Properties.Settings.Default.AnotherTest = "another";
-			SIL.Windows.Forms.Tests.Properties.Settings.Default.Save();
+			Properties.Settings.Default.TestString = "hello world";
+			Properties.Settings.Default.Save();
+			Properties.Settings.Default.AnotherTest = "another";
+			Properties.Settings.Default.Save();
 			Registration.Registration.Default.FirstName = "John";
 			Registration.Registration.Default.Save();
 
 			// This line was a problem in one version of the code, where Settings saved a version of the XML without the Registration stuff.
 			// The thing this test is mainly about is that this subsequent Save() does not discard the registration settings.
-			SIL.Windows.Forms.Tests.Properties.Settings.Default.Save();
+			Properties.Settings.Default.Save();
 
 			// Somehow a Reload() at this point does NOT detect that the registration settings are missing (if they are).
 			string fileContent = File.ReadAllText(settingsFilePath);

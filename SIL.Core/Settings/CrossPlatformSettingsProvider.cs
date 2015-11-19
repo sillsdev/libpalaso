@@ -371,7 +371,7 @@ namespace SIL.Settings
 						XmlNode userSettingsNode = oldDoc.SelectSingleNode("configuration/userSettings");
 						if (userSettingsNode != null)
 						{
-							foreach (XmlElement sectionNode in userSettingsNode.ChildNodes.OfType<XmlElement>())
+							foreach (XmlElement sectionNode in userSettingsNode.ChildNodes.OfType<XmlElement>().ToArray())
 							{
 								string newName;
 								if (_renamedSections.TryGetValue(sectionNode.Name, out newName))
