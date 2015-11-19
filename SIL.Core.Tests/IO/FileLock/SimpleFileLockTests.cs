@@ -63,7 +63,7 @@ namespace SIL.Tests.IO.FileLock
 			LockIO.WriteLock(LockPath, new FileLockContent
 			{
 				PID = 9999,
-				ProcessName = "Stuff",
+				ProcessName = Path.GetRandomFileName(),
 				Timestamp = DateTime.Now.Ticks
 			});
 			SimpleFileLock fileLock = SimpleFileLock.Create("SimpleFileLockTests");
@@ -81,7 +81,7 @@ namespace SIL.Tests.IO.FileLock
 		}
 
 		[Test]
-		public void TryAcquireLock_FileOpen_ReturnsFalse()
+		public void TryAcquireLock_LockFileCurrentlyOpen_ReturnsFalse()
 		{
 			SimpleFileLock fileLock = SimpleFileLock.Create("SimpleFileLockTests");
 			using (File.Open(LockPath, FileMode.Create))
@@ -157,7 +157,7 @@ namespace SIL.Tests.IO.FileLock
 		}
 
 		[Test]
-		public void ReleaseLock_FileOpen_LockFileExists()
+		public void ReleaseLock_LockFileCurrentlyOpen_LockFileExists()
 		{
 			SimpleFileLock fileLock = SimpleFileLock.Create("SimpleFileLockTests");
 			using (File.Open(LockPath, FileMode.Create))

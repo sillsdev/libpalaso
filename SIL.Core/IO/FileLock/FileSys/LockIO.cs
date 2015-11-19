@@ -51,7 +51,10 @@ namespace SIL.IO.FileLock.FileSys
 			try
 			{
 				var obj = new JObject();
-				// type is only required for forward compatibility
+				// type is only required for forward compatibility.
+				// older versions of this library used DataContractJsonSerializer to read/write the lock file contents.
+				// by writing out the old type value, it allows older versions of this library to continue to be able
+				// to read the lock files correctly.
 				obj["__type"] = "FileLockContent:#Palaso.IO.FileLock";
 				obj["PID"] = lockContent.PID;
 				obj["ProcessName"] = lockContent.ProcessName;
