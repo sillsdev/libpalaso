@@ -1,18 +1,12 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.Serialization.Json;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace SIL.IO.FileLock.FileSys
 {
 	internal static class LockIO
 	{
-		private static readonly DataContractJsonSerializer JsonSerializer;
-
-		static LockIO()
-		{
-			JsonSerializer = new DataContractJsonSerializer(typeof(FileLockContent), new[] { typeof(FileLockContent) }, int.MaxValue, true, null, true);
-		}
-
 		public static string GetFilePath(string lockName)
 		{
 			return Path.Combine(Path.GetTempPath(), lockName);
@@ -27,10 +21,15 @@ namespace SIL.IO.FileLock.FileSys
 		{
 			try
 			{
-				using (var stream = File.OpenRead(lockFilePath))
+				using (var streamReader = new StreamReader(File.OpenRead(lockFilePath)))
 				{
-					var obj = JsonSerializer.ReadObject(stream);
-					return (FileLockContent) obj ?? new MissingFileLockContent();
+					JObject obj = JObject.Load(new JsonTextReader(streamReader));
+					return new FileLockContent
+					{
+						PID = obj["PID"].ToObject<long>(),
+						ProcessName = obj["ProcessName"].ToString(),
+						Timestamp = obj["Timestamp"].ToObject<long>()
+					};
 				}
 			}
 			catch (FileNotFoundException)
@@ -51,9 +50,15 @@ namespace SIL.IO.FileLock.FileSys
 		{
 			try
 			{
-				using (var stream = File.Create(lockFilePath))
+				var obj = new JObject();
+				// type is only required for forward compatibility
+				obj["__type"] = "FileLockContent:#Palaso.IO.FileLock";
+				obj["PID"] = lockContent.PID;
+				obj["ProcessName"] = lockContent.ProcessName;
+				obj["Timestamp"] = lockContent.Timestamp;
+				using (StreamWriter streamWriter = new StreamWriter(File.Create(lockFilePath)))
 				{
-					JsonSerializer.WriteObject(stream, lockContent);
+					obj.WriteTo(new JsonTextWriter(streamWriter));
 				}
 				return true;
 			}
