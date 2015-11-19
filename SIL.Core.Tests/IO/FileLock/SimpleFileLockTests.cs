@@ -4,6 +4,7 @@ using System.IO;
 using NUnit.Framework;
 using SIL.IO.FileLock;
 using SIL.IO.FileLock.FileSys;
+using SIL.PlatformUtilities;
 
 namespace SIL.Tests.IO.FileLock
 {
@@ -11,6 +12,11 @@ namespace SIL.Tests.IO.FileLock
 	public class SimpleFileLockTests
 	{
 		private static readonly string LockPath = Path.Combine(Path.GetTempPath(), "SimpleFileLockTests");
+		// some tests require the Id of an active process.
+		// on Windows, we use 0, which is the system idle process.
+		// on Linux, we use 1, which is the init process.
+		// we know that these will always be active.
+		private static readonly int ActiveProcessId = Platform.IsLinux ? 1 : 0;
 
 		[SetUp]
 		public void SetUp()
@@ -43,8 +49,8 @@ namespace SIL.Tests.IO.FileLock
 		{
 			LockIO.WriteLock(LockPath, new FileLockContent
 			{
-				PID = 0,
-				ProcessName = Process.GetProcessById(0).ProcessName,
+				PID = ActiveProcessId,
+				ProcessName = Process.GetProcessById(ActiveProcessId).ProcessName,
 				Timestamp = DateTime.Now.Ticks
 			});
 			SimpleFileLock fileLock = SimpleFileLock.Create("SimpleFileLockTests");
@@ -98,8 +104,8 @@ namespace SIL.Tests.IO.FileLock
 		{
 			LockIO.WriteLock(LockPath, new FileLockContent
 			{
-				PID = 0,
-				ProcessName = Process.GetProcessById(0).ProcessName,
+				PID = ActiveProcessId,
+				ProcessName = Process.GetProcessById(ActiveProcessId).ProcessName,
 				Timestamp = (DateTime.Now - TimeSpan.FromHours(2)).Ticks
 			});
 			SimpleFileLock fileLock = SimpleFileLock.Create("SimpleFileLockTests", TimeSpan.FromHours(1));
@@ -111,8 +117,8 @@ namespace SIL.Tests.IO.FileLock
 		{
 			LockIO.WriteLock(LockPath, new FileLockContent
 			{
-				PID = 0,
-				ProcessName = Process.GetProcessById(0).ProcessName,
+				PID = ActiveProcessId,
+				ProcessName = Process.GetProcessById(ActiveProcessId).ProcessName,
 				Timestamp = DateTime.Now.Ticks
 			});
 			SimpleFileLock fileLock = SimpleFileLock.Create("SimpleFileLockTests", TimeSpan.FromHours(1));
@@ -141,8 +147,8 @@ namespace SIL.Tests.IO.FileLock
 		{
 			LockIO.WriteLock(LockPath, new FileLockContent
 			{
-				PID = 0,
-				ProcessName = Process.GetProcessById(0).ProcessName,
+				PID = ActiveProcessId,
+				ProcessName = Process.GetProcessById(ActiveProcessId).ProcessName,
 				Timestamp = DateTime.Now.Ticks
 			});
 			SimpleFileLock fileLock = SimpleFileLock.Create("SimpleFileLockTests");
