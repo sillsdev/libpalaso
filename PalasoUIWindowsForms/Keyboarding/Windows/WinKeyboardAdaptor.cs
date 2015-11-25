@@ -770,13 +770,13 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Windows
 				{
 					var profile = ProfileMgr.GetActiveProfile(Guids.TfcatTipKeyboard);
 					return Keyboard.Controller.AllAvailableKeyboards.OfType<WinKeyboardDescription>()
-						.FirstOrDefault(winKeybd => InputProcessorProfilesEqual(profile, winKeybd.InputProcessorProfile));
+						.FirstOrDefault(winKeybd => InputProcessorProfilesEqual(profile, winKeybd.InputProcessorProfile)) ?? KeyboardDescription.Zero;
 				}
 
 				// Probably Windows XP where we don't have ProfileMgr
 				var lang = ProcessorProfiles.GetCurrentLanguage();
 				return Keyboard.Controller.AllAvailableKeyboards.OfType<WinKeyboardDescription>()
-					.FirstOrDefault(winKeybd => winKeybd.InputProcessorProfile.LangId == lang);
+					.FirstOrDefault(winKeybd => winKeybd.InputProcessorProfile.LangId == lang) ?? KeyboardDescription.Zero;
 			}
 		}
 
