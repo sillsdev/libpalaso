@@ -22,6 +22,8 @@ namespace SIL.Windows.Forms.ImageToolbox
 		private Control _currentControl;
 		private PalasoImage _imageInfo;
 		private ListViewItem _cropToolListItem;
+		private string _incomingSearchLanguage;
+		private AcquireImageControl _acquireImageControl;
 
 		public ImageToolboxControl()
 		{
@@ -115,7 +117,16 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// <summary>
 		/// Gets or sets the language used in searching for an image by words.
 		/// </summary>
-		public string SearchLanguage { protected get; set; }
+		public string SearchLanguage
+		{
+			//the acquireImageControl is added at some point during use; if we have it, we want to tell
+			//the client what search language the user has actually chosen. But if we don't have that
+			//control yet, just return whatever value they set us to.
+			get { return _acquireImageControl != null ? _acquireImageControl.SearchLanguage : _incomingSearchLanguage; }
+			
+			// We store this until we get an acquireImageControl, then pass it along to it when it is created.
+			set { _incomingSearchLanguage = value; }
+		}
 
 		private void SetCurrentImageToolTip(PalasoImage image)
 		{
@@ -339,10 +350,10 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 			AddControl("Get Picture".Localize("ImageToolbox.GetPicture"), ImageToolboxButtons.browse, "browse", (x) =>
 			{
-				var c = new AcquireImageControl();
-				c.SetIntialSearchString(InitialSearchString);
-				c.SearchLanguage = SearchLanguage;
-				return c;
+				_acquireImageControl = new AcquireImageControl();
+				_acquireImageControl.SetIntialSearchString(InitialSearchString);
+				_acquireImageControl.SearchLanguage = _incomingSearchLanguage;
+				return _acquireImageControl;
 			});
 			_cropToolListItem = AddControl("Crop".Localize("ImageToolbox.Crop"), ImageToolboxButtons.crop, "crop", (x) => new ImageCropper());
 

@@ -35,7 +35,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			Metadata metadata1 = new Metadata();
 			this._cancelButton = new System.Windows.Forms.Button();
 			this._okButton = new System.Windows.Forms.Button();
-			this.imageToolboxControl1 = new ImageToolboxControl();
+			this._imageToolboxControl = new ImageToolboxControl();
 			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).BeginInit();
 			this.SuspendLayout();
@@ -71,11 +71,11 @@ namespace SIL.Windows.Forms.ImageToolbox
 			//
 			// imageToolboxControl1
 			//
-			this.imageToolboxControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			this._imageToolboxControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 			| System.Windows.Forms.AnchorStyles.Left)
 			| System.Windows.Forms.AnchorStyles.Right)));
-			this.imageToolboxControl1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			this.imageToolboxControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this._imageToolboxControl.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this._imageToolboxControl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			palasoImage1.Image = null;
 			metadata1.AttributionUrl = null;
 			metadata1.CollectionName = null;
@@ -86,16 +86,16 @@ namespace SIL.Windows.Forms.ImageToolbox
 			metadata1.License = null;
 			palasoImage1.Metadata = metadata1;
 			palasoImage1.MetadataLocked = false;
-			this.imageToolboxControl1.ImageInfo = palasoImage1;
-			this.imageToolboxControl1.InitialSearchString = null;
-			this._L10NSharpExtender.SetLocalizableToolTip(this.imageToolboxControl1, null);
-			this._L10NSharpExtender.SetLocalizationComment(this.imageToolboxControl1, null);
-			this._L10NSharpExtender.SetLocalizationPriority(this.imageToolboxControl1, L10NSharp.LocalizationPriority.NotLocalizable);
-			this._L10NSharpExtender.SetLocalizingId(this.imageToolboxControl1, "ImageToolbox.ImageToolboxDialog.ImageToolboxControl");
-			this.imageToolboxControl1.Location = new System.Drawing.Point(1, 1);
-			this.imageToolboxControl1.Name = "imageToolboxControl1";
-			this.imageToolboxControl1.Size = new System.Drawing.Size(873, 450);
-			this.imageToolboxControl1.TabIndex = 3;
+			this._imageToolboxControl.ImageInfo = palasoImage1;
+			this._imageToolboxControl.InitialSearchString = null;
+			this._L10NSharpExtender.SetLocalizableToolTip(this._imageToolboxControl, null);
+			this._L10NSharpExtender.SetLocalizationComment(this._imageToolboxControl, null);
+			this._L10NSharpExtender.SetLocalizationPriority(this._imageToolboxControl, L10NSharp.LocalizationPriority.NotLocalizable);
+			this._L10NSharpExtender.SetLocalizingId(this._imageToolboxControl, "ImageToolbox.ImageToolboxDialog.ImageToolboxControl");
+			this._imageToolboxControl.Location = new System.Drawing.Point(1, 1);
+			this._imageToolboxControl.Name = "_imageToolboxControl";
+			this._imageToolboxControl.Size = new System.Drawing.Size(873, 450);
+			this._imageToolboxControl.TabIndex = 3;
 			//
 			// _L10NSharpExtender
 			//
@@ -108,7 +108,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.CancelButton = this._cancelButton;
 			this.ClientSize = new System.Drawing.Size(886, 485);
-			this.Controls.Add(this.imageToolboxControl1);
+			this.Controls.Add(this._imageToolboxControl);
 			this.Controls.Add(this._okButton);
 			this.Controls.Add(this._cancelButton);
 			this._L10NSharpExtender.SetLocalizableToolTip(this, null);
@@ -129,7 +129,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private System.Windows.Forms.Button _cancelButton;
 		private System.Windows.Forms.Button _okButton;
-		private ImageToolboxControl imageToolboxControl1;
+		private ImageToolboxControl _imageToolboxControl;
 		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
 	}
 }
