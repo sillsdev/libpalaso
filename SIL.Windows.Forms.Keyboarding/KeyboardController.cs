@@ -492,7 +492,7 @@ namespace SIL.Windows.Forms.Keyboarding
 				if (_activeKeyboard == null)
 				{
 					_activeKeyboard = Adaptors[KeyboardAdaptorType.System].SwitchingAdaptor.ActiveKeyboard;
-					if (_activeKeyboard == null)
+					if (_activeKeyboard == null || _activeKeyboard == NullKeyboard)
 					{
 						try
 						{
