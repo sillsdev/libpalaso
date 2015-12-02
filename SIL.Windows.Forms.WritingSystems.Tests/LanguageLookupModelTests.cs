@@ -1,11 +1,9 @@
 ﻿using System.Linq;
 using NUnit.Framework;
-using SIL.TestUtilities;
 
 namespace SIL.Windows.Forms.WritingSystems.Tests
 {
 	[TestFixture]
-	[OfflineSldr]
 	public class LanguageLookupModelTests
 	{
 		[Test]

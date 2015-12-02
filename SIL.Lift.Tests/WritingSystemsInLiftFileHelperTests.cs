@@ -10,7 +10,6 @@ using SIL.WritingSystems.Tests;
 namespace SIL.Lift.Tests
 {
 	[TestFixture]
-	[OfflineSldr]
 	public class WritingSystemsInLiftFileHelperTests
 	{
 		private class TestEnvironment : IDisposable

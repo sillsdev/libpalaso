@@ -12,7 +12,6 @@ using SIL.WritingSystems;
 namespace SIL.DictionaryServices.Tests
 {
 	[TestFixture]
-	[OfflineSldr]
 	public class LiftLexEntryRepositoryTests
 	{
 		private class TestEnvironment : IDisposable
