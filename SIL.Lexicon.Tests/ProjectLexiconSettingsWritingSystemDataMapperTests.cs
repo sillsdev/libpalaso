@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Linq;
 using NUnit.Framework;
-using SIL.TestUtilities;
 using SIL.WritingSystems;
 
 namespace SIL.Lexicon.Tests
 {
 	[TestFixture]
-	[OfflineSldr]
 	public class ProjectLexiconSettingsWritingSystemDataMapperTests
 	{
 		[Test]

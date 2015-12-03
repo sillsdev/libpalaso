@@ -11,24 +11,31 @@ namespace SIL.TestUtilities
 	public class OfflineSldrAttribute : Attribute, ITestAction
 	{
 		private OfflineSldr _offlineSldr;
+		private int _refCount;
 
 		public void BeforeTest(TestDetails testDetails)
 		{
-			_offlineSldr = new OfflineSldr();
+			if (_refCount == 0)
+				_offlineSldr = new OfflineSldr();
+			_refCount++;
 		}
 
 		public void AfterTest(TestDetails testDetails)
 		{
-			_offlineSldr.Dispose();
-			_offlineSldr = null;
+			_refCount--;
+			if (_refCount == 0)
+			{
+				_offlineSldr.Dispose();
+				_offlineSldr = null;
+			}
 		}
 
 		/// <summary>
-		/// Provides the target for the action attribute. This action will be run on all tests.
+		/// Provides the target for the action attribute. This action will be run on all tests and suites (fixtures/assemblies).
 		/// </summary>
 		public ActionTargets Targets
 		{
-			get { return ActionTargets.Test; }
+			get { return ActionTargets.Test | ActionTargets.Suite; }
 		}
 	}
 }
