@@ -273,6 +273,21 @@
     <Reference Include="Enchant.Net">
       <HintPath>..\lib\common\Enchant.Net.dll</HintPath>
     </Reference>
+    <Reference Include="MarkdownDeep">
+      <HintPath>..\packages\MarkdownDeep.NET.1.5\lib\.NetFramework 3.5\MarkdownDeep.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" Condition="'$(OS)'=='Windows_NT'" />
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" Condition="'$(OS)'=='Unix'" />
+    <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" Condition="'$(OS)'=='Unix'" />
+    <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" Condition="'$(OS)'=='Unix'" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -292,19 +307,8 @@
     <None Include="..\lib\common\Enchant.Net.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Reference Include="MarkdownDeep, Version=1.5.4615.26275, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MarkdownDeep.NET.1.5\lib\.NetFramework 3.5\MarkdownDeep.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualBasic" Condition="'$(OS)'=='Windows_NT'" />
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Security" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="WindowsBase" />
+    <None Include="FileDialog\FileDialogStrings.resx" />
+    <None Include="FileDialog\readme.txt" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\GlobalAssemblyInfo.cs">
@@ -713,6 +717,31 @@
     <Compile Include="HtmlBrowser\XWebBrowser.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Extensions\ComponentsExtensionMethods.cs" />
+    <Compile Include="Extensions\TextBoxExtensions.cs" />
+    <Compile Include="FileDialog\FileDialogAdapter.cs" />
+    <Compile Include="FileDialog\FileDialogStrings.Designer.cs" />
+    <Compile Include="FileDialog\FolderBrowserDialogAdapter.cs" />
+    <Compile Include="FileDialog\Manager.cs" />
+    <Compile Include="FileDialog\OpenFileDialogAdapter.cs" />
+    <Compile Include="FileDialog\SaveFileDialogAdapter.cs" />
+    <Compile Include="FileDialog\Interfaces\IFileDialog.cs" />
+    <Compile Include="FileDialog\Interfaces\IFolderBrowserDialog.cs" />
+    <Compile Include="FileDialog\Interfaces\IOpenFileDialog.cs" />
+    <Compile Include="FileDialog\Interfaces\ISaveFileDialog.cs" />
+    <Compile Include="FileDialog\Linux\FileDialogLinux.cs" />
+    <Compile Include="FileDialog\Linux\FolderBrowserDialogLinux.cs" />
+    <Compile Include="FileDialog\Linux\OpenFileDialogLinux.cs" />
+    <Compile Include="FileDialog\Linux\SaveFileDialogLinux.cs" />
+    <Compile Include="FileDialog\Windows\FileDialogWindows.cs" />
+    <Compile Include="FileDialog\Windows\FolderBrowserDialogWindows.cs" />
+    <Compile Include="FileDialog\Windows\OpenFileDialogWindows.cs" />
+    <Compile Include="FileDialog\Windows\SaveFileDialogWindows.cs" />
+    <Compile Include="RegistryHelper.cs" />
+    <Compile Include="Win32Wrappers.cs" />
+    <Compile Include="Pathway\PathwayUtils.cs" />
+    <Compile Include="Pathway\SilSubKey.cs" />
+    <Compile Include="Extensions\RectExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ClearShare\ClearShareResources.resx">
@@ -1051,4 +1080,8 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Folder Include="FileDialog\" />
+    <Folder Include="Pathway\" />
+  </ItemGroup>
 </Project>

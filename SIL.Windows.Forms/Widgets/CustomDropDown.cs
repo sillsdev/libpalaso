@@ -1,3 +1,5 @@
+// Copyright (c) 2011-2015 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Windows.Forms;
 
@@ -29,10 +31,18 @@ namespace SIL.Windows.Forms.Widgets
 		}
 
 		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Clean up
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
 		protected override void Dispose(bool disposing)
 		{
-			if (_hostedControl != null)
-				_hostedControl.Resize -= HandleHostedControlResize;
+			System.Diagnostics.Debug.WriteLineIf(!disposing, "****** Missing Dispose() call for " + GetType() + ". ****** ");
+			if (disposing)
+			{
+				if (_hostedControl != null)
+					_hostedControl.Resize -= HandleHostedControlResize;
+			}
 
 			base.Dispose(disposing);
 		}

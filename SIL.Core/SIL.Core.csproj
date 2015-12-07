@@ -347,6 +347,11 @@
     <Compile Include="PlatformUtilities\Platform.cs" />
     <Compile Include="IO\PathUtilities.cs" />
     <Compile Include="Extensions\XAttributeExtensions.cs" />
+    <Compile Include="Reporting\ContinuableErrorException.cs" />
+    <Compile Include="Unicode\Surrogates.cs" />
+    <Compile Include="Text\StringUtils.cs" />
+    <Compile Include="Code\ReflectionHelper.cs" />
+    <Compile Include="Rect.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName' Or '$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
     <Compile Include="UsbDrive\Windows\UsbDriveInfoWindows.cs" />
@@ -400,4 +405,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Folder Include="Unicode\" />
+  </ItemGroup>
 </Project>
