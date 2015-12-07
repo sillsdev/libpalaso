@@ -275,6 +275,7 @@
     <Compile Include="ErrorReporting\ErrorReportingTests.cs" />
     <Compile Include="Progress\LogBox\LogBoxFormForTest.cs" />
     <Compile Include="Progress\LogBox\LogBoxTests.cs" />
+    <Compile Include="Extensions\TextBoxExtensionsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj">
@@ -329,4 +330,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
 </Project>

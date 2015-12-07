@@ -1,3 +1,5 @@
+// Copyright (c) 2009-2015 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -105,6 +107,7 @@ namespace SIL.Windows.Forms
 		/// ------------------------------------------------------------------------------------
 		public static void DrawCustomBorder(Control ctrl)
 		{
+			// TODO-Linux: VisualStyleInformation.TextControlBorder has a MonoTODO.
 			DrawCustomBorder(ctrl, CanPaintVisualStyle() ?
 				VisualStyleInformation.TextControlBorder : Color.Black);
 		}

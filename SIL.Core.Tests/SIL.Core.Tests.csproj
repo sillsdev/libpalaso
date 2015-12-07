@@ -275,6 +275,8 @@
     <Compile Include="IO\PathUtilitiesTests.cs" />
     <Compile Include="SetupFixture.cs" />
     <Compile Include="CommandLineProcessing\CommandLineRunnerTests.cs" />
+    <Compile Include="Unicode\SurrogateTests.cs" />
+    <Compile Include="Text\StringUtilsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
@@ -325,4 +327,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Unicode\" />
+  </ItemGroup>
 </Project>

@@ -5,6 +5,7 @@ using System.Windows.Forms;
 
 namespace SIL.Windows.Forms
 {
+	[Obsolete("Use SIL.Core.ReflectionHelper instead")]
 	public static class ReflectionHelper
 	{
 		/// ------------------------------------------------------------------------------------
