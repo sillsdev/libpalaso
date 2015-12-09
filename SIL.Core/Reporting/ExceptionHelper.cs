@@ -1,23 +1,11 @@
-// --------------------------------------------------------------------------------------------
-#region // Copyright (c) 2002, SIL International. All Rights Reserved.
-// <copyright from='2002' to='2002' company='SIL International'>
-//		Copyright (c) 2002, SIL International. All Rights Reserved.
-//
-//		Distributable under the terms of either the Common Public License or the
-//		GNU Lesser General Public License, as specified in the LICENSING.txt file.
-// </copyright>
-#endregion
-//
-// File: ExceptionHelper.cs
-// Responsibility: Eberhard Beilharz
-// Last reviewed:
-//
-// <remarks>
-// Implements helper methods for getting information from nested exceptions
-// </remarks>
-// --------------------------------------------------------------------------------------------
+// Copyright (c) 2002-2015 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
+using System.Collections;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 
 namespace SIL.Reporting
 {
@@ -34,7 +22,7 @@ namespace SIL.Reporting
 		/// <returns>String with the messages of all nested exceptions</returns>
 		public static string GetAllExceptionMessages(Exception e)
 		{
-			StringBuilder strB = new StringBuilder();
+			var strB = new StringBuilder();
 			while (e != null)
 			{
 				strB.Append("\n\t");
@@ -54,7 +42,7 @@ namespace SIL.Reporting
 		/// form type1(type2(type3...)).</returns>
 		public static string GetExceptionTypes(Exception e)
 		{
-			StringBuilder strB = new StringBuilder();
+			var strB = new StringBuilder();
 			int nTypes = 0;
 			while (e != null)
 			{
@@ -85,7 +73,7 @@ namespace SIL.Reporting
 				strB = new StringBuilder(
 					string.Format("Stack trace for {0} in module {1}, {2} ({3}):\n{4}\n\n{5}",
 					e.GetType().Name, e.Source, e.TargetSite.Name, e.Message, e.StackTrace,
-					strB.ToString()));
+					strB));
 				e = e.InnerException;
 			}
 
@@ -134,12 +122,145 @@ namespace SIL.Reporting
 			string helpLink = string.Empty;
 			while (e != null)
 			{
-				if (e.HelpLink != null && e.HelpLink != string.Empty)
+				if (!string.IsNullOrEmpty(e.HelpLink))
 					helpLink = e.HelpLink;
 				e = e.InnerException;
 			}
 
 			return helpLink;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets the hiearchical exception info.
+		/// </summary>
+		/// <param name="error">The error.</param>
+		/// <param name="innerMostException">The inner most exception or null if the error is
+		/// the inner most exception</param>
+		/// <returns>A string containing the text of the specified error</returns>
+		/// ------------------------------------------------------------------------------------
+		public static string GetHiearchicalExceptionInfo(Exception error,
+			ref Exception innerMostException)
+		{
+			innerMostException = error.InnerException;
+			var strBldr = new StringBuilder();
+			strBldr.Append(GetExceptionText(error));
+
+			if (error.InnerException != null)
+			{
+				strBldr.AppendLine("**Inner Exception:");
+				strBldr.Append(GetHiearchicalExceptionInfo(error.InnerException, ref innerMostException));
+			}
+			return strBldr.ToString();
+		}
+
+		public static string GetExceptionText(Exception error)
+		{
+			var strBldr = new StringBuilder();
+
+			strBldr.Append("Msg: ");
+			strBldr.AppendLine(error.Message);
+
+			try
+			{
+				var comException = error as COMException;
+				if (comException != null)
+				{
+					strBldr.Append("COM message: ");
+					strBldr.AppendLine(new Win32Exception(comException.ErrorCode).Message);
+				}
+			}
+			catch
+			{
+			}
+
+			try
+			{
+				strBldr.Append("Source: ");
+				strBldr.AppendLine(error.Source);
+			}
+			catch
+			{
+			}
+
+			try
+			{
+				if (error.TargetSite != null)
+				{
+					strBldr.Append("Assembly: ");
+					strBldr.AppendLine(error.TargetSite.DeclaringType.Assembly.FullName);
+				}
+			}
+			catch
+			{
+			}
+
+			try
+			{
+				strBldr.Append("Stack: ");
+				strBldr.AppendLine(error.StackTrace);
+			}
+			catch
+			{
+			}
+			strBldr.AppendFormat("Thread: {0}", Thread.CurrentThread.Name);
+			strBldr.AppendLine();
+
+			strBldr.AppendFormat("Thread UI culture: {0}", Thread.CurrentThread.CurrentUICulture);
+			strBldr.AppendLine();
+
+			strBldr.AppendFormat("Exception: {0}", error.GetType());
+			strBldr.AppendLine();
+
+			try
+			{
+				if (error.Data.Count > 0)
+				{
+					strBldr.AppendLine("Additional Exception Information:");
+					foreach (DictionaryEntry de in error.Data)
+					{
+						strBldr.AppendFormat("{0}={1}", de.Key, de.Value);
+						strBldr.AppendLine();
+					}
+				}
+			}
+			catch
+			{
+			}
+
+			return strBldr.ToString();
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Executes the action, logging and ignoring any exceptions.
+		/// </summary>
+		/// <param name="action">The action.</param>
+		/// ------------------------------------------------------------------------------------
+		public static void LogAndIgnoreErrors(Action action)
+		{
+			LogAndIgnoreErrors(action, null);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Executes the action, logging and ignoring any exceptions.
+		/// </summary>
+		/// <param name="action">The action.</param>
+		/// <param name="onError">Additional action to perform after logging the error.</param>
+		/// ------------------------------------------------------------------------------------
+		public static void LogAndIgnoreErrors(Action action, Action<Exception> onError)
+		{
+			try
+			{
+				action();
+			}
+			catch (Exception e)
+			{
+				Logger.WriteError(e);
+				if (onError != null)
+					onError(e);
+			}
 		}
 	}
 }

@@ -15,7 +15,7 @@ namespace SIL.Reporting
 		/// </summary>
 		void WriteConciseHistoricalEvent(string message, params object[] args);
 	}
-	public class MultiLogger :ILogger
+	public class MultiLogger: ILogger
 	{
 		private readonly List<ILogger> _loggers= new List<ILogger>();
 
@@ -69,7 +69,7 @@ namespace SIL.Reporting
 	/// c:\Documents and Settings\Username\Local Settings\Temp\Companyname\Productname\Log.txt
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
-	public class Logger : IDisposable, ILogger
+	public class Logger: IDisposable, ILogger
 	{
 		private static Logger _singleton;
 		protected StreamWriter m_out;
@@ -386,6 +386,32 @@ namespace SIL.Reporting
 				}
 #endif
 			}
+		}
+
+		/// <summary>
+		/// Writes an exception and its stack trace to the log. This method will do nothing if
+		/// Init() is not called first.
+		/// </summary>
+		public static void WriteError(Exception e)
+		{
+			WriteError(null, e);
+		}
+
+		/// <summary>
+		/// Writes <paramref name="msg"/> and an exception and its stack trace to the log.
+		/// This method will do nothing if Init() is not called first.
+		/// </summary>
+		public static void WriteError(string msg, Exception e)
+		{
+			Exception dummy = null;
+			var bldr = new StringBuilder(msg);
+			if (bldr.Length > 0)
+				bldr.AppendLine();
+			bldr.Append(ExceptionHelper.GetHiearchicalExceptionInfo(e, ref dummy));
+			Debug.WriteLine(bldr.ToString());
+
+			if (Singleton != null)
+				Singleton.WriteEventCore(bldr.ToString());
 		}
 
 		/// <summary>
