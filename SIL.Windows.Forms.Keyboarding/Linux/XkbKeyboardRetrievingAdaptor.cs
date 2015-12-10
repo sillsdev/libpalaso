@@ -160,7 +160,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			string[] parts = id.Split('_');
 			string locale = parts[0];
-			string layout = parts[1];
+			string layout = parts.Length > 1 ? parts[1] : string.Empty;
 
 			string realLocale = locale;
 			if (locale == "zh")

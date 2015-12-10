@@ -400,6 +400,23 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			adaptor.SwitchingAdaptor.ActivateKeyboard(KeyboardController.Instance.Keyboards.First());
 			KeyboardController.Shutdown();
 		}
+
+		[Test]
+		public void CreateKeyboardDefinition()
+		{
+			// Setup
+			XklEngineResponder.SetGroupNames = new string[] { KeyboardUSA };
+			var adaptor = new XkbKeyboardRetrievingAdaptor(new XklEngineResponder());
+			KeyboardController.Initialize(adaptor);
+
+			// Exercise
+			var keyboard = XkbKeyboardRetrievingAdaptor.CreateKeyboardDefinition("/some/keyboard/without/dash",
+				adaptor.SwitchingAdaptor);
+
+			// Verify
+			Assert.That(keyboard, Is.Not.Null);
+			Assert.That(keyboard.Name, Is.EqualTo("[Missing] /some/keyboard/without/dash ()"));
+		}
 	}
 }
 #endif
