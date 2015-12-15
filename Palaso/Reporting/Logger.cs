@@ -75,6 +75,9 @@ namespace Palaso.Reporting
 	public class Logger: IDisposable, ILogger
 	{
 		private static Logger _singleton;
+		private static string _actualLogPath;
+		private static string _logfilePrefix;
+
 		protected StreamWriter m_out;
 		private StringBuilder m_minorEvents;
 
@@ -87,7 +90,27 @@ namespace Palaso.Reporting
 		public static void Init()
 		{
 			if(Singleton == null)
-				_singleton = new Logger();
+				Init(null);
+		}
+
+		/// <summary>
+		/// Creates the logger. The logging functions can't be used until this method is called.
+		/// Initializes the logger by creating a new log file, prepending the specified
+		/// <paramref name="logfilePrefix"/>. If Init has been called before, the previous
+		/// Logger gets shutdown first.
+		/// </summary>
+		/// <remarks>
+		/// This method is useful when an application wants to write different logging files
+		/// while it is running. For example, FieldWorks writes to a different log file after
+		/// loading the project. This is also necessary when an application can run multiple
+		/// instances simultaneously.
+		/// </remarks>
+		public static void Init(string logfilePrefix)
+		{
+			ShutDown();
+
+			if (Singleton == null)
+				_singleton = new Logger(logfilePrefix, true);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -105,18 +128,22 @@ namespace Palaso.Reporting
 			}
 		}
 
-		public Logger(): this(true)
+		public Logger(): this(null, true)
 		{
 		}
 
-		private Logger(bool startWithNewFile)
+		private Logger(string logfilePrefix, bool startWithNewFile)
 		{
-			if(_singleton!= null)
+			if(_singleton != null)
 			{
 				throw new ApplicationException("Sadly, only one instance of Logger is currently allowed, per instance of the application.");
 			}
 			try
 			{
+				_logfilePrefix = logfilePrefix;
+				if (!string.IsNullOrEmpty(logfilePrefix))
+					_logfilePrefix += "_";
+
 				m_out = null;
 				if (startWithNewFile)
 				{
@@ -127,7 +154,7 @@ namespace Palaso.Reporting
 					catch (Exception)
 					{
 						//try again with a different file.  We loose the history, but oh well.
-						SetActualLogPath("Log-"+Path.GetFileNameWithoutExtension(Path.GetTempFileName()) + ".txt");
+						SetActualLogPath(_logfilePrefix + "Log-"+Path.GetFileNameWithoutExtension(Path.GetTempFileName()) + ".txt");
 						m_out = File.CreateText(LogPath);
 
 					}
@@ -175,8 +202,6 @@ namespace Palaso.Reporting
 		/// </summary>
 		private bool m_isDisposed = false;
 
-		private static string _actualLogPath;
-
 		/// <summary>
 		/// See if the object has been disposed.
 		/// </summary>
@@ -196,16 +221,6 @@ namespace Palaso.Reporting
 		{
 			Dispose(false);
 			// The base class finalizer is called automatically.
-		}
-
-		/// <summary>
-		/// This is for version-control checkin descriptions. E.g. "Deleted foobar".
-		/// </summary>
-		/// <param name="message"></param>
-		/// <param name="args"></param>
-		public void WriteConciseHistoricalEvent(string message, params object[] args)
-		{
-			WriteEventCore(message, args);
 		}
 
 		/// <summary>
@@ -265,6 +280,16 @@ namespace Palaso.Reporting
 		}
 
 		#endregion IDisposable & Co. implementation
+
+		/// <summary>
+		/// This is for version-control checkin descriptions. E.g. "Deleted foobar".
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="args"></param>
+		public void WriteConciseHistoricalEvent(string message, params object[] args)
+		{
+			WriteEventCore(message, args);
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -330,7 +355,7 @@ namespace Palaso.Reporting
 			{
 				if (string.IsNullOrEmpty(_actualLogPath))
 				{
-					SetActualLogPath("Log.txt");
+					SetActualLogPath(_logfilePrefix + "Log.txt");
 				}
 				return _actualLogPath;
 			}
