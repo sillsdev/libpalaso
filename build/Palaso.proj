@@ -53,7 +53,7 @@
 	</Target>
 
 	<ItemGroup>
-		<AssemblyInfoFiles Include="$(RootDir)/**/AssemblyInfo.cs"/>
+		<AssemblyInfoFiles Include="$(RootDir)/GlobalAssemblyInfo.cs"/>
 	</ItemGroup>
 
 	<Target Name="SetAssemblyVersion" DependsOnTargets="VersionNumbers">

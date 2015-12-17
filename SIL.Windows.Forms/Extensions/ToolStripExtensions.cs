@@ -42,7 +42,7 @@ namespace SIL.Windows.Forms.Extensions
 	/// </summary>
 	/// <remarks>
 	/// This code originated in the Bloom project, but proved to be useful for the
-	/// ArtOfReadingChooser control in PalasoUIWindowsForms.
+	/// ArtOfReadingChooser control in SIL.Windows.Forms.
 	/// </remarks>
 	public class NoBorderToolStripRenderer : ToolStripProfessionalRenderer
 	{

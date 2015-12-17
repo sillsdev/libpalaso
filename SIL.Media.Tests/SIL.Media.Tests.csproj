@@ -184,6 +184,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="AudioRecorderTests.cs" />
     <Compile Include="AudioPlayerTests.cs" />
     <Compile Include="FFmpegRunnerTests.cs" />

@@ -18,32 +18,35 @@ namespace SIL.DblBundle.Tests
 		private const string TestXml =
 @"<?xml version=""1.0"" encoding=""UTF-8""?>
 <DBLMetadata id=""3b9fdc679b9319c3"" revision=""1"" mediatype=""text"" typeVersion=""1.3"">
-  <identification>
-    <name>Acholi New Testament 1985</name>
-    <nameLocal>Acoli Baibul 1985</nameLocal>
-    <systemId type=""tms"">b9236acd-66f3-44d0-98fc-3970b3d017cd</systemId>
-    <systemId type=""paratext"">3b9fdc679b9319c3ee45ab86cc1c0c42930c2979</systemId>
-  </identification>
-  <language>
-    <iso>ach</iso>
-  </language>
-  <promotion>    
-    <promoVersionInfo contentType=""xhtml"">
-      <h1>Acholi New Testament 1985</h1>
-      <p>This translation, published by the Bible Society of Uganda, was first published in 1985.</p>
-      <p>If you are interested in obtaining a printed copy, please contact the Bible Society of Uganda at <a href=""http://www.biblesociety-uganda.org/"">www.biblesociety-uganda.org</a>.</p>
-    </promoVersionInfo>
-    <promoEmail contentType=""xhtml"">
-      <p>Hi YouVersion friend,</p>
-      <p>Sincerely, Your Friends at YouVersion</p>
-    </promoEmail>
-  </promotion>
-  <archiveStatus>
-    <archivistName>Emma Canales -archivist</archivistName>
-    <dateArchived>2014-05-28T15:18:31.080800</dateArchived>
-    <dateUpdated>2014-05-28T15:18:31.080800</dateUpdated>
-    <comments>First submit</comments>
-  </archiveStatus>
+	<identification>
+		<name>Acholi New Testament 1985</name>
+		<nameLocal>Acoli Baibul 1985</nameLocal>
+		<systemId type=""tms"">b9236acd-66f3-44d0-98fc-3970b3d017cd</systemId>
+		<systemId type=""paratext"">3b9fdc679b9319c3ee45ab86cc1c0c42930c2979</systemId>
+	</identification>
+	<language>
+		<iso>ach</iso>
+	</language>
+	<copyright>
+		<statement contentType=""xhtml"">© 2015, SIL Inc. All rights reserved.</statement>
+	</copyright>
+	<promotion>
+		<promoVersionInfo contentType=""xhtml"">
+			<h1>Acholi New Testament 1985</h1>
+			<p>This translation, published by the Bible Society of Uganda, was first published in 1985.</p>
+			<p>If you are interested in obtaining a printed copy, please contact the Bible Society of Uganda at <a href=""http://www.biblesociety-uganda.org/"">www.biblesociety-uganda.org</a>.</p>
+		</promoVersionInfo>
+		<promoEmail contentType=""xhtml"">
+			<p>Hi YouVersion friend,</p>
+			<p>Sincerely, Your Friends at YouVersion</p>
+		</promoEmail>
+	</promotion>
+	<archiveStatus>
+		<archivistName>Emma Canales -archivist</archivistName>
+		<dateArchived>2014-05-28T15:18:31.080800</dateArchived>
+		<dateUpdated>2014-05-28T15:18:31.080800</dateUpdated>
+		<comments>First submit</comments>
+	</archiveStatus>
 </DBLMetadata>";
 
 		[TestFixtureSetUp]
@@ -76,6 +79,14 @@ namespace SIL.DblBundle.Tests
 		public void GetLanguageIso()
 		{
 			Assert.AreEqual("ach", m_metadata.Language.Iso);
+		}
+
+		[Test]
+		public void GetCopyrightStatement()
+		{
+			const string expectedValue = @"© 2015, SIL Inc. All rights reserved.";
+			Assert.AreEqual(expectedValue, m_metadata.Copyright.Statement.Xhtml);
+			Assert.AreEqual("xhtml", m_metadata.Copyright.Statement.ContentType);
 		}
 
 		[Test]
@@ -133,9 +144,13 @@ namespace SIL.DblBundle.Tests
 					Name = "name",
 					SystemIds = new HashSet<DblMetadataSystemId> { new DblMetadataSystemId { Type = "type", Id = "Idvalue" } }
 				},
+				Copyright = new DblMetadataCopyright
+				{
+					Statement = new DblMetadataXhtmlContentNode { Xhtml = @"© 2015, SIL Inc. All rights reserved." }
+				},
 				Promotion = new DblMetadataPromotion
 				{
-					PromoVersionInfo = new DblMetadataXhtmlContentNode { Xhtml = @"<h1>Acholi New Testament 1985</h1>" },
+					PromoVersionInfo = new DblMetadataXhtmlContentNode { Xhtml = @"<h1>Acholi New Testament 1985</h1><p>More text</p>" },
 					PromoEmail = new DblMetadataXhtmlContentNode { Xhtml = "<p>Email Text</p>" }
 				},
 				ArchiveStatus = new DblMetadataArchiveStatus { DateArchived = "dateArchived" }
@@ -144,21 +159,25 @@ namespace SIL.DblBundle.Tests
 			const string expectedResult =
 @"<?xml version=""1.0"" encoding=""utf-16""?>
 <DBLMetadata id=""id"" revision=""1"">
-  <identification>
-    <name>name</name>
-    <systemId type=""type"">Idvalue</systemId>
-  </identification>
-  <promotion>
-    <promoVersionInfo contentType=""xhtml"">
-      <h1>Acholi New Testament 1985</h1>
-    </promoVersionInfo>
-    <promoEmail contentType=""xhtml"">
-      <p>Email Text</p>
-    </promoEmail>
-  </promotion>
-  <archiveStatus>
-    <dateArchived>dateArchived</dateArchived>
-  </archiveStatus>
+	<identification>
+		<name>name</name>
+		<systemId type=""type"">Idvalue</systemId>
+	</identification>
+	<copyright>
+		<statement contentType=""xhtml"">© 2015, SIL Inc. All rights reserved.</statement>
+	</copyright>
+	<promotion>
+		<promoVersionInfo contentType=""xhtml"">
+			<h1>Acholi New Testament 1985</h1>
+			<p>More text</p>
+		</promoVersionInfo>
+		<promoEmail contentType=""xhtml"">
+			<p>Email Text</p>
+		</promoEmail>
+	</promotion>
+	<archiveStatus>
+		<dateArchived>dateArchived</dateArchived>
+	</archiveStatus>
 </DBLMetadata>";
 
 			AssertThatXmlIn.String(expectedResult).EqualsIgnoreWhitespace(metadata.GetAsXml());

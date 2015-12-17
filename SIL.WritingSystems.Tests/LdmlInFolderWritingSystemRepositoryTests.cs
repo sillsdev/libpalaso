@@ -58,17 +58,17 @@ namespace SIL.WritingSystems.Tests
 		{
 			private readonly TemporaryFolder _localRepoFolder;
 			private readonly WritingSystemDefinition _writingSystem;
-			private readonly TemporaryFolder _sldrCacheFolder;
 			private readonly TemporaryFolder _templateFolder;
 			private readonly TemporaryFolder _globalRepoFolder;
+			private readonly TestWritingSystemCustomDataMapper _writingSystemCustomDataMapper;
 
 			public TestEnvironment()
 			{
 				_localRepoFolder = new TemporaryFolder("LdmlInFolderWritingSystemRepositoryTests");
-				_sldrCacheFolder = new TemporaryFolder("SldrCache");
 				_templateFolder = new TemporaryFolder("Templates");
 				_globalRepoFolder = new TemporaryFolder("GlobalWritingSystemRepository");
 				_writingSystem = new WritingSystemDefinition();
+				_writingSystemCustomDataMapper = new TestWritingSystemCustomDataMapper();
 				ResetRepositories();
 			}
 
@@ -77,7 +77,7 @@ namespace SIL.WritingSystems.Tests
 				if (GlobalRepository != null)
 					GlobalRepository.Dispose();
 				GlobalRepository = new GlobalWritingSystemRepository(_globalRepoFolder.Path);
-				LocalRepository = new TestLdmlInFolderWritingSystemRepository(_localRepoFolder.Path, GlobalRepository);
+				LocalRepository = new TestLdmlInFolderWritingSystemRepository(_localRepoFolder.Path, new[] {_writingSystemCustomDataMapper}, GlobalRepository);
 				LocalRepository.WritingSystemFactory.TemplateFolder = _templateFolder.Path;
 			}
 
@@ -85,7 +85,6 @@ namespace SIL.WritingSystems.Tests
 			{
 				GlobalRepository.Dispose();
 				_globalRepoFolder.Dispose();
-				_sldrCacheFolder.Dispose();
 				_templateFolder.Dispose();
 				_localRepoFolder.Dispose();
 			}
@@ -97,11 +96,6 @@ namespace SIL.WritingSystems.Tests
 			public string LocalRepositoryPath
 			{
 				get { return _localRepoFolder.Path; }
-			}
-
-			public string SldrCachePath
-			{
-				get { return _sldrCacheFolder.Path; }
 			}
 
 			public WritingSystemDefinition WritingSystem
@@ -614,8 +608,8 @@ namespace SIL.WritingSystems.Tests
 		{
 			using (var environment = new TestEnvironment())
 			{
-				File.WriteAllText(Path.Combine(environment.LocalRepositoryPath, "aa-latn.ldml"),
-								  LdmlContentForTests.CurrentVersion("aa", "Latn", "", ""));
+				File.WriteAllText(Path.Combine(environment.LocalRepositoryPath, "aa-cyrl.ldml"),
+								  LdmlContentForTests.CurrentVersion("aa", "Cyrl", "", ""));
 
 				environment.ResetRepositories();
 				IList<WritingSystemRepositoryProblem> problems = environment.LocalRepository.LoadProblems;
@@ -1004,7 +998,7 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(enWS.Language, Is.EqualTo((LanguageSubtag) "en"));
 				Assert.That(enWS.Script, Is.EqualTo((ScriptSubtag) "Latn"));
 				Assert.That(enWS.VersionDescription, Is.EqualTo("From SLDR"));
-				Assert.That(enWS.Template, Is.EqualTo(Path.Combine(environment.SldrCachePath, "en.ldml")));
+				Assert.That(enWS.Template, Is.EqualTo(Path.Combine(Sldr.SldrCachePath, "en.ldml")));
 
 				// ensure that the template is used when the writing system is saved
 				environment.LocalRepository.Set(enWS);
@@ -1062,6 +1056,7 @@ namespace SIL.WritingSystems.Tests
 				var ws = new WritingSystemDefinition("en-US");
 				environment.LocalRepository.Set(ws);
 				ws.RightToLeftScript = true;
+				ws.DefaultCollation = new SystemCollationDefinition {LanguageTag = "en-US"};
 				environment.LocalRepository.Save();
 				Assert.IsTrue(File.Exists(environment.GetPathForLocalWSId("en-US")));
 				Assert.IsTrue(File.Exists(environment.GetPathForGlobalWSId("en-US")));
@@ -1089,6 +1084,8 @@ namespace SIL.WritingSystems.Tests
 
 				ws = environment.LocalRepository.Get("en-US");
 				Assert.That(ws.RightToLeftScript, Is.False);
+				// ensure that application-specific settings are preserved
+				Assert.That(ws.DefaultCollation.ValueEquals(new SystemCollationDefinition {LanguageTag = "en-US"}), Is.True);
 				Assert.Less(lastModified, File.GetLastWriteTime(environment.GetPathForLocalWSId("en-US")));
 			}
 		}

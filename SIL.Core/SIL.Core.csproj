@@ -137,8 +137,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Ionic.Zip.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <None Include="Settings\README" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -149,6 +153,7 @@
     <Reference Include="System.Security" />
     <Reference Include="System.Xml" />
     <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -159,6 +164,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Base32\Base32Convert.cs" />
     <Compile Include="Base32\Base32ConvertBase.cs" />
     <Compile Include="Base32\Base32FormattingOptions.cs" />
@@ -238,6 +246,7 @@
     <Compile Include="Network\ProxyCredentialSettings.Designer.cs" />
     <Compile Include="Network\RobustNetworkOperation.cs" />
     <Compile Include="ObjectModel\BulkObservableList.cs" />
+    <Compile Include="ObjectModel\DisposableBase.cs" />
     <Compile Include="ObjectModel\Freezable.cs" />
     <Compile Include="ObjectModel\FreezableEqualityComparer.cs" />
     <Compile Include="ObjectModel\FreezableList.cs" />
@@ -271,6 +280,7 @@
     <Compile Include="ObjectModel\ReadOnlySet.cs" />
     <Compile Include="CoreSetup.cs" />
     <Compile Include="ObjectModel\SortableBindingList.cs" />
+    <Compile Include="PlatformUtilities\NativeException.cs" />
     <Compile Include="Progress\Commands\AsyncCommand.cs" />
     <Compile Include="Progress\BackgroundWorkerState.cs" />
     <Compile Include="Progress\Commands\BasicCommand.cs" />
@@ -316,6 +326,7 @@
     <Compile Include="Text\ApproximateMatcher.cs" />
     <Compile Include="Text\LanguageForm.cs" />
     <Compile Include="Text\MultiTextBase.cs" />
+    <Compile Include="Threading\GlobalMutex.cs" />
     <Compile Include="UiBindings\IBindableControl.cs" />
     <Compile Include="UiBindings\ICountGiver.cs" />
     <Compile Include="UiBindings\IDisplayStringAdaptor.cs" />

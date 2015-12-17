@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Xml;
 using System.Xml.Linq;
 using Icu;
@@ -58,7 +57,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			var langTagCleaner = new IetfLanguageTagCleaner(writingSystemDefinitionV1.Language, writingSystemDefinitionV1.Script, writingSystemDefinitionV1.Region,
 				variant, privateUse);
 			langTagCleaner.Clean();
-			string langTag = IetfLanguageTag.Normalize(langTagCleaner.GetCompleteTag(), IetfLanguageTagNormalizationForm.SilCompatible);
+			string langTag = IetfLanguageTag.Canonicalize(langTagCleaner.GetCompleteTag());
 			List<string> knownKeyboards = writingSystemDefinitionV1.KnownKeyboards.Select(k => string.IsNullOrEmpty(k.Locale) ? k.Layout : string.Format("{0}_{1}", k.Locale, k.Layout)).ToList();
 			bool isGraphiteEnabled = false;
 			string legacyMapping = string.Empty;

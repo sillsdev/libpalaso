@@ -275,7 +275,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-	<None Include="packages.config" />
+    <None Include="packages.config" />
     <None Include="app.config" />
     <None Include="Progress\LogBoxSettings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -307,6 +307,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="AbstractControlDescriptionProvider.cs" />
     <Compile Include="ClearShare\ClearShareResources.Designer.cs" />
     <Compile Include="ClearShare\Contribution.cs" />
@@ -644,6 +647,12 @@
     <Compile Include="Widgets\HeaderLabel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Widgets\HtmlLabel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Widgets\HtmlLabel.Designer.cs">
+      <DependentUpon>HtmlLabel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Widgets\Prompt.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -847,6 +856,9 @@
     <EmbeddedResource Include="Widgets\ControlListBox.resx">
       <DependentUpon>ControlListBox.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Widgets\HtmlLabel.resx">
+      <DependentUpon>HtmlLabel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Widgets\StdTextInputBox.resx">
       <DependentUpon>StdTextInputBox.cs</DependentUpon>

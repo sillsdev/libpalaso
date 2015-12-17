@@ -84,7 +84,7 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		public IEnumerable<T> CheckForNewerGlobalWritingSystems()
+		public virtual IEnumerable<T> CheckForNewerGlobalWritingSystems()
 		{
 			if (_globalRepository != null)
 			{

@@ -172,6 +172,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="ProjectLexiconSettingsDataMapperTests.cs" />
     <Compile Include="ProjectLexiconSettingsWritingSystemDataMapperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -185,6 +188,10 @@
     <ProjectReference Include="..\SIL.Lexicon\SIL.Lexicon.csproj">
       <Project>{fad20de2-d5bb-4d9d-aeef-61f02663105f}</Project>
       <Name>SIL.Lexicon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj">
+      <Project>{d74ce910-d44a-44f5-8c0f-f5e50b26f85d}</Project>
+      <Name>SIL.TestUtilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj">
       <Project>{52a93c63-08f4-4527-8e6e-ac2adeba6e2d}</Project>

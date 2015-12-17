@@ -244,6 +244,8 @@ namespace SIL.Windows.Forms.HtmlBrowser
 
 		public event EventHandler StatusTextChanged;
 
+		public event EventHandler DomClick;
+
 		#region IWebBrowserCallbacks
 		void IWebBrowserCallbacks.OnCanGoBackChanged(EventArgs e)
 		{
@@ -311,6 +313,12 @@ namespace SIL.Windows.Forms.HtmlBrowser
 		{
 			if (StatusTextChanged != null)
 				StatusTextChanged(this, e);
+		}
+
+		void IWebBrowserCallbacks.OnDomClick(EventArgs e)
+		{
+			if (DomClick != null)
+				DomClick(this, e);
 		}
 
 #endregion

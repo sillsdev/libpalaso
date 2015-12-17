@@ -200,6 +200,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="AddSortKeysToXmlTests.cs" />
     <Compile Include="CharacterSetDefinitionCloneableTests.cs" />
     <Compile Include="CollationDefinitionCloneableTests.cs" />
@@ -227,6 +230,7 @@
     <Compile Include="TestLdmlInXmlWritingSystemRepository.cs" />
     <Compile Include="TestLdmlInFolderWritingSystemFactory.cs" />
     <Compile Include="TestLdmlInFolderWritingSystemRepository.cs" />
+    <Compile Include="TestWritingSystemCustomDataMapper.cs" />
     <Compile Include="TestWritingSystemFactory.cs" />
     <Compile Include="WritingSystemRepositoryTests.cs" />
     <Compile Include="LdmlDataMapperTests.cs" />

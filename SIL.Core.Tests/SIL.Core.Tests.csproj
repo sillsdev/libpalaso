@@ -212,6 +212,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Annotations\AnnotatableTests.cs" />
     <Compile Include="Base32Tests\Base32HexTests.cs" />
     <Compile Include="Base32Tests\Base32Tests.cs" />
@@ -234,6 +237,7 @@
     <Compile Include="i18n\StringCatalogTests.cs" />
     <Compile Include="IO\DirectoryUtilitiesTests.cs" />
     <Compile Include="IO\FileLocatorTests.cs" />
+    <Compile Include="IO\FileLock\SimpleFileLockTests.cs" />
     <Compile Include="IO\FileUtilsTests.cs" />
     <Compile Include="IO\TempFileTests.cs" />
     <Compile Include="Migration\DefaultVersionTests.cs" />
@@ -256,6 +260,7 @@
     <Compile Include="Text\ApproximateMatcherTests.cs" />
     <Compile Include="Text\LanguageFormTest.cs" />
     <Compile Include="Text\MultiTextBase.Tests.cs" />
+    <Compile Include="Threading\GlobalMutexTests.cs" />
     <Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UDiskDeviceTests.cs" />
     <Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UDisksTests.cs" />
     <Compile Include="UsbDrive\UsbDeviceInfoTests.cs" />

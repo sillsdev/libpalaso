@@ -13,6 +13,11 @@ namespace SIL.Windows.Forms.Registration
 	/// </summary>
 	public class RegistrationSettingsProvider : CrossPlatformSettingsProvider
 	{
+		public RegistrationSettingsProvider()
+		{
+			RenamedSections["Palaso.UI.WindowsForms.Registration.Registration"] = "SIL.Windows.Forms.Registration.Registration";
+		}
+
 		private static string _productName ;
 		public static void SetProductName(string product)
 		{

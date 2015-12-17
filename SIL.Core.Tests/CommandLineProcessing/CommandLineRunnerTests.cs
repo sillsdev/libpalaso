@@ -30,8 +30,8 @@ namespace SIL.Tests.CommandLineProcessing
 			Assert.That(result.StandardError, Contains.Substring("Timed Out after waiting 3 seconds."));
 		}
 
-		[Test, Category("KnownMonoIssue")]
-		[Platform(Exclude="Linux", Reason = "Test has problems on Mono")]
+		[Test, Category("ByHand")]
+		[Platform(Exclude = "Linux", Reason = "See comment in test")]
 		public void CommandWith10Line_CallbackOption_Get10LinesAsynchronously()
 		{
 			var progress = new StringBuilderProgress();
@@ -40,6 +40,7 @@ namespace SIL.Tests.CommandLineProcessing
 				progress, s => ++linesReceivedAsynchronously);
 			// The test fails on Linux because progress gets called 10x for StdOutput plus
 			// 1x for StdError (probably on the closing of the stream), so linesReceivedAsync is 11.
+			// It also failes about 4% of the time on TC Windows agents
 			Assert.AreEqual(10, linesReceivedAsynchronously);
 		}
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using NUnit.Framework;
@@ -85,30 +86,34 @@ namespace SIL.Windows.Forms.Tests
 		[Test]
 		public void CanOverrideDefaultLocation()
 		{
-			RegistrationSettingsProvider.SetProductName("FlowerUnitTest");
-			var settingsProvider = new TestCrossPlatformSettingsProvider();
-			settingsProvider.Initialize(null, null); // Seems to be what .NET does, despite warnings
-			var dirPath = settingsProvider.UserConfigLocation;
-			Assert.That(dirPath, Is.StringContaining("FlowerUnitTest"));
-			Directory.CreateDirectory(dirPath);
-			var filePath = Path.Combine(dirPath, TestCrossPlatformSettingsProvider.UserConfigFileName);
-			using (var tempFile = new TempFile(filePath, true))
+			string settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL", "SettingsProviderTests");
+			Directory.CreateDirectory(settingsPath);
+			using (TemporaryFolder.TrackExisting(settingsPath))
 			{
-				File.WriteAllText(filePath,
-					@"<?xml version='1.0' encoding='utf-8'?>
+				RegistrationSettingsProvider.SetProductName("SettingsProviderTests");
+				var settingsProvider = new TestCrossPlatformSettingsProvider();
+				settingsProvider.Initialize(null, null); // Seems to be what .NET does, despite warnings
+				string dirPath = settingsProvider.UserConfigLocation;
+				Assert.That(dirPath, Is.StringContaining("SettingsProviderTests"));
+				Directory.CreateDirectory(dirPath);
+				string filePath = Path.Combine(dirPath, TestCrossPlatformSettingsProvider.UserConfigFileName);
+				using (new TempFile(filePath, true))
+				{
+					File.WriteAllText(filePath,
+						@"<?xml version='1.0' encoding='utf-8'?>
 <configuration>
-    <userSettings>
-        <SIL.Windows.Forms.Registration.Registration>
-            <setting name='Email' serializeAs='String'>
-                <value>someone@somewhere.org</value>
-            </setting>
-        </SIL.Windows.Forms.Registration.Registration>
-    </userSettings>
+	<userSettings>
+		<SIL.Windows.Forms.Registration.Registration>
+			<setting name='Email' serializeAs='String'>
+				<value>someone@somewhere.org</value>
+			</setting>
+		</SIL.Windows.Forms.Registration.Registration>
+	</userSettings>
 </configuration>");
 
-				var regSettings = Registration.Registration.Default;
-				var email = regSettings.Email;
-				Assert.That(email, Is.EqualTo("someone@somewhere.org"));
+					Registration.Registration regSettings = Registration.Registration.Default;
+					Assert.That(regSettings.Email, Is.EqualTo("someone@somewhere.org"));
+				}
 			}
 		}
 
@@ -126,21 +131,59 @@ namespace SIL.Windows.Forms.Tests
 			if (File.Exists(settingsFilePath))
 				File.Delete(settingsFilePath);
 
-			SIL.Windows.Forms.Tests.Properties.Settings.Default.TestString = "hello world";
-			SIL.Windows.Forms.Tests.Properties.Settings.Default.Save();
-			SIL.Windows.Forms.Tests.Properties.Settings.Default.AnotherTest = "another";
-			SIL.Windows.Forms.Tests.Properties.Settings.Default.Save();
+			Properties.Settings.Default.TestString = "hello world";
+			Properties.Settings.Default.Save();
+			Properties.Settings.Default.AnotherTest = "another";
+			Properties.Settings.Default.Save();
 			Registration.Registration.Default.FirstName = "John";
 			Registration.Registration.Default.Save();
 
 			// This line was a problem in one version of the code, where Settings saved a version of the XML without the Registration stuff.
 			// The thing this test is mainly about is that this subsequent Save() does not discard the registration settings.
-			SIL.Windows.Forms.Tests.Properties.Settings.Default.Save();
+			Properties.Settings.Default.Save();
 
 			// Somehow a Reload() at this point does NOT detect that the registration settings are missing (if they are).
 			string fileContent = File.ReadAllText(settingsFilePath);
 			Assert.That(fileContent, Is.StringContaining("Registration"));
 			Assert.That(fileContent, Is.StringContaining("John"));
+		}
+
+		[Test]
+		public void Upgrade_SectionsRenamed_SettingsMigrated()
+		{
+			string settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL", "SettingsProviderTests");
+			Directory.CreateDirectory(settingsPath);
+			using (TemporaryFolder.TrackExisting(settingsPath))
+			{
+				RegistrationSettingsProvider.SetProductName("SettingsProviderTests");
+				var settingsProvider = new TestCrossPlatformSettingsProvider();
+				settingsProvider.Initialize(null, null); // Seems to be what .NET does, despite warnings
+				string dirPath = Path.Combine(settingsPath, "0.0.0.0");
+				Directory.CreateDirectory(dirPath);
+				string filePath = Path.Combine(dirPath, TestCrossPlatformSettingsProvider.UserConfigFileName);
+				using (new TempFile(filePath, true))
+				{
+					File.WriteAllText(filePath,
+						@"<?xml version='1.0' encoding='utf-8'?>
+<configuration>
+	<userSettings>
+		<Palaso.UI.WindowsForms.Registration.Registration>
+			<setting name='Email' serializeAs='String'>
+				<value>someone@somewhere.org</value>
+			</setting>
+			<setting name='LaunchCount' serializeAs='String'>
+				<value>10</value>
+			</setting>
+		</Palaso.UI.WindowsForms.Registration.Registration>
+	</userSettings>
+</configuration>");
+
+					Registration.Registration regSettings = Registration.Registration.Default;
+					regSettings.Upgrade();
+					Assert.That(regSettings.Email, Is.EqualTo("someone@somewhere.org"));
+					Assert.That(regSettings.LaunchCount, Is.EqualTo(10));
+				}
+			}
 		}
 
 		/// <summary>

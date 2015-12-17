@@ -18,6 +18,7 @@ namespace SIL.IO
 	{
 		protected string _path;
 		private string _folderToDelete; // if not null, delete this as well on dispose
+		private bool _detached;
 
 		public TempFile()
 		{
@@ -55,9 +56,21 @@ namespace SIL.IO
 			get { return _path; }
 		}
 
+		/// <summary>
+		/// Don't try to delete this file when Dispose()'d.
+		/// </summary>
+		public void Detach()
+		{
+			_detached = true;
+		}
+
 		// See comment on class above regarding Dispose
 		public void Dispose()
 		{
+			if (_detached)
+			{
+				return;
+			}
 			File.Delete(_path);
 			if (_folderToDelete != null)
 				DirectoryUtilities.DeleteDirectoryRobust(_folderToDelete);

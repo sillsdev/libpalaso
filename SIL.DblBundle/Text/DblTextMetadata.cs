@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
+using SIL.Extensions;
 using SIL.ObjectModel;
 using SIL.Scripture;
 using SIL.Xml;
@@ -16,6 +17,9 @@ namespace SIL.DblBundle.Text
 	{
 		[XmlElement("identification")]
 		public DblMetadataIdentification Identification { get; set; }
+
+		[XmlElement("copyright")]
+		public DblMetadataCopyright Copyright { get; set; }
 
 		[XmlElement("promotion")]
 		public DblMetadataPromotion Promotion { get; set; }
@@ -108,6 +112,12 @@ namespace SIL.DblBundle.Text
 		}
 	}
 
+	public class DblMetadataCopyright
+	{
+		[XmlElement("statement")]
+		public DblMetadataXhtmlContentNode Statement { get; set; }
+	}
+
 	public class DblMetadataPromotion
 	{
 		[XmlElement("promoVersionInfo")]
@@ -130,7 +140,10 @@ namespace SIL.DblBundle.Text
 		public string ContentType { get; set; }
 
 		[XmlAnyElement]
-		public XmlElement[] InternalNodes { get; set; }
+		public XmlNode[] InternalNodes { get; set; }
+
+		[XmlText]
+		public string Text { get; set; }
 
 		[XmlIgnore]
 		public string Xhtml
@@ -140,9 +153,14 @@ namespace SIL.DblBundle.Text
 				if (m_value == null)
 				{
 					var sb = new StringBuilder();
-					foreach (var node in InternalNodes)
-						sb.Append(node.OuterXml);
-					m_value = sb.ToString();
+					if (InternalNodes == null)
+						m_value = Text;
+					else
+					{
+						foreach (var node in InternalNodes)
+							sb.Append(node.OuterXml);
+						m_value = sb.ToString();
+					}
 				}
 				return m_value;
 			}
@@ -150,8 +168,20 @@ namespace SIL.DblBundle.Text
 			{
 				m_value = value;
 				var doc = new XmlDocument();
-				doc.LoadXml(value);
-				InternalNodes = new[] { doc.DocumentElement };
+				string dummyXml = "<dummy>" + value + "</dummy>";
+				doc.LoadXml(dummyXml);
+				if (doc.DocumentElement != null && doc.DocumentElement.ChildNodes.Count > 0)
+				{
+					var childNodes = doc.DocumentElement.ChildNodes;
+					InternalNodes = new XmlNode[childNodes.Count];
+					int i = 0;
+					foreach (var childNode in childNodes)
+						InternalNodes[i++] = (XmlNode)childNode;
+				}
+				else
+				{
+					InternalNodes = new XmlNode[0];
+				}
 			}
 		}
 	}

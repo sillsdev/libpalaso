@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using NUnit.Framework;
 using SIL.Progress;
+using CategoryAttribute = NUnit.Framework.CategoryAttribute;
 
 namespace SIL.Tests.Progress
 {
@@ -25,7 +26,7 @@ namespace SIL.Tests.Progress
 		{
 		}
 
-		[Test]
+		[Test, Category("ByHand")]
 		public void LongRunningMethodUsingConsoleHandler_ProducesLog()
 		{
 			Assert.IsFalse((_logBuilder.ToString().Contains("99")));
@@ -36,6 +37,7 @@ namespace SIL.Tests.Progress
 			cacheBuildingWork.RunWorkerAsync(progress);
 
 			WaitForFinish(progress, ProgressState.StateValue.Finished);
+			// Fails about 2% of the time on TC Windows agents, likely due to the Asynchronous aspects of this test
 			Assert.IsTrue(_logBuilder.ToString().Contains("99"));
 		}
 

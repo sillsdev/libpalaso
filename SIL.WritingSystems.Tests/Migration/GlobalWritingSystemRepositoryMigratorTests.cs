@@ -1,8 +1,7 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using System.Xml;
 using NUnit.Framework;
+using SIL.PlatformUtilities;
 using SIL.TestUtilities;
 using SIL.WritingSystems.Migration;
 
@@ -11,36 +10,42 @@ namespace SIL.WritingSystems.Tests.Migration
 	[TestFixture]
 	public class GlobalWritingSystemRepositoryMigratorTests
 	{
-
-		class TestEnvironment : IDisposable
+		private class TestEnvironment : IDisposable
 		{
-			private readonly string[] _ldmlFileNames;
-
 			private readonly TemporaryFolder _baseFolder = new TemporaryFolder("GlobalWritingSystemRepositoryMigratorTests");
+			private readonly TemporaryFolder _ldmlPathVersion0 = new TemporaryFolder("LdmlPathVersion0");
+			private readonly TemporaryFolder _oldLinuxBaseFolder = new TemporaryFolder("GlobalWritingSystemRepositoryMigratorTestsOldLinux");
 
 			public TestEnvironment()
 			{
-				_ldmlFileNames = Directory.GetFiles(GlobalWritingSystemRepositoryMigrator.LdmlPathPre0);
-				NamespaceManager = new XmlNamespaceManager(new NameTable());
-				NamespaceManager.AddNamespace("sil", "urn://www.sil.org/ldml/0.1");
-				NamespaceManager.AddNamespace("palaso", "urn://palaso.org/ldmlExtensions/v1");
+				GlobalWritingSystemRepositoryMigrator.LdmlPathVersion0 = _ldmlPathVersion0.Path;
+				GlobalWritingSystemRepositoryMigrator.LdmlPathLinuxVersion2 = _oldLinuxBaseFolder.Path;
 			}
-
-			private XmlNamespaceManager NamespaceManager { get; set; }
 
 			public string BasePath { get { return _baseFolder.Path; } }
 
-			public static void WriteLdmlFile(string language, string bogus, int version)
+			public void WriteVersion0LdmlFile(string language)
 			{
-				string filePath = GlobalWritingSystemRepositoryMigrator.LdmlPathPre0;
-				if (!Directory.Exists(filePath))
-					Directory.CreateDirectory(filePath);
-				filePath = Path.Combine(filePath, String.Format("{0}.ldml", language));
-				string content = string.Empty;
-				if (version == 0)
-					content = LdmlContentForTests.Version0Bogus(language, "", "", "", bogus);
-				if (version == LdmlDataMapper.CurrentLdmlVersion)
-					content = LdmlContentForTests.CurrentVersion(language, "", "", "", string.Format("\n\t<{0} />",bogus));
+				string filePath = Path.Combine(GlobalWritingSystemRepositoryMigrator.LdmlPathVersion0, String.Format("{0}.ldml", language));
+				string content = LdmlContentForTests.Version0(language, "", "", "");
+				File.WriteAllText(filePath, content);
+			}
+
+			public void WriteVersion1LdmlFile(string language)
+			{
+				string folderPath = Path.Combine(Platform.IsLinux ? GlobalWritingSystemRepositoryMigrator.LdmlPathLinuxVersion2 : _baseFolder.Path, "1");
+				Directory.CreateDirectory(folderPath);
+				string filePath = Path.Combine(folderPath, String.Format("{0}.ldml", language));
+				string content = LdmlContentForTests.Version1(language, "", "", "");
+				File.WriteAllText(filePath, content);
+			}
+
+			public void WriteVersion2LdmlFile(string language)
+			{
+				string folderPath = Path.Combine(Platform.IsLinux ? GlobalWritingSystemRepositoryMigrator.LdmlPathLinuxVersion2 : _baseFolder.Path, "2");
+				Directory.CreateDirectory(folderPath);
+				string filePath = Path.Combine(folderPath, String.Format("{0}.ldml", language));
+				string content = LdmlContentForTests.Version2(language, "", "", "");
 				File.WriteAllText(filePath, content);
 			}
 
@@ -57,56 +62,59 @@ namespace SIL.WritingSystems.Tests.Migration
 				}
 			}
 
-			public int GetFileVersion(string fileName)
+			public int GetMigratedFileVersion(string fileName)
 			{
 				var versionReader = new WritingSystemLdmlVersionGetter();
 				string filePath = Path.Combine(MigratedLdmlFolder, fileName);
 				return versionReader.GetFileVersion(filePath);
 			}
 
-			private static void DeleteFilesInFolderExcept(string path, string[] fileNames)
-			{
-				foreach (string fileName in Directory.GetFiles(path))
-				{
-					if (!fileNames.Contains(fileName))
-					{
-						string filePath = Path.Combine(path, fileName);
-						File.Delete(filePath);
-					}
-				}
-			}
-
 			public void Dispose()
 			{
-				// Delete all files not already present
-				DeleteFilesInFolderExcept(GlobalWritingSystemRepositoryMigrator.LdmlPathPre0, _ldmlFileNames);
+				_oldLinuxBaseFolder.Dispose();
+				_ldmlPathVersion0.Dispose();
 				_baseFolder.Dispose();
+				GlobalWritingSystemRepositoryMigrator.LdmlPathVersion0 = GlobalWritingSystemRepositoryMigrator.DefaultLdmlPathVersion0;
+				GlobalWritingSystemRepositoryMigrator.LdmlPathLinuxVersion2 = GlobalWritingSystemRepositoryMigrator.DefaultLdmlPathLinuxVersion2;
 			}
 		}
 
 		[Test]
-		public void Migrate_WithOldLdmlFile_Migrates()
+		public void Migrate_WithVersion0LdmlFile_Migrates()
 		{
 			using (var e = new TestEnvironment())
 			{
-				TestEnvironment.WriteLdmlFile("qaa-x-bogus", "bogus", 0);
+				e.WriteVersion0LdmlFile("en");
 				var m = new GlobalWritingSystemRepositoryMigrator(e.BasePath);
 				m.Migrate();
 
-				Assert.AreEqual(LdmlDataMapper.CurrentLdmlVersion, e.GetFileVersion("qaa-x-bogus.ldml"));
+				Assert.That(e.GetMigratedFileVersion("en.ldml"), Is.EqualTo(LdmlDataMapper.CurrentLdmlVersion));
 			}
 		}
 
 		[Test]
-		public void Migrate_WithCurrentVersionLdmlFile_FileCopiedToRepo()
+		public void Migrate_WithVersion1LdmlFile_Migrates()
 		{
 			using (var e = new TestEnvironment())
 			{
-				TestEnvironment.WriteLdmlFile("qaa-x-bogus", "bogus", LdmlDataMapper.CurrentLdmlVersion);
+				e.WriteVersion1LdmlFile("en");
 				var m = new GlobalWritingSystemRepositoryMigrator(e.BasePath);
 				m.Migrate();
 
-				Assert.AreEqual(LdmlDataMapper.CurrentLdmlVersion, e.GetFileVersion("qaa-x-bogus.ldml"));
+				Assert.That(e.GetMigratedFileVersion("en.ldml"), Is.EqualTo(LdmlDataMapper.CurrentLdmlVersion));
+			}
+		}
+
+		[Test]
+		public void Migrate_WithVersion2LdmlFile_Migrates()
+		{
+			using (var e = new TestEnvironment())
+			{
+				e.WriteVersion2LdmlFile("en");
+				var m = new GlobalWritingSystemRepositoryMigrator(e.BasePath);
+				m.Migrate();
+
+				Assert.That(e.GetMigratedFileVersion("en.ldml"), Is.EqualTo(LdmlDataMapper.CurrentLdmlVersion));
 			}
 		}
 	}

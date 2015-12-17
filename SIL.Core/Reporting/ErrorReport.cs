@@ -101,7 +101,7 @@ namespace SIL.Reporting
 
 		//We removed all references to Winforms from Palaso.dll but our error reporting relied heavily on it.
 		//Not wanting to break existing applications we have now added this class initializer which will
-		//look for a reference to PalasoUIWindowsForms in the consuming app and if it exists instantiate the
+		//look for a reference to SIL.Windows.Forms in the consuming app and if it exists instantiate the
 		//WinformsErrorReporter from there through Reflection. otherwise we will simply use a console
 		//error reporter
 		static ErrorReport()
@@ -138,6 +138,18 @@ namespace SIL.Reporting
 			ErrorReport.AddStandardProperties();
 		}
 
+		private static void UpdateEmailSubject(Exception error)
+		{
+			var subject = new StringBuilder();
+			subject.AppendFormat("Exception: {0}", error.Message);
+			try
+			{
+				subject.AppendFormat(" in {0}", error.Source);
+			}
+			catch {}
+			s_emailSubject = subject.ToString();
+		}
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		///
@@ -147,53 +159,8 @@ namespace SIL.Reporting
 		/// ------------------------------------------------------------------------------------
 		public static string GetExceptionText(Exception error)
 		{
-			var subject = new StringBuilder();
-			subject.AppendFormat("Exception: {0}", error.Message);
-
-			var txt = new StringBuilder();
-
-			txt.Append("Msg: ");
-			txt.AppendLine(error.Message);
-
-			try
-			{
-				var cOMException = error as COMException;
-				if (cOMException != null)
-				{
-					txt.Append("COM message: ");
-					txt.AppendLine(new Win32Exception(cOMException.ErrorCode).Message);
-				}
-			}
-			catch {}
-
-			try
-			{
-				txt.Append("Source: ");
-				txt.AppendLine(error.Source);
-				subject.AppendFormat(" in {0}", error.Source);
-			}
-			catch {}
-
-			try
-			{
-				if (error.TargetSite != null)
-				{
-					txt.Append("Assembly: ");
-					txt.AppendLine(error.TargetSite.DeclaringType.Assembly.FullName);
-				}
-			}
-			catch {}
-
-			try
-			{
-				txt.Append("Stack: ");
-				txt.AppendLine(error.StackTrace);
-			}
-			catch {}
-
-			s_emailSubject = subject.ToString();
-
-			return txt.ToString();
+			UpdateEmailSubject(error);
+			return ExceptionHelper.GetExceptionText(error);
 		}
 
 		public static string GetVersionForErrorReporting()
@@ -482,24 +449,10 @@ namespace SIL.Reporting
 			return Environment.OSVersion.VersionString;
 		}
 
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		///
-		/// </summary>
-		/// <returns></returns>
-		/// ------------------------------------------------------------------------------------
 		public static string GetHiearchicalExceptionInfo(Exception error, ref Exception innerMostException)
 		{
-			var x = GetExceptionText(error);
-
-			if (error.InnerException != null)
-			{
-				innerMostException = error.InnerException;
-
-				x += "**Inner Exception:" + Environment.NewLine;
-				x += GetHiearchicalExceptionInfo(error.InnerException, ref innerMostException);
-			}
-			return x;
+			UpdateEmailSubject(error);
+			return ExceptionHelper.GetHiearchicalExceptionInfo(error, ref innerMostException);
 		}
 
 		public static void ReportFatalException(Exception error)

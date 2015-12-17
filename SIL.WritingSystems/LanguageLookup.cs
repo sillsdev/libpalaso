@@ -14,8 +14,6 @@ namespace SIL.WritingSystems
 		private readonly Dictionary<string, LanguageInfo> _codeToLanguageIndex = new Dictionary<string, LanguageInfo>();
 		private readonly Dictionary<string, List<LanguageInfo>> _nameToLanguageIndex = new Dictionary<string, List<LanguageInfo>>();
 
-		private readonly bool _isUpToDate;
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LanguageLookup"/> class.
 		/// </summary>
@@ -59,11 +57,8 @@ namespace SIL.WritingSystems
 				}
 			}
 
-			IEnumerable<string> availableLangTags;
-			_isUpToDate = Sldr.GetAvailableLanguageTags(out availableLangTags);
-
-			IEnumerable<IGrouping<string, string>> languageGroups = availableLangTags.Where(IetfLanguageTag.IsValid)
-				.Select(l => IetfLanguageTag.Normalize(l, IetfLanguageTagNormalizationForm.SilCompatible))
+			IEnumerable<IGrouping<string, string>> languageGroups = Sldr.LanguageTags.Where(info => info.IsAvailable && IetfLanguageTag.IsValid(info.LanguageTag))
+				.Select(info => IetfLanguageTag.Canonicalize(info.LanguageTag))
 				.GroupBy(IetfLanguageTag.GetLanguagePart);
 
 			foreach (IGrouping<string, string> languageGroup in languageGroups)
@@ -185,11 +180,6 @@ namespace SIL.WritingSystems
 			if (!string.IsNullOrEmpty(countryName))
 				language.Countries.Add(countryName);
 			return language;
-		}
-
-		public bool IsUpToDate
-		{
-			get { return _isUpToDate; }
 		}
 
 		/// <summary>

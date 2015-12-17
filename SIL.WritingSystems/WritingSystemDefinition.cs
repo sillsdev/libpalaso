@@ -119,7 +119,7 @@ namespace SIL.WritingSystems
 			if (!IetfLanguageTag.IsValid(languageTag))
 				throw new ArgumentException("The language tag is invalid.", languageTag);
 
-			_languageTag = IetfLanguageTag.Normalize(languageTag, IetfLanguageTagNormalizationForm.SilCompatible);
+			_languageTag = IetfLanguageTag.Canonicalize(languageTag);
 			IEnumerable<VariantSubtag> variantSubtags;
 			IetfLanguageTag.TryGetSubtags(_languageTag, out _language, out _script, out _region, out variantSubtags);
 			_variants = new BulkObservableList<VariantSubtag>(variantSubtags);
@@ -416,6 +416,9 @@ namespace SIL.WritingSystems
 			return true;
 		}
 
+		/// <summary>
+		/// Gets or sets the language.
+		/// </summary>
 		public LanguageSubtag Language
 		{
 			get { return _language; }
@@ -428,14 +431,13 @@ namespace SIL.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the script. If the language tag for the writing system has an implicit script,
+		/// this property will return the implicit script.
+		/// </summary>
 		public ScriptSubtag Script
 		{
-			get
-			{
-				if (_script == null && _language != null)
-					return _language.ImplicitScriptCode;
-				return _script;
-			}
+			get { return _script; }
 			set
 			{
 				string oldCode = _script == null ? string.Empty : _script.Code;
@@ -445,6 +447,9 @@ namespace SIL.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the region.
+		/// </summary>
 		public RegionSubtag Region
 		{
 			get { return _region; }
@@ -581,7 +586,7 @@ namespace SIL.WritingSystems
 
 				if (_script != null && !IsVoice && !IetfLanguageTag.IsScriptImplied(_languageTag))
 					details.AppendFormat("{0}-", _script.Code);
-				if (_region != null && !IetfLanguageTag.IsRegionImplied(_languageTag))
+				if (_region != null)
 					details.AppendFormat("{0}-", _region.Code);
 				foreach (VariantSubtag variantSubtag in _variants.Where(v => !v.IsPrivateUse))
 				{
@@ -654,7 +659,7 @@ namespace SIL.WritingSystems
 				if (!IetfLanguageTag.IsValid(value))
 					throw new ArgumentException("The language tag is invalid.", "value");
 
-				string newLangTag = IetfLanguageTag.Normalize(value, IetfLanguageTagNormalizationForm.SilCompatible);
+				string newLangTag = IetfLanguageTag.Canonicalize(value);
 				if (!newLangTag.Equals(_languageTag, StringComparison.InvariantCultureIgnoreCase))
 				{
 					LanguageSubtag language;
@@ -791,6 +796,9 @@ namespace SIL.WritingSystems
 			if (_language == null && (_script != null || _region != null || _variants.Any(v => !v.IsPrivateUse)))
 				Set(() => Language, ref _language, WellKnownSubtags.UnlistedLanguage);
 			Set(() => LanguageTag, ref _languageTag, IetfLanguageTag.Create(_language, _script, _region, _variants, false));
+
+			if (_script == null && IetfLanguageTag.IsValid(_languageTag) && IetfLanguageTag.IsScriptImplied(_languageTag))
+				Set(() => Script, ref _script, IetfLanguageTag.GetScriptSubtag(_languageTag));
 		}
 
 		/// <summary>

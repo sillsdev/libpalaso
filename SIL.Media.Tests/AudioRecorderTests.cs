@@ -17,7 +17,7 @@ namespace SIL.Media.Tests
 		[Test]
 		public void Construct_FileDoesNotExist_OK()
 		{
-			var x = AudioFactory.AudioSession(Path.GetRandomFileName());
+			var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName());
 		}
 
 		[Test]
@@ -25,7 +25,7 @@ namespace SIL.Media.Tests
 		{
 			using (var f = new TempFile())
 			{
-				var x = AudioFactory.AudioSession(f.Path);
+				var x = AudioFactory.CreateAudioSession(f.Path);
 			}
 		}
 
@@ -34,14 +34,14 @@ namespace SIL.Media.Tests
 		public void Construct_FileDoesNotExist_DoesNotCreateFile()
 		{
 			var path = Path.GetRandomFileName();
-			var x = AudioFactory.AudioSession(path);
+			var x = AudioFactory.CreateAudioSession(path);
 			Assert.IsFalse(File.Exists(path));
 		}
 
 		[Test]
 		public void StopRecording_NotRecording_Throws()
 		{
-			var x = AudioFactory.AudioSession(Path.GetRandomFileName());
+			var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName());
 			Assert.Throws<ApplicationException>(() => x.StopRecordingAndSaveAsWav());
 		}
 
@@ -79,14 +79,14 @@ namespace SIL.Media.Tests
 		[Test]
 		public void CanRecord_FileDoesNotExist_True()
 		{
-			var x = AudioFactory.AudioSession(Path.GetRandomFileName());
+			var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName());
 			Assert.IsTrue(x.CanRecord);
 		}
 
 		[Test]
 		public void CanStop_NonExistantFile_False()
 		{
-			var x = AudioFactory.AudioSession(Path.GetRandomFileName());
+			var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName());
 			Assert.IsFalse(x.CanStop);
 		}
 
@@ -95,18 +95,18 @@ namespace SIL.Media.Tests
 		{
 			using (var f = new TempFile())
 			{
-				var x = AudioFactory.AudioSession(f.Path);
+				var x = AudioFactory.CreateAudioSession(f.Path);
 				Assert.IsTrue(x.CanRecord);
 			}
 		}
 
 		[Test]
-		[Platform(Include="Linux", Reason="IrrKlang doesn't throw, so we don't really know")]
+		[Platform(Exclude ="Windows", Reason="IrrKlang doesn't throw, so we don't really know")]
 		public void Play_FileEmpty_Throws()
 		{
 			using (var f = new TempFile())
 			{
-				var x = AudioFactory.AudioSession(f.Path);
+				var x = AudioFactory.CreateAudioSession(f.Path);
 				Assert.Throws<Exception>(() => x.Play());
 			}
 		}
@@ -114,7 +114,7 @@ namespace SIL.Media.Tests
 		[Test]
 		public void Play_FileDoesNotExist_Throws()
 		{
-			var x = AudioFactory.AudioSession(Path.GetRandomFileName());
+			var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName());
 			Assert.Throws<FileNotFoundException>(() => x.Play());
 		}
 
@@ -140,7 +140,7 @@ namespace SIL.Media.Tests
 				var oldLength = oldInfo.Length;
 				Assert.AreEqual(0, oldLength);
 				var oldTimestamp = oldInfo.LastWriteTimeUtc;
-				var x = AudioFactory.AudioSession(f.Path);
+				var x = AudioFactory.CreateAudioSession(f.Path);
 				x.StartRecording();
 				Thread.Sleep(1000);
 				x.StopRecordingAndSaveAsWav();
@@ -155,7 +155,7 @@ namespace SIL.Media.Tests
 		{
 			using (var f = new TempFile())
 			{
-				var x = AudioFactory.AudioSession(f.Path);
+				var x = AudioFactory.CreateAudioSession(f.Path);
 				x.StartRecording();
 				Thread.Sleep(100);
 				Assert.IsTrue(x.IsRecording);
@@ -171,7 +171,7 @@ namespace SIL.Media.Tests
 				var w = new BackgroundWorker();
 				w.DoWork+=new DoWorkEventHandler((o,args)=> SystemSounds.Exclamation.Play());
 
-				var x = AudioFactory.AudioSession(f.Path);
+				var x = AudioFactory.CreateAudioSession(f.Path);
 				x.StartRecording();
 				w.RunWorkerAsync();
 				Thread.Sleep(1000);
@@ -194,13 +194,13 @@ namespace SIL.Media.Tests
 					var w = new BackgroundWorker();
 					w.DoWork += new DoWorkEventHandler((o, args) => SystemSounds.Exclamation.Play());
 
-					var x = AudioFactory.AudioSession(f.Path);
+					var x = AudioFactory.CreateAudioSession(f.Path);
 					x.StartRecording();
 					w.RunWorkerAsync();
 					Thread.Sleep(1000);
 					x.StopRecordingAndSaveAsWav();
 
-					var y = AudioFactory.AudioSession(f.Path);
+					var y = AudioFactory.CreateAudioSession(f.Path);
 					y.Play();
 					Thread.Sleep(1000);
 					y.StopPlaying();
@@ -220,7 +220,7 @@ namespace SIL.Media.Tests
 			public RecordingSession()
 			{
 				_tempFile = new TempFile();
-				_recorder = AudioFactory.AudioSession(_tempFile.Path);
+				_recorder = AudioFactory.CreateAudioSession(_tempFile.Path);
 				_recorder.StartRecording();
 				Thread.Sleep(100);
 			}
@@ -344,7 +344,7 @@ namespace SIL.Media.Tests
 
 		private ISimpleAudioSession RecordSomething(TempFile f)
 		{
-			var x = AudioFactory.AudioSession(f.Path);
+			var x = AudioFactory.CreateAudioSession(f.Path);
 			x.StartRecording();
 			Thread.Sleep(100);
 			x.StopRecordingAndSaveAsWav();

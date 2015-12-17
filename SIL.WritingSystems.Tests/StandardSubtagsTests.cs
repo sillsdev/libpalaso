@@ -33,31 +33,12 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void RegisteredLanguages_HasImplicitScriptCodeForEnglish()
-		{
-			LanguageSubtag english = StandardSubtags.RegisteredLanguages["en"];
-			Assert.That(english.ImplicitScriptCode, Is.EqualTo("Latn"));
-		}
-
-		[Test]
-		public void RegisteredLanguages_HasFonipa_False()
-		{
-			Assert.That(StandardSubtags.RegisteredLanguages.Contains("fonipa"), Is.False);
-		}
-
-		[Test]
 		public void RegisteredScripts_HasLatn_True()
 		{
 			Assert.That(StandardSubtags.RegisteredScripts.Contains("Latn"), Is.True);
 		}
 
 		[Test]
-		public void RegisteredLanguages_Spanish_HasLatinImplicitScriptCode()
-		{
-			Assert.That(StandardSubtags.RegisteredLanguages["es"].ImplicitScriptCode, Is.EqualTo("Latn"));
-		}
-
-        [Test]
 		public void RegisteredScripts_HasOldItalic_True()
 		{
 			Assert.That(StandardSubtags.RegisteredScripts.Any(code => code.Name == "Old Italic (Etruscan, Oscan, etc.)"), Is.True);
@@ -100,7 +81,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void RegisteredScripts_HasHiraganaKatakana_True()
 		{
-            Assert.That(StandardSubtags.RegisteredScripts.Any(code => code.Name == "Japanese syllabaries (Hiragana + Katakana)"), Is.True);
+			Assert.That(StandardSubtags.RegisteredScripts.Any(code => code.Name == "Japanese syllabaries (Hiragana + Katakana)"), Is.True);
 		}
 
 		[Test]

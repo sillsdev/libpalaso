@@ -10,7 +10,7 @@ namespace SIL.Windows.Forms.ImageGallery
 {
 	/// <summary>
 	/// Thumbnail viewer is a this wrapper around either a ListViewThumbnailViewer or a WebThumbnailViewer
-	/// (implemented in PalasoUiWindowsForms.GeckoFxWebBrowserAdapter), which must be used by clients
+	/// (implemented in SIL.Windows.Forms.GeckoBrowserAdapter), which must be used by clients
 	/// that are using GeckoFx.
 	/// </summary>
 	public class ThumbnailViewer : UserControl
@@ -34,6 +34,7 @@ namespace SIL.Windows.Forms.ImageGallery
 			};
 			_thumbnailViewer.TheControl.Dock = DockStyle.Fill;
 			Controls.Add(_thumbnailViewer.TheControl);
+			Clear(); // BL-2901 prevents thumbnail viewer from having a black background when displayed
 		}
 
 		public IThumbnailViewer CreateViewer()
@@ -41,13 +42,13 @@ namespace SIL.Windows.Forms.ImageGallery
 			if (UseWebViewer)
 			{
 				var path = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath),
-					"PalasoUIWindowsForms.GeckoBrowserAdapter.dll");
+					"SIL.Windows.Forms.GeckoBrowserAdapter.dll");
 				if (File.Exists(path))
 				{
 					var assembly = Assembly.LoadFile(path);
 					if (assembly != null)
 					{
-						var browser = assembly.GetType("Palaso.UI.WindowsForms.ImageGallery.WebThumbnailViewer");
+						var browser = assembly.GetType("SIL.Windows.Forms.GeckoBrowserAdapter.WebThumbnailViewer");
 						if (browser != null)
 						{
 							try

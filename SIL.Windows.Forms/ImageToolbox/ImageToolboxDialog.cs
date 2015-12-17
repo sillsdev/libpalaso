@@ -14,30 +14,34 @@ namespace SIL.Windows.Forms.ImageToolbox
 		public ImageToolboxDialog(PalasoImage imageInfo, string initialSearchString)
 		{
 			InitializeComponent();
-			imageToolboxControl1.ImageInfo = imageInfo;
-			imageToolboxControl1.InitialSearchString = initialSearchString;
+			_imageToolboxControl.ImageInfo = imageInfo;
+			_imageToolboxControl.InitialSearchString = initialSearchString;
 			SearchLanguage = "en";	// unless the caller specifies otherwise explicitly
 		}
-		public PalasoImage ImageInfo { get { return imageToolboxControl1.ImageInfo; } }
+		public PalasoImage ImageInfo { get { return _imageToolboxControl.ImageInfo; } }
 
 		/// <summary>
 		/// Sets the language used in searching for an image by words.
 		/// </summary>
-		public string SearchLanguage { set { imageToolboxControl1.SearchLanguage = value; } }
+		public string SearchLanguage
+		{
+			get { return _imageToolboxControl.SearchLanguage; }
+			set { _imageToolboxControl.SearchLanguage = value; }
+		}
 
 		private void _okButton_Click(object sender, EventArgs e)
 		{
 			//enhance: doesn't tell us all that much.
 			UsageReporter.SendNavigationNotice("ImageToolboxDialog/Ok");
 			DialogResult = (ImageInfo==null || ImageInfo.Image==null)? DialogResult.Cancel : DialogResult.OK;
-			imageToolboxControl1.Closing();
+			_imageToolboxControl.Closing();
 			Close();
 		}
 
 		private void _cancelButton_Click(object sender, EventArgs e)
 		{
 			DialogResult = DialogResult.Cancel;
-			imageToolboxControl1.Closing();
+			_imageToolboxControl.Closing();
 			Close();
 		}
 
