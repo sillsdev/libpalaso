@@ -106,6 +106,12 @@ namespace Palaso.UsbDrive
 		public static List<IUsbDriveInfo> GetDrives()
 		{
 #if MONO
+			// Using Palaso.UsbDrive on Linux/Mono results in NDesk spinning up a thread that
+			// continues until NDesk Bus is closed.  Failure to close the thread results in a
+			// program hang when closing.  Closing the system bus allows the thread to close,
+			// and thus the program to close.
+			AppDomain.CurrentDomain.ProcessExit += (sender, args) => { NDesk.DBus.Bus.System.Close(); };
+
 			// Ubuntu 12.04 uses udisks. HAL use is deprecated.
 			// Ubuntu 14.04 can use udisks or udisks2.
 			// Ubuntu 16.04 uses udisks2.
