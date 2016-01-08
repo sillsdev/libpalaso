@@ -400,6 +400,27 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			adaptor.SwitchingAdaptor.ActivateKeyboard(KeyboardController.Instance.Keyboards.First());
 			KeyboardController.Shutdown();
 		}
+
+		[Test]
+		public void CreateKeyboardDefinition()
+		{
+			// Setup
+			XklEngineResponder.SetGroupNames = new string[] { KeyboardUSA };
+			var adaptor = new XkbKeyboardRetrievingAdaptor(new XklEngineResponder());
+			KeyboardController.Initialize(adaptor);
+
+			// This mimics a KMFL ibus keyboard (which come through as path to the keyman file)
+			const string kmflKeyboard = "/some/keyboard/without/dash";
+			const string expectedKeyboardName = "[Missing] /some/keyboard/without/dash ()";
+
+			// Exercise
+			var keyboard = XkbKeyboardRetrievingAdaptor.CreateKeyboardDefinition(kmflKeyboard,
+				adaptor.SwitchingAdaptor);
+
+			// Verify
+			Assert.That(keyboard, Is.Not.Null);
+			Assert.That(keyboard.Name, Is.EqualTo(expectedKeyboardName));
+		}
 	}
 }
 #endif
