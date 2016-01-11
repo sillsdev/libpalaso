@@ -60,16 +60,21 @@ namespace SIL.Windows.Forms.ClearShare
 		}
 
 		/// <summary>
+		/// If the MetaData was loaded from a file, this stores all the other metadata from that file,
+		/// which will typically be useful to write to a file derived from it.
+		/// </summary>
+		TagLib.Image.File _originalTablibMetadata;
+
+		/// <summary>
 		/// NB: this is used in 2 places; one is loading from the image we are linked to, the other from a sample image we are copying metadata from
 		/// </summary>
 		/// <param name="path"></param>
 		/// <param name="destinationMetadata"></param>
 		private static void LoadProperties(string path, Metadata destinationMetadata)
 		{
-			TagLib.Image.File file;
 			try
 			{
-				file = TagLib.File.Create(path) as TagLib.Image.File;
+				destinationMetadata._originalTablibMetadata = TagLib.File.Create(path) as TagLib.Image.File;
 			}
 			catch (TagLib.UnsupportedFormatException)
 			{
@@ -79,7 +84,7 @@ namespace SIL.Windows.Forms.ClearShare
 				// even in DEBUG mode, because else a lot of simple image tests fail
 				return;
 			}
-			LoadProperties(file.ImageTag, destinationMetadata);
+			LoadProperties(destinationMetadata._originalTablibMetadata.ImageTag, destinationMetadata);
 		}
 
 		/// <summary>
@@ -362,7 +367,26 @@ namespace SIL.Windows.Forms.ClearShare
 			return file != null && !file.GetType().FullName.Contains("NoMetadata");
 		}
 
-		public void Write(string path, string originalImagePath = null)
+		/// <summary>
+		/// Set standard orientation on any metadata saved from the original image (typically because we hard-rotated the image)
+		/// </summary>
+		public void NormalizeOrientation()
+		{
+			var ifdTag = _originalTablibMetadata?.GetTag(TagTypes.TiffIFD) as IFDTag;
+			if (ifdTag != null)
+				ifdTag.Orientation = ImageOrientation.TopLeft;
+		}
+
+		/// <summary>
+		/// Write the metadata to the specified image file. Optionally, if this MetaData was made from a file,
+		/// any other original metadata from that file can be copied to the new one. This can include all kinds
+		/// of details like where and when a photo was taken, image size, and so forth, so it should not be
+		/// done except for copies of the image; for example, not when applying the same ClearShare settings
+		/// to a group of images.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="copyAllMetaDataFromOriginal"></param>
+		public void Write(string path, bool copyAllMetaDataFromOriginal = false)
 		{
 			// do not attempt to add metadata to a file type that does not support it.
 			if (!FileFormatSupportsMetadata(path))
@@ -376,17 +400,9 @@ namespace SIL.Windows.Forms.ClearShare
 			// of this library and its clients) won't see our copyright notice and creator, at least.
 			file.GetTag(TagTypes.Png, true);
 			// If we know where the image came from, copy as much metadata as we can to the new image.
-			if (originalImagePath != null && File.Exists(originalImagePath))
+			if (copyAllMetaDataFromOriginal && _originalTablibMetadata != null)
 			{
-				var originalFile = TagLib.File.Create(originalImagePath) as TagLib.Image.File;
-				if (originalFile != null)
-					file.CopyFrom(originalFile);
-				// But, don't copy any orientation information from the original image. At least for now,
-				// all callers which pass an originalImagePath already corrected for any orientation
-				// recorded in the original image.
-				var ifdTag = file.GetTag(TagTypes.TiffIFD) as IFDTag;
-				if (ifdTag != null)
-					ifdTag.Orientation = ImageOrientation.TopLeft;
+				file.CopyFrom(_originalTablibMetadata);
 			}
 			SaveInImageTag(file.ImageTag);
 			file.Save();

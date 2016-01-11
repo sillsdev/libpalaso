@@ -145,7 +145,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		{
 			ThrowIfDisposedOfAlready();
 			SaveImageSafely(path, format);
-			Metadata.Write(path, OriginalFilePath);
+			Metadata.Write(path, true);
 		}
 
 		private void SaveImageSafely(string path, ImageFormat format)
@@ -289,6 +289,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 				_tempFilePath = tempPath
 			};
 			NormalizeImageOrientation(i.Image);
+			i.Metadata.NormalizeOrientation();
 			return i;
 		}
 
