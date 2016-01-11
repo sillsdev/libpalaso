@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using L10NSharp;
 using SIL.Extensions;
 using TagLib;
+using TagLib.IFD;
 using TagLib.Image;
 using TagLib.Xmp;
 using File = System.IO.File;
@@ -361,7 +362,7 @@ namespace SIL.Windows.Forms.ClearShare
 			return file != null && !file.GetType().FullName.Contains("NoMetadata");
 		}
 
-		public void Write(string path)
+		public void Write(string path, string originalImagePath = null)
 		{
 			// do not attempt to add metadata to a file type that does not support it.
 			if (!FileFormatSupportsMetadata(path))
@@ -374,6 +375,19 @@ namespace SIL.Windows.Forms.ClearShare
 			// If it is, we want this tag to exist, since otherwise tools like exiftool (and hence old versions
 			// of this library and its clients) won't see our copyright notice and creator, at least.
 			file.GetTag(TagTypes.Png, true);
+			// If we know where the image came from, copy as much metadata as we can to the new image.
+			if (originalImagePath != null && File.Exists(originalImagePath))
+			{
+				var originalFile = TagLib.File.Create(originalImagePath) as TagLib.Image.File;
+				if (originalFile != null)
+					file.CopyFrom(originalFile);
+				// But, don't copy any orientation information from the original image. At least for now,
+				// all callers which pass an originalImagePath already corrected for any orientation
+				// recorded in the original image.
+				var ifdTag = file.GetTag(TagTypes.TiffIFD) as IFDTag;
+				if (ifdTag != null)
+					ifdTag.Orientation = ImageOrientation.TopLeft;
+			}
 			SaveInImageTag(file.ImageTag);
 			file.Save();
 			//as of right now, we are clean with respect to what is on disk, no need to save.
