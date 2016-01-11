@@ -372,7 +372,9 @@ namespace SIL.Windows.Forms.ClearShare
 		/// </summary>
 		public void NormalizeOrientation()
 		{
-			var ifdTag = _originalTablibMetadata?.GetTag(TagTypes.TiffIFD) as IFDTag;
+			if (_originalTablibMetadata == null)
+				return;
+			var ifdTag = _originalTablibMetadata.GetTag(TagTypes.TiffIFD) as IFDTag;
 			if (ifdTag != null)
 				ifdTag.Orientation = ImageOrientation.TopLeft;
 		}

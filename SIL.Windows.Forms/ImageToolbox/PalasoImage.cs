@@ -288,8 +288,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 				Metadata = Metadata.FromFile(path),
 				_tempFilePath = tempPath
 			};
-			NormalizeImageOrientation(i.Image);
-			i.Metadata.NormalizeOrientation();
+			NormalizeImageOrientation(i);
 			return i;
 		}
 
@@ -297,9 +296,10 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// If the image contains metadata indicating that it is mirrored or rotated,
 		/// convert it to normal orientation (and remove the metadata).
 		/// </summary>
-		/// <param name="img"></param>
-		private static void NormalizeImageOrientation(Image img)
+		/// <param name="i"></param>
+		private static void NormalizeImageOrientation(PalasoImage i)
 		{
+			var img = i.Image;
 			if (Array.IndexOf(img.PropertyIdList, 274) > -1)
 			{
 				var orientation = (int)img.GetPropertyItem(274).Value[0];
@@ -333,6 +333,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 				// This EXIF data is now invalid and should be removed.
 				img.RemovePropertyItem(274);
 			}
+			i.Metadata.NormalizeOrientation(); // remove it from metadata too.
 		}
 
 		/// <summary>
