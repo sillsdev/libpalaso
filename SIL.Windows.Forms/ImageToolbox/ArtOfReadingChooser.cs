@@ -69,7 +69,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// <summary>
 		/// Gets or sets the language used in searching for an image by words.
 		/// </summary>
-		public string SearchLanguage { internal get; set; }
+		public string SearchLanguage { get; set; }
 
 		void _thumbnailViewer_SelectedIndexChanged(object sender, EventArgs e)
 		{

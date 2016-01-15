@@ -40,6 +40,14 @@ namespace SIL.WritingSystems.Tests
 			{
 				FolderContainingLdml.Dispose();
 				Sldr.EmbeddedAllTagsTime = Sldr.DefaultEmbeddedAllTagsTime;
+				// The OfflineSldrAttribute has been assigned to the entire test assembly, so we set the offline mode
+				// back to the default value, which is true
+				Sldr.OfflineMode = true;
+				// clear out SLDR cache
+				DirectoryInfo di = new DirectoryInfo(Sldr.SldrCachePath);
+				foreach (FileInfo fi in di.GetFiles())
+					fi.Delete();
+				Sldr.ResetLanguageTags();
 			}
 		}
 
@@ -448,6 +456,7 @@ amo-Latn = amo
 		{
 			using (new TestEnvironment(false))
 			{
+				Sldr.ResetLanguageTags();
 				Sldr.EmbeddedAllTagsTime = new DateTime(2000, 1, 1, 12, 0, 0);
 				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.txt");
 				Assert.That(File.Exists(allTagsPath), Is.False);
@@ -461,6 +470,7 @@ amo-Latn = amo
 		{
 			using (new TestEnvironment())
 			{
+				Sldr.ResetLanguageTags();
 				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.txt");
 
 				File.WriteAllText(allTagsPath, "*en-US");
@@ -476,6 +486,7 @@ amo-Latn = amo
 		{
 			using (new TestEnvironment())
 			{
+				Sldr.ResetLanguageTags();
 				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.txt");
 
 				File.WriteAllText(allTagsPath, "*en-US");
@@ -493,6 +504,7 @@ amo-Latn = amo
 		{
 			using (new TestEnvironment())
 			{
+				Sldr.ResetLanguageTags();
 				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.txt");
 				Assert.That(File.Exists(allTagsPath), Is.False);
 

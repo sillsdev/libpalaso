@@ -11,7 +11,6 @@ using SIL.WritingSystems;
 namespace SIL.DictionaryServices.Tests
 {
 	[TestFixture]
-	[OfflineSldr]
 	public class LiftLexEntryRepositoryCachingTests
 	{
 		private TemporaryFolder _tempfolder;

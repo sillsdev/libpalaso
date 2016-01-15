@@ -9,7 +9,6 @@ using SIL.TestUtilities;
 namespace SIL.DictionaryServices.Tests.Processors
 {
 	[TestFixture]
-	[OfflineSldr]
 	public class MergeHomographsTests
 	{
 		private StringBuilderProgress _progress;

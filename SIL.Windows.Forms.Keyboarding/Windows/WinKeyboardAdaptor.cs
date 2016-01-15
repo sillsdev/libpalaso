@@ -858,13 +858,15 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				{
 					var profile = ProfileMgr.GetActiveProfile(Guids.TfcatTipKeyboard);
 					return Keyboard.Controller.AvailableKeyboards.OfType<WinKeyboardDescription>()
-						.FirstOrDefault(winKeybd => InputProcessorProfilesEqual(profile, winKeybd.InputProcessorProfile));
+						.FirstOrDefault(winKeybd => InputProcessorProfilesEqual(profile, winKeybd.InputProcessorProfile)) ??
+						KeyboardController.NullKeyboard;
 				}
 
 				// Probably Windows XP where we don't have ProfileMgr
 				var lang = ProcessorProfiles.GetCurrentLanguage();
 				return Keyboard.Controller.AvailableKeyboards.OfType<WinKeyboardDescription>()
-					.FirstOrDefault(winKeybd => winKeybd.InputProcessorProfile.LangId == lang);
+					.FirstOrDefault(winKeybd => winKeybd.InputProcessorProfile.LangId == lang) ??
+					KeyboardController.NullKeyboard;
 			}
 		}
 
