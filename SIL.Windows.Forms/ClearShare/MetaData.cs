@@ -63,7 +63,7 @@ namespace SIL.Windows.Forms.ClearShare
 		/// If the MetaData was loaded from a file, this stores all the other metadata from that file,
 		/// which will typically be useful to write to a file derived from it.
 		/// </summary>
-		TagLib.Image.File _originalTablibMetadata;
+		TagLib.Image.File _originalTaglibMetadata;
 
 		/// <summary>
 		/// NB: this is used in 2 places; one is loading from the image we are linked to, the other from a sample image we are copying metadata from
@@ -74,7 +74,7 @@ namespace SIL.Windows.Forms.ClearShare
 		{
 			try
 			{
-				destinationMetadata._originalTablibMetadata = TagLib.File.Create(path) as TagLib.Image.File;
+				destinationMetadata._originalTaglibMetadata = TagLib.File.Create(path) as TagLib.Image.File;
 			}
 			catch (TagLib.UnsupportedFormatException)
 			{
@@ -84,7 +84,7 @@ namespace SIL.Windows.Forms.ClearShare
 				// even in DEBUG mode, because else a lot of simple image tests fail
 				return;
 			}
-			LoadProperties(destinationMetadata._originalTablibMetadata.ImageTag, destinationMetadata);
+			LoadProperties(destinationMetadata._originalTaglibMetadata.ImageTag, destinationMetadata);
 		}
 
 		/// <summary>
@@ -372,9 +372,9 @@ namespace SIL.Windows.Forms.ClearShare
 		/// </summary>
 		public void NormalizeOrientation()
 		{
-			if (_originalTablibMetadata == null)
+			if (_originalTaglibMetadata == null)
 				return;
-			var ifdTag = _originalTablibMetadata.GetTag(TagTypes.TiffIFD) as IFDTag;
+			var ifdTag = _originalTaglibMetadata.GetTag(TagTypes.TiffIFD) as IFDTag;
 			if (ifdTag != null)
 				ifdTag.Orientation = ImageOrientation.TopLeft;
 		}
@@ -402,9 +402,9 @@ namespace SIL.Windows.Forms.ClearShare
 			// of this library and its clients) won't see our copyright notice and creator, at least.
 			file.GetTag(TagTypes.Png, true);
 			// If we know where the image came from, copy as much metadata as we can to the new image.
-			if (copyAllMetaDataFromOriginal && _originalTablibMetadata != null)
+			if (copyAllMetaDataFromOriginal && _originalTaglibMetadata != null)
 			{
-				file.CopyFrom(_originalTablibMetadata);
+				file.CopyFrom(_originalTaglibMetadata);
 			}
 			SaveInImageTag(file.ImageTag);
 			file.Save();
