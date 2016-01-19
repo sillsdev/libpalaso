@@ -1,8 +1,14 @@
-﻿using System;
+﻿// Copyright (c) 2009-2016 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using SIL.UsbDrive;
+#if __MonoCS__
+using SIL.UsbDrive.Linux;
+#endif
 
 namespace SIL.Tests.UsbDrive
 {
@@ -55,7 +61,8 @@ namespace SIL.Tests.UsbDrive
 		public void IsReady_1Drive_True()
 		{
 			var drives = UsbDriveInfo.GetDrives();
-			Assert.That(drives.Count, Is.GreaterThan(0));
+			if (drives.Count < 1)
+				Assert.Ignore("Need at least 1 USB drive plugged in");
 			Assert.That(drives[0].IsReady, Is.True);
 		}
 
@@ -66,7 +73,8 @@ namespace SIL.Tests.UsbDrive
 		{
 			var drives = UsbDriveInfo.GetDrives();
 			// TODO The below is a platform specific expectation.  Fix for windows
-			Assert.That(drives.Count, Is.GreaterThan(0));
+			if (drives.Count < 1)
+				Assert.Ignore("Need at least 1 USB drive plugged in");
 			Assert.That(drives[0].RootDirectory.FullName, Is.StringContaining("/media/"));
 		}
 
@@ -76,7 +84,8 @@ namespace SIL.Tests.UsbDrive
 		public void TotalSize_1Drive_GreaterThan1000()
 		{
 			var drives = UsbDriveInfo.GetDrives();
-			Assert.That(drives.Count, Is.GreaterThan(0));
+			if (drives.Count < 1)
+				Assert.Ignore("Need at least 1 USB drive plugged in");
 			Assert.That(drives[0].TotalSize, Is.GreaterThan(1000));
 		}
 
@@ -104,7 +113,8 @@ namespace SIL.Tests.UsbDrive
 		public void TotalSize_2DrivesArePluggedIn_TheDrivesSizesAreCorrect()
 		{
 			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
-			Assert.That(usbDrives.Count, Is.GreaterThan(1));
+			if (usbDrives.Count < 2)
+				Assert.Ignore("Need at least 2 USB drives plugged in");
 			Assert.AreEqual(_drive0.DriveSize, usbDrives[0].TotalSize);
 			Assert.AreEqual(_drive1.DriveSize, usbDrives[1].TotalSize);
 		}
@@ -115,7 +125,8 @@ namespace SIL.Tests.UsbDrive
 		public void RootDirectory_2DrivesArePluggedInAndReady_TheDrivesPathsCorrect()
 		{
 			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
-			Assert.That(usbDrives.Count, Is.GreaterThan(1));
+			if (usbDrives.Count < 2)
+				Assert.Ignore("Need at least 2 USB drives plugged in");
 			Assert.AreEqual(_drive0.Path.FullName, usbDrives[0].RootDirectory.FullName);
 			Assert.AreEqual(_drive1.Path.FullName, usbDrives[1].RootDirectory.FullName);
 		}
@@ -126,7 +137,8 @@ namespace SIL.Tests.UsbDrive
 		public void IsReady_2DrivesAreMounted_ReturnsTrue()
 		{
 			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
-			Assert.That(usbDrives.Count, Is.GreaterThan(1));
+			if (usbDrives.Count < 2)
+				Assert.Ignore("Need at least 2 USB drives plugged in");
 			Assert.IsTrue(usbDrives[0].IsReady);
 			Assert.IsTrue(usbDrives[1].IsReady);
 		}
@@ -137,7 +149,8 @@ namespace SIL.Tests.UsbDrive
 		public void IsReady_3DrivesAreMounted_ReturnsTrue()
 		{
 			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
-			Assert.That(usbDrives.Count, Is.GreaterThan(2));
+			if (usbDrives.Count < 3)
+				Assert.Ignore("Need at least 3 USB drives plugged in");
 			Assert.IsTrue(usbDrives[0].IsReady);
 			Assert.IsTrue(usbDrives[1].IsReady);
 			Assert.IsTrue(usbDrives[2].IsReady);
@@ -149,7 +162,8 @@ namespace SIL.Tests.UsbDrive
 		public void IsReady_2DrivesAreNotMounted_ReturnsFalse()
 		{
 			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
-			Assert.That(usbDrives.Count, Is.GreaterThan(1));
+			if (usbDrives.Count < 2)
+				Assert.Ignore("Need at least 2 USB drives plugged in");
 			Assert.IsFalse(usbDrives[0].IsReady);
 			Assert.IsFalse(usbDrives[1].IsReady);
 		}
@@ -157,15 +171,34 @@ namespace SIL.Tests.UsbDrive
 		[Test]
 		[Category("RequiresUSB")]
 		[Category("SkipOnTeamCity")]
-		public void RootDirectory_2DrivesAreNotMounted_Throws()
+		public void RootDirectory_FirstDriveIsNotMounted_Throws()
 		{
 			var usbDrives = UsbDriveInfo.GetDrives();
+			if (usbDrives.Count < 1)
+				Assert.Ignore("Need at least 1 USB drive plugged in");
+#if __MonoCS__
+			if (UsbDriveInfoUDisks2.IsUDisks2Available)
+				Assert.Ignore("With udisks2 GetDrives() only returns mounted drives");
+#endif
+
 			Assert.Throws<ArgumentOutOfRangeException>(
 				() =>
 					{
 						string s = usbDrives[0].RootDirectory.FullName;
 					}
 				);
+		}
+
+		[Test]
+		[Category("RequiresUSB")]
+		[Category("SkipOnTeamCity")]
+		public void VolumeLabel_1Drive_GivesInfo()
+		{
+			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
+			if (usbDrives.Count < 1)
+				Assert.Ignore("Need at least 1 USB drive plugged in");
+			// We can't test VolumeLabel because the drive might not have a label
+			Assert.That(usbDrives[0].TotalSize, Is.GreaterThan(0));
 		}
 	}
 }

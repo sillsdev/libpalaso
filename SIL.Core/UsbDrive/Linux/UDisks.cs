@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2009-2016 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
+using System;
 using System.Collections.Generic;
 using SIL.Reporting;
 using NDesk.DBus;
@@ -20,7 +23,8 @@ namespace SIL.UsbDrive.Linux
 		}
 
 		/// <summary>
-		/// Enumerate the devices on the given interface.
+		/// Enumerate the mounted filesystems on the given interface, returning a set of their
+		/// mount points.
 		/// </summary>
 		/// <remarks>
 		/// DBus is a bit flakey and subject to random timing problems.  We need to
