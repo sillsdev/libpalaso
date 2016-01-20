@@ -1,7 +1,10 @@
-﻿using System;
+﻿// Copyright (c) 2009-2016 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
+using System;
 using System.Collections.Generic;
 using System.IO;
-#if MONO
+#if __MonoCS__
 using SIL.UsbDrive.Linux;
 #else
 using SIL.UsbDrive.Windows;
@@ -104,8 +107,19 @@ namespace SIL.UsbDrive
 
 		public static List<IUsbDriveInfo> GetDrives()
 		{
-#if MONO
-			return UsbDriveInfoUDisks.GetDrives(); // Lucid now uses UDisks, HAL use is deprecated.
+#if __MonoCS__
+			// Using Palaso.UsbDrive on Linux/Mono results in NDesk spinning up a thread that
+			// continues until NDesk Bus is closed.  Failure to close the thread results in a
+			// program hang when closing.  Closing the system bus allows the thread to close,
+			// and thus the program to close.
+			AppDomain.CurrentDomain.ProcessExit += (sender, args) => NDesk.DBus.Bus.System.Close();
+
+			// Ubuntu 12.04 uses udisks. HAL use is deprecated.
+			// Ubuntu 14.04 can use udisks or udisks2.
+			// Ubuntu 16.04 uses udisks2.
+			return UsbDriveInfoUDisks2.IsUDisks2Available ?
+				UsbDriveInfoUDisks2.GetDrives() :
+				UsbDriveInfoUDisks.GetDrives();
 #else
 			return UsbDriveInfoWindows.GetDrives();
 #endif
