@@ -16,7 +16,7 @@
 	<ItemGroup Condition=" '$(PackageSources)' == '' ">
 		<!-- Package sources used to restore packages. -->
 		<!-- The official NuGet package source (https://nuget.org/api/v2/) will be excluded if package sources are specified and it does not appear in the list -->
-		<PackageSource Include="http://nuget.org/api/v2/" />
+		<PackageSource Include="https://nuget.org/api/v2/" />
 		<PackageSource Include="http://build.palaso.org/guestAuth/app/nuget/v1/FeedService.svc/" />
 	</ItemGroup>
 
@@ -49,13 +49,16 @@
 	<Target Name="_DownloadNuGet" Condition=" '$(DownloadNuGetExe)' == 'true' AND !Exists('$(NuGetExePath)')">
 		<DownloadNuGet OutputFilename="$(NuGetExePath)"
 			Condition="'$(OS)' == 'Windows_NT'" />
-		<Exec Command="wget http://nuget.org/NuGet.exe || curl -O -L http://nuget.org/NuGet.exe"
+		<Exec Command="wget https://nuget.org/NuGet.exe || curl -O -L https://nuget.org/NuGet.exe"
 			WorkingDirectory="$(NuGetToolsPath)"
 			Condition="'$(OS)' != 'Windows_NT'" />
 	</Target>
 
 	<Target Name="RestorePackages" DependsOnTargets="CheckPrerequisites">
-		<Exec Command='$(NuGetCommand) restore "$(SolutionPath)"'/>
+		<Exec Command='$(NuGetCommand) restore -source "$(PackageSources)" "$(SolutionPath)"'
+			Condition="Exists('$(SolutionPath)')"/>
+		<Exec Command='$(NuGetCommand) restore -source "$(PackageSources)" -SolutionDirectory "$(SolutionDir)" "%(PackageConfigs.FullPath)"'
+			Condition="!Exists('$(SolutionPath)')"/>
 	</Target>
 
 	<UsingTask TaskName="DownloadNuGet" TaskFactory="CodeTaskFactory"
@@ -78,7 +81,7 @@
 
 					Log.LogMessage("Downloading latest version of NuGet.exe...");
 					WebClient webClient = new WebClient();
-					webClient.DownloadFile("http://nuget.org/nuget.exe", OutputFilename);
+					webClient.DownloadFile("https://nuget.org/NuGet.exe", OutputFilename);
 
 					return true;
 				}
