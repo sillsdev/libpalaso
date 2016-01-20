@@ -759,12 +759,15 @@ namespace SIL.WritingSystems
 		/// but false for "<element></element>", we have to check both cases
 		/// </summary>
 		/// <param name="element">XElement to remove if it's empty or has 0 contents/attributes/elements</param>
-		private void RemoveIfEmpty(XElement element)
+		private void RemoveIfEmpty(ref XElement element)
 		{
 			if (element != null)
 			{
-				if (element.IsEmpty || (string.IsNullOrEmpty((string)element) && !element.HasElements && !element.HasAttributes))
-					element.Remove();
+                if (element.IsEmpty || (string.IsNullOrEmpty((string)element) && !element.HasElements && !element.HasAttributes))
+                {
+                    element.Remove();
+                    element = null;
+                }
 			}
 		}
 		
@@ -865,27 +868,27 @@ namespace SIL.WritingSystems
 
 			XElement identityElem = element.GetOrCreateElement("identity");
 			WriteIdentityElement(identityElem, ws);
-			RemoveIfEmpty(identityElem);
+			RemoveIfEmpty(ref identityElem);
 
 			XElement charactersElem = element.GetOrCreateElement("characters");
 			WriteCharactersElement(charactersElem, ws);
-			RemoveIfEmpty(charactersElem);
+			RemoveIfEmpty(ref charactersElem);
 
 			XElement delimitersElem = element.GetOrCreateElement("delimiters");
 			WriteDelimitersElement(delimitersElem, ws);
-			RemoveIfEmpty(delimitersElem);
+			RemoveIfEmpty(ref delimitersElem);
 
 			XElement layoutElem = element.GetOrCreateElement("layout");
 			WriteLayoutElement(layoutElem, ws);
-			RemoveIfEmpty(layoutElem);
+			RemoveIfEmpty(ref layoutElem);
 
 			XElement numbersElem = element.GetOrCreateElement("numbers");
 			WriteNumbersElement(numbersElem, ws);
-			RemoveIfEmpty(numbersElem);
+			RemoveIfEmpty(ref numbersElem);
 
 			XElement collationsElem = element.GetOrCreateElement("collations");
 			WriteCollationsElement(collationsElem, ws);
-			RemoveIfEmpty(collationsElem);
+			RemoveIfEmpty(ref collationsElem);
 
 			// Can have multiple specials.  Find the one with SIL namespace and external-resources.
 			// Also handle case where we create special because writingsystem has entries to write
@@ -899,7 +902,7 @@ namespace SIL.WritingSystems
 			if (specialElem != null)
 			{
 				WriteTopLevelSpecialElements(specialElem, ws);
-				RemoveIfEmpty(specialElem);
+				RemoveIfEmpty(ref specialElem);
 			}
 
 			element.WriteTo(writer);
@@ -973,7 +976,7 @@ namespace SIL.WritingSystems
 			if (specialElem != null)
 			{
 				specialElem.NonAltElements(Sil + "exemplarCharacters").Remove();
-				RemoveIfEmpty(specialElem);
+				RemoveIfEmpty(ref specialElem);
 			}
 
 			foreach (CharacterSetDefinition csd in ws.CharacterSets)
@@ -1045,9 +1048,9 @@ namespace SIL.WritingSystems
 				if (matchedPairsElem != null)
 				{
 					matchedPairsElem.NonAltElements(Sil + "matched-pair").Remove();
-					RemoveIfEmpty(matchedPairsElem);
+					RemoveIfEmpty(ref matchedPairsElem);
 				}
-				RemoveIfEmpty(specialElem);
+				RemoveIfEmpty(ref specialElem);
 			}
 			foreach (var mp in ws.MatchedPairs)
 			{
@@ -1069,9 +1072,9 @@ namespace SIL.WritingSystems
 				if (punctuationPatternsElem != null)
 				{
 					punctuationPatternsElem.NonAltElements(Sil + "punctuation-pattern").Remove();
-					RemoveIfEmpty(punctuationPatternsElem);
+					RemoveIfEmpty(ref punctuationPatternsElem);
 				}
-				RemoveIfEmpty(specialElem);
+				RemoveIfEmpty(ref specialElem);
 			}
 			foreach (var pp in ws.PunctuationPatterns)
 			{
@@ -1096,9 +1099,9 @@ namespace SIL.WritingSystems
 					quotationmarksElem.NonAltElements(Sil + "quotation").Where(e => (string) e.Attribute("type") == "narrative").Remove();
 					quotationmarksElem.NonAltElements(Sil + "quotationContinue").Remove();
 					quotationmarksElem.NonAltElements(Sil + "alternateQuotationContinue").Remove();
-					RemoveIfEmpty(quotationmarksElem);
+					RemoveIfEmpty(ref quotationmarksElem);
 				}
-				RemoveIfEmpty(specialElem);
+				RemoveIfEmpty(ref specialElem);
 			}
 
 			if (qm1 != null)
@@ -1152,7 +1155,7 @@ namespace SIL.WritingSystems
 			if (orientationElem != null)
 			{
 				orientationElem.NonAltElements().Where(e => e.Name == "characterOrder").Remove();
-				RemoveIfEmpty(orientationElem);
+				RemoveIfEmpty(ref orientationElem);
 			}
 
 			// we generally don't need to write out default values, but SLDR seems to always write characterOrder
