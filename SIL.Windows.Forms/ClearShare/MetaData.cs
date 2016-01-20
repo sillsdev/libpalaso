@@ -380,15 +380,17 @@ namespace SIL.Windows.Forms.ClearShare
 		}
 
 		/// <summary>
-		/// Write the metadata to the specified image file. Optionally, if this MetaData was made from a file,
-		/// any other original metadata from that file can be copied to the new one. This can include all kinds
+		/// Write the metadata to the specified image file. By default, if this MetaData was made from a file,
+		/// any other original metadata from that file is copied to the new one. This can include all kinds
 		/// of details like where and when a photo was taken, image size, and so forth, so it should not be
 		/// done except for copies of the image; for example, not when applying the same ClearShare settings
-		/// to a group of images.
+		/// to a group of images. Thought should also be given to copying to a modified version of the image;
+		/// for example, some of the metadata may be incorrect if the image being saved has a different
+		/// size or format from the original file from which the metadata was loaded.
 		/// </summary>
 		/// <param name="path"></param>
 		/// <param name="copyAllMetaDataFromOriginal"></param>
-		public void Write(string path, bool copyAllMetaDataFromOriginal = false)
+		public void Write(string path, bool copyAllMetaDataFromOriginal = true)
 		{
 			// do not attempt to add metadata to a file type that does not support it.
 			if (!FileFormatSupportsMetadata(path))
@@ -410,6 +412,17 @@ namespace SIL.Windows.Forms.ClearShare
 			file.Save();
 			//as of right now, we are clean with respect to what is on disk, no need to save.
 			HasChanges = false;
+		}
+
+		/// <summary>
+		/// Write just the ClearShare License information to the specified image. This is appropriate
+		/// when e.g. duplicating license info to a collection of images (things like the place and time
+		/// where a photo was taken should not be copied to all of them).
+		/// </summary>
+		/// <param name="path"></param>
+		public void WriteLicenseOnly(string path)
+		{
+			Write(path, false);
 		}
 
 		public void SetupReasonableLicenseDefaultBeforeEditing()
