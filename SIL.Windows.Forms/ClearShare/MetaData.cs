@@ -420,7 +420,7 @@ namespace SIL.Windows.Forms.ClearShare
 		/// where a photo was taken should not be copied to all of them).
 		/// </summary>
 		/// <param name="path"></param>
-		public void WriteLicenseOnly(string path)
+		public void WriteIntellectualPropertyOnly(string path)
 		{
 			Write(path, false);
 		}
