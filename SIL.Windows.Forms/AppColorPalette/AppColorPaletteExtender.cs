@@ -27,6 +27,7 @@ namespace SIL.Windows.Forms.AppColorPalette
 
 		private Container _components = null;
 		private readonly Dictionary<object, ColorOverrideInfo> _extendedCtrls;
+		private bool _initialized;
 
 		private class ColorOverrideInfo
 		{
@@ -93,7 +94,37 @@ namespace SIL.Windows.Forms.AppColorPalette
 		{
 			var overrideInfo = GetComponentInfo(component);
 			overrideInfo.UsePaletteColors = usePaletteColors;
-			ApplyColorChange(component, overrideInfo);
+			if (_initialized)
+			{
+				if (usePaletteColors)
+					ApplyColorChange(component, overrideInfo);
+				else
+				{
+					var control = component as Control;
+					if (control != null)
+					{
+						control.ResetForeColor();
+						control.ResetBackColor();
+						var linkLabel = control as LinkLabel;
+						if (linkLabel != null)
+						{
+							linkLabel.LinkColor = Color.Empty;
+							linkLabel.ActiveLinkColor = Color.Empty;
+							linkLabel.DisabledLinkColor = Color.Empty;
+							linkLabel.VisitedLinkColor = Color.Empty;
+						}
+					}
+					else
+					{
+						var item = component as ToolStripItem;
+						if (item != null)
+						{
+							item.ResetForeColor();
+							item.ResetBackColor();
+						}
+					}
+				}
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -108,7 +139,7 @@ namespace SIL.Windows.Forms.AppColorPalette
 			var overrideInfo = GetComponentInfo(component);
 			// By default, we do not override the fore color for forms because it will affect the
 			// fore color of buttons or other controls that are using visual styles.
-			if (overrideInfo.ForeColor.Equals(default(TPaletteColors)) && !(component is ScrollableControl))
+			if (overrideInfo.ForeColor.Equals(default(TPaletteColors)) && (!(component is ScrollableControl) || component is UserControl))
 				overrideInfo.ForeColor = GetDefaultPaletteColor(ColorProperties.ForeColor);
 			return overrideInfo.ForeColor;
 		}
@@ -122,7 +153,8 @@ namespace SIL.Windows.Forms.AppColorPalette
 		{
 			var overrideInfo = GetComponentInfo(component);
 			overrideInfo.ForeColor = color;
-			ApplyColorChange(component, overrideInfo);
+			if (_initialized)
+				ApplyColorChange(component, overrideInfo);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -149,7 +181,8 @@ namespace SIL.Windows.Forms.AppColorPalette
 		{
 			var overrideInfo = GetComponentInfo(component);
 			overrideInfo.BackColor = color;
-			ApplyColorChange(component, overrideInfo);
+			if (_initialized)
+				ApplyColorChange(component, overrideInfo);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -176,7 +209,8 @@ namespace SIL.Windows.Forms.AppColorPalette
 		{
 			var overrideInfo = GetComponentInfo(label);
 			overrideInfo.LinkColor = color;
-			ApplyColorChange(label, overrideInfo);
+			if (_initialized)
+				ApplyColorChange(label, overrideInfo);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -203,7 +237,8 @@ namespace SIL.Windows.Forms.AppColorPalette
 		{
 			var overrideInfo = GetComponentInfo(label);
 			overrideInfo.ActiveLinkColor = color;
-			ApplyColorChange(label, overrideInfo);
+			if (_initialized)
+				ApplyColorChange(label, overrideInfo);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -230,7 +265,8 @@ namespace SIL.Windows.Forms.AppColorPalette
 		{
 			var overrideInfo = GetComponentInfo(label);
 			overrideInfo.DisabledLinkColor = color;
-			ApplyColorChange(label, overrideInfo);
+			if (_initialized)
+				ApplyColorChange(label, overrideInfo);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -257,7 +293,8 @@ namespace SIL.Windows.Forms.AppColorPalette
 		{
 			var overrideInfo = GetComponentInfo(label);
 			overrideInfo.VisitedLinkColor = color;
-			ApplyColorChange(label, overrideInfo);
+			if (_initialized)
+				ApplyColorChange(label, overrideInfo);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -280,6 +317,7 @@ namespace SIL.Windows.Forms.AppColorPalette
 
 		public void BeginInit()
 		{
+			_initialized = false;
 		}
 
 		public void EndInit()
@@ -288,6 +326,7 @@ namespace SIL.Windows.Forms.AppColorPalette
 			{
 				ApplyColorChange(componentOverrideInfo.Key, componentOverrideInfo.Value);
 			}
+			_initialized = true;
 		}
 
 		private void ApplyColorChange(object component, ColorOverrideInfo info)
@@ -327,18 +366,6 @@ namespace SIL.Windows.Forms.AppColorPalette
 							linkLabel.VisitedLinkColor = GetColor(info.VisitedLinkColor);
 					}
 				}
-				else
-				{
-					control.ResetForeColor();
-					control.ResetBackColor();
-					if (linkLabel != null)
-					{
-						linkLabel.LinkColor = Color.Empty;
-						linkLabel.ActiveLinkColor = Color.Empty;
-						linkLabel.DisabledLinkColor = Color.Empty;
-						linkLabel.VisitedLinkColor = Color.Empty;
-					}
-				}
 				if (resetUseVisualStyleBackColor)
 					ReflectionHelper.SetProperty(control, "UseVisualStyleBackColor",  true);
 			}
@@ -353,11 +380,6 @@ namespace SIL.Windows.Forms.AppColorPalette
 							item.ForeColor = GetColor(info.ForeColor);
 						if (!info.BackColor.Equals(default(TPaletteColors)))
 							item.BackColor = GetColor(info.BackColor);
-					}
-					else
-					{
-						item.ResetForeColor();
-						item.ResetBackColor();
 					}
 				}
 			}
