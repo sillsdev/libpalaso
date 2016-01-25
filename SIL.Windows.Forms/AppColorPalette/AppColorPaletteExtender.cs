@@ -13,6 +13,9 @@ namespace SIL.Windows.Forms.AppColorPalette
 	[ProvideProperty("ActiveLinkColor", typeof(LinkLabel))]
 	[ProvideProperty("DisabledLinkColor", typeof(LinkLabel))]
 	[ProvideProperty("VisitedLinkColor", typeof(LinkLabel))]
+	[ProvideProperty("FlatAppearanceBorderColor", typeof(ButtonBase))]
+	[ProvideProperty("FlatAppearanceMouseDownBackColor", typeof(ButtonBase))]
+	[ProvideProperty("FlatAppearanceMouseOverBackColor", typeof(ButtonBase))]
 	public abstract class AppColorPaletteExtender<TPaletteColors> : Component, IExtenderProvider, ISupportInitialize where TPaletteColors : struct, IConvertible
 	{
 		public enum ColorProperties
@@ -23,6 +26,9 @@ namespace SIL.Windows.Forms.AppColorPalette
 			ActiveLinkColor, 
 			DisabledLinkColor,
 			VisitedLinkColor,
+			BorderColor,
+			MouseDownBackColor,
+			MouseOverBackColor,
 		}
 
 		private Container _components = null;
@@ -43,6 +49,9 @@ namespace SIL.Windows.Forms.AppColorPalette
 			public TPaletteColors ActiveLinkColor { get; set; }
 			public TPaletteColors DisabledLinkColor { get; set; }
 			public TPaletteColors VisitedLinkColor { get; set; }
+			public TPaletteColors FlatAppearanceBorderColor { get; set; }
+			public TPaletteColors FlatAppearanceMouseDownBackColor { get; set; }
+			public TPaletteColors FlatAppearanceMouseOverBackColor { get; set; }
 		}
 
 		public abstract Color GetColor(TPaletteColors paletteColor);
@@ -77,7 +86,6 @@ namespace SIL.Windows.Forms.AppColorPalette
 		/// ------------------------------------------------------------------------------------
 		[Localizable(false)]
 		[Category("App Palette Properties")]
-		[DefaultValue(true)]
 		public bool GetUsePaletteColors(IComponent component)
 		{
 			var overrideInfo = GetComponentInfo(component);
@@ -112,6 +120,16 @@ namespace SIL.Windows.Forms.AppColorPalette
 							linkLabel.ActiveLinkColor = Color.Empty;
 							linkLabel.DisabledLinkColor = Color.Empty;
 							linkLabel.VisitedLinkColor = Color.Empty;
+						}
+						else
+						{
+							var button = control as ButtonBase;
+							if (button != null)
+							{
+								button.FlatAppearance.BorderColor = Color.Empty;
+								button.FlatAppearance.MouseDownBackColor = Color.Empty;
+								button.FlatAppearance.MouseOverBackColor = Color.Empty;
+							}
 						}
 					}
 					else
@@ -299,6 +317,36 @@ namespace SIL.Windows.Forms.AppColorPalette
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
+		/// Gets the border color of a button that uses "flat" appearance (ignored if button
+		/// uses "VisualStyles").
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Localizable(false)]
+		[Category("App Palette Properties")]
+		public TPaletteColors GetFlatAppearanceBorderColor(ButtonBase button)
+		{
+			var overrideInfo = GetComponentInfo(button);
+			if (overrideInfo.FlatAppearanceBorderColor.Equals(default(TPaletteColors)))
+				overrideInfo.FlatAppearanceBorderColor = GetDefaultPaletteColor(ColorProperties.BorderColor);
+			return overrideInfo.FlatAppearanceBorderColor;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Sets the border color of a button that uses "flat" appearance (ignored if button
+		/// uses "VisualStyles").
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public void SetFlatAppearanceBorderColor(ButtonBase button, TPaletteColors color)
+		{
+			var overrideInfo = GetComponentInfo(button);
+			overrideInfo.FlatAppearanceBorderColor = color;
+			if (_initialized)
+				ApplyColorChange(button, overrideInfo);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
 		/// Gets the color object information for the specified component.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
@@ -347,13 +395,13 @@ namespace SIL.Windows.Forms.AppColorPalette
 				catch (MissingMethodException)
 				{
 				}
-				var linkLabel = control as LinkLabel;
 				if (info.UsePaletteColors)
 				{
 					if (!info.ForeColor.Equals(default(TPaletteColors)))
 						control.ForeColor = GetColor(info.ForeColor);
 					if (!info.BackColor.Equals(default(TPaletteColors)))
 						control.BackColor = GetColor(info.BackColor);
+					var linkLabel = control as LinkLabel;
 					if (linkLabel != null)
 					{
 						if (!info.LinkColor.Equals(default(TPaletteColors)))
@@ -364,6 +412,19 @@ namespace SIL.Windows.Forms.AppColorPalette
 							linkLabel.DisabledLinkColor = GetColor(info.DisabledLinkColor);
 						if (!info.VisitedLinkColor.Equals(default(TPaletteColors)))
 							linkLabel.VisitedLinkColor = GetColor(info.VisitedLinkColor);
+					}
+					else
+					{
+						var button = control as ButtonBase;
+						if (button != null)
+						{
+							if (!info.FlatAppearanceBorderColor.Equals(default(TPaletteColors)))
+								button.FlatAppearance.BorderColor = GetColor(info.FlatAppearanceBorderColor);
+							if (!info.FlatAppearanceMouseDownBackColor.Equals(default(TPaletteColors)))
+								button.FlatAppearance.MouseDownBackColor = GetColor(info.FlatAppearanceMouseDownBackColor);
+							if (!info.FlatAppearanceMouseOverBackColor.Equals(default(TPaletteColors)))
+								button.FlatAppearance.MouseOverBackColor = GetColor(info.FlatAppearanceMouseOverBackColor);
+						}
 					}
 				}
 				if (resetUseVisualStyleBackColor)
