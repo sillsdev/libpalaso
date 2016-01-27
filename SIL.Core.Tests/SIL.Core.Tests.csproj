@@ -261,6 +261,7 @@
     <Compile Include="Text\LanguageFormTest.cs" />
     <Compile Include="Text\MultiTextBase.Tests.cs" />
     <Compile Include="Threading\GlobalMutexTests.cs" />
+    <Compile Include="Unicode\CharacterUtilsTests.cs" />
     <Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UDiskDeviceTests.cs" />
     <Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UDisksTests.cs" />
     <Compile Include="UsbDrive\UsbDeviceInfoTests.cs" />
@@ -278,7 +279,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
-      <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
+      <Project>{3527da1d-1e25-48be-a71e-9ebf7f9208d4}</Project>
       <Name>SIL.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj">
