@@ -104,10 +104,21 @@ namespace SIL.Reporting
 		/// </remarks>
 		public static void Init(string logfilePrefix)
 		{
+			Init(logfilePrefix, true);
+		}
+
+		/// <summary>
+		/// Creates the logger. The logging functions can't be used until this method is called.
+		/// Initializes the logger by creating a new log file, prepending the specified
+		/// <paramref name="logfilePrefix"/>. If Init has been called before, the previous
+		/// Logger gets shutdown first.
+		/// </summary>
+		public static void Init(string logfilePrefix, bool startWithNewFile)
+		{
 			ShutDown();
 
 			if (Singleton == null)
-				_singleton = new Logger(logfilePrefix, true);
+				_singleton = new Logger(logfilePrefix, startWithNewFile);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -142,7 +153,7 @@ namespace SIL.Reporting
 					_logfilePrefix += "_";
 
 				m_out = null;
-				if (startWithNewFile)
+				if (startWithNewFile || !File.Exists(LogPath))
 				{
 					try
 					{
@@ -153,14 +164,17 @@ namespace SIL.Reporting
 						//try again with a different file.  We loose the history, but oh well.
 						SetActualLogPath(_logfilePrefix + "Log-"+Path.GetFileNameWithoutExtension(Path.GetTempFileName()) + ".txt");
 						m_out = File.CreateText(LogPath);
-
 					}
+
 					m_out.WriteLine(DateTime.Now.ToLongDateString());
 				}
 				else
 					StartAppendingToLog();
 
 				RestartMinorEvents();
+
+				_singleton = this;
+
 				this.WriteEventCore("App Launched with [" + System.Environment.CommandLine + "]");
 			}
 			catch
@@ -271,6 +285,7 @@ namespace SIL.Reporting
 			}
 
 			// Dispose unmanaged resources here, whether disposing is true or false.
+			_actualLogPath = null;
 			m_out = null;
 
 			m_isDisposed = true;
