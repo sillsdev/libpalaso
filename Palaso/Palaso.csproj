@@ -434,6 +434,7 @@
     <Compile Include="UsbDrive\Linux\UDisks.cs" />
     <Compile Include="UsbDrive\Linux\UsbDriveInfoUDisks.cs" />
     <Compile Include="UsbDrive\Linux\UsbDriveInfoHAL.cs" />
+    <Compile Include="UsbDrive\Linux\UsbDriveInfoUDisks2.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
