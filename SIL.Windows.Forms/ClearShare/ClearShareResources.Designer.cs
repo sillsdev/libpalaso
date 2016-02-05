@@ -36,7 +36,7 @@ namespace SIL.Windows.Forms.ClearShare {
 		internal static global::System.Resources.ResourceManager ResourceManager {
 			get {
 				if (object.ReferenceEquals(resourceMan, null)) {
-					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Palaso.UI.WindowsForms.ClearShare.ClearShareResources", typeof(ClearShareResources).Assembly);
+					global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SIL.Windows.Forms.ClearShare.ClearShareResources", typeof(ClearShareResources).Assembly);
 					resourceMan = temp;
 				}
 				return resourceMan;
