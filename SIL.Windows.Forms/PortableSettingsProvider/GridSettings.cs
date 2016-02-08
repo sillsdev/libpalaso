@@ -101,7 +101,7 @@ namespace SIL.Windows.Forms.PortableSettingsProvider
 					grid.Columns[col.Id].DisplayIndex = col.DisplayIndex;
 			}
 
-			if (!string.IsNullOrEmpty(SortedColumn) && grid.Columns.Contains(SortedColumn))
+			if (!grid.VirtualMode && !string.IsNullOrEmpty(SortedColumn) && grid.Columns.Contains(SortedColumn))
 				grid.Sort(grid.Columns[SortedColumn], SortOrder == SortOrder.Descending ? ListSortDirection.Descending : ListSortDirection.Ascending);
 
 			// If the column header height or the former dpi settings are different,
