@@ -566,6 +566,9 @@ namespace SIL.WritingSystems
 
 		private static void CreateSldrCacheDirectory()
 		{
+			if (Directory.Exists(SldrCachePath))
+				return;
+
 			DirectoryInfo di = Directory.CreateDirectory(SldrCachePath);
 			if (!Platform.IsLinux && !SldrCachePath.StartsWith(Path.GetTempPath()))
 			{
