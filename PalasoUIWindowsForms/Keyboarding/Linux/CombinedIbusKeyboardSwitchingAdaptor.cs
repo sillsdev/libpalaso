@@ -52,13 +52,16 @@ namespace Palaso.UI.WindowsForms.Keyboarding.Linux
 				bldr.AppendFormat (" -variant {0}", variant);
 			if (!String.IsNullOrEmpty(option))
 				bldr.AppendFormat (" -option {0}", option);
-			//Console.WriteLine ("DEBUG: about to call \"{0} {1}\"", startInfo.FileName, bldr.ToString ());
+			//Console.WriteLine("DEBUG SetXkbLayout({0},{1},{2}): about to call \"{3} {4}\"", layout, variant, option, startInfo.FileName, bldr.ToString());
 			startInfo.Arguments = bldr.ToString();
 			startInfo.UseShellExecute = false;
 			startInfo.CreateNoWindow = true;
 			using (var process = Process.Start(startInfo))
 			{
-				process.WaitForExit();
+				// Allow 0.3 seconds for the process -- measured at less than 0.1 seconds from command line.
+				// (See https://jira.sil.org/browse/LT-17012 for why we need a timeout here.)  Keyboard
+				// switching appears to work okay even when the process hangs and the timeout takes place.
+				process.WaitForExit(300);
 				process.Close();
 			}
 
