@@ -236,6 +236,11 @@ namespace SIL.Threading
 				}
 			}
 
+			protected override void DisposeManagedResources()
+			{
+				Unlink();
+			}
+
 			protected override void DisposeUnmanagedResources()
 			{
 				Syscall.close(_handle);
