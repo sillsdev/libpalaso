@@ -33,6 +33,7 @@ namespace Palaso.Tests.CommandLineProcessing
 		}
 
 		[Test, Category("ByHand")]
+		[Platform(Exclude = "Linux", Reason = "See comment in test")]
 		public void CommandWith10Line_CallbackOption_Get10LinesAsynchronously()
 		{
 			var progress = new StringBuilderProgress();
