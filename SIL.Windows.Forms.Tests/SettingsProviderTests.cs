@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using NUnit.Framework;
 using SIL.IO;
+using SIL.Reporting;
 using SIL.Settings;
 using SIL.TestUtilities;
 using SIL.Windows.Forms.Registration;
@@ -182,6 +184,67 @@ namespace SIL.Windows.Forms.Tests
 					regSettings.Upgrade();
 					Assert.That(regSettings.Email, Is.EqualTo("someone@somewhere.org"));
 					Assert.That(regSettings.LaunchCount, Is.EqualTo(10));
+				}
+			}
+		}
+
+		[Test, Ignore("Probably due to statics on CrossPlatformSettingsProvider, this test is corrupted by other tests. Works fine in isolation")]
+		public void LoadSettings_FileCorrupt_ShowsErrorAndSelfHeals()
+		{
+			var settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL", "SettingsProviderTests");
+			Directory.CreateDirectory(settingsPath);
+			using (TemporaryFolder.TrackExisting(settingsPath))
+			{
+				var settingsProvider = new TestCrossPlatformSettingsProvider();
+				settingsProvider.Initialize(null, null); // Seems to be what .NET does, despite warnings
+				var dirPath = settingsProvider.UserConfigLocation;
+				Directory.CreateDirectory(dirPath);
+				var filePath = Path.Combine(dirPath, TestCrossPlatformSettingsProvider.UserConfigFileName);
+				File.Delete(filePath);
+				using (new TempFile(filePath, true))
+				{
+					File.WriteAllText(filePath,"hello world");
+					using (new ErrorReport.NonFatalErrorReportExpected())
+					{
+						var dummy = Registration.Registration.Default;
+						//by this point, we expect that the file has been fixed and we can continue normally
+						dummy.Email = "foo@foo.com";
+					}
+				}
+
+				//next time, it should be healed
+				using (new ErrorReport.NoNonFatalErrorReportExpected())
+				{
+					var settingsProvider2 = new TestCrossPlatformSettingsProvider();
+					settingsProvider2.Initialize(null, null); // Seems to be what .NET does, despite warnings
+					Assert.That(Registration.Registration.Default.Email, Is.EqualTo("foo@foo.com"));
+				}
+			}
+		}
+
+		[Test]
+		public void CheckForErrorsInFile_FileCorrupt_ReturnsMessage()
+		{
+			var settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL", "SettingsProviderTests");
+			Directory.CreateDirectory(settingsPath);
+			using (TemporaryFolder.TrackExisting(settingsPath))
+			{
+				var settingsProvider = new TestCrossPlatformSettingsProvider();
+				settingsProvider.Initialize(null, null); // Seems to be what .NET does, despite warnings
+				var dirPath = settingsProvider.UserConfigLocation;
+				Directory.CreateDirectory(dirPath);
+				var filePath = Path.Combine(dirPath, TestCrossPlatformSettingsProvider.UserConfigFileName);
+				using (new TempFile(filePath, true))
+				{
+					File.WriteAllText(filePath, "hello world");
+
+					Assert.That(settingsProvider.CheckForErrorsInFile(), Is.Not.Null);
+
+					//because we already did the check, we don't expect to see any error now
+					using (new ErrorReport.NoNonFatalErrorReportExpected())
+					{
+						var dummy = Registration.Registration.Default;
+					}
 				}
 			}
 		}
