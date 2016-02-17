@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
@@ -8,6 +7,8 @@ namespace Palaso.BuildTasks
 {
 	public class FileUpdate : Task
 	{
+		private string _dateFormat;
+
 		[Required]
 		public string File { get; set; }
 
@@ -22,22 +23,30 @@ namespace Palaso.BuildTasks
 		/// </summary>
 		public string DatePlaceholder { get; set; }
 
+		/// <summary>
+		/// The date format to output (default is dd/MMM/yyyy)
+		/// </summary>
+		public string DateFormat
+		{
+			get { return _dateFormat ?? "dd/MMM/yyyy"; }
+			set { _dateFormat = value; }
+		}
+
 		public override bool Execute()
 		{
 			var content = System.IO.File.ReadAllText(File);
-			var newContents = System.Text.RegularExpressions.Regex.Replace(content, this.Regex, ReplacementText);
+			var newContents = System.Text.RegularExpressions.Regex.Replace(content, Regex, ReplacementText);
 
 			if(!string.IsNullOrEmpty(DatePlaceholder))
 			{
-				newContents = newContents.Replace(DatePlaceholder, DateTime.UtcNow.Date.ToString("dd/MMM/yyyy"));
+				newContents = newContents.Replace(DatePlaceholder, DateTime.UtcNow.Date.ToString(DateFormat));
 			}
 			if(!newContents.Contains(ReplacementText))
 			{
-				SafeLogError("Did not manage to replace '{0}' with '{1}'", this.Regex, ReplacementText);
+				SafeLogError("Did not manage to replace '{0}' with '{1}'", Regex, ReplacementText);
 				return false;//we didn't actually replace anything
 			}
-			System.IO.File.WriteAllText(File,
-				newContents);
+			System.IO.File.WriteAllText(File, newContents);
 			return true;
 		}
 
@@ -47,7 +56,7 @@ namespace Palaso.BuildTasks
 		{
 			try
 			{
-				Debug.WriteLine(string.Format(msg, args));
+				Debug.WriteLine(msg, args);
 				Log.LogError(msg, args);
 			}
 			catch (Exception)
