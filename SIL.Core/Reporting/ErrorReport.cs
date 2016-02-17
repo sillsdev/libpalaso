@@ -560,7 +560,6 @@ namespace SIL.Reporting
 		/// </summary>
 		public static void ReportFatalMessageWithStackTrace(string message, params object[] args)
 		{
-			s_previousNonFatalMessage = message;
 			_errorReporter.ReportFatalMessageWithStackTrace(message, args);
 		}
 

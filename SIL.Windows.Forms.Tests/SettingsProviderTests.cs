@@ -238,7 +238,7 @@ namespace SIL.Windows.Forms.Tests
 				{
 					File.WriteAllText(filePath, "hello world");
 
-					Assert.That(settingsProvider.CheckForErrorsInFile(), Is.Not.Null);
+					Assert.That(settingsProvider.CheckForErrorsInSettingsFile(), Is.Not.Null);
 
 					//because we already did the check, we don't expect to see any error now
 					using (new ErrorReport.NoNonFatalErrorReportExpected())

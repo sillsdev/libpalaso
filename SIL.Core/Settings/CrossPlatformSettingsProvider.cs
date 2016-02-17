@@ -13,7 +13,7 @@ namespace SIL.Settings
 	/// A custom SettingsProvider implementation functional on both Windows and Linux (the default mono implementation was buggy and incomplete)
 	/// </summary>
 	/// <example>
-	/// var settingsProvider = new TestCrossPlatformSettingsProvider();
+	/// var settingsProvider = new CrossPlatformSettingsProvider();
 	/// //optionally pre-check for problems
 	/// if(settingsProvider.CheckForErrorsInFile()) ...
 	/// </example>
@@ -77,8 +77,8 @@ namespace SIL.Settings
 		/// If you want to control when it does that, and get a message describing the problem
 		/// so that you can tell the user, call this before anything else touches the settings.
 		/// </summary>
-		/// <returns>and exception or null</returns>
-		public Exception CheckForErrorsInFile()
+		/// <returns>an exception or null</returns>
+		public Exception CheckForErrorsInSettingsFile()
 		{
 			if(!_initialized)
 				throw new ApplicationException("CrossPlatformSettingsProvider: Call Initialize() before CheckForErrorsInFile()");
