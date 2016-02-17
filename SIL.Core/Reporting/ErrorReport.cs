@@ -273,6 +273,36 @@ namespace SIL.Reporting
 		}
 
 		/// <summary>
+		/// use this in unit tests to cleanly check that a message would have been shown.
+		/// E.g.  using (new Palaso.Reporting.ErrorReport.NonFatalErrorReportExpected()) {...}
+		/// </summary>
+		public class NoNonFatalErrorReportExpected : IDisposable
+		{
+			private readonly bool previousJustRecordNonFatalMessagesForTesting;
+			public NoNonFatalErrorReportExpected()
+			{
+				previousJustRecordNonFatalMessagesForTesting = s_justRecordNonFatalMessagesForTesting;
+				s_justRecordNonFatalMessagesForTesting = true;
+				s_previousNonFatalMessage = null;//this is a static, so a previous unit test could have filled it with something (yuck)
+				s_previousNonFatalException = null;
+			}
+			public void Dispose()
+			{
+				s_justRecordNonFatalMessagesForTesting = previousJustRecordNonFatalMessagesForTesting;
+				if (s_previousNonFatalException != null || s_previousNonFatalMessage != null)
+					throw new Exception("Non Fatal Error Report was not expected but was generated: "+Message);
+				s_previousNonFatalMessage = null;
+			}
+			/// <summary>
+			/// use this to check the actual contents of the message that was triggered
+			/// </summary>
+			public string Message
+			{
+				get { return s_previousNonFatalMessage; }
+			}
+		}
+
+		/// <summary>
 		/// set this property if you want the dialog to offer to create an e-mail message.
 		/// </summary>
 		public static string EmailAddress
@@ -511,6 +541,8 @@ namespace SIL.Reporting
 		/// </summary>
 		public static void ReportNonFatalExceptionWithMessage(Exception error, string message, params object[] args)
 		{
+			s_previousNonFatalMessage = message;
+			s_previousNonFatalException = error;
 			_errorReporter.ReportNonFatalExceptionWithMessage(error, message, args);
 		}
 
@@ -520,6 +552,7 @@ namespace SIL.Reporting
 		/// </summary>
 		public static void ReportNonFatalMessageWithStackTrace(string message, params object[] args)
 		{
+			s_previousNonFatalMessage = message;
 			_errorReporter.ReportNonFatalMessageWithStackTrace(message, args);
 		}
 		/// <summary>

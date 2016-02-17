@@ -12,6 +12,11 @@ namespace SIL.Settings
 	/// <summary>
 	/// A custom SettingsProvider implementation functional on both Windows and Linux (the default mono implementation was buggy and incomplete)
 	/// </summary>
+	/// <example>
+	/// var settingsProvider = new CrossPlatformSettingsProvider();
+	/// //optionally pre-check for problems
+	/// if(settingsProvider.CheckForErrorsInFile()) ...
+	/// </example>
 	public class CrossPlatformSettingsProvider : SettingsProvider, IApplicationSettingsProvider
 	{
 		//Protected only for unit testing. I can't get InternalsVisibleTo to work, possibly because of strong naming.
@@ -22,10 +27,16 @@ namespace SIL.Settings
 		protected string UserLocalLocation = null;
 		private static string CompanyAndProductPath;
 
+		private bool _reportReadingErrorsDirectlyToUser = true;
+
 		// May be overridden in a derived class to control where settings are looked for
 		// when that class is used as the provider. Must do any initialization before calls to GetCompanyAndProductPath,
 		// that is, before trying to use instances of the relevant settings.
-		protected virtual string ProductName {get { return null; }}
+		protected virtual string ProductName
+		{
+			get { return null; }
+		}
+
 		/// <summary>
 		/// Indicates if the settings should be saved in roaming or local location, defaulted to false;
 		/// </summary>
@@ -34,9 +45,12 @@ namespace SIL.Settings
 		/// <summary>
 		/// Where we expect to find the config file. Protected for unit testing.
 		/// </summary>
-		protected string UserConfigLocation { get { return IsRoaming ? UserRoamingLocation : UserLocalLocation; } }
+		protected string UserConfigLocation
+		{
+			get { return IsRoaming ? UserRoamingLocation : UserLocalLocation; }
+		}
 
-		private readonly Dictionary<string, string> _renamedSections; 
+		private readonly Dictionary<string, string> _renamedSections;
 
 		/// <summary>
 		/// Default constructor for this provider class
@@ -44,8 +58,10 @@ namespace SIL.Settings
 		public CrossPlatformSettingsProvider()
 		{
 			_renamedSections = new Dictionary<string, string>();
-			UserRoamingLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), GetFullSettingsPath());
-			UserLocalLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), GetFullSettingsPath());
+			UserRoamingLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+				GetFullSettingsPath());
+			UserLocalLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+				GetFullSettingsPath());
 			// When running multiple builds in parallel we have to use separate directories for
 			// each build, otherwise some unit tests might fail.
 			var buildagentSubdir = Environment.GetEnvironmentVariable("BUILDAGENT_SUBKEY");
@@ -54,6 +70,22 @@ namespace SIL.Settings
 				UserRoamingLocation = Path.Combine(UserRoamingLocation, buildagentSubdir);
 				UserLocalLocation = Path.Combine(UserLocalLocation, buildagentSubdir);
 			}
+		}
+
+		/// <summary>
+		/// This Settings Provider will automatically delete a corrupted settings file, silently.
+		/// If you want to control when it does that, and get a message describing the problem
+		/// so that you can tell the user, call this before anything else touches the settings.
+		/// </summary>
+		/// <returns>an exception or null</returns>
+		public Exception CheckForErrorsInSettingsFile()
+		{
+			if(!_initialized)
+				throw new ApplicationException("CrossPlatformSettingsProvider: Call Initialize() before CheckForErrorsInFile()");
+
+			_reportReadingErrorsDirectlyToUser = false;
+			var dummy =SettingsXml;
+			return _lastReadingError;
 		}
 
 		public IDictionary<string, string> RenamedSections
@@ -69,6 +101,7 @@ namespace SIL.Settings
 			{
 				base.Initialize(name, config);
 			}
+			_initialized = true;
 		}
 
 		private string GetFullSettingsPath()
@@ -412,6 +445,8 @@ namespace SIL.Settings
 		}
 
 		private XmlDocument _settingsXml;
+		private bool _initialized;
+		private XmlException _lastReadingError;
 
 		private XmlDocument SettingsXml
 		{
@@ -430,10 +465,39 @@ namespace SIL.Settings
 								_settingsXml.Load(Path.Combine(UserConfigLocation, UserConfigFileName));
 								return _settingsXml;
 							}
-							catch(XmlException e)
+							catch (XmlException e)
 							{
-								ErrorReport.ReportNonFatalExceptionWithMessage(e, "A settings file was corrupted. Some user settings may have been lost.");
-								File.Delete(userConfigFilePath);
+								//a partial reading can leave the _settingsXml in a weird state. Start over:
+								_settingsXml = new XmlDocument();
+
+								Logger.WriteError("Problem with contents of " + userConfigFilePath, e);
+
+								//This ErrorReport was actually keeping Bloom from starting at all.
+								//It now calls CheckForErrorsInFile() which lets it control the messaging;
+								//that also sets this to false.
+
+								if(_reportReadingErrorsDirectlyToUser)
+									ErrorReport.ReportNonFatalExceptionWithMessage(e, "A settings file was corrupted. Some user settings may have been lost.");
+								_lastReadingError = e;
+
+								try
+								{
+									File.Copy(userConfigFilePath, userConfigFilePath + ".bad", true);
+								}
+								catch (Exception)
+								{
+									//not worth dying over
+								}
+								try
+								{
+									File.Delete(userConfigFilePath);
+								}
+								catch (Exception deletionError)
+								{
+									Logger.WriteError("Could not delete " + userConfigFilePath, deletionError);
+									ErrorReport.ReportFatalMessageWithStackTrace("Please delete the configuration file at " + userConfigFilePath + " and then re-run the program.");
+									throw deletionError;
+								}
 							}
 						}
 
