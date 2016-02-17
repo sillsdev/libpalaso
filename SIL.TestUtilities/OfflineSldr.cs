@@ -16,17 +16,13 @@ namespace SIL.TestUtilities
 		public OfflineSldr()
 		{
 			_sldrCacheFolder = new TemporaryFolder("SldrCacheTest");
-			Sldr.SldrCachePath = _sldrCacheFolder.Path;
-			Sldr.OfflineMode = true;
-			Sldr.ResetLanguageTags();
+			Sldr.Initialize(true, _sldrCacheFolder.Path);
 		}
 
 		protected override void DisposeManagedResources()
 		{
-			Sldr.OfflineMode = false;
-			Sldr.ResetLanguageTags();
+			Sldr.Cleanup();
 			_sldrCacheFolder.Dispose();
-			Sldr.SldrCachePath = Sldr.DefaultSldrCachePath;
 		}
 	}
 }

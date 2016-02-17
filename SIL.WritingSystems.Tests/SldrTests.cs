@@ -14,9 +14,14 @@ namespace SIL.WritingSystems.Tests
 	{
 		private class TestEnvironment : IDisposable
 		{
-			public TestEnvironment(bool sldrOffline = true)
+			public TestEnvironment(bool sldrOffline = true, DateTime? embeddedAllTagsTime = null)
 			{
-				Sldr.OfflineMode = sldrOffline;
+				string sldrCachePath = Sldr.SldrCachePath;
+				Sldr.Cleanup();
+				if (embeddedAllTagsTime == null)
+					Sldr.Initialize(sldrOffline, sldrCachePath);
+				else
+					Sldr.Initialize(sldrOffline, sldrCachePath, embeddedAllTagsTime.Value);
 				FolderContainingLdml = new TemporaryFolder("SldrTests");
 				NamespaceManager = new XmlNamespaceManager(new NameTable());
 				NamespaceManager.AddNamespace("sil", "urn://www.sil.org/ldml/0.1");
@@ -39,15 +44,15 @@ namespace SIL.WritingSystems.Tests
 			public void Dispose()
 			{
 				FolderContainingLdml.Dispose();
-				Sldr.EmbeddedAllTagsTime = Sldr.DefaultEmbeddedAllTagsTime;
-				// The OfflineSldrAttribute has been assigned to the entire test assembly, so we set the offline mode
-				// back to the default value, which is true
-				Sldr.OfflineMode = true;
+				string sldrCachePath = Sldr.SldrCachePath;
+				Sldr.Cleanup();
 				// clear out SLDR cache
-				DirectoryInfo di = new DirectoryInfo(Sldr.SldrCachePath);
+				DirectoryInfo di = new DirectoryInfo(sldrCachePath);
 				foreach (FileInfo fi in di.GetFiles())
 					fi.Delete();
-				Sldr.ResetLanguageTags();
+				// The OfflineSldrAttribute has been assigned to the entire test assembly, so we reinitialize
+				// the SLDR back to what it was
+				Sldr.Initialize(true, sldrCachePath);
 			}
 		}
 
@@ -454,10 +459,8 @@ amo-Latn = amo
 		[Category("SkipOnTeamCity")]
 		public void LanguageTags_OlderEmbeddedAllTags_DownloadsNewAllTags()
 		{
-			using (new TestEnvironment(false))
+			using (new TestEnvironment(false, new DateTime(2000, 1, 1, 12, 0, 0)))
 			{
-				Sldr.ResetLanguageTags();
-				Sldr.EmbeddedAllTagsTime = new DateTime(2000, 1, 1, 12, 0, 0);
 				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.txt");
 				Assert.That(File.Exists(allTagsPath), Is.False);
 				Assert.That(Sldr.LanguageTags, Is.Not.Empty);
@@ -470,7 +473,6 @@ amo-Latn = amo
 		{
 			using (new TestEnvironment())
 			{
-				Sldr.ResetLanguageTags();
 				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.txt");
 
 				File.WriteAllText(allTagsPath, "*en-US");
@@ -486,7 +488,6 @@ amo-Latn = amo
 		{
 			using (new TestEnvironment())
 			{
-				Sldr.ResetLanguageTags();
 				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.txt");
 
 				File.WriteAllText(allTagsPath, "*en-US");
@@ -504,7 +505,6 @@ amo-Latn = amo
 		{
 			using (new TestEnvironment())
 			{
-				Sldr.ResetLanguageTags();
 				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.txt");
 				Assert.That(File.Exists(allTagsPath), Is.False);
 
