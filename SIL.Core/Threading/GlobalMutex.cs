@@ -131,7 +131,7 @@ namespace SIL.Threading
 
 		[SuppressMessage("Gendarme.Rules.Correctness", "DisposableFieldsShouldBeDisposedRule",
 			Justification="m_adapter is a reference.")]
-		private sealed class ReleaseDisposable : IDisposable
+		private sealed class ReleaseDisposable : DisposableBase
 		{
 			private readonly IGlobalMutexAdapter _adapter;
 
@@ -140,7 +140,7 @@ namespace SIL.Threading
 				_adapter = adapter;
 			}
 
-			public void Dispose()
+			protected override void DisposeManagedResources()
 			{
 				_adapter.Release();
 			}
@@ -236,9 +236,13 @@ namespace SIL.Threading
 				}
 			}
 
-			protected override void DisposeUnmanagedResources()
+			protected override void DisposeManagedResources()
 			{
 				Unlink();
+			}
+
+			protected override void DisposeUnmanagedResources()
+			{
 				Syscall.close(_handle);
 			}
 		}

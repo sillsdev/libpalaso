@@ -118,7 +118,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		internal static void Initialize(bool offlineMode, string sldrCachePath, DateTime embeddedAllTagsTime)
 		{
-			if (_sldrCacheMutex != null)
+			if (IsInitialized)
 				throw new InvalidOperationException("The SLDR has already been initialized.");
 
 			_sldrCacheMutex = new GlobalMutex("SldrCache");
@@ -126,6 +126,11 @@ namespace SIL.WritingSystems
 			_offlineMode = offlineMode;
 			SldrCachePath = sldrCachePath;
 			_embeddedAllTagsTime = embeddedAllTagsTime;
+		}
+
+		public static bool IsInitialized
+		{
+			get { return _sldrCacheMutex != null; }
 		}
 
 		/// <summary>
@@ -142,7 +147,7 @@ namespace SIL.WritingSystems
 
 		private static void CheckInitialized()
 		{
-			if (_sldrCacheMutex == null)
+			if (!IsInitialized)
 				throw new InvalidOperationException("The SLDR has not been initialized.");
 		}
 
