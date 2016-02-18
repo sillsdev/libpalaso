@@ -13,7 +13,6 @@ namespace SIL.Tests.Threading
 			{
 				mutex.Unlink();
 				Assert.That(mutex.Initialize(), Is.True);
-				mutex.Unlink();
 			}
 		}
 
@@ -25,7 +24,6 @@ namespace SIL.Tests.Threading
 				mutex1.Initialize();
 				using (var mutex2 = new GlobalMutex("test"))
 					Assert.That(mutex2.Initialize(), Is.False);
-				mutex1.Unlink();
 			}
 		}
 
@@ -38,7 +36,6 @@ namespace SIL.Tests.Threading
 				bool createdNew;
 				using (mutex.InitializeAndLock(out createdNew)) {}
 				Assert.That(createdNew, Is.True);
-				mutex.Unlink();
 			}
 		}
 
@@ -54,7 +51,6 @@ namespace SIL.Tests.Threading
 					using (mutex2.InitializeAndLock(out createdNew)) {}
 					Assert.That(createdNew, Is.False);
 				}
-				mutex1.Unlink();
 			}
 		}
 
@@ -67,7 +63,6 @@ namespace SIL.Tests.Threading
 				{
 					using (mutex.Lock()) {}
 				}
-				mutex.Unlink();
 			}
 		}
 
@@ -81,7 +76,6 @@ namespace SIL.Tests.Threading
 				{
 					using (mutex.Lock()) {}
 				}
-				mutex.Unlink();
 			}
 		}
 	}

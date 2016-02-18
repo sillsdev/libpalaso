@@ -67,7 +67,7 @@ namespace SIL.WritingSystems
 		private const string UserAgent = "SIL.WritingSystems Library";
 
 		// Mode to test when the SLDR is unavailable.  Default to false
-		internal static bool OfflineMode { get; set; }
+		private static bool _offlineMode;
 
 		// If the user wants to request a new UID, you use "uid=unknown" and that will create a new random identifier
 		public const string DefaultUserId = "unknown";
@@ -75,7 +75,7 @@ namespace SIL.WritingSystems
 		// in order to avoid deadlocks, SyncRoot should always be acquired first and then SldrCacheMutex
 		private static readonly object SyncRoot = new object();
 		// multiple applications could read/write to the SLDR cache at the same time, so synchronize access
-		private static readonly GlobalMutex SldrCacheMutex;
+		private static GlobalMutex _sldrCacheMutex;
 
 		private static IReadOnlyKeyedCollection<string, SldrLanguageTagInfo> _languageTags;
 
@@ -90,19 +90,65 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
-		/// Gets the SLDR cache path. The setter should only be used for testing purposes.
+		/// Gets the SLDR cache path.
 		/// </summary>
-		public static string SldrCachePath { get; internal set; }
+		public static string SldrCachePath { get; private set; }
 
-		internal static readonly DateTime DefaultEmbeddedAllTagsTime = DateTime.Parse(LanguageRegistryResources.AllTagsTime, CultureInfo.InvariantCulture);
-		internal static DateTime EmbeddedAllTagsTime { get; set; }
+		private static readonly DateTime DefaultEmbeddedAllTagsTime = DateTime.Parse(LanguageRegistryResources.AllTagsTime, CultureInfo.InvariantCulture);
+		private static DateTime _embeddedAllTagsTime;
 
-		static Sldr()
+		/// <summary>
+		/// Initializes the SLDR. This should be called before calling other methods or properties.
+		/// </summary>
+		public static void Initialize()
 		{
-			SldrCacheMutex = new GlobalMutex("SldrCache");
-			SldrCacheMutex.Initialize();
-			SldrCachePath = DefaultSldrCachePath;
-			EmbeddedAllTagsTime = DefaultEmbeddedAllTagsTime;
+			Initialize(false, DefaultSldrCachePath);
+		}
+
+		/// <summary>
+		/// This method is used for testing purposes.
+		/// </summary>
+		internal static void Initialize(bool offlineMode, string sldrCachePath)
+		{
+			Initialize(offlineMode, sldrCachePath, DefaultEmbeddedAllTagsTime);
+		}
+
+		/// <summary>
+		/// This method is used for testing purposes.
+		/// </summary>
+		internal static void Initialize(bool offlineMode, string sldrCachePath, DateTime embeddedAllTagsTime)
+		{
+			if (IsInitialized)
+				throw new InvalidOperationException("The SLDR has already been initialized.");
+
+			_sldrCacheMutex = new GlobalMutex("SldrCache");
+			_sldrCacheMutex.Initialize();
+			_offlineMode = offlineMode;
+			SldrCachePath = sldrCachePath;
+			_embeddedAllTagsTime = embeddedAllTagsTime;
+		}
+
+		public static bool IsInitialized
+		{
+			get { return _sldrCacheMutex != null; }
+		}
+
+		/// <summary>
+		/// Cleans up the SLDR. This should be called to properly clean up SLDR resources.
+		/// </summary>
+		public static void Cleanup()
+		{
+			CheckInitialized();
+
+			_sldrCacheMutex.Dispose();
+			_sldrCacheMutex = null;
+			_languageTags = null;
+		}
+
+		private static void CheckInitialized()
+		{
+			if (!IsInitialized)
+				throw new InvalidOperationException("The SLDR has not been initialized.");
 		}
 
 		/// <summary>
@@ -116,6 +162,8 @@ namespace SIL.WritingSystems
 		/// <returns>Enum status SldrStatus if file could be retrieved and the source</returns>
 		public static SldrStatus GetLdmlFile(string destinationPath, string languageTag, IEnumerable<string> topLevelElements, out string filename)
 		{
+			CheckInitialized();
+
 			if (String.IsNullOrEmpty(destinationPath))
 				throw new ArgumentException("destinationPath");
 			if (!Directory.Exists(destinationPath))
@@ -131,7 +179,7 @@ namespace SIL.WritingSystems
 				sldrLanguageTag = langTagInfo.SldrLanguageTag;
 			string[] topLevelElementsArray = topLevelElements.ToArray();
 
-			using (SldrCacheMutex.Lock())
+			using (_sldrCacheMutex.Lock())
 			{
 				var status = SldrStatus.NotFound;
 				CreateSldrCacheDirectory();
@@ -181,7 +229,7 @@ namespace SIL.WritingSystems
 
 					try
 					{
-						if (OfflineMode)
+						if (_offlineMode)
 							throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
 
 						// Check the response header to see if the requested LDML file got redirected
@@ -274,18 +322,14 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
+				CheckInitialized();
+
 				lock (SyncRoot)
 				{
 					LoadLanguageTagsIfNecessary();
 					return _languageTags;
 				}
 			}
-		}
-
-		public static void ResetLanguageTags()
-		{
-			lock (SyncRoot)
-				_languageTags = null;
 		}
 
 		/// <summary>
@@ -297,13 +341,13 @@ namespace SIL.WritingSystems
 				return;
 
 			string allTagsContent;
-			using (SldrCacheMutex.Lock())
+			using (_sldrCacheMutex.Lock())
 			{
 				CreateSldrCacheDirectory();
 
 				string cachedAllTagsPath = Path.Combine(SldrCachePath, "alltags.txt");
 				DateTime latestCommitTime = DateTime.MinValue;
-				DateTime sinceTime = EmbeddedAllTagsTime;
+				DateTime sinceTime = _embeddedAllTagsTime;
 				if (File.Exists(cachedAllTagsPath))
 				{
 					DateTime fileTime = File.GetLastWriteTime(cachedAllTagsPath);
@@ -318,7 +362,7 @@ namespace SIL.WritingSystems
 				sinceTime += TimeSpan.FromSeconds(1);
 				try
 				{
-					if (OfflineMode)
+					if (_offlineMode)
 						throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
 
 					// query the SLDR Git repo to see if there is an updated version of alltags.txt
