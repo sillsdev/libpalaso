@@ -189,13 +189,15 @@ namespace Palaso.TestUtilities
 
 		public static void PrintNodeToConsole(XmlNode node)
 		{
-			XmlWriterSettings settings = new XmlWriterSettings();
+			var settings = new XmlWriterSettings();
 			settings.Indent = true;
 			settings.ConformanceLevel = ConformanceLevel.Fragment;
-			XmlWriter writer = XmlWriter.Create(Console.Out, settings);
-			node.WriteContentTo(writer);
-			writer.Flush();
-			Console.WriteLine();
+			using (XmlWriter writer = XmlWriter.Create(Console.Out, settings))
+			{
+				node.WriteContentTo(writer);
+				writer.Flush();
+				Console.WriteLine();
+			}
 		}
 
 
@@ -223,7 +225,7 @@ namespace Palaso.TestUtilities
 
 		private XmlNode GetNode(string xpath)
 		{
-#if MONO
+#if __MonoCS__
 			// Currently the method XmlNodeExtensions.GetPrefixedPath doesn't allow for / in a literal string
 			return NodeOrDom.SelectSingleNode(xpath);
 #else
