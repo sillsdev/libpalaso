@@ -19,6 +19,9 @@ namespace SIL.Windows.Forms.DblBundle
 	{
 		public event EventHandler SelectedProjectChanged;
 		public event EventHandler ListLoaded;
+		public event EventHandler<DataGridViewColumnEventArgs> ColumnWidthChanged;
+		public event EventHandler<DataGridViewColumnEventArgs> ColumnDisplayIndexChanged;
+		public event EventHandler ProjectListSorted;
 
 		private string m_selectedProject;
 		private string m_filterIcuLocale;
@@ -125,6 +128,9 @@ namespace SIL.Windows.Forms.DblBundle
 
 				for (int i = 0; i < m_list.Columns.Count; i++)
 				{
+					// don't change the AutoSizeMode of the fill column
+					if (m_list.Columns[i] == FillColumn)
+						continue;
 					int colw = m_list.Columns[i].Width;
 					m_list.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
 					m_list.Columns[i].Width = colw;
@@ -280,6 +286,9 @@ namespace SIL.Windows.Forms.DblBundle
 				if (!m_projectSelected)
 					m_list.ClearSelection();
 				m_sorting = false;
+
+				if (ProjectListSorted != null)
+					ProjectListSorted(this, e);
 			}
 			else
 				Debug.Fail("PrepareToSort should have been called before sorting.");
@@ -331,6 +340,18 @@ namespace SIL.Windows.Forms.DblBundle
 				m_list.RefreshEdit();
 				e.Cancel = true;
 			}
+		}
+
+		private void HandleColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
+		{
+			if (ColumnWidthChanged != null)
+				ColumnWidthChanged(this, e);
+		}
+
+		private void HandleColumnDisplayIndexChanged(object sender, DataGridViewColumnEventArgs e)
+		{
+			if (ColumnDisplayIndexChanged != null)
+				ColumnDisplayIndexChanged(this, e);
 		}
 	}
 }

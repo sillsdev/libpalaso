@@ -74,6 +74,8 @@ namespace SIL.Windows.Forms.DblBundle
 			this.m_list.TabIndex = 0;
 			this.m_list.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.HandleCellDoubleClick);
 			this.m_list.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.HandleListCellMouseDown);
+			this.m_list.ColumnDisplayIndexChanged += new System.Windows.Forms.DataGridViewColumnEventHandler(this.HandleColumnDisplayIndexChanged);
+			this.m_list.ColumnWidthChanged += new System.Windows.Forms.DataGridViewColumnEventHandler(this.HandleColumnWidthChanged);
 			this.m_list.Sorted += new System.EventHandler(this.HandleProjectListSorted);
 			// 
 			// colProjectPathOrId
