@@ -172,18 +172,28 @@ namespace Palaso.TestUtilities
 		/// </summary>
 		public void HasSpecifiedNumberOfMatchesForXpath(string xpath, int count)
 		{
+			HasSpecifiedNumberOfMatchesForXpath(xpath, count, true);
+		}
+
+		public void HasSpecifiedNumberOfMatchesForXpath(string xpath, int count, bool verbose)
+		{
 			var nodes = NodeOrDom.SafeSelectNodes(xpath);
 			if (nodes==null)
 			{
-				Console.WriteLine("Expected {0} but got 0 matches for {1}",count,  xpath);
-				PrintNodeToConsole(NodeOrDom);
-				Assert.AreEqual(count,0);
+				if (count > 0)
+				{
+					Console.WriteLine("Expected {0} but got 0 matches for {1}", count, xpath);
+					if (verbose)
+						PrintNodeToConsole(NodeOrDom);
+				}
+				Assert.AreEqual(count, 0);
 			}
 			else if (nodes.Count != count)
 			{
-				Console.WriteLine("Expected {0} but got {1} matches for {2}",count, nodes.Count, xpath);
-				PrintNodeToConsole(NodeOrDom);
-				Assert.AreEqual(count, nodes.Count, "matches for "+xpath);
+				Console.WriteLine("Expected {0} but got {1} matches for {2}", count, nodes.Count, xpath);
+				if (verbose)
+					PrintNodeToConsole(NodeOrDom);
+				Assert.AreEqual(count, nodes.Count, "matches for " + xpath);
 			}
 		}
 
