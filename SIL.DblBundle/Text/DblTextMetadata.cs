@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using SIL.Extensions;
 using SIL.ObjectModel;
 using SIL.Scripture;
+using SIL.WritingSystems;
 using SIL.Xml;
 
 namespace SIL.DblBundle.Text
@@ -108,7 +108,7 @@ namespace SIL.DblBundle.Text
 
 		public override string ToString()
 		{
-			return string.IsNullOrEmpty(Name) ? Iso : (string.IsNullOrEmpty(Iso) ? Name : string.Format("{0} ({1})", Name, Iso));
+			return string.IsNullOrEmpty(Name) ? (Iso == WellKnownSubtags.UnlistedLanguage ? "Unknown" : Iso) : (string.IsNullOrEmpty(Iso) ? Name : string.Format("{0} ({1})", Name, Iso));
 		}
 	}
 
