@@ -5,9 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using SIL.Extensions;
+using L10NSharp;
 using SIL.ObjectModel;
 using SIL.Scripture;
+using SIL.WritingSystems;
 using SIL.Xml;
 
 namespace SIL.DblBundle.Text
@@ -106,9 +107,20 @@ namespace SIL.DblBundle.Text
 		[XmlElement("numerals")]
 		public string Numerals { get; set; }
 
+		[XmlIgnore]
+		public string DisplayName
+		{
+			get
+			{
+				if (string.IsNullOrEmpty(Name))
+					return Iso == WellKnownSubtags.UnlistedLanguage ? LocalizationManager.GetString("DblBundle.UnknownLanguageName", "Unknown") : Iso;
+				return string.IsNullOrEmpty(Iso) ? Name : string.Format("{0} ({1})", Name, Iso);
+			}
+		}
+
 		public override string ToString()
 		{
-			return string.IsNullOrEmpty(Name) ? Iso : (string.IsNullOrEmpty(Iso) ? Name : string.Format("{0} ({1})", Name, Iso));
+			return DisplayName;
 		}
 	}
 
