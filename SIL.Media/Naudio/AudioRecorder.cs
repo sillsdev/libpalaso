@@ -575,5 +575,64 @@ namespace SIL.Media.Naudio
 			Stop();
 			return false;
 		}
+
+		/// <summary>
+		/// Given a wav file, produce a different wav file with the given start and stop times
+		/// </summary>
+		/// <remarks>This is in this file because ideally it should be part of the recorder...
+		/// the use case at the moment is trimming off the last 200ms or so in order to remove
+		/// the sound of the click that ends the recording. That "amount to trim off the end"
+		/// would be a natural parameter
+		/// to add to the recording, perhaps under user-settings control. But doing that is
+		/// beyond the time I have to give to this now, so I'm at least positioning this code
+		/// in this library rather than in my app, as a first step. I call it when the AudioRecorder
+		/// raises the Stopped event.</remarks>
+		public static void TrimWavFile(string inPath, string outPath, TimeSpan cutFromStart, TimeSpan cutFromEnd)
+		{
+			//from http://stackoverflow.com/a/6488629/723299
+			using (var reader = new WaveFileReader(inPath))
+			{
+				using (var writer = new WaveFileWriter(outPath, reader.WaveFormat))
+				{
+					var bytesPerMillisecond = reader.WaveFormat.AverageBytesPerSecond / 1000;
+
+					var startPos = (int)cutFromStart.TotalMilliseconds * bytesPerMillisecond;
+					startPos = startPos - startPos % reader.WaveFormat.BlockAlign;
+
+					var endBytes = (int)cutFromEnd.TotalMilliseconds * bytesPerMillisecond;
+					endBytes = endBytes - endBytes % reader.WaveFormat.BlockAlign;
+					var endPos = (int)reader.Length - endBytes;
+					//this minBytes thing is arbitrary, set to not allow trimming more than half a second
+					var minBytes = bytesPerMillisecond * 500;
+					endPos = Math.Max(minBytes, endPos);
+					TrimWavFile(reader, writer, startPos, endPos);
+				}
+			}
+		}
+
+		private static void TrimWavFile(WaveFileReader reader, WaveFileWriter writer, int startPos, int endPos)
+		{
+			//from http://stackoverflow.com/a/6488629/723299, added the break if we aren't getting any more data
+			reader.Position = startPos;
+			var buffer = new byte[1024];
+			while (reader.Position < endPos)
+			{
+				var bytesRequired = (int)(endPos - reader.Position);
+				if (bytesRequired > 0)
+				{
+					var bytesToRead = Math.Min(bytesRequired, buffer.Length);
+					var bytesRead = reader.Read(buffer, 0, bytesToRead);
+					if (bytesRead > 0)
+					{
+						writer.Write(buffer,0, bytesRead);
+					}
+					else
+					{
+						//assumption here is that we tried to trim more than the whole file has
+						break; 
+					}
+				}
+			}
+		}
 	}
 }
