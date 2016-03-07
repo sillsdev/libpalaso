@@ -587,30 +587,41 @@ namespace SIL.Media.Naudio
 		/// beyond the time I have to give to this now, so I'm at least positioning this code
 		/// in this library rather than in my app, as a first step. I call it when the AudioRecorder
 		/// raises the Stopped event.</remarks>
-		public static void TrimWavFile(string inPath, string outPath, TimeSpan cutFromStart, TimeSpan cutFromEnd)
+		/// <param name="inPath"></param>
+		/// <param name="outPath"></param>
+		/// <param name="cutFromStart"></param>
+		/// <param name="cutFromEnd"></param>
+		/// <param name="minimumDesiredDuration">The start and end cuts will be reduced if the result would be less than this. Start has priority.</param>
+		public static void TrimWavFile(string inPath, string outPath, TimeSpan cutFromStart, TimeSpan cutFromEnd, TimeSpan minimumDesiredDuration)
 		{
-			//from http://stackoverflow.com/a/6488629/723299
 			using (var reader = new WaveFileReader(inPath))
 			{
+				long totalMilliseconds = 1000*reader.Length/reader.WaveFormat.AverageBytesPerSecond;
+
+				//we  can't trim more than we have, and more than the stated minimum size
+				var cutFromStartMilliseconds = (long)Math.Min(totalMilliseconds - minimumDesiredDuration.TotalMilliseconds, cutFromStart.TotalMilliseconds);
+				cutFromStartMilliseconds = (long) Math.Max(0, cutFromStartMilliseconds); // has to be 0 or positive
+
+				totalMilliseconds -= cutFromStartMilliseconds;
+				var cutFromEndMilliseconds = (long)Math.Min(totalMilliseconds - minimumDesiredDuration.TotalMilliseconds, cutFromEnd.TotalMilliseconds);
+				cutFromEndMilliseconds = (long)Math.Max(0, cutFromEndMilliseconds); // has to be 0 or positive
+
+				//from http://stackoverflow.com/a/6488629/723299
 				using (var writer = new WaveFileWriter(outPath, reader.WaveFormat))
 				{
 					var bytesPerMillisecond = reader.WaveFormat.AverageBytesPerSecond / 1000;
-
-					var startPos = (int)cutFromStart.TotalMilliseconds * bytesPerMillisecond;
+					var startPos = cutFromStartMilliseconds * bytesPerMillisecond;
 					startPos = startPos - startPos % reader.WaveFormat.BlockAlign;
 
-					var endBytes = (int)cutFromEnd.TotalMilliseconds * bytesPerMillisecond;
+					var endBytes = cutFromEndMilliseconds * bytesPerMillisecond;
 					endBytes = endBytes - endBytes % reader.WaveFormat.BlockAlign;
-					var endPos = (int)reader.Length - endBytes;
-					//this minBytes thing is arbitrary, set to not allow trimming more than half a second
-					var minBytes = bytesPerMillisecond * 500;
-					endPos = Math.Max(minBytes, endPos);
-					TrimWavFile(reader, writer, startPos, endPos);
+					var endPos = reader.Length - endBytes;
+					TrimWavFileInternal(reader, writer, startPos, endPos);
 				}
 			}
 		}
 
-		private static void TrimWavFile(WaveFileReader reader, WaveFileWriter writer, int startPos, int endPos)
+		private static void TrimWavFileInternal(WaveFileReader reader, WaveFileWriter writer, long startPos, long endPos)
 		{
 			//from http://stackoverflow.com/a/6488629/723299, added the break if we aren't getting any more data
 			reader.Position = startPos;
