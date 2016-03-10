@@ -7,6 +7,13 @@ namespace Palaso.Media.Tests
 	[TestFixture]
 	public class MediaInfoTests
 	{
+		[TestFixtureSetUp]
+		public void CheckRequirements()
+		{
+			if (!MediaInfo.HaveNecessaryComponents)
+				Assert.Ignore("These tests require ffmpeg to be installed.");
+		}
+
 		[Test]
 		[NUnit.Framework.Category("RequiresFfmpeg")]
 		public void HaveNecessaryComponents_ReturnsTrue()
