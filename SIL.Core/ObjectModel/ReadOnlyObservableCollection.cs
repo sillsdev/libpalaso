@@ -33,14 +33,16 @@ namespace SIL.ObjectModel
 
 		protected virtual void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
 		{
-			if (CollectionChanged != null)
-				CollectionChanged(this, e);
+			NotifyCollectionChangedEventHandler handler = CollectionChanged;
+			if (handler != null)
+				handler(this, e);
 		}
 
 		protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
 		{
-			if (PropertyChanged != null)
-				PropertyChanged(this, e);
+			PropertyChangedEventHandler handler = PropertyChanged;
+			if (handler != null)
+				handler(this, e);
 		}
 	}
 }

@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using L10NSharp;
 using SIL.DblBundle;
@@ -20,6 +19,9 @@ namespace SIL.Windows.Forms.DblBundle
 	{
 		public event EventHandler SelectedProjectChanged;
 		public event EventHandler ListLoaded;
+		public event EventHandler<DataGridViewColumnEventArgs> ColumnWidthChanged;
+		public event EventHandler<DataGridViewColumnEventArgs> ColumnDisplayIndexChanged;
+		public event EventHandler ProjectListSorted;
 
 		private string m_selectedProject;
 		private string m_filterIcuLocale;
@@ -28,7 +30,7 @@ namespace SIL.Windows.Forms.DblBundle
 		private bool m_hiddenProjectsExist;
 		private bool m_gridInitializedFromSettings;
 		private readonly List<string> m_readOnlyProjects = new List<string>();
-		private bool m_projectSelected; // The value of this boolean is only reliable if m_sorting is true.
+		private bool m_projectSelected;  // The value of this boolean is only reliable if m_sorting is true.
 		private bool m_sorting;
 
 		public ProjectsListBase()
@@ -126,6 +128,9 @@ namespace SIL.Windows.Forms.DblBundle
 
 				for (int i = 0; i < m_list.Columns.Count; i++)
 				{
+					// don't change the AutoSizeMode of the fill column
+					if (m_list.Columns[i] == FillColumn)
+						continue;
 					int colw = m_list.Columns[i].Width;
 					m_list.Columns[i].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
 					m_list.Columns[i].Width = colw;
@@ -136,6 +141,7 @@ namespace SIL.Windows.Forms.DblBundle
 		protected virtual DataGridViewColumn FillColumn { get { return colRecordingProjectName; } }
 
 		protected abstract IEnumerable<string> AllProjectFolders { get; }
+
 		protected abstract string ProjectFileExtension { get; }
 	
 		protected virtual IEnumerable<Tuple<string, IProjectInfo>> Projects
@@ -273,26 +279,33 @@ namespace SIL.Windows.Forms.DblBundle
 		/// <summary>
 		/// See https://stackoverflow.com/questions/1407195/prevent-datagridview-selecting-a-row-when-sorted-if-none-was-previously-selected/1407261#1407261
 		/// </summary>
-		void HandleProjectListSorted(object sender, System.EventArgs e)
+		void HandleProjectListSorted(object sender, EventArgs e)
 		{
 			if (m_sorting)
 			{
 				if (!m_projectSelected)
 					m_list.ClearSelection();
 				m_sorting = false;
+
+				if (ProjectListSorted != null)
+					ProjectListSorted(this, e);
 			}
 			else
 				Debug.Fail("PrepareToSort should have been called before sorting.");
 		}
 
-		private void HandleDoubleClick(object sender, EventArgs e)
+		private void HandleCellDoubleClick(object sender, DataGridViewCellEventArgs e)
 		{
+			// ignore double-click of header cells
+			if (e.RowIndex < 0) return;
 			OnDoubleClick(new EventArgs());
 		}
 
 		private void HandleListCellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
 		{
-			if ((e.Button == MouseButtons.Left) && (e.RowIndex == -1))
+			// clicking on the header row
+			// also make sure we're not already set for sorting -- can happen if header is double-clicked
+			if ((e.Button == MouseButtons.Left) && (e.RowIndex == -1) && !m_sorting)
 			{
 				PrepareToSort();
 			}
@@ -327,6 +340,18 @@ namespace SIL.Windows.Forms.DblBundle
 				m_list.RefreshEdit();
 				e.Cancel = true;
 			}
+		}
+
+		private void HandleColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
+		{
+			if (ColumnWidthChanged != null)
+				ColumnWidthChanged(this, e);
+		}
+
+		private void HandleColumnDisplayIndexChanged(object sender, DataGridViewColumnEventArgs e)
+		{
+			if (ColumnDisplayIndexChanged != null)
+				ColumnDisplayIndexChanged(this, e);
 		}
 	}
 }

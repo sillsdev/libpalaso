@@ -311,6 +311,9 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AbstractControlDescriptionProvider.cs" />
+    <Compile Include="AppColorPalette\AppColorPaletteExtender.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ClearShare\ClearShareResources.Designer.cs" />
     <Compile Include="ClearShare\Contribution.cs" />
     <Compile Include="ClearShare\ContributionCollection.cs" />

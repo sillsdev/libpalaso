@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Threading;
 using SIL.Reporting;
 
@@ -298,6 +300,55 @@ namespace SIL.IO
 				return !Directory.EnumerateFiles(path).Any();
 
 			return !Directory.EnumerateFileSystemEntries(path).Any();
+		}
+
+		/// <summary>
+		/// Sets the permissions for this directory so that everyone has full control
+		/// </summary>
+		/// <param name="fullDirectoryPath"></param>
+		/// <param name="showErrorMessage"></param>
+		/// <returns>True if able to set access, False otherwise</returns>
+		public static bool SetFullControl(string fullDirectoryPath, bool showErrorMessage = true)
+		{
+			// get current settings
+			var everyone = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
+			var security = Directory.GetAccessControl(fullDirectoryPath, AccessControlSections.Access);
+			var currentRules = security.GetAccessRules(true, true, typeof(SecurityIdentifier));
+
+			// if everyone already has full control, return now
+			if (currentRules.Cast<FileSystemAccessRule>()
+				.Where(rule => rule.IdentityReference.Value == everyone.Value)
+				.Any(rule => rule.FileSystemRights == FileSystemRights.FullControl))
+			{
+				return true;
+			}
+
+			// initialize
+			var returnVal = false;
+
+			try
+			{
+				// set the permissions so everyone can read and write to this directory
+				var fullControl = new FileSystemAccessRule(everyone,
+															FileSystemRights.FullControl,
+															InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit,
+															PropagationFlags.None,
+															AccessControlType.Allow);
+				security.AddAccessRule(fullControl);
+				Directory.SetAccessControl(fullDirectoryPath, security);
+
+				returnVal = true;
+			}
+			catch (Exception ex)
+			{
+				if (showErrorMessage)
+				{
+					ErrorReport.NotifyUserOfProblem(ex, "{0} was not able to set directory security for '{1}' to 'full control' for everyone.",
+						EntryAssembly.ProductName, fullDirectoryPath);
+				}
+			}
+
+			return returnVal;
 		}
 	}
 }

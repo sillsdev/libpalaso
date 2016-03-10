@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using L10NSharp;
 using SIL.Extensions;
 using TagLib;
+using TagLib.IFD;
 using TagLib.Image;
 using TagLib.Xmp;
 using File = System.IO.File;
@@ -59,16 +60,21 @@ namespace SIL.Windows.Forms.ClearShare
 		}
 
 		/// <summary>
+		/// If the MetaData was loaded from a file, this stores all the other metadata from that file,
+		/// which will typically be useful to write to a file derived from it.
+		/// </summary>
+		TagLib.Image.File _originalTaglibMetadata;
+
+		/// <summary>
 		/// NB: this is used in 2 places; one is loading from the image we are linked to, the other from a sample image we are copying metadata from
 		/// </summary>
 		/// <param name="path"></param>
 		/// <param name="destinationMetadata"></param>
 		private static void LoadProperties(string path, Metadata destinationMetadata)
 		{
-			TagLib.Image.File file;
 			try
 			{
-				file = TagLib.File.Create(path) as TagLib.Image.File;
+				destinationMetadata._originalTaglibMetadata = TagLib.File.Create(path) as TagLib.Image.File;
 			}
 			catch (TagLib.UnsupportedFormatException)
 			{
@@ -78,7 +84,7 @@ namespace SIL.Windows.Forms.ClearShare
 				// even in DEBUG mode, because else a lot of simple image tests fail
 				return;
 			}
-			LoadProperties(file.ImageTag, destinationMetadata);
+			LoadProperties(destinationMetadata._originalTaglibMetadata.ImageTag, destinationMetadata);
 		}
 
 		/// <summary>
@@ -361,7 +367,30 @@ namespace SIL.Windows.Forms.ClearShare
 			return file != null && !file.GetType().FullName.Contains("NoMetadata");
 		}
 
-		public void Write(string path)
+		/// <summary>
+		/// Set standard orientation on any metadata saved from the original image (typically because we hard-rotated the image)
+		/// </summary>
+		public void NormalizeOrientation()
+		{
+			if (_originalTaglibMetadata == null)
+				return;
+			var ifdTag = _originalTaglibMetadata.GetTag(TagTypes.TiffIFD) as IFDTag;
+			if (ifdTag != null)
+				ifdTag.Orientation = ImageOrientation.TopLeft;
+		}
+
+		/// <summary>
+		/// Write the metadata to the specified image file. By default, if this MetaData was made from a file,
+		/// any other original metadata from that file is copied to the new one. This can include all kinds
+		/// of details like where and when a photo was taken, image size, and so forth, so it should not be
+		/// done except for copies of the image; for example, not when applying the same ClearShare settings
+		/// to a group of images. Thought should also be given to copying to a modified version of the image;
+		/// for example, some of the metadata may be incorrect if the image being saved has a different
+		/// size or format from the original file from which the metadata was loaded.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="copyAllMetaDataFromOriginal"></param>
+		public void Write(string path, bool copyAllMetaDataFromOriginal = true)
 		{
 			// do not attempt to add metadata to a file type that does not support it.
 			if (!FileFormatSupportsMetadata(path))
@@ -374,10 +403,26 @@ namespace SIL.Windows.Forms.ClearShare
 			// If it is, we want this tag to exist, since otherwise tools like exiftool (and hence old versions
 			// of this library and its clients) won't see our copyright notice and creator, at least.
 			file.GetTag(TagTypes.Png, true);
+			// If we know where the image came from, copy as much metadata as we can to the new image.
+			if (copyAllMetaDataFromOriginal && _originalTaglibMetadata != null)
+			{
+				file.CopyFrom(_originalTaglibMetadata);
+			}
 			SaveInImageTag(file.ImageTag);
 			file.Save();
 			//as of right now, we are clean with respect to what is on disk, no need to save.
 			HasChanges = false;
+		}
+
+		/// <summary>
+		/// Write just the ClearShare License information to the specified image. This is appropriate
+		/// when e.g. duplicating license info to a collection of images (things like the place and time
+		/// where a photo was taken should not be copied to all of them).
+		/// </summary>
+		/// <param name="path"></param>
+		public void WriteIntellectualPropertyOnly(string path)
+		{
+			Write(path, false);
 		}
 
 		public void SetupReasonableLicenseDefaultBeforeEditing()

@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Windows.Forms;
+using SIL.WritingSystems;
 
 namespace SIL.Windows.Forms.TestApp
 {
@@ -14,6 +15,7 @@ namespace SIL.Windows.Forms.TestApp
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
+			Sldr.Initialize();
 
 			if(args.Length>0) //for testing commandlinerunner
 			{
@@ -27,6 +29,7 @@ namespace SIL.Windows.Forms.TestApp
 
 			Application.Run(new TestAppForm());
 
+			Sldr.Cleanup();
 	   }
 
 

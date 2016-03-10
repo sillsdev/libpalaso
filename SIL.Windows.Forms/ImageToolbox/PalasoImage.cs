@@ -216,9 +216,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		/// If you edit the metadata, call this. If it happens to have an actual file associated, it will save it.
 		/// If not (e.g. the image came from a scanner), it won't do anything.
 		/// 
-		/// Warning. Don't use this on original books. See https://jira.sil.org/browse/BL-1001. Bloom uses it to 
-		/// update its own copies of books, when the user edits the metadata without opening the libpalaso
-		/// image toolbox.
+		/// Warning. Don't use this on original images. See https://jira.sil.org/browse/BL-1001.
 		/// </summary>
 		public void SaveUpdatedMetadataIfItMakesSense()
 		{
@@ -288,7 +286,52 @@ namespace SIL.Windows.Forms.ImageToolbox
 				Metadata = Metadata.FromFile(path),
 				_tempFilePath = tempPath
 			};
+			NormalizeImageOrientation(i);
 			return i;
+		}
+
+		/// <summary>
+		/// If the image contains metadata indicating that it is mirrored or rotated,
+		/// convert it to normal orientation (and remove the metadata).
+		/// </summary>
+		/// <param name="i"></param>
+		private static void NormalizeImageOrientation(PalasoImage i)
+		{
+			var img = i.Image;
+			if (Array.IndexOf(img.PropertyIdList, 274) > -1)
+			{
+				var orientation = (int)img.GetPropertyItem(274).Value[0];
+				switch (orientation)
+				{
+					case 1:
+						// No rotation required.
+						break;
+					case 2:
+						img.RotateFlip(RotateFlipType.RotateNoneFlipX);
+						break;
+					case 3:
+						img.RotateFlip(RotateFlipType.Rotate180FlipNone);
+						break;
+					case 4:
+						img.RotateFlip(RotateFlipType.Rotate180FlipX);
+						break;
+					case 5:
+						img.RotateFlip(RotateFlipType.Rotate90FlipX);
+						break;
+					case 6:
+						img.RotateFlip(RotateFlipType.Rotate90FlipNone);
+						break;
+					case 7:
+						img.RotateFlip(RotateFlipType.Rotate270FlipX);
+						break;
+					case 8:
+						img.RotateFlip(RotateFlipType.Rotate270FlipNone);
+						break;
+				}
+				// This EXIF data is now invalid and should be removed.
+				img.RemovePropertyItem(274);
+			}
+			i.Metadata.NormalizeOrientation(); // remove it from metadata too.
 		}
 
 		/// <summary>

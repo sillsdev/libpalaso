@@ -575,5 +575,75 @@ namespace SIL.Media.Naudio
 			Stop();
 			return false;
 		}
+
+		/// <summary>
+		/// Given a wav file, produce a different wav file with the given start and stop times
+		/// </summary>
+		/// <remarks>This is in this file because ideally it should be part of the recorder...
+		/// the use case at the moment is trimming off the last 200ms or so in order to remove
+		/// the sound of the click that ends the recording. That "amount to trim off the end"
+		/// would be a natural parameter
+		/// to add to the recording, perhaps under user-settings control. But doing that is
+		/// beyond the time I have to give to this now, so I'm at least positioning this code
+		/// in this library rather than in my app, as a first step. I call it when the AudioRecorder
+		/// raises the Stopped event.</remarks>
+		/// <param name="inPath"></param>
+		/// <param name="outPath"></param>
+		/// <param name="cutFromStart"></param>
+		/// <param name="cutFromEnd"></param>
+		/// <param name="minimumDesiredDuration">The start and end cuts will be reduced if the result would be less than this. Start has priority.</param>
+		public static void TrimWavFile(string inPath, string outPath, TimeSpan cutFromStart, TimeSpan cutFromEnd, TimeSpan minimumDesiredDuration)
+		{
+			using (var reader = new WaveFileReader(inPath))
+			{
+				long totalMilliseconds = 1000*reader.Length/reader.WaveFormat.AverageBytesPerSecond;
+
+				//we  can't trim more than we have, and more than the stated minimum size
+				var cutFromStartMilliseconds = (long)Math.Min(totalMilliseconds - minimumDesiredDuration.TotalMilliseconds, cutFromStart.TotalMilliseconds);
+				cutFromStartMilliseconds = (long) Math.Max(0, cutFromStartMilliseconds); // has to be 0 or positive
+
+				totalMilliseconds -= cutFromStartMilliseconds;
+				var cutFromEndMilliseconds = (long)Math.Min(totalMilliseconds - minimumDesiredDuration.TotalMilliseconds, cutFromEnd.TotalMilliseconds);
+				cutFromEndMilliseconds = (long)Math.Max(0, cutFromEndMilliseconds); // has to be 0 or positive
+
+				//from http://stackoverflow.com/a/6488629/723299
+				using (var writer = new WaveFileWriter(outPath, reader.WaveFormat))
+				{
+					var bytesPerMillisecond = reader.WaveFormat.AverageBytesPerSecond / 1000;
+					var startPos = cutFromStartMilliseconds * bytesPerMillisecond;
+					startPos = startPos - startPos % reader.WaveFormat.BlockAlign;
+
+					var endBytes = cutFromEndMilliseconds * bytesPerMillisecond;
+					endBytes = endBytes - endBytes % reader.WaveFormat.BlockAlign;
+					var endPos = reader.Length - endBytes;
+					TrimWavFileInternal(reader, writer, startPos, endPos);
+				}
+			}
+		}
+
+		private static void TrimWavFileInternal(WaveFileReader reader, WaveFileWriter writer, long startPos, long endPos)
+		{
+			//from http://stackoverflow.com/a/6488629/723299, added the break if we aren't getting any more data
+			reader.Position = startPos;
+			var buffer = new byte[1024];
+			while (reader.Position < endPos)
+			{
+				var bytesRequired = (int)(endPos - reader.Position);
+				if (bytesRequired > 0)
+				{
+					var bytesToRead = Math.Min(bytesRequired, buffer.Length);
+					var bytesRead = reader.Read(buffer, 0, bytesToRead);
+					if (bytesRead > 0)
+					{
+						writer.Write(buffer,0, bytesRead);
+					}
+					else
+					{
+						//assumption here is that we tried to trim more than the whole file has
+						break; 
+					}
+				}
+			}
+		}
 	}
 }

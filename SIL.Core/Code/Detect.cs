@@ -13,7 +13,7 @@ namespace SIL.Code
 
 	public class ReentryDetecter : IDisposable
 	{
-		private static List<string> _currentlyInScope = new List<string>();
+		private static HashSet<string> _currentlyInScope = new HashSet<string>();
 		private readonly string _name;
 		private bool _didReenter;
 

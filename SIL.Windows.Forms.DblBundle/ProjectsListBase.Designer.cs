@@ -37,9 +37,9 @@ namespace SIL.Windows.Forms.DblBundle
 		private void InitializeComponent()
 		{
 			this.m_list = new System.Windows.Forms.DataGridView();
+			this.colProjectPathOrId = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.colLanguage = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.colRecordingProjectName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.colProjectPathOrId = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			((System.ComponentModel.ISupportInitialize)(this.m_list)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -58,7 +58,7 @@ namespace SIL.Windows.Forms.DblBundle
 			this.m_list.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this.m_list.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.colProjectPathOrId,
-			this.colLanguage,
+            this.colLanguage,
             this.colRecordingProjectName});
 			this.m_list.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.m_list.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(225)))), ((int)(((byte)(225)))), ((int)(((byte)(225)))));
@@ -72,9 +72,18 @@ namespace SIL.Windows.Forms.DblBundle
 			this.m_list.ShowEditingIcon = false;
 			this.m_list.Size = new System.Drawing.Size(368, 147);
 			this.m_list.TabIndex = 0;
-			this.m_list.DoubleClick += new System.EventHandler(this.HandleDoubleClick);
+			this.m_list.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.HandleCellDoubleClick);
+			this.m_list.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.HandleListCellMouseDown);
+			this.m_list.ColumnDisplayIndexChanged += new System.Windows.Forms.DataGridViewColumnEventHandler(this.HandleColumnDisplayIndexChanged);
+			this.m_list.ColumnWidthChanged += new System.Windows.Forms.DataGridViewColumnEventHandler(this.HandleColumnWidthChanged);
 			this.m_list.Sorted += new System.EventHandler(this.HandleProjectListSorted);
-			this.m_list.CellMouseDown += HandleListCellMouseDown;
+			// 
+			// colProjectPathOrId
+			// 
+			this.colProjectPathOrId.HeaderText = "ProjectPathOrId";
+			this.colProjectPathOrId.Name = "colProjectPathOrId";
+			this.colProjectPathOrId.ReadOnly = true;
+			this.colProjectPathOrId.Visible = false;
 			// 
 			// colLanguage
 			// 
@@ -93,13 +102,6 @@ namespace SIL.Windows.Forms.DblBundle
 			this.colRecordingProjectName.Name = "colRecordingProjectName";
 			this.colRecordingProjectName.ReadOnly = true;
 			this.colRecordingProjectName.Width = 115;
-			// 
-			// colProjectPath
-			// 
-			this.colProjectPathOrId.HeaderText = "ProjectPathOrId";
-			this.colProjectPathOrId.Name = "colProjectPathOrId";
-			this.colProjectPathOrId.ReadOnly = true;
-			this.colProjectPathOrId.Visible = false;
 			// 
 			// ProjectsListBase
 			// 

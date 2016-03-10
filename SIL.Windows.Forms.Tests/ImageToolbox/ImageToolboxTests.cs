@@ -23,7 +23,10 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 				if (DialogResult.OK == dlg.ShowDialog())
 				{
 					// File name ending in .tmp will confuse TagLib#...doesn't know what kind of metadata to write.
-					string path  = Path.ChangeExtension(Path.GetTempFileName(), ".png");
+					var ext = ".png";
+					if (Path.GetExtension(dlg.ImageInfo.OriginalFilePath) == ".jpg")
+						ext = ".jpg";
+					string path  = Path.ChangeExtension(Path.GetTempFileName(), ext);
 					dlg.ImageInfo.Save(path);
 					Process.Start("explorer.exe", "/select, \"" + path + "\"");
 				}

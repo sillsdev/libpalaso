@@ -72,14 +72,16 @@ namespace SIL.ObjectModel
 
 		protected virtual void OnPropertyChanging(PropertyChangingEventArgs e)
 		{
-			if (PropertyChanging != null)
-				PropertyChanging(this, e);
+			PropertyChangingEventHandler handler = PropertyChanging;
+			if (handler != null)
+				handler(this, e);
 		}
 
 		protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)
 		{
-			if (PropertyChanged != null)
-				PropertyChanged(this, e);
+			PropertyChangedEventHandler handler = PropertyChanged;
+			if (handler != null)
+				handler(this, e);
 		}
 
 		/// <summary>
