@@ -127,8 +127,9 @@ namespace Palaso.UsbDrive.Linux
 				.Where(obj => (obj.Value["org.freedesktop.UDisks2.Filesystem"]["MountPoints"] as byte[][]).Length > 0)
 				.Where(obj =>
 				{
-					ObjectPath drive = (ObjectPath)obj.Value["org.freedesktop.UDisks2.Block"]["Drive"];
-					return (bool)managedObjects[drive]["org.freedesktop.UDisks2.Drive"]["Removable"] &&
+					var drive = (ObjectPath)obj.Value["org.freedesktop.UDisks2.Block"]["Drive"];
+					return managedObjects.ContainsKey(drive) &&
+						(bool)managedObjects[drive]["org.freedesktop.UDisks2.Drive"]["Removable"] &&
 						managedObjects[drive]["org.freedesktop.UDisks2.Drive"]["ConnectionBus"] as string == "usb";
 				});
 
