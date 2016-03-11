@@ -1,11 +1,17 @@
 ﻿using System.IO;
+using SIL.Reporting;
 
 namespace SIL.IO
 {
+	/// <summary>
+	/// Provides an easy way to write to a file and then, if there are no problems, safely replace
+	/// the existing copy with the new one as atomically as we can, moving the previous version
+	/// to a ".bak" copy.
+	/// </summary>
 	public class TempFileForSafeWriting
 	{
 		private readonly string _realFilePath;
-		private string _tempPath;
+		private readonly string _tempPath;
 
 		public TempFileForSafeWriting(string realFilePath)
 		{
@@ -18,6 +24,8 @@ namespace SIL.IO
 			get { return _tempPath; }
 		}
 
+		public bool SimulateVolumeThatCannotHandleFileReplace;
+
 		public void WriteWasSuccessful()
 		{
 			//get it onto the same volume for sure
@@ -26,14 +34,55 @@ namespace SIL.IO
 			{
 				File.Delete(pending);
 			}
-			File.Move(_tempPath, pending);//NB: Replace() is tempting but failes across volumes
+			File.Move(_tempPath, pending);//NB: Replace() is tempting but fails across volumes
 			if (File.Exists(_realFilePath))
 			{
-				File.Replace(pending, _realFilePath, _realFilePath + ".bak");
+				SafeReplace(pending, _realFilePath, _realFilePath + ".bak");
 			}
 			else
 			{
 				File.Move(pending, _realFilePath);
+			}
+		}
+
+		private void SafeReplace(string sourceFilePath, string destinationFilePath, string backupFilePath)
+		{
+			try
+			{
+				if(SimulateVolumeThatCannotHandleFileReplace)
+				{
+					throw new IOException("dummy");
+				}
+
+				if(File.Exists(destinationFilePath))
+				{
+					//this one *might* be atomic, though no guarantees, apparently
+					File.Replace(sourceFilePath, destinationFilePath, backupFilePath);
+				}
+				else // I think it's confusing to find empty ".bak" files, we don't mention the bak file if the original is missing
+				{
+					// "Pass null to the destinationBackupFileName parameter if you do not want to create a backup of the file being replaced."
+					File.Replace(sourceFilePath, destinationFilePath,null);
+				}
+			}
+			catch(IOException error)
+			{
+				Logger.WriteMinorEvent("TempFileForSafeWriting got "+error.Message+"  Will use fall back method.");
+
+				// This one for where on JAARS network-mapped volumes, the File.Replace fails
+				// See https://silbloom.myjetbrains.com/youtrack/issue/BL-3222 
+
+				if(File.Exists(destinationFilePath))
+				{
+					if (File.Exists(backupFilePath))
+					{
+						File.Delete(backupFilePath);
+					}
+
+					File.Move(destinationFilePath, backupFilePath);
+					File.Delete(destinationFilePath);
+				}
+				File.Move(sourceFilePath, destinationFilePath);
 			}
 		}
 	}
