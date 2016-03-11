@@ -239,6 +239,7 @@
     <Compile Include="IO\FileLocatorTests.cs" />
     <Compile Include="IO\FileLock\SimpleFileLockTests.cs" />
     <Compile Include="IO\FileUtilsTests.cs" />
+    <Compile Include="IO\TempFileForSafeWritingTests.cs" />
     <Compile Include="IO\TempFileTests.cs" />
     <Compile Include="Migration\DefaultVersionTests.cs" />
     <Compile Include="Migration\FileMigratorTests.cs" />
