@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using SIL.Reporting;
 
 namespace SIL.IO
@@ -65,7 +66,8 @@ namespace SIL.IO
 					File.Replace(sourceFilePath, destinationFilePath,null);
 				}
 			}
-			catch(IOException error)
+			//NB: UnauthorizedAccessException, which we get in BL-322, is not a subclass of IOException
+			catch (Exception error)
 			{
 				Logger.WriteMinorEvent("TempFileForSafeWriting got "+error.Message+"  Will use fall back method.");
 
