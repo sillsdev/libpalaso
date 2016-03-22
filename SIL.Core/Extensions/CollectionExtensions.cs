@@ -184,6 +184,44 @@ namespace SIL.Extensions
 			return set.SetEquals(second);
 		}
 
+		public static int SequenceCompare<T>(this IEnumerable<T> x, IEnumerable<T> y)
+		{
+			return SequenceCompare(x, y, Comparer<T>.Default);
+		}
+
+		public static int SequenceCompare<T>(this IEnumerable<T> x, IEnumerable<T> y, IComparer<T> comparer)
+		{
+			int result = 0;
+			using (IEnumerator<T> iteratorX = x.GetEnumerator())
+			using (IEnumerator<T> iteratorY = y.GetEnumerator())
+			{
+				bool hasValueX = iteratorX.MoveNext();
+				bool hasValueY = iteratorY.MoveNext();
+				while (hasValueX && hasValueY)
+				{
+					int compare = comparer.Compare(iteratorX.Current, iteratorY.Current);
+					if (compare != 0)
+					{
+						result = compare;
+						break;
+					}
+
+					hasValueX = iteratorX.MoveNext();
+					hasValueY = iteratorY.MoveNext();
+				}
+
+				if (result == 0)
+				{
+					if (hasValueX && !hasValueY)
+						result = 1;
+					else if (!hasValueX && hasValueY)
+						result = -1;
+				}
+			}
+
+			return result;
+		}
+
 		#endregion
 
 		#region IList
@@ -316,6 +354,26 @@ namespace SIL.Extensions
 				dictionary.Add(key, target);
 			}
 			return target;
+		}
+
+		public static void UpdateValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, Func<TValue> defaultValueSelector, Func<TValue, TValue> valueSelector)
+		{
+			TValue value;
+			if (!dictionary.TryGetValue(key, out value))
+				value = defaultValueSelector();
+
+			dictionary[key] = valueSelector(value);
+		}
+
+		public static TValue GetOrCreate<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, Func<TValue> defaultValueSelector)
+		{
+			TValue value;
+			if (!dictionary.TryGetValue(key, out value))
+			{
+				value = defaultValueSelector();
+				dictionary[key] = value;
+			}
+			return value;
 		}
 
 		public static ReadOnlyDictionary<TKey, TValue> ToReadOnlyDictionary<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)

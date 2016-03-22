@@ -283,6 +283,7 @@
     <Compile Include="EntryAssembly.cs" />
     <Compile Include="Extensions\ByteArrayExtensions.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
+    <Compile Include="Extensions\ComparerExtensions.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\ProcessExtensions.cs" />
@@ -325,6 +326,8 @@
     <Compile Include="Network\HttpUtilityFromMono.cs" />
     <Compile Include="Network\ProxyCredentialSettings.Designer.cs" />
     <Compile Include="Network\RobustNetworkOperation.cs" />
+    <Compile Include="ObjectModel\AnonymousComparer.cs" />
+    <Compile Include="ObjectModel\AnonymousEqualityComparer.cs" />
     <Compile Include="ObjectModel\BulkObservableList.cs" />
     <Compile Include="ObjectModel\DisposableBase.cs" />
     <Compile Include="ObjectModel\Freezable.cs" />
@@ -347,10 +350,13 @@
     <Compile Include="ObjectModel\IValueEquatable.cs" />
     <Compile Include="ObjectModel\KeyedBulkObservableList.cs" />
     <Compile Include="ObjectModel\KeyedList.cs" />
+    <Compile Include="ObjectModel\NullableValue.cs" />
     <Compile Include="ObjectModel\ObservableDictionary.cs" />
     <Compile Include="ObjectModel\ObservableHashSet.cs" />
     <Compile Include="ObjectModel\ObservableList.cs" />
     <Compile Include="ObjectModel\ObservableObject.cs" />
+    <Compile Include="ObjectModel\ProjectionComparer.cs" />
+    <Compile Include="ObjectModel\ProjectionEqualityComparer.cs" />
     <Compile Include="ObjectModel\ReadOnlyCollection.cs" />
     <Compile Include="ObjectModel\ReadOnlyDictionary.cs" />
     <Compile Include="ObjectModel\ReadOnlyKeyedCollection.cs" />
@@ -359,7 +365,14 @@
     <Compile Include="ObjectModel\ReadOnlyObservableList.cs" />
     <Compile Include="ObjectModel\ReadOnlySet.cs" />
     <Compile Include="CoreSetup.cs" />
+    <Compile Include="ObjectModel\ReferenceEqualityComparer.cs" />
+    <Compile Include="ObjectModel\ReverseComparer.cs" />
+    <Compile Include="ObjectModel\SequenceComparer.cs" />
+    <Compile Include="ObjectModel\SequenceEqualityComparer.cs" />
     <Compile Include="ObjectModel\SortableBindingList.cs" />
+    <Compile Include="ObjectModel\StructuralEqualityComparer.cs" />
+    <Compile Include="ObjectModel\UnorderedTuple.cs" />
+    <Compile Include="ObjectModel\WrapperEqualityComparer.cs" />
     <Compile Include="PlatformUtilities\NativeException.cs" />
     <Compile Include="Progress\Commands\AsyncCommand.cs" />
     <Compile Include="Progress\BackgroundWorkerState.cs" />
