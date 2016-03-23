@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 
 namespace SIL.ObjectModel
 {
@@ -39,6 +40,16 @@ namespace SIL.ObjectModel
 			if (_hasValue)
 				return _value.ToString();
 			return "null";
+		}
+
+		public override bool Equals(object obj)
+		{
+			return ((IStructuralEquatable) this).Equals(obj, EqualityComparer<object>.Default);
+		}
+
+		public override int GetHashCode()
+		{
+			return ((IStructuralEquatable) this).GetHashCode(EqualityComparer<object>.Default);
 		}
 
 		bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
