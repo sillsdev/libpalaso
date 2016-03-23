@@ -179,9 +179,8 @@ namespace SIL.ObjectModel
 			if (other == null)
 				return false;
 			var tuple = other as UnorderedTuple<T1, T2, T3>;
-			return tuple != null && ((comparer.Equals(_item1, tuple._item1) && comparer.Equals(_item2, tuple._item2) && comparer.Equals(_item3, tuple._item3))
-				|| (comparer.Equals(_item1, tuple._item2) && comparer.Equals(_item2, tuple._item1) && comparer.Equals(_item3, tuple._item3))
-				|| (comparer.Equals(_item1, tuple._item1) && comparer.Equals(_item2, tuple._item3) && comparer.Equals(_item3, tuple._item2)));
+			var wrapper = new WrapperEqualityComparer<object>(comparer);
+			return tuple != null && new HashSet<object>(wrapper) {_item1, _item2, _item3}.SetEquals(new HashSet<object>(wrapper) {tuple._item1, tuple._item2, tuple._item3});
 		}
 
 		int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)

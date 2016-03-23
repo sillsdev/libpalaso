@@ -43,7 +43,7 @@ namespace SIL.ObjectModel
 
 		bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
 		{
-			if (other == null || !(other is NullableValue<T>))
+			if (!(other is NullableValue<T>))
 				return false;
 
 			var otherVal = (NullableValue<T>) other;
