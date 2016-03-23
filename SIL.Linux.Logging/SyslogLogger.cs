@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text;
+using Mono.Unix.Native;
 using SIL.Reporting;
 
 namespace SIL.Linux.Logging
@@ -78,17 +80,6 @@ namespace SIL.Linux.Logging
 		#region Interop functions (C# calls)
 
 		/// <summary>
-		/// Combine a SyslogFacility and SyslogPriority value into an int suitable for passing to libc_syslog()'s first parameter.
-		/// </summary>
-		/// <param name="facility">SyslogFacility value to combine (should almost always be SyslogFacility.User)</param>
-		/// <param name="priority">SyslogPriority value</param>
-		/// <returns></returns>
-		public static int CombineFacilityAndPriority(SyslogFacility facility, SyslogPriority priority)
-		{
-			return (int) facility | (int) priority;
-		}
-
-		/// <summary>
 		/// Open a connection to /dev/log. IMPORTANT: You must keep the IntPtr handle returned by this function,
 		/// and dispose of it by calling Closelog(), otherwise a memory leak or segfault could result.
 		/// </summary>
@@ -99,8 +90,8 @@ namespace SIL.Linux.Logging
 		{
 			if (String.IsNullOrEmpty(ident))
 				ident = AppName;
-			IntPtr marshalledAppName = MarshallingHelper.MarshalStringToUtf8WithNullTerminator(ident);
-			libc_openlog(marshalledAppName, (int) option, (int) Facility);
+			IntPtr marshalledAppName = MarshalStringToUtf8WithNullTerminator(ident);
+			Syscall.openlog(marshalledAppName, (Mono.Unix.Native.SyslogOptions)option, (Mono.Unix.Native.SyslogFacility)Facility);
 			return marshalledAppName;
 		}
 
@@ -116,9 +107,7 @@ namespace SIL.Linux.Logging
 		/// <param name="message">The C# string to be logged</param>
 		private void Syslog(SyslogPriority priority, string message)
 		{
-			int facilityPriority = CombineFacilityAndPriority(Facility, priority);
-			byte[] encodedMessage = MarshallingHelper.GetUtf8BytesWithNullTerminator(message);
-			libc_syslog(facilityPriority, "%s", encodedMessage);
+			Syscall.syslog((Mono.Unix.Native.SyslogFacility)Facility, (Mono.Unix.Native.SyslogLevel)priority, message);
 		}
 
 		/// <summary>
@@ -127,8 +116,8 @@ namespace SIL.Linux.Logging
 		/// <param name="marshalledAppName"></param>
 		private void Closelog(ref IntPtr marshalledAppName)
 		{
-			MarshallingHelper.SafelyDisposeOfMarshalledHandle(ref marshalledAppName);
-			libc_closelog();
+			SafelyDisposeOfMarshalledHandle(ref marshalledAppName);
+			Syscall.closelog();
 		}
 
 		#endregion
@@ -141,8 +130,14 @@ namespace SIL.Linux.Logging
 		public void Log(SyslogPriority priority, string message)
 		{
 			IntPtr handle = Openlog();
-			Syslog(priority, message);
-			Closelog(ref handle);
+			try
+			{
+				Syslog(priority, message);
+			}
+			finally
+			{
+				Closelog(ref handle);
+			}
 		}
 
 		/// <summary>
@@ -154,9 +149,15 @@ namespace SIL.Linux.Logging
 		public void LogMany(SyslogPriority priority, IEnumerable<string> messages)
 		{
 			IntPtr handle = Openlog();
-			foreach (string message in messages)
-				Syslog(priority, message);
-			Closelog(ref handle);
+			try
+			{ 
+				foreach (string message in messages)
+					Syslog(priority, message);
+			}
+			finally
+			{
+				Closelog(ref handle);
+			}
 		}
 
 		#region Convenience functions
@@ -242,5 +243,48 @@ namespace SIL.Linux.Logging
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Marshal a string to UTF-8, with a null terminating byte (a '\0' character)
+		/// </summary>
+		/// <param name="s">C# string to marshal to a UTF-8 encoded</param>
+		/// <returns>IntPtr handle to the null-terminated UTF-8 string</returns>
+		private static IntPtr MarshalStringToUtf8WithNullTerminator(string s)
+		{
+			// Can't use Marshal.StringToHGlobalAnsi as it's hardcoded to use the current codepage (which will mangle UTF-8)
+			byte[] encodedBytes = GetUtf8BytesWithNullTerminator(s);
+			IntPtr handle = Marshal.AllocHGlobal(encodedBytes.Length);
+			Marshal.Copy(encodedBytes, 0, handle, encodedBytes.Length);
+			return handle;
+		}
+
+		/// <summary>
+		/// Free a marshalled handle if (and only if) it hasn't been freed before.
+		/// Enforces the "only free a handle once" by setting it to IntPtr.Zero after
+		/// freeing it, and requiring callers to pass the handle as a ref parameter so
+		/// that they know it's going to be set to IntPtr.Zero.
+		/// </summary>
+		/// <param name="marshalledHandle"></param>
+		private static void SafelyDisposeOfMarshalledHandle(ref IntPtr marshalledHandle)
+		{
+			if (marshalledHandle != IntPtr.Zero)
+				Marshal.FreeHGlobal(marshalledHandle);
+			marshalledHandle = IntPtr.Zero;
+		}
+
+		/// <summary>
+		/// Convert a string to UTF-8 with a null terminating byte (a '\0' character) and no BOM.
+		/// </summary>
+		/// <param name="s">The string to encode</param>
+		/// <returns>Byte array containing the UTF-8 encoding of s, with a \0 terminator</returns>
+		private static byte[] GetUtf8BytesWithNullTerminator(string s)
+		{
+			UTF8Encoding utf8 = new UTF8Encoding(false);
+			int byteCount = utf8.GetByteCount(s) + 1; // Need 1 extra byte for the '\0' terminator
+			byte[] encodedBytes = new byte[byteCount];
+			encodedBytes[byteCount - 1] = 0; // Not actually needed since C# zero-fills allocated memory, but be safe anyway
+			utf8.GetBytes(s, 0, s.Length, encodedBytes, 0);
+			return encodedBytes;
+		}
 	}
 }

@@ -184,8 +184,10 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'DebugMonoStrongName' Or '$(Configuration)' == 'ReleaseMono' Or '$(Configuration)' == 'ReleaseMonoStrongName'">
+    <Reference Include="Mono.Posix" />
+  </ItemGroup>
   <ItemGroup>
-    <Compile Include="MarshallingHelper.cs" />
     <Compile Include="SyslogExceptionHandler.cs" />
     <Compile Include="SyslogFacility.cs" />
     <Compile Include="SyslogLogger.cs" />
