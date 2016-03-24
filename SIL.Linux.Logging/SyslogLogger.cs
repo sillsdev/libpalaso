@@ -26,14 +26,15 @@ namespace SIL.Linux.Logging
 		/// Syslog options (e.g., LOG_PID). Exposed so that callers can, if desired, log to console and/or stderr
 		/// in addition to logging to syslog, by setting the appropriate flags.
 		/// </summary>
-		/// <value>The options.</value>
 		public SyslogOption Options { get; set; }
 
 		/// <summary>
-		/// Build new SyslogLogger with specified application name and/or facility. (Both are optional parameters).
+		/// Build new SyslogLogger with specified application name, facility, and/or options. (All are optional parameters).
 		/// </summary>
 		/// <param name="appName">Application name to use in syslog (omit to use default value, UsageReporter.AppNameToUseInReporting)</param>
 		/// <param name="facility">Syslog facility (can usually omit to use default value, SyslogFacility.User)</param>
+		/// <param name="options">Syslog option flags (can usually omit to use default value, SyslogOption.LogPid). If
+		/// setting this to values other than the default, including the LogPid flag is HIGHLY recommended.</param>
 		public SyslogLogger(string appName = null, SyslogFacility facility = SyslogFacility.User, SyslogOption options = SyslogOption.LogPid)
 		{
 			AppName = String.IsNullOrEmpty(appName) ? GetDefaultAppName() : appName;
