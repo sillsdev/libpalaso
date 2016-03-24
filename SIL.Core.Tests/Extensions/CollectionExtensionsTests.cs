@@ -44,5 +44,37 @@ namespace SIL.Tests.Extensions
 				return string.Compare(x, y, StringComparison.Ordinal);
 			}
 		}
+
+		[Test]
+		public void SequenceCompare_SameItems_ReturnsZero()
+		{
+			string[] array1 = {"A", "B", "C", "D"};
+			string[] array2 = {"A", "B", "C", "D"};
+			Assert.That(array1.SequenceCompare(array2), Is.EqualTo(0));
+		}
+
+		[Test]
+		public void SequenceCompare_GreaterThan_ReturnsOne()
+		{
+			string[] array1 = {"A", "B", "C", "E"};
+			string[] array2 = {"A", "B", "C", "D"};
+			Assert.That(array1.SequenceCompare(array2), Is.EqualTo(1));
+		}
+
+		[Test]
+		public void SequenceCompare_LessThan_ReturnsNegativeOne()
+		{
+			string[] array1 = {"A", "B", "C", "D"};
+			string[] array2 = {"A", "B", "D", "D"};
+			Assert.That(array1.SequenceCompare(array2), Is.EqualTo(-1));
+		}
+
+		[Test]
+		public void SequenceCompare_CountNotEqual_ReturnsNegativeOne()
+		{
+			string[] array1 = {"A", "B", "C"};
+			string[] array2 = {"A", "B", "C", "D"};
+			Assert.That(array1.SequenceCompare(array2), Is.EqualTo(-1));
+		}
 	}
 }
