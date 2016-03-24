@@ -51,41 +51,6 @@ namespace SIL.Linux.Logging
 			return UsageReporter.AppNameToUseInReporting;
 		}
 
-		#region Interop functions (libc calls)
-
-		/// <summary>
-		/// External reference to the openlog() function from libc.
-		/// <para />
-		/// The ident parameter is a char * in the real openlog(), but here we need an IntPtr since we'll be using
-		/// a marshalled handle to unmanaged memory. It is the caller's responsibility to free the handle, but
-		/// the handle MUST NOT be freed until after libc_closelog() has been called, or a segfault may result.
-		/// </summary>
-		/// <param name="ident">Handle to marshalled string containing application name to use in syslog</param>
-		/// <param name="option">SyslogOption value, as an int (should almost always be SyslogOption.LogPid)</param>
-		/// <param name="facility">SyslogFacility value, as an int (should almost always be SyslogFacility.User)</param>
-		[DllImport("libc", EntryPoint = "openlog")]
-		private static extern void libc_openlog(IntPtr ident, int option, int facility);
-
-		/// <summary>
-		/// External reference to the syslog() function from libc.
-		/// <para />
-		/// Note that we define CharSet = CharSet.Ansi here, so that we can declare the fmt parameter
-		/// to be a C# string. It's always going to be "%s" in our invocations, so the Ansi charset won't mangle it.
-		/// </summary>
-		/// <param name="facility_priority">Use CombineFacilityAndPriority() to provide this parameter</param>
-		/// <param name="fmt">Always pass "%s" here</param>
-		/// <param name="msg">The message to log, encoded as UTF-8 with a terminating null byte (a '\0' character)</param>
-		[DllImport("libc", EntryPoint = "syslog", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-		private static extern void libc_syslog(int facility_priority, string fmt, byte[] msg);
-
-		/// <summary>
-		/// External reference to the closelog() function from libc.
-		/// </summary>
-		[DllImport("libc", EntryPoint = "closelog")]
-		private static extern void libc_closelog();
-
-		#endregion
-
 		#region Interop functions (C# calls)
 
 		/// <summary>
