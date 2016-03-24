@@ -23,14 +23,22 @@ namespace SIL.Linux.Logging
 		public SyslogFacility Facility { get; set; }
 
 		/// <summary>
+		/// Syslog options (e.g., LOG_PID). Exposed so that callers can, if desired, log to console and/or stderr
+		/// in addition to logging to syslog, by setting the appropriate flags.
+		/// </summary>
+		/// <value>The options.</value>
+		public SyslogOption Options { get; set; }
+
+		/// <summary>
 		/// Build new SyslogLogger with specified application name and/or facility. (Both are optional parameters).
 		/// </summary>
 		/// <param name="appName">Application name to use in syslog (omit to use default value, UsageReporter.AppNameToUseInReporting)</param>
 		/// <param name="facility">Syslog facility (can usually omit to use default value, SyslogFacility.User)</param>
-		public SyslogLogger(string appName = null, SyslogFacility facility = SyslogFacility.User)
+		public SyslogLogger(string appName = null, SyslogFacility facility = SyslogFacility.User, SyslogOption options = SyslogOption.LogPid)
 		{
 			AppName = String.IsNullOrEmpty(appName) ? GetDefaultAppName() : appName;
 			Facility = facility;
+			Options = options;
 		}
 
 		/// <summary>
@@ -84,14 +92,13 @@ namespace SIL.Linux.Logging
 		/// and dispose of it by calling Closelog(), otherwise a memory leak or segfault could result.
 		/// </summary>
 		/// <param name="ident">The application name to use in the syslog messages</param>
-		/// <param name="option">SyslogOption values can be set here (you'll usually just want the default, LogPid)</param>
 		/// <returns></returns>
-		private IntPtr Openlog(string ident = null, SyslogOption option = SyslogOption.LogPid)
+		private IntPtr Openlog(string ident = null)
 		{
 			if (String.IsNullOrEmpty(ident))
 				ident = AppName;
 			IntPtr marshalledAppName = MarshalStringToUtf8WithNullTerminator(ident);
-			Syscall.openlog(marshalledAppName, (Mono.Unix.Native.SyslogOptions)option, (Mono.Unix.Native.SyslogFacility)Facility);
+			Syscall.openlog(marshalledAppName, (Mono.Unix.Native.SyslogOptions)Options, (Mono.Unix.Native.SyslogFacility)Facility);
 			return marshalledAppName;
 		}
 
