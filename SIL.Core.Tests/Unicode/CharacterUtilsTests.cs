@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Globalization;
+using System.Linq;
 using NUnit.Framework;
 using SIL.Unicode;
 
@@ -7,6 +8,27 @@ namespace SIL.Tests.Unicode
 	[TestFixture]
 	class CharacterUtilsTests
 	{
+		[TestCase(UnicodeCategory.LowercaseLetter, 'a')]
+		[TestCase(UnicodeCategory.UppercaseLetter, 'A')]
+		[TestCase(UnicodeCategory.OpenPunctuation, '(')]
+		[TestCase(UnicodeCategory.ClosePunctuation, '}')]
+		public void GetAllCharactersInUnicodeCategory_CategoryShouldContainCharacter_CategoryContainsCharacter(UnicodeCategory category, char character)
+		{
+			Assert.True(CharacterUtils.GetAllCharactersInUnicodeCategory(category).Contains(character));
+		}
+
+		[TestCase(UnicodeCategory.LowercaseLetter, 'A')]
+		[TestCase(UnicodeCategory.UppercaseLetter, 'a')]
+		[TestCase(UnicodeCategory.ClosePunctuation, '(')]
+		[TestCase(UnicodeCategory.OpenPunctuation, '}')]
+		[TestCase(UnicodeCategory.OpenPunctuation, ')')]
+		[TestCase(UnicodeCategory.ClosePunctuation, '{')]
+		public void GetAllCharactersInUnicodeCategory_CategoryShouldNotContainCharacter_CategoryDoesNotContainCharacter(UnicodeCategory category, char character)
+		{
+			Assert.False(CharacterUtils.GetAllCharactersInUnicodeCategory(category).Contains(character));
+		}
+
+
 		// For completeness, this list should be kept in synch with the list and switch statement in CharacterUtils itself.
 
 		// Note... while one might think that char.GetUnicodeCategory could tell you if a character was a sentence separator, this is not the case. 
