@@ -1,14 +1,17 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace SIL.Unicode
 {
 	public static class CharacterUtils
 	{
+		private static readonly Dictionary<UnicodeCategory, IGrouping<UnicodeCategory, char>> CharInfo;
+
 		// This list MUST be kept in synch with the cases in the switch statement below.
 		// To optimize performance (switch is twice as fast as a HashSet lookup), this list
 		// is not used to implement IsSentenceFinalPunctuation.
-		private static readonly char[] s_sentenceFinalCharactersArray = { '.', '?', '!',
+		private static readonly char[] SentenceFinalCharactersArray = { '.', '?', '!',
 				'\u00A7', // SECTION SIGN
 				'\u055C', // ARMENIAN EXCLAMATION MARK
 				'\u055E', // ARMENIAN QUESTION MARK
@@ -94,9 +97,23 @@ namespace SIL.Unicode
 				//'\u111C6', // SHARADA DOUBLE DANDA
 			};
 
+		static CharacterUtils()
+		{
+			CharInfo = Enumerable.Range(0, 0x110000)
+				.Where(x => x < 0x00d800 || x > 0x00dfff)
+				.Select(x => char.ConvertFromUtf32(x)[0])
+				.GroupBy(char.GetUnicodeCategory)
+				.ToDictionary(g => g.Key);
+		}
+
+		public static IEnumerable<char> GetAllCharactersInUnicodeCategory(UnicodeCategory category)
+		{
+			return CharInfo[category];
+		}
+
 		public static char[] SentenceFinalPunctuation
 		{
-			get { return s_sentenceFinalCharactersArray.ToArray(); }
+			get { return SentenceFinalCharactersArray.ToArray(); }
 		}
 
 		public static bool IsSentenceFinalPunctuation(char c)
