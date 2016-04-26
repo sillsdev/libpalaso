@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Ionic.Zip;
 using NUnit.Framework;
 using SIL.DblBundle.Tests.Properties;
@@ -88,7 +89,20 @@ namespace SIL.DblBundle.Tests.Text
 			Assert.False(m_bundleWithoutLdml.ContainsLdmlFile());
 		}
 
-		public static TempFile CreateZippedTextBundleFromResources(bool includeLdml = true)
+		[Test]
+		public void ContainsInvalidUsxPath_ThrowsApplicationException()
+		{
+			Assert.Throws<ApplicationException>(() =>
+			{
+				using (var zippedBundle = CreateZippedTextBundleFromResources(false, true))
+				{
+					// ReSharper disable once ObjectCreationAsStatement
+					new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
+				}
+			});
+		}
+
+		public static TempFile CreateZippedTextBundleFromResources(bool includeLdml = true, bool invalidUsxDirectory = false)
 		{
 			TempFile bundle = TempFile.WithExtension(DblBundleFileUtils.kDblBundleExtension);
 
@@ -114,7 +128,7 @@ namespace SIL.DblBundle.Tests.Text
 					zip.AddFile(ldmlXml.Path, string.Empty);
 				}
 				File.WriteAllBytes(matUsx.Path, Resources.MAT_usx);
-				zip.AddFile(matUsx.Path, "USX_0");
+				zip.AddFile(matUsx.Path, invalidUsxDirectory ? "USX_1" : "USX_0");
 				zip.Save(bundle.Path);
 			}
 

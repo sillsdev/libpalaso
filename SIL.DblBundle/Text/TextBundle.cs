@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using L10NSharp;
 using SIL.DblBundle.Usx;
-using SIL.IO;
 using SIL.Reporting;
 using SIL.WritingSystems;
 
@@ -31,6 +30,9 @@ namespace SIL.DblBundle.Text
 		/// <returns>True if the book exists, false otherwise</returns>
 		bool TryGetBook(string bookId, out UsxDocument book);
 
+		/// <summary>
+		/// Books which are included and have valid data and metadata
+		/// </summary>
 		IEnumerable<UsxDocument> UsxBooksToInclude { get; }
 	}
 
@@ -71,6 +73,9 @@ namespace SIL.DblBundle.Text
 		/// </summary>
 		public override string Name { get { return Metadata.Identification.Name; } }
 
+		/// <summary>
+		/// Books which are included and have valid data and metadata
+		/// </summary>
 		public IEnumerable<UsxDocument> UsxBooksToInclude
 		{
 			get
@@ -134,9 +139,24 @@ namespace SIL.DblBundle.Text
 		{
 			DblMetadataCanon defaultCanon = Metadata.Canons.FirstOrDefault(c => c.Default);
 			if (defaultCanon != null)
-				ExtractBooksInCanon(GetPathToCanon(defaultCanon.CanonId));
+			{
+				string canonDirectory = GetPathToCanon(defaultCanon.CanonId);
+				if (Directory.Exists(canonDirectory))
+					ExtractBooksInCanon(canonDirectory);
+			}
 			foreach (DblMetadataCanon canon in Metadata.Canons.Where(c => !c.Default).OrderBy(c => c.CanonId))
-				ExtractBooksInCanon(GetPathToCanon(canon.CanonId));
+			{
+				string canonDirectory = GetPathToCanon(canon.CanonId);
+				if (Directory.Exists(canonDirectory))
+					ExtractBooksInCanon(canonDirectory);
+			}
+			if (!m_books.Any())
+			{
+				throw new ApplicationException(
+					LocalizationManager.GetString("DblBundle.UnableToLoadAnyBooks",
+						"Unable to load any books. File may not be a valid Text Release Bundle or it may contain a problem:") +
+					Environment.NewLine + m_pathToZippedBundle);
+			}
 		}
 
 		private void ExtractBooksInCanon(string pathToCanon)
