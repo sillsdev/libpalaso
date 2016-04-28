@@ -255,6 +255,8 @@ namespace SIL.Windows.Forms.ImageToolbox
 				_downloadInstallerLink.Visible = true;
 				_downloadInstallerLink.BackColor = Color.White;
 			}
+			// Restore alignment (from center) for messages.  (See https://silbloom.myjetbrains.com/youtrack/issue/BL-2753.)
+			_messageLabel.TextAlign = _messageLabel.RightToLeft==RightToLeft.Yes ? HorizontalAlignment.Right : HorizontalAlignment.Left;
 			_messageLabel.Text = msg;
 		}
 
