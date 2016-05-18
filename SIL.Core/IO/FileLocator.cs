@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Microsoft.Win32;
 using SIL.Code;
 using SIL.PlatformUtilities;
@@ -309,7 +310,8 @@ namespace SIL.IO
 			if (Directory.Exists(path))
 				return path;
 
-			foreach (var directoryHoldingFiles in new[] {"", "DistFiles", "common" /*for wesay*/, "src" /*for Bloom*/})
+			var directoriesHoldingFiles = new[] {"DistFiles", "common" /*for wesay*/, "src" /*for Bloom*/};
+			foreach (var directoryHoldingFiles in directoriesHoldingFiles)
 			{
 				path = Path.Combine(FileLocator.DirectoryOfApplicationOrSolution, directoryHoldingFiles);
 				foreach (var part in partsOfTheSubPath)
@@ -323,7 +325,16 @@ namespace SIL.IO
 			if (optional && !Directory.Exists(path))
 				return null;
 
-			RequireThat.Directory(path).Exists();
+			if (!Directory.Exists(path))
+			{
+				var message = new StringBuilder("Could not find the directory ");
+				message.Append(Path.Combine(partsOfTheSubPath));
+				message.Append(". We looked in ");
+				message.Append(FileLocator.DirectoryOfApplicationOrSolution);
+				message.Append(" and in its subdirectories ");
+				message.Append(String.Join(", ", directoriesHoldingFiles));
+				throw new ArgumentException(message.ToString());
+			}
 			return path;
 		}
 		/// <summary>
