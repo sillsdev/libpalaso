@@ -32,6 +32,8 @@ namespace Palaso.BuildTasks.StampAssemblies
 			foreach (var inputAssemblyPath in InputAssemblyPaths)
 			{
 				var path = inputAssemblyPath.ItemSpec;
+
+				SafeLog("StampAssemblies: Reading {0}", path); //investigating mysterious TeamCity failure with "Illegal Characters in path"
 				var contents = File.ReadAllText(path);
 
 				SafeLog("StampAssemblies: Stamping {0}", inputAssemblyPath);
