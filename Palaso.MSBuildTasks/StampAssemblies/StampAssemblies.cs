@@ -34,6 +34,7 @@ namespace Palaso.BuildTasks.StampAssemblies
 				var path = inputAssemblyPath.ItemSpec;
 
 				SafeLog("StampAssemblies: Reading {0}", path); //investigating mysterious TeamCity failure with "Illegal Characters in path"
+				SafeLog("StampAssemblies: If you get 'Illegal Characters in path' and have a wild card in the file specification, check for paths that exceed MAX_PATH. We had this happen when we 'shrinkwrap'-ped our node dependencies. MsBuild just silently gives up when this happens.");
 				var contents = File.ReadAllText(path);
 
 				SafeLog("StampAssemblies: Stamping {0}", inputAssemblyPath);
