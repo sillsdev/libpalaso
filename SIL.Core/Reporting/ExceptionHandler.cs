@@ -82,7 +82,7 @@ namespace SIL.Reporting
 			{
 				var referencedAssemblies = topMostAssembly.GetReferencedAssemblies();
 				var silWindowsFormsInitializeAssemblyName =
-					referencedAssemblies.FirstOrDefault(a => a.Name.Contains(silWindowsFormsAssemblyName));
+					referencedAssemblies.FirstOrDefault(a => a.Name.Equals(silWindowsFormsAssemblyName));
 				if (silWindowsFormsInitializeAssemblyName != null)
 				{
 					var toInitializeAssembly = Assembly.Load(silWindowsFormsInitializeAssemblyName);
