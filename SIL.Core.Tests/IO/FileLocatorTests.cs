@@ -24,6 +24,22 @@ namespace SIL.Tests.IO
 		}
 
 		[Test]
+		public void GetDirectoryDistributedWithApplication_WhenFails_ReportsAllTried()
+		{
+			try
+			{
+				FileLocator.GetDirectoryDistributedWithApplication("LookHere","ThisWillNotExist");
+			}
+			catch (ArgumentException ex)
+			{
+				Assert.That(ex.Message, Is.StringContaining(Path.Combine("LookHere", "ThisWillNotExist") ));
+				Assert.That(ex.Message, Is.StringContaining(FileLocator.DirectoryOfApplicationOrSolution));
+				Assert.That(ex.Message, Is.StringContaining("DistFiles"));
+				Assert.That(ex.Message, Is.StringContaining("src"));
+			}
+		}
+
+		[Test]
 		public void DirectoryOfApplicationOrSolution_OnDevMachine_FindsOutputDirectory()
 		{
 			var path = FileLocator.DirectoryOfTheApplicationExecutable;
