@@ -172,6 +172,40 @@ namespace SIL.Tests.Unicode
 			Assert.AreEqual(originalFirstElement, CharacterUtils.SentenceFinalPunctuation[0]);
 		}
 
+		[TestCase("This is a short sentence.")]
+		[TestCase("This is a short sentence. ")]
+		[TestCase("This is a short sentence.\r\n")]
+		[TestCase("This is a short sentence.\n")]
+		[TestCase("This is a short sentence.' \" ")]
+		[TestCase("This is a short sentence.' \"\r\n")]
+		[TestCase("This is a short sentence.' \"\n")]
+		[TestCase("This is a short sentence.\" ")]
+		[TestCase("This is a short sentence.\"\r\n")]
+		[TestCase("This is a short sentence.\"\n")]
+		[TestCase("This is a short sentence.»\r\n")]
+		[TestCase("This is a short sentence.»\n")]
+		[Test]
+		public void EndsWithSentenceFinalPunctuation_TextEndsWithSFP_ReturnsTrue(string text)
+		{
+			var actual = CharacterUtils.EndsWithSentenceFinalPunctuation(text);
+			Assert.IsTrue(actual);
+		}
+
+		[TestCase("not a sentence")]
+		[TestCase("This is a,")]
+		[TestCase("This is a, ")]
+		[TestCase("This is a,\r\n")]
+		[TestCase("This is a short sentence.\nThis is a")]
+		[TestCase("This is a \"\n")]
+		[TestCase("This is a,»\r\n")]
+		[TestCase("This is a»\n")]
+		[Test]
+		public void EndsWithSentenceFinalPunctuation_TextDoesNotEndWithSFP_ReturnsFalse(string text)
+		{
+			var actual = CharacterUtils.EndsWithSentenceFinalPunctuation(text);
+			Assert.IsFalse(actual);
+		}
+
 		//[Test]
 		//public void SpeedTest()
 		//{

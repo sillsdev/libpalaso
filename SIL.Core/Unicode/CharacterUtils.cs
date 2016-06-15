@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace SIL.Unicode
 {
 	public static class CharacterUtils
 	{
 		private static readonly Dictionary<UnicodeCategory, IGrouping<UnicodeCategory, char>> CharInfo;
+		private static Regex _sentenceEndingRegex;
 
 		// This list MUST be kept in synch with the cases in the switch statement below.
 		// To optimize performance (switch is twice as fast as a HashSet lookup), this list
@@ -96,6 +98,15 @@ namespace SIL.Unicode
 				//'\u111C5', // SHARADA DANDA
 				//'\u111C6', // SHARADA DOUBLE DANDA
 			};
+
+		// Unambiguous Paragraph Ending Punctuation
+		// Source: http://www.unicode.org/reports/tr29
+		private static readonly char[] ParagraphEndingCharactersArray =
+		{
+			'\r',     // Carriage Return
+			'\n',     // Line Feed
+			'\u0085'  // Next Line
+		};
 
 		static CharacterUtils()
 		{
@@ -211,6 +222,33 @@ namespace SIL.Unicode
 				default:
 					return false;
 			}
+		}
+
+		public static bool EndsWithSentenceFinalPunctuation(string text)
+		{
+			if (_sentenceEndingRegex == null)
+			{
+				// One or more of the sentence ending punctuation characters is at or near the end of the string
+				var sentenceEndingChars = "[" + new string(SentenceFinalPunctuation) + "]+";
+
+				// Zero or more non-word-forming characters that can follow the sentence ending punctuation
+				// Pf => Punctuation, Final quote
+				// Pe => Punctuation, Close
+				var sentenceTrailingChars = "[\\s\'\"\\p{Pf}\\p{Pe}]*";
+
+				// Zero or more unambiguous paragraph ending characters
+				// Zl => Separator, Line
+				// Zp => Separator, Paragraph
+				var paragraphEndingChars = "[" + new string(ParagraphEndingCharactersArray.ToArray()) + "\\p{Zl}\\p{Zp}]*";
+
+				var regexPattern = sentenceEndingChars + sentenceTrailingChars + paragraphEndingChars + "$";
+
+				_sentenceEndingRegex = new Regex(regexPattern);
+			}
+
+			var match = _sentenceEndingRegex.Match(text);
+
+			return match.Success;
 		}
 	}
 }
