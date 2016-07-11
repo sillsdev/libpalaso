@@ -175,13 +175,13 @@ namespace Palaso.BuildTasks.UnitTestTasks
 			if (_testInNewThread.HasValue && !_testInNewThread.Value)
 				bldr.AppendFormat(" {0}nothread", switchChar);
 			if (!String.IsNullOrEmpty(ProjectConfiguration))
-				bldr.AppendFormat(" {0}config={1}", switchChar, ProjectConfiguration);
+				bldr.AppendFormat(" \"{0}config={1}\"", switchChar, ProjectConfiguration);
 			if (!String.IsNullOrEmpty(Fixture))
-				bldr.AppendFormat(" {0}fixture={1}", switchChar, Fixture);
+				bldr.AppendFormat(" \"{0}fixture={1}\"", switchChar, Fixture);
 			if (!String.IsNullOrEmpty(IncludeCategory))
-				bldr.AppendFormat(" {0}include={1}", switchChar, IncludeCategory);
+				bldr.AppendFormat(" \"{0}include={1}\"", switchChar, IncludeCategory);
 			if (!String.IsNullOrEmpty(ExcludeCategory))
-				bldr.AppendFormat(" {0}exclude={1}", switchChar, ExcludeCategory);
+				bldr.AppendFormat(" \"{0}exclude={1}\"", switchChar, ExcludeCategory);
 			if (!String.IsNullOrEmpty(XsltTransformFile))
 				bldr.AppendFormat(" \"{0}transform={1}\"", switchChar, XsltTransformFile);
 			if (!String.IsNullOrEmpty(OutputXmlFile))
@@ -189,9 +189,9 @@ namespace Palaso.BuildTasks.UnitTestTasks
 			if (!String.IsNullOrEmpty(ErrorOutputFile))
 				bldr.AppendFormat(" \"{0}err={1}\"", switchChar, ErrorOutputFile);
 			if (!String.IsNullOrEmpty(Framework))
-				bldr.AppendFormat(" {0}framework={1}", switchChar, Framework);
+				bldr.AppendFormat(" \"{0}framework={1}\"", switchChar, Framework);
 			if (!String.IsNullOrEmpty(Apartment))
-				bldr.AppendFormat(" {0}apartment={1}", switchChar, Apartment);
+				bldr.AppendFormat(" \"{0}apartment={1}\"", switchChar, Apartment);
 			bldr.AppendFormat(" {0}labels", switchChar);
 			return bldr.ToString();
 		}
@@ -199,13 +199,13 @@ namespace Palaso.BuildTasks.UnitTestTasks
 		private void EnsureToolPath()
 		{
 			if (!String.IsNullOrEmpty(ToolPath) &&
-				File.Exists(Path.Combine(ToolPath, "nunit-console.exe")))
+				File.Exists(Path.Combine(ToolPath, RealProgramName)))
 			{
 				return;
 			}
 			foreach (var dir in Environment.GetEnvironmentVariable("PATH").Split(Path.PathSeparator))
 			{
-				if (File.Exists(Path.Combine(dir, "nunit-console.exe")))
+				if (File.Exists(Path.Combine(dir, RealProgramName)))
 				{
 					ToolPath = dir;
 					return;
@@ -215,7 +215,7 @@ namespace Palaso.BuildTasks.UnitTestTasks
 			{
 				if (dir.StartsWith("NUnit"))
 				{
-					if (File.Exists(Path.Combine(dir, Path.Combine("bin", "nunit-console.exe"))))
+					if (File.Exists(Path.Combine(dir, Path.Combine("bin", RealProgramName))))
 					{
 						ToolPath = dir;
 						return;
@@ -238,7 +238,7 @@ namespace Palaso.BuildTasks.UnitTestTasks
 							{
 								var path = keyVer.GetValue("InstallDir").ToString();
 								if (!String.IsNullOrEmpty(path) &&
-									File.Exists(Path.Combine(path, "nunit-console.exe")))
+									File.Exists(Path.Combine(path, RealProgramName)))
 								{
 									ToolPath = path;
 									return;
