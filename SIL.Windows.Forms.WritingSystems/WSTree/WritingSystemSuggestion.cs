@@ -87,7 +87,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSTree
 		/// <summary>
 		/// these are ordered in terms of preference, so the last one is just the fallback
 		/// </summary>
-		private readonly string[] _fontsForIpa = {"arial unicode ms", "lucinda sans unicode", "doulous sil", FontFamily.GenericSansSerif.Name};
+		private readonly string[] _fontsForIpa = {"arial unicode ms", "lucinda sans unicode", "doulos sil", FontFamily.GenericSansSerif.Name};
 
 		private readonly WritingSystemDefinition _templateWritingSystemDefinition;
 
