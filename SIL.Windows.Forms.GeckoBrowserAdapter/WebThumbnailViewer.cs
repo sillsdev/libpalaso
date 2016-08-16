@@ -209,16 +209,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 				sb.AppendLine("<div class='imageWrap' id='" + htmlPath
 					+ "'><div class='imageWrapRel'><div class='imageWrapOuter'><div class='imageWrapMid'><div class='imageWrapInner'>");
 				// the data-echo attribute is part of lazy loading for very long lists (see below).
-
-				if (PlatformUtilities.Platform.IsWindows)
-				{
-					sb.AppendLine("<img class='image' src='' data-echo='file://" + htmlPath + "'>");
-				}
-				else
-				{
-					sb.AppendLine("<img class='image' src='' data-echo='file://" + new Uri(GetThumbnailFile(path)).AbsolutePath + "'>");
-				}
-				
+				sb.AppendLine("<img class='image' src='' data-echo='file://" + htmlPath + "'>");
 				sb.AppendLine("</div></div></div></div></div>");
 			}
 			sb.AppendLine("</p>");
@@ -243,19 +234,6 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 			_browser.Visible = false;
 			_browser.Navigate(_htmlFile.Path);
 			_browser.Visible = true;
-		}
-
-		//BL-907: Crashes, probably out-of-memory error
-		private string GetThumbnailFile(string fileName)
-		{
-			var tempFileName = Path.Combine(_tempDirectoryName, Path.GetRandomFileName() + ".jpg");
-
-			using (var img = ImageUtilities.GetThumbNail(fileName, ThumbNailSize, ThumbNailSize, ThumbBorderColor, ThumbBackgroundColor))
-			{
-				img.Save(tempFileName, ImageFormat.Jpeg);
-			}
-			
-			return tempFileName;
 		}
 
 		string ColorToHtmlCode(Color color)
