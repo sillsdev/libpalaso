@@ -39,6 +39,8 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 
 		protected Image _removeRowImageNormal;
 		protected Image _removeRowImageHot;
+		protected bool _alwaysShowRemoveRowIcon;
+		protected bool _skipValidationBecauseUserIsClickingDeleteButton;
 		protected bool _isDirty;
 		protected bool _paintWaterMark;
 		protected bool _showWaterMarkWhenDirty;
@@ -548,6 +550,8 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		{
 			if (Cursor == Cursors.SizeNS || Cursor == Cursors.SizeWE)
 				DoubleBuffered = false;
+			else if (IsRemoveRowColumn(e.ColumnIndex))
+				_skipValidationBecauseUserIsClickingDeleteButton = true;
 
 			base.OnCellMouseDown(e);
 		}
@@ -560,6 +564,8 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		protected override void OnCellMouseUp(DataGridViewCellMouseEventArgs e)
 		{
+			_skipValidationBecauseUserIsClickingDeleteButton = false;
+
 			if (!DoubleBuffered)
 				DoubleBuffered = true;
 
@@ -585,13 +591,13 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 				CommitEdit(DataGridViewDataErrorContexts.Commit);
 				EndEdit();
 			}
-			else if (e.RowIndex < NewRowIndex && RemoveRowAction != null &&
-				GetColumnName(e.ColumnIndex) == "removerow")
+			else if (e.RowIndex < NewRowIndex && RemoveRowAction != null && IsRemoveRowColumn(e.ColumnIndex))
 			{
 				RemoveRowAction(e.RowIndex);
 				if (VirtualMode)
 					RowCount--;
 				Invalidate();
+				_skipValidationBecauseUserIsClickingDeleteButton = false;
 			}
 		}
 
@@ -731,6 +737,9 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		protected override void OnCellValidating(DataGridViewCellValidatingEventArgs e)
 		{
+			if (_skipValidationBecauseUserIsClickingDeleteButton)
+				return;
+
 			base.OnCellValidating(e);
 
 			// If a delegate already cancelled or the cell is not in a column with the
@@ -762,35 +771,43 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 
 		#region Methods for removing rows and the special column for removing rows.
 		/// ------------------------------------------------------------------------------------
-		public void AddRemoveRowColumn(Image imgNormal, Image imgHot,
-			Func<string> getRemoveRowToolTipText, Action<int> removeRowAction)
+		public DataGridViewImageColumn AddRemoveRowColumn(Image imgNormal, Image imgHot,
+			Func<string> getRemoveRowToolTipText, Action<int> removeRowAction, bool alwaysShowIcon = false)
 		{
 			RemoveRowAction = removeRowAction;
 			_removeRowImageNormal = imgNormal ?? Resources.RemoveGridRowNormal;
 			_removeRowImageHot = imgHot ?? Resources.RemoveGridRowHot;
+			_alwaysShowRemoveRowIcon = alwaysShowIcon;
 			GetRemoveRowToolTipText = getRemoveRowToolTipText;
 
 			var col = CreateImageColumn("removerow");
+			col.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
 			col.HeaderText = string.Empty;
 			col.SortMode = DataGridViewColumnSortMode.NotSortable;
 			col.Resizable = DataGridViewTriState.False;
 			col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-			col.Width = Resources.RemoveGridRowNormal.Width + 4;
+			col.Width = _removeRowImageNormal.Width + 4;
 			col.Image = new Bitmap(_removeRowImageNormal.Width, _removeRowImageNormal.Height,
 				System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
 			Columns.Add(col);
+			return col;
+		}
+
+		private bool IsRemoveRowColumn(int columnIndex)
+		{
+			return GetColumnName(columnIndex) == "removerow";
 		}
 
 		/// ------------------------------------------------------------------------------------
 		protected override void OnCellValueNeeded(DataGridViewCellValueEventArgs e)
 		{
-			if (e.RowIndex != NewRowIndex && GetColumnName(e.ColumnIndex) == "removerow")
+			if (e.RowIndex != NewRowIndex && IsRemoveRowColumn(e.ColumnIndex))
 			{
 				var rc = GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, false);
 				bool mouseOverRemoveImage = rc.Contains(PointToClient(MousePosition));
 
-				if (CurrentCellAddress.Y == e.RowIndex || mouseOverRemoveImage)
+				if (CurrentCellAddress.Y == e.RowIndex || mouseOverRemoveImage || _alwaysShowRemoveRowIcon)
 				{
 					e.Value = (mouseOverRemoveImage ?
 					_removeRowImageHot : _removeRowImageNormal);
@@ -803,7 +820,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		protected override void OnCellMouseEnter(DataGridViewCellEventArgs e)
 		{
-			if (e.RowIndex < NewRowIndex && e.RowIndex >= 0 && GetColumnName(e.ColumnIndex) == "removerow")
+			if (e.RowIndex < NewRowIndex && e.RowIndex >= 0 && IsRemoveRowColumn(e.ColumnIndex))
 			{
 				InvalidateCell(e.ColumnIndex, e.RowIndex);
 			}
@@ -814,7 +831,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		protected override void OnCellMouseLeave(DataGridViewCellEventArgs e)
 		{
-			if (e.RowIndex < NewRowIndex && e.RowIndex >= 0 && GetColumnName(e.ColumnIndex) == "removerow")
+			if (e.RowIndex < NewRowIndex && e.RowIndex >= 0 && IsRemoveRowColumn(e.ColumnIndex))
 				InvalidateCell(e.ColumnIndex, e.RowIndex);
 
 			base.OnCellMouseLeave(e);
@@ -825,7 +842,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		protected override void OnCellToolTipTextNeeded(DataGridViewCellToolTipTextNeededEventArgs e)
 		{
 			if (e.RowIndex < NewRowIndex && e.RowIndex >= 0 &&
-				GetColumnName(e.ColumnIndex) == "removerow" && GetRemoveRowToolTipText != null)
+				IsRemoveRowColumn(e.ColumnIndex) && GetRemoveRowToolTipText != null)
 			{
 				e.ToolTipText = GetRemoveRowToolTipText();
 			}
@@ -1027,7 +1044,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 
 			// Make sure the remove row cell in the new row (if there is a new row) doesn't
 			// contain the default no image, image (i.e. white square box containing a red x).
-			if (e.RowIndex == NewRowIndex && GetColumnName(e.ColumnIndex) == "removerow")
+			if (e.RowIndex == NewRowIndex && IsRemoveRowColumn(e.ColumnIndex))
 				e.Value = ((DataGridViewImageColumn)Columns["removerow"]).Image;
 
 			base.OnCellFormatting(e);
@@ -1069,7 +1086,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		protected override void OnCellPainting(DataGridViewCellPaintingEventArgs e)
 		{
-			if (e.RowIndex >= 0 && GetColumnName(e.ColumnIndex) == "removerow")
+			if (e.RowIndex >= 0 && IsRemoveRowColumn(e.ColumnIndex))
 			{
 				// Don't draw borders around remove row image cells.
 				e.AdvancedBorderStyle.Bottom = DataGridViewAdvancedCellBorderStyle.None;
