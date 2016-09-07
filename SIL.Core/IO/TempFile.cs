@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
+using SIL.Reporting;
 
 namespace SIL.IO
 {
@@ -71,7 +73,16 @@ namespace SIL.IO
 			{
 				return;
 			}
-			File.Delete(_path);
+			try
+			{
+				File.Delete(_path);
+			}
+			catch (IOException e)
+			{
+				// We tried, but we don't want to crash just because virus scanner or similar won't release the file.
+				Logger.WriteMinorEvent("Could not delete temp file during Dispose(): " + e.Message);
+				Debug.Fail("Could not delete temp file during Dispose(): " + e.Message, e.ToString());
+			}
 			if (_folderToDelete != null)
 				DirectoryUtilities.DeleteDirectoryRobust(_folderToDelete);
 		}
