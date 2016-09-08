@@ -29,7 +29,7 @@ namespace SIL.Windows.Forms.ReleaseNotes
 
 			var md = new Markdown();
 			_temp = TempFile.WithExtension("htm"); //enhance: will leek a file to temp
-			File.WriteAllText(_temp.Path, md.Transform(contents));
+			File.WriteAllText(_temp.Path, GetBasicHtmlFromMarkdown(md.Transform(contents)));
 			_browser.Url = new Uri(_temp.Path);
 		}
 
@@ -39,6 +39,11 @@ namespace SIL.Windows.Forms.ReleaseNotes
 
 			// a bug in Mono requires us to wait to set Icon until handle created.
 			Icon = _icon;
+		}
+
+		private string GetBasicHtmlFromMarkdown(string markdownHtml)
+		{
+			return string.Format("<html><head><meta charset=\"utf-8\"/></head><body>{0}</body></html>", markdownHtml);
 		}
 	}
 }
