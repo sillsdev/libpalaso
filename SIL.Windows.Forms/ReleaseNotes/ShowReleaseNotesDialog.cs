@@ -28,7 +28,8 @@ namespace SIL.Windows.Forms.ReleaseNotes
 			string contents = File.ReadAllText(_path);
 
 			var md = new Markdown();
-			_temp = TempFile.WithExtension("htm"); //enhance: will leek a file to temp
+			// Disposed of during dialog Dispose()
+			_temp = TempFile.WithExtension("htm");
 			File.WriteAllText(_temp.Path, GetBasicHtmlFromMarkdown(md.Transform(contents)));
 			_browser.Url = new Uri(_temp.Path);
 		}
