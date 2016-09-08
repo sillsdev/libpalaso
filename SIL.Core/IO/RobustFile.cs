@@ -107,6 +107,12 @@ namespace SIL.IO
 		{
 			return RetryUtility.Retry(() => File.ReadAllText(path, encoding));
 		}
+
+		public static void Replace(string sourceFileName, string destinationFileName, string destinationBackupFileName)
+		{
+			RetryUtility.Retry(() => File.Replace(sourceFileName, destinationFileName, destinationBackupFileName));
+		}
+
 		public static void SetAttributes(string path, FileAttributes fileAttributes)
 		{
 			RetryUtility.Retry(() => File.SetAttributes(path, fileAttributes));
