@@ -35,7 +35,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
 			this._versionNumber = new System.Windows.Forms.Label();
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
-			this._browser = new XWebBrowser();
+			this._browser = new SIL.Windows.Forms.HtmlBrowser.XWebBrowser();
 			this._checkForUpdates = new System.Windows.Forms.Button();
 			this._releaseNotesLabel = new System.Windows.Forms.LinkLabel();
 			this.tableLayoutPanelMain = new System.Windows.Forms.TableLayoutPanel();
@@ -61,7 +61,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			// 
 			// _L10NSharpExtender
 			// 
-			this._L10NSharpExtender.LocalizationManagerId = "Bloom";
+			this._L10NSharpExtender.LocalizationManagerId = "Palaso";
 			this._L10NSharpExtender.PrefixForNewItems = "AboutDialog";
 			// 
 			// _versionNumber
@@ -175,7 +175,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			this._L10NSharpExtender.SetLocalizableToolTip(this, null);
 			this._L10NSharpExtender.SetLocalizationComment(this, null);
 			this._L10NSharpExtender.SetLocalizationPriority(this, L10NSharp.LocalizationPriority.MediumLow);
-			this._L10NSharpExtender.SetLocalizingId(this, "AboutDialog.AboutDialogWindowTitle");
+			this._L10NSharpExtender.SetLocalizingId(this, "AboutDialog.WindowTitle");
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.MinimumSize = new System.Drawing.Size(591, 487);
@@ -184,7 +184,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-			this.Text = "About";
+			this.Text = "About {0}";
 			this.Shown += new System.EventHandler(this.SILAboutBoxShown);
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
