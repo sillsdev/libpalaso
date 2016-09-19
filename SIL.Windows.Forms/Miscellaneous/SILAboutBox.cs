@@ -32,7 +32,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			_versionNumber.Text = useFullVersionNumber ? Application.ProductVersion :
 				GetShortVersionInfo();
 			_buildDate.Text = GetBuiltOnDate();
-			Text = "About " + GetTitle();
+			Text = GetWindowTitle();
 		}
 
 		protected override void OnLoad(EventArgs e)
@@ -71,7 +71,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 						return titleAttribute.Title;
 					}
 				}
-				return System.IO.Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
+				return Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
 			}
 		}
 
@@ -136,6 +136,16 @@ namespace SIL.Windows.Forms.Miscellaneous
 		}
 		#endregion
 
+		private string GetWindowTitle()
+		{
+			// The window title was originally "About " with the application title appended.
+			// There was also the L10N id "AboutDialog.AboutDialogWindowTitle" which wasn't actually being displayed but
+			// which was based on the English "About" (and probably was translated in many apps).
+			// I considered trying to repurpose this id, but realized its presence in existing files would
+			// prevent translators from seeing that it needed to have the {0} added.
+			// Therefore, I've simply used a new id which corrects the string.
+			return string.Format(LocalizationManager.GetString("AboutDialog.WindowTitle", "About {0}", "{0} is the application name"), GetApplicationTitle());
+		}
 
 		private string GetBuiltOnDate()
 		{
@@ -146,7 +156,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 
 			// Use UTC for calculation of build-on-date so that we get the same date regardless
 			// of timezone setting.
-			return string.Format("Built on {0}", fi.CreationTimeUtc.ToString("dd-MMM-yyyy"));
+			return string.Format(LocalizationManager.GetString("AboutDialog.BuiltOnDate", "Built on {0}", "{0} is the date the application was built"), fi.CreationTimeUtc.ToString("dd-MMM-yyyy"));
 		}
 
 		private string GetShortVersionInfo()
@@ -167,7 +177,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			return string.Empty;
 		}
 
-		private string GetTitle()
+		private string GetApplicationTitle()
 		{
 			foreach (object attribute in _assembly.GetCustomAttributes(false))
 			{
