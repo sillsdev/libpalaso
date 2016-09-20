@@ -30,19 +30,19 @@ namespace SIL.IO
 		public void WriteWasSuccessful()
 		{
 			//get it onto the same volume for sure
-			string pending = _realFilePath+".pending";
-			if(File.Exists(pending))
+			string pending = _realFilePath + ".pending";
+			if (RobustFile.Exists(pending))
 			{
-				File.Delete(pending);
+				RobustFile.Delete(pending);
 			}
-			File.Move(_tempPath, pending);//NB: Replace() is tempting but fails across volumes
-			if (File.Exists(_realFilePath))
+			RobustFile.Move(_tempPath, pending); //NB: Replace() is tempting but fails across volumes
+			if (RobustFile.Exists(_realFilePath))
 			{
 				SafeReplace(pending, _realFilePath, _realFilePath + ".bak");
 			}
 			else
 			{
-				File.Move(pending, _realFilePath);
+				RobustFile.Move(pending, _realFilePath);
 			}
 		}
 
@@ -50,41 +50,41 @@ namespace SIL.IO
 		{
 			try
 			{
-				if(SimulateVolumeThatCannotHandleFileReplace)
+				if (SimulateVolumeThatCannotHandleFileReplace)
 				{
 					throw new IOException("dummy");
 				}
 
-				if(File.Exists(destinationFilePath))
+				if (RobustFile.Exists(destinationFilePath))
 				{
 					//this one *might* be atomic, though no guarantees, apparently
-					File.Replace(sourceFilePath, destinationFilePath, backupFilePath);
+					RobustFile.Replace(sourceFilePath, destinationFilePath, backupFilePath);
 				}
 				else // I think it's confusing to find empty ".bak" files, we don't mention the bak file if the original is missing
 				{
 					// "Pass null to the destinationBackupFileName parameter if you do not want to create a backup of the file being replaced."
-					File.Replace(sourceFilePath, destinationFilePath,null);
+					RobustFile.Replace(sourceFilePath, destinationFilePath, null);
 				}
 			}
 			//NB: UnauthorizedAccessException, which we get in BL-322, is not a subclass of IOException
 			catch (Exception error)
 			{
-				Logger.WriteMinorEvent("TempFileForSafeWriting got "+error.Message+"  Will use fall back method.");
+				Logger.WriteMinorEvent("TempFileForSafeWriting got " + error.Message + "  Will use fall back method.");
 
-				// This one for where on JAARS network-mapped volumes, the File.Replace fails
+				// This one for where on JAARS network-mapped volumes, the RobustFile.Replace fails
 				// See https://silbloom.myjetbrains.com/youtrack/issue/BL-3222 
 
-				if(File.Exists(destinationFilePath))
+				if (RobustFile.Exists(destinationFilePath))
 				{
-					if (File.Exists(backupFilePath))
+					if (RobustFile.Exists(backupFilePath))
 					{
-						File.Delete(backupFilePath);
+						RobustFile.Delete(backupFilePath);
 					}
 
-					File.Move(destinationFilePath, backupFilePath);
-					File.Delete(destinationFilePath);
+					RobustFile.Move(destinationFilePath, backupFilePath);
+					RobustFile.Delete(destinationFilePath);
 				}
-				File.Move(sourceFilePath, destinationFilePath);
+				RobustFile.Move(sourceFilePath, destinationFilePath);
 			}
 		}
 	}
