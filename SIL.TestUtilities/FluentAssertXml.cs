@@ -198,26 +198,23 @@ namespace SIL.TestUtilities
 			}
 		}
 
-		public void HasNoMatchForXpath(string xpath, XmlNamespaceManager nameSpaceManager)
+		public void HasNoMatchForXpath(string xpath, XmlNamespaceManager nameSpaceManager, string message = null, bool print = true)
 		{
-			XmlNode node = GetNode( xpath, nameSpaceManager);
+			var node = GetNode(xpath, nameSpaceManager);
 			if (node != null)
 			{
-				Console.WriteLine("Was not supposed to match " + xpath);
-				PrintNodeToConsole(NodeOrDom);
+				if (message != null)
+					Console.WriteLine(message);
+				Console.WriteLine(@"Was not supposed to match " + xpath);
+				if (print)
+					PrintNodeToConsole(NodeOrDom);
 			}
-			Assert.IsNull(node, "Should not have matched: " + xpath);
+			Assert.IsNull(node, "Should not have matched: {0}{1}{2}", xpath, Environment.NewLine, message);
 		}
 
-		public  void HasNoMatchForXpath(string xpath)
+		public void HasNoMatchForXpath(string xpath, string message = null, bool print = true)
 		{
-			XmlNode node = GetNode( xpath, new XmlNamespaceManager(new NameTable()));
-			if (node != null)
-			{
-				Console.WriteLine("Was not supposed to match " + xpath);
-				PrintNodeToConsole(NodeOrDom);
-			}
-			Assert.IsNull(node, "Should not have matched: " + xpath);
+			HasNoMatchForXpath(xpath, new XmlNamespaceManager(new NameTable()), message, print);
 		}
 
 		private XmlNode GetNode(string xpath)
