@@ -59,6 +59,9 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 				_copyrightBy.Text = _metadata.GetCopyrightBy();
 				if(_metadata.License!=null)
 					_licenseImage.Image = _metadata.License.GetImage();
+
+				_useIGOLicenseVersion.Enabled = false;
+
 				if (_metadata.License is CreativeCommonsLicense)
 				{
 					var cc = (CreativeCommonsLicense) _metadata.License;
@@ -70,6 +73,8 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 					_commercial.Checked = cc.CommercialUseAllowed;
 					_nonCommercial.Checked = !cc.CommercialUseAllowed;
 					_customRightsStatement.Text = _metadata.License.RightsStatement;
+					_useIGOLicenseVersion.Enabled = true;
+					_useIGOLicenseVersion.Checked = cc.IntergovernmentalOriganizationQualifier;
 				}
 				else if(_metadata.License is CustomLicense)
 				{
@@ -148,6 +153,8 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			_customRightsStatement.Enabled = _customLicense.Checked || _creativeCommons.Checked;
 			_linkToRefinedCreativeCommonsWarning.Visible = _creativeCommons.Checked && !string.IsNullOrWhiteSpace(_customRightsStatement.Text);
 			_additionalRequestsLabel.Visible = _creativeCommons.Checked;
+			_useIGOLicenseVersion.Enabled = _creativeCommons.Checked;
+
 			if (_creativeCommons.Checked)
 			{
 				_customRightsStatement.Top = _additionalRequestsLabel.Bottom+10;
@@ -198,6 +205,12 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			if (_settingUp)
 				return;
 			_metadata.SetCopyrightNotice(_copyrightYear.Text, _copyrightBy.Text);
+		}
+
+		private void _useIGOLicenseVersion_CheckedChanged(object sender, EventArgs e)
+		{
+			//NB: we know it is CC because this checkbox will be disabled otherwise
+			((CreativeCommonsLicense) _metadata.License).IntergovernmentalOriganizationQualifier = _useIGOLicenseVersion.Checked;
 		}
 	}
 	public class BetterPictureBox : PictureBox
