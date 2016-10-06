@@ -110,7 +110,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = cancelButton;
-			this.ClientSize = new System.Drawing.Size(347, 585);
+			this.ClientSize = new System.Drawing.Size(360, 585);
 			this.ControlBox = false;
 			this.Controls.Add(panel1);
 			this.Controls.Add(this._metadataEditorControl);

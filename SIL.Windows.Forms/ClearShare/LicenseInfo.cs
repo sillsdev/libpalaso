@@ -30,6 +30,8 @@ namespace SIL.Windows.Forms.ClearShare
 		/// </summary>
 		public abstract string Token { get; }
 
+		//Review (JH asks in Oct 2016): Why does this exist? The only uses in libpalaso are in tests and examples. Bloom does not use it.
+		// Why is From Url not sufficient?
 		public static LicenseInfo FromToken(string abbr)
 		{
 			switch (abbr)
