@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using SIL.Retry;
+using SIL.Code;
 
 namespace SIL.IO
 {

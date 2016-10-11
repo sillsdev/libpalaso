@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 
-namespace SIL.Retry
+namespace SIL.Code
 {
 	/// <summary>
 	/// This utility can be used to wrap any call and retry it in a loop

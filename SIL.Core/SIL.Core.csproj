@@ -413,7 +413,7 @@
     <Compile Include="IO\SFMReader.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Retry\RetryUtility.cs" />
+    <Compile Include="Code\RetryUtility.cs" />
     <Compile Include="Settings\CrossPlatformSettingsProvider.cs" />
     <Compile Include="Annotations\Annotation.cs" />
     <Compile Include="Annotations\IAnnotatable.cs" />
