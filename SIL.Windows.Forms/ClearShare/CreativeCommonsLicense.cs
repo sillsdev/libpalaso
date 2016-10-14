@@ -86,7 +86,8 @@ namespace SIL.Windows.Forms.ClearShare
 		public static LicenseInfo FromToken(string token)
 		{
 			var result = new CreativeCommonsLicense();
-			result.Url = MakeUrlFromTokenAndVersion(token, kDefaultVersion);
+			// Note (JH): Since version was set to default, as I add the qualifier, I'm going to let it be default as well.
+			result.Url = MakeUrlFromParts(token, kDefaultVersion, null);
 			return result;
 		}
 
@@ -119,7 +120,7 @@ namespace SIL.Windows.Forms.ClearShare
 		{
 			get
 			{
-				return MakeUrlFromTokenAndVersion(Token, Version);
+				return MakeUrlFromParts(Token, Version, _qualifier);
 			}
 			set
 			{
@@ -141,15 +142,18 @@ namespace SIL.Windows.Forms.ClearShare
 
 				var urlWithoutTrailingSlash = value.TrimEnd(new char[] {'/'});
 				var parts = urlWithoutTrailingSlash.Split(new char[] { '/' });
-				var v=  parts[parts.Length - 1];
+				var version=  parts[5];
 				decimal result;
-				if (decimal.TryParse(v, out result))
-					Version = v;
+				if (decimal.TryParse(version, out result))
+					Version = version;
+
+				if(parts.Length > 6)
+					_qualifier = parts[6].ToLowerInvariant().Trim();
 			}
 
 		}
 
-		private static string MakeUrlFromTokenAndVersion(string token, string version)
+		private static string MakeUrlFromParts(string token, string version, string qualifier)
 		{
 			var url = token + "/";
 			if (token.StartsWith("cc-"))
@@ -157,6 +161,10 @@ namespace SIL.Windows.Forms.ClearShare
 
 			if (!string.IsNullOrEmpty(version))
 				url += version + "/";
+
+			if (!string.IsNullOrWhiteSpace(qualifier)) 
+				url += qualifier + "/"; // e.g, igo as in https://creativecommons.org/licenses/by/3.0/igo/
+
 			return "http://creativecommons.org/licenses/" + url;
 		}
 
@@ -164,6 +172,11 @@ namespace SIL.Windows.Forms.ClearShare
 		/// <summary>
 		/// A string form used for serialization
 		/// </summary>
+		/// <remarks>
+		/// REVIEW: (asked by Hatton Oct 2016) Serialization by whom? Why not just use the url, which is the canonical form?
+		/// Note that this does not include any qualifier (of which at the moment the one one is "igo", but who knows
+		/// what the future holds.
+		///</remarks>
 		public override string Token
 		{
 			get
@@ -202,12 +215,19 @@ namespace SIL.Windows.Forms.ClearShare
 		public override string GetDescription(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
 		{
 			//Enanced labs.creativecommons.org has a lot of code, some of which might be useful, especially if we wanted a full, rather than consise, description.
-			
+
 			//Note that this isn't going to be able to convey to the caller the situation if some strings are translatable in some language, but others in some other language.
 			//It will just end up being an amalgam in that case.
-			string s="";
 
-			if(CommercialUseAllowed)
+			//This IGO qualifier thing is new, and I'm not clear how I want to convey it on the page.
+			//We could introduce text like "For more information, see", but the price of needing new 
+			// localizations at this point is somewhat daunting... for now, it seems enough that the "/igo/" is shown in the URL, if
+			//it is in use in this license.
+
+			string s= Url + System.Environment.NewLine;
+
+
+			if (CommercialUseAllowed)
 				s += GetComponentOfLicenseInBestLanguage("CommercialUseAllowed", "You are free to make commercial use of this work.", languagePriorityIds, out idOfLanguageUsed) + " ";
 			else
 				s += GetComponentOfLicenseInBestLanguage("NonCommercial", "You may not use this work for commercial purposes.", languagePriorityIds, out idOfLanguageUsed) + " ";
@@ -276,5 +296,22 @@ namespace SIL.Windows.Forms.ClearShare
 				_version = value;
 			}
 		}
+
+		// For information on this qualifier, see https://wiki.creativecommons.org/wiki/Intergovernmental_Organizations
+		private string _qualifier = null;
+		public bool IntergovernmentalOriganizationQualifier
+		{
+			get { return _qualifier == "igo"; }
+			set
+			{
+				var newValue = value ? "igo" : null;
+				if (newValue != _qualifier)
+				{
+					HasChanges = true;
+				}
+				_qualifier = newValue;
+			}
+		}
+
 	}
 }

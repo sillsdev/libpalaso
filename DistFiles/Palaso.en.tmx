@@ -420,6 +420,11 @@
         <seg>Creative Commons</seg>
       </tuv>
     </tu>
+	<tu tuid="MetadataEditor.CreativeCommons.Intergovernmental">
+      <tuv xml:lang="en">
+        <seg>Intergovernmental Version</seg>
+      </tuv>
+    </tu>
     <tu tuid="MetadataEditor.CreatorLabel">
       <tuv xml:lang="en">
         <seg>Creator</seg>

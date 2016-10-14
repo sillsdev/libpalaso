@@ -5,9 +5,9 @@
 // associated with an assembly.
 [assembly: AssemblyCompany("SIL")]
 [assembly: AssemblyProduct("Palaso Library")]
-[assembly: AssemblyCopyright("Copyright © 2015 SIL International")]
+[assembly: AssemblyCopyright("Copyright © 2016 SIL International")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyFileVersion("3.0.0.0")]
-[assembly: AssemblyVersion("3.0.0.0")]
+[assembly: AssemblyFileVersion("3.1.0.0")]
+[assembly: AssemblyVersion("3.1.0.0")]

@@ -37,15 +37,44 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			Assert.AreEqual(copy.DerivativeRule, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
 		}
 
+		[Test]
+		public void RoundTrip_BY_IGO()
+		{
+			var original = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
+			original.IntergovernmentalOriganizationQualifier = true;
+			var copy = CreativeCommonsLicense.FromLicenseUrl(original.Url);
+			Assert.IsTrue(copy.IntergovernmentalOriganizationQualifier);
+		}
+		[Test]
+		public void Url_QualifierIsIGO_UrlHasIgo()
+		{
+			var original = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
+			original.Version = "3.0";
+			original.IntergovernmentalOriganizationQualifier = true;
+			Assert.AreEqual("http://creativecommons.org/licenses/by/3.0/igo/", original.Url);
+		}
 
 		[Test]
 		public void FromLicenseUrl_VersionRead()
 		{
 			var original = CreativeCommonsLicense.FromLicenseUrl("http://creativecommons.org/licenses/by-nd/4.3/");
-			Assert.AreEqual(original.Version, "4.3");
+			Assert.AreEqual("4.3", original.Version);
 
 		}
-
+		[Test]
+		public void FromLicenseUrl_IGO_VersionRead()
+		{
+			var original = CreativeCommonsLicense.FromLicenseUrl("http://creativecommons.org/licenses/by/3.0/IGO");
+			Assert.AreEqual("3.0", original.Version);
+		}
+		[Test]
+		public void FromLicenseUrl_IGO_IGORead()
+		{
+			var license = CreativeCommonsLicense.FromLicenseUrl("http://creativecommons.org/licenses/by/3.0/");
+			Assert.IsFalse(license.IntergovernmentalOriganizationQualifier);
+			license = CreativeCommonsLicense.FromLicenseUrl("http://creativecommons.org/licenses/by/3.0/IGO");
+			Assert.IsTrue(license.IntergovernmentalOriganizationQualifier);
+		}
 
 		[Test]
 		public void FromLicenseUrl_EmtpyString_Throws()
@@ -68,6 +97,16 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
 			l.HasChanges = false;
 			l.Version = "3.23";
+			Assert.IsTrue(l.HasChanges);
+		}
+		[Test]
+		public void ChangeIGO_HasChanges_True()
+		{
+			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives)
+			{
+				HasChanges = false,
+				IntergovernmentalOriganizationQualifier = true
+			};
 			Assert.IsTrue(l.HasChanges);
 		}
 

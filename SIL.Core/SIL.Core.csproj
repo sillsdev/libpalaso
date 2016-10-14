@@ -298,6 +298,8 @@
     <Compile Include="IO\FileUtils.cs" />
     <Compile Include="EventsAndDelegates\GenericEventArgs.cs" />
     <Compile Include="IO\DirectoryUtilities.cs" />
+    <Compile Include="IO\RobustFile.cs" />
+    <Compile Include="IO\RobustIO.cs" />
     <Compile Include="IO\TempFile.cs" />
     <Compile Include="IO\ZipUtilities.cs" />
     <Compile Include="Keyboarding\DefaultKeyboardController.cs" />
@@ -411,6 +413,7 @@
     <Compile Include="IO\SFMReader.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Code\RetryUtility.cs" />
     <Compile Include="Settings\CrossPlatformSettingsProvider.cs" />
     <Compile Include="Annotations\Annotation.cs" />
     <Compile Include="Annotations\IAnnotatable.cs" />
