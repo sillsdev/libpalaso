@@ -104,7 +104,7 @@ namespace SIL.IO.FileLock
 			if (process == null) return false;
 
 			// Next, check for a match on processName.
-			var isRunning = process.ProcessName == processName;
+			var isRunning = GetProcessNameSafely(process) == processName;
 
 			// If a match was found or this is running on Windows, this is as far as we need to go.
 			if (isRunning || Platform.IsWindows) return isRunning;
@@ -113,7 +113,8 @@ namespace SIL.IO.FileLock
 
 			// If the name of the process is not "mono" or does not start with "mono-", this is not
 			// a mono application, and therefore this is not the process we are looking for.
-			if (process.ProcessName.ToLower() != "mono" && !process.ProcessName.ToLower().StartsWith("mono-"))
+			var lowername = GetProcessNameSafely(process).ToLowerInvariant();
+			if (lowername != "mono" && !lowername.StartsWith("mono-"))
 				return false;
 
 			// The mono application will have a module with the same name as the process, with ".exe" added.
@@ -121,6 +122,19 @@ namespace SIL.IO.FileLock
 			return process.Modules.Cast<ProcessModule>().Any(mod => mod.ModuleName.ToLower() == moduleName);
 		}
 
+		/// <summary>
+		/// Tests can create dummy data based on process 1 on Linux, but the library
+		/// throws an error trying to get the name of that process unless the program
+		/// is running as root.  So we'll use a dummy name for process 1 on Linux (which
+		/// has to be active).
+		/// </summary>
+		private static string GetProcessNameSafely(Process process)
+		{
+			if (Platform.IsWindows)
+				return process.ProcessName;
+			else
+				return (process.Id == 1) ? "init" : process.ProcessName;
+		}
 		#endregion
 
 		#region Create methods
