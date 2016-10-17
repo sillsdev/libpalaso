@@ -7,6 +7,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using SIL.IO;
 using SIL.PlatformUtilities;
 
 
@@ -173,9 +174,7 @@ namespace SIL.Reporting
 				version += " (apparent build date: ";
 				try
 				{
-					string path = assembly.CodeBase.Replace(@"file://", "");
-					if (Platform.IsWindows)
-						path = path.TrimStart('/');
+					string path = FileUtils.StripFilePrefix(assembly.CodeBase);
 					version += File.GetLastWriteTimeUtc(path).ToString("dd-MMM-yyyy") + ")";
 				}
 				catch
@@ -228,9 +227,7 @@ namespace SIL.Reporting
 			{
 				var asm = Assembly.GetEntryAssembly();
 				var ver = asm.GetName().Version;
-				var file = asm.CodeBase.Replace("file://", string.Empty);
-				if (Platform.IsWindows)
-					file = file.TrimStart('/');
+				var file = FileUtils.StripFilePrefix(asm.CodeBase);
 				var fi = new FileInfo(file);
 
 				return string.Format(
