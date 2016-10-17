@@ -7,6 +7,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using Palaso.IO;
 using Palaso.PlatformUtilities;
 
 
@@ -206,9 +207,7 @@ namespace Palaso.Reporting
 				version += " (apparent build date: ";
 				try
 				{
-					string path = assembly.CodeBase.Replace(@"file://", "");
-					if (Palaso.PlatformUtilities.Platform.IsWindows)
-						path = path.TrimStart('/');
+					var path = FileUtils.StripFilePrefix(assembly.CodeBase);
 					version += File.GetLastWriteTimeUtc(path).ToString("dd-MMM-yyyy") + ")";
 				}
 				catch
@@ -261,9 +260,7 @@ namespace Palaso.Reporting
 			{
 				var asm = Assembly.GetEntryAssembly();
 				var ver = asm.GetName().Version;
-				var file = asm.CodeBase.Replace("file://", string.Empty);
-				if (Palaso.PlatformUtilities.Platform.IsWindows)
-					file = file.TrimStart('/');
+				var file = FileUtils.StripFilePrefix(asm.CodeBase);
 				var fi = new FileInfo(file);
 
 				return string.Format(

@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 using L10NSharp;
+using Palaso.IO;
 
 namespace Palaso.UI.WindowsForms.SIL
 {
@@ -138,9 +139,7 @@ namespace Palaso.UI.WindowsForms.SIL
 
 		private string GetBuiltOnDate()
 		{
-			var file = _assembly.CodeBase.Replace("file://", string.Empty);
-			if (PlatformUtilities.Platform.IsWindows)
-				file = file.TrimStart('/');
+			var file = FileUtils.StripFilePrefix(_assembly.CodeBase);
 			var fi = new FileInfo(file);
 
 			// Use UTC for calculation of build-on-date so that we get the same date regardless
