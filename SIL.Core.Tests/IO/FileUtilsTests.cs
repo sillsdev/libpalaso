@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.Reporting;
@@ -265,6 +266,32 @@ namespace SIL.Tests.IO
 		public void NormalizePath_WindowsStylePathConvertsToSlashes()
 		{
 			Assert.That(FileUtils.NormalizePath("c:\\a\\b\\c"), Is.EqualTo("c:/a/b/c"));
+		}
+
+		[Test]
+		[Platform(Include = "Windows")]
+		public void StripFilePrefix_EnsureFilePrefixIsRemoved_Windows()
+		{
+			var prefix = Uri.UriSchemeFile + ":";
+			var fullPathname = Assembly.GetExecutingAssembly().CodeBase;
+			Assert.IsTrue(fullPathname.StartsWith(prefix));
+
+			var reducedPathname = FileUtils.StripFilePrefix(fullPathname);
+			Assert.IsFalse(reducedPathname.StartsWith(prefix));
+			Assert.IsFalse(reducedPathname.StartsWith("/"));
+		}
+
+		[Test]
+		[Platform(Include = "Linux")]
+		public void StripFilePrefix_EnsureFilePrefixIsRemoved_Linux()
+		{
+			var prefix = Uri.UriSchemeFile + ":";
+			var fullPathname = Assembly.GetExecutingAssembly().CodeBase;
+			Assert.IsTrue(fullPathname.StartsWith(prefix));
+
+			var reducedPathname = FileUtils.StripFilePrefix(fullPathname);
+			Assert.IsFalse(reducedPathname.StartsWith(prefix));
+			Assert.IsTrue(reducedPathname.StartsWith("/"));
 		}
 	}
 }
