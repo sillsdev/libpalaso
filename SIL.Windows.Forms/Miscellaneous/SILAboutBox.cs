@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using L10NSharp;
 using SIL.PlatformUtilities;
+using SIL.IO;
 
 namespace SIL.Windows.Forms.Miscellaneous
 {
@@ -149,9 +150,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 
 		private string GetBuiltOnDate()
 		{
-			var file = _assembly.CodeBase.Replace("file://", string.Empty);
-			if (Platform.IsWindows)
-				file = file.TrimStart('/');
+			var file = FileUtils.StripFilePrefix(_assembly.CodeBase);
 			var fi = new FileInfo(file);
 
 			// Use UTC for calculation of build-on-date so that we get the same date regardless

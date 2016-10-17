@@ -5,11 +5,12 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using SIL.PlatformUtilities;
 using SIL.Reporting;
 
 namespace SIL.IO
 {
-	public class FileUtils
+	public static class FileUtils
 	{
 		public static StringCollection TextFileExtensions
 		{
@@ -334,5 +335,39 @@ namespace SIL.IO
 		{
 			return path.Replace('\\', '/');
 		}
+
+		/// <summary>
+		/// Strips file URI prefix from the beginning of a file URI string, and keeps
+		/// a beginning slash if in Linux.
+		/// eg "file:///C:/Windows" becomes "C:/Windows" in Windows, and
+		/// "file:///usr/bin" becomes "/usr/bin" in Linux.
+		/// Returns the input unchanged if it does not begin with "file:".
+		///
+		/// Does not convert the result into a valid path or a path using current platform
+		/// path separators.
+		///
+		/// See uri.LocalPath, http://en.wikipedia.org/wiki/File_URI , and
+		/// http://blogs.msdn.com/b/ie/archive/2006/12/06/file-uris-in-windows.aspx .
+		/// </summary>
+		public static string StripFilePrefix(string fileString)
+		{
+			if (String.IsNullOrEmpty(fileString))
+				return fileString;
+
+			var prefix = Uri.UriSchemeFile + ":";
+
+			if (!fileString.StartsWith(prefix))
+				return fileString;
+
+			var path = fileString.Substring(prefix.Length);
+			// Trim any number of beginning slashes
+			path = path.TrimStart('/');
+			// Prepend slash on Linux
+			if (Platform.IsUnix)
+				path = '/' + path;
+
+			return path;
+		}
+
 	}
 }
