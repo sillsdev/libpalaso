@@ -54,7 +54,7 @@ namespace Palaso.BuildTasks.UpdateBuildTypeFile
 		{
 			int i = contents.IndexOf("public enum VersionType", StringComparison.Ordinal);
 			if (i < 0)
-				throw new Exception("File does not contain a public definition for and enum named VersionType!");
+				throw new Exception("File does not contain a public definition for an enum named VersionType!");
 			var iStart = contents.IndexOf("{", i, StringComparison.Ordinal) + 1;
 			var iEnd = contents.IndexOf("}", iStart, StringComparison.Ordinal);
 			var versionTypeEnumBody = contents.Substring(iStart, iEnd - iStart);
