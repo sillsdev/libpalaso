@@ -184,8 +184,8 @@ namespace Palaso.BuildTasks.UnitTestTasks
 				{
 					StartInfo =
 						{
-							FileName = ProgramName(),
-							Arguments = ProgramArguments(),
+							FileName = ProgramNameAndPath,
+							Arguments = ProgramArguments,
 							RedirectStandardOutput = true,
 							RedirectStandardError = true,
 							//required to allow redirects
@@ -213,9 +213,12 @@ namespace Palaso.BuildTasks.UnitTestTasks
 			}
 		}
 
-		protected abstract string ProgramName();
+		/// <summary>
+		/// Returns the name (and if necessary path) of the test application executable
+		/// </summary>
+		protected abstract string ProgramNameAndPath { get; }
 
-		protected abstract string ProgramArguments();
+		protected abstract string ProgramArguments { get; }
 
 		protected abstract void ProcessOutput(bool fTimedOut, TimeSpan delta);
 

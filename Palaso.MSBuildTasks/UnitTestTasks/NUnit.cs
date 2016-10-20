@@ -63,10 +63,7 @@ namespace Palaso.BuildTasks.UnitTestTasks
 			{
 				return Path.GetFullPath(WorkingDirectory);
 			}
-			else
-			{
-				return Path.GetFullPath(Path.GetDirectoryName(Assemblies[0].ItemSpec));
-			}
+			return Path.GetFullPath(Path.GetDirectoryName(Assemblies[0].ItemSpec));
 		}
 
 		/// <summary>
@@ -112,8 +109,8 @@ namespace Palaso.BuildTasks.UnitTestTasks
 		public string Apartment { get; set; }
 
 		/// <summary>
-		/// Gets the name of the NUnit executable. When running on Mono this is
-		/// different from ProgramName() which returns the executable we'll start.
+		/// Gets the name (without path) of the NUnit executable. When running on Mono this is
+		/// different from ProgramNameAndPath() which returns the executable we'll start.
 		/// </summary>
 		private string RealProgramName
 		{
@@ -141,17 +138,21 @@ namespace Palaso.BuildTasks.UnitTestTasks
 		/// </summary>
 		/// <returns>The name of the NUnit executable when run on .NET, or
 		/// the name of the Mono runtime executable when run on Mono.</returns>
-		protected override string ProgramName()
+		protected override string ProgramNameAndPath
 		{
-			if (IsMono)
-				return "mono";
+			get
+			{
+				if (IsMono)
+					return "mono";
 
 				EnsureToolPath();
 				return Path.Combine(Path.GetFullPath(ToolPath), RealProgramName);
+			}
 		}
 
-		protected override string ProgramArguments()
+		protected override string ProgramArguments
 		{
+			get
 			{
 				var bldr = new StringBuilder();
 				if (IsMono)
@@ -165,35 +166,39 @@ namespace Palaso.BuildTasks.UnitTestTasks
 					if (bldr.Length > 0)
 						bldr.Append(" ");
 					bldr.Append(item.ItemSpec);
+				}
+				var switchChar = '/';
+				if (Environment.OSVersion.Platform == PlatformID.Unix
+					|| Environment.OSVersion.Platform == PlatformID.MacOSX)
+				{
+					switchChar = '-';
+				}
+				bldr.AppendFormat(" {0}nologo", switchChar);
+				if (DisableShadowCopy)
+					bldr.AppendFormat(" {0}noshadow", switchChar);
+				if (_testInNewThread.HasValue && !_testInNewThread.Value)
+					bldr.AppendFormat(" {0}nothread", switchChar);
+				if (!String.IsNullOrEmpty(ProjectConfiguration))
+					bldr.AppendFormat(" \"{0}config={1}\"", switchChar, ProjectConfiguration);
+				if (!String.IsNullOrEmpty(Fixture))
+					bldr.AppendFormat(" \"{0}fixture={1}\"", switchChar, Fixture);
+				if (!String.IsNullOrEmpty(IncludeCategory))
+					bldr.AppendFormat(" \"{0}include={1}\"", switchChar, IncludeCategory);
+				if (!String.IsNullOrEmpty(ExcludeCategory))
+					bldr.AppendFormat(" \"{0}exclude={1}\"", switchChar, ExcludeCategory);
+				if (!String.IsNullOrEmpty(XsltTransformFile))
+					bldr.AppendFormat(" \"{0}transform={1}\"", switchChar, XsltTransformFile);
+				if (!String.IsNullOrEmpty(OutputXmlFile))
+					bldr.AppendFormat(" \"{0}xml={1}\"", switchChar, OutputXmlFile);
+				if (!String.IsNullOrEmpty(ErrorOutputFile))
+					bldr.AppendFormat(" \"{0}err={1}\"", switchChar, ErrorOutputFile);
+				if (!String.IsNullOrEmpty(Framework))
+					bldr.AppendFormat(" \"{0}framework={1}\"", switchChar, Framework);
+				if (!String.IsNullOrEmpty(Apartment))
+					bldr.AppendFormat(" \"{0}apartment={1}\"", switchChar, Apartment);
+				bldr.AppendFormat(" {0}labels", switchChar);
+				return bldr.ToString();
 			}
-			var switchChar = '/';
-			if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
-				switchChar = '-';
-			bldr.AppendFormat(" {0}nologo", switchChar);
-			if (DisableShadowCopy)
-				bldr.AppendFormat(" {0}noshadow", switchChar);
-			if (_testInNewThread.HasValue && !_testInNewThread.Value)
-				bldr.AppendFormat(" {0}nothread", switchChar);
-			if (!String.IsNullOrEmpty(ProjectConfiguration))
-				bldr.AppendFormat(" \"{0}config={1}\"", switchChar, ProjectConfiguration);
-			if (!String.IsNullOrEmpty(Fixture))
-				bldr.AppendFormat(" \"{0}fixture={1}\"", switchChar, Fixture);
-			if (!String.IsNullOrEmpty(IncludeCategory))
-				bldr.AppendFormat(" \"{0}include={1}\"", switchChar, IncludeCategory);
-			if (!String.IsNullOrEmpty(ExcludeCategory))
-				bldr.AppendFormat(" \"{0}exclude={1}\"", switchChar, ExcludeCategory);
-			if (!String.IsNullOrEmpty(XsltTransformFile))
-				bldr.AppendFormat(" \"{0}transform={1}\"", switchChar, XsltTransformFile);
-			if (!String.IsNullOrEmpty(OutputXmlFile))
-				bldr.AppendFormat(" \"{0}xml={1}\"", switchChar, OutputXmlFile);
-			if (!String.IsNullOrEmpty(ErrorOutputFile))
-				bldr.AppendFormat(" \"{0}err={1}\"", switchChar, ErrorOutputFile);
-			if (!String.IsNullOrEmpty(Framework))
-				bldr.AppendFormat(" \"{0}framework={1}\"", switchChar, Framework);
-			if (!String.IsNullOrEmpty(Apartment))
-				bldr.AppendFormat(" \"{0}apartment={1}\"", switchChar, Apartment);
-			bldr.AppendFormat(" {0}labels", switchChar);
-			return bldr.ToString();
 		}
 
 		private void EnsureToolPath()
@@ -292,13 +297,13 @@ namespace Palaso.BuildTasks.UnitTestTasks
 				// that contains as much as possible.
 				if (File.Exists(OutputXmlFile))
 				{
-					FileInfo fi = new FileInfo(OutputXmlFile);
+					var fi = new FileInfo(OutputXmlFile);
 					if (fi.Length > 0)
 						File.Move(OutputXmlFile, OutputXmlFile + "-partial");
 					else
 						File.Delete(OutputXmlFile);
 				}
-				using (StreamWriter writer = new StreamWriter(OutputXmlFile))
+				using (var writer = new StreamWriter(OutputXmlFile))
 				{
 					var num = lines.Count;
 					writer.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
