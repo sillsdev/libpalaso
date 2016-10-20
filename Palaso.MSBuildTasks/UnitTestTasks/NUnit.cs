@@ -119,8 +119,7 @@ namespace Palaso.BuildTasks.UnitTestTasks
 		{
 			get
 			{
-				return Path.Combine(Path.GetFullPath(ToolPath),
-					Force32Bit ? "nunit-console-x86.exe" : "nunit-console.exe");
+				return Force32Bit ? "nunit-console-x86.exe" : "nunit-console.exe";
 			}
 		}
 
@@ -147,24 +146,25 @@ namespace Palaso.BuildTasks.UnitTestTasks
 			if (IsMono)
 				return "mono";
 
-			EnsureToolPath();
-			return RealProgramName;
+				EnsureToolPath();
+				return Path.Combine(Path.GetFullPath(ToolPath), RealProgramName);
 		}
 
 		protected override string ProgramArguments()
 		{
-			var bldr = new StringBuilder();
-			if (IsMono)
 			{
-				EnsureToolPath();
-				bldr.Append("--debug "); // cause Mono to show filenames in stack trace
-				bldr.Append(RealProgramName);
-			}
-			foreach (var item in Assemblies)
-			{
-				if (bldr.Length > 0)
-					bldr.Append(" ");
-				bldr.Append(item.ItemSpec);
+				var bldr = new StringBuilder();
+				if (IsMono)
+				{
+					EnsureToolPath();
+					bldr.Append("--debug "); // cause Mono to show filenames in stack trace
+					bldr.Append(Path.Combine(Path.GetFullPath(ToolPath), RealProgramName));
+				}
+				foreach (var item in Assemblies)
+				{
+					if (bldr.Length > 0)
+						bldr.Append(" ");
+					bldr.Append(item.ItemSpec);
 			}
 			var switchChar = '/';
 			if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
