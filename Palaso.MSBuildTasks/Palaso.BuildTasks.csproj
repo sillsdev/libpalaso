@@ -218,6 +218,7 @@
     <Compile Include="CpuArchitecture.cs" />
     <Compile Include="DownloadFile.cs" />
     <Compile Include="SubString\Split.cs" />
+    <Compile Include="UnitTestTasks\NUnit3.cs" />
     <Compile Include="UnitTestTasks\TestTask.cs" />
     <Compile Include="UnitTestTasks\NUnit.cs" />
     <Compile Include="UnixName.cs" />

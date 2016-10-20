@@ -59,7 +59,7 @@ namespace Palaso.BuildTasks.UnitTestTasks
 
 		protected override string GetWorkingDirectory()
 		{
-			if (!String.IsNullOrEmpty(WorkingDirectory))
+			if (!string.IsNullOrEmpty(WorkingDirectory))
 			{
 				return Path.GetFullPath(WorkingDirectory);
 			}
@@ -112,7 +112,7 @@ namespace Palaso.BuildTasks.UnitTestTasks
 		/// Gets the name (without path) of the NUnit executable. When running on Mono this is
 		/// different from ProgramNameAndPath() which returns the executable we'll start.
 		/// </summary>
-		private string RealProgramName
+		protected virtual string RealProgramName
 		{
 			get
 			{
@@ -167,38 +167,40 @@ namespace Palaso.BuildTasks.UnitTestTasks
 						bldr.Append(" ");
 					bldr.Append(item.ItemSpec);
 				}
-				var switchChar = '/';
-				if (Environment.OSVersion.Platform == PlatformID.Unix
-					|| Environment.OSVersion.Platform == PlatformID.MacOSX)
-				{
-					switchChar = '-';
-				}
-				bldr.AppendFormat(" {0}nologo", switchChar);
+				// At least with NUnit 2.8.4 we can use "--" as switch char on both Windows and Linux
 				if (DisableShadowCopy)
-					bldr.AppendFormat(" {0}noshadow", switchChar);
-				if (_testInNewThread.HasValue && !_testInNewThread.Value)
-					bldr.AppendFormat(" {0}nothread", switchChar);
-				if (!String.IsNullOrEmpty(ProjectConfiguration))
-					bldr.AppendFormat(" \"{0}config={1}\"", switchChar, ProjectConfiguration);
-				if (!String.IsNullOrEmpty(Fixture))
-					bldr.AppendFormat(" \"{0}fixture={1}\"", switchChar, Fixture);
-				if (!String.IsNullOrEmpty(IncludeCategory))
-					bldr.AppendFormat(" \"{0}include={1}\"", switchChar, IncludeCategory);
-				if (!String.IsNullOrEmpty(ExcludeCategory))
-					bldr.AppendFormat(" \"{0}exclude={1}\"", switchChar, ExcludeCategory);
-				if (!String.IsNullOrEmpty(XsltTransformFile))
-					bldr.AppendFormat(" \"{0}transform={1}\"", switchChar, XsltTransformFile);
-				if (!String.IsNullOrEmpty(OutputXmlFile))
-					bldr.AppendFormat(" \"{0}xml={1}\"", switchChar, OutputXmlFile);
-				if (!String.IsNullOrEmpty(ErrorOutputFile))
-					bldr.AppendFormat(" \"{0}err={1}\"", switchChar, ErrorOutputFile);
-				if (!String.IsNullOrEmpty(Framework))
-					bldr.AppendFormat(" \"{0}framework={1}\"", switchChar, Framework);
-				if (!String.IsNullOrEmpty(Apartment))
-					bldr.AppendFormat(" \"{0}apartment={1}\"", switchChar, Apartment);
-				bldr.AppendFormat(" {0}labels", switchChar);
+					bldr.Append(" --noshadow");
+				if (!string.IsNullOrEmpty(ProjectConfiguration))
+					bldr.AppendFormat(" \"--config={0}\"", ProjectConfiguration);
+				if (!string.IsNullOrEmpty(Fixture))
+					bldr.AppendFormat(" \"--fixture={0}\"", Fixture);
+				if (!string.IsNullOrEmpty(IncludeCategory))
+					bldr.AppendFormat(" \"--include={0}\"", IncludeCategory);
+				if (!string.IsNullOrEmpty(ExcludeCategory))
+					bldr.AppendFormat(" \"--exclude={0}\"", ExcludeCategory);
+				if (!string.IsNullOrEmpty(XsltTransformFile))
+					bldr.AppendFormat(" \"--transform={0}\"", XsltTransformFile);
+				if (!string.IsNullOrEmpty(ErrorOutputFile))
+					bldr.AppendFormat(" \"--err={0}\"", ErrorOutputFile);
+				if (!string.IsNullOrEmpty(Framework))
+					bldr.AppendFormat(" \"--framework={0}\"", Framework);
+				if (!string.IsNullOrEmpty(Apartment))
+					bldr.AppendFormat(" \"--apartment={0}\"", Apartment);
+				bldr.AppendFormat(AddAdditionalProgramArguments());
 				return bldr.ToString();
 			}
+		}
+
+		protected virtual string AddAdditionalProgramArguments()
+		{
+			var bldr = new StringBuilder();
+			bldr.Append(" --nologo");
+			if (!TestInNewThread)
+				bldr.Append(" --nothread");
+			if (!string.IsNullOrEmpty(OutputXmlFile))
+				bldr.AppendFormat(" \"--xml={0}\"", OutputXmlFile);
+			bldr.Append(" --labels");
+			return bldr.ToString();
 		}
 
 		private void EnsureToolPath()
