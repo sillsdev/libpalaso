@@ -78,6 +78,8 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		public void FixtureSetup()
 		{
 			KeyboardController.Initialize();
+			if (!Sldr.IsInitialized)
+				Sldr.Initialize();
 		}
 
 		[TestFixtureTearDown]
