@@ -5,7 +5,7 @@ using System.Text;
 namespace Palaso.BuildTasks.UnitTestTasks
 {
 	/// <summary>
-	/// Run NUnit on a test assembly.
+	/// Run NUnit3 on a test assembly.
 	/// </summary>
 	public class NUnit3 : NUnit
 	{
@@ -18,6 +18,12 @@ namespace Palaso.BuildTasks.UnitTestTasks
 		}
 
 		public bool NoColor { get; set; }
+
+		/// <summary>
+		/// Should be set to true if the tests are running on a TeamCity server.
+		/// Adds --teamcity which "Turns on use of TeamCity service messages."
+		/// </summary>
+		public bool TeamCity { get; set; }
 
 		/// <summary>
 		/// Gets the name (without path) of the NUnit executable. When running on Mono this is
@@ -46,6 +52,8 @@ namespace Palaso.BuildTasks.UnitTestTasks
 				bldr.Append(" --nocolor");
 			if (Force32Bit)
 				bldr.Append(" --x86");
+			if (TeamCity)
+				bldr.Append(" --teamcity");
 			return bldr.ToString();
 		}
 	}
