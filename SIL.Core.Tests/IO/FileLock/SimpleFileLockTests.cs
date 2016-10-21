@@ -50,7 +50,7 @@ namespace SIL.Tests.IO.FileLock
 			LockIO.WriteLock(LockPath, new FileLockContent
 			{
 				PID = ActiveProcessId,
-				ProcessName = Process.GetProcessById(ActiveProcessId).ProcessName,
+				ProcessName = GetSafeActiveProcessName(),
 				Timestamp = DateTime.Now.Ticks
 			});
 			SimpleFileLock fileLock = SimpleFileLock.Create("SimpleFileLockTests");
@@ -105,7 +105,7 @@ namespace SIL.Tests.IO.FileLock
 			LockIO.WriteLock(LockPath, new FileLockContent
 			{
 				PID = ActiveProcessId,
-				ProcessName = Process.GetProcessById(ActiveProcessId).ProcessName,
+				ProcessName = GetSafeActiveProcessName(),
 				Timestamp = (DateTime.Now - TimeSpan.FromHours(2)).Ticks
 			});
 			SimpleFileLock fileLock = SimpleFileLock.Create("SimpleFileLockTests", TimeSpan.FromHours(1));
@@ -118,7 +118,7 @@ namespace SIL.Tests.IO.FileLock
 			LockIO.WriteLock(LockPath, new FileLockContent
 			{
 				PID = ActiveProcessId,
-				ProcessName = Process.GetProcessById(ActiveProcessId).ProcessName,
+				ProcessName = GetSafeActiveProcessName(),
 				Timestamp = DateTime.Now.Ticks
 			});
 			SimpleFileLock fileLock = SimpleFileLock.Create("SimpleFileLockTests", TimeSpan.FromHours(1));
@@ -148,12 +148,21 @@ namespace SIL.Tests.IO.FileLock
 			LockIO.WriteLock(LockPath, new FileLockContent
 			{
 				PID = ActiveProcessId,
-				ProcessName = Process.GetProcessById(ActiveProcessId).ProcessName,
+				ProcessName = GetSafeActiveProcessName(),
 				Timestamp = DateTime.Now.Ticks
 			});
 			SimpleFileLock fileLock = SimpleFileLock.Create("SimpleFileLockTests");
 			fileLock.ReleaseLock();
 			Assert.That(File.Exists(LockPath), Is.True);
+		}
+
+		/// <summary>
+		/// Trying to get the process name for process 1 on Linux throws an exception unless the program
+		/// is running as root.  So use a dummy name for the init process instead.
+		/// </summary>
+		private string GetSafeActiveProcessName()
+		{
+			return Platform.IsLinux && (ActiveProcessId == 1) ? "init" : Process.GetProcessById(ActiveProcessId).ProcessName;
 		}
 
 		[Test]
