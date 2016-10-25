@@ -323,6 +323,17 @@ namespace SIL.Tests.IO
 			}
 			PathUtilities.OpenDirectoryInExplorer(path);
 		}
+
+		[TestCase(null, Result = false)]
+		[TestCase("", Result = false)]
+		[TestCase("directory", Result = true)]
+		[TestCase("rect", Result = false)]
+		[TestCase("none", Result = false)]
+		public bool PathContainsDirectory(string directory)
+		{
+			var path = Path.Combine(Path.GetTempPath(), "some", "directory", "and", "other", "directory");
+			return PathUtilities.PathContainsDirectory(path, directory);
+		}
 	}
 }
 
