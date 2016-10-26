@@ -419,6 +419,23 @@ namespace SIL.IO
 			}
 		}
 
+		public static bool PathContainsDirectory(string path, string directory)
+		{
+			if (string.IsNullOrEmpty(directory))
+				return false;
+
+			if (path.Contains(directory))
+			{
+				while (!string.IsNullOrEmpty(path))
+				{
+					var subdir = Path.GetFileName(path);
+					if (subdir == directory)
+						return true;
+					path = Path.GetDirectoryName(path);
+				}
+			}
+			return false;
+		}
 	}
 }
 
