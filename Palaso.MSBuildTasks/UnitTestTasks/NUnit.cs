@@ -174,10 +174,6 @@ namespace Palaso.BuildTasks.UnitTestTasks
 					bldr.AppendFormat(" \"--config={0}\"", ProjectConfiguration);
 				if (!string.IsNullOrEmpty(Fixture))
 					bldr.AppendFormat(" \"--fixture={0}\"", Fixture);
-				if (!string.IsNullOrEmpty(IncludeCategory))
-					bldr.AppendFormat(" \"--include={0}\"", IncludeCategory);
-				if (!string.IsNullOrEmpty(ExcludeCategory))
-					bldr.AppendFormat(" \"--exclude={0}\"", ExcludeCategory);
 				if (!string.IsNullOrEmpty(XsltTransformFile))
 					bldr.AppendFormat(" \"--transform={0}\"", XsltTransformFile);
 				if (!string.IsNullOrEmpty(ErrorOutputFile))
@@ -186,9 +182,21 @@ namespace Palaso.BuildTasks.UnitTestTasks
 					bldr.AppendFormat(" \"--framework={0}\"", Framework);
 				if (!string.IsNullOrEmpty(Apartment))
 					bldr.AppendFormat(" \"--apartment={0}\"", Apartment);
+				bldr.AppendFormat(AddIncludeAndExcludeArguments());
 				bldr.AppendFormat(AddAdditionalProgramArguments());
 				return bldr.ToString();
 			}
+		}
+
+		// internal for testing
+		internal virtual string AddIncludeAndExcludeArguments()
+		{
+			var bldr = new StringBuilder();
+			if (!string.IsNullOrEmpty(IncludeCategory))
+				bldr.AppendFormat(" \"--include={0}\"", IncludeCategory);
+			if (!string.IsNullOrEmpty(ExcludeCategory))
+				bldr.AppendFormat(" \"--exclude={0}\"", ExcludeCategory);
+			return bldr.ToString();
 		}
 
 		protected virtual string AddAdditionalProgramArguments()
