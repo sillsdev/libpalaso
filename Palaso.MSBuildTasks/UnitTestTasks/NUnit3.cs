@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2016 SIL International
 // This software is licensed under the MIT license (http://opensource.org/licenses/MIT)
+
+using System;
 using System.Text;
 
 namespace Palaso.BuildTasks.UnitTestTasks
@@ -54,6 +56,43 @@ namespace Palaso.BuildTasks.UnitTestTasks
 				bldr.Append(" --x86");
 			if (TeamCity)
 				bldr.Append(" --teamcity");
+			return bldr.ToString();
+		}
+
+		internal override string AddIncludeAndExcludeArguments()
+		{
+			var bldr = new StringBuilder();
+			string include = null;
+			string exclude = null;
+
+			if (!string.IsNullOrWhiteSpace(IncludeCategory))
+				include = BuildCategoriesString(IncludeCategory, "=", " or ");
+
+			if (!string.IsNullOrWhiteSpace(ExcludeCategory))
+				exclude = BuildCategoriesString(ExcludeCategory, "!=", " and ");
+
+			if (include == null && exclude == null)
+				return string.Empty;
+
+			bldr.Append(" --where \"");
+			if (include != null && exclude != null)
+				bldr.Append(include).Append(" and ").Append(exclude);
+			else
+				bldr.Append(include).Append(exclude);
+			bldr.Append("\"");
+
+			return bldr.ToString();
+		}
+
+		private string BuildCategoriesString(string categoryString, string condition, string joiner)
+		{
+			var bldr = new StringBuilder();
+
+			foreach (var cat in categoryString.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries))
+				bldr.Append("cat" + condition + cat + joiner);
+
+			bldr.Length = bldr.Length - joiner.Length; // remove final "or"
+			bldr.Insert(0, "(").Append(")");
 			return bldr.ToString();
 		}
 	}

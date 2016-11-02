@@ -195,6 +195,7 @@
     </Compile>
     <Compile Include="ArchiveTests.cs" />
     <Compile Include="GenerateReleaseArtifactsTests.cs" />
+    <Compile Include="UnitTestTasks\NUnit3Tests.cs" />
     <Compile Include="UpdateBuildTypeFileTests.cs" />
     <Compile Include="MakePotTests.cs" />
     <Compile Include="MockTaskItem.cs" />
