@@ -69,26 +69,37 @@ namespace SIL.Windows.Forms.HtmlBrowser
 					// the geckofx case instead.
 					goto case BrowserType.GeckoFx;
 				case BrowserType.GeckoFx:
-					var path = Path.Combine(Path.GetDirectoryName(
-						new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath),
-						"SIL.Windows.Forms.GeckoBrowserAdapter.dll");
-					if (File.Exists(path))
+					const string geckoFxWebBrowserAdapterType =
+						"SIL.Windows.Forms.GeckoBrowserAdapter.GeckoFxWebBrowserAdapter";
+					// It's possible that GeckoBrowserAdapter.dll got ilmerged/ilrepacked into
+					// the currently executing assembly, so try that first.
+					// NOTE: when ilrepacking SIL.Windows.Forms.dll you'll also have to ilrepack
+					// GeckoBrowserAdapter.dll, otherwise the IWebBrowser interface definition
+					// will be different!
+					var browser = Assembly.GetExecutingAssembly().GetType(geckoFxWebBrowserAdapterType);
+					if (browser == null)
 					{
-						var assembly = Assembly.LoadFile(path);
-						if (assembly != null)
+						var path = Path.Combine(Path.GetDirectoryName(
+							new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath),
+							"SIL.Windows.Forms.GeckoBrowserAdapter.dll");
+						if (File.Exists(path))
 						{
-							var browser = assembly.GetType("SIL.Windows.Forms.GeckoBrowserAdapter.GeckoFxWebBrowserAdapter");
-							if (browser != null)
+							var assembly = Assembly.LoadFile(path);
+							if (assembly != null)
 							{
-								try
-								{
-									return (IWebBrowser)Activator.CreateInstance(browser, this);
-								}
-								catch (Exception)
-								{
-									//Eat exceptions creating the GeckoFxWebBrowserAdapter
-								}
+								browser = assembly.GetType(geckoFxWebBrowserAdapterType);
 							}
+						}
+					}
+					if (browser != null)
+					{
+						try
+						{
+							return (IWebBrowser) Activator.CreateInstance(browser, this);
+						}
+						catch (Exception)
+						{
+							//Eat exceptions creating the GeckoFxWebBrowserAdapter
 						}
 					}
 					//We failed to Create the GeckoFxWebBrowserAdapter, so drop into the fallback case
