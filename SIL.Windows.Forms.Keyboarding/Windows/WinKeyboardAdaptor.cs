@@ -308,19 +308,20 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				ushort langId = ime.Item2;
 				IntPtr hkl = ime.Item3;
 
-				var culture = new CultureInfo(langId);
+				CultureInfo culture;
 				string locale;
 				string cultureName;
 				try
 				{
+					culture = new CultureInfo(langId);
 					cultureName = culture.DisplayName;
 					locale = culture.Name;
 				}
 				catch (CultureNotFoundException)
 				{
-					// we get an exception for non-supported cultures, probably because of a
-					// badly applied .NET patch.
-					// http://www.ironspeed.com/Designer/3.2.4/WebHelp/Part_VI/Culture_ID__XXX__is_not_a_supported_culture.htm and others
+					// This can happen for old versions of Keyman that created a custom culture that is invalid to .Net.
+					// Also see http://stackoverflow.com/a/24820530/4953232
+					culture = new CultureInfo("en-US");
 					cultureName = "[Unknown Language]";
 					locale = "en-US";
 				}
