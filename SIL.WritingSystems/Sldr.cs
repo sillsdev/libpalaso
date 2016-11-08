@@ -100,9 +100,9 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Initializes the SLDR. This should be called before calling other methods or properties.
 		/// </summary>
-		public static void Initialize()
+		public static void Initialize(bool offlineMode = false)
 		{
-			Initialize(false, DefaultSldrCachePath);
+			Initialize(offlineMode, DefaultSldrCachePath);
 		}
 
 		/// <summary>
