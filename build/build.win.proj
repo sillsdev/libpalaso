@@ -1,7 +1,0 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<!-- HACK: in order to be able to build we need nuget packages installed. This got
-		introduced in Palaso.proj. However, the TC builds still call this file, so we import
-		the new build file to keep the TC builds from failing.
-		Once the TC builds got changed we should remove this file. -->
-	<Import Project="Palaso.proj"/>
-</Project>
