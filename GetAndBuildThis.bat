@@ -8,6 +8,12 @@ IF "%1"=="" (
 
 REM Presence of a second argument indicates that the caller has already run vsvars32.bat
 IF "%2"=="" (
+	if not "%VS140COMNTOOLS%" == "" (
+		echo Setting up Visual Studio 2015 Tools...
+		@call "%VS140COMNTOOLS%vsvars32.bat"
+		goto build
+	)
+
 	if not "%VS120COMNTOOLS%" == "" (
 		echo Setting up Visual Studio Pro 2013 Tools...
 		@call "%VS120COMNTOOLS%vsvars32.bat"

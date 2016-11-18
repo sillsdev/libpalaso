@@ -25,7 +25,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			set
 			{
 				_metadataEditorControl.ShowCreator = value;
-				Text = value ? LocalizationManager.GetString("MetadataEditor.TitleWithCredit", "Credit, Copyright, & License") :  LocalizationManager.GetString("MetadataEditor.TitleNoCredit", "Copyright & License");
+				Text = value ? LocalizationManager.GetString("MetadataEditor.TitleWithCredit", "Credit, Copyright, and License") :  LocalizationManager.GetString("MetadataEditor.TitleNoCredit", "Copyright and License");
 			}
 		}
 

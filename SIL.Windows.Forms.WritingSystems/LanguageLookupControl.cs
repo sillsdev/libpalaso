@@ -183,7 +183,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			_listView.SelectedIndices.Clear();
 			var toShow = new List<ListViewItem>();
 
-			string multipleCountriesLabel = LocalizationManager.GetString("LanguageLookup.CountryCount", "{0} Countries", "Shown when there are multiple countries and it is just confusing to list them all.");
+			string multipleCountriesLabel = LocalizationManager.GetString("LanguageLookup.CountryCount", "{0} Countries", "Shown when there are multiple countries and it is just confusing to list them all. {0} is a count of countries.");
 
 			var itemSelected = false;
 			foreach (LanguageInfo lang in _model.MatchingLanguages)
