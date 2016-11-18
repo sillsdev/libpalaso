@@ -235,7 +235,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private void SetMessageLabelText()
 		{
-			var msg = "In the box above, type what you are searching for, then press ENTER.".Localize("ImageToolbox.EnterSearchTerms");
+			var msg = "This is the 'Art Of Reading' gallery. In the box above, type what you are searching for, then press ENTER. You can type words in English and Indonesian.".Localize("ImageToolbox.EnterSearchTerms");
 			// Allow for the old index that contained English and Indonesian together.
 			var searchLang = "English + Indonesian";
 			// If we have the new multilingual index, _searchLanguageMenu will be visible.  Its tooltip

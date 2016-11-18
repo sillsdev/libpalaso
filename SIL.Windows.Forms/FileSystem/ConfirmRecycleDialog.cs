@@ -26,7 +26,7 @@ namespace SIL.Windows.Forms.FileSystem
 			LabelForThingBeingDeleted = labelForThingBeingDeleted.Trim();
 			string msgFmt = multipleItems ? LocalizationManager.GetString("DialogBoxes.ConfirmRecycleDialog.MessageForMultipleItems",
 				"{0} will be moved to the Recycle Bin.", 
-				"Param 0 is a description of the things being deleted (e.g., \"The selected files\"") : _messageLabel.Text;
+				"Param {0} is a description of the things being deleted (e.g., \"The selected files\")") : _messageLabel.Text;
 			_messageLabel.Text = string.Format(msgFmt, LabelForThingBeingDeleted);
 		}
 
