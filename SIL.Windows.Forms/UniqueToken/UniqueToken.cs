@@ -96,7 +96,7 @@ namespace SIL.Windows.Forms.UniqueToken
 						"Another copy of the application is already running. If you cannot find it, restart your computer.") :
 						String.Format(
 							L10NSharp.LocalizationManager.GetString("Application.AlreadyRunning.Specific",
-								"Another copy of {0} is already running. If you cannot find that {0}, restart your computer.",
+                                "Another copy of {0} is already running. If you cannot find that copy of {0}, restart your computer.",
 								"{0} is the application name"),
 							applicationName);
 				ErrorReport.NotifyUserOfProblem(errorMsg);

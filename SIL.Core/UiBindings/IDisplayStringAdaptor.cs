@@ -47,8 +47,8 @@ namespace SIL.UiBindings
 	}
 
 	/// <summary>
-	/// This is used to convert from the IEnuerable<string> that the cache give us
-	/// to the IEnumerable<object> that AutoComplete needs.
+	/// This is used to convert from the IEnuerable<string/> that the cache give us
+	/// to the IEnumerable<object/> that AutoComplete needs.
 	/// </summary>
 	public class StringToObjectEnumerableWrapper: IEnumerable<object>
 	{
