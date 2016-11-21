@@ -197,5 +197,19 @@ namespace SIL.IO
 			File.Move(Path, path);
 			_path = path;
 		}
+
+
+		/// <summary>
+		/// Used to create a temporary filename in the same folder as another file.
+		/// </summary>
+		/// <param name="inputPath">path to an (existing) file</param>
+		public static TempFile InFolderOf(string inputPath)
+		{
+			var folder = System.IO.Path.GetDirectoryName(inputPath);
+			if (String.IsNullOrEmpty(folder))
+				folder = ".";
+			var path = System.IO.Path.Combine(folder, System.IO.Path.GetRandomFileName());
+			return TempFile.TrackExisting(path);
+		}
 	}
 }
