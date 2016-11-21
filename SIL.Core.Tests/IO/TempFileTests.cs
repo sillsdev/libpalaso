@@ -76,5 +76,35 @@ namespace SIL.Tests.IO
 				Assert.That(file1.Path, Is.Not.EqualTo(file2.Path));
 			}
 		}
+
+		[Test]
+		public void InFolderOf_WorksProperly()
+		{
+			string codeBase = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
+			UriBuilder uri = new UriBuilder(codeBase);
+			string originalPath = Uri.UnescapeDataString(uri.Path);
+			string filePath, filePath2;
+			using (var file1 = TempFile.InFolderOf(originalPath))
+			using (var file2 = TempFile.InFolderOf(originalPath))
+			{
+				Assert.That(file1.Path, Is.Not.EqualTo(originalPath));
+				Assert.That(file2.Path, Is.Not.EqualTo(originalPath));
+				Assert.That(file1.Path, Is.Not.EqualTo(file2.Path));
+				Assert.That(Path.GetDirectoryName(file1.Path), Is.EqualTo(Path.GetDirectoryName(file2.Path)));
+				Assert.That(Path.GetDirectoryName(file1.Path), Is.EqualTo(Path.GetDirectoryName(originalPath)));
+				Assert.IsFalse(File.Exists(file1.Path));	// doesn't actually create file
+				filePath = file1.Path;
+				using (FileStream fs = File.Create(file2.Path))
+				{
+					Byte[] data = new System.Text.UTF8Encoding(true).GetBytes("This is a test.");
+					// Add some information to the file.
+					fs.Write(data, 0, data.Length);
+				}
+				Assert.IsTrue(File.Exists(file2.Path));		// file was created by test code.
+				filePath2 = file2.Path;
+			}
+			Assert.IsFalse(File.Exists(filePath));		// doesn't crash "deleting" non-existent file
+			Assert.IsFalse(File.Exists(filePath2));		// deletes file that was created
+		}
 	}
 }
