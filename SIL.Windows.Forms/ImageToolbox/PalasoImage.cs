@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -288,6 +289,27 @@ namespace SIL.Windows.Forms.ImageToolbox
 			};
 			NormalizeImageOrientation(i);
 			return i;
+		}
+
+		/// <summary>
+		/// Load a PalasoImage from a file, trying several times if needed.
+		/// </summary>
+		/// <remarks>
+		/// This would logically belong in SIL.Core.IO.RobustIO except that PalasoImage is in SIL.Windows.Forms.
+		/// </remarks>
+		public static PalasoImage FromFileRobustly(string path)
+		{
+			return RetryUtility.Retry(() => PalasoImage.FromFile(path),
+				RetryUtility.kDefaultMaxRetryAttempts,
+				RetryUtility.kDefaultRetryDelay,
+				new HashSet<Type>
+				{
+					Type.GetType("System.IO.IOException"),
+					// Odd type to catch... but it seems that Image.FromFile (which is called in the bowels of PalasoImage.FromFile)
+					// throws OutOfMemoryException when the file is inaccessible.
+					// See http://stackoverflow.com/questions/2610416/is-there-a-reason-image-fromfile-throws-an-outofmemoryexception-for-an-invalid-i
+					Type.GetType("System.OutOfMemoryException")
+				});
 		}
 
 		/// <summary>
