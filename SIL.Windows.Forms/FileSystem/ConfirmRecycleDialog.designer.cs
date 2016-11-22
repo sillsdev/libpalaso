@@ -112,7 +112,7 @@
 			// _messageLabel
 			// 
 			this._L10NSharpExtender.SetLocalizableToolTip(this._messageLabel, null);
-			this._L10NSharpExtender.SetLocalizationComment(this._messageLabel, "Param 0 is a file name");
+			this._L10NSharpExtender.SetLocalizationComment(this._messageLabel, "Param {0} is a file name");
 			this._L10NSharpExtender.SetLocalizingId(this._messageLabel, "DialogBoxes.ConfirmRecycleDialog.MessageForSingleItem");
 			this._messageLabel.Location = new System.Drawing.Point(95, 20);
 			this._messageLabel.Margin = new System.Windows.Forms.Padding(0, 4, 0, 10);
