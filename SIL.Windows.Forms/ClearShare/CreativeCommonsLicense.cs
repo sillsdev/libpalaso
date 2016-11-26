@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 
 namespace SIL.Windows.Forms.ClearShare
 {
@@ -143,8 +144,10 @@ namespace SIL.Windows.Forms.ClearShare
 				var urlWithoutTrailingSlash = value.TrimEnd(new char[] {'/'});
 				var parts = urlWithoutTrailingSlash.Split(new char[] { '/' });
 				var version=  parts[5];
+
+				//just a sanity check on the version
 				decimal result;
-				if (decimal.TryParse(version, out result))
+				if (decimal.TryParse(version, NumberStyles.AllowDecimalPoint, new CultureInfo("en-US"), out result))
 					Version = version;
 
 				if(parts.Length > 6)
@@ -310,6 +313,10 @@ namespace SIL.Windows.Forms.ClearShare
 					HasChanges = true;
 				}
 				_qualifier = newValue;
+				if(value)
+				{
+					_version = "3.0";// as of November 2016, igo only had a 3.0 version, while normal cc licenses were up to 4.0
+				}
 			}
 		}
 
