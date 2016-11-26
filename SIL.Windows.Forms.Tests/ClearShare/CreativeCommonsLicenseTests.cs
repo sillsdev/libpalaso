@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Globalization;
+using System.Threading;
 using NUnit.Framework;
 using SIL.Windows.Forms.ClearShare;
 
@@ -7,6 +9,12 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 	[TestFixture]
 	public class CreativeCommonsLicenseTests
 	{
+		[SetUp]
+		public void Setup()
+		{
+			Thread.CurrentThread.CurrentCulture = new CultureInfo("sv-SE"); //sweden, which uses commas for decimal  point (regression test)
+		}
+
 		[Test]
 		public void RoundTrip_BY()
 		{
@@ -108,6 +116,16 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 				IntergovernmentalOriganizationQualifier = true
 			};
 			Assert.IsTrue(l.HasChanges);
+		}
+
+		[Test]
+		public void SetIGO_VersionNumerIsAppropriate()
+		{
+			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives)
+			{
+				IntergovernmentalOriganizationQualifier = true
+			};
+			Assert.AreEqual("3.0", l.Version, "The igo version of CC did not have a version beyond 3.0 as of Nov 2016");
 		}
 
 		[Test]
