@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using SIL.IO;
 
@@ -481,7 +482,19 @@ namespace SIL.Reporting
 						m_minorEvents.Remove(0, cutoff);
 					}
 					m_minorEvents.Append(DateTime.Now.ToLongTimeString() + "\t");
-					m_minorEvents.AppendFormat(message, args);
+					if (args.Any())
+					{
+						try
+						{
+							m_minorEvents.AppendFormat(message, args);
+						}
+						catch (Exception)
+						{
+							m_minorEvents.AppendFormat("Error formatting message with {0} args: {1}", args.Length, message);
+						}
+					}
+					else
+						m_minorEvents.Append(message);
 					m_minorEvents.AppendLine();
 #if !DEBUG
 					}
