@@ -44,7 +44,12 @@ namespace SIL.WritingSystems
 				LanguageInfo language = GetOrCreateLanguageFromCode(code, regionCode == "?" ? "?" : StandardSubtags.RegisteredRegions[regionCode].Name);
 
 				string name = items[3].Trim();
-				if (items[2] == "L")
+
+				if(items[2].Contains("P"))
+				{
+					//Skip pejorative
+				}
+				else if (items[2] == "L")
 				{
 					while (language.Names.Contains(name))
 						language.Names.Remove(name);
