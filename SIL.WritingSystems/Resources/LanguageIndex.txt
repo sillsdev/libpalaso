@@ -15702,7 +15702,6 @@ gaw	PG	LA	Nobnob
 gax	ET	L	Oromo, Borana-Arsi-Guji
 gax	ET	LA	Afan Oromo
 gax	ET	LA	Southern Oromo
-gax	ET	LP	Galla
 gax	ET	LP	Galligna
 gax	ET	LP	Gallinya
 gax	KE	D	Arsi
@@ -15714,7 +15713,6 @@ gax	KE	LA	Boraan
 gax	KE	LA	Boran
 gax	KE	LA	Oromo
 gax	KE	LA	Southern Oromo
-gax	KE	LP	Galla
 gax	SO	D	Borana
 gax	SO	DA	Booran
 gax	SO	DA	Boran
@@ -15732,7 +15730,6 @@ gaz	ET	L	Oromo, West Central
 gaz	ET	LA	Afan Oromo
 gaz	ET	LA	Oromiffa
 gaz	ET	LA	Oromoo
-gaz	ET	LP	Galla
 gba	CF	L	Gbaya
 gbb	AU	L	Kaytetye
 gbb	AU	LA	Gaididj
