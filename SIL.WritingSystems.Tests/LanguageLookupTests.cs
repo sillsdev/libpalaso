@@ -142,25 +142,5 @@ namespace SIL.WritingSystems.Tests
 			Assert.True(languages.Any(l => l.Names.Contains("Andaki")));
 			Assert.True(languages.Any(l => l.Names.Contains("Churuba")));
 		}
-
-		[Test]
-		public void SuggestLanguages_Akan_DoesnotCrash()
-		{
-			var lookup = new LanguageLookup();
-			LanguageInfo[] languages = lookup.SuggestLanguages("a").ToArray();
-			Assert.True(languages.Any(l => l.LanguageTag == "ak"));
-			Assert.True(languages.Any(l => l.LanguageTag == "akq"));
-			Assert.True(languages.Any(l => l.Names.Contains("Akuapem")));
-			Assert.True(languages.Any(l => l.Names.Contains("Ak")));
-			Assert.True(languages.Any(l => l.Names.Contains("Akan")));
-			Assert.True(languages.Any(l => l.Names.Contains("Fanti")));
-			languages = lookup.SuggestLanguages("ak").ToArray();
-			Assert.True(languages.Any(l => l.LanguageTag == "ak"));
-			Assert.True(languages.Any(l => l.LanguageTag == "akq"));
-			Assert.True(languages.Any(l => l.Names.Contains("Asante")));
-			Assert.True(languages.Any(l => l.Names.Contains("Ak")));
-			Assert.True(languages.Any(l => l.Names.Contains("Akan")));
-			Assert.True(languages.Any(l => l.Names.Contains("Fanti")));
-		}
 	}
 }
