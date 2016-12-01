@@ -35,6 +35,9 @@ namespace SIL.WritingSystems
 				string[] items = entry.Split('\t');
 				if (items.Length != 4)
 					continue;
+				if(items[2].Contains('!')) //temporary suppression of entries while waiting for Ethnologue changes
+					continue;
+
 				string code = items[0].Trim();
 				string twoLetterCode;
 				if (threeToTwoLetter.TryGetValue(code, out twoLetterCode))
@@ -45,11 +48,8 @@ namespace SIL.WritingSystems
 
 				string name = items[3].Trim();
 
-				if(items[2].Contains("P"))
-				{
-					//Skip pejorative
-				}
-				else if (items[2] == "L")
+				
+				if (items[2] == "L")
 				{
 					while (language.Names.Contains(name))
 						language.Names.Remove(name);
@@ -57,7 +57,19 @@ namespace SIL.WritingSystems
 				}
 				else
 				{
-					if (!language.Names.Contains(name))
+					if (items[2].Contains("P"))
+					{
+						//Skip pejorative
+					}
+					else if (items[1] == ("ET"))
+					{
+						//Skip alternatives for Ethiopia, as per request
+					}
+					else if (items[0] == "gax" || items[0] == "om")
+					{
+						//For these two "Oromo" languages, skip all related languages as per request
+					}
+					else if (!language.Names.Contains(name))
 						language.Names.Add(name); //intentionally not lower-casing
 				}
 			}
@@ -115,6 +127,9 @@ namespace SIL.WritingSystems
 			{
 				foreach (string name in languageInfo.Names)
 					GetOrCreateListFromName(name).Add(languageInfo);
+
+				if (languageInfo.Names.Count == 0)
+					continue; // this language is suppressed
 
 				//Why just this small set? Only out of convenience. Ideally we'd have a db of all languages as they write it in their literature.
 				string localName = null;

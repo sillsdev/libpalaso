@@ -174,5 +174,30 @@ namespace SIL.WritingSystems.Tests
 			Assert.True(languages.Any(l => l.Names.Contains("Deg Xit’an")));
 			Assert.AreEqual(3, languages[0].Names.Count, "3 of the 5 names are pejorative and should not be listed");
 		}
+
+		/// <summary>
+		/// This is a result of finding that some of the alternative names, in Nov 2016, were *not* marked as pejorative but actually were.
+		/// These may be fixed in the Ethnologue over time, but it was requested that we just remove all alternative names for now.
+		/// </summary>
+		[Test]
+		public void SuggestLanguages_LanguageIsInEthiopia_ShowOnlyOfficialNames()
+		{
+			var lookup = new LanguageLookup();
+			var languages = lookup.SuggestLanguages("Wolaytta").ToArray();
+			Assert.True(languages.Any(l => l.Names.Contains("Wolaytta")));
+			Assert.AreEqual(1, languages[0].Names.Count, "Should only list a single name for Ethiopian languages.");
+		}
+
+		/// <summary>
+		/// We have been asked to temporarily suppress these three codes for Ethiopia, until the Ethologue is changed.
+		/// </summary>
+		[Test]
+		public void SuggestLanguages_LanguageIsOromo_DoNotShowRelatedLanguages()
+		{
+			var lookup = new LanguageLookup();
+			var languages = lookup.SuggestLanguages("Oromo").ToArray();
+			Assert.True(languages.All(l => l.DesiredName == "Oromo"));
+			Assert.True(languages.All(l => l.LanguageTag.StartsWith("om")), "We should be suppressing gat, hae, gaz");
+		}
 	}
 }

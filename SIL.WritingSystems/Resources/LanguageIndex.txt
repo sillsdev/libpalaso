@@ -15699,37 +15699,37 @@ gaw	PG	LA	Butelkud-Guntabak
 gaw	PG	LA	Garuh
 gaw	PG	LA	Nobanob
 gaw	PG	LA	Nobnob
-gax	ET	L	Oromo, Borana-Arsi-Guji
-gax	ET	LA	Afan Oromo
-gax	ET	LA	Southern Oromo
-gax	ET	LP	Galligna
-gax	ET	LP	Gallinya
-gax	KE	D	Arsi
-gax	KE	D	Boran
-gax	KE	D	Guji
-gax	KE	L	Borana
-gax	KE	LA	Booran
-gax	KE	LA	Boraan
-gax	KE	LA	Boran
-gax	KE	LA	Oromo
-gax	KE	LA	Southern Oromo
-gax	SO	D	Borana
-gax	SO	DA	Booran
-gax	SO	DA	Boran
-gax	SO	L	Oromo, Borana-Arsi-Guji
-gax	SO	LA	Southern Oromo
+gax	ET	!L	Oromo, Borana-Arsi-Guji
+gax	ET	!LA	Afan Oromo
+gax	ET	!LA	Southern Oromo
+gax	ET	!LP	Galligna
+gax	ET	!LP	Gallinya
+gax	KE	!D	Arsi
+gax	KE	!D	Boran
+gax	KE	!D	Guji
+gax	KE	!L	Borana
+gax	KE	!LA	Booran
+gax	KE	!LA	Boraan
+gax	KE	!LA	Boran
+gax	KE	!LA	Oromo
+gax	KE	!LA	Southern Oromo
+gax	SO	!D	Borana
+gax	SO	!DA	Booran
+gax	SO	!DA	Boran
+gax	SO	!L	Oromo, Borana-Arsi-Guji
+gax	SO	!LA	Southern Oromo
 gay	ID	D	Deret
 gay	ID	D	Lues
 gay	ID	D	Lut
 gay	ID	D	Serbejadi-Lukup
 gay	ID	L	Gayo
 gay	ID	LA	Gajo
-gaz	ET	D	Central Oromo
-gaz	ET	D	Western Oromo
-gaz	ET	L	Oromo, West Central
-gaz	ET	LA	Afan Oromo
-gaz	ET	LA	Oromiffa
-gaz	ET	LA	Oromoo
+gaz	ET	!D	Central Oromo
+gaz	ET	!D	Western Oromo
+gaz	ET	!L	Oromo, West Central
+gaz	ET	!LA	Afan Oromo
+gaz	ET	!LA	Oromiffa
+gaz	ET	!LA	Oromoo
 gba	CF	L	Gbaya
 gbb	AU	L	Kaytetye
 gbb	AU	LA	Gaididj
@@ -18222,15 +18222,15 @@ had	ID	LA	Miriei
 had	ID	LA	Moi
 had	ID	LA	Tinam
 had	ID	LA	Uran
-hae	ET	L	Oromo, Eastern
-hae	ET	LA	Harar
-hae	ET	LA	Harer
-hae	ET	LA	Ittu
-hae	ET	LP	Kwottu
-hae	ET	LP	Qottu
-hae	ET	LP	Qotu Oromo
-hae	ET	LP	Quottu
-hae	ET	LP	Qwottu
+hae	ET	!L	Oromo, Eastern
+hae	ET	!LA	Harar
+hae	ET	!LA	Harer
+hae	ET	!LA	Ittu
+hae	ET	!LP	Kwottu
+hae	ET	!LP	Qottu
+hae	ET	!LP	Qotu Oromo
+hae	ET	!LP	Quottu
+hae	ET	!LP	Qwottu
 haf	VN	L	Haiphong Sign Language
 hag	GH	D	Northern Hanga
 hag	GH	D	Southern Hanga
