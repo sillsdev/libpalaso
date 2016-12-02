@@ -52,7 +52,11 @@ namespace Palaso.WritingSystems
 				LanguageInfo language = GetOrCreateLanguageFromCode(code, items[1].Trim());
 
 				var name = items[3].Trim();
-				if (items[2] == "L")
+				if (items[2].Contains("P"))
+				{
+					//Skip pejorative
+				}
+				else if (items[2] == "L")
 				{
 					while (language.Names.Contains(name))
 						language.Names.Remove(name);
