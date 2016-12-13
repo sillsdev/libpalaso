@@ -104,7 +104,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.framework">
-      <HintPath>..\output\Release\nunit.framework.dll</HintPath>
+      <HintPath>..\lib\common\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="Rhino.Mocks">
       <HintPath>..\lib\common\Rhino.Mocks.dll</HintPath>
