@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using System.Xml;
 using SIL.IO;
 using SIL.PlatformUtilities;
 using SIL.Threading;
@@ -108,12 +109,20 @@ namespace SIL.WritingSystems
 				else
 				{
 					// new writing system
-					ws = WritingSystemFactory.Create();
-					ldmlDataMapper.Read(file, ws);
-					ws.Id = ws.LanguageTag;
-					ws.AcceptChanges();
-					WritingSystems[id] = ws;
-					_lastFileStats[id] = Tuple.Create(fi.LastWriteTime, fi.Length);
+					try
+					{
+						ws = WritingSystemFactory.Create();
+						ldmlDataMapper.Read(file, ws);
+						ws.Id = ws.LanguageTag;
+						ws.AcceptChanges();
+						WritingSystems[id] = ws;
+						_lastFileStats[id] = Tuple.Create(fi.LastWriteTime, fi.Length);
+					}
+					catch (XmlException)
+					{
+						// ldml file is not valid, rename it so it is no longer used
+						RobustFile.Move(file, file + ".bad");
+					}
 				}
 			}
 
