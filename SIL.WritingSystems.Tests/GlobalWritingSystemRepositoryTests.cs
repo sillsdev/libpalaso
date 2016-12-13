@@ -21,6 +21,24 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void Initialize_SkipsBadFile()
+		{
+			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			{
+				string versionPath = Path.Combine(e.Path, LdmlDataMapper.CurrentLdmlVersion.ToString());
+				Directory.CreateDirectory(versionPath);
+				string badFile = Path.Combine(versionPath, "en.ldml");
+				File.WriteAllBytes(badFile, new byte[100]); // 100 nulls
+				var repo = GlobalWritingSystemRepository.InitializeWithBasePath(e.Path, null);
+				// main part of test is that we don't get any exception.
+				Assert.That(repo.Count, Is.EqualTo(0));
+				// original .ldml file should have been renamed
+				Assert.That(File.Exists(badFile), Is.False);
+				Assert.That(File.Exists(badFile + ".bad"), Is.True);
+			}
+		}
+
+		[Test]
 		public void PathConstructor_HasCorrectPath()
 		{
 			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
