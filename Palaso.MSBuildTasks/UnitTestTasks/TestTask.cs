@@ -55,6 +55,16 @@ namespace Palaso.BuildTasks.UnitTestTasks
 		/// <value><c>true</c> if verbose; otherwise, <c>false</c>.</value>
 		public bool Verbose { get; set; }
 
+		/// <summary>
+		/// Sometimes it is important that the task report a failure if any tests fail.
+		/// One example is if we run multiple build targets in the same call and
+		/// expect subsequent targets not to be called if tests fail.
+		/// 
+		/// REVIEW: it actually seems to me that this should be the default behavior, but
+		/// I suppose changing the code in that way now could cause problems for existing callers.
+		/// </summary>
+		public bool FailTaskIfAnyTestsFail { get; set; }
+
 		private MessageImportance Importance;
 
 		/// <summary>
@@ -147,6 +157,13 @@ namespace Palaso.BuildTasks.UnitTestTasks
 					Log.LogWarning("{0} returned with exit code {1}", TestProgramName,
 						process.ExitCode);
 					FailedSuites = FailedSuiteNames;
+
+					if (process.ExitCode < 0) // test infrastructure error
+						retVal = false;
+
+					if (process.ExitCode > 0 && FailTaskIfAnyTestsFail) // at least one failed test
+						retVal = false;
+					
 					// Return true in this case - at least NUnit returns non-zero exit code when
 					// a test fails, but we don't want to stop the build.
 				}
