@@ -55,6 +55,10 @@ namespace Palaso.BuildTasks.UnitTestTasks
 		/// <value><c>true</c> if verbose; otherwise, <c>false</c>.</value>
 		public bool Verbose { get; set; }
 
+		protected bool _failTaskIfPositiveExitCode;
+
+		protected bool _failTaskIfNegativeExitCode;
+
 		private MessageImportance Importance;
 
 		/// <summary>
@@ -147,6 +151,13 @@ namespace Palaso.BuildTasks.UnitTestTasks
 					Log.LogWarning("{0} returned with exit code {1}", TestProgramName,
 						process.ExitCode);
 					FailedSuites = FailedSuiteNames;
+
+					if (process.ExitCode < 0 && _failTaskIfNegativeExitCode)
+						retVal = false;
+
+					if (process.ExitCode > 0 && _failTaskIfPositiveExitCode)
+						retVal = false;
+					
 					// Return true in this case - at least NUnit returns non-zero exit code when
 					// a test fails, but we don't want to stop the build.
 				}

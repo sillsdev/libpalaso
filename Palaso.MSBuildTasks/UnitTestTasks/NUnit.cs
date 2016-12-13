@@ -14,6 +14,12 @@ namespace Palaso.BuildTasks.UnitTestTasks
 	/// </summary>
 	public class NUnit : TestTask
 	{
+		public NUnit()
+		{
+			// For NUnit, a negative exit code indicates a problem running the tests
+			_failTaskIfNegativeExitCode = true;
+		}
+
 		/// <summary>
 		/// Gets or sets the full path to the NUnit assemblies (test DLLs).
 		/// </summary>
@@ -76,8 +82,29 @@ namespace Palaso.BuildTasks.UnitTestTasks
 		/// </summary>
 		public string ProjectConfiguration { get; set; }
 
+		/// <summary>
+		/// Sometimes it is important that the task report a failure if any tests fail.
+		/// One example is if we run multiple build targets in the same call and
+		/// expect subsequent targets not to be called if tests fail.
+		/// 
+		/// REVIEW: it actually seems to me that this should be the default behavior, but
+		/// I suppose changing the code in that way now could cause problems for existing callers.
+		/// </summary>
+		public bool FailTaskIfAnyTestsFail
+		{
+			get { return _failTaskIfAnyTestsFail; }
+			set
+			{
+				_failTaskIfAnyTestsFail = value;
+
+				// For NUnit, a positive exit code indicates the number of failed tests
+				_failTaskIfPositiveExitCode = value;
+			}
+		}
+
 		// make this nullable so we have a third state, not set
 		private bool? _testInNewThread;
+		private bool _failTaskIfAnyTestsFail;
 
 		/// <summary>
 		/// Allows tests to be run in a new thread, allowing you to take advantage of ApartmentState and ThreadPriority settings in the config file.
