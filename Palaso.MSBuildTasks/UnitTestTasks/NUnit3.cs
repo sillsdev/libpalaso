@@ -11,6 +11,14 @@ namespace Palaso.BuildTasks.UnitTestTasks
 	/// </summary>
 	public class NUnit3 : NUnit
 	{
+		public NUnit3()
+		{
+			// REVIEW: This should probably be true for NUnit also, but changing
+			// the logic there could potentially cause unexpected results for existing
+			// callers whereas the NUnit3 task is new enough, I think we are okay.
+			FailTaskIfAnyTestsFail = true;
+		}
+
 		private bool? _useNUnit3Xml;
 
 		public bool UseNUnit3Xml
