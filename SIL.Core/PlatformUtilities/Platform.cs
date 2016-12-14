@@ -156,12 +156,20 @@ namespace SIL.PlatformUtilities
 					IntPtr buf = IntPtr.Zero;
 					try
 					{
-						// This is the only way I've figured out to get the session manager.
+						// This is the only way I've figured out to get the session manager: read the
+						// symbolic link destination value.
 						buf = System.Runtime.InteropServices.Marshal.AllocHGlobal(8192);
 						var len = readlink("/etc/alternatives/x-session-manager", buf, 8192);
 						if (len > 0)
-							_sessionManager = System.Runtime.InteropServices.Marshal.PtrToStringAnsi(buf);
-						else
+						{
+							// For some reason, Marshal.PtrToStringAnsi() sometimes returns null in Mono.
+							// Copying the bytes and then converting them to a string avoids that problem.
+							// Filenames are likely to be in UTF-8 on Linux if they are not pure ASCII.
+							var bytes = new byte[len];
+							System.Runtime.InteropServices.Marshal.Copy(buf, bytes, 0, len);
+							_sessionManager = System.Text.Encoding.UTF8.GetString(bytes);
+						}
+						if (_sessionManager == null)
 							_sessionManager = String.Empty;
 					}
 					catch
