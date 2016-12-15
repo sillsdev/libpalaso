@@ -85,35 +85,21 @@ cd -
 #     revision: l10nsharp-1.2.tcbuildtag
 #     paths: {"L10NSharp.dll"=>"lib/DebugMono"}
 #     VCS: https://github.com/sillsdev/l10nsharp [master]
-# [2] build: icucil-trusty64-icu54-Continuous (Libraries_IcucilTrusty64icu54Continuous)
-#     project: Libraries
-#     URL: http://build.palaso.org/viewType.html?buildTypeId=Libraries_IcucilTrusty64icu54Continuous
-#     clean: false
-#     revision: latest.lastSuccessful
-#     paths: {"*.dll"=>"lib/DebugMono", "*.config"=>"lib/DebugMono"}
-#     VCS: https://github.com/sillsdev/icu-dotnet [master]
-# [3] build: icucil-trusty64-icu54-Continuous (Libraries_IcucilTrusty64icu54Continuous)
-#     project: Libraries
-#     URL: http://build.palaso.org/viewType.html?buildTypeId=Libraries_IcucilTrusty64icu54Continuous
-#     clean: false
-#     revision: latest.lastSuccessful
-#     paths: {"*.dll"=>"lib/ReleaseMono", "*.config"=>"lib/ReleaseMono"}
-#     VCS: https://github.com/sillsdev/icu-dotnet [master]
-# [4] build: TagLib-Sharp Continuous (bt411)
+# [2] build: TagLib-Sharp Continuous (bt411)
 #     project: Libraries
 #     URL: http://build.palaso.org/viewType.html?buildTypeId=bt411
 #     clean: false
 #     revision: latest.lastSuccessful
 #     paths: {"taglib-sharp.dll"=>"lib/ReleaseMono"}
 #     VCS: https://github.com/sillsdev/taglib-sharp.git [develop]
-# [5] build: TagLib-Sharp Continuous (bt411)
+# [3] build: TagLib-Sharp Continuous (bt411)
 #     project: Libraries
 #     URL: http://build.palaso.org/viewType.html?buildTypeId=bt411
 #     clean: false
 #     revision: latest.lastSuccessful
 #     paths: {"taglib-sharp.dll"=>"lib/DebugMono"}
 #     VCS: https://github.com/sillsdev/taglib-sharp.git [develop]
-# [6] build: Spart Continuous (bt439)
+# [4] build: Spart Continuous (bt439)
 #     project: Spart
 #     URL: http://build.palaso.org/viewType.html?buildTypeId=bt439
 #     clean: false
@@ -129,10 +115,6 @@ mkdir -p ../lib/common
 # download artifact dependencies
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt271/l10nsharp-1.2.tcbuildtag/L10NSharp.dll ../lib/ReleaseMono/L10NSharp.dll
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt271/l10nsharp-1.2.tcbuildtag/L10NSharp.dll ../lib/DebugMono/L10NSharp.dll
-copy_auto http://build.palaso.org/guestAuth/repository/download/Libraries_IcucilTrusty64icu54Continuous/latest.lastSuccessful/icu.net.dll ../lib/DebugMono/icu.net.dll
-copy_auto http://build.palaso.org/guestAuth/repository/download/Libraries_IcucilTrusty64icu54Continuous/latest.lastSuccessful/icu.net.dll.config ../lib/DebugMono/icu.net.dll.config
-copy_auto http://build.palaso.org/guestAuth/repository/download/Libraries_IcucilTrusty64icu54Continuous/latest.lastSuccessful/icu.net.dll ../lib/ReleaseMono/icu.net.dll
-copy_auto http://build.palaso.org/guestAuth/repository/download/Libraries_IcucilTrusty64icu54Continuous/latest.lastSuccessful/icu.net.dll.config ../lib/ReleaseMono/icu.net.dll.config
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt411/latest.lastSuccessful/taglib-sharp.dll ../lib/ReleaseMono/taglib-sharp.dll
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt411/latest.lastSuccessful/taglib-sharp.dll ../lib/DebugMono/taglib-sharp.dll
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt439/latest.lastSuccessful/Spart.dll ../lib/common/Spart.dll
