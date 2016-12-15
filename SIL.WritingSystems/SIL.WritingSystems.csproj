@@ -353,6 +353,7 @@
     <Content Include="Resources\alltags.txt" />
     <Content Include="Resources\ianaSubtagRegistry.txt" />
     <Content Include="Resources\LanguageCodes.txt" />
+    <Content Include="Resources\LanguageDataIndex.txt" />
     <Content Include="Resources\LanguageIndex.txt" />
     <Content Include="Resources\TwoToThreeCodes.txt" />
   </ItemGroup>

@@ -1,13 +1,15 @@
-﻿using System;
+﻿// Copyright (c) 2016-2017 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using SIL.Extensions;
 using SIL.Text;
 
 namespace SIL.WritingSystems
 {
 	/// <summary>
-	/// Lets you find a language using data from the Ethnologue and the SLDR.
+	/// Lets you find a language using data from the Ethnologue, IANA subtag repository and the SLDR.
 	/// </summary>
 	public class LanguageLookup
 	{
@@ -15,166 +17,45 @@ namespace SIL.WritingSystems
 		private readonly Dictionary<string, List<LanguageInfo>> _nameToLanguageIndex = new Dictionary<string, List<LanguageInfo>>();
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="LanguageLookup"/> class.
+		/// Initializes a new instance of the <see cref="NewLanguageLookup"/> class.
 		/// </summary>
 		public LanguageLookup()
 		{
-			var threeToTwoLetter = new Dictionary<string, string>();
-			foreach (string line in LanguageRegistryResources.TwoToThreeCodes.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
-			{
-				string[] items = line.Split('\t');
-				threeToTwoLetter.Add(items[1].Trim(), items[0].Trim());
-			}
+			// Load from file into the data structures instead of creating it from scratch
+			var entries = LanguageRegistryResources.LanguageDataIndex.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
-			//LanguageIndex.txt Format: LangID	CountryID	NameType	Name
-			//a language appears on one row for each of its alternative langauges
-			var entries = new List<string>(LanguageRegistryResources.LanguageIndex.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries));
-			entries.Add("qaa\t?\tL\tUnlisted Language");
-			foreach (string entry in entries.Skip(1)) //skip the header
+			foreach (string entry in entries)
 			{
+				//Code ThreeLetterCode DesiredName Names Countries
 				string[] items = entry.Split('\t');
-				if (items.Length != 4)
+				if (items.Length != 6) // This needs to be changed if the number of fields changes
 					continue;
-				if(items[2].Contains('!')) //temporary suppression of entries while waiting for Ethnologue changes
-					continue;
-
-				string code = items[0].Trim();
-				string twoLetterCode;
-				if (threeToTwoLetter.TryGetValue(code, out twoLetterCode))
-					code = twoLetterCode;
-
-				string regionCode = items[1].Trim();
-				LanguageInfo language = GetOrCreateLanguageFromCode(code, regionCode == "?" ? "?" : StandardSubtags.RegisteredRegions[regionCode].Name);
-
-				string name = items[3].Trim();
-
-				
-				if (items[2] == "L")
+				string code = items[0];
+				string threelettercode = items[1];
+				string desiredname = items[2];
+				bool macrolanguage = String.Equals("M", items[3]);
+				string[] names = items[4].Split(';');
+				string[] countries = items[5].Split(';');
+				LanguageInfo language = new LanguageInfo { LanguageTag = code, ThreeLetterTag = threelettercode, DesiredName = desiredname, IsMacroLanguage = macrolanguage };
+				foreach (string country in countries)
 				{
-					while (language.Names.Contains(name))
-						language.Names.Remove(name);
-					language.Names.Insert(0, name);
+					language.Countries.Add(country);
 				}
-				else
+				foreach (string langname in names)
 				{
-					if (items[2].Contains("P"))
-					{
-						//Skip pejorative
-					}
-					else if (items[1] == ("ET"))
-					{
-						//Skip alternatives for Ethiopia, as per request
-					}
-					else if (items[0] == "gax" || items[0] == "om")
-					{
-						//For these two "Oromo" languages, skip all related languages as per request
-					}
-					else if (!language.Names.Contains(name))
-						language.Names.Add(name); //intentionally not lower-casing
+					language.Names.Add(langname.Trim());
 				}
-			}
 
-			IEnumerable<IGrouping<string, string>> languageGroups = Sldr.LanguageTags.Where(info => info.IsAvailable && IetfLanguageTag.IsValid(info.LanguageTag))
-				.Select(info => IetfLanguageTag.Canonicalize(info.LanguageTag))
-				.GroupBy(IetfLanguageTag.GetLanguagePart);
+				// add language to _codeToLanguageIndex and _nameToLanguageIndex
+				// if 2 letter code then add both 2 and 3 letter codes to _codeToLanguageIndex
 
-			foreach (IGrouping<string, string> languageGroup in languageGroups)
-			{
-				string[] langTags = languageGroup.ToArray();
-				if (langTags.Length == 1)
+				_codeToLanguageIndex[code] = language;
+				if (!String.Equals(code, threelettercode))
 				{
-					string langTag = langTags[0];
-					LanguageInfo language;
-					if (langTag != languageGroup.Key && _codeToLanguageIndex.TryGetValue(languageGroup.Key, out language))
-					{
-						_codeToLanguageIndex.Remove(languageGroup.Key);
-						language.LanguageTag = langTag;
-						_codeToLanguageIndex[langTag] = language;
-					}
+					_codeToLanguageIndex[threelettercode] = language;
 				}
-				else
-				{
-					foreach (string langTag in langTags)
-					{
-						LanguageSubtag languageSubtag;
-						ScriptSubtag scriptSubtag;
-						RegionSubtag regionSubtag;
-						IEnumerable<VariantSubtag> variantSubtags;
-						if (IetfLanguageTag.TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
-						{
-							if (langTag == languageSubtag)
-								continue;
-
-							LanguageInfo language = GetOrCreateLanguageFromCode(langTag, regionSubtag == null ? "?" : regionSubtag.Name);
-							bool displayScript = scriptSubtag != null && !IetfLanguageTag.IsScriptImplied(langTag);
-							LanguageInfo otherLanguage;
-							if (langTag != languageSubtag && !displayScript && _codeToLanguageIndex.TryGetValue(languageSubtag, out otherLanguage) && language.Countries.SetEquals(otherLanguage.Countries))
-							{
-								language.Names.AddRange(otherLanguage.Names);
-							}
-							else
-							{
-								string name = displayScript ? string.Format("{0} ({1})", languageSubtag.Name, scriptSubtag.Name) : languageSubtag.Name;
-								if (!language.Names.Contains(name))
-									language.Names.Add(name); //intentionally not lower-casing
-							}
-						}
-					}
-				}
-			}
-
-			foreach (LanguageInfo languageInfo in _codeToLanguageIndex.Values)
-			{
-				foreach (string name in languageInfo.Names)
-					GetOrCreateListFromName(name).Add(languageInfo);
-
-				if (languageInfo.Names.Count == 0)
-					continue; // this language is suppressed
-
-				//Why just this small set? Only out of convenience. Ideally we'd have a db of all languages as they write it in their literature.
-				string localName = null;
-				switch (languageInfo.Names[0])
-				{
-					case "French":
-						localName = "français";
-						break;
-					case "Spanish":
-						localName = "español";
-						break;
-					case "Chinese":
-						localName = "中文";
-						break;
-					case "Hindi":
-						localName = "हिन्दी";
-						break;
-					case "Bengali":
-						localName = "বাংলা";
-						break;
-					case "Telugu":
-						localName = "తెలుగు";
-						break;
-					case "Tamil":
-						localName = "தமிழ்";
-						break;
-					case "Urdu":
-						localName = "اُردُو";
-						break;
-					case "Arabic":
-						localName = "العربية/عربي";
-						break;
-					case "Thai":
-						localName = "ภาษาไทย";
-						break;
-					case "Indonesian":
-						localName = "Bahasa Indonesia";
-						break;
-				}
-				if (!string.IsNullOrEmpty(localName))
-				{
-					if (!languageInfo.Names.Remove(localName))
-						GetOrCreateListFromName(localName).Add(languageInfo);
-					languageInfo.Names.Insert(0, localName);
-				}
+				foreach (string langname in language.Names)
+					GetOrCreateListFromName(langname).Add(language);
 			}
 		}
 
@@ -189,19 +70,6 @@ namespace SIL.WritingSystems
 			return languages;
 		}
 
-		private LanguageInfo GetOrCreateLanguageFromCode(string code, string countryName)
-		{
-			LanguageInfo language;
-			if (!_codeToLanguageIndex.TryGetValue(code, out language))
-			{
-				language = new LanguageInfo {LanguageTag = code};
-				_codeToLanguageIndex.Add(code, language);
-			}
-			if (!string.IsNullOrEmpty(countryName))
-				language.Countries.Add(countryName);
-			return language;
-		}
-
 		/// <summary>
 		/// Get an list of languages that match the given string in some way (code, name, country)
 		/// </summary>
@@ -214,8 +82,10 @@ namespace SIL.WritingSystems
 
 			if (searchString == "*")
 			{
-				foreach (LanguageInfo l in _codeToLanguageIndex.Select(l => l.Value).OrderBy(l => l, new ResultComparer(searchString)))
-					yield return l;
+				// there will be duplicate LanguageInfo entries for 2 and 3 letter codes
+				var all_languages = new HashSet<LanguageInfo>(_codeToLanguageIndex.Select(l => l.Value));
+				foreach (LanguageInfo languageInfo in all_languages.OrderBy(l => l, new ResultComparer(searchString)))
+					yield return languageInfo;
 			}
 			else
 			{

@@ -10,9 +10,15 @@ namespace SIL.WritingSystems
 	/// This class parses the IANA subtag registry in order to provide a list of valid language, script, region and variant subtags
 	/// for use by the IetfLanguageTagHelper and other classes.
 	/// </summary>
-	public class StandardSubtags
+	public static class StandardSubtags
 	{
 		static StandardSubtags()
+		{	
+			InitialiseIanaSubtags(LanguageRegistryResources.TwoToThreeCodes, LanguageRegistryResources.ianaSubtagRegistry);
+			Iso3Languages = RegisteredLanguages.Where(l => !string.IsNullOrEmpty(l.Iso3Code)).ToDictionary(l => l.Iso3Code, StringComparer.InvariantCultureIgnoreCase);
+		}
+
+		internal static void InitialiseIanaSubtags(string twotothreecodes, string subtagregistry)
 		{
 			// JohnT: can't find anywhere else to document this, so here goes: TwoToThreeMap is a file adapted from
 			// FieldWorks Ethnologue\Data\iso-639-3_20080804.tab, by discarding all but the first column (3-letter
@@ -21,21 +27,13 @@ namespace SIL.WritingSystems
 			// Iana code, and the string after it is the one we want to return as the corresponding ISO3Code.
 			// The following block of code assembles these lines into a map we can use to fill this slot properly
 			// when building the main table.
-			var twoToThreeMap = new Dictionary<string, string>();
-			string[] encodingPairs = LanguageRegistryResources.TwoToThreeCodes.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
-			foreach (string pair in encodingPairs)
-			{
-				var items = pair.Split('\t');
-				if (items.Length != 2)
-					continue;
-				twoToThreeMap[items[0]] = items[1];
-			}
+			var twoToThreeMap = TwoAndThreeMap(twotothreecodes, false);
+			string[] ianaSubtagsAsStrings = subtagregistry.Split(new[] { "%%" }, StringSplitOptions.None);
 
 			var languages = new List<LanguageSubtag>();
 			var scripts = new List<ScriptSubtag>();
 			var regions = new List<RegionSubtag>();
 			var variants = new List<VariantSubtag>();
-			string[] ianaSubtagsAsStrings = LanguageRegistryResources.ianaSubtagRegistry.Split(new[] { "%%" }, StringSplitOptions.None);
 			foreach (string ianaSubtagAsString in ianaSubtagsAsStrings)
 			{
 				string[] subTagComponents = ianaSubtagAsString.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
@@ -46,12 +44,65 @@ namespace SIL.WritingSystems
 				}
 
 				CheckIfIanaSubtagFromFileHasExpectedForm(subTagComponents);
+				var descriptions = new List<string>();
+				bool macrolanguage = false, deprecated = false, comment = false, collection = false;
+				string type = null, subtag = null, description = null;
 
-				string type = subTagComponents[0].Split(' ')[1];
-				string subtag = subTagComponents[1].Split(' ')[1];
-				string description = SubTagComponentDescription(subTagComponents[2]);
+				foreach (string component in subTagComponents)
+				{
+					if (comment || String.IsNullOrEmpty(component.Trim()))
+						continue;
+					if (component.Split(':').Length < 2) // the description for ia (Interlingua) is spread over 2 lines
+					{
+						if (descriptions.Count() > 0)
+						{
+							description = description + component.Substring(1);
+							descriptions.Clear();
+							descriptions.Add(description);
+						}
+						continue;
+					}
+					string field = component.Split(':')[0];
+					string value = component.Split(':')[1].Trim();
 
-				if (subtag.Contains("..")) // do not add private use subtags to the list
+					switch (field)
+					{
+						case "Type":
+							type = value;
+							break;
+						case "Subtag":
+							subtag = value;
+							break;
+						case "Tag":
+							subtag = value;
+							break;
+						case "Description":
+							description = SubTagComponentDescription(component); ; // so that the description spread over 2 lines can be appended to
+							descriptions.Add(description);
+							break;
+						case "Deprecated":
+							deprecated = true;
+							break;
+						case "Scope":
+							if (String.Equals(value, "macrolanguage"))
+								macrolanguage = true;
+							if (String.Equals(value, "collection"))
+								collection = true;
+
+							break;
+						case "Comments":
+							comment = true;
+							break;
+					}
+				}
+				description = descriptions.First();
+
+				if (String.IsNullOrEmpty(subtag) || String.IsNullOrEmpty(description) || String.IsNullOrEmpty(type))
+				{
+					continue;
+				}
+
+				if (subtag.Contains("..") || collection) // do not add private use subtags or collections to the list
 				{
 					continue;
 				}
@@ -75,7 +126,7 @@ namespace SIL.WritingSystems
 						string iso3Code;
 						if (!twoToThreeMap.TryGetValue(subtag, out iso3Code))
 							iso3Code = subtag;
-						languages.Add(new LanguageSubtag(subtag, description, false, iso3Code));
+						languages.Add(new LanguageSubtag(subtag, description, false, iso3Code, descriptions, macrolanguage, deprecated));
 						break;
 					case "script":
 						scripts.Add(new ScriptSubtag(subtag, description, false));
@@ -101,8 +152,6 @@ namespace SIL.WritingSystems
 				new VariantSubtag(WellKnownSubtags.IpaPhonemicPrivateUse, "Phonemic"),
 				new VariantSubtag(WellKnownSubtags.AudioPrivateUse, "Audio")
 			}, v => v.Code, StringComparer.InvariantCultureIgnoreCase));
-
-			Iso3Languages = RegisteredLanguages.Where(l => !string.IsNullOrEmpty(l.Iso3Code)).ToDictionary(l => l.Iso3Code, StringComparer.InvariantCultureIgnoreCase);
 		}
 
 		private static readonly Dictionary<string, LanguageSubtag> Iso3Languages; 
@@ -130,6 +179,7 @@ namespace SIL.WritingSystems
 		{
 			string description = component.Substring(component.IndexOf(" ", StringComparison.Ordinal) + 1);
 			description = Regex.Replace(description, @"\(alias for ", "(");
+			description = Regex.Replace(description, @" \(individual language\)", "");
 			if (description[0] == '(')
 			{
 				// remove parens if the description begins with an open parenthesis
@@ -211,6 +261,24 @@ namespace SIL.WritingSystems
 		public static bool IsValidRegisteredVariantCode(string variantToCheck)
 		{
 			return RegisteredVariants.Contains(variantToCheck);
+		}
+
+		public static IDictionary<string, string> TwoAndThreeMap(string twotothreecodes, bool reverse)
+		{
+			var twoAndThreeLetter = new Dictionary<string, string>();
+			foreach (string line in twotothreecodes.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
+			{
+				string[] items = line.Split('\t');
+				if (reverse)
+				{
+					twoAndThreeLetter[items[1].Trim()] = items[0].Trim();
+				}
+				else
+				{
+					twoAndThreeLetter[items[0].Trim()] = items[1].Trim();
+				}
+			}
+			return twoAndThreeLetter;
 		}
 	}
 }

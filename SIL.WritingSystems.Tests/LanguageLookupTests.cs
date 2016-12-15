@@ -144,23 +144,24 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		// Akan is a macrolanguage so make sure we know that
 		public void SuggestLanguages_Akan_DoesnotCrash()
 		{
 			var lookup = new LanguageLookup();
 			LanguageInfo[] languages = lookup.SuggestLanguages("a").ToArray();
-			Assert.True(languages.Any(l => l.LanguageTag == "ak"));
-			Assert.True(languages.Any(l => l.LanguageTag == "akq"));
-			Assert.True(languages.Any(l => l.Names.Contains("Akuapem")));
-			Assert.True(languages.Any(l => l.Names.Contains("Ak")));
-			Assert.True(languages.Any(l => l.Names.Contains("Akan")));
-			Assert.True(languages.Any(l => l.Names.Contains("Fanti")));
+			Assert.True(languages.Any(l => l.LanguageTag == "ak" && l.IsMacroLanguage));
+			Assert.True(languages.Any(l => l.LanguageTag == "akq" && !l.IsMacroLanguage));
+			Assert.True(languages.Any(l => l.Names.Contains("Akuapem") && l.IsMacroLanguage));
+			Assert.True(languages.Any(l => l.Names.Contains("Ak") && !l.IsMacroLanguage));
+			Assert.True(languages.Any(l => l.Names.Contains("Akan") && l.IsMacroLanguage));
+			Assert.True(languages.Any(l => l.Names.Contains("Fanti") && l.IsMacroLanguage));
 			languages = lookup.SuggestLanguages("ak").ToArray();
-			Assert.True(languages.Any(l => l.LanguageTag == "ak"));
-			Assert.True(languages.Any(l => l.LanguageTag == "akq"));
-			Assert.True(languages.Any(l => l.Names.Contains("Asante")));
-			Assert.True(languages.Any(l => l.Names.Contains("Ak")));
-			Assert.True(languages.Any(l => l.Names.Contains("Akan")));
-			Assert.True(languages.Any(l => l.Names.Contains("Fanti")));
+			Assert.True(languages.Any(l => l.LanguageTag == "ak" && l.IsMacroLanguage));
+			Assert.True(languages.Any(l => l.LanguageTag == "akq" && !l.IsMacroLanguage));
+			Assert.True(languages.Any(l => l.Names.Contains("Asante") && l.IsMacroLanguage));
+			Assert.True(languages.Any(l => l.Names.Contains("Ak") && !l.IsMacroLanguage));
+			Assert.True(languages.Any(l => l.Names.Contains("Akan") && l.IsMacroLanguage));
+			Assert.True(languages.Any(l => l.Names.Contains("Fanti") && l.IsMacroLanguage));
 		}
 
 		[Test]
@@ -172,7 +173,7 @@ namespace SIL.WritingSystems.Tests
 			Assert.True(languages.Any(l => l.Names.Contains("Degexit’an")));
 			Assert.True(languages.Any(l => l.Names.Contains("Deg Xinag")));
 			Assert.True(languages.Any(l => l.Names.Contains("Deg Xit’an")));
-			Assert.AreEqual(3, languages[0].Names.Count, "3 of the 5 names are pejorative and should not be listed");
+			Assert.AreEqual(3, languages[0].Names.Count, "2 of the 5 names are pejorative and should not be listed");
 		}
 
 		/// <summary>
@@ -185,11 +186,15 @@ namespace SIL.WritingSystems.Tests
 			var lookup = new LanguageLookup();
 			var languages = lookup.SuggestLanguages("Wolaytta").ToArray();
 			Assert.True(languages.Any(l => l.Names.Contains("Wolaytta")));
-			Assert.AreEqual(1, languages[0].Names.Count, "Should only list a single name for Ethiopian languages.");
+			Assert.True(languages.Any(l => l.Names.Contains("Wolaitta")));
+			Assert.AreEqual(2, languages[0].Names.Count, "Should only list the names in the IANA subtag registry for Ethiopian languages.");
+			languages = lookup.SuggestLanguages("Qimant").ToArray();
+			Assert.True(languages.Any(l => l.Names.Contains("Qimant")));
+			Assert.AreEqual(1, languages[0].Names.Count, "Should only list the names in the IANA subtag registry for Ethiopian languages.");
 		}
 
 		/// <summary>
-		/// We have been asked to temporarily suppress these three codes for Ethiopia, until the Ethologue is changed.
+		/// We have been asked to temporarily suppress these three codes for Ethiopia, until the Ethnologue is changed.
 		/// </summary>
 		[Test]
 		public void SuggestLanguages_LanguageIsOromo_DoNotShowRelatedLanguages()
@@ -198,6 +203,68 @@ namespace SIL.WritingSystems.Tests
 			var languages = lookup.SuggestLanguages("Oromo").ToArray();
 			Assert.True(languages.All(l => l.DesiredName == "Oromo"));
 			Assert.True(languages.All(l => l.LanguageTag.StartsWith("om")), "We should be suppressing gat, hae, gaz");
+		}
+
+		/// <summary>
+		/// We should not suggest macro languages unless they are marked as such so that they can be filtered out.
+		/// </summary>
+		[Test]
+		public void SuggestLanguages_CanFilterMacroLanguages()
+		{
+			var lookup = new LanguageLookup();
+			Assert.That(lookup.SuggestLanguages("macrolanguage").Count(), Is.EqualTo(0));
+			var languages = lookup.SuggestLanguages("zza").ToArray();
+			Assert.True(languages.Any(l => l.LanguageTag == "zza" && l.IsMacroLanguage));
+		}
+
+		/// <summary>
+		/// We should not suggest deprecated tags for languages.
+		/// </summary>
+		[Test]
+		public void SuggestLanguages_DoesNotSuggestDeprecatedTags()
+		{
+			var lookup = new LanguageLookup();
+			var languages = lookup.SuggestLanguages("dzd").ToArray();
+			Assert.False(languages.Any(l => l.LanguageTag == "dzd"));
+			languages = lookup.SuggestLanguages("yiy").ToArray();
+			Assert.False(languages.Any(l => l.LanguageTag == "yiy"));
+		}
+
+		/// <summary>
+		/// We should not suggest language collections.
+		/// </summary>
+		[Test]
+		public void SuggestLanguages_DoesNotSuggestLanguageCollections()
+		{
+			var lookup = new LanguageLookup();
+			var languages = lookup.SuggestLanguages("urj").ToArray();
+			Assert.False(languages.Any(l => l.LanguageTag == "urj"));
+			languages = lookup.SuggestLanguages("aav").ToArray();
+			Assert.False(languages.Any(l => l.LanguageTag == "aav"));
+		}
+
+		/// <summary>
+		/// We should now be able to search for 3 letter codes e.g. nld for languages that have 2 letter codes e.g. nl
+		/// </summary>
+		[Test]
+		public void SuggestLanguages_CanFind3LetterCodesForLanguagesWith2LetterCodes()
+		{
+			var lookup = new LanguageLookup();
+			var languages = lookup.SuggestLanguages("nld").ToArray();
+			Assert.True(languages.Any(l => l.DesiredName == "Dutch"));
+		}
+
+		/// <summary>
+		/// We should now be able to find codes that are in iana registry but not Ethnologue
+		/// </summary>
+		[Test]
+		public void SuggestLanguages_CanFindValidTagsThatAreNotInEthnologue()
+		{
+			var lookup = new LanguageLookup();
+			var languages = lookup.SuggestLanguages("fat").ToArray();
+			Assert.True(languages.Any(l => l.DesiredName == "Fanti"));
+			languages = lookup.SuggestLanguages("twi").ToArray();
+			Assert.True(languages.Any(l => l.DesiredName == "Twi"));
 		}
 	}
 }

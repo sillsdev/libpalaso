@@ -10,6 +10,8 @@ namespace SIL.WritingSystems
 		private string _desiredName;
 
 		public string LanguageTag { get; set; }
+		public string ThreeLetterTag { get; set; }
+		public bool IsMacroLanguage { get; set; }
 
 		public IList<string> Names
 		{
