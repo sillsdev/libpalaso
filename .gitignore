@@ -35,3 +35,5 @@ Download/
 *.nupkg
 packages/
 lib/xulrunner/
+.idea/
+riderModule.iml
