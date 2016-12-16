@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using SIL.WritingSystems;
+using System.Collections.Generic;
 
 
 namespace LanguageData
@@ -11,12 +12,12 @@ namespace LanguageData
     /// </summary>
     public class LdStandardTags : StandardSubtags
     {
-        static LdStandardTags()
+		LdStandardTags(Dictionary<string,string> sourcefiles)
         {
             // need to load these in from files not resources so that can use new source files that have been downloaded
-            string twotothreecodes = File.ReadAllText(@"TwoToThreeCodes.txt");
+			string twotothreecodes = sourcefiles["TwoToThreeCodes.txt"];
             string[] encodingPairs = twotothreecodes.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
-            string subtagregistry = File.ReadAllText(@"ianaSubtagRegistry.txt");
+			string subtagregistry = sourcefiles["ianaSubtagRegistry.txt"];
             string[] ianaSubtagsAsStrings = subtagregistry.Split(new[] { "%%" }, StringSplitOptions.None);
             InitialiseIanaSubtags(encodingPairs, ianaSubtagsAsStrings);
             // Iso3Languages not needed by this so no need to populate it
