@@ -16,10 +16,10 @@ namespace LanguageData
         /// <summary>
         /// Initializes a new instance of the <see cref="LanguageIndex"/> class.
         /// </summary>
-        public LanguageIndex()
+		public LanguageIndex(Dictionary<string,string> sourcefiles)
         {
             var threeToTwoLetter = new Dictionary<string, string>();
-            string twotothreecodes = File.ReadAllText(@"TwoToThreeCodes.txt");
+            string twotothreecodes = sourcefiles["TwoToThreeCodes.txt"];
             foreach (string line in twotothreecodes.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
             {
                 string[] items = line.Split('\t');
@@ -28,7 +28,7 @@ namespace LanguageData
 
             //LanguageIndex.txt Format: LangID	CountryID	NameType	Name
             //a language appears on one row for each of its alternative langauges
-            string languageindex = File.ReadAllText(@"LanguageIndex.txt");
+            string languageindex = sourcefiles["LanguageIndex.txt"];
             var entries = new List<string>(languageindex.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries));
             entries.Add("qaa\t?\tL\tUnlisted Language");
             foreach (string entry in entries.Skip(1)) //skip the header

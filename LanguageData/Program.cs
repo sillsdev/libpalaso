@@ -32,7 +32,12 @@ namespace LanguageData
         static void Main(string[] args)
         {
             Sldr.Initialize();
-            LanguageIndex langIndex = new LanguageIndex();
+			GetAndCheckSources getcheck = new GetAndCheckSources ();
+			getcheck.GetOldSources ();
+			getcheck.GetNewSources();
+			getcheck.CheckSourcesAreDifferent ();
+			getcheck.WriteNewFiles (".");
+			LanguageIndex langIndex = new LanguageIndex(getcheck.GetFileStrings(false));
             langIndex.WriteIndex();
         }
     }
