@@ -113,6 +113,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Linux.Logging.Tests", "SIL.Linux.Logging.Tests\SIL.Linux.Logging.Tests.csproj", "{D7AD97B3-88DB-400D-B748-0E06914F17FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageData", "LanguageData\LanguageData.csproj", "{12C78D85-BB7F-4F00-BF64-E47557F99039}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4} = {3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

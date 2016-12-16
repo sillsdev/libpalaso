@@ -12,8 +12,16 @@ namespace SIL.WritingSystems
 	/// </summary>
 	public class StandardSubtags
 	{
-		static StandardSubtags()
-		{
+        static StandardSubtags()
+        {
+            string[] encodingPairs = LanguageRegistryResources.TwoToThreeCodes.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            string[] ianaSubtagsAsStrings = LanguageRegistryResources.ianaSubtagRegistry.Split(new[] { "%%" }, StringSplitOptions.None);
+            InitialiseIanaSubtags(encodingPairs, ianaSubtagsAsStrings);
+            Iso3Languages = RegisteredLanguages.Where(l => !string.IsNullOrEmpty(l.Iso3Code)).ToDictionary(l => l.Iso3Code, StringComparer.InvariantCultureIgnoreCase);
+        }
+
+        protected static void InitialiseIanaSubtags(string[] encodingPairs, string[] ianaSubtagsAsStrings)
+        {
 			// JohnT: can't find anywhere else to document this, so here goes: TwoToThreeMap is a file adapted from
 			// FieldWorks Ethnologue\Data\iso-639-3_20080804.tab, by discarding all but the first column (3-letter
 			// ethnologue codes) and the fourth (two-letter IANA codes), and all the rows where the fourth column is empty.
@@ -22,7 +30,6 @@ namespace SIL.WritingSystems
 			// The following block of code assembles these lines into a map we can use to fill this slot properly
 			// when building the main table.
 			var twoToThreeMap = new Dictionary<string, string>();
-			string[] encodingPairs = LanguageRegistryResources.TwoToThreeCodes.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
 			foreach (string pair in encodingPairs)
 			{
 				var items = pair.Split('\t');
@@ -35,7 +42,7 @@ namespace SIL.WritingSystems
 			var scripts = new List<ScriptSubtag>();
 			var regions = new List<RegionSubtag>();
 			var variants = new List<VariantSubtag>();
-			string[] ianaSubtagsAsStrings = LanguageRegistryResources.ianaSubtagRegistry.Split(new[] { "%%" }, StringSplitOptions.None);
+
 			foreach (string ianaSubtagAsString in ianaSubtagsAsStrings)
 			{
 				string[] subTagComponents = ianaSubtagAsString.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
@@ -102,8 +109,7 @@ namespace SIL.WritingSystems
 				new VariantSubtag(WellKnownSubtags.AudioPrivateUse, "Audio")
 			}, v => v.Code, StringComparer.InvariantCultureIgnoreCase));
 
-			Iso3Languages = RegisteredLanguages.Where(l => !string.IsNullOrEmpty(l.Iso3Code)).ToDictionary(l => l.Iso3Code, StringComparer.InvariantCultureIgnoreCase);
-		}
+        }
 
 		private static readonly Dictionary<string, LanguageSubtag> Iso3Languages; 
 
