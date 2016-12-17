@@ -18,6 +18,7 @@ namespace LanguageData
         /// </summary>
 		public LanguageIndex(Dictionary<string,string> sourcefiles)
         {
+			LdStandardTags subtags = new LdStandardTags (sourcefiles);
             var threeToTwoLetter = new Dictionary<string, string>();
             string twotothreecodes = sourcefiles["TwoToThreeCodes.txt"];
             foreach (string line in twotothreecodes.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
@@ -31,6 +32,22 @@ namespace LanguageData
             string languageindex = sourcefiles["LanguageIndex.txt"];
             var entries = new List<string>(languageindex.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries));
             entries.Add("qaa\t?\tL\tUnlisted Language");
+
+			//expect 8092, 299(301), 173(174), 68
+			Console.WriteLine ("StandardSubtags has {0} languages, {1} regions, {2} scripts, {3} variants", 
+				StandardSubtags.RegisteredLanguages.Count,
+				StandardSubtags.RegisteredRegions.Count,
+				StandardSubtags.RegisteredScripts.Count,
+				StandardSubtags.RegisteredVariants.Count
+			);
+
+			//expect 8115, 303, 181, 77
+			Console.WriteLine ("LdStandardTags has {0} languages, {1} regions, {2} scripts, {3} variants",
+				LdStandardTags.RegisteredLanguages.Count,
+				LdStandardTags.RegisteredRegions.Count,
+				LdStandardTags.RegisteredScripts.Count,
+				LdStandardTags.RegisteredVariants.Count
+			);
             foreach (string entry in entries.Skip(1)) //skip the header
             {
                 string[] items = entry.Split('\t');
@@ -45,7 +62,7 @@ namespace LanguageData
                     code = twoLetterCode;
 
                 string regionCode = items[1].Trim();
-                LanguageInfo language = GetOrCreateLanguageFromCode(code, regionCode == "?" ? "?" : StandardSubtags.RegisteredRegions[regionCode].Name);
+				LanguageInfo language = GetOrCreateLanguageFromCode(code, regionCode == "?" ? "?" : LdStandardTags.RegisteredRegions[regionCode].Name);
 
                 string name = items[3].Trim();
 
