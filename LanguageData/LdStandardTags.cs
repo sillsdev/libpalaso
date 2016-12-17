@@ -2,6 +2,7 @@
 using System.IO;
 using SIL.WritingSystems;
 using System.Collections.Generic;
+using SIL.ObjectModel;
 
 
 namespace LanguageData
@@ -12,7 +13,8 @@ namespace LanguageData
     /// </summary>
     public class LdStandardTags : StandardSubtags
     {
-		LdStandardTags(Dictionary<string,string> sourcefiles)
+
+		public LdStandardTags(Dictionary<string,string> sourcefiles)
         {
             // need to load these in from files not resources so that can use new source files that have been downloaded
 			string twotothreecodes = sourcefiles["TwoToThreeCodes.txt"];

@@ -37,7 +37,7 @@ namespace LanguageData
 			getcheck.GetNewSources();
 			getcheck.CheckSourcesAreDifferent ();
 			getcheck.WriteNewFiles (".");
-			LanguageIndex langIndex = new LanguageIndex(getcheck.GetFileStrings(false));
+			LanguageIndex langIndex = new LanguageIndex(getcheck.GetFileStrings(true));
             langIndex.WriteIndex();
         }
     }
