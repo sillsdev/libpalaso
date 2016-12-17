@@ -17,7 +17,7 @@ namespace SIL.WritingSystems
             string[] encodingPairs = LanguageRegistryResources.TwoToThreeCodes.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
             string[] ianaSubtagsAsStrings = LanguageRegistryResources.ianaSubtagRegistry.Split(new[] { "%%" }, StringSplitOptions.None);
             InitialiseIanaSubtags(encodingPairs, ianaSubtagsAsStrings);
-            Iso3Languages = RegisteredLanguages.Where(l => !string.IsNullOrEmpty(l.Iso3Code)).ToDictionary(l => l.Iso3Code, StringComparer.InvariantCultureIgnoreCase);
+			Iso3Languages = RegisteredLanguages.Where(l => !string.IsNullOrEmpty(l.Iso3Code)).ToDictionary(l => l.Iso3Code, StringComparer.InvariantCultureIgnoreCase);
         }
 
         protected static void InitialiseIanaSubtags(string[] encodingPairs, string[] ianaSubtagsAsStrings)
@@ -42,7 +42,6 @@ namespace SIL.WritingSystems
 			var scripts = new List<ScriptSubtag>();
 			var regions = new List<RegionSubtag>();
 			var variants = new List<VariantSubtag>();
-
 			foreach (string ianaSubtagAsString in ianaSubtagsAsStrings)
 			{
 				string[] subTagComponents = ianaSubtagAsString.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
