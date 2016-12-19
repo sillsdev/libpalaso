@@ -52,11 +52,11 @@ namespace LanguageData
 			_newtwotothree = GenerateTwoToThreeCodes (newiso693);
 		}
 
-		public void GetOldSources ()
+		public void GetOldSources (string input_dir)
 		{
-			_oldtwotothree = File.ReadAllText (@"TwoToThreeCodes.txt");
-			_oldlanguageindex = File.ReadAllText (@"LanguageIndex.txt");
-			_oldianasubtags = File.ReadAllText (@"ianaSubtagRegistry.txt");
+			_oldtwotothree = File.ReadAllText (Path.Combine (input_dir, @"TwoToThreeCodes.txt"));
+			_oldlanguageindex = File.ReadAllText (Path.Combine (input_dir, @"LanguageIndex.txt"));
+			_oldianasubtags = File.ReadAllText (Path.Combine (input_dir, @"ianaSubtagRegistry.txt"));
 		}
 		public bool CheckSourcesAreDifferent ()
 		{

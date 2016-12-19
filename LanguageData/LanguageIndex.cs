@@ -220,9 +220,9 @@ namespace LanguageData
             return language;
         }
 
-        public void WriteIndex()
+		public void WriteIndex(string output_file)
         {
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"LanguageDataIndex.txt"))
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(output_file))
             {
                 string entry;
                 foreach (LanguageInfo languageInfo in _codeToLanguageIndex.Values)

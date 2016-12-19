@@ -107,7 +107,6 @@ namespace SIL.WritingSystems
 				new VariantSubtag(WellKnownSubtags.IpaPhonemicPrivateUse, "Phonemic"),
 				new VariantSubtag(WellKnownSubtags.AudioPrivateUse, "Audio")
 			}, v => v.Code, StringComparer.InvariantCultureIgnoreCase));
-
         }
 
 		private static readonly Dictionary<string, LanguageSubtag> Iso3Languages; 

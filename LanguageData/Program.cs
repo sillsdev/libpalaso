@@ -2,43 +2,90 @@
 using System.Collections.Generic;
 using System.Linq;
 using SIL.WritingSystems;
+using CommandLine;
+using CommandLine.Text;
+using System.IO;
+
+//TODO 
 
 namespace LanguageData
 {
     class Program
     {
- 
-
-        static void Usage()
+		static int Main(string[] args)
         {
-            //LanguageData will process Ethnologue, IANA subtag and ISO693-3 data to a single language index file
-            // Tasks/Parameters
-            // -g Get fresh source files
-            // -c Check if source files have changed (implies -g) and return
-            // input directory for where source files will be and fresh ones should go (default LanguageData/Resources)
-                // IANA subtags and 2to3lettercodes are used in SIL.WritingSystems by other parts,
-                // but Ethnologue LanguageIndex is only used in LanguageLookup
-            // output directory for index file (default SIL.WritingSystems/Reources)
-            // output filename for index file
-            Console.Error.WriteLine(
-                    "Usage: LanguageData");
-            //Console.Error.WriteLine("source: an XPath which selects the nodes that will be used to generate sort keys");
-            //Console.Error.WriteLine("sort: the sort identifier (en-US) or sort rules");
-            //Console.Error.WriteLine("  sort rules should be prefixed by their type (icu: or simple:)");
-            //Console.Error.WriteLine("location: a relative xpath (from the source) to the element the sortkey attribute will be put in");
-            //Console.Error.WriteLine("attribute: the name of the attribute to put the generated sort key in");
-        }
-
-        static void Main(string[] args)
-        {
+			var options = new Options();
+			var isValid = CommandLine.Parser.Default.ParseArgumentsStrict (args, options);
+			//Console.WriteLine ("Parsing is valid: {0}", isValid);
+			if (isValid)
+			{
+				// consume Options instance properties
+				if (options.ShowHelp)
+				{
+					Console.WriteLine(options.GetUsage ());
+					return 0;
+				}
+				if (String.IsNullOrEmpty(options.InputDir))
+				{
+					options.InputDir = Path.Combine ("..", "..", "..", "SIL.WritingSystems", "Resources");
+				}
+				if (!Directory.Exists(options.InputDir))
+				{
+					Console.WriteLine ("Input directory does not exist");
+					return 1;
+				}
+				else if (!File.Exists(Path.Combine(options.InputDir, "LanguageIndex.txt")) ||
+					!File.Exists(Path.Combine(options.InputDir, "ianaSubtagRegistry.txt")) ||
+					!File.Exists(Path.Combine(options.InputDir, "TwoToThreeCodes.txt")))
+				{
+					Console.WriteLine ("Input directory does not contain the source files LanguageIndex.txt, ianaSubtagRegistry.txt and TwoToThreeCodes.txt");
+					return 1;
+				}
+				if ((options.OutputFile != "LanguageDataIndex.txt") && File.Exists (options.OutputFile))
+				{
+					Console.WriteLine ("The file {0} already exists.", options.OutputFile);
+					return 1;
+				}
+				if (options.Verbose)
+				{
+					Console.WriteLine("Input directory: {0}", options.InputDir);
+					Console.WriteLine("Output file: {0}", options.OutputFile);
+					Console.WriteLine("Getting new files: {0}", options.GetFresh);
+					//Console.WriteLine(options.MaximumLength);
+				}
+				//Console.WriteLine("errors {0}", options.LastParserState?.Errors.Any ().ToString());
+				if (options.LastParserState?.Errors.Any () == true)
+				{
+					Console.WriteLine ("parse errors");	
+					Console.WriteLine (options.GetUsage ());
+					return 1;
+				}
+			}
+			else
+			{
+				// Display the default usage information
+				Console.WriteLine("command line parsing failed");
+				Console.WriteLine(options.GetUsage());
+				return 1;
+			}
+				
             Sldr.Initialize();
 			GetAndCheckSources getcheck = new GetAndCheckSources ();
-			getcheck.GetOldSources ();
-			getcheck.GetNewSources();
-			getcheck.CheckSourcesAreDifferent ();
-			getcheck.WriteNewFiles (".");
-			LanguageIndex langIndex = new LanguageIndex(getcheck.GetFileStrings(true));
-            langIndex.WriteIndex();
+			getcheck.GetOldSources (options.InputDir);
+			if (options.GetFresh || options.CheckFresh)
+			{
+				getcheck.GetNewSources();
+				getcheck.CheckSourcesAreDifferent ();
+				if (options.GetFresh)
+				{
+					getcheck.WriteNewFiles (".");
+				}
+			}
+			if (!options.CheckFresh) {
+				LanguageIndex langIndex = new LanguageIndex (getcheck.GetFileStrings (options.GetFresh));
+				langIndex.WriteIndex (options.OutputFile);
+			}
+			return 0;
         }
     }
 }
