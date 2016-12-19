@@ -28,7 +28,7 @@ namespace Palaso.BuildTasks.UnitTestTasks
 		public TestTask()
 		{
 			// more than 24 days should be a high enough value as default :-)
-			Timeout = Int32.MaxValue;
+			Timeout = int.MaxValue;
 			FudgeFactor = 1;
 		}
 
@@ -77,14 +77,17 @@ namespace Palaso.BuildTasks.UnitTestTasks
 		{
 			Importance = Verbose ? MessageImportance.Normal : MessageImportance.Low;
 
-			if (FudgeFactor >= 0 && Timeout < Int32.MaxValue)
+			if (FudgeFactor >= 0 && Timeout < int.MaxValue)
 				Timeout *= FudgeFactor;
 
 			bool retVal = true;
-			if (Timeout == Int32.MaxValue)
+			if (Timeout == int.MaxValue)
 				Log.LogMessage(MessageImportance.Normal, "Running {0}", TestProgramName);
 			else
-				Log.LogMessage(MessageImportance.Normal, "Running {0} (timeout = {1} seconds)", TestProgramName, ((double)Timeout/1000.0).ToString("F1"));
+			{
+				Log.LogMessage(MessageImportance.Normal, "Running {0} (timeout = {1} seconds)",
+					TestProgramName, ((double) Timeout/1000.0).ToString("F1"));
+			}
 
 			Thread outputThread = null;
 			Thread errorThread = null;
@@ -180,10 +183,9 @@ namespace Palaso.BuildTasks.UnitTestTasks
 					errorThread.Abort();
 				}
 			}
-			// Return retVal instead of !Log.HasLoggedErrors - if we get test failures we log
-			// those but don't want the build to fail. However, if we get an exception from the
-			// test or if we get a timeout we want to fail the build.
-			return retVal;
+			// If we logged errors we never want to return true. Test failures will be reported
+			// as warnings, not as errors.
+			return retVal && !Log.HasLoggedErrors;
 		}
 
 		/// <summary>
