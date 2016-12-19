@@ -83,15 +83,14 @@ namespace LanguageData
 			{
 				getcheck.GetNewSources();
 				bool newfiles = getcheck.CheckSourcesAreDifferent ();
-				if (options.GetFresh)
+				if (newfiles)
 				{
 					getcheck.WriteNewFiles (".");
-				} 
-				else
-				{
-					if (newfiles)
+					if (options.CheckFresh)
+					{
 						return 99;
-				}
+					}
+				} 
 			}
 			if (!options.CheckFresh) {
 				LanguageIndex langIndex = new LanguageIndex (getcheck.GetFileStrings (options.GetFresh));

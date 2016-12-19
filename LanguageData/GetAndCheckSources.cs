@@ -125,11 +125,11 @@ namespace LanguageData
 			{
 				throw new Exception();
 			}
-			string filename = output_directory + Path.DirectorySeparatorChar + "LanguageIndex.txt.new";
+			string filename = output_directory + Path.DirectorySeparatorChar + "LanguageIndex.txt";
 			File.WriteAllText (@filename, _newlanguageindex);
-			filename = output_directory + Path.DirectorySeparatorChar + "ianaSubtagRegistry.txt.new";
+			filename = output_directory + Path.DirectorySeparatorChar + "ianaSubtagRegistry.txt";
 			File.WriteAllText (@filename, _newianasubtags);
-			filename = output_directory + Path.DirectorySeparatorChar + "TwoToThreeCodes.txt.new";
+			filename = output_directory + Path.DirectorySeparatorChar + "TwoToThreeCodes.txt";
 			File.WriteAllText (@filename, _newtwotothree);
 		}
 
