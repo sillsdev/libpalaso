@@ -90,7 +90,7 @@ namespace Palaso.BuildTasks.UnitTestTasks
 		/// REVIEW: it actually seems to me that this should be the default behavior, but
 		/// I suppose changing the code in that way now could cause problems for existing callers.
 		/// </summary>
-		public bool FailTaskIfAnyTestsFail
+		public bool? FailTaskIfAnyTestsFail
 		{
 			get { return _failTaskIfAnyTestsFail; }
 			set
@@ -98,13 +98,13 @@ namespace Palaso.BuildTasks.UnitTestTasks
 				_failTaskIfAnyTestsFail = value;
 
 				// For NUnit, a positive exit code indicates the number of failed tests
-				_failTaskIfPositiveExitCode = value;
+				_failTaskIfPositiveExitCode = value.HasValue && value.Value;
 			}
 		}
 
 		// make this nullable so we have a third state, not set
 		private bool? _testInNewThread;
-		private bool _failTaskIfAnyTestsFail;
+		private bool? _failTaskIfAnyTestsFail;
 
 		/// <summary>
 		/// Allows tests to be run in a new thread, allowing you to take advantage of ApartmentState and ThreadPriority settings in the config file.

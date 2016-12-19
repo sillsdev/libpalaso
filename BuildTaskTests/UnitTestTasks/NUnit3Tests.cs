@@ -27,5 +27,32 @@ namespace Palaso.BuildTask.Tests.UnitTestTasks
 
 			Assert.AreEqual(result, nUnit3.AddIncludeAndExcludeArguments());
 		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void FailTaskIfAnyTestsFail_NotSetByUser_SetByTeamCityProperty(bool teamcity)
+		{
+			var nUnit3 = new NUnit3
+			{
+				TeamCity = teamcity
+			};
+
+			Assert.AreEqual(teamcity, nUnit3.FailTaskIfAnyTestsFail);
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void FailTaskIfAnyTestsFail_SetByUser_NotAffectedByTeamCityProperty(bool failTaskIfAnyTestsFail)
+		{
+			var nUnit3 = new NUnit3
+			{
+				FailTaskIfAnyTestsFail = failTaskIfAnyTestsFail
+			};
+
+			nUnit3.TeamCity = true;
+			Assert.AreEqual(failTaskIfAnyTestsFail, nUnit3.FailTaskIfAnyTestsFail);
+			nUnit3.TeamCity = false;
+			Assert.AreEqual(failTaskIfAnyTestsFail, nUnit3.FailTaskIfAnyTestsFail);
+		}
 	}
 }
