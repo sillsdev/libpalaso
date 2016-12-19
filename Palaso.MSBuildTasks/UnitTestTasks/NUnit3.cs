@@ -11,15 +11,8 @@ namespace Palaso.BuildTasks.UnitTestTasks
 	/// </summary>
 	public class NUnit3 : NUnit
 	{
-		public NUnit3()
-		{
-			// REVIEW: This should probably be true for NUnit also, but changing
-			// the logic there could potentially cause unexpected results for existing
-			// callers whereas the NUnit3 task is new enough, I think we are okay.
-			FailTaskIfAnyTestsFail = true;
-		}
-
 		private bool? _useNUnit3Xml;
+		private bool _teamCity;
 
 		public bool UseNUnit3Xml
 		{
@@ -33,7 +26,23 @@ namespace Palaso.BuildTasks.UnitTestTasks
 		/// Should be set to true if the tests are running on a TeamCity server.
 		/// Adds --teamcity which "Turns on use of TeamCity service messages."
 		/// </summary>
-		public bool TeamCity { get; set; }
+		public bool TeamCity
+		{
+			get { return _teamCity; }
+			set
+			{
+				_teamCity = value;
+
+				// According to Eberhard, we don't want this behavior by default on 
+				// Jenkins, so this is tied to the TeamCity property.
+				// REVIEW: This should probably be true for NUnit also, but changing
+				// the logic there could potentially cause unexpected results for existing
+				// callers whereas the NUnit3 task is new enough, I think we are okay.
+				// (And there is no TeamCity property for NUnit, anyway.)
+				if (!FailTaskIfAnyTestsFail.HasValue)
+					FailTaskIfAnyTestsFail = value;
+			}
+		}
 
 		/// <summary>
 		/// Gets the name (without path) of the NUnit executable. When running on Mono this is
