@@ -82,10 +82,15 @@ namespace LanguageData
 			if (options.GetFresh || options.CheckFresh)
 			{
 				getcheck.GetNewSources();
-				getcheck.CheckSourcesAreDifferent ();
+				bool newfiles = getcheck.CheckSourcesAreDifferent ();
 				if (options.GetFresh)
 				{
 					getcheck.WriteNewFiles (".");
+				} 
+				else
+				{
+					if (newfiles)
+						return 99;
 				}
 			}
 			if (!options.CheckFresh) {
