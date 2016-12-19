@@ -25,6 +25,8 @@ namespace LanguageData
 		{
 		}
 
+		// solution to teamcity problems with certificates
+		// found in http://stackoverflow.com/questions/4926676/mono-webrequest-fails-with-https
 		public bool MyRemoteCertificateValidationCallback(System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
 			bool isOk = true;
 			// If there are errors in the certificate chain, look at each error to determine the cause.
