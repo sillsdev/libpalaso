@@ -6,7 +6,12 @@ using CommandLine;
 using CommandLine.Text;
 using System.IO;
 
-//TODO 
+//TODO 1: Set up teamcity build configurations
+// a: copy of libpalaso using glasseyes github, and with LanguageData.exe artifact
+// b: check source files - run LanguageData -c, fail if new files, artifact LastModified.txt
+// c: pushbutton to run LanguageData -g, artifact LanguageData.txt to be used by libpalaso
+// then set up dependencies (a) on latest build of (c) and (c) on latest build of (a)
+//TODO 2: 
 
 namespace LanguageData
 {
