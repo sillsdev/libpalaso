@@ -18,8 +18,8 @@ namespace LanguageData
 		// output filename for index file
 	class Options
 	{
-		[ParserState]
-		public IParserState LastParserState { get; set; }
+		//[ParserState]
+		//public IParserState LastParserState { get; set; }
 
 		[Option('i', "input", HelpText = "Input directory containing source files.")]
 		public string InputDir { get; set; }
@@ -57,7 +57,7 @@ namespace LanguageData
 			//usage.AppendLine("LanguageData (c) 2016 SIL International");
 			//usage.AppendLine("LanguageData will process Ethnologue, IANA subtag and ISO693-3 data to a single language data index file.");
 			//Console.WriteLine("LastParseState: {0}", this.LastParserState?.ToString());
-			if (this.LastParserState?.Errors.Any() == true)
+			/*if (this.LastParserState?.Errors.Any() == true)
 			{
 				Console.WriteLine ("have some cl parsing errors");
 				var errors = help.RenderParsingErrorsText(this, 2); // indent with two spaces
@@ -69,6 +69,7 @@ namespace LanguageData
 				} else
 					Console.WriteLine ("error list is empty");
 			}
+			*/
 			return help;
 		}
 	}

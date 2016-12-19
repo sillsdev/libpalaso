@@ -53,6 +53,7 @@ namespace LanguageData
 					Console.WriteLine("Getting new files: {0}", options.GetFresh);
 					//Console.WriteLine(options.MaximumLength);
 				}
+				/*
 				//Console.WriteLine("errors {0}", options.LastParserState?.Errors.Any ().ToString());
 				if (options.LastParserState?.Errors.Any () == true)
 				{
@@ -60,6 +61,7 @@ namespace LanguageData
 					Console.WriteLine (options.GetUsage ());
 					return 1;
 				}
+				*/
 			}
 			else
 			{
