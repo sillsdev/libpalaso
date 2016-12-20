@@ -11,7 +11,7 @@ using System.IO;
 // b: check source files - run LanguageData -c, fail if new files, artifact LastModified.txt
 // c: pushbutton to run LanguageData -g, artifact LanguageData.txt to be used by libpalaso
 // then set up dependencies (a) on latest build of (c) and (c) on latest build of (a)
-//TODO 2: 
+//TODO 2: Write tests for LanguageData and classes
 
 namespace LanguageData
 {
@@ -32,7 +32,7 @@ namespace LanguageData
 				}
 				if (String.IsNullOrEmpty(options.InputDir))
 				{
-					options.InputDir = Path.Combine ("..", "..", "..", "SIL.WritingSystems", "Resources");
+					options.InputDir = Path.Combine ("..", "..", "SIL.WritingSystems", "Resources");
 				}
 				if (!Directory.Exists(options.InputDir))
 				{
