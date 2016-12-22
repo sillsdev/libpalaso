@@ -5,6 +5,9 @@ using System.IO;
 using SIL.WritingSystems;
 using SIL.Extensions;
 
+// possible tests
+// sanity check some data? or just leave the tests to SIL.WritingSystems.LanguageLookup after file is read in?
+
 namespace LanguageData
 {
     public class LanguageIndex
