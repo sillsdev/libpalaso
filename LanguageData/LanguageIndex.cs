@@ -230,12 +230,12 @@ namespace LanguageData
                 string entry;
                 foreach (LanguageInfo languageInfo in _codeToLanguageIndex.Values)
                 {
-                    entry = String.Format("{0}\t{1}\t{2},\t{3}\t{4}",
+                    entry = String.Format("{0}\t{1}\t{2}\t{3}\t{4}",
                         languageInfo.LanguageTag,
                         languageInfo.LanguageTag,
                         languageInfo.DesiredName,
                         String.Join(";", languageInfo.Names),
-                        String.Join(",", languageInfo.Countries)
+						String.Join(";", languageInfo.Countries)
                         );
                     file.WriteLine(entry);
                 }
