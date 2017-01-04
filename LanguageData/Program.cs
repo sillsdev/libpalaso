@@ -81,7 +81,11 @@ namespace LanguageData
 			getcheck.GetOldSources (options.InputDir);
 			if (options.GetFresh || options.CheckFresh)
 			{
-				getcheck.GetNewSources();
+				if (!getcheck.GetNewSources ())
+				{
+					Console.WriteLine("Failed to download files - aborting");
+					return 2;
+				}
 				bool newfiles = getcheck.CheckSourcesAreDifferent ();
 				if (newfiles)
 				{
