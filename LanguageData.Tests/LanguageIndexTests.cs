@@ -7,7 +7,7 @@ namespace LanguageData.Tests
 	public class LanguageIndexTests
 	{
 		[Test ()]
-		public void TestCase ()
+		public void LanguageIndexTest ()
 		{
 		}
 	}

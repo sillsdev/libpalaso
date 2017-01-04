@@ -19,6 +19,17 @@ namespace LanguageData
 {
 	public class GetAndCheckSources
 	{
+		// used in test to simulate no network
+		private class WebClientWithTimeout:WebClient
+		{
+			protected override WebRequest GetWebRequest(Uri address)
+			{
+				WebRequest wr = base.GetWebRequest(address);
+				wr.Timeout = 1; // timeout in milliseconds (ms)
+				return wr;
+			}
+		}
+
 		private string _oldtwotothree;
 		private string _oldlanguageindex;
 		private string _oldianasubtags;
@@ -55,34 +66,51 @@ namespace LanguageData
 			return isOk;
 		}
 
-		public void GetNewSources ()
+		public bool GetNewSources (bool intest = false)
 		{
-			// Create web client.
-			ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
-			WebClient client = new WebClient ();
-
-			// Download strings.
-			string newiso693 = client.DownloadString ("http://www-01.sil.org/iso639-3/iso-639-3.tab");
-			string lastmod_iso693 = client.ResponseHeaders["Last-Modified"];
-
-			_newlanguageindex = client.DownloadString ("https://www.ethnologue.com/codes/LanguageIndex.tab");
-			string lastmod_languageindex = client.ResponseHeaders["Last-Modified"];
-
-			_newianasubtags = client.DownloadString ("http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry");
-			string lastmod_ianasubtag = client.ResponseHeaders["Last-Modified"];
-
-			Console.WriteLine ("IANA subtags last modified: " + lastmod_ianasubtag);
-			Console.WriteLine ("Ethnologue index last modified: " + lastmod_languageindex);
-			Console.WriteLine ("ISO693-3 table last modified: " + lastmod_iso693);
-
-			using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"LastModified.txt"))
+			try
 			{
-				file.WriteLine ("IANA subtags last modified: " + lastmod_ianasubtag);
-				file.WriteLine ("Ethnologue index last modified: " + lastmod_languageindex);
-				file.WriteLine ("ISO693-3 table last modified: " + lastmod_iso693);
-			}
+				
+				// Create web client.
+				ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
+				WebClient client;
+				if (intest)
+				{
+					client = new WebClientWithTimeout();
+				}
+				else
+				{
+					client = new WebClient ();
+				}
 
-			_newtwotothree = GenerateTwoToThreeCodes (newiso693);
+				// Download strings.
+				string newiso693 = client.DownloadString ("http://www-01.sil.org/iso639-3/iso-639-3.tab");
+				string lastmod_iso693 = client.ResponseHeaders["Last-Modified"];
+
+				_newlanguageindex = client.DownloadString ("https://www.ethnologue.com/codes/LanguageIndex.tab");
+				string lastmod_languageindex = client.ResponseHeaders["Last-Modified"];
+
+				_newianasubtags = client.DownloadString ("http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry");
+				string lastmod_ianasubtag = client.ResponseHeaders["Last-Modified"];
+
+				Console.WriteLine ("IANA subtags last modified: " + lastmod_ianasubtag);
+				Console.WriteLine ("Ethnologue index last modified: " + lastmod_languageindex);
+				Console.WriteLine ("ISO693-3 table last modified: " + lastmod_iso693);
+
+				using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"LastModified.txt"))
+				{
+					file.WriteLine ("IANA subtags last modified: " + lastmod_ianasubtag);
+					file.WriteLine ("Ethnologue index last modified: " + lastmod_languageindex);
+					file.WriteLine ("ISO693-3 table last modified: " + lastmod_iso693);
+				}
+
+				_newtwotothree = GenerateTwoToThreeCodes (newiso693);
+				return true;
+			}
+			catch (WebException wex)
+			{
+				return false;
+			}
 		}
 
 		public void GetOldSources (string input_dir)
@@ -130,11 +158,12 @@ namespace LanguageData
 			return retval;
 		}
 
+		// this does not check that it is a safe place to put the files
 		public void WriteNewFiles(string output_directory)
 		{
-			if (!Uri.IsWellFormedUriString(output_directory, UriKind.RelativeOrAbsolute))
+			if (!Uri.IsWellFormedUriString(output_directory, UriKind.RelativeOrAbsolute) || !Directory.Exists(output_directory))
 			{
-				throw new Exception();
+				throw new DirectoryNotFoundException();
 			}
 			string filename = output_directory + Path.DirectorySeparatorChar + "LanguageIndex.txt";
 			File.WriteAllText (@filename, _newlanguageindex);
@@ -183,7 +212,7 @@ namespace LanguageData
 			return retval;
 		}
 
-		private bool AreFilesDifferent(string oldfile, string newfile)
+		public bool AreFilesDifferent(string oldfile, string newfile)
 		{
 			// return true if files are different, false if the same
 			var sha = new SHA256Managed();
