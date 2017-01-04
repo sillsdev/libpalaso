@@ -46,7 +46,7 @@ namespace LanguageData.Tests
 		{
 			Assert.That(LdStandardTags.RegisteredScripts.Any(code => code.Name == "Old Italic (Etruscan, Oscan, etc.)"), Is.True);
 		}
-		/* Covered in StandardSubtagTests
+		/* Covered in StandardSubtagTests and can't access from this class
 		[Test]
 		public void SubTagComponentDescription_HasBeginningParenthesis_RemovesParens()
 		{
