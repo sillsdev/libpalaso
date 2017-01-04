@@ -1,14 +1,17 @@
 ﻿using NUnit.Framework;
 using System;
 using System.IO;
+using System.Security.Cryptography;
 
 // possible tests
 // verify AreFilesDifferent for 2 identical and 2 different strings
 // verify CheckSourcesAreDifferent in 2 cases, same and different
 // verify GenerateTwoToThreeCodes generates the same thing consistently on all platforms
+//           i.e. whether or not CRLF are in the file
 // what happens to GetNewSources if no net?
 // what happens to GetOldSources if input dir is bad (not exists or files not readable)?
 // what about WriteNewFiles if output dir is bad (not exists or system folder)?
+using System.Text;
 
 namespace LanguageData.Tests
 {
@@ -21,18 +24,62 @@ namespace LanguageData.Tests
 			string stringone = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
 			string stringtwo = "22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222";
 			GetAndCheckSources getcheck = new GetAndCheckSources ();
-			Assert.That (!getcheck.AreFilesDifferent(stringone, stringone));
-			Assert.That (getcheck.AreFilesDifferent(stringone, stringtwo));
+			Assert.False (getcheck.AreFilesDifferent(stringone, stringone));
+			Assert.True (getcheck.AreFilesDifferent(stringone, stringtwo));
+		}
+
+		[Test ()]
+		public void Verify_CheckSourcesAreSame ()
+		{
+			GetAndCheckSources getcheck = new GetAndCheckSources ();
+			if (!getcheck.GetNewSources ())
+			{
+				Assert.Fail ();
+			}
+			getcheck.WriteNewFiles (".");
+			getcheck.GetOldSources (".");
+			Assert.False (getcheck.CheckSourcesAreDifferent ());
 		}
 
 		[Test ()]
 		public void Verify_CheckSourcesAreDifferent ()
 		{
+			GetAndCheckSources getcheck = new GetAndCheckSources ();
+			string filename = "." + Path.DirectorySeparatorChar + "LanguageIndex.txt";
+			File.WriteAllText (@filename, "11111111111111111111111111111111111111111111111111111111111111111");
+			filename = "." + Path.DirectorySeparatorChar + "ianaSubtagRegistry.txt";
+			File.WriteAllText (@filename, "22222222222222222222222222222222222222222222222222222222222222222");
+			filename = "." + Path.DirectorySeparatorChar + "TwoToThreeCodes.txt";
+			File.WriteAllText (@filename, "33333333333333333333333333333333333333333333333333333333333333333");
+
+			getcheck.GetOldSources (".");
+
+			filename = "." + Path.DirectorySeparatorChar + "LanguageIndex.txt";
+			File.Delete (@filename);
+			filename = "." + Path.DirectorySeparatorChar + "ianaSubtagRegistry.txt";
+			File.Delete (@filename);
+			filename = "." + Path.DirectorySeparatorChar + "TwoToThreeCodes.txt";
+			File.Delete (@filename);
+
+
+			if (!getcheck.GetNewSources ())
+			{
+				Assert.Fail ();
+			}
+			Assert.True (getcheck.CheckSourcesAreDifferent ());
 		}
 
+		// checks that the TwoToThreeCodes checksum is as expected whichever system the test is run on
 		[Test ()]
 		public void Verify_TwoToThreeCodes ()
 		{
+			string input_dir = Path.Combine ("..", "..", "..", "SIL.WritingSystems", "Resources");
+			string twotothree = File.ReadAllText (Path.Combine (input_dir, @"TwoToThreeCodes.txt"));
+			var sha = new SHA256Managed();
+			byte[] checksum_twotothree = sha.ComputeHash (Encoding.UTF8.GetBytes(twotothree));
+			string checksumstring = BitConverter.ToString (checksum_twotothree);
+			Console.WriteLine ("hash of TwoToThreeCodes.txt is: " + checksumstring);
+			Assert.AreEqual (checksumstring, "F5-3A-3D-8F-B7-F3-47-F1-12-70-B4-B8-0A-EE-51-11-CA-CC-77-AB-1B-5B-DA-06-90-B6-1F-8C-F6-31-2E-12");
 		}
 
 		[Test ()]
@@ -67,14 +114,14 @@ namespace LanguageData.Tests
 		public void GetNewSources_Ok ()
 		{
 			GetAndCheckSources getcheck = new GetAndCheckSources ();
-			Assert.That (getcheck.GetNewSources());
+			Assert.True (getcheck.GetNewSources());
 		}
 
 		[Test ()]
 		public void GetNewSources_NoNet ()
 		{
 			GetAndCheckSources getcheck = new GetAndCheckSources ();
-			Assert.That (!getcheck.GetNewSources(true));
+			Assert.False (getcheck.GetNewSources(true));
 		}
 	}
 }
