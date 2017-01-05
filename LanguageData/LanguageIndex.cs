@@ -61,11 +61,12 @@ namespace LanguageData
 
                 string code = items[0].Trim();
                 string twoLetterCode;
+                string threelettercode = code;
                 if (threeToTwoLetter.TryGetValue(code, out twoLetterCode))
                     code = twoLetterCode;
 
                 string regionCode = items[1].Trim();
-				LanguageInfo language = GetOrCreateLanguageFromCode(code, regionCode == "?" ? "?" : LdStandardTags.RegisteredRegions[regionCode].Name);
+				LanguageInfo language = GetOrCreateLanguageFromCode(code, threelettercode, regionCode == "?" ? "?" : LdStandardTags.RegisteredRegions[regionCode].Name);
 
                 string name = items[3].Trim();
 
@@ -126,7 +127,7 @@ namespace LanguageData
                             if (langTag == languageSubtag)
                                 continue;
 
-                            LanguageInfo language = GetOrCreateLanguageFromCode(langTag, regionSubtag == null ? "?" : regionSubtag.Name);
+                            LanguageInfo language = GetOrCreateLanguageFromCode(langTag, langTag, regionSubtag == null ? "?" : regionSubtag.Name);
                             bool displayScript = scriptSubtag != null && !IetfLanguageTag.IsScriptImplied(langTag);
                             LanguageInfo otherLanguage;
                             if (langTag != languageSubtag && !displayScript && _codeToLanguageIndex.TryGetValue(languageSubtag, out otherLanguage) && language.Countries.SetEquals(otherLanguage.Countries))
@@ -210,12 +211,12 @@ namespace LanguageData
             return languages;
         }
 
-        private LanguageInfo GetOrCreateLanguageFromCode(string code, string countryName)
+        private LanguageInfo GetOrCreateLanguageFromCode(string code, string threelettercode, string countryName)
         {
             LanguageInfo language;
             if (!_codeToLanguageIndex.TryGetValue(code, out language))
             {
-                language = new LanguageInfo { LanguageTag = code };
+                language = new LanguageInfo { LanguageTag = code, ThreeLetterTag = threelettercode };
                 _codeToLanguageIndex.Add(code, language);
             }
             if (!string.IsNullOrEmpty(countryName))
@@ -232,7 +233,7 @@ namespace LanguageData
                 {
                     entry = String.Format("{0}\t{1}\t{2}\t{3}\t{4}",
                         languageInfo.LanguageTag,
-                        languageInfo.LanguageTag,
+                        languageInfo.ThreeLetterTag,
                         languageInfo.DesiredName,
                         String.Join(";", languageInfo.Names),
 						String.Join(";", languageInfo.Countries)
