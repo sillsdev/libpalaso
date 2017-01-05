@@ -153,5 +153,33 @@ namespace SIL.Media.AlsaAudio
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Start recording at the desired sample rate and number of channels.  The device remembers
+		/// these settings.
+		/// </summary>
+		/// <remarks>
+		/// This method is not in the interface, but may be used by the calling program to record better audio files
+		/// (e.g., 44K instead of 22K sample rate).
+		/// </remarks>
+		public void StartRecording(uint sampleRate, ushort channelCount)
+		{
+			_device.DesiredSampleRate = sampleRate;
+			_device.DesiredChannelCount = channelCount;
+			StartRecording();
+		}
+
+		/// <summary>
+		/// Set the name of the input device to open for recording.  The default value is "default".  I have no idea
+		/// what other valid values would be, and those would be system dependent anyway.  Use this at your own risk!
+		/// </summary>
+		/// <remarks>
+		/// This method is not in the interface, but may be used to allow the user to choose the input device
+		/// from inside the calling program.
+		/// </remarks>
+		public void SetInputDevice(string device)
+		{
+			_device.DesiredInputDevice = device;
+		}
 	}
 }
