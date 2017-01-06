@@ -14,7 +14,6 @@ namespace LanguageData
     {
         private readonly Dictionary<string, LanguageInfo> _codeToLanguageIndex = new Dictionary<string, LanguageInfo>();
         private readonly Dictionary<string, List<LanguageInfo>> _nameToLanguageIndex = new Dictionary<string, List<LanguageInfo>>();
-        private System.IO.StreamWriter file;
 
 
         /// <summary>
@@ -52,7 +51,7 @@ namespace LanguageData
 				LdStandardTags.RegisteredScripts.Count,
 				LdStandardTags.RegisteredVariants.Count
 			);
-            file = new System.IO.StreamWriter(@"processing.txt");
+
             foreach (string entry in entries.Skip(1)) //skip the header
             {
                 string[] items = entry.Split('\t');
@@ -68,7 +67,6 @@ namespace LanguageData
                     code = twoLetterCode;
 
                 string regionCode = items[1].Trim();
-                file.WriteLine("Adding language {0} region {1}:{2}", code, regionCode, regionCode == "?" ? "?" : LdStandardTags.RegisteredRegions[regionCode].Name);
                 LanguageInfo language = GetOrCreateLanguageFromCode(code, threelettercode, regionCode == "?" ? "?" : LdStandardTags.RegisteredRegions[regionCode].Name);
 
                 string name = items[3].Trim();
@@ -99,11 +97,6 @@ namespace LanguageData
                 }
             }
 
-            file.WriteLine("Finished processing Ethnologue data, {0} items", _codeToLanguageIndex.Count());
-            file.WriteLine("Sldr LanguageTags Count {0}", Sldr.LanguageTags.Count());
-            file.WriteLine("Sldr LanguageTags Available Count {0}", Sldr.LanguageTags.Where(info => info.IsAvailable).Count());
-            file.WriteLine("Sldr LanguageTags Available and Valid Count {0}", Sldr.LanguageTags.Where(info => info.IsAvailable && IetfLanguageTag.IsValid(info.LanguageTag)).Count());
-
             IEnumerable<IGrouping<string, string>> languageGroups = Sldr.LanguageTags.Where(info => info.IsAvailable && IetfLanguageTag.IsValid(info.LanguageTag))
                 .Select(info => IetfLanguageTag.Canonicalize(info.LanguageTag))
                 .GroupBy(IetfLanguageTag.GetLanguagePart);
@@ -114,7 +107,6 @@ namespace LanguageData
                 if (langTags.Length == 1)
                 {
                     string langTag = langTags[0];
-                    file.WriteLine("Single Sldr tag {0}", langTag);
                     LanguageInfo language;
                     if (langTag != languageGroup.Key && _codeToLanguageIndex.TryGetValue(languageGroup.Key, out language))
                     {
@@ -125,7 +117,6 @@ namespace LanguageData
                 }
                 else
                 {
-                    file.WriteLine("Multiple langtags in grouping");
                     foreach (string langTag in langTags)
                     {
                         LanguageSubtag languageSubtag;
@@ -134,11 +125,6 @@ namespace LanguageData
                         IEnumerable<VariantSubtag> variantSubtags;
                         if (IetfLanguageTag.TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
                         {
-                            file.WriteLine("Got subtags for {0} lang:{1} script:{2} region:{3}",
-                                langTag,
-                                languageSubtag == null ? "?" : languageSubtag.Name,
-                                scriptSubtag == null ? "?" : scriptSubtag.Name,
-                                regionSubtag == null ? "?" : regionSubtag.Name);
                             if (langTag == languageSubtag)
                                 continue;
 
@@ -156,11 +142,9 @@ namespace LanguageData
                                     language.Names.Add(name); //intentionally not lower-casing
                             }
                         }
-                        else file.WriteLine("but could not get subtags for {0}", langTag);
                     }
                 }
             }
-            file.Close();
 
             foreach (LanguageInfo languageInfo in _codeToLanguageIndex.Values)
             {
@@ -233,13 +217,11 @@ namespace LanguageData
             LanguageInfo language;
             if (!_codeToLanguageIndex.TryGetValue(code, out language))
             {
-                file.WriteLine("adding new language for {0}", code);
                 language = new LanguageInfo { LanguageTag = code, ThreeLetterTag = threelettercode };
                 _codeToLanguageIndex.Add(code, language);
             }
             if (!string.IsNullOrEmpty(countryName))
             {
-                file.WriteLine("Adding country {0} to {1}", countryName, code);
                 language.Countries.Add(countryName);
             }
             return language;
