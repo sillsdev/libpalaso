@@ -203,6 +203,39 @@ namespace SIL.WritingSystems.Tests
         }
 
         /// <summary>
+        /// We should not suggest macro languages.
+        /// </summary>
+        [Test]
+        public void SuggestLanguages_DoesNotSuggestMacroLanguages()
+        {
+            var lookup = new NewLanguageLookup();
+            Assert.That(lookup.SuggestLanguages("macrolanguage").Count(), Is.EqualTo(0));
+            var languages = lookup.SuggestLanguages("zza").ToArray();
+            Assert.False(languages.Any(l => l.LanguageTag == "zza"));
+        }
+
+        /// <summary>
+        /// We should not suggest deprecated tags for languages.
+        /// </summary>
+        [Test]
+        public void SuggestLanguages_DoesNotSuggestDeprecatedTags()
+        {
+            var lookup = new NewLanguageLookup();
+            Assert.That(lookup.SuggestLanguages("dzd").Count(), Is.EqualTo(0));
+        }
+
+        /// <summary>
+        /// We should now be able to search for 3 letter codes e.g. nld for languages that have 2 letter codes e.g. nl
+        /// </summary>
+        [Test]
+        public void SuggestLanguages_CanFind3LetterCodesForLanguagesWith2LetterCodes()
+        {
+            var lookup = new NewLanguageLookup();
+            var languages = lookup.SuggestLanguages("nld").ToArray();
+            Assert.True(languages.Any(l => l.DesiredName == "Dutch"));
+        }
+
+        /// <summary>
         /// Check that new language lookup is same as old language lookup as far as we can check.
         /// Note that if Sldr alltags.txt file is cached or online sldr used then results will be 
         /// different when creating LanguageDataIndex.txt
