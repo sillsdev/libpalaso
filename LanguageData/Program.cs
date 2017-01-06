@@ -54,17 +54,8 @@ namespace LanguageData
 					Console.WriteLine("Input directory: {0}", options.InputDir);
 					Console.WriteLine("Output file: {0}", options.OutputFile);
 					Console.WriteLine("Getting new files: {0}", options.GetFresh);
-					//Console.WriteLine(options.MaximumLength);
 				}
-				/*
-				//Console.WriteLine("errors {0}", options.LastParserState?.Errors.Any ().ToString());
-				if (options.LastParserState?.Errors.Any () == true)
-				{
-					Console.WriteLine ("parse errors");	
-					Console.WriteLine (options.GetUsage ());
-					return 1;
-				}
-				*/
+
 			}
 			else
 			{
