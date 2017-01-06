@@ -183,6 +183,22 @@ namespace SIL.WritingSystems {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to aaa	aaa	Ghotuo	Ghotuo	Nigeria
+        ///aab	aab	Alumu-Tesu	Alumu-Tesu;Alumu;Tesu;Arum;Arum-Cesu;Arum-Chessu;Arum-Tesu	Nigeria
+        ///aac	aac	Ari	Ari;Serea	Papua New Guinea
+        ///aad	aad	Amal	Amal;Alai	Papua New Guinea
+        ///aae	aae	Albanian, Arbëreshë	Albanian, Arbëreshë;Calabrian Albanian;Campo Marino Albanian;Central Mountain Albanian;Molise Albanian;Sicilian Albanian;Arbëreshë	Italy
+        ///aaf	aaf	Aranadan	Aranadan;Aranatan;Eranadans	India
+        ///aag	aag	Ambrak	Ambrak	Papua New Guinea
+        ///aah	aah	Arapesh, Abu’	Arapesh, Abu’;Matapau;Ua	Papua Ne [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string LanguageDataIndex {
+            get {
+                return ResourceManager.GetString("LanguageDataIndex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to LangID	CountryID	NameType	Name
         ///aaa	NG	L	Ghotuo
         ///aab	NG	D	Alumu
