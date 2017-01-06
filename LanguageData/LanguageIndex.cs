@@ -51,6 +51,7 @@ namespace LanguageData
 				LdStandardTags.RegisteredScripts.Count,
 				LdStandardTags.RegisteredVariants.Count
 			);
+
             foreach (string entry in entries.Skip(1)) //skip the header
             {
                 string[] items = entry.Split('\t');
@@ -66,7 +67,7 @@ namespace LanguageData
                     code = twoLetterCode;
 
                 string regionCode = items[1].Trim();
-				LanguageInfo language = GetOrCreateLanguageFromCode(code, threelettercode, regionCode == "?" ? "?" : LdStandardTags.RegisteredRegions[regionCode].Name);
+                LanguageInfo language = GetOrCreateLanguageFromCode(code, threelettercode, regionCode == "?" ? "?" : LdStandardTags.RegisteredRegions[regionCode].Name);
 
                 string name = items[3].Trim();
 
@@ -220,7 +221,9 @@ namespace LanguageData
                 _codeToLanguageIndex.Add(code, language);
             }
             if (!string.IsNullOrEmpty(countryName))
+            {
                 language.Countries.Add(countryName);
+            }
             return language;
         }
 
