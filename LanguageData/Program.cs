@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using SIL.WritingSystems;
-using CommandLine;
-using CommandLine.Text;
 using System.IO;
+
+
 
 //TODO 1: Set up teamcity build configurations
 // a: copy of libpalaso using glasseyes github, and with LanguageData.exe artifact
@@ -75,9 +73,8 @@ namespace LanguageData
 				Console.WriteLine(options.GetUsage());
 				return 1;
 			}
-				
-            Sldr.Initialize();
-			GetAndCheckSources getcheck = new GetAndCheckSources ();
+
+            GetAndCheckSources getcheck = new GetAndCheckSources ();
 			getcheck.GetOldSources (options.InputDir);
 			if (options.GetFresh || options.CheckFresh)
 			{
@@ -97,9 +94,11 @@ namespace LanguageData
 				} 
 			}
 			if (!options.CheckFresh) {
-				LanguageIndex langIndex = new LanguageIndex (getcheck.GetFileStrings (options.GetFresh));
+                Sldr.Initialize(true);
+                LanguageIndex langIndex = new LanguageIndex (getcheck.GetFileStrings (options.GetFresh));
 				langIndex.WriteIndex (options.OutputFile);
-			}
+                Sldr.Cleanup();
+            }
 			return 0;
         }
     }

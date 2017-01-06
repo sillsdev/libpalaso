@@ -13,11 +13,12 @@ namespace SIL.WritingSystems
 	{
 		private readonly Dictionary<string, LanguageInfo> _codeToLanguageIndex = new Dictionary<string, LanguageInfo>();
 		private readonly Dictionary<string, List<LanguageInfo>> _nameToLanguageIndex = new Dictionary<string, List<LanguageInfo>>();
+        private System.IO.StreamWriter file;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="LanguageLookup"/> class.
-		/// </summary>
-		public LanguageLookup()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LanguageLookup"/> class.
+        /// </summary>
+        public LanguageLookup()
 		{
 			var threeToTwoLetter = new Dictionary<string, string>();
 			foreach (string line in LanguageRegistryResources.TwoToThreeCodes.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
@@ -26,9 +27,10 @@ namespace SIL.WritingSystems
 				threeToTwoLetter.Add(items[1].Trim(), items[0].Trim());
 			}
 
-			//LanguageIndex.txt Format: LangID	CountryID	NameType	Name
-			//a language appears on one row for each of its alternative langauges
-			var entries = new List<string>(LanguageRegistryResources.LanguageIndex.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries));
+            file = new System.IO.StreamWriter(@"processing2.txt");
+            //LanguageIndex.txt Format: LangID	CountryID	NameType	Name
+            //a language appears on one row for each of its alternative langauges
+            var entries = new List<string>(LanguageRegistryResources.LanguageIndex.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries));
 			entries.Add("qaa\t?\tL\tUnlisted Language");
 			foreach (string entry in entries.Skip(1)) //skip the header
 			{
@@ -44,7 +46,8 @@ namespace SIL.WritingSystems
 					code = twoLetterCode;
 
 				string regionCode = items[1].Trim();
-				LanguageInfo language = GetOrCreateLanguageFromCode(code, regionCode == "?" ? "?" : StandardSubtags.RegisteredRegions[regionCode].Name);
+                file.WriteLine("Adding language {0} region {1}:{2}", code, regionCode, regionCode == "?" ? "?" : StandardSubtags.RegisteredRegions[regionCode].Name);
+                LanguageInfo language = GetOrCreateLanguageFromCode(code, regionCode == "?" ? "?" : StandardSubtags.RegisteredRegions[regionCode].Name);
 
 				string name = items[3].Trim();
 
@@ -74,7 +77,12 @@ namespace SIL.WritingSystems
 				}
 			}
 
-			IEnumerable<IGrouping<string, string>> languageGroups = Sldr.LanguageTags.Where(info => info.IsAvailable && IetfLanguageTag.IsValid(info.LanguageTag))
+            file.WriteLine("Finished processing Ethnologue data, {0} items", _codeToLanguageIndex.Count());
+            file.WriteLine("Sldr LanguageTags Count {0}", Sldr.LanguageTags.Count());
+            file.WriteLine("Sldr LanguageTags Available Count {0}", Sldr.LanguageTags.Where(info => info.IsAvailable).Count());
+            file.WriteLine("Sldr LanguageTags Available and Valid Count {0}", Sldr.LanguageTags.Where(info => info.IsAvailable && IetfLanguageTag.IsValid(info.LanguageTag)).Count());
+
+            IEnumerable<IGrouping<string, string>> languageGroups = Sldr.LanguageTags.Where(info => info.IsAvailable && IetfLanguageTag.IsValid(info.LanguageTag))
 				.Select(info => IetfLanguageTag.Canonicalize(info.LanguageTag))
 				.GroupBy(IetfLanguageTag.GetLanguagePart);
 
@@ -84,6 +92,7 @@ namespace SIL.WritingSystems
 				if (langTags.Length == 1)
 				{
 					string langTag = langTags[0];
+                    file.WriteLine("Single Sldr tag {0}", langTag);
 					LanguageInfo language;
 					if (langTag != languageGroup.Key && _codeToLanguageIndex.TryGetValue(languageGroup.Key, out language))
 					{
@@ -94,7 +103,8 @@ namespace SIL.WritingSystems
 				}
 				else
 				{
-					foreach (string langTag in langTags)
+                    file.WriteLine("Multiple langtags in grouping");
+                    foreach (string langTag in langTags)
 					{
 						LanguageSubtag languageSubtag;
 						ScriptSubtag scriptSubtag;
@@ -102,7 +112,12 @@ namespace SIL.WritingSystems
 						IEnumerable<VariantSubtag> variantSubtags;
 						if (IetfLanguageTag.TryGetSubtags(langTag, out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags))
 						{
-							if (langTag == languageSubtag)
+                            file.WriteLine("Got subtags for {0} lang:{1} script:{2} region:{3}",
+                                langTag,
+                                languageSubtag == null ? "?" : languageSubtag.Name,
+                                scriptSubtag == null ? "?" : scriptSubtag.Name,
+                                regionSubtag == null ? "?" : regionSubtag.Name);
+                            if (langTag == languageSubtag)
 								continue;
 
 							LanguageInfo language = GetOrCreateLanguageFromCode(langTag, regionSubtag == null ? "?" : regionSubtag.Name);
@@ -119,9 +134,12 @@ namespace SIL.WritingSystems
 									language.Names.Add(name); //intentionally not lower-casing
 							}
 						}
-					}
+                        else file.WriteLine("but could not get subtags for {0}", langTag);
+                    }
 				}
 			}
+
+            file.Close();
 
 			foreach (LanguageInfo languageInfo in _codeToLanguageIndex.Values)
 			{
@@ -194,12 +212,16 @@ namespace SIL.WritingSystems
 			LanguageInfo language;
 			if (!_codeToLanguageIndex.TryGetValue(code, out language))
 			{
-				language = new LanguageInfo {LanguageTag = code};
+                file.WriteLine("adding new language for {0}", code);
+                language = new LanguageInfo {LanguageTag = code};
 				_codeToLanguageIndex.Add(code, language);
 			}
 			if (!string.IsNullOrEmpty(countryName))
-				language.Countries.Add(countryName);
-			return language;
+            {
+                file.WriteLine("Adding country {0} to {1}", countryName, code);
+                language.Countries.Add(countryName);
+            }
+            return language;
 		}
 
 		/// <summary>
