@@ -275,6 +275,7 @@
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\FlexConformPrivateUseRfc5646TagInterpreter.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\KeyboardDefinitionV1.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV2To3Migration\Staging.cs" />
+    <Compile Include="NewLanguageLookup.cs" />
     <Compile Include="RulesCollationDefinition.cs" />
     <Compile Include="SldrLanguageTagInfo.cs" />
     <Compile Include="SystemCollationDefinition.cs" />
@@ -353,6 +354,7 @@
     <Content Include="Resources\alltags.txt" />
     <Content Include="Resources\ianaSubtagRegistry.txt" />
     <Content Include="Resources\LanguageCodes.txt" />
+    <Content Include="Resources\LanguageDataIndex.txt" />
     <Content Include="Resources\LanguageIndex.txt" />
     <Content Include="Resources\TwoToThreeCodes.txt" />
   </ItemGroup>
