@@ -24,6 +24,23 @@
 		/// <param name="name">The name.</param>
 		/// <param name="isPrivateUse">if set to <c>true</c> this is a private use subtag.</param>
 		/// <param name="iso3Code">The ISO 639-3 language code.</param>
+		/// <param name="isMacroLanguage">if set to <c>true</c> this is a macrolanguage.</param>
+		/// <param name="isDeprecated">if set to <c>true</c> this subtag is deprecated and should not be used.</param>
+		internal LanguageSubtag(string code, string name, bool isPrivateUse, string iso3Code, bool isMacroLanguage, bool isDeprecated)
+			: base(code, name, isPrivateUse)
+		{
+			_iso3Code = iso3Code;
+			_isMacroLanguage = isMacroLanguage;
+			_isDeprecated = isDeprecated;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:LanguageSubtag"/> class.
+		/// </summary>
+		/// <param name="code">The code.</param>
+		/// <param name="name">The name.</param>
+		/// <param name="isPrivateUse">if set to <c>true</c> this is a private use subtag.</param>
+		/// <param name="iso3Code">The ISO 639-3 language code.</param>
 		internal LanguageSubtag(string code, string name, bool isPrivateUse, string iso3Code)
 			: base(code, name, isPrivateUse)
 		{
@@ -47,6 +64,24 @@
 		public string Iso3Code
 		{
 			get { return _iso3Code ?? string.Empty; }
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether this is a macrolanguage.
+		/// </summary>
+		/// <c>true</c> if this is a macrolanguage; otherwise, <c>false</c>.
+		public bool IsMacroLanguage
+		{
+			get { return _isMacroLanguage; }
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether this tag is deprecated.
+		/// </summary>
+		/// <c>true</c> if this tag is deprecated and should not be used; otherwise, <c>false</c>.
+		public bool IsDeprecated
+		{
+			get { return _isDeprecated; }
 		}
 
 		public static implicit operator LanguageSubtag(string code)
