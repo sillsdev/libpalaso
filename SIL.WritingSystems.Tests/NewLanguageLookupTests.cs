@@ -221,7 +221,10 @@ namespace SIL.WritingSystems.Tests
         public void SuggestLanguages_DoesNotSuggestDeprecatedTags()
         {
             var lookup = new NewLanguageLookup();
-            Assert.That(lookup.SuggestLanguages("dzd").Count(), Is.EqualTo(0));
+			var languages = lookup.SuggestLanguages("dzd").ToArray();
+			Assert.False(languages.Any(l => l.LanguageTag == "dzd"));
+			languages = lookup.SuggestLanguages("yiy").ToArray();
+			Assert.False(languages.Any(l => l.LanguageTag == "yiy"));
         }
 
         /// <summary>
