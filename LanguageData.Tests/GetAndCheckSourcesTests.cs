@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Security.Cryptography;
+using System.Text;
 
 // possible tests
 // verify AreFilesDifferent for 2 identical and 2 different strings
@@ -11,7 +12,7 @@ using System.Security.Cryptography;
 // what happens to GetNewSources if no net?
 // what happens to GetOldSources if input dir is bad (not exists or files not readable)?
 // what about WriteNewFiles if output dir is bad (not exists or system folder)?
-using System.Text;
+
 
 namespace LanguageData.Tests
 {
