@@ -52,10 +52,57 @@ namespace SIL.WritingSystems
 				}
 
 				CheckIfIanaSubtagFromFileHasExpectedForm(subTagComponents);
+				var descriptions = new List<string>();
+				bool macrolanguage = false, deprecated = false;
+				string type = null, subtag = null, description = null;
 
-				string type = subTagComponents[0].Split(' ')[1];
-				string subtag = subTagComponents[1].Split(' ')[1];
-				string description = SubTagComponentDescription(subTagComponents[2]);
+				foreach (string component in subTagComponents)
+				{
+					if (String.IsNullOrEmpty(component.Trim()))
+						continue;
+					if (component.Split(':').Length < 2) // the description for ia (Interlingua) is spread over 2 lines
+					{
+						if (descriptions.Count() > 0)
+						{
+							description = description + component;
+							descriptions.Clear();
+							descriptions.Add(description);
+						}
+						continue;
+					}
+					string field = component.Split(':')[0];
+					string value = component.Split(':')[1].Trim();
+
+					switch (field)
+					{
+					case "Type":
+						type = value;
+						break;
+					case "Subtag":
+						subtag = value;
+						break;
+					case "Tag":
+						subtag = value;
+						break;
+					case "Description":
+						description = SubTagComponentDescription(component); ; // so that the description spread over 2 lines can be appended to
+						descriptions.Add(description);
+						break;
+					case "Deprecated":
+						deprecated = true;
+						break;
+					case "Scope":
+						if (String.Equals(value, "macrolanguage"))
+							macrolanguage = true;
+						break;
+					}
+				}
+				description = descriptions.First();
+
+				if (String.IsNullOrEmpty(subtag) || String.IsNullOrEmpty(description) || String.IsNullOrEmpty(type))
+				{
+					continue;
+				}
 
 				if (subtag.Contains("..")) // do not add private use subtags to the list
 				{
@@ -81,7 +128,7 @@ namespace SIL.WritingSystems
 						string iso3Code;
 						if (!twoToThreeMap.TryGetValue(subtag, out iso3Code))
 							iso3Code = subtag;
-						languages.Add(new LanguageSubtag(subtag, description, false, iso3Code));
+						languages.Add(new LanguageSubtag(subtag, description, false, iso3Code, macrolanguage, deprecated));
 						break;
 					case "script":
 						scripts.Add(new ScriptSubtag(subtag, description, false));
