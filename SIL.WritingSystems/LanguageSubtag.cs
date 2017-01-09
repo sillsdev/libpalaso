@@ -6,6 +6,8 @@
 	public class LanguageSubtag : Subtag
 	{
 		private readonly string _iso3Code;
+		private bool _isMacroLanguage = false;
+		private bool _isDeprecated = false;
 
 		/// <summary>
 		/// Initializes a new private-use instance of the <see cref="LanguageSubtag"/> class.
