@@ -86,9 +86,17 @@ namespace LanguageData
 			}
 			if (!options.CheckFresh) {
                 Sldr.Initialize(true);
-                LanguageIndex langIndex = new LanguageIndex (getcheck.GetFileStrings (options.GetFresh));
-				langIndex.WriteIndex (options.OutputFile);
-                Sldr.Cleanup();
+				if (options.UseNew)
+				{
+					NewLanguageIndex langIndex = new NewLanguageIndex(getcheck.GetFileStrings(options.GetFresh));
+					langIndex.WriteIndex(options.OutputFile);
+				}
+				else
+				{
+					LanguageIndex langIndex = new LanguageIndex(getcheck.GetFileStrings(options.GetFresh));
+					langIndex.WriteIndex(options.OutputFile);
+				}
+				Sldr.Cleanup();
             }
 			return 0;
         }
