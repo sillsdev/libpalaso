@@ -53,18 +53,18 @@ namespace SIL.WritingSystems
 
 				CheckIfIanaSubtagFromFileHasExpectedForm(subTagComponents);
 				var descriptions = new List<string>();
-				bool macrolanguage = false, deprecated = false;
+				bool macrolanguage = false, deprecated = false, comment = false;
 				string type = null, subtag = null, description = null;
 
 				foreach (string component in subTagComponents)
 				{
-					if (String.IsNullOrEmpty(component.Trim()))
+					if (comment || String.IsNullOrEmpty(component.Trim()))
 						continue;
 					if (component.Split(':').Length < 2) // the description for ia (Interlingua) is spread over 2 lines
 					{
 						if (descriptions.Count() > 0)
 						{
-							description = description + component;
+							description = description + component.Substring(1);
 							descriptions.Clear();
 							descriptions.Add(description);
 						}
@@ -75,26 +75,29 @@ namespace SIL.WritingSystems
 
 					switch (field)
 					{
-					case "Type":
-						type = value;
-						break;
-					case "Subtag":
-						subtag = value;
-						break;
-					case "Tag":
-						subtag = value;
-						break;
-					case "Description":
-						description = SubTagComponentDescription(component); ; // so that the description spread over 2 lines can be appended to
-						descriptions.Add(description);
-						break;
-					case "Deprecated":
-						deprecated = true;
-						break;
-					case "Scope":
-						if (String.Equals(value, "macrolanguage"))
-							macrolanguage = true;
-						break;
+						case "Type":
+							type = value;
+							break;
+						case "Subtag":
+							subtag = value;
+							break;
+						case "Tag":
+							subtag = value;
+							break;
+						case "Description":
+							description = SubTagComponentDescription(component); ; // so that the description spread over 2 lines can be appended to
+							descriptions.Add(description);
+							break;
+						case "Deprecated":
+							deprecated = true;
+							break;
+						case "Scope":
+							if (String.Equals(value, "macrolanguage"))
+								macrolanguage = true;
+							break;
+						case "Comments":
+							comment = true;
+							break;
 					}
 				}
 				description = descriptions.First();
