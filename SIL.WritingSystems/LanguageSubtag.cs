@@ -8,7 +8,7 @@ namespace SIL.WritingSystems
 	public class LanguageSubtag : Subtag
 	{
 		private readonly string _iso3Code;
-		private readonly List<string> _descriptions = new List<string>();;
+		private readonly List<string> _descriptions = new List<string>();
 		private bool _isMacroLanguage = false;
 		private bool _isDeprecated = false;
 
