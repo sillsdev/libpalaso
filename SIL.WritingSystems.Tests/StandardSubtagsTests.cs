@@ -73,6 +73,15 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void SubTagComponentDescription_HasIndividualLanguage_RemovesIt()
+		{
+			Assert.AreEqual(
+				"Malay",
+				StandardSubtags.SubTagComponentDescription("Description: Malay (individual language)")
+			);
+		}
+
+		[Test]
 		public void RegisteredScripts_HasLatinFraktur_True()
 		{
 			Assert.That(StandardSubtags.RegisteredScripts.Any(code => code.Name == "Latin (Fraktur variant)"), Is.True);
