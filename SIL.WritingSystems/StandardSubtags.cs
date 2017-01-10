@@ -53,7 +53,7 @@ namespace SIL.WritingSystems
 
 				CheckIfIanaSubtagFromFileHasExpectedForm(subTagComponents);
 				var descriptions = new List<string>();
-				bool macrolanguage = false, deprecated = false, comment = false;
+				bool macrolanguage = false, deprecated = false, comment = false, collection = false;
 				string type = null, subtag = null, description = null;
 
 				foreach (string component in subTagComponents)
@@ -94,6 +94,9 @@ namespace SIL.WritingSystems
 						case "Scope":
 							if (String.Equals(value, "macrolanguage"))
 								macrolanguage = true;
+							if (String.Equals(value, "collection"))
+								collection = true;
+
 							break;
 						case "Comments":
 							comment = true;
@@ -107,7 +110,7 @@ namespace SIL.WritingSystems
 					continue;
 				}
 
-				if (subtag.Contains("..")) // do not add private use subtags to the list
+				if (subtag.Contains("..") || collection) // do not add private use subtags or collections to the list
 				{
 					continue;
 				}
