@@ -181,6 +181,7 @@ namespace SIL.WritingSystems
 		{
 			string description = component.Substring(component.IndexOf(" ", StringComparison.Ordinal) + 1);
 			description = Regex.Replace(description, @"\(alias for ", "(");
+			description = Regex.Replace(description, @" \(individual language\)", "");
 			if (description[0] == '(')
 			{
 				// remove parens if the description begins with an open parenthesis
