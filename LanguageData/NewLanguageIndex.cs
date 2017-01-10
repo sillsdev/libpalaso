@@ -196,6 +196,10 @@ namespace LanguageData
 				}
 				if (!string.IsNullOrEmpty(localName))
 				{
+					if (languageInfo.Names.Contains(localName))
+					{
+						languageInfo.Names.Remove(localName);
+					}
 					languageInfo.Names.Insert(0, localName);
 					languageInfo.DesiredName = localName;
 				}
