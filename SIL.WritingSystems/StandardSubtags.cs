@@ -128,7 +128,7 @@ namespace SIL.WritingSystems
 						string iso3Code;
 						if (!twoToThreeMap.TryGetValue(subtag, out iso3Code))
 							iso3Code = subtag;
-						languages.Add(new LanguageSubtag(subtag, description, false, iso3Code, macrolanguage, deprecated));
+						languages.Add(new LanguageSubtag(subtag, description, false, iso3Code, descriptions, macrolanguage, deprecated));
 						break;
 					case "script":
 						scripts.Add(new ScriptSubtag(subtag, description, false));
