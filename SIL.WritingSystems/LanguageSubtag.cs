@@ -1,4 +1,6 @@
-﻿namespace SIL.WritingSystems
+﻿using System.Collections.Generic;
+
+namespace SIL.WritingSystems
 {
 	/// <summary>
 	/// This class represents a language from the IANA language subtag registry.
@@ -6,6 +8,7 @@
 	public class LanguageSubtag : Subtag
 	{
 		private readonly string _iso3Code;
+		private readonly List<string> _descriptions = new List<string>();;
 		private bool _isMacroLanguage = false;
 		private bool _isDeprecated = false;
 
@@ -26,12 +29,14 @@
 		/// <param name="name">The name.</param>
 		/// <param name="isPrivateUse">if set to <c>true</c> this is a private use subtag.</param>
 		/// <param name="iso3Code">The ISO 639-3 language code.</param>
+		/// <param name="descriptions">A list of names or descriptions of the subtag.</param>
 		/// <param name="isMacroLanguage">if set to <c>true</c> this is a macrolanguage.</param>
 		/// <param name="isDeprecated">if set to <c>true</c> this subtag is deprecated and should not be used.</param>
-		internal LanguageSubtag(string code, string name, bool isPrivateUse, string iso3Code, bool isMacroLanguage, bool isDeprecated)
+		internal LanguageSubtag(string code, string name, bool isPrivateUse, string iso3Code, List<string> descriptions, bool isMacroLanguage, bool isDeprecated)
 			: base(code, name, isPrivateUse)
 		{
 			_iso3Code = iso3Code;
+			_descriptions = descriptions;
 			_isMacroLanguage = isMacroLanguage;
 			_isDeprecated = isDeprecated;
 		}
@@ -57,6 +62,15 @@
 		public LanguageSubtag(LanguageSubtag subtag, string name)
 			: this(subtag.Code, name, subtag.IsPrivateUse, subtag._iso3Code)
 		{
+		}
+
+		/// <summary>
+		/// Gets the list of language names.
+		/// </summary>
+		/// <value>The list of language names.</value>
+		public IList<string> Names
+		{
+			get { return _descriptions; }
 		}
 
 		/// <summary>
