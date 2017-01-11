@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -256,15 +256,19 @@
     <Compile Include="Naudio\UI\RecordingDeviceIndicator.designer.cs">
       <DependentUpon>RecordingDeviceIndicator.cs</DependentUpon>
     </Compile>
-    <Compile Include="Naudio\RecordingState.cs" />
     <Compile Include="Naudio\SampleAggregator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Naudio\IAudioRecorder.cs" />
+    <Compile Include="Naudio\RecordingState.cs" />
     <Compile Include="AlsaAudio\AlsaAudioDevice.cs" />
     <Compile Include="AlsaAudio\AudioAlsaSession.cs" />
+    <Compile Include="AlsaAudio\AudioRecorder.cs" />
+    <Compile Include="AlsaAudio\RecordingDevice.cs" />
+    <Compile Include="AlsaAudio\WaveFormat.cs" />
     <Compile Include="AudioFactory.cs" />
     <Compile Include="AudioNullSession.cs" />
     <Compile Include="FFmpegRunner.cs" />
