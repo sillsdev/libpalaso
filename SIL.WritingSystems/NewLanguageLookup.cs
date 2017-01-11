@@ -47,10 +47,10 @@ namespace SIL.WritingSystems
                 // if 2 letter code then add both 2 and 3 letter codes to _codeToLanguageIndex
 
                 _codeToLanguageIndex[code] = language;
-                /*if (!String.Equals(code, threelettercode))
-                {
-                    _codeToLanguageIndex[threelettercode] = language;
-                }*/
+				if (!String.Equals(code, threelettercode))
+				{
+					_codeToLanguageIndex[threelettercode] = language;
+				}
                 foreach (string langname in language.Names)
                     GetOrCreateListFromName(langname).Add(language);
             }
@@ -239,8 +239,11 @@ namespace SIL.WritingSystems
 
             if (searchString == "*")
             {
-                foreach (LanguageInfo l in _codeToLanguageIndex.Select(l => l.Value).OrderBy(l => l, new ResultComparer(searchString)))
-                    yield return l;
+				// there will be duplicate LanguageInfo entries for 2 and 3 letter codes
+				var all_languages = new HashSet<LanguageInfo>(_codeToLanguageIndex.Select(l => l.Value));
+				//foreach (LanguageInfo l in _codeToLanguageIndex.Select(l => l.Value).OrderBy(l => l, new ResultComparer(searchString)))
+				foreach (LanguageInfo l in all_languages.OrderBy(l => l, new ResultComparer(searchString)))
+					yield return l;
             }
             else
             {
