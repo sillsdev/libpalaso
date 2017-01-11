@@ -81,7 +81,6 @@ namespace SIL.WritingSystems
 			{
 				// there will be duplicate LanguageInfo entries for 2 and 3 letter codes
 				var all_languages = new HashSet<LanguageInfo>(_codeToLanguageIndex.Select(l => l.Value));
-				//foreach (LanguageInfo l in _codeToLanguageIndex.Select(l => l.Value).OrderBy(l => l, new ResultComparer(searchString)))
 				foreach (LanguageInfo l in all_languages.OrderBy(l => l, new ResultComparer(searchString)))
 					yield return l;
 			}
