@@ -87,12 +87,13 @@ namespace LanguageData
 					continue;
 				}
 				LanguageInfo langinfo = GetOrCreateLanguageFromCode(language.Code, language.Iso3Code, null);
-				langinfo.DesiredName = language.Name;
+				langinfo.DesiredName = language.Name.Replace("'", "’");
 				foreach (string name in language.Names)
 				{
-					if (!langinfo.Names.Contains(name))
+					string langname = name.Replace("'", "’");
+					if (!langinfo.Names.Contains(langname))
 					{
-						langinfo.Names.Add(name);
+						langinfo.Names.Add(langname);
 					}
 				}
 				_codeToLanguageIndex.Add(language.Code, langinfo);
