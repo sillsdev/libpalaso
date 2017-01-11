@@ -145,26 +145,26 @@ namespace SIL.WritingSystems.Tests
             Assert.True(languages.Any(l => l.Names.Contains("Churuba")));
         }
 
-        [Test]
-		// Akan is a macrolanguage so this test doesn't make sense
-        public void SuggestLanguages_Akan_DoesnotCrash()
-        {
-            var lookup = new NewLanguageLookup();
-            LanguageInfo[] languages = lookup.SuggestLanguages("a").ToArray();
-            Assert.True(languages.Any(l => l.LanguageTag == "ak"));
-            Assert.True(languages.Any(l => l.LanguageTag == "akq"));
-            Assert.True(languages.Any(l => l.Names.Contains("Akuapem")));
-            Assert.True(languages.Any(l => l.Names.Contains("Ak")));
-            Assert.True(languages.Any(l => l.Names.Contains("Akan")));
-            Assert.True(languages.Any(l => l.Names.Contains("Fanti")));
-            languages = lookup.SuggestLanguages("ak").ToArray();
-            Assert.True(languages.Any(l => l.LanguageTag == "ak"));
-            Assert.True(languages.Any(l => l.LanguageTag == "akq"));
-            Assert.True(languages.Any(l => l.Names.Contains("Asante")));
-            Assert.True(languages.Any(l => l.Names.Contains("Ak")));
-            Assert.True(languages.Any(l => l.Names.Contains("Akan")));
-            Assert.True(languages.Any(l => l.Names.Contains("Fanti")));
-        }
+		[Test]
+		// Akan is a macrolanguage so won't find results related to it
+		public void SuggestLanguages_Akan_DoesnotCrash()
+		{
+			var lookup = new NewLanguageLookup();
+			LanguageInfo[] languages = lookup.SuggestLanguages("a").ToArray();
+			Assert.False(languages.Any(l => l.LanguageTag == "ak"));
+			Assert.True(languages.Any(l => l.LanguageTag == "akq"));
+			Assert.False(languages.Any(l => l.Names.Contains("Akuapem")));
+			Assert.True(languages.Any(l => l.Names.Contains("Ak")));
+			Assert.True(languages.Any(l => l.Names.Contains("Akan")));
+			Assert.False(languages.Any(l => l.Names.Contains("Fanti")));
+			languages = lookup.SuggestLanguages("ak").ToArray();
+			Assert.False(languages.Any(l => l.LanguageTag == "ak"));
+			Assert.True(languages.Any(l => l.LanguageTag == "akq"));
+			Assert.False(languages.Any(l => l.Names.Contains("Asante")));
+			Assert.True(languages.Any(l => l.Names.Contains("Ak")));
+			Assert.True(languages.Any(l => l.Names.Contains("Akan")));
+			Assert.False(languages.Any(l => l.Names.Contains("Fanti")));
+		}
 
         [Test]
         public void SuggestLanguages_LanguageHasPejorativeAlternativeNames_FilteredOut()
@@ -181,8 +181,6 @@ namespace SIL.WritingSystems.Tests
         /// <summary>
         /// This is a result of finding that some of the alternative names, in Nov 2016, were *not* marked as pejorative but actually were.
         /// These may be fixed in the Ethnologue over time, but it was requested that we just remove all alternative names for now.
-		/// 
-		/// The iana subtag registry has 2 names, need to check what they want to do about that
         /// </summary>
         [Test]
         public void SuggestLanguages_LanguageIsInEthiopia_ShowOnlyOfficialNames()
@@ -190,8 +188,12 @@ namespace SIL.WritingSystems.Tests
             var lookup = new NewLanguageLookup();
             var languages = lookup.SuggestLanguages("Wolaytta").ToArray();
             Assert.True(languages.Any(l => l.Names.Contains("Wolaytta")));
-            Assert.AreEqual(1, languages[0].Names.Count, "Should only list a single name for Ethiopian languages.");
-        }
+			Assert.True(languages.Any(l => l.Names.Contains("Wolaitta")));
+			Assert.AreEqual(2, languages[0].Names.Count, "Should only list the names in the IANA subtag registry for Ethiopian languages.");
+			languages = lookup.SuggestLanguages("Qimant").ToArray();
+			Assert.True(languages.Any(l => l.Names.Contains("Qimant")));
+			Assert.AreEqual(1, languages[0].Names.Count, "Should only list the names in the IANA subtag registry for Ethiopian languages.");
+		}
 
         /// <summary>
         /// We have been asked to temporarily suppress these three codes for Ethiopia, until the Ethologue is changed.
@@ -230,10 +232,23 @@ namespace SIL.WritingSystems.Tests
 			Assert.False(languages.Any(l => l.LanguageTag == "yiy"));
         }
 
-        /// <summary>
-        /// We should now be able to search for 3 letter codes e.g. nld for languages that have 2 letter codes e.g. nl
-        /// </summary>
-        [Test]
+		/// <summary>
+		/// We should not suggest language collections.
+		/// </summary>
+		[Test]
+		public void SuggestLanguages_DoesNotSuggestLanguageCollections()
+		{
+			var lookup = new NewLanguageLookup();
+			var languages = lookup.SuggestLanguages("urj").ToArray();
+			Assert.False(languages.Any(l => l.LanguageTag == "dzd"));
+			languages = lookup.SuggestLanguages("aav").ToArray();
+			Assert.False(languages.Any(l => l.LanguageTag == "aav"));
+		}
+
+		/// <summary>
+		/// We should now be able to search for 3 letter codes e.g. nld for languages that have 2 letter codes e.g. nl
+		/// </summary>
+		[Test]
         public void SuggestLanguages_CanFind3LetterCodesForLanguagesWith2LetterCodes()
         {
             var lookup = new NewLanguageLookup();
@@ -241,12 +256,25 @@ namespace SIL.WritingSystems.Tests
             Assert.True(languages.Any(l => l.DesiredName == "Dutch"));
         }
 
-        /// <summary>
-        /// Check that new language lookup is same as old language lookup as far as we can check.
-        /// Note that if Sldr alltags.txt file is cached or online sldr used then results will be 
-        /// different when creating LanguageDataIndex.txt
-        /// </summary>
-        [Test]
+		/// <summary>
+		/// We should now be able to find codes that are in iana registry but not Ethnologue
+		/// </summary>
+		[Test]
+		public void SuggestLanguages_CanFindValidTagsThatAreNotInEthnologue()
+		{
+			var lookup = new NewLanguageLookup();
+			var languages = lookup.SuggestLanguages("fat").ToArray();
+			Assert.True(languages.Any(l => l.DesiredName == "Fanti"));
+			languages = lookup.SuggestLanguages("twi").ToArray();
+			Assert.True(languages.Any(l => l.DesiredName == "Twi"));
+		}
+
+		/// <summary>
+		/// Check that new language lookup is same as old language lookup as far as we can check.
+		/// Note that if Sldr alltags.txt file is cached or online sldr used then results will be 
+		/// different when creating LanguageDataIndex.txt
+		/// </summary>
+		[Test]
         public void NewLanguageLookup_SameCountAsOld()
         {
             Console.WriteLine("StandardSubtags has {0} languages, {1} regions, {2} scripts, {3} variants",
