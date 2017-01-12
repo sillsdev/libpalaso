@@ -275,7 +275,8 @@ namespace SIL.WritingSystems.Tests
 		/// different when creating LanguageDataIndex.txt
 		/// </summary>
 		[Test]
-        public void NewLanguageLookup_SameCountAsOld()
+		[Category("SkipOnTeamCity")]
+		public void NewLanguageLookup_SameCountAsOld()
         {
             Console.WriteLine("StandardSubtags has {0} languages, {1} regions, {2} scripts, {3} variants",
                 StandardSubtags.RegisteredLanguages.Count,
@@ -295,7 +296,8 @@ namespace SIL.WritingSystems.Tests
         /// Check that new language lookup is same as old language lookup as far as we can check.
         /// </summary>
         [Test]
-        public void NewLanguageLookup_SameValuesAsOld()
+		[Category("SkipOnTeamCity")]
+		public void NewLanguageLookup_SameValuesAsOld()
         {
             var lookup = new NewLanguageLookup();
             var oldlookup = new LanguageLookup();
