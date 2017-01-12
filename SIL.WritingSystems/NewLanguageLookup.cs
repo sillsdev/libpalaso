@@ -26,14 +26,16 @@ namespace SIL.WritingSystems
 			{
 				//Code ThreeLetterCode DesiredName Names Countries
 				string[] items = entry.Split('\t');
-				if (items.Length != 5)
+				if (items.Length != 6)
 					continue;
 				string code = items[0];
 				string threelettercode = items[1];
 				string desiredname = items[2];
-				string[] names = items[3].Split(';');
-				string[] countries = items[4].Split(';');
+				bool macrolanguage = String.Equals("M", items[3]);
+				string[] names = items[4].Split(';');
+				string[] countries = items[5].Split(';');
 				LanguageInfo language = new LanguageInfo { LanguageTag = code, ThreeLetterTag = threelettercode, DesiredName = desiredname };
+				language.MacroLanguage = macrolanguage;
 				foreach (string country in countries)
 				{
 					language.Countries.Add(country);
