@@ -82,12 +82,13 @@ namespace LanguageData
 			IOrderedEnumerable<LanguageSubtag> languages =  LdStandardTags.RegisteredLanguages.OrderBy(lang => lang.Iso3Code);
 			foreach (LanguageSubtag language in languages)
 			{
-				if (language.IsMacroLanguage || language.IsDeprecated)
+				if (language.IsDeprecated)
 				{
 					continue;
 				}
 				LanguageInfo langinfo = GetOrCreateLanguageFromCode(language.Code, language.Iso3Code, null);
 				langinfo.DesiredName = language.Name.Replace("'", "’");
+				langinfo.MacroLanguage = language.IsMacroLanguage;
 				foreach (string name in language.Names)
 				{
 					string langname = name.Replace("'", "’");
@@ -143,6 +144,11 @@ namespace LanguageData
 								string name = displayScript ? string.Format("{0} ({1})", languageSubtag.Name, scriptSubtag.Name) : languageSubtag.Name;
 								if (!language.Names.Contains(name))
 									language.Names.Add(name); //intentionally not lower-casing
+							}
+							LanguageInfo keylanguage;
+							if (_codeToLanguageIndex.TryGetValue(languageGroup.Key, out keylanguage))
+							{
+								language.MacroLanguage = keylanguage.MacroLanguage;
 							}
 							_codeToLanguageIndex.Add(langTag, language);
 						}
@@ -229,10 +235,11 @@ namespace LanguageData
 				string entry;
 				foreach (LanguageInfo languageInfo in _codeToLanguageIndex.Values)
 				{
-					entry = String.Format("{0}\t{1}\t{2}\t{3}\t{4}",
+					entry = String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}",
 						languageInfo.LanguageTag,
 						languageInfo.ThreeLetterTag,
 						languageInfo.DesiredName,
+						languageInfo.MacroLanguage ? "M" : ".",
 						String.Join(";", languageInfo.Names),
 						String.Join(";", languageInfo.Countries)
 						);

@@ -146,24 +146,24 @@ namespace SIL.WritingSystems.Tests
         }
 
 		[Test]
-		// Akan is a macrolanguage so won't find results related to it
+		// Akan is a macrolanguage so make sure we know that
 		public void SuggestLanguages_Akan_DoesnotCrash()
 		{
 			var lookup = new NewLanguageLookup();
 			LanguageInfo[] languages = lookup.SuggestLanguages("a").ToArray();
-			Assert.False(languages.Any(l => l.LanguageTag == "ak"));
-			Assert.True(languages.Any(l => l.LanguageTag == "akq"));
-			Assert.False(languages.Any(l => l.Names.Contains("Akuapem")));
-			Assert.True(languages.Any(l => l.Names.Contains("Ak")));
-			Assert.True(languages.Any(l => l.Names.Contains("Akan")));
-			Assert.False(languages.Any(l => l.Names.Contains("Fanti")));
+			Assert.True(languages.Any(l => l.LanguageTag == "ak" && l.MacroLanguage));
+			Assert.True(languages.Any(l => l.LanguageTag == "akq" && !l.MacroLanguage));
+			Assert.True(languages.Any(l => l.Names.Contains("Akuapem") && l.MacroLanguage));
+			Assert.True(languages.Any(l => l.Names.Contains("Ak") && !l.MacroLanguage));
+			Assert.True(languages.Any(l => l.Names.Contains("Akan") && l.MacroLanguage));
+			Assert.True(languages.Any(l => l.Names.Contains("Fanti") && l.MacroLanguage));
 			languages = lookup.SuggestLanguages("ak").ToArray();
-			Assert.False(languages.Any(l => l.LanguageTag == "ak"));
-			Assert.True(languages.Any(l => l.LanguageTag == "akq"));
-			Assert.False(languages.Any(l => l.Names.Contains("Asante")));
-			Assert.True(languages.Any(l => l.Names.Contains("Ak")));
-			Assert.True(languages.Any(l => l.Names.Contains("Akan")));
-			Assert.False(languages.Any(l => l.Names.Contains("Fanti")));
+			Assert.True(languages.Any(l => l.LanguageTag == "ak" && l.MacroLanguage));
+			Assert.True(languages.Any(l => l.LanguageTag == "akq" && !l.MacroLanguage));
+			Assert.True(languages.Any(l => l.Names.Contains("Asante") && l.MacroLanguage));
+			Assert.True(languages.Any(l => l.Names.Contains("Ak") && !l.MacroLanguage));
+			Assert.True(languages.Any(l => l.Names.Contains("Akan") && l.MacroLanguage));
+			Assert.True(languages.Any(l => l.Names.Contains("Fanti") && l.MacroLanguage));
 		}
 
         [Test]
@@ -208,15 +208,15 @@ namespace SIL.WritingSystems.Tests
         }
 
         /// <summary>
-        /// We should not suggest macro languages.
+        /// We should not suggest macro languages unless they are marked as such so that they can be filtered out.
         /// </summary>
         [Test]
-        public void SuggestLanguages_DoesNotSuggestMacroLanguages()
+        public void SuggestLanguages_CanFilterMacroLanguages()
         {
             var lookup = new NewLanguageLookup();
             Assert.That(lookup.SuggestLanguages("macrolanguage").Count(), Is.EqualTo(0));
             var languages = lookup.SuggestLanguages("zza").ToArray();
-            Assert.False(languages.Any(l => l.LanguageTag == "zza"));
+            Assert.True(languages.Any(l => l.LanguageTag == "zza" && l.MacroLanguage));
         }
 
         /// <summary>
