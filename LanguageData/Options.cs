@@ -48,7 +48,7 @@ namespace LanguageData
 		{
 			var help = new HelpText {
 				Heading = new HeadingInfo("LanguageData", "0.1"),
-				Copyright = new CopyrightInfo("SIL International", 2016),
+				Copyright = new CopyrightInfo("SIL International", 2016, 2017),
 				AdditionalNewLineAfterOption = false,
 				AddDashesToOption = true
 			};
