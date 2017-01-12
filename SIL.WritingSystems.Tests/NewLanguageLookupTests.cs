@@ -196,7 +196,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
         /// <summary>
-        /// We have been asked to temporarily suppress these three codes for Ethiopia, until the Ethologue is changed.
+		/// We have been asked to temporarily suppress these three codes for Ethiopia, until the Ethnologue is changed.
         /// </summary>
         [Test]
         public void SuggestLanguages_LanguageIsOromo_DoNotShowRelatedLanguages()
@@ -240,7 +240,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			var lookup = new NewLanguageLookup();
 			var languages = lookup.SuggestLanguages("urj").ToArray();
-			Assert.False(languages.Any(l => l.LanguageTag == "dzd"));
+			Assert.False(languages.Any(l => l.LanguageTag == "urj"));
 			languages = lookup.SuggestLanguages("aav").ToArray();
 			Assert.False(languages.Any(l => l.LanguageTag == "aav"));
 		}
