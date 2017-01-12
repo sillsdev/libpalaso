@@ -7,9 +7,10 @@ using System.Threading;
 namespace SIL.Media.AlsaAudio
 {
 	/// <summary>
-	/// Simplified wrapper around the standard Linux Alsa audio library.  This wrapper
-	/// records only simple 16-bit PCM mono WAVE files at 22KHz, and plays back using
-	/// libsndfile to read the sound data.
+	/// Simplified wrapper around the standard Linux Alsa audio library.  This wrapper defaults
+	/// to recording simple 16-bit PCM mono WAVE files at 22KHz, and plays back using libsndfile
+	/// to read the sound data.  (The number of input channels and the sample rate can be changed
+	/// if desired and if the hardware supports the new setting.)
 	/// </summary>
 	public class AlsaAudioDevice
 	{
@@ -242,6 +243,10 @@ namespace SIL.Media.AlsaAudio
 		/// </summary>
 		public AlsaAudioDevice()
 		{
+			// Set the defaults for recording.
+			DesiredSampleRate = 22000;
+			DesiredChannelCount = 1;
+			DesiredInputDevice = "default";
 		}
 
 		/// <summary>
@@ -410,6 +415,10 @@ namespace SIL.Media.AlsaAudio
 			_playbackThread = null;
 		}
 
+		public uint DesiredSampleRate { get; set; }
+		public ushort DesiredChannelCount { get; set; }
+		public string DesiredInputDevice { get; set; }
+
 		#endregion
 
 		/// <summary>
@@ -429,13 +438,13 @@ namespace SIL.Media.AlsaAudio
 		bool InitializeForRecording()
 		{
 			_pcmFormat = SND_PCM_FORMAT_S16_LE;
-			_channelCount = 1;
-			_sampleRate = 22000;
+			_channelCount = DesiredChannelCount;
+			_sampleRate = DesiredSampleRate;
 			_startDelay = 1;
-			int res = snd_pcm_open(ref _hpcm, "default", SND_PCM_STREA_CAPTURE, 0);
+			int res = snd_pcm_open(ref _hpcm, DesiredInputDevice, SND_PCM_STREA_CAPTURE, 0);
 			if (res < 0)
 			{
-				ShowError("Cannot open default sound device for recording");
+				ShowError(String.Format("Cannot open {0} sound device for recording", DesiredInputDevice));
 				_hpcm = IntPtr.Zero;
 				return false;
 			}
