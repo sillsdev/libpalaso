@@ -13,10 +13,10 @@ using System.IO;
 
 namespace LanguageData
 {
-    class Program
-    {
+	class Program
+	{
 		static int Main(string[] args)
-        {
+		{
 			var options = new Options();
 			var isValid = CommandLine.Parser.Default.ParseArgumentsStrict (args, options);
 			//Console.WriteLine ("Parsing is valid: {0}", isValid);
@@ -65,7 +65,7 @@ namespace LanguageData
 				return 1;
 			}
 
-            GetAndCheckSources getcheck = new GetAndCheckSources ();
+			GetAndCheckSources getcheck = new GetAndCheckSources ();
 			getcheck.GetOldSources (options.InputDir);
 			if (options.GetFresh || options.CheckFresh)
 			{
@@ -85,7 +85,7 @@ namespace LanguageData
 				} 
 			}
 			if (!options.CheckFresh) {
-                Sldr.Initialize(true);
+				Sldr.Initialize(true);
 				if (options.UseNew)
 				{
 					NewLanguageIndex langIndex = new NewLanguageIndex(getcheck.GetFileStrings(options.GetFresh));
@@ -97,8 +97,8 @@ namespace LanguageData
 					langIndex.WriteIndex(options.OutputFile);
 				}
 				Sldr.Cleanup();
-            }
+			}
 			return 0;
-        }
-    }
+		}
+	}
 }
