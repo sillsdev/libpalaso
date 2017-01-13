@@ -116,7 +116,7 @@ namespace LanguageData
 		public void GetOldSources (string input_dir)
 		{
 			_oldtwotothree = File.ReadAllText (Path.Combine (input_dir, @"TwoToThreeCodes.txt"));
-            _oldtwotothree = _oldtwotothree.Replace("\r\n", "\n");
+			_oldtwotothree = _oldtwotothree.Replace("\r\n", "\n");
 			_oldlanguageindex = File.ReadAllText (Path.Combine (input_dir, @"LanguageIndex.txt"));
 			_oldianasubtags = File.ReadAllText (Path.Combine (input_dir, @"ianaSubtagRegistry.txt"));
 		}

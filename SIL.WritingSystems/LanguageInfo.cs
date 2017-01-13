@@ -10,10 +10,10 @@ namespace SIL.WritingSystems
 		private string _desiredName;
 
 		public string LanguageTag { get; set; }
-        public string ThreeLetterTag { get; set; }
+		public string ThreeLetterTag { get; set; }
 		public bool MacroLanguage { get; set; }
 
-        public IList<string> Names
+		public IList<string> Names
 		{
 			get { return _names; }
 		}

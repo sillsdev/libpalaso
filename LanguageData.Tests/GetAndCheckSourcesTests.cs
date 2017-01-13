@@ -76,8 +76,8 @@ namespace LanguageData.Tests
 		{
 			string input_dir = Path.Combine ("..", "..", "..", "SIL.WritingSystems", "Resources");
 			string twotothree = File.ReadAllText (Path.Combine (input_dir, @"TwoToThreeCodes.txt"));
-            twotothree = twotothree.Replace("\r\n", "\n");
-            var sha = new SHA256Managed();
+			twotothree = twotothree.Replace("\r\n", "\n");
+			var sha = new SHA256Managed();
 			byte[] checksum_twotothree = sha.ComputeHash (Encoding.UTF8.GetBytes(twotothree));
 			string checksumstring = BitConverter.ToString (checksum_twotothree);
 			Console.WriteLine ("hash of TwoToThreeCodes.txt is: " + checksumstring);
