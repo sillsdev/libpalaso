@@ -1,9 +1,6 @@
 ﻿using System;
-using System.IO;
-using SIL.WritingSystems;
 using System.Collections.Generic;
-using SIL.ObjectModel;
-
+using SIL.WritingSystems;
 
 // possible tests
 //repeat StandardSubtagsTests for LDStandardTags

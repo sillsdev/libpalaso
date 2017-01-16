@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using SIL.Extensions;
 using System.Linq;
 using SIL.WritingSystems;
-using SIL.Extensions;
 
 namespace LanguageData
 {

@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Net;
-using System.Security.Cryptography;
-using System.Text;
-using System.IO;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
+using System.IO;
+using System.Net;
 using System.Net.Security;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+
 
 // possible tests
 // verify AreFilesDifferent for 2 identical and 2 different strings
@@ -34,30 +35,29 @@ namespace LanguageData
 		private string _oldlanguageindex;
 		private string _oldianasubtags;
 
-
 		private string _newtwotothree;
 		private string _newlanguageindex;
 		private string _newianasubtags;
 
-
-		static GetAndCheckSources ()
-		{
-		}
-
 		// solution to teamcity problems with certificates
 		// found in http://stackoverflow.com/questions/4926676/mono-webrequest-fails-with-https
-		public bool MyRemoteCertificateValidationCallback(System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors) {
+		private bool MyRemoteCertificateValidationCallback(System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+		{
 			bool isOk = true;
 			// If there are errors in the certificate chain, look at each error to determine the cause.
-			if (sslPolicyErrors != SslPolicyErrors.None) {
-				for (int i=0; i<chain.ChainStatus.Length; i++) {
-					if (chain.ChainStatus [i].Status != X509ChainStatusFlags.RevocationStatusUnknown) {
+			if (sslPolicyErrors != SslPolicyErrors.None)
+			{
+				for (int i=0; i<chain.ChainStatus.Length; i++)
+				{
+					if (chain.ChainStatus [i].Status != X509ChainStatusFlags.RevocationStatusUnknown)
+					{
 						chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
 						chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
 						chain.ChainPolicy.UrlRetrievalTimeout = new TimeSpan (0, 1, 0);
 						chain.ChainPolicy.VerificationFlags = X509VerificationFlags.AllFlags;
 						bool chainIsValid = chain.Build ((X509Certificate2)certificate);
-						if (!chainIsValid) {
+						if (!chainIsValid)
+						{
 							isOk = false;
 						}
 					}
@@ -165,12 +165,12 @@ namespace LanguageData
 			{
 				throw new DirectoryNotFoundException();
 			}
-			string filename = output_directory + Path.DirectorySeparatorChar + "LanguageIndex.txt";
-			File.WriteAllText (@filename, _newlanguageindex);
-			filename = output_directory + Path.DirectorySeparatorChar + "ianaSubtagRegistry.txt";
-			File.WriteAllText (@filename, _newianasubtags);
-			filename = output_directory + Path.DirectorySeparatorChar + "TwoToThreeCodes.txt";
-			File.WriteAllText (@filename, _newtwotothree);
+			string filename = Path.Combine(output_directory, "LanguageIndex.txt");
+			File.WriteAllText (filename, _newlanguageindex);
+			filename = Path.Combine(output_directory, "ianaSubtagRegistry.txt");
+			File.WriteAllText (filename, _newianasubtags);
+			filename = Path.Combine(output_directory, "TwoToThreeCodes.txt");
+			File.WriteAllText (filename, _newtwotothree);
 		}
 
 		public Dictionary<string,string> GetFileStrings(bool newfiles)

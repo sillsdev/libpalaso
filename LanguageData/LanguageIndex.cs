@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using SIL.WritingSystems;
 using SIL.Extensions;
+using System.Linq;
+using SIL.WritingSystems;
 
 // possible tests
 // sanity check some data? or just leave the tests to SIL.WritingSystems.LanguageLookup after file is read in?
