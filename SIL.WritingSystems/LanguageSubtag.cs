@@ -9,8 +9,6 @@ namespace SIL.WritingSystems
 	{
 		private readonly string _iso3Code;
 		private readonly List<string> _descriptions = new List<string>();
-		private bool _isMacroLanguage = false;
-		private bool _isDeprecated = false;
 
 		/// <summary>
 		/// Initializes a new private-use instance of the <see cref="LanguageSubtag"/> class.
@@ -37,8 +35,8 @@ namespace SIL.WritingSystems
 		{
 			_iso3Code = iso3Code;
 			_descriptions = descriptions;
-			_isMacroLanguage = isMacroLanguage;
-			_isDeprecated = isDeprecated;
+			IsMacroLanguage = isMacroLanguage;
+			IsDeprecated = isDeprecated;
 		}
 
 		/// <summary>
@@ -86,19 +84,13 @@ namespace SIL.WritingSystems
 		/// Gets a value indicating whether this is a macrolanguage.
 		/// </summary>
 		/// <c>true</c> if this is a macrolanguage; otherwise, <c>false</c>.
-		public bool IsMacroLanguage
-		{
-			get { return _isMacroLanguage; }
-		}
+		public bool IsMacroLanguage { get; private set; }
 
 		/// <summary>
 		/// Gets a value indicating whether this tag is deprecated.
 		/// </summary>
 		/// <c>true</c> if this tag is deprecated and should not be used; otherwise, <c>false</c>.
-		public bool IsDeprecated
-		{
-			get { return _isDeprecated; }
-		}
+		public bool IsDeprecated { get; private set; }
 
 		public static implicit operator LanguageSubtag(string code)
 		{

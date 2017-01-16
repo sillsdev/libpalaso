@@ -20,7 +20,7 @@ namespace SIL.WritingSystems
 		public NewLanguageLookup()
 		{
 			// Load from file into the data structures instead of creating it from scratch
-			var entries = new List<string>(LanguageRegistryResources.LanguageDataIndex.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries));
+			var entries = LanguageRegistryResources.LanguageDataIndex.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
 			foreach (string entry in entries)
 			{
@@ -34,7 +34,7 @@ namespace SIL.WritingSystems
 				bool macrolanguage = String.Equals("M", items[3]);
 				string[] names = items[4].Split(';');
 				string[] countries = items[5].Split(';');
-				LanguageInfo language = new LanguageInfo { LanguageTag = code, ThreeLetterTag = threelettercode, DesiredName = desiredname, MacroLanguage = macrolanguage };
+				LanguageInfo language = new LanguageInfo { LanguageTag = code, ThreeLetterTag = threelettercode, DesiredName = desiredname, IsMacroLanguage = macrolanguage };
 				foreach (string country in countries)
 				{
 					language.Countries.Add(country);

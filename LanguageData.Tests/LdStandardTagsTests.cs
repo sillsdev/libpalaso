@@ -76,6 +76,15 @@ namespace LanguageData.Tests
 		}
 
 		[Test]
+		public void SubTagComponentDescription_HasIndividualLanguage_RemovesIt()
+		{
+			Assert.AreEqual(
+				"Malay",
+				LdStandardSubtags.SubTagComponentDescription("Description: Malay (individual language)")
+			);
+		}
+
+		[Test]
 		public void RegisteredScripts_HasLatinFraktur_True()
 		{
 			Assert.That(LdStandardTags.RegisteredScripts.Any(code => code.Name == "Latin (Fraktur variant)"), Is.True);

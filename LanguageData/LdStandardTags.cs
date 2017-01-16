@@ -2,10 +2,6 @@
 using System.Collections.Generic;
 using SIL.WritingSystems;
 
-// possible tests
-//repeat StandardSubtagsTests for LDStandardTags
-// also verify that data is the data loaded from the sourcefiles not the resource data
-
 namespace LanguageData
 {
 	/// <summary>

@@ -38,7 +38,7 @@ namespace LanguageData
 				string[] items = entry.Split('\t');
 				if (items.Length != 4)
 					continue;
-				if (items[2].Contains('!')) //temporary suppression of entries while waiting for Ethnologue changes
+				if (items[2].StartsWith("!")) //temporary suppression of entries while waiting for Ethnologue changes
 					continue;
 
 				string code = items[0].Trim();
@@ -53,7 +53,7 @@ namespace LanguageData
 				string name = items[3].Trim();
 
 
-				if (items[2] == "L")
+				if (items[2].Trim() == "L")
 				{
 					while (language.Names.Contains(name))
 						language.Names.Remove(name);
@@ -65,11 +65,11 @@ namespace LanguageData
 					{
 						//Skip pejorative
 					}
-					else if (items[1] == ("ET"))
+					else if (regionCode == ("ET"))
 					{
 						//Skip alternatives for Ethiopia, as per request
 					}
-					else if (items[0] == "gax" || items[0] == "om")
+					else if (code == "gax" || code == "om")
 					{
 						//For these two "Oromo" languages, skip all related languages as per request
 					}
@@ -88,7 +88,7 @@ namespace LanguageData
 				}
 				LanguageInfo langinfo = GetOrCreateLanguageFromCode(language.Code, language.Iso3Code, null);
 				langinfo.DesiredName = language.Name.Replace("'", "’");
-				langinfo.MacroLanguage = language.IsMacroLanguage;
+				langinfo.IsMacroLanguage = language.IsMacroLanguage;
 				foreach (string name in language.Names)
 				{
 					string langname = name.Replace("'", "’");
@@ -100,7 +100,6 @@ namespace LanguageData
 				_codeToLanguageIndex.Add(language.Code, langinfo);
 			}
 
-			// Do we need these tags? xx-YY or xx-Ssss format
 			IEnumerable<IGrouping<string, string>> languageGroups = Sldr.LanguageTags.Where(info => info.IsAvailable && IetfLanguageTag.IsValid(info.LanguageTag))
 	.Select(info => IetfLanguageTag.Canonicalize(info.LanguageTag))
 	.GroupBy(IetfLanguageTag.GetLanguagePart);
@@ -148,7 +147,7 @@ namespace LanguageData
 							LanguageInfo keylanguage;
 							if (_codeToLanguageIndex.TryGetValue(languageGroup.Key, out keylanguage))
 							{
-								language.MacroLanguage = keylanguage.MacroLanguage;
+								language.IsMacroLanguage = keylanguage.IsMacroLanguage;
 							}
 							_codeToLanguageIndex.Add(langTag, language);
 						}
@@ -239,7 +238,7 @@ namespace LanguageData
 						languageInfo.LanguageTag,
 						languageInfo.ThreeLetterTag,
 						languageInfo.DesiredName,
-						languageInfo.MacroLanguage ? "M" : ".",
+						languageInfo.IsMacroLanguage ? "M" : ".",
 						String.Join(";", languageInfo.Names),
 						String.Join(";", languageInfo.Countries)
 						);
