@@ -34,8 +34,7 @@ namespace SIL.WritingSystems
 				bool macrolanguage = String.Equals("M", items[3]);
 				string[] names = items[4].Split(';');
 				string[] countries = items[5].Split(';');
-				LanguageInfo language = new LanguageInfo { LanguageTag = code, ThreeLetterTag = threelettercode, DesiredName = desiredname };
-				language.MacroLanguage = macrolanguage;
+				LanguageInfo language = new LanguageInfo { LanguageTag = code, ThreeLetterTag = threelettercode, DesiredName = desiredname, MacroLanguage = macrolanguage };
 				foreach (string country in countries)
 				{
 					language.Countries.Add(country);

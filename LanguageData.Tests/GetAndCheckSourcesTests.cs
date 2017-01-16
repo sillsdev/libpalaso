@@ -16,10 +16,10 @@ using System.Text;
 
 namespace LanguageData.Tests
 {
-	[TestFixture ()]
+	[TestFixture]
 	public class GetAndCheckSourcesTests
 	{
-		[Test ()]
+		[Test]
 		public void Verify_AllFilesDifferent ()
 		{
 			string stringone = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
@@ -29,7 +29,7 @@ namespace LanguageData.Tests
 			Assert.True (getcheck.AreFilesDifferent(stringone, stringtwo));
 		}
 
-		[Test ()]
+		[Test]
 		public void Verify_CheckSourcesAreSame ()
 		{
 			GetAndCheckSources getcheck = new GetAndCheckSources ();
@@ -42,25 +42,25 @@ namespace LanguageData.Tests
 			Assert.False (getcheck.CheckSourcesAreDifferent ());
 		}
 
-		[Test ()]
+		[Test]
 		public void Verify_CheckSourcesAreDifferent ()
 		{
 			GetAndCheckSources getcheck = new GetAndCheckSources ();
 			string filename = "." + Path.DirectorySeparatorChar + "LanguageIndex.txt";
-			File.WriteAllText (@filename, "11111111111111111111111111111111111111111111111111111111111111111");
+			File.WriteAllText (filename, "11111111111111111111111111111111111111111111111111111111111111111");
 			filename = "." + Path.DirectorySeparatorChar + "ianaSubtagRegistry.txt";
-			File.WriteAllText (@filename, "22222222222222222222222222222222222222222222222222222222222222222");
+			File.WriteAllText (filename, "22222222222222222222222222222222222222222222222222222222222222222");
 			filename = "." + Path.DirectorySeparatorChar + "TwoToThreeCodes.txt";
-			File.WriteAllText (@filename, "33333333333333333333333333333333333333333333333333333333333333333");
+			File.WriteAllText (filename, "33333333333333333333333333333333333333333333333333333333333333333");
 
 			getcheck.GetOldSources (".");
 
 			filename = "." + Path.DirectorySeparatorChar + "LanguageIndex.txt";
-			File.Delete (@filename);
+			File.Delete (filename);
 			filename = "." + Path.DirectorySeparatorChar + "ianaSubtagRegistry.txt";
-			File.Delete (@filename);
+			File.Delete (filename);
 			filename = "." + Path.DirectorySeparatorChar + "TwoToThreeCodes.txt";
-			File.Delete (@filename);
+			File.Delete (filename);
 
 
 			if (!getcheck.GetNewSources ())
@@ -71,7 +71,7 @@ namespace LanguageData.Tests
 		}
 
 		// checks that the TwoToThreeCodes checksum is as expected whichever system the test is run on
-		[Test ()]
+		[Test]
 		public void Verify_TwoToThreeCodes ()
 		{
 			string input_dir = Path.Combine ("..", "..", "..", "SIL.WritingSystems", "Resources");
@@ -84,7 +84,7 @@ namespace LanguageData.Tests
 			Assert.AreEqual ("F5-3A-3D-8F-B7-F3-47-F1-12-70-B4-B8-0A-EE-51-11-CA-CC-77-AB-1B-5B-DA-06-90-B6-1F-8C-F6-31-2E-12", checksumstring);
 		}
 
-		[Test ()]
+		[Test]
 		public void GetOldSources_BadInputDir_throws ()
 		{
 			try
@@ -98,7 +98,7 @@ namespace LanguageData.Tests
 			}
 		}
 
-		[Test ()]
+		[Test]
 		public void WriteNewFiles_BadOutputDir_throws ()
 		{
 			try
@@ -112,14 +112,14 @@ namespace LanguageData.Tests
 			}
 		}
 
-		[Test ()]
+		[Test]
 		public void GetNewSources_Ok ()
 		{
 			GetAndCheckSources getcheck = new GetAndCheckSources ();
 			Assert.True (getcheck.GetNewSources());
 		}
 
-		[Test ()]
+		[Test]
 		public void GetNewSources_NoNet ()
 		{
 			GetAndCheckSources getcheck = new GetAndCheckSources ();

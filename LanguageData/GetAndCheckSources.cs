@@ -97,7 +97,7 @@ namespace LanguageData
 				Console.WriteLine ("Ethnologue index last modified: " + lastmod_languageindex);
 				Console.WriteLine ("ISO693-3 table last modified: " + lastmod_iso693);
 
-				using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"LastModified.txt"))
+				using (StreamWriter file = new StreamWriter(@"LastModified.txt"))
 				{
 					file.WriteLine ("IANA subtags last modified: " + lastmod_ianasubtag);
 					file.WriteLine ("Ethnologue index last modified: " + lastmod_languageindex);
@@ -173,7 +173,7 @@ namespace LanguageData
 			File.WriteAllText (filename, _newtwotothree);
 		}
 
-		public Dictionary<string,string> GetFileStrings(bool newfiles)
+		public IDictionary<string,string> GetFileStrings(bool newfiles)
 		{
 			var filestrings = new Dictionary<string,string> ();
 			if (newfiles) {

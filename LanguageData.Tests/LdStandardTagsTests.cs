@@ -6,7 +6,7 @@ using SIL.WritingSystems;
 
 namespace LanguageData.Tests
 {
-	[TestFixture ()]
+	[TestFixture]
 	public class LdStandardTagsTests
 	{
 		[Test]

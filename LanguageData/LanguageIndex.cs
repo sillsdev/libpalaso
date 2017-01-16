@@ -18,7 +18,7 @@ namespace LanguageData
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LanguageIndex"/> class.
 		/// </summary>
-		public LanguageIndex(Dictionary<string,string> sourcefiles)
+		public LanguageIndex(IDictionary<string,string> sourcefiles)
 		{
 			LdStandardTags subtags = new LdStandardTags (sourcefiles);
 			var threeToTwoLetter = new Dictionary<string, string>();
