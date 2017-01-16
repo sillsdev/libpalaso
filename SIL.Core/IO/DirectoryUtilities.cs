@@ -210,7 +210,7 @@ namespace SIL.IO
 		/// This method uses all the tricks to do its best.
 		/// </summary>
 		/// <returns>returns true if the directory is fully deleted</returns>
-		public static bool DeleteDirectoryRobust(string path)
+		public static bool DeleteDirectoryRobust(string path, bool overrideReadOnly=true)
 		{
 			// ReSharper disable EmptyGeneralCatchClause
 
@@ -239,9 +239,10 @@ namespace SIL.IO
 					{
 						try
 						{
-							/* we could do this too, but it's dangerous
-							 *  File.SetAttributes(filePath, FileAttributes.Normal);
-							 */
+							if(overrideReadOnly)
+							{
+								File.SetAttributes(filePath, FileAttributes.Normal);
+							}
 							File.Delete(filePath);
 						}
 						catch (Exception)
@@ -254,7 +255,7 @@ namespace SIL.IO
 					}
 
 				}
-				catch (Exception)//yes, even these simple queries can throw exceptions, as stuff suddenly is deleted base on our prior request
+				catch (Exception)//yes, even these simple queries can throw exceptions, as stuff suddenly is deleted based on our prior request
 				{
 				}
 				//sleep and let some OS things catch up
