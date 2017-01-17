@@ -7,7 +7,7 @@ using SIL.Text;
 namespace SIL.WritingSystems
 {
 	/// <summary>
-	/// Lets you find a language using data from the Ethnologue and the SLDR.
+	/// Lets you find a language using data from the Ethnologue, IANA subtag repository and the SLDR.
 	/// </summary>
 	public class NewLanguageLookup
 	{

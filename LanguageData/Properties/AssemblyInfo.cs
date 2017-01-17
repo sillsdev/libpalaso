@@ -19,6 +19,9 @@ using System.Runtime.InteropServices;
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
+// Allow tests to see internals
+[assembly: InternalsVisibleTo("LanguageData.Tests")]
+
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("12c78d85-bb7f-4f00-bf64-e47557f99039")]
 

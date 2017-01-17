@@ -7,15 +7,6 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
-
-// possible tests
-// verify AreFilesDifferent for 2 identical and 2 different strings
-// verify CheckSourcesAreDifferent in 2 cases, same and different
-// verify GenerateTwoToThreeCodes generates the same thing consistently on all platforms
-// what happens to GetNewSources if no net?
-// what happens to GetOldSources if input dir is bad (not exists or files not readable)?
-// what about WriteNewFiles if output dir is bad (not exists or system folder)?
-
 namespace LanguageData
 {
 	public class GetAndCheckSources
@@ -212,7 +203,7 @@ namespace LanguageData
 			return retval;
 		}
 
-		public bool AreFilesDifferent(string oldfile, string newfile)
+		internal bool AreFilesDifferent(string oldfile, string newfile)
 		{
 			// return true if files are different, false if the same
 			var sha = new SHA256Managed();
