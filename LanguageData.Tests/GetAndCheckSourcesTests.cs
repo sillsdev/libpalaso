@@ -28,7 +28,7 @@ namespace LanguageData.Tests
 			GetAndCheckSources getcheck = new GetAndCheckSources ();
 			if (!getcheck.GetNewSources ())
 			{
-				Assert.Fail ();
+				Assert.Ignore("Server not available");
 			}
 			getcheck.WriteNewFiles (".");
 			getcheck.GetOldSources (".");
@@ -58,7 +58,7 @@ namespace LanguageData.Tests
 
 			if (!getcheck.GetNewSources ())
 			{
-				Assert.Fail ();
+				Assert.Ignore("Server not available");
 			}
 			Assert.True (getcheck.CheckSourcesAreDifferent ());
 		}

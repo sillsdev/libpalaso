@@ -33,7 +33,7 @@ namespace LanguageData
 					!File.Exists(Path.Combine(options.InputDir, "ianaSubtagRegistry.txt")) ||
 					!File.Exists(Path.Combine(options.InputDir, "TwoToThreeCodes.txt")))
 				{
-					Console.WriteLine("Input directory does not contain the source files LanguageIndex.txt, ianaSubtagRegistry.txt and TwoToThreeCodes.txt");
+					Console.WriteLine("Input directory does not contain all of the source files LanguageIndex.txt, ianaSubtagRegistry.txt and TwoToThreeCodes.txt");
 					return 1;
 				}
 				if ((options.OutputFile != "LanguageDataIndex.txt") && File.Exists (options.OutputFile))

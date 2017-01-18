@@ -198,12 +198,12 @@ namespace LanguageData
 					twoToThreeLetter.Add (items [3].Trim (), items [0].Trim ());
 				}
 			}
-			string retval = "";
+			var retval = new StringBuilder();
 			foreach (KeyValuePair<string,string> item in twoToThreeLetter)
 			{
-				retval += String.Format("{0}\t{1}\n", item.Key, item.Value);
+				retval.AppendLine(String.Format("{0}\t{1}", item.Key, item.Value));
 			}
-			return retval;
+			return retval.ToString();
 		}
 
 		internal bool AreFilesDifferent(string oldfile, string newfile)

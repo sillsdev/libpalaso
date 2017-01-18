@@ -10,16 +10,12 @@ namespace LanguageData
 		// Tasks/Parameters
 		// -g Get fresh source files
 		// -c Check if source files have changed (implies -g) and return
-		// input directory for where source files will be and fresh ones should go (default LanguageData/Resources)
+		// input directory for where source files will be (default SIL.WritingSystems/Resources)
 		// IANA subtags and 2to3lettercodes are used in SIL.WritingSystems by other parts,
 		// but Ethnologue LanguageIndex is only used in LanguageLookup
-		// output directory for index file (default SIL.WritingSystems/Reources)
-		// output filename for index file
+		// output filename for index file (default LanguageDataIndex.txt)
 	class Options
 	{
-		//[ParserState]
-		//public IParserState LastParserState { get; set; }
-
 		[Option('i', "input", HelpText = "Input directory containing source files.")]
 		public string InputDir { get; set; }
 

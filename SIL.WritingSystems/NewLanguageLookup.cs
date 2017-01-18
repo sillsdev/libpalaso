@@ -1,7 +1,9 @@
-﻿using System;
+﻿// Copyright (c) 2016-2017 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using SIL.Extensions;
 using SIL.Text;
 
 namespace SIL.WritingSystems
@@ -82,8 +84,8 @@ namespace SIL.WritingSystems
 			{
 				// there will be duplicate LanguageInfo entries for 2 and 3 letter codes
 				var all_languages = new HashSet<LanguageInfo>(_codeToLanguageIndex.Select(l => l.Value));
-				foreach (LanguageInfo l in all_languages.OrderBy(l => l, new ResultComparer(searchString)))
-					yield return l;
+				foreach (LanguageInfo languageInfo in all_languages.OrderBy(l => l, new ResultComparer(searchString)))
+					yield return languageInfo;
 			}
 			else
 			{
