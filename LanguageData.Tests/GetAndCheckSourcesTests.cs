@@ -67,7 +67,7 @@ namespace LanguageData.Tests
 		[Test]
 		public void Verify_TwoToThreeCodes ()
 		{
-			string input_dir = Path.Combine ("..", "..", "..", "SIL.WritingSystems", "Resources");
+			string input_dir = Path.Combine ("..", "..", "SIL.WritingSystems", "Resources");
 			string twotothree = File.ReadAllText (Path.Combine (input_dir, @"TwoToThreeCodes.txt"));
 			twotothree = twotothree.Replace("\r\n", "\n");
 			var sha = new SHA256Managed();

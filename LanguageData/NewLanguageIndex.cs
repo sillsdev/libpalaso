@@ -25,7 +25,7 @@ namespace LanguageData
 			//LdStandardTags subtags = new LdStandardTags(sourcefiles);
 
 			// First read in Ethnologue data file into temporary dictionary
-			var threeToTwoLetter = StandardSubtags.ThreeToTwoMap(twotothreecodes);
+			var threeToTwoLetter = StandardSubtags.TwoAndThreeMap(twotothreecodes, true);
 
 			//LanguageIndex.txt Format: LangID	CountryID	NameType	Name
 			//a language appears on one row for each of its alternative langauges

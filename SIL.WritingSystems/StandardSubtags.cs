@@ -27,7 +27,7 @@ namespace SIL.WritingSystems
 			// Iana code, and the string after it is the one we want to return as the corresponding ISO3Code.
 			// The following block of code assembles these lines into a map we can use to fill this slot properly
 			// when building the main table.
-			var twoToThreeMap = ThreeToTwoMap(twotothreecodes);
+			var twoToThreeMap = TwoAndThreeMap(twotothreecodes, false);
 			string[] ianaSubtagsAsStrings = subtagregistry.Split(new[] { "%%" }, StringSplitOptions.None);
 
 			var languages = new List<LanguageSubtag>();
@@ -263,15 +263,22 @@ namespace SIL.WritingSystems
 			return RegisteredVariants.Contains(variantToCheck);
 		}
 
-		public static IDictionary<string, string> ThreeToTwoMap(string twotothreecodes)
+		public static IDictionary<string, string> TwoAndThreeMap(string twotothreecodes, bool reverse)
 		{
-			var threeToTwoLetter = new Dictionary<string, string>();
+			var twoAndThreeLetter = new Dictionary<string, string>();
 			foreach (string line in twotothreecodes.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
 			{
 				string[] items = line.Split('\t');
-				threeToTwoLetter.Add(items[1].Trim(), items[0].Trim());
+				if (reverse)
+				{
+					twoAndThreeLetter[items[1].Trim()] = items[0].Trim();
+				}
+				else
+				{
+					twoAndThreeLetter[items[0].Trim()] = items[1].Trim();
+				}
 			}
-			return threeToTwoLetter;
+			return twoAndThreeLetter;
 		}
 	}
 }
