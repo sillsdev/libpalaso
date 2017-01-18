@@ -184,7 +184,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LdStandardTagsTests.cs" />
     <Compile Include="GetAndCheckSourcesTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

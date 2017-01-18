@@ -21,8 +21,8 @@ namespace LanguageData
 		{
 			string twotothreecodes = sourcefiles["TwoToThreeCodes.txt"];
 			string subtagregistry = sourcefiles["ianaSubtagRegistry.txt"];
+
 			StandardSubtags.InitialiseIanaSubtags(twotothreecodes, subtagregistry);
-			//LdStandardTags subtags = new LdStandardTags(sourcefiles);
 
 			// First read in Ethnologue data file into temporary dictionary
 			var threeToTwoLetter = StandardSubtags.TwoAndThreeMap(twotothreecodes, true);
