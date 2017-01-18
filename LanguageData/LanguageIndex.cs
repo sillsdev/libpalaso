@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2016-2017 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
+using System;
 using System.Collections.Generic;
 using SIL.Extensions;
 using System.Linq;
@@ -20,7 +23,7 @@ namespace LanguageData
 		/// </summary>
 		public LanguageIndex(IDictionary<string,string> sourcefiles)
 		{
-			LdStandardTags subtags = new LdStandardTags (sourcefiles);
+			//LdStandardTags subtags = new LdStandardTags (sourcefiles);
 			var threeToTwoLetter = new Dictionary<string, string>();
 			string twotothreecodes = sourcefiles["TwoToThreeCodes.txt"];
 			foreach (string line in twotothreecodes.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
@@ -34,7 +37,7 @@ namespace LanguageData
 			string languageindex = sourcefiles["LanguageIndex.txt"];
 			var entries = new List<string>(languageindex.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries));
 			entries.Add("qaa\t?\tL\tUnlisted Language");
-
+			/*
 			//expect 8092, 299(301), 173(174), 68
 			Console.WriteLine ("StandardSubtags has {0} languages, {1} regions, {2} scripts, {3} variants", 
 				StandardSubtags.RegisteredLanguages.Count,
@@ -50,6 +53,7 @@ namespace LanguageData
 				LdStandardTags.RegisteredScripts.Count,
 				LdStandardTags.RegisteredVariants.Count
 			);
+			*/
 
 			foreach (string entry in entries.Skip(1)) //skip the header
 			{
@@ -66,7 +70,7 @@ namespace LanguageData
 					code = twoLetterCode;
 
 				string regionCode = items[1].Trim();
-				LanguageInfo language = GetOrCreateLanguageFromCode(code, threelettercode, regionCode == "?" ? "?" : LdStandardTags.RegisteredRegions[regionCode].Name);
+				LanguageInfo language = GetOrCreateLanguageFromCode(code, threelettercode, regionCode == "?" ? "?" : StandardSubtags.RegisteredRegions[regionCode].Name);
 
 				string name = items[3].Trim();
 

@@ -10,17 +10,15 @@ namespace SIL.WritingSystems
 	/// This class parses the IANA subtag registry in order to provide a list of valid language, script, region and variant subtags
 	/// for use by the IetfLanguageTagHelper and other classes.
 	/// </summary>
-	public class StandardSubtags
+	public static class StandardSubtags
 	{
 		static StandardSubtags()
-		{
-			string[] encodingPairs = LanguageRegistryResources.TwoToThreeCodes.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
-			string[] ianaSubtagsAsStrings = LanguageRegistryResources.ianaSubtagRegistry.Split(new[] { "%%" }, StringSplitOptions.None);
-			InitialiseIanaSubtags(encodingPairs, ianaSubtagsAsStrings);
+		{	
+			InitialiseIanaSubtags(LanguageRegistryResources.TwoToThreeCodes, LanguageRegistryResources.ianaSubtagRegistry);
 			Iso3Languages = RegisteredLanguages.Where(l => !string.IsNullOrEmpty(l.Iso3Code)).ToDictionary(l => l.Iso3Code, StringComparer.InvariantCultureIgnoreCase);
 		}
 
-		protected static void InitialiseIanaSubtags(string[] encodingPairs, string[] ianaSubtagsAsStrings)
+		internal static void InitialiseIanaSubtags(string twotothreecodes, string subtagregistry)
 		{
 			// JohnT: can't find anywhere else to document this, so here goes: TwoToThreeMap is a file adapted from
 			// FieldWorks Ethnologue\Data\iso-639-3_20080804.tab, by discarding all but the first column (3-letter
@@ -29,14 +27,8 @@ namespace SIL.WritingSystems
 			// Iana code, and the string after it is the one we want to return as the corresponding ISO3Code.
 			// The following block of code assembles these lines into a map we can use to fill this slot properly
 			// when building the main table.
-			var twoToThreeMap = new Dictionary<string, string>();
-			foreach (string pair in encodingPairs)
-			{
-				var items = pair.Split('\t');
-				if (items.Length != 2)
-					continue;
-				twoToThreeMap[items[0]] = items[1];
-			}
+			var twoToThreeMap = ThreeToTwoMap(twotothreecodes);
+			string[] ianaSubtagsAsStrings = subtagregistry.Split(new[] { "%%" }, StringSplitOptions.None);
 
 			var languages = new List<LanguageSubtag>();
 			var scripts = new List<ScriptSubtag>();
@@ -269,6 +261,17 @@ namespace SIL.WritingSystems
 		public static bool IsValidRegisteredVariantCode(string variantToCheck)
 		{
 			return RegisteredVariants.Contains(variantToCheck);
+		}
+
+		public static IDictionary<string, string> ThreeToTwoMap(string twotothreecodes)
+		{
+			var threeToTwoLetter = new Dictionary<string, string>();
+			foreach (string line in twotothreecodes.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
+			{
+				string[] items = line.Split('\t');
+				threeToTwoLetter.Add(items[1].Trim(), items[0].Trim());
+			}
+			return threeToTwoLetter;
 		}
 	}
 }

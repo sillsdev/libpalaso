@@ -1,7 +1,10 @@
-﻿using System;
+﻿// Copyright (c) 2016-2017 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
+using System;
 using System.Collections.Generic;
-using SIL.Extensions;
 using System.Linq;
+using SIL.Extensions;
 using SIL.WritingSystems;
 
 namespace LanguageData
@@ -16,16 +19,13 @@ namespace LanguageData
 		/// </summary>
 		public NewLanguageIndex(IDictionary<string, string> sourcefiles)
 		{
-			LdStandardTags subtags = new LdStandardTags(sourcefiles);
+			string twotothreecodes = sourcefiles["TwoToThreeCodes.txt"];
+			string subtagregistry = sourcefiles["ianaSubtagRegistry.txt"];
+			StandardSubtags.InitialiseIanaSubtags(twotothreecodes, subtagregistry);
+			//LdStandardTags subtags = new LdStandardTags(sourcefiles);
 
 			// First read in Ethnologue data file into temporary dictionary
-			var threeToTwoLetter = new Dictionary<string, string>();
-			string twotothreecodes = sourcefiles["TwoToThreeCodes.txt"];
-			foreach (string line in twotothreecodes.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
-			{
-				string[] items = line.Split('\t');
-				threeToTwoLetter.Add(items[1].Trim(), items[0].Trim());
-			}
+			var threeToTwoLetter = StandardSubtags.ThreeToTwoMap(twotothreecodes);
 
 			//LanguageIndex.txt Format: LangID	CountryID	NameType	Name
 			//a language appears on one row for each of its alternative langauges
@@ -48,7 +48,7 @@ namespace LanguageData
 					code = twoLetterCode;
 
 				string regionCode = items[1].Trim();
-				LanguageInfo language = GetOrCreateLanguageFromCode(code, threelettercode, regionCode == "?" ? "?" : LdStandardTags.RegisteredRegions[regionCode].Name);
+				LanguageInfo language = GetOrCreateLanguageFromCode(code, threelettercode, regionCode == "?" ? "?" : StandardSubtags.RegisteredRegions[regionCode].Name);
 
 				string name = items[3].Trim();
 
@@ -79,7 +79,7 @@ namespace LanguageData
 			}
 
 			// Then for each registered ietf language tag create a real entry and add the ethnologue data to it
-			IOrderedEnumerable<LanguageSubtag> languages =  LdStandardTags.RegisteredLanguages.OrderBy(lang => lang.Iso3Code);
+			IOrderedEnumerable<LanguageSubtag> languages =  StandardSubtags.RegisteredLanguages.OrderBy(lang => lang.Iso3Code);
 			foreach (LanguageSubtag language in languages)
 			{
 				if (language.IsDeprecated)

@@ -1,9 +1,10 @@
-﻿using NUnit.Framework;
-using System;
-using System.Linq;
-using LanguageData;
-using SIL.WritingSystems;
+﻿// Copyright (c) 2016-2017 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
+using NUnit.Framework;
+using SIL.WritingSystems;
+using System.Linq;
+/*
 namespace LanguageData.Tests
 {
 	[TestFixture]
@@ -46,6 +47,7 @@ namespace LanguageData.Tests
 		{
 			Assert.That(LdStandardTags.RegisteredScripts.Any(code => code.Name == "Old Italic (Etruscan, Oscan, etc.)"), Is.True);
 		}
+		*/
 		/* Covered in StandardSubtagTests and can't access from this class
 		[Test]
 		public void SubTagComponentDescription_HasBeginningParenthesis_RemovesParens()
@@ -96,7 +98,7 @@ namespace LanguageData.Tests
 			Assert.That(LdStandardTags.RegisteredScripts.Any(code => code.Name == "Japanese syllabaries (Hiragana + Katakana)"), Is.True);
 		}
 		*/
-
+		/*
 		[Test]
 		public void RegisteredScripts_HasFonipa_False()
 		{
@@ -250,4 +252,4 @@ namespace LanguageData.Tests
 		}
 	}
 }
-
+*/

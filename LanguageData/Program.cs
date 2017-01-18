@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2016-2017 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
+using System;
 using System.IO;
 using SIL.WritingSystems;
 
@@ -9,14 +12,12 @@ namespace LanguageData
 		static int Main(string[] args)
 		{
 			var options = new Options();
-			var isValid = CommandLine.Parser.Default.ParseArgumentsStrict (args, options);
-			//Console.WriteLine ("Parsing is valid: {0}", isValid);
+			var isValid = CommandLine.Parser.Default.ParseArgumentsStrict(args, options);
 			if (isValid)
 			{
-				// consume Options instance properties
 				if (options.ShowHelp)
 				{
-					Console.WriteLine(options.GetUsage ());
+					Console.WriteLine(options.GetUsage());
 					return 0;
 				}
 				if (String.IsNullOrEmpty(options.InputDir))
@@ -32,12 +33,12 @@ namespace LanguageData
 					!File.Exists(Path.Combine(options.InputDir, "ianaSubtagRegistry.txt")) ||
 					!File.Exists(Path.Combine(options.InputDir, "TwoToThreeCodes.txt")))
 				{
-					Console.WriteLine ("Input directory does not contain the source files LanguageIndex.txt, ianaSubtagRegistry.txt and TwoToThreeCodes.txt");
+					Console.WriteLine("Input directory does not contain the source files LanguageIndex.txt, ianaSubtagRegistry.txt and TwoToThreeCodes.txt");
 					return 1;
 				}
 				if ((options.OutputFile != "LanguageDataIndex.txt") && File.Exists (options.OutputFile))
 				{
-					Console.WriteLine ("The file {0} already exists.", options.OutputFile);
+					Console.WriteLine("The file {0} already exists.", options.OutputFile);
 					return 1;
 				}
 				if (options.Verbose)
@@ -75,7 +76,8 @@ namespace LanguageData
 					}
 				} 
 			}
-			if (!options.CheckFresh) {
+			if (!options.CheckFresh)
+			{
 				Sldr.Initialize(true);
 				if (options.UseNew)
 				{

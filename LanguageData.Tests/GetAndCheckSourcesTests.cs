@@ -1,18 +1,11 @@
-﻿using NUnit.Framework;
+﻿// Copyright (c) 2016-2017 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
+using NUnit.Framework;
 using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-
-// possible tests
-// verify AreFilesDifferent for 2 identical and 2 different strings
-// verify CheckSourcesAreDifferent in 2 cases, same and different
-// verify GenerateTwoToThreeCodes generates the same thing consistently on all platforms
-//           i.e. whether or not CRLF are in the file
-// what happens to GetNewSources if no net?
-// what happens to GetOldSources if input dir is bad (not exists or files not readable)?
-// what about WriteNewFiles if output dir is bad (not exists or system folder)?
-
 
 namespace LanguageData.Tests
 {
