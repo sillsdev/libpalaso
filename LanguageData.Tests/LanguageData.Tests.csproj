@@ -5,6 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2BB85EB7-7A51-4C34-968C-396D3C6B48CA}</ProjectGuid>
     <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LanguageData.Tests</RootNamespace>
     <AssemblyName>LanguageData.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
@@ -185,6 +186,7 @@
   <ItemGroup>
     <Compile Include="LdStandardTagsTests.cs" />
     <Compile Include="GetAndCheckSourcesTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
