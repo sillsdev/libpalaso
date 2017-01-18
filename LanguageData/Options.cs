@@ -32,9 +32,6 @@ namespace LanguageData
 		[Option('c', "check", DefaultValue = false, HelpText = "Download source files and check if they are new.")]
 		public bool CheckFresh { get; set; }
 
-		[Option('n', "new", DefaultValue = true, HelpText = "Use the newer index generator.")]
-		public bool UseNew { get; set; }
-
 		[Option('v', "verbose", DefaultValue = false, HelpText = "Verbose output.")]
 		public bool Verbose { get; set; }
 
