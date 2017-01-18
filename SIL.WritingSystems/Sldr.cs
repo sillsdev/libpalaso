@@ -244,8 +244,13 @@ namespace SIL.WritingSystems
 							else if (webResponse.StatusCode == HttpStatusCode.MovedPermanently)
 							{
 								// Extract ietfLanguageTag from the response header
-								string responseString = webResponse.Headers["Location"].Replace(SldrRepository, "");
-								sldrLanguageTag = responseString.Split('?')[0];
+#if STAGING_SLDR
+									string responseString = webResponse.Headers["Location"].Replace("https://staging.scriptsource.org/cms_staging/scripts/module.php?module_id=ldml_server&ws_id=", "");
+									sldrLanguageTag = responseString.Split('?')[0];
+#else
+									string responseString = webResponse.Headers["Location"].Replace(SldrRepository, "");
+									sldrLanguageTag = responseString.Split('?')[0];
+#endif
 								redirected = true;
 							}
 							else
