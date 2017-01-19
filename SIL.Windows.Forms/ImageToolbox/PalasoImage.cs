@@ -313,6 +313,24 @@ namespace SIL.Windows.Forms.ImageToolbox
 		}
 
 		/// <summary>
+		/// Save a PalasoImage to a file, trying several times if needed.
+		/// </summary>
+		/// <remarks>
+		/// This would logically belong in SIL.Core.IO.RobustIO except that PalasoImage is in SIL.Windows.Forms.
+		/// </remarks>
+		public static void SaveImageRobustly(PalasoImage image, string fileName)
+		{
+			RetryUtility.Retry(() => image.Save(fileName),
+				RetryUtility.kDefaultMaxRetryAttempts,
+				RetryUtility.kDefaultRetryDelay,
+				new HashSet<Type>
+				{
+					Type.GetType("System.IO.IOException"),
+					Type.GetType("System.Runtime.InteropServices.ExternalException")
+				});
+		}
+
+		/// <summary>
 		/// If the image contains metadata indicating that it is mirrored or rotated,
 		/// convert it to normal orientation (and remove the metadata).
 		/// </summary>
