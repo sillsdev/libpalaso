@@ -188,16 +188,16 @@ namespace LanguageData
 			{
 				retval.AppendLine(String.Format("{0}\t{1}", item.Key, item.Value));
 			}
-			return retval.ToString();
+			return retval.ToString().Replace("\r\n", "\n");
 		}
 
 		internal bool AreFilesDifferent(string oldfile, string newfile)
 		{
 			// return true if files are different, false if the same
 			var sha = new SHA256Managed();
-			byte[] checksum_oldfile = sha.ComputeHash (Encoding.UTF8.GetBytes(oldfile));
+			byte[] checksum_oldfile = sha.ComputeHash(Encoding.UTF8.GetBytes(oldfile));
 			Console.WriteLine("hash of oldfile is: " + BitConverter.ToString(checksum_oldfile));
-			byte[] checksum_newfile = sha.ComputeHash (Encoding.UTF8.GetBytes(newfile));
+			byte[] checksum_newfile = sha.ComputeHash(Encoding.UTF8.GetBytes(newfile));
 			Console.WriteLine("hash of newfile is: " + BitConverter.ToString(checksum_newfile));
 
 			return BitConverter.ToString(checksum_oldfile) != BitConverter.ToString(checksum_newfile);

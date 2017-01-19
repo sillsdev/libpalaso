@@ -37,8 +37,8 @@ namespace LanguageData.Tests
 			string stringone = "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
 			string stringtwo = "22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222";
 			GetAndCheckSources getcheck = new GetAndCheckSources();
-			Assert.False (getcheck.AreFilesDifferent(stringone, stringone));
-			Assert.True (getcheck.AreFilesDifferent(stringone, stringtwo));
+			Assert.False(getcheck.AreFilesDifferent(stringone, stringone));
+			Assert.True(getcheck.AreFilesDifferent(stringone, stringtwo));
 		}
 
 		[Test]
@@ -49,9 +49,9 @@ namespace LanguageData.Tests
 			{
 				Assert.Ignore("Server not available");
 			}
-			getcheck.WriteNewFiles (".");
-			getcheck.GetOldSources (".");
-			Assert.False (getcheck.CheckSourcesAreDifferent ());
+			getcheck.WriteNewFiles(".");
+			getcheck.GetOldSources(".");
+			Assert.False(getcheck.CheckSourcesAreDifferent());
 		}
 
 		[Test]
@@ -59,11 +59,11 @@ namespace LanguageData.Tests
 		{
 			GetAndCheckSources getcheck = new GetAndCheckSources();
 			string filename = Path.Combine(".", "LanguageIndex.txt");
-			File.WriteAllText (filename, "11111111111111111111111111111111111111111111111111111111111111111");
+			File.WriteAllText(filename, "11111111111111111111111111111111111111111111111111111111111111111");
 			filename = Path.Combine(".", "ianaSubtagRegistry.txt");
-			File.WriteAllText (filename, "22222222222222222222222222222222222222222222222222222222222222222");
-				filename = Path.Combine(".", "TwoToThreeCodes.txt");
-			File.WriteAllText (filename, "33333333333333333333333333333333333333333333333333333333333333333");
+			File.WriteAllText(filename, "22222222222222222222222222222222222222222222222222222222222222222");
+			filename = Path.Combine(".", "TwoToThreeCodes.txt");
+			File.WriteAllText(filename, "33333333333333333333333333333333333333333333333333333333333333333");
 
 			getcheck.GetOldSources(".");
 
@@ -78,7 +78,7 @@ namespace LanguageData.Tests
 			{
 				Assert.Ignore("Server not available");
 			}
-			Assert.True (getcheck.CheckSourcesAreDifferent());
+			Assert.True(getcheck.CheckSourcesAreDifferent());
 		}
 
 		// checks that the TwoToThreeCodes checksum is as expected whichever system the test is run on
@@ -98,13 +98,13 @@ namespace LanguageData.Tests
 		[Test]
 		public void GetOldSources_BadInputDir_throws()
 		{
-			GetAndCheckSources getcheck = new GetAndCheckSources ();
-			Assert.That(() => getcheck.GetOldSources ("gibberish"),
+			GetAndCheckSources getcheck = new GetAndCheckSources();
+			Assert.That(() => getcheck.GetOldSources("gibberish"),
 				Throws.TypeOf<DirectoryNotFoundException>());
 		}
 
 		[Test]
-		public void WriteNewFiles_BadOutputDir_throws ()
+		public void WriteNewFiles_BadOutputDir_throws()
 		{
 			GetAndCheckSources getcheck = new GetAndCheckSources();
 			Assert.That(() => getcheck.WriteNewFiles("gibberish"),
