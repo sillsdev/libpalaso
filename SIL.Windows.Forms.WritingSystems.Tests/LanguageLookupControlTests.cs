@@ -24,8 +24,12 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 
 		private void _control_ReadinessChanged(object sender, EventArgs e)
 		{
+			Console.WriteLine("Test: check readiness");
 			if (_control.SelectedLanguage != null)
+			{
+				Console.WriteLine("Test: control readiness has changed");
 				_ready = true;
+			}
 		}
 
 		private void WaitForControl()

@@ -20,6 +20,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		public void UpdateReadiness()
 		{
+			Console.WriteLine("LanguageLookupControl: UpdateReadiness");
 			EventHandler handler = ReadinessChanged;
 			if (handler != null)
 				handler(this, null);
@@ -35,6 +36,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		public void LoadLanguages()
 		{
+			Console.WriteLine("LanguageLookupControl: LoadLanguages");
 			_model.LoadLanguages();
 		}
 
@@ -63,6 +65,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			get { return _model.SelectedLanguage; }
 			set
 			{
+				Console.WriteLine("LanguageLookupControl: setting SelectedLanguage {0}", value);
 				string oldLangTag = _model.LanguageTag;
 				_model.SelectedLanguage = value;
 				_desiredLanguageDisplayName.Text = _model.DesiredLanguageName;
@@ -89,6 +92,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		private void OnLoad(object sender, EventArgs e)
 		{
+			Console.WriteLine("LanguageLookupControl: Loading");
 			if (DesignMode)
 				return;
 
@@ -100,6 +104,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 			UpdateReadiness();
 			_searchTimer.Start();
+			Console.WriteLine("LanguageLookupControl: Finished loading");
 		}
 
 		/// <summary>
@@ -150,6 +155,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		private void OnSelectedIndexChanged(object sender, EventArgs e)
 		{
+			Console.WriteLine("LanguageLookupControl: OnSelectedIndexChanged");
 			string oldLangTag = _model.LanguageTag;
 			if(_listView.SelectedIndices != null && _listView.SelectedIndices.Count > 0)
 			{
@@ -158,7 +164,10 @@ namespace SIL.Windows.Forms.WritingSystems
 				_desiredLanguageDisplayName.Text = _model.DesiredLanguageName;
 			}
 			if (_model.LanguageTag != oldLangTag)
+			{
+				Console.WriteLine("LanguageLookupControl: OnSelectedIndexChanged UpdateReadiness");
 				UpdateReadiness();
+			}
 		}
 
 		/// <summary>
@@ -175,6 +184,8 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			if (_model.SearchText == _lastSearchedForText)
 				return;
+
+			Console.WriteLine("LanguageLookupControl: searchTimerTick");
 
 			_lastSearchedForText = _model.SearchText;
 			_listView.SuspendLayout();
@@ -216,6 +227,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				_listView.SelectedItems[0].EnsureVisible();
 
 			_listView.ResumeLayout();
+			Console.WriteLine("LanguageLookupControl: searchTimerTick UpdateReadiness");
 			UpdateReadiness();
 		}
 
@@ -244,6 +256,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		private void _desiredLanguageDisplayName_TextChanged(object sender, EventArgs e)
 		{
 			_model.DesiredLanguageName = _desiredLanguageDisplayName.Text;
+			Console.WriteLine("LanguageLookupControl: desiredlanguagetextchanged UpdateReadiness");
 			UpdateReadiness();
 		}
 
