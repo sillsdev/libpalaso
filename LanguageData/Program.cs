@@ -57,19 +57,19 @@ namespace LanguageData
 				return 1;
 			}
 
-			GetAndCheckSources getcheck = new GetAndCheckSources ();
-			getcheck.GetOldSources (options.InputDir);
+			GetAndCheckSources getcheck = new GetAndCheckSources();
+			getcheck.GetOldSources(options.InputDir);
 			if (options.GetFresh || options.CheckFresh)
 			{
-				if (!getcheck.GetNewSources ())
+				if (!getcheck.GetNewSources())
 				{
 					Console.WriteLine("Failed to download files - aborting");
 					return 2;
 				}
-				bool newfiles = getcheck.CheckSourcesAreDifferent ();
+				bool newfiles = getcheck.CheckSourcesAreDifferent();
 				if (newfiles)
 				{
-					getcheck.WriteNewFiles (".");
+					getcheck.WriteNewFiles(".");
 					if (options.CheckFresh)
 					{
 						return 99;

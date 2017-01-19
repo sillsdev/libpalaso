@@ -14,17 +14,6 @@ namespace LanguageData
 {
 	public class GetAndCheckSources
 	{
-		// used in test to simulate no network
-		private class WebClientWithTimeout:WebClient
-		{
-			protected override WebRequest GetWebRequest(Uri address)
-			{
-				WebRequest wr = base.GetWebRequest(address);
-				wr.Timeout = 1; // timeout in milliseconds (ms)
-				return wr;
-			}
-		}
-
 		private string _oldtwotothree;
 		private string _oldlanguageindex;
 		private string _oldianasubtags;
@@ -60,45 +49,36 @@ namespace LanguageData
 			return isOk;
 		}
 
-		public bool GetNewSources (bool intest = false)
+		public bool GetNewSources()
 		{
 			try
 			{
-				
 				// Create web client.
 				ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
-				WebClient client;
-				if (intest)
-				{
-					client = new WebClientWithTimeout();
-				}
-				else
-				{
-					client = new WebClient ();
-				}
+				WebClient client = CreateWebClient();
 
 				// Download strings.
-				string newiso693 = client.DownloadString ("http://www-01.sil.org/iso639-3/iso-639-3.tab");
+				string newiso693 = client.DownloadString("http://www-01.sil.org/iso639-3/iso-639-3.tab");
 				string lastmod_iso693 = client.ResponseHeaders["Last-Modified"];
 
-				_newlanguageindex = client.DownloadString ("https://www.ethnologue.com/codes/LanguageIndex.tab");
+				_newlanguageindex = client.DownloadString("https://www.ethnologue.com/codes/LanguageIndex.tab");
 				string lastmod_languageindex = client.ResponseHeaders["Last-Modified"];
 
-				_newianasubtags = client.DownloadString ("http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry");
+				_newianasubtags = client.DownloadString("http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry");
 				string lastmod_ianasubtag = client.ResponseHeaders["Last-Modified"];
 
-				Console.WriteLine ("IANA subtags last modified: " + lastmod_ianasubtag);
-				Console.WriteLine ("Ethnologue index last modified: " + lastmod_languageindex);
-				Console.WriteLine ("ISO693-3 table last modified: " + lastmod_iso693);
+				Console.WriteLine("IANA subtags last modified: " + lastmod_ianasubtag);
+				Console.WriteLine("Ethnologue index last modified: " + lastmod_languageindex);
+				Console.WriteLine("ISO693-3 table last modified: " + lastmod_iso693);
 
 				using (StreamWriter file = new StreamWriter(@"LastModified.txt"))
 				{
-					file.WriteLine ("IANA subtags last modified: " + lastmod_ianasubtag);
-					file.WriteLine ("Ethnologue index last modified: " + lastmod_languageindex);
-					file.WriteLine ("ISO693-3 table last modified: " + lastmod_iso693);
+					file.WriteLine("IANA subtags last modified: " + lastmod_ianasubtag);
+					file.WriteLine("Ethnologue index last modified: " + lastmod_languageindex);
+					file.WriteLine("ISO693-3 table last modified: " + lastmod_iso693);
 				}
 
-				_newtwotothree = GenerateTwoToThreeCodes (newiso693);
+				_newtwotothree = GenerateTwoToThreeCodes(newiso693);
 				return true;
 			}
 			catch (WebException wex)
@@ -107,14 +87,19 @@ namespace LanguageData
 			}
 		}
 
-		public void GetOldSources (string input_dir)
+		protected virtual WebClient CreateWebClient()
 		{
-			_oldtwotothree = File.ReadAllText (Path.Combine (input_dir, @"TwoToThreeCodes.txt"));
-			_oldtwotothree = _oldtwotothree.Replace("\r\n", "\n");
-			_oldlanguageindex = File.ReadAllText (Path.Combine (input_dir, @"LanguageIndex.txt"));
-			_oldianasubtags = File.ReadAllText (Path.Combine (input_dir, @"ianaSubtagRegistry.txt"));
+			return new WebClient();
 		}
-		public bool CheckSourcesAreDifferent ()
+
+		public void GetOldSources(string input_dir)
+		{
+			_oldtwotothree = File.ReadAllText(Path.Combine (input_dir, @"TwoToThreeCodes.txt"));
+			_oldtwotothree = _oldtwotothree.Replace("\r\n", "\n");
+			_oldlanguageindex = File.ReadAllText(Path.Combine (input_dir, @"LanguageIndex.txt"));
+			_oldianasubtags = File.ReadAllText(Path.Combine (input_dir, @"ianaSubtagRegistry.txt"));
+		}
+		public bool CheckSourcesAreDifferent()
 		{
 			// return true if any are different, false if all the same
 			bool retval = false;
@@ -160,42 +145,42 @@ namespace LanguageData
 				throw new DirectoryNotFoundException();
 			}
 			string filename = Path.Combine(output_directory, "LanguageIndex.txt");
-			File.WriteAllText (filename, _newlanguageindex);
+			File.WriteAllText(filename, _newlanguageindex);
 			filename = Path.Combine(output_directory, "ianaSubtagRegistry.txt");
-			File.WriteAllText (filename, _newianasubtags);
+			File.WriteAllText(filename, _newianasubtags);
 			filename = Path.Combine(output_directory, "TwoToThreeCodes.txt");
-			File.WriteAllText (filename, _newtwotothree);
+			File.WriteAllText(filename, _newtwotothree);
 		}
 
 		public IDictionary<string,string> GetFileStrings(bool newfiles)
 		{
-			var filestrings = new Dictionary<string,string> ();
+			var filestrings = new Dictionary<string,string>();
 			if (newfiles) {
-				filestrings.Add ("TwoToThreeCodes.txt", _newtwotothree);
-				filestrings.Add ("LanguageIndex.txt", _newlanguageindex);
-				filestrings.Add ("ianaSubtagRegistry.txt", _newianasubtags);
+				filestrings.Add("TwoToThreeCodes.txt", _newtwotothree);
+				filestrings.Add("LanguageIndex.txt", _newlanguageindex);
+				filestrings.Add("ianaSubtagRegistry.txt", _newianasubtags);
 			} else {
-				filestrings.Add ("TwoToThreeCodes.txt", _oldtwotothree);
-				filestrings.Add ("LanguageIndex.txt", _oldlanguageindex);
-				filestrings.Add ("ianaSubtagRegistry.txt", _oldianasubtags);
+				filestrings.Add("TwoToThreeCodes.txt", _oldtwotothree);
+				filestrings.Add("LanguageIndex.txt", _oldlanguageindex);
+				filestrings.Add("ianaSubtagRegistry.txt", _oldianasubtags);
 			}
 			return filestrings;
 		}
 
-		private string GenerateTwoToThreeCodes (string iso693)
+		private string GenerateTwoToThreeCodes(string iso693)
 		{
 			// JohnT: can't find anywhere else to document this, so here goes: TwoToThreeMap is a file adapted from
 			// FieldWorks Ethnologue\Data\iso-639-3_20080804.tab, by discarding all but the first column (3-letter
 			// ethnologue codes) and the fourth (two-letter IANA codes), and all the rows where the fourth column is empty.
 			// I then swapped the columns. So, in this resource, the string before the tab in each line is a 2-letter
 			// Iana code, and the string after it is the one we want to return as the corresponding ISO3Code.
-			File.WriteAllText (@"isocodes.txt", iso693);
+			File.WriteAllText(@"isocodes.txt", iso693);
 			var twoToThreeLetter = new Dictionary<string, string>();
 			foreach (string line in iso693.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
 			{
 				string[] items = line.Split('\t');
-				if (items [3].Trim ().Length == 2) {
-					twoToThreeLetter.Add (items [3].Trim (), items [0].Trim ());
+				if (items[3].Trim().Length == 2) {
+					twoToThreeLetter.Add (items[3].Trim(), items[0].Trim());
 				}
 			}
 			var retval = new StringBuilder();
@@ -211,9 +196,9 @@ namespace LanguageData
 			// return true if files are different, false if the same
 			var sha = new SHA256Managed();
 			byte[] checksum_oldfile = sha.ComputeHash (Encoding.UTF8.GetBytes(oldfile));
-			Console.WriteLine ("hash of oldfile is: " + BitConverter.ToString(checksum_oldfile));
+			Console.WriteLine("hash of oldfile is: " + BitConverter.ToString(checksum_oldfile));
 			byte[] checksum_newfile = sha.ComputeHash (Encoding.UTF8.GetBytes(newfile));
-			Console.WriteLine ("hash of newfile is: " + BitConverter.ToString(checksum_newfile));
+			Console.WriteLine("hash of newfile is: " + BitConverter.ToString(checksum_newfile));
 
 			return BitConverter.ToString(checksum_oldfile) != BitConverter.ToString(checksum_newfile);
 		}
