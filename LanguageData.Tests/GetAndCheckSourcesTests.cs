@@ -98,29 +98,17 @@ namespace LanguageData.Tests
 		[Test]
 		public void GetOldSources_BadInputDir_throws()
 		{
-			try
-			{
-				GetAndCheckSources getcheck = new GetAndCheckSources ();
-				getcheck.GetOldSources ("gibberish");
-			}
-			catch (DirectoryNotFoundException dnfex)
-			{
-				Console.WriteLine (dnfex.Message);
-			}
+			GetAndCheckSources getcheck = new GetAndCheckSources ();
+			Assert.That(() => getcheck.GetOldSources ("gibberish"),
+				Throws.TypeOf<DirectoryNotFoundException>());
 		}
 
 		[Test]
 		public void WriteNewFiles_BadOutputDir_throws ()
 		{
-			try
-			{
-				GetAndCheckSources getcheck = new GetAndCheckSources ();
-				getcheck.WriteNewFiles ("gibberish");
-			}
-			catch (DirectoryNotFoundException dnfex)
-			{
-				Console.WriteLine (dnfex.Message);
-			}
+			GetAndCheckSources getcheck = new GetAndCheckSources();
+			Assert.That(() => getcheck.WriteNewFiles("gibberish"),
+				Throws.TypeOf<DirectoryNotFoundException>());
 		}
 
 		[Test]
