@@ -7,6 +7,7 @@ namespace SIL.WritingSystems
 {
 	public class CharacterSetDefinition : DefinitionBase<CharacterSetDefinition>
 	{
+		private static readonly string[] _sequenceTypes = {"footnotes", "crossrefs", "verseSegments" };
 		private readonly string _type;
 		private readonly ObservableList<string> _characters; 
 
@@ -39,6 +40,11 @@ namespace SIL.WritingSystems
 			get { return _type; }
 		}
 
+		public bool IsSequenceType
+		{
+			get { return _sequenceTypes.Contains(_type); }
+		}
+
 		public IObservableList<string> Characters
 		{
 			get { return _characters; }
@@ -48,7 +54,7 @@ namespace SIL.WritingSystems
 		{
 			if (other == null || _type != other._type)
 				return false;
-			if (_type == "footnotes")
+			if (IsSequenceType)
 				return _characters.SequenceEqual(other._characters);
 			return _characters.SetEquals(other._characters);
 		}
