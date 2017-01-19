@@ -29,6 +29,7 @@ namespace SIL.TestUtilities
 						string[] files = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories);
 						foreach (string s in files)
 						{
+							File.SetAttributes(s, FileAttributes.Normal); //get past readonly
 							File.Delete(s);
 						}
 						//sleep and try again (seems to work)

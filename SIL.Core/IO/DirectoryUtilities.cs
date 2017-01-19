@@ -210,10 +210,15 @@ namespace SIL.IO
 		/// This method uses all the tricks to do its best.
 		/// </summary>
 		/// <returns>returns true if the directory is fully deleted</returns>
-		public static bool DeleteDirectoryRobust(string path)
+		public static bool DeleteDirectoryRobust(string path, bool overrideReadOnly=true)
 		{
 			// ReSharper disable EmptyGeneralCatchClause
-
+#if __MonoCS__
+			// The Mono runtime deletes readonly files and directories that contain readonly files.
+			// This violates the MSDN specification of Directory.Delete and File.Delete.
+			if (!overrideReadOnly && DirectoryContainsReadOnly(path))
+					return false;
+#endif
 			for (int i = 0; i < 40; i++) // each time, we sleep a little. This will try for up to 2 seconds (40*50ms)
 			{
 				if (!Directory.Exists(path))
@@ -239,9 +244,10 @@ namespace SIL.IO
 					{
 						try
 						{
-							/* we could do this too, but it's dangerous
-							 *  File.SetAttributes(filePath, FileAttributes.Normal);
-							 */
+							if(overrideReadOnly)
+							{
+								File.SetAttributes(filePath, FileAttributes.Normal);
+							}
 							File.Delete(filePath);
 						}
 						catch (Exception)
@@ -254,7 +260,7 @@ namespace SIL.IO
 					}
 
 				}
-				catch (Exception)//yes, even these simple queries can throw exceptions, as stuff suddenly is deleted base on our prior request
+				catch (Exception)//yes, even these simple queries can throw exceptions, as stuff suddenly is deleted based on our prior request
 				{
 				}
 				//sleep and let some OS things catch up
@@ -285,6 +291,34 @@ namespace SIL.IO
 			}
 			return Path.Combine(parent, name + suffix);
 		}
+
+#if __MonoCS__
+		/// <summary>
+		/// Check whether the given directory is readonly, or contains files or subdirectories that are readonly.
+		/// </summary>
+		/// <remarks>
+		/// Using this check could be considered a workaround for a bug in the Mono runtime, but that bug goes so
+		/// deep that it's safer and easier to work around it here.
+		/// </remarks>
+		static bool DirectoryContainsReadOnly(string path)
+		{
+			var dirInfo = new DirectoryInfo(path);
+			if ((dirInfo.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+				return true;
+			foreach (var file in Directory.GetFiles(path))
+			{
+				var fileInfo = new FileInfo(file);
+				if ((fileInfo.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+					return true;
+			}
+			foreach (var dir in Directory.GetDirectories(path))
+			{
+				if (DirectoryContainsReadOnly(dir))
+					return true;
+			}
+			return false;
+		}
+#endif
 
 		/// <summary>
 		/// Checks if there are any entries in a directory
