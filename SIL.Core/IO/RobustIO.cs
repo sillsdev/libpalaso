@@ -25,8 +25,12 @@ namespace SIL.IO
 
 		public static void DeleteDirectory(string path, bool recursive)
 		{
-			if (recursive)
-				DirectoryUtilities.DeleteDirectoryRobust(path);
+			if(recursive)
+			{
+				var succeeded = DirectoryUtilities.DeleteDirectoryRobust(path);
+				if(!succeeded)
+					throw new IOException("Could not delete directory "+path);
+			}
 			else
 				RetryUtility.Retry(() => Directory.Delete(path, false));
 		}

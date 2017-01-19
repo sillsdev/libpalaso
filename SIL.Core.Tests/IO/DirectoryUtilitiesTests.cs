@@ -589,5 +589,31 @@ namespace SIL.Tests.IO
 				File.Delete(fileName);
 			}
 		}
+
+		[Test]
+		public void DeleteDirectoryRobust_ContainsReadOnlyFile_StillRemoves()
+		{
+			using (var tempDir = new TemporaryFolder("DeleteDirectoryRobust_ContainsReadOnlyFile_StillRemoves"))
+			{
+				var fileName = tempDir.Combine("tempFile.txt");
+				File.WriteAllText(fileName, @"Some test text");
+				new System.IO.FileInfo(fileName).IsReadOnly = true;
+				DirectoryUtilities.DeleteDirectoryRobust(tempDir.Path);
+				Assert.IsFalse(Directory.Exists(tempDir.Path), "Did not delete directory");
+			}
+		}
+
+		[Test]
+		public void DeleteDirectoryRobust_NoOverrideContainsReadOnlyFile_ReturnsFalse()
+		{
+			using (var tempDir = new TemporaryFolder("DeleteDirectoryRobust_NoOverrideContainsReadOnlyFile_ReturnsFalse"))
+			{
+				var fileName = tempDir.Combine("tempFile.txt");
+				File.WriteAllText(fileName, @"Some test text");
+				new System.IO.FileInfo(fileName).IsReadOnly = true;
+				Assert.IsFalse(DirectoryUtilities.DeleteDirectoryRobust(tempDir.Path, overrideReadOnly:false));
+				Assert.IsTrue(Directory.Exists(tempDir.Path), "Did not expect it to delete directory because of the readonly file");
+			}
+		}
 	}
 }
