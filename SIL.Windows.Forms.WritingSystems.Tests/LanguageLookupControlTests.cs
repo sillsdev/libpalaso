@@ -19,6 +19,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 			_control.ReadinessChanged += _control_ReadinessChanged;
 			_testForm = new Form();
 			_testForm.Controls.Add(_control);
+			Console.WriteLine("Setup created control");
 		}
 
 		private void _control_ReadinessChanged(object sender, EventArgs e)
@@ -39,15 +40,22 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		[Test]
 		public void AkanSearchDoesNotCrash()
 		{
+			Console.WriteLine("AkanSearchDoesNotCrash: starting");
 			_control.SearchText = "a";
 			_testForm.Show();
+			Console.WriteLine("AkanSearchDoesNotCrash: about to wait for control (1)");
 			WaitForControl();
+			Console.WriteLine("AkanSearchDoesNotCrash: finished waiting for control (1)");
 			_control.SearchText = "ak";
+			Console.WriteLine("AkanSearchDoesNotCrash: about to wait for control (2)");
 			WaitForControl();
+			Console.WriteLine("AkanSearchDoesNotCrash: finished waiting for control (2)");
 			Assert.AreEqual("akq", _control.SelectedLanguage.LanguageTag);
 			Assert.AreEqual("Ak", _control.DesiredLanguageName);
 			_control.SearchText = "akq";
+			Console.WriteLine("AkanSearchDoesNotCrash: about to wait for control (3)");
 			WaitForControl();
+			Console.WriteLine("AkanSearchDoesNotCrash: finished waiting for control (3)");
 			Assert.AreEqual("akq", _control.SelectedLanguage.LanguageTag);
 			Assert.AreEqual("Ak", _control.DesiredLanguageName);
 		}
