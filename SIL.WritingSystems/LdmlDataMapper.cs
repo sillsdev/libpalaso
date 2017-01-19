@@ -554,7 +554,7 @@ namespace SIL.WritingSystems
 			string type = (string) exemplarCharactersElem.Attribute("type") ?? "main";
 			var csd = new CharacterSetDefinition(type);
 			var unicodeSet = (string) exemplarCharactersElem;
-			csd.Characters.AddRange(type == "footnotes" ? unicodeSet.Trim('[', ']').Split(' ').Select(c => c.Trim('{', '}')) : UnicodeSet.ToCharacters(unicodeSet));
+			csd.Characters.AddRange(csd.IsSequenceType ? unicodeSet.Trim('[', ']').Split(' ').Select(c => c.Trim('{', '}')) : UnicodeSet.ToCharacters(unicodeSet));
 			ws.CharacterSets.Add(csd);
 		}
 
@@ -1001,7 +1001,7 @@ namespace SIL.WritingSystems
 						break;
 					// All others go to special Sil:exemplarCharacters
 					default:
-						string unicodeSet = csd.Type == "footnotes" ? string.Format("[{0}]", string.Join(" ", csd.Characters.Select(c => c.Length > 1 ? string.Format("{{{0}}}", c) : c)))
+						string unicodeSet = csd.IsSequenceType ? string.Format("[{0}]", string.Join(" ", csd.Characters.Select(c => c.Length > 1 ? string.Format("{{{0}}}", c) : c)))
 							: UnicodeSet.ToPattern(csd.Characters);
 						exemplarCharactersElem = new XElement(Sil + "exemplarCharacters", unicodeSet);
 						exemplarCharactersElem.SetAttributeValue("type", csd.Type);
