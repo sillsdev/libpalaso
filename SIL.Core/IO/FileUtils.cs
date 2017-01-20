@@ -228,12 +228,7 @@ namespace SIL.IO
 						)
 					{
 						//can't use File.Replace or File.Move across volumes (sigh)
-						if (!string.IsNullOrEmpty(backupPath) && File.Exists(destinationPath))
-						{
-							File.Copy(destinationPath, backupPath, true);
-						}
-						File.Copy(sourcePath, destinationPath, true);
-						File.Delete(sourcePath);
+						ReplaceByCopyDelete(sourcePath, destinationPath, backupPath);
 					}
 					else
 					{
@@ -241,10 +236,29 @@ namespace SIL.IO
 						Exception theProblem;
 						do
 						{
+							theProblem = null;
 							try
 							{
-								theProblem = null;
 								File.Replace(sourcePath, destinationPath, backupPath);
+							}
+							catch (UnauthorizedAccessException uae)
+							{
+								// We were getting this while trying to Replace on a JAARS network drive.
+								// The network drive is U:\ which maps to \\waxhaw\users\{username},
+								// so it doesn't get caught by the checks above.
+								// Both files were in the same directory and there were no permissions issues,
+								// but the Replace command was failing with "Access to the path is denied." anyway.
+								// I never could figure out why. See http://issues.bloomlibrary.org/youtrack/issue/BL-4179
+								try
+								{
+									ReplaceByCopyDelete(sourcePath, destinationPath, backupPath);
+								}
+								catch
+								{
+									// Though it probably doesn't matter, report the original exception since we prefer Replace to CopyDelete.
+									theProblem = uae;
+									Thread.Sleep(100);
+								}
 							}
 							catch (Exception e)
 							{
@@ -268,6 +282,16 @@ namespace SIL.IO
 				}
 			}
 			while (!succeeded);
+		}
+
+		private static void ReplaceByCopyDelete(string sourcePath, string destinationPath, string backupPath)
+		{
+			if (!string.IsNullOrEmpty(backupPath) && File.Exists(destinationPath))
+			{
+				File.Copy(destinationPath, backupPath, true);
+			}
+			File.Copy(sourcePath, destinationPath, true);
+			File.Delete(sourcePath);
 		}
 
 		// NB: I don't actually know for sure that we can't do the replace on these paths; this dev doesn't
