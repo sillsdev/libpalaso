@@ -32,11 +32,7 @@ namespace SIL.Tests.Xml
 		private static void CheckReaderSettings(XmlReaderSettings settings, ConformanceLevel expectedConformanceLevel)
 		{
 			Assert.IsFalse(settings.CheckCharacters);
-#if NET_4_0 && !__MonoCS__
 			Assert.AreEqual(DtdProcessing.Parse, settings.DtdProcessing);
-#else
-			Assert.IsTrue(settings.ProhibitDtd);
-#endif
 			Assert.AreEqual(ValidationType.None , settings.ValidationType);
 			Assert.IsTrue(settings.CloseInput);
 			Assert.IsTrue(settings.IgnoreWhitespace);

@@ -28,11 +28,7 @@ namespace SIL.Xml
 			{
 				CheckCharacters = false,
 				ConformanceLevel = conformanceLevel,
-#if NET_4_0 && !__MonoCS__
 				DtdProcessing = DtdProcessing.Parse,
-#else
-				ProhibitDtd = true,
-#endif
 				ValidationType = ValidationType.None,
 				CloseInput = true,
 				IgnoreWhitespace = true
