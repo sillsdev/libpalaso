@@ -75,5 +75,42 @@ namespace SIL.Tests.Xml
 				Assert.AreEqual(expected, result);
 			}
 		}
+
+		[Test]
+		public void WriteReadWithFile_WithCanonicalXmlWriterSettings_NormalizesLineEndings()
+		{
+			const string xmlInput = "<a><b>\nContent</b><b>\r\nOther</b></a>";
+			const string expected = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<a>\r\n\t<b>\r\nContent</b>\r\n\t<b>\r\nOther</b>\r\n</a>";
+			using (var tempFile = TempFile.CreateAndGetPathButDontMakeTheFile())
+			{
+				using (var reader = XmlReader.Create(new StringReader(xmlInput)))
+				{
+					using (var writer = XmlWriter.Create(tempFile.Path, CanonicalXmlSettings.CreateXmlWriterSettings()))
+					{
+						writer.WriteNode(reader, false);
+					}
+				}
+				string result = File.ReadAllText(tempFile.Path);
+				Console.WriteLine(result);
+				Assert.AreEqual(expected, result);
+			}
+		}
+
+		[Test]
+		public void Write_WithCanonicalXmlWriterSettingsNoNormalize_KeepLineEndings()
+		{
+			const string content = "\nContent\rmore\r\nOther\n\rfinal";
+			const string expected = "<a>" + content + "</a>";
+			var bldr = new StringBuilder();
+			using (var writer = XmlWriter.Create(bldr, CanonicalXmlSettings.CreateXmlWriterSettings(ConformanceLevel.Fragment, NewLineHandling.None)))
+			{
+				writer.WriteStartElement("a");
+				writer.WriteRaw(content);
+				writer.WriteEndElement();
+			}
+			var result = bldr.ToString();
+			Console.WriteLine(result);
+			Assert.AreEqual(expected, result);
+		}
 	}
 }
