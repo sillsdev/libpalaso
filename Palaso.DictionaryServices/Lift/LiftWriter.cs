@@ -61,7 +61,7 @@ namespace Palaso.DictionaryServices.Lift
 		public LiftWriter(StringBuilder builder, bool produceFragmentOnly): this()
 		{
 			_writer = XmlWriter.Create(builder, CanonicalXmlSettings.CreateXmlWriterSettings(
-				produceFragmentOnly ? ConformanceLevel.Fragment : ConformanceLevel.Document)
+				produceFragmentOnly ? ConformanceLevel.Fragment : ConformanceLevel.Document, false)
 			);
 			if (!produceFragmentOnly)
 			{
