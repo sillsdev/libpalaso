@@ -61,11 +61,12 @@ namespace LanguageData
 				string newiso693 = client.DownloadString("http://www-01.sil.org/iso639-3/iso-639-3.tab");
 				string lastmod_iso693 = client.ResponseHeaders["Last-Modified"];
 
-				_newlanguageindex = client.DownloadString("https://www.ethnologue.com/codes/LanguageIndex.tab");
-				string lastmod_languageindex = client.ResponseHeaders["Last-Modified"];
-
 				_newianasubtags = client.DownloadString("http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry");
 				string lastmod_ianasubtag = client.ResponseHeaders["Last-Modified"];
+
+				client.Encoding = Encoding.UTF8; // ethnologue site currently doesn't specify 2017-01-24
+				_newlanguageindex = client.DownloadString("https://www.ethnologue.com/codes/LanguageIndex.tab");
+				string lastmod_languageindex = client.ResponseHeaders["Last-Modified"];
 
 				Console.WriteLine("IANA subtags last modified: " + lastmod_ianasubtag);
 				Console.WriteLine("Ethnologue index last modified: " + lastmod_languageindex);
@@ -81,7 +82,7 @@ namespace LanguageData
 				_newtwotothree = GenerateTwoToThreeCodes(newiso693);
 				return true;
 			}
-			catch (WebException wex)
+			catch (WebException)
 			{
 				return false;
 			}

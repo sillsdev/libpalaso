@@ -40,12 +40,20 @@ namespace LanguageData
 					continue;
 				if (items[2].StartsWith("!")) //temporary suppression of entries while waiting for Ethnologue changes
 					continue;
+				// excluded by !
+				// all gax (ET,KE,SO) including L
+				// all gaz (ET) including L
+				// all hae (ET) including L
 
 				string code = items[0].Trim();
 				string twoLetterCode;
 				string threelettercode = code;
 				if (threeToTwoLetter.TryGetValue(code, out twoLetterCode))
 					code = twoLetterCode;
+
+				//temporary suppression of entries while waiting for Ethnologue changes (those excluded by !)
+				if (code == "gax" || code == "gaz" || code == "hae")
+					continue;
 
 				string regionCode = items[1].Trim();
 				LanguageInfo language = GetOrCreateLanguageFromCode(code, threelettercode, regionCode == "?" ? "?" : StandardSubtags.RegisteredRegions[regionCode].Name);
