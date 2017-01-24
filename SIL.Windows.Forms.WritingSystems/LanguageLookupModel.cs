@@ -11,7 +11,7 @@ namespace SIL.Windows.Forms.WritingSystems
 	{
 		private static readonly string UnlistedLanguageName = LocalizationManager.GetString("LanguageLookup.UnlistedLanguage", "Unlisted Language");
 
-		private NewLanguageLookup _languageLookup;
+		private LanguageLookup _languageLookup;
 		private string _searchText;
 		private LanguageInfo _selectedLanguage;
 		private string _desiredLanguageName;
@@ -49,7 +49,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		public void LoadLanguages()
 		{
-			_languageLookup = new NewLanguageLookup();
+			_languageLookup = new LanguageLookup();
 		}
 
 		public bool AreLanguagesLoaded

@@ -275,7 +275,6 @@
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\FlexConformPrivateUseRfc5646TagInterpreter.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV0To1Migration\KeyboardDefinitionV1.cs" />
     <Compile Include="Migration\WritingSystemsLdmlV2To3Migration\Staging.cs" />
-    <Compile Include="NewLanguageLookup.cs" />
     <Compile Include="RulesCollationDefinition.cs" />
     <Compile Include="SldrLanguageTagInfo.cs" />
     <Compile Include="SystemCollationDefinition.cs" />
