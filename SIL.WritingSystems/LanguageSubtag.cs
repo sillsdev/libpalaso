@@ -8,7 +8,6 @@ namespace SIL.WritingSystems
 	public class LanguageSubtag : Subtag
 	{
 		private readonly string _iso3Code;
-		private readonly List<string> _descriptions = new List<string>();
 
 		/// <summary>
 		/// Initializes a new private-use instance of the <see cref="LanguageSubtag"/> class.
@@ -34,7 +33,7 @@ namespace SIL.WritingSystems
 			: base(code, name, isPrivateUse)
 		{
 			_iso3Code = iso3Code;
-			_descriptions = descriptions;
+			Names = descriptions;
 			IsMacroLanguage = isMacroLanguage;
 			IsDeprecated = isDeprecated;
 		}
@@ -66,10 +65,7 @@ namespace SIL.WritingSystems
 		/// Gets the list of language names.
 		/// </summary>
 		/// <value>The list of language names.</value>
-		public IList<string> Names
-		{
-			get { return _descriptions; }
-		}
+		public IList<string> Names { get; private set;  } = new List<string>();
 
 		/// <summary>
 		/// Gets the ISO 639-3 language code.
