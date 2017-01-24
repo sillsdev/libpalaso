@@ -17,6 +17,7 @@ namespace SIL.WritingSystems
 		public LanguageSubtag(string code, string name = null)
 			: base(code, name, true)
 		{
+			 Names = new List<string>();
 		}
 
 		/// <summary>
@@ -48,6 +49,7 @@ namespace SIL.WritingSystems
 		internal LanguageSubtag(string code, string name, bool isPrivateUse, string iso3Code)
 			: base(code, name, isPrivateUse)
 		{
+			Names = new List<string>();
 			_iso3Code = iso3Code;
 		}
 
@@ -59,13 +61,14 @@ namespace SIL.WritingSystems
 		public LanguageSubtag(LanguageSubtag subtag, string name)
 			: this(subtag.Code, name, subtag.IsPrivateUse, subtag._iso3Code)
 		{
+			Names = new List<string>();
 		}
 
 		/// <summary>
 		/// Gets the list of language names.
 		/// </summary>
 		/// <value>The list of language names.</value>
-		public IList<string> Names { get; private set;  } = new List<string>();
+		public IList<string> Names { get; private set; }
 
 		/// <summary>
 		/// Gets the ISO 639-3 language code.
