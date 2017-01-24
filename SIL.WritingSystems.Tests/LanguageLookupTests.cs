@@ -1,7 +1,5 @@
 ﻿using System.Linq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 
 namespace SIL.WritingSystems.Tests
 {

@@ -28,7 +28,7 @@ namespace SIL.WritingSystems
 			{
 				//Code ThreeLetterCode DesiredName Names Countries
 				string[] items = entry.Split('\t');
-				if (items.Length != 6)
+				if (items.Length != 6) // This needs to be changed if the number of fields changes
 					continue;
 				string code = items[0];
 				string threelettercode = items[1];

@@ -240,6 +240,9 @@ namespace LanguageData
 			using (System.IO.StreamWriter file = new System.IO.StreamWriter(output_file))
 			{
 				string entry;
+				// If you add another field here don't forget to change LanguageLookup to deal with it
+				// if the teamcity project has been set up with any project having dependencies on a LanguageDataIndex.txt artifact
+				// then the circular dependency needs to be broken to get the new version in
 				foreach (LanguageInfo languageInfo in _codeToLanguageIndex.Values)
 				{
 					entry = String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}",
