@@ -390,7 +390,6 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._linkToDefinitionOfNonCommercial.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this._linkToDefinitionOfNonCommercial.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Underline);
 			this._linkToDefinitionOfNonCommercial.ForeColor = System.Drawing.Color.Blue;
-			this._linkToDefinitionOfNonCommercial.IsTextSelectable = false;
 			this._L10NSharpExtender.SetLocalizableToolTip(this._linkToDefinitionOfNonCommercial, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._linkToDefinitionOfNonCommercial, "The meaning of  \"non-commercial\" is vague but important. This hyperlink takes you" +
         " somewhere that defines it.");
@@ -410,7 +409,6 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			this._linkToRefinedCreativeCommonsWarning.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this._linkToRefinedCreativeCommonsWarning.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Underline);
 			this._linkToRefinedCreativeCommonsWarning.ForeColor = System.Drawing.Color.Blue;
-			this._linkToRefinedCreativeCommonsWarning.IsTextSelectable = false;
 			this._L10NSharpExtender.SetLocalizableToolTip(this._linkToRefinedCreativeCommonsWarning, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._linkToRefinedCreativeCommonsWarning, resources.GetString("_linkToRefinedCreativeCommonsWarning.LocalizationComment"));
 			this._L10NSharpExtender.SetLocalizingId(this._linkToRefinedCreativeCommonsWarning, "MetadataEditor.linkToWarningAboutRefiningCreativeCommons");
