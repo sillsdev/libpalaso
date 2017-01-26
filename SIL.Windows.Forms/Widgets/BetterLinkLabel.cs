@@ -16,6 +16,7 @@ namespace SIL.Windows.Forms.Widgets
 		{
 			ReadOnly = false;
 			Enabled = true;
+			IsTextSelectable = true; // Otherwise, the link is disabled
 			SetStyle(ControlStyles.UserPaint, false);
 		}
 
