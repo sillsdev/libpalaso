@@ -400,5 +400,46 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			Assert.AreEqual("", m.GetCopyrightYear());
 		}
 
+		[Test]
+		public void MinimalCredits_CustomLicense()
+		{
+			var m = new Metadata
+			{
+				CopyrightNotice = "Copyright © 2014 SIL",
+				Creator = "Jane Doe",
+				CollectionName = "My Collection",
+				License = new CustomLicense()
+				{
+					RightsStatement = "Please attribute nicely"
+				}
+			};
+
+			string idOfLanguageUsedForLicense;
+			Assert.AreEqual("Jane Doe, My Collection, Please attribute nicely, © 2014 SIL", m.MinimalCredits(new[] {"en"}, out idOfLanguageUsedForLicense));
+		}
+		[Test]
+		public void MinimalCredits_OnlyCopyright()
+		{
+			var m = new Metadata {CopyrightNotice = "Copyright 2011 Foo Incorporated"};
+			string idOfLanguageUsedForLicense;
+			Assert.AreEqual("© 2011 Foo Incorporated", m.MinimalCredits(new[] { "en" }, out idOfLanguageUsedForLicense));
+		}
+
+		[Test]
+		public void MinimalCredits_CreativeCommonsNoCreator()
+		{
+			var m = new Metadata
+			{
+				CopyrightNotice = "Copyright © 2014 SIL",
+				CollectionName = "My Collection",
+				License = new CreativeCommonsLicense(true,true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike)
+				{
+					IntergovernmentalOriganizationQualifier = true
+				}
+			};
+
+			string idOfLanguageUsedForLicense;
+			Assert.AreEqual("My Collection, CC-BY-SA IGO 3.0, © 2014 SIL", m.MinimalCredits(new[] { "en" }, out idOfLanguageUsedForLicense));
+		}
 	}
 }

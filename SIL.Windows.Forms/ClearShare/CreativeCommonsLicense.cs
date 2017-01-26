@@ -210,6 +210,37 @@ namespace SIL.Windows.Forms.ClearShare
 		}
 
 		/// <summary>
+		/// A compact form of of this license that doesn't introduce any new text (though the license may itself have text)
+		/// E.g. CC-BY-NC
+		/// </summary>
+		public override string GetMinimalFormForCredits(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
+		{
+			idOfLanguageUsed = "*";
+
+			var form = "CC-";
+			if (AttributionRequired)
+				form += "BY-";
+			if (!CommercialUseAllowed)
+				form += "NC-";
+			switch (DerivativeRule)
+			{
+				case DerivativeRules.NoDerivatives:
+					form += "ND";
+					break;
+				case DerivativeRules.DerivativesWithShareAndShareAlike:
+					form += "SA";
+					break;
+				case DerivativeRules.Derivatives:
+					break;
+				default:
+					throw new ArgumentOutOfRangeException("derivativeRule");
+			}
+			form = form.TrimEnd(new char[] { '-' });
+
+			return form + " " + (IntergovernmentalOriganizationQualifier ? "IGO " : "") + Version ;
+		}
+
+		/// <summary>
 		/// Get a simple, non-legal summary of the license, using the "best" language for which we can find a translation.
 		/// </summary>
 		/// <param name="languagePriorityIds"></param>

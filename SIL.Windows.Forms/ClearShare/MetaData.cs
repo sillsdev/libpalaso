@@ -808,5 +808,40 @@ namespace SIL.Windows.Forms.ClearShare
 
 			return m.Groups["by"].Value.Trim();
 		}
+
+		/// <summary>
+		/// A super compact form of credits that doesn't introduce any English.
+		/// Jane Doe, CC-BY-NC, © 2008 SIL International
+		/// "International Illustrations: Art Of Reading", CC-ND, © 2009 SIL International
+		/// </summary>
+		public string MinimalCredits(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsedForLicense)
+		{
+			var notice = "";
+			if (!string.IsNullOrWhiteSpace(Creator))
+			{
+				notice += string.Format("{0},", Creator);
+			}
+			if (!string.IsNullOrWhiteSpace(CollectionName))
+			{
+				notice += string.Format(" {0},", CollectionName);
+			}
+			if(License != null)
+			{
+				var minimalFormForCredits = License.GetMinimalFormForCredits(languagePriorityIds, out idOfLanguageUsedForLicense);
+				if(!string.IsNullOrWhiteSpace(minimalFormForCredits))
+				{
+					notice += string.Format(" {0},", minimalFormForCredits);
+				}
+			}
+			else
+			{
+				idOfLanguageUsedForLicense = "*";
+			}
+			if (!string.IsNullOrWhiteSpace(CopyrightNotice))
+			{
+				notice += string.Format(" © {0} {1}", GetCopyrightYear(), GetCopyrightBy());
+			}
+			return notice.Trim();
+		}
 	}
 }

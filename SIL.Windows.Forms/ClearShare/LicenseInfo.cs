@@ -23,6 +23,12 @@ namespace SIL.Windows.Forms.ClearShare
 			return new NullLicense();
 		}
 
+		/// <summary>
+		/// A compact form of of this license that doesn't introduce any new text (though the license may itself have text)
+		/// E.g. CC-BY-NC
+		/// </summary>
+		public abstract string GetMinimalFormForCredits(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed);
+
 		public abstract string GetDescription(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed);
 
 		/// <summary>
@@ -120,6 +126,12 @@ namespace SIL.Windows.Forms.ClearShare
 			get { return "ask"; }
 		}
 
+		public override string GetMinimalFormForCredits(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
+		{
+			idOfLanguageUsed = "*";
+			return ""; // that is, the license is unknown. We might be tempted to return "used by permission", but... was it?
+		}
+
 		public override string ToString()
 		{
 			return "";
@@ -143,6 +155,11 @@ namespace SIL.Windows.Forms.ClearShare
 		public override string ToString()
 		{
 			return "Custom License";
+		}
+
+		public override string GetMinimalFormForCredits(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
+		{
+			return GetDescription(languagePriorityIds, out idOfLanguageUsed);
 		}
 
 		///<summary></summary>
