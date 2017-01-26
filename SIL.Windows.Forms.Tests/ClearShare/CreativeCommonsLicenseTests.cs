@@ -129,6 +129,34 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 		}
 
 		[Test]
+		public void UnSetIGO_VersionNumberIsHighestDefault()
+		{
+			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives)
+			{
+				IntergovernmentalOriganizationQualifier = true,
+				Version = "3.0"
+			};
+			// SUT
+			l.IntergovernmentalOriganizationQualifier = false;
+			Assert.AreEqual(CreativeCommonsLicense.kDefaultVersion, l.Version,
+				"Setting igo to false when it was true should change version to the current default version.");
+		}
+
+		[Test]
+		public void UnSetIGO_IGOAlreadyUnset_DoesntAffectPreviousVersionNumber()
+		{
+			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.Derivatives)
+			{
+				IntergovernmentalOriganizationQualifier = false,
+				Version = "3.0"
+			};
+			// SUT
+			l.IntergovernmentalOriganizationQualifier = false;
+			Assert.AreEqual("3.0", l.Version,
+				"Setting igo to false when it was already false should not change an older version.");
+		}
+
+		[Test]
 		public void ChangeAttributionRequired_HasChanges_True()
 		{
 			var l = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
