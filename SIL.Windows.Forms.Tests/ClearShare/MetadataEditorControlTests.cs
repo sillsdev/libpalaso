@@ -90,5 +90,41 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			dlg.Controls.Add(c);
 			dlg.ShowDialog();
 		}
+
+		[Test]
+		public void MetadataSetter_WasIGO_UncheckingProducesCurrentDefaultLicense()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "test1";
+			m.Creator = "test2";
+			var ccLicense = new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
+			ccLicense.IntergovernmentalOriganizationQualifier = true;
+			m.License = ccLicense;
+			Assert.That(m.License.Url, Is.StringEnding("3.0/igo/"));
+			// SUT
+			ccLicense.IntergovernmentalOriganizationQualifier = false;
+			m.License = ccLicense;
+			Assert.That(m.License.Url, Is.StringEnding(CreativeCommonsLicense.kDefaultVersion+"/"));
+		}
+
+		[Test]
+		public void MetadataSetter_WasCC3_thenIGO_UncheckingStillProducesCurrentDefaultLicense()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "test1";
+			m.Creator = "test2";
+			var ccLicense = new CreativeCommonsLicense(true, false, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike);
+			ccLicense.Version = "3.0"; // set old version (but non-IGO)
+			m.License = ccLicense;
+			Assert.That(m.License.Url, Is.StringEnding("3.0/"));
+			ccLicense.IntergovernmentalOriganizationQualifier = true;
+			m.License = ccLicense;
+			Assert.That(m.License.Url, Is.StringEnding("3.0/igo/"));
+			// SUT
+			ccLicense.IntergovernmentalOriganizationQualifier = false;
+			m.License = ccLicense;
+			// Considered an acceptable loss of information, since the user was messing with the IGO setting.
+			Assert.That(m.License.Url, Is.StringEnding(CreativeCommonsLicense.kDefaultVersion + "/"));
+		}
 	}
 }
