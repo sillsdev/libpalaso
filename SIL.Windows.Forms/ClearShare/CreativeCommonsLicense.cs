@@ -323,6 +323,10 @@ namespace SIL.Windows.Forms.ClearShare
 				if (newValue != _qualifier)
 				{
 					HasChanges = true;
+					if (!value)
+					{
+						_version = kDefaultVersion; // Undo the switch to 3.0 below
+					}
 				}
 				_qualifier = newValue;
 				if(value)
