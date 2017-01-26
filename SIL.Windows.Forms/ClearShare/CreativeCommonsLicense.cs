@@ -143,7 +143,19 @@ namespace SIL.Windows.Forms.ClearShare
 
 				var urlWithoutTrailingSlash = value.TrimEnd(new char[] {'/'});
 				var parts = urlWithoutTrailingSlash.Split(new char[] { '/' });
-				var version=  parts[5];
+
+				string version;
+				try
+				{
+					version = parts[5];
+				}
+				catch (IndexOutOfRangeException)
+				{
+					// We had a problem with some urls getting saved without a version.
+					// We fixed the save problem, but now we need to handle that bad data.
+					// See http://issues.bloomlibrary.org/youtrack/issue/BL-4108.
+					version = kDefaultVersion;
+				}
 
 				//just a sanity check on the version
 				decimal result;
@@ -342,6 +354,10 @@ namespace SIL.Windows.Forms.ClearShare
 				if (newValue != _qualifier)
 				{
 					HasChanges = true;
+					if (!value)
+					{
+						_version = kDefaultVersion; // Undo the switch to 3.0 below
+					}
 				}
 				_qualifier = newValue;
 				if(value)
