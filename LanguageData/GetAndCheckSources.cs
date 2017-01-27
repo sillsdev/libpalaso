@@ -104,7 +104,7 @@ namespace LanguageData
 		{
 			// return true if any are different, false if all the same
 			bool retval = false;
-			if (AreFilesDifferent(_oldianasubtags, _newianasubtags))
+			if (AreFilesDifferent(_oldianasubtags.Replace("\r\n", "\n"), _newianasubtags.Replace("\r\n", "\n")))
 			{
 				Console.WriteLine("There is a new IANA Subtags registry available");
 				retval = true;
@@ -114,7 +114,7 @@ namespace LanguageData
 				Console.WriteLine("The IANA Subtags registry has not changed");
 			}
 
-			if (AreFilesDifferent(_oldlanguageindex, _newlanguageindex))
+			if (AreFilesDifferent(_oldlanguageindex.Replace("\r\n", "\n"), _newlanguageindex.Replace("\r\n", "\n")))
 			{
 				retval = true;
 				Console.WriteLine("There is a new Ethnologue Language Index available");
@@ -124,7 +124,7 @@ namespace LanguageData
 				Console.WriteLine("The Ethnologue Language Index has not changed");
 			}
 
-			if (AreFilesDifferent(_oldtwotothree, _newtwotothree))
+			if (AreFilesDifferent(_oldtwotothree.Replace("\r\n", "\n"), _newtwotothree.Replace("\r\n", "\n")))
 			{
 				retval = true;
 				Console.WriteLine("There are new 2 to 3 letter code mappings available");

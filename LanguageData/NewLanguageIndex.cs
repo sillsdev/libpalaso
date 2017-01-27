@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 using SIL.Extensions;
 using SIL.WritingSystems;
 
@@ -237,7 +239,7 @@ namespace LanguageData
 
 		public void WriteIndex(string output_file)
 		{
-			using (System.IO.StreamWriter file = new System.IO.StreamWriter(output_file))
+			using (StreamWriter file = new StreamWriter(output_file))
 			{
 				string entry;
 				// If you add another field here don't forget to change LanguageLookup to deal with it
@@ -254,6 +256,66 @@ namespace LanguageData
 						String.Join(";", languageInfo.Countries)
 						);
 					file.WriteLine(entry);
+				}
+			}
+		}
+
+		public void WriteJson(string output_file)
+		{
+			using (StreamWriter file = new StreamWriter(output_file))
+			{
+				using (JsonWriter writer = new JsonTextWriter(file))
+				{
+					// If you add another field here don't forget to change LanguageLookup to deal with it
+					// if the teamcity project has been set up with any project having dependencies on a LanguageDataIndex.txt artifact
+					// then the circular dependency needs to be broken to get the new version in
+					writer.WriteStartArray();
+					foreach (LanguageInfo languageInfo in _codeToLanguageIndex.Values)
+					{
+						if (languageInfo.ThreeLetterTag.Length == 3)
+						{
+							writer.WriteStartObject();
+
+							writer.WritePropertyName("name");
+							writer.WriteValue(languageInfo.DesiredName);
+
+							writer.WritePropertyName("code");
+							writer.WriteStartObject();
+							if (!String.Equals(languageInfo.LanguageTag, languageInfo.ThreeLetterTag))
+							{
+								writer.WritePropertyName("two");
+								writer.WriteValue(languageInfo.LanguageTag);
+							}
+							writer.WritePropertyName("three");
+							writer.WriteValue(languageInfo.ThreeLetterTag);
+							writer.WriteEndObject();
+
+							writer.WritePropertyName("macro");
+							writer.WriteValue(languageInfo.IsMacroLanguage);
+
+							writer.WritePropertyName("country");
+							writer.WriteStartArray();
+							foreach (string country in languageInfo.Countries)
+							{
+								writer.WriteValue(country);
+							}
+							writer.WriteEndArray();
+
+							writer.WritePropertyName("altNames");
+							writer.WriteStartArray();
+							foreach (string name in languageInfo.Names)
+							{
+								if (!String.Equals(name, languageInfo.DesiredName))
+								{
+									writer.WriteValue(name);
+								}
+							}
+							writer.WriteEndArray();
+
+							writer.WriteEndObject();
+						}
+					}
+					writer.WriteEndArray();
 				}
 			}
 		}

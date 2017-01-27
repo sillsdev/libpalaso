@@ -81,6 +81,12 @@ namespace LanguageData
 				Sldr.Initialize(true);
 				NewLanguageIndex langIndex = new NewLanguageIndex(getcheck.GetFileStrings(options.GetFresh));
 				langIndex.WriteIndex(options.OutputFile);
+				if (options.Json)
+				{
+					string basename = Path.GetFileNameWithoutExtension(options.OutputFile);
+					string json_file = basename + ".json";
+					langIndex.WriteJson(json_file);
+				}
 				Sldr.Cleanup();
 			}
 			return 0;
