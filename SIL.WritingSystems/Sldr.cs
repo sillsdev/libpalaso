@@ -11,6 +11,7 @@ using System.Security.Principal;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SIL.Extensions;
+using SIL.Network;
 using SIL.ObjectModel;
 using SIL.PlatformUtilities;
 using SIL.Threading;
@@ -244,8 +245,8 @@ namespace SIL.WritingSystems
 							else if (webResponse.StatusCode == HttpStatusCode.MovedPermanently)
 							{
 								// Extract ietfLanguageTag from the response header
-								string responseString = webResponse.Headers["Location"].Replace(SldrRepository, "");
-								sldrLanguageTag = responseString.Split('?')[0];
+								var parsedresponse = HttpUtilityFromMono.ParseQueryString(webResponse.Headers["Location"]);
+								sldrLanguageTag = parsedresponse.Get("ws_id").Split('?')[0];
 								redirected = true;
 							}
 							else
