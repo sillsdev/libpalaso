@@ -156,5 +156,18 @@ namespace Palaso.Tests.WritingSystems
 			Assert.True(languages.Any(l => l.Names.Contains("Akan")));
 			Assert.True(languages.Any(l => l.Names.Contains("Fanti")));
 		}
+
+
+		[Test]
+		public void SuggestLanguages_LanguageHasPejorativeAlternativeNames_FilteredOut()
+		{
+			var languages = _ethnologue.SuggestLanguages("Degexit’an").ToArray();
+			Assert.AreEqual("ing", languages[0].Code);
+			Assert.True(languages.Any(l => l.Names.Contains("Degexit'an")));
+			Assert.True(languages.Any(l => l.Names.Contains("Deg Xinag")));
+			Assert.True(languages.Any(l => l.Names.Contains("Deg Xit'an")));
+			Assert.AreEqual(3, languages[0].Names.Count, "2 of the 5 names are pejorative and should not be listed");
+		}
+
 	}
 }
