@@ -169,5 +169,27 @@ namespace Palaso.Tests.WritingSystems
 			Assert.AreEqual(3, languages[0].Names.Count, "2 of the 5 names are pejorative and should not be listed");
 		}
 
+		/// <summary> 
+		/// This is a result of finding that some of the alternative names, in Nov 2016, were *not* marked as pejorative but actually were. 
+		/// These may be fixed in the Ethnologue over time, but it was requested that we just remove all alternative names for now. 
+		/// </summary> 
+		[Test]
+		public void SuggestLanguages_LanguageIsInEthiopia_ShowOnlyOfficialNames()
+		{
+			var languages = _ethnologue.SuggestLanguages("Wolaytta").ToArray();
+			Assert.True(languages.Any(l => l.Names.Contains("Wolaytta")));
+			Assert.AreEqual(1, languages[0].Names.Count, "Should only list a single name for Ethiopian languages.");
+		}
+
+		/// <summary> 
+		/// We have been asked to temporarily suppress these three codes for Ethiopia, until the Ethologue is changed. 
+		/// </summary> 
+		[Test]
+		public void SuggestLanguages_LanguageIsOromo_DoNotShowRelatedLanguages()
+		{
+			var languages = _ethnologue.SuggestLanguages("Oromo").ToArray();
+			Assert.True(languages.All(l => l.DesiredName == "Oromo"));
+			Assert.True(languages.All(l => l.Code.StartsWith("om")), "We should be suppressing gax, hae, gaz");
+		}
 	}
 }

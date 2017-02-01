@@ -44,6 +44,8 @@ namespace Palaso.WritingSystems
 				var items = entry.Split('\t');
 				if (items.Length != 4)
 					continue;
+				if (items[2].Contains('!')) //allows for temporary suppression of entries while waiting for Ethnologue changes 
+					continue;
 				var code = items[0].Trim();
 				string TwoLetterCode;
 				if (ThreeToTwoLetter.TryGetValue(code, out TwoLetterCode))
@@ -52,11 +54,8 @@ namespace Palaso.WritingSystems
 				LanguageInfo language = GetOrCreateLanguageFromCode(code, items[1].Trim());
 
 				var name = items[3].Trim();
-				if (items[2].Contains("P"))
-				{
-					//Skip pejorative 
-				}
-				else if (items[2] == "L")
+
+				if (items[2].Trim() == "L")
 				{
 					while (language.Names.Contains(name))
 						language.Names.Remove(name);
@@ -64,7 +63,19 @@ namespace Palaso.WritingSystems
 				}
 				else
 				{
-					if (!language.Names.Contains(name))
+					if (items[2].Contains("P"))
+					{
+						//Skip pejorative 
+					}
+					else if (items[1].Trim() == ("ET"))
+					{
+						//Skip alternatives for Ethiopia, as per request 
+					}
+					else if (code == "gax" || code == "om")
+					{
+						//For these two "Oromo" languages, skip all related languages as per request 
+					}
+					else if (!language.Names.Contains(name))
 						language.Names.Add(name); //intentionally not lower-casing
 				}
 			}
