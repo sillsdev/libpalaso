@@ -23,7 +23,7 @@ namespace Palaso.Extensions
 		public static string ToISO8601DateAndUTCTimeString(this DateTime  when)
 		{
 			//the invariantCulture here ensures we get what we asked for. Else, we can actually get '.' instead of ':' in the time separators.
-			return when.ToString(TimeFormatNoTimeZone, CultureInfo.InvariantCulture);
+			return when.ToUniversalTime().ToString(TimeFormatNoTimeZone, CultureInfo.InvariantCulture);
 		}
 
 		public static string ToISO8601DateOnlyString(this DateTime when)
