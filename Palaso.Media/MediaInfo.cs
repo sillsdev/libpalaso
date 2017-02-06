@@ -28,10 +28,7 @@ namespace Palaso.Media
 			{
 				Video = new VideoInfo(ffmpegOutput);
 			}
-
 		}
-
-
 
 		///<summary>
 		/// Returns false if it can't find ffmpeg
@@ -96,7 +93,6 @@ namespace Palaso.Media
 				return default(TimeSpan);
 		}
 
-
 		public class AudioInfo
 		{
 
@@ -121,9 +117,10 @@ namespace Palaso.Media
 
 			private void ExtractChannels(string ffmpegOutput)
 			{
-				var match = Regex.Match(ffmpegOutput, ", ([^,]*) channels");
-				if (match.Groups.Count == 2)
+				var regex = new Regex(", ([^,]*) channels");
+				if (regex.IsMatch(ffmpegOutput))
 				{
+					var match = regex.Match(ffmpegOutput);
 					var value = match.Groups[1].Value;
 
 					int channelCount;
@@ -131,6 +128,57 @@ namespace Palaso.Media
 					if (int.TryParse(value, out channelCount))
 					{
 						this.ChannelCount = channelCount;
+					}
+					return;
+				}
+				// older versions (i.e. 9.18 which comes with trusty) have a slightly different
+				// output format
+				regex = new Regex(", (mono|stereo|quad|hexagonal|octagonal|downmix|[2-7].[0-1](\\(.\\))?),");
+				if (regex.IsMatch(ffmpegOutput))
+				{
+					var match = regex.Match(ffmpegOutput);
+					var value = match.Groups[1].Value;
+					switch (value)
+					{
+						case "mono":
+							this.ChannelCount = 1;
+							break;
+						case "stereo":
+						case "downmix":
+							this.ChannelCount = 2;
+							break;
+						case "2.1":
+						case "3.0":
+						case "3.0(back)":
+							this.ChannelCount = 3;
+							break;
+						case "3.1":
+						case "4.0":
+						case "quad":
+						case "quad(side)":
+							this.ChannelCount = 4;
+							break;
+						case "4.1":
+						case "5.0":
+							this.ChannelCount = 5;
+							break;
+						case "5.1":
+						case "6.0":
+						case "6.0(front)":
+						case "hexagonal":
+							this.ChannelCount = 6;
+							break;
+						case "6.1":
+						case "6.1(front)":
+						case "7.0":
+						case "7.0(front)":
+							this.ChannelCount = 7;
+							break;
+						case "7.1":
+						case "7.1(wide)":
+						case "octagonal":
+							this.ChannelCount = 8;
+							break;
 					}
 				}
 			}

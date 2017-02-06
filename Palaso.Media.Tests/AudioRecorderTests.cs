@@ -18,7 +18,7 @@ namespace Palaso.Media.Tests
 	   [Test]
 	   public void Construct_FileDoesNotExist_OK()
 	   {
-		   var x = AudioFactory.AudioSession(Path.GetRandomFileName());
+		   var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName());
 	   }
 
 	   [Test]
@@ -26,7 +26,7 @@ namespace Palaso.Media.Tests
 	   {
 		   using (var f = new TempFile())
 		   {
-			   var x = AudioFactory.AudioSession(f.Path);
+			   var x = AudioFactory.CreateAudioSession(f.Path);
 		   }
 	   }
 
@@ -35,14 +35,14 @@ namespace Palaso.Media.Tests
 	   public void Construct_FileDoesNotExist_DoesNotCreateFile()
 	   {
 		   var path = Path.GetRandomFileName();
-		   var x = AudioFactory.AudioSession(path);
+		   var x = AudioFactory.CreateAudioSession(path);
 		   Assert.IsFalse(File.Exists(path));
 	   }
 
 	   [Test]
 	   public void StopRecording_NotRecording_Throws()
 	   {
-		   var x = AudioFactory.AudioSession(Path.GetRandomFileName());
+		   var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName());
 		Assert.Throws<ApplicationException>(() =>
 x.StopRecordingAndSaveAsWav());
 	   }
@@ -82,14 +82,14 @@ session.Recorder.Play());
 	   [Test]
 	   public void CanRecord_FileDoesNotExist_True()
 	   {
-		   var x = AudioFactory.AudioSession(Path.GetRandomFileName());
+		   var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName());
 		   Assert.IsTrue(x.CanRecord);
 	   }
 
 	   [Test]
 	   public void CanStop_NonExistantFile_False()
 	   {
-		   var x = AudioFactory.AudioSession(Path.GetRandomFileName());
+		   var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName());
 		   Assert.IsFalse(x.CanStop);
 	   }
 
@@ -98,18 +98,18 @@ session.Recorder.Play());
 	   {
 		   using (var f = new TempFile())
 		   {
-			   var x = AudioFactory.AudioSession(f.Path);
+			   var x = AudioFactory.CreateAudioSession(f.Path);
 			   Assert.IsTrue(x.CanRecord);
 		   }
 	   }
 
 	   [Test]
-	   [Platform(Include="Linux", Reason="IrrKlang doesn't throw, so we don't really know")]
+	   [Platform(Exclude="Windows", Reason="IrrKlang doesn't throw, so we don't really know")]
 	   public void Play_FileEmpty_Throws()
 	   {
 		   using (var f = new TempFile())
 		   {
-			   var x = AudioFactory.AudioSession(f.Path);
+			   var x = AudioFactory.CreateAudioSession(f.Path);
 			   Assert.Throws<Exception>(() =>
  x.Play());
 		   }
@@ -118,7 +118,7 @@ session.Recorder.Play());
 	   [Test]
 	   public void Play_FileDoesNotExist_Throws()
 	   {
-		   var x = AudioFactory.AudioSession(Path.GetRandomFileName());
+		   var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName());
 			   Assert.Throws<FileNotFoundException>(() =>
 x.Play());
 	   }
@@ -145,7 +145,7 @@ x.Play());
 			   var oldLength = oldInfo.Length;
 			   Assert.AreEqual(0, oldLength);
 			   var oldTimestamp = oldInfo.LastWriteTimeUtc;
-			   var x = AudioFactory.AudioSession(f.Path);
+			   var x = AudioFactory.CreateAudioSession(f.Path);
 			   x.StartRecording();
 			   Thread.Sleep(1000);
 			   x.StopRecordingAndSaveAsWav();
@@ -160,7 +160,7 @@ x.Play());
 	   {
 		   using (var f = new TempFile())
 		   {
-			   var x = AudioFactory.AudioSession(f.Path);
+			   var x = AudioFactory.CreateAudioSession(f.Path);
 			   x.StartRecording();
 			   Thread.Sleep(100);
 			   Assert.IsTrue(x.IsRecording);
@@ -176,7 +176,7 @@ x.Play());
 			   var w = new BackgroundWorker();
 			   w.DoWork+=new DoWorkEventHandler((o,args)=> SystemSounds.Exclamation.Play());
 
-			   var x = AudioFactory.AudioSession(f.Path);
+			   var x = AudioFactory.CreateAudioSession(f.Path);
 			   x.StartRecording();
 			  w.RunWorkerAsync();
 			   Thread.Sleep(1000);
@@ -199,13 +199,13 @@ x.Play());
 				   var w = new BackgroundWorker();
 				   w.DoWork += new DoWorkEventHandler((o, args) => SystemSounds.Exclamation.Play());
 
-				   var x = AudioFactory.AudioSession(f.Path);
+				   var x = AudioFactory.CreateAudioSession(f.Path);
 				   x.StartRecording();
 				   w.RunWorkerAsync();
 				   Thread.Sleep(1000);
 				   x.StopRecordingAndSaveAsWav();
 
-				   var y = AudioFactory.AudioSession(f.Path);
+				   var y = AudioFactory.CreateAudioSession(f.Path);
 				   y.Play();
 				   Thread.Sleep(1000);
 					y.StopPlaying();
@@ -225,7 +225,7 @@ x.Play());
 		   public RecordingSession()
 		   {
 			   _tempFile = new TempFile();
-			   _recorder = AudioFactory.AudioSession(_tempFile.Path);
+			   _recorder = AudioFactory.CreateAudioSession(_tempFile.Path);
 			   _recorder.StartRecording();
 			   Thread.Sleep(100);
 		   }
@@ -350,7 +350,7 @@ session.Recorder.StartRecording());
 
 	   private ISimpleAudioSession RecordSomething(TempFile f)
 	   {
-		   var x = AudioFactory.AudioSession(f.Path);
+		   var x = AudioFactory.CreateAudioSession(f.Path);
 		   x.StartRecording();
 		   Thread.Sleep(100);
 		   x.StopRecordingAndSaveAsWav();
@@ -361,7 +361,7 @@ session.Recorder.StartRecording());
 		public void Play_DoesPlay ()
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav")) {
-				var x = AudioFactory.AudioSession (file.Path);
+				var x = AudioFactory.CreateAudioSession (file.Path);
 				Assert.DoesNotThrow( () => x.Play() );
 				Assert.DoesNotThrow( () => x.StopPlaying() );
 			}
@@ -372,7 +372,7 @@ session.Recorder.StartRecording());
 		{
 
 			string fpath = "/tmp/dump.ogg";
-			var x = AudioFactory.AudioSession (fpath);
+			var x = AudioFactory.CreateAudioSession (fpath);
 			Assert.DoesNotThrow( () => x.StartRecording() );
 			Assert.IsTrue(x.IsRecording);
 			Thread.Sleep(1000);

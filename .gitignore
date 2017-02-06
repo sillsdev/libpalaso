@@ -35,3 +35,6 @@ Download/
 *.nupkg
 packages/
 lib/xulrunner/
+.idea/
+riderModule.iml
+icu4c.readme.txt
