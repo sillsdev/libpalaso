@@ -66,44 +66,54 @@ cd -
 
 
 # *** Results ***
-# build: palaso-win32-lfmerge Continuous (PalasoWin32lfmergeContinuous)
+# build: palaso-win32-libpalaso-2.6-nostrongname Continuous (PalasoWin32v26nostrongCont)
 # project: libpalaso
-# URL: http://build.palaso.org/viewType.html?buildTypeId=PalasoWin32lfmergeContinuous
+# URL: http://build.palaso.org/viewType.html?buildTypeId=PalasoWin32v26nostrongCont
 # VCS: https://github.com/sillsdev/libpalaso.git []
 # dependencies:
 # [0] build: L10NSharp continuous (bt196)
 #     project: L10NSharp
 #     URL: http://build.palaso.org/viewType.html?buildTypeId=bt196
 #     clean: false
-#     revision: latest.lastSuccessful
 #     revision: l10nsharp-2.0.tcbuildtag
 #     paths: {"L10NSharp.dll"=>"lib/Debug", "L10NSharp.pdb"=>"lib/Debug"}
-#     revision: fw-8.3.tcbuildtag
 #     VCS: https://github.com/sillsdev/l10nsharp [master]
 # [1] build: L10NSharp continuous (bt196)
 #     project: L10NSharp
 #     URL: http://build.palaso.org/viewType.html?buildTypeId=bt196
 #     clean: false
-#     revision: latest.lastSuccessful
 #     revision: l10nsharp-2.0.tcbuildtag
 #     paths: {"L10NSharp.dll"=>"lib/Release", "L10NSharp.pdb"=>"lib/Release"}
-#     revision: fw-8.3.tcbuildtag
 #     VCS: https://github.com/sillsdev/l10nsharp [master]
-# [2] build: TagLib-Sharp Continuous (bt411)
+# [2] build: icucil-win32-default Continuous (bt14)
+#     project: Libraries
+#     URL: http://build.palaso.org/viewType.html?buildTypeId=bt14
+#     clean: false
+#     revision: latest.lastSuccessful
+#     paths: {"*.dll"=>"lib/Release", "*.config"=>"lib/Release"}
+#     VCS: https://github.com/sillsdev/icu-dotnet [master]
+# [3] build: icucil-win32-default Continuous (bt14)
+#     project: Libraries
+#     URL: http://build.palaso.org/viewType.html?buildTypeId=bt14
+#     clean: false
+#     revision: latest.lastSuccessful
+#     paths: {"*.dll"=>"lib/Debug", "*.config"=>"lib/Debug"}
+#     VCS: https://github.com/sillsdev/icu-dotnet [master]
+# [4] build: TagLib-Sharp Continuous (bt411)
 #     project: Libraries
 #     URL: http://build.palaso.org/viewType.html?buildTypeId=bt411
 #     clean: false
 #     revision: latest.lastSuccessful
 #     paths: {"taglib-sharp.dll"=>"lib/Release"}
 #     VCS: https://github.com/sillsdev/taglib-sharp.git [develop]
-# [3] build: TagLib-Sharp Continuous (bt411)
+# [5] build: TagLib-Sharp Continuous (bt411)
 #     project: Libraries
 #     URL: http://build.palaso.org/viewType.html?buildTypeId=bt411
 #     clean: false
 #     revision: latest.lastSuccessful
 #     paths: {"taglib-sharp.dll"=>"lib/Debug"}
 #     VCS: https://github.com/sillsdev/taglib-sharp.git [develop]
-# [4] build: Spart Continuous (bt439)
+# [6] build: Spart Continuous (bt439)
 #     project: Spart
 #     URL: http://build.palaso.org/viewType.html?buildTypeId=bt439
 #     clean: false
@@ -117,20 +127,6 @@ mkdir -p ../lib/Release
 mkdir -p ../lib/common
 
 # download artifact dependencies
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt196/latest.lastSuccessful/L10NSharp.dll ../lib/Release/L10NSharp.dll
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt196/latest.lastSuccessful/L10NSharp.pdb ../lib/Release/L10NSharp.pdb
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt196/latest.lastSuccessful/L10NSharp.dll ../lib/Debug/L10NSharp.dll
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt196/latest.lastSuccessful/L10NSharp.pdb ../lib/Debug/L10NSharp.pdb
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt14/latest.lastSuccessful/icu.net.dll ../lib/Release/icu.net.dll
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt14/latest.lastSuccessful/icudt54.dll ../lib/Release/icudt54.dll
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt14/latest.lastSuccessful/icuin54.dll ../lib/Release/icuin54.dll
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt14/latest.lastSuccessful/icuuc54.dll ../lib/Release/icuuc54.dll
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt14/latest.lastSuccessful/icu.net.dll.config ../lib/Release/icu.net.dll.config
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt14/latest.lastSuccessful/icu.net.dll ../lib/Debug/icu.net.dll
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt14/latest.lastSuccessful/icudt54.dll ../lib/Debug/icudt54.dll
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt14/latest.lastSuccessful/icuin54.dll ../lib/Debug/icuin54.dll
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt14/latest.lastSuccessful/icuuc54.dll ../lib/Debug/icuuc54.dll
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt14/latest.lastSuccessful/icu.net.dll.config ../lib/Debug/icu.net.dll.config
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt196/l10nsharp-2.0.tcbuildtag/L10NSharp.dll ../lib/Debug/L10NSharp.dll
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt196/l10nsharp-2.0.tcbuildtag/L10NSharp.pdb ../lib/Debug/L10NSharp.pdb
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt196/l10nsharp-2.0.tcbuildtag/L10NSharp.dll ../lib/Release/L10NSharp.dll
@@ -145,10 +141,6 @@ copy_auto http://build.palaso.org/guestAuth/repository/download/bt14/latest.last
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt14/latest.lastSuccessful/icuin54.dll ../lib/Debug/icuin54.dll
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt14/latest.lastSuccessful/icuuc54.dll ../lib/Debug/icuuc54.dll
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt14/latest.lastSuccessful/icu.net.dll.config ../lib/Debug/icu.net.dll.config
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt196/fw-8.3.tcbuildtag/L10NSharp.dll ../lib/Release/L10NSharp.dll
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt196/fw-8.3.tcbuildtag/L10NSharp.pdb ../lib/Release/L10NSharp.pdb
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt196/fw-8.3.tcbuildtag/L10NSharp.dll ../lib/Debug/L10NSharp.dll
-copy_auto http://build.palaso.org/guestAuth/repository/download/bt196/fw-8.3.tcbuildtag/L10NSharp.pdb ../lib/Debug/L10NSharp.pdb
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt411/latest.lastSuccessful/taglib-sharp.dll ../lib/Release/taglib-sharp.dll
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt411/latest.lastSuccessful/taglib-sharp.dll ../lib/Debug/taglib-sharp.dll
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt439/latest.lastSuccessful/Spart.dll ../lib/common/Spart.dll
