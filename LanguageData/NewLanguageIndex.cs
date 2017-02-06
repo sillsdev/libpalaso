@@ -14,6 +14,11 @@ namespace LanguageData
 		private readonly Dictionary<string, LanguageInfo> _codeToLanguageIndex = new Dictionary<string, LanguageInfo>();
 		private readonly Dictionary<string, LanguageInfo> _codeToEthnologueData = new Dictionary<string, LanguageInfo>();
 
+		// Completely exclude these language codes
+		private List<string> ExcludedCodes = new List<string> {"gax", "gaz", "hae"};
+		// Exclude alternative names from these regions
+		private List<string> ExcludedRegions = new List<string> { "Ethiopia" };
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NewLanguageIndex"/> class.
 		/// </summary>
@@ -52,8 +57,10 @@ namespace LanguageData
 					code = twoLetterCode;
 
 				//temporary suppression of entries while waiting for Ethnologue changes (those excluded by !)
-				if (code == "gax" || code == "gaz" || code == "hae")
+				if (ExcludedCodes.Contains(code))
+				{
 					continue;
+				}
 
 				string regionCode = items[1].Trim();
 				LanguageInfo language = GetOrCreateLanguageFromCode(code, threelettercode, regionCode == "?" ? "?" : StandardSubtags.RegisteredRegions[regionCode].Name);
@@ -73,7 +80,7 @@ namespace LanguageData
 					{
 						//Skip pejorative
 					}
-					else if (regionCode == ("ET"))
+					else if (ExcludedRegions.Contains(StandardSubtags.RegisteredRegions[regionCode].Name))
 					{
 						//Skip alternatives for Ethiopia, as per request
 					}
@@ -90,19 +97,41 @@ namespace LanguageData
 			IOrderedEnumerable<LanguageSubtag> languages =  StandardSubtags.RegisteredLanguages.OrderBy(lang => lang.Iso3Code);
 			foreach (LanguageSubtag language in languages)
 			{
-				if (language.IsDeprecated)
+				bool singlename = false;
+				if (language.IsDeprecated || ExcludedCodes.Contains(language.Code))
 				{
 					continue;
 				}
 				LanguageInfo langinfo = GetOrCreateLanguageFromCode(language.Code, language.Iso3Code, null);
 				langinfo.DesiredName = language.Name.Replace("'", "’");
 				langinfo.IsMacroLanguage = language.IsMacroLanguage;
+
+				foreach (string country in langinfo.Countries)
+				{
+					if (ExcludedRegions.Contains(country))
+					{
+						singlename = true;
+					}
+				}
+
 				foreach (string name in language.Names)
 				{
 					string langname = name.Replace("'", "’");
 					if (!langinfo.Names.Contains(langname))
 					{
-						langinfo.Names.Add(langname);
+						if (singlename && langinfo.Names.Count == 1)
+						{
+							// leave single ethnologue names
+							break;
+						}
+						else
+						{
+							langinfo.Names.Add(langname);
+						}
+					}
+					if (singlename)
+					{
+						break;
 					}
 				}
 				_codeToLanguageIndex.Add(language.Code, langinfo);

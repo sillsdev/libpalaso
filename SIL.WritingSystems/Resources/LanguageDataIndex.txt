@@ -236,7 +236,7 @@ alr	alr	Alutor	.	Alutor;Alutorskij;Alutor Proper;Aliutor;Alyutor;Olyutor	Russian
 als	als	Tosk Albanian	.	Albanian, Tosk;Tosk, Cham;Tosk, Lab;Tosk, Northern;Çam;Labërisht;Arnaut;Shkip;Shqip;Shqiperë;Skchip;Tosk;Zhgabe;Arvanitika;Camerija;Tosk Albanian	Albania;Greece;Turkey
 alt	alt	Southern Altai	.	Altai, Southern;Altai Proper;Talangit;Teleut;Altai-Kizhi;Altaj Kizi;Chuy;Maina-Kizhi;Southern Altai;Talangit-Tolos;Telengit;Altai;Oirot;Oyrot	Russian Federation
 alu	alu	’Are’are	.	’Are’are;Marau;Marau Sound;Areare	Solomon Islands
-alw	alw	Alaba-K’abeena	.	Alaba-K’abeena;Wanbasana	Ethiopia
+alw	alw	Alaba-K’abeena	.	Alaba-K’abeena	Ethiopia
 alx	alx	Amol	.	Amol;Alang Mol;Arang Mol;Alatil;Aru;Eru;Mol;Oru	Papua New Guinea
 aly	aly	Alyawarr	.	Alyawarr;Aljawara;Alyawarra;Alyawarre;Iliaura;Yowera	Australia
 alz	alz	Alur	.	Alur;Jonam;Ngora;Aloro;Alua;Alulu;Dho Alur;Jo Alur;Lur;Luri;Jokot;Mambisa;Wanyoro	The Democratic Republic of the Congo;Uganda
@@ -1065,7 +1065,7 @@ bwk	bwk	Bauwaki	.	Bauwaki;Bawaki	Papua New Guinea
 bwl	bwl	Bwela	.	Bwela;Buela;Lingi	The Democratic Republic of the Congo
 bwm	bwm	Biwat	.	Biwat;Munduguma;Mundugumor	Papua New Guinea
 bwn	bwn	Wunai Bunu	.	Bunu, Wunai;Hm Nai;Ngnai;Punu;Wunai;Wunai Bunu	China
-bwo	bwo	Boro (Ethiopia)	.	Borna;Boro (Ethiopia);Borna (Ethiopia)	Ethiopia
+bwo	bwo	Boro (Ethiopia)	.	Borna	Ethiopia
 bwp	bwp	Mandobo Bawah	.	Mandobo Bawah;Dumut;Kambon;Mandobbo;Nub	Indonesia
 bwq	bwq	Southern Bobo Madaré	.	Bobo Madaré, Southern;Benge;Sogokiré;Syabéré;Voré;Zara;Bobo Dioula;Bobo Jula;Sya;Black Bobo;Bobo;Bobo Fi;Bobo Fing;Boboda;Southern Bobo Madaré	Burkina Faso
 bwr	bwr	Bura-Pabir	.	Bura-Pabir;Hyil Hawul;Pela;Bura Hyilhawul;Bura Pela;Hill Bura;Plain Bura;Babir;Babur;Barburr;Bourrah;Bura;Burra;Huve;Huviya;Kwojeffa;Mya Bura;Pabir	Nigeria
@@ -1080,7 +1080,7 @@ bxa	bxa	Tairaha	.	Tairaha;Bauro;Haununu;Rawo;Hauhunu;Ravo;Bwauro	Solomon Islands
 bxb	bxb	Belanda Bor	.	Belanda Bor;De Bor	South Sudan
 bxc	bxc	Molengue	.	Molengue;Balengue;Molendji	Equatorial Guinea
 bxd	bxd	Pela	.	Pela;Bela;Bola;Bula;Pala;Polo	China
-bxe	bxe	Birale	.	Ongota;Birale	Ethiopia
+bxe	bxe	Birale	.	Ongota	Ethiopia
 bxf	bxf	Bilur	.	Minigir;Bilur;Birar	Papua New Guinea
 bxg	bxg	Bangala	.	Bangala;Ngala	The Democratic Republic of the Congo
 bxh	bxh	Buhutu	.	Buhutu;Bohutu;Buhulu;Siasiada;Yaleba	Papua New Guinea
@@ -1704,7 +1704,7 @@ dth	dth	Adithinngithigh	.	Adithinngithigh;Adetingiti	Australia
 dti	dti	Ana Tinga Dogon	.	Dogon, Ana Tinga;Ana Tinga Dogon	Mali
 dtk	dtk	Tene Kan Dogon	.	Dogon, Tene Kan;Giwnri Kan;Tene Kan;Tengu Kan;Togo Kan;Woru Kan;Wolu Kan;Tene Tingi;Tene Kan Dogon	Mali
 dtm	dtm	Tomo Kan Dogon	.	Dogon, Tomo Kan;Tomo-Kan;Aa;Aa Bara;Basara;Bongu;Nienne;Tanwan Bara;Tie Bara;Tienwan Ganda;Tomo Kan Dogon	Burkina Faso;Mali
-dtn	dtn	Daatsʼíin	.	Daatsʼíin;Daatsʼíin	Ethiopia
+dtn	dtn	Daatsʼíin	.	Daatsʼíin	Ethiopia
 dto	dto	Tommo So Dogon	.	Dogon, Tommo So;Tombo-So;Tommo So;Tommo So Dogon	Mali
 dtp	dtp	Kadazan Dusun	.	Dusun, Kadazan;Beaufort;Bundu;Coastal Kadazan;Dusun Sinulihan;Kadazan-Tagaro;Kiundu;Kuriyou;Liwan;Luba;Menggatal;Pahu’;Ranau;Sokid;Tambunan Dusun;Tinagas Dusun;Tindal;Tindal Dusun;Dusun;Kadamaian Dusun;Kadazan;Kadazan Tangaa’;Kiulu;Kota Marudu Tinagas;Kuala Monsok Dusun;Membakut Kadazan;Papar Kadazan;Penampang Kadazan;Sinulihan;Tagaro;Taginambur;Talantang;Tambunan;Tampasok;Tampassuk;Telipok;Tempasok;Tempasuk;Tempasuk Dusun;Tinagas;Tinombunan;Ulu Sugut Dusun;Central Dusun;Central Kadazan;Dusan;Dusum;Dusur;Idaan;Kadasan;Kadayan;Kadazandusun;Kedayan;Kadazan Dusun	Malaysia
 dtr	dtr	Lotud	.	Lotud;Dusun Kadayan;Suang Lotud;Suang Olung;Suang Sarayoh;Dusun Lotud	Malaysia
@@ -1997,9 +1997,7 @@ gas	gas	Adiwasi Garasia	.	Garasia, Adiwasi;Adiwasi Girasia;Adiwasi Gujarati;Gira
 gat	gat	Kenati	.	Kenati;Aziana;Ganati;Kenathi	Papua New Guinea
 gau	gau	Mudhili Gadaba	.	Gadaba, Mudhili;Gadaba;Gol Gadaba;Kondekar;Kondko;Mudhili Gadaba	India
 gaw	gaw	Nobonob	.	Nobonob;Ari;A’i;Ati;Butelkud-Guntabak;Garuh;Nobanob;Nobnob	Papua New Guinea
-gax	gax	Borana-Arsi-Guji Oromo	.	Borana-Arsi-Guji Oromo	
 gay	gay	Gayo	.	Gayo;Deret;Lues;Lut;Serbejadi-Lukup;Gajo	Indonesia
-gaz	gaz	West Central Oromo	.	West Central Oromo	
 gba	gba	Gbaya (Central African Republic)	M	Gbaya;Gbaya (Central African Republic)	Central African Republic
 gbb	gbb	Kaytetye	.	Kaytetye;Gaididj;Kaiditj;Kaititj;Kaytej	Australia
 gbd	gbd	Karadjeri	.	Karadjeri;Garadjari;Garadjiri;Garadyari;Gard’are;Guradjara;Karajarri;Karrajarri	Australia
@@ -2310,7 +2308,6 @@ haa	haa	Han	.	Han;Dawson;Han-Kutchin;Moosehide	Canada;United States
 hab	hab	Hanoi Sign Language	.	Hanoi Sign Language	Viet Nam
 hac	hac	Gurani	.	Gurani;Macho;Kakai;Zengana;Kakkai;Gorani;Hawramani;Hawrami;Hewrami;Macho-Zwani;Bewyani;Gawrajuyi;Hawraman i Luhon;Hawraman i Taxt;Kandula;Zardayana;Avromani;Awroman;Awromani;Hourami;Howrami;Ourami	Iraq;Islamic Republic of Iran
 had	had	Hatam	.	Hatam;Adihup;Miriei;Moi;Tinam;Uran;Moire;Atam;Borai;Hattam;Mansim	Indonesia
-hae	hae	Eastern Oromo	.	Eastern Oromo	
 haf	haf	Haiphong Sign Language	.	Haiphong Sign Language	Viet Nam
 hag	hag	Hanga	.	Hanga;Northern Hanga;Southern Hanga;Anga	Ghana
 hah	hah	Hahon	.	Hahon;Aravia;Kurur;Ratsua;Hanon	Papua New Guinea
@@ -3382,10 +3379,10 @@ kwy	kwy	San Salvador Kongo	.	Kongo, San Salvador;Congo;Iwoyo;Kikongo;Kikoongo;Ki
 kwz	kwz	Kwadi	.	Kwadi;Zorotua;Vasorontu;Bakoroka;Cuanhoca;Cuepe;Curoca;Koroka;Makoroko;Mucoroca	Angola
 kxa	kxa	Kairiru	.	Kairiru	Papua New Guinea
 kxb	kxb	Krobu	.	Krobu;Krobou	Côte d'Ivoire
-kxc	kxc	Konso	.	Konso;Khonso	Ethiopia
+kxc	kxc	Konso	.	Konso	Ethiopia
 kxd	kxd	Brunei	.	Brunei;Brunei Malay;Kampong Ayer;Kedayan;Kadaian;Kadayan;Kadian;Kadien;Kadyan;Karayan;Kedien;Kedyan;Kerayan;Brunei-Kadaian;Orang Bukit;Brunai	Brunei Darussalam;Malaysia
 kxf	kxf	Manumanaw Karen	.	Kawyaw;Doloso;Tawkhu;Kayah-Munu;Kayàw;Manö;Manu;Manu Manaw;Manumanaw;Manumanaw Karen;Monu	Myanmar
-kxh	kxh	Karo (Ethiopia)	.	Karo;Karo (Ethiopia)	Ethiopia
+kxh	kxh	Karo (Ethiopia)	.	Karo	Ethiopia
 kxi	kxi	Keningau Murut	.	Murut, Keningau;Ambual;Nabay;Dabai;Dabay;Nabai;Nebee;Rabai;Rabay;Central Murut;Keningau Murut	Malaysia
 kxj	kxj	Kulfa	.	Kulfa;Bara;Kurumi;Koulfa;Kouroumi;Kulfe;Kurmi	Chad
 kxk	kxk	Zayein Karen	.	Zayein;Gaungtou;Khaungtou;Zayein Karen	Myanmar
@@ -3891,7 +3888,7 @@ mdu	mdu	Mboko	.	Mboko;Ngare;Mboxo;Mbuku	Congo
 mdv	mdv	Santa Lucía Monteverde Mixtec	.	Mixtec, Santa Lucía Monteverde;Mixteco de Santa Lucía Monteverde;Mixteco de Yosonotú;Santa Lucía Monteverde Mixtec	Mexico
 mdw	mdw	Mbosi	.	Mbosi;Bunji;Eboi;Ngolo;Olee;Ondinga;Mbonzi;Embosi;Mbochi;Mboshe;Mboshi	Congo
 mdx	mdx	Dizin	.	Dizin	Ethiopia
-mdy	mdy	Male (Ethiopia)	.	Male;Male (Ethiopia)	Ethiopia
+mdy	mdy	Male (Ethiopia)	.	Male	Ethiopia
 mdz	mdz	Suruí Do Pará	.	Suruí do Pará;Aikewara;Akewara;Akewere;Sororos;Suruí;Suruí Do Pará	Brazil
 mea	mea	Menka	.	Menka;Mamwoh;Wando Bando	Cameroon
 meb	meb	Ikobi	.	Ikobi;Dukemi;Gorau;Mena;Pimuru;Upper Kikori Kaser;Upper Turama-Kaser;Utabi;Ikobi Kairi;Ikobi-Mena;Kasere;Kopo-Monia;Meni;Wailemi	Papua New Guinea
@@ -5682,7 +5679,7 @@ sbb	sbb	Simbo	.	Simbo;Madeggusu;Mandeghughusu;Sibo	Solomon Islands
 sbc	sbc	Kele (Papua New Guinea)	.	Kele;Gele’;Kele (Papua New Guinea)	Papua New Guinea
 sbd	sbd	Southern Samo	.	Samo, Southern;Toma;Makaa;Nyaana;San;Sane;Southern Samo	Burkina Faso
 sbe	sbe	Saliba	.	Saliba;Loga	Papua New Guinea
-sbf	sbf	Chabu	.	Shabo;Chabu	Ethiopia
+sbf	sbf	Chabu	.	Shabo	Ethiopia
 sbg	sbg	Seget	.	Seget	Indonesia
 sbh	sbh	Sori-Harengan	.	Sori-Harengan;Harengan;Sori	Papua New Guinea
 sbi	sbi	Seti	.	Seti	Papua New Guinea
@@ -6915,7 +6912,7 @@ wag	wag	Wa’ema	.	Wa’ema;Waiema	Papua New Guinea
 wah	wah	Watubela	.	Watubela;Sulmelang;Tamher Timur;Esiriun;Kasiui;Kasui;Kesui;Matabello;Snabi Watubela;Wesi	Indonesia
 wai	wai	Wares	.	Wares	Indonesia
 waj	waj	Waffa	.	Waffa	Papua New Guinea
-wal	wal	Wolaytta	.	Wolaytta;Wolaitta	Ethiopia
+wal	wal	Wolaytta	.	Wolaytta	Ethiopia
 wam	wam	Wampanoag	.	Wampanoag;Massachusett;Massachusetts;Natick;Wôpanâak	United States
 wan	wan	Wan	.	Wan;Kemu;Miamu;Nwa	Côte d'Ivoire
 wao	wao	Wappo	.	Wappo	United States
@@ -7688,7 +7685,7 @@ zau	zau	Zangskari	.	Zangskari;Zanskari;Zaskari	India
 zav	zav	Yatzachi Zapotec	.	Zapotec, Yatzachi;Villa Alta Zapotec;Zapoteco de Yatzachi;Yatzachi Zapotec	Mexico
 zaw	zaw	Mitla Zapotec	.	Zapotec, Mitla;Santiago Matatlán Zapotec;Matatlán Zapotec;Didxsaj;East Central Tlacolula Zapotec;East Valley Zapotec;Mitla Zapotec	Mexico
 zax	zax	Xadani Zapotec	.	Zapotec, Xadani;Eastern Pochutla Zapotec;Zapoteco de Santa María Xadani;Xadani Zapotec	Mexico
-zay	zay	Zayse-Zergulla	.	Zaysete;Zayse-Zergulla	Ethiopia
+zay	zay	Zayse-Zergulla	.	Zaysete	Ethiopia
 zaz	zaz	Zari	.	Zari;Boto;Zakshi;Bibot;Boot;Kopti;Kwapm;Zaksa;Zariwa	Nigeria
 zbc	zbc	Central Berawan	.	Berawan, Central;Batu Belah Berawan;Long Teru Berawan;Batu Belah;Long Teru;Melawan;Central Berawan	Malaysia
 zbe	zbe	East Berawan	.	Berawan, East;Long Jegan Berawan;Melawan;East Berawan	Malaysia
