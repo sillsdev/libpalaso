@@ -169,6 +169,8 @@ namespace Palaso.Tests.WritingSystems
 			Assert.True(languages.Any(l => l.Names.Contains("Degexit'an")));
 			Assert.True(languages.Any(l => l.Names.Contains("Deg Xinag")));
 			Assert.True(languages.Any(l => l.Names.Contains("Deg Xit'an")));
+			Assert.False(languages.Any(l => l.Names.Contains("Ingalik")));
+			Assert.False(languages.Any(l => l.Names.Contains("Ingalit")));
 			Assert.AreEqual(3, languages[0].Names.Count, "2 of the 5 names are pejorative and should not be listed");
 		}
 
@@ -192,6 +194,9 @@ namespace Palaso.Tests.WritingSystems
 		{
 			var languages = _ethnologue.SuggestLanguages("Oromo").ToArray();
 			Assert.True(languages.All(l => l.DesiredName == "Oromo"));
+			Assert.False(languages.All(l => l.Code.StartsWith("gax")), "suppress gax code");
+			Assert.False(languages.All(l => l.Code.StartsWith("gaz")), "suppress gaz code");
+			Assert.False(languages.All(l => l.Code.StartsWith("hae")), "suppress hae code");
 			Assert.True(languages.All(l => l.Code.StartsWith("om")), "We should be suppressing gax, hae, gaz");
 		}
 	}
