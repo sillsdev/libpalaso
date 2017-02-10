@@ -61,12 +61,14 @@ namespace LanguageData
 				string newiso693 = client.DownloadString("http://www-01.sil.org/iso639-3/iso-639-3.tab");
 				string lastmod_iso693 = client.ResponseHeaders["Last-Modified"];
 
-				_newianasubtags = client.DownloadString("http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry");
-				string lastmod_ianasubtag = client.ResponseHeaders["Last-Modified"];
-
 				client.Encoding = Encoding.UTF8; // ethnologue site currently doesn't specify 2017-01-24
 				_newlanguageindex = client.DownloadString("https://www.ethnologue.com/codes/LanguageIndex.tab");
+				_newlanguageindex = _newlanguageindex.Replace("\r\n", "\n");
 				string lastmod_languageindex = client.ResponseHeaders["Last-Modified"];
+
+				_newianasubtags = client.DownloadString("http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry");
+				_newianasubtags = _newianasubtags.Replace("\r\n", "\n");
+				string lastmod_ianasubtag = client.ResponseHeaders["Last-Modified"];
 
 				Console.WriteLine("IANA subtags last modified: " + lastmod_ianasubtag);
 				Console.WriteLine("Ethnologue index last modified: " + lastmod_languageindex);
@@ -98,7 +100,9 @@ namespace LanguageData
 			_oldtwotothree = File.ReadAllText(Path.Combine (input_dir, @"TwoToThreeCodes.txt"));
 			_oldtwotothree = _oldtwotothree.Replace("\r\n", "\n");
 			_oldlanguageindex = File.ReadAllText(Path.Combine (input_dir, @"LanguageIndex.txt"));
+			_oldlanguageindex = _oldlanguageindex.Replace("\r\n", "\n");
 			_oldianasubtags = File.ReadAllText(Path.Combine (input_dir, @"ianaSubtagRegistry.txt"));
+			_oldianasubtags = _oldianasubtags.Replace("\r\n", "\n");
 		}
 		public bool CheckSourcesAreDifferent()
 		{

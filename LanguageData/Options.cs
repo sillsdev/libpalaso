@@ -22,6 +22,9 @@ namespace LanguageData
 		[Option('o', "output", DefaultValue = "LanguageDataIndex.txt", HelpText = "Output file to write.")]
 		public string OutputFile { get; set; }
 
+		[Option('j', "json", DefaultValue = false, HelpText = "Output json file as well as text.")]
+		public bool Json { get; set; }
+
 		[Option('g', "get", DefaultValue = false, HelpText = "Get fresh source files.")]
 		public bool GetFresh { get; set; }
 
