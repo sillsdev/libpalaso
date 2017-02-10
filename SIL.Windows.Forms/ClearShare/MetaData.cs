@@ -729,6 +729,8 @@ namespace SIL.Windows.Forms.ClearShare
 			if (!string.IsNullOrEmpty(License.Url))
 				b.AppendLine(License.Url);
 			b.AppendLine(License.GetDescription(languagePriorityIds, out idOfLanguageUsed));
+			if (!String.IsNullOrWhiteSpace(License.RightsStatement))
+				b.AppendLine(License.RightsStatement);
 			return b.ToString();
 		}
 
