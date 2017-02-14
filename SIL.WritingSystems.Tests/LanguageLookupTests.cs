@@ -186,11 +186,10 @@ namespace SIL.WritingSystems.Tests
 			var lookup = new LanguageLookup();
 			var languages = lookup.SuggestLanguages("Wolaytta").ToArray();
 			Assert.True(languages.Any(l => l.Names.Contains("Wolaytta")));
-			Assert.True(languages.Any(l => l.Names.Contains("Wolaitta")));
-			Assert.AreEqual(2, languages[0].Names.Count, "Should only list the names in the IANA subtag registry for Ethiopian languages.");
+			Assert.AreEqual(1, languages[0].Names.Count, "Should only list the first name in the IANA subtag registry for Ethiopian languages.");
 			languages = lookup.SuggestLanguages("Qimant").ToArray();
 			Assert.True(languages.Any(l => l.Names.Contains("Qimant")));
-			Assert.AreEqual(1, languages[0].Names.Count, "Should only list the names in the IANA subtag registry for Ethiopian languages.");
+			Assert.AreEqual(1, languages[0].Names.Count, "Should only list the first name in the IANA subtag registry for Ethiopian languages.");
 		}
 
 		/// <summary>
@@ -202,7 +201,13 @@ namespace SIL.WritingSystems.Tests
 			var lookup = new LanguageLookup();
 			var languages = lookup.SuggestLanguages("Oromo").ToArray();
 			Assert.True(languages.All(l => l.DesiredName == "Oromo"));
-			Assert.True(languages.All(l => l.LanguageTag.StartsWith("om")), "We should be suppressing gat, hae, gaz");
+			Assert.True(languages.All(l => l.LanguageTag.StartsWith("om")), "We should be suppressing gax, hae, gaz");
+			languages = lookup.SuggestLanguages("gax").ToArray();
+			Assert.False(languages.Any(l => l.LanguageTag == "gax"));
+			languages = lookup.SuggestLanguages("gaz").ToArray();
+			Assert.False(languages.Any(l => l.LanguageTag == "gaz"));
+			languages = lookup.SuggestLanguages("hae").ToArray();
+			Assert.False(languages.Any(l => l.LanguageTag == "hae"));
 		}
 
 		/// <summary>
