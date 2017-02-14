@@ -349,6 +349,32 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			Assert.AreEqual("SIL International", m.GetCopyrightBy());
 		}
 
+		[Test]
+		public void GetCopyrightInfo_ArtOfReading_ReturnsCopyrightInfo()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "Copyright, SIL International 2009. ";	// (from AOR_Cat3.png)
+			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+			Assert.AreEqual("2009", m.GetCopyrightYear());
+		}
+
+		[Test]
+		public void GetCopyrightInfo_Vaccinations_ReturnsCopyrightInfo()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "Copyright SIL Papua New Guinea 1996";
+			Assert.AreEqual("SIL Papua New Guinea", m.GetCopyrightBy());
+			Assert.AreEqual("1996", m.GetCopyrightYear());
+		}
+
+		[Test]
+		public void GetCopyrightInfo_StoryPrimer_ReturnsCopyrightInfo()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "Copyright SIL Australia and the Literacy Association of the Solomon Islands (LASI) 2014";
+			Assert.AreEqual("SIL Australia and the Literacy Association of the Solomon Islands (LASI)", m.GetCopyrightBy());
+			Assert.AreEqual("2014", m.GetCopyrightYear());
+		}
 
 		[Test]
 		public void GetCopyrightYear_HasCopyrightAndSymbolAndComma_ReturnsCopyrightYear()

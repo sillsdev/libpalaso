@@ -783,7 +783,7 @@ namespace SIL.Windows.Forms.ClearShare
 		}
 
 		const string kCopyrightPattern = @"\D*(?<year>\d\d\d\d)?(,\s)?(?<by>.+)?";
-		const string kNoYearPattern = @"([cC]opyright\s+)?(COPYRIGHT\s+)?\©?\s*(?<by>.+)";
+		const string kNoYearPattern = @"([cC]opyright,?\s+)?(COPYRIGHT,?\s+)?\©?\s*(?<by>.+)";
 		private const string kNsCollections = "http://www.metadataworkinggroup.com/schemas/collections/";
 		private const string kNsCc = "http://creativecommons.org/ns#";
 
@@ -807,8 +807,21 @@ namespace SIL.Windows.Forms.ClearShare
 			{
 				m = Regex.Match(CopyrightNotice, kNoYearPattern);
 			}
+			var trimChars = new char[] { ' ', '\t', ',', '.', ':', ';' };
+			var by0 = m.Groups["by"].Value.Trim(trimChars);
+			if (!String.IsNullOrEmpty(by0))
+				return by0;
 
-			return m.Groups["by"].Value.Trim();
+			// Okay, maybe we can get this by deleting the Copyright word or symbol and the year.
+			m = Regex.Match(CopyrightNotice, kNoYearPattern);
+			var by1 = m.Groups["by"].Value.Trim();
+			if (String.IsNullOrEmpty(by1))
+				by1 = CopyrightNotice;
+			m = Regex.Match(by1, @"(?<year>\d\d\d\d)");
+			if (m.Groups["year"].Success)
+				by1 = by1.Replace(m.Groups["year"].Value, "");
+			by1 = by1.Trim(trimChars);
+			return by1;
 		}
 
 		/// <summary>
