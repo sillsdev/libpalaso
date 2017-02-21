@@ -28,11 +28,7 @@ namespace Palaso.Xml
 			{
 				CheckCharacters = false,
 				ConformanceLevel = conformanceLevel,
-#if NET_4_0 && !__MonoCS__
 				DtdProcessing = DtdProcessing.Parse,
-#else
-				ProhibitDtd = true,
-#endif
 				ValidationType = ValidationType.None,
 				CloseInput = true,
 				IgnoreWhitespace = true
@@ -65,22 +61,25 @@ namespace Palaso.Xml
 		/// This formats with new line on attributes, indents with tab, and encoded in UTF8 with no BOM.
 		/// </remarks>
 		/// <param name="conformanceLevel">Document|Fragment</param>
+		/// <param name = "newLineHandling">Indicates how to normalize line breaks in the output.</param>
 		///<returns>XmlWriterSettings</returns>
-		public static XmlWriterSettings CreateXmlWriterSettings(ConformanceLevel conformanceLevel)
+		public static XmlWriterSettings CreateXmlWriterSettings(ConformanceLevel conformanceLevel,
+			NewLineHandling newLineHandling = NewLineHandling.Replace)
 		{
-			var settings = new XmlWriterSettings
-							   {
-								   NewLineOnAttributes = true,              // New line for each attribute, saves space on a typical Chorus changeset.
-								   Indent = true,                           // Indent entities
-								   IndentChars = "\t",                      // Tabs for the indent
-								   CheckCharacters = false,
-								   Encoding = new UTF8Encoding(false),      // UTF8 without a BOM.
-								   CloseOutput = true,                      // Close the underlying stream on Close.  This is not the default.
-								   ConformanceLevel = conformanceLevel,
-								   NewLineChars = "\r\n",                   // Use /r/n for our end of lines
-								   NewLineHandling = NewLineHandling.None,  // Assume that the input is as written /r/n
-								   OmitXmlDeclaration = false               // The default, an xml declaration is written
-							   };
+			var settings = new XmlWriterSettings {
+				NewLineOnAttributes = true,              // New line for each attribute, saves space on a typical Chorus changeset.
+				Indent = true,                           // Indent entities
+				IndentChars = "\t",                      // Tabs for the indent
+				CheckCharacters = false,
+				Encoding = new UTF8Encoding(false),      // UTF8 without a BOM.
+				CloseOutput = true,                      // Close the underlying stream on Close.  This is not the default.
+				ConformanceLevel = conformanceLevel,
+				NewLineChars = "\r\n",                   // Use /r/n for our end of lines
+				// NOTE: .NET and Mono (3.4) behave differently with NewLineHandling.Replace when calling XmlWriter.WriteRaw():
+				// .NET will still replace line endings whereas Mono will write the data as-is.
+				NewLineHandling = newLineHandling,  // Normalize line endings
+				OmitXmlDeclaration = false               // The default, an xml declaration is written
+			};
 			return settings;
 		}
 

@@ -47,11 +47,11 @@ namespace SIL.Archiving.Generic
 				{
 					if (Palaso.PlatformUtilities.Platform.IsLinux)
 					{
-						if (folderName.StartsWith("/var/lib/SIL/"))
+						if (folderName.StartsWith("/var/lib/SIL"))
 						{
 							// by default /var/lib isn't writable on Linux, so we can't create a new
 							// directory. Create a folder in the user's home directory instead.
-							var endFolder = folderName.Substring("/var/lib/SIL/".Length);
+							var endFolder = folderName.Substring("/var/lib/SIL".Length).TrimStart('/');
 							folderName = Path.Combine(
 								Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
 								"SIL", endFolder);
