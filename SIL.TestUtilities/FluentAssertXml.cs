@@ -46,7 +46,7 @@ namespace SIL.TestUtilities
 
 		/// <summary>
 		/// Assert functional equivalence of two XML strings while ignoring whitespace
-		/// 
+		///
 		/// May fail if XML header is different.  Also, see warning in CanonicalXml.
 		/// </summary>
 		/// <param name="xml"></param>
@@ -67,12 +67,12 @@ namespace SIL.TestUtilities
 		/// <summary>
 		/// Assert node-by-node equivalence of two XML strings
 		/// This will ignore irrelevant whitespace.
-		/// 
+		///
 		/// The only known difference between this method and EqualsIgnoreWhitespace
 		/// is this completely ignores the encoding set in the header.
 		/// However, given the difference of implementation, other differences could exist.
-		/// 
-		/// Additionally, the output of a failed test is much less useful here than 
+		///
+		/// Additionally, the output of a failed test is much less useful here than
 		/// the character-by-character comparison achieved by EqualsIgnoreWhitespace.
 		/// </summary>
 		/// <param name="xml"></param>
@@ -170,18 +170,31 @@ namespace SIL.TestUtilities
 		/// </summary>
 		public void HasSpecifiedNumberOfMatchesForXpath(string xpath, int count, XmlNamespaceManager nameSpaceManager = null)
 		{
+			HasSpecifiedNumberOfMatchesForXpath(xpath, count, true, nameSpaceManager);
+		}
+
+		/// <summary>
+		/// Will honor default namespace
+		/// </summary>
+		public void HasSpecifiedNumberOfMatchesForXpath(string xpath, int count, bool verbose, XmlNamespaceManager nameSpaceManager = null)
+		{
 			var nodes = nameSpaceManager == null ? NodeOrDom.SafeSelectNodes(xpath) : NodeOrDom.SafeSelectNodes(xpath, nameSpaceManager);
 			if (nodes==null)
 			{
-				Console.WriteLine("Expected {0} but got 0 matches for {1}",count,  xpath);
-				PrintNodeToConsole(NodeOrDom);
-				Assert.AreEqual(count,0);
+				if (count > 0)
+				{
+					Console.WriteLine("Expected {0} but got 0 matches for {1}", count,  xpath);
+					if (verbose)
+						PrintNodeToConsole(NodeOrDom);
+				}
+				Assert.AreEqual(count, 0);
 			}
 			else if (nodes.Count != count)
 			{
-				Console.WriteLine("Expected {0} but got {1} matches for {2}",count, nodes.Count, xpath);
-				PrintNodeToConsole(NodeOrDom);
-				Assert.AreEqual(count, nodes.Count, "matches for "+xpath);
+				Console.WriteLine("Expected {0} but got {1} matches for {2}", count, nodes.Count, xpath);
+				if (verbose)
+					PrintNodeToConsole(NodeOrDom);
+				Assert.AreEqual(count, nodes.Count, "matches for " + xpath);
 			}
 		}
 
