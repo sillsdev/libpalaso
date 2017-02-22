@@ -785,8 +785,8 @@ namespace SIL.WritingSystems.Tests
 				adaptor.Read(tempFile.Path, wsFromLdml);
 				Assert.That(wsFromLdml.Variants, Is.EqualTo(new[]
 				{
-					new VariantSubtag("private", "private", true, new List<string>()),
-					new VariantSubtag("use", "", true, new List<string>())
+					new VariantSubtag("private", "private", true, false, new List<string>()),
+					new VariantSubtag("use", "", true, false, new List<string>())
 				}));
 			}
 		}

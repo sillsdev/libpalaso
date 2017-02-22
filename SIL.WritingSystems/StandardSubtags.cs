@@ -129,13 +129,13 @@ namespace SIL.WritingSystems
 						languages.Add(new LanguageSubtag(subtag, description, false, iso3Code, descriptions, macrolanguage, deprecated));
 						break;
 					case "script":
-						scripts.Add(new ScriptSubtag(subtag, description, false));
+						scripts.Add(new ScriptSubtag(subtag, description, false, deprecated));
 						break;
 					case "region":
-						regions.Add(new RegionSubtag(subtag, description, false));
+						regions.Add(new RegionSubtag(subtag, description, false, deprecated));
 						break;
 					case "variant":
-						variants.Add(new VariantSubtag(subtag, description, false, GetVariantPrefixes(subTagComponents)));
+						variants.Add(new VariantSubtag(subtag, description, false, deprecated, GetVariantPrefixes(subTagComponents)));
 						break;
 				}
 			}
