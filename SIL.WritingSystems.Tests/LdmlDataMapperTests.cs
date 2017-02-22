@@ -903,10 +903,12 @@ namespace SIL.WritingSystems.Tests
 				//Create an ldml file to read
 				var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
+				ws.DateModified = new DateTime(01, 01, 01, 0, 0, 0, DateTimeKind.Utc);
 				adaptor.Write(file.Path, ws, null);
 
 				//change the read writing system and write it out again
 				var ws2 = new WritingSystemDefinition();
+				ws2.DateModified = new DateTime(01, 01, 01, 0, 0, 0, DateTimeKind.Utc);
 				adaptor.Read(file.Path, ws2);
 				ws2.Region = "US";
 				adaptor.Write(file.Path, ws2, new MemoryStream(File.ReadAllBytes(file.Path)));
