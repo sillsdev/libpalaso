@@ -11,10 +11,11 @@ namespace SIL.WritingSystems
 		private readonly string _code;
 		private readonly string _name;
 		private readonly bool _isPrivateUse;
+		private readonly bool _isDeprecated;
 		private readonly int _hashCode;
 
-		protected Subtag(string code, bool isPrivateUse)
-			: this(code, null, isPrivateUse)
+		protected Subtag(string code, bool isPrivateUse, bool isDeprecated)
+			: this(code, null, isPrivateUse, isDeprecated)
 		{
 		}
 
@@ -24,7 +25,7 @@ namespace SIL.WritingSystems
 		/// <param name="code">The code.</param>
 		/// <param name="name">The name.</param>
 		/// <param name="isPrivateUse">if set to <c>true</c> this is a private use subtag.</param>
-		protected Subtag(string code, string name, bool isPrivateUse)
+		protected Subtag(string code, string name, bool isPrivateUse, bool isDeprecated)
 		{
 			if (code == null)
 				throw new ArgumentNullException("code");
@@ -34,6 +35,7 @@ namespace SIL.WritingSystems
 			_code = code;
 			_name = name;
 			_isPrivateUse = isPrivateUse;
+			_isDeprecated = isDeprecated;
 
 			_hashCode = 23;
 			_hashCode = _hashCode * 31 + _code.ToLowerInvariant().GetHashCode();
@@ -76,6 +78,12 @@ namespace SIL.WritingSystems
 		{
 			get { return _isPrivateUse; }
 		}
+
+		/// <summary>
+		/// Gets a value indicating whether this tag is deprecated.
+		/// </summary>
+		/// <c>true</c> if this tag is deprecated and should not be used; otherwise, <c>false</c>.
+		public bool IsDeprecated { get {return _isDeprecated;} }
 
 		/// <summary>
 		/// Determines whether the specified <see cref="T:System.Object"/> is equal to this instance.
