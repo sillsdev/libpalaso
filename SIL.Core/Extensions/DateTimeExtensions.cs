@@ -9,7 +9,7 @@ using System.Threading;
 namespace SIL.Extensions
 {
 	public static class DateTimeExtensions
-	{	
+	{
 		/// <summary>
 		/// We expect to handle ISO 8601 format.  CVS format is deprecated
 		/// </summary>
@@ -29,7 +29,7 @@ namespace SIL.Extensions
 
 		public static string ToISO8601TimeFormatWithUTCString(this DateTime when)
 		{
-			return when.ToString(ISO8601TimeFormatWithUTC, CultureInfo.InvariantCulture);
+			return when.ToUniversalTime().ToString(ISO8601TimeFormatWithUTC, CultureInfo.InvariantCulture);
 		}
 
 		public static string ToISO8601TimeFormatNoTimeZoneString(this DateTime when)
@@ -46,9 +46,9 @@ namespace SIL.Extensions
 		{
 			var formats = new string[]
 								  {
-									  ISO8601TimeFormatNoTimeZone, 
-									  ISO8601TimeFormatWithTimeZone, 
-									  ISO8601TimeFormatWithUTC, 
+									  ISO8601TimeFormatNoTimeZone,
+									  ISO8601TimeFormatWithTimeZone,
+									  ISO8601TimeFormatWithUTC,
 									  ISO8601TimeFormatDateOnly
 								  };
 			try
@@ -83,20 +83,20 @@ namespace SIL.Extensions
 
 //		/// <summary>
 //		/// if we can't parse it, we stick in the min value & write a warning to the progress
-//        /// </summary>
+//		/// </summary>
 //
-//        public static DateTime ParseDateTimePermissivelyWithFallbackToDefaultAndWarningToProgress(string when, IProgress progress)
-//        {
-//            try
-//            {
-//                return ParseDateTimePermissivelyWithException(when);
-//            }
-//            catch (Exception error)
-//            {
-//                progress.WriteWarning(error.Message);
-//                return default(DateTime);
-//            }
-//        }
+//		public static DateTime ParseDateTimePermissivelyWithFallbackToDefaultAndWarningToProgress(string when, IProgress progress)
+//		{
+//			try
+//			{
+//				return ParseDateTimePermissivelyWithException(when);
+//			}
+//			catch (Exception error)
+//			{
+//				progress.WriteWarning(error.Message);
+//				return default(DateTime);
+//			}
+//		}
 
 		/// <summary>
 		/// We have this permsissive business because we released versions of SayMore which used the local
@@ -175,7 +175,7 @@ namespace SIL.Extensions
 			if (string.IsNullOrEmpty(value))
 				return false;
 
-			if (!Regex.IsMatch(value, @"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z?$") && 
+			if (!Regex.IsMatch(value, @"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z?$") &&
 				!Regex.IsMatch(value, @"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:?\d{2}$"))
 				return false;
 
