@@ -16,7 +16,7 @@ namespace SIL.WritingSystems
 		/// <param name="code">The code.</param>
 		/// <param name="name">The name.</param>
 		public VariantSubtag(string code, string name = null)
-			: this(code, name, true, Enumerable.Empty<string>())
+			: this(code, name, true, false, Enumerable.Empty<string>())
 		{
 		}
 
@@ -26,9 +26,10 @@ namespace SIL.WritingSystems
 		/// <param name="code">The code.</param>
 		/// <param name="name">The name.</param>
 		/// <param name="isPrivateUse">if set to <c>true</c> this is a private use subtag.</param>
+		/// <param name="isDeprecated">if set to <c>true</c> this is a deprecated subtag.</param>
 		/// <param name="prefixes">The prefixes.</param>
-		internal VariantSubtag(string code, string name, bool isPrivateUse, IEnumerable<string> prefixes)
-			: base(code, name, isPrivateUse)
+		internal VariantSubtag(string code, string name, bool isPrivateUse, bool isDeprecated, IEnumerable<string> prefixes)
+			: base(code, name, isPrivateUse, isDeprecated)
 		{
 			_prefixes = new HashSet<string>(prefixes);
 		}
@@ -39,7 +40,7 @@ namespace SIL.WritingSystems
 		/// <param name="subtag">The subtag.</param>
 		/// <param name="name">The name.</param>
 		public VariantSubtag(VariantSubtag subtag, string name)
-			: this(subtag.Code, name, subtag.IsPrivateUse, subtag._prefixes)
+			: this(subtag.Code, name, subtag.IsPrivateUse, subtag.IsDeprecated, subtag._prefixes)
 		{
 		}
 

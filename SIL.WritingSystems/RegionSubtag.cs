@@ -8,17 +8,17 @@
 		/// <param name="code">The code.</param>
 		/// <param name="name">The name.</param>
 		public RegionSubtag(string code, string name = null)
-			: base(code, name, true)
+			: base(code, name, true, false)
 		{
 		}
 
-		internal RegionSubtag(string code, string name, bool isPrivateUse)
-			: base(code, name, isPrivateUse)
+		internal RegionSubtag(string code, string name, bool isPrivateUse, bool isDeprecated)
+			: base(code, name, isPrivateUse, isDeprecated)
 		{
 		}
 
 		public RegionSubtag(RegionSubtag subtag, string name)
-			: this(subtag.Code, name, subtag.IsPrivateUse)
+			: this(subtag.Code, name, subtag.IsPrivateUse, subtag.IsDeprecated)
 		{
 		}
 
