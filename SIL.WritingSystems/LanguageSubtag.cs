@@ -15,7 +15,7 @@ namespace SIL.WritingSystems
 		/// <param name="code">The code.</param>
 		/// <param name="name">The name.</param>
 		public LanguageSubtag(string code, string name = null)
-			: base(code, name, true)
+			: base(code, name, true, false)
 		{
 			 Names = new List<string>();
 		}
@@ -31,12 +31,11 @@ namespace SIL.WritingSystems
 		/// <param name="isMacroLanguage">if set to <c>true</c> this is a macrolanguage.</param>
 		/// <param name="isDeprecated">if set to <c>true</c> this subtag is deprecated and should not be used.</param>
 		internal LanguageSubtag(string code, string name, bool isPrivateUse, string iso3Code, List<string> descriptions, bool isMacroLanguage, bool isDeprecated)
-			: base(code, name, isPrivateUse)
+			: base(code, name, isPrivateUse, isDeprecated)
 		{
 			_iso3Code = iso3Code;
 			Names = descriptions;
 			IsMacroLanguage = isMacroLanguage;
-			IsDeprecated = isDeprecated;
 		}
 
 		/// <summary>
@@ -47,7 +46,7 @@ namespace SIL.WritingSystems
 		/// <param name="isPrivateUse">if set to <c>true</c> this is a private use subtag.</param>
 		/// <param name="iso3Code">The ISO 639-3 language code.</param>
 		internal LanguageSubtag(string code, string name, bool isPrivateUse, string iso3Code)
-			: base(code, name, isPrivateUse)
+			: base(code, name, isPrivateUse, false)
 		{
 			Names = new List<string>();
 			_iso3Code = iso3Code;
@@ -84,12 +83,6 @@ namespace SIL.WritingSystems
 		/// </summary>
 		/// <c>true</c> if this is a macrolanguage; otherwise, <c>false</c>.
 		public bool IsMacroLanguage { get; private set; }
-
-		/// <summary>
-		/// Gets a value indicating whether this tag is deprecated.
-		/// </summary>
-		/// <c>true</c> if this tag is deprecated and should not be used; otherwise, <c>false</c>.
-		public bool IsDeprecated { get; private set; }
 
 		public static implicit operator LanguageSubtag(string code)
 		{
