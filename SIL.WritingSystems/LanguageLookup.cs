@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SIL.Code;
 using SIL.Text;
 
 namespace SIL.WritingSystems
@@ -68,6 +69,18 @@ namespace SIL.WritingSystems
 				_nameToLanguageIndex.Add(name, languages);
 			}
 			return languages;
+		}
+
+		/// <summary>
+		/// Just lookup the code in the index.
+		/// </summary>
+		/// <returns>null if not found</returns>
+		public LanguageInfo GetLanguageFromCode(string isoCode)
+		{
+			Guard.AgainstNullOrEmptyString(isoCode, "Parameter to GetLanguageFromCode must not be null or empty.");
+			LanguageInfo languageInfo = null;
+			_codeToLanguageIndex.TryGetValue(isoCode, out languageInfo);
+			return languageInfo;
 		}
 
 		/// <summary>
