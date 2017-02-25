@@ -271,5 +271,20 @@ namespace SIL.WritingSystems.Tests
 			languages = lookup.SuggestLanguages("twi").ToArray();
 			Assert.True(languages.Any(l => l.DesiredName == "Twi"));
 		}
+
+		[Test]
+		public void GetLanguageFromCode_CodeNotFound_ReturnsNull()
+		{
+			var lookup = new LanguageLookup();
+			Assert.IsNull(lookup.GetLanguageFromCode("foobar"));
+		}
+
+		[Test]
+		public void GetLanguageFromCode_CodeFound_ReturnsMatchingLanguageInfo()
+		{
+			var lookup = new LanguageLookup();
+			Assert.AreEqual("etr", lookup.GetLanguageFromCode("etr").LanguageTag);
+			Assert.AreEqual("English", lookup.GetLanguageFromCode("en").DesiredName);
+		}
 	}
 }
