@@ -45,7 +45,7 @@ namespace SIL.DictionaryServices.Lift
 		///
 		/// </summary>
 		/// <param name="path"></param>
-		/// <param name="includeByteOrderMark">PrinceXML (at least v7 chokes if given a BOM, Lexique Pro chokes without it) </param>
+		/// <param name="byteOrderStyle">PrinceXML (at least v7 chokes if given a BOM, Lexique Pro chokes without it) </param>
 		public LiftWriter(string path, ByteOrderStyle byteOrderStyle)
 			: this()
 		{
@@ -60,7 +60,7 @@ namespace SIL.DictionaryServices.Lift
 		public LiftWriter(StringBuilder builder, bool produceFragmentOnly): this()
 		{
 			_writer = XmlWriter.Create(builder, CanonicalXmlSettings.CreateXmlWriterSettings(
-				produceFragmentOnly ? ConformanceLevel.Fragment : ConformanceLevel.Document)
+				produceFragmentOnly ? ConformanceLevel.Fragment : ConformanceLevel.Document, NewLineHandling.None)
 			);
 			if (!produceFragmentOnly)
 			{

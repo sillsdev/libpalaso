@@ -290,7 +290,6 @@ namespace SIL.Text
 		/// just for deserialization
 		/// </summary>
 		[XmlElement(typeof (LanguageForm), ElementName="form")]
-
 		public LanguageForm[] Forms
 		{
 			get

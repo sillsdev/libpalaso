@@ -10,6 +10,25 @@ namespace SIL.Tests.Extensions
 	public class DateTimeExtensionTests
 	{
 		[Test]
+		public void ToISO8601TimeFormatWithUTCString_ReturnsTimeInUTC()
+		{
+			var dateTime = DateTime.Parse("2017-02-20T12:08:09+03:00");
+			Assert.That(dateTime.ToISO8601TimeFormatWithUTCString(),
+				Is.EqualTo("2017-02-20T09:08:09Z"));
+		}
+
+		[TestCase(DateTimeKind.Local)]
+		[TestCase(DateTimeKind.Utc)]
+		[TestCase(DateTimeKind.Unspecified)]
+		public void ToISO8601TimeFormatWithUTCString_DifferentInputKind_ReturnsTimeInUTC(DateTimeKind kind)
+		{
+			var dateTime = new DateTime(2017, 02, 20, 17, 18, 19, kind);
+			Assert.That(dateTime.ToISO8601TimeFormatWithUTCString(),
+				Is.EqualTo(dateTime.ToUniversalTime()
+					.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture)));
+		}
+
+		[Test]
 		public void ToISO8601XTimeString_CultureUsesPeriods_OutputsWithColons()
 		{
 			//simulate the culture that was messing us up

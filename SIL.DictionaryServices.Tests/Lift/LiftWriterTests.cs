@@ -1743,6 +1743,8 @@ namespace SIL.DictionaryServices.Tests.Lift
 		[Test]
 		public void Add_TextWithSpanAndMeaningfulWhiteSpace_FormattingAndWhitespaceIsUntouched()
 		{
+			// REVIEW (EberhardB): does it really make sense to preserve the line endings? It seems
+			// that for a text node line endings should be standardized.
 			const string formattedText = "\rThis's <span href=\"reference\">\n is a\t\t\n\r\t span</span> with annoying whitespace!\r\n";
 			const string expected = "<form\r\n\tlang=\"de\">\r\n\t<text>" + formattedText + "</text>\r\n</form>";
 			using (var session = new LiftExportAsFragmentTestSession())

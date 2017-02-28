@@ -198,12 +198,19 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <ItemGroup  Condition="'$(OS)'!='Windows_NT'">
+    <Reference Include="L10NSharp">
+      <HintPath>..\lib\ReleaseMono\L10NSharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup  Condition="'$(OS)'=='Windows_NT'">
+    <Reference Include="L10NSharp">
+      <HintPath>..\lib\Release\L10NSharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="Ionic.Zip">
       <HintPath>..\lib\Ionic.Zip.dll</HintPath>
-    </Reference>
-    <Reference Include="L10NSharp">
-      <HintPath>..\lib\Release\L10NSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
