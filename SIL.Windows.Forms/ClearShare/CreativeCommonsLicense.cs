@@ -249,7 +249,9 @@ namespace SIL.Windows.Forms.ClearShare
 			}
 			form = form.TrimEnd(new char[] { '-' });
 
-			return form + " " + (IntergovernmentalOriganizationQualifier ? "IGO " : "") + Version ;
+			var additionalRights = (RightsStatement != null ? ". " + RightsStatement : "");
+			return (form + " " + (IntergovernmentalOriganizationQualifier ? "IGO " : "") + Version + additionalRights).Trim();
+			;
 		}
 
 		/// <summary>
