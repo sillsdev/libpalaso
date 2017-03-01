@@ -726,9 +726,11 @@ namespace SIL.Windows.Forms.ClearShare
 				b.AppendLine(CollectionName);
 			if (!string.IsNullOrEmpty(CollectionUri))
 				b.AppendLine(CollectionUri);
-			if (!string.IsNullOrEmpty(License.Url))
+			var description = License.GetDescription(languagePriorityIds, out idOfLanguageUsed);
+			// BL-4243, Description for CC usually contains the url already.
+			if (!string.IsNullOrEmpty(License.Url) && !description.Contains(License.Url))
 				b.AppendLine(License.Url);
-			b.AppendLine(License.GetDescription(languagePriorityIds, out idOfLanguageUsed));
+			b.AppendLine(description);
 			if (!String.IsNullOrWhiteSpace(License.RightsStatement))
 				b.AppendLine(License.RightsStatement);
 			return b.ToString();
