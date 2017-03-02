@@ -441,7 +441,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			};
 
 			string idOfLanguageUsedForLicense;
-			Assert.AreEqual("Jane Doe, My Collection, Please attribute nicely, © 2014 SIL", m.MinimalCredits(new[] {"en"}, out idOfLanguageUsedForLicense));
+			Assert.AreEqual("Jane Doe, My Collection, © 2014 SIL. Please attribute nicely", m.MinimalCredits(new[] {"en"}, out idOfLanguageUsedForLicense));
 		}
 		[Test]
 		public void MinimalCredits_OnlyCopyright()
@@ -465,7 +465,24 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			};
 
 			string idOfLanguageUsedForLicense;
-			Assert.AreEqual("My Collection, CC-BY-SA IGO 3.0, © 2014 SIL", m.MinimalCredits(new[] { "en" }, out idOfLanguageUsedForLicense));
+			Assert.AreEqual("My Collection, © 2014 SIL. CC-BY-SA IGO 3.0", m.MinimalCredits(new[] { "en" }, out idOfLanguageUsedForLicense));
+		}
+
+		[Test]
+		public void MinimalCredits_CreativeCommonsWithExtraRightsStatement()
+		{
+			var m = new Metadata
+			{
+				CopyrightNotice = "Copyright © 2014 SIL",
+				License = new CreativeCommonsLicense(true, true, CreativeCommonsLicense.DerivativeRules.DerivativesWithShareAndShareAlike)
+				{
+					IntergovernmentalOriganizationQualifier = true,
+					RightsStatement = "Only people named Fred can use this."
+				}
+			};
+
+			string idOfLanguageUsedForLicense;
+			Assert.AreEqual("© 2014 SIL. CC-BY-SA IGO 3.0. Only people named Fred can use this.", m.MinimalCredits(new[] { "en" }, out idOfLanguageUsedForLicense));
 		}
 	}
 }
