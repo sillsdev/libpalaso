@@ -411,7 +411,23 @@ namespace SIL.Reporting
 				if (m_out != null && m_out.BaseStream.CanWrite)
 				{
 					m_out.Write(DateTime.Now.ToLongTimeString() + "\t");
-					m_out.WriteLine(message, args);
+					if (args.Any())
+					{
+						try
+						{
+							m_out.WriteLine(message, args);
+						}
+						catch (Exception)
+						{
+							m_out.WriteLine("Error formatting message with {0} args: {1}", args.Length, message);
+						}
+					}
+					else
+					{
+						// If there are no arguments, we don't want .NET trying to interpret the message as a format string.
+						// It might have curly braces that aren't valid format items and will throw exceptions.
+						m_out.WriteLine(message);
+					}
 					m_out.Flush();//in case we crash
 
 					//want this to show up in the proper order in the minor event list, too
