@@ -56,7 +56,7 @@ namespace SIL.Reporting
 		StringBuilder _builder = new StringBuilder();
 		public void WriteConciseHistoricalEvent(string message, params object[] args)
 		{
-			_builder.AppendFormat(message, args);
+			_builder.Append(Logger.FormatMessage(message, args));
 		}
 		public string GetLogText()
 		{
@@ -411,7 +411,7 @@ namespace SIL.Reporting
 				if (m_out != null && m_out.BaseStream.CanWrite)
 				{
 					m_out.Write(DateTime.Now.ToLongTimeString() + "\t");
-					m_out.WriteLine(message, args);
+					m_out.WriteLine(FormatMessage(message, args));
 					m_out.Flush();//in case we crash
 
 					//want this to show up in the proper order in the minor event list, too
@@ -464,6 +464,32 @@ namespace SIL.Reporting
 				Singleton.WriteMinorEventCore(message,args);
 		}
 
+		/// <summary>
+		/// Conceptually, returns string.Format(message, args).
+		/// However, if there are no args, it just returns message, so unlike string.Format and friends,
+		/// it won't choke if message contains curly braces as long as there are no args.
+		/// Also, if the attempt to format the args fails, it will replace the usual output with
+		/// a message describing the failure to produce the output (and embedding message).
+		/// </summary>
+		/// <param name="message"></param>
+		/// <param name="args"></param>
+		/// <returns></returns>
+		internal static string FormatMessage(string message, object[] args)
+		{
+			if (args.Any())
+			{
+				try
+				{
+					return string.Format(message, args);
+				}
+				catch (Exception)
+				{
+					return string.Format("Error formatting message with {0} args: {1}", args.Length, message);
+				}
+			}
+			return message;
+		}
+
 		private void WriteMinorEventCore(string message, params object[] args)
 		{
 			CheckDisposed();
@@ -482,19 +508,7 @@ namespace SIL.Reporting
 						m_minorEvents.Remove(0, cutoff);
 					}
 					m_minorEvents.Append(DateTime.Now.ToLongTimeString() + "\t");
-					if (args.Any())
-					{
-						try
-						{
-							m_minorEvents.AppendFormat(message, args);
-						}
-						catch (Exception)
-						{
-							m_minorEvents.AppendFormat("Error formatting message with {0} args: {1}", args.Length, message);
-						}
-					}
-					else
-						m_minorEvents.Append(message);
+					m_minorEvents.Append(FormatMessage(message, args));
 					m_minorEvents.AppendLine();
 #if !DEBUG
 					}
