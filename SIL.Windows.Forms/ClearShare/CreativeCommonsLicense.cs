@@ -108,13 +108,16 @@ namespace SIL.Windows.Forms.ClearShare
 		{
 
 		}
-
-		public CreativeCommonsLicense(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule)
+		public CreativeCommonsLicense(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule, string version)
 		{
 			AttributionRequired = attributionRequired;
 			CommercialUseAllowed = commercialUseAllowed;
 			DerivativeRule = derivativeRule;
-			Version = kDefaultVersion;
+			Version = version;
+		}
+		public CreativeCommonsLicense(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule)
+			:this(attributionRequired, commercialUseAllowed, derivativeRule, kDefaultVersion)
+		{
 		}
 
 		public override string Url
@@ -131,6 +134,7 @@ namespace SIL.Windows.Forms.ClearShare
 				}
 				CommercialUseAllowed = true;
 				DerivativeRule = DerivativeRules.Derivatives;
+				AttributionRequired = false;
 
 				if (value.Contains("by"))
 					AttributionRequired = true;
@@ -170,6 +174,12 @@ namespace SIL.Windows.Forms.ClearShare
 
 		private static string MakeUrlFromParts(string token, string version, string qualifier)
 		{
+			if(token == "cc0")
+			{
+				// this one is weird in a couple ways, including that it doesn't have /licenses/ in the path
+				return "http://creativecommons.org/publicdomain/zero/" + version +"/";
+			}
+
 			var url = token + "/";
 			if (token.StartsWith("cc-"))
 				url = url.Substring("cc-".Length); // don't want this as part of URL.
@@ -177,7 +187,7 @@ namespace SIL.Windows.Forms.ClearShare
 			if (!string.IsNullOrEmpty(version))
 				url += version + "/";
 
-			if (!string.IsNullOrWhiteSpace(qualifier)) 
+			if (!string.IsNullOrWhiteSpace(qualifier))
 				url += qualifier + "/"; // e.g, igo as in https://creativecommons.org/licenses/by/3.0/igo/
 
 			return "http://creativecommons.org/licenses/" + url;
@@ -216,7 +226,7 @@ namespace SIL.Windows.Forms.ClearShare
 				}
 				token = token.TrimEnd(new char[] {'-'});
 				if (token == "cc")
-					token = "srr"; //some rights reserved
+					token = "cc0"; // public domain
 				return token;
 			}
 		}
@@ -262,18 +272,22 @@ namespace SIL.Windows.Forms.ClearShare
 		/// <returns>The description of the license.</returns>
 		public override string GetDescription(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
 		{
-			//Enanced labs.creativecommons.org has a lot of code, some of which might be useful, especially if we wanted a full, rather than consise, description.
+			//Enhance labs.creativecommons.org has a lot of code, some of which might be useful, especially if we wanted a full, rather than concise, description.
 
 			//Note that this isn't going to be able to convey to the caller the situation if some strings are translatable in some language, but others in some other language.
 			//It will just end up being an amalgam in that case.
 
 			//This IGO qualifier thing is new, and I'm not clear how I want to convey it on the page.
-			//We could introduce text like "For more information, see", but the price of needing new 
+			//We could introduce text like "For more information, see", but the price of needing new
 			// localizations at this point is somewhat daunting... for now, it seems enough that the "/igo/" is shown in the URL, if
 			//it is in use in this license.
 
 			string s= Url + System.Environment.NewLine;
 
+			if(!AttributionRequired)
+			{
+				return GetComponentOfLicenseInBestLanguage("PublicDomain", "You can copy, modify, and distribute this work, even for commercial purposes, all without asking permission.", languagePriorityIds, out idOfLanguageUsed) + " ";
+			}
 
 			if (CommercialUseAllowed)
 				s += GetComponentOfLicenseInBestLanguage("CommercialUseAllowed", "You are free to make commercial use of this work.", languagePriorityIds, out idOfLanguageUsed) + " ";
@@ -323,7 +337,7 @@ namespace SIL.Windows.Forms.ClearShare
 			if (AttributionRequired && !CommercialUseAllowed && DerivativeRule == DerivativeRules.DerivativesWithShareAndShareAlike)
 				return LicenseLogos.by_nc_sa;
 
-			return LicenseLogos.srr;
+			return LicenseLogos.cc0;
 		}
 
 		public override bool EditingAllowed
