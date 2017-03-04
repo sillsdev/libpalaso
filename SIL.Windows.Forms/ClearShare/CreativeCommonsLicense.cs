@@ -45,6 +45,28 @@ namespace SIL.Windows.Forms.ClearShare
 			}
 		}
 
+		/*		private bool _publicDomain;
+
+				public bool PublicDomain
+				{
+					get { return _publicDomain; }
+					set
+					{
+						if (value != _publicDomain)
+						{
+							HasChanges = true;
+						}
+						if (value)
+						{
+							AttributionRequired = false;
+							DerivativeRule = DerivativeRules.Derivatives;
+							CommercialUseAllowed = true;
+						}
+						_publicDomain = value;
+					}
+				}
+		*/
+
 		private DerivativeRules _derivativeRule;
 		public DerivativeRules DerivativeRule
 		{
@@ -108,13 +130,16 @@ namespace SIL.Windows.Forms.ClearShare
 		{
 
 		}
-
-		public CreativeCommonsLicense(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule)
+		public CreativeCommonsLicense(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule, string version)
 		{
 			AttributionRequired = attributionRequired;
 			CommercialUseAllowed = commercialUseAllowed;
 			DerivativeRule = derivativeRule;
-			Version = kDefaultVersion;
+			Version = version;
+		}
+		public CreativeCommonsLicense(bool attributionRequired, bool commercialUseAllowed, DerivativeRules derivativeRule)
+			:this(attributionRequired, commercialUseAllowed, derivativeRule, kDefaultVersion)
+		{
 		}
 
 		public override string Url
@@ -131,6 +156,7 @@ namespace SIL.Windows.Forms.ClearShare
 				}
 				CommercialUseAllowed = true;
 				DerivativeRule = DerivativeRules.Derivatives;
+				AttributionRequired = false;
 
 				if (value.Contains("by"))
 					AttributionRequired = true;
@@ -170,6 +196,12 @@ namespace SIL.Windows.Forms.ClearShare
 
 		private static string MakeUrlFromParts(string token, string version, string qualifier)
 		{
+			if(token == "cc0")
+			{
+				// this one is weird in a couple ways, including that it doesn't have /licenses/ in the path
+				return "http://creativecommons.org/publicdomain/zero/" + version +"/";
+			}
+
 			var url = token + "/";
 			if (token.StartsWith("cc-"))
 				url = url.Substring("cc-".Length); // don't want this as part of URL.
@@ -216,7 +248,7 @@ namespace SIL.Windows.Forms.ClearShare
 				}
 				token = token.TrimEnd(new char[] {'-'});
 				if (token == "cc")
-					token = "srr"; //some rights reserved
+					token = "cc0"; // public domain
 				return token;
 			}
 		}
@@ -262,7 +294,7 @@ namespace SIL.Windows.Forms.ClearShare
 		/// <returns>The description of the license.</returns>
 		public override string GetDescription(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
 		{
-			//Enanced labs.creativecommons.org has a lot of code, some of which might be useful, especially if we wanted a full, rather than consise, description.
+			//Enhance labs.creativecommons.org has a lot of code, some of which might be useful, especially if we wanted a full, rather than concise, description.
 
 			//Note that this isn't going to be able to convey to the caller the situation if some strings are translatable in some language, but others in some other language.
 			//It will just end up being an amalgam in that case.
@@ -274,6 +306,10 @@ namespace SIL.Windows.Forms.ClearShare
 
 			string s= Url + System.Environment.NewLine;
 
+			if(!AttributionRequired)
+			{
+				return GetComponentOfLicenseInBestLanguage("PublicDomain", "You can copy, modify, and distribute this work, even for commercial purposes, all without asking permission.", languagePriorityIds, out idOfLanguageUsed) + " ";
+			}
 
 			if (CommercialUseAllowed)
 				s += GetComponentOfLicenseInBestLanguage("CommercialUseAllowed", "You are free to make commercial use of this work.", languagePriorityIds, out idOfLanguageUsed) + " ";
@@ -323,7 +359,7 @@ namespace SIL.Windows.Forms.ClearShare
 			if (AttributionRequired && !CommercialUseAllowed && DerivativeRule == DerivativeRules.DerivativesWithShareAndShareAlike)
 				return LicenseLogos.by_nc_sa;
 
-			return LicenseLogos.srr;
+			return LicenseLogos.cc0;
 		}
 
 		public override bool EditingAllowed
