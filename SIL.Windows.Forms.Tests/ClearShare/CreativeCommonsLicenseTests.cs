@@ -53,6 +53,29 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			var copy = CreativeCommonsLicense.FromLicenseUrl(original.Url);
 			Assert.IsTrue(copy.IntergovernmentalOriganizationQualifier);
 		}
+
+		[Test]
+		public void RoundTrip_CC0()
+		{
+			// CC0 is essentially just "do what you want". So we don't have a particular property for it, we
+			// just set all three aspects to be permissive.
+			var original = new CreativeCommonsLicense(false, true, CreativeCommonsLicense.DerivativeRules.Derivatives);
+			var copy = CreativeCommonsLicense.FromLicenseUrl(original.Url);
+			Assert.IsFalse(copy.AttributionRequired);
+			Assert.IsTrue(copy.CommercialUseAllowed);
+			Assert.AreEqual(copy.DerivativeRule, CreativeCommonsLicense.DerivativeRules.Derivatives);
+		}
+
+		[Test]
+		public void Url_CC0_Correct()
+		{
+			// CC0 is essentially just "do what you want". So we don't have a particular property for it, we
+			// just set all three aspects to be permissive.
+			var original = new CreativeCommonsLicense(false, true, CreativeCommonsLicense.DerivativeRules.Derivatives, "1.0");
+			//notice that the url for cc0 does not follow the conventions of the other licenses.
+			Assert.AreEqual("http://creativecommons.org/publicdomain/zero/1.0/", original.Url);
+		}
+
 		[Test]
 		public void Url_QualifierIsIGO_UrlHasIgo()
 		{
