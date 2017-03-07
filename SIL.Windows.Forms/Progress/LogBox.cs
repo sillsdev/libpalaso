@@ -149,7 +149,7 @@ namespace SIL.Windows.Forms.Progress
 			var name = LogBoxSettings.Default.FontName;
 			var size = LogBoxSettings.Default.FontSize;
 
-			if (string.IsNullOrEmpty(name) && size > 0f)
+			if (!string.IsNullOrEmpty(name) && size > 0f)
 				fnt = new Font(name, size);
 
 			Font = fnt;
