@@ -8,5 +8,8 @@
     <Setting Name="FontSize" Type="System.Single" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
+    <Setting Name="FontStyle" Type="System.Drawing.FontStyle" Scope="User">
+      <Value Profile="(Default)">Regular</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
