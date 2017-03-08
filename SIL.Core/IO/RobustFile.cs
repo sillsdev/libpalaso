@@ -10,34 +10,121 @@ namespace SIL.IO
 	/// The original intent of this class is to attempt to mitigate issues
 	/// where we attempt IO but the file is locked by another application.
 	/// Our theory is that some anti-virus software locks files while it scans them.
+	/// 
+	/// Later (BL-4340) we encountered problems of corrupted files suspected to be caused
+	/// by power failures or similar disasters before the disk write cache was flushed.
+	/// In an attempt to fix this we made as many methods as possible use FileOptions.WriteThrough,
+	/// which may slow things down but is supposed to guarantee the data is really written
+	/// all the way to something persistent.
 	///
 	/// The reason some methods are included here but not implemented differently from
 	/// System.IO.File is that this class is intended as a full replacement for System.IO.File.
 	/// The decision of which to provide a special implementation for is based on the
-	/// initial attempt to resolve locked file problems.
+	/// initial attempt to resolve locked file problems, and the later problems
+	/// with cached writes.
+	/// 
+	/// These functions may not throw exactly the same exceptions in the same circumstances
+	/// as the File methods with the same names.
 	/// </summary>
 	public static class RobustFile
 	{
-		public static void Copy(string sourceFileName, string destFileName)
+		// This is just a guess at a buffer size that should make copying reasonably efficient without
+		// being too hard to allocate.
+		private const int BufferSize = 1024 * 256;
+
+		public static void Copy(string sourceFileName, string destFileName, bool overwrite = false)
 		{
-			RetryUtility.Retry(() => File.Copy(sourceFileName, destFileName));
+			RetryUtility.Retry(() =>
+			{
+				// This is my own implementation; the .NET library uses a native windows function.
+				var bufSize = (int)Math.Min(BufferSize, new FileInfo(sourceFileName).Length);
+				var buffer = new byte[bufSize];
+				using (var input = new FileStream(sourceFileName, FileMode.Open, FileAccess.Read))
+				{
+					using (
+						// We don't need WriteThrough here, it would just slow things down to force
+						// each write to commit. The final Flush(true) guarantees everything is
+						// written before the method returns.
+						var output = new FileStream(destFileName,
+							(overwrite ? FileMode.Create : FileMode.CreateNew),
+							FileAccess.Write,
+							FileShare.None, bufSize,
+							FileOptions.SequentialScan))
+					{
+						int count;
+						while ((count = input.Read(buffer, 0, bufSize)) > 0)
+						{
+							output.Write(buffer, 0, count);
+						}
+						// This is the whole point of replacing File.Copy(); forces a real write all the
+						// way to disk.
+						output.Flush(true);
+					}
+				}
+				// original
+				//File.Copy(sourceFileName, destFileName, overwrite);
+			});
 		}
 
-		public static void Copy(string sourceFileName, string destFileName, bool overwrite)
-		{
-			RetryUtility.Retry(() => File.Copy(sourceFileName, destFileName, overwrite));
-		}
-
+		// Creates a stream that will write to disk on every write.
+		// For most purposes (except perhaps logging when crashes are likely),
+		// calling Flush(true) on the stream when finished would probaby suffice.
 		public static FileStream Create(string path)
 		{
-			// Nothing different from File for now
-			return File.Create(path);
+			// Make it based on a WriteThrough file.
+			// This is based on the .Net implementation of Create (flattened somewhat)
+			// File.Create calls File.Create(path, FileStream.DefaultBufferSize)
+			// which returns new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None, FileStream.DefaultBufferSize)
+			// which calls another constructor adding FileOptions.None, Path.GetFileName(path), false
+			// That constructor is unfortunately internal. But the simplest public constructor that takes a FileOptions
+			// calls the same thing, passing the same extra two options. So the following gives the exact same
+			// effect, except that unfortunately we can't get at the internal constant for FileStream.DefaultBufferSize
+			// and just have to insert its value.
+			return new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.WriteThrough);
+			// original
+			//return File.Create(path);
 		}
 
+		// Creates a streamwriter that will write to disk on every write.
+		// For most purposes (except perhaps logging when crashes are likely),
+		// calling Flush(true) on the stream when finished would probaby suffice.
 		public static StreamWriter CreateText(string path)
 		{
-			// Nothing different from File for now
-			return File.CreateText(path);
+			// Make it based on a WriteThrough file.
+			// This is based on the .Net implementation of CreateText (flattened somewhat)
+			// Various methods in the call chain check these things:
+			if (path == null)
+				throw new ArgumentNullException(nameof(path));
+			if (path.Length == 0)
+				throw new ArgumentException("Argument_EmptyPath");
+
+			// File.CreateText uses the FileStream constructor, passing path, false[not append].
+			// that uses another FileStream constructor, passing path, false[not append], UTF8NoBOM, DefaultBufferSize[=1024]
+			// that uses another constructor, with the same arguments plus true[checkHost]
+
+			// apart from error checking, the 5-argument FileStream constructor does:
+			// Stream stream = CreateFile(path, append, checkHost);
+			// Init(stream, encoding, bufferSize, false);
+
+			// The call to CreateFile expands to a call to an internal constructor, equivalent to:
+			// Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read,
+			//	4096, FileOptions.SequentialScan, Path.GetFileName(path), false, false, true)
+			// The fileStream constructor call below is equivalent with two exceptions:
+			// - we're adding in FileOptions.WriteThrough (as desired)
+			// - we end up passing false instead of true for an obscure internal option called checkHost,
+			//    which does nothing in the version of .NET that VS thinks we're using.
+			Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read,
+				4096, FileOptions.SequentialScan | FileOptions.WriteThrough);
+
+			// The call to Init works out to Init(path, UTF8NoBOM, DefaultBufferSize, false), but
+			// we can't call that private method from here.
+			// However it is also called by the StreamWriter constructor which takes a stream.
+			// In fact, that constructor provides the same values for the other default arguments.
+			// So we can just call the simple constructor.
+			return new StreamWriter(stream);
+
+			// This is the original (not write-through) implementation.
+			//return File.CreateText(path);
 		}
 
 		public static void Delete(string path)
@@ -110,6 +197,8 @@ namespace SIL.IO
 
 		public static void Replace(string sourceFileName, string destinationFileName, string destinationBackupFileName)
 		{
+			// I haven't tried to make this WriteThrough; not sure how to do that while keeping all the
+			// clever properties Replace has.
 			RetryUtility.Retry(() => File.Replace(sourceFileName, destinationFileName, destinationBackupFileName));
 		}
 
@@ -120,17 +209,35 @@ namespace SIL.IO
 
 		public static void WriteAllBytes(string path, byte[] bytes)
 		{
-			RetryUtility.Retry(() => File.WriteAllBytes(path, bytes));
+			RetryUtility.Retry(() =>
+			{
+				// This forces it to block until the data is really safely on disk.
+				var f = File.Create(path, 4096, FileOptions.WriteThrough);
+				f.Write(bytes, 0, bytes.Length);
+				f.Close();
+			});
 		}
 
 		public static void WriteAllText(string path, string contents)
 		{
-			RetryUtility.Retry(() => File.WriteAllText(path, contents));
+			// Note that we can't just call WriteAllText(path, contents, Encoding.Utf8).
+			// That would insert an unwanted BOM.
+			var content = Encoding.UTF8.GetBytes(contents);
+			WriteAllBytes(path, content);
 		}
 
 		public static void WriteAllText(string path, string contents, Encoding encoding)
 		{
-			RetryUtility.Retry(() => File.WriteAllText(path, contents, encoding));
+			RetryUtility.Retry(() =>
+			{
+				// This forces it to block until the data is really safely on disk.
+				var f = File.Create(path, 4096, FileOptions.WriteThrough);
+				var preamble = encoding.GetPreamble();
+				f.Write(preamble, 0, preamble.Length);
+				var content = encoding.GetBytes(contents);
+				f.Write(content, 0, content.Length);
+				f.Close();
+			});
 		}
 	}
 }
