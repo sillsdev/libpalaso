@@ -94,7 +94,7 @@ namespace SIL.IO
 			// This is based on the .Net implementation of CreateText (flattened somewhat)
 			// Various methods in the call chain check these things:
 			if (path == null)
-				throw new ArgumentNullException(nameof(path));
+				throw new ArgumentNullException("path"); // TeamCity builds do not handle nameof()
 			if (path.Length == 0)
 				throw new ArgumentException("Argument_EmptyPath");
 
