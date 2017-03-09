@@ -1,6 +1,9 @@
 using System;
+using System.IO;
 using System.Threading;
 using System.Windows.Forms;
+using L10NSharp;
+using SIL.IO;
 using SIL.WritingSystems;
 
 namespace SIL.Windows.Forms.TestApp
@@ -16,7 +19,9 @@ namespace SIL.Windows.Forms.TestApp
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 			Sldr.Initialize();
-
+			var localizationFolder = Path.GetDirectoryName(FileLocator.GetFileDistributedWithApplication("Palaso.en.tmx"));
+			LocalizationManager.Create("fr", "Palaso", "Palaso", "1.0.0", localizationFolder, "SIL/Palaso",
+				null, "");
 			if(args.Length>0) //for testing commandlinerunner
 			{
 				for (int i = 0; i < 10; i++)
