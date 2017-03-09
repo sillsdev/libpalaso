@@ -10,7 +10,7 @@ namespace SIL.IO
 	/// The original intent of this class is to attempt to mitigate issues
 	/// where we attempt IO but the file is locked by another application.
 	/// Our theory is that some anti-virus software locks files while it scans them.
-	/// 
+	///
 	/// Later (BL-4340) we encountered problems of corrupted files suspected to be caused
 	/// by power failures or similar disasters before the disk write cache was flushed.
 	/// In an attempt to fix this we made as many methods as possible use FileOptions.WriteThrough,
@@ -22,15 +22,17 @@ namespace SIL.IO
 	/// The decision of which to provide a special implementation for is based on the
 	/// initial attempt to resolve locked file problems, and the later problems
 	/// with cached writes.
-	/// 
+	///
 	/// These functions may not throw exactly the same exceptions in the same circumstances
 	/// as the File methods with the same names.
 	/// </summary>
 	public static class RobustFile
 	{
+		private const int FileStreamBufferSize = 4096; // FileStream.DefaultBufferSize, unfortunately not public.
+
 		// This is just a guess at a buffer size that should make copying reasonably efficient without
 		// being too hard to allocate.
-		private const int BufferSize = 1024 * 256;
+		internal static int BufferSize = 1024 * 256; // internal so we can tweak in unit tests
 
 		public static void Copy(string sourceFileName, string destFileName, bool overwrite = false)
 		{
@@ -80,7 +82,7 @@ namespace SIL.IO
 			// calls the same thing, passing the same extra two options. So the following gives the exact same
 			// effect, except that unfortunately we can't get at the internal constant for FileStream.DefaultBufferSize
 			// and just have to insert its value.
-			return new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.WriteThrough);
+			return new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.None, FileStreamBufferSize, FileOptions.WriteThrough);
 			// original
 			//return File.Create(path);
 		}
@@ -114,7 +116,7 @@ namespace SIL.IO
 			// - we end up passing false instead of true for an obscure internal option called checkHost,
 			//    which does nothing in the version of .NET that VS thinks we're using.
 			Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read,
-				4096, FileOptions.SequentialScan | FileOptions.WriteThrough);
+				FileStreamBufferSize, FileOptions.SequentialScan | FileOptions.WriteThrough);
 
 			// The call to Init works out to Init(path, UTF8NoBOM, DefaultBufferSize, false), but
 			// we can't call that private method from here.
@@ -212,7 +214,7 @@ namespace SIL.IO
 			RetryUtility.Retry(() =>
 			{
 				// This forces it to block until the data is really safely on disk.
-				var f = File.Create(path, 4096, FileOptions.WriteThrough);
+				var f = File.Create(path, FileStreamBufferSize, FileOptions.WriteThrough);
 				f.Write(bytes, 0, bytes.Length);
 				f.Close();
 			});
@@ -231,7 +233,7 @@ namespace SIL.IO
 			RetryUtility.Retry(() =>
 			{
 				// This forces it to block until the data is really safely on disk.
-				var f = File.Create(path, 4096, FileOptions.WriteThrough);
+				var f = File.Create(path, FileStreamBufferSize, FileOptions.WriteThrough);
 				var preamble = encoding.GetPreamble();
 				f.Write(preamble, 0, preamble.Length);
 				var content = encoding.GetBytes(contents);

@@ -11,8 +11,6 @@ namespace SIL.Tests.IO
 	[TestFixture]
 	public class RobustFileTests
 	{
-
-		[Test]
 		[TestCase("abc")]
 		[TestCase("")]
 		[TestCase("wyjście𐐷")]
@@ -33,7 +31,6 @@ namespace SIL.Tests.IO
 			Assert.That(result, Is.EqualTo(correct));
 		}
 
-		[Test]
 		[TestCase("abc")]
 		[TestCase("")]
 		[TestCase("wyjście𐐷")]
@@ -54,7 +51,6 @@ namespace SIL.Tests.IO
 			Assert.That(result, Is.EqualTo(correct));
 		}
 
-		[Test]
 		[TestCase("abc")]
 		[TestCase("")]
 		[TestCase("wyjście𐐷")]
@@ -141,12 +137,35 @@ namespace SIL.Tests.IO
 					RobustFile.Delete(output.Path); // apparently we can encounter a left-over temp file
 					RobustFile.Copy(temp.Path, output.Path);
 					Assert.That(File.ReadAllText(output.Path), Is.EqualTo("This is a test"));
+					// output file now exists, w/o 3rd argument can't overwrite
 					Assert.Throws<IOException>(() => RobustFile.Copy(temp.Path, output.Path));
 					RobustFile.WriteAllText(temp.Path, "This is another test");
 					RobustFile.Copy(temp.Path, output.Path, true); // overwrite, no exception
 					Assert.That(File.ReadAllText(output.Path), Is.EqualTo("This is another test"));
-
 				}
+			}
+		}
+
+		[Test]
+		public void CopyBiggerThanBuffer()
+		{
+			using (var temp = new TempFile())
+			{
+				var bldr = new StringBuilder();
+				for (int i = 0; i < 512; i++)
+					bldr.AppendLine("This is a test");
+				var input = bldr.ToString();
+				Assert.That(input.Length > 4096);
+				var oldBufSize = RobustFile.BufferSize;
+				RobustFile.BufferSize = 4096; // To avoid writing a large file in a unit test
+				RobustFile.WriteAllText(temp.Path, input);
+				using (var output = new TempFile())
+				{
+					RobustFile.Delete(output.Path); // apparently we can encounter a left-over temp file
+					RobustFile.Copy(temp.Path, output.Path);
+					Assert.That(File.ReadAllText(output.Path), Is.EqualTo(input));
+				}
+				RobustFile.BufferSize = oldBufSize;
 			}
 		}
 	}
