@@ -105,6 +105,7 @@
 			// 
 			this._L10NSharpExtender.SetLocalizableToolTip(this._searchText, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._searchText, null);
+			this._L10NSharpExtender.SetLocalizationPriority(this._searchText, L10NSharp.LocalizationPriority.NotLocalizable);
 			this._L10NSharpExtender.SetLocalizingId(this._searchText, "LanguageLookup.LookupISOControl._searchText");
 			this._searchText.Location = new System.Drawing.Point(1, 3);
 			this._searchText.Name = "_searchText";

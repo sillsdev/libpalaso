@@ -282,6 +282,7 @@
 	  </tuv>
 	</tu>
 	<tu tuid="LanguageLookup.LookupISOControl._searchText">
+	  <prop type="x-nolongerused">true</prop>
 	  <tuv xml:lang="en">
 		<seg>?</seg>
 	  </tuv>
