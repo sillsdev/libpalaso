@@ -228,6 +228,19 @@ namespace SIL.IO
 			WriteAllBytes(path, content);
 		}
 
+		/// <summary>
+		/// As in Windows, this version inserts a BOM at the start of the file. Thus,
+		/// in particular, the file produced by WriteString(x,y, Encoding.UTF8) is not
+		/// the same as that produced by WriteString(x, y), though both are encoded
+		/// using UTF8.
+		/// On Windows, the BOM is inserted even if contents is an empty string.
+		/// As of Mono 3.4, Linux instead writes an empty file. We think this is a bug.
+		/// Accordingly, this version is consistent and writes a BOM on both platforms,
+		/// even for empty strings.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="contents"></param>
+		/// <param name="encoding"></param>
 		public static void WriteAllText(string path, string contents, Encoding encoding)
 		{
 			RetryUtility.Retry(() =>

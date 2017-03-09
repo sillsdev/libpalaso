@@ -48,7 +48,15 @@ namespace SIL.Tests.IO
 				RobustFile.WriteAllText(temp.Path, text, Encoding.UTF8);
 				result = File.ReadAllBytes(temp.Path);
 			}
-			Assert.That(result, Is.EqualTo(correct));
+			if (text == "")
+			{
+				// Linux behaves unexpectedly as of Mono 3.4 and omits the preamble for empty strings.
+				Assert.That(result, Is.EqualTo(Encoding.UTF8.GetPreamble()));
+			}
+			else
+			{
+				Assert.That(result, Is.EqualTo(correct));
+			}
 		}
 
 		[TestCase("abc")]
@@ -68,7 +76,15 @@ namespace SIL.Tests.IO
 				RobustFile.WriteAllText(temp.Path, text, Encoding.BigEndianUnicode);
 				result = File.ReadAllBytes(temp.Path);
 			}
-			Assert.That(result, Is.EqualTo(correct));
+			if (text == "")
+			{
+				// Linux behaves unexpectedly as of Mono 3.4 and omits the preamble for empty strings.
+				Assert.That(result, Is.EqualTo(Encoding.BigEndianUnicode.GetPreamble()));
+			}
+			else
+			{
+				Assert.That(result, Is.EqualTo(correct));
+			}
 		}
 
 		[Test]
