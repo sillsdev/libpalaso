@@ -31,59 +31,76 @@ namespace SIL.Tests.IO
 			Assert.That(result, Is.EqualTo(correct));
 		}
 
-		[TestCase("abc")]
-		[TestCase("")]
-		[TestCase("wyjście𐐷")]
-		public void WriteAllTextUtf8(string text)
+		[Test]
+		public void WriteAllTextExceptions()
 		{
-			byte[] correct = null;
 			using (var temp = new TempFile())
 			{
-				File.WriteAllText(temp.Path, text, Encoding.UTF8);
-				correct = File.ReadAllBytes(temp.Path);
-			}
-			byte[] result;
-			using (var temp = new TempFile())
-			{
-				RobustFile.WriteAllText(temp.Path, text, Encoding.UTF8);
-				result = File.ReadAllBytes(temp.Path);
-			}
-			if (text == "")
-			{
-				// Linux behaves unexpectedly as of Mono 3.4 and omits the preamble for empty strings.
-				Assert.That(result, Is.EqualTo(Encoding.UTF8.GetPreamble()));
-			}
-			else
-			{
-				Assert.That(result, Is.EqualTo(correct));
+				Assert.Throws<ArgumentNullException>(() => RobustFile.WriteAllText(temp.Path, null));
+				Assert.Throws<ArgumentNullException>(() => RobustFile.WriteAllText(null, "nonsense"));
 			}
 		}
 
 		[TestCase("abc")]
-		[TestCase("")]
 		[TestCase("wyjście𐐷")]
+		// Here empty string gets its own test because it is a special case.
+		public void WriteAllTextUtf8(string text)
+		{
+			WriteAllTextEncoding(text, Encoding.UTF8);
+		}
+
+		[TestCase("abc")]
+		[TestCase("wyjście𐐷")]
+		// Here empty string gets its own test because it is a special case.
 		public void WriteAllTextBigEndian(string text)
+		{
+			WriteAllTextEncoding(text, Encoding.BigEndianUnicode);
+		}
+
+		// Unfortunately, Encoding.UTF8 and friends are not constants we can use in TestCase annotations.
+		// Hence the two methods above to produce cases of Encoding.
+		public void WriteAllTextEncoding(string text, Encoding encoding)
 		{
 			byte[] correct = null;
 			using (var temp = new TempFile())
 			{
-				File.WriteAllText(temp.Path, text, Encoding.BigEndianUnicode);
+				File.WriteAllText(temp.Path, text, encoding);
 				correct = File.ReadAllBytes(temp.Path);
 			}
 			byte[] result;
 			using (var temp = new TempFile())
 			{
-				RobustFile.WriteAllText(temp.Path, text, Encoding.BigEndianUnicode);
+				RobustFile.WriteAllText(temp.Path, text, encoding);
 				result = File.ReadAllBytes(temp.Path);
 			}
-			if (text == "")
+			Assert.That(result, Is.EqualTo(correct));
+		}
+
+		public void WriteAllText_EmptyString_Encoding()
+		{
+			byte[] result;
+			using (var temp = new TempFile())
 			{
-				// Linux behaves unexpectedly as of Mono 3.4 and omits the preamble for empty strings.
-				Assert.That(result, Is.EqualTo(Encoding.BigEndianUnicode.GetPreamble()));
+				RobustFile.WriteAllText(temp.Path, "", Encoding.UTF8);
+				result = File.ReadAllBytes(temp.Path);
 			}
-			else
+			// Linux behaves unexpectedly as of Mono 3.4 and omits the preamble for empty strings.
+			// The documentation for the method is unclear...the most natural reading is that
+			// an empty content string would throw an exception, but this doesn't happen on
+			// either platform.
+			// We decided our version should consistently follow the Windows .NET behavior
+			// so we don't get the correct value by using the original function in this case. 
+			Assert.That(result, Is.EqualTo(Encoding.UTF8.GetPreamble()));
+		}
+
+		[Test]
+		public void WriteAllTextEncodingExceptions()
+		{
+			using (var temp = new TempFile())
 			{
-				Assert.That(result, Is.EqualTo(correct));
+				Assert.Throws<ArgumentNullException>(() => RobustFile.WriteAllText(temp.Path, null, Encoding.UTF8));
+				Assert.Throws<ArgumentNullException>(() => RobustFile.WriteAllText(null, "nonsense", Encoding.BigEndianUnicode));
+				Assert.Throws<ArgumentNullException>(() => RobustFile.WriteAllText(temp.Path, "nonsense", null));
 			}
 		}
 
@@ -118,7 +135,7 @@ namespace SIL.Tests.IO
 		[Test]
 		public void Create()
 		{
-			byte[] correct = null;
+			byte[] correct;
 			using (var temp = new TempFile())
 			{
 				var writer = File.Create(temp.Path);

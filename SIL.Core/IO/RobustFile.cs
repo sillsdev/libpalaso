@@ -68,9 +68,11 @@ namespace SIL.IO
 			});
 		}
 
-		// Creates a stream that will write to disk on every write.
-		// For most purposes (except perhaps logging when crashes are likely),
-		// calling Flush(true) on the stream when finished would probaby suffice.
+		/// <summary>
+		/// Creates a stream that will write to disk on every write.
+		/// For most purposes (except perhaps logging when crashes are likely),
+		/// calling Flush(true) on the stream when finished would probaby suffice.
+		/// </summary>
 		public static FileStream Create(string path)
 		{
 			// Make it based on a WriteThrough file.
@@ -87,9 +89,11 @@ namespace SIL.IO
 			//return File.Create(path);
 		}
 
-		// Creates a streamwriter that will write to disk on every write.
-		// For most purposes (except perhaps logging when crashes are likely),
-		// calling Flush(true) on the stream when finished would probaby suffice.
+		/// <summary>
+		/// Creates a streamwriter that will write to disk on every write.
+		/// For most purposes (except perhaps logging when crashes are likely),
+		/// calling Flush(true) on the stream when finished would probaby suffice.
+		/// </summary>
 		public static StreamWriter CreateText(string path)
 		{
 			// Make it based on a WriteThrough file.
@@ -214,9 +218,11 @@ namespace SIL.IO
 			RetryUtility.Retry(() =>
 			{
 				// This forces it to block until the data is really safely on disk.
-				var f = File.Create(path, FileStreamBufferSize, FileOptions.WriteThrough);
-				f.Write(bytes, 0, bytes.Length);
-				f.Close();
+				using (var f = File.Create(path, FileStreamBufferSize, FileOptions.WriteThrough))
+				{
+					f.Write(bytes, 0, bytes.Length);
+					f.Close();
+				}
 			});
 		}
 
@@ -243,15 +249,22 @@ namespace SIL.IO
 		/// <param name="encoding"></param>
 		public static void WriteAllText(string path, string contents, Encoding encoding)
 		{
+			// It's helpful to check for these first so we don't actaully create the file.
+			if (contents == null)
+				throw new ArgumentNullException(@"contents", @"contents must not be null");
+			if (encoding == null)
+				throw new ArgumentNullException(@"encoding", @"encoding must not be null");
 			RetryUtility.Retry(() =>
 			{
 				// This forces it to block until the data is really safely on disk.
-				var f = File.Create(path, FileStreamBufferSize, FileOptions.WriteThrough);
-				var preamble = encoding.GetPreamble();
-				f.Write(preamble, 0, preamble.Length);
-				var content = encoding.GetBytes(contents);
-				f.Write(content, 0, content.Length);
-				f.Close();
+				using (var f = File.Create(path, FileStreamBufferSize, FileOptions.WriteThrough))
+				{
+					var preamble = encoding.GetPreamble();
+					f.Write(preamble, 0, preamble.Length);
+					var content = encoding.GetBytes(contents);
+					f.Write(content, 0, content.Length);
+					f.Close();
+				}
 			});
 		}
 	}
