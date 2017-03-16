@@ -205,7 +205,31 @@ namespace SIL.IO
 		{
 			// I haven't tried to make this WriteThrough; not sure how to do that while keeping all the
 			// clever properties Replace has.
-			RetryUtility.Retry(() => File.Replace(sourceFileName, destinationFileName, destinationBackupFileName));
+			RetryUtility.Retry(() =>
+			{
+				try
+				{
+					File.Replace(sourceFileName, destinationFileName, destinationBackupFileName);
+				}
+				catch (UnauthorizedAccessException uae)
+				{
+					// We were getting this while trying to Replace on a JAARS network drive.
+					// The network drive is U:\ which maps to \\waxhaw\users\{username}.
+					// Both files were in the same directory and there were no permissions issues,
+					// but the Replace command was failing with "Access to the path is denied." anyway.
+					// I never could figure out why. See http://issues.bloomlibrary.org/youtrack/issue/BL-4436.
+					// There is very similar code in FileUtils.ReplaceFileWithUserInteractionIfNeeded.
+					try
+					{
+						FileUtils.ReplaceByCopyDelete(sourceFileName, destinationFileName, destinationBackupFileName);
+					}
+					catch
+					{
+						// Though it probably doesn't matter, report the original exception since we prefer Replace to CopyDelete.
+						throw uae;
+					}
+				}
+			});
 		}
 
 		public static void SetAttributes(string path, FileAttributes fileAttributes)
