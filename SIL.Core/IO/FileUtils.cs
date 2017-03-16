@@ -284,7 +284,7 @@ namespace SIL.IO
 			while (!succeeded);
 		}
 
-		private static void ReplaceByCopyDelete(string sourcePath, string destinationPath, string backupPath)
+		public static void ReplaceByCopyDelete(string sourcePath, string destinationPath, string backupPath)
 		{
 			if (!string.IsNullOrEmpty(backupPath) && File.Exists(destinationPath))
 			{
