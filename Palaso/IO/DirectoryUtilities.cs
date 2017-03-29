@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2017 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -6,7 +9,7 @@ using Palaso.Reporting;
 
 namespace Palaso.IO
 {
-	public class DirectoryUtilities
+	public static class DirectoryUtilities
 	{
 
 		/// <summary>
@@ -94,7 +97,7 @@ namespace Palaso.IO
 			return true;
 		}
 
-		public static void CopyDirectoryWithException(string sourcePath, string destinationPath)
+		public static void CopyDirectoryWithException(string sourcePath, string destinationPath, bool overwrite = false)
 		{
 			if (!Directory.Exists(destinationPath))
 				Directory.CreateDirectory(destinationPath);
@@ -103,14 +106,14 @@ namespace Palaso.IO
 			foreach (var filepath in Directory.GetFiles(sourcePath))
 			{
 				var filename = Path.GetFileName(filepath);
-				File.Copy(filepath, Path.Combine(destinationPath, filename));
+				File.Copy(filepath, Path.Combine(destinationPath, filename), overwrite);
 			}
 
-			// Copy all the sub directorys.
+			// Copy all the sub directories.
 			foreach (var directorypath in Directory.GetDirectories(sourcePath))
 			{
 				var directoryname = Path.GetFileName(directorypath);
-				CopyDirectoryContents(directorypath, Path.Combine(destinationPath, directoryname));
+				CopyDirectoryWithException(directorypath, Path.Combine(destinationPath, directoryname), overwrite);
 			}
 		}
 
