@@ -298,8 +298,28 @@ namespace SIL.Windows.Forms.HtmlBrowser
 		{
 			//we're interpretting AllowNavigation==false as meaning "links should open in an external browser"
 			if (GetShouldThisNavigationUseExternalBrowser(e.Url.AbsolutePath))
-			{				
-				Process.Start(e.Url.AbsoluteUri);
+			{
+				try
+				{
+					Process.Start(e.Url.AbsoluteUri);
+				}
+				catch (Exception)
+				{
+					bool localPathWorked = false;
+					if (e.Url.AbsoluteUri.StartsWith("file:"))
+					{
+						try
+						{
+							Process.Start(e.Url.LocalPath);
+							localPathWorked = true;
+						}
+						catch
+						{
+						}
+					}
+					if (!localPathWorked)
+						throw;
+				}			
 				e.Cancel = true;
 			}
 			else if (Navigating != null)
