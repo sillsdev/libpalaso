@@ -280,7 +280,8 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 
 		public void Clear()
 		{
-			_browser.DocumentText = "<!DOCTYPE html><html><body></body></html>";
+			// We need at least the charset declaration to prevent Javascript warnings.
+			_browser.DocumentText = "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body></body></html>";
 			SelectedPath = null;
 			HasSelection = false;
 		}
