@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using L10NSharp;
 using SIL.DblBundle.Usx;
+using SIL.IO;
 using SIL.Reporting;
 using SIL.WritingSystems;
 
@@ -188,7 +189,7 @@ namespace SIL.DblBundle.Text
 				throw new ApplicationException(
 					string.Format("Attempted to copy {0} from the bundle but {0} does not exist in this bundle.", DblBundleFileUtils.kVersificationFileName));
 
-			File.Copy(versificationPath, destinationPath, true);
+			RobustFile.Copy(versificationPath, destinationPath, true);
 		}
 
 		/// <summary>
