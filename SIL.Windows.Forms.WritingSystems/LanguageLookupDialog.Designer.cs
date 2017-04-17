@@ -1,4 +1,4 @@
-namespace SIL.Windows.Forms.WritingSystems
+﻿namespace SIL.Windows.Forms.WritingSystems
 {
 	partial class LanguageLookupDialog
 	{
@@ -43,7 +43,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._L10NSharpExtender.SetLocalizableToolTip(this._okButton, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._okButton, null);
 			this._L10NSharpExtender.SetLocalizingId(this._okButton, "Common.OKButton");
-			this._okButton.Location = new System.Drawing.Point(453, 311);
+			this._okButton.Location = new System.Drawing.Point(372, 311);
 			this._okButton.Name = "_okButton";
 			this._okButton.Size = new System.Drawing.Size(96, 23);
 			this._okButton.TabIndex = 1;
@@ -58,7 +58,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._L10NSharpExtender.SetLocalizableToolTip(this._cancelButton, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._cancelButton, null);
 			this._L10NSharpExtender.SetLocalizingId(this._cancelButton, "Common.CancelButton");
-			this._cancelButton.Location = new System.Drawing.Point(568, 311);
+			this._cancelButton.Location = new System.Drawing.Point(487, 311);
 			this._cancelButton.Name = "_cancelButton";
 			this._cancelButton.Size = new System.Drawing.Size(98, 23);
 			this._cancelButton.TabIndex = 2;
@@ -81,7 +81,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._L10NSharpExtender.SetLocalizingId(this._languageLookupControl, "LanguageLookup.LookupISOControl");
 			this._languageLookupControl.Location = new System.Drawing.Point(21, 16);
 			this._languageLookupControl.Name = "_languageLookupControl";
-			this._languageLookupControl.Size = new System.Drawing.Size(645, 289);
+			this._languageLookupControl.Size = new System.Drawing.Size(564, 289);
 			this._languageLookupControl.TabIndex = 0;
 			this._languageLookupControl.ReadinessChanged += new System.EventHandler(this._lookupLanguageControl_Changed);
 			this._languageLookupControl.DoubleClick += new System.EventHandler(this.OnChooserDoubleClicked);
@@ -92,7 +92,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this._cancelButton;
-			this.ClientSize = new System.Drawing.Size(686, 349);
+			this.ClientSize = new System.Drawing.Size(605, 349);
 			this.Controls.Add(this._languageLookupControl);
 			this.Controls.Add(this._cancelButton);
 			this.Controls.Add(this._okButton);
