@@ -287,12 +287,6 @@
   <Import Project="..\packages\NDesk.DBus.0.14.0\build\NDesk.DBus.targets" Condition="Exists('..\packages\NDesk.DBus.0.14.0\build\NDesk.DBus.targets')" />
   <Import Project="..\packages\ibusdotnet.2.0.0.20771\build\ibusdotnet.targets" Condition="Exists('..\packages\ibusdotnet.2.0.0.20771\build\ibusdotnet.targets')" />
   <Import Project="..\packages\Icu4c.Win.Min.54.1.31\build\Icu4c.Win.Min.targets" Condition="Exists('..\packages\Icu4c.Win.Min.54.1.31\build\Icu4c.Win.Min.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Icu4c.Win.Min.54.1.31\build\Icu4c.Win.Min.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Icu4c.Win.Min.54.1.31\build\Icu4c.Win.Min.targets'))" />
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
