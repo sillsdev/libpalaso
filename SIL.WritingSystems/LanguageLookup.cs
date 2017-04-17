@@ -16,6 +16,7 @@ namespace SIL.WritingSystems
 	{
 		private readonly Dictionary<string, LanguageInfo> _codeToLanguageIndex = new Dictionary<string, LanguageInfo>();
 		private readonly Dictionary<string, List<LanguageInfo>> _nameToLanguageIndex = new Dictionary<string, List<LanguageInfo>>();
+		private readonly Dictionary<string, List<LanguageInfo>> _countryToLanguageIndex = new Dictionary<string, List<LanguageInfo>>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="NewLanguageLookup"/> class.
@@ -57,6 +58,23 @@ namespace SIL.WritingSystems
 				}
 				foreach (string langname in language.Names)
 					GetOrCreateListFromName(langname).Add(language);
+				// add to _countryToLanguageIndex
+				foreach (var country in language.Countries)
+				{
+					// About 37 languages currently have a single country called "?". This does not seem a useful way to find them.
+					if (string.IsNullOrEmpty(country) || country == "?")
+						continue;
+					if (!string.IsNullOrEmpty(country)) // todo: filter ?
+					{
+						List<LanguageInfo> list;
+						if (!_countryToLanguageIndex.TryGetValue(country, out list))
+						{
+							list = new List<LanguageInfo>();
+							_countryToLanguageIndex[country] = list;
+						}
+						list.Add(language);
+					}
+				}
 			}
 
 			var langData = LanguageRegistryResources.LanguageCodes.Replace("\r\n", "\n")
@@ -137,6 +155,7 @@ namespace SIL.WritingSystems
 			{
 				IEnumerable<LanguageInfo> matchOnCode = from x in _codeToLanguageIndex where x.Key.StartsWith(searchString, StringComparison.InvariantCultureIgnoreCase) select x.Value;
 				List<LanguageInfo>[] matchOnName = (from x in _nameToLanguageIndex where x.Key.StartsWith(searchString, StringComparison.InvariantCultureIgnoreCase) select x.Value).ToArray();
+				List<LanguageInfo>[] matchOnCountry = (from x in _countryToLanguageIndex where x.Key.StartsWith(searchString, StringComparison.InvariantCultureIgnoreCase) select x.Value).ToArray();
 
 				if (!matchOnName.Any())
 				{
@@ -153,7 +172,8 @@ namespace SIL.WritingSystems
 				var combined = new HashSet<LanguageInfo>(matchOnCode);
 				foreach (List<LanguageInfo> l in matchOnName)
 					combined.UnionWith(l);
-
+				foreach (List<LanguageInfo> l in matchOnCountry)
+					combined.UnionWith(l);
 				foreach (LanguageInfo languageInfo in combined.OrderBy(l => l, new ResultComparer(searchString)))
 					yield return languageInfo;
 			}

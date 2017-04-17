@@ -197,6 +197,25 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void SuggestLanguages_ByCountry_Matches()
+		{
+			var lookup = new LanguageLookup();
+			var languages = lookup.SuggestLanguages("United States");
+			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("en")));
+			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("es")));
+
+			languages = lookup.SuggestLanguages("Fran"); // prefix of 'France'
+			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("fr")));
+
+			languages = lookup.SuggestLanguages("Russian");
+			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("bua"))); // macro-language in Russian Federation
+
+			languages = lookup.SuggestLanguages("?");
+			Assert.That(languages, Has.No.Member(lookup.GetLanguageFromCode("qaa")));
+			Assert.That(languages, Has.No.Member(lookup.GetLanguageFromCode("mn-Mong")));
+		}
+
+		[Test]
 		public void SuggestLanguages_LanguageHasPejorativeAlternativeNames_FilteredOut()
 		{
 			var lookup = new LanguageLookup();
