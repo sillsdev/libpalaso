@@ -58,6 +58,39 @@ namespace SIL.WritingSystems
 				foreach (string langname in language.Names)
 					GetOrCreateListFromName(langname).Add(language);
 			}
+
+			var langData = LanguageRegistryResources.LanguageCodes.Replace("\r\n", "\n")
+				.Split(new[] {"\n"}, StringSplitOptions.RemoveEmptyEntries);
+			foreach (var languageCode in langData)
+			{
+				var data = languageCode.Split(new[] {'\t'}, StringSplitOptions.RemoveEmptyEntries);
+				if (data.Length < 2)
+					continue;
+				var langCode = data[0];
+				var countryCode = data[1];
+				var lang = this.GetLanguageFromCode(langCode);
+				if (lang == null)
+					continue;
+				RegionSubtag region;
+				if (!StandardSubtags.RegisteredRegions.TryGet(countryCode, out region))
+					continue;
+				lang.PrimaryRegion = region;
+			}
+		}
+
+		/// <summary>
+		///  For testing; used to detect if we need more special cases in LanguageInfo.PrimaryCountry.
+		/// </summary>
+		/// <returns></returns>
+		internal List<LanguageInfo> LanguagesWithoutRegions()
+		{
+			var result = new List<LanguageInfo>();
+			foreach (var lang in _codeToLanguageIndex.Values)
+			{
+				if (lang.PrimaryRegion == null)
+					result.Add(lang);
+			}
+			return result;
 		}
 
 		private List<LanguageInfo> GetOrCreateListFromName(string name)
