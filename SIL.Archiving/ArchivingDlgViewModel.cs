@@ -547,4 +547,9 @@ namespace SIL.Archiving
 		/// <remarks/>
 		public Dictionary<string, MessageType> AdditionalMessages { get; private set; }
 	}
+
+	public interface ISupportMetadataOnly
+	{
+		bool MetadataOnly { get; set; }
+	}
 }

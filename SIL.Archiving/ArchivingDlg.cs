@@ -52,6 +52,7 @@ namespace SIL.Archiving
 
 			UpdateLaunchButtonText();
 			_buttonLaunchRamp.Enabled = false; //!string.IsNullOrEmpty(model.PathToProgramToLaunch);
+			_chkMetadataOnly.Visible = _viewModel is ISupportMetadataOnly;
 
 			_linkOverview.Text = model.InformativeText;
 			_linkOverview.Links.Clear();
@@ -109,6 +110,7 @@ namespace SIL.Archiving
 				_logBox.Clear();
 				_buttonLaunchRamp.Enabled = model.CreatePackage();
 				_buttonCreatePackage.Enabled = false;
+				_chkMetadataOnly.Enabled = false;
 				_progressBar.Visible = false;
 				WaitCursor.Hide();
 			};
@@ -221,6 +223,11 @@ namespace SIL.Archiving
 		private void HandleLogBoxReportErrorLinkClicked(object sender, EventArgs e)
 		{
 			Close();
+		}
+
+		private void _chkMetadataOnly_CheckedChanged(object sender, EventArgs e)
+		{
+			((ISupportMetadataOnly)_viewModel).MetadataOnly = _chkMetadataOnly.Checked;
 		}
 	}
 }

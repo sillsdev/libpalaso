@@ -35,12 +35,14 @@ namespace SIL.Archiving
 			this._buttonCreatePackage = new System.Windows.Forms.Button();
 			this._linkOverview = new System.Windows.Forms.LinkLabel();
 			this._progressBar = new System.Windows.Forms.ProgressBar();
-			this._logBox = new LogBox();
+			this._logBox = new SIL.Windows.Forms.Progress.LogBox();
 			this._buttonLaunchRamp = new System.Windows.Forms.Button();
 			this._buttonCancel = new System.Windows.Forms.Button();
 			this._flowLayoutExtra = new System.Windows.Forms.FlowLayoutPanel();
 			this.locExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
+			this._chkMetadataOnly = new System.Windows.Forms.CheckBox();
 			this._tableLayoutPanel.SuspendLayout();
+			this._flowLayoutExtra.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.locExtender)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -107,7 +109,7 @@ namespace SIL.Archiving
 			this._progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this._tableLayoutPanel.SetColumnSpan(this._progressBar, 3);
-			this._progressBar.Location = new System.Drawing.Point(0, 349);
+			this._progressBar.Location = new System.Drawing.Point(0, 326);
 			this._progressBar.Margin = new System.Windows.Forms.Padding(0, 0, 0, 12);
 			this._progressBar.Name = "_progressBar";
 			this._progressBar.Size = new System.Drawing.Size(355, 15);
@@ -138,7 +140,7 @@ namespace SIL.Archiving
 			this._logBox.ShowDiagnosticsMenuItem = false;
 			this._logBox.ShowFontMenuItem = false;
 			this._logBox.ShowMenu = false;
-			this._logBox.Size = new System.Drawing.Size(355, 326);
+			this._logBox.Size = new System.Drawing.Size(355, 303);
 			this._logBox.TabIndex = 5;
 			this._logBox.TabStop = false;
 			this._logBox.ReportErrorLinkClicked += new System.EventHandler(this.HandleLogBoxReportErrorLinkClicked);
@@ -180,17 +182,33 @@ namespace SIL.Archiving
 			this._flowLayoutExtra.AutoSize = true;
 			this._flowLayoutExtra.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this._tableLayoutPanel.SetColumnSpan(this._flowLayoutExtra, 3);
+			this._flowLayoutExtra.Controls.Add(this._chkMetadataOnly);
 			this._flowLayoutExtra.Dock = System.Windows.Forms.DockStyle.Top;
 			this._flowLayoutExtra.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-			this._flowLayoutExtra.Location = new System.Drawing.Point(3, 379);
+			this._flowLayoutExtra.Location = new System.Drawing.Point(3, 356);
 			this._flowLayoutExtra.Name = "_flowLayoutExtra";
-			this._flowLayoutExtra.Size = new System.Drawing.Size(349, 0);
+			this._flowLayoutExtra.Size = new System.Drawing.Size(349, 23);
 			this._flowLayoutExtra.TabIndex = 6;
 			// 
 			// locExtender
 			// 
 			this.locExtender.LocalizationManagerId = "SIL.Archiving";
 			this.locExtender.PrefixForNewItems = null;
+			// 
+			// _chkMetadataOnly
+			// 
+			this._chkMetadataOnly.AutoSize = true;
+			this.locExtender.SetLocalizableToolTip(this._chkMetadataOnly, "Select this to prevent copying actual data files into archive");
+			this.locExtender.SetLocalizationComment(this._chkMetadataOnly, null);
+			this.locExtender.SetLocalizingId(this._chkMetadataOnly, "ArchivingDlg._chkMetadataOnly");
+			this._chkMetadataOnly.Location = new System.Drawing.Point(3, 3);
+			this._chkMetadataOnly.Name = "_chkMetadataOnly";
+			this._chkMetadataOnly.Size = new System.Drawing.Size(93, 17);
+			this._chkMetadataOnly.TabIndex = 0;
+			this._chkMetadataOnly.Text = "Metadata only";
+			this._chkMetadataOnly.UseVisualStyleBackColor = true;
+			this._chkMetadataOnly.Visible = false;
+			this._chkMetadataOnly.CheckedChanged += new System.EventHandler(this._chkMetadataOnly_CheckedChanged);
 			// 
 			// ArchivingDlg
 			// 
@@ -214,6 +232,8 @@ namespace SIL.Archiving
 			this.Text = "{0}: Archive using {1}";
 			this._tableLayoutPanel.ResumeLayout(false);
 			this._tableLayoutPanel.PerformLayout();
+			this._flowLayoutExtra.ResumeLayout(false);
+			this._flowLayoutExtra.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.locExtender)).EndInit();
 			this.ResumeLayout(false);
 
@@ -230,5 +250,6 @@ namespace SIL.Archiving
 		protected System.Windows.Forms.Button _buttonLaunchRamp;
 		protected System.Windows.Forms.Button _buttonCreatePackage;
 		protected System.Windows.Forms.Button _buttonCancel;
+		private System.Windows.Forms.CheckBox _chkMetadataOnly;
 	}
 }
