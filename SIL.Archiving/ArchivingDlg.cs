@@ -110,6 +110,7 @@ namespace SIL.Archiving
 				_logBox.Clear();
 				_buttonLaunchRamp.Enabled = model.CreatePackage();
 				_buttonCreatePackage.Enabled = false;
+				_chkMetadataOnly.Enabled = false;
 				_progressBar.Visible = false;
 				WaitCursor.Hide();
 			};
