@@ -11,7 +11,7 @@ using SIL.WritingSystems;
 
 namespace LanguageData
 {
-	public class NewLanguageIndex
+	public class LanguageDataIndex
 	{
 		private readonly Dictionary<string, LanguageInfo> _codeToLanguageIndex = new Dictionary<string, LanguageInfo>();
 		private readonly Dictionary<string, LanguageInfo> _codeToEthnologueData = new Dictionary<string, LanguageInfo>();
@@ -22,9 +22,9 @@ namespace LanguageData
 		private List<string> ExcludedRegions = new List<string> { "Ethiopia" };
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="NewLanguageIndex"/> class.
+		/// Initializes a new instance of the <see cref="LanguageDataIndex"/> class.
 		/// </summary>
-		public NewLanguageIndex(IDictionary<string, string> sourcefiles)
+		public LanguageDataIndex(IDictionary<string, string> sourcefiles)
 		{
 			string twotothreecodes = sourcefiles["TwoToThreeCodes.txt"];
 			string subtagregistry = sourcefiles["ianaSubtagRegistry.txt"];
@@ -193,7 +193,7 @@ namespace LanguageData
 					}
 				}
 			}
-			
+
 
 				// localise some language names
 				foreach (LanguageInfo languageInfo in _codeToLanguageIndex.Values)
