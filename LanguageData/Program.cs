@@ -74,12 +74,12 @@ namespace LanguageData
 					{
 						return 99;
 					}
-				} 
+				}
 			}
 			if (!options.CheckFresh)
 			{
 				Sldr.Initialize(true);
-				NewLanguageIndex langIndex = new NewLanguageIndex(getcheck.GetFileStrings(options.GetFresh));
+				LanguageDataIndex langIndex = new LanguageDataIndex(getcheck.GetFileStrings(options.GetFresh));
 				langIndex.WriteIndex(options.OutputFile);
 				if (options.Json)
 				{
