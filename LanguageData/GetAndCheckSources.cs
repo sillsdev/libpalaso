@@ -16,10 +16,12 @@ namespace LanguageData
 	{
 		private string _oldtwotothree;
 		private string _oldlanguageindex;
+		private string _oldlanguagecodes;
 		private string _oldianasubtags;
 
 		private string _newtwotothree;
 		private string _newlanguageindex;
+		private string _newlanguagecodes;
 		private string _newianasubtags;
 
 		// solution to teamcity problems with certificates
@@ -66,18 +68,24 @@ namespace LanguageData
 				_newlanguageindex = _newlanguageindex.Replace("\r\n", "\n");
 				string lastmod_languageindex = client.ResponseHeaders["Last-Modified"];
 
+				_newlanguagecodes = client.DownloadString("https://www.ethnologue.com/codes/LanguageCodes.tab");
+				_newlanguagecodes = _newlanguagecodes.Replace("\r\n", "\n");
+				string lastmod_languagecodes = client.ResponseHeaders["Last-Modified"];
+
 				_newianasubtags = client.DownloadString("http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry");
 				_newianasubtags = _newianasubtags.Replace("\r\n", "\n");
 				string lastmod_ianasubtag = client.ResponseHeaders["Last-Modified"];
 
 				Console.WriteLine("IANA subtags last modified: " + lastmod_ianasubtag);
 				Console.WriteLine("Ethnologue index last modified: " + lastmod_languageindex);
+				Console.WriteLine("Ethnologue codes list last modified: " + lastmod_languagecodes);
 				Console.WriteLine("ISO693-3 table last modified: " + lastmod_iso693);
 
 				using (StreamWriter file = new StreamWriter(@"LastModified.txt"))
 				{
 					file.WriteLine("IANA subtags last modified: " + lastmod_ianasubtag);
 					file.WriteLine("Ethnologue index last modified: " + lastmod_languageindex);
+					file.WriteLine("Ethnologue codes list last modified: " + lastmod_languagecodes);
 					file.WriteLine("ISO693-3 table last modified: " + lastmod_iso693);
 				}
 
@@ -101,6 +109,8 @@ namespace LanguageData
 			_oldtwotothree = _oldtwotothree.Replace("\r\n", "\n");
 			_oldlanguageindex = File.ReadAllText(Path.Combine (input_dir, @"LanguageIndex.txt"));
 			_oldlanguageindex = _oldlanguageindex.Replace("\r\n", "\n");
+			_oldlanguagecodes = File.ReadAllText(Path.Combine(input_dir, @"LanguageCodes.txt"));
+			_oldlanguagecodes = _oldlanguagecodes.Replace("\r\n", "\n");
 			_oldianasubtags = File.ReadAllText(Path.Combine (input_dir, @"ianaSubtagRegistry.txt"));
 			_oldianasubtags = _oldianasubtags.Replace("\r\n", "\n");
 		}
@@ -128,6 +138,16 @@ namespace LanguageData
 				Console.WriteLine("The Ethnologue Language Index has not changed");
 			}
 
+			if (AreFilesDifferent(_oldlanguagecodes, _newlanguagecodes))
+			{
+				retval = true;
+				Console.WriteLine("There is a new Ethnologue Language Codes list available");
+			}
+			else
+			{
+				Console.WriteLine("The Ethnologue Language Language Codes list has not changed");
+			}
+
 			if (AreFilesDifferent(_oldtwotothree, _newtwotothree))
 			{
 				retval = true;
@@ -151,6 +171,8 @@ namespace LanguageData
 			}
 			string filename = Path.Combine(output_directory, "LanguageIndex.txt");
 			File.WriteAllText(filename, _newlanguageindex);
+			filename = Path.Combine(output_directory, "LanguageCodes.txt");
+			File.WriteAllText(filename, _newlanguagecodes);
 			filename = Path.Combine(output_directory, "ianaSubtagRegistry.txt");
 			File.WriteAllText(filename, _newianasubtags);
 			filename = Path.Combine(output_directory, "TwoToThreeCodes.txt");
@@ -163,10 +185,12 @@ namespace LanguageData
 			if (newfiles) {
 				filestrings.Add("TwoToThreeCodes.txt", _newtwotothree);
 				filestrings.Add("LanguageIndex.txt", _newlanguageindex);
+				filestrings.Add("LanguageCodes.txt", _newlanguagecodes);
 				filestrings.Add("ianaSubtagRegistry.txt", _newianasubtags);
 			} else {
 				filestrings.Add("TwoToThreeCodes.txt", _oldtwotothree);
 				filestrings.Add("LanguageIndex.txt", _oldlanguageindex);
+				filestrings.Add("LanguageCodes.txt", _oldlanguagecodes);
 				filestrings.Add("ianaSubtagRegistry.txt", _oldianasubtags);
 			}
 			return filestrings;

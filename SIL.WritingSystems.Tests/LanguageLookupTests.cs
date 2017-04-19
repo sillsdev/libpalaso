@@ -99,7 +99,7 @@ namespace SIL.WritingSystems.Tests
 		[TestCase("en", "United Kingdom")] // a typical result
 		[TestCase("ro", "Romania")] // even more typical (and different from langInfo.Countries.First()).
 		[TestCase("zrp", "France")] // a three-letter code that has a region
-		[TestCase("xak", "Venezuala")] // two special cases, the countries without regions and with >1 country
+		[TestCase("xak", "Venezuela")] // two special cases, the countries without regions and with >1 country
 		[TestCase("itd", "Indonesia")]
 		[TestCase("qaa", "?")] // a special case
 		[TestCase("bua", "Russian Federation")] // no region, but does have a unique country
