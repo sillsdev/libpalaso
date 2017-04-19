@@ -14,7 +14,7 @@ using System.Windows.Forms;
 namespace SIL.Archiving.IMDI
 {
 	/// <summary>Implements archiving for IMDI repositories</summary>
-	public class IMDIArchivingDlgViewModel : ArchivingDlgViewModel
+	public class IMDIArchivingDlgViewModel : ArchivingDlgViewModel, ISupportMetadataOnly
 	{
 		private readonly IMDIPackage _imdiData;
 		private string _corpusDirectoryName;
@@ -102,6 +102,8 @@ namespace SIL.Archiving.IMDI
 		{
 			get { return Properties.Settings.Default.IMDIWebSite; }
 		}
+
+		public bool MetadataOnly { get; set; }
 		#endregion
 
 		/// ------------------------------------------------------------------------------------
@@ -245,7 +247,7 @@ namespace SIL.Archiving.IMDI
 				success = _imdiData.CreateIMDIPackage();
 
 			// copy the content files
-			if (success)
+			if (success && !MetadataOnly)
 				success = CreateIMDIPackage();
 
 			CleanUp();
