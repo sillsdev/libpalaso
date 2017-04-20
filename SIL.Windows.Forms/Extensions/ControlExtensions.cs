@@ -1,7 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using SIL.Code;
 
 namespace SIL.Windows.Forms.Extensions
 {
@@ -81,6 +84,83 @@ namespace SIL.Windows.Forms.Extensions
 		public static void BeginInvoke(this Control control, Action action)
 		{
 			control.BeginInvoke(action);
+		}
+
+		public enum ErrorHandlingAction
+		{
+			Throw,
+			IgnoreIfDisposed,
+			IgnoreAll,
+		}
+
+		/// <summary>
+		/// Invoke an action safely even if called from the background thread.
+		/// </summary>
+		/// <remarks>
+		/// Invoking on the ui thread from background threads works *most* of the time, with occasional crash.
+		/// Stackoverflow has a good collection of people trying to deal with these corner cases, where
+		/// InvokeRequired(), for example, is unreliable (it doesn't tell you if the control hasn't even
+		/// got a handle yet).
+		/// The exact behavior of some of these methods have changed between different versions of .net.
+		/// Here's the relevant page in msdn that explains the current situation:
+		/// https://msdn.microsoft.com/en-us/library/system.windows.forms.control.invokerequired(v=vs.110).aspx
+		/// So now I'm trying something more mainstream here, from a highly voted SO answer.
+		/// </remarks>
+		public static void SafeInvoke(this Control control, Action action, string nameForErrorReporting = "context not supplied",
+			ErrorHandlingAction errorHandling = ErrorHandlingAction.Throw, bool forceSynchronous = false)
+		{
+			Guard.AgainstNull(control, nameForErrorReporting); // throw this one regardless of the throwIfAnythingGoesWrong
+			Guard.AgainstNull(action, nameForErrorReporting); // throw this one regardless of the throwIfAnythingGoesWrong
+
+			if (control.IsDisposed)
+			{
+				if (errorHandling == ErrorHandlingAction.Throw)
+					throw new ObjectDisposedException("Control is already disposed. (" + nameForErrorReporting + ")");
+				return; // Caller asked to ignore this.
+			}
+
+			if (!control.InvokeRequired)
+			{
+				// InvokeRequired will return false if the control isn't set up yet
+				if (!control.IsHandleCreated)
+				{
+					// This situation happened in BL-2918, prompting the introduction of this SafeInvoke method
+
+					if (errorHandling == ErrorHandlingAction.IgnoreAll)
+						return;
+					throw new ApplicationException("SafeInvoke.Invoke apparently called before control created (" + nameForErrorReporting + ")");
+
+					// Resist the temptation to work around this by just making the handle be created with something like
+					// var unused = control.Handle
+					// This can create the handle on the wrong thread and make the application unstable. (I believe it would crash instantly on Linux.)
+				}
+			}
+
+			// This implementation began with http://stackoverflow.com/a/809186/723299, but allows the caller to specify the
+			// desired handling of various types of errors and also deals specially with a control that is an IProgress and
+			// therefore has a SyncContext (which is better, according to MSDN).
+			try
+			{
+				if (control.InvokeRequired)
+				{
+					var delgate = (Action)delegate { SafeInvoke(control, action, nameForErrorReporting, errorHandling, forceSynchronous); };
+					if (forceSynchronous)
+						control.Invoke(delgate);
+					else
+						control.BeginInvoke(delgate);
+				}
+				else
+					action();
+			}
+			catch (Exception error)
+			{
+				SIL.Reporting.Logger.WriteEvent("**** " + error.Message);
+
+				if (errorHandling != ErrorHandlingAction.IgnoreAll)
+					throw new TargetInvocationException(nameForErrorReporting + ":" + error.Message, error);
+
+				Debug.Fail("This error would be swallowed in release version: " + error.Message);
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------

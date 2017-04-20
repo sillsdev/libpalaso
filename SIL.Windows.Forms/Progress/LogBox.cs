@@ -7,6 +7,7 @@ using System.Windows.Forms.VisualStyles;
 using SIL.Extensions;
 using SIL.Progress;
 using SIL.Reporting;
+using SIL.Windows.Forms.Extensions;
 
 namespace SIL.Windows.Forms.Progress
 {
@@ -223,45 +224,9 @@ namespace SIL.Windows.Forms.Progress
 		/// This is an attempt to avoid a mysterious crash (B. Waters) where the invoke was
 		/// happening before the window's handle had been created
 		/// </summary>
-		public void SafeInvoke(Control box, Action action)
+		private void SafeInvoke(Control box, Action action)
 		{
-			try
-			{
-				if (!box.IsHandleCreated)
-				{
-					//Debug.Fail("In release build, would have given up writing this message, because the destination control isn't built yet.");
-					return;
-				}
-
-				if(!IsDisposed) //note, we'll check it again on the UI thread, since it could be disposed while waiting to run
-				{
-					if (SynchronizationContext.Current == SyncContext) //we're on the UI thread
-					{
-						action();
-					}
-					else
-					{
-						//NB: if you're getting eratic behavior here, make sure there isn't one of those "access to modified closure" situations in your calling method
-						SyncContext.Post(state =>
-							{
-								//assumption is that since this is run on the UI thread, we can't be disposed in between the check of IsDiposed and the action itself
-								if(!IsDisposed)
-									action();
-							}, null);
-					}
-				}
-			}
-			catch (Exception)
-			{
-#if DEBUG
-				throw;
-#else
-				//WS-34006
-				// better to swallow the message than raise a stink
-#endif
-			}
-
-
+			box.SafeInvoke(action, errorHandling:ControlExtensions.ErrorHandlingAction.IgnoreAll);
 		}
 
 		private void Write(Color color, FontStyle style, string msg, params object[] args)
