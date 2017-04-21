@@ -247,11 +247,25 @@ namespace SIL.Windows.Forms.ImageGallery
 			}
 		}
 
-
-		public IEnumerable<string> GetPathsFromResults(IEnumerable<object> results, bool limitToThoseActuallyAvailable)
+		/// <summary>
+		/// Given a set of internal paths from GetMatchingPictures, return the actual paths to the picture files.
+		/// The actual picture files may be .png or .jpg.
+		/// </summary>
+		/// <param name="macPaths">Actually a sequence of STRINGS, specifically, some of the partial paths
+		/// that one of the LoadIndex methods put into _wordToPartialPathIndex. As such they are
+		/// basically country:filename pairs, or :additionalPathIndex:country:filename if from an additional path
+		/// rather than the main AOR collection.</param>
+		/// <param name="limitToThoseActuallyAvailable"></param>
+		/// <returns></returns>
+		/// <remarks>It might be nice to modify this and GetMatchingPictures to take and give a
+		/// string enumeration rather than an object one, but again, I don't want to mess with a public API.
+		/// Possibly it was done this way to convey the notion that the only safe thing to pass to this method
+		/// is results obtained from GetMatchingPictures.</remarks>
+		public IEnumerable<string> GetPathsFromResults(IEnumerable<object> macPaths, bool limitToThoseActuallyAvailable)
 		{
-			foreach (string macPath1 in results)
+			foreach (string macPath1 in macPaths)
 			{
+				// "mac" paths have colons as folder separators and other special properties as noted above.
 				string rootPath = RootImagePath;
 				string macPath = macPath1;
 				if (macPath.StartsWith(":"))
