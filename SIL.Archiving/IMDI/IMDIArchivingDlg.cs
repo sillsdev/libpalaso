@@ -80,6 +80,12 @@ namespace SIL.Archiving.IMDI
 			_flowLayoutExtra.Controls.Add(_destinationFolderTable);
 		}
 
+		protected override void DisableControlsDuringPackageCreation()
+		{
+			base.DisableControlsDuringPackageCreation();
+			_destinationFolderTable.Visible = false;
+		}
+
 		void SetDestinationLabelText()
 		{
 			var labelText = ((IMDIArchivingDlgViewModel)_viewModel).OutputFolder;
@@ -108,6 +114,7 @@ namespace SIL.Archiving.IMDI
 				((IMDIArchivingDlgViewModel)_viewModel).OutputFolder = chooseFolder.SelectedPath;
 
 				SetDestinationLabelText();
+				SetControlProperties();
 			}
 		}
 

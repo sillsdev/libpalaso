@@ -85,6 +85,8 @@ namespace SIL.Archiving
 			this._buttonCreatePackage.TabIndex = 0;
 			this._buttonCreatePackage.Text = "&1) Create Package";
 			this._buttonCreatePackage.UseVisualStyleBackColor = true;
+			this._buttonCreatePackage.Click += new System.EventHandler(this.CreatePackage);
+
 			// 
 			// _linkOverview
 			// 

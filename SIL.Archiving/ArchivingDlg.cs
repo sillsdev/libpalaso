@@ -100,20 +100,24 @@ namespace SIL.Archiving
 				model.Cancel();
 				WaitCursor.Hide();
 			};
+		}
 
-			_buttonCreatePackage.Click += delegate
-			{
-				Focus();
-				_buttonCreatePackage.Enabled = false;
-				_progressBar.Visible = true;
-				WaitCursor.Show();
-				_logBox.Clear();
-				_buttonLaunchRamp.Enabled = model.CreatePackage();
-				_buttonCreatePackage.Enabled = false;
-				_chkMetadataOnly.Enabled = false;
-				_progressBar.Visible = false;
-				WaitCursor.Hide();
-			};
+		private void CreatePackage(object sender, EventArgs eventArgs)
+		{
+			Focus();
+			DisableControlsDuringPackageCreation();
+			_progressBar.Visible = true;
+			WaitCursor.Show();
+			_logBox.Clear();
+			_buttonLaunchRamp.Enabled = _viewModel.CreatePackage();
+			_progressBar.Visible = false;
+			WaitCursor.Hide();
+		}
+
+		protected virtual void DisableControlsDuringPackageCreation()
+		{
+			_buttonCreatePackage.Enabled = false;
+			_chkMetadataOnly.Enabled = false;
 		}
 
 		/// ------------------------------------------------------------------------------------
