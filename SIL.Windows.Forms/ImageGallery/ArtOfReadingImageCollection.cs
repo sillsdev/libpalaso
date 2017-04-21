@@ -12,8 +12,37 @@ using SIL.Text;
 
 namespace SIL.Windows.Forms.ImageGallery
 {
+
+	/// <summary>
+	/// Originally a wrapper for the Art of Reading image collection, it may now include others.
+	/// 
+	/// An image collection is a folder plus a master index file.
+	/// The root folder contains the master index file. It should be the only file with a name ending in
+	/// MultilingualIndex.txt. Typically the previous part of the name corresponds to the collection name
+	/// without spaces, e.g., ArtOfReadingMultilingualIndex.txt.
+	/// The rest of the collection is a folder called Images with a folder for each source country.
+	/// (This class of course does not  care whether the folders are really named for countries or
+	/// really contain pictures appropriate to that country, but that's how Art of Reading is organized
+	/// and the file/folder structure follows that.)
+	/// Each folder contains image files.
+	/// The master index file contains columnar data, with the columns separated by tabs in each line.
+	/// It starts with a heading row indicating that the columns contain order, filename, artist, country,
+	/// and then lists of keywords in various languages. The header indicates which languages,
+	/// for example the AOR index contains (tab-separated) en	id	fr	es	ar	hi	bn	pt	th	sw	zh.
+	/// Each single-language list of keywords is comma-separated.
+	/// To locate the actual image file corresponding to a line of the index,
+	/// - use the country field as a folder in the Images folder of the collection.
+	/// - look for a file whose name (without extension) ends in the filename from the line.
+	/// (There is typically a prefix, for example, the line that starts 5	CMB0012		Cambodia
+	/// in the AOR index corresponds to a file called Cambodia/AOR_CMB0012.png.)
+	/// If such prefixes are used they must be consistent across the entire collection.
+	/// Otherwise, use full file names in the index.
+	/// (Currently, the class figures out the prefix by looking for the first file specified
+	/// in the index. For this reason, the first file must actually exist.)
+	/// </summary>
 	public class ArtOfReadingImageCollection : IImageCollection
 	{
+		internal const string ImageFolder = "Images";
 		private Dictionary<string, List<string>> _wordToPartialPathIndex;
 		private Dictionary<string, string> _partialPathToWordsIndex;
 		private static readonly object _padlock = new object();
@@ -28,8 +57,26 @@ namespace SIL.Windows.Forms.ImageGallery
 			SearchLanguage = "en";	// until told otherwise...
 		}
 
+		/// <summary>
+		/// This is actually the default root image path used by LoadMultilingualIndex when not
+		/// explicitly passed a rootImagePath argument. This effectively means it is the root
+		/// image path for the original AOR collection, not for any of the others. Note that it's
+		/// the path to the (typically) Images directory; the index file is expected to be in
+		/// the parent of this directory, unless both are passed explicitly (a case not tested
+		/// much if at all).
+		/// Would be nice to rename to something like DefaultAorRootImagePath, but I don't want
+		/// to change the public API of a library class since it's hard to be sure of tracking down
+		/// all the clients that might be affected.
+		/// </summary>
 		public string RootImagePath { get; set; }
 
+		public IEnumerable<string> AdditionalCollectionPaths { get; set; }
+
+		/// <summary>
+		/// Load an old-style index. Only applicable to old versions of AOR.
+		/// Not used for AdditionalCollectionPaths.
+		/// </summary>
+		/// <param name="indexFilePath"></param>
 		public void LoadIndex(string indexFilePath)
 		{
 			using (var f = File.OpenText(indexFilePath))
@@ -56,12 +103,36 @@ namespace SIL.Windows.Forms.ImageGallery
 		}
 
 		/// <summary>
+		/// This one assumes a standard organization
+		/// - images in rootFolder/Images
+		/// - index in rootFolder, first file ending in MultilingualIndex.txt
+		/// </summary>
+		/// <param name="rootFolder"></param>
+		internal void LoadMultilingualIndexAtRoot(string rootFolder)
+		{
+			var pathToIndexFile = TryForPathToMultilingualIndex(rootFolder);
+			var rootImagePath = Path.Combine(rootFolder, ImageFolder);
+			LoadMultilingualIndex(pathToIndexFile, rootImagePath);
+		}
+
+		/// <summary>
 		/// Load the multilingual index of the images.
 		/// </summary>
 		/// <returns>number of index lines successfully loaded</returns>
-		public int LoadMultilingualIndex(string pathToIndexFile)
+		public int LoadMultilingualIndex(string pathToIndexFile, string rootImagePath = null)
 		{
+			if (rootImagePath == null)
+				rootImagePath = RootImagePath;
+			string filenamePrefix = null;
 			const string defaultLang = "en";
+			// prefix we will stick on partial paths to indicate which folder they come from.
+			// More space-efficient that just storing the full path.
+			// GetPathsFromResults must remain consistent with this.
+			var pathPrefix = "";
+			if (rootImagePath != RootImagePath)
+			{
+				pathPrefix = ":" + AdditionalCollectionPaths.IndexOf(Path.GetDirectoryName(rootImagePath)) + ":";
+			}
 			using (var f = File.OpenText(pathToIndexFile))
 			{
 				var columns = GetColumnHeadersIfValid(f);
@@ -91,7 +162,7 @@ namespace SIL.Windows.Forms.ImageGallery
 					Debug.Assert(parts.Length > defaultColumn);
 					if (parts.Length <= defaultColumn)
 						continue;
-					var partialPath = String.Format("{0}:AOR_{1}.png", parts[3], parts[1]);
+					var partialPath = GetPartialPath(rootImagePath, parts[3], parts[1], ref filenamePrefix, pathPrefix);
 					string keyString;
 					if (parts.Length > desiredColumn)
 						keyString = parts[desiredColumn];
@@ -113,6 +184,25 @@ namespace SIL.Windows.Forms.ImageGallery
 				}
 				return count;
 			}
+		}
+
+		string GetPartialPath(string rootImagePath, string folder, string filename, ref string filenamePrefix, string pathPrefix)
+		{
+			if (filenamePrefix == null)
+			{
+				var pattern = "*" + filename + ".*";
+				var searchFolder = Path.Combine(rootImagePath, folder);
+				var filePath = Directory.EnumerateFiles(searchFolder, pattern).FirstOrDefault();
+				if (filePath == null)
+				{
+					Debug.Assert(filePath != null, "Could not find expected file in collection to determine prefix");
+					return "";
+				}
+				// We should have gotten something like .../Cambodia/AOR_filename.png
+				var realFileName = Path.GetFileNameWithoutExtension(filePath);
+				filenamePrefix = realFileName.Substring(0, realFileName.Length - filename.Length);
+			}
+			return String.Format("{3}{0}:{1}{2}.png", folder, filenamePrefix, filename, pathPrefix);
 		}
 
 		public IEnumerable<object> GetMatchingPictures(string keywords, out bool foundExactMatches)
@@ -160,18 +250,30 @@ namespace SIL.Windows.Forms.ImageGallery
 
 		public IEnumerable<string> GetPathsFromResults(IEnumerable<object> results, bool limitToThoseActuallyAvailable)
 		{
-			foreach (var macPath in results)
+			foreach (string macPath1 in results)
 			{
-				var path = Path.Combine(RootImagePath, ((string) macPath).Replace(':', Path.DirectorySeparatorChar));
-				if (!limitToThoseActuallyAvailable)
+				string rootPath = RootImagePath;
+				string macPath = macPath1;
+				if (macPath.StartsWith(":"))
+				{
+					var secondColonIndex = macPath.IndexOf(":", 1, StringComparison.InvariantCulture);
+					var additionalFileIndex = Int32.Parse(macPath.Substring(1, secondColonIndex - 1));
+					rootPath = Path.Combine(AdditionalCollectionPaths.Skip(additionalFileIndex).First(), ImageFolder);
+					macPath = macPath.Substring(secondColonIndex + 1);
+				}
+				var path = Path.Combine(rootPath, macPath.Replace(':', Path.DirectorySeparatorChar));
+
+				if (File.Exists(path))
 				{
 					yield return path;
 					continue; // don't look further
 				}
 
-				if (File.Exists(path))
+				// User collections might have jpgs instead
+				var jpgPath = Path.ChangeExtension(path, "jpg");
+				if (File.Exists(jpgPath))
 				{
-					yield return path;
+					yield return jpgPath;
 					continue; // don't look further
 				}
 
@@ -200,6 +302,16 @@ namespace SIL.Windows.Forms.ImageGallery
 						yield return updatedPath;
 						continue;
 					}
+				}
+
+				// Tried everything, but we're not limiting things so return the original name anyway.
+				// Note: by doing this at the end we're losing any performance benefit of not limiting things.
+				// But, it feels really wrong to return a name ending in .png when it isn't there and there
+				// IS a jpg. In any case, I don't know of any code that actually passes false, so it probably
+				// doesn't matter.
+				if (!limitToThoseActuallyAvailable)
+				{
+					yield return path;
 				}
 			}
 		}
@@ -269,9 +381,42 @@ namespace SIL.Windows.Forms.ImageGallery
 			return !string.IsNullOrEmpty(imagesPath) && !string.IsNullOrEmpty(TryToGetPathToIndex(imagesPath));
 		}
 
+		// Currently only used for testing.
+		internal static string StandardAdditionalDirectoriesRoot { get; set; }
+
+		internal static IEnumerable<string> GetStandardAdditionalDirectories()
+		{
+			string rootPath;
+			if (StandardAdditionalDirectoriesRoot != null)
+				rootPath = StandardAdditionalDirectoriesRoot;
+			else if (Environment.OSVersion.Platform == PlatformID.Unix)
+			{
+				// By analogy with Linux case in TryToGetRootImageCatalogPath.
+				// I'm not sure Linux actually needs a special case here...would the Windows code
+				// give a reasonable result?
+				rootPath = @"/usr/share/SIL/ImageCollections";
+			}
+			else
+			{
+				rootPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)
+					.CombineForPath("SIL")
+					.CombineForPath("ImageCollections");
+			}
+			if (!Directory.Exists(rootPath))
+				return new string[0];
+			return Directory.GetDirectories(rootPath).Where(x=>TryForPathToMultilingualIndex(x) != null);
+		}
+
+		public static string TryForPathToMultilingualIndex(string directory)
+		{
+			if (String.IsNullOrEmpty(directory) || !Directory.Exists(directory))
+				return null;
+			return Directory.EnumerateFiles(directory, "*MultilingualIndex.txt").FirstOrDefault();
+		}
+
 		public static string TryToGetRootImageCatalogPath()
 		{
-			var distributedWithApp = FileLocator.GetDirectoryDistributedWithApplication(true,"Art Of Reading", "images");
+			var distributedWithApp = FileLocator.GetDirectoryDistributedWithApplication(true,"Art Of Reading", ImageFolder);
 			if(!string.IsNullOrEmpty(distributedWithApp) && Directory.Exists(distributedWithApp))
 				return distributedWithApp;
 
@@ -294,11 +439,11 @@ namespace SIL.Windows.Forms.ImageGallery
 			else
 			{
 				//look for the folder created by the ArtOfReadingFree installer
-				var aorInstallerTarget = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("SIL", "Art Of Reading", "images");
+				var aorInstallerTarget = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("SIL", "Art Of Reading", ImageFolder);
 
 				//the rest of these are for before we had an installer for AOR
-				var appData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("Art Of Reading", "images");
-				var appDataNoSpace = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("ArtOfReading", "images");
+				var appData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("Art Of Reading", ImageFolder);
+				var appDataNoSpace = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("ArtOfReading", ImageFolder);
 				var winPaths = new[] { aorInstallerTarget,  @"c:\art of reading\images", @"c:/ArtOfReading/images", appData, appDataNoSpace };
 
 				foreach (var path in winPaths)
@@ -324,7 +469,11 @@ namespace SIL.Windows.Forms.ImageGallery
 			if (DoNotFindArtOfReading_Test)
 				path = null;
 
-			if (path == null)
+			var additionalPaths = GetStandardAdditionalDirectories();
+
+			// This seems reasonable but the implication is that if any 'additional' image collections
+			// have been installed, ImageChooser won't report that AOR is missing.
+			if (path == null && !additionalPaths.Any())
 				return null;
 
 			var c = new ArtOfReadingImageCollection();
@@ -332,6 +481,7 @@ namespace SIL.Windows.Forms.ImageGallery
 			c.RootImagePath = path;
 			c.GetIndexLanguages();
 			c.SearchLanguage = lang;
+			c.AdditionalCollectionPaths = additionalPaths;
 
 			// Load the index information asynchronously so as not to delay displaying
 			// the parent dialog.  Loading the file takes a second or two, but should
@@ -389,18 +539,22 @@ namespace SIL.Windows.Forms.ImageGallery
 			return columns;
 		}
 
-		void LoadImageIndex()
+		internal void LoadImageIndex()
 		{
 			int countMulti = 0;
 			string pathToIndexFile = TryToGetPathToMultilingualIndex(RootImagePath);
 			if (!String.IsNullOrEmpty(pathToIndexFile))
 			{
-				countMulti = LoadMultilingualIndex(pathToIndexFile);
+				countMulti = LoadMultilingualIndex(pathToIndexFile, RootImagePath);
 			}
 			if (countMulti == 0)
 			{
 				pathToIndexFile = TryToGetPathToIndex(RootImagePath);
 				LoadIndex(pathToIndexFile);
+			}
+			foreach (var path in AdditionalCollectionPaths)
+			{
+				LoadMultilingualIndexAtRoot(path);
 			}
 		}
 
