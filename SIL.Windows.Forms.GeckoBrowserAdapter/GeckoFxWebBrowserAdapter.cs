@@ -75,9 +75,15 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 				xulRunnerPath = Path.Combine(FileLocator.DirectoryOfApplicationOrSolution, "xulrunner");
 				if (!Directory.Exists(xulRunnerPath))
 				{
-					//if this is a programmer, go look in the lib directory
+					// Gecko 45
 					xulRunnerPath = Path.Combine(FileLocator.DirectoryOfApplicationOrSolution,
-						Path.Combine("lib", "xulrunner"));
+						Path.Combine("Firefox"));
+					if (!Directory.Exists(xulRunnerPath))
+					{
+						//if this is a programmer, go look in the lib directory
+						xulRunnerPath = Path.Combine(FileLocator.DirectoryOfApplicationOrSolution,
+							Path.Combine("lib", "xulrunner"));
+					}
 
 					//on my build machine, I really like to have the dir labelled with the version.
 					//but it's a hassle to update all the other parts (installer, build machine) with this number,
