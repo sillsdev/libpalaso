@@ -401,7 +401,7 @@
     <Compile Include="i18n\LocalizationHelper.designer.cs">
       <DependentUpon>LocalizationHelper.cs</DependentUpon>
     </Compile>
-    <Compile Include="ImageGallery\ArtOfReadingImageCollection.cs" />
+    <Compile Include="ImageGallery\ImageCollection.cs" />
     <Compile Include="ImageGallery\IImageCollection.cs" />
     <Compile Include="ImageGallery\ImageUtilities.cs" />
     <Compile Include="ImageGallery\PictureChooser.cs">

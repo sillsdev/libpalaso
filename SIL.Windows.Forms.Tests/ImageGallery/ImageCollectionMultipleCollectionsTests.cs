@@ -9,14 +9,14 @@ using SIL.Windows.Forms.ImageGallery;
 
 namespace SIL.Windows.Forms.Tests.ImageGallery
 {
-	public class ArtOfReadingImageCollectionMultipleCollectionsTests
+	public class ImageCollectionMultipleCollectionsTests
 	{
 		private TemporaryFolder _testFolder;
 		private string _aorRoot;
 		private string _additionalRoot;
 		private string _additionalCollectionBob;
 		private string _additionalCollectionSally;
-		private ArtOfReadingImageCollection _collection;
+		private ImageCollection _collection;
 
 		[TestFixtureSetUp]
 		public void SetupFakeArtOfReading()
@@ -27,10 +27,10 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 			_additionalCollectionBob = Path.Combine(_additionalRoot, "Bob");
 			_additionalCollectionSally = Path.Combine(_additionalRoot, "Sally");
 
-			_collection = new ArtOfReadingImageCollection();
+			_collection = new ImageCollection();
 			_collection.AdditionalCollectionPaths = new[]
 				{_additionalCollectionBob, _additionalCollectionSally};
-			_collection.RootImagePath = Path.Combine(_aorRoot, ArtOfReadingImageCollection.ImageFolder);
+			_collection.RootImagePath = Path.Combine(_aorRoot, ImageCollection.ImageFolder);
 			// Don't really need all these for the tests here, but a little bit of data out of the real thing might be good for catching problems
 			MakeFakeImageCollection(_aorRoot, "AOR_", "ArtOfReadingMultilingualIndex.txt", @"order	filename	artist	country	en	id	fr	es	ar	hi	bn	pt	th	sw	zh
 1	B-3-3		Brazil	boy,child,head,people,shoulder	anak laki-laki,anak,kepala,orang,orang-orang,bahu	garçon,enfant,tête,personnes,épaule	niño,niño,cabeza,gente,hombro	صبي,طفل,رئيس,الناس,كتف	लड़का,बच्चा,सिर,लोग,कंधा	ছেলে,শিশু,মাথা,সম্প্রদায়,অংস	Garoto,criança,cabeça,pessoas,ombro	เด็กผู้ชาย,เด็ก,หัว,คน,ไหล่	mvulana,Mtoto,kichwa,Watu,bega	男孩,孩子,头,人,肩
@@ -50,10 +50,10 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 5	Bridge		Sydney	bridge,sydney,harbor,child
 6	OperaAndBridge		Sydney	bridge,opera,sydney,harbor
 7	RainbowWater		Sydney	bridge,opera,sydney,rainbow,harbor");
-			var hubblePath = Path.Combine(_additionalCollectionBob, ArtOfReadingImageCollection.ImageFolder, "Australia",
+			var hubblePath = Path.Combine(_additionalCollectionBob, ImageCollection.ImageFolder, "Australia",
 				"Bob_Hubble Galaxy.png");
 			File.Move(hubblePath, Path.ChangeExtension(hubblePath, "jpg"));
-			var christmasLightsPath = Path.Combine(_additionalCollectionBob, ArtOfReadingImageCollection.ImageFolder, "Australia",
+			var christmasLightsPath = Path.Combine(_additionalCollectionBob, ImageCollection.ImageFolder, "Australia",
 				"Bob_Christmas Lights.png");
 			File.Delete(christmasLightsPath); // make a missing file special case.
 			_collection.LoadImageIndex();
@@ -70,7 +70,7 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 			Directory.CreateDirectory(rootFolder);
 			var indexPath = Path.Combine(rootFolder, indexName);
 			File.WriteAllText(indexPath, content);
-			var imagesPath = Path.Combine(rootFolder, ArtOfReadingImageCollection.ImageFolder);
+			var imagesPath = Path.Combine(rootFolder, ImageCollection.ImageFolder);
 			var first = true;
 			foreach (var line in content.Replace("\r\n", "\n").Split('\n'))
 			{
@@ -172,8 +172,8 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 			Assert.That(foundExactMatches, Is.True);
 			var results = _collection.GetPathsFromResults(pics, false);
 			Assert.That(results.Count(), Is.EqualTo(2));
-			Assert.That(results, Has.Member(Path.Combine(_additionalCollectionBob, ArtOfReadingImageCollection.ImageFolder, "Australia", "Bob_Christmas Lights.png")));
-			Assert.That(results, Has.Member(Path.Combine(_additionalCollectionBob, ArtOfReadingImageCollection.ImageFolder, "Australia", "Bob_Hubble Galaxy.jpg")));
+			Assert.That(results, Has.Member(Path.Combine(_additionalCollectionBob, ImageCollection.ImageFolder, "Australia", "Bob_Christmas Lights.png")));
+			Assert.That(results, Has.Member(Path.Combine(_additionalCollectionBob, ImageCollection.ImageFolder, "Australia", "Bob_Hubble Galaxy.jpg")));
 		}
 
 		[Test]
@@ -184,8 +184,8 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 			Assert.That(foundExactMatches, Is.True);
 			var results = _collection.GetPathsFromResults(pics, true);
 			Assert.That(results.Count(), Is.EqualTo(2));
-			Assert.That(results, Has.Member(Path.Combine(_additionalCollectionBob, ArtOfReadingImageCollection.ImageFolder, "Australia", "Bob_First.png")));
-			Assert.That(results, Has.Member(Path.Combine(_additionalCollectionBob, ArtOfReadingImageCollection.ImageFolder, "Australia", "Bob_Hubble Galaxy.jpg")));
+			Assert.That(results, Has.Member(Path.Combine(_additionalCollectionBob, ImageCollection.ImageFolder, "Australia", "Bob_First.png")));
+			Assert.That(results, Has.Member(Path.Combine(_additionalCollectionBob, ImageCollection.ImageFolder, "Australia", "Bob_Hubble Galaxy.jpg")));
 		}
 	}
 }

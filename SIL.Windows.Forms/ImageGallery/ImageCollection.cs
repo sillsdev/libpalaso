@@ -15,11 +15,14 @@ namespace SIL.Windows.Forms.ImageGallery
 
 	/// <summary>
 	/// Originally a wrapper for the Art of Reading image collection, it may now include others.
+	/// By default (static method FromstandardLocations()) it loads AOR from any of the places
+	/// we know of that installers might put it, and any additional collections found at
+	/// %programdata%/SIL/ImageCollections
 	/// 
 	/// An image collection is a folder plus a master index file.
 	/// The root folder contains the master index file. It should be the only file with a name ending in
-	/// MultilingualIndex.txt. Typically the previous part of the name corresponds to the collection name
-	/// without spaces, e.g., ArtOfReadingMultilingualIndex.txt.
+	/// Index.txt. There could be a more descriptive name before this, e.g., ArtOfReadingMultilingualIndex.txt,
+	/// but this is not required...a simple Index.txt will do fine.
 	/// The rest of the collection is a folder called Images with a folder for each source country.
 	/// (This class of course does not  care whether the folders are really named for countries or
 	/// really contain pictures appropriate to that country, but that's how Art of Reading is organized
@@ -40,7 +43,7 @@ namespace SIL.Windows.Forms.ImageGallery
 	/// (Currently, the class figures out the prefix by looking for the first file specified
 	/// in the index. For this reason, the first file must actually exist.)
 	/// </summary>
-	public class ArtOfReadingImageCollection : IImageCollection
+	public class ImageCollection : IImageCollection
 	{
 		internal const string ImageFolder = "Images";
 		private Dictionary<string, List<string>> _wordToPartialPathIndex;
@@ -50,7 +53,7 @@ namespace SIL.Windows.Forms.ImageGallery
 		private List<string> _indexLanguages;
 		public IEnumerable<string> IndexLanguageIds { get { return _indexLanguages; } }
 
-		public ArtOfReadingImageCollection()
+		public ImageCollection()
 		{
 			_wordToPartialPathIndex = new Dictionary<string, List<string>>();
 			_partialPathToWordsIndex = new Dictionary<string, string>();
@@ -205,7 +208,7 @@ namespace SIL.Windows.Forms.ImageGallery
 			return String.Format("{3}{0}:{1}{2}.png", folder, filenamePrefix, filename, pathPrefix);
 		}
 
-		public IEnumerable<object> GetMatchingPictures(string keywords, out bool foundExactMatches)
+		public IEnumerable<string> GetMatchingPictures(string keywords, out bool foundExactMatches)
 		{
 			keywords = GetCleanedUpSearchString(keywords.ToLowerInvariant());
 			return GetMatchingPictures(keywords.SplitTrimmed(' '), out foundExactMatches);
@@ -251,31 +254,27 @@ namespace SIL.Windows.Forms.ImageGallery
 		/// Given a set of internal paths from GetMatchingPictures, return the actual paths to the picture files.
 		/// The actual picture files may be .png or .jpg.
 		/// </summary>
-		/// <param name="macPaths">Actually a sequence of STRINGS, specifically, some of the partial paths
+		/// <param name="internalPaths">Some of the partial paths (typically obtained from GetMatchingPictures())
 		/// that one of the LoadIndex methods put into _wordToPartialPathIndex. As such they are
 		/// basically country:filename pairs, or :additionalPathIndex:country:filename if from an additional path
 		/// rather than the main AOR collection.</param>
 		/// <param name="limitToThoseActuallyAvailable"></param>
 		/// <returns></returns>
-		/// <remarks>It might be nice to modify this and GetMatchingPictures to take and give a
-		/// string enumeration rather than an object one, but again, I don't want to mess with a public API.
-		/// Possibly it was done this way to convey the notion that the only safe thing to pass to this method
-		/// is results obtained from GetMatchingPictures.</remarks>
-		public IEnumerable<string> GetPathsFromResults(IEnumerable<object> macPaths, bool limitToThoseActuallyAvailable)
+		public IEnumerable<string> GetPathsFromResults(IEnumerable<string> internalPaths, bool limitToThoseActuallyAvailable)
 		{
-			foreach (string macPath1 in macPaths)
+			foreach (string rawInternalPath in internalPaths)
 			{
-				// "mac" paths have colons as folder separators and other special properties as noted above.
+				// internal paths have colons as folder separators and other special properties as noted above.
 				string rootPath = RootImagePath;
-				string macPath = macPath1;
-				if (macPath.StartsWith(":"))
+				string internalPath = rawInternalPath;
+				if (internalPath.StartsWith(":"))
 				{
-					var secondColonIndex = macPath.IndexOf(":", 1, StringComparison.InvariantCulture);
-					var additionalFileIndex = Int32.Parse(macPath.Substring(1, secondColonIndex - 1));
+					var secondColonIndex = internalPath.IndexOf(":", 1, StringComparison.InvariantCulture);
+					var additionalFileIndex = Int32.Parse(internalPath.Substring(1, secondColonIndex - 1));
 					rootPath = Path.Combine(AdditionalCollectionPaths.Skip(additionalFileIndex).First(), ImageFolder);
-					macPath = macPath.Substring(secondColonIndex + 1);
+					internalPath = internalPath.Substring(secondColonIndex + 1);
 				}
-				var path = Path.Combine(rootPath, macPath.Replace(':', Path.DirectorySeparatorChar));
+				var path = Path.Combine(rootPath, internalPath.Replace(':', Path.DirectorySeparatorChar));
 
 				if (File.Exists(path))
 				{
@@ -330,7 +329,7 @@ namespace SIL.Windows.Forms.ImageGallery
 			}
 		}
 
-		private IEnumerable<object> GetMatchingPictures(IEnumerable<string> keywords, out bool foundExactMatches)
+		private IEnumerable<string> GetMatchingPictures(IEnumerable<string> keywords, out bool foundExactMatches)
 		{
 			var pictures = new List<string>();
 			foundExactMatches = false;
@@ -367,7 +366,7 @@ namespace SIL.Windows.Forms.ImageGallery
 					}
 				}
 			}
-			var results = new List<object>();
+			var results = new List<string>();
 			pictures.Distinct().ForEach(p => results.Add(p));
 			return results;
 		}
@@ -403,15 +402,19 @@ namespace SIL.Windows.Forms.ImageGallery
 			string rootPath;
 			if (StandardAdditionalDirectoriesRoot != null)
 				rootPath = StandardAdditionalDirectoriesRoot;
-			else if (Environment.OSVersion.Platform == PlatformID.Unix)
-			{
-				// By analogy with Linux case in TryToGetRootImageCatalogPath.
-				// I'm not sure Linux actually needs a special case here...would the Windows code
-				// give a reasonable result?
-				rootPath = @"/usr/share/SIL/ImageCollections";
-			}
 			else
 			{
+				// Windows: typically C:\ProgramData\SIL\ImageCollections.
+				// Linux: typically /usr/share/SIL/ImageCollections
+				// (This is not the typical place for a Linux package to install things
+				// and CamelCase is not a standard way to name folders.
+				// Typically each package would make its own folder at the root of /user/share.
+				// Then something like sil-image-collection might plausibly be part of each
+				// folder name.
+				// But that will require a whole different strategy for finding them, possibly
+				// something like an environment variable, or we could search the whole
+				// of /user/share for folders starting with sil-image-collection. Let's wait and see whether anyone
+				// actually wants to do this and doesn't find the current proposal satisfactory.)
 				rootPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)
 					.CombineForPath("SIL")
 					.CombineForPath("ImageCollections");
@@ -425,7 +428,7 @@ namespace SIL.Windows.Forms.ImageGallery
 		{
 			if (String.IsNullOrEmpty(directory) || !Directory.Exists(directory))
 				return null;
-			return Directory.EnumerateFiles(directory, "*MultilingualIndex.txt").FirstOrDefault();
+			return Directory.EnumerateFiles(directory, "*Index.txt").FirstOrDefault();
 		}
 
 		public static string TryToGetRootImageCatalogPath()
@@ -490,7 +493,7 @@ namespace SIL.Windows.Forms.ImageGallery
 			if (path == null && !additionalPaths.Any())
 				return null;
 
-			var c = new ArtOfReadingImageCollection();
+			var c = new ImageCollection();
 
 			c.RootImagePath = path;
 			c.GetIndexLanguages();

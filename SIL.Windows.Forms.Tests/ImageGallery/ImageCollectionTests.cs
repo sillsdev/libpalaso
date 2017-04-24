@@ -10,14 +10,14 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 
 
 	[TestFixture]
-	public class ArtOfReadingImageCollectionTests
+	public class ImageCollectionTests
 	{
-		private ArtOfReadingImageCollection _artCollection;
+		private ImageCollection _artCollection;
 
 		[SetUp]
 		public void Setup()
 		{
-			_artCollection = new ArtOfReadingImageCollection();
+			_artCollection = new ImageCollection();
 			_artCollection.LoadIndex(IndexPath);
 		}
 
@@ -109,16 +109,16 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 		{
 			try
 			{
-				ArtOfReadingImageCollection.DoNotFindArtOfReading_Test = true;
+				ImageCollection.DoNotFindArtOfReading_Test = true;
 				using (var tempfolder = new TemporaryFolder("No image folders"))
 				{
-					ArtOfReadingImageCollection.StandardAdditionalDirectoriesRoot = tempfolder.Path;
-					Assert.IsNull(ArtOfReadingImageCollection.FromStandardLocations());
+					ImageCollection.StandardAdditionalDirectoriesRoot = tempfolder.Path;
+					Assert.IsNull(ImageCollection.FromStandardLocations());
 				}
 			}
 			finally
 			{
-				ArtOfReadingImageCollection.DoNotFindArtOfReading_Test = false;
+				ImageCollection.DoNotFindArtOfReading_Test = false;
 			}
 		}
 	}

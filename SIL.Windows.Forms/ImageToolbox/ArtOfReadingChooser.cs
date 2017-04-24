@@ -201,7 +201,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			if (DesignMode)
 				return;
 
-			_imageCollection = ArtOfReadingImageCollection.FromStandardLocations(SearchLanguage);
+			_imageCollection = ImageCollection.FromStandardLocations(SearchLanguage);
 			if (_imageCollection == null)
 			{
 				_messageLabel.Visible = true;
