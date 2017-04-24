@@ -32,7 +32,7 @@ namespace SIL.DblBundle.Text
 		[XmlArrayItem("book")]
 		public List<Book> AvailableBooks { get; set; }
 
-		public IReadOnlyList<Book> AvailableBibleBooks
+		public SIL.ObjectModel.IReadOnlyList<Book> AvailableBibleBooks
 		{
 			get
 			{
