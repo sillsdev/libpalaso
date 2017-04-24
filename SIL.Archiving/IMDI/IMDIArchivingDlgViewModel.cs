@@ -22,6 +22,7 @@ namespace SIL.Archiving.IMDI
 		private string _programPreset;
 		private string _otherProgramPath;
 		private readonly string _configFileName = Path.Combine(ArchivingFileSystem.SilCommonArchivingDataFolder, "IMDIProgram.config");
+		private string _outputFolder;
 
 		#region Properties
 		internal override string ArchiveType
@@ -126,8 +127,6 @@ namespace SIL.Archiving.IMDI
 			: base(appName, title, id, appSpecificArchivalProcessInfo, setFilesToArchive)
 		{
 			OutputFolder = outputFolder;
-
-			PackagePath = Path.Combine(OutputFolder, CorpusDirectoryName);
 
 			_imdiData = new IMDIPackage(corpus, PackagePath)
 			{
@@ -611,6 +610,16 @@ namespace SIL.Archiving.IMDI
 		}
 
 		/// <summary />
-		public string OutputFolder { get; set; }
+		public string OutputFolder
+		{
+			get { return _outputFolder; }
+			set
+			{
+				_outputFolder = value;
+				PackagePath = Path.Combine(value, CorpusDirectoryName);
+				if (_imdiData != null)
+					_imdiData.PackagePath = "";
+			}
+		}
 	}
 }

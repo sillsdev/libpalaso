@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using SIL.Archiving.Generic;
 using SIL.Archiving.IMDI.Lists;
@@ -19,7 +20,8 @@ namespace SIL.Archiving.IMDI
 		public string MainExportFile { get; private set; }
 
 		private readonly bool _corpus;
-		private readonly string _packagePath;
+		private bool _creationStarted;
+		private string _packagePath;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>Constructor</summary>
@@ -30,7 +32,7 @@ namespace SIL.Archiving.IMDI
 		public IMDIPackage(bool corpus, string packagePath)
 		{
 			_corpus = corpus;
-			_packagePath = packagePath;
+			PackagePath = packagePath;
 
 			BaseImdiFile = new MetaTranscript(MetatranscriptValueType.CORPUS);
 
@@ -46,9 +48,15 @@ namespace SIL.Archiving.IMDI
 		/// <summary>The path where the corpus imdi file and corpus directory will be created</summary>
 		public string PackagePath
 		{
-			get { return _packagePath;  }
+			get { return _packagePath; }
+			set
+			{
+				if (_creationStarted)
+					throw new InvalidOperationException("Cannot change package path after package creation has already begun.");
+				_packagePath = value;
+			}
 		}
-#endregion
+		#endregion
 
 		// **** Corpus Layout ****
 		//
@@ -65,6 +73,8 @@ namespace SIL.Archiving.IMDI
 		/// <returns></returns>
 		public bool CreateIMDIPackage()
 		{
+			_creationStarted = true;
+
 			// list of session files for the corpus
 			List<string> sessionFiles = new List<string>();
 
@@ -73,12 +83,12 @@ namespace SIL.Archiving.IMDI
 			foreach (var session in Sessions)
 			{
 				var sessImdi = new MetaTranscript { Items = new object[] { session }, Type = MetatranscriptValueType.SESSION };
-				sessionFiles.Add(sessImdi.WriteImdiFile(_packagePath, Name));
+				sessionFiles.Add(sessImdi.WriteImdiFile(PackagePath, Name));
 			}
 
 			if (!_corpus)
 			{
-				MainExportFile = sessionFiles[0];
+				MainExportFile = Path.Combine(PackagePath, sessionFiles[0]);
 				return true;
 			}
 
@@ -92,7 +102,7 @@ namespace SIL.Archiving.IMDI
 			corpus.CatalogueLink = CreateCorpusCatalogue();
 
 			//  Create the corpus imdi file
-			MainExportFile = BaseImdiFile.WriteImdiFile(_packagePath, Name);
+			MainExportFile = BaseImdiFile.WriteImdiFile(PackagePath, Name);
 
 			return true;
 		}
@@ -159,7 +169,7 @@ namespace SIL.Archiving.IMDI
 
 			// write the xml file
 			var catImdi = new MetaTranscript { Items = new object[] { catalogue }, Type = MetatranscriptValueType.CATALOGUE };
-			return catImdi.WriteImdiFile(_packagePath, Name).Replace("\\", "/");
+			return catImdi.WriteImdiFile(PackagePath, Name).Replace("\\", "/");
 		}
 
 		/// <summary>Add a description of the package/corpus</summary>
