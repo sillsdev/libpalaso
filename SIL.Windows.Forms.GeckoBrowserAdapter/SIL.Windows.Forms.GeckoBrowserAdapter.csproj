@@ -1,13 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{D000879E-9AA6-4811-A6F0-80DF6119FB08}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>SIL.Windows.Forms.GeckoBrowserAdapter</RootNamespace>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,6 +23,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <NoWarn>1591</NoWarn>
     <DocumentationFile>..\output\Debug\SIL.Windows.Forms.GeckoBrowserAdapter.XML</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,6 +35,7 @@
     <AssemblyName>SIL.WindowsForms.GeckoBrowserAdapter</AssemblyName>
     <DebugSymbols>true</DebugSymbols>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
     <Optimize>false</Optimize>
@@ -44,6 +47,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>..\output\DebugMono\SIL.Windows.Forms.GeckoBrowserAdapter.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
     <Optimize>true</Optimize>
@@ -54,6 +58,7 @@
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DefineConstants>MONO</DefineConstants>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -66,6 +71,7 @@
     <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
     <DocumentationFile>..\output\DebugStrongName\SIL.Windows.Forms.GeckoBrowserAdapter.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -76,6 +82,7 @@
     <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
     <NoWarn>1591</NoWarn>
     <DocumentationFile>..\output\DebugMonoStrongName\SIL.Windows.Forms.GeckoBrowserAdapter.XML</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -86,6 +93,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -96,6 +104,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
     <DefineConstants>MONO</DefineConstants>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyName>SIL.Windows.Forms.GeckoBrowserAdapter</AssemblyName>
@@ -110,6 +119,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1591</NoWarn>
     <DocumentationFile>..\output\Debug\SIL.Windows.Forms.GeckoBrowserAdapter.XML</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -119,6 +129,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMono|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -128,6 +139,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>..\output\DebugMono\SIL.Windows.Forms.GeckoBrowserAdapter.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMono|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -137,6 +149,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DefineConstants>MONO</DefineConstants>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -148,6 +161,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>..\output\DebugStrongName\SIL.Windows.Forms.GeckoBrowserAdapter.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -157,6 +171,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1591</NoWarn>
     <DocumentationFile>..\output\DebugMonoStrongName\SIL.Windows.Forms.GeckoBrowserAdapter.XML</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseStrongName|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -166,6 +181,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -175,6 +191,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DefineConstants>MONO</DefineConstants>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -209,13 +226,13 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\SIL.Windows.Forms\SIL.Windows.Forms.csproj">
-      <Project>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</Project>
-      <Name>SIL.Windows.Forms</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
       <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
       <Name>SIL.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SIL.Windows.Forms\SIL.Windows.Forms.csproj">
+      <Project>{db44f49c-d8c6-434f-81ed-28ea5c9e8195}</Project>
+      <Name>SIL.Windows.Forms</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj">
       <Project>{52a93c63-08f4-4527-8e6e-ac2adeba6e2d}</Project>
