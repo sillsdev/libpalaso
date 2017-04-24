@@ -21,7 +21,7 @@ namespace SIL.Archiving.IMDI
 
 		private readonly bool _corpus;
 		private bool _creationStarted;
-		private string m_packagePath;
+		private string _packagePath;
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>Constructor</summary>
@@ -48,12 +48,12 @@ namespace SIL.Archiving.IMDI
 		/// <summary>The path where the corpus imdi file and corpus directory will be created</summary>
 		public string PackagePath
 		{
-			get { return m_packagePath; }
+			get { return _packagePath; }
 			set
 			{
 				if (_creationStarted)
 					throw new InvalidOperationException("Cannot change package path after package creation has already begun.");
-				m_packagePath = value;
+				_packagePath = value;
 			}
 		}
 		#endregion
