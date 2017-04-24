@@ -1,7 +1,11 @@
-﻿using System;
+﻿// Copyright (c) 2016-2017 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
+using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using SIL.Acknowledgements;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
@@ -27,3 +31,7 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("SIL.Core.Tests")]
 [assembly: InternalsVisibleTo("SIL.WritingSystems.Tests")]
 #endif
+
+[assembly: Acknowledgement("Ionic.Zip.dll", "Ionic.Zip", copyright: "Dino Chiesa",
+	license: "https://opensource.org/licenses/MS-PL", location: "./Ionic.Zip.dll",
+	html: "<li><a href=\"http://www.codeplex.com/DotNetZip\">Ionic.Zip</a> by Dino Chiesa (<a href=\"https://opensource.org/licenses/MS-PL\">MS-PL</a>) - a library for handling zip archives (Flavor=Retail)</li>")]
