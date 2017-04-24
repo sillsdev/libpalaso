@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using SIL.Acknowledgements;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
@@ -27,3 +28,7 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("SIL.Core.Tests")]
 [assembly: InternalsVisibleTo("SIL.WritingSystems.Tests")]
 #endif
+
+[assembly: Acknowledgement("Ionic.Zip.dll", "Ionic.Zip", aaCopyright: "Dino Chiesa",
+	aaLicense: "https://opensource.org/licenses/MS-PL", aaLocation: "./Ionic.Zip.dll",
+	aaHtml: "<li><a href=\"http://www.codeplex.com/DotNetZip\">Ionic.Zip</a> (MS-PL) by Dino Chiesa - a library for handling zip archives (Flavor=Retail)</li>")]

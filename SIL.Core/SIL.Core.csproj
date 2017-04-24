@@ -247,6 +247,8 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Acknowledgements\AcknowledgementAttribute.cs" />
+    <Compile Include="Acknowledgements\AcknowledgementsProvider.cs" />
     <Compile Include="Base32\Base32Convert.cs" />
     <Compile Include="Base32\Base32ConvertBase.cs" />
     <Compile Include="Base32\Base32FormattingOptions.cs" />

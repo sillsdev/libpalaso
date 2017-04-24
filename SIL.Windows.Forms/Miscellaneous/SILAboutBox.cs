@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using L10NSharp;
-using SIL.PlatformUtilities;
+using SIL.Acknowledgements;
 using SIL.IO;
 
 namespace SIL.Windows.Forms.Miscellaneous
@@ -39,7 +40,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
-			
+
 			if (CheckForUpdatesClicked == null)
 				_checkForUpdates.Visible = false;
 			else
@@ -63,10 +64,10 @@ namespace SIL.Windows.Forms.Miscellaneous
 		{
 			get
 			{
-				object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
+				var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
 				if (attributes.Length > 0)
 				{
-					AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes[0];
+					var titleAttribute = (AssemblyTitleAttribute)attributes[0];
 					if (titleAttribute.Title != "")
 					{
 						return titleAttribute.Title;
@@ -88,12 +89,8 @@ namespace SIL.Windows.Forms.Miscellaneous
 		{
 			get
 			{
-				object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
-				if (attributes.Length == 0)
-				{
-					return "";
-				}
-				return ((AssemblyDescriptionAttribute)attributes[0]).Description;
+				var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
+				return attributes.Length == 0 ? "" : ((AssemblyDescriptionAttribute)attributes[0]).Description;
 			}
 		}
 
@@ -101,12 +98,8 @@ namespace SIL.Windows.Forms.Miscellaneous
 		{
 			get
 			{
-				object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
-				if (attributes.Length == 0)
-				{
-					return "";
-				}
-				return ((AssemblyProductAttribute)attributes[0]).Product;
+				var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
+				return attributes.Length == 0 ? "" : ((AssemblyProductAttribute)attributes[0]).Product;
 			}
 		}
 
@@ -114,12 +107,8 @@ namespace SIL.Windows.Forms.Miscellaneous
 		{
 			get
 			{
-				object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
-				if (attributes.Length == 0)
-				{
-					return "";
-				}
-				return ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
+				var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+				return attributes.Length == 0 ? "" : ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
 			}
 		}
 
@@ -127,12 +116,22 @@ namespace SIL.Windows.Forms.Miscellaneous
 		{
 			get
 			{
-				object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
+				var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
+				return attributes.Length == 0 ? "" : ((AssemblyCompanyAttribute)attributes[0]).Company;
+			}
+		}
+
+		public AcknowledgementAttribute[] AssemblyAcknowledgements
+		{
+			get
+			{
+				var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AcknowledgementAttribute), false);
 				if (attributes.Length == 0)
 				{
-					return "";
+					return new AcknowledgementAttribute[0];
 				}
-				return ((AssemblyCompanyAttribute)attributes[0]).Company;
+				return attributes.Cast<AcknowledgementAttribute>().ToArray();
+
 			}
 		}
 		#endregion
@@ -188,13 +187,33 @@ namespace SIL.Windows.Forms.Miscellaneous
 			return string.Empty;
 		}
 
+		/// <summary>
+		/// Put this string in your project's AboutBox.html file. The SILAboutBox will replace it with all the
+		/// dependencies it can collect from your project's dependencies' AssemblyInfo.cs files.
+		/// </summary>
+		public const string DependencyMarker = "#DependencyAcknowledgements#";
+
 		private void SILAboutBoxShown(object sender, EventArgs e)
 		{
-			//review: EB had changed from Navigate to this in ab66af23393f74b767ffd78c2182bd1fdc8eb963, presumably to 
+			//review: EB had changed from Navigate to this in ab66af23393f74b767ffd78c2182bd1fdc8eb963, presumably to
 			// get around the AllowNavigation=false problem. It may work on Linux, but it didn't on Windows, which would just show a blank browser.
 			//_browser.Url = new Uri(_pathToAboutBoxHtml);
 			// So I've instead modified the browser wrapper to always let the first navigation get through, regardless
-			_browser.Navigate(_pathToAboutBoxHtml);
+			var filePath = AcknowledgementsProvider.GetFullNonUriFileName(_pathToAboutBoxHtml);
+			var aboutBoxHtml = File.ReadAllText(filePath);
+			if (!aboutBoxHtml.Contains(DependencyMarker))
+			{
+				_browser.Navigate(_pathToAboutBoxHtml);
+			}
+			else
+			{
+				var insertableAcknowledgements = AcknowledgementsProvider.AssembleAcknowledgements();
+				var newHtmlContents = aboutBoxHtml.Replace(DependencyMarker, insertableAcknowledgements);
+				// Review: This will leave a temporary file laying around everytime we run the About Box.
+				// Should we delete it when we close the About Box? Or is it an advantage to be able to see the complete About Box?
+				var file = new TempFile(newHtmlContents);
+				_browser.Navigate(file.Path);
+			}
 		}
 	}
 }
