@@ -1,7 +1,11 @@
-﻿using System;
+﻿// Copyright (c) 2016-2017 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
+using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using SIL.Acknowledgements;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
@@ -27,3 +31,12 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("SIL.Core.Tests")]
 [assembly: InternalsVisibleTo("SIL.WritingSystems.Tests")]
 #endif
+
+[assembly: Acknowledgement("Ionic.Zip", "Ionic.Zip", copyright: "Dino Chiesa", url: "http://www.codeplex.com/DotNetZip",
+	licenseUrl: "https://opensource.org/licenses/MS-PL", location: "./Ionic.Zip.dll",
+	html: "<li><a href='http://www.codeplex.com/DotNetZip'>Ionic.Zip</a> by Dino Chiesa (<a href='https://opensource.org/licenses/MS-PL'>MS-PL</a>) - a library for handling zip archives (Flavor=Retail)</li>")]
+[assembly: Acknowledgement("NDesk.DBus", "NDesk.DBus", url: "https://www.nuget.org/packages/NDesk.DBus/",
+	licenseUrl: "https://opensource.org/licenses/MIT", location: "./NDesk.DBus.dll")]
+[assembly: Acknowledgement("Newtonsoft.Json", url: "https://www.nuget.org/packages/Newtonsoft.Json/",
+	licenseUrl: "https://opensource.org/licenses/MIT", location: "./Newtonsoft.Json.dll")]
+[assembly: Acknowledgement("Mono.Posix", "Mono.Posix", url: "https://www.nuget.org/packages/Mono.Posix/", licenseUrl: "https://opensource.org/licenses/MIT")]

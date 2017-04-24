@@ -1,9 +1,15 @@
-﻿using System;
+﻿// Copyright (c) 2016-2017 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
+using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using System.Xml;
 using L10NSharp;
-using SIL.PlatformUtilities;
+using SIL.Acknowledgements;
 using SIL.IO;
 
 namespace SIL.Windows.Forms.Miscellaneous
@@ -12,6 +18,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 	{
 		private readonly Assembly _assembly;
 		private readonly string _pathToAboutBoxHtml;
+		private TempFile _tempAboutBoxHtmlFile; // after update by AcknowledgementsProvider
 
 		public event EventHandler CheckForUpdatesClicked;
 		public event EventHandler ReleaseNotesClicked;
@@ -39,7 +46,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
-			
+
 			if (CheckForUpdatesClicked == null)
 				_checkForUpdates.Visible = false;
 			else
@@ -63,10 +70,10 @@ namespace SIL.Windows.Forms.Miscellaneous
 		{
 			get
 			{
-				object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
+				var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
 				if (attributes.Length > 0)
 				{
-					AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute)attributes[0];
+					var titleAttribute = (AssemblyTitleAttribute)attributes[0];
 					if (titleAttribute.Title != "")
 					{
 						return titleAttribute.Title;
@@ -88,12 +95,8 @@ namespace SIL.Windows.Forms.Miscellaneous
 		{
 			get
 			{
-				object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
-				if (attributes.Length == 0)
-				{
-					return "";
-				}
-				return ((AssemblyDescriptionAttribute)attributes[0]).Description;
+				var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
+				return attributes.Length == 0 ? "" : ((AssemblyDescriptionAttribute)attributes[0]).Description;
 			}
 		}
 
@@ -101,12 +104,8 @@ namespace SIL.Windows.Forms.Miscellaneous
 		{
 			get
 			{
-				object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
-				if (attributes.Length == 0)
-				{
-					return "";
-				}
-				return ((AssemblyProductAttribute)attributes[0]).Product;
+				var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
+				return attributes.Length == 0 ? "" : ((AssemblyProductAttribute)attributes[0]).Product;
 			}
 		}
 
@@ -114,12 +113,8 @@ namespace SIL.Windows.Forms.Miscellaneous
 		{
 			get
 			{
-				object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
-				if (attributes.Length == 0)
-				{
-					return "";
-				}
-				return ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
+				var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
+				return attributes.Length == 0 ? "" : ((AssemblyCopyrightAttribute)attributes[0]).Copyright;
 			}
 		}
 
@@ -127,12 +122,22 @@ namespace SIL.Windows.Forms.Miscellaneous
 		{
 			get
 			{
-				object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
+				var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
+				return attributes.Length == 0 ? "" : ((AssemblyCompanyAttribute)attributes[0]).Company;
+			}
+		}
+
+		public AcknowledgementAttribute[] AssemblyAcknowledgements
+		{
+			get
+			{
+				var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AcknowledgementAttribute), false);
 				if (attributes.Length == 0)
 				{
-					return "";
+					return new AcknowledgementAttribute[0];
 				}
-				return ((AssemblyCompanyAttribute)attributes[0]).Company;
+				return attributes.Cast<AcknowledgementAttribute>().ToArray();
+
 			}
 		}
 		#endregion
@@ -188,13 +193,105 @@ namespace SIL.Windows.Forms.Miscellaneous
 			return string.Empty;
 		}
 
+		/// <summary>
+		/// Put this string in your project's AboutBox.html file. The SILAboutBox will replace it with all the
+		/// dependencies it can collect from your project's dependencies' AssemblyInfo.cs files.
+		/// Each dependency will be embedded in a <li></li> element, so normally you will want <ul></ul> around
+		/// this DependencyMarker. The AcknowledgementsProvider doesn't put out the ul elements, since there may be
+		/// other dependencies to be included besides those this tool can find.
+		/// </summary>
+		public const string DependencyMarker = "#DependencyAcknowledgements#";
+
 		private void SILAboutBoxShown(object sender, EventArgs e)
 		{
-			//review: EB had changed from Navigate to this in ab66af23393f74b767ffd78c2182bd1fdc8eb963, presumably to 
+			//review: EB had changed from Navigate to this in ab66af23393f74b767ffd78c2182bd1fdc8eb963, presumably to
 			// get around the AllowNavigation=false problem. It may work on Linux, but it didn't on Windows, which would just show a blank browser.
 			//_browser.Url = new Uri(_pathToAboutBoxHtml);
 			// So I've instead modified the browser wrapper to always let the first navigation get through, regardless
-			_browser.Navigate(_pathToAboutBoxHtml);
+			var filePath = AcknowledgementsProvider.GetFullNonUriFileName(_pathToAboutBoxHtml);
+			var aboutBoxHtml = File.ReadAllText(filePath);
+			aboutBoxHtml = ValidateHtml(aboutBoxHtml);
+			if (!aboutBoxHtml.Contains(DependencyMarker))
+			{
+				_browser.Navigate(_pathToAboutBoxHtml);
+			}
+			else
+			{
+				var insertableAcknowledgements = AcknowledgementsProvider.AssembleAcknowledgements();
+				var newHtmlContents = aboutBoxHtml.Replace(DependencyMarker, insertableAcknowledgements);
+				// Create a temporary file with the DependencyMarker replaced with our collected Acknowledgements.
+				// This file will be deleted OnClosed.
+				_tempAboutBoxHtmlFile = new TempFile(newHtmlContents);
+				_browser.Navigate(_tempAboutBoxHtmlFile.Path);
+			}
+		}
+
+		internal const string MinimalHtmlContents = "<html><head><meta charset='UTF-8' /></head><body></body><ul>" +
+								DependencyMarker + "</ul></html>";
+
+		/// <summary>
+		/// Make sure the About Box html is valid by loading it into an XmlDocument.
+		/// Also ensure that it uses Unicode, since even common things like copyright symbols
+		/// won't be rendered correctly otherwise.
+		/// Internal for testing
+		/// </summary>
+		internal static string ValidateHtml(string htmlString)
+		{
+			XmlDocument dom;
+			XmlNode headNode;
+			try
+			{
+				dom = new XmlDocument {InnerXml = htmlString};
+				var charsetNode = dom.SelectSingleNode("//head/meta[@charset]");
+				if (charsetNode != null)
+				{
+					return htmlString; // don't overwrite any existing charset attribute
+				}
+				headNode = dom.SelectSingleNode("//head");
+				if (headNode == null)
+				{
+					var bodyNode = dom.SelectSingleNode("//body");
+					if (bodyNode == null)
+					{
+						// What!? Someone created an AboutBox html file with no body element?!
+						// Create a minimal file
+						return MinimalHtmlContents;
+					}
+					headNode = dom.CreateElement("head");
+					bodyNode.ParentNode.InsertBefore(headNode, bodyNode);
+				}
+				var metaNode = dom.CreateElement("meta");
+				var charsetAttr = dom.CreateAttribute("charset");
+				charsetAttr.Value = "UTF-8";
+				metaNode.SetAttributeNode(charsetAttr);
+				headNode.AppendChild(metaNode);
+				return dom.InnerXml;
+			}
+			catch (XmlException ex)
+			{
+				Debug.WriteLine("Loading the AboutBox html threw an exception: " + ex.Message);
+				return MinimalHtmlContents;
+			}
+		}
+
+		protected override void OnClosed(EventArgs e)
+		{
+			// Clean up our temporary file
+			try
+			{
+				if (_tempAboutBoxHtmlFile != null) // shouldn't happen, but might as well be careful.
+				{
+					File.Delete(_tempAboutBoxHtmlFile.Path);
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine("Temporary file deletion failed. " + _tempAboutBoxHtmlFile.Path + ex.Message);
+			}
+			finally
+			{
+				base.OnClosed(e);
+			}
 		}
 	}
 }
