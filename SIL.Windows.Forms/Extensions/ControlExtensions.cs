@@ -131,9 +131,9 @@ namespace SIL.Windows.Forms.Extensions
 					// var unused = control.Handle
 					// This can create the handle on the wrong thread and make the application unstable. (I believe it would crash instantly on Linux.)
 				}
-				// Technically, if forceSynchronous is false, we could call control.BeginInvoke, but then we'd need to wrap it in a
-				// delegate (as above) to re-check to see if the control has been disposed. Probably not worth it. If we're already
-				// on the UI thread, even if synchronous execution wasn't required, it should be okay.
+				// Technically, if forceSynchronous is false, we could call control.BeginInvoke, but that just complicates our code
+				// (another chance for the control to get disposed before action() happens), and by definition the order in which
+				// things happen doesn't matter if we aren't forcing things to be synchronous.
 				action();
 			}
 			else
