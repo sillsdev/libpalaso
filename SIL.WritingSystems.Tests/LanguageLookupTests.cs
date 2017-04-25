@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using NUnit.Framework;
+using SIL.Extensions;
 
 namespace SIL.WritingSystems.Tests
 {
@@ -95,6 +96,37 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(lookup.SuggestLanguages("english").First().Names.Count(s => s == "English"), Is.EqualTo(1));
 		}
 
+		[TestCase("en", "United Kingdom")] // a typical result
+		[TestCase("ro", "Romania")] // even more typical (and different from langInfo.Countries.First()).
+		[TestCase("zrp", "France")] // a three-letter code that has a region
+		[TestCase("xak", "Venezuala")] // two special cases, the countries without regions and with >1 country
+		[TestCase("itd", "Indonesia")]
+		[TestCase("qaa", "?")] // a special case
+		[TestCase("bua", "Russian Federation")] // no region, but does have a unique country
+		public void FindsCorrectPrimaryCountry(string code, string primaryCountry)
+		{
+			var lookup = new LanguageLookup();
+			var lang = lookup.GetLanguageFromCode(code);
+			Assert.That(lang.PrimaryCountry, Is.EqualTo(primaryCountry));
+		}
+
+		/// <summary>
+		/// At the time I wrote these tests, only the indicated two languages had more than one
+		/// country and lacked a region specification to disambigute the primary country.
+		/// This test is designed to catch a change in that situation when the language data
+		/// tables are updated.
+		/// </summary>
+		[Test]
+		public void AllExpectedLanguagesHaveUniquePrimaryCountries()
+		{
+			var languagesWithoutRegions = new LanguageLookup().LanguagesWithoutRegions();
+			var languagesWithAmbiguousPrimaryCountry =
+				languagesWithoutRegions.Where(l => l.Countries.Count() > 1);
+			foreach (var lang in languagesWithAmbiguousPrimaryCountry)
+			{
+				Assert.That(lang.LanguageTag, Is.EqualTo("xak").Or.EqualTo("itd"));
+			}
+		}
 
 		[Test]
 		public void SuggestLanguages_GivenUnambigous3LetterCode_ReturnsLanguage()
@@ -162,6 +194,25 @@ namespace SIL.WritingSystems.Tests
 			Assert.True(languages.Any(l => l.Names.Contains("Ak") && !l.IsMacroLanguage));
 			Assert.True(languages.Any(l => l.Names.Contains("Akan") && l.IsMacroLanguage));
 			Assert.True(languages.Any(l => l.Names.Contains("Fanti") && l.IsMacroLanguage));
+		}
+
+		[Test]
+		public void SuggestLanguages_ByCountry_Matches()
+		{
+			var lookup = new LanguageLookup();
+			var languages = lookup.SuggestLanguages("United States");
+			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("en")));
+			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("es")));
+
+			languages = lookup.SuggestLanguages("Fran"); // prefix of 'France'
+			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("fr")));
+
+			languages = lookup.SuggestLanguages("Russian");
+			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("bua"))); // macro-language in Russian Federation
+
+			languages = lookup.SuggestLanguages("?");
+			Assert.That(languages, Has.No.Member(lookup.GetLanguageFromCode("qaa")));
+			Assert.That(languages, Has.No.Member(lookup.GetLanguageFromCode("mn-Mong")));
 		}
 
 		[Test]
