@@ -2,7 +2,7 @@
 #region // Copyright (c) 2014, SIL International.
 // <copyright from='2008' to='2014' company='SIL International'>
 //		Copyright (c) 2014, SIL International.   
-//    
+//	
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
 // </copyright> 
 #endregion
@@ -11,12 +11,56 @@
 // --------------------------------------------------------------------------------------------
 namespace SIL.Scripture
 {
-    public interface IScrVers
-    {
-        int GetLastChapter(int bookNum);
+	public interface IScrVers
+	{
+		string Name { get; }
 
-        int GetLastVerse(int bookNum, int chapterNum);
+		/// <summary>
+		/// Gets last book in this versification
+		/// </summary>
+		int GetLastBook();
 
-        int ChangeVersification(int reference, IScrVers scrVersSource);
-    }
+		/// <summary>
+		/// Gets last chapter number in the given book.
+		/// </summary>
+		int GetLastChapter(int bookNum);
+
+		/// <summary>
+		/// Gets last verse number in the given book/chapter.
+		/// </summary>
+		int GetLastVerse(int bookNum, int chapterNum);
+
+		int ChangeVersification(int reference, IScrVers scrVersSource);
+
+		/// <summary>
+		/// Determines whether the specified verse is excluded in the versification.
+		/// </summary>
+		bool IsExcluded(int bbbcccvvv);
+
+		/// <summary>
+		/// Gets first reference starting at the specified book/chapter considering excluded verses.
+		/// </summary>
+		/// <returns>first verse in the specified book and chapter that is not excluded or
+		/// returns <c>null</c> if no included verse left in book</returns>
+		VerseRef FirstIncludedVerse(int bookNum, int chapterNum);
+
+		/// <summary>
+		/// Gets a list of verse segments for the specified reference or null if the specified
+		/// reference does not have segments defined in the versification.
+		/// </summary>
+		string[] VerseSegments(int bbbcccvvv);
+
+		/// <summary>
+		/// Change the passed VerseRef to be this versification applying any necessary mappings.
+		/// </summary>
+		void ChangeVersification(VerseRef reference);
+
+		/// <summary>
+		/// Change the versification of an entry with Verse like 1-3 or 1,3a applying any necessary mappings to each part.
+		/// Can't really work in the most general case because the verse parts could become separate chapters.
+		/// </summary>
+		/// <returns>true if successful (i.e. all verses were in the same the same chapter in the new versification),
+		/// false if the changing resulted in the reference spanning chapters (which makes the results undefined)</returns>
+		bool ChangeVersificationWithRanges(VerseRef reference);
+	}
 }

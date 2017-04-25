@@ -2,7 +2,7 @@
 #region // Copyright (c) 2014, SIL International.
 // <copyright from='2005' to='2014' company='SIL International'>
 //		Copyright (c) 2014, SIL International.   
-//    
+//	
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
 // </copyright> 
 #endregion
@@ -167,15 +167,15 @@ namespace SIL.Scripture
 		}
 		#endregion
 
-        /// ------------------------------------------------------------------------------------
-        /// <summary>
-        /// Gets an instance representing an "empty" reference.
-        /// </summary>
-        /// ------------------------------------------------------------------------------------
-        public static BCVRef Empty
-        {
-            get { return new BCVRef(); }
-        }
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets an instance representing an "empty" reference.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public static BCVRef Empty
+		{
+			get { return new BCVRef(); }
+		}
 
 		#region Operators
 		/// ------------------------------------------------------------------------------------
@@ -435,20 +435,20 @@ namespace SIL.Scripture
 					return false;
 				return (m_chapter >= 1 && (m_verse > 0 || (m_verse == 0 && m_chapter == 1)));
 			}
-        }
+		}
 
-        /// ------------------------------------------------------------------------------------
-        /// <summary>
-        /// Determines if the reference is valid for the given versification.
-        /// </summary>
-        /// ------------------------------------------------------------------------------------
-        public virtual bool IsValidInVersification(IScrVers versification)
-        {
-            return Valid && (versification.GetLastChapter(Book) >= Chapter &&
-                versification.GetLastVerse(Book, Chapter) >= Verse);
-        }
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Determines if the reference is valid for the given versification.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public virtual bool IsValidInVersification(IScrVers versification)
+		{
+			return Valid && (versification.GetLastChapter(Book) >= Chapter &&
+				versification.GetLastVerse(Book, Chapter) >= Verse);
+		}
 
-	    /// ------------------------------------------------------------------------------------
+		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Determine if the book is valid.
 		/// </summary>
@@ -493,28 +493,28 @@ namespace SIL.Scripture
 			}
 		}
 
-        /// ------------------------------------------------------------------------------------
-        /// <summary>
-        /// Gets whether this book only has one chapter. Since BCVRef doesn't have versification
-        /// info, we just hardcode this.
-        /// </summary>
-        /// ------------------------------------------------------------------------------------
-        public virtual bool IsSingleChapterBook
-        {
-            get
-            {
-                switch (m_book)
-                {
-                    case 31:
-                    case 57:
-                    case 63:
-                    case 64:
-                    case 65:
-                        return true;
-                }
-                return false;
-            }
-        }
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets whether this book only has one chapter. Since BCVRef doesn't have versification
+		/// info, we just hardcode this.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public virtual bool IsSingleChapterBook
+		{
+			get
+			{
+				switch (m_book)
+				{
+					case 31:
+					case 57:
+					case 63:
+					case 64:
+					case 65:
+						return true;
+				}
+				return false;
+			}
+		}
 		#endregion
 
 		#region ToString methods
@@ -860,25 +860,25 @@ namespace SIL.Scripture
 				return;
 			}
 
-		    sAfterToken = sAfterToken.TrimStart(null);
+			sAfterToken = sAfterToken.TrimStart(null);
 
 			// If there is no chapter:verse portion then just set 1:1
-		    if (sAfterToken == string.Empty)
-		    {
-		        m_chapter = m_verse = 1;
-                return;
-		    }
-		    
-		    m_chapter = 0;
-		    m_verse = -1;
+			if (sAfterToken == string.Empty)
+			{
+				m_chapter = m_verse = 1;
+				return;
+			}
+			
+			m_chapter = 0;
+			m_verse = -1;
 
-		    // Break out the chapter and verse numbers
+			// Break out the chapter and verse numbers
 			bool inChapter = true;
-            if (IsSingleChapterBook && (sAfterToken[0] != '1' || (sAfterToken.Length > 1 && Char.IsDigit(sAfterToken[1]))))
-            {
-                m_chapter = 1;
-                inChapter = false;
-            }
+			if (IsSingleChapterBook && (sAfterToken[0] != '1' || (sAfterToken.Length > 1 && Char.IsDigit(sAfterToken[1]))))
+			{
+				m_chapter = 1;
+				inChapter = false;
+			}
 
 			foreach (char ch in sAfterToken)
 			{
@@ -917,9 +917,157 @@ namespace SIL.Scripture
 			if (m_verse == -1)
 				m_verse = 1;
 		}
-	    #endregion
+		#endregion
 
 		#region Book/Chapter/Verse conversions
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Convert a chapter number string into an integer and ignore the remaining text
+		/// </summary>
+		/// <param name="chapterString"></param>
+		/// <returns></returns>
+		/// ------------------------------------------------------------------------------------
+		public static int ChapterToInt(string chapterString)
+		{
+			string dummy;
+
+			return ChapterToInt(chapterString, out dummy);
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Convert a chapter number string into an integer
+		/// </summary>
+		/// <param name="chapterString">string representing the chapter number</param>
+		/// <param name="remainingText">returns the remaining non-number portion of the string</param>
+		/// <returns>The chapter number</returns>
+		/// ------------------------------------------------------------------------------------
+		public static int ChapterToInt(string chapterString, out string remainingText)
+		{
+			remainingText = string.Empty;
+			if (chapterString == null)
+				throw new ArgumentNullException("chapterString");
+			chapterString = chapterString.TrimStart();
+			if (chapterString == string.Empty)
+				throw new ArgumentException("The chapter string was empty");
+			if (!Char.IsDigit(chapterString[0]))
+				throw new ArgumentException("The chapter string does not start with a digit");
+
+			int chapter = 0;
+			for (int i = 0; i < chapterString.Length; i++)
+			{
+				char ch = chapterString[i];
+				if (Char.IsDigit(ch))
+				{
+					chapter = chapter * 10 + (int)Char.GetNumericValue(ch);
+					if (chapter > Int16.MaxValue)
+						chapter = Int16.MaxValue;
+				}
+				else
+				{
+					remainingText = chapterString.Substring(i);
+					break;
+				}
+			}
+			if (chapter == 0)
+				throw new ArgumentException("The chapter number evaluated to 0");
+			return chapter;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// A version of VerseToInt that returns the starting verse value. 
+		/// </summary>
+		/// <param name="sourceString"></param>
+		/// <returns>the starting verse value</returns>
+		/// ------------------------------------------------------------------------------------
+		public static int VerseToIntStart(string sourceString)
+		{
+			int startVerse, endVerse;
+			VerseToInt(sourceString, out startVerse, out endVerse);
+			return startVerse;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// A version of VerseToInt that returns the ending verse value. 
+		/// </summary>
+		/// <param name="sourceString"></param>
+		/// <returns>the ending verse value</returns>
+		/// ------------------------------------------------------------------------------------
+		public static int VerseToIntEnd(string sourceString)
+		{
+			int startVerse, endVerse;
+			VerseToInt(sourceString, out startVerse, out endVerse);
+			return endVerse;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// This is a helper function to get a starting and ending verse number from a string
+		/// which may or may not represent a verse bridge. Ignore any unusual syntax.
+		/// </summary>
+		/// <param name="sVerseNum">the string representing the verse number(s).</param>
+		/// <param name="nVerseStart">the starting verse number in sVerseNum.</param>
+		/// <param name="nVerseEnd">the ending verse number in sVerseNum (will be different from
+		/// startRef if sVerseNum represents a verse bridge).</param>
+		/// ------------------------------------------------------------------------------------
+		public static void VerseToInt(string sVerseNum, out int nVerseStart, out int nVerseEnd)
+		{
+			int nFactor = 1;
+			int nVerseT = 0;
+			nVerseStart = nVerseEnd = 0;
+			// nVerseFirst is the left-most (or right-most if R2L) non-zero number found.
+			int nVerseFirst = nVerseT;
+			bool fVerseBridge = false;
+			if (sVerseNum == null)
+				return;
+			// REVIEW JohnW (TomB): For robustness, our initial implementation will assume
+			// that the first set of contiguous numbers is the starting verse number and
+			// the last set of contiguous numbers is the ending verse number. This way, we
+			// don't have to know what all the legal possibilities of bridge markers and
+			// sub-verse segment indicators are.
+			for (int i = sVerseNum.Length - 1; i >= 0; i--)
+			{
+				int numVal = -1;
+				if (Char.IsDigit(sVerseNum[i]))
+					numVal = (int)Char.GetNumericValue(sVerseNum[i]);
+
+				if (numVal >= 0 && numVal <= 9)
+				{
+					if (nFactor > 100) // verse number greater than 999
+					{
+						// REVIEW JohnW (TomB): Need to decide how we want to display this.
+						nVerseT = 999;
+					}
+					else
+					{
+						nVerseT += nFactor * numVal;
+						nFactor *= 10;
+					}
+					nVerseFirst = nVerseT;
+				}
+				else if (nVerseT > 0)
+				{
+					if (!fVerseBridge)
+					{
+						fVerseBridge = true;
+						nVerseFirst = nVerseEnd = nVerseT;
+					}
+					nVerseT = 0;
+					nFactor = 1;
+				}
+			}
+			nVerseStart = nVerseFirst;
+			if (!fVerseBridge)
+				nVerseEnd = nVerseFirst;
+
+			// Don't want to use an assertion for this because it could happen due to bad input data.
+			// If this causes problems, just pick one ref and use it for both or something.
+			// TODO TomB: Later, we need to catch this and flag it as an error.
+			//Assert(nVerseStart <= nVerseEnd);
+		}
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Map an SIL book code to a book number (1=GEN, 66=REV)

@@ -2,7 +2,7 @@
 #region // Copyright (c) 2014, SIL International.
 // <copyright from='2013' to='2014' company='SIL International'>
 //		Copyright (c) 2014, SIL International.   
-//    
+//	
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
 // </copyright> 
 #endregion
@@ -52,6 +52,41 @@ namespace SIL.Scripture.Tests
 		public int ChangeVersification(int reference, IScrVers scrVersSource)
 		{
 			return m_vers.ChangeVersification(reference, scrVersSource);
+		}
+
+		public string Name
+		{
+			get { return "dummy"; }
+		}
+
+		public int GetLastBook()
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public bool IsExcluded(int bbbcccvvv)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public VerseRef FirstIncludedVerse(int bookNum, int chapterNum)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public string[] VerseSegments(int bbbcccvvv)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void ChangeVersification(VerseRef reference)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public bool ChangeVersificationWithRanges(VerseRef reference)
+		{
+			throw new System.NotImplementedException();
 		}
 	}
 }
