@@ -4,6 +4,14 @@ using SIL.Media.Tests.Properties;
 
 namespace SIL.Media.Tests
 {
+	/// <summary>
+	/// All these tests are skipped on TeamCity (even if you remove this category) because SIL.Media.Tests compiles to an exe,
+	/// and the project that builds libpalaso on TeamCity (build/Palaso.proj, task Test) invokes RunNUnitTC which
+	/// selects the test assemblies using Include="$(RootDir)/output/$(Configuration)/*.Tests.dll" which excludes exes.
+	/// I have not tried to verify that all of these tests would actually have problems on TeamCity, but it seemed
+	/// helpful to document in the usual way that they are not, in fact, run there. 
+	/// </summary>
+	[Category("SkipOnTeamCity")]
 	[TestFixture]
 	public class MediaInfoTests
 	{

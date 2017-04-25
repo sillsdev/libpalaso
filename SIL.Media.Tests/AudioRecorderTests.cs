@@ -10,6 +10,14 @@ using SIL.TestUtilities;
 
 namespace SIL.Media.Tests
 {
+	/// <summary>
+	/// All these tests are skipped on TeamCity (even if you remove this category) because SIL.Media.Tests compiles to an exe,
+	/// and the project that builds libpalaso on TeamCity (build/Palaso.proj, task Test) invokes RunNUnitTC which
+	/// selects the test assemblies using Include="$(RootDir)/output/$(Configuration)/*.Tests.dll" which excludes exes.
+	/// I have not tried to verify that all of these tests would actually have problems on TeamCity, but it seemed
+	/// helpful to document in the usual way that they are not, in fact, run there. 
+	/// </summary>
+	[NUnit.Framework.Category("SkipOnTeamCity")]
 	[TestFixture]
 	[NUnit.Framework.Category("AudioTests")]
 	public class AudioRecorderTests
@@ -118,6 +126,21 @@ namespace SIL.Media.Tests
 			Assert.Throws<FileNotFoundException>(() => x.Play());
 		}
 
+		// It's not completely reproducible, but typically including one of the tests marked like this
+		// will cause aborting the whole test sequence (or cause it to lock up, if you aren't using a
+		// test runner with a time limit). As near as I can make out, things fail at so high a level
+		// that no useful stack trace emerges. The problem seems to be the one described at
+		// http://lambert.geek.nz/2007/05/unmanaged-appdomain-callback/. Specifically, something
+		// in IrrKlang's unmanaged code calls a managed-code function. The common case appears to be
+		// to report that Play has stopped, but there may be other callbacks. This works fine in an
+		// app that is only running in one AppDomain, but NUnit uses two, one for the test management
+		// code and one for the SUT. Apparently unmanaged code has no way to know which AppDomain to
+		// make the call-back in and guesses the first and that is wrong, leading to an exception
+		// "Cannot pass a GCHandle across AppDomains". Somehow this is at such a high level that
+		// it freezes up the whole test sequence, possibly because the exception is thrown in
+		// NUnit's management AppDomain. There doesn't seem to be any way to fix this in our code
+		// (the link above suggests something IrrKlang could do) so I've disabled the offending tests.
+		[Ignore("Aborts with 'GC across AppDomain not allowed' IrrKlang.Play/Nunit incompatibility")]
 		[Test]
 		public void CanStop_WhilePlaying_True()
 		{
@@ -163,6 +186,7 @@ namespace SIL.Media.Tests
 			}
 		}
 
+		[Ignore("Aborts with 'GC across AppDomain not allowed' IrrKlang.Play/Nunit incompatibility")]
 		[Test]
 		public void RecordThenPlay_SmokeTest()
 		{
@@ -182,6 +206,7 @@ namespace SIL.Media.Tests
 			}
 		}
 
+		[Ignore("Aborts with 'GC across AppDomain not allowed' IrrKlang.Play/Nunit incompatibility")]
 		[Test]
 		public void Play_GiveThaiFileName_ShouldHearTwoSounds()
 		{
@@ -287,6 +312,7 @@ namespace SIL.Media.Tests
 			}
 		}
 
+		[Ignore("IrrKlang Play not compatible with NUnit")]
 		[Test]
 		public void CanRecord_WhilePlaying_False()
 		{
@@ -299,6 +325,7 @@ namespace SIL.Media.Tests
 			}
 		}
 
+		[Ignore("Aborts with 'GC across AppDomain not allowed' IrrKlang.Play/Nunit incompatibility")]
 		[Test]
 		public void CanPlay_WhilePlaying_False()
 		{
@@ -330,6 +357,7 @@ namespace SIL.Media.Tests
 			}
 		}
 
+		[Ignore("Aborts with 'GC across AppDomain not allowed' IrrKlang.Play/Nunit incompatibility")]
 		[Test]
 		public void RecordThenPlay_OK()
 		{
@@ -351,6 +379,7 @@ namespace SIL.Media.Tests
 			return x;
 		}
 
+		[Ignore("Aborts with 'GC across AppDomain not allowed' IrrKlang.Play/Nunit incompatibility")]
 		[Test]
 		public void Play_DoesPlay ()
 		{
@@ -366,12 +395,15 @@ namespace SIL.Media.Tests
 		public void Record_DoesRecord ()
 		{
 
-			string fpath = "/tmp/dump.ogg";
-			var x = AudioFactory.AudioSession (fpath);
-			Assert.DoesNotThrow( () => x.StartRecording() );
-			Assert.IsTrue(x.IsRecording);
-			Thread.Sleep(1000);
-			Assert.DoesNotThrow( () => x.StopRecordingAndSaveAsWav() );
+			using (var folder = new TemporaryFolder("Record_DoesRecord"))
+			{
+				string fpath = Path.Combine(folder.Path, "dump.ogg");
+				var x = AudioFactory.AudioSession(fpath);
+				Assert.DoesNotThrow(() => x.StartRecording());
+				Assert.IsTrue(x.IsRecording);
+				Thread.Sleep(1000);
+				Assert.DoesNotThrow(() => x.StopRecordingAndSaveAsWav());
+			}
 		}
 	}
 }
