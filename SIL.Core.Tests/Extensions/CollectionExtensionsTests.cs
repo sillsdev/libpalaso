@@ -76,5 +76,81 @@ namespace SIL.Tests.Extensions
 			string[] array2 = {"A", "B", "C", "D"};
 			Assert.That(array1.SequenceCompare(array2), Is.EqualTo(-1));
 		}
+
+		[Test]
+		public void KeyedSetsEqual_SimpleType()
+		{
+			Assert.IsTrue(new[] { 1, 5, 9, 10, 27 }.KeyedSetsEqual(new[] { 1, 5, 9, 10, 27 }));
+			Assert.IsTrue(new[] { 1, 5, 9, 10, 27 }.KeyedSetsEqual(new[] { 27, 1, 10, 9, 5 }));
+			Assert.IsTrue(new int[0].KeyedSetsEqual(new int[0]));
+
+			Assert.IsFalse(new[] { 1, 5, 9, 10, 27 }.KeyedSetsEqual(new[] { 27, 10, 9, 5 }));
+			Assert.IsFalse(new int[0].KeyedSetsEqual(new[] { 27, 1 }));
+			Assert.IsFalse(new[] { 27, 1 }.KeyedSetsEqual(new int[0]));
+		}
+
+		[Test]
+		public void KeyedSetsEqual_KeyValuePair()
+		{
+			Assert.IsTrue(new[] { new KeyValuePair<string, string>("here", "there"), new KeyValuePair<string, string>("john", "smith") }
+				.KeyedSetsEqual(new[] { new KeyValuePair<string, string>("john", "smith"), new KeyValuePair<string, string>("here", "there") }));
+
+			Assert.IsTrue(new[] { new KeyValuePair<TstCmp, TstCmp>(new TstCmp(1, 2), new TstCmp(3, 5)),
+				new KeyValuePair<TstCmp, TstCmp>(new TstCmp(8, 9), new TstCmp(6, 7)) }
+				.KeyedSetsEqual(new[] { new KeyValuePair<TstCmp, TstCmp>(new TstCmp(8, 9), new TstCmp(6, 7)),
+					new KeyValuePair<TstCmp, TstCmp>(new TstCmp(1, 2), new TstCmp(3, 5)) }));
+
+			Assert.IsFalse(new[] { new KeyValuePair<string, string>("here", "there"), new KeyValuePair<string, string>("john", "smith") }
+				.KeyedSetsEqual(new[] { new KeyValuePair<string, string>("smith", "john"), new KeyValuePair<string, string>("there", "here") }));
+
+			Assert.IsFalse(new[] { new KeyValuePair<TstCmp, TstCmp>(new TstCmp(1, 2), new TstCmp(3, 5)),
+				new KeyValuePair<TstCmp, TstCmp>(new TstCmp(8, 9), new TstCmp(6, 7)) }
+				.KeyedSetsEqual(new[] { new KeyValuePair<TstCmp, TstCmp>(new TstCmp(7, 0), new TstCmp(6, 7)),
+					new KeyValuePair<TstCmp, TstCmp>(new TstCmp(1, 2), new TstCmp(3, 5)) }));
+		}
+
+		[Test]
+		public void KeyedSetsEqual_UsingDictionary()
+		{
+			Assert.IsTrue(new Dictionary<string, string> { { "here", "there" }, { "john", "smith" } }
+				.KeyedSetsEqual(new Dictionary<string, string> { { "john", "smith" }, { "here", "there" } }));
+
+			Assert.IsTrue(new Dictionary<TstCmp, TstCmp> { { new TstCmp(1, 2), new TstCmp(3, 5) }, { new TstCmp(8, 9), new TstCmp(6, 7) } }
+				.KeyedSetsEqual(new Dictionary<TstCmp, TstCmp> { { new TstCmp(8, 9), new TstCmp(6, 7) }, { new TstCmp(1, 2), new TstCmp(3, 5) } }));
+
+			Assert.IsFalse(new Dictionary<string, string> { { "here", "there" }, { "john", "smith" } }
+				.KeyedSetsEqual(new Dictionary<string, string> { { "smith", "john" }, { "there", "here" } }));
+
+			Assert.IsFalse(new Dictionary<string, string> { { "here", "there" }, { "john", "smith" } }
+				.KeyedSetsEqual(new Dictionary<string, string> { { "john", "jones" }, { "here", "stay" } }));
+
+			Assert.IsFalse(new Dictionary<TstCmp, TstCmp> { { new TstCmp(1, 2), new TstCmp(3, 5) }, { new TstCmp(8, 9), new TstCmp(6, 7) } }
+				.KeyedSetsEqual(new Dictionary<TstCmp, TstCmp> { { new TstCmp(7, 0), new TstCmp(6, 7) }, { new TstCmp(1, 2), new TstCmp(3, 5) } }));
+		}
+
+		#region TstCmp class
+		private sealed class TstCmp
+		{
+			private readonly int V1;
+			private readonly int V2;
+
+			public TstCmp(int v1, int v2)
+			{
+				V1 = v1;
+				V2 = v2;
+			}
+
+			public override int GetHashCode()
+			{
+				return V1 ^ V2;
+			}
+
+			public override bool Equals(object obj)
+			{
+				TstCmp other = obj as TstCmp;
+				return other != null && other.V1 == V1 && other.V2 == V2;
+			}
+		}
+		#endregion
 	}
 }

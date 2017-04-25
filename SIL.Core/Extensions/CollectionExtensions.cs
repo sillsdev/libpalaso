@@ -402,6 +402,31 @@ namespace SIL.Extensions
 				collection.Remove(item);
 		}
 
+		/// <summary>
+		/// Compares the values in two collections to determine whether they contain exactly the same items.
+		/// <para>WARNING: This method only works on collections that come from a keyed set (e.g. HashSet or Dictionary)
+		/// where an item is guaranteed to only appear once.</para>
+		/// </summary>
+		/// <remarks>This also works efficiently on a dictionary as it has an implementation of ICollection.Contains that takes a
+		/// KeyValuePair and does a hash lookup.</remarks>
+		public static bool KeyedSetsEqual<T>(this ICollection<T> first, ICollection<T> second, IEqualityComparer<T> comparer = null)
+		{
+			if (first == null)
+				throw new ArgumentNullException("first");
+			if (second == null)
+				throw new ArgumentNullException("second");
+
+			if (ReferenceEquals(first, second))
+				return true;
+
+			if (first.Count != second.Count)
+				return false;
+
+			// WARNING: Don't change the code to use LINQ unconditionally because it will be much slower than
+			// using the Contains method if the ICollection is a HashSet or Dictionary (which is typically
+			// going to be the case).
+			return comparer == null ? first.All(second.Contains) : first.All(i => second.Contains(i, comparer));
+		}
 		#endregion
 
 		#region ISet
