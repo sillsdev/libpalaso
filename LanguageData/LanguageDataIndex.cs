@@ -9,11 +9,14 @@ using Newtonsoft.Json;
 using SIL.Extensions;
 using SIL.WritingSystems;
 
+// LanguageData is a separate program for gathering standard language information together
+// It should be run when you want to check for new data files or create the LanguageDataIndex.txt
+// See https://github.com/sillsdev/libpalaso/wiki/LanguageData for more details
 namespace LanguageData
 {
 	/// <summary>
 	/// Generates LanguageDataIndex.txt using data from the Ethnologue, IANA subtag repository and the SLDR.
-	/// This is used to populate SIL.WritingSystems.LanguageLookup for searching
+	/// This is the resource that is used to populate SIL.WritingSystems.LanguageLookup for searching
 	/// Also can generate LanguageDataIndex.json for webapps to consume
 	/// </summary>
 	public class LanguageDataIndex
@@ -70,7 +73,7 @@ namespace LanguageData
 				}
 
 				string regionCode = items[1].Trim();
-				LanguageInfo language = GetOrCreateLanguageFromCode(code, threelettercode, regionCode == "?" ? "?" : StandardSubtags.RegisteredRegions[regionCode].Name);
+				LanguageInfo language = GetOrCreateLanguageFromCode(code, threelettercode, regionCode == "?" ? "" : StandardSubtags.RegisteredRegions[regionCode].Name);
 
 				string name = items[3].Trim();
 
@@ -175,7 +178,7 @@ namespace LanguageData
 							if (langTag == languageSubtag)
 								continue;
 
-							LanguageInfo language = GetOrCreateLanguageFromCode(langTag, langTag, regionSubtag == null ? "?" : regionSubtag.Name);
+							LanguageInfo language = GetOrCreateLanguageFromCode(langTag, langTag, regionSubtag == null ? "" : regionSubtag.Name); // changed to default to "" 2017-04-24
 							bool displayScript = scriptSubtag != null && !IetfLanguageTag.IsScriptImplied(langTag);
 							LanguageInfo otherLanguage;
 							if (langTag != languageSubtag && !displayScript && _codeToLanguageIndex.TryGetValue(languageSubtag, out otherLanguage) && language.Countries.SetEquals(otherLanguage.Countries))
@@ -293,6 +296,20 @@ namespace LanguageData
 						break;
 				}
 
+			}
+
+			// check if any languages are found in multiple countries but do not have a primary country
+			// there is a test for this in LanguageLookupTests.llExpectedLanguagesHaveUniquePrimaryCountries
+			var languagesWithoutRegions = new List<LanguageInfo>();
+			foreach (var lang in _codeToLanguageIndex.Values)
+			{
+				if (String.IsNullOrEmpty(lang.PrimaryCountry))
+					languagesWithoutRegions.Add(lang);
+			}
+			var languagesWithAmbiguousPrimaryCountry = languagesWithoutRegions.Where(l => l.Countries.Count() > 1);
+			foreach (var lang in languagesWithAmbiguousPrimaryCountry)
+			{
+				Console.WriteLine("Language {0}({1}) has no primary country but is found in multiple countries", lang.DesiredName, lang.LanguageTag);
 			}
 
 		}
