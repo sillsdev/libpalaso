@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 namespace SIL.Unicode
 {
 	public static class CharacterUtils
-	{
+    {
 		private static readonly Dictionary<UnicodeCategory, IGrouping<UnicodeCategory, char>> CharInfo;
 		private static Regex _sentenceEndingRegex;
 

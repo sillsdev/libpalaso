@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Core", "SIL.Core\SIL.Core.csproj", "{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}"
 EndProject
@@ -804,8 +804,8 @@ Global
 		{F71BA7B9-D9DC-4F8C-A307-87B503D0E05B}.ReleaseStrongName|x86.Build.0 = ReleaseStrongName|x86
 		{4528287F-BA86-49D8-AFBB-1250A60CE7EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4528287F-BA86-49D8-AFBB-1250A60CE7EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4528287F-BA86-49D8-AFBB-1250A60CE7EA}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{4528287F-BA86-49D8-AFBB-1250A60CE7EA}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4528287F-BA86-49D8-AFBB-1250A60CE7EA}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{4528287F-BA86-49D8-AFBB-1250A60CE7EA}.Debug|Mixed Platforms.Build.0 = Debug|x86
 		{4528287F-BA86-49D8-AFBB-1250A60CE7EA}.Debug|x86.ActiveCfg = Debug|x86
 		{4528287F-BA86-49D8-AFBB-1250A60CE7EA}.Debug|x86.Build.0 = Debug|x86
 		{4528287F-BA86-49D8-AFBB-1250A60CE7EA}.DebugMono|Any CPU.ActiveCfg = DebugMono|Any CPU

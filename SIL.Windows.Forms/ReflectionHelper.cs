@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
@@ -196,72 +197,17 @@ namespace SIL.Windows.Forms
 		{
 			return ((bool)GetResult(binding, methodName, args));
 		}
-
+        
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Calls a method specified on the specified binding.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public static void CallMethod(object binding, string methodName)
-		{
-			CallMethod(binding, methodName, null);
-		}
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Calls a method specified on the specified binding.
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		public static void CallMethod(object binding, string methodName, object args)
+		public static void CallMethod(object binding, string methodName, params object[] args)
 		{
 			GetResult(binding, methodName, args);
 		}
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Calls a method specified on the specified binding.
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		public static void CallMethod(object binding, string methodName, object arg1, object arg2)
-		{
-			object[] args = new[] {arg1, arg2};
-			GetResult(binding, methodName, args);
-		}
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Calls a method specified on the specified binding.
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		public static void CallMethod(object binding, string methodName, object arg1,
-			object arg2, object arg3)
-		{
-			object[] args = new[] { arg1, arg2, arg3 };
-			GetResult(binding, methodName, args);
-		}
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Calls a method specified on the specified binding.
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		public static void CallMethod(object binding, string methodName, object arg1,
-			object arg2, object arg3, object arg4)
-		{
-			object[] args = new[] { arg1, arg2, arg3, arg4 };
-			GetResult(binding, methodName, args);
-		}
-
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Calls a method specified on the specified binding.
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		public static void CallMethod(object binding, string methodName, object[] args)
-		{
-			GetResult(binding, methodName, args);
-		}
-
+        
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Returns the result of calling a method on the specified binding.
@@ -359,7 +305,7 @@ namespace SIL.Windows.Forms
 		/// may occur.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public static object CallMethodWithThrow(object binding, string name, object[] args)
+		public static object CallMethodWithThrow(object binding, string name, params object[] args)
 		{
 			const BindingFlags flags =
 				(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.InvokeMethod);
