@@ -82,6 +82,8 @@ namespace SIL.Windows.Forms.ImageGallery
 		/// <param name="indexFilePath"></param>
 		public void LoadIndex(string indexFilePath)
 		{
+			if (RootImagePath == null)
+				RootImagePath = Path.GetDirectoryName(indexFilePath).CombineForPath(ImageFolder);
 			using (var f = File.OpenText(indexFilePath))
 			{
 				while (!f.EndOfStream)
@@ -124,6 +126,7 @@ namespace SIL.Windows.Forms.ImageGallery
 		/// <returns>number of index lines successfully loaded</returns>
 		public int LoadMultilingualIndex(string pathToIndexFile, string rootImagePath = null)
 		{
+			Debug.WriteLine($"starting to load index for {pathToIndexFile} at {DateTime.Now.ToString("o")}");
 			if (rootImagePath == null)
 				rootImagePath = RootImagePath;
 			string filenamePrefix = null;
@@ -185,6 +188,7 @@ namespace SIL.Windows.Forms.ImageGallery
 					}
 					++count;
 				}
+				Debug.WriteLine($"finished loading index for {pathToIndexFile} at {DateTime.Now.ToString("o")}");
 				return count;
 			}
 		}
@@ -306,14 +310,17 @@ namespace SIL.Windows.Forms.ImageGallery
 				// we'll see if we can find the file in a subdirectory.
 				var parentDir = Path.GetDirectoryName(path);
 				var fileName = Path.GetFileName(path);
-				var subDirs = Directory.EnumerateDirectories(parentDir);
-				foreach (var subDir in subDirs)
+				if (Directory.Exists(parentDir))
 				{
-					updatedPath = Path.Combine(parentDir, subDir, fileName);
-					if (File.Exists(updatedPath))
+					var subDirs = Directory.EnumerateDirectories(parentDir);
+					foreach (var subDir in subDirs)
 					{
-						yield return updatedPath;
-						continue;
+						updatedPath = Path.Combine(parentDir, subDir, fileName);
+						if (File.Exists(updatedPath))
+						{
+							yield return updatedPath;
+							continue;
+						}
 					}
 				}
 
