@@ -1,7 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using SIL.Code;
@@ -60,7 +58,7 @@ namespace SIL.Windows.Forms.Extensions
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// If the method might be in a different thread, this will do an invoke,
-		/// otherwise it just invokes the action
+		/// otherwise it just invokes the action. <seealso cref="SafeInvoke"/>
 		/// </summary>
 		/// <example>InvokeIfRequired(()=>BackgroundColor=Color.Blue);</example>
 		/// <example>((Control)this).InvokeIfRequired(()=>SetChoices(languages));</example>
@@ -140,6 +138,13 @@ namespace SIL.Windows.Forms.Extensions
 			}
 			else
 			{
+				// Unfortunately, if the control's handle is disposed (on the UI thread) between the time we check above and the time
+				// we attempt to invoke the action on it below, the Invoke or BeginInvoke call will throw an InvalidOperationException,
+				// not an ObjectDisposedException (which seems to make more sense). But in the case where we are invoking synchronously
+				// (and the control is not disposed), it's possible that the action itself could throw an InvalidOperationException, and
+				// we definitely wouldn't want to mistake that case for the special case of the Invoke command throwing the exception.
+				// So we wrap the action in a simple delegate and once inside (on the UI thread), we clear this flag because any subsequent
+				// exception is guaranteed to be caused by the action itself and not because the control had gotten disposed.
 				bool treatInvalidOperationExceptionAsObjectDisposedException = true;
 				try
 				{
@@ -159,8 +164,13 @@ namespace SIL.Windows.Forms.Extensions
 				{
 					if (treatInvalidOperationExceptionAsObjectDisposedException)
 					{
+						// This is to catch the case where the control gets disposed after the check at the start of this method but before
+						// the Invoke or BeginInvoke executes. This does NOT happen if the control is disposed after the BeginInvoke is issued
+						// but before the action is processed. In that case, the action will be dequeued (at least on Windows???), and its
+						// entry will have an exception set (which will be ignored since SafeInvoke doesn't reurn the IAsyncResult).
 						if (errorHandling == ErrorHandlingAction.Throw)
-							throw new ObjectDisposedException("SafeInvoke called after the control was disposed. (" + nameForErrorReporting + ")", e);
+							throw new ObjectDisposedException("Control was disposed before " + (forceSynchronous ? "Invoke" : "BeginInvoke") +
+								" could be called. To suppress this kind of race-condition error, call SafeInvoke with IgnoreIfDisposed. (" + nameForErrorReporting + ")", e);
 					}
 					else
 						throw;

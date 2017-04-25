@@ -104,7 +104,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 		/// subsequently disposed (i.e., before the action can actually be performed), but it turns out that when the control's handle is
 		/// destroyed, the action is dequeued, and an ObjectDisposedException is registered in the entry. That exception is available via
 		/// EndInvoke, but since SafeInvoke does not return the IAsyncResult, this test cannot show that.
-		/// Not that the first SafeInvoke in this test also tests the normal case of an action invoked asynchronously on a non-UI thread.
+		/// Note that the first SafeInvoke in this test also tests the normal case of an action invoked asynchronously on a non-UI thread.
 		/// </summary>
 		[TestCase(ControlExtensions.ErrorHandlingAction.IgnoreAll)]
 		[TestCase(ControlExtensions.ErrorHandlingAction.IgnoreIfDisposed)]
@@ -120,9 +120,19 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			{
 				var ctrl = (Control)args.Argument;
 				Trace.WriteLine("SafeInvoke 1");
-				ctrl.SafeInvoke(() => { Trace.WriteLine("invoking 1"); textFromControl = ctrl.Text; ctrl.Text = "Final Text"; ctrl.Dispose(); }, "Getting initial value and resetting control text.");
+				ctrl.SafeInvoke(() =>
+				{
+					Trace.WriteLine("invoking 1");
+					textFromControl = ctrl.Text;
+					ctrl.Text = "Final Text";
+					ctrl.Dispose();
+				}, "Getting initial value, resetting control text, and disposing control.");
 				Trace.WriteLine("SafeInvoke 2");
-				ctrl.SafeInvoke(() => { Trace.WriteLine("invoking 2"); textFromControl = ctrl.Text; }, "DisposedAfterInvokingOnUiThread", errorHandling);
+				ctrl.SafeInvoke(() =>
+				{
+					Trace.WriteLine("invoking 2");
+					textFromControl = ctrl.Text;
+				}, "DisposedAfterInvokingOnUiThread", errorHandling);
 				Trace.WriteLine("About to sleep on worker thread : 50 ms");
 				Thread.Sleep(50);
 			};
@@ -130,6 +140,28 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			while (worker.IsBusy)
 				Application.DoEvents();
 			Assert.AreEqual("Initial Text", textFromControl);
+		}
+
+		[Test]
+		public void SafeInvoke_Asynchronous_InvokedAsynchronously()
+		{
+			var control = new Control();
+			string textFromControl = null;
+			control.CreateControl();
+			control.Text = "Initial Text";
+			var worker = new BackgroundWorker();
+			worker.DoWork += (sender, args) =>
+			{
+				var ctrl = (Control)args.Argument;
+				Trace.WriteLine("SafeInvoke 1");
+				ctrl.SafeInvoke(() => { Trace.WriteLine("invoking 1"); textFromControl = ctrl.Text; ctrl.Text = "Final Text"; }, "Getting initial value and resetting control text.");
+				Assert.IsNull(textFromControl);
+			};
+			worker.RunWorkerAsync(control);
+			while (worker.IsBusy)
+				Application.DoEvents();
+			Assert.AreEqual("Initial Text", textFromControl);
+			Assert.AreEqual("Final Text", control.Text);
 		}
 
 		[Test]
@@ -144,12 +176,16 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			{
 				var ctrl = (Control)args.Argument;
 				Trace.WriteLine("SafeInvoke 1");
-				ctrl.SafeInvoke(() => { textFromControl = ctrl.Text; ctrl.Text = "Final Text"; }, "Force synchronous.", forceSynchronous: true);
-				Assert.AreEqual("Initial Text", textFromControl);
+				ctrl.SafeInvoke(() =>
+				{
+					textFromControl = ctrl.Text;
+					ctrl.Text = "Final Text";
+				}, "Force synchronous.", forceSynchronous: true);
+				Assert.AreEqual("Initial Text", textFromControl, "Since the invoke was done synchronously, this should have been set before SafeInvoke returned.");
 			};
 			worker.RunWorkerAsync(control);
 			while (worker.IsBusy)
-				Application.DoEvents();
+				Application.DoEvents(); // Even though the SafeInvoke call is synchronous, the worker thread obviously isn't, so we need to wait for it to finish.
 			Assert.AreEqual("Final Text", control.Text);
 		}
 
@@ -237,7 +273,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 		}
 
 		[Test]
-		public void SafeInvoke_SynchronousActionThrowsException_Hmmmmmm()
+		public void SafeInvoke_SynchronousActionThrowsException_ExceptionThrownOutOfSafeInvoke()
 		{
 			var control = new Control();
 			Exception exceptionThrownBySafeInvoke = null;
