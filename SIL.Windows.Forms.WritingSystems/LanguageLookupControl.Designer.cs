@@ -34,7 +34,6 @@
 			this.PrimaryNameHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.codeHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.countryHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.AlternateNamesHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this._searchText = new System.Windows.Forms.TextBox();
 			this._searchTimer = new System.Windows.Forms.Timer(this.components);
 			this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -56,13 +55,12 @@
 			this._listView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.PrimaryNameHeader,
             this.codeHeader,
-            this.countryHeader,
-            this.AlternateNamesHeader});
+            this.countryHeader});
 			this._listView.FullRowSelect = true;
 			this._listView.HideSelection = false;
 			this._listView.Location = new System.Drawing.Point(0, 29);
 			this._listView.Name = "_listView";
-			this._listView.Size = new System.Drawing.Size(758, 269);
+			this._listView.Size = new System.Drawing.Size(577, 269);
 			this._listView.TabIndex = 1;
 			this._listView.UseCompatibleStateImageBehavior = false;
 			this._listView.View = System.Windows.Forms.View.Details;
@@ -75,7 +73,7 @@
 			this._L10NSharpExtender.SetLocalizationComment(this.PrimaryNameHeader, null);
 			this._L10NSharpExtender.SetLocalizingId(this.PrimaryNameHeader, "LanguageLookup.PrimaryNameHeader");
 			this.PrimaryNameHeader.Text = "Name";
-			this.PrimaryNameHeader.Width = 104;
+			this.PrimaryNameHeader.Width = 194;
 			// 
 			// codeHeader
 			// 
@@ -91,15 +89,7 @@
 			this._L10NSharpExtender.SetLocalizationComment(this.countryHeader, null);
 			this._L10NSharpExtender.SetLocalizingId(this.countryHeader, "LanguageLookup.CountryHeader");
 			this.countryHeader.Text = "Country";
-			this.countryHeader.Width = 116;
-			// 
-			// AlternateNamesHeader
-			// 
-			this._L10NSharpExtender.SetLocalizableToolTip(this.AlternateNamesHeader, null);
-			this._L10NSharpExtender.SetLocalizationComment(this.AlternateNamesHeader, null);
-			this._L10NSharpExtender.SetLocalizingId(this.AlternateNamesHeader, "LanguageLookup.AlternateNamesHeader");
-			this.AlternateNamesHeader.Text = "Other Names";
-			this.AlternateNamesHeader.Width = 437;
+			this.countryHeader.Width = 305;
 			// 
 			// _searchText
 			// 
@@ -139,7 +129,7 @@
 			this._L10NSharpExtender.SetLocalizableToolTip(this._cannotFindLanguageLink, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._cannotFindLanguageLink, null);
 			this._L10NSharpExtender.SetLocalizingId(this._cannotFindLanguageLink, "LanguageLookup._cannotFindLanguageLink");
-			this._cannotFindLanguageLink.Location = new System.Drawing.Point(628, 6);
+			this._cannotFindLanguageLink.Location = new System.Drawing.Point(450, 6);
 			this._cannotFindLanguageLink.Name = "_cannotFindLanguageLink";
 			this._cannotFindLanguageLink.Size = new System.Drawing.Size(127, 13);
 			this._cannotFindLanguageLink.TabIndex = 12;
@@ -154,7 +144,7 @@
 			this._L10NSharpExtender.SetLocalizableToolTip(this._desiredLanguageLabel, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._desiredLanguageLabel, null);
 			this._L10NSharpExtender.SetLocalizingId(this._desiredLanguageLabel, "LanguageLookup.DesiredLanguageDisplayNameLabel");
-			this._desiredLanguageLabel.Location = new System.Drawing.Point(197, 316);
+			this._desiredLanguageLabel.Location = new System.Drawing.Point(19, 316);
 			this._desiredLanguageLabel.Name = "_desiredLanguageLabel";
 			this._desiredLanguageLabel.Size = new System.Drawing.Size(309, 13);
 			this._desiredLanguageLabel.TabIndex = 14;
@@ -169,7 +159,7 @@
 			this._L10NSharpExtender.SetLocalizableToolTip(this._desiredLanguageDisplayName, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._desiredLanguageDisplayName, null);
 			this._L10NSharpExtender.SetLocalizingId(this._desiredLanguageDisplayName, "LanguageLookup.LookupISOControl._desiredLanguageDisplayName");
-			this._desiredLanguageDisplayName.Location = new System.Drawing.Point(512, 304);
+			this._desiredLanguageDisplayName.Location = new System.Drawing.Point(334, 304);
 			this._desiredLanguageDisplayName.Name = "_desiredLanguageDisplayName";
 			this._desiredLanguageDisplayName.Size = new System.Drawing.Size(243, 33);
 			this._desiredLanguageDisplayName.TabIndex = 13;
@@ -179,7 +169,7 @@
 			// 
 			this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-			this.flowLayoutPanel1.Location = new System.Drawing.Point(56, 349);
+			this.flowLayoutPanel1.Location = new System.Drawing.Point(-122, 349);
 			this.flowLayoutPanel1.Name = "flowLayoutPanel1";
 			this.flowLayoutPanel1.Size = new System.Drawing.Size(453, 37);
 			this.flowLayoutPanel1.TabIndex = 15;
@@ -219,7 +209,7 @@
 			this._L10NSharpExtender.SetLocalizationComment(this, null);
 			this._L10NSharpExtender.SetLocalizingId(this, "LanguageLookup.LookupISOControl.LookupISOControl");
 			this.Name = "LanguageLookupControl";
-			this.Size = new System.Drawing.Size(758, 343);
+			this.Size = new System.Drawing.Size(580, 343);
 			this.Load += new System.EventHandler(this.OnLoad);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).EndInit();
@@ -238,7 +228,6 @@
 		private System.Windows.Forms.PictureBox pictureBox1;
 		private System.Windows.Forms.LinkLabel _cannotFindLanguageLink;
 		private System.Windows.Forms.ColumnHeader countryHeader;
-		private System.Windows.Forms.ColumnHeader AlternateNamesHeader;
 		private System.Windows.Forms.Label _desiredLanguageLabel;
 		private System.Windows.Forms.TextBox _desiredLanguageDisplayName;
 		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;

@@ -193,10 +193,9 @@ namespace SIL.Windows.Forms.WritingSystems
 
 				// Users were having problems when they looked up things like "English" and were presented with "United Arab Emirates"
 				// and such, as these colonial languages are spoken in so many countries. So this just displays the number of countries.
-				// 3 or more was chosen because generally 2 languages fit in the space allowed
-				string country = lang.Countries.Count > 2 ? string.Format(multipleCountriesLabel, lang.Countries.Count) : string.Join(", ", lang.Countries);
+				// 6 or more was chosen because generally 5 languages fit in the space allowed
+				string country = lang.Countries.Count > 5 ? string.Format(multipleCountriesLabel, lang.Countries.Count) : string.Join(", ", lang.Countries);
 				item.SubItems.Add(country);
-				item.SubItems.Add(string.Join(", ", lang.Names.Skip(1)));
 				item.Tag = lang;
 				toShow.Add(item);
 
