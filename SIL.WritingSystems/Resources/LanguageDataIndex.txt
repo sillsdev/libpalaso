@@ -1,4 +1,4 @@
-qaa	qaa	Language Not Listed	.	Unlisted Language	?	?
+qaa	qaa	Language Not Listed	.	Unlisted Language		
 aaa	aaa	Ghotuo	.	Ghotuo	Nigeria	Nigeria
 aab	aab	Alumu-Tesu	.	Alumu-Tesu;Alumu;Tesu;Arum;Arum-Cesu;Arum-Chessu;Arum-Tesu	Nigeria	Nigeria
 aac	aac	Ari	.	Ari;Serea	Papua New Guinea	Papua New Guinea
@@ -7883,15 +7883,15 @@ as-IN	as-IN	Assamese	.	Assamese;Jharwa;Mayang;Standard Assamese;Western Assamese
 asa-TZ	asa-TZ	Asu	.	Asu;Gonja;Mbaga;Ashu;Athu;Casu;Chasu;Chiasu;Kiathu;Kipare;Pare;Pare-Asu;Asu (Tanzania)	United Republic of Tanzania	United Republic of Tanzania
 ast-ES	ast-ES	Asturian	.	Asturian	Spain	Spain
 az-AZ	az-AZ	Azerbaijani	M	Azerbaijani	Azerbaijan	Azerbaijan
-az-Cyrl	az-Cyrl	Azerbaijani (Cyrillic)	M	Azerbaijani (Cyrillic)	?	?
+az-Cyrl	az-Cyrl	Azerbaijani (Cyrillic)	M	Azerbaijani (Cyrillic)		
 az-Cyrl-AZ	az-Cyrl-AZ	Azerbaijani (Cyrillic)	M	Azerbaijani (Cyrillic)	Azerbaijan	Azerbaijan
-az-Latn	az-Latn	Azerbaijani (Latin)	M	Azerbaijani (Latin)	?	?
+az-Latn	az-Latn	Azerbaijani (Latin)	M	Azerbaijani (Latin)		
 bas-CM	bas-CM	Basaa	.	Basaa;Bakem;Basso;Bibeng;Bon;Diboum;Log;Mbang;Mpo;Ndokama;Ndokbele;Ndokpenda;Nyamtam;Basa;Bassa;Bicek;Bikyek;Bisaa;Mbele;Mee;Mvele;Northern Mbene;Tupen;Basa (Cameroon)	Cameroon	Cameroon
 be-BY	be-BY	Belarusian	.	Belarusian	Belarus	Belarus
 bem-ZM	bem-ZM	Bemba (Zambia)	.	Bemba (Zambia)	Zambia	Zambia
 bez-TZ	bez-TZ	Bena	.	Bena;Ilembula;Kilavungi;Kinamanga;Lupembe;Masakati;Masitu;Maswamu;Mavemba;Ngaveeta;Nyikolwe;Sovi;Twangabita;Ulanga;Kilavagi;Masagati;Sove;Ekibena;Ikibena;Kibena;Bena (Tanzania)	United Republic of Tanzania	United Republic of Tanzania
 bg-BG	bg-BG	Bulgarian	.	Bulgarian	Bulgaria	Bulgaria
-bm-Latn	bm-Latn	Bambara (Latin)	.	Bambara (Latin)	?	?
+bm-Latn	bm-Latn	Bambara (Latin)	.	Bambara (Latin)		
 bm-ML	bm-ML	Bambara	.	Bambara	Mali	Mali
 bm-Latn-ML	bm-Latn-ML	Bambara (Latin)	.	Bambara (Latin)	Mali	Mali
 bn-BD	bn-BD	বাংলা	.	বাংলা;Bengali	Bangladesh	Bangladesh
@@ -7900,10 +7900,10 @@ bo-CN	bo-CN	Tibetan	.	Tibetan	China	China
 bo-IN	bo-IN	Tibetan	.	Tibetan	India	India
 br-FR	br-FR	Breton	.	Breton;Gwenedeg;Kerneveg;Leoneg;Tregerieg;Cornouaillais;Leonais;Tregorrois;Vannetais;Berton;Brezhoneg	France	France
 brx-IN	brx-IN	Bodo (India)	.	Bodo (India)	India	India
-bs-Latn	bs-Latn	Bosnian (Latin)	.	Bosnian (Latin)	?	?
+bs-Latn	bs-Latn	Bosnian (Latin)	.	Bosnian (Latin)		
 bs-BA	bs-BA	Bosnian	.	Bosnian	Bosnia and Herzegovina	Bosnia and Herzegovina
 bs-Cyrl-BA	bs-Cyrl-BA	Bosnian (Cyrillic)	.	Bosnian (Cyrillic)	Bosnia and Herzegovina	Bosnia and Herzegovina
-byn-Latn	byn-Latn	Bilin (Latin)	.	Bilin (Latin)	?	?
+byn-Latn	byn-Latn	Bilin (Latin)	.	Bilin (Latin)		
 ca-ES	ca-ES	Catalan	.	Catalan	Spain	Spain
 ca-AD	ca-AD	Catalan	.	Catalan	Andorra	Andorra
 ca-ES-valencia	ca-ES-valencia	Catalan	.	Catalan	Spain	Spain
@@ -7912,7 +7912,7 @@ ca-IT	ca-IT	Catalan	.	Catalan	Italy	Italy
 ce-RU	ce-RU	Chechen	.	Chechen	Russian Federation	Russian Federation
 cgg-UG	cgg-UG	Chiga	.	Chiga;RuHimba;RuNyaifwe-Hororo;RuNyangyezi;RuSigi;Bachiga;Bahororo;Ciga;Kiga;Nkore;Nkore-Kiga;Oluchiga;Orukiga;Rukiga;Runyankore-Rukiga	Uganda	Uganda
 chr-US	chr-US	Cherokee	.	Cherokee;Elati;Kituhwa;Otali;Overhill-Middle Cherokee;Eastern Cherokee;Lower Cherokee;Middle Cherokee;Overhill Cherokee;Upper Cherokee;Western Cherokee;Tsalagi;Tslagi	United States	United States
-ckb-Arab	ckb-Arab	Central Kurdish (Arabic)	.	Central Kurdish (Arabic)	?	?
+ckb-Arab	ckb-Arab	Central Kurdish (Arabic)	.	Central Kurdish (Arabic)		
 ckb-IQ	ckb-IQ	Central Kurdish	.	Central Kurdish	Iraq	Iraq
 ckb-IR	ckb-IR	Central Kurdish	.	Central Kurdish	Islamic Republic of Iran	Islamic Republic of Iran
 cs-CZ	cs-CZ	Czech	.	Czech	Czechia	Czechia
@@ -8076,7 +8076,7 @@ ff-SN	ff-SN	Fulah	M	Fulah	Senegal	Senegal
 ff-CM	ff-CM	Fulah	M	Fulah	Cameroon	Cameroon
 ff-GN	ff-GN	Fulah	M	Fulah	Guinea	Guinea
 ff-MR	ff-MR	Fulah	M	Fulah	Mauritania	Mauritania
-ffm-Arab	ffm-Arab	Maasina Fulfulde (Arabic)	.	Maasina Fulfulde (Arabic)	?	?
+ffm-Arab	ffm-Arab	Maasina Fulfulde (Arabic)	.	Maasina Fulfulde (Arabic)		
 fi-FI	fi-FI	Finnish	.	Finnish	Finland	Finland
 fil-PH	fil-PH	Filipino	.	Filipino;Pilipino	Philippines	Philippines
 fo-FO	fo-FO	Faroese	.	Faroese;Suthuroy;Faeroese;Føroyskt	Faroe Islands	Faroe Islands
@@ -8138,10 +8138,10 @@ gsw-LI	gsw-LI	Swiss German	.	Swiss German	Liechtenstein	Liechtenstein
 gu-IN	gu-IN	Gujarati	.	Gujarati	India	India
 guz-KE	guz-KE	Gusii	.	Gusii	Kenya	Kenya
 gv-IM	gv-IM	Manx	.	Manx;Gaelg;Gailck;Manx Gaelic	Isle of Man	Isle of Man
-ha-Latn	ha-Latn	Hausa (Latin)	.	Hausa (Latin)	?	?
+ha-Latn	ha-Latn	Hausa (Latin)	.	Hausa (Latin)		
 ha-NG	ha-NG	Hausa	.	Hausa	Nigeria	Nigeria
 ha-Latn-NG	ha-Latn-NG	Hausa (Latin)	.	Hausa (Latin)	Nigeria	Nigeria
-ha-Arab	ha-Arab	Hausa (Arabic)	.	Hausa (Arabic)	?	?
+ha-Arab	ha-Arab	Hausa (Arabic)	.	Hausa (Arabic)		
 ha-GH	ha-GH	Hausa	.	Hausa	Ghana	Ghana
 ha-Latn-GH	ha-Latn-GH	Hausa (Latin)	.	Hausa (Latin)	Ghana	Ghana
 ha-Latn-NE	ha-Latn-NE	Hausa (Latin)	.	Hausa (Latin)	Niger	Niger
@@ -8172,10 +8172,10 @@ kde-TZ	kde-TZ	Makonde	.	Makonde	United Republic of Tanzania	United Republic of T
 kea-CV	kea-CV	Kabuverdianu	.	Kabuverdianu	Cabo Verde	Cabo Verde
 khq-ML	khq-ML	Songhay, Koyra Chiini	.	Songhay, Koyra Chiini;Djenné Chiini;Koyra Chiini;Songai;Songay;Songhai;Songhay;Songhoy;Songoi;Songoy;Sonrai;Sonrhai;Timbuktu Songhoy;West Songhoy;Koyra Chiini Songhay	Mali	Mali
 ki-KE	ki-KE	Gikuyu	.	Gikuyu;Gichugu;Mathira;Ndia;Northern Gikuyu;Southern Gikuyu;Karatina;Kiambu;Northern Kirinyaga;Northern Murang’a;Nyeri;Southern Kirinyaga;Southern Murang’a;Gekoyo;Gigikuyu;Kikuyu	Kenya	Kenya
-kk-Cyrl	kk-Cyrl	Kazakh (Cyrillic)	.	Kazakh (Cyrillic)	?	?
+kk-Cyrl	kk-Cyrl	Kazakh (Cyrillic)	.	Kazakh (Cyrillic)		
 kk-KZ	kk-KZ	Kazakh	.	Kazakh	Kazakhstan	Kazakhstan
 kk-Cyrl-KZ	kk-Cyrl-KZ	Kazakh (Cyrillic)	.	Kazakh (Cyrillic)	Kazakhstan	Kazakhstan
-kk-Arab	kk-Arab	Kazakh (Arabic)	.	Kazakh (Arabic)	?	?
+kk-Arab	kk-Arab	Kazakh (Arabic)	.	Kazakh (Arabic)		
 kkj-CM	kkj-CM	Kako	.	Kako	Cameroon	Cameroon
 kl-GL	kl-GL	Kalaallisut	.	Kalaallisut	Greenland	Greenland
 kln-KE	kln-KE	Kalenjin	M	Kalenjin	Kenya	Kenya
@@ -8186,16 +8186,16 @@ ko-KP	ko-KP	Korean	.	Korean	Democratic People's Republic of Korea	Democratic Peo
 kok-IN	kok-IN	Konkani	M	Konkani;Konkani (macrolanguage)	India	India
 ks-IN	ks-IN	Kashmiri	.	Kashmiri	India	India
 ks-Arab-IN	ks-Arab-IN	Kashmiri (Arabic)	.	Kashmiri (Arabic)	India	India
-ks-Arab	ks-Arab	Kashmiri (Arabic)	.	Kashmiri (Arabic)	?	?
+ks-Arab	ks-Arab	Kashmiri (Arabic)	.	Kashmiri (Arabic)		
 ksb-TZ	ksb-TZ	Shambala	.	Shambala;Kisambaa;Kishambaa;Kishambala;Sambaa;Sambala;Sambara;Schambala;Shambaa	United Republic of Tanzania	United Republic of Tanzania
 ksf-CM	ksf-CM	Bafia	.	Bafia;Bape;Kpa;Bekpak;Rikpa;Rikpa’	Cameroon	Cameroon
 ksh-DE	ksh-DE	Kölsch	.	Kölsch	Germany	Germany
-ku-Arab	ku-Arab	Kurdish (Arabic)	M	Kurdish (Arabic)	?	?
+ku-Arab	ku-Arab	Kurdish (Arabic)	M	Kurdish (Arabic)		
 kw-GB	kw-GB	Cornish	.	Cornish;Curnoack;Kernewek;Kernowek	United Kingdom	United Kingdom
-ky-Cyrl	ky-Cyrl	Kirghiz (Cyrillic)	.	Kirghiz (Cyrillic)	?	?
+ky-Cyrl	ky-Cyrl	Kirghiz (Cyrillic)	.	Kirghiz (Cyrillic)		
 ky-KG	ky-KG	Kirghiz	.	Kirghiz	Kyrgyzstan	Kyrgyzstan
 ky-Cyrl-KG	ky-Cyrl-KG	Kirghiz (Cyrillic)	.	Kirghiz (Cyrillic)	Kyrgyzstan	Kyrgyzstan
-ky-Arab	ky-Arab	Kirghiz (Arabic)	.	Kirghiz (Arabic)	?	?
+ky-Arab	ky-Arab	Kirghiz (Arabic)	.	Kirghiz (Arabic)		
 lag-TZ	lag-TZ	Langi	.	Langi;Busi;Haubi;Kolo;Kondoa;Mondo;Irangi;Kelangi;Kilaangi;Kilangi;Kirangi;Klaangi;Rangi;Valaangi	United Republic of Tanzania	United Republic of Tanzania
 lb-LU	lb-LU	Luxembourgish	.	Luxembourgish	Luxembourg	Luxembourg
 lg-UG	lg-UG	Ganda	.	Ganda;Diopa;Kooki;Sese;Vuma;Ludiopa;Luvuma;Olukooki;Olusese;Luganda	Uganda	Uganda
@@ -8221,15 +8221,15 @@ mgh-MZ	mgh-MZ	Makhuwa-Meetto	.	Makhuwa-Meetto	Mozambique	Mozambique
 mgo-CM	mgo-CM	Meta’	.	Meta’;Menemo;Moghamo;Ashong;Awyi;Iyirikum;Kugwe;Medig;Muywi;Ngyen-Mbo;Tiwirkum;Widekum;Zang Tabi;Bameta;Batibo;Besi;Chubo;Menemo-Mogamo;Metta;Mitaa;Moghamo-Menemo;Muta;Uta’;Widikum-Tadkon	Cameroon	Cameroon
 mk-MK	mk-MK	Macedonian	.	Macedonian	The Former Yugoslav Republic of Macedonia	The Former Yugoslav Republic of Macedonia
 ml-IN	ml-IN	Malayalam	.	Malayalam	India	India
-mn-Cyrl	mn-Cyrl	Mongolian (Cyrillic)	M	Mongolian (Cyrillic)	?	?
+mn-Cyrl	mn-Cyrl	Mongolian (Cyrillic)	M	Mongolian (Cyrillic)		
 mn-MN	mn-MN	Mongolian	M	Mongolian	Mongolia	Mongolia
 mn-Cyrl-MN	mn-Cyrl-MN	Mongolian (Cyrillic)	M	Mongolian (Cyrillic)	Mongolia	Mongolia
-mn-Mong	mn-Mong	Mongolian (Mongolian)	M	Mongolian (Mongolian)	?	?
+mn-Mong	mn-Mong	Mongolian (Mongolian)	M	Mongolian (Mongolian)		
 mr-IN	mr-IN	Marathi	.	Marathi;Gawdi of Goa;Kasargod;Kosti;Kudali;Nagpuri Marathi;Maharashtra;Maharathi;Malhatee;Marthi;Muruthu	India	India
-ms-Latn	ms-Latn	Malay (macrolanguage) (Latin)	M	Malay (macrolanguage) (Latin)	?	?
+ms-Latn	ms-Latn	Malay (macrolanguage) (Latin)	M	Malay (macrolanguage) (Latin)		
 ms-MY	ms-MY	Malay	M	Malay;Malay (macrolanguage)	Malaysia	Malaysia
 ms-Latn-MY	ms-Latn-MY	Malay (macrolanguage) (Latin)	M	Malay (macrolanguage) (Latin)	Malaysia	Malaysia
-ms-Arab	ms-Arab	Malay (macrolanguage) (Arabic)	M	Malay (macrolanguage) (Arabic)	?	?
+ms-Arab	ms-Arab	Malay (macrolanguage) (Arabic)	M	Malay (macrolanguage) (Arabic)		
 ms-Latn-BN	ms-Latn-BN	Malay (macrolanguage) (Latin)	M	Malay (macrolanguage) (Latin)	Brunei Darussalam	Brunei Darussalam
 ms-Latn-SG	ms-Latn-SG	Malay (macrolanguage) (Latin)	M	Malay (macrolanguage) (Latin)	Singapore	Singapore
 mt-MT	mt-MT	Maltese	.	Maltese;Gozo;Port Maltese;Rural Central Maltese;Rural East Maltese;Rural West Maltese;Standard Maltese;Zurrieq;Malti	Malta	Malta
@@ -8264,7 +8264,7 @@ os-GE	os-GE	Ossetian	.	Ossetian	Georgia	Georgia
 os-RU	os-RU	Ossetian	.	Ossetian	Russian Federation	Russian Federation
 pa-IN	pa-IN	Panjabi	.	Panjabi	India	India
 pa-PK	pa-PK	Panjabi	.	Panjabi	Pakistan	Pakistan
-pa-Guru	pa-Guru	Panjabi (Gurmukhi)	.	Panjabi (Gurmukhi)	?	?
+pa-Guru	pa-Guru	Panjabi (Gurmukhi)	.	Panjabi (Gurmukhi)		
 pl-PL	pl-PL	Polish	.	Polish	Poland	Poland
 prg-001	prg-001	Prussian	.	Prussian	World	World
 ps-AF	ps-AF	Pushto	M	Pushto	Afghanistan	Afghanistan
@@ -8302,7 +8302,7 @@ se-SE	se-SE	Northern Sami	.	Northern Sami	Sweden	Sweden
 seh-MZ	seh-MZ	Sena	.	Sena;Bangwe;Caia;Gombe;Gorongosa;Podzo;Sangwe;Care;Chipodzo;Cipodzo;North Sena;Phodzo;Puthsu;Sare;Shiputhsu;South Sena;Chisena;Cisena	Mozambique	Mozambique
 ses-ML	ses-ML	Songhay, Koyraboro Senni	.	Songhay, Koyraboro Senni;Fulan Kirya;Gao;East Songhay;Gao Songhay;Koroboro Senni;Koyra Senni;Koyra Senni Songhay;Songai;Songay;Songay Senni;Songhai;Songhay;Songoi;Songoy;Sonrai;Sonrhai;Koyraboro Senni Songhai	Mali	Mali
 sg-CF	sg-CF	Sango	.	Sango	Central African Republic	Central African Republic
-shi-Tfng	shi-Tfng	Tachelhit (Tifinagh)	.	Tachelhit (Tifinagh)	?	?
+shi-Tfng	shi-Tfng	Tachelhit (Tifinagh)	.	Tachelhit (Tifinagh)		
 shi-MA	shi-MA	Tachelhit	.	Tachelhit	Morocco	Morocco
 shi-Latn-MA	shi-Latn-MA	Tachelhit (Latin)	.	Tachelhit (Latin)	Morocco	Morocco
 si-LK	si-LK	Sinhala	.	Sinhala	Sri Lanka	Sri Lanka
@@ -8310,7 +8310,7 @@ sk-SK	sk-SK	Slovak	.	Slovak	Slovakia	Slovakia
 sl-SI	sl-SI	Slovenian	.	Slovenian	Slovenia	Slovenia
 smn-FI	smn-FI	Saami, Inari	.	Saami, Inari;Anar;Saam;Saame;Sámi;Samic;Inari Sami	Finland	Finland
 sn-ZW	sn-ZW	Shona	.	Shona	Zimbabwe	Zimbabwe
-snk-Arab	snk-Arab	Soninke (Arabic)	.	Soninke (Arabic)	?	?
+snk-Arab	snk-Arab	Soninke (Arabic)	.	Soninke (Arabic)		
 so-SO	so-SO	Somali	.	Somali	Somalia	Somalia
 so-DJ	so-DJ	Somali	.	Somali	Djibouti	Djibouti
 so-ET	so-ET	Somali	.	Somali	Ethiopia	Ethiopia
@@ -8318,22 +8318,22 @@ so-KE	so-KE	Somali	.	Somali	Kenya	Kenya
 sq-AL	sq-AL	Albanian	M	Albanian	Albania	Albania
 sq-MK	sq-MK	Albanian	M	Albanian	The Former Yugoslav Republic of Macedonia	The Former Yugoslav Republic of Macedonia
 sq-XK	sq-XK	Albanian	M	Albanian		
-sr-Cyrl	sr-Cyrl	Serbian (Cyrillic)	.	Serbian (Cyrillic)	?	?
+sr-Cyrl	sr-Cyrl	Serbian (Cyrillic)	.	Serbian (Cyrillic)		
 sr-RS	sr-RS	Serbian	.	Serbian	Serbia	Serbia
 sr-Cyrl-BA	sr-Cyrl-BA	Serbian (Cyrillic)	.	Serbian (Cyrillic)	Bosnia and Herzegovina	Bosnia and Herzegovina
 sr-Cyrl-ME	sr-Cyrl-ME	Serbian (Cyrillic)	.	Serbian (Cyrillic)	Montenegro	Montenegro
 sr-Cyrl-XK	sr-Cyrl-XK	Serbian (Cyrillic)	.	Serbian (Cyrillic)		
-sr-Latn	sr-Latn	Serbian (Latin)	.	Serbian (Latin)	?	?
+sr-Latn	sr-Latn	Serbian (Latin)	.	Serbian (Latin)		
 sr-Latn-BA	sr-Latn-BA	Serbian (Latin)	.	Serbian (Latin)	Bosnia and Herzegovina	Bosnia and Herzegovina
 sr-ME	sr-ME	Serbian	.	Serbian	Montenegro	Montenegro
 sr-Latn-RS	sr-Latn-RS	Serbian (Latin)	.	Serbian (Latin)	Serbia	Serbia
 sr-Latn-XK	sr-Latn-XK	Serbian (Latin)	.	Serbian (Latin)		
-srr-Arab	srr-Arab	Serer (Arabic)	.	Serer (Arabic)	?	?
+srr-Arab	srr-Arab	Serer (Arabic)	.	Serer (Arabic)		
 ss-ZA	ss-ZA	Swati	.	Swati	South Africa	South Africa
 ss-SZ	ss-SZ	Swati	.	Swati	Swaziland	Swaziland
 ssy-ER	ssy-ER	Saho	.	Saho	Eritrea	Eritrea
 st-LS	st-LS	Southern Sotho	.	Southern Sotho	Lesotho	Lesotho
-sus-Arab	sus-Arab	Susu (Arabic)	.	Susu (Arabic)	?	?
+sus-Arab	sus-Arab	Susu (Arabic)	.	Susu (Arabic)		
 sv-SE	sv-SE	Swedish	.	Swedish	Sweden	Sweden
 sv-AX	sv-AX	Swedish	.	Swedish	Åland Islands	Åland Islands
 sv-FI	sv-FI	Swedish	.	Swedish	Finland	Finland
@@ -8366,29 +8366,29 @@ ur-PK	ur-PK	اُردُو	.	اُردُو;Urdu	Pakistan	Pakistan
 ur-IN	ur-IN	اُردُو	.	اُردُو;Urdu	India	India
 uz-UZ	uz-UZ	Uzbek	M	Uzbek	Uzbekistan	Uzbekistan
 uz-AF	uz-AF	Uzbek	M	Uzbek	Afghanistan	Afghanistan
-uz-Cyrl	uz-Cyrl	Uzbek (Cyrillic)	M	Uzbek (Cyrillic)	?	?
+uz-Cyrl	uz-Cyrl	Uzbek (Cyrillic)	M	Uzbek (Cyrillic)		
 uz-Cyrl-UZ	uz-Cyrl-UZ	Uzbek (Cyrillic)	M	Uzbek (Cyrillic)	Uzbekistan	Uzbekistan
-uz-Latn	uz-Latn	Uzbek (Latin)	M	Uzbek (Latin)	?	?
-vai-Vaii	vai-Vaii	Vai (Vai)	.	Vai (Vai)	?	?
+uz-Latn	uz-Latn	Uzbek (Latin)	M	Uzbek (Latin)		
+vai-Vaii	vai-Vaii	Vai (Vai)	.	Vai (Vai)		
 vai-LR	vai-LR	Vai	.	Vai	Liberia	Liberia
 ve-ZA	ve-ZA	Venda	.	Venda	South Africa	South Africa
 vi-VN	vi-VN	Vietnamese	.	Vietnamese	Viet Nam	Viet Nam
 vo-001	vo-001	Volapük	.	Volapük	World	World
 vun-TZ	vun-TZ	Vunjo	.	Vunjo;Kiruwa;Lema;Mamba;Marangu;Mwika;Kilema;Morang’u;Kivunjo;Kivunjo-Chaga;Kiwunjo;Wunjo	United Republic of Tanzania	United Republic of Tanzania
 wae-CH	wae-CH	Walser	.	Walser	Switzerland	Switzerland
-wal-Latn	wal-Latn	Wolaytta (Latin)	.	Wolaytta (Latin)	?	?
+wal-Latn	wal-Latn	Wolaytta (Latin)	.	Wolaytta (Latin)		
 xog-UG	xog-UG	Soga	.	Soga;Diope;Gabula;Gweri;Kigulu;Lamogi;Lukono;Luuka;Nholo;Siki;Tembé;Tenga;Lamoogi;Ludiope;Lugabula;Lugweri;Lukigulu;Lulamogi;Lulamoogi;Lunholo;Lusiginyi;Lusiki;Lutembe;Lutenga;Siginyi;Lusoga;Olusoga	Uganda	Uganda
 yav-CM	yav-CM	Yangben	.	Yangben;Nukalonge;Numende;Nutanga;Central Yambassa;Kalong;Nuasue;Yambassa	Cameroon	Cameroon
 yi-001	yi-001	Yiddish	M	Yiddish	World	World
 yo-NG	yo-NG	Yoruba	.	Yoruba	Nigeria	Nigeria
 yo-BJ	yo-BJ	Yoruba	.	Yoruba	Benin	Benin
 zgh-MA	zgh-MA	Tamazight, Standard Moroccan	.	Tamazight, Standard Moroccan;Amazighe standard marocain;Standard Moroccan Tamazight	Morocco	Morocco
-zh-Hans	zh-Hans	Chinese (Han (Simplified variant))	M	Chinese (Han (Simplified variant))	?	?
+zh-Hans	zh-Hans	Chinese (Han (Simplified variant))	M	Chinese (Han (Simplified variant))		
 zh-CN	zh-CN	中文	M	中文;Chinese	China	China
 zh-Hans-HK	zh-Hans-HK	Chinese (Han (Simplified variant))	M	Chinese (Han (Simplified variant))	Hong Kong	Hong Kong
 zh-Hans-MO	zh-Hans-MO	Chinese (Han (Simplified variant))	M	Chinese (Han (Simplified variant))	Macao	Macao
 zh-Hans-SG	zh-Hans-SG	Chinese (Han (Simplified variant))	M	Chinese (Han (Simplified variant))	Singapore	Singapore
-zh-Hant	zh-Hant	Chinese (Han (Traditional variant))	M	Chinese (Han (Traditional variant))	?	?
+zh-Hant	zh-Hant	Chinese (Han (Traditional variant))	M	Chinese (Han (Traditional variant))		
 zh-HK	zh-HK	中文	M	中文;Chinese	Hong Kong	Hong Kong
 zh-MO	zh-MO	中文	M	中文;Chinese	Macao	Macao
 zh-TW	zh-TW	中文	M	中文;Chinese	Taiwan, Province of China	Taiwan, Province of China
