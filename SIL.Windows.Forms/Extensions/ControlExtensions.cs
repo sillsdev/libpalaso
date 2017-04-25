@@ -110,8 +110,8 @@ namespace SIL.Windows.Forms.Extensions
 		public static void SafeInvoke(this Control control, Action action, string nameForErrorReporting = "context not supplied",
 			ErrorHandlingAction errorHandling = ErrorHandlingAction.Throw, bool forceSynchronous = false)
 		{
-			Guard.AgainstNull(control, nameof(control)); // throw this one regardless of the errorHandling directive
-			Guard.AgainstNull(action, nameof(action)); // throw this one regardless of the errorHandling directive
+			Guard.AgainstNull(control, "control"); // throw this one regardless of the errorHandling directive
+			Guard.AgainstNull(action, "action"); // throw this one regardless of the errorHandling directive
 
 			if (control.IsDisposed)
 			{
