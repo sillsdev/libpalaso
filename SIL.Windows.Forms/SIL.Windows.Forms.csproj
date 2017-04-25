@@ -665,11 +665,17 @@
     <Compile Include="Widgets\EnhancedPanel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Widgets\EnterTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Widgets\Flying\Animator.cs" />
     <Compile Include="Widgets\Flying\FlyingLabel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Widgets\HeaderLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Widgets\HorizontalSpinner.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Widgets\HtmlLabel.cs">
@@ -683,6 +689,9 @@
     </Compile>
     <Compile Include="Widgets\IControlThatKnowsWritingSystem.cs" />
     <Compile Include="Widgets\ITextInputBox.cs" />
+    <Compile Include="Widgets\SafeComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Widgets\StdTextInputBox.cs">
       <SubType>Component</SubType>
     </Compile>
