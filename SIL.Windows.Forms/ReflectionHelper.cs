@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
@@ -224,7 +225,7 @@ namespace SIL.Windows.Forms
 		/// ------------------------------------------------------------------------------------
 		public static void CallMethod(object binding, string methodName, object arg1, object arg2)
 		{
-			object[] args = new[] {arg1, arg2};
+			object[] args = new[] { arg1, arg2 };
 			GetResult(binding, methodName, args);
 		}
 
@@ -359,7 +360,7 @@ namespace SIL.Windows.Forms
 		/// may occur.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public static object CallMethodWithThrow(object binding, string name, object[] args)
+		public static object CallMethodWithThrow(object binding, string name, params object[] args)
 		{
 			const BindingFlags flags =
 				(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.InvokeMethod);
@@ -384,36 +385,36 @@ namespace SIL.Windows.Forms
 		///// ------------------------------------------------------------------------------------
 		//private static bool CanInvoke(object binding, string name, BindingFlags flags)
 		//{
-		//    var srchFlags = (BindingFlags.Public | BindingFlags.NonPublic);
-		//    Type bindingType = null;
+		//	var srchFlags = (BindingFlags.Public | BindingFlags.NonPublic);
+		//	Type bindingType = null;
 
-		//    if (binding is Type)
-		//    {
-		//        bindingType = (Type)binding;
-		//        srchFlags |= BindingFlags.Static;
-		//    }
-		//    else
-		//    {
-		//        binding.GetType();
-		//        srchFlags |= BindingFlags.Instance;
-		//    }
+		//	if (binding is Type)
+		//	{
+		//		bindingType = (Type)binding;
+		//		srchFlags |= BindingFlags.Static;
+		//	}
+		//	else
+		//	{
+		//		binding.GetType();
+		//		srchFlags |= BindingFlags.Instance;
+		//	}
 
-		//    if (((flags & BindingFlags.GetProperty) == BindingFlags.GetProperty) ||
-		//        ((flags & BindingFlags.SetProperty) == BindingFlags.SetProperty))
-		//    {
-		//        return (bindingType.GetProperty(name, srchFlags) != null);
-		//    }
+		//	if (((flags & BindingFlags.GetProperty) == BindingFlags.GetProperty) ||
+		//		((flags & BindingFlags.SetProperty) == BindingFlags.SetProperty))
+		//	{
+		//		return (bindingType.GetProperty(name, srchFlags) != null);
+		//	}
 
-		//    if (((flags & BindingFlags.GetField) == BindingFlags.GetField) ||
-		//        ((flags & BindingFlags.SetField) == BindingFlags.SetField))
-		//    {
-		//        return (bindingType.GetField(name, srchFlags) != null);
-		//    }
+		//	if (((flags & BindingFlags.GetField) == BindingFlags.GetField) ||
+		//		((flags & BindingFlags.SetField) == BindingFlags.SetField))
+		//	{
+		//		return (bindingType.GetField(name, srchFlags) != null);
+		//	}
 
-		//    if ((flags & BindingFlags.InvokeMethod) == BindingFlags.InvokeMethod)
-		//        return (bindingType.GetMethod(name, srchFlags) != null);
+		//	if ((flags & BindingFlags.InvokeMethod) == BindingFlags.InvokeMethod)
+		//		return (bindingType.GetMethod(name, srchFlags) != null);
 
-		//    return false;
+		//	return false;
 		//}
 	}
 }

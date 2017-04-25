@@ -262,5 +262,23 @@ namespace SIL.Extensions
 			}
 			return false;
 		}
+
+		/// <summary>
+		/// Removes diacritics from the specified string
+		/// </summary>
+		public static string RemoveDiacritics(this string stIn)
+		{
+			string stFormD = stIn.Normalize(NormalizationForm.FormD);
+			StringBuilder sb = new StringBuilder();
+
+			foreach (char t in stFormD)
+			{
+				UnicodeCategory uc = char.GetUnicodeCategory(t);
+				if (uc != UnicodeCategory.NonSpacingMark)
+					sb.Append(t);
+			}
+
+			return sb.ToString().Normalize(NormalizationForm.FormC);
+		}
 	}
 }

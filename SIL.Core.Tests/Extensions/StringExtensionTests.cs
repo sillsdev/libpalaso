@@ -67,12 +67,12 @@ namespace SIL.Tests.Extensions
 			Assert.AreEqual("This &lt;span href=\"reference\"&gt;is not really &#x1F; xml.",
 				s.EscapeSoXmlSeesAsPureTextAndEscapeCharactersIllegalInXml());
 //
-//            XmlDocument x = new XmlDocument();
-//            x.LoadXml("<hello>&#x1f;</hello>");
-//            var writer = XmlWriter.Create(Path.GetTempFileName());
-//            writer.WriteElementString("x", x.InnerText);
+//			XmlDocument x = new XmlDocument();
+//			x.LoadXml("<hello>&#x1f;</hello>");
+//			var writer = XmlWriter.Create(Path.GetTempFileName());
+//			writer.WriteElementString("x", x.InnerText);
 //
-//            writer.WriteNode(z);
+//			writer.WriteNode(z);
 		 }
 
 		[Test]
@@ -157,6 +157,14 @@ namespace SIL.Tests.Extensions
 		{
 			var result = "1.3, 2.5, 3.6,".ToIntArray();
 			Assert.AreEqual(0, result.Length);
+		}
+
+		[TestCase("hello\u0300 world", "hello world")]
+		[TestCase("h\u00e9ll\u00f3 world", "hello world")]
+		[TestCase("hello world", "hello world")]
+		public void RemoveDiacritics_ExpectedResults(string str, string expectedResult)
+		{
+			Assert.AreEqual(expectedResult, str.RemoveDiacritics());
 		}
 	}
 }
