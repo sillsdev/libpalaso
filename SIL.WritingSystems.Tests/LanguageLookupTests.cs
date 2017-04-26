@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using NUnit.Framework;
+using SIL.Extensions;
 
 namespace SIL.WritingSystems.Tests
 {
@@ -95,6 +96,39 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(lookup.SuggestLanguages("english").First().Names.Count(s => s == "English"), Is.EqualTo(1));
 		}
 
+		[TestCase("en", "United Kingdom")] // a typical result
+		[TestCase("ro", "Romania")] // even more typical (and different from langInfo.Countries.First()).
+		[TestCase("zrp", "France")] // a three-letter code that has a region
+		[TestCase("xak", "Venezuela")] // two special cases, the countries currently without regions and with >1 country
+		[TestCase("itd", "Indonesia")]
+		[TestCase("fuv-Arab", "Nigeria")] // language code with script with country
+		[TestCase("zh-Hans", "")] // language code with script without country
+		[TestCase("qaa", "")] // unknown language, no country
+		[TestCase("bua", "Russian Federation")] // no region, but does have a unique country
+		public void FindsCorrectPrimaryCountry(string code, string primaryCountry)
+		{
+			var lookup = new LanguageLookup();
+			var lang = lookup.GetLanguageFromCode(code);
+			Assert.That(lang.PrimaryCountry, Is.EqualTo(primaryCountry));
+		}
+
+		/// <summary>
+		/// JT: At the time I wrote these tests, only the indicated two languages had more than one
+		/// country and lacked a region specification to disambigute the primary country.
+		/// This test is designed to catch a change in that situation when the language data
+		/// tables are updated.
+		///
+		/// DG: LanguageData.exe will say which languages don't have a unique primary country
+		/// see LanguageDataIndex()
+		/// </summary>
+		[Test]
+		public void AllExpectedLanguagesHaveUniquePrimaryCountries()
+		{
+			var languagesWithoutRegions = new LanguageLookup().LanguagesWithoutRegions();
+			var languagesWithAmbiguousPrimaryCountry =
+				languagesWithoutRegions.Where(l => l.Countries.Count() > 1);
+			Assert.IsEmpty(languagesWithAmbiguousPrimaryCountry);
+		}
 
 		[Test]
 		public void SuggestLanguages_GivenUnambigous3LetterCode_ReturnsLanguage()

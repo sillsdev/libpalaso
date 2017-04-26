@@ -5,6 +5,9 @@ using System;
 using System.IO;
 using SIL.WritingSystems;
 
+// LanguageData is a separate program for gathering standard language information together
+// It should be run when you want to check for new data files or create the LanguageDataIndex.txt
+// See https://github.com/sillsdev/libpalaso/wiki/LanguageData for more details
 namespace LanguageData
 {
 	class Program
@@ -74,12 +77,12 @@ namespace LanguageData
 					{
 						return 99;
 					}
-				} 
+				}
 			}
 			if (!options.CheckFresh)
 			{
 				Sldr.Initialize(true);
-				NewLanguageIndex langIndex = new NewLanguageIndex(getcheck.GetFileStrings(options.GetFresh));
+				LanguageDataIndex langIndex = new LanguageDataIndex(getcheck.GetFileStrings(options.GetFresh));
 				langIndex.WriteIndex(options.OutputFile);
 				if (options.Json)
 				{

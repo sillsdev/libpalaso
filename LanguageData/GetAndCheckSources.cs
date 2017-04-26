@@ -10,16 +10,35 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
+// LanguageData is a separate program for gathering standard language information together
+// It should be run when you want to check for new data files or create the LanguageDataIndex.txt
+// See https://github.com/sillsdev/libpalaso/wiki/LanguageData for more details
 namespace LanguageData
 {
+	/// <summary>
+	/// This is the part of the LanguageData app that gets the source data and checks if it has changed
+	/// it writes a file LastModified.txt which says when each of the data files were last modified on their servers
+	/// The data files are:
+	///    ianaSubtagRegistry.txt - http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
+	///        iana subtag registry which is the primary resource for language tags
+	///    LanguageCodes.txt - https://www.ethnologue.com/codes/LanguageCodes.tab - language codes and countries from the ethnologue
+	///    LanguageIndex.txt - https://www.ethnologue.com/codes/LanguageIndex.tab - main ethnologue data
+	///    http://www-01.sil.org/iso639-3/iso-639-3.tab is used to create TwoToThreeCodes.txt
+	/// The data files do not change often, maybe 2 or 3 times per year each
+	///
+	/// If you add a new data source then you will need to add it to the comments, GetNewSources, GetOldSources,
+	///    CheckSourcesAreDifferent, WriteNewFiles and GetFileStrings
+	/// </summary>
 	public class GetAndCheckSources
 	{
 		private string _oldtwotothree;
 		private string _oldlanguageindex;
+		private string _oldlanguagecodes;
 		private string _oldianasubtags;
 
 		private string _newtwotothree;
 		private string _newlanguageindex;
+		private string _newlanguagecodes;
 		private string _newianasubtags;
 
 		// solution to teamcity problems with certificates
@@ -49,6 +68,10 @@ namespace LanguageData
 			return isOk;
 		}
 
+		/// <summary>
+		/// Get the current versions of the files from their websites
+		/// </summary>
+		/// <returns>true if it succeeds in downloading the current versions of the files</returns>
 		public bool GetNewSources()
 		{
 			try
@@ -61,10 +84,14 @@ namespace LanguageData
 				string newiso693 = client.DownloadString("http://www-01.sil.org/iso639-3/iso-639-3.tab");
 				string lastmod_iso693 = client.ResponseHeaders["Last-Modified"];
 
-				client.Encoding = Encoding.UTF8; // ethnologue site currently doesn't specify 2017-01-24
+				client.Encoding = Encoding.UTF8; // ethnologue site currently doesn't specify encoding 2017-01-24
 				_newlanguageindex = client.DownloadString("https://www.ethnologue.com/codes/LanguageIndex.tab");
 				_newlanguageindex = _newlanguageindex.Replace("\r\n", "\n");
 				string lastmod_languageindex = client.ResponseHeaders["Last-Modified"];
+
+				_newlanguagecodes = client.DownloadString("https://www.ethnologue.com/codes/LanguageCodes.tab");
+				_newlanguagecodes = _newlanguagecodes.Replace("\r\n", "\n");
+				string lastmod_languagecodes = client.ResponseHeaders["Last-Modified"];
 
 				_newianasubtags = client.DownloadString("http://www.iana.org/assignments/language-subtag-registry/language-subtag-registry");
 				_newianasubtags = _newianasubtags.Replace("\r\n", "\n");
@@ -72,12 +99,14 @@ namespace LanguageData
 
 				Console.WriteLine("IANA subtags last modified: " + lastmod_ianasubtag);
 				Console.WriteLine("Ethnologue index last modified: " + lastmod_languageindex);
+				Console.WriteLine("Ethnologue codes list last modified: " + lastmod_languagecodes);
 				Console.WriteLine("ISO693-3 table last modified: " + lastmod_iso693);
 
 				using (StreamWriter file = new StreamWriter(@"LastModified.txt"))
 				{
 					file.WriteLine("IANA subtags last modified: " + lastmod_ianasubtag);
 					file.WriteLine("Ethnologue index last modified: " + lastmod_languageindex);
+					file.WriteLine("Ethnologue codes list last modified: " + lastmod_languagecodes);
 					file.WriteLine("ISO693-3 table last modified: " + lastmod_iso693);
 				}
 
@@ -95,15 +124,26 @@ namespace LanguageData
 			return new WebClient();
 		}
 
+		/// <summary>
+		/// Read the current data files: TwoToThreeCodes.txt, LanguageIndex.txt, LanguageCodes.txt, ianaSubtagRegistry.txt
+		/// </summary>
+		/// <param name="input_dir">Directory to find the current data files</param>
 		public void GetOldSources(string input_dir)
 		{
 			_oldtwotothree = File.ReadAllText(Path.Combine (input_dir, @"TwoToThreeCodes.txt"));
 			_oldtwotothree = _oldtwotothree.Replace("\r\n", "\n");
 			_oldlanguageindex = File.ReadAllText(Path.Combine (input_dir, @"LanguageIndex.txt"));
 			_oldlanguageindex = _oldlanguageindex.Replace("\r\n", "\n");
+			_oldlanguagecodes = File.ReadAllText(Path.Combine(input_dir, @"LanguageCodes.txt"));
+			_oldlanguagecodes = _oldlanguagecodes.Replace("\r\n", "\n");
 			_oldianasubtags = File.ReadAllText(Path.Combine (input_dir, @"ianaSubtagRegistry.txt"));
 			_oldianasubtags = _oldianasubtags.Replace("\r\n", "\n");
 		}
+
+		/// <summary>
+		/// Check if old and new sources are different
+		/// </summary>
+		/// <returns>true if any downloaded files are different from the current ones</returns>
 		public bool CheckSourcesAreDifferent()
 		{
 			// return true if any are different, false if all the same
@@ -128,6 +168,16 @@ namespace LanguageData
 				Console.WriteLine("The Ethnologue Language Index has not changed");
 			}
 
+			if (AreFilesDifferent(_oldlanguagecodes, _newlanguagecodes))
+			{
+				retval = true;
+				Console.WriteLine("There is a new Ethnologue Language Codes list available");
+			}
+			else
+			{
+				Console.WriteLine("The Ethnologue Language Language Codes list has not changed");
+			}
+
 			if (AreFilesDifferent(_oldtwotothree, _newtwotothree))
 			{
 				retval = true;
@@ -143,6 +193,10 @@ namespace LanguageData
 		}
 
 		// this does not check that it is a safe place to put the files
+		/// <summary>
+		/// Save the downloaded files in a specified directory
+		/// </summary>
+		/// <param name="output_directory">Directory to save the files</param>
 		public void WriteNewFiles(string output_directory)
 		{
 			if (!Uri.IsWellFormedUriString(output_directory, UriKind.RelativeOrAbsolute) || !Directory.Exists(output_directory))
@@ -151,22 +205,33 @@ namespace LanguageData
 			}
 			string filename = Path.Combine(output_directory, "LanguageIndex.txt");
 			File.WriteAllText(filename, _newlanguageindex);
+			filename = Path.Combine(output_directory, "LanguageCodes.txt");
+			File.WriteAllText(filename, _newlanguagecodes);
 			filename = Path.Combine(output_directory, "ianaSubtagRegistry.txt");
 			File.WriteAllText(filename, _newianasubtags);
 			filename = Path.Combine(output_directory, "TwoToThreeCodes.txt");
 			File.WriteAllText(filename, _newtwotothree);
 		}
 
+
+		/// <summary>
+		/// Get a dictionary of files names and the string contents of the file
+		/// This is to be passed to LanguageDataIndex to process
+		/// </summary>
+		/// <param name="newfiles">true means use new files, false means current files</param>
+		/// <returns>Dictionary of files names and the string contents of the file</returns>
 		public IDictionary<string,string> GetFileStrings(bool newfiles)
 		{
 			var filestrings = new Dictionary<string,string>();
 			if (newfiles) {
 				filestrings.Add("TwoToThreeCodes.txt", _newtwotothree);
 				filestrings.Add("LanguageIndex.txt", _newlanguageindex);
+				filestrings.Add("LanguageCodes.txt", _newlanguagecodes);
 				filestrings.Add("ianaSubtagRegistry.txt", _newianasubtags);
 			} else {
 				filestrings.Add("TwoToThreeCodes.txt", _oldtwotothree);
 				filestrings.Add("LanguageIndex.txt", _oldlanguageindex);
+				filestrings.Add("LanguageCodes.txt", _oldlanguagecodes);
 				filestrings.Add("ianaSubtagRegistry.txt", _oldianasubtags);
 			}
 			return filestrings;

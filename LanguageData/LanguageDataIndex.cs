@@ -9,9 +9,17 @@ using Newtonsoft.Json;
 using SIL.Extensions;
 using SIL.WritingSystems;
 
+// LanguageData is a separate program for gathering standard language information together
+// It should be run when you want to check for new data files or create the LanguageDataIndex.txt
+// See https://github.com/sillsdev/libpalaso/wiki/LanguageData for more details
 namespace LanguageData
 {
-	public class NewLanguageIndex
+	/// <summary>
+	/// Generates LanguageDataIndex.txt using data from the Ethnologue, IANA subtag repository and the SLDR.
+	/// This is the resource that is used to populate SIL.WritingSystems.LanguageLookup for searching
+	/// Also can generate LanguageDataIndex.json for webapps to consume
+	/// </summary>
+	public class LanguageDataIndex
 	{
 		private readonly Dictionary<string, LanguageInfo> _codeToLanguageIndex = new Dictionary<string, LanguageInfo>();
 		private readonly Dictionary<string, LanguageInfo> _codeToEthnologueData = new Dictionary<string, LanguageInfo>();
@@ -22,9 +30,9 @@ namespace LanguageData
 		private List<string> ExcludedRegions = new List<string> { "Ethiopia" };
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="NewLanguageIndex"/> class.
+		/// Initializes a new instance of the <see cref="LanguageDataIndex"/> class.
 		/// </summary>
-		public NewLanguageIndex(IDictionary<string, string> sourcefiles)
+		public LanguageDataIndex(IDictionary<string, string> sourcefiles)
 		{
 			string twotothreecodes = sourcefiles["TwoToThreeCodes.txt"];
 			string subtagregistry = sourcefiles["ianaSubtagRegistry.txt"];
@@ -65,7 +73,7 @@ namespace LanguageData
 				}
 
 				string regionCode = items[1].Trim();
-				LanguageInfo language = GetOrCreateLanguageFromCode(code, threelettercode, regionCode == "?" ? "?" : StandardSubtags.RegisteredRegions[regionCode].Name);
+				LanguageInfo language = GetOrCreateLanguageFromCode(code, threelettercode, regionCode == "?" ? "" : StandardSubtags.RegisteredRegions[regionCode].Name);
 
 				string name = items[3].Trim();
 
@@ -170,7 +178,7 @@ namespace LanguageData
 							if (langTag == languageSubtag)
 								continue;
 
-							LanguageInfo language = GetOrCreateLanguageFromCode(langTag, langTag, regionSubtag == null ? "?" : regionSubtag.Name);
+							LanguageInfo language = GetOrCreateLanguageFromCode(langTag, langTag, regionSubtag == null ? "" : regionSubtag.Name); // changed to default to "" 2017-04-24
 							bool displayScript = scriptSubtag != null && !IetfLanguageTag.IsScriptImplied(langTag);
 							LanguageInfo otherLanguage;
 							if (langTag != languageSubtag && !displayScript && _codeToLanguageIndex.TryGetValue(languageSubtag, out otherLanguage) && language.Countries.SetEquals(otherLanguage.Countries))
@@ -193,10 +201,32 @@ namespace LanguageData
 					}
 				}
 			}
-			
 
-				// localise some language names
-				foreach (LanguageInfo languageInfo in _codeToLanguageIndex.Values)
+			string languagecodes = sourcefiles["LanguageCodes.txt"];
+			var codeentries = new List<string>(languagecodes.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries));
+
+			foreach (var languageCode in codeentries)
+			{
+				var data = languageCode.Split(new[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
+				if (data.Length < 2)
+					continue;
+				var langCode = data[0];
+				string twoLetterCode;
+				if (threeToTwoLetter.TryGetValue(langCode, out twoLetterCode))
+					langCode = twoLetterCode;
+				if (langCode == "fuv")
+					langCode = "fuv-Arab";	// special case because the script has been added to this language code
+											// which is probably something to do with the SLDR
+				var countryCode = data[1];
+				LanguageInfo lang;
+				if (_codeToLanguageIndex.TryGetValue(langCode, out lang))
+				{
+					lang.PrimaryCountry = StandardSubtags.RegisteredRegions[countryCode].Name;
+				}
+			}
+
+			// localise some language names
+			foreach (LanguageInfo languageInfo in _codeToLanguageIndex.Values)
 			{
 				if (languageInfo.Names.Count == 0)
 					continue; // this language is suppressed
@@ -248,7 +278,40 @@ namespace LanguageData
 					languageInfo.Names.Insert(0, localName);
 					languageInfo.DesiredName = localName;
 				}
+
+				switch (languageInfo.ThreeLetterTag)
+				{
+					case "itd": // 2 temporary special cases because the LanguageCodes.txt files needs to be updated with LanguageIndex.txt
+						languageInfo.PrimaryCountry = "Indonesia";
+						break;
+					case "xak":
+						languageInfo.PrimaryCountry = "Venezuela";
+						break;
+					default:
+						// Also set the PrimaryCountry if there is only one country
+						if (String.IsNullOrEmpty(languageInfo.PrimaryCountry) && languageInfo.Countries.Count == 1)
+						{
+							languageInfo.PrimaryCountry = languageInfo.Countries.First();
+						}
+						break;
+				}
+
 			}
+
+			// check if any languages are found in multiple countries but do not have a primary country
+			// there is a test for this in LanguageLookupTests.llExpectedLanguagesHaveUniquePrimaryCountries
+			var languagesWithoutRegions = new List<LanguageInfo>();
+			foreach (var lang in _codeToLanguageIndex.Values)
+			{
+				if (String.IsNullOrEmpty(lang.PrimaryCountry))
+					languagesWithoutRegions.Add(lang);
+			}
+			var languagesWithAmbiguousPrimaryCountry = languagesWithoutRegions.Where(l => l.Countries.Count() > 1);
+			foreach (var lang in languagesWithAmbiguousPrimaryCountry)
+			{
+				Console.WriteLine("Language {0}({1}) has no primary country but is found in multiple countries", lang.DesiredName, lang.LanguageTag);
+			}
+
 		}
 
 		private LanguageInfo GetOrCreateLanguageFromCode(string code, string threelettercode, string countryName)
@@ -276,13 +339,14 @@ namespace LanguageData
 				// then the circular dependency needs to be broken to get the new version in
 				foreach (LanguageInfo languageInfo in _codeToLanguageIndex.Values)
 				{
-					entry = String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}",
+					entry = String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}",
 						languageInfo.LanguageTag,
 						languageInfo.ThreeLetterTag,
 						languageInfo.DesiredName,
 						languageInfo.IsMacroLanguage ? "M" : ".",
 						String.Join(";", languageInfo.Names),
-						String.Join(";", languageInfo.Countries)
+						String.Join(";", languageInfo.Countries),
+						languageInfo.PrimaryCountry
 						);
 					file.WriteLine(entry);
 				}
@@ -322,7 +386,7 @@ namespace LanguageData
 							writer.WritePropertyName("macro");
 							writer.WriteValue(languageInfo.IsMacroLanguage);
 
-							writer.WritePropertyName("country");
+							writer.WritePropertyName("countries");
 							writer.WriteStartArray();
 							foreach (string country in languageInfo.Countries)
 							{
@@ -340,6 +404,10 @@ namespace LanguageData
 								}
 							}
 							writer.WriteEndArray();
+
+							writer.WritePropertyName("country");
+							writer.WriteValue(languageInfo.PrimaryCountry);
+							writer.WriteEndObject();
 
 							writer.WriteEndObject();
 						}

@@ -64,10 +64,14 @@ namespace LanguageData.Tests
 			File.WriteAllText(filename, "22222222222222222222222222222222222222222222222222222222222222222");
 			filename = Path.Combine(".", "TwoToThreeCodes.txt");
 			File.WriteAllText(filename, "33333333333333333333333333333333333333333333333333333333333333333");
+			filename = Path.Combine(".", "LanguageCodes.txt");
+			File.WriteAllText(filename, "44444444444444444444444444444444444444444444444444444444444444444");
 
 			getcheck.GetOldSources(".");
 
 			filename = Path.Combine(".", "LanguageIndex.txt");
+			File.Delete(filename);
+			filename = Path.Combine(".", "LanguageCodes.txt");
 			File.Delete(filename);
 			filename = Path.Combine(".", "ianaSubtagRegistry.txt");
 			File.Delete(filename);
