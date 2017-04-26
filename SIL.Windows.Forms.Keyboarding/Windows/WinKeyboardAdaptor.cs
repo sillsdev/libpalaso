@@ -397,7 +397,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			// - Look up extended layout in HKLM\\SYSTEM\\CurrentControlSet\\Control\\Keyboard Layouts
 			// - Look up basic (non-extended) layout in HKLM\\SYSTEM\\CurrentControlSet\\Control\\Keyboard Layouts
 			// -Scan for ID of extended layout in HKLM\\SYSTEM\\CurrentControlSet\\Control\\Keyboard Layouts
-			var hkl = string.Format("{0:X8}", (int)handle);
+			var hkl = string.Format("{0:X8}", (long)handle);
 
 			// Get substitute first
 			var substituteHkl = (string)Registry.GetValue(@"HKEY_CURRENT_USER\Keyboard Layout\Substitutes", hkl, null);
@@ -451,7 +451,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			var displayName = (string)Registry.GetValue(key, "Layout Display Name", null);
 			if (string.IsNullOrEmpty(layoutText) && string.IsNullOrEmpty(displayName))
 				return null;
-			
+
 			if (string.IsNullOrEmpty(displayName))
 				return new LayoutName(layoutText);
 

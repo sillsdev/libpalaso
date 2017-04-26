@@ -35,7 +35,11 @@ namespace Palaso.BuildTask.Tests.UnitTestTasks
 </Project>",
 				Path.Combine(OutputDirectory, "Palaso.BuildTasks.dll"),
 				Path.Combine(OutputDirectory, "Palaso.BuildTask.Tests.Helper.dll"),
+#if (PLATFORMx64)
+				Path.Combine(OutputDirectory, "..", "..", "packages", "NUnit.Runners.Net4.2.6.4", "tools"),
+#else
 				Path.Combine(OutputDirectory, "..", "..", "..", "packages", "NUnit.Runners.Net4.2.6.4", "tools"),
+#endif
 				category, Platform.IsWindows));
 
 			return buildFile;
