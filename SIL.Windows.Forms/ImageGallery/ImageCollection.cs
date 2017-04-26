@@ -142,7 +142,6 @@ namespace SIL.Windows.Forms.ImageGallery
 		/// <returns>number of index lines successfully loaded</returns>
 		public int LoadMultilingualIndex(string pathToIndexFile, string rootImagePath = null)
 		{
-			Debug.WriteLine($"starting to load index for {pathToIndexFile} at {DateTime.Now.ToString("o")}");
 			if (rootImagePath == null)
 				rootImagePath = RootImagePath;
 			RestoreEditabilityOfCollection(Path.GetDirectoryName(pathToIndexFile));
@@ -205,7 +204,6 @@ namespace SIL.Windows.Forms.ImageGallery
 					}
 					++count;
 				}
-				Debug.WriteLine($"finished loading index for {pathToIndexFile} at {DateTime.Now.ToString("o")}");
 				return count;
 			}
 		}
