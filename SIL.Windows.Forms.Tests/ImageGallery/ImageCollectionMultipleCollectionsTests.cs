@@ -30,7 +30,7 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 			_collection = new ImageCollection();
 			_collection.AdditionalCollectionPaths = new[]
 				{_additionalCollectionBob, _additionalCollectionSally};
-			_collection.RootImagePath = Path.Combine(_aorRoot, ImageCollection.ImageFolder);
+			_collection.DefaultAorRootImagePath = Path.Combine(_aorRoot, ImageCollection.ImageFolder);
 			// Don't really need all these for the tests here, but a little bit of data out of the real thing might be good for catching problems
 			MakeFakeImageCollection(_aorRoot, "AOR_", "ArtOfReadingMultilingualIndex.txt", @"order	filename	artist	country	en	id	fr	es	ar	hi	bn	pt	th	sw	zh
 1	B-3-3		Brazil	boy,child,head,people,shoulder	anak laki-laki,anak,kepala,orang,orang-orang,bahu	garçon,enfant,tête,personnes,épaule	niño,niño,cabeza,gente,hombro	صبي,طفل,رئيس,الناس,كتف	लड़का,बच्चा,सिर,लोग,कंधा	ছেলে,শিশু,মাথা,সম্প্রদায়,অংস	Garoto,criança,cabeça,pessoas,ombro	เด็กผู้ชาย,เด็ก,หัว,คน,ไหล่	mvulana,Mtoto,kichwa,Watu,bega	男孩,孩子,头,人,肩
@@ -38,11 +38,11 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 3	B-A-10		Brazil	animal,armadillo	binatang	animal,tatou	animal,armadillo	حيوان,المدرع حيوان ثديي	पशु,Armadillo	পশু,সাঁজোয়া জাহাজ	animal,tatu	สัตว์,ตัวนิ่ม	wanyama,kakakuona	动物,犰狳
 4	B-NA-1		Brazil	peccary,pig,animal,wild pig	binatang,babi	pécari,porc,animal,cochon sauvage	pecarí,cerdo,animal,jabalí	حيوان امريكي شبيه بالخنزير,خنزير,حيوان,الخنزير البري	अमेरिका देश का सुअर के आकार का एक चौपाया,सुअर,पशु,जंगली सुअर	দক্ষিণ আমেরিকার শূকসদৃশ প্রাণীবিশেষ,শূকর,পশু,বন্য শূকর	pecari,porco,animal,porco selvagem	สัตว์เพคะริ,หมู,สัตว์,หมูป่า	peccary,nguruwe,wanyama,nguruwe pori	野猪,猪,动物,野猪
 5	CMB0012		Cambodia	dish,food,rice	beras,makanan,nasi,piring	plat,aliments,riz	plato,comida,arroz	طبق,طعام,الأرز	थाली,भोजन,चावल	থালা,খাদ্য,চাল	prato,Comida,arroz	จาน,อาหาร,ข้าว	sahani,chakula,mchele	菜,食品,饭");
-			MakeFakeImageCollection(_additionalCollectionBob, "Bob_", "BobsMultilingualIndex.txt", @"order	filename	artist	country	en	id	fr	es	ar	hi	bn	pt	th	sw	zh
+			MakeFakeImageCollection(_additionalCollectionBob, "Bob_", "BobsMultilingualIndex.txt", @"order	filename	artist	country	en	id	de
 1	First		Australia	galaxy
 1	Christmas Lights		Australia	Christmas,lights,programming,stars,bridge	
 2	Hubble Galaxy		Australia	Hubble,stars,galaxy	");
-			MakeFakeImageCollection(_additionalCollectionSally, "", "SallysMultilingualIndex.txt", @"order	filename	artist	country	en	id	fr	es	ar	hi	bn	pt	th	sw	zh
+			MakeFakeImageCollection(_additionalCollectionSally, "", "SallysMultilingualIndex.txt", @"order	filename	artist	country	en	id	jt
 1	brokenBridge		Melbourne	bridge,broken,melbourne,skyscraper	bridgeIn,brokenIn,melbourneIn,skyscraperIn
 2	Central		Melbourne	skyscraper,bridge,river,melbourne	
 3	Yarra		Melbourne	yarra,river,melbourne,skyscraper
@@ -105,6 +105,19 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 			Assert.That(pics, Has.Count.EqualTo(2));
 			Assert.That(pics, Has.Member("Brazil:AOR_B-3-3.png"));
 			Assert.That(pics, Has.Member(":1:Sydney:Bridge.png"));
+		}
+
+		[Test]
+		public void GetIndexLanguages_RetrievesFromAll()
+		{
+			_collection.GetIndexLanguages();
+			var langs = _collection.IndexLanguageIds;
+			Assert.That(langs, Has.Member("en")); // always
+			Assert.That(langs, Has.Member("id")); // common
+			Assert.That(langs, Has.Member("jt")); // improbable one from secondary collection
+			Assert.That(langs, Has.Member("de")); // minority only
+			Assert.That(langs, Has.Member("zh")); // last and in AOR only
+			Assert.That(langs, Has.Count.EqualTo(new HashSet<string>(langs).Count()));
 		}
 
 		[Test]

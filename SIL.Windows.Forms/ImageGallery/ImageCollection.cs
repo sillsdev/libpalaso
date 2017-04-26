@@ -74,17 +74,14 @@ namespace SIL.Windows.Forms.ImageGallery
 		}
 
 		/// <summary>
-		/// This is actually the default root image path used by LoadMultilingualIndex when not
-		/// explicitly passed a rootImagePath argument. This effectively means it is the root
+		/// This is the default root image path used by LoadMultilingualIndex when not
+		/// explicitly passed a rootImagePath argument. This  means it is the root
 		/// image path for the original AOR collection, not for any of the others. Note that it's
 		/// the path to the (typically) Images directory; the index file is expected to be in
 		/// the parent of this directory, unless both are passed explicitly (a case not tested
 		/// much if at all).
-		/// Would be nice to rename to something like DefaultAorRootImagePath, but I don't want
-		/// to change the public API of a library class since it's hard to be sure of tracking down
-		/// all the clients that might be affected.
 		/// </summary>
-		public string RootImagePath { get; set; }
+		public string DefaultAorRootImagePath { get; set; }
 
 		public IEnumerable<string> AdditionalCollectionPaths { get; set; }
 
@@ -95,11 +92,11 @@ namespace SIL.Windows.Forms.ImageGallery
 		/// <param name="indexFilePath"></param>
 		public void LoadIndex(string indexFilePath)
 		{
-			if (RootImagePath == null)
+			if (DefaultAorRootImagePath == null)
 			{
-				RootImagePath = Path.GetDirectoryName(indexFilePath).CombineForPath(ImageFolder);
+				DefaultAorRootImagePath = Path.GetDirectoryName(indexFilePath).CombineForPath(ImageFolder);
 			}
-			RestoreEditabilityOfCollection(Path.GetDirectoryName(RootImagePath));
+			RestoreEditabilityOfCollection(Path.GetDirectoryName(DefaultAorRootImagePath));
 			using (var f = File.OpenText(indexFilePath))
 			{
 				while (!f.EndOfStream)
@@ -143,7 +140,7 @@ namespace SIL.Windows.Forms.ImageGallery
 		public int LoadMultilingualIndex(string pathToIndexFile, string rootImagePath = null)
 		{
 			if (rootImagePath == null)
-				rootImagePath = RootImagePath;
+				rootImagePath = DefaultAorRootImagePath;
 			RestoreEditabilityOfCollection(Path.GetDirectoryName(pathToIndexFile));
 			string filenamePrefix = null;
 			const string defaultLang = "en";
@@ -151,7 +148,7 @@ namespace SIL.Windows.Forms.ImageGallery
 			// More space-efficient that just storing the full path.
 			// GetPathsFromResults must remain consistent with this.
 			var pathPrefix = "";
-			if (rootImagePath != RootImagePath)
+			if (rootImagePath != DefaultAorRootImagePath)
 			{
 				pathPrefix = ":" + AdditionalCollectionPaths.IndexOf(Path.GetDirectoryName(rootImagePath)) + ":";
 			}
@@ -257,7 +254,7 @@ namespace SIL.Windows.Forms.ImageGallery
 		{
 			try
 			{
-				var partialPath = path.Replace(RootImagePath, "");
+				var partialPath = path.Replace(DefaultAorRootImagePath, "");
 				partialPath = partialPath.Replace(Path.DirectorySeparatorChar, ':');
 				partialPath = partialPath.Trim(new char[] {':'});
 				lock (_padlock)
@@ -346,7 +343,7 @@ namespace SIL.Windows.Forms.ImageGallery
 
 		private string ImageFolderForInternalPath(string rawInternalPath, out string relativePath)
 		{
-			string rootPath = RootImagePath;
+			string rootPath = DefaultAorRootImagePath;
 			relativePath = rawInternalPath;
 			if (relativePath.StartsWith(":"))
 			{
@@ -542,10 +539,10 @@ namespace SIL.Windows.Forms.ImageGallery
 
 			var c = new ImageCollection();
 
-			c.RootImagePath = path;
+			c.DefaultAorRootImagePath = path;
+			c.AdditionalCollectionPaths = additionalPaths;
 			c.GetIndexLanguages();
 			c.SearchLanguage = lang;
-			c.AdditionalCollectionPaths = additionalPaths;
 
 			// We would eventually add these paths to the enabled collection, and correctly
 			// set their state, as we load each index. But since that's async and the image toolbox
@@ -559,7 +556,7 @@ namespace SIL.Windows.Forms.ImageGallery
 			// the parent dialog.  Loading the file takes a second or two, but should
 			// be done before the user finishes typing a search string.
 			var thr = new Thread(c.LoadImageIndex);
-			thr.Name = "LoadArtOfReadingIndex";
+			thr.Name = "LoadImageIndex";
 			thr.Start();
 
 			return c;
@@ -568,22 +565,32 @@ namespace SIL.Windows.Forms.ImageGallery
 		internal void GetIndexLanguages()
 		{
 			_indexLanguages = null;
-			var pathToIndexFile = TryToGetPathToMultilingualIndex(RootImagePath);
-			if (File.Exists(pathToIndexFile))
+			var pathToAorIndexFile = TryToGetPathToMultilingualIndex(DefaultAorRootImagePath);
+			var roots = new List<string>();
+			if (pathToAorIndexFile != null)
+				roots.Add(pathToAorIndexFile);
+			roots.AddRange(AdditionalCollectionPaths.Select(p => TryForPathToMultilingualIndex(p)).Where(s => s != null));
+			_indexLanguages = new List<string>();
+			foreach (var pathToIndexFile in roots)
 			{
-				using (var f = File.OpenText(pathToIndexFile))
+				if (File.Exists(pathToIndexFile))
 				{
-					var columns = GetColumnHeadersIfValid(f);
-					if (columns != null)
+					using (var f = File.OpenText(pathToIndexFile))
 					{
-						_indexLanguages = new List<string>();
-						// The first four columns are meta data about an image.  The remaining
-						// columns are search words in different languages, one language per column.
-						// The header contains the ISO language codes.
-						for (int i = 4; i < columns.Length; ++i)
-							_indexLanguages.Add(columns[i]);
+						var columns = GetColumnHeadersIfValid(f);
+						if (columns != null)
+						{
+							// The first four columns are meta data about an image.  The remaining
+							// columns are search words in different languages, one language per column.
+							// The header contains the ISO language codes.
+							for (int i = 4; i < columns.Length; ++i)
+							{
+								if (!IndexLanguageIds.Contains(columns[i]))
+								_indexLanguages.Add(columns[i]);
+							}
+						}
+						f.Close();
 					}
-					f.Close();
 				}
 			}
 		}
@@ -617,14 +624,14 @@ namespace SIL.Windows.Forms.ImageGallery
 			// do NOT do this here. It runs in the background on initial load, and this could clear things
 			// just between when FromStandardLocations initializes them and AORChooser uses them.
 			//_enabledCollections.Clear();
-			string pathToIndexFile = TryToGetPathToMultilingualIndex(RootImagePath);
+			string pathToIndexFile = TryToGetPathToMultilingualIndex(DefaultAorRootImagePath);
 			if (!String.IsNullOrEmpty(pathToIndexFile))
 			{
-				countMulti = LoadMultilingualIndex(pathToIndexFile, RootImagePath);
+				countMulti = LoadMultilingualIndex(pathToIndexFile, DefaultAorRootImagePath);
 			}
 			if (countMulti == 0)
 			{
-				pathToIndexFile = TryToGetPathToIndex(RootImagePath);
+				pathToIndexFile = TryToGetPathToIndex(DefaultAorRootImagePath);
 				LoadIndex(pathToIndexFile);
 			}
 			foreach (var path in AdditionalCollectionPaths)
