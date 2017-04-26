@@ -202,6 +202,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 				return;
 
 			_imageCollection = ImageCollection.FromStandardLocations(SearchLanguage);
+			_collectionToolStrip.Visible = false;
 			if (_imageCollection == null)
 			{
 				_messageLabel.Visible = true;
@@ -221,6 +222,45 @@ namespace SIL.Windows.Forms.ImageToolbox
 				_messageLabel.Height = 200;
 				SetMessageLabelText();
 				_thumbnailViewer.SelectedIndexChanged += new EventHandler(_thumbnailViewer_SelectedIndexChanged);
+				if (_imageCollection.Collections.Count() > 1)
+				{
+					_collectionToolStrip.Visible = true;
+					_collectionDropDown.Visible = true;
+					_collectionDropDown.Text =
+						"Search these collections".Localize("ImageToolbox.SearchTheseCollections");
+					_labelSearchAOR.Visible = false;
+					foreach (var collection in _imageCollection.Collections)
+					{
+						var text = Path.GetFileNameWithoutExtension(collection);
+						var item = new ToolStripMenuItem(text);
+						_collectionDropDown.DropDownItems.Add(item);
+						item.CheckOnClick = true;
+						item.CheckState = _imageCollection.IsCollectionEnabled(collection) ? CheckState.Checked : CheckState.Unchecked;
+						item.CheckedChanged += (o, args) =>
+						{
+							if (_collectionDropDown.DropDownItems.Cast<ToolStripMenuItem>().Count(x => x.Checked) == 0)
+								item.Checked = true; // tried to uncheck the last one, don't allow it.
+							else
+								_imageCollection.EnableCollection(collection, item.Checked);
+						};
+					}
+				}
+				else
+				{
+					// Only one collection, but might not be AOR
+					var name = Path.GetFileNameWithoutExtension(_imageCollection.Collections.First());
+					if (name != "Art Of Reading") // Don't mess with it if it's AOR, that has custom localizations
+					{
+						_labelSearchAOR.Text =
+							String.Format("Search In {0}".Localize("ImageToolbox.SearchThisCollection"), name);
+					}
+					// Pathologically, the user might have disabled this collection, then deleted all others
+					// It's not so bad if he disabled some and then deleted all the enabled ones and still has
+					// at least two (all disabled) because he can just re-enable one of them. But if we aren't
+					// even showing that control he's had it, and also, in this case it's obvious which single
+					// collection to enable.
+					_imageCollection.EnableCollection(_imageCollection.Collections.First(), true);
+				}
 			}
 			_messageLabel.Font = new Font(SystemFonts.DialogFont.FontFamily, 10);
 

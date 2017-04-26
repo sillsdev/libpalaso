@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -52,12 +53,24 @@ namespace SIL.Windows.Forms.ImageGallery
 		public string SearchLanguage { get; set; }
 		private List<string> _indexLanguages;
 		public IEnumerable<string> IndexLanguageIds { get { return _indexLanguages; } }
+		private Dictionary<string, bool> _enabledCollections = new Dictionary<string, bool>();
 
 		public ImageCollection()
 		{
 			_wordToPartialPathIndex = new Dictionary<string, List<string>>();
 			_partialPathToWordsIndex = new Dictionary<string, string>();
 			SearchLanguage = "en";	// until told otherwise...
+		}
+
+		public IEnumerable<string> Collections
+		{
+			get
+			{
+				var result = _enabledCollections.Keys.ToList();
+				result.Sort((x, y) => Path.GetDirectoryName(x).ToLowerInvariant()
+						.CompareTo(Path.GetDirectoryName(y).ToLowerInvariant()));
+				return result;
+			}
 		}
 
 		/// <summary>
@@ -83,7 +96,10 @@ namespace SIL.Windows.Forms.ImageGallery
 		public void LoadIndex(string indexFilePath)
 		{
 			if (RootImagePath == null)
+			{
 				RootImagePath = Path.GetDirectoryName(indexFilePath).CombineForPath(ImageFolder);
+			}
+			RestoreEditabilityOfCollection(Path.GetDirectoryName(RootImagePath));
 			using (var f = File.OpenText(indexFilePath))
 			{
 				while (!f.EndOfStream)
@@ -129,6 +145,7 @@ namespace SIL.Windows.Forms.ImageGallery
 			Debug.WriteLine($"starting to load index for {pathToIndexFile} at {DateTime.Now.ToString("o")}");
 			if (rootImagePath == null)
 				rootImagePath = RootImagePath;
+			RestoreEditabilityOfCollection(Path.GetDirectoryName(pathToIndexFile));
 			string filenamePrefix = null;
 			const string defaultLang = "en";
 			// prefix we will stick on partial paths to indicate which folder they come from.
@@ -269,16 +286,9 @@ namespace SIL.Windows.Forms.ImageGallery
 			foreach (string rawInternalPath in internalPaths)
 			{
 				// internal paths have colons as folder separators and other special properties as noted above.
-				string rootPath = RootImagePath;
-				string internalPath = rawInternalPath;
-				if (internalPath.StartsWith(":"))
-				{
-					var secondColonIndex = internalPath.IndexOf(":", 1, StringComparison.InvariantCulture);
-					var additionalFileIndex = Int32.Parse(internalPath.Substring(1, secondColonIndex - 1));
-					rootPath = Path.Combine(AdditionalCollectionPaths.Skip(additionalFileIndex).First(), ImageFolder);
-					internalPath = internalPath.Substring(secondColonIndex + 1);
-				}
-				var path = Path.Combine(rootPath, internalPath.Replace(':', Path.DirectorySeparatorChar));
+				string relativePath;
+				var rootPath = ImageFolderForInternalPath(rawInternalPath, out relativePath);
+				var path = Path.Combine(rootPath, relativePath);
 
 				if (File.Exists(path))
 				{
@@ -336,6 +346,22 @@ namespace SIL.Windows.Forms.ImageGallery
 			}
 		}
 
+		private string ImageFolderForInternalPath(string rawInternalPath, out string relativePath)
+		{
+			string rootPath = RootImagePath;
+			relativePath = rawInternalPath;
+			if (relativePath.StartsWith(":"))
+			{
+				var secondColonIndex = relativePath.IndexOf(":", 1, StringComparison.InvariantCulture);
+				var additionalFileIndex = Int32.Parse(relativePath.Substring(1, secondColonIndex - 1));
+				rootPath = Path.Combine(AdditionalCollectionPaths.Skip(additionalFileIndex).First(),
+					ImageFolder);
+				relativePath = relativePath.Substring(secondColonIndex + 1);
+			}
+			relativePath = relativePath.Replace(':', Path.DirectorySeparatorChar);
+			return rootPath;
+		}
+
 		private IEnumerable<string> GetMatchingPictures(IEnumerable<string> keywords, out bool foundExactMatches)
 		{
 			var pictures = new List<string>();
@@ -349,11 +375,19 @@ namespace SIL.Windows.Forms.ImageGallery
 				{
 					if (_wordToPartialPathIndex.TryGetValue(term, out picturesForThisKey))
 					{
-						pictures.AddRange(picturesForThisKey);
-						foundExactMatches = true;
+						foreach (var path in picturesForThisKey)
+						{
+							string relativePath;
+							var imageFolder = ImageFolderForInternalPath(path, out relativePath);
+							if (_enabledCollections[Path.GetDirectoryName(imageFolder)])
+							{
+								pictures.Add(path);
+								foundExactMatches = true;
+							}
+						}
 					}
 					//then look  for approximate matches
-					else
+					if (!foundExactMatches)
 					{
 						foundExactMatches = false;
 						var kMaxEditDistance = 1;
@@ -367,7 +401,15 @@ namespace SIL.Windows.Forms.ImageGallery
 						{
 							foreach (var keyValuePair in matches)
 							{
-								pictures.AddRange(keyValuePair.Value);
+								foreach (var path in keyValuePair.Value)
+								{
+									string relativePath;
+									var imageFolder = ImageFolderForInternalPath(path, out relativePath);
+									if (_enabledCollections[Path.GetDirectoryName(imageFolder)])
+									{
+										pictures.Add(path);
+									}
+								}
 							}
 						}
 					}
@@ -507,6 +549,14 @@ namespace SIL.Windows.Forms.ImageGallery
 			c.SearchLanguage = lang;
 			c.AdditionalCollectionPaths = additionalPaths;
 
+			// We would eventually add these paths to the enabled collection, and correctly
+			// set their state, as we load each index. But since that's async and the image toolbox
+			// may ask for the state of enabled collections immediately, we need to update that now.
+			if (path != null)
+				c.RestoreEditabilityOfCollection(Path.GetDirectoryName(path));
+			foreach (var p in additionalPaths)
+				c.RestoreEditabilityOfCollection(p);
+
 			// Load the index information asynchronously so as not to delay displaying
 			// the parent dialog.  Loading the file takes a second or two, but should
 			// be done before the user finishes typing a search string.
@@ -566,6 +616,9 @@ namespace SIL.Windows.Forms.ImageGallery
 		internal void LoadImageIndex()
 		{
 			int countMulti = 0;
+			// do NOT do this here. It runs in the background on initial load, and this could clear things
+			// just between when FromStandardLocations initializes them and AORChooser uses them.
+			//_enabledCollections.Clear();
 			string pathToIndexFile = TryToGetPathToMultilingualIndex(RootImagePath);
 			if (!String.IsNullOrEmpty(pathToIndexFile))
 			{
@@ -611,13 +664,45 @@ namespace SIL.Windows.Forms.ImageGallery
 			return FileLocator.GetFileDistributedWithApplication(true, "ArtOfReadingIndexV3_en.txt");
 		}
 
+		void RestoreEditabilityOfCollection(string path)
+		{
+			_enabledCollections[path] = true;
+			var disabledSettings = Properties.Settings.Default.DisabledImageCollections;
+			if (disabledSettings == null)
+				disabledSettings = new StringCollection();
+			if (disabledSettings.IndexOf(path) >= 0)
+				_enabledCollections[path] = false;
+		}
+
 
 		public void ReloadImageIndex(string languageId)
 		{
 			SearchLanguage = languageId;
+			_enabledCollections.Clear();
 			_wordToPartialPathIndex.Clear();
 			_partialPathToWordsIndex.Clear();
 			LoadImageIndex();
+		}
+
+		public void EnableCollection(string path, bool enabled)
+		{
+			_enabledCollections[path] = enabled;
+			var disabledSettings = Properties.Settings.Default.DisabledImageCollections;
+			if (disabledSettings == null)
+				Properties.Settings.Default.DisabledImageCollections = disabledSettings = new StringCollection();
+			if (enabled && disabledSettings.Contains(path))
+				disabledSettings.Remove(path);
+			if (!enabled && !disabledSettings.Contains(path))
+				disabledSettings.Add(path);
+			Properties.Settings.Default.Save();
+		}
+
+		public bool IsCollectionEnabled(string path)
+		{
+			bool result;
+			if (!_enabledCollections.TryGetValue(path, out result))
+				return true; // default is to enable
+			return result;
 		}
 	}
 }

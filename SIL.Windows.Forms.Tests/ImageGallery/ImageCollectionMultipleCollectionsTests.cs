@@ -19,7 +19,7 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 		private ImageCollection _collection;
 
 		[TestFixtureSetUp]
-		public void SetupFakeArtOfReading()
+		public void SetupFakeCollections()
 		{
 			_testFolder = new TemporaryFolder("AOR_Multiple_Tests");
 			_aorRoot = Path.Combine(_testFolder.Path, "AOR");
@@ -116,6 +116,42 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 			Assert.That(pics, Has.Count.EqualTo(2));
 			Assert.That(pics, Has.Member("Brazil:AOR_B-3-3.png"));
 			Assert.That(pics, Has.Member(":1:Sydney:Bridge.png"));
+		}
+
+		[Test]
+		public void GetMatchingPicturesInexact_SkipsDisabledCollection()
+		{
+			bool foundExactMatches;
+			try
+			{
+				_collection.EnableCollection(_additionalCollectionSally, false);
+				var pics = _collection.GetMatchingPictures("chil", out foundExactMatches);
+				Assert.That(foundExactMatches, Is.False);
+				Assert.That(pics, Has.Count.EqualTo(1));
+				Assert.That(pics, Has.Member("Brazil:AOR_B-3-3.png"));
+			}
+			finally
+			{
+				_collection.EnableCollection(_additionalCollectionSally, true);
+			}
+		}
+
+		[Test]
+		public void GetMatchingPicturesExact_SkipsDisabledCollection()
+		{
+			bool foundExactMatches;
+			try
+			{
+				_collection.EnableCollection(_additionalCollectionSally, false);
+				var pics = _collection.GetMatchingPictures("child", out foundExactMatches);
+				Assert.That(foundExactMatches, Is.True);
+				Assert.That(pics, Has.Count.EqualTo(1));
+				Assert.That(pics, Has.Member("Brazil:AOR_B-3-3.png"));
+			}
+			finally
+			{
+				_collection.EnableCollection(_additionalCollectionSally, true);
+			}
 		}
 
 		/// <summary>

@@ -23,5 +23,11 @@ namespace SIL.Windows.Forms.ImageGallery
 		IEnumerable<string> IndexLanguageIds { get; }
 
 		void ReloadImageIndex(string languageId);
+
+		IEnumerable<string> Collections { get; }
+
+		void EnableCollection(string path, bool enabled);
+
+		bool IsCollectionEnabled(string path);
 	}
 }

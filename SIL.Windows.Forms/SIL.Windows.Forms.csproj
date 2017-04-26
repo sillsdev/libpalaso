@@ -315,6 +315,10 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>LogBoxSettings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
     <None Include="Registration\Registration.settings">
       <Generator>PublicSettingsSingleFileGenerator</Generator>
       <LastGenOutput>Registration.Designer.cs</LastGenOutput>
@@ -507,6 +511,11 @@
       <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Miscellaneous\WaitCursor.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="Registration\RegistrationSettingsProvider.cs" />
     <Compile Include="Reporting\MemoryManagement.cs" />
     <Compile Include="ScreenHelper.cs" />

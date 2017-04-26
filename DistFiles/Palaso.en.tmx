@@ -252,6 +252,17 @@
             <seg>The search box is currently set to {0}</seg>
          </tuv>
       </tu>
+      <tu tuid="ImageToolbox.SearchTheseCollections">
+         <tuv xml:lang="en">
+            <seg>Search these collections</seg>
+         </tuv>
+      </tu>
+      <tu tuid="ImageToolbox.SearchThisCollection">
+         <note>The {0} will be replaced by the name of the collection.</note>
+         <tuv xml:lang="en">
+            <seg>Search in {0}</seg>
+         </tuv>
+      </tu>
       <tu tuid="ImageToolbox.SetUpMetadataLink">
          <tuv xml:lang="en">
             <seg>Set up metadata...</seg>
