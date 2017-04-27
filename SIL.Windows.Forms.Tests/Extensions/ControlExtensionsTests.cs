@@ -11,7 +11,6 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 	[TestFixture]
 	public class ControlExtensionsTests
 	{
-		private Exception _threadException;
 		private Control _control;
 
 		[TestFixtureSetUp]
@@ -29,7 +28,6 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 		[SetUp]
 		public void Setup()
 		{
-			_threadException = null;
 			_control = new Control();
 		}
 
@@ -111,12 +109,14 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 		{
 			string confirmationMessage = null;
 			_control.CreateControl();
+			IAsyncResult resultOfSafeInvokeCall1 = null;
+			IAsyncResult resultOfSafeInvokeCall2 = null;
 			var worker = new BackgroundWorker();
 			worker.DoWork += (sender, args) =>
 			{
 				var ctrl = (Control)args.Argument;
 				Trace.WriteLine("SafeInvoke 1");
-				ctrl.SafeInvoke(() =>
+				resultOfSafeInvokeCall1 = ctrl.SafeInvoke(() =>
 				{
 					Trace.WriteLine("invoking 1");
 					confirmationMessage = "First action got invoked";
@@ -124,7 +124,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 					ctrl.Dispose();
 				}, "Getting initial value, resetting control text, and disposing control.");
 				Trace.WriteLine("SafeInvoke 2");
-				ctrl.SafeInvoke(() =>
+				resultOfSafeInvokeCall2 = ctrl.SafeInvoke(() =>
 				{
 					Assert.Fail("This should have been de-queued when the control was disposed.");
 				}, "DisposedAfterInvokingOnUiThread", errorHandling);
@@ -135,6 +135,10 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			while (worker.IsBusy)
 				Application.DoEvents();
 			Assert.AreEqual("First action got invoked", confirmationMessage);
+			Assert.IsNotNull(resultOfSafeInvokeCall1);
+			Assert.IsNotNull(resultOfSafeInvokeCall2);
+			_control.EndInvoke(resultOfSafeInvokeCall1);
+			Assert.Throws<ObjectDisposedException>(() => _control.EndInvoke(resultOfSafeInvokeCall2));
 		}
 
 		[Test]
@@ -249,6 +253,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 		{
 			Exception exceptionThrownBySafeInvoke = null;
 			_control.CreateControl();
+			IAsyncResult resultOfSafeInvoke = null;
 			bool actionWasInvoked = false;
 			var worker = new BackgroundWorker();
 			worker.DoWork += (sender, args) =>
@@ -256,7 +261,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 				var ctrl = (Control)args.Argument;
 				try
 				{
-					ctrl.SafeInvoke(() =>
+					resultOfSafeInvoke = ctrl.SafeInvoke(() =>
 					{
 						actionWasInvoked = true;
 						throw new InvalidOperationException("Blah");
@@ -275,13 +280,16 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 
 			Assert.IsTrue(actionWasInvoked);
 			Assert.IsNull(exceptionThrownBySafeInvoke);
-			Assert.IsNotNull(_threadException);
-			Assert.AreEqual(typeof(InvalidOperationException), _threadException.GetType());
+			Assert.IsNotNull(resultOfSafeInvoke);
+			var ex = Assert.Throws<InvalidOperationException>(() => _control.EndInvoke(resultOfSafeInvoke));
+			Assert.AreEqual("Blah", ex.Message);
+			//Assert.IsNotNull(_threadException);
+			//Assert.AreEqual(typeof(InvalidOperationException), _threadException.GetType());
 		}
 
 		private void ApplicationOnThreadException(object sender, ThreadExceptionEventArgs threadExceptionEventArgs)
 		{
-			_threadException = threadExceptionEventArgs.Exception;
+			// This will be handled and returned when EndInvoke is called.
 		}
 
 		[Test]
@@ -310,7 +318,6 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			Assert.IsFalse(finished);
 			while (worker.IsBusy)
 				Application.DoEvents();
-			Assert.IsNull(_threadException);
 			Assert.IsNotNull(exceptionThrownBySafeInvoke);
 			string nestedExceptions = "";
 			Exception ex = exceptionThrownBySafeInvoke;

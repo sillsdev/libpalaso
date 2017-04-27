@@ -105,7 +105,7 @@ namespace SIL.Windows.Forms.Extensions
 		/// This method does <i>not</i> catch and suppress errors thrown by the target action being invoked. If the caller 
 		/// wishes to have that behavior, the action should include the appropriate try-catch wrapper to achieve that.
 		/// </remarks>
-		public static void SafeInvoke(this Control control, Action action, string nameForErrorReporting = "context not supplied",
+		public static IAsyncResult SafeInvoke(this Control control, Action action, string nameForErrorReporting = "context not supplied",
 			ErrorHandlingAction errorHandling = ErrorHandlingAction.Throw, bool forceSynchronous = false)
 		{
 			Guard.AgainstNull(control, "control"); // throw this one regardless of the errorHandling directive
@@ -115,7 +115,7 @@ namespace SIL.Windows.Forms.Extensions
 			{
 				if (errorHandling == ErrorHandlingAction.Throw)
 					throw new ObjectDisposedException("SafeInvoke called after the control was disposed. (" + nameForErrorReporting + ")");
-				return; // Caller asked to ignore this.
+				return null; // Caller asked to ignore this.
 			}
 
 			if (!control.InvokeRequired)
@@ -124,7 +124,7 @@ namespace SIL.Windows.Forms.Extensions
 				if (!control.IsHandleCreated)
 				{
 					if (errorHandling == ErrorHandlingAction.IgnoreAll)
-						return;
+						return null;
 					throw new InvalidOperationException("SafeInvoke called before the control's handle was created. (" + nameForErrorReporting + ")");
 
 					// Resist the temptation to work around this by just making the handle be created with something like
@@ -158,7 +158,7 @@ namespace SIL.Windows.Forms.Extensions
 						control.Invoke(synchronousAction);
 					}
 					else
-						control.BeginInvoke(action);
+						return control.BeginInvoke(action);
 				}
 				catch (InvalidOperationException e)
 				{
@@ -176,6 +176,7 @@ namespace SIL.Windows.Forms.Extensions
 						throw;
 				}
 			}
+			return null;
 		}
 
 		/// ------------------------------------------------------------------------------------
