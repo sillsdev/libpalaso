@@ -77,9 +77,6 @@ namespace SIL.WritingSystems
 				// add to _countryToLanguageIndex
 				foreach (var country in language.Countries)
 				{
-					// About 37 languages currently have a single country called "?". This does not seem a useful way to find them.
-					if (string.IsNullOrEmpty(country) || country == "?")
-						continue;
 					if (!string.IsNullOrEmpty(country))
 					{
 						List<LanguageInfo> list;
