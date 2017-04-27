@@ -398,6 +398,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			// - Look up basic (non-extended) layout in HKLM\\SYSTEM\\CurrentControlSet\\Control\\Keyboard Layouts
 			// -Scan for ID of extended layout in HKLM\\SYSTEM\\CurrentControlSet\\Control\\Keyboard Layouts
 			var hkl = string.Format("{0:X8}", (long)handle);
+			//hkl = "0" + hkl.Substring(1, 7);
 
 			// Get substitute first
 			var substituteHkl = (string)Registry.GetValue(@"HKEY_CURRENT_USER\Keyboard Layout\Substitutes", hkl, null);
@@ -513,7 +514,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 						if (sameLayout == null)
 							sameLayout = keyboardDescription;
 					}
-					else if (keyboardDescription.Locale == inputLanguage.Culture.Name && sameCulture == null)
+					else if (keyboardDescription.Locale == inputLanguage.Culture.Name && sameCulture == KeyboardController.NullKeyboard)
 						sameCulture = keyboardDescription;
 				}
 				catch (CultureNotFoundException)
@@ -523,7 +524,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					// http://www.ironspeed.com/Designer/3.2.4/WebHelp/Part_VI/Culture_ID__XXX__is_not_a_supported_culture.htm and others
 				}
 			}
-			return sameLayout ?? sameCulture;
+			return sameLayout == KeyboardController.NullKeyboard ? sameCulture: sameLayout;
 		}
 
 		private void OnTimerTick(object sender, EventArgs eventArgs)
