@@ -1,8 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Security.Cryptography;
 using System.Threading;
 using System.Windows.Forms;
 using NUnit.Framework;
@@ -20,19 +18,12 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 		public void TestFixtureSetup()
 		{
 			Application.ThreadException += ApplicationOnThreadException;
-			AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
-		}
-
-		private void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
-		{
-			throw new CryptographicUnexpectedOperationException("This shouldn't have happened", unhandledExceptionEventArgs.ExceptionObject as Exception);
 		}
 
 		[TestFixtureTearDown]
 		public void TestFixtureTearDown()
 		{
 			Application.ThreadException -= ApplicationOnThreadException;
-			AppDomain.CurrentDomain.UnhandledException -= CurrentDomainOnUnhandledException;
 		}
 
 		[SetUp]
