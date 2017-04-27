@@ -100,7 +100,7 @@ namespace SIL.Windows.Forms.ImageGallery
 			}
 			if (!Directory.Exists(DefaultAorRootImagePath) && !AllowCollectionWithNoImageFolderForTesting)
 				return; // spurious index of some sort, no images.
-			RestoreEditabilityOfCollection(Path.GetDirectoryName(DefaultAorRootImagePath));
+			RestoreEnabledStateOfCollection(Path.GetDirectoryName(DefaultAorRootImagePath));
 			using (var f = File.OpenText(indexFilePath))
 			{
 				while (!f.EndOfStream)
@@ -147,7 +147,7 @@ namespace SIL.Windows.Forms.ImageGallery
 				rootImagePath = DefaultAorRootImagePath;
 			if (!Directory.Exists(rootImagePath))
 				return 0; // spurious index of some sort, no images.
-			RestoreEditabilityOfCollection(Path.GetDirectoryName(pathToIndexFile));
+			RestoreEnabledStateOfCollection(Path.GetDirectoryName(pathToIndexFile));
 			string filenamePrefix = null;
 			const string defaultLang = "en";
 			// prefix we will stick on partial paths to indicate which folder they come from.
@@ -287,9 +287,7 @@ namespace SIL.Windows.Forms.ImageGallery
 			foreach (string rawInternalPath in internalPaths)
 			{
 				// internal paths have colons as folder separators and other special properties as noted above.
-				string relativePath;
-				var rootPath = ImageFolderForInternalPath(rawInternalPath, out relativePath);
-				var path = Path.Combine(rootPath, relativePath);
+				var path = GetFileSystemPathFromInternalPath(rawInternalPath);
 
 				if (File.Exists(path))
 				{
@@ -347,6 +345,20 @@ namespace SIL.Windows.Forms.ImageGallery
 			}
 		}
 
+		private string GetFileSystemPathFromInternalPath(string rawInternalPath)
+		{
+			string relativePath;
+			var rootPath = ImageFolderForInternalPath(rawInternalPath, out relativePath);
+			return Path.Combine(rootPath, relativePath);
+		}
+
+		private string ImageFolderForInternalPath(string rawInternalPath)
+		{
+			string relativePath;
+			return ImageFolderForInternalPath(rawInternalPath, out relativePath);
+		}
+
+		// Use one of the methods above if you just want the image folder or want to combine the parts and find the file.
 		private string ImageFolderForInternalPath(string rawInternalPath, out string relativePath)
 		{
 			string rootPath = DefaultAorRootImagePath;
@@ -378,8 +390,7 @@ namespace SIL.Windows.Forms.ImageGallery
 					{
 						foreach (var path in picturesForThisKey)
 						{
-							string relativePath;
-							var imageFolder = ImageFolderForInternalPath(path, out relativePath);
+							var imageFolder = ImageFolderForInternalPath(path);
 							if (_enabledCollections[Path.GetDirectoryName(imageFolder)])
 							{
 								pictures.Add(path);
@@ -404,8 +415,7 @@ namespace SIL.Windows.Forms.ImageGallery
 							{
 								foreach (var path in keyValuePair.Value)
 								{
-									string relativePath;
-									var imageFolder = ImageFolderForInternalPath(path, out relativePath);
+									var imageFolder = ImageFolderForInternalPath(path);
 									if (_enabledCollections[Path.GetDirectoryName(imageFolder)])
 									{
 										pictures.Add(path);
@@ -505,7 +515,7 @@ namespace SIL.Windows.Forms.ImageGallery
 				return distributedWithApp;
 
 			// Look for it installed alongside other image galleries in the new standard location.
-			// We intend the next version of AOR to put itself there.
+			// We intend the next version of AOR (3.3 and later) to put itself there.
 			var galleryRoot = GetImageGalleryRoot();
 			if (Directory.Exists(galleryRoot))
 			{
@@ -532,7 +542,7 @@ namespace SIL.Windows.Forms.ImageGallery
 			}
 			else
 			{
-				//look for the folder created by the ArtOfReadingFree installer
+				//look for the folder created by the ArtOfReadingFree installer before 3.3, the first version to put it in the ImageCollections folder.
 				var aorInstallerTarget = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).CombineForPath("SIL", "Art Of Reading", ImageFolder);
 
 				//the rest of these are for before we had an installer for AOR
@@ -579,9 +589,9 @@ namespace SIL.Windows.Forms.ImageGallery
 			// set their state, as we load each index. But since that's async and the image toolbox
 			// may ask for the state of enabled collections immediately, we need to update that now.
 			if (path != null)
-				c.RestoreEditabilityOfCollection(Path.GetDirectoryName(path));
+				c.RestoreEnabledStateOfCollection(Path.GetDirectoryName(path));
 			foreach (var p in additionalPaths)
-				c.RestoreEditabilityOfCollection(p);
+				c.RestoreEnabledStateOfCollection(p);
 
 			// Load the index information asynchronously so as not to delay displaying
 			// the parent dialog.  Loading the file takes a second or two, but should
@@ -700,7 +710,7 @@ namespace SIL.Windows.Forms.ImageGallery
 			return FileLocator.GetFileDistributedWithApplication(true, "ArtOfReadingIndexV3_en.txt");
 		}
 
-		void RestoreEditabilityOfCollection(string path)
+		void RestoreEnabledStateOfCollection(string path)
 		{
 			_enabledCollections[path] = true;
 			var disabledSettings = Properties.Settings.Default.DisabledImageCollections;
