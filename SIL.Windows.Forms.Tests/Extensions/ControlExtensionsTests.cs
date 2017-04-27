@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Windows.Forms;
 using NUnit.Framework;
@@ -19,12 +20,19 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 		public void TestFixtureSetup()
 		{
 			Application.ThreadException += ApplicationOnThreadException;
+			AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
+		}
+
+		private void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
+		{
+			throw new CryptographicUnexpectedOperationException("This shouldn't have happened", unhandledExceptionEventArgs.ExceptionObject as Exception);
 		}
 
 		[TestFixtureTearDown]
 		public void TestFixtureTearDown()
 		{
 			Application.ThreadException -= ApplicationOnThreadException;
+			AppDomain.CurrentDomain.UnhandledException -= CurrentDomainOnUnhandledException;
 		}
 
 		[SetUp]
@@ -245,19 +253,23 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			Assert.IsTrue(exception is ObjectDisposedException);
 		}
 
-		[TestCase(typeof(InvalidOperationException))]
-		[TestCase(typeof(IOException))]
-		public void SafeInvoke_AsynchronousActionThrowsException_ExceptionHandledByApplicationThreadExceptionHandler(Type exceptionType)
+		[Test]
+		public void SafeInvoke_AsynchronousActionThrowsException_ExceptionHandledByApplicationThreadExceptionHandler()
 		{
 			Exception exceptionThrownBySafeInvoke = null;
 			_control.CreateControl();
+			bool actionWasInvoked = false;
 			var worker = new BackgroundWorker();
 			worker.DoWork += (sender, args) =>
 			{
 				var ctrl = (Control)args.Argument;
 				try
 				{
-					ctrl.SafeInvoke(() => { throw (Exception)Activator.CreateInstance(exceptionType, "Blah"); }, "AsynchronousActionThrowsException");
+					ctrl.SafeInvoke(() =>
+					{
+						actionWasInvoked = true;
+						throw new InvalidOperationException("Blah");
+					}, "AsynchronousActionThrowsException");
 				}
 				catch (Exception e)
 				{
@@ -268,10 +280,12 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			worker.RunWorkerAsync(_control);
 			while (worker.IsBusy)
 				Application.DoEvents();
+			Application.DoEvents(); // Just for good measure. We're desperate!
 
+			Assert.IsTrue(actionWasInvoked);
 			Assert.IsNull(exceptionThrownBySafeInvoke);
 			Assert.IsNotNull(_threadException);
-			Assert.AreEqual(exceptionType, _threadException.GetType());
+			Assert.AreEqual(typeof(InvalidOperationException), _threadException.GetType());
 		}
 
 		private void ApplicationOnThreadException(object sender, ThreadExceptionEventArgs threadExceptionEventArgs)
