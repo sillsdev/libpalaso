@@ -74,11 +74,11 @@ namespace SIL.Windows.Forms.ImageToolbox
 			this._galleryButton.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this._L10NSharpExtender.SetLocalizableToolTip(this._galleryButton, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._galleryButton, null);
-			this._L10NSharpExtender.SetLocalizingId(this._galleryButton, "ImageToolbox.ArtOfReading");
+			this._L10NSharpExtender.SetLocalizingId(this._galleryButton, "ImageToolbox.ImageGalleries");
 			this._galleryButton.Margin = new System.Windows.Forms.Padding(20, 1, 0, 2);
 			this._galleryButton.Name = "_galleryButton";
 			this._galleryButton.Size = new System.Drawing.Size(89, 51);
-			this._galleryButton.Text = "Art Of Reading";
+			this._galleryButton.Text = "Image Galleries";
 			this._galleryButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
 			this._galleryButton.Click += new System.EventHandler(this.OnGalleryClick);
 			//

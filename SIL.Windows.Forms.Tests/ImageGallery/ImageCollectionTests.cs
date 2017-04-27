@@ -17,6 +17,7 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 		[SetUp]
 		public void Setup()
 		{
+			ImageCollection.AllowCollectionWithNoImageFolderForTesting = true; // before we load it!
 			_artCollection = new ImageCollection();
 			_artCollection.LoadIndex(IndexPath);
 		}
@@ -24,6 +25,7 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 		[TearDown]
 		public void TearDown()
 		{
+			ImageCollection.AllowCollectionWithNoImageFolderForTesting = false;
 		}
 
 

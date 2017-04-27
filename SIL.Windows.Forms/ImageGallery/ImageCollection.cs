@@ -85,6 +85,8 @@ namespace SIL.Windows.Forms.ImageGallery
 
 		public IEnumerable<string> AdditionalCollectionPaths { get; set; }
 
+		internal static bool AllowCollectionWithNoImageFolderForTesting;
+
 		/// <summary>
 		/// Load an old-style index. Only applicable to old versions of AOR.
 		/// Not used for AdditionalCollectionPaths.
@@ -96,6 +98,8 @@ namespace SIL.Windows.Forms.ImageGallery
 			{
 				DefaultAorRootImagePath = Path.GetDirectoryName(indexFilePath).CombineForPath(ImageFolder);
 			}
+			if (!Directory.Exists(DefaultAorRootImagePath) && !AllowCollectionWithNoImageFolderForTesting)
+				return; // spurious index of some sort, no images.
 			RestoreEditabilityOfCollection(Path.GetDirectoryName(DefaultAorRootImagePath));
 			using (var f = File.OpenText(indexFilePath))
 			{
@@ -141,6 +145,8 @@ namespace SIL.Windows.Forms.ImageGallery
 		{
 			if (rootImagePath == null)
 				rootImagePath = DefaultAorRootImagePath;
+			if (!Directory.Exists(rootImagePath))
+				return 0; // spurious index of some sort, no images.
 			RestoreEditabilityOfCollection(Path.GetDirectoryName(pathToIndexFile));
 			string filenamePrefix = null;
 			const string defaultLang = "en";
@@ -443,6 +449,21 @@ namespace SIL.Windows.Forms.ImageGallery
 
 		internal static IEnumerable<string> GetStandardAdditionalDirectories()
 		{
+			string rootPath = GetImageGalleryRoot();
+			if (!Directory.Exists(rootPath))
+				return new string[0];
+			// Even if Art Of Reading is installed in this directory, it's not additional.
+			// This is a bit awkward...if we didn't want to deal with old versions of AOR we could just make this
+			// a list of all directories, one of which might be AOR.
+			// But we do in fact have various special cases for finding AOR, yet we also need to cope
+			// with eventually finding it in this directory. I _think_ it is simplest to allow the
+			// code that looks specifically for AOR to find it here and therefore NOT to allow
+			// it to count as additional.
+			return Directory.GetDirectories(rootPath).Where(x=>TryForPathToMultilingualIndex(x) != null && Path.GetFileName(x) != "Art Of Reading");
+		}
+
+		private static string GetImageGalleryRoot()
+		{
 			string rootPath;
 			if (StandardAdditionalDirectoriesRoot != null)
 				rootPath = StandardAdditionalDirectoriesRoot;
@@ -463,9 +484,7 @@ namespace SIL.Windows.Forms.ImageGallery
 					.CombineForPath("SIL")
 					.CombineForPath("ImageCollections");
 			}
-			if (!Directory.Exists(rootPath))
-				return new string[0];
-			return Directory.GetDirectories(rootPath).Where(x=>TryForPathToMultilingualIndex(x) != null);
+			return rootPath;
 		}
 
 		public static string TryForPathToMultilingualIndex(string directory)
@@ -480,6 +499,16 @@ namespace SIL.Windows.Forms.ImageGallery
 			var distributedWithApp = FileLocator.GetDirectoryDistributedWithApplication(true,"Art Of Reading", ImageFolder);
 			if(!string.IsNullOrEmpty(distributedWithApp) && Directory.Exists(distributedWithApp))
 				return distributedWithApp;
+
+			// Look for it installed alongside other image galleries in the new standard location.
+			// We intend the next version of AOR to put itself there.
+			var galleryRoot = GetImageGalleryRoot();
+			if (Directory.Exists(galleryRoot))
+			{
+				var possiblePath = Path.Combine(galleryRoot, "Art Of Reading", ImageFolder);
+				if (Directory.Exists(possiblePath))
+					return possiblePath;
+			}
 
 			//look for it in a hard-coded location
 			if (Environment.OSVersion.Platform == PlatformID.Unix)
@@ -532,8 +561,6 @@ namespace SIL.Windows.Forms.ImageGallery
 
 			var additionalPaths = GetStandardAdditionalDirectories();
 
-			// This seems reasonable but the implication is that if any 'additional' image collections
-			// have been installed, ImageChooser won't report that AOR is missing.
 			if (path == null && !additionalPaths.Any())
 				return null;
 

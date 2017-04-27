@@ -39,7 +39,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 				// Ensure that we can get localized text here.
 				_downloadInstallerLink.Text = "Download Art Of Reading Installer".Localize("ImageToolbox.DownloadArtOfReading");
 			}
-			_labelSearchAOR.Text = "Search the Art of Reading Gallery".Localize("ImageToolbox.SearchArtOfReading");
+			_labelSearch.Text = "Image Galleries".Localize("ImageToolbox.ImageGalleries");
 			SearchLanguage = "en";	// until/unless the owner specifies otherwise explicitly
 			// Get rid of any trace of a border on the toolstrip.
 			toolStrip1.Renderer = new NoBorderToolStripRenderer();
@@ -206,10 +206,10 @@ namespace SIL.Windows.Forms.ImageToolbox
 			if (_imageCollection == null)
 			{
 				_messageLabel.Visible = true;
-				_messageLabel.Text = "This computer doesn't appear to have the 'Art Of Reading' gallery installed yet.".Localize("ImageToolbox.NoArtOfReading");
-				// Adjust size to avoid text truncation
-				_messageLabel.Size = new Size(400,100);
+				_messageLabel.Text = "This computer doesn't appear to have any galleries installed yet.".Localize("ImageToolbox.NoGalleries");
 				_downloadInstallerLink.Visible = true;
+				_searchTermsBox.Enabled = false;
+				_searchButton.Enabled = false;
 			}
 			else
 			{
@@ -227,8 +227,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 					_collectionToolStrip.Visible = true;
 					_collectionDropDown.Visible = true;
 					_collectionDropDown.Text =
-						"Search these collections".Localize("ImageToolbox.SearchTheseCollections");
-					_labelSearchAOR.Visible = false;
+						"Galleries".Localize("ImageToolbox.Galleries");
 					foreach (var collection in _imageCollection.Collections)
 					{
 						var text = Path.GetFileNameWithoutExtension(collection);
@@ -247,13 +246,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 				}
 				else
 				{
-					// Only one collection, but might not be AOR
-					var name = Path.GetFileNameWithoutExtension(_imageCollection.Collections.First());
-					if (name != "Art Of Reading") // Don't mess with it if it's AOR, that has custom localizations
-					{
-						_labelSearchAOR.Text =
-							String.Format("Search In {0}".Localize("ImageToolbox.SearchThisCollection"), name);
-					}
 					// Pathologically, the user might have disabled this collection, then deleted all others
 					// It's not so bad if he disabled some and then deleted all the enabled ones and still has
 					// at least two (all disabled) because he can just re-enable one of them. But if we aren't
@@ -275,7 +267,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private void SetMessageLabelText()
 		{
-			var msg = "This is the 'Art Of Reading' gallery. In the box above, type what you are searching for, then press ENTER. You can type words in English and Indonesian.".Localize("ImageToolbox.EnterSearchTerms");
+			var msg = "In the box above, type what you are searching for, then press ENTER.".Localize("ImageToolbox.EnterSearchTerms");
 			// Allow for the old index that contained English and Indonesian together.
 			var searchLang = "English + Indonesian";
 			// If we have the new multilingual index, _searchLanguageMenu will be visible.  Its tooltip
