@@ -208,7 +208,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			var control = new Control();
 			var i = 0;
 			control.CreateControl();
-			control.SafeInvoke(() => { i++; }, "CalledOnUiThread_Normal", forceSynchronous:forceSynchronous);
+			control.SafeInvoke(() => { i++; }, "CalledOnUiThread_Normal", forceSynchronous: forceSynchronous);
 			Assert.AreEqual(1, i);
 		}
 
@@ -239,7 +239,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 				{
 					ctrl.SafeInvoke(() => { textFromControl = ctrl.Text; }, "OnNonUiThread_Disposed");
 				}
-				catch(Exception e)
+				catch (Exception e)
 				{
 					exception = e;
 				}
@@ -255,7 +255,6 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 		[Test]
 		public void SafeInvoke_AsynchronousActionThrowsException_ExceptionHandledByApplicationThreadExceptionHandler()
 		{
-			_threadException = null;
 			var control = new Control();
 			Exception exceptionThrownBySafeInvoke = null;
 			control.CreateControl();
@@ -275,7 +274,14 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			};
 			worker.RunWorkerAsync(control);
 			while (worker.IsBusy)
-				Application.DoEvents();
+				try
+				{
+					Application.DoEvents();
+				}
+				catch (Exception ex)
+				{
+					_threadException = ex; // Maybe this is what happens on Linux???
+				}
 			Assert.IsNull(exceptionThrownBySafeInvoke);
 			Assert.IsNotNull(_threadException);
 			Assert.IsTrue(_threadException is InvalidOperationException);
@@ -315,8 +321,16 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 				Application.DoEvents();
 			Assert.IsNull(_threadException);
 			Assert.IsNotNull(exceptionThrownBySafeInvoke);
-			Assert.IsTrue(exceptionThrownBySafeInvoke is InvalidOperationException);
-			Assert.AreEqual("Blah", exceptionThrownBySafeInvoke.Message);
+			string nestedExceptions = "";
+			Exception ex = exceptionThrownBySafeInvoke;
+			while (ex != null && !(ex is InvalidOperationException))
+			{
+				nestedExceptions += ex.GetType() + ": " + ex.Message + Environment.NewLine;
+				ex = ex.InnerException;
+			}
+			Assert.IsNotNull(ex, nestedExceptions);
+			Assert.IsTrue(ex is InvalidOperationException, nestedExceptions);
+			Assert.AreEqual("Blah", ex.Message);
 		}
 	}
 }
