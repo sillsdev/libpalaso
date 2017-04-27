@@ -154,7 +154,15 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			{
 				var ctrl = (Control)args.Argument;
 				Trace.WriteLine("SafeInvoke 1");
-				ctrl.SafeInvoke(() => { Trace.WriteLine("invoking 1"); textFromControl = ctrl.Text; ctrl.Text = "Final Text"; }, "Getting initial value and resetting control text.");
+				ctrl.SafeInvoke(() =>
+				{
+					// Since this code is going to be executed on the UI thread, it is guaranteed not to execute until
+					// the next time messages are "pumped", which in the case of this test happens during the call to
+					// Application.DoEvents below.
+					Trace.WriteLine("invoking 1");
+					textFromControl = ctrl.Text;
+					ctrl.Text = "Final Text";
+				}, "Getting initial value and resetting control text.");
 				Assert.IsNull(textFromControl);
 			};
 			worker.RunWorkerAsync(control);
@@ -178,15 +186,21 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 				Trace.WriteLine("SafeInvoke 1");
 				ctrl.SafeInvoke(() =>
 				{
+					// The calls to Thread.Sleep are sprinkled in here just to PROVE that this is being done synchronously and therefore
+					// essentially blocks any further execution on either thread.
+					Thread.Sleep(10);
 					textFromControl = ctrl.Text;
+					Thread.Sleep(10);
 					ctrl.Text = "Final Text";
+					Thread.Sleep(10);
 				}, "Force synchronous.", forceSynchronous: true);
 				Assert.AreEqual("Initial Text", textFromControl, "Since the invoke was done synchronously, this should have been set before SafeInvoke returned.");
+				Assert.AreEqual("Final Text", control.Text);
 			};
 			worker.RunWorkerAsync(control);
 			while (worker.IsBusy)
 				Application.DoEvents(); // Even though the SafeInvoke call is synchronous, the worker thread obviously isn't, so we need to wait for it to finish.
-			Assert.AreEqual("Final Text", control.Text);
+			Assert.AreEqual("Final Text", control.Text, "This just proves that we don't get here without having executed the worker thread's code.");
 		}
 
 		[TestCase(true)]
