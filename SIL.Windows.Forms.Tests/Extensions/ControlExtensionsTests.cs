@@ -112,9 +112,8 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 		public void SafeInvoke_DisposedAfterInvokingOnUiThread_InvokedActionDequeued(ControlExtensions.ErrorHandlingAction errorHandling)
 		{
 			var control = new Control();
-			string textFromControl = null;
+			string confirmationMessage = null;
 			control.CreateControl();
-			control.Text = "Initial Text";
 			var worker = new BackgroundWorker();
 			worker.DoWork += (sender, args) =>
 			{
@@ -123,15 +122,14 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 				ctrl.SafeInvoke(() =>
 				{
 					Trace.WriteLine("invoking 1");
-					textFromControl = ctrl.Text;
-					ctrl.Text = "Final Text";
+					confirmationMessage = "First action got invoked";
+					Assert.IsFalse(ctrl.InvokeRequired);
 					ctrl.Dispose();
 				}, "Getting initial value, resetting control text, and disposing control.");
 				Trace.WriteLine("SafeInvoke 2");
 				ctrl.SafeInvoke(() =>
 				{
-					Trace.WriteLine("invoking 2");
-					textFromControl = ctrl.Text;
+					Assert.Fail("This should have been de-queued when the control was disposed.");
 				}, "DisposedAfterInvokingOnUiThread", errorHandling);
 				Trace.WriteLine("About to sleep on worker thread : 50 ms");
 				Thread.Sleep(50);
@@ -139,7 +137,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			worker.RunWorkerAsync(control);
 			while (worker.IsBusy)
 				Application.DoEvents();
-			Assert.AreEqual("Initial Text", textFromControl);
+			Assert.AreEqual("First action got invoked", confirmationMessage);
 		}
 
 		[Test]
@@ -273,11 +271,13 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 				{
 					exceptionThrownBySafeInvoke = e;
 				}
+				Thread.Sleep(50); // Ensure that the UI thread has a chance to pump messages and perform the action
 			};
 			worker.RunWorkerAsync(control);
 			while (worker.IsBusy)
 				Application.DoEvents();
 			Assert.IsNull(exceptionThrownBySafeInvoke);
+			Assert.IsNotNull(_threadException);
 			Assert.IsTrue(_threadException is InvalidOperationException);
 		}
 
@@ -292,23 +292,29 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			var control = new Control();
 			Exception exceptionThrownBySafeInvoke = null;
 			control.CreateControl();
+			bool finished = false;
 			var worker = new BackgroundWorker();
 			worker.DoWork += (sender, args) =>
 			{
 				var ctrl = (Control)args.Argument;
 				try
 				{
-					ctrl.SafeInvoke(() => { throw new InvalidOperationException("Blah"); }, "AsynchronousActionThrowsException", forceSynchronous:true);
+					ctrl.SafeInvoke(() => { throw new InvalidOperationException("Blah"); }, "SynchronousActionThrowsException", forceSynchronous:true);
 				}
 				catch (Exception e)
 				{
 					exceptionThrownBySafeInvoke = e;
 				}
+				finished = true;
 			};
 			worker.RunWorkerAsync(control);
+			// The next two lines are not *required*, but they help to prove that the action was really performed synchronously.
+			Thread.Sleep(30); // Nothing should hapen on the non-UI-thread until we call DoEvents.
+			Assert.IsFalse(finished);
 			while (worker.IsBusy)
 				Application.DoEvents();
 			Assert.IsNull(_threadException);
+			Assert.IsNotNull(exceptionThrownBySafeInvoke);
 			Assert.IsTrue(exceptionThrownBySafeInvoke is InvalidOperationException);
 			Assert.AreEqual("Blah", exceptionThrownBySafeInvoke.Message);
 		}
