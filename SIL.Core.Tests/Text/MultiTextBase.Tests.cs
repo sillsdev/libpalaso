@@ -186,35 +186,39 @@ namespace SIL.Tests.Text
 		public void SerializeEmptyWithXmlSerializer()
 		{
 			MultiTextBase text = new MultiTextBase();
-			string answer =
-				@"<?xml version='1.0' encoding='utf-16'?>
-<TestMultiTextHolder xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema'>
+			string answer1 =
+				@"<?xml version=""1.0"" encoding=""utf-16""?>
+<TestMultiTextHolder xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
   <name />
-</TestMultiTextHolder>";
-			CheckSerializeWithXmlSerializer(text, answer);
+</TestMultiTextHolder>".Replace("\r\n", "\n");
+			string answer2 =
+				@"<?xml version=""1.0"" encoding=""utf-16""?>
+<TestMultiTextHolder xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
+  <name />
+</TestMultiTextHolder>".Replace("\r\n", "\n");
+			var result = SerializerToString(text);
+			Assert.IsTrue(result == answer1 || result == answer2, result + "is not answer1:\n" + answer1 + "\nor answer2:\n" + answer2);
 		}
 
 
-		public void CheckSerializeWithXmlSerializer(MultiTextBase MultiTextBase, string answer)
+		public string SerializerToString(MultiTextBase multiTextBase)
 		{
 
 			XmlSerializer ser = new XmlSerializer(typeof(TestMultiTextHolder));
 
 			StringWriter writer = new System.IO.StringWriter();
 			TestMultiTextHolder holder = new TestMultiTextHolder();
-			holder.Name = MultiTextBase;
+			holder.Name = multiTextBase;
 			ser.Serialize(writer, holder);
 
 			string mtxml = writer.GetStringBuilder().ToString();
-			mtxml = mtxml.Replace('"', '\'');
 
 			// normalize string line terminators
 			// for portability across os
 			mtxml = mtxml.Replace("\r\n", "\n");
-			answer = answer.Replace("\r\n", "\n");
 
 			Debug.WriteLine(mtxml);
-			Assert.AreEqual(answer, mtxml);
+			return mtxml;
 		}
 
 		//        [Test]
