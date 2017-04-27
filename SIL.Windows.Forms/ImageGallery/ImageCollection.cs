@@ -491,7 +491,11 @@ namespace SIL.Windows.Forms.ImageGallery
 		{
 			if (String.IsNullOrEmpty(directory) || !Directory.Exists(directory))
 				return null;
-			return Directory.EnumerateFiles(directory, "*Index.txt").FirstOrDefault();
+			// It's somewhat arbitrary what order we use here, but making it alphabetical makes it more
+			// predictable, since the order returned by EnumerateFiles is not guaranteed.
+			// On thing that is important is that in versions of AOR that have both
+			// ArtOfReadingMultilingualIndex.txt and index.txt, the former must be found first.
+			return Directory.EnumerateFiles(directory, "*Index.txt").OrderBy(x => x.ToLowerInvariant()).FirstOrDefault();
 		}
 
 		public static string TryToGetRootImageCatalogPath()

@@ -161,7 +161,7 @@
       </tu>
       <tu tuid="ImageToolbox.EnterSearchTerms">
          <tuv xml:lang="en">
-            <seg>In the box above, type what you are searching for, then press ENTER. You can type words in English and Indonesian.</seg>
+            <seg>In the box above, type what you are searching for, then press ENTER.</seg>
          </tuv>
       </tu>
       <tu tuid="ImageToolbox.FileButton">
