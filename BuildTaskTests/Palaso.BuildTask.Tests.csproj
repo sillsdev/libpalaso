@@ -11,6 +11,7 @@
     <RootNamespace>Palaso.BuildTask.Tests</RootNamespace>
     <AssemblyName>Palaso.BuildTask.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <LangVersion>6</LangVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
