@@ -289,10 +289,11 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 				Application.DoEvents();
 			Application.DoEvents(); // Just for good measure. We're desperate!
 
-			Assert.IsTrue(invokeWasRequired);
-			Assert.IsTrue(actionWasInvoked);
+			Assert.IsTrue(invokeWasRequired, "Because this is on a separate thread, we expected it to invoke");
+			Assert.IsTrue(actionWasInvoked, "We expected the action to have been run by this point");
 			Assert.IsNull(exceptionThrownBySafeInvoke);
 			Assert.IsNotNull(resultOfSafeInvoke);
+			Assert.IsFalse(resultOfSafeInvoke.CompletedSynchronously, "We really expected the SafeInvoke to be asynchronous.");
 			var ex = VerifyExpectedExceptionInNest<InvalidOperationException>(() => _control.EndInvoke(resultOfSafeInvoke));
 			Assert.AreEqual("Blah", ex.Message);
 			//Assert.IsNotNull(_threadException);

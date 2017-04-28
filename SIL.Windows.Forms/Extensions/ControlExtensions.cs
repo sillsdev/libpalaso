@@ -148,17 +148,19 @@ namespace SIL.Windows.Forms.Extensions
 				bool treatInvalidOperationExceptionAsObjectDisposedException = true;
 				try
 				{
-					if (forceSynchronous)
+					// When this gets executed on the UI thread, we need to re-check IsDisposed because it might have gotten disposed
+					// between the time we invoke and the time the action is executed. All we really need from SafeInvoke is that little
+					// bit of code at the start that checks for IsDisposed, but re-using SafeInvoke for the delegate is probably better
+					// than repeating that bit of code. Rechecking InvokeRequired should be lightning fast.
+					var delgate = (Action)delegate
 					{
-						var synchronousAction = (Action)delegate
-						{
-							treatInvalidOperationExceptionAsObjectDisposedException = false;
-							action();
-						};
-						control.Invoke(synchronousAction);
-					}
+						treatInvalidOperationExceptionAsObjectDisposedException = false;
+						control.SafeInvoke(action, nameForErrorReporting, errorHandling, forceSynchronous);
+					};
+					if (forceSynchronous)
+						control.Invoke(delgate);
 					else
-						return control.BeginInvoke(action);
+						return control.BeginInvoke(delgate);
 				}
 				catch (InvalidOperationException e)
 				{
@@ -167,7 +169,7 @@ namespace SIL.Windows.Forms.Extensions
 						// This is to catch the case where the control gets disposed after the check at the start of this method but before
 						// the Invoke or BeginInvoke executes. This does NOT happen if the control is disposed after the BeginInvoke is issued
 						// but before the action is processed. In that case, the action will be dequeued (at least on Windows???), and its
-						// entry will have an exception set (which will be ignored since SafeInvoke doesn't reurn the IAsyncResult).
+						// entry will have an exception set.
 						if (errorHandling == ErrorHandlingAction.Throw)
 							throw new ObjectDisposedException("Control was disposed before " + (forceSynchronous ? "Invoke" : "BeginInvoke") +
 								" could be called. To suppress this kind of race-condition error, call SafeInvoke with IgnoreIfDisposed. (" + nameForErrorReporting + ")", e);
