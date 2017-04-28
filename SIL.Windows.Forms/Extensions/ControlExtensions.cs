@@ -104,11 +104,13 @@ namespace SIL.Windows.Forms.Extensions
 		/// desired handling of various types of errors.
 		/// This method does <i>not</i> catch and suppress errors thrown by the target action being invoked. If the caller 
 		/// wishes to have that behavior, the action should include the appropriate try-catch wrapper to achieve that.
-		/// On Linux, it appears that any exception (including an ObjectDisposedException as well as any other exception
-		/// thrown by the target action) thrown when it is run asynchronously (i.e., InvokeRequired returns true and
-		/// forceSynchronous == false) will only be accessible by calling EndInvoke on the control by passing the
-		/// IAsyncResult returned from this method. On Windows, these exceptions will cause the Application.ThreadException
-		/// event to fire.
+		/// On Linux, it appears that when the action is to be run asynchronously (i.e., InvokeRequired returns true and
+		/// forceSynchronous == false):
+		/// * an ObjectDisposedException will just be ignored.
+		/// * any other exception thrown by the target action will only be accessible by calling EndInvoke on the
+		///   control by passing the IAsyncResult returned from this method.
+		/// On Windows, both ObjectDisposedExceptions and any exceptions thrown by the action will cause the
+		/// Application.ThreadException event to fire (as well as being thrown when EndInvoke is called).
 		/// </remarks>
 		public static IAsyncResult SafeInvoke(this Control control, Action action, string nameForErrorReporting = "context not supplied",
 			ErrorHandlingAction errorHandling = ErrorHandlingAction.Throw, bool forceSynchronous = false)

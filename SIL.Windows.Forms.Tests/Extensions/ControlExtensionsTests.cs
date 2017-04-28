@@ -118,6 +118,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			_control.CreateControl();
 			IAsyncResult resultOfSafeInvokeCall1 = null;
 			IAsyncResult resultOfSafeInvokeCall2 = null;
+			bool action2WasExecuted = false;
 			var worker = new BackgroundWorker();
 			worker.DoWork += (sender, args) =>
 			{
@@ -133,6 +134,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 				Trace.WriteLine("SafeInvoke 2");
 				resultOfSafeInvokeCall2 = ctrl.SafeInvoke(() =>
 				{
+					action2WasExecuted = true;
 					Assert.Fail("This should have been de-queued when the control was disposed.");
 				}, "DisposedAfterInvokingOnUiThread", errorHandling);
 				Trace.WriteLine("About to sleep on worker thread : 50 ms");
@@ -147,7 +149,10 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			Assert.IsNull(_threadException, "If this is not null, then the second call to SafeInvoke must have thrown an exception.");
 			Assert.IsNotNull(resultOfSafeInvokeCall2, "Second call to SafeInvoke should have returned a non-null IAsyncResult (even though it is later dequeued).");
 			_control.EndInvoke(resultOfSafeInvokeCall1);
+			Assert.IsFalse(action2WasExecuted, "Action 2 should not have been executed at all.");
+#if !MONO
 			VerifyExpectedExceptionInNest<ObjectDisposedException>(() => _control.EndInvoke(resultOfSafeInvokeCall2));
+#endif
 		}
 
 		[Test]
@@ -296,8 +301,6 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			Assert.IsFalse(resultOfSafeInvoke.CompletedSynchronously, "We really expected the SafeInvoke to be asynchronous.");
 			var ex = VerifyExpectedExceptionInNest<InvalidOperationException>(() => _control.EndInvoke(resultOfSafeInvoke));
 			Assert.AreEqual("Blah", ex.Message);
-			//Assert.IsNotNull(_threadException);
-			//Assert.AreEqual(typeof(InvalidOperationException), _threadException.GetType());
 		}
 
 		private void ApplicationOnThreadException(object sender, ThreadExceptionEventArgs threadExceptionEventArgs)
