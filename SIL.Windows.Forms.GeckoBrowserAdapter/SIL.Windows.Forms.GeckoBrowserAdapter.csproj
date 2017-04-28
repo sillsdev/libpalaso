@@ -22,6 +22,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <NoWarn>1591</NoWarn>
     <DocumentationFile>..\output\Debug\SIL.Windows.Forms.GeckoBrowserAdapter.XML</DocumentationFile>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,6 +34,7 @@
     <AssemblyName>SIL.WindowsForms.GeckoBrowserAdapter</AssemblyName>
     <DebugSymbols>true</DebugSymbols>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
     <Optimize>false</Optimize>
@@ -44,6 +46,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>..\output\DebugMono\SIL.Windows.Forms.GeckoBrowserAdapter.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
     <Optimize>true</Optimize>
@@ -54,6 +57,7 @@
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DefineConstants>MONO</DefineConstants>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -66,6 +70,7 @@
     <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
     <DocumentationFile>..\output\DebugStrongName\SIL.Windows.Forms.GeckoBrowserAdapter.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -76,6 +81,7 @@
     <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
     <NoWarn>1591</NoWarn>
     <DocumentationFile>..\output\DebugMonoStrongName\SIL.Windows.Forms.GeckoBrowserAdapter.XML</DocumentationFile>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -86,6 +92,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -96,6 +103,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <AssemblyName>PalasoUIWindowsForms.GeckoBrowserAdapter</AssemblyName>
     <DefineConstants>MONO</DefineConstants>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyName>SIL.Windows.Forms.GeckoBrowserAdapter</AssemblyName>

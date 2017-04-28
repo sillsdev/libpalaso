@@ -325,7 +325,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 					return _info.NativeName;	// English (English) looks rather silly...
 				if (idsOfRecognizableLanguages.Contains(Id))
 					return _info.NativeName;
-				return String.Format("{0} ({1})", _info.NativeName, _info.EnglishName);
+				return $"{_info.NativeName} ({_info.EnglishName})";
 			}
 		}
 
