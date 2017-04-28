@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
 using NUnit.Framework;
@@ -67,8 +66,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 		public void SafeInvoke_OnUiThread_HandleNotCreated_IgnoreAll_ReturnsWithoutInvokingOrThrowing()
 		{
 			int i = 0;
-			// TODO: Check the return result for this call and all other tests.
-			_control.SafeInvoke(() => { i++; }, "HandleNotCreatedTest", ControlExtensions.ErrorHandlingAction.IgnoreAll);
+			Assert.IsNull(_control.SafeInvoke(() => { i++; }, "HandleNotCreatedTest", ControlExtensions.ErrorHandlingAction.IgnoreAll));
 			Assert.AreEqual(0, i);
 		}
 
@@ -87,7 +85,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			var i = 0;
 			_control.CreateControl();
 			_control.Dispose();
-			_control.SafeInvoke(() => { i++; }, "DisposedTest", errorHandling);
+			Assert.IsNull(_control.SafeInvoke(() => { i++; }, "DisposedTest", errorHandling));
 			Assert.AreEqual(0, i);
 		}
 
@@ -123,21 +121,21 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			worker.DoWork += (sender, args) =>
 			{
 				var ctrl = (Control)args.Argument;
-				Trace.WriteLine("SafeInvoke 1");
+				Console.WriteLine("SafeInvoke 1");
 				resultOfSafeInvokeCall1 = ctrl.SafeInvoke(() =>
 				{
-					Trace.WriteLine("invoking 1");
+					Console.WriteLine("invoking 1");
 					confirmationMessage = "First action got invoked";
 					Assert.IsFalse(ctrl.InvokeRequired);
 					ctrl.Dispose();
 				}, "Getting initial value, resetting control text, and disposing control.");
-				Trace.WriteLine("SafeInvoke 2");
+				Console.WriteLine("SafeInvoke 2");
 				resultOfSafeInvokeCall2 = ctrl.SafeInvoke(() =>
 				{
 					action2WasExecuted = true;
 					Assert.Fail("This should have been de-queued when the control was disposed.");
 				}, "DisposedAfterInvokingOnUiThread", errorHandling);
-				Trace.WriteLine("About to sleep on worker thread : 50 ms");
+				Console.WriteLine("About to sleep on worker thread : 50 ms");
 				Thread.Sleep(50);
 			};
 			worker.RunWorkerAsync(_control);
@@ -148,7 +146,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			Assert.IsFalse(resultOfSafeInvokeCall1.CompletedSynchronously, "Expected asynchronous invocation of action 1.");
 			Assert.IsNull(_threadException, "If this is not null, then the second call to SafeInvoke must have thrown an exception.");
 			Assert.IsNotNull(resultOfSafeInvokeCall2, "Second call to SafeInvoke should have returned a non-null IAsyncResult (even though it is later dequeued).");
-			_control.EndInvoke(resultOfSafeInvokeCall1);
+			Assert.IsNull(_control.EndInvoke(resultOfSafeInvokeCall1)); // this should not throw an exception
 			Assert.IsFalse(action2WasExecuted, "Action 2 should not have been executed at all.");
 #if !MONO
 			VerifyExpectedExceptionInNest<ObjectDisposedException>(() => _control.EndInvoke(resultOfSafeInvokeCall2));
@@ -159,19 +157,20 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 		public void SafeInvoke_Asynchronous_InvokedAsynchronously()
 		{
 			string textFromControl = null;
+			IAsyncResult resultOfSafeInvokeCall = null;
 			_control.CreateControl();
 			_control.Text = "Initial Text";
 			var worker = new BackgroundWorker();
 			worker.DoWork += (sender, args) =>
 			{
 				var ctrl = (Control)args.Argument;
-				Trace.WriteLine("SafeInvoke 1");
-				ctrl.SafeInvoke(() =>
+				Console.WriteLine("SafeInvoke 1");
+				resultOfSafeInvokeCall = ctrl.SafeInvoke(() =>
 				{
 					// Since this code is going to be executed on the UI thread, it is guaranteed not to execute until
 					// the next time messages are "pumped", which in the case of this test happens during the call to
 					// Application.DoEvents below.
-					Trace.WriteLine("invoking 1");
+					Console.WriteLine("invoking 1");
 					textFromControl = ctrl.Text;
 					ctrl.Text = "Final Text";
 				}, "Getting initial value and resetting control text.");
@@ -182,20 +181,26 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 				Application.DoEvents();
 			Assert.AreEqual("Initial Text", textFromControl);
 			Assert.AreEqual("Final Text", _control.Text);
+			Assert.IsNotNull(resultOfSafeInvokeCall, "Call to SafeInvoke should have returned a non-null IAsyncResult.");
+			Assert.IsFalse(resultOfSafeInvokeCall.CompletedSynchronously, "Expected asynchronous invocation of action.");
+			Assert.IsTrue(resultOfSafeInvokeCall.IsCompleted, "Asynchronous action should have completed.");
+			Assert.IsNull(_threadException, "If this is not null, then the second call to SafeInvoke must have thrown an exception.");
+			Assert.IsNull(_control.EndInvoke(resultOfSafeInvokeCall)); // this should not throw an exception
 		}
 
 		[Test]
 		public void SafeInvoke_ForceSynchronous_InvokedSynchronously()
 		{
 			string textFromControl = null;
+			IAsyncResult resultOfSafeInvokeCall = null;
 			_control.CreateControl();
 			_control.Text = "Initial Text";
 			var worker = new BackgroundWorker();
 			worker.DoWork += (sender, args) =>
 			{
 				var ctrl = (Control)args.Argument;
-				Trace.WriteLine("SafeInvoke 1");
-				ctrl.SafeInvoke(() =>
+				Console.WriteLine("SafeInvoke 1");
+				resultOfSafeInvokeCall = ctrl.SafeInvoke(() =>
 				{
 					// The calls to Thread.Sleep are sprinkled in here just to PROVE that this is being done synchronously and therefore
 					// essentially blocks any further execution on either thread.
@@ -212,6 +217,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			while (worker.IsBusy)
 				Application.DoEvents(); // Even though the SafeInvoke call is synchronous, the worker thread obviously isn't, so we need to wait for it to finish.
 			Assert.AreEqual("Final Text", _control.Text, "This just proves that we don't get here without having executed the worker thread's code.");
+			Assert.IsNull(resultOfSafeInvokeCall, "When SafeInvoke results in a synchronous call, not IAsyncResult should be returned.");
 		}
 
 		[TestCase(true)]
@@ -220,7 +226,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 		{
 			var i = 0;
 			_control.CreateControl();
-			_control.SafeInvoke(() => { i++; }, "CalledOnUiThread_Normal", forceSynchronous: forceSynchronous);
+			Assert.IsNull(_control.SafeInvoke(() => { i++; }, "CalledOnUiThread_Normal", forceSynchronous: forceSynchronous));
 			Assert.AreEqual(1, i);
 		}
 
@@ -228,11 +234,20 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 		[TestCase(ControlExtensions.ErrorHandlingAction.IgnoreIfDisposed)]
 		public void SafeInvoke_OnNonUiThread_Disposed_Ignore_ReturnsWithoutInvokingOrThrowing(ControlExtensions.ErrorHandlingAction errorHandling)
 		{
+			IAsyncResult resultOfSafeInvokeCall = null;
 			var i = 0;
 			_control.CreateControl();
 			_control.Dispose();
-			_control.SafeInvoke(() => { i++; }, "DisposedTest", errorHandling);
+			var worker = new BackgroundWorker();
+			worker.DoWork += (sender, args) =>
+			{
+				resultOfSafeInvokeCall = _control.SafeInvoke(() => { i++; }, "DisposedTest", errorHandling);
+			};
+			worker.RunWorkerAsync(_control);
+			while (worker.IsBusy)
+				Application.DoEvents();
 			Assert.AreEqual(0, i);
+			Assert.IsNull(resultOfSafeInvokeCall);
 		}
 
 		[Test]
