@@ -147,7 +147,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			Assert.IsNull(_threadException, "If this is not null, then the second call to SafeInvoke must have thrown an exception.");
 			Assert.IsNotNull(resultOfSafeInvokeCall2, "Second call to SafeInvoke should have returned a non-null IAsyncResult (even though it is later dequeued).");
 			_control.EndInvoke(resultOfSafeInvokeCall1);
-			Assert.Throws<ObjectDisposedException>(() => _control.EndInvoke(resultOfSafeInvokeCall2));
+			VerifyExpectedExceptionInNest<ObjectDisposedException>(() => _control.EndInvoke(resultOfSafeInvokeCall2));
 		}
 
 		[Test]
@@ -332,16 +332,35 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			while (worker.IsBusy)
 				Application.DoEvents();
 			Assert.IsNotNull(exceptionThrownBySafeInvoke);
+			var ex = VerifyExpectedExceptionInNest<InvalidOperationException>(exceptionThrownBySafeInvoke);
+			Assert.AreEqual("Blah", ex.Message);
+		}
+
+		private static T VerifyExpectedExceptionInNest<T>(Action actionThatShouldThrowAnException) where T : Exception
+		{
+			try
+			{
+				actionThatShouldThrowAnException();
+			}
+			catch (Exception e)
+			{
+				return VerifyExpectedExceptionInNest<T>(e);
+			}
+			Assert.Fail("action should have thrown an exception");
+			return null; // Can't get here, but we need to make the compiler happy.
+		}
+
+		private static T VerifyExpectedExceptionInNest<T>(Exception ex) where T : Exception
+		{
 			string nestedExceptions = "";
-			Exception ex = exceptionThrownBySafeInvoke;
-			while (ex != null && !(ex is InvalidOperationException))
+			while (ex != null && !(ex is T))
 			{
 				nestedExceptions += ex.GetType() + ": " + ex.Message + Environment.NewLine;
 				ex = ex.InnerException;
 			}
 			Assert.IsNotNull(ex, nestedExceptions);
-			Assert.IsTrue(ex is InvalidOperationException, nestedExceptions);
-			Assert.AreEqual("Blah", ex.Message);
+			Assert.IsTrue(ex is T, nestedExceptions);
+			return (T)ex;
 		}
 	}
 }
