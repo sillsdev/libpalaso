@@ -104,6 +104,11 @@ namespace SIL.Windows.Forms.Extensions
 		/// desired handling of various types of errors.
 		/// This method does <i>not</i> catch and suppress errors thrown by the target action being invoked. If the caller 
 		/// wishes to have that behavior, the action should include the appropriate try-catch wrapper to achieve that.
+		/// On Linux, it appears that any exception (including an ObjectDisposedException as well as any other exception
+		/// thrown by the target action) thrown when it is run asynchronously (i.e., InvokeRequired returns true and
+		/// forceSynchronous == false) will only be accessible by calling EndInvoke on the control by passing the
+		/// IAsyncResult returned from this method. On Windows, these exceptions will cause the Application.ThreadException
+		/// event to fire.
 		/// </remarks>
 		public static IAsyncResult SafeInvoke(this Control control, Action action, string nameForErrorReporting = "context not supplied",
 			ErrorHandlingAction errorHandling = ErrorHandlingAction.Throw, bool forceSynchronous = false)
@@ -111,15 +116,15 @@ namespace SIL.Windows.Forms.Extensions
 			Guard.AgainstNull(control, "control"); // throw this one regardless of the errorHandling directive
 			Guard.AgainstNull(action, "action"); // throw this one regardless of the errorHandling directive
 
-			if (control.IsDisposed)
-			{
-				if (errorHandling == ErrorHandlingAction.Throw)
-					throw new ObjectDisposedException("SafeInvoke called after the control was disposed. (" + nameForErrorReporting + ")");
-				return null; // Caller asked to ignore this.
-			}
-
 			if (!control.InvokeRequired)
 			{
+				if (control.IsDisposed)
+				{
+					if (errorHandling == ErrorHandlingAction.Throw)
+						throw new ObjectDisposedException("SafeInvoke called after the control was disposed. (" + nameForErrorReporting + ")");
+					return null; // Caller asked to ignore this.
+				}
+
 				// InvokeRequired will return false if the control isn't set up yet
 				if (!control.IsHandleCreated)
 				{
