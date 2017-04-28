@@ -144,28 +144,91 @@ namespace SIL.IO
 			return PathUtilities.GetDeviceNumber(firstPath) == PathUtilities.GetDeviceNumber(secondPath);
 		}
 
-		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto, Pack = 1)]
+		/// <summary>
+		/// Possible flags for the SHFileOperation method.
+		/// </summary>
+		[Flags]
+		public enum FileOperationFlags : ushort
+		{
+			/// <summary>
+			/// Do not show a dialog during the process
+			/// </summary>
+			FOF_SILENT = 0x0004,
+
+			/// <summary>
+			/// Do not ask the user to confirm selection
+			/// </summary>
+			FOF_NOCONFIRMATION = 0x0010,
+
+			/// <summary>
+			/// Delete the file to the recycle bin.  (Required flag to send a file to the bin
+			/// </summary>
+			FOF_ALLOWUNDO = 0x0040,
+
+			/// <summary>
+			/// Do not show the names of the files or folders that are being recycled.
+			/// </summary>
+			FOF_SIMPLEPROGRESS = 0x0100,
+
+			/// <summary>
+			/// Surpress errors, if any occur during the process.
+			/// </summary>
+			FOF_NOERRORUI = 0x0400,
+
+			/// <summary>
+			/// Warn if files are too big to fit in the recycle bin and will need
+			/// to be deleted completely.
+			/// </summary>
+			FOF_WANTNUKEWARNING = 0x4000,
+		}
+
+		/// <summary>
+		/// File Operation Function Type for SHFileOperation
+		/// </summary>
+		public enum FileOperationType : uint
+		{
+			/// <summary>
+			/// Move the objects
+			/// </summary>
+			FO_MOVE = 0x0001,
+
+			/// <summary>
+			/// Copy the objects
+			/// </summary>
+			FO_COPY = 0x0002,
+
+			/// <summary>
+			/// Delete (or recycle) the objects
+			/// </summary>
+			FO_DELETE = 0x0003,
+
+			/// <summary>
+			/// Rename the object(s)
+			/// </summary>
+			FO_RENAME = 0x0004,
+		}
+
+
+
+		/// <summary>
+		/// SHFILEOPSTRUCT for SHFileOperation from COM
+		/// </summary>
+		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
 		private struct SHFILEOPSTRUCT
 		{
+
 			public IntPtr hwnd;
-			[MarshalAs(UnmanagedType.U4)]
-			public int wFunc;
+			[MarshalAs(UnmanagedType.U4)] public FileOperationType wFunc;
 			public string pFrom;
 			public string pTo;
-			public short fFlags;
-			[MarshalAs(UnmanagedType.Bool)]
-			public bool fAnyOperationsAborted;
+			public FileOperationFlags fFlags;
+			[MarshalAs(UnmanagedType.Bool)] public bool fAnyOperationsAborted;
 			public IntPtr hNameMappings;
 			public string lpszProgressTitle;
 		}
 
 		[DllImport("shell32.dll", CharSet = CharSet.Auto)]
 		private static extern int SHFileOperation(ref SHFILEOPSTRUCT FileOp);
-
-		private const int FO_DELETE = 3;
-		private const int FOF_ALLOWUNDO = 0x40;
-		private const int FOF_NOCONFIRMATION = 0x10; // Don't prompt the user
-		private const int FOF_SIMPLEPROGRESS = 0x0100;
 
 		private static void WriteTrashInfoFile(string trashPath, string filePath, string trashedFile)
 		{
@@ -180,12 +243,25 @@ namespace SIL.IO
 
 		/// <summary>
 		/// Delete a file or directory by moving it to the trash bin
+		/// Display dialog, display warning if files are too big to fit (FOF_WANTNUKEWARNING)
 		/// </summary>
+		/// <remarks>See: http://stackoverflow.com/questions/3282418/send-a-file-to-the-recycle-bin</remarks>
 		/// <param name="filePath">Full path of the file.</param>
 		/// <returns><c>true</c> if successfully deleted.</returns>
 		public static bool DeleteToRecycleBin(string filePath)
 		{
-			if (PlatformUtilities.Platform.IsWindows)
+			return DeleteToRecycleBin(filePath, FileOperationFlags.FOF_NOCONFIRMATION | FileOperationFlags.FOF_WANTNUKEWARNING);
+		}
+
+		/// <summary>
+		/// Delete a file or directory by moving it to the trash bin
+		/// </summary>
+		/// <param name="filePath">Full path of the file.</param>
+		/// <param name="flags">options flags from FileOperationFlags</param>
+		/// <returns><c>true</c> if successfully deleted.</returns>
+		public static bool DeleteToRecycleBin(string filePath, FileOperationFlags flags)
+		{
+			if (Platform.IsWindows)
 			{
 				if (!File.Exists(filePath) && !Directory.Exists(filePath))
 					return false;
@@ -194,14 +270,22 @@ namespace SIL.IO
 				// FileSystem.DeleteDirectory(item.FolderPath,UIOption.OnlyErrorDialogs), RecycleOption.SendToRecycleBin);
 
 				//moves it to the recyle bin
-				var shf = new SHFILEOPSTRUCT();
-				shf.wFunc = FO_DELETE;
-				shf.fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION;
-				string pathWith2Nulls = filePath + "\0\0";
-				shf.pFrom = pathWith2Nulls;
+				try
+				{
+					var shf = new SHFILEOPSTRUCT
+					{
+						wFunc = FileOperationType.FO_DELETE,
+						pFrom = filePath + '\0' + '\0',
+						fFlags = FileOperationFlags.FOF_ALLOWUNDO | flags
+					};
 
-				SHFileOperation(ref shf);
-				return !shf.fAnyOperationsAborted;
+					SHFileOperation(ref shf);
+					return !shf.fAnyOperationsAborted;
+				}
+				catch (Exception)
+				{
+					return false;
+				}
 			}
 
 			// On Linux we'll have to move the file to $XDG_DATA_HOME/Trash/files and create
