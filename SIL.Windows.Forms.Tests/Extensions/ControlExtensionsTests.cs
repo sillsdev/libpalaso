@@ -293,7 +293,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			Assert.IsTrue(actionWasInvoked);
 			Assert.IsNull(exceptionThrownBySafeInvoke);
 			Assert.IsNotNull(resultOfSafeInvoke);
-			var ex = Assert.Throws<InvalidOperationException>(() => _control.EndInvoke(resultOfSafeInvoke));
+			var ex = VerifyExpectedExceptionInNest<InvalidOperationException>(() => _control.EndInvoke(resultOfSafeInvoke));
 			Assert.AreEqual("Blah", ex.Message);
 			//Assert.IsNotNull(_threadException);
 			//Assert.AreEqual(typeof(InvalidOperationException), _threadException.GetType());
