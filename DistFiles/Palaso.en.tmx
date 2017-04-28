@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <tmx version="1.4">
    <header srclang="en"
            adminlang="en"
@@ -161,7 +161,7 @@
       </tu>
       <tu tuid="ImageToolbox.EnterSearchTerms">
          <tuv xml:lang="en">
-            <seg>This is the 'Art Of Reading' gallery. In the box above, type what you are searching for, then press ENTER. You can type words in English and Indonesian.</seg>
+            <seg>In the box above, type what you are searching for, then press ENTER.</seg>
          </tuv>
       </tu>
       <tu tuid="ImageToolbox.FileButton">
@@ -169,6 +169,11 @@
             <seg>File</seg>
          </tuv>
       </tu>
+       <tu tuid="ImageToolbox.Galleries">
+           <tuv xml:lang="en">
+               <seg>Galleries</seg>
+           </tuv>
+       </tu>
       <tu tuid="ImageToolbox.GenericGettingImageProblem">
          <tuv xml:lang="en">
             <seg>Sorry, something went wrong while getting the image.</seg>
@@ -184,7 +189,12 @@
             <seg>Get Picture</seg>
          </tuv>
       </tu>
-      <tu tuid="ImageToolbox.ImageToolboxWindowTitle">
+      <tu tuid="ImageToolbox.ImageGalleries">
+           <tuv xml:lang="en">
+               <seg>Image Galleries</seg>
+           </tuv>
+       </tu>
+       <tu tuid="ImageToolbox.ImageToolboxWindowTitle">
          <tuv xml:lang="en">
             <seg>Image Toolbox</seg>
          </tuv>
@@ -205,9 +215,9 @@
             <seg>Did you know that there is a new version of this collection which lets you search in Arabic, Bengali, Chinese, English, French, Indonesian, Hindi, Portuguese, Spanish, Thai, or Swahili? It is free and available for downloading.</seg>
          </tuv>
       </tu>
-      <tu tuid="ImageToolbox.NoArtOfReading">
+      <tu tuid="ImageToolbox.NoGalleries">
          <tuv xml:lang="en">
-            <seg>This computer doesn't appear to have the 'Art Of Reading' gallery installed yet.</seg>
+            <seg>This computer doesn't appear to have any galleries installed yet.</seg>
          </tuv>
       </tu>
       <tu tuid="ImageToolbox.NoMatchingImages">
@@ -239,11 +249,6 @@
       <tu tuid="ImageToolbox.Scanner">
          <tuv xml:lang="en">
             <seg>Scanner</seg>
-         </tuv>
-      </tu>
-      <tu tuid="ImageToolbox.SearchArtOfReading">
-         <tuv xml:lang="en">
-            <seg>Search the Art of Reading Gallery</seg>
          </tuv>
       </tu>
       <tu tuid="ImageToolbox.SearchLanguage">

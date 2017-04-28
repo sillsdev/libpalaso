@@ -27,7 +27,7 @@ namespace SIL.Windows.Forms.ImageGallery
 				if (!string.IsNullOrEmpty(_searchTermsBox.Text))
 				{
 					bool foundExactMatches;
-					IEnumerable<object> results = _images.GetMatchingPictures(_searchTermsBox.Text, out foundExactMatches);
+					var results = _images.GetMatchingPictures(_searchTermsBox.Text, out foundExactMatches);
 					if (results.Count() == 0)
 					{
 						_notFoundLabel.Visible = true;

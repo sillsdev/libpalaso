@@ -39,7 +39,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 				// Ensure that we can get localized text here.
 				_downloadInstallerLink.Text = "Download Art Of Reading Installer".Localize("ImageToolbox.DownloadArtOfReading");
 			}
-			_labelSearchAOR.Text = "Search the Art of Reading Gallery".Localize("ImageToolbox.SearchArtOfReading");
+			_labelSearch.Text = "Image Galleries".Localize("ImageToolbox.ImageGalleries");
 			SearchLanguage = "en";	// until/unless the owner specifies otherwise explicitly
 			// Get rid of any trace of a border on the toolstrip.
 			toolStrip1.Renderer = new NoBorderToolStripRenderer();
@@ -201,14 +201,15 @@ namespace SIL.Windows.Forms.ImageToolbox
 			if (DesignMode)
 				return;
 
-			_imageCollection = ArtOfReadingImageCollection.FromStandardLocations(SearchLanguage);
+			_imageCollection = ImageCollection.FromStandardLocations(SearchLanguage);
+			_collectionToolStrip.Visible = false;
 			if (_imageCollection == null)
 			{
 				_messageLabel.Visible = true;
-				_messageLabel.Text = "This computer doesn't appear to have the 'Art Of Reading' gallery installed yet.".Localize("ImageToolbox.NoArtOfReading");
-				// Adjust size to avoid text truncation
-				_messageLabel.Size = new Size(400,100);
+				_messageLabel.Text = "This computer doesn't appear to have any galleries installed yet.".Localize("ImageToolbox.NoGalleries");
 				_downloadInstallerLink.Visible = true;
+				_searchTermsBox.Enabled = false;
+				_searchButton.Enabled = false;
 			}
 			else
 			{
@@ -221,6 +222,37 @@ namespace SIL.Windows.Forms.ImageToolbox
 				_messageLabel.Height = 200;
 				SetMessageLabelText();
 				_thumbnailViewer.SelectedIndexChanged += new EventHandler(_thumbnailViewer_SelectedIndexChanged);
+				if (_imageCollection.Collections.Count() > 1)
+				{
+					_collectionToolStrip.Visible = true;
+					_collectionDropDown.Visible = true;
+					_collectionDropDown.Text =
+						"Galleries".Localize("ImageToolbox.Galleries");
+					foreach (var collection in _imageCollection.Collections)
+					{
+						var text = Path.GetFileNameWithoutExtension(collection);
+						var item = new ToolStripMenuItem(text);
+						_collectionDropDown.DropDownItems.Add(item);
+						item.CheckOnClick = true;
+						item.CheckState = _imageCollection.IsCollectionEnabled(collection) ? CheckState.Checked : CheckState.Unchecked;
+						item.CheckedChanged += (o, args) =>
+						{
+							if (_collectionDropDown.DropDownItems.Cast<ToolStripMenuItem>().Count(x => x.Checked) == 0)
+								item.Checked = true; // tried to uncheck the last one, don't allow it.
+							else
+								_imageCollection.EnableCollection(collection, item.Checked);
+						};
+					}
+				}
+				else
+				{
+					// Pathologically, the user might have disabled this collection, then deleted all others
+					// It's not so bad if he disabled some and then deleted all the enabled ones and still has
+					// at least two (all disabled) because he can just re-enable one of them. But if we aren't
+					// even showing that control he's had it, and also, in this case it's obvious which single
+					// collection to enable.
+					_imageCollection.EnableCollection(_imageCollection.Collections.First(), true);
+				}
 			}
 			_messageLabel.Font = new Font(SystemFonts.DialogFont.FontFamily, 10);
 
@@ -235,7 +267,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private void SetMessageLabelText()
 		{
-			var msg = "This is the 'Art Of Reading' gallery. In the box above, type what you are searching for, then press ENTER. You can type words in English and Indonesian.".Localize("ImageToolbox.EnterSearchTerms");
+			var msg = "In the box above, type what you are searching for, then press ENTER.".Localize("ImageToolbox.EnterSearchTerms");
 			// Allow for the old index that contained English and Indonesian together.
 			var searchLang = "English + Indonesian";
 			// If we have the new multilingual index, _searchLanguageMenu will be visible.  Its tooltip

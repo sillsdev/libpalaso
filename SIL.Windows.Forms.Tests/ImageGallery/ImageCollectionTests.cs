@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using SIL.TestUtilities;
 using SIL.Windows.Forms.ImageGallery;
 
 namespace SIL.Windows.Forms.Tests.ImageGallery
@@ -9,20 +10,22 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 
 
 	[TestFixture]
-	public class ArtOfReadingImageCollectionTests
+	public class ImageCollectionTests
 	{
-		private ArtOfReadingImageCollection _artCollection;
+		private ImageCollection _artCollection;
 
 		[SetUp]
 		public void Setup()
 		{
-			_artCollection = new ArtOfReadingImageCollection();
+			ImageCollection.AllowCollectionWithNoImageFolderForTesting = true; // before we load it!
+			_artCollection = new ImageCollection();
 			_artCollection.LoadIndex(IndexPath);
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
+			ImageCollection.AllowCollectionWithNoImageFolderForTesting = false;
 		}
 
 
@@ -108,14 +111,17 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 		{
 			try
 			{
-				ArtOfReadingImageCollection.DoNotFindArtOfReading_Test = true;
-				Assert.IsNull(ArtOfReadingImageCollection.FromStandardLocations());
+				ImageCollection.DoNotFindArtOfReading_Test = true;
+				using (var tempfolder = new TemporaryFolder("No image folders"))
+				{
+					ImageCollection.StandardAdditionalDirectoriesRoot = tempfolder.Path;
+					Assert.IsNull(ImageCollection.FromStandardLocations());
+				}
 			}
 			finally
 			{
-				ArtOfReadingImageCollection.DoNotFindArtOfReading_Test = false;
+				ImageCollection.DoNotFindArtOfReading_Test = false;
 			}
 		}
-
 	}
 }
