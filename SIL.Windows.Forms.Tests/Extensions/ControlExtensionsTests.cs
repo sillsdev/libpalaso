@@ -12,7 +12,12 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 	public class ControlExtensionsTests
 	{
 		private Control _control;
+		private Exception _threadException;
 
+		// Theoretically, setting up the handler to call ApplicationOnThreadException is not needed on Linux because, for some
+		// reason, Mono works differently than the Windows implementation of .Net, which *does* fire the ThreadException event.
+		// But since it doesn't hurt anything, rather than making this conditionally compiled, we'll leave it here for the Mono
+		// builds, too, just in case they ever make Mono work the same way.
 		[TestFixtureSetUp]
 		public void TestFixtureSetup()
 		{
@@ -28,6 +33,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 		[SetUp]
 		public void Setup()
 		{
+			_threadException = null;
 			_control = new Control();
 		}
 
@@ -61,6 +67,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 		public void SafeInvoke_OnUiThread_HandleNotCreated_IgnoreAll_ReturnsWithoutInvokingOrThrowing()
 		{
 			int i = 0;
+			// TODO: Check the return result for this call and all other tests.
 			_control.SafeInvoke(() => { i++; }, "HandleNotCreatedTest", ControlExtensions.ErrorHandlingAction.IgnoreAll);
 			Assert.AreEqual(0, i);
 		}
@@ -135,8 +142,10 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			while (worker.IsBusy)
 				Application.DoEvents();
 			Assert.AreEqual("First action got invoked", confirmationMessage);
-			Assert.IsNotNull(resultOfSafeInvokeCall1);
-			Assert.IsNotNull(resultOfSafeInvokeCall2);
+			Assert.IsNotNull(resultOfSafeInvokeCall1, "First call to SafeInvoke should have returned a non-null IAsyncResult.");
+			Assert.IsFalse(resultOfSafeInvokeCall1.CompletedSynchronously, "Expected asynchronous invocation of action 1.");
+			Assert.IsNull(_threadException, "If this is not null, then the second call to SafeInvoke must have thrown an exception.");
+			Assert.IsNotNull(resultOfSafeInvokeCall2, "Second call to SafeInvoke should have returned a non-null IAsyncResult (even though it is later dequeued).");
 			_control.EndInvoke(resultOfSafeInvokeCall1);
 			Assert.Throws<ObjectDisposedException>(() => _control.EndInvoke(resultOfSafeInvokeCall2));
 		}
@@ -254,11 +263,13 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			Exception exceptionThrownBySafeInvoke = null;
 			_control.CreateControl();
 			IAsyncResult resultOfSafeInvoke = null;
+			bool invokeWasRequired = false;
 			bool actionWasInvoked = false;
 			var worker = new BackgroundWorker();
 			worker.DoWork += (sender, args) =>
 			{
 				var ctrl = (Control)args.Argument;
+				invokeWasRequired = ctrl.InvokeRequired;
 				try
 				{
 					resultOfSafeInvoke = ctrl.SafeInvoke(() =>
@@ -278,6 +289,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 				Application.DoEvents();
 			Application.DoEvents(); // Just for good measure. We're desperate!
 
+			Assert.IsTrue(invokeWasRequired);
 			Assert.IsTrue(actionWasInvoked);
 			Assert.IsNull(exceptionThrownBySafeInvoke);
 			Assert.IsNotNull(resultOfSafeInvoke);
@@ -290,6 +302,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 		private void ApplicationOnThreadException(object sender, ThreadExceptionEventArgs threadExceptionEventArgs)
 		{
 			// This will be handled and returned when EndInvoke is called.
+			_threadException = threadExceptionEventArgs.Exception;
 		}
 
 		[Test]
