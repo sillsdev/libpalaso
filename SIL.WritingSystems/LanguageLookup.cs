@@ -107,22 +107,6 @@ namespace SIL.WritingSystems
 			return result;
 		}
 
-		/// <summary>
-		///  For testing; used to detect if we need more special cases where LanguageDataIndex()
-		///  populates LanguageInfo.PrimaryCountry.
-		/// </summary>
-		/// <returns></returns>
-		internal List<LanguageInfo> LanguagesWithoutRegions()
-		{
-			var result = new List<LanguageInfo>();
-			foreach (var lang in _codeToLanguageIndex.Values)
-			{
-				if (String.IsNullOrEmpty(lang.PrimaryCountry))
-					result.Add(lang);
-			}
-			return result;
-		}
-
 		private List<LanguageInfo> GetOrCreateListFromName(string name)
 		{
 			List<LanguageInfo> languages;
