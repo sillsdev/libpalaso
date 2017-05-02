@@ -1,7 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using SIL.Code;
@@ -60,7 +58,7 @@ namespace SIL.Windows.Forms.Extensions
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// If the method might be in a different thread, this will do an invoke,
-		/// otherwise it just invokes the action
+		/// otherwise it just invokes the action. <seealso cref="SafeInvoke"/>
 		/// </summary>
 		/// <example>InvokeIfRequired(()=>BackgroundColor=Color.Blue);</example>
 		/// <example>((Control)this).InvokeIfRequired(()=>SetChoices(languages));</example>
@@ -94,73 +92,100 @@ namespace SIL.Windows.Forms.Extensions
 		}
 
 		/// <summary>
-		/// Invoke an action safely even if called from the background thread.
+		/// Invoke an action on the UI thread even if called from the background thread. This method is more reliable
+		/// than merely calling InvokeRequired() which, for example, gives a misleading answer if the control hasn't
+		/// got a handle yet.
 		/// </summary>
 		/// <remarks>
-		/// Invoking on the ui thread from background threads works *most* of the time, with occasional crash.
-		/// Stackoverflow has a good collection of people trying to deal with these corner cases, where
-		/// InvokeRequired(), for example, is unreliable (it doesn't tell you if the control hasn't even
-		/// got a handle yet).
-		/// The exact behavior of some of these methods have changed between different versions of .net.
-		/// Here's the relevant page in msdn that explains the current situation:
+		/// The exact behavior of some of the InvokeRequired method (and some of the related methods) has changed
+		/// between different versions of .net. Here's the relevant page in msdn that explains the current situation:
 		/// https://msdn.microsoft.com/en-us/library/system.windows.forms.control.invokerequired(v=vs.110).aspx
-		/// So now I'm trying something more mainstream here, from a highly voted SO answer.
+		/// This implementation began with http://stackoverflow.com/a/809186/723299, but allows the caller to specify the
+		/// desired handling of various types of errors.
+		/// This method does <i>not</i> catch and suppress errors thrown by the target action being invoked. If the caller 
+		/// wishes to have that behavior, the action should include the appropriate try-catch wrapper to achieve that.
+		/// On Linux, it appears that when the action is to be run asynchronously (i.e., InvokeRequired returns true and
+		/// forceSynchronous == false):
+		/// * an ObjectDisposedException will just be ignored.
+		/// * any other exception thrown by the target action will only be accessible by calling EndInvoke on the
+		///   control by passing the IAsyncResult returned from this method.
+		/// On Windows, both ObjectDisposedExceptions and any exceptions thrown by the action will cause the
+		/// Application.ThreadException event to fire (as well as being thrown when EndInvoke is called).
 		/// </remarks>
-		public static void SafeInvoke(this Control control, Action action, string nameForErrorReporting = "context not supplied",
+		public static IAsyncResult SafeInvoke(this Control control, Action action, string nameForErrorReporting = "context not supplied",
 			ErrorHandlingAction errorHandling = ErrorHandlingAction.Throw, bool forceSynchronous = false)
 		{
-			Guard.AgainstNull(control, nameForErrorReporting); // throw this one regardless of the throwIfAnythingGoesWrong
-			Guard.AgainstNull(action, nameForErrorReporting); // throw this one regardless of the throwIfAnythingGoesWrong
-
-			if (control.IsDisposed)
-			{
-				if (errorHandling == ErrorHandlingAction.Throw)
-					throw new ObjectDisposedException("Control is already disposed. (" + nameForErrorReporting + ")");
-				return; // Caller asked to ignore this.
-			}
+			Guard.AgainstNull(control, "control"); // throw this one regardless of the errorHandling directive
+			Guard.AgainstNull(action, "action"); // throw this one regardless of the errorHandling directive
 
 			if (!control.InvokeRequired)
 			{
+				if (control.IsDisposed)
+				{
+					if (errorHandling == ErrorHandlingAction.Throw)
+						throw new ObjectDisposedException("SafeInvoke called after the control was disposed. (" + nameForErrorReporting + ")");
+					return null; // Caller asked to ignore this.
+				}
+
 				// InvokeRequired will return false if the control isn't set up yet
 				if (!control.IsHandleCreated)
 				{
-					// This situation happened in BL-2918, prompting the introduction of this SafeInvoke method
-
 					if (errorHandling == ErrorHandlingAction.IgnoreAll)
-						return;
-					throw new ApplicationException("SafeInvoke.Invoke apparently called before control created (" + nameForErrorReporting + ")");
+						return null;
+					throw new InvalidOperationException("SafeInvoke called before the control's handle was created. (" + nameForErrorReporting + ")");
 
 					// Resist the temptation to work around this by just making the handle be created with something like
 					// var unused = control.Handle
 					// This can create the handle on the wrong thread and make the application unstable. (I believe it would crash instantly on Linux.)
 				}
+				// Technically, if forceSynchronous is false, we could call control.BeginInvoke, but that just complicates our code
+				// (another chance for the control to get disposed before action() happens), and by definition the order in which
+				// things happen doesn't matter if we aren't forcing things to be synchronous.
+				action();
 			}
-
-			// This implementation began with http://stackoverflow.com/a/809186/723299, but allows the caller to specify the
-			// desired handling of various types of errors and also deals specially with a control that is an IProgress and
-			// therefore has a SyncContext (which is better, according to MSDN).
-			try
+			else
 			{
-				if (control.InvokeRequired)
+				// Unfortunately, if the control's handle is disposed (on the UI thread) between the time we check above and the time
+				// we attempt to invoke the action on it below, the Invoke or BeginInvoke call will throw an InvalidOperationException,
+				// not an ObjectDisposedException (which seems to make more sense). But in the case where we are invoking synchronously
+				// (and the control is not disposed), it's possible that the action itself could throw an InvalidOperationException, and
+				// we definitely wouldn't want to mistake that case for the special case of the Invoke command throwing the exception.
+				// So we wrap the action in a simple delegate and once inside (on the UI thread), we clear this flag because any subsequent
+				// exception is guaranteed to be caused by the action itself and not because the control had gotten disposed.
+				bool treatInvalidOperationExceptionAsObjectDisposedException = true;
+				try
 				{
-					var delgate = (Action)delegate { SafeInvoke(control, action, nameForErrorReporting, errorHandling, forceSynchronous); };
+					// When this gets executed on the UI thread, we need to re-check IsDisposed because it might have gotten disposed
+					// between the time we invoke and the time the action is executed. All we really need from SafeInvoke is that little
+					// bit of code at the start that checks for IsDisposed, but re-using SafeInvoke for the delegate is probably better
+					// than repeating that bit of code. Rechecking InvokeRequired should be lightning fast.
+					var delgate = (Action)delegate
+					{
+						treatInvalidOperationExceptionAsObjectDisposedException = false;
+						control.SafeInvoke(action, nameForErrorReporting, errorHandling, forceSynchronous);
+					};
 					if (forceSynchronous)
 						control.Invoke(delgate);
 					else
-						control.BeginInvoke(delgate);
+						return control.BeginInvoke(delgate);
 				}
-				else
-					action();
+				catch (InvalidOperationException e)
+				{
+					if (treatInvalidOperationExceptionAsObjectDisposedException)
+					{
+						// This is to catch the case where the control gets disposed after the check at the start of this method but before
+						// the Invoke or BeginInvoke executes. This does NOT happen if the control is disposed after the BeginInvoke is issued
+						// but before the action is processed. In that case, the action will be dequeued (at least on Windows???), and its
+						// entry will have an exception set.
+						if (errorHandling == ErrorHandlingAction.Throw)
+							throw new ObjectDisposedException("Control was disposed before " + (forceSynchronous ? "Invoke" : "BeginInvoke") +
+								" could be called. To suppress this kind of race-condition error, call SafeInvoke with IgnoreIfDisposed. (" + nameForErrorReporting + ")", e);
+					}
+					else
+						throw;
+				}
 			}
-			catch (Exception error)
-			{
-				SIL.Reporting.Logger.WriteEvent("**** " + error.Message);
-
-				if (errorHandling != ErrorHandlingAction.IgnoreAll)
-					throw new TargetInvocationException(nameForErrorReporting + ":" + error.Message, error);
-
-				Debug.Fail("This error would be swallowed in release version: " + error.Message);
-			}
+			return null;
 		}
 
 		/// ------------------------------------------------------------------------------------
