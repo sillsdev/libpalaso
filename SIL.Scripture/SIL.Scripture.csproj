@@ -99,7 +99,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\DebugStrongName\</OutputPath>
+    <OutputPath>..\output\DebugStrongName</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>..\output\DebugStrongName\SIL.Scripture.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -112,7 +112,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\DebugMonoStrongName\</OutputPath>
+    <OutputPath>..\output\DebugMonoStrongName</OutputPath>
     <DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
     <DocumentationFile>..\output\DebugMonoStrongName\SIL.Scripture.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -124,7 +124,7 @@
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseStrongName|AnyCPU'">
-    <OutputPath>..\output\ReleaseStrongName\</OutputPath>
+    <OutputPath>..\output\ReleaseStrongName</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>..\output\ReleaseStrongName\SIL.Scripture.xml</DocumentationFile>
     <Optimize>true</Optimize>
@@ -137,7 +137,7 @@
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|AnyCPU'">
-    <OutputPath>..\output\ReleaseMonoStrongName\</OutputPath>
+    <OutputPath>..\output\ReleaseMonoStrongName</OutputPath>
     <DefineConstants>TRACE;MONO</DefineConstants>
     <DocumentationFile>..\output\ReleaseMonoStrongName\SIL.Scripture.xml</DocumentationFile>
     <Optimize>true</Optimize>
@@ -151,7 +151,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
+    <OutputPath>..\output\Debug</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>..\output\Debug\SIL.Scripture.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -162,7 +162,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
+    <OutputPath>..\output\Release</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>..\output\Release\SIL.Scripture.xml</DocumentationFile>
     <Optimize>true</Optimize>
@@ -175,7 +175,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMono|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\DebugMono\</OutputPath>
+    <OutputPath>..\output\DebugMono</OutputPath>
     <DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
     <DocumentationFile>..\output\DebugMono\SIL.Scripture.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -186,7 +186,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMono|x86'">
-    <OutputPath>bin\x86\ReleaseMono\</OutputPath>
+    <OutputPath>..\output\ReleaseMono</OutputPath>
     <DefineConstants>TRACE;MONO</DefineConstants>
     <DocumentationFile>..\output\ReleaseMono\SIL.Scripture.xml</DocumentationFile>
     <Optimize>true</Optimize>
@@ -199,7 +199,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\DebugStrongName\</OutputPath>
+    <OutputPath>..\output\DebugStrongName</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>..\output\DebugStrongName\SIL.Scripture.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -211,7 +211,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\DebugMonoStrongName\</OutputPath>
+    <OutputPath>..\output\DebugMonoStrongName</OutputPath>
     <DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
     <DocumentationFile>..\output\DebugMonoStrongName\SIL.Scripture.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -222,7 +222,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseStrongName|x86'">
-    <OutputPath>bin\x86\ReleaseStrongName\</OutputPath>
+    <OutputPath>..\output\ReleaseStrongName</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>..\output\ReleaseStrongName\SIL.Scripture.xml</DocumentationFile>
     <Optimize>true</Optimize>
@@ -234,7 +234,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|x86'">
-    <OutputPath>bin\x86\ReleaseMonoStrongName\</OutputPath>
+    <OutputPath>..\output\ReleaseMonoStrongName</OutputPath>
     <DefineConstants>TRACE;MONO</DefineConstants>
     <DocumentationFile>..\output\ReleaseMonoStrongName\SIL.Scripture.xml</DocumentationFile>
     <Optimize>true</Optimize>
@@ -247,7 +247,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\x64\Debug\</OutputPath>
+    <OutputPath>..\output\Debug</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>..\output\Debug\SIL.Scripture.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -258,7 +258,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>..\output\x64\Release\</OutputPath>
+    <OutputPath>..\output\Release</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>..\output\Release\SIL.Scripture.xml</DocumentationFile>
     <Optimize>true</Optimize>
@@ -271,7 +271,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMono|x64'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\x64\DebugMono\</OutputPath>
+    <OutputPath>..\output\DebugMono</OutputPath>
     <DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
     <DocumentationFile>..\output\DebugMono\SIL.Scripture.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -282,7 +282,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMono|x64'">
-    <OutputPath>..\output\x64\ReleaseMono\</OutputPath>
+    <OutputPath>..\output\ReleaseMono</OutputPath>
     <DefineConstants>TRACE;MONO</DefineConstants>
     <DocumentationFile>..\output\ReleaseMono\SIL.Scripture.xml</DocumentationFile>
     <Optimize>true</Optimize>
@@ -295,7 +295,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|x64'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\x64\DebugStrongName\</OutputPath>
+    <OutputPath>..\output\DebugStrongName</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>..\output\DebugStrongName\SIL.Scripture.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -307,7 +307,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|x64'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\x64\DebugMonoStrongName\</OutputPath>
+    <OutputPath>..\output\DebugMonoStrongName</OutputPath>
     <DefineConstants>DEBUG;TRACE;MONO</DefineConstants>
     <DocumentationFile>..\output\DebugMonoStrongName\SIL.Scripture.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -318,7 +318,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseStrongName|x64'">
-    <OutputPath>..\output\x64\ReleaseStrongName\</OutputPath>
+    <OutputPath>..\output\ReleaseStrongName</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>..\output\ReleaseStrongName\SIL.Scripture.xml</DocumentationFile>
     <Optimize>true</Optimize>
@@ -330,7 +330,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|x64'">
-    <OutputPath>..\output\x64\ReleaseMonoStrongName\</OutputPath>
+    <OutputPath>..\output\ReleaseMonoStrongName</OutputPath>
     <DefineConstants>TRACE;MONO</DefineConstants>
     <DocumentationFile>..\output\ReleaseMonoStrongName\SIL.Scripture.xml</DocumentationFile>
     <Optimize>true</Optimize>
@@ -407,7 +407,7 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
