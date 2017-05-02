@@ -253,13 +253,13 @@ namespace SIL.Media
 
 		public void Dispose()
 		{
-			_engine.Dispose();
 			_recorder.Dispose();
 			if (_sound != null)
 			{
 				_sound.Dispose();
 				_sound = null;
 			}
+			_engine.Dispose();
 		}
 	}
 }
