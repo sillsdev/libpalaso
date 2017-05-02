@@ -181,5 +181,10 @@ namespace SIL.Media.AlsaAudio
 		{
 			_device.DesiredInputDevice = device;
 		}
+
+		public void Dispose()
+		{
+			// There is nothing to dispose
+		}
 	}
 }

@@ -2,7 +2,7 @@ using System;
 
 namespace SIL.Media
 {
-	public interface ISimpleAudioSession
+	public interface ISimpleAudioSession : IDisposable
 	{
 		string FilePath { get; }
 		void StartRecording();

@@ -7,7 +7,7 @@ using IrrKlang;
 
 namespace SIL.Media
 {
-	public class AudioIrrKlangSession : ISimpleAudioSession, ISimpleAudioWithEvents, IDisposable
+	public class AudioIrrKlangSession : ISimpleAudioSession, ISimpleAudioWithEvents
 	{
 		private readonly IAudioRecorder _recorder;
 		private readonly ISoundEngine _engine;
