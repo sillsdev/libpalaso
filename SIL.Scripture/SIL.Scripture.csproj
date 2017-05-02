@@ -54,6 +54,7 @@
     <NoWarn>1591</NoWarn>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -66,6 +67,7 @@
     <DocumentationFile>..\output\Release\SIL.Scripture.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -80,6 +82,7 @@
     <NoWarn>1591</NoWarn>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -92,6 +95,7 @@
     <DocumentationFile>..\output\ReleaseMono\SIL.Scripture.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -104,6 +108,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -116,6 +121,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseStrongName|AnyCPU'">
     <OutputPath>..\output\ReleaseStrongName\</OutputPath>
@@ -128,6 +134,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|AnyCPU'">
     <OutputPath>..\output\ReleaseMonoStrongName\</OutputPath>
@@ -140,6 +147,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>

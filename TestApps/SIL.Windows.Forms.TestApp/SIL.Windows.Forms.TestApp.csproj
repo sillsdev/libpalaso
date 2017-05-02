@@ -28,6 +28,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <PlatformTarget>x86</PlatformTarget>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -38,6 +39,7 @@
     <WarningLevel>4</WarningLevel>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -50,6 +52,7 @@
     </TargetFrameworkProfile>
     <WarningLevel>4</WarningLevel>
     <Optimize>false</Optimize>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
     <OutputPath>..\..\output\ReleaseMono\</OutputPath>
@@ -61,6 +64,7 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -71,6 +75,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -80,6 +85,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseStrongName|AnyCPU'">
     <OutputPath>..\..\output\ReleaseStrongName\</OutputPath>
@@ -89,6 +95,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|AnyCPU'">
     <OutputPath>..\..\output\ReleaseMonoStrongName\</OutputPath>
@@ -98,6 +105,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>

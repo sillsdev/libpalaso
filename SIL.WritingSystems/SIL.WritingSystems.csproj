@@ -23,7 +23,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\output\Debug\SIL.WritingSystems.XML</DocumentationFile>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>default</LangVersion>
+    <LangVersion>6</LangVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
@@ -36,6 +36,7 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -50,6 +51,7 @@
     </TargetFrameworkProfile>
     <DocumentationFile>..\output\DebugMono\SIL.WritingSystems.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU'">
     <OutputPath>..\output\ReleaseMono</OutputPath>
@@ -61,6 +63,7 @@
     <WarningLevel>4</WarningLevel>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -78,6 +81,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1699,1591</NoWarn>
     <DocumentationFile>..\output\DebugMonoStrongName\SIL.WritingSystems.XML</DocumentationFile>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -85,7 +89,7 @@
     <DefineConstants>TRACE;DEBUG;STRONG_NAME;STAGING_SLDR</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>default</LangVersion>
+    <LangVersion>6</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1699,1591</NoWarn>
@@ -100,6 +104,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1699</NoWarn>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseStrongName|AnyCPU'">
     <OutputPath>..\output\ReleaseStrongName\</OutputPath>
@@ -110,6 +115,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1699</NoWarn>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>

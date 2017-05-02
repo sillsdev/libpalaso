@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -41,7 +41,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\output\Debug\SIL.Media.xml</DocumentationFile>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>default</LangVersion>
+    <LangVersion>6</LangVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
@@ -54,6 +54,7 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -62,7 +63,7 @@
     <DocumentationFile>..\output\DebugMono\SIL.Media.xml</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>default</LangVersion>
+    <LangVersion>6</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -80,6 +81,7 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -88,7 +90,7 @@
     <DocumentationFile>..\output\DebugStrongName\SIL.Media.xml</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>default</LangVersion>
+    <LangVersion>6</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1591</NoWarn>
@@ -100,7 +102,7 @@
     <DocumentationFile>..\output\DebugMonoStrongName\SIL.Media.xml</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <LangVersion>default</LangVersion>
+    <LangVersion>6</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1591</NoWarn>
@@ -113,6 +115,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|AnyCPU'">
     <OutputPath>..\output\ReleaseMonoStrongName\</OutputPath>
@@ -122,6 +125,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>

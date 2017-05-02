@@ -29,6 +29,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <NoWarn>1591</NoWarn>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -39,6 +40,7 @@
     <WarningLevel>4</WarningLevel>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugMono|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -51,6 +53,7 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <NoWarn>1591</NoWarn>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU' ">
     <OutputPath>..\output\ReleaseMono</OutputPath>
@@ -61,6 +64,7 @@
     <ErrorReport>prompt</ErrorReport>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -78,6 +82,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1591</NoWarn>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -91,6 +96,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <NoWarn>1591</NoWarn>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseStrongName|AnyCPU'">
     <OutputPath>..\output\ReleaseStrongName\</OutputPath>
@@ -100,6 +106,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|AnyCPU'">
     <OutputPath>..\output\ReleaseMonoStrongName\</OutputPath>
@@ -111,6 +118,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
+    <LangVersion>6</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
