@@ -96,6 +96,7 @@ namespace SIL.Media
 			set
 			{
 				_path = value;
+				if (_recorder != null) _recorder.Dispose();
 				_recorder = AudioFactory.CreateAudioSession(Path);
 				toolTip1.SetToolTip(_deleteButton, _deleteButtonInstructions +"\r\n"+_path);
 				UpdateScreen();
