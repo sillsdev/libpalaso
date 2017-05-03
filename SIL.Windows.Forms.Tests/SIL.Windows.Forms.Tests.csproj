@@ -209,6 +209,7 @@
     <Compile Include="ClearShare\MetadataTests.cs" />
     <Compile Include="ClearShare\OlacSystemTests.cs" />
     <Compile Include="ClearShare\RoleTests.cs" />
+    <Compile Include="Extensions\ControlExtensionsTests.cs" />
     <Compile Include="FontTests\FontHelperTests.cs" />
     <Compile Include="Hotspot\HotSpotProviderTestForms.cs" />
     <Compile Include="Hotspot\HotSpotProviderTests.cs" />

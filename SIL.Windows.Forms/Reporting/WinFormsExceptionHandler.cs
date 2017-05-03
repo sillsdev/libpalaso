@@ -36,11 +36,11 @@ namespace SIL.Windows.Forms.Reporting
 
 			// Using Application.ThreadException rather than
 			// AppDomain.CurrentDomain.UnhandledException has the advantage that the
-			// program doesn't necessarily ends - we can ignore the exception and continue.
+			// program doesn't necessarily end - we can ignore the exception and continue.
 			Application.ThreadException += HandleTopLevelError;
 
 			// We also want to catch the UnhandledExceptions for all the cases that
-			// ThreadException don't catch, e.g. in the startup.
+			// ThreadException doesn't catch, e.g. in the startup.
 			AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
 		}
 
