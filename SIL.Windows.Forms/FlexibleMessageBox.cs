@@ -137,8 +137,8 @@ namespace SIL.Windows.Forms
 		/// Pass this in as the linkClickedAction to the Show methods to get a simple link-handler that fires off a
 		/// process using the link text as it's parameter.
 		/// </summary>
-		public static LinkClickedEventHandler BasicLinkClickedEventHandler => richTextBoxMessage_LinkClicked;
-			
+		public static LinkClickedEventHandler BasicLinkClickedEventHandler { get { return richTextBoxMessage_LinkClicked; } }
+
 		/// <summary>
 		/// Provides a basic implementation for handling the LinkClicked event of the richTextBoxMessage control.
 		/// </summary>
