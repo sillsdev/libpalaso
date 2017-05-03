@@ -95,6 +95,21 @@
             <seg>Yes</seg>
          </tuv>
       </tu>
+      <tu tuid="Common.Abort">
+         <tuv xml:lang="en">
+            <seg>&amp;Abort</seg>
+         </tuv>
+      </tu>
+      <tu tuid="Common.Ignore">
+         <tuv xml:lang="en">
+            <seg>&amp;Ignore</seg>
+         </tuv>
+      </tu>
+      <tu tuid="Common.Retry">
+         <tuv xml:lang="en">
+            <seg>&amp;Retry</seg>
+         </tuv>
+      </tu>
       <tu tuid="DialogBoxes.ConfirmRecycleDialog.MessageForMultipleItems">
          <note>Parameter {0} is a description of the things being deleted (e.g., "The selected files")</note>
          <tuv xml:lang="en">
