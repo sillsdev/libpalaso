@@ -45,6 +45,30 @@
         <seg>Oui</seg>
       </tuv>
     </tu>
+    <tu tuid="Common.Abort">
+      <tuv xml:lang="en">
+        <seg>&amp;Abort</seg>
+      </tuv>
+	  <tuv xml:lang="fr">
+	    <seg>&amp;Annuler</seg>
+	  </tuv>
+    </tu>
+    <tu tuid="Common.Ignore">
+      <tuv xml:lang="en">
+        <seg>&amp;Ignore</seg>
+      </tuv>
+	  <tuv xml:lang="fr">
+	    <seg>&amp;Ignorer</seg>
+	  </tuv>
+    </tu>
+    <tu tuid="Common.Retry">
+      <tuv xml:lang="en">
+        <seg>&amp;Retry</seg>
+      </tuv>
+	  <tuv xml:lang="fr">
+	    <seg>&amp;Réessayer</seg>
+	  </tuv>
+    </tu>
     <tu tuid="ImageToolbox.ArtOfReading">
       <tuv xml:lang="en">
         <seg>Art Of Reading</seg>

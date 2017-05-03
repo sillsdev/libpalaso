@@ -37,6 +37,30 @@
 		<seg>Aceptar</seg>
 	  </tuv>
 	</tu>
+    <tu tuid="Common.Abort">
+      <tuv xml:lang="en">
+        <seg>&amp;Abort</seg>
+      </tuv>
+	  <tuv xml:lang="es">
+	    <seg>&amp;Abortar</seg>
+	  </tuv>
+    </tu>
+    <tu tuid="Common.Ignore">
+      <tuv xml:lang="en">
+        <seg>&amp;Ignore</seg>
+      </tuv>
+	  <tuv xml:lang="es">
+	    <seg>&amp;Ignorar</seg>
+	  </tuv>
+    </tu>
+    <tu tuid="Common.Retry">
+      <tuv xml:lang="en">
+        <seg>&amp;Retry</seg>
+      </tuv>
+	  <tuv xml:lang="es">
+	    <seg>&amp;Reintentar</seg>
+	  </tuv>
+    </tu>
 	<tu tuid="DialogBoxes.FileDlg.AllFilesLabel">
       <tuv xml:lang="en">
         <seg>All Files</seg>
