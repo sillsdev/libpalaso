@@ -87,17 +87,23 @@ namespace SIL.Windows.Forms
 	public class FlexibleMessageBox
 	{
 		#region Public statics
+		private static double _maxWidthFactor = 0.7;
+		private static double _maxHeightFactor = 0.9;
 
 		/// <summary>
 		/// Defines the maximum width for all FlexibleMessageBox instances in percent of the working area.
 		/// 
 		/// Allowed values are 0.2 - 1.0 where: 
-		/// 0.2 means:  The FlexibleMessageBox can be at most half as wide as the working area.
+		/// 0.2 means:  The FlexibleMessageBox can be at most 20% of the width of the working area.
 		/// 1.0 means:  The FlexibleMessageBox can be as wide as the working area.
 		/// 
-		/// Default is: 70% of the working area width.
+		/// Default is: 0.7 (70% of the working area width)
 		/// </summary>
-		public static double MAX_WIDTH_FACTOR = 0.7;
+		public static double MaxWidthFactor
+		{
+			get { return _maxWidthFactor; }
+			set { _maxWidthFactor = Math.Max(Math.Min(value, 1.0), 0.2); }
+		}
 
 		/// <summary>
 		/// Defines the maximum height for all FlexibleMessageBox instances in percent of the working area.
@@ -106,16 +112,20 @@ namespace SIL.Windows.Forms
 		/// 0.2 means:  The FlexibleMessageBox can be at most half as high as the working area.
 		/// 1.0 means:  The FlexibleMessageBox can be as high as the working area.
 		/// 
-		/// Default is: 90% of the working area height.
+		/// Default is: 0.9 (90% of the working area height)
 		/// </summary>
-		public static double MAX_HEIGHT_FACTOR = 0.9;
+		public static double MaxHeightFactor
+		{
+			get { return _maxHeightFactor; }
+			set { _maxHeightFactor = Math.Max(Math.Min(value, 1.0), 0.2); }
+		}
 
 		/// <summary>
 		/// Defines the font for all FlexibleMessageBox instances.
 		/// 
 		/// Default is: SystemFonts.MessageBoxFont
 		/// </summary>
-		public static Font FONT = SystemFonts.MessageBoxFont;
+		public static Font Font = SystemFonts.MessageBoxFont;
 
 		public static IEnumerable<KeyValuePair<string, string>> GetButtonTextLocalizationKeys
 		{
@@ -569,33 +579,14 @@ namespace SIL.Windows.Forms
 				{
 					case ButtonID.Ok: return LocalizationManager.GetString("Common.OKButton", "&OK");
 					case ButtonID.Cancel: return LocalizationManager.GetString("Common.CancelButton", "&Cancel");
-					case ButtonID.Yes: return LocalizationManager.GetString("Common.Yes", "Yes");
-					case ButtonID.No: return LocalizationManager.GetString("Common.No", "No");
-					case ButtonID.Abort: return LocalizationManager.GetString("Common.Abort", "&Abort");
-					case ButtonID.Retry: return LocalizationManager.GetString("Common.Retry", "&Retry");
-					case ButtonID.Ignore: return LocalizationManager.GetString("Common.Ignore", "&Ignore");
+					case ButtonID.Yes: return LocalizationManager.GetString("Common.YesButton", "&Yes");
+					case ButtonID.No: return LocalizationManager.GetString("Common.NoButton", "&No");
+					case ButtonID.Abort: return LocalizationManager.GetString("Common.AbortButton", "&Abort");
+					case ButtonID.Retry: return LocalizationManager.GetString("Common.RetryButton", "&Retry");
+					case ButtonID.Ignore: return LocalizationManager.GetString("Common.IgnoreButton", "&Ignore");
 					default:
 						throw new InvalidEnumArgumentException("buttonId", (int)buttonId, typeof(ButtonID));
 				}
-			}
-
-			/// <summary>
-			/// Ensure the given working area factor in the range of  0.2 - 1.0 where: 
-			/// 
-			/// 0.2 means:  20 percent of the working area height or width.
-			/// 1.0 means:  100 percent of the working area height or width.
-			/// </summary>
-			/// <param name="workingAreaFactor">The given working area factor.</param>
-			/// <returns>The corrected given working area factor.</returns>
-			private static double GetCorrectedWorkingAreaFactor(double workingAreaFactor)
-			{
-				const double MIN_FACTOR = 0.2;
-				const double MAX_FACTOR = 1.0;
-
-				if (workingAreaFactor < MIN_FACTOR) return MIN_FACTOR;
-				if (workingAreaFactor > MAX_FACTOR) return MAX_FACTOR;
-
-				return workingAreaFactor;
 			}
 
 			/// <summary>
@@ -626,19 +617,19 @@ namespace SIL.Windows.Forms
 			private static void SetDialogSizes(FlexibleMessageBoxForm flexibleMessageBoxForm, string text, string caption)
 			{
 				//First set the bounds for the maximum dialog size
-				flexibleMessageBoxForm.MaximumSize = new Size(Convert.ToInt32(SystemInformation.WorkingArea.Width * FlexibleMessageBoxForm.GetCorrectedWorkingAreaFactor(MAX_WIDTH_FACTOR)),
-															  Convert.ToInt32(SystemInformation.WorkingArea.Height * FlexibleMessageBoxForm.GetCorrectedWorkingAreaFactor(MAX_HEIGHT_FACTOR)));
+				flexibleMessageBoxForm.MaximumSize = new Size(Convert.ToInt32(SystemInformation.WorkingArea.Width * MaxWidthFactor),
+															  Convert.ToInt32(SystemInformation.WorkingArea.Height * MaxHeightFactor));
 
 				//Get rows. Exit if there are no rows to render...
 				var stringRows = GetStringRows(text);
 				if (stringRows == null) return;
 
 				//Calculate whole text height
-				var textHeight = TextRenderer.MeasureText(text, FONT).Height;
+				var textHeight = TextRenderer.MeasureText(text, FlexibleMessageBox.Font).Height;
 					
 				//Calculate width for longest text line
 				const int SCROLLBAR_WIDTH_OFFSET = 15;
-				var longestTextRowWidth = stringRows.Max(textForRow => TextRenderer.MeasureText(textForRow, FONT).Width);
+				var longestTextRowWidth = stringRows.Max(textForRow => TextRenderer.MeasureText(textForRow, FlexibleMessageBox.Font).Width);
 				var captionWidth = TextRenderer.MeasureText(caption, SystemFonts.CaptionFont).Width;
 				var textWidth = Math.Max(longestTextRowWidth + SCROLLBAR_WIDTH_OFFSET, captionWidth);
 				
@@ -914,8 +905,8 @@ namespace SIL.Windows.Forms
 				SetDialogIcon(flexibleMessageBoxForm, icon);
 
 				//Set the font for all controls
-				flexibleMessageBoxForm.Font = FONT;
-				flexibleMessageBoxForm.richTextBoxMessage.Font = FONT;
+				flexibleMessageBoxForm.Font = FlexibleMessageBox.Font;
+				flexibleMessageBoxForm.richTextBoxMessage.Font = FlexibleMessageBox.Font;
 				if (linkClickedAction == null)
 					flexibleMessageBoxForm.richTextBoxMessage.DetectUrls = false;
 				else
