@@ -13,6 +13,14 @@
         <seg>À propos de</seg>
       </tuv>
     </tu>
+    <tu tuid="Common.AbortButton">
+      <tuv xml:lang="en">
+        <seg>&amp;Abort</seg>
+      </tuv>
+	  <tuv xml:lang="fr">
+	    <seg>&amp;Annuler</seg>
+	  </tuv>
+    </tu>
     <tu tuid="Common.CancelButton">
       <tuv xml:lang="en">
         <seg>&amp;Cancel</seg>
@@ -21,12 +29,28 @@
         <seg>Annuler</seg>
       </tuv>
     </tu>
+    <tu tuid="Common.IgnoreButton">
+      <tuv xml:lang="en">
+        <seg>&amp;Ignore</seg>
+      </tuv>
+	  <tuv xml:lang="fr">
+	    <seg>&amp;Ignorer</seg>
+	  </tuv>
+    </tu>
     <tu tuid="Common.No">
       <tuv xml:lang="en">
         <seg>No</seg>
       </tuv>
       <tuv xml:lang="fr">
         <seg>Non</seg>
+      </tuv>
+    </tu>
+    <tu tuid="Common.NoButton">
+      <tuv xml:lang="en">
+        <seg>&amp;No</seg>
+      </tuv>
+      <tuv xml:lang="fr">
+        <seg>&amp;Non</seg>
       </tuv>
     </tu>
     <tu tuid="Common.OKButton">
@@ -37,6 +61,14 @@
         <seg>&amp;OK</seg>
       </tuv>
     </tu>
+    <tu tuid="Common.RetryButton">
+      <tuv xml:lang="en">
+        <seg>&amp;Retry</seg>
+      </tuv>
+	  <tuv xml:lang="fr">
+	    <seg>&amp;Réessayer</seg>
+	  </tuv>
+    </tu>
     <tu tuid="Common.Yes">
       <tuv xml:lang="en">
         <seg>Yes</seg>
@@ -45,29 +77,13 @@
         <seg>Oui</seg>
       </tuv>
     </tu>
-    <tu tuid="Common.Abort">
+    <tu tuid="Common.YesButton">
       <tuv xml:lang="en">
-        <seg>&amp;Abort</seg>
+        <seg>&amp;Yes</seg>
       </tuv>
-	  <tuv xml:lang="fr">
-	    <seg>&amp;Annuler</seg>
-	  </tuv>
-    </tu>
-    <tu tuid="Common.Ignore">
-      <tuv xml:lang="en">
-        <seg>&amp;Ignore</seg>
+      <tuv xml:lang="fr">
+        <seg>&amp;Oui</seg>
       </tuv>
-	  <tuv xml:lang="fr">
-	    <seg>&amp;Ignorer</seg>
-	  </tuv>
-    </tu>
-    <tu tuid="Common.Retry">
-      <tuv xml:lang="en">
-        <seg>&amp;Retry</seg>
-      </tuv>
-	  <tuv xml:lang="fr">
-	    <seg>&amp;Réessayer</seg>
-	  </tuv>
     </tu>
     <tu tuid="ImageToolbox.ArtOfReading">
       <tuv xml:lang="en">

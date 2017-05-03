@@ -75,9 +75,19 @@
             <seg>Waiting for other {0} to finish...</seg>
          </tuv>
       </tu>
+      <tu tuid="Common.AbortButton">
+         <tuv xml:lang="en">
+            <seg>&amp;Abort</seg>
+         </tuv>
+      </tu>
       <tu tuid="Common.CancelButton">
          <tuv xml:lang="en">
             <seg>&amp;Cancel</seg>
+         </tuv>
+      </tu>
+      <tu tuid="Common.IgnoreButton">
+         <tuv xml:lang="en">
+            <seg>&amp;Ignore</seg>
          </tuv>
       </tu>
       <tu tuid="Common.No">
@@ -85,9 +95,19 @@
             <seg>No</seg>
          </tuv>
       </tu>
+      <tu tuid="Common.NoButton">
+         <tuv xml:lang="en">
+            <seg>&No</seg>
+         </tuv>
+      </tu>
       <tu tuid="Common.OKButton">
          <tuv xml:lang="en">
             <seg>&amp;OK</seg>
+         </tuv>
+      </tu>
+      <tu tuid="Common.RetryButton">
+         <tuv xml:lang="en">
+            <seg>&amp;Retry</seg>
          </tuv>
       </tu>
       <tu tuid="Common.Yes">
@@ -95,19 +115,9 @@
             <seg>Yes</seg>
          </tuv>
       </tu>
-      <tu tuid="Common.Abort">
+      <tu tuid="Common.YesButton">
          <tuv xml:lang="en">
-            <seg>&amp;Abort</seg>
-         </tuv>
-      </tu>
-      <tu tuid="Common.Ignore">
-         <tuv xml:lang="en">
-            <seg>&amp;Ignore</seg>
-         </tuv>
-      </tu>
-      <tu tuid="Common.Retry">
-         <tuv xml:lang="en">
-            <seg>&amp;Retry</seg>
+            <seg>&amp;Yes</seg>
          </tuv>
       </tu>
       <tu tuid="DialogBoxes.ConfirmRecycleDialog.MessageForMultipleItems">
