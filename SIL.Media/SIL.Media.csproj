@@ -491,6 +491,6 @@
   </Target>
   -->
   <Target Name="AfterBuild">
-    <Copy SourceFiles="..\lib\$(Platform)\ikpMP3.dll;..\lib\$(Platform)\ikpFlac.dll" DestinationFolder="$(OutputPath)" />
+    <Copy SourceFiles="..\lib\$(Platform)\ikpMP3.dll;..\lib\$(Platform)\ikpFlac.dll" DestinationFolder="$(OutputPath)" Condition="'$(Platform)' == 'x64'"/>
   </Target>
 </Project>
