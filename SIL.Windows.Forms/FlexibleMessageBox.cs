@@ -3,60 +3,58 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using L10NSharp;
-
 namespace SIL.Windows.Forms
 {
 	/*  FlexibleMessageBox – A flexible replacement for the .NET MessageBox
-	 * 
+	 *
 	 *  Author:		Jörg Reichert (public@jreichert.de)
 	 *  Contributors:   Thanks to: David Hall, Roink
 	 *  Version:		1.3
 	 *  Published at:   http://www.codeproject.com/Articles/601900/FlexibleMessageBox
-	 *  
+	 *
 	 ************************************************************************************************************
 	 * Features:
 	 *  - It can be simply used instead of MessageBox since all important static "Show"-Functions are supported
-	 *  - It is small, only one source file, which could be added easily to each solution 
+	 *  - It is small, only one source file, which could be added easily to each solution
 	 *  - It can be resized and the content is correctly word-wrapped
 	 *  - It tries to auto-size the width to show the longest text row
 	 *  - It never exceeds the current desktop working area
 	 *  - It displays a vertical scrollbar when needed
 	 *  - It does support hyperlinks in text
 	 *  - It allows copying of messages to clipboard
-	 * 
-	 *  Because the interface is identical to MessageBox, you can add this single source file to your project 
-	 *  and use the FlexibleMessageBox almost everywhere you use a standard MessageBox. 
-	 *  The goal was NOT to produce as many features as possible but to provide a simple replacement to fit my 
+	 *
+	 *  Because the interface is identical to MessageBox, you can add this single source file to your project
+	 *  and use the FlexibleMessageBox almost everywhere you use a standard MessageBox.
+	 *  The goal was NOT to produce as many features as possible but to provide a simple replacement to fit my
 	 *  own needs. Feel free to add additional features on your own, but please left my credits in this class.
-	 * 
+	 *
 	 ************************************************************************************************************
 	 * Usage examples:
-	 * 
+	 *
 	 *  FlexibleMessageBox.Show("Just a text");
-	 * 
-	 *  FlexibleMessageBox.Show("A text", "A caption"); 
-	 *  
-	 *  FlexibleMessageBox.Show("Some text with a link: www.google.com", 
+	 *
+	 *  FlexibleMessageBox.Show("A text", "A caption");
+	 *
+	 *  FlexibleMessageBox.Show("Some text with a link: www.google.com",
 	 *							"Some caption",
-	 *							MessageBoxButtons.AbortRetryIgnore, 
+	 *							MessageBoxButtons.AbortRetryIgnore,
 	 *							MessageBoxIcon.Information,
 	 *							MessageBoxDefaultButton.Button2);
-	 *  
-	 *  var dialogResult = FlexibleMessageBox.Show("Do you know the answer to life the universe and everything?", 
+	 *
+	 *  var dialogResult = FlexibleMessageBox.Show("Do you know the answer to life the universe and everything?",
 	 *											   "One short question",
-	 *											   MessageBoxButtons.YesNo);	 
-	 * 
+	 *											   MessageBoxButtons.YesNo);
+	 *
 	 ************************************************************************************************************
 	 *  THE SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS", WITHOUT WARRANTY
 	 *  OF ANY KIND, EXPRESS OR IMPLIED. IN NO EVENT SHALL THE AUTHOR BE
 	 *  LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY ARISING FROM,
 	 *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OF THIS
 	 *  SOFTWARE.
-	 *  
+	 *
 	 ************************************************************************************************************
 	 * History:
 	 *	Adapted for use in libpalaso
@@ -70,17 +68,17 @@ namespace SIL.Windows.Forms
 	 *  - Tab handling is now corrected (only tabbing over the visible buttons)
 	 *  - Added standard MessageBox handling for ALT-Keyboard shortcuts
 	 *  - SetDialogSizes: Refactored completely: Corrected sizing and added caption driven sizing
-	 * 
+	 *
 	 *	Version 1.2 - 10.August 2013
 	 *   - Do not ShowInTaskbar anymore (original MessageBox is also hidden in taskbar)
 	 *   - Added handling for Escape-Button
 	 *   - Adapted top right close button (red X) to behave like MessageBox (but hidden instead of deactivated)
-	 * 
+	 *
 	 *	Version 1.1 - 14.June 2013
 	 *   - Some Refactoring
 	 *   - Added internal form class
 	 *   - Added missing code comments, etc.
-	 *  
+	 *
 	 *	Version 1.0 - 15.April 2013
 	 *   - Initial Version
 	 */
@@ -89,14 +87,13 @@ namespace SIL.Windows.Forms
 		#region Public statics
 		private static double _maxWidthFactor = 0.7;
 		private static double _maxHeightFactor = 0.9;
-
 		/// <summary>
 		/// Defines the maximum width for all FlexibleMessageBox instances in percent of the working area.
-		/// 
-		/// Allowed values are 0.2 - 1.0 where: 
+		///
+		/// Allowed values are 0.2 - 1.0 where:
 		/// 0.2 means:  The FlexibleMessageBox can be at most 20% of the width of the working area.
 		/// 1.0 means:  The FlexibleMessageBox can be as wide as the working area.
-		/// 
+		///
 		/// Default is: 0.7 (70% of the working area width)
 		/// </summary>
 		public static double MaxWidthFactor
@@ -104,14 +101,13 @@ namespace SIL.Windows.Forms
 			get { return _maxWidthFactor; }
 			set { _maxWidthFactor = Math.Max(Math.Min(value, 1.0), 0.2); }
 		}
-
 		/// <summary>
 		/// Defines the maximum height for all FlexibleMessageBox instances in percent of the working area.
-		/// 
-		/// Allowed values are 0.2 - 1.0 where: 
+		///
+		/// Allowed values are 0.2 - 1.0 where:
 		/// 0.2 means:  The FlexibleMessageBox can be at most half as high as the working area.
 		/// 1.0 means:  The FlexibleMessageBox can be as high as the working area.
-		/// 
+		///
 		/// Default is: 0.9 (90% of the working area height)
 		/// </summary>
 		public static double MaxHeightFactor
@@ -122,17 +118,23 @@ namespace SIL.Windows.Forms
 
 		/// <summary>
 		/// Defines the font for all FlexibleMessageBox instances.
-		/// 
+		///
 		/// Default is: SystemFonts.MessageBoxFont
 		/// </summary>
 		public static Font Font = SystemFonts.MessageBoxFont;
 
+		/// <summary>
+		/// Callers that use a localization strategy other than L10NSharp can use this property to obtain a full
+		/// list of all localization keys and the default (English) value. These keys will be passed to the
+		/// GetButtonText function if it is overridden.
+		/// </summary>
 		public static IEnumerable<KeyValuePair<string, string>> GetButtonTextLocalizationKeys
 		{
 			get
 			{
-				yield return new KeyValuePair<string, string>("FlexibleMessageBoxBtn.Ok", "OK");
-				yield return new KeyValuePair<string, string>("FlexibleMessageBoxBtn.Cancel", "Cancel");
+				// Localization ID Prefixes here must match the hard-coded text in FlexibleMessageBoxForm.GetButtonText:
+				yield return new KeyValuePair<string, string>("FlexibleMessageBoxBtn.Ok", "&OK");
+				yield return new KeyValuePair<string, string>("FlexibleMessageBoxBtn.Cancel", "&Cancel");
 				yield return new KeyValuePair<string, string>("FlexibleMessageBoxBtn.Yes", "&Yes");
 				yield return new KeyValuePair<string, string>("FlexibleMessageBoxBtn.No", "&No");
 				yield return new KeyValuePair<string, string>("FlexibleMessageBoxBtn.Abort", "&Abort");
@@ -141,6 +143,10 @@ namespace SIL.Windows.Forms
 			}
 		}
 
+		/// <summary>
+		/// Callers that use a localization strategy other than L10NSharp can set this function to get a
+		/// callback allowing them to supply a non-English button name.
+		/// </summary>
 		public static Func<string, string> GetButtonText { get; set; }
 
 		/// <summary>
@@ -148,7 +154,6 @@ namespace SIL.Windows.Forms
 		/// process using the link text as it's parameter.
 		/// </summary>
 		public static LinkClickedEventHandler BasicLinkClickedEventHandler { get { return richTextBoxMessage_LinkClicked; } }
-
 		/// <summary>
 		/// Provides a basic implementation for handling the LinkClicked event of the richTextBoxMessage control.
 		/// </summary>
@@ -172,9 +177,7 @@ namespace SIL.Windows.Forms
 			}
 		}
 		#endregion
-
 		#region Public show functions
-
 		/// <summary>
 		/// Shows the specified message box.
 		/// </summary>
@@ -187,7 +190,6 @@ namespace SIL.Windows.Forms
 		{
 			return FlexibleMessageBoxForm.Show(null, text, string.Empty, MessageBoxButtons.OK, MessageBoxIcon.None, MessageBoxDefaultButton.Button1, linkClickedAction);
 		}
-
 		/// <summary>
 		/// Shows the specified message box.
 		/// </summary>
@@ -202,7 +204,6 @@ namespace SIL.Windows.Forms
 		{
 			return FlexibleMessageBoxForm.Show(owner, text, string.Empty, MessageBoxButtons.OK, MessageBoxIcon.None, MessageBoxDefaultButton.Button1, linkClickedAction);
 		}
-
 		/// <summary>
 		/// Shows the specified message box.
 		/// </summary>
@@ -217,7 +218,6 @@ namespace SIL.Windows.Forms
 		{
 			return FlexibleMessageBoxForm.Show(null, text, caption, MessageBoxButtons.OK, MessageBoxIcon.None, MessageBoxDefaultButton.Button1, linkClickedAction);
 		}
-
 		/// <summary>
 		/// Shows the specified message box.
 		/// </summary>
@@ -233,7 +233,6 @@ namespace SIL.Windows.Forms
 		{
 			return FlexibleMessageBoxForm.Show(owner, text, caption, MessageBoxButtons.OK, MessageBoxIcon.None, MessageBoxDefaultButton.Button1, linkClickedAction);
 		}
-
 		/// <summary>
 		/// Shows the specified message box.
 		/// </summary>
@@ -249,7 +248,6 @@ namespace SIL.Windows.Forms
 		{
 			return FlexibleMessageBoxForm.Show(null, text, caption, buttons, MessageBoxIcon.None, MessageBoxDefaultButton.Button1, linkClickedAction);
 		}
-
 		/// <summary>
 		/// Shows the specified message box.
 		/// </summary>
@@ -266,7 +264,6 @@ namespace SIL.Windows.Forms
 		{
 			return FlexibleMessageBoxForm.Show(owner, text, caption, buttons, MessageBoxIcon.None, MessageBoxDefaultButton.Button1, linkClickedAction);
 		}
-
 		/// <summary>
 		/// Shows the specified message box.
 		/// </summary>
@@ -283,7 +280,6 @@ namespace SIL.Windows.Forms
 		{
 			return FlexibleMessageBoxForm.Show(null, text, caption, buttons, icon, MessageBoxDefaultButton.Button1, linkClickedAction);
 		}
-
 		/// <summary>
 		/// Shows the specified message box.
 		/// </summary>
@@ -302,7 +298,6 @@ namespace SIL.Windows.Forms
 		{
 			return FlexibleMessageBoxForm.Show(owner, text, caption, buttons, icon, MessageBoxDefaultButton.Button1, linkClickedAction);
 		}
-
 		/// <summary>
 		/// Shows the specified message box.
 		/// </summary>
@@ -321,7 +316,6 @@ namespace SIL.Windows.Forms
 		{
 			return FlexibleMessageBoxForm.Show(null, text, caption, buttons, icon, defaultButton, linkClickedAction);
 		}
-
 		/// <summary>
 		/// Shows the specified message box.
 		/// </summary>
@@ -341,28 +335,26 @@ namespace SIL.Windows.Forms
 		{
 			return FlexibleMessageBoxForm.Show(owner, text, caption, buttons, icon, defaultButton, linkClickedAction);
 		}
-
 		#endregion
-
 		#region Internal form class
-
 		/// <summary>
 		/// The form to show the customized message box.
 		/// It is defined as an internal class to keep the public interface of the FlexibleMessageBox clean.
+		/// As the comments below indicate, this was (presumably) originally created in Designer. We're leaving
+		/// all the Designer-related stuff (including) comments, in case some day someone decides it is
+		/// expedient to try to move it back out and make it designable.
 		/// </summary>
 		class FlexibleMessageBoxForm : Form
 		{
 			#region Form-Designer generated code
-
 			/// <summary>
-			/// Erforderliche Designervariable.
+			/// Required Designer variable.
 			/// </summary>
 			private System.ComponentModel.IContainer components = null;
-
 			/// <summary>
-			/// Verwendete Ressourcen bereinigen.
+			/// Clean up any resources being used.
 			/// </summary>
-			/// <param name="disposing">True, wenn verwaltete Ressourcen gelöscht werden sollen; andernfalls False.</param>
+			/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
 			protected override void Dispose(bool disposing)
 			{
 				if (disposing && (components != null))
@@ -371,10 +363,9 @@ namespace SIL.Windows.Forms
 				}
 				base.Dispose(disposing);
 			}
-
 			/// <summary>
-			/// Erforderliche Methode für die Designerunterstützung.
-			/// Der Inhalt der Methode darf nicht mit dem Code-Editor geändert werden.
+			/// Required method for Designer support - do not modify
+			/// the contents of this method with the code editor.
 			/// </summary>
 			private void InitializeComponent()
 			{
@@ -390,9 +381,9 @@ namespace SIL.Windows.Forms
 				this.panel1.SuspendLayout();
 				((System.ComponentModel.ISupportInitialize)(this.pictureBoxForIcon)).BeginInit();
 				this.SuspendLayout();
-				// 
+				//
 				// button1
-				// 
+				//
 				this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 				this.button1.AutoSize = true;
 				this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
@@ -404,9 +395,9 @@ namespace SIL.Windows.Forms
 				this.button1.Text = "OK";
 				this.button1.UseVisualStyleBackColor = true;
 				this.button1.Visible = false;
-				// 
+				//
 				// richTextBoxMessage
-				// 
+				//
 				this.richTextBoxMessage.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 				| System.Windows.Forms.AnchorStyles.Left)
 				| System.Windows.Forms.AnchorStyles.Right)));
@@ -423,9 +414,9 @@ namespace SIL.Windows.Forms
 				this.richTextBoxMessage.TabIndex = 0;
 				this.richTextBoxMessage.TabStop = false;
 				this.richTextBoxMessage.Text = "<Message>";
-				// 
+				//
 				// panel1
-				// 
+				//
 				this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 				| System.Windows.Forms.AnchorStyles.Left)
 				| System.Windows.Forms.AnchorStyles.Right)));
@@ -436,18 +427,18 @@ namespace SIL.Windows.Forms
 				this.panel1.Name = "panel1";
 				this.panel1.Size = new System.Drawing.Size(268, 59);
 				this.panel1.TabIndex = 1;
-				// 
+				//
 				// pictureBoxForIcon
-				// 
+				//
 				this.pictureBoxForIcon.BackColor = System.Drawing.Color.Transparent;
 				this.pictureBoxForIcon.Location = new System.Drawing.Point(15, 19);
 				this.pictureBoxForIcon.Name = "pictureBoxForIcon";
 				this.pictureBoxForIcon.Size = new System.Drawing.Size(32, 32);
 				this.pictureBoxForIcon.TabIndex = 8;
 				this.pictureBoxForIcon.TabStop = false;
-				// 
+				//
 				// button2
-				// 
+				//
 				this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 				this.button2.DialogResult = System.Windows.Forms.DialogResult.OK;
 				this.button2.Location = new System.Drawing.Point(92, 67);
@@ -458,9 +449,9 @@ namespace SIL.Windows.Forms
 				this.button2.Text = "OK";
 				this.button2.UseVisualStyleBackColor = true;
 				this.button2.Visible = false;
-				// 
+				//
 				// button3
-				// 
+				//
 				this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 				this.button3.AutoSize = true;
 				this.button3.DialogResult = System.Windows.Forms.DialogResult.OK;
@@ -472,9 +463,9 @@ namespace SIL.Windows.Forms
 				this.button3.Text = "OK";
 				this.button3.UseVisualStyleBackColor = true;
 				this.button3.Visible = false;
-				// 
+				//
 				// FlexibleMessageBoxForm
-				// 
+				//
 				this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 				this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 				this.ClientSize = new System.Drawing.Size(260, 102);
@@ -498,7 +489,6 @@ namespace SIL.Windows.Forms
 				this.ResumeLayout(false);
 				this.PerformLayout();
 			}
-
 			private System.Windows.Forms.Button button1;
 			private System.Windows.Forms.BindingSource FlexibleMessageBoxFormBindingSource;
 			private System.Windows.Forms.RichTextBox richTextBoxMessage;
@@ -506,75 +496,49 @@ namespace SIL.Windows.Forms
 			private System.Windows.Forms.PictureBox pictureBoxForIcon;
 			private System.Windows.Forms.Button button2;
 			private System.Windows.Forms.Button button3;
-
 			#endregion
-
 			#region Private constants
-
 			//These separators are used for the "copy to clipboard" standard operation, triggered by Ctrl + C (behavior and clipboard format is like in a standard MessageBox)
 			private static readonly String STANDARD_MESSAGEBOX_SEPARATOR_LINES = "---------------------------\n";
 			private static readonly String STANDARD_MESSAGEBOX_SEPARATOR_SPACES = "   ";
-
 			//These are the possible buttons (in a standard MessageBox)
 			private enum ButtonID { Ok = 0, Cancel, Yes, No, Abort, Retry, Ignore };
 			#endregion
-
 			#region Private members
-
-			private MessageBoxDefaultButton defaultButton;
-			private int visibleButtonsCount;
-
+			private MessageBoxDefaultButton _defaultButton;
+			private int _visibleButtonsCount;
 			#endregion
-
 			#region Private constructor
-
 			/// <summary>
 			/// Initializes a new instance of the <see cref="FlexibleMessageBoxForm"/> class.
 			/// </summary>
 			private FlexibleMessageBoxForm()
 			{
 				InitializeComponent();
-
 				this.KeyPreview = true;
 				this.KeyUp += FlexibleMessageBoxForm_KeyUp;
 			}
-
 			#endregion
-
 			#region Private helper functions
-
 			/// <summary>
-			/// Gets the string rows.
-			/// </summary>
-			/// <param name="message">The message.</param>
-			/// <returns>The string rows as 1-dimensional array</returns>
-			private static string[] GetStringRows(string message)
-			{
-				if (string.IsNullOrEmpty(message)) return null;
-
-				var messageRows = message.Split(new char[] { '\n' }, StringSplitOptions.None);
-				return messageRows;
-			}
-
-			/// <summary>
-			/// Gets the button text for the CurrentUICulture language.
-			/// Note: The fallback language is English
+			/// Gets the button text for the current UI language.
+			/// Note: If the caller does not override FlexibleMessageBox.GetButtonText, then the standard
+			/// L10NSharp localization approach will be used.
 			/// </summary>
 			/// <param name="buttonID">The ID of the button.</param>
 			/// <returns>The button text</returns>
 			private string GetButtonText(ButtonID buttonID)
 			{
 				if (FlexibleMessageBox.GetButtonText != null)
-					return FlexibleMessageBox.GetButtonText("FlexibleMessageBoxBtn." + buttonID);
-
+					return FlexibleMessageBox.GetButtonText("FlexibleMessageBoxBtn." + buttonID); // Constant text here must match the text used in GetButtonTextLocalizationKeys
 				return GetButtonTextAsLocalizedByL10nSharp(buttonID);
 			}
-
+		
 			private static string GetButtonTextAsLocalizedByL10nSharp(ButtonID buttonId)
 			{
 				// If we ever want to ship standard German and Italian button names in a TMX file, here they are:
-				//"OK", "Abbrechen", "&Ja", "&Nein", "&Abbrechen", "&Wiederholen", "&Ignorieren"
-				//"OK", "Annulla", "&Sì", "&No", "&Interrompi", "&Riprova", "&Ignora"
+				//"&OK", "&Abbrechen", "&Ja", "&Nein", "&Abbrechen", "&Wiederholen", "&Ignorieren"
+				//"&OK", "&Annulla", "&Sì", "&No", "&Interrompi", "&Riprova", "I&gnora"
 				switch (buttonId)
 				{
 					case ButtonID.Ok: return LocalizationManager.GetString("Common.OKButton", "&OK");
@@ -590,60 +554,80 @@ namespace SIL.Windows.Forms
 			}
 
 			/// <summary>
-			/// Set the dialog's start position when given. 
-			/// Otherwise center the dialog on the current screen.
+			/// Center the dialog on the current screen (in case where there is no owning form to use for centering).
 			/// </summary>
 			/// <param name="flexibleMessageBoxForm">The FlexibleMessageBox dialog.</param>
-			/// <param name="owner">The owner.</param>
-			private static void SetDialogStartPosition(FlexibleMessageBoxForm flexibleMessageBoxForm, IWin32Window owner)
+			/// <param name="screen">The screen to display on.</param>
+			private static void CenterDialogOnScreen(FlexibleMessageBoxForm flexibleMessageBoxForm, Screen screen)
 			{
-				//If no owner given: Center on current screen
-				if (owner == null)
-				{
-					var screen = Screen.FromPoint(Cursor.Position);
-					flexibleMessageBoxForm.StartPosition = FormStartPosition.Manual;
-					flexibleMessageBoxForm.Left = screen.Bounds.Left + screen.Bounds.Width / 2 - flexibleMessageBoxForm.Width / 2;
-					flexibleMessageBoxForm.Top = screen.Bounds.Top + screen.Bounds.Height / 2 - flexibleMessageBoxForm.Height / 2;
-				}
+				flexibleMessageBoxForm.StartPosition = FormStartPosition.Manual;
+				flexibleMessageBoxForm.Left = screen.Bounds.Left + screen.Bounds.Width / 2 - flexibleMessageBoxForm.Width / 2;
+				flexibleMessageBoxForm.Top = screen.Bounds.Top + screen.Bounds.Height / 2 - flexibleMessageBoxForm.Height / 2;
 			}
 
 			/// <summary>
-			/// Calculate the dialog's start size (Try to auto-size width to show longest text row).
-			/// Also set the maximum dialog size. 
+			/// Calculate the dialog's start size (Try to auto-size width to show longest text row.)
+			/// Also set the maximum dialog size.
 			/// </summary>
 			/// <param name="flexibleMessageBoxForm">The FlexibleMessageBox dialog.</param>
 			/// <param name="text">The text (the longest text row is used to calculate the dialog width).</param>
-			/// <param name="text">The caption (this can also affect the dialog width).</param>
-			private static void SetDialogSizes(FlexibleMessageBoxForm flexibleMessageBoxForm, string text, string caption)
+			/// <param name="caption">The caption (this can also affect the dialog width).</param>
+			/// <param name="screen">The screen the message box dialog will be displayed on</param>
+			private static void SetDialogSizes(FlexibleMessageBoxForm flexibleMessageBoxForm, string text, string caption, Screen screen)
 			{
-				//First set the bounds for the maximum dialog size
-				flexibleMessageBoxForm.MaximumSize = new Size(Convert.ToInt32(SystemInformation.WorkingArea.Width * MaxWidthFactor),
-															  Convert.ToInt32(SystemInformation.WorkingArea.Height * MaxHeightFactor));
-
 				//Get rows. Exit if there are no rows to render...
-				var stringRows = GetStringRows(text);
-				if (stringRows == null) return;
+				if (String.IsNullOrEmpty(text))
+					return;
 
-				//Calculate whole text height
-				var textHeight = TextRenderer.MeasureText(text, FlexibleMessageBox.Font).Height;
-					
-				//Calculate width for longest text line
-				const int SCROLLBAR_WIDTH_OFFSET = 15;
-				var longestTextRowWidth = stringRows.Max(textForRow => TextRenderer.MeasureText(textForRow, FlexibleMessageBox.Font).Width);
-				var captionWidth = TextRenderer.MeasureText(caption, SystemFonts.CaptionFont).Width;
-				var textWidth = Math.Max(longestTextRowWidth + SCROLLBAR_WIDTH_OFFSET, captionWidth);
+				var maxDlgSize = new Size(Convert.ToInt32(screen.WorkingArea.Width * MaxWidthFactor),
+					Convert.ToInt32(screen.WorkingArea.Height * MaxHeightFactor));
 				
 				//Calculate margins
 				var marginWidth = flexibleMessageBoxForm.Width - flexibleMessageBoxForm.richTextBoxMessage.Width;
 				var marginHeight = flexibleMessageBoxForm.Height - flexibleMessageBoxForm.richTextBoxMessage.Height;
 
-				//Set calculated dialog size (if the calculated values exceed the maximums, they were cut by windows forms automatically)
-				flexibleMessageBoxForm.Size = new Size(textWidth + marginWidth,
-													   textHeight + marginHeight);
+				var maxRtfBoxSize = new Size(maxDlgSize.Width - marginWidth, maxDlgSize.Height - marginHeight);
+
+				// Determine text size if we were to draw in maximum area available.
+				var requiredRtfBoxSize = TextRenderer.MeasureText(text, FlexibleMessageBox.Font, maxRtfBoxSize, TextFormatFlags.NoClipping);
+				if (requiredRtfBoxSize.Width > maxRtfBoxSize.Width)
+				{
+					var height = requiredRtfBoxSize.Height;
+					// Once or more text lines are going to need to wrap. Calculate required size with word-wrapping.
+					if (height < maxRtfBoxSize.Height)
+					{
+						// We might not need a vertical scroll bar. Let's see if it still fits with word-wrapping on.
+						requiredRtfBoxSize.Height = height = TextRenderer.MeasureText(text, FlexibleMessageBox.Font, maxRtfBoxSize,
+							TextFormatFlags.WordBreak | TextFormatFlags.NoClipping).Height;
+					}
+					if (height > maxRtfBoxSize.Height)
+					{
+						// Text is going to be too long vertically, so we'll need a scroll-bar. Go with max size.
+						flexibleMessageBoxForm.Size = maxDlgSize;
+						return;
+						//// Calculate one more time, this time allowing for vertical scroll bar width.
+						//var usableSize = new Size(maxRtfBoxSize.Width - SystemInformation.VerticalScrollBarWidth, maxRtfBoxSize.Height);
+						//// Once or more text lines are going to need to wrap. Calculate required size with word-wrapping and allowing for
+						//// vertical scroll bar.
+						//fullTextSize = TextRenderer.MeasureText(text, FlexibleMessageBox.Font, usableSize, TextFormatFlags.WordBreak);
+					}
+				}
+				else
+				{
+					var redXButtonWidth = SystemInformation.CaptionButtonSize.Width;
+					var captionWidth = TextRenderer.MeasureText(caption, SystemFonts.CaptionFont).Width;
+					if (captionWidth > requiredRtfBoxSize.Width - redXButtonWidth)
+						requiredRtfBoxSize.Width = Math.Min(maxRtfBoxSize.Width, captionWidth + redXButtonWidth);
+				}
+
+				//var textHeight = .Height;
+				//var textWidth = Math.Max(longestTextRowWidth + SystemInformation.VerticalScrollBarWidth, captionWidth);
+
+				flexibleMessageBoxForm.Size = new Size(requiredRtfBoxSize.Width + marginWidth, requiredRtfBoxSize.Height + marginHeight);
 			}
 
 			/// <summary>
-			/// Set the dialogs icon. 
+			/// Set the dialog icon.
 			/// When no icon is used: Correct placement and width of rich text box.
 			/// </summary>
 			/// <param name="flexibleMessageBoxForm">The FlexibleMessageBox dialog.</param>
@@ -672,9 +656,8 @@ namespace SIL.Windows.Forms
 						break;
 				}
 			}
-
 			/// <summary>
-			/// Set dialog buttons visibilities and texts. 
+			/// Set dialog buttons visibilities and texts.
 			/// Also set a default button.
 			/// </summary>
 			/// <param name="flexibleMessageBoxForm">The FlexibleMessageBox dialog.</param>
@@ -686,102 +669,75 @@ namespace SIL.Windows.Forms
 				switch (buttons)
 				{
 					case MessageBoxButtons.AbortRetryIgnore:
-						flexibleMessageBoxForm.visibleButtonsCount = 3;
-
+						flexibleMessageBoxForm._visibleButtonsCount = 3;
 						flexibleMessageBoxForm.button1.Visible = true;
 						flexibleMessageBoxForm.button1.Text = flexibleMessageBoxForm.GetButtonText(ButtonID.Abort);
 						flexibleMessageBoxForm.button1.DialogResult = DialogResult.Abort;
-
 						flexibleMessageBoxForm.button2.Visible = true;
 						flexibleMessageBoxForm.button2.Text = flexibleMessageBoxForm.GetButtonText(ButtonID.Retry);
 						flexibleMessageBoxForm.button2.DialogResult = DialogResult.Retry;
-
 						flexibleMessageBoxForm.button3.Visible = true;
 						flexibleMessageBoxForm.button3.Text = flexibleMessageBoxForm.GetButtonText(ButtonID.Ignore);
 						flexibleMessageBoxForm.button3.DialogResult = DialogResult.Ignore;
-						
 						flexibleMessageBoxForm.ControlBox = false;
 						break;
-
 					case MessageBoxButtons.OKCancel:
-						flexibleMessageBoxForm.visibleButtonsCount = 2;
-
+						flexibleMessageBoxForm._visibleButtonsCount = 2;
 						flexibleMessageBoxForm.button2.Visible = true;
 						flexibleMessageBoxForm.button2.Text = flexibleMessageBoxForm.GetButtonText(ButtonID.Ok);
 						flexibleMessageBoxForm.button2.DialogResult = DialogResult.OK;
-
 						flexibleMessageBoxForm.button3.Visible = true;
 						flexibleMessageBoxForm.button3.Text = flexibleMessageBoxForm.GetButtonText(ButtonID.Cancel);
 						flexibleMessageBoxForm.button3.DialogResult = DialogResult.Cancel;
-
 						flexibleMessageBoxForm.CancelButton = flexibleMessageBoxForm.button3;
 						break;
-
 					case MessageBoxButtons.RetryCancel:
-						flexibleMessageBoxForm.visibleButtonsCount = 2;
-
+						flexibleMessageBoxForm._visibleButtonsCount = 2;
 						flexibleMessageBoxForm.button2.Visible = true;
 						flexibleMessageBoxForm.button2.Text = flexibleMessageBoxForm.GetButtonText(ButtonID.Retry);
 						flexibleMessageBoxForm.button2.DialogResult = DialogResult.Retry;
-
 						flexibleMessageBoxForm.button3.Visible = true;
 						flexibleMessageBoxForm.button3.Text = flexibleMessageBoxForm.GetButtonText(ButtonID.Cancel);
 						flexibleMessageBoxForm.button3.DialogResult = DialogResult.Cancel;
-
 						flexibleMessageBoxForm.CancelButton = flexibleMessageBoxForm.button3;
 						break;
-
 					case MessageBoxButtons.YesNo:
-						flexibleMessageBoxForm.visibleButtonsCount = 2;
-
+						flexibleMessageBoxForm._visibleButtonsCount = 2;
 						flexibleMessageBoxForm.button2.Visible = true;
 						flexibleMessageBoxForm.button2.Text = flexibleMessageBoxForm.GetButtonText(ButtonID.Yes);
 						flexibleMessageBoxForm.button2.DialogResult = DialogResult.Yes;
-
 						flexibleMessageBoxForm.button3.Visible = true;
 						flexibleMessageBoxForm.button3.Text = flexibleMessageBoxForm.GetButtonText(ButtonID.No);
 						flexibleMessageBoxForm.button3.DialogResult = DialogResult.No;
-
 						flexibleMessageBoxForm.ControlBox = false;
 						break;
-
 					case MessageBoxButtons.YesNoCancel:
-						flexibleMessageBoxForm.visibleButtonsCount = 3;
-
+						flexibleMessageBoxForm._visibleButtonsCount = 3;
 						flexibleMessageBoxForm.button1.Visible = true;
 						flexibleMessageBoxForm.button1.Text = flexibleMessageBoxForm.GetButtonText(ButtonID.Yes);
 						flexibleMessageBoxForm.button1.DialogResult = DialogResult.Yes;
-
 						flexibleMessageBoxForm.button2.Visible = true;
 						flexibleMessageBoxForm.button2.Text = flexibleMessageBoxForm.GetButtonText(ButtonID.No);
 						flexibleMessageBoxForm.button2.DialogResult = DialogResult.No;
-
 						flexibleMessageBoxForm.button3.Visible = true;
 						flexibleMessageBoxForm.button3.Text = flexibleMessageBoxForm.GetButtonText(ButtonID.Cancel);
 						flexibleMessageBoxForm.button3.DialogResult = DialogResult.Cancel;
-
 						flexibleMessageBoxForm.CancelButton = flexibleMessageBoxForm.button3;
 						break;
-
 					case MessageBoxButtons.OK:
 					default:
-						flexibleMessageBoxForm.visibleButtonsCount = 1;
+						flexibleMessageBoxForm._visibleButtonsCount = 1;
 						flexibleMessageBoxForm.button3.Visible = true;
 						flexibleMessageBoxForm.button3.Text = flexibleMessageBoxForm.GetButtonText(ButtonID.Ok);
 						flexibleMessageBoxForm.button3.DialogResult = DialogResult.OK;
-
 						flexibleMessageBoxForm.CancelButton = flexibleMessageBoxForm.button3;
 						break;
 				}
-
 				//Set default button (used in FlexibleMessageBoxForm_Shown)
-				flexibleMessageBoxForm.defaultButton = defaultButton;
+				flexibleMessageBoxForm._defaultButton = defaultButton;
 			}
-
 			#endregion
-
 			#region Private event handlers
-
 			/// <summary>
 			/// Handles the Shown event of the FlexibleMessageBoxForm control.
 			/// </summary>
@@ -789,13 +745,10 @@ namespace SIL.Windows.Forms
 			/// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
 			private void FlexibleMessageBoxForm_Shown(object sender, EventArgs e)
 			{
-				int buttonIndexToFocus = 1;
+				int buttonIndexToFocus;
 				Button buttonToFocus;
-
-				//Set the default button...
-				switch (this.defaultButton)
+				switch (_defaultButton)
 				{
-					case MessageBoxDefaultButton.Button1:
 					default:
 						buttonIndexToFocus = 1;
 						break;
@@ -806,25 +759,23 @@ namespace SIL.Windows.Forms
 						buttonIndexToFocus = 3;
 						break;
 				}
+				if (buttonIndexToFocus > _visibleButtonsCount)
+					buttonIndexToFocus = _visibleButtonsCount;
 
-				if (buttonIndexToFocus > this.visibleButtonsCount) buttonIndexToFocus = this.visibleButtonsCount;
-
-				if (buttonIndexToFocus == 3)
+				switch (buttonIndexToFocus)
 				{
-					buttonToFocus = this.button3;
+					case 3:
+						buttonToFocus = button3;
+						break;
+					case 2:
+						buttonToFocus = button2;
+						break;
+					default:
+						buttonToFocus = button1;
+						break;
 				}
-				else if (buttonIndexToFocus == 2)
-				{
-					buttonToFocus = this.button2;
-				}
-				else
-				{
-					buttonToFocus = this.button1;
-				}
-
 				buttonToFocus.Focus();
 			}
-
 			/// <summary>
 			/// Handles the KeyUp event of the richTextBoxMessage control.
 			/// </summary>
@@ -838,7 +789,6 @@ namespace SIL.Windows.Forms
 					var buttonsTextLine = (this.button1.Visible ? this.button1.Text + STANDARD_MESSAGEBOX_SEPARATOR_SPACES : string.Empty)
 										+ (this.button2.Visible ? this.button2.Text + STANDARD_MESSAGEBOX_SEPARATOR_SPACES : string.Empty)
 										+ (this.button3.Visible ? this.button3.Text + STANDARD_MESSAGEBOX_SEPARATOR_SPACES : string.Empty);
-
 					//Build same clipboard text like the standard .Net MessageBox
 					var textForClipboard = STANDARD_MESSAGEBOX_SEPARATOR_LINES
 										 + this.Text + Environment.NewLine
@@ -847,30 +797,24 @@ namespace SIL.Windows.Forms
 										 + STANDARD_MESSAGEBOX_SEPARATOR_LINES
 										 + buttonsTextLine.Replace("&", string.Empty) + Environment.NewLine
 										 + STANDARD_MESSAGEBOX_SEPARATOR_LINES;
-
 					//Set text in clipboard
 					Clipboard.SetText(textForClipboard);
 				}
 			}
-
 			#endregion
 
 			#region Properties (only used for binding)
-
 			/// <summary>
 			/// The text that is been used for the heading.
 			/// </summary>
 			public string CaptionText { get; set; }
-
 			/// <summary>
 			/// The text that is been used in the FlexibleMessageBoxForm.
 			/// </summary>
 			public string MessageText { get; set; }
-
 			#endregion
 
 			#region Public show function
-
 			/// <summary>
 			/// Shows the specified message box.
 			/// </summary>
@@ -889,22 +833,18 @@ namespace SIL.Windows.Forms
 			internal static DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons buttons,
 				MessageBoxIcon icon, MessageBoxDefaultButton defaultButton, LinkClickedEventHandler linkClickedAction = null)
 			{
-				//Create a new instance of the FlexibleMessageBox form
+				// Create a new instance of the FlexibleMessageBox form
 				var flexibleMessageBoxForm = new FlexibleMessageBoxForm();
 				flexibleMessageBoxForm.ShowInTaskbar = false;
-
-				//Bind the caption and the message text
+				// Bind the caption and the message text
 				flexibleMessageBoxForm.CaptionText = caption;
 				flexibleMessageBoxForm.MessageText = text;
 				flexibleMessageBoxForm.FlexibleMessageBoxFormBindingSource.DataSource = flexibleMessageBoxForm;
-
-				//Set the buttons visibilities and texts. Also set a default button.
+				// Set the buttons visibilities and texts. Also set a default button.
 				SetDialogButtons(flexibleMessageBoxForm, buttons, defaultButton);
-
-				//Set the dialogs icon. When no icon is used: Correct placement and width of rich text box.
+				// Set the dialogs icon. When no icon is used, correct placement and width of rich text box.
 				SetDialogIcon(flexibleMessageBoxForm, icon);
-
-				//Set the font for all controls
+				// Set the font for all controls
 				flexibleMessageBoxForm.Font = FlexibleMessageBox.Font;
 				flexibleMessageBoxForm.richTextBoxMessage.Font = FlexibleMessageBox.Font;
 				if (linkClickedAction == null)
@@ -912,19 +852,18 @@ namespace SIL.Windows.Forms
 				else
 					flexibleMessageBoxForm.richTextBoxMessage.LinkClicked += linkClickedAction;
 
-				//Calculate the dialogs start size (Try to auto-size width to show longest text row). Also set the maximum dialog size. 
-				SetDialogSizes(flexibleMessageBoxForm, text, caption);
-
-				//Set the dialogs start position when given. Otherwise center the dialog on the current screen.
-				SetDialogStartPosition(flexibleMessageBoxForm, owner);
-
-				//Show the dialog
+				var screen = owner == null ? Screen.FromPoint(Cursor.Position) : Screen.FromHandle(owner.Handle);
+				// Calculate the dialog's start size (Try to auto-size width to show longest text row). Also set the maximum dialog size.
+				SetDialogSizes(flexibleMessageBoxForm, text, caption, screen);
+				// If an owning window was supplied, the message box dialog is initially displayed using the default "Center Parent".
+				// Otherwise, we center it on the current screen.
+				if (owner == null)
+					CenterDialogOnScreen(flexibleMessageBoxForm, screen);
+				// Show the dialog
 				return flexibleMessageBoxForm.ShowDialog(owner);
 			}
-
 			#endregion
 		} //class FlexibleMessageBoxForm
-
 		#endregion
 	}
 }
