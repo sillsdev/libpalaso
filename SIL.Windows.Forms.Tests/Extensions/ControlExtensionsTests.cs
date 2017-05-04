@@ -128,6 +128,7 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 					confirmationMessage = "First action got invoked";
 					Assert.IsFalse(ctrl.InvokeRequired);
 					ctrl.Dispose();
+					Console.WriteLine("ctrl has been disposed");
 				}, "Getting initial value, resetting control text, and disposing control.");
 				Console.WriteLine("SafeInvoke 2");
 				resultOfSafeInvokeCall2 = ctrl.SafeInvoke(() =>
@@ -136,9 +137,11 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 					Assert.Fail("This should have been de-queued when the control was disposed.");
 				}, "DisposedAfterInvokingOnUiThread", errorHandling);
 				Console.WriteLine("About to sleep on worker thread : 50 ms");
-				Thread.Sleep(50);
+				Thread.Sleep(60);
 			};
 			worker.RunWorkerAsync(_control);
+			Thread.Sleep(20);
+			Console.WriteLine("Ui thread waking up to begin processing queued-up aynchronous actions.");
 			while (worker.IsBusy)
 				Application.DoEvents();
 			Assert.AreEqual("First action got invoked", confirmationMessage);
