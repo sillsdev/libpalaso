@@ -407,6 +407,7 @@
     </Compile>
     <Compile Include="ImageGallery\ImageCollection.cs" />
     <Compile Include="ImageGallery\IImageCollection.cs" />
+    <Compile Include="ImageGallery\ImageIndexLayout.cs" />
     <Compile Include="ImageGallery\ImageUtilities.cs" />
     <Compile Include="ImageGallery\PictureChooser.cs">
       <SubType>Form</SubType>

@@ -52,14 +52,16 @@ namespace SIL.Windows.Forms.ImageGallery
 		private static readonly object _padlock = new object();
 		public string SearchLanguage { get; set; }
 		private List<string> _indexLanguages;
-		public IEnumerable<string> IndexLanguageIds { get { return _indexLanguages; } }
-		private Dictionary<string, bool> _enabledCollections = new Dictionary<string, bool>();
+		public IEnumerable<string> IndexLanguageIds => _indexLanguages;
+	    private Dictionary<string, bool> _enabledCollections = new Dictionary<string, bool>();
+
+		public static bool DoNotFindArtOfReading_Test = false;
 
 		public ImageCollection()
 		{
 			_wordToPartialPathIndex = new Dictionary<string, List<string>>();
 			_partialPathToWordsIndex = new Dictionary<string, string>();
-			SearchLanguage = "en";	// until told otherwise...
+			SearchLanguage = "en";  // until told otherwise...
 		}
 
 		public IEnumerable<string> Collections
@@ -90,9 +92,12 @@ namespace SIL.Windows.Forms.ImageGallery
 		/// <summary>
 		/// Load an old-style index. Only applicable to old versions of AOR.
 		/// Not used for AdditionalCollectionPaths.
+		/// Index looked like this (notice, 2 columns only, no header row, English and Indonesian stick together) : 
+		/// Brazil:AOR_AOR_B-2-23.png	"arrow, bow, weapon, anak panah, panah, senjata"
+		/// Brazil:AOR_AOR_B-3-1.png	"grass, man, people, rumput, manusia, orang, orang-orang"
 		/// </summary>
 		/// <param name="indexFilePath"></param>
-		public void LoadIndex(string indexFilePath)
+		public void LoadOldStyleIndex(string indexFilePath)
 		{
 			if (DefaultAorRootImagePath == null)
 			{
@@ -107,7 +112,6 @@ namespace SIL.Windows.Forms.ImageGallery
 				{
 					var line = f.ReadLine();
 					var parts = line.Split(new char[] { '\t' });
-					Debug.Assert(parts.Length == 2);
 					if (parts.Length != 2)
 						continue;
 					var partialPath = parts[0];
@@ -160,46 +164,20 @@ namespace SIL.Windows.Forms.ImageGallery
 			}
 			using (var f = File.OpenText(pathToIndexFile))
 			{
-				var columns = GetColumnHeadersIfValid(f);
-				if (columns == null)
-					return 0;
-				int desiredColumn = -1;
-				int defaultColumn = -1;
-				// The first four columns are fixed metadata.  The remaining columns contain
-				// search words for different languages, one language per column.  The header
-				// contains the ISO language codes.
-				for (int i = 4; i < columns.Length; ++i)
-				{
-					if (columns[i] == SearchLanguage)
-						desiredColumn = i;
-					if (columns[i] == defaultLang)
-						defaultColumn = i;
-				}
-				if (desiredColumn == -1)
-					desiredColumn = defaultColumn;
-				if (defaultColumn == -1)
-					return 0;		// we must have English!!?
+				var indexLayout = new ImageIndexLayout(f);
+				
 				int count = 0;
 				while (!f.EndOfStream)
 				{
 					var line = f.ReadLine();
-					var parts = line.Split(new char[]{'\t'});
-					Debug.Assert(parts.Length > defaultColumn);
-					if (parts.Length <= defaultColumn)
-						continue;
-					var partialPath = GetPartialPath(rootImagePath, parts[3], parts[1], ref filenamePrefix, pathPrefix);
-					string keyString;
-					if (parts.Length > desiredColumn)
-						keyString = parts[desiredColumn];
-					else if (parts.Length > defaultColumn)
-						keyString = parts[defaultColumn];
-					else
-						keyString = String.Empty;
-					if (String.IsNullOrWhiteSpace (keyString))
+					var fields = line.Split(new char[]{'\t'});
+					var partialPath = GetPartialPath(rootImagePath, indexLayout.GetSubFolderOrEmpty(fields), indexLayout.GetFilename(fields), ref filenamePrefix, pathPrefix);
+				    string csvOfKeywords = indexLayout.GetCSVOfKeywordsOrEmpty(SearchLanguage, fields);
+					if (String.IsNullOrWhiteSpace (csvOfKeywords))
 						continue;
 					lock (_padlock)
-						_partialPathToWordsIndex.Add(partialPath, keyString.Replace(",", ", "));
-					var keys = keyString.Split(',');
+						_partialPathToWordsIndex.Add(partialPath, csvOfKeywords.Replace(",", ", "));
+					var keys = csvOfKeywords.Split(',');
 					foreach (var key in keys)
 					{
 						lock (_padlock)
@@ -563,9 +541,7 @@ namespace SIL.Windows.Forms.ImageGallery
 			return null;
 		}
 
-		public static bool DoNotFindArtOfReading_Test = false;
-
-		public static IImageCollection FromStandardLocations()
+	    public static IImageCollection FromStandardLocations()
 		{
 			return FromStandardLocations("en");
 		}
@@ -585,7 +561,7 @@ namespace SIL.Windows.Forms.ImageGallery
 
 			c.DefaultAorRootImagePath = path;
 			c.AdditionalCollectionPaths = additionalPaths;
-			c.GetIndexLanguages();
+			c.DetermineIndexLanguages();
 			c.SearchLanguage = lang;
 
 			// We would eventually add these paths to the enabled collection, and correctly
@@ -606,9 +582,8 @@ namespace SIL.Windows.Forms.ImageGallery
 			return c;
 		}
 
-		internal void GetIndexLanguages()
+		internal void DetermineIndexLanguages()
 		{
-			_indexLanguages = null;
 			var pathToAorIndexFile = TryToGetPathToMultilingualIndex(DefaultAorRootImagePath);
 			var roots = new List<string>();
 			if (pathToAorIndexFile != null)
@@ -621,46 +596,15 @@ namespace SIL.Windows.Forms.ImageGallery
 				{
 					using (var f = File.OpenText(pathToIndexFile))
 					{
-						var columns = GetColumnHeadersIfValid(f);
-						if (columns != null)
-						{
-							// The first four columns are meta data about an image.  The remaining
-							// columns are search words in different languages, one language per column.
-							// The header contains the ISO language codes.
-							for (int i = 4; i < columns.Length; ++i)
-							{
-								if (!IndexLanguageIds.Contains(columns[i]))
-								_indexLanguages.Add(columns[i]);
-							}
-						}
-						f.Close();
+						var indexLayout = new ImageIndexLayout(f);
+						_indexLanguages.AddRange(indexLayout.LanguageIds);
+					    f.Close();
 					}
 				}
 			}
+			_indexLanguages = new List<string>(_indexLanguages.Distinct());
 		}
 
-		/// <summary>
-		/// Return the column headers from a multilingual index file, or null if it is not valid.
-		/// </summary>
-		private static string[] GetColumnHeadersIfValid(StreamReader f)
-		{
-			// The file should start with a line that looks like the following:
-			//order	filename	artist	country	en	id	fr	es	ar	hi	bn	pt	th	sw	zh
-			var header = f.ReadLine();
-			if (String.IsNullOrEmpty(header))
-				return null;
-			var columns = header.Split(new[]{'\t'});
-			// Check for the four fixed columns and at least one language.
-			if (columns.Length < 5 ||
-				columns[0] != "order" ||
-				columns[1] != "filename" ||
-				columns[2] != "artist" ||
-				columns[3] != "country")
-			{
-				return null;
-			}
-			return columns;
-		}
 
 		internal void LoadImageIndex()
 		{
@@ -676,7 +620,7 @@ namespace SIL.Windows.Forms.ImageGallery
 			if (countMulti == 0)
 			{
 				pathToIndexFile = TryToGetPathToIndex(DefaultAorRootImagePath);
-				LoadIndex(pathToIndexFile);
+				LoadOldStyleIndex(pathToIndexFile);
 			}
 			foreach (var path in AdditionalCollectionPaths)
 			{

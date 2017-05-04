@@ -18,7 +18,7 @@ namespace SIL.Windows.Forms.TestApp
 		{
 			ThumbnailViewer.UseWebViewer = _useGeckoVersion.Checked;
 			var images = new ImageCollection();
-			images.LoadIndex(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "ImageGallery/ArtOfReadingIndexV3_en.txt"));
+			images.LoadOldStyleIndex(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "ImageGallery/ArtOfReadingIndexV3_en.txt"));
 			images.DefaultAorRootImagePath = RootImagePath.Text;
 			using (var form = new PictureChooser(images, "duck"))
 			{

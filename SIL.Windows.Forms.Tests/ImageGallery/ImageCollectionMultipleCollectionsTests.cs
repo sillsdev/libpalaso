@@ -38,6 +38,7 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 3	B-A-10		Brazil	animal,armadillo	binatang	animal,tatou	animal,armadillo	حيوان,المدرع حيوان ثديي	पशु,Armadillo	পশু,সাঁজোয়া জাহাজ	animal,tatu	สัตว์,ตัวนิ่ม	wanyama,kakakuona	动物,犰狳
 4	B-NA-1		Brazil	peccary,pig,animal,wild pig	binatang,babi	pécari,porc,animal,cochon sauvage	pecarí,cerdo,animal,jabalí	حيوان امريكي شبيه بالخنزير,خنزير,حيوان,الخنزير البري	अमेरिका देश का सुअर के आकार का एक चौपाया,सुअर,पशु,जंगली सुअर	দক্ষিণ আমেরিকার শূকসদৃশ প্রাণীবিশেষ,শূকর,পশু,বন্য শূকর	pecari,porco,animal,porco selvagem	สัตว์เพคะริ,หมู,สัตว์,หมูป่า	peccary,nguruwe,wanyama,nguruwe pori	野猪,猪,动物,野猪
 5	CMB0012		Cambodia	dish,food,rice	beras,makanan,nasi,piring	plat,aliments,riz	plato,comida,arroz	طبق,طعام,الأرز	थाली,भोजन,चावल	থালা,খাদ্য,চাল	prato,Comida,arroz	จาน,อาหาร,ข้าว	sahani,chakula,mchele	菜,食品,饭");
+
 			MakeFakeImageCollection(_additionalCollectionBob, "Bob_", "BobsMultilingualIndex.txt", @"order	filename	artist	country	en	id	de
 1	First		Australia	galaxy
 1	Christmas Lights		Australia	Christmas,lights,programming,stars,bridge	
@@ -110,7 +111,7 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 		[Test]
 		public void GetIndexLanguages_RetrievesFromAll()
 		{
-			_collection.GetIndexLanguages();
+			_collection.DetermineIndexLanguages();
 			var langs = _collection.IndexLanguageIds;
 			Assert.That(langs, Has.Member("en")); // always
 			Assert.That(langs, Has.Member("id")); // common

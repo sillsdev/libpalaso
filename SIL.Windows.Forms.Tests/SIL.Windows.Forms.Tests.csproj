@@ -216,6 +216,7 @@
     <Compile Include="Hotspot\HotSpotTests.cs" />
     <Compile Include="ImageGallery\ImageCollectionMultipleCollectionsTests.cs" />
     <Compile Include="ImageGallery\ImageCollectionTests.cs" />
+    <Compile Include="ImageGallery\ImageIndexLayoutTests.cs" />
     <Compile Include="ImageToolbox\ImageToolboxTests.cs" />
     <Compile Include="ClearShare\MetaDataDisplayTests.cs" />
     <Compile Include="ImageToolbox\PalasoImageTests.cs" />

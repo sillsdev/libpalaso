@@ -19,7 +19,7 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 		{
 			ImageCollection.AllowCollectionWithNoImageFolderForTesting = true; // before we load it!
 			_artCollection = new ImageCollection();
-			_artCollection.LoadIndex(IndexPath);
+			_artCollection.LoadOldStyleIndex(IndexPath);
 		}
 
 		[TearDown]
@@ -123,5 +123,18 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 				ImageCollection.DoNotFindArtOfReading_Test = false;
 			}
 		}
+//
+//	    [Test]
+//	    public void LoadMultilingualIndex_HasNoCountryOrArtist_blah()
+//	    {
+//	        using(var index = new TempFile())
+//	        {
+//				File.WriteAllText(index.Path, "order\tfilename\tartist\tcountry\ten\tfr");
+//	            var collection = new ImageCollection();
+//	            collection.LoadMultilingualIndex(index.Path);
+//	            collection.GetIndexLanguages();
+//				Assert.AreEqual(2,collection.IndexLanguageIds);
+//	        }
+//	    }
 	}
 }
