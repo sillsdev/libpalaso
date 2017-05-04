@@ -32,11 +32,14 @@ using SIL.Acknowledgements;
 [assembly: InternalsVisibleTo("SIL.WritingSystems.Tests")]
 #endif
 
-[assembly: Acknowledgement("Ionic.Zip", Name = "Ionic.Zip", Copyright = "Dino Chiesa", Url = "http://www.codeplex.com/DotNetZip",
+[assembly: Acknowledgement("Ionic.Zip", Copyright = "© Dino Chiesa 2006-2011",
+	Url = "http://www.codeplex.com/DotNetZip",
 	LicenseUrl = "https://opensource.org/licenses/MS-PL", Location = "./Ionic.Zip.dll",
-	Html = "<li><a href='http://www.codeplex.com/DotNetZip'>Ionic.Zip</a> by Dino Chiesa (<a href='https://opensource.org/licenses/MS-PL'>MS-PL</a>) - a library for handling zip archives (Flavor=Retail)</li>")]
+	Html = "<li><a href='http://www.codeplex.com/DotNetZip'>Ionic.Zip</a> © Dino Chiesa 2006-2011 (<a href='https://opensource.org/licenses/MS-PL'>MS-PL</a>) - a library for handling zip archives (Flavor=Retail)</li>")]
 [assembly: Acknowledgement("NDesk.DBus", Name = "NDesk.DBus", Url = "https://www.nuget.org/packages/NDesk.DBus/",
-	LicenseUrl = "https://opensource.org/licenses/MIT", Location = "./NDesk.DBus.dll")]
-[assembly: Acknowledgement("Newtonsoft.Json", Url = "https://www.nuget.org/packages/Newtonsoft.Json/",
-	LicenseUrl = "https://opensource.org/licenses/MIT", Location = "./Newtonsoft.Json.dll")]
-[assembly: Acknowledgement("Mono.Posix", Name = "Mono.Posix", Url = "https://www.nuget.org/packages/Mono.Posix/", LicenseUrl = "https://opensource.org/licenses/MIT")]
+	LicenseUrl = "https://opensource.org/licenses/MIT", Copyright = "Copyright © Alp Toker", Location = "./NDesk.DBus.dll")]
+[assembly: Acknowledgement("Newtonsoft.Json", Name = "Json.NET", Url = "https://www.nuget.org/packages/Newtonsoft.Json/",
+	LicenseUrl = "https://opensource.org/licenses/MIT", Copyright = "Copyright © James Newton-King 2008",
+	Location = "./Newtonsoft.Json.dll")]
+[assembly: Acknowledgement("Mono.Posix", Name = "Mono.Posix", Url = "https://www.nuget.org/packages/Mono.Posix/",
+	LicenseUrl = "https://opensource.org/licenses/MIT")]

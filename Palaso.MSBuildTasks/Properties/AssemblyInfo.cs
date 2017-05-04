@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using SIL.Acknowledgements;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -18,3 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: Guid("8a17ca29-630a-4869-8a66-aa05cf5538ba")]
 
 [assembly: InternalsVisibleTo("Palaso.BuildTask.Tests")]
+
+[assembly: Acknowledgement("MarkdownDeep", Url = "https://www.nuget.org/packages/MarkdownDeep.NET/",
+	LicenseUrl = "https://opensource.org/licenses/Apache-2.0", Copyright = "Copyright © 2010-2011 Topten Software",
+	Location = "./MarkdownDeep.dll")]

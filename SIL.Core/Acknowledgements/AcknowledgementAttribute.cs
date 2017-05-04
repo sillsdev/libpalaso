@@ -56,9 +56,10 @@ namespace SIL.Acknowledgements
 			{
 				if (!string.IsNullOrEmpty(_name) || string.IsNullOrEmpty(Location))
 					return _name;
-				// Try to get it from the dll/exe file
+				// Try to get it from the dll/exe file, failing that use the Key (which is almost always identical anyway).
 				var versionInfo = ExtractExecutableVersionInfo();
-				return versionInfo == null ? _name : versionInfo.ProductName;
+				_name = versionInfo == null ? Key : versionInfo.ProductName;
+				return _name;
 			}
 			set { _name = value; }
 		}

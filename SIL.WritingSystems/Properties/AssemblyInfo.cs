@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using SIL.Acknowledgements;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
@@ -31,3 +32,11 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("SIL.TestUtilities")]
 [assembly: InternalsVisibleTo("LanguageData")]
 #endif
+
+[assembly: Acknowledgement("Newtonsoft.Json", Name = "Json.NET", Url = "https://www.nuget.org/packages/Newtonsoft.Json/",
+	LicenseUrl = "https://opensource.org/licenses/MIT", Copyright = "Copyright © James Newton-King 2008",
+	Location = "./Newtonsoft.Json.dll")]
+[assembly: Acknowledgement("icu-dotnet", Url = "https://github.com/sillsdev/icu-dotnet",
+	LicenseUrl = "https://opensource.org/licenses/MIT", Copyright = "Copyright © SIL International 2007-2016", Location = "./icu-dotnet.dll")]
+[assembly: Acknowledgement("Spart", Copyright = "Copyright © SIL International 2014", Url = "https://github.com/sillsdev/spart",
+	Location = "./Spart.dll")]

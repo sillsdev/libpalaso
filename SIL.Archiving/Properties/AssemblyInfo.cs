@@ -17,8 +17,9 @@ using SIL.Acknowledgements;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("2edd981c-375e-4461-8412-2f62884ce827")]
 
-[assembly: Acknowledgement("Ionic.Zip", Name = "Ionic.Zip", Copyright = "Dino Chiesa", Url = "http://www.codeplex.com/DotNetZip",
+[assembly: Acknowledgement("Ionic.Zip", Copyright = "Dino Chiesa", Url = "http://www.codeplex.com/DotNetZip",
 	LicenseUrl = "https://opensource.org/licenses/MS-PL", Location = "./Ionic.Zip.dll",
-	Html = "<li><a href='http://www.codeplex.com/DotNetZip'>Ionic.Zip</a> by Dino Chiesa (<a href='https://opensource.org/licenses/MS-PL'>MS-PL</a>) - a library for handling zip archives (Flavor=Retail)</li>")]
-[assembly: Acknowledgement("L10NSharp", Name = "L10NSharp", Url = "https://github.com/sillsdev/l10nsharp/",
-	LicenseUrl = "https://opensource.org/licenses/MIT", Location = "./L10NSharp.dll")]
+	Html = "<li><a href='http://www.codeplex.com/DotNetZip'>Ionic.Zip</a> © Dino Chiesa 2006-2011 (<a href='https://opensource.org/licenses/MS-PL'>MS-PL</a>) - a library for handling zip archives (Flavor=Retail)</li>")]
+[assembly: Acknowledgement("L10NSharp", Url = "https://github.com/sillsdev/l10nsharp/",
+	Copyright = "Copyright © SIL International 2010-2014", LicenseUrl = "https://opensource.org/licenses/MIT",
+	Location = "./L10NSharp.dll")]

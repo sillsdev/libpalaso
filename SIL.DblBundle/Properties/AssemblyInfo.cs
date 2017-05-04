@@ -17,5 +17,6 @@ using SIL.Acknowledgements;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("9b1e72d3-7b8d-4d32-b453-db4415b1f5ca")]
 
-[assembly: Acknowledgement("L10NSharp", Name = "L10NSharp", Url = "https://github.com/sillsdev/l10nsharp/",
-	LicenseUrl= "https://opensource.org/licenses/MIT", Location = "./L10NSharp.dll")]
+[assembly: Acknowledgement("L10NSharp", Url = "https://github.com/sillsdev/l10nsharp/",
+	Copyright = "Copyright © SIL International 2010-2014", LicenseUrl = "https://opensource.org/licenses/MIT",
+	Location = "./L10NSharp.dll")]
