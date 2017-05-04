@@ -119,8 +119,9 @@ namespace SIL.Windows.Forms.TestApp
 			using (var tempfile = TempFile.WithExtension("html"))
 			{
 				File.WriteAllText(tempfile.Path,
-					@"<html><body><h3>Copyright 2014 <a href=""http://sil.org"">SIL International</a></h3>" +
-					@"<p>Testing the <b>about box</b></p></body></html>");
+					@"<html><head><meta charset='UTF-8' /></head><body>" +
+					@"<h3>Copyright 2014 <a href=""http://sil.org"">SIL International</a></h3>" +
+					@"<p>Testing the <b>about box</b></p><ul>#DependencyAcknowledgements#</ul></body></html>");
 				var uri = new Uri(tempfile.Path);
 				using (var dlg = new SILAboutBox(uri.AbsoluteUri, useFullVersionNumber))
 				{
@@ -142,7 +143,7 @@ and displays it as HTML.
 * change one
 * change two
 ## 1.9
-* big change 
+* big change
   + little change
   - other little change
 ## 1.8
