@@ -97,7 +97,7 @@
       </tu>
       <tu tuid="Common.NoButton">
          <tuv xml:lang="en">
-            <seg>&No</seg>
+            <seg>&amp;No</seg>
          </tuv>
       </tu>
       <tu tuid="Common.OKButton">

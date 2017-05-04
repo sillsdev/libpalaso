@@ -39,7 +39,7 @@
     </tu>
 	<tu tuid="Common.No">
 	  <tuv xml:lang="en">
-		<seg>&amp;No</seg>
+		<seg>No</seg>
 	  </tuv>
 	  <tuv xml:lang="es">
 		<seg>No</seg>
