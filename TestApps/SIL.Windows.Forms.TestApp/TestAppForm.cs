@@ -56,7 +56,7 @@ namespace SIL.Windows.Forms.TestApp
 				browser.Width = form.ClientSize.Width;
 				browser.Height = form.ClientSize.Height;
 				browser.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left |
-								AnchorStyles.Right;
+					AnchorStyles.Right;
 				browser.ShowOnlyMappedDrives = false;
 				browser.ShowAddressbar = true;
 				form.Controls.Add(browser);
@@ -167,7 +167,7 @@ and displays it as HTML.
 		{
 			// Get first file in personal folder
 			var fileName = Directory.EnumerateFiles(
-				Environment.GetFolderPath(Environment.SpecialFolder.Personal))
+					Environment.GetFolderPath(Environment.SpecialFolder.Personal))
 				.First(x => !Path.GetFileName(x).StartsWith(".", StringComparison.InvariantCulture));
 			PathUtilities.SelectFileInExplorer(fileName);
 		}
@@ -176,6 +176,78 @@ and displays it as HTML.
 		{
 			using (var dlg = new SettingProtectionDialog())
 				dlg.ShowDialog();
+		}
+
+		private void btnFlexibleMessageBox_Click(object sender, EventArgs e)
+		{
+			var LocalizedButtonText = FlexibleMessageBox.GetButtonTextLocalizationKeys.ToDictionary(k => k.Key, v => v.Value + " Loc");
+			FlexibleMessageBox.GetButtonText = id => LocalizedButtonText[id];
+
+			var random = new Random(DateTime.Now.Millisecond);
+			string caption;
+			string msg;
+			try
+			{
+				string clipboardText = Clipboard.GetText();
+				var data = clipboardText.Split(new [] {'\n'}, 2);
+				if (data.Length == 1)
+				{
+					caption = Text;
+					msg = clipboardText;
+				}
+				else
+				{
+					caption = data[0];
+					msg = data[1];
+				}
+			}
+			catch (Exception)
+			{
+				caption = Text;
+				msg = "If you don't like this message, copy some text to your clipboard. If it's more than\n" +
+					"one line, the first line will be used as the caption of the flexible message box.";
+			}
+
+			LinkClickedEventHandler handler = msg.Contains("www.") ? (LinkClickedEventHandler)((s, args) =>
+			{
+				FlexibleMessageBox.Show("Link clicked: " + args.LinkText);
+			}) : null;
+
+			switch (random.Next(0, 9))
+			{
+				case 0:
+					FlexibleMessageBox.Show(this, msg, handler);
+					break;
+				case 1:
+					FlexibleMessageBox.Show(this, msg, caption, handler);
+					break;
+				case 2:
+					FlexibleMessageBox.Show(this, msg, caption, MessageBoxButtons.OKCancel, handler);
+					break;
+				case 3:
+					FlexibleMessageBox.Show(this, msg, caption, MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Warning, handler);
+					break;
+				case 4:
+					FlexibleMessageBox.Show(this, msg, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+						MessageBoxDefaultButton.Button2, handler);
+					break;
+				case 5:
+					FlexibleMessageBox.Show(msg, handler);
+					break;
+				case 6:
+					FlexibleMessageBox.Show(msg, caption, handler);
+					break;
+				case 7:
+					FlexibleMessageBox.Show(msg, caption, MessageBoxButtons.RetryCancel, handler);
+					break;
+				case 8:
+					FlexibleMessageBox.Show(msg, caption, MessageBoxButtons.OK, MessageBoxIcon.Stop, handler);
+					break;
+				default:
+					FlexibleMessageBox.Show(msg, caption, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question,
+						MessageBoxDefaultButton.Button3, handler);
+					break;
+			}
 		}
 	}
 }
