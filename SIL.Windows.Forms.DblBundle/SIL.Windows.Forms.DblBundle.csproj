@@ -244,6 +244,10 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
+      <Project>{3527da1d-1e25-48be-a71e-9ebf7f9208d4}</Project>
+      <Name>SIL.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SIL.DblBundle\SIL.DblBundle.csproj">
       <Project>{d4f0f320-faf6-4775-8411-4d03fae99f84}</Project>
       <Name>SIL.DblBundle</Name>

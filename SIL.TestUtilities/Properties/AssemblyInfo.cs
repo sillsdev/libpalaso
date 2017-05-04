@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
+using SIL.Acknowledgements;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
@@ -19,3 +20,7 @@ using System.Runtime.InteropServices;
 #if STRONG_NAME
 [assembly: AssemblyKeyFileAttribute("../palaso.snk")]
 #endif
+
+// When we move to NUnit3.0, we should switch to MIT license
+[assembly: Acknowledgement("NUnit", Url = "https://www.nuget.org/packages/NUnit/2.6.4",
+	LicenseUrl = "https://www.nunit.org/nuget/license.html", Location = "./nunit.framework.dll")]
