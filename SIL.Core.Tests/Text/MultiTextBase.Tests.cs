@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Xml.Serialization;
 using NUnit.Framework;
+using SIL.TestUtilities;
 using SIL.Text;
 
 namespace SIL.Tests.Text
@@ -165,37 +166,25 @@ namespace SIL.Tests.Text
 		}
 
 
-//        [Test]
-//        public void SerializeWithXmlSerializer()
-//        {
-//            MultiTextBase text = new MultiTextBase();
-//            text["foo"] = "alpha";
-//            text["boo"] = "beta";
-//            string answer =
-//                @"<?xml version='1.0' encoding='utf-16'?>
-//<TestMultiTextHolder xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema'>
-//  <name>
-//    <form starred='false' lang='foo'>alpha</form>
-//    <form starred='false' lang='boo'>beta</form>
-//  </name>
-//</TestMultiTextHolder>";
-//            CheckSerializeWithXmlSerializer(text, answer);
-//        }
+		[Test]
+		public void SerializeWithXmlSerializer()
+		{
+			MultiTextBase text = new MultiTextBase();
+			text["foo"] = "alpha";
+			text["boo"] = "beta";
+			var answerXPath = "/TestMultiTextHolder[namespace::xsd='http://www.w3.org/2001/XMLSchema' and namespace::xsi='http://www.w3.org/2001/XMLSchema-instance']/name/form";
+			CheckSerializeWithXmlSerializer(text, answerXPath, 2);
+		}
 
 		[Test]
 		public void SerializeEmptyWithXmlSerializer()
 		{
 			MultiTextBase text = new MultiTextBase();
-			string answer =
-				@"<?xml version='1.0' encoding='utf-16'?>
-<TestMultiTextHolder xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema'>
-  <name />
-</TestMultiTextHolder>";
-			CheckSerializeWithXmlSerializer(text, answer);
+			var answerXpath = "/TestMultiTextHolder[namespace::xsd='http://www.w3.org/2001/XMLSchema' and namespace::xsi='http://www.w3.org/2001/XMLSchema-instance']/name";
+			CheckSerializeWithXmlSerializer(text, answerXpath, 1);
 		}
 
-
-		public void CheckSerializeWithXmlSerializer(MultiTextBase MultiTextBase, string answer)
+		private void CheckSerializeWithXmlSerializer(MultiTextBase MultiTextBase, string answer, int matches)
 		{
 
 			XmlSerializer ser = new XmlSerializer(typeof(TestMultiTextHolder));
@@ -205,102 +194,17 @@ namespace SIL.Tests.Text
 			holder.Name = MultiTextBase;
 			ser.Serialize(writer, holder);
 
-			string mtxml = writer.GetStringBuilder().ToString();
-			mtxml = mtxml.Replace('"', '\'');
-
-			// normalize string line terminators
-			// for portability across os
-			mtxml = mtxml.Replace("\r\n", "\n");
-			answer = answer.Replace("\r\n", "\n");
-
+			var mtxml = writer.GetStringBuilder().ToString();
 			Debug.WriteLine(mtxml);
-			Assert.AreEqual(answer, mtxml);
+			AssertThatXmlIn.String(mtxml).HasSpecifiedNumberOfMatchesForXpath(answer, matches);
 		}
 
-		//        [Test]
-		//        public void DeSerializeWithNetReflector()
-		//        {
-		//            MultiTextBase text = new MultiTextBase();
-		//            text["foo"] = "alpha";
-		//
-		//            NetReflectorTypeTable t = new NetReflectorTypeTable();
-		//            t.Add(typeof(MultiTextBase));
-		//            t.Add(typeof(TestMultiTextHolder));
-		//
-		//
-		//            string answer =
-		//                @"<testMultiTextHolder>
-		//                    <name>
-		//				        <form starred='false' ws='en'>verb</form>
-		//				        <form starred='false' ws='fr'>verbe</form>
-		//				        <form starred='false' ws='es'>verbo</form>
-		//			        </name>
-		//                </testMultiTextHolder>";
-		//            NetReflectorReader r = new NetReflectorReader(t);
-		//            TestMultiTextHolder h = (TestMultiTextHolder)r.Read(answer);
-		//            Assert.AreEqual(3, h._name.Count);
-		//            Assert.AreEqual("verbo",h._name["es"]);
-		//        }
-
-//        [Test]
-//        public void DeSerializesWithOldWsAttributes()
-//        {
-//            MultiTextBase t = DeserializeWithXmlSerialization(
-//                @"<TestMultiTextHolder>
-//                     <name>
-//				        <form ws='en'>verb</form>
-//				        <form ws='fr'>verbe</form>
-//				        <form ws='es'>verbo</form>
-//			        </name>
-//                    </TestMultiTextHolder>
-//                ");
-//            Assert.AreEqual(3, t.Forms.Length);
-//            Assert.AreEqual("verbo", t["es"]);
-//        }
-//
-//        [Test]
-//        public void DeSerializesWithNewWsAttributes()
-//        {
-//            MultiTextBase t = DeserializeWithXmlSerialization(
-//                @"<TestMultiTextHolder>
-//                     <name>
-//				        <form lang='en'>verb</form>
-//				        <form lang='fr'>verbe</form>
-//				        <form lang='es'>verbo</form>
-//			        </name>
-//                    </TestMultiTextHolder>
-//                ");
-//            Assert.AreEqual(3, t.Forms.Length);
-//            Assert.AreEqual("verbo", t["es"]);
-//        }
-
-//        [Test]
-//        public void DeSerializesWhenEmpty()
-//        {
-//            MultiTextBase t = DeserializeWithXmlSerialization(
-//                @"  <TestMultiTextHolder>
-//                        <name/>
-//			        </TestMultiTextHolder>");
-//            Assert.AreEqual(0, t.Forms.Length);
-//        }
-//
-//
-//        private MultiTextBase DeserializeWithXmlSerialization(string answer)
-//        {
-//            StringReader r = new StringReader(answer);
-//            System.Xml.Serialization.XmlSerializer serializer = new XmlSerializer(typeof(TestMultiTextHolder));
-//            TestMultiTextHolder holder = serializer.Deserialize(r) as TestMultiTextHolder;
-//            return holder.Name;
-//        }
-
-		//  [ReflectorType("testMultiTextHolder")]
 		public class TestMultiTextHolder
 		{
 			[XmlIgnore]
 			public MultiTextBase _name;
 
 			[XmlElement("name")]
-			//    [ReflectorProperty("name", typeof(MultiTextSerializorFactory), Required = true)]
 				public MultiTextBase Name
 			{
 				get { return _name; }
