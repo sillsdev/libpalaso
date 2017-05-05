@@ -573,7 +573,7 @@ namespace SIL.Windows.Forms
 			/// <param name="text">The text (the longest text row is used to calculate the dialog width).</param>
 			/// <param name="caption">The caption (this can also affect the dialog width).</param>
 			/// <param name="screen">The screen the message box dialog will be displayed on</param>
-			private static void SetDialogSizes(FlexibleMessageBoxForm flexibleMessageBoxForm, string text, string caption, Screen screen)
+			private static void SetDialogSize(FlexibleMessageBoxForm flexibleMessageBoxForm, string text, string caption, Screen screen)
 			{
 				//Get rows. Exit if there are no rows to render...
 				if (String.IsNullOrEmpty(text))
@@ -589,11 +589,12 @@ namespace SIL.Windows.Forms
 				var maxRtfBoxSize = new Size(maxDlgSize.Width - marginWidth, maxDlgSize.Height - marginHeight);
 
 				// Determine text size if we were to draw in maximum area available.
-				var requiredRtfBoxSize = TextRenderer.MeasureText(text, FlexibleMessageBox.Font, maxRtfBoxSize, TextFormatFlags.NoClipping);
+				var requiredRtfBoxSize = TextRenderer.MeasureText(text, FlexibleMessageBox.Font, maxRtfBoxSize, TextFormatFlags.NoClipping | TextFormatFlags.ExpandTabs);
 				if (requiredRtfBoxSize.Width > maxRtfBoxSize.Width)
 				{
+					requiredRtfBoxSize.Width = maxRtfBoxSize.Width;
 					var height = requiredRtfBoxSize.Height;
-					// Once or more text lines are going to need to wrap. Calculate required size with word-wrapping.
+					// One or more text lines are going to need to wrap. Calculate required size with word-wrapping.
 					if (height < maxRtfBoxSize.Height)
 					{
 						// We might not need a vertical scroll bar. Let's see if it still fits with word-wrapping on.
@@ -605,23 +606,21 @@ namespace SIL.Windows.Forms
 						// Text is going to be too long vertically, so we'll need a scroll-bar. Go with max size.
 						flexibleMessageBoxForm.Size = maxDlgSize;
 						return;
-						//// Calculate one more time, this time allowing for vertical scroll bar width.
-						//var usableSize = new Size(maxRtfBoxSize.Width - SystemInformation.VerticalScrollBarWidth, maxRtfBoxSize.Height);
-						//// Once or more text lines are going to need to wrap. Calculate required size with word-wrapping and allowing for
-						//// vertical scroll bar.
-						//fullTextSize = TextRenderer.MeasureText(text, FlexibleMessageBox.Font, usableSize, TextFormatFlags.WordBreak);
 					}
 				}
 				else
 				{
-					var redXButtonWidth = SystemInformation.CaptionButtonSize.Width;
+					var redXButtonWidth = flexibleMessageBoxForm.ControlBox ? SystemInformation.CaptionButtonSize.Width : 0;
 					var captionWidth = TextRenderer.MeasureText(caption, SystemFonts.CaptionFont).Width;
 					if (captionWidth > requiredRtfBoxSize.Width - redXButtonWidth)
+					{
 						requiredRtfBoxSize.Width = Math.Min(maxRtfBoxSize.Width, captionWidth + redXButtonWidth);
+						// Since we're basing the width on the caption rather than the message text, we need to reduce
+						// the horizontal margin to not account for the picture box (if visible) because that does not
+						// affect the caption.
+						marginWidth -= flexibleMessageBoxForm.richTextBoxMessage.Left;
+					}
 				}
-
-				//var textHeight = .Height;
-				//var textWidth = Math.Max(longestTextRowWidth + SystemInformation.VerticalScrollBarWidth, captionWidth);
 
 				flexibleMessageBoxForm.Size = new Size(requiredRtfBoxSize.Width + marginWidth, requiredRtfBoxSize.Height + marginHeight);
 			}
@@ -842,7 +841,7 @@ namespace SIL.Windows.Forms
 				flexibleMessageBoxForm.FlexibleMessageBoxFormBindingSource.DataSource = flexibleMessageBoxForm;
 				// Set the buttons visibilities and texts. Also set a default button.
 				SetDialogButtons(flexibleMessageBoxForm, buttons, defaultButton);
-				// Set the dialogs icon. When no icon is used, correct placement and width of rich text box.
+				// Set the dialog's icon. When no icon is used, correct placement and width of rich text box.
 				SetDialogIcon(flexibleMessageBoxForm, icon);
 				// Set the font for all controls
 				flexibleMessageBoxForm.Font = FlexibleMessageBox.Font;
@@ -854,7 +853,7 @@ namespace SIL.Windows.Forms
 
 				var screen = owner == null ? Screen.FromPoint(Cursor.Position) : Screen.FromHandle(owner.Handle);
 				// Calculate the dialog's start size (Try to auto-size width to show longest text row). Also set the maximum dialog size.
-				SetDialogSizes(flexibleMessageBoxForm, text, caption, screen);
+				SetDialogSize(flexibleMessageBoxForm, text, caption, screen);
 				// If an owning window was supplied, the message box dialog is initially displayed using the default "Center Parent".
 				// Otherwise, we center it on the current screen.
 				if (owner == null)

@@ -178,21 +178,40 @@ and displays it as HTML.
 				dlg.ShowDialog();
 		}
 
+		/// <summary>
+		/// Displays the FlexibleMessageBox using the contents of the clipboard (if text is available on it) or
+		/// some standard text. The localization (French vs. a custom pseudo-localization) and the version of the
+		/// Show method (which buttons, icon, etc.) are randomized. This makes it easy to see fairly quickly what
+		/// it would look like with several different options, but it makes it impossible to repeatedly test a
+		/// particular option over and over. I thought this was probably faster and more useful than designing a
+		/// whole UI that would allow the tester to configure which options would be used, but that could certainly
+		/// be done later if it proved expedient.
+		/// </summary>
 		private void btnFlexibleMessageBox_Click(object sender, EventArgs e)
 		{
-			var LocalizedButtonText = FlexibleMessageBox.GetButtonTextLocalizationKeys.ToDictionary(k => k.Key, v => v.Value + " Loc");
-			FlexibleMessageBox.GetButtonText = id => LocalizedButtonText[id];
-
 			var random = new Random(DateTime.Now.Millisecond);
+
+			if (random.Next(0, 6) == 5)
+			{
+				var LocalizedButtonText = FlexibleMessageBox.GetButtonTextLocalizationKeys.ToDictionary(k => k.Key, v => v.Value + " Loc");
+				FlexibleMessageBox.GetButtonText = id => LocalizedButtonText[id];
+			}
+			else
+			{
+				FlexibleMessageBox.GetButtonText = null;
+			}
+
 			string caption;
 			string msg;
 			try
 			{
 				string clipboardText = Clipboard.GetText();
+				if (clipboardText == String.Empty)
+					throw new ApplicationException("This is fine. It will display the default caption and message");
 				var data = clipboardText.Split(new [] {'\n'}, 2);
 				if (data.Length == 1)
 				{
-					caption = Text;
+					caption = "Flexible Message Box test caption";
 					msg = clipboardText;
 				}
 				else
@@ -208,12 +227,17 @@ and displays it as HTML.
 					"one line, the first line will be used as the caption of the flexible message box.";
 			}
 
-			LinkClickedEventHandler handler = msg.Contains("www.") ? (LinkClickedEventHandler)((s, args) =>
+			LinkClickedEventHandler handler = msg.Contains("http:") ? (LinkClickedEventHandler)((s, args) =>
 			{
 				FlexibleMessageBox.Show("Link clicked: " + args.LinkText);
 			}) : null;
 
-			switch (random.Next(0, 9))
+			while (ShowFlexibleMessageBox(random.Next(0, 10), msg, caption, handler));
+		}
+
+		private bool ShowFlexibleMessageBox(int option, string msg, string caption, LinkClickedEventHandler handler)
+		{
+			switch (option)
 			{
 				case 0:
 					FlexibleMessageBox.Show(this, msg, handler);
@@ -225,12 +249,12 @@ and displays it as HTML.
 					FlexibleMessageBox.Show(this, msg, caption, MessageBoxButtons.OKCancel, handler);
 					break;
 				case 3:
-					FlexibleMessageBox.Show(this, msg, caption, MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Warning, handler);
-					break;
+					msg += "\nClick Retry to display another version of the message box.";
+					return FlexibleMessageBox.Show(this, msg, caption, MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Warning, handler) == DialogResult.Retry;
 				case 4:
-					FlexibleMessageBox.Show(this, msg, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question,
-						MessageBoxDefaultButton.Button2, handler);
-					break;
+					msg += "\nWould you like to display another version of the message box?";
+					return FlexibleMessageBox.Show(this, msg, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+						MessageBoxDefaultButton.Button2, handler) == DialogResult.Yes;
 				case 5:
 					FlexibleMessageBox.Show(msg, handler);
 					break;
@@ -238,16 +262,17 @@ and displays it as HTML.
 					FlexibleMessageBox.Show(msg, caption, handler);
 					break;
 				case 7:
-					FlexibleMessageBox.Show(msg, caption, MessageBoxButtons.RetryCancel, handler);
-					break;
+					msg += "\nClick Retry to display another version of the message box.";
+					return FlexibleMessageBox.Show(msg, caption, MessageBoxButtons.RetryCancel, handler) == DialogResult.Retry;
 				case 8:
 					FlexibleMessageBox.Show(msg, caption, MessageBoxButtons.OK, MessageBoxIcon.Stop, handler);
 					break;
 				default:
-					FlexibleMessageBox.Show(msg, caption, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question,
-						MessageBoxDefaultButton.Button3, handler);
-					break;
+					msg += "\nWould you like to display another version of the message box?";
+					return FlexibleMessageBox.Show(msg, caption, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question,
+						MessageBoxDefaultButton.Button3, handler) == DialogResult.Yes;
 			}
+			return false;
 		}
 	}
 }
