@@ -232,10 +232,10 @@ and displays it as HTML.
 				FlexibleMessageBox.Show("Link clicked: " + args.LinkText);
 			}) : null;
 
-			while (ShowFlexibleMessageBox(random.Next(0, 10), msg, caption, handler));
+			while (ShowFlexibleMessageBox(random.Next(0, 10), msg, caption, GetDefaultButton(random.Next(0, 3)), handler));
 		}
 
-		private bool ShowFlexibleMessageBox(int option, string msg, string caption, LinkClickedEventHandler handler)
+		private bool ShowFlexibleMessageBox(int option, string msg, string caption, MessageBoxDefaultButton defaultButton, LinkClickedEventHandler handler)
 		{
 			switch (option)
 			{
@@ -254,7 +254,7 @@ and displays it as HTML.
 				case 4:
 					msg += "\nWould you like to display another version of the message box?";
 					return FlexibleMessageBox.Show(this, msg, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question,
-						MessageBoxDefaultButton.Button2, handler) == DialogResult.Yes;
+							defaultButton, handler) == DialogResult.Yes;
 				case 5:
 					FlexibleMessageBox.Show(msg, handler);
 					break;
@@ -270,9 +270,19 @@ and displays it as HTML.
 				default:
 					msg += "\nWould you like to display another version of the message box?";
 					return FlexibleMessageBox.Show(msg, caption, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question,
-						MessageBoxDefaultButton.Button3, handler) == DialogResult.Yes;
+						defaultButton, handler) == DialogResult.Yes;
 			}
 			return false;
+		}
+
+		private MessageBoxDefaultButton GetDefaultButton(int defaultButton)
+		{
+			switch (defaultButton)
+			{
+				default: return MessageBoxDefaultButton.Button1;
+				case 1: return MessageBoxDefaultButton.Button2;
+				case 2: return MessageBoxDefaultButton.Button3;
+			}
 		}
 	}
 }
