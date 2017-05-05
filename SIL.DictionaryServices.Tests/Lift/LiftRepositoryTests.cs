@@ -1,11 +1,11 @@
-using System.IO;
+﻿using System.IO;
 using System.Xml;
 using NUnit.Framework;
 using SIL.DictionaryServices.Lift;
 using SIL.DictionaryServices.Model;
+using SIL.IO;
 using SIL.Progress;
 using SIL.Tests.Data;
-using SIL.TestUtilities;
 
 namespace SIL.DictionaryServices.Tests.Lift
 {
@@ -45,13 +45,13 @@ namespace SIL.DictionaryServices.Tests.Lift
 	public class LiftRepositoryStateUnitializedTests: IRepositoryStateUnitializedTests<LexEntry>
 	{
 		private string _persistedFilePath;
-		private TemporaryFolder _tempFolder;
+		private TempFile _tempFile;
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_tempFolder = new TemporaryFolder();
-			_persistedFilePath = _tempFolder.GetTemporaryFile();
+			_tempFile = new TempFile();
+			_persistedFilePath = _tempFile.Path;
 			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 
@@ -59,7 +59,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Dispose();
+			_tempFile.Dispose();
 		}
 
 		public static LiftDataMapper CreateDataMapper(string filePath)
@@ -110,20 +110,21 @@ namespace SIL.DictionaryServices.Tests.Lift
 		[Test]
 		public void UnlockedLiftFile_ConstructorDoesNotThrow()
 		{
-			string persistedFilePath = _tempFolder.GetTemporaryFile();
-			persistedFilePath = Path.GetFullPath(persistedFilePath);
+			using (var persistedFile = new TempFile())
+			{
+				var persistedFilePath = persistedFile.Path;
 
-			// Confirm that the file is writable.
-			FileStream fileStream = File.OpenWrite(persistedFilePath);
-			Assert.IsTrue(fileStream.CanWrite);
+				// Confirm that the file is writable.
+				FileStream fileStream = File.OpenWrite(persistedFilePath);
+				Assert.IsTrue(fileStream.CanWrite);
 
-			// Close it before creating the LiftDataMapper.
-			fileStream.Close();
+				// Close it before creating the LiftDataMapper.
+				fileStream.Close();
 
-			LiftDataMapper liftDataMapper = null;
-			Assert.That(() => liftDataMapper = CreateDataMapper(persistedFilePath), Throws.Nothing);
-			liftDataMapper.Dispose();
-			File.Delete(persistedFilePath);
+				LiftDataMapper liftDataMapper = null;
+				Assert.That(() => liftDataMapper = CreateDataMapper(persistedFilePath), Throws.Nothing);
+				liftDataMapper.Dispose();
+			}
 		}
 	}
 
@@ -132,13 +133,13 @@ namespace SIL.DictionaryServices.Tests.Lift
 		IRepositoryPopulateFromPersistedTests<LexEntry>
 	{
 		private string _persistedFilePath;
-		private TemporaryFolder _tempFolder;
+		private TempFile _tempFile;
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_tempFolder = new TemporaryFolder();
-			_persistedFilePath = _tempFolder.GetTemporaryFile();
+			_tempFile = new TempFile();
+			_persistedFilePath = _tempFile.Path;
 			LiftFileInitializer.MakeFile(_persistedFilePath);
 			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
 		}
@@ -147,7 +148,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Dispose();
+			_tempFile.Dispose();
 		}
 
 		protected override void  LastModified_IsSetToMostRecentItemInPersistedDatasLastModifiedTime_v()
@@ -168,7 +169,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		IRepositoryCreateItemTransitionTests<LexEntry>
 	{
 		private string _persistedFilePath;
-		private TemporaryFolder _tempFolder;
+		private TempFile _tempFile;
 
 		public LiftRepositoryCreateItemTransitionTests()
 		{
@@ -178,8 +179,8 @@ namespace SIL.DictionaryServices.Tests.Lift
 		[SetUp]
 		public override void SetUp()
 		{
-			_tempFolder = new TemporaryFolder();
-			_persistedFilePath = _tempFolder.GetTemporaryFile();
+			_tempFile = new TempFile();
+			_persistedFilePath = _tempFile.Path;
 			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 
@@ -187,7 +188,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Dispose();
+			_tempFile.Dispose();
 		}
 
 		protected override void CreateNewRepositoryFromPersistedData()
@@ -203,13 +204,13 @@ namespace SIL.DictionaryServices.Tests.Lift
 		IRepositoryDeleteItemTransitionTests<LexEntry>
 	{
 		private string _persistedFilePath;
-		private TemporaryFolder _tempFolder;
+		private TempFile _tempFile;
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_tempFolder = new TemporaryFolder();
-			_persistedFilePath = _tempFolder.GetTemporaryFile();
+			_tempFile = new TempFile();
+			_persistedFilePath = _tempFile.Path;
 			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 
@@ -217,7 +218,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Dispose();
+			_tempFile.Dispose();
 		}
 
 		protected override void CreateNewRepositoryFromPersistedData()
@@ -232,13 +233,13 @@ namespace SIL.DictionaryServices.Tests.Lift
 	public class LiftRepositoryDeleteIdTransitionTests: IRepositoryDeleteIdTransitionTests<LexEntry>
 	{
 		private string _persistedFilePath;
-		private TemporaryFolder _tempFolder;
+		private TempFile _tempFile;
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_tempFolder = new TemporaryFolder();
-			_persistedFilePath = _tempFolder.GetTemporaryFile();
+			_tempFile = new TempFile();
+			_persistedFilePath = _tempFile.Path;
 			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 
@@ -246,7 +247,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Dispose();
+			_tempFile.Dispose();
 		}
 
 		protected override void CreateNewRepositoryFromPersistedData()
@@ -263,13 +264,13 @@ namespace SIL.DictionaryServices.Tests.Lift
 		IRepositoryDeleteAllItemsTransitionTests<LexEntry>
 	{
 		private string _persistedFilePath;
-		private TemporaryFolder _tempFolder;
+		private TempFile _tempFile;
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_tempFolder = new TemporaryFolder();
-			_persistedFilePath = _tempFolder.GetTemporaryFile();
+			_tempFile = new TempFile();
+			_persistedFilePath = _tempFile.Path;
 			DataMapperUnderTest = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath);
 		}
 
@@ -277,7 +278,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Dispose();
+			_tempFile.Dispose();
 		}
 
 		protected override void RepopulateRepositoryFromPersistedData()

@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using NUnit.Framework;
 using SIL.IO;
 
@@ -9,8 +9,8 @@ namespace SIL.TestUtilities {
 		[Test]
 		public void Constructor_CreatesTemporarySubDirectory()
 		{
-			var temporaryFolder = new TemporaryFolder();
-			Assert.IsTrue(Directory.Exists(temporaryFolder.FolderPath));
+			var temporaryFolder = new TemporaryFolder(TestContext.CurrentContext.Test.Name);
+			Assert.IsTrue(Directory.Exists(temporaryFolder.Path));
 			temporaryFolder.Dispose();
 			Assert.IsFalse(Directory.Exists(temporaryFolder.Path));
 		}
@@ -20,15 +20,15 @@ namespace SIL.TestUtilities {
 		{
 			using (TemporaryFolder temporaryFolder = new TemporaryFolder("foo"))
 			{
-				Assert.IsTrue(Directory.Exists(temporaryFolder.FolderPath));
+				Assert.IsTrue(Directory.Exists(temporaryFolder.Path));
 			}
 		}
 
 		[Test]
 		public void Constructor_PathDirectoryName_CreatesTemporarySubDirectoryAtPathWithGivenName()
 		{
-			TemporaryFolder temporaryFolder = new TemporaryFolder("Constructor_PathDirectoryName_CreatesTemporarySubDirectoryAtPathWithGivenName");
-			Assert.IsTrue(Directory.Exists(temporaryFolder.FolderPath));
+			TemporaryFolder temporaryFolder = new TemporaryFolder(TestContext.CurrentContext.Test.Name);
+			Assert.IsTrue(Directory.Exists(temporaryFolder.Path));
 			temporaryFolder.Dispose();
 			Assert.IsFalse(Directory.Exists(temporaryFolder.Path));
 		}
@@ -50,8 +50,10 @@ namespace SIL.TestUtilities {
 		[Test]
 		public void GetTemporaryFile_FileExistsInTemporarySubdirectory()
 		{
-			TemporaryFolder temporaryFolder = new TemporaryFolder();
+			TemporaryFolder temporaryFolder = new TemporaryFolder(TestContext.CurrentContext.Test.Name);
+#pragma warning disable 618
 			string pathToFile = temporaryFolder.GetTemporaryFile();
+#pragma warning restore 618
 			Assert.IsTrue(File.Exists(pathToFile));
 			temporaryFolder.Dispose();
 			Assert.IsFalse(Directory.Exists(temporaryFolder.Path));
@@ -60,8 +62,10 @@ namespace SIL.TestUtilities {
 		[Test]
 		public void GetTemporaryFile_Name_FileWithNameExistsInTemporarySubdirectory()
 		{
-			TemporaryFolder temporaryFolder = new TemporaryFolder();
+			TemporaryFolder temporaryFolder = new TemporaryFolder(TestContext.CurrentContext.Test.Name);
+#pragma warning disable 618
 			string pathToFile = temporaryFolder.GetTemporaryFile("blah");
+#pragma warning restore 618
 			Assert.IsTrue(File.Exists(pathToFile));
 			Assert.AreEqual(pathToFile, Path.Combine(temporaryFolder.Path, "blah"));
 			temporaryFolder.Dispose();
@@ -71,9 +75,11 @@ namespace SIL.TestUtilities {
 		[Test]
 		public void GetTemporaryFile_CalledTwice_BothFilesFoundInSameTemporarySubdirectory()
 		{
-			TemporaryFolder temporaryFolder = new TemporaryFolder();
+			TemporaryFolder temporaryFolder = new TemporaryFolder(TestContext.CurrentContext.Test.Name);
+#pragma warning disable 618
 			temporaryFolder.GetTemporaryFile();
 			temporaryFolder.GetTemporaryFile();
+#pragma warning restore 618
 			Assert.AreEqual(2, Directory.GetFiles(temporaryFolder.Path).Length);
 			temporaryFolder.Dispose();
 			Assert.IsFalse(Directory.Exists(temporaryFolder.Path));
@@ -83,7 +89,9 @@ namespace SIL.TestUtilities {
 		public void Delete_RemovesTemporarySubDirectory()
 		{
 			TemporaryFolder temporaryFolder = new TemporaryFolder("NonStandard");
+#pragma warning disable 618
 			temporaryFolder.Delete();
+#pragma warning restore 618
 			Assert.IsFalse(Directory.Exists(temporaryFolder.Path));
 		}
 
@@ -91,7 +99,7 @@ namespace SIL.TestUtilities {
 		public void Delete_FileInDirectory_RemovesTemporaryDirectory()
 		{
 			TemporaryFolder temporaryFolder = new TemporaryFolder("NonStandard");
-			string pathToFile = Path.Combine(temporaryFolder.FolderPath, Path.GetRandomFileName());
+			string pathToFile = Path.Combine(temporaryFolder.Path, Path.GetRandomFileName());
 			FileStream file = File.Create(pathToFile);
 			file.Close();
 			temporaryFolder.Dispose();
@@ -128,7 +136,7 @@ namespace SIL.TestUtilities {
 		[Test]
 		public void TrackExisting()
 		{
-			using (var tempFolder = new TemporaryFolder())
+			using (var tempFolder = new TemporaryFolder("TrackExisting"))
 			{
 				using (var sut = TemporaryFolder.TrackExisting(tempFolder.Path))
 				{
