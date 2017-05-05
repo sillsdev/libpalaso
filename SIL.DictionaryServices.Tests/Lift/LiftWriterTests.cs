@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -131,10 +131,9 @@ namespace SIL.DictionaryServices.Tests.Lift
 			AssertThatXmlIn.String(session.StringBuilder.ToString()).HasAtLeastOneMatchForXpath(xpath);
 		}
 
-		[Obsolete("Use AssertThatXmlInXPath.String(...)")] // CP 2011-01
-		private static string GetSenseElement(LexSense sense)
+		private static string GetSenseElement(LexSense sense, string innerXml)
 		{
-			return string.Format("<sense id=\"{0}\">", sense.GetOrCreateId());
+			return string.Format("<sense id=\"{0}\">{1}</sense>", sense.GetOrCreateId(), innerXml);
 		}
 
 		private static string GetStringAttributeOfTopElement(string attribute, LiftExportTestSessionBase session)
@@ -217,7 +216,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
 				session.LiftWriter.AddMultitextForms(null, new MultiText());
-				AssertEqualsCanonicalString("", session);
+				AssertEqualsCanonicalString("", session.OutputString());
 			}
 		}
 
@@ -564,14 +563,10 @@ namespace SIL.DictionaryServices.Tests.Lift
 				var o = sense.GetOrCreateProperty<OptionRefCollection>("flubs");
 				o.AddRange(new[] {"orange", "blue"});
 				session.LiftWriter.Add(sense);
-				session.LiftWriter.End();
 				string expected = CanonicalXml.ToCanonicalStringFragment(
-					GetSenseElement(sense) +
-					"<trait name=\"flubs\" value=\"orange\" /><trait name=\"flubs\" value=\"blue\" /></sense>"
+					GetSenseElement(sense, "<trait name=\"flubs\" value=\"orange\" /><trait name=\"flubs\" value=\"blue\" />")
 				);
-				Assert.AreEqual(
-					expected,
-					session.StringBuilder.ToString());
+				Assert.AreEqual(expected, session.OutputString());
 			}
 		}
 
@@ -626,14 +621,10 @@ namespace SIL.DictionaryServices.Tests.Lift
 				var o = sense.GetOrCreateProperty<OptionRef>("flub");
 				o.Value = "orange";
 				session.LiftWriter.Add(sense);
-				session.LiftWriter.End();
 				string expected = CanonicalXml.ToCanonicalStringFragment(
-					GetSenseElement(sense) + "<trait name=\"flub\" value=\"orange\" /></sense>"
+					GetSenseElement(sense, "<trait name=\"flub\" value=\"orange\" />")
 				);
-				Assert.AreEqual(
-					expected,
-					session.StringBuilder.ToString()
-				);
+				Assert.AreEqual(expected, session.OutputString());
 			}
 		}
 
@@ -1453,8 +1444,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 				PictureRef p = sense.GetOrCreateProperty<PictureRef>("Picture");
 				p.Value = "bird.jpg";
 				session.LiftWriter.Add(sense);
-				session.LiftWriter.End();
-				AssertEqualsCanonicalString(GetSenseElement(sense) + "<illustration href=\"bird.jpg\" /></sense>", session);
+				AssertEqualsCanonicalString(GetSenseElement(sense, "<illustration href=\"bird.jpg\" />"), session.OutputString());
 			}
 		}
 
@@ -1469,11 +1459,9 @@ namespace SIL.DictionaryServices.Tests.Lift
 				p.Caption = new MultiText();
 				p.Caption["aa"] = "aCaption";
 				session.LiftWriter.Add(sense);
-				session.LiftWriter.End();
 				AssertEqualsCanonicalString(
-					GetSenseElement(sense) +
-						"<illustration href=\"bird.jpg\"><label><form lang=\"aa\"><text>aCaption</text></form></label></illustration></sense>",
-					session
+					GetSenseElement(sense, "<illustration href=\"bird.jpg\"><label><form lang=\"aa\"><text>aCaption</text></form></label></illustration>"),
+					session.OutputString()
 				);
 			}
 		}

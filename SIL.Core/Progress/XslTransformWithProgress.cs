@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.IO;
@@ -60,7 +60,7 @@ namespace SIL.Progress
 
 					//all this just to allow a DTD statement in the source xslt
 					XmlReaderSettings readerSettings = new XmlReaderSettings();
-					readerSettings.ProhibitDtd = false;
+					readerSettings.DtdProcessing = DtdProcessing.Parse;
 
 					_progressState.StatusLabel = "Preparing...";
 					using (Stream stream = _xsltStream)

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using NUnit.Framework;
 using SIL.Code;
 using Guard = SIL.Code.Guard;
@@ -24,7 +24,9 @@ namespace SIL.Tests.Misc
 			}
 		}
 
+#pragma warning disable 618
 		private GuardAgainstReentry _sentry;
+#pragma warning restore 618
 
 		[SetUp]
 		public void SetUp()
@@ -35,14 +37,18 @@ namespace SIL.Tests.Misc
 		[Test]
 		public void GuardAgainstReentry_ReturnsInstance()
 		{
+#pragma warning disable 618
 			GuardAgainstReentry sentry = null;
 			sentry = Guard.AgainstReEntry(sentry);
+#pragma warning restore 618
 			Assert.IsNotNull(sentry);
 		}
 
 		private void WorkWithoutReentry(TestSession session)
 		{
+#pragma warning disable 618
 			using (_sentry = Guard.AgainstReEntry(_sentry))
+#pragma warning restore 618
 			{
 				session.DoWork();
 			}
@@ -67,7 +73,9 @@ namespace SIL.Tests.Misc
 
 		private void WorkWithReentry(TestSession session, int count)
 		{
+#pragma warning disable 618
 			using (_sentry = Guard.AgainstReEntry(_sentry))
+#pragma warning restore 618
 			{
 				session.DoWork();
 				if (count == 0)
@@ -87,7 +95,9 @@ namespace SIL.Tests.Misc
 
 		private void WorkWithReentryExpected(TestSession session, int count)
 		{
+#pragma warning disable 618
 			using (_sentry = Guard.AgainstReEntryExpected(_sentry))
+#pragma warning restore 618
 			{
 				if (_sentry.HasEntered)
 					return;

@@ -1,8 +1,8 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 using SIL.DictionaryServices.Model;
+using SIL.IO;
 using SIL.Tests.Data;
-using SIL.TestUtilities;
 
 namespace SIL.DictionaryServices.Tests
 {
@@ -10,7 +10,7 @@ namespace SIL.DictionaryServices.Tests
 	public class LiftLexEntryRepositoryCreateItemTransitionTests :
 		IRepositoryCreateItemTransitionTests<LexEntry>
 	{
-		private TemporaryFolder _tempFolder;
+		private TempFile _tempFile;
 		private string _persistedFilePath;
 
 		public LiftLexEntryRepositoryCreateItemTransitionTests()
@@ -21,8 +21,8 @@ namespace SIL.DictionaryServices.Tests
 		[SetUp]
 		public override void SetUp()
 		{
-			_tempFolder = new TemporaryFolder();
-			_persistedFilePath = _tempFolder.GetTemporaryFile();
+			_tempFile = new TempFile();
+			_persistedFilePath = _tempFile.Path;
 			DataMapperUnderTest = new LiftLexEntryRepository(_persistedFilePath);
 		}
 
@@ -30,7 +30,7 @@ namespace SIL.DictionaryServices.Tests
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Dispose();
+			_tempFile.Dispose();
 		}
 
 		[Test]

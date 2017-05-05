@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -160,7 +160,7 @@ namespace SIL.i18n
 					return "!!"+s; // show it without the formatting
 				}
 			}
-			catch(Exception e)
+			catch(Exception)
 			{
 				return "Error localizing string '" + id + "' to this UI language";
 			}
@@ -205,7 +205,6 @@ namespace SIL.i18n
 		{
 			get
 			{
-				string translated = null;
 				if (_catalog.ContainsKey(id))
 				{
 					return _catalog[id];

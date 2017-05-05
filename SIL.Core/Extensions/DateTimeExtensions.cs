@@ -108,7 +108,7 @@ namespace SIL.Extensions
 			{
 				return ParseISO8601DateTime(when);
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				// Up-until mid-version 1.1, we were accidentally saving locale-specific dates
 

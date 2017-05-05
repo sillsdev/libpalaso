@@ -105,25 +105,18 @@ namespace SIL.CommandLineProcessing
 		        if (standardInputPath != null)
 		            _process.StartInfo.RedirectStandardInput = true;
 
-		        try
-		        {
-		            Debug.WriteLine("CommandLineRunner Starting at " + DateTime.Now.ToString());
-		            _process.Start();
-		            if (standardInputPath != null)
-		            {
-		                var myWriter = _process.StandardInput.BaseStream;
-		                var input = File.ReadAllBytes(standardInputPath);
-		                myWriter.Write(input, 0, input.Length);
-		                myWriter.Close(); // no more input
-		            }
-		        }
-		        catch (Win32Exception error)
-		        {
-		            throw;
-		        }
+				Debug.WriteLine("CommandLineRunner Starting at " + DateTime.Now.ToString());
+				_process.Start();
+				if (standardInputPath != null)
+				{
+					var myWriter = _process.StandardInput.BaseStream;
+					var input = File.ReadAllBytes(standardInputPath);
+					myWriter.Write(input, 0, input.Length);
+					myWriter.Close(); // no more input
+				}
 
-		        if (secondsBeforeTimeOut > TimeoutSecondsOverrideForUnitTests)
-		            secondsBeforeTimeOut = TimeoutSecondsOverrideForUnitTests;
+				if (secondsBeforeTimeOut > TimeoutSecondsOverrideForUnitTests)
+					secondsBeforeTimeOut = TimeoutSecondsOverrideForUnitTests;
 
 		        bool timedOut = false;
 		        Debug.WriteLine("CommandLineRunner Reading at " + DateTime.Now.ToString("HH:mm:ss.ffff"));

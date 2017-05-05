@@ -1,4 +1,4 @@
-//using WeSay.LexicalModel.Migration;
+﻿//using WeSay.LexicalModel.Migration;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -39,7 +39,7 @@ namespace SIL.Lift
 				MigrateLiftIfNeeded(progressState);
 				LoadAllLexEntries();
 			}
-			catch (Exception error)
+			catch (Exception)
 			{
 				// Dispose anything that we've created already.
 				_backend.Dispose();

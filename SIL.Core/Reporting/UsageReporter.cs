@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -345,7 +345,7 @@ namespace SIL.Reporting
 					s_singleton._analytics.SendNavigationNotice(area);
 					s_singleton._mostRecentArea = area;
 				}
-				catch (Exception e)
+				catch (Exception)
 				{
 #if DEBUG
 					throw;
@@ -384,7 +384,7 @@ namespace SIL.Reporting
 					Debug.WriteLine(string.Format("SendEvent(cat={0},action={1},label={2},value={3}", category, action, optionalLabel, optionalInteger));
 					s_singleton._analytics.SendEvent(programArea, category, action, optionalLabel, optionalInteger);
 				}
-				catch (Exception e)
+				catch (Exception)
 				{
 #if DEBUG
 					throw;

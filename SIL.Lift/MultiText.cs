@@ -1,4 +1,4 @@
-//using Exortech.NetReflector;
+﻿//using Exortech.NetReflector;
 //using Exortech.NetReflector.Util;
 using System;
 using System.Collections.Generic;
@@ -23,9 +23,6 @@ namespace SIL.Lift
 	{
 		private PalasoDataObject _parent;
 		public List<string> EmbeddedXmlElements = new List<string>();
-
-		//Adapter pattern: LiftMultitext has some features we would like to use
-		private static LiftMultiText _liftMultitext;
 
 		public MultiText(PalasoDataObject parent)
 		{
@@ -326,11 +323,6 @@ namespace SIL.Lift
 				strippedString = textToStrip;
 			}
 			return strippedString;
-		}
-
-		public string GetFormWithoutSpans(string languageId)
-		{
-			return _liftMultitext[languageId].Text;
 		}
 
 		public bool ContainsEqualForm(string form, string writingSystemId)

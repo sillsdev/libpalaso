@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using NUnit.Framework;
 using SIL.DictionaryServices.Model;
 using SIL.IO;
@@ -26,7 +26,7 @@ namespace SIL.DictionaryServices.Tests
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Delete();
+			_tempFolder.Dispose();
 		}
 
 		[Test]

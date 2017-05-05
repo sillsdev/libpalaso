@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using NUnit.Framework;
 using SIL.Lift.Merging;
@@ -82,8 +82,9 @@ namespace SIL.Lift.Tests.Merging
 
 			StringReader o = new StringReader(origDocContent);
 			StringReader m = new StringReader(modifiedDocContent);
-			LiftChangeReport report=null;
+
 /*experiment with rhino mocks
+ * LiftChangeReport report=null;
  * With.Mocks(delegate
 						   {
 							   IProgress p = (IProgress) Mocker.Current.DynamicMock(typeof (IProgress));
