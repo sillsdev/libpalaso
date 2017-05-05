@@ -1,4 +1,4 @@
-// Copyright (c) 2015 SIL International
+﻿// Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+using SIL.Reporting;
 
 namespace SIL.Windows.Forms.Widgets
 {
@@ -52,6 +53,7 @@ namespace SIL.Windows.Forms.Widgets
 							}
 							catch (Exception e)
 							{
+								Logger.WriteMinorEvent("Could not create gecko - based text box", e);
 #if DEBUG
 								throw new Exception("Could not create gecko-based text box", e);
 #endif

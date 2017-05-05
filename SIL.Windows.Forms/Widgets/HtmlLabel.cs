@@ -103,7 +103,7 @@ namespace SIL.Windows.Forms.Widgets
 					GeckoCoreAssembly = Assembly.LoadFrom("geckofx-core-14.dll");
 				}
 			}
-			catch(Exception e)
+			catch(Exception)
 			{
 				MessageBox.Show("Unable to load geckofx dependancy. Files may not have been included in the build.",
 					"Failed to load geckofx", MessageBoxButtons.OK, MessageBoxIcon.Error);

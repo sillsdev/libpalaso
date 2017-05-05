@@ -40,7 +40,7 @@ namespace SIL.Windows.Forms.ImageGallery
 				}
 
 			}
-			catch (Exception error)
+			catch (Exception)
 			{
 
 			}

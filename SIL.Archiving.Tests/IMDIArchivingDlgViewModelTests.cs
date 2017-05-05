@@ -17,7 +17,6 @@ namespace SIL.Archiving.Tests
 		private const string kAppName = "Tèst App Náme";
 		private const string kTitle = "Tèst Title";
 		private const string kArchiveId = "Tèst Corpus Náme"; // include some invalid characters for testing
-		private Dictionary<string, Tuple<IEnumerable<string>, string>> _filesToAdd;
 
 		#region Setup and Teardown
 
@@ -27,8 +26,7 @@ namespace SIL.Archiving.Tests
 		{
 			ErrorReport.IsOkToInteractWithUser = false;
 			_tmpFolder = new TemporaryFolder("IMDIArchiveHelperTestFolder");
-			_model = new IMDIArchivingDlgViewModel(kAppName, kTitle, kArchiveId, null, true,
-				SetFilesToArchive, _tmpFolder.Path);
+			_model = new IMDIArchivingDlgViewModel(kAppName, kTitle, kArchiveId, null, true, dummyAction => { }, _tmpFolder.Path);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -200,17 +198,6 @@ namespace SIL.Archiving.Tests
 		//    Assert.Throws(typeof (ArgumentException), () => _model.SetAbstract(descriptions));
 		//}
 
-		#endregion
-
-		#region Helper methods
-		/// ------------------------------------------------------------------------------------
-		private void SetFilesToArchive(ArchivingDlgViewModel model)
-		{
-			if (_filesToAdd == null)
-				return;
-			foreach (var kvp in _filesToAdd)
-				model.AddFileGroup(kvp.Key, kvp.Value.Item1, kvp.Value.Item2);
-		}
 		#endregion
 	}
 }

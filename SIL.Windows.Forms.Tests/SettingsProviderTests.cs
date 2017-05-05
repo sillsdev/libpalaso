@@ -23,7 +23,7 @@ namespace SIL.Windows.Forms.Tests
 			// takes the system some time to notice that it is gone.)
 			for (var which = 0; which < 1; which++)
 			{
-				using (var tempFolder = new TemporaryFolder())
+				using (var tempFolder = new TemporaryFolder("SettingsFolderWithNoConfig_SortsAfterOneWithConfig"))
 				{
 					var firstDirPath = Path.Combine(tempFolder.Path, "first");
 					var secondDirPath = Path.Combine(tempFolder.Path, "second");
@@ -52,7 +52,7 @@ namespace SIL.Windows.Forms.Tests
 		public void SettingsFolderWithNewerConfig_SortsBeforeOneWithOlderConfig()
 		{
 
-			using (var tempFolder = new TemporaryFolder())
+			using (var tempFolder = new TemporaryFolder("SettingsFolderWithNewerConfig_SortsBeforeOneWithOlderConfig"))
 			{
 				var firstDirPath = Path.Combine(tempFolder.Path, "first");
 				var secondDirPath = Path.Combine(tempFolder.Path, "second");

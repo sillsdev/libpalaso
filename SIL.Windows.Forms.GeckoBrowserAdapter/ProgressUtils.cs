@@ -1,4 +1,4 @@
-// Copyright (c) 2015 SIL International
+﻿// Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -31,7 +31,6 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		// FB25127
 		public static event Action<Exception> UnhandledThreadException;
 
-		static bool inExecuteOnSameThread;
 		private static volatile ManualResetEvent executeOnSameThreadComplete = new ManualResetEvent(true);
 
 		// Do not access directly
@@ -185,10 +184,6 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 				// Wait for the UI Thread
 				UISynchronizationContext.Send(delegate
 					{
-						// If the action is to be run exclusively and if ExecuteOnSameThread is already running, then wait
-						if (exclusively && inExecuteOnSameThread)
-							return;
-
 						try
 						{
 							action();
