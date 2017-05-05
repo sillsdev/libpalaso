@@ -561,6 +561,7 @@
 	  <tuv xml:lang="es">
 		<seg>ImageToolbox.CopyExemplarMetadata</seg>
 	  </tuv>
+	</tu>
     <tu tuid="WSFontControl.Font">
       <tuv xml:lang="en">
         <seg>&amp;Font:</seg>
