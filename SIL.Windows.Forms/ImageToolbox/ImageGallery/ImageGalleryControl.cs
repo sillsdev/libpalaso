@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Diagnostics;
@@ -11,17 +12,16 @@ using System.Windows.Forms;
 using L10NSharp;
 using SIL.Reporting;
 using SIL.Windows.Forms.Extensions;
-using SIL.Windows.Forms.ImageGallery;
 
-namespace SIL.Windows.Forms.ImageToolbox
+namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 {
-	public partial class ArtOfReadingChooser : UserControl, IImageToolboxControl
+	public partial class ImageGalleryControl : UserControl, IImageToolboxControl
 	{
-		private IImageCollection _imageCollection;
+		private ImageCollectionManager _imageCollectionManager;
 		private PalasoImage _previousImage;
 		public bool InSomeoneElesesDesignMode;
 
-		public ArtOfReadingChooser()
+		public ImageGalleryControl()
 		{
 			InitializeComponent();
 			_thumbnailViewer.CaptionMethod = ((s) => string.Empty);//don't show a caption
@@ -99,12 +99,12 @@ namespace SIL.Windows.Forms.ImageToolbox
 				{
 					bool foundExactMatches;
 					// (avoid enumerating the returned IEnumerable<object> more than once by copying to a List.)
-					var results = _imageCollection.GetMatchingPictures(_searchTermsBox.Text, out foundExactMatches).ToList();
+					var results = _imageCollectionManager.GetMatchingImages(_searchTermsBox.Text, true, out foundExactMatches).ToList();
 					if (results.Any())
 					{
 						_messageLabel.Visible = false;
 						_downloadInstallerLink.Visible = false;
-						_thumbnailViewer.LoadItems(_imageCollection.GetPathsFromResults(results, true));
+						_thumbnailViewer.LoadItems(results);
 						var fmt = "Found {0} images".Localize("ImageToolbox.MatchingImages", "The {0} will be replaced by the number of matching images");
 						if (!foundExactMatches)
 							fmt = "Found {0} images with names close to {1}".Localize("ImageToolbox.AlmostMatchingImages", "The {0} will be replaced by the number of images found.  The {1} will be replaced with the search string.");
@@ -135,7 +135,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		public bool HaveImageCollectionOnThisComputer
 		{
-			get { return _imageCollection != null; }
+			get { return _imageCollectionManager != null; }
 		}
 
 
@@ -201,9 +201,9 @@ namespace SIL.Windows.Forms.ImageToolbox
 			if (DesignMode)
 				return;
 
-			_imageCollection = ImageCollection.FromStandardLocations(SearchLanguage);
+			_imageCollectionManager = ImageCollectionManager.FromStandardLocations(SearchLanguage);
 			_collectionToolStrip.Visible = false;
-			if (_imageCollection == null)
+			if (_imageCollectionManager == null)
 			{
 				_messageLabel.Visible = true;
 				_messageLabel.Text = "This computer doesn't appear to have any galleries installed yet.".Localize("ImageToolbox.NoGalleries");
@@ -222,36 +222,45 @@ namespace SIL.Windows.Forms.ImageToolbox
 				_messageLabel.Height = 200;
 				SetMessageLabelText();
 				_thumbnailViewer.SelectedIndexChanged += new EventHandler(_thumbnailViewer_SelectedIndexChanged);
-				if (_imageCollection.Collections.Count() > 1)
+				if (_imageCollectionManager.Collections.Count() > 1)
 				{
 					_collectionToolStrip.Visible = true;
 					_collectionDropDown.Visible = true;
 					_collectionDropDown.Text =
 						"Galleries".Localize("ImageToolbox.Galleries");
-					foreach (var collection in _imageCollection.Collections)
+					foreach (var collection in _imageCollectionManager.Collections)
 					{
-						var text = Path.GetFileNameWithoutExtension(collection);
+					    if(Properties.Settings.Default.DisabledImageCollections.Contains(collection.FolderPath))
+					    {
+					        collection.Enabled = false;
+					    }
+						var text = Path.GetFileNameWithoutExtension(collection.Name);
 						var item = new ToolStripMenuItem(text);
 						_collectionDropDown.DropDownItems.Add(item);
 						item.CheckOnClick = true;
-						item.CheckState = _imageCollection.IsCollectionEnabled(collection) ? CheckState.Checked : CheckState.Unchecked;
+						item.CheckState = collection.Enabled ? CheckState.Checked : CheckState.Unchecked;
 						item.CheckedChanged += (o, args) =>
 						{
-							if (_collectionDropDown.DropDownItems.Cast<ToolStripMenuItem>().Count(x => x.Checked) == 0)
-								item.Checked = true; // tried to uncheck the last one, don't allow it.
-							else
-								_imageCollection.EnableCollection(collection, item.Checked);
+						    if(_collectionDropDown.DropDownItems.Cast<ToolStripMenuItem>().Count(x => x.Checked) == 0)
+						        item.Checked = true; // tried to uncheck the last one, don't allow it.
+						    else
+						    {
+						        collection.Enabled = item.Checked;
+								var disabledSettings = Properties.Settings.Default.DisabledImageCollections;
+								if (disabledSettings == null)
+									Properties.Settings.Default.DisabledImageCollections = disabledSettings = new StringCollection();
+								if (item.Checked && disabledSettings.Contains(collection.FolderPath))
+									disabledSettings.Remove(collection.FolderPath);
+								if (!item.Checked && !disabledSettings.Contains(collection.FolderPath))
+									disabledSettings.Add(collection.FolderPath);
+								Properties.Settings.Default.Save();
+							}
 						};
 					}
 				}
 				else
 				{
-					// Pathologically, the user might have disabled this collection, then deleted all others
-					// It's not so bad if he disabled some and then deleted all the enabled ones and still has
-					// at least two (all disabled) because he can just re-enable one of them. But if we aren't
-					// even showing that control he's had it, and also, in this case it's obvious which single
-					// collection to enable.
-					_imageCollection.EnableCollection(_imageCollection.Collections.First(), true);
+					// otherwise, just leave them all enabled
 				}
 			}
 			_messageLabel.Font = new Font(SystemFonts.DialogFont.FontFamily, 10);
@@ -331,7 +340,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private void SetupSearchLanguageChoice()
 		{
-			var indexLangs = _imageCollection.IndexLanguageIds;
+			var indexLangs = _imageCollectionManager.IndexLanguageIds;
 			if (indexLangs == null)
 			{
 				_searchLanguageMenu.Visible = false;
@@ -371,7 +380,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 					_searchLanguageMenu.Text = lang.NativeName;
 					_searchLanguageMenu.ToolTipText = lang.ToString();
 					SearchLanguage = lang.Id;
-					_imageCollection.ReloadImageIndex(lang.Id);
+					_imageCollectionManager.ChangeSearchLanguageAndReloadIndex(lang.Id);
 					SetMessageLabelText();		// Update with new language name.
 				}
 			}

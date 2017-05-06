@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using NUnit.Framework;
-using SIL.Windows.Forms.ImageGallery;
+using SIL.Windows.Forms.ImageToolbox.ImageGallery;
 
-namespace SIL.Windows.Forms.Tests.ImageGallery
+namespace SIL.Windows.Forms.Tests.ImageToolbox.ImageGallery
 {
 	[TestFixture]
 	public class ImageIndexLayoutTests
@@ -19,7 +18,7 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 			using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(header)))
 			using (var reader = new StreamReader(stream))
 			{
-				Assert.Throws<InvalidOperationException>(() => new ImageIndexLayout(reader));
+				Assert.Throws<InvalidOperationException>(() => new ImageIndexReader(reader));
 			}
 	    }
 
@@ -30,7 +29,7 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 			using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(header)))
 			using (var reader = new StreamReader(stream))
 			{
-			    var layout = new ImageIndexLayout(reader);
+			    var layout = new ImageIndexReader(reader);
 				Assert.AreEqual(languageCount,layout.LanguageIds.Count);
 			}
 		}
@@ -41,7 +40,7 @@ namespace SIL.Windows.Forms.Tests.ImageGallery
 			using (var stream = new MemoryStream(Encoding.UTF8.GetBytes("order\tfilename\tartist\tcountry\ten\tru\tid\tfr\tes\tar\thi\tbn\tpt\tth\tsw\tzh")))
 			using (var reader = new StreamReader(stream))
 			{
-				var layout = new ImageIndexLayout(reader);
+				var layout = new ImageIndexReader(reader);
 				Assert.AreEqual(12, layout.LanguageIds.Count);
 				Assert.AreEqual("ru",layout.LanguageIds[1]);
 			    var row = "1	B-3-3	TheArtist	Brazil	boy,child,head,people,shoulder	мальчик,ребёнок,голова,люди,плечо	anak laki-laki,anak,kepala,orang,orang-orang,bahu";

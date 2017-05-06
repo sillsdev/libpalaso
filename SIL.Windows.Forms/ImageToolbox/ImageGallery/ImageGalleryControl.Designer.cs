@@ -1,6 +1,6 @@
-﻿namespace SIL.Windows.Forms.ImageToolbox
+﻿namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 {
-	partial class ArtOfReadingChooser
+	partial class ImageGalleryControl
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -37,7 +37,7 @@
 			this._downloadInstallerLink = new SIL.Windows.Forms.Widgets.BetterLinkLabel();
 			this._messageLabel = new SIL.Windows.Forms.Widgets.BetterLabel();
 			this._searchTermsBox = new SIL.Windows.Forms.Widgets.TextInputBox();
-			this._thumbnailViewer = new SIL.Windows.Forms.ImageGallery.ThumbnailViewer();
+			this._thumbnailViewer = new ThumbnailViewer();
 			this._localizationHelper = new SIL.Windows.Forms.i18n.LocalizationHelper(this.components);
 			this._collectionToolStrip = new System.Windows.Forms.ToolStrip();
 			this._collectionDropDown = new System.Windows.Forms.ToolStripDropDownButton();
@@ -212,7 +212,7 @@
 			this.Controls.Add(this._searchButton);
 			this.Controls.Add(this._searchTermsBox);
 			this.Controls.Add(this._thumbnailViewer);
-			this.Name = "ArtOfReadingChooser";
+			this.Name = "ImageGalleryControl";
 			this.Size = new System.Drawing.Size(530, 325);
 			this.Load += new System.EventHandler(this.ArtOfReadingChooser_Load);
 			this.toolStrip1.ResumeLayout(false);

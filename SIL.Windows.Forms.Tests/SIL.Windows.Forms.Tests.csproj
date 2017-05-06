@@ -214,9 +214,9 @@
     <Compile Include="Hotspot\HotSpotProviderTestForms.cs" />
     <Compile Include="Hotspot\HotSpotProviderTests.cs" />
     <Compile Include="Hotspot\HotSpotTests.cs" />
-    <Compile Include="ImageGallery\ImageCollectionMultipleCollectionsTests.cs" />
-    <Compile Include="ImageGallery\ImageCollectionTests.cs" />
-    <Compile Include="ImageGallery\ImageIndexLayoutTests.cs" />
+    <Compile Include="ImageToolbox\ImageGallery\ImageCollectionTests.cs" />
+    <Compile Include="ImageToolbox\ImageGallery\ImageIndexLayoutTests.cs" />
+    <Compile Include="ImageToolbox\ImageGallery\ImageCollectionManagerTests.cs" />
     <Compile Include="ImageToolbox\ImageToolboxTests.cs" />
     <Compile Include="ClearShare\MetaDataDisplayTests.cs" />
     <Compile Include="ImageToolbox\PalasoImageTests.cs" />
@@ -297,7 +297,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="ImageGallery\ArtOfReadingIndexV3_en.txt">
+    <None Include="ImageToolbox\ImageGallery\ArtOfReadingIndexV3_en.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />

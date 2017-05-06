@@ -1,4 +1,5 @@
-﻿using SIL.Windows.Forms.Widgets;
+﻿using SIL.Windows.Forms.ImageToolbox.ImageGallery;
+using SIL.Windows.Forms.Widgets;
 
 namespace SIL.Windows.Forms.ImageToolbox
 {
@@ -39,7 +40,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			this._cameraButton = new System.Windows.Forms.ToolStripButton();
 			this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
 			this._pictureBox = new System.Windows.Forms.PictureBox();
-			this._galleryControl = new ArtOfReadingChooser();
+			this._galleryControl = new ImageGalleryControl();
 			this._messageLabel = new BetterLabel();
 			this._focusTimer = new System.Windows.Forms.Timer(this.components);
 			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
@@ -217,7 +218,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		private System.Windows.Forms.ToolStripButton _scannerButton;
 		private System.Windows.Forms.ToolStripButton _galleryButton;
 		private System.Windows.Forms.PictureBox _pictureBox;
-		private ArtOfReadingChooser _galleryControl;
+		private ImageGalleryControl _galleryControl;
 		private Widgets.BetterLabel _messageLabel;
 		private System.Windows.Forms.Timer _focusTimer;
 		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;

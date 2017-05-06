@@ -1,4 +1,4 @@
-﻿namespace SIL.Windows.Forms.ImageGallery
+﻿namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 {
 	partial class ListViewThumbnailViewer
 	{

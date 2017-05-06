@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using SIL.Reporting;
 
-namespace SIL.Windows.Forms.ImageGallery
+namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 {
 	/// <summary>
 	/// Thumbnail viewer is a this wrapper around either a ListViewThumbnailViewer or a WebThumbnailViewer
@@ -72,7 +72,7 @@ namespace SIL.Windows.Forms.ImageGallery
 			// If we can't make a gecko one for any reason, the default one is only slightly imperfect.
 			return new ListViewThumbnailViewer();
 		}
-		public CaptionMethodDelegate CaptionMethod
+		public Func<string, string> CaptionMethod
 		{
 			get { return _thumbnailViewer.CaptionMethod; }
 			set { _thumbnailViewer.CaptionMethod = value; }
@@ -105,7 +105,7 @@ namespace SIL.Windows.Forms.ImageGallery
 	public interface IThumbnailViewer
 	{
 		Control TheControl { get; }
-		CaptionMethodDelegate CaptionMethod { get; set; }
+		Func<string, string> CaptionMethod { get; set; }
 		void Clear();
 		void Closing();
 		void LoadItems(IEnumerable<string> pathList);

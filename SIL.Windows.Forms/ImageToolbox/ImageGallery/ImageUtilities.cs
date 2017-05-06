@@ -2,7 +2,7 @@
 using System.Drawing.Drawing2D;
 using SIL.PlatformUtilities;
 
-namespace SIL.Windows.Forms.ImageGallery
+namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 {
 	public static class ImageUtilities
 	{

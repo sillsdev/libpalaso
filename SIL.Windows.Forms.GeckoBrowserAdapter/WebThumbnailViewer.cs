@@ -7,7 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using SIL.IO;
 using SIL.Windows.Forms.HtmlBrowser;
-using SIL.Windows.Forms.ImageGallery;
+using SIL.Windows.Forms.ImageToolbox.ImageGallery;
 
 // ReSharper disable once CheckNamespace
 namespace SIL.Windows.Forms.GeckoBrowserAdapter
@@ -249,7 +249,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		/// Implemented for compatibity with the API of the other implementation, but as it's not needed
 		/// for AOR I have not attempted to implement captions.
 		/// </summary>
-		public CaptionMethodDelegate CaptionMethod
+		public Func<string, string> CaptionMethod
 		{
 			get; set;
 		}

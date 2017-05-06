@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using SIL.Code;
 
-namespace SIL.Windows.Forms.ImageGallery
+namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 {
 	/// <summary>
 	/// This class handles using the first (header) row of the tab-delimeted index to retrieve requested data from the other rows.
@@ -12,7 +12,7 @@ namespace SIL.Windows.Forms.ImageGallery
 	/// Currently this knows just 3 things: filename, subfolder (optional), and column per search language. It also knows that old
 	/// Art Of Reading indexes have a "country" column that should be used in place of "subfolder".
 	/// </summary>
-    internal class ImageIndexLayout
+    internal class ImageIndexReader
     {
 		/// <summary>
 		/// The languages for which this index has search tearms
@@ -21,7 +21,11 @@ namespace SIL.Windows.Forms.ImageGallery
 
         private readonly Dictionary<string, int> _columnNameToIndex = new Dictionary<string, int>();
 
-        public ImageIndexLayout(StreamReader stream)
+        protected ImageIndexReader()
+        {
+            
+        }
+        public ImageIndexReader(StreamReader stream)
         {
             // The file should start with a line that looks like the following:
             //someheader <tab> someotherheader <tab> ... someotherheader <tab> en <tab> id <tab> someotherlanguage <tab>
@@ -44,21 +48,27 @@ namespace SIL.Windows.Forms.ImageGallery
                 }
             }
 
-            Require.That(_columnNameToIndex.ContainsKey("filename"), "The index must require a filename column.");
+            Require.That(_columnNameToIndex.ContainsKey("filename"), "The index must have a filename column.");
 			Require.That(LanguageIds.Count > 0, "No language ids found in header of index.");
 		}
 
-        public string GetSubFolderOrEmpty(string[] fields)
+        public virtual string GetSubFolderOrEmpty(string[] fields)
         {
             return GetFieldOrEmpty("subfolder", fields);
         }
 
-        public string GetFilename(string[] fields)
+        public virtual string GetFilename(string[] fields)
         {
             return fields[_columnNameToIndex["filename"]];
         }
 
-        public string GetCSVOfKeywordsOrEmpty(string languageId, string[] fields)
+		public virtual string GetImageRelativePath(string[] fields)
+		{
+			return Path.Combine(GetSubFolderOrEmpty(fields), fields[_columnNameToIndex["filename"]].Trim());
+		}
+
+
+		public virtual string GetCSVOfKeywordsOrEmpty(string languageId, string[] fields)
         {
             return GetFieldOrEmpty(languageId, fields);
         }
@@ -75,5 +85,53 @@ namespace SIL.Windows.Forms.ImageGallery
             }
             return "";
         }
+
+        public static ImageIndexReader FromFile(string indexPath)
+        {
+			string headerLine="";
+
+			using (var reader = File.OpenText(indexPath))
+            {
+                headerLine = reader.ReadLine();
+                reader.Close();
+            }
+            using(var reader = File.OpenText(indexPath))
+            {
+                if(headerLine.ToLowerInvariant().Contains("filename"))
+                    return new ImageIndexReader(reader);
+                else return new ArtOfReadingOriginalBilingualIndexReader();
+            }
+        }
     }
+
+	/// <summary>
+	/// Provide index reader for the original AOR index that had only two fields: the filename that used mac-style paths, 
+	/// and a csv that combined English and Indonesian terms:
+	/// e.g
+	/// Brazil:B-2-23.tif	"arrow, bow, weapon, anak panah, panah, senjata"
+	/// Brazil:B-3-1.tif	"grass, man, people, rumput, manusia, orang, orang-orang"
+	/// </summary>
+    internal class ArtOfReadingOriginalBilingualIndexReader : ImageIndexReader
+    {
+        public ArtOfReadingOriginalBilingualIndexReader()
+        {
+        }
+
+		public override string GetSubFolderOrEmpty(string[] fields)
+		{
+		    return "";
+		}
+
+		public override string GetImageRelativePath(string[] fields)
+		{
+			Require.That(fields.Length == 2);
+		    return fields[0].Replace(':', Path.DirectorySeparatorChar);
+		}
+
+		public override string GetCSVOfKeywordsOrEmpty(string languageId, string[] fields)
+		{
+		    Require.That(fields.Length == 2);
+	        return fields[1].Trim('"');
+		}
+	}
 }
