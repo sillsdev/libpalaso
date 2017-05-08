@@ -2,16 +2,19 @@
 	<PropertyGroup>
 		<RootDir Condition="'$(teamcity_build_checkoutDir)' == '' And '$(RootDir)'==''">$(MSBuildProjectDirectory)/..</RootDir>
 		<RootDir Condition="'$(teamcity_build_checkoutDir)' != ''">$(teamcity_build_checkoutDir)</RootDir>
+		<BuilTaskDir Condition="'$(BuilTaskDir)'==''">build</BuilTaskDir>
+		<TestNamePat Condition="'$(TestNamePat)'==''">*.Tests</TestNamePat>
+		<StampIt Condition="'$(StampIt)'==''">true</StampIt>
 		<BUILD_NUMBER Condition="'$(BUILD_NUMBER)'==''">1.2.3.4</BUILD_NUMBER>
 		<!-- Note, after some thought, we've decided this is the best place to keep the version number (not on TeamCity, not in the assemblies). -->
 		<Version>4.0</Version>
 	</PropertyGroup>
 
-	<UsingTask TaskName="StampAssemblies" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
-	<UsingTask TaskName="Archive" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
-	<UsingTask TaskName="Split" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
-	<UsingTask TaskName="FileUpdate" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
-	<UsingTask TaskName="NUnit" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
+	<UsingTask TaskName="StampAssemblies" AssemblyFile="$(RootDir)/$(BuilTaskDir)/Palaso.BuildTasks.dll" />
+	<UsingTask TaskName="Archive" AssemblyFile="$(RootDir)/$(BuilTaskDir)/Palaso.BuildTasks.dll" />
+	<UsingTask TaskName="Split" AssemblyFile="$(RootDir)/$(BuilTaskDir)/Palaso.BuildTasks.dll" />
+	<UsingTask TaskName="FileUpdate" AssemblyFile="$(RootDir)/$(BuilTaskDir)/Palaso.BuildTasks.dll" />
+	<UsingTask TaskName="NUnit" AssemblyFile="$(RootDir)/$(BuilTaskDir)/Palaso.BuildTasks.dll" />
 	<UsingTask TaskName="NUnitTeamCity"
 		AssemblyFile="$(teamcity_dotnet_nunitlauncher_msbuild_task)"
 		Condition=" '$(teamcity_version)' != '' And '$(OS)'=='Windows_NT'"/>
@@ -66,7 +69,7 @@
 
 	<Target Name="Build">
 		<CallTarget Targets="Clean"/>
-		<CallTarget Targets="SetAssemblyVersion"/>
+		<CallTarget Targets="SetAssemblyVersion" Condition="'$(StampIt)'=='true'"/>
 		<CallTarget Targets="Compile"/>
 		<Message Text="Build Complete"/>
 	</Target>
@@ -103,7 +106,7 @@
 
 	<Target Name="RunNUnitTC" Condition="'$(teamcity_version)' != ''">
 		<ItemGroup>
-			<TestAssemblies Include="$(RootDir)/output/$(Configuration)/*.Tests.dll"/>
+			<TestAssemblies Include="$(RootDir)/output/$(Configuration)/$(TestNamePat).dll"/>
 		</ItemGroup>
 
 		<NUnitTeamCity
@@ -114,7 +117,7 @@
 
 	<Target Name="RunNUnit" Condition="'$(teamcity_version)' == ''">
 		<ItemGroup>
-			<TestAssemblies Include="$(RootDir)/output/$(Configuration)/*.Tests.dll"/>
+			<TestAssemblies Include="$(RootDir)/output/$(Configuration)/$(TestNamePat).dll"/>
 		</ItemGroup>
 
 		<NUnit Assemblies="@(TestAssemblies)"
