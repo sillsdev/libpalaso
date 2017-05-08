@@ -13,6 +13,14 @@
 		<seg>Acerca de</seg>
 	  </tuv>
 	</tu>
+    <tu tuid="Common.AbortButton">
+      <tuv xml:lang="en">
+        <seg>&amp;Abort</seg>
+      </tuv>
+	  <tuv xml:lang="es">
+	    <seg>&amp;Abortar</seg>
+	  </tuv>
+    </tu>
 	<tu tuid="Common.CancelButton">
 	  <tuv xml:lang="en">
 		<seg>&amp;Cancel</seg>
@@ -21,6 +29,14 @@
 		<seg>&amp;Cancelar</seg>
 	  </tuv>
 	</tu>
+    <tu tuid="Common.IgnoreButton">
+      <tuv xml:lang="en">
+        <seg>&amp;Ignore</seg>
+      </tuv>
+	  <tuv xml:lang="es">
+	    <seg>&amp;Ignorar</seg>
+	  </tuv>
+    </tu>
 	<tu tuid="Common.No">
 	  <tuv xml:lang="en">
 		<seg>No</seg>
@@ -29,12 +45,44 @@
 		<seg>No</seg>
 	  </tuv>
 	</tu>
+	<tu tuid="Common.NoButton">
+	  <tuv xml:lang="en">
+		<seg>&amp;No</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>&amp;No</seg>
+	  </tuv>
+	</tu>
 	<tu tuid="Common.OKButton">
 	  <tuv xml:lang="en">
 		<seg>&amp;OK</seg>
 	  </tuv>
 	  <tuv xml:lang="es">
-		<seg>Aceptar</seg>
+		<seg>&amp;Aceptar</seg>
+	  </tuv>
+	</tu>
+    <tu tuid="Common.RetryButton">
+      <tuv xml:lang="en">
+        <seg>&amp;Retry</seg>
+      </tuv>
+	  <tuv xml:lang="es">
+	    <seg>&amp;Reintentar</seg>
+	  </tuv>
+    </tu>
+	<tu tuid="Common.Yes">
+	  <tuv xml:lang="en">
+		<seg>Yes</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>Si</seg>
+	  </tuv>
+	</tu>
+	<tu tuid="Common.YesButton">
+	  <tuv xml:lang="en">
+		<seg>&amp;Yes</seg>
+	  </tuv>
+	  <tuv xml:lang="es">
+		<seg>&amp;Si</seg>
 	  </tuv>
 	</tu>
 	<tu tuid="DialogBoxes.FileDlg.AllFilesLabel">
@@ -62,14 +110,6 @@
         <seg>Paquetes de descarga de texto</seg>
       </tuv>
     </tu>
-	<tu tuid="Common.Yes">
-	  <tuv xml:lang="en">
-		<seg>Yes</seg>
-	  </tuv>
-	  <tuv xml:lang="es">
-		<seg>Si</seg>
-	  </tuv>
-	</tu>
 	<tu tuid="ImageToolbox.ArtOfReading">
 	  <tuv xml:lang="en">
 		<seg>Art Of Reading</seg>
