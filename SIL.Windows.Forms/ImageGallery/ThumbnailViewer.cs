@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+using SIL.Reporting;
 
 namespace SIL.Windows.Forms.ImageGallery
 {
@@ -57,6 +58,7 @@ namespace SIL.Windows.Forms.ImageGallery
 							}
 							catch (Exception e)
 							{
+								Logger.WriteMinorEvent("Could not create gecko viewer" + e);
 #if DEBUG
 								throw new Exception("Could not create gecko viewer", e);
 #endif

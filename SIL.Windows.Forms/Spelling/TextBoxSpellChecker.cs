@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -60,7 +60,7 @@ namespace SIL.Windows.Forms.Spelling
 			{
 				return _dictionaries[language].Suggest(text);
 			}
-			catch (Exception error)
+			catch (Exception)
 			{
 				//the actual error messages are always worthless, talking about corrupted memory
 				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), "There was a problem with the Enchant Spell-Checking system related to {0}", language);
@@ -74,7 +74,7 @@ namespace SIL.Windows.Forms.Spelling
 			{
 				return _dictionaries[language].Check(s);
 			}
-			catch (Exception error)
+			catch (Exception)
 			{
 				//the actual error messages are always worthless, talking about corrupted memory
 				ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), "There was a problem with the Enchant Spell-Checking system related to {0}", language);
@@ -265,7 +265,7 @@ namespace SIL.Windows.Forms.Spelling
 							_hotSpotProvider.SetEnableHotSpots(control, true);
 						}
 					}
-					catch (Exception error)
+					catch (Exception)
 					{
 						//the actual error messages are always worthless, talking about corrupted memory
 						//ErrorReport.NotifyUserOfProblem(new ShowOncePerSessionBasedOnExactMessagePolicy(), "There was a problem with the Enchant Spell-Checking system related to {0}", language);

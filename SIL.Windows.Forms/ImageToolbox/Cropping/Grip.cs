@@ -88,16 +88,12 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 				{
 					case Sides.Left:
 						return Value + Width;
-						break;
 					case Sides.Right:
 						return Value+Width;
-						break;
 					case Sides.Top:
 						return Value+Height;
-						break;
 					case Sides.Bottom:
 						return Value+Height;
-						break;
 					default:
 						throw new ArgumentOutOfRangeException();
 				}

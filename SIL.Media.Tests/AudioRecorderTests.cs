@@ -385,7 +385,7 @@ namespace SIL.Media.Tests
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
 			{
-				var x = AudioFactory.AudioSession (file.Path);
+				var x = AudioFactory.CreateAudioSession(file.Path);
 				Assert.DoesNotThrow( () => x.Play() );
 				Assert.DoesNotThrow( () => x.StopPlaying() );
 			}
@@ -398,7 +398,7 @@ namespace SIL.Media.Tests
 			using (var folder = new TemporaryFolder("Record_DoesRecord"))
 			{
 				string fpath = Path.Combine(folder.Path, "dump.ogg");
-				var x = AudioFactory.AudioSession(fpath);
+				var x = AudioFactory.CreateAudioSession(fpath);
 				Assert.DoesNotThrow(() => x.StartRecording());
 				Assert.IsTrue(x.IsRecording);
 				Thread.Sleep(1000);

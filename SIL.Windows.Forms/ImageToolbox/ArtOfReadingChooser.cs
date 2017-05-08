@@ -119,7 +119,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 					}
 				}
 			}
-			catch (Exception error)
+			catch (Exception)
 			{
 			}
 			_searchButton.Enabled = true;

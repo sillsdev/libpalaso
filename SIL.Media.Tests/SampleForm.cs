@@ -6,9 +6,6 @@ namespace SIL.Media.Tests
 {
 	public partial class Form1 : Form
 	{
-		private readonly ISimpleAudioSession _recorder;
-		private string _path;
-
 		public Form1()
 		{
 //            _recorder = new AudioIrrKlangSession(_path);
