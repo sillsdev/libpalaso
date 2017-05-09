@@ -218,18 +218,14 @@
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <None Include="Settings\README" />
     <Reference Include="NDesk.DBus">
       <HintPath>..\packages\NDesk.DBus.0.14.0\lib\NDesk.DBus.dll</HintPath>
     </Reference>
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Management" />
     <Reference Include="System.Security" />
     <Reference Include="System.Xml" />
     <None Include="app.config" />
@@ -290,7 +286,6 @@
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\ProcessExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="i18n\StringCatalog.cs" />
     <Compile Include="CommandLineProcessing\CommandLineRunner.cs" />
     <Compile Include="IO\FileLock\FileLockContent.cs" />
     <Compile Include="IO\FileLock\IFileLock.cs" />
@@ -416,7 +411,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Code\RetryUtility.cs" />
-    <Compile Include="Settings\CrossPlatformSettingsProvider.cs" />
     <Compile Include="Annotations\Annotation.cs" />
     <Compile Include="Annotations\IAnnotatable.cs" />
     <Compile Include="Spelling\WordTokenizer.cs" />
@@ -429,7 +423,6 @@
     <Compile Include="UiBindings\ICountGiver.cs" />
     <Compile Include="UiBindings\IDisplayStringAdaptor.cs" />
     <Compile Include="Unicode\CharacterUtils.cs" />
-    <Compile Include="UsbDrive\UsbDriveInfo.cs" />
     <Compile Include="IO\FileRelatedStrings.Designer.cs">
       <DependentUpon>FileRelatedStrings.resx</DependentUpon>
       <DesignTime>True</DesignTime>
@@ -447,18 +440,6 @@
     <Compile Include="PlatformUtilities\Platform.cs" />
     <Compile Include="IO\PathUtilities.cs" />
     <Compile Include="Extensions\XAttributeExtensions.cs" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName' Or '$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
-    <Compile Include="UsbDrive\Windows\UsbDriveInfoWindows.cs" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'DebugMonoStrongName' Or '$(Configuration)' == 'ReleaseMono' Or '$(Configuration)' == 'ReleaseMonoStrongName'">
-    <Compile Include="UsbDrive\Linux\IUDiskDevice.cs" />
-    <Compile Include="UsbDrive\Linux\IUDisks.cs" />
-    <Compile Include="UsbDrive\Linux\UDiskDevice.cs" />
-    <Compile Include="UsbDrive\Linux\UDisks.cs" />
-    <Compile Include="UsbDrive\Linux\UsbDriveInfoUDisks.cs" />
-    <Compile Include="UsbDrive\Linux\UsbDriveInfoUDisks2.cs" />
-    <Compile Include="UsbDrive\Linux\UsbDriveInfoHAL.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
