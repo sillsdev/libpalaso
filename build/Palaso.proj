@@ -116,7 +116,7 @@
 			WorkingDirectory="$(RootDir)/output/$(Configuration)"
 			Force32Bit="$(useNUnit-x86)"
 			Verbose="true"
-			OutputXmlFile="$(RootDir)/output/$(Configuration)/TestResults.xml"/>
+			FailTaskIfAnyTestsFail="true"/>
 	</Target>
 
 	<Target Name="RunNUnit" Condition="'$(teamcity_version)' == ''">
