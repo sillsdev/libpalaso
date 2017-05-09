@@ -104,12 +104,19 @@
 	<Target Name="RunNUnitTC" Condition="'$(teamcity_version)' != ''">
 		<ItemGroup>
 			<TestAssemblies Include="$(RootDir)/output/$(Configuration)/*.Tests.dll"/>
+			<NUnitAddinFiles Include="$(teamcity_dotnet_nunitaddin)-2.6.4.*" />
 		</ItemGroup>
 
-		<NUnitTeamCity
-			Assemblies="@(TestAssemblies)"
-			ExcludeCategory="SkipOnTeamCity;ByHand$(ExtraExcludeCategories)"
-			NUnitVersion="NUnit-2.6.3" />
+		<MakeDir Directories="$(RootDir)/packages/NUnit.Runners.Net4.2.6.4/tools/addins" />
+		<Copy SourceFiles="@(NUnitAddinFiles)" DestinationFolder="$(RootDir)/packages/NUnit.Runners.Net4.2.6.4/tools/addins" />
+		<NUnit Assemblies="@(TestAssemblies)"
+			ToolPath="$(RootDir)/packages/NUnit.Runners.Net4.2.6.4/tools"
+			TestInNewThread="false"
+			ExcludeCategory="SkipOnTeamCity;$(excludedCategories)$(ExtraExcludeCategories)"
+			WorkingDirectory="$(RootDir)/output/$(Configuration)"
+			Force32Bit="$(useNUnit-x86)"
+			Verbose="true"
+			OutputXmlFile="$(RootDir)/output/$(Configuration)/TestResults.xml"/>
 	</Target>
 
 	<Target Name="RunNUnit" Condition="'$(teamcity_version)' == ''">
