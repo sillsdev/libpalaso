@@ -199,9 +199,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="nunit.framework">
@@ -236,7 +236,6 @@
     <Compile Include="Extensions\CollectionExtensionsTests.cs" />
     <Compile Include="Extensions\DateTimeExtensionTests.cs" />
     <Compile Include="Extensions\StringExtensionTests.cs" />
-    <Compile Include="i18n\StringCatalogTests.cs" />
     <Compile Include="IO\DirectoryUtilitiesTests.cs" />
     <Compile Include="IO\FileLocatorTests.cs" />
     <Compile Include="IO\FileLock\SimpleFileLockTests.cs" />
@@ -251,6 +250,7 @@
     <Compile Include="Migration\XslMigratorTests.cs" />
     <Compile Include="Misc\GuardAgainstReentry.cs" />
     <Compile Include="Network\RobustNetworkOperation.Tests.cs" />
+    <Compile Include="ValidateReferencesTests.cs" />
     <Compile Include="ObjectModel\NullableValueTests.cs" />
     <Compile Include="ObjectModel\SortableBindingListTests.cs" />
     <Compile Include="ObjectModel\UnorderedTupleTests.cs" />
@@ -268,9 +268,6 @@
     <Compile Include="Text\MultiTextBase.Tests.cs" />
     <Compile Include="Threading\GlobalMutexTests.cs" />
     <Compile Include="Unicode\CharacterUtilsTests.cs" />
-    <Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UDiskDeviceTests.cs" />
-    <Compile Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'ReleaseMono' " Include="UsbDrive\Linux\UDisksTests.cs" />
-    <Compile Include="UsbDrive\UsbDeviceInfoTests.cs" />
     <Compile Include="Xml\CanonicalXmlSettingsTests.cs" />
     <Compile Include="Xml\XmlUtilsTests.cs" />
     <Compile Include="Xml\XmlWriterExtensionsTests.cs" />

@@ -305,6 +305,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SIL.Core.Desktop\SIL.Core.Desktop.csproj">
+      <Project>{c48de000-2086-4ceb-a5a1-3171c272725e}</Project>
+      <Name>SIL.Core.Desktop</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\SIL.Media\SIL.Media.csproj">
       <Project>{66B3504A-3B4E-45CB-903A-A9A75B22EF68}</Project>
       <Name>SIL.Media</Name>

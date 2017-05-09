@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
+﻿using System.IO;
 using System.Xml.Linq;
 using SIL.Code;
 
@@ -39,55 +35,7 @@ namespace SIL.IO
 		{
 			RetryUtility.Retry(() => Directory.Move(sourceDirName, destDirName));
 		}
-
-		public static void SaveImage(Image image, string fileName)
-		{
-			RetryUtility.Retry(() => image.Save(fileName),
-				RetryUtility.kDefaultMaxRetryAttempts,
-				RetryUtility.kDefaultRetryDelay,
-				new HashSet<Type>
-				{
-					Type.GetType("System.IO.IOException"),
-					Type.GetType("System.Runtime.InteropServices.ExternalException")
-				});
-		}
-
-		public static void SaveImage(Image image, string fileName, ImageFormat format)
-		{
-			RetryUtility.Retry(() => image.Save(fileName, format),
-				RetryUtility.kDefaultMaxRetryAttempts,
-				RetryUtility.kDefaultRetryDelay,
-				new HashSet<Type>
-				{
-					Type.GetType("System.IO.IOException"),
-					Type.GetType("System.Runtime.InteropServices.ExternalException")
-				});
-		}
-
-		public static void SaveImage(Image image, Stream stream, ImageFormat format)
-		{
-			RetryUtility.Retry(() => image.Save(stream, format),
-				RetryUtility.kDefaultMaxRetryAttempts,
-				RetryUtility.kDefaultRetryDelay,
-				new HashSet<Type>
-				{
-					Type.GetType("System.IO.IOException"),
-					Type.GetType("System.Runtime.InteropServices.ExternalException")
-				});
-		}
-
-		public static void SaveImage(Image image, string fileName, ImageCodecInfo jpgEncoder, EncoderParameters parameters)
-		{
-			RetryUtility.Retry(() => image.Save(fileName, jpgEncoder, parameters),
-				RetryUtility.kDefaultMaxRetryAttempts,
-				RetryUtility.kDefaultRetryDelay,
-				new HashSet<Type>
-				{
-					Type.GetType("System.IO.IOException"),
-					Type.GetType("System.Runtime.InteropServices.ExternalException")
-				});
-		}
-
+		
 		public static XElement LoadXElement(string uri)
 		{
 			return RetryUtility.Retry(() => XElement.Load(uri));
