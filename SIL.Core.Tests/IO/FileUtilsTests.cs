@@ -5,7 +5,6 @@ using NUnit.Framework;
 using SIL.IO;
 using SIL.Reporting;
 using SIL.TestUtilities;
-using SIL.UsbDrive;
 
 namespace SIL.Tests.IO
 {
@@ -84,14 +83,19 @@ namespace SIL.Tests.IO
 		/// <summary>
 		/// regression for WS-1394. Must be run manually because it requires a second drive
 		/// </summary>
-		[Test, Ignore("Must be run manually with another drive")]
+		[Test, Explicit("Must be run manually with another drive")]
 		public void MANUAL_ReplaceFileWithUserInteractionIfNeeded_DifferentDrives_OK()
 		{
 			ErrorReport.IsOkToInteractWithUser = false;
 			using (var source = new TempFile("one"))
 			using (var backup = new TempFile("two"))
 			{
-				var drives = UsbDriveInfo.GetDrives();
+				// Since UsbDriveInfo was moved to SIL.Core.Desktop, we need to use reflection to access 
+				// the drives since we can't add a reference to SIL.Core.Desktop.
+				Assembly coreDesktopAssembly = Assembly.Load("SIL.Core.Desktop");
+				Type usbDriveInfoType = coreDesktopAssembly.GetType("SIL.UsbDrive.UsbDriveInfo");
+				MethodInfo getDrivesMethod = usbDriveInfoType.GetMethod("GetDrives");
+				dynamic drives = getDrivesMethod.Invoke(usbDriveInfoType, null);
 				Assert.Greater(drives.Count, 0, "This test requires at least one writeable USB drive");
 
 				var testFolder = Path.Combine(drives[0].RootDirectory.FullName, "PalasoFileUtilsUnitTests");
