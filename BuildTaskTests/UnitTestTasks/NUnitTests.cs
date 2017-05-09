@@ -24,6 +24,7 @@ namespace Palaso.BuildTask.Tests.UnitTestTasks
 
 		private static string GetBuildFilename(string category)
 		{
+			// sizeof(IntPtr) = 4 on 32-bit and 8 on 64-bit
 			var buildFile = Path.GetTempFileName();
 			File.WriteAllText(buildFile, string.Format(@"
 <Project xmlns='http://schemas.microsoft.com/developer/msbuild/2003'>
@@ -35,8 +36,8 @@ namespace Palaso.BuildTask.Tests.UnitTestTasks
 </Project>",
 				Path.Combine(OutputDirectory, "Palaso.BuildTasks.dll"),
 				Path.Combine(OutputDirectory, "Palaso.BuildTask.Tests.Helper.dll"),
-				Path.Combine(OutputDirectory, "..", "..", "..", "packages", "NUnit.Runners.Net4.2.6.4", "tools"),
-				category, Platform.IsWindows));
+				Path.Combine(OutputDirectory, "..", "..", "packages", "NUnit.Runners.Net4.2.6.4", "tools"),
+				category, System.Runtime.InteropServices.Marshal.SizeOf(IntPtr.Zero) == 4));
 
 			return buildFile;
 		}
