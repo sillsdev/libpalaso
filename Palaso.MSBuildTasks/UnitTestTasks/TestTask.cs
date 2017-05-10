@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -291,7 +291,16 @@ namespace Palaso.BuildTasks.UnitTestTasks
 					}
 
 					if (Verbose)
-						Log.LogError(logContents);
+					{
+						// For some odd reason, these get sent to standard error instead of standard output.
+						// That means our TC builds can see them and report a failed build.
+						if (!logContents.StartsWith("TeamCity addin installed") &&
+							!logContents.StartsWith("TeamCity addin initializing...") &&
+							!logContents.StartsWith("TeamCity addin loaded"))
+						{
+							Log.LogError(logContents);
+						}
+					}
 
 					// ensure only one thread writes to the log at any time
 					lock (LockObject)
