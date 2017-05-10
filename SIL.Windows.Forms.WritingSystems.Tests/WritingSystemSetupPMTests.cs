@@ -6,7 +6,6 @@ using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
 using SIL.Reporting;
-using SIL.Windows.Forms.Keyboarding;
 using SIL.WritingSystems;
 using SIL.WritingSystems.Tests;
 
@@ -77,7 +76,6 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
-			KeyboardController.Initialize();
 			if (!Sldr.IsInitialized)
 				Sldr.Initialize();
 		}
@@ -85,7 +83,6 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		[TestFixtureTearDown]
 		public void FixtureTearDown()
 		{
-			KeyboardController.Shutdown();
 		}
 
 		[SetUp]
