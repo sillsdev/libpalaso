@@ -5,16 +5,31 @@ using System;
 using System.Globalization;
 using NUnit.Framework;
 using SIL.Keyboarding;
+using Rhino.Mocks;
 
 namespace SIL.Windows.Forms.Keyboarding.Tests
 {
 	[TestFixture]
 	public class KeyboardControllerTests
 	{
+		private IKeyboardRetrievingAdaptor _mockKeyboardAdaptor = MockRepository.GenerateMock<IKeyboardRetrievingAdaptor>();
+
 		[SetUp]
 		public void Setup()
 		{
-			KeyboardController.Initialize();
+			// To avoid OS specific behavior in these tests we mock up our own keyboard adaptor returning appropriate values to enable these tests
+			_mockKeyboardAdaptor.Stub(k => k.IsApplicable).Return(true);
+			_mockKeyboardAdaptor.Stub(k => k.Type).Return(KeyboardAdaptorType.System);
+			_mockKeyboardAdaptor.Stub(k => k.CanHandleFormat(KeyboardFormat.Unknown)).Return(true);
+			_mockKeyboardAdaptor.Stub(k => k.CreateKeyboardDefinition(Arg<string>.Is.Anything)).Return(null) // will be ignored but still the API requires it
+				.WhenCalled(k =>
+				{
+					var id = (string)k.Arguments[0];
+					var idParts = id.Split('_');
+					var mockKd = new MockKeyboardDescription(id, idParts[0], idParts[1]);
+					k.ReturnValue = mockKd;
+				});
+			KeyboardController.Initialize(_mockKeyboardAdaptor);
 		}
 
 		[TearDown]
@@ -100,6 +115,17 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		{
 			var inputLanguage = new InputLanguageWrapper(new CultureInfo("en-US"), IntPtr.Zero, "foo");
 			Assert.That(Keyboard.Controller.GetKeyboard(inputLanguage), Is.EqualTo(KeyboardController.NullKeyboard));
+		}
+
+		/// <summary>
+		/// This mock (less code than a Rhino.Mocks version) provides sufficient IKeyboardDefinition for testing the KeyboardController
+		/// </summary>
+		private class MockKeyboardDescription : KeyboardDescription
+		{
+			public MockKeyboardDescription(string id, string locale, string layout) : base(id, id + "mockKbDescription", layout, locale, true, null)
+			{
+				InputLanguage = new InputLanguageWrapper(locale, IntPtr.Zero, layout);
+			}
 		}
 	}
 }
