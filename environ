@@ -1,0 +1,11 @@
+#!/bin/sh
+# Environment settings for running programs with the SIL version of mono
+# Note that this file is intended to be "sourced", not "executed".
+
+[ -z "$MONO_PREFIX" ] && export MONO_PREFIX=/opt/mono4-sil
+export GDK_SHARP=${MONO_PREFIX}/lib/mono/gtk-sharp-2.0
+export LD_LIBRARY_PATH=${MONO_PREFIX}/lib:${LD_LIBRARY_PATH}
+export PKG_CONFIG_PATH=${MONO_PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}
+export MONO_GAC_PREFIX=${MONO_PREFIX}:${MONO_GAC_PREFIX}
+export MONO_MWF_SCALING=disable
+export PATH=${MONO_PREFIX}/bin:$PATH
