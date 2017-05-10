@@ -117,7 +117,7 @@
 			Verbose="true"
 			OutputXmlFile="$(RootDir)/output/$(Configuration)/TestResults.xml"/>
 		<Message Text="##teamcity[importData type='nunit' path='$(RootDir)/output/$(Configuration)/TestResults.xml']"
-			Condition="'$(teamcity_version)' != ''"/>
+			Condition="'$(teamcity_version)' != '' and '$(OS)'!='Windows_NT'"/>
 	</Target>
 
 	<!-- Source Package - used by wesay -->
