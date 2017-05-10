@@ -12,12 +12,6 @@
 	<UsingTask TaskName="Split" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
 	<UsingTask TaskName="FileUpdate" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
 	<UsingTask TaskName="NUnit" AssemblyFile="$(RootDir)/build/Palaso.BuildTasks.dll" />
-	<UsingTask TaskName="NUnitTeamCity"
-		AssemblyFile="$(teamcity_dotnet_nunitlauncher_msbuild_task)"
-		Condition=" '$(teamcity_version)' != '' And '$(OS)'=='Windows_NT'"/>
-	<UsingTask TaskName="NUnitTeamCity"
-		AssemblyFile="$(agent_home_dir)/plugins/dotnetPlugin/bin/JetBrains.BuildServer.MSBuildLoggers.dll"
-		Condition=" '$(teamcity_version)' != '' And '$(OS)'!='Windows_NT'"/>
 
 	<Import Project="NuGet.targets"/>
 
@@ -29,7 +23,8 @@
 		<ApplicationNameLC>libpalaso</ApplicationNameLC>
 		<Configuration Condition="'$(OS)'!='Windows_NT' And '$(Configuration)'==''">ReleaseMonoStrongName</Configuration>
 		<Configuration Condition="'$(OS)'=='Windows_NT' And '$(Configuration)'==''">ReleaseStrongName</Configuration>
-		<ExtraExcludeCategories Condition="'$(OS)'!='Windows_NT'">;KnownMonoIssue</ExtraExcludeCategories>
+		<ExtraExcludeCategories Condition="'$(OS)'!='Windows_NT'">KnownMonoIssue,</ExtraExcludeCategories>
+		<ExtraExcludeCategories Condition="'$(teamcity_version)' != ''">SkipOnTeamCity,$(ExtraExcludeCategories)</ExtraExcludeCategories>
 		<useNUnit-x86 Condition="'$(OS)'=='Windows_NT'">true</useNUnit-x86>
 		<useNUnit-x86 Condition="'$(OS)'!='Windows_NT'">false</useNUnit-x86>
 		<Platform Condition="'$(OS)'!='Windows_NT' And '$(Platform)'==''">Any CPU</Platform>
@@ -99,39 +94,30 @@
 		<CallTarget Targets="TestOnly"/>
 	</Target>
 
-	<Target Name="TestOnly" DependsOnTargets="RunNUnitTC;RunNUnit"/>
-
-	<Target Name="RunNUnitTC" Condition="'$(teamcity_version)' != ''">
+	<Target Name="TestOnly">
+		<PropertyGroup>
+			<NUnitVersion>2.6.4</NUnitVersion>
+			<NUnitRunnerPackage>$(RootDir)/packages/NUnit.Runners.Net4.$(NUnitVersion)</NUnitRunnerPackage>
+		</PropertyGroup>
 		<ItemGroup>
 			<TestAssemblies Include="$(RootDir)/output/$(Configuration)/*.Tests.dll"/>
-			<NUnitAddinFiles Include="$(teamcity_dotnet_nunitaddin)-2.6.4.*" />
+			<NUnitAddinFiles Include="$(teamcity_dotnet_nunitaddin)-$(NUnitVersion).*" />
 		</ItemGroup>
 
-		<MakeDir Directories="$(RootDir)/packages/NUnit.Runners.Net4.2.6.4/tools/addins" />
-		<Copy SourceFiles="@(NUnitAddinFiles)" DestinationFolder="$(RootDir)/packages/NUnit.Runners.Net4.2.6.4/tools/addins" />
+		<MakeDir Directories="$(NUnitRunnerPackage)/tools/addins"
+			Condition="'$(teamcity_version)' != ''"/>
+		<Copy SourceFiles="@(NUnitAddinFiles)" DestinationFolder="$(NUnitRunnerPackage)/tools/addins"
+			Condition="'$(teamcity_version)' != ''"/>
 		<NUnit Assemblies="@(TestAssemblies)"
-			ToolPath="$(RootDir)/packages/NUnit.Runners.Net4.2.6.4/tools"
+			ToolPath="$(NUnitRunnerPackage)/tools"
 			TestInNewThread="false"
-			ExcludeCategory="SkipOnTeamCity;$(excludedCategories)$(ExtraExcludeCategories)"
+			ExcludeCategory="$(ExtraExcludeCategories)$(excludedCategories)"
 			WorkingDirectory="$(RootDir)/output/$(Configuration)"
 			Force32Bit="$(useNUnit-x86)"
 			Verbose="true"
 			OutputXmlFile="$(RootDir)/output/$(Configuration)/TestResults.xml"/>
-	</Target>
-
-	<Target Name="RunNUnit" Condition="'$(teamcity_version)' == ''">
-		<ItemGroup>
-			<TestAssemblies Include="$(RootDir)/output/$(Configuration)/*.Tests.dll"/>
-		</ItemGroup>
-
-		<NUnit Assemblies="@(TestAssemblies)"
-			ToolPath="$(RootDir)/packages/NUnit.Runners.Net4.2.6.4/tools"
-			TestInNewThread="false"
-			ExcludeCategory="$(excludedCategories)$(ExtraExcludeCategories)"
-			WorkingDirectory="$(RootDir)/output/$(Configuration)"
-			Force32Bit="$(useNUnit-x86)"
-			Verbose="true"
-			OutputXmlFile="$(RootDir)/output/$(Configuration)/TestResults.xml"/>
+		<Message Text="##teamcity[importData type='nunit' path='$(RootDir)/output/$(Configuration)/TestResults.xml']"
+			Condition="'$(teamcity_version)' != ''"/>
 	</Target>
 
 	<!-- Source Package - used by wesay -->
