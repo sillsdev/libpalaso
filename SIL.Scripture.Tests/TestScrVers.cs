@@ -53,5 +53,40 @@ namespace SIL.Scripture.Tests
 		{
 			return m_vers.ChangeVersification(reference, scrVersSource);
 		}
+
+	    public string Name
+	    {
+	        get { return "dummy"; }
+	    }
+
+	    public int GetLastBook()
+	    {
+	        throw new System.NotImplementedException();
+	    }
+
+	    public bool IsExcluded(int bbbcccvvv)
+	    {
+	        throw new System.NotImplementedException();
+	    }
+
+	    public VerseRef FirstIncludedVerse(int bookNum, int chapterNum)
+	    {
+	        throw new System.NotImplementedException();
+	    }
+
+	    public string[] VerseSegments(int bbbcccvvv)
+	    {
+	        throw new System.NotImplementedException();
+	    }
+
+	    public void ChangeVersification(VerseRef reference)
+	    {
+	        throw new System.NotImplementedException();
+	    }
+
+	    public bool ChangeVersificationWithRanges(VerseRef reference)
+	    {
+	        throw new System.NotImplementedException();
+	    }
 	}
 }

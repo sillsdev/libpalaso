@@ -917,18 +917,166 @@ namespace SIL.Scripture
 			if (m_verse == -1)
 				m_verse = 1;
 		}
-	    #endregion
+        #endregion
 
-		#region Book/Chapter/Verse conversions
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Map an SIL book code to a book number (1=GEN, 66=REV)
-		/// </summary>
-		/// <param name="book"></param>
-		/// <returns>The book code if the string passed is a valid SIL book code; -1 if it is a
-		/// Deuterocanonical book code; 0 if it is a totally bogus string</returns>
-		/// ------------------------------------------------------------------------------------
-		public static int BookToNumber(string book)
+        #region Book/Chapter/Verse conversions
+        /// ------------------------------------------------------------------------------------
+        /// <summary>
+        /// Convert a chapter number string into an integer and ignore the remaining text
+        /// </summary>
+        /// <param name="chapterString"></param>
+        /// <returns></returns>
+        /// ------------------------------------------------------------------------------------
+        public static int ChapterToInt(string chapterString)
+        {
+            string dummy;
+
+            return ChapterToInt(chapterString, out dummy);
+        }
+
+        /// ------------------------------------------------------------------------------------
+        /// <summary>
+        /// Convert a chapter number string into an integer
+        /// </summary>
+        /// <param name="chapterString">string representing the chapter number</param>
+        /// <param name="remainingText">returns the remaining non-number portion of the string</param>
+        /// <returns>The chapter number</returns>
+        /// ------------------------------------------------------------------------------------
+        public static int ChapterToInt(string chapterString, out string remainingText)
+        {
+            remainingText = string.Empty;
+            if (chapterString == null)
+                throw new ArgumentNullException("chapterString");
+            chapterString = chapterString.TrimStart();
+            if (chapterString == string.Empty)
+                throw new ArgumentException("The chapter string was empty");
+            if (!Char.IsDigit(chapterString[0]))
+                throw new ArgumentException("The chapter string does not start with a digit");
+
+            int chapter = 0;
+            for (int i = 0; i < chapterString.Length; i++)
+            {
+                char ch = chapterString[i];
+                if (Char.IsDigit(ch))
+                {
+                    chapter = chapter * 10 + (int)Char.GetNumericValue(ch);
+                    if (chapter > Int16.MaxValue)
+                        chapter = Int16.MaxValue;
+                }
+                else
+                {
+                    remainingText = chapterString.Substring(i);
+                    break;
+                }
+            }
+            if (chapter == 0)
+                throw new ArgumentException("The chapter number evaluated to 0");
+            return chapter;
+        }
+
+        /// ------------------------------------------------------------------------------------
+        /// <summary>
+        /// A version of VerseToInt that returns the starting verse value. 
+        /// </summary>
+        /// <param name="sourceString"></param>
+        /// <returns>the starting verse value</returns>
+        /// ------------------------------------------------------------------------------------
+        public static int VerseToIntStart(string sourceString)
+        {
+            int startVerse, endVerse;
+            VerseToInt(sourceString, out startVerse, out endVerse);
+            return startVerse;
+        }
+
+        /// ------------------------------------------------------------------------------------
+        /// <summary>
+        /// A version of VerseToInt that returns the ending verse value. 
+        /// </summary>
+        /// <param name="sourceString"></param>
+        /// <returns>the ending verse value</returns>
+        /// ------------------------------------------------------------------------------------
+        public static int VerseToIntEnd(string sourceString)
+        {
+            int startVerse, endVerse;
+            VerseToInt(sourceString, out startVerse, out endVerse);
+            return endVerse;
+        }
+
+        /// ------------------------------------------------------------------------------------
+        /// <summary>
+        /// This is a helper function to get a starting and ending verse number from a string
+        /// which may or may not represent a verse bridge. Ignore any unusual syntax.
+        /// </summary>
+        /// <param name="sVerseNum">the string representing the verse number(s).</param>
+        /// <param name="nVerseStart">the starting verse number in sVerseNum.</param>
+        /// <param name="nVerseEnd">the ending verse number in sVerseNum (will be different from
+        /// startRef if sVerseNum represents a verse bridge).</param>
+        /// ------------------------------------------------------------------------------------
+        public static void VerseToInt(string sVerseNum, out int nVerseStart, out int nVerseEnd)
+        {
+            int nFactor = 1;
+            int nVerseT = 0;
+            nVerseStart = nVerseEnd = 0;
+            // nVerseFirst is the left-most (or right-most if R2L) non-zero number found.
+            int nVerseFirst = nVerseT;
+            bool fVerseBridge = false;
+            if (sVerseNum == null)
+                return;
+            // REVIEW JohnW (TomB): For robustness, our initial implementation will assume
+            // that the first set of contiguous numbers is the starting verse number and
+            // the last set of contiguous numbers is the ending verse number. This way, we
+            // don't have to know what all the legal possibilities of bridge markers and
+            // sub-verse segment indicators are.
+            for (int i = sVerseNum.Length - 1; i >= 0; i--)
+            {
+                int numVal = -1;
+                if (Char.IsDigit(sVerseNum[i]))
+                    numVal = (int)Char.GetNumericValue(sVerseNum[i]);
+
+                if (numVal >= 0 && numVal <= 9)
+                {
+                    if (nFactor > 100) // verse number greater than 999
+                    {
+                        // REVIEW JohnW (TomB): Need to decide how we want to display this.
+                        nVerseT = 999;
+                    }
+                    else
+                    {
+                        nVerseT += nFactor * numVal;
+                        nFactor *= 10;
+                    }
+                    nVerseFirst = nVerseT;
+                }
+                else if (nVerseT > 0)
+                {
+                    if (!fVerseBridge)
+                    {
+                        fVerseBridge = true;
+                        nVerseFirst = nVerseEnd = nVerseT;
+                    }
+                    nVerseT = 0;
+                    nFactor = 1;
+                }
+            }
+            nVerseStart = nVerseFirst;
+            if (!fVerseBridge)
+                nVerseEnd = nVerseFirst;
+
+            // Don't want to use an assertion for this because it could happen due to bad input data.
+            // If this causes problems, just pick one ref and use it for both or something.
+            // TODO TomB: Later, we need to catch this and flag it as an error.
+            //Assert(nVerseStart <= nVerseEnd);
+        }
+
+        /// ------------------------------------------------------------------------------------
+        /// <summary>
+        /// Map an SIL book code to a book number (1=GEN, 66=REV)
+        /// </summary>
+        /// <param name="book"></param>
+        /// <returns>The book code if the string passed is a valid SIL book code; -1 if it is a
+        /// Deuterocanonical book code; 0 if it is a totally bogus string</returns>
+        /// ------------------------------------------------------------------------------------
+        public static int BookToNumber(string book)
 		{
 			string key = (book.Length > 3) ? book.Substring(0, 3) : book;
 			key = key.ToUpper();
@@ -1305,27 +1453,27 @@ namespace SIL.Scripture
 			}
 			return true;
 		}
-		#endregion
+        #endregion
 
-		#region IComparable Members
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Compares the current instance with another object of the same type.
-		/// </summary>
-		/// <param name="obj">An object to compare with this instance.</param>
-		/// <returns>
-		/// A 32-bit signed integer that indicates the relative order of the objects being 
-		/// compared. The return value has these meanings: 
-		/// 
-		/// Value				Meaning 
-		/// Less than zero		This instance is less than <paramref name="obj"/>. 
-		/// Zero				This instance is equal to <paramref name="obj"/>. 
-		/// Greater than zero	This instance is greater than <paramref name="obj"/>.
-		/// </returns>
-		/// <exception cref="T:System.ArgumentException">
-		/// 	<paramref name="obj"/> is not the same type as this instance. </exception>
-		/// ------------------------------------------------------------------------------------
-		public virtual int CompareTo(object obj)
+        #region IComparable Members
+        /// ------------------------------------------------------------------------------------
+        /// <summary>
+        /// Compares the current instance with another object of the same type.
+        /// </summary>
+        /// <param name="obj">An object to compare with this instance.</param>
+        /// <returns>
+        /// A 32-bit signed integer that indicates the relative order of the objects being 
+        /// compared. The return value has these meanings: 
+        /// 
+        /// Value				Meaning 
+        /// Less than zero		This instance is less than <paramref name="obj"/>. 
+        /// Zero				This instance is equal to <paramref name="obj"/>. 
+        /// Greater than zero	This instance is greater than <paramref name="obj"/>.
+        /// </returns>
+        /// <exception cref="T:System.ArgumentException">
+        /// 	<paramref name="obj"/> is not the same type as this instance. </exception>
+        /// ------------------------------------------------------------------------------------
+        public virtual int CompareTo(object obj)
 		{
 			if (!(obj is BCVRef))
 				throw new ArgumentException();
