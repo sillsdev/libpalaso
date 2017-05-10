@@ -467,7 +467,10 @@ namespace SIL.Windows.Forms.Keyboarding
 			KeyboardDescription keyboard;
 			if (!_keyboards.TryGet(id, out keyboard))
 			{
-				keyboard = _adaptors.Values.First(adaptor => adaptor.CanHandleFormat(format)).CreateKeyboardDefinition(id);
+				var firstCompatibleAdapter = _adaptors.Values.FirstOrDefault(adaptor => adaptor.CanHandleFormat(format));
+				if(firstCompatibleAdapter == null)
+					throw new ArgumentException(string.Format("Did not find {0} in {1} adapters", format, _adaptors.Count), "format");
+				keyboard = firstCompatibleAdapter.CreateKeyboardDefinition(id);
 				_keyboards.Add(keyboard);
 			}
 
