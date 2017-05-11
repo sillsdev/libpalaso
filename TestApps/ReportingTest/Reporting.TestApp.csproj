@@ -61,7 +61,6 @@
     <DebugSymbols>true</DebugSymbols>
     <RootNamespace>TestApp</RootNamespace>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
