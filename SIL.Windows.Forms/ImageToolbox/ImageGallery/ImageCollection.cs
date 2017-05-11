@@ -23,7 +23,7 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 
 		internal const string kStandardImageFolderName = "images";
 		private Dictionary<string, List<string>> _indexOfWordsToRelativePath;
-		private Dictionary<string, string> _indexOfRelativeFilePathToKeywordsCsv;
+		//private Dictionary<string, string> _indexOfRelativeFilePathToKeywordsCsv;
 		private static readonly object _padlock = new object();
 		private ImageIndexReader _imageIndexReader;
 		private Func<IEnumerable<string>, IEnumerable<string>> _fixPaths = p => p; // identity function, by default
@@ -60,7 +60,7 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 			}
 
 			_indexOfWordsToRelativePath = new Dictionary<string, List<string>>();
-			_indexOfRelativeFilePathToKeywordsCsv = new Dictionary<string, string>();
+			//_indexOfRelativeFilePathToKeywordsCsv = new Dictionary<string, string>();
 
 			using (var f = File.OpenText(FindIndexFileInFolder(FolderPath)))
 			{
@@ -74,8 +74,8 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 					var csvOfKeywords = _imageIndexReader.GetCSVOfKeywordsOrEmpty(searchLanguageId, fields);
 					if (String.IsNullOrWhiteSpace(csvOfKeywords))
 						continue;
-					lock (_padlock)
-						_indexOfRelativeFilePathToKeywordsCsv.Add(relativePath, csvOfKeywords.Replace(",", ", "));
+					//lock (_padlock)
+						//_indexOfRelativeFilePathToKeywordsCsv.Add(relativePath, csvOfKeywords.Replace(",", ", "));
 					var keys = csvOfKeywords.SplitTrimmed(',');
 					foreach (var key in keys)
 					{
