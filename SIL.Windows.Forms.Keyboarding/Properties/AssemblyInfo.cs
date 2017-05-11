@@ -23,8 +23,8 @@ using SIL.Acknowledgements;
 [assembly: Acknowledgement("ibusdotnet", Name = "ibusdotnet", Url = "https://www.nuget.org/packages/ibusdotnet/",
 	Copyright = "Copyright 2015 SIL International", LicenseUrl = "https://opensource.org/licenses/MIT",
 	Location = "./ibusdotnet.dll")]
-[assembly: Acknowledgement("icu-dotnet", Name = "icu-dotnet", Url = "https://github.com/sillsdev/icu-dotnet",
-	LicenseUrl = "https://opensource.org/licenses/MIT", Copyright = "Copyright © SIL International 2007-2016", Location = "./icu-dotnet.dll")]
+[assembly: Acknowledgement("icu.net", Name = "icu.net", Url = "https://github.com/sillsdev/icu-dotnet",
+	LicenseUrl = "https://opensource.org/licenses/MIT", Copyright = "Copyright © SIL International 2007-2016", Location = "./icu.net.dll")]
 [assembly: Acknowledgement("KeymanLink", Url = "https://keyman.com/", Copyright = "Copyright © SIL 2006",
 	Location = "./KeymanLink.dll")]
 [assembly: Acknowledgement("L10NSharp", Url = "https://github.com/sillsdev/l10nsharp/",
