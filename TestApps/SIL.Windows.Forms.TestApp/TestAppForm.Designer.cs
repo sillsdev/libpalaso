@@ -69,6 +69,7 @@ namespace SIL.Windows.Forms.TestApp
 			this.btnSelectFile = new System.Windows.Forms.Button();
 			this._silAboutBoxGecko = new System.Windows.Forms.Button();
 			this.btnSettingProtectionDialog = new System.Windows.Forms.Button();
+			this.btnFlexibleMessageBox = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// btnFolderBrowserControl
@@ -137,8 +138,9 @@ namespace SIL.Windows.Forms.TestApp
 			// 
 			// label1
 			// 
+			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(12, 298);
+			this.label1.Location = new System.Drawing.Point(12, 331);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(149, 13);
 			superToolTipInfo1.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
@@ -198,11 +200,22 @@ namespace SIL.Windows.Forms.TestApp
 			this.btnSettingProtectionDialog.UseVisualStyleBackColor = true;
 			this.btnSettingProtectionDialog.Click += new System.EventHandler(this.btnSettingProtectionDialog_Click);
 			// 
+			// btnFlexibleMessageBox
+			// 
+			this.btnFlexibleMessageBox.Location = new System.Drawing.Point(12, 302);
+			this.btnFlexibleMessageBox.Name = "btnFlexibleMessageBox";
+			this.btnFlexibleMessageBox.Size = new System.Drawing.Size(157, 23);
+			this.btnFlexibleMessageBox.TabIndex = 4;
+			this.btnFlexibleMessageBox.Text = "Flexible Message Box";
+			this.btnFlexibleMessageBox.UseVisualStyleBackColor = true;
+			this.btnFlexibleMessageBox.Click += new System.EventHandler(this.btnFlexibleMessageBox_Click);
+			// 
 			// TestAppForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(187, 326);
+			this.ClientSize = new System.Drawing.Size(187, 359);
+			this.Controls.Add(this.btnFlexibleMessageBox);
 			this.Controls.Add(this.btnSettingProtectionDialog);
 			this.Controls.Add(this._silAboutBoxGecko);
 			this.Controls.Add(this.label1);
@@ -235,5 +248,6 @@ namespace SIL.Windows.Forms.TestApp
 		private System.Windows.Forms.Button btnSelectFile;
 		private System.Windows.Forms.Button _silAboutBoxGecko;
 		private System.Windows.Forms.Button btnSettingProtectionDialog;
+		private System.Windows.Forms.Button btnFlexibleMessageBox;
 	}
 }
