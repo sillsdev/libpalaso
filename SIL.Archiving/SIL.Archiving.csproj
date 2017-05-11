@@ -54,13 +54,11 @@
     <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
     <NoWarn>1591</NoWarn>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMono|AnyCPU'">
-    <OutputPath>..\output\ReleaseMono\</OutputPath>
+    <OutputPath>..\output\ReleaseMono</OutputPath>
     <DefineConstants>TRACE;MONO</DefineConstants>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile>..\output\ReleaseMono\SIL.</DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -72,11 +70,10 @@
     <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
     <NoWarn>1591</NoWarn>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\DebugStrongName\</OutputPath>
+    <OutputPath>..\output\DebugStrongName</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>..\output\DebugStrongName\SIL.Archiving.XML</DocumentationFile>
     <DebugType>full</DebugType>
@@ -84,11 +81,10 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1591</NoWarn>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\DebugMonoStrongName\</OutputPath>
+    <OutputPath>..\output\DebugMonoStrongName</OutputPath>
     <DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -96,33 +92,29 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>..\output\DebugMonoStrongName\SIL.Archiving.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseStrongName|AnyCPU'">
-    <OutputPath>..\output\ReleaseStrongName\</OutputPath>
+    <OutputPath>..\output\ReleaseStrongName</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile>..\output\ReleaseStrongName\SIL.</DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|AnyCPU'">
-    <OutputPath>..\output\ReleaseMonoStrongName\</OutputPath>
+    <OutputPath>..\output\ReleaseMonoStrongName</OutputPath>
     <DefineConstants>TRACE;MONO</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\Debug\</OutputPath>
+    <OutputPath>..\output\Debug</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>..\output\Debug\SIL.Archiving.XML</DocumentationFile>
     <DebugType>full</DebugType>
@@ -130,13 +122,11 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1591</NoWarn>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>..\output\Release\</OutputPath>
+    <OutputPath>..\output\Release</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile>..\output\Release\SIL.</DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -144,11 +134,10 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>
     </NoWarn>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMono|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\DebugMono\</OutputPath>
+    <OutputPath>..\output\DebugMono</OutputPath>
     <DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -156,10 +145,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>..\output\DebugMono\SIL.Archiving.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMono|x86'">
-    <OutputPath>..\output\ReleaseMono\</OutputPath>
+    <OutputPath>..\output\ReleaseMono</OutputPath>
     <DefineConstants>TRACE;MONO</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -167,11 +155,10 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1591</NoWarn>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\DebugStrongName\</OutputPath>
+    <OutputPath>..\output\DebugStrongName</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>..\output\DebugStrongName\SIL.Archiving.XML</DocumentationFile>
     <DebugType>full</DebugType>
@@ -179,11 +166,10 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <NoWarn>1591</NoWarn>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\output\DebugMonoStrongName\</OutputPath>
+    <OutputPath>..\output\DebugMonoStrongName</OutputPath>
     <DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -191,29 +177,106 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>..\output\DebugMonoStrongName\SIL.Archiving.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseStrongName|x86'">
-    <OutputPath>..\output\ReleaseStrongName\</OutputPath>
+    <OutputPath>..\output\ReleaseStrongName</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile>..\output\ReleaseStrongName\SIL.</DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|x86'">
-    <OutputPath>..\output\ReleaseMonoStrongName\</OutputPath>
+    <OutputPath>..\output\ReleaseMonoStrongName</OutputPath>
     <DefineConstants>TRACE;MONO</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\output\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>..\output\Debug\SIL.Archiving.XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>..\output\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMono|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\output\DebugMono</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
+    <DocumentationFile>..\output\DebugMono\SIL.Archiving.XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMono|x64'">
+    <OutputPath>..\output\ReleaseMono</OutputPath>
+    <DefineConstants>TRACE;MONO</DefineConstants>
+    <Optimize>true</Optimize>
+    <NoWarn>1591</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\output\DebugStrongName</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>..\output\DebugStrongName\SIL.Archiving.XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\output\DebugMonoStrongName</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MONO</DefineConstants>
+    <DocumentationFile>..\output\DebugMonoStrongName\SIL.Archiving.XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseStrongName|x64'">
+    <OutputPath>..\output\ReleaseStrongName</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMonoStrongName|x64'">
+    <OutputPath>..\output\ReleaseMonoStrongName</OutputPath>
+    <DefineConstants>TRACE;MONO</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup Condition="'$(OS)'!='Windows_NT'">
     <Reference Include="L10NSharp">
@@ -310,6 +373,16 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SIL.Windows.Forms\SIL.Windows.Forms.csproj">
+      <Project>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</Project>
+      <Name>SIL.Windows.Forms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
+      <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
+      <Name>SIL.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <None Include="app.config" />
     <None Include="IMDI\xsd\GenerateClasses.bat" />
     <None Include="IMDI\xsd\IMDI_3.0.xsd">
@@ -332,16 +405,7 @@
     <None Include="Resources\elar.html" />
     <None Include="Resources\tla.html" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
-      <Project>{3527da1d-1e25-48be-a71e-9ebf7f9208d4}</Project>
-      <Name>SIL.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SIL.Windows.Forms\SIL.Windows.Forms.csproj">
-      <Project>{db44f49c-d8c6-434f-81ed-28ea5c9e8195}</Project>
-      <Name>SIL.Windows.Forms</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemGroup/>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
 	   Other similar extension points exist, see Microsoft.Common.targets.
