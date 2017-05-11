@@ -39,13 +39,13 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox.ImageGallery
 
 			MakeFakeImageCollection(_bobCollectionFolder, "Bob_", "index.txt", @"filename\tsubfolder\ten\tid\tde
 Bob_First.png	Australia	galaxy
-Bob_Christmas Lights.png	Australia	Christmas,lights,programming,stars,bridge	
+Bob_Christmas Lights.png	Australia	Christmas,lights,programming,stars,bridge
 Bob_Hubble Galaxy.png 	Australia	Hubble,stars,galaxy	");
 			MakeFakeImageCollection(_sallyCollectionFolder, "", "index.txt", @"filename\tsubfolder\ten\tid\tjt
 brokenBridge.png\tMelbourne\tbridge,broken,melbourne,skyscraper\tbridgeIn,brokenIn,melbourneIn,skyscraperIn
-Central.png\tMelbourne	foo,skyscraper,bridge,river,melbourne	
+Central.png\tMelbourne	foo,skyscraper,bridge,river,melbourne
 Yarra.png\tMelbourne	yarra,river,melbourne,skyscraper
-Central.png\tSydney	skyscraper,bridge,river,sydney	
+Central.png\tSydney	skyscraper,bridge,river,sydney
 Bridge.png\tSydney	bridge,sydney,harbor,child
 OperaAndBridge.png\tSydney	bridge,opera,sydney,harbor
 RainbowWater.png\tSydney	bridge,opera,sydney,rainbow,harbor");
@@ -59,9 +59,9 @@ RainbowWater.png\tSydney	bridge,opera,sydney,rainbow,harbor");
 			_testFolder.Dispose();
 		}
 
-	    [SetUp]
-	    public void Setup()
-	    {
+		[SetUp]
+		public void Setup()
+		{
 			_collectionManager = new ImageCollectionManager("en");
 			_collectionManager.FindAndLoadCollections(new[] { _artOfReadingFolder, _bobCollectionFolder, _sallyCollectionFolder });
 		}
@@ -70,7 +70,7 @@ RainbowWater.png\tSydney	bridge,opera,sydney,rainbow,harbor");
 		{
 			Directory.CreateDirectory(rootFolder);
 			var indexPath = Path.Combine(rootFolder, indexName);
-			File.WriteAllText(indexPath, content.Replace("\\t","\t")); //since we @ the string, the \t's get taken literally
+			File.WriteAllText(indexPath, content.Replace("\\t", "\t")); //since we @ the string, the \t's get taken literally
 		}
 
 		/// <summary>
@@ -86,8 +86,8 @@ RainbowWater.png\tSydney	bridge,opera,sydney,rainbow,harbor");
 			var pics = _collectionManager.GetMatchingImages("child", false, out foundExactMatches);
 			Assert.That(foundExactMatches, Is.True);
 			Assert.That(pics, Has.Count.EqualTo(2));
-			AssertHasResultThatEndsInSubpath(pics,"Brazil/AOR_B-3-3.png");
-		    AssertHasResultThatEndsInSubpath(pics, "Sydney/Bridge.png");
+			AssertHasResultThatEndsInSubpath(pics, "Brazil/AOR_B-3-3.png");
+			AssertHasResultThatEndsInSubpath(pics, "Sydney/Bridge.png");
 		}
 
 		[Test]
@@ -109,59 +109,59 @@ RainbowWater.png\tSydney	bridge,opera,sydney,rainbow,harbor");
 			var pics = _collectionManager.GetMatchingImages("chil", false, out foundExactMatches);
 			Assert.That(foundExactMatches, Is.False);
 			Assert.That(pics, Has.Count.EqualTo(2));
-			AssertHasResultThatEndsInSubpath(pics,"Brazil/AOR_B-3-3.png");
+			AssertHasResultThatEndsInSubpath(pics, "Brazil/AOR_B-3-3.png");
 			AssertHasResultThatEndsInSubpath(pics, "Sydney/Bridge.png");
 		}
 
-	    [Test]
-	    public void GetMatchingPictures_OnlyApproximateMatchExists_SkipsDisabledCollection()
-	    {
-	        _collectionManager.SetCollectionEnabledStatus(_sallyCollectionFolder, false);
-	        bool foundExactMatches;
-	        var pics = _collectionManager.GetMatchingImages("chil", false, out foundExactMatches);
-	        Assert.That(foundExactMatches, Is.False);
-	        Assert.That(pics, Has.Count.EqualTo(1));
-	        AssertHasResultThatEndsInSubpath(pics, "Brazil/AOR_B-3-3.png");
-	    }
+		[Test]
+		public void GetMatchingPictures_OnlyApproximateMatchExists_SkipsDisabledCollection()
+		{
+			_collectionManager.SetCollectionEnabledStatus(_sallyCollectionFolder, false);
+			bool foundExactMatches;
+			var pics = _collectionManager.GetMatchingImages("chil", false, out foundExactMatches);
+			Assert.That(foundExactMatches, Is.False);
+			Assert.That(pics, Has.Count.EqualTo(1));
+			AssertHasResultThatEndsInSubpath(pics, "Brazil/AOR_B-3-3.png");
+		}
 
-	    [Test]
-	    public void GetMatchingPictures_IndexHadUpperCase_StillFindsIt()
-	    {
-	        bool foundExactMatches;
-	        var pics = _collectionManager.GetMatchingImages("pArRoT", false, out foundExactMatches);
-	        Assert.That(foundExactMatches, Is.True);
-	        Assert.That(pics, Has.Count.EqualTo(1));
-	        AssertHasResultThatEndsInSubpath(pics, "Brazil/AOR_B-NA-6.png");
-	    }
+		[Test]
+		public void GetMatchingPictures_IndexHadUpperCase_StillFindsIt()
+		{
+			bool foundExactMatches;
+			var pics = _collectionManager.GetMatchingImages("pArRoT", false, out foundExactMatches);
+			Assert.That(foundExactMatches, Is.True);
+			Assert.That(pics, Has.Count.EqualTo(1));
+			AssertHasResultThatEndsInSubpath(pics, "Brazil/AOR_B-NA-6.png");
+		}
 
-	    [Test]
-	    public void GetMatchingPictures_ExactMatchExists_SkipsDisabledCollection()
-	    {
-	        bool foundExactMatches;
-	        _collectionManager.SetCollectionEnabledStatus(_sallyCollectionFolder, false);
-	        var pics = _collectionManager.GetMatchingImages("child", false, out foundExactMatches);
-	        Assert.That(foundExactMatches, Is.True);
-	        Assert.That(pics, Has.Count.EqualTo(1));
-	        AssertHasResultThatEndsInSubpath(pics, "Brazil/AOR_B-3-3.png");
-	    }
+		[Test]
+		public void GetMatchingPictures_ExactMatchExists_SkipsDisabledCollection()
+		{
+			bool foundExactMatches;
+			_collectionManager.SetCollectionEnabledStatus(_sallyCollectionFolder, false);
+			var pics = _collectionManager.GetMatchingImages("child", false, out foundExactMatches);
+			Assert.That(foundExactMatches, Is.True);
+			Assert.That(pics, Has.Count.EqualTo(1));
+			AssertHasResultThatEndsInSubpath(pics, "Brazil/AOR_B-3-3.png");
+		}
 
-	    /// <summary>
-	    /// Other things checked
-	    /// - comma, space separator in keyword list
-	    /// </summary>
-	    [Test]
-	    public void GetMatchingPictures_FindsMatchesOnMultipleIndonesianWords()
-	    {
+		/// <summary>
+		/// Other things checked
+		/// - comma, space separator in keyword list
+		/// </summary>
+		[Test]
+		public void GetMatchingPictures_FindsMatchesOnMultipleIndonesianWords()
+		{
 			_collectionManager.ChangeSearchLanguageAndReloadIndex("id");
-	        bool foundExactMatches; //kepala==boy
-	        var pics = _collectionManager.GetMatchingImages("bridgeIn, kepala", false, out foundExactMatches);
-	        Assert.That(foundExactMatches, Is.True);
-	        AssertHasResultThatEndsInSubpath(pics, "Brazil/AOR_B-3-3.png");
-	        AssertHasResultThatEndsInSubpath(pics, "Melbourne/brokenBridge.png");
-	        Assert.That(pics, Has.Count.EqualTo(2));
-	    }
+			bool foundExactMatches; //kepala==boy
+			var pics = _collectionManager.GetMatchingImages("bridgeIn, kepala", false, out foundExactMatches);
+			Assert.That(foundExactMatches, Is.True);
+			AssertHasResultThatEndsInSubpath(pics, "Brazil/AOR_B-3-3.png");
+			AssertHasResultThatEndsInSubpath(pics, "Melbourne/brokenBridge.png");
+			Assert.That(pics, Has.Count.EqualTo(2));
+		}
 
-	    /// <summary>
+		/// <summary>
 		/// Other things checked
 		/// - Prefix in additional collection works
 		/// - different indexes added for different additional collections
@@ -217,13 +217,13 @@ RainbowWater.png\tSydney	bridge,opera,sydney,rainbow,harbor");
 			Assert.True(_collectionManager.IsCollectionEnabled(_sallyCollectionFolder));
 		}
 
-	    private void AssertHasResultThatEndsInSubpath(IEnumerable<string> paths, string subpathInWindowsOrLinux)
-	    {
-	        var path = subpathInWindowsOrLinux.Replace('/', Path.DirectorySeparatorChar)
-	            .Replace('\\', Path.DirectorySeparatorChar);
-	        var hassubPath = paths.Any(p => p.EndsWith(path));
-	        var nl = Environment.NewLine;
-	        Assert.True(hassubPath, "expected something ending in:" + nl + path + " but got {"+nl+paths.Aggregate((a,b)=>a+nl+b).Trim(new[]{','})+"}");
+		private void AssertHasResultThatEndsInSubpath(IEnumerable<string> paths, string subpathInWindowsOrLinux)
+		{
+			var path = subpathInWindowsOrLinux.Replace('/', Path.DirectorySeparatorChar)
+				.Replace('\\', Path.DirectorySeparatorChar);
+			var hassubPath = paths.Any(p => p.EndsWith(path));
+			var nl = Environment.NewLine;
+			Assert.True(hassubPath, "expected something ending in:" + nl + path + " but got {" + nl + paths.Aggregate((a, b) => a + nl + b).Trim(new[] { ',' }) + "}");
 		}
 	}
 }

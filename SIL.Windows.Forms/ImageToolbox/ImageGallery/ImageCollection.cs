@@ -11,40 +11,40 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 {
 	/// <summary>
 	/// A set of images on disk that have an index file with key words in one or more languages.
-	/// For example, "Art of Reading" is one of these collections. 
+	/// For example, "Art of Reading" is one of these collections.
 	/// See https://github.com/sillsdev/image-collection-starter and https://github.com/sillsdev/ArtOfReading
 	/// </summary>
 	public class ImageCollection
-    {
-        public readonly string FolderPath;
-        public IEnumerable<string> IndexLanguages => _imageIndexReader.LanguageIds;
+	{
+		public readonly string FolderPath;
+		public IEnumerable<string> IndexLanguages => _imageIndexReader.LanguageIds;
 		public bool Enabled = true;
 		public string Key => FolderPath;
 
 		internal const string kStandardImageFolderName = "images";
 		private Dictionary<string, List<string>> _indexOfWordsToRelativePath;
-        private Dictionary<string, string> _indexOfRelativeFilePathToKeywordsCsv;
-        private static readonly object _padlock = new object();
-        private ImageIndexReader _imageIndexReader;
+		private Dictionary<string, string> _indexOfRelativeFilePathToKeywordsCsv;
+		private static readonly object _padlock = new object();
+		private ImageIndexReader _imageIndexReader;
 		private Func<IEnumerable<string>, IEnumerable<string>> _fixPaths = p => p; // identity function, by default
 
 		public ImageCollection(string path)
-        {
-            Require.That(Directory.Exists(path), "path must be a directory and must exist");
-            FolderPath = path;
+		{
+			Require.That(Directory.Exists(path), "path must be a directory and must exist");
+			FolderPath = path;
 			LoadLanguageChoices();
 		}
-      
+
 		/// <summary>
 		/// Some sort of name for the collection
 		/// </summary>
-        public string Name => Path.GetFileName(FolderPath);
+		public string Name => Path.GetFileName(FolderPath);
 
 		/// <summary>
 		/// Figure out in what languages we have keywords
 		/// </summary>
-        protected void LoadLanguageChoices()
-        {
+		protected void LoadLanguageChoices()
+		{
 			var pathToIndexFile = FindIndexFileInFolder(FolderPath);
 			_imageIndexReader = ImageIndexReader.FromFile(pathToIndexFile);
 		}
@@ -52,46 +52,46 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 		/// <summary>
 		/// Note: you can call this more than once, in order to change the search language id
 		/// </summary>
-        public virtual void LoadIndex(string searchLanguageId)
-        {
-            if(_imageIndexReader == null)
-            {
-                LoadLanguageChoices();
-            }
+		public virtual void LoadIndex(string searchLanguageId)
+		{
+			if (_imageIndexReader == null)
+			{
+				LoadLanguageChoices();
+			}
 
 			_indexOfWordsToRelativePath = new Dictionary<string, List<string>>();
 			_indexOfRelativeFilePathToKeywordsCsv = new Dictionary<string, string>();
 
 			using (var f = File.OpenText(FindIndexFileInFolder(FolderPath)))
-            {
+			{
 				//skip header line, which was already read to make the index layout above
 				f.ReadLine();
-                while(!f.EndOfStream)
-                {
-                    var line = f.ReadLine();
-					var fields = line.Split(new char[] {'\t'});
-                    var relativePath = _imageIndexReader.GetImageRelativePath(fields);
-                    var csvOfKeywords = _imageIndexReader.GetCSVOfKeywordsOrEmpty(searchLanguageId, fields);
-                    if(String.IsNullOrWhiteSpace(csvOfKeywords))
-                        continue;
-                    lock(_padlock)
-                        _indexOfRelativeFilePathToKeywordsCsv.Add(relativePath, csvOfKeywords.Replace(",", ", "));
-                    var keys = csvOfKeywords.SplitTrimmed(',');
-                    foreach(var key in keys)
-                    {
-                        lock(_padlock)
-                            _indexOfWordsToRelativePath.GetOrCreate(key.ToLowerInvariant()).Add(relativePath);
-                    }
-                }
-            }
-        }
+				while (!f.EndOfStream)
+				{
+					var line = f.ReadLine();
+					var fields = line.Split(new char[] { '\t' });
+					var relativePath = _imageIndexReader.GetImageRelativePath(fields);
+					var csvOfKeywords = _imageIndexReader.GetCSVOfKeywordsOrEmpty(searchLanguageId, fields);
+					if (String.IsNullOrWhiteSpace(csvOfKeywords))
+						continue;
+					lock (_padlock)
+						_indexOfRelativeFilePathToKeywordsCsv.Add(relativePath, csvOfKeywords.Replace(",", ", "));
+					var keys = csvOfKeywords.SplitTrimmed(',');
+					foreach (var key in keys)
+					{
+						lock (_padlock)
+							_indexOfWordsToRelativePath.GetOrCreate(key.ToLowerInvariant()).Add(relativePath);
+					}
+				}
+			}
+		}
 
 		/// <summary>
 		/// Get images that exactly match one or more search terms.
 		/// </summary>
-        public IEnumerable<string> GetMatchingImages(string searchTermsCsv)
-        {
-            searchTermsCsv = ImageCollectionManager.GetCleanedUpSearchString(searchTermsCsv);
+		public IEnumerable<string> GetMatchingImages(string searchTermsCsv)
+		{
+			searchTermsCsv = ImageCollectionManager.GetCleanedUpSearchString(searchTermsCsv);
 			return GetMatchingImages(searchTermsCsv.SplitTrimmed(' '));
 		}
 
@@ -109,13 +109,13 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 					List<string> imagesForThisSearchTerm;
 					if (_indexOfWordsToRelativePath.TryGetValue(term.ToLowerInvariant(), out imagesForThisSearchTerm))
 					{
-					    fullPathsToImages.AddRange(imagesForThisSearchTerm.Select(GetFullPath));
+						fullPathsToImages.AddRange(imagesForThisSearchTerm.Select(GetFullPath));
 					}
 				}
 			}
 			var results = new List<string>();
 			fullPathsToImages.Distinct().ForEach(p => results.Add(p));
-		    return _fixPaths(results);
+			return _fixPaths(results);
 		}
 
 		/// <summary>
@@ -124,30 +124,30 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 		public IEnumerable<string> GetApproximateMatchingImages(IEnumerable<string> searchTerms)
 		{
 			var fullPathsToImages = new List<string>();
-		    foreach(var term in searchTerms)
-		    {
-		        lock(_padlock)
-		        {
-		            const int kMaxEditDistance = 1;
-		            var itemFormExtractor =
-		                new ApproximateMatcher.GetStringDelegate<KeyValuePair<string, List<string>>>(pair => pair.Key);
-		            var matches =
-		                ApproximateMatcher.FindClosestForms<KeyValuePair<string, List<string>>>(_indexOfWordsToRelativePath,
-		                    itemFormExtractor,
-		                    term.ToLowerInvariant(),
-		                    ApproximateMatcherOptions.None,
-		                    kMaxEditDistance);
+			foreach (var term in searchTerms)
+			{
+				lock (_padlock)
+				{
+					const int kMaxEditDistance = 1;
+					var itemFormExtractor =
+						new ApproximateMatcher.GetStringDelegate<KeyValuePair<string, List<string>>>(pair => pair.Key);
+					var matches =
+						ApproximateMatcher.FindClosestForms<KeyValuePair<string, List<string>>>(_indexOfWordsToRelativePath,
+							itemFormExtractor,
+							term.ToLowerInvariant(),
+							ApproximateMatcherOptions.None,
+							kMaxEditDistance);
 
-		            if(matches != null && matches.Count > 0)
-		            {
-		                foreach(var keyValuePair in matches)
-		                {
-		                    fullPathsToImages.AddRange(keyValuePair.Value.Select(GetFullPath));
-		                }
-		            }
-		        }
-		    }
-		    var results = new List<string>();
+					if (matches != null && matches.Count > 0)
+					{
+						foreach (var keyValuePair in matches)
+						{
+							fullPathsToImages.AddRange(keyValuePair.Value.Select(GetFullPath));
+						}
+					}
+				}
+			}
+			var results = new List<string>();
 			fullPathsToImages.Distinct().ForEach(p => results.Add(p));
 			return _fixPaths(results);
 		}
@@ -155,7 +155,7 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 
 		public string GetFullPath(string partialPath)
 		{
-			return Path.Combine( this.FolderPath, ImageCollection.kStandardImageFolderName, partialPath);
+			return Path.Combine(this.FolderPath, ImageCollection.kStandardImageFolderName, partialPath);
 		}
 
 		/*		public string StripNonMatchingKeywords(string stringWhichMayContainKeywords)
@@ -177,7 +177,7 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 
 		/* oddly, we have various methods around for captions, but non were wired up.
          * at the moment, I can't think of why you'd want captions... but not exactly ready
-         * to delete all this in case it later occurs to me.... 
+         * to delete all this in case it later occurs to me....
 		public string GetCaption(string path)
 		{
 			try
