@@ -25,6 +25,7 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 		private readonly List<ImageCollection> _collections;
 		private IEnumerable<ImageCollection> EnabledCollections => Collections.Where(c => c.Enabled);
 		private string _searchLanguage;
+		private bool _indicesLoaded;
 
 		/// <summary>
 		/// Factory method that finds and loads any available image collections
@@ -77,13 +78,13 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 		public void FindAndLoadCollections(IEnumerable<string> explicitFoldersForUnitTests = null)
 		{
 			List<string> collectionFolders = new List<string>();
-			if (explicitFoldersForUnitTests != null)
+			if(explicitFoldersForUnitTests != null)
 			{
 				collectionFolders.AddRange(explicitFoldersForUnitTests);
 			}
 			else
 			{
-				if (Directory.Exists(ImageCollectionsFolder))
+				if(Directory.Exists(ImageCollectionsFolder))
 				{
 					collectionFolders.AddRange(
 						Directory.GetDirectories(ImageCollectionsFolder)
@@ -91,10 +92,10 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 				}
 
 				// if there was no collection that looks like Art Of Reading in the SIL/ImageCollections, look in the old location used prior to Art Of Reading 3.3
-				if (!collectionFolders.Any(path => path.Contains("Art") && path.Contains("Reading")))
+				if(!collectionFolders.Any(path => path.Contains("Art") && path.Contains("Reading")))
 				{
 					var aorPath = TryToGetLegacyArtOfReadingPath();
-					if (!string.IsNullOrEmpty(aorPath))
+					if(!string.IsNullOrEmpty(aorPath))
 					{
 						collectionFolders.Add(aorPath);
 					}
@@ -103,17 +104,18 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 			_collections.AddRange(collectionFolders.Select(f => new ImageCollection(f)));
 
 			// Load the index information asynchronously so as not to delay displaying
-			// the parent dialog.  Loading the file takes a second or two, but should
-			// be done before the user finishes typing a search string.
-			//
-			foreach (var c in Collections)
+			// the parent dialog.
+
+			var indexLoadingThread = new Thread(() =>
 			{
-				var indexLoadingThread = new Thread(() => { c.LoadIndex(_searchLanguage); })
+				foreach(var c in Collections)
 				{
-					Name = "Index Loading Thread For " + c.Name
-				};
-				indexLoadingThread.Start();
-			}
+					c.LoadIndex(_searchLanguage);
+				}
+				_indicesLoaded = true;
+			});
+			indexLoadingThread.Name = "Index Loading Thread";
+			indexLoadingThread.Start();
 		}
 
 		/// <summary>
@@ -123,6 +125,22 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 			out bool foundExactMatches)
 		{
 			foundExactMatches = false;
+
+			// On a dev machine, the index loading feels instantaneous with AOR,
+			// but if the user were on a super slow computer, and entered a query quickly, he would
+			// get a spinning cursor until they are done.
+			const int kMaxSecondsToWaitForIndexLoading = 20;
+			var whenToGiveUp = DateTime.Now.AddSeconds(kMaxSecondsToWaitForIndexLoading);
+			while(!_indicesLoaded && DateTime.Now < whenToGiveUp)
+			{
+				Thread.Sleep(10);
+			}
+			// If still not done, give up and return no results.
+			if(!_indicesLoaded)
+			{
+				return new string[]{};
+			}
+
 			searchTerms = GetCleanedUpSearchString(searchTerms.ToLowerInvariant());
 			var searchTermArray = searchTerms.SplitTrimmed(' ');
 
