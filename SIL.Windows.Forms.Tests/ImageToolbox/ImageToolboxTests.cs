@@ -6,8 +6,8 @@ using System.Reflection;
 using System.Windows.Forms;
 using NUnit.Framework;
 using SIL.Windows.Forms.ClearShare;
-using SIL.Windows.Forms.ImageGallery;
 using SIL.Windows.Forms.ImageToolbox;
+using SIL.Windows.Forms.ImageToolbox.ImageGallery;
 
 namespace SIL.Windows.Forms.Tests.ImageToolbox
 {

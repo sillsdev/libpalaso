@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace SIL.Windows.Forms.ImageGallery
+namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 {
 	public partial class ListViewThumbnailViewer : ListView, IThumbnailViewer
 	{
@@ -195,7 +195,7 @@ namespace SIL.Windows.Forms.ImageGallery
 
 		public Control TheControl { get { return this; } }
 
-		public CaptionMethodDelegate CaptionMethod
+		public Func<string,string> CaptionMethod
 		{
 			get; set;
 		}
