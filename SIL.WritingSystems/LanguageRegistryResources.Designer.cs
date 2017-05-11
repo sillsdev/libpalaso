@@ -106,7 +106,6 @@ namespace SIL.WritingSystems {
                 return ResourceManager.GetString("AllTagsTime", resourceCulture);
             }
         }
-
 		/// <summary>
 		///   Looks up a localized string similar to File-Date: 2017-01-20
 		///%%
@@ -143,8 +142,42 @@ namespace SIL.WritingSystems {
 		///Description: Amharic
 		///Adde [rest of string was truncated]&quot;;.
 		/// </summary>
-		/// <comment>This is the iana subtag registry which is the primary resource for language tags</comment>
-		internal static string ianaSubtagRegistry {
+        ///   Looks up a localized string similar to File-Date: 2017-01-20
+        ///%%
+        ///Type: language
+        ///Subtag: aa
+        ///Description: Afar
+        ///Added: 2005-10-16
+        ///%%
+        ///Type: language
+        ///Subtag: ab
+        ///Description: Abkhazian
+        ///Added: 2005-10-16
+        ///Suppress-Script: Cyrl
+        ///%%
+        ///Type: language
+        ///Subtag: ae
+        ///Description: Avestan
+        ///Added: 2005-10-16
+        ///%%
+        ///Type: language
+        ///Subtag: af
+        ///Description: Afrikaans
+        ///Added: 2005-10-16
+        ///Suppress-Script: Latn
+        ///%%
+        ///Type: language
+        ///Subtag: ak
+        ///Description: Akan
+        ///Added: 2005-10-16
+        ///Scope: macrolanguage
+        ///%%
+        ///Type: language
+        ///Subtag: am
+        ///Description: Amharic
+        ///Adde [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ianaSubtagRegistry {
             get {
                 return ResourceManager.GetString("ianaSubtagRegistry", resourceCulture);
             }
@@ -185,16 +218,16 @@ namespace SIL.WritingSystems {
         }
 
 		/// <summary>
-		///   Looks up a localized string similar to qaa	qaa	Language Not Listed	.	Unlisted Language	?	?
-		///aaa	aaa	Ghotuo	.	Ghotuo	Nigeria	Nigeria
-		///aab	aab	Alumu-Tesu	.	Alumu-Tesu;Alumu;Tesu;Arum;Arum-Cesu;Arum-Chessu;Arum-Tesu	Nigeria	Nigeria
-		///aac	aac	Ari	.	Ari;Serea	Papua New Guinea	Papua New Guinea
-		///aad	aad	Amal	.	Amal;Alai	Papua New Guinea	Papua New Guinea
-		///aae	aae	Arbëreshë Albanian	.	Albanian, Arbëreshë;Calabrian Albanian;Campo Marino Albanian;Central Mountain Albanian;Molise Albanian;Sicilian Albanian;Arbëreshë;Arbëreshë Albanian	Italy	Italy
-		///aaf	aaf	Ar [rest of string was truncated]&quot;;.
-		/// </summary>
-		/// <comment>This is the data used by SIL.WritingSystems.LanguageLookup, compiled from LanguageCodes, LanguageIndex and ianaSubtagRegistry</comment>
-		internal static string LanguageDataIndex {
+        ///   Looks up a localized string similar to qaa	qaa	Language Not Listed	.	Unlisted Language	?
+        ///aaa	aaa	Ghotuo	.	Ghotuo	Nigeria
+        ///aab	aab	Alumu-Tesu	.	Alumu-Tesu;Alumu;Tesu;Arum;Arum-Cesu;Arum-Chessu;Arum-Tesu	Nigeria
+        ///aac	aac	Ari	.	Ari;Serea	Papua New Guinea
+        ///aad	aad	Amal	.	Amal;Alai	Papua New Guinea
+        ///aae	aae	Arbëreshë Albanian	.	Albanian, Arbëreshë;Calabrian Albanian;Campo Marino Albanian;Central Mountain Albanian;Molise Albanian;Sicilian Albanian;Arbëreshë;Arbëreshë Albanian	Italy
+        ///aaf	aaf	Aranadan	.	Aranadan;Aranatan;Eranadans	India
+        ///aag	aag	Ambrak [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string LanguageDataIndex {
             get {
                 return ResourceManager.GetString("LanguageDataIndex", resourceCulture);
             }
