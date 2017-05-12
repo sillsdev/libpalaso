@@ -74,12 +74,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 		{
 			using (File.OpenWrite(_persistedFilePath))
 			{
-//                using(LiftDataMapper dataMapper = LiftRepositoryStateUnitializedTests.CreateDataMapper(_persistedFilePath))
-//                {
-//                }
-				Assert.Throws<IOException>(() =>
-										   CreateDataMapper(_persistedFilePath));
-
+				Assert.Throws<IOException>(() => CreateDataMapper(_persistedFilePath));
 			}
 		}
 
@@ -125,11 +120,9 @@ namespace SIL.DictionaryServices.Tests.Lift
 			// Close it before creating the LiftDataMapper.
 			fileStream.Close();
 
-			// LiftDataMapper constructor shouldn't throw an IOException.
-			using (LiftDataMapper liftDataMapper = LiftRepositoryStateUnitializedTests.CreateDataMapper(persistedFilePath))
-			{
-			}
-			Assert.IsTrue(true); // Constructor didn't throw.
+			LiftDataMapper liftDataMapper = null;
+			Assert.That(() => liftDataMapper = CreateDataMapper(persistedFilePath), Throws.Nothing);
+			liftDataMapper.Dispose();
 			File.Delete(persistedFilePath);
 		}
 	}
