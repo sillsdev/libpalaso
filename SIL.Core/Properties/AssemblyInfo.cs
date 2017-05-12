@@ -37,7 +37,7 @@ using SIL.Acknowledgements;
 	LicenseUrl = "https://opensource.org/licenses/MS-PL", Location = "./Ionic.Zip.dll",
 	Html = "<li><a href='http://www.codeplex.com/DotNetZip'>Ionic.Zip</a> © Dino Chiesa 2006-2011 (<a href='https://opensource.org/licenses/MS-PL'>MS-PL</a>) - a library for handling zip archives (Flavor=Retail)</li>")]
 [assembly: Acknowledgement("NDesk.DBus", Name = "NDesk.DBus", Url = "https://www.nuget.org/packages/NDesk.DBus/",
-	LicenseUrl = "https://opensource.org/licenses/MIT", Copyright = "Copyright © Alp Toker", Location = "./NDesk.DBus.dll")]
+	LicenseUrl = "https://opensource.org/licenses/MIT", Copyright = "Copyright © 2006 Alp Toker", Location = "./NDesk.DBus.dll")]
 [assembly: Acknowledgement("Newtonsoft.Json", Name = "Json.NET", Url = "https://www.nuget.org/packages/Newtonsoft.Json/",
 	LicenseUrl = "https://opensource.org/licenses/MIT", Copyright = "Copyright © James Newton-King 2008",
 	Location = "./Newtonsoft.Json.dll")]

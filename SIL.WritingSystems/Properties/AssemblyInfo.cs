@@ -36,7 +36,16 @@ using SIL.Acknowledgements;
 [assembly: Acknowledgement("Newtonsoft.Json", Name = "Json.NET", Url = "https://www.nuget.org/packages/Newtonsoft.Json/",
 	LicenseUrl = "https://opensource.org/licenses/MIT", Copyright = "Copyright © James Newton-King 2008",
 	Location = "./Newtonsoft.Json.dll")]
-[assembly: Acknowledgement("icu-dotnet", Url = "https://github.com/sillsdev/icu-dotnet",
-	LicenseUrl = "https://opensource.org/licenses/MIT", Copyright = "Copyright © SIL International 2007-2016", Location = "./icu-dotnet.dll")]
-[assembly: Acknowledgement("Spart", Copyright = "Copyright © SIL International 2014", Url = "https://github.com/sillsdev/spart",
+[assembly: Acknowledgement("icu.net", Url = "https://github.com/sillsdev/icu-dotnet",
+	LicenseUrl = "https://opensource.org/licenses/MIT", Copyright = "Copyright © SIL International 2007-2016", Location = "./icu.net.dll")]
+// The Spart code came originally from a 2003 Code Project article at
+// https://www.codeproject.com/Articles/5676/Spart-a-parser-generator-framework-C.  You have to dig
+// into the source code files to find the copyright and license information.  SIL programmers have
+// modified the code in various ways and SIL owns the copyright on those changes, but not on the
+// original code.  Since our github repo links to the Code Project article, it seems like the best
+// Url value.
+[assembly: Acknowledgement("Spart",
+	Copyright = "Copyright © Jonathan de Halleux 2003, portions Copyright © 2014 SIL International",
+	Url = "https://github.com/sillsdev/spart",
+	LicenseUrl = "https://opensource.org/licenses/Zlib",
 	Location = "./Spart.dll")]

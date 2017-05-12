@@ -23,7 +23,7 @@ namespace SIL.Acknowledgements
 			//"nunit.framework.dll", ".Tests.dll", ".Tests.exe"
 		};
 
-		public static string AssembleAcknowledgements()
+		public static Dictionary<string, AcknowledgementAttribute> CollectAcknowledgements()
 		{
 			var ackAttrDict = new Dictionary<string, AcknowledgementAttribute>();
 
@@ -68,6 +68,12 @@ namespace SIL.Acknowledgements
 					}
 				}
 			}
+			return ackAttrDict;
+		}
+
+		public static string AssembleAcknowledgements()
+		{
+			var ackAttrDict = CollectAcknowledgements();
 			return SortByNameAndConcatenateHtml(ackAttrDict);
 		}
 
