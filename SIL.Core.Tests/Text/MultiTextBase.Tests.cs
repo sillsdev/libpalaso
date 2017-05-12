@@ -149,20 +149,20 @@ namespace SIL.Tests.Text
 		[Test]
 		public void UsesNextAlternativeWhenMissing()
 		{
-			MultiTextBase MultiTextBase = new MultiTextBase();
-			MultiTextBase["wsWithNullElement"] = null;
-			MultiTextBase["wsWithEmptyElement"] = "";
-			MultiTextBase["wsWithContent"] = "hello";
-			Assert.AreEqual(String.Empty, MultiTextBase.GetExactAlternative("missingWs"));
-			Assert.AreEqual(String.Empty, MultiTextBase.GetExactAlternative("wsWithEmptyElement"));
-			Assert.AreEqual("hello", MultiTextBase.GetBestAlternative("missingWs"));
-			Assert.AreEqual("hello", MultiTextBase.GetBestAlternative("wsWithEmptyElement"));
-			Assert.AreEqual("hello*", MultiTextBase.GetBestAlternative("wsWithEmptyElement", "*"));
-			Assert.AreEqual("hello", MultiTextBase.GetBestAlternative("wsWithNullElement"));
-			Assert.AreEqual("hello*", MultiTextBase.GetBestAlternative("wsWithNullElement", "*"));
-			Assert.AreEqual("hello", MultiTextBase.GetExactAlternative("wsWithContent"));
-			Assert.AreEqual("hello", MultiTextBase.GetBestAlternative("wsWithContent"));
-			Assert.AreEqual("hello", MultiTextBase.GetBestAlternative("wsWithContent", "*"));
+			MultiTextBase multiTextBase = new MultiTextBase();
+			multiTextBase["wsWithNullElement"] = null;
+			multiTextBase["wsWithEmptyElement"] = "";
+			multiTextBase["wsWithContent"] = "hello";
+			Assert.AreEqual(String.Empty, multiTextBase.GetExactAlternative("missingWs"));
+			Assert.AreEqual(String.Empty, multiTextBase.GetExactAlternative("wsWithEmptyElement"));
+			Assert.AreEqual("hello", multiTextBase.GetBestAlternative("missingWs"));
+			Assert.AreEqual("hello", multiTextBase.GetBestAlternative("wsWithEmptyElement"));
+			Assert.AreEqual("hello*", multiTextBase.GetBestAlternative("wsWithEmptyElement", "*"));
+			Assert.AreEqual("hello", multiTextBase.GetBestAlternative("wsWithNullElement"));
+			Assert.AreEqual("hello*", multiTextBase.GetBestAlternative("wsWithNullElement", "*"));
+			Assert.AreEqual("hello", multiTextBase.GetExactAlternative("wsWithContent"));
+			Assert.AreEqual("hello", multiTextBase.GetBestAlternative("wsWithContent"));
+			Assert.AreEqual("hello", multiTextBase.GetBestAlternative("wsWithContent", "*"));
 		}
 
 
@@ -184,14 +184,14 @@ namespace SIL.Tests.Text
 			CheckSerializeWithXmlSerializer(text, answerXpath, 1);
 		}
 
-		private void CheckSerializeWithXmlSerializer(MultiTextBase MultiTextBase, string answer, int matches)
+		private void CheckSerializeWithXmlSerializer(MultiTextBase multiTextBase, string answer, int matches)
 		{
 
 			XmlSerializer ser = new XmlSerializer(typeof(TestMultiTextHolder));
 
 			StringWriter writer = new System.IO.StringWriter();
 			TestMultiTextHolder holder = new TestMultiTextHolder();
-			holder.Name = MultiTextBase;
+			holder.Name = multiTextBase;
 			ser.Serialize(writer, holder);
 
 			var mtxml = writer.GetStringBuilder().ToString();
@@ -428,50 +428,50 @@ namespace SIL.Tests.Text
 		[Test]
 		public void SetAnnotation()
 		{
-			MultiTextBase MultiTextBase = new MultiTextBase();
-			MultiTextBase.SetAnnotationOfAlternativeIsStarred("zz", true);
-			Assert.AreEqual(String.Empty, MultiTextBase.GetExactAlternative("zz"));
-			Assert.IsTrue(MultiTextBase.GetAnnotationOfAlternativeIsStarred("zz"));
-			MultiTextBase.SetAnnotationOfAlternativeIsStarred("zz", false);
-			Assert.IsFalse(MultiTextBase.GetAnnotationOfAlternativeIsStarred("zz"));
+			MultiTextBase multiTextBase = new MultiTextBase();
+			multiTextBase.SetAnnotationOfAlternativeIsStarred("zz", true);
+			Assert.AreEqual(String.Empty, multiTextBase.GetExactAlternative("zz"));
+			Assert.IsTrue(multiTextBase.GetAnnotationOfAlternativeIsStarred("zz"));
+			multiTextBase.SetAnnotationOfAlternativeIsStarred("zz", false);
+			Assert.IsFalse(multiTextBase.GetAnnotationOfAlternativeIsStarred("zz"));
 		}
 
 		[Test]
 		public void ClearingAnnotationOfEmptyAlternativeRemovesTheAlternative()
 		{
-			MultiTextBase MultiTextBase = new MultiTextBase();
-			MultiTextBase.SetAnnotationOfAlternativeIsStarred("zz", true);
-			MultiTextBase.SetAnnotationOfAlternativeIsStarred("zz", false);
-			Assert.IsFalse(MultiTextBase.ContainsAlternative("zz"));
+			MultiTextBase multiTextBase = new MultiTextBase();
+			multiTextBase.SetAnnotationOfAlternativeIsStarred("zz", true);
+			multiTextBase.SetAnnotationOfAlternativeIsStarred("zz", false);
+			Assert.IsFalse(multiTextBase.ContainsAlternative("zz"));
 		}
 
 		[Test]
 		public void ClearingAnnotationOfNonEmptyAlternative()
 		{
-			MultiTextBase MultiTextBase = new MultiTextBase();
-			MultiTextBase.SetAnnotationOfAlternativeIsStarred("zz", true);
-			MultiTextBase["zz"] = "hello";
-			MultiTextBase.SetAnnotationOfAlternativeIsStarred("zz", false);
-			Assert.IsTrue(MultiTextBase.ContainsAlternative("zz"));
+			MultiTextBase multiTextBase = new MultiTextBase();
+			multiTextBase.SetAnnotationOfAlternativeIsStarred("zz", true);
+			multiTextBase["zz"] = "hello";
+			multiTextBase.SetAnnotationOfAlternativeIsStarred("zz", false);
+			Assert.IsTrue(multiTextBase.ContainsAlternative("zz"));
 		}
 
 		[Test]
 		public void EmptyingTextOfFlaggedAlternativeDoesNotDeleteIfFlagged()
 		{
 			// REVIEW: not clear really what behavior we want here, since user deletes via clearing text
-			MultiTextBase MultiTextBase = new MultiTextBase();
-			MultiTextBase["zz"] = "hello";
-			MultiTextBase.SetAnnotationOfAlternativeIsStarred("zz", true);
-			MultiTextBase["zz"] = "";
-			Assert.IsTrue(MultiTextBase.ContainsAlternative("zz"));
+			MultiTextBase multiTextBase = new MultiTextBase();
+			multiTextBase["zz"] = "hello";
+			multiTextBase.SetAnnotationOfAlternativeIsStarred("zz", true);
+			multiTextBase["zz"] = "";
+			Assert.IsTrue(multiTextBase.ContainsAlternative("zz"));
 		}
 
 		[Test]
 		public void AnnotationOfMisssingAlternative()
 		{
-			MultiTextBase MultiTextBase = new MultiTextBase();
-			Assert.IsFalse(MultiTextBase.GetAnnotationOfAlternativeIsStarred("zz"));
-			Assert.IsFalse(MultiTextBase.ContainsAlternative("zz"), "should not cause the creation of the alt");
+			MultiTextBase multiTextBase = new MultiTextBase();
+			Assert.IsFalse(multiTextBase.GetAnnotationOfAlternativeIsStarred("zz"));
+			Assert.IsFalse(multiTextBase.ContainsAlternative("zz"), "should not cause the creation of the alt");
 		}
 
 
