@@ -6,7 +6,7 @@ namespace SIL.Annotations
 {
 	public class Annotatable : IAnnotatable, ICloneable<Annotatable>, IEquatable<Annotatable>
 	{
-		protected Annotation _annotation;
+		private Annotation _annotation;
 
 		[XmlAttribute("starred")]
 		public bool IsStarred
@@ -33,7 +33,13 @@ namespace SIL.Annotations
 			}
 		}
 
-		public virtual Annotatable Clone()
+		protected Annotation Annotation
+		{
+			get { return _annotation; }
+			set { _annotation = value; }
+		}
+
+	    public virtual Annotatable Clone()
 		{
 			var clone = new Annotatable();
 			clone._annotation = _annotation == null ? null : _annotation.Clone();

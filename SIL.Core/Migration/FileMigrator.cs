@@ -43,7 +43,7 @@ namespace SIL.Migration
 			string destinationFilePath = "";
 			while (currentVersion != ToVersion)
 			{
-				IMigrationStrategy strategy = _migrationStrategies.Find(s => s.FromVersion == currentVersion);
+				IMigrationStrategy strategy = MigrationStrategies.Find(s => s.FromVersion == currentVersion);
 				if (strategy == null)
 				{
 					throw new InvalidOperationException(

@@ -232,12 +232,36 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 	/// ----------------------------------------------------------------------------------------
 	public class FadingMessageWindow
 	{
-		protected Thread _thread;
-		protected FadingMessageForm _form;
-		protected string _text;
-		protected Point _point;
+		private Thread _thread;
+		private FadingMessageForm _form;
+		private string _text;
+		private Point _point;
 
-		/// ------------------------------------------------------------------------------------
+		protected Thread MsgThread
+		{
+			get { return _thread; }
+			set { _thread = value; }
+		}
+
+		protected FadingMessageForm MsgForm
+		{
+			get { return _form; }
+			set { _form = value; }
+		}
+
+		protected string Text
+		{
+			get { return _text; }
+			set { _text = value; }
+		}
+
+		protected Point MsgPoint
+		{
+			get { return _point; }
+			set { _point = value; }
+		}
+
+	    /// ------------------------------------------------------------------------------------
 		public void Show(string text, Point pt)
 		{
 			if (_thread != null)

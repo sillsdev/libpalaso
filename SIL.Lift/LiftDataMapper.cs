@@ -191,7 +191,13 @@ namespace SIL.Lift
 			get { return Path.GetDirectoryName(_liftFilePath); }
 		}
 
-		private void UpdateLiftFileWithModified(IEnumerable<T> entriesToUpdate)
+		protected bool Disposed
+		{
+			get { return _disposed; }
+			set { _disposed = value; }
+		}
+
+	    private void UpdateLiftFileWithModified(IEnumerable<T> entriesToUpdate)
 		{
 			CreateFileContainingModified(entriesToUpdate);
 			MergeIncrementFiles();
@@ -397,8 +403,7 @@ namespace SIL.Lift
 		}
 #endif
 
-		[CLSCompliant(false)]
-		protected bool _disposed;
+		private bool _disposed;
 
 		public virtual void Dispose()
 		{

@@ -36,13 +36,13 @@ namespace SIL.CommandLineProcessing
 		{
 			_actionForReportingProgress = actionForReportingProgress;
 			//not allowed to even ask: Guard.Against(process.StartTime!=default(DateTime),"Must initialize this reader before starting the process");
-			_process = process;
-			_progress = progress;
+			base.Process = process;
+			base.Progress = progress;
 			_outputBuilder = new StringBuilder();
 			_errorBuilder = new StringBuilder();
 
-			_process.OutputDataReceived += (p, data) => HandleNewData(data, _outputBuilder, "StdOutput");
-			_process.ErrorDataReceived += (p, data) => HandleNewData(data, _errorBuilder, "StdError");
+			base.Process.OutputDataReceived += (p, data) => HandleNewData(data, _outputBuilder, "StdOutput");
+			base.Process.ErrorDataReceived += (p, data) => HandleNewData(data, _errorBuilder, "StdError");
 		}
 
 		/// <param name="secondsBeforeTimeOut"></param>
@@ -50,15 +50,15 @@ namespace SIL.CommandLineProcessing
 		public override bool Read(int secondsBeforeTimeOut)
 		{
 			_stillReading = true;
-			_process.BeginOutputReadLine();
-			_process.BeginErrorReadLine();
+			Process.BeginOutputReadLine();
+			Process.BeginErrorReadLine();
 
 			var end = DateTime.Now.AddSeconds(secondsBeforeTimeOut);
 			try
 			{
-				while (!_process.HasExited)
+				while (!Process.HasExited)
 				{
-					if (_progress.CancelRequested)
+					if (Progress.CancelRequested)
 						return false;
 
 					Thread.Sleep(100);
@@ -76,8 +76,8 @@ namespace SIL.CommandLineProcessing
 			finally
 			{
 				_stillReading = false; //probably the following cancells, which I learned of later, would remove the need for this _stillReading flag
-				_process.CancelOutputRead();
-				_process.CancelErrorRead();
+				Process.CancelOutputRead();
+				Process.CancelErrorRead();
 			}
 		}
 

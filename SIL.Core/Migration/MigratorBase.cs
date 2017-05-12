@@ -6,8 +6,8 @@ namespace SIL.Migration
 {
 	public class MigratorBase
 	{
-		protected readonly List<IMigrationStrategy> _migrationStrategies;
-		protected readonly List<IFileVersion> _versionStrategies;
+		private readonly List<IMigrationStrategy> _migrationStrategies;
+		private readonly List<IFileVersion> _versionStrategies;
 
 		private class VersionComparerDescending : IComparer<IFileVersion>
 		{
@@ -30,7 +30,17 @@ namespace SIL.Migration
 
 		public int ToVersion { get; private set; }
 
-		public void AddVersionStrategy(IFileVersion strategy)
+		protected List<IMigrationStrategy> MigrationStrategies
+		{
+			get { return _migrationStrategies; }
+		}
+
+		protected List<IFileVersion> VersionStrategies
+		{
+			get { return _versionStrategies; }
+		}
+
+	    public void AddVersionStrategy(IFileVersion strategy)
 		{
 			_versionStrategies.Add(strategy);
 		}

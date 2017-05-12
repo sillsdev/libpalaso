@@ -140,7 +140,9 @@ namespace SIL.Windows.Forms.Reporting
 
 	public struct MemoryInformation
 	{
+		[CLSCompliant(false)]
 		public ulong TotalPhysicalMemory;
+		[CLSCompliant(false)]
 		public ulong TotalVirtualMemory;
 	}
 }

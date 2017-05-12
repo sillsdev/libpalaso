@@ -90,7 +90,7 @@ namespace SIL.Text
 			if (!IsStarred.Equals(other.IsStarred)) return false;
 			if ((WritingSystemId != null && !WritingSystemId.Equals(other.WritingSystemId)) || (other.WritingSystemId != null && !other.WritingSystemId.Equals(WritingSystemId))) return false;
 			if ((Form != null && !Form.Equals(other.Form)) || (other.Form != null && !other.Form.Equals(Form))) return false;
-			if ((_annotation != null && !_annotation.Equals(other._annotation)) || (other._annotation != null && !other._annotation.Equals(_annotation))) return false;
+			if ((Annotation != null && !Annotation.Equals(other.Annotation)) || (other.Annotation != null && !other.Annotation.Equals(Annotation))) return false;
 			if (_spans != other.Spans)
 			{
 				if (_spans == null || other.Spans == null || _spans.Count != other.Spans.Count) return false;
@@ -122,7 +122,7 @@ namespace SIL.Text
 			var clone = new LanguageForm();
 			clone._writingSystemId = _writingSystemId;
 			clone._form = _form;
-			clone._annotation = _annotation == null ? null : _annotation.Clone();
+			clone.Annotation = Annotation == null ? null : Annotation.Clone();
 			foreach (var span in _spans)
 				clone._spans.Add(new FormatSpan{Index=span.Index, Length=span.Length, Class=span.Class, Lang=span.Lang, LinkURL=span.LinkURL});
 			return clone;

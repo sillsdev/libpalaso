@@ -37,15 +37,15 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		protected Action<int> RemoveRowAction;
 		protected Func<string> GetRemoveRowToolTipText;
 
-		protected Image _removeRowImageNormal;
-		protected Image _removeRowImageHot;
-		protected bool _alwaysShowRemoveRowIcon;
-		protected bool _skipValidationBecauseUserIsClickingDeleteButton;
-		protected bool _isDirty;
-		protected bool _paintWaterMark;
-		protected bool _showWaterMarkWhenDirty;
-		protected string _waterMark = "!";
-		protected int _prevRowIndex = -1;
+		private Image _removeRowImageNormal;
+		private Image _removeRowImageHot;
+		private bool _alwaysShowRemoveRowIcon;
+		private bool _skipValidationBecauseUserIsClickingDeleteButton;
+		private bool _isDirty;
+		private bool _paintWaterMark;
+		private bool _showWaterMarkWhenDirty;
+		private string _waterMark = "!";
+		private int _prevRowIndex = -1;
 
 		/// ------------------------------------------------------------------------------------
 		public BetterGrid()
@@ -340,7 +340,43 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 			get { return Controls.OfType<HScrollBar>().Select(ctrl => ctrl).FirstOrDefault(); }
 		}
 
-		/// ------------------------------------------------------------------------------------
+		protected Image RemoveRowImageNormal
+		{
+			get { return _removeRowImageNormal; }
+			set { _removeRowImageNormal = value; }
+		}
+
+		protected Image RemoveRowImageHot
+		{
+			get { return _removeRowImageHot; }
+			set { _removeRowImageHot = value; }
+		}
+
+		protected bool AlwaysShowRemoveRowIcon
+		{
+			get { return _alwaysShowRemoveRowIcon; }
+			set { _alwaysShowRemoveRowIcon = value; }
+		}
+
+		protected bool SkipValidationBecauseUserIsClickingDeleteButton
+		{
+			get { return _skipValidationBecauseUserIsClickingDeleteButton; }
+			set { _skipValidationBecauseUserIsClickingDeleteButton = value; }
+		}
+
+		protected bool PaintWaterMark
+		{
+			get { return _paintWaterMark; }
+			set { _paintWaterMark = value; }
+		}
+
+		protected int PrevRowIndex
+		{
+			get { return _prevRowIndex; }
+			set { _prevRowIndex = value; }
+		}
+
+	    /// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Update the water mark when the grid scrolls.
 		/// </summary>

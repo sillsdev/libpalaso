@@ -9,9 +9,9 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 	/// ----------------------------------------------------------------------------------------
 	public class CellCustomDropDownList : Panel
 	{
-		protected DataGridViewCell _associatedCell;
-		protected readonly ListBox _listBox;
-		protected readonly CustomDropDown _dropDown;
+		private DataGridViewCell _associatedCell;
+		private readonly ListBox _listBox;
+		private readonly CustomDropDown _dropDown;
 
 		/// ------------------------------------------------------------------------------------
 		public CellCustomDropDownList()
@@ -73,7 +73,23 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 			get { return _associatedCell != null; }
 		}
 
-		/// ------------------------------------------------------------------------------------
+		protected DataGridViewCell AssociatedCell
+		{
+			get { return _associatedCell; }
+			set { _associatedCell = value; }
+		}
+
+		protected ListBox Box
+		{
+			get { return _listBox; }
+		}
+
+		protected CustomDropDown DropDown
+		{
+			get { return _dropDown; }
+		}
+
+	    /// ------------------------------------------------------------------------------------
 		public void Close()
 		{
 			_dropDown.Close();

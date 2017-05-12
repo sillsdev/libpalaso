@@ -1649,6 +1649,7 @@ namespace SIL.Windows.Forms.FolderBrowserControl
 	public class Win32
 	{
 		[DllImport("kernel32")]
+		[CLSCompliant(false)]
 		public static extern uint GetDriveType(string lpRootPathName);
 	}
 

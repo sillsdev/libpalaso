@@ -14,14 +14,13 @@ namespace SIL.Data
 
 		private DateTime lastModified = new DateTime(DateTime.MinValue.Ticks, DateTimeKind.Utc);
 #if DEBUG
-		[CLSCompliant(false)]
-		protected StackTrace _constructionStackTrace;
+        private StackTrace _constructionStackTrace;
 #endif
 
 		public MemoryDataMapper()
 		{
 #if DEBUG
-			_constructionStackTrace = new StackTrace();
+			ConstructionStackTrace = new StackTrace();
 #endif
 			_disposed = false;
 		}
@@ -45,7 +44,19 @@ namespace SIL.Data
 			get { return false; }
 		}
 
-		public virtual T CreateItem()
+		protected StackTrace ConstructionStackTrace
+		{
+			get { return _constructionStackTrace; }
+			set { _constructionStackTrace = value; }
+		}
+
+		protected bool Disposed
+		{
+			get { return _disposed; }
+			set { _disposed = value; }
+		}
+
+	    public virtual T CreateItem()
 		{
 			T t = new T();
 			MemoryRepositoryId id = new MemoryRepositoryId();
@@ -189,13 +200,12 @@ namespace SIL.Data
 		{
 			if (!_disposed)
 			{
-				throw new ApplicationException("Disposed not explicitly called on MemoryDataMapper." + "\n" + _constructionStackTrace.ToString());
+				throw new ApplicationException("Disposed not explicitly called on MemoryDataMapper." + "\n" + ConstructionStackTrace.ToString());
 			}
 		}
 #endif
 
-		[CLSCompliant(false)]
-		protected bool _disposed;
+	    private bool _disposed;
 
 		public virtual void Dispose()
 		{

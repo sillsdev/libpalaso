@@ -35,11 +35,11 @@ namespace SIL.IO
 
 	public class FileLocator : IChangeableFileLocator
 	{
-		protected readonly List<string> _searchPaths;
+		private readonly List<string> _searchPaths;
 
-		public FileLocator(IEnumerable<string> searchPaths  )
+		public FileLocator(IEnumerable<string> searchPaths)
 		{
-			_searchPaths = new List<string>(searchPaths);
+			this._searchPaths = new List<string>(searchPaths);
 		}
 
 		public string LocateFile(string fileName)
@@ -179,7 +179,12 @@ namespace SIL.IO
 			}
 		}
 
-		private static string LocateExecutableDistributedWithApplication(string[] partsOfTheSubPath)
+		protected List<string> SearchPaths
+		{
+			get { return _searchPaths; }
+		}
+
+        private static string LocateExecutableDistributedWithApplication(string[] partsOfTheSubPath)
 		{
 			var exe = GetFileDistributedWithApplication(true, partsOfTheSubPath);
 			if (string.IsNullOrEmpty(exe))

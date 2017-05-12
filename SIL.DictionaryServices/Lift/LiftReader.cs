@@ -35,7 +35,13 @@ namespace SIL.DictionaryServices.Lift
 		/// </summary>
 		public event EventHandler AfterEntryRead;
 
-		public void Read(string filePath, MemoryDataMapper<LexEntry> dataMapper)
+		protected bool Disposed
+		{
+			get { return _disposed; }
+			set { _disposed = value; }
+		}
+
+	    public void Read(string filePath, MemoryDataMapper<LexEntry> dataMapper)
 		{
 			const string status = "Loading entries";
 			Logger.WriteEvent(status);
@@ -129,8 +135,7 @@ namespace SIL.DictionaryServices.Lift
 		}
 #endif
 
-		[CLSCompliant(false)]
-		protected bool _disposed;
+		private bool _disposed;
 
 		public virtual void Dispose()
 		{

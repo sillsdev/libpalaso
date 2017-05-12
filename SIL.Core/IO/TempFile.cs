@@ -18,7 +18,7 @@ namespace SIL.IO
 	/// <example>using(f = new TempFile())</example>
 	public class TempFile : IDisposable
 	{
-		protected string _path;
+		private string _path;
 		private string _folderToDelete; // if not null, delete this as well on dispose
 		private bool _detached;
 
@@ -56,6 +56,7 @@ namespace SIL.IO
 		public string Path
 		{
 			get { return _path; }
+			protected set { _path = value; }
 		}
 
 		/// <summary>

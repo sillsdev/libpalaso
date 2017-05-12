@@ -22,8 +22,7 @@ namespace SIL.DictionaryServices.Lift
 		private readonly Dictionary<string, int> _allIdsExportedSoFar;
 
 		#if DEBUG
-		[CLSCompliant(false)]
-		protected StackTrace _constructionStack;
+		private StackTrace _constructionStack;
 		#endif
 
 		private LiftWriter()
@@ -93,8 +92,19 @@ namespace SIL.DictionaryServices.Lift
 		{
 			get { return _writer; }
 		}
+	    protected StackTrace ConstructionStack
+	    {
+	        get { return _constructionStack; }
+	        set { _constructionStack = value; }
+	    }
 
-		public void End()
+		protected bool Disposed
+		{
+			get { return _disposed; }
+			set { _disposed = value; }
+		}
+
+	    public void End()
 		{
 			if (Writer.Settings.ConformanceLevel != ConformanceLevel.Fragment)
 			{
@@ -908,8 +918,7 @@ namespace SIL.DictionaryServices.Lift
 		}
 #endif
 
-		[CLSCompliant(false)]
-		protected bool _disposed;
+		private bool _disposed;
 
 		public virtual void Dispose()
 		{
