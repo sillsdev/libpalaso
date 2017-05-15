@@ -22,7 +22,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		protected const int kMessageMargin = 7;
 
 		protected Timer _timer;
-		protected Point _point;
+		protected Point MsgPoint;
 		protected TimerState _state;
 
 		/// ------------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		/// ------------------------------------------------------------------------------------
 		public FadingMessageForm(Point pt) : this()
 		{
-			_point = pt;
+			MsgPoint = pt;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -93,7 +93,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 				rc.X + (rc.Width - _tableLayout.Width) / 2,
 				rc.Y + (rc.Height - kPointerSize - _tableLayout.Height) / 2);
 
-			Location = new Point(_point.X - (rc.Width / 2), _point.Y - Height);
+			Location = new Point(MsgPoint.X - (rc.Width / 2), MsgPoint.Y - Height);
 
 			// start the fading/waiting timer.
 			_timer = new Timer();
@@ -232,49 +232,52 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 	/// ----------------------------------------------------------------------------------------
 	public class FadingMessageWindow
 	{
-		protected Thread _thread;
-		protected FadingMessageForm _form;
-		protected string _text;
-		protected Point _point;
+		protected Thread MsgThread { get; set; }
 
-		/// ------------------------------------------------------------------------------------
+		protected FadingMessageForm MsgForm { get; set; }
+
+		protected string Text { get; set; }
+
+		protected Point MsgPoint { get; set; }
+
+	    /// ------------------------------------------------------------------------------------
 		public void Show(string text, Point pt)
 		{
-			if (_thread != null)
+			if (MsgThread != null)
 				return;
 
-			_text = text;
-			_point = pt;
+			Text = text;
+			MsgPoint = pt;
 
 			// For some reason we have to specify a stack size, otherwise we get a stack overflow.
 			// The default stack size of 1MB works on WinXP. Needs to be 2MB on Win2K.
 			// Don't know what value it's using if we don't specify it.
-			_thread = new Thread(ShowForm, 0x200000);
-			_thread.CurrentUICulture = Thread.CurrentThread.CurrentUICulture;
-			_thread.IsBackground = true;
-			_thread.SetApartmentState(ApartmentState.STA);
-			_thread.Name = "FadingWindow";
-			_thread.Start();
+			MsgThread = new Thread(ShowForm, 0x200000);
+			MsgThread.CurrentUICulture = Thread.CurrentThread.CurrentUICulture;
+			MsgThread.IsBackground = true;
+			MsgThread.SetApartmentState(ApartmentState.STA);
+			MsgThread.Name = "FadingWindow";
+			MsgThread.Start();
 		}
 
 		/// ------------------------------------------------------------------------------------
 		protected virtual void ShowForm()
 		{
-			_form = new FadingMessageForm(_point);
-			_form.Text = _text;
-			_form.ShowDialog();
-			_thread = null;
-			_form = null;
+			MsgForm = new FadingMessageForm(MsgPoint);
+			MsgForm.Text = Text;
+			MsgForm.ShowDialog();
+			MsgThread = null;
+			MsgForm = null;
 		}
 
 		/// ------------------------------------------------------------------------------------
 		public void Close()
 		{
-			if (_form != null)
+			if (MsgForm != null)
 			{
-				lock (_form)
+				lock (MsgForm)
 				{
-					_form.Invoke(new MethodInvoker(_form.Close));
+					MsgForm.Invoke(new MethodInvoker(MsgForm.Close));
 				}
 			}
 		}

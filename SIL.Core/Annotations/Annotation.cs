@@ -6,37 +6,37 @@ namespace SIL.Annotations
 {
 	public class Annotatable : IAnnotatable, ICloneable<Annotatable>, IEquatable<Annotatable>
 	{
-		protected Annotation _annotation;
-
 		[XmlAttribute("starred")]
 		public bool IsStarred
 		{
 			get
 			{
-				if (_annotation == null)
+				if (Annotation == null)
 				{
 					return false; // don't bother making one yet
 				}
-				return _annotation.IsOn;
+				return Annotation.IsOn;
 			}
 			set
 			{
 				if (!value)
 				{
-					_annotation = null; //free it up
+					Annotation = null; //free it up
 				}
-				else if (_annotation == null)
+				else if (Annotation == null)
 				{
-					_annotation = new Annotation();
-					_annotation.IsOn = true;
+					Annotation = new Annotation();
+					Annotation.IsOn = true;
 				}
 			}
 		}
 
-		public virtual Annotatable Clone()
+		protected Annotation Annotation { get; set; }
+
+	    public virtual Annotatable Clone()
 		{
 			var clone = new Annotatable();
-			clone._annotation = _annotation == null ? null : _annotation.Clone();
+			clone.Annotation = Annotation == null ? null : Annotation.Clone();
 			return clone;
 		}
 
@@ -50,7 +50,7 @@ namespace SIL.Annotations
 		{
 			if (ReferenceEquals(null, other)) return false;
 			if (ReferenceEquals(this, other)) return true;
-			if ((_annotation != null && !_annotation.Equals(other._annotation)) || (other._annotation != null && !other._annotation.Equals(_annotation))) return false;
+			if ((Annotation != null && !Annotation.Equals(other.Annotation)) || (other.Annotation != null && !other.Annotation.Equals(Annotation))) return false;
 			return true;
 		}
 	}

@@ -35,7 +35,7 @@ namespace SIL.DictionaryServices.Lift
 		/// </summary>
 		public event EventHandler AfterEntryRead;
 
-		public void Read(string filePath, MemoryDataMapper<LexEntry> dataMapper)
+	    public void Read(string filePath, MemoryDataMapper<LexEntry> dataMapper)
 		{
 			const string status = "Loading entries";
 			Logger.WriteEvent(status);
@@ -122,15 +122,14 @@ namespace SIL.DictionaryServices.Lift
 #if DEBUG
 		~LiftReader()
 		{
-			if (!_disposed)
+			if (!Disposed)
 			{
 				throw new ApplicationException("Disposed not explicitly called on LiftReader.");
 			}
 		}
 #endif
 
-		[CLSCompliant(false)]
-		protected bool _disposed;
+		protected bool Disposed { get; set; }
 
 		public virtual void Dispose()
 		{
@@ -140,7 +139,7 @@ namespace SIL.DictionaryServices.Lift
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_disposed)
+			if (!Disposed)
 			{
 				if (disposing)
 				{
@@ -148,20 +147,17 @@ namespace SIL.DictionaryServices.Lift
 				}
 
 				// shared (dispose and finalizable) cleanup logic
-				_disposed = true;
+				Disposed = true;
 			}
 		}
 
 		protected void VerifyNotDisposed()
 		{
-			if (!_disposed)
+			if (!Disposed)
 			{
 				throw new ObjectDisposedException("WeSayLiftReader");
 			}
 		}
-
 		#endregion
-
-
 	}
 }

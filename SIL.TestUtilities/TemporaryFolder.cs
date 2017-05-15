@@ -23,26 +23,26 @@ namespace SIL.TestUtilities
 		{
 			if (parentFolder != null)
 			{
-				_path = parentFolder.GetPathForNewTempFile(false) + ".lift";
+				Path = parentFolder.GetPathForNewTempFile(false) + ".lift";
 			}
 			else
 			{
 				var temp = System.IO.Path.GetTempFileName();
-				_path = temp + ".lift";
-				File.Move(temp, _path);
+				Path = temp + ".lift";
+				File.Move(temp, Path);
 			}
 
 			string liftContents = string.Format("<?xml version='1.0' encoding='utf-8'?><lift version='{0}'>{1}</lift>", claimedLiftVersion, xmlOfEntries);
-			File.WriteAllText(_path, liftContents);
+			File.WriteAllText(Path, liftContents);
 		}
 
 		public TempLiftFile(string fileName, TemporaryFolder parentFolder, string xmlOfEntries, string claimedLiftVersion)
 			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
-			_path = parentFolder.Combine(fileName);
+			Path = parentFolder.Combine(fileName);
 
 			string liftContents = string.Format("<?xml version='1.0' encoding='utf-8'?><lift version='{0}'>{1}</lift>", claimedLiftVersion, xmlOfEntries);
-			File.WriteAllText(_path, liftContents);
+			File.WriteAllText(Path, liftContents);
 		}
 
 		private TempLiftFile()
@@ -57,7 +57,7 @@ namespace SIL.TestUtilities
 		{
 			Debug.Assert(File.Exists(path));
 			TempLiftFile t = new TempLiftFile();
-			t._path = path;
+			t.Path = path;
 			return t;
 		}
 
@@ -75,14 +75,14 @@ namespace SIL.TestUtilities
 		public TempFileFromFolder(TemporaryFolder parentFolder)
 			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
-			_path = parentFolder != null ? parentFolder.GetPathForNewTempFile(true) : System.IO.Path.GetTempFileName();
+			Path = parentFolder != null ? parentFolder.GetPathForNewTempFile(true) : System.IO.Path.GetTempFileName();
 		}
 
 		public TempFileFromFolder(TemporaryFolder parentFolder, string name, string contents)
 			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
-			_path = parentFolder.Combine(name);
-			File.WriteAllText(_path, contents);
+			Path = parentFolder.Combine(name);
+			File.WriteAllText(Path, contents);
 		}
 
 		public static TempFile CreateXmlFileWithContents(string fileName, TemporaryFolder folder, string xmlBody)

@@ -9,12 +9,14 @@ namespace SIL.CommandLineProcessing
 {
 	public abstract class ProcessOutputReaderBase
 	{
-		protected Process _process;
-		protected IProgress _progress;
 		public string StandardOutput { get; set; }
 		public string StandardError { get; set; }
 
-		/// <summary>
+		protected Process Process { get; set; }
+
+		protected IProgress Progress { get; set; }
+
+	    /// <summary>
 		/// Safely read the streams of the process
 		/// </summary>
 		/// <param name="secondsBeforeTimeOut"></param>
@@ -35,8 +37,8 @@ namespace SIL.CommandLineProcessing
 
 		public SynchronousProcessOutputReader(Process process, IProgress progress)
 		{
-			_process = process;
-			_progress = progress;
+			base.Process = process;
+			base.Progress = progress;
 		}
 
 		/// <summary>
@@ -47,14 +49,14 @@ namespace SIL.CommandLineProcessing
 		/// <returns>true if the process completed before the timeout or cancellation</returns>
 		public override bool Read(int secondsBeforeTimeOut)
 		{
-			var outputReaderArgs = new ReaderArgs() {Proc = _process, Reader = _process.StandardOutput, Progress = _progress};
-			if (_process.StartInfo.RedirectStandardOutput)
+			var outputReaderArgs = new ReaderArgs() {Proc = Process, Reader = Process.StandardOutput, Progress = Progress};
+			if (Process.StartInfo.RedirectStandardOutput)
 			{
 				_outputReader = new Thread(new ParameterizedThreadStart(ReadStream));
 				_outputReader.Start(outputReaderArgs);
 			}
-			var errorReaderArgs = new ReaderArgs() {Proc = _process, Reader = _process.StandardError, Progress = _progress};
-			if (_process.StartInfo.RedirectStandardError)
+			var errorReaderArgs = new ReaderArgs() {Proc = Process, Reader = Process.StandardError, Progress = Progress};
+			if (Process.StartInfo.RedirectStandardError)
 			{
 				_errorReader = new Thread(new ParameterizedThreadStart(ReadStream));
 				_errorReader.Start(errorReaderArgs);
@@ -66,7 +68,7 @@ namespace SIL.CommandLineProcessing
 			//nb: at one point I (jh) tried adding !_process.HasExited, but that made things less stable.
 			while (MoreToRead())
 			{
-				if (_progress.CancelRequested)
+				if (Progress.CancelRequested)
 					return false;
 
 				Thread.Sleep(100);
@@ -83,7 +85,7 @@ namespace SIL.CommandLineProcessing
 			// See http://www.wesay.org/issues/browse/WS-14948
 			// The output reader threads may exit slightly prior to the application closing.
 			// So we wait for the exit to be confirmed.
-			_process.WaitForExit(1000);
+			Process.WaitForExit(1000);
 			StandardOutput = outputReaderArgs.Results;
 			StandardError = errorReaderArgs.Results;
 

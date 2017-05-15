@@ -142,7 +142,7 @@ namespace SIL.Migration
 				var fileNamesToMigrate = GetFilesOfVersion(currentVersion, currentPath);
 
 				// Find a strategy to migrate this version
-				IMigrationStrategy strategy = _migrationStrategies.Find(s => s.FromVersion == currentVersion);
+				IMigrationStrategy strategy = MigrationStrategies.Find(s => s.FromVersion == currentVersion);
 				if (strategy == null)
 				{
 					throw new InvalidOperationException(

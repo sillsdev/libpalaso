@@ -192,7 +192,7 @@ namespace SIL.Lift.Options
 		{
 			var clone = new OptionRef(Key);
 			clone.EmbeddedXmlElements = new List<string>(EmbeddedXmlElements);
-			clone._annotation = _annotation == null ? null : _annotation.Clone();
+			clone.Annotation = Annotation == null ? null : Annotation.Clone();
 			return clone;
 		}
 
@@ -218,7 +218,7 @@ namespace SIL.Lift.Options
 			if (ReferenceEquals(this, other)) return true;
 			if (Key != other.Key) return false;
 			//we are doing a reference comparison here in case it's null
-			if ((_annotation != null && !_annotation.Equals(other._annotation)) || (other._annotation != null && !other._annotation.Equals(_annotation))) return false;
+			if ((Annotation != null && !Annotation.Equals(other.Annotation)) || (other.Annotation != null && !other.Annotation.Equals(Annotation))) return false;
 			if (!EmbeddedXmlElements.SequenceEqual(other.EmbeddedXmlElements)) return false;
 			return true;
 		}

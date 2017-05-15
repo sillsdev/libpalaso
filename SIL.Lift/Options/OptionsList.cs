@@ -36,7 +36,6 @@ namespace SIL.Lift.Options
 		}
 
 		[XmlElement(typeof (Option), ElementName = "option")]
-		[CLSCompliant(false)]
 		public List<Option> Options
 		{
 			get { return _options; }

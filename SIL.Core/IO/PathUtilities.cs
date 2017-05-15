@@ -325,6 +325,7 @@ namespace SIL.IO
 		public static extern IntPtr ILCreateFromPathW(string pszPath);
 
 		[DllImport("shell32.dll", ExactSpelling = true)]
+		[CLSCompliant(false)]
 		public static extern int SHOpenFolderAndSelectItems(IntPtr pidlList, uint cild, IntPtr children, uint dwFlags);
 
 		public static void SelectItemInExplorerEx(string path)
