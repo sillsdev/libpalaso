@@ -48,12 +48,12 @@ namespace SIL.DictionaryServices.Lift
 		public LiftWriter(string path, ByteOrderStyle byteOrderStyle)
 			: this()
 		{
-			_disposed = true; // Just in case we throw in the constructor
+			Disposed = true; // Just in case we throw in the constructor
 			var settings = CanonicalXmlSettings.CreateXmlWriterSettings();
 			settings.Encoding = new UTF8Encoding(byteOrderStyle == ByteOrderStyle.BOM);
 			_writer = XmlWriter.Create(path, settings);
 			Start();
-			_disposed = false;
+			Disposed = false;
 		}
 
 		public LiftWriter(StringBuilder builder, bool produceFragmentOnly): this()
@@ -97,12 +97,6 @@ namespace SIL.DictionaryServices.Lift
 	        get { return _constructionStack; }
 	        set { _constructionStack = value; }
 	    }
-
-		protected bool Disposed
-		{
-			get { return _disposed; }
-			set { _disposed = value; }
-		}
 
 	    public void End()
 		{
@@ -911,14 +905,14 @@ namespace SIL.DictionaryServices.Lift
 #if DEBUG
 		~LiftWriter()
 		{
-			if (!_disposed)
+			if (!Disposed)
 			{
 				throw new ApplicationException("Disposed not explicitly called on LiftWriter." + "\n" + _constructionStack);
 			}
 		}
 #endif
 
-		private bool _disposed;
+		protected bool Disposed { get; set; }
 
 		public virtual void Dispose()
 		{
@@ -928,7 +922,7 @@ namespace SIL.DictionaryServices.Lift
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_disposed)
+			if (!Disposed)
 			{
 				if (disposing)
 				{
@@ -938,13 +932,13 @@ namespace SIL.DictionaryServices.Lift
 				}
 
 				// shared (dispose and finalizable) cleanup logic
-				_disposed = true;
+				Disposed = true;
 			}
 		}
 
 		protected void VerifyNotDisposed()
 		{
-			if (!_disposed)
+			if (!Disposed)
 			{
 				throw new ObjectDisposedException("WeSayLiftWriter");
 			}

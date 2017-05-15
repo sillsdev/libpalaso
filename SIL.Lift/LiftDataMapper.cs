@@ -25,7 +25,7 @@ namespace SIL.Lift
 		public LiftDataMapper(string liftFilePath, ProgressState progressState, ILiftReaderWriterProvider<T> ioProvider)
 		{
 			//set to true so that an exception in the constructor does not cause the destructor to throw
-			_disposed = true;
+			Disposed = true;
 			Guard.AgainstNull(progressState, "progressState");
 
 			_backend = new MemoryDataMapper<T>();
@@ -46,7 +46,7 @@ namespace SIL.Lift
 				throw;
 			}
 			//Now that the constructor has not thrown we can set this back to false
-			_disposed = false;
+			Disposed = false;
 		}
 
 		public DateTime LastModified
@@ -189,12 +189,6 @@ namespace SIL.Lift
 		private string LiftDirectory
 		{
 			get { return Path.GetDirectoryName(_liftFilePath); }
-		}
-
-		protected bool Disposed
-		{
-			get { return _disposed; }
-			set { _disposed = value; }
 		}
 
 	    private void UpdateLiftFileWithModified(IEnumerable<T> entriesToUpdate)
@@ -396,14 +390,14 @@ namespace SIL.Lift
 #if DEBUG
 		~LiftDataMapper()
 		{
-			if (!_disposed)
+			if (!Disposed)
 			{
 				throw new ApplicationException("Disposed not explicitly called on LiftDataMapper.");
 			}
 		}
 #endif
 
-		private bool _disposed;
+		protected bool Disposed { get; set; }
 
 		public virtual void Dispose()
 		{
@@ -413,7 +407,7 @@ namespace SIL.Lift
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!_disposed)
+			if (!Disposed)
 			{
 				if (disposing)
 				{
@@ -422,13 +416,13 @@ namespace SIL.Lift
 				}
 
 				// shared (dispose and finalizable) cleanup logic
-				_disposed = true;
+				Disposed = true;
 			}
 		}
 
 		protected void VerifyNotDisposed()
 		{
-			if (_disposed)
+			if (Disposed)
 			{
 				throw new ObjectDisposedException("LiftDataMapper");
 			}

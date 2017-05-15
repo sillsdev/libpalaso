@@ -37,16 +37,6 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		protected Action<int> RemoveRowAction;
 		protected Func<string> GetRemoveRowToolTipText;
 
-		private Image _removeRowImageNormal;
-		private Image _removeRowImageHot;
-		private bool _alwaysShowRemoveRowIcon;
-		private bool _skipValidationBecauseUserIsClickingDeleteButton;
-		private bool _isDirty;
-		private bool _paintWaterMark;
-		private bool _showWaterMarkWhenDirty;
-		private string _waterMark = "!";
-		private int _prevRowIndex = -1;
-
 		/// ------------------------------------------------------------------------------------
 		public BetterGrid()
 		{
@@ -72,6 +62,9 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 			MultiSelect = false;
 			PaintHeaderAcrossFullGridWidth = true;
 			TextBoxEditControlBorderColor = Color.Silver;
+
+			WaterMark = "!";
+			PrevRowIndex = -1;
 		}
 
 		#region Properties
@@ -96,13 +89,13 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool IsDirty
 		{
-			get { return _isDirty; }
+			get { return IsDirty; }
 			set
 			{
-				_isDirty = value;
-				_paintWaterMark = (value && _showWaterMarkWhenDirty);
+				IsDirty = value;
+				PaintWaterMark = (value && ShowWaterMarkWhenDirty);
 
-				if (_showWaterMarkWhenDirty)
+				if (ShowWaterMarkWhenDirty)
 					Invalidate();
 			}
 		}
@@ -203,11 +196,11 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		public bool ShowWaterMarkWhenDirty
 		{
-			get { return _showWaterMarkWhenDirty; }
+			get { return ShowWaterMarkWhenDirty; }
 			set
 			{
-				_showWaterMarkWhenDirty = value;
-				_paintWaterMark = (value && _isDirty);
+				ShowWaterMarkWhenDirty = value;
+				PaintWaterMark = (value && IsDirty);
 				Invalidate();
 			}
 		}
@@ -219,11 +212,11 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		public string WaterMark
 		{
-			get { return _waterMark; }
+			get { return WaterMark; }
 			set
 			{
-				_waterMark = value;
-				if (_paintWaterMark)
+				WaterMark = value;
+				if (PaintWaterMark)
 					Invalidate();
 			}
 		}
@@ -289,22 +282,22 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		protected override void OnSizeChanged(EventArgs e)
 		{
-			bool paintWaterMark = _paintWaterMark;
+			bool paintWaterMark = PaintWaterMark;
 
-			if (_paintWaterMark)
+			if (PaintWaterMark)
 			{
 				// Clear previous water mark.
-				_paintWaterMark = false;
+				PaintWaterMark = false;
 				Invalidate();
 			}
 
 			base.OnSizeChanged(e);
 
-			_paintWaterMark = paintWaterMark;
-			if (_paintWaterMark)
+			PaintWaterMark = paintWaterMark;
+			if (PaintWaterMark)
 				Invalidate(WaterMarkRectangle);
 
-			if (!_paintWaterMark && Focused && PaintFullRowFocusRectangle &&
+			if (!PaintWaterMark && Focused && PaintFullRowFocusRectangle &&
 				CurrentCellAddress.Y >= 0 && CurrentCellAddress.Y < RowCount)
 			{
 				InvalidateRow(CurrentCellAddress.Y);
@@ -340,41 +333,17 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 			get { return Controls.OfType<HScrollBar>().Select(ctrl => ctrl).FirstOrDefault(); }
 		}
 
-		protected Image RemoveRowImageNormal
-		{
-			get { return _removeRowImageNormal; }
-			set { _removeRowImageNormal = value; }
-		}
+		protected Image RemoveRowImageNormal { get; set; }
 
-		protected Image RemoveRowImageHot
-		{
-			get { return _removeRowImageHot; }
-			set { _removeRowImageHot = value; }
-		}
+		protected Image RemoveRowImageHot { get; set; }
 
-		protected bool AlwaysShowRemoveRowIcon
-		{
-			get { return _alwaysShowRemoveRowIcon; }
-			set { _alwaysShowRemoveRowIcon = value; }
-		}
+		protected bool AlwaysShowRemoveRowIcon { get; set; }
 
-		protected bool SkipValidationBecauseUserIsClickingDeleteButton
-		{
-			get { return _skipValidationBecauseUserIsClickingDeleteButton; }
-			set { _skipValidationBecauseUserIsClickingDeleteButton = value; }
-		}
+		protected bool SkipValidationBecauseUserIsClickingDeleteButton { get; set; }
 
-		protected bool PaintWaterMark
-		{
-			get { return _paintWaterMark; }
-			set { _paintWaterMark = value; }
-		}
+		protected bool PaintWaterMark { get; set; }
 
-		protected int PrevRowIndex
-		{
-			get { return _prevRowIndex; }
-			set { _prevRowIndex = value; }
-		}
+		protected int PrevRowIndex { get; set; }
 
 	    /// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -383,19 +352,19 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		protected override void OnScroll(ScrollEventArgs e)
 		{
-			bool paintWaterMark = _paintWaterMark;
+			bool paintWaterMark = PaintWaterMark;
 
-			if (_paintWaterMark)
+			if (PaintWaterMark)
 			{
 				// Clear previous water mark.
-				_paintWaterMark = false;
+				PaintWaterMark = false;
 				Invalidate();
 			}
 
 			base.OnScroll(e);
 
-			_paintWaterMark = paintWaterMark;
-			if (_paintWaterMark)
+			PaintWaterMark = paintWaterMark;
+			if (PaintWaterMark)
 				Invalidate(WaterMarkRectangle);
 
 			// This chunk of code takes care of painting problems when scrolling and a full
@@ -437,7 +406,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		{
 			base.OnPaint(e);
 
-			if (!_paintWaterMark || string.IsNullOrEmpty(_waterMark))
+			if (!PaintWaterMark || string.IsNullOrEmpty(WaterMark))
 				return;
 
 			Rectangle rc = WaterMarkRectangle;
@@ -450,11 +419,11 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 			{
 				using (Font fnt = FontHelper.MakeFont(family.Name, size, FontStyle.Bold))
 				{
-					int height = TextRenderer.MeasureText(_waterMark, fnt).Height;
+					int height = TextRenderer.MeasureText(WaterMark, fnt).Height;
 					if (height < rc.Height)
 					{
 						using (StringFormat sf = GetStringFormat(true))
-							path.AddString(_waterMark, family, (int)FontStyle.Bold, size, rc, sf);
+							path.AddString(WaterMark, family, (int)FontStyle.Bold, size, rc, sf);
 
 						break;
 					}
@@ -587,7 +556,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 			if (Cursor == Cursors.SizeNS || Cursor == Cursors.SizeWE)
 				DoubleBuffered = false;
 			else if (IsRemoveRowColumn(e.ColumnIndex))
-				_skipValidationBecauseUserIsClickingDeleteButton = true;
+				SkipValidationBecauseUserIsClickingDeleteButton = true;
 
 			base.OnCellMouseDown(e);
 		}
@@ -600,7 +569,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		protected override void OnCellMouseUp(DataGridViewCellMouseEventArgs e)
 		{
-			_skipValidationBecauseUserIsClickingDeleteButton = false;
+			SkipValidationBecauseUserIsClickingDeleteButton = false;
 
 			if (!DoubleBuffered)
 				DoubleBuffered = true;
@@ -633,7 +602,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 				if (VirtualMode)
 					RowCount--;
 				Invalidate();
-				_skipValidationBecauseUserIsClickingDeleteButton = false;
+				SkipValidationBecauseUserIsClickingDeleteButton = false;
 			}
 		}
 
@@ -655,7 +624,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		protected override void OnCurrentCellDirtyStateChanged(EventArgs e)
 		{
-			if (!_isDirty)
+			if (!IsDirty)
 				IsDirty  = IsCurrentCellDirty;
 
 			base.OnCurrentCellDirtyStateChanged(e);
@@ -773,7 +742,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		protected override void OnCellValidating(DataGridViewCellValidatingEventArgs e)
 		{
-			if (_skipValidationBecauseUserIsClickingDeleteButton)
+			if (SkipValidationBecauseUserIsClickingDeleteButton)
 				return;
 
 			base.OnCellValidating(e);
@@ -811,9 +780,9 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 			Func<string> getRemoveRowToolTipText, Action<int> removeRowAction, bool alwaysShowIcon = false)
 		{
 			RemoveRowAction = removeRowAction;
-			_removeRowImageNormal = imgNormal ?? Resources.RemoveGridRowNormal;
-			_removeRowImageHot = imgHot ?? Resources.RemoveGridRowHot;
-			_alwaysShowRemoveRowIcon = alwaysShowIcon;
+			RemoveRowImageNormal = imgNormal ?? Resources.RemoveGridRowNormal;
+			RemoveRowImageHot = imgHot ?? Resources.RemoveGridRowHot;
+			AlwaysShowRemoveRowIcon = alwaysShowIcon;
 			GetRemoveRowToolTipText = getRemoveRowToolTipText;
 
 			var col = CreateImageColumn("removerow");
@@ -822,8 +791,8 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 			col.SortMode = DataGridViewColumnSortMode.NotSortable;
 			col.Resizable = DataGridViewTriState.False;
 			col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
-			col.Width = _removeRowImageNormal.Width + 4;
-			col.Image = new Bitmap(_removeRowImageNormal.Width, _removeRowImageNormal.Height,
+			col.Width = RemoveRowImageNormal.Width + 4;
+			col.Image = new Bitmap(RemoveRowImageNormal.Width, RemoveRowImageNormal.Height,
 				System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
 			Columns.Add(col);
@@ -843,10 +812,10 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 				var rc = GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, false);
 				bool mouseOverRemoveImage = rc.Contains(PointToClient(MousePosition));
 
-				if (CurrentCellAddress.Y == e.RowIndex || mouseOverRemoveImage || _alwaysShowRemoveRowIcon)
+				if (CurrentCellAddress.Y == e.RowIndex || mouseOverRemoveImage || AlwaysShowRemoveRowIcon)
 				{
 					e.Value = (mouseOverRemoveImage ?
-					_removeRowImageHot : _removeRowImageNormal);
+					RemoveRowImageHot : RemoveRowImageNormal);
 				}
 			}
 
@@ -1040,11 +1009,11 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		{
 			base.OnCurrentCellChanged(e);
 
-			if (_prevRowIndex != CurrentCellAddress.Y)
+			if (PrevRowIndex != CurrentCellAddress.Y)
 			{
-				InvalidateRowInFullRowSelectMode(_prevRowIndex);
+				InvalidateRowInFullRowSelectMode(PrevRowIndex);
 				InvalidateRowInFullRowSelectMode(CurrentCellAddress.Y);
-				_prevRowIndex = CurrentCellAddress.Y;
+				PrevRowIndex = CurrentCellAddress.Y;
 
 				// REVIEW: So far, it seems to work that OnCurrentRowChanged is not
 				// invoked unless the handle is created. It's possible that somewhere

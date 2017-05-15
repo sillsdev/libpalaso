@@ -18,46 +18,41 @@ namespace SIL.IO
 	/// <example>using(f = new TempFile())</example>
 	public class TempFile : IDisposable
 	{
-		private string _path;
 		private string _folderToDelete; // if not null, delete this as well on dispose
 		private bool _detached;
 
 		public TempFile()
 		{
-			_path = System.IO.Path.GetTempFileName();
+			Path = System.IO.Path.GetTempFileName();
 		}
 
 		public TempFile(bool dontMakeMeAFileAndDontSetPath)
 		{
 			if(!dontMakeMeAFileAndDontSetPath)
 			{
-				_path = System.IO.Path.GetTempFileName();
+				Path = System.IO.Path.GetTempFileName();
 			}
 		}
 
 		public TempFile(string contents)
 			: this()
 		{
-			File.WriteAllText(_path, contents);
+			File.WriteAllText(Path, contents);
 		}
 
 		public TempFile(string contents, Encoding encoding)
 			: this()
 		{
-			File.WriteAllText(_path, contents, encoding);
+			File.WriteAllText(Path, contents, encoding);
 		}
 
 		public TempFile(string[] contentLines)
 			: this()
 		{
-			File.WriteAllLines(_path, contentLines);
+			File.WriteAllLines(Path, contentLines);
 		}
 
-		public string Path
-		{
-			get { return _path; }
-			protected set { _path = value; }
-		}
+		public string Path { get; protected set; }
 
 		/// <summary>
 		/// Don't try to delete this file when Dispose()'d.
@@ -76,7 +71,7 @@ namespace SIL.IO
 			}
 			try
 			{
-				File.Delete(_path);
+				File.Delete(Path);
 			}
 			catch (IOException e)
 			{
@@ -97,7 +92,7 @@ namespace SIL.IO
 
 		public TempFile(string existingPath, bool dummy)
 		{
-			_path = existingPath;
+			Path = existingPath;
 		}
 
 		/// <summary>
@@ -196,7 +191,7 @@ namespace SIL.IO
 		public void MoveTo(string path)
 		{
 			File.Move(Path, path);
-			_path = path;
+			Path = path;
 		}
 
 

@@ -9,22 +9,12 @@ namespace SIL.CommandLineProcessing
 {
 	public abstract class ProcessOutputReaderBase
 	{
-	    private Process _process;
-	    private IProgress _progress;
 		public string StandardOutput { get; set; }
 		public string StandardError { get; set; }
 
-		protected Process Process
-		{
-			get { return _process; }
-			set { _process = value; }
-		}
+		protected Process Process { get; set; }
 
-		protected IProgress Progress
-		{
-			get { return _progress; }
-			set { _progress = value; }
-		}
+		protected IProgress Progress { get; set; }
 
 	    /// <summary>
 		/// Safely read the streams of the process

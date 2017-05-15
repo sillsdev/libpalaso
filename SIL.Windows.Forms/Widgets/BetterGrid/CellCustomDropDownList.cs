@@ -9,7 +9,6 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 	/// ----------------------------------------------------------------------------------------
 	public class CellCustomDropDownList : Panel
 	{
-		private DataGridViewCell _associatedCell;
 		private readonly ListBox _listBox;
 		private readonly CustomDropDown _dropDown;
 
@@ -20,7 +19,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 			_dropDown = new CustomDropDown();
 			_dropDown.AutoCloseWhenMouseLeaves = false;
 			_dropDown.AddControl(this);
-			_dropDown.Closed += delegate { _associatedCell = null; };
+			_dropDown.Closed += delegate { AssociatedCell = null; };
 
 			_listBox = new ListBox();
 			_listBox.BorderStyle = BorderStyle.None;
@@ -70,14 +69,10 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		public bool IsDroppedDown
 		{
-			get { return _associatedCell != null; }
+			get { return AssociatedCell != null; }
 		}
 
-		protected DataGridViewCell AssociatedCell
-		{
-			get { return _associatedCell; }
-			set { _associatedCell = value; }
-		}
+		protected DataGridViewCell AssociatedCell { get; set; }
 
 		protected ListBox Box
 		{
@@ -116,7 +111,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 			if (SelectedIndex < 0 && Items.Count > 0)
 				SelectedIndex = 0;
 
-			_associatedCell = cell;
+			AssociatedCell = cell;
 			int col = cell.ColumnIndex;
 			int row = cell.RowIndex;
 			Width = Math.Max(cell.DataGridView.Columns[col].Width, _listBox.PreferredSize.Width);
@@ -140,7 +135,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		{
 			int i = _listBox.IndexFromPoint(e.Location);
 			if (i >= 0)
-				_associatedCell.Value = Items[i] as string;
+				AssociatedCell.Value = Items[i] as string;
 
 			_dropDown.Close();
 		}
@@ -152,7 +147,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 				_dropDown.Close();
 			else if (e.KeyCode == Keys.Return && SelectedItem != null)
 			{
-				_associatedCell.Value = SelectedItem as string;
+				AssociatedCell.Value = SelectedItem as string;
 				_dropDown.Close();
 			}
 		}

@@ -13,9 +13,6 @@ namespace SIL.Data
 				new Dictionary<T, RepositoryId>();
 
 		private DateTime lastModified = new DateTime(DateTime.MinValue.Ticks, DateTimeKind.Utc);
-#if DEBUG
-        private StackTrace _constructionStackTrace;
-#endif
 
 		public MemoryDataMapper()
 		{
@@ -24,6 +21,7 @@ namespace SIL.Data
 #endif
 			_disposed = false;
 		}
+
 		public DateTime LastModified
 		{
 			get { return lastModified; }
@@ -44,11 +42,9 @@ namespace SIL.Data
 			get { return false; }
 		}
 
-		protected StackTrace ConstructionStackTrace
-		{
-			get { return _constructionStackTrace; }
-			set { _constructionStackTrace = value; }
-		}
+#if DEBUG
+		protected StackTrace ConstructionStackTrace { get; set; }
+#endif
 
 		protected bool Disposed
 		{
