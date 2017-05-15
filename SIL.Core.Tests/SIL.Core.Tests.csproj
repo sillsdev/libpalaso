@@ -41,7 +41,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <TargetFrameworkProfile></TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -354,6 +355,7 @@
     <Compile Include="Threading\GlobalMutexTests.cs" />
     <Compile Include="Unicode\CharacterUtilsTests.cs" />
     <Compile Include="Xml\CanonicalXmlSettingsTests.cs" />
+    <Compile Include="Xml\XElementExtensionTests.cs" />
     <Compile Include="Xml\XmlUtilsTests.cs" />
     <Compile Include="Xml\XmlWriterExtensionsTests.cs" />
     <Compile Include="Xml\XmlNodeExtensionsTests.cs" />

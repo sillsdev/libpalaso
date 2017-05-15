@@ -527,6 +527,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Xml\CanonicalXmlSettings.cs" />
     <Compile Include="Xml\FastXmlElementSplitter.cs" />
+    <Compile Include="Xml\XElementExtensions.cs" />
     <Compile Include="Xml\XmlDomExtensions.cs" />
     <Compile Include="Xml\XmlHelpers.cs" />
     <Compile Include="Xml\XmlNodeExtensions.cs" />
