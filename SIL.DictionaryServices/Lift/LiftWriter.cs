@@ -92,11 +92,14 @@ namespace SIL.DictionaryServices.Lift
 		{
 			get { return _writer; }
 		}
+
+		#if DEBUG
 	    protected StackTrace ConstructionStack
 	    {
 	        get { return _constructionStack; }
 	        set { _constructionStack = value; }
 	    }
+		#endif
 
 	    public void End()
 		{
