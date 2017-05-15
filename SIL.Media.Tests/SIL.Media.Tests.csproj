@@ -11,6 +11,7 @@
     <RootNamespace>SIL.Media.Tests</RootNamespace>
     <AssemblyName>SIL.Media.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <LangVersion>6</LangVersion>
     <FileAlignment>512</FileAlignment>
     <StartupObject>
     </StartupObject>
