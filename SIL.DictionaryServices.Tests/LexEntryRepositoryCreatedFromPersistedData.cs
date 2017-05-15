@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -6,6 +6,7 @@ using System.Threading;
 using NUnit.Framework;
 using SIL.DictionaryServices.Model;
 using SIL.Extensions;
+using SIL.IO;
 using SIL.Tests.Data;
 using SIL.TestUtilities;
 
@@ -48,14 +49,14 @@ namespace SIL.DictionaryServices.Tests
 	public class LiftLexEntryRepositoryCreatedFromPersistedData :
 		IRepositoryPopulateFromPersistedTests<LexEntry>
 	{
-		private TemporaryFolder _tempFolder;
+		private TempFile _tempFile;
 		private string _persistedFilePath;
 
 		[SetUp]
 		public override void SetUp()
 		{
-			_tempFolder = new TemporaryFolder("LiftLexEntryRepositoryCreatedFromPersistedData");
-			_persistedFilePath = LiftFileInitializer.MakeFile(_tempFolder.GetTemporaryFile());
+			_tempFile = new TempFile();
+			_persistedFilePath = LiftFileInitializer.MakeFile(_tempFile.Path);
 			DataMapperUnderTest = new LiftLexEntryRepository(_persistedFilePath);
 		}
 
@@ -63,7 +64,7 @@ namespace SIL.DictionaryServices.Tests
 		public override void TearDown()
 		{
 			DataMapperUnderTest.Dispose();
-			_tempFolder.Delete();
+			_tempFile.Dispose();
 		}
 
 		[Test]

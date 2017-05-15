@@ -206,7 +206,7 @@ namespace SIL.Settings
 			{
 				settingNode = (XmlElement)groupNode.SelectSingleNode("setting[@name='" + propVal.Name + "']");
 			}
-			catch(Exception ex)
+			catch(Exception)
 			{
 				settingNode = null;
 			}

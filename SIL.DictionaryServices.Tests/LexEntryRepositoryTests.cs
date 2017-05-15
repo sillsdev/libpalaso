@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using SIL.Data;
 using SIL.DictionaryServices.Model;
+using SIL.IO;
 using SIL.Lift;
 using SIL.Lift.Options;
-using SIL.TestUtilities;
 using SIL.Text;
 using SIL.WritingSystems;
 
@@ -16,15 +16,14 @@ namespace SIL.DictionaryServices.Tests
 	{
 		private class TestEnvironment : IDisposable
 		{
-			private readonly TemporaryFolder _temporaryFolder;
+			private readonly TempFile _tempFile;
 			private readonly LiftLexEntryRepository _repository;
 			private readonly WritingSystemDefinition _headwordWritingSystem;
 
 			public TestEnvironment()
 			{
-				_temporaryFolder = new TemporaryFolder("LiftLexEntryRepositoryTests");
-				string filePath = _temporaryFolder.GetTemporaryFile();
-				_repository = new LiftLexEntryRepository(filePath);
+				_tempFile = new TempFile();
+				_repository = new LiftLexEntryRepository(_tempFile.Path);
 				_headwordWritingSystem = new WritingSystemDefinition("th") {DefaultCollation = new IcuRulesCollationDefinition("standard")};
 			}
 
@@ -117,7 +116,7 @@ namespace SIL.DictionaryServices.Tests
 			public void Dispose()
 			{
 				_repository.Dispose();
-				_temporaryFolder.Dispose();
+				_tempFile.Dispose();
 			}
 		}
 

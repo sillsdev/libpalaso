@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -202,7 +202,6 @@ namespace SIL.Progress
 		private readonly List<ProgressHandler> _progressHandlers=new List<ProgressHandler>();
 		private bool _cancelRequested;
 		private ProgressIndicatorForMultiProgress _indicatorForMultiProgress;
-		private bool _errorsEncountered;
 
 		public MultiProgress(IEnumerable<IProgress> progressHandlers)
 		{
