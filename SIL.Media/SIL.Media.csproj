@@ -302,7 +302,7 @@
       <HintPath>..\lib\Debug\NAudio.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup Condition="'$(Platform)' == 'x86'">
+  <ItemGroup Condition="'$(Platform)' == 'x86' Or '$(Platform)' == 'AnyCPU'">
     <Reference Include="irrKlang.NET4">
       <HintPath>..\lib\x86\irrKlang.NET4.dll</HintPath>
     </Reference>
