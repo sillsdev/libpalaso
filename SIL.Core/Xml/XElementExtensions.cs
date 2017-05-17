@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Xml.Linq;
 
-namespace SIL.WritingSystems
+namespace SIL.Xml
 {
-	internal static class XElementExtensions
+	public static class XElementExtensions
 	{
 		/// <summary>
 		/// Get the first (in document order) child element with the specified XName that doesn't have an "alt" attribute
@@ -181,6 +181,42 @@ namespace SIL.WritingSystems
 		public static void SetOptionalAttributeValue(this XElement element, string attribute, string value)
 		{
 			element.SetAttributeValue(attribute, string.IsNullOrEmpty(value) ? null : value);
+		}
+
+		/// <summary>
+		/// Clone the XElement.
+		/// </summary>
+		/// <returns>A copy of the XElement</returns>
+		public static XElement Clone(this XElement element)
+		{
+			return XElement.Parse(element.ToString());
+		}
+
+		/// <summary>
+		/// Get an xml string for the given XElement.
+		/// </summary>
+		/// <returns>Equivalent of "OuterXml" for an XmlNode</returns>
+		public static string GetOuterXml(this XElement element)
+		{
+			return element.ToString();
+		}
+
+		/// <summary>
+		/// Get an xml string for all children.
+		/// </summary>
+		/// <returns>Equivalent of "InnerText" for an XmlNode</returns>
+		public static string GetInnerText(this XElement element)
+		{
+			return element.Value;
+		}
+
+		/// <summary>
+		/// Get an xml string for all children.
+		/// </summary>
+		/// <returns>Equivalent of "InnerText" for an XmlNode</returns>
+		public static string GetInnerXml(this XElement element)
+		{
+			return string.Concat(element.Elements());
 		}
 	}
 }
