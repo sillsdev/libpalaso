@@ -12,8 +12,8 @@ using SIL.Windows.Forms.Extensions;
 namespace SIL.Windows.Forms.Progress
 {
 	/// <summary>
-	/// A full-featured log ui control, which supports colored & styled text, user-controlled
-	/// verbosity, error reporting, & copy to clipboard. Protects itself, thread-wise.
+	/// A full-featured log ui control, which supports colored and styled text, user-controlled
+	/// verbosity, error reporting, and copy to clipboard. Protects itself, thread-wise.
 	/// Implements IProgress, so that processes can send
 	/// text to it without knowing anything about UI.
 	/// </summary>

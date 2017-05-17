@@ -372,7 +372,7 @@ namespace SIL.Lift
 			}
 		}
 
-		/// <remark>
+		/// <summary>
 		/// The protection provided by this simple approach is obviously limited;
 		/// it will keep the lift file safe normally... but could lead to non-data-losing crashes
 		/// if some automated process was sitting out there, just waiting to open as soon as we realease

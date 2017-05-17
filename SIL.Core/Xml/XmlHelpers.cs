@@ -181,6 +181,7 @@ namespace SIL.Xml
 		/// </summary>
 		/// <param name="node">The XmlNode to look in.</param>
 		/// <param name="attrName">The attribute to find.</param>
+		/// <param name="defaultString">value to return when optional attribute not specified</param>
 		/// <returns>The value of the attribute, or null, if not found.</returns>
 		public static string GetOptionalAttributeValue(XmlNode node, string attrName, string defaultString)
 		{

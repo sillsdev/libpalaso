@@ -37,15 +37,13 @@ namespace SIL.CommandLineProcessing
 
 		public SynchronousProcessOutputReader(Process process, IProgress progress)
 		{
-			base.Process = process;
-			base.Progress = progress;
+			Process = process;
+			Progress = progress;
 		}
 
 		/// <summary>
 		/// Safely read the streams of the process
 		/// </summary>
-		/// <param name="process"></param>
-		/// <param name="secondsBeforeTimeOut"></param>
 		/// <returns>true if the process completed before the timeout or cancellation</returns>
 		public override bool Read(int secondsBeforeTimeOut)
 		{

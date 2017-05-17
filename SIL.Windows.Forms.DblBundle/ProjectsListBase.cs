@@ -17,8 +17,11 @@ namespace SIL.Windows.Forms.DblBundle
 		where TM : DblMetadataBase<TL>
 		where TL : DblMetadataLanguage, new()
 	{
+		/// <summary>Event when selected project is changed</summary>
 		public event EventHandler SelectedProjectChanged;
+		/// <summary>Event after list of project is loaded</summary>
 		public event EventHandler ListLoaded;
+		/// <summary>Event when the column width changes</summary>
 		public event EventHandler<DataGridViewColumnEventArgs> ColumnWidthChanged;
 		public event EventHandler<DataGridViewColumnEventArgs> ColumnDisplayIndexChanged;
 		public event EventHandler ProjectListSorted;

@@ -92,6 +92,7 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 		private void DoCropDrag()
 		{
 			return;
+			// REVIEW: Is this code intentionally disabled?
 			Grip hStart, vStart, hEnd, vEnd;
 
 			Point mouse = PointToClient(MousePosition);

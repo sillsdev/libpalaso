@@ -147,6 +147,7 @@ namespace SIL.IO
 		/// <summary>
 		/// Possible flags for the SHFileOperation method.
 		/// </summary>
+		[CLSCompliant(false)]
 		[Flags]
 		public enum FileOperationFlags : ushort
 		{
@@ -185,6 +186,7 @@ namespace SIL.IO
 		/// <summary>
 		/// File Operation Function Type for SHFileOperation
 		/// </summary>
+		[CLSCompliant(false)]
 		public enum FileOperationType : uint
 		{
 			/// <summary>
@@ -259,6 +261,7 @@ namespace SIL.IO
 		/// <param name="filePath">Full path of the file.</param>
 		/// <param name="flags">options flags from FileOperationFlags</param>
 		/// <returns><c>true</c> if successfully deleted.</returns>
+		[CLSCompliant(false)]
 		public static bool DeleteToRecycleBin(string filePath, FileOperationFlags flags)
 		{
 			if (Platform.IsWindows)

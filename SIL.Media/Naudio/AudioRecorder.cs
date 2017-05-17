@@ -57,9 +57,9 @@ namespace SIL.Media.Naudio
 							"Cannot switch recording devices while recording is in progress.");
 					if (_waveIn != null)
 					{
-						/// Switch device after we have started monitoring, typically because the user plugged in a new one.
-						/// The usual way to achieve this is to display a RecordingDeviceIndicator connected to this Recorder.
-						/// See the implementation of RecordingDeviceIndicator.checkNewMicTimer_Tick.
+						// Switch device after we have started monitoring, typically because the user plugged in a new one.
+						// The usual way to achieve this is to display a RecordingDeviceIndicator connected to this Recorder.
+						// See the implementation of RecordingDeviceIndicator.checkNewMicTimer_Tick.
 						CloseWaveIn();
 					}
 					_selectedDevice = value;

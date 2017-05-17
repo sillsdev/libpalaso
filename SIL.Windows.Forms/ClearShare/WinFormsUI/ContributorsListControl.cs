@@ -385,6 +385,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		}
 
 		/// <remarks>SP-874: Localize column headers</remarks>
+		[CLSCompliant (false)]
 		public void SetLocalizationExtender(L10NSharpExtender extender)
 		{
 			extender.SetLocalizingId(_grid, "ContributorsEditorGrid");

@@ -5,21 +5,29 @@ using SIL.Xml;
 
 namespace SIL.DblBundle
 {
+	/// <summary>
+	/// Information about a Digital Bible Library bundle
+	/// </summary>
 	[XmlRoot("DBLMetadata")]
 	public class DblMetadata
 	{
+		/// <summary>Identification for bundle</summary>
 		[XmlAttribute("id")]
 		public string Id { get; set; }
 
+		/// <summary>Identification for bundle--only text bundles are currently supported</summary>
 		[XmlAttribute("type")]
 		public string Type { get; set; }
 
+		/// <summary>Version of the release bundle type</summary>
 		[XmlAttribute("typeVersion")]
 		public string TypeVersion { get; set; }
 
+		/// <summary>Revision of the data for the entry contained within this bundle</summary>
 		[XmlAttribute("revision")]
 		public int Revision { get; set; }
 
+		/// <summary>Gets whether bundle is for text</summary>
 		public bool IsTextReleaseBundle { get { return Type == "text"; } }
 	}
 
@@ -30,6 +38,9 @@ namespace SIL.DblBundle
 	/// </summary>
 	public abstract class DblMetadataBase<TL> : DblMetadata, IProjectInfo where TL: DblMetadataLanguage, new()
 	{
+		/// <summary>
+		/// Loads information about a Digital Bible Library bundle from the specified projectFilePath.
+		/// </summary>
 		public static T Load<T>(string projectFilePath, out Exception exception) where T : DblMetadataBase<TL>
 		{
 			var metadata = XmlSerializationHelper.DeserializeFromFile<T>(projectFilePath, out exception);

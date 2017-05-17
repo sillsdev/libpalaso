@@ -4,7 +4,7 @@ using System.Windows.Forms;
 namespace SIL.Windows.Forms.SettingProtection
 {
 	/// <summary>
-	/// This control will hide & challenge for a password, as appropriate.
+	/// This control will hide and challenge for a password, as appropriate.
 	/// You can also make a custom control which fits better for your application, and use the SettingsProtectionHelper just like this does.
 	/// </summary>
 	public partial class SettingsLauncherButton : UserControl

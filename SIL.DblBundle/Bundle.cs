@@ -13,11 +13,19 @@ namespace SIL.DblBundle
 	/// </summary>
 	public static class DblBundleFileUtils
 	{
+		/// <summary>Extension used on DBL bundles</summary>
 		public const string kDblBundleExtension = ".zip";
+		/// <summary>File that contains versification</summary>
 		public const string kVersificationFileName = "versification.vrs";
+		/// <summary>File that contains language definition</summary>
 		public const string kLdmlFileName = "ldml.xml";
+		/// <summary>File extension for language definition files</summary>
 		public const string kUnzippedLdmlFileExtension = ".ldml";
 
+		/// <summary>
+		/// Extract the contents of a zip file located in the specified path to a temp directory
+		/// </summary>
+		/// <returns>path of the temporary directory</returns>
 		public static string ExtractToTempDirectory(string zipFilePath)
 		{
 			if (!File.Exists(zipFilePath))
@@ -59,6 +67,7 @@ namespace SIL.DblBundle
 		where TL : DblMetadataLanguage, new()
 	{
 		private readonly TM m_dblMetadata;
+		/// <summary>temporary directory path where the zip bundle is extracted</summary>
 		protected readonly string m_pathToZippedBundle;
 		private string m_pathToUnzippedDirectory;
 
@@ -191,6 +200,9 @@ namespace SIL.DblBundle
 		#endregion
 
 		#region IDisposable Members
+		/// <summary>
+		/// Dispose method for this class.
+		/// </summary>
 		public void Dispose()
 		{
 			if (m_pathToUnzippedDirectory != null && Directory.Exists(m_pathToUnzippedDirectory))

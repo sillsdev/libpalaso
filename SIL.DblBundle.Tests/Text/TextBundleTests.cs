@@ -10,12 +10,18 @@ using SIL.WritingSystems;
 
 namespace SIL.DblBundle.Tests.Text
 {
+	/// <summary>
+	/// Tests methods in the TextBundle class.
+	/// </summary>
 	[TestFixture]
 	public class TextBundleTests
 	{
 		private TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage> m_bundle;
 		private TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage> m_bundleWithoutLdml;
 
+		/// <summary>
+		/// Setup test fixture.
+		/// </summary>
 		[TestFixtureSetUp]
 		public void TestFixtureSetup()
 		{
@@ -25,6 +31,9 @@ namespace SIL.DblBundle.Tests.Text
 				m_bundleWithoutLdml = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
 		}
 
+		/// <summary>
+		/// Tear down test fixture.
+		/// </summary>
 		[TestFixtureTearDown]
 		public void TestFixtureTearDown()
 		{
@@ -32,6 +41,9 @@ namespace SIL.DblBundle.Tests.Text
 			m_bundleWithoutLdml.Dispose();
 		}
 
+		/// <summary>
+		/// Tests that properties are correctly created in a bundle.
+		/// </summary>
 		[Test]
 		public void CreateBundle_PropertiesReadCorrectly()
 		{
@@ -40,6 +52,9 @@ namespace SIL.DblBundle.Tests.Text
 			Assert.AreEqual("eng", m_bundle.LanguageIso);
 		}
 
+		/// <summary>
+		/// Tests that the stylesheet is loaded correctly from a bundle.
+		/// </summary>
 		[Test]
 		public void CreateBundle_ProperlyLoadsStylesheet()
 		{
@@ -50,6 +65,9 @@ namespace SIL.DblBundle.Tests.Text
 			Assert.AreEqual(14, stylesheet.FontSizeInPoints);
 		}
 
+		/// <summary>
+		/// Tests that writing system for a bundle is created correctly.
+		/// </summary>
 		[Test]
 		public void CreateBundle_ProperlyLoadsWritingSystemDefinition()
 		{
@@ -69,6 +87,9 @@ namespace SIL.DblBundle.Tests.Text
 			Assert.IsFalse(ws.RightToLeftScript);
 		}
 
+		/// <summary>
+		/// Tests that a book is obtained from a bundle.
+		/// </summary>
 		[Test]
 		public void TryGetBook()
 		{
@@ -77,18 +98,27 @@ namespace SIL.DblBundle.Tests.Text
 			Assert.AreEqual("MAT", book.BookId);
 		}
 
+		/// <summary>
+		/// Tests that a bundle with an LDML file correctly reports that.
+		/// </summary>
 		[Test]
 		public void ContainsLdmlFile_FileExists_ReturnsTrue()
 		{
 			Assert.IsTrue(m_bundle.ContainsLdmlFile());
 		}
 
+		/// <summary>
+		/// Tests that a bundle without an LDML file correctly reports that.
+		/// </summary>
 		[Test]
 		public void ContainsLdmlFile_FileDoesNotExist_ReturnsFalse()
 		{
 			Assert.False(m_bundleWithoutLdml.ContainsLdmlFile());
 		}
 
+		/// <summary>
+		/// Tests that a bundle with an invalid USX path throws an exception.
+		/// </summary>
 		[Test]
 		public void ContainsInvalidUsxPath_ThrowsApplicationException()
 		{
@@ -102,6 +132,9 @@ namespace SIL.DblBundle.Tests.Text
 			});
 		}
 
+		/// <summary>
+		/// Helper method for tests to create a zipped text bundle.
+		/// </summary>
 		public static TempFile CreateZippedTextBundleFromResources(bool includeLdml = true, bool invalidUsxDirectory = false)
 		{
 			TempFile bundle = TempFile.WithExtension(DblBundleFileUtils.kDblBundleExtension);

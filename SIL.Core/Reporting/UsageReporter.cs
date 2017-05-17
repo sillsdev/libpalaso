@@ -358,6 +358,7 @@ namespace SIL.Reporting
 		/// Send an event to Google Analytics, if BeginGoogleAnalytics was previously called
 		/// </summary>
 		/// <param name="programArea">DictionaryBrowse</param>
+		/// <param name="category"></param>
 		/// <param name="action">       DeleteWord                   Error</param>
 		/// <param name="optionalLabel">Some Exception Message</param>
 		/// <param name="optionalInteger">some integer that makes sense for this event</param>

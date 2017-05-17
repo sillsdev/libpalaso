@@ -50,8 +50,6 @@ namespace SIL.DictionaryServices.Processors
 		/// <summary>
 		/// Note, this isn't very ambitious. The only thing the new entry will have is the lexeme form and the new sense, not any other traits/fields
 		/// </summary>
-		/// <param name="repo"> </param>
-		/// <param name="sense"></param>
 		private static void SpinSenseOffToItsOwnEntry(LiftLexEntryRepository repo, LexSense sense, IProgress progress)
 		{
 			var existingEntry = (LexEntry) sense.Parent;

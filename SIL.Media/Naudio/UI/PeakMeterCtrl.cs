@@ -20,12 +20,12 @@
 //
 // 3. This notice may not be removed or altered from any source distribution.
 ///////////////////////////////////////////////////////////////////////////////
-///
-///
-/// Subsequent additions/modifications:
-/// hatton: Added PeakLevel property, to simplify wiring to audio recorders
-/// So, to use, simply drag this on the form, then call PeakLevel occasionally.
-/// bogle: Changed to use Windows.Forms.Timer to avoid deadlock.
+//
+//
+// Subsequent additions/modifications:
+// hatton: Added PeakLevel property, to simplify wiring to audio recorders
+// So, to use, simply drag this on the form, then call PeakLevel occasionally.
+// bogle: Changed to use Windows.Forms.Timer to avoid deadlock.
 
 using System;
 using System.ComponentModel;

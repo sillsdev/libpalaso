@@ -516,13 +516,13 @@ namespace SIL.DictionaryServices.Lift
 			}
 		}
 //
-		/// <summary>
-		/// We do this because in linguist tools, there is a distinction that we don't want to
-		/// normally make in WeSay.  There, "gloss" is the first pass at a definition, but its
-		/// really just for interlinearlization.  That isn't a distinction we want our user
-		/// to bother with.
-		/// </summary>
-		/// <param name="entry"></param>
+		///// <summary>
+		///// We do this because in linguist tools, there is a distinction that we don't want to
+		///// normally make in WeSay.  There, "gloss" is the first pass at a definition, but its
+		///// really just for interlinearlization.  That isn't a distinction we want our user
+		///// to bother with.
+		///// </summary>
+		///// <param name="entry"></param>
 //        private void PostProcessSenses(LexEntry entry)
 //        {
 //            foreach (LexSense sense in entry.Senses)

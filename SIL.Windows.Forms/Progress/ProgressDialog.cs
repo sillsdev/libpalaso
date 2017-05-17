@@ -418,10 +418,10 @@ namespace SIL.Windows.Forms.Progress
 			base.Dispose( disposing );
 		}
 
-		/// <summary>
-		/// Custom handle creation code
-		/// </summary>
-		/// <param name="e">Event data</param>
+		///// <summary>
+		///// Custom handle creation code
+		///// </summary>
+		///// <param name="e">Event data</param>
 //        protected override void OnHandleCreated(EventArgs e)
 //        {
 //            base.OnHandleCreated (e);
@@ -435,10 +435,10 @@ namespace SIL.Windows.Forms.Progress
 //            }
 //        }
 
-		/// <summary>
-		/// Custom close handler
-		/// </summary>
-		/// <param name="e">Event data</param>
+		///// <summary>
+		///// Custom close handler
+		///// </summary>
+		///// <param name="e">Event data</param>
 //        protected override void OnClosing(CancelEventArgs e)
 //        {
 //            Debug.WriteLine("Dialog:OnClosing");

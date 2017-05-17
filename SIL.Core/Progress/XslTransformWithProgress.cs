@@ -9,7 +9,7 @@ namespace SIL.Progress
 {
 	/// <summary>
 	/// Does an xslt transform with a cancellable progress dialog.
-	/// The XSLT should have a <xsl:message/> to trigger each step
+	/// The XSLT should have a &lt;xsl:message/&gt; to trigger each step
 	/// </summary>
 	public class XslTransformWithProgress
 	{

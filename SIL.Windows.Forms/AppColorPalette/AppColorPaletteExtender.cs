@@ -16,6 +16,7 @@ namespace SIL.Windows.Forms.AppColorPalette
 	[ProvideProperty("FlatAppearanceBorderColor", typeof(ButtonBase))]
 	[ProvideProperty("FlatAppearanceMouseDownBackColor", typeof(ButtonBase))]
 	[ProvideProperty("FlatAppearanceMouseOverBackColor", typeof(ButtonBase))]
+	[CLSCompliant(false)]
 	public abstract class AppColorPaletteExtender<TPaletteColors> : Component, IExtenderProvider, ISupportInitialize where TPaletteColors : struct, IConvertible
 	{
 		public enum ColorProperties

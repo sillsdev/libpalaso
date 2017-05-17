@@ -391,7 +391,6 @@ namespace SIL.Reporting
 		/// Writes an event to the logger. This method will do nothing if Init() is not called
 		/// first.
 		/// </summary>
-		/// <param name="message"></param>
 		/// ------------------------------------------------------------------------------------
 		public static void WriteEvent(string message, params object[] args)
 		{

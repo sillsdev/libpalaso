@@ -51,6 +51,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			_deviceKind = deviceKind;
 		}
 
+		[CLSCompliant(false)]
 		public ImageFile Acquire()
 		{
 			ImageFile image;
