@@ -1,8 +1,9 @@
 ﻿using System.Linq;
 using System.Xml.Linq;
 using NUnit.Framework;
+using SIL.Xml;
 
-namespace SIL.WritingSystems.Tests
+namespace SIL.Tests.Xml
 {
 	[TestFixture]
 	public class XElementExtensionTests
@@ -176,6 +177,84 @@ namespace SIL.WritingSystems.Tests
 			// Remove the color attribute with null
 			identityElem.SetOptionalAttributeValue("color", null);
 			Assert.That(root.GetAttributeValue("identity", "color"), Is.Null);
+		}
+
+		[TestCase("<stuff />", "stuff")]
+		[TestCase("<stuff attr='myAttrValue' />", "myAttrValue")]
+		[TestCase("<stuff attr='myAttrValue' ><child attr='myChildAttrValue' /></stuff>", "myChildAttrValue")]
+		[TestCase("<stuff attr='myAttrValue' ><!-- Some comment --><child attr='myChildAttrValue' /></stuff>", "<!-- Some comment -->")]
+		public void CloneIsSameAsSource(string sourceData, string testData)
+		{
+			StringAssert.Contains(testData, sourceData);
+			var sourceElement = XElement.Parse(sourceData);
+			var clone = sourceElement.Clone();
+			Assert.AreNotSame(sourceElement, clone);
+			Assert.AreEqual(sourceElement.ToString(), clone.ToString());
+		}
+
+		/// <summary>
+		/// Make sure XElement "GetOuterXml" (aka: 'OuterXml') is the same as the ToString() contents.
+		/// </summary>
+		[Test]
+		public void GetOuterXml_IsSameAsToStringText()
+		{
+			const string outerXmlData = "<stuff attr='myAttrValue' ><!-- Some comment --><child attr='myChildAttrValue' /></stuff>";
+			var element = XElement.Parse(outerXmlData);
+			Assert.AreEqual(element.ToString(), element.GetOuterXml());
+		}
+
+		/// <summary>
+		/// Make sure XElement "GetInnerXml" (aka: 'InnerXml') is the same as combined child node contents,
+		/// but without the comment.
+		/// </summary>
+		[Test]
+		public void GetInnerXml_IsCombinedChildElementXml_CommentIsExcluded()
+		{
+			const string outerTextData = "<stuff attr='myAttrValue' ><!-- Some comment --><child attr=\"myChildAttrValue\" /><child2 attr=\"myChild2AttrValue\" /></stuff>";
+			const string expectedResult = "<child attr=\"myChildAttrValue\" /><child2 attr=\"myChild2AttrValue\" />";
+			var element = XElement.Parse(outerTextData);
+			Assert.AreEqual(expectedResult, element.GetInnerXml());
+		}
+
+		/// <summary>
+		/// Make sure XElement "GetInnerXml" (aka: 'InnerXml') is the same as combined child node contents.
+		/// </summary>
+		[Test]
+		public void GetInnerXml_IsCombinedChildElementXml()
+		{
+			const string outerTextData = "<stuff attr='myAttrValue' ><child attr=\"myChildAttrValue\" /><child2 attr=\"myChild2AttrValue\" /></stuff>";
+			const string expectedResult = "<child attr=\"myChildAttrValue\" /><child2 attr=\"myChild2AttrValue\" />";
+			var element = XElement.Parse(outerTextData);
+			Assert.AreEqual(expectedResult, element.GetInnerXml());
+		}
+
+		/// <summary>
+		/// Make sure XElement "GetInnerText" (aka: 'InnerText') is the same as self's Value concatenated child node Value properties,
+		/// but without the comment.
+		/// </summary>
+		[Test]
+		public void GetInnerText_IsConcatenatedElementValues_CommentIsExcluded()
+		{
+			const string outerTextData = "<stuff attr='myAttrValue' ><!-- Some comment -->My Value<child attr=\"myChildAttrValue\" >Child Value</child><child2 attr=\"myChild2AttrValue\" >Child2 Value</child2></stuff>";
+			const string myValueExpected = "My Value";
+			const string childExpected = "Child Value";
+			const string child2Expected = "Child2 Value";
+			var element = XElement.Parse(outerTextData);
+			Assert.AreEqual(string.Concat(myValueExpected, childExpected, child2Expected), element.GetInnerText());
+		}
+
+		/// <summary>
+		/// Make sure XElement "GetInnerText" (aka: 'InnerText') is the same as self's Value concatenated child node Value properties.
+		/// </summary>
+		[Test]
+		public void GetInnerText_IsConcatenatedElementValues()
+		{
+			const string outerTextData = "<stuff attr='myAttrValue' >My Value<child attr=\"myChildAttrValue\" >Child Value</child><child2 attr=\"myChild2AttrValue\" >Child2 Value</child2></stuff>";
+			const string myValueExpected = "My Value";
+			const string childExpected = "Child Value";
+			const string child2Expected = "Child2 Value";
+			var element = XElement.Parse(outerTextData);
+			Assert.AreEqual(string.Concat(myValueExpected, childExpected, child2Expected), element.GetInnerText());
 		}
 	}
 }
