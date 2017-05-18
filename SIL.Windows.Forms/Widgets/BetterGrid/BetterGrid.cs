@@ -37,6 +37,9 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		protected Action<int> RemoveRowAction;
 		protected Func<string> GetRemoveRowToolTipText;
 
+		private bool _showWaterMarkWhenDirty;
+		private string _waterMark = "!";
+
 		/// ------------------------------------------------------------------------------------
 		public BetterGrid()
 		{
@@ -196,10 +199,10 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		public bool ShowWaterMarkWhenDirty
 		{
-			get { return ShowWaterMarkWhenDirty; }
+			get { return _showWaterMarkWhenDirty; }
 			set
 			{
-				ShowWaterMarkWhenDirty = value;
+				_showWaterMarkWhenDirty = value;
 				PaintWaterMark = (value && IsDirty);
 				Invalidate();
 			}
@@ -212,10 +215,10 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		/// ------------------------------------------------------------------------------------
 		public string WaterMark
 		{
-			get { return WaterMark; }
+			get { return _waterMark; }
 			set
 			{
-				WaterMark = value;
+				_waterMark = value;
 				if (PaintWaterMark)
 					Invalidate();
 			}
