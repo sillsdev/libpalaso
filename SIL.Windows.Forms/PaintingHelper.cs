@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms
 {
@@ -28,38 +29,48 @@ namespace SIL.Windows.Forms
 	public class PaintingHelper
 	{
 		#region OS-specific stuff
-#if !__MonoCS__
-		[DllImport("User32.dll")]
-		extern static public IntPtr GetWindowDC(IntPtr hwnd);
-#else
-		static public IntPtr GetWindowDC(IntPtr hwnd)
+
+		[DllImport("User32.dll", EntryPoint = "GetWindowDC")]
+		private static extern IntPtr GetWindowDCWindows(IntPtr hwnd);
+
+		private static IntPtr GetWindowDCLinux(IntPtr hwnd)
 		{
 			Console.WriteLine("Warning--using unimplemented method GetWindowDC"); // FIXME Linux
 			return(IntPtr.Zero);
 		}
-#endif
 
-#if !__MonoCS__
-		[DllImport("User32.dll")]
-		extern static public int ReleaseDC(IntPtr hwnd, IntPtr hdc);
-#else
-		static public int ReleaseDC(IntPtr hwnd, IntPtr hdc)
+		public static IntPtr GetWindowDC(IntPtr hwnd)
+		{
+			return Platform.IsWindows ? GetWindowDCWindows(hwnd) : GetWindowDCLinux(hwnd);
+		}
+
+		[DllImport("User32.dll", EntryPoint = "ReleaseDC")]
+		private static extern int ReleaseDCWindows(IntPtr hwnd, IntPtr hdc);
+
+		private static int ReleaseDCLinux(IntPtr hwnd, IntPtr hdc)
 		{
 			Console.WriteLine("Warning--using unimplemented method ReleaseDC"); // FIXME Linux
 			return(-1);
 		}
-#endif
 
-#if !__MonoCS__
-		[DllImport("user32.dll", CharSet = CharSet.Auto)]
-		public static extern IntPtr GetParent(IntPtr hWnd);
-#else
-		public static IntPtr GetParent(IntPtr hWnd)
+		public static int ReleaseDC(IntPtr hwnd, IntPtr hdc)
+		{
+			return Platform.IsWindows ? ReleaseDCWindows(hwnd, hdc) : ReleaseDCLinux(hwnd, hdc);
+		}
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto, EntryPoint = "GetParent")]
+		private static extern IntPtr GetParentWindows(IntPtr hWnd);
+
+		private static IntPtr GetParentLinux(IntPtr hWnd)
 		{
 			Console.WriteLine("Warning--using unimplemented method GetParent"); // FIXME Linux
 			return(IntPtr.Zero);
 		}
-#endif
+
+		public static IntPtr GetParent(IntPtr hWnd)
+		{
+			return Platform.IsWindows ? GetParentWindows(hWnd) : GetParentLinux(hWnd);
+		}
 
 		#endregion
 

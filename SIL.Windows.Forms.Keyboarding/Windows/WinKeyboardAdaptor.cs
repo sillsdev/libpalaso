@@ -1,7 +1,5 @@
 // Copyright (c) 2013 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-
-#if !__MonoCS__
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -159,8 +157,8 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			TfSource = ProcessorProfiles as ITfSource;
 			if (TfSource != null)
 			{
-				_profileNotifySinkCookie = TfSource.AdviseSink(Guids.ITfLanguageProfileNotifySink,
-					_tfLanguageProfileNotifySink);
+				_profileNotifySinkCookie = TfSource.AdviseSink(
+					ref Guids.Consts.ITfLanguageProfileNotifySink, _tfLanguageProfileNotifySink);
 			}
 
 			if (KeyboardController.Instance != null)
@@ -238,7 +236,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				while (profilesEnumerator.Next(1, out profile) == 1)
 				{
 					// We only deal with keyboards; skip other input methods
-					if (profile.CatId != Guids.TfcatTipKeyboard)
+					if (profile.CatId != Guids.Consts.TfcatTipKeyboard)
 						continue;
 
 					if ((profile.Flags & TfIppFlags.Enabled) == 0)
@@ -857,7 +855,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			{
 				if (ProfileMgr != null)
 				{
-					var profile = ProfileMgr.GetActiveProfile(Guids.TfcatTipKeyboard);
+					var profile = ProfileMgr.GetActiveProfile(ref Guids.Consts.TfcatTipKeyboard);
 					return Keyboard.Controller.AvailableKeyboards.OfType<WinKeyboardDescription>()
 						.FirstOrDefault(winKeybd => InputProcessorProfilesEqual(profile, winKeybd.InputProcessorProfile)) ??
 						KeyboardController.NullKeyboard;
@@ -973,4 +971,3 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		#endregion IDisposable & Co. implementation
 	}
 }
-#endif

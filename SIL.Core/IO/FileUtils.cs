@@ -299,12 +299,11 @@ namespace SIL.IO
 		// same drive fails for UNC paths, so this at least gets us past that problem
 		private static bool UnsafeForFileReplaceMethod(string path)
 		{
-#if !MONO
-			return path.StartsWith("//") || path.StartsWith("\\\\");
-#else
-			return false; // we will soon be requesting some testing with networks on Linux; 
+			if (Platform.IsWindows)
+				return path.StartsWith("//") || path.StartsWith("\\\\");
+
+			return false; // we will soon be requesting some testing with networks on Linux;
 			//as a result of that, we might need to do something here, too. Or maybe not.
-#endif
 		}
 
 		private static void ReportFailedReplacement(string destinationPath, Exception error)
@@ -326,13 +325,11 @@ namespace SIL.IO
 			}
 		}
 
-#if !MONO
 		[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
 		static extern uint GetShortPathName(
 		   [MarshalAs(UnmanagedType.LPTStr)]string lpszLongPath,
 		   [MarshalAs(UnmanagedType.LPTStr)]StringBuilder lpszShortPath,
 		   uint cchBuffer);
-#endif
 
 		/// <summary>
 		/// When calling external exe's on Windows any non-ascii characters can get converted to '?'. This
@@ -340,14 +337,13 @@ namespace SIL.IO
 		/// </summary>
 		public static string MakePathSafeFromEncodingProblems(string path)
 		{
-#if MONO
-			return path;//Linux doesn't have these problems, far as I know
-#else
+			if (!Platform.IsWindows)
+				return path;//Linux doesn't have these problems, far as I know
+
 			const int MAXPATH = 260;
 			var shortBuilder = new StringBuilder(MAXPATH);
 			GetShortPathName(path, shortBuilder, (uint)shortBuilder.Capacity);
 			return shortBuilder.ToString();
-#endif
 		}
 
 		/// <summary>

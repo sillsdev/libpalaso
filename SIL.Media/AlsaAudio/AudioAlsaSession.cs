@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
+#if MONO
 namespace SIL.Media.AlsaAudio
 {
 	/// <summary>
@@ -16,7 +17,7 @@ namespace SIL.Media.AlsaAudio
 		DateTime _stopRecordingTime = DateTime.MinValue;
 		AlsaAudioDevice _device;
 
-		#region Construction and Disposal
+#region Construction and Disposal
 
 		/// <summary>
 		/// Initialize a new instance of the <see cref="AudioAlsaSession"/> class.
@@ -27,9 +28,9 @@ namespace SIL.Media.AlsaAudio
 			_device = new AlsaAudioDevice();
 		}
 
-		#endregion
+#endregion
 
-		#region Implementation of ISimpleAudioSession
+#region Implementation of ISimpleAudioSession
 
 		/// <summary>
 		/// Gets the path to the sound file, as established by the constructor.
@@ -152,7 +153,7 @@ namespace SIL.Media.AlsaAudio
 			_device.StopPlaying();
 		}
 
-		#endregion
+#endregion
 
 		/// <summary>
 		/// Start recording at the desired sample rate and number of channels.  The device remembers
@@ -183,3 +184,4 @@ namespace SIL.Media.AlsaAudio
 		}
 	}
 }
+#endif

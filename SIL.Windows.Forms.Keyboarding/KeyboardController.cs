@@ -9,12 +9,10 @@ using System.Text;
 using System.Windows.Forms;
 using SIL.Keyboarding;
 using SIL.ObjectModel;
+using SIL.PlatformUtilities;
 using SIL.Reporting;
-#if __MonoCS__
 using SIL.Windows.Forms.Keyboarding.Linux;
-#else
 using SIL.Windows.Forms.Keyboarding.Windows;
-#endif
 
 namespace SIL.Windows.Forms.Keyboarding
 {
@@ -181,13 +179,15 @@ namespace SIL.Windows.Forms.Keyboarding
 			return usingIP;
 		}
 
-		
+
 		private static bool IsUsingInputProcessor()
 		{
-#if __MonoCS__
-			// not yet implemented on Linux
-			return false;
-#else
+			if (!Platform.IsWindows)
+			{
+				// not yet implemented on Linux
+				return false;
+			}
+
 			TfInputProcessorProfilesClass inputProcessor;
 			try
 			{
@@ -202,9 +202,8 @@ namespace SIL.Windows.Forms.Keyboarding
 
 			if (profileMgr == null) return false;
 
-			var profile = profileMgr.GetActiveProfile(Guids.TfcatTipKeyboard);
+			var profile = profileMgr.GetActiveProfile(ref Guids.Consts.TfcatTipKeyboard);
 			return profile.ProfileType == TfProfileType.InputProcessor;
-#endif
 		}
 
 		#endregion
@@ -226,15 +225,19 @@ namespace SIL.Windows.Forms.Keyboarding
 
 		private void SetDefaultKeyboardAdaptors()
 		{
-			SetKeyboardAdaptors(new IKeyboardRetrievingAdaptor[] {
-#if __MonoCS__
-				new XkbKeyboardRetrievingAdaptor(), new IbusKeyboardRetrievingAdaptor(),
-				new UnityXkbKeyboardRetrievingAdaptor(), new UnityIbusKeyboardRetrievingAdaptor(),
-				new CombinedIbusKeyboardRetrievingAdaptor()
-#else
-				new WinKeyboardAdaptor(), new KeymanKeyboardAdaptor()
-#endif
-			});
+			SetKeyboardAdaptors(
+				Platform.IsWindows
+					? new IKeyboardRetrievingAdaptor[]
+					{
+						new WinKeyboardAdaptor(), new KeymanKeyboardAdaptor()
+					}
+					: new IKeyboardRetrievingAdaptor[]
+					{
+						new XkbKeyboardRetrievingAdaptor(), new IbusKeyboardRetrievingAdaptor(),
+						new UnityXkbKeyboardRetrievingAdaptor(), new UnityIbusKeyboardRetrievingAdaptor(),
+						new CombinedIbusKeyboardRetrievingAdaptor()
+					}
+			);
 		}
 
 		private void SetKeyboardAdaptors(IKeyboardRetrievingAdaptor[] adaptors)

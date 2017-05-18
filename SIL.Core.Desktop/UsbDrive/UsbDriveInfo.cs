@@ -4,11 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-#if __MonoCS__
+using SIL.PlatformUtilities;
 using SIL.UsbDrive.Linux;
-#else
 using SIL.UsbDrive.Windows;
-#endif
 
 namespace SIL.UsbDrive
 {
@@ -110,7 +108,9 @@ namespace SIL.UsbDrive
 
 		public static List<IUsbDriveInfo> GetDrives()
 		{
-#if __MonoCS__
+			if (Platform.IsWindows)
+				return UsbDriveInfoWindows.GetDrives();
+
 			// Using Palaso.UsbDrive on Linux/Mono results in NDesk spinning up a thread that
 			// continues until NDesk Bus is closed.  Failure to close the thread results in a
 			// program hang when closing.  Closing the system bus allows the thread to close,
@@ -120,13 +120,9 @@ namespace SIL.UsbDrive
 			// Ubuntu 12.04 uses udisks. HAL use is deprecated.
 			// Ubuntu 14.04 can use udisks or udisks2.
 			// Ubuntu 16.04 uses udisks2.
-			return UsbDriveInfoUDisks2.IsUDisks2Available ?
-				UsbDriveInfoUDisks2.GetDrives() :
-				UsbDriveInfoUDisks.GetDrives();
-#else
-			return UsbDriveInfoWindows.GetDrives();
-#endif
-
+			return UsbDriveInfoUDisks2.IsUDisks2Available
+				? UsbDriveInfoUDisks2.GetDrives()
+				: UsbDriveInfoUDisks.GetDrives();
 		}
 	}
 

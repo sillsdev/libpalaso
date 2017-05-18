@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows.Forms;
 using L10NSharp;
 using SIL.Code;
+using SIL.PlatformUtilities;
 using SIL.Reporting;
 using SIL.Windows.Forms.ClearShare;
 using SIL.Windows.Forms.ClearShare.WinFormsUI;
@@ -123,7 +124,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			//the client what search language the user has actually chosen. But if we don't have that
 			//control yet, just return whatever value they set us to.
 			get { return _acquireImageControl != null ? _acquireImageControl.SearchLanguage : _incomingSearchLanguage; }
-			
+
 			// We store this until we get an acquireImageControl, then pass it along to it when it is created.
 			set { _incomingSearchLanguage = value; }
 		}
@@ -184,7 +185,10 @@ namespace SIL.Windows.Forms.ImageToolbox
 				var s = LocalizationManager.GetString("ImageToolbox.CopyExemplarMetadata", "Use {0}", "Used to copy a previous metadata set to the current image. The  {0} will be replaced with the name of the exemplar image.");
 				_copyExemplarMetadata.Text = string.Format(s, Metadata.GetStoredExemplarSummaryString(Metadata.FileCategory.Image));
 			}
-#if __MonoCS__
+
+			if (Platform.IsWindows)
+				return;
+
 			// Ensure that the metadata gets fully displayed if at all possible.
 			// See https://silbloom.myjetbrains.com/youtrack/issue/BL-2354 for what can happen otherwise.
 			// The need for this appears to be a bug in the Mono library that allows _metadataDisplayControl
@@ -202,7 +206,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 					_metadataDisplayControl.Location = loc;
 				}
 			}
-#endif
 		}
 
 		private ListViewItem AddControl(string label, Bitmap bitmap, string imageKey, System.Func<PalasoImage, Control> makeControl)

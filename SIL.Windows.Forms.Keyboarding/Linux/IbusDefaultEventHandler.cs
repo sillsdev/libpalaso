@@ -1,7 +1,5 @@
 // Copyright (c) 2013, SIL International.
 // Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
-
-#if __MonoCS__
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -382,4 +380,3 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		#endregion
 	}
 }
-#endif

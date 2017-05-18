@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2013, SIL International.
 // Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
 
-#if __MonoCS__
 using System;
 using System.Windows.Forms;
 using IBusDotNet;
@@ -11,6 +10,7 @@ using SIL.Windows.Forms.Keyboarding.Linux;
 namespace SIL.Windows.Forms.Keyboarding.Tests
 {
 	[TestFixture]
+	[Platform(Include="Linux", Reason="Linux specific tests")]
 	public class IbusDefaultEventHandlerTests
 	{
 		private TextBox m_TextBox;
@@ -29,7 +29,6 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		/// <summary>Unit tests for the OnUpdatePreeditText method. We test this separately from
 		/// CommitText since we expect a slightly different behavior, e.g. the range selection
 		/// should remain.</summary>
-		[Test]
 		[TestCase("",  0, 0, /* Input: */ "e", 1, /* expected: */ "e",  1, 0, TestName="UpdatePreedit_EmptyTextbox_AddsText")]
 		[TestCase("b", 1, 0, /* Input: */ "e", 1, /* expected: */ "be", 2, 0, TestName="UpdatePreedit_ExistingText_AddsText")]
 		[TestCase("b", 0, 0, /* Input: */ "e", 1, /* expected: */ "eb", 1, 0, TestName="UpdatePreedit_ExistingText_InsertInFront")]
@@ -57,7 +56,6 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			Assert.That(m_TextBox.SelectionLength, Is.EqualTo(expectedSelectionLength), "SelectionLength");
 		}
 
-		[Test]
 		// This tests the scenario where we get a second OnUpdatePreeditText that should replace
 		// the composition of the first one.
 		[TestCase("bc", 1, 0, "a", 1, /* Input: */ "e", 1, /* expected: */ "bec", 2, 0, TestName="UpdatePreedit_ExistingText_ReplaceFirstChar")]
@@ -87,7 +85,6 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		}
 
 		/// <summary>Unit tests for the CommitOrReset method</summary>
-		[Test]
 		[TestCase(IBusAttrUnderline.None,   /* expected: */ false, "a", 1, 0, TestName="CommitOrReset_Commits")]
 		[TestCase(IBusAttrUnderline.Single, /* expected: */ true, "", 0, 0, TestName="CommitOrReset_Resets")]
 		public void CommitOrReset(IBusAttrUnderline underline,
@@ -113,7 +110,6 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		/// <summary>Unit tests for the OnCommitText method. These tests are very similar to
 		/// the tests for UpdatePreedit, but there are some important differences in the behavior,
 		/// e.g. range selections should be replaced by the composition string.</summary>
-		[Test]
 		[TestCase("", 0, 0, "e", 1,  /* Input: */ "e", /* expected: */ "e", 1, 0, TestName="Commit_EmptyTextbox_AddsText")]
 		[TestCase("b", 1, 0, "e", 1, /* Input: */ "e", /* expected: */ "be", 2, 0, TestName="Commit_ExistingText_AddsText")]
 		[TestCase("b", 0, 0, "e", 1, /* Input: */ "e", /* expected: */ "eb", 1, 0, TestName="Commit_ExistingText_InsertInFront")]
@@ -217,7 +213,6 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		/// is 0-based, however the IBus docs don't say and I haven't found a keyboard in the
 		/// wild that uses positive offsets.
 		/// </summary>
-		[Test]
 		[TestCase(1, /* Input: */ -1, 1, /* expected: */ "bc", 0, TestName="DeleteSurroundingText_Before")]
 		[TestCase(1, /* Input: */  0, 1, /* expected: */ "ac", 1, TestName="DeleteSurroundingText_After")]
 		[TestCase(1, /* Input: */ -2, 1, /* expected: */ "abc",1, TestName="DeleteSurroundingText_IllegalBeforeIgnores")]
@@ -248,7 +243,6 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		}
 
 
-		[Test]
 		[TestCase(1, 0, TestName = "CancelPreedit_IP")]
 		[TestCase(0, 1, TestName = "CancelPreedit_RangeSelection")]
 		public void CancelPreedit(int selStart, int selLength)
@@ -266,4 +260,3 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		}
 	}
 }
-#endif

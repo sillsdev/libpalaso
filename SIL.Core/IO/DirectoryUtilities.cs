@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Threading;
+using SIL.PlatformUtilities;
 using SIL.Reporting;
 
 namespace SIL.IO
@@ -126,14 +127,9 @@ namespace SIL.IO
 		// Gleaned from http://stackoverflow.com/questions/2281531/how-can-i-compare-directory-paths-in-c
 		public static bool AreDirectoriesEquivalent(DirectoryInfo dirInfo1, DirectoryInfo dirInfo2)
 		{
-			StringComparison comparison;
-#if !MONO
-			comparison = StringComparison.InvariantCultureIgnoreCase;
-#else
-			comparison = StringComparison.InvariantCulture;
-#endif
+			var comparison = Platform.IsWindows ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
 			var backslash = new char[] { '\\' }; // added this step because mono does not implicitly convert from char to char[]
-			return String.Compare(dirInfo1.FullName.TrimEnd(backslash), dirInfo2.FullName.TrimEnd(backslash), comparison) == 0;
+			return string.Compare(dirInfo1.FullName.TrimEnd(backslash), dirInfo2.FullName.TrimEnd(backslash), comparison) == 0;
 		}
 
 		/// <summary>
@@ -215,12 +211,15 @@ namespace SIL.IO
 		public static bool DeleteDirectoryRobust(string path, bool overrideReadOnly=true)
 		{
 			// ReSharper disable EmptyGeneralCatchClause
-#if __MonoCS__
-			// The Mono runtime deletes readonly files and directories that contain readonly files.
-			// This violates the MSDN specification of Directory.Delete and File.Delete.
-			if (!overrideReadOnly && DirectoryContainsReadOnly(path))
+
+			if (!Platform.IsWindows)
+			{
+				// The Mono runtime deletes readonly files and directories that contain readonly files.
+				// This violates the MSDN specification of Directory.Delete and File.Delete.
+				if (!overrideReadOnly && DirectoryContainsReadOnly(path))
 					return false;
-#endif
+			}
+
 			for (int i = 0; i < 40; i++) // each time, we sleep a little. This will try for up to 2 seconds (40*50ms)
 			{
 				if (!Directory.Exists(path))
@@ -294,7 +293,6 @@ namespace SIL.IO
 			return Path.Combine(parent, name + suffix);
 		}
 
-#if __MonoCS__
 		/// <summary>
 		/// Check whether the given directory is readonly, or contains files or subdirectories that are readonly.
 		/// </summary>
@@ -320,7 +318,6 @@ namespace SIL.IO
 			}
 			return false;
 		}
-#endif
 
 		/// <summary>
 		/// Checks if there are any entries in a directory

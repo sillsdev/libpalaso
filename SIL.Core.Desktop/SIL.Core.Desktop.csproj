@@ -296,11 +296,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\CrossPlatformSettingsProvider.cs" />
     <Compile Include="UsbDrive\UsbDriveInfo.cs" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName' Or '$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
     <Compile Include="UsbDrive\Windows\UsbDriveInfoWindows.cs" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'DebugMonoStrongName' Or '$(Configuration)' == 'ReleaseMono' Or '$(Configuration)' == 'ReleaseMonoStrongName'">
     <Compile Include="UsbDrive\Linux\IUDiskDevice.cs" />
     <Compile Include="UsbDrive\Linux\IUDisks.cs" />
     <Compile Include="UsbDrive\Linux\UDiskDevice.cs" />
@@ -327,7 +323,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\NDesk.DBus.0.14.0\build\NDesk.DBus.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NDesk.DBus.0.14.0\build\NDesk.DBus.targets'))" />
   </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

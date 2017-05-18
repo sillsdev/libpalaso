@@ -46,9 +46,12 @@ namespace SIL.Windows.Forms.TestApp
 
 		private void OnFolderBrowserControlClicked(object sender, EventArgs e)
 		{
-#if __MonoCS__
-			MessageBox.Show("FolderBrowserControl not supported on Linux");
-#else
+			if (!Platform.IsWindows)
+			{
+				MessageBox.Show("FolderBrowserControl not supported on Linux");
+				return;
+			}
+
 			using (var form = new Form())
 			{
 				var browser = new FolderBrowserControl.FolderBrowserControl();
@@ -62,7 +65,6 @@ namespace SIL.Windows.Forms.TestApp
 				form.Controls.Add(browser);
 				form.ShowDialog();
 			}
-#endif
 		}
 
 		private void OnLanguageLookupDialogClicked(object sender, EventArgs e)

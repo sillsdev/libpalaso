@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.Widgets
 {
@@ -50,26 +51,41 @@ namespace SIL.Windows.Forms.Widgets
 			}
 		}
 
-#if __MonoCS__
 		protected override void OnMouseDown(MouseEventArgs args)
 		{
-			if (IsTextSelectable)
+			if (Platform.IsWindows)
 				base.OnMouseDown(args);
-			// Or ignore the mouse totally.
+			else
+			{
+				if (IsTextSelectable)
+					base.OnMouseDown(args);
+				// Or ignore the mouse totally.
+			}
 		}
+
 		protected override void OnMouseMove(MouseEventArgs args)
 		{
-			if (IsTextSelectable)
+			if (Platform.IsWindows)
 				base.OnMouseMove(args);
-			// Or ignore the mouse totally.
+			else
+			{
+				if (IsTextSelectable)
+					base.OnMouseMove(args);
+				// Or ignore the mouse totally.
+			}
 		}
+
 		protected override void OnMouseUp(MouseEventArgs args)
 		{
-			if (IsTextSelectable)
+			if (Platform.IsWindows)
 				base.OnMouseUp(args);
-			// Or ignore the mouse totally.
+			else
+			{
+				if (IsTextSelectable)
+					base.OnMouseUp(args);
+				// Or ignore the mouse totally.
+			}
 		}
-#endif
 
 		/// <summary>
 		/// Custom draw to be ReadOnly without being necessarily grey.

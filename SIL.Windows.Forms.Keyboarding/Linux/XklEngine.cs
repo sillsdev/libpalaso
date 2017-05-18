@@ -1,11 +1,11 @@
 // Copyright (c) 2011-2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-
-#if __MonoCS__
 using System;
 using System.Runtime.InteropServices;
 using X11;
+#if MONO
 using Mono.Unix;
+#endif
 
 namespace X11.XKlavier
 {
@@ -13,7 +13,7 @@ namespace X11.XKlavier
 	/// Provides access to the xklavier XKB keyboarding engine methods.
 	/// </summary>
 	/// <seealso href="https://developer.gnome.org/libxklavier/stable/libxklavier-xkl-engine.html"/>
-	internal class XklEngine: IXklEngine
+	internal class XklEngine : IXklEngine
 	{
 		private struct XklState
 		{
@@ -24,14 +24,16 @@ namespace X11.XKlavier
 		private string[] m_GroupNames;
 		private string[] m_LocalizedGroupNames;
 
-		public XklEngine(): this(X11Helper.GetDisplayConnection())
+		public XklEngine() : this(X11Helper.GetDisplayConnection())
 		{
 		}
 
 		public XklEngine(IntPtr display)
 		{
 			Engine = xkl_engine_get_instance(display);
+#if MONO
 			Catalog.Init("xkeyboard-config", string.Empty);
+#endif
 		}
 
 		public void Close()
@@ -90,7 +92,9 @@ namespace X11.XKlavier
 					m_LocalizedGroupNames = new string[count];
 					for (int i = 0; i < count; i++)
 					{
+#if MONO
 						m_LocalizedGroupNames[i] = Catalog.GetString(GroupNames[i]);
+#endif
 					}
 				}
 				return m_LocalizedGroupNames;
@@ -206,4 +210,3 @@ namespace X11.XKlavier
 		private extern static IntPtr xkl_get_last_error();
 	}
 }
-#endif

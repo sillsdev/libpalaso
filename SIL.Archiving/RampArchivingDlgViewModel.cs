@@ -15,6 +15,7 @@ using L10NSharp;
 using SIL.Archiving.Generic;
 using SIL.Archiving.Properties;
 using SIL.IO;
+using SIL.PlatformUtilities;
 using SIL.Windows.Forms.ClearShare;
 using Timer = System.Threading.Timer;
 
@@ -23,16 +24,16 @@ namespace SIL.Archiving
 	/// ------------------------------------------------------------------------------------
 	public class RampArchivingDlgViewModel: ArchivingDlgViewModel
 	{
-#if !__MonoCS__
-		[DllImport("user32.dll")]
+		[DllImport("user32.dll", EntryPoint = "SetWindowPos")]
 		[return: MarshalAs(UnmanagedType.Bool)]
-		private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
-#else
-// ReSharper disable once UnusedMethodReturnValue.Local
-		// the signature of this function needs to match the signature of the windows api SetWindowPos
-		private static bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags) { return true; }
-#endif
+		private static extern bool SetWindowPosWindows(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, uint uFlags);
 
+		private static bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx,
+			int cy, uint uFlags)
+		{
+			// on Linux simply return true
+			return !Platform.IsWindows || SetWindowPosWindows(hWnd, hWndInsertAfter, x, y, cx, cy, uFlags);
+		}
 		// ReSharper disable InconsistentNaming
 		private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);    // brings window to top and makes it "always on top"
 		private static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);  // brings window to top but not "always on top"

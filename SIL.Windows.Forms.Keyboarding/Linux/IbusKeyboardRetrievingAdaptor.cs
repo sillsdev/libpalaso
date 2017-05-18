@@ -1,7 +1,5 @@
 // Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-
-#if __MonoCS__
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -244,4 +242,3 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		#endregion IDisposable & Co. implementation
 	}
 }
-#endif

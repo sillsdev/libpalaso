@@ -1,6 +1,5 @@
 // Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-#if __MonoCS__
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -145,7 +144,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		{
 			InitLocales();
 		}
-			
+
 		/// <summary>
 		/// Creates and returns a keyboard definition object based on the layout and locale.
 		/// Note that this method is used when we do NOT have a matching available keyboard.
@@ -333,4 +332,3 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		#endregion IDisposable & Co. implementation
 	}
 }
-#endif

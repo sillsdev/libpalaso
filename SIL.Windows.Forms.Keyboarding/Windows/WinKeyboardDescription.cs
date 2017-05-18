@@ -1,7 +1,5 @@
 // Copyright (c) 2013 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-
-#if !__MonoCS__
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Win32;
@@ -88,4 +86,3 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		}
 	}
 }
-#endif

@@ -1,15 +1,14 @@
-#if __MonoCS__
 using System.Linq;
 using System.Windows.Forms;
 using NUnit.Framework;
 using SIL.Reporting;
-using SIL.Windows.Forms.Keyboarding;
 using SIL.Windows.Forms.Keyboarding.Linux;
 using SIL.Keyboarding;
 
 namespace SIL.Windows.Forms.Keyboarding.Tests
 {
 	[TestFixture]
+	[Platform(Include="Linux", Reason="Linux specific tests")]
 	[Category("SkipOnTeamCity")]
 	public class LinuxKeyboardControllerTests
 	{
@@ -214,4 +213,3 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 
 	}
 }
-#endif

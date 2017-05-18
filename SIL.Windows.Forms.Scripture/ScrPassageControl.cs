@@ -1,12 +1,12 @@
 // --------------------------------------------------------------------------------------------
 #region // Copyright (c) 2013, SIL International.
 // <copyright from='2003' to='2013' company='SIL International'>
-//		Copyright (c) 2013, SIL International.   
-//    
+//		Copyright (c) 2013, SIL International.
+//
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
-// </copyright> 
+// </copyright>
 #endregion
-// 
+//
 // File: ScrPassageControl.cs
 // --------------------------------------------------------------------------------------------
 using System;
@@ -20,6 +20,7 @@ using System.Linq;
 using System.Media;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+using SIL.PlatformUtilities;
 using SIL.Scripture;
 using SIL.Windows.Forms.Extensions;
 using SIL.Windows.Forms.FileDialogExtender;
@@ -87,12 +88,14 @@ namespace SIL.Windows.Forms.Scripture
 			if (DesignMode)
 				return;
 
-            m_mulScrBooks = new MultilingScrBooks();	
+            m_mulScrBooks = new MultilingScrBooks();
 			m_dropdownForm = null;
-			
-#if __MonoCS__ // Setting MinumumSize allows mono's buggy ToolStrip layout of ToolStripControlHost's to work.
-			MinimumSize = new Size(100, 20);
-#endif
+
+			if (!Platform.IsWindows)
+			{
+				// Setting MinumumSize allows mono's buggy ToolStrip layout of ToolStripControlHost's to work.
+				MinimumSize = new Size(100, 20);
+			}
 		}
 
         /// ------------------------------------------------------------------------------------
@@ -173,7 +176,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private void InitializeBookLabels()
@@ -183,14 +186,14 @@ namespace SIL.Windows.Forms.Scripture
 			int iName = 0;
 			foreach (int bookOrd in m_availableBookIds)
 				bookNames[iName++] = new BookLabel(m_mulScrBooks.GetBookName(bookOrd), bookOrd);
-			
+
 			BookLabels = bookNames;
 		}
 		#endregion
 
 		#region Component Designer generated code
 		/// <summary>
-		/// Required method for Designer support - do not modify 
+		/// Required method for Designer support - do not modify
 		/// the contents of this method with the code editor.
 		/// </summary>
 		private void InitializeComponent()
@@ -201,9 +204,9 @@ namespace SIL.Windows.Forms.Scripture
 			this.txtScrRef = new System.Windows.Forms.TextBox();
 			this.btnScrPsgDropDown = new System.Windows.Forms.Panel();
 			this.SuspendLayout();
-			// 
+			//
 			// txtScrRef
-			// 
+			//
 			resources.ApplyResources(this.txtScrRef, "txtScrRef");
 			this.txtScrRef.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.txtScrRef.Name = "txtScrRef";
@@ -213,9 +216,9 @@ namespace SIL.Windows.Forms.Scripture
 			this.txtScrRef.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtScrRef_KeyPress);
 			this.txtScrRef.Enter += new System.EventHandler(this.txtScrRef_GotFocus);
 			this.txtScrRef.MouseEnter += new System.EventHandler(this.txtScrRef_MouseEnter);
-			// 
+			//
 			// btnScrPsgDropDown
-			// 
+			//
 			this.btnScrPsgDropDown.BackColor = System.Drawing.SystemColors.Highlight;
 			resources.ApplyResources(this.btnScrPsgDropDown, "btnScrPsgDropDown");
 			this.btnScrPsgDropDown.Name = "btnScrPsgDropDown";
@@ -224,9 +227,9 @@ namespace SIL.Windows.Forms.Scripture
 			this.btnScrPsgDropDown.MouseDown += new System.Windows.Forms.MouseEventHandler(this.btnScrPsgDropDown_MouseDown);
 			this.btnScrPsgDropDown.MouseUp += new System.Windows.Forms.MouseEventHandler(this.btnScrPsgDropDown_MouseUp);
 			this.btnScrPsgDropDown.MouseEnter += new System.EventHandler(this.btnScrPsgDropDown_MouseEnter);
-			// 
+			//
 			// ScrPassageControl
-			// 
+			//
 			this.BackColor = System.Drawing.SystemColors.Window;
 			this.Controls.Add(this.btnScrPsgDropDown);
 			this.Controls.Add(this.txtScrRef);
@@ -264,7 +267,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Description("The contents of the text portion of the control.")]
-		public virtual string Reference 
+		public virtual string Reference
 		{
 			get {return txtScrRef.Text;}
 			set {txtScrRef.Text = value;}
@@ -278,7 +281,7 @@ namespace SIL.Windows.Forms.Scripture
 		[Description("The array containing the primary & secondary encodings.")]
 		[Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		public int[] WritingSystems 
+		public int[] WritingSystems
 		{
 			get {return m_rgnEncodings;}
 			set {m_rgnEncodings = value;}
@@ -286,7 +289,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Browsable(false)]
@@ -339,7 +342,7 @@ namespace SIL.Windows.Forms.Scripture
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool Valid
 		{
-			get 
+			get
 			{
 				return m_mulScrBooks.ParseRefString(Reference).Valid;
 			}
@@ -453,7 +456,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		void HandleSizeChanged(object sender, EventArgs e)
@@ -555,11 +558,11 @@ namespace SIL.Windows.Forms.Scripture
 			}
 			else
 			{
-				// Since the user has pressed enter we have to set the focus back to the 
+				// Since the user has pressed enter we have to set the focus back to the
 				// text, even if the passage didn't change.
 
-				// HACK (EberhardB): This is a little bit of a hack. The passage hasn't actually 
-				// changed, but this is the easiest way to put the focus back to where it belongs. 
+				// HACK (EberhardB): This is a little bit of a hack. The passage hasn't actually
+				// changed, but this is the easiest way to put the focus back to where it belongs.
 				InvokePassageChanged(BCVRef.Empty);
 			}
 		}
@@ -587,7 +590,7 @@ namespace SIL.Windows.Forms.Scripture
 				var prevStartBook = startBook;
 				scrRef = m_mulScrBooks.ParseRefString(sTextToBeParsed, startBook);
 
-				// If the book is in the Scripture project 
+				// If the book is in the Scripture project
 				// (or if we get the same book back from the parse method or go back to the start)...
 				if (m_availableBookIds.Contains(scrRef.Book) ||
 					prevStartBook == scrRef.Book || prevStartBook > scrRef.Book)
@@ -612,7 +615,7 @@ namespace SIL.Windows.Forms.Scripture
 		/// Determines whether the specified BCVRef is in the list of available books.
 		/// </summary>
 		/// <param name="scrRef">The given BCVRef</param>
-		/// <returns><c>true</c> if the book reference is in the list of available books; 
+		/// <returns><c>true</c> if the book reference is in the list of available books;
 		/// otherwise, <c>false</c>.
 		/// </returns>
 		/// ------------------------------------------------------------------------------------
@@ -648,7 +651,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[SuppressMessage("Gendarme.Rules.Correctness", "EnsureLocalDisposalRule",
@@ -659,7 +662,7 @@ namespace SIL.Windows.Forms.Scripture
 			ScrPassageDropDown spDropDown = CreateScrPassageDropDown(this);
 			PositionDropDown(spDropDown);
 			spDropDown.Closed += DropDownClosed;
-			
+
 			spDropDown.BookSelected += DropDownBookSelected;
 
 			spDropDown.ChapterSelected += DropDownChapterSelected;
@@ -695,7 +698,7 @@ namespace SIL.Windows.Forms.Scripture
 			dropDown.DesktopLocation = screenPoint;
 
 			// Make sure that the drop down fits on the screen.
-			Rectangle rect = new Rectangle(dropDown.DesktopLocation, 
+			Rectangle rect = new Rectangle(dropDown.DesktopLocation,
 				new Size(dropDown.Width, dropDown.Height));
 			ScreenHelper.EnsureVisibleRect(ref rect);
 			dropDown.DesktopLocation = new Point(rect.Left, rect.Top);
@@ -735,7 +738,7 @@ namespace SIL.Windows.Forms.Scripture
 			// Select the chapter portion of the reference in the text box.
 			int space = Reference.LastIndexOf(' ');
 			int sepr = Reference.LastIndexOf(ChapterVerseSepr);
-			
+
 			if (space >= 0 && sepr >= 0 && sepr > space)
 			{
 				txtScrRef.SelectionStart = space + 1;
@@ -745,12 +748,12 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private void DropDownChapterSelected(int book, int chapter)
 		{
-			// If the book or chapter have changed, parse the new reference and display it 
+			// If the book or chapter have changed, parse the new reference and display it
 			// in the text box.
 			if (ScReference.Book != book || ScReference.Chapter != chapter)
 			{
@@ -808,7 +811,7 @@ namespace SIL.Windows.Forms.Scripture
 		#region Delegate methods
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private void txtScrRef_MouseEnter(object sender, EventArgs e)
@@ -819,7 +822,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private void txtScrRef_MouseLeave(object sender, EventArgs e)
@@ -827,10 +830,10 @@ namespace SIL.Windows.Forms.Scripture
 			m_textBoxHot = false;
 			Invalidate(true);
 		}
-	
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		protected void txtScrRef_KeyDown(object sender, KeyEventArgs e)
@@ -845,8 +848,8 @@ namespace SIL.Windows.Forms.Scripture
 			{
 				e.Handled = true;
 				Reference = ScReference.AsString;
-				// HACK (EberhardB): This is a little bit of a hack. The passage hasn't actually 
-				// changed, but this is the easiest way to put the focus back to where it belongs. 
+				// HACK (EberhardB): This is a little bit of a hack. The passage hasn't actually
+				// changed, but this is the easiest way to put the focus back to where it belongs.
 				InvokePassageChanged(BCVRef.Empty);
 			}
 		}
@@ -890,7 +893,7 @@ namespace SIL.Windows.Forms.Scripture
 		{
 			if (m_fParentIsToolstrip)
 				Application.AddMessageFilter(this);
-	
+
 			txtScrRef.SelectAll();
 		}
 
@@ -908,7 +911,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		protected override void OnPaint(PaintEventArgs e)
@@ -926,13 +929,13 @@ namespace SIL.Windows.Forms.Scripture
 			else
 			{
 				VisualStyleRenderer renderer;
-				
+
 				renderer = new VisualStyleRenderer(Enabled ?
 					VisualStyleElement.TextBox.TextEdit.Normal :
 					VisualStyleElement.TextBox.TextEdit.Disabled);
 
 				renderer.DrawBackground(e.Graphics, ClientRectangle, e.ClipRectangle);
-				
+
 				// When the textbox background is drawn in normal mode (at least when the
 				// theme is one of the standard XP themes), it's drawn with a white background
 				// and not the System Window background color. Therefore, we need to create
@@ -943,7 +946,7 @@ namespace SIL.Windows.Forms.Scripture
 				int dy = (rc.Height - ClientRectangle.Height) / 2;
 				rc = ClientRectangle;
 				rc.Inflate(-dx, -dy);
-				
+
 				using (SolidBrush br = new SolidBrush(txtScrRef.BackColor))
 					e.Graphics.FillRectangle(br, rc);
 			}
@@ -951,7 +954,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private void PaintOnToolbar(PaintEventArgs e)
@@ -966,7 +969,7 @@ namespace SIL.Windows.Forms.Scripture
 			using (Pen pen = new Pen(ProfessionalColors.ButtonSelectedHighlightBorder))
 			{
 				e.Graphics.DrawRectangle(pen, rc);
-				
+
 				Point pt1 = new Point(btnScrPsgDropDown.Left - 1, 0);
 				Point pt2 = new Point(btnScrPsgDropDown.Left - 1, Height);
 				e.Graphics.DrawLine(pen, pt1, pt2);
@@ -975,7 +978,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private void btnScrPsgDropDown_Paint(object sender, PaintEventArgs e)
@@ -1014,7 +1017,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private void btnScrPsgDropDown_PaintOnToolstrip(PaintEventArgs e)
@@ -1049,12 +1052,12 @@ namespace SIL.Windows.Forms.Scripture
 			}
 
 			e.Graphics.DrawImageUnscaledAndClipped(Properties.Resources.DropDownArrowNarrow,
-				btnScrPsgDropDown.ClientRectangle); 
+				btnScrPsgDropDown.ClientRectangle);
 		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private void PaintNonThemeButton(Graphics graphics, ButtonState state)
@@ -1073,7 +1076,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private void btnScrPsgDropDown_MouseEnter(object sender, System.EventArgs e)
@@ -1091,7 +1094,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		private void btnScrPsgDropDown_MouseLeave(object sender, System.EventArgs e)
@@ -1109,7 +1112,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
@@ -1123,7 +1126,7 @@ namespace SIL.Windows.Forms.Scripture
 				btnScrPsgDropDown.Invalidate();
 			}
 
-			// Strangely enough - Windows drops the DropDown of a combo box in the mouse down, 
+			// Strangely enough - Windows drops the DropDown of a combo box in the mouse down,
 			// not the click event as almost anywhere else in Windows.
 			HandleDropDown();
 		}
@@ -1155,7 +1158,7 @@ namespace SIL.Windows.Forms.Scripture
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
@@ -1165,7 +1168,7 @@ namespace SIL.Windows.Forms.Scripture
 			// Repaint the drop down button so that it displays normal instead of pressed
 			if (m_mouseDown)
 			{
-				m_mouseDown = false;	
+				m_mouseDown = false;
 				btnScrPsgDropDown.Invalidate();
 			}
 		}

@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+#if !MONO
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -47,7 +48,7 @@ namespace SIL.Media
 
 		public void StartRecording()
 		{
-			if(_thinkWeAreRecording)
+			if (_thinkWeAreRecording)
 				throw new ApplicationException("Can't begin recording when we're already recording.");
 
 			_thinkWeAreRecording = true;
@@ -60,12 +61,12 @@ namespace SIL.Media
 		}
 		public void StopRecordingAndSaveAsWav()
 		{
-			if(!_thinkWeAreRecording)
+			if (!_thinkWeAreRecording)
 				throw new ApplicationException("Stop Recording called when we weren't recording.  Use IsRecording to check first.");
 
 			_thinkWeAreRecording = false;
 			_recorder.StopRecordingAudio();
-			if (_recorder.RecordedAudioData!=null)
+			if (_recorder.RecordedAudioData != null)
 			{
 				SaveAsWav(FilePath);
 			}
@@ -77,7 +78,7 @@ namespace SIL.Media
 		{
 			get
 			{
-				if(_startRecordingTime == default(DateTime) || _stopRecordingTime == default(DateTime))
+				if (_startRecordingTime == default(DateTime) || _stopRecordingTime == default(DateTime))
 					return 0;
 				return _stopRecordingTime.Subtract(_startRecordingTime).TotalMilliseconds;
 			}
@@ -96,7 +97,7 @@ namespace SIL.Media
 
 		public bool IsPlaying
 		{
-			get { return (_sound !=null && !_sound.Finished); }
+			get { return (_sound != null && !_sound.Finished); }
 		}
 
 		public bool CanRecord
@@ -116,7 +117,7 @@ namespace SIL.Media
 
 		public void Play()
 		{
-			if(IsRecording)
+			if (IsRecording)
 				throw new ApplicationException("Can't play while recording.");
 
 			if (_sound != null)
@@ -124,7 +125,7 @@ namespace SIL.Media
 				_engine.StopAllSounds();
 			}
 
-			if(!File.Exists(_path))
+			if (!File.Exists(_path))
 				throw new FileNotFoundException("Could not find sound file", _path);
 
 			//turns out, the silly engine will keep playing the same recording, even
@@ -138,7 +139,7 @@ namespace SIL.Media
 			// we have to read it into memory and then play from memory,
 			// because the built-in Irrklang play from file function keeps
 			// the file open and locked
-			byte[] audioData = File.ReadAllBytes(_path);	//REVIEW: will this leak?
+			byte[] audioData = File.ReadAllBytes(_path);    //REVIEW: will this leak?
 			_soundSource = engine.AddSoundSourceFromMemory(audioData, _path);
 			if (_sound != null)
 				_sound.Dispose();
@@ -160,39 +161,39 @@ namespace SIL.Media
 		/// And this is just a private mater, since we expose the event through a normal .net event handler
 		/// </summary>
 		private class ProxyForIrrklangEvents : ISoundStopEventReceiver
-			{
+		{
 			private readonly AudioIrrKlangSession _session;
 
 			public ProxyForIrrklangEvents(AudioIrrKlangSession session)
-				{
+			{
 				_session = session;
-				}
+			}
 
 			public void OnSoundStopped(ISound sound, StopEventCause reason, object userData)
-				{
-				_session.OnSoundStopped(sound,reason,userData);
+			{
+				_session.OnSoundStopped(sound, reason, userData);
 			}
 		}
 
 		private void OnSoundStopped(ISound sound, StopEventCause reason, object userData)
 		{
-			if(_soundSource != null)
+			if (_soundSource != null)
 				_soundSource.Dispose();
 			_soundSource = null;
 
 			//this dispose is here because sometimes sounds (over 4 seconds) were getting left in a locked state
 			//but this didn't actually help.
-			((IrrKlang.ISoundEngine) userData).Dispose();
+			((IrrKlang.ISoundEngine)userData).Dispose();
 
 
 			var handler = PlaybackStopped;
-			if(handler != null) handler(this, EventArgs.Empty);
+			if (handler != null) handler(this, EventArgs.Empty);
 		}
 
 		public void SaveAsWav(string path)
 		{
 
-			if(File.Exists(path))
+			if (File.Exists(path))
 				File.Delete(path);
 
 			short formatType = 1;
@@ -275,3 +276,4 @@ I use an option on the constructor of the soundEngine(SoundOutputDriver.WinMM);
 
 And I set "nostreaming" and "preload" true - now it works like a charm!
  */
+#endif

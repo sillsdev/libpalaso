@@ -482,7 +482,7 @@
       <DependentUpon>ConfirmRecycleDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="FlexibleMessageBox.cs" />
-    <Compile Include="FolderBrowserControl\FolderBrowserControl.cs" Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName' Or '$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
+    <Compile Include="FolderBrowserControl\FolderBrowserControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="FontHelper.cs" />

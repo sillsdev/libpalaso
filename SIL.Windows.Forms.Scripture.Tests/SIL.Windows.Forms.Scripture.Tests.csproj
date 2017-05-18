@@ -451,6 +451,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
+      <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
+      <Name>SIL.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SIL.Windows.Forms.Scripture\SIL.Windows.Forms.Scripture.csproj">
       <Project>{6CA85A3E-4AB3-4BBC-861F-0C68F018868B}</Project>
       <Name>SIL.Windows.Forms.Scripture</Name>

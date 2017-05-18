@@ -2,6 +2,11 @@
 
 namespace SIL.Media.Naudio
 {
+	public class PlaybackProgressEventArgs : EventArgs
+	{
+		public TimeSpan PlaybackPosition;
+	}
+
 	public interface IAudioPlayer : IDisposable
 	{
 		void LoadFile(string path);

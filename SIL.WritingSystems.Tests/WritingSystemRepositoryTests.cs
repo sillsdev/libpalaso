@@ -5,6 +5,8 @@ using NUnit.Framework;
 
 namespace SIL.WritingSystems.Tests
 {
+	[Platform(Exclude = "Linux",
+		Reason = "Ignored because linux nunit-test runner can't handle Tests in abastract base class")]
 	public abstract class WritingSystemRepositoryTests
 	{
 		private IWritingSystemRepository _repositoryUnderTest;
@@ -43,7 +45,6 @@ namespace SIL.WritingSystems.Tests
 
 // Disabled because linux nunit-test runner can't handle Tests in abastract base class
 // TODO: refactor or fix nunit-runner
-#if !MONO
 		[Test]
 		public void SetTwoDefinitions_CountEquals2()
 		{
@@ -579,6 +580,5 @@ namespace SIL.WritingSystems.Tests
 			RepositoryUnderTest.Save();
 			Assert.That(RepositoryUnderTest.WritingSystemIdHasChangedTo("en"), Is.EqualTo("en"));
 		}
-#endif
 	}
 }

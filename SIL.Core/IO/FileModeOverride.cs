@@ -1,9 +1,7 @@
 // Copyright (c) 2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-
 using System;
-
-#if __MonoCS__
+#if MONO
 using Mono.Unix.Native;
 #endif
 
@@ -16,11 +14,11 @@ namespace SIL.IO
 	/// ----------------------------------------------------------------------------------------
 	public class FileModeOverride : IDisposable
 	{
-#if __MonoCS__
+#if MONO
 		private FilePermissions m_prevMask;
 #endif
 
-#if __MonoCS__
+#if MONO
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Overrides the system File permissions with the default permissions of "002"
@@ -30,9 +28,7 @@ namespace SIL.IO
 			: this(FilePermissions.S_IWOTH)
 		{
 		}
-#endif
 
-#if __MonoCS__
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Overrides the system File permissions with the value passed in FilePermissions
@@ -44,6 +40,7 @@ namespace SIL.IO
 			SetFileCreationMask(fp);
 		}
 #endif
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// </summary>
@@ -54,7 +51,7 @@ namespace SIL.IO
 			// The base class finalizer is called automatically.
 		}
 
-#if __MonoCS__
+#if MONO
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Set the File creation mode passed in by filePermissions.
@@ -65,7 +62,7 @@ namespace SIL.IO
 		/// ------------------------------------------------------------------------------------
 		private void SetFileCreationMask(FilePermissions filePermissions)
 		{
-			m_prevMask = Mono.Unix.Native.Syscall.umask(filePermissions);
+			m_prevMask = Syscall.umask(filePermissions);
 		}
 #endif
 
@@ -117,7 +114,7 @@ namespace SIL.IO
 
 			if (disposing)
 			{
-#if __MonoCS__
+#if MONO
 				SetFileCreationMask(m_prevMask);
 #endif
 			}

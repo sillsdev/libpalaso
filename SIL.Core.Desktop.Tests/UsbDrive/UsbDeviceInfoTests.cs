@@ -5,10 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
+using SIL.PlatformUtilities;
 using SIL.UsbDrive;
-#if __MonoCS__
 using SIL.UsbDrive.Linux;
-#endif
 
 namespace SIL.Tests.UsbDrive
 {
@@ -31,19 +30,22 @@ namespace SIL.Tests.UsbDrive
 			if (usbDrives == null || usbDrives.Count < 1)
 			{
 				Assert.Ignore("Tests require USB drive");
-				return;
 			}
-#if __MonoCS__
-			_drive0.DriveSize = 256850432;
-			_drive0.Path = new DirectoryInfo("/media/Kingston");
-			_drive1.DriveSize = 1032724480;
-			_drive1.Path = new DirectoryInfo("/media/PAXERIT");
-#else
-			_drive0.DriveSize = 256770048;
-			_drive0.Path = new DirectoryInfo("E:\\");
-			_drive1.DriveSize = 1032454144;
-			_drive1.Path = new DirectoryInfo("J:\\");
-#endif
+
+			if (!Platform.IsWindows)
+			{
+				_drive0.DriveSize = 256850432;
+				_drive0.Path = new DirectoryInfo("/media/Kingston");
+				_drive1.DriveSize = 1032724480;
+				_drive1.Path = new DirectoryInfo("/media/PAXERIT");
+			}
+			else
+			{
+				_drive0.DriveSize = 256770048;
+				_drive0.Path = new DirectoryInfo("E:\\");
+				_drive1.DriveSize = 1032454144;
+				_drive1.Path = new DirectoryInfo("J:\\");
+			}
 		}
 
 		[Test]
@@ -179,10 +181,8 @@ namespace SIL.Tests.UsbDrive
 			var usbDrives = UsbDriveInfo.GetDrives();
 			if (usbDrives.Count < 1)
 				Assert.Ignore("Need at least 1 USB drive plugged in");
-#if __MonoCS__
-			if (UsbDriveInfoUDisks2.IsUDisks2Available)
+			if (!Platform.IsWindows && UsbDriveInfoUDisks2.IsUDisks2Available)
 				Assert.Ignore("With udisks2 GetDrives() only returns mounted drives");
-#endif
 
 			Assert.Throws<ArgumentOutOfRangeException>(
 				() =>

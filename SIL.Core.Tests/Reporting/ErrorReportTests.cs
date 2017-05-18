@@ -2,9 +2,7 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using NUnit.Framework;
-#if !__MonoCS__
 using SIL.Email;
-#endif
 using SIL.Reporting;
 
 namespace SIL.Tests.Reporting
@@ -20,16 +18,15 @@ namespace SIL.Tests.Reporting
 			ErrorReport.ReportNonFatalException(new ApplicationException("testing"));
 		}
 
-#if !__MonoCS__
 		[Test]
 		[Ignore("by hand only")]
+		[Platform(Include = "Windows", Reason = "Windows specific test")]
 		public void TestSendEmail()
 		{
 			MAPI x = new MAPI();
 			x.AddRecipientTo("pretend@8ksdfj83jls8.com");
 			x.SendMailDirect("test", "testbody");
 		}
-#endif
 
 		[Test]
 		[Platform(Include = "Windows", Reason = "Windows specific test")]

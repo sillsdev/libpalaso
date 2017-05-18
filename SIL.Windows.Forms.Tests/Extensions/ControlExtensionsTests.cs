@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Windows.Forms;
 using NUnit.Framework;
+using SIL.PlatformUtilities;
 using SIL.Windows.Forms.Extensions;
 
 namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
@@ -151,9 +152,8 @@ namespace SIL.Windows.Forms.Tests.ControlExtensionsTests
 			Assert.IsNotNull(resultOfSafeInvokeCall2, "Second call to SafeInvoke should have returned a non-null IAsyncResult (even though it is later dequeued).");
 			Assert.IsNull(_control.EndInvoke(resultOfSafeInvokeCall1)); // this should not throw an exception
 			Assert.IsFalse(action2WasExecuted, "Action 2 should not have been executed at all.");
-#if !MONO
-			VerifyExpectedExceptionInNest<ObjectDisposedException>(() => _control.EndInvoke(resultOfSafeInvokeCall2));
-#endif
+			if (Platform.IsWindows)
+				VerifyExpectedExceptionInNest<ObjectDisposedException>(() => _control.EndInvoke(resultOfSafeInvokeCall2));
 		}
 
 		[Test]

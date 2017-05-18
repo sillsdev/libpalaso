@@ -5,6 +5,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Reflection;
+using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.Keyboarding.Windows
 {
@@ -120,25 +121,29 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		#endregion
 
 		#region user32.dll
-#if !__MonoCS__
 		/// <summary></summary>
-		[DllImport("user32.dll", CharSet = CharSet.Auto)]
-		public static extern IntPtr GetFocus();
-#else
+		[DllImport("user32.dll", CharSet = CharSet.Auto, EntryPoint = "GetFocus")]
+		public static extern IntPtr GetFocusWindows();
+
 		private static MethodInfo s_getFocus;
-		public static IntPtr GetFocus()
+		public static IntPtr GetFocusLinux()
 		{
 			if (s_getFocus == null)
-				s_getFocus = XplatUI.GetMethod("GetFocus",
-					System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static,
+			{
+				s_getFocus = XplatUI.GetMethod("GetFocus", BindingFlags.NonPublic | BindingFlags.Static,
 					null, Type.EmptyTypes, null);
+			}
 			return (IntPtr)s_getFocus.Invoke(null, null);
-
 		}
-#endif
+
+		public static IntPtr GetFocus()
+		{
+			return Platform.IsWindows ? GetFocusWindows() : GetFocusLinux();
+		}
+
 
 		[DllImport("user32.dll")]
-		public static extern IntPtr ActivateKeyboardLayout(HandleRef hkl, UInt32 flags);
+		public static extern IntPtr ActivateKeyboardLayout(HandleRef hkl, uint flags);
 		public const int KLF_SETFORPROCESS = 256;
 
 		[DllImport("user32.dll")]
@@ -151,7 +156,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		#endregion
 
 
-#if __MonoCS__
 		private static Assembly s_monoWinFormsAssembly;
 		private static Assembly MonoWinFormsAssembly
 		{
@@ -178,6 +182,5 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				return s_xplatUIType;
 			}
 		}
-#endif
 	}
 }

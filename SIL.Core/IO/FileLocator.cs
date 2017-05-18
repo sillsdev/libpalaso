@@ -394,20 +394,22 @@ namespace SIL.IO
 		public static string LocateInProgramFiles(string exeName, bool fallBackToDeepSearch,
 			params string[] subFoldersToSearch)
 		{
-#if !__MonoCS__
-			var tgtPath = LocateInProgramFilesUsingShallowSearch(exeName, subFoldersToSearch);
-			if (tgtPath != null)
-				return tgtPath;
+			if (Platform.IsWindows)
+			{
+				var tgtPath = LocateInProgramFilesUsingShallowSearch(exeName, subFoldersToSearch);
+				if (tgtPath != null)
+					return tgtPath;
 
-			return (!fallBackToDeepSearch ? null :
-				LocateInProgramFilesUsingDeepSearch(exeName, subFoldersToSearch));
-#else
+				return (!fallBackToDeepSearch
+					? null
+					: LocateInProgramFilesUsingDeepSearch(exeName, subFoldersToSearch));
+			}
+
 			// For Mono, the deep search and shallow search are the same because there
 			// normally are no sub-directories in the program files directories.
 
 			// The subFoldersToSearch parameter is not valid on Linux.
 			return LocateInProgramFilesUsingShallowSearch(exeName);
-#endif
 		}
 
 		private static string LocateInProgramFilesUsingShallowSearch(string exeName,
@@ -441,27 +443,38 @@ namespace SIL.IO
 				// those directories that should be searched for program files.
 				foreach (var path in subFoldersToSearch.Select(sf => Path.Combine(progFolder, sf)).Where(Directory.Exists))
 				{
-#if __MonoCS__
-					var subDir = path;
-#else
-					foreach (var subDir in DirectoryUtilities.GetSafeDirectories(path))
-#endif
+					if (Platform.IsWindows)
 					{
-						try
+						foreach (var subDir in DirectoryUtilities.GetSafeDirectories(path))
 						{
-							var tgtPath = Directory.GetFiles(subDir, exeName, srcOption).FirstOrDefault();
-							if (tgtPath != null)
+							var tgtPath = GetFiles(exeName, srcOption, subDir);
+							if (!string.IsNullOrEmpty(tgtPath))
 								return tgtPath;
 						}
-						catch (Exception e)
-						{
-							Debug.Fail(e.Message);
-							//swallow. Some paths, we aren't allowed to look in (like Google Chrome crash reports)
-						}
+					}
+					else
+					{
+						var tgtPath = GetFiles(exeName, srcOption, path);
+						if (!string.IsNullOrEmpty(tgtPath))
+							return tgtPath;
 					}
 				}
 			}
 
+			return null;
+		}
+
+		private static string GetFiles(string exeName, SearchOption srcOption, string subDir)
+		{
+			try
+			{
+				return Directory.GetFiles(subDir, exeName, srcOption).FirstOrDefault();
+			}
+			catch (Exception e)
+			{
+				Debug.Fail(e.Message);
+				//swallow. Some paths, we aren't allowed to look in (like Google Chrome crash reports)
+			}
 			return null;
 		}
 
@@ -476,21 +489,24 @@ namespace SIL.IO
 		/// ------------------------------------------------------------------------------------
 		public static string GetFromRegistryProgramThatOpensFileType(string fileExtension)
 		{
-#if __MonoCS__
-			//------------------------------------------------------------------------------------
-			// The following command will output the mime type of an existing file, Phil.html:
-			//    file -b --mime-type ~/Phil.html
-			//
-			// This command will tell you the default application to open the file Phil.html:
-			//    ext=$(grep "$(file -b --mime-type ~/Phil.html)" /etc/mime.types
-			//        | awk '{print $1}') && xdg-mime query default $ext
-			//
-			// This command will open the file Phil.html using the default application:
-			//    xdg-open ~/Page.html
-			//------------------------------------------------------------------------------------
+			if (!Platform.IsWindows)
+			{
+				//------------------------------------------------------------------------------------
+				// The following command will output the mime type of an existing file, Phil.html:
+				//    file -b --mime-type ~/Phil.html
+				//
+				// This command will tell you the default application to open the file Phil.html:
+				//    ext=$(grep "$(file -b --mime-type ~/Phil.html)" /etc/mime.types
+				//        | awk '{print $1}') && xdg-mime query default $ext
+				//
+				// This command will open the file Phil.html using the default application:
+				//    xdg-open ~/Page.html
+				//------------------------------------------------------------------------------------
 
-			throw new NotImplementedException("GetFromRegistryProgramThatOpensFileType not implemented on Mono yet.");
-#endif
+				throw new NotImplementedException(
+					"GetFromRegistryProgramThatOpensFileType not implemented on Mono yet.");
+			}
+
 			var ext = fileExtension.Trim();
 			if (!ext.StartsWith("."))
 				ext = "." + ext;
@@ -528,15 +544,16 @@ namespace SIL.IO
 		/// ------------------------------------------------------------------------------------
 		private static IEnumerable<string> GetPossibleProgramFilesFolders()
 		{
-#if __MonoCS__
-			foreach (var dir in Environment.GetEnvironmentVariable("PATH").Split(':'))
-				yield return dir;
-			yield return "/opt"; // RAMP is installed in the /opt directory by default
-#else
+			if (!Platform.IsWindows)
+			{
+				foreach (var dir in Environment.GetEnvironmentVariable("PATH").Split(':'))
+					yield return dir;
+				yield return "/opt"; // RAMP is installed in the /opt directory by default
+			}
+
 			var pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
 			yield return pf.Replace(" (x86)", string.Empty);
 			yield return pf.Replace(" (x86)", string.Empty) + " (x86)";
-#endif
 		}
 
 		#endregion

@@ -10,7 +10,7 @@ Date: 06/25/06
 Company Info: www.irajesh.com
 Explorer Tree
 ----------------------------------------------------------------
-Original copyright © Rajesh Lal, 2006-2007
+Original copyright (C) Rajesh Lal, 2006-2007
 Email connectrajesh@hotmail.com
 
 Author Quartz (Rajesh Lal - connectrajesh@hotmail.com)
@@ -116,6 +116,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.FolderBrowserControl
 {
@@ -274,6 +275,9 @@ namespace SIL.Windows.Forms.FolderBrowserControl
 		/// </summary>
 		public FolderBrowserControl()
 		{
+			if (!Platform.IsWindows)
+				throw new NotSupportedException("The FolderBrowserControl dialog is currently only supported on Windows");
+
 			// This call is required by the Windows.Forms Form Designer.
 			InitializeComponent();
 
@@ -1096,23 +1100,18 @@ namespace SIL.Windows.Forms.FolderBrowserControl
 		/// <param name="focusTree">Whether or not treeview should gain focus</param>
 		private void ExpandTreeFromPath(TreeNode lastExpandedFolderNode, string path, bool focusTree)
 		{
-#if MONO
-			var usefulPath = path;
-#else
 			// Windows is case-insensitive in folder names, so to compensate for user case-laziness,
 			// we will work entirely in lower case:
-			var usefulPath = path.ToLower();
-#endif
+			var usefulPath = Platform.IsWindows ? path.ToLower() : path;
+
 			// Search all subfolder nodes for one which gets us further along the lowerCasePath:
 			foreach (TreeNode subfolderNode in lastExpandedFolderNode.Nodes)
 			{
-#if MONO
 				// Get full path of current subfolder:
-				var subfolderPath = subfolderNode.Tag.ToString();
-#else
-				// Get full path (in lower case) of current subfolder:
-				var subfolderPath = subfolderNode.Tag.ToString().ToLower();
-#endif
+				var subfolderPath = Platform.IsWindows
+					? subfolderNode.Tag.ToString().ToLower()
+					: subfolderNode.Tag.ToString();
+
 				// If we haven't gotten all the way along lowerCasePath, make a copy of
 				// subfolderPath with a trailing backslash:
 				string subfolderPathBackslash = subfolderPath;

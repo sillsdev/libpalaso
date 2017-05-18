@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using SIL.Email;
 using SIL.Reporting;
 using System.Runtime.InteropServices;
+using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.Reporting
 {
@@ -686,42 +687,42 @@ namespace SIL.Windows.Forms.Reporting
 			{
 				_details.Text = String.Format("Please e-mail this to {0} {1}", ErrorReport.EmailAddress, _details.Text);
 			}
-#if MONO
-			try
+			if (!Platform.IsWindows)
 			{
-				// Workaround for Xamarin bug #4959. Eberhard had a mono fix for that bug
-				// but it doesn't work with FW (or Palaso) -- he couldn't figure out why not.
-				// This is a dirty hack but at least it works :-)
-				var clipboardAtom = gdk_atom_intern("CLIPBOARD", true);
-				var clipboard = gtk_clipboard_get(clipboardAtom);
-				if (clipboard != IntPtr.Zero)
+				try
 				{
-					gtk_clipboard_set_text(clipboard, _details.Text, -1);
-					gtk_clipboard_store(clipboard);
+					// Workaround for Xamarin bug #4959. Eberhard had a mono fix for that bug
+					// but it doesn't work with FW (or Palaso) -- he couldn't figure out why not.
+					// This is a dirty hack but at least it works :-)
+					var clipboardAtom = gdk_atom_intern("CLIPBOARD", true);
+					var clipboard = gtk_clipboard_get(clipboardAtom);
+					if (clipboard != IntPtr.Zero)
+					{
+						gtk_clipboard_set_text(clipboard, _details.Text, -1);
+						gtk_clipboard_store(clipboard);
+					}
+				}
+				catch
+				{
+					// ignore any errors - most likely because gtk isn't installed?
+					return false;
 				}
 			}
-			catch
-			{
-				// ignore any errors - most likely because gtk isn't installed?
-				return false;
-			}
-#else
-			Clipboard.SetDataObject(_details.Text, true);
-#endif
+			else
+				Clipboard.SetDataObject(_details.Text, true);
+
 			return true;
 		}
 
-#if MONO
 		// Workaround for Xamarin bug #4959
 		[DllImport("libgdk-x11-2.0")]
-		internal extern static IntPtr gdk_atom_intern(string atomName, bool onlyIfExists);
+		private static extern IntPtr gdk_atom_intern(string atomName, bool onlyIfExists);
 		[DllImport("libgtk-x11-2.0")]
-		internal extern static IntPtr gtk_clipboard_get(IntPtr atom);
+		private static extern IntPtr gtk_clipboard_get(IntPtr atom);
 		[DllImport("libgtk-x11-2.0")]
-		internal extern static void gtk_clipboard_store(IntPtr clipboard);
+		private static extern void gtk_clipboard_store(IntPtr clipboard);
 		[DllImport("libgtk-x11-2.0")]
-		internal extern static void gtk_clipboard_set_text(IntPtr clipboard, [MarshalAs(UnmanagedType.LPStr)] string text, int len);
-#endif
+		private static extern void gtk_clipboard_set_text(IntPtr clipboard, [MarshalAs(UnmanagedType.LPStr)] string text, int len);
 
 		private bool SendViaEmail()
 		{

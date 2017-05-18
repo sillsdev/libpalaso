@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using SIL.ObjectModel;
-#if __MonoCS__
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
+#if MONO
 using Mono.Unix.Native;
-using SIL.PlatformUtilities;
 #endif
+using SIL.ObjectModel;
+using SIL.PlatformUtilities;
 
 namespace SIL.Threading
 {
@@ -30,11 +30,10 @@ namespace SIL.Threading
 		public GlobalMutex(string name)
 		{
 			_name = name;
-#if __MonoCS__
-			_adapter = new LinuxGlobalMutexAdapter(name);
-#else
-			_adapter = new WindowsGlobalMutexAdapter(name);
-#endif
+			if (!Platform.IsWindows)
+				_adapter = new LinuxGlobalMutexAdapter(name);
+			else
+				_adapter = new WindowsGlobalMutexAdapter(name);
 		}
 
 		/// <summary>
@@ -130,7 +129,7 @@ namespace SIL.Threading
 		}
 
 		[SuppressMessage("Gendarme.Rules.Correctness", "DisposableFieldsShouldBeDisposedRule",
-			Justification="m_adapter is a reference.")]
+			Justification = "m_adapter is a reference.")]
 		private sealed class ReleaseDisposable : DisposableBase
 		{
 			private readonly IGlobalMutexAdapter _adapter;
@@ -154,7 +153,6 @@ namespace SIL.Threading
 			bool Unlink();
 		}
 
-#if __MonoCS__
 		/// <summary>
 		/// On Linux, the global mutex is implemented using file locks.
 		/// </summary>
@@ -178,8 +176,9 @@ namespace SIL.Threading
 
 			public bool Init(bool initiallyOwned)
 			{
+				bool result = true;
+#if MONO
 				_handle = Syscall.open(_name, OpenFlags.O_CREAT | OpenFlags.O_EXCL, FilePermissions.S_IWUSR | FilePermissions.S_IRUSR);
-				bool result;
 				if (_handle != -1)
 				{
 					result = true;
@@ -196,6 +195,7 @@ namespace SIL.Threading
 				}
 				if (initiallyOwned)
 					Wait();
+#endif
 				return result;
 			}
 
@@ -225,6 +225,7 @@ namespace SIL.Threading
 			{
 				lock (_syncObject)
 				{
+#if MONO
 					if (Syscall.unlink(_name) == -1)
 					{
 						Errno errno = Syscall.GetLastError();
@@ -232,6 +233,7 @@ namespace SIL.Threading
 							return false;
 						throw new NativeException((int) errno);
 					}
+#endif
 					return true;
 				}
 			}
@@ -243,11 +245,12 @@ namespace SIL.Threading
 
 			protected override void DisposeUnmanagedResources()
 			{
+#if MONO
 				Syscall.close(_handle);
+#endif
 			}
 		}
 
-#else
 		/// <summary>
 		/// On Windows, the global mutex is implemented using a named mutex.
 		/// </summary>
@@ -290,6 +293,5 @@ namespace SIL.Threading
 				_mutex.Dispose();
 			}
 		}
-#endif
 	}
 }

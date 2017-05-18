@@ -6,6 +6,7 @@ using System.Xml;
 using NUnit.Framework;
 using SIL.Lift.Merging;
 using SIL.Lift.Validation;
+using SIL.PlatformUtilities;
 
 namespace SIL.Lift.Tests.Merging
 {
@@ -88,9 +89,10 @@ namespace SIL.Lift.Tests.Merging
 			//Create a .lift.update file with three entries.  One to replace the second entry in the original LIFT file.
 			//The other two are new and should be appended to the original LIFT file.
 			WriteFile("LiftChangeFileB" + SynchronicMerger.ExtensionOfIncrementalFiles, s_LiftUpdate1, _directory);
-#if MONO
-			Thread.Sleep(1000);		// Wait long enough to ensure different timestamps.  This is a problem for Linux/Mono.
-#endif
+
+			if (!Platform.IsWindows)
+				Thread.Sleep(1000);		// Wait long enough to ensure different timestamps.  This is a problem for Linux/Mono.
+
 			//Create a .lift.update file with two entries.  One to replace one of the changes from the first LiftUpdate file and one new entry.
 			WriteFile("LiftChangeFileA" + SynchronicMerger.ExtensionOfIncrementalFiles, s_LiftUpdate2, _directory);
 			FileInfo[] files = SynchronicMerger.GetPendingUpdateFiles(Path.Combine(_directory, _baseLiftFileName));

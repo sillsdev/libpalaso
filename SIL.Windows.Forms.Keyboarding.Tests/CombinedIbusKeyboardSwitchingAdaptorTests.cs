@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-#if __MonoCS__
 using IBusDotNet;
 using Moq;
 using NUnit.Framework;
@@ -9,6 +8,7 @@ using SIL.Windows.Forms.Keyboarding.Linux;
 namespace SIL.Windows.Forms.Keyboarding.Tests
 {
 	[TestFixture]
+	[Platform(Include="Linux", Reason="Linux specific tests")]
 	public class CombinedIbusKeyboardSwitchingAdaptorTests
 	{
 		class CombinedIbusKeyboardRetrievingAdaptorDouble : CombinedIbusKeyboardRetrievingAdaptor
@@ -116,4 +116,3 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 
 	}
 }
-#endif

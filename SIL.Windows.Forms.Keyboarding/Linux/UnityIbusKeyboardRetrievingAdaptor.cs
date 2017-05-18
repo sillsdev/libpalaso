@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-#if __MonoCS__
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -85,4 +84,3 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		}
 	}
 }
-#endif

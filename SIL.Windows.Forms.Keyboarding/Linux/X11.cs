@@ -1,8 +1,5 @@
 // Copyright (c) 2011-2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-
-
-#if __MonoCS__
 using System;
 using System.Diagnostics;
 using System.Reflection;
@@ -51,4 +48,3 @@ namespace X11
 
 	}
 }
-#endif
