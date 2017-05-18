@@ -5,7 +5,6 @@
 //
 // Original author: MarkS 2013-01-04 XklEngineTests.cs
 
-#if __MonoCS__
 using System;
 using NUnit.Framework;
 using X11.XKlavier;
@@ -65,4 +64,3 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		}
 	}
 }
-#endif

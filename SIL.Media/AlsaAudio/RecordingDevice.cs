@@ -3,10 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
 
-#if __MonoCS__
+#if MONO
 namespace SIL.Media.AlsaAudio
 {
 	/// <summary>

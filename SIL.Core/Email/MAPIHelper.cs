@@ -1,5 +1,4 @@
 //from http://www.codeproject.com/cs/internet/SendFileToNET.asp
-#if !MONO
 using System;
 using System.Runtime.InteropServices;
 using System.IO;
@@ -60,8 +59,8 @@ namespace SIL.Email
 			msg.files = GetAttachments(out msg.fileCount);
 
 			m_lastError = MAPISendMail(new IntPtr(0), new IntPtr(0), msg, how, 0);
-//            if (m_lastError > 1)
-//                MessageBox.Show("MAPISendMail failed! " + GetLastError(), "MAPISendMail");
+			//            if (m_lastError > 1)
+			//                MessageBox.Show("MAPISendMail failed! " + GetLastError(), "MAPISendMail");
 			//todo if(m_lastError==25)
 			//bad recipient
 			var success = m_lastError == 0; // m_lastError gets reset by Cleanup()
@@ -168,8 +167,8 @@ namespace SIL.Email
 
 		public string GetLastError()
 		{
-			if (m_lastError >= 0 &&  m_lastError <= 26)
-				return Errors[ m_lastError ];
+			if (m_lastError >= 0 && m_lastError <= 26)
+				return Errors[m_lastError];
 			return "MAPI error [" + m_lastError + "]";
 		}
 
@@ -184,8 +183,8 @@ namespace SIL.Email
 			"Invalid edit fields [24]", "Invalid recipients [25]", "Not supported [26]"
 		};
 
-		readonly List<MapiRecipDesc> m_recipients	= new List<MapiRecipDesc>();
-		readonly List<string> m_attachments	= new List<string>();
+		readonly List<MapiRecipDesc> m_recipients = new List<MapiRecipDesc>();
+		readonly List<string> m_attachments = new List<string>();
 		int m_lastError;
 
 		const int MAPI_LOGON_UI = 0x00000001;
@@ -229,15 +228,14 @@ namespace SIL.Email
 		public IntPtr type;
 	}
 
-	[StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
+	[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
 	public class MapiRecipDesc
 	{
-		public int		reserved;
-		public int		recipClass;
-		public string	name;
-		public string	address;
-		public int		eIDSize;
-		public IntPtr	entryID;
+		public int reserved;
+		public int recipClass;
+		public string name;
+		public string address;
+		public int eIDSize;
+		public IntPtr entryID;
 	}
 }
-#endif

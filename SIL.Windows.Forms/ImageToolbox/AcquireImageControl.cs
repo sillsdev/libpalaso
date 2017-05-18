@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using L10NSharp;
-using SIL.IO;
+using SIL.PlatformUtilities;
 using SIL.Reporting;
-#if __MonoCS__
-using System.Reflection;
-#else
+#if !MONO
+using System.Drawing.Imaging;
+using SIL.IO;
 using WIA;
 #endif
 
@@ -29,13 +28,14 @@ namespace SIL.Windows.Forms.ImageToolbox
 		{
 			InitializeComponent();
 
-#if __MonoCS__
-			_scannerButton.Enabled =  _cameraButton.Enabled = false;
-			// Mono layout doesn't always handle Anchor point properly.  Fix it.
-			FixMyLayoutForMono();
-#endif
+			if (!Platform.IsWindows)
+			{
+				_scannerButton.Enabled = _cameraButton.Enabled = false;
+				// Mono layout doesn't always handle Anchor point properly.  Fix it.
+				FixMyLayoutForMono();
+			}
 
-			_galleryControl.ImageChanged += new EventHandler(_galleryControl_ImageChanged);
+			_galleryControl.ImageChanged += _galleryControl_ImageChanged;
 		}
 
 		void _galleryControl_ImageChanged(object sender, EventArgs e)
@@ -48,22 +48,13 @@ namespace SIL.Windows.Forms.ImageToolbox
 		private void OnGetFromFileSystemClick(object sender, EventArgs e)
 		{
 			SetMode(Modes.SingleImage);
-#if __MonoCS__
-			using (var dlg = new OpenFileDialog())
-#else
 			// The primary thing that OpenFileDialogWithViews buys us is the ability to default to large icons.
 			// OpenFileDialogWithViews still doesn't let us read (and thus remember) the selected view.
 			using (var dlg = new OpenFileDialogWithViews(OpenFileDialogWithViews.DialogViewTypes.Large_Icons))
-#endif
 			{
-#if __MonoCS__
-				// OpenFileDialogWithViews is Windows-only.  Until we need more of its functionality elsewhere,
-				// it's much simpler to implement the one method we need here for Mono/Linux.
-				SelectLargeIconView(dlg);
-#endif
 				if (string.IsNullOrEmpty(ImageToolboxSettings.Default.LastImageFolder))
 				{
-					dlg.InitialDirectory = System.Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+					dlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
 				}
 				else
 				{
@@ -71,7 +62,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 				}
 
 				//NB: dissallowed gif because of a .net crash:  http://jira.palaso.org/issues/browse/BL-85
-				dlg.Filter = "picture files".Localize("ImageToolbox.PictureFiles", "Shown in the file-picking dialog to describe what kind of files the dialog is filtering for")+"(*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp)|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
+				dlg.Filter = "picture files".Localize("ImageToolbox.PictureFiles", "Shown in the file-picking dialog to describe what kind of files the dialog is filtering for") + "(*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp)|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
 
 				if (DialogResult.OK == dlg.ShowDialog())
 				{
@@ -84,7 +75,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 					}
 					catch (Exception err) //for example, http://jira.palaso.org/issues/browse/BL-199
 					{
-						ErrorReport.NotifyUserOfProblem(err,"Sorry, there was a problem loading that image.".Localize("ImageToolbox.ProblemLoadingImage"));
+						ErrorReport.NotifyUserOfProblem(err, "Sorry, there was a problem loading that image.".Localize("ImageToolbox.ProblemLoadingImage"));
 						return;
 					}
 					_pictureBox.Image = _currentImage.Image;
@@ -93,42 +84,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 				}
 			}
 		}
-
-#if __MonoCS__
-		/// <summary>
-		/// Select the large icon view in the open file dialog.
-		/// </summary>
-		/// <remarks>
-		/// This totally depends on the internal implementation of the file dialogs in Mono.  Since that has
-		/// remained stable for several years, it should work for us.  The worst that can happen for a new
-		/// version of Mono is that it silently stops working.
-		/// </remarks>
-		static void SelectLargeIconView(OpenFileDialog dlg)
-		{
-			// Accessing a private member variable of FileDialog, so if the
-			// implementation changes, give up immediately.
-			if (!(dlg is FileDialog))
-				return;
-			Type dlgType = typeof(FileDialog);
-			var dlgViewField = dlgType.GetField("mwfFileView", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
-			if (dlgViewField == null)
-				return;
-			var fileView = dlgViewField.GetValue(dlg);
-			if (fileView == null)
-				return;
-			var viewType = fileView.GetType();
-			var viewItemField = viewType.GetField("largeIconMenutItem", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
-			if (viewItemField == null)
-				return;
-			var largeIcon = viewItemField.GetValue(fileView) as MenuItem;
-			if (largeIcon == null)
-				return;
-			var viewOnClickMethod = viewType.GetMethod("OnClickViewMenuSubItem", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public,
-				null, new Type[] { typeof(Object), typeof(EventArgs) }, null);
-			if (viewOnClickMethod != null)
-				viewOnClickMethod.Invoke(fileView, new Object[] { largeIcon, new EventArgs() });
-		}
-#endif
 
 		private void OpenFileFromDrag(string path)
 		{
@@ -158,9 +113,9 @@ namespace SIL.Windows.Forms.ImageToolbox
 					// all the time when DragDrop handler is active, so we need to return
 					// immidiately (especially if OpenFile shows MessageBox).
 
-					this.BeginInvoke(new Action<string>(OpenFileFromDrag), s);
+					BeginInvoke(new Action<string>(OpenFileFromDrag), s);
 
-					this.ParentForm.Activate();        // in the case Explorer overlaps this form
+					ParentForm.Activate();        // in the case Explorer overlaps this form
 				}
 			}
 			catch (Exception)
@@ -189,7 +144,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		public PalasoImage GetImage()
 		{
-			if(_galleryControl.Visible)
+			if (_galleryControl.Visible)
 			{
 				return _galleryControl.GetImage();
 			}
@@ -205,27 +160,28 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private void OnScannerClick(object sender, EventArgs e)
 		{
-#if !__MonoCS__
+#if !MONO
 			_scannerButton.Checked = true;
 			SetImage(null);
 			UsageReporter.SendNavigationNotice("ImageToolbox:GetFromScanner");
 			GetFromDevice(ImageAcquisitionService.DeviceKind.Scanner);
 #endif
 		}
+
 		private void OnCameraClick(object sender, EventArgs e)
 		{
-#if !__MonoCS__
+#if !MONO
 			SetImage(null);
 			_cameraButton.Checked = true;
 			UsageReporter.SendNavigationNotice("ImageToolbox:GetFromCamera");
 			GetFromDevice(ImageAcquisitionService.DeviceKind.Camera);
 #endif
-
 		}
-#if !__MonoCS__
+
+#if !MONO
 		private void GetFromDevice(ImageAcquisitionService.DeviceKind deviceKind)
 		{
-	  //_pictureBox.Image = SampleImages.sampleScan;
+			//_pictureBox.Image = SampleImages.sampleScan;
 			try
 			{
 				var acquisitionService = new ImageAcquisitionService(deviceKind);
@@ -234,7 +190,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 				if (wiaImageFile == null)
 					return;
 
-				var imageFile  = ConvertToPngOrJpegIfNotAlready(wiaImageFile);
+				var imageFile = ConvertToPngOrJpegIfNotAlready(wiaImageFile);
 				_currentImage = PalasoImage.FromFile(imageFile);
 				_pictureBox.Image = _currentImage.Image;
 
@@ -243,7 +199,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			}
 			catch (ImageDeviceNotFoundException error)
 			{
-				_messageLabel.Text = error.Message + Environment.NewLine +Environment.NewLine+
+				_messageLabel.Text = error.Message + Environment.NewLine + Environment.NewLine +
 									 "Note: this program works with devices that have a 'WIA' driver, not the old-style 'TWAIN' driver";
 				_messageLabel.Visible = true;
 			}
@@ -319,13 +275,13 @@ namespace SIL.Windows.Forms.ImageToolbox
 		}
 		*/
 
-#if !__MonoCS__
+#if !MONO
 		private string ConvertToPngOrJpegIfNotAlready(ImageFile wiaImageFile)
 		{
 			Image acquiredImage;//with my scanner, always a .bmp
 
 			var imageBytes = (byte[])wiaImageFile.FileData.get_BinaryData();
-			if (wiaImageFile.FileExtension==".jpg" || wiaImageFile.FileExtension==".png")
+			if (wiaImageFile.FileExtension == ".jpg" || wiaImageFile.FileExtension == ".png")
 			{
 				var temp = TempFile.WithExtension(wiaImageFile.FileExtension);
 				wiaImageFile.SaveFile(temp.Path);
@@ -355,7 +311,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 				}
 
 				//now return the smaller of the two;
-				if(new FileInfo(jpeg.Path).Length > new FileInfo(png.Path).Length)
+				if (new FileInfo(jpeg.Path).Length > new FileInfo(png.Path).Length)
 				{
 					File.Delete(jpeg.Path);
 					return png.Path;
@@ -369,7 +325,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		}
 #endif
 
-		private enum Modes {Gallery, SingleImage}
+		private enum Modes { Gallery, SingleImage }
 		private void SetMode(Modes mode)
 		{
 			_messageLabel.Visible = false;
@@ -378,7 +334,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 				case Modes.Gallery:
 					_pictureBox.Visible = false;
 					_pictureBox.Image = null; //prevent error upon resetting visibility to true
-					_galleryControl.Visible= true;
+					_galleryControl.Visible = true;
 					//_galleryButton.Select();
 					_galleryButton.Checked = true;
 					_galleryControl.Focus();
@@ -401,7 +357,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private void AcquireImageControl_Load(object sender, EventArgs e)
 		{
-			if(_galleryControl.HaveImageCollectionOnThisComputer)
+			if (_galleryControl.HaveImageCollectionOnThisComputer)
 			{
 				SetMode(Modes.Gallery);
 				_focusTimer.Interval = 100;
@@ -434,12 +390,12 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 				if (e.Data.GetDataPresent(DataFormats.FileDrop))
 				{
-					var a = (Array) e.Data.GetData(DataFormats.FileDrop);
+					var a = (Array)e.Data.GetData(DataFormats.FileDrop);
 
 					if (a != null)
 					{
 						var path = a.GetValue(0).ToString();
-						if ((new List<string>(new[] {".tif", ".png", ".bmp", ".jpg", ".jpeg"})).Contains(Path.GetExtension(path).ToLower()))
+						if ((new List<string>(new[] { ".tif", ".png", ".bmp", ".jpg", ".jpeg" })).Contains(Path.GetExtension(path).ToLower()))
 						{
 							e.Effect = DragDropEffects.Copy;
 							return;
@@ -454,7 +410,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 			e.Effect = DragDropEffects.None;
 		}
 
-#if __MonoCS__
 		/// <summary>
 		/// _galleryControl is supposed to fill us with just some minor margins to the left and right.
 		/// Mono changes our size before it calculates the margin to maintain with those anchors being
@@ -479,27 +434,26 @@ namespace SIL.Windows.Forms.ImageToolbox
 				(Width - _galleryControl.Width > 6 || Height - _galleryControl.Height > 60))
 			{
 				var oldSize = _galleryControl.Size;
-				_galleryControl.Anchor = (System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left);
+				_galleryControl.Anchor = AnchorStyles.Top | AnchorStyles.Left;
 				_galleryControl.Size = new Size(Width - 6, Height - 60);
-				_galleryControl.Anchor = (System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom |
-					System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right);
+				_galleryControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom |
+										 AnchorStyles.Left | AnchorStyles.Right;
 			}
 			if (_messageLabel != null && Contains(_messageLabel) && Width - _messageLabel.Width != 223)
 			{
-				_messageLabel.Anchor = (System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left);
+				_messageLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left;
 				_messageLabel.Size = new Size(Width - 223, _messageLabel.Height);
-				_messageLabel.Anchor = (System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left |
-					System.Windows.Forms.AnchorStyles.Right);
+				_messageLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left |
+									   AnchorStyles.Right;
 			}
-			if (_pictureBox != null && Contains (_pictureBox) &&
+			if (_pictureBox != null && Contains(_pictureBox) &&
 				(Width != _pictureBox.Width || Height - _pictureBox.Height != 60))
 			{
-				_pictureBox.Anchor = (System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left);
+				_pictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Left;
 				_pictureBox.Size = new Size(Width, Height - 60);
-				_pictureBox.Anchor = (System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom |
-					System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right);
+				_pictureBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom |
+									 AnchorStyles.Left | AnchorStyles.Right;
 			}
 		}
-#endif
 	}
 }

@@ -1,14 +1,10 @@
-﻿using System;
+﻿#if !MONO
+using System;
 using System.Timers;
 using NAudio.Wave;
 
 namespace SIL.Media.Naudio
 {
-	public class PlaybackProgressEventArgs : EventArgs
-	{
-		public TimeSpan PlaybackPosition;
-	}
-
 	public class AudioPlayer : IAudioPlayer
 	{
 		private WaveOut _waveOut;
@@ -75,14 +71,14 @@ namespace SIL.Media.Naudio
 		void HandleWaveOutPlaybackStopped(object sender, EventArgs e)
 		{
 			CloseWaveOut();
-			Stopped.Invoke(sender,e);
+			Stopped.Invoke(sender, e);
 		}
 
 		public void Stop()
 		{
 			_waveOut.Stop();
 			_timer.Stop();
-		   _inStream.Position = 0;
+			_inStream.Position = 0;
 		}
 
 		public TimeSpan StartPosition
@@ -139,3 +135,4 @@ namespace SIL.Media.Naudio
 		}
 	}
 }
+#endif

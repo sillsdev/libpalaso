@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using SIL.Keyboarding;
+using SIL.PlatformUtilities;
 using SIL.Text;
 using SIL.Windows.Forms.Spelling;
 using SIL.WritingSystems;
@@ -111,10 +112,12 @@ namespace SIL.Windows.Forms.Widgets
 			}
 			base.OnTextChanged(e);
 			Height = GetPreferredHeight(Width);
-#if __MonoCS__
-			// For some fonts that don't render properly in MONO
-			Refresh();
-#endif
+
+			if (!Platform.IsWindows)
+			{
+				// For some fonts that don't render properly in MONO
+				Refresh();
+			}
 		}
 
 		// we do this in OnLayout instead of OnResize see
@@ -173,23 +176,25 @@ namespace SIL.Windows.Forms.Widgets
 												   Font,
 												   new Size(width, int.MaxValue),
 												   flags);
-#if __MonoCS__
-				// For Mono, need to make an additional adjustment if more than one line is displayed
-				Size sz2 = TextRenderer.MeasureText(g,
+
+				if (!Platform.IsWindows)
+				{
+					// For Mono, need to make an additional adjustment if more than one line is displayed
+					var sz2 = TextRenderer.MeasureText(g,
 						" ",
 						Font,
 						new Size(width, int.MaxValue),
 						flags);
-				int numberOfLines = sz.Height/ sz2.Height;
-				if (sz.Height % sz2.Height != 0)
-				{
-					numberOfLines++;
+					var numberOfLines = sz.Height / sz2.Height;
+					if (sz.Height % sz2.Height != 0)
+					{
+						numberOfLines++;
+					}
+					if (numberOfLines > 1)
+					{
+						sz.Height += numberOfLines * 4;
+					}
 				}
-				if (numberOfLines > 1)
-				{
-					sz.Height += numberOfLines * 4;
-				}
-#endif
 				_oldHeight = sz.Height + 2; // add enough space for spell checking squiggle underneath
 				_oldWidth = width;
 				_oldText = Text;

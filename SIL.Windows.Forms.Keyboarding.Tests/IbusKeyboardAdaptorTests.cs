@@ -1,7 +1,6 @@
 // Copyright (c) 2013, SIL International.
 // Distributable under the terms of the MIT license (http://opensource.org/licenses/MIT).
 
-#if __MonoCS__
 using System;
 using Moq;
 using NUnit.Framework;
@@ -12,6 +11,7 @@ using SIL.Windows.Forms.Keyboarding.Linux;
 namespace SIL.Windows.Forms.Keyboarding.Tests
 {
 	[TestFixture]
+	[Platform(Include = "Linux", Reason = "Linux specific tests")]
 	public class IbusKeyboardAdaptorTests
 	{
 		public class DoNothingIbusCommunicator: IIbusCommunicator
@@ -146,11 +146,11 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		[TearDown]
 		public void TearDown()
 		{
+			KeyboardController.Shutdown();
 			GlobalCachedInputContext.Keyboard = null;
 			GlobalCachedInputContext.Clear();
 		}
 
-		[Test]
 		[TestCase("Pinyin", "zh", "us", TestName="Pinyin")]
 		[TestCase("IPA Unicode 6.2 (ver 1.3) KMN", "x040F", "en", TestName="IPA")]
 		[TestCase("Some hypothetical ibus keyboard", "de", "fr", TestName="FrenchParentLayout")]
@@ -181,10 +181,6 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			xklEngineMock.Verify(x => x.SetGroup(layout == "fr" ? FrKeyboardGroup : EnKeyboardGroup),
 				string.Format("Switching to the ibus keyboard should activate the {0} xkb keyboard.",
 					layout == "fr" ? "French" : "English"));
-
-			// Shutdown
-			KeyboardController.Shutdown();
 		}
 	}
 }
-#endif

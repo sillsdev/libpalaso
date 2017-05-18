@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Security.Permissions;
 using System.Windows.Forms;
+using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.HotSpot
 {
@@ -286,7 +287,6 @@ namespace SIL.Windows.Forms.HotSpot
 							// if we don't invalidate, then we end up with artifacts from the wave when it is removed
 						}
 						break;
-#if MONO
 					case 0x286:	//IME_CHAR
 					case 0x10F:	//IME_COMPOSITION
 						//These two messages cause an extra character to be drawn by mono
@@ -295,9 +295,11 @@ namespace SIL.Windows.Forms.HotSpot
 						//For the time being it fixes an annoying bug (Ws-15007) where 4 characters
 						//were being displayed for each keystroke.
 						//See WS-15008 for a full description of the problem and a roadmap for fixing it
-//						//base.WndProc(ref m);
-					break;
-#endif
+
+						// On Linux, ignore these messages, on Windows handle them
+						if (Platform.IsWindows)
+							base.WndProc(ref m);
+						break;
 					default:
 						base.WndProc(ref m);
 						break;

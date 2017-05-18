@@ -278,7 +278,7 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName'">
+  <ItemGroup Condition="$(Configuration.StartsWith('Debug'))">
     <Reference Include="Keyman7Interop.dll">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Debug\Keyman7Interop.dll</HintPath>
@@ -288,7 +288,7 @@
       <HintPath>..\lib\Debug\KeymanLink.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
+  <ItemGroup Condition="$(Configuration.StartsWith('Release'))">
     <Reference Include="Keyman7Interop.dll">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Release\Keyman7Interop.dll</HintPath>
@@ -310,15 +310,17 @@
       <HintPath>..\lib\ReleaseMono\L10NSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'DebugMonoStrongName' Or '$(Configuration)' == 'ReleaseMono' Or '$(Configuration)' == 'ReleaseMonoStrongName'">
-    <Reference Include="NDesk.DBus">
-      <HintPath>..\packages\NDesk.DBus.0.14.0\lib\NDesk.DBus.dll</HintPath>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName'">
+    <Reference Include="L10NSharp.dll">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Debug\L10NSharp.dll</HintPath>
     </Reference>
-    <Reference Include="ibusdotnet">
-      <HintPath>..\packages\ibusdotnet.2.0.0.20771\lib\ibusdotnet.dll</HintPath>
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
+    <Reference Include="L10NSharp.dll">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Release\L10NSharp.dll</HintPath>
     </Reference>
-    <Reference Include="System.Drawing" />
-    <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="icu.net, Version=2.1.0.0, Culture=neutral, PublicKeyToken=416fdd914afa6b66, processorArchitecture=MSIL">
@@ -327,7 +329,17 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="NDesk.DBus">
+      <HintPath>..\packages\NDesk.DBus.0.14.0\lib\NDesk.DBus.dll</HintPath>
+    </Reference>
+    <Reference Include="ibusdotnet">
+      <HintPath>..\packages\ibusdotnet.2.0.0.20771\lib\ibusdotnet.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="$(Configuration.Contains('Mono'))">
+    <Reference Include="Mono.Posix" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\GlobalAssemblyInfo.cs">

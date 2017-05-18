@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
 using SIL.Keyboarding;
+using SIL.PlatformUtilities;
 using SIL.Windows.Forms.Widgets;
 using SIL.WritingSystems;
 
@@ -74,10 +75,11 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 			this.BackColorChanged += _backColorChangedHandler;
 			_foreColorChangedHandler = new EventHandler(OnForeColorChanged);
 			this.ForeColorChanged += _foreColorChangedHandler;
-#if __MonoCS__
-			_domClickHandler = new EventHandler<EventArgs>(OnDomClick);
+			if (Platform.IsWindows)
+				return;
+
+			_domClickHandler = OnDomClick;
 			_browser.DomClick += _domClickHandler;
-#endif
 		}
 		public void Init(WritingSystemDefinition writingSystem, String name)
 		{
@@ -103,9 +105,10 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 				_browser.DomFocus -= _domFocusHandler;
 				_browser.DomBlur -= _domBlurHandler;
 				_browser.DocumentCompleted -= _domDocumentCompletedHandler;
-#if __MonoCS__
-				_browser.DomClick -= _domClickHandler;
-#endif
+
+				if (!Platform.IsWindows)
+					_browser.DomClick -= _domClickHandler;
+
 				_browser.Dispose();
 				_browser = null;
 			}
@@ -114,9 +117,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 			_domKeyUpHandler = null;
 			_domFocusHandler = null;
 			_domDocumentCompletedHandler = null;
-#if __MonoCS__
 			_domClickHandler = null;
-#endif
 		}
 		protected virtual void AdjustHeight()
 		{
@@ -186,31 +187,33 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 				{
 					e.Handled = true;
 				}
-#if __MonoCS__
-				SendKey(e);
-#else
-				if ((e.KeyCode == (uint)Keys.Tab) && !e.CtrlKey && !e.AltKey)
+
+				if (!Platform.IsWindows)
+					SendKey(e);
+				else
 				{
-					e.Handled = true;
-					if (e.ShiftKey)
+					if ((e.KeyCode == (uint) Keys.Tab) && !e.CtrlKey && !e.AltKey)
 					{
-						if (!ParentForm.SelectNextControl(this, false, true, true, true))
+						e.Handled = true;
+						if (e.ShiftKey)
 						{
-							Debug.WriteLine("Failed to advance");
+							if (!ParentForm.SelectNextControl(this, false, true, true, true))
+							{
+								Debug.WriteLine("Failed to advance");
+							}
 						}
-					}
-					else
-					{
-						if (!ParentForm.SelectNextControl(this, true, true, true, true))
+						else
 						{
-							Debug.WriteLine("Failed to advance");
+							if (!ParentForm.SelectNextControl(this, true, true, true, true))
+							{
+								Debug.WriteLine("Failed to advance");
+							}
 						}
+						e.Handled = true;
+						return;
 					}
-					e.Handled = true;
-					return;
 				}
 
-#endif
 				OnKeyDown(new KeyEventArgs((Keys)e.KeyCode));
 			}
 		}
@@ -372,7 +375,9 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 			_entered = false;
 
 			base.OnLeave(e);
-#if __MonoCS__
+			if (Platform.IsWindows)
+				return;
+
 			Action EnsureXInputFocusIsRemovedFromReceivedWinFormsControl = () =>
 			{
 				var control = Control.FromHandle(NativeReplacements.MonoGetFocus());
@@ -399,8 +404,8 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 				control.GotFocus += focusEvent;
 			};
 
-			ProgressUtils.InvokeLaterOnUIThread(() => EnsureXInputFocusIsRemovedFromReceivedWinFormsControl());
-#endif
+			ProgressUtils.InvokeLaterOnUIThread(
+				() => EnsureXInputFocusIsRemovedFromReceivedWinFormsControl());
 		}
 
 		protected void ChangeFocus()
@@ -495,13 +500,14 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		/// </summary>
 		protected static void MoveInputFocusBackToAWinFormsControl()
 		{
-#if __MonoCS__
+			if (Platform.IsWindows)
+				return;
+
 			IntPtr newTargetHandle = NativeReplacements.MonoGetFocus();
 			IntPtr displayHandle = NativeReplacements.MonoGetDisplayHandle();
 
 			// Remove the Focus from a Gtk window back to a mono winform X11 window.
 			NativeX11Methods.XSetInputFocus(displayHandle, NativeReplacements.MonoGetX11Window(newTargetHandle), NativeX11Methods.RevertTo.None, IntPtr.Zero);
-#endif
 		}
 		// Making these empty handlers rather than abstract so the class only
 		// needs to implement the ones they need.

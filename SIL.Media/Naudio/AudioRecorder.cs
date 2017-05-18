@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !MONO
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -607,15 +608,16 @@ namespace SIL.Media.Naudio
 					var bytesRead = reader.Read(buffer, 0, bytesToRead);
 					if (bytesRead > 0)
 					{
-						writer.Write(buffer,0, bytesRead);
+						writer.Write(buffer, 0, bytesRead);
 					}
 					else
 					{
 						//assumption here is that we tried to trim more than the whole file has
-						break; 
+						break;
 					}
 				}
 			}
 		}
 	}
 }
+#endif

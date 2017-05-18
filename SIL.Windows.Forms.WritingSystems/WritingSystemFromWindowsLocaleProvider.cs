@@ -22,28 +22,29 @@ namespace SIL.Windows.Forms.WritingSystems
 			_writingSystemFactory = writingSystemFactory;
 		}
 
-//        public static Palaso.WritingSystems.WritingSystemDefinition Get(string rfc4646)
-//        {
-//            foreach (InputLanguage language in InputLanguage.InstalledInputLanguages)
-//            {
-//                Debug.WriteLine(string.Format("{0} {1}", language.Culture.Name, language.Culture.LCID));
-//            }
-//
-//            foreach (InputLanguage language in InputLanguage.InstalledInputLanguages)
-//            {
-//                if (language.Culture.LCID.ToString().ToLower() == rfc4646.ToLower())
-//                {
-//                    WritingSystemDefinition def =
-//                        new WritingSystemDefinition(language.Culture.ThreeLetterISOLanguageName, "", "", "",
-//                                                    language.Culture.EnglishName, "");
-//                    return def;
-//                }
-//            }
-//            return null;
-//        }
+		//        public static Palaso.WritingSystems.WritingSystemDefinition Get(string rfc4646)
+		//        {
+		//            foreach (InputLanguage language in InputLanguage.InstalledInputLanguages)
+		//            {
+		//                Debug.WriteLine(string.Format("{0} {1}", language.Culture.Name, language.Culture.LCID));
+		//            }
+		//
+		//            foreach (InputLanguage language in InputLanguage.InstalledInputLanguages)
+		//            {
+		//                if (language.Culture.LCID.ToString().ToLower() == rfc4646.ToLower())
+		//                {
+		//                    WritingSystemDefinition def =
+		//                        new WritingSystemDefinition(language.Culture.ThreeLetterISOLanguageName, "", "", "",
+		//                                                    language.Culture.EnglishName, "");
+		//                    return def;
+		//                }
+		//            }
+		//            return null;
+		//        }
 
 
-		private static string GetRegion(InputLanguage language) {
+		private static string GetRegion(InputLanguage language)
+		{
 #if MONO // CultureAndRegionInfoBuilder not supported by Mono
 			return string.Empty;
 #else

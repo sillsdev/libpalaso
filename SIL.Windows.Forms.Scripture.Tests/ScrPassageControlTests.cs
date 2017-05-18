@@ -1,12 +1,12 @@
 // --------------------------------------------------------------------------------------------
-#region // Copyright (c) 2014, SIL International.   
+#region // Copyright (c) 2014, SIL International.
 // <copyright from='2003' to='2014' company='SIL International'>
-//		Copyright (c) 2014, SIL International.   
-//    
+//		Copyright (c) 2014, SIL International.
+//
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
-// </copyright> 
+// </copyright>
 #endregion
-// 
+//
 // File: ScrPassageControlTest.cs
 // --------------------------------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 using NUnit.Framework;
+using SIL.PlatformUtilities;
 using SIL.Scripture;
 using SIL.Scripture.Tests;
 
@@ -120,7 +121,7 @@ namespace SIL.Windows.Forms.Scripture.Tests
 
 			/// --------------------------------------------------------------------------------
 			/// <summary>
-			/// 
+			///
 			/// </summary>
 			/// <param name="e"></param>
 			/// --------------------------------------------------------------------------------
@@ -131,7 +132,7 @@ namespace SIL.Windows.Forms.Scripture.Tests
 
 			/// --------------------------------------------------------------------------------
 			/// <summary>
-			/// 
+			///
 			/// </summary>
 			/// <param name="e"></param>
 			/// --------------------------------------------------------------------------------
@@ -174,7 +175,7 @@ namespace SIL.Windows.Forms.Scripture.Tests
 						if (ctrl is LabelButton)
 							count++;
 					}
-				
+
 					return count;
 				}
 			}
@@ -241,10 +242,11 @@ namespace SIL.Windows.Forms.Scripture.Tests
 		[TearDown]
 		public void TestTearDown()
 		{
-#if !__MonoCS__
-            // m_dbScp.SimulateDropDownButtonClick(); can cause this form to hang on close on mono.
-			m_ctrlOwner.Close();
-#endif
+			if (Platform.IsWindows)
+			{
+				// m_dbScp.SimulateDropDownButtonClick(); can cause this form to hang on close on mono.
+				m_ctrlOwner.Close();
+			}
 			m_ctrlOwner.Dispose();
 		}
 		#endregion
@@ -265,7 +267,7 @@ namespace SIL.Windows.Forms.Scripture.Tests
 			Assert.IsTrue(m_scp.Valid);
 			m_scp.Reference = "Gen 1:0";
 			Assert.IsTrue(m_scp.Valid);
-			
+
 			// set to James 3:5
 			m_scp.ScReference = new BCVRef(59, 3, 5);
 			Assert.AreEqual("JAS 3:5", m_scp.ReferenceTextBox.Text);
@@ -285,7 +287,7 @@ namespace SIL.Windows.Forms.Scripture.Tests
 		{
 			if (m_scp.DropDownWindow != null)
 				m_scp.DropDownWindow.Close();
-			
+
 			Assert.IsNull(m_scp.DropDownWindow);
 			m_scp.SimulateDropDownButtonClick();
 			Assert.IsTrue(m_scp.DropDownWindow.Visible);
@@ -345,8 +347,8 @@ namespace SIL.Windows.Forms.Scripture.Tests
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Resolves an incomplete reference for James when the user types "j" with 
-		/// DBMultilingScrBooks. It is not Joshua, Judges, Job, Jeremiah, Joel, etc because these 
+		/// Resolves an incomplete reference for James when the user types "j" with
+		/// DBMultilingScrBooks. It is not Joshua, Judges, Job, Jeremiah, Joel, etc because these
 		/// books are not in the list.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
@@ -476,35 +478,35 @@ namespace SIL.Windows.Forms.Scripture.Tests
 			// Set control to really invalid reference.
 			m_scp.Reference = "DAVID 100:100";
 			m_scp.SimulateDropDownButtonClick();
-			
+
 			WaitForDropDownWindow(m_scp, 66);
-			
+
 			// Verify Genesis is the current and default book.
-			Assert.AreEqual(1, m_scp.DropDownWindow.CurrentButtonValue, 
+			Assert.AreEqual(1, m_scp.DropDownWindow.CurrentButtonValue,
 				"Incorrect Current Book Button");
 			Assert.AreEqual(1, m_scp.DropDownWindow.CurrentBook, "Incorrect Current Book");
 			Assert.AreEqual(ScrPassageDropDown.ListTypes.Books,
 				m_scp.DropDownWindow.CurrentListType, "Incorrect List is showing");
 
-			Assert.AreEqual(66, m_scp.DropDownWindow.ButtonsShowing, 
+			Assert.AreEqual(66, m_scp.DropDownWindow.ButtonsShowing,
 				"Incorrect number of books showing");
-			
+
 			// Choose Deuteronomy and move to the chapter list.
 			m_scp.DropDownWindow.SetCurrentButton(5);
 			m_scp.DropDownWindow.PerformKeyDown(new KeyEventArgs(Keys.Enter));
 
 			// Verify the contents of the passage control's text box.
 			Assert.AreEqual("DEU 1:1", m_scp.ReferenceTextBox.Text.ToUpper());
-			
+
 			// Verify that chapter 1 is current and default chapter.
-			Assert.AreEqual(1, m_scp.DropDownWindow.CurrentButtonValue, 
+			Assert.AreEqual(1, m_scp.DropDownWindow.CurrentButtonValue,
 				"Incorrect Current Chapter Button");
 			Assert.AreEqual(1, m_scp.DropDownWindow.CurrentChapter, "Incorrect Current Chapter");
 			Assert.AreEqual(ScrPassageDropDown.ListTypes.Chapters,
 				m_scp.DropDownWindow.CurrentListType, "Incorrect List is showing");
 
 			// Should be 34 chapters showing
-			Assert.AreEqual(34, m_scp.DropDownWindow.ButtonsShowing, 
+			Assert.AreEqual(34, m_scp.DropDownWindow.ButtonsShowing,
 				"Incorrect number of chapters showing");
 
 			// Choose Chapter 17 and move to the verse list.
@@ -515,12 +517,12 @@ namespace SIL.Windows.Forms.Scripture.Tests
 			Assert.AreEqual("DEU 17:1", m_scp.ReferenceTextBox.Text.ToUpper());
 
 			// Verify that verse 1 is current and default verse.
-			Assert.AreEqual(1, m_scp.DropDownWindow.CurrentButtonValue,	
+			Assert.AreEqual(1, m_scp.DropDownWindow.CurrentButtonValue,
 				"Incorrect Current Verse Button");
 			Assert.AreEqual(1, m_scp.DropDownWindow.CurrentVerse, "Incorrect Current Verse");
 			Assert.AreEqual(ScrPassageDropDown.ListTypes.Verses,
 				m_scp.DropDownWindow.CurrentListType, "Incorrect List is showing");
-			
+
 			// Should be 20 verses showing
 			Assert.AreEqual(20, m_scp.DropDownWindow.ButtonsShowing,
 				"Incorrect number of verses showing");
@@ -550,7 +552,7 @@ namespace SIL.Windows.Forms.Scripture.Tests
 			m_scp.Reference = "DAVID 100:100";
 			m_scp.SimulateDropDownButtonClick();
 			WaitForDropDownWindow(m_scp, 66);
-			
+
 			// Move to chapter list and verify content in the passage control's text box.
 			m_scp.DropDownWindow.PerformKeyDown(new KeyEventArgs(Keys.Enter));
 			Assert.AreEqual("GEN 1:1", m_scp.ReferenceTextBox.Text.ToUpper());
@@ -562,7 +564,7 @@ namespace SIL.Windows.Forms.Scripture.Tests
 			// Escape from the drop-down and verify that the drop-down goes away.
 			m_scp.DropDownWindow.PerformKeyDown(new KeyEventArgs(Keys.Escape));
 			Assert.IsNull(m_scp.DropDownWindow, "Drop-down should not be visible");
-		}	
+		}
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -577,9 +579,9 @@ namespace SIL.Windows.Forms.Scripture.Tests
 			// Set control to really invalid reference.
 			m_scp.Reference = "DAVID 100:100";
 			m_scp.SimulateDropDownButtonClick();
-			
+
 			WaitForDropDownWindow(m_scp, 66);
-			
+
 			// Move to chapter list and verify content in the passage control's text box.
 			m_scp.DropDownWindow.PerformKeyDown(new KeyEventArgs(Keys.Enter));
 			Assert.AreEqual("GEN 1:1", m_scp.ReferenceTextBox.Text.ToUpper());

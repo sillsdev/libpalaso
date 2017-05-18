@@ -1,5 +1,4 @@
-﻿#if __MonoCS__
-#if WANT_PORT
+﻿#if WANT_PORT
 namespace SIL.Windows.Forms.Keyboarding.Tests
 {
 	public class IBusEnvironmentForTest : IDisposable
@@ -64,5 +63,4 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		}
 	}
 }
-#endif
 #endif

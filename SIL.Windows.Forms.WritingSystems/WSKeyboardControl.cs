@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using L10NSharp;
 using SIL.Keyboarding;
+using SIL.PlatformUtilities;
 using SIL.Windows.Forms.Keyboarding;
 
 namespace SIL.Windows.Forms.WritingSystems
@@ -44,16 +45,20 @@ namespace SIL.Windows.Forms.WritingSystems
 			_defaultFontName = _testArea.Font.Name;
 			_possibleKeyboardsList.ShowItemToolTips = true;
 			_keymanConfigurationLink.Visible &= KeyboardController.HasSecondaryKeyboardSetupApplication;
-#if __MonoCS__
-	// Keyman is not supported, setup link should not say "Windows".
-			_keyboardSettingsLink.Text = L10NSharp.LocalizationManager.GetString("WSKeyboardControl.SetupKeyboards", "Set up keyboards");
+
+			if (Platform.IsWindows)
+				return;
+
+			// Keyman is not supported, setup link should not say "Windows".
+			_keyboardSettingsLink.Text =
+				L10NSharp.LocalizationManager.GetString("WSKeyboardControl.SetupKeyboards",
+					"Set up keyboards");
 
 			// The sequence of Events in Mono dictate using GotFocus instead of Enter as the point
 			// when we want to assign keyboard and font to this textbox.  (For some reason, using
 			// Enter works fine for the WSFontControl._testArea textbox control.)
 			this._testArea.Enter -= new System.EventHandler(this._testArea_Enter);
 			this._testArea.GotFocus += new System.EventHandler(this._testArea_Enter);
-#endif
 		}
 
 		private bool _hookedToForm;
@@ -325,7 +330,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			string arguments;
 			string program = KeyboardController.GetSecondaryKeyboardSetupApplication(out arguments);
-			
+
 			if (string.IsNullOrEmpty(program))
 			{
 				MessageBox.Show(LocalizationManager.GetString("WSKeyboardControl.KeymanNotInstalled",

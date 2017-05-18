@@ -1,4 +1,3 @@
-#if !__MonoCS__
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -10,6 +9,7 @@ using SIL.Windows.Forms.Keyboarding.Windows;
 namespace SIL.Windows.Forms.Keyboarding.Tests
 {
 	[TestFixture]
+	[Platform(Exclude = "Linux", Reason = "Windows specific tests")]
 	[Category("SkipOnTeamCity")] // TeamCity builds don't seem to be able to see any installed keyboards.
 	public class WindowsKeyboardControllerTests
 	{
@@ -227,4 +227,3 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 #endif
 	}
 }
-#endif

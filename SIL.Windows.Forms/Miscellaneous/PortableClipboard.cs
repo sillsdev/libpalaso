@@ -16,7 +16,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 	{
 		public static bool ContainsText()
 		{
-#if __MonoCS__
+#if MONO
 			return GtkContainsText();
 #else
 			return Clipboard.ContainsText();
@@ -25,7 +25,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 
 		public static string GetText()
 		{
-#if __MonoCS__
+#if MONO
 			return GtkGetText();
 #else
 			return Clipboard.GetText();
@@ -34,7 +34,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 
 		public static string GetText(TextDataFormat format)
 		{
-#if __MonoCS__
+#if MONO
 			return GtkGetText();
 #else
 			return Clipboard.GetText(format);
@@ -43,7 +43,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 
 		public static void SetText(string text)
 		{
-#if __MonoCS__
+#if MONO
 			GtkSetText(text);
 #else
 			Clipboard.SetText(text);
@@ -52,7 +52,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 
 		public static void SetText(string text, TextDataFormat format)
 		{
-#if __MonoCS__
+#if MONO
 			GtkSetText(text);
 #else
 			Clipboard.SetText(text, format);
@@ -61,7 +61,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 
 		public static bool ContainsImage()
 		{
-#if __MonoCS__
+#if MONO
 			return GtkContainsImage();
 #else
 			return Clipboard.ContainsImage();
@@ -70,7 +70,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 
 		public static System.Drawing.Image GetImage()
 		{
-#if __MonoCS__
+#if MONO
 			return GtkGetImage();
 #else
 			return Clipboard.GetImage();
@@ -82,7 +82,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			// N.B.: PalasoImage does not handle .svg files
 			if(image == null)
 				return;
-#if __MonoCS__
+#if MONO
 			// Review: Someone who knows how needs to implement this!
 			throw new NotImplementedException("SIL.Windows.Forms.Miscellaneous.PortableClipboard.CopyImageToClipboard() is not yet implemented for Linux");
 #else
@@ -112,7 +112,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 		public static PalasoImage GetImageFromClipboard()
 		{
 			// N.B.: PalasoImage does not handle .svg files
-#if __MonoCS__
+#if MONO
 			if (GtkContainsImage())
 				return PalasoImage.FromImage(GtkGetImage());
 
@@ -205,7 +205,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 #endif
 		}
 
-#if __MonoCS__
+#if MONO
 		// The following methods are derived from GtkClipboard.cs from https://github.com/phillip-hopper/GtkUtils.
 
 		/// <summary>Set the clipboard text</summary>
@@ -259,7 +259,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 		private static System.Drawing.Image GtkGetImageFromText()
 		{
 			var stringSeparators = new string[] { Environment.NewLine };
-			var paths = GetText().Split(stringSeparators, StringSplitOptions.None); 
+			var paths = GetText().Split(stringSeparators, StringSplitOptions.None);
 
 			foreach (var path in paths)
 			{

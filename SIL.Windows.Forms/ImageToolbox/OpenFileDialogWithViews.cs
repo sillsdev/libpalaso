@@ -1,8 +1,12 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
+using SIL.PlatformUtilities;
 
 //This cam from a comment by Henrik Stromberg, posted on at http://www.codeproject.com/Messages/2238408/Like-the-code-below-you-dont-have-to-call-StartWat.aspx
 namespace SIL.Windows.Forms.ImageToolbox
@@ -57,13 +61,27 @@ namespace SIL.Windows.Forms.ImageToolbox
 		public OpenFileDialogWithViews()
 		{
 			m_IsWatching = false;
-			m_DialogViewTypes = DialogViewTypes.Small_Icons;
+			DialogViewType = DialogViewTypes.Small_Icons;
 		}
 
-		public OpenFileDialogWithViews(DialogViewTypes dialogViewTypes)
+		public OpenFileDialogWithViews(DialogViewTypes dialogViewType)
 			: this()
 		{
-			m_DialogViewTypes = dialogViewTypes;
+			DialogViewType = dialogViewType;
+		}
+
+		private DialogViewTypes DialogViewType
+		{
+			get { return m_DialogViewTypes; }
+			set
+			{
+				m_DialogViewTypes = value;
+				if (!Platform.IsWindows && m_DialogViewTypes == DialogViewTypes.Large_Icons)
+				{
+					// on Mono for now we support only setting large icons
+					SelectLargeIconView(OpenFileDialog);
+				}
+			}
 		}
 
 		private OpenFileDialog OpenFileDialog
@@ -210,7 +228,10 @@ namespace SIL.Windows.Forms.ImageToolbox
 		{
 			m_IsWatching = true;
 
-			Thread t = new Thread(new ThreadStart(CheckActiveWindow));
+			if (!Platform.IsWindows)
+				return;
+
+			var t = new Thread(CheckActiveWindow);
 			t.Start();
 		}
 
@@ -239,6 +260,8 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private void CheckActiveWindow()
 		{
+			Debug.Assert(Platform.IsWindows, "Should not be called on Linux!");
+
 			lock (this)
 			{
 				uint listviewHandle = 0;
@@ -250,10 +273,45 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 				if (listviewHandle != 0)
 				{
-					SendMessage(listviewHandle, WM_COMMAND, (uint) this.m_DialogViewTypes, 0);
+					SendMessage(listviewHandle, WM_COMMAND, (uint) this.DialogViewType, 0);
 				}
 			}
 		}
+
+		/// <summary>
+		/// Select the large icon view in the open file dialog.
+		/// </summary>
+		/// <remarks>
+		/// This totally depends on the internal implementation of the file dialogs in Mono.  Since that has
+		/// remained stable for several years, it should work for us.  The worst that can happen for a new
+		/// version of Mono is that it silently stops working.
+		/// </remarks>
+		private static void SelectLargeIconView(OpenFileDialog dlg)
+		{
+			// Accessing a private member variable of FileDialog, so if the
+			// implementation changes, give up immediately.
+			if (!(dlg is FileDialog))
+				return;
+			Type dlgType = typeof(FileDialog);
+			var dlgViewField = dlgType.GetField("mwfFileView", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+			if (dlgViewField == null)
+				return;
+			var fileView = dlgViewField.GetValue(dlg);
+			if (fileView == null)
+				return;
+			var viewType = fileView.GetType();
+			var viewItemField = viewType.GetField("largeIconMenutItem", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
+			if (viewItemField == null)
+				return;
+			var largeIcon = viewItemField.GetValue(fileView) as MenuItem;
+			if (largeIcon == null)
+				return;
+			var viewOnClickMethod = viewType.GetMethod("OnClickViewMenuSubItem", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public,
+				null, new Type[] { typeof(Object), typeof(EventArgs) }, null);
+			if (viewOnClickMethod != null)
+				viewOnClickMethod.Invoke(fileView, new Object[] { largeIcon, new EventArgs() });
+		}
+
 	}
 
 }

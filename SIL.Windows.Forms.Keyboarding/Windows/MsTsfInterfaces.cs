@@ -1,7 +1,5 @@
 ﻿// Copyright (c) 2013 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-
-#if !__MonoCS__
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -63,12 +61,12 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 	[Flags]
 	internal enum TfIppMf : uint
 	{
-		ForProcess						= 0x10000000,
-		ForSession						= 0x20000000,
-		ForSystemAll					= 0x40000000,
-		EnableProfile					= 0x00000001,
-		DisableProfile					= 0x00000002,
-		DontCareCurrentInputLanguage	= 0x00000004,
+		ForProcess = 0x10000000,
+		ForSession = 0x20000000,
+		ForSystemAll = 0x40000000,
+		EnableProfile = 0x00000001,
+		DisableProfile = 0x00000002,
+		DontCareCurrentInputLanguage = 0x00000004,
 	}
 	#endregion
 
@@ -94,7 +92,8 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
 		[return: MarshalAs(UnmanagedType.Interface)]
-		/* IEnumGUID */ object EnumInputProcessorInfo();
+		/* IEnumGUID */
+		object EnumInputProcessorInfo();
 
 		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
 		[return: MarshalAs(UnmanagedType.Struct)]
@@ -340,14 +339,21 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 	#region GUIDs
 	internal class Guids
 	{
-		// Values from Wine project (http://source.winehq.org/git/wine.git/blob/HEAD:/dlls/uuid/uuid.c)
-		public static readonly Guid TfcatTipKeyboard = new Guid(0x34745c63,0xb2f0,0x4784,0x8b,0x67,0x5e,0x12,0xc8,0x70,0x1a,0x31);
-		public static readonly Guid TfcatTipSpeech = new Guid(0xB5A73CD1, 0x8355, 0x426B, 0xA1, 0x61, 0x25, 0x98, 0x08, 0xF2, 0x6B, 0x14);
-		public static readonly Guid TfcatTipHandwriting = new Guid(0x246ecb87, 0xc2f2, 0x4abe, 0x90, 0x5b, 0xc8, 0xb3, 0x8a, 0xdd, 0x2c, 0x43);
-		public static readonly Guid TfcatDisplayAttributeProvider = new Guid(0x046B8C80, 0x1647, 0x40F7, 0x9B, 0x21, 0xB9, 0x3B, 0x81, 0xAA, 0xBC, 0x1B);
+		// in the COM interface definitions we have to use `ref Guid` so that the Guid gets
+		// marshalled correctly. However, that prevents using constants. The workaround that I
+		// came up with is to introduce the `Consts` property and return a new `Guids` object
+		// every time. On Windows we got away without the `ref` when calling the method (although
+		// our method definition had the `ref`), but that doesn't work on Linux.
 
-		public static readonly Guid ITfLanguageProfileNotifySink = new Guid("43c9fe15-f494-4c17-9de2-b8a4ac350aa8");
+		public static Guids Consts => new Guids();
+
+		// Values from Wine project (http://source.winehq.org/git/wine.git/blob/HEAD:/dlls/uuid/uuid.c)
+		public Guid TfcatTipKeyboard = new Guid(0x34745c63, 0xb2f0, 0x4784, 0x8b, 0x67, 0x5e, 0x12, 0xc8, 0x70, 0x1a, 0x31);
+		public Guid TfcatTipSpeech = new Guid(0xB5A73CD1, 0x8355, 0x426B, 0xA1, 0x61, 0x25, 0x98, 0x08, 0xF2, 0x6B, 0x14);
+		public Guid TfcatTipHandwriting = new Guid(0x246ecb87, 0xc2f2, 0x4abe, 0x90, 0x5b, 0xc8, 0xb3, 0x8a, 0xdd, 0x2c, 0x43);
+		public Guid TfcatDisplayAttributeProvider = new Guid(0x046B8C80, 0x1647, 0x40F7, 0x9B, 0x21, 0xB9, 0x3B, 0x81, 0xAA, 0xBC, 0x1B);
+
+		public Guid ITfLanguageProfileNotifySink = new Guid("43c9fe15-f494-4c17-9de2-b8a4ac350aa8");
 	}
 	#endregion
 }
-#endif

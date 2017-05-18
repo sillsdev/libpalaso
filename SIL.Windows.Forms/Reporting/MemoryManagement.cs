@@ -2,17 +2,15 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using L10NSharp;
 using SIL.PlatformUtilities;
 using SIL.Reporting;
-#if !__MonoCS__ // This is not needed on Linux, and can causes extra dependancy trouble if it is compiled in
-using Microsoft.VisualBasic.Devices;
-#else
-using System.IO;
-using System.Text.RegularExpressions;
-#endif
+using SIL.Windows.Forms.FileDialogExtender;
 
 namespace SIL.Windows.Forms.Reporting
 {
@@ -22,6 +20,30 @@ namespace SIL.Windows.Forms.Reporting
 	/// </summary>
 	public static class MemoryManagement
 	{
+		// from http://stackoverflow.com/a/105109
+		[CLSCompliant(false)]
+		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+		private class MemoryStatusEx
+		{
+			private uint dwLength;
+			public uint dwMemoryLoad;
+			public ulong ullTotalPhys;
+			public ulong ullAvailPhys;
+			public ulong ullTotalPageFile;
+			public ulong ullAvailPageFile;
+			public ulong ullTotalVirtual;
+			public ulong ullAvailVirtual;
+			public ulong ullAvailExtendedVirtual;
+			public MemoryStatusEx()
+			{
+				dwLength = (uint)Marshal.SizeOf(typeof(MemoryStatusEx));
+			}
+		}
+
+		[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		private static extern bool GlobalMemoryStatusEx([In, Out] MemoryStatusEx lpBuffer);
+
 		private static bool s_warningShown;
 
 		/// <summary>
@@ -106,34 +128,41 @@ namespace SIL.Windows.Forms.Reporting
 		{
 			var returnVal = new MemoryInformation();
 
-#if !__MonoCS__ // There are completely different dependencies and code per platform for finding the memory information
-			var computerInfo = new Computer().Info;
-			returnVal.TotalPhysicalMemory = computerInfo.TotalPhysicalMemory;
-			returnVal.TotalVirtualMemory = computerInfo.TotalVirtualMemory;
-#else
-			var meminfo = File.ReadAllText("/proc/meminfo");
-			var match = new Regex(@"MemTotal:\s+(\d+) kB").Match(meminfo);
-			if (match.Success)
-				returnVal.TotalPhysicalMemory = ulong.Parse(match.Groups[1].Value) * 1024;
-			ulong totalSwapMemory = 0;
-			var match2 = new Regex(@"SwapTotal:\s+(\d+) kB").Match(meminfo);
-			if (match2.Success)
-				totalSwapMemory = ulong.Parse(match2.Groups [1].Value) * 1024;
-			var availableMemory = returnVal.TotalPhysicalMemory + totalSwapMemory;
-			var is64BitProcess = IntPtr.Size == 8; // according to MSDN
-			if (is64BitProcess)
+			if (Platform.IsWindows)
 			{
-				returnVal.TotalVirtualMemory = availableMemory;
+				// from http://stackoverflow.com/a/105109
+				var memStatus = new MemoryStatusEx();
+				if (GlobalMemoryStatusEx(memStatus))
+				{
+					returnVal.TotalPhysicalMemory = memStatus.ullTotalPhys;
+					returnVal.TotalVirtualMemory = memStatus.ullTotalVirtual;
+				}
 			}
 			else
 			{
-				// Googling indicates that 32-bit Mono programs attempting to allocate more than
-				// about 1.4 GB start running into OutOfMemory errors.  So 2GB is probably the
-				// right virtual memory limit for 32-bit processes.
-				const ulong twoGB = 2147483648L;
-				returnVal.TotalVirtualMemory = availableMemory > twoGB ? twoGB : availableMemory;
+				var meminfo = File.ReadAllText("/proc/meminfo");
+				var match = new Regex(@"MemTotal:\s+(\d+) kB").Match(meminfo);
+				if (match.Success)
+					returnVal.TotalPhysicalMemory = ulong.Parse(match.Groups[1].Value) * 1024;
+
+				ulong totalSwapMemory = 0;
+				var match2 = new Regex(@"SwapTotal:\s+(\d+) kB").Match(meminfo);
+				if (match2.Success)
+					totalSwapMemory = ulong.Parse(match2.Groups[1].Value) * 1024;
+				var availableMemory = returnVal.TotalPhysicalMemory + totalSwapMemory;
+				if (Environment.Is64BitProcess)
+				{
+					returnVal.TotalVirtualMemory = availableMemory;
+				}
+				else
+				{
+					// Googling indicates that 32-bit Mono programs attempting to allocate more than
+					// about 1.4 GB start running into OutOfMemory errors.  So 2GB is probably the
+					// right virtual memory limit for 32-bit processes.
+					const ulong twoGB = 2147483648L;
+					returnVal.TotalVirtualMemory = availableMemory > twoGB ? twoGB : availableMemory;
+				}
 			}
-#endif
 			return returnVal;
 		}
 	}

@@ -1,5 +1,4 @@
-﻿#if !__MonoCS__
-using SIL.Keyboarding;
+﻿using SIL.Keyboarding;
 
 namespace SIL.Windows.Forms.Keyboarding.Windows
 {
@@ -29,4 +28,3 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		void OnInputLanguageChanged(IKeyboardDefinition previousKeyboard, IKeyboardDefinition newKeyboard);
 	}
 }
-#endif

@@ -16,16 +16,11 @@ namespace TestAppKeyboard
 				return;
 
 			KeyboardController.Initialize();
-#if __MonoCS__
-			KeyboardController.RegisterControl(testAreaA);
-			KeyboardController.RegisterControl(testAreaB);
-			KeyboardController.RegisterControl(testAreaC);
-#else
 			var eventHandler = new TestWindowsLanguageProfileSink(this);
 			KeyboardController.RegisterControl(testAreaA, eventHandler);
 			KeyboardController.RegisterControl(testAreaB, eventHandler);
 			KeyboardController.RegisterControl(testAreaC, eventHandler);
-#endif
+
 			LoadKeyboards(keyboardsA);
 			LoadKeyboards(keyboardsB);
 			LoadKeyboards(keyboardsC);
@@ -79,7 +74,6 @@ namespace TestAppKeyboard
 			}
 		}
 
-#if !__MonoCS__
 		private class TestWindowsLanguageProfileSink : IWindowsLanguageProfileSink
 		{
 			private readonly KeyboardForm _form;
@@ -97,6 +91,5 @@ namespace TestAppKeyboard
 				_form.lblCurrentKeyboard.Text = newKeyboard != null ? newKeyboard.Layout : "<null>";
 			}
 		}
-#endif
 	}
 }

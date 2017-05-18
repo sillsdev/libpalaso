@@ -1,7 +1,6 @@
 // Copyright (c) 2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
-#if !__MonoCS__
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -93,7 +92,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				UpdateKeyboards(curKeyboards, keyman.Keyboards.OfType<IKeymanKeyboard>().Select(kb => kb.Name), false);
 			}
 			catch (Exception)
-			{				
+			{
 				// Keyman 7 isn't installed or whatever.
 			}
 
@@ -425,4 +424,3 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		#endregion IDisposable & Co. implementation
 	}
 }
-#endif

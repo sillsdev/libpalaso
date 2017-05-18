@@ -5,6 +5,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using SIL.Extensions;
+using SIL.PlatformUtilities;
 using SIL.Progress;
 using SIL.Reporting;
 using SIL.Windows.Forms.Extensions;
@@ -89,7 +90,7 @@ namespace SIL.Windows.Forms.Progress
 				LinkClicked(this, e);
 		}
 
-		public event EventHandler<LinkClickedEventArgs> LinkClicked; 
+		public event EventHandler<LinkClickedEventArgs> LinkClicked;
 
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public SynchronizationContext SyncContext
@@ -165,11 +166,11 @@ namespace SIL.Windows.Forms.Progress
 		public override string Text
 		{
 			get {
-				// The Text property get called during ctor so return an 
-				// empty string in that case.  This works around a crash 
+				// The Text property get called during ctor so return an
+				// empty string in that case.  This works around a crash
 				// in WeSay.
 				if (_box == null || _verboseBox == null) return String.Empty;
-				return "Box:" + _box.Text + "Verbose:" + _verboseBox.Text; 
+				return "Box:" + _box.Text + "Verbose:" + _verboseBox.Text;
 			}
 		}
 
@@ -241,23 +242,31 @@ namespace SIL.Windows.Forms.Progress
 				var styleForDelegate = style;
 				SafeInvoke(rtfBox, (() =>
 				{
-#if !MONO // changing the text colour throws exceptions with mono 2011-12-09
-					// so just append plain text
-					if (!rtfBoxForDelegate.Font.FontFamily.IsStyleAvailable(styleForDelegate))
-						style = rtfBoxForDelegate.Font.Style;
-
-					using (var fnt = new Font(rtfBoxForDelegate.Font, styleForDelegate))
+					if (Platform.IsWindows)
 					{
-						rtfBoxForDelegate.SelectionStart = rtfBoxForDelegate.Text.Length;
-						rtfBoxForDelegate.SelectionColor = color;
-						rtfBoxForDelegate.SelectionFont = fnt;
-#endif
-						rtfBoxForDelegate.AppendText(msg.FormatWithErrorStringInsteadOfException(args) + Environment.NewLine);
+						if (!rtfBoxForDelegate.Font.FontFamily.IsStyleAvailable(styleForDelegate))
+							style = rtfBoxForDelegate.Font.Style;
+
+						using (var fnt = new Font(rtfBoxForDelegate.Font, styleForDelegate))
+						{
+							rtfBoxForDelegate.SelectionStart = rtfBoxForDelegate.Text.Length;
+							rtfBoxForDelegate.SelectionColor = color;
+							rtfBoxForDelegate.SelectionFont = fnt;
+							rtfBoxForDelegate.AppendText(msg.FormatWithErrorStringInsteadOfException(args) +
+								Environment.NewLine);
+							rtfBoxForDelegate.SelectionStart = rtfBoxForDelegate.Text.Length;
+							rtfBoxForDelegate.ScrollToCaret();
+						}
+					}
+					else
+					{
+						// changing the text colour throws exceptions with mono 2011-12-09
+						// so just append plain text
+						rtfBoxForDelegate.AppendText(msg.FormatWithErrorStringInsteadOfException(args) +
+							Environment.NewLine);
 						rtfBoxForDelegate.SelectionStart = rtfBoxForDelegate.Text.Length;
 						rtfBoxForDelegate.ScrollToCaret();
-#if !MONO
 					}
-#endif
 				}));
 			}
 #if !DEBUG
@@ -327,17 +336,21 @@ namespace SIL.Windows.Forms.Progress
 
 		public void WriteVerbose(string message, params object[] args)
 		{
-#if MONO
-			_verboseBox.AppendText(SafeFormat(message + Environment.NewLine, args));
-#else
-			SafeInvoke(_verboseBox, (() =>
+			if (!Platform.IsWindows)
 			{
-				_verboseBox.SelectionStart = _verboseBox.Text.Length;
-				_verboseBox.SelectionColor = Color.DarkGray;
 				_verboseBox.AppendText(SafeFormat(message + Environment.NewLine, args));
-			}));
-#endif
+			}
+			else
+			{
+				SafeInvoke(_verboseBox, (() =>
+				{
+					_verboseBox.SelectionStart = _verboseBox.Text.Length;
+					_verboseBox.SelectionColor = Color.DarkGray;
+					_verboseBox.AppendText(SafeFormat(message + Environment.NewLine, args));
+				}));
+			}
 		}
+
 		public static string SafeFormat(string format, params object[] args)
 		{
 			if (args == null && args.Length == 0)
@@ -372,18 +385,21 @@ namespace SIL.Windows.Forms.Progress
 
 		private void _copyToClipboardLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-#if MONO
-//at least on Xubuntu, getting some rtf on the clipboard would mean that when you pasted, you'd see rtf
-			if (!string.IsNullOrEmpty(_verboseBox.Text))
+			if (!Platform.IsWindows)
 			{
-				Clipboard.SetText(_verboseBox.Text);
+				//at least on Xubuntu, getting some rtf on the clipboard would mean that when you pasted, you'd see rtf
+				if (!string.IsNullOrEmpty(_verboseBox.Text))
+				{
+					Clipboard.SetText(_verboseBox.Text);
+				}
 			}
-#else
-			var data = new DataObject();
-			data.SetText(_verboseBox.Rtf, TextDataFormat.Rtf);
-			data.SetText(_verboseBox.Text, TextDataFormat.UnicodeText);
-			Clipboard.SetDataObject(data);
-#endif
+			else
+			{
+				var data = new DataObject();
+				data.SetText(_verboseBox.Rtf, TextDataFormat.Rtf);
+				data.SetText(_verboseBox.Text, TextDataFormat.UnicodeText);
+				Clipboard.SetDataObject(data);
+			}
 		}
 
 		public void Clear()

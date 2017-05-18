@@ -7,7 +7,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-#if __MonoCS__
+#if MONO
 namespace SIL.Media.AlsaAudio
 {
 	/// <summary>
@@ -62,7 +62,7 @@ namespace SIL.Media.AlsaAudio
 			}
 		}
 
-		public virtual SIL.Media.Naudio.RecordingState RecordingState
+		public virtual Naudio.RecordingState RecordingState
 		{
 			get
 			{

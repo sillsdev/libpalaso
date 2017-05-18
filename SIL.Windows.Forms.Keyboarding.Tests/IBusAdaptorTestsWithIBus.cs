@@ -1,4 +1,3 @@
-#if __MonoCS__
 #if WANT_PORT
 using System;
 using NUnit.Framework;
@@ -85,5 +84,4 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		}
 	}
 }
-#endif
 #endif

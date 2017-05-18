@@ -3,34 +3,43 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using SIL.Code;
+using SIL.PlatformUtilities;
 
 namespace SIL.Windows.Forms.Extensions
 {
 	public static class ControlExtensions
 	{
-#if !__MonoCS__
-		[DllImport("user32.dll", CharSet = CharSet.Auto)]
-		private static extern void SendMessage(IntPtr hWnd, int msg, int wParam, int lParam);
-#else
-		private static void SendMessage(IntPtr hWnd, int msg, int wParam, int lParam)
+		[DllImport("user32.dll", CharSet = CharSet.Auto, EntryPoint = "SendMessage")]
+		private static extern void SendMessageWindows(IntPtr hWnd, int msg, int wParam, int lParam);
+
+		private static void SendMessageLinux(IntPtr hWnd, int msg, int wParam, int lParam)
 		{
 			if(msg != PaintingHelper.WM_NCPAINT) { // repaint
 				Console.WriteLine("Warning--using unimplemented method SendMessage"); // FIXME Linux
 			}
-			return;
 		}
-#endif
 
-#if !__MonoCS__
-		[DllImport("user32")]
-		private static extern int UpdateWindow(IntPtr hwnd);
-#else
-		private static int UpdateWindow(IntPtr hwnd)
+		private static void SendMessage(IntPtr hWnd, int msg, int wParam, int lParam)
+		{
+			if (Platform.IsWindows)
+				SendMessageWindows(hWnd, msg, wParam, lParam);
+			else
+				SendMessageLinux(hWnd, msg, wParam, lParam);
+		}
+
+		[DllImport("user32", EntryPoint = "UpdateWindow")]
+		private static extern int UpdateWindowWindows(IntPtr hwnd);
+
+		private static int UpdateWindowLinux(IntPtr hwnd)
 		{
 			Console.WriteLine("Warning--using unimplemented method UpdateWindow"); // FIXME Linux
-			return(0);
+			return 0;
 		}
-#endif
+
+		private static int UpdateWindow(IntPtr hwnd)
+		{
+			return Platform.IsWindows ? UpdateWindowWindows(hwnd) : UpdateWindowLinux(hwnd);
+		}
 
 		private const int WM_SETREDRAW = 0xB;
 
@@ -102,7 +111,7 @@ namespace SIL.Windows.Forms.Extensions
 		/// https://msdn.microsoft.com/en-us/library/system.windows.forms.control.invokerequired(v=vs.110).aspx
 		/// This implementation began with http://stackoverflow.com/a/809186/723299, but allows the caller to specify the
 		/// desired handling of various types of errors.
-		/// This method does <i>not</i> catch and suppress errors thrown by the target action being invoked. If the caller 
+		/// This method does <i>not</i> catch and suppress errors thrown by the target action being invoked. If the caller
 		/// wishes to have that behavior, the action should include the appropriate try-catch wrapper to achieve that.
 		/// On Linux, it appears that when the action is to be run asynchronously (i.e., InvokeRequired returns true and
 		/// forceSynchronous == false):
@@ -204,14 +213,15 @@ namespace SIL.Windows.Forms.Extensions
 		{
 			if (ctrl != null && !ctrl.IsDisposed && ctrl.IsHandleCreated)
 			{
-#if !__MonoCS__
-				SendMessage(ctrl.Handle, WM_SETREDRAW, (turnOn ? 1 : 0), 0);
-#else
-				if (turnOn)
-					ctrl.ResumeLayout(invalidateAfterTurningOn);
+				if (Platform.IsWindows)
+					SendMessage(ctrl.Handle, WM_SETREDRAW, (turnOn ? 1 : 0), 0);
 				else
-					ctrl.SuspendLayout();
-#endif
+				{
+					if (turnOn)
+						ctrl.ResumeLayout(invalidateAfterTurningOn);
+					else
+						ctrl.SuspendLayout();
+				}
 				if (turnOn && invalidateAfterTurningOn)
 					ctrl.Invalidate(true);
 			}

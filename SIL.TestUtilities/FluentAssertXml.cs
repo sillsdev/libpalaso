@@ -2,6 +2,7 @@
 using System.Xml;
 using System.Xml.Linq;
 using NUnit.Framework;
+using SIL.PlatformUtilities;
 using SIL.Xml;
 
 namespace SIL.TestUtilities
@@ -231,12 +232,10 @@ namespace SIL.TestUtilities
 
 		private XmlNode GetNode(string xpath)
 		{
-#if __MonoCS__
-			// Currently the method XmlNodeExtensions.GetPrefixedPath doesn't allow for / in a literal string
-			return NodeOrDom.SelectSingleNode(xpath);
-#else
-			return NodeOrDom.SelectSingleNodeHonoringDefaultNS(xpath);
-#endif
+			// Mono: Currently the method XmlNodeExtensions.GetPrefixedPath doesn't allow for / in a literal string
+			return Platform.IsWindows
+				? NodeOrDom.SelectSingleNodeHonoringDefaultNS(xpath)
+				: NodeOrDom.SelectSingleNode(xpath);
 		}
 
 		private XmlNode GetNode(string xpath, XmlNamespaceManager nameSpaceManager)

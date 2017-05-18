@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -297,9 +297,14 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName'">
+  <ItemGroup Condition="$(Configuration.StartsWith('Debug'))">
     <Reference Include="NAudio">
       <HintPath>..\lib\Debug\NAudio.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="$(Configuration.StartsWith('Release'))">
+    <Reference Include="NAudio">
+      <HintPath>..\lib\Release\NAudio.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Platform)' == 'x86' Or '$(Platform)' == 'AnyCPU'">
@@ -312,11 +317,6 @@
       <HintPath>..\lib\x64\irrKlang.NET4.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
-    <Reference Include="NAudio">
-      <HintPath>..\lib\Release\NAudio.dll</HintPath>
-    </Reference>
-  </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -325,7 +325,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName' Or '$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
+  <ItemGroup>
     <Compile Include="AudioIrrKlangSession.cs" />
     <Compile Include="Naudio\AudioPlayer.cs" />
     <Compile Include="Naudio\AudioRecorder.cs" />
@@ -351,8 +351,6 @@
       <DependentUpon>RecordingDeviceIndicator.cs</DependentUpon>
     </Compile>
     <Compile Include="Naudio\SampleAggregator.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
@@ -390,7 +388,7 @@
   <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName' Or '$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
+  <ItemGroup>
     <EmbeddedResource Include="Naudio\UI\AudioDeviceIcons.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>AudioDeviceIcons.Designer.cs</LastGenOutput>

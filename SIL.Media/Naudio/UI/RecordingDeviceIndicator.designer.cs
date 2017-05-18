@@ -1,4 +1,5 @@
-﻿namespace SIL.Media.Naudio.UI
+﻿#if !MONO
+namespace SIL.Media.Naudio.UI
 {
 	partial class RecordingDeviceIndicator
 	{
@@ -66,3 +67,4 @@
 		private System.Windows.Forms.PictureBox _recordingDeviceImage;
 	}
 }
+#endif

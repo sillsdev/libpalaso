@@ -13,9 +13,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 
 		[Test]
 		[Category("DesktopRequired")] // Fails on Jenkins because InputLanguage.InstalledInputLanguages returns an empty list.
-#if MONO
-		[Ignore("Linux only usually returns the Invariant, reimplement using IBus")]
-#endif
+		[Platform(Exclude = "Linux", Reason = "Linux only usually returns the Invariant, reimplement using IBus")]
 		public void ActiveIncludesAtLeastOneLanguage()
 		{
 			IEnumerable<Tuple<string, string>> provider = new WritingSystemFromWindowsLocaleProvider(new TestWritingSystemFactory());
@@ -28,9 +26,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		/// </summary>
 		[Test]
 		[Category("DesktopRequired")] // Fails on Jenkins because InputLanguage.InstalledInputLanguages returns an empty list.
-#if MONO
-		[Ignore("Linux only usually returns the Invariant, reimplement using IBus")]
-#endif
+		[Platform(Exclude = "Linux", Reason = "Linux only usually returns the Invariant, reimplement using IBus")]
 		public void GetEnumerator_IfHaveMultipleSystemKeyboardsForSameLanguage_OnlyReturnsOneForEachLanguage()
 		{
 			IEnumerable<Tuple<string, string>> provider = new WritingSystemFromWindowsLocaleProvider(new TestWritingSystemFactory());

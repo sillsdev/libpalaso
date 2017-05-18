@@ -1,7 +1,6 @@
 // Copyright (c) 2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
-#if !__MonoCS__
 using System.Diagnostics.CodeAnalysis;
 using System.Security;
 using Microsoft.Win32;
@@ -83,10 +82,10 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		/// always returns <c>false</c>.
 		/// </summary>
 		public override bool UseNfcContext { get { return false; } }
-	
+
 		/// <summary>
-		/// If the new keyboard is the default windows keyboard then we need to deactivate the Keyman 
-		/// keyboard without resetting the windows keyboard. However, if the default keyboard is a Keyman 
+		/// If the new keyboard is the default windows keyboard then we need to deactivate the Keyman
+		/// keyboard without resetting the windows keyboard. However, if the default keyboard is a Keyman
 		/// keyboard associated with the system default keyboard, then don't reset the Keyman keyboard as
 		/// that causes the association to appear as if it's not there due to a Keyman timing issue.
 		/// </summary>
@@ -101,4 +100,3 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		}
 	}
 }
-#endif

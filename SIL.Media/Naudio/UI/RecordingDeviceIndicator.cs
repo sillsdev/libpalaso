@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !MONO
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -178,7 +179,7 @@ namespace SIL.Media.Naudio.UI
 			// A microphone seems most likely to suggest what needs to be connected.
 			if (Recorder.SelectedDevice == null)
 				_recordingDeviceImage.Image = AudioDeviceIcons.Microphone;
-			else if(_recorder.SelectedDevice.GenericName.Contains("Internal"))
+			else if (_recorder.SelectedDevice.GenericName.Contains("Internal"))
 				_recordingDeviceImage.Image = AudioDeviceIcons.Computer;
 			else if (_recorder.SelectedDevice.GenericName.Contains("USB Audio Device"))
 				_recordingDeviceImage.Image = AudioDeviceIcons.HeadSet;
@@ -207,3 +208,4 @@ namespace SIL.Media.Naudio.UI
 		}
 	}
 }
+#endif

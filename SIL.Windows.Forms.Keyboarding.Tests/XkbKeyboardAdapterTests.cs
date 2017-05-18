@@ -7,7 +7,6 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------
 
-#if __MonoCS__
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -420,4 +419,3 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		}
 	}
 }
-#endif

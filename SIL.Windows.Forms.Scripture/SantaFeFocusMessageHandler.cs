@@ -1,18 +1,19 @@
 // ---------------------------------------------------------------------------------------------
 #region // Copyright (c) 2014, SIL International.
 // <copyright from='2007' to='2014' company='SIL International'>
-//		Copyright (c) 2014, SIL International.   
-//    
+//		Copyright (c) 2014, SIL International.
+//
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
-// </copyright> 
+// </copyright>
 #endregion
-// 
+//
 // File: SantaFeFocusMessageHandler.cs
 // ---------------------------------------------------------------------------------------------
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using SIL.PlatformUtilities;
 using SIL.Scripture;
 
 namespace SIL.Windows.Forms.Scripture
@@ -31,29 +32,40 @@ namespace SIL.Windows.Forms.Scripture
 		/// <param name="name">unique name of a message</param>
 		/// <returns>message identifier in the range 0xC000 through 0xFFFF, or 0 if an error
 		/// occurs</returns>
-#if !__MonoCS__
-		[DllImport("User32.dll")]
-		private static extern uint RegisterWindowMessage(string name);
-#else
-		private static uint RegisterWindowMessage(string name)
+		[DllImport("User32.dll", EntryPoint = "RegisterWindowMessage")]
+		private static extern uint RegisterWindowMessageWindows(string name);
+
+		private static uint RegisterWindowMessageLinux(string name)
 		{
 			// TODO-Linux: Deal with this somehow see BasicUtils
 			return 0;
 		}
-#endif
+
+		private static uint RegisterWindowMessage(string name)
+		{
+			return Platform.IsWindows
+				? RegisterWindowMessageWindows(name)
+				: RegisterWindowMessageLinux(name);
+		}
+
 
 		/// <summary></summary>
-#if !__MonoCS__
-		[DllImport("User32.dll", CharSet = CharSet.Auto)]
+		[DllImport("User32.dll", CharSet = CharSet.Auto, EntryPoint = "PostMessage")]
 		[return: MarshalAs(UnmanagedType.Bool)]
-		private static extern bool PostMessage(IntPtr hWnd, int Msg, uint wParam, uint lParam);
-#else
-		private static bool PostMessage(IntPtr hWnd, int Msg, uint wParam, uint lParam)
+		private static extern bool PostMessageWindows(IntPtr hWnd, int Msg, uint wParam, uint lParam);
+
+		private static bool PostMessageLinux(IntPtr hWnd, int Msg, uint wParam, uint lParam)
 		{
 			// TODO-Linux: Deal with this somehow see BasicUtils
 			return false;
 		}
-#endif
+
+		private static bool PostMessage(IntPtr hWnd, int Msg, uint wParam, uint lParam)
+		{
+			return Platform.IsWindows
+				? PostMessageWindows(hWnd, Msg, wParam, lParam)
+				: PostMessageLinux(hWnd, Msg, wParam, lParam);
+		}
 		#endregion
 
 		/// ----------------------------------------------------------------------------------------

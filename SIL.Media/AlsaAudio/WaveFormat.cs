@@ -2,7 +2,7 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 
-#if __MonoCS__
+#if MONO
 namespace SIL.Media.AlsaAudio
 {
 	/// <summary>
@@ -30,4 +30,3 @@ namespace SIL.Media.AlsaAudio
 	}
 }
 #endif
-

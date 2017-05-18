@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using SIL.PlatformUtilities;
 
 namespace SIL.Email
 {
@@ -12,9 +13,9 @@ namespace SIL.Email
 
 		public bool SendMessage(IEmailMessage message)
 		{
-#if MONO
-			return false;
-#else
+			if (!Platform.IsWindows)
+				return false;
+
 			var mapi = new MAPI();
 			foreach (string recipient in message.To)
 			{
@@ -39,7 +40,6 @@ namespace SIL.Email
 
 			//this one works for thunderbird, too. It opens a window rather than just sending:
 			return mapi.SendMailPopup(message.Subject, message.Body);
-#endif
 		}
 	}
 }
