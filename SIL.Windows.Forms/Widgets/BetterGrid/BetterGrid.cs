@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -37,6 +37,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		protected Action<int> RemoveRowAction;
 		protected Func<string> GetRemoveRowToolTipText;
 
+		private bool _isDirty;
 		private bool _showWaterMarkWhenDirty;
 		private string _waterMark = "!";
 
@@ -92,10 +93,10 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public bool IsDirty
 		{
-			get { return IsDirty; }
+			get { return _isDirty; }
 			set
 			{
-				IsDirty = value;
+				_isDirty = value;
 				PaintWaterMark = (value && ShowWaterMarkWhenDirty);
 
 				if (ShowWaterMarkWhenDirty)
@@ -699,7 +700,7 @@ namespace SIL.Windows.Forms.Widgets.BetterGrid
 			cbo.Items.Clear();
 			cbo.Items.AddRange(listInfo.Value.ToArray());
 
-			if (listInfo.Key == null || listInfo.Value.Count() == 0)
+			if (listInfo.Key == null || !listInfo.Value.Any())
 				return;
 
 			if (listInfo.Key.GetType() != typeof(int))
