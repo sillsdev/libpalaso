@@ -14,7 +14,7 @@ namespace SIL.Tests.CommandLineProcessing
 		{
 			var progress = new StringBuilderProgress();
 			var result = CommandLineRunner.Run(App, "CommandLineRunnerTest", null, string.Empty, 100,
-				progress, null);
+				progress, null, null, true);
 			Assert.IsTrue(result.StandardOutput.Contains("0"));
 			Assert.IsTrue(result.StandardOutput.Contains("9"));
 		}
@@ -24,7 +24,7 @@ namespace SIL.Tests.CommandLineProcessing
 		{
 			var progress = new StringBuilderProgress();
 			var result = CommandLineRunner.Run(App, "CommandLineRunnerTest", null, string.Empty, 3,
-				progress, null);
+				progress, null, null, true);
 			Assert.That(result.DidTimeOut, Is.True);
 			Assert.That(result.StandardOutput, Is.Null);
 			Assert.That(result.StandardError, Contains.Substring("Timed Out after waiting 3 seconds."));
@@ -37,7 +37,7 @@ namespace SIL.Tests.CommandLineProcessing
 			var progress = new StringBuilderProgress();
 			int linesReceivedAsynchronously = 0;
 			CommandLineRunner.Run(App, "CommandLineRunnerTest", null, string.Empty, 100,
-				progress, s => ++linesReceivedAsynchronously);
+				progress, s => ++linesReceivedAsynchronously, null, true);
 			// The test fails on Linux because progress gets called 10x for StdOutput plus
 			// 1x for StdError (probably on the closing of the stream), so linesReceivedAsync is 11.
 			// It also failes about 4% of the time on TC Windows agents
@@ -50,7 +50,7 @@ namespace SIL.Tests.CommandLineProcessing
 			var progress = new StringBuilderProgress();
 			int linesReceivedAsynchronously = 0;
 			var result = CommandLineRunner.Run(App, "CommandLineRunnerTest", null, string.Empty, 3,
-				progress, s => ++linesReceivedAsynchronously);
+				progress, s => ++linesReceivedAsynchronously, null, true);
 			Assert.That(result.DidTimeOut, Is.True);
 			Assert.That(result.StandardOutput, Is.Null);
 			Assert.That(result.StandardError, Contains.Substring("Timed Out after waiting 3 seconds."));
