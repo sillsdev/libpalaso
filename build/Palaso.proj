@@ -76,9 +76,9 @@
 
 	<Target Name="Clean">
 		<Delete Files="@(ExistingObjectFiles)" />
-		<Delete Condition="'$(OS)'=='Windows_NT'"
+		<Delete Condition="'$(OS)'=='Windows_NT' OR $(MSBuildToolsVersion) &gt;= 15"
 			 Files="$(RootDir)/**/obj/**/*" />
-		<Exec Condition="'$(OS)'!='Windows_NT'"
+		<Exec Condition="'$(OS)'!='Windows_NT' AND $(MSBuildToolsVersion) &lt; 15"
 			Command="find . %5c( -name obj -o -name bin -o -name test-results %5c) -type d -print0 | xargs -0 rm -rf"
 			WorkingDirectory="$(RootDir)" />
 	</Target>
