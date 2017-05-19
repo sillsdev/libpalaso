@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using NUnit.Framework;
@@ -322,15 +323,18 @@ namespace SIL.Tests.Xml
 		}
 
 		[Test]
-		public void MakeStringFromList_For_int()
+		[SetCulture("")]
+		public void MakeStringFromList_Int()
 		{
-			Assert.AreEqual("1,2,3", XmlUtils.MakeStringFromList(new List<int>() { 1, 2, 3 }));
+			var ci = Thread.CurrentThread.CurrentCulture;
+			ci.NumberFormat.NegativeSign = "*";
+			Assert.AreEqual("-1,-2,-3", XmlUtils.MakeStringFromList(new List<int> { -1, -2, -3 }));
 		}
 
 		[Test]
-		public void MakeStringFromList_For_uint()
+		public void MakeStringFromList_Uint()
 		{
-			Assert.AreEqual("1,2,3", XmlUtils.MakeStringFromList(new List<uint>() { 1, 2, 3 }));
+			Assert.AreEqual("1,2,3", XmlUtils.MakeStringFromList(new List<uint> { 1, 2, 3 }));
 		}
 
 		[Test]
