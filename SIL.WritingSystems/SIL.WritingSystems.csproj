@@ -67,12 +67,6 @@
     </TargetFrameworkProfile>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugMonoStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\output\DebugMonoStrongName\</OutputPath>
@@ -81,6 +75,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <NoWarn>1699,1591</NoWarn>
     <DocumentationFile>..\output\DebugMonoStrongName\SIL.WritingSystems.XML</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
@@ -93,6 +89,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <NoWarn>1699,1591</NoWarn>
     <DocumentationFile>..\output\DebugStrongName\SIL.WritingSystems.XML</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
@@ -105,6 +103,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <NoWarn>1699</NoWarn>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
@@ -116,6 +116,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <NoWarn>1699</NoWarn>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
@@ -167,6 +169,8 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\output\DebugMonoStrongName\</OutputPath>
     <DefineConstants>TRACE;DEBUG;MONO;STRONG_NAME;STAGING_SLDR</DefineConstants>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <NoWarn>1699,1591</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -179,6 +183,8 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\output\DebugStrongName\</OutputPath>
     <DefineConstants>TRACE;DEBUG;STRONG_NAME;STAGING_SLDR</DefineConstants>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <NoWarn>1699,1591</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -191,6 +197,8 @@
     <OutputPath>..\output\ReleaseMonoStrongName</OutputPath>
     <DefineConstants>TRACE;MONO;STRONG_NAME;STAGING_SLDR</DefineConstants>
     <Optimize>true</Optimize>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <NoWarn>1699</NoWarn>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -202,6 +210,8 @@
     <OutputPath>..\output\ReleaseStrongName</OutputPath>
     <DefineConstants>TRACE;STRONG_NAME;STAGING_SLDR</DefineConstants>
     <Optimize>true</Optimize>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <NoWarn>1699</NoWarn>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -254,6 +264,8 @@
     <OutputPath>..\output\DebugMonoStrongName</OutputPath>
     <DefineConstants>TRACE;DEBUG;MONO;STRONG_NAME;STAGING_SLDR</DefineConstants>
     <DocumentationFile>..\output\DebugMonoStrongName\SIL.WritingSystems.XML</DocumentationFile>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <NoWarn>1699,1591</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -265,6 +277,8 @@
     <OutputPath>..\output\DebugStrongName</OutputPath>
     <DefineConstants>TRACE;DEBUG;STRONG_NAME;STAGING_SLDR</DefineConstants>
     <DocumentationFile>..\output\DebugStrongName\SIL.WritingSystems.XML</DocumentationFile>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <NoWarn>1699,1591</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -275,6 +289,8 @@
     <OutputPath>..\output\ReleaseMonoStrongName</OutputPath>
     <DefineConstants>TRACE;MONO;STRONG_NAME;STAGING_SLDR</DefineConstants>
     <Optimize>true</Optimize>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <NoWarn>1699</NoWarn>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -285,6 +301,8 @@
     <OutputPath>..\output\ReleaseStrongName</OutputPath>
     <DefineConstants>TRACE;STRONG_NAME;STAGING_SLDR</DefineConstants>
     <Optimize>true</Optimize>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <NoWarn>1699</NoWarn>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>

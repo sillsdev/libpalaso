@@ -66,18 +66,14 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugStrongName|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\output\DebugStrongName</OutputPath>
     <DefineConstants>DEBUG;TRACE;STRONG_NAME</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
@@ -89,6 +85,8 @@
     <OutputPath>..\output\DebugMonoStrongName</OutputPath>
     <DefineConstants>TRACE;DEBUG;MONO;STRONG_NAME</DefineConstants>
     <DebugType>full</DebugType>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
@@ -101,6 +99,8 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
@@ -112,6 +112,8 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
@@ -169,6 +171,8 @@
     <DefineConstants>DEBUG;TRACE;STRONG_NAME</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
@@ -181,6 +185,8 @@
     <DefineConstants>TRACE;DEBUG;MONO;STRONG_NAME</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
@@ -193,6 +199,8 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
@@ -204,6 +212,8 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
@@ -251,6 +261,8 @@
     <DefineConstants>DEBUG;TRACE;STRONG_NAME</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -260,6 +272,8 @@
     <DefineConstants>TRACE;DEBUG;MONO;STRONG_NAME</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -269,6 +283,8 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -278,6 +294,8 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -295,9 +313,6 @@
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="CommandLine">
-      <HintPath>..\packages\CommandLineParser.1.9.71\lib\net40\CommandLine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -322,7 +337,7 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
