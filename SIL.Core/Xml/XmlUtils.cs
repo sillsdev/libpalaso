@@ -236,7 +236,7 @@ namespace SIL.Xml
 				{
 					builder.Append(",");
 				}
-				builder.Append(vals[i].ToString());
+				builder.Append(vals[i].ToString(CultureInfo.InvariantCulture));
 			}
 			return builder.ToString();
 		}
@@ -248,17 +248,7 @@ namespace SIL.Xml
 		/// <returns></returns>
 		public static string MakeStringFromList(List<int> vals)
 		{
-			StringBuilder builder = new StringBuilder(vals.Count * 7);
-			// enough unless VERY big numbers
-			for (int i = 0;i < vals.Count;i++)
-			{
-				if (i != 0)
-				{
-					builder.Append(",");
-				}
-				builder.Append(vals[i].ToString());
-			}
-			return builder.ToString();
+			return MakeIntegerListValue(vals.ToArray());
 		}
 
 		/// <summary>
@@ -317,6 +307,7 @@ namespace SIL.Xml
 		/// <param name="attrName"></param>
 		/// <param name="defaultValue"></param>
 		/// <returns></returns>
+		[Obsolete("Use GetOptionalAttributeValue instead")]
 		public static string GetAttributeValue(XmlNode node, string attrName, string defaultValue)
 		{
 			return GetOptionalAttributeValue(node, attrName, defaultValue);
@@ -328,6 +319,7 @@ namespace SIL.Xml
 		/// <param name="node">The XmlNode to look in.</param>
 		/// <param name="attrName">The attribute to find.</param>
 		/// <returns>The value of the attribute, or null, if not found.</returns>
+		[Obsolete("Use GetOptionalAttributeValue instead")]
 		public static string GetAttributeValue(XmlNode node, string attrName)
 		{
 			return GetOptionalAttributeValue(node, attrName);
@@ -339,6 +331,7 @@ namespace SIL.Xml
 		/// <param name="element">The XElement to look in.</param>
 		/// <param name="attrName">The attribute to find.</param>
 		/// <returns>The value of the attribute, or null, if not found.</returns>
+		[Obsolete("Use GetOptionalAttributeValue instead")]
 		public static string GetAttributeValue(XElement element, string attrName)
 		{
 			return GetOptionalAttributeValue(element, attrName);
@@ -840,7 +833,7 @@ namespace SIL.Xml
 		{
 			string sOutput = sInput;
 
-			if (sOutput != null && sOutput.Length != 0)
+			if (!string.IsNullOrEmpty(sOutput))
 			{
 				sOutput = sOutput.Replace("&", "&amp;");
 				sOutput = sOutput.Replace("\"", "&quot;");
