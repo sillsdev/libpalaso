@@ -276,16 +276,11 @@ namespace SIL.Xml
 		/// <param name="attrName">The attribute to find.</param>
 		/// <param name="defaultValue"></param>
 		/// <returns>The value of the attribute, or the default value, if the attribute dismissing</returns>
-		public static bool GetOptionalBooleanAttributeValue(XmlNode node,
-															string attrName,
-															bool defaultValue)
+		public static bool GetOptionalBooleanAttributeValue(XmlNode node, string attrName,
+			bool defaultValue)
 		{
-			return
-				GetBooleanAttributeValue(GetOptionalAttributeValue(node,
-																   attrName,
-																   defaultValue
-																	   ? "true"
-																	   : "false"));
+			return GetBooleanAttributeValue(GetOptionalAttributeValue(node, attrName,
+				defaultValue ? "true" : "false"));
 		}
 
 		/// <summary>
@@ -297,7 +292,8 @@ namespace SIL.Xml
 		/// <returns>The value of the attribute, or the default value, if the attribute dismissing</returns>
 		public static bool GetOptionalBooleanAttributeValue(XElement element, string attrName, bool defaultValue)
 		{
-			return GetBooleanAttributeValue(GetOptionalAttributeValue(element, attrName, defaultValue ? "true" : "false"));
+			return GetBooleanAttributeValue(GetOptionalAttributeValue(element, attrName,
+				defaultValue ? "true" : "false"));
 		}
 
 		/// <summary>
@@ -377,9 +373,8 @@ namespace SIL.Xml
 		/// <param name="attrName">The attribute to find.</param>
 		/// <returns>The value of the attribute, or null, if not found.</returns>
 		/// <param name="defaultString"></param>
-		public static string GetOptionalAttributeValue(XmlNode node,
-													   string attrName,
-													   string defaultString)
+		public static string GetOptionalAttributeValue(XmlNode node, string attrName,
+			string defaultString)
 		{
 			if (node != null && node.Attributes != null)
 			{
@@ -399,7 +394,8 @@ namespace SIL.Xml
 		/// <param name="attrName">The attribute to find.</param>
 		/// <param name="defaultString"></param>
 		/// <returns>The value of the attribute, or null, if not found.</returns>
-		public static string GetOptionalAttributeValue(XElement element, string attrName, string defaultString)
+		public static string GetOptionalAttributeValue(XElement element, string attrName,
+			string defaultString)
 		{
 			if (element == null || !element.Attributes().Any())
 			{
@@ -416,9 +412,8 @@ namespace SIL.Xml
 		/// <param name="attrName">The attribute to find.</param>
 		/// <returns>The value of the attribute, or null, if not found.</returns>
 		/// <param name="defaultString"></param>
-		public static string GetOptionalAttributeValue(XPathNavigator node,
-													   string attrName,
-													   string defaultString)
+		public static string GetOptionalAttributeValue(XPathNavigator node, string attrName,
+			string defaultString)
 		{
 			if (node != null && node.HasAttributes)
 			{
@@ -478,9 +473,10 @@ namespace SIL.Xml
 			}
 			return null;
 		}
-		
+
 		/// <summary>
-		/// Find the index of the <paramref name="target"/> in <paramref name="elements"/> that 'matches' the <paramref name="target"/> element.
+		/// Find the index of the <paramref name="target"/> in <paramref name="elements"/> that
+		/// 'matches' the <paramref name="target"/> element.
 		/// </summary>
 		/// <param name="elements">The elements to look in.</param>
 		/// <param name="target">The target to look for a match of.</param>
@@ -510,10 +506,8 @@ namespace SIL.Xml
 		{
 			string retval = GetOptionalAttributeValue(node, attrName, null);
 			if (retval == null)
-			{
-				throw new ApplicationException("The attribute'" + attrName +
-											   "' is mandatory, but was missing. " + node.OuterXml);
-			}
+				throw new ApplicationException($"The attribute'{attrName}' is mandatory, but was missing. {node.OuterXml}");
+
 			return retval;
 		}
 
@@ -530,12 +524,8 @@ namespace SIL.Xml
 		{
 			var retval = GetOptionalAttributeValue(element, attrName, null);
 			if (retval == null)
-			{
-				throw new ApplicationException("The attribute'"
-				                               + attrName
-				                               + "' is mandatory, but was missing. "
-				                               + element);
-			}
+				throw new ApplicationException($"The attribute'{attrName}' is mandatory, but was missing. {element}");
+
 			return retval;
 		}
 
@@ -543,10 +533,8 @@ namespace SIL.Xml
 		{
 			string retval = GetOptionalAttributeValue(node, attrName, null);
 			if (retval == null)
-			{
-				throw new ApplicationException("The attribute'" + attrName +
-											   "' is mandatory, but was missing. " + node.OuterXml);
-			}
+				throw new ApplicationException($"The attribute'{attrName}' is mandatory, but was missing. {node.OuterXml}");
+
 			return retval;
 		}
 
@@ -695,11 +683,8 @@ namespace SIL.Xml
 				// If we finished both lists we got a match.
 				return ichild1 == node1.ChildNodes.Count && ichild2 == node2.ChildNodes.Count;
 			}
-			else
-			{
-				// both lists are null
-				return true;
-			}
+			// both lists are null
+			return true;
 		}
 
 		/// <summary>
