@@ -210,106 +210,84 @@ namespace SIL.Tests.Xml
 			Assert.Throws<FormatException>(() => XmlUtils.GetOptionalIntegerValue(new XElement("element", new XAttribute("intAttr", "Not_Int")), "intAttr", 1));
 		}
 
-		[TestCase(null, "Null should return false")]
-		[TestCase("", "Empty string should return false")]
-		[TestCase(" ", "Whitespace only string should return false")]
-		[TestCase("FALSE", "'FALSE' should return false")]
-		[TestCase("False", "'False' should return false")]
-		[TestCase("false", "'false' should return false")]
-		[TestCase("NO", "'NO' should return false")]
-		[TestCase("No", "'No' should return false")]
-		[TestCase("no", "'no' should return false")]
-		public void GetBooleanAttributeValue_Returns_False(string input, string errorMessage)
+		[TestCase(null, ExpectedResult = false, Description = "Null should return false")]
+		[TestCase("", ExpectedResult = false, Description = "Empty string should return false")]
+		[TestCase(" ", ExpectedResult = false, Description = "Whitespace only string should return false")]
+		[TestCase("FALSE", ExpectedResult = false, Description = "'FALSE' should return false")]
+		[TestCase("False", ExpectedResult = false, Description = "'False' should return false")]
+		[TestCase("false", ExpectedResult = false, Description = "'false' should return false")]
+		[TestCase("NO", ExpectedResult = false, Description = "'NO' should return false")]
+		[TestCase("No", ExpectedResult = false, Description = "'No' should return false")]
+		[TestCase("no", ExpectedResult = false, Description = "'no' should return false")]
+		[TestCase("TRUE", ExpectedResult = true, Description = "'TRUE' should return true")]
+		[TestCase("True", ExpectedResult = true, Description = "'True' should return true")]
+		[TestCase("true", ExpectedResult = true, Description = "'true' should return true")]
+		[TestCase("YES", ExpectedResult = true, Description = "'YES' should return true")]
+		[TestCase("Yes", ExpectedResult = true, Description = "'Yes' should return true")]
+		[TestCase("yes", ExpectedResult = true, Description = "'yes' should return true")]
+		public bool GetBooleanAttributeValue_Returns_True(string input)
 		{
 			// Test overload that takes just the attribute's value
-			Assert.IsFalse(XmlUtils.GetBooleanAttributeValue(input), errorMessage);
-
-			// Test overload that takes the element and attr name.
-			var element = new XElement("element");
-			if (input != null)
-			{
-				var attr = new XAttribute("boolAttr", input);
-				element.Add(attr);
-			}
-			Assert.IsFalse(XmlUtils.GetBooleanAttributeValue(element, "boolAttr"), errorMessage);
+			return XmlUtils.GetBooleanAttributeValue(input);
 		}
 
-		[TestCase("TRUE", "'TRUE' should return true")]
-		[TestCase("True", "'True' should return true")]
-		[TestCase("true", "'true' should return true")]
-		[TestCase("YES", "'YES' should return true")]
-		[TestCase("Yes", "'Yes' should return true")]
-		[TestCase("yes", "'yes' should return true")]
-		public void GetBooleanAttributeValue_Returns_True(string input, string errorMessage)
+		[TestCase("", ExpectedResult = false, Description = "Empty string should return false")]
+		[TestCase(" ", ExpectedResult = false, Description = "Whitespace only string should return false")]
+		[TestCase("FALSE", ExpectedResult = false, Description = "'FALSE' should return false")]
+		[TestCase("False", ExpectedResult = false, Description = "'False' should return false")]
+		[TestCase("false", ExpectedResult = false, Description = "'false' should return false")]
+		[TestCase("NO", ExpectedResult = false, Description = "'NO' should return false")]
+		[TestCase("No", ExpectedResult = false, Description = "'No' should return false")]
+		[TestCase("no", ExpectedResult = false, Description = "'no' should return false")]
+		[TestCase("TRUE", ExpectedResult = true, Description = "'TRUE' should return true")]
+		[TestCase("True", ExpectedResult = true, Description = "'True' should return true")]
+		[TestCase("true", ExpectedResult = true, Description = "'true' should return true")]
+		[TestCase("YES", ExpectedResult = true, Description = "'YES' should return true")]
+		[TestCase("Yes", ExpectedResult = true, Description = "'Yes' should return true")]
+		[TestCase("yes", ExpectedResult = true, Description = "'yes' should return true")]
+		public bool GetBooleanAttributeValueAttrName_Returns_True(string input)
 		{
-			// Test overload that takes just the attribute's value
-			Assert.IsTrue(XmlUtils.GetBooleanAttributeValue(input), errorMessage);
-
 			// Test overload that takes the element and attr name.
 			var element = new XElement("element", new XAttribute("boolAttr", input));
-			Assert.IsTrue(XmlUtils.GetBooleanAttributeValue(element, "boolAttr"), errorMessage);
+			return XmlUtils.GetBooleanAttributeValue(element, "boolAttr");
 		}
 
-		[TestCase(false, true /* not used */, true, "No attr should return default of true")]
-		[TestCase(false, true /* not used */, false, "No attr should return default of false")]
-		[TestCase(true, true, false, "Has attr should not return default of false")]
-		[TestCase(true, false, true, "Has attr should not return default of true")]
-		public void GetOptionalBooleanAttributeValue(bool hasAttr, bool actualValue, bool defaultValue, string errorMessage)
+		[TestCase(null, true, ExpectedResult = true, Description = "No attr should return default of true")]
+		[TestCase(null, false, ExpectedResult = false, Description = "No attr should return default of false")]
+		[TestCase(true, false, ExpectedResult = true, Description = "Has attr should not return default of false")]
+		[TestCase(false, true, ExpectedResult = false, Description = "Has attr should not return default of true")]
+		public bool GetOptionalBooleanAttributeValue(bool? actualValue, bool defaultValue)
 		{
-			bool expectedValue;
 			var element = new XElement("element");
 
-			if (hasAttr)
-			{
-				element.Add(new XAttribute("boolAttr", actualValue));
-				expectedValue = actualValue;
-			}
-			else
-			{
-				// Don't add attr, but expect the call to use the default value.
-				expectedValue = defaultValue;
-			}
-			Assert.AreEqual(expectedValue, XmlUtils.GetOptionalBooleanAttributeValue(element, "boolAttr", defaultValue), errorMessage);
+			if (actualValue.HasValue)
+				element.Add(new XAttribute("boolAttr", actualValue.Value));
+
+			return XmlUtils.GetOptionalBooleanAttributeValue(element, "boolAttr", defaultValue);
 		}
 
-		[TestCase(false, "NotUsedValue" /* not used */, "DefaultValue", "No attr should return default of 'DefaultValue'")]
-		[TestCase(true, "RealValue", "DefaultValue", "Has attr should not return default of 'DefaultValue'")]
-		public void GetOptionalAttributeValue_Using_Default(bool hasAttr, string actualValue, string defaultValue, string errorMessage)
+		[TestCase(null, "DefaultValue", ExpectedResult = "DefaultValue", Description = "No attr should return default of 'DefaultValue'")]
+		[TestCase("RealValue", "DefaultValue", ExpectedResult = "RealValue", Description = "Has attr should not return default of 'DefaultValue'")]
+		public string GetOptionalAttributeValue_Using_Default(string actualValue, string defaultValue)
 		{
-			string expectedValue;
 			var element = new XElement("element");
 
-			if (hasAttr)
-			{
+			if (actualValue != null)
 				element.Add(new XAttribute("attr", actualValue));
-				expectedValue = actualValue;
-			}
-			else
-			{
-				// Don't add attr, but expect the call to use the default value.
-				expectedValue = defaultValue;
-			}
-			Assert.AreEqual(expectedValue, XmlUtils.GetOptionalAttributeValue(element, "attr", expectedValue), errorMessage);
+
+			return XmlUtils.GetOptionalAttributeValue(element, "attr", defaultValue);
 		}
 
-		[TestCase(false, "NotUsedValue" /* not used */, "No attr should return default of 'DefaultValue'")]
-		[TestCase(true, "RealValue", "Has attr should not return default of 'DefaultValue'")]
-		public void GetOptionalAttributeValue_Without_Using_Default(bool hasAttr, string actualValue, string errorMessage)
+		[TestCase(null, ExpectedResult = null, Description = "No attr should return default of 'DefaultValue'")]
+		[TestCase("RealValue", ExpectedResult = "RealValue", Description = "Has attr should not return default of 'DefaultValue'")]
+		public string GetOptionalAttributeValue_Without_Using_Default(string actualValue)
 		{
-			string expectedValue;
 			var element = new XElement("element");
 
-			if (hasAttr)
-			{
+			if (actualValue != null)
 				element.Add(new XAttribute("attr", actualValue));
-				expectedValue = actualValue;
-			}
-			else
-			{
-				// Don't add attr, but expect the call to use the default value.
-				expectedValue = null;
-			}
-			Assert.AreEqual(expectedValue, XmlUtils.GetOptionalAttributeValue(element, "attr"), errorMessage);
+
+			return XmlUtils.GetOptionalAttributeValue(element, "attr");
 		}
 
 		[TestCase("-1,1,2", "'-1,1,2' should return three integers in the array", "Expected order in array is: '-1,1,2'")]
