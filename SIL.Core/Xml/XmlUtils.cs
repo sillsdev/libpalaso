@@ -221,6 +221,19 @@ namespace SIL.Xml
 			return result;
 		}
 
+		private static string MakeStringFromEnum<T>(IEnumerable<T> vals, int count)
+		{
+			var builder = new StringBuilder(count * 7); // enough unless VERY big numbers
+
+			foreach (var val in vals)
+			{
+				if (builder.Length > 0)
+					builder.Append(",");
+				builder.AppendFormat(CultureInfo.InvariantCulture, "{0}", val);
+			}
+			return builder.ToString();
+		}
+
 		/// <summary>
 		/// Make a value suitable for GetMandatoryIntegerListAttributeValue to parse.
 		/// </summary>
@@ -228,17 +241,7 @@ namespace SIL.Xml
 		/// <returns></returns>
 		public static string MakeIntegerListValue(int[] vals)
 		{
-			StringBuilder builder = new StringBuilder(vals.Length * 7);
-			// enough unless VERY big numbers
-			for (int i = 0;i < vals.Length;i++)
-			{
-				if (i != 0)
-				{
-					builder.Append(",");
-				}
-				builder.Append(vals[i].ToString());
-			}
-			return builder.ToString();
+			return MakeStringFromEnum(vals, vals.Length);
 		}
 
 		/// <summary>
@@ -248,17 +251,7 @@ namespace SIL.Xml
 		/// <returns></returns>
 		public static string MakeStringFromList(List<int> vals)
 		{
-			StringBuilder builder = new StringBuilder(vals.Count * 7);
-			// enough unless VERY big numbers
-			for (int i = 0;i < vals.Count;i++)
-			{
-				if (i != 0)
-				{
-					builder.Append(",");
-				}
-				builder.Append(vals[i].ToString());
-			}
-			return builder.ToString();
+			return MakeStringFromEnum(vals, vals.Count);
 		}
 
 		/// <summary>
@@ -269,14 +262,7 @@ namespace SIL.Xml
 		[CLSCompliant(false)]
 		public static string MakeStringFromList(List<uint> vals)
 		{
-			var builder = new StringBuilder(vals.Count * 7); // enough unless VERY big numbers
-			for (var i = 0; i < vals.Count; i++)
-			{
-				if (i != 0)
-					builder.Append(",");
-				builder.Append(vals[i].ToString(CultureInfo.InvariantCulture));
-			}
-			return builder.ToString();
+			return MakeStringFromEnum(vals, vals.Count);
 		}
 
 		/// <summary>
@@ -317,6 +303,7 @@ namespace SIL.Xml
 		/// <param name="attrName"></param>
 		/// <param name="defaultValue"></param>
 		/// <returns></returns>
+		[Obsolete("Use GetOptionalAttributeValue instead")]
 		public static string GetAttributeValue(XmlNode node, string attrName, string defaultValue)
 		{
 			return GetOptionalAttributeValue(node, attrName, defaultValue);
@@ -328,6 +315,7 @@ namespace SIL.Xml
 		/// <param name="node">The XmlNode to look in.</param>
 		/// <param name="attrName">The attribute to find.</param>
 		/// <returns>The value of the attribute, or null, if not found.</returns>
+		[Obsolete("Use GetOptionalAttributeValue instead")]
 		public static string GetAttributeValue(XmlNode node, string attrName)
 		{
 			return GetOptionalAttributeValue(node, attrName);
@@ -339,6 +327,7 @@ namespace SIL.Xml
 		/// <param name="element">The XElement to look in.</param>
 		/// <param name="attrName">The attribute to find.</param>
 		/// <returns>The value of the attribute, or null, if not found.</returns>
+		[Obsolete("Use GetOptionalAttributeValue instead")]
 		public static string GetAttributeValue(XElement element, string attrName)
 		{
 			return GetOptionalAttributeValue(element, attrName);
@@ -840,7 +829,7 @@ namespace SIL.Xml
 		{
 			string sOutput = sInput;
 
-			if (sOutput != null && sOutput.Length != 0)
+			if (!string.IsNullOrEmpty(sOutput))
 			{
 				sOutput = sOutput.Replace("&", "&amp;");
 				sOutput = sOutput.Replace("\"", "&quot;");
