@@ -4,17 +4,26 @@ using SIL.DblBundle.Usx;
 
 namespace SIL.DblBundle.Tests.Usx
 {
+	/// <summary>
+	/// Tests the UsxNode class
+	/// </summary>
 	[TestFixture]
 	public class UsxNodeTests
 	{
 		private XmlNodeList m_nodes;
 
+		/// <summary>
+		/// Test fixture setup
+		/// </summary>
 		[TestFixtureSetUp]
 		public void TestFixtureSetUp()
 		{
 			m_nodes = UsxDocumentTests.GetChaptersAndParasForMarkOneContaining2Verses();
 		}
 
+		/// <summary>
+		/// Tests that correct StyleTag is obtained from the UsxNode.
+		/// </summary>
 		[Test]
 		public void StyleTag_GetsCorrectStyleTagFromUsxNode()
 		{
@@ -22,6 +31,9 @@ namespace SIL.DblBundle.Tests.Usx
 			Assert.AreEqual("c", usxNode.StyleTag);
 		}
 
+		/// <summary>
+		/// Texts that the correct chapter number is obtained from the UsxChapter.
+		/// </summary>
 		[Test]
 		public void ChapterNumber_GetsCorrectStyleTagFromUsxChapter()
 		{

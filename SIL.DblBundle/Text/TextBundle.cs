@@ -44,6 +44,7 @@ namespace SIL.DblBundle.Text
 		where TM : DblTextMetadata<TL>
 		where TL : DblMetadataLanguage, new()
 	{
+		/// <summary>mapping from the book ID to a USX document for the book</summary>
 		protected readonly IDictionary<string, UsxDocument> m_books = new Dictionary<string, UsxDocument>();
 		private readonly Stylesheet m_stylesheet;
 		private readonly WritingSystemDefinition m_ws;

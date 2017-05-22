@@ -33,8 +33,6 @@ namespace SIL.Windows.Forms.Widgets
 		/// <summary>
 		/// we can't override SetItemCheck, alas.  But it sure won't work because of our AuthorizeCheck thing.
 		/// </summary>
-		/// <param name="index"></param>
-		/// <param name="value"></param>
 		public void SetItemCheckedReally(int index, bool value)
 		{
 			AuthorizeCheck = true;

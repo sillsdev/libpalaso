@@ -555,7 +555,7 @@ namespace SIL.Windows.Forms.ClearShare
 		/// future use.
 		/// (Though...it will need enhancing if we store yet more information in yet other alternatives.)
 		/// </summary>
-		/// <param name="file"></param>
+		/// <param name="tagMain"></param>
 		/// <param name="copyright"></param>
 		void SetCopyright(ImageTag tagMain, string copyright)
 		{

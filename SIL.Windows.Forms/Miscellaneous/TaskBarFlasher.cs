@@ -39,30 +39,38 @@ namespace SIL.Windows.Forms.Miscellaneous
 		/// <summary>
 		/// Stop flashing. The system restores the window to its original stae.
 		/// </summary>
+		[CLSCompliant(false)]
 		public const uint FLASHW_STOP = 0;
 
 		/// <summary>
 		/// Flash the window caption.
 		/// </summary>
+		[CLSCompliant(false)]
 		public const uint FLASHW_CAPTION = 1;
 
 		/// <summary>
 		/// Flash the taskbar button.
 		/// </summary>
+		[CLSCompliant(false)]
 		public const uint FLASHW_TRAY = 2;
 
 		/// <summary>
 		/// Flash both the window caption and taskbar button.
 		/// This is equivalent to setting the FLASHW_CAPTION | FLASHW_TRAY flags.
 		/// </summary>
+		[CLSCompliant(false)]
 		public const uint FLASHW_ALL = 3;
+
 		/// <summary>
 		/// Flash continuously, until the FLASHW_STOP flag is set.
 		/// </summary>
+		[CLSCompliant(false)]
 		public const uint FLASHW_TIMER = 4;
+
 		/// <summary>
 		/// Flash continuously until the window comes to the foreground.
 		/// </summary>
+		[CLSCompliant(false)]
 		public const uint FLASHW_TIMERNOFG = 12;
 
 		/// <summary>

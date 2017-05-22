@@ -17,7 +17,7 @@ namespace SIL.Reporting
 
 		private static ExceptionHandler _singleton;
 
-		/// ------------------------------------------------------------------------------------
+		// ------------------------------------------------------------------------------------
 		//We removed all references to Winforms from Palaso.dll but our error reporting relied heavily on it.
 		//Not wanting to break existing applications we have now added this class initializer which will
 		//look for a reference to SIL.Windows.Forms in the consuming app and if it exists instantiate the
@@ -153,19 +153,19 @@ namespace SIL.Reporting
 			return true;
 		}
 
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Shows the error message of the exception to the user.
-		/// </summary>
-		/// <returns><c>true</c> to exit application, <c>false</c> to continue</returns>
-		/// ------------------------------------------------------------------------------------
-		//        protected bool DisplayError(Exception exception)
-		//        {
-		//  //review
-		//            //          Form form = (m_rgMainWindows.Count > 0 ? m_rgMainWindows[0] as Form : null);
-		//    //        return DisplayError(exception, form);
-		//            return DisplayError(exception, Application.m);
-		//        }
+		//// ------------------------------------------------------------------------------------
+		///// <summary>
+		///// Shows the error message of the exception to the user.
+		///// </summary>
+		///// <returns><c>true</c> to exit application, <c>false</c> to continue</returns>
+		///// ------------------------------------------------------------------------------------
+		////        protected bool DisplayError(Exception exception)
+		////        {
+		////  //review
+		////            //          Form form = (m_rgMainWindows.Count > 0 ? m_rgMainWindows[0] as Form : null);
+		////    //        return DisplayError(exception, form);
+		////            return DisplayError(exception, Application.m);
+		////        }
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>

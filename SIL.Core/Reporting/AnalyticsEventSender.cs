@@ -45,6 +45,7 @@ namespace SIL.Reporting
 		/// <summary>
 		/// http://code.google.com/apis/analytics/docs/tracking/eventTrackerGuide.html
 		/// </summary>
+		/// <param name="pagePath"></param>
 		/// <param name="category">     Videos                  Runtime</param>
 		/// <param name="action">       Pause                   Error</param>
 		/// <param name="optionalLabel">Gone With The Wind      Exception Message</param>

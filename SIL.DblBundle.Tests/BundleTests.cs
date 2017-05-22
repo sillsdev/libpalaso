@@ -8,11 +8,17 @@ using SIL.WritingSystems;
 
 namespace SIL.DblBundle.Tests
 {
+	/// <summary>
+	/// Tests for a Digital Bible Library text bundle.
+	/// </summary>
 	[TestFixture]
 	public class BundleTests
 	{
 		private TestBundle m_bundle;
 
+		/// <summary>
+		/// Setup for test fixture.
+		/// </summary>
 		[TestFixtureSetUp]
 		public void TestFixtureSetup()
 		{
@@ -32,6 +38,9 @@ namespace SIL.DblBundle.Tests
 			}
 		}
 
+		/// <summary>
+		/// Tests getting language code from metadata.
+		/// </summary>
 		[Test]
 		public void LanguageIso_LanguageCodeSpecifiedInMetadata_ReturnsLanguageCode()
 		{
@@ -40,6 +49,9 @@ namespace SIL.DblBundle.Tests
 			Assert.AreEqual("ach", m_bundle.LanguageIso);
 		}
 
+		/// <summary>
+		/// Tests getting language code when no language code is specified.
+		/// </summary>
 		[Test]
 		public void LanguageIso_NoLanguageCodeSpecified_ReturnsCodeForUnlistedLanguage()
 		{
@@ -71,11 +83,17 @@ namespace SIL.DblBundle.Tests
 	/// </summary>
 	public class TestMetadata : DblMetadataBase<DblMetadataLanguage>
 	{
+		/// <summary>
+		/// Creates empty Metadata for testing
+		/// </summary>
 		protected override void InitializeMetadata()
 		{
 			Language = new DblMetadataLanguage();
 		}
 
+		/// <summary>
+		/// Gets name test value
+		/// </summary>
 		public override string Name { get { return "Test"; } }
 	}
 }

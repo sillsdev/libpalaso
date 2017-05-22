@@ -227,6 +227,7 @@ namespace SIL.Windows.Forms
 		/// <summary>
 		/// Initializes a new instance of the PropertySpec class.
 		/// </summary>
+		/// <param name="sID"></param>
 		/// <param name="name">The name of the property displayed in the property grid.</param>
 		/// <param name="type">A Type that represents the type of the property.</param>
 		public PropertySpec(string sID, string name, Type type)
@@ -237,6 +238,7 @@ namespace SIL.Windows.Forms
 		/// <summary>
 		/// Initializes a new instance of the PropertySpec class.
 		/// </summary>
+		/// <param name="sID"></param>
 		/// <param name="name">The name of the property displayed in the property grid.</param>
 		/// <param name="type">A Type that represents the type of the property.</param>
 		/// <param name="category">The category under which the property is displayed in the
@@ -249,6 +251,7 @@ namespace SIL.Windows.Forms
 		/// <summary>
 		/// Initializes a new instance of the PropertySpec class.
 		/// </summary>
+		/// <param name="sID"></param>
 		/// <param name="name">The name of the property displayed in the property grid.</param>
 		/// <param name="type">A Type that represents the type of the property.</param>
 		/// <param name="category">The category under which the property is displayed in the
@@ -263,6 +266,7 @@ namespace SIL.Windows.Forms
 		/// <summary>
 		/// Initializes a new instance of the PropertySpec class.
 		/// </summary>
+		/// <param name="sID"></param>
 		/// <param name="name">The name of the property displayed in the property grid.</param>
 		/// <param name="type">A Type that represents the type of the property.</param>
 		/// <param name="category">The category under which the property is displayed in the
@@ -287,6 +291,7 @@ namespace SIL.Windows.Forms
 		/// <summary>
 		/// Initializes a new instance of the PropertySpec class.
 		/// </summary>
+		/// <param name="sID"></param>
 		/// <param name="name">The name of the property displayed in the property grid.</param>
 		/// <param name="type">A Type that represents the type of the property.</param>
 		/// <param name="category">The category under which the property is displayed in the
@@ -311,6 +316,7 @@ namespace SIL.Windows.Forms
 		/// <summary>
 		/// Initializes a new instance of the PropertySpec class.
 		/// </summary>
+		/// <param name="sID"></param>
 		/// <param name="name">The name of the property displayed in the property grid.</param>
 		/// <param name="type">A Type that represents the type of the property.</param>
 		/// <param name="category">The category under which the property is displayed in the
@@ -335,6 +341,7 @@ namespace SIL.Windows.Forms
 		/// <summary>
 		/// Initializes a new instance of the PropertySpec class.
 		/// </summary>
+		/// <param name="sID"></param>
 		/// <param name="name">The name of the property displayed in the property grid.</param>
 		/// <param name="category">The category under which the property is displayed in the
 		/// property grid.</param>

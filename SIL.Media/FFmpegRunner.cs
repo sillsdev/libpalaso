@@ -428,7 +428,10 @@ namespace SIL.Media
         /// <summary>
         /// Converts to low-quality, small video
         /// </summary>
+        /// <param name="inputPath">file location for original file</param>
+        /// <param name="outputPath">file location for converted file</param>
         /// <param name="maxSeconds">0 if you don't want to truncate at all</param>
+        /// <param name="progress">progress bar</param>
         /// <returns>log of the run</returns>
         public static ExecutionResult MakeLowQualitySmallVideo(string inputPath, string outputPath, int maxSeconds, IProgress progress)
         {

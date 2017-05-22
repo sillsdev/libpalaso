@@ -6,7 +6,7 @@ using System.Windows.Forms;
 namespace SIL.Windows.Forms.SettingProtection
 {
 	/// <summary>
-	/// This class takes an Settings-launching control & adds the behaviors needed to conform to the standard SIL
+	/// This class takes an Settings-launching control and adds the behaviors needed to conform to the standard SIL
 	/// "Rice Farmer" settings protection behavior.
 	/// If you use the standard SettingsLauncherButton, you don't have to worry about this class (it uses this).
 	/// But if you have a need custom control for look/feel, then add this component to the form and
@@ -164,7 +164,6 @@ namespace SIL.Windows.Forms.SettingProtection
 		/// <summary>
 		/// Allows you to dynamically add a control or ToolStripItem, rather than having to use the winforms designer
 		/// </summary>
-		/// <param name="control"></param>
 		public void ManageComponent(Component controlOrToolStripItem)
 		{
 			if (_controlIsUnderSettingsProtection.ContainsKey(controlOrToolStripItem))

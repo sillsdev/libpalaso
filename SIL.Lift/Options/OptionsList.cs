@@ -20,7 +20,7 @@ namespace SIL.Lift.Options
 		}
 
 		/// <summary>
-		/// just to get the old xml format (which includes a <options> element around the options) read in
+		/// just to get the old xml format (which includes a &lt;options&gt; element around the options) read in
 		/// </summary>
 		[XmlElement("options")]
 		public OptionsListWrapper options

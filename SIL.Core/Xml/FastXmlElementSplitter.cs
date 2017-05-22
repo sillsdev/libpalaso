@@ -227,7 +227,7 @@ namespace SIL.Xml
 		/// Given that _currentInput is at the first character of the marker of the opening XML tag
 		/// of an element, return the byte array that is the complete element.
 		/// </summary>
-		/// <param name="firstElementMarkerAsBytes"></param>
+		/// <param name="marker"></param>
 		/// <returns></returns>
 		private byte[] MakeElement(byte[] marker)
 		{

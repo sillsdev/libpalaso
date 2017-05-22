@@ -21,9 +21,9 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		protected const int kPointerSize = 8;
 		protected const int kMessageMargin = 7;
 
-		protected Timer _timer;
-		protected Point MsgPoint;
-		protected TimerState _state;
+		protected Timer Timer { get; set; }
+		protected Point MsgPoint { get; set; }
+		protected TimerState State { get; set; }
 
 		/// ------------------------------------------------------------------------------------
 		private FadingMessageForm()
@@ -50,11 +50,11 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 				if (components != null)
 					components.Dispose();
 
-				if (_timer != null)
-					_timer.Dispose();
+				if (Timer != null)
+					Timer.Dispose();
 			}
 
-			_timer = null;
+			Timer = null;
 
 			base.Dispose(disposing);
 		}
@@ -96,11 +96,11 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			Location = new Point(MsgPoint.X - (rc.Width / 2), MsgPoint.Y - Height);
 
 			// start the fading/waiting timer.
-			_timer = new Timer();
-			_timer.Interval = 30;
-			_timer.Tick += HandleTimerTick;
-			_timer.Start();
-			_state = TimerState.FadingIn;
+			Timer = new Timer();
+			Timer.Interval = 30;
+			Timer.Tick += HandleTimerTick;
+			Timer.Start();
+			State = TimerState.FadingIn;
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -113,30 +113,30 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 				if (currentOpacity.Equals(0.001))
 					Refresh();
 
-				switch (_state)
+				switch (State)
 				{
 					case TimerState.FadingIn:
 						Opacity = currentOpacity + 0.05;
 						if (currentOpacity.Equals(1.0))
-							_state = TimerState.FadeInComplete;
+							State = TimerState.FadeInComplete;
 						break;
 
 					case TimerState.FadeInComplete:
-						_timer.Interval = 3000;
-						_state = TimerState.WaitingToFadeOut;
+						Timer.Interval = 3000;
+						State = TimerState.WaitingToFadeOut;
 						break;
 
 					case TimerState.WaitingToFadeOut:
-						_timer.Interval = 50;
+						Timer.Interval = 50;
 						if (!AdjustedClientRectangle().Contains(PointToClient(MousePosition)))
-							_state = TimerState.FadingOut;
+							State = TimerState.FadingOut;
 						break;
 
 					case TimerState.FadingOut:
 						if (AdjustedClientRectangle().Contains(PointToClient(MousePosition)))
 						{
 							Opacity = 1;
-							_state = TimerState.WaitingToFadeOut;
+							State = TimerState.WaitingToFadeOut;
 						}
 						else
 						{
@@ -154,8 +154,8 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		protected override void OnFormClosing(FormClosingEventArgs e)
 		{
 			base.OnFormClosing(e);
-			_timer.Stop();
-			_timer = null;
+			Timer.Stop();
+			Timer = null;
 		}
 
 		/// ------------------------------------------------------------------------------------
