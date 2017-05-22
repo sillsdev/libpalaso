@@ -4,7 +4,7 @@ using NUnit.Framework;
 using System.IO;
 using System.Reflection;
 using System.Text;
-using SIL.Windows.Forms;
+using SIL.Reflection;
 
 namespace SIL.Scripture.Tests
 {

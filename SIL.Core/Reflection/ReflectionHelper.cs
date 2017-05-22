@@ -1,10 +1,8 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Windows.Forms;
 
-namespace SIL.Windows.Forms
+namespace SIL.Reflection
 {
 	public static class ReflectionHelper
 	{
@@ -20,7 +18,8 @@ namespace SIL.Windows.Forms
 				if (!File.Exists(dllPath))
 				{
 					string dllFile = Path.GetFileName(dllPath);
-					dllPath = Path.Combine(Application.StartupPath, dllFile);
+					string startingDir = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+					dllPath = Path.Combine(startingDir, dllFile);
 					if (!File.Exists(dllPath))
 						return null;
 				}
