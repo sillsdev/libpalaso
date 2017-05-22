@@ -13,7 +13,7 @@ namespace SIL.Scripture.Tests
 	/// Provides methods for accessing private data on Versification and Versification.Table
 	/// for testing purposes
 	/// </summary>
-	internal static class ScrVersReflectionHelper
+	public static class ScrVersReflectionHelper
 	{
 		#region Extension methods for easy access to private data
 		/// <summary>
