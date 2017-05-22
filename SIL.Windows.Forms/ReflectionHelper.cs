@@ -54,7 +54,7 @@ namespace SIL.Windows.Forms
 			{
 				// First, take a stab at creating the instance with the specified name.
 				object instance = assembly.CreateInstance(className, false,
-					BindingFlags.CreateInstance, null, args, null, null);
+					BindingFlags.Instance | BindingFlags.CreateInstance | BindingFlags.NonPublic, null, args, null, null);
 
 				if (instance != null)
 					return instance;
@@ -69,7 +69,7 @@ namespace SIL.Windows.Forms
 					if (type.Name == className)
 					{
 						return assembly.CreateInstance(type.FullName, false,
-							BindingFlags.CreateInstance, null, args, null, null);
+							BindingFlags.Instance | BindingFlags.CreateInstance | BindingFlags.NonPublic, null, args, null, null);
 					}
 				}
 			}
