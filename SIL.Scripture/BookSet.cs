@@ -296,7 +296,22 @@ namespace SIL.Scripture
 			}
 		}
 		#endregion
-		
+
+		#region Other public methods
+		/// <summary>
+		/// Creates a book set containing books in verses
+		/// </summary>
+		public static BookSet CreateBookSetFromRefs(IEnumerable<VerseRef> verseRefs)
+		{
+			BookSet books = new BookSet();
+
+			foreach (var verseRef in verseRefs)
+				books.Add(verseRef.BookNum);
+
+			return books;
+		}
+		#endregion
+
 		#region Overrides of Object
 		public override int GetHashCode()
 		{

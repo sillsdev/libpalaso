@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using SIL.Windows.Forms;
 
@@ -12,7 +13,7 @@ namespace SIL.Scripture.Tests
 	/// Provides methods for accessing private data on Versification and Versification.Table
 	/// for testing purposes
 	/// </summary>
-	internal static class ScrVersReflectionHelper
+	public static class ScrVersReflectionHelper
 	{
 		#region Extension methods for easy access to private data
 		/// <summary>
@@ -159,6 +160,12 @@ namespace SIL.Scripture.Tests
 			{
 				ReflectionHelper.SetField(typeof(Versification.Table), "mergeMode", false);
 			}
+		}
+
+		public static Versification CreateClonedVers(Versification orig, string newName)
+		{
+			return (Versification)ReflectionHelper.CreateClassInstance(Assembly.Load("SIL.Scripture"), 
+				"SIL.Scripture.Versification", new object[] { orig, newName, "" });
 		}
 		#endregion
 	}
@@ -513,7 +520,266 @@ namespace SIL.Scripture.Tests
 				VersificationLoadErrorType.InvalidSyntax, "* GEN 1:5", "testfile");
 		}
 		#endregion
-		
+
+		#region ProcessVersLine (with custom modifications) tests
+		/// <summary>
+		/// Customize a versification scheme when the chapters/verses for a book is updated.
+		/// </summary>
+		[Test]
+		public void ProcessVersLine_Custom_ChapterVerseUpdated()
+		{
+			versification.ProcessVersLine("HAB 1:17 2:20 3:19");
+
+			// Add a custom line that updates the original chapter-verse versification for Habakkuk
+			versification.ProcessVersLine("HAB 1:15 2:13 3:22 4:21");
+
+			// Confirm that the custom versification overrides the original
+			int bookId = Canon.BookIdToNumber("HAB");
+			List<int[]> bookList = versification.bookList();
+			Assert.AreEqual(bookList.Count, bookId);
+			Assert.AreEqual(bookList[bookId - 1], new int[] { 15, 13, 22, 21 });
+
+			Assert.AreEqual(4, versification.GetLastChapter(bookId),
+				"The customized version of HAB should have four chapters");
+			Assert.AreEqual(15, versification.GetLastVerse(bookId, 1), "Custom HAB 1 has 15 verses");
+			Assert.AreEqual(13, versification.GetLastVerse(bookId, 2), "Custom HAB 2 has 13 verses");
+			Assert.AreEqual(22, versification.GetLastVerse(bookId, 3), "Custom HAB 3 has 22 verses");
+			Assert.AreEqual(21, versification.GetLastVerse(bookId, 4), "Custom HAB 4 has 21 verses");
+		}
+
+		/// <summary>
+		/// Customize a versification scheme when verses for a single chapter of a book are updated.
+		/// </summary>
+		[Test]
+		public void ProcessVersLine_Custom_SingleChapter()
+		{
+			versification.ProcessVersLine("HAB 1:17 2:20 3:19");
+
+			// Add a custom line that updates a single chapter in Habakkuk
+			versification.ProcessVersLine("HAB 2:55");
+
+			// Confirm that the custom versification overrides the original
+			int bookId = Canon.BookIdToNumber("HAB");
+			List<int[]> bookList = versification.bookList();
+			Assert.AreEqual(bookList.Count, bookId);
+			Assert.AreEqual(bookList[bookId - 1], new int[] { 17, 55, 19 });
+
+			Assert.AreEqual(3, versification.GetLastChapter(bookId),
+				"The customized version of HAB should have three chapters");
+			Assert.AreEqual(17, versification.GetLastVerse(bookId, 1), "Custom HAB 1 has 17 verses");
+			Assert.AreEqual(55, versification.GetLastVerse(bookId, 2), "Custom HAB 2 has 55 verses");
+			Assert.AreEqual(19, versification.GetLastVerse(bookId, 3), "Custom HAB 3 has 19 verses");
+		}
+
+		/// <summary>
+		/// Customize a versification scheme when verses for a single chapter of a book are updated.
+		/// However, the chapter is not in the original versification for the book.
+		/// </summary>
+		[Test]
+		public void ProcessVersLine_Custom_ChapterNotInOriginal()
+		{
+			versification.ProcessVersLine("HAB 1:17 2:20 3:19");
+
+			// Add a custom line that updates the original chapter-verse versification for Habakkuk
+			versification.ProcessVersLine("HAB 7:55");
+
+			// Confirm that the custom versification overrides the original
+			int bookId = Canon.BookIdToNumber("HAB");
+			List<int[]> bookList = versification.bookList();
+			Assert.AreEqual(bookList.Count, bookId);
+			Assert.AreEqual(bookList[bookId - 1], new int[] { 17, 20, 19, 1, 1, 1, 55 });
+
+			Assert.AreEqual(7, versification.GetLastChapter(bookId));
+			Assert.AreEqual(17, versification.GetLastVerse(bookId, 1));
+			Assert.AreEqual(20, versification.GetLastVerse(bookId, 2));
+			Assert.AreEqual(19, versification.GetLastVerse(bookId, 3));
+			Assert.AreEqual(1, versification.GetLastVerse(bookId, 4));
+			Assert.AreEqual(1, versification.GetLastVerse(bookId, 5));
+			Assert.AreEqual(1, versification.GetLastVerse(bookId, 6));
+			Assert.AreEqual(55, versification.GetLastVerse(bookId, 7));
+		}
+
+		/// <summary>
+		/// Customize a versification scheme when the chapters/verses for a book is updated.
+		/// </summary>
+		[Test]
+		public void ProcessVersLine_Custom_ChapterRemoved()
+		{
+			versification.ProcessVersLine("HAB 1:17 2:20 3:19");
+
+			// Add a custom line that updates the original chapter-verse versification for Habakkuk
+			versification.ProcessVersLine("HAB 2:0");
+
+			// Confirm that the custom versification overrides the original
+			int bookId = Canon.BookIdToNumber("HAB");
+			List<int[]> bookList = versification.bookList();
+			Assert.AreEqual(bookList.Count, bookId);
+			Assert.AreEqual(bookList[bookId - 1], new int[] { 17, 0, 19 });
+
+			Assert.AreEqual(3, versification.GetLastChapter(bookId),
+				"The customized version of HAB should still have three chapters");
+			Assert.AreEqual(17, versification.GetLastVerse(bookId, 1));
+			Assert.AreEqual(0, versification.GetLastVerse(bookId, 2));
+			Assert.AreEqual(19, versification.GetLastVerse(bookId, 3));
+		}
+
+		/// <summary>
+		/// Customize a versification scheme when the verse mapping for a book is updated.
+		/// </summary>
+		[Test]
+		public void ProcessVersLine_Custom_MappingUpdated1()
+		{
+			versification.ProcessVersLine("PSA 119:1-15 = PSA 119:3-18");
+
+			// Add a custom line that updates the original verse mapping
+			ScrVersReflectionHelper.Merge(() =>
+			{
+				versification.ProcessVersLine("PSA 119:1 = PSA 119:1");
+				// no longer map PSA 119:1 to PSA 119:3
+				versification.ProcessVersLine("PSA 119:2-16 = PSA 119:20-34");
+			});
+
+			// Get mapping from "PSA 119:2-16 = PSA 119:20-34" in the versification
+			VerseRef vref;
+			for (int i = 1; i <= 16; i++)
+			{
+				vref = new VerseRef(19, 119, i, versification);
+				ScrVers.Original.ChangeVersification(vref);
+				if (i == 1)
+				{
+					Assert.AreEqual(new VerseRef(19, 119, 1, ScrVers.Original), vref);
+					continue;
+				}
+				Assert.AreEqual(new VerseRef(19, 119, i + 18, ScrVers.Original), vref);
+			}
+
+			vref = new VerseRef(19, 119, 1, ScrVers.Original);
+			versification.ChangeVersification(vref);
+			Assert.AreEqual(new VerseRef(19, 119, 1, versification), vref);
+
+			for (int i = 20; i <= 34; i++)
+			{
+				vref = new VerseRef(19, 119, i, ScrVers.Original);
+				versification.ChangeVersification(vref);
+				Assert.AreEqual(new VerseRef(19, 119, i - 18, versification), vref);
+			}
+		}
+
+		/// <summary>
+		/// Customize a versification scheme when the verse mapping for a book is updated.
+		/// </summary>
+		[Test]
+		public void ProcessVersLine_Custom_MappingUpdated2()
+		{
+			versification.ProcessVersLine("PSA 78:3-18 = PSA 78:1-15");
+
+			// Add a custom line that updates the original verse mapping
+			ScrVersReflectionHelper.Merge(() =>
+			{
+				versification.ProcessVersLine("PSA 78:1 = PSA 78:1"); // no longer map PSA 78:1 to PSA 78:3
+				versification.ProcessVersLine("PSA 78:20-34 = PSA 78:2-16 ");
+			});
+
+			// Get mapping from "PSA 78:20-34 = PSA 78:2-16" in the versification
+			VerseRef vref = new VerseRef(19, 78, 1, versification);
+			ScrVers.Original.ChangeVersification(vref);
+			Assert.AreEqual(new VerseRef(19, 78, 1, ScrVers.Original), vref);
+
+			for (int i = 20; i <= 34; i++)
+			{
+				vref = new VerseRef(19, 78, i, versification);
+				ScrVers.Original.ChangeVersification(vref);
+				Assert.AreEqual(new VerseRef(19, 78, i - 18, ScrVers.Original), vref);
+			}
+
+			for (int i = 1; i <= 16; i++)
+			{
+				vref = new VerseRef(19, 78, i, ScrVers.Original);
+				versification.ChangeVersification(vref);
+				if (i == 1)
+				{
+					Assert.AreEqual(new VerseRef(19, 78, 1, versification), vref);
+					continue;
+				}
+				Assert.AreEqual(new VerseRef(19, 78, i + 18, versification), vref);
+			}
+		}
+
+		/// <summary>
+		/// Customize a versification scheme when the segments on a verse are updated.
+		/// </summary>
+		[Test]
+		public void ProcessVersLine_Custom_VerseSegments()
+		{
+			versification.ProcessVersLine("#! *HAG 1:5,-,a,b,c");
+
+			// Add a custom line that updates the original verse segments
+			ScrVersReflectionHelper.Merge(() => versification.ProcessVersLine("#! *HAG 1:5,d,e,f"));
+
+			// Confirm that the expected segments are added to the specified verse.
+			CheckSegments(versification, 1, new VerseRef("HAG 1:5"),
+				new[] { "d", "e", "f" });
+
+			Assert.AreEqual(versification.VerseSegments(new VerseRef("HAG 1:5").BBBCCCVVV),
+				new[] { "d", "e", "f" });
+
+		}
+
+		/// <summary>
+		/// Verify that invalid verse segment is rejected
+		/// </summary>
+		[Test]
+		public void ProcessVersLine_Custom_VerseSegments_Invalid()
+		{
+			VerifyThrows(() => versification.ParseVerseSegmentsLine("*HAG 1:5,a,b,c,-"),
+				VersificationLoadErrorType.UnspecifiedSegmentLocation, "*HAG 1:5,a,b,c,-", "testfile");
+
+			try
+			{
+				versification.ProcessVersLine("#! *HAG 1:5,a,b,c,-");
+			}
+			catch (Exception e)
+			{
+				Assert.IsTrue(e.InnerException is InvalidVersificationLineException, "Didn't get the expected exception");
+			}
+		}
+		#endregion
+
+		#region ParseMappingLine tests
+		/// <summary>
+		/// Tests the method ChangeVersification when the versifications only differ by customization 
+		/// (one is the base versification of another customized versification).
+		/// See FB-17661
+		/// </summary>
+		[Test]
+		public void ParseMappingLine_CompareBaseToCustomized()
+		{
+			Versification vers2 = ScrVersReflectionHelper.CreateClonedVers(versification.VersInfo,
+				versification.Name + "-monkey");
+			ScrVers versification2 = new ScrVers(vers2);
+
+			versification.ParseChapterVerseLine(
+				"ACT 1:26 2:47 3:26 4:37 5:42 6:15 7:60 8:40 9:43 10:48 11:30 12:25 13:52 14:28 15:41 16:40 17:34 18:28 19:41 20:38 21:40 22:30 23:35 24:27 25:27 26:32 27:44 28:31");
+			versification2.ParseChapterVerseLine(
+				"ACT 1:26 2:47 3:26 4:37 5:42 6:15 7:60 8:40 9:43 10:48 11:30 12:25 13:52 14:28 15:41 16:40 17:34 18:28 19:41 20:38 21:40 22:30 23:35 24:27 25:27 26:32 27:44 28:31");
+
+			versification2.ParseMappingLine("ACT 19:41 = ACT 19:40");
+			versification.ParseMappingLine("ACT 19:41 = ACT 19:40");
+
+			// Even tho we have both vers 40 and 41 mapped to the same verse, doing a conversion between the
+			// two versification should not cause the original distinction to be lost if both versifications are
+			// based on the same original versification.
+
+			VerseRef vref = new VerseRef("ACT 19:40", versification);
+			versification2.ChangeVersification(vref);
+			Assert.AreEqual(new VerseRef("ACT 19:40", versification2), vref);
+
+			vref = new VerseRef("ACT 19:41", versification);
+			versification2.ChangeVersification(vref);
+			Assert.AreEqual(new VerseRef("ACT 19:41", versification2), vref);
+		}
+		#endregion
+
 		#region WriteToStream test
 		/// <summary>
 		/// Tests the WriteVersification method

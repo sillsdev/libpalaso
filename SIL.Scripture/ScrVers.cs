@@ -209,8 +209,8 @@ namespace SIL.Scripture
 				}
 				else
 				{
-					type = ScrVersType.Unknown;
 					versInfo = Versification.Table.Implementation.Get(value);
+					type = versInfo.Type;
 				}
 			}
 		}
@@ -223,7 +223,16 @@ namespace SIL.Scripture
 		{
 			get { return VersInfo.FullPath; }
 		}
-		
+
+		/// <summary>
+		/// Is versification file for this versification present
+		/// </summary>
+		[XmlIgnore]
+		public bool IsPresent
+		{
+			get { return VersInfo.IsPresent; }
+		}
+
 		/// <summary>
 		/// Gets the type of versification.
 		/// </summary>
@@ -241,7 +250,32 @@ namespace SIL.Scripture
 		{
 			get { return VersInfo.HasVerseSegments; }
 		}
-		
+
+		/// <summary>
+		/// Gets whether or not this versification is created from a custom VRS file that overrides
+		/// a default base versification
+		/// </summary>
+		[XmlIgnore]
+		public bool IsCustomized
+		{
+			get { return VersInfo.IsCustomized; }
+		}
+
+		/// <summary>
+		/// Gets the base versification of this customized versification or null if this versification is
+		/// not customized.
+		/// </summary>
+		[XmlIgnore]
+		public ScrVers BaseVersification
+		{
+			get
+			{
+				Versification versification = VersInfo.BaseVersification;
+				return versification != null ? new ScrVers(versification) : null;
+			}
+		}
+
+
 		/// <summary>
 		/// All books which are valid in this scripture text.
 		/// Valid means a) is a cannonical book, b) not obsolete, c) present in the versification for this text

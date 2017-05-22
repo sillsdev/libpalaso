@@ -54,7 +54,26 @@ namespace SIL.Scripture
 			excludedVerses = new HashSet<int>();
 			verseSegments = new Dictionary<int, string[]>();
 		}
-		
+
+		/// <summary>
+		/// Creates a copy of another Versification
+		/// </summary>
+		private Versification(Versification baseVersification, string newName, string fullPath)
+		{
+			if (baseVersification == null)
+				throw new ArgumentNullException("baseVersification");
+
+			name = newName;
+			FullPath = fullPath;
+			BaseVersification = baseVersification;
+			Type = ScrVersType.Unknown;
+			description = baseVersification.description;
+			bookList = new List<int[]>(baseVersification.bookList);
+			mappings = new VerseMappings(baseVersification.mappings);
+			excludedVerses = new HashSet<int>(baseVersification.excludedVerses);
+			verseSegments = new Dictionary<int, string[]>(baseVersification.verseSegments);
+		}
+
 		private void Clear()
 		{
 			bookList.Clear();
@@ -72,12 +91,36 @@ namespace SIL.Scripture
 		{
 			get { return name; }
 		}
-		
+
 		/// <summary>
-		/// Gets the full path for this versification file (e.g. \My Paratext Projects\eng.vrs)
+		/// Gets the base versification of this customized versification or null if this versification is
+		/// not customized.
+		/// </summary>
+		internal Versification BaseVersification { get; private set; }
+
+		/// <summary>
+		/// Gets the full path for this versification file (e.g. \My Paratext Projects\eng.vrs).
+		/// <para>Note that this will be null for built-in versifications since they are stored as embedded resources.</para>
 		/// </summary>
 		internal string FullPath { get; private set; }
 
+		/// <summary>
+		/// Is versification file for this versification present
+		/// </summary>
+		internal bool IsPresent
+		{
+			get { return Table.Implementation.VersificationFileExists(Name); }
+		}
+
+		/// <summary>
+		/// Gets whether or not this versification is created from a custom VRS file that overrides
+		/// a default base versification
+		/// </summary>
+		internal bool IsCustomized
+		{
+			get { return BaseVersification != null; }
+		}
+		
 		/// <summary>
 		/// Gets the type of versification.
 		/// </summary>
@@ -415,17 +458,27 @@ namespace SIL.Scripture
 				new Dictionary<VersificationKey, Versification>();
 			#endregion
 			
-			#region Static public methods
+			#region Public methods
 			/// <summary>
 			/// True iff named versification exists
 			/// </summary>
 			public bool Exists(string versName)
 			{
-				if (string.IsNullOrEmpty(versName))
-					throw new ArgumentNullException("versName");
+				ScrVersType versificationType;
+				if (Enum.TryParse(versName, out versificationType) && versificationType != ScrVersType.Unknown)
+					return true;
 
 				lock (versifications)
 					return versifications.ContainsKey(new VersificationKey(ScrVersType.Unknown, versName));
+			}
+
+			public virtual bool VersificationFileExists(string versName)
+			{
+				if (!Exists(versName))
+					return false;
+
+				Versification versification = Get(versName);
+				return versification.FullPath == null || File.Exists(versification.FullPath);
 			}
 
 			/// <summary>
@@ -465,12 +518,72 @@ namespace SIL.Scripture
 			/// Loads the specified versification file and returns the results. The versification is loaded into
 			/// the versification map so any calls to get a versification of that name will return the same versification.
 			/// </summary>
-			public ScrVers Load(string fileName, string fallbackName = null)
+			public ScrVers Load(string fullPath, string fallbackName = null)
 			{
 				Versification versification = null;
-				Load(fileName, ScrVersType.Unknown, ref versification, fallbackName);
+				Load(fullPath, ScrVersType.Unknown, ref versification, fallbackName);
 				return new ScrVers(versification);
 			}
+
+			/// <summary>
+			/// Loads a versification from the specified stream while overriding a base versification. 
+			/// The versification is loaded into the versification map so any calls to get a versification of that name 
+			/// will return the same versification.
+			/// </summary>
+			public ScrVers Load(TextReader stream, string fullPath, ScrVers baseVers, string name)
+			{
+				if (string.IsNullOrEmpty(name))
+					throw new ArgumentNullException("name");
+
+				if (baseVers == null)
+					throw new ArgumentNullException("baseVers");
+
+				if (baseVers.IsCustomized)
+					throw new InvalidOperationException("Can not create a custom versification from customized versification " + baseVers.Name);
+
+				Versification versification;
+				lock (versifications)
+				{
+					versification = new Versification(baseVers.VersInfo, name, fullPath);
+					Load(stream, fullPath, ScrVersType.Unknown, ref versification, name);
+					versifications.Add(new VersificationKey(ScrVersType.Unknown, name), versification);
+				}
+				return new ScrVers(versification);
+			}
+
+			public static ParsedVersificationLine ParseLine(string line)
+			{
+				line = line.Trim();
+				bool isCommentLine = (line.Length > 0 && line[0] == commentSymbol);
+				string[] parts = line.Split(new[] { commentSymbol }, 2);
+				line = parts[0].Trim();
+				string comment = parts.Length == 2 ? parts[1].Trim() : string.Empty;
+
+				LineType lineType;
+				if (line == string.Empty && comment.Length > 2 && comment[0] == versExtensionSymbol)
+				{
+					line = comment.Substring(1).Trim(); // found Paratext 7.3(+) versification line beginning with #!
+					comment = "";
+					isCommentLine = false;
+				}
+
+				if (line.Length == 0 || isCommentLine)
+					lineType = LineType.comment;
+				else if (line.Contains(mappingSymbol))
+				{
+					// mapping one verse to multiple
+					lineType = line[0] == '&' ? LineType.oneToManyMapping : LineType.standardMapping;
+				}
+				else if (line[0] == excludedSymbol)
+					lineType = LineType.excludedVerse;
+				else if (line[0] == segmentSymbol)
+					lineType = LineType.verseSegments;
+				else
+					lineType = LineType.chapterVerse;
+
+				return new ParsedVersificationLine(lineType, line, comment);
+			}
+			#endregion
 
 			/// <summary>
 			/// Override this to handle a versification line error besides just throwing it
@@ -480,7 +593,6 @@ namespace SIL.Scripture
 			{
 				return false;
 			}
-			#endregion
 
 			#region Private/internal methods
 			/// <summary>
@@ -514,12 +626,16 @@ namespace SIL.Scripture
 			}
 
 			/// <summary>
-			/// Get the versification table for this versification
+			/// Gets the versification with the specified name. This can be a built-in versification or a custom one.
 			/// </summary>
-			internal Versification Get(string versName)
+			protected internal virtual Versification Get(string versName)
 			{
 				if (string.IsNullOrEmpty(versName))
 					throw new ArgumentNullException("versName");
+
+				ScrVersType type;
+				if (Enum.TryParse(versName, out type) && type != ScrVersType.Unknown)
+					return Get(type);
 
 				lock (versifications)
 				{
@@ -530,7 +646,7 @@ namespace SIL.Scripture
 
 					using (TextReader fallbackVersificationStream = new StringReader(Resources.eng_vrs))
 						ReadVersificationFile(fallbackVersificationStream, null, ScrVersType.Unknown, ref versification);
-					versifications[key] = versification;// = Get(ScrVers.fallbackVersification);
+					versifications[key] = versification;
 					return versification;
 				}
 			}
@@ -545,15 +661,15 @@ namespace SIL.Scripture
 				return Enum.TryParse(versName, out type) ? type : ScrVersType.Unknown;
 			}
 
-			private void Load(string fileName, ScrVersType type, ref Versification versification, string fallbackName = null)
+			private void Load(string filePath, ScrVersType type, ref Versification versification, string fallbackName = null)
 			{
-				using (TextReader stream = new StreamReader(fileName))
-					Load(stream, fileName, type, ref versification, fallbackName);
+				using (TextReader stream = new StreamReader(filePath))
+					Load(stream, filePath, type, ref versification, fallbackName);
 			}
 
-			private void Load(TextReader stream, string fileName, ScrVersType type, ref Versification versification, string fallbackName)
+			private void Load(TextReader stream, string filePath, ScrVersType type, ref Versification versification, string fallbackName)
 			{
-				ReadVersificationFile(stream, fileName, type, ref versification, fallbackName);
+				ReadVersificationFile(stream, filePath, type, ref versification, fallbackName);
 			}
 
 			/// <summary>
@@ -562,7 +678,7 @@ namespace SIL.Scripture
 			/// Once for the standard versification, once for custom entries in versification.vrs
 			/// file for this project.
 			/// </summary>
-			private void ReadVersificationFile(TextReader stream, string fileName, ScrVersType type,
+			private void ReadVersificationFile(TextReader stream, string filePath, ScrVersType type,
 				ref Versification versification, string fallbackName = null)
 			{
 				// Parse the lines in the versification file
@@ -570,7 +686,7 @@ namespace SIL.Scripture
 				{
 					try
 					{
-						ProcessVersLine(line, fileName, type, fallbackName, ref versification);
+						ProcessVersLine(line, filePath, type, fallbackName, ref versification);
 					}
 					catch (InvalidVersificationLineException ex)
 					{
@@ -595,7 +711,7 @@ namespace SIL.Scripture
 			/// Process a line from a versification file.
 			/// </summary>
 			/// <param name="line">line of text in the file</param>
-			/// <param name="filePath">name of file where versification is read--only used for error messages</param>
+			/// <param name="filePath">full path to the versification file (if loaded from a file)</param>
 			/// <param name="type"></param>
 			/// <param name="fallbackName">Optional name to use if no name is found inside the file.</param>
 			/// <param name="versification">Existing versification (being reloaded) or null (loading a new one)</param>
@@ -610,10 +726,8 @@ namespace SIL.Scripture
 
 					if (!string.IsNullOrEmpty(name))
 					{
-						VersificationKey key = CreateKey(type, name);
-						versifications.Remove(key);
 						versification = new Versification(name, filePath);
-						versifications.Add(key, versification);
+						versifications[CreateKey(type, name)] = versification;
 					}
 				}
 
@@ -625,10 +739,8 @@ namespace SIL.Scripture
 				{
 					if (!string.IsNullOrEmpty(fallbackName))
 					{
-						VersificationKey key = CreateKey(type, fallbackName);
-						versifications.Remove(key);
 						versification = new Versification(fallbackName, filePath);
-						versifications.Add(key, versification);
+						versifications[CreateKey(type, fallbackName)] = versification;
 					}
 					else
 						throw new InvalidVersificationLineException(VersificationLoadErrorType.MissingName, parsedLine.Line, filePath);
@@ -656,39 +768,6 @@ namespace SIL.Scripture
 						ParseVerseSegmentsLine(filePath, versification, parsedLine.Line);
 						break;
 				}
-			}
-
-			private static ParsedVersificationLine ParseLine(string line)
-			{
-				line = line.Trim();
-				bool isCommentLine = (line.Length > 0 && line[0] == commentSymbol);
-				string[] parts = line.Split(new[] { commentSymbol }, 2);
-				line = parts[0].Trim();
-				string comment = parts.Length == 2 ? parts[1].Trim() : string.Empty;
-
-				LineType lineType;
-				if (line == string.Empty && comment.Length > 2 && comment[0] == versExtensionSymbol)
-				{
-					line = comment.Substring(1).Trim(); // found Paratext 7.3(+) versification line beginning with #!
-					comment = "";
-					isCommentLine = false;
-				}
-
-				if (line.Length == 0 || isCommentLine)
-					lineType = LineType.comment;
-				else if (line.Contains(mappingSymbol))
-				{
-					// mapping one verse to multiple
-					lineType = line[0] == '&' ? LineType.oneToManyMapping : LineType.standardMapping;
-				}
-				else if (line[0] == excludedSymbol)
-					lineType = LineType.excludedVerse;
-				else if (line[0] == segmentSymbol)
-					lineType = LineType.verseSegments;
-				else
-					lineType = LineType.chapterVerse;
-
-				return new ParsedVersificationLine(lineType, line, comment);
 			}
 
 			/// <summary>
@@ -1027,7 +1106,16 @@ namespace SIL.Scripture
 				versToStandard = new Dictionary<VerseRef, VerseRef>(100);
 				standardToVers = new Dictionary<VerseRef, VerseRef>(100);
 			}
-			
+
+			/// <summary>
+			/// Creates a copy of an original mapping.
+			/// </summary>
+			public VerseMappings(VerseMappings origMapping)
+			{
+				versToStandard = new Dictionary<VerseRef, VerseRef>(origMapping.versToStandard);
+				standardToVers = new Dictionary<VerseRef, VerseRef>(origMapping.standardToVers);
+			}
+
 			/// <summary>
 			/// Adds a new verse mapping. Calling this for an existing mapping will replace it.
 			/// </summary>
@@ -1197,10 +1285,14 @@ namespace SIL.Scripture
 	/// <summary>
 	/// List of versification types. Used mostly for backwards compatibility where just a 
 	/// versification integer code was stored.
-	/// <para>WARNING: The order of these items are very important as they correspond to the old codes.</para>
+	/// <para>WARNING: The order of these items are very important as they correspond to the old, legacy codes.</para>
 	/// </summary>
 	public enum ScrVersType
 	{
+		/// <summary>
+		/// This means the versification was loaded from a file or it is a custom versification based on a 
+		/// built-in versification
+		/// </summary>
 		Unknown,
 		Original,
 		Septuagint,
