@@ -9,8 +9,10 @@ using System.Reflection;
 using System.Windows.Forms;
 using System.Xml;
 using L10NSharp;
+using HAP = HtmlAgilityPack;
 using SIL.Acknowledgements;
 using SIL.IO;
+using SIL.Reporting;
 
 namespace SIL.Windows.Forms.Miscellaneous
 {
@@ -230,47 +232,59 @@ namespace SIL.Windows.Forms.Miscellaneous
 								DependencyMarker + "</ul></html>";
 
 		/// <summary>
-		/// Make sure the About Box html is valid by loading it into an XmlDocument.
+		/// Make sure the About Box html is valid by loading it into an HtmlDocument.
 		/// Also ensure that it uses Unicode, since even common things like copyright symbols
 		/// won't be rendered correctly otherwise.
 		/// Internal for testing
 		/// </summary>
 		internal static string ValidateHtml(string htmlString)
 		{
-			XmlDocument dom;
-			XmlNode headNode;
 			try
 			{
-				dom = new XmlDocument {InnerXml = htmlString};
-				var charsetNode = dom.SelectSingleNode("//head/meta[@charset]");
+				// This will throw if the htmlString is not valid Html, but production will just return the original string
+				// to maintain backwards compatibility.
+				// Bloom actually had missing html, head and body tags
+				var dom = new HAP.HtmlDocument();
+				dom.LoadHtml(htmlString);
+				if (dom.ParseErrors.Count() > 0)
+				{
+#if DEBUG
+					var err = dom.ParseErrors.First();
+					throw new ApplicationException(string.Format("{0} at {1}", err.Reason, err.Line));
+#else
+					Logger.WriteEvent(string.Format("Html for AboutBox has {0} parse errors.", dom.ParseErrors.Count()));
+					return htmlString; // maintain backwards compatibility even if there are parsing errors?
+#endif
+				}
+				var charsetNode = dom.DocumentNode.SelectSingleNode("//head/meta[@charset]");
 				if (charsetNode != null)
 				{
 					return htmlString; // don't overwrite any existing charset attribute
 				}
-				headNode = dom.SelectSingleNode("//head");
+				var headNode = dom.DocumentNode.SelectSingleNode("//head");
 				if (headNode == null)
 				{
-					var bodyNode = dom.SelectSingleNode("//body");
+					var bodyNode = dom.DocumentNode.SelectSingleNode("//body");
 					if (bodyNode == null)
 					{
 						// What!? Someone created an AboutBox html file with no body element?!
-						// Create a minimal file
-						return MinimalHtmlContents;
+						// return the original string for backwards compatibility, but... will it work?!
+						Logger.WriteEvent("Html for AboutBox has no head or body and needs charset meta tag.");
+						return htmlString;
 					}
 					headNode = dom.CreateElement("head");
 					bodyNode.ParentNode.InsertBefore(headNode, bodyNode);
 				}
 				var metaNode = dom.CreateElement("meta");
-				var charsetAttr = dom.CreateAttribute("charset");
-				charsetAttr.Value = "UTF-8";
-				metaNode.SetAttributeNode(charsetAttr);
+				metaNode.SetAttributeValue("charset", "UTF-8");
 				headNode.AppendChild(metaNode);
-				return dom.InnerXml;
+				return dom.DocumentNode.OuterHtml;
 			}
-			catch (XmlException ex)
+			catch (ApplicationException ex)
 			{
-				Debug.WriteLine("Loading the AboutBox html threw an exception: " + ex.Message);
-				return MinimalHtmlContents;
+				// see comment at the beginning of the try block
+				Debug.Fail("Loading the AboutBox html threw an exception: " + ex.Message);
+				return htmlString;
 			}
 		}
 

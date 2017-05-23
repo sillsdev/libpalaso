@@ -43,3 +43,6 @@ using SIL.Acknowledgements;
 	Location = "./taglib-sharp.dll", LicenseUrl = "https://opensource.org/licenses/LGPL-2.1")]
 [assembly: Acknowledgement("gtk-sharp", Name = "gtk-sharp", Url = "http://www.mono-project.com/docs/gui/gtksharp/",
 	Location = "./gtk-sharp.dll", LicenseUrl = "https://opensource.org/licenses/MIT")]
+[assembly: Acknowledgement("HtmlAgilityPack", Name = "HtmlAgilityPack",
+	Url = "https://www.nuget.org/packages/HtmlAgilityPack/", LicenseUrl = "https://opensource.org/licenses/MS-PL",
+	Location = "./HtmlAgilityPack.dll")]
