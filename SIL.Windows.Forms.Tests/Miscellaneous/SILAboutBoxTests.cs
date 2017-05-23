@@ -7,6 +7,18 @@ namespace SIL.Windows.Forms.Tests.Miscellaneous
 	public class SILAboutBoxTests
 	{
 		[Test]
+		public void ValidateHtml_MissingBodyTagReturnsMinimalHtml()
+		{
+			const string htmlInput =
+				@"<html>
+					<meta charset='UTF-16' />
+					<some>stuff</some>
+				</html>";
+			var result = SILAboutBox.ValidateHtml(htmlInput);
+			Assert.That(result, Is.StringContaining(SILAboutBox.MinimalHtmlContents));
+		}
+
+		[Test]
 		public void ValidateHtml_ValidHtmlNotOverriden()
 		{
 			const string htmlInput =
@@ -23,8 +35,11 @@ namespace SIL.Windows.Forms.Tests.Miscellaneous
 		}
 
 		[Test]
-		public void ValidateHtml_InvalidHtml_ReturnsMinimalHtml()
+		public void ValidateHtml_InvalidHtml_ReturnsOriginalHtml()
 		{
+			// returning the original input string even though ValidateHtml fails
+			// maintains backwards compatibility, but a Debug.Fail makes sure
+			// that programmers become aware of the problem.
 			const string htmlInput =
 				@"<html>
 					ad>
@@ -34,7 +49,7 @@ namespace SIL.Windows.Forms.Tests.Miscellaneous
 					</body>
 				</html>";
 			var result = SILAboutBox.ValidateHtml(htmlInput);
-			Assert.That(result, Is.EqualTo(SILAboutBox.MinimalHtmlContents));
+			Assert.That(result, Is.EqualTo(htmlInput));
 		}
 
 		[Test]
@@ -47,7 +62,7 @@ namespace SIL.Windows.Forms.Tests.Miscellaneous
 					</body>
 				</html>";
 			var result = SILAboutBox.ValidateHtml(htmlInput);
-			Assert.That(result, Is.StringContaining("<head><meta charset=\"UTF-8\" /></head>"));
+			Assert.That(result, Is.StringContaining("<head><meta charset=\"UTF-8\"></head>"));
 		}
 	}
 }
