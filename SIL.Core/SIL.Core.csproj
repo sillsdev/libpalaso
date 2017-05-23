@@ -488,6 +488,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Reflection\ReflectionHelper.cs" />
     <Compile Include="Reporting\AnalyticsEventSender.cs" />
     <Compile Include="Reporting\ConfigurationException.cs" />
     <Compile Include="Reporting\ConsoleErrorReporter.cs" />
