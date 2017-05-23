@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using SIL.Acknowledgements;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
@@ -21,3 +22,6 @@ using System.Runtime.InteropServices;
 [assembly: CLSCompliant(true)]
 
 [assembly: InternalsVisibleTo("SIL.Core.Desktop.Tests")]
+
+[assembly: Acknowledgement("NDesk.DBus", Name = "NDesk.DBus", Url = "https://www.nuget.org/packages/NDesk.DBus/",
+	LicenseUrl = "https://opensource.org/licenses/MIT", Copyright = "Copyright © 2006 Alp Toker", Location = "./NDesk.DBus.dll")]
