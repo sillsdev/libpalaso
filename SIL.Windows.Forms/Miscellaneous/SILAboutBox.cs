@@ -241,6 +241,10 @@ namespace SIL.Windows.Forms.Miscellaneous
 			XmlNode headNode;
 			try
 			{
+				// This will throw if the htmlString is not valid XML, but production will just return the original string
+				// to maintain backwards compatibility. Changes that may need to be made could include:
+				// - &nbsp; -> &#160;
+				// - & -> &amp;
 				dom = new XmlDocument {InnerXml = htmlString};
 				var charsetNode = dom.SelectSingleNode("//head/meta[@charset]");
 				if (charsetNode != null)
@@ -269,8 +273,9 @@ namespace SIL.Windows.Forms.Miscellaneous
 			}
 			catch (XmlException ex)
 			{
-				Debug.WriteLine("Loading the AboutBox html threw an exception: " + ex.Message);
-				return MinimalHtmlContents;
+				// see comment at the beginning of the try block
+				Debug.Fail("Loading the AboutBox html threw an exception: " + ex.Message);
+				return htmlString;
 			}
 		}
 
