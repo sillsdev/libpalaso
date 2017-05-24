@@ -9,8 +9,10 @@ using System.Reflection;
 using System.Windows.Forms;
 using System.Xml;
 using L10NSharp;
+using HAP = HtmlAgilityPack;
 using SIL.Acknowledgements;
 using SIL.IO;
+using SIL.Reporting;
 
 namespace SIL.Windows.Forms.Miscellaneous
 {
@@ -226,52 +228,64 @@ namespace SIL.Windows.Forms.Miscellaneous
 			}
 		}
 
-		internal const string MinimalHtmlContents = "<html><head><meta charset='UTF-8' /></head><body></body><ul>" +
-								DependencyMarker + "</ul></html>";
-
 		/// <summary>
-		/// Make sure the About Box html is valid by loading it into an XmlDocument.
-		/// Also ensure that it uses Unicode, since even common things like copyright symbols
+		/// Make sure the About Box html is valid by loading it into an HtmlDocument.
+		/// Also try to ensure that it uses Unicode, since even common things like copyright symbols
 		/// won't be rendered correctly otherwise.
+		///
+		/// Behavior is different for Debug and Release versions. Release versions will Log an event if
+		/// there are parsing errors, but will return the original parameter in order to maintain backwards compatibility.
+		/// Debug versions will throw an exception so that programmers will be encouraged to update their html.
+		/// Tests will reflect this.
+		///
 		/// Internal for testing
 		/// </summary>
 		internal static string ValidateHtml(string htmlString)
 		{
-			XmlDocument dom;
-			XmlNode headNode;
-			try
+			// Bloom actually had missing html, head and body tags at one point.
+			var dom = new HAP.HtmlDocument();
+			dom.LoadHtml(htmlString);
+			if (dom.ParseErrors.Any())
 			{
-				dom = new XmlDocument {InnerXml = htmlString};
-				var charsetNode = dom.SelectSingleNode("//head/meta[@charset]");
-				if (charsetNode != null)
+				var err = dom.ParseErrors.First();
+				HandleParsingError(string.Format("{0} at line {1}", err.Reason, err.Line));
+				return htmlString; // maintain backwards compatibility even if there are parsing errors
+			}
+			var charsetNode = dom.DocumentNode.SelectSingleNode("//head/meta[@charset]");
+			if (charsetNode != null)
+			{
+				return htmlString; // don't overwrite any existing charset attribute
+			}
+			var headNode = dom.DocumentNode.SelectSingleNode("//head");
+			if (headNode == null)
+			{
+				var bodyNode = dom.DocumentNode.SelectSingleNode("//body");
+				if (bodyNode == null)
 				{
-					return htmlString; // don't overwrite any existing charset attribute
+					// What!? Someone created an AboutBox html file with no body element?!
+					HandleParsingError("Html has no head or body and needs a charset meta tag.");
+					return htmlString;
 				}
-				headNode = dom.SelectSingleNode("//head");
-				if (headNode == null)
-				{
-					var bodyNode = dom.SelectSingleNode("//body");
-					if (bodyNode == null)
-					{
-						// What!? Someone created an AboutBox html file with no body element?!
-						// Create a minimal file
-						return MinimalHtmlContents;
-					}
-					headNode = dom.CreateElement("head");
-					bodyNode.ParentNode.InsertBefore(headNode, bodyNode);
-				}
-				var metaNode = dom.CreateElement("meta");
-				var charsetAttr = dom.CreateAttribute("charset");
-				charsetAttr.Value = "UTF-8";
-				metaNode.SetAttributeNode(charsetAttr);
+				headNode = dom.CreateElement("head");
+				bodyNode.ParentNode.InsertBefore(headNode, bodyNode);
+			}
+			var metaNode = dom.DocumentNode.SelectSingleNode("//head/meta");
+			if (metaNode == null) // might be a meta tag with no charset attribute
+			{
+				metaNode = dom.CreateElement("meta");
 				headNode.AppendChild(metaNode);
-				return dom.InnerXml;
 			}
-			catch (XmlException ex)
-			{
-				Debug.WriteLine("Loading the AboutBox html threw an exception: " + ex.Message);
-				return MinimalHtmlContents;
-			}
+			metaNode.SetAttributeValue("charset", "UTF-8");
+			return dom.DocumentNode.OuterHtml;
+		}
+
+		private static void HandleParsingError(string message)
+		{
+#if DEBUG
+			throw new ApplicationException(message);
+#else
+			Logger.WriteEvent("Html for AboutBox generated parse errors. " + message);
+#endif
 		}
 
 		protected override void OnClosed(EventArgs e)
