@@ -315,7 +315,6 @@
       <DependentUpon>TestImages.resx</DependentUpon>
     </Compile>
     <Compile Include="Miscellaneous\PortableClipboardTests.cs" />
-    <Compile Include="Miscellaneous\SILAboutBoxTests.cs" />
     <Compile Include="Progress\Commands\ProgressDialogHandlerTests.cs" />
     <Compile Include="Progress\ProgressDialogTests.cs" />
     <Compile Include="Progress\ProgressIndicatorTests.cs" />
