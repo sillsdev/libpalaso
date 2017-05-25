@@ -210,67 +210,22 @@ namespace SIL.Windows.Forms.Miscellaneous
 			// So I've instead modified the browser wrapper to always let the first navigation get through, regardless
 			var filePath = AcknowledgementsProvider.GetFullNonUriFileName(_pathToAboutBoxHtml);
 			var aboutBoxHtml = File.ReadAllText(filePath);
-			aboutBoxHtml = ValidateHtml(aboutBoxHtml);
 			if (!aboutBoxHtml.Contains(DependencyMarker))
 			{
 				_browser.Navigate(_pathToAboutBoxHtml);
 			}
 			else
 			{
+				// Without a charset='UTF-8' meta tag attribute, things like copyright symbols don't show up correctly.
+				Debug.Assert(aboutBoxHtml.Contains(" charset"), "At a minimum, the About Box html should contain a meta charset='UTF-8' tag.");
 				var insertableAcknowledgements = AcknowledgementsProvider.AssembleAcknowledgements();
 				var newHtmlContents = aboutBoxHtml.Replace(DependencyMarker, insertableAcknowledgements);
 				// Create a temporary file with the DependencyMarker replaced with our collected Acknowledgements.
 				// This file will be deleted OnClosed.
+				// This means that if your project uses the DependencyMarker in your html file, you will not be able to
+				// link to a file on a relative path for css styles or images.
 				_tempAboutBoxHtmlFile = new TempFile(newHtmlContents);
 				_browser.Navigate(_tempAboutBoxHtmlFile.Path);
-			}
-		}
-
-		internal const string MinimalHtmlContents = "<html><head><meta charset='UTF-8' /></head><body></body><ul>" +
-								DependencyMarker + "</ul></html>";
-
-		/// <summary>
-		/// Make sure the About Box html is valid by loading it into an XmlDocument.
-		/// Also ensure that it uses Unicode, since even common things like copyright symbols
-		/// won't be rendered correctly otherwise.
-		/// Internal for testing
-		/// </summary>
-		internal static string ValidateHtml(string htmlString)
-		{
-			XmlDocument dom;
-			XmlNode headNode;
-			try
-			{
-				dom = new XmlDocument {InnerXml = htmlString};
-				var charsetNode = dom.SelectSingleNode("//head/meta[@charset]");
-				if (charsetNode != null)
-				{
-					return htmlString; // don't overwrite any existing charset attribute
-				}
-				headNode = dom.SelectSingleNode("//head");
-				if (headNode == null)
-				{
-					var bodyNode = dom.SelectSingleNode("//body");
-					if (bodyNode == null)
-					{
-						// What!? Someone created an AboutBox html file with no body element?!
-						// Create a minimal file
-						return MinimalHtmlContents;
-					}
-					headNode = dom.CreateElement("head");
-					bodyNode.ParentNode.InsertBefore(headNode, bodyNode);
-				}
-				var metaNode = dom.CreateElement("meta");
-				var charsetAttr = dom.CreateAttribute("charset");
-				charsetAttr.Value = "UTF-8";
-				metaNode.SetAttributeNode(charsetAttr);
-				headNode.AppendChild(metaNode);
-				return dom.InnerXml;
-			}
-			catch (XmlException ex)
-			{
-				Debug.WriteLine("Loading the AboutBox html threw an exception: " + ex.Message);
-				return MinimalHtmlContents;
 			}
 		}
 
@@ -279,14 +234,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			// Clean up our temporary file
 			try
 			{
-				if (_tempAboutBoxHtmlFile != null) // shouldn't happen, but might as well be careful.
-				{
-					File.Delete(_tempAboutBoxHtmlFile.Path);
-				}
-			}
-			catch (Exception ex)
-			{
-				Debug.WriteLine("Temporary file deletion failed. " + _tempAboutBoxHtmlFile.Path + ex.Message);
+				_tempAboutBoxHtmlFile?.Dispose(); // Dispose handles the actual file deletion and exception catching
 			}
 			finally
 			{
