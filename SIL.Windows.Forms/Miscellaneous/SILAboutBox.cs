@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using System.Xml;
 using L10NSharp;
 using SIL.Acknowledgements;
 using SIL.IO;
@@ -24,7 +23,11 @@ namespace SIL.Windows.Forms.Miscellaneous
 		public event EventHandler ReleaseNotesClicked;
 
 		/// <summary>
-		///
+		/// Creates a project AboutBox. There is now a DependencyMarker (see comments for usage) that can be added to
+		/// a project's AboutBox html file that SILAboutBoxShown() will replace with a series of Acknowledgements gleaned
+		/// from your project's dependencies. There is one caveat: using this marker will preclude the use of relative links
+		/// for css styling or images in the html file. See some comments in that method for possible future ways around this
+		/// limitation.
 		/// </summary>
 		/// <param name="pathToAboutBoxHtml">For example, use FileLocator.GetFileDistributedWithApplication("distfiles", "aboutBox.htm")</param>
 		/// <param name="useFullVersionNumber"><c>false</c> to only display the first three
@@ -210,67 +213,37 @@ namespace SIL.Windows.Forms.Miscellaneous
 			// So I've instead modified the browser wrapper to always let the first navigation get through, regardless
 			var filePath = AcknowledgementsProvider.GetFullNonUriFileName(_pathToAboutBoxHtml);
 			var aboutBoxHtml = File.ReadAllText(filePath);
-			aboutBoxHtml = ValidateHtml(aboutBoxHtml);
 			if (!aboutBoxHtml.Contains(DependencyMarker))
 			{
 				_browser.Navigate(_pathToAboutBoxHtml);
 			}
 			else
 			{
+				// Without a charset='UTF-8' meta tag attribute, things like copyright symbols don't show up correctly.
+				Debug.Assert(aboutBoxHtml.Contains(" charset"), "At a minimum, the About Box html should contain a meta charset='UTF-8' tag.");
 				var insertableAcknowledgements = AcknowledgementsProvider.AssembleAcknowledgements();
 				var newHtmlContents = aboutBoxHtml.Replace(DependencyMarker, insertableAcknowledgements);
 				// Create a temporary file with the DependencyMarker replaced with our collected Acknowledgements.
 				// This file will be deleted OnClosed.
+				// This means that if your project uses the DependencyMarker in your html file, you will not be able to
+				// link to a file on a relative path for css styles or images.
+				// ----------
+				// Comments on possible ways around this limitation from John Thomson:
+				//		1.Document that an About Box HTML file which uses dependency injection must live in its own folder
+				// with all dependent files, and copy the whole folder to a temp folder.
+				// (could work but is a nuisance, especially for anyone who doesn't need any dependencies)
+				//		2.Document that an About Box HTML file which uses dependency injection may only use a few common kinds
+				// of relative links, search for matching links, and copy the appropriate files to a temp directory along
+				// with the temp file.
+				// (I rather like this idea. A fairly simple regular expression will search for src or rel followed by a value
+				// with no path separators...something like(src | rel) = (['"])([^/\]*)\1 (or something similar...
+				// handle white space...). That will catch all references to images, stylesheets, and scripts,
+				// and if the bit of the RegEx that matches the filename corresponds to an existing file in the same folder
+				// as the HTML we can just copy it. Unless they're doing relative paths to different folders that will do it,
+				// and I think it's reasonable to have SOME restrictions in the interests of simplicity.
+				// ----------
 				_tempAboutBoxHtmlFile = new TempFile(newHtmlContents);
 				_browser.Navigate(_tempAboutBoxHtmlFile.Path);
-			}
-		}
-
-		internal const string MinimalHtmlContents = "<html><head><meta charset='UTF-8' /></head><body></body><ul>" +
-								DependencyMarker + "</ul></html>";
-
-		/// <summary>
-		/// Make sure the About Box html is valid by loading it into an XmlDocument.
-		/// Also ensure that it uses Unicode, since even common things like copyright symbols
-		/// won't be rendered correctly otherwise.
-		/// Internal for testing
-		/// </summary>
-		internal static string ValidateHtml(string htmlString)
-		{
-			XmlDocument dom;
-			XmlNode headNode;
-			try
-			{
-				dom = new XmlDocument {InnerXml = htmlString};
-				var charsetNode = dom.SelectSingleNode("//head/meta[@charset]");
-				if (charsetNode != null)
-				{
-					return htmlString; // don't overwrite any existing charset attribute
-				}
-				headNode = dom.SelectSingleNode("//head");
-				if (headNode == null)
-				{
-					var bodyNode = dom.SelectSingleNode("//body");
-					if (bodyNode == null)
-					{
-						// What!? Someone created an AboutBox html file with no body element?!
-						// Create a minimal file
-						return MinimalHtmlContents;
-					}
-					headNode = dom.CreateElement("head");
-					bodyNode.ParentNode.InsertBefore(headNode, bodyNode);
-				}
-				var metaNode = dom.CreateElement("meta");
-				var charsetAttr = dom.CreateAttribute("charset");
-				charsetAttr.Value = "UTF-8";
-				metaNode.SetAttributeNode(charsetAttr);
-				headNode.AppendChild(metaNode);
-				return dom.InnerXml;
-			}
-			catch (XmlException ex)
-			{
-				Debug.WriteLine("Loading the AboutBox html threw an exception: " + ex.Message);
-				return MinimalHtmlContents;
 			}
 		}
 
@@ -279,14 +252,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			// Clean up our temporary file
 			try
 			{
-				if (_tempAboutBoxHtmlFile != null) // shouldn't happen, but might as well be careful.
-				{
-					File.Delete(_tempAboutBoxHtmlFile.Path);
-				}
-			}
-			catch (Exception ex)
-			{
-				Debug.WriteLine("Temporary file deletion failed. " + _tempAboutBoxHtmlFile.Path + ex.Message);
+				_tempAboutBoxHtmlFile?.Dispose(); // Dispose handles the actual file deletion and exception catching
 			}
 			finally
 			{
