@@ -26,6 +26,7 @@ namespace SIL.Media
 			set
 			{
 				_path = value;
+				if (_recorder != null) _recorder.Dispose();
 				_recorder = AudioFactory.CreateAudioSession(Path);
 				_timer.Enabled = true;
 			}
