@@ -17,6 +17,7 @@ namespace SIL.Media
 		private DateTime _startRecordingTime;
 		private DateTime _stopRecordingTime;
 		private readonly string _path;
+		private readonly SoundFile _soundFile;
 		private readonly ISoundStopEventReceiver _irrklangEventProxy;
 
 		/// <summary>
@@ -27,7 +28,8 @@ namespace SIL.Media
 
 		public AudioIrrKlangSession(string filePath)
 		{
-			_engine.AddFileFactory(new SoundFile(filePath));
+			_soundFile = new SoundFile(filePath);
+			_engine.AddFileFactory(_soundFile);
 			_recorder = new IAudioRecorder(_engine);
 			_path = filePath;
 			_irrklangEventProxy = new ProxyForIrrklangEvents(this);
@@ -118,7 +120,8 @@ namespace SIL.Media
 			{
 				_engine.RemoveAllSoundSources();
 				_engine.StopAllSounds();
-				Dispose();
+				_sound.Dispose();
+				_sound = null;
 			}
 
 			if (!File.Exists(_path))
@@ -137,18 +140,27 @@ namespace SIL.Media
 
 		private class SoundFile : IFileFactory
 		{
-			private readonly string _fileSoundPath;
+			private readonly string _soundFiledPath;
+			private FileStream _soundFileStream;
 
 			public SoundFile(string filePath)
 			{
-				_fileSoundPath= filePath;
+				_soundFiledPath = filePath;
 			}
 
 			// myFile doesn't retain unicode characters so we capture it when the object is created
 			public Stream openFile(string myFile)
 			{
+				CloseFile();
 				// Ensure that the file is not locked from other users
-				return File.Open(_fileSoundPath, FileMode.Open, FileAccess.Read);
+				_soundFileStream = File.Open(_soundFiledPath, FileMode.Open, FileAccess.Read);
+				return _soundFileStream;
+			}
+
+			public void CloseFile()
+			{
+				if (_soundFileStream != null) _soundFileStream.Close();
+				_soundFileStream = null;
 			}
 		}
 
@@ -245,7 +257,9 @@ namespace SIL.Media
 				// We'll just ignore any errors on stopping the sounds (they probably aren't playing).
 			}
 			_engine.StopAllSounds();
-			Dispose();
+			if (_sound != null)
+				_sound.Dispose();
+			_sound = null;
 		}
 
 		public void Dispose()
@@ -254,6 +268,7 @@ namespace SIL.Media
 			if (_sound != null)
 				_sound.Dispose();
 			_sound = null;
+			_soundFile.CloseFile();
 		}
 	}
 }
