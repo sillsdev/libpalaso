@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddSortKey", "AddSortKey\Ad
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.Tests", "SIL.Windows.Forms.Tests\SIL.Windows.Forms.Tests.csproj", "{6E16866F-FF8D-4136-AD67-36AFE3626432}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.BuildTasks", "Palaso.MSBuildTasks\Palaso.BuildTasks.csproj", "{1B4E2E6B-4424-4560-97E0-B0BD34BF85D8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.BuildTasks", "SIL.BuildTasks\SIL.BuildTasks.csproj", "{1B4E2E6B-4424-4560-97E0-B0BD34BF85D8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Media", "SIL.Media\SIL.Media.csproj", "{66B3504A-3B4E-45CB-903A-A9A75B22EF68}"
 EndProject
@@ -35,7 +35,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reporting.TestApp", "TestAp
 		{DB44F49C-D8C6-434F-81ED-28EA5C9E8195} = {DB44F49C-D8C6-434F-81ED-28EA5C9E8195}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.BuildTask.Tests", "BuildTaskTests\Palaso.BuildTask.Tests.csproj", "{C1DFF344-3B97-4265-A465-C14A84BA19F6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.BuildTasks.Tests", "SIL.BuildTasks.Tests\SIL.BuildTasks.Tests.csproj", "{C1DFF344-3B97-4265-A465-C14A84BA19F6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{413BC26E-4F2E-4273-9D2D-83AB79753D8D} = {413BC26E-4F2E-4273-9D2D-83AB79753D8D}
 	EndProjectSection
@@ -110,7 +110,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Linux.Logging", "SIL.Li
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Linux.Logging.Tests", "SIL.Linux.Logging.Tests\SIL.Linux.Logging.Tests.csproj", "{D7AD97B3-88DB-400D-B748-0E06914F17FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Palaso.BuildTask.Tests.Helper", "BuildTaskTests\Palaso.BuildTask.Tests.Helper\Palaso.BuildTask.Tests.Helper.csproj", "{413BC26E-4F2E-4273-9D2D-83AB79753D8D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.BuildTasks.Tests.Helper", "SIL.BuildTasks.Tests\SIL.BuildTasks.Tests.Helper\SIL.BuildTasks.Tests.Helper.csproj", "{413BC26E-4F2E-4273-9D2D-83AB79753D8D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageData", "LanguageData\LanguageData.csproj", "{12C78D85-BB7F-4F00-BF64-E47557F99039}"
 	ProjectSection(ProjectDependencies) = postProject
