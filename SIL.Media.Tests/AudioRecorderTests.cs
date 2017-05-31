@@ -15,7 +15,7 @@ namespace SIL.Media.Tests
 	/// and the project that builds libpalaso on TeamCity (build/Palaso.proj, task Test) invokes RunNUnitTC which
 	/// selects the test assemblies using Include="$(RootDir)/output/$(Configuration)/*.Tests.dll" which excludes exes.
 	/// I have not tried to verify that all of these tests would actually have problems on TeamCity, but it seemed
-	/// helpful to document in the usual way that they are not, in fact, run there. 
+	/// helpful to document in the usual way that they are not, in fact, run there.
 	/// </summary>
 	[NUnit.Framework.Category("SkipOnTeamCity")]
 	[TestFixture]
@@ -25,7 +25,8 @@ namespace SIL.Media.Tests
 		[Test]
 		public void Construct_FileDoesNotExist_OK()
 		{
-			var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName());
+			// ReSharper disable once UnusedVariable
+			using (var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName())) { }
 		}
 
 		[Test]
@@ -33,7 +34,8 @@ namespace SIL.Media.Tests
 		{
 			using (var f = new TempFile())
 			{
-				var x = AudioFactory.CreateAudioSession(f.Path);
+				// ReSharper disable once UnusedVariable
+				using (var x = AudioFactory.CreateAudioSession(f.Path)) { }
 			}
 		}
 
@@ -42,15 +44,18 @@ namespace SIL.Media.Tests
 		public void Construct_FileDoesNotExist_DoesNotCreateFile()
 		{
 			var path = Path.GetRandomFileName();
-			var x = AudioFactory.CreateAudioSession(path);
-			Assert.IsFalse(File.Exists(path));
+			// ReSharper disable once UnusedVariable
+			using (var x = AudioFactory.CreateAudioSession(path)) { }
+			Assert.IsFalse(File.Exists(path)); // File doesn't exist after disposal
 		}
 
 		[Test]
 		public void StopRecording_NotRecording_Throws()
 		{
-			var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName());
-			Assert.Throws<ApplicationException>(() => x.StopRecordingAndSaveAsWav());
+			using (var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName()))
+			{
+				Assert.Throws<ApplicationException>(() => x.StopRecordingAndSaveAsWav());
+			}
 		}
 
 		[Test]
@@ -87,15 +92,19 @@ namespace SIL.Media.Tests
 		[Test]
 		public void CanRecord_FileDoesNotExist_True()
 		{
-			var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName());
-			Assert.IsTrue(x.CanRecord);
+			using (var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName()))
+			{
+				Assert.IsTrue(x.CanRecord);
+			}
 		}
 
 		[Test]
 		public void CanStop_NonExistantFile_False()
 		{
-			var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName());
-			Assert.IsFalse(x.CanStop);
+			using (var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName()))
+			{
+				Assert.IsFalse(x.CanStop);
+			}
 		}
 
 		[Test]
@@ -103,44 +112,34 @@ namespace SIL.Media.Tests
 		{
 			using (var f = new TempFile())
 			{
-				var x = AudioFactory.CreateAudioSession(f.Path);
-				Assert.IsTrue(x.CanRecord);
+				using (var x = AudioFactory.CreateAudioSession(f.Path))
+				{
+					Assert.IsTrue(x.CanRecord);
+				}
 			}
 		}
 
 		[Test]
-		[Platform(Exclude ="Windows", Reason="IrrKlang doesn't throw, so we don't really know")]
 		public void Play_FileEmpty_Throws()
 		{
 			using (var f = new TempFile())
 			{
-				var x = AudioFactory.CreateAudioSession(f.Path);
-				Assert.Throws<Exception>(() => x.Play());
+				using (var x = AudioFactory.CreateAudioSession(f.Path))
+				{
+					Assert.Throws<Exception>(() => x.Play());
+				}
 			}
 		}
 
 		[Test]
 		public void Play_FileDoesNotExist_Throws()
 		{
-			var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName());
-			Assert.Throws<FileNotFoundException>(() => x.Play());
+			using (var x = AudioFactory.CreateAudioSession(Path.GetRandomFileName()))
+			{
+				Assert.Throws<FileNotFoundException>(() => x.Play());
+			}
 		}
 
-		// It's not completely reproducible, but typically including one of the tests marked like this
-		// will cause aborting the whole test sequence (or cause it to lock up, if you aren't using a
-		// test runner with a time limit). As near as I can make out, things fail at so high a level
-		// that no useful stack trace emerges. The problem seems to be the one described at
-		// http://lambert.geek.nz/2007/05/unmanaged-appdomain-callback/. Specifically, something
-		// in IrrKlang's unmanaged code calls a managed-code function. The common case appears to be
-		// to report that Play has stopped, but there may be other callbacks. This works fine in an
-		// app that is only running in one AppDomain, but NUnit uses two, one for the test management
-		// code and one for the SUT. Apparently unmanaged code has no way to know which AppDomain to
-		// make the call-back in and guesses the first and that is wrong, leading to an exception
-		// "Cannot pass a GCHandle across AppDomains". Somehow this is at such a high level that
-		// it freezes up the whole test sequence, possibly because the exception is thrown in
-		// NUnit's management AppDomain. There doesn't seem to be any way to fix this in our code
-		// (the link above suggests something IrrKlang could do) so I've disabled the offending tests.
-		[Ignore("Aborts with 'GC across AppDomain not allowed' IrrKlang.Play/Nunit incompatibility")]
 		[Test]
 		public void CanStop_WhilePlaying_True()
 		{
@@ -158,15 +157,16 @@ namespace SIL.Media.Tests
 		{
 			using (var f = new TempFile())
 			{
-				var old = File.GetLastWriteTimeUtc(f.Path);
 				var oldInfo = new FileInfo(f.Path);
 				var oldLength = oldInfo.Length;
 				Assert.AreEqual(0, oldLength);
 				var oldTimestamp = oldInfo.LastWriteTimeUtc;
-				var x = AudioFactory.CreateAudioSession(f.Path);
-				x.StartRecording();
-				Thread.Sleep(1000);
-				x.StopRecordingAndSaveAsWav();
+				using (var x = AudioFactory.CreateAudioSession(f.Path))
+				{
+					x.StartRecording();
+					Thread.Sleep(1000);
+					x.StopRecordingAndSaveAsWav();
+				}
 				var newInfo = new FileInfo(f.Path);
 				Assert.Greater(newInfo.LastWriteTimeUtc, oldTimestamp);
 				Assert.Greater(newInfo.Length, oldLength);
@@ -178,35 +178,38 @@ namespace SIL.Media.Tests
 		{
 			using (var f = new TempFile())
 			{
-				var x = AudioFactory.CreateAudioSession(f.Path);
-				x.StartRecording();
-				Thread.Sleep(100);
-				Assert.IsTrue(x.IsRecording);
-				x.StopRecordingAndSaveAsWav();
+				using (var x = AudioFactory.CreateAudioSession(f.Path))
+				{
+					x.StartRecording();
+					Thread.Sleep(100);
+					Assert.IsTrue(x.IsRecording);
+					x.StopRecordingAndSaveAsWav();
+				}
 			}
 		}
 
-		[Ignore("Aborts with 'GC across AppDomain not allowed' IrrKlang.Play/Nunit incompatibility")]
 		[Test]
 		public void RecordThenPlay_SmokeTest()
 		{
 			using (var f = new TempFile())
 			{
 				var w = new BackgroundWorker();
-				w.DoWork+=new DoWorkEventHandler((o,args)=> SystemSounds.Exclamation.Play());
+				// ReSharper disable once RedundantDelegateCreation
+				w.DoWork += new DoWorkEventHandler((o, args) => SystemSounds.Exclamation.Play());
 
-				var x = AudioFactory.CreateAudioSession(f.Path);
-				x.StartRecording();
-				w.RunWorkerAsync();
-				Thread.Sleep(1000);
-				x.StopRecordingAndSaveAsWav();
-				x.Play();
-				Thread.Sleep(1000);
-				x.StopPlaying();
+				using (var x = AudioFactory.CreateAudioSession(f.Path))
+				{
+					x.StartRecording();
+					w.RunWorkerAsync();
+					Thread.Sleep(1000);
+					x.StopRecordingAndSaveAsWav();
+					x.Play();
+					Thread.Sleep(1000);
+					x.StopPlaying();
+				}
 			}
 		}
 
-		[Ignore("Aborts with 'GC across AppDomain not allowed' IrrKlang.Play/Nunit incompatibility")]
 		[Test]
 		public void Play_GiveThaiFileName_ShouldHearTwoSounds()
 		{
@@ -217,18 +220,23 @@ namespace SIL.Media.Tests
 				using (var f = TempFile.TrackExisting(soundPath))
 				{
 					var w = new BackgroundWorker();
+					// ReSharper disable once RedundantDelegateCreation
 					w.DoWork += new DoWorkEventHandler((o, args) => SystemSounds.Exclamation.Play());
 
-					var x = AudioFactory.CreateAudioSession(f.Path);
-					x.StartRecording();
-					w.RunWorkerAsync();
-					Thread.Sleep(1000);
-					x.StopRecordingAndSaveAsWav();
+					using (var x = AudioFactory.CreateAudioSession(f.Path))
+					{
+						x.StartRecording();
+						w.RunWorkerAsync();
+						Thread.Sleep(2000);
+						x.StopRecordingAndSaveAsWav();
+					}
 
-					var y = AudioFactory.CreateAudioSession(f.Path);
-					y.Play();
-					Thread.Sleep(1000);
-					y.StopPlaying();
+					using (var y = AudioFactory.CreateAudioSession(f.Path))
+					{
+						y.Play();
+						Thread.Sleep(1000);
+						y.StopPlaying();
+					}
 				}
 			}
 		}
@@ -237,7 +245,7 @@ namespace SIL.Media.Tests
 		/// <summary>
 		/// for testing things while recording is happening
 		/// </summary>
-		class RecordingSession:IDisposable
+		class RecordingSession : IDisposable
 		{
 			private TempFile _tempFile;
 			private ISimpleAudioSession _recorder;
@@ -253,7 +261,8 @@ namespace SIL.Media.Tests
 			public RecordingSession(int millisecondsToRecordBeforeStopping)
 				: this()
 			{
-				Thread.Sleep(1000);//record a second
+				if (millisecondsToRecordBeforeStopping == 0) millisecondsToRecordBeforeStopping = 1000;
+				Thread.Sleep(millisecondsToRecordBeforeStopping);
 				_recorder.StopRecordingAndSaveAsWav();
 			}
 
@@ -262,17 +271,20 @@ namespace SIL.Media.Tests
 				get { return _recorder; }
 			}
 
-			public void Stop()
-			{
-				_recorder.StopRecordingAndSaveAsWav();
-			}
 			public void Dispose()
 			{
-				if (_recorder.IsRecording)
+				try
 				{
-					_recorder.StopRecordingAndSaveAsWav();
+					if (_recorder.IsRecording)
+					{
+						_recorder.StopRecordingAndSaveAsWav();
+					}
 				}
-				_tempFile.Dispose();
+				finally
+				{
+					_recorder.Dispose();
+					_tempFile.Dispose();
+				}
 			}
 		}
 
@@ -312,7 +324,6 @@ namespace SIL.Media.Tests
 			}
 		}
 
-		[Ignore("IrrKlang Play not compatible with NUnit")]
 		[Test]
 		public void CanRecord_WhilePlaying_False()
 		{
@@ -325,7 +336,6 @@ namespace SIL.Media.Tests
 			}
 		}
 
-		[Ignore("Aborts with 'GC across AppDomain not allowed' IrrKlang.Play/Nunit incompatibility")]
 		[Test]
 		public void CanPlay_WhilePlaying_False()
 		{
@@ -342,8 +352,10 @@ namespace SIL.Media.Tests
 		{
 			using (var f = new TempFile())
 			{
-				ISimpleAudioSession x = RecordSomething(f);
-				Assert.IsFalse(x.IsRecording);
+				using (ISimpleAudioSession x = RecordSomething(f))
+				{
+					Assert.IsFalse(x.IsRecording);
+				}
 			}
 		}
 
@@ -352,21 +364,24 @@ namespace SIL.Media.Tests
 		{
 			using (var f = new TempFile())
 			{
-				ISimpleAudioSession x = RecordSomething(f);
-				Assert.IsTrue(x.CanPlay);
+				using (ISimpleAudioSession x = RecordSomething(f))
+				{
+					Assert.IsTrue(x.CanPlay);
+				}
 			}
 		}
 
-		[Ignore("Aborts with 'GC across AppDomain not allowed' IrrKlang.Play/Nunit incompatibility")]
 		[Test]
 		public void RecordThenPlay_OK()
 		{
 			using (var f = new TempFile())
 			{
-				ISimpleAudioSession x = RecordSomething(f);
-				x.Play();
-				Thread.Sleep(100);	// Ensure file exists to be played.
-				x.StopPlaying();
+				using (ISimpleAudioSession x = RecordSomething(f))
+				{
+					x.Play();
+					Thread.Sleep(100);
+				   x.StopPlaying();
+				}
 			}
 		}
 
@@ -379,30 +394,60 @@ namespace SIL.Media.Tests
 			return x;
 		}
 
-		[Ignore("Aborts with 'GC across AppDomain not allowed' IrrKlang.Play/Nunit incompatibility")]
 		[Test]
 		public void Play_DoesPlay ()
 		{
 			using (var file = TempFile.FromResource(Resources.finished, ".wav"))
 			{
-				var x = AudioFactory.CreateAudioSession(file.Path);
-				Assert.DoesNotThrow( () => x.Play() );
-				Assert.DoesNotThrow( () => x.StopPlaying() );
+				using (var x = AudioFactory.CreateAudioSession(file.Path))
+				{
+					Assert.DoesNotThrow(() => x.Play());
+					Assert.DoesNotThrow(() => x.StopPlaying());
+				}
 			}
 		}
 
 		[Test]
 		public void Record_DoesRecord ()
 		{
-
 			using (var folder = new TemporaryFolder("Record_DoesRecord"))
 			{
 				string fpath = Path.Combine(folder.Path, "dump.ogg");
-				var x = AudioFactory.CreateAudioSession(fpath);
-				Assert.DoesNotThrow(() => x.StartRecording());
-				Assert.IsTrue(x.IsRecording);
-				Thread.Sleep(1000);
-				Assert.DoesNotThrow(() => x.StopRecordingAndSaveAsWav());
+				using (var x = AudioFactory.CreateAudioSession(fpath))
+				{
+					Assert.DoesNotThrow(() => x.StartRecording());
+					Assert.IsTrue(x.IsRecording);
+					Thread.Sleep(1000);
+					Assert.DoesNotThrow(() => x.StopRecordingAndSaveAsWav());
+				}
+			}
+		}
+
+		[Test]
+		[NUnit.Framework.Category("ByHand")]
+		[Ignore("this test is to be run manually to test long recordings. Recite John 3:16")]
+		public void Record_LongRecording()
+		{
+			using (var folder = new TemporaryFolder("Record_LongRecording"))
+			{
+				string fpath = Path.Combine(folder.Path, "long.wav");
+				using (var x = AudioFactory.CreateAudioSession(fpath))
+				{
+					SystemSounds.Beep.Play();
+					Assert.DoesNotThrow(() => x.StartRecording());
+					Assert.IsTrue(x.IsRecording);
+					Thread.Sleep(10000); // Records 10 seconds
+					Assert.DoesNotThrow(() => x.StopRecordingAndSaveAsWav());
+					SystemSounds.Beep.Play();
+					Assert.IsTrue(x.CanPlay);
+					Assert.DoesNotThrow(() => x.Play());
+					Thread.Sleep(4000); // Plays the first 4 seconds
+					Assert.DoesNotThrow(() => x.StopPlaying());
+					Thread.Sleep(500); // Pause
+					Assert.DoesNotThrow(() => x.Play());
+					Thread.Sleep(6000); // Plays the first 6 seconds
+					Assert.DoesNotThrow(() => x.StopPlaying());
+				}
 			}
 		}
 	}

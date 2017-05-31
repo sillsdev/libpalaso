@@ -64,6 +64,11 @@ namespace SIL.Media
 			ReportNotImplemented();
 		}
 
+		public void Dispose()
+		{
+			// There is nothing to dispose
+		}
+
 		/// <Summary>
 		/// MessageBoxes are much less destructive than exceptions, but almost as intrusive.
 		/// </Summary>
