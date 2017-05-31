@@ -21,9 +21,6 @@ using SIL.Acknowledgements;
 [assembly: System.CLSCompliant(true)]
 [assembly: InternalsVisibleTo("SIL.Windows.Forms.Tests")]
 
-[assembly: Acknowledgement("irrKlang.NET4", Name = "irrKlang.NET4", Url = "http://www.ambiera.com/irrklang/index.html",
-	LicenseUrl = "http://www.ambiera.com/irrklang/license.html",
-	Copyright = "Copyright © Nikolaus Gebhardt / Ambiera 2001-2009", Location = "./irrKlang.NET4.dll")]
 [assembly: Acknowledgement("L10NSharp", Url = "https://github.com/sillsdev/l10nsharp/",
 	Copyright = "Copyright © SIL International 2010-2014", LicenseUrl = "https://opensource.org/licenses/MIT",
 	Location = "./L10NSharp.dll")]
