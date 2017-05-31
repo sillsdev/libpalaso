@@ -46,7 +46,7 @@ namespace SIL.Media.Tests
 			var path = Path.GetRandomFileName();
 			// ReSharper disable once UnusedVariable
 			using (var x = AudioFactory.CreateAudioSession(path)) { }
-			Assert.IsFalse(File.Exists(path));
+			Assert.IsFalse(File.Exists(path)); // File doesn't exist after disposal
 		}
 
 		[Test]
@@ -271,11 +271,6 @@ namespace SIL.Media.Tests
 				get { return _recorder; }
 			}
 
-			//public void Stop()
-			//{
-			//	_recorder.StopRecordingAndSaveAsWav();
-			//}
-
 			public void Dispose()
 			{
 				try
@@ -285,14 +280,11 @@ namespace SIL.Media.Tests
 						_recorder.StopRecordingAndSaveAsWav();
 					}
 				}
-				catch (Exception)
+				finally
 				{
 					_recorder.Dispose();
 					_tempFile.Dispose();
-					throw;
 				}
-				_recorder.Dispose();
-				_tempFile.Dispose();
 			}
 		}
 
@@ -432,6 +424,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
+		[NUnit.Framework.Category("ByHand")]
 		[Ignore("this test is to be run manually to test long recordings. Recite John 3:16")]
 		public void Record_LongRecording()
 		{
@@ -443,16 +436,16 @@ namespace SIL.Media.Tests
 					SystemSounds.Beep.Play();
 					Assert.DoesNotThrow(() => x.StartRecording());
 					Assert.IsTrue(x.IsRecording);
-					Thread.Sleep(10000);
+					Thread.Sleep(10000); // Records 10 seconds
 					Assert.DoesNotThrow(() => x.StopRecordingAndSaveAsWav());
 					SystemSounds.Beep.Play();
 					Assert.IsTrue(x.CanPlay);
 					Assert.DoesNotThrow(() => x.Play());
-					Thread.Sleep(4000);
+					Thread.Sleep(4000); // Plays the first 4 seconds
 					Assert.DoesNotThrow(() => x.StopPlaying());
 					Thread.Sleep(500); // Pause
 					Assert.DoesNotThrow(() => x.Play());
-					Thread.Sleep(6000);
+					Thread.Sleep(6000); // Plays the first 6 seconds
 					Assert.DoesNotThrow(() => x.StopPlaying());
 				}
 			}

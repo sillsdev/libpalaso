@@ -1,5 +1,6 @@
-﻿// Copyright (c) 2015 SIL International
+﻿// Copyright (c) 2015-2017 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
 #if !MONO
 using System;
 using System.Diagnostics;
@@ -118,8 +119,15 @@ namespace SIL.Media
 
 			if (_sound != null)
 			{
-				_engine.RemoveAllSoundSources();
-				_engine.StopAllSounds();
+				try
+				{
+					_engine.RemoveAllSoundSources(); // Stops sounds currently playing
+				}
+				catch (Exception)
+				{
+					// The most likely exception is that the sound has finished playing
+				}
+				_engine.StopAllSounds(); // Stops sounds after playing
 				_sound.Dispose();
 				_sound = null;
 			}
@@ -149,7 +157,7 @@ namespace SIL.Media
 			}
 
 			// myFile doesn't retain unicode characters so we capture it when the object is created
-			public Stream openFile(string myFile)
+			public Stream openFile(string dummy)
 			{
 				CloseFile();
 				// Ensure that the file is not locked from other users
