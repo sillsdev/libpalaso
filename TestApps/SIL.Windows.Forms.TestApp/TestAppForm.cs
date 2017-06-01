@@ -52,6 +52,7 @@ namespace SIL.Windows.Forms.TestApp
 				return;
 			}
 
+#if !MONO
 			using (var form = new Form())
 			{
 				var browser = new FolderBrowserControl.FolderBrowserControl();
@@ -65,6 +66,7 @@ namespace SIL.Windows.Forms.TestApp
 				form.Controls.Add(browser);
 				form.ShowDialog();
 			}
+#endif
 		}
 
 		private void OnLanguageLookupDialogClicked(object sender, EventArgs e)
