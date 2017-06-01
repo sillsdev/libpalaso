@@ -186,10 +186,23 @@ namespace SIL.PlatformUtilities
 			}
 		}
 
-		[System.Runtime.InteropServices.DllImport ("libc")]
-		static extern int uname (IntPtr buf);
+		[System.Runtime.InteropServices.DllImport("libc")]
+		private static extern int uname(IntPtr buf);
 
-		[System.Runtime.InteropServices.DllImport ("libc")]
-		static extern int readlink(string path, IntPtr buf, int bufsiz);
+		[System.Runtime.InteropServices.DllImport("libc")]
+		private static extern int readlink(string path, IntPtr buf, int bufsiz);
+
+		[System.Runtime.InteropServices.DllImport("__Internal", EntryPoint = "mono_get_runtime_build_info")]
+		private static extern string GetMonoVersion();
+
+		/// <summary>
+		/// Gets the version of the currently running Mono (e.g.
+		/// "5.0.1.1 (2017-02/5077205 Thu May 25 09:16:53 UTC 2017)"), or the empty string
+		/// on Windows.
+		/// </summary>
+		public static string MonoVersion
+		{
+			get { return IsMono ? GetMonoVersion() : string.Empty; }
+		}
 	}
 }
