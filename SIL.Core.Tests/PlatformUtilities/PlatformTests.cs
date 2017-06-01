@@ -204,6 +204,19 @@ namespace SIL.Tests.PlatformUtilities
 			return Platform.DesktopEnvironmentInfoString;
 		}
 
+		[Test]
+		[Platform(Include = "Linux", Reason = "Linux specific test")]
+		public void MonoPlatform_Linux()
+		{
+			Assert.That(Platform.MonoVersion, Is.Not.Empty);
+		}
+
+		[Test]
+		[Platform(Exclude = "Linux", Reason = "Windows specific test")]
+		public void MonoPlatform_Windows()
+		{
+			Assert.That(Platform.MonoVersion, Is.Empty);
+		}
 	}
 }
 
