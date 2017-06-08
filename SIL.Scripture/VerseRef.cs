@@ -544,9 +544,9 @@ namespace SIL.Scripture
 		/// Change the versification of an entry with Verse like 1-3 or 1,3a.
 		/// Can't really work in the most general case because the verse parts could become separate chapters.
 		/// </summary>
-		public void ChangeVersificationWithRanges(ScrVers newVersification)
+		public bool ChangeVersificationWithRanges(ScrVers newVersification)
 		{
-			newVersification.ChangeVersificationWithRanges(this);
+			return newVersification.ChangeVersificationWithRanges(this);
 		}
 
 		#endregion

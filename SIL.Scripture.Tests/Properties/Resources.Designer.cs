@@ -59,35 +59,5 @@ namespace SIL.Scripture.Tests.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] eng {
-            get {
-                object obj = ResourceManager.GetObject("eng", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] lxx {
-            get {
-                object obj = ResourceManager.GetObject("lxx", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] org {
-            get {
-                object obj = ResourceManager.GetObject("org", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
     }
 }
