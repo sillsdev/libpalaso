@@ -1,4 +1,4 @@
-// --------------------------------------------------------------------------------------------
+﻿// --------------------------------------------------------------------------------------------
 #region // Copyright (c) 2014, SIL International.
 // <copyright from='2003' to='2014' company='SIL International'>
 //		Copyright (c) 2014, SIL International.
@@ -467,12 +467,12 @@ namespace SIL.Windows.Forms.Scripture.Tests
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests populating drop down control - this doesn't work well on build machine, so
-		/// test has been marked as being "ByHand".
+		/// Tests populating drop down control - this doesn't work well on some build agents, so
+		/// test has been marked as "SkipOnTeamCity".
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Category("ByHand")]
+		[Category("SkipOnTeamCity")]
 		public void VerifyDropDownContentWithInvalidDefault()
 		{
 			// Set control to really invalid reference.
@@ -540,12 +540,12 @@ namespace SIL.Windows.Forms.Scripture.Tests
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests populating drop down control - this doesn't work well on build machine, so
-		/// test has been marked as being "ByHand".
+		/// Tests populating drop down control - this doesn't work well on some build agents, so
+		/// test has been marked as "SkipOnTeamCity".
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Category("ByHand")]
+		[Category("SkipOnTeamCity")]
 		public void VerifyEscapeBehavior()
 		{
 			// Set control to really invalid reference.
@@ -568,12 +568,12 @@ namespace SIL.Windows.Forms.Scripture.Tests
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Tests populating drop down control - this doesn't work well on build machine, so
-		/// test has been marked as being "ByHand".
+		/// Tests populating drop down control - this doesn't work well on some build agents, so
+		/// test has been marked as "SkipOnTeamCity".
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		[Category("ByHand")]
+		[Category("SkipOnTeamCity")]
 		public void VerifyClickingOutsideDropdownBehavior()
 		{
 			// Set control to really invalid reference.
@@ -597,15 +597,15 @@ namespace SIL.Windows.Forms.Scripture.Tests
 			Assert.IsNull(m_scp.DropDownWindow, "Drop-down should not be visible");
         }
 
-        /// ------------------------------------------------------------------------------------
-        /// <summary>
-        /// Tests selecting books, chapters, and verses using the keyboard in the drop down
-        /// control - this doesn't work well on build machine, so test has been marked as being
-        /// "ByHand".
-        /// </summary>
-        /// ------------------------------------------------------------------------------------
-        [Test]
-        [Category("ByHand")]
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests selecting books, chapters, and verses using the keyboard in the drop down
+		/// control - this doesn't work well on some build agents, so
+		/// test has been marked as "SkipOnTeamCity".
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		[Category("SkipOnTeamCity")]
         public void VerifyKeyboardAcceleratorDropdownBehavior()
         {
             // Set control to really invalid reference.
@@ -659,14 +659,12 @@ namespace SIL.Windows.Forms.Scripture.Tests
             Assert.AreEqual(11, m_scp.DropDownWindow.CurrentButtonValue);
         }
 
-        /// ------------------------------------------------------------------------------------
-        /// <summary>
-        /// Tests selecting books, chapters, and verses using the keyboard in the drop down
-        /// control - this doesn't work well on build machine, so test has been marked as being
-        /// "ByHand".
-        /// </summary>
-        /// ------------------------------------------------------------------------------------
-        [Test]
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Tests selecting books, chapters, and verses using the keyboard in the drop down control
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
         [Ignore("Not sure that it's really desirable to have the selected book and chapter be" +
         " retained if the user cancels or clicks away. Anyway, it doesn't actually behave that way now.")]
         public void VerifyreferenceIsRetainedWhenDropdownCloses()
