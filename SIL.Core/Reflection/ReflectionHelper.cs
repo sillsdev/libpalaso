@@ -330,22 +330,11 @@ namespace SIL.Reflection
 		/// ------------------------------------------------------------------------------------
 		private static object Invoke(object binding, string name, object[] args, BindingFlags flags)
 		{
-			flags |= (BindingFlags.NonPublic | BindingFlags.Public);
-
 			//if (CanInvoke(binding, name, flags))
 			{
 				try
 				{
-					// If binding is a Type then assume invoke on a static method, property or field.
-					// Otherwise invoke on an instance method, property or field.
-					if (binding is Type)
-					{
-						return ((binding as Type).InvokeMember(name,
-							flags | BindingFlags.Static, null, binding, args));
-					}
-
-					return binding.GetType().InvokeMember(name,
-						flags | BindingFlags.Instance, null, binding, args);
+					return InvokeWithError(binding, name, args, flags);
 				}
 				catch { }
 			}
@@ -361,19 +350,29 @@ namespace SIL.Reflection
 		/// ------------------------------------------------------------------------------------
 		public static object CallMethodWithThrow(object binding, string name, params object[] args)
 		{
-			const BindingFlags flags =
-				(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.InvokeMethod);
+			return InvokeWithError(binding, name, args, BindingFlags.InvokeMethod);
+		}
 
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Sets the specified member variable or property (specified by name) on the
+		/// specified binding.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		private static object InvokeWithError(object binding, string name, object[] args, BindingFlags flags)
+		{
 			// If binding is a Type then assume invoke on a static method, property or field.
 			// Otherwise invoke on an instance method, property or field.
-			if (binding is Type)
-			{
-				return ((binding as Type).InvokeMember(name,
-					flags | BindingFlags.Static, null, binding, args));
-			}
+			flags |= BindingFlags.NonPublic | BindingFlags.Public |
+					 (binding is Type ? BindingFlags.Static : BindingFlags.Instance);
 
-			return binding.GetType().InvokeMember(name,
-				flags | BindingFlags.Instance, null, binding, args);
+			// If necessary, go up the inheritance chain until the name
+			// of the method, property or field is found.
+			Type type = binding is Type ? (Type)binding : binding.GetType();
+			while (type.GetMember(name, flags).Length == 0 && type.BaseType != null)
+				type = type.BaseType;
+
+			return type.InvokeMember(name, flags, null, binding, args);
 		}
 
 		///// ------------------------------------------------------------------------------------

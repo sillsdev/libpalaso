@@ -172,7 +172,7 @@ namespace SIL.Scripture.Tests
 	#endregion
 
 	/// <summary>
-	/// Tests methods in the ScrVers class.
+	/// Tests methods in the ScrVers/Versification class.
 	/// </summary>
 	[TestFixture]
 	public class ScrVersTests
@@ -780,6 +780,31 @@ namespace SIL.Scripture.Tests
 		}
 		#endregion
 
+		#region RemoveAllUnknownVersifications tests
+		[Test]
+		public void RemoveAllUnknownVersifications()
+		{
+			Assert.IsFalse(Versification.Table.Implementation.Exists("ModifiedRuth"));
+
+			using (TextReader reader = new StringReader("RUT 5:91"))
+				Versification.Table.Implementation.Load(reader, "", ScrVers.English, "ModifiedRuth");
+
+			Assert.IsTrue(Versification.Table.Implementation.Exists("ModifiedRuth"));
+
+			ScrVers modRuth = new ScrVers("ModifiedRuth");
+			Assert.AreEqual(5, modRuth.GetLastChapter(Canon.BookIdToNumber("RUT")));
+			Assert.AreEqual(91, modRuth.GetLastVerse(Canon.BookIdToNumber("RUT"), 5));
+
+			Versification.Table.Implementation.RemoveAllUnknownVersifications();
+
+			Assert.IsFalse(Versification.Table.Implementation.Exists("ModifiedRuth"));
+
+			modRuth = new ScrVers("ModifiedRuth");
+			Assert.AreEqual(4, modRuth.GetLastChapter(Canon.BookIdToNumber("RUT")));
+			Assert.AreEqual(22, modRuth.GetLastVerse(Canon.BookIdToNumber("RUT"), 4));
+		}
+		#endregion
+
 		#region WriteToStream test
 		/// <summary>
 		/// Tests the WriteVersification method
@@ -850,6 +875,18 @@ namespace SIL.Scripture.Tests
 			Assert.AreEqual(ScrVersType.English, Versification.Table.GetVersificationType("English"));
 		}
 
+		[Test]
+		public void TypeProperty_ReturnsCorrectType()
+		{
+			Assert.AreEqual(ScrVersType.Original, ScrVers.Original.Type);
+			Assert.AreEqual(ScrVersType.English, ScrVers.English.Type);
+			Assert.AreEqual(ScrVersType.Septuagint, ScrVers.Septuagint.Type);
+			Assert.AreEqual(ScrVersType.Vulgate, ScrVers.Vulgate.Type);
+			Assert.AreEqual(ScrVersType.RussianOrthodox, ScrVers.RussianOrthodox.Type);
+			Assert.AreEqual(ScrVersType.RussianProtestant, ScrVers.RussianProtestant.Type);
+			Assert.AreEqual(ScrVersType.Unknown, new ScrVers("random").Type);
+		}
+
 		/// <summary>
 		/// Test that we correctly skip over a bunch of 0 verse chapters and a lone non-zero verse chapter
 		/// </summary>
@@ -858,6 +895,14 @@ namespace SIL.Scripture.Tests
 		{
 			versification.ParseChapterVerseLine("GEN 51:0 52:0 53:10");
 			Assert.AreEqual(53, versification.FirstIncludedVerse(1, 51).ChapterNum);
+		}
+
+		[Test]
+		public void UnknownVersification_IsNotPresent_HasCorrectName()
+		{
+			ScrVers vers = new ScrVers("Blah");
+			Assert.AreEqual("Blah", vers.Name);
+			Assert.IsFalse(vers.IsPresent);
 		}
 		#endregion
 

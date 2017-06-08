@@ -335,6 +335,7 @@
     <Compile Include="Migration\XslMigratorTests.cs" />
     <Compile Include="Misc\GuardAgainstReentry.cs" />
     <Compile Include="Network\RobustNetworkOperation.Tests.cs" />
+    <Compile Include="Reflection\ReflectionHelperTests.cs" />
     <Compile Include="ValidateReferencesTests.cs" />
     <Compile Include="ObjectModel\NullableValueTests.cs" />
     <Compile Include="ObjectModel\SortableBindingListTests.cs" />

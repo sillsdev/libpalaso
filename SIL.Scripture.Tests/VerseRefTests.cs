@@ -755,20 +755,20 @@ namespace SIL.Scripture.Tests
 		public void ChangeVersificationWithRanges()
 		{
 			VerseRef vref = new VerseRef("EXO 6:0", ScrVers.English);
-			vref.ChangeVersificationWithRanges(ScrVers.Original);
+			Assert.IsTrue(vref.ChangeVersificationWithRanges(ScrVers.Original));
 			Assert.AreEqual(new VerseRef("EXO 6:0", ScrVers.Original), vref);
 
 			vref = new VerseRef("GEN 31:55", ScrVers.English);
-			vref.ChangeVersificationWithRanges(ScrVers.Original);
+			Assert.IsTrue(vref.ChangeVersificationWithRanges(ScrVers.Original));
 			Assert.AreEqual(new VerseRef("GEN 32:1", ScrVers.Original), vref);
 
 			vref = new VerseRef("GEN 32:3-4", ScrVers.English);
-			vref.ChangeVersificationWithRanges(ScrVers.Original);
+			Assert.IsTrue(vref.ChangeVersificationWithRanges(ScrVers.Original));
 			Assert.AreEqual(new VerseRef("GEN 32:4-5", ScrVers.Original), vref);
 
 			// This is the case where this can't really work properly:
 			vref = new VerseRef("GEN 31:54-55", ScrVers.English);
-			vref.ChangeVersificationWithRanges(ScrVers.Original);
+			Assert.IsFalse(vref.ChangeVersificationWithRanges(ScrVers.Original));
 			Assert.AreEqual(new VerseRef("GEN 31:54-1", ScrVers.Original), vref);
 		}
 

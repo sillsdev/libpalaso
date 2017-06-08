@@ -237,19 +237,19 @@ namespace SIL.Scripture
 
 			vref.Verse = parts[0];
 			ChangeVersification(vref);
-			bool diffChapter = false;
+			bool allSameChapter = true;
 
 			for (int i = 2; i < parts.Length; i += 2)
 			{
 				VerseRef vref3 = vref2.Clone();
 				vref3.Verse = parts[i];
 				ChangeVersification(vref3);
-				diffChapter |= vref.ChapterNum != vref3.ChapterNum;
+				allSameChapter &= vref.ChapterNum == vref3.ChapterNum;
 
 				vref.Verse = vref.Verse + parts[i - 1] + vref3.Verse;
 			}
 
-			return diffChapter;
+			return allSameChapter;
 		}
 
 		/// <summary>
@@ -478,7 +478,27 @@ namespace SIL.Scripture
 					return false;
 
 				Versification versification = Get(versName);
-				return versification.FullPath == null || File.Exists(versification.FullPath);
+				if (versification.FullPath != null)
+					return File.Exists(versification.FullPath);
+
+				// If not a known type and it doesn't have a path, then assume it's an invalid versification.
+				return typeof(ScrVersType).IsEnumDefined(versName);
+			}
+
+			/// <summary>
+			/// Removes all versifications that have an unknown type (i.e. all versifications that are not built-in).
+			/// Mostly used for testing purposes.
+			/// </summary>
+			public void RemoveAllUnknownVersifications()
+			{
+				lock (versifications)
+				{
+					foreach (ScrVers ver in VersificationTables())
+					{
+						if (ver.Type == ScrVersType.Unknown)
+							versifications.Remove(new VersificationKey(ScrVersType.Unknown, ver.Name));
+					}
+				}
 			}
 
 			/// <summary>
@@ -619,6 +639,7 @@ namespace SIL.Scripture
 						default: throw new InvalidOperationException("Can not create a versification for an unknown type");
 					}
 					
+					versification = new Versification(type.ToString(), null);
 					using (TextReader fallbackVersificationStream = new StringReader(resourceFileText))
 						ReadVersificationFile(fallbackVersificationStream, null, type, ref versification);
 					return versification;
@@ -644,6 +665,7 @@ namespace SIL.Scripture
 					if (versifications.TryGetValue(key, out versification))
 						return versification;
 
+					versification = new Versification(versName, null);
 					using (TextReader fallbackVersificationStream = new StringReader(Resources.eng_vrs))
 						ReadVersificationFile(fallbackVersificationStream, null, ScrVersType.Unknown, ref versification);
 					versifications[key] = versification;
