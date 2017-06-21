@@ -506,13 +506,18 @@ namespace SIL.Scripture
 			/// </summary>
 			public IEnumerable<ScrVers> VersificationTables()
 			{
+				yield return ScrVers.English;
+				yield return ScrVers.Original;
+				yield return ScrVers.Septuagint;
+				yield return ScrVers.Vulgate;
+				yield return ScrVers.RussianOrthodox;
+				yield return ScrVers.RussianProtestant;
+
 				List<Versification> versificationList;
 				lock (versifications)
-				{
 					versificationList = versifications.Values.ToList();
-				}
 
-				foreach (var versification in versificationList)
+				foreach (var versification in versificationList.Where(v => v.Type == ScrVersType.Unknown))
 					yield return new ScrVers(versification);
 			}
 
@@ -642,6 +647,7 @@ namespace SIL.Scripture
 					versification = new Versification(type.ToString(), null);
 					using (TextReader fallbackVersificationStream = new StringReader(resourceFileText))
 						ReadVersificationFile(fallbackVersificationStream, null, type, ref versification);
+					versifications[key] = versification;
 					return versification;
 				}
 			}
