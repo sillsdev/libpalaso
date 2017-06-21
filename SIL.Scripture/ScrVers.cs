@@ -201,8 +201,8 @@ namespace SIL.Scripture
 			get { return VersInfo.Name; }
 			set
 			{
-				ScrVersType knownType;
-				if (Enum.TryParse(value, out knownType))
+				ScrVersType knownType = Versification.Table.GetVersificationType(value);
+				if (knownType != ScrVersType.Unknown)
 				{
 					type = knownType;
 					versInfo = null;
