@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace SIL.Media.Naudio.UI
@@ -10,11 +11,13 @@ namespace SIL.Media.Naudio.UI
 	/// This control displays an icon and tooltip to indicate which recording device is currently in use.
 	/// It also monitors the set of connected RecordingDevices and (a) switches to a new one if it appears,
 	/// as for example when a new microphone is plugged in; (b) switches to the default one if the current
-	/// one is unplugged.
+	/// one is unplugged. You can customize the icons using the __Image properties.
+	/// </summary>
+	/// <remarks>
 	/// Enhance JohnT: Possibly the RecordingDeviceIndicator could become a RecordingDeviceButton and could respond to a click by cycling through
 	/// the available devices, or pop up a chooser...though that is probably overdoing things, users
 	/// are unlikely to have more than two. Currently there is no click behavior.
-	/// </summary>
+	/// </remarks>
 	public partial class RecordingDeviceIndicator : UserControl
 	{
 		private IAudioRecorder _recorder;
@@ -23,13 +26,38 @@ namespace SIL.Media.Naudio.UI
 
 		private HashSet<string> _knownRecordingDevices;
 
+		/// <summary>
+		/// Used to look at what names the OS has for a device and choose an icon. These are stored as functions so that we don't
+		/// have to tell clients *when* they are allowed to override these.
+		/// </summary>
+		private readonly List<KeyValuePair<string, Func<Image>>> _nameSubstringToIconProperty =
+			new List<KeyValuePair<string, Func<Image>>>();
+
+
+		// These allow clients to set their own images to match their color schemes
+		public Image NoAudioDeviceImage { get; set; } = AudioDeviceIcons.NoAudioDevice;
+		public Image WebcamImage { get; set; } = AudioDeviceIcons.Webcam;
+		public Image ComputerInternalImage { get; set; } = AudioDeviceIcons.Computer;
+		public Image KnownHeadsetImage { get; set; } = AudioDeviceIcons.Headset;
+		public Image UsbAudioDeviceImage { get; set; } = AudioDeviceIcons.Headset;
+		public Image MicrophoneImage { get; set; } = AudioDeviceIcons.Microphone;
+		public Image LineImage { get; set; } = AudioDeviceIcons.Line;
+		public Image RecorderImage { get; set; } = AudioDeviceIcons.Recorder;
+
 		public RecordingDeviceIndicator() : this(1000, true)
 		{
 		}
 
-		public RecordingDeviceIndicator(int checkNewMicTimerInterval, bool checkNewMicTimerInitiallyEnabled)
+		public RecordingDeviceIndicator(int checkNewMicTimerInterval,
+			bool checkNewMicTimerInitiallyEnabled)
 		{
 			InitializeComponent();
+
+			// All the audio device icons shipped with libpalaso 16px high, but of varying width.
+			// Because we allow clients to give different icons, honor whatever height/width they came in at,
+			// no scaling. Done here so we can have this comment.
+			_recordingDeviceImage.SizeMode = PictureBoxSizeMode.AutoSize;
+
 			_checkNewMicTimer.Tick += OnCheckNewMicTimer_Tick;
 			_checkNewMicTimer.Interval = checkNewMicTimerInterval;
 			MicCheckingEnabled = checkNewMicTimerInitiallyEnabled;
@@ -52,10 +80,10 @@ namespace SIL.Media.Naudio.UI
 			get { return _recorder; }
 			set
 			{
-				if (_recorder != null)
+				if(_recorder != null)
 					_recorder.SelectedDeviceChanged -= RecorderOnSelectedDeviceChanged;
 				_recorder = value;
-				if (_recorder != null)
+				if(_recorder != null)
 				{
 					_recorder.SelectedDeviceChanged += RecorderOnSelectedDeviceChanged;
 					_checkNewMicTimer.Start();
@@ -65,14 +93,15 @@ namespace SIL.Media.Naudio.UI
 				{
 					_checkNewMicTimer.Stop();
 				}
-				if (IsHandleCreated)
+				if(IsHandleCreated)
 					UpdateDisplay();
 			}
 		}
 
 		private void SetKnownRecordingDevices()
 		{
-			_knownRecordingDevices = new HashSet<string>(from d in RecordingDevice.Devices select d.ProductName);
+			_knownRecordingDevices =
+				new HashSet<string>(from d in RecordingDevice.Devices select d.ProductName);
 		}
 
 		/// <summary>
@@ -93,34 +122,36 @@ namespace SIL.Media.Naudio.UI
 		/// <param name="e"></param>
 		void OnCheckNewMicTimer_Tick(object sender, EventArgs e)
 		{
-			if (_recorder == null)
+			if(_recorder == null)
 				return;
 			// Don't try to change horses in the middle of the stream if recording is in progress.
-			if (_recorder.RecordingState != RecordingState.Monitoring && _recorder.RecordingState != RecordingState.Stopped)
+			if(_recorder.RecordingState != RecordingState.Monitoring &&
+				_recorder.RecordingState != RecordingState.Stopped)
 				return;
 			bool foundCurrentDevice = false;
 			var devices = RecordingDevice.Devices.ToList();
-			foreach (var device in devices)
+			foreach(var device in devices)
 			{
-				if (!_knownRecordingDevices.Contains(device.ProductName))
+				if(!_knownRecordingDevices.Contains(device.ProductName))
 				{
 					_recorder.SelectedDevice = device;
-					if (_recorder.RecordingState == RecordingState.Monitoring)
+					if(_recorder.RecordingState == RecordingState.Monitoring)
 					{
 						_knownRecordingDevices.Add(device.ProductName);
 						UpdateDisplay();
 						return;
 					}
 				}
-				if (_recorder.SelectedDevice != null && device.ProductName == _recorder.SelectedDevice.ProductName)
+				if(_recorder.SelectedDevice != null && device.ProductName ==
+					_recorder.SelectedDevice.ProductName)
 					foundCurrentDevice = true;
 			}
-			if (foundCurrentDevice)
+			if(foundCurrentDevice)
 			{
-				if (_recorder.RecordingState != RecordingState.Monitoring)
+				if(_recorder.RecordingState != RecordingState.Monitoring)
 				{
 					_recorder.BeginMonitoring();
-					if (_recorder.RecordingState == RecordingState.Monitoring)
+					if(_recorder.RecordingState == RecordingState.Monitoring)
 						UpdateDisplay();
 				}
 			}
@@ -128,7 +159,7 @@ namespace SIL.Media.Naudio.UI
 			{
 				// presumably unplugged...try to switch to another.
 				var defaultDevice = devices.FirstOrDefault();
-				if (defaultDevice != _recorder.SelectedDevice)
+				if(defaultDevice != _recorder.SelectedDevice)
 				{
 					_recorder.SelectedDevice = defaultDevice;
 					UpdateDisplay();
@@ -140,13 +171,13 @@ namespace SIL.Media.Naudio.UI
 
 		protected override void OnHandleDestroyed(EventArgs e)
 		{
-			if (_checkNewMicTimer != null)
+			if(_checkNewMicTimer != null)
 			{
 				_checkNewMicTimer.Stop();
 				_checkNewMicTimer.Dispose();
 				_checkNewMicTimer = null;
 			}
-			if (_recorder != null)
+			if(_recorder != null)
 				_recorder.SelectedDeviceChanged -= RecorderOnSelectedDeviceChanged;
 			base.OnHandleDestroyed(e);
 		}
@@ -158,13 +189,14 @@ namespace SIL.Media.Naudio.UI
 
 		protected override void OnLoad(EventArgs e)
 		{
+			PrepareNameToIconLookup();
 			UpdateDisplay();
 			base.OnLoad(e);
 		}
 
 		public void UpdateDisplay()
 		{
-			if (_recorder != null && _recorder.SelectedDevice != null)
+			if(_recorder?.SelectedDevice != null)
 			{
 				toolTip1.SetToolTip(_recordingDeviceImage, _recorder.SelectedDevice.Capabilities.ProductName);
 			}
@@ -172,39 +204,72 @@ namespace SIL.Media.Naudio.UI
 			{
 				toolTip1.SetToolTip(_recordingDeviceImage, "no input device");
 			}
-			if (_recorder == null)
+			if(_recorder == null)
 				return;
 
-			// It's rather arbitrary which one we use if we have no recording device.
-			// A microphone seems most likely to suggest what needs to be connected.
-			if (Recorder.SelectedDevice == null)
-				_recordingDeviceImage.Image = AudioDeviceIcons.Microphone;
-			else if (_recorder.SelectedDevice.GenericName.Contains("Internal"))
-				_recordingDeviceImage.Image = AudioDeviceIcons.Computer;
-			else if (_recorder.SelectedDevice.GenericName.Contains("USB Audio Device"))
-				_recordingDeviceImage.Image = AudioDeviceIcons.HeadSet;
-			else if (_recorder.SelectedDevice.GenericName.Contains("Microphone"))
-				_recordingDeviceImage.Image = AudioDeviceIcons.Microphone;
-
-			if (Recorder.SelectedDevice != null)
+			if(Recorder.SelectedDevice == null)
+				_recordingDeviceImage.Image = NoAudioDeviceImage;
+			else
 			{
-				var deviceName = _recorder.SelectedDevice.ProductName;
-
-				if (deviceName.Contains("ZOOM"))
-					_recordingDeviceImage.Image = AudioDeviceIcons.Recorder;
-				else if (deviceName.Contains("Plantronics") || deviceName.Contains("Andrea") || deviceName.Contains("Microphone (VXi X200"))
-					_recordingDeviceImage.Image = AudioDeviceIcons.HeadSet;
-				else if (deviceName.Contains("Line"))
-					_recordingDeviceImage.Image = AudioDeviceIcons.ExternalAudioDevice;
+				toolTip1.SetToolTip(_recordingDeviceImage, _recorder.SelectedDevice.GenericName);
+				_recordingDeviceImage.Image = GetIconForRecordingDevice();
 			}
+		}
 
-			// REVIEW: For some reason, the icons used to represent the different devices are all different sizes
-			// and proportions. Best approach seems to be to scale them down to fit but not scale them up
-			// because they will pixelate. It would probably be better to get somebody with an eye for design to
-			// come up with consistent looking icons that are of the same size and scale nicely.
-			_recordingDeviceImage.SizeMode =
-				(_recordingDeviceImage.Image.Height > Height || _recordingDeviceImage.Image.Width > Width) ?
-				PictureBoxSizeMode.Zoom : PictureBoxSizeMode.CenterImage;
+		private Image GetIconForRecordingDevice()
+		{
+			foreach(var pair in _nameSubstringToIconProperty)
+			{
+				var substring = pair.Key.ToLowerInvariant();
+				if(_recorder.SelectedDevice.GenericName.ToLowerInvariant().Contains(substring) ||
+					_recorder.SelectedDevice.ProductName.ToLowerInvariant().Contains(substring))
+				{
+					return pair.Value();
+				}
+			}
+			return MicrophoneImage;
+		}
+
+		private void RecordingDeviceIndicator_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				// launch the control panel that shows the user all their recording device options
+				System.Diagnostics.Process.Start("control", "mmsys.cpl,,1");
+			}
+			catch(Exception)
+			{
+				// ah well, we tried, nothing useful to tell the user.
+			}
+		}
+
+		private void PrepareNameToIconLookup()
+		{
+			AddDeviceMatch("None", () => NoAudioDeviceImage);
+			//NB order is important here, as these are used in a substring match, so put the more specific ones (e.g. Webcam) before more general ones (e.g. Microphone)
+			AddDeviceMatch("Webcam", () => WebcamImage);
+			AddDeviceMatch("Internal", () => ComputerInternalImage);
+			AddDeviceMatch("USB Audio Device", () => UsbAudioDeviceImage);
+			AddDeviceMatch("Microphone", () => MicrophoneImage);
+			AddDeviceMatch("Line", () => LineImage);
+			AddDeviceMatch("ZOOM", () => RecorderImage);
+
+			// not sure if this ever gets used; it would if we had a recording device but failed to figure out anything else about it
+			AddDeviceMatch("Generic", () => MicrophoneImage);
+
+			// Headset device names
+			// It's not clear to me why these device names are needed, but the original code was written in a way that
+			// suggests sometimes the SelectedDevice.GenericName is null, requiring us to match on specific device names.
+
+			foreach(var name in new[] {"Plantronics", "Andrea", "Microphone (VXi X200"})
+			{
+				AddDeviceMatch(name, () => KnownHeadsetImage);
+			}
+		}
+
+		private void AddDeviceMatch(string substring, Func<Image> function)
+		{
+			_nameSubstringToIconProperty.Add(new KeyValuePair<string, Func<Image>>(substring, function));
 		}
 	}
 }
