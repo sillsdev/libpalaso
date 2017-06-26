@@ -452,20 +452,30 @@ namespace SIL.Scripture
 			#endregion
 
 			#region Member variables
+			private static readonly Dictionary<string, ScrVersType> stringToTypeMap = new Dictionary<string, ScrVersType>();
+
 			public static Table Implementation = new Table();
 
 			private readonly Dictionary<VersificationKey, Versification> versifications = 
 				new Dictionary<VersificationKey, Versification>();
 			#endregion
-			
+
+			#region Static constructor
+			static Table()
+			{
+				foreach (ScrVersType type in Enum.GetValues(typeof(ScrVersType)))
+					stringToTypeMap[type.ToString()] = type;
+			}
+			#endregion
+
 			#region Public methods
 			/// <summary>
 			/// True iff named versification exists
 			/// </summary>
 			public bool Exists(string versName)
 			{
-				ScrVersType versificationType;
-				if (Enum.TryParse(versName, out versificationType) && versificationType != ScrVersType.Unknown)
+				ScrVersType versificationType = GetVersificationType(versName);
+				if (versificationType != ScrVersType.Unknown)
 					return true;
 
 				lock (versifications)
@@ -506,13 +516,18 @@ namespace SIL.Scripture
 			/// </summary>
 			public IEnumerable<ScrVers> VersificationTables()
 			{
+				yield return ScrVers.English;
+				yield return ScrVers.Original;
+				yield return ScrVers.Septuagint;
+				yield return ScrVers.Vulgate;
+				yield return ScrVers.RussianOrthodox;
+				yield return ScrVers.RussianProtestant;
+
 				List<Versification> versificationList;
 				lock (versifications)
-				{
 					versificationList = versifications.Values.ToList();
-				}
 
-				foreach (var versification in versificationList)
+				foreach (var versification in versificationList.Where(v => v.Type == ScrVersType.Unknown))
 					yield return new ScrVers(versification);
 			}
 
@@ -642,6 +657,7 @@ namespace SIL.Scripture
 					versification = new Versification(type.ToString(), null);
 					using (TextReader fallbackVersificationStream = new StringReader(resourceFileText))
 						ReadVersificationFile(fallbackVersificationStream, null, type, ref versification);
+					versifications[key] = versification;
 					return versification;
 				}
 			}
@@ -654,8 +670,8 @@ namespace SIL.Scripture
 				if (string.IsNullOrEmpty(versName))
 					throw new ArgumentNullException("versName");
 
-				ScrVersType type;
-				if (Enum.TryParse(versName, out type) && type != ScrVersType.Unknown)
+				ScrVersType type = GetVersificationType(versName);
+				if (type != ScrVersType.Unknown)
 					return Get(type);
 
 				lock (versifications)
@@ -680,7 +696,7 @@ namespace SIL.Scripture
 			internal static ScrVersType GetVersificationType(string versName)
 			{
 				ScrVersType type;
-				return Enum.TryParse(versName, out type) ? type : ScrVersType.Unknown;
+				return stringToTypeMap.TryGetValue(versName, out type) ? type : ScrVersType.Unknown;
 			}
 
 			private void Load(string filePath, ScrVersType type, ref Versification versification, string fallbackName = null)

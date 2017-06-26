@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using SIL.Reflection;
@@ -183,9 +184,14 @@ namespace SIL.Scripture.Tests
 		[SetUp]
 		public void Setup()
 		{
-			versification = new ScrVers("DummyScrVers");
-			// Defaults to the eng.vrs file but without a common name
-			versification.ClearAllInfo();
+			versification = new ScrVers("DummyScrVers"); // Defaults to the eng.vrs file but without a common name
+			versification.ClearAllInfo(); // Clear all mappings, etc. from the versification so we can test with a clean slate
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
+			Versification.Table.Implementation.RemoveAllUnknownVersifications();
 		}
 		#endregion
 
@@ -903,6 +909,50 @@ namespace SIL.Scripture.Tests
 			ScrVers vers = new ScrVers("Blah");
 			Assert.AreEqual("Blah", vers.Name);
 			Assert.IsFalse(vers.IsPresent);
+		}
+
+		[Test]
+		public void Get_BuiltInVersificationsCached()
+		{
+			ScrVers english1 = ScrVers.English;
+			ScrVers english2 = new ScrVers(ScrVersType.English);
+			ScrVers english3 = new ScrVers("English");
+			Assert.IsTrue(ReferenceEquals(english1.VersInfo, english2.VersInfo));
+			Assert.IsTrue(ReferenceEquals(english2.VersInfo, english3.VersInfo));
+		}
+
+		[Test]
+		public void Get_UnknownVersificationsCached()
+		{
+			ScrVers monkey1 = new ScrVers("Monkey");
+			ScrVers monkey2 = new ScrVers("Monkey");
+			Assert.IsTrue(ReferenceEquals(monkey1.VersInfo, monkey2.VersInfo));
+		}
+
+		[Test]
+		public void Get_NumberValueAllowedAsName()
+		{
+			ScrVers number2 = new ScrVers("2");
+			Assert.AreEqual(ScrVersType.Unknown, number2.Type);
+			Assert.AreEqual("2", number2.Name);
+
+			ScrVers number27 = new ScrVers("27");
+			Assert.AreEqual(ScrVersType.Unknown, number27.Type);
+			Assert.AreEqual("27", number27.Name);
+		}
+
+		[Test]
+		public void VersificationTables_AlwaysIncludesAllBuiltInVersifications()
+		{
+			List<ScrVers> foundVersifications = Versification.Table.Implementation.VersificationTables().ToList();
+			Assert.AreEqual(7, foundVersifications.Count);
+			Assert.IsTrue(foundVersifications.Contains(versification));
+			Assert.IsTrue(foundVersifications.Contains(ScrVers.English), "missing English");
+			Assert.IsTrue(foundVersifications.Contains(ScrVers.Original), "missing Original");
+			Assert.IsTrue(foundVersifications.Contains(ScrVers.RussianOrthodox), "missing RussianOrthodox");
+			Assert.IsTrue(foundVersifications.Contains(ScrVers.Septuagint), "missing Septuagint");
+			Assert.IsTrue(foundVersifications.Contains(ScrVers.Vulgate), "missing Vulgate");
+			Assert.IsTrue(foundVersifications.Contains(ScrVers.RussianProtestant), "missing RussianProtestant");
 		}
 		#endregion
 
