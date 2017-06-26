@@ -28,8 +28,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <TargetFrameworkProfile/>
+    <PlatformTarget>x86</PlatformTarget>
+    <TargetFrameworkProfile />
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -269,6 +269,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Debug\L10NSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -317,6 +318,10 @@
     <ProjectReference Include="..\..\SIL.Lexicon\SIL.Lexicon.csproj">
       <Project>{fad20de2-d5bb-4d9d-aeef-61f02663105f}</Project>
       <Name>SIL.Lexicon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SIL.Media\SIL.Media.csproj">
+      <Project>{66B3504A-3B4E-45CB-903A-A9A75B22EF68}</Project>
+      <Name>SIL.Media</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SIL.Windows.Forms.Keyboarding\SIL.Windows.Forms.Keyboarding.csproj">
       <Project>{0580ed5f-6274-4928-83ee-175f01ad052d}</Project>

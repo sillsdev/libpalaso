@@ -3,8 +3,10 @@
 
 #if !MONO
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Media;
 using IrrKlang;
 
 namespace SIL.Media
@@ -92,10 +94,7 @@ namespace SIL.Media
 			get { return _recorder != null && _recorder.IsRecording; }
 		}
 
-		public bool IsPlaying
-		{
-			get { return _sound != null && !_sound.Finished; }
-		}
+		public bool IsPlaying { get; set; }
 
 		public bool CanRecord
 		{
@@ -112,38 +111,79 @@ namespace SIL.Media
 			get { return !IsPlaying && !IsRecording && File.Exists(_path); }
 		}
 
+		SoundPlayer _player = new SoundPlayer();
+
 		public void Play()
 		{
 			if (IsRecording)
 				throw new ApplicationException("Can't play while recording.");
+			if (!File.Exists(FilePath))
+				throw new FileNotFoundException("No file to play");
+			if (new FileInfo(FilePath).Length == 0)
+				throw new Exception("Trying to play empty file");
 
-			if (_sound != null)
+			// Current version doesn't use IrrKlang for playback.
+			// Recently we've had all kinds of problems with IrrKlang playback,
+			// mainly connected with the sound completed event.
+			// One version crashed if a sound completed event happened and the handler
+			// wasn't in the right AppDomain (breaking many unit tests)
+			// Another version crahsed at the end of the sound, even in a real app.
+			// The current version, according to my tests, never generates the sound completed event.
+			// So, just use the built-in system sound player.
+			_player.Stop();
+			_player.SoundLocation = FilePath;
+			var worker = new BackgroundWorker();
+			IsPlaying = true;
+			worker.DoWork += (sender, args) =>
 			{
 				try
 				{
-					_engine.RemoveAllSoundSources(); // Stops sounds currently playing
+					_player.PlaySync();
+					PlaybackStopped?.Invoke(this, new EventArgs());
+					IsPlaying = false;
 				}
-				catch (Exception)
+				catch (Exception e)
 				{
-					// The most likely exception is that the sound has finished playing
+					// Try to clean things up as best we can...no easy way to test this, though.
+					// Even though we're about to try to play it another way, we won't know when that's done,
+					// and we don't want to be permanently in the playing state.
+					IsPlaying = false;
+					// And, in case something critical is waiting for this...
+					PlaybackStopped?.Invoke(this, new EventArgs());
+					// Maybe the system has another way of playing it that works? e.g., most default players will handle mp3.
+					Process.Start(FilePath);
+					// The main thread has gone on with other work, don't have any current way to report the exception.
 				}
-				_engine.StopAllSounds(); // Stops sounds after playing
-				_sound.Dispose();
-				_sound = null;
-			}
+			};
+			worker.RunWorkerAsync();
 
-			if (!File.Exists(_path))
-				throw new FileNotFoundException("Could not find sound file", _path);
+			//if (_sound != null)
+			//{
+			//	try
+			//	{
+			//		_engine.RemoveAllSoundSources(); // Stops sounds currently playing
+			//	}
+			//	catch (Exception)
+			//	{
+			//		// The most likely exception is that the sound has finished playing
+			//	}
+			//	_engine.StopAllSounds(); // Stops sounds after playing
+			//	_sound.Dispose();
+			//	_sound = null;
+			//}
 
-			_sound = _engine.Play2D(_path);
-			if (_sound != null)
-			{
-				_sound.setSoundStopEventReceiver(_irrklangEventProxy, _engine);
-				return;
-			}
-			if (new FileInfo(_path).Length == 0) throw new Exception("Empty File");
-			// if BytesPerSecond is 0 or _sound is null, it's probably a format we don't recognize. See if the OS knows how to play it.
-			Process.Start(_path);
+			//if (!File.Exists(_path))
+			//	throw new FileNotFoundException("Could not find sound file", _path);
+
+			//_sound = _engine.Play2D(_path);
+			//if (_sound != null)
+			//{
+			//	_sound.setSoundStopEventReceiver(_irrklangEventProxy, _engine);
+			//	return;
+			//}
+			//if (new FileInfo(_path).Length == 0) throw new Exception("Empty File");
+			//// if BytesPerSecond is 0 or _sound is null, it's probably a format we don't recognize. See if the OS knows how to play it.
+			//Process.Start(_path);
 		}
 
 		private class SoundFile : IFileFactory
@@ -256,6 +296,8 @@ namespace SIL.Media
 		{
 			if (_sound != null && !_sound.Finished)
 				_sound.Stop();
+			if (IsPlaying)
+				_player.Stop();
 			try
 			{
 				_engine.RemoveAllSoundSources();

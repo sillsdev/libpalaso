@@ -5,6 +5,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using SIL.IO;
 using SIL.Lexicon;
@@ -21,6 +22,8 @@ using SIL.Windows.Forms.ReleaseNotes;
 using SIL.Windows.Forms.SettingProtection;
 using SIL.Windows.Forms.WritingSystems;
 using SIL.WritingSystems;
+using SIL.Media;
+using Microsoft.VisualBasic.Devices;
 
 namespace SIL.Windows.Forms.TestApp
 {
@@ -287,6 +290,43 @@ and displays it as HTML.
 				default: return MessageBoxDefaultButton.Button1;
 				case 1: return MessageBoxDefaultButton.Button2;
 				case 2: return MessageBoxDefaultButton.Button3;
+			}
+		}
+
+		private bool _mouseDownFlag = false;
+
+		private void recordPlayButton_MouseUp(object sender, MouseEventArgs e)
+		{
+			_mouseDownFlag = false;
+		}
+
+		/// <summary>
+		/// Used for a practical validation of audio session record and playback.
+		/// Hold the button down while saying something; release to hear playback.
+		/// Should see a "play started" dialog immediately after releasing mouse,
+		/// and "play stopped" when it has all played.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void recordPlayButton_MouseDown(object sender, MouseEventArgs e)
+		{
+			_mouseDownFlag = true;
+			using (var tempFile = TempFile.WithExtension(".wav"))
+			using (var session = AudioFactory.CreateAudioSession(tempFile.Path))
+			{
+				session.StartRecording();
+				while (_mouseDownFlag)
+				{
+					Thread.Sleep(10);
+					Application.DoEvents();
+				}
+				session.StopRecordingAndSaveAsWav();
+				(session as ISimpleAudioWithEvents).PlaybackStopped += (o, args) =>
+				{
+					this.Invoke((Action)(()=> MessageBox.Show("play stopped")));
+				};
+				session.Play();
+				MessageBox.Show("play started");
 			}
 		}
 	}
