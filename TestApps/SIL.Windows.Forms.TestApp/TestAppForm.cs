@@ -23,7 +23,6 @@ using SIL.Windows.Forms.SettingProtection;
 using SIL.Windows.Forms.WritingSystems;
 using SIL.WritingSystems;
 using SIL.Media;
-using Microsoft.VisualBasic.Devices;
 
 namespace SIL.Windows.Forms.TestApp
 {

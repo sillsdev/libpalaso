@@ -21,7 +21,7 @@ namespace SIL.Media
 		private DateTime _stopRecordingTime;
 		private readonly string _path;
 		private readonly SoundFile _soundFile;
-		private readonly ISoundStopEventReceiver _irrklangEventProxy;
+		//private readonly ISoundStopEventReceiver _irrklangEventProxy;
 
 		/// <summary>
 		/// Will be raised when playing is over
@@ -35,7 +35,7 @@ namespace SIL.Media
 			_engine.AddFileFactory(_soundFile);
 			_recorder = new IAudioRecorder(_engine);
 			_path = filePath;
-			_irrklangEventProxy = new ProxyForIrrklangEvents(this);
+			//_irrklangEventProxy = new ProxyForIrrklangEvents(this);
 		}
 
 		public void Test()
@@ -118,7 +118,7 @@ namespace SIL.Media
 			if (IsRecording)
 				throw new ApplicationException("Can't play while recording.");
 			if (!File.Exists(FilePath))
-				throw new FileNotFoundException("No file to play");
+				throw new FileNotFoundException("Could not find sound file");
 			if (new FileInfo(FilePath).Length == 0)
 				throw new Exception("Trying to play empty file");
 
@@ -145,13 +145,14 @@ namespace SIL.Media
 				catch (Exception e)
 				{
 					// Try to clean things up as best we can...no easy way to test this, though.
-					// Even though we're about to try to play it another way, we won't know when that's done,
-					// and we don't want to be permanently in the playing state.
+					// We don't want to be permanently in the playing state.
 					IsPlaying = false;
 					// And, in case something critical is waiting for this...
 					PlaybackStopped?.Invoke(this, new EventArgs());
 					// Maybe the system has another way of playing it that works? e.g., most default players will handle mp3.
-					Process.Start(FilePath);
+					// But it seems risky...maybe we will be trying to play another sound or do some recording?
+					// Decided not to do this for now.
+					// Process.Start(FilePath);
 					// The main thread has gone on with other work, don't have any current way to report the exception.
 				}
 			};
@@ -216,26 +217,31 @@ namespace SIL.Media
 		/// This is better than putting the ISoundStopEventReceiver on our class, because doing *that*
 		/// requires clients then to reference the irrklang assembly, where it is defined.
 		/// And this is just a private mater, since we expose the event through a normal .net event handler
+		/// (This class was needed for the old IrrKlang playback.)
 		/// </summary>
-		private class ProxyForIrrklangEvents : ISoundStopEventReceiver
-		{
-			private readonly AudioIrrKlangSession _session;
+		//private class ProxyForIrrklangEvents : ISoundStopEventReceiver
+		//{
+		//	private readonly AudioIrrKlangSession _session;
 
-			public ProxyForIrrklangEvents(AudioIrrKlangSession session)
-			{
-				_session = session;
-			}
+		//	public ProxyForIrrklangEvents(AudioIrrKlangSession session)
+		//	{
+		//		_session = session;
+		//	}
 
-			public void OnSoundStopped(ISound sound, StopEventCause reason, object userData)
-			{
-				_session.OnSoundStopped(sound, reason, userData);
-			}
-		}
+		//	public void OnSoundStopped(ISound sound, StopEventCause reason, object userData)
+		//	{
+		//		_session.OnSoundStopped(sound, reason, userData);
+		//	}
+		//}
 
-		private void OnSoundStopped(ISound sound, StopEventCause reason, object userData)
-		{
-			Dispose();
-		}
+		//private void OnSoundStopped(ISound sound, StopEventCause reason, object userData)
+		//{
+		//	// If we reinstate the old IrrKlang player, we may need to do something about disposing of _soundFile.
+		//	// or possibly _sound.
+		//	// Previously it called Dispose(), which is wrong; the session isn't necessarily done with
+		//	// after playing one sound.
+		//	PlaybackStopped?.Invoke(this, EventArgs.Empty);
+		//}
 
 		public void SaveAsWav(string path)
 		{
