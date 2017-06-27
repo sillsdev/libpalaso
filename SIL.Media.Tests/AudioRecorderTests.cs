@@ -1,8 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Media;
 using System.Threading;
+using System.Windows.Forms;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.Media.Tests.Properties;
@@ -203,9 +205,20 @@ namespace SIL.Media.Tests
 					w.RunWorkerAsync();
 					Thread.Sleep(1000);
 					x.StopRecordingAndSaveAsWav();
+					bool stopped = false;
+					(x as ISimpleAudioWithEvents).PlaybackStopped += (o, args) => { stopped = true; };
+					var watch = Stopwatch.StartNew();
 					x.Play();
-					Thread.Sleep(1000);
-					x.StopPlaying();
+					while (!stopped)
+					{
+						Thread.Sleep(20);
+						Application.DoEvents();
+						if (watch.ElapsedMilliseconds > 2000)
+						{
+							x.StopPlaying();
+							Assert.Fail("stop event not received");
+						}
+					}
 				}
 			}
 		}
