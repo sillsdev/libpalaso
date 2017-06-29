@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -544,6 +545,21 @@ namespace SIL.Xml
 			XmlElement xe = node.OwnerDocument.CreateElement(elementName);
 			node.AppendChild(xe);
 			return xe;
+		}
+
+		/// <summary>
+		/// Append an attribute with the specified name and value to parent.
+		/// </summary>
+		/// <param name="parent"></param>
+		/// <param name="attrName"></param>
+		/// <param name="attrVal"></param>
+		public static void AppendAttribute(XmlNode parent, string attrName, string attrVal)
+		{
+			Debug.Assert(parent.OwnerDocument != null, "parent.OwnerDocument != null");
+			XmlAttribute xa = parent.OwnerDocument.CreateAttribute(attrName);
+			xa.Value = attrVal;
+			Debug.Assert(parent.Attributes != null, "parent.Attributes != null");
+			parent.Attributes.Append(xa);
 		}
 
 		/// <summary>
