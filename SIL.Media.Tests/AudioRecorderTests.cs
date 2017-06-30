@@ -206,7 +206,14 @@ namespace SIL.Media.Tests
 					Thread.Sleep(1000);
 					x.StopRecordingAndSaveAsWav();
 					bool stopped = false;
-					(x as ISimpleAudioWithEvents).PlaybackStopped += (o, args) => { stopped = true; };
+					bool isPlayingInEventHandler = false;
+					(x as ISimpleAudioWithEvents).PlaybackStopped += (o, args) =>
+					{
+						// assert here is swallowed, probably because not receiving exceptions from background worker.
+						// We want to check that isPlaying is false even during the event handler.
+						isPlayingInEventHandler = x.IsPlaying;
+						stopped = true;
+					};
 					var watch = Stopwatch.StartNew();
 					x.Play();
 					while (!stopped)
@@ -219,6 +226,8 @@ namespace SIL.Media.Tests
 							Assert.Fail("stop event not received");
 						}
 					}
+					Assert.That(isPlayingInEventHandler, Is.False);
+					Assert.That(x.IsPlaying, Is.False);
 				}
 			}
 		}

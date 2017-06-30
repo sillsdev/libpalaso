@@ -139,8 +139,8 @@ namespace SIL.Media
 				try
 				{
 					_player.PlaySync();
+					IsPlaying = false; // BEFORE we raise the event! State should be valid while handling it.
 					PlaybackStopped?.Invoke(this, new EventArgs());
-					IsPlaying = false;
 				}
 				catch (Exception e)
 				{
