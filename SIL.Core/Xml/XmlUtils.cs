@@ -550,16 +550,10 @@ namespace SIL.Xml
 		/// <summary>
 		/// Append an attribute with the specified name and value to parent.
 		/// </summary>
-		/// <param name="parent"></param>
-		/// <param name="attrName"></param>
-		/// <param name="attrVal"></param>
+		[Obsolete("Use SetAttribute instead")]
 		public static void AppendAttribute(XmlNode parent, string attrName, string attrVal)
 		{
-			Debug.Assert(parent.OwnerDocument != null, "parent.OwnerDocument != null");
-			XmlAttribute xa = parent.OwnerDocument.CreateAttribute(attrName);
-			xa.Value = attrVal;
-			Debug.Assert(parent.Attributes != null, "parent.Attributes != null");
-			parent.Attributes.Append(xa);
+			SetAttribute(parent, attrName, attrVal);
 		}
 
 		/// <summary>
