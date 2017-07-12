@@ -763,11 +763,11 @@ namespace SIL.WritingSystems
 		{
 			if (element != null)
 			{
-                if (element.IsEmpty || (string.IsNullOrEmpty((string)element) && !element.HasElements && !element.HasAttributes))
-                {
-                    element.Remove();
-                    element = null;
-                }
+				if (element.IsEmpty || (string.IsNullOrEmpty((string)element) && !element.HasElements && !element.HasAttributes))
+				{
+					element.Remove();
+					element = null;
+				}
 			}
 		}
 		
@@ -806,7 +806,15 @@ namespace SIL.WritingSystems
 						DtdProcessing = DtdProcessing.Parse
 					};
 					reader = XmlReader.Create(oldFile, readerSettings);
-					element = XElement.Load(reader);
+					try
+					{
+						element = XElement.Load(reader);
+					}
+					catch
+					{
+						// ignore content of old file since it can't be read
+						element = new XElement("ldml");
+					}
 				}
 				else
 				{
@@ -819,6 +827,7 @@ namespace SIL.WritingSystems
 				using (var writer = XmlWriter.Create(filePath, writerSettings))
 				{
 					WriteLdml(writer, element, ws);
+					writer.Flush();
 					writer.Close();
 				}
 			}
