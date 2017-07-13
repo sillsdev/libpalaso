@@ -716,7 +716,6 @@ namespace SIL.Archiving
 		}
 
 		/// ------------------------------------------------------------------------------------
-// ReSharper disable once UnusedParameter.Local
 		private void PreventInvalidAudienceTypeForWorkStage(Enum invalidAudience, WorkStage stage)
 		{
 			if ((invalidAudience != null) && (invalidAudience.HasFlag(_metsAudienceType)))

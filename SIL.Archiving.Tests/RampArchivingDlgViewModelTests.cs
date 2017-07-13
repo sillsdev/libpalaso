@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using Ionic.Zip;
 using NUnit.Framework;
-using SIL.Archiving.Generic;
 using SIL.IO;
 using SIL.Reporting;
 using SIL.TestUtilities;
@@ -15,7 +14,7 @@ namespace SIL.Archiving.Tests
 {
 	[TestFixture]
 	[Category("Archiving")]
-	public class SessionArchivingTests
+	public class RampArchivingDlgViewModelTests
 	{
 		private RampArchivingDlgViewModel _helper;
 		private Dictionary<string, Tuple<IEnumerable<string>, string>> _filesToAdd;
