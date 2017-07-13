@@ -57,11 +57,13 @@ namespace SIL.Windows.Forms.Reporting
 		/// <param name="minor">True to write a minor event, false to write full event</param>
 		/// <param name="eventDescription"></param>
 		/// <param name="okToBotherUser">The first time it is called with this true and short of memory, display a dialog.</param>
+		/// <param name="forceFullCollection">true to indicate that this method can wait for garbage collection to occur before returning;
+		/// true is the default for compatibility with previous behavior</param>
 		/// <returns>true if total memory in use is more than 1G (whether or not we bothered the user)</returns>
-		public static bool CheckMemory(bool minor, string eventDescription, bool okToBotherUser)
+		public static bool CheckMemory(bool minor, string eventDescription, bool okToBotherUser, bool forceFullCollection = true)
 		{
 			// the best available approximation of the number of bytes currently allocated in managed memory.
-			var heapMem = GC.GetTotalMemory(true); // first, as it may reduce other numbers
+			var heapMem = GC.GetTotalMemory(forceFullCollection); // first, as it may reduce other numbers
 			var is64BitProcess = IntPtr.Size == 8; // according to MSDN
 			long memorySize64;
 			long workingSet64;
