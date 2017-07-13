@@ -284,26 +284,6 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <ItemGroup Condition="$(Configuration.StartsWith('Debug'))">
-    <Reference Include="Keyman7Interop.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Debug\Keyman7Interop.dll</HintPath>
-    </Reference>
-    <Reference Include="KeymanLink.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Debug\KeymanLink.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup Condition="$(Configuration.StartsWith('Release'))">
-    <Reference Include="Keyman7Interop.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Release\Keyman7Interop.dll</HintPath>
-    </Reference>
-    <Reference Include="KeymanLink.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Release\KeymanLink.dll</HintPath>
-    </Reference>
-  </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'DebugMonoStrongName'">
     <Reference Include="L10NSharp.dll">
       <SpecificVersion>False</SpecificVersion>
@@ -317,12 +297,28 @@
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName'">
+    <Reference Include="Keyman7Interop.dll">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Debug\Keyman7Interop.dll</HintPath>
+    </Reference>
+    <Reference Include="KeymanLink.dll">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Debug\KeymanLink.dll</HintPath>
+    </Reference>
     <Reference Include="L10NSharp.dll">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Debug\L10NSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
+    <Reference Include="Keyman7Interop.dll">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Release\Keyman7Interop.dll</HintPath>
+    </Reference>
+    <Reference Include="KeymanLink.dll">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\Release\KeymanLink.dll</HintPath>
+    </Reference>
     <Reference Include="L10NSharp.dll">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Release\L10NSharp.dll</HintPath>

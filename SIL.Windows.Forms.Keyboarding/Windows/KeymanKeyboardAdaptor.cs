@@ -1,12 +1,13 @@
 // Copyright (c) 2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+#if !MONO
 using Keyman7Interop;
+#endif
 using Microsoft.Win32;
 using SIL.Keyboarding;
 using SIL.Reporting;
@@ -36,6 +37,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		{
 			get
 			{
+#if !MONO
 				// Try the Keyman 7/8 interface
 				try
 				{
@@ -66,6 +68,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				{
 					// Keyman 6 isn't installed or whatever.
 				}
+#endif
 				return false;
 			}
 		}
@@ -85,6 +88,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		{
 			CheckDisposed();
 			Dictionary<string, KeymanKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<KeymanKeyboardDescription>().ToDictionary(kd => kd.Id);
+#if !MONO
 			// Try the Keyman 7/8 interface
 			try
 			{
@@ -107,6 +111,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			{
 				// Keyman 6 isn't installed or whatever.
 			}
+#endif
 
 			foreach (KeymanKeyboardDescription keyboard in curKeyboards.Values)
 				keyboard.SetIsAvailable(false);
@@ -235,6 +240,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		public bool ActivateKeyboard(KeyboardDescription keyboard)
 		{
 			CheckDisposed();
+#if !MONO
 			var keymanKbdDesc = (KeymanKeyboardDescription)keyboard;
 			if (keymanKbdDesc.IsKeyman6)
 			{
@@ -274,6 +280,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					return false;
 				}
 			}
+#endif
 
 			KeyboardController.Instance.ActiveKeyboard = keyboard;
 			return true;
@@ -282,6 +289,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		public void DeactivateKeyboard(KeyboardDescription keyboard)
 		{
 			CheckDisposed();
+#if !MONO
 			try
 			{
 				if (((KeymanKeyboardDescription) keyboard).IsKeyman6)
@@ -300,6 +308,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			{
 				// Keyman not installed?
 			}
+#endif
 		}
 
 		/// <summary>
