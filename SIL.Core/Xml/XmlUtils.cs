@@ -114,7 +114,7 @@ namespace SIL.Xml
 		/// <returns>The value, or 0 if attr is missing.</returns>
 		public static int GetMandatoryIntegerAttributeValue(XmlNode node, string attrName)
 		{
-			return Int32.Parse(GetManditoryAttributeValue(node, attrName));
+			return Int32.Parse(GetMandatoryAttributeValue(node, attrName));
 		}
 
 		/// <summary>
@@ -127,7 +127,7 @@ namespace SIL.Xml
 		/// <exception cref="FormatException">Thrown, if <paramref name="attrName"/> value is not an integer (int).</exception>
 		public static int GetMandatoryIntegerAttributeValue(XElement element, string attrName)
 		{
-			return int.Parse(GetManditoryAttributeValue(element, attrName), CultureInfo.InvariantCulture);
+			return int.Parse(GetMandatoryAttributeValue(element, attrName), CultureInfo.InvariantCulture);
 		}
 
 		/// <summary>
@@ -165,7 +165,7 @@ namespace SIL.Xml
 		/// <returns></returns>
 		public static int[] GetMandatoryIntegerListAttributeValue(XmlNode node, string attrName)
 		{
-			string input = GetManditoryAttributeValue(node, attrName);
+			string input = GetMandatoryAttributeValue(node, attrName);
 			string[] vals = input.Split(',');
 			int[] result = new int[vals.Length];
 			for (int i = 0;i < vals.Length;i++)
@@ -183,7 +183,7 @@ namespace SIL.Xml
 		/// <returns></returns>
 		public static int[] GetMandatoryIntegerListAttributeValue(XElement element, string attrName)
 		{
-			var input = GetManditoryAttributeValue(element, attrName);
+			var input = GetMandatoryAttributeValue(element, attrName);
 			var vals = input.Split(',');
 			var result = new int[vals.Length];
 			for (var i = 0; i < vals.Length; i++)
@@ -200,7 +200,7 @@ namespace SIL.Xml
 		[CLSCompliant(false)]
 		public static uint[] GetMandatoryUIntegerListAttributeValue(XmlNode node, string attrName)
 		{
-			var input = GetManditoryAttributeValue(node, attrName);
+			var input = GetMandatoryAttributeValue(node, attrName);
 			var vals = input.Split(',');
 			var result = new uint[vals.Length];
 			for (var i = 0; i < vals.Length; i++)
@@ -214,7 +214,7 @@ namespace SIL.Xml
 		[CLSCompliant(false)]
 		public static uint[] GetMandatoryUIntegerListAttributeValue(XElement element, string attrName)
 		{
-			var input = GetManditoryAttributeValue(element, attrName);
+			var input = GetMandatoryAttributeValue(element, attrName);
 			var vals = input.Split(',');
 			var result = new uint[vals.Length];
 			for (var i = 0; i < vals.Length; i++)
@@ -490,6 +490,27 @@ namespace SIL.Xml
 			return -1;
 		}
 
+		#region Obsolete mis-spelled methods
+		[Obsolete("Use GetMandatoryAttributeValue instead")]
+		public static string GetManditoryAttributeValue(XmlNode node, string attrName)
+		{
+			return GetMandatoryAttributeValue(node, attrName);
+		}
+
+		[Obsolete("Use GetMandatoryAttributeValue instead")]
+		public static string GetManditoryAttributeValue(XElement element, string attrName)
+		{
+			return GetMandatoryAttributeValue(element, attrName);
+		}
+
+		[Obsolete("Use GetMandatoryAttributeValue instead")]
+		public static string GetManditoryAttributeValue(XPathNavigator node, string attrName)
+		{
+			return GetMandatoryAttributeValue(node, attrName);
+		}
+
+		#endregion
+
 		/// <summary>
 		/// Get an obligatory attribute value.
 		/// </summary>
@@ -499,7 +520,7 @@ namespace SIL.Xml
 		/// <exception cref="ApplicationException">
 		/// Thrown when the value is not found in the node.
 		/// </exception>
-		public static string GetManditoryAttributeValue(XmlNode node, string attrName)
+		public static string GetMandatoryAttributeValue(XmlNode node, string attrName)
 		{
 			string retval = GetOptionalAttributeValue(node, attrName, null);
 			if (retval == null)
@@ -517,7 +538,7 @@ namespace SIL.Xml
 		/// <exception cref="ApplicationException">
 		/// Thrown when the value is not found in the node.
 		/// </exception>
-		public static string GetManditoryAttributeValue(XElement element, string attrName)
+		public static string GetMandatoryAttributeValue(XElement element, string attrName)
 		{
 			var retval = GetOptionalAttributeValue(element, attrName, null);
 			if (retval == null)
@@ -526,7 +547,7 @@ namespace SIL.Xml
 			return retval;
 		}
 
-		public static string GetManditoryAttributeValue(XPathNavigator node, string attrName)
+		public static string GetMandatoryAttributeValue(XPathNavigator node, string attrName)
 		{
 			string retval = GetOptionalAttributeValue(node, attrName, null);
 			if (retval == null)
