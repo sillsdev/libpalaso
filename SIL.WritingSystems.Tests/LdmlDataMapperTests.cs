@@ -895,8 +895,9 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		[Test]
-		public void Write_LdmlIsNicelyFormatted()
+		[TestCase(null)]
+		[TestCase("\u0000\u0000")]
+		public void Write_LdmlIsNicelyFormatted(string curentContent)
 		{
 			using (var file = new TempFile())
 			{
@@ -904,7 +905,8 @@ namespace SIL.WritingSystems.Tests
 				var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				var ws = new WritingSystemDefinition("en-Zxxx-x-audio");
 				ws.DateModified = new DateTime(01, 01, 01, 0, 0, 0, DateTimeKind.Utc);
-				adaptor.Write(file.Path, ws, null);
+				Stream existingDataStream = curentContent == null ? null : new MemoryStream(Encoding.UTF8.GetBytes(curentContent));
+				adaptor.Write(file.Path, ws, existingDataStream);
 
 				//change the read writing system and write it out again
 				var ws2 = new WritingSystemDefinition();
