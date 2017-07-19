@@ -524,12 +524,12 @@
       </tuv>
     </tu>
     <tu tuid="SettingsProtection.PasswordNotice">
-      <note>Don't forget to have the {0} and {1} in your translated string!</note>
+      <note>Don't forget to have the {0}, {1} and {2} in your translated string!</note>
       <tuv xml:lang="en">
-        <seg>Factory password for these settings is "{0}".  If you forget it, you can always google for "{1}" and "factory password"</seg>
+        <seg>Factory password for these settings is "{0}".  If you forget it, you can always google for "{1}" and "{2}"</seg>
       </tuv>
       <tuv xml:lang="fr">
-        <seg>Le mot de passe d'usine pour cette configuration est "{0}". Pour le retrouver, vous pouvez toujours googler "{1}" et "factory password"</seg>
+        <seg>Le mot de passe d'usine pour cette configuration est "{0}". Pour le retrouver, vous pouvez toujours googler "{1}" et "{2}"</seg>
       </tuv>
     </tu>
     <tu tuid="SettingsProtection.RequirePasswordCheckBox">

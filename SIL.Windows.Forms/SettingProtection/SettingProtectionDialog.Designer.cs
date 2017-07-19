@@ -110,8 +110,8 @@ namespace SIL.Windows.Forms.SettingProtection
 			this._passwordNotice.TabIndex = 5;
 			this._passwordNotice.TabStop = false;
 			this._passwordNotice.Text = "Factory password for these settings is \"{0}\".  If you forget it, you can always g" +
-	"oogle for \"{1}\" and \"factory password\"";
-			//
+    "oogle for \"{1}\" and \"{2}\"";
+			// 
 			// betterLabel1
 			//
 			this.betterLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)

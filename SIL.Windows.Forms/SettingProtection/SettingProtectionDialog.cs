@@ -6,6 +6,7 @@ namespace SIL.Windows.Forms.SettingProtection
 	public partial class SettingProtectionDialog : Form
 	{
 		private bool _didHavePasswordSet;
+		private const string FactoryPassword = "factory password";
 
 		public SettingProtectionDialog()
 		{
@@ -16,7 +17,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			_didHavePasswordSet = SettingsProtectionSingleton.Settings.RequirePassword;
 
 			_passwordNotice.Text = string.Format(_passwordNotice.Text, SettingsProtectionSingleton.FactoryPassword,
-												 SettingsProtectionSingleton.CoreProductName);
+												 SettingsProtectionSingleton.CoreProductName, FactoryPassword);
 		}
 
 		private void OnNormallHidden_CheckedChanged(object sender, EventArgs e)
