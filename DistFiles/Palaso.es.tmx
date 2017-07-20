@@ -571,11 +571,12 @@
 	  </tuv>
 	</tu>
 	<tu tuid="SettingsProtection.PasswordNotice">
+	  <note>Don't forget to have the {0}, {1} and {2} in your translated string!</note>
 	  <tuv xml:lang="en">
-		<seg>Factory password for these settings is "{0}".  If you forget it, you can always google for "{1}" and "factory password"</seg>
+		<seg>Factory password for these settings is "{0}".  If you forget it, you can always google for "{1}" and "{2}"</seg>
 	  </tuv>
 	  <tuv xml:lang="es">
-		<seg>Contraseña de fábrica para estos ajustes es "{0}".  Si lo olvida, siempre puedes usar Google para buscar "{1}" y "factory password"</seg>
+		<seg>Contraseña de fábrica para estos ajustes es "{0}".  Si lo olvida, siempre puedes usar Google para buscar "{1}" y "{2}"</seg>
 	  </tuv>
 	</tu>
 	<tu tuid="SettingsProtection.RequirePasswordCheckBox">
