@@ -114,11 +114,8 @@ namespace Palaso.DictionaryServices.Tests.Model
 			_entry = new LexEntry();
 			_sense = new LexSense();
 			_entry.Senses.Add(_sense);
-#if GlossMeaning
-			this._sense.Gloss["th"] = "sense";
-#else
+			_sense.Gloss["th"] = "sense";
 			_sense.Definition["th"] = "sense";
-#endif
 			MultiText customFieldInSense =
 				_sense.GetOrCreateProperty<MultiText>("customFieldInSense");
 			customFieldInSense["th"] = "custom";
@@ -378,11 +375,8 @@ namespace Palaso.DictionaryServices.Tests.Model
 
 		private void ClearSenseMeaning()
 		{
-#if GlossMeaning
-			this._sense.Gloss["th"] = string.Empty;
-#else
 			_sense.Definition["th"] = string.Empty;
-#endif
+			_sense.Gloss["th"] = string.Empty;
 		}
 
 		private void ClearSenseExample()
@@ -534,16 +528,25 @@ namespace Palaso.DictionaryServices.Tests.Model
 		[Test]
 		public void GetOrCreateSenseWithMeaning_SenseDoesNotExist_NewSenseWithMeaning()
 		{
+			_sense.Gloss["th"] = string.Empty;
 			MultiText meaning = new MultiText();
 			meaning.SetAlternative("th", "new");
 
 			LexSense sense = _entry.GetOrCreateSenseWithMeaning(meaning);
 			Assert.AreNotSame(_sense, sense);
-#if GlossMeaning
-			Assert.AreEqual("new", sense.Gloss.GetExactAlternative("th"));
-#else
 			Assert.AreEqual("new", sense.Definition.GetExactAlternative("th"));
-#endif
+		}
+
+		[Test]
+		public void GetOrCreateSenseWithMeaning_SenseDoesNotExist_NewSenseWithMeaning_Gloss()
+		{
+			_sense.Definition["th"] = string.Empty;
+			MultiText meaning = new MultiText();
+			meaning.SetAlternative("th", "new");
+
+			LexSense sense = _entry.GetOrCreateSenseWithMeaning(meaning, false);
+			Assert.AreNotSame(_sense, sense);
+			Assert.AreEqual("new", sense.Gloss.GetExactAlternative("th"));
 		}
 
 		[Test]
@@ -559,14 +562,40 @@ namespace Palaso.DictionaryServices.Tests.Model
 		}
 
 		[Test]
+		public void GetOrCreateSenseWithMeaning_SenseWithEmptyStringExists_ExistingSense_Gloss()
+		{
+			ClearSenseMeaning();
+
+			MultiText meaning = new MultiText();
+			meaning.SetAlternative("th", string.Empty);
+
+			LexSense sense = _entry.GetOrCreateSenseWithMeaning(meaning, false);
+			Assert.AreSame(_sense, sense);
+		}
+
+
+		[Test]
 		public void GetOrCreateSenseWithMeaning_SenseDoesExists_ExistingSense()
 		{
+			_sense.Gloss["th"] = string.Empty;
 			MultiText meaning = new MultiText();
 			meaning.SetAlternative("th", "sense");
 
 			LexSense sense = _entry.GetOrCreateSenseWithMeaning(meaning);
 			Assert.AreSame(_sense, sense);
 		}
+
+		[Test]
+		public void GetOrCreateSenseWithMeaning_SenseDoesExists_ExistingSense_Gloss()
+		{
+			_sense.Definition["th"] = string.Empty;
+			MultiText meaning = new MultiText();
+			meaning.SetAlternative("th", "sense");
+
+			LexSense sense = _entry.GetOrCreateSenseWithMeaning(meaning, false);
+			Assert.AreSame(_sense, sense);
+		}
+
 
 		[Test]
 		public void GetHeadword_EmptyEverything_ReturnsEmptyString()
