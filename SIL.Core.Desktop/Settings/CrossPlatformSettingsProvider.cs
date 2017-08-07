@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
+using SIL.IO;
 using SIL.Reporting;
 
 namespace SIL.Settings
@@ -188,7 +189,7 @@ namespace SIL.Settings
 					SetValue(groupNode, propval);
 				}
 				Directory.CreateDirectory(UserConfigLocation);
-				SettingsXml.Save(Path.Combine(UserConfigLocation, UserConfigFileName));
+				RobustIO.SaveXml(SettingsXml, Path.Combine(UserConfigLocation, UserConfigFileName));
 			}
 		}
 
