@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Xml;
 using SIL.Code;
 
 namespace SIL.IO
@@ -65,6 +66,23 @@ namespace SIL.IO
 				}
 				// original
 				//File.Copy(sourceFileName, destFileName, overwrite);
+			});
+		}
+
+		/// <summary>
+		/// Save an Xml document. This should be equivalent to doc.Save(path) except for extra robustness (and slowness).
+		/// </summary>
+		/// <param name="doc"></param>
+		/// <param name="path"></param>
+		public static void SaveXml(XmlDocument doc, string path)
+		{
+			RetryUtility.Retry(() =>
+			{
+				using (var stream = Create(path))
+				{
+					doc.Save(stream);
+					stream.Close();
+				}
 			});
 		}
 
