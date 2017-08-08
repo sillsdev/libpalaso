@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Xml;
 using System.Xml.Linq;
 using SIL.Code;
 
@@ -44,6 +45,23 @@ namespace SIL.IO
 		public static void SaveXElement(XElement xElement, string fileName)
 		{
 			RetryUtility.Retry(() => xElement.Save(fileName));
+		}
+
+		/// <summary>
+		/// Save an Xml document. This should be equivalent to doc.Save(path) except for extra robustness (and slowness).
+		/// </summary>
+		/// <param name="doc"></param>
+		/// <param name="path"></param>
+		public static void SaveXml(XmlDocument doc, string path)
+		{
+			RetryUtility.Retry(() =>
+			{
+				using (var stream = RobustFile.Create(path))
+				{
+					doc.Save(stream);
+					stream.Close();
+				}
+			});
 		}
 	}
 }

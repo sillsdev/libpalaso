@@ -326,6 +326,7 @@
     <Compile Include="IO\FileLock\SimpleFileLockTests.cs" />
     <Compile Include="IO\FileUtilsTests.cs" />
     <Compile Include="IO\RobustFileTests.cs" />
+    <Compile Include="IO\RobustIOTests.cs" />
     <Compile Include="IO\TempFileForSafeWritingTests.cs" />
     <Compile Include="IO\TempFileTests.cs" />
     <Compile Include="Migration\DefaultVersionTests.cs" />
