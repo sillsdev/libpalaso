@@ -249,9 +249,9 @@ namespace SIL.Media
 					File.Delete(Path);
 
 				SetPathToAvailableFilenameInDefaultDir(dlg.FileName);
-				// *Always* make a copy, since the only way to change the recording is to delete the old one, and there is no delete confirmation.
-				// (We don't want to make it that easy to delete a file that somebody else might be using)
-				File.Copy(dlg.FileName, Path);
+				// Copies the file into the default directory (AudioVisual directory in FLEx) if it is not already there.
+				// *Careful!* The only way to change the recording is to delete the old one, and there is no delete confirmation.
+				File.Copy(dlg.FileName, Path, true);
 			}
 			catch (Exception error)
 			{
@@ -263,23 +263,13 @@ namespace SIL.Media
 
 		/// <summary>
 		/// LT-15375 Don't copy the file to some weird name.
-		/// Use the filename that the user selected (or filename_#.ext if there is a conflict) in the default directory.
+		/// Use the filename that the user selected in the default directory.
 		/// </summary>
 		private void SetPathToAvailableFilenameInDefaultDir(string dlgPath)
 		{
 			var defaultDir = System.IO.Path.GetDirectoryName(Path);
 			var dlgName = System.IO.Path.GetFileName(dlgPath);
 			var newPath = System.IO.Path.Combine(defaultDir, dlgName);
-			if(File.Exists(newPath))
-			{
-				var newPathNoExt = System.IO.Path.ChangeExtension(newPath, null); // Get the path without an extension
-				var dlgExt = System.IO.Path.GetExtension(dlgPath);
-				var disambiguation = 1; // add a number at the end of the filename to disambiguate between new and pre-existing files
-				while(File.Exists(newPath))
-				{
-					newPath = string.Format("{0}_{1}{2}", newPathNoExt, disambiguation++, dlgExt);
-				}
-			}
 			Path = newPath;
 		}
 
