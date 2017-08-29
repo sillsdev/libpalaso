@@ -68,26 +68,15 @@ namespace SIL.Windows.Forms.ImageToolbox
 			{
 				try
 				{
-					var oldValue = _imageInfo;
-					// We've been having trouble with an obscure situation where one of the edit metadata links is
-					// clicked while _imageInfo is null. Wondering whether an exception might somehow be caught
-					// in such a way that SetupMetaDataControls is called here based on value being non-null,
-					// but _imageInfo never actually gets set to the new value. Seems a setter should always
-					// set the backing variable to the new value, so we now do this first.
-					_imageInfo = value;
-
 					if (value == null || value.Image == null)
 					{
 						_currentImageBox.Image = null;
 						_metadataDisplayControl.Visible = false;
-						// These two controls when clicked run code that requires _imageInfo to be non-null.
-						// Make sure they are hidden if it is set to null.
 						_invitationToMetadataPanel.Visible = false;
-						_editLink.Visible = false;
 					}
 					else
 					{
-						if (value.Image == _currentImageBox.Image)
+						if(value.Image == _currentImageBox.Image)
 						{
 							return;
 						}
@@ -110,12 +99,14 @@ namespace SIL.Windows.Forms.ImageToolbox
 						SetCurrentImageToolTip(value);
 						SetupMetaDataControls(value.Metadata);
 					}
-					if (oldValue != null && oldValue != value)
+					if(_imageInfo!=null && _imageInfo!=value)
 					{
-						oldValue.Dispose();
+						_imageInfo.Dispose();
 					}
 
-					GC.Collect(); //having trouble reliably tracking down a PalasoImage which is not being disposed of.
+					_imageInfo = value;
+					GC.Collect();//having trouble reliably tracking down a PalasoImage which is not being disposed of.
+
 				}
 				catch (Exception e)
 				{
@@ -171,7 +162,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private void SetupMetaDataControls(Metadata metaData)
 		{
-			Guard.AgainstNull(_imageInfo, "_imageInfo");
 			if (_currentImageBox.Image == null)
 			{
 				// Otherwise, the metadata controls are visible upon first load (with no image).
@@ -359,10 +349,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 			_toolImages.ColorDepth = ColorDepth.Depth24Bit;
 			_toolImages.ImageSize = new Size(32, 32);
 
-			// These two controls should never be visible except when made so by SetupMetaDataControls when ImageInfo is not null.
-			// To help ensure this we make both not visible right at the start.
 			_editLink.Visible = false;
-			_invitationToMetadataPanel.Visible = false;
 
 			AddControl("Get Picture".Localize("ImageToolbox.GetPicture"), ImageToolboxButtons.browse, "browse", (x) =>
 			{
