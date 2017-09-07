@@ -28,7 +28,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			get
 			{
-				return _desiredLanguageName != null && SelectedLanguage != null && 
+				return _desiredLanguageName != null && SelectedLanguage != null &&
 					_desiredLanguageName != UnlistedLanguageName && _desiredLanguageName.Length > 0;
 			}
 		}

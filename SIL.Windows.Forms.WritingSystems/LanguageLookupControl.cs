@@ -15,6 +15,7 @@ namespace SIL.Windows.Forms.WritingSystems
 	{
 		private readonly LanguageLookupModel _model;
 		private string _lastSearchedForText;
+		private Dictionary<string, string> _languageNameAliases = new Dictionary<string, string>();
 
 		public event EventHandler ReadinessChanged;
 
@@ -65,8 +66,14 @@ namespace SIL.Windows.Forms.WritingSystems
 			{
 				string oldLangTag = _model.LanguageTag;
 				_model.SelectedLanguage = value;
-				_desiredLanguageDisplayName.Text = _model.DesiredLanguageName;
-				if(_model.LanguageTag != oldLangTag)
+				var newName = _model.DesiredLanguageName;
+				string alias;
+				if (_languageNameAliases.TryGetValue(value.LanguageTag, out alias))
+				{
+					_model.DesiredLanguageName = newName = alias;
+				}
+				_desiredLanguageDisplayName.Text = newName;
+				if (_model.LanguageTag != oldLangTag)
 					UpdateReadiness();
 			}
 		}
@@ -150,15 +157,11 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		private void OnSelectedIndexChanged(object sender, EventArgs e)
 		{
-			string oldLangTag = _model.LanguageTag;
 			if(_listView.SelectedIndices != null && _listView.SelectedIndices.Count > 0)
 			{
 				ListViewItem item = _listView.Items[_listView.SelectedIndices[0]];
-				_model.SelectedLanguage = (LanguageInfo) item.Tag;
-				_desiredLanguageDisplayName.Text = _model.DesiredLanguageName;
+				SelectedLanguage = (LanguageInfo) item.Tag;
 			}
-			if (_model.LanguageTag != oldLangTag)
-				UpdateReadiness();
 		}
 
 		/// <summary>
@@ -169,6 +172,16 @@ namespace SIL.Windows.Forms.WritingSystems
 		public void StopTimer()
 		{
 			_searchTimer.Stop();
+		}
+
+		/// <summary>
+		/// Requests that the specified language, if matched, should be displayed with the specified name.
+		/// </summary>
+		/// <param name="code"></param>
+		/// <param name="name"></param>
+		public void SetLanguageAlias(string code, string name)
+		{
+			_languageNameAliases[code] = name;
 		}
 
 		private void _searchTimer_Tick(object sender, EventArgs e)
@@ -188,7 +201,11 @@ namespace SIL.Windows.Forms.WritingSystems
 			var itemSelected = false;
 			foreach (LanguageInfo lang in _model.MatchingLanguages)
 			{
-				var item = new ListViewItem(lang.Names[0]);
+				var langName = lang.Names[0];
+				string alias;
+				if (_languageNameAliases.TryGetValue(lang.LanguageTag, out alias))
+					langName = alias;
+				var item = new ListViewItem(langName);
 				item.SubItems.Add(lang.LanguageTag);
 
 				// Users were having problems when they looked up things like "English" and were presented with "United Arab Emirates"
