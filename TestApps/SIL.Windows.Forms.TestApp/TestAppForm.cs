@@ -74,7 +74,11 @@ namespace SIL.Windows.Forms.TestApp
 		private void OnLanguageLookupDialogClicked(object sender, EventArgs e)
 		{
 			using (var dialog = new LanguageLookupDialog())
+			{
+				dialog.SetLanguageAlias("zh-Hans", "Simplified Chinese (简体中文)");
+				dialog.MatchingLanguageFilter = info => info.LanguageTag != "cmn";
 				dialog.ShowDialog();
+			}
 		}
 
 		private void OnWritingSystemSetupDialogClicked(object sender, EventArgs e)

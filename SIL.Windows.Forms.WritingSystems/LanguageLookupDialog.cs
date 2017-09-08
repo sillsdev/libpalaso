@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Windows.Forms;
 using SIL.WritingSystems;
 
@@ -28,6 +28,25 @@ namespace SIL.Windows.Forms.WritingSystems
 		public Func<LanguageInfo, bool> MatchingLanguageFilter
 		{
 			set { _languageLookupControl.MatchingLanguageFilter = value; }
+		}
+
+		/// <summary>
+		/// Requests that the specified language, if matched, should be displayed with the specified name.
+		/// </summary>
+		/// <param name="code"></param>
+		/// <param name="name"></param>
+		public void SetLanguageAlias(string code, string name)
+		{
+			_languageLookupControl.SetLanguageAlias(code, name);
+		}
+
+		/// <summary>
+		/// Set up a filter so we don't offer codes 'zh' and 'cmn' at all, and use some more
+		/// familiar names (in both English and Chinese) for the four main useful Chinese codes.
+		/// </summary>
+		public void UseSimplifiedChinese()
+		{
+			_languageLookupControl.UseSimplifiedChinese();
 		}
 
 		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
