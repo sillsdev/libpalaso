@@ -405,7 +405,8 @@ namespace Palaso.Lift.Parsing
 			LiftString alternative;
 			if (!TryGetValue(key, out alternative))
 			{
-				alternative = new LiftString();
+				// When you get to here you know that textNode.InnerText.Length=0
+				alternative = new LiftString("");
 				this[key] = alternative;
 			}
 			int start = alternative.Text.Length;
