@@ -33,7 +33,6 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox.ImageGallery
 		[Test]
 		public void GetMatchingPictures_OnKeyWordHasManyMatches_GetManyMatches()
 		{
-			bool foundExactMatches;
 			var matches = _collection.GetMatchingImages("duck");
 		    Assert.AreEqual(kDuckPicturesInArtOfReading, matches.Count());
 		}
@@ -41,7 +40,6 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox.ImageGallery
 		[Test]
 		public void GetMatchingPictures_OnKeyWordHasNoMatches_GetNoMatches()
 		{
-			bool foundExactMatches;
 			var matches = _collection.GetMatchingImages("xy3z");
 			Assert.AreEqual(0, matches.Count());
 		}
@@ -49,7 +47,6 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox.ImageGallery
 		[Test]
 		public void GetMatchingPictures_TwoKeyWords_GetMatchesOnBoth()
 		{
-			bool foundExactMatches;
 			var duckMatches = _collection.GetMatchingImages("duck");
 			var bothMatches = _collection.GetMatchingImages("duck sheep");
 			Assert.Greater(bothMatches.Count(), duckMatches.Count());
@@ -58,7 +55,6 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox.ImageGallery
 		[Test]
 		public void GetMatchingPictures_UpperCaseQuery_GetsMatches()
 		{
-			bool foundExactMatches;
 			var treesMatches = _collection.GetMatchingImages("trees");
 			var TREESMatches = _collection.GetMatchingImages("TREES");
 			Assert.AreEqual(treesMatches.Count(), TREESMatches.Count());
@@ -68,7 +64,6 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox.ImageGallery
 		[Test]
 		public void GetMatchingPictures_WordsFollowedByPunctuation_StillMatches()
 		{
-			bool foundExactMatches;
 			var duckMatches = _collection.GetMatchingImages("duck,");
 			Assert.AreEqual(kDuckPicturesInArtOfReading, duckMatches.Count());
 		}
@@ -76,7 +71,6 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox.ImageGallery
 		[Test]
 		public void GetMatchingPictures_HasExtraNonMatchingWords_StillMatches()
 		{
-			bool foundExactMatches;
 			var duckMatches = _collection.GetMatchingImages("duck blah");
 			Assert.AreEqual(kDuckPicturesInArtOfReading, duckMatches.Count());
 		}
@@ -84,7 +78,6 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox.ImageGallery
 		[Test]
 		public void GetMatchingPictures_KeyWordsMatchSamePicture_PictureOnlyListedOnce()
 		{
-			bool foundExactMatches;
 			var batMatches = _collection.GetMatchingImages("bat");
 			var bothMatches = _collection.GetMatchingImages("bat bat");
 			Assert.AreEqual(bothMatches.Count(), batMatches.Count());

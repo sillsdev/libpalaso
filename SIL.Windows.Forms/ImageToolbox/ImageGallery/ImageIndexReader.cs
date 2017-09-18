@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using SIL.Code;
+using SIL.Extensions;
 
 namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 {
@@ -72,7 +73,13 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 
 		public virtual string GetCSVOfKeywordsOrEmpty(string languageId, string[] fields)
 		{
-			return GetFieldOrEmpty(languageId, fields);
+			var csv = GetFieldOrEmpty(languageId, fields).Trim();
+
+			// When you export a cell in Excel that has items separated by a comma, it sticks quotes around it. We want to ignore those quotes.
+			if (csv.StartsWith("\"") && csv.EndsWith("\""))
+				csv = csv.Trim('"');
+
+			return csv;
 		}
 
 		private string GetFieldOrEmpty(string key, string[] fields)

@@ -50,5 +50,21 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox.ImageGallery
 				Assert.AreEqual("мальчик,ребёнок,голова,люди,плечо", layout.GetCSVOfKeywordsOrEmpty("ru", rowparts));
 			}
 		}
+
+
+		/// <summary>
+		/// When you export a cell in Excel that has items separated by a comma, it sticks quotes around it. We want to ignore those quotes.
+		/// </summary>
+		[Test]
+		public void Constructor_KeyWordsFieldSurroundedByQuotes_QuotesIgnored()
+		{
+			using (var stream = new MemoryStream(Encoding.UTF8.GetBytes("filename\ten")))
+			using (var reader = new StreamReader(stream))
+			{
+				var layout = new ImageIndexReader(reader);
+				var rowparts = "filename	\"boy,child\"".Split('\t');
+				Assert.AreEqual("boy,child", layout.GetCSVOfKeywordsOrEmpty("en", rowparts), "Should strip off quotation marks");
+			}
+		}
 	}
 }
