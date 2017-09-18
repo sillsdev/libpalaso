@@ -37,3 +37,5 @@ packages/
 lib/xulrunner/
 .idea/
 icu4c.readme.txt
+
+.vs/
