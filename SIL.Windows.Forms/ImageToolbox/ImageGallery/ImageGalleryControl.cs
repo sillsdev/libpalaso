@@ -230,7 +230,7 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 						"Galleries".Localize("ImageToolbox.Galleries");
 					foreach (var collection in _imageCollectionManager.Collections)
 					{
-					    if(Properties.Settings.Default.DisabledImageCollections.Contains(collection.FolderPath))
+					    if(ImageToolboxSettings.Default.DisabledImageCollections.Contains(collection.FolderPath))
 					    {
 					        collection.Enabled = false;
 					    }
@@ -246,14 +246,14 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 						    else
 						    {
 						        collection.Enabled = item.Checked;
-								var disabledSettings = Properties.Settings.Default.DisabledImageCollections;
+								var disabledSettings = ImageToolboxSettings.Default.DisabledImageCollections;
 								if (disabledSettings == null)
-									Properties.Settings.Default.DisabledImageCollections = disabledSettings = new StringCollection();
+									ImageToolboxSettings.Default.DisabledImageCollections = disabledSettings = new StringCollection();
 								if (item.Checked && disabledSettings.Contains(collection.FolderPath))
 									disabledSettings.Remove(collection.FolderPath);
 								if (!item.Checked && !disabledSettings.Contains(collection.FolderPath))
 									disabledSettings.Add(collection.FolderPath);
-								Properties.Settings.Default.Save();
+								ImageToolboxSettings.Default.Save();
 							}
 						};
 					}
