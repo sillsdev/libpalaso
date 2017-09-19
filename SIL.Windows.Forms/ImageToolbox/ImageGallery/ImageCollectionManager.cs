@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Windows.Forms;
 using SIL.Code;
 using SIL.Extensions;
 using SIL.IO;
@@ -110,7 +111,17 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 			{
 				foreach(var c in Collections)
 				{
-					c.LoadIndex(_searchLanguage);
+					try
+					{
+						c.LoadIndex(_searchLanguage);
+					}
+					catch(Exception e)
+					{
+						// This is not worth localizing. It should be very rare to have a problem in an
+						// image collection that has been distributed, and pretty easy for us to get a hold
+						// of it and see the real problem.
+						MessageBox.Show($"There was a problem loading the {c.Name} collection, so some images may not be findable. The problem was:{Environment.NewLine}{e.Message}.");
+					}
 				}
 				_indicesLoaded = true;
 			});
