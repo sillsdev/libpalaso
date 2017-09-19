@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -62,7 +62,8 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 			_indexOfWordsToRelativePath = new Dictionary<string, List<string>>();
 			_indexOfRelativeFilePathToKeywordsCsv = new Dictionary<string, string>();
 
-			using (var f = File.OpenText(FindIndexFileInFolder(FolderPath)))
+			var indexPath = FindIndexFileInFolder(FolderPath);
+			using (var f = File.OpenText(indexPath))
 			{
 				//skip header line, which was already read to make the index layout above
 				f.ReadLine();
@@ -74,8 +75,21 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 					var csvOfKeywords = _imageIndexReader.GetCSVOfKeywordsOrEmpty(searchLanguageId, fields);
 					if (String.IsNullOrWhiteSpace(csvOfKeywords))
 						continue;
-					lock (_padlock)
-						_indexOfRelativeFilePathToKeywordsCsv.Add(relativePath, csvOfKeywords.Replace(",", ", "));
+					lock(_padlock)
+					{
+						try
+						{
+							_indexOfRelativeFilePathToKeywordsCsv.Add(relativePath, csvOfKeywords.Replace(",", ", "));
+						}
+						catch (System.ArgumentException)
+						{
+							if(_indexOfRelativeFilePathToKeywordsCsv.ContainsKey(relativePath))
+								throw new ApplicationException(
+									$"{indexPath} has more than one row describing a file name '{relativePath}'. This is not allowed. You can use 'conditional formatting' with the condition 'duplicate' in a spreadsheet program to find duplicates.");
+							else
+								throw;
+						}
+					}
 					var keys = csvOfKeywords.SplitTrimmed(',');
 					foreach (var key in keys)
 					{
