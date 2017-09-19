@@ -113,8 +113,9 @@ namespace LanguageData
 				_newtwotothree = GenerateTwoToThreeCodes(newiso693);
 				return true;
 			}
-			catch (WebException)
+			catch (WebException we)
 			{
+				Console.WriteLine("Downloading {0} caused a WebException: {1}", (we.Response != null && we.Response.ResponseUri != null ? we.Response.ResponseUri.ToString() : "???"), we.Message);
 				return false;
 			}
 		}
