@@ -85,11 +85,11 @@ namespace LanguageData
 				string lastmod_iso693 = client.ResponseHeaders["Last-Modified"];
 
 				client.Encoding = Encoding.UTF8; // ethnologue site currently doesn't specify encoding 2017-01-24
-				_newlanguageindex = client.DownloadString("https://www.ethnologue.com/codes/LanguageIndex.tab");
+				_newlanguageindex = client.DownloadString("https://www.ethnologue.com/sites/default/files/LanguageIndex.tab");
 				_newlanguageindex = _newlanguageindex.Replace("\r\n", "\n");
 				string lastmod_languageindex = client.ResponseHeaders["Last-Modified"];
 
-				_newlanguagecodes = client.DownloadString("https://www.ethnologue.com/codes/LanguageCodes.tab");
+				_newlanguagecodes = client.DownloadString("https://www.ethnologue.com/sites/default/files/LanguageCodes.tab");
 				_newlanguagecodes = _newlanguagecodes.Replace("\r\n", "\n");
 				string lastmod_languagecodes = client.ResponseHeaders["Last-Modified"];
 
