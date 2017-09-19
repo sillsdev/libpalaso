@@ -116,6 +116,7 @@ namespace LanguageData.Tests
 		}
 
 		[Test]
+		[Platform(Exclude = "Linux", Reason = "Mono WebClient code cannot access files on www.ethnologue.com")]
 		public void GetNewSources_Ok()
 		{
 			GetAndCheckSources getcheck = new GetAndCheckSources();
