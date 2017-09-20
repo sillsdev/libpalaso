@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -228,6 +228,11 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 					_collectionDropDown.Visible = true;
 					_collectionDropDown.Text =
 						"Galleries".Localize("ImageToolbox.Galleries");
+					if(ImageToolboxSettings.Default.DisabledImageCollections == null)
+					{
+						ImageToolboxSettings.Default.DisabledImageCollections = new StringCollection();
+					}
+
 					foreach (var collection in _imageCollectionManager.Collections)
 					{
 					    if(ImageToolboxSettings.Default.DisabledImageCollections.Contains(collection.FolderPath))
