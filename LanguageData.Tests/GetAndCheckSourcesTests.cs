@@ -116,6 +116,7 @@ namespace LanguageData.Tests
 		}
 
 		[Test]
+		[Category("SkipOnTeamCity")]
 		public void GetNewSources_Ok()
 		{
 			GetAndCheckSources getcheck = new GetAndCheckSources();
