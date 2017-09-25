@@ -13,6 +13,7 @@ namespace SIL.Media
 		private ISimpleAudioSession _recorder;
 		private string _path;
 		private string _deleteButtonInstructions = "Delete this recording.";
+        public bool CopyFilesAlreadyInDefaultDir { get; set; }
 
 		public event EventHandler BeforeStartingToRecord;
 		public event EventHandler SoundRecorded;
@@ -30,6 +31,7 @@ namespace SIL.Media
 			_playButton.MouseEnter += delegate(object o, EventArgs args) { ButtonEnter(args); };
 			_playButton.MouseLeave += delegate(object o, EventArgs args) { ButtonLeave(args); };
 			_deleteButton.MouseLeave += delegate(object o, EventArgs args) { ButtonLeave(args); };
+            CopyFilesAlreadyInDefaultDir = true;
 		}
 
 		private void UpdateButtonAppearances(bool enable)
@@ -241,17 +243,19 @@ namespace SIL.Media
 					AutoUpgradeEnabled = true,
 					Filter = "sound files (*.wav, *.mp3)|*.wav;*.mp3"
 				};
-				if (DialogResult.OK != dlg.ShowDialog())
+				if (DialogResult.OK != dlg.ShowDialog() || Path == dlg.FileName)
 				{
 					return false;
 				}
 				if (File.Exists(Path))
 					File.Delete(Path);
 
-				SetPathToAvailableFilenameInDefaultDir(dlg.FileName);
-				// *Always* make a copy, since the only way to change the recording is to delete the old one, and there is no delete confirmation.
+                UpdatePathToSoundFile(dlg.FileName);
+				// (Unless CopyFilesAlreadyInDefaultDir is false) *Always* make a copy, since the only way
+				// to change the recording is to delete the old one, and there is no delete confirmation.
 				// (We don't want to make it that easy to delete a file that somebody else might be using)
-				File.Copy(dlg.FileName, Path);
+				if (!File.Exists(Path))
+					File.Copy(dlg.FileName, Path);
 			}
 			catch (Exception error)
 			{
@@ -260,6 +264,16 @@ namespace SIL.Media
 			UpdateScreen();
 			return true;
 		}
+
+        private void UpdatePathToSoundFile(string dlgPath)
+        {
+	        string mediaDir = System.IO.Path.GetDirectoryName(Path);
+            if (!CopyFilesAlreadyInDefaultDir && dlgPath.StartsWith(mediaDir))
+                Path = dlgPath;
+            // the file is outside the media directory, make a copy
+            else
+                SetPathToAvailableFilenameInDefaultDir(dlgPath);
+        }
 
 		/// <summary>
 		/// LT-15375 Don't copy the file to some weird name.
