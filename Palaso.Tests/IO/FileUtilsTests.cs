@@ -305,7 +305,7 @@ namespace Palaso.Tests.IO
 
 			var reducedDirname = FileUtils.StripFilePrefix(baseDir);
 			Assert.IsFalse(reducedDirname.StartsWith(prefix));
-			Assert.IsFalse(reducedDirname.StartsWith("/"));
+			Assert.IsTrue(reducedDirname.StartsWith("/"));
 		}
 	}
 }
