@@ -771,7 +771,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 			string[] parts = id.Split('_');
 			string locale = parts[0];
-			string layout = parts[1];
+			string layout = parts.Length > 1 ? parts[1] : string.Empty;
 
 			IInputLanguage inputLanguage;
 			string cultureName;
