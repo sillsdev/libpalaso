@@ -215,7 +215,7 @@
       <HintPath>..\packages\NDesk.DBus.0.15.0\lib\NDesk.DBus.dll</HintPath>
     </Reference>
     <Reference Include="ibusdotnet">
-      <HintPath>..\lib\commonMono\ibusdotnet.dll</HintPath>
+      <HintPath>..\packages\ibusdotnet.2.0.0.20771\lib\ibusdotnet.dll</HintPath>
     </Reference>
     <None Include="icu4c.readme.txt" />
   </ItemGroup>
