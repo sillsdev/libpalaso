@@ -100,6 +100,7 @@ namespace SIL.WritingSystems
 						{
 							// modified writing system
 							ldmlDataMapper.Read(file, ws);
+							ws.Id = ws.LanguageTag;
 							ws.AcceptChanges();
 							_lastFileStats[id] = Tuple.Create(fi.LastWriteTime, fi.Length);
 						}
