@@ -102,6 +102,9 @@ namespace SIL.BuildTasks
 
 		private static void ConvertMarkdownLineToChangelogLine(string markdownLine, List<string> newEntryLines)
 		{
+			if (string.IsNullOrEmpty(markdownLine))
+				return;
+
 			switch(markdownLine[0])
 			{
 				case '*':
