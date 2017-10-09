@@ -56,6 +56,17 @@ namespace Palaso.BuildTasks
 		[Required]
 		public string DebianChangelog { get; set; }
 
+		/// <summary>
+		/// Finalize the changelog and (if <see cref="StampMarkdownFile"/> is true) markdown file
+		/// for a release.
+		/// </summary>
+		public bool Release { get; set; }
+
+		public GenerateReleaseArtifacts()
+		{
+			Release = true;
+		}
+
 		public override bool Execute()
 		{
 			return StampMarkdownFileWithVersion() && CreateHtmFromMarkdownFile() && UpdateDebianChangelog();
@@ -63,9 +74,9 @@ namespace Palaso.BuildTasks
 
 		internal bool UpdateDebianChangelog()
 		{
-			if(string.IsNullOrEmpty(Stability))
-				Stability = "unstable";
-			if(string.IsNullOrEmpty(Urgency))
+			if (string.IsNullOrEmpty(Stability))
+				Stability = Release ? "unstable" : "UNRELEASED";
+			if (string.IsNullOrEmpty(Urgency))
 				Urgency = "low";
 			var oldChangeLog = Path.ChangeExtension(DebianChangelog, ".old");
 			File.Delete(oldChangeLog);
@@ -135,7 +146,7 @@ namespace Palaso.BuildTasks
 		/// <returns></returns>
 		internal bool StampMarkdownFileWithVersion()
 		{
-			if(StampMarkdownFile)
+			if (StampMarkdownFile && Release)
 			{
 				var markdownLines = File.ReadAllLines(MarkdownFile);
 				markdownLines[0] = string.Format("## {0} {1:dd/MMM/yyyy}", VersionNumber, DateTime.Today);
