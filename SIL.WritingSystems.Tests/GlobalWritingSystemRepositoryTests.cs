@@ -301,5 +301,30 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(repo1.Count, Is.EqualTo(0));
 			}
 		}
+
+		[Test]
+		public void AllWritingSystems_LdmlCheckingSetEmptyandGetWSId()
+		{
+			using (var tf = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			{
+				var repo1 = new GlobalWritingSystemRepository(tf.Path);
+				var repo2 = new GlobalWritingSystemRepository(tf.Path);
+
+				var ws = new WritingSystemDefinition("en-US");
+				repo1.Set(ws);
+				repo1.Save();
+				Assert.That(ws.WindowsLcid, Is.Empty);
+				// ensure that last modified timestamp changes
+				Thread.Sleep(1000);
+				ws = repo2.Get("en-US");
+				ws.WindowsLcid = "test";
+				// Make an arbitrary change to force a save of the ldml file.
+				ws.Id = string.Empty;
+				repo2.Save();
+				Assert.That(repo1.Get("en-US").WindowsLcid, Is.EqualTo("test"));
+				Assert.That(ws.IsChanged, Is.False);
+				Assert.AreEqual(ws.Id, "en-US");
+			}
+		}
 	}
 }
