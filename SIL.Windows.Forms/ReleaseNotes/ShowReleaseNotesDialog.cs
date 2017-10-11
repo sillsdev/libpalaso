@@ -10,27 +10,46 @@ namespace SIL.Windows.Forms.ReleaseNotes
 	/// <summary>
 	/// Shows a dialog for release notes; accepts html and markdown
 	/// </summary>
+	/// <remarks>
+	/// Despite the name, this dialog is generally useful for displaying
+	/// formatted information, not just for release notes.
+	/// </remarks>
 	public partial class ShowReleaseNotesDialog : Form
 	{
 		private readonly string _path;
 		private TempFile _temp;
 		private readonly Icon _icon;
 
-		public ShowReleaseNotesDialog(Icon icon, string path)
+		public bool ApplyMarkdown { get; set;}
+
+		public ShowReleaseNotesDialog(Icon icon, string path, bool applyMarkdown = true)
 		{
 			_path = path;
 			_icon = icon;
+			ApplyMarkdown = applyMarkdown;
 			InitializeComponent();
 		}
 
 		private void ShowReleaseNotesDialog_Load(object sender, EventArgs e)
 		{
 			string contents = File.ReadAllText(_path);
-
-			var md = new Markdown();
 			// Disposed of during dialog Dispose()
 			_temp = TempFile.WithExtension("htm");
-			File.WriteAllText(_temp.Path, GetBasicHtmlFromMarkdown(md.Transform(contents)));
+			if (ApplyMarkdown)
+			{
+				var md = new Markdown();
+				File.WriteAllText(_temp.Path, GetBasicHtmlFromMarkdown(md.Transform(contents)));
+			}
+			else if (contents.Contains("<html>") && contents.Contains("<body"))
+			{
+				// apparently full fledged HTML already, so just copy the input file
+				File.WriteAllText(_temp.Path, contents);
+			}
+			else
+			{
+				// likely markdown output from another process, so add outer html elements
+				File.WriteAllText(_temp.Path, GetBasicHtmlFromMarkdown(contents));
+			}
 			_browser.Url = new Uri(_temp.Path);
 		}
 
