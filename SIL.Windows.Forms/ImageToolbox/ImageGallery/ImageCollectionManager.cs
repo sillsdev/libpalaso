@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using SIL.Code;
 using SIL.Extensions;
 using SIL.IO;
+using SIL.Reporting;
 
 namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 {
@@ -106,7 +107,6 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 
 			// Load the index information asynchronously so as not to delay displaying
 			// the parent dialog.
-
 			var indexLoadingThread = new Thread(() =>
 			{
 				foreach(var c in Collections)
@@ -120,7 +120,7 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 						// This is not worth localizing. It should be very rare to have a problem in an
 						// image collection that has been distributed, and pretty easy for us to get a hold
 						// of it and see the real problem.
-						MessageBox.Show($"There was a problem loading the {c.Name} collection, so some images may not be findable. The problem was:{Environment.NewLine}{e.Message}.");
+						ErrorReport.NotifyUserOfProblem($"There was a problem loading the {c.Name} collection, so some images may not be findable. The problem was:{Environment.NewLine}{e.Message}.");
 					}
 				}
 				_indicesLoaded = true;
