@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Original code from https://code.google.com/archive/p/snowcode/
  * License: MIT (http://www.opensource.org/licenses/mit-license.php)
  *
@@ -11,6 +11,7 @@ using System.IO;
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Amazon.S3.Transfer;
 
 namespace SIL.BuildTasks.AWS.S3
 {
@@ -59,6 +60,24 @@ namespace SIL.BuildTasks.AWS.S3
 			string destinationFolder = GetDestinationFolder(folder);
 
 			StoreFiles(files, bucketName, destinationFolder, isPublicRead, contentType, contentEncoding);
+		}
+
+		/// <summary>
+		/// Publish a directory to a S3 bucket, in the folder specified, optionally making it publically readable.
+		/// </summary>
+		public void PublishDirectory(string sourceDirectory, string bucketName, string destinationFolder, bool isPublicRead)
+		{
+			destinationFolder = GetDestinationFolder(destinationFolder);
+
+			TransferUtility directoryTransferUtility = new TransferUtility(Client);
+			directoryTransferUtility.UploadDirectory(new TransferUtilityUploadDirectoryRequest
+			{
+				Directory = sourceDirectory,
+				BucketName = bucketName,
+				SearchOption = SearchOption.AllDirectories,
+				KeyPrefix = destinationFolder,
+				CannedACL = isPublicRead ? S3CannedACL.PublicRead : S3CannedACL.Private
+			});
 		}
 
 		#endregion
