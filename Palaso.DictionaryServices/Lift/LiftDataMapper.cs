@@ -55,11 +55,11 @@ namespace Palaso.DictionaryServices.Lift
 		{
 		}
 
-		public void Init()
+		public LiftDataMapper Init()
 		{
 			base.Init();
+			return this;
 		}
-
 
 	}
 
@@ -73,7 +73,7 @@ namespace Palaso.DictionaryServices.Lift
 			: base(filePath,semanticDomainsList,idsOfSingleOptionFields,progressState)
 		{
 			_glossMeaningField = glossMeaningField;
-			base.Init();
+			Init();
 		}
 
 		protected override void CustomizeReader(ILiftReader<LexEntry> reader)

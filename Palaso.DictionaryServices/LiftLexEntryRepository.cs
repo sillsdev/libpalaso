@@ -61,7 +61,7 @@ namespace Palaso.DictionaryServices
 #if DEBUG
 			_constructionStackTrace = new StackTrace();
 #endif
-			_decoratedDataMapper = new LiftDataMapper(path, null, new string[] {}, new ProgressState());
+			_decoratedDataMapper = new LiftDataMapper(path, null, new string[] {}, new ProgressState()).Init();
 			_disposed = false;
 		}
 
@@ -73,6 +73,7 @@ namespace Palaso.DictionaryServices
 #if DEBUG
 			_constructionStackTrace = new StackTrace();
 #endif
+			decoratedDataMapper.Init();
 			_decoratedDataMapper = decoratedDataMapper;
 			_disposed = false;
 		}

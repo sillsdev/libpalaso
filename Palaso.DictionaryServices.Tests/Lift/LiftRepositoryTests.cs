@@ -66,7 +66,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		{
 			return new LiftDataMapper(
 				filePath, null, new string[] {}, new ProgressState()
-			);
+			).Init();
 		}
 
 		[Test]
