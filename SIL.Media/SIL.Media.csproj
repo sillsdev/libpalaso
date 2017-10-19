@@ -212,7 +212,7 @@
       <HintPath>..\lib\Debug\irrKlang.NET4.dll</HintPath>
     </Reference>
     <Reference Include="NAudio">
-      <HintPath>..\lib\Debug\NAudio.dll</HintPath>
+      <HintPath>..\packages\NAudio.1.8.3\lib\NAudio.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
@@ -220,7 +220,7 @@
       <HintPath>..\lib\Release\irrKlang.NET4.dll</HintPath>
     </Reference>
     <Reference Include="NAudio">
-      <HintPath>..\lib\Release\NAudio.dll</HintPath>
+      <HintPath>..\packages\NAudio.1.8.3\lib\NAudio.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
