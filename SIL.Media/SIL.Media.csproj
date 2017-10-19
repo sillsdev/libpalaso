@@ -300,12 +300,12 @@
   </PropertyGroup>
   <ItemGroup Condition="$(Configuration.StartsWith('Debug'))">
     <Reference Include="NAudio">
-      <HintPath>..\lib\Debug\NAudio.dll</HintPath>
+      <HintPath>..\packages\NAudio.1.8.3\lib\NAudio.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="$(Configuration.StartsWith('Release'))">
     <Reference Include="NAudio">
-      <HintPath>..\lib\Release\NAudio.dll</HintPath>
+      <HintPath>..\packages\NAudio.1.8.3\lib\NAudio.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Platform)' == 'x86' Or '$(Platform)' == 'AnyCPU'">
