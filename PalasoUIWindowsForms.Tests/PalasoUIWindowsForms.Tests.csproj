@@ -109,6 +109,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'DebugMonoStrongName' Or '$(Configuration)' == 'ReleaseMono' Or '$(Configuration)' == 'ReleaseMonoStrongName'">
+    <Reference Include="NDesk.DBus">
+      <HintPath>..\packages\NDesk.DBus.0.15.0\lib\NDesk.DBus.dll</HintPath>
+    </Reference>
     <Reference Include="ibusdotnet">
       <HintPath>..\packages\ibusdotnet.2.0.0.20771\lib\ibusdotnet.dll</HintPath>
     </Reference>
