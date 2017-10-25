@@ -136,4 +136,10 @@
   <data name="versification_vrs" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\TestBundleFiles\versification.vrs;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="AcholiMetadataVersion1_5_xml" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\AcholiMetadataVersion1_5.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="AcholiMetadataVersion2_1_xml" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\AcholiMetadataVersion2_1.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
 </root>
