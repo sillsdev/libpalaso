@@ -209,6 +209,10 @@
     <None Include="Resources\TestBundleFiles\English.lds" />
     <None Include="Resources\TestBundleFiles\USX_0\MAT.usx" />
     <None Include="Resources\TestBundleFiles\versification.vrs" />
+    <None Include="Resources\TestBundleVersion2Files\eng.lds" />
+    <None Include="Resources\TestBundleVersion2Files\eng_en.ldml" />
+    <None Include="Resources\TestBundleVersion2Files\USX_1\MAT.usx" />
+    <None Include="Resources\TestBundleVersion2Files\versification.vrs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj">
@@ -245,6 +249,8 @@
     <None Include="Resources\TestBundleFiles\ldml.xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\TestBundleVersion2Files\styles.xml" />
+    <None Include="Resources\TestBundleVersion2Files\metadata.xml" />
     <None Include="Resources\AcholiMetadataVersion1_5.xml" />
     <Content Include="Resources\AcholiMetadataVersion2_1.xml" />
   </ItemGroup>

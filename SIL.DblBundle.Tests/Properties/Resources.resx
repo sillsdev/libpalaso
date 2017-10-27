@@ -142,4 +142,22 @@
   <data name="AcholiMetadataVersion2_1_xml" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\AcholiMetadataVersion2_1.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="v2_eng_en_ldml" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\TestBundleVersion2Files\eng_en.ldml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="v2_eng_lds" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\TestBundleVersion2Files\eng.lds;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="v2_MAT_usx" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\TestBundleVersion2Files\USX_1\MAT.usx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="v2_metadata_xml" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\TestBundleVersion2Files\metadata.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="v2_styles_xml" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\TestBundleVersion2Files\styles.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="v2_versification_vrs" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\TestBundleVersion2Files\versification.vrs;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

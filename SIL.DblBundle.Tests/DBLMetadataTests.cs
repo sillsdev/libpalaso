@@ -7,6 +7,7 @@ using NUnit.Framework;
 using SIL.DblBundle.Tests.Properties;
 using SIL.DblBundle.Text;
 using SIL.IO;
+using SIL.ObjectModel;
 using SIL.TestUtilities;
 
 namespace SIL.DblBundle.Tests
@@ -77,6 +78,35 @@ namespace SIL.DblBundle.Tests
 		}
 
 		[Test]
+		public void HasDefaultCanon()
+		{
+			Assert.AreEqual(1, _metadata.Canons.Count);
+			Assert.AreEqual(1, _metadata2.Canons.Count);
+
+			Assert.DoesNotThrow(() => _metadata.Canons.Single(c => c.Default));
+			Assert.DoesNotThrow(() => _metadata2.Canons.Single(c => c.Default));
+
+			Assert.AreEqual(1, _metadata.Publications.Count);
+			Assert.AreEqual(1, _metadata2.Publications.Count);
+
+			Assert.DoesNotThrow(() => _metadata.Publications.Single(p => p.Default));
+			Assert.DoesNotThrow(() => _metadata2.Publications.Single(p => p.Default));
+		}
+
+		[Test]
+		public void AvailableBooks()
+		{
+			Assert.AreEqual(27, _metadata.AvailableBooks.Count);
+			Assert.AreEqual(27, _metadata2.AvailableBooks.Count);
+
+			Assert.AreEqual("MAT", _metadata.AvailableBooks[0].Code);
+			Assert.AreEqual("MAT", _metadata2.AvailableBooks[0].Code);
+
+			Assert.AreEqual("book-mat", _metadata.AvailableBooks[0].Id);
+			Assert.AreEqual("book-mat", _metadata2.AvailableBooks[0].Id);
+		}
+
+		[Test]
 		public void IsTextReleaseBundle()
 		{
 			Assert.True(_metadata.IsTextReleaseBundle);
@@ -103,8 +133,9 @@ namespace SIL.DblBundle.Tests
 			Assert.NotNull(exception);
 		}
 
-		[Test]
-		public void Serialize()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void Serialize(bool version1metdata)
 		{
 			var metadata = new DblTextMetadata<DblMetadataLanguage>
 			{
@@ -124,8 +155,43 @@ namespace SIL.DblBundle.Tests
 					PromoVersionInfo = new DblMetadataXhtmlContentNode { Xhtml = @"<h1>Acholi New Testament 1985</h1><p>More text</p>" },
 					PromoEmail = new DblMetadataXhtmlContentNode { Xhtml = "<p>Email Text</p>" }
 				},
-				ArchiveStatus = new DblMetadataArchiveStatus { DateArchived = "dateArchived" }
+				ArchiveStatus = new DblMetadataArchiveStatus { DateArchived = "dateArchived" },
+				AvailableBooks = new List<Book>
+				{
+					new Book
+					{
+						Code = "MAT",
+						ShortName = "Matayo"
+					}
+				}
 			};
+
+			var canonBooks = new List<DblMetadataCanonBook> {new DblMetadataCanonBook {Code = "MAT"}};
+
+			if (version1metdata)
+			{
+				metadata.Canons = new ObservableList<DblMetadataCanon>
+				{
+					new DblMetadataCanon
+					{
+						CanonId = "p1",
+						CanonBooks = canonBooks,
+						Default = true
+					}
+				};
+			}
+			else
+			{
+				metadata.Publications = new ObservableList<DblMetadataPublication>
+				{
+					new DblMetadataPublication
+					{
+						CanonId = "p1",
+						CanonBooks = canonBooks,
+						Default = true
+					}
+				};
+			}
 
 			const string expectedResult =
 @"<?xml version=""1.0"" encoding=""utf-16""?>
@@ -149,6 +215,18 @@ namespace SIL.DblBundle.Tests
 	<archiveStatus>
 		<dateArchived>dateArchived</dateArchived>
 	</archiveStatus>
+	<names>
+	<name id=""book-mat"">
+		<short>Matayo</short>
+	</name>
+	</names>
+	<publications>
+		<publication default=""true"" id=""p1"">
+			<canonicalContent>
+				<book code=""MAT"" />
+			</canonicalContent>
+		</publication>
+	</publications>
 </DBLMetadata>";
 
 			AssertThatXmlIn.String(expectedResult).EqualsIgnoreWhitespace(metadata.GetAsXml());

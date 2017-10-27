@@ -1,0 +1,1519 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<stylesheet>
+  <property name="font-family">Gentium Basic</property>
+  <property name="font-size" unit="pt">14</property>
+  <style id="id" publishable="false" versetext="false">
+    <name>id - File - Identification</name>
+    <description>File identification information (BOOKID, FILENAME, EDITOR, MODIFICATION DATE)</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="ide" publishable="false" versetext="false">
+    <name>ide - File - Encoding</name>
+    <description>File encoding information</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="h" publishable="true" versetext="false">
+    <name>h - File - Header</name>
+    <description>Running header text for a book (basic)</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="h1" publishable="true" versetext="false">
+    <name>h1 - File - Header</name>
+    <description>Running header text</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="h2" publishable="true" versetext="false">
+    <name>h2 - File - Left Header</name>
+    <description>Running header text, left side of page</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="h3" publishable="true" versetext="false">
+    <name>h3 - File - Right Header</name>
+    <description>Running header text, right side of page</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="toc1" publishable="true" versetext="false">
+    <name>toc1 - File - Long Table of Contents Text</name>
+    <description>Long table of contents text</description>
+    <property name="font-weight">bold</property>
+    <property name="color">#004000</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="toc2" publishable="true" versetext="false">
+    <name>toc2 - File - Short Table of Contents Text</name>
+    <description>Short table of contents text</description>
+    <property name="color">#004000</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="toc3" publishable="true" versetext="false">
+    <name>toc3 - File - Book Abbreviation</name>
+    <description>Book Abbreviation</description>
+    <property name="font-weight">bold</property>
+    <property name="color">#800000</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="rem" publishable="false" versetext="false">
+    <name>rem - File - Remark</name>
+    <description>Comments and remarks</description>
+    <property name="color">#0000FF</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="sts" publishable="false" versetext="false">
+    <name>rem - File - Status</name>
+    <description>Status of this file</description>
+    <property name="color">#0000FF</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="restore" publishable="false" versetext="false">
+    <name>restore - File - Restore Information</name>
+    <description>Project restore information</description>
+    <property name="color">#0000FF</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="imt" publishable="true" versetext="false">
+    <name>imt - Introduction - Major Title Level 1</name>
+    <description>Introduction major title, level 1 (if single level) (basic)</description>
+    <property name="font-weight">bold</property>
+    <property name="font-size" unit="%">116</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">8</property>
+  </style>
+  <style id="imt1" publishable="true" versetext="false">
+    <name>imt1 - Introduction - Major Title Level 1</name>
+    <description>Introduction major title, level 1 (if multiple levels)</description>
+    <property name="font-weight">bold</property>
+    <property name="font-size" unit="%">116</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">8</property>
+  </style>
+  <style id="imt2" publishable="true" versetext="false">
+    <name>imt2 - Introduction - Major Title Level 2</name>
+    <description>Introduction major title, level 2</description>
+    <property name="font-size" unit="%">108</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">3</property>
+    <property name="margin-top" unit="pt">6</property>
+  </style>
+  <style id="imt3" publishable="true" versetext="false">
+    <name>imt3 - Introduction - Major Title Level 3</name>
+    <description>Introduction major title, level 3</description>
+    <property name="font-weight">bold</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">2</property>
+    <property name="margin-top" unit="pt">2</property>
+  </style>
+  <style id="imt4" publishable="true" versetext="false">
+    <name>imt4 - Introduction - Major Title Level 4</name>
+    <description>Introduction major title, level 4 (usually within parenthesis)</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">2</property>
+    <property name="margin-top" unit="pt">2</property>
+  </style>
+  <style id="imte" publishable="true" versetext="false">
+    <name>imte - Introduction - [Uncommon] Major Title at Introduction End Level 1</name>
+    <description>Introduction major title at introduction end, level 1 (if single level)</description>
+    <property name="font-weight">bold</property>
+    <property name="font-size" unit="%">166</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">8</property>
+  </style>
+  <style id="imte1" publishable="true" versetext="false">
+    <name>imte1 - Introduction - [Uncommon] Major Title at Introduction End Level 1</name>
+    <description>Introduction major title at introduction end, level 1 (if multiple levels)</description>
+    <property name="font-weight">bold</property>
+    <property name="font-size" unit="%">166</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">8</property>
+  </style>
+  <style id="imte2" publishable="true" versetext="false">
+    <name>imte2 - Introduction - [Uncommon] Major Title at Introduction End Level 2</name>
+    <description>Introduction major title at introduction end, level 2</description>
+    <property name="font-size" unit="%">133</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">2</property>
+  </style>
+  <style id="is" publishable="true" versetext="false">
+    <name>is - Introduction - Section Heading Level 1</name>
+    <description>Introduction section heading, level 1 (if single level) (basic)</description>
+    <property name="font-weight">bold</property>
+    <property name="font-size" unit="%">116</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">8</property>
+  </style>
+  <style id="is1" publishable="true" versetext="false">
+    <name>is1 - Introduction - Section Heading Level 1</name>
+    <description>Introduction section heading, level 1 (if multiple levels)</description>
+    <property name="font-weight">bold</property>
+    <property name="font-size" unit="%">116</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">8</property>
+  </style>
+  <style id="is2" publishable="true" versetext="false">
+    <name>is2 - Introduction - Section Heading Level 2</name>
+    <description>Introduction section heading, level 2</description>
+    <property name="font-weight">bold</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">8</property>
+  </style>
+  <style id="iot" publishable="true" versetext="false">
+    <name>iot - Introduction - Outline Title</name>
+    <description>Introduction outline title (basic)</description>
+    <property name="font-weight">bold</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">8</property>
+  </style>
+  <style id="io" publishable="true" versetext="false">
+    <name>io - Introduction - Outline Level 1</name>
+    <description>Introduction outline text, level 1 (if single level)</description>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.500</property>
+  </style>
+  <style id="io1" publishable="true" versetext="false">
+    <name>io1 - Introduction - Outline Level 1</name>
+    <description>Introduction outline text, level 1 (if multiple levels) (basic)</description>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.500</property>
+  </style>
+  <style id="io2" publishable="true" versetext="false">
+    <name>io2 - Introduction - Outline Level 2</name>
+    <description>Introduction outline text, level 2</description>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.750</property>
+  </style>
+  <style id="io3" publishable="true" versetext="false">
+    <name>io3 - Introduction - Outline Level 3</name>
+    <description>Introduction outline text, level 3</description>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">1.000</property>
+  </style>
+  <style id="io4" publishable="true" versetext="false">
+    <name>io4 - Introduction - Outline Level 4</name>
+    <description>Introduction outline text, level 4</description>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">1.250</property>
+  </style>
+  <style id="ior" publishable="true" versetext="false">
+    <name>ior...ior* - Introduction - Outline References Range</name>
+    <description>Introduction references range for outline entry; for marking references separately</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="ip" publishable="true" versetext="false">
+    <name>ip - Introduction - Paragraph</name>
+    <description>Introduction prose paragraph (basic)</description>
+    <property name="text-indent" unit="in">0.125</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="im" publishable="true" versetext="false">
+    <name>im - Introduction - Paragraph - no first line indent</name>
+    <description>Introduction prose paragraph, with no first line indent (may occur after poetry)</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="ipi" publishable="true" versetext="false">
+    <name>ipi - Introduction - Indented Para - first line indent</name>
+    <description>Introduction prose paragraph, indented, with first line indent</description>
+    <property name="text-indent" unit="in">0.125</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.250</property>
+    <property name="margin-right" unit="in">0.250</property>
+  </style>
+  <style id="imi" publishable="true" versetext="false">
+    <name>imi - Introduction - Indented Para - no first line indent</name>
+    <description>Introduction prose paragraph text, indented, with no first line indent</description>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.250</property>
+    <property name="margin-right" unit="in">0.250</property>
+  </style>
+  <style id="ili" publishable="true" versetext="false">
+    <name>ili - Introduction - List Entry - Level 1</name>
+    <description>A list entry, level 1 (if single level)</description>
+    <property name="text-indent" unit="in">-0.375</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.500</property>
+  </style>
+  <style id="ili1" publishable="true" versetext="false">
+    <name>ili1 - Introduction - List Entry - Level 1</name>
+    <description>A list entry, level 1 (if multiple levels)</description>
+    <property name="text-indent" unit="in">-0.375</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.500</property>
+  </style>
+  <style id="ili2" publishable="true" versetext="false">
+    <name>ili2 - Introduction - List Entry - Level 2</name>
+    <description>A list entry, level 2</description>
+    <property name="text-indent" unit="in">-0.375</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.750</property>
+  </style>
+  <style id="ipq" publishable="true" versetext="false">
+    <name>ipq - Introduction - Paragraph - quote from text</name>
+    <description>Introduction prose paragraph, quote from the body text</description>
+    <property name="text-indent" unit="in">0.125</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.250</property>
+    <property name="margin-right" unit="in">0.250</property>
+  </style>
+  <style id="imq" publishable="true" versetext="false">
+    <name>imq - Introduction - Paragraph - quote from text - no first line indent</name>
+    <description>Introduction prose paragraph, quote from the body text, with no first line indent</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.250</property>
+    <property name="margin-right" unit="in">0.250</property>
+  </style>
+  <style id="ipr" publishable="true" versetext="false">
+    <name>ipr - Introduction - Paragraph - right aligned</name>
+    <description>Introduction prose paragraph, right aligned</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">right</property>
+    <property name="margin-left" unit="in">0.250</property>
+    <property name="margin-right" unit="in">0.250</property>
+  </style>
+  <style id="ib" publishable="true" versetext="false">
+    <name>ib - Introduction - Blank Line</name>
+    <description>Introduction blank line</description>
+    <property name="font-size" unit="%">83</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="iq" publishable="true" versetext="false">
+    <name>iq - Introduction - Poetry Level 1</name>
+    <description>Introduction poetry text, level 1 (if single level)</description>
+    <property name="text-indent" unit="in">-0.750</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">1.000</property>
+  </style>
+  <style id="iq1" publishable="true" versetext="false">
+    <name>iq1 - Introduction - Poetry Level 1</name>
+    <description>Introduction poetry text, level 1 (if multiple levels)</description>
+    <property name="text-indent" unit="in">-0.750</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">1.000</property>
+  </style>
+  <style id="iq2" publishable="true" versetext="false">
+    <name>iq2 - Introduction - Poetry Level 2</name>
+    <description>Introduction poetry text, level 2</description>
+    <property name="text-indent" unit="in">-0.500</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">1.000</property>
+  </style>
+  <style id="iq3" publishable="true" versetext="false">
+    <name>iq3 - Introduction - Poetry Level 3</name>
+    <description>Introduction poetry text, level 3</description>
+    <property name="text-indent" unit="in">-0.250</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">1.000</property>
+  </style>
+  <style id="iex" publishable="true" versetext="false">
+    <name>iex - Introduction - Explanatory or Bridge Text</name>
+    <description>Introduction explanatory or bridge text (e.g. explanation of missing book in Short Old Testament)</description>
+    <property name="text-indent" unit="in">0.125</property>
+    <property name="text-align">left</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">4</property>
+  </style>
+  <style id="iqt" publishable="true" versetext="false">
+    <name>iqt...iqt* - Special Text - Quoted Scripture Text in Introduction</name>
+    <description>For quoted scripture text appearing in the introduction</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="ie" publishable="true" versetext="false">
+    <name>ie - Introduction - End Marker</name>
+    <description>Introduction ending marker</description>
+    <property name="font-size" unit="%">83</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="c" publishable="true" versetext="false">
+    <name>c - Chapter Number</name>
+    <description>Chapter number (necessary for normal Paratext operation)</description>
+    <property name="font-weight">bold</property>
+    <property name="font-size" unit="%">150</property>
+    <property name="text-align">left</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">8</property>
+  </style>
+  <style id="ca" publishable="true" versetext="false">
+    <name>ca...ca* - Chapter Number - Alternate</name>
+    <description>Second (alternate) chapter number (for coding dual versification; useful for places where different traditions of chapter breaks need to be supported in the same translation)</description>
+    <property name="color">#228B22</property>
+    <property name="font-size" unit="%">133</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="cp" publishable="true" versetext="false">
+    <name>cp - Chapter Number - Publishing Alternate</name>
+    <description>Published chapter number (this is a chapter marking that would be used in the published text)</description>
+    <property name="font-weight">bold</property>
+    <property name="color">#0000FF</property>
+    <property name="font-size" unit="%">150</property>
+    <property name="text-align">left</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">8</property>
+  </style>
+  <style id="cl" publishable="true" versetext="false">
+    <name>cl - Chapter - Publishing Label</name>
+    <description>Chapter label used for translations that add a word such as "Chapter" before chapter numbers (e.g. Psalms). The subsequent text is the chapter label.</description>
+    <property name="font-weight">bold</property>
+    <property name="font-size" unit="%">150</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">8</property>
+  </style>
+  <style id="cd" publishable="true" versetext="false">
+    <name>cd - Chapter - Description</name>
+    <description>Chapter Description (Publishing option D, e.g. in Russian Bibles)</description>
+    <property name="font-size" unit="%">91</property>
+    <property name="text-align">left</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">8</property>
+  </style>
+  <style id="v" publishable="true" versetext="true">
+    <name>v - Verse Number</name>
+    <description>A verse number (Necessary for normal paratext operation) (basic)</description>
+    <property name="text-align">left</property>
+    <property name="vertical-align">text-top</property>
+    <property name="font-size" unit="%">66</property>
+    <property name="white-space">nowrap</property>
+  </style>
+  <style id="va" publishable="true" versetext="false">
+    <name>va...va* - Verse Number - Alternate</name>
+    <description>Second (alternate) verse number (for coding dual numeration in Psalms; see also NRSV Exo 22.1-4)</description>
+    <property name="color">#228B22</property>
+    <property name="text-align">left</property>
+    <property name="vertical-align">text-top</property>
+    <property name="font-size" unit="%">66</property>
+  </style>
+  <style id="vp" publishable="true" versetext="false">
+    <name>vp...vp* - Verse Number - Publishing Alternate</name>
+    <description>Published verse marker - this is a verse marking that would be used in the published text</description>
+    <property name="color">#0000FF</property>
+    <property name="text-align">left</property>
+    <property name="vertical-align">text-top</property>
+    <property name="font-size" unit="%">66</property>
+  </style>
+  <style id="p" publishable="true" versetext="true">
+    <name>p - Paragraph - Normal - First Line Indent</name>
+    <description>Paragraph text, with first line indent (basic)</description>
+    <property name="text-indent" unit="in">0.125</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="m" publishable="true" versetext="true">
+    <name>m - Paragraph - Margin - No First Line Indent</name>
+    <description>Paragraph text, with no first line indent (may occur after poetry) (basic)</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="pmo" publishable="true" versetext="true">
+    <name>pmo - Paragraph - Embedded Text Opening</name>
+    <description>Embedded text opening</description>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.250</property>
+    <property name="margin-right" unit="in">0.250</property>
+  </style>
+  <style id="pm" publishable="true" versetext="true">
+    <name>pm - Paragraph - Embedded Text</name>
+    <description>Embedded text paragraph</description>
+    <property name="text-indent" unit="in">0.125</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.250</property>
+    <property name="margin-right" unit="in">0.250</property>
+  </style>
+  <style id="pmc" publishable="true" versetext="true">
+    <name>pmc - Paragraph - Embedded Text Closing</name>
+    <description>Embedded text closing</description>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.250</property>
+    <property name="margin-right" unit="in">0.250</property>
+  </style>
+  <style id="pmr" publishable="true" versetext="true">
+    <name>pmr - Paragraph - Embedded Text Refrain</name>
+    <description>Embedded text refrain (e.g. Then all the people shall say, "Amen!")</description>
+    <property name="text-align">right</property>
+    <property name="margin-left" unit="in">0.250</property>
+    <property name="margin-right" unit="in">0.250</property>
+  </style>
+  <style id="pi" publishable="true" versetext="true">
+    <name>pi - Paragraph - Indented - Level 1 - First Line Indent</name>
+    <description>Paragraph text, level 1 indent (if sinlge level), with first line indent; often used for discourse (basic)</description>
+    <property name="text-indent" unit="in">0.125</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.250</property>
+    <property name="margin-right" unit="in">0.250</property>
+  </style>
+  <style id="pi1" publishable="true" versetext="true">
+    <name>pi1 - Paragraph - Indented - Level 1 - First Line Indent</name>
+    <description>Paragraph text, level 1 indent (if multiple levels), with first line indent; often used for discourse</description>
+    <property name="text-indent" unit="in">0.125</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.250</property>
+    <property name="margin-right" unit="in">0.250</property>
+  </style>
+  <style id="pi2" publishable="true" versetext="true">
+    <name>pi2 - Paragraph - Indented - Level 2 - First Line Indent</name>
+    <description>Paragraph text, level 2 indent, with first line indent; often used for discourse</description>
+    <property name="text-indent" unit="in">0.125</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.500</property>
+    <property name="margin-right" unit="in">0.250</property>
+  </style>
+  <style id="pi3" publishable="true" versetext="true">
+    <name>pi3 - Paragraph - Indented - Level 3 - First Line Indent</name>
+    <description>Paragraph text, level 3 indent, with first line indent; often used for discourse</description>
+    <property name="text-indent" unit="in">0.125</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.750</property>
+    <property name="margin-right" unit="in">0.250</property>
+  </style>
+  <style id="pc" publishable="true" versetext="true">
+    <name>pc - Paragraph - Centered (for Inscription)</name>
+    <description>Paragraph text, centered (for Inscription)</description>
+    <property name="text-align">center</property>
+  </style>
+  <style id="mi" publishable="true" versetext="true">
+    <name>mi - Paragraph - Indented - No First Line Indent</name>
+    <description>Paragraph text, indented, with no first line indent; often used for discourse</description>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.250</property>
+    <property name="margin-right" unit="in">0.250</property>
+  </style>
+  <style id="nb" publishable="true" versetext="true">
+    <name>nb - Paragraph - No Break with Previous Paragraph</name>
+    <description>Paragraph text, with no break from previous paragraph text (at chapter boundary) (basic)</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="cls" publishable="true" versetext="true">
+    <name>cls - Paragraph - Closure of an Epistle</name>
+    <description>Closure of an Epistle</description>
+    <property name="text-align">right</property>
+  </style>
+  <style id="q" publishable="true" versetext="true">
+    <name>q - Poetry - Indent Level 1 - Single Level Only</name>
+    <description>Poetry text, level 1 indent (if single level)</description>
+    <property name="text-indent" unit="in">-1.000</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">1.250</property>
+  </style>
+  <style id="q1" publishable="true" versetext="true">
+    <name>q1 - Poetry - Indent Level 1</name>
+    <description>Poetry text, level 1 indent (if multiple levels) (basic)</description>
+    <property name="text-indent" unit="in">-1.000</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">1.250</property>
+  </style>
+  <style id="q2" publishable="true" versetext="true">
+    <name>q2 - Poetry - Indent Level 2</name>
+    <description>Poetry text, level 2 indent (basic)</description>
+    <property name="text-indent" unit="in">-0.750</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">1.250</property>
+  </style>
+  <style id="q3" publishable="true" versetext="true">
+    <name>q3 - Poetry - Indent Level 3</name>
+    <description>Poetry text, level 3 indent</description>
+    <property name="text-indent" unit="in">-0.500</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">1.250</property>
+  </style>
+  <style id="q4" publishable="true" versetext="true">
+    <name>q4 - Poetry - Indent Level 4</name>
+    <description>Poetry text, level 4 indent</description>
+    <property name="text-indent" unit="in">-0.250</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">1.250</property>
+  </style>
+  <style id="qc" publishable="true" versetext="true">
+    <name>qc - Poetry - Centered</name>
+    <description>Poetry text, centered</description>
+    <property name="text-align">center</property>
+  </style>
+  <style id="qr" publishable="true" versetext="true">
+    <name>qr - Poetry - Right Aligned</name>
+    <description>Poetry text, Right Aligned</description>
+    <property name="text-align">right</property>
+  </style>
+  <style id="qs" publishable="true" versetext="true">
+    <name>qs...qs* - Poetry Text - Selah</name>
+    <description>Poetry text, Selah</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="qa" publishable="true" versetext="false">
+    <name>qa - Poetry - Acrostic Heading/Marker</name>
+    <description>Poetry text, Acrostic marker/heading</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="qac" publishable="true" versetext="false">
+    <name>qac...qac* - Poetry Text - Acrostic Letter</name>
+    <description>Poetry text, Acrostic markup of the first character of a line of acrostic poetry</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="qm" publishable="true" versetext="true">
+    <name>qm - Poetry - Embedded Text - Indent Level 1 - Single Level Only</name>
+    <description>Poetry text, embedded, level 1 indent (if single level)</description>
+    <property name="text-indent" unit="in">-0.750</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">1.000</property>
+  </style>
+  <style id="qm1" publishable="true" versetext="true">
+    <name>qm1 - Poetry - Embedded Text - Indent Level 1</name>
+    <description>Poetry text, embedded, level 1 indent (if multiple levels)</description>
+    <property name="text-indent" unit="in">-0.750</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">1.000</property>
+  </style>
+  <style id="qm2" publishable="true" versetext="true">
+    <name>qm2 - Poetry - Embedded Text - Indent Level 2</name>
+    <description>Poetry text, embedded, level 2 indent</description>
+    <property name="text-indent" unit="in">-0.500</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">1.000</property>
+  </style>
+  <style id="qm3" publishable="true" versetext="true">
+    <name>qm3 - Poetry - Embedded Text - Indent Level 3</name>
+    <description>Poetry text, embedded, level 3 indent</description>
+    <property name="text-indent" unit="in">-0.250</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">1.000</property>
+  </style>
+  <style id="b" publishable="true" versetext="true">
+    <name>b - Poetry - Stanza Break (Blank Line)</name>
+    <description>Poetry text stanza break (e.g. stanza break) (basic)</description>
+    <property name="font-size" unit="%">83</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="mt" publishable="true" versetext="false">
+    <name>mt - Title - Major Title Level 1</name>
+    <description>The main title of the book (if single level)</description>
+    <property name="font-weight">bold</property>
+    <property name="font-size" unit="%">166</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">8</property>
+  </style>
+  <style id="mt1" publishable="true" versetext="false">
+    <name>mt1 - Title - Major Title Level 1</name>
+    <description>The main title of the book (if multiple levels) (basic)</description>
+    <property name="font-weight">bold</property>
+    <property name="font-size" unit="%">166</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">2</property>
+  </style>
+  <style id="mt2" publishable="true" versetext="false">
+    <name>mt2 - Title - Major Title Level 2</name>
+    <description>A secondary title usually occurring before the main title (basic)</description>
+    <property name="font-size" unit="%">133</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">2</property>
+  </style>
+  <style id="mt3" publishable="true" versetext="false">
+    <name>mt3 - Title - Major Title Level 3</name>
+    <description>A secondary title occurring after the main title</description>
+    <property name="font-weight">bold</property>
+    <property name="font-size" unit="%">133</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">2</property>
+    <property name="margin-top" unit="pt">2</property>
+  </style>
+  <style id="mt4" publishable="true" versetext="false">
+    <name>mt4 - Title - Major Title level 4</name>
+    <description>A small secondary title sometimes occuring within parentheses</description>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">2</property>
+    <property name="margin-top" unit="pt">2</property>
+  </style>
+  <style id="mte" publishable="true" versetext="false">
+    <name>mte - Title - [Uncommon] Major Title Ending Level 1</name>
+    <description>The main title of the book repeated at the end of the book, level 1 (if single level)</description>
+    <property name="font-weight">bold</property>
+    <property name="font-size" unit="%">166</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">8</property>
+  </style>
+  <style id="mte1" publishable="true" versetext="false">
+    <name>mte1 - Title - [Uncommon] Major Title Ending Level 1</name>
+    <description>The main title of the book repeated at the end of the book, level 1 (if multiple levels)</description>
+    <property name="font-weight">bold</property>
+    <property name="font-size" unit="%">166</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">8</property>
+  </style>
+  <style id="mte2" publishable="true" versetext="false">
+    <name>mte2 - Title - [Uncommon] Major Title Ending Level 2</name>
+    <description>A secondary title occurring before or after the 'ending' main title</description>
+    <property name="font-size" unit="%">133</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">2</property>
+  </style>
+  <style id="ms" publishable="true" versetext="false">
+    <name>ms - Heading - Major Section Level 1</name>
+    <description>A major section division heading, level 1 (if single level) (basic)</description>
+    <property name="font-weight">bold</property>
+    <property name="font-size" unit="%">116</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">16</property>
+  </style>
+  <style id="ms1" publishable="true" versetext="false">
+    <name>ms1 - Heading - Major Section Level 1</name>
+    <description>A major section division heading, level 1 (if multiple levels)</description>
+    <property name="font-weight">bold</property>
+    <property name="font-size" unit="%">116</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">16</property>
+  </style>
+  <style id="ms2" publishable="true" versetext="false">
+    <name>ms2 - Heading - Major Section Level 2</name>
+    <description>A major section division heading, level 2</description>
+    <property name="font-weight">bold</property>
+    <property name="font-size" unit="%">116</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">16</property>
+  </style>
+  <style id="ms3" publishable="true" versetext="false">
+    <name>ms3 - Heading - Major Section Level 3</name>
+    <description>A major section division heading, level 3</description>
+    <property name="font-size" unit="%">116</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">16</property>
+  </style>
+  <style id="mr" publishable="true" versetext="false">
+    <name>mr - Heading - Major Section Range References</name>
+    <description>A major section division references range heading (basic)</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+  </style>
+  <style id="s" publishable="true" versetext="false">
+    <name>s - Heading - Section Level 1</name>
+    <description>A section heading, level 1 (if single level) (basic)</description>
+    <property name="font-weight">bold</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">8</property>
+  </style>
+  <style id="s1" publishable="true" versetext="false">
+    <name>s1 - Heading - Section Level 1</name>
+    <description>A section heading, level 1 (if multiple levels)</description>
+    <property name="font-weight">bold</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">8</property>
+  </style>
+  <style id="s2" publishable="true" versetext="false">
+    <name>s2 - Heading - Section Level 2</name>
+    <description>A section heading, level 2 (e.g. Proverbs 22-24)</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">8</property>
+  </style>
+  <style id="s3" publishable="true" versetext="false">
+    <name>s3 - Heading - Section Level 3</name>
+    <description>A section heading, level 3 (e.g. Genesis "The First Day")</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+    <property name="margin-bottom" unit="pt">3</property>
+    <property name="margin-top" unit="pt">6</property>
+  </style>
+  <style id="s4" publishable="true" versetext="false">
+    <name>s4 - Heading - Section Level 4</name>
+    <description>A section heading, level 4</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+    <property name="margin-bottom" unit="pt">3</property>
+    <property name="margin-top" unit="pt">6</property>
+  </style>
+  <style id="sr" publishable="true" versetext="false">
+    <name>sr - Heading - Section Range References</name>
+    <description>A section division references range heading</description>
+    <property name="font-weight">bold</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+  </style>
+  <style id="r" publishable="true" versetext="false">
+    <name>r - Heading - Parallel References</name>
+    <description>Parallel reference(s) (basic)</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+  </style>
+  <style id="sp" publishable="true" versetext="false">
+    <name>sp - Heading - Speaker</name>
+    <description>A heading, to identify the speaker (e.g. Job)</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">8</property>
+  </style>
+  <style id="d" publishable="true" versetext="true">
+    <name>d - Heading - Descriptive Title - Hebrew Subtitle</name>
+    <description>A Hebrew text heading, to provide description (e.g. Psalms)</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">center</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">4</property>
+  </style>
+  <style id="tr" publishable="true" versetext="true">
+    <name>tr - Table - Row</name>
+    <description>A new table row</description>
+    <property name="text-indent" unit="in">-0.250</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.500</property>
+  </style>
+  <style id="th1" publishable="true" versetext="true">
+    <name>th1 - Table - Column 1 Heading</name>
+    <description>A table heading, column 1</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="th2" publishable="true" versetext="true">
+    <name>th2 - Table - Column 2 Heading</name>
+    <description>A table heading, column 2</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="th3" publishable="true" versetext="true">
+    <name>th3 - Table - Column 3 Heading</name>
+    <description>A table heading, column 3</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="th4" publishable="true" versetext="true">
+    <name>th4 - Table - Column 4 Heading</name>
+    <description>A table heading, column 4</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="th5" publishable="true" versetext="true">
+    <name>th5 - Table - Column 5 Heading</name>
+    <description>A table heading, column 5</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="tc1" publishable="true" versetext="true">
+    <name>tc1 - Table - Column 1 Cell</name>
+    <description>A table cell item, column 1</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="tc2" publishable="true" versetext="true">
+    <name>tc2 - Table - Column 2 Cell</name>
+    <description>A table cell item, column 2</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="tc3" publishable="true" versetext="true">
+    <name>tc3 - Table - Column 3 Cell</name>
+    <description>A table cell item, column 3</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="tc4" publishable="true" versetext="true">
+    <name>tc4 - Table - Column 4 Cell</name>
+    <description>A table cell item, column 4</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="tc5" publishable="true" versetext="true">
+    <name>tc5 - Table - Column 5 Cell</name>
+    <description>A table cell item, column 5</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="thc1" publishable="true" versetext="true">
+    <name>thc1 - Table - Column 1 Heading - Center Aligned</name>
+    <description>A table heading, column 1, center aligned</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">center</property>
+  </style>
+  <style id="thc2" publishable="true" versetext="true">
+    <name>thc2 - Table - Column 2 Heading - Center Aligned</name>
+    <description>A table heading, column 2, center aligned</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">center</property>
+  </style>
+  <style id="thc3" publishable="true" versetext="true">
+    <name>thc3 - Table - Column 3 Heading - Center Aligned</name>
+    <description>A table heading, column 3, center aligned</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">center</property>
+  </style>
+  <style id="thc4" publishable="true" versetext="true">
+    <name>thc4 - Table - Column 4 Heading - Center Aligned</name>
+    <description>A table heading, column 4, center aligned</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">center</property>
+  </style>
+  <style id="thc5" publishable="true" versetext="true">
+    <name>thc5 - Table - Column 5 Heading - Center Aligned</name>
+    <description>A table heading, column 5, center aligned</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">center</property>
+  </style>
+  <style id="tcc1" publishable="true" versetext="true">
+    <name>tcc1 - Table - Column 1 Cell - Center Aligned</name>
+    <description>A table cell item, column 1, center aligned</description>
+    <property name="text-align">center</property>
+  </style>
+  <style id="tcc2" publishable="true" versetext="true">
+    <name>tcc2 - Table - Column 2 Cell - Center Aligned</name>
+    <description>A table cell item, column 2, center aligned</description>
+    <property name="text-align">center</property>
+  </style>
+  <style id="tcc3" publishable="true" versetext="true">
+    <name>tcc3 - Table - Column 3 Cell - Center Aligned</name>
+    <description>A table cell item, column 3, center aligned</description>
+    <property name="text-align">center</property>
+  </style>
+  <style id="tcc4" publishable="true" versetext="true">
+    <name>tcc4 - Table - Column 4 Cell - Center Aligned</name>
+    <description>A table cell item, column 4, center aligned</description>
+    <property name="text-align">center</property>
+  </style>
+  <style id="tcc5" publishable="true" versetext="true">
+    <name>tcc5 - Table - Column 5 Cell - Center Aligned</name>
+    <description>A table cell item, column 5, center aligned</description>
+    <property name="text-align">center</property>
+  </style>
+  <style id="thr1" publishable="true" versetext="true">
+    <name>thr1 - Table - Column 1 Heading - Right Aligned</name>
+    <description>A table heading, column 1, right aligned</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">right</property>
+  </style>
+  <style id="thr2" publishable="true" versetext="true">
+    <name>thr2 - Table - Column 2 Heading - Right Aligned</name>
+    <description>A table heading, column 2, right aligned</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">right</property>
+  </style>
+  <style id="thr3" publishable="true" versetext="true">
+    <name>thr3 - Table - Column 3 Heading - Right Aligned</name>
+    <description>A table heading, column 3, right aligned</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">right</property>
+  </style>
+  <style id="thr4" publishable="true" versetext="true">
+    <name>thr4 - Table - Column 4 Heading - Right Aligned</name>
+    <description>A table heading, column 4, right aligned</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">right</property>
+  </style>
+  <style id="thr5" publishable="true" versetext="true">
+    <name>thr5 - Table - Column 5 Heading - Right Aligned</name>
+    <description>A table heading, column 5, right aligned</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">right</property>
+  </style>
+  <style id="tcr1" publishable="true" versetext="true">
+    <name>tcr1 - Table - Column 1 Cell - Right Aligned</name>
+    <description>A table cell item, column 1, right aligned</description>
+    <property name="text-align">right</property>
+  </style>
+  <style id="tcr2" publishable="true" versetext="true">
+    <name>tcr2 - Table - Column 2 Cell - Right Aligned</name>
+    <description>A table cell item, column 2, right aligned</description>
+    <property name="text-align">right</property>
+  </style>
+  <style id="tcr3" publishable="true" versetext="true">
+    <name>tcr3 - Table - Column 3 Cell - Right Aligned</name>
+    <description>A table cell item, column 3, right aligned</description>
+    <property name="text-align">right</property>
+  </style>
+  <style id="tcr4" publishable="true" versetext="true">
+    <name>tcr4 - Table - Column 4 Cell - Right Aligned</name>
+    <description>A table cell item, column 4, right aligned</description>
+    <property name="text-align">right</property>
+  </style>
+  <style id="tcr5" publishable="true" versetext="true">
+    <name>tcr5 - Table - Column 5 Cell - Right Aligned</name>
+    <description>A table cell item, column 5, right aligned</description>
+    <property name="text-align">right</property>
+  </style>
+  <style id="li" publishable="true" versetext="true">
+    <name>li - List Entry - Level 1</name>
+    <description>A list entry, level 1 (if single level)</description>
+    <property name="text-indent" unit="in">-0.375</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.500</property>
+  </style>
+  <style id="li1" publishable="true" versetext="true">
+    <name>li1 - List Entry - Level 1</name>
+    <description>A list entry, level 1 (if multiple levels)</description>
+    <property name="text-indent" unit="in">-0.375</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.500</property>
+  </style>
+  <style id="li2" publishable="true" versetext="true">
+    <name>li2 - List Entry - Level 2</name>
+    <description>A list entry, level 2</description>
+    <property name="text-indent" unit="in">-0.375</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.750</property>
+  </style>
+  <style id="li3" publishable="true" versetext="true">
+    <name>li3 - List Entry - Level 3</name>
+    <description>A list entry, level 3</description>
+    <property name="text-indent" unit="in">-0.375</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">1.000</property>
+  </style>
+  <style id="li4" publishable="true" versetext="true">
+    <name>li4 - List Entry - Level 4</name>
+    <description>A list entry, level 4</description>
+    <property name="text-indent" unit="in">-0.375</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">1.250</property>
+  </style>
+  <style id="f" publishable="true" versetext="false">
+    <name>f...f* - Footnote</name>
+    <description>A Footnote text item (basic)</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="fe" publishable="true" versetext="false">
+    <name>fe...fe* - Endnote</name>
+    <description>An Endnote text item</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="fr" publishable="true" versetext="false">
+    <name>fr - Footnote - Reference</name>
+    <description>The origin reference for the footnote (basic)</description>
+    <property name="font-weight">bold</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="ft" publishable="true" versetext="false">
+    <name>ft - Footnote - Text</name>
+    <description>Footnote text, Protocanon (basic)</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="fk" publishable="true" versetext="false">
+    <name>fk - Footnote - Keyword</name>
+    <description>A footnote keyword (basic)</description>
+    <property name="font-weight">bold</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="fq" publishable="true" versetext="false">
+    <name>fq - Footnote - Quotation or Alternate Rendering</name>
+    <description>A footnote scripture quote or alternate rendering (basic)</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="fqa" publishable="true" versetext="false">
+    <name>fqa - Footnote - Alternate Translation Rendering</name>
+    <description>A footnote alternate rendering for a portion of scripture text</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="fl" publishable="true" versetext="false">
+    <name>fl - Footnote - Label Text</name>
+    <description>A footnote label text item, for marking or "labelling" the type or alternate translation being provided in the note.</description>
+    <property name="font-weight">bold</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="fp" publishable="true" versetext="false">
+    <name>fp - Footnote Paragraph Mark</name>
+    <description>A Footnote additional paragraph marker</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="fv" publishable="true" versetext="false">
+    <name>fv...fv* - Footnote - Embedded Verse Number</name>
+    <description>A verse number within the footnote text</description>
+    <property name="text-align">left</property>
+    <property name="vertical-align">text-top</property>
+    <property name="font-size" unit="%">66</property>
+  </style>
+  <style id="fdc" publishable="true" versetext="false">
+    <name>fdc...fdc* - Footnote - DC text</name>
+    <description>Footnote text, applies to Deuterocanon only</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="fm" publishable="true" versetext="false">
+    <name>fm - Footnote - Additional Caller to Previous Note</name>
+    <description>An additional footnote marker location for a previous footnote</description>
+    <property name="text-align">left</property>
+    <property name="vertical-align">text-top</property>
+    <property name="font-size" unit="%">66</property>
+  </style>
+  <style id="x" publishable="true" versetext="false">
+    <name>x...x* - Cross Reference</name>
+    <description>A list of cross references (basic)</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="xo" publishable="true" versetext="false">
+    <name>xo - Cross Reference - Origin Reference</name>
+    <description>The cross reference origin reference (basic)</description>
+    <property name="font-weight">bold</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="xt" publishable="true" versetext="false">
+    <name>xt - Cross Reference - Target References</name>
+    <description>The cross reference target reference(s), protocanon only (basic)</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="xk" publishable="true" versetext="false">
+    <name>xk - Cross Reference - Keyword</name>
+    <description>A cross reference keyword</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="xq" publishable="true" versetext="false">
+    <name>xq - Cross Reference - Quotation</name>
+    <description>A cross-reference quotation from the scripture text</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="xot" publishable="true" versetext="false">
+    <name>xot...xot* - Cross Reference - OT Target Refs (optional)</name>
+    <description>Cross-reference target reference(s), Old Testament only</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="xnt" publishable="true" versetext="false">
+    <name>xnt...xnt* - Cross Reference - NT Target Refs (optional)</name>
+    <description>Cross-reference target reference(s), New Testament only</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="xdc" publishable="true" versetext="false">
+    <name>xdc...xdc* - Cross Reference - DC Target Refs</name>
+    <description>Cross-reference target reference(s), Deuterocanon only</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="rq" publishable="true" versetext="true">
+    <name>rq...rq* - Cross Reference - Inline Quotation References</name>
+    <description>A cross-reference indicating the source text for the preceding quotation.</description>
+    <property name="font-size" unit="%">83</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="qt" publishable="true" versetext="true">
+    <name>qt...qt* - Special Text - Quoted Text - OT in NT</name>
+    <description>For Old Testament quoted text appearing in the New Testament (basic)</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="nd" publishable="true" versetext="true">
+    <name>nd...nd* - Special Text - Name of Deity</name>
+    <description>For name of deity (basic)</description>
+    <property name="text-align">left</property>
+    <property name="text-decoration">underline</property>
+  </style>
+  <style id="tl" publishable="true" versetext="true">
+    <name>tl...tl* - Special Text - Transliterated Word</name>
+    <description>For transliterated words</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="dc" publishable="true" versetext="false">
+    <name>dc...dc* - Special Text - Deuterocanonical/LXX Additions</name>
+    <description>Deuterocanonical/LXX additions or insertions in the Protocanonical text</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="bk" publishable="true" versetext="true">
+    <name>bk...bk* - Special Text - Quoted book title</name>
+    <description>For the quoted name of a book</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="sig" publishable="true" versetext="true">
+    <name>sig...sig* - Special Text - Author's Signature (Epistles)</name>
+    <description>For the signature of the author of an Epistle</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="pn" publishable="true" versetext="true">
+    <name>pn...pn* - Special Text - Proper Name</name>
+    <description>For a proper name</description>
+    <property name="font-weight">bold</property>
+    <property name="text-align">left</property>
+    <property name="text-decoration">underline</property>
+  </style>
+  <style id="addpn" publishable="true" versetext="true">
+    <name>addpn...addpn* - Special Text for Chinese</name>
+    <description>For chinese words to be dot underline &amp; underline</description>
+    <property name="font-weight">bold</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+    <property name="text-decoration">underline</property>
+  </style>
+  <style id="wj" publishable="true" versetext="true">
+    <name>wj...wj* - Special Text - Words of Jesus</name>
+    <description>For marking the words of Jesus</description>
+    <property name="color">#FF0000</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="k" publishable="true" versetext="true">
+    <name>k...k* - Special Text - Keyword</name>
+    <description>For a keyword</description>
+    <property name="font-weight">bold</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="sls" publishable="true" versetext="true">
+    <name>sls...sls* - Special Text - Secondary Language or Text Source</name>
+    <description>To represent where the original text is in a secondary language or from an alternate text source</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="ord" publishable="true" versetext="true">
+    <name>ord...ord* - Special Text - Ordinal number text portion</name>
+    <description>For the text portion of an ordinal number</description>
+    <property name="text-align">left</property>
+    <property name="vertical-align">text-top</property>
+    <property name="font-size" unit="%">66</property>
+  </style>
+  <style id="add" publishable="true" versetext="true">
+    <name>add...add* - Special Text - Translational Addition</name>
+    <description>For a translational addition to the text</description>
+    <property name="font-weight">bold</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="lit" publishable="true" versetext="false">
+    <name>lit - Special Text - Liturgical note</name>
+    <description>For a comment or note inserted for liturgical use</description>
+    <property name="font-weight">bold</property>
+    <property name="text-align">right</property>
+  </style>
+  <style id="no" publishable="true" versetext="false">
+    <name>no...no* - Character - Normal Text</name>
+    <description>A character style, use normal text</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="it" publishable="true" versetext="false">
+    <name>it...it* - Character - Italic Text</name>
+    <description>A character style, use italic text</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="bd" publishable="true" versetext="false">
+    <name>bd...bd* - Character - Bold Text</name>
+    <description>A character style, use bold text</description>
+    <property name="font-weight">bold</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="bdit" publishable="true" versetext="false">
+    <name>bdit...bdit* - Character - BoldItalic Text</name>
+    <description>A character style, use bold + italic text</description>
+    <property name="font-weight">bold</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="em" publishable="true" versetext="false">
+    <name>em...em* - Character - Emphasized Text</name>
+    <description>A character style, use emphasized text style</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="sc" publishable="true" versetext="false">
+    <name>sc...sc* - Character - Small Caps</name>
+    <description>A character style, for small capitalization text</description>
+    <property name="font-variant">small-caps</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="pb" publishable="true" versetext="false">
+    <name>pb - Break - Page Break</name>
+    <description>Page Break used for new reader portions and children's bibles where content is controlled by the page</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="fig" publishable="true" versetext="false">
+    <name>fig...fig* - Auxiliary - Figure/Illustration/Map</name>
+    <description>Illustration [Columns to span, height, filename, caption text]</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="pro" publishable="false" versetext="false">
+    <name>pro...pro* - Special Text - CJK Pronunciation</name>
+    <description>For indicating pronunciation in CJK texts</description>
+    <property name="font-size" unit="%">83</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="w" publishable="true" versetext="true">
+    <name>w...w* - Peripheral Ref - Wordlist Entry</name>
+    <description>A wordlist text item</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="wh" publishable="true" versetext="true">
+    <name>wh...wh* - Peripheral Ref - Hebrew Wordlist Entry</name>
+    <description>A Hebrew wordlist text item</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="wg" publishable="true" versetext="true">
+    <name>wg...wg* - Peripheral Ref - Greek Wordlist Entry</name>
+    <description>A Greek Wordlist text item</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="ndx" publishable="true" versetext="true">
+    <name>ndx...ndx* - Peripheral Ref - Subject Index Entry</name>
+    <description>A subject index text item</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="periph" publishable="true" versetext="false">
+    <name>periph - Peripherals - Content Division Marker</name>
+    <description>Periheral content division marker which should be followed by an additional division argument/title.</description>
+    <property name="font-weight">bold</property>
+    <property name="color">#FF8000</property>
+    <property name="font-size" unit="%">116</property>
+    <property name="text-align">left</property>
+    <property name="margin-bottom" unit="pt">4</property>
+    <property name="margin-top" unit="pt">16</property>
+  </style>
+  <style id="p1" publishable="true" versetext="false">
+    <name>p1 - Periph - Front/Back Matter Paragraph Level 1</name>
+    <description>Front or back matter text paragraph, level 1 (if multiple levels)</description>
+    <property name="text-indent" unit="in">0.125</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="p2" publishable="true" versetext="false">
+    <name>p2 - Periph - Front/Back Matter Paragraph Level 2</name>
+    <description>Front or back matter text paragraph, level 2 (if multiple levels)</description>
+    <property name="text-indent" unit="in">0.125</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.125</property>
+  </style>
+  <style id="k1" publishable="true" versetext="false">
+    <name>k1 - Periph - Concordance Keyword Level 1</name>
+    <description>Concordance main entry text or keyword, level 1</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="k2" publishable="true" versetext="false">
+    <name>k2 - Periph - Concordance Keyword Level 2</name>
+    <description>Concordance main entry text or keyword, level 2</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="xtSee" publishable="true" versetext="false">
+    <name>xtSee - Concordance and Names Index - Alternate Entry Target Reference</name>
+    <description>Concordance and Names Index markup for an alternate entry target reference.</description>
+    <property name="color">#0000FF</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="xtSeeAlso" publishable="true" versetext="false">
+    <name>xtSeeAlso - Concordance and Names Index - Additional Entry Target Reference</name>
+    <description>Concordance and Names Index markup for an additional entry target reference.</description>
+    <property name="color">#0000FF</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="pr" publishable="true" versetext="true">
+    <name>DEPRECATED pr - Paragraph - Right Aligned</name>
+    <description>Paragraph text, right aligned</description>
+    <property name="text-align">right</property>
+  </style>
+  <style id="ph" publishable="true" versetext="true">
+    <name>DEPRECATED ph - Paragraph - Hanging Indent - Level 1</name>
+    <description>Paragraph text, with level 1 hanging indent (if single level)</description>
+    <property name="text-indent" unit="in">-0.250</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.500</property>
+  </style>
+  <style id="ph1" publishable="true" versetext="true">
+    <name>DEPRECATED ph1 - Paragraph - Hanging Indent - Level 1</name>
+    <description>Paragraph text, with level 1 hanging indent (if multiple levels)</description>
+    <property name="text-indent" unit="in">-0.250</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.500</property>
+  </style>
+  <style id="ph2" publishable="true" versetext="true">
+    <name>DEPRECATED ph2 - Paragraph - Hanging Indent - Level 2</name>
+    <description>Paragraph text, with level 2 hanging indent</description>
+    <property name="text-indent" unit="in">-0.250</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.750</property>
+  </style>
+  <style id="ph3" publishable="true" versetext="true">
+    <name>DEPRECATED ph3 - Paragraph - Hanging Indent - Level 3</name>
+    <description>Paragraph text, with level 3 hanging indent</description>
+    <property name="text-indent" unit="in">-0.250</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">1.000</property>
+  </style>
+  <style id="phi" publishable="true" versetext="true">
+    <name>DEPRECATED phi - Paragraph - Indented - Hanging Indent</name>
+    <description>Paragraph text, indented with hanging indent</description>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">1.000</property>
+  </style>
+  <style id="tr1" publishable="true" versetext="true">
+    <name>OBSOLETE tr1 - Table - Row - Level 1</name>
+    <description>A table Row</description>
+    <property name="text-indent" unit="in">-0.250</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.500</property>
+  </style>
+  <style id="tr2" publishable="true" versetext="true">
+    <name>OBSOLETE tr2 - Table - Row - Level 2</name>
+    <description>A table Row</description>
+    <property name="text-indent" unit="in">-0.250</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.750</property>
+  </style>
+  <style id="ps" publishable="true" versetext="true">
+    <name>OBSOLETE ps - Paragraph - No Break with Next Paragraph</name>
+    <description>Paragraph text, no break with next paragraph text at chapter boundary</description>
+    <property name="text-indent" unit="in">0.125</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="psi" publishable="true" versetext="true">
+    <name>OBSOLETE psi - Paragraph - Indented - No Break with Next</name>
+    <description>Paragraph text, indented, with no break with next paragraph text (at chapter boundary)</description>
+    <property name="text-indent" unit="in">0.125</property>
+    <property name="text-align">left</property>
+    <property name="margin-left" unit="in">0.250</property>
+    <property name="margin-right" unit="in">0.250</property>
+  </style>
+  <style id="fs" publishable="true" versetext="false">
+    <name>DEPRECATED fs - Footnote - Footnote Summary</name>
+    <description>A summary text for the concept/idea/quotation from the scripture translation for which the note is being provided.</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="wr" publishable="true" versetext="true">
+    <name>OBSOLETE wr...wr* - Auxiliary - Wordlist/Glossary Reference</name>
+    <description>A Wordlist text item</description>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="pub" publishable="true" versetext="true">
+    <name>OBSOLETE pub Peripherals - Front Matter Publication Data</name>
+    <description>Front matter publication data</description>
+    <property name="font-size" unit="%">83</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="toc" publishable="true" versetext="true">
+    <name>OBSOLETE toc Peripherals - Front Matter Table of Contents</name>
+    <description>Front matter table of contents</description>
+    <property name="font-size" unit="%">83</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="pref" publishable="true" versetext="true">
+    <name>OBSOLETE pref Peripherals - Front Matter Preface</name>
+    <description>Front matter preface</description>
+    <property name="font-size" unit="%">83</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="intro" publishable="true" versetext="true">
+    <name>OBSOLETE intro Peripherals - Front Matter Introduction</name>
+    <description>Front matter introduction</description>
+    <property name="font-size" unit="%">83</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="conc" publishable="true" versetext="true">
+    <name>OBSOLETE conc Peripherals - Back Matter Concordance</name>
+    <description>Back matter concordance</description>
+    <property name="font-size" unit="%">83</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="glo" publishable="true" versetext="true">
+    <name>OBSOLETE glo Peripherals - Back Matter Glossary</name>
+    <description>Back matter glossary</description>
+    <property name="font-size" unit="%">83</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="idx" publishable="true" versetext="true">
+    <name>OBSOLETE idx Peripherals - Back Matter Index</name>
+    <description>Back matter index</description>
+    <property name="font-size" unit="%">83</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="maps" publishable="true" versetext="true">
+    <name>OBSOLETE maps Peripherals - Back Matter Map Index</name>
+    <description>Back matter map index</description>
+    <property name="font-size" unit="%">83</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="cov" publishable="true" versetext="true">
+    <name>OBSOLETE cov Peripherals - Other - Cover</name>
+    <description>Other peripheral materials - cover</description>
+    <property name="font-size" unit="%">83</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="spine" publishable="true" versetext="true">
+    <name>OBSOLETE spine Peripherals - Other - Spine</name>
+    <description>Other peripheral materials - spine</description>
+    <property name="font-size" unit="%">83</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="pubinfo" publishable="false" versetext="false">
+    <name>OBSOLETE pubinfo - Publication - Information</name>
+    <description>Publication information - Lang,Credit,Version,Copies,Publisher,Id,Logo</description>
+    <property name="color">#0000FF</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="zpa-xb" publishable="true" versetext="false">
+    <name>zpa-xb - Periph - Book</name>
+    <description>Book Ref</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="zpa-xc" publishable="true" versetext="false">
+    <name>zpa-xc - Periph - Chapter</name>
+    <description>Chapter Ref</description>
+    <property name="font-weight">bold</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="zpa-xv" publishable="true" versetext="false">
+    <name>zpa-xv - Periph - Verse</name>
+    <description>Verse Ref</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="zpa-d" publishable="true" versetext="false">
+    <name>zpa-d - Periph - Description</name>
+    <description>Description</description>
+    <property name="text-align">left</property>
+  </style>
+  <style id="zw" publishable="true" versetext="true">
+    <name>zw...zw* - Special Text - Strong's Number Start</name>
+    <description />
+    <property name="font-size" unit="%">58</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="zx" publishable="true" versetext="true">
+    <name>zx...zx* - Special Text - Strong's Number End</name>
+    <description />
+    <property name="font-size" unit="%">58</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="toc4" publishable="true" versetext="false">
+    <name>toc4 - File - Alternate Book Name or Abbreviation</name>
+    <description>Alternate Book Name or Abbreviation</description>
+    <property name="color">#800000</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="ztoc4" publishable="true" versetext="false">
+    <name>ztoc4 - File - Alternate Book Name or Abbreviation</name>
+    <description>Alternate Book Name or Abbreviation</description>
+    <property name="color">#800000</property>
+    <property name="font-style">italic</property>
+    <property name="text-align">left</property>
+  </style>
+  <style id="ref" publishable="true" versetext="false">
+    <name />
+    <description />
+    <property name="color">#FF0000</property>
+    <property name="text-align">left</property>
+  </style>
+</stylesheet>

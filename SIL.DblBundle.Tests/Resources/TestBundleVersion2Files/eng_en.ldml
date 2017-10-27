@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ldml>
+	<identity>
+		<version number="" />
+		<generation date="0001-01-01T00:00:00Z" />
+		<language type="en" />
+	</identity>
+	<characters>
+		<exemplarCharacters>[]</exemplarCharacters>
+		<exemplarCharacters type="punctuation">[!%-/\:;=?\[\]\u00B0\u00D7\u200C\u200D\u2013\u2014\u2018\u2019\u201C\u201D\u2303{...}]</exemplarCharacters>
+		<special xmlns:sil="urn://www.sil.org/ldml/0.1">
+			<sil:exemplarCharacters type="footnotes">[]</sil:exemplarCharacters>
+		</special>
+	</characters>
+	<delimiters>
+		<special xmlns:sil="urn://www.sil.org/ldml/0.1">
+			<sil:matched-pairs>
+				<sil:matched-pair open="(" close=")" paraClose="false" />
+				<sil:matched-pair open="[" close="]" paraClose="false" />
+				<sil:matched-pair open="{" close="}" paraClose="false" />
+			</sil:matched-pairs>
+			<sil:punctuation-patterns>
+				<sil:punctuation-pattern pattern="_—" context="init" />
+				<sil:punctuation-pattern pattern="]_" context="final" />
+				<sil:punctuation-pattern pattern="_[" context="init" />
+				<sil:punctuation-pattern pattern="'_" context="final" />
+				<sil:punctuation-pattern pattern="–" context="medial" />
+				<sil:punctuation-pattern pattern="_=_" context="isolate" />
+				<sil:punctuation-pattern pattern="%_" context="final" />
+				<sil:punctuation-pattern pattern="‘" context="medial" />
+				<sil:punctuation-pattern pattern="-_" context="final" />
+				<sil:punctuation-pattern pattern=")" context="medial" />
+				<sil:punctuation-pattern pattern="_&amp;_" context="isolate" />
+				<sil:punctuation-pattern pattern="_—_" context="isolate" />
+				<sil:punctuation-pattern pattern="/" context="medial" />
+				<sil:punctuation-pattern pattern="⌃_" context="final" />
+				<sil:punctuation-pattern pattern="”" context="medial" />
+				<sil:punctuation-pattern pattern="?" context="medial" />
+				<sil:punctuation-pattern pattern="_+_" context="isolate" />
+				<sil:punctuation-pattern pattern="—_" context="final" />
+				<sil:punctuation-pattern pattern="!_" context="final" />
+				<sil:punctuation-pattern pattern="." context="medial" />
+				<sil:punctuation-pattern pattern="—" context="medial" />
+				<sil:punctuation-pattern pattern="_&amp;" context="init" />
+				<sil:punctuation-pattern pattern="-" context="medial" />
+				<sil:punctuation-pattern pattern="?_" context="final" />
+				<sil:punctuation-pattern pattern="..._" context="final" />
+				<sil:punctuation-pattern pattern="," context="medial" />
+				<sil:punctuation-pattern pattern="..." context="medial" />
+				<sil:punctuation-pattern pattern="_(" context="init" />
+				<sil:punctuation-pattern pattern=")_" context="final" />
+				<sil:punctuation-pattern pattern="._" context="final" />
+				<sil:punctuation-pattern pattern=",_" context="final" />
+				<sil:punctuation-pattern pattern="_“" context="init" />
+				<sil:punctuation-pattern pattern="”_" context="final" />
+				<sil:punctuation-pattern pattern=";_" context="final" />
+				<sil:punctuation-pattern pattern="’_" context="final" />
+				<sil:punctuation-pattern pattern="_‘" context="init" />
+				<sil:punctuation-pattern pattern=":_" context="final" />
+				<sil:punctuation-pattern pattern="’" context="medial" />
+				<sil:punctuation-pattern pattern="*" context="medial" />
+				<sil:punctuation-pattern pattern="‌" context="medial" />
+				<sil:punctuation-pattern pattern="‍" context="medial" />
+				<sil:punctuation-pattern pattern="___" context="isolate" />
+				<sil:punctuation-pattern pattern="×" context="medial" />
+				<sil:punctuation-pattern pattern="°_" context="final" />
+			</sil:punctuation-patterns>
+			<sil:quotation-marks paraContinueType="all">
+				<sil:quotationContinue>“</sil:quotationContinue>
+				<sil:alternateQuotationContinue>‘</sil:alternateQuotationContinue>
+				<sil:quotation open="“" close="”" continue="“" level="3" />
+			</sil:quotation-marks>
+		</special>
+		<quotationStart>“</quotationStart>
+		<quotationEnd>”</quotationEnd>
+		<alternateQuotationStart>‘</alternateQuotationStart>
+		<alternateQuotationEnd>’</alternateQuotationEnd>
+	</delimiters>
+	<layout>
+		<orientation>
+			<characterOrder>left-to-right</characterOrder>
+		</orientation>
+	</layout>
+	<collations>
+		<defaultCollation>standard</defaultCollation>
+		<collation type="standard" />
+	</collations>
+	<special xmlns:sil="urn://www.sil.org/ldml/0.1">
+		<sil:external-resources>
+			<sil:font name="Gentium Basic" />
+		</sil:external-resources>
+	</special>
+</ldml>

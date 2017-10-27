@@ -71,8 +71,7 @@ namespace SIL.DblBundle.Tests.Properties {
         ///    &lt;scope&gt;New Testament&lt;/scope&gt;
         ///    &lt;description&gt;Acholi: Acholi New Testament 1985 New Testament only&lt;/description&gt;
         ///    &lt;dateCompleted/&gt;
-        ///    &lt;systemId type=&quot;tms&quot;&gt;b9236acd-66f3-44d0-98fc-3970b3d017cd&lt;/systemId&gt;
-        ///    [rest of string was truncated]&quot;;.
+        ///    &lt;systemId type=&quot;tms&quot;&gt;b9236acd-66f3-44d0-98fc-3970b3d017cd&lt;/sys [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string AcholiMetadataVersion1_5_xml {
             get {
@@ -182,6 +181,97 @@ namespace SIL.DblBundle.Tests.Properties {
         internal static string styles_xml {
             get {
                 return ResourceManager.GetString("styles_xml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+        ///&lt;ldml&gt;
+        ///	&lt;identity&gt;
+        ///		&lt;version number=&quot;&quot; /&gt;
+        ///		&lt;generation date=&quot;0001-01-01T00:00:00Z&quot; /&gt;
+        ///		&lt;language type=&quot;en&quot; /&gt;
+        ///	&lt;/identity&gt;
+        ///	&lt;characters&gt;
+        ///		&lt;exemplarCharacters&gt;[]&lt;/exemplarCharacters&gt;
+        ///		&lt;exemplarCharacters type=&quot;punctuation&quot;&gt;[!%-/\:;=?\[\]\u00B0\u00D7\u200C\u200D\u2013\u2014\u2018\u2019\u201C\u201D\u2303{...}]&lt;/exemplarCharacters&gt;
+        ///		&lt;special xmlns:sil=&quot;urn://www.sil.org/ldml/0.1&quot;&gt;
+        ///			&lt;sil:exemplarCharacters type=&quot;footnotes&quot;&gt;[]&lt;/sil:exemplarCharacters&gt;
+        ///		&lt; [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string v2_eng_en_ldml {
+            get {
+                return ResourceManager.GetString("v2_eng_en_ldml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] v2_eng_lds {
+            get {
+                object obj = ResourceManager.GetObject("v2_eng_lds", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] v2_MAT_usx {
+            get {
+                object obj = ResourceManager.GetObject("v2_MAT_usx", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; standalone=&quot;yes&quot;?&gt;
+        ///&lt;DBLMetadata version=&quot;2.0&quot; id=&quot;9879dbb7cfe39e4d&quot; revision=&quot;5&quot;&gt;
+        ///  &lt;identification&gt;
+        ///    &lt;name&gt;World English Bible&lt;/name&gt;
+        ///    &lt;description&gt;English: World English Bible Bible with Deuterocanon&lt;/description&gt;
+        ///    &lt;abbreviation&gt;WEB&lt;/abbreviation&gt;
+        ///    &lt;scope&gt;Bible with Deuterocanon&lt;/scope&gt;
+        ///    &lt;dateCompleted&gt;2014-09-24&lt;/dateCompleted&gt;
+        ///    &lt;bundleProducer&gt;Paratext/7.6.54.99&lt;/bundleProducer&gt;
+        ///    &lt;systemId type=&quot;gbc&quot;&gt;
+        ///      &lt;id&gt;546a4d9f5117ad7230055b04&lt;/id&gt;
+        ///    &lt;/systemId&gt;
+        ///    &lt;s [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string v2_metadata_xml {
+            get {
+                return ResourceManager.GetString("v2_metadata_xml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+        ///&lt;stylesheet&gt;
+        ///  &lt;property name=&quot;font-family&quot;&gt;Gentium Basic&lt;/property&gt;
+        ///  &lt;property name=&quot;font-size&quot; unit=&quot;pt&quot;&gt;14&lt;/property&gt;
+        ///  &lt;style id=&quot;id&quot; publishable=&quot;false&quot; versetext=&quot;false&quot;&gt;
+        ///    &lt;name&gt;id - File - Identification&lt;/name&gt;
+        ///    &lt;description&gt;File identification information (BOOKID, FILENAME, EDITOR, MODIFICATION DATE)&lt;/description&gt;
+        ///    &lt;property name=&quot;text-align&quot;&gt;left&lt;/property&gt;
+        ///  &lt;/style&gt;
+        ///  &lt;style id=&quot;ide&quot; publishable=&quot;false&quot; versetext=&quot;false&quot;&gt;
+        ///    &lt;name&gt;ide -  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string v2_styles_xml {
+            get {
+                return ResourceManager.GetString("v2_styles_xml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] v2_versification_vrs {
+            get {
+                object obj = ResourceManager.GetObject("v2_versification_vrs", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
