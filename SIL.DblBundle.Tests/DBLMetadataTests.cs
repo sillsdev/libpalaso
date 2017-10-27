@@ -7,86 +7,58 @@ using NUnit.Framework;
 using SIL.DblBundle.Tests.Properties;
 using SIL.DblBundle.Text;
 using SIL.IO;
+using SIL.ObjectModel;
 using SIL.TestUtilities;
 
 namespace SIL.DblBundle.Tests
 {
+	[TestFixture]
 	class DblMetadataTests
 	{
-		private DblTextMetadata<DblMetadataLanguage> m_metadata;
-
-		private const string TestXml =
-@"<?xml version=""1.0"" encoding=""UTF-8""?>
-<DBLMetadata id=""3b9fdc679b9319c3"" revision=""1"" mediatype=""text"" typeVersion=""1.3"">
-	<identification>
-		<name>Acholi New Testament 1985</name>
-		<nameLocal>Acoli Baibul 1985</nameLocal>
-		<systemId type=""tms"">b9236acd-66f3-44d0-98fc-3970b3d017cd</systemId>
-		<systemId type=""paratext"">3b9fdc679b9319c3ee45ab86cc1c0c42930c2979</systemId>
-	</identification>
-	<language>
-		<iso>ach</iso>
-	</language>
-	<copyright>
-		<statement contentType=""xhtml"">© 2015, SIL Inc. All rights reserved.</statement>
-	</copyright>
-	<promotion>
-		<promoVersionInfo contentType=""xhtml"">
-			<h1>Acholi New Testament 1985</h1>
-			<p>This translation, published by the Bible Society of Uganda, was first published in 1985.</p>
-			<p>If you are interested in obtaining a printed copy, please contact the Bible Society of Uganda at <a href=""http://www.biblesociety-uganda.org/"">www.biblesociety-uganda.org</a>.</p>
-		</promoVersionInfo>
-		<promoEmail contentType=""xhtml"">
-			<p>Hi YouVersion friend,</p>
-			<p>Sincerely, Your Friends at YouVersion</p>
-		</promoEmail>
-	</promotion>
-	<archiveStatus>
-		<archivistName>Emma Canales -archivist</archivistName>
-		<dateArchived>2014-05-28T15:18:31.080800</dateArchived>
-		<dateUpdated>2014-05-28T15:18:31.080800</dateUpdated>
-		<comments>First submit</comments>
-	</archiveStatus>
-</DBLMetadata>";
+		private DblTextMetadata<DblMetadataLanguage> _metadata;
+		private DblTextMetadata<DblMetadataLanguage> _metadata2;
 
 		[TestFixtureSetUp]
 		public void TestFixtureSetup()
 		{
 			var xs = new XmlSerializer(typeof(DblTextMetadata<DblMetadataLanguage>));
-			using (TextReader reader = new StringReader(TestXml))
-				m_metadata = (DblTextMetadata<DblMetadataLanguage>)xs.Deserialize(reader);
+			using (TextReader reader = new StringReader(Resources.AcholiMetadataVersion1_5_xml))
+				_metadata = (DblTextMetadata<DblMetadataLanguage>)xs.Deserialize(reader);
+
+			using (TextReader reader = new StringReader(Resources.AcholiMetadataVersion2_1_xml))
+				_metadata2 = (DblTextMetadata<DblMetadataLanguage>)xs.Deserialize(reader);
 		}
 
 		[Test]
 		public void GetId()
 		{
-			Assert.AreEqual("3b9fdc679b9319c3", m_metadata.Id);
+			Assert.AreEqual("3b9fdc679b9319c3", _metadata.Id);
 		}
 
 		[Test]
 		public void GetName()
 		{
-			Assert.AreEqual("Acholi New Testament 1985", m_metadata.Identification.Name);
+			Assert.AreEqual("Acholi New Testament 1985", _metadata.Identification.Name);
 		}
 
 		[Test]
 		public void GetParatextSystemId()
 		{
-			Assert.AreEqual("3b9fdc679b9319c3ee45ab86cc1c0c42930c2979", m_metadata.Identification.SystemIds.FirstOrDefault(sid => sid.Type.Equals("paratext")).Id);
+			Assert.AreEqual("3b9fdc679b9319c3ee45ab86cc1c0c42930c2979", _metadata.Identification.SystemIds.FirstOrDefault(sid => sid.Type.Equals("paratext")).Id);
 		}
 
 		[Test]
 		public void GetLanguageIso()
 		{
-			Assert.AreEqual("ach", m_metadata.Language.Iso);
+			Assert.AreEqual("ach", _metadata.Language.Iso);
 		}
 
 		[Test]
 		public void GetCopyrightStatement()
 		{
-			const string expectedValue = @"© 2015, SIL Inc. All rights reserved.";
-			Assert.AreEqual(expectedValue, m_metadata.Copyright.Statement.Xhtml);
-			Assert.AreEqual("xhtml", m_metadata.Copyright.Statement.ContentType);
+			const string expectedValue = "<p>© 1985 The Bible Society of Uganda</p>";
+			Assert.AreEqual(expectedValue, _metadata.Copyright.Statement.Xhtml);
+			Assert.AreEqual("xhtml", _metadata.Copyright.Statement.ContentType);
 		}
 
 		[Test]
@@ -95,21 +67,50 @@ namespace SIL.DblBundle.Tests
 			const string expectedValue = @"<h1>Acholi New Testament 1985</h1><p>This translation, published by the Bible Society " +
 				@"of Uganda, was first published in 1985.</p><p>If you are interested in obtaining a printed copy, please contact " +
 				@"the Bible Society of Uganda at <a href=""http://www.biblesociety-uganda.org/"">www.biblesociety-uganda.org</a>.</p>";
-			Assert.AreEqual(expectedValue, m_metadata.Promotion.PromoVersionInfo.Xhtml);
-			Assert.AreEqual("xhtml", m_metadata.Promotion.PromoVersionInfo.ContentType);
-		}
-
-		[Test]
-		public void GetPromoEmail()
-		{
-			const string expectedValue = @"<p>Hi YouVersion friend,</p><p>Sincerely, Your Friends at YouVersion</p>";
-			Assert.AreEqual(expectedValue, m_metadata.Promotion.PromoEmail.Xhtml);
+			Assert.AreEqual(expectedValue, _metadata.Promotion.PromoVersionInfo.Xhtml);
+			Assert.AreEqual("xhtml", _metadata.Promotion.PromoVersionInfo.ContentType);
 		}
 
 		[Test]
 		public void GetDateArchived()
 		{
-			Assert.AreEqual("2014-05-28T15:18:31.080800", m_metadata.ArchiveStatus.DateArchived);
+			Assert.AreEqual("2014-05-28T15:18:31.080800", _metadata.ArchiveStatus.DateArchived);
+		}
+
+		[Test]
+		public void HasDefaultCanon()
+		{
+			Assert.AreEqual(1, _metadata.Canons.Count);
+			Assert.AreEqual(1, _metadata2.Canons.Count);
+
+			Assert.DoesNotThrow(() => _metadata.Canons.Single(c => c.Default));
+			Assert.DoesNotThrow(() => _metadata2.Canons.Single(c => c.Default));
+
+			Assert.AreEqual(1, _metadata.Publications.Count);
+			Assert.AreEqual(1, _metadata2.Publications.Count);
+
+			Assert.DoesNotThrow(() => _metadata.Publications.Single(p => p.Default));
+			Assert.DoesNotThrow(() => _metadata2.Publications.Single(p => p.Default));
+		}
+
+		[Test]
+		public void AvailableBooks()
+		{
+			Assert.AreEqual(27, _metadata.AvailableBooks.Count);
+			Assert.AreEqual(27, _metadata2.AvailableBooks.Count);
+
+			Assert.AreEqual("MAT", _metadata.AvailableBooks[0].Code);
+			Assert.AreEqual("MAT", _metadata2.AvailableBooks[0].Code);
+
+			Assert.AreEqual("book-mat", _metadata.AvailableBooks[0].Id);
+			Assert.AreEqual("book-mat", _metadata2.AvailableBooks[0].Id);
+		}
+
+		[Test]
+		public void IsTextReleaseBundle()
+		{
+			Assert.True(_metadata.IsTextReleaseBundle);
+			Assert.True(_metadata2.IsTextReleaseBundle);
 		}
 
 		[Test]
@@ -132,8 +133,9 @@ namespace SIL.DblBundle.Tests
 			Assert.NotNull(exception);
 		}
 
-		[Test]
-		public void Serialize()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void Serialize(bool version1metdata)
 		{
 			var metadata = new DblTextMetadata<DblMetadataLanguage>
 			{
@@ -153,8 +155,43 @@ namespace SIL.DblBundle.Tests
 					PromoVersionInfo = new DblMetadataXhtmlContentNode { Xhtml = @"<h1>Acholi New Testament 1985</h1><p>More text</p>" },
 					PromoEmail = new DblMetadataXhtmlContentNode { Xhtml = "<p>Email Text</p>" }
 				},
-				ArchiveStatus = new DblMetadataArchiveStatus { DateArchived = "dateArchived" }
+				ArchiveStatus = new DblMetadataArchiveStatus { DateArchived = "dateArchived" },
+				AvailableBooks = new List<Book>
+				{
+					new Book
+					{
+						Code = "MAT",
+						ShortName = "Matayo"
+					}
+				}
 			};
+
+			var canonBooks = new List<DblMetadataCanonBook> {new DblMetadataCanonBook {Code = "MAT"}};
+
+			if (version1metdata)
+			{
+				metadata.Canons = new ObservableList<DblMetadataCanon>
+				{
+					new DblMetadataCanon
+					{
+						CanonId = "p1",
+						CanonBooks = canonBooks,
+						Default = true
+					}
+				};
+			}
+			else
+			{
+				metadata.Publications = new ObservableList<DblMetadataPublication>
+				{
+					new DblMetadataPublication
+					{
+						CanonId = "p1",
+						CanonBooks = canonBooks,
+						Default = true
+					}
+				};
+			}
 
 			const string expectedResult =
 @"<?xml version=""1.0"" encoding=""utf-16""?>
@@ -178,6 +215,18 @@ namespace SIL.DblBundle.Tests
 	<archiveStatus>
 		<dateArchived>dateArchived</dateArchived>
 	</archiveStatus>
+	<names>
+	<name id=""book-mat"">
+		<short>Matayo</short>
+	</name>
+	</names>
+	<publications>
+		<publication default=""true"" id=""p1"">
+			<canonicalContent>
+				<book code=""MAT"" />
+			</canonicalContent>
+		</publication>
+	</publications>
 </DBLMetadata>";
 
 			AssertThatXmlIn.String(expectedResult).EqualsIgnoreWhitespace(metadata.GetAsXml());

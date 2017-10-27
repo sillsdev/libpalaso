@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using L10NSharp;
 using SIL.DblBundle.Usx;
 using SIL.Reporting;
@@ -43,6 +44,8 @@ namespace SIL.DblBundle.Text
 		where TM : DblTextMetadata<TL>
 		where TL : DblMetadataLanguage, new()
 	{
+		private static readonly Regex s_canonIdRegex = new Regex("p(\\d*)", RegexOptions.Compiled);
+
 		protected readonly IDictionary<string, UsxDocument> m_books = new Dictionary<string, UsxDocument>();
 		private readonly Stylesheet m_stylesheet;
 		private readonly WritingSystemDefinition m_ws;
@@ -82,8 +85,12 @@ namespace SIL.DblBundle.Text
 			{
 				foreach (var book in Metadata.AvailableBibleBooks.Where(b => b.IncludeInScript))
 				{
+					if (book.Id == null)
+						continue;
 					UsxDocument usxBook;
-					if (TryGetBook(book.Code, out usxBook))
+					if (TryGetBook(book.Id, out usxBook))
+						yield return usxBook;
+					else if (TryGetBook(book.Id.Substring(DblTextMetadata<TL>.Version2BookIdPrefix.Length), out usxBook))
 						yield return usxBook;
 				}
 			}
@@ -137,16 +144,16 @@ namespace SIL.DblBundle.Text
 
 		private void ExtractBooks()
 		{
-			DblMetadataCanon defaultCanon = Metadata.Canons.FirstOrDefault(c => c.Default);
-			if (defaultCanon != null)
+			DblMetadataPublication defaultPublication = Metadata.Publications.FirstOrDefault(c => c.Default);
+			if (defaultPublication != null)
 			{
-				string canonDirectory = GetPathToCanon(defaultCanon.CanonId);
+				string canonDirectory = GetPathToCanon(defaultPublication.CanonId);
 				if (Directory.Exists(canonDirectory))
 					ExtractBooksInCanon(canonDirectory);
 			}
-			foreach (DblMetadataCanon canon in Metadata.Canons.Where(c => !c.Default).OrderBy(c => c.CanonId))
+			foreach (DblMetadataPublication publication in Metadata.Publications.Where(c => !c.Default).OrderBy(c => c.CanonId))
 			{
-				string canonDirectory = GetPathToCanon(canon.CanonId);
+				string canonDirectory = GetPathToCanon(publication.CanonId);
 				if (Directory.Exists(canonDirectory))
 					ExtractBooksInCanon(canonDirectory);
 			}
@@ -170,9 +177,13 @@ namespace SIL.DblBundle.Text
 			}
 		}
 
-		private string GetPathToCanon(string canonId)
+		// internal for testing
+		internal string GetPathToCanon(string canonId)
 		{
-			return Path.Combine(PathToUnzippedDirectory, "USX_" + canonId);
+			string directorySuffix = canonId;
+			if (s_canonIdRegex.IsMatch(canonId))
+				directorySuffix = s_canonIdRegex.Match(canonId).Groups[1].Value;
+			return Path.Combine(PathToUnzippedDirectory, "USX_" + directorySuffix);
 		}
 		#endregion
 
@@ -240,7 +251,7 @@ namespace SIL.DblBundle.Text
 		/// <returns>True if the book exists, false otherwise</returns>
 		public bool TryGetBook(string bookId, out UsxDocument book)
 		{
-			return m_books.TryGetValue(bookId, out book);
+			return m_books.TryGetValue(bookId.ToUpper(), out book);
 		}
 		#endregion
 	}

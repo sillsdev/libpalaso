@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Ionic.Zip;
 using NUnit.Framework;
 using SIL.DblBundle.Tests.Properties;
@@ -14,13 +15,17 @@ namespace SIL.DblBundle.Tests.Text
 	public class TextBundleTests
 	{
 		private TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage> m_bundle;
+		private TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage> m_bundleWithVersion2Metadata;
 		private TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage> m_bundleWithoutLdml;
 
 		[TestFixtureSetUp]
 		public void TestFixtureSetup()
 		{
+			Sldr.Initialize();
 			using (var zippedBundle = CreateZippedTextBundleFromResources())
 				m_bundle = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
+			using (var zippedBundle = CreateZippedTextBundleFromResources(metadataVersion2: true))
+				m_bundleWithVersion2Metadata = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
 			using (var zippedBundle = CreateZippedTextBundleFromResources(false))
 				m_bundleWithoutLdml = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
 		}
@@ -30,6 +35,7 @@ namespace SIL.DblBundle.Tests.Text
 		{
 			m_bundle.Dispose();
 			m_bundleWithoutLdml.Dispose();
+			Sldr.Cleanup();
 		}
 
 		[Test]
@@ -69,6 +75,21 @@ namespace SIL.DblBundle.Tests.Text
 			Assert.IsFalse(ws.RightToLeftScript);
 		}
 
+		[TestCase("1")]
+		[TestCase("p1")]
+		public void CreateBundle_GetPathToCanon(string canonId)
+		{
+			Assert.True(m_bundle.GetPathToCanon(canonId).EndsWith("USX_1"));
+		}
+
+		[TestCase(false)]
+		[TestCase(true)]
+		public void UsxBooksToInclude(bool version2)
+		{
+			var bundle = version2 ? m_bundleWithVersion2Metadata : m_bundle;
+			Assert.AreEqual(1, bundle.UsxBooksToInclude.Count());
+		}
+
 		[Test]
 		public void TryGetBook()
 		{
@@ -102,7 +123,7 @@ namespace SIL.DblBundle.Tests.Text
 			});
 		}
 
-		public static TempFile CreateZippedTextBundleFromResources(bool includeLdml = true, bool invalidUsxDirectory = false)
+		public static TempFile CreateZippedTextBundleFromResources(bool includeLdml = true, bool invalidUsxDirectory = false, bool metadataVersion2 = false)
 		{
 			TempFile bundle = TempFile.WithExtension(DblBundleFileUtils.kDblBundleExtension);
 
@@ -114,21 +135,42 @@ namespace SIL.DblBundle.Tests.Text
 			using (var matUsx = TempFile.WithFilename("MAT.usx"))
 			using (var zip = new ZipFile())
 			{
-				File.WriteAllBytes(englishLds.Path, Resources.English_lds);
+				var ldsResource = Resources.English_lds;
+				var metadataResource = Resources.metadata_xml;
+				var styleResource = Resources.styles_xml;
+				var versificationResource = Resources.versification_vrs;
+				var ldmlResource = Resources.ldml_xml;
+				var MATResource = Resources.MAT_usx;
+				var usxDirectory = "USX_0";
+
+				if (metadataVersion2)
+				{
+					ldsResource = Resources.v2_eng_lds;
+					metadataResource = Resources.v2_metadata_xml;
+					styleResource = Resources.v2_styles_xml;
+					versificationResource = Resources.v2_versification_vrs;
+					ldmlResource = Resources.v2_eng_en_ldml;
+					MATResource = Resources.v2_MAT_usx;
+					usxDirectory = "USX_1";
+				}
+				if (invalidUsxDirectory)
+					usxDirectory = "USX_A";
+
+				File.WriteAllBytes(englishLds.Path, ldsResource);
 				zip.AddFile(englishLds.Path, string.Empty);
-				File.WriteAllText(metadataXml.Path, Resources.metadata_xml);
+				File.WriteAllText(metadataXml.Path, metadataResource);
 				zip.AddFile(metadataXml.Path, string.Empty);
-				File.WriteAllText(stylesXml.Path, Resources.styles_xml);
+				File.WriteAllText(stylesXml.Path, styleResource);
 				zip.AddFile(stylesXml.Path, string.Empty);
-				File.WriteAllBytes(versificationVrs.Path, Resources.versification_vrs);
+				File.WriteAllBytes(versificationVrs.Path, versificationResource);
 				zip.AddFile(versificationVrs.Path, string.Empty);
 				if (includeLdml)
 				{
-					File.WriteAllText(ldmlXml.Path, Resources.ldml_xml);
+					File.WriteAllText(ldmlXml.Path, ldmlResource);
 					zip.AddFile(ldmlXml.Path, string.Empty);
 				}
-				File.WriteAllBytes(matUsx.Path, Resources.MAT_usx);
-				zip.AddFile(matUsx.Path, invalidUsxDirectory ? "USX_1" : "USX_0");
+				File.WriteAllBytes(matUsx.Path, MATResource);
+				zip.AddFile(matUsx.Path, usxDirectory);
 				zip.Save(bundle.Path);
 			}
 

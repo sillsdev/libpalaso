@@ -1,0 +1,232 @@
+<?xml version="1.0"?>
+<DBLMetadata type="text" typeVersion="1.5" id="3b9fdc679b9319c3" revision="2">
+  <identification>
+    <name>Acholi New Testament 1985</name>
+    <nameLocal>Acoli Baibul 1985</nameLocal>
+    <abbreviation>ACHBI85</abbreviation>
+    <abbreviationLocal>Aco85</abbreviationLocal>
+    <scope>New Testament</scope>
+    <description>Acholi: Acholi New Testament 1985 New Testament only</description>
+    <dateCompleted/>
+    <systemId type="tms">b9236acd-66f3-44d0-98fc-3970b3d017cd</systemId>
+    <systemId type="paratext" name="ACHNT85" fullname="Acholi New Testament 1985">3b9fdc679b9319c3ee45ab86cc1c0c42930c2979</systemId>
+    <bundleProducer>Paratext/7.4.500.59</bundleProducer>
+  </identification>
+  <confidential>false</confidential>
+  <agencies>
+    <rightsHolder abbr="UGA" local="The Bible Society of Uganda" url="http://www.biblesociety-uganda.org/" uid="545d2cb0376c84385bad7f96">Bible Society of Uganda</rightsHolder>
+    <contributor uid="545d2cb0376c84385bad7f96" content="true" management="false" publication="true" qa="false">Bible Society of Uganda</contributor>
+  </agencies>
+  <language>
+    <iso>ach</iso>
+    <name>Acholi</name>
+    <ldml>ach</ldml>
+    <rod/>
+    <script>Latin</script>
+    <scriptDirection>LTR</scriptDirection>
+    <numerals/>
+  </language>
+  <country>
+    <iso>UG</iso>
+    <name>Uganda</name>
+  </country>
+  <type>
+    <translationType>Revision</translationType>
+    <audience>Common</audience>
+  </type>
+  <bookNames>
+    <book code="MAT">
+      <abbr>Mat</abbr>
+      <short>Matayo</short>
+      <long>Jiri Ma Matayo Ocoyo</long>
+    </book>
+    <book code="MRK">
+      <abbr>Mar</abbr>
+      <short>Marako</short>
+      <long>Jiri Ma Marako Ocoyo</long>
+    </book>
+    <book code="LUK">
+      <abbr>Luka</abbr>
+      <short>Luka</short>
+      <long>Jiri Ma Luka Ocoyo</long>
+    </book>
+    <book code="JHN">
+      <abbr>Jon</abbr>
+      <short>Jon</short>
+      <long>Jiri Ma Jon Ocoyo</long>
+    </book>
+    <book code="ACT">
+      <abbr>Tic</abbr>
+      <short>Tic Pa Lukwena</short>
+      <long>Tic Pa Lukwena</long>
+    </book>
+    <book code="ROM">
+      <abbr>Rom</abbr>
+      <short>Jo Roma</short>
+      <long>Waraga Ma Paulo Ocoyo Bot Jo Roma</long>
+    </book>
+    <book code="1CO">
+      <abbr>1 Kor</abbr>
+      <short>1 Jo Korint</short>
+      <long>Waraga Mukwoŋo Ma Paulo Ocoyo Pa Jo Korint</long>
+    </book>
+    <book code="2CO">
+      <abbr>2 Kor</abbr>
+      <short>2 Jo Korint</short>
+      <long>Waraga Me Aryo Ma Paulo Ocoyo Bot Jo Korint</long>
+    </book>
+    <book code="GAL">
+      <abbr>Gal</abbr>
+      <short>Jo Galatia</short>
+      <long>Waraga Ma Paulo Ocoyo Bot Jo Galatia</long>
+    </book>
+    <book code="EPH">
+      <abbr>Ep</abbr>
+      <short>Jo Epeco</short>
+      <long>Waraga Ma Paulo Ocoyo Bot Jo Epeco</long>
+    </book>
+    <book code="PHP">
+      <abbr>Pil</abbr>
+      <short>Jo Pilipi</short>
+      <long>Waraga Ma Paulo Ocoyo Bot Jo Pilipi</long>
+    </book>
+    <book code="COL">
+      <abbr>Kol</abbr>
+      <short>Jo Kolocai</short>
+      <long>Waraga Ma Paulo Ocoyo Bot Jo Kolocai</long>
+    </book>
+    <book code="1TH">
+      <abbr>1 Tec</abbr>
+      <short>1 Jo Tecalonika</short>
+      <long>Waraga Mukwoŋo Ma Paulo Ocoyo Bot Jo Tecalonika</long>
+    </book>
+    <book code="2TH">
+      <abbr>2 Tec</abbr>
+      <short>2 Jo Tecalonika</short>
+      <long>Waraga Me Aryo Ma Paulo Ocoyo Bot Jo Tecalonika</long>
+    </book>
+    <book code="1TI">
+      <abbr>1 Tem</abbr>
+      <short>1 Temceo</short>
+      <long>Waraga Mukwoŋo Ma Paulo Ocoyo Bot Temceo</long>
+    </book>
+    <book code="2TI">
+      <abbr>2 Tem</abbr>
+      <short>2 Temceo</short>
+      <long>Waraga Me Aryo Ma Paulo Ocoyo Bot Temceo</long>
+    </book>
+    <book code="TIT">
+      <abbr>Tito</abbr>
+      <short>Tito</short>
+      <long>Waraga Ma Paulo Ocoyo Bot Tito</long>
+    </book>
+    <book code="PHM">
+      <abbr>Pile</abbr>
+      <short>Pilemon</short>
+      <long>Waraga Ma Paulo Ocoyo Bot Pilemon Mot</long>
+    </book>
+    <book code="HEB">
+      <abbr>Ibru</abbr>
+      <short>Jo Ibru</short>
+      <long>Waraga Ma Gicoyo Bot Jo Ibru</long>
+    </book>
+    <book code="JAS">
+      <abbr>Yak</abbr>
+      <short>Yakobo</short>
+      <long>Waraga Ma Yakobo Ocoyo</long>
+    </book>
+    <book code="1PE">
+      <abbr>1 Pet</abbr>
+      <short>1 Petero</short>
+      <long>Waraga Mukwoŋo Ma Petero Ocoyo</long>
+    </book>
+    <book code="2PE">
+      <abbr>2 Pet</abbr>
+      <short>2 Petero</short>
+      <long>Waraga Me Aryo Ma Petero Ocoyo</long>
+    </book>
+    <book code="1JN">
+      <abbr>1 Jon</abbr>
+      <short>1 Jon</short>
+      <long>Waraga Mukwoŋo Ma Jon Ocoyo</long>
+    </book>
+    <book code="2JN">
+      <abbr>2 Jon</abbr>
+      <short>2 Jon</short>
+      <long>Waraga Me Aryo Ma Jon Ocoyo</long>
+    </book>
+    <book code="3JN">
+      <abbr>3 Jon</abbr>
+      <short>3 Jon</short>
+      <long>Waraga Me Adek Ma Jon Ocoyo</long>
+    </book>
+    <book code="JUD">
+      <abbr>Juda</abbr>
+      <short>Juda</short>
+      <long>Waraga Ma Juda Ocoyo</long>
+    </book>
+    <book code="REV">
+      <abbr>Yabo</abbr>
+      <short>Niyabo</short>
+      <long>Niyabo Bot Jon</long>
+    </book>
+  </bookNames>
+  <contents>
+    <bookList id="1" default="true">
+      <name>Acholi New Testament 1985</name>
+      <nameLocal>Acoli Baibul 1985</nameLocal>
+      <abbreviation>ACHBI85</abbreviation>
+      <abbreviationLocal>ACHBI85</abbreviationLocal>
+      <description>Western New Testament</description>
+      <descriptionLocal>Western New Testament</descriptionLocal>
+      <books>
+        <book code="MAT"/>
+        <book code="MRK"/>
+        <book code="LUK"/>
+        <book code="JHN"/>
+        <book code="ACT"/>
+        <book code="ROM"/>
+        <book code="1CO"/>
+        <book code="2CO"/>
+        <book code="GAL"/>
+        <book code="EPH"/>
+        <book code="PHP"/>
+        <book code="COL"/>
+        <book code="1TH"/>
+        <book code="2TH"/>
+        <book code="1TI"/>
+        <book code="2TI"/>
+        <book code="TIT"/>
+        <book code="PHM"/>
+        <book code="HEB"/>
+        <book code="JAS"/>
+        <book code="1PE"/>
+        <book code="2PE"/>
+        <book code="1JN"/>
+        <book code="2JN"/>
+        <book code="3JN"/>
+        <book code="JUD"/>
+        <book code="REV"/>
+      </books>
+    </bookList>
+  </contents>
+  <copyright>
+    <statement contentType="xhtml">
+      <p>© 1985 The Bible Society of Uganda</p>
+    </statement>
+  </copyright>
+  <promotion>
+    <promoVersionInfo contentType="xhtml">
+      <h1>Acholi New Testament 1985</h1>
+      <p>This translation, published by the Bible Society of Uganda, was first published in 1985.</p>
+      <p>If you are interested in obtaining a printed copy, please contact the Bible Society of Uganda at <a href="http://www.biblesociety-uganda.org/">www.biblesociety-uganda.org</a>.</p>
+    </promoVersionInfo>
+  </promotion>
+  <archiveStatus>
+    <archivistName>Emma Canales -archivist</archivistName>
+    <dateArchived>2014-05-28T15:18:31.080800</dateArchived>
+    <dateUpdated>2014-05-28T15:18:31.080800</dateUpdated>
+    <comments>First submit (Updated to DBL 4.0)</comments>
+  </archiveStatus>
+  <format>text/xml</format>
+</DBLMetadata>

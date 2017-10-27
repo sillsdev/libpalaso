@@ -5,15 +5,70 @@ using SIL.Xml;
 
 namespace SIL.DblBundle
 {
+	/// <summary>
+	/// Information about a Digital Bible Library bundle
+	/// </summary>
 	[XmlRoot("DBLMetadata")]
 	public class DblMetadata
 	{
+		private DblMetadataType _type;
+
 		[XmlAttribute("id")]
 		public string Id { get; set; }
 
+		/// <summary>
+		/// Type of DBL bundle.
+		/// Only text bundles are currently supported.
+		/// Deprecated as of metadata version 2.
+		/// </summary>
 		[XmlAttribute("type")]
-		public string Type { get; set; }
+		public string Type_DeprecatedXml
+		{
+			get { return null; }
+			set {
+				if (_type == null)
+					_type = new DblMetadataType();
+				_type.Medium = value;
+			}
+		}
 
+		/// <summary>
+		/// This is required to prevent a breaking change to the API after deprecating the type attribute above.
+		/// </summary>
+		[XmlIgnore]
+		public string Type
+		{
+			get { return _type?.Medium; }
+			set
+			{
+				if (_type == null)
+					_type = new DblMetadataType();
+				_type.Medium = value;
+			}
+		}
+
+		/// <summary>
+		/// Type of DBL bundle.
+		/// Only text bundles are currently supported.
+		/// Replaced the type attribute as of metadata version 2.
+		/// </summary>
+		[XmlElement("type")]
+		public DblMetadataType TypeElement
+		{
+			get { return _type; }
+			set
+			{
+				// This is a hack to prevent the deserializer from setting
+				// a blank DblMetadataType when we already have one with content
+				// (set from Type_DeprecatedXml).
+				// Surprisingly, the deserializer will call set with a newly
+				// constructed DblMetadataType even if no type element exists.
+				// This seems to be only because the potential attribute and
+				// the potential element have the same name ("type").
+				if (value?.Medium != null && _type?.Medium == null)
+					_type = value;
+			}
+		}
 		[XmlAttribute("typeVersion")]
 		public string TypeVersion { get; set; }
 
@@ -21,6 +76,18 @@ namespace SIL.DblBundle
 		public int Revision { get; set; }
 
 		public bool IsTextReleaseBundle { get { return Type == "text"; } }
+	}
+
+	/// <summary>
+	/// Contains the type information for DBL Metadata
+	/// </summary>
+	public class DblMetadataType
+	{
+		/// <summary>
+		/// Type medium, e.g. text or audio
+		/// </summary>
+		[XmlElement("medium")]
+		public string Medium { get; set; }
 	}
 
 	/// <summary>

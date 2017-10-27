@@ -1,0 +1,326 @@
+<?xml version="1.0" standalone="yes"?>
+<DBLMetadata version="2.1" id="3b9fdc679b9319c3" revision="2">
+  <identification>
+    <name>Acholi New Testament 1985</name>
+    <nameLocal>Acoli Baibul 1985</nameLocal>
+    <description>Acholi: Acholi New Testament 1985 New Testament only</description>
+    <abbreviation>ACHBI85</abbreviation>
+    <abbreviationLocal>Aco85</abbreviationLocal>
+    <scope>New Testament</scope>
+    <bundleProducer>Paratext/7.4.500.59</bundleProducer>
+    <systemId type="tms">
+      <id>b9236acd-66f3-44d0-98fc-3970b3d017cd</id>
+    </systemId>
+    <systemId type="paratext">
+      <id>3b9fdc679b9319c3ee45ab86cc1c0c42930c2979</id>
+      <name>ACHNT85</name>
+      <fullName>Acholi New Testament 1985</fullName>
+    </systemId>
+  </identification>
+  <type>
+    <medium>text</medium>
+    <isConfidential>false</isConfidential>
+    <hasCharacters>true</hasCharacters>
+    <isTranslation>true</isTranslation>
+    <isExpression>true</isExpression>
+    <translationType>Revision</translationType>
+    <audience>Common</audience>
+  </type>
+  <relationships/>
+  <agencies>
+    <rightsHolder>
+      <abbr>UGA</abbr>
+      <url>http://www.biblesociety-uganda.org/</url>
+      <local>The Bible Society of Uganda</local>
+      <uid>545d2cb0376c84385bad7f96</uid>
+      <name>Bible Society of Uganda</name>
+    </rightsHolder>
+    <contributor>
+      <content>true</content>
+      <publication>true</publication>
+      <management>false</management>
+      <qa>false</qa>
+      <uid>545d2cb0376c84385bad7f96</uid>
+      <name>Bible Society of Uganda</name>
+    </contributor>
+  </agencies>
+  <language>
+    <iso>ach</iso>
+    <name>Acholi</name>
+    <script>Latin</script>
+    <scriptCode>Latn</scriptCode>
+    <scriptDirection>LTR</scriptDirection>
+    <ldml>ach</ldml>
+  </language>
+  <countries>
+    <country>
+      <iso>UG</iso>
+      <name>Uganda</name>
+    </country>
+  </countries>
+  <format>
+    <versedParagraphs>false</versedParagraphs>
+  </format>
+  <names>
+    <name id="book-mat">
+      <abbr>Mat</abbr>
+      <short>Matayo</short>
+      <long>Jiri Ma Matayo Ocoyo</long>
+    </name>
+    <name id="book-mrk">
+      <abbr>Mar</abbr>
+      <short>Marako</short>
+      <long>Jiri Ma Marako Ocoyo</long>
+    </name>
+    <name id="book-luk">
+      <abbr>Luka</abbr>
+      <short>Luka</short>
+      <long>Jiri Ma Luka Ocoyo</long>
+    </name>
+    <name id="book-jhn">
+      <abbr>Jon</abbr>
+      <short>Jon</short>
+      <long>Jiri Ma Jon Ocoyo</long>
+    </name>
+    <name id="book-act">
+      <abbr>Tic</abbr>
+      <short>Tic Pa Lukwena</short>
+      <long>Tic Pa Lukwena</long>
+    </name>
+    <name id="book-rom">
+      <abbr>Rom</abbr>
+      <short>Jo Roma</short>
+      <long>Waraga Ma Paulo Ocoyo Bot Jo Roma</long>
+    </name>
+    <name id="book-1co">
+      <abbr>1 Kor</abbr>
+      <short>1 Jo Korint</short>
+      <long>Waraga Mukwoŋo Ma Paulo Ocoyo Pa Jo Korint</long>
+    </name>
+    <name id="book-2co">
+      <abbr>2 Kor</abbr>
+      <short>2 Jo Korint</short>
+      <long>Waraga Me Aryo Ma Paulo Ocoyo Bot Jo Korint</long>
+    </name>
+    <name id="book-gal">
+      <abbr>Gal</abbr>
+      <short>Jo Galatia</short>
+      <long>Waraga Ma Paulo Ocoyo Bot Jo Galatia</long>
+    </name>
+    <name id="book-eph">
+      <abbr>Ep</abbr>
+      <short>Jo Epeco</short>
+      <long>Waraga Ma Paulo Ocoyo Bot Jo Epeco</long>
+    </name>
+    <name id="book-php">
+      <abbr>Pil</abbr>
+      <short>Jo Pilipi</short>
+      <long>Waraga Ma Paulo Ocoyo Bot Jo Pilipi</long>
+    </name>
+    <name id="book-col">
+      <abbr>Kol</abbr>
+      <short>Jo Kolocai</short>
+      <long>Waraga Ma Paulo Ocoyo Bot Jo Kolocai</long>
+    </name>
+    <name id="book-1th">
+      <abbr>1 Tec</abbr>
+      <short>1 Jo Tecalonika</short>
+      <long>Waraga Mukwoŋo Ma Paulo Ocoyo Bot Jo Tecalonika</long>
+    </name>
+    <name id="book-2th">
+      <abbr>2 Tec</abbr>
+      <short>2 Jo Tecalonika</short>
+      <long>Waraga Me Aryo Ma Paulo Ocoyo Bot Jo Tecalonika</long>
+    </name>
+    <name id="book-1ti">
+      <abbr>1 Tem</abbr>
+      <short>1 Temceo</short>
+      <long>Waraga Mukwoŋo Ma Paulo Ocoyo Bot Temceo</long>
+    </name>
+    <name id="book-2ti">
+      <abbr>2 Tem</abbr>
+      <short>2 Temceo</short>
+      <long>Waraga Me Aryo Ma Paulo Ocoyo Bot Temceo</long>
+    </name>
+    <name id="book-tit">
+      <abbr>Tito</abbr>
+      <short>Tito</short>
+      <long>Waraga Ma Paulo Ocoyo Bot Tito</long>
+    </name>
+    <name id="book-phm">
+      <abbr>Pile</abbr>
+      <short>Pilemon</short>
+      <long>Waraga Ma Paulo Ocoyo Bot Pilemon Mot</long>
+    </name>
+    <name id="book-heb">
+      <abbr>Ibru</abbr>
+      <short>Jo Ibru</short>
+      <long>Waraga Ma Gicoyo Bot Jo Ibru</long>
+    </name>
+    <name id="book-jas">
+      <abbr>Yak</abbr>
+      <short>Yakobo</short>
+      <long>Waraga Ma Yakobo Ocoyo</long>
+    </name>
+    <name id="book-1pe">
+      <abbr>1 Pet</abbr>
+      <short>1 Petero</short>
+      <long>Waraga Mukwoŋo Ma Petero Ocoyo</long>
+    </name>
+    <name id="book-2pe">
+      <abbr>2 Pet</abbr>
+      <short>2 Petero</short>
+      <long>Waraga Me Aryo Ma Petero Ocoyo</long>
+    </name>
+    <name id="book-1jn">
+      <abbr>1 Jon</abbr>
+      <short>1 Jon</short>
+      <long>Waraga Mukwoŋo Ma Jon Ocoyo</long>
+    </name>
+    <name id="book-2jn">
+      <abbr>2 Jon</abbr>
+      <short>2 Jon</short>
+      <long>Waraga Me Aryo Ma Jon Ocoyo</long>
+    </name>
+    <name id="book-3jn">
+      <abbr>3 Jon</abbr>
+      <short>3 Jon</short>
+      <long>Waraga Me Adek Ma Jon Ocoyo</long>
+    </name>
+    <name id="book-jud">
+      <abbr>Juda</abbr>
+      <short>Juda</short>
+      <long>Waraga Ma Juda Ocoyo</long>
+    </name>
+    <name id="book-rev">
+      <abbr>Yabo</abbr>
+      <short>Niyabo</short>
+      <long>Niyabo Bot Jon</long>
+    </name>
+  </names>
+  <manifest>
+    <container uri="release">
+      <resource checksum="fcbeec4171f947eac9d548cfa6d4f76e" mimeType="application/octet-stream" size="699" uri="Acholi.lds"/>
+      <container uri="USX_1">
+        <resource checksum="fc429880a4083c756ebf186124628ef5" mimeType="application/xml" size="82633" uri="1CO.usx"/>
+        <resource checksum="01050fbec7a877fff7eae7123460e6dd" mimeType="application/xml" size="19168" uri="1JN.usx"/>
+        <resource checksum="c2e22ff7cc277139a344000f1da7cedb" mimeType="application/xml" size="23171" uri="1PE.usx"/>
+        <resource checksum="e46f407b03e1350f713cb1f1187e92b4" mimeType="application/xml" size="15532" uri="1TH.usx"/>
+        <resource checksum="5c274c40d26a19824f2a787fc343d52b" mimeType="application/xml" size="20997" uri="1TI.usx"/>
+        <resource checksum="41bb07734dec9900474c0e0ad17fd248" mimeType="application/xml" size="51842" uri="2CO.usx"/>
+        <resource checksum="a4abf16b7c8acc22d939af62a8e322b8" mimeType="application/xml" size="2750" uri="2JN.usx"/>
+        <resource checksum="345e27a61b26534295363bfe546f0cd7" mimeType="application/xml" size="13499" uri="2PE.usx"/>
+        <resource checksum="f9c0d7d00adb449c74517c36d570af57" mimeType="application/xml" size="9329" uri="2TH.usx"/>
+        <resource checksum="fccea12fbbf197adf7185133f01d2e52" mimeType="application/xml" size="16299" uri="2TI.usx"/>
+        <resource checksum="23b640d0cdb98ad56d409cf5417e15ab" mimeType="application/xml" size="3141" uri="3JN.usx"/>
+        <resource checksum="fe9a3ebf4d3944dec6d28d1101c3c40b" mimeType="application/xml" size="180054" uri="ACT.usx"/>
+        <resource checksum="050923a920b220b6e77ec9068965c3d8" mimeType="application/xml" size="20116" uri="COL.usx"/>
+        <resource checksum="4828577cf31c7738067c1c1257db9754" mimeType="application/xml" size="30138" uri="EPH.usx"/>
+        <resource checksum="b3b230554135cba885edc82bc5216f8d" mimeType="application/xml" size="29541" uri="GAL.usx"/>
+        <resource checksum="1dc4765cc5afbdf5b9e3db7202577b6b" mimeType="application/xml" size="72597" uri="HEB.usx"/>
+        <resource checksum="73e0aab7a566d7a2069140e5cc99fcfc" mimeType="application/xml" size="20322" uri="JAS.usx"/>
+        <resource checksum="2020dd91597ccd63f63bddcee089af74" mimeType="application/xml" size="133802" uri="JHN.usx"/>
+        <resource checksum="08ce698fd0ed99e10e36e4f58167b04c" mimeType="application/xml" size="6926" uri="JUD.usx"/>
+        <resource checksum="d0a84e28c5c712b3d126b7231decc702" mimeType="application/xml" size="203595" uri="LUK.usx"/>
+        <resource checksum="ac7eaa62e63104b1e8e58603f71791aa" mimeType="application/xml" size="214291" uri="MAT.usx"/>
+        <resource checksum="3447ba8c4a6f24b119fae4854af4d84d" mimeType="application/xml" size="126238" uri="MRK.usx"/>
+        <resource checksum="050feca1c030d450f4bd7c1b676f4ae2" mimeType="application/xml" size="5050" uri="PHM.usx"/>
+        <resource checksum="a66face5481a0ee4738ed9b4dbbadf30" mimeType="application/xml" size="19194" uri="PHP.usx"/>
+        <resource checksum="18cb7150ed498a2c853bcff25627f6a6" mimeType="application/xml" size="118199" uri="REV.usx"/>
+        <resource checksum="f5ae8cfea4a96aa8b3d64c0b27b1dfe1" mimeType="application/xml" size="88792" uri="ROM.usx"/>
+        <resource checksum="dcec087bb107a6db92245ca0a7c0ca47" mimeType="application/xml" size="9220" uri="TIT.usx"/>
+      </container>
+      <resource checksum="7d0952fc510cf8535dc3c79e07d1e070" mimeType="application/octet-stream" size="3924" uri="ach.ldml"/>
+      <resource checksum="c0f16ec4c82660a6f81953e5477150df" mimeType="application/xml" size="77885" uri="styles.xml"/>
+      <resource checksum="79cd112ae17a62636db418498e63cda1" mimeType="application/octet-stream" size="13114" uri="versification.vrs"/>
+    </container>
+    <container uri="source">
+      <resource checksum="a8d495e7f56f39d736ce09782615466d" mimeType="application/zip" size="815519" uri="source.zip"/>
+    </container>
+  </manifest>
+  <source/>
+  <publications>
+    <publication id="p1" default="true">
+      <description>Western New Testament</description>
+      <descriptionLocal>Western New Testament</descriptionLocal>
+      <canonicalContent>
+        <book code="1CO"/>
+        <book code="1JN"/>
+        <book code="1PE"/>
+        <book code="1TH"/>
+        <book code="1TI"/>
+        <book code="2CO"/>
+        <book code="2JN"/>
+        <book code="2PE"/>
+        <book code="2TH"/>
+        <book code="2TI"/>
+        <book code="3JN"/>
+        <book code="ACT"/>
+        <book code="COL"/>
+        <book code="EPH"/>
+        <book code="GAL"/>
+        <book code="HEB"/>
+        <book code="JAS"/>
+        <book code="JHN"/>
+        <book code="JUD"/>
+        <book code="LUK"/>
+        <book code="MAT"/>
+        <book code="MRK"/>
+        <book code="PHM"/>
+        <book code="PHP"/>
+        <book code="REV"/>
+        <book code="ROM"/>
+        <book code="TIT"/>
+      </canonicalContent>
+      <structure>
+        <content name="book-mat" src="release/USX_1/MAT.usx" role="MAT"/>
+        <content name="book-mrk" src="release/USX_1/MRK.usx" role="MRK"/>
+        <content name="book-luk" src="release/USX_1/LUK.usx" role="LUK"/>
+        <content name="book-jhn" src="release/USX_1/JHN.usx" role="JHN"/>
+        <content name="book-act" src="release/USX_1/ACT.usx" role="ACT"/>
+        <content name="book-rom" src="release/USX_1/ROM.usx" role="ROM"/>
+        <content name="book-1co" src="release/USX_1/1CO.usx" role="1CO"/>
+        <content name="book-2co" src="release/USX_1/2CO.usx" role="2CO"/>
+        <content name="book-gal" src="release/USX_1/GAL.usx" role="GAL"/>
+        <content name="book-eph" src="release/USX_1/EPH.usx" role="EPH"/>
+        <content name="book-php" src="release/USX_1/PHP.usx" role="PHP"/>
+        <content name="book-col" src="release/USX_1/COL.usx" role="COL"/>
+        <content name="book-1th" src="release/USX_1/1TH.usx" role="1TH"/>
+        <content name="book-2th" src="release/USX_1/2TH.usx" role="2TH"/>
+        <content name="book-1ti" src="release/USX_1/1TI.usx" role="1TI"/>
+        <content name="book-2ti" src="release/USX_1/2TI.usx" role="2TI"/>
+        <content name="book-tit" src="release/USX_1/TIT.usx" role="TIT"/>
+        <content name="book-phm" src="release/USX_1/PHM.usx" role="PHM"/>
+        <content name="book-heb" src="release/USX_1/HEB.usx" role="HEB"/>
+        <content name="book-jas" src="release/USX_1/JAS.usx" role="JAS"/>
+        <content name="book-1pe" src="release/USX_1/1PE.usx" role="1PE"/>
+        <content name="book-2pe" src="release/USX_1/2PE.usx" role="2PE"/>
+        <content name="book-1jn" src="release/USX_1/1JN.usx" role="1JN"/>
+        <content name="book-2jn" src="release/USX_1/2JN.usx" role="2JN"/>
+        <content name="book-3jn" src="release/USX_1/3JN.usx" role="3JN"/>
+        <content name="book-jud" src="release/USX_1/JUD.usx" role="JUD"/>
+        <content name="book-rev" src="release/USX_1/REV.usx" role="REV"/>
+      </structure>
+    </publication>
+  </publications>
+  <copyright>
+    <fullStatement>
+      <statementContent type="xhtml">
+        <p>© 1985 The Bible Society of Uganda</p>
+      </statementContent>
+    </fullStatement>
+  </copyright>
+  <promotion>
+    <promoVersionInfo contentType="xhtml">
+      <h1>Acholi New Testament 1985</h1>
+      <p>This translation, published by the Bible Society of Uganda, was first published in 1985.</p>
+      <p>If you are interested in obtaining a printed copy, please contact the Bible Society of Uganda at <a href="http://www.biblesociety-uganda.org/">www.biblesociety-uganda.org</a>.</p>
+    </promoVersionInfo>
+  </promotion>
+  <archiveStatus>
+    <archivistName>Emma Canales -archivist</archivistName>
+    <dateArchived>2014-05-28T15:18:31.080800</dateArchived>
+    <dateUpdated>2014-05-28T15:18:31.080800</dateUpdated>
+    <comments>First submit (Updated to DBL 4.0)</comments>
+  </archiveStatus>
+</DBLMetadata>
