@@ -496,7 +496,7 @@ namespace Palaso.DictionaryServices.Lift
 
 				Writer.WriteStartElement("relation");
 				Writer.WriteAttributeString("type", GetOutputRelationName(relation));
-				Writer.WriteAttributeString("ref", relation.Key);
+				Writer.WriteAttributeString("ref", relation.Key.Normalize(NormalizationForm.FormC));
 				WriteRelationTarget(relation);
 
 				WriteExtensible(relation);
