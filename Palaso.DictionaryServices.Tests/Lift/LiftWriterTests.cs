@@ -363,6 +363,26 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
+		public void EntryWithRelationToDiacriticWord()
+		{
+			using (var session = new LiftExportAsFullDocumentTestSession())
+			{
+				LexEntry diacritic_entry = session.CreateItem();
+				diacritic_entry.LexicalForm["test"] = "më"; // NFC entry
+				session.LiftWriter.Add(diacritic_entry);
+
+				LexEntry entry_with_relation = session.CreateItem();
+				entry_with_relation.LexicalForm["test"] = "men";
+				entry_with_relation.AddRelationTarget("confer", diacritic_entry.Id);  // NFD id
+				session.LiftWriter.Add(entry_with_relation);
+
+				session.LiftWriter.End();
+
+				AssertHasOneMatch("lift/entry/relation[@ref='më_" + diacritic_entry.Guid + "']", session);
+			}
+		}
+
+		[Test]
 		public void SenseWith2Notes()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
