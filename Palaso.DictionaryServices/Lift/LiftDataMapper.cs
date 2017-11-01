@@ -54,13 +54,6 @@ namespace Palaso.DictionaryServices.Lift
 			: this(filePath, new OptionsList(), new string[] { }, new ProgressState())
 		{
 		}
-
-		public LiftDataMapper Init()
-		{
-			base.Init();
-			return this;
-		}
-
 	}
 
 	/// <summary>
