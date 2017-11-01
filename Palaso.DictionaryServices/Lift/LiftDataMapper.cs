@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Palaso.DictionaryServices.Lift;
 using Palaso.DictionaryServices.Model;
 using Palaso.Lift;
 using Palaso.Lift.Options;
@@ -55,8 +54,6 @@ namespace Palaso.DictionaryServices.Lift
 			: this(filePath, new OptionsList(), new string[] { }, new ProgressState())
 		{
 		}
-
-
 	}
 
 	/// <summary>
@@ -64,9 +61,13 @@ namespace Palaso.DictionaryServices.Lift
 	/// </summary>
 	public class WeSayLiftDataMapper : LiftDataMapper
 	{
-		public WeSayLiftDataMapper(string filePath, OptionsList semanticDomainsList, IEnumerable<string> idsOfSingleOptionFields, ProgressState progressState)
-			:base(filePath,semanticDomainsList,idsOfSingleOptionFields,progressState)
-		{}
+		private bool _glossMeaningField;
+		public WeSayLiftDataMapper(string filePath, OptionsList semanticDomainsList, IEnumerable<string> idsOfSingleOptionFields, ProgressState progressState, bool glossMeaningField)
+			: base(filePath,semanticDomainsList,idsOfSingleOptionFields,progressState)
+		{
+			_glossMeaningField = glossMeaningField;
+			Init();
+		}
 
 		protected override void CustomizeReader(ILiftReader<LexEntry> reader)
 		{
@@ -86,7 +87,10 @@ namespace Palaso.DictionaryServices.Lift
 			var entry = (LexEntry) entryObj;
 			foreach (LexSense sense in entry.Senses)
 			{
-				CopyOverGlossesIfDefinitionsMissing(sense);
+				if (!_glossMeaningField)
+				{
+					CopyOverGlossesIfDefinitionsMissing(sense);
+				}
 				FixUpOldLiteralMeaningMistake(entry, sense);
 			}
 		}

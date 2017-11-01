@@ -19,14 +19,13 @@ namespace Palaso.Lift
 		private readonly string _liftFilePath;
 		private FileStream _liftFileStreamForLocking;
 		private int _nextFileOrder;
+		private bool _initialized;
 
 		private readonly ILiftReaderWriterProvider<T> _ioProvider;
 		private MemoryDataMapper<T> _backend;
 
 		public LiftDataMapper(string liftFilePath, ProgressState progressState, ILiftReaderWriterProvider<T> ioProvider)
 		{
-			//set to true so that an exception in the constructor does not cause the destructor to throw
-			_disposed = true;
 			Guard.AgainstNull(progressState, "progressState");
 
 			_backend = new MemoryDataMapper<T>();
@@ -34,20 +33,30 @@ namespace Palaso.Lift
 			_progressState = progressState;
 			_ioProvider = ioProvider;
 
-			try
+		}
+
+		public void Init()
+		{
+			if (!_initialized)
 			{
-				CreateEmptyLiftFileIfNeeded(liftFilePath);
-				MigrateLiftIfNeeded(progressState);
-				LoadAllLexEntries();
+				//set to true so that an exception in the constructor does not cause the destructor to throw
+				_disposed = true;
+				try
+				{
+					CreateEmptyLiftFileIfNeeded(_liftFilePath);
+					MigrateLiftIfNeeded(_progressState);
+					LoadAllLexEntries();
+					_initialized = true;
+				}
+				catch (Exception error)
+				{
+					// Dispose anything that we've created already.
+					_backend.Dispose();
+					throw;
+				}
+				//Now that the constructor has not thrown we can set this back to false
+				_disposed = false;
 			}
-			catch (Exception error)
-			{
-				// Dispose anything that we've created already.
-				_backend.Dispose();
-				throw;
-			}
-			//Now that the constructor has not thrown we can set this back to false
-			_disposed = false;
 		}
 
 		public DateTime LastModified
