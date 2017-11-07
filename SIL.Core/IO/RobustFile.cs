@@ -41,6 +41,12 @@ namespace SIL.IO
 			{
 				// This is my own implementation; the .NET library uses a native windows function.
 				var bufSize = (int)Math.Min(BufferSize, new FileInfo(sourceFileName).Length);
+				// A buffer size of zero fails when creating the FileStream, even when we end up
+				// writing zero bytes.  So just change the buffer size to a nominal value.  The
+				// actual read and write operations will properly transfer zero bytes.
+				// (See https://issues.bloomlibrary.org/youtrack/issue/BL-5191.)
+				if (bufSize == 0)
+					bufSize = 8;
 				var buffer = new byte[bufSize];
 				using (var input = new FileStream(sourceFileName, FileMode.Open, FileAccess.Read))
 				{

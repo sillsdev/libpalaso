@@ -202,5 +202,28 @@ namespace SIL.Tests.IO
 				RobustFile.BufferSize = oldBufSize;
 			}
 		}
+
+		[Test]
+		public void CopyEmptyFile()
+		{
+			// Create an empty file.
+			var emptyFile = Path.GetTempFileName();
+			Assert.IsTrue(RobustFile.Exists(emptyFile));
+			var info = new FileInfo(emptyFile);
+			Assert.AreEqual(0, info.Length);
+
+			var destName = emptyFile + "-xyzzy";
+			// This was throwing a System.ArgumentOutOfRangeException exception before being fixed.
+			RobustFile.Copy(emptyFile, destName, true);
+			Assert.IsTrue(RobustFile.Exists(destName));
+			var infoDest = new FileInfo(destName);
+			Assert.AreEqual(0, infoDest.Length);
+
+			// Clean up after ourselves.
+			RobustFile.Delete(emptyFile);
+			Assert.IsFalse(RobustFile.Exists(emptyFile));
+			RobustFile.Delete(destName);
+			Assert.IsFalse(RobustFile.Exists(destName));
+		}
 	}
 }
