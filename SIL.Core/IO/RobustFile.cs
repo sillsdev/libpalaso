@@ -33,15 +33,14 @@ namespace SIL.IO
 
 		// This is just a guess at a buffer size that should make copying reasonably efficient without
 		// being too hard to allocate.
-		internal static int BufferSize = 1024 * 256; // internal so we can tweak in unit tests
+		internal static int BufferSize = FileStreamBufferSize; // internal so we can tweak in unit tests
 
 		public static void Copy(string sourceFileName, string destFileName, bool overwrite = false)
 		{
 			RetryUtility.Retry(() =>
 			{
 				// This is my own implementation; the .NET library uses a native windows function.
-				var bufSize = (int)Math.Min(BufferSize, new FileInfo(sourceFileName).Length);
-				var buffer = new byte[bufSize];
+				var buffer = new byte[BufferSize];
 				using (var input = new FileStream(sourceFileName, FileMode.Open, FileAccess.Read))
 				{
 					using (
@@ -51,11 +50,11 @@ namespace SIL.IO
 						var output = new FileStream(destFileName,
 							(overwrite ? FileMode.Create : FileMode.CreateNew),
 							FileAccess.Write,
-							FileShare.None, bufSize,
+							FileShare.None, BufferSize,
 							FileOptions.SequentialScan))
 					{
 						int count;
-						while ((count = input.Read(buffer, 0, bufSize)) > 0)
+						while ((count = input.Read(buffer, 0, BufferSize)) > 0)
 						{
 							output.Write(buffer, 0, count);
 						}
