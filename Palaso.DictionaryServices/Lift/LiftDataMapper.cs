@@ -61,11 +61,9 @@ namespace Palaso.DictionaryServices.Lift
 	/// </summary>
 	public class WeSayLiftDataMapper : LiftDataMapper
 	{
-		private bool _glossMeaningField;
-		public WeSayLiftDataMapper(string filePath, OptionsList semanticDomainsList, IEnumerable<string> idsOfSingleOptionFields, ProgressState progressState, bool glossMeaningField)
+		public WeSayLiftDataMapper(string filePath, OptionsList semanticDomainsList, IEnumerable<string> idsOfSingleOptionFields, ProgressState progressState)
 			: base(filePath,semanticDomainsList,idsOfSingleOptionFields,progressState)
 		{
-			_glossMeaningField = glossMeaningField;
 			Init();
 		}
 
@@ -87,23 +85,7 @@ namespace Palaso.DictionaryServices.Lift
 			var entry = (LexEntry) entryObj;
 			foreach (LexSense sense in entry.Senses)
 			{
-				if (!_glossMeaningField)
-				{
-					CopyOverGlossesIfDefinitionsMissing(sense);
-				}
 				FixUpOldLiteralMeaningMistake(entry, sense);
-			}
-		}
-
-
-		private void CopyOverGlossesIfDefinitionsMissing(LexSense sense)
-		{
-			foreach (LanguageForm form in sense.Gloss.Forms)
-			{
-				if (!sense.Definition.ContainsAlternative(form.WritingSystemId))
-				{
-					sense.Definition.SetAlternative(form.WritingSystemId, form.Form);
-				}
 			}
 		}
 
