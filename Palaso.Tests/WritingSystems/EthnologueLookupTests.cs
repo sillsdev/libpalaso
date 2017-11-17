@@ -117,6 +117,14 @@ namespace Palaso.Tests.WritingSystems
 			Assert.Greater(1000, _ethnologue.SuggestLanguages("eastern").Count());
 		}
 
+		[Test]
+		public void SuggestLanguages_MacroLanguageNotFound()
+		{
+			var languages = _ethnologue.SuggestLanguages("zza");
+			Assert.False(languages.Any(l => l.Code == "zza"));
+			var arabic = _ethnologue.SuggestLanguages("ar");
+			Assert.False(arabic.Any(l => l.Code == "ar"));
+		}
 
 		[Test]
 		public void SuggestLanguages_3LetterCode_ResultIncludesAlternateLanguageNames()
