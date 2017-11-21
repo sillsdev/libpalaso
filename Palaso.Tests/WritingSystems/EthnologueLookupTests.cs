@@ -147,22 +147,23 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		// Akan is a macrolanguage so won't be found
 		public void SuggestLanguages_Akan_DoesnotCrash()
 		{
 			var languages = _ethnologue.SuggestLanguages("a");
-			Assert.True(languages.Any(l => l.Code == "ak"));
+			Assert.False(languages.Any(l => l.Code == "ak"));
 			Assert.True(languages.Any(l => l.Code == "akq"));
-			Assert.True(languages.Any(l => l.Names.Contains("Akuapem")));
+			Assert.False(languages.Any(l => l.Names.Contains("Akuapem")));
 			Assert.True(languages.Any(l => l.Names.Contains("Ak")));
-			Assert.True(languages.Any(l => l.Names.Contains("Akan")));
-			Assert.True(languages.Any(l => l.Names.Contains("Fanti")));
+			Assert.False(languages.Any(l => l.Names.Contains("Akan")));
+			Assert.False(languages.Any(l => l.Names.Contains("Fanti")));
 			languages = _ethnologue.SuggestLanguages("ak");
-			Assert.True(languages.Any(l => l.Code == "ak"));
+			Assert.False(languages.Any(l => l.Code == "ak"));
 			Assert.True(languages.Any(l => l.Code == "akq"));
-			Assert.True(languages.Any(l => l.Names.Contains("Asante")));
+			Assert.False(languages.Any(l => l.Names.Contains("Asante")));
 			Assert.True(languages.Any(l => l.Names.Contains("Ak")));
-			Assert.True(languages.Any(l => l.Names.Contains("Akan")));
-			Assert.True(languages.Any(l => l.Names.Contains("Fanti")));
+			Assert.False(languages.Any(l => l.Names.Contains("Akan")));
+			Assert.False(languages.Any(l => l.Names.Contains("Fanti")));
 		}
 
 
@@ -193,16 +194,17 @@ namespace Palaso.Tests.WritingSystems
 
 		/// <summary> 
 		/// We have been asked to temporarily suppress these three codes for Ethiopia, until the Ethologue is changed. 
+		/// Oromo is a macrolanguage so it won't be found
 		/// </summary> 
 		[Test]
 		public void SuggestLanguages_LanguageIsOromo_DoNotShowRelatedLanguages()
 		{
 			var languages = _ethnologue.SuggestLanguages("Oromo").ToArray();
-			Assert.True(languages.All(l => l.DesiredName == "Oromo"));
+			Assert.False(languages.All(l => l.DesiredName == "Oromo"));
 			Assert.False(languages.All(l => l.Code.StartsWith("gax")), "suppress gax code");
 			Assert.False(languages.All(l => l.Code.StartsWith("gaz")), "suppress gaz code");
 			Assert.False(languages.All(l => l.Code.StartsWith("hae")), "suppress hae code");
-			Assert.True(languages.All(l => l.Code.StartsWith("om")), "We should be suppressing gax, hae, gaz");
+			Assert.False(languages.All(l => l.Code.StartsWith("om")), "We should be suppressing gax, hae, gaz");
 		}
 	}
 }
