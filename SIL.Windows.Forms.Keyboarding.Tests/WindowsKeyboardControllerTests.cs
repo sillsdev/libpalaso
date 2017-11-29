@@ -44,7 +44,8 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			get
 			{
 				WinKeyboardDescription[] keyboards = Keyboard.Controller.AvailableKeyboards.OfType<WinKeyboardDescription>().ToArray();
-				Assert.Greater(keyboards.Length, 0, "This test requires that the Windows IME has at least one language installed.");
+				if (keyboards.Length < 2)
+					Assert.Ignore("This test requires that the Windows IME has at least two languages installed.");
 				WinKeyboardDescription d = keyboards.FirstOrDefault(x => x != Keyboard.Controller.ActiveKeyboard);
 				if (d == null)
 					return keyboards.First(); // Some tests have some value even if it is an active keyboard.
@@ -66,7 +67,8 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		public void WindowsIME_DeActivateKeyboard_RevertsToDefault()
 		{
 			IKeyboardDefinition[] keyboards = Keyboard.Controller.AvailableKeyboards.Where(kd => kd is WinKeyboardDescription).ToArray();
-			Assert.Greater(keyboards.Length, 1, "This test requires that the Windows IME has at least two languages installed.");
+			if(keyboards.Length < 2)
+				Assert.Ignore("This test requires that the Windows IME has at least two languages installed.");
 			IKeyboardDefinition d = GetNonDefaultKeyboard(keyboards);
 			d.Activate();
 			Assert.AreEqual(d, Keyboard.Controller.ActiveKeyboard);
@@ -97,7 +99,8 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		public void WindowsIME_GetKeyboards_GivesSeveralButOnlyWindowsOnes()
 		{
 			WinKeyboardDescription[] keyboards = Keyboard.Controller.AvailableKeyboards.OfType<WinKeyboardDescription>().ToArray();
-			Assert.Greater(keyboards.Length, 1, "This test requires that the Windows IME has at least two languages installed.");
+			if (keyboards.Length < 2)
+				Assert.Ignore("This test requires that the Windows IME has at least two languages installed.");
 
 			Assert.That(keyboards.Select(keyboard => keyboard.Engine), Is.All.TypeOf<WinKeyboardAdaptor>());
 		}
