@@ -404,6 +404,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Reporting\Usage.ico" />
+    <Content Include="Resources\Macrolanguages.txt" />
     <None Include="Resources\TwoToThreeCodes.txt" />
     <None Include="Resources\LanguageIndex.txt" />
     <None Include="Resources\LanguageCodes.txt" />
@@ -445,8 +446,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\NDesk.DBus.0.15.0\build\NDesk.DBus.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NDesk.DBus.0.15.0\build\NDesk.DBus.targets'))" />
   </Target>
-
-<!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

@@ -15,7 +15,7 @@ namespace Palaso.WritingSystems
 		Dictionary<string, LanguageInfo> CodeToLanguageIndex = new Dictionary<string, LanguageInfo>();
 		Dictionary<string, List<LanguageInfo>> NameToLanguageIndex = new Dictionary<string, List<LanguageInfo>>();
 		Dictionary<string, string> ThreeToTwoLetter = new Dictionary<string, string>();
-		private List<string> _macroLanguages = new List<string>();
+		List<string> MacroLanguages = new List<string>();
 
 		/// <summary>Force the dialog to return 3 letter iso codes even if a 2 letter code is available</summary>
 		public bool Force3LetterCodes { get; set; }
@@ -35,6 +35,11 @@ namespace Palaso.WritingSystems
 				CountryCodeToCountryName.Add(items[0].Trim(), items[1].Trim());
 			}
 			CountryCodeToCountryName.Add("?","?");//for unlisted language
+
+			foreach (var line in LanguageRegistryResources.Macrolanguages.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+			{
+				MacroLanguages.Add(line);
+			}
 
 			//LanguageIndex.txt Format: LangID	CountryID	NameType	Name
 			//a language appears on one row for each of its alternative langauges
@@ -107,79 +112,6 @@ namespace Palaso.WritingSystems
 				{
 					GetOrCreateListFromName(languageInfo.LocalName).Add(languageInfo);
 				}
-			}
-		}
-
-		private List<string> MacroLanguages
-		{
-			get
-			{
-				if (_macroLanguages.Count == 0)
-				{
-					_macroLanguages.Add("ak");
-					_macroLanguages.Add("ar");
-					_macroLanguages.Add("ay");
-					_macroLanguages.Add("az");
-					_macroLanguages.Add("cr");
-					_macroLanguages.Add("et");
-					_macroLanguages.Add("fa");
-					_macroLanguages.Add("ff");
-					_macroLanguages.Add("gn");
-					_macroLanguages.Add("ik");
-					_macroLanguages.Add("iu");
-					_macroLanguages.Add("kg");
-					_macroLanguages.Add("kr");
-					_macroLanguages.Add("ku");
-					_macroLanguages.Add("kv");
-					_macroLanguages.Add("lv");
-					_macroLanguages.Add("mg");
-					_macroLanguages.Add("mn");
-					_macroLanguages.Add("ms");
-					_macroLanguages.Add("ne");
-					_macroLanguages.Add("no");
-					_macroLanguages.Add("oj");
-					_macroLanguages.Add("om");
-					_macroLanguages.Add("or");
-					_macroLanguages.Add("ps");
-					_macroLanguages.Add("qu");
-					_macroLanguages.Add("sc");
-					_macroLanguages.Add("sh");
-					_macroLanguages.Add("sq");
-					_macroLanguages.Add("sw");
-					_macroLanguages.Add("uz");
-					_macroLanguages.Add("yi");
-					_macroLanguages.Add("za");
-					_macroLanguages.Add("zh");
-					_macroLanguages.Add("bal");
-					_macroLanguages.Add("bik");
-					_macroLanguages.Add("bnc");
-					_macroLanguages.Add("bua");
-					_macroLanguages.Add("chm");
-					_macroLanguages.Add("del");
-					_macroLanguages.Add("den");
-					_macroLanguages.Add("din");
-					_macroLanguages.Add("doi");
-					_macroLanguages.Add("gba");
-					_macroLanguages.Add("gon");
-					_macroLanguages.Add("grb");
-					_macroLanguages.Add("hai");
-					_macroLanguages.Add("hmn");
-					_macroLanguages.Add("jrb");
-					_macroLanguages.Add("kln");
-					_macroLanguages.Add("kok");
-					_macroLanguages.Add("kpe");
-					_macroLanguages.Add("lah");
-					_macroLanguages.Add("luy");
-					_macroLanguages.Add("man");
-					_macroLanguages.Add("mwr");
-					_macroLanguages.Add("raj");
-					_macroLanguages.Add("rom");
-					_macroLanguages.Add("syr");
-					_macroLanguages.Add("tmh");
-					_macroLanguages.Add("zap");
-					_macroLanguages.Add("zza");
-				}
-				return _macroLanguages;
 			}
 		}
 
