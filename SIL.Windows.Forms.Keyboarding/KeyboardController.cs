@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -471,8 +472,11 @@ namespace SIL.Windows.Forms.Keyboarding
 			if (!_keyboards.TryGet(id, out keyboard))
 			{
 				var firstCompatibleAdapter = _adaptors.Values.FirstOrDefault(adaptor => adaptor.CanHandleFormat(format));
-				if(firstCompatibleAdapter == null)
-					throw new ArgumentException(string.Format("Did not find {0} in {1} adapters", format, _adaptors.Count), "format");
+				if (firstCompatibleAdapter == null)
+				{
+					Debug.Fail(string.Format("Could not load keyboard for {0}. Did not find {1} in {2} adapters", id, format, _adaptors.Count));
+					return NullKeyboard;
+				}
 				keyboard = firstCompatibleAdapter.CreateKeyboardDefinition(id);
 				_keyboards.Add(keyboard);
 			}
