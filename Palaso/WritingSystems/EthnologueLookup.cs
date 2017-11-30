@@ -36,9 +36,9 @@ namespace Palaso.WritingSystems
 			}
 			CountryCodeToCountryName.Add("?","?");//for unlisted language
 
-			foreach (var line in LanguageRegistryResources.Macrolanguages.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+			foreach (var line in LanguageRegistryResources.Macrolanguages.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
 			{
-				MacroLanguages.Add(line);
+				MacroLanguages.Add(line.Trim());
 			}
 
 			//LanguageIndex.txt Format: LangID	CountryID	NameType	Name
