@@ -302,7 +302,7 @@ namespace SIL.IO
 #if !MONO
 			return path.StartsWith("//") || path.StartsWith("\\\\");
 #else
-			return false; // we will soon be requesting some testing with networks on Linux; 
+			return false; // we will soon be requesting some testing with networks on Linux;
 			//as a result of that, we might need to do something here, too. Or maybe not.
 #endif
 		}
@@ -386,6 +386,7 @@ namespace SIL.IO
 			var path = fileString.Substring(prefix.Length);
 			// Trim any number of beginning slashes
 			path = path.TrimStart('/');
+			path = path.TrimStart('\\');
 			// Prepend slash on Linux
 			if (Platform.IsUnix)
 				path = '/' + path;
