@@ -308,6 +308,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Debug\L10NSharp.dll</HintPath>
     </Reference>
+    <Reference Include="NAudio">
+      <HintPath>..\packages\NAudio.1.8.3\lib\NAudio.dll</HintPath>
+    </Reference>
     <!-- this is the Microsoft WIndows Image Acquisition COM library, for scanner and camera control-->
     <Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
@@ -323,6 +326,9 @@
     <Reference Include="L10NSharp.dll">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Release\L10NSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="NAudio">
+      <HintPath>..\packages\NAudio.1.8.3\lib\NAudio.dll</HintPath>
     </Reference>
     <!-- this is the Microsoft WIndows Image Acquisition COM library, for scanner and camera control-->
     <Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">

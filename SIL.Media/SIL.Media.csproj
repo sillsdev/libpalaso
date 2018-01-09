@@ -298,14 +298,14 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <ItemGroup Condition="$(Configuration.StartsWith('Debug'))">
+  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName'">
     <Reference Include="NAudio">
-      <HintPath>..\lib\Debug\NAudio.dll</HintPath>
+      <HintPath>..\packages\NAudio.1.8.3\lib\NAudio.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup Condition="$(Configuration.StartsWith('Release'))">
+  <ItemGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
     <Reference Include="NAudio">
-      <HintPath>..\lib\Release\NAudio.dll</HintPath>
+      <HintPath>..\packages\NAudio.1.8.3\lib\NAudio.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Platform)' == 'x86' Or '$(Platform)' == 'AnyCPU'">
@@ -319,6 +319,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
