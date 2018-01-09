@@ -134,11 +134,11 @@ namespace SIL.IO
 		public static void GrepFile(string inputPath, string pattern, string replaceWith)
 		{
 			Regex regex = new Regex(pattern, RegexOptions.Compiled);
-			string tempPath = inputPath + ".tmp";
+			TempFile tempFile = new TempFile();
 
 			using (StreamReader reader = File.OpenText(inputPath))
 			{
-				using (StreamWriter writer = new StreamWriter(tempPath))
+				using (StreamWriter writer = new StreamWriter(tempFile.Path))
 				{
 					while (!reader.EndOfStream)
 					{
@@ -151,7 +151,8 @@ namespace SIL.IO
 			//string backupPath = GetUniqueFileName(inputPath);
 			string backupPath = inputPath + ".bak";
 
-			ReplaceFileWithUserInteractionIfNeeded(tempPath, inputPath, backupPath);
+			ReplaceFileWithUserInteractionIfNeeded(tempFile.Path, inputPath, backupPath);
+			tempFile.Dispose();
 		}
 
 		public static bool GrepFile(string inputPath, string pattern)
@@ -302,7 +303,7 @@ namespace SIL.IO
 #if !MONO
 			return path.StartsWith("//") || path.StartsWith("\\\\");
 #else
-			return false; // we will soon be requesting some testing with networks on Linux; 
+			return false; // we will soon be requesting some testing with networks on Linux;
 			//as a result of that, we might need to do something here, too. Or maybe not.
 #endif
 		}
