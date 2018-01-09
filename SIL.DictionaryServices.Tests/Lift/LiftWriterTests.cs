@@ -367,7 +367,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 			using (var session = new LiftExportAsFullDocumentTestSession())
 			{
 				LexEntry diacritic_entry = session.CreateItem();
-				diacritic_entry.LexicalForm["test"] = "më"; // NFC entry
+				diacritic_entry.LexicalForm["test"] = "m\u00EB"; // NFC entry
 				session.LiftWriter.Add(diacritic_entry);
 
 				LexEntry entry_with_relation = session.CreateItem();
@@ -377,7 +377,7 @@ namespace SIL.DictionaryServices.Tests.Lift
 
 				session.LiftWriter.End();
 
-				AssertHasOneMatch("lift/entry/relation[@ref='më_" + diacritic_entry.Guid + "']", session);
+				AssertHasOneMatch("lift/entry/relation[@ref='m\u00EB_" + diacritic_entry.Guid + "']", session);
 			}
 		}
 
