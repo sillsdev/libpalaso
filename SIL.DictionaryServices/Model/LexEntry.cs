@@ -426,46 +426,51 @@ namespace SIL.DictionaryServices.Model
 			}
 		}
 
-		public LexSense GetOrCreateSenseWithMeaning(MultiText meaning) //Switch to meaning
+		public LexSense GetOrCreateSenseWithMeaning(MultiText meaning, bool definition_meaningfield) //Switch to meaning
 		{
 			foreach (LexSense sense in Senses)
 			{
-#if GlossMeaning
-				if (meaning.HasFormWithSameContent(sense.Gloss))
-#else
-				if (meaning.HasFormWithSameContent(sense.Definition))
-#endif
+				if (meaning.HasFormWithSameContent(definition_meaningfield ? sense.Definition : sense.Gloss))
 				{
 					return sense;
 				}
 			}
 			LexSense newSense = new LexSense();
 			Senses.Add(newSense);
-#if GlossMeaning
-			newSense.Gloss.MergeIn(meaning);
-#else
-			newSense.Definition.MergeIn(meaning);
-#endif
+			if (definition_meaningfield)
+			{
+				newSense.Definition.MergeIn(meaning);
+			}
+			else
+			{
+				newSense.Gloss.MergeIn(meaning);
+			}
 			return newSense;
 		}
 
-		public string GetToolTipText()
+		// meaning field is definition by default
+		public LexSense GetOrCreateSenseWithMeaning(MultiText meaning) //Switch to meaning
 		{
-			string s = "";
+			return GetOrCreateSenseWithMeaning(meaning, true);
+		}
+
+		public string GetToolTipText(bool definition_meaningfield)
+		{
+			List<string> meanings = new List<string>();
 			foreach (LexSense sense in Senses)
 			{
-				string x = sense.Definition.GetFirstAlternative();
+				string x = definition_meaningfield ? sense.Definition.GetFirstAlternative() : sense.Gloss.GetFirstAlternative();
 				if (string.IsNullOrEmpty(x))
 				{
-					x = sense.Gloss.GetFirstAlternative();
+					x = definition_meaningfield ? sense.Gloss.GetFirstAlternative() : sense.Definition.GetFirstAlternative();
 				}
-				s += x + ", ";
+				meanings.Add(x);
 			}
-			if (s == "")
+			if (meanings.Count == 0)
 			{
 				return StringCatalog.Get("~No Senses");
 			}
-			return s.Substring(0, s.Length - 2); // chop off the trailing separator
+			return string.Join(", ", meanings);
 		}
 
 		/// <summary>

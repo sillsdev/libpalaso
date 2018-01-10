@@ -387,6 +387,7 @@ namespace SIL.IO
 			var path = fileString.Substring(prefix.Length);
 			// Trim any number of beginning slashes
 			path = path.TrimStart('/');
+			path = path.TrimStart('\\');
 			// Prepend slash on Linux
 			if (Platform.IsUnix)
 				path = '/' + path;

@@ -85,20 +85,7 @@ namespace SIL.DictionaryServices.Lift
 			var entry = (LexEntry) entryObj;
 			foreach (LexSense sense in entry.Senses)
 			{
-				CopyOverGlossesIfDefinitionsMissing(sense);
 				FixUpOldLiteralMeaningMistake(entry, sense);
-			}
-		}
-
-
-		private void CopyOverGlossesIfDefinitionsMissing(LexSense sense)
-		{
-			foreach (LanguageForm form in sense.Gloss.Forms)
-			{
-				if (!sense.Definition.ContainsAlternative(form.WritingSystemId))
-				{
-					sense.Definition.SetAlternative(form.WritingSystemId, form.Form);
-				}
 			}
 		}
 
