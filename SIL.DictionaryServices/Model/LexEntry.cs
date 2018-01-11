@@ -473,6 +473,11 @@ namespace SIL.DictionaryServices.Model
 			return string.Join(", ", meanings);
 		}
 
+		public string GetToolTipText()
+		{
+			return GetToolTipText(true);
+		}
+
 		/// <summary>
 		/// checks if it looks like the user has added info. this is used when changing spelling
 		/// in a word-gathering task
