@@ -52,7 +52,7 @@
 			this._L10NSharpExtender.SetLocalizingId(this._okButton, "Common.OKButton");
 			this._okButton.Location = new System.Drawing.Point(164, 10);
 			this._okButton.Name = "_okButton";
-			this._okButton.Size = new System.Drawing.Size(75, 23);
+			this._okButton.Size = new System.Drawing.Size(75, 30);
 			this._okButton.TabIndex = 2;
 			this._okButton.Text = "&OK";
 			this._okButton.UseVisualStyleBackColor = true;
@@ -68,7 +68,7 @@
 			this._L10NSharpExtender.SetLocalizingId(cancelButton, "Common.CancelButton");
 			cancelButton.Location = new System.Drawing.Point(255, 10);
 			cancelButton.Name = "_cancelButton";
-			cancelButton.Size = new System.Drawing.Size(75, 23);
+			cancelButton.Size = new System.Drawing.Size(75, 30);
 			cancelButton.TabIndex = 3;
 			cancelButton.Text = "&Cancel";
 			cancelButton.UseVisualStyleBackColor = true;
@@ -101,7 +101,7 @@
 			// panel1
 			//
 			panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			panel1.ClientSize = new System.Drawing.Size(347, 43);
+			panel1.ClientSize = new System.Drawing.Size(347, 50);
 			panel1.Controls.Add(cancelButton);
 			panel1.Controls.Add(this._okButton);
 			//
@@ -110,7 +110,7 @@
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = cancelButton;
-			this.ClientSize = new System.Drawing.Size(360, 585);
+			this.ClientSize = new System.Drawing.Size(472, 610);
 			this.ControlBox = false;
 			this.Controls.Add(panel1);
 			this.Controls.Add(this._metadataEditorControl);
