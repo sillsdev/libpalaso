@@ -1,4 +1,7 @@
+// Copyright (c) 2018 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
@@ -30,37 +33,18 @@ namespace SIL.Email
 		{
 			string body = EscapeString(message.Body);
 			string subject = EscapeString(message.Subject);
-			var recipientTo = message.To;
-			var toBuilder = new StringBuilder();
-
-			for (int i = 0; i < recipientTo.Count; ++i)
-			{
-				if (i > 0)
-				{
-					toBuilder.Append(",");
-				}
-				toBuilder.Append(recipientTo[i]);
-			}
-			string commandLine;
-			if (message.AttachmentFilePath.Count == 0)
-			{
-				commandLine = String.Format(
-					FormatStringNoAttachments,
-					toBuilder, subject, body
-				);
-			}
-			else
-			{
-				// DG: attachments untested with xdg-email
-				// review CP: throw if AttachmentFilePath.Count > 0 ?
-				// review CP: throw if file not present?
-				string attachments = EscapeString(String.Format(FormatStringAttachFile, message.AttachmentFilePath[0]));
-				commandLine = String.Format(
-					FormatStringWithAttachments,
-					toBuilder, subject, attachments, body
-				);
-			}
+			var toBuilder = GetToRecipients(message.To);
+			var commandLine = string.Format(
+				FormatString,
+				toBuilder, subject, body, GetCcRecipients(message.Cc),
+				GetBccRecipients(message.Bcc), GetAttachments(message.AttachmentFilePath)
+			);
 			Console.WriteLine(commandLine);
+			return StartEmailProcess(commandLine);
+		}
+
+		protected virtual bool StartEmailProcess(string commandLine)
+		{
 			var p = new Process
 			{
 				StartInfo =
@@ -87,28 +71,44 @@ namespace SIL.Email
 			}
 		}
 
-		protected virtual string FormatStringNoAttachments
+		protected virtual string FormatString
 		{
 			get
 			{
-				return "--subject '{1}' --body '{2}' {0}";
+				return "--subject '{1}' --body '{2}'{3}{4}{5}{0}";
 			}
 		}
 
-		protected virtual string FormatStringWithAttachments
+		private static string GetArguments(IList<string> arguments, string field)
 		{
-			get
+			var toBuilder = new StringBuilder();
+
+			foreach (var argument in arguments)
 			{
-				return "--subject '{1}' --body '{3}' --attach '{2}' {0}";
+				toBuilder.Append($" {field}'{argument}'");
 			}
+
+			return toBuilder.ToString();
 		}
 
-		protected virtual string FormatStringAttachFile
+		protected virtual string GetToRecipients(IList<string> recipientTo)
 		{
-			get
-			{
-				return "{0}";
-			}
+			return GetArguments(recipientTo, "");
+		}
+
+		protected virtual string GetCcRecipients(IList<string> recipients)
+		{
+			return GetArguments(recipients, "--cc ");
+		}
+
+		protected virtual string GetBccRecipients(IList<string> recipients)
+		{
+			return GetArguments(recipients, "--bcc ");
+		}
+
+		protected virtual string GetAttachments(IList<string> attachments)
+		{
+			return GetArguments(attachments, "--attach ");
 		}
 	}
 }

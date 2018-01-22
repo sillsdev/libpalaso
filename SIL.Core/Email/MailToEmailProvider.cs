@@ -1,4 +1,7 @@
+// Copyright (c) 2018 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
@@ -13,38 +16,23 @@ namespace SIL.Email
 
 		public bool SendMessage(IEmailMessage message)
 		{
+			// NOTE: attachments are not officially supported in the mailto: protocol, so they may
+			// or may not work for the user
+
 			//string body = _body.Replace(System.Environment.NewLine, "%0A").Replace("\"", "%22").Replace("&", "%26");
-			string body = Uri.EscapeDataString(message.Body);
-			string subject = Uri.EscapeDataString(message.Subject);
-			var recipientTo = message.To;
-			var toBuilder = new StringBuilder();
-			for (int i = 0; i < recipientTo.Count; ++i)
-			{
-				if (i > 0)
-				{
-					toBuilder.Append(",");
-				}
-				toBuilder.Append(recipientTo[i]);
-			}
-			string commandLine = "";
-			if (message.AttachmentFilePath.Count == 0)
-			{
-				commandLine = String.Format("mailto:{0}?subject={1}&body={2}",
-											toBuilder, subject, body);
-			}
-			else
-			{
-				// review CP: throw if AttachmentFilePath.Count > 0 ?
-				// review CP: throw if file not present?
-				string attachments = message.AttachmentFilePath[0];
-				commandLine = String.Format("mailto:{0}?subject={1}&attachment={2}&body={3}",
-											toBuilder, subject, attachments, body);
-			}
+			var body = Uri.EscapeDataString(message.Body);
+			var subject = Uri.EscapeDataString(message.Subject);
+			// review CP: throw if AttachmentFilePath.Count > 0 ?
+			// review CP: throw if file not present?
+			var commandLine = $"mailto:{GetToRecipients(message.To)}?subject={subject}{GetCcRecipients(message.Cc)}{GetBccRecipients(message.Bcc)}{GetAttachments(message.AttachmentFilePath)}&body={body}";
 			Console.WriteLine(commandLine);
-			var p = new Process
-			{
-				StartInfo =
-				{
+			return StartEmailProcess(commandLine);
+		}
+
+		protected virtual bool StartEmailProcess(string commandLine)
+		{
+			var p = new Process {
+				StartInfo = {
 					FileName = commandLine,
 					UseShellExecute = true,
 					ErrorDialog = true
@@ -57,5 +45,38 @@ namespace SIL.Email
 			return true;
 		}
 
+		private static string GetArguments(IList<string> arguments, string prefix = "", string postfix = "")
+		{
+			var toBuilder = new StringBuilder();
+
+			foreach (var argument in arguments)
+			{
+				if (toBuilder.Length > 0)
+					toBuilder.Append(",");
+				toBuilder.Append($"{prefix}{argument}{postfix}");
+			}
+
+			return toBuilder.ToString();
+		}
+
+		private static string GetToRecipients(IList<string> recipientTo)
+		{
+			return GetArguments(recipientTo);
+		}
+
+		private static string GetCcRecipients(IList<string> recipients)
+		{
+			return recipients.Count > 0 ? $"&cc={GetArguments(recipients)}" : null;
+		}
+
+		private static string GetBccRecipients(IList<string> recipients)
+		{
+			return recipients.Count > 0 ? $"&bcc={GetArguments(recipients)}" : null;
+		}
+
+		private static string GetAttachments(IList<string> attachments)
+		{
+			return attachments.Count > 0 ? $"&attachment={GetArguments(attachments, "\"", "\"")}" : null;
+		}
 	}
 }

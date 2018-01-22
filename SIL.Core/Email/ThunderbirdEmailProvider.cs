@@ -1,3 +1,8 @@
+// Copyright (c) 2018 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+using System.Collections.Generic;
+using System.Text;
+
 namespace SIL.Email
 {
 	public class ThunderbirdEmailProvider : LinuxEmailProvider
@@ -10,29 +15,46 @@ namespace SIL.Email
 			}
 		}
 
-		protected override string FormatStringNoAttachments
+		protected override string FormatString
 		{
 			get
 			{
-				return "-compose \"to='{0}',subject='{1}',body='{2}'\"";
+				return "-compose \"to='{0}',subject='{1}',body='{2}'{3}{4}{5}\"";
 			}
 		}
 
-		protected override string FormatStringWithAttachments
+		private static string GetArguments(IList<string> arguments, string prefix = "")
 		{
-			get
+			var toBuilder = new StringBuilder();
+
+			foreach (var argument in arguments)
 			{
-				return "-compose \"to='{0}',subject='{1}',attachment='{2}',body='{3}'\"";
+				if (toBuilder.Length > 0)
+					toBuilder.Append(",");
+				toBuilder.Append($"{prefix}{argument}");
 			}
+
+			return toBuilder.ToString();
 		}
 
-		protected virtual string FormatStringAttachFile
+		protected override string GetToRecipients(IList<string> recipientTo)
 		{
-			get
-			{
-				return "file://{0}";
-			}
+			return GetArguments(recipientTo);
 		}
 
+		protected override string GetCcRecipients(IList<string> recipients)
+		{
+			return recipients.Count > 0 ? $",cc='{GetArguments(recipients)}'" : null;
+		}
+
+		protected override string GetBccRecipients(IList<string> recipients)
+		{
+			return recipients.Count > 0 ? $",bcc='{GetArguments(recipients)}'" : null;
+		}
+
+		protected override string GetAttachments(IList<string> attachments)
+		{
+			return attachments.Count > 0 ? $",attachment='{GetArguments(attachments, "file://")}'" : null;
+		}
 	}
 }
