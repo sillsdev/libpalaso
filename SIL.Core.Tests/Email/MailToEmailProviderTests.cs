@@ -29,11 +29,11 @@ namespace SIL.Tests.Email
 		}
 
 		[TestCase("foo@example.com",
-			Result = "mailto:foo@example.com?subject=Testing&body=Hi%20there%21")]
+			Result = "mailto:foo@example.com?subject=Testing&body=Hi%20there")]
 		[TestCase("Foo <foo@example.com>",
-			Result = "mailto:Foo <foo@example.com>?subject=Testing&body=Hi%20there%21")]
+			Result = "mailto:Foo <foo@example.com>?subject=Testing&body=Hi%20there")]
 		[TestCase("foo@example.com;someone@example.com",
-			Result = "mailto:foo@example.com,someone@example.com?subject=Testing&body=Hi%20there%21")]
+			Result = "mailto:foo@example.com,someone@example.com?subject=Testing&body=Hi%20there")]
 		public string SendMessage_ToOnly(string to)
 		{
 			// Setup
@@ -41,7 +41,7 @@ namespace SIL.Tests.Email
 			var email = provider.CreateMessage();
 			email.To.AddRange(to.Split(';'));
 			email.Subject =  "Testing";
-			email.Body = "Hi there!";
+			email.Body = "Hi there";
 
 			// Exercise
 			provider.SendMessage(email);
@@ -51,15 +51,15 @@ namespace SIL.Tests.Email
 		}
 
 		[TestCase("foo@example.com", null,
-			Result = "mailto:bar@example.com?subject=Testing&cc=foo@example.com&body=Hi%20there%21")]
+			Result = "mailto:bar@example.com?subject=Testing&cc=foo@example.com&body=Hi%20there")]
 		[TestCase("foo@example.com;someone@example.com", null,
-			Result = "mailto:bar@example.com?subject=Testing&cc=foo@example.com,someone@example.com&body=Hi%20there%21")]
+			Result = "mailto:bar@example.com?subject=Testing&cc=foo@example.com,someone@example.com&body=Hi%20there")]
 		[TestCase(null, "foo@example.com",
-			Result = "mailto:bar@example.com?subject=Testing&bcc=foo@example.com&body=Hi%20there%21")]
+			Result = "mailto:bar@example.com?subject=Testing&bcc=foo@example.com&body=Hi%20there")]
 		[TestCase(null, "foo@example.com;someone@example.com",
-			Result = "mailto:bar@example.com?subject=Testing&bcc=foo@example.com,someone@example.com&body=Hi%20there%21")]
+			Result = "mailto:bar@example.com?subject=Testing&bcc=foo@example.com,someone@example.com&body=Hi%20there")]
 		[TestCase("a@example.com", "foo@example.com;someone@example.com",
-			Result = "mailto:bar@example.com?subject=Testing&cc=a@example.com&bcc=foo@example.com,someone@example.com&body=Hi%20there%21")]
+			Result = "mailto:bar@example.com?subject=Testing&cc=a@example.com&bcc=foo@example.com,someone@example.com&body=Hi%20there")]
 		public string SendMessage_CcAndBcc(string cc, string bcc)
 		{
 			// Setup
@@ -71,7 +71,7 @@ namespace SIL.Tests.Email
 			if (bcc != null)
 				email.Bcc.AddRange(bcc.Split(';'));
 			email.Subject =  "Testing";
-			email.Body = "Hi there!";
+			email.Body = "Hi there";
 
 			// Exercise
 			provider.SendMessage(email);
@@ -80,12 +80,12 @@ namespace SIL.Tests.Email
 			return provider.GetCommandLine();
 		}
 
-		[TestCase(null, null, 1, "mailto:bar@example.com?subject=Testing $ATTACH&body=Hi%20there%21")]
-		[TestCase(null, null, 2, "mailto:bar@example.com?subject=Testing $ATTACH&body=Hi%20there%21")]
+		[TestCase(null, null, 1, "mailto:bar@example.com?subject=Testing $ATTACH&body=Hi%20there")]
+		[TestCase(null, null, 2, "mailto:bar@example.com?subject=Testing $ATTACH&body=Hi%20there")]
 		[TestCase("foo@example.com", null, 1,
-			"mailto:bar@example.com?subject=Testing&cc=foo@example.com $ATTACH&body=Hi%20there%21")]
+			"mailto:bar@example.com?subject=Testing&cc=foo@example.com $ATTACH&body=Hi%20there")]
 		[TestCase("foo@example.com", "a@example.com", 1,
-			"mailto:bar@example.com?subject=Testing&cc=foo@example.com&bcc=a@example.com $ATTACH&body=Hi%20there%21")]
+			"mailto:bar@example.com?subject=Testing&cc=foo@example.com&bcc=a@example.com $ATTACH&body=Hi%20there")]
 		public void SendMessage_Attachment(string cc, string bcc, int noOfAttachments, string expected)
 		{
 			// Setup
@@ -97,7 +97,7 @@ namespace SIL.Tests.Email
 			if (bcc != null)
 				email.Bcc.AddRange(bcc.Split(';'));
 			email.Subject =  "Testing";
-			email.Body = "Hi there!";
+			email.Body = "Hi there";
 			var tempFiles = new List<TempFile>();
 			try
 			{
