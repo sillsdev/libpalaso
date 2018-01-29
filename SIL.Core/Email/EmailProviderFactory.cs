@@ -1,34 +1,39 @@
+// Copyright (c) 2008-2018 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.IO;
 using System.Xml;
 using System.Xml.XPath;
+using SIL.PlatformUtilities;
 
 namespace SIL.Email
 {
-	public class EmailProviderFactory
+	public static class EmailProviderFactory
 	{
 		public static IEmailProvider PreferredEmailProvider()
 		{
-			if (Environment.OSVersion.Platform == PlatformID.Unix)
+			if (Platform.IsWindows)
+				return new MapiEmailProvider();
+
+			if (Platform.IsMac)
+				return new MacOsXEmailProvider();
+
+			if (ThunderbirdIsDefault())
 			{
-				if (ThunderbirdIsDefault())
-				{
-					Console.WriteLine("Using Thunderbird provider");
-					return new ThunderbirdEmailProvider();
-				}
-				if (File.Exists("/usr/bin/xdg-email"))
-				{
-					Console.WriteLine("Using xdg-email provider");
-					return new LinuxEmailProvider();
-				}
-				return new MailToEmailProvider();
+				Console.WriteLine("Using Thunderbird provider");
+				return new ThunderbirdEmailProvider();
 			}
-			return new MapiEmailProvider();
+			if (File.Exists("/usr/bin/xdg-email"))
+			{
+				Console.WriteLine("Using xdg-email provider");
+				return new LinuxEmailProvider();
+			}
+			return new MailToEmailProvider();
 		}
 
 		public static IEmailProvider AlternateEmailProvider()
 		{
-			if (Environment.OSVersion.Platform == PlatformID.Unix && !ThunderbirdIsDefault() && !File.Exists("/usr/bin/xdg-email"))
+			if (Platform.IsLinux && !ThunderbirdIsDefault() && !File.Exists("/usr/bin/xdg-email"))
 			{
 				return null;
 			}
@@ -36,9 +41,7 @@ namespace SIL.Email
 		}
 
 		public static bool ThunderbirdIsDefault() {
-			bool result = false;
-			if (!result)
-				result |= ThunderbirdIsDefaultOnX();
+			var result = ThunderbirdIsDefaultOnX();
 			if (!result)
 				result |= ThunderbirdIsDefaultOnGnome();
 			return result;
@@ -46,17 +49,14 @@ namespace SIL.Email
 
 		public static bool ThunderbirdIsDefaultOnGnome()
 		{
-			bool result = false;
-			string home = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-			string preferredAppFile = String.Format(
-				"{0}/.gconf/desktop/gnome/url-handlers/mailto/%gconf.xml",
-				home
-			);
+			var result = false;
+			var home = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+			var preferredAppFile = $"{home}/.gconf/desktop/gnome/url-handlers/mailto/%gconf.xml";
 			if (File.Exists(preferredAppFile))
 			{
-				XPathDocument doc = new XPathDocument(new XmlTextReader(preferredAppFile));
-				XPathNavigator nav = doc.CreateNavigator();
-				XPathNodeIterator it = nav.Select("/gconf/entry/stringvalue");
+				var doc = new XPathDocument(new XmlTextReader(preferredAppFile));
+				var nav = doc.CreateNavigator();
+				var it = nav.Select("/gconf/entry/stringvalue");
 				if (it.MoveNext())
 				{
 					result = it.Current.Value.Contains("thunderbird");
@@ -68,12 +68,9 @@ namespace SIL.Email
 
 		public static bool ThunderbirdIsDefaultOnX()
 		{
-			bool result = false;
-			string home = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-			string preferredAppFile = String.Format(
-				"{0}/.config/xfce4/helpers.rc",
-				home
-			);
+			var result = false;
+			var home = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+			var preferredAppFile = $"{home}/.config/xfce4/helpers.rc";
 			if (File.Exists(preferredAppFile))
 			{
 				using (var reader = File.OpenText(preferredAppFile))
@@ -81,11 +78,12 @@ namespace SIL.Email
 					while (!reader.EndOfStream)
 					{
 						var line = reader.ReadLine().Trim();
-						string[] keyValue = line.Split('=');
-						if (keyValue.Length == 2) {
-							result =  (keyValue[0] == "MailReader" && keyValue[1] == "thunderbird");
-							break;
-						}
+						var keyValue = line.Split('=');
+						if (keyValue.Length != 2)
+							continue;
+
+						result = keyValue[0] == "MailReader" && keyValue[1] == "thunderbird";
+						break;
 					}
 				}
 			}

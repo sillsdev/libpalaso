@@ -317,6 +317,7 @@
     <Compile Include="Data\PalasoTestItem.cs" />
     <Compile Include="Data\TestRepositoryId.cs" />
     <Compile Include="Email\LinuxEmailProviderTests.cs" />
+    <Compile Include="Email\MacOsXEmailProviderTests.cs" />
     <Compile Include="Extensions\ByteArrayExtensionTests.cs" />
     <Compile Include="Extensions\CollectionExtensionsTests.cs" />
     <Compile Include="Extensions\DateTimeExtensionTests.cs" />

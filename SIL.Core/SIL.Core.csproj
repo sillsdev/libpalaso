@@ -367,6 +367,7 @@
     <Compile Include="Email\EmailProviderFactory.cs" />
     <Compile Include="Email\IEmailMessage.cs" />
     <Compile Include="Email\IEmailProvider.cs" />
+    <Compile Include="Email\MacOsXEmailProvider.cs" />
     <Compile Include="Email\MailToEmailProvider.cs" />
     <Compile Include="Email\MapiEmailProvider.cs" />
     <Compile Include="Email\MAPIHelper.cs" />
