@@ -50,6 +50,7 @@ namespace SIL.Windows.Forms.Widgets
 		private System.Drawing.Color _ImageBorderColor           = System.Drawing.Color.Chocolate;
 		private bool                 _StretchImage               = false;
 		private bool                 _TextDropShadow             = true;
+		private bool                 _TextWordWrap               = false;
 		private int                  _Padding                    = 5;
 		private bool                 _OffsetPressedContent       = true;
 		private bool                 _ImageBorderEnabled         = true;
@@ -90,6 +91,19 @@ namespace SIL.Windows.Forms.Widgets
 		{
 			get{return _TextDropShadow;}
 			set{_TextDropShadow = value;}
+		}
+		/// <summary>
+		/// Enable the wrapping of the button text
+		/// </summary>
+		[Browsable(true),
+			Category("Appearance"),
+			Description("allows the text to wrap words in its box (if no shadow)"),
+			System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)
+		]
+		public bool TextWordWrap
+		{
+			get{return _TextWordWrap;}
+			set{_TextWordWrap = value;}
 		}
 		/// <summary>
 		/// Enables the dashed focus rectangle
@@ -645,9 +659,11 @@ namespace SIL.Windows.Forms.Widgets
 			if( (State == BtnState.Pushed) && (OffsetPressedContent) )
 				   rect.Offset(1,1);
 			//
-			// caculate bounding rectagle for the text
+			// calculate bounding rectangle for the text
 			//
 			System.Drawing.SizeF size = txt_Size(e.Graphics,this.Text,this.Font);
+			if (TextWordWrap && !TextDropShadow && size.Width > (float)this.Width)
+				size = CalculateBestWrappingSize(e.Graphics, size);
 			//
 			// calculate the starting location to paint the text
 			//
@@ -659,7 +675,10 @@ namespace SIL.Windows.Forms.Widgets
 			{
 				using(var solidBrush = new SolidBrush(DisabledTextColor))
 				{
-					e.Graphics.DrawString(this.Text, this.Font, solidBrush, pt.X + 1, pt.Y + 1);
+					if (TextWordWrap && !TextDropShadow)
+						e.Graphics.DrawString(this.Text, this.Font, solidBrush, new RectangleF(pt.X+1, pt.Y+1, size.Width, size.Height));
+					else
+						e.Graphics.DrawString(this.Text,this.Font, solidBrush, pt.X + 1, pt.Y + 1);
 				}
 			}
 				//
@@ -690,7 +709,10 @@ namespace SIL.Windows.Forms.Widgets
 				//
 				using(var solidBrush = new SolidBrush(this.ForeColor))
 				{
-					e.Graphics.DrawString(this.Text,this.Font, solidBrush,pt.X,pt.Y);
+					if (TextWordWrap && !TextDropShadow)
+						e.Graphics.DrawString(this.Text, this.Font, solidBrush, new RectangleF(pt.X, pt.Y, size.Width, size.Height));
+					else
+						e.Graphics.DrawString(this.Text,this.Font, solidBrush,pt.X,pt.Y);
 				}
 			}
 		}
@@ -828,6 +850,40 @@ namespace SIL.Windows.Forms.Widgets
 			System.Drawing.SizeF size = g.MeasureString(strText,font);
 			return (size);
 		}
+		/// <summary>
+		/// Calculate the size that is best for wrapping text to fit the available width.
+		/// </summary>
+		/// <remarks>
+		/// Note that this assumes only two lines of space are available.
+		/// </remarks>
+		private System.Drawing.SizeF CalculateBestWrappingSize(Graphics g, SizeF sizeOneLine)
+		{
+			// We need to wrap if possible.  Try each space as a possible break point.
+			SizeF sizePrev = sizeOneLine;
+			for (int idx = this.Text.IndexOf(' '); idx > 0; idx = this.Text.IndexOf(' ', idx+1))
+			{
+				// Measure the string with a wrap forced by a newline character instead of the space.
+				var text = this.Text.Remove(idx, 1);
+				text = text.Insert(idx, "\n");
+				var sizeWrap = txt_Size(g, text, this.Font);
+				if (sizeWrap.Width >= (float)this.Width)
+				{
+					// The wrapped string is as wide or wider as the control, so we need to
+					// quit.  If we have a previous splitting point that looks better, use it.
+					// Otherwise, measure with this splitting point's width and hope for the
+					// best.
+					if (sizePrev.Width < sizeWrap.Width && sizePrev.Height <= sizeWrap.Height)
+						return g.MeasureString(this.Text, this.Font, 1+(int)sizePrev.Width);
+					return g.MeasureString(this.Text, this.Font, 1+(int)sizeWrap.Width);
+				}
+				sizePrev = sizeWrap;
+			}
+			// If we successfully split the string with only one space in it, use the split.
+			if (sizePrev != sizeOneLine)
+				return g.MeasureString(this.Text, this.Font, 1+(int)sizePrev.Width);
+			return sizeOneLine;
+		}
+
 		/// <summary>
 		/// Calculates the rectangular region used for text display.
 		/// </summary>
