@@ -250,6 +250,8 @@ namespace LanguageData
 			foreach (string line in iso693.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
 			{
 				string[] items = line.Split('\t');
+				if (items.Length < 4)
+					continue;	// protect against garbage downloaded from the web
 				if (items[3].Trim().Length == 2) {
 					twoToThreeLetter.Add (items[3].Trim(), items[0].Trim());
 				}
