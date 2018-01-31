@@ -92,6 +92,16 @@ namespace SIL.Windows.Forms.Widgets
 			set{_TextDropShadow = value;}
 		}
 		/// <summary>
+		/// Enable the wrapping of the button text
+		/// </summary>
+		[Browsable(true),
+			Category("Appearance"),
+			Description("allows the text to wrap words in its box (if no shadow)"),
+			System.ComponentModel.RefreshProperties(RefreshProperties.Repaint)
+		]
+		public bool TextWordWrap { get; set; }
+
+		/// <summary>
 		/// Enables the dashed focus rectangle
 		/// </summary>
 		[Browsable(true),
@@ -339,6 +349,7 @@ namespace SIL.Windows.Forms.Widgets
 
 			ImageAttributes = new ImageAttributes();
 			DisabledTextColor = System.Drawing.Color.DimGray;
+			TextWordWrap = false;
 		}
 
 		// Expose the protected method in case some user wants to change the
@@ -645,9 +656,11 @@ namespace SIL.Windows.Forms.Widgets
 			if( (State == BtnState.Pushed) && (OffsetPressedContent) )
 				   rect.Offset(1,1);
 			//
-			// caculate bounding rectagle for the text
+			// calculate bounding rectangle for the text
 			//
 			System.Drawing.SizeF size = txt_Size(e.Graphics,this.Text,this.Font);
+			if (TextWordWrap && !TextDropShadow && size.Width > (float)this.Width)
+				size = CalculateBestWrappingSize(e.Graphics);
 			//
 			// calculate the starting location to paint the text
 			//
@@ -659,7 +672,10 @@ namespace SIL.Windows.Forms.Widgets
 			{
 				using(var solidBrush = new SolidBrush(DisabledTextColor))
 				{
-					e.Graphics.DrawString(this.Text, this.Font, solidBrush, pt.X + 1, pt.Y + 1);
+					if (TextWordWrap && !TextDropShadow)
+						e.Graphics.DrawString(this.Text, this.Font, solidBrush, new RectangleF(pt.X+1, pt.Y+1, size.Width, size.Height));
+					else
+						e.Graphics.DrawString(this.Text,this.Font, solidBrush, pt.X + 1, pt.Y + 1);
 				}
 			}
 				//
@@ -690,7 +706,10 @@ namespace SIL.Windows.Forms.Widgets
 				//
 				using(var solidBrush = new SolidBrush(this.ForeColor))
 				{
-					e.Graphics.DrawString(this.Text,this.Font, solidBrush,pt.X,pt.Y);
+					if (TextWordWrap && !TextDropShadow)
+						e.Graphics.DrawString(this.Text, this.Font, solidBrush, new RectangleF(pt.X, pt.Y, size.Width, size.Height));
+					else
+						e.Graphics.DrawString(this.Text,this.Font, solidBrush,pt.X,pt.Y);
 				}
 			}
 		}
@@ -828,6 +847,17 @@ namespace SIL.Windows.Forms.Widgets
 			System.Drawing.SizeF size = g.MeasureString(strText,font);
 			return (size);
 		}
+		/// <summary>
+		/// Calculate the size that is best for wrapping text to fit the available width.
+		/// </summary>
+		private System.Drawing.SizeF CalculateBestWrappingSize(Graphics g)
+		{
+			// Try to wrap with the maximum available width.  This may cause words to split in the
+			// middle, or more than two lines to be displayed.  But that's still better than showing
+			// partial data in one line.
+			return g.MeasureString(this.Text, this.Font, this.Width);
+		}
+
 		/// <summary>
 		/// Calculates the rectangular region used for text display.
 		/// </summary>
