@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using SIL.Code;
@@ -36,10 +37,18 @@ namespace SIL.IO
 		{
 			RetryUtility.Retry(() => Directory.Move(sourceDirName, destDirName));
 		}
-		
+
 		public static XElement LoadXElement(string uri)
 		{
-			return RetryUtility.Retry(() => XElement.Load(uri));
+			// Previously used RetryUtility on XElement.Load(uri). However, we had problems with this
+			// in Bloom using some non-roman collection names...specifically, one involving the Northern Pashti
+			// localization of 'books' (کتابونه)...see BL-5416. It seems that somewhere in the
+			// implementation of Linq.XElement.Load() the path is converted to a URL and then back
+			// to a path and something changes in that process so that a valid path passed to Load()
+			// raises an invalid path exception. Reading the file directly and then parsing the string
+			// works around this problem.
+			var content = RobustFile.ReadAllText(uri, Encoding.UTF8);
+			return XElement.Parse(content);
 		}
 
 		public static void SaveXElement(XElement xElement, string fileName)
