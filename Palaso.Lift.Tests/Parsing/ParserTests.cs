@@ -177,6 +177,14 @@ namespace Palaso.Lift.Tests.Parsing
 			SimpleCheckGetOrMakeEntry_InsertVersion("<lift V />", 0);
 		}
 
+		[Test]
+		public void EmptySpanOk()
+		{
+			_doc.LoadXml("<example><form lang='en-US-fonipa'><text><span lang='en-US'></span></text></form></example>");
+			LiftMultiText t = _parser.ReadMultiText(_doc.FirstChild);
+			Assert.AreEqual(0, _parsingWarnings.Count);
+		}
+
 
 
 		[Test]

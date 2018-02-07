@@ -64,9 +64,11 @@ namespace Palaso.DictionaryServices.Tests.Lift
 
 		public static LiftDataMapper CreateDataMapper(string filePath)
 		{
-			return new LiftDataMapper(
-				filePath, null, new string[] {}, new ProgressState()
-			);
+
+			LiftDataMapper mapper = new LiftDataMapper(
+				filePath, null, new string[] { }, new ProgressState());
+			mapper.Init();
+			return mapper;
 		}
 
 		[Test]

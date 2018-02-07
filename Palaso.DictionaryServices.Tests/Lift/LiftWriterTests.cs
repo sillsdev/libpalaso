@@ -159,7 +159,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void AddUsingWholeList_TwoEntries_HasTwoEntries()
+		public void LiftWriter_AddUsingWholeList_TwoEntries_HasTwoEntries()
 		{
 			using (var session = new LiftExportAsFullDocumentTestSession())
 			{
@@ -171,7 +171,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void AttributesWithProblematicCharacters()
+		public void LiftWriter_AttributesWithProblematicCharacters()
 		{
 			const string expected = "lang=\"x&quot;y\">";
 			using (var session = new LiftExportAsFragmentTestSession())
@@ -186,7 +186,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void BlankExample()
+		public void LiftWriter_BlankExample()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -196,7 +196,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void BlankGrammi()
+		public void LiftWriter_BlankGrammi()
 		{
 			var sense = new LexSense();
 			var o = sense.GetOrCreateProperty<OptionRef>(
@@ -213,7 +213,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void BlankMultiText()
+		public void LiftWriter_BlankMultiText()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -223,7 +223,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void BlankSense()
+		public void LiftWriter_BlankSense()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -237,7 +237,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void Citation()
+		public void LiftWriter_Citation()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -256,7 +256,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void CitationWithStarredForm()
+		public void LiftWriter_CitationWithStarredForm()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -277,7 +277,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void EntryWith2SimpleVariants()
+		public void LiftWriter_EntryWith2SimpleVariants()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -297,7 +297,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 
 
 		[Test]
-		public void EntryWithSimpleEtymology()
+		public void LiftWriter_EntryWithSimpleEtymology()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -313,7 +313,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void EntryWithFullEtymology()
+		public void LiftWriter_EntryWithFullEtymology()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -334,7 +334,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			}
 		}
 		[Test]
-		public void EntryWithBorrowedWord()
+		public void LiftWriter_EntryWithBorrowedWord()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -348,7 +348,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void EntryWithSimplePronunciation()
+		public void LiftWriter_EntryWithSimplePronunciation()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -363,7 +363,28 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void SenseWith2Notes()
+		public void LiftWriter_EntryWithRelationToDiacriticWord()
+		{
+			// WS-356 relation ref in lift file was NFD so it couldn't find the referenced entry
+			using (var session = new LiftExportAsFullDocumentTestSession())
+			{
+				LexEntry diacritic_entry = session.CreateItem();
+				diacritic_entry.LexicalForm["test"] = "më"; // NFC entry
+				session.LiftWriter.Add(diacritic_entry);
+
+				LexEntry entry_with_relation = session.CreateItem();
+				entry_with_relation.LexicalForm["test"] = "men";
+				entry_with_relation.AddRelationTarget("confer", diacritic_entry.Id);  // NFD id
+				session.LiftWriter.Add(entry_with_relation);
+
+				session.LiftWriter.End();
+				// assert that the relation ref is NFC
+				AssertHasOneMatch("lift/entry/relation[@ref='më_" + diacritic_entry.Guid + "']", session);
+			}
+		}
+
+		[Test]
+		public void LiftWriter_SenseWith2Notes()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -383,7 +404,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void SenseWith2Reversals()
+		public void LiftWriter_SenseWith2Reversals()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -404,7 +425,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void EntryWithTypedNote()
+		public void LiftWriter_EntryWithTypedNote()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -420,7 +441,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void VariantWith2Traits()
+		public void LiftWriter_VariantWith2Traits()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -436,7 +457,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void VariantWith2SimpleFields()
+		public void LiftWriter_VariantWith2SimpleFields()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -456,7 +477,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void FieldWithTraits()
+		public void LiftWriter_FieldWithTraits()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -472,7 +493,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			}
 		}
 		[Test]
-		public void CustomMultiTextOnEntry()
+		public void LiftWriter_CustomMultiTextOnEntry()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -488,7 +509,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void CustomMultiTextOnExample()
+		public void LiftWriter_CustomMultiTextOnExample()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -502,7 +523,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void CustomMultiTextOnSense()
+		public void LiftWriter_CustomMultiTextOnSense()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -516,7 +537,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void CustomOptionRefCollectionOnEntry()
+		public void LiftWriter_CustomOptionRefCollectionOnEntry()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -535,7 +556,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void CustomOptionRefCollectionOnExample()
+		public void LiftWriter_CustomOptionRefCollectionOnExample()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -556,7 +577,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void CustomOptionRefCollectionOnSense()
+		public void LiftWriter_CustomOptionRefCollectionOnSense()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -577,7 +598,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void CustomOptionRefOnEntry()
+		public void LiftWriter_CustomOptionRefOnEntry()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -597,7 +618,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void CustomOptionRefOnExample()
+		public void LiftWriter_CustomOptionRefOnExample()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -618,7 +639,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void CustomOptionRefOnSense()
+		public void LiftWriter_CustomOptionRefOnSense()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -639,7 +660,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void CustomOptionRefOnSenseWithGrammi()
+		public void LiftWriter_CustomOptionRefOnSenseWithGrammi()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -660,7 +681,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void DefinitionOnSense_OutputAsDefinition()
+		public void LiftWriter_DefinitionOnSense_OutputAsDefinition()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -677,7 +698,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void DeletedEntry()
+		public void LiftWriter_DeletedEntry()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -689,7 +710,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void DocumentStart()
+		public void LiftWriter_DocumentStart()
 		{
 			using (var session = new LiftExportAsFullDocumentTestSession())
 			{
@@ -703,7 +724,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void EmptyCustomMultiText()
+		public void LiftWriter_EmptyCustomMultiText()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -716,7 +737,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void EmptyCustomOptionRef()
+		public void LiftWriter_EmptyCustomOptionRef()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -729,7 +750,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void EmptyCustomOptionRefCollection()
+		public void LiftWriter_EmptyCustomOptionRefCollection()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -742,7 +763,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void EmptyDefinitionOnSense_NotOutput()
+		public void LiftWriter_EmptyDefinitionOnSense_NotOutput()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -756,7 +777,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void EmptyExampleSource_NoAttribute()
+		public void LiftWriter_EmptyExampleSource_NoAttribute()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -771,7 +792,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void EmptyNoteOnEntry_NoOutput()
+		public void LiftWriter_EmptyNoteOnEntry_NoOutput()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -786,7 +807,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void Entry_EntryHasIdWithInvalidXMLCharacters_CharactersEscaped()
+		public void LiftWriter_Entry_EntryHasIdWithInvalidXMLCharacters_CharactersEscaped()
 		{
 			const string expected = "id=\"&lt;&gt;&amp;&quot;'\"";
 			using (var session = new LiftExportAsFragmentTestSession())
@@ -802,7 +823,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void Entry_ScaryUnicodeCharacter_SafeXmlEmitted()
+		public void LiftWriter_Entry_ScaryUnicodeCharacter_SafeXmlEmitted()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -818,7 +839,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void Entry_HasId_RemembersId()
+		public void LiftWriter_Entry_HasId_RemembersId()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -833,7 +854,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void Entry_NoId_GetsHumanReadableId()
+		public void LiftWriter_Entry_NoId_GetsHumanReadableId()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -853,7 +874,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void EntryGuid()
+		public void LiftWriter_EntryGuid()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -866,7 +887,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void EmptyRelationNotOutput()
+		public void LiftWriter_EmptyRelationNotOutput()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -879,7 +900,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void EntryHasDateCreated()
+		public void LiftWriter_EntryHasDateCreated()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -894,7 +915,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void EntryHasDateModified()
+		public void LiftWriter_EntryHasDateModified()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -915,7 +936,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		/// Regression: WS-34576
 		/// </summary>
 		[Test]
-		public void Add_CultureUsesPeriodForTimeSeparator_DateAttributesOutputWithColon()
+		public void LiftWriter_Add_CultureUsesPeriodForTimeSeparator_DateAttributesOutputWithColon()
 		{
 			var culture = new CultureInfo("en-US");
 			culture.DateTimeFormat.TimeSeparator = ".";
@@ -941,7 +962,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void EntryWithSenses()
+		public void LiftWriter_EntryWithSenses()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -964,7 +985,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void ExampleSentence()
+		public void LiftWriter_ExampleSentence()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -980,7 +1001,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void ExampleSentenceWithTranslation()
+		public void LiftWriter_ExampleSentenceWithTranslation()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -996,7 +1017,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void ExampleSourceAsAttribute()
+		public void LiftWriter_ExampleSourceAsAttribute()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1013,7 +1034,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void FlagCleared_NoOutput()
+		public void LiftWriter_FlagCleared_NoOutput()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1029,7 +1050,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void FlagOnEntry_OutputAsTrait()
+		public void LiftWriter_FlagOnEntry_OutputAsTrait()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1045,7 +1066,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 
 		/* this is not relevant, as we are currently using form_guid as the id
 		[Test]
-		public void DuplicateFormsGetHomographNumbers()
+		public void LiftWriter_DuplicateFormsGetHomographNumbers()
 		{
 			LexEntry entry = new LexEntry();
 			entry.LexicalForm["blue"] = "ocean";
@@ -1060,7 +1081,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		*/
 
 		[Test]
-		public void GetHumanReadableId_EntryHasId_GivesId()
+		public void LiftWriter_GetHumanReadableId_EntryHasId_GivesId()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1187,7 +1208,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		*/
 
 		[Test]
-		public void GetHumanReadableId_IdIsSpace_NoForm()
+		public void LiftWriter_GetHumanReadableId_IdIsSpace_NoForm()
 		{
 			var entry = new LexEntry(" ", Guid.NewGuid());
 			Assert.IsTrue(
@@ -1198,7 +1219,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void GetHumanReadableId_IdIsSpace_TreatedAsThoughNonExistentId()
+		public void LiftWriter_GetHumanReadableId_IdIsSpace_TreatedAsThoughNonExistentId()
 		{
 			var entry = new LexEntry(" ", Guid.NewGuid());
 			entry.LexicalForm["green"] = "string";
@@ -1208,7 +1229,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void Gloss()
+		public void LiftWriter_Gloss()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1224,7 +1245,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test] // Ummmm no it shouldn't CP 2013-05.  Flex expects the opposite of this.
-		public void Gloss_MultipleGlossesSplitIntoSeparateEntries()
+		public void LiftWriter_Gloss_MultipleGlossesSplitIntoSeparateEntries()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1240,7 +1261,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void GlossWithProblematicCharacters()
+		public void LiftWriter_GlossWithProblematicCharacters()
 		{
 			const string expected = "<text>LessThan&lt;GreaterThan&gt;Ampersan&amp;</text>";
 			using (var session = new LiftExportAsFragmentTestSession())
@@ -1254,7 +1275,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void GlossWithStarredForm()
+		public void LiftWriter_GlossWithStarredForm()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1268,7 +1289,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void Grammi()
+		public void LiftWriter_Grammi()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1285,7 +1306,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void GrammiWithStarredForm()
+		public void LiftWriter_GrammiWithStarredForm()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1305,7 +1326,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void LexemeForm_SingleWritingSystem()
+		public void LiftWriter_LexemeForm_SingleWritingSystem()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1320,7 +1341,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void LexEntry_becomes_entry()
+		public void LiftWriter_LexEntry_becomes_entry()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1333,7 +1354,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void LexicalUnit()
+		public void LiftWriter_LexicalUnit()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1348,7 +1369,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void LexicalUnitWithStarredForm()
+		public void LiftWriter_LexicalUnitWithStarredForm()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1368,7 +1389,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void LexSense_becomes_sense()
+		public void LiftWriter_LexSense_becomes_sense()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1380,7 +1401,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void MultiText()
+		public void LiftWriter_MultiText()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1396,7 +1417,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void NoteOnEntry_OutputAsNote()
+		public void LiftWriter_NoteOnEntry_OutputAsNote()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1414,7 +1435,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void NoteOnExample_OutputAsNote()
+		public void LiftWriter_NoteOnExample_OutputAsNote()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1430,7 +1451,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void NoteOnSense_OutputAsNote()
+		public void LiftWriter_NoteOnSense_OutputAsNote()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1446,7 +1467,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void Picture_OutputAsPictureURLRef()
+		public void LiftWriter_Picture_OutputAsPictureURLRef()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1460,7 +1481,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void Picture_OutputAsPictureWithCaption()
+		public void LiftWriter_Picture_OutputAsPictureWithCaption()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1480,7 +1501,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void Sense_HasId_RemembersId()
+		public void LiftWriter_Sense_HasId_RemembersId()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1494,7 +1515,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void Sense_NoId_GetsId()
+		public void LiftWriter_Sense_NoId_GetsId()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1509,7 +1530,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void SensesAreLastObjectsInEntry() // this helps conversions to sfm review: It would be great if this wasn't necessary CP 2011-01
+		public void LiftWriter_SensesAreLastObjectsInEntry() // this helps conversions to sfm review: It would be great if this wasn't necessary CP 2011-01
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1546,7 +1567,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void SenseWithExample()
+		public void LiftWriter_SenseWithExample()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1563,7 +1584,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void SenseWithSynonymRelations()
+		public void LiftWriter_SenseWithSynonymRelations()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1603,7 +1624,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void AddRelationTarget_SenseWithSynonymRelations()
+		public void LiftWriter_AddRelationTarget_SenseWithSynonymRelations()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1626,7 +1647,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			}
 		}
 		[Test]
-		public void SenseWithRelationWithEmbeddedXml()
+		public void LiftWriter_SenseWithRelationWithEmbeddedXml()
 		{
 			using (var session = new LiftExportAsFragmentTestSession())
 			{
@@ -1655,7 +1676,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void WriteToFile()
+		public void LiftWriter_WriteToFile()
 		{
 			using (var session = new LiftExportAsFileTestSession())
 			{
@@ -1667,7 +1688,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void Add_MultiTextWithWellFormedXML_IsExportedAsXML()
+		public void LiftWriter_Add_MultiTextWithWellFormedXML_IsExportedAsXML()
 		{
 			const string expected =
 				"<form\r\n\tlang=\"de\">\r\n\t<text>This <span href=\"reference\">is well formed</span> XML!</text>\r\n</form>";
@@ -1682,7 +1703,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void Add_MultiTextWithWellFormedXMLAndScaryCharacter_IsExportedAsXML()
+		public void LiftWriter_Add_MultiTextWithWellFormedXMLAndScaryCharacter_IsExportedAsXML()
 		{
 			const string expected =
 			"<form\r\n\tlang=\"de\">\r\n\t<text>This <span href=\"reference\">is well &#x1F; formed</span> XML!</text>\r\n</form>";
@@ -1696,7 +1717,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 			}
 		}
 		[Test]
-		public void Add_MultiTextWithScaryUnicodeChar_IsExported()
+		public void LiftWriter_Add_MultiTextWithScaryUnicodeChar_IsExported()
 		{
 			const string expected =
 				"<form\r\n\tlang=\"de\">\r\n\t<text>This has a segment separator character at the end&#x1F;</text>\r\n</form>";
@@ -1712,7 +1733,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void Add_MalformedXmlWithWithScaryUnicodeChar_IsExportedAsText()
+		public void LiftWriter_Add_MalformedXmlWithWithScaryUnicodeChar_IsExportedAsText()
 		{
 			const string expected = "<form\r\n\tlang=\"de\">\r\n\t<text>This &lt;span href=\"reference\"&gt;is not well &#x1F; formed&lt;span&gt; XML!</text>\r\n</form>";
 			//  1F is the character for "Segment Separator" and you can insert it by right-clicking in windows
@@ -1727,7 +1748,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void Add_MultiTextWithMalFormedXML_IsExportedText()
+		public void LiftWriter_Add_MultiTextWithMalFormedXML_IsExportedText()
 		{
 			const string expected =
 				"<form\r\n\tlang=\"de\">\r\n\t<text>This &lt;span href=\"reference\"&gt;is not well formed&lt;span&gt; XML!</text>\r\n</form>";
@@ -1742,7 +1763,7 @@ namespace Palaso.DictionaryServices.Tests.Lift
 		}
 
 		[Test]
-		public void Add_TextWithSpanAndMeaningfulWhiteSpace_FormattingAndWhitespaceIsUntouched()
+		public void LiftWriter_Add_TextWithSpanAndMeaningfulWhiteSpace_FormattingAndWhitespaceIsUntouched()
 		{
 			// REVIEW (EberhardB): does it really make sense to preserve the line endings? It seems
 			// that for a text node line endings should be standardized.

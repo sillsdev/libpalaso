@@ -15,6 +15,7 @@ namespace Palaso.WritingSystems
 		Dictionary<string, LanguageInfo> CodeToLanguageIndex = new Dictionary<string, LanguageInfo>();
 		Dictionary<string, List<LanguageInfo>> NameToLanguageIndex = new Dictionary<string, List<LanguageInfo>>();
 		Dictionary<string, string> ThreeToTwoLetter = new Dictionary<string, string>();
+		List<string> MacroLanguages = new List<string>();
 
 		/// <summary>Force the dialog to return 3 letter iso codes even if a 2 letter code is available</summary>
 		public bool Force3LetterCodes { get; set; }
@@ -35,6 +36,11 @@ namespace Palaso.WritingSystems
 			}
 			CountryCodeToCountryName.Add("?","?");//for unlisted language
 
+			foreach (var line in LanguageRegistryResources.Macrolanguages.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries))
+			{
+				MacroLanguages.Add(line.Trim());
+			}
+
 			//LanguageIndex.txt Format: LangID	CountryID	NameType	Name
 			//a language appears on one row for each of its alternative langauges
 			List<string> entries = new List<string>(LanguageRegistryResources.LanguageIndex.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries));
@@ -50,6 +56,8 @@ namespace Palaso.WritingSystems
 				string TwoLetterCode;
 				if (ThreeToTwoLetter.TryGetValue(code, out TwoLetterCode))
 					code = TwoLetterCode;
+				if (MacroLanguages.Contains(code)) // exclude known macrolanguages
+					continue;
 
 				LanguageInfo language = GetOrCreateLanguageFromCode(code, items[1].Trim());
 
@@ -83,13 +91,13 @@ namespace Palaso.WritingSystems
 			//Why just this small set? Only out of convenience. Ideally we'd have a db of all languages as they write it in their literature.
 			this.CodeToLanguageIndex["fr"].LocalName =  "français";
 			this.CodeToLanguageIndex["es"].LocalName =  "español";
-			this.CodeToLanguageIndex["zho"].LocalName =  "中文"; //chinese
+			this.CodeToLanguageIndex["cmn"].LocalName =  "中文"; //chinese
 			this.CodeToLanguageIndex["hi"].LocalName =  "हिन्दी"; //hindi
 			this.CodeToLanguageIndex["bn"].LocalName =  "বাংলা"; //bengali
 			this.CodeToLanguageIndex["te"].LocalName =  "తెలుగు"; //telugu
 			this.CodeToLanguageIndex["ta"].LocalName =  "தமிழ்"; //tamil
 			this.CodeToLanguageIndex["ur"].LocalName =  "اُردُو"; //urdu
-			this.CodeToLanguageIndex["ar"].LocalName =  "العربية/عربي"; //arabic
+			this.CodeToLanguageIndex["arb"].LocalName =  "العربية/عربي"; //arabic
 			this.CodeToLanguageIndex["th"].LocalName = "ภาษาไทย"; //thai
 			this.CodeToLanguageIndex["id"].LocalName = "Bahasa Indonesia"; //indonesian
 
