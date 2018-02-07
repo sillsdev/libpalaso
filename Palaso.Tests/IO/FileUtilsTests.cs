@@ -268,7 +268,7 @@ namespace Palaso.Tests.IO
 		}
 
 		[Test]
-		[Platform(Include = "Windows")]
+		[Platform(Include = "Win", Reason = "Windows specific test")]
 		public void StripFilePrefix_EnsureFilePrefixIsRemoved_Windows()
 		{
 			var prefix = Uri.UriSchemeFile + ":";
@@ -278,10 +278,18 @@ namespace Palaso.Tests.IO
 			var reducedPathname = FileUtils.StripFilePrefix(fullPathname);
 			Assert.IsFalse(reducedPathname.StartsWith(prefix));
 			Assert.IsFalse(reducedPathname.StartsWith("/"));
+
+			var baseDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
+			Assert.IsTrue(baseDir.StartsWith(prefix));
+
+			var reducedDirname = FileUtils.StripFilePrefix(baseDir);
+			Assert.IsFalse(reducedDirname.StartsWith(prefix));
+			Assert.IsFalse(reducedDirname.StartsWith("/"));
+			Assert.IsFalse(reducedDirname.StartsWith("\\"));
 		}
 
 		[Test]
-		[Platform(Include = "Linux")]
+		[Platform(Include = "Linux", Reason = "Linux specific test")]
 		public void StripFilePrefix_EnsureFilePrefixIsRemoved_Linux()
 		{
 			var prefix = Uri.UriSchemeFile + ":";
@@ -291,6 +299,13 @@ namespace Palaso.Tests.IO
 			var reducedPathname = FileUtils.StripFilePrefix(fullPathname);
 			Assert.IsFalse(reducedPathname.StartsWith(prefix));
 			Assert.IsTrue(reducedPathname.StartsWith("/"));
+
+			var baseDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
+			Assert.IsTrue(baseDir.StartsWith(prefix));
+
+			var reducedDirname = FileUtils.StripFilePrefix(baseDir);
+			Assert.IsFalse(reducedDirname.StartsWith(prefix));
+			Assert.IsTrue(reducedDirname.StartsWith("/"));
 		}
 	}
 }

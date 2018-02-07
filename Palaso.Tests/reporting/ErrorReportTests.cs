@@ -33,7 +33,7 @@ namespace Palaso.Tests.reporting
 #endif
 
 		[Test]
-		[Platform(Include = "Windows", Reason = "Windows specific test")]
+		[Platform(Include = "Win", Reason = "Windows specific test")]
 		public void Properties_WindowsDoesNotContainDesktopEnvironment()
 		{
 			// SUT
@@ -45,7 +45,7 @@ namespace Palaso.Tests.reporting
 		}
 
 		[Test]
-		[Platform(Include = "Windows", Reason = "Windows specific test")]
+		[Platform(Include = "Win", Reason = "Windows specific test")]
 		public void GetStandardProperties_WindowsDoesNotContainDesktopEnvironment()
 		{
 			// SUT
