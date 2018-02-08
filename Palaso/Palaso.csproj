@@ -229,6 +229,9 @@
     <Compile Include="Progress\NullProgressState.cs" />
     <Compile Include="Progress\ProgressState.cs" />
     <Compile Include="Progress\XslTransformWithProgress.cs" />
+    <Compile Include="Providers\BaseProvider.cs" />
+    <Compile Include="Providers\DateTimeProvider.cs" />
+    <Compile Include="Providers\GuidProvider.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
