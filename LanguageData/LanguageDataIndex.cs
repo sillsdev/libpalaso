@@ -407,7 +407,6 @@ namespace LanguageData
 
 							writer.WritePropertyName("country");
 							writer.WriteValue(languageInfo.PrimaryCountry);
-							writer.WriteEndObject();
 
 							writer.WriteEndObject();
 						}
