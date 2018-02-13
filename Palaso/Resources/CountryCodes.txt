@@ -66,12 +66,14 @@ ET	Ethiopia	Africa
 FI	Finland	Europe
 FJ	Fiji	Pacific
 FM	Micronesia	Pacific
+FO	Faroe Islands	Europe
 FR	France	Europe
 GA	Gabon	Africa
 GB	United Kingdom	Europe
 GD	Grenada	Americas
 GE	Georgia	Asia
 GF	French Guiana	Americas
+GG	Guernsey	Europe
 GH	Ghana	Africa
 GI	Gibraltar	Europe
 GL	Greenland	Americas
@@ -99,6 +101,7 @@ IQ	Iraq	Asia
 IR	Iran	Asia
 IS	Iceland	Europe
 IT	Italy	Europe
+JE	Jersey	Europe
 JM	Jamaica	Americas
 JO	Jordan	Asia
 JP	Japan	Asia
