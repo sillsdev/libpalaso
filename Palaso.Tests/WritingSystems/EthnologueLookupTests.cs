@@ -132,6 +132,7 @@ namespace Palaso.Tests.WritingSystems
 			var languages = _ethnologue.SuggestLanguages("norwegian");
 			Assert.True(languages.Any(l => l.Code == "nb"));
 			Assert.True(languages.Any(l => l.Code == "nn"));
+			Assert.True(languages.Any(l => l.Code == "no"));
 		}
 
 		[Test]
