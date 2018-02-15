@@ -264,6 +264,20 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		/// <summary>
+		/// We should not find old code for Kataang (deprecated Jan 2017)
+		/// but find new ones instead
+		/// </summary>
+		[Test]
+		public void SuggestLanguages_KataangNewCodes()
+		{
+			var lookup = new LanguageLookup();
+			var languages = lookup.SuggestLanguages("Kataang").ToArray();
+			Assert.True(languages.Any(l => l.LanguageTag == "ncq"));
+			Assert.True(languages.Any(l => l.LanguageTag == "sct"));
+			Assert.False(languages.Any(l => l.LanguageTag == "kgd"));
+		}
+
+		/// <summary>
 		/// We should not suggest macro languages unless they are marked as such so that they can be filtered out.
 		/// </summary>
 		[Test]
