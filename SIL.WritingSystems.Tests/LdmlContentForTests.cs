@@ -438,6 +438,28 @@ namespace SIL.WritingSystems.Tests
 </ldml>".Replace('\'', '"'), language, script, region, variant);
 		}
 
+		public static string Version2WithRightToLeftLayout(string languageSubtag, string languageName)
+		{
+			return string.Format(
+				@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+<identity>
+	<version number='' />
+	<generation date='0001-01-01T00:00:00' />
+	<language type='{0}' />
+</identity>
+<layout><orientation characters='right-to-left' /></layout >
+<collations />
+<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
+	<palaso:languageName value='{1}' />
+	<palaso:version value='2' />
+</special>
+</ldml>".Replace('\'', '"'), languageSubtag, languageName);
+		}
+
+
+	#endregion
+
 		#region Version 3 
 
 		/// <summary>
@@ -445,7 +467,7 @@ namespace SIL.WritingSystems.Tests
 		/// </summary>
 		/// <param name="sortType">Type of collation to use in the element: "standard", "simple", "simpleNeedsCompiling", "inherited"</param>
 		/// <returns></returns>
-		static public string CollationElem(string sortType)
+		public static string CollationElem(string sortType)
 		{
 			string collationString = string.Empty;
 			switch (sortType)
