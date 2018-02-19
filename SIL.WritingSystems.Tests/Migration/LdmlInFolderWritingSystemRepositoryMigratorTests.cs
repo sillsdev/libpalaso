@@ -1643,7 +1643,23 @@ namespace SIL.WritingSystems.Tests.Migration
 			}
 		}
 
-		# endregion
+		[Test]
+		public void Migrate_Layout_RightToLeftIsRetained()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile("hbo.ldml",
+					LdmlContentForTests.Version2WithRightToLeftLayout("hbo", "Hebrew, Ancient"));
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+
+				var wsV3 = new WritingSystemDefinition();
+				new LdmlDataMapper(new TestWritingSystemFactory()).Read(environment.MappedFilePath("hbo.ldml"), wsV3);
+				Assert.True(wsV3.RightToLeftScript);
+			}
+		}
+
+		#endregion
 
 	}
 }
