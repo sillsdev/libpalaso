@@ -385,19 +385,21 @@ namespace SIL.Windows.Forms.Progress
 
 		private void _copyToClipboardLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
+			var text = _verboseBox.Text;
+			if (String.IsNullOrEmpty(text))
+				return;		// Clipboard and DataObject both strongly dislike both null and String.Empty
 			if (!Platform.IsWindows)
 			{
 				//at least on Xubuntu, getting some rtf on the clipboard would mean that when you pasted, you'd see rtf
-				if (!string.IsNullOrEmpty(_verboseBox.Text))
-				{
-					Clipboard.SetText(_verboseBox.Text);
-				}
+				Clipboard.SetText(text);
 			}
 			else
 			{
 				var data = new DataObject();
-				data.SetText(_verboseBox.Rtf, TextDataFormat.Rtf);
-				data.SetText(_verboseBox.Text, TextDataFormat.UnicodeText);
+				var rtfText = _verboseBox.Rtf;
+				if (!String.IsNullOrEmpty(rtfText))
+					data.SetText(rtfText, TextDataFormat.Rtf);
+				data.SetText(text, TextDataFormat.UnicodeText);
 				Clipboard.SetDataObject(data);
 			}
 		}
