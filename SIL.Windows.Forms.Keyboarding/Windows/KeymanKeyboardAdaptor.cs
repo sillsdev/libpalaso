@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 #if !MONO
 using Keyman7Interop;
+using Keyman10Interop;
 #endif
 using Microsoft.Win32;
 using SIL.Keyboarding;
@@ -38,6 +39,20 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			get
 			{
 #if !MONO
+				// Try the Keyman 10 interface
+				try
+				{
+					var keyman10 = new KeymanClass();
+					if (keyman10.Keyboards != null && keyman10.Keyboards.Count > 0)
+					{
+						return true;
+					}
+				}
+				catch (Exception)
+				{
+					// Keyman 10 isn't installed or whatever.
+				}
+
 				// Try the Keyman 7/8 interface
 				try
 				{
@@ -89,11 +104,22 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			CheckDisposed();
 			Dictionary<string, KeymanKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<KeymanKeyboardDescription>().ToDictionary(kd => kd.Id);
 #if !MONO
+			// Try the Keyman 10 interface
+			try
+			{
+				var keyman10 = new KeymanClass();
+				UpdateKeyboards(curKeyboards, keyman10.Keyboards.OfType<Keyman10Interop.IKeymanKeyboard>().Select(kb => kb.Name), false);
+			}
+			catch (Exception)
+			{
+				// Keyman 10 isn't installed or whatever.
+			}
+
 			// Try the Keyman 7/8 interface
 			try
 			{
 				var keyman = new TavultesoftKeymanClass();
-				UpdateKeyboards(curKeyboards, keyman.Keyboards.OfType<IKeymanKeyboard>().Select(kb => kb.Name), false);
+				UpdateKeyboards(curKeyboards, keyman.Keyboards.OfType<Keyman7Interop.IKeymanKeyboard>().Select(kb => kb.Name), false);
 			}
 			catch (Exception)
 			{
