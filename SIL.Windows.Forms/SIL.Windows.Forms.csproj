@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -386,6 +386,9 @@
     <Reference Include="MarkdownDeep, Version=1.5.4615.26275, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MarkdownDeep.NET.1.5\lib\.NetFramework 3.5\MarkdownDeep.dll</HintPath>
+    </Reference>
+    <Reference Include="DialogAdapters">
+      <HintPath>..\packages\DialogAdapters.0.1.1.32530\lib\net45\DialogAdapters.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" Condition="'$(OS)'=='Windows_NT'" />
     <Reference Include="System" />
