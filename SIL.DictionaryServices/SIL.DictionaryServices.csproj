@@ -44,7 +44,8 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\output\Debug\SIL.DictionaryServices.xml</DocumentationFile>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <TargetFrameworkProfile></TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <NoWarn>1591</NoWarn>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
@@ -334,7 +335,7 @@
       <Name>SIL.Core.Desktop</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
-      <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
+      <Project>{53cb36d9-2f66-4823-b1f0-4523e8565200}</Project>
       <Name>SIL.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.Lift\SIL.Lift.csproj">

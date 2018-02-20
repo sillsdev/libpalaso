@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using SIL.IO;
 using SIL.PlatformUtilities;
-
+using SIL.Reflection;
 
 namespace SIL.Reporting
 {
@@ -166,28 +166,7 @@ namespace SIL.Reporting
 
 		public static string GetVersionForErrorReporting()
 		{
-			Assembly assembly = Assembly.GetEntryAssembly();
-			if (assembly != null)
-			{
-				string version = VersionNumberString;
-
-				version += " (apparent build date: ";
-				try
-				{
-					string path = FileUtils.StripFilePrefix(assembly.CodeBase);
-					version += File.GetLastWriteTimeUtc(path).ToString("dd-MMM-yyyy") + ")";
-				}
-				catch
-				{
-					version += "???";
-				}
-
-#if DEBUG
-				version += "  (Debug version)";
-#endif
-				return version;
-			}
-			return "unknown";
+			return ReflectionHelper.LongVersionNumberString;
 		}
 
 		public static object GetAssemblyAttribute(Type attributeType)
@@ -205,21 +184,7 @@ namespace SIL.Reporting
 			return null;
 		}
 
-		public static string VersionNumberString
-		{
-			get
-			{
-/*                object attr = GetAssemblyAttribute(typeof (AssemblyFileVersionAttribute));
-				if (attr != null)
-				{
-					return ((AssemblyFileVersionAttribute) attr).Version;
-				}
-				return Application.ProductVersion;
- */
-				var ver = Assembly.GetEntryAssembly().GetName().Version;
-				return string.Format("Version {0}.{1}.{2}", ver.Major, ver.Minor, ver.Build);
-			}
-		}
+		public static string VersionNumberString => ReflectionHelper.VersionNumberString;
 
 		public static string UserFriendlyVersionString
 		{
@@ -227,7 +192,7 @@ namespace SIL.Reporting
 			{
 				var asm = Assembly.GetEntryAssembly();
 				var ver = asm.GetName().Version;
-				var file = FileUtils.StripFilePrefix(asm.CodeBase);
+				var file = PathHelper.StripFilePrefix(asm.CodeBase);
 				var fi = new FileInfo(file);
 
 				return string.Format(

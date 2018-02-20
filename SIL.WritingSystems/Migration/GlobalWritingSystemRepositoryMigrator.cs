@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -122,7 +122,7 @@ namespace SIL.WritingSystems.Migration
 		{
 			if (!Directory.Exists(SourcePath))
 				GlobalWritingSystemRepository.CreateGlobalWritingSystemRepositoryDirectory(SourcePath);
-			DirectoryUtilities.CopyDirectoryWithException(sourcePath, SourcePath);
+			DirectoryHelper.Copy(sourcePath, SourcePath);
 		}
 	}
 }

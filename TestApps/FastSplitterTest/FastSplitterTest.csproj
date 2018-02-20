@@ -15,6 +15,8 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -321,7 +323,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SIL.Core\SIL.Core.csproj">
-      <Project>{3527da1d-1e25-48be-a71e-9ebf7f9208d4}</Project>
+      <Project>{53cb36d9-2f66-4823-b1f0-4523e8565200}</Project>
       <Name>SIL.Core</Name>
     </ProjectReference>
   </ItemGroup>
