@@ -281,11 +281,12 @@ namespace SIL.WritingSystems
 			Set(ws);
 
 			string writingSystemFilePath = GetFilePathFromLanguageTag(ws.LanguageTag);
-			if (!File.Exists(writingSystemFilePath) && !string.IsNullOrEmpty(ws.Template))
+			if (!File.Exists(writingSystemFilePath) && !string.IsNullOrEmpty(ws.Template) && File.Exists(ws.Template))
 			{
 				// this is a new writing system that was generated from a template, so copy the template over before saving
 				File.Copy(ws.Template, writingSystemFilePath);
 				ws.Template = null;
+				ws.AcceptChanges();
 			}
 
 			if (!ws.IsChanged && File.Exists(writingSystemFilePath))

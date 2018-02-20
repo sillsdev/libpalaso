@@ -5,12 +5,12 @@ namespace SIL.WritingSystems.Tests
 {
 	public class LdmlContentForTests
 	{
-		static public string NoLdml = @"<?xml version='1.0' encoding='UTF-8' ?>
+		public static string NoLdml = @"<?xml version='1.0' encoding='UTF-8' ?>
 <noLdml>
 </noLdml>
 ".Replace("'", "\"");
 		
-		static public string Version99Default()
+		public static string Version99Default()
 		{
 			return
 				@"<?xml version='1.0' encoding='utf-8'?>
@@ -31,9 +31,9 @@ namespace SIL.WritingSystems.Tests
 
 		#region Version 0 Ldml
 
-		static public string Version0WithLanguageSubtagAndName(string languageSubtag, string languageName)
+		public static string Version0WithLanguageSubtagAndName(string languageSubtag, string languageName)
 		{
-			return String.Format(
+			return string.Format(
 				@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 <identity>
@@ -50,9 +50,9 @@ namespace SIL.WritingSystems.Tests
 </ldml>".Replace('\'', '"'), languageSubtag, languageName);
 		}
 
-		static public string Version0WithAllSortsOfDatathatdoesNotNeedSpecialAttention(string language, string script, string region, string variant)
+		public static string Version0WithAllSortsOfDatathatdoesNotNeedSpecialAttention(string language, string script, string region, string variant)
 		{
-			return String.Format(
+			return string.Format(
 				@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 <identity>
@@ -127,7 +127,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			string collationelement = GetCollationElementXml(sortType);
 
-			return String.Format(
+			return string.Format(
 				@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 <identity>
@@ -153,9 +153,9 @@ namespace SIL.WritingSystems.Tests
 </ldml>".Replace('\'', '"'), collationelement);
 		}
 
-		static public string Version0WithLdmlInfoWeDontCareAbout(string language, string script, string region, string variant)
+		public static string Version0WithLdmlInfoWeDontCareAbout(string language, string script, string region, string variant)
 		{
-			return String.Format(
+			return string.Format(
 				@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 <identity>
@@ -186,11 +186,11 @@ namespace SIL.WritingSystems.Tests
 
 		private static string GetCollationElementXml(WritingSystemDefinitionV0.SortRulesType sortType)
 		{
-			string collationelement = String.Empty;
+			string collationelement = string.Empty;
 			switch (sortType)
 			{
 				case WritingSystemDefinitionV0.SortRulesType.DefaultOrdering:
-					collationelement = String.Empty;
+					collationelement = string.Empty;
 					break;
 				case WritingSystemDefinitionV0.SortRulesType.CustomICU:
 					collationelement =
@@ -236,9 +236,9 @@ namespace SIL.WritingSystems.Tests
 			return collationelement;
 		}
 
-		static public string Version0WithFw(string language, string script, string region, string variant)
+		public static string Version0WithFw(string language, string script, string region, string variant)
 		{
-			return String.Format(
+			return string.Format(
 				@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 <identity>
@@ -271,9 +271,9 @@ namespace SIL.WritingSystems.Tests
 </ldml>".Replace('\'', '"'), language, script, region, variant);
 		}
 
-		static public string Version0WithOldFwValidChars(string language, string script, string region, string variant)
+		public static string Version0WithOldFwValidChars(string language, string script, string region, string variant)
 		{
-			return String.Format(
+			return string.Format(
 				@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 <identity>
@@ -301,9 +301,9 @@ namespace SIL.WritingSystems.Tests
 </ldml>".Replace('\'', '"'), language, script, region, variant);
 		}
 
-		static public string Version0Bogus(string language, string script, string region, string variant, string bogus)
+		public static string Version0Bogus(string language, string script, string region, string variant, string bogus)
 		{
-			return String.Format(
+			return string.Format(
 				@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 <identity>
@@ -322,9 +322,9 @@ namespace SIL.WritingSystems.Tests
 </ldml>".Replace('\'', '"'), language, script, region, variant, bogus);
 		}
 		
-		static public string Version0(string language, string script, string region, string variant, string abbreviation)
+		public static string Version0(string language, string script, string region, string variant, string abbreviation)
 		{
-			return String.Format(
+			return string.Format(
 				@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 <identity>
@@ -344,9 +344,9 @@ namespace SIL.WritingSystems.Tests
 </ldml>".Replace('\'', '"'), language, script, region, variant, abbreviation);
 		}
 
-		static public string Version0(string language, string script, string region, string variant)
+		public static string Version0(string language, string script, string region, string variant)
 		{
-			return String.Format(
+			return string.Format(
 				@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 <identity>
@@ -366,10 +366,10 @@ namespace SIL.WritingSystems.Tests
 		}
 		#endregion
 
-		static public string Version1(string language, string script, string region, string variant, string abbreviation)
+		public static string Version1(string language, string script, string region, string variant, string abbreviation)
 		{
 			return
-				String.Format(@"<?xml version='1.0' encoding='utf-8'?>
+				string.Format(@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 <identity>
 	<version number='' />
@@ -389,10 +389,10 @@ namespace SIL.WritingSystems.Tests
 </ldml>".Replace('\'', '"'), language, script, region, variant, abbreviation);
 		}
 
-		static public string Version1(string language, string script, string region, string variant)
+		public static string Version1(string language, string script, string region, string variant)
 		{
 			return
-				String.Format(@"<?xml version='1.0' encoding='utf-8'?>
+				string.Format(@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 <identity>
 	<version number='' />
@@ -411,10 +411,11 @@ namespace SIL.WritingSystems.Tests
 </ldml>".Replace('\'', '"'), language, script, region, variant);
 		}
 
-		static public string Version2(string language, string script, string region, string variant)
+	#region Version 2 LDML
+		public static string Version2(string language, string script, string region, string variant)
 		{
 			return
-				String.Format(@"<?xml version='1.0' encoding='utf-8'?>
+				string.Format(@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 <identity>
 	<version number='' />
@@ -438,6 +439,28 @@ namespace SIL.WritingSystems.Tests
 </ldml>".Replace('\'', '"'), language, script, region, variant);
 		}
 
+		public static string Version2WithRightToLeftLayout(string languageSubtag, string languageName)
+		{
+			return string.Format(
+				@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+<identity>
+	<version number='' />
+	<generation date='0001-01-01T00:00:00' />
+	<language type='{0}' />
+</identity>
+<layout><orientation characters='right-to-left' /></layout >
+<collations />
+<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
+	<palaso:languageName value='{1}' />
+	<palaso:version value='2' />
+</special>
+</ldml>".Replace('\'', '"'), languageSubtag, languageName);
+		}
+
+
+	#endregion
+
 		#region Version 3 
 
 		/// <summary>
@@ -445,7 +468,7 @@ namespace SIL.WritingSystems.Tests
 		/// </summary>
 		/// <param name="sortType">Type of collation to use in the element: "standard", "simple", "simpleNeedsCompiling", "inherited"</param>
 		/// <returns></returns>
-		static public string CollationElem(string sortType)
+		public static string CollationElem(string sortType)
 		{
 			string collationString = string.Empty;
 			switch (sortType)
@@ -570,7 +593,7 @@ namespace SIL.WritingSystems.Tests
 			return collationString;
 		}
 		
-		static public string FontElem = @"
+		public static string FontElem = @"
 	<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
 		<sil:external-resources>
 			<sil:font types='default emphasis' name='Padauk' size='2.1' minversion='3.1.4' features='order=3 children=2 color=red createDate=1996' lang='en' engines='gr ot' otlang='abcd' subset='unknown' >
@@ -580,7 +603,7 @@ namespace SIL.WritingSystems.Tests
 		</sil:external-resources>
 	</special>".Replace("'", "\"");
 		
-		static public string SpellCheckerElem = @"
+		public static string SpellCheckerElem = @"
 	<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
 		<sil:external-resources>
 			<sil:spellcheck type='hunspell'>
@@ -590,7 +613,7 @@ namespace SIL.WritingSystems.Tests
 		</sil:external-resources>
 	</special>".Replace("'", "\"");
 		
-		static public string KeyboardElem = @"
+		public static string KeyboardElem = @"
 	<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
 		<sil:external-resources>
 			<sil:kbd id='Compiled Keyman9' type='kmx'>
@@ -609,10 +632,10 @@ namespace SIL.WritingSystems.Tests
 		/// <param name="variant"></param>
 		/// <param name="otherElement"></param>
 		/// <returns></returns>
-		static public string Version3(string language, string script, string region, string variant, string otherElement = null)
+		public static string Version3(string language, string script, string region, string variant, string otherElement = null)
 		{
 			return
-				String.Format(@"<?xml version='1.0' encoding='utf-8'?>
+				string.Format(@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 	<identity>
 		<version number='$Revision$'>Identity version description</version>
@@ -638,11 +661,11 @@ namespace SIL.WritingSystems.Tests
 		/// <param name="defaultRegion"></param>
 		/// <param name="revid"></param>
 		/// <returns></returns>
-		static public string Version3Identity(string language, string script, string region, string variant,
+		public static string Version3Identity(string language, string script, string region, string variant,
 											string uid, string windowsLCID, string variantName, string defaultRegion, string revid)
 		{
 			return
-				String.Format(@"<?xml version='1.0' encoding='utf-8'?>
+				string.Format(@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 	<identity>
 		<version number='$Revision$'>Identity version description</version>
@@ -659,12 +682,12 @@ namespace SIL.WritingSystems.Tests
 		}
 		 #endregion
 
-		static public string CurrentVersion(string language, string script, string region, string variant, string otherElement = null)
+		public static string CurrentVersion(string language, string script, string region, string variant, string otherElement = null)
 		{
 			return Version3(language, script, region, variant, otherElement);
 		}
 
-		static public string CurrentVersion(string languageTag)
+		public static string CurrentVersion(string languageTag)
 		{
 			string language, script, region, variant;
 			IetfLanguageTag.TryGetParts(languageTag, out language, out script, out region, out variant);
