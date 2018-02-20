@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using SIL.Reporting;
 
 namespace SIL.Migration
 {
@@ -52,7 +51,6 @@ namespace SIL.Migration
 
 		public int GetFileVersion(string filePath)
 		{
-			Logger.WriteMinorEvent("Getting file version of "+filePath);
 			try
 			{
 				_versionStrategies.Sort(new VersionComparerDescending());

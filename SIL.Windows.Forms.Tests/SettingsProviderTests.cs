@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -151,6 +151,7 @@ namespace SIL.Windows.Forms.Tests
 		}
 
 		[Test]
+		[Category("KnownMonoIssue")]
 		public void Upgrade_SectionsRenamed_SettingsMigrated()
 		{
 			string settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SIL", "SettingsProviderTests");

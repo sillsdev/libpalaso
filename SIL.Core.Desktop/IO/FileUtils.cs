@@ -1,8 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Specialized;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using SIL.PlatformUtilities;
@@ -10,6 +8,9 @@ using SIL.Reporting;
 
 namespace SIL.IO
 {
+	/// <summary>
+	/// Desktop-specific utility methods for processing files, e.g. methods that report to the user.
+	/// </summary>
 	public static class FileUtils
 	{
 		public static StringCollection TextFileExtensions
@@ -108,22 +109,6 @@ namespace SIL.IO
 			return (extension != null) && extensions.Contains(extension.ToLower());
 		}
 
-		public static bool IsFileLocked(string filePath)
-		{
-			if (filePath == null || !File.Exists(filePath))
-				return false;
-
-			try
-			{
-				File.OpenWrite(filePath).Close();
-				return false;
-			}
-			catch
-			{
-				return true;
-			}
-		}
-
 		/// <summary>
 		/// NB: This will show a dialog if the file writing can't be done (subject to Palaso.Reporting settings).
 		/// It will throw whatever exception was encountered, if the user can't resolve it.
@@ -154,49 +139,6 @@ namespace SIL.IO
 			ReplaceFileWithUserInteractionIfNeeded(tempPath, inputPath, backupPath);
 		}
 
-		public static bool GrepFile(string inputPath, string pattern)
-		{
-			Regex regex = new Regex(pattern, RegexOptions.Compiled);
-
-			using (StreamReader reader = File.OpenText(inputPath))
-			{
-				while (!reader.EndOfStream)
-				{
-					if (regex.IsMatch(reader.ReadLine()))
-					{
-						return true;
-					}
-				}
-				reader.Close();
-			}
-			return false;
-		}
-
-		/// <summary>
-		/// Make sure the given <paramref name="pathToFile"/> file is 'valid'.
-		///
-		/// Valid means that
-		///		1. <paramref name="pathToFile"/> must not be null or an empty string
-		///		2. <paramref name="pathToFile"/> must exist, and
-		///		3. The extension for <paramref name="pathToFile"/> must equal <paramref name="expectedExtension"/>
-		///			(Or both must be null)
-		/// </summary>
-		public static bool CheckValidPathname(string pathToFile, string expectedExtension)
-		{
-			var extension = ((expectedExtension == null) || (expectedExtension.Trim() == String.Empty))
-								? null
-								: expectedExtension.StartsWith(".") ? expectedExtension.Substring(1) : expectedExtension;
-
-			if (string.IsNullOrEmpty(pathToFile) || !File.Exists(pathToFile))
-				return false;
-
-			var actualExtension = Path.GetExtension(pathToFile);
-			if (actualExtension == String.Empty)
-				actualExtension = null;
-			return (actualExtension == null && extension == null) || (actualExtension != null && extension != null &&
-				   actualExtension.ToLowerInvariant() == "." + extension.ToLowerInvariant());
-		}
-
 		/// <summary>
 		/// If there is a problem doing the replace, a dialog is shown which tells the user
 		/// what happened, and lets them try to fix it.  It also lets them "Give up", in
@@ -220,15 +162,15 @@ namespace SIL.IO
 				{
 					if (UnsafeForFileReplaceMethod(sourcePath) || UnsafeForFileReplaceMethod(destinationPath)
 						||
-						(!string.IsNullOrEmpty(backupPath) && !PathUtilities.PathsAreOnSameVolume(sourcePath,backupPath))
+						(!string.IsNullOrEmpty(backupPath) && !PathHelper.AreOnSameVolume(sourcePath,backupPath))
 						||
-						!PathUtilities.PathsAreOnSameVolume(sourcePath, destinationPath)
+						!PathHelper.AreOnSameVolume(sourcePath, destinationPath)
 						||
 						!File.Exists(destinationPath)
 						)
 					{
 						//can't use File.Replace or File.Move across volumes (sigh)
-						ReplaceByCopyDelete(sourcePath, destinationPath, backupPath);
+						RobustFile.ReplaceByCopyDelete(sourcePath, destinationPath, backupPath);
 					}
 					else
 					{
@@ -251,7 +193,7 @@ namespace SIL.IO
 								// I never could figure out why. See http://issues.bloomlibrary.org/youtrack/issue/BL-4179
 								try
 								{
-									ReplaceByCopyDelete(sourcePath, destinationPath, backupPath);
+									RobustFile.ReplaceByCopyDelete(sourcePath, destinationPath, backupPath);
 								}
 								catch
 								{
@@ -282,16 +224,6 @@ namespace SIL.IO
 				}
 			}
 			while (!succeeded);
-		}
-
-		public static void ReplaceByCopyDelete(string sourcePath, string destinationPath, string backupPath)
-		{
-			if (!string.IsNullOrEmpty(backupPath) && File.Exists(destinationPath))
-			{
-				File.Copy(destinationPath, backupPath, true);
-			}
-			File.Copy(sourcePath, destinationPath, true);
-			File.Delete(sourcePath);
 		}
 
 		// NB: I don't actually know for sure that we can't do the replace on these paths; this dev doesn't
@@ -325,25 +257,47 @@ namespace SIL.IO
 			}
 		}
 
-		[DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-		static extern uint GetShortPathName(
-		   [MarshalAs(UnmanagedType.LPTStr)]string lpszLongPath,
-		   [MarshalAs(UnmanagedType.LPTStr)]StringBuilder lpszShortPath,
-		   uint cchBuffer);
+		[Obsolete("Use FileHelper.IsLocked()")]
+		public static bool IsFileLocked(string filePath)
+		{
+			return FileHelper.IsLocked(filePath);
+		}
+
+		[Obsolete("Use FileHelper.Grep()")]
+		public static bool GrepFile(string inputPath, string pattern)
+		{
+			return FileHelper.Grep(inputPath, pattern);
+		}
+
+		/// <summary>
+		/// Make sure the given <paramref name="pathToFile"/> file is 'valid'.
+		///
+		/// Valid means that
+		///		1. <paramref name="pathToFile"/> must not be null or an empty string
+		///		2. <paramref name="pathToFile"/> must exist, and
+		///		3. The extension for <paramref name="pathToFile"/> must equal <paramref name="expectedExtension"/>
+		///			(Or both must be null)
+		/// </summary>
+		[Obsolete("Use PathHelper.CheckValidPathname()")]
+		public static bool CheckValidPathname(string pathToFile, string expectedExtension)
+		{
+			return PathHelper.CheckValidPathname(pathToFile, expectedExtension);
+		}
+
+		[Obsolete("Use RobustFile.ReplaceByCopyDelete()")]
+		public static void ReplaceByCopyDelete(string sourcePath, string destinationPath, string backupPath)
+		{
+			RobustFile.ReplaceByCopyDelete(sourcePath, destinationPath, backupPath);
+		}
 
 		/// <summary>
 		/// When calling external exe's on Windows any non-ascii characters can get converted to '?'. This
 		/// will convert them to 8.3 format which is all ascii (and do nothing on Linux).
 		/// </summary>
+		[Obsolete("Use PathHelpers.MakePathSafeFromEncodingProblems()")]
 		public static string MakePathSafeFromEncodingProblems(string path)
 		{
-			if (!Platform.IsWindows)
-				return path;//Linux doesn't have these problems, far as I know
-
-			const int MAXPATH = 260;
-			var shortBuilder = new StringBuilder(MAXPATH);
-			GetShortPathName(path, shortBuilder, (uint)shortBuilder.Capacity);
-			return shortBuilder.ToString();
+			return PathHelper.MakePathSafeFromEncodingProblems(path);
 		}
 
 		/// <summary>
@@ -351,9 +305,10 @@ namespace SIL.IO
 		/// useful when a path gets read from a file that gets shared between Windows and Linux -
 		/// if the path contains backslashes it can't be found on Linux.
 		/// </summary>
+		[Obsolete("Use PathHelpers.NormalizePath()")]
 		public static string NormalizePath(string path)
 		{
-			return path.Replace('\\', '/');
+			return PathHelper.NormalizePath(path);
 		}
 
 		/// <summary>
@@ -369,24 +324,10 @@ namespace SIL.IO
 		/// See uri.LocalPath, http://en.wikipedia.org/wiki/File_URI , and
 		/// http://blogs.msdn.com/b/ie/archive/2006/12/06/file-uris-in-windows.aspx .
 		/// </summary>
+		[Obsolete("Use PathHelpers.StripFilePrefix()")]
 		public static string StripFilePrefix(string fileString)
 		{
-			if (String.IsNullOrEmpty(fileString))
-				return fileString;
-
-			var prefix = Uri.UriSchemeFile + ":";
-
-			if (!fileString.StartsWith(prefix))
-				return fileString;
-
-			var path = fileString.Substring(prefix.Length);
-			// Trim any number of beginning slashes
-			path = path.TrimStart('/');
-			// Prepend slash on Linux
-			if (Platform.IsUnix)
-				path = '/' + path;
-
-			return path;
+			return PathHelper.StripFilePrefix(fileString);
 		}
 
 	}

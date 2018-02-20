@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Xml;
 using System.Xml.Xsl;
 
@@ -61,11 +61,6 @@ namespace SIL.Migration
 
 						transform.Transform(reader, writer);
 
-						var tempfiles = transform.TemporaryFiles;
-						if (tempfiles != null) // tempfiles will be null when debugging is not enabled
-						{
-							tempfiles.Delete();
-						}
 						writer.Close();
 						reader.Close();
 						destinationStream.Close();

@@ -332,7 +332,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
-      <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
+      <Project>{53cb36d9-2f66-4823-b1f0-4523e8565200}</Project>
       <Name>SIL.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.Scripture\SIL.Scripture.csproj">

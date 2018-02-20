@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2017 SIL International
+// Copyright (c) 2017 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.IO;
@@ -178,7 +178,7 @@ License: MIT
 				copyrights.AddOrUpdateParagraphFromAcknowledgement(ackDict[key], "");
 			}
 
-			Assert.LessOrEqual(ackDict.Keys.Count + 3, copyrights.Paragraphs.Count, "We should have the two standard paragraphs, one paragraph per acknowledgement, and at least one license paragraph");
+			Assert.LessOrEqual(ackDict.Keys.Count - 1 + 3, copyrights.Paragraphs.Count, "We should have the two standard paragraphs, one paragraph per acknowledgement, and at least one license paragraph");
 
 			// Collect the license paragraphs, assert that the MIT license has a paragraph, and test its content.
 			var licenseParas = new List<SIL.ExtractCopyright.DebianParagraph>();

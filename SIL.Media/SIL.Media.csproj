@@ -429,12 +429,6 @@
     <None Include="artwork\playDisabled14x16.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
-      <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
-      <Name>SIL.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
@@ -471,6 +465,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Webcam.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SIL.Core.Desktop\SIL.Core.Desktop.csproj">
+      <Project>{c48de000-2086-4ceb-a5a1-3171c272725e}</Project>
+      <Name>SIL.Core.Desktop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
+      <Project>{53cb36d9-2f66-4823-b1f0-4523e8565200}</Project>
+      <Name>SIL.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
