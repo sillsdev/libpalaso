@@ -1,11 +1,9 @@
-﻿using System;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
-#if MONO
 using Mono.Unix.Native;
-#endif
 using SIL.ObjectModel;
 using SIL.PlatformUtilities;
 
@@ -176,8 +174,7 @@ namespace SIL.Threading
 
 			public bool Init(bool initiallyOwned)
 			{
-				bool result = true;
-#if MONO
+				bool result;
 				_handle = Syscall.open(_name, OpenFlags.O_CREAT | OpenFlags.O_EXCL, FilePermissions.S_IWUSR | FilePermissions.S_IRUSR);
 				if (_handle != -1)
 				{
@@ -185,17 +182,16 @@ namespace SIL.Threading
 				}
 				else
 				{
-					Errno errno = Syscall.GetLastError();
+					Errno errno = Stdlib.GetLastError();
 					if (errno != Errno.EEXIST)
 						throw new NativeException((int) errno);
 					_handle = Syscall.open(_name, OpenFlags.O_CREAT, FilePermissions.S_IWUSR | FilePermissions.S_IRUSR);
 					if (_handle == -1)
-						throw new NativeException((int) Syscall.GetLastError());
+						throw new NativeException((int) Stdlib.GetLastError());
 					result = false;
 				}
 				if (initiallyOwned)
 					Wait();
-#endif
 				return result;
 			}
 
@@ -225,15 +221,13 @@ namespace SIL.Threading
 			{
 				lock (_syncObject)
 				{
-#if MONO
 					if (Syscall.unlink(_name) == -1)
 					{
-						Errno errno = Syscall.GetLastError();
+						Errno errno = Stdlib.GetLastError();
 						if (errno == Errno.ENOENT)
 							return false;
 						throw new NativeException((int) errno);
 					}
-#endif
 					return true;
 				}
 			}
@@ -245,9 +239,7 @@ namespace SIL.Threading
 
 			protected override void DisposeUnmanagedResources()
 			{
-#if MONO
 				Syscall.close(_handle);
-#endif
 			}
 		}
 

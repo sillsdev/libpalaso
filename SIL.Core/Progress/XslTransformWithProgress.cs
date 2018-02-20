@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.IO;
@@ -108,18 +108,6 @@ namespace SIL.Progress
 					_progressState.ExceptionThatWasEncountered = err;
 					_progressState.WriteToLog(err.Message);
 					_progressState.State = ProgressState.StateValue.StoppedWithError;
-				}
-				finally
-				{
-					if (transform != null)
-					{
-						_progressState.StatusLabel = "Cleaning up...";
-						TempFileCollection tempfiles = transform.TemporaryFiles;
-						if (tempfiles != null) // tempfiles will be null when debugging is not enabled
-						{
-							tempfiles.Delete();
-						}
-					}
 				}
 			}
 		}

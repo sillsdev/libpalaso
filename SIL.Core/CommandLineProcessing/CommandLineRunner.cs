@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -205,12 +205,12 @@ namespace SIL.CommandLineProcessing
 			if (!File.Exists(path))
 			{
 				File.WriteAllText(path, "");
-				safe = FileUtils.MakePathSafeFromEncodingProblems(path);
+				safe = PathHelper.MakePathSafeFromEncodingProblems(path);
 				File.Delete(path);
 			}
 			else
 			{
-				safe = FileUtils.MakePathSafeFromEncodingProblems(path);
+				safe = PathHelper.MakePathSafeFromEncodingProblems(path);
 			}
 
 			return safe;
@@ -236,12 +236,12 @@ namespace SIL.CommandLineProcessing
 			if (!Directory.Exists(path))
 			{
 				Directory.CreateDirectory(path);
-				safe = FileUtils.MakePathSafeFromEncodingProblems(path);
+				safe = PathHelper.MakePathSafeFromEncodingProblems(path);
 				Directory.Delete(path);
 			}
 			else
 			{
-				safe = FileUtils.MakePathSafeFromEncodingProblems(path);
+				safe = PathHelper.MakePathSafeFromEncodingProblems(path);
 			}
 
 			return safe;
