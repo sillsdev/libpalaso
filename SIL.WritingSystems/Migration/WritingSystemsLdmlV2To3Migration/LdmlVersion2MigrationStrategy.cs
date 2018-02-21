@@ -407,16 +407,16 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				var layoutElement = ldmlElem.Element("layout");
 				WriteLayoutElement(layoutElement);
 
-				if (staging.CharacterSets.ContainsKey("numeric"))
-				{
-					XElement numbersElem = ldmlElem.GetOrCreateElement("numbers");
-					WriteNumbersElement(numbersElem, staging);
-				}
-
 				if (staging.CharacterSets.ContainsKey("main") || staging.CharacterSets.ContainsKey("punctuation"))
 				{
 					XElement charactersElem = ldmlElem.GetOrCreateElement("characters");
 					WriteCharactersElement(charactersElem, staging);
+				}
+
+				if (staging.CharacterSets.ContainsKey("numeric"))
+				{
+					XElement numbersElem = ldmlElem.GetOrCreateElement("numbers");
+					WriteNumbersElement(numbersElem, staging);
 				}
 
 				if (staging.SortUsing != WritingSystemDefinitionV1.SortRulesType.OtherLanguage)
