@@ -22,7 +22,7 @@ namespace SIL.WritingSystems
 		protected bool Set(Expression<Func<string>> propertyExpression, ref string field, string value)
 		{
 			//count null as same as ""
-			if (String.IsNullOrEmpty(field) && String.IsNullOrEmpty(value))
+			if (string.IsNullOrEmpty(field) && string.IsNullOrEmpty(value))
 				return false;
 
 			return base.Set(propertyExpression, ref field, value);

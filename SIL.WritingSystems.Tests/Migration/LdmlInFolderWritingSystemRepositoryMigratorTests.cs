@@ -1025,6 +1025,10 @@ namespace SIL.WritingSystems.Tests.Migration
 				WritingSystemDefinition ws = repo.Get("de");
 				var scd = new SystemCollationDefinition {LanguageTag = "de"};
 				Assert.That(ws.DefaultCollation.ValueEquals(scd), Is.True);
+
+				var fromFile = new WritingSystemDefinition();
+				new LdmlDataMapper(new TestWritingSystemFactory()).Read(environment.MappedFilePath("test.ldml"), fromFile);
+				Assert.NotNull(fromFile.DefaultCollation);
 			}
 		}
 
