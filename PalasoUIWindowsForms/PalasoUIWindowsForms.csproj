@@ -128,10 +128,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\$(Configuration)\irrKlang.NET4.dll</HintPath>
     </Reference>
-    <Reference Include="NAudio, Version=1.8.3.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NAudio.1.8.3\lib\NAudio.dll</HintPath>
-    </Reference>
     <Reference Include="Keyman7Interop">
       <HintPath>..\lib\Debug\Keyman7Interop.dll</HintPath>
       <EmbedInteropTypes>False</EmbedInteropTypes>
@@ -160,10 +156,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Release\irrKlang.NET4.dll</HintPath>
     </Reference>
-    <Reference Include="NAudio, Version=1.8.3.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NAudio.1.8.3\lib\NAudio.dll</HintPath>
-    </Reference>
     <Reference Include="Keyman7Interop">
       <HintPath>..\lib\Release\Keyman7Interop.dll</HintPath>
       <EmbedInteropTypes>False</EmbedInteropTypes>
@@ -188,7 +180,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\DebugMono\L10NSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Posix" />
     <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\DebugMono\taglib-sharp.dll</HintPath>
@@ -199,47 +190,30 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\ReleaseMono\L10NSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Posix" />
     <Reference Include="taglib-sharp, Version=2.1.1.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\ReleaseMono\taglib-sharp.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Enchant.Net">
-      <HintPath>..\lib\common\Enchant.Net.dll</HintPath>
+  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName' Or '$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
+    <Reference Include="NAudio, Version=1.8.3.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NAudio.1.8.3\lib\NAudio.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'DebugMonoStrongName' Or '$(Configuration)' == 'ReleaseMono' Or '$(Configuration)' == 'ReleaseMonoStrongName'">
+    <Reference Include="Mono.Posix" />
     <Reference Include="NDesk.DBus">
       <HintPath>..\packages\NDesk.DBus.0.15.0\lib\NDesk.DBus.dll</HintPath>
     </Reference>
     <Reference Include="ibusdotnet">
       <HintPath>..\packages\ibusdotnet.2.0.0.20771\lib\ibusdotnet.dll</HintPath>
     </Reference>
-    <None Include="icu4c.readme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="Progress\LogBoxSettings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>LogBoxSettings.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="Registration\Registration.settings">
-      <Generator>PublicSettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Registration.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="SettingProtection\SettingsProtection1.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>SettingsProtection1.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="SettingProtection\SettingsProtectionSettings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>SettingsProtectionSettings.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="..\lib\common\Enchant.Net.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <Reference Include="Enchant.Net">
+      <HintPath>..\lib\common\Enchant.Net.dll</HintPath>
+    </Reference>
     <Reference Include="MarkdownDeep, Version=1.5.4615.26275, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\MarkdownDeep.NET.1.5\lib\.NetFramework 3.5\MarkdownDeep.dll</HintPath>
@@ -260,6 +234,29 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="icu4c.readme.txt" />
+    <None Include="packages.config" />
+    <None Include="Progress\LogBoxSettings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>LogBoxSettings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Registration\Registration.settings">
+      <Generator>PublicSettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Registration.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="SettingProtection\SettingsProtection1.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>SettingsProtection1.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="SettingProtection\SettingsProtectionSettings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>SettingsProtectionSettings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="..\lib\common\Enchant.Net.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClearShare\ClearShareResources.Designer.cs" />

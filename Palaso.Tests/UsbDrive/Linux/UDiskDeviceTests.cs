@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if MONO
+using System;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -73,3 +74,4 @@ namespace Palaso.Tests.UsbDrive.Linux
 
 	}
 }
+#endif
