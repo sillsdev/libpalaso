@@ -117,7 +117,12 @@ namespace SIL.Windows.Forms.Keyboarding
 				_instance.ControlRemoving(_instance, new ControlEventArgs(control));
 			_instance._eventHandlers.Remove(control);
 		}
-
+		/// <summary/>
+		/// <returns>a string to be used by process start with the arguments set in out parameter.</returns>
+		/// <remarks>
+		/// The API would be improved if this and the IKeyboardRetrievingAdapter instead returned an Action.
+		/// Then the Keyman Com API could be used instead of looking up registry information.
+		/// </remarks>
 		public static string GetKeyboardSetupApplication(out string arguments)
 		{
 			string program = null;
