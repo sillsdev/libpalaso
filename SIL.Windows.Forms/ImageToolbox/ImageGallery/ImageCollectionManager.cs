@@ -172,7 +172,14 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 					result.AddRange(collection.GetApproximateMatchingImages(searchTermArray));
 				}
 			}
-			return limitToThoseActuallyAvailable ? result.Where(File.Exists) : result;
+			var finalResult = limitToThoseActuallyAvailable ? result.Where(File.Exists) : result;
+#if DEBUG
+			if (limitToThoseActuallyAvailable)
+			{
+				System.Diagnostics.Debug.Assert(result.Count == finalResult.Count(), "All of the images in the index should exist");
+			}
+#endif
+			return finalResult;
 		}
 
 
