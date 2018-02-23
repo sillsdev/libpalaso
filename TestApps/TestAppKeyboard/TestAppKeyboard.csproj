@@ -341,10 +341,6 @@
       <Project>{0580ed5f-6274-4928-83ee-175f01ad052d}</Project>
       <Name>SIL.Windows.Forms.Keyboarding</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SIL.WritingSystems\SIL.WritingSystems.csproj">
-      <Project>{52a93c63-08f4-4527-8e6e-ac2adeba6e2d}</Project>
-      <Name>SIL.WritingSystems</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

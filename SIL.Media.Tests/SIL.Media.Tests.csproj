@@ -333,10 +333,6 @@
       <Project>{db44f49c-d8c6-434f-81ed-28ea5c9e8195}</Project>
       <Name>SIL.Windows.Forms</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj">
-      <Project>{52a93c63-08f4-4527-8e6e-ac2adeba6e2d}</Project>
-      <Name>SIL.WritingSystems</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\finished.wav" />

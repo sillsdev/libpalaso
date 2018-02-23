@@ -51,9 +51,9 @@
 	</ItemGroup>
 
 	<Target Name="RestorePackages" DependsOnTargets="CheckPrerequisites">
-		<Exec Command='$(NuGetCommand) restore "$(SolutionPath)"'
+		<Exec Command='$(NuGetCommand) restore -Force "$(SolutionPath)"'
 			Condition="Exists('$(SolutionPath)')"/>
-		<Exec Command='$(NuGetCommand) restore -SolutionDirectory "$(SolutionDir)" "%(PackageConfigs.FullPath)"'
+		<Exec Command='$(NuGetCommand) restore -Force -SolutionDirectory "$(SolutionDir)" "%(PackageConfigs.FullPath)"'
 			Condition="!Exists('$(SolutionPath)')"/>
 	</Target>
 
