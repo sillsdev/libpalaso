@@ -1,11 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using L10NSharp;
 using SIL.ObjectModel;
 using SIL.Scripture;
 using SIL.WritingSystems;
@@ -74,7 +73,7 @@ namespace SIL.DblBundle.Text
 		/// <summary>
 		/// Gets the name of the DBL bundle.
 		/// </summary>
-		public override string Name { get { return Identification.Name; } }
+		public override string Name => Identification.Name;
 
 		/// <summary>
 		/// Gets the text representation for this DBL bundle as its name.
@@ -84,9 +83,9 @@ namespace SIL.DblBundle.Text
 			if (Language.Iso == "sample")
 				return Id;
 
-			string identificationPart = Identification == null ? Id : Identification.ToString();
+			string identificationPart = Identification?.ToString() ?? Id;
 
-			return String.Format("{0} - {1}", Language, identificationPart);
+			return $"{Language} - {identificationPart}";
 		}
 	}
 
@@ -110,7 +109,7 @@ namespace SIL.DblBundle.Text
 		/// <summary>Text representation for the DBL bundle</summary>
 		public override string ToString()
 		{
-			return NameLocal == Name ? NameLocal : String.Format("{0} ({1})", NameLocal, Name);
+			return NameLocal == Name ? NameLocal : $"{NameLocal} ({Name})";
 		}
 	}
 
@@ -128,17 +127,17 @@ namespace SIL.DblBundle.Text
 		public string Name { get; set; }
 
 		/// <summary>
-		/// Unicode language identifier. Not required, but may be needed in order to distinguish the language of the 
-		/// scripture text from a text in the same language,but from another region, or using another writing system 
-		/// (e.g. en-US vs en-GB). Paratext generated DBL text bundles are supplied this value from the ‘Language Identifier’ 
-		/// field of the selected project’s properties. 
+		/// Unicode language identifier. Not required, but may be needed in order to distinguish the language of the
+		/// scripture text from a text in the same language,but from another region, or using another writing system
+		/// (e.g. en-US vs en-GB). Paratext generated DBL text bundles are supplied this value from the ‘Language Identifier’
+		/// field of the selected project’s properties.
 		/// </summary>
 		[XmlElement("ldml")]
 		public string Ldml { get; set; }
 
 		/// <summary>
-		/// Dialect code taken from the Harvest Information Sysyems (HIS) Registry of Dialects (ROD). 
-		/// A ROD code may be needed(in addition to language/ldml) in order to distinguish the specific dialect of the 
+		/// Dialect code taken from the Harvest Information Sysyems (HIS) Registry of Dialects (ROD).
+		/// A ROD code may be needed(in addition to language/ldml) in order to distinguish the specific dialect of the
 		/// language of the scripture text from others within the DBL.
 		/// References: http://globalrecordings.net/research/rod
 		/// </summary>
@@ -155,8 +154,8 @@ namespace SIL.DblBundle.Text
 		public string ScriptDirection { get; set; }
 
 		/// <summary>
-		/// Preferred numbering system to use for rendering digits in the scripture text. 
-		/// Publishers should use this information for providing the correct presentation of chapter and verse numbers, 
+		/// Preferred numbering system to use for rendering digits in the scripture text.
+		/// Publishers should use this information for providing the correct presentation of chapter and verse numbers,
 		/// which are always provided in USX &lt;chapter&gt; and &lt;verse&gt; ‘num’ attributes in Arabic script.
 		/// </summary>
 		[XmlElement("numerals")]
@@ -169,8 +168,8 @@ namespace SIL.DblBundle.Text
 			get
 			{
 				if (string.IsNullOrEmpty(Name))
-					return Iso == WellKnownSubtags.UnlistedLanguage ? LocalizationManager.GetString("DblBundle.UnknownLanguageName", "Unknown") : Iso;
-				return string.IsNullOrEmpty(Iso) ? Name : string.Format("{0} ({1})", Name, Iso);
+					return Iso == WellKnownSubtags.UnlistedLanguage ? Localizer.GetString("DblBundle.UnknownLanguageName", "Unknown") : Iso;
+				return string.IsNullOrEmpty(Iso) ? Name : $"{Name} ({Iso})";
 			}
 		}
 
@@ -197,7 +196,7 @@ namespace SIL.DblBundle.Text
 		public DblMetadataXhtmlContentNode PromoVersionInfo { get; set; }
 
 		/// <summary>
-		/// A promotional email message text which can be used to send to a new user of the text 
+		/// A promotional email message text which can be used to send to a new user of the text
 		/// (for example - when the text is downloaded within a publishing application for offline use).
 		/// </summary>
 		[XmlElement("promoEmail")]
@@ -205,12 +204,12 @@ namespace SIL.DblBundle.Text
 	}
 
 	/// <summary>
-	/// Contains child elements for supplying one or more bookList elements in which divisions and book codes are supplied 
+	/// Contains child elements for supplying one or more bookList elements in which divisions and book codes are supplied
 	/// in the correct order for known publications of the scripture text.
 	/// </summary>
 	public class DblMetadataXhtmlContentNode
 	{
-		private string m_value;
+		private string _value;
 
 		/// <summary>
 		/// Constructs a DBL content node
@@ -238,23 +237,23 @@ namespace SIL.DblBundle.Text
 		{
 			get
 			{
-				if (m_value == null)
+				if (_value == null)
 				{
 					var sb = new StringBuilder();
 					if (InternalNodes == null)
-						m_value = Text;
+						_value = Text;
 					else
 					{
 						foreach (var node in InternalNodes)
 							sb.Append(node.OuterXml);
-						m_value = sb.ToString();
+						_value = sb.ToString();
 					}
 				}
-				return m_value;
+				return _value;
 			}
 			set
 			{
-				m_value = value;
+				_value = value;
 				var doc = new XmlDocument();
 				string dummyXml = "<dummy>" + value + "</dummy>";
 				doc.LoadXml(dummyXml);
@@ -358,7 +357,7 @@ namespace SIL.DblBundle.Text
 	}
 
 	/// <summary>
-	/// Contains child elements for supplying long, short, and 
+	/// Contains child elements for supplying long, short, and
 	/// abbr (abbreviation) vernacular names for Biblical books in the scripture text.
 	/// </summary>
 	public class Book
@@ -382,15 +381,15 @@ namespace SIL.DblBundle.Text
 		public string LongName { get; set; }
 
 		/// <summary>
-		/// Vernacular text for the shorter form of the name for the Biblical book. 
-		/// This is the text typically used for the running header reference text in a printed volume, or 
+		/// Vernacular text for the shorter form of the name for the Biblical book.
+		/// This is the text typically used for the running header reference text in a printed volume, or
 		/// for the text to appear for the book name in a digital navigation (menu) system.
 		/// </summary>
 		[XmlElement("short")]
 		public string ShortName { get; set; }
 
 		/// <summary>
-		/// Vernacular text for the abbreviated form of the name for the Biblical book. 
+		/// Vernacular text for the abbreviated form of the name for the Biblical book.
 		/// This is the text typically used within reference lists found in cross references, indexes, or concordances.
 		/// </summary>
 		[XmlElement("abbr")]

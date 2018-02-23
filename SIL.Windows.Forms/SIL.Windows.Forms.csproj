@@ -491,6 +491,7 @@
     <Compile Include="HotSpot\HotSpotProvider.cs" />
     <Compile Include="HotSpot\RetrieveHotSpotsEventArgs.cs" />
     <Compile Include="i18n\ILocalizableControl.cs" />
+    <Compile Include="i18n\L10NSharpLocalizer.cs" />
     <Compile Include="i18n\LocalizationHelper.cs">
       <SubType>Component</SubType>
     </Compile>
