@@ -230,6 +230,7 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 			p = Path.Combine(folderPath, "index.txt");
 			if (File.Exists(p))
 			{
+				_fixPaths = FixPathsForCountrySubfolders;
 				return p;
 			}
 
@@ -250,9 +251,40 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 				{
 					p = Path.Combine(Path.GetDirectoryName(p), "AOR_" + f);
 				}
+				p = FixMexicoImagePath(p);
 				yield return p;
 			}
 		}
 
+		private static IEnumerable<string> FixPathsForCountrySubfolders(IEnumerable<string> paths)
+		{
+			foreach (var path in paths)
+			{
+				var p = FixMexicoImagePath(path);
+				yield return p;
+			}
+		}
+
+		/// <summary>
+		/// Since Mexico contribued over 2600 images to Art of Reading, the files were split into
+		/// two subdirectories, A-OF and OG-Z.
+		/// </summary>
+		private static string FixMexicoImagePath(string path)
+		{
+			var directory = Path.GetDirectoryName(path);
+			if (Path.GetFileName(directory) == "Mexico")
+			{
+				var filename = Path.GetFileName(path);
+				if (String.Compare(filename.ToLowerInvariant(), "aor_og") < 0)
+				{
+					return Path.Combine(directory, "A-OF", filename);
+				}
+				else
+				{
+					return Path.Combine(directory, "OG-Z", filename);
+				}
+			}
+			return path;
+		}
 	}
 }
