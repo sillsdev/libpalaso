@@ -170,6 +170,7 @@
 	
 	<ItemGroup>
 		<PackProjects Include="$(RootDir)/SIL.Core/SIL.Core.csproj" />
+		<PackProjects Include="$(RootDir)/SIL.DblBundle/SIL.DblBundle.csproj" />
 		<PackProjects Include="$(RootDir)/SIL.Scripture/SIL.Scripture.csproj" />
 		<PackProjects Include="$(RootDir)/SIL.WritingSystems/SIL.WritingSystems.csproj" />
 	</ItemGroup>
