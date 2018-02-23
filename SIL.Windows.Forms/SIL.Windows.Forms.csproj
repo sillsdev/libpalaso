@@ -388,7 +388,7 @@
       <HintPath>..\packages\MarkdownDeep.NET.1.5\lib\.NetFramework 3.5\MarkdownDeep.dll</HintPath>
     </Reference>
     <Reference Include="DialogAdapters">
-      <HintPath>..\packages\DialogAdapters.0.1.1.32530\lib\net45\DialogAdapters.dll</HintPath>
+      <HintPath>..\packages\DialogAdapters.0.1.2.18378\lib\net45\DialogAdapters.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" Condition="'$(OS)'=='Windows_NT'" />
     <Reference Include="System" />
