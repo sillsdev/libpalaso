@@ -4,6 +4,7 @@
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <RootNamespace>SIL</RootNamespace>
     <Configurations>Debug;Release;DebugStrongName;ReleaseStrongName</Configurations>
+    <Description>SIL.Core provides general utilities for language software. It is the base library for all Palaso libraries.</Description>
   </PropertyGroup>
 
   <Import Project="..\GlobalAssemblyInfo.props" />
