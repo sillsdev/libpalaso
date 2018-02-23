@@ -83,8 +83,14 @@ namespace SIL.Windows.Forms.ImageToolbox
 				if (m_OpenFileDialog == null)
 				{
 					m_OpenFileDialog = new DialogAdapters.OpenFileDialogAdapter();
+					if (DialogAdapters.CommonDialogAdapter.UseGtkDialogs)
+					{
+						DialogAdapters.CommonDialogAdapter.WindowType = Platform.IsCinnamon ?
+							DialogAdapters.CommonDialogAdapter.WindowTypeHintAdaptor.Dialog :
+							DialogAdapters.CommonDialogAdapter.WindowTypeHintAdaptor.Utility;
+						DialogAdapters.CommonDialogAdapter.ForceKeepAbove = true;
+					}
 				}
-
 				return m_OpenFileDialog;
 			}
 
