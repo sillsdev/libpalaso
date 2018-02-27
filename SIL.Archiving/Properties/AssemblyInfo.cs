@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SIL.Acknowledgements;
 
@@ -16,6 +17,7 @@ using SIL.Acknowledgements;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("2edd981c-375e-4461-8412-2f62884ce827")]
+[assembly: InternalsVisibleTo("SIL.Archiving.Tests")]
 
 [assembly: Acknowledgement("Ionic.Zip", Copyright = "Dino Chiesa", Url = "http://www.codeplex.com/DotNetZip",
 	LicenseUrl = "https://opensource.org/licenses/MS-PL", Location = "./Ionic.Zip.dll",
