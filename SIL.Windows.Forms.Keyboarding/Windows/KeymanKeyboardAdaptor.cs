@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 #if !MONO
 using Keyman7Interop;
+using Keyman10Interop;
 #endif
 using Microsoft.Win32;
 using SIL.Keyboarding;
@@ -38,6 +39,20 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			get
 			{
 #if !MONO
+				// Try the Keyman 10 interface
+				try
+				{
+					var keyman10 = new KeymanClass();
+					if (keyman10.Keyboards != null && keyman10.Keyboards.Count > 0)
+					{
+						return true;
+					}
+				}
+				catch (Exception)
+				{
+					// Keyman 10 isn't installed or whatever.
+				}
+
 				// Try the Keyman 7/8 interface
 				try
 				{
@@ -89,11 +104,22 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			CheckDisposed();
 			Dictionary<string, KeymanKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<KeymanKeyboardDescription>().ToDictionary(kd => kd.Id);
 #if !MONO
+			// Try the Keyman 10 interface
+			try
+			{
+				var keyman10 = new KeymanClass();
+				UpdateKeyboards(curKeyboards, keyman10.Keyboards.OfType<Keyman10Interop.IKeymanKeyboard>().Select(kb => kb.Name), false);
+			}
+			catch (Exception)
+			{
+				// Keyman 10 isn't installed or whatever.
+			}
+
 			// Try the Keyman 7/8 interface
 			try
 			{
 				var keyman = new TavultesoftKeymanClass();
-				UpdateKeyboards(curKeyboards, keyman.Keyboards.OfType<IKeymanKeyboard>().Select(kb => kb.Name), false);
+				UpdateKeyboards(curKeyboards, keyman.Keyboards.OfType<Keyman7Interop.IKeymanKeyboard>().Select(kb => kb.Name), false);
 			}
 			catch (Exception)
 			{
@@ -162,6 +188,17 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				keyman = Path.Combine(keymanPath, @"kmshell.exe");
 				if (File.Exists(keyman))
 				{
+					// We would like to use the COM API for Keyman 10 but it will take an API change:
+					// Code that we would use:
+					//try
+					//{
+					//	var keymanComObject = new KeymanClass();
+					//	keymanComObject.Control.OpenConfiguration();
+					//}
+					//catch (COMException)
+					//{
+					//	// Keyman is not installed
+					//}
 					// From Marc Durdin (7/16/09):
 					// Re LT-9902, in Keyman 6, you could launch the configuration dialog reliably by running kmshell.exe.
 					// However, Keyman 7 works slightly differently.  The recommended approach is to use the COM API:
@@ -198,21 +235,22 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		/// <returns></returns>
 		private static string GetKeymanRegistryValue(string key, ref int version)
 		{
-			using (var rkKeyman = Registry.LocalMachine.OpenSubKey(@"Software\Tavultesoft\Keyman", false))
+			using (var keyman10 = Registry.LocalMachine.OpenSubKey(@"Software\Keyman\Keyman Engine", false))
+			using (var olderKeyman = Registry.LocalMachine.OpenSubKey(@"Software\Tavultesoft\Keyman", false))
+			using (var older32Keyman = Registry.LocalMachine.OpenSubKey(@"Software\WOW6432Node\Tavultesoft\Keyman", false))
 			{
-				if (rkKeyman == null)
+				var keymanKey = keyman10 ?? olderKeyman ?? older32Keyman;
+				if (keymanKey == null)
 					return null;
 
-				//May 2008 version 7.0 is the lastest version. The others are here for
-				//future versions.
 				int[] versions = {10, 9, 8, 7, 6, 5};
-				foreach (int vers in versions)
+				foreach (var vers in versions)
 				{
-					using (var rkApplication = rkKeyman.OpenSubKey(vers + @".0", false))
+					using (var rkApplication = keymanKey.OpenSubKey($"{vers}.0", false))
 					{
 						if (rkApplication != null)
 						{
-							foreach (string sKey in rkApplication.GetValueNames())
+							foreach (var sKey in rkApplication.GetValueNames())
 							{
 								if (sKey == key)
 								{

@@ -230,6 +230,7 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 			p = Path.Combine(folderPath, "index.txt");
 			if (File.Exists(p))
 			{
+				_fixPaths = FixPathsForCountrySubfolders;
 				return p;
 			}
 
@@ -250,9 +251,55 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 				{
 					p = Path.Combine(Path.GetDirectoryName(p), "AOR_" + f);
 				}
+				p = FixMexicoImagePath(p);
 				yield return p;
 			}
 		}
 
+		private static IEnumerable<string> FixPathsForCountrySubfolders(IEnumerable<string> paths)
+		{
+			foreach (var path in paths)
+			{
+				var p = FixMexicoImagePath(path);
+				yield return p;
+			}
+		}
+
+		/// <summary>
+		/// Since Mexico contributed over 2600 images to Art of Reading, the files were split into
+		/// two subdirectories, A-OF and OG-Z.  The index file has no indication that this has
+		/// happened, so the file path is adjusted here as needed.
+		/// </summary>
+		/// <remarks>
+		/// See https://issues.bloomlibrary.org/youtrack/issue/BL-5678.
+		/// The problem is being fixed here for version 3.3 of AOR so that users around the
+		/// world won't have to download another 300MB just to get a fixed index file.
+		/// For the next version of AOR, perhaps the "country" field of the index file should
+		/// also include the subdirectory information.  I.e., Mexico image entries would read
+		/// "Mexico/A-OF" or "Mexico/OG-Z" instead of just "Mexico".  The code here would see
+		/// that the directory ended with "A-OF" or "OG-Z", not Mexico, and not do anything.
+		/// (The file uses forward slash / for compatibility with both Windows and Linux.)
+		/// There appears to be code for dealing the a "subfolder" field, but it gets confused
+		/// with the country field and may need some coding to have both fields actually exist
+		/// in the index.  That would be another way to handle things at the expense of adding
+		/// at least a tab character to every line in the index.
+		/// </remarks>
+		private static string FixMexicoImagePath(string path)
+		{
+			var directory = Path.GetDirectoryName(path);
+			if (Path.GetFileName(directory) == "Mexico")
+			{
+				var filename = Path.GetFileName(path);
+				if (String.Compare(filename.ToLowerInvariant(), "aor_og") < 0)
+				{
+					return Path.Combine(directory, "A-OF", filename);
+				}
+				else
+				{
+					return Path.Combine(directory, "OG-Z", filename);
+				}
+			}
+			return path;
+		}
 	}
 }

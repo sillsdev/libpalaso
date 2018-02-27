@@ -9,7 +9,7 @@ namespace SIL.WritingSystems.Tests
 <noLdml>
 </noLdml>
 ".Replace("'", "\"");
-		
+
 		public static string Version99Default()
 		{
 			return
@@ -90,7 +90,7 @@ namespace SIL.WritingSystems.Tests
 
 		internal static string Version0WithSystemCollationInfo()
 		{
-			return 
+			return
 				@"<?xml version='1.0' encoding='utf-8'?>
 <ldml>
 <identity>
@@ -321,7 +321,7 @@ namespace SIL.WritingSystems.Tests
 </special>
 </ldml>".Replace('\'', '"'), language, script, region, variant, bogus);
 		}
-		
+
 		public static string Version0(string language, string script, string region, string variant, string abbreviation)
 		{
 			return string.Format(
@@ -411,7 +411,7 @@ namespace SIL.WritingSystems.Tests
 </ldml>".Replace('\'', '"'), language, script, region, variant);
 		}
 
-	#region Version 2 LDML
+		#region Version 2 LDML
 		public static string Version2(string language, string script, string region, string variant)
 		{
 			return
@@ -459,7 +459,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 
-	#endregion
+		#endregion
 
 		#region Version 3 
 
@@ -473,7 +473,7 @@ namespace SIL.WritingSystems.Tests
 			string collationString = string.Empty;
 			switch (sortType)
 			{
-				case "standard" :
+				case "standard":
 					collationString = @"
 	<collations>
 		<defaultCollation>standard</defaultCollation>
@@ -487,8 +487,8 @@ namespace SIL.WritingSystems.Tests
 			]]></cr>
 		</collation>
 	</collations>".Replace("'", "\"");
-				break;
-				case "simple" :
+					break;
+				case "simple":
 					collationString = @"
 	<collations>
 		<defaultCollation>standard</defaultCollation>
@@ -532,8 +532,8 @@ namespace SIL.WritingSystems.Tests
 			</special>
 		</collation>
 	</collations>".Replace("'", "\"");
-				break;
-				case "simpleNeedsCompiling" :
+					break;
+				case "simpleNeedsCompiling":
 					collationString = @"
 	<collations>
 		<defaultCollation>standard</defaultCollation>
@@ -570,8 +570,8 @@ namespace SIL.WritingSystems.Tests
 			</special>
 		</collation>
 	</collations>".Replace("'", "\"");
-				break;
-				case "inherited" :
+					break;
+				case "inherited":
 					collationString = @"
 	<collations>
 		<defaultCollation>standard</defaultCollation>
@@ -588,11 +588,11 @@ namespace SIL.WritingSystems.Tests
 			</special>
 		</collation>
 	</collations>".Replace("'", "\"");
-				break;
+					break;
 			}
 			return collationString;
 		}
-		
+
 		public static string FontElem = @"
 	<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
 		<sil:external-resources>
@@ -602,7 +602,7 @@ namespace SIL.WritingSystems.Tests
 			</sil:font>
 		</sil:external-resources>
 	</special>".Replace("'", "\"");
-		
+
 		public static string SpellCheckerElem = @"
 	<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
 		<sil:external-resources>
@@ -612,7 +612,7 @@ namespace SIL.WritingSystems.Tests
 			</sil:spellcheck>
 		</sil:external-resources>
 	</special>".Replace("'", "\"");
-		
+
 		public static string KeyboardElem = @"
 	<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
 		<sil:external-resources>
@@ -622,7 +622,7 @@ namespace SIL.WritingSystems.Tests
 			</sil:kbd>
 		</sil:external-resources>
 	</special>".Replace("'", "\"");
-		
+
 		/// <summary>
 		/// Minimal LDML for version 3
 		/// </summary>
@@ -651,16 +651,6 @@ namespace SIL.WritingSystems.Tests
 		/// <summary>
 		/// Minimal LDML for version 3 along with sil:identity element
 		/// </summary>
-		/// <param name="language"></param>
-		/// <param name="script"></param>
-		/// <param name="region"></param>
-		/// <param name="variant"></param>
-		/// <param name="uid"></param>
-		/// <param name="windowsLCID"></param>
-		/// <param name="variantName"></param>
-		/// <param name="defaultRegion"></param>
-		/// <param name="revid"></param>
-		/// <returns></returns>
 		public static string Version3Identity(string language, string script, string region, string variant,
 											string uid, string windowsLCID, string variantName, string defaultRegion, string revid)
 		{
@@ -678,9 +668,9 @@ namespace SIL.WritingSystems.Tests
 			<sil:identity uid='{4}' windowsLCID='{5}' variantName='{6}' defaultRegion='{7}' revid='{8}'></sil:identity>
 		</special>
 	</identity>
-</ldml>".Replace("'", "\""), language, script, region, variant, uid, windowsLCID, variantName, defaultRegion, revid );
+</ldml>".Replace("'", "\""), language, script, region, variant, uid, windowsLCID, variantName, defaultRegion, revid);
 		}
-		 #endregion
+		#endregion
 
 		public static string CurrentVersion(string language, string script, string region, string variant, string otherElement = null)
 		{
@@ -692,7 +682,7 @@ namespace SIL.WritingSystems.Tests
 			string language, script, region, variant;
 			IetfLanguageTag.TryGetParts(languageTag, out language, out script, out region, out variant);
 			return CurrentVersion(language, script, region, variant);
-			
+
 		}
 	}
 }
