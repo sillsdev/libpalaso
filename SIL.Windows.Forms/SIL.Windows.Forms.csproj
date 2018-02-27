@@ -308,9 +308,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Debug\L10NSharp.dll</HintPath>
     </Reference>
-    <Reference Include="NAudio">
-      <HintPath>..\packages\NAudio.1.8.3\lib\NAudio.dll</HintPath>
-    </Reference>
     <!-- this is the Microsoft WIndows Image Acquisition COM library, for scanner and camera control-->
     <Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
@@ -388,6 +385,9 @@
       <HintPath>..\packages\MarkdownDeep.NET.1.5\lib\.NetFramework 3.5\MarkdownDeep.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" Condition="'$(OS)'=='Windows_NT'" />
+    <Reference Include="NAudio, Version=1.8.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.1.8.4\lib\net35\NAudio.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Drawing" />
