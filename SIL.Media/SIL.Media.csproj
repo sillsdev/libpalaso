@@ -298,9 +298,9 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
+  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName' Or '$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
     <Reference Include="NAudio">
-      <HintPath>..\packages\NAudio.1.8.3\lib\NAudio.dll</HintPath>
+      <HintPath>..\packages\NAudio.1.8.4\lib\NAudio.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Platform)' == 'x86' Or '$(Platform)' == 'AnyCPU'">
