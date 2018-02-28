@@ -18,6 +18,15 @@ namespace SIL.Archiving.Generic
 		/// <summary>If needed but not given, Name will be used</summary>
 		public string FullName;
 
+		///  <summary/>
+		public string Code;
+
+		/// <summary/>
+		public string FamilySocialRole;
+
+		/// <summary/>
+		public string EthnicGroup;
+
 		/// <summary />
 		public string Age;
 
