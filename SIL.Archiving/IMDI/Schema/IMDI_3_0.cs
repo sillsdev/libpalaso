@@ -1274,6 +1274,10 @@ namespace SIL.Archiving.IMDI.Schema
 			if (!string.IsNullOrEmpty(actor.Occupation))
 				Keys.Key.Add(new KeyType { Name = "Occupation", Value = actor.Occupation });
 
+			// Ethnic Group
+			if (!string.IsNullOrEmpty(actor.EthnicGroup))
+				EthnicGroup = actor.EthnicGroup;
+
 			// Anonymize
 			if (actor.Anonymize)
 				Anonymized = new BooleanType { Value = BooleanEnum.@true };
