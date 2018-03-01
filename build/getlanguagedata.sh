@@ -76,7 +76,7 @@ cd -
 #     URL: http://build.palaso.org/viewType.html?buildTypeId=bt98
 #     clean: false
 #     revision: latest.lastSuccessful
-#     paths: {"ianaSubtagRegistry.txt"=>"SIL.WritingSystems/Resources", "LanguageDataIndex.txt"=>"SIL.WritingSystems/Resources", "LanguageDataIndex.json"=>"SIL.WritingSystems/Resources", "LanguageIndex.txt"=>"SIL.WritingSystems/Resources", "TwoToThreeCodes.txt"=>"SIL.WritingSystems/Resources"}
+#     paths: {"ianaSubtagRegistry.txt"=>"SIL.WritingSystems/Resources", "LanguageCodes.txt"=>"SIL.WritingSystems/Resources", "LanguageDataIndex.txt"=>"SIL.WritingSystems/Resources", "LanguageDataIndex.json"=>"SIL.WritingSystems/Resources", "LanguageIndex.txt"=>"SIL.WritingSystems/Resources", "TwoToThreeCodes.txt"=>"SIL.WritingSystems/Resources"}
 #     VCS: https://github.com/sillsdev/libpalaso.git [master]
 
 # make sure output directories exist
@@ -84,6 +84,7 @@ mkdir -p ../SIL.WritingSystems/Resources
 
 # download artifact dependencies
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt98/latest.lastSuccessful/ianaSubtagRegistry.txt ../SIL.WritingSystems/Resources/ianaSubtagRegistry.txt
+copy_auto http://build.palaso.org/guestAuth/repository/download/bt98/latest.lastSuccessful/LanguageCodes.txt ../SIL.WritingSystems/Resources/LanguageCodes.txt
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt98/latest.lastSuccessful/LanguageDataIndex.txt ../SIL.WritingSystems/Resources/LanguageDataIndex.txt
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt98/latest.lastSuccessful/LanguageDataIndex.json ../SIL.WritingSystems/Resources/LanguageDataIndex.json
 copy_auto http://build.palaso.org/guestAuth/repository/download/bt98/latest.lastSuccessful/LanguageIndex.txt ../SIL.WritingSystems/Resources/LanguageIndex.txt
