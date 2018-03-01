@@ -18,7 +18,6 @@ mg
 mn
 ms
 ne
-no
 oj
 om
 or

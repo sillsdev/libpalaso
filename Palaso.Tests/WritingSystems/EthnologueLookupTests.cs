@@ -127,6 +127,15 @@ namespace Palaso.Tests.WritingSystems
 		}
 
 		[Test]
+		public void SuggestLanguages_NorwegianFindsNynorskAndBokmal()
+		{
+			var languages = _ethnologue.SuggestLanguages("norwegian");
+			Assert.True(languages.Any(l => l.Code == "nb"));
+			Assert.True(languages.Any(l => l.Code == "nn"));
+			Assert.True(languages.Any(l => l.Code == "no"));
+		}
+
+		[Test]
 		public void SuggestLanguages_3LetterCode_ResultIncludesAlternateLanguageNames()
 		{
 			var languages = _ethnologue.SuggestLanguages("ana");

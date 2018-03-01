@@ -87,6 +87,10 @@ namespace Palaso.WritingSystems
 						language.Names.Add(name); //intentionally not lower-casing
 				}
 			}
+			//Special case Norwegian
+			SpecialCaseLanguage("nb", "NO", "Norwegian Bokmål");
+			SpecialCaseLanguage("nn", "NO", "Norwegian Nynorsk");
+
 
 			//Why just this small set? Only out of convenience. Ideally we'd have a db of all languages as they write it in their literature.
 			this.CodeToLanguageIndex["fr"].LocalName =  "français";
@@ -113,6 +117,13 @@ namespace Palaso.WritingSystems
 					GetOrCreateListFromName(languageInfo.LocalName).Add(languageInfo);
 				}
 			}
+		}
+
+		private LanguageInfo SpecialCaseLanguage(string code, string country, string name)
+		{
+			LanguageInfo language = GetOrCreateLanguageFromCode(code, country);
+			language.Names.Add(name);
+			return language;
 		}
 
 		private List<LanguageInfo> GetOrCreateListFromName(string name)
