@@ -236,11 +236,18 @@ namespace SIL.Windows.Forms.WritingSystems
 				item.Tag = lang;
 				toShow.Add(item);
 
-				if (!itemSelected)
+				// Keep the current selection if there is one.  This minimizes user confusion.
+				if (SelectedLanguage != null && lang.LanguageTag == SelectedLanguage.LanguageTag)
 				{
 					item.Selected = true;
-					itemSelected = true; //we only want to select the first one
+					itemSelected = true; // we want to select only one.
 				}
+			}
+			// Select the first language if one wasn't already selected.
+			if (!itemSelected && toShow.Count > 0)
+			{
+				toShow[0].Selected = true;
+				itemSelected = true;
 			}
 			if (!itemSelected)
 				_model.SelectedLanguage = null;

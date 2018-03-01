@@ -404,16 +404,19 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				XElement identityElem = ldmlElem.Element("identity");
 				WriteIdentityElement(identityElem, staging, migrationInfo.LanguageTagAfterMigration);
 
-				if (staging.CharacterSets.ContainsKey("numeric"))
-				{
-					XElement numbersElem = ldmlElem.GetOrCreateElement("numbers");
-					WriteNumbersElement(numbersElem, staging);
-				}
+				var layoutElement = ldmlElem.Element("layout");
+				WriteLayoutElement(layoutElement);
 
 				if (staging.CharacterSets.ContainsKey("main") || staging.CharacterSets.ContainsKey("punctuation"))
 				{
 					XElement charactersElem = ldmlElem.GetOrCreateElement("characters");
 					WriteCharactersElement(charactersElem, staging);
+				}
+
+				if (staging.CharacterSets.ContainsKey("numeric"))
+				{
+					XElement numbersElem = ldmlElem.GetOrCreateElement("numbers");
+					WriteNumbersElement(numbersElem, staging);
 				}
 
 				if (staging.SortUsing != WritingSystemDefinitionV1.SortRulesType.OtherLanguage)
@@ -440,6 +443,18 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			}
 			if (_migrationHandler != null)
 				_migrationHandler(ToVersion, _migrationInfo);
+		}
+
+		private void WriteLayoutElement(XElement layoutElement)
+		{
+			var orientation = layoutElement?.Element("orientation");
+			var characterOrientationAttribute = orientation?.Attribute("characters");
+			if(characterOrientationAttribute == null)
+				return;
+			characterOrientationAttribute.Remove();
+			var characterOrientationElement = new XElement("characterOrder");
+			characterOrientationElement.Value = characterOrientationAttribute.Value;
+			orientation.Add(characterOrientationElement);
 		}
 
 		internal void EnsureIeftLanguageTagsUnique(IEnumerable<LdmlMigrationInfo> migrationInfo)

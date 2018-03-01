@@ -12,7 +12,10 @@ namespace SIL.Archiving.IMDI.Lists
 		/// <summary>Constructs a new LanguageItem</summary>
 		/// <param name="englishName">Example: "English"</param>
 		/// <param name="imdiCode">Example: "ISO639-3:eng"</param>
-		internal LanguageItem(string englishName, string imdiCode) : base(imdiCode, englishName) { }
+		internal LanguageItem(string englishName, string imdiCode) : base(imdiCode, englishName)
+		{
+			Text = englishName;
+		}
 
 		internal LanguageItem(string englishName, string imdiCode, string otherName) : this(englishName, imdiCode)
 		{

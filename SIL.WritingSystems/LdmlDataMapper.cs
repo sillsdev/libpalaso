@@ -295,33 +295,42 @@ namespace SIL.WritingSystems
 
 			ResetWritingSystemDefinition(ws);
 
-			XElement identityElem = element.Element("identity");
+			var identityElem = element.Element("identity");
 			if (identityElem != null)
+			{
 				ReadIdentityElement(identityElem, ws);
+			}
 
 			// Check for the proper LDML version after reading identity element so that we have the proper language tag if an error occurs.
-			foreach (XElement specialElem in element.NonAltElements("special"))
+			foreach (var specialElem in element.NonAltElements("special"))
 				CheckVersion(specialElem, ws);
 
-			XElement charactersElem = element.Element("characters");
+			var charactersElem = element.Element("characters");
 			if (charactersElem != null)
 				ReadCharactersElement(charactersElem, ws);
 
-			XElement delimitersElem = element.Element("delimiters");
+			var delimitersElem = element.Element("delimiters");
 			if (delimitersElem != null)
 				ReadDelimitersElement(delimitersElem, ws);
 
-			XElement layoutElem = element.Element("layout");
+			var layoutElem = element.Element("layout");
 			if (layoutElem != null)
 				ReadLayoutElement(layoutElem, ws);
 
-			XElement numbersElem = element.Element("numbers");
+			var numbersElem = element.Element("numbers");
 			if (numbersElem != null)
 				ReadNumbersElement(numbersElem, ws);
 
-			XElement collationsElem = element.Element("collations");
+			var collationsElem = element.Element("collations");
 			if (collationsElem != null)
+			{
 				ReadCollationsElement(collationsElem, ws);
+			}
+			else
+			{
+				ws.DefaultCollationType = "standard";
+				ws.DefaultCollation = new SystemCollationDefinition { LanguageTag = ws.LanguageTag };
+			}
 
 			foreach (XElement specialElem in element.NonAltElements("special"))
 				ReadTopLevelSpecialElement(specialElem, ws);
@@ -683,10 +692,16 @@ namespace SIL.WritingSystems
 
 		private void ReadCollationsElement(XElement collationsElem, WritingSystemDefinition ws)
 		{
-			XElement defaultCollationElem = collationsElem.Element("defaultCollation");
-			ws.DefaultCollationType = (string) defaultCollationElem;
-			foreach (XElement collationElem in collationsElem.NonAltElements("collation"))
+			var defaultCollationElem = collationsElem.Element("defaultCollation");
+			ws.DefaultCollationType = (string) defaultCollationElem ?? "standard";
+			foreach (var collationElem in collationsElem.NonAltElements("collation"))
+			{
 				ReadCollationElement(collationElem, ws);
+			}
+			if (defaultCollationElem == null)
+			{
+				ws.DefaultCollation = new SystemCollationDefinition { LanguageTag = ws.LanguageTag };
+			}
 		}
 
 		private void ReadCollationElement(XElement collationElem, WritingSystemDefinition ws)
@@ -1216,13 +1231,17 @@ namespace SIL.WritingSystems
 
 			// if there will be no collation elements, don't write out defaultCollation element
 			if (!collationsElem.Elements("collation").Any() && ws.Collations.All(c => c is SystemCollationDefinition))
+			{
 				return;
+			}
 
-			XElement defaultCollationElem = collationsElem.GetOrCreateElement("defaultCollation");
+			var defaultCollationElem = collationsElem.GetOrCreateElement("defaultCollation");
 			defaultCollationElem.SetValue(ws.DefaultCollationType);
-			
+
 			foreach (CollationDefinition collation in ws.Collations)
+			{
 				WriteCollationElement(collationsElem, collation);
+			}
 		}
 
 		private void WriteCollationElement(XElement collationsElem, CollationDefinition collation)
@@ -1231,8 +1250,11 @@ namespace SIL.WritingSystems
 			Debug.Assert(collation != null);
 
 			// SystemCollationDefinition is application-specific and not written to LDML
+			// REVIEW: This does not handle the 'sort like' situation and that may need to be addressed
 			if (collation is SystemCollationDefinition)
+			{
 				return;
+			}
 
 			var collationElem = new XElement("collation", new XAttribute("type", collation.Type));
 			collationsElem.Add(collationElem);

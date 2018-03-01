@@ -1025,6 +1025,10 @@ namespace SIL.WritingSystems.Tests.Migration
 				WritingSystemDefinition ws = repo.Get("de");
 				var scd = new SystemCollationDefinition {LanguageTag = "de"};
 				Assert.That(ws.DefaultCollation.ValueEquals(scd), Is.True);
+
+				var fromFile = new WritingSystemDefinition();
+				new LdmlDataMapper(new TestWritingSystemFactory()).Read(environment.MappedFilePath("test.ldml"), fromFile);
+				Assert.NotNull(fromFile.DefaultCollation);
 			}
 		}
 
@@ -1643,7 +1647,23 @@ namespace SIL.WritingSystems.Tests.Migration
 			}
 		}
 
-		# endregion
+		[Test]
+		public void Migrate_Layout_RightToLeftIsRetained()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile("hbo.ldml",
+					LdmlContentForTests.Version2WithRightToLeftLayout("hbo", "Hebrew, Ancient"));
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+
+				var wsV3 = new WritingSystemDefinition();
+				new LdmlDataMapper(new TestWritingSystemFactory()).Read(environment.MappedFilePath("hbo.ldml"), wsV3);
+				Assert.True(wsV3.RightToLeftScript);
+			}
+		}
+
+		#endregion
 
 	}
 }
