@@ -618,7 +618,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		[Category("ICU54OrHigher")]
 		public void ConvertToIcuRules_UnicodeCharacterReference_SurrogateLowBound_Throws()
 		{
-			Assert.Throws<ApplicationException>(
+			Assert.Throws<ArgumentException>(
 				// Invalid unicode character escape sequence: 
 				() => VerifyExpectedIcuFromActualSimple(IcuStart + "\\ud800", "\\ud800")
 			);
@@ -628,7 +628,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		[Category("ICU54OrHigher")]
 		public void ConvertToIcuRules_SurrogateCharacterLowBound_Throws()
 		{
-			Assert.Throws<ApplicationException>(
+			Assert.Throws<ArgumentException>(
 				// Invalid unicode character escape sequence: 
 				() => VerifyExpectedIcuFromActualSimple(IcuStart + "\ud800", "\ud800")
 			);
@@ -638,7 +638,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		[Category("ICU54OrHigher")]
 		public void ConvertToIcuRules_UnicodeCharacterReference_SurrogateHighBounds_Throws()
 		{
-			Assert.Throws<ApplicationException>(
+			Assert.Throws<ArgumentException>(
 				// Invalid unicode character escape sequence: 
 				() => VerifyExpectedIcuFromActualSimple(IcuStart + "\\udfff", "\\udfff")
 			);
@@ -648,7 +648,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		[Category("ICU54OrHigher")]
 		public void ConvertToIcuRules_SurrogateCharacterHighBound_Throws()
 		{
-			Assert.Throws<ApplicationException>(
+			Assert.Throws<ArgumentException>(
 				// Invalid unicode character escape sequence: 
 				() => VerifyExpectedIcuFromActualSimple(IcuStart + "\udfff", "\udfff")
 			);
@@ -670,7 +670,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		[Category("ICU54OrHigher")]
 		public void ConvertToIcuRules_UnicodeCharacterReference_SurrogatesOutOfOrder_Throws()
 		{
-			Assert.Throws<ApplicationException>(
+			Assert.Throws<ArgumentException>(
 				// Invalid unicode character escape sequence: 
 				() => VerifyExpectedIcuFromActualSimple(IcuStart + "a << \\udc00\\ud800", "a \\udc00\\ud800")
 			);
@@ -680,7 +680,7 @@ namespace Palaso.Tests.WritingSystems.Collation
 		[Category("ICU54OrHigher")]
 		public void ConvertToIcuRules_SurrogateCharactersOutOfOrder_Throws()
 		{
-			Assert.Throws<ApplicationException>(
+			Assert.Throws<ArgumentException>(
 				// Invalid unicode character escape sequence: 
 				() => VerifyExpectedIcuFromActualSimple(IcuStart + "a << \udc00\ud800", "a \udc00\ud800")
 			);
