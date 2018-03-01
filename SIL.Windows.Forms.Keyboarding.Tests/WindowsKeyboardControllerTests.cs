@@ -109,7 +109,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		public void ActivateDefaultKeyboard_ActivatesDefaultInputLanguage()
 		{
 			Keyboard.Controller.ActivateDefaultKeyboard();
-			Assert.That(WinKeyboardAdaptor.GetInputLanguage((WinKeyboardDescription) Keyboard.Controller.ActiveKeyboard),
+			Assert.That(WinKeyboardUtils.GetInputLanguage((WinKeyboardDescription) Keyboard.Controller.ActiveKeyboard),
 				Is.EqualTo(InputLanguage.DefaultInputLanguage));
 		}
 

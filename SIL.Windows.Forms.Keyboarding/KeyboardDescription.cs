@@ -44,7 +44,7 @@ namespace SIL.Windows.Forms.Keyboarding
 				Engine.DeactivateKeyboard(this);
 		}
 
-		public IInputLanguage InputLanguage { get; internal protected set; }
+		public IInputLanguage InputLanguage { get; protected internal set; }
 
 		protected virtual bool DeactivatePreviousKeyboard(IKeyboardDefinition keyboardToActivate)
 		{

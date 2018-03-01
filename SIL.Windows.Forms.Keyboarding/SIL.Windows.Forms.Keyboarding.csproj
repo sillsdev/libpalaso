@@ -396,8 +396,10 @@
     <Compile Include="Windows\KeymanKeyboardDescription.cs" />
     <Compile Include="Windows\MsTsfInterfaces.cs" />
     <Compile Include="Windows\Win32.cs" />
+    <Compile Include="Windows\WindowsXPKeyboardSwitchingAdapter.cs" />
     <Compile Include="Windows\WinKeyboardAdaptor.cs" />
     <Compile Include="Windows\WinKeyboardDescription.cs" />
+    <Compile Include="Windows\WinKeyboardUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">

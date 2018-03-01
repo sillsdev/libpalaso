@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
 #if !MONO
 using Keyman7Interop;
 using Keyman10Interop;
@@ -18,8 +20,18 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 	/// <summary>
 	/// Class for handling Keyman keyboards not associated with a Windows language
 	/// </summary>
-	internal class KeymanKeyboardAdaptor : IKeyboardRetrievingAdaptor, IKeyboardSwitchingAdaptor
+	internal class KeymanKeyboardAdaptor : IKeyboardRetrievingAdaptor
 	{
+		private enum KeymanVersion
+		{
+			NotInstalled,
+			Keyman6,
+			Keyman7to9,
+			Keyman10
+		}
+
+		private KeymanVersion InstalledKeymanVersion { get; set; }
+
 		#region IKeyboardRetrievingAdaptor Members
 
 		/// <summary>
@@ -39,64 +51,97 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			get
 			{
 #if !MONO
-				// Try the Keyman 10 interface
-				try
+				switch (InstalledKeymanVersion)
 				{
-					var keyman10 = new KeymanClass();
-					if (keyman10.Keyboards != null && keyman10.Keyboards.Count > 0)
-					{
-						return true;
-					}
-				}
-				catch (Exception)
-				{
-					// Keyman 10 isn't installed or whatever.
-				}
-
-				// Try the Keyman 7/8 interface
-				try
-				{
-					var keyman = new TavultesoftKeymanClass();
-					if (keyman.Keyboards != null && keyman.Keyboards.Count > 0)
-					{
-						return true;
-					}
-				}
-				catch (Exception)
-				{
-					// Keyman 7 isn't installed or whatever.
-				}
-
-				// Try the Keyman 6 interface
-				try
-				{
-					var keymanLink = new KeymanLink.KeymanLink();
-					if (keymanLink.Initialize())
-					{
-						if (keymanLink.Keyboards != null && keymanLink.Keyboards.Length > 0)
+					case KeymanVersion.Keyman10:
+						var keyman10 = new KeymanClass();
+						if (keyman10.Keyboards != null && keyman10.Keyboards.Count > 0)
 						{
 							return true;
 						}
-					}
-				}
-				catch (Exception)
-				{
-					// Keyman 6 isn't installed or whatever.
+						break;
+					case KeymanVersion.Keyman7to9:
+						var keyman = new TavultesoftKeymanClass();
+						if (keyman.Keyboards != null && keyman.Keyboards.Count > 0)
+						{
+							return true;
+						}
+						break;
+					case KeymanVersion.Keyman6:
+						var keymanLink = new KeymanLink.KeymanLink();
+							if (keymanLink.Initialize())
+							{
+								if (keymanLink.Keyboards != null && keymanLink.Keyboards.Length > 0)
+								{
+									return true;
+								}
+							}
+							break;
+					case KeymanVersion.NotInstalled:
+						return false;
+					default:
+						throw new NotSupportedException($"{InstalledKeymanVersion} not yet supported in IsApplicable");
+
 				}
 #endif
 				return false;
 			}
 		}
 
-		public IKeyboardSwitchingAdaptor SwitchingAdaptor
-		{
-			get { return this; }
-		}
+		public IKeyboardSwitchingAdaptor SwitchingAdaptor { get; set; }
 
 		public void Initialize()
 		{
 			CheckDisposed();
+			InstalledKeymanVersion = GetInstalledKeymanVersion();
+			SwitchingAdaptor = GetKeymanSwitchingAdapter(InstalledKeymanVersion);
 			UpdateAvailableKeyboards();
+		}
+
+		private IKeyboardSwitchingAdaptor GetKeymanSwitchingAdapter(KeymanVersion installedKeymanVersion)
+		{
+			switch (installedKeymanVersion)
+			{
+				case KeymanVersion.Keyman10:
+					return new KeymanKeyboardSwitchingAdapter();
+				case KeymanVersion.Keyman6:
+				case KeymanVersion.Keyman7to9:
+					return new LegacyKeymanKeyboardSwitchingAdapter();
+			}
+			return null;
+		}
+
+		private KeymanVersion GetInstalledKeymanVersion()
+		{
+			// limit the COMException catching by determining the current version once and assuming it for the
+			// rest of the adaptor's lifetime
+			try
+			{
+				var keyman10 = new KeymanClass();
+				return KeymanVersion.Keyman10;
+			}
+			catch (COMException)
+			{
+				// not 10
+			}
+			try
+			{
+				var keyman = new TavultesoftKeymanClass();
+				return KeymanVersion.Keyman7to9;
+			}
+			catch (COMException)
+			{
+				// Not 7-9
+			}
+			try
+			{
+				var keymanLink = new KeymanLink.KeymanLink();
+				return KeymanVersion.Keyman6;
+			}
+			catch (COMException)
+			{
+				return KeymanVersion.NotInstalled;
+			}
 		}
 
 		public void UpdateAvailableKeyboards()
@@ -104,43 +149,75 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			CheckDisposed();
 			Dictionary<string, KeymanKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<KeymanKeyboardDescription>().ToDictionary(kd => kd.Id);
 #if !MONO
-			// Try the Keyman 10 interface
-			try
+			switch (InstalledKeymanVersion)
 			{
-				var keyman10 = new KeymanClass();
-				UpdateKeyboards(curKeyboards, keyman10.Keyboards.OfType<Keyman10Interop.IKeymanKeyboard>().Select(kb => kb.Name), false);
-			}
-			catch (Exception)
-			{
-				// Keyman 10 isn't installed or whatever.
-			}
-
-			// Try the Keyman 7/8 interface
-			try
-			{
-				var keyman = new TavultesoftKeymanClass();
-				UpdateKeyboards(curKeyboards, keyman.Keyboards.OfType<Keyman7Interop.IKeymanKeyboard>().Select(kb => kb.Name), false);
-			}
-			catch (Exception)
-			{
-				// Keyman 7 isn't installed or whatever.
-			}
-
-			// Try the Keyman 6 interface
-			try
-			{
-				var keymanLink = new KeymanLink.KeymanLink();
-				if (keymanLink.Initialize())
-					UpdateKeyboards(curKeyboards, keymanLink.Keyboards.Select(kb => kb.KbdName), true);
-			}
-			catch (Exception)
-			{
-				// Keyman 6 isn't installed or whatever.
+				case KeymanVersion.Keyman10:
+					var keyman10 = new KeymanClass();
+					var langs = keyman10.Languages;
+					UpdateKeyboards(curKeyboards, keyman10.Keyboards.OfType<Keyman10Interop.IKeymanKeyboard>(), langs);
+					break;
+				case KeymanVersion.Keyman7to9:
+					var keyman = new TavultesoftKeymanClass();
+					UpdateKeyboards(curKeyboards, keyman.Keyboards.OfType<Keyman7Interop.IKeymanKeyboard>().Select(kb => kb.Name), false);
+					break;
+				case KeymanVersion.Keyman6:
+					var keymanLink = new KeymanLink.KeymanLink();
+					if (keymanLink.Initialize())
+					{
+						UpdateKeyboards(curKeyboards, keymanLink.Keyboards.Select(kb => kb.KbdName), true);
+					}
+					break;
 			}
 #endif
 
-			foreach (KeymanKeyboardDescription keyboard in curKeyboards.Values)
+			foreach (var keyboard in curKeyboards.Values)
+			{
 				keyboard.SetIsAvailable(false);
+			}
+		}
+
+		private void UpdateKeyboards(Dictionary<string, KeymanKeyboardDescription> curKeyboards, IEnumerable<Keyman10Interop.IKeymanKeyboard> availableKeyboards, Keyman10Interop.IKeymanLanguages languages)
+		{
+			var langAssocKeyboards = new Dictionary<string, string>();
+			foreach (Keyman10Interop.IKeymanLanguage lang in languages)
+			{
+				if (lang.KeymanKeyboardLanguage != null)
+				{
+					langAssocKeyboards[lang.LayoutName] = lang.KeymanKeyboardLanguage.BCP47Code;
+				}
+			}
+			foreach (Keyman10Interop.IKeymanKeyboard keyboard in availableKeyboards)
+			{
+				var keyboardName = keyboard.Name;
+				KeymanKeyboardDescription existingKeyboard;
+				if (curKeyboards.TryGetValue(keyboardName, out existingKeyboard))
+				{
+					if (!existingKeyboard.IsAvailable)
+					{
+						existingKeyboard.SetIsAvailable(true);
+						existingKeyboard.IsKeyman6 = false;
+						if (existingKeyboard.Format == KeyboardFormat.Unknown)
+						{
+							existingKeyboard.Format = KeyboardFormat.CompiledKeyman;
+						}
+					}
+					curKeyboards.Remove(keyboardName);
+				}
+				else
+				{
+					var langId = langAssocKeyboards[keyboardName];
+					string[] parts = langId.Split('_');
+					string locale = parts[0];
+					string layout = parts.Length > 1 ? parts[1] : string.Empty;
+
+					string cultureName;
+					var inputLanguage = WinKeyboardUtils.GetInputLanguage(locale, layout, out cultureName);
+					KeyboardController.Instance.Keyboards.Add(new KeymanKeyboardDescription(keyboardName, false, this, true)
+					{
+						Format = KeyboardFormat.CompiledKeyman, InputLanguage = inputLanguage
+					});
+				}
+			}
 		}
 
 		private void UpdateKeyboards(Dictionary<string, KeymanKeyboardDescription> curKeyboards, IEnumerable<string> availableKeyboardNames, bool isKeyman6)
@@ -161,7 +238,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				}
 				else
 				{
-					KeyboardController.Instance.Keyboards.Add(new KeymanKeyboardDescription(keyboardName, isKeyman6, this, true) {Format = KeyboardFormat.CompiledKeyman});
+					KeyboardController.Instance.Keyboards.Add(new KeymanKeyboardDescription(keyboardName, isKeyman6, this, true) { Format = KeyboardFormat.CompiledKeyman });
 				}
 			}
 		}
@@ -174,7 +251,19 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		public KeyboardDescription CreateKeyboardDefinition(string id)
 		{
 			CheckDisposed();
-			return new KeymanKeyboardDescription(id, false, this, false);
+			switch (InstalledKeymanVersion)
+			{
+				case KeymanVersion.Keyman10:
+					string[] parts = id.Split('_');
+					string locale = parts[0];
+					string layout = parts.Length > 1 ? parts[1] : string.Empty;
+
+					string cultureName;
+					var inputLanguage = WinKeyboardUtils.GetInputLanguage(locale, layout, out cultureName);
+					return new KeymanKeyboardDescription(id, false, this, false) { InputLanguage = inputLanguage };
+				default:
+					return new KeymanKeyboardDescription(id, false, this, false);
+			}
 		}
 
 		public string GetKeyboardSetupApplication(out string arguments)
@@ -266,108 +355,150 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			return null;
 		}
 
-		public bool IsSecondaryKeyboardSetupApplication
-		{
-			get { return true; }
-		}
+		public bool IsSecondaryKeyboardSetupApplication => true;
 
 		#endregion
 
 		#region IKeyboardSwitchingAdaptor Members
 
-		public bool ActivateKeyboard(KeyboardDescription keyboard)
+		private class LegacyKeymanKeyboardSwitchingAdapter : IKeyboardSwitchingAdaptor
 		{
-			CheckDisposed();
-#if !MONO
-			var keymanKbdDesc = (KeymanKeyboardDescription)keyboard;
-			if (keymanKbdDesc.IsKeyman6)
+			public bool ActivateKeyboard(KeyboardDescription keyboard)
 			{
-				try
+#if !MONO
+				var keymanKbdDesc = (KeymanKeyboardDescription)keyboard;
+				if (keymanKbdDesc.IsKeyman6)
 				{
-					var keymanLink = new KeymanLink.KeymanLink();
-					if (!keymanLink.Initialize())
+					try
 					{
-						ErrorReport.NotifyUserOfProblem("Keyman6 could not be activated.");
+						var keymanLink = new KeymanLink.KeymanLink();
+						if (!keymanLink.Initialize())
+						{
+							ErrorReport.NotifyUserOfProblem("Keyman6 could not be activated.");
+							return false;
+						}
+						keymanLink.SelectKeymanKeyboard(keyboard.Id);
+					}
+					catch (Exception)
+					{
 						return false;
 					}
-					keymanLink.SelectKeymanKeyboard(keyboard.Id);
-				}
-				catch (Exception)
-				{
-					return false;
-				}
-			}
-			else
-			{
-				try
-				{
-					var keyman = new TavultesoftKeymanClass();
-					int oneBasedIndex = keyman.Keyboards.IndexOf(keyboard.Id);
-
-					if (oneBasedIndex < 1)
-					{
-						ErrorReport.NotifyUserOfProblem("The keyboard '{0}' could not be activated using Keyman 7.",
-							keyboard.Id);
-						return false;
-					}
-					keyman.Control.ActiveKeyboard = keyman.Keyboards[oneBasedIndex];
-				}
-				catch (Exception)
-				{
-					// Keyman 7 not installed?
-					return false;
-				}
-			}
-#endif
-
-			KeyboardController.Instance.ActiveKeyboard = keyboard;
-			return true;
-		}
-
-		public void DeactivateKeyboard(KeyboardDescription keyboard)
-		{
-			CheckDisposed();
-#if !MONO
-			try
-			{
-				if (((KeymanKeyboardDescription) keyboard).IsKeyman6)
-				{
-					var keymanLink = new KeymanLink.KeymanLink();
-					if (keymanLink.Initialize())
-						keymanLink.SelectKeymanKeyboard(null, false);
 				}
 				else
 				{
-					var keyman = new TavultesoftKeymanClass();
-					keyman.Control.ActiveKeyboard = null;
+					try
+					{
+						var keyman = new TavultesoftKeymanClass();
+						int oneBasedIndex = keyman.Keyboards.IndexOf(keyboard.Id);
+
+						if (oneBasedIndex < 1)
+						{
+							ErrorReport.NotifyUserOfProblem("The keyboard '{0}' could not be activated using Keyman 7.",
+								keyboard.Id);
+							return false;
+						}
+						keyman.Control.ActiveKeyboard = keyman.Keyboards[oneBasedIndex];
+					}
+					catch (Exception)
+					{
+						// Keyman 7 not installed?
+						return false;
+					}
+				}
+#endif
+
+				KeyboardController.Instance.ActiveKeyboard = keyboard;
+				return true;
+			}
+
+			public void DeactivateKeyboard(KeyboardDescription keyboard)
+			{
+#if !MONO
+				try
+				{
+					if (((KeymanKeyboardDescription)keyboard).IsKeyman6)
+					{
+						var keymanLink = new KeymanLink.KeymanLink();
+						if (keymanLink.Initialize())
+							keymanLink.SelectKeymanKeyboard(null, false);
+					}
+					else
+					{
+						var keyman = new TavultesoftKeymanClass();
+						keyman.Control.ActiveKeyboard = null;
+					}
+				}
+				catch (Exception)
+				{
+					// Keyman not installed?
+				}
+#endif
+			}
+
+			/// <summary>
+			/// Gets the default keyboard of the system.
+			/// </summary>
+			public KeyboardDescription DefaultKeyboard
+			{
+				get
+				{
+					throw new NotImplementedException(
+						"Keyman keyboards that are not associated with a language are never the system default.");
 				}
 			}
-			catch (Exception)
+
+			/// <summary>
+			/// Implementation is not required because this is not the primary (Type System) adapter.
+			/// </summary>
+			public KeyboardDescription ActiveKeyboard
 			{
-				// Keyman not installed?
+				get { throw new NotImplementedException(); }
 			}
+		}
+
+		private class KeymanKeyboardSwitchingAdapter : IKeyboardSwitchingAdaptor
+		{
+			public bool ActivateKeyboard(KeyboardDescription keyboard)
+			{
+#if !MONO
+				foreach (InputLanguage lang in InputLanguage.InstalledInputLanguages)
+				{
+					if (keyboard.InputLanguage.Culture.EnglishName == lang.Culture.EnglishName)
+					{
+						InputLanguage.CurrentInputLanguage = lang;
+						return true;
+					}
+				}
 #endif
-		}
+				return false;
+			}
 
-		/// <summary>
-		/// Gets the default keyboard of the system.
-		/// </summary>
-		public KeyboardDescription DefaultKeyboard
-		{
-			get
+			public void DeactivateKeyboard(KeyboardDescription keyboard)
 			{
-				throw new NotImplementedException(
-					"Keyman keyboards that are not associated with a language are never the system default.");
+				// noop
+			}
+
+			/// <summary>
+			/// Gets the default keyboard of the system.
+			/// </summary>
+			public KeyboardDescription DefaultKeyboard
+			{
+				get
+				{
+					throw new NotImplementedException(
+						"Keyman keyboards that are not associated with a language are never the system default.");
+				}
+			}
+
+			/// <summary>
+			/// Implementation is not required because this is not the primary (Type System) adapter.
+			/// </summary>
+			public KeyboardDescription ActiveKeyboard
+			{
+				get { throw new NotImplementedException(); }
 			}
 		}
 
-		/// <summary>
-		/// Implementation is not required because this is not the primary (Type System) adapter.
-		/// </summary>
-		public KeyboardDescription ActiveKeyboard
-		{
-			get { throw new NotImplementedException(); }
-		}
 
 		public bool CanHandleFormat(KeyboardFormat format)
 		{
