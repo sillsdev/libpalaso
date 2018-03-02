@@ -325,11 +325,12 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		/// <returns></returns>
 		private static string GetKeymanRegistryValue(string key, ref int version)
 		{
-			using (var keyman10 = Registry.LocalMachine.OpenSubKey(@"Software\Keyman\Keyman Engine", false))
+			using (var keyman10 = Registry.LocalMachine.OpenSubKey(@"Software\Keyman\Keyman Desktop", false))
 			using (var olderKeyman = Registry.LocalMachine.OpenSubKey(@"Software\Tavultesoft\Keyman", false))
+			using (var keyman10_32 = Registry.LocalMachine.OpenSubKey(@"Software\WOW6432Node\Keyman\Keyman Desktop", false))
 			using (var older32Keyman = Registry.LocalMachine.OpenSubKey(@"Software\WOW6432Node\Tavultesoft\Keyman", false))
 			{
-				var keymanKey = keyman10 ?? olderKeyman ?? older32Keyman;
+				var keymanKey = keyman10 ?? olderKeyman ?? keyman10_32 ?? older32Keyman;
 				if (keymanKey == null)
 					return null;
 
