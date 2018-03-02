@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+using System;
+using System.Drawing;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.TestUtilities;
@@ -347,6 +348,15 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			var m = new Metadata();
 			m.CopyrightNotice = "SIL International";
 			Assert.AreEqual("SIL International", m.GetCopyrightBy());
+		}
+
+		[Test]
+		public void GetCopyrightBy_HandlesMultilineCopyrightHolder()
+		{
+			var m = new Metadata();
+			m.CopyrightNotice = "Copyright © 2018, text1" + Environment.NewLine + "text2";
+			var cHolder = m.GetCopyrightBy();
+			Assert.AreEqual("text1" + Environment.NewLine + "text2", cHolder, "Copyright holder should have 2 lines of text.");
 		}
 
 		[Test]
