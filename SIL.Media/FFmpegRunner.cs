@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -94,7 +94,7 @@ namespace SIL.Media
         {
             try
             {
-                return FileLocator.GetFileDistributedWithApplication("ffmpeg", "ffmpeg.exe");
+				return FileLocationUtilities.GetFileDistributedWithApplication("ffmpeg", "ffmpeg.exe");
             }
             catch (Exception)
             {
