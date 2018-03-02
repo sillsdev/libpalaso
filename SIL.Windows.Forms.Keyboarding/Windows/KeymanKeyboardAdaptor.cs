@@ -115,6 +115,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 		private KeymanVersion GetInstalledKeymanVersion()
 		{
+#if !MONO
 			// limit the COMException catching by determining the current version once and assuming it for the
 			// rest of the adaptor's lifetime
 			try
@@ -142,8 +143,9 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			}
 			catch (COMException)
 			{
-				return KeymanVersion.NotInstalled;
 			}
+#endif
+			return KeymanVersion.NotInstalled;
 		}
 
 		public void UpdateAvailableKeyboards()
