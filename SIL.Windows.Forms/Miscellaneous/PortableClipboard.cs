@@ -288,7 +288,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 		// The following methods were added to allow dialogs to use the PortableClipboard in TextBox and RichTextBox
 		// controls.  It's possible that these methods might only be used on Linux, but they compile (and would work)
 		// fine for Windows.  I prefer not using #if MONO more than absolutely necessary.
-		// See SIL.Windows.Forms.ClearShare.WinFormsUI.MetadataEditorDialog for an example of using these methods.
+		// These methods are used by FormUsingPortableClipboard, which is defined below.
 
 		/// <summary>
 		/// Recursively remove all TextBox menus found owned by the control.
@@ -364,7 +364,12 @@ namespace SIL.Windows.Forms.Miscellaneous
 				var length = box.SelectionLength;
 				var text = box.Text;
 				if (length > 0)
-					text = text.Remove(start, length);
+				{
+					if (start + length > text.Length)	// shouldn't happen, but sometimes paranoia pays
+						text = text.Remove(start);
+					else
+						text = text.Remove(start, length);
+				}
 				var clipText = SIL.Windows.Forms.Miscellaneous.PortableClipboard.GetText();
 				box.Text = text.Insert(start, clipText);
 				box.SelectionStart = start + clipText.Length;
@@ -385,6 +390,10 @@ namespace SIL.Windows.Forms.Miscellaneous
 			if (length > 0)
 			{
 				var start = box.SelectionStart;
+				if (start + length > box.Text.Length)
+					length = box.Text.Length - start;	// shouldn't happen, but paranoia sometimes pays.
+				if (length <= 0)
+					return true;
 				var text = box.Text.Substring(start, length);
 				SIL.Windows.Forms.Miscellaneous.PortableClipboard.SetText(text);
 				if (cut)
@@ -394,6 +403,40 @@ namespace SIL.Windows.Forms.Miscellaneous
 				}
 			}
 			return true;
+		}
+	}
+
+	/// <summary>
+	/// This class helps dialogs (or program main windows) with textboxes to use the PortableClipboard
+	/// instead of the regular clipboard if needed.  Clipboard operations (copy/cut/paste) in text boxes
+	/// may not work properly on Linux in some situations, freezing or crashing the program.
+	/// See https://issues.bloomlibrary.org/youtrack/issue/BL-5681 for one example.
+	/// </summary>
+	public class FormUsingPortableClipboard : Form
+	{
+		private bool _usePortableClipboard;
+		public bool UsePortableClipboard
+		{
+			get { return _usePortableClipboard; }
+			set
+			{
+				_usePortableClipboard = value;
+				// Note that TextBox.ShortcutsEnabled does nothing in the Mono runtime.  Needing to
+				// remove (or fix) the context menu means that this must be done after the dialog
+				// has been initialized.
+				if (value)
+					SIL.Windows.Forms.Miscellaneous.PortableClipboard.RemoveTextboxMenus(this);
+			}
+		}
+
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+		{
+			if (UsePortableClipboard &&
+				SIL.Windows.Forms.Miscellaneous.PortableClipboard.ProcessClipboardCmdKeysForDialog(this, msg, keyData))
+			{
+				return true;
+			}
+			return base.ProcessCmdKey(ref msg, keyData);
 		}
 	}
 }
