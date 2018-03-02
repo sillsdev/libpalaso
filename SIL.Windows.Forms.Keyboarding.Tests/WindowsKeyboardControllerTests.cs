@@ -102,7 +102,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			if (keyboards.Length < 2)
 				Assert.Ignore("This test requires that the Windows IME has at least two languages installed.");
 
-			Assert.That(keyboards.Select(keyboard => keyboard.Engine), Is.All.TypeOf<WinKeyboardAdaptor>());
+			Assert.That(keyboards.Select(keyboard => keyboard.Engine), Is.All.TypeOf<WindowsKeyboardSwitchingAdapter>());
 		}
 
 		[Test]

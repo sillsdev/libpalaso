@@ -1,6 +1,8 @@
 // Copyright (c) 2013-2018 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -11,20 +13,34 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 	/// <summary>
 	/// This keyboard switching adapter handles windows keyboard switching using the modern api as well as falling back to old win API for XP.
 	/// </summary>
-	internal class WindowsXPKeyboardSwitchingAdapter : IKeyboardSwitchingAdaptor, IDisposable
+	internal class WindowsKeyboardSwitchingAdapter : IKeyboardSwitchingAdaptor, IDisposable
 	{
-		public Timer Timer { get; }
+		public Timer Timer { get; private set; }
 
 		private KeyboardDescription _expectedKeyboard;
 		private bool HasSwitchedLanguages { get; set; }
 		private bool IsSwitchingKeyboards { get; set; }
 		private ITfInputProcessorProfiles ProcessorProfiles { get; }
 		private ITfInputProcessorProfileMgr ProfileMgr { get; }
+		internal ITfSource TfSource { get; private set; }
 
-		public WindowsXPKeyboardSwitchingAdapter(ITfInputProcessorProfiles processorProfiles, ITfInputProcessorProfileMgr profileMgr)
+		private ushort _profileNotifySinkCookie;
+		private readonly TfLanguageProfileNotifySink _tfLanguageProfileNotifySink;
+
+		private readonly List<IWindowsLanguageProfileSink> _windowsLanguageProfileSinks = new List<IWindowsLanguageProfileSink>();
+
+		public WindowsKeyboardSwitchingAdapter(ITfInputProcessorProfiles processorProfiles, ITfInputProcessorProfileMgr profileMgr)
 		{
 			ProfileMgr = profileMgr;
 			ProcessorProfiles = processorProfiles;
+			_tfLanguageProfileNotifySink = new TfLanguageProfileNotifySink(this);
+
+			TfSource = ProcessorProfiles as ITfSource;
+			if (TfSource != null)
+			{
+				_profileNotifySinkCookie = TfSource.AdviseSink(
+					ref Guids.Consts.ITfLanguageProfileNotifySink, _tfLanguageProfileNotifySink);
+			}
 
 			Timer = new Timer { Interval = 500 };
 			Timer.Tick += OnTimerTick;
@@ -33,6 +49,12 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			if (Form.ActiveForm != null)
 			{
 				Form.ActiveForm.InputLanguageChanged += ActiveFormOnInputLanguageChanged;
+			}
+
+			if (KeyboardController.Instance != null)
+			{
+				KeyboardController.Instance.ControlAdded += OnControlRegistered;
+				KeyboardController.Instance.ControlRemoving += OnControlRemoving;
 			}
 		}
 
@@ -109,7 +131,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		{
 			return ProcessorProfiles == null || ProfileMgr == null && winKeyboard.InputProcessorProfile.Hkl == IntPtr.Zero;
 		}
-
 
 		private void ActiveFormOnInputLanguageChanged(object sender, InputLanguageChangedEventArgs inputLanguageChangedEventArgs)
 		{
@@ -266,9 +287,141 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			}
 		}
 
+		internal void OnControlRegistered(object sender, RegisterEventArgs e)
+		{
+			var windowsLanguageProfileSink = e.EventHandler as IWindowsLanguageProfileSink;
+			if (windowsLanguageProfileSink != null && !_windowsLanguageProfileSinks.Contains(windowsLanguageProfileSink))
+				_windowsLanguageProfileSinks.Add(windowsLanguageProfileSink);
+
+			if (_profileNotifySinkCookie != 0)
+				return;
+
+			// TSF disabled, so we have to fall back to Windows messages
+			_tfLanguageProfileNotifySink.RegisterWindowsMessageHandler(e.Control);
+		}
+
+		private void OnControlRemoving(object sender, ControlEventArgs e)
+		{
+			if (_profileNotifySinkCookie != 0)
+				return;
+
+			// TSF disabled, so we have to fall back to Windows messages
+			_tfLanguageProfileNotifySink.UnregisterWindowsMessageHandler(e.Control);
+		}
+
+		/// <summary>
+		/// See if the object has been disposed.
+		/// </summary>
+		public bool IsDisposed { get; private set; }
+
 		public void Dispose()
 		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			Debug.WriteLineIf(!disposing, "****************** " + GetType().Name + " 'disposing' is false. ******************");
+			// Must not be run more than once.
+			if (IsDisposed)
+				return;
+
+			if (disposing)
+			{
+				if (_profileNotifySinkCookie > 0)
+				{
+					if (TfSource != null)
+						TfSource.UnadviseSink(_profileNotifySinkCookie);
+					_profileNotifySinkCookie = 0;
+				}
+			}
+
 			Timer?.Dispose();
+			IsDisposed = true;
+		}
+
+		~WindowsKeyboardSwitchingAdapter()
+		{
+			Dispose(false);
+		}
+
+		/// <summary>
+		/// This class receives notifications from TSF when the input method changes.
+		/// It also implements a fallback to Windows messages if TSF isn't available,
+		/// e.g. on Windows XP.
+		/// </summary>
+		private class TfLanguageProfileNotifySink : ITfLanguageProfileNotifySink
+		{
+			private readonly WindowsKeyboardSwitchingAdapter _keyboardSwitcher;
+			private readonly List<Form> _toplevelForms = new List<Form>();
+
+			public TfLanguageProfileNotifySink(WindowsKeyboardSwitchingAdapter keyboardSwitcher)
+			{
+				_keyboardSwitcher = keyboardSwitcher;
+			}
+
+			#region ITfLanguageProfileNotifySink Members
+
+			public bool OnLanguageChange(ushort langid)
+			{
+				// In my tests we never hit this method (Windows 8.1). I don't know if the
+				// method signature is wrong or why that is.
+
+				// Return true to allow the language profile change
+				return true;
+			}
+
+			public void OnLanguageChanged()
+			{
+				IKeyboardDefinition winKeyboard = _keyboardSwitcher.ActiveKeyboard;
+				Debug.WriteLine("Language changed from {0} to {1}",
+					Keyboard.Controller.ActiveKeyboard != null ? Keyboard.Controller.ActiveKeyboard.Layout : "<null>",
+					winKeyboard != null ? winKeyboard.Layout : "<null>");
+
+				_keyboardSwitcher._windowsLanguageProfileSinks.ForEach(
+					sink => sink.OnInputLanguageChanged(Keyboard.Controller.ActiveKeyboard, winKeyboard));
+			}
+			#endregion
+
+			#region Fallback if TSF isn't available
+
+			// The WinKeyboardAdaptor will subscribe to the Form's InputLanguageChanged event
+			// only if TSF is not available. Otherwise this code won't be executed.
+
+			private void OnWindowsMessageInputLanguageChanged(object sender,
+				InputLanguageChangedEventArgs inputLanguageChangedEventArgs)
+			{
+				Debug.Assert(_keyboardSwitcher._profileNotifySinkCookie == 0);
+
+				KeyboardDescription winKeyboard = WinKeyboardUtils.GetKeyboardDescription(inputLanguageChangedEventArgs.InputLanguage.Interface());
+
+				_keyboardSwitcher._windowsLanguageProfileSinks.ForEach(
+					sink => sink.OnInputLanguageChanged(Keyboard.Controller.ActiveKeyboard, winKeyboard));
+			}
+
+			public void RegisterWindowsMessageHandler(Control control)
+			{
+				Debug.Assert(_keyboardSwitcher._profileNotifySinkCookie == 0);
+
+				var topForm = control.FindForm();
+				if (topForm == null || _toplevelForms.Contains(topForm))
+					return;
+
+				_toplevelForms.Add(topForm);
+				topForm.InputLanguageChanged += OnWindowsMessageInputLanguageChanged;
+			}
+
+			public void UnregisterWindowsMessageHandler(Control control)
+			{
+				var topForm = control.FindForm();
+				if (topForm == null || !_toplevelForms.Contains(topForm))
+					return;
+
+				topForm.InputLanguageChanged -= OnWindowsMessageInputLanguageChanged;
+				_toplevelForms.Remove(topForm);
+			}
+			#endregion
 		}
 	}
 }

@@ -10,28 +10,9 @@ using SIL.Keyboarding;
 
 namespace SIL.Windows.Forms.Keyboarding.Windows
 {
-	internal class LayoutName
-	{
-		public LayoutName()
-		{
-			Name = string.Empty;
-			LocalizedName = string.Empty;
-		}
-
-		public LayoutName(string layout) : this(layout, layout)
-		{
-		}
-
-		public LayoutName(string layout, string localizedLayout)
-		{
-			Name = layout;
-			LocalizedName = localizedLayout;
-		}
-
-		public string Name;
-		public string LocalizedName;
-	}
-
+	/// <summary>
+	/// Static methods used with keyboard adapters and switching adapters on windows
+	/// </summary>
 	internal class WinKeyboardUtils
 	{
 		internal static LayoutName GetLayoutNameEx(IntPtr handle)
