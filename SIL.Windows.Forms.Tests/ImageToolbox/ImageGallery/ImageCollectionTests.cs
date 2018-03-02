@@ -18,7 +18,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox.ImageGallery
 		[SetUp]
 		public void Setup()
 		{
-			_collection = new ImageCollection(Path.GetDirectoryName(FileLocator.GetFileDistributedWithApplication("ArtOfReadingIndexV3_en.txt")));
+			_collection = new ImageCollection(Path.GetDirectoryName(FileLocationUtilities.GetFileDistributedWithApplication("ArtOfReadingIndexV3_en.txt")));
 			//PictureCollection.AllowCollectionWithNoImageFolderForTesting = true; // before we load it!
 			_collection.LoadIndex("en");
 		}

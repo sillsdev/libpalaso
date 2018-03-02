@@ -72,16 +72,16 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 			string xulRunnerPath = Environment.GetEnvironmentVariable("XULRUNNER");
 			if (!Directory.Exists(xulRunnerPath))
 			{
-				xulRunnerPath = Path.Combine(FileLocator.DirectoryOfApplicationOrSolution, "xulrunner");
+				xulRunnerPath = Path.Combine(FileLocationUtilities.DirectoryOfApplicationOrSolution, "xulrunner");
 				if (!Directory.Exists(xulRunnerPath))
 				{
 					// Gecko 45
-					xulRunnerPath = Path.Combine(FileLocator.DirectoryOfApplicationOrSolution,
+					xulRunnerPath = Path.Combine(FileLocationUtilities.DirectoryOfApplicationOrSolution,
 						Path.Combine("Firefox"));
 					if (!Directory.Exists(xulRunnerPath))
 					{
 						//if this is a programmer, go look in the lib directory
-						xulRunnerPath = Path.Combine(FileLocator.DirectoryOfApplicationOrSolution,
+						xulRunnerPath = Path.Combine(FileLocationUtilities.DirectoryOfApplicationOrSolution,
 							Path.Combine("lib", "xulrunner"));
 					}
 
@@ -90,7 +90,7 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 					//so we only use it if we don't find the unnumbered alternative.
 					if (!Directory.Exists(xulRunnerPath))
 					{
-						xulRunnerPath = Path.Combine(FileLocator.DirectoryOfApplicationOrSolution,
+						xulRunnerPath = Path.Combine(FileLocationUtilities.DirectoryOfApplicationOrSolution,
 							Path.Combine("lib", "xulrunner" + XulRunnerVersion));
 					}
 
