@@ -1,9 +1,12 @@
-using Icu.Collation;
-using SIL.PlatformUtilities;
+// Copyright (c) 2018 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
 using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
+using Icu.Collation;
+using SIL.PlatformUtilities;
 
 namespace SIL.WritingSystems
 {

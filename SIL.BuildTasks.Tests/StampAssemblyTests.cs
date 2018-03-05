@@ -16,10 +16,10 @@ namespace SIL.BuildTasks.Tests
 [assembly: AssemblyFileVersion(""1.0.0.0"")]";
 
 			var v = stamper.GetExistingAssemblyVersion(content);
-			Assert.AreEqual("1", v.Parts[0]);
-			Assert.AreEqual("*", v.Parts[1]);
-			Assert.AreEqual("3", v.Parts[2]);
-			Assert.AreEqual("44", v.Parts[3]);
+			Assert.AreEqual("1", v.parts[0]);
+			Assert.AreEqual("*", v.parts[1]);
+			Assert.AreEqual("3", v.parts[2]);
+			Assert.AreEqual("44", v.parts[3]);
 		}
 
 		[Test]

@@ -11,7 +11,7 @@
 
 		<!-- Download NuGet.exe if it does not already exist -->
 		<DownloadNuGetExe Condition=" '$(DownloadNuGetExe)' == '' ">true</DownloadNuGetExe>
-    <NuGetExeUrl>https://dist.nuget.org/win-x86-commandline/latest/nuget.exe</NuGetExeUrl>
+		<NuGetExeUrl>https://dist.nuget.org/win-x86-commandline/latest/nuget.exe</NuGetExeUrl>
 	</PropertyGroup>
 
 	<PropertyGroup>

@@ -305,7 +305,7 @@
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <HintPath>..\lib\common\Keyman10Interop.dll</HintPath>
-    </Reference>	
+    </Reference>
     <Reference Include="KeymanLink.dll">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Debug\KeymanLink.dll</HintPath>
@@ -324,7 +324,7 @@
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <HintPath>..\lib\common\Keyman10Interop.dll</HintPath>
-    </Reference>	
+    </Reference>
     <Reference Include="KeymanLink.dll">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Release\KeymanLink.dll</HintPath>
@@ -336,7 +336,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="icu.net, Version=2.3.0.0, Culture=neutral, PublicKeyToken=416fdd914afa6b66, processorArchitecture=MSIL">
-      <HintPath>..\packages\icu.net.2.3.0\lib\net40\icu.net.dll</HintPath>
+      <HintPath>..\packages\icu.net.2.3.0\lib\net451\icu.net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.DotNet.PlatformAbstractions, Version=2.0.4.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.DotNet.PlatformAbstractions.2.0.4\lib\net45\Microsoft.DotNet.PlatformAbstractions.dll</HintPath>
@@ -347,7 +347,7 @@
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-     <Reference Include="System" />
+    <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
