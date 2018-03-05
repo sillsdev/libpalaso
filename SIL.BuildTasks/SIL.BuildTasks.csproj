@@ -310,7 +310,6 @@
     <Compile Include="UpdateBuildTypeFile\UpdateBuildTypeFile.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ExcerciseTasks.msbuild" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

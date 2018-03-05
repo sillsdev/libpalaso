@@ -1,10 +1,12 @@
-// Copyright (c) 2017 SIL International
+// Copyright (c) 2017-2018 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
 using System;
 using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using SIL.PlatformUtilities;
 using SIL.Reporting;
 
 namespace SIL.IO
@@ -22,7 +24,6 @@ namespace SIL.IO
 		/// </summary>
 		/// <param name="srcDirectory">Directory to copy</param>
 		/// <returns>Null if the copy was unsuccessful, otherwise the path to the copied directory</returns>
-
 		public static string CopyDirectoryToTempDirectory(string srcDirectory)
 		{
 			string dstDirectory;
@@ -41,13 +42,11 @@ namespace SIL.IO
 		/// <param name="srcDirectory">Directory being copied</param>
 		/// <param name="dstDirectoryParent">Destination directory where source directory and its contents are copied</param>
 		/// <returns>true if successful, otherwise, false.</returns>
-
 		public static bool CopyDirectory(string srcDirectory, string dstDirectoryParent)
 		{
 			string dstDirectory;
 			return CopyDirectory(srcDirectory, dstDirectoryParent, out dstDirectory);
 		}
-
 
 		private static bool CopyDirectory(string srcDirectory, string dstDirectoryParent, out string dstDirectory)
 		{
@@ -73,7 +72,7 @@ namespace SIL.IO
 		/// <summary>
 		/// Copies the specified source directory's contents to the specified destination directory.
 		/// If the destination directory does not exist, it will be created first. If the source
-		/// directory contains sub directorys, those and their content will also be copied. If the
+		/// directory contains sub directories, those and their content will also be copied. If the
 		/// copy fails at any point in the process, the user is notified of the problem and
 		/// an attempt is made to remove the destination directory if the failure happened part
 		/// way through the process.
@@ -81,7 +80,6 @@ namespace SIL.IO
 		/// <param name="sourcePath">Directory whose contents will be copied</param>
 		/// <param name="destinationPath">Destination directory receiving the content of the source directory</param>
 		/// <returns>true if successful, otherwise, false.</returns>
-		///
 		public static bool CopyDirectoryContents(string sourcePath, string destinationPath)
 		{
 			try
@@ -123,6 +121,9 @@ namespace SIL.IO
 		/// <returns>True if able to set access, False otherwise</returns>
 		public static bool SetFullControl(string fullDirectoryPath, bool showErrorMessage = true)
 		{
+			if (!Platform.IsWindows)
+				return false;
+
 			// get current settings
 			var everyone = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
 			var security = Directory.GetAccessControl(fullDirectoryPath, AccessControlSections.Access);

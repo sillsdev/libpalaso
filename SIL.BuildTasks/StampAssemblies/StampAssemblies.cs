@@ -148,7 +148,7 @@ namespace SIL.BuildTasks.StampAssemblies
 			VersionParts result = new VersionParts
 			{
 				Parts = (string[]) existing.Parts.Clone(),
-				Prerelease = existing.Prerelease
+				Prerelease = incoming.Prerelease ?? existing.Prerelease
 			};
 			for (int i = 0; i < result.Parts.Length; i++)
 			{
@@ -157,8 +157,6 @@ namespace SIL.BuildTasks.StampAssemblies
 				else if (existing.Parts[i] == "*")
 					result.Parts[i] = "0";
 			}
-			if (incoming.Prerelease != null)
-				result.Prerelease = incoming.Prerelease;
 			return result.ToString();
 		}
 
