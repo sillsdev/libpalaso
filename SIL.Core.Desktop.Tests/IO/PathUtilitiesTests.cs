@@ -1,11 +1,10 @@
-// Copyright (c) 2014 SIL International
+// Copyright (c) 2014-2018 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
-using NUnit.Framework;
-using SIL.IO;
-using SIL.PlatformUtilities;
 using System;
 using System.IO;
+using NUnit.Framework;
+using SIL.IO;
 
 namespace SIL.Tests.IO
 {

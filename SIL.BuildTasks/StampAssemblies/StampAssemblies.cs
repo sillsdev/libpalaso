@@ -9,7 +9,7 @@ namespace SIL.BuildTasks.StampAssemblies
 {
 	public class StampAssemblies : Task
 	{
-		public enum VersionFormat
+		private enum VersionFormat
 		{
 			File,
 			Info,
@@ -18,14 +18,14 @@ namespace SIL.BuildTasks.StampAssemblies
 
 		public class VersionParts
 		{
-			public string[] Parts { get; set; }
-			public string Prerelease { get; set; }
+			public string[] parts = new string[4];
+			public string prerelease;
 
 			public override string ToString()
 			{
-				string str = string.Join(".", Parts);
-				if (!string.IsNullOrEmpty(Prerelease))
-					str += "-" + Prerelease;
+				string str = string.Join(".", parts);
+				if (!string.IsNullOrEmpty(prerelease))
+					str += "-" + prerelease;
 				return str;
 			}
 		}
@@ -85,7 +85,12 @@ namespace SIL.BuildTasks.StampAssemblies
 			}
 		}
 
-		public string GetModifiedContents(string contents, bool isCode, string versionStr, string fileVersionStr,
+		public string GetModifiedContents(string contents, string versionStr, string fileVersionStr)
+		{
+			return GetModifiedContents(contents, true, versionStr, fileVersionStr, null);
+		}
+
+		internal string GetModifiedContents(string contents, bool isCode, string versionStr, string fileVersionStr,
 			string packageVersionStr)
 		{
 			// ENHANCE: add property for InformationalVersion
@@ -147,18 +152,16 @@ namespace SIL.BuildTasks.StampAssemblies
 		{
 			VersionParts result = new VersionParts
 			{
-				Parts = (string[]) existing.Parts.Clone(),
-				Prerelease = existing.Prerelease
+				parts = (string[]) existing.parts.Clone(),
+				prerelease = incoming.prerelease ?? existing.prerelease
 			};
-			for (int i = 0; i < result.Parts.Length; i++)
+			for (int i = 0; i < result.parts.Length; i++)
 			{
-				if (incoming.Parts[i] != "*")
-					result.Parts[i] = incoming.Parts[i];
-				else if (existing.Parts[i] == "*")
-					result.Parts[i] = "0";
+				if (incoming.parts[i] != "*")
+					result.parts[i] = incoming.parts[i];
+				else if (existing.parts[i] == "*")
+					result.parts[i] = "0";
 			}
-			if (incoming.Prerelease != null)
-				result.Prerelease = incoming.Prerelease;
 			return result.ToString();
 		}
 
@@ -190,7 +193,12 @@ namespace SIL.BuildTasks.StampAssemblies
 			return GetExistingAssemblyVersion("AssemblyFileVersion", contents);
 		}
 
-		public static VersionParts ParseVersionString(string contents, VersionFormat format = VersionFormat.File)
+		public VersionParts ParseVersionString(string contents, bool allowHashAsRevision = false)
+		{
+			return ParseVersionString(contents, allowHashAsRevision ? VersionFormat.Info : VersionFormat.File);
+		}
+
+		private static VersionParts ParseVersionString(string contents, VersionFormat format)
 		{
 			VersionParts v;
 			if (format == VersionFormat.Semantic)
@@ -199,13 +207,13 @@ namespace SIL.BuildTasks.StampAssemblies
 
 				v = new VersionParts
 				{
-					Parts = new[]
+					parts = new[]
 					{
 						result.Groups[1].Value,
 						result.Groups[2].Value,
 						result.Groups[3].Value
 					},
-					Prerelease = result.Groups[4].Value
+					prerelease = result.Groups[4].Value
 				};
 			}
 			else
@@ -225,7 +233,7 @@ namespace SIL.BuildTasks.StampAssemblies
 
 				v = new VersionParts
 				{
-					Parts = new[]
+					parts = new[]
 					{
 						result.Groups[1].Value,
 						result.Groups[2].Value,
@@ -234,20 +242,18 @@ namespace SIL.BuildTasks.StampAssemblies
 					}
 				};
 
-				if (format == VersionFormat.File && v.Parts.Length == 4
-					&& v.Parts[3].IndexOfAny(new[] { 'a', 'b', 'c', 'd', 'e', 'f' }) != -1)
+				if (format == VersionFormat.File && v.parts.Length == 4
+					&& v.parts[3].IndexOfAny(new[] { 'a', 'b', 'c', 'd', 'e', 'f' }) != -1)
 				{
 					// zero out hash code which we can't have in numeric version numbers
-					v.Parts[3] = "0";
+					v.parts[3] = "0";
 				}
 			}
 
-			for (int i = 0; i < v.Parts.Length; i++)
+			for (int i = 0; i < v.parts.Length; i++)
 			{
-				if (string.IsNullOrEmpty(v.Parts[i]))
-				{
-					v.Parts[i] = "*";
-				}
+				if (string.IsNullOrEmpty(v.parts[i]))
+					v.parts[i] = "*";
 			}
 
 			return v;

@@ -1,7 +1,10 @@
-using SIL.PlatformUtilities;
+// Copyright (c) 2018 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
 using System;
 using System.IO;
 using System.Linq;
+using SIL.PlatformUtilities;
 
 namespace SIL.IO
 {
@@ -72,7 +75,7 @@ namespace SIL.IO
 		public static bool AreEquivalent(DirectoryInfo dirInfo1, DirectoryInfo dirInfo2)
 		{
 			var comparison = Platform.IsWindows ? StringComparison.InvariantCultureIgnoreCase : StringComparison.InvariantCulture;
-			var backslash = new char[] { '\\' }; // added this step because mono does not implicitly convert from char to char[]
+			var backslash = new char[] { '\\', '/' }; // added this step because mono does not implicitly convert from char to char[]
 			return string.Compare(dirInfo1.FullName.TrimEnd(backslash), dirInfo2.FullName.TrimEnd(backslash), comparison) == 0;
 		}
 

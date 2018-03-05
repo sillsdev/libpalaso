@@ -1,4 +1,8 @@
+// Copyright (c) 2018 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
 using System;
+using System.Diagnostics;
 using System.IO;
 using NUnit.Framework;
 using SIL.IO;
@@ -19,8 +23,9 @@ namespace SIL.Tests.IO
 		[SetUp]
 		public void TestSetup()
 		{
-			_srcFolder = Path.Combine(Path.GetTempPath(), "~!source");
-			_dstFolder = Path.Combine(Path.GetTempPath(), "~!destination");
+			string tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+			_srcFolder = Path.Combine(tempDir, "~!source");
+			_dstFolder = Path.Combine(tempDir, "~!destination");
 			Directory.CreateDirectory(_srcFolder);
 		}
 
@@ -149,6 +154,13 @@ namespace SIL.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
+		public void AreEquivalent_ForwardSlashAtEnd_ReturnsTrue()
+		{
+			Assert.IsTrue(DirectoryHelper.AreEquivalent("c:/temp/", "c:/temp"));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
 		public void AreEquivalent_AbsolutePathAndRelativePathToDifferentFolder_ReturnsFalse()
 		{
 			Directory.SetCurrentDirectory(_srcFolder);
@@ -165,17 +177,18 @@ namespace SIL.Tests.IO
 		{
 			Assert.IsTrue(DirectoryHelper.AreEquivalent(".", Directory.GetCurrentDirectory()));
 
-			Directory.SetCurrentDirectory(Path.GetTempPath());
+			string curDir = Path.GetDirectoryName(_srcFolder);
+			Debug.Assert(curDir != null);
+			Directory.SetCurrentDirectory(curDir);
 			Assert.IsTrue(DirectoryHelper.AreEquivalent(_srcFolder, "~!source"));
-			string[] logicalDrives;
+			string[] logicalDrives = null;
 			try
 			{
 				logicalDrives = Directory.GetLogicalDrives();
 			}
 			catch
 			{
-				// Ignore -- can't test this on this system
-				return;
+				Assert.Ignore("Can't test this on this system");
 			}
 			foreach (string logicalDrive in logicalDrives)
 			{
@@ -194,10 +207,11 @@ namespace SIL.Tests.IO
 					try
 					{
 						Directory.SetCurrentDirectory(Path.Combine(logicalDrive, folder));
+						break;
 					}
 					catch
 					{
-						continue; // try another folder
+						// try another folder
 					}
 				}
 				// 02 SEP 2013, Phil Hopper: set correct directory separator for OS
