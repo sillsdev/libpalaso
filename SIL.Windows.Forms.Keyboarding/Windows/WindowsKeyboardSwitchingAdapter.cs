@@ -365,8 +365,8 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 			public bool OnLanguageChange(ushort langid)
 			{
-				// In my tests we never hit this method (Windows 8.1). I don't know if the
-				// method signature is wrong or why that is.
+				// In windows 8 the TSF language bar has been swapped out for the Win8 language switcher and this event is no longer fired
+				// It is also not possible to decline a language change in the new world.
 
 				// Return true to allow the language profile change
 				return true;

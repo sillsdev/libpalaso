@@ -205,10 +205,14 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				}
 				else
 				{
+					if (!langAssocKeyboards.ContainsKey(keyboardName))
+					{
+						continue; // a KeymanKeyboard that is not associated with a language can not be used
+					}
 					var langId = langAssocKeyboards[keyboardName];
-					string[] parts = langId.Split('_');
-					string locale = parts[0];
-					string layout = parts.Length > 1 ? parts[1] : string.Empty;
+
+					string layout, locale;
+					KeyboardController.GetLayoutAndLocaleFromLanguageId(langId, out layout, out locale);
 
 					string cultureName;
 					var inputLanguage = WinKeyboardUtils.GetInputLanguage(locale, layout, out cultureName);
@@ -255,9 +259,8 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			switch (InstalledKeymanVersion)
 			{
 				case KeymanVersion.Keyman10:
-					string[] parts = id.Split('_');
-					string locale = parts[0];
-					string layout = parts.Length > 1 ? parts[1] : string.Empty;
+					string layout, locale;
+					KeyboardController.GetLayoutAndLocaleFromLanguageId(id, out layout, out locale);
 
 					string cultureName;
 					var inputLanguage = WinKeyboardUtils.GetInputLanguage(locale, layout, out cultureName);
@@ -326,11 +329,11 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		private static string GetKeymanRegistryValue(string key, ref int version)
 		{
 			using (var keyman10 = Registry.LocalMachine.OpenSubKey(@"Software\Keyman\Keyman Desktop", false))
-			using (var olderKeyman = Registry.LocalMachine.OpenSubKey(@"Software\Tavultesoft\Keyman", false))
+			using (var keyman6to9 = Registry.LocalMachine.OpenSubKey(@"Software\Tavultesoft\Keyman", false))
 			using (var keyman10_32 = Registry.LocalMachine.OpenSubKey(@"Software\WOW6432Node\Keyman\Keyman Desktop", false))
-			using (var older32Keyman = Registry.LocalMachine.OpenSubKey(@"Software\WOW6432Node\Tavultesoft\Keyman", false))
+			using (var keyman6to9_32 = Registry.LocalMachine.OpenSubKey(@"Software\WOW6432Node\Tavultesoft\Keyman", false))
 			{
-				var keymanKey = keyman10 ?? olderKeyman ?? keyman10_32 ?? older32Keyman;
+				var keymanKey = keyman10 ?? keyman6to9 ?? keyman10_32 ?? keyman6to9_32;
 				if (keymanKey == null)
 					return null;
 
@@ -359,9 +362,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 		public bool IsSecondaryKeyboardSetupApplication => true;
 
-		#endregion
-
-		#region IKeyboardSwitchingAdaptor Members
 		public bool CanHandleFormat(KeyboardFormat format)
 		{
 			CheckDisposed();

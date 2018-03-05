@@ -257,9 +257,8 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		/// </summary>
 		public KeyboardDescription CreateKeyboardDefinition(string id)
 		{
-			string[] parts = id.Split('_');
-			string locale = parts[0];
-			string layout = parts.Length > 1 ? parts[1] : string.Empty;
+			string layout, locale;
+			KeyboardController.GetLayoutAndLocaleFromLanguageId(id, out layout, out locale);
 
 			string cultureName;
 			var inputLanguage = WinKeyboardUtils.GetInputLanguage(locale, layout, out cultureName);

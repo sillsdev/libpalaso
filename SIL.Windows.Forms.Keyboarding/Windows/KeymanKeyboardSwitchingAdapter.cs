@@ -15,7 +15,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 #if !MONO
 			foreach (InputLanguage lang in InputLanguage.InstalledInputLanguages)
 			{
-				if (keyboard.InputLanguage.Culture.EnglishName == lang.Culture.EnglishName)
+				if (keyboard.InputLanguage.Culture.Name == lang.Culture.Name)
 				{
 					InputLanguage.CurrentInputLanguage = lang;
 					return true;
@@ -37,8 +37,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		{
 			get
 			{
-				throw new NotImplementedException(
-					"Keyman keyboards that are not associated with a language are never the system default.");
+				throw new NotImplementedException("Only keyboards of the type KeyboardAdaptorTypeSystem need to return a DefaultKeyboard. KeymanKeyboards are not of that type.");
 			}
 		}
 
