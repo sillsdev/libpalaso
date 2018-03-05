@@ -278,7 +278,17 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			return false;
 		}
 
-		public string GetKeyboardSetupApplication(out string arguments)
+		public Action GetKeyboardSetupAction()
+		{
+			return () =>
+			{
+				string args;
+				var setupApp = GetKeyboardSetupApplication(out args);
+				using (Process.Start(setupApp, args)) {}
+			};
+		}
+
+		private string GetKeyboardSetupApplication(out string arguments)
 		{
 			arguments = @"input.dll";
 			return Path.Combine(

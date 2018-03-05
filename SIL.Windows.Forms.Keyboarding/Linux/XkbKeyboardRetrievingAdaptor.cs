@@ -200,7 +200,16 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			return format == KeyboardFormat.Unknown;
 		}
 
-		public virtual string GetKeyboardSetupApplication(out string arguments)
+		public Action GetKeyboardSetupAction()
+		{
+			return () => {
+				string args;
+				var setupApp = GetKeyboardSetupApplication(out args);
+				using (Process.Start(setupApp, args)) { }
+			};
+		}
+
+		protected virtual string GetKeyboardSetupApplication(out string arguments)
 		{
 			// NOTE: if we get false results (e.g. because the user has installed multiple
 			// desktop environments) we could check for the currently running desktop
