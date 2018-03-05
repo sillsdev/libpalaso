@@ -360,6 +360,29 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			return null;
 		}
 
+		public Action GetKeyboardSetupAction()
+		{
+			switch (InstalledKeymanVersion)
+			{
+				case KeymanVersion.Keyman10:
+					return () =>
+					{
+						var keymanClass = new KeymanClass();
+						keymanClass.Control.OpenConfiguration();
+					};
+				case KeymanVersion.Keyman7to9:
+				case KeymanVersion.Keyman6:
+				return () =>
+				{
+					string args;
+					var setupApp = GetKeyboardSetupApplication(out args);
+					Process.Start(setupApp, args);
+				};
+				default:
+					throw new NotSupportedException($"No keyboard setup action defined for keyman version {InstalledKeymanVersion}");
+			}
+		}
+
 		public bool IsSecondaryKeyboardSetupApplication => true;
 
 		public bool CanHandleFormat(KeyboardFormat format)

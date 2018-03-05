@@ -32,7 +32,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			InitLocales();
 		}
 
-		public override string GetKeyboardSetupApplication(out string arguments)
+		protected override string GetKeyboardSetupApplication(out string arguments)
 		{
 			var program = _helper.GetKeyboardSetupApplication(out arguments);
 			return string.IsNullOrEmpty(program) ? base.GetKeyboardSetupApplication(out arguments) : program;
