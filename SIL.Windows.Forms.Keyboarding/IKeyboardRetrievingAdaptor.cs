@@ -81,9 +81,9 @@ namespace SIL.Windows.Forms.Keyboarding
 		bool CanHandleFormat(KeyboardFormat format);
 
 		/// <summary>
-		/// Gets the keyboard setup application and the arguments needed to call it.
+		/// Gets an action that when executed will launch the keyboard setup application
 		/// </summary>
-		string GetKeyboardSetupApplication(out string arguments);
+		Action GetKeyboardSetupAction();
 
 		/// <summary>
 		/// Returns <c>true</c> if this is the secondary keyboard application, e.g.
