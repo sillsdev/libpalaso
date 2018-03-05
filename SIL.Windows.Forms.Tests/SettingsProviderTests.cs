@@ -1,6 +1,8 @@
+// Copyright (c) 2018 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using NUnit.Framework;
@@ -150,6 +152,10 @@ namespace SIL.Windows.Forms.Tests
 			Assert.That(fileContent, Is.StringContaining("John"));
 		}
 
+		/// <summary>
+		/// This test is ignored on Mono, because of known issues in the ApplicationSettingsBase class (Xamarin-15818
+		/// and Xamarin-2315). This issue is fixed in Mono-SIL.
+		/// </summary>
 		[Test]
 		[Category("KnownMonoIssue")]
 		public void Upgrade_SectionsRenamed_SettingsMigrated()

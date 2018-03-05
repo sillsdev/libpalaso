@@ -1,12 +1,10 @@
-// Copyright (c) 2017 SIL International
+// Copyright (c) 2017-2018 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-
 using NUnit.Framework;
 
 namespace SIL.Tests.ExtractCopyright
@@ -178,6 +176,7 @@ License: MIT
 				copyrights.AddOrUpdateParagraphFromAcknowledgement(ackDict[key], "");
 			}
 
+			// The Mono.Posix acknowledgement is intentionally ignored, so subtract it from acknowledgment count
 			Assert.LessOrEqual(ackDict.Keys.Count - 1 + 3, copyrights.Paragraphs.Count, "We should have the two standard paragraphs, one paragraph per acknowledgement, and at least one license paragraph");
 
 			// Collect the license paragraphs, assert that the MIT license has a paragraph, and test its content.

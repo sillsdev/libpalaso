@@ -1,5 +1,8 @@
-using SIL.IO;
+// Copyright (c) 2018 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
 using System;
+using SIL.IO;
 
 namespace SIL.Tests.IO
 {

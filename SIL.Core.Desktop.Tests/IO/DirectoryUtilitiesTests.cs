@@ -1,7 +1,10 @@
+// Copyright (c) 2018 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
+using System.IO;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.Reporting;
-using System.IO;
 
 namespace SIL.Tests.IO
 {
@@ -16,8 +19,9 @@ namespace SIL.Tests.IO
 		public void TestSetup()
 		{
 			ErrorReport.IsOkToInteractWithUser = false;
-			_srcFolder = Path.Combine(Path.GetTempPath(), "~!source");
-			_dstFolder = Path.Combine(Path.GetTempPath(), "~!destination");
+			string tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+			_srcFolder = Path.Combine(tempDir, "~!source");
+			_dstFolder = Path.Combine(tempDir, "~!destination");
 			Directory.CreateDirectory(_srcFolder);
 		}
 
@@ -42,7 +46,7 @@ namespace SIL.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void CopyFolder_SourceDoesNotExist_ReturnsFalse()
+		public void CopyDirectoryContents_SourceDoesNotExist_ReturnsFalse()
 		{
 			using (new ErrorReport.NonFatalErrorReportExpected())
 				Assert.IsFalse(DirectoryUtilities.CopyDirectoryContents("sblah", "dblah"));
@@ -50,7 +54,7 @@ namespace SIL.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void CopyFolder_DestinationFolderDoesNotExist_CreatesItAndReturnsTrue()
+		public void CopyDirectoryContents_DestinationFolderDoesNotExist_CreatesItAndReturnsTrue()
 		{
 			Assert.IsFalse(Directory.Exists(_dstFolder));
 			Assert.IsTrue(DirectoryUtilities.CopyDirectoryContents(_srcFolder, _dstFolder));
@@ -59,7 +63,7 @@ namespace SIL.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void CopyFolder_SourceContainsFilesNoSubFolders_CopiesThemAndSucceeds()
+		public void CopyDirectoryContents_SourceContainsFilesNoSubFolders_CopiesThemAndSucceeds()
 		{
 			File.CreateText(Path.Combine(_srcFolder, "file1.txt")).Close();
 			File.CreateText(Path.Combine(_srcFolder, "file2.txt")).Close();
@@ -71,7 +75,7 @@ namespace SIL.Tests.IO
 		/// ------------------------------------------------------------------------------------
 		[Test]
 		[Platform(Exclude = "Linux", Reason = "This test won't fail as expected on Linux")]
-		public void CopyFolder_SourceContainsLockedFile_ReturnsFalse()
+		public void CopyDirectoryContents_SourceContainsLockedFile_ReturnsFalse()
 		{
 			using (new ErrorReport.NonFatalErrorReportExpected())
 			using (var fs = File.Open(Path.Combine(_srcFolder, "file1.txt"), FileMode.Append))
@@ -84,7 +88,7 @@ namespace SIL.Tests.IO
 		/// ------------------------------------------------------------------------------------
 		[Test]
 		[Platform(Exclude = "Linux", Reason = "This test won't fail as expected on Linux")]
-		public void CopyFolder_CopyFails_DestinationFolderNotLeftBehind()
+		public void CopyDirectoryContents_CopyFails_DestinationFolderNotLeftBehind()
 		{
 			using (new ErrorReport.NonFatalErrorReportExpected())
 			using (var fs = File.Open(Path.Combine(_srcFolder, "file1.txt"), FileMode.Append))
@@ -97,7 +101,7 @@ namespace SIL.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void CopyFolder_SourceContainsEmptySubFolders_CopiesThem()
+		public void CopyDirectoryContents_SourceContainsEmptySubFolders_CopiesThem()
 		{
 			Directory.CreateDirectory(Path.Combine(_srcFolder, "subfolder1"));
 			Directory.CreateDirectory(Path.Combine(_srcFolder, "subfolder2"));
@@ -108,7 +112,7 @@ namespace SIL.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void CopyFolder_SourceContainsSubFolderWithFiles_CopiesThem()
+		public void CopyDirectoryContents_SourceContainsSubFolderWithFiles_CopiesThem()
 		{
 			var subfolder = Path.Combine(_srcFolder, "subfolder");
 			Directory.CreateDirectory(subfolder);
@@ -121,7 +125,7 @@ namespace SIL.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void CopyFolderToTempFolder_SourceFolderExists_ReturnsCorrectFolderPath()
+		public void CopyDirectoryToTempDirectory_SourceFolderExists_ReturnsCorrectFolderPath()
 		{
 			string srcFolder2 = Path.Combine(_srcFolder, "copyFrom");
 			Directory.CreateDirectory(srcFolder2);
@@ -143,7 +147,7 @@ namespace SIL.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void CopyFolderToTempFolder_SourceFolderExists_MakesCopyInTempFolder()
+		public void CopyDirectoryToTempDirectory_SourceFolderExists_MakesCopyInTempFolder()
 		{
 			string srcFolder2 = Path.Combine(_srcFolder, "copyFrom");
 			Directory.CreateDirectory(srcFolder2);
@@ -163,7 +167,7 @@ namespace SIL.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void CopyFolder_DestinationFolderDoesNotExist_ReturnsFalse()
+		public void CopyDirectory_DestinationFolderDoesNotExist_ReturnsFalse()
 		{
 			using (new ErrorReport.NonFatalErrorReportExpected())
 				Assert.IsFalse(DirectoryUtilities.CopyDirectory(_srcFolder, _dstFolder));
@@ -171,7 +175,7 @@ namespace SIL.Tests.IO
 
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void CopyFolder_SourceFolderExists_MakesCopyOfFolderWithSameName()
+		public void CopyDirectory_SourceFolderExists_MakesCopyOfFolderWithSameName()
 		{
 			Directory.CreateDirectory(_dstFolder);
 			Assert.IsTrue(DirectoryUtilities.CopyDirectory(_srcFolder, _dstFolder));
