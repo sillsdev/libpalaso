@@ -288,7 +288,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 		// The following methods were added to allow dialogs to use the PortableClipboard in TextBox and RichTextBox
 		// controls.  It's possible that these methods might only be used on Linux, but they compile (and would work)
 		// fine for Windows.  I prefer not using #if MONO more than absolutely necessary.
-		// See SIL.Windows.Forms.ClearShare.WinFormsUI.MetadataEditorDialog for an example of using these methods.
+		// These methods are used by FormUsingPortableClipboard.
 
 		/// <summary>
 		/// Recursively remove all TextBox menus found owned by the control.
@@ -364,7 +364,12 @@ namespace SIL.Windows.Forms.Miscellaneous
 				var length = box.SelectionLength;
 				var text = box.Text;
 				if (length > 0)
-					text = text.Remove(start, length);
+				{
+					if (start + length > text.Length)	// shouldn't happen, but sometimes paranoia pays
+						text = text.Remove(start);
+					else
+						text = text.Remove(start, length);
+				}
 				var clipText = SIL.Windows.Forms.Miscellaneous.PortableClipboard.GetText();
 				box.Text = text.Insert(start, clipText);
 				box.SelectionStart = start + clipText.Length;
@@ -385,6 +390,10 @@ namespace SIL.Windows.Forms.Miscellaneous
 			if (length > 0)
 			{
 				var start = box.SelectionStart;
+				if (start + length > box.Text.Length)
+					length = box.Text.Length - start;	// shouldn't happen, but paranoia sometimes pays.
+				if (length <= 0)
+					return true;
 				var text = box.Text.Substring(start, length);
 				SIL.Windows.Forms.Miscellaneous.PortableClipboard.SetText(text);
 				if (cut)
