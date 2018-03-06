@@ -281,6 +281,119 @@ namespace SIL.Windows.Forms.Miscellaneous
 			return null;
 		}
 #endif
-	}
 
+		// -------------------------------------------------------------------------------------------------------------
+		// Clipboard operations (copy/cut/paste) in text boxes do not work properly on Linux in some situations,
+		// freezing or crashing the program. See https://issues.bloomlibrary.org/youtrack/issue/BL-5681 for one example.
+		// The following methods were added to allow dialogs to use the PortableClipboard in TextBox and RichTextBox
+		// controls.  It's possible that these methods might only be used on Linux, but they compile (and would work)
+		// fine for Windows.  I prefer not using #if MONO more than absolutely necessary.
+		// See SIL.Windows.Forms.ClearShare.WinFormsUI.MetadataEditorDialog for an example of using these methods.
+
+		/// <summary>
+		/// Recursively remove all TextBox menus found owned by the control.
+		/// </summary>
+		/// <remarks>>
+		/// It might be better to hook up the copy/cut/paste commands to use the PortableClipboard instead, but that
+		/// would be a lot trickier to pull off reliably.
+		/// </remarks>
+		public static void RemoveTextboxMenus(Control control)
+		{
+			if (control is TextBoxBase)
+			{
+				(control as TextBoxBase).ContextMenu = null;
+				return;
+			}
+			else if (control == null || control.Controls == null)
+			{
+				return;
+			}
+			foreach (var ctl in control.Controls)
+				RemoveTextboxMenus(ctl as Control);
+		}
+
+		/// <summary>
+		/// Process the clipboard cmd keys for a dialog.  This is called from a ProcessCmdKeys override method.
+		/// </summary>
+		/// <returns><c>true</c>, if a clipboard command key for this dialog was processed, <c>false</c> otherwise.</returns>
+		public static bool ProcessClipboardCmdKeysForDialog(Form form, Message msg, Keys keyData)
+		{
+			switch (keyData)
+			{
+			case Keys.Control|Keys.V:
+				return PortablePasteIntoTextBox(form, msg.HWnd);
+			case Keys.Control|Keys.C:
+				return PortableCopyOrCutFromTextBox(form, msg.HWnd, false);
+			case Keys.Control|Keys.X:
+				return PortableCopyOrCutFromTextBox(form, msg.HWnd, true);
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Recursively search for a TextBox or RichTextBox control with the given handle.
+		/// </summary>
+		/// <returns>the matching TextBoxBase control if found, null otherwise.</returns>
+		private static TextBoxBase GetTextBoxFromHWnd(Control control, IntPtr hwnd)
+		{
+			if (control is TextBoxBase && (control as TextBoxBase).Handle == hwnd)
+				return (control as TextBoxBase);
+			else if (control == null || control.Controls == null)
+				return null;
+			foreach (var ctl in control.Controls)
+			{
+				var box = GetTextBoxFromHWnd(ctl as Control, hwnd);
+				if (box != null)
+					return box;
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Paste from the PortableClipboard into a textbox in the given form that matches the given hwnd.
+		/// </summary>
+		/// <returns><c>true</c>, if pasting into a textbox was successful, <c>false</c> otherwise.</returns>
+		private static bool PortablePasteIntoTextBox(Form form, IntPtr hwnd)
+		{
+			var box = GetTextBoxFromHWnd(form, hwnd);
+			if (box == null)
+				return false;
+			if (SIL.Windows.Forms.Miscellaneous.PortableClipboard.ContainsText())
+			{
+				var start = box.SelectionStart;
+				var length = box.SelectionLength;
+				var text = box.Text;
+				if (length > 0)
+					text = text.Remove(start, length);
+				var clipText = SIL.Windows.Forms.Miscellaneous.PortableClipboard.GetText();
+				box.Text = text.Insert(start, clipText);
+				box.SelectionStart = start + clipText.Length;
+			}
+			return true;
+		}
+
+		/// <summary>
+		/// Copy (or cut) into the PortableClipboard from a textbox in the given form that matches the given hwnd.
+		/// </summary>
+		/// <returns><c>true</c>, if copying or cutting from a textbox was successful, <c>false</c> otherwise.</returns>
+		private static bool PortableCopyOrCutFromTextBox(Form form, IntPtr hwnd, bool cut)
+		{
+			var box = GetTextBoxFromHWnd(form, hwnd);
+			if (box == null)
+				return false;
+			var length = box.SelectionLength;
+			if (length > 0)
+			{
+				var start = box.SelectionStart;
+				var text = box.Text.Substring(start, length);
+				SIL.Windows.Forms.Miscellaneous.PortableClipboard.SetText(text);
+				if (cut)
+				{
+					box.Text = box.Text.Remove(start, length);
+					box.SelectionStart = start;
+				}
+			}
+			return true;
+		}
+	}
 }
