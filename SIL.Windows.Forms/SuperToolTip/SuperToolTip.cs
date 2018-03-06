@@ -168,14 +168,7 @@ namespace SIL.Windows.Forms.SuperToolTip
 			if (controlTable[owner].UseSuperToolTip)
 			{
 				CloseTooltip();
-				if (_useFadding)
-				{
-					FadeIn();
-				}
-
 				winData.SuperInfo = controlTable[owner].SuperToolTipInfo;
-				window.Size = winData.Size;
-
 				if (winData.SuperInfo.OffsetForWhereToDisplay != default(Point))
 				{
 					window.Location = owner.PointToScreen(winData.SuperInfo.OffsetForWhereToDisplay);
@@ -184,7 +177,10 @@ namespace SIL.Windows.Forms.SuperToolTip
 				{
 					window.Location = owner.PointToScreen(new Point(0, owner.Height));
 				}
-
+				if (_useFadding)
+				{
+					FadeIn();
+				}
 				winData.GotFocus += OnGotFocus;
 				window.Show(owner);
 				winData.GotFocus -= OnGotFocus;
@@ -202,21 +198,42 @@ namespace SIL.Windows.Forms.SuperToolTip
 			fadingTimer.Stop();
 			window.MouseLeave -= OnToolTipMouseLeave;
 			window.Hide();
-			window.Close();
-			window = null;
+			winData.SizeChanged -= OnWinDataSizeChanged;
+			window.Controls.Remove(winData);
+			winData.Dispose();
+			winData = null;
 			CreateTooltipWindows();
 		}
 
 		private void CreateTooltipWindows()
 		{
-			window = new SuperToolTipWindow();
+			if (window == null)
+			{
+				window = new SuperToolTipWindow();
+				if (SIL.PlatformUtilities.Platform.IsLinux)
+					window.SizeChanged += CheckSizeChange;
+			}
 			window.MouseLeave += OnToolTipMouseLeave;
 			winData = new SuperToolTipWindowData();
-			winData.SizeChanged += OnWindowSizeChanged;
+			winData.SizeChanged += OnWinDataSizeChanged;
 			window.Controls.Add(winData);
 		}
 
-		private void OnWindowSizeChanged(object sender, EventArgs e)
+		/// <summary>
+		/// Ensure that the tooltip window doesn't get set too small.  This is happening
+		/// frequently on Linux/Mono, possibly due to a different order of events than
+		/// in Windows/.Net.)
+		/// </summary>
+		private void CheckSizeChange(object sender, EventArgs e)
+		{
+			if (winData != null && window.Size != winData.Size)
+			{
+				//System.Diagnostics.Debug.WriteLine(String.Format("Resetting SuperToolTip window.Size = {0} to winData.Size = {1}", window.Size, winData.Size));
+				window.Size = winData.Size;
+			}
+		}
+
+		private void OnWinDataSizeChanged(object sender, EventArgs e)
 		{
 		   window.Size = winData.Size;
 		}
@@ -247,8 +264,7 @@ namespace SIL.Windows.Forms.SuperToolTip
 			}
 			else if (window.Opacity <= 0.0 && fadingDirection == FadingDirection.FadeOut)
 			{
-				fadingTimer.Stop();
-				window.Close();
+				CloseTooltip();
 			}
 		}
 
@@ -324,6 +340,12 @@ namespace SIL.Windows.Forms.SuperToolTip
 			if (disposing && (components != null))
 			{
 				components.Dispose();
+			}
+			if (window != null)
+			{
+				window.Hide();
+				window.Close();
+				window = null;
 			}
 			base.Dispose(disposing);
 		}
