@@ -4,7 +4,7 @@ using L10NSharp;
 
 namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 {
-	public partial class MetadataEditorDialog : Form
+	public partial class MetadataEditorDialog : SIL.Windows.Forms.Miscellaneous.FormUsingPortableClipboard
 	{
 		private readonly Metadata _originalMetaData;
 		private Metadata _returnMetaData;
@@ -58,34 +58,6 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		private void _minimallyCompleteCheckTimer_Tick(object sender, EventArgs e)
 		{
 			_okButton.Enabled = _metadataEditorControl.Metadata.IsMinimallyComplete;
-		}
-
-		private bool _usePortableClipboard;
-		/// <summary>
-		/// Clipboard operations (copy/cut/paste) in text boxes may not work properly on Linux
-		/// in some known situations, freezing or crashing the program.
-		/// See https://issues.bloomlibrary.org/youtrack/issue/BL-5681 for one example.
-		/// </summary>
-		public bool UsePortableClipboard
-		{
-			get { return _usePortableClipboard; }
-			set
-			{
-				_usePortableClipboard = value;
-				// Note that TextBox.ShortcutsEnabled does nothing in the Mono runtime.
-				if (value)
-					SIL.Windows.Forms.Miscellaneous.PortableClipboard.RemoveTextboxMenus(this);
-			}
-		}
-
-		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-		{
-			if (UsePortableClipboard &&
-				SIL.Windows.Forms.Miscellaneous.PortableClipboard.ProcessClipboardCmdKeysForDialog(this, msg, keyData))
-			{
-				return true;
-			}
-			return base.ProcessCmdKey(ref msg, keyData);
 		}
 	}
 }
