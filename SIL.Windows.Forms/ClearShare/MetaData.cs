@@ -1,4 +1,6 @@
-﻿using System;
+// Copyright (c) 2018 SIL International 
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT) 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -784,7 +786,7 @@ namespace SIL.Windows.Forms.ClearShare
 				CopyrightNotice = "Copyright © " + by;
 		}
 
-		const string kCopyrightPattern = @"\D*(?<year>\d\d\d\d)?(,\s)?(?<by>.+)?";
+		const string kCopyrightPattern = @"\D*(?<year>\d\d\d\d)?(,\s)?(?<by>(.|\r?\n)+)?";
 		const string kNoYearPattern = @"([cC]opyright,?\s+)?(COPYRIGHT,?\s+)?\©?\s*(?<by>.+)";
 		private const string kNsCollections = "http://www.metadataworkinggroup.com/schemas/collections/";
 		private const string kNsCc = "http://creativecommons.org/ns#";
