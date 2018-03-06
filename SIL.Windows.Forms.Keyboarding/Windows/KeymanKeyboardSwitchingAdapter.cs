@@ -12,6 +12,10 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 	{
 		public bool ActivateKeyboard(KeyboardDescription keyboard)
 		{
+			if (keyboard?.InputLanguage?.Culture == null)
+			{
+				return false;
+			}
 #if !MONO
 			foreach (InputLanguage lang in InputLanguage.InstalledInputLanguages)
 			{
