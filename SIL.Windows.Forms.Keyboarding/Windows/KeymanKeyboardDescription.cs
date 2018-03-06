@@ -1,7 +1,6 @@
-// Copyright (c) 2014 SIL International
+// Copyright (c) 2014-2018 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
-using System.Diagnostics.CodeAnalysis;
 using System.Security;
 using Microsoft.Win32;
 using SIL.Keyboarding;
@@ -13,8 +12,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 	/// Keyboard description for a Keyman keyboard not associated with a windows language
 	/// </summary>
 	/// ----------------------------------------------------------------------------------------
-	[SuppressMessage("Gendarme.Rules.Design", "TypesWithNativeFieldsShouldBeDisposableRule",
-		Justification = "WindowHandle is a reference to a control")]
 	internal class KeymanKeyboardDescription : KeyboardDescription
 	{
 		private static readonly bool KeymanKeyboardSwitchingSettingEnabled;
@@ -65,12 +62,9 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			return true;
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the
-		/// <see cref="T:SIL.Windows.Forms.Keyboarding.Windows.KeymanKeyboardDescription"/> class.
-		/// </summary>
+		/// <summary/>
 		internal KeymanKeyboardDescription(string layout, bool isKeyman6, KeymanKeyboardAdaptor engine, bool isAvailable)
-			: base(layout, layout, layout, string.Empty, isAvailable, engine)
+			: base(layout, layout, layout, string.Empty, isAvailable, engine.SwitchingAdaptor)
 		{
 			IsKeyman6 = isKeyman6;
 		}

@@ -1,7 +1,6 @@
-// Copyright (c) 2013 SIL International
+// Copyright (c) 2013-2018 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Win32;
 using SIL.Keyboarding;
 
@@ -17,20 +16,15 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 	/// differing keyboards. The user expects that a keyboard keeps its state between fields.
 	/// </remarks>
 	/// ----------------------------------------------------------------------------------------
-	[SuppressMessage("Gendarme.Rules.Design", "TypesWithNativeFieldsShouldBeDisposableRule",
-		Justification = "WindowHandle is a reference to a control")]
 	internal class WinKeyboardDescription : KeyboardDescription
 	{
 		private string _localizedName;
 		private readonly bool _useNfcContext;
 
-		/// <summary>
-		/// Initializes a new instance of the
-		/// <see cref="T:SIL.Windows.Forms.Keyboarding.Windows.WinKeyboardDescription"/> class.
-		/// </summary>
+		/// <summary/>
 		internal WinKeyboardDescription(string id, string name, string layout, string locale, bool isAvailable,
 			IInputLanguage inputLanguage, WinKeyboardAdaptor engine, string localizedName, TfInputProcessorProfile profile)
-			: base(id, name, layout, locale, isAvailable, engine)
+			: base(id, name, layout, locale, isAvailable, engine.SwitchingAdaptor)
 		{
 			InputLanguage = inputLanguage;
 			_localizedName = localizedName;
@@ -73,7 +67,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		internal int SentenceMode { get; set; }
 		internal IntPtr WindowHandle { get; set; }
 
-		internal TfInputProcessorProfile InputProcessorProfile { get; set; }
+		public TfInputProcessorProfile InputProcessorProfile { get; set; }
 
 		internal void SetIsAvailable(bool isAvailable)
 		{

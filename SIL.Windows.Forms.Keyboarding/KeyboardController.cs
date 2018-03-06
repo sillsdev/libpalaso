@@ -526,5 +526,12 @@ namespace SIL.Windows.Forms.Keyboarding
 			}
 			set { _activeKeyboard = value; }
 		}
+
+		internal static void GetLayoutAndLocaleFromLanguageId(string id, out string layout, out string locale)
+		{
+			var parts = id.Split('_');
+			locale = parts[0];
+			layout = parts.Length > 1 ? parts[1] : String.Empty;
+		}
 	}
 }

@@ -33,8 +33,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			_defaultFontSize = _sortRulesTextBox.Font.SizeInPoints;
 
 			// default text for testing the sort rules
-			// default text for testing the sort rules; bug fix for WS-55 so all platforms have the right line ending
-			_testSortText.Text = String.Join(Environment.NewLine, new string[] { "pear", "apple", "orange", "mango", "peach" });
+			_testSortText.Text = string.Join(Environment.NewLine, "pear", "apple", "orange", "mango", "peach");
 		}
 
 		public void BindToModel(WritingSystemSetupModel model)
