@@ -308,7 +308,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Debug\L10NSharp.dll</HintPath>
     </Reference>
-	<Reference Include="NAudio">
+    <Reference Include="NAudio">
       <HintPath>..\packages\NAudio.1.8.4\lib\NAudio.dll</HintPath>
     </Reference>
     <!-- this is the Microsoft WIndows Image Acquisition COM library, for scanner and camera control-->
@@ -577,7 +577,7 @@
     </Compile>
     <Compile Include="ImageToolbox\ImageAcquisitionService.cs" />
     <Compile Include="Miscellaneous\PortableClipboard.cs" />
-    <Compile Include="Miscellaneous\FormUsingPortableClipboard.cs" />
+    <Compile Include="Miscellaneous\FormForUsingPortableClipboard.cs" />
     <Compile Include="Miscellaneous\IUserInterfaceMemory.cs" />
     <Compile Include="Miscellaneous\SILAboutBox.cs">
       <SubType>Form</SubType>

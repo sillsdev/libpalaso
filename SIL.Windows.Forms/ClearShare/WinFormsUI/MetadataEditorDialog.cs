@@ -4,7 +4,7 @@ using L10NSharp;
 
 namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 {
-	public partial class MetadataEditorDialog : SIL.Windows.Forms.Miscellaneous.FormUsingPortableClipboard
+	public partial class MetadataEditorDialog : SIL.Windows.Forms.Miscellaneous.FormForUsingPortableClipboard
 	{
 		private readonly Metadata _originalMetaData;
 		private Metadata _returnMetaData;
