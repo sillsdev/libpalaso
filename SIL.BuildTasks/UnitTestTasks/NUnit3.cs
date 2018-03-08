@@ -48,13 +48,7 @@ namespace SIL.BuildTasks.UnitTestTasks
 		/// Gets the name (without path) of the NUnit executable. When running on Mono this is
 		/// different from ProgramNameAndPath() which returns the executable we'll start.
 		/// </summary>
-		protected override string RealProgramName
-		{
-			get
-			{
-				return "nunit3-console.exe";
-			}
-		}
+		protected override string RealProgramName => "nunit3-console.exe";
 
 		protected override string AddAdditionalProgramArguments()
 		{
