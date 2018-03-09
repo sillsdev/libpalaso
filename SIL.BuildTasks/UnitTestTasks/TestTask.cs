@@ -290,16 +290,29 @@ namespace SIL.BuildTasks.UnitTestTasks
 						break;
 					}
 
-					if (Verbose)
+					bool logError = false;
+					StringComparison comp = StringComparison.OrdinalIgnoreCase;
+
+					// "The standard error stream is the default destination for error messages and other diagnostic warnings."
+					// By default log the message as it is most likely a warning.
+					// If the stderr message includes error, crash or fail then log it as an error
+					// and investigate. Change this if it is too broad.
+					string[] toerror = { "error", "crash", "fail" };
+					foreach (string msg in toerror)
 					{
-						// For some odd reason, these get sent to standard error instead of standard output.
-						// That means our TC builds can see them and report a failed build.
-						if (!logContents.StartsWith("TeamCity addin installed") &&
-							!logContents.StartsWith("TeamCity addin initializing...") &&
-							!logContents.StartsWith("TeamCity addin loaded"))
+						if (logContents.IndexOf(msg, comp) >= 0)
 						{
-							Log.LogError(logContents);
+							logError = true;
 						}
+					}
+
+					if (logError)
+					{
+						Log.LogError(logContents);
+					}
+					else
+					{
+						Log.LogMessage(MessageImportance.High, logContents);
 					}
 
 					// ensure only one thread writes to the log at any time
