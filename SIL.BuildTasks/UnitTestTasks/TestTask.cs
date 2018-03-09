@@ -291,7 +291,6 @@ namespace SIL.BuildTasks.UnitTestTasks
 					}
 
 					bool logError = false;
-					StringComparison comp = StringComparison.OrdinalIgnoreCase;
 
 					// "The standard error stream is the default destination for error messages and other diagnostic warnings."
 					// By default log the message as it is most likely a warning.
@@ -300,7 +299,7 @@ namespace SIL.BuildTasks.UnitTestTasks
 					string[] toerror = { "error", "crash", "fail" };
 					foreach (string msg in toerror)
 					{
-						if (logContents.IndexOf(msg, comp) >= 0)
+						if (logContents.IndexOf(msg, StringComparison.OrdinalIgnoreCase) >= 0)
 						{
 							logError = true;
 						}
