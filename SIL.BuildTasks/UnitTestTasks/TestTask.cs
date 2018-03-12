@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
@@ -49,8 +50,8 @@ namespace SIL.BuildTasks.UnitTestTasks
 		public int FudgeFactor { get; set; }
 
 		/// <summary>
-		/// If <c>true</c> print the output of NUnit immediately, otherwise print it ater NUnit
-		/// finished.
+		/// If <c>true</c> print the output of NUnit immediately, otherwise print it after NUnit
+		/// finishes.
 		/// </summary>
 		/// <value><c>true</c> if verbose; otherwise, <c>false</c>.</value>
 		public bool Verbose { get; set; }
@@ -258,7 +259,10 @@ namespace SIL.BuildTasks.UnitTestTasks
 						break;
 					}
 
-					Log.LogMessage(Importance, logContents);
+					if (Verbose)
+					{
+						Log.LogMessage(Importance, logContents);
+					}
 
 					// ensure only one thread writes to the log at any time
 					lock (LockObject)
@@ -290,28 +294,19 @@ namespace SIL.BuildTasks.UnitTestTasks
 						break;
 					}
 
-					bool logError = false;
-
 					// "The standard error stream is the default destination for error messages and other diagnostic warnings."
 					// By default log the message as it is most likely a warning.
 					// If the stderr message includes error, crash or fail then log it as an error
 					// and investigate. Change this if it is too broad.
 					string[] toerror = { "error", "crash", "fail" };
-					foreach (string msg in toerror)
-					{
-						if (logContents.IndexOf(msg, StringComparison.OrdinalIgnoreCase) >= 0)
-						{
-							logError = true;
-						}
-					}
 
-					if (logError)
+					if (toerror.Any(err => logContents.IndexOf(err, StringComparison.OrdinalIgnoreCase) >= 0))
 					{
 						Log.LogError(logContents);
 					}
-					else
+					else if (Verbose)
 					{
-						Log.LogMessage(MessageImportance.High, logContents);
+						Log.LogWarning(logContents);
 					}
 
 					// ensure only one thread writes to the log at any time
