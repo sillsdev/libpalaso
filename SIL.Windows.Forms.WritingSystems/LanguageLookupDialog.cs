@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Windows.Forms;
 using SIL.WritingSystems;
+using SIL.Windows.Forms.Miscellaneous;
 
 namespace SIL.Windows.Forms.WritingSystems
 {
-	public partial class LanguageLookupDialog : Form
+	public partial class LanguageLookupDialog : FormForUsingPortableClipboard
 	{
 		public LanguageLookupDialog()
 		{
