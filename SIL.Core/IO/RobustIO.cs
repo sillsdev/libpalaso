@@ -1,8 +1,14 @@
-﻿using System.IO;
+// Copyright (c) 2018 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
+using System;
+using System.IO;
 using System.Text;
+using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using SIL.Code;
+using SIL.PlatformUtilities;
 
 namespace SIL.IO
 {
@@ -14,23 +20,111 @@ namespace SIL.IO
 	/// </summary>
 	public static class RobustIO
 	{
-		public static void DeleteDirectory(string path)
-		{
-			// This is not the same as DirectoryUtilities.DeleteDirectoryRobust(path)
-			// as this version requires the directory to be empty.
-			RetryUtility.Retry(() => Directory.Delete(path));
-		}
-
-		public static void DeleteDirectory(string path, bool recursive)
+		public static void DeleteDirectory(string path, bool recursive = false)
 		{
 			if(recursive)
 			{
-				var succeeded = DirectoryUtilities.DeleteDirectoryRobust(path);
+				var succeeded = DeleteDirectoryAndContents(path);
 				if(!succeeded)
 					throw new IOException("Could not delete directory "+path);
 			}
 			else
 				RetryUtility.Retry(() => Directory.Delete(path, false));
+		}
+
+		/// <summary>
+		/// There are various things which can prevent a simple directory deletion, mostly timing related things which are hard to debug.
+		/// This method uses all the tricks to do its best.
+		/// </summary>
+		/// <returns>returns true if the directory is fully deleted</returns>
+		public static bool DeleteDirectoryAndContents(string path, bool overrideReadOnly = true)
+		{
+			// ReSharper disable EmptyGeneralCatchClause
+
+			if (!Platform.IsWindows)
+			{
+				// The Mono runtime deletes readonly files and directories that contain readonly files.
+				// This violates the MSDN specification of Directory.Delete and File.Delete.
+				if (!overrideReadOnly && DirectoryContainsReadOnly(path))
+					return false;
+			}
+
+			for (int i = 0; i < 40; i++) // each time, we sleep a little. This will try for up to 2 seconds (40*50ms)
+			{
+				if (!Directory.Exists(path))
+					break;
+
+				try
+				{
+					Directory.Delete(path, true);
+				}
+				catch (Exception)
+				{
+				}
+
+				if (!Directory.Exists(path))
+					break;
+
+				try
+				{
+					//try to clear it out a bit
+					string[] dirs = Directory.GetDirectories(path);
+					string[] files = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
+					foreach (string filePath in files)
+					{
+						try
+						{
+							if (overrideReadOnly)
+							{
+								File.SetAttributes(filePath, FileAttributes.Normal);
+							}
+							File.Delete(filePath);
+						}
+						catch (Exception)
+						{
+						}
+					}
+					foreach (var dir in dirs)
+					{
+						DeleteDirectoryAndContents(dir, overrideReadOnly);
+					}
+
+				}
+				catch (Exception)//yes, even these simple queries can throw exceptions, as stuff suddenly is deleted based on our prior request
+				{
+				}
+				//sleep and let some OS things catch up
+				Thread.Sleep(50);
+			}
+
+			return !Directory.Exists(path);
+			// ReSharper restore EmptyGeneralCatchClause
+		}
+
+		/// <summary>
+		/// Check whether the given directory is readonly, or contains files or subdirectories that are readonly.
+		/// </summary>
+		/// <remarks>
+		/// Using this check could be considered a workaround for a bug in the Mono runtime, but that bug goes so
+		/// deep that it's safer and easier to work around it here.
+		/// </remarks>
+		private static bool DirectoryContainsReadOnly(string path)
+		{
+			var dirInfo = new DirectoryInfo(path);
+			if ((dirInfo.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+				return true;
+			foreach (var file in Directory.GetFiles(path))
+			{
+				var fileInfo = new FileInfo(file);
+				if ((fileInfo.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+					return true;
+			}
+			foreach (var dir in Directory.GetDirectories(path))
+			{
+				if (DirectoryContainsReadOnly(dir))
+					return true;
+			}
+			return false;
 		}
 
 		public static void MoveDirectory(string sourceDirName, string destDirName)

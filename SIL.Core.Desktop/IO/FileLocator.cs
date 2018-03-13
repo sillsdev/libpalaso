@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 SIL International
+// Copyright (c) 2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -6,11 +6,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using Microsoft.Win32;
-using SIL.Code;
 using SIL.PlatformUtilities;
+using SIL.Reflection;
 using SIL.Reporting;
 
 namespace SIL.IO
@@ -160,31 +159,14 @@ namespace SIL.IO
 			}
 		}
 
-		public static string DirectoryOfTheApplicationExecutable
-		{
-			get
-			{
-				string path;
-				bool unitTesting = Assembly.GetEntryAssembly() == null;
-				if (unitTesting)
-				{
-					path = new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath;
-					path = Uri.UnescapeDataString(path);
-				}
-				else
-				{
-					path = EntryAssembly.Location;
-				}
-				return Directory.GetParent(path).FullName;
-			}
-		}
+		public static string DirectoryOfTheApplicationExecutable => ReflectionHelper.DirectoryOfTheApplicationExecutable;
 
 		protected List<string> SearchPaths
 		{
 			get { return _searchPaths; }
 		}
 
-        private static string LocateExecutableDistributedWithApplication(string[] partsOfTheSubPath)
+		private static string LocateExecutableDistributedWithApplication(string[] partsOfTheSubPath)
 		{
 			var exe = GetFileDistributedWithApplication(true, partsOfTheSubPath);
 			if (string.IsNullOrEmpty(exe))
@@ -445,7 +427,7 @@ namespace SIL.IO
 				{
 					if (Platform.IsWindows)
 					{
-						foreach (var subDir in DirectoryUtilities.GetSafeDirectories(path))
+						foreach (var subDir in DirectoryHelper.GetSafeDirectories(path))
 						{
 							var tgtPath = GetFiles(exeName, srcOption, subDir);
 							if (!string.IsNullOrEmpty(tgtPath))

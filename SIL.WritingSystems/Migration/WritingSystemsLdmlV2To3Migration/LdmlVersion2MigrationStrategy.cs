@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -10,6 +10,7 @@ using SIL.Extensions;
 using SIL.IO;
 using SIL.Keyboarding;
 using SIL.Migration;
+using SIL.Reflection;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 using SIL.Xml;
 
@@ -194,8 +195,8 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 
 		private static void ParseLegacyWordformingCharOverridesFile(Staging staging)
 		{
-			string legacyOverridesFile = FileLocator.GetFileDistributedWithApplication(true, "WordFormingCharOverrides.xml");
-			if (!string.IsNullOrEmpty(legacyOverridesFile))
+			string legacyOverridesFile = GetLegacyWordformingCharOverridesPath();
+			if (File.Exists(legacyOverridesFile))
 			{
 				XElement rootElem = XElement.Load(legacyOverridesFile);
 				var characters = new HashSet<string>();
@@ -212,6 +213,19 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 				if (characters.Count > 0)
 					staging.CharacterSets.Add("main", UnicodeSet.ToPattern(characters));
 			}
+		}
+
+		private static string GetLegacyWordformingCharOverridesPath()
+		{
+			string path = ReflectionHelper.DirectoryOfTheApplicationExecutable;
+			int index = path.ToLower().LastIndexOf(Path.DirectorySeparatorChar + "output" + Path.DirectorySeparatorChar,
+				StringComparison.Ordinal);
+			if (index != -1)
+			{
+				string parentPath = path.Substring(0, index + 1);
+				path = Path.Combine(parentPath, "DistFiles");
+			}
+			return Path.Combine(path, "WordFormingCharOverrides.xml");
 		}
 
 		/// <summary>

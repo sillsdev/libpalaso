@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2016-2017 SIL International
+// Copyright (c) 2016-2017 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -158,7 +158,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 
 		private string GetBuiltOnDate()
 		{
-			var file = FileUtils.StripFilePrefix(_assembly.CodeBase);
+			var file = PathHelper.StripFilePrefix(_assembly.CodeBase);
 			var fi = new FileInfo(file);
 
 			// Use UTC for calculation of build-on-date so that we get the same date regardless

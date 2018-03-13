@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015 SIL International
+// Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using NUnit.Framework;
@@ -16,16 +16,6 @@ namespace SIL.Tests.Reporting
 		{
 			ErrorReport.EmailAddress = "pretend@8ksdfj83jls8.com";
 			ErrorReport.ReportNonFatalException(new ApplicationException("testing"));
-		}
-
-		[Test]
-		[Ignore("by hand only")]
-		[Platform(Include = "Windows", Reason = "Windows specific test")]
-		public void TestSendEmail()
-		{
-			MAPI x = new MAPI();
-			x.AddRecipientTo("pretend@8ksdfj83jls8.com");
-			x.SendMailDirect("test", "testbody");
 		}
 
 		[Test]

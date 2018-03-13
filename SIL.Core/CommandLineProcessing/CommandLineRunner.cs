@@ -1,5 +1,7 @@
-﻿using System;
-using System.ComponentModel;
+// Copyright (c) 2018 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
+using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -205,12 +207,12 @@ namespace SIL.CommandLineProcessing
 			if (!File.Exists(path))
 			{
 				File.WriteAllText(path, "");
-				safe = FileUtils.MakePathSafeFromEncodingProblems(path);
+				safe = PathHelper.MakePathSafeFromEncodingProblems(path);
 				File.Delete(path);
 			}
 			else
 			{
-				safe = FileUtils.MakePathSafeFromEncodingProblems(path);
+				safe = PathHelper.MakePathSafeFromEncodingProblems(path);
 			}
 
 			return safe;
@@ -236,12 +238,12 @@ namespace SIL.CommandLineProcessing
 			if (!Directory.Exists(path))
 			{
 				Directory.CreateDirectory(path);
-				safe = FileUtils.MakePathSafeFromEncodingProblems(path);
+				safe = PathHelper.MakePathSafeFromEncodingProblems(path);
 				Directory.Delete(path);
 			}
 			else
 			{
-				safe = FileUtils.MakePathSafeFromEncodingProblems(path);
+				safe = PathHelper.MakePathSafeFromEncodingProblems(path);
 			}
 
 			return safe;

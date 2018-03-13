@@ -1,7 +1,9 @@
-﻿using System;
+// Copyright (c) 2018 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
+using System;
 using System.IO;
 using System.Text;
-using System.Xml;
 using SIL.Code;
 
 namespace SIL.IO
@@ -221,7 +223,7 @@ namespace SIL.IO
 					// There is very similar code in FileUtils.ReplaceFileWithUserInteractionIfNeeded.
 					try
 					{
-						FileUtils.ReplaceByCopyDelete(sourceFileName, destinationFileName, destinationBackupFileName);
+						ReplaceByCopyDelete(sourceFileName, destinationFileName, destinationBackupFileName);
 					}
 					catch
 					{
@@ -230,6 +232,16 @@ namespace SIL.IO
 					}
 				}
 			});
+		}
+
+		public static void ReplaceByCopyDelete(string sourcePath, string destinationPath, string backupPath)
+		{
+			if (!string.IsNullOrEmpty(backupPath) && File.Exists(destinationPath))
+			{
+				File.Copy(destinationPath, backupPath, true);
+			}
+			File.Copy(sourcePath, destinationPath, true);
+			File.Delete(sourcePath);
 		}
 
 		public static void SetAttributes(string path, FileAttributes fileAttributes)

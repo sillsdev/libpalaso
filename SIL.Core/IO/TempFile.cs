@@ -1,8 +1,10 @@
-﻿using System;
+// Copyright (c) 2018 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using SIL.Reporting;
 
 namespace SIL.IO
 {
@@ -76,11 +78,10 @@ namespace SIL.IO
 			catch (IOException e)
 			{
 				// We tried, but we don't want to crash just because virus scanner or similar won't release the file.
-				Logger.WriteMinorEvent("Could not delete temp file during Dispose(): " + e.Message);
 				Debug.Fail("Could not delete temp file during Dispose(): " + e.Message, e.ToString());
 			}
 			if (_folderToDelete != null)
-				DirectoryUtilities.DeleteDirectoryRobust(_folderToDelete);
+				RobustIO.DeleteDirectoryAndContents(_folderToDelete);
 		}
 
 		public static TempFile CopyOf(string pathToExistingFile)
@@ -154,7 +155,7 @@ namespace SIL.IO
 			var tempFolder = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName());
 			Directory.CreateDirectory(tempFolder);
 			var path = System.IO.Path.Combine(tempFolder, fileName);
-			var result = TempFile.TrackExisting(path);
+			var result = TrackExisting(path);
 			result._folderToDelete = tempFolder;
 			return result;
 		}
@@ -205,7 +206,7 @@ namespace SIL.IO
 			if (String.IsNullOrEmpty(folder))
 				folder = ".";
 			var path = System.IO.Path.Combine(folder, System.IO.Path.GetRandomFileName());
-			return TempFile.TrackExisting(path);
+			return TrackExisting(path);
 		}
 	}
 }
