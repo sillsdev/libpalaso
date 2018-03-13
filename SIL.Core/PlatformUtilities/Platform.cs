@@ -2,36 +2,21 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 // Parts based on code by MJ Hutchinson http://mjhutchinson.com/journal/2010/01/25/integrating_gtk_application_mac
 using System;
+using System.Runtime.InteropServices;
 
 namespace SIL.PlatformUtilities
 {
 	public static class Platform
 	{
-		private static readonly string UnixNameMac = "Darwin";
-		private static readonly string UnixNameLinux = "Linux";
 		private static bool? _isMono;
-		private static string _unixName;
 		private static string _sessionManager;
 
-		public static bool IsUnix
-		{
-			get { return Environment.OSVersion.Platform == PlatformID.Unix; }
-		}
-
-		public static bool IsLinux
-		{
-			get { return IsUnix && (UnixName == UnixNameLinux); }
-		}
-
-		public static bool IsMac
-		{
-			get { return IsUnix && (UnixName == UnixNameMac); }
-		}
-
-		public static bool IsWindows
-		{
-			get { return !IsUnix; }
-		}
+		public static bool IsUnix => Environment.OSVersion.Platform == PlatformID.Unix;
+		public static bool IsLinux => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+		public static bool IsMac => RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+		public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+		public static bool IsWasta => IsUnix && System.IO.File.Exists("/etc/wasta-release");
+		public static bool IsCinnamon => IsUnix && SessionManager.StartsWith("/usr/bin/cinnamon-session");
 
 		public static bool IsMono
 		{
@@ -43,50 +28,9 @@ namespace SIL.PlatformUtilities
 				return (bool)_isMono;
 			}
 		}
-
-		public static bool IsDotNet
-		{
-			get { return !IsMono; }
-		}
-
-		private static string UnixName
-		{
-			get
-			{
-				if (_unixName == null)
-				{
-					IntPtr buf = IntPtr.Zero;
-					try
-					{
-						buf = System.Runtime.InteropServices.Marshal.AllocHGlobal (8192);
-						// This is a hacktastic way of getting sysname from uname ()
-						if (uname (buf) == 0)
-							_unixName = System.Runtime.InteropServices.Marshal.PtrToStringAnsi (buf);
-					}
-					catch
-					{
-						_unixName = String.Empty;
-					}
-					finally {
-						if (buf != IntPtr.Zero)
-							System.Runtime.InteropServices.Marshal.FreeHGlobal (buf);
-					}
-				}
-
-				return _unixName;
-			}
-		}
-
-
-		public static bool IsWasta
-		{
-			get { return IsUnix && System.IO.File.Exists("/etc/wasta-release"); }
-		}
-
-		public static bool IsCinnamon
-		{
-			get { return IsUnix && SessionManager.StartsWith("/usr/bin/cinnamon-session"); }
-		}
+		public static bool IsDotNet => !IsMono;
+		public static bool IsDotNetCore => RuntimeInformation.FrameworkDescription == ".NET Core";
+		public static bool IsDotNetFramework => IsDotNet && RuntimeInformation.FrameworkDescription == ".NET Framework";
 
 		/// <summary>
 		/// On a Unix machine this gets the current desktop environment (gnome/xfce/...), on
@@ -121,7 +65,7 @@ namespace SIL.PlatformUtilities
 				// Special case for Wasta 12
 				else if (currentDesktop == "GNOME" && Environment.GetEnvironmentVariable("GDMSESSION") == "cinnamon")
 					currentDesktop = Environment.GetEnvironmentVariable("GDMSESSION");
-				return currentDesktop == null ? null : currentDesktop.ToLowerInvariant();
+				return currentDesktop?.ToLowerInvariant();
 			}
 		}
 
@@ -143,7 +87,7 @@ namespace SIL.PlatformUtilities
 				if (!string.IsNullOrEmpty(mirSession))
 					additionalInfo = " [display server: Mir]";
 				string gdmSession = Environment.GetEnvironmentVariable("GDMSESSION") ?? "not set";
-				return string.Format("{0} ({1}{2})", currentDesktop, gdmSession, additionalInfo);
+				return $"{currentDesktop} ({gdmSession}{additionalInfo})";
 			}
 		}
 
@@ -158,7 +102,7 @@ namespace SIL.PlatformUtilities
 					{
 						// This is the only way I've figured out to get the session manager: read the
 						// symbolic link destination value.
-						buf = System.Runtime.InteropServices.Marshal.AllocHGlobal(8192);
+						buf = Marshal.AllocHGlobal(8192);
 						var len = readlink("/etc/alternatives/x-session-manager", buf, 8192);
 						if (len > 0)
 						{
@@ -166,33 +110,30 @@ namespace SIL.PlatformUtilities
 							// Copying the bytes and then converting them to a string avoids that problem.
 							// Filenames are likely to be in UTF-8 on Linux if they are not pure ASCII.
 							var bytes = new byte[len];
-							System.Runtime.InteropServices.Marshal.Copy(buf, bytes, 0, len);
+							Marshal.Copy(buf, bytes, 0, len);
 							_sessionManager = System.Text.Encoding.UTF8.GetString(bytes);
 						}
 						if (_sessionManager == null)
-							_sessionManager = String.Empty;
+							_sessionManager = string.Empty;
 					}
 					catch
 					{
-						_sessionManager = String.Empty;
+						_sessionManager = string.Empty;
 					}
 					finally
 					{
 						if (buf != IntPtr.Zero)
-							System.Runtime.InteropServices.Marshal.FreeHGlobal(buf);
+							Marshal.FreeHGlobal(buf);
 					}
 				}
 				return _sessionManager;
 			}
 		}
 
-		[System.Runtime.InteropServices.DllImport("libc")]
-		private static extern int uname(IntPtr buf);
-
-		[System.Runtime.InteropServices.DllImport("libc")]
+		[DllImport("libc")]
 		private static extern int readlink(string path, IntPtr buf, int bufsiz);
 
-		[System.Runtime.InteropServices.DllImport("__Internal", EntryPoint = "mono_get_runtime_build_info")]
+		[DllImport("__Internal", EntryPoint = "mono_get_runtime_build_info")]
 		private static extern string GetMonoVersion();
 
 		/// <summary>
@@ -200,9 +141,6 @@ namespace SIL.PlatformUtilities
 		/// "5.0.1.1 (2017-02/5077205 Thu May 25 09:16:53 UTC 2017)"), or the empty string
 		/// on Windows.
 		/// </summary>
-		public static string MonoVersion
-		{
-			get { return IsMono ? GetMonoVersion() : string.Empty; }
-		}
+		public static string MonoVersion => IsMono ? GetMonoVersion() : string.Empty;
 	}
 }

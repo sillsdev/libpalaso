@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using System.Reflection;
-using SIL.Reporting;
+using SIL.Reflection;
 
 namespace SIL.WritingSystems
 {
@@ -29,7 +29,7 @@ namespace SIL.WritingSystems
 
 		private string _getProducerVersion()
 		{
-			return ErrorReport.GetVersionForErrorReporting();
+			return ReflectionHelper.LongVersionNumberString;
 		}
 
 		public string Producer { get; internal set; }

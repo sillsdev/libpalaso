@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 
 namespace SIL.BuildTasks.Tests
 {
@@ -31,7 +31,7 @@ namespace SIL.BuildTasks.Tests
 [assembly: AssemblyVersion(""0.7.*.*"")]
 [assembly: AssemblyFileVersion(""1.0.0.0"")]";
 
-			var s = stamper.GetModifiedContents(content, "*.*.123.456", null);
+			var s = stamper.GetModifiedContents(content, true, "*.*.123.456", null, null);
 			Assert.That(s, Is.StringContaining("0.7.123.456"));
 		}
 
@@ -44,7 +44,7 @@ namespace SIL.BuildTasks.Tests
 [assembly: AssemblyVersion(""0.7.*.0"")]
 [assembly: AssemblyFileVersion(""1.0.0.0"")]";
 
-			var s = stamper.GetModifiedContents(content, "*.*.123.9e1b12ec3712", null);
+			var s = stamper.GetModifiedContents(content, true, "*.*.123.9e1b12ec3712", null, null);
 			Assert.That(s, Is.StringContaining("0.7.123.0"));
 		}
 
@@ -61,7 +61,7 @@ namespace SIL.BuildTasks.Tests
 [assembly: AssemblyVersion(""1.2.*"")]
 [assembly: AssemblyFileVersion(""1.2.*"")]";
 
-			var s = stamper.GetModifiedContents(content, "*.*.345.6", null);
+			var s = stamper.GetModifiedContents(content, true, "*.*.345.6", null, null);
 			Assert.That(s, Is.StringContaining("1.2.345.6"));
 		}
 
@@ -78,7 +78,7 @@ namespace SIL.BuildTasks.Tests
 [assembly: AssemblyVersion(""*.*.*.*"")]
 [assembly: AssemblyFileVersion(""*.*.*.*"")]";
 
-			var s = stamper.GetModifiedContents(content, "*.*.345.6", null);
+			var s = stamper.GetModifiedContents(content, true, "*.*.345.6", null, null);
 			Assert.That(s, Is.StringContaining("0.0.345.6"));
 		}
 
@@ -92,7 +92,7 @@ namespace SIL.BuildTasks.Tests
 [assembly: AssemblyVersion(""1.0.0.0"")]
 [assembly: AssemblyFileVersion(""1.0.0.0"")]";
 
-			var s = stamper.GetModifiedContents(content, "*.*.121.93bc7076063f", null);
+			var s = stamper.GetModifiedContents(content, true, "*.*.121.93bc7076063f", null, null);
 			Assert.That(s, Is.StringContaining("1.0.121.0"));
 		}
 
@@ -111,7 +111,7 @@ namespace SIL.BuildTasks.Tests
 [assembly: AssemblyVersion(""0.0.9.789"")]
 [assembly: AssemblyFileVersion(""0.0.9.789"")]";
 
-			var s = stamper.GetModifiedContents(content, "0.3.14", null);
+			var s = stamper.GetModifiedContents(content, true, "0.3.14", null, null);
 			Assert.That(s, Is.StringContaining("0.3.14"), s);
 		}
 
@@ -157,7 +157,7 @@ using System.Runtime.InteropServices;
 
 ".Replace('\'', '"');
 
-			var s = stamper.GetModifiedContents(content, "*.*.121.93bc7076063f", null);
+			var s = stamper.GetModifiedContents(content, true, "*.*.121.93bc7076063f", null, null);
 			Assert.That(s, Is.StringContaining("0.1.121.0"));
 		}
 
@@ -170,7 +170,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion(""9.9.9.99"")]
 [assembly: AssemblyFileVersion(""8.8.8.88"")]";
 
-			var v = stamper.GetModifiedContents(content, "5.4.3.2", "1.2.3.4");
+			var v = stamper.GetModifiedContents(content, true, "5.4.3.2", "1.2.3.4", null);
 			Assert.That(v, Is.StringContaining("AssemblyVersion(\"5.4.3.2\")"));
 			Assert.That(v, Is.StringContaining("AssemblyFileVersion(\"1.2.3.4\")"));
 			Assert.That(v, Is.Not.StringContaining("9.9.9.99"));
@@ -186,7 +186,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion(""9.9.9.99"")]
 [assembly: AssemblyFileVersion(""8.8.8.88"")]";
 
-			var v = stamper.GetModifiedContents(content, "5.4.3.2", null);
+			var v = stamper.GetModifiedContents(content, true, "5.4.3.2", null, null);
 			Assert.That(v, Is.StringContaining("AssemblyVersion(\"5.4.3.2"));
 			Assert.That(v, Is.StringContaining("AssemblyFileVersion(\"5.4.3.2"));
 			Assert.That(v, Is.Not.StringContaining("9.9.9.99"));
@@ -206,7 +206,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion(""4.2.1.0"")]
 [assembly: AssemblyFileVersion(""4.2.1.0"")]";
 
-			var v = stamper.GetModifiedContents(content, "*.*.*", "*.*.*.346");
+			var v = stamper.GetModifiedContents(content, true, "*.*.*", "*.*.*.346", null);
 			Assert.That(v, Is.StringContaining("AssemblyVersion(\"4.2.1.0"));
 			Assert.That(v, Is.StringContaining("AssemblyFileVersion(\"4.2.1.346"));
 			Assert.That(v, Is.Not.StringContaining("AssemblyFileVersion(\"4.2.1.0"));
@@ -221,7 +221,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion(""1.0.0.0"")]
 [assembly: AssemblyInformationalVersion(""2.3.4.5"")]";
 
-			var s = stamper.GetModifiedContents(content, "*.*.123.9e1b12ec3712", null);
+			var s = stamper.GetModifiedContents(content, true, "*.*.123.9e1b12ec3712", null, null);
 			Assert.That(s, Is.StringContaining("AssemblyVersion(\"0.7.123.0\")"));
 			Assert.That(s, Is.StringContaining("AssemblyFileVersion(\"1.0.123.0\")"));
 			Assert.That(s, Is.StringContaining("AssemblyInformationalVersion(\"2.3.123.9e1b12ec3712\")"));
@@ -236,10 +236,27 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion(""1.0.0.0"")]
 [assembly: AssemblyInformationalVersion(""2.3.4.5"")]";
 
-			var s = stamper.GetModifiedContents(content, "*.*.123.9e1b12ec3712", "*.*.456.f7a874");
+			var s = stamper.GetModifiedContents(content, true, "*.*.123.9e1b12ec3712", "*.*.456.f7a874", null);
 			Assert.That(s, Is.StringContaining("AssemblyVersion(\"0.7.123.0\")"));
 			Assert.That(s, Is.StringContaining("AssemblyFileVersion(\"1.0.456.0\")"));
 			Assert.That(s, Is.StringContaining("AssemblyInformationalVersion(\"2.3.123.9e1b12ec3712\")"));
+		}
+
+		[Test]
+		public void GetModifiedContents_MSBuildProps()
+		{
+			var stamper = new StampAssemblies.StampAssemblies();
+			var content = @"
+<Version>1.2.*</Version>
+<AssemblyVersion>0.7.*.0</AssemblyVersion>
+<FileVersion>1.0.0.0</FileVersion>
+<InformationalVersion>2.3.4.5</InformationalVersion>";
+
+			var s = stamper.GetModifiedContents(content, false, "*.*.123.9e1b12ec3712", "*.*.456.f7a874", "*.*.3-4");
+			Assert.That(s, Is.StringContaining("<Version>1.2.3-4</Version>"));
+			Assert.That(s, Is.StringContaining("<AssemblyVersion>0.7.123.0</AssemblyVersion>"));
+			Assert.That(s, Is.StringContaining("<FileVersion>1.0.456.0</FileVersion"));
+			Assert.That(s, Is.StringContaining("<InformationalVersion>2.3.123.9e1b12ec3712</InformationalVersion>"));
 		}
 	}
 }

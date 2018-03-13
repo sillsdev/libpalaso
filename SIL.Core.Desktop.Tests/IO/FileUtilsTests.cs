@@ -1,10 +1,10 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.Reporting;
 using SIL.TestUtilities;
+using System;
+using System.IO;
+using System.Reflection;
 
 namespace SIL.Tests.IO
 {
@@ -26,42 +26,6 @@ namespace SIL.Tests.IO
 		{
 			_parentFolder.Dispose();
 			_parentFolder = null;
-		}
-
-		[Test]
-		public void IsFileLocked_FilePathIsNull_ReturnsFalse()
-		{
-			Assert.IsFalse(FileUtils.IsFileLocked(null));
-		}
-
-		[Test]
-		public void IsFileLocked_FileDoesntExist_ReturnsFalse()
-		{
-			Assert.IsFalse(FileUtils.IsFileLocked(@"c:\blahblah.blah"));
-		}
-
-		[Test]
-		public void IsFileLocked_FileExistsAndIsNotLocked_ReturnsFalse()
-		{
-			using (var file = new TempFileFromFolder(_parentFolder))
-				Assert.IsFalse(FileUtils.IsFileLocked(file.Path));
-		}
-
-		[Test]
-		public void IsFileLocked_FileExistsAndIsLocked_ReturnsTrue()
-		{
-			using (var file = new TempFileFromFolder(_parentFolder))
-			{
-				var stream = File.OpenWrite(file.Path);
-				try
-				{
-					Assert.IsTrue(FileUtils.IsFileLocked(file.Path));
-				}
-				finally
-				{
-					stream.Close();
-				}
-			}
 		}
 
 		public class TestEnvironment : IDisposable
@@ -169,133 +133,15 @@ namespace SIL.Tests.IO
 		}
 
 		[Test]
-		public void GrepFile_FileContainsPattern_True()
-		{
-			using (var e = new TestEnvironment())
-			{
-				Assert.That(FileUtils.GrepFile(e.tempFile.Path, "lang='fr'"), Is.True);
-			}
-		}
-
-
-		[Test]
-		public void GrepFile_FileDoesNotContainPattern_False()
-		{
-			using (var e = new TestEnvironment())
-			{
-				Assert.That(FileUtils.GrepFile(e.tempFile.Path, "lang='ee'"), Is.False);
-			}
-		}
-
-		[Test]
 		public void GrepFile_ContainsPattern_ReplacesCorrectly()
 		{
 			using (var e = new TestEnvironment())
 			{
 				FileUtils.GrepFile(e.tempFile.Path, "lang", "1234567");
-				Assert.That(FileUtils.GrepFile(e.tempFile.Path, "1234567"), Is.True);
+				Assert.That(FileHelper.Grep(e.tempFile.Path, "1234567"), Is.True);
 				var bakPath = e.tempFile.Path + ".bak";
 				File.Delete(bakPath);
 			}
-		}
-
-		[Test]
-		public void CheckValidPathname_RejectsNullOrEmpty_Pathname()
-		{
-			Assert.IsFalse(FileUtils.CheckValidPathname(null, "xyz"));
-			Assert.IsFalse(FileUtils.CheckValidPathname("", "xyz"));
-		}
-
-		[Test]
-		public void CheckValidPathname_RejectsNonExtant_Pathname()
-		{
-			Assert.IsFalse(FileUtils.CheckValidPathname("Bogus.txt", "xyz"));
-		}
-
-		[Test]
-		public void CheckValidPathname_RejectsMismatchedExtension()
-		{
-			using (var e = new TestEnvironment())
-			{
-				Assert.IsFalse(FileUtils.CheckValidPathname(e.tempFile.Path, "xyz"));
-				Assert.IsFalse(FileUtils.CheckValidPathname(e.tempFile.Path, null));
-				Assert.IsFalse(FileUtils.CheckValidPathname(e.tempFile.Path, ""));
-			}
-		}
-
-		[Test]
-		public void CheckValidPathname_AcceptsMatchedExtensions()
-		{
-			using (var e = new TestEnvironment())
-			{
-				Assert.True(FileUtils.CheckValidPathname(e.tempFile.Path, Path.GetExtension(e.tempFile.Path))); // With starting '.'
-				Assert.True(FileUtils.CheckValidPathname(e.tempFile.Path, Path.GetExtension(e.tempFile.Path).Substring(1))); // Sans starting '.'
-			}
-		}
-
-		[Test]
-		public void CheckValidPathname_AcceptsMissingExtensions()
-		{
-			var tempPathname = Path.Combine(Path.GetTempPath(), "extensionlessfile");
-			try
-			{
-				File.WriteAllText(tempPathname, "stuff");
-				Assert.True(FileUtils.CheckValidPathname(tempPathname, null));
-			}
-			finally
-			{
-				if (File.Exists(tempPathname))
-					File.Delete(tempPathname);
-			}
-		}
-
-		[Test]
-		public void NormalizePath_SlashStaysSlash()
-		{
-			Assert.That(FileUtils.NormalizePath("/a/b/c"), Is.EqualTo("/a/b/c"));
-		}
-
-		[Test]
-		public void NormalizePath_BackslashConvertsToSlash()
-		{
-			Assert.That(FileUtils.NormalizePath("\\a\\b\\c"), Is.EqualTo("/a/b/c"));
-		}
-
-		[Test]
-		public void NormalizePath_MixedConvertsToSlashes()
-		{
-			Assert.That(FileUtils.NormalizePath("/a\\b/c"), Is.EqualTo("/a/b/c"));
-		}
-		[Test]
-		public void NormalizePath_WindowsStylePathConvertsToSlashes()
-		{
-			Assert.That(FileUtils.NormalizePath("c:\\a\\b\\c"), Is.EqualTo("c:/a/b/c"));
-		}
-
-		[Test]
-		[Platform(Include = "Windows")]
-		public void StripFilePrefix_EnsureFilePrefixIsRemoved_Windows()
-		{
-			var prefix = Uri.UriSchemeFile + ":";
-			var fullPathname = Assembly.GetExecutingAssembly().CodeBase;
-			Assert.IsTrue(fullPathname.StartsWith(prefix));
-
-			var reducedPathname = FileUtils.StripFilePrefix(fullPathname);
-			Assert.IsFalse(reducedPathname.StartsWith(prefix));
-			Assert.IsFalse(reducedPathname.StartsWith("/"));
-		}
-
-		[Test]
-		[Platform(Include = "Linux")]
-		public void StripFilePrefix_EnsureFilePrefixIsRemoved_Linux()
-		{
-			var prefix = Uri.UriSchemeFile + ":";
-			var fullPathname = Assembly.GetExecutingAssembly().CodeBase;
-			Assert.IsTrue(fullPathname.StartsWith(prefix));
-
-			var reducedPathname = FileUtils.StripFilePrefix(fullPathname);
-			Assert.IsFalse(reducedPathname.StartsWith(prefix));
-			Assert.IsTrue(reducedPathname.StartsWith("/"));
 		}
 	}
 }

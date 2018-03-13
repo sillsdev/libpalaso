@@ -12,9 +12,11 @@ using SIL.Reporting;
 
 namespace SIL.IO
 {
+	/// <summary>
+	/// Desktop-specific utility methods for processing file paths.
+	/// </summary>
 	public static class PathUtilities
 	{
-
 		// On Unix there are more characters valid in file names, but we
 		// want the result to be identical on both platforms, so we want
 		// to use the larger invalid Windows list for both platforms
@@ -64,84 +66,6 @@ namespace SIL.IO
 				'\\',
 				'/'
 			};
-		}
-
-		// map directory name to its disk device number (not used on Windows)
-		private static Dictionary<string,int> _deviceNumber = new Dictionary<string, int>();
-
-		public static int GetDeviceNumber(string filePath)
-		{
-			if (Platform.IsWindows)
-			{
-				var driveInfo = new DriveInfo(Path.GetPathRoot(filePath));
-				return driveInfo.Name.ToUpper()[0] - 'A' + 1;
-			}
-
-			// path can mean a file or a directory.  Get the directory
-			// so that our device number cache can work better.  (fewer
-			// unique directory names than filenames)
-			var pathToCheck = filePath;
-			if (File.Exists(pathToCheck))
-				pathToCheck = Path.GetDirectoryName(pathToCheck);
-			else if (!Directory.Exists(pathToCheck))
-			{
-				// Work up the path until a directory exists.
-				do
-				{
-					pathToCheck = Path.GetDirectoryName(pathToCheck);
-				}
-				while (!String.IsNullOrEmpty(pathToCheck) && !Directory.Exists(pathToCheck));
-				// If the whole path is invalid, give up.
-				if (String.IsNullOrEmpty(pathToCheck))
-					return -1;
-			}
-
-			int retval;
-			// Use cached value if we can to avoid process invocation.
-			if (_deviceNumber.TryGetValue(pathToCheck, out retval))
-				return retval;
-
-			using (var process = new Process())
-			{
-				var statFlags = Platform.IsMac ? "-f" : "-c";
-				process.StartInfo = new ProcessStartInfo
-				{
-					FileName = "stat",
-					Arguments = string.Format("{0} %d \"{1}\"", statFlags, pathToCheck),
-					UseShellExecute = false,
-					RedirectStandardOutput = true,
-					CreateNoWindow = true
-				};
-				process.Start();
-				var output = process.StandardOutput.ReadToEnd();
-				// This process is frequently not exiting even after filling the output string
-				// with the desired information.  So we'll wait a couple of seconds instead of
-				// waiting forever and just go on.  If there's data to process, we'll use it.
-				// (2 seconds should be more than enough for that simple command to execute.
-				// "time statc -c %d "/tmp" reports 2ms of real time and 2ms of user time.)
-				// See https://jira.sil.org/browse/BL-771 for a bug report involving this code
-				// with a simple process.WaitForExit().
-				// This feels like a Mono bug of some sort, so feel free to regard this as a
-				// workaround hack.
-				process.WaitForExit(2000);
-				if (!String.IsNullOrWhiteSpace(output))
-				{
-					if (Int32.TryParse(output.Trim(), out retval))
-					{
-						_deviceNumber.Add(pathToCheck, retval);
-						return retval;
-					}
-				}
-				return -1;
-			}
-		}
-
-		public static bool PathsAreOnSameVolume(string firstPath, string secondPath)
-		{
-			if (string.IsNullOrEmpty(firstPath) || string.IsNullOrEmpty(secondPath))
-				return false;
-
-			return PathUtilities.GetDeviceNumber(firstPath) == PathUtilities.GetDeviceNumber(secondPath);
 		}
 
 		/// <summary>
@@ -315,7 +239,7 @@ namespace SIL.IO
 
 				WriteTrashInfoFile(trashPath, filePath, trashedFileName);
 				// Directory.Move works for directories and files
-				DirectoryUtilities.MoveDirectorySafely(filePath, recyclePath);
+				DirectoryHelper.Move(filePath, recyclePath);
 				return true;
 			}
 			return false;
@@ -507,22 +431,22 @@ namespace SIL.IO
 			}
 		}
 
+		[Obsolete("Use PathHelper.GetDeviceNumber()")]
+		public static int GetDeviceNumber(string filePath)
+		{
+			return PathHelper.GetDeviceNumber(filePath);
+		}
+
+		[Obsolete("Use PathHelper.PathsAreOnSameVolume()")]
+		public static bool PathsAreOnSameVolume(string firstPath, string secondPath)
+		{
+			return PathHelper.AreOnSameVolume(firstPath, secondPath);
+		}
+
+		[Obsolete("Use PathHelper.ContainsDirectory()")]
 		public static bool PathContainsDirectory(string path, string directory)
 		{
-			if (string.IsNullOrEmpty(directory))
-				return false;
-
-			if (path.Contains(directory))
-			{
-				while (!string.IsNullOrEmpty(path))
-				{
-					var subdir = Path.GetFileName(path);
-					if (subdir == directory)
-						return true;
-					path = Path.GetDirectoryName(path);
-				}
-			}
-			return false;
+			return PathHelper.ContainsDirectory(path, directory);
 		}
 	}
 }

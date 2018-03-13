@@ -21,13 +21,19 @@ if "%INCLUDE%%LIB%" == "" (
 )
 :build
 if "%~1" == "" (
-	SET BUILD=ReleaseStrongName
+	SET BUILD=DebugStrongName
 ) else (
 	SET BUILD=%~1
+)
+
+if "%~2" == "" (
+	SET TARGET=Clean;Compile
+) else (
+	SET TARGET=%~2
 )
 @echo on
 @pushd "%~dp0"
 
-msbuild "/target:Clean;Compile" /property:Configuration="%BUILD%" /property:RootDir=..  /property:BUILD_NUMBER="0.0.0.abcd" Palaso.proj
+msbuild "/target:%TARGET%" /property:Configuration="%BUILD%" /property:RootDir=.. Palaso.proj
 
 @popd

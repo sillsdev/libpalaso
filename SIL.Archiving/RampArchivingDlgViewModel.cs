@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -1433,7 +1433,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		private void CheckIfPackageFileIsLocked(Object packageFile)
 		{
-			if (!FileUtils.IsFileLocked(packageFile as string))
+			if (!FileHelper.IsLocked(packageFile as string))
 				CleanUpTempRampPackage();
 		}
 

@@ -306,17 +306,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj">
-      <Project>{52A93C63-08F4-4527-8E6E-AC2ADEBA6E2D}</Project>
-      <Name>SIL.WritingSystems</Name>
-    </ProjectReference>
     <ProjectReference Include="..\LanguageData\LanguageData.csproj">
       <Project>{12C78D85-BB7F-4F00-BF64-E47557F99039}</Project>
       <Name>LanguageData</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
-      <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
-      <Name>SIL.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

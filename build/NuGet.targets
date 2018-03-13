@@ -11,26 +11,18 @@
 
 		<!-- Download NuGet.exe if it does not already exist -->
 		<DownloadNuGetExe Condition=" '$(DownloadNuGetExe)' == '' ">true</DownloadNuGetExe>
+		<NuGetExeUrl>https://dist.nuget.org/win-x86-commandline/latest/nuget.exe</NuGetExeUrl>
 	</PropertyGroup>
-
-	<ItemGroup Condition=" '$(PackageSources)' == '' ">
-		<!-- Package sources used to restore packages. -->
-		<!-- The official NuGet package source (https://nuget.org/api/v2/) will be excluded if package sources are specified and it does not appear in the list -->
-		<PackageSource Include="https://nuget.org/api/v2/" />
-		<PackageSource Include="http://build.palaso.org/guestAuth/app/nuget/v1/FeedService.svc/" />
-	</ItemGroup>
 
 	<PropertyGroup>
 		<NuGetToolsPath>$(MSBuildThisFileDirectory)</NuGetToolsPath>
 		<PackagesConfig>$(ProjectDir)packages.config</PackagesConfig>
 
 		<!-- NuGet command -->
-		<NuGetExePath Condition=" '$(NuGetExePath)' == '' ">$(NuGetToolsPath)/NuGet.exe</NuGetExePath>
-
-		<PackageSources Condition=" $(PackageSources) == '' ">@(PackageSource)</PackageSources>
+		<NuGetExePath Condition=" '$(NuGetExePath)' == '' ">$(NuGetToolsPath)/nuget.exe</NuGetExePath>
 
 		<NuGetCommand Condition=" '$(OS)' == 'Windows_NT'">"$(NuGetExePath)"</NuGetCommand>
-		<NuGetCommand Condition=" '$(OS)' != 'Windows_NT' ">mono --runtime=v4.0.30319 $(NuGetExePath)</NuGetCommand>
+		<NuGetCommand Condition=" '$(OS)' != 'Windows_NT' ">mono $(NuGetExePath)</NuGetCommand>
 	</PropertyGroup>
 
 	<Target Name="CheckPrerequisites">
@@ -49,7 +41,7 @@
 	<Target Name="_DownloadNuGet" Condition=" '$(DownloadNuGetExe)' == 'true' AND !Exists('$(NuGetExePath)')">
 		<DownloadNuGet OutputFilename="$(NuGetExePath)"
 			Condition="'$(OS)' == 'Windows_NT'" />
-		<Exec Command="wget https://nuget.org/NuGet.exe || curl -O -L https://nuget.org/NuGet.exe"
+		<Exec Command="wget $(NuGetExeUrl) || curl -O -L $(NuGetExeUrl)"
 			WorkingDirectory="$(NuGetToolsPath)"
 			Condition="'$(OS)' != 'Windows_NT'" />
 	</Target>
@@ -59,9 +51,9 @@
 	</ItemGroup>
 
 	<Target Name="RestorePackages" DependsOnTargets="CheckPrerequisites">
-		<Exec Command='$(NuGetCommand) restore -source "$(PackageSources)" "$(SolutionPath)"'
+		<Exec Command='$(NuGetCommand) restore -Force "$(SolutionPath)"'
 			Condition="Exists('$(SolutionPath)')"/>
-		<Exec Command='$(NuGetCommand) restore -source "$(PackageSources)" -SolutionDirectory "$(SolutionDir)" "%(PackageConfigs.FullPath)"'
+		<Exec Command='$(NuGetCommand) restore -Force -SolutionDirectory "$(SolutionDir)" "%(PackageConfigs.FullPath)"'
 			Condition="!Exists('$(SolutionPath)')"/>
 	</Target>
 
@@ -85,7 +77,7 @@
 
 					Log.LogMessage("Downloading latest version of NuGet.exe...");
 					WebClient webClient = new WebClient();
-					webClient.DownloadFile("https://nuget.org/NuGet.exe", OutputFilename);
+					webClient.DownloadFile("$(NuGetExeUrl)", OutputFilename);
 
 					return true;
 				}
