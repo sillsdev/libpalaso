@@ -1,7 +1,8 @@
-﻿// Copyright (c) 2016 SIL International
+// Copyright (c) 2016-2018 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
+using System.Runtime.InteropServices;
 using NUnit.Framework;
 
 namespace SIL.BuildTasks.Tests.Helper
@@ -33,31 +34,39 @@ namespace SIL.BuildTasks.Tests.Helper
 			throw new ApplicationException("This test throws an exception");
 		}
 
-		#region ThrowsExceptionInFinalizer
-		/// <summary>
-		/// This class simulates a class that throws an exception when the finalizer runs
-		/// </summary>
-		class ThrowsExceptionInFinalizer
-		{
-			~ThrowsExceptionInFinalizer()
-			{
-				throw new ApplicationException();
-			}
-
-			public bool DoSomething()
-			{
-				// just some arbitrary method so that we can instantiate the class
-				return true;
-			}
-		}
-		#endregion
+		[DllImport("ForceCrash")]
+		private static extern void ForceCrash();
 
 		[Test]
-		[Category("Finalizer")]
-		public void Finalizer()
+		[Category("Crash")]
+		public void Crash()
 		{
-			Assert.That(new ThrowsExceptionInFinalizer().DoSomething(), Is.True);
-			// will throw an exception sometime later when GC runs
+			ForceCrash();
+			Assert.Fail("Should have crashed");
+		}
+
+		[DllImport("ForceCrash")]
+		private static extern void OutputOnStderr();
+
+		[Test]
+		[Category("Stderr")]
+		public void Stderr()
+		{
+			OutputOnStderr();
+		}
+
+		[Test]
+		[Category("ErrorOnStdErr")]
+		public void ErrorOnStdErr()
+		{
+			Console.Error.WriteLine("Error testing");
+		}
+
+		[Test]
+		[Category("WarningOnStdErr")]
+		public void WarningOnStdErr()
+		{
+			Console.Error.WriteLine("Just some warning");
 		}
 	}
 }
