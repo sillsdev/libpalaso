@@ -299,8 +299,10 @@ namespace Palaso.BuildTasks.UnitTestTasks
 					// If the stderr message includes error, crash or fail then log it as an error
 					// and investigate. Change this if it is too broad.
 					string[] toerror = { "error", "crash", "fail" };
+					string[] noterror = { "induce", "simulator" };
 
-					if (toerror.Any(err => logContents.IndexOf(err, StringComparison.OrdinalIgnoreCase) >= 0))
+					if (toerror.Any(err => logContents.IndexOf(err, StringComparison.OrdinalIgnoreCase) >= 0) &&
+						!noterror.Any(err => logContents.IndexOf(err, StringComparison.OrdinalIgnoreCase) >= 0))
 					{
 						Log.LogError(logContents);
 					}
