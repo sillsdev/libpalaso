@@ -1826,7 +1826,7 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public void AddKeyValuePair(string key, string value)
 		{
-			MDGroup.Keys.Key.Add(new KeyType { Name = key, Value = value });
+			MDGroup.Content.Keys.Key.Add(new KeyType { Name = key, Value = value });
 		}
 
 		/// <remarks/>

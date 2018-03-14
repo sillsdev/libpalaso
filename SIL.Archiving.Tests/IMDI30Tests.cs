@@ -314,5 +314,15 @@ namespace SIL.Archiving.Tests
 			session.Genre = "<Unknown>";
 			Assert.AreEqual("Unknown", session.Genre);
 		}
+
+		[Test]
+		public void SessionAddKeyValuePair_TwoKeywords_numberUp2()
+		{
+			var session = new Session();
+			var number = session.MDGroup.Content.Keys.Key.Count;
+			session.AddKeyValuePair("keyword", "holiday");
+			session.AddKeyValuePair("keyword", "emotion");
+			Assert.AreEqual(number + 2, session.MDGroup.Content.Keys.Key.Count);
+		}
 	}
 }
