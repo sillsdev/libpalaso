@@ -12,9 +12,6 @@ namespace SIL.PlatformUtilities
 		private static string _sessionManager;
 
 		public static bool IsUnix => Environment.OSVersion.Platform == PlatformID.Unix;
-		public static bool IsLinux => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
-		public static bool IsMac => RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
-		public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 		public static bool IsWasta => IsUnix && System.IO.File.Exists("/etc/wasta-release");
 		public static bool IsCinnamon => IsUnix && SessionManager.StartsWith("/usr/bin/cinnamon-session");
 
@@ -29,8 +26,58 @@ namespace SIL.PlatformUtilities
 			}
 		}
 		public static bool IsDotNet => !IsMono;
+
+#if NETSTANDARD2_0
+		public static bool IsLinux => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+		public static bool IsMac => RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+		public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+
 		public static bool IsDotNetCore => RuntimeInformation.FrameworkDescription == ".NET Core";
 		public static bool IsDotNetFramework => IsDotNet && RuntimeInformation.FrameworkDescription == ".NET Framework";
+#elif NET461
+		private static readonly string UnixNameMac = "Darwin";
+		private static readonly string UnixNameLinux = "Linux";
+
+		public static bool IsLinux => IsUnix && UnixName == UnixNameLinux;
+		public static bool IsMac => IsUnix && UnixName == UnixNameMac;
+		public static bool IsWindows => !IsUnix;
+
+		public static bool IsDotNetCore => false;
+		public static bool IsDotNetFramework => IsDotNet;
+
+		private static string _unixName;
+		private static string UnixName
+		{
+			get
+			{
+				if (_unixName == null)
+				{
+					IntPtr buf = IntPtr.Zero;
+					try
+					{
+						buf = Marshal.AllocHGlobal(8192);
+						// This is a hacktastic way of getting sysname from uname ()
+						if (uname(buf) == 0)
+							_unixName = Marshal.PtrToStringAnsi(buf);
+					}
+					catch
+					{
+						_unixName = String.Empty;
+					}
+					finally
+					{
+						if (buf != IntPtr.Zero)
+							Marshal.FreeHGlobal(buf);
+					}
+				}
+
+				return _unixName;
+			}
+		}
+
+		[DllImport("libc")]
+		private static extern int uname(IntPtr buf);
+#endif
 
 		/// <summary>
 		/// On a Unix machine this gets the current desktop environment (gnome/xfce/...), on
