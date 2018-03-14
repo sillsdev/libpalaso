@@ -297,13 +297,18 @@ namespace SIL.BuildTasks.UnitTestTasks
 					// "The standard error stream is the default destination for error messages and other diagnostic warnings."
 					// By default log the message as it is most likely a warning.
 					// If the stderr message includes error, crash or fail then log it as an error
-					// and investigate. Change this if it is too broad.
+					// and investigate.
+					// If looks like an error but includes induce or simulator then log as warning instead of error
+					// Change this if it is still too broad.
 					string[] toerror = { "error", "crash", "fail" };
+					string[] noterror = { "induce", "simulator" };
 
-					if (toerror.Any(err => logContents.IndexOf(err, StringComparison.OrdinalIgnoreCase) >= 0))
+					if (toerror.Any(err => logContents.IndexOf(err, StringComparison.OrdinalIgnoreCase) >= 0) &&
+						!noterror.Any(err => logContents.IndexOf(err, StringComparison.OrdinalIgnoreCase) >= 0))
 					{
 						Log.LogError(logContents);
 					}
+
 					else if (Verbose)
 					{
 						Log.LogWarning(logContents);
