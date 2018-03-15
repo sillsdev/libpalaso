@@ -320,8 +320,8 @@ namespace SIL.Archiving.Tests
 		{
 			var session = new Session();
 			var number = session.MDGroup.Content.Keys.Key.Count;
-			session.AddKeyValuePair("keyword", "holiday");
-			session.AddKeyValuePair("keyword", "emotion");
+			session.AddContentKeyValuePair("keyword", "holiday");
+			session.AddContentKeyValuePair("keyword", "emotion");
 			Assert.AreEqual(number + 2, session.MDGroup.Content.Keys.Key.Count);
 		}
 	}
