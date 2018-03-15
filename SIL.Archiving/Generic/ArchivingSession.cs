@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace SIL.Archiving.Generic
@@ -25,7 +25,13 @@ namespace SIL.Archiving.Generic
 		void AddActor(ArchivingActor actor);
 
 		/// <summary></summary>
-		void AddKeyValuePair(string key, string value);
+		void AddGroupKeyValuePair(string key, string value);
+
+		/// <summary></summary>
+		void AddContentKeyValuePair(string key, string value);
+
+		/// <summary></summary>
+		void AddFileKeyValuePair(string fullFileName, string key, string value);
 
 		/// <summary></summary>
 		string Genre { get; set; }

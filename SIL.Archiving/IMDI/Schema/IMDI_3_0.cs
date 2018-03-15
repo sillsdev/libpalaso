@@ -1824,9 +1824,32 @@ namespace SIL.Archiving.IMDI.Schema
 		public string AccessCode { get; set; }
 
 		/// <remarks/>
-		public void AddKeyValuePair(string key, string value)
+		public void AddGroupKeyValuePair(string key, string value)
+		{
+			MDGroup.Keys.Key.Add(new KeyType { Name = key, Value = value });
+		}
+
+		/// <remarks/>
+		public void AddContentKeyValuePair(string key, string value)
 		{
 			MDGroup.Content.Keys.Key.Add(new KeyType { Name = key, Value = value });
+		}
+
+		/// <remarks/>
+		public void AddFileKeyValuePair(string fullFileName, string key, string value)
+		{
+			var sessionFile = GetFile(fullFileName);
+			if (sessionFile == null) return;
+			if (sessionFile is MediaFileType)
+			{
+				var audioOrVisualFile = sessionFile as MediaFileType;
+				audioOrVisualFile.Keys.Key.Add(new KeyType { Name = key, Value = value });
+			}
+			else if (sessionFile is WrittenResourceType)
+			{
+				var writtenResourceFile = sessionFile as WrittenResourceType;
+				writtenResourceFile.Keys.Key.Add(new KeyType { Name = key, Value = value });
+			}
 		}
 
 		/// <remarks/>
@@ -1844,6 +1867,22 @@ namespace SIL.Archiving.IMDI.Schema
 				Resources.MediaFile.Add(imdiFile.ToMediaFileType(directoryName));
 			else
 				Resources.WrittenResource.Add(imdiFile.ToWrittenResourceType(directoryName));
+		}
+
+		/// <summary></summary>
+		private IIMDISessionFile GetFile(string fileName)
+		{
+			foreach (var fileType in Resources.MediaFile)
+			{
+				if (fileType.FullPathAndFileName == fileName)
+					return fileType;
+			}
+			foreach (var writtenResourceType in Resources.WrittenResource)
+			{
+				if (writtenResourceType.FullPathAndFileName == fileName)
+					return writtenResourceType;
+			}
+			return null;
 		}
 
 		/// <remarks/>
