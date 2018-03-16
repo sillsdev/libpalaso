@@ -219,7 +219,7 @@
       <HintPath>..\packages\MarkdownDeep.NET.1.5\lib\.NetFramework 3.5\MarkdownDeep.dll</HintPath>
     </Reference>
     <Reference Include="icu.net">
-      <HintPath>..\packages\icu.net.2.3.0\lib\net40\icu.net.dll</HintPath>
+      <HintPath>..\packages\icu.net.2.3.2\lib\net40\icu.net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" Condition="'$(OS)'=='Windows_NT'" />
     <Reference Include="sysglobl" />
