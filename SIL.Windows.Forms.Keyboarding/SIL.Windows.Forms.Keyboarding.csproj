@@ -213,8 +213,8 @@
     <Reference Include="ibusdotnet">
       <HintPath>..\packages\ibusdotnet.2.0.0.20771\lib\ibusdotnet.dll</HintPath>
     </Reference>
-    <Reference Include="icu.net, Version=2.3.0.0, Culture=neutral, PublicKeyToken=416fdd914afa6b66, processorArchitecture=MSIL">
-      <HintPath>..\packages\icu.net.2.3.0\lib\net40\icu.net.dll</HintPath>
+    <Reference Include="icu.net, Version=2.3.2.0, Culture=neutral, PublicKeyToken=416fdd914afa6b66, processorArchitecture=MSIL">
+      <HintPath>..\packages\icu.net.2.3.2\lib\net40\icu.net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Drawing" />
