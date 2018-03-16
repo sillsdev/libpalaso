@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <Configurations>Debug;Release;DebugStrongName;ReleaseStrongName</Configurations>
+    <Description>SIL.Scripture provides classes for working with Scripture data such as references and versifications.</Description>
   </PropertyGroup>
 
   <Import Project="..\GlobalAssemblyInfo.props" />
