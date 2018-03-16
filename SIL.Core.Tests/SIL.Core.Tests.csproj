@@ -324,6 +324,7 @@
     <Compile Include="Extensions\DateTimeExtensionTests.cs" />
     <Compile Include="Extensions\StringExtensionTests.cs" />
     <Compile Include="IO\DirectoryHelperTests.cs" />
+    <Compile Include="IO\FileLocationUtilitiesTests.cs" />
     <Compile Include="IO\FileLock\SimpleFileLockTests.cs" />
     <Compile Include="IO\FileHelperTests.cs" />
     <Compile Include="IO\FileTestEnvironment.cs" />
