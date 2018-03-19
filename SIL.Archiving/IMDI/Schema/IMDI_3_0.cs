@@ -965,6 +965,8 @@ namespace SIL.Archiving.IMDI.Schema
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public class ContentType
 	{
+		private const bool DontRequireUppercaseFirstCharacter = false;
+
 		/// <remarks/>
 		public ContentType()
 		{
@@ -1025,14 +1027,14 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public void SetPlanningType(string planningType)
 		{
-			IMDIItemList list = ListConstructor.GetClosedList(ListType.ContentPlanningType);
+			IMDIItemList list = ListConstructor.GetClosedList(ListType.ContentPlanningType, DontRequireUppercaseFirstCharacter);
 			CommunicationContext.PlanningType = list.FindByValue(planningType).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentPlanningType));
 		}
 
 		/// <remarks/>
 		public void SetInvolvement(string involvement)
 		{
-			IMDIItemList list = ListConstructor.GetClosedList(ListType.ContentInvolvement);
+			IMDIItemList list = ListConstructor.GetClosedList(ListType.ContentInvolvement, DontRequireUppercaseFirstCharacter);
 			CommunicationContext.Involvement = list.FindByValue(involvement).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentInvolvement));
 		}
 
