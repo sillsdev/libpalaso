@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2016-2017 SIL International
+// Copyright (c) 2016-2017 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -147,6 +147,29 @@ namespace LanguageData
 				_codeToLanguageIndex.Add(language.Code, langinfo);
 			}
 
+			string languagecodes = sourcefiles["LanguageCodes.txt"];
+			var codeentries = new List<string>(languagecodes.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries));
+
+			foreach (var languageCode in codeentries)
+			{
+				var data = languageCode.Split(new[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
+				if (data.Length < 2)
+					continue;
+				var langCode = data[0];
+				string twoLetterCode;
+				if (threeToTwoLetter.TryGetValue(langCode, out twoLetterCode))
+					langCode = twoLetterCode;
+				//if (langCode == "fuv")
+				//	langCode = "fuv-Arab";  // special case because the script has been added to this language code
+				// which is probably something to do with the SLDR
+				var countryCode = data[1];
+				LanguageInfo lang;
+				if (_codeToLanguageIndex.TryGetValue(langCode, out lang))
+				{
+					lang.PrimaryCountry = StandardSubtags.RegisteredRegions[countryCode].Name;
+				}
+			}
+
 			IEnumerable<IGrouping<string, string>> languageGroups = Sldr.LanguageTags.Where(info => info.IsAvailable && IetfLanguageTag.IsValid(info.LanguageTag))
 	.Select(info => IetfLanguageTag.Canonicalize(info.LanguageTag))
 	.GroupBy(IetfLanguageTag.GetLanguagePart);
@@ -199,29 +222,6 @@ namespace LanguageData
 							_codeToLanguageIndex.Add(langTag, language);
 						}
 					}
-				}
-			}
-
-			string languagecodes = sourcefiles["LanguageCodes.txt"];
-			var codeentries = new List<string>(languagecodes.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries));
-
-			foreach (var languageCode in codeentries)
-			{
-				var data = languageCode.Split(new[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
-				if (data.Length < 2)
-					continue;
-				var langCode = data[0];
-				string twoLetterCode;
-				if (threeToTwoLetter.TryGetValue(langCode, out twoLetterCode))
-					langCode = twoLetterCode;
-				if (langCode == "fuv")
-					langCode = "fuv-Arab";	// special case because the script has been added to this language code
-											// which is probably something to do with the SLDR
-				var countryCode = data[1];
-				LanguageInfo lang;
-				if (_codeToLanguageIndex.TryGetValue(langCode, out lang))
-				{
-					lang.PrimaryCountry = StandardSubtags.RegisteredRegions[countryCode].Name;
 				}
 			}
 

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2016-2017 SIL International
+// Copyright (c) 2016-2017 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -81,7 +81,7 @@ namespace LanguageData
 			}
 			if (!options.CheckFresh)
 			{
-				Sldr.Initialize(true);
+				Sldr.Initialize(); // true is offline
 				LanguageDataIndex langIndex = new LanguageDataIndex(getcheck.GetFileStrings(options.GetFresh));
 				langIndex.WriteIndex(options.OutputFile);
 				if (options.Json)
