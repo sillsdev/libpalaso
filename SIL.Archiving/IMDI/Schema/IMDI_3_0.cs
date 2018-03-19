@@ -1278,6 +1278,24 @@ namespace SIL.Archiving.IMDI.Schema
 			if (!string.IsNullOrEmpty(actor.EthnicGroup))
 				EthnicGroup = actor.EthnicGroup;
 
+			// Contact
+			if (actor.Contact != null)
+			{
+				Contact = new ContactType
+				{
+					Address = actor.Contact.Address,
+					Email = actor.Contact.Email,
+					Name = actor.Contact.Name,
+					Organisation = actor.Contact.OrganizationName
+				};
+			}
+
+			// Description
+			foreach (var description in actor.Descriptions)
+			{
+				Description.Add(description);
+			}
+
 			// Anonymize
 			if (actor.Anonymize)
 				Anonymized = new BooleanType { Value = BooleanEnum.@true };
@@ -1392,6 +1410,17 @@ namespace SIL.Archiving.IMDI.Schema
 
 			if (!string.IsNullOrEmpty(BirthDate))
 				actr.BirthDate = BirthDate;
+
+			if (actr.Contact != null)
+			{
+				actr.Contact = new ArchivingContact
+				{
+					Address = Contact.Address,
+					Name = Contact.Name,
+					Email = Contact.Email,
+					OrganizationName = Contact.Organisation
+				};
+			}
 
 			foreach (LanguageType lang in Languages.Language)
 			{
@@ -1786,6 +1815,12 @@ namespace SIL.Archiving.IMDI.Schema
 		}
 
 		/// <remarks/>
+		public void AddContentDescription(LanguageString description)
+		{
+			MDGroup.Content.Description.Add(description);
+		}
+
+		/// <remarks/>
 		public void AddDescription(LanguageString description)
 		{
 			Description.Add(description);
@@ -1850,6 +1885,37 @@ namespace SIL.Archiving.IMDI.Schema
 				var writtenResourceFile = sessionFile as WrittenResourceType;
 				writtenResourceFile.Keys.Key.Add(new KeyType { Name = key, Value = value });
 			}
+		}
+
+		public void AddFileDescription(string fullFileName, LanguageString description)
+		{
+			var sessionFile = GetFile(fullFileName);
+			if (sessionFile == null) return;
+
+			// IMDIFile.cs line 160 adds a default value which will block the adding of the first entry
+			if (sessionFile.Description.Count == 1 &&
+				sessionFile.Description.FirstOrDefault().Value == null)
+				sessionFile.Description.Remove(sessionFile.Description.FirstOrDefault());
+
+			if (sessionFile is MediaFileType)
+			{
+				var audioOrVisualFile = sessionFile as MediaFileType;
+				audioOrVisualFile.Description.Add(description);
+			}
+			else if (sessionFile is WrittenResourceType)
+			{
+				var writtenResourceFile = sessionFile as WrittenResourceType;
+				writtenResourceFile.Description.Add(description);
+			}
+		}
+
+		public void AddMediaFileTimes(string fullFileName, string start, string stop)
+		{
+			var sessionFile = GetFile(fullFileName);
+			if (!(sessionFile is MediaFileType)) return;
+			var audioOrVisualFile = sessionFile as MediaFileType;
+			audioOrVisualFile.TimePosition.Start = start;
+			audioOrVisualFile.TimePosition.End = stop;
 		}
 
 		/// <remarks/>
@@ -1993,7 +2059,7 @@ namespace SIL.Archiving.IMDI.Schema
 			}
 			set
 			{
-				MDGroup.Content.SubGenre = value.ToVocabularyType(false, ListType.Link(ListType.ContentSubGenre));
+				MDGroup.Content.Task = value.ToVocabularyType(false, ListType.Link(ListType.ContentSubGenre));
 			}
 		}
 	}
