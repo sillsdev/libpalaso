@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using SIL.Archiving.IMDI.Schema;
 using SIL.Extensions;
 
 namespace SIL.Archiving.Generic
@@ -26,6 +27,9 @@ namespace SIL.Archiving.Generic
 
 		/// <summary/>
 		public string EthnicGroup;
+
+		/// <summary/>
+		public ArchivingContact Contact;
 
 		/// <summary />
 		public string Age;
@@ -70,6 +74,7 @@ namespace SIL.Archiving.Generic
 			Iso3Languages = new ArchivingLanguageCollection();
 			Files = new List<ArchivingFile>();
 			Keys = new List<KeyValuePair<string, string>>();
+			Descriptions = new DescriptionTypeCollection();
 		}
 
 		/// <summary>Value can be either DateTime (birth date), int (birth year), or string</summary>
@@ -119,6 +124,9 @@ namespace SIL.Archiving.Generic
 		{
 			Keys.Add(new KeyValuePair<string, string>(key, value));
 		}
+
+		/// <summary />
+		public DescriptionTypeCollection Descriptions;
 
 		/// <summary>Compare 2 ArchivingActor objects. They are identical if they have the same FullName</summary>
 		public int CompareTo(object obj)
