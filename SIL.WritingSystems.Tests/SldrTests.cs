@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -264,7 +264,8 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		[Test, Ignore("SkipOnTeamCity")]
+		[Test]
+		[Category("SkipOnTeamCity")]
 		// This depends on when SLDR updates "en-US.ldml" with the revid 
 		public void GetLdmlFile_NotModified_DoesntDownloadNewFile()
 		{

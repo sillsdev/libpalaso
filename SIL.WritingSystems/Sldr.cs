@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
@@ -369,6 +369,7 @@ namespace SIL.WritingSystems
 					// query the SLDR Git repo to see if there is an updated version of alltags.txt
 					string commitUrl = string.Format("{0}commits?path=extras/alltags.txt&since={1:O}",
 						SldrGitHubRepo, sinceTime);
+					ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 					var webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(commitUrl));
 					webRequest.UserAgent = UserAgent;
 					webRequest.Timeout = 10000;
@@ -398,6 +399,7 @@ namespace SIL.WritingSystems
 						webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(contentsUrl));
 						webRequest.UserAgent = UserAgent;
 						webRequest.Timeout = 10000;
+
 						using (var webResponse = (HttpWebResponse) webRequest.GetResponse())
 						{
 							Stream stream = webResponse.GetResponseStream();
