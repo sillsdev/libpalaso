@@ -1833,6 +1833,22 @@ namespace SIL.Archiving.IMDI.Schema
 		}
 
 		/// <remarks/>
+		public void AddContentLanguage(ArchivingLanguage language, LanguageString description)
+		{
+			MDGroup.Content.Languages.Language.Add(new LanguageType
+			{
+				Id = language.Iso3Code,
+				Name = new []{new LanguageNameType
+				{
+					Link = "http://www.mpi.nl/IMDI/Schema/MPI-Languages.xml",
+					Type = VocabularyTypeValueType.OpenVocabulary,
+					Value = language.EnglishName
+				}},
+				Description = new DescriptionTypeCollection{description}
+			});
+		}
+
+		/// <remarks/>
 		public void AddContentDescription(LanguageString description)
 		{
 			MDGroup.Content.Description.Add(description);
