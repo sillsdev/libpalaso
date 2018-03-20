@@ -13,6 +13,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 {
 	/// <summary>
 	/// Acts like a normal OpenFileDialog, but with the addition of letting you set the initial view (e.g. to Large_Icons)
+	/// On Linux, this will use the GTK file open dialog instead of the WinForms dialog.
 	/// </summary>
 	public class OpenFileDialogWithViews : Component
 	{
@@ -56,7 +57,7 @@ namespace SIL.Windows.Forms.ImageToolbox
 		private bool m_IsWatching = false;
 		private DialogViewTypes m_DialogViewTypes;
 		private const int WM_COMMAND = 0x0111;
-		private OpenFileDialog m_OpenFileDialog;
+		private DialogAdapters.OpenFileDialogAdapter m_OpenFileDialog;
 
 		public OpenFileDialogWithViews()
 		{
@@ -73,26 +74,24 @@ namespace SIL.Windows.Forms.ImageToolbox
 		private DialogViewTypes DialogViewType
 		{
 			get { return m_DialogViewTypes; }
-			set
-			{
-				m_DialogViewTypes = value;
-				if (!Platform.IsWindows && m_DialogViewTypes == DialogViewTypes.Large_Icons)
-				{
-					// on Mono for now we support only setting large icons
-					SelectLargeIconView(OpenFileDialog);
-				}
-			}
+			set { m_DialogViewTypes = value; }
 		}
 
-		private OpenFileDialog OpenFileDialog
+		private DialogAdapters.OpenFileDialogAdapter OpenFileDialog
 		{
 			get
 			{
 				if (m_OpenFileDialog == null)
 				{
-					m_OpenFileDialog = new OpenFileDialog();
+					m_OpenFileDialog = new DialogAdapters.OpenFileDialogAdapter();
+					if (DialogAdapters.CommonDialogAdapter.UseGtkDialogs)
+					{
+						DialogAdapters.CommonDialogAdapter.WindowType = Platform.IsCinnamon ?
+							DialogAdapters.CommonDialogAdapter.WindowTypeHintAdaptor.Dialog :
+							DialogAdapters.CommonDialogAdapter.WindowTypeHintAdaptor.Utility;
+						DialogAdapters.CommonDialogAdapter.ForceKeepAbove = true;
+					}
 				}
-
 				return m_OpenFileDialog;
 			}
 
@@ -277,41 +276,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 				}
 			}
 		}
-
-		/// <summary>
-		/// Select the large icon view in the open file dialog.
-		/// </summary>
-		/// <remarks>
-		/// This totally depends on the internal implementation of the file dialogs in Mono.  Since that has
-		/// remained stable for several years, it should work for us.  The worst that can happen for a new
-		/// version of Mono is that it silently stops working.
-		/// </remarks>
-		private static void SelectLargeIconView(OpenFileDialog dlg)
-		{
-			// Accessing a private member variable of FileDialog, so if the
-			// implementation changes, give up immediately.
-			if (!(dlg is FileDialog))
-				return;
-			Type dlgType = typeof(FileDialog);
-			var dlgViewField = dlgType.GetField("mwfFileView", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
-			if (dlgViewField == null)
-				return;
-			var fileView = dlgViewField.GetValue(dlg);
-			if (fileView == null)
-				return;
-			var viewType = fileView.GetType();
-			var viewItemField = viewType.GetField("largeIconMenutItem", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
-			if (viewItemField == null)
-				return;
-			var largeIcon = viewItemField.GetValue(fileView) as MenuItem;
-			if (largeIcon == null)
-				return;
-			var viewOnClickMethod = viewType.GetMethod("OnClickViewMenuSubItem", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public,
-				null, new Type[] { typeof(Object), typeof(EventArgs) }, null);
-			if (viewOnClickMethod != null)
-				viewOnClickMethod.Invoke(fileView, new Object[] { largeIcon, new EventArgs() });
-		}
-
 	}
 
 }
