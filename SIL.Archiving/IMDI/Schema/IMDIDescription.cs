@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using SIL.Archiving.Generic;
@@ -59,9 +59,7 @@ namespace SIL.Archiving.IMDI.Schema
 
 		public int GetHashCode(DescriptionType obj)
 		{
-			return obj.LanguageId == null
-				? string.Empty.GetHashCode()
-				: obj.LanguageId.GetHashCode();
+			return ((obj.Name ?? string.Empty) + (obj.LanguageId ?? string.Empty)).GetHashCode();
 		}
 	}
 

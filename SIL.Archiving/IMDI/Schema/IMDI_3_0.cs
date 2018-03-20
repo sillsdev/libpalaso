@@ -1934,16 +1934,11 @@ namespace SIL.Archiving.IMDI.Schema
 				sessionFile.Description.FirstOrDefault().Value == null)
 				sessionFile.Description.Remove(sessionFile.Description.FirstOrDefault());
 
-			if (sessionFile is MediaFileType)
+			sessionFile.Description.Add(new LanguageString
 			{
-				var audioOrVisualFile = sessionFile as MediaFileType;
-				audioOrVisualFile.Description.Add(description);
-			}
-			else if (sessionFile is WrittenResourceType)
-			{
-				var writtenResourceFile = sessionFile as WrittenResourceType;
-				writtenResourceFile.Description.Add(description);
-			}
+				Value = description.Value,
+				Iso3LanguageId = description.Iso3LanguageId
+			});
 		}
 
 		public void AddMediaFileTimes(string fullFileName, string start, string stop)
@@ -1962,9 +1957,23 @@ namespace SIL.Archiving.IMDI.Schema
 		}
 
 		/// <remarks/>
-		public void AddFileAccess(string fullFileName, AccessType access)
+		public void AddFileAccess(string fullFileName, AccessType access, LanguageString conditions, LanguageString restrictions)
 		{
 			var sessionFile = GetFile(fullFileName);
+			if (conditions == null) conditions = new LanguageString{Value = null};
+			access.Description.Add(new DescriptionType
+			{
+				Name = "Conditions of Access",
+				LanguageId = conditions.Iso3LanguageId,
+				Value = conditions.Value
+			});
+			if (restrictions == null) restrictions = new LanguageString { Value = null };
+			access.Description.Add(new DescriptionType
+			{
+				Name = "Restrictions",
+				LanguageId = restrictions.Iso3LanguageId,
+				Value = restrictions.Value
+			});
 			sessionFile.Access = access;
 		}
 
