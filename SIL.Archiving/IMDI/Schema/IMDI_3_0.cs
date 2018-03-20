@@ -847,6 +847,20 @@ namespace SIL.Archiving.IMDI.Schema
 			Contact = new ContactType();
 		}
 
+		public AccessType(IArchivingPackage package)
+		{
+			Availability = package.AccessCode;
+			Date = package.Access.DateAvailable;
+			Owner = package.Access.Owner;
+			Publisher = package.Publisher;
+			Contact = new ContactType
+			{
+				Address = package.Location.Address,
+				Name = package.Author,
+				Organisation = package.Owner
+			};
+		}
+
 		/// <remarks/>
 		public string Availability { get; set; }
 
@@ -1817,6 +1831,27 @@ namespace SIL.Archiving.IMDI.Schema
 		}
 
 		/// <remarks/>
+		public void AddProject(ArchivingPackage package)
+		{
+			var project = new Project
+			{
+				Name = package.FundingProject.Name,
+				Title = package.Title,
+				Contact = new ContactType
+				{
+					Address = Location.Address,
+					Name = package.Author,
+					Organisation = package.Publisher
+				}
+			};
+			var imdiPackage = package as IMDIPackage;
+			var corpus = imdiPackage?.BaseImdiFile.Items.FirstOrDefault() as Corpus;
+			if (corpus != null)
+				project.Description.Add(corpus.Description.FirstOrDefault());
+			MDGroup.Project = new List<Project>{ project };
+		}
+
+		/// <remarks/>
 		public void AddContentDescription(LanguageString description)
 		{
 			MDGroup.Content.Description.Add(description);
@@ -1924,6 +1959,13 @@ namespace SIL.Archiving.IMDI.Schema
 		public void AddFile(ArchivingFile file)
 		{
 			AddFile(new IMDIFile(file), IMDIArchivingDlgViewModel.NormalizeDirectoryName(Name));
+		}
+
+		/// <remarks/>
+		public void AddFileAccess(string fullFileName, AccessType access)
+		{
+			var sessionFile = GetFile(fullFileName);
+			sessionFile.Access = access;
 		}
 
 		/// <summary></summary>

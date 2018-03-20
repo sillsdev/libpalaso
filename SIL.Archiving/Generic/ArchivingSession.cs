@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SIL.Archiving.IMDI.Schema;
 
 namespace SIL.Archiving.Generic
 {
@@ -8,6 +9,9 @@ namespace SIL.Archiving.Generic
 	{
 		/// <summary></summary>
 		void AddFile(ArchivingFile file);
+
+		/// <summary></summary>
+		void AddFileAccess(string fullFileName, AccessType access);
 
 		/// <summary></summary>
 		List<string> Files { get; }
@@ -41,6 +45,9 @@ namespace SIL.Archiving.Generic
 
 		/// <summary></summary>
 		void AddContentDescription(LanguageString description);
+
+		/// <summary></summary>
+		void AddProject(ArchivingPackage package);
 
 		/// <summary></summary>
 		string Genre { get; set; }
