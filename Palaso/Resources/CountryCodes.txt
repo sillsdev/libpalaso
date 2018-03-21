@@ -54,7 +54,7 @@ CU	Cuba	Americas
 CV	Cape Verde Islands	Africa
 CW	Curacao	Americas
 CY	Cyprus	Asia
-CX	 Christmas Island	Pacific
+CX	Christmas Island	Pacific
 CZ	Czech Republic	Europe
 DE	Germany	Europe
 DG	Diego Garcia
