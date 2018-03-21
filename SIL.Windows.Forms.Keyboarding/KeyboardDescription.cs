@@ -56,6 +56,11 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// </summary>
 		public override void Activate()
 		{
+			if (Keyboard.Controller.ActiveKeyboard == this)
+			{
+				// Don't waste the time, energy, and buggy behavior with IMEs to 'reactivate' ourself.
+				return;
+			}
 			var activeKeyboard = Keyboard.Controller.ActiveKeyboard as KeyboardDescription;
 			if (activeKeyboard != null && activeKeyboard.DeactivatePreviousKeyboard(this))
 				activeKeyboard.Deactivate();
