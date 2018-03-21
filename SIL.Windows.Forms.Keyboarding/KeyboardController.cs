@@ -523,9 +523,9 @@ namespace SIL.Windows.Forms.Keyboarding
 
 		internal static void GetLayoutAndLocaleFromLanguageId(string id, out string layout, out string locale)
 		{
-			var parts = id.Split('_');
+			var parts = id.Split('_', '-');
 			locale = parts[0];
-			layout = parts.Length > 1 ? parts[1] : String.Empty;
+			layout = parts.Length > 1 ? parts[parts.Length - 1] : String.Empty;
 		}
 	}
 }
