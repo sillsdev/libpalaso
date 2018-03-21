@@ -23,14 +23,19 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 		/// <summary/>
 		internal WinKeyboardDescription(string id, string name, string layout, string locale, bool isAvailable,
-			IInputLanguage inputLanguage, WinKeyboardAdaptor engine, string localizedName, TfInputProcessorProfile profile)
-			: base(id, name, layout, locale, isAvailable, engine.SwitchingAdaptor)
+			IInputLanguage inputLanguage, WinKeyboardAdaptor engine, TfInputProcessorProfile profile)
+			: this(id, name, layout, locale, isAvailable, inputLanguage, engine)
+		{
+			InputProcessorProfile = profile;
+			_useNfcContext = !IsKeymanKeyboard(profile);
+		}
+
+		internal WinKeyboardDescription(string keyboardId, string localizedKeyboardName, string inputLanguageLayoutName,
+			string cultureName, bool isAvailable, IInputLanguage inputLanguage, WinKeyboardAdaptor engine) : base(keyboardId, localizedKeyboardName, inputLanguageLayoutName, cultureName, isAvailable, engine.SwitchingAdaptor)
 		{
 			InputLanguage = inputLanguage;
-			_localizedName = localizedName;
-			InputProcessorProfile = profile;
-			ConversionMode = (int) (Win32.IME_CMODE.NATIVE | Win32.IME_CMODE.SYMBOL);
-			_useNfcContext = !IsKeymanKeyboard(profile);
+			_localizedName = localizedKeyboardName;
+			ConversionMode = (int)(Win32.IME_CMODE.NATIVE | Win32.IME_CMODE.SYMBOL);
 		}
 
 		private static bool IsKeymanKeyboard(TfInputProcessorProfile profile)

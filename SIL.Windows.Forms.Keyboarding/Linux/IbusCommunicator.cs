@@ -206,7 +206,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// <param name="scanCode">The X11 scan code</param>
 		/// <param name="state">The modifier state, i.e. shift key etc.</param>
 		/// <returns><c>true</c> if the key event is handled by ibus.</returns>
-		/// <seealso cref="IBusKeyboardAdaptor.HandleKeyPress"/>
+		/// <seealso cref="IbusKeyboardSwitchingAdaptor.HandleKeyPress"/>
 		public bool ProcessKeyEvent(int keySym, int scanCode, Keys state)
 		{
 			if (m_inputContext == null)

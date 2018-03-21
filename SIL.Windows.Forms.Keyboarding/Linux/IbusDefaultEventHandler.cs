@@ -163,7 +163,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// the composition is ending. The temporarily inserted composition string will be
 		/// replaced with <paramref name="ibusText"/>.
 		/// </summary>
-		/// <seealso cref="IBusKeyboardAdaptor.HandleKeyPress"/>
+		/// <seealso cref="IbusKeyboardSwitchingAdaptor.HandleKeyPress"/>
 		public void OnCommitText(object ibusText)
 		{
 			// Note: when we try to pass IBusText as ibusText parameter we get a compiler crash
@@ -189,7 +189,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// <param name="cursorPos">0-based position where the cursor should be put after
 		/// updating the composition (pre-edit window). This position is relative to the
 		/// composition/preedit text.</param>
-		/// <seealso cref="IBusKeyboardAdaptor.HandleKeyPress"/>
+		/// <seealso cref="IbusKeyboardSwitchingAdaptor.HandleKeyPress"/>
 		public void OnUpdatePreeditText(object obj, int cursorPos)
 		{
 			if (m_TextBox.InvokeRequired)
@@ -303,7 +303,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// depending on which modifier keys are pressed. 0 is always unmodified, and 1 is with
 		/// shift alone.
 		/// </param>
-		/// <seealso cref="IBusKeyboardAdaptor.HandleKeyPress"/>
+		/// <seealso cref="IbusKeyboardSwitchingAdaptor.HandleKeyPress"/>
 		public void OnIbusKeyPress(int keySym, int scanCode, int index)
 		{
 			if (m_TextBox.InvokeRequired)

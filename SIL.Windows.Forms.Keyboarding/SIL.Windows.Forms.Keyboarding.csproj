@@ -399,6 +399,7 @@
     <Compile Include="Linux\XklEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegisterEventArgs.cs" />
+    <Compile Include="Windows\WindowsKeyboardSwitchingAdapter.cs" />
     <Compile Include="Windows\IWindowsLanguageProfileSink.cs" />
     <Compile Include="Windows\KeymanKeyboardAdaptor.cs" />
     <Compile Include="Windows\KeymanKeyboardDescription.cs" />
@@ -407,7 +408,6 @@
     <Compile Include="Windows\LegacyKeymanKeyboardSwitchingAdapter.cs" />
     <Compile Include="Windows\MsTsfInterfaces.cs" />
     <Compile Include="Windows\Win32.cs" />
-    <Compile Include="Windows\WindowsKeyboardSwitchingAdapter.cs" />
     <Compile Include="Windows\WinKeyboardAdaptor.cs" />
     <Compile Include="Windows\WinKeyboardDescription.cs" />
     <Compile Include="Windows\WinKeyboardUtils.cs" />
