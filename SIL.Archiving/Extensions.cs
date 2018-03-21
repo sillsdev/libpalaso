@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Text;
 using System.Windows.Forms;
@@ -112,13 +112,17 @@ namespace SIL.Archiving
 		public static string ToLatinOnly(this string s, string charReplacement, string spaceReplacement, string charsToIgnore)
 		{
 			var returnVal = "";
+			int lastDot = s.LastIndexOf(".", StringComparison.InvariantCulture);
 
+			int i = 0;
 			foreach (var c in s)
 			{
 				var test = c.ToString(CultureInfo.InvariantCulture);
 
 				if ((test == charReplacement) || (test == spaceReplacement))  // do not replace the replacement characters
 					returnVal += test;
+				else if (c == '.' && i != lastDot) // only allow one dot in the file name
+					returnVal += charReplacement;
 				else if (charsToIgnore.Contains(test))  // do not replace ignored characters
 					returnVal += test;
 				else if (char.IsWhiteSpace(c))
@@ -135,6 +139,7 @@ namespace SIL.Archiving
 					returnVal += charReplacement;
 				else  // legal characters
 					returnVal += test;
+				i += 1;
 			}
 
 			// remove consecutive replacement characters
