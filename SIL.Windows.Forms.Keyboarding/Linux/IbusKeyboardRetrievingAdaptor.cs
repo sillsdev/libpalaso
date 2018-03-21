@@ -142,15 +142,19 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		public Action GetKeyboardSetupAction()
 		{
+			string args;
+			var setupApp = GetKeyboardSetupApplication(out args);
+			if (setupApp == null)
+			{
+				return null;
+			}
 			return () =>
 			{
-				string args;
-				var setupApp = GetKeyboardSetupApplication(out args);
 				using (Process.Start(setupApp, args)) { }
 			};
 		}
 
-		public virtual string GetKeyboardSetupApplication(out string arguments)
+		protected virtual string GetKeyboardSetupApplication(out string arguments)
 		{
 			arguments = null;
 			return File.Exists("/usr/bin/ibus-setup") ? "/usr/bin/ibus-setup" : null;

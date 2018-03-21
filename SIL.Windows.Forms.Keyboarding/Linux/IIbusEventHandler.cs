@@ -22,7 +22,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// allow the keyboard to manage the pre-edit text.
 	///
 	/// If the application implements this interface it will need to pass an instance
-	/// when registering the control (<see cref="KeyboardController.Register"/>).
+	/// when registering the control (<see cref="KeyboardController.RegisterControl"/>).
 	///
 	/// If the application doesn't implement this interface a default event handler
 	/// (<see cref="SIL.Windows.Forms.Keyboarding.Linux.IbusDefaultEventHandler"/>) will
@@ -76,7 +76,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// sequence.
 		/// </summary>
 		/// <param name="text">An IBusText object</param>
-		/// <seealso cref="IBusKeyboardAdaptor.HandleKeyPress"/>
+		/// <seealso cref="IbusKeyboardSwitchingAdaptor.HandleKeyPress"/>
 		void OnCommitText(object text);
 
 		/// <summary>
@@ -87,8 +87,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// <param name="cursorPos">0-based position where the cursor should be put after
 		/// updating the composition (pre-edit window). This position is relative to the
 		/// composition/preedit text.</param>
-		/// <param name="compositionText">An IBusText object</param>
-		/// <seealso cref="IBusKeyboardAdaptor.HandleKeyPress"/>
+		/// <seealso cref="IbusKeyboardSwitchingAdaptor.HandleKeyPress"/>
 		void OnUpdatePreeditText(object compositionText, int cursorPos);
 
 		/// <summary>
@@ -119,7 +118,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 		/// depending on which modifier keys are pressed. 0 is always unmodified, and 1 is with
 		/// shift alone.
 		/// </param>
-		/// <seealso cref="IBusKeyboardAdaptor.HandleKeyPress"/>
+		/// <seealso cref="IbusKeyboardSwitchingAdaptor.HandleKeyPress"/>
 		void OnIbusKeyPress(int keySym, int scanCode, int modifiers);
 		#endregion
 	}

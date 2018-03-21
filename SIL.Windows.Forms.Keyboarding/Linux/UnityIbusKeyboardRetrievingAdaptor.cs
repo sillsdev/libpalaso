@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015 SIL International
+// Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Collections.Generic;
@@ -20,10 +20,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		#region Specific implementations of IKeyboardRetriever
 
-		public override bool IsApplicable
-		{
-			get { return _helper.IsApplicable; }
-		}
+		public override bool IsApplicable => _helper.IsApplicable;
 
 		public override void Initialize()
 		{
@@ -32,7 +29,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			InitKeyboards();
 		}
 
-		public override string GetKeyboardSetupApplication(out string arguments)
+		protected override string GetKeyboardSetupApplication(out string arguments)
 		{
 			var program = _helper.GetKeyboardSetupApplication(out arguments);
 			return string.IsNullOrEmpty(program) ? base.GetKeyboardSetupApplication(out arguments) : program;

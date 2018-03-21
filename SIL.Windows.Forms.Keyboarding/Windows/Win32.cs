@@ -163,9 +163,9 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			{
 				if (s_monoWinFormsAssembly == null)
 				{
-#pragma warning disable 0612 // Using Obsolete method LoadWithPartialName.
+#pragma warning disable 0618  // Using Obsolete method LoadWithPartialName.
 					s_monoWinFormsAssembly = Assembly.LoadWithPartialName("System.Windows.Forms");
-#pragma warning restore 0612
+#pragma warning restore 0618
 				}
 				return s_monoWinFormsAssembly;
 			}

@@ -202,9 +202,13 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 
 		public Action GetKeyboardSetupAction()
 		{
+			string args;
+			var setupApp = GetKeyboardSetupApplication(out args);
+			if (setupApp == null)
+			{
+				return null;
+			}
 			return () => {
-				string args;
-				var setupApp = GetKeyboardSetupApplication(out args);
 				using (Process.Start(setupApp, args)) { }
 			};
 		}
