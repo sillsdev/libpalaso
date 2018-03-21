@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -1870,7 +1870,7 @@ namespace SIL.Archiving.IMDI.Schema
 			}
 			set
 			{
-				MDGroup.Content.Genre = value.ToVocabularyType(false, ListType.Link(ListType.ContentGenre));
+				MDGroup.Content.Genre = value.Replace("<","").Replace(">","").ToVocabularyType(false, ListType.Link(ListType.ContentGenre));
 			}
 		}
 
