@@ -34,6 +34,21 @@ namespace SIL.Archiving.Generic
 		void AddFileKeyValuePair(string fullFileName, string key, string value);
 
 		/// <summary></summary>
+		void AddContentDescription(LanguageString description);
+
+		/// <summary></summary>
+		void AddActorDescription(ArchivingActor actor, LanguageString description);
+
+		/// <summary></summary>
+		void AddFileDescription(string fullFileName, LanguageString description);
+
+		/// <summary></summary>
+		void AddActorContact(ArchivingActor actor, ArchivingContact contact);
+
+		/// <summary></summary>
+		void AddMediaFileTimes(string fullFileName, string start, string stop);
+
+		/// <summary></summary>
 		string Genre { get; set; }
 
 		/// <summary></summary>
