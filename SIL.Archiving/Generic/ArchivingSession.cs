@@ -10,7 +10,7 @@ namespace SIL.Archiving.Generic
 		void AddFile(ArchivingFile file);
 
 		/// <summary></summary>
-		void AddFileAccess(string fullFileName, ArchivingPackage package);
+		void AddFileAccess(string fullFileName, ArchivingPackage package, LanguageString conditions, LanguageString restrictions);
 
 		/// <summary></summary>
 		List<string> Files { get; }
