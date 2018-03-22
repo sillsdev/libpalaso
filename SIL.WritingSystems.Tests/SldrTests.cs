@@ -264,14 +264,15 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		[Test, Ignore("SkipOnTeamCity")]
+		[Test]
+		[Category("SkipOnTeamCity")]
 		// This depends on when SLDR updates "en-US.ldml" with the revid 
 		public void GetLdmlFile_NotModified_DoesntDownloadNewFile()
 		{
 			using (var environment = new TestEnvironment(false))
 			{
 				// Write 
-				string content = LdmlContentForTests.Version3Identity("en", "", "US", "", "", "12345", "variantName", "", "53d542ba498f40f437f7723e69dcf64dab6c9794");
+				string content = LdmlContentForTests.Version3Identity("en", "", "US", "", "", "12345", "variantName", "", "d9fabd0fa2c615cfdfb3d2b48f403f55145ff16a");
 				const string ietfLanguageTag = "en-US";
 
 				// Write content to destination and cache

@@ -369,6 +369,7 @@ namespace SIL.WritingSystems
 					// query the SLDR Git repo to see if there is an updated version of alltags.txt
 					string commitUrl = string.Format("{0}commits?path=extras/alltags.txt&since={1:O}",
 						SldrGitHubRepo, sinceTime);
+					ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 					var webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(commitUrl));
 					webRequest.UserAgent = UserAgent;
 					webRequest.Timeout = 10000;
