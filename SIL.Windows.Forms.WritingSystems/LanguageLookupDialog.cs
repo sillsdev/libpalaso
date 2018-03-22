@@ -50,6 +50,18 @@ namespace SIL.Windows.Forms.WritingSystems
 			_languageLookupControl.UseSimplifiedChinese();
 		}
 
+#if __MonoCS__
+		// This patches over a bug in the Mono runtime layout related to AutoScale.
+		protected override void OnSizeChanged (EventArgs e)
+		{
+			var margin = _languageLookupControl.Location.X;
+			var availableWidth = this.ClientSize.Width;
+			if (_languageLookupControl.Width < availableWidth - 2 * margin)
+				_languageLookupControl.Size = new System.Drawing.Size (availableWidth - 2 * margin, _languageLookupControl.Height);
+			base.OnSizeChanged (e);
+		}
+#endif
+
 		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
 		{
 			_languageLookupControl.StopTimer();
