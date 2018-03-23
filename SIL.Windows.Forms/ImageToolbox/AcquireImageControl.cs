@@ -45,43 +45,57 @@ namespace SIL.Windows.Forms.ImageToolbox
 				ImageChanged(sender, e);
 		}
 
+		private bool _actModal;
+
 		private void OnGetFromFileSystemClick(object sender, EventArgs e)
 		{
-			SetMode(Modes.SingleImage);
-			// The primary thing that OpenFileDialogWithViews buys us is the ability to default to large icons.
-			// OpenFileDialogWithViews still doesn't let us read (and thus remember) the selected view.
-			using (var dlg = new OpenFileDialogWithViews(OpenFileDialogWithViews.DialogViewTypes.Large_Icons))
+			if (_actModal)
+				return;		// The GTK file chooser on Linux isn't acting modal, so we simulate it.
+			_actModal = true;
+			try
 			{
-				if (string.IsNullOrEmpty(ImageToolboxSettings.Default.LastImageFolder))
+				SetMode(Modes.SingleImage);
+				// The primary thing that OpenFileDialogWithViews buys us is the ability to default to large icons.
+				// OpenFileDialogWithViews still doesn't let us read (and thus remember) the selected view.
+				using (var dlg = new OpenFileDialogWithViews(OpenFileDialogWithViews.DialogViewTypes.Large_Icons))
 				{
-					dlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-				}
-				else
-				{
-					dlg.InitialDirectory = ImageToolboxSettings.Default.LastImageFolder; ;
-				}
-
-				//NB: dissallowed gif because of a .net crash:  http://jira.palaso.org/issues/browse/BL-85
-				dlg.Filter = "picture files".Localize("ImageToolbox.PictureFiles", "Shown in the file-picking dialog to describe what kind of files the dialog is filtering for") + "(*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp)|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
-
-				if (DialogResult.OK == dlg.ShowDialog())
-				{
-					ImageToolboxSettings.Default.LastImageFolder = Path.GetDirectoryName(dlg.FileName);
-					ImageToolboxSettings.Default.Save();
-
-					try
+					if (string.IsNullOrEmpty(ImageToolboxSettings.Default.LastImageFolder))
 					{
-						_currentImage = PalasoImage.FromFile(dlg.FileName);
+						dlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
 					}
-					catch (Exception err) //for example, http://jira.palaso.org/issues/browse/BL-199
+					else
 					{
-						ErrorReport.NotifyUserOfProblem(err, "Sorry, there was a problem loading that image.".Localize("ImageToolbox.ProblemLoadingImage"));
-						return;
+						dlg.InitialDirectory = ImageToolboxSettings.Default.LastImageFolder; ;
 					}
-					_pictureBox.Image = _currentImage.Image;
-					if (ImageChanged != null)
-						ImageChanged.Invoke(this, null);
+
+					dlg.Title = "Choose Picture File".Localize("ImageToolbox.FileChooserTitle", "Title shown for a file chooser dialog brought up by the ImageToolbox");
+
+					//NB: dissallowed gif because of a .net crash:  http://jira.palaso.org/issues/browse/BL-85
+					dlg.Filter = "picture files".Localize("ImageToolbox.PictureFiles", "Shown in the file-picking dialog to describe what kind of files the dialog is filtering for") + "(*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp)|*.png;*.tif;*.tiff;*.jpg;*.jpeg;*.bmp;";
+
+					if (DialogResult.OK == dlg.ShowDialog(this.ParentForm))
+					{
+						ImageToolboxSettings.Default.LastImageFolder = Path.GetDirectoryName(dlg.FileName);
+						ImageToolboxSettings.Default.Save();
+
+						try
+						{
+							_currentImage = PalasoImage.FromFile(dlg.FileName);
+						}
+						catch (Exception err) //for example, http://jira.palaso.org/issues/browse/BL-199
+						{
+							ErrorReport.NotifyUserOfProblem(err, "Sorry, there was a problem loading that image.".Localize("ImageToolbox.ProblemLoadingImage"));
+							return;
+						}
+						_pictureBox.Image = _currentImage.Image;
+						if (ImageChanged != null)
+							ImageChanged.Invoke(this, null);
+					}
 				}
+			}
+			finally
+			{
+				_actModal = false;
 			}
 		}
 

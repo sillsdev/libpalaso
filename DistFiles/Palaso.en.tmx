@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <tmx version="1.4">
    <header srclang="en"
            adminlang="en"
@@ -192,6 +192,12 @@
       <tu tuid="ImageToolbox.FileButton">
          <tuv xml:lang="en">
             <seg>File</seg>
+         </tuv>
+      </tu>
+      <tu tuid="ImageToolbox.FileChooserTitle">
+         <note>Title shown for a file chooser dialog brought up by the ImageToolbox</note>
+         <tuv xml:lang="en">
+            <seg>Choose Picture File</seg>
          </tuv>
       </tu>
        <tu tuid="ImageToolbox.Galleries">
