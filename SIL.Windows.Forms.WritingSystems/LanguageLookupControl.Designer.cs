@@ -40,7 +40,6 @@
 			this._cannotFindLanguageLink = new System.Windows.Forms.LinkLabel();
 			this._desiredLanguageLabel = new System.Windows.Forms.Label();
 			this._desiredLanguageDisplayName = new System.Windows.Forms.TextBox();
-			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
 			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
 			this._showRegionalDialectsCheckBox = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -58,9 +57,9 @@
             this.countryHeader});
 			this._listView.FullRowSelect = true;
 			this._listView.HideSelection = false;
-			this._listView.Location = new System.Drawing.Point(0, 29);
+			this._listView.Location = new System.Drawing.Point(0, 36);
 			this._listView.Name = "_listView";
-			this._listView.Size = new System.Drawing.Size(577, 269);
+			this._listView.Size = new System.Drawing.Size(577, 262);
 			this._listView.TabIndex = 1;
 			this._listView.UseCompatibleStateImageBehavior = false;
 			this._listView.View = System.Windows.Forms.View.Details;
@@ -129,7 +128,7 @@
 			this._L10NSharpExtender.SetLocalizableToolTip(this._cannotFindLanguageLink, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._cannotFindLanguageLink, null);
 			this._L10NSharpExtender.SetLocalizingId(this._cannotFindLanguageLink, "LanguageLookup._cannotFindLanguageLink");
-			this._cannotFindLanguageLink.Location = new System.Drawing.Point(450, 6);
+			this._cannotFindLanguageLink.Location = new System.Drawing.Point(450, 21);
 			this._cannotFindLanguageLink.Name = "_cannotFindLanguageLink";
 			this._cannotFindLanguageLink.Size = new System.Drawing.Size(127, 13);
 			this._cannotFindLanguageLink.TabIndex = 12;
@@ -165,15 +164,6 @@
 			this._desiredLanguageDisplayName.TabIndex = 13;
 			this._desiredLanguageDisplayName.TextChanged += new System.EventHandler(this._desiredLanguageDisplayName_TextChanged);
 			// 
-			// flowLayoutPanel1
-			// 
-			this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-			this.flowLayoutPanel1.Location = new System.Drawing.Point(-122, 349);
-			this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-			this.flowLayoutPanel1.Size = new System.Drawing.Size(453, 37);
-			this.flowLayoutPanel1.TabIndex = 15;
-			// 
 			// _L10NSharpExtender
 			// 
 			this._L10NSharpExtender.LocalizationManagerId = "Palaso";
@@ -185,7 +175,7 @@
 			this._L10NSharpExtender.SetLocalizableToolTip(this._showRegionalDialectsCheckBox, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._showRegionalDialectsCheckBox, null);
 			this._L10NSharpExtender.SetLocalizingId(this._showRegionalDialectsCheckBox, "LanguageLookup.ShowRegionalDialectsLabel");
-			this._showRegionalDialectsCheckBox.Location = new System.Drawing.Point(235, 5);
+			this._showRegionalDialectsCheckBox.Location = new System.Drawing.Point(235, 3);
 			this._showRegionalDialectsCheckBox.Name = "_showRegionalDialectsCheckBox";
 			this._showRegionalDialectsCheckBox.Size = new System.Drawing.Size(132, 17);
 			this._showRegionalDialectsCheckBox.TabIndex = 16;
@@ -199,7 +189,6 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this._showRegionalDialectsCheckBox);
 			this.Controls.Add(this._desiredLanguageLabel);
-			this.Controls.Add(this.flowLayoutPanel1);
 			this.Controls.Add(this._desiredLanguageDisplayName);
 			this.Controls.Add(this._cannotFindLanguageLink);
 			this.Controls.Add(this.pictureBox1);
@@ -231,7 +220,6 @@
 		private System.Windows.Forms.Label _desiredLanguageLabel;
 		private System.Windows.Forms.TextBox _desiredLanguageDisplayName;
 		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
-		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
 		private System.Windows.Forms.CheckBox _showRegionalDialectsCheckBox;
 	}
 }
