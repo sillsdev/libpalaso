@@ -10,6 +10,9 @@ using Timer = System.Windows.Forms.Timer;
 
 namespace SIL.Windows.Forms.Keyboarding.Windows
 {
+	/// <summary>
+	/// This class handles switching for normal Windows keyboards, Windows IME keyboards, and Keyman 10 keyboards
+	/// </summary>
 	internal class WindowsKeyboardSwitchingAdapter : IKeyboardSwitchingAdaptor
 	{
 		#region Variables used for windows IME Mode switching hack

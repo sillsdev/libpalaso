@@ -12,7 +12,7 @@ namespace SIL.Windows.Forms.WritingSystems
 	public partial class WSKeyboardControl : UserControl
 	{
 
-		private class KeyboardDefinitionAdapter
+		public class KeyboardDefinitionAdapter
 		{
 			private IKeyboardDefinition _descriptor;
 
