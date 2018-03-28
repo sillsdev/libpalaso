@@ -2,6 +2,7 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -10,7 +11,10 @@ using Timer = System.Windows.Forms.Timer;
 
 namespace SIL.Windows.Forms.Keyboarding.Windows
 {
-	internal class WindowsKeyboardSwitchingAdapter : IKeyboardSwitchingAdaptor
+	/// <summary>
+	/// This class handles switching for normal Windows keyboards, Windows IME keyboards, and Keyman 10 keyboards
+	/// </summary>
+	internal class WindowsKeyboardSwitchingAdapter : IKeyboardSwitchingAdaptor, IDisposable
 	{
 		#region Variables used for windows IME Mode switching hack
 		public Timer Timer { get; private set; }
@@ -168,6 +172,32 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				return availableWinKeyboards.FirstOrDefault(winKeybd => winKeybd.InputLanguage.Culture.Name == currentLanguage.Culture.Name)
 					?? KeyboardController.NullKeyboard;
 			}
+		}
+
+		~WindowsKeyboardSwitchingAdapter()
+		{
+			Dispose(false);
+			// The base class finalizer is called automatically.
+		}
+
+		/// <summary/>
+		/// <remarks>Must not be virtual.</remarks>
+		public void Dispose()
+		{
+			Dispose(true);
+			// This object will be cleaned up by the Dispose method.
+			// Therefore, you should call GC.SupressFinalize to
+			// take this object off the finalization queue
+			// and prevent finalization code for this object
+			// from executing a second time.
+			GC.SuppressFinalize(this);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			Debug.WriteLineIf(!disposing, "****************** " + GetType().Name + " 'disposing' is false. ******************");
+			Timer?.Dispose();
+			Timer = null;
 		}
 	}
 }
