@@ -278,9 +278,9 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 		public Action GetKeyboardSetupAction()
 		{
-#if !MONO
 			switch (InstalledKeymanVersion)
 			{
+#if !MONO
 				case KeymanVersion.Keyman10:
 					return () =>
 					{
@@ -295,9 +295,9 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					var setupApp = GetKeyboardSetupApplication(out args);
 					Process.Start(setupApp, args);
 				};
+#endif
 				default:
 					throw new NotSupportedException($"No keyboard setup action defined for keyman version {InstalledKeymanVersion}");
-#endif
 			}
 		}
 

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2013 SIL International
+// Copyright (c) 2013-2018 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Runtime.CompilerServices;
@@ -6,8 +6,9 @@ using System.Runtime.InteropServices;
 
 namespace SIL.Windows.Forms.Keyboarding.Windows
 {
-	#region Structs
-	[StructLayout(LayoutKind.Sequential, Pack = 4)]
+#region Structs used by COM API
+	// Pack 0 so that it works for both 64 and 32bit
+	[StructLayout(LayoutKind.Sequential, Pack = 0)]
 	internal struct TfInputProcessorProfile
 	{
 		public TfProfileType ProfileType;
@@ -21,7 +22,8 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		public TfIppFlags Flags;
 	}
 
-	[StructLayout(LayoutKind.Sequential, Pack = 4)]
+	// Pack 0 so that it works for both 64 and 32bit
+	[StructLayout(LayoutKind.Sequential, Pack = 0)]
 	internal struct TfLanguageProfile
 	{
 		public Guid ClsId;
@@ -30,9 +32,9 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		public bool IsActive;
 		public Guid GuidProfile;
 	}
-	#endregion
+#endregion
 
-	#region Enums
+#region Enums
 	internal enum TfProfileType : uint
 	{
 		Illegal = 0,
@@ -68,9 +70,13 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		DisableProfile = 0x00000002,
 		DontCareCurrentInputLanguage = 0x00000004,
 	}
-	#endregion
+#endregion
 
-	#region ITfInputProcessorProfiles
+#region ITfInputProcessorProfiles
+	/// <summary>
+	/// These interfaces are now only used to retrieve nice keyboard names. All of the other keyboard switching is handled
+	/// through .NET APIs (CurrentCulture)
+	/// </summary>
 	[ComImport]
 	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 	[Guid("1F02B6C5-7842-4EE6-8A0B-9A24183A95CA")]
@@ -211,9 +217,9 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
 		public virtual extern void SubstituteKeyboardLayout(ref Guid rclsid, ushort langid, ref Guid guidProfile, uint hkl);
 	}
-	#endregion
+#endregion
 
-	#region ITfInputProcessorProfileMgr
+#region ITfInputProcessorProfileMgr
 	[ComImport]
 	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 	[Guid("71c6e74c-0f28-11d8-a82a-00065b84435c")]
@@ -250,9 +256,9 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		[return: MarshalAs(UnmanagedType.Struct)]
 		TfInputProcessorProfile GetActiveProfile(ref Guid catid);
 	}
-	#endregion
+#endregion
 
-	#region IEnumTfInputProcessorProfiles
+#region IEnumTfInputProcessorProfiles
 	[ComImport]
 	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 	[Guid("71c6e74d-0f28-11d8-a82a-00065b84435c")]
@@ -263,12 +269,8 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		[return: MarshalAs(UnmanagedType.Interface)]
 		IEnumTfInputProcessorProfiles Clone();
 
-		// We cheat with this method. Usually it takes an array of TfInputProcessorProfiles as
-		// second parameter, but that is harder to marshal and since we always use it with
-		// ulCount==1 we simply pass only one TfInputProcessorProfile.
 		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-		int Next(uint ulCount, out TfInputProcessorProfile profiles);
-		//int Next(uint ulCount, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)] TfInputProcessorProfile[] profiles);
+		int Next(uint ulCount, [Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 0)] TfInputProcessorProfile[] profiles);
 
 		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
 		void Reset();
@@ -276,9 +278,9 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
 		void Skip(uint ulCount);
 	}
-	#endregion
+#endregion
 
-	#region IEnumTfLanguageProfiles
+#region IEnumTfLanguageProfiles
 	[ComImport]
 	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 	[Guid("3d61bf11-ac5f-42c8-a4cb-931bcc28c744")]
@@ -302,9 +304,9 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
 		void Skip(uint ulCount);
 	}
-	#endregion
+#endregion
 
-	#region ITfLanguageProfileNotifySink
+#region ITfLanguageProfileNotifySink
 	[ComImport]
 	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 	[Guid("43c9fe15-f494-4c17-9de2-b8a4ac350aa8")]
@@ -317,9 +319,9 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
 		void OnLanguageChanged();
 	}
-	#endregion
+#endregion
 
-	#region ITfSource
+#region ITfSource
 	[ComImport]
 	[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 	[Guid("4ea48a35-60ae-446f-8fd6-e6a8d82459f7")]
@@ -334,9 +336,9 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
 		void UnadviseSink(ushort dwCookie);
 	}
-	#endregion
+#endregion
 
-	#region GUIDs
+#region GUIDs
 	internal class Guids
 	{
 		// in the COM interface definitions we have to use `ref Guid` so that the Guid gets
@@ -355,5 +357,5 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 		public Guid ITfLanguageProfileNotifySink = new Guid("43c9fe15-f494-4c17-9de2-b8a4ac350aa8");
 	}
-	#endregion
+#endregion
 }
