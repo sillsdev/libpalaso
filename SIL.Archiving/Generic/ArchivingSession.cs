@@ -10,6 +10,9 @@ namespace SIL.Archiving.Generic
 		void AddFile(ArchivingFile file);
 
 		/// <summary></summary>
+		void AddFileAccess(string fullFileName, ArchivingPackage package);
+
+		/// <summary></summary>
 		List<string> Files { get; }
 
 		/// <summary>Set session date with DateTime object</summary>
@@ -47,6 +50,9 @@ namespace SIL.Archiving.Generic
 
 		/// <summary></summary>
 		void AddMediaFileTimes(string fullFileName, string start, string stop);
+
+		/// <summary></summary>
+		void AddProject(ArchivingPackage package);
 
 		/// <summary></summary>
 		string Genre { get; set; }
