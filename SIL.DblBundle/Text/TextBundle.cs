@@ -1,11 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using L10NSharp;
 using SIL.DblBundle.Usx;
 using SIL.IO;
-using SIL.Reporting;
 using SIL.WritingSystems;
 
 namespace SIL.DblBundle.Text
@@ -106,19 +104,18 @@ namespace SIL.DblBundle.Text
 			if (!File.Exists(stylesheetPath))
 			{
 				throw new ApplicationException(
-					string.Format(LocalizationManager.GetString("DblBundle.FileMissingFromBundle",
+					string.Format(Localizer.GetString("DblBundle.FileMissingFromBundle",
 						"Required {0} file not found. File is not a valid Text Release Bundle:"), filename) +
-					Environment.NewLine + m_pathToZippedBundle);
+					Environment.NewLine + _pathToZippedBundle);
 			}
 
 			Exception exception;
 			var stylesheet = Stylesheet.Load(stylesheetPath, out exception);
 			if (exception != null)
 			{
-				throw new ApplicationException(
-					LocalizationManager.GetString("DblBundle.StylesheetInvalid",
+				throw new ApplicationException(Localizer.GetString("DblBundle.StylesheetInvalid",
 						"Unable to read stylesheet. File is not a valid Text Release Bundle:") +
-					Environment.NewLine + m_pathToZippedBundle, exception);
+					Environment.NewLine + _pathToZippedBundle, exception);
 			}
 
 			return stylesheet;
@@ -154,10 +151,9 @@ namespace SIL.DblBundle.Text
 			}
 			if (!m_books.Any())
 			{
-				throw new ApplicationException(
-					LocalizationManager.GetString("DblBundle.UnableToLoadAnyBooks",
+				throw new ApplicationException(Localizer.GetString("DblBundle.UnableToLoadAnyBooks",
 						"Unable to load any books. File may not be a valid Text Release Bundle or it may contain a problem:") +
-					Environment.NewLine + m_pathToZippedBundle);
+					Environment.NewLine + _pathToZippedBundle);
 			}
 		}
 
@@ -196,8 +192,9 @@ namespace SIL.DblBundle.Text
 		/// <summary>
 		/// Copies any font files (*.ttf) in the bundle to the given destination directory
 		/// </summary>
-		public void CopyFontFiles(string destinationDir)
+		public bool CopyFontFiles(string destinationDir, out ISet<string> filesWhichFailedToCopy)
 		{
+			filesWhichFailedToCopy = new HashSet<string>();
 			foreach (var ttfFile in Directory.GetFiles(PathToUnzippedDirectory, "*.ttf"))
 			{
 				string newPath = Path.Combine(destinationDir, Path.GetFileName(ttfFile));
@@ -206,12 +203,13 @@ namespace SIL.DblBundle.Text
 					if (!File.Exists(newPath))
 						File.Copy(ttfFile, newPath, true);
 				}
-				catch (IOException e)
+				catch (Exception)
 				{
-					ErrorReport.ReportNonFatalExceptionWithMessage(e,
-						LocalizationManager.GetString("DblBundle.FontFileCopyFailed", "An attempt to copy font file {0} from the bundle to {1} failed."), Path.GetFileName(ttfFile), destinationDir);
+					filesWhichFailedToCopy.Add(Path.GetFileName(ttfFile));
 				}
 			}
+
+			return !filesWhichFailedToCopy.Any();
 		}
 
 		/// <summary>
