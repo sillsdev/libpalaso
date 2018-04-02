@@ -836,15 +836,28 @@ namespace SIL.Archiving.IMDI.Schema
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public class AccessType : IMDIDescription
 	{
-		/// <remarks/>
+		/// <remarks>initialize for Arbil</remarks>
 		public AccessType()
 		{
-			// initialize for Arbil
 			Availability = string.Empty;
 			Date = string.Empty;
 			Owner = string.Empty;
 			Publisher = string.Empty;
 			Contact = new ContactType();
+		}
+
+		public AccessType(IArchivingPackage package)
+		{
+			Availability = package.AccessCode;
+			Date = package.Access.DateAvailable;
+			Owner = package.Access.Owner;
+			Publisher = package.Publisher;
+			Contact = new ContactType
+			{
+				Address = package.Location.Address,
+				Name = package.Author,
+				Organisation = package.Owner
+			};
 		}
 
 		/// <remarks/>
@@ -965,6 +978,11 @@ namespace SIL.Archiving.IMDI.Schema
 	[XmlTypeAttribute(Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public class ContentType
 	{
+		/// <summary>
+		/// Passing true or no parameter would force first character to upper case so we want to pass false to avoid forcing upper case.
+		/// </summary>
+		private const bool DontRequireUppercaseFirstCharacter = false;
+
 		/// <remarks/>
 		public ContentType()
 		{
@@ -1025,14 +1043,14 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public void SetPlanningType(string planningType)
 		{
-			IMDIItemList list = ListConstructor.GetClosedList(ListType.ContentPlanningType);
+			IMDIItemList list = ListConstructor.GetClosedList(ListType.ContentPlanningType, DontRequireUppercaseFirstCharacter);
 			CommunicationContext.PlanningType = list.FindByValue(planningType).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentPlanningType));
 		}
 
 		/// <remarks/>
 		public void SetInvolvement(string involvement)
 		{
-			IMDIItemList list = ListConstructor.GetClosedList(ListType.ContentInvolvement);
+			IMDIItemList list = ListConstructor.GetClosedList(ListType.ContentInvolvement, DontRequireUppercaseFirstCharacter);
 			CommunicationContext.Involvement = list.FindByValue(involvement).ToVocabularyType(VocabularyTypeValueType.ClosedVocabulary, ListType.Link(ListType.ContentInvolvement));
 		}
 
@@ -1785,6 +1803,47 @@ namespace SIL.Archiving.IMDI.Schema
 			}
 		}
 
+		/// <remarks>Not used yet</remarks>
+		[XmlIgnore]
+		public ArchiveAccessProtocol AccessProtocol { get; set; }
+
+		/// <remarks>The access level code for this object, applied to resource files and actors</remarks>
+		[XmlIgnore]
+		public string AccessCode { get; set; }
+
+		/// <remarks/>
+		public void AddProject(ArchivingPackage package)
+		{
+			var project = new Project
+			{
+				Name = package.FundingProject.Name,
+				Title = package.Title,
+				Contact = new ContactType
+				{
+					Name = package.Author,
+					Address = Location.Address,
+					Organisation = package.Publisher
+				}
+			};
+			var imdiPackage = package as IMDIPackage;
+			var corpus = imdiPackage?.BaseImdiFile?.Items?.FirstOrDefault() as Corpus;
+			if (corpus != null)
+				project.Description.Add(corpus.Description.FirstOrDefault());
+			MDGroup.Project = new List<Project>{ project };
+		}
+
+		/// <remarks/>
+		public void AddContentDescription(LanguageString description)
+		{
+			MDGroup.Content.Description.Add(description);
+		}
+
+		public void AddActorDescription(ArchivingActor actor, LanguageString description)
+		{
+			var actorType = GetActor(actor.FullName);
+			actorType?.Description.Add(description);
+		}
+
 		/// <remarks/>
 		public void AddDescription(LanguageString description)
 		{
@@ -1815,14 +1874,6 @@ namespace SIL.Archiving.IMDI.Schema
 			}
 		}
 
-		/// <remarks>Not used yet</remarks>
-		[XmlIgnore]
-		public ArchiveAccessProtocol AccessProtocol { get; set; }
-
-		/// <remarks>The access level code for this object, applied to resource files and actors</remarks>
-		[XmlIgnore]
-		public string AccessCode { get; set; }
-
 		/// <remarks/>
 		public void AddGroupKeyValuePair(string key, string value)
 		{
@@ -1852,10 +1903,52 @@ namespace SIL.Archiving.IMDI.Schema
 			}
 		}
 
+		public void AddFileDescription(string fullFileName, LanguageString description)
+		{
+			var sessionFile = GetFile(fullFileName);
+			if (sessionFile == null) return;
+
+			// IMDIFile.cs line 160 adds a default value which will block the adding of the first entry
+			if (sessionFile.Description.Count == 1 &&
+				sessionFile.Description.FirstOrDefault().Value == null)
+				sessionFile.Description.Remove(sessionFile.Description.FirstOrDefault());
+
+			sessionFile.Description.Add(description);
+		}
+
+		public void AddActorContact(ArchivingActor actor, ArchivingContact contact)
+		{
+			var actorType = GetActor(actor.FullName);
+			if (actorType == null) return;
+			actorType.Contact = new ContactType
+			{
+				Name = contact.Name,
+				Address = contact.Address,
+				Email = contact.Email,
+				Organisation = contact.OrganizationName
+			};
+		}
+
+		public void AddMediaFileTimes(string fullFileName, string start, string stop)
+		{
+			var sessionFile = GetFile(fullFileName);
+			if (!(sessionFile is MediaFileType)) return;
+			var audioOrVisualFile = sessionFile as MediaFileType;
+			audioOrVisualFile.TimePosition.Start = start;
+			audioOrVisualFile.TimePosition.End = stop;
+		}
+
 		/// <remarks/>
 		public void AddFile(ArchivingFile file)
 		{
 			AddFile(new IMDIFile(file), IMDIArchivingDlgViewModel.NormalizeDirectoryName(Name));
+		}
+
+		/// <remarks/>
+		public void AddFileAccess(string fullFileName, ArchivingPackage package)
+		{
+			var sessionFile = GetFile(fullFileName);
+			sessionFile.Access = new AccessType(package);
 		}
 
 		/// <summary></summary>
@@ -1867,6 +1960,14 @@ namespace SIL.Archiving.IMDI.Schema
 				Resources.MediaFile.Add(imdiFile.ToMediaFileType(directoryName));
 			else
 				Resources.WrittenResource.Add(imdiFile.ToWrittenResourceType(directoryName));
+		}
+
+		/// <summary></summary>
+		private ActorType GetActor(string fullName)
+		{
+			return (from actorType in MDGroup.Actors.Actor
+				where actorType.FullName == fullName
+				select actorType).FirstOrDefault();
 		}
 
 		/// <summary></summary>
@@ -1993,7 +2094,7 @@ namespace SIL.Archiving.IMDI.Schema
 			}
 			set
 			{
-				MDGroup.Content.SubGenre = value.ToVocabularyType(false, ListType.Link(ListType.ContentSubGenre));
+				MDGroup.Content.Task = value.ToVocabularyType(false, ListType.Link(ListType.ContentTask));
 			}
 		}
 	}
