@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -376,7 +376,7 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 
 		public Image GetCroppedImage()
 		{
-			if (_image == null)
+			if (_image == null || _image.Disposed)
 				return null;
 
 			try
@@ -442,7 +442,8 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 		public PalasoImage GetImage()
 		{
 			Image x = GetCroppedImage();
-			if (x == null)
+			// BL-5830 somehow user was cropping an image and this PalasoImage was already disposed
+			if (x == null || _image.Disposed)
 				return null;
 			//we want to retain the metdata of the PalasoImage we started with; we just want to update its actual image
 			_image.Image = x;
