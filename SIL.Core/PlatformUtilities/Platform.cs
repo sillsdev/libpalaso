@@ -1,7 +1,13 @@
 // Copyright (c) 2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 // Parts based on code by MJ Hutchinson http://mjhutchinson.com/journal/2010/01/25/integrating_gtk_application_mac
+// Parts based on code by bugsnag-dotnet (https://github.com/bugsnag/bugsnag-dotnet/blob/v1.4/src/Bugsnag/Diagnostics.cs)
+
 using System;
+using System.Diagnostics;
+#if !NETSTANDARD2_0
+using System.Management;
+#endif
 using System.Runtime.InteropServices;
 
 namespace SIL.PlatformUtilities
@@ -189,5 +195,129 @@ namespace SIL.PlatformUtilities
 		/// on Windows.
 		/// </summary>
 		public static string MonoVersion => IsMono ? GetMonoVersion() : string.Empty;
+
+		/// <summary>
+		/// Gets a string that describes the OS, e.g. 'Windows 10' or 'Ubuntu 16.04 LTS'
+		/// </summary>
+		/// <remarks>Note that you might have to add an app.config file to your executable
+		/// that lists the supported Windows versions in order to get the correct Windows version
+		/// reported (https://msdn.microsoft.com/en-us/library/windows/desktop/aa374191.aspx)!
+		/// </remarks>
+		public static string OperatingSystemDescription
+		{
+			get
+			{
+				switch (Environment.OSVersion.Platform)
+				{
+					// Platform is Windows 95, Windows 98, Windows 98 Second Edition,
+					// or Windows Me.
+					case PlatformID.Win32Windows:
+						// Platform is Windows 95, Windows 98, Windows 98 Second Edition,
+						// or Windows Me.
+						switch (Environment.OSVersion.Version.Minor)
+						{
+							case 0:
+								return "Windows 95";
+							case 10:
+								return "Windows 98";
+							case 90:
+								return "Windows Me";
+							default:
+								return "UNKNOWN";
+						}
+					case PlatformID.Win32NT:
+						return GetWin32NTVersion();
+					case PlatformID.Unix:
+					case PlatformID.MacOSX:
+						return UnixOrMacVersion();
+					default:
+						return "UNKNOWN";
+				}
+			}
+		}
+
+		/// <summary>
+		/// Detects the current operating system version if its Win32 NT
+		/// </summary>
+		/// <returns>The operation system version</returns>
+		private static string GetWin32NTVersion()
+		{
+			switch (Environment.OSVersion.Version.Major)
+			{
+				case 3:
+					return "Windows NT 3.51";
+				case 4:
+					return "Windows NT 4.0";
+				case 5:
+					return Environment.OSVersion.Version.Minor == 0 ? "Windows 2000" : "Windows XP";
+				case 6:
+					switch (Environment.OSVersion.Version.Minor)
+					{
+						case 0:
+							return "Windows Server 2008";
+						case 1:
+							return IsWindowsServer ? "Windows Server 2008 R2" : "Windows 7";
+						case 2:
+							return IsWindowsServer ? "Windows Server 2012" : "Windows 8";
+						case 3:
+							return IsWindowsServer ? "Windows Server 2012 R2" : "Windows 8.1";
+						default:
+							return "UNKNOWN";
+					}
+				case 10:
+					return "Windows 10";
+				default:
+					return "UNKNOWN";
+			}
+		}
+
+		// https://stackoverflow.com/a/3138781/487503
+		private static bool IsWindowsServer => IsOS(OS_ANYSERVER);
+
+		private const int OS_ANYSERVER = 29;
+
+		[DllImport("shlwapi.dll", SetLastError=true)]
+		private static extern bool IsOS(int os);
+
+		/// <summary>
+		/// Determines the OS version if on a UNIX based system
+		/// </summary>
+		/// <returns></returns>
+		private static string UnixOrMacVersion()
+		{
+			if (RunTerminalCommand("uname") == "Darwin")
+			{
+				var osName = RunTerminalCommand("sw_vers", "-productName");
+				var osVersion = RunTerminalCommand("sw_vers", "-productVersion");
+				return osName + " (" + osVersion + ")";
+			}
+
+			var distro = RunTerminalCommand("bash", "-c \"[ $(which lsb_release) ] && lsb_release -d -s\"");
+			return string.IsNullOrEmpty(distro) ? "UNIX" : distro;
+		}
+
+		/// <summary>
+		/// Executes a command with arguments, used to send terminal commands in UNIX systems
+		/// </summary>
+		/// <param name="cmd">The command to send</param>
+		/// <param name="args">The arguments to send</param>
+		/// <returns>The returned output</returns>
+		private static string RunTerminalCommand(string cmd, string args = null)
+		{
+			var proc = new Process {
+				EnableRaisingEvents = false,
+				StartInfo = {
+					FileName = cmd,
+					Arguments = args,
+					UseShellExecute = false,
+					RedirectStandardOutput = true
+				}
+			};
+			proc.Start();
+			proc.WaitForExit();
+			var output = proc.StandardOutput.ReadToEnd();
+			return output.Trim();
+		}
+
 	}
 }
