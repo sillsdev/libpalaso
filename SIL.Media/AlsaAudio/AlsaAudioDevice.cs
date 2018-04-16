@@ -613,10 +613,15 @@ namespace SIL.Media.AlsaAudio
 				int frameCount = byteCount * 8 / _bitsPerFrame;
 				Debug.Assert(frameCount == _chunkSize);
 				int count = (int)snd_pcm_readi(_hpcm, _audiobuf, (long)frameCount);
+				if (count < 0)
+				{
+					Console.WriteLine("AlsaAudioDevice: stopping because returned count ({0}) signals an error", count);
+					break;
+				}
 				if (count != frameCount)
 				{
-					Console.WriteLine("AlsaAudioDevice: stopping because returned count ({0}) != frameCount ({1})", count, frameCount);
-					break;
+					Debug.WriteLine(String.Format("AlsaAudioDevice: short read ({0} < requested {1} frames)", count, frameCount));
+					byteCount = (count * _bitsPerFrame) / 8;
 				}
 				file.Write(_audiobuf, 0, byteCount);
 				rest -= byteCount;
