@@ -36,16 +36,23 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		private static bool IsKeymanKeyboard(string cultureName)
 		{
 #if !MONO
-			var kmn = new KeymanClass();
-			foreach (IKeymanLanguage kl in kmn.Languages)
+			try
 			{
-				foreach (IKeymanKeyboard kb in kmn.Keyboards)
+				var kmn = new KeymanClass();
+				foreach (IKeymanLanguage kl in kmn.Languages)
 				{
-					if (kb.DefaultWindowsLanguages != null && kb.DefaultWindowsLanguages.Contains(cultureName))
+					foreach (IKeymanKeyboard kb in kmn.Keyboards)
 					{
-						return true;
+						if (kb.DefaultWindowsLanguages != null && kb.DefaultWindowsLanguages.Contains(cultureName))
+						{
+							return true;
+						}
 					}
 				}
+			}
+			catch(COMException)
+			{
+				// Not a keyman keyboard
 			}
 #endif
 			return false;
