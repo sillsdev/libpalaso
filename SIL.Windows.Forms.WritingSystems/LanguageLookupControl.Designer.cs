@@ -175,7 +175,7 @@
 			this._L10NSharpExtender.SetLocalizableToolTip(this._showRegionalDialectsCheckBox, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._showRegionalDialectsCheckBox, null);
 			this._L10NSharpExtender.SetLocalizingId(this._showRegionalDialectsCheckBox, "LanguageLookup.ShowRegionalDialectsLabel");
-			this._showRegionalDialectsCheckBox.Location = new System.Drawing.Point(235, 3);
+			this._showRegionalDialectsCheckBox.Location = new System.Drawing.Point(235, 5);
 			this._showRegionalDialectsCheckBox.Name = "_showRegionalDialectsCheckBox";
 			this._showRegionalDialectsCheckBox.Size = new System.Drawing.Size(132, 17);
 			this._showRegionalDialectsCheckBox.TabIndex = 16;
