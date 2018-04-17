@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Drawing;
 using System.Windows.Forms;
 using NUnit.Framework;
 
@@ -27,6 +28,22 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 				_ready = true;
 		}
 
+		private void AddOKButtonToTestForm()
+		{
+			var okButton = new Button
+			{
+				Text = "OK",
+				DialogResult = DialogResult.OK
+			};
+			_testForm.Controls.Add(okButton);
+			_testForm.AcceptButton = okButton;
+			var otherCtrl = _testForm.Controls[0];
+			var bottomRight = new Point(otherCtrl.Width + otherCtrl.Location.X, otherCtrl.Height + otherCtrl.Location.Y);
+			okButton.Location = new Point(bottomRight.X - (okButton.Width + 5), bottomRight.Y - 20);
+			okButton.BringToFront();
+			okButton.Visible = true;
+		}
+
 		private void WaitForControl()
 		{
 			while (!_ready)
@@ -50,6 +67,29 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 			WaitForControl();
 			Assert.AreEqual("akq", _control.SelectedLanguage.LanguageTag);
 			Assert.AreEqual("Ak", _control.DesiredLanguageName);
+		}
+
+		[Test, Ignore("By Hand")]
+		[Category("SkipOnTeamCity")]
+		public void TestLanguageLookupControl_manualTest()
+		{
+			_control.SearchText = "";
+			_control.IsScriptAndVariantLinkVisible = true; // comment this line to verify control w/o Script link
+			_control.IsShowRegionalDialectsCheckBoxVisible = true;
+			_testForm.Width = 613;
+			_testForm.Height = 425;
+			_testForm.AutoSize = false;
+			_testForm.MaximizeBox = false;
+			_testForm.MinimizeBox = false;
+			_testForm.SizeGripStyle = SizeGripStyle.Hide;
+			_testForm.FormBorderStyle = FormBorderStyle.FixedDialog;
+			var initialControlLoc = _testForm.Controls[0].Location;
+			_testForm.Controls[0].Location = new Point(initialControlLoc.X + 10, initialControlLoc.Y);
+			AddOKButtonToTestForm();
+
+			MessageBox.Show("Attach debugger","Debug");
+			_testForm.ShowDialog();
+			MessageBox.Show("Got '" + _control.CompleteLanguageIdentifier + "'", "Test Result");
 		}
 	}
 }
