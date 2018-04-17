@@ -1,7 +1,0 @@
-*.o
-*.so
-*.obj
-*.dll
-*.exp
-*.lib
-Debug/
