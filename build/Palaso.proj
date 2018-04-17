@@ -7,10 +7,10 @@
 		<Version>4.2.0</Version>
 	</PropertyGroup>
 
-	<UsingTask TaskName="StampAssemblies" AssemblyFile="$(RootDir)/build/SIL.BuildTasks.dll" />
-	<UsingTask TaskName="Archive" AssemblyFile="$(RootDir)/build/SIL.BuildTasks.dll" />
-	<UsingTask TaskName="FileUpdate" AssemblyFile="$(RootDir)/build/SIL.BuildTasks.dll" />
-	<UsingTask TaskName="NUnit" AssemblyFile="$(RootDir)/build/SIL.BuildTasks.dll" />
+	<UsingTask TaskName="StampAssemblies" AssemblyFile="$(RootDir)/packages/SIL.BuildTasks.1.0.0/tools/SIL.BuildTasks.dll" />
+	<UsingTask TaskName="Archive" AssemblyFile="$(RootDir)/packages/SIL.BuildTasks.1.0.0/tools/SIL.BuildTasks.dll" />
+	<UsingTask TaskName="FileUpdate" AssemblyFile="$(RootDir)/packages/SIL.BuildTasks.1.0.0/tools/SIL.BuildTasks.dll" />
+	<UsingTask TaskName="NUnit" AssemblyFile="$(RootDir)/packages/SIL.BuildTasks.1.0.0/tools/SIL.BuildTasks.dll" />
 
 	<Import Project="NuGet.targets"/>
 
