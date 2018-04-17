@@ -1,4 +1,4 @@
-﻿namespace SIL.Windows.Forms.WritingSystems
+namespace SIL.Windows.Forms.WritingSystems
 {
 	partial class LanguageLookupControl
 	{
@@ -42,8 +42,12 @@
 			this._desiredLanguageDisplayName = new System.Windows.Forms.TextBox();
 			this._L10NSharpExtender = new L10NSharp.UI.L10NSharpExtender(this.components);
 			this._showRegionalDialectsCheckBox = new System.Windows.Forms.CheckBox();
+			this._scriptsAndVariantsLink = new System.Windows.Forms.LinkLabel();
+			this._scriptsAndVariantsLabel = new System.Windows.Forms.Label();
+			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).BeginInit();
+			this.flowLayoutPanel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// _listView
@@ -57,9 +61,9 @@
             this.countryHeader});
 			this._listView.FullRowSelect = true;
 			this._listView.HideSelection = false;
-			this._listView.Location = new System.Drawing.Point(0, 36);
+			this._listView.Location = new System.Drawing.Point(0, 29);
 			this._listView.Name = "_listView";
-			this._listView.Size = new System.Drawing.Size(577, 262);
+			this._listView.Size = new System.Drawing.Size(577, 265);
 			this._listView.TabIndex = 1;
 			this._listView.UseCompatibleStateImageBehavior = false;
 			this._listView.View = System.Windows.Forms.View.Details;
@@ -96,7 +100,7 @@
 			this._L10NSharpExtender.SetLocalizationComment(this._searchText, null);
 			this._L10NSharpExtender.SetLocalizationPriority(this._searchText, L10NSharp.LocalizationPriority.NotLocalizable);
 			this._L10NSharpExtender.SetLocalizingId(this._searchText, "LanguageLookup.LookupISOControl._searchText");
-			this._searchText.Location = new System.Drawing.Point(1, 3);
+			this._searchText.Location = new System.Drawing.Point(0, 3);
 			this._searchText.Name = "_searchText";
 			this._searchText.Size = new System.Drawing.Size(228, 20);
 			this._searchText.TabIndex = 0;
@@ -123,12 +127,12 @@
 			// 
 			// _cannotFindLanguageLink
 			// 
-			this._cannotFindLanguageLink.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this._cannotFindLanguageLink.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this._cannotFindLanguageLink.AutoSize = true;
 			this._L10NSharpExtender.SetLocalizableToolTip(this._cannotFindLanguageLink, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._cannotFindLanguageLink, null);
 			this._L10NSharpExtender.SetLocalizingId(this._cannotFindLanguageLink, "LanguageLookup._cannotFindLanguageLink");
-			this._cannotFindLanguageLink.Location = new System.Drawing.Point(450, 21);
+			this._cannotFindLanguageLink.Location = new System.Drawing.Point(-2, 359);
 			this._cannotFindLanguageLink.Name = "_cannotFindLanguageLink";
 			this._cannotFindLanguageLink.Size = new System.Drawing.Size(127, 13);
 			this._cannotFindLanguageLink.TabIndex = 12;
@@ -143,7 +147,7 @@
 			this._L10NSharpExtender.SetLocalizableToolTip(this._desiredLanguageLabel, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._desiredLanguageLabel, null);
 			this._L10NSharpExtender.SetLocalizingId(this._desiredLanguageLabel, "LanguageLookup.DesiredLanguageDisplayNameLabel");
-			this._desiredLanguageLabel.Location = new System.Drawing.Point(19, 316);
+			this._desiredLanguageLabel.Location = new System.Drawing.Point(58, 308);
 			this._desiredLanguageLabel.Name = "_desiredLanguageLabel";
 			this._desiredLanguageLabel.Size = new System.Drawing.Size(309, 13);
 			this._desiredLanguageLabel.TabIndex = 14;
@@ -158,9 +162,9 @@
 			this._L10NSharpExtender.SetLocalizableToolTip(this._desiredLanguageDisplayName, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._desiredLanguageDisplayName, null);
 			this._L10NSharpExtender.SetLocalizingId(this._desiredLanguageDisplayName, "LanguageLookup.LookupISOControl._desiredLanguageDisplayName");
-			this._desiredLanguageDisplayName.Location = new System.Drawing.Point(334, 304);
+			this._desiredLanguageDisplayName.Location = new System.Drawing.Point(373, 300);
 			this._desiredLanguageDisplayName.Name = "_desiredLanguageDisplayName";
-			this._desiredLanguageDisplayName.Size = new System.Drawing.Size(243, 33);
+			this._desiredLanguageDisplayName.Size = new System.Drawing.Size(204, 33);
 			this._desiredLanguageDisplayName.TabIndex = 13;
 			this._desiredLanguageDisplayName.TextChanged += new System.EventHandler(this._desiredLanguageDisplayName_TextChanged);
 			// 
@@ -183,10 +187,51 @@
 			this._showRegionalDialectsCheckBox.UseVisualStyleBackColor = true;
 			this._showRegionalDialectsCheckBox.CheckedChanged += new System.EventHandler(this._showRegionalDialectsCheckBox_CheckedChanged);
 			// 
+			// _scriptsAndVariantsLink
+			// 
+			this._scriptsAndVariantsLink.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this._scriptsAndVariantsLink.AutoSize = true;
+			this._scriptsAndVariantsLink.Enabled = false;
+			this._L10NSharpExtender.SetLocalizableToolTip(this._scriptsAndVariantsLink, null);
+			this._L10NSharpExtender.SetLocalizationComment(this._scriptsAndVariantsLink, null);
+			this._L10NSharpExtender.SetLocalizingId(this._scriptsAndVariantsLink, "LanguageLookup._scriptsAndVariantsLink");
+			this._scriptsAndVariantsLink.Location = new System.Drawing.Point(3, 0);
+			this._scriptsAndVariantsLink.Name = "_scriptsAndVariantsLink";
+			this._scriptsAndVariantsLink.Size = new System.Drawing.Size(101, 13);
+			this._scriptsAndVariantsLink.TabIndex = 17;
+			this._scriptsAndVariantsLink.TabStop = true;
+			this._scriptsAndVariantsLink.Text = "Scripts and Variants";
+			this._scriptsAndVariantsLink.Visible = false;
+			this._scriptsAndVariantsLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this._scriptsAndVariants_LinkClicked);
+			// 
+			// _scriptsAndVariantsLabel
+			// 
+			this._scriptsAndVariantsLabel.AutoSize = true;
+			this._L10NSharpExtender.SetLocalizableToolTip(this._scriptsAndVariantsLabel, null);
+			this._L10NSharpExtender.SetLocalizationComment(this._scriptsAndVariantsLabel, null);
+			this._L10NSharpExtender.SetLocalizingId(this._scriptsAndVariantsLabel, "LanguageLookup._scriptsAndVariantsLabel");
+			this._scriptsAndVariantsLabel.Location = new System.Drawing.Point(110, 0);
+			this._scriptsAndVariantsLabel.Name = "_scriptsAndVariantsLabel";
+			this._scriptsAndVariantsLabel.Size = new System.Drawing.Size(108, 13);
+			this._scriptsAndVariantsLabel.TabIndex = 18;
+			this._scriptsAndVariantsLabel.Text = "my script variant label";
+			this._scriptsAndVariantsLabel.Visible = false;
+			// 
+			// flowLayoutPanel1
+			// 
+			this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.flowLayoutPanel1.Controls.Add(this._scriptsAndVariantsLink);
+			this.flowLayoutPanel1.Controls.Add(this._scriptsAndVariantsLabel);
+			this.flowLayoutPanel1.Location = new System.Drawing.Point(-5, 336);
+			this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+			this.flowLayoutPanel1.Size = new System.Drawing.Size(247, 19);
+			this.flowLayoutPanel1.TabIndex = 18;
+			// 
 			// LanguageLookupControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.flowLayoutPanel1);
 			this.Controls.Add(this._showRegionalDialectsCheckBox);
 			this.Controls.Add(this._desiredLanguageLabel);
 			this.Controls.Add(this._desiredLanguageDisplayName);
@@ -198,10 +243,12 @@
 			this._L10NSharpExtender.SetLocalizationComment(this, null);
 			this._L10NSharpExtender.SetLocalizingId(this, "LanguageLookup.LookupISOControl.LookupISOControl");
 			this.Name = "LanguageLookupControl";
-			this.Size = new System.Drawing.Size(580, 343);
+			this.Size = new System.Drawing.Size(580, 372);
 			this.Load += new System.EventHandler(this.OnLoad);
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).EndInit();
+			this.flowLayoutPanel1.ResumeLayout(false);
+			this.flowLayoutPanel1.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -221,5 +268,8 @@
 		private System.Windows.Forms.TextBox _desiredLanguageDisplayName;
 		private L10NSharp.UI.L10NSharpExtender _L10NSharpExtender;
 		private System.Windows.Forms.CheckBox _showRegionalDialectsCheckBox;
+		private System.Windows.Forms.LinkLabel _scriptsAndVariantsLink;
+		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+		private System.Windows.Forms.Label _scriptsAndVariantsLabel;
 	}
 }
