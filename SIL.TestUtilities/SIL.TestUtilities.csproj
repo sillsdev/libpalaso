@@ -315,6 +315,8 @@
     <Compile Include="OfflineSldr.cs" />
     <Compile Include="OfflineSldrAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\ReproducibleDateTimeProvider.cs" />
+    <Compile Include="Providers\ReproducibleGuidProvider.cs" />
     <Compile Include="TemporaryFolder.cs" />
     <Compile Include="TemporaryFolderTests.cs" />
     <Compile Include="TestUtilities.cs" />
