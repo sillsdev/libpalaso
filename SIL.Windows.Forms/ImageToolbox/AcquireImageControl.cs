@@ -52,6 +52,24 @@ namespace SIL.Windows.Forms.ImageToolbox
 			if (_actModal)
 				return;		// The GTK file chooser on Linux isn't acting modal, so we simulate it.
 			_actModal = true;
+			// Something in the Mono runtime state machine keeps the GTK filechooser from getting the
+			// focus immediately when we invoke OpenFileDialogWithViews.ShowDialog() directly at this
+			// point.  Waiting for the next idle gets it into a state where the filechooser does receive
+			// the focus as desired.  See https://silbloom.myjetbrains.com/youtrack/issue/BL-5809.
+			if (Platform.IsMono)
+				Application.Idle += DelayGetImageFileFromSystem;
+			else
+				GetImageFileFromSystem();
+		}
+
+		private void DelayGetImageFileFromSystem(object sender, EventArgs e)
+		{
+			Application.Idle -= DelayGetImageFileFromSystem;
+			GetImageFileFromSystem();
+		}
+
+		private void GetImageFileFromSystem()
+		{
 			try
 			{
 				SetMode(Modes.SingleImage);
