@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 using SIL.WritingSystems;
 
@@ -12,6 +12,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 		{
 			InitializeComponent();
 		}
+
 		public void BindToModel(WritingSystemSetupModel model)
 		{
 			if (_model != null)
@@ -23,14 +24,31 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 			{
 				_model.SelectionChanged += ModelSelectionChanged;
 			}
-//            UpdateProxyFromModel();
 			this.Disposed += OnDisposed;
-
-			AddDetailsControl(new NothingSpecialView(model));
-			AddDetailsControl(new IpaIdentifierView(model));
-			AddDetailsControl(new VoiceIdentifierView(model));
-			AddDetailsControl(new ScriptRegionVariantView(model));
-			//AddDetailsControl(new CustomIdentifierView(model));
+			if (_model.IsSpecialComboLocked)
+			{
+				switch (_model.LockedSpecialCombo)
+				{
+					case WritingSystemSetupModel.SelectionsForSpecialCombo.Ipa:
+						AddDetailsControl(new IpaIdentifierView(model));
+						break;
+					case WritingSystemSetupModel.SelectionsForSpecialCombo.Voice:
+						AddDetailsControl(new VoiceIdentifierView(model));
+						break;
+					case WritingSystemSetupModel.SelectionsForSpecialCombo.ScriptRegionVariant:
+						AddDetailsControl(new ScriptRegionVariantView(model));
+						break;
+					default:
+						throw new ApplicationException("Special Combo is locked to an unknown selection.");
+				}
+			}
+			else
+			{
+				AddDetailsControl(new NothingSpecialView(model));
+				AddDetailsControl(new IpaIdentifierView(model));
+				AddDetailsControl(new VoiceIdentifierView(model));
+				AddDetailsControl(new ScriptRegionVariantView(model));
+			}
 			comboBox1.DisplayMember = "ChoiceName";
 			comboBox1.SelectedIndex = 0;
 			UpdateFromModel();
@@ -51,8 +69,11 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 				_abbreviation.Text = _model.CurrentAbbreviation;
 //                _name.Text = _model.CurrentLanguageName;
 				//_code.Text=_model.CurrentISO;
-				UpdateSpecialComboBox();
-				comboBox1.SelectedIndex = (int)_model.SelectionForSpecialCombo;
+				if (!_model.IsSpecialComboLocked)
+				{
+					UpdateSpecialComboBox();
+					comboBox1.SelectedIndex = (int)_model.SelectionForSpecialCombo;
+				}
 			}
 			else
 			{
@@ -98,21 +119,10 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 		{
 			if (comboBox1.SelectedItem == null || _model.CurrentDefinition==null)
 				return;
-//
-//            if(_detailPanel.Controls.Count>1)
-//            {
-//                _detailPanel.Controls[0].Dispose();
-//                _detailPanel.Controls.Clear();
-//            }
+
 			_detailPanel.Controls.Clear();
 			_detailPanel.Controls.Add((Control)comboBox1.SelectedItem);
 			((ISelectableIdentifierOptions)comboBox1.SelectedItem).Selected();
-
-//            if (_model.CurrentDefinition != null)
-//            {
-//                _model.CurrentIsVoice = comboBox1.SelectedItem is VoiceIdentifierView;
-//            }
-
 		}
 
 		private void OnVisibleChanged(object sender, EventArgs e)

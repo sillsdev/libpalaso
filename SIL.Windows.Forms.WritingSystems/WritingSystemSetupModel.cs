@@ -71,7 +71,10 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		internal string DefaultCustomSimpleSortRules = "A a-B b-C c-D d-E e-F f-G g-H h-I i-J j-K k-L l-M m-N n-O o-P p-Q q-R r-S s-T t-U u-V v-W w-X x-Y y-Z z".Replace("-", "\r\n");
 
-
+		/// <summary>
+		/// Set this to limit the Special combo to only one selection
+		/// </summary>
+		public SelectionsForSpecialCombo LockedSpecialCombo { get; private set; }
 		/// <summary>
 		/// Use this to set the appropriate kinds of writing systems according to your
 		/// application.  For example, is the user of your app likely to want voice? ipa? dialects?
@@ -83,6 +86,11 @@ namespace SIL.Windows.Forms.WritingSystems
 		public IWritingSystemFactory WritingSystemFactory
 		{
 			get { return _writingSystemFactory; }
+		}
+
+		internal bool IsSpecialComboLocked
+		{
+			get { return LockedSpecialCombo != SelectionsForSpecialCombo.None; }
 		}
 
 		/// <summary>
@@ -116,7 +124,10 @@ namespace SIL.Windows.Forms.WritingSystems
 		/// This is the easiest form to use if you only want part of the UI elements or only operate on
 		/// one WritingSystemDefiniion
 		/// </summary>
-		public WritingSystemSetupModel(WritingSystemDefinition ws)
+		/// <param name="ws">A writing system definition</param>
+		/// <param name="lockedSpecialComboSelection">Optional parameter if we want to limit the Special combo to one value</param>
+		public WritingSystemSetupModel(WritingSystemDefinition ws,
+			SelectionsForSpecialCombo lockedSpecialComboSelection = SelectionsForSpecialCombo.None)
 		{
 			if (ws == null)
 			{
@@ -131,6 +142,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			_writingSystemDefinitions = new List<WritingSystemDefinition> {ws};
 			_deletedWritingSystemDefinitions = null;
 			_usingRepository = false;
+			LockedSpecialCombo = lockedSpecialComboSelection;
 		}
 
 		public IEnumerable<IKeyboardDefinition> KnownKeyboards
@@ -779,7 +791,6 @@ namespace SIL.Windows.Forms.WritingSystems
 			}
 		}
 
-
 		public string CurrentVerboseDescription
 		{
 			get
@@ -953,6 +964,10 @@ namespace SIL.Windows.Forms.WritingSystems
 			{
 				// TODO: this is really too simplistic
 				// Changed 2011-04 CP, seems ok to me.
+				if (LockedSpecialCombo != SelectionsForSpecialCombo.None)
+				{
+					return LockedSpecialCombo;
+				}
 
 				if (_currentWritingSystem.IsVoice)
 				{

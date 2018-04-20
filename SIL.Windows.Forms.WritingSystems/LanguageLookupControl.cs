@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 using L10NSharp;
 using SIL.Extensions;
@@ -32,6 +31,17 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			InitializeComponent();
 			_model = new LanguageLookupModel();
+			_model.SelectedLanguageChanged += SelectedLanguageChanged;
+		}
+
+		private void SelectedLanguageChanged(object sender, EventArgs eventArgs)
+		{
+			_scriptsAndVariantsLink.Enabled = _model.HaveSufficientInformation;
+			if (!_model.HaveSufficientInformation)
+			{
+				_scriptsAndVariantsLabel.Visible = false;
+				_model.CompleteLanguageIdentifier = null;
+			}
 		}
 
 		public void LoadLanguages()
@@ -54,6 +64,11 @@ namespace SIL.Windows.Forms.WritingSystems
 			set { _showRegionalDialectsCheckBox.Visible = value; }
 		}
 
+		public bool IsScriptAndVariantLinkVisible
+		{
+			set { _scriptsAndVariantsLink.Visible = value; }
+		}
+
 		public Func<LanguageInfo, bool> MatchingLanguageFilter
 		{
 			set { _model.MatchingLanguageFilter = value; }
@@ -71,6 +86,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				if (value != null && _languageNameAliases.TryGetValue(value.LanguageTag, out alias))
 				{
 					_model.DesiredLanguageName = newName = alias;
+					_scriptsAndVariantsLink.Enabled = _scriptsAndVariantsLink.Visible;
 				}
 				_desiredLanguageDisplayName.Text = newName;
 				if (_model.LanguageTag != oldLangTag)
@@ -88,6 +104,11 @@ namespace SIL.Windows.Forms.WritingSystems
 			get { return _model.HaveSufficientInformation; }
 		}
 
+		public string CompleteLanguageIdentifier
+		{
+			get { return _model.CompleteLanguageIdentifier; }
+		}
+
 		public string SearchText
 		{
 			get { return _model.SearchText; }
@@ -103,7 +124,6 @@ namespace SIL.Windows.Forms.WritingSystems
 				_model.LoadLanguages();
 			if (_desiredLanguageDisplayName.Visible)
 				AdjustDesiredLanguageNameFieldLocations();
-			AdjustCannotFindLanguageLocation();
 
 			UpdateReadiness();
 			_searchTimer.Start();
@@ -114,36 +134,13 @@ namespace SIL.Windows.Forms.WritingSystems
 		/// </summary>
 		private void AdjustDesiredLanguageNameFieldLocations()
 		{
-			Point labelLocation = _desiredLanguageLabel.Location;
-			int labelWidth = _desiredLanguageLabel.Width;
-			Point nameLocation = _desiredLanguageDisplayName.Location;
-			if (labelLocation.X + labelWidth + 5 >= nameLocation.X)
-			{
-				var newLabelLoc = new Point(_listView.Location.X, labelLocation.Y);
-				_desiredLanguageLabel.Location = newLabelLoc;
-				if(newLabelLoc.X + labelWidth + 5 >= nameLocation.X)
-				{
-					var newNameLoc = new Point(newLabelLoc.X + labelWidth + 6, nameLocation.Y);
-					_desiredLanguageDisplayName.Location = newNameLoc;
-				}
-			}
-		}
-
-		/// <summary>
-		/// The link label for "Cannot find language?" is truncated on Linux/Mono.
-		/// Adjust the location to allow it to display properly.
-		/// </summary>
-		private void AdjustCannotFindLanguageLocation()
-		{
-			//_cannotFindLanguageLink
-			Point labelLocation = _cannotFindLanguageLink.Location;
-			int labelWidth = _cannotFindLanguageLink.Width;
-			int shortage = labelLocation.X + labelWidth - Width;
-			if (shortage > 0)
-			{
-				var newLoc = new Point(labelLocation.X - shortage, labelLocation.Y);
-				_cannotFindLanguageLink.Location = newLoc;
-			}
+			var labelLocation = _desiredLanguageLabel.Location;
+			var labelWidth = _desiredLanguageLabel.Width;
+			var nameLocation = _desiredLanguageDisplayName.Location;
+			if (labelLocation.X + labelWidth + 5 < nameLocation.X)
+				return;
+			var newLabelLoc = new Point(nameLocation.X - (labelWidth + 6), labelLocation.Y);
+			_desiredLanguageLabel.Location = newLabelLoc;
 		}
 
 		private new bool DesignMode
@@ -280,6 +277,31 @@ namespace SIL.Windows.Forms.WritingSystems
 				{
 					_desiredLanguageDisplayName.Select();
 					_desiredLanguageDisplayName.Enabled = true;
+				}
+			}
+		}
+
+		private void _scriptsAndVariants_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+		{
+			// This is a Script link, so for now we'll limit the dialog to only the ScriptRegionVariant combo option.
+			var wsSetupModel = new WritingSystemSetupModel(new WritingSystemDefinition(CompleteLanguageIdentifier),
+				WritingSystemSetupModel.SelectionsForSpecialCombo.ScriptRegionVariant);
+			wsSetupModel.IdentifierScriptRegionVariantSelected();
+			var originalShortTag = _model.SelectedLanguage.LanguageTag;
+			using (var dlg = new ScriptsAndVariantsDialog())
+			{
+				dlg.BindToModel(wsSetupModel);
+				if (dlg.ShowDialog() != DialogResult.OK)
+					return;
+				_model.CompleteLanguageIdentifier = wsSetupModel.CurrentDefinition.LanguageTag;
+				if (CompleteLanguageIdentifier != originalShortTag)
+				{
+					_scriptsAndVariantsLabel.Text = "(" + CompleteLanguageIdentifier + ")";
+					_scriptsAndVariantsLabel.Visible = true;
+				}
+				else
+				{
+					_scriptsAndVariantsLabel.Visible = false;
 				}
 			}
 		}
