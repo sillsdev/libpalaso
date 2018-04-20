@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using L10NSharp;
@@ -15,6 +15,8 @@ namespace SIL.Windows.Forms.WritingSystems
 		private string _searchText;
 		private LanguageInfo _selectedLanguage;
 		private string _desiredLanguageName;
+		private string _completeLanguageIdentifier;
+		public EventHandler SelectedLanguageChanged;
 
 		public Func<LanguageInfo, bool> MatchingLanguageFilter { get; set; }
 
@@ -92,8 +94,10 @@ namespace SIL.Windows.Forms.WritingSystems
 				var oldValue = _selectedLanguage;
 				_selectedLanguage = value;
 				if (_selectedLanguage == null)
+				{
+					RaiseSelectedLanguageChanged(oldValue);
 					return;
-
+				}
 				if (LanguageTag == "qaa")
 				{
 					if (_searchText != "?")
@@ -126,6 +130,16 @@ namespace SIL.Windows.Forms.WritingSystems
 						_desiredLanguageName = _selectedLanguage.DesiredName;
 					}
 				}
+
+				RaiseSelectedLanguageChanged(oldValue);
+			}
+		}
+
+		private void RaiseSelectedLanguageChanged(LanguageInfo oldValue)
+		{
+			if (SelectedLanguageChanged != null && _selectedLanguage != oldValue)
+			{
+				SelectedLanguageChanged.Invoke(this, EventArgs.Empty);
 			}
 		}
 
@@ -140,5 +154,15 @@ namespace SIL.Windows.Forms.WritingSystems
 		}
 
 		public bool IncludeRegionalDialects { get; set; }
+
+		public string CompleteLanguageIdentifier
+		{
+			get { return _completeLanguageIdentifier ?? LanguageTag; }
+
+			set
+			{
+				_completeLanguageIdentifier = value;
+			}
+		}
 	}
 }

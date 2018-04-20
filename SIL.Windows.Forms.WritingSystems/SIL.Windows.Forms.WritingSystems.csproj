@@ -30,7 +30,8 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>..\output\Debug\SIL.Windows.Forms.WritingSystems.XML</DocumentationFile>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <TargetFrameworkProfile></TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <NoWarn>1591</NoWarn>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
@@ -318,6 +319,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -352,6 +354,12 @@
       <DependentUpon>LanguageLookupControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScriptsAndVariantsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ScriptsAndVariantsDialog.Designer.cs">
+      <DependentUpon>ScriptsAndVariantsDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="WritingSystemFromWindowsLocaleProvider.cs" />
     <Compile Include="WritingSystemSetupDialog.cs">
       <SubType>Form</SubType>
@@ -508,6 +516,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="LanguageLookupControl.resx">
       <DependentUpon>LanguageLookupControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ScriptsAndVariantsDialog.resx">
+      <DependentUpon>ScriptsAndVariantsDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="WritingSystemSetupDialog.resx">
       <DependentUpon>WritingSystemSetupDialog.cs</DependentUpon>
