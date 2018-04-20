@@ -109,7 +109,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			// 
 			// _fontLabel
 			// 
-			this._fontLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._fontLabel.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._l10NSharpExtender.SetLocalizableToolTip(this._fontLabel, null);
 			this._l10NSharpExtender.SetLocalizationComment(this._fontLabel, null);
 			this._l10NSharpExtender.SetLocalizingId(this._fontLabel, "WSFontControl.Font");
@@ -121,7 +121,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			// 
 			// _sizeLabel
 			// 
-			this._sizeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._sizeLabel.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._l10NSharpExtender.SetLocalizableToolTip(this._sizeLabel, null);
 			this._l10NSharpExtender.SetLocalizationComment(this._sizeLabel, null);
 			this._l10NSharpExtender.SetLocalizingId(this._sizeLabel, "WSFontControl.Size");
