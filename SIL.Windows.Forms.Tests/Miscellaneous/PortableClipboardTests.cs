@@ -18,7 +18,7 @@ namespace SIL.Windows.Forms.Tests.Miscellaneous
 
 		private static string GetPathToImage(string requestedImage)
 		{
-			return FileLocator.GetFileDistributedWithApplication(TestImageDir, requestedImage);
+			return FileLocationUtilities.GetFileDistributedWithApplication(TestImageDir, requestedImage);
 		}
 
 		[Test]

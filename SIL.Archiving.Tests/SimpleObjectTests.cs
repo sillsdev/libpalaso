@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using NUnit.Framework;
 using SIL.Archiving.Generic;
 
@@ -30,6 +30,13 @@ namespace SIL.Archiving.Tests
 			Assert.AreEqual(2, hs.Count);
 			Assert.AreEqual(firstValue, hs.First(ls => ls.Iso3LanguageId == "eng").Value);
 			Assert.AreEqual(frenchValue, hs.First(ls => ls.Iso3LanguageId == "fra").Value);
+		}
+
+		[Test]
+		public void ToLatinOnly_MultiplePeriod_OnePeriod()
+		{
+			var result = "Langauge.wav.meta".ToLatinOnly("_", "+", ".");
+			Assert.AreEqual("Langauge_wav.meta", result);
 		}
 	}
 }

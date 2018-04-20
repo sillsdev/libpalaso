@@ -304,10 +304,6 @@
       <Project>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</Project>
       <Name>SIL.TestUtilities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
-      <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
-      <Name>SIL.Core</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

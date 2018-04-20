@@ -291,13 +291,16 @@
     <Compile Include="LinuxKeyboardControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WindowsKeyboardControllerTests.cs" />
-    <Compile Include="WinKeyboardAdaptorTests.cs" />
     <Compile Include="XkbKeyboardAdapterTests.cs" />
     <Compile Include="XklEngineTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SIL.Core.Desktop\SIL.Core.Desktop.csproj">
+      <Project>{c48de000-2086-4ceb-a5a1-3171c272725e}</Project>
+      <Name>SIL.Core.Desktop</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
-      <Project>{3527da1d-1e25-48be-a71e-9ebf7f9208d4}</Project>
+      <Project>{53cb36d9-2f66-4823-b1f0-4523e8565200}</Project>
       <Name>SIL.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.Windows.Forms.Keyboarding\SIL.Windows.Forms.Keyboarding.csproj">

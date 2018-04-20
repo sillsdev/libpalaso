@@ -1,0 +1,14 @@
+<Project>
+	<PropertyGroup>
+		<Version>4.2.0</Version>
+		<AssemblyVersion>4.2.0.0</AssemblyVersion>
+		<FileVersion>4.2.0.0</FileVersion>
+		<Authors>SIL</Authors>
+		<Company>SIL</Company>
+		<Product>Palaso Library</Product>
+		<Copyright>Copyright © 2018 SIL International</Copyright>
+		<PackageLicenseUrl>https://github.com/sillsdev/libpalaso/blob/master/LICENSE</PackageLicenseUrl>
+		<PackageProjectUrl>https://github.com/sillsdev/libpalaso</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/sillsdev/libpalaso.git</RepositoryUrl>
+	</PropertyGroup>
+</Project>

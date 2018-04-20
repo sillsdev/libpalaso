@@ -234,7 +234,7 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 		private static string TryToGetLegacyArtOfReadingImagesPath()
 		{
 			const string kImages = "Images";
-			var distributedWithApp = FileLocator.GetDirectoryDistributedWithApplication(true, "Art Of Reading", kImages);
+			var distributedWithApp = FileLocationUtilities.GetDirectoryDistributedWithApplication(true, "Art Of Reading", kImages);
 			if (!string.IsNullOrEmpty(distributedWithApp) && Directory.Exists(distributedWithApp))
 				return distributedWithApp;
 

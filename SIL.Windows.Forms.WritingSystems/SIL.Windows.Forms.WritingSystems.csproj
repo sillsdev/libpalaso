@@ -487,6 +487,10 @@
       <Project>{c48de000-2086-4ceb-a5a1-3171c272725e}</Project>
       <Name>SIL.Core.Desktop</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
+      <Project>{53cb36d9-2f66-4823-b1f0-4523e8565200}</Project>
+      <Name>SIL.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SIL.Windows.Forms.Keyboarding\SIL.Windows.Forms.Keyboarding.csproj">
       <Project>{0580ed5f-6274-4928-83ee-175f01ad052d}</Project>
       <Name>SIL.Windows.Forms.Keyboarding</Name>
@@ -495,12 +499,8 @@
       <Project>{db44f49c-d8c6-434f-81ed-28ea5c9e8195}</Project>
       <Name>SIL.Windows.Forms</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
-      <Project>{3527da1d-1e25-48be-a71e-9ebf7f9208d4}</Project>
-      <Name>SIL.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj">
-      <Project>{52A93C63-08F4-4527-8E6E-AC2ADEBA6E2D}</Project>
+      <Project>{a61cc666-1faa-4a92-bb3b-aa36bd66bdda}</Project>
       <Name>SIL.WritingSystems</Name>
     </ProjectReference>
   </ItemGroup>

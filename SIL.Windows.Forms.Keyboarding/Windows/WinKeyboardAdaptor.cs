@@ -17,14 +17,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 	/// </summary>
 	internal class WinKeyboardAdaptor : IKeyboardRetrievingAdaptor
 	{
-
-		private WinKeyboardDescription _expectedKeyboard;
-		private bool _fSwitchedLanguages;
-
-
-		internal ITfInputProcessorProfiles ProcessorProfiles { get; private set; }
-		internal ITfInputProcessorProfileMgr ProfileMgr { get; private set; }
-
 		public bool IsApplicable => true;
 
 		public IKeyboardSwitchingAdaptor SwitchingAdaptor { get; private set; }
@@ -42,67 +34,13 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			}
 
 			// ProfileMgr will be null on Windows XP - the interface got introduced in Vista
-			ProfileMgr = ProcessorProfiles as ITfInputProcessorProfileMgr;
-
-			SwitchingAdaptor = new WindowsKeyboardSwitchingAdapter(ProcessorProfiles, ProfileMgr);
+			ProfileManager = ProcessorProfiles as ITfInputProcessorProfileMgr;
+			SwitchingAdaptor = new WindowsKeyboardSwitchingAdapter();
 		}
-
-		protected short[] Languages
+		
+		private static string GetDisplayName(string layout, string locale)
 		{
-			get
-			{
-				if (ProcessorProfiles == null)
-					return new short[0];
-
-				var ptr = IntPtr.Zero;
-				try
-				{
-					var count = ProcessorProfiles.GetLanguageList(out ptr);
-					if (count <= 0)
-						return new short[0];
-
-					var langIds = new short[count];
-					Marshal.Copy(ptr, langIds, 0, count);
-					return langIds;
-				}
-				catch (InvalidCastException)
-				{
-					// For strange reasons tests on TeamCity failed with InvalidCastException: Unable
-					// to cast COM object of type TfInputProcessorProfilesClass to interface type
-					// ITfInputProcessorProfiles when trying to call GetLanguageList. Don't know why
-					// it wouldn't fail when we create the object. Since it's theoretically possible
-					// that this also happens on a users machine we catch the exception here - maybe
-					// TSF is not enabled?
-					ProcessorProfiles = null;
-					return new short[0];
-				}
-				finally
-				{
-					if (ptr != IntPtr.Zero)
-						Marshal.FreeCoTaskMem(ptr);
-				}
-			}
-		}
-
-		private IEnumerable<Tuple<TfInputProcessorProfile, ushort, IntPtr>> GetInputMethodsThroughTsf()
-		{
-			foreach (short langId in Languages)
-			{
-				IEnumTfInputProcessorProfiles profilesEnumerator = ProfileMgr.EnumProfiles(langId);
-				TfInputProcessorProfile profile;
-				while (profilesEnumerator.Next(1, out profile) == 1)
-				{
-					// We only deal with keyboards; skip other input methods
-					if (profile.CatId != Guids.Consts.TfcatTipKeyboard)
-						continue;
-
-					// REVIEW: Is this right? Why do we skip if the Enabled flag isn't set
-					if ((profile.Flags & TfIppFlags.Enabled) == 0)
-						continue;
-
-					yield return Tuple.Create(profile, profile.LangId, profile.Hkl);
-				}
-			}
+			return $"{layout} - {locale}";
 		}
 
 		private IEnumerable<Tuple<TfInputProcessorProfile, ushort, IntPtr>> GetInputMethodsThroughWinApi()
@@ -117,12 +55,12 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				Win32.GetKeyboardLayoutList(countKeyboardLayouts, keyboardLayouts);
 
 				IntPtr current = keyboardLayouts;
-				var elemSize = (ulong) IntPtr.Size;
+				var elemSize = (ulong)IntPtr.Size;
 				for (int i = 0; i < countKeyboardLayouts; i++)
 				{
-					var hkl = (IntPtr) Marshal.ReadInt32(current);
+					var hkl = (IntPtr)Marshal.ReadInt32(current);
 					yield return Tuple.Create(new TfInputProcessorProfile(), HklToLangId(hkl), hkl);
-					current = (IntPtr) ((ulong)current + elemSize);
+					current = (IntPtr)((ulong)current + elemSize);
 				}
 			}
 			finally
@@ -135,43 +73,20 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		{
 			return (ushort)((uint)hkl & 0xffff);
 		}
-
-		private static string GetId(string layout, string locale)
-		{
-			return String.Format("{0}_{1}", locale, layout);
-		}
-
-		private static string GetDisplayName(string layout, string locale)
-		{
-			return string.Format("{0} - {1}", layout, locale);
-		}
-
 		public void UpdateAvailableKeyboards()
 		{
-			IEnumerable<Tuple<TfInputProcessorProfile, ushort, IntPtr>> imes;
-			if (ProfileMgr != null)
-				// Windows >= Vista
-				imes = GetInputMethodsThroughTsf();
-			else
-				// Windows XP
-				imes = GetInputMethodsThroughWinApi();
+			var curKeyboards = KeyboardController.Instance.Keyboards.OfType<WinKeyboardDescription>().ToDictionary(kd => kd.Id);
 
-			var allKeyboards = KeyboardController.Instance.Keyboards;
-			Dictionary<string, WinKeyboardDescription> curKeyboards = allKeyboards.OfType<WinKeyboardDescription>().ToDictionary(kd => kd.Id);
-			foreach (Tuple<TfInputProcessorProfile, ushort, IntPtr> ime in imes)
+			foreach (InputLanguage inputLanguage in InputLanguage.InstalledInputLanguages)
 			{
-				TfInputProcessorProfile profile = ime.Item1;
-				ushort langId = ime.Item2;
-				IntPtr hkl = ime.Item3;
-
+				var keyboardId = $"{inputLanguage.Culture.Name}_{inputLanguage.LayoutName}";
+				var keyboardLayoutName = GetBestAvailableKeyboardName(inputLanguage);
 				CultureInfo culture;
-				string locale;
 				string cultureName;
 				try
 				{
-					culture = new CultureInfo(langId);
+					culture = new CultureInfo(inputLanguage.Culture.Name);
 					cultureName = culture.DisplayName;
-					locale = culture.Name;
 				}
 				catch (CultureNotFoundException)
 				{
@@ -179,64 +94,75 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					// Also see http://stackoverflow.com/a/24820530/4953232
 					culture = new CultureInfo("en-US");
 					cultureName = "[Unknown Language]";
-					locale = "en-US";
 				}
 
-				try
+				WinKeyboardDescription existingKeyboard;
+				if (curKeyboards.TryGetValue(keyboardId, out existingKeyboard))
 				{
-					LayoutName layoutName;
-					if (profile.Hkl == IntPtr.Zero && profile.ProfileType != TfProfileType.Illegal)
+					if (!existingKeyboard.IsAvailable)
 					{
-						layoutName = new LayoutName(ProcessorProfiles.GetLanguageProfileDescription(
-							ref profile.ClsId, profile.LangId, ref profile.GuidProfile));
+						existingKeyboard.SetIsAvailable(true);
+						existingKeyboard.SetLocalizedName(keyboardLayoutName.LocalizedName);
 					}
-					else
-					{
-						layoutName = WinKeyboardUtils.GetLayoutNameEx(hkl);
-					}
-
-					string id = GetId(layoutName.Name, locale);
-					WinKeyboardDescription existingKeyboard;
-					if (curKeyboards.TryGetValue(id, out existingKeyboard))
-					{
-						if (!existingKeyboard.IsAvailable)
-						{
-							existingKeyboard.SetIsAvailable(true);
-							existingKeyboard.InputProcessorProfile = profile;
-							existingKeyboard.SetLocalizedName(GetDisplayName(layoutName.LocalizedName, cultureName));
-						}
-						curKeyboards.Remove(id);
-					}
-					else
-					{
-						// Prevent a keyboard with this id from being registered again.
-						// Potentially, id's are duplicated. e.g. A Keyman keyboard linked to a windows one.
-						// For now we simply ignore this second registration.
-						// A future enhancement would be to include knowledge of the driver in the Keyboard definition so
-						// we could choose the best one to register.
-						KeyboardDescription keyboard;
-						if (!allKeyboards.TryGet(id, out keyboard))
-						{
-							KeyboardController.Instance.Keyboards.Add(
-								new WinKeyboardDescription(id, GetDisplayName(layoutName.Name, cultureName),
-									layoutName.Name, locale, true, new InputLanguageWrapper(culture, hkl, layoutName.Name), this,
-									GetDisplayName(layoutName.LocalizedName, cultureName), profile));
-						}
-					}
+					curKeyboards.Remove(keyboardId);
 				}
-				catch (COMException)
+				else
 				{
-					// this can happen when the user changes the language associated with a
-					// Keyman keyboard (LT-16172)
+					// Prevent a keyboard with this id from being registered again.
+					// Potentially, id's are duplicated. e.g. A Keyman keyboard linked to a windows one.
+					// For now we simply ignore this second registration.
+					// A future enhancement would be to include knowledge of the driver in the Keyboard definition so
+					// we could choose the best one to register.
+					KeyboardDescription keyboard;
+					if (!KeyboardController.Instance.Keyboards.TryGet(keyboardId, out keyboard))
+					{
+						KeyboardController.Instance.Keyboards.Add(
+							new WinKeyboardDescription(keyboardId, GetDisplayName(keyboardLayoutName.LocalizedName, cultureName), keyboardLayoutName.Name, inputLanguage.Culture.Name, true,
+								new InputLanguageWrapper(inputLanguage), this));
+					}
 				}
 			}
+
 			// Set each unhanandled keyboard to unavailable
 			foreach (var existingKeyboard in curKeyboards.Values)
 			{
 				existingKeyboard.SetIsAvailable(false);
 			}
 		}
-		
+
+		private LayoutName GetBestAvailableKeyboardName(InputLanguage inputLanguage)
+		{
+			try
+			{
+				var profilesEnumerator = ProfileManager.EnumProfiles((short)inputLanguage.Culture.KeyboardLayoutId);
+				TfInputProcessorProfile[] profiles = new TfInputProcessorProfile[1];
+				while (profilesEnumerator.Next(1, profiles) == 1)
+				{
+					// We only deal with keyboards; skip other input methods
+					if (profiles[0].CatId != Guids.Consts.TfcatTipKeyboard)
+						continue;
+
+					if ((profiles[0].Flags & TfIppFlags.Enabled) == 0)
+						continue;
+					if (profiles[0].Hkl == IntPtr.Zero && profiles[0].ProfileType != TfProfileType.Illegal)
+					{
+						return new LayoutName(inputLanguage.LayoutName,
+							ProcessorProfiles.GetLanguageProfileDescription(ref profiles[0].ClsId, profiles[0].LangId,
+								ref profiles[0].GuidProfile));
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				Debug.WriteLine($"Error looking up keyboards for language {inputLanguage.Culture.Name} - {(short)inputLanguage.Culture.KeyboardLayoutId}");
+			}
+			return new LayoutName(inputLanguage.LayoutName, inputLanguage.Culture.DisplayName);
+		}
+
+		public ITfInputProcessorProfiles ProcessorProfiles { get; set; }
+
+		public ITfInputProcessorProfileMgr ProfileManager { get; set; }
+
 		#region IKeyboardRetrievingAdaptor Members
 
 		/// <summary>
@@ -247,7 +173,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		public void Initialize()
 		{
 			UpdateAvailableKeyboards();
-
 		}
 
 		/// <summary>
@@ -263,8 +188,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			string cultureName;
 			var inputLanguage = WinKeyboardUtils.GetInputLanguage(locale, layout, out cultureName);
 
-			return new WinKeyboardDescription(id, GetDisplayName(layout, cultureName), layout, locale, false, inputLanguage, this,
-				GetDisplayName(layout, cultureName), new TfInputProcessorProfile());
+			return new WinKeyboardDescription(id, GetDisplayName(layout, cultureName), layout, cultureName, false, inputLanguage, this);
 		}
 
 		public bool CanHandleFormat(KeyboardFormat format)
@@ -278,18 +202,16 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			return false;
 		}
 
-		public string GetKeyboardSetupApplication(out string arguments)
+		public Action GetKeyboardSetupAction()
 		{
-			arguments = @"input.dll";
-			return Path.Combine(
-				Environment.GetFolderPath(Environment.SpecialFolder.System), @"control.exe");
+			return () =>
+			{
+				using (Process.Start(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "control.exe"),
+					"input.dll")) {}
+			};
 		}
 
-		public bool IsSecondaryKeyboardSetupApplication
-		{
-			get { return false; }
-		}
-
+		public bool IsSecondaryKeyboardSetupApplication => false;
 		#endregion
 
 		#region IDisposable & Co. implementation
@@ -313,9 +235,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			// The base class finalizer is called automatically.
 		}
 
-		/// <summary>
-		///
-		/// </summary>
+		/// <summary/>
 		/// <remarks>Must not be virtual.</remarks>
 		public void Dispose()
 		{
@@ -356,7 +276,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			(SwitchingAdaptor as IDisposable)?.Dispose();
 
 			// Dispose unmanaged resources here, whether disposing is true or false.
-
 			IsDisposed = true;
 		}
 

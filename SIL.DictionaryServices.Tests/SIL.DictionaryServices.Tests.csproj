@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0" DefaultTargets="Build">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -32,7 +32,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
- </PropertyGroup>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -299,17 +299,21 @@
     <Compile Include="Processors\MergeHomographsTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SIL.Core.Desktop\SIL.Core.Desktop.csproj">
+      <Project>{c48de000-2086-4ceb-a5a1-3171c272725e}</Project>
+      <Name>SIL.Core.Desktop</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SIL.Core.Tests\SIL.Core.Tests.csproj">
       <Project>{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}</Project>
       <Name>SIL.Core.Tests</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
+      <Project>{53cb36d9-2f66-4823-b1f0-4523e8565200}</Project>
+      <Name>SIL.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj">
       <Project>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</Project>
       <Name>SIL.TestUtilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
-      <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
-      <Name>SIL.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.DictionaryServices\SIL.DictionaryServices.csproj">
       <Project>{5ff5cbd8-b75d-4f79-a39d-2d898fbfadbd}</Project>
@@ -320,7 +324,7 @@
       <Name>SIL.Lift</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj">
-      <Project>{52a93c63-08f4-4527-8e6e-ac2adeba6e2d}</Project>
+      <Project>{a61cc666-1faa-4a92-bb3b-aa36bd66bdda}</Project>
       <Name>SIL.WritingSystems</Name>
     </ProjectReference>
   </ItemGroup>

@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Xml;
 using System.Xml.Xsl;
 
@@ -8,7 +8,7 @@ namespace SIL.Migration
 	///</summary>
 	public class XslMigrationStrategy : MigrationStrategyBase
 	{
-		protected string XslSource { get; private set; }
+		protected string XslSource { get; }
 
 		///<summary>
 		///</summary>
@@ -27,7 +27,11 @@ namespace SIL.Migration
 		///<param name="destinationFilePath"></param>
 		public override void Migrate(string source, string destinationFilePath)
 		{
-			MigrateUsingXslt(OpenXslStream(XslSource), OpenSourceStream(source), destinationFilePath);
+			using (TextReader xslStream = OpenXslStream(XslSource))
+			using (TextReader xmlStream = OpenSourceStream(source))
+			{
+				MigrateUsingXslt(xslStream, xmlStream, destinationFilePath);
+			}
 		}
 
 		protected virtual TextReader OpenXslStream(string xslSource)
@@ -42,36 +46,16 @@ namespace SIL.Migration
 
 		protected static void MigrateUsingXslt(TextReader xslStream, TextReader xmlStream, string destinationFilePath)
 		{
-			var transform = new XslCompiledTransform();
-			using (xslStream)
+			using (var xslReader = XmlReader.Create(xslStream))
+			using (var reader = XmlReader.Create(xmlStream))
+			using (var writer = XmlWriter.Create(destinationFilePath, new XmlWriterSettings { Indent = true }))
 			{
-				using (xmlStream)
-				{
-					using (var destinationStream = new StreamWriter(destinationFilePath))
-					{
-						var xslReader = XmlReader.Create(xslStream);
-						transform.Load(xslReader);
-						xslReader.Close();
-						xslStream.Close();
-
-						var reader = XmlReader.Create(xmlStream);
-
-						var settings = new XmlWriterSettings { Indent = true };
-						var writer = XmlWriter.Create(destinationStream, settings);
-
-						transform.Transform(reader, writer);
-
-						var tempfiles = transform.TemporaryFiles;
-						if (tempfiles != null) // tempfiles will be null when debugging is not enabled
-						{
-							tempfiles.Delete();
-						}
-						writer.Close();
-						reader.Close();
-						destinationStream.Close();
-					}
-					xmlStream.Close();
-				}
+				var transform = new XslCompiledTransform();
+				transform.Load(xslReader);
+				transform.Transform(reader, writer);
+#if NET461
+				transform.TemporaryFiles?.Delete();
+#endif
 			}
 		}
 	}

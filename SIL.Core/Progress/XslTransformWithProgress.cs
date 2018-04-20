@@ -1,5 +1,4 @@
-﻿using System;
-using System.CodeDom.Compiler;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Xml;
@@ -14,17 +13,17 @@ namespace SIL.Progress
 	public class XslTransformWithProgress
 	{
 		private readonly string _inputFilePath;
-		private readonly string _outputFilePath;
 		private readonly Stream _xsltStream;
 		private readonly string _xpathToCountSteps;
 		private XsltArgumentList _xsltArguments;
 
 		private ProgressState _progressState;
 
-		public XslTransformWithProgress(string inputFilePath, string outputFilePath, Stream xsltStream, string xpathToCountSteps)
+		public XslTransformWithProgress(string inputFilePath, string outputFilePath, Stream xsltStream,
+			string xpathToCountSteps)
 		{
 			_inputFilePath = inputFilePath;
-			_outputFilePath = outputFilePath;
+			OutputFilePath = outputFilePath;
 			_xsltStream = xsltStream;
 			_xpathToCountSteps = xpathToCountSteps;
 			_progressState = null;
@@ -39,28 +38,21 @@ namespace SIL.Progress
 			_xsltArguments.AddParam(name, string.Empty, value);
 		}
 
-		public string OutputFilePath
-		{
-			get { return _outputFilePath; }
-		}
+		public string OutputFilePath { get; }
 
 		public void Transform(ProgressState progressState)
 		{
 			_progressState = progressState;
-			XslCompiledTransform transform = null;
 			using (Stream outputStream = File.Create(OutputFilePath))
 			{
-				XmlDocument inputDocument = new XmlDocument();
-				inputDocument.PreserveWhitespace = true;
+				var inputDocument = new XmlDocument { PreserveWhitespace = true };
 				inputDocument.Load(_inputFilePath);
 
+				var transform = new XslCompiledTransform();
 				try
 				{
-					transform = new XslCompiledTransform();
-
 					//all this just to allow a DTD statement in the source xslt
-					XmlReaderSettings readerSettings = new XmlReaderSettings();
-					readerSettings.DtdProcessing = DtdProcessing.Parse;
+					var readerSettings = new XmlReaderSettings { DtdProcessing = DtdProcessing.Parse };
 
 					_progressState.StatusLabel = "Preparing...";
 					using (Stream stream = _xsltStream)
@@ -71,6 +63,7 @@ namespace SIL.Progress
 							transform.Load(xsltReader, settings, new XmlUrlResolver());
 							xsltReader.Close();
 						}
+
 						stream.Close();
 					}
 
@@ -81,17 +74,19 @@ namespace SIL.Progress
 					{
 						entriesCount = nodeCountList.Count;
 					}
+
 					_progressState.TotalNumberOfSteps = entriesCount;
 					if (_xsltArguments == null)
 					{
 						_xsltArguments = new XsltArgumentList();
 					}
+
 					_xsltArguments.XsltMessageEncountered += OnXsltMessageEncountered;
 					transform.Transform(inputDocument, _xsltArguments, outputStream);
 
 					outputStream.Close(); //let the next guy get at the file
 					Debug.Assert(_progressState.NumberOfStepsCompleted <= entriesCount,
-								 "Should use up more than we reserved for ourselves");
+						"Should use up more than we reserved for ourselves");
 					_progressState.NumberOfStepsCompleted = entriesCount;
 					_progressState.State = ProgressState.StateValue.Finished;
 				}
@@ -109,18 +104,13 @@ namespace SIL.Progress
 					_progressState.WriteToLog(err.Message);
 					_progressState.State = ProgressState.StateValue.StoppedWithError;
 				}
+#if NET461
 				finally
 				{
-					if (transform != null)
-					{
-						_progressState.StatusLabel = "Cleaning up...";
-						TempFileCollection tempfiles = transform.TemporaryFiles;
-						if (tempfiles != null) // tempfiles will be null when debugging is not enabled
-						{
-							tempfiles.Delete();
-						}
-					}
+					_progressState.StatusLabel = "Cleaning up...";
+					transform.TemporaryFiles?.Delete();
 				}
+#endif
 			}
 		}
 

@@ -304,20 +304,20 @@
     <None Include="Resources\TestBundleFiles\versification.vrs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
+      <Project>{53cb36d9-2f66-4823-b1f0-4523e8565200}</Project>
+      <Name>SIL.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj">
       <Project>{d74ce910-d44a-44f5-8c0f-f5e50b26f85d}</Project>
       <Name>SIL.TestUtilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
-      <Project>{3527da1d-1e25-48be-a71e-9ebf7f9208d4}</Project>
-      <Name>SIL.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.DblBundle\SIL.DblBundle.csproj">
       <Project>{d4f0f320-faf6-4775-8411-4d03fae99f84}</Project>
       <Name>SIL.DblBundle</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj">
-      <Project>{52A93C63-08F4-4527-8E6E-AC2ADEBA6E2D}</Project>
+      <Project>{a61cc666-1faa-4a92-bb3b-aa36bd66bdda}</Project>
       <Name>SIL.WritingSystems</Name>
     </ProjectReference>
   </ItemGroup>

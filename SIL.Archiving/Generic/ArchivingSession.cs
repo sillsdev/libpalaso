@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace SIL.Archiving.Generic
@@ -8,6 +8,9 @@ namespace SIL.Archiving.Generic
 	{
 		/// <summary></summary>
 		void AddFile(ArchivingFile file);
+
+		/// <summary></summary>
+		void AddFileAccess(string fullFileName, ArchivingPackage package);
 
 		/// <summary></summary>
 		List<string> Files { get; }
@@ -25,7 +28,31 @@ namespace SIL.Archiving.Generic
 		void AddActor(ArchivingActor actor);
 
 		/// <summary></summary>
-		void AddKeyValuePair(string key, string value);
+		void AddGroupKeyValuePair(string key, string value);
+
+		/// <summary></summary>
+		void AddContentKeyValuePair(string key, string value);
+
+		/// <summary></summary>
+		void AddFileKeyValuePair(string fullFileName, string key, string value);
+
+		/// <summary></summary>
+		void AddContentDescription(LanguageString description);
+
+		/// <summary></summary>
+		void AddActorDescription(ArchivingActor actor, LanguageString description);
+
+		/// <summary></summary>
+		void AddFileDescription(string fullFileName, LanguageString description);
+
+		/// <summary></summary>
+		void AddActorContact(ArchivingActor actor, ArchivingContact contact);
+
+		/// <summary></summary>
+		void AddMediaFileTimes(string fullFileName, string start, string stop);
+
+		/// <summary></summary>
+		void AddProject(ArchivingPackage package);
 
 		/// <summary></summary>
 		string Genre { get; set; }

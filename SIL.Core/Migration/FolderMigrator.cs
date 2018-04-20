@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using SIL.IO;
-using SIL.Reporting;
 
 namespace SIL.Migration
 {
@@ -97,7 +96,7 @@ namespace SIL.Migration
 			// Clean up root backup path
 			if (Directory.Exists(MigrationPath))
 			{
-				if (!DirectoryUtilities.DeleteDirectoryRobust(MigrationPath))
+				if (!RobustIO.DeleteDirectoryAndContents(MigrationPath))
 				{
 					//for user, ah well
 					//for programmer, tell us
@@ -109,8 +108,6 @@ namespace SIL.Migration
 			if(!Directory.Exists(SourcePath)) return;
 
 
-			Logger.WriteMinorEvent("Migrator examining "+SourcePath);
-
 			if (GetLowestVersionInFolder(SourcePath) == ToVersion) return;
 
 			// Backup current folder to backup path under backup root
@@ -121,8 +118,6 @@ namespace SIL.Migration
 			int lowestVersoinInFolder1 = -1;
 			while ((lowestVersionInFolder = GetLowestVersionInFolder(currentPath)) != ToVersion)
 			{
-				Logger.WriteEvent("Migrating "+currentPath+" from "+lowestVersionInFolder);//enhance: to what version?
-
 				//This guards against an empty Folder
 				if(lowestVersionInFolder == int.MaxValue)
 				{
@@ -193,7 +188,7 @@ namespace SIL.Migration
 
 			// Copy the migration results into SourcePath
 			CopyDirectory(currentPath, SourcePath, "");
-			if (!DirectoryUtilities.DeleteDirectoryRobust(MigrationPath))
+			if (!RobustIO.DeleteDirectoryAndContents(MigrationPath))
 			{
 				//for user, ah well
 				//for programmer, tell us

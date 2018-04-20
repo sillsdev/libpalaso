@@ -1,6 +1,11 @@
 // Copyright (c) 2013-2018 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
+using System.Linq;
+#if !MONO
+using Keyman10Interop;
+using System.Runtime.InteropServices;
+#endif
 using Microsoft.Win32;
 using SIL.Keyboarding;
 
@@ -21,32 +26,37 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		private string _localizedName;
 		private readonly bool _useNfcContext;
 
-		/// <summary/>
-		internal WinKeyboardDescription(string id, string name, string layout, string locale, bool isAvailable,
-			IInputLanguage inputLanguage, WinKeyboardAdaptor engine, string localizedName, TfInputProcessorProfile profile)
-			: base(id, name, layout, locale, isAvailable, engine.SwitchingAdaptor)
+		internal WinKeyboardDescription(string keyboardId, string localizedKeyboardName, string inputLanguageLayoutName, string cultureName, bool isAvailable, IInputLanguage inputLanguage, WinKeyboardAdaptor engine) : base(keyboardId, localizedKeyboardName, inputLanguageLayoutName, cultureName, isAvailable, engine.SwitchingAdaptor)
 		{
 			InputLanguage = inputLanguage;
-			_localizedName = localizedName;
-			InputProcessorProfile = profile;
-			ConversionMode = (int) (Win32.IME_CMODE.NATIVE | Win32.IME_CMODE.SYMBOL);
-			_useNfcContext = !IsKeymanKeyboard(profile);
+			_localizedName = localizedKeyboardName;
+			ConversionMode = (int)(Win32.IME_CMODE.NATIVE | Win32.IME_CMODE.SYMBOL);
+			_useNfcContext = IsKeymanKeyboard(cultureName);
 		}
 
-		private static bool IsKeymanKeyboard(TfInputProcessorProfile profile)
+		private static bool IsKeymanKeyboard(string cultureName)
 		{
-			if (profile.ProfileType != TfProfileType.InputProcessor)
-				return false;
-
-			// check the default key value for profile.ClsId.
-			var subKey = string.Format(@"CLSID\{{{0}}}", profile.ClsId);
-			using (RegistryKey key = Registry.ClassesRoot.OpenSubKey(subKey))
+#if !MONO
+			try
 			{
-				if (key == null)
-					return false;
-				var value = key.GetValue(null) as string;
-				return value != null && value.Contains("Keyman");
+				var kmn = new KeymanClass();
+				foreach (IKeymanLanguage kl in kmn.Languages)
+				{
+					foreach (IKeymanKeyboard kb in kmn.Keyboards)
+					{
+						if (kb.DefaultWindowsLanguages != null && kb.DefaultWindowsLanguages.Contains(cultureName))
+						{
+							return true;
+						}
+					}
+				}
 			}
+			catch(COMException)
+			{
+				// Not a keyman keyboard
+			}
+#endif
+			return false;
 		}
 
 		/// <summary>
@@ -77,6 +87,11 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		internal void SetLocalizedName(string localizedName)
 		{
 			_localizedName = localizedName;
+		}
+
+		public override string ToString()
+		{
+			return Id;
 		}
 	}
 }

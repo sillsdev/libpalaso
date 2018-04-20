@@ -34,6 +34,8 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkProfile />
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -285,6 +287,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="SIL.Windows.Forms.WritingSystems, Version=4.2.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\output\Debug\SIL.Windows.Forms.WritingSystems.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -332,16 +338,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SIL.Core\SIL.Core.csproj">
-      <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
+      <Project>{53cb36d9-2f66-4823-b1f0-4523e8565200}</Project>
       <Name>SIL.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SIL.Windows.Forms.Keyboarding\SIL.Windows.Forms.Keyboarding.csproj">
       <Project>{0580ed5f-6274-4928-83ee-175f01ad052d}</Project>
       <Name>SIL.Windows.Forms.Keyboarding</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\SIL.WritingSystems\SIL.WritingSystems.csproj">
-      <Project>{52a93c63-08f4-4527-8e6e-ac2adeba6e2d}</Project>
-      <Name>SIL.WritingSystems</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -12,7 +12,7 @@ namespace SIL.Windows.Forms.WritingSystems
 	public partial class WSKeyboardControl : UserControl
 	{
 
-		private class KeyboardDefinitionAdapter
+		public class KeyboardDefinitionAdapter
 		{
 			private IKeyboardDefinition _descriptor;
 
@@ -313,35 +313,28 @@ namespace SIL.Windows.Forms.WritingSystems
 		private void _windowsKeyboardSettingsLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
 			string arguments;
-			string program = KeyboardController.GetKeyboardSetupApplication(out arguments);
-			if (string.IsNullOrEmpty(program))
+			var program = KeyboardController.GetKeyboardSetupApplication();
+			if (program == null)
 			{
 				MessageBox.Show("Cannot open keyboard setup program", "Information");
 				return;
 			}
 
-			var processInfo = new ProcessStartInfo(program, arguments);
-			using (Process.Start(processInfo))
-			{
-			}
+			program.Invoke();
 		}
 
 		private void _keymanConfigurationLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			string arguments;
-			string program = KeyboardController.GetSecondaryKeyboardSetupApplication(out arguments);
+			var program = KeyboardController.GetSecondaryKeyboardSetupApplication();
 
-			if (string.IsNullOrEmpty(program))
+			if (program == null)
 			{
 				MessageBox.Show(LocalizationManager.GetString("WSKeyboardControl.KeymanNotInstalled",
 					"Keyman 5.0 or later is not Installed."));
 				return;
 			}
 
-			var processInfo = new ProcessStartInfo(program, arguments);
-			using (Process.Start(processInfo))
-			{
-			}
+			program.Invoke();
 		}
 	}
 }

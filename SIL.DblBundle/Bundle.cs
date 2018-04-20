@@ -1,9 +1,7 @@
-﻿using System;
+using System;
 using System.IO;
-using L10NSharp;
 using SIL.DblBundle.Text;
 using SIL.IO;
-using SIL.Reporting;
 using SIL.Xml;
 
 namespace SIL.DblBundle
@@ -66,10 +64,11 @@ namespace SIL.DblBundle
 		where TM : DblMetadataBase<TL>
 		where TL : DblMetadataLanguage, new()
 	{
-		private readonly TM m_dblMetadata;
+
+		private readonly TM _dblMetadata;
 		/// <summary>temporary directory path where the zip bundle is extracted</summary>
-		protected readonly string m_pathToZippedBundle;
-		private string m_pathToUnzippedDirectory;
+		protected readonly string _pathToZippedBundle;
+		private string _pathToUnzippedDirectory;
 
 		/// <summary>
 		/// Create a DBL Bundle
@@ -78,19 +77,19 @@ namespace SIL.DblBundle
 		/// <exception cref="ApplicationException"></exception>
 		protected Bundle(string pathToZippedBundle)
 		{
-			m_pathToZippedBundle = pathToZippedBundle;
+			_pathToZippedBundle = pathToZippedBundle;
 			try
 			{
-				m_pathToUnzippedDirectory = DblBundleFileUtils.ExtractToTempDirectory(m_pathToZippedBundle);
+				_pathToUnzippedDirectory = DblBundleFileUtils.ExtractToTempDirectory(_pathToZippedBundle);
 			}
 			catch (Exception ex)
 			{
-				throw new ApplicationException(LocalizationManager.GetString("DblBundle.UnableToExtractBundle",
+				throw new ApplicationException(Localizer.GetString("DblBundle.UnableToExtractBundle",
 						"Unable to read contents of Text Release Bundle:") +
-					Environment.NewLine + m_pathToZippedBundle, ex);
+					Environment.NewLine + _pathToZippedBundle, ex);
 			}
 
-			m_dblMetadata = LoadMetadata();
+			_dblMetadata = LoadMetadata();
 		}
 
 		#region Public properties
@@ -104,17 +103,17 @@ namespace SIL.DblBundle
 		/// <summary>
 		/// Path to the original (unzipped) DBL bundle
 		/// </summary>
-		public string BundlePath { get { return m_pathToZippedBundle; } }
+		public string BundlePath => _pathToZippedBundle;
 
 		/// <summary>
 		/// Representation of the metadata.xml file included in the bundle
 		/// </summary>
-		public TM Metadata { get { return m_dblMetadata; } }
+		public TM Metadata => _dblMetadata;
 
 		/// <summary>
 		/// Unique hex ID for the DBL bundle
 		/// </summary>
-		public string Id { get { return m_dblMetadata.Id; } }
+		public string Id => _dblMetadata.Id;
 
 		/// <summary>
 		/// 3-letter ISO 639-2 code for the language of the DBL bundle. If the metadata's language does
@@ -126,7 +125,7 @@ namespace SIL.DblBundle
 		{
 			get
 			{
-				var isoCode = m_dblMetadata.Language.Iso;
+				var isoCode = _dblMetadata.Language.Iso;
 				return String.IsNullOrEmpty(isoCode) ? DefaultLanguageIsoCode : isoCode;
 			}
 		}
@@ -140,57 +139,54 @@ namespace SIL.DblBundle
 		/// <summary>
 		/// (Temporary) path of the unzipped contents of the DBL bundle
 		/// </summary>
-		protected string PathToUnzippedDirectory { get { return m_pathToUnzippedDirectory; } }
+		protected string PathToUnzippedDirectory => _pathToUnzippedDirectory;
 
 		#region Private methods
 		private TM LoadMetadata()
 		{
 			const string filename = "metadata.xml";
-			string metadataPath = Path.Combine(m_pathToUnzippedDirectory, filename);
+			string metadataPath = Path.Combine(_pathToUnzippedDirectory, filename);
 
 			if (!File.Exists(metadataPath))
 			{
-				bool sourceBundle = filename.Contains("source") || Directory.Exists(Path.Combine(m_pathToUnzippedDirectory, "gather"));
+				bool sourceBundle = filename.Contains("source") || Directory.Exists(Path.Combine(_pathToUnzippedDirectory, "gather"));
 				if (sourceBundle)
 				{
 					throw new ApplicationException(
-						string.Format(LocalizationManager.GetString("DblBundle.SourceReleaseBundle",
+						string.Format(Localizer.GetString("DblBundle.SourceReleaseBundle",
 							"This bundle appears to be a source bundle. Only Text Release Bundles are currently supported."), filename) +
-						Environment.NewLine + m_pathToZippedBundle);
+						Environment.NewLine + _pathToZippedBundle);
 
 				}
 				throw new ApplicationException(
-					string.Format(LocalizationManager.GetString("DblBundle.FileMissingFromBundle",
+					string.Format(Localizer.GetString("DblBundle.FileMissingFromBundle",
 						"Required {0} file not found. File is not a valid Text Release Bundle:"), filename) +
-					Environment.NewLine + m_pathToZippedBundle);
+					Environment.NewLine + _pathToZippedBundle);
 			}
 
-			Exception exception;
-			var dblMetadata = DblMetadataBase<TL>.Load<TM>(metadataPath, out exception);
+			var dblMetadata = DblMetadataBase<TL>.Load<TM>(metadataPath, out var exception);
 			if (exception != null)
 			{
-				Exception metadataBaseDeserializationError;
 				DblMetadata metadata = XmlSerializationHelper.DeserializeFromFile<DblMetadata>(metadataPath,
-					out metadataBaseDeserializationError);
+					out var metadataBaseDeserializationError);
 				if (metadataBaseDeserializationError != null)
 				{
-					throw new ApplicationException(
-						LocalizationManager.GetString("DblBundle.MetadataInvalid",
+					throw new ApplicationException(Localizer.GetString("DblBundle.MetadataInvalid",
 							"Unable to read metadata. File is not a valid Text Release Bundle:") +
-						Environment.NewLine + m_pathToZippedBundle, metadataBaseDeserializationError);
+						Environment.NewLine + _pathToZippedBundle, metadataBaseDeserializationError);
 				}
 
 				throw new ApplicationException(
-					String.Format(LocalizationManager.GetString("DblBundle.MetadataInvalidVersion",
+					String.Format(Localizer.GetString("DblBundle.MetadataInvalidVersion",
 						"Unable to read metadata. Type: {0}. Version: {1}. File is not a valid Text Release Bundle:"),
 						metadata.Type, metadata.TypeVersion) +
-					Environment.NewLine + m_pathToZippedBundle);
+					Environment.NewLine + _pathToZippedBundle);
 			}
 
 			if (!dblMetadata.IsTextReleaseBundle)
 			{
 				throw new ApplicationException(
-					String.Format(LocalizationManager.GetString("DblBundle.NotTextReleaseBundle",
+					String.Format(Localizer.GetString("DblBundle.NotTextReleaseBundle",
 						"This metadata in this bundle indicates that it is of type \"{0}\". Only Text Release Bundles are currently supported."),
 						dblMetadata.Type));
 			}
@@ -205,18 +201,17 @@ namespace SIL.DblBundle
 		/// </summary>
 		public void Dispose()
 		{
-			if (m_pathToUnzippedDirectory != null && Directory.Exists(m_pathToUnzippedDirectory))
+			if (_pathToUnzippedDirectory != null && Directory.Exists(_pathToUnzippedDirectory))
 			{
 				try
 				{
-					Directory.Delete(m_pathToUnzippedDirectory, true);
+					Directory.Delete(_pathToUnzippedDirectory, true);
 				}
-				catch (Exception e)
+				catch (Exception)
 				{
-					ErrorReport.ReportNonFatalExceptionWithMessage(e,
-						string.Format("Failed to clean up temporary folder where bundle was unzipped: {0}.", m_pathToUnzippedDirectory));
+					// Oh well, we tried
 				}
-				m_pathToUnzippedDirectory = null;
+				_pathToUnzippedDirectory = null;
 			}
 		}
 		#endregion

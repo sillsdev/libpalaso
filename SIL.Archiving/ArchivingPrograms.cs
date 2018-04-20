@@ -26,10 +26,10 @@ namespace SIL.Archiving
 			const string rampFileExtension = ".ramp";
 
 			if (ArchivingDlgViewModel.IsMono)
-				exeFile = FileLocator.LocateInProgramFiles("RAMP", true);
+				exeFile = FileLocationUtilities.LocateInProgramFiles("RAMP", true);
 			else
 				exeFile = FileLocator.GetFromRegistryProgramThatOpensFileType(rampFileExtension) ??
-					FileLocator.LocateInProgramFiles("ramp.exe", true, "ramp");
+					FileLocationUtilities.LocateInProgramFiles("ramp.exe", true, "ramp");
 
 			// make sure the file exists
 			return !File.Exists(exeFile) ? null : new FileInfo(exeFile).FullName;
@@ -40,7 +40,7 @@ namespace SIL.Archiving
 		{
 			var exeFile = ArchivingDlgViewModel.IsMono
 				? FindArbilJarFileMono()
-				: FileLocator.LocateInProgramFiles("arbil-stable.exe", true, "arbil");
+				: FileLocationUtilities.LocateInProgramFiles("arbil-stable.exe", true, "arbil");
 
 			// make sure the file exists
 			return !File.Exists(exeFile)

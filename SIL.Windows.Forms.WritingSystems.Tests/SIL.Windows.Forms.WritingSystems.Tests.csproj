@@ -291,13 +291,17 @@
     <Compile Include="WritingSystemSetupPMTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SIL.Core.Desktop\SIL.Core.Desktop.csproj">
+      <Project>{c48de000-2086-4ceb-a5a1-3171c272725e}</Project>
+      <Name>SIL.Core.Desktop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
+      <Project>{53cb36d9-2f66-4823-b1f0-4523e8565200}</Project>
+      <Name>SIL.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj">
       <Project>{d74ce910-d44a-44f5-8c0f-f5e50b26f85d}</Project>
       <Name>SIL.TestUtilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
-      <Project>{3527da1d-1e25-48be-a71e-9ebf7f9208d4}</Project>
-      <Name>SIL.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.Windows.Forms.Keyboarding\SIL.Windows.Forms.Keyboarding.csproj">
       <Project>{0580ed5f-6274-4928-83ee-175f01ad052d}</Project>
@@ -312,7 +316,7 @@
       <Name>SIL.WritingSystems.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj">
-      <Project>{52a93c63-08f4-4527-8e6e-ac2adeba6e2d}</Project>
+      <Project>{a61cc666-1faa-4a92-bb3b-aa36bd66bdda}</Project>
       <Name>SIL.WritingSystems</Name>
     </ProjectReference>
   </ItemGroup>

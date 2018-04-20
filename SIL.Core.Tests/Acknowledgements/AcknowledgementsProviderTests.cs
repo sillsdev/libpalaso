@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2017 SIL International
+// Copyright (c) 2017 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System.Collections.Generic;
@@ -55,8 +55,6 @@ namespace SIL.Tests.Acknowledgements
 		public void AssembleAcknowledgements_FindsSILCoreAcknowledgements()
 		{
 			var html = AcknowledgementsProvider.AssembleAcknowledgements();
-			Assert.That(html, Contains.Substring("<a href='http://www.codeplex.com/DotNetZip'>Ionic.Zip</a>"));
-			Assert.That(html, Contains.Substring("<a href='https://www.nuget.org/packages/NDesk.DBus/'>NDesk.DBus</a>"));
 			Assert.That(html, Contains.Substring("<a href='https://www.nuget.org/packages/Newtonsoft.Json/'>Json.NET</a>"));
 		}
 	}

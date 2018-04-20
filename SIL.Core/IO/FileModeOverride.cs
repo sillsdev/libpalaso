@@ -1,9 +1,8 @@
 // Copyright (c) 2014 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
-#if MONO
 using Mono.Unix.Native;
-#endif
+using SIL.PlatformUtilities;
 
 namespace SIL.IO
 {
@@ -14,19 +13,17 @@ namespace SIL.IO
 	/// ----------------------------------------------------------------------------------------
 	public class FileModeOverride : IDisposable
 	{
-#if MONO
-		private FilePermissions m_prevMask;
-#endif
+		private uint m_prevMask;
 
-#if MONO
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Overrides the system File permissions with the default permissions of "002"
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public FileModeOverride()
-			: this(FilePermissions.S_IWOTH)
 		{
+			if (Platform.IsUnix)
+				SetFileCreationMask((uint) FilePermissions.S_IWOTH);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -35,11 +32,12 @@ namespace SIL.IO
 		/// </summary>
 		/// <param name="fp">file permissions value</param>
 		/// ------------------------------------------------------------------------------------
-		public FileModeOverride(FilePermissions fp)
+		[CLSCompliant(false)]
+		public FileModeOverride(uint fp)
 		{
-			SetFileCreationMask(fp);
+			if (Platform.IsUnix)
+				SetFileCreationMask(fp);
 		}
-#endif
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -51,7 +49,6 @@ namespace SIL.IO
 			// The base class finalizer is called automatically.
 		}
 
-#if MONO
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Set the File creation mode passed in by filePermissions.
@@ -60,11 +57,10 @@ namespace SIL.IO
 		/// </summary>
 		/// <param name="filePermissions">file permissions value</param>
 		/// ------------------------------------------------------------------------------------
-		private void SetFileCreationMask(FilePermissions filePermissions)
+		private void SetFileCreationMask(uint filePermissions)
 		{
-			m_prevMask = Syscall.umask(filePermissions);
+			m_prevMask = (uint) Syscall.umask((FilePermissions) filePermissions);
 		}
-#endif
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -114,9 +110,8 @@ namespace SIL.IO
 
 			if (disposing)
 			{
-#if MONO
-				SetFileCreationMask(m_prevMask);
-#endif
+				if (Platform.IsUnix)
+					SetFileCreationMask(m_prevMask);
 			}
 			IsDisposed = true;
 		}

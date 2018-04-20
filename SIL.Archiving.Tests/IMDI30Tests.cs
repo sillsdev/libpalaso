@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Linq;
 using NUnit.Framework;
@@ -305,6 +305,24 @@ namespace SIL.Archiving.Tests
 			Assert.IsNull(countries.FindByText("Unknown"));
 			Assert.IsNull(countries.FindByText("Unspecified"));
 			Assert.IsNull(countries.FindByText("Undefined"));
+		}
+
+		[Test]
+		public void SetSessionGenre_ContainsAngleBrackets_LatinOnly()
+		{
+			var session = new Session();
+			session.Genre = "<Unknown>";
+			Assert.AreEqual("Unknown", session.Genre);
+		}
+
+		[Test]
+		public void SessionAddKeyValuePair_TwoKeywords_numberUp2()
+		{
+			var session = new Session();
+			var number = session.MDGroup.Content.Keys.Key.Count;
+			session.AddContentKeyValuePair("keyword", "holiday");
+			session.AddContentKeyValuePair("keyword", "emotion");
+			Assert.AreEqual(number + 2, session.MDGroup.Content.Keys.Key.Count);
 		}
 	}
 }

@@ -1,3 +1,4 @@
+using SIL.IO;
 using System;
 using System.IO;
 using System.Reflection;
@@ -414,5 +415,69 @@ namespace SIL.Reflection
 
 		//	return false;
 		//}
+
+		public static string VersionNumberString
+		{
+			get
+			{
+				/*                object attr = GetAssemblyAttribute(typeof (AssemblyFileVersionAttribute));
+								if (attr != null)
+								{
+									return ((AssemblyFileVersionAttribute) attr).Version;
+								}
+								return Application.ProductVersion;
+				 */
+				var ver = Assembly.GetEntryAssembly().GetName().Version;
+				return string.Format("Version {0}.{1}.{2}", ver.Major, ver.Minor, ver.Build);
+			}
+		}
+
+		public static string LongVersionNumberString
+		{
+			get
+			{
+				Assembly assembly = Assembly.GetEntryAssembly();
+				if (assembly != null)
+				{
+					string version = VersionNumberString;
+
+					version += " (apparent build date: ";
+					try
+					{
+						string path = PathHelper.StripFilePrefix(assembly.CodeBase);
+						version += File.GetLastWriteTimeUtc(path).ToString("dd-MMM-yyyy") + ")";
+					}
+					catch
+					{
+						version += "???";
+					}
+
+#if DEBUG
+					version += "  (Debug version)";
+#endif
+					return version;
+				}
+				return "unknown";
+			}
+		}
+
+		public static string DirectoryOfTheApplicationExecutable
+		{
+			get
+			{
+				string path;
+				bool unitTesting = Assembly.GetEntryAssembly() == null;
+				if (unitTesting)
+				{
+					path = new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath;
+					path = Uri.UnescapeDataString(path);
+				}
+				else
+				{
+					path = EntryAssembly.Location;
+				}
+				return Directory.GetParent(path).FullName;
+			}
+		}
 	}
 }

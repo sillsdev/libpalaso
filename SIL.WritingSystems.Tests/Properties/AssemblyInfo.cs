@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using SIL.TestUtilities;
 
@@ -16,9 +16,5 @@ using SIL.TestUtilities;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("4008ed57-599e-4c21-b357-085fcec15736")]
-
-#if STRONG_NAME
-[assembly: AssemblyKeyFileAttribute("../palaso.snk")]
-#endif
 
 [assembly: OfflineSldr]

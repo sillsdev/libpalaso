@@ -140,13 +140,7 @@ namespace SIL.BuildTasks.UnitTestTasks
 		/// Gets the name (without path) of the NUnit executable. When running on Mono this is
 		/// different from ProgramNameAndPath() which returns the executable we'll start.
 		/// </summary>
-		protected virtual string RealProgramName
-		{
-			get
-			{
-				return Force32Bit ? "nunit-console-x86.exe" : "nunit-console.exe";
-			}
-		}
+		protected virtual string RealProgramName => Force32Bit ? "nunit-console-x86.exe" : "nunit-console.exe";
 
 		private static bool? _isMono;
 
@@ -294,10 +288,7 @@ namespace SIL.BuildTasks.UnitTestTasks
 			ToolPath = ".";
 		}
 
-		protected override string TestProgramName
-		{
-			get { return String.Format("NUnit ({0})", FixturePath); }
-		}
+		protected override string TestProgramName => $"{GetType().Name} ({FixturePath})";
 
 		private string FixturePath
 		{

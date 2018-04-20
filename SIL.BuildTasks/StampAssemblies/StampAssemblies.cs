@@ -9,13 +9,24 @@ namespace SIL.BuildTasks.StampAssemblies
 {
 	public class StampAssemblies : Task
 	{
+		private enum VersionFormat
+		{
+			File,
+			Info,
+			Semantic
+		}
+
 		public class VersionParts
 		{
 			public string[] parts = new string[4];
+			public string Prerelease { get; set; }
 
 			public override string ToString()
 			{
-				return string.Format("{0}.{1}.{2}.{3}", parts[0], parts[1], parts[2], parts[3]);
+				string str = string.Join(".", parts);
+				if (!string.IsNullOrEmpty(Prerelease))
+					str += "-" + Prerelease;
+				return str;
 			}
 		}
 
@@ -26,6 +37,8 @@ namespace SIL.BuildTasks.StampAssemblies
 		public string Version { get; set; }
 
 		public string FileVersion { get; set; }
+
+		public string PackageVersion { get; set; }
 
 		public override bool Execute()
 		{
@@ -38,49 +51,87 @@ namespace SIL.BuildTasks.StampAssemblies
 				var contents = File.ReadAllText(path);
 
 				SafeLog("StampAssemblies: Stamping {0}", inputAssemblyPath);
-				//SafeLog("StampAssemblies: Contents: {0}",contents);
 
+				bool isCode = Path.GetExtension(path).Equals(".cs", StringComparison.InvariantCultureIgnoreCase);
 				// ENHANCE: add property for InformationalVersion
-				File.WriteAllText(path,  GetModifiedContents(contents, Version, FileVersion));
+				contents = GetModifiedContents(contents, isCode, Version, FileVersion, PackageVersion);
+				File.WriteAllText(path, contents);
 			}
 			return true;
 		}
 
-		private string ExpandTemplate(string whichAttribute, string contents,
-			VersionParts incomingVersion, bool allowHashAsRevision)
+		private string ExpandTemplate(string regexTemplate, string replaceTemplate, string whichVersion,
+			string contents, VersionParts incomingVersion, VersionFormat format = VersionFormat.File)
 		{
 			try
 			{
-				var regex = new Regex(string.Format(@"\[assembly\: {0}\(""(.+)""", whichAttribute));
+				var regex = new Regex(string.Format(regexTemplate, whichVersion));
 				var result = regex.Match(contents);
 				if (result == Match.Empty)
 					return contents;
-				var versionTemplateInFile = ParseVersionString(result.Groups[1].Value, allowHashAsRevision);
+				var versionTemplateInFile = ParseVersionString(result.Groups[1].Value, format);
 				var newVersion = MergeTemplates(incomingVersion, versionTemplateInFile);
 
 				SafeLog("StampAssemblies: Merging existing {0} with incoming {1} to produce {2}.",
 					versionTemplateInFile.ToString(), incomingVersion.ToString(), newVersion);
-				return regex.Replace(contents, string.Format(@"[assembly: {0}(""{1}""", whichAttribute, newVersion));
+				return regex.Replace(contents, string.Format(replaceTemplate, whichVersion, newVersion));
 			}
 			catch (Exception e)
 			{
 				Log.LogError("Could not parse the {0} attribute, which should be something like 0.7.*.* or 1.0.0.0",
-					whichAttribute);
+					whichVersion);
 				Log.LogErrorFromException(e);
-				throw e;
+				throw;
 			}
 		}
 
-		public string GetModifiedContents(string contents, string incomingVersion, string incomingFileVersion)
+		public string GetModifiedContents(string contents, string versionStr, string fileVersionStr)
 		{
-			var versionTemplateInBuildScript = ParseVersionString(incomingVersion, false);
-			var fileVersionTemplateInScript = incomingFileVersion != null ?
-				ParseVersionString(incomingFileVersion, false) : versionTemplateInBuildScript;
-			var infoVersionTemplateInBuildScript = ParseVersionString(incomingVersion, true);
+			return GetModifiedContents(contents, true, versionStr, fileVersionStr, null);
+		}
 
-			contents = ExpandTemplate("AssemblyVersion", contents, versionTemplateInBuildScript, false );
-			contents = ExpandTemplate("AssemblyFileVersion", contents, fileVersionTemplateInScript, false);
-			contents = ExpandTemplate("AssemblyInformationalVersion", contents, infoVersionTemplateInBuildScript, true);
+		internal string GetModifiedContents(string contents, bool isCode, string versionStr, string fileVersionStr,
+			string packageVersionStr)
+		{
+			// ENHANCE: add property for InformationalVersion
+			VersionParts version = ParseVersionString(versionStr);
+			VersionParts fileVersion = fileVersionStr != null ? ParseVersionString(fileVersionStr) : version;
+			VersionParts infoVersion = ParseVersionString(versionStr, VersionFormat.Info);
+			VersionParts packageVersion = packageVersionStr != null
+				? ParseVersionString(packageVersionStr, VersionFormat.Semantic)
+				: version;
+
+			if (isCode)
+				return ModifyCodeAttributes(contents, version, fileVersion, infoVersion);
+			return ModifyMSBuildProps(contents, version, fileVersion, infoVersion, packageVersion);
+		}
+
+		private string ModifyCodeAttributes(string contents, VersionParts version, VersionParts fileVersion,
+			VersionParts infoVersion)
+		{
+			const string regexTemplate = @"\[assembly\: {0}\(""(.+)""";
+			const string replaceTemplate = @"[assembly: {0}(""{1}""";
+
+			contents = ExpandTemplate(regexTemplate, replaceTemplate, "AssemblyVersion", contents, version);
+			contents = ExpandTemplate(regexTemplate, replaceTemplate, "AssemblyFileVersion", contents, fileVersion);
+			contents = ExpandTemplate(regexTemplate, replaceTemplate, "AssemblyInformationalVersion", contents,
+				infoVersion, VersionFormat.Info);
+			return contents;
+		}
+
+		private string ModifyMSBuildProps(string contents, VersionParts version, VersionParts fileVersion,
+			VersionParts infoVersion, VersionParts packageVersion)
+		{
+			const string regexTemplate = "<{0}>(.+)</{0}>";
+			const string replaceTemplate = "<{0}>{1}</{0}>";
+
+			contents = ExpandTemplate(regexTemplate, replaceTemplate, "AssemblyVersion", contents, version);
+			contents = ExpandTemplate(regexTemplate, replaceTemplate, "FileVersion", contents, fileVersion);
+			contents = ExpandTemplate(regexTemplate, replaceTemplate, "InformationalVersion", contents, infoVersion,
+				VersionFormat.Info);
+			contents = ExpandTemplate(regexTemplate, replaceTemplate, "Version", contents, packageVersion,
+				VersionFormat.Semantic);
+
 			return contents;
 		}
 
@@ -88,7 +139,7 @@ namespace SIL.BuildTasks.StampAssemblies
 		{
 			try
 			{
-				Debug.WriteLine(string.Format(msg,args));
+				Debug.WriteLine(msg, args);
 				Log.LogMessage(msg,args);
 			}
 			catch (Exception)
@@ -99,36 +150,26 @@ namespace SIL.BuildTasks.StampAssemblies
 
 		public string MergeTemplates(VersionParts incoming, VersionParts existing)
 		{
-			string result = "";
-			for (int i = 0; i < 4; i++)
+			VersionParts result = new VersionParts
 			{
-				//SafeLog("StampAssemblies: incoming[{0}]={1}", i, incoming.parts[i]);
-				//SafeLog("StampAssemblies: existing[{0}]={1}", i, existing.parts[i]);
-				if(incoming.parts[i] != "*")
-				{
-					result += incoming.parts[i] + ".";
-				}
-				else
-				{
-					if(existing.parts[i] == "*")
-					{
-						//SafeLog("StampAssemblies: existing.parts[i] == '*'");
-						result += "0.";
-					}
-					else
-					{
-						result += existing.parts[i] + ".";
-					}
-				}
+				parts = (string[]) existing.parts.Clone(),
+				Prerelease = incoming.Prerelease ?? existing.Prerelease
+			};
+			for (int i = 0; i < result.parts.Length; i++)
+			{
+				if (incoming.parts[i] != "*")
+					result.parts[i] = incoming.parts[i];
+				else if (existing.parts[i] == "*")
+					result.parts[i] = "0";
 			}
-			return result.TrimEnd(new char[] {'.'});
+			return result.ToString();
 		}
 
 		private VersionParts GetExistingAssemblyVersion(string whichAttribute, string contents)
 		{
 			try
 			{
-				var result = Regex.Match(contents, string.Format(@"\[assembly\: {0}\(""(.+)""", whichAttribute));
+				var result = Regex.Match(contents, $@"\[assembly\: {whichAttribute}\(""(.+)""");
 				if (result == Match.Empty)
 					return null;
 				return ParseVersionString(result.Groups[1].Value);
@@ -138,7 +179,7 @@ namespace SIL.BuildTasks.StampAssemblies
 				Log.LogError("Could not parse the {0} attribute, which should be something like 0.7.*.* or 1.0.0.0",
 					whichAttribute);
 				Log.LogErrorFromException(e);
-				throw e;
+				throw;
 			}
 		}
 
@@ -154,36 +195,65 @@ namespace SIL.BuildTasks.StampAssemblies
 
 		public VersionParts ParseVersionString(string contents, bool allowHashAsRevision = false)
 		{
-			var result = Regex.Match(contents, @"(.+)\.(.+)\.(.+)\.(.+)");
-			if(!result.Success)
-			{
-				//handle 1.0.*  (I'm not good enough with regex to
-				//overcome greediness and get a single pattern to work for both situations).
-				result = Regex.Match(contents, @"(.+)\.(.+)\.(\*)");
-			}
-			if (!result.Success)
-			{
-				//handle 0.0.12
-				result = Regex.Match(contents, @"(.+)\.(.+)\.(.+)");
-			}
-			var v = new VersionParts();
-			v.parts[0] = result.Groups[1].Value;
-			v.parts[1] = result.Groups[2].Value;
-			v.parts[2] = result.Groups[3].Value;
-			v.parts[3] = result.Groups[4].Value;
+			return ParseVersionString(contents, allowHashAsRevision ? VersionFormat.Info : VersionFormat.File);
+		}
 
-			for (int i = 0; i < 4; i++)
+		private static VersionParts ParseVersionString(string contents, VersionFormat format)
+		{
+			VersionParts v;
+			if (format == VersionFormat.Semantic)
 			{
-				if(string.IsNullOrEmpty(v.parts[i]))
+				Match result = Regex.Match(contents, @"([\d\*]+)\.([\d\*]+)\.([\d\*]+)(?:\-(.*))?");
+
+				v = new VersionParts
 				{
-					v.parts[i] = "*";
+					parts = new[]
+					{
+						result.Groups[1].Value,
+						result.Groups[2].Value,
+						result.Groups[3].Value
+					},
+					Prerelease = result.Groups[4].Value
+				};
+			}
+			else
+			{
+				Match result = Regex.Match(contents, @"(.+)\.(.+)\.(.+)\.(.+)");
+				if (!result.Success)
+				{
+					//handle 1.0.*  (I'm not good enough with regex to
+					//overcome greediness and get a single pattern to work for both situations).
+					result = Regex.Match(contents, @"(.+)\.(.+)\.(\*)");
+				}
+				if (!result.Success)
+				{
+					//handle 0.0.12
+					result = Regex.Match(contents, @"(.+)\.(.+)\.(.+)");
+				}
+
+				v = new VersionParts
+				{
+					parts = new[]
+					{
+						result.Groups[1].Value,
+						result.Groups[2].Value,
+						result.Groups[3].Value,
+						result.Groups[4].Value
+					}
+				};
+
+				if (format == VersionFormat.File && v.parts.Length == 4
+					&& v.parts[3].IndexOfAny(new[] { 'a', 'b', 'c', 'd', 'e', 'f' }) != -1)
+				{
+					// zero out hash code which we can't have in numeric version numbers
+					v.parts[3] = "0";
 				}
 			}
 
-			if(!allowHashAsRevision && v.parts[3].IndexOfAny(new char[]{'a','b','c','d','e','f'}) >-1)
+			for (int i = 0; i < v.parts.Length; i++)
 			{
-				// zero out hash code which we can't have in numeric version numbers
-				v.parts[3] = "0";
+				if (string.IsNullOrEmpty(v.parts[i]))
+					v.parts[i] = "*";
 			}
 
 			return v;

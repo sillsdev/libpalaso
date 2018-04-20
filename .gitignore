@@ -29,7 +29,7 @@ L10NSharp.*
 *.pdb
 *.ncrunchproject
 *.ncrunchsolution
-build/NuGet.exe
+build/nuget.exe
 *.cache
 Download/
 *.nupkg

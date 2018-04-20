@@ -33,6 +33,8 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkProfile />
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -406,7 +408,7 @@
       <Name>SIL.Core.Desktop</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SIL.Core\SIL.Core.csproj">
-      <Project>{3527da1d-1e25-48be-a71e-9ebf7f9208d4}</Project>
+      <Project>{53cb36d9-2f66-4823-b1f0-4523e8565200}</Project>
       <Name>SIL.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SIL.Media\SIL.Media.csproj">
@@ -422,7 +424,7 @@
       <Name>SIL.Windows.Forms</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\SIL.WritingSystems\SIL.WritingSystems.csproj">
-      <Project>{52a93c63-08f4-4527-8e6e-ac2adeba6e2d}</Project>
+      <Project>{a61cc666-1faa-4a92-bb3b-aa36bd66bdda}</Project>
       <Name>SIL.WritingSystems</Name>
     </ProjectReference>
   </ItemGroup>

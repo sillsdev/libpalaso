@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
@@ -49,8 +50,8 @@ namespace SIL.BuildTasks.UnitTestTasks
 		public int FudgeFactor { get; set; }
 
 		/// <summary>
-		/// If <c>true</c> print the output of NUnit immediately, otherwise print it ater NUnit
-		/// finished.
+		/// If <c>true</c> print the output of NUnit immediately, otherwise print it after NUnit
+		/// finishes.
 		/// </summary>
 		/// <value><c>true</c> if verbose; otherwise, <c>false</c>.</value>
 		public bool Verbose { get; set; }
@@ -258,7 +259,10 @@ namespace SIL.BuildTasks.UnitTestTasks
 						break;
 					}
 
-					Log.LogMessage(Importance, logContents);
+					if (Verbose)
+					{
+						Log.LogMessage(Importance, logContents);
+					}
 
 					// ensure only one thread writes to the log at any time
 					lock (LockObject)
@@ -290,16 +294,24 @@ namespace SIL.BuildTasks.UnitTestTasks
 						break;
 					}
 
-					if (Verbose)
+					// "The standard error stream is the default destination for error messages and other diagnostic warnings."
+					// By default log the message as it is most likely a warning.
+					// If the stderr message includes error, crash or fail then log it as an error
+					// and investigate.
+					// If looks like an error but includes induce or simulator then log as warning instead of error
+					// Change this if it is still too broad.
+					string[] toerror = { "error", "crash", "fail" };
+					string[] noterror = { "induce", "simulator" };
+
+					if (toerror.Any(err => logContents.IndexOf(err, StringComparison.OrdinalIgnoreCase) >= 0) &&
+						!noterror.Any(err => logContents.IndexOf(err, StringComparison.OrdinalIgnoreCase) >= 0))
 					{
-						// For some odd reason, these get sent to standard error instead of standard output.
-						// That means our TC builds can see them and report a failed build.
-						if (!logContents.StartsWith("TeamCity addin installed") &&
-							!logContents.StartsWith("TeamCity addin initializing...") &&
-							!logContents.StartsWith("TeamCity addin loaded"))
-						{
-							Log.LogError(logContents);
-						}
+						Log.LogError(logContents);
+					}
+
+					else if (Verbose)
+					{
+						Log.LogWarning(logContents);
 					}
 
 					// ensure only one thread writes to the log at any time

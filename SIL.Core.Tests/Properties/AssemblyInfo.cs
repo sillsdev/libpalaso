@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
@@ -15,7 +15,3 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("5045fb1b-46c3-4078-8e1e-418d4d751e6a")]
-
-#if STRONG_NAME
-[assembly: AssemblyKeyFileAttribute("../palaso.snk")]
-#endif

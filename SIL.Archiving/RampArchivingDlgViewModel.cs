@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -1409,9 +1409,9 @@ namespace SIL.Archiving
 		{
 			// On mono this requires xdotool or wmctrl
 			string args = null;
-			if (!string.IsNullOrEmpty(FileLocator.LocateInProgramFiles("xdotool", true)))      /* try to find xdotool first */
+			if (!string.IsNullOrEmpty(FileLocationUtilities.LocateInProgramFiles("xdotool", true)))      /* try to find xdotool first */
 				args = "-c \"for pid in `xdotool search --name RAMP`; do xdotool windowactivate $pid; done\"";
-			else if (!string.IsNullOrEmpty(FileLocator.LocateInProgramFiles("wmctrl", true)))  /* if xdotool is not installed, look for wmctrl */
+			else if (!string.IsNullOrEmpty(FileLocationUtilities.LocateInProgramFiles("wmctrl", true)))  /* if xdotool is not installed, look for wmctrl */
 				args = "-c \"wmctrl -a RAMP\"";
 
 			if (string.IsNullOrEmpty(args)) return;
@@ -1433,7 +1433,7 @@ namespace SIL.Archiving
 		/// ------------------------------------------------------------------------------------
 		private void CheckIfPackageFileIsLocked(Object packageFile)
 		{
-			if (!FileUtils.IsFileLocked(packageFile as string))
+			if (!FileHelper.IsLocked(packageFile as string))
 				CleanUpTempRampPackage();
 		}
 

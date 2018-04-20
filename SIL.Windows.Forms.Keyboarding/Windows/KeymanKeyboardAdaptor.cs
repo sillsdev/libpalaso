@@ -156,9 +156,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			switch (InstalledKeymanVersion)
 			{
 				case KeymanVersion.Keyman10:
-					var keyman10 = new KeymanClass();
-					var langs = keyman10.Languages;
-					UpdateKeyboards(curKeyboards, keyman10.Keyboards.OfType<Keyman10Interop.IKeymanKeyboard>(), langs);
+					// Keyman10 keyboards are handled by the WinKeyboardAdapter and WindowsKeyboardSwitchingAdapter
 					break;
 				case KeymanVersion.Keyman7to9:
 					var keyman = new TavultesoftKeymanClass();
@@ -174,56 +172,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			}
 #endif
 		}
-
-#if !MONO
-		private void UpdateKeyboards(Dictionary<string, KeymanKeyboardDescription> curKeyboards, IEnumerable<Keyman10Interop.IKeymanKeyboard> availableKeyboards, Keyman10Interop.IKeymanLanguages languages)
-		{
-			var langAssocKeyboards = new Dictionary<string, string>();
-			foreach (Keyman10Interop.IKeymanLanguage lang in languages)
-			{
-				if (lang.KeymanKeyboardLanguage != null)
-				{
-					langAssocKeyboards[lang.LayoutName] = lang.KeymanKeyboardLanguage.BCP47Code;
-				}
-			}
-			foreach (Keyman10Interop.IKeymanKeyboard keyboard in availableKeyboards)
-			{
-				var keyboardName = keyboard.Name;
-				KeymanKeyboardDescription existingKeyboard;
-				if (curKeyboards.TryGetValue(keyboardName, out existingKeyboard))
-				{
-					if (!existingKeyboard.IsAvailable)
-					{
-						existingKeyboard.SetIsAvailable(true);
-						existingKeyboard.IsKeyman6 = false;
-						if (existingKeyboard.Format == KeyboardFormat.Unknown)
-						{
-							existingKeyboard.Format = KeyboardFormat.CompiledKeyman;
-						}
-					}
-					curKeyboards.Remove(keyboardName);
-				}
-				else
-				{
-					if (!langAssocKeyboards.ContainsKey(keyboardName))
-					{
-						continue; // a KeymanKeyboard that is not associated with a language can not be used
-					}
-					var langId = langAssocKeyboards[keyboardName];
-
-					string layout, locale;
-					KeyboardController.GetLayoutAndLocaleFromLanguageId(langId, out layout, out locale);
-
-					string cultureName;
-					var inputLanguage = WinKeyboardUtils.GetInputLanguage(locale, layout, out cultureName);
-					KeyboardController.Instance.Keyboards.Add(new KeymanKeyboardDescription(keyboardName, false, this, true)
-					{
-						Format = KeyboardFormat.CompiledKeyman, InputLanguage = inputLanguage
-					});
-				}
-			}
-		}
-#endif
 
 		private void UpdateKeyboards(Dictionary<string, KeymanKeyboardDescription> curKeyboards, IEnumerable<string> availableKeyboardNames, bool isKeyman6)
 		{
@@ -281,35 +229,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				keyman = Path.Combine(keymanPath, @"kmshell.exe");
 				if (File.Exists(keyman))
 				{
-					// We would like to use the COM API for Keyman 10 but it will take an API change:
-					// Code that we would use:
-					//try
-					//{
-					//	var keymanComObject = new KeymanClass();
-					//	keymanComObject.Control.OpenConfiguration();
-					//}
-					//catch (COMException)
-					//{
-					//	// Keyman is not installed
-					//}
-					// From Marc Durdin (7/16/09):
-					// Re LT-9902, in Keyman 6, you could launch the configuration dialog reliably by running kmshell.exe.
-					// However, Keyman 7 works slightly differently.  The recommended approach is to use the COM API:
-					// http://www.tavultesoft.com/keymandev/documentation/70/comapi_interface_IKeymanProduct_OpenConfiguration.html
-					// Sample code:
-					//	dim kmcom, product
-					//	Set kmcom = CreateObject("kmcomapi.TavultesoftKeyman")
-					//	rem  Pro = ProductID 1; Light = ProductID 8
-					//	rem  Following line will raise exception if product is not installed, so try/catch it
-					//	Set product = kmcom.Products.ItemsByProductID(1)
-					//	Product.OpenConfiguration
-					// But if that is not going to be workable for you, then use the parameter  "-c" to start configuration.
-					// Without a parameter, the action is to start Keyman Desktop itself; v7.0 would fire configuration if restarted,
-					// v7.1 just flags to the user that Keyman is running and where to find it.  This change was due to feedback that
-					// users would repeatedly try to start Keyman when it was already running, and get confused when they got the
-					// Configuration dialog.  Sorry for the unannounced change... 9
-					// The -c parameter will not work with Keyman 6, so you would need to test for the specific version.  For what it's worth, the
-					// COM API is static and should not change, while the command line parameters are not guaranteed to change from version to version.
 					arguments = @"";
 					if (version > 6)
 						arguments = @"-c";
@@ -325,19 +244,16 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		/// </summary>
 		/// <param name="key">The key.</param>
 		/// <param name="version">The version.</param>
-		/// <returns></returns>
 		private static string GetKeymanRegistryValue(string key, ref int version)
 		{
-			using (var keyman10 = Registry.LocalMachine.OpenSubKey(@"Software\Keyman\Keyman Desktop", false))
-			using (var keyman6to9 = Registry.LocalMachine.OpenSubKey(@"Software\Tavultesoft\Keyman", false))
-			using (var keyman10_32 = Registry.LocalMachine.OpenSubKey(@"Software\WOW6432Node\Keyman\Keyman Desktop", false))
-			using (var keyman6to9_32 = Registry.LocalMachine.OpenSubKey(@"Software\WOW6432Node\Tavultesoft\Keyman", false))
+			using (var olderKeyman = Registry.LocalMachine.OpenSubKey(@"Software\Tavultesoft\Keyman", false))
+			using (var olderKeyman32 = Registry.LocalMachine.OpenSubKey(@"Software\WOW6432Node\Tavultesoft\Keyman", false))
 			{
-				var keymanKey = keyman10 ?? keyman6to9 ?? keyman10_32 ?? keyman6to9_32;
+				var keymanKey = olderKeyman32 ?? olderKeyman;
 				if (keymanKey == null)
 					return null;
 
-				int[] versions = {10, 9, 8, 7, 6, 5};
+				int[] versions = {9, 8, 7, 6, 5};
 				foreach (var vers in versions)
 				{
 					using (var rkApplication = keymanKey.OpenSubKey($"{vers}.0", false))
@@ -358,6 +274,31 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			}
 
 			return null;
+		}
+
+		public Action GetKeyboardSetupAction()
+		{
+			switch (InstalledKeymanVersion)
+			{
+#if !MONO
+				case KeymanVersion.Keyman10:
+					return () =>
+					{
+						var keymanClass = new KeymanClass();
+						keymanClass.Control.OpenConfiguration();
+					};
+				case KeymanVersion.Keyman7to9:
+				case KeymanVersion.Keyman6:
+				return () =>
+				{
+					string args;
+					var setupApp = GetKeyboardSetupApplication(out args);
+					Process.Start(setupApp, args);
+				};
+#endif
+				default:
+					throw new NotSupportedException($"No keyboard setup action defined for keyman version {InstalledKeymanVersion}");
+			}
 		}
 
 		public bool IsSecondaryKeyboardSetupApplication => true;

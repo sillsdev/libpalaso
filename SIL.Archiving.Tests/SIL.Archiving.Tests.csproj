@@ -307,13 +307,17 @@
     <Compile Include="SimpleObjectTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SIL.Core.Desktop\SIL.Core.Desktop.csproj">
+      <Project>{c48de000-2086-4ceb-a5a1-3171c272725e}</Project>
+      <Name>SIL.Core.Desktop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
+      <Project>{53cb36d9-2f66-4823-b1f0-4523e8565200}</Project>
+      <Name>SIL.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj">
       <Project>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</Project>
       <Name>SIL.TestUtilities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
-      <Project>{3527DA1D-1E25-48BE-A71E-9EBF7F9208D4}</Project>
-      <Name>SIL.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\SIL.Archiving\SIL.Archiving.csproj">
       <Project>{BCE1F124-5479-4B23-90B1-B7A4EBE44FA3}</Project>

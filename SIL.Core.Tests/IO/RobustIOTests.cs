@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using NUnit.Framework;
@@ -45,6 +42,32 @@ namespace SIL.Tests.IO
 				var fileName = Path.Combine(folder.Path, "Balangao کتابونه.xml");
 				input.Save(fileName);
 				Assert.DoesNotThrow(() => RobustIO.LoadXElement(fileName));
+			}
+		}
+
+		[Test]
+		public void DeleteDirectoryAndContents_ContainsReadOnlyFile_StillRemoves()
+		{
+			using (var tempDir = new TemporaryFolder("DeleteDirectoryAndContents_ContainsReadOnlyFile_StillRemoves"))
+			{
+				var fileName = tempDir.Combine("tempFile.txt");
+				File.WriteAllText(fileName, @"Some test text");
+				new FileInfo(fileName).IsReadOnly = true;
+				RobustIO.DeleteDirectoryAndContents(tempDir.Path);
+				Assert.IsFalse(Directory.Exists(tempDir.Path), "Did not delete directory");
+			}
+		}
+
+		[Test]
+		public void DeleteDirectoryAndContents_NoOverrideContainsReadOnlyFile_ReturnsFalse()
+		{
+			using (var tempDir = new TemporaryFolder("DeleteDirectoryAndContents_NoOverrideContainsReadOnlyFile_ReturnsFalse"))
+			{
+				var fileName = tempDir.Combine("tempFile.txt");
+				File.WriteAllText(fileName, @"Some test text");
+				new FileInfo(fileName).IsReadOnly = true;
+				Assert.IsFalse(RobustIO.DeleteDirectoryAndContents(tempDir.Path, overrideReadOnly: false));
+				Assert.IsTrue(Directory.Exists(tempDir.Path), "Did not expect it to delete directory because of the readonly file");
 			}
 		}
 	}

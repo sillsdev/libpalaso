@@ -2,14 +2,13 @@
 	<PropertyGroup>
 		<RootDir Condition="'$(teamcity_build_checkoutDir)' == '' And '$(RootDir)'==''">$(MSBuildProjectDirectory)/..</RootDir>
 		<RootDir Condition="'$(teamcity_build_checkoutDir)' != ''">$(teamcity_build_checkoutDir)</RootDir>
-		<BUILD_NUMBER Condition="'$(BUILD_NUMBER)'==''">1.2.3.4</BUILD_NUMBER>
+		<BUILD_COUNTER Condition="'$(BUILD_COUNTER)'==''">1</BUILD_COUNTER>
 		<!-- Note, after some thought, we've decided this is the best place to keep the version number (not on TeamCity, not in the assemblies). -->
-		<Version>4.1</Version>
+		<Version>4.2.0</Version>
 	</PropertyGroup>
 
 	<UsingTask TaskName="StampAssemblies" AssemblyFile="$(RootDir)/build/SIL.BuildTasks.dll" />
 	<UsingTask TaskName="Archive" AssemblyFile="$(RootDir)/build/SIL.BuildTasks.dll" />
-	<UsingTask TaskName="Split" AssemblyFile="$(RootDir)/build/SIL.BuildTasks.dll" />
 	<UsingTask TaskName="FileUpdate" AssemblyFile="$(RootDir)/build/SIL.BuildTasks.dll" />
 	<UsingTask TaskName="NUnit" AssemblyFile="$(RootDir)/build/SIL.BuildTasks.dll" />
 
@@ -32,27 +31,33 @@
 	</PropertyGroup>
 
 	<Target Name="VersionNumbers">
-		<Message Text="BUILD_NUMBER: $(BUILD_NUMBER)" Importance="high"/>
+		<CreateProperty Value="$(Version.Substring(0, $(Version.LastIndexOf('.')))).0.0">
+			<Output PropertyName="AssemblyVersion" TaskParameter="Value"/>
+		</CreateProperty>
+		
+		<Message Text="Assembly Version: $(AssemblyVersion)" Importance="high"/>
+	
+		<Message Text="BUILD_COUNTER: $(BUILD_COUNTER)" Importance="high"/>
 
-		<Split Input="$(BUILD_NUMBER)" Delimiter="." OutputSubString="2">
-			<Output TaskParameter="ReturnValue" PropertyName="BuildCounter" />
-		</Split>
-
-		<Message Text="BuildCounter: $(BuildCounter)" Importance="high"/>
-
-		<CreateProperty Value="$(Version).$(BuildCounter).0">
+		<CreateProperty Value="$(Version).$(BUILD_COUNTER)">
 			<Output PropertyName="FileVersion" TaskParameter="Value"/>
 		</CreateProperty>
 
-		<Message Text="Version: $(FileVersion)" Importance="high"/>
+		<Message Text="File Version: $(FileVersion)" Importance="high"/>
+		
+		<CreateProperty Value="$(Version)-$(BUILD_COUNTER)">
+			<Output PropertyName="PackageVersion" TaskParameter="Value"/>
+		</CreateProperty>
+		
+		<Message Text="Package Version: $(PackageVersion)" Importance="high"/>
 	</Target>
 
 	<ItemGroup>
-		<AssemblyInfoFiles Include="$(RootDir)/GlobalAssemblyInfo.cs"/>
+		<AssemblyInfoFiles Include="$(RootDir)/GlobalAssemblyInfo.*"/>
 	</ItemGroup>
 
 	<Target Name="SetAssemblyVersion" DependsOnTargets="VersionNumbers">
-	  <StampAssemblies Version="$(Version).0.0" FileVersion="$(FileVersion)" InputAssemblyPaths="@(AssemblyInfoFiles)" />
+	  <StampAssemblies Version="$(AssemblyVersion)" FileVersion="$(FileVersion)" PackageVersion="$(PackageVersion)" InputAssemblyPaths="@(AssemblyInfoFiles)" />
 	</Target>
 
 	<PropertyGroup>
@@ -161,5 +166,19 @@
 			Command="tar -czf $(SourcePackageFileName) $(ApplicationNameLC)-$(Version)"
 			WorkingDirectory="$(OutputDir)"
 		/>
+	</Target>
+	
+	<ItemGroup>
+		<PackProjects Include="$(RootDir)/SIL.Core/SIL.Core.csproj" />
+		<PackProjects Include="$(RootDir)/SIL.DblBundle/SIL.DblBundle.csproj" />
+		<PackProjects Include="$(RootDir)/SIL.Scripture/SIL.Scripture.csproj" />
+		<PackProjects Include="$(RootDir)/SIL.WritingSystems/SIL.WritingSystems.csproj" />
+	</ItemGroup>
+	
+	<Target Name="Pack" DependsOnTargets="SetAssemblyVersion;RestorePackages">
+		<MSBuild
+			Projects="@(PackProjects)"
+			Targets="pack"
+			Properties="Configuration=$(Configuration)" />
 	</Target>
 </Project>

@@ -118,30 +118,24 @@ namespace SIL.Windows.Forms.Keyboarding
 			_instance._eventHandlers.Remove(control);
 		}
 		/// <summary/>
-		/// <returns>a string to be used by process start with the arguments set in out parameter.</returns>
-		/// <remarks>
-		/// The API would be improved if this and the IKeyboardRetrievingAdapter instead returned an Action.
-		/// Then the Keyman Com API could be used instead of looking up registry information.
-		/// </remarks>
-		public static string GetKeyboardSetupApplication(out string arguments)
+		/// <returns>An action that will bring up the keyboard setup application dialog</returns>
+		public static Action GetKeyboardSetupApplication()
 		{
-			string program = null;
-			arguments = null;
+			Action program = null;
 			if (!HasSecondaryKeyboardSetupApplication && _instance.Adaptors.ContainsKey(KeyboardAdaptorType.OtherIm))
-				program = _instance.Adaptors[KeyboardAdaptorType.OtherIm].GetKeyboardSetupApplication(out arguments);
+				program = _instance.Adaptors[KeyboardAdaptorType.OtherIm].GetKeyboardSetupAction();
 
-			if (string.IsNullOrEmpty(program))
-				program = _instance.Adaptors[KeyboardAdaptorType.System].GetKeyboardSetupApplication(out arguments);
+			if (program == null)
+				program = _instance.Adaptors[KeyboardAdaptorType.System].GetKeyboardSetupAction();
 
 			return program;
 		}
 
-		public static string GetSecondaryKeyboardSetupApplication(out string arguments)
+		public static Action GetSecondaryKeyboardSetupApplication()
 		{
-			string program = null;
-			arguments = null;
+			Action program = null;
 			if (HasSecondaryKeyboardSetupApplication && _instance.Adaptors.ContainsKey(KeyboardAdaptorType.OtherIm))
-				program = _instance.Adaptors[KeyboardAdaptorType.OtherIm].GetKeyboardSetupApplication(out arguments);
+				program = _instance.Adaptors[KeyboardAdaptorType.OtherIm].GetKeyboardSetupAction();
 
 			return program;
 		}
@@ -529,9 +523,9 @@ namespace SIL.Windows.Forms.Keyboarding
 
 		internal static void GetLayoutAndLocaleFromLanguageId(string id, out string layout, out string locale)
 		{
-			var parts = id.Split('_');
+			var parts = id.Split('_', '-');
 			locale = parts[0];
-			layout = parts.Length > 1 ? parts[1] : String.Empty;
+			layout = parts.Length > 1 ? parts[parts.Length - 1] : String.Empty;
 		}
 	}
 }
