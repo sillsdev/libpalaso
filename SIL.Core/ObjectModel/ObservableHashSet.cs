@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -8,7 +8,7 @@ using SIL.Code;
 
 namespace SIL.ObjectModel
 {
-	public class ObservableHashSet<T> : IObservableSet<T>
+	public class ObservableHashSet<T> : IObservableSet<T>, IReadOnlySet<T>, IReadOnlyObservableCollection<T>
 	{
 		public virtual event NotifyCollectionChangedEventHandler CollectionChanged;
 		event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
