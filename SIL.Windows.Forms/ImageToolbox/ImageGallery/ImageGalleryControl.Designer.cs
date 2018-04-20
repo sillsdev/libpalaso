@@ -92,7 +92,7 @@
 			this.toolStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
 			this.toolStrip1.Location = new System.Drawing.Point(228, 35);
 			this.toolStrip1.Name = "toolStrip1";
-			this.toolStrip1.Size = new System.Drawing.Size(145, 28);
+			this.toolStrip1.Size = new System.Drawing.Size(200, 28);
 			this.toolStrip1.TabIndex = 15;
 			this.toolStrip1.Text = "toolStrip1";
 			// 

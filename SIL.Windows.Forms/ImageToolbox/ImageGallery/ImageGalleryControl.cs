@@ -331,14 +331,22 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 
 			public string Id { get { return _info.Name == "zh-Hans" ? "zh" : _info.Name; } }
 
-			public string NativeName { get { return _info.NativeName; } }
+			public string NativeName
+			{
+				get
+				{
+					if (_info.Name == "id" && _info.NativeName == "Indonesia")
+						return "Bahasa Indonesia";	// This is a known problem in Windows/.Net.
+					return _info.NativeName;
+				}
+			}
 
 			public override string ToString()
 			{
 				if (_info.NativeName == _info.EnglishName)
-					return _info.NativeName;	// English (English) looks rather silly...
+					return NativeName;	// English (English) looks rather silly...
 				if (idsOfRecognizableLanguages.Contains(Id))
-					return _info.NativeName;
+					return NativeName;
 				return String.Format("{0} ({1})", _info.NativeName, _info.EnglishName);
 			}
 		}
