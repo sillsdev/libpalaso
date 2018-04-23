@@ -79,7 +79,7 @@
 			// uiChapter
 			// 
 			this.uiChapter.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.uiChapter.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.uiChapter.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.uiChapter.Location = new System.Drawing.Point(61, 0);
 			this.uiChapter.Margin = new System.Windows.Forms.Padding(8, 0, 0, 0);
 			this.uiChapter.Name = "uiChapter";
@@ -93,7 +93,7 @@
 			// uiVerse
 			// 
 			this.uiVerse.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.uiVerse.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.uiVerse.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.uiVerse.Location = new System.Drawing.Point(130, 0);
 			this.uiVerse.Margin = new System.Windows.Forms.Padding(8, 0, 0, 0);
 			this.uiVerse.Name = "uiVerse";
@@ -123,7 +123,7 @@
 			this.uiBook.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
 			this.uiBook.DropDownHeight = 400;
 			this.uiBook.DropDownWidth = 200;
-			this.uiBook.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.uiBook.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.uiBook.IntegralHeight = false;
 			this.uiBook.Location = new System.Drawing.Point(0, 0);
 			this.uiBook.Margin = new System.Windows.Forms.Padding(0);

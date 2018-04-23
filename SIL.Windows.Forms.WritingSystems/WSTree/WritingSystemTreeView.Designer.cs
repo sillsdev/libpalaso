@@ -42,7 +42,7 @@
 			//
 			this.treeView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.treeView1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.treeView1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.treeView1.HideSelection = false;
 			this.treeView1.Location = new System.Drawing.Point(10, 10);
 			this.treeView1.Margin = new System.Windows.Forms.Padding(113, 113, 3, 3);

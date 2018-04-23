@@ -82,7 +82,7 @@ namespace SIL.Windows.Forms.Reporting
 			| System.Windows.Forms.AnchorStyles.Right)));
 			this._message.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.tableLayoutOuter.SetColumnSpan(this._message, 3);
-			this._message.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._message.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._message.Location = new System.Drawing.Point(63, 3);
 			this._message.Multiline = true;
 			this._message.Name = "_message";
