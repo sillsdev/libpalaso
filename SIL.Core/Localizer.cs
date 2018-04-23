@@ -2,11 +2,20 @@ using System;
 
 namespace SIL
 {
-	public abstract class Localizer
+	public interface ILocalizer
 	{
-		private static Localizer s_localizer = new EnglishLocalizer();
+		string UILanguageId { get; }
+		string GetString(string stringId, string englishText);
+		string GetString(string stringId, string englishText, string comment);
+		string GetDynamicString(string appId, string id, string englishText);
+		string GetDynamicString(string appId, string id, string englishText, string comment);
+	}
 
-		public static Localizer Default
+	public class Localizer
+	{
+		private static ILocalizer s_localizer = new EnglishLocalizer();
+
+		public static ILocalizer Default
 		{
 			get
 			{
@@ -18,29 +27,49 @@ namespace SIL
 			set => s_localizer = value;
 		}
 
+		public static string UILanguageId => Default.UILanguageId;
+
 		public static string GetString(string stringId, string englishText)
 		{
-			return Default.GetLocalizedString(stringId, englishText);
+			return Default.GetString(stringId, englishText);
 		}
 
 		public static string GetString(string stringId, string englishText, string comment)
 		{
-			return Default.GetLocalizedString(stringId, englishText, comment);
+			return Default.GetString(stringId, englishText, comment);
 		}
 
-		public abstract string GetLocalizedString(string stringId, string englishText);
+		public static string GetDynamicString(string appId, string id, string englishText)
+		{
+			return Default.GetDynamicString(appId, id, englishText);
+		}
 
-		public abstract string GetLocalizedString(string stringId, string englishText, string comment);
+		public static string GetDynamicString(string appId, string id, string englishText, string comment)
+		{
+			return Default.GetDynamicString(appId, id, englishText, comment);
+		}
 	}
 
-	class EnglishLocalizer : Localizer
+	class EnglishLocalizer : ILocalizer
 	{
-		public override string GetLocalizedString(string stringId, string englishText)
+		public string UILanguageId => "en";
+
+		public string GetString(string stringId, string englishText)
 		{
 			return englishText;
 		}
 
-		public override string GetLocalizedString(string stringId, string englishText, string comment)
+		public string GetString(string stringId, string englishText, string comment)
+		{
+			return englishText;
+		}
+
+		public string GetDynamicString(string appId, string id, string englishText)
+		{
+			return englishText;
+		}
+
+		public string GetDynamicString(string appId, string id, string englishText, string comment)
 		{
 			return englishText;
 		}
