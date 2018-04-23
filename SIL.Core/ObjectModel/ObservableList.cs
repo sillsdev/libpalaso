@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace SIL.ObjectModel
 {
-	public class ObservableList<T> : ObservableCollection<T>, IObservableList<T>
+	public class ObservableList<T> : ObservableCollection<T>, IObservableList<T>, IReadOnlyObservableList<T>
 	{
 		public ObservableList()
 		{

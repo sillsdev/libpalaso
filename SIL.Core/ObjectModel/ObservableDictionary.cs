@@ -42,7 +42,8 @@ namespace SIL.ObjectModel
 		IObservableDictionary<TKey, TValue>,
 		IDictionary,
 		ISerializable,
-		IDeserializationCallback
+		IDeserializationCallback,
+		IReadOnlyDictionary<TKey, TValue>
 	{
 		#region constructors
 
@@ -608,6 +609,14 @@ namespace SIL.ObjectModel
 		protected virtual event PropertyChangedEventHandler PropertyChanged;
 
 		#endregion INotifyPropertyChanged
+
+		#region IReadOnlyDictionary
+
+		IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => Keys;
+
+		IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => Values;
+
+		#endregion
 
 		#endregion interfaces
 

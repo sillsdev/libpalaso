@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -42,7 +41,7 @@ namespace SIL.DblBundle.Text
 		/// <summary>
 		/// Gets the books that are available in this DBL bundle.
 		/// </summary>
-		public ObjectModel.IReadOnlyList<Book> AvailableBibleBooks
+		public IReadOnlyList<Book> AvailableBibleBooks
 		{
 			get
 			{

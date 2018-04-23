@@ -1,4 +1,6 @@
-﻿namespace SIL.ObjectModel
+using System.Collections.Generic;
+
+namespace SIL.ObjectModel
 {
 	public interface IReadOnlyKeyedCollection<in TKey, TItem> : IReadOnlyCollection<TItem>
 	{
