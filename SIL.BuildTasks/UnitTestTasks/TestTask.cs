@@ -301,7 +301,7 @@ namespace SIL.BuildTasks.UnitTestTasks
 					// If looks like an error but includes induce or simulator then log as warning instead of error
 					// Change this if it is still too broad.
 					string[] toerror = { "error", "crash", "fail" };
-					string[] noterror = { "induce", "simulator" };
+					string[] noterror = { "induce", "simulator", "Gdk-CRITICAL **:", "Gtk-CRITICAL **:" };
 
 					if (toerror.Any(err => logContents.IndexOf(err, StringComparison.OrdinalIgnoreCase) >= 0) &&
 						!noterror.Any(err => logContents.IndexOf(err, StringComparison.OrdinalIgnoreCase) >= 0))
