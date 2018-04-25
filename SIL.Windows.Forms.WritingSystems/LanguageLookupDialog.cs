@@ -90,15 +90,6 @@ namespace SIL.Windows.Forms.WritingSystems
 			set { _languageLookupControl.SelectedLanguage = value; }
 		}
 
-		/// <summary>
-		/// This will be the same as SelectedLanguage.LanguageTag, unless the ScriptAndVariant link is visible.
-		/// If it is, this could have Script and Variant additions (e.g. 'sok-Arab-x-easy').
-		/// </summary>
-		public string CompleteLanguageIdentifier
-		{
-			get { return _languageLookupControl.CompleteLanguageIdentifier; }
-		}
-
 		public string DesiredLanguageName
 		{
 			get { return _languageLookupControl.DesiredLanguageName; }

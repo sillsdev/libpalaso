@@ -104,11 +104,6 @@ namespace SIL.Windows.Forms.WritingSystems
 			get { return _model.HaveSufficientInformation; }
 		}
 
-		public string CompleteLanguageIdentifier
-		{
-			get { return _model.CompleteLanguageIdentifier; }
-		}
-
 		public string SearchText
 		{
 			get { return _model.SearchText; }
@@ -284,19 +279,19 @@ namespace SIL.Windows.Forms.WritingSystems
 		private void _scriptsAndVariants_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
 			// This is a Script link, so for now we'll limit the dialog to only the ScriptRegionVariant combo option.
-			var wsSetupModel = new WritingSystemSetupModel(new WritingSystemDefinition(CompleteLanguageIdentifier),
+			var wsSetupModel = new WritingSystemSetupModel(new WritingSystemDefinition(_model.SelectedLanguage.LanguageTag),
 				WritingSystemSetupModel.SelectionsForSpecialCombo.ScriptRegionVariant);
 			wsSetupModel.IdentifierScriptRegionVariantSelected();
-			var originalShortTag = _model.SelectedLanguage.LanguageTag;
 			using (var dlg = new ScriptsAndVariantsDialog())
 			{
 				dlg.BindToModel(wsSetupModel);
 				if (dlg.ShowDialog() != DialogResult.OK)
 					return;
-				_model.CompleteLanguageIdentifier = wsSetupModel.CurrentDefinition.LanguageTag;
-				if (CompleteLanguageIdentifier != originalShortTag)
+				_model.SelectedLanguage.LanguageTag = wsSetupModel.CurrentDefinition.LanguageTag;
+				// This would be simpler if there weren't some 2 letter tags out there...
+				if (_model.LanguageTag.Length >= 3 && _model.LanguageTag != _model.SelectedLanguage.ThreeLetterTag)
 				{
-					_scriptsAndVariantsLabel.Text = "(" + CompleteLanguageIdentifier + ")";
+					_scriptsAndVariantsLabel.Text = "(" + _model.LanguageTag + ")";
 					_scriptsAndVariantsLabel.Visible = true;
 				}
 				else
