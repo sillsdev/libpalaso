@@ -89,7 +89,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 
 			MessageBox.Show("Attach debugger","Debug");
 			_testForm.ShowDialog();
-			MessageBox.Show("Got '" + _control.CompleteLanguageIdentifier + "'", "Test Result");
+			MessageBox.Show("Got '" + _control.SelectedLanguage.LanguageTag + "'", "Test Result");
 		}
 	}
 }
