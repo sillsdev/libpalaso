@@ -303,6 +303,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				{
 					_scriptsAndVariantsLabel.Visible = false;
 				}
+				UpdateReadiness();
 			}
 		}
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
 using SIL.WritingSystems;
 using SIL.Windows.Forms.Miscellaneous;
@@ -24,6 +24,11 @@ namespace SIL.Windows.Forms.WritingSystems
 		public bool IsShowRegionalDialectsCheckBoxVisible
 		{
 			set { _languageLookupControl.IsShowRegionalDialectsCheckBoxVisible = value; }
+		}
+
+		public bool IsScriptAndVariantLinkVisible
+		{
+			set { _languageLookupControl.IsScriptAndVariantLinkVisible = value; }
 		}
 
 		public Func<LanguageInfo, bool> MatchingLanguageFilter
@@ -83,6 +88,15 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			get { return _languageLookupControl.SelectedLanguage; }
 			set { _languageLookupControl.SelectedLanguage = value; }
+		}
+
+		/// <summary>
+		/// This will be the same as SelectedLanguage.LanguageTag, unless the ScriptAndVariant link is visible.
+		/// If it is, this could have Script and Variant additions (e.g. 'sok-Arab-x-easy').
+		/// </summary>
+		public string CompleteLanguageIdentifier
+		{
+			get { return _languageLookupControl.CompleteLanguageIdentifier; }
 		}
 
 		public string DesiredLanguageName
