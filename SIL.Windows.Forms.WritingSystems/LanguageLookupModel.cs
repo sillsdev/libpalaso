@@ -15,7 +15,6 @@ namespace SIL.Windows.Forms.WritingSystems
 		private string _searchText;
 		private LanguageInfo _selectedLanguage;
 		private string _desiredLanguageName;
-		private string _completeLanguageIdentifier;
 		public EventHandler SelectedLanguageChanged;
 
 		public Func<LanguageInfo, bool> MatchingLanguageFilter { get; set; }
@@ -154,15 +153,5 @@ namespace SIL.Windows.Forms.WritingSystems
 		}
 
 		public bool IncludeRegionalDialects { get; set; }
-
-		public string CompleteLanguageIdentifier
-		{
-			get { return _completeLanguageIdentifier ?? LanguageTag; }
-
-			set
-			{
-				_completeLanguageIdentifier = value;
-			}
-		}
 	}
 }

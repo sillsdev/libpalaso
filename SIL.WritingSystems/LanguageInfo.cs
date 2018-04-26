@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SIL.WritingSystems
@@ -25,6 +25,20 @@ namespace SIL.WritingSystems
 
 		public string LanguageTag { get; set; }
 		public string ThreeLetterTag { get; set; }
+
+		public LanguageInfo()
+		{
+			// Don't need any body to this constructor, but we need a public ctor that takes no parameters.
+		}
+
+		/// <summary>
+		/// Special constructor only for use by static CloneLanguageInfo method.
+		/// </summary>
+		private LanguageInfo(List<string> names, HashSet<string> countries)
+		{
+			_names = names;
+			_countries = countries;
+		}
 
 
 		/// <summary>
@@ -72,6 +86,21 @@ namespace SIL.WritingSystems
 				return _desiredName;
 			}
 			set { _desiredName = value; }
+		}
+
+		public static LanguageInfo CloneLanguageInfo(LanguageInfo oldInfo)
+		{
+			var newLangInfo =
+				new LanguageInfo(oldInfo._names, oldInfo._countries)
+				{
+					DesiredName = oldInfo.DesiredName,
+					LanguageTag = oldInfo.LanguageTag,
+					IsMacroLanguage = oldInfo.IsMacroLanguage,
+					PrimaryCountry = oldInfo.PrimaryCountry,
+					ThreeLetterTag = oldInfo.ThreeLetterTag
+				};
+
+			return newLangInfo;
 		}
 	}
 }
