@@ -311,6 +311,10 @@
       <Project>{f7df58e2-5b67-498a-9f64-b5f1584a5ab9}</Project>
       <Name>SIL.Windows.Forms.WritingSystems</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SIL.Windows.Forms\SIL.Windows.Forms.csproj">
+      <Project>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</Project>
+      <Name>SIL.Windows.Forms</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SIL.WritingSystems.Tests\SIL.WritingSystems.Tests.csproj">
       <Project>{641eb241-bf16-4a5f-89bd-54411f9ac973}</Project>
       <Name>SIL.WritingSystems.Tests</Name>

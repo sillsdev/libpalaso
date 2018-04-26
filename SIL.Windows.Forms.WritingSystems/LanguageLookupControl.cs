@@ -40,7 +40,6 @@ namespace SIL.Windows.Forms.WritingSystems
 			if (!_model.HaveSufficientInformation)
 			{
 				_scriptsAndVariantsLabel.Visible = false;
-				_model.CompleteLanguageIdentifier = null;
 			}
 		}
 
@@ -298,6 +297,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				{
 					_scriptsAndVariantsLabel.Visible = false;
 				}
+				_model.SelectedLanguageChanged.Invoke(this, EventArgs.Empty);
 				UpdateReadiness();
 			}
 		}
