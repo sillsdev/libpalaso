@@ -40,7 +40,6 @@ namespace SIL.Windows.Forms.WritingSystems
 			if (!_model.HaveSufficientInformation)
 			{
 				_scriptsAndVariantsLabel.Visible = false;
-				_model.CompleteLanguageIdentifier = null;
 			}
 		}
 
@@ -287,7 +286,12 @@ namespace SIL.Windows.Forms.WritingSystems
 				dlg.BindToModel(wsSetupModel);
 				if (dlg.ShowDialog() != DialogResult.OK)
 					return;
-				_model.SelectedLanguage.LanguageTag = wsSetupModel.CurrentDefinition.LanguageTag;
+				// Just changing the LanguageTag on the old LanguageInfo object didn't trigger
+				// the SelectedLanguageChanged event. But cloning the object, updating the LanguageTag and
+				// reassigning _model.SelectedLanguage does trigger it.
+				var newLanguageInfo = _model.SelectedLanguage.CloneLanguageInfo();
+				newLanguageInfo.LanguageTag = wsSetupModel.CurrentDefinition.LanguageTag;
+				_model.SelectedLanguage = newLanguageInfo;
 				// This would be simpler if there weren't some 2 letter tags out there...
 				if (_model.LanguageTag.Length >= 3 && _model.LanguageTag != _model.SelectedLanguage.ThreeLetterTag)
 				{

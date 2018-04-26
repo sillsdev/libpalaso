@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SIL.WritingSystems
@@ -25,7 +25,6 @@ namespace SIL.WritingSystems
 
 		public string LanguageTag { get; set; }
 		public string ThreeLetterTag { get; set; }
-
 
 		/// <summary>
 		/// This allows apps to filter out macro languages
@@ -72,6 +71,11 @@ namespace SIL.WritingSystems
 				return _desiredName;
 			}
 			set { _desiredName = value; }
+		}
+
+		public LanguageInfo CloneLanguageInfo()
+		{
+			return (LanguageInfo)MemberwiseClone();
 		}
 	}
 }
