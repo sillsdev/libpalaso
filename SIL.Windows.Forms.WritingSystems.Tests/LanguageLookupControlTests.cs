@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using NUnit.Framework;
+using SIL.WritingSystems;
 
 namespace SIL.Windows.Forms.WritingSystems.Tests
 {
@@ -90,6 +91,29 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 			MessageBox.Show("Attach debugger","Debug");
 			_testForm.ShowDialog();
 			MessageBox.Show("Got '" + _control.SelectedLanguage.LanguageTag + "'", "Test Result");
+		}
+
+		[Test, Ignore("By Hand")]
+		[Category("SkipOnTeamCity")]
+		public void TestLanguageLookupDialog_manualTest()
+		{
+			const string testLangCode = "sok";
+			const string testLangName = "Sokoro";
+			using (var dlg = new LanguageLookupDialog())
+			{
+				dlg.IsDesiredLanguageNameFieldVisible = true;
+				dlg.IsShowRegionalDialectsCheckBoxVisible = true;
+				dlg.IsScriptAndVariantLinkVisible = true;
+
+				var language = new LanguageInfo() { LanguageTag = testLangCode };
+				language.DesiredName = testLangName;
+				dlg.SelectedLanguage = language;
+				dlg.SearchText = testLangCode;
+				dlg.UseSimplifiedChinese();
+
+				dlg.ShowDialog();
+				MessageBox.Show("Got LanguageTag='" + dlg.SelectedLanguage.LanguageTag + "'.");
+			}
 		}
 	}
 }
