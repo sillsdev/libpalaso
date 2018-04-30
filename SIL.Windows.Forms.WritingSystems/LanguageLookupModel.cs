@@ -15,7 +15,6 @@ namespace SIL.Windows.Forms.WritingSystems
 		private string _searchText;
 		private LanguageInfo _selectedLanguage;
 		private string _desiredLanguageName;
-		public EventHandler SelectedLanguageChanged;
 
 		public Func<LanguageInfo, bool> MatchingLanguageFilter { get; set; }
 
@@ -93,10 +92,8 @@ namespace SIL.Windows.Forms.WritingSystems
 				var oldValue = _selectedLanguage;
 				_selectedLanguage = value;
 				if (_selectedLanguage == null)
-				{
-					RaiseSelectedLanguageChanged(oldValue);
 					return;
-				}
+
 				if (LanguageTag == "qaa")
 				{
 					if (_searchText != "?")
@@ -129,16 +126,6 @@ namespace SIL.Windows.Forms.WritingSystems
 						_desiredLanguageName = _selectedLanguage.DesiredName;
 					}
 				}
-
-				RaiseSelectedLanguageChanged(oldValue);
-			}
-		}
-
-		private void RaiseSelectedLanguageChanged(LanguageInfo oldValue)
-		{
-			if (SelectedLanguageChanged != null && _selectedLanguage != oldValue)
-			{
-				SelectedLanguageChanged.Invoke(this, EventArgs.Empty);
 			}
 		}
 
@@ -153,5 +140,28 @@ namespace SIL.Windows.Forms.WritingSystems
 		}
 
 		public bool IncludeRegionalDialects { get; set; }
+
+		/// <summary>
+		/// This would be simpler if there weren't some 2 letter tags out there...
+		/// </summary>
+		public bool LanguageTagContainsScriptRegionVariantInfo
+		{
+			get
+			{
+				if (SelectedLanguage == null)
+					return false;
+
+				var threeLetter = SelectedLanguage.ThreeLetterTag;
+				return LanguageTag.Length >= 3 && (LanguageTag != threeLetter || threeLetter.Contains("-"));
+			}
+		}
+
+		public string LanguageTagWithoutScriptRegionVariant
+		{
+			get
+			{
+				return LanguageTagContainsScriptRegionVariantInfo ? LanguageTag.Split('-')[0] : LanguageTag;
+			}
+		}
 	}
 }

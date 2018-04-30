@@ -97,7 +97,8 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		[Category("SkipOnTeamCity")]
 		public void TestLanguageLookupDialog_manualTest()
 		{
-			const string testLangCode = "sok";
+			const string testLangCode = "sok-x-easy";
+			const string testLangThreeLetterCode = "sok";
 			const string testLangName = "Sokoro";
 			using (var dlg = new LanguageLookupDialog())
 			{
@@ -108,7 +109,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 				var language = new LanguageInfo() { LanguageTag = testLangCode };
 				language.DesiredName = testLangName;
 				dlg.SelectedLanguage = language;
-				dlg.SearchText = testLangCode;
+				dlg.SearchText = testLangThreeLetterCode;
 				dlg.UseSimplifiedChinese();
 
 				dlg.ShowDialog();
