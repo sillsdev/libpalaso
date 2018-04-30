@@ -20,6 +20,8 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		public void UpdateReadiness()
 		{
+			SetScriptsAndVariantsLabel();
+
 			EventHandler handler = ReadinessChanged;
 			if (handler != null)
 				handler(this, null);
@@ -31,16 +33,6 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			InitializeComponent();
 			_model = new LanguageLookupModel();
-			_model.SelectedLanguageChanged += SelectedLanguageChanged;
-		}
-
-		private void SelectedLanguageChanged(object sender, EventArgs eventArgs)
-		{
-			_scriptsAndVariantsLink.Enabled = _model.HaveSufficientInformation;
-			if (!_model.HaveSufficientInformation)
-			{
-				_scriptsAndVariantsLabel.Visible = false;
-			}
 		}
 
 		public void LoadLanguages()
@@ -151,7 +143,17 @@ namespace SIL.Windows.Forms.WritingSystems
 			if(_listView.SelectedIndices != null && _listView.SelectedIndices.Count > 0)
 			{
 				ListViewItem item = _listView.Items[_listView.SelectedIndices[0]];
-				SelectedLanguage = (LanguageInfo) item.Tag;
+				var oldLangInfo = SelectedLanguage;
+				var newLangInfo = (LanguageInfo) item.Tag;
+				// If the user has already set some Script/Region/Variant info, we don't want
+				// to undo that just because the listview is set to that main language in the search.
+				if (_model.LanguageTagContainsScriptRegionVariantInfo &&
+				    newLangInfo.LanguageTag == _model.LanguageTagWithoutScriptRegionVariant)
+				{
+					newLangInfo.DesiredName = oldLangInfo.DesiredName;
+					newLangInfo.LanguageTag = oldLangInfo.LanguageTag;
+				}
+				SelectedLanguage = newLangInfo;
 			}
 		}
 
@@ -279,7 +281,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			// This is a Script link, so for now we'll limit the dialog to only the ScriptRegionVariant combo option.
 			var wsSetupModel = new WritingSystemSetupModel(new WritingSystemDefinition(_model.SelectedLanguage.LanguageTag),
-				WritingSystemSetupModel.SelectionsForSpecialCombo.ScriptRegionVariant);
+				WritingSystemSetupModel.SelectionsForSpecialCombo.ScriptRegionVariant, false);
 			wsSetupModel.IdentifierScriptRegionVariantSelected();
 			using (var dlg = new ScriptsAndVariantsDialog())
 			{
@@ -287,8 +289,20 @@ namespace SIL.Windows.Forms.WritingSystems
 				if (dlg.ShowDialog() != DialogResult.OK)
 					return;
 				_model.SelectedLanguage.LanguageTag = wsSetupModel.CurrentDefinition.LanguageTag;
-				// This would be simpler if there weren't some 2 letter tags out there...
-				if (_model.LanguageTag.Length >= 3 && _model.LanguageTag != _model.SelectedLanguage.ThreeLetterTag)
+				UpdateReadiness();
+			}
+		}
+
+		private void SetScriptsAndVariantsLabel()
+		{
+			_scriptsAndVariantsLink.Enabled = _model.HaveSufficientInformation;
+			if (!_model.HaveSufficientInformation)
+			{
+				_scriptsAndVariantsLabel.Visible = false;
+			}
+			else
+			{
+				if (_model.LanguageTagContainsScriptRegionVariantInfo)
 				{
 					_scriptsAndVariantsLabel.Text = "(" + _model.LanguageTag + ")";
 					_scriptsAndVariantsLabel.Visible = true;
@@ -297,8 +311,6 @@ namespace SIL.Windows.Forms.WritingSystems
 				{
 					_scriptsAndVariantsLabel.Visible = false;
 				}
-				_model.SelectedLanguageChanged.Invoke(this, EventArgs.Empty);
-				UpdateReadiness();
 			}
 		}
 

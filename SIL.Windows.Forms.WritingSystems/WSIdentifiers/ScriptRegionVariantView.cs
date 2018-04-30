@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
@@ -18,6 +18,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 			if (model != null)
 			{
 				model.SelectionChanged += UpdateDisplayFromModel;
+				_warningLabel.Visible = model.DisplayScriptRegionVariantWarningLabel;
 			}
 
 			_scriptCombo.Items.Add(new ScriptSubtag("blank")); // add a blank item at the top of the list
