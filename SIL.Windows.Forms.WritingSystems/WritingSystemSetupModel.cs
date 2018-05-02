@@ -75,6 +75,12 @@ namespace SIL.Windows.Forms.WritingSystems
 		/// Set this to limit the Special combo to only one selection
 		/// </summary>
 		public SelectionsForSpecialCombo LockedSpecialCombo { get; private set; }
+
+		/// <summary>
+		/// Set this to false to keep ScriptRegionVariantView from showing its scary warning label
+		/// </summary>
+		public bool DisplayScriptRegionVariantWarningLabel { get; private set; }
+
 		/// <summary>
 		/// Use this to set the appropriate kinds of writing systems according to your
 		/// application.  For example, is the user of your app likely to want voice? ipa? dialects?
@@ -126,8 +132,10 @@ namespace SIL.Windows.Forms.WritingSystems
 		/// </summary>
 		/// <param name="ws">A writing system definition</param>
 		/// <param name="lockedSpecialComboSelection">Optional parameter if we want to limit the Special combo to one value</param>
+		/// <param name="displayScriptRegionVariantWarningLabel">Optional parameter used to hide unwanted label</param>
 		public WritingSystemSetupModel(WritingSystemDefinition ws,
-			SelectionsForSpecialCombo lockedSpecialComboSelection = SelectionsForSpecialCombo.None)
+			SelectionsForSpecialCombo lockedSpecialComboSelection = SelectionsForSpecialCombo.None,
+			bool displayScriptRegionVariantWarningLabel = true)
 		{
 			if (ws == null)
 			{
@@ -143,6 +151,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			_deletedWritingSystemDefinitions = null;
 			_usingRepository = false;
 			LockedSpecialCombo = lockedSpecialComboSelection;
+			DisplayScriptRegionVariantWarningLabel = displayScriptRegionVariantWarningLabel;
 		}
 
 		public IEnumerable<IKeyboardDefinition> KnownKeyboards
