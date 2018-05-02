@@ -26,7 +26,7 @@ namespace SIL.Archiving
 			const string rampFileExtension = ".ramp";
 
 			if (ArchivingDlgViewModel.IsMono)
-				exeFile = FileLocationUtilities.LocateInProgramFiles("RAMP", true);
+				exeFile = FileLocationUtilities.LocateInProgramFiles("ramp", true);
 			else
 				exeFile = FileLocator.GetFromRegistryProgramThatOpensFileType(rampFileExtension) ??
 					FileLocationUtilities.LocateInProgramFiles("ramp.exe", true, "ramp");
