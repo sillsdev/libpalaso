@@ -368,11 +368,6 @@ namespace Palaso.IO
 		///		- If fallBackToDeepSearch is false, then only the top-level program files
 		///		  folder is searched.
 		///
-		/// Note: For Mono the deep search and shallow search are the same because there
-		///		normally are no sub-directories in the program files directories.
-		///
-		/// Note: For Mono the subFoldersToSearch parameter is ignored.
-		///
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public static string LocateInProgramFiles(string exeName, bool fallBackToDeepSearch,
@@ -386,11 +381,8 @@ namespace Palaso.IO
 			return (!fallBackToDeepSearch ? null :
 				LocateInProgramFilesUsingDeepSearch(exeName, subFoldersToSearch));
 #else
-			// For Mono, the deep search and shallow search are the same because there
-			// normally are no sub-directories in the program files directories.
-
-			// The subFoldersToSearch parameter is not valid on Linux.
-			return LocateInProgramFilesUsingShallowSearch(exeName);
+			return fallBackToDeepSearch ? LocateInProgramFilesUsingDeepSearch(exeName) :
+				LocateInProgramFilesUsingShallowSearch(exeName);
 #endif
 		}
 

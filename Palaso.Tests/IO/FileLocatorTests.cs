@@ -114,6 +114,77 @@ namespace Palaso.Tests.IO
 			Assert.DoesNotThrow(() => FileLocator.LocateInProgramFiles(findFile, true, "!~@blah"));
 		}
 
+		[Test]
+		[Platform(Include = "Linux")]
+		public void LocateInProgramFiles_DeepSearch_FindsFileInSubdir()
+		{
+			// This simulates finding RAMP which is installed as /opt/RAMP/ramp. We can't put
+			// anything in /opt for testing, so we add our tmp directory to the path.
+
+			// Setup
+			var simulatedOptDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+			var pathVariable = Environment.GetEnvironmentVariable("PATH");
+			try
+			{
+				Directory.CreateDirectory(simulatedOptDir);
+				Directory.CreateDirectory(Path.Combine(simulatedOptDir, "RAMP"));
+				var file = Path.Combine(simulatedOptDir, "RAMP", "ramp");
+				File.WriteAllText(file, "Simulated RAMP starter");
+				Environment.SetEnvironmentVariable("PATH", simulatedOptDir + Path.PathSeparator + pathVariable);
+
+				// Exercise/Verify
+				Assert.That(FileLocator.LocateInProgramFiles("ramp", true),
+					Is.EqualTo(file));
+			}
+			finally
+			{
+				try
+				{
+					Environment.SetEnvironmentVariable("PATH", pathVariable);
+					Directory.Delete(simulatedOptDir, true);
+				}
+				catch
+				{
+					// just ignore
+				}
+			}
+		}
+
+		[Test]
+		[Platform(Include = "Linux")]
+		public void LocateInProgramFiles_ShallowSearch_FindsNothing()
+		{
+			// This simulates finding RAMP which is installed as /opt/RAMP/ramp. We can't put
+			// anything in /opt for testing, so we add our tmp directory to the path.
+
+			// Setup
+			var simulatedOptDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+			var pathVariable = Environment.GetEnvironmentVariable("PATH");
+			try
+			{
+				Directory.CreateDirectory(simulatedOptDir);
+				Directory.CreateDirectory(Path.Combine(simulatedOptDir, "RAMP"));
+				var file = Path.Combine(simulatedOptDir, "RAMP", "ramp");
+				File.WriteAllText(file, "Simulated RAMP starter");
+				Environment.SetEnvironmentVariable("PATH", simulatedOptDir + Path.PathSeparator + pathVariable);
+
+				// Exercise/Verify
+				Assert.That(FileLocator.LocateInProgramFiles("ramp", false),
+					Is.Null);
+			}
+			finally
+			{
+				try
+				{
+					Environment.SetEnvironmentVariable("PATH", pathVariable);
+					Directory.Delete(simulatedOptDir, true);
+				}
+				catch
+				{
+					// just ignore
+				}
+			}
+		}
 		//TODO: this could use lots more tests
 
 		[Test]
