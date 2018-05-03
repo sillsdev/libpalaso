@@ -854,9 +854,9 @@ namespace SIL.Archiving.IMDI.Schema
 			Publisher = package.Publisher;
 			Contact = new ContactType
 			{
-				Address = package.Location.Address,
 				Name = package.Author,
-				Organisation = package.Owner
+				Address = package.Location.Address,
+				Organisation = package.Access.Owner
 			};
 		}
 
@@ -1822,7 +1822,7 @@ namespace SIL.Archiving.IMDI.Schema
 				{
 					Name = package.Author,
 					Address = Location.Address,
-					Organisation = package.Publisher
+					Organisation = package.Access.Owner
 				}
 			};
 			var imdiPackage = package as IMDIPackage;
@@ -1830,6 +1830,22 @@ namespace SIL.Archiving.IMDI.Schema
 			if (corpus != null)
 				project.Description.Add(corpus.Description.FirstOrDefault());
 			MDGroup.Project = new List<Project>{ project };
+		}
+
+		/// <remarks/>
+		public void AddContentLanguage(ArchivingLanguage language, LanguageString description)
+		{
+			MDGroup.Content.Languages.Language.Add(new LanguageType
+			{
+				Id = language.Iso3Code,
+				Name = new []{new LanguageNameType
+				{
+					Link = "http://www.mpi.nl/IMDI/Schema/MPI-Languages.xml",
+					Type = VocabularyTypeValueType.OpenVocabulary,
+					Value = language.EnglishName
+				}},
+				Description = new DescriptionTypeCollection{description}
+			});
 		}
 
 		/// <remarks/>
@@ -1945,10 +1961,24 @@ namespace SIL.Archiving.IMDI.Schema
 		}
 
 		/// <remarks/>
-		public void AddFileAccess(string fullFileName, ArchivingPackage package)
+		public void AddFileAccess(string fullFileName, ArchivingPackage package, LanguageString conditions, LanguageString restrictions)
 		{
 			var sessionFile = GetFile(fullFileName);
 			sessionFile.Access = new AccessType(package);
+			if (conditions == null) conditions = new LanguageString{Value = null};
+			sessionFile.Access.Description.Add(new DescriptionType
+			{
+				Name = "Conditions of Access",
+				LanguageId = conditions.Iso3LanguageId,
+				Value = conditions.Value
+			});
+			if (restrictions == null) restrictions = new LanguageString { Value = null };
+			sessionFile.Access.Description.Add(new DescriptionType
+			{
+				Name = "Restrictions",
+				LanguageId = restrictions.Iso3LanguageId,
+				Value = restrictions.Value
+			});
 		}
 
 		/// <summary></summary>

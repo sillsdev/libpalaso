@@ -10,7 +10,7 @@ namespace SIL.Archiving.Generic
 		void AddFile(ArchivingFile file);
 
 		/// <summary></summary>
-		void AddFileAccess(string fullFileName, ArchivingPackage package);
+		void AddFileAccess(string fullFileName, ArchivingPackage package, LanguageString conditions, LanguageString restrictions);
 
 		/// <summary></summary>
 		List<string> Files { get; }
@@ -23,6 +23,9 @@ namespace SIL.Archiving.Generic
 
 		/// <summary>Set session date with just the year</summary>
 		void SetDate(int year);
+
+		/// <summary></summary>
+		void AddContentLanguage(ArchivingLanguage language, LanguageString description);
 
 		/// <summary></summary>
 		void AddActor(ArchivingActor actor);
