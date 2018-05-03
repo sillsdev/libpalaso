@@ -2010,7 +2010,7 @@ namespace SIL.Archiving.IMDI.Schema
 			}
 			set
 			{
-				MDGroup.Content.Genre = value.Replace("<","").Replace(">","").ToVocabularyType(false, ListType.Link(ListType.ContentGenre));
+				MDGroup.Content.Genre = value?.Replace("<","")?.Replace(">","").ToVocabularyType(false, ListType.Link(ListType.ContentGenre));
 			}
 		}
 

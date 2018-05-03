@@ -308,6 +308,14 @@ namespace SIL.Archiving.Tests
 		}
 
 		[Test]
+		public void SetSessionGenre_NullValue_Null()
+		{
+			var session = new Session();
+			session.Genre = null;
+			Assert.AreEqual(null, session.Genre);
+		}
+
+		[Test]
 		public void SetSessionGenre_ContainsAngleBrackets_LatinOnly()
 		{
 			var session = new Session();
