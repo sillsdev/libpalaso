@@ -442,6 +442,7 @@
       <DependentUpon>UserRegistrationDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="Miscellaneous\WaitCursor.cs" />
+    <Compile Include="Miscellaneous\X11.cs" />
     <Compile Include="Registration\RegistrationSettingsProvider.cs" />
     <Compile Include="Reporting\MemoryManagement.cs" />
     <Compile Include="ScreenHelper.cs" />
