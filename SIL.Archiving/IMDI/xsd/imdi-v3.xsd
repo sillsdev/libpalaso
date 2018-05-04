@@ -5,13 +5,8 @@
 	Version 3.0.13
 
 	Max-Planck Institute for Psycholinguistics
-
-	http://www.mpi.nl/IMDI/Schema/IMDI_3.0.xsd
 -->
 <!--
-
-3.0.16, 2010-12-08, Alexander Koenig and Vlado Plaga
-		in 'complexType name="Quality_Type"' added attributes 'Link' and 'Type'
 
 3.0.15, 2009-11-17, Alexander Koenig
 	in session
@@ -1624,11 +1619,8 @@
 		<xsd:simpleContent>
 			<xsd:extension base="imdi:Quality_Value_Type">
 				<xsd:attributeGroup ref="imdi:ProfileAttributes"/>
-				<xsd:attribute name="Link" type="imdi:Link_Value_Type" use="optional"/>
-				<xsd:attribute name="Type" type="imdi:VocabularyType_Value_Type" default="ClosedVocabulary"/>
 			</xsd:extension>
 		</xsd:simpleContent>
-
 	</xsd:complexType>
 	<!--
 		Value Types
@@ -1808,3 +1800,4 @@
 		<xsd:attribute name="XXX-FollowUpDepend" type="xsd:string" use="optional"/>
 	</xsd:attributeGroup>
 </xsd:schema>
+

@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using SIL.Archiving.Generic;
 using SIL.Archiving.IMDI.Lists;
 using SIL.Archiving.IMDI.Schema;
@@ -97,7 +97,7 @@ namespace SIL.Archiving.IMDI
 			var mediaFile = new MediaFileType();
 			SetResourceProperties(mediaFile, sessionDirectoryName);
 
-			mediaFile.Quality = new QualityType { Type = VocabularyTypeValueType.ClosedVocabulary, Value = "Unspecified" };
+			mediaFile.Quality = new QualityType { Value = "Unspecified" };
 
 			return mediaFile;
 		}

@@ -1528,9 +1528,7 @@ namespace SIL.Archiving.IMDI.Schema
 	public class QualityType
 	{
 		/// <remarks/>
-		public QualityType() {
-			Type = VocabularyTypeValueType.ClosedVocabulary;
-		}
+		public QualityType() {}
 
 		/// <remarks/>
 		[XmlAttribute(DataType="anyURI")]
