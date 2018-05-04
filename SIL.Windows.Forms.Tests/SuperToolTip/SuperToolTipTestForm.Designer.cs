@@ -47,9 +47,9 @@ namespace SIL.Windows.Forms.Tests.SuperToolTip
 			superToolTipInfo1.BackgroundGradientBegin = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
 			superToolTipInfo1.BackgroundGradientEnd = System.Drawing.Color.FromArgb(((int)(((byte)(202)))), ((int)(((byte)(218)))), ((int)(((byte)(239)))));
 			superToolTipInfo1.BackgroundGradientMiddle = System.Drawing.Color.FromArgb(((int)(((byte)(242)))), ((int)(((byte)(246)))), ((int)(((byte)(251)))));
-			superToolTipInfo1.BodyFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			superToolTipInfo1.BodyFont = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			superToolTipInfo1.BodyText = "hello\r\nalsdkjfsaldjk\r\nasdlfjasl\r\n\r\nsalkdjflk\r\n";
-			superToolTipInfo1.HeaderFont = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+			superToolTipInfo1.HeaderFont = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold);
 			superToolTipInfo1.HeaderText = "Test";
 			superToolTipInfo1.OffsetForWhereToDisplay = new System.Drawing.Point(0, 0);
 			superToolTipInfoWrapper1.SuperToolTipInfo = superToolTipInfo1;

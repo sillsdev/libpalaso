@@ -154,13 +154,13 @@ namespace SIL.IO
 		public static DateTime GetLastWriteTime(string path)
 		{
 			// Nothing different from File for now
-			return File.GetLastAccessTime(path);
+			return File.GetLastWriteTime(path);
 		}
 
 		public static DateTime GetLastWriteTimeUtc(string path)
 		{
 			// Nothing different from File for now
-			return File.GetLastAccessTimeUtc(path);
+			return File.GetLastWriteTimeUtc(path);
 		}
 
 		public static void Move(string sourceFileName, string destFileName)

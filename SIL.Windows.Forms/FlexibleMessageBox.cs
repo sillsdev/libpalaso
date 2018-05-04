@@ -404,7 +404,7 @@ namespace SIL.Windows.Forms
 				this.richTextBoxMessage.BackColor = System.Drawing.Color.White;
 				this.richTextBoxMessage.BorderStyle = System.Windows.Forms.BorderStyle.None;
 				this.richTextBoxMessage.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.FlexibleMessageBoxFormBindingSource, "MessageText", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-				this.richTextBoxMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+				this.richTextBoxMessage.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 				this.richTextBoxMessage.Location = new System.Drawing.Point(50, 26);
 				this.richTextBoxMessage.Margin = new System.Windows.Forms.Padding(0);
 				this.richTextBoxMessage.Name = "richTextBoxMessage";
