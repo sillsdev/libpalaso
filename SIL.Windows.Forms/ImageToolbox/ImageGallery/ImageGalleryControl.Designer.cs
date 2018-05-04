@@ -48,7 +48,7 @@
 			// 
 			// _searchButton
 			// 
-			this._searchButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
+			this._searchButton.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this._searchButton.Image = global::SIL.Windows.Forms.Properties.Resources.search18x18;
 			this._searchButton.Location = new System.Drawing.Point(175, 35);
 			this._searchButton.Name = "_searchButton";
@@ -61,7 +61,7 @@
 			// _searchResultStats
 			// 
 			this._searchResultStats.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this._searchResultStats.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
+			this._searchResultStats.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this._searchResultStats.Location = new System.Drawing.Point(9, 303);
 			this._searchResultStats.Name = "_searchResultStats";
 			this._searchResultStats.Size = new System.Drawing.Size(375, 22);
@@ -71,7 +71,7 @@
 			// _labelSearch
 			// 
 			this._labelSearch.AutoSize = true;
-			this._labelSearch.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._labelSearch.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._labelSearch.Location = new System.Drawing.Point(8, 8);
 			this._labelSearch.Name = "_labelSearch";
 			this._labelSearch.Size = new System.Drawing.Size(120, 20);

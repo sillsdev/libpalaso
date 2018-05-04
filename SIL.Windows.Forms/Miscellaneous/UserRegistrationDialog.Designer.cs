@@ -41,7 +41,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			//
 			// _emailAddress
 			//
-			this._emailAddress.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._emailAddress.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._emailAddress.Location = new System.Drawing.Point(114, 194);
 			this._emailAddress.MaximumSize = new System.Drawing.Size(228, 24);
 			this._emailAddress.Name = "_emailAddress";
@@ -72,7 +72,7 @@ namespace SIL.Windows.Forms.Miscellaneous
 			// _welcomeLabel
 			//
 			this._welcomeLabel.AutoSize = true;
-			this._welcomeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._welcomeLabel.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._welcomeLabel.Location = new System.Drawing.Point(23, 18);
 			this._welcomeLabel.MaximumSize = new System.Drawing.Size(330, 0);
 			this._welcomeLabel.Name = "_welcomeLabel";

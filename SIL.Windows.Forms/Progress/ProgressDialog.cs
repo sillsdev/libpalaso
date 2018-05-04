@@ -483,7 +483,7 @@ namespace SIL.Windows.Forms.Progress
 			this._statusLabel.AutoSize = true;
 			this._statusLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
 			this.tableLayout.SetColumnSpan(this._statusLabel, 2);
-			this._statusLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._statusLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._statusLabel.Location = new System.Drawing.Point(0, 35);
 			this._statusLabel.Margin = new System.Windows.Forms.Padding(0, 0, 0, 5);
 			this._statusLabel.Name = "_statusLabel";
@@ -551,7 +551,7 @@ namespace SIL.Windows.Forms.Progress
 			this._overviewLabel.AutoSize = true;
 			this._overviewLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
 			this.tableLayout.SetColumnSpan(this._overviewLabel, 2);
-			this._overviewLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this._overviewLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this._overviewLabel.Location = new System.Drawing.Point(0, 0);
 			this._overviewLabel.Margin = new System.Windows.Forms.Padding(0, 0, 0, 20);
 			this._overviewLabel.Name = "_overviewLabel";

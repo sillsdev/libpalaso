@@ -65,7 +65,7 @@ namespace SIL.Windows.Forms.Scripture
 			if (Platform.IsLinux)
 			{
 				// Set a smaller font on Linux. (Stops 'J''s being clipped)
-				uiBook.Font = new Font("Microsoft Sans Serif", 8F, FontStyle.Regular, GraphicsUnit.Point, 0);
+				uiBook.Font = new Font("Segoe UI", 8F, FontStyle.Regular, GraphicsUnit.Point, 0);
 
 				// Also increase the ItemHeight as to stop clipping of items in the drop down menu..
 				uiBook.ItemHeight += 2;
