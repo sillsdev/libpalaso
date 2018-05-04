@@ -61,6 +61,7 @@ namespace SIL.Archiving.Tests
 
 			var actrIn = new ArchivingActor
 			{
+				Code = "123",
 				Education = "8th grade",
 				Name = "John Smith",
 				Age = "50 +- 10",
@@ -78,6 +79,7 @@ namespace SIL.Archiving.Tests
 
 			Assert.AreEqual(actrIn.Name, actrOut.FullName);
 			Assert.AreEqual(actrIn.Name, actrOut.Name[0]);
+			Assert.AreEqual(actrIn.Code, actrOut.Code);
 			Assert.AreEqual(actrIn.Gender, actrOut.Sex.Value);
 			Assert.AreEqual(actrIn.Occupation, actrOut.Keys.Key.Find(k => k.Name == "Occupation").Value);
 			Assert.AreEqual(actrIn.GetBirthDate(), actrOut.BirthDate);
