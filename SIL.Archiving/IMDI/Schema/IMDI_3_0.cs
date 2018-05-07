@@ -1246,6 +1246,8 @@ namespace SIL.Archiving.IMDI.Schema
 		{
 			Name = new[] {actor.GetName()};
 			FullName = actor.GetFullName();
+			if (actor.Code != null)
+				Code = actor.Code;
 
 			if (!string.IsNullOrEmpty(actor.Age))
 				Age = actor.Age;
