@@ -200,7 +200,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._scriptsAndVariantsLink.Size = new System.Drawing.Size(101, 13);
 			this._scriptsAndVariantsLink.TabIndex = 17;
 			this._scriptsAndVariantsLink.TabStop = true;
-			this._scriptsAndVariantsLink.Text = "Scripts and Variants";
+			this._scriptsAndVariantsLink.Text = "Script and Variant";
 			this._scriptsAndVariantsLink.Visible = false;
 			this._scriptsAndVariantsLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this._scriptsAndVariants_LinkClicked);
 			// 

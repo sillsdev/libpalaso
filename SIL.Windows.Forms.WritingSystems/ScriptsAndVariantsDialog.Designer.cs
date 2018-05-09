@@ -97,7 +97,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this.Name = "ScriptsAndVariantsDialog";
 			this.ShowIcon = false;
 			this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
-			this.Text = "Scripts and Variants";
+			this.Text = "Script and Variant";
 			this.TopMost = true;
 			((System.ComponentModel.ISupportInitialize)(this._L10NSharpExtender)).EndInit();
 			this.ResumeLayout(false);
