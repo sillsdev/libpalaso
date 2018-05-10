@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using System.Linq;
@@ -10,7 +10,7 @@ namespace SIL.Scripture
 	/// <summary>
 	/// Stores a reference to a specific verse in Scripture.
 	/// </summary>
-	public sealed class VerseRef : IComparable<VerseRef>
+	public sealed class VerseRef : IComparable<VerseRef>, IComparable
 	{
 		#region Constants
 #if DEBUG
@@ -277,8 +277,8 @@ namespace SIL.Scripture
 				}
 				catch (VerseRefException e)
 				{
-                    // Allow parse to fail during deserialization. VerseRef will just be invalid.
-                    Console.WriteLine("Invalid deserialized reference: " + e.InvalidVerseRef);
+					// Allow parse to fail during deserialization. VerseRef will just be invalid.
+					Console.WriteLine("Invalid deserialized reference: " + e.InvalidVerseRef);
 				}
 			}
 		}
@@ -1011,6 +1011,17 @@ namespace SIL.Scripture
 					   && (v.versification == versification);
 			}
 			return false;
+		}
+
+		public int CompareTo(object obj)
+		{
+			if (obj == null)
+				return 1;
+
+			if (!(obj is VerseRef))
+				throw new ArgumentException("Object must be of type VerseRef.");
+
+			return CompareTo((VerseRef) obj);
 		}
 
 		/// <summary>
