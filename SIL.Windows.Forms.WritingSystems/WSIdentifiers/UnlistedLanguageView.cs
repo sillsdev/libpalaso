@@ -55,7 +55,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 
 		private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			System.Diagnostics.Process.Start("http://www.w3.org/International/articles/language-tags/");
+			SIL.Program.Process.SafeStart("http://www.w3.org/International/articles/language-tags/");
 		}
 
 		public string ChoiceName

@@ -45,7 +45,7 @@ namespace SIL.Windows.Forms.Widgets
 			{
 				try
 				{
-					System.Diagnostics.Process.Start(URL);
+					SIL.Program.Process.SafeStart(URL);
 				}
 				catch(Exception)
 				{

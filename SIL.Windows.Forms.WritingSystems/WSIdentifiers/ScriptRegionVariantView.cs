@@ -43,7 +43,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 
 		private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			Process.Start("http://www.w3.org/International/questions/qa-choosing-language-tags");
+			SIL.Program.Process.SafeStart("http://www.w3.org/International/questions/qa-choosing-language-tags");
 		}
 
 		public string ChoiceName
