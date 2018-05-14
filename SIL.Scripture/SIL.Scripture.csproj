@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
@@ -7,24 +7,6 @@
   </PropertyGroup>
 
   <Import Project="..\GlobalAssemblyInfo.props" />
-
-  <ItemGroup>
-    <None Remove="Resources\eng.vrs.txt" />
-    <None Remove="Resources\lxx.vrs.txt" />
-    <None Remove="Resources\org.vrs.txt" />
-    <None Remove="Resources\rsc.vrs.txt" />
-    <None Remove="Resources\rso.vrs.txt" />
-    <None Remove="Resources\vul.vrs.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Resources\eng.vrs.txt" />
-    <Content Include="Resources\lxx.vrs.txt" />
-    <Content Include="Resources\org.vrs.txt" />
-    <Content Include="Resources\rsc.vrs.txt" />
-    <Content Include="Resources\rso.vrs.txt" />
-    <Content Include="Resources\vul.vrs.txt" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
