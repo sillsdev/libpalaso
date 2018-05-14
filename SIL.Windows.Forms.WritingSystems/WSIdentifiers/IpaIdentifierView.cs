@@ -30,7 +30,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 
 		private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
 		{
-			System.Diagnostics.Process.Start("http://en.wikipedia.org/wiki/International_Phonetic_Alphabet");
+			SIL.Program.Process.SafeStart("http://en.wikipedia.org/wiki/International_Phonetic_Alphabet");
 		}
 
 		public string ChoiceName
