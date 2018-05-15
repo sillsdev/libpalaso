@@ -7,7 +7,7 @@ using Palaso.PlatformUtilities;
 
 namespace Palaso.UI.WindowsForms.Miscellaneous
 {
-	internal static class X11
+	public static class X11
 	{
 		#region NativeReplacement methods
 		/// <summary>
