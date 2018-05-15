@@ -301,7 +301,7 @@ namespace SIL.Windows.Forms.HtmlBrowser
 			{
 				try
 				{
-					Process.Start(e.Url.AbsoluteUri);
+					SIL.Program.Process.SafeStart(e.Url.AbsoluteUri);
 				}
 				catch (Exception)
 				{
@@ -310,7 +310,7 @@ namespace SIL.Windows.Forms.HtmlBrowser
 					{
 						try
 						{
-							Process.Start(e.Url.LocalPath);
+							SIL.Program.Process.SafeStart(e.Url.LocalPath);
 							localPathWorked = true;
 						}
 						catch
