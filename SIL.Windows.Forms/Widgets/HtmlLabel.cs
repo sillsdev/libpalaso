@@ -148,12 +148,12 @@ namespace SIL.Windows.Forms.Widgets
 					}
 					else
 					{
-						Process.Start(path);
+						SIL.Program.Process.SafeStart(path);
 					}
 				}
 				else
 				{
-					Process.Start(url);
+					SIL.Program.Process.SafeStart(url);
 				}
 				handledProp.SetValue(ge, true, null); //don't let the browser navigate itself
 			}
