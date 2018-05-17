@@ -97,7 +97,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 				var h = g.MeasureString(label, this.Font, w).Height;
 				var linkLabel = new LinkLabel() {Text = label, Width = this.Width - 10, Height = (int) (h + 5)};
 
-				linkLabel.Click += new EventHandler((x, y) => Process.Start(url));
+				linkLabel.Click += new EventHandler((x, y) => SIL.Program.Process.SafeStart(url));
 				_table.Controls.Add(linkLabel);
 				_table.SetColumnSpan(linkLabel, columns);
 			   _table.RowCount++;
