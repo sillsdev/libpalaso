@@ -1820,6 +1820,15 @@ namespace SIL.Archiving
 			if (dir == null)
 				throw new DirectoryNotFoundException("The RAMP directory was not found.");
 
+
+			if (Platform.IsWindows)
+			{
+				//Ramp 3.0 Package doesn't have languages.yaml
+				if (!Directory.Exists(Path.Combine(dir, "data")))
+				{
+					return string.Empty;
+				}
+			}
 			// on Linux the exe and data directory are not in the same directory
 			if (!Directory.Exists(Path.Combine(dir, "data")))
 			{
@@ -1859,16 +1868,18 @@ namespace SIL.Archiving
 			{
 				_languageList = new Dictionary<string, string>();
 				var langFile = GetLanguageFileLocation();
-
-				foreach (var fileLine in File.ReadLines(langFile).Where(l => l.StartsWith("  code: \"")))
+				if (File.Exists(langFile))
 				{
-					const int start = 9;
-					var end = fileLine.IndexOf('"', start);
-					if (end > start)
+					foreach (var fileLine in File.ReadLines(langFile).Where(l => l.StartsWith("  code: \"")))
 					{
-						var parts = fileLine.Substring(start, end - start).Split(':');
-						if (parts.Length == 2)
-							_languageList[parts[0]] = parts[1];
+						const int start = 9;
+						var end = fileLine.IndexOf('"', start);
+						if (end > start)
+						{
+							var parts = fileLine.Substring(start, end - start).Split(':');
+							if (parts.Length == 2)
+								_languageList[parts[0]] = parts[1];
+						}
 					}
 				}
 			}

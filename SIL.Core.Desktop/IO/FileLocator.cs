@@ -243,8 +243,13 @@ namespace SIL.IO
 				return null;
 
 			key = Registry.ClassesRoot.OpenSubKey(string.Format("{0}\\shell\\open\\command", value));
-			if (key == null)
-				return null;
+
+			if (key == null && value.ToLower() == "ramp.package")
+			{
+				key = Registry.ClassesRoot.OpenSubKey(string.Format("{0}\\shell\\open\\command", "ramp"));
+				if (key == null)
+					return null;
+			}
 
 			value = key.GetValue(string.Empty) as string;
 			key.Close();
