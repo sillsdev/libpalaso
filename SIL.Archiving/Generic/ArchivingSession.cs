@@ -25,6 +25,9 @@ namespace SIL.Archiving.Generic
 		void SetDate(int year);
 
 		/// <summary></summary>
+		void AddContentLanguage(ArchivingLanguage language, LanguageString description);
+
+		/// <summary></summary>
 		void AddActor(ArchivingActor actor);
 
 		/// <summary></summary>
