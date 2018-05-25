@@ -297,6 +297,7 @@
     </Compile>
     <Compile Include="AddSortKeysToXmlTests.cs" />
     <Compile Include="CharacterSetDefinitionCloneableTests.cs" />
+    <Compile Include="CLDRNumberingSystemsTests.cs" />
     <Compile Include="CollationDefinitionCloneableTests.cs" />
     <Compile Include="IcuRulesCollationDefinitionTests.cs" />
     <Compile Include="IetfLanguageTagTests.cs" />
