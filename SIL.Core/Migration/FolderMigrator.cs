@@ -158,7 +158,14 @@ namespace SIL.Migration
 					string targetFilePath = Path.Combine(destinationPath, fileName);
 					if (fileNamesToMigrate.Contains(sourceFilePath))
 					{
-						strategy.Migrate(sourceFilePath, targetFilePath);
+						try
+						{
+							strategy.Migrate(sourceFilePath, targetFilePath);
+						}
+						catch (Exception e)
+						{
+							problems.Add(new FolderMigratorProblem { Exception = e, FilePath = sourceFilePath });
+						}
 					}
 					else
 					{
