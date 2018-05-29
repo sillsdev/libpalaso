@@ -40,6 +40,7 @@ namespace SIL.WritingSystems.Tests
 								 new ValuesToSet("to be", "!(to be)"),
 								 new ValuesToSet(DateTime.Now, DateTime.MinValue),
 								 new ValuesToSet(QuotationParagraphContinueType.All, QuotationParagraphContinueType.None),
+								 new ValuesToSet(NumberingSystemDefinition.Default, NumberingSystemDefinition.CreateCustomSystem("9876543210"))
 							 };
 			}
 		}
@@ -783,6 +784,8 @@ namespace SIL.WritingSystems.Tests
 			secondValueToSet.Add(typeof(ScriptSubtag), (ScriptSubtag) "Armi");
 			firstValueToSet.Add(typeof(RegionSubtag), (RegionSubtag) "US");
 			secondValueToSet.Add(typeof(RegionSubtag), (RegionSubtag) "GB");
+			firstValueToSet.Add(typeof(NumberingSystemDefinition), NumberingSystemDefinition.Default);
+			secondValueToSet.Add(typeof(NumberingSystemDefinition), NumberingSystemDefinition.CreateCustomSystem("9876543210"));
 
 
 			foreach (PropertyInfo propertyInfo in typeof(WritingSystemDefinition).GetProperties(BindingFlags.Public | BindingFlags.Instance))

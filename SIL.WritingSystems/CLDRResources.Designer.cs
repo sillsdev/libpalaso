@@ -71,7 +71,7 @@ namespace SIL.WritingSystems {
         ///&lt;supplementalData&gt;
         ///    &lt;version number=&quot;$Revision: 13459 $&quot;/&gt;
         ///    &lt;numberingSystems&gt;
-        ///        &lt;numberingSystem id=&quot;adlm&quot; type=&quot;numeric&quot; digits=&quot;&amp;#x1E950;&amp;#x1E951;&amp;#x1E952;&amp;#x1E953;&amp;#x1E954;&amp; [rest of string was truncated]&quot;;.
+        ///        &lt;numberingSystem id=&quot;adlm&quot; type=&quot;numeric&quot; digits=&quot;&amp;#x1E950;&amp;#x1E951;&amp;#x1E952;&amp;#x1E953; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string numberingSystems {
             get {

@@ -42,7 +42,7 @@ namespace SIL.WritingSystems.Migration
 		/// is called.
 		///</summary>
 		public GlobalWritingSystemRepositoryMigrator(string basePath, Action<int, IEnumerable<LdmlMigrationInfo>> migrationHandler = null,
-			int versionToMigrateTo = LdmlDataMapper.CurrentLdmlVersion)
+			int versionToMigrateTo = LdmlDataMapper.CurrentLdmlLibraryVersion)
 			: base(Path.Combine(basePath, versionToMigrateTo.ToString(CultureInfo.InvariantCulture)), migrationHandler, versionToMigrateTo)
 		{
 			_basePath = basePath;
@@ -76,7 +76,7 @@ namespace SIL.WritingSystems.Migration
 			}
 
 			// 2) Harvest any older ldml in %CommonApplicationData% (c:\ProgramData\SIL\WritingSystemRepository\N on win 7)
-			for (int version = LdmlDataMapper.CurrentLdmlVersion - 1; version >= 0; --version)
+			for (int version = LdmlDataMapper.CurrentLdmlLibraryVersion - 1; version >= 0; --version)
 			{
 				string sourceVersionPath = Path.Combine(_basePath, version.ToString(CultureInfo.InvariantCulture));
 				if (Directory.Exists(sourceVersionPath))

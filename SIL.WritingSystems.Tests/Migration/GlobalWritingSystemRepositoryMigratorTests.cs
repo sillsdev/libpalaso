@@ -56,7 +56,7 @@ namespace SIL.WritingSystems.Tests.Migration
 					string filePath = _baseFolder.Path;
 					filePath = Path.Combine(
 						filePath,
-						LdmlDataMapper.CurrentLdmlVersion.ToString()
+						LdmlDataMapper.CurrentLdmlLibraryVersion.ToString()
 					);
 					return filePath;
 				}
@@ -88,7 +88,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var m = new GlobalWritingSystemRepositoryMigrator(e.BasePath);
 				m.Migrate();
 
-				Assert.That(e.GetMigratedFileVersion("en.ldml"), Is.EqualTo(LdmlDataMapper.CurrentLdmlVersion));
+				Assert.That(e.GetMigratedFileVersion("en.ldml"), Is.EqualTo(LdmlDataMapper.CurrentLdmlLibraryVersion));
 			}
 		}
 
@@ -101,7 +101,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var m = new GlobalWritingSystemRepositoryMigrator(e.BasePath);
 				m.Migrate();
 
-				Assert.That(e.GetMigratedFileVersion("en.ldml"), Is.EqualTo(LdmlDataMapper.CurrentLdmlVersion));
+				Assert.That(e.GetMigratedFileVersion("en.ldml"), Is.EqualTo(LdmlDataMapper.CurrentLdmlLibraryVersion));
 			}
 		}
 
@@ -114,7 +114,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var m = new GlobalWritingSystemRepositoryMigrator(e.BasePath);
 				m.Migrate();
 
-				Assert.That(e.GetMigratedFileVersion("en.ldml"), Is.EqualTo(LdmlDataMapper.CurrentLdmlVersion));
+				Assert.That(e.GetMigratedFileVersion("en.ldml"), Is.EqualTo(LdmlDataMapper.CurrentLdmlLibraryVersion));
 			}
 		}
 	}

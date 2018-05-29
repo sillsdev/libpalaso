@@ -17,7 +17,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			{
 				var silLdmlVersion = new SilLdmlVersion();
 				int result = silLdmlVersion.GetFileVersion(file.Path);
-				Assert.That(result, Is.EqualTo(LdmlDataMapper.CurrentLdmlVersion));
+				Assert.That(result, Is.EqualTo(LdmlDataMapper.CurrentLdmlLibraryVersion));
 			}
 		}
 
@@ -31,7 +31,7 @@ namespace SIL.WritingSystems.Tests.Migration
 			{
 				var silLdmlVersion = new SilLdmlVersion();
 				int result = silLdmlVersion.GetFileVersion(file.Path);
-				Assert.That(result, Is.EqualTo(LdmlDataMapper.CurrentLdmlVersion));
+				Assert.That(result, Is.EqualTo(LdmlDataMapper.CurrentLdmlLibraryVersion));
 			}
 		}
 
