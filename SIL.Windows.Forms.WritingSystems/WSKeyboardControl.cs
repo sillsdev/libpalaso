@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
@@ -44,7 +45,11 @@ namespace SIL.Windows.Forms.WritingSystems
 			_defaultFontSize = _testArea.Font.SizeInPoints;
 			_defaultFontName = _testArea.Font.Name;
 			_possibleKeyboardsList.ShowItemToolTips = true;
-			_keymanConfigurationLink.Visible &= KeyboardController.HasSecondaryKeyboardSetupApplication;
+			// Skip this link test when this control is being displayed in the windows forms designer
+			if (LicenseManager.UsageMode != LicenseUsageMode.Designtime)
+			{
+				_keymanConfigurationLink.Visible &= KeyboardController.HasSecondaryKeyboardSetupApplication;
+			}
 
 			if (Platform.IsWindows)
 				return;

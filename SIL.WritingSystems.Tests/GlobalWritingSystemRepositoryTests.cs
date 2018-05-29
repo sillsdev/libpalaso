@@ -16,7 +16,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			GlobalWritingSystemRepository repo = GlobalWritingSystemRepository.Initialize();
 			string expectedPath = string.Format(".*SIL.WritingSystemRepository.{0}", 
-				LdmlDataMapper.CurrentLdmlVersion);
+				LdmlDataMapper.CurrentLdmlLibraryVersion);
 			Assert.That(repo.PathToWritingSystems, Is.StringMatching(expectedPath));
 		}
 
@@ -25,7 +25,7 @@ namespace SIL.WritingSystems.Tests
 		{
 			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
 			{
-				string versionPath = Path.Combine(e.Path, LdmlDataMapper.CurrentLdmlVersion.ToString());
+				string versionPath = Path.Combine(e.Path, LdmlDataMapper.CurrentLdmlLibraryVersion.ToString());
 				Directory.CreateDirectory(versionPath);
 				string badFile = Path.Combine(versionPath, "en.ldml");
 				File.WriteAllBytes(badFile, new byte[100]); // 100 nulls
@@ -45,7 +45,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				var repo = new GlobalWritingSystemRepository(e.Path);
 				string expectedPath = string.Format(".*GlobalWritingSystemRepositoryTests.{0}",
-					LdmlDataMapper.CurrentLdmlVersion);
+					LdmlDataMapper.CurrentLdmlLibraryVersion);
 				Assert.That(repo.PathToWritingSystems, Is.StringMatching(expectedPath));
 			}
 		}

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -96,7 +96,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				Assert.AreEqual(LdmlDataMapper.CurrentLdmlVersion, environment.GetFileVersion(fileName));
+				Assert.AreEqual(LdmlDataMapper.CurrentLdmlLibraryVersion, environment.GetFileVersion(fileName));
 			}
 		}
 
@@ -1104,8 +1104,6 @@ namespace SIL.WritingSystems.Tests.Migration
 					}
 				};
 
-				var numeric = new CharacterSetDefinition("numeric") {Characters = {"๐", "๑", "๒", "๓", "๔", "๕", "๖", "๗", "๘", "๙"}};
-
 				var punctuation = new CharacterSetDefinition("punctuation") {Characters = {" ", "-", ",", ".", "’", "«", "»", "(", ")", "[", "]"}};
 
 				WritingSystemDefinition ws = repo.Get("en-Qaaa-QM-1996-x-Kala-AP-myOwnVar");
@@ -1113,7 +1111,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				Assert.That(ws.DefaultFont.ValueEquals(other));
 				Assert.That(ws.WindowsLcid, Is.EqualTo("4321"));
 				Assert.That(ws.CharacterSets["main"].ValueEquals(main));
-				Assert.That(ws.CharacterSets["numeric"].ValueEquals(numeric));
+				Assert.That(ws.NumberingSystem.ValueEquals(new NumberingSystemDefinition("thai")));
 				Assert.That(ws.CharacterSets["punctuation"].ValueEquals(punctuation));
 
 				// ScriptName, RegionName, VariantName, LegacyMapping, IsGraphiteEnabled
@@ -1272,7 +1270,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 				var versionGetter = new WritingSystemLdmlVersionGetter();
-				Assert.AreEqual(LdmlDataMapper.CurrentLdmlVersion, versionGetter.GetFileVersion(environment.MappedFilePath("test.ldml")));
+				Assert.AreEqual(LdmlDataMapper.CurrentLdmlLibraryVersion, versionGetter.GetFileVersion(environment.MappedFilePath("test.ldml")));
 			}
 		}
 
@@ -1584,7 +1582,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				Assert.AreEqual(LdmlDataMapper.CurrentLdmlVersion, environment.GetFileVersion(environment.MappedFilePath("test.ldml")));
+				Assert.AreEqual(LdmlDataMapper.CurrentLdmlLibraryVersion, environment.GetFileVersion(environment.MappedFilePath("test.ldml")));
 			}
 		}
 

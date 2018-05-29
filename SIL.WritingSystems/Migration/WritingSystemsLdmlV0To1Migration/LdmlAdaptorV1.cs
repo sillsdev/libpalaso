@@ -889,7 +889,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration
 				}
 				writer.WriteEndElement(); // KnownKeyboards
 				WriteFlexOrPalasoConformElement(writer, reader, Palaso2NamespaceName, "version",
-					LdmlDataMapper.CurrentLdmlVersion.ToString());
+					LdmlDataMapper.CurrentLdmlLibraryVersion.ToString());
 				writer.WriteEndElement(); // Special
 			}
 		}

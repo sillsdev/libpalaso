@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -157,7 +157,7 @@ namespace SIL.WritingSystems
 		///</summary>
 		public static string CurrentVersionPath(string basePath)
 		{
-			return Path.Combine(basePath, LdmlDataMapper.CurrentLdmlVersion.ToString(CultureInfo.InvariantCulture));
+			return Path.Combine(basePath, LdmlDataMapper.CurrentLdmlLibraryVersion.ToString(CultureInfo.InvariantCulture));
 		}
 
 		public static void CreateGlobalWritingSystemRepositoryDirectory(string path)
