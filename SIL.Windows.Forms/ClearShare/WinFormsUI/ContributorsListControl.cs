@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -22,6 +22,8 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		public delegate void ColumnHeaderMouseClickHandler(object sender, DataGridViewCellMouseEventArgs e);
 		public event ColumnHeaderMouseClickHandler ColumnHeaderMouseClick;
 
+		public bool _disableDateColumn;
+
 		private FadingMessageWindow _msgWindow;
 		private readonly ContributorsListControlViewModel _model;
 
@@ -32,10 +34,11 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 		}
 
 		/// ------------------------------------------------------------------------------------
-		public ContributorsListControl(ContributorsListControlViewModel model) : this()
+		public ContributorsListControl(ContributorsListControlViewModel model, bool disableDateColumn = false) : this()
 		{
 			_model = model;
 			_model.NewContributionListAvailable += HandleNewContributionListAvailable;
+			_disableDateColumn = disableDateColumn;
 			Initialize();
 		}
 
@@ -56,7 +59,11 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			col.Width = 120;
 			_grid.Columns.Add(col);
 
-			_grid.Columns.Add(BetterGrid.CreateCalendarControlColumn("date", "Date", null, CalendarCell.UserAction.CellMouseClick));
+			var dateColumn = BetterGrid.CreateCalendarControlColumn("date", "Date", null,
+				CalendarCell.UserAction.CellMouseClick);
+			_grid.Columns.Add(dateColumn);
+			if (_disableDateColumn)
+				dateColumn.Visible = false;
 
 			col = BetterGrid.CreateTextBoxColumn("comments", "Comments");
 			col.Width = 200;
