@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -60,7 +60,14 @@ namespace SIL.WritingSystems
 			PrivateUsePattern = new Regex("\\A(" + PrivateUseSubExpr + ")\\z", RegexOptions.ExplicitCapture);
 		}
 
-		public static bool TryGetVariantSubtags(string variantCodes, out IEnumerable<VariantSubtag> variantSubtags)
+		/// <summary>
+		/// Return Variant Subtags based on the code, looking up and returning subtags for standard codes or creating new ones for custom (private use) codes
+		/// </summary>
+		/// <param name="variantCodes">Variant code</param>
+		/// <param name="variantSubtags">return as variantsubtags</param>
+		/// <param name="variantNames">comma separated list of variant names to use with each private use code in variantCodes</param>
+		/// <returns></returns>
+		public static bool TryGetVariantSubtags(string variantCodes, out IEnumerable<VariantSubtag> variantSubtags, string variantNames = "")
 		{
 			if (string.IsNullOrEmpty(variantCodes))
 			{
@@ -85,12 +92,15 @@ namespace SIL.WritingSystems
 				}
 			}
 
+			var variantName = variantNames.Split(',');
+			int index = 0;
 			foreach (string privateUseCode in privateUseVariantCodes.Split(new[] { '-' }, StringSplitOptions.RemoveEmptyEntries))
 			{
 				VariantSubtag variantSubtag;
 				if (!StandardSubtags.CommonPrivateUseVariants.TryGet(privateUseCode, out variantSubtag))
-					variantSubtag = new VariantSubtag(privateUseCode);
+					variantSubtag = new VariantSubtag(privateUseCode, variantName[index]);
 				variantSubtagsList.Add(variantSubtag);
+				index++;
 			}
 			variantSubtags = variantSubtagsList;
 			return true;

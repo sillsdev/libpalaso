@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
@@ -405,6 +405,29 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(scriptSubtag, Is.EqualTo((ScriptSubtag) "Latn"));
 			Assert.That(regionSubtag, Is.EqualTo((RegionSubtag) "US"));
 			Assert.That(variantSubtags, Is.Empty);
+		}
+
+		[Test]
+		public void TryGetVariantSubtags_ReturnsTwoVariantSubTags()
+		{
+			IEnumerable<VariantSubtag> variantSubtags;
+			IetfLanguageTag.TryGetVariantSubtags("x-code1-code2", out variantSubtags, "x-name1,name2");
+			Assert.AreEqual(2, variantSubtags.Count());
+			int index = 0;
+			foreach (VariantSubtag variantSubtag in variantSubtags)
+			{
+				if (index == 0) //For first VariantSubTag
+				{
+					Assert.That("code1", Is.EqualTo(variantSubtag.Code));
+					Assert.That("x-name1", Is.EqualTo(variantSubtag.Name));
+				}
+				else //For second VariantSubTag
+				{
+					Assert.That("code2", Is.EqualTo(variantSubtag.Code));
+					Assert.That("name2", Is.EqualTo(variantSubtag.Name));
+				}
+				index++;
+			}
 		}
 
 		[Test]
