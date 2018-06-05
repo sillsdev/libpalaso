@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using Moq;
 using NUnit.Framework;
 using SIL.Windows.Forms.ClearShare;
@@ -45,6 +45,21 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 
 			var names = _model.GetAutoCompleteNames();
 			Assert.AreEqual(2, names.Count);
+			Assert.IsTrue(names.Contains("jimmy"));
+			Assert.IsTrue(names.Contains("tommy"));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void GetAutoCompleteNames_HasGatherer_ReturnsValidNames()
+		{
+			var gatherer = new Mock<IAutoCompleteValueProvider>();
+			gatherer.Setup(g => g.GetValuesForKey("person")).Returns(new[] { "jimmy (Author)", "tommy", "jimmy (transcriber)" });
+			_model = new ContributorsListControlViewModel(gatherer.Object, null);
+
+			var names = _model.GetAutoCompleteNames();
+			Assert.AreEqual(2, names.Count);
+			Assert.IsFalse(names.Contains("jimmy (Author)"));
 			Assert.IsTrue(names.Contains("jimmy"));
 			Assert.IsTrue(names.Contains("tommy"));
 		}

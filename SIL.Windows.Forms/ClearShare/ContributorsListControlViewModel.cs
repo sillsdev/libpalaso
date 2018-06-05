@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -62,10 +62,24 @@ namespace SIL.Windows.Forms.ClearShare
 		{
 			var list = (_autoCompleteProvider != null ?
 				_autoCompleteProvider.GetValuesForKey("person") : new List<string>(0));
-
+			list = GetAutoCompleteList(list);
 			var autoCompleteValues = new AutoCompleteStringCollection();
 			autoCompleteValues.AddRange(list.ToArray());
 			return autoCompleteValues;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Remove role from people name if present
+		/// </summary>
+		/// <param name="list">list of names</param>
+		/// <returns>names list without role</returns>
+		/// ------------------------------------------------------------------------------------
+		private static string[] GetAutoCompleteList(IEnumerable<string> list)
+		{
+			return new SortedSet<string>(from name in list
+				let i = name.IndexOf(" (", StringComparison.Ordinal)
+				select i >= 0? name.Substring(0, i) : name).ToArray();
 		}
 	}
 }

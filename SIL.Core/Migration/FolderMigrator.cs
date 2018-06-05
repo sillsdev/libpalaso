@@ -158,7 +158,17 @@ namespace SIL.Migration
 					string targetFilePath = Path.Combine(destinationPath, fileName);
 					if (fileNamesToMigrate.Contains(sourceFilePath))
 					{
-						strategy.Migrate(sourceFilePath, targetFilePath);
+						try
+						{
+							strategy.Migrate(sourceFilePath, targetFilePath);
+						}
+						catch (Exception e)
+						{
+							// Put the unmigrated file where the migrated files will end up
+							string unmigratedFile = Path.Combine(SourcePath, Path.GetFileName(sourceFilePath) + ".bad");
+							File.Copy(sourceFilePath, unmigratedFile);
+							problems.Add(new FolderMigratorProblem { Exception = e, FilePath = sourceFilePath });
+						}
 					}
 					else
 					{
