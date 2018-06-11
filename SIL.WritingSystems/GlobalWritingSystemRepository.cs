@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -218,6 +218,14 @@ namespace SIL.WritingSystems
 			}
 		}
 
+		public override void Replace(string languageTag, T newWs)
+		{
+			using (new WsStasher(Path.Combine(_path, languageTag + Extension)))
+			{
+				base.Replace(languageTag, newWs);
+			}
+		}
+		
 		/// <summary>
 		/// Returns true if a writing system with the given Store ID exists in the store
 		/// </summary>
@@ -510,5 +518,22 @@ namespace SIL.WritingSystems
 				_mutex.Dispose();
 			IsDisposed = true;
 		}
+
+		private class WsStasher : IDisposable
+		{
+			private string _wsFile;
+			private const string _localrepoupdate = ".localrepoupdate";
+
+			public WsStasher(string wsFile)
+			{
+				_wsFile = wsFile;
+				File.Copy(wsFile, wsFile + _localrepoupdate);
+			}
+			public void Dispose()
+			{
+				File.Move($"{_wsFile}{_localrepoupdate}", _wsFile);
+			}
+		}
+
 	}
 }

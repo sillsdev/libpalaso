@@ -50,8 +50,7 @@ namespace SIL.WritingSystems
 						T newWs = WritingSystemFactory.Create(ws);
 						try
 						{
-							_globalRepository.Remove(ws.LanguageTag);
-							_globalRepository.Set(newWs);
+							_globalRepository.Replace(ws.LanguageTag, newWs);
 						}
 						catch (Exception)
 						{
@@ -60,7 +59,6 @@ namespace SIL.WritingSystems
 						}
 					}
 				}
-
 				else
 				{
 					_globalRepository.Set(WritingSystemFactory.Create(ws));

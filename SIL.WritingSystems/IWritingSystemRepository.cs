@@ -158,6 +158,7 @@ namespace SIL.WritingSystems
 		string GetNewIdWhenSet(T ws);
 		new IEnumerable<T> AllWritingSystems { get; }
 		bool CanSave(T ws);
-		new IWritingSystemFactory<T> WritingSystemFactory { get; } 
+		new IWritingSystemFactory<T> WritingSystemFactory { get; }
+		void Replace(string wsLanguageTag, T newWs);
 	}
 }

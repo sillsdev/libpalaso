@@ -167,6 +167,12 @@ namespace SIL.WritingSystems
 			ws.Id = ws.LanguageTag;
 		}
 
+		public virtual void Replace(string languageTag, T newWs)
+		{
+			Remove(languageTag);
+			Set(newWs);
+		}
+
 		/// <summary>
 		/// Updates the changed IDs mapping.
 		/// </summary>
