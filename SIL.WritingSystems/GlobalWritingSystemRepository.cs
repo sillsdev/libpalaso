@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -215,6 +215,19 @@ namespace SIL.WritingSystems
 			{
 				UpdateDefinitions();
 				return base.Get(id);
+			}
+		}
+
+		/// <summary>
+		/// This method will save the global store file in a temporary location while doing the base
+		/// Replace (Remove/Set). This will leave the old file content available during the Save method so that
+		/// it will round trip correctly.
+		/// </summary>
+		public override void Replace(string languageTag, T newWs)
+		{
+			using (new WsStasher(Path.Combine(_path, languageTag + Extension)))
+			{
+				base.Replace(languageTag, newWs);
 			}
 		}
 
@@ -509,6 +522,22 @@ namespace SIL.WritingSystems
 			if (disposing)
 				_mutex.Dispose();
 			IsDisposed = true;
+		}
+
+		private class WsStasher : IDisposable
+		{
+			private string _wsFile;
+			private const string _localrepoupdate = ".localrepoupdate";
+
+			public WsStasher(string wsFile)
+			{
+				_wsFile = wsFile;
+				RobustFile.Copy(wsFile, wsFile + _localrepoupdate);
+			}
+			public void Dispose()
+			{
+				RobustFile.Move($"{_wsFile}{_localrepoupdate}", _wsFile);
+			}
 		}
 	}
 }
