@@ -41,6 +41,8 @@ namespace SIL.IO
 		{
 			// ReSharper disable EmptyGeneralCatchClause
 
+			var failedToDeleteAChildDirectory = false;
+
 			if (!Platform.IsWindows)
 			{
 				// The Mono runtime deletes readonly files and directories that contain readonly files.
@@ -86,13 +88,21 @@ namespace SIL.IO
 					}
 					foreach (var dir in dirs)
 					{
-						DeleteDirectoryAndContents(dir, overrideReadOnly);
+						if (!DeleteDirectoryAndContents(dir, overrideReadOnly))
+						{
+							failedToDeleteAChildDirectory = true;
+						}
 					}
-
 				}
 				catch (Exception)//yes, even these simple queries can throw exceptions, as stuff suddenly is deleted based on our prior request
 				{
 				}
+
+				// if a child directory could not be deleted, well that already took us 2 seconds. If we keep trying, then
+				// we will take up 40 * 2 seconds. Now if that child is 2 levels down, we're up to 40 * 40 * 2, etc. So give up.
+				if (failedToDeleteAChildDirectory)
+					break;
+
 				//sleep and let some OS things catch up
 				Thread.Sleep(50);
 			}
