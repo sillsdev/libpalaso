@@ -124,7 +124,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void LatestVersion_IsThree()
 		{
-			Assert.AreEqual(3, LdmlDataMapper.CurrentLdmlVersion);
+			Assert.AreEqual(3, LdmlDataMapper.CurrentLdmlLibraryVersion);
 		}
 
 		[Test]
@@ -905,7 +905,7 @@ namespace SIL.WritingSystems.Tests
 					Is.TypeOf<ApplicationException>().With.Property("Message").
 					ContainsSubstring(String.Format(
 						"The LDML tag 'en' is version 0.  Version {0} was expected.",
-						LdmlDataMapper.CurrentLdmlVersion
+						LdmlDataMapper.CurrentLdmlLibraryVersion
 					))
 				);
 			}
@@ -927,7 +927,7 @@ namespace SIL.WritingSystems.Tests
 					Is.TypeOf<ApplicationException>().With.Property("Message").
 					ContainsSubstring(String.Format(
 						"The LDML tag 'xh' is version 0.  Version {0} was expected.",
-						LdmlDataMapper.CurrentLdmlVersion
+						LdmlDataMapper.CurrentLdmlLibraryVersion
 					))
 				);
 			}

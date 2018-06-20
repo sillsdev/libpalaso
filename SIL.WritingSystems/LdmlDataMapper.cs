@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using Icu;
@@ -38,7 +39,7 @@ namespace SIL.WritingSystems
 		/// This should not be confused with the version of the locale data contained in this writing system.
 		/// That information is stored in the "VersionNumber" property.
 		/// </summary>
-		public const int CurrentLdmlVersion = 3;
+		public const int CurrentLdmlLibraryVersion = 3;
 
 		private static readonly XNamespace Palaso = "urn://palaso.org/ldmlExtensions/v1";
 		private static readonly XNamespace Sil = "urn://www.sil.org/ldml/0.1";
@@ -319,7 +320,13 @@ namespace SIL.WritingSystems
 
 			var numbersElem = element.Element("numbers");
 			if (numbersElem != null)
+			{
 				ReadNumbersElement(numbersElem, ws);
+				if (ws.NumberingSystem == NumberingSystemDefinition.Default)
+				{
+					ReadIntermediateVersion3NumbersElement(numbersElem, ws);
+				}
+			}
 
 			var collationsElem = element.Element("collations");
 			if (collationsElem != null)
@@ -387,7 +394,7 @@ namespace SIL.WritingSystems
 					"The LDML tag '{0}' is version {1}.  Version {2} was expected.",
 					ws.LanguageTag,
 					version,
-					CurrentLdmlVersion
+					CurrentLdmlLibraryVersion
 					));
 			}
 		}
@@ -669,25 +676,72 @@ namespace SIL.WritingSystems
 			}
 		}
 
-		// Numbering system gets added to the character set definition
+		/// <summary>
+		/// This will read the content written out in the first released version 3 LDML Library (which was used in some limited releases of products)
+		/// The content was not valid LDML.
+		/// The numbering system is added as a NumberingSystemDefinition
+		/// </summary>
+		private void ReadIntermediateVersion3NumbersElement(XElement numbersElem, WritingSystemDefinition ws)
+		{
+			XElement defaultNumberingSystemElem = numbersElem.NonAltElement("defaultNumberingSystem");
+			if (defaultNumberingSystemElem != null)
+			{
+				var id = (string)defaultNumberingSystemElem;
+				XElement numberingSystemsElem = numbersElem.NonAltElements("numberingSystem")
+					.FirstOrDefault(e => id == (string)e.Attribute("id") && (string)e.Attribute("type") == "numeric");
+				if (numberingSystemsElem != null)
+				{
+					var digits = (string)numberingSystemsElem.Attribute("digits");
+					var cldrSysId = CLDRNumberingSystems.FindNumberingSystemID(digits);
+					if (cldrSysId == null) // digits don't match a cldr def, create a custom one
+					{
+						ws.NumberingSystem = NumberingSystemDefinition.CreateCustomSystem(digits);
+					}
+					else
+					{
+						ws.NumberingSystem = new NumberingSystemDefinition(cldrSysId);
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Read the numbers element, expecting only a defaultNumberingSystem element.
+		/// The numbering system is added as a NumberingSystemDefinition
+		/// </summary>
 		private void ReadNumbersElement(XElement numbersElem, WritingSystemDefinition ws)
 		{
 			XElement defaultNumberingSystemElem = numbersElem.NonAltElement("defaultNumberingSystem");
 			if (defaultNumberingSystemElem != null)
 			{
-				var id = (string) defaultNumberingSystemElem;
-				XElement numberingSystemsElem = numbersElem.NonAltElements("numberingSystem")
-					.FirstOrDefault(e => id == (string) e.Attribute("id") && (string) e.Attribute("type") == "numeric");
-				if (numberingSystemsElem != null)
+				var id = (string)defaultNumberingSystemElem;
+				var digits = CLDRNumberingSystems.GetDigitsForID(id);
+				if (!string.IsNullOrEmpty(digits) )
 				{
-					var csd = new CharacterSetDefinition("numeric");
-					// Only handle numeric types
-					var digits = (string) numberingSystemsElem.Attribute("digits");
-					foreach (char charItem in digits)
-						csd.Characters.Add(charItem.ToString(CultureInfo.InvariantCulture));
-					ws.CharacterSets.Add(csd);
+					ws.NumberingSystem = new NumberingSystemDefinition(id);
+				}
+				else if(ParseCustomNumberingSystem(id, out digits))
+				{
+					ws.NumberingSystem = NumberingSystemDefinition.CreateCustomSystem(digits);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Parses text similar to 'other(0123456789)' returns true if valid
+		/// </summary>
+		private bool ParseCustomNumberingSystem(string id, out string digits)
+		{
+			var regex = new Regex("other\\((.*)\\)");
+			var match = regex.Match(id.Trim());
+			if (match.Success)
+			{
+				digits = match.Groups[1].Value;
+				return true;
+			}
+
+			digits = null;
+			return false;
 		}
 
 		private void ReadCollationsElement(XElement collationsElem, WritingSystemDefinition ws)
@@ -1189,38 +1243,26 @@ namespace SIL.WritingSystems
 			// Ignore lineOrder
 		}
 
+		/// <summary>
+		/// Write all the content into the Numbers element cleaning up bad data from our old library and setting the defaultNumberingSystem
+		/// for the writing system if there is one defined other than the CLDR default ('latn').
+		/// </summary>
 		private void WriteNumbersElement(XElement numbersElem, WritingSystemDefinition ws)
 		{
 			Debug.Assert(numbersElem != null);
 			Debug.Assert(ws != null);
 
-			// Save off defaultNumberingSystem if it exists.
-			string defaultNumberingSystem = "standard";
-			XElement defaultNumberingSystemElem = numbersElem.NonAltElement("defaultNumberingSystem");
-			if (defaultNumberingSystemElem != null && !string.IsNullOrEmpty((string) defaultNumberingSystemElem))
-				defaultNumberingSystem = (string) defaultNumberingSystemElem;
-			// Remove defaultNumberingSystem and numberingSystems elements of type "numeric" to repopulate later
+			// Remove defaultNumberingSystem and numberingSystems elements of type "numeric", we'll repopulate defaultNumberingSystem if needed
 			numbersElem.NonAltElements("defaultNumberingSystem").Remove();
-			numbersElem.NonAltElements("numberingSystem").Where(e => (string) e.Attribute("id") == defaultNumberingSystem && (string) e.Attribute("type") == "numeric" && e.Attribute("alt") == null).Remove();
+			// Remove any numberingSystem elements created by our intermediate version of the LDMLLibrary
+			numbersElem.NonAltElements("numberingSystem").Where(e => (string) e.Attribute("id") == "standard" && (string) e.Attribute("type") == "numeric" && e.Attribute("alt") == null).Remove();
 
-			CharacterSetDefinition csd;
-			if (ws.CharacterSets.TryGet("numeric", out csd))
-			{
-				// Create defaultNumberingSystem element and add as the first child
-				if (defaultNumberingSystemElem == null)
-				{
-					defaultNumberingSystemElem = new XElement("defaultNumberingSystem", defaultNumberingSystem);
-					numbersElem.AddFirst(defaultNumberingSystemElem);
-				}
-
-				// Populate numbering system element
-				var numberingSystemsElem = new XElement("numberingSystem");
-				numberingSystemsElem.SetAttributeValue("id", defaultNumberingSystem);
-				numberingSystemsElem.SetAttributeValue("type", csd.Type);
-				string digits = string.Join("", csd.Characters);
-				numberingSystemsElem.SetAttributeValue("digits", digits);
-				numbersElem.Add(numberingSystemsElem);
-			}
+			var numberingSystem = ws.NumberingSystem;
+			if (numberingSystem.Equals(NumberingSystemDefinition.Default))
+				return;
+			// Create defaultNumberingSystem element and add as the first child
+			var defaultNumberingSystemElem = new XElement("defaultNumberingSystem", numberingSystem.Id);
+			numbersElem.AddFirst(defaultNumberingSystemElem);
 		}
 
 		private void WriteCollationsElement(XElement collationsElem, WritingSystemDefinition ws)
