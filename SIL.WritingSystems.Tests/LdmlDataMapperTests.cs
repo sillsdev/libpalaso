@@ -391,6 +391,13 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void BadCustomDigitsReturnDefault()
+		{
+			Assert.AreSame(NumberingSystemDefinition.Default, NumberingSystemDefinition.CreateCustomSystem(string.Empty));
+			Assert.AreSame(NumberingSystemDefinition.Default, NumberingSystemDefinition.CreateCustomSystem("123"));
+		}
+
+		[Test]
 		public void Roundtrip_LdmlCustomNumbersWithSurrogatePairs()
 		{
 			using (var environment = new TestEnvironment())
