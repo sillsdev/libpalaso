@@ -65,11 +65,13 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Factory method to create a custom numbering system with specific digits
 		/// </summary>
+		/// <remarks>If the digits given are invalid it will return the Default instead.</remarks>
 		public static NumberingSystemDefinition CreateCustomSystem(string digits)
 		{
 			if (new StringInfo(digits).LengthInTextElements != 10)
 			{
-				throw new ArgumentException("numbering systems must contain exactly 10 digits");
+				Debug.WriteLine("Numbering systems must contain exactly 10 digits. Tried to create one with '{0}'");
+				return Default;
 			}
 			return new NumberingSystemDefinition {_digits = digits};
 		}
