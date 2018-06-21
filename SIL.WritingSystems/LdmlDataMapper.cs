@@ -1365,7 +1365,7 @@ namespace SIL.WritingSystems
 				fontElem.SetAttributeValue("name", font.Name);
 
 				// Generate space-separated list of font roles
-				if (font.Roles != FontRoles.Default)
+				if (font.Roles != FontRoles.None)
 				{
 					var fontRoleList = new List<string>();
 					foreach (FontRoles fontRole in Enum.GetValues(typeof(FontRoles)))
