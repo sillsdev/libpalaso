@@ -391,6 +391,13 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void BadCustomDigitsReturnDefault()
+		{
+			Assert.AreSame(NumberingSystemDefinition.Default, NumberingSystemDefinition.CreateCustomSystem(string.Empty));
+			Assert.AreSame(NumberingSystemDefinition.Default, NumberingSystemDefinition.CreateCustomSystem("123"));
+		}
+
+		[Test]
 		public void Roundtrip_LdmlCustomNumbersWithSurrogatePairs()
 		{
 			using (var environment = new TestEnvironment())
@@ -818,9 +825,9 @@ namespace SIL.WritingSystems.Tests
 				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:font[@name='font1' and @types='default' and @size='2.1' and @minversion='3.1.4' and @features='order=3 children=2 color=red createDate=1996' and @lang='en' and @otlang='abcd' and @subset='unknown']/sil:url[text()='http://wirl.scripts.sil.org/font1']", environment.NamespaceManager);
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:font[@name='font1' and @types='default' and @size='2.1' and @minversion='3.1.4' and @features='order=3 children=2 color=red createDate=1996' and @lang='en' and @otlang='abcd' and @subset='unknown']/sil:url[text()='http://wirl.scripts.sil.org/font1']", 1, environment.NamespaceManager);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/special/sil:external-resources/sil:font[@name='font2' and @size='2.1' and @minversion='3.1.4' and @features='order=3 children=2 color=red createDate=1996' and @lang='en' and @otlang='abcd' and @subset='unknown']/sil:url[text()='http://wirl.scripts.sil.org/font2']", environment.NamespaceManager);
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:font[@name='font2' and @size='2.1' and @minversion='3.1.4' and @features='order=3 children=2 color=red createDate=1996' and @lang='en' and @otlang='abcd' and @subset='unknown']/sil:url[text()='http://wirl.scripts.sil.org/font2']", 1, environment.NamespaceManager);
 			}
 		}
 
