@@ -789,6 +789,49 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void Roundtrip_LdmlFontRoles()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var fd1 = new FontDefinition("font1")
+				{
+					RelativeSize = 2.1f,
+					MinVersion = "3.1.4",
+					Features = "order=3 children=2 color=red createDate=1996",
+					Language = "en",
+					Engines = FontEngines.Graphite | FontEngines.OpenType,
+					OpenTypeLanguage = "abcd",
+					Roles = FontRoles.Default,
+					Subset = "unknown"
+				};
+				fd1.Urls.Add("http://wirl.scripts.sil.org/font1");
+
+				var fd2 = new FontDefinition("font2")
+				{
+					RelativeSize = 2.1f,
+					MinVersion = "3.1.4",
+					Features = "order=3 children=2 color=red createDate=1996",
+					Language = "en",
+					Engines = FontEngines.Graphite | FontEngines.OpenType,
+					OpenTypeLanguage = "abcd",
+					Roles = FontRoles.None,
+					Subset = "unknown"
+				};
+				fd2.Urls.Add("http://wirl.scripts.sil.org/font2");
+
+				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
+				wsToLdml.Fonts.Add(fd1);
+				wsToLdml.Fonts.Add(fd2);
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:font[@name='font1' and @types='default' and @size='2.1' and @minversion='3.1.4' and @features='order=3 children=2 color=red createDate=1996' and @lang='en' and @otlang='abcd' and @subset='unknown']/sil:url[text()='http://wirl.scripts.sil.org/font1']", 1, environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:font[@name='font2' and @size='2.1' and @minversion='3.1.4' and @features='order=3 children=2 color=red createDate=1996' and @lang='en' and @otlang='abcd' and @subset='unknown']/sil:url[text()='http://wirl.scripts.sil.org/font2']", 1, environment.NamespaceManager);
+			}
+		}
+
+		[Test]
 		public void Roundtrip_LdmlSpellChecker()
 		{
 			using (var environment = new TestEnvironment())
