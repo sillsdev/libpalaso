@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -616,9 +616,9 @@ namespace SIL.Archiving.IMDI
 			set
 			{
 				_outputFolder = value;
-				PackagePath = Path.Combine(value, CorpusDirectoryName);
-				if (_imdiData != null)
-					_imdiData.PackagePath = "";
+				PackagePath = !string.IsNullOrEmpty(_outputFolder)
+					? Path.Combine(value, CorpusDirectoryName)
+					: string.Empty;
 			}
 		}
 	}
