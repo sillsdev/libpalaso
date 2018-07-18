@@ -287,10 +287,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="SIL.Windows.Forms.WritingSystems, Version=4.2.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\output\Debug\SIL.Windows.Forms.WritingSystems.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -344,6 +340,10 @@
     <ProjectReference Include="..\..\SIL.Windows.Forms.Keyboarding\SIL.Windows.Forms.Keyboarding.csproj">
       <Project>{0580ed5f-6274-4928-83ee-175f01ad052d}</Project>
       <Name>SIL.Windows.Forms.Keyboarding</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SIL.Windows.Forms.WritingSystems\SIL.Windows.Forms.WritingSystems.csproj">
+      <Project>{f7df58e2-5b67-498a-9f64-b5f1584a5ab9}</Project>
+      <Name>SIL.Windows.Forms.WritingSystems</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
