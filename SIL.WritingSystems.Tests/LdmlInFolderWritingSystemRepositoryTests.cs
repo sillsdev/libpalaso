@@ -124,7 +124,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void LatestVersion_IsThree()
 		{
-			Assert.AreEqual(3, LdmlDataMapper.CurrentLdmlVersion);
+			Assert.AreEqual(3, LdmlDataMapper.CurrentLdmlLibraryVersion);
 		}
 
 		[Test]
@@ -905,7 +905,7 @@ namespace SIL.WritingSystems.Tests
 					Is.TypeOf<ApplicationException>().With.Property("Message").
 					ContainsSubstring(String.Format(
 						"The LDML tag 'en' is version 0.  Version {0} was expected.",
-						LdmlDataMapper.CurrentLdmlVersion
+						LdmlDataMapper.CurrentLdmlLibraryVersion
 					))
 				);
 			}
@@ -927,7 +927,7 @@ namespace SIL.WritingSystems.Tests
 					Is.TypeOf<ApplicationException>().With.Property("Message").
 					ContainsSubstring(String.Format(
 						"The LDML tag 'xh' is version 0.  Version {0} was expected.",
-						LdmlDataMapper.CurrentLdmlVersion
+						LdmlDataMapper.CurrentLdmlLibraryVersion
 					))
 				);
 			}
@@ -1053,40 +1053,48 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			using (var testFolder2 = new TemporaryFolder("LdmlInFolderWritingSystemRepositoryTests2"))
 			{
-				var ws = new WritingSystemDefinition("en-US");
+				var enUsTag = "en-US";
+				var ws = new WritingSystemDefinition(enUsTag);
 				environment.LocalRepository.Set(ws);
 				ws.RightToLeftScript = true;
-				ws.DefaultCollation = new SystemCollationDefinition {LanguageTag = "en-US"};
+				ws.DefaultCollation = new SystemCollationDefinition {LanguageTag = enUsTag};
 				environment.LocalRepository.Save();
-				Assert.IsTrue(File.Exists(environment.GetPathForLocalWSId("en-US")));
-				Assert.IsTrue(File.Exists(environment.GetPathForGlobalWSId("en-US")));
+				Assert.IsTrue(File.Exists(environment.GetPathForLocalWSId(enUsTag)));
+				Assert.IsTrue(File.Exists(environment.GetPathForGlobalWSId(enUsTag)));
+				// Add some extra content to make sure we round trip it
+				var document = XDocument.Load(environment.GetPathForGlobalWSId(enUsTag));
+				var root = document.Root;
+				root.Add(XElement.Parse("<mysteryTag><languages><language type='aa'>Ingles</language></languages></mysteryTag>"));
+				document.Save(environment.GetPathForGlobalWSId(enUsTag));
 
 				// ensure that the date modified actually changes
 				Thread.Sleep(1000);
 
-				DateTime lastModified = File.GetLastWriteTime(environment.GetPathForGlobalWSId("en-US"));
+				DateTime lastModified = File.GetLastWriteTime(environment.GetPathForGlobalWSId(enUsTag));
 				var localRepo2 = new LdmlInFolderWritingSystemRepository(testFolder2.Path, environment.GlobalRepository);
-				ws = new WritingSystemDefinition("en-US");
+				ws = new WritingSystemDefinition(enUsTag);
 				localRepo2.Set(ws);
 				ws.RightToLeftScript = false;
 				localRepo2.Save();
-				Assert.Less(lastModified, File.GetLastWriteTime(environment.GetPathForGlobalWSId("en-US")));
+				Assert.Less(lastModified, File.GetLastWriteTime(environment.GetPathForGlobalWSId(enUsTag)));
 
-				lastModified = File.GetLastWriteTime(environment.GetPathForLocalWSId("en-US"));
+				lastModified = File.GetLastWriteTime(environment.GetPathForLocalWSId(enUsTag));
 				environment.ResetRepositories();
-				ws = environment.LocalRepository.Get("en-US");
+				ws = environment.LocalRepository.Get(enUsTag);
 				Assert.That(ws.RightToLeftScript, Is.True);
 				WritingSystemDefinition[] sharedWSs = environment.LocalRepository.CheckForNewerGlobalWritingSystems().ToArray();
-				Assert.That(sharedWSs.Select(sharedWS => sharedWS.LanguageTag), Is.EqualTo(new[] {"en-US"}));
+				Assert.That(sharedWSs.Select(sharedWS => sharedWS.LanguageTag), Is.EqualTo(new[] {enUsTag}));
 				environment.LocalRepository.Remove(sharedWSs[0].LanguageTag);
 				environment.LocalRepository.Set(sharedWSs[0]);
 				environment.LocalRepository.Save();
 
-				ws = environment.LocalRepository.Get("en-US");
+				ws = environment.LocalRepository.Get(enUsTag);
 				Assert.That(ws.RightToLeftScript, Is.False);
 				// ensure that application-specific settings are preserved
-				Assert.That(ws.DefaultCollation.ValueEquals(new SystemCollationDefinition {LanguageTag = "en-US"}), Is.True);
-				Assert.Less(lastModified, File.GetLastWriteTime(environment.GetPathForLocalWSId("en-US")));
+				Assert.That(ws.DefaultCollation.ValueEquals(new SystemCollationDefinition {LanguageTag = enUsTag}), Is.True);
+				Assert.Less(lastModified, File.GetLastWriteTime(environment.GetPathForLocalWSId(enUsTag)));
+				// verify that we round tripped the extra content
+				AssertThatXmlIn.File(environment.GetPathForGlobalWSId(enUsTag)).HasSpecifiedNumberOfMatchesForXpath("/ldml/mysteryTag/languages/language[@type='aa']", 1);
 			}
 		}
 

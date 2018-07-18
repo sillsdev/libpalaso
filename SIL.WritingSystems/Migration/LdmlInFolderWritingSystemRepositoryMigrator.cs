@@ -17,7 +17,7 @@ namespace SIL.WritingSystems.Migration
 		public LdmlInFolderWritingSystemRepositoryMigrator(
 			string ldmlPath,
 			Action<int, IEnumerable<LdmlMigrationInfo>> migrationHandler,
-			int versionToMigrateTo = LdmlDataMapper.CurrentLdmlVersion
+			int versionToMigrateTo = LdmlDataMapper.CurrentLdmlLibraryVersion
 		) : base(versionToMigrateTo, ldmlPath)
 		{
 			_removedPropertiesSetters = new Dictionary<string, List<Action<WritingSystemDefinition>>>();

@@ -99,7 +99,7 @@ namespace SIL.WritingSystems
 				VariantSubtag variantSubtag;
 				if (!StandardSubtags.CommonPrivateUseVariants.TryGet(privateUseCode, out variantSubtag))
 				{
-					if (!string.IsNullOrEmpty(variantNames))
+					if (!string.IsNullOrEmpty(variantNames) && index < variantName.Length)
 					{
 						variantSubtag = new VariantSubtag(privateUseCode, variantName[index]);
 						index++;

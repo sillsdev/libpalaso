@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -300,7 +300,7 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		// This tests characters and numbers elements
+		// This tests characters elements
 		[Test]
 		public void Roundtrip_LdmlCharacters()
 		{
@@ -335,17 +335,88 @@ namespace SIL.WritingSystems.Tests
 				// Character set in XPath is escaped differently from the actual file
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
 					.HasAtLeastOneMatchForXpath("/ldml/characters/special/sil:exemplarCharacters[@type='footnotes' and text()='[¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ {¹⁰}]']", environment.NamespaceManager);
-				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/numbers/defaultNumberingSystem[text()='standard']", environment.NamespaceManager);
-				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
-					.HasAtLeastOneMatchForXpath("/ldml/numbers/numberingSystem[@id='standard' and @type='numeric' and @digits='๐๑๒๓๔๕๖๗๘๙']", environment.NamespaceManager);
 
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
 				Assert.That(wsFromLdml.CharacterSets["index"].ValueEquals(index), Is.True);
 				Assert.That(wsFromLdml.CharacterSets["main"].ValueEquals(main), Is.True);
 				Assert.That(wsFromLdml.CharacterSets["footnotes"].ValueEquals(footnotes), Is.True);
-				Assert.That(wsFromLdml.CharacterSets["numeric"].ValueEquals(numeric), Is.True);
+			}
+		}
+
+		[Test]
+		public void Roundtrip_LdmlCLDRNumbers()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var numeric = new NumberingSystemDefinition("arab");
+
+				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
+				wsToLdml.NumberingSystem = numeric;
+
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/numbers/defaultNumberingSystem[text()='arab']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasNoMatchForXpath("/ldml/numbers/numberingSystem", environment.NamespaceManager);
+
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
+				Assert.That(wsFromLdml.NumberingSystem.ValueEquals(numeric));
+			}
+		}
+
+		[Test]
+		public void Roundtrip_LdmlCustomNumbers()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var numeric = NumberingSystemDefinition.CreateCustomSystem("๐๑๒๓๔๕๖๗๘๙");
+
+				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
+				wsToLdml.NumberingSystem = numeric;
+
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/numbers/defaultNumberingSystem[text()='other(๐๑๒๓๔๕๖๗๘๙)']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasNoMatchForXpath("/ldml/numbers/numberingSystem", environment.NamespaceManager);
+
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
+				Assert.That(wsFromLdml.NumberingSystem.ValueEquals(numeric));
+			}
+		}
+
+		[Test]
+		public void BadCustomDigitsReturnDefault()
+		{
+			Assert.AreSame(NumberingSystemDefinition.Default, NumberingSystemDefinition.CreateCustomSystem(string.Empty));
+			Assert.AreSame(NumberingSystemDefinition.Default, NumberingSystemDefinition.CreateCustomSystem("123"));
+		}
+
+		[Test]
+		public void Roundtrip_LdmlCustomNumbersWithSurrogatePairs()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var numeric = NumberingSystemDefinition.CreateCustomSystem("01234𠈓6789");
+
+				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
+				wsToLdml.NumberingSystem = numeric;
+
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasAtLeastOneMatchForXpath("/ldml/numbers/defaultNumberingSystem[text()='other(01234𠈓6789)']", environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasNoMatchForXpath("/ldml/numbers/numberingSystem", environment.NamespaceManager);
+
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
+				Assert.That(wsFromLdml.NumberingSystem.ValueEquals(numeric));
 			}
 		}
 
@@ -718,6 +789,49 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void Roundtrip_LdmlFontRoles()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var fd1 = new FontDefinition("font1")
+				{
+					RelativeSize = 2.1f,
+					MinVersion = "3.1.4",
+					Features = "order=3 children=2 color=red createDate=1996",
+					Language = "en",
+					Engines = FontEngines.Graphite | FontEngines.OpenType,
+					OpenTypeLanguage = "abcd",
+					Roles = FontRoles.Default,
+					Subset = "unknown"
+				};
+				fd1.Urls.Add("http://wirl.scripts.sil.org/font1");
+
+				var fd2 = new FontDefinition("font2")
+				{
+					RelativeSize = 2.1f,
+					MinVersion = "3.1.4",
+					Features = "order=3 children=2 color=red createDate=1996",
+					Language = "en",
+					Engines = FontEngines.Graphite | FontEngines.OpenType,
+					OpenTypeLanguage = "abcd",
+					Roles = FontRoles.None,
+					Subset = "unknown"
+				};
+				fd2.Urls.Add("http://wirl.scripts.sil.org/font2");
+
+				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
+				wsToLdml.Fonts.Add(fd1);
+				wsToLdml.Fonts.Add(fd2);
+				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:font[@name='font1' and @types='default' and @size='2.1' and @minversion='3.1.4' and @features='order=3 children=2 color=red createDate=1996' and @lang='en' and @otlang='abcd' and @subset='unknown']/sil:url[text()='http://wirl.scripts.sil.org/font1']", 1, environment.NamespaceManager);
+				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
+					.HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:font[@name='font2' and @size='2.1' and @minversion='3.1.4' and @features='order=3 children=2 color=red createDate=1996' and @lang='en' and @otlang='abcd' and @subset='unknown']/sil:url[text()='http://wirl.scripts.sil.org/font2']", 1, environment.NamespaceManager);
+			}
+		}
+
+		[Test]
 		public void Roundtrip_LdmlSpellChecker()
 		{
 			using (var environment = new TestEnvironment())
@@ -968,7 +1082,7 @@ namespace SIL.WritingSystems.Tests
 				adaptor.Write(file.Path, ws, new MemoryStream(File.ReadAllBytes(file.Path), true));
 				AssertThatLdmlMatches("xh", "", "", "", file);
 				var versionReader = new WritingSystemLdmlVersionGetter();
-				Assert.That(LdmlDataMapper.CurrentLdmlVersion, Is.EqualTo(versionReader.GetFileVersion(file.Path)));
+				Assert.That(LdmlDataMapper.CurrentLdmlLibraryVersion, Is.EqualTo(versionReader.GetFileVersion(file.Path)));
 			}
 		}
 
@@ -996,7 +1110,7 @@ namespace SIL.WritingSystems.Tests
 								Throws.Exception.TypeOf<ApplicationException>()
 										.With.Property("Message")
 										.EqualTo(String.Format("The LDML tag 'en' is version 0.  Version {0} was expected.",
-										LdmlDataMapper.CurrentLdmlVersion)));
+										LdmlDataMapper.CurrentLdmlLibraryVersion)));
 			}
 		}
 
@@ -1013,7 +1127,7 @@ namespace SIL.WritingSystems.Tests
 								Throws.Exception.TypeOf<ApplicationException>()
 										.With.Property("Message")
 										.EqualTo(String.Format("The LDML tag 'en' is version 2.  Version {0} was expected.",
-										LdmlDataMapper.CurrentLdmlVersion)));
+										LdmlDataMapper.CurrentLdmlLibraryVersion)));
 			}
 		}
 

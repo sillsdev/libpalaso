@@ -87,6 +87,7 @@ namespace SIL.WritingSystems
 		private readonly ObservableHashSet<PunctuationPattern> _punctuationPatterns;
 		private readonly BulkObservableList<QuotationMark> _quotationMarks;
 		private readonly KeyedBulkObservableList<string, CharacterSetDefinition> _characterSets;
+		private NumberingSystemDefinition _numberingSystem;
 		private readonly SimpleMonitor _ignoreVariantChanges = new SimpleMonitor();
 		private string _legacyMapping;
 		private bool _isGraphiteEnabled = true;
@@ -118,7 +119,7 @@ namespace SIL.WritingSystems
 		{
 			if (!IetfLanguageTag.IsValid(languageTag))
 				throw new ArgumentException("The language tag is invalid.", languageTag);
-
+			_numberingSystem = NumberingSystemDefinition.Default;
 			_languageTag = IetfLanguageTag.Canonicalize(languageTag);
 			IEnumerable<VariantSubtag> variantSubtags;
 			IetfLanguageTag.TryGetSubtags(_languageTag, out _language, out _script, out _region, out variantSubtags);
@@ -172,6 +173,7 @@ namespace SIL.WritingSystems
 			if (ws._defaultCollation != null)
 				_defaultCollation = _collations[ws._collations.IndexOf(ws._defaultCollation)];
 			_characterSets = new KeyedBulkObservableList<string, CharacterSetDefinition>(ws._characterSets.CloneItems(), csd => csd.Type);
+			_numberingSystem = new NumberingSystemDefinition(ws.NumberingSystem);
 			_isGraphiteEnabled = ws._isGraphiteEnabled;
 			_legacyMapping = ws._legacyMapping;
 			SetupCollectionChangeListeners();
@@ -791,6 +793,12 @@ namespace SIL.WritingSystems
 			get { return _characterSets; }
 		}
 
+		public NumberingSystemDefinition NumberingSystem
+		{
+			get => _numberingSystem;
+			set { Set(() => NumberingSystem, ref _numberingSystem, value); }
+		}
+
 		protected virtual void UpdateLanguageTag()
 		{
 			if (_language == null && (_script != null || _region != null || _variants.Any(v => !v.IsPrivateUse)))
@@ -1215,6 +1223,8 @@ namespace SIL.WritingSystems
 				if (!other._characterSets.TryGet(csd.Type, out otherCsd) || !csd.ValueEquals(otherCsd))
 					return false;
 			}
+			if (!_numberingSystem.ValueEquals(other._numberingSystem))
+				return false;
 
 			return true;
 		}

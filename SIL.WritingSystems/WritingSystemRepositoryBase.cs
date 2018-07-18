@@ -168,6 +168,16 @@ namespace SIL.WritingSystems
 		}
 
 		/// <summary>
+		/// Replace one writing system with another
+		/// </summary>
+		/// <remarks>The language tag could either change, or remain the same.</remarks>
+		public virtual void Replace(string languageTag, T newWs)
+		{
+			Remove(languageTag);
+			Set(newWs);
+		}
+
+		/// <summary>
 		/// Updates the changed IDs mapping.
 		/// </summary>
 		protected void UpdateChangedIds(string oldId, string newId)
