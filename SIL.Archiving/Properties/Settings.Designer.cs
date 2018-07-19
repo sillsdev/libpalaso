@@ -25,7 +25,7 @@ namespace SIL.Archiving.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://www.help.insitehome.org/reap/manual/ramp-users-manual")]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://gateway.sil.org/display/RH/RAMP+Users%27+Manual")]
         public string RampWebSite {
             get {
                 return ((string)(this["RampWebSite"]));
