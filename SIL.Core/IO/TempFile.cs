@@ -73,7 +73,7 @@ namespace SIL.IO
 			}
 			try
 			{
-				File.Delete(Path);
+				RobustIO.Delete(Path);
 			}
 			catch (IOException e)
 			{
