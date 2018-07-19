@@ -616,7 +616,9 @@ namespace SIL.Archiving.IMDI
 			set
 			{
 				_outputFolder = value;
-				PackagePath = Path.Combine(value, CorpusDirectoryName);
+				PackagePath = !string.IsNullOrEmpty(value)?
+					Path.Combine(value, CorpusDirectoryName):
+					CorpusDirectoryName;
 				if (_imdiData != null)
 					_imdiData.PackagePath = "";
 			}
