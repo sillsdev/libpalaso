@@ -286,7 +286,6 @@ namespace SIL.WritingSystems
 				// this is a new writing system that was generated from a template, so copy the template over before saving
 				File.Copy(ws.Template, writingSystemFilePath);
 				ws.Template = null;
-				ws.AcceptChanges();
 			}
 
 			if (!ws.IsChanged && File.Exists(writingSystemFilePath))
