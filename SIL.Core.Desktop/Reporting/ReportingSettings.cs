@@ -14,6 +14,7 @@ namespace SIL.Reporting
 			OkToPingBasicUsageData = true;
 			HaveShowRegistrationDialog = false;
 			PreviousVersion = string.Empty;
+			UserOkToAutoUpdate = false;
 		}
 
 		public int Launches { get; set;}
@@ -23,7 +24,7 @@ namespace SIL.Reporting
 		public DateTime FirstLaunchDate { get; set; }
 		public DateTime PreviousLaunchDate { get; set; }
 		public bool OkToPingBasicUsageData { get; set; }
-
+		public bool UserOkToAutoUpdate { get; set; }
 		public bool HaveShowRegistrationDialog { get; set; }
 
 		/// <summary>
