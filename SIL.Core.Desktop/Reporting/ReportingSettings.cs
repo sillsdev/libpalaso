@@ -12,6 +12,7 @@ namespace SIL.Reporting
 			UserIdentifier = string.Empty;
 			FirstLaunchDate = PreviousLaunchDate = DateTime.UtcNow;
 			OkToPingBasicUsageData = true;
+			UserOkToAutoUpdate = true;
 			HaveShowRegistrationDialog = false;
 			PreviousVersion = string.Empty;
 		}
@@ -23,7 +24,7 @@ namespace SIL.Reporting
 		public DateTime FirstLaunchDate { get; set; }
 		public DateTime PreviousLaunchDate { get; set; }
 		public bool OkToPingBasicUsageData { get; set; }
-
+		public bool UserOkToAutoUpdate { get; set; }
 		public bool HaveShowRegistrationDialog { get; set; }
 
 		/// <summary>
