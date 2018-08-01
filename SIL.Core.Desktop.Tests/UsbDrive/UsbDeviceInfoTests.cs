@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2009-2016 SIL International
+// Copyright (c) 2009-2016 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -75,10 +75,10 @@ namespace SIL.Tests.UsbDrive
 		public void RootDirectory_1Drive_MatchesMountPath()
 		{
 			var drives = UsbDriveInfo.GetDrives();
-			// TODO The below is a platform specific expectation.  Fix for windows
 			if (drives.Count < 1)
 				Assert.Ignore("Need at least 1 USB drive plugged in");
-			Assert.That(drives[0].RootDirectory.FullName, Is.StringContaining("/media/"));
+			// Be sure it matches a valid linux or windows root path
+			Assert.That(drives[0].RootDirectory.FullName, Is.StringContaining("/media/").Or.StringMatching(@"^[A-Z]:\\$"));
 		}
 
 		[Test]
@@ -113,6 +113,7 @@ namespace SIL.Tests.UsbDrive
 		}
 
 		[Test]
+		[Ignore("This test will only pass if the DriveParamsForTests in the Fixture setup match the test system.")]
 		[Category("RequiresUSB")]
 		[Category("SkipOnTeamCity")]
 		public void TotalSize_2DrivesArePluggedIn_TheDrivesSizesAreCorrect()
@@ -125,6 +126,7 @@ namespace SIL.Tests.UsbDrive
 		}
 
 		[Test]
+		[Ignore("This test will only pass if the DriveParamsForTests in the Fixture setup match the test system.")]
 		[Category("RequiresUSB")]
 		[Category("SkipOnTeamCity")]
 		public void RootDirectory_2DrivesArePluggedInAndReady_TheDrivesPathsCorrect()
@@ -169,6 +171,8 @@ namespace SIL.Tests.UsbDrive
 			List<IUsbDriveInfo> usbDrives = UsbDriveInfo.GetDrives();
 			if (usbDrives.Count < 2)
 				Assert.Ignore("Need at least 2 USB drives plugged in");
+			if (Platform.IsWindows)
+				Assert.Ignore("On windows unmounted USB drives are not listed.");
 			Assert.IsFalse(usbDrives[0].IsReady);
 			Assert.IsFalse(usbDrives[1].IsReady);
 		}
@@ -181,8 +185,8 @@ namespace SIL.Tests.UsbDrive
 			var usbDrives = UsbDriveInfo.GetDrives();
 			if (usbDrives.Count < 1)
 				Assert.Ignore("Need at least 1 USB drive plugged in");
-			if (!Platform.IsWindows && UsbDriveInfoUDisks2.IsUDisks2Available)
-				Assert.Ignore("With udisks2 GetDrives() only returns mounted drives");
+			if (Platform.IsWindows || UsbDriveInfoUDisks2.IsUDisks2Available)
+				Assert.Ignore("On windows, or on linux with udisks2 GetDrives() only returns mounted drives");
 
 			Assert.Throws<ArgumentOutOfRangeException>(
 				() =>
