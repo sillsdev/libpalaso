@@ -20,7 +20,7 @@ To use in C# code:
 #endif
 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <UsingTask TaskName="UnixName" AssemblyFile="SIL.BuildTasks.dll" />
+  <UsingTask TaskName="UnixName" AssemblyFile="..\packages\SIL.BuildTasks.1.0.0\tools\SIL.BuildTasks.dll" />
   <Target Name="BeforeBuild">
     <UnixName>
       <Output TaskParameter="Value" PropertyName="UNIX_NAME" />
