@@ -27,13 +27,11 @@ namespace SIL.TestUtilities
 			}
 			else
 			{
-				var temp = System.IO.Path.GetTempFileName();
-				Path = temp + ".lift";
-				File.Move(temp, Path);
+				Path = System.IO.Path.Combine(System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName() + ".lift");
 			}
 
 			string liftContents = string.Format("<?xml version='1.0' encoding='utf-8'?><lift version='{0}'>{1}</lift>", claimedLiftVersion, xmlOfEntries);
-			File.WriteAllText(Path, liftContents);
+			RobustFile.WriteAllText(Path, liftContents);
 		}
 
 		public TempLiftFile(string fileName, TemporaryFolder parentFolder, string xmlOfEntries, string claimedLiftVersion)
@@ -42,7 +40,7 @@ namespace SIL.TestUtilities
 			Path = parentFolder.Combine(fileName);
 
 			string liftContents = string.Format("<?xml version='1.0' encoding='utf-8'?><lift version='{0}'>{1}</lift>", claimedLiftVersion, xmlOfEntries);
-			File.WriteAllText(Path, liftContents);
+			RobustFile.WriteAllText(Path, liftContents);
 		}
 
 		private TempLiftFile()
@@ -82,7 +80,7 @@ namespace SIL.TestUtilities
 			: base(true) // True means "I'll set the the pathname, thank you very much." Otherwise, the temp one 'false' creates will stay forever, and fill the hard drive up.
 		{
 			Path = parentFolder.Combine(name);
-			File.WriteAllText(Path, contents);
+			RobustFile.WriteAllText(Path, contents);
 		}
 
 		public static TempFile CreateXmlFileWithContents(string fileName, TemporaryFolder folder, string xmlBody)
