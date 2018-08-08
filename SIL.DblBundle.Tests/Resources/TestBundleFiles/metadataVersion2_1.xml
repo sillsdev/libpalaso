@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DBLMetadata version="2.1" id="7881095a69332502" revision="">
+  <identification>
+    <name>Ri utzilaj tzij re ri kanimajawal Jesucristo</name>
+    <description>New Testament in Achi Rabinal; acr (GT:acrN:Achi)</description>
+    <abbreviation>acrNNT</abbreviation>
+    <scope>New Testament</scope>
+    <dateCompleted>2009</dateCompleted>
+    <bundleProducer>Paratext/7.4.100.9</bundleProducer>
+    <systemId type="paratext">
+      <id>7881095a69332502ec7b3544a7e4e72c77624215</id>
+      <name>acrNDBL</name>
+      <fullName>Rabinal Achi NT (new alphabet) (Guatemala) (acrN) DBL</fullName>
+    </systemId>
+    <systemId type="reap">
+      <id>http://www.reap.insitehome.org/handle/9284745/10177</id>
+    </systemId>
+  </identification>
+  <type>
+    <medium>text</medium>
+    <isConfidential>false</isConfidential>
+    <hasCharacters>true</hasCharacters>
+    <isTranslation>true</isTranslation>
+    <isExpression>true</isExpression>
+    <translationType>New</translationType>
+    <audience>Common</audience>
+  </type>
+  <relationships/>
+  <agencies>
+    <rightsHolder>
+      <abbr>WBT</abbr>
+      <url>http://www.wycliffe.org</url>
+      <nameLocal>Wycliffe Bible Translators, Inc.</nameLocal>
+      <uid>545d2cb00be06579ca809b57</uid>
+      <name>Wycliffe Bible Translators, Inc.</name>
+    </rightsHolder>
+    <contributor>
+      <content>true</content>
+      <publication>true</publication>
+      <management>false</management>
+      <qa>false</qa>
+      <uid>545d2cb00be06579ca809b57</uid>
+      <name>Wycliffe Bible Translators, Inc.</name>
+    </contributor>
+  </agencies>
+  <language>
+    <iso>acr</iso>
+    <name>Achi</name>
+    <nameLocal>Achi'</nameLocal>
+    <script>Latin</script>
+    <scriptCode>Latn</scriptCode>
+    <scriptDirection>LTR</scriptDirection>
+    <ldml>acr</ldml>
+    <rod>00448</rod>
+  </language>
+  <countries>
+    <country>
+      <iso>GT</iso>
+      <name>Guatemala</name>
+    </country>
+  </countries>
+  <format>
+    <versedParagraphs>false</versedParagraphs>
+  </format>
+  <names>
+    <name id="book-mat">
+      <abbr>Mt.</abbr>
+      <short>Mateo</short>
+      <long>Ri Utzilaj Tzij re Jesucristo tzꞌibꞌital kan ruma ri Mateo</long>
+    </name>
+    <name id="book-mrk">
+      <abbr>Mr.</abbr>
+      <short>Marcos</short>
+      <long>Ri Utzilaj Tzij re Jesucristo tzꞌibꞌital kan ruma ri Marcos</long>
+    </name>
+    <name id="book-luk">
+      <abbr>Lc.</abbr>
+      <short>Lucas</short>
+      <long>Ri Utzilaj Tzij re Jesucristo tzꞌibꞌital kan ruma ri Lucas</long>
+    </name>
+    <name id="book-jhn">
+      <abbr>Jn.</abbr>
+      <short>Juan</short>
+      <long>Ri Utzilaj Tzij re Jesucristo tzꞌibꞌital kan ruma ri Juan</long>
+    </name>
+    <name id="book-act">
+      <abbr>Hch.</abbr>
+      <short>Hechos</short>
+      <long>Janipa ri xkiꞌan taq rutaqoꞌn ri Cristo</long>
+    </name>
+    <name id="book-rom">
+      <abbr>Ro.</abbr>
+      <short>Romanos</short>
+      <long>Ri carta xutzꞌibꞌaj ri Pablo che riglesia kꞌo Roma</long>
+    </name>
+    <name id="book-1co">
+      <abbr>1 Co.</abbr>
+      <short>1 Corintios</short>
+      <long>Ri nabꞌe carta xutzꞌibꞌaj ri Pablo che riglesia kꞌo Corinto</long>
+    </name>
+    <name id="book-2co">
+      <abbr>2 Co.</abbr>
+      <short>2 Corintios</short>
+      <long>Rukaꞌm carta xutzꞌibꞌaj ri Pablo che riglesia kꞌo Corinto</long>
+    </name>
+    <name id="book-gal">
+      <abbr>Gl.</abbr>
+      <short>Gálatas</short>
+      <long>Ri carta xutzꞌibꞌaj ri Pablo che riglesia kꞌo Galacia</long>
+    </name>
+    <name id="book-eph">
+      <abbr>Ef.</abbr>
+      <short>Efesios</short>
+      <long>Ri carta xutzꞌibꞌaj ri Pablo che riglesia kꞌo Éfeso</long>
+    </name>
+    <name id="book-php">
+      <abbr>Flp.</abbr>
+      <short>Filipenses</short>
+      <long>Ri carta xutzꞌibꞌaj ri Pablo che riglesia kꞌo Filipos</long>
+    </name>
+    <name id="book-col">
+      <abbr>Col.</abbr>
+      <short>Colosenses</short>
+      <long>Ri carta xutzꞌibꞌaj ri Pablo che riglesia kꞌo Colosas</long>
+    </name>
+    <name id="book-1th">
+      <abbr>1 Ts.</abbr>
+      <short>1 Tesalonicenses</short>
+      <long>Ri nabꞌe carta xutzꞌibꞌaj ri Pablo che riglesia kꞌo Tesalónica</long>
+    </name>
+    <name id="book-2th">
+      <abbr>2 Ts.</abbr>
+      <short>2 Tesalonicenses</short>
+      <long>Rukaꞌm carta xutzꞌibꞌaj ri Pablo che riglesia kꞌo Tesalónica</long>
+    </name>
+    <name id="book-1ti">
+      <abbr>1 Ti.</abbr>
+      <short>1 Timoteo</short>
+      <long>Ri nabꞌe carta xutzꞌibꞌaj ri Pablo che ri Timoteo</long>
+    </name>
+    <name id="book-2ti">
+      <abbr>2 Ti.</abbr>
+      <short>2 Timoteo</short>
+      <long>Rukaꞌm carta xutzꞌibꞌaj ri Pablo che ri Timoteo</long>
+    </name>
+    <name id="book-tit">
+      <abbr>Tit.</abbr>
+      <short>Tito</short>
+      <long>Ri carta xutzꞌibꞌaj ri Pablo che ri Tito</long>
+    </name>
+    <name id="book-phm">
+      <abbr>Flm.</abbr>
+      <short>Filemón</short>
+      <long>Ri carta xutzꞌibꞌaj ri Pablo che ri Filemón</long>
+    </name>
+    <name id="book-heb">
+      <abbr>Heb.</abbr>
+      <short>Hebreos</short>
+      <long>Ri xtzꞌibꞌax chike ri e aj hebreo</long>
+    </name>
+    <name id="book-jas">
+      <abbr>Stg.</abbr>
+      <short>Santiago</short>
+      <long>Ri carta xutzꞌibꞌaj ri Santiago</long>
+    </name>
+    <name id="book-1pe">
+      <abbr>1 P.</abbr>
+      <short>1 Pedro</short>
+      <long>Ri nabꞌe carta xutzꞌibꞌaj ri Pedro</long>
+    </name>
+    <name id="book-2pe">
+      <abbr>2 P.</abbr>
+      <short>2 Pedro</short>
+      <long>Rukaꞌm carta xutzꞌibꞌaj ri Pedro</long>
+    </name>
+    <name id="book-1jn">
+      <abbr>1 Jn.</abbr>
+      <short>1 Juan</short>
+      <long>Ri nabꞌe carta xutzꞌibꞌaj ri Juan</long>
+    </name>
+    <name id="book-2jn">
+      <abbr>2 Jn.</abbr>
+      <short>2 Juan</short>
+      <long>Rukaꞌm carta xutzꞌibꞌaj ri Juan</long>
+    </name>
+    <name id="book-3jn">
+      <abbr>3 Jn.</abbr>
+      <short>3 Juan</short>
+      <long>Rurox carta xutzꞌibꞌaj ri Juan</long>
+    </name>
+    <name id="book-jud">
+      <abbr>Jud.</abbr>
+      <short>Judas</short>
+      <long>Ri carta xutzꞌibꞌaj ri Judas</long>
+    </name>
+    <name id="book-rev">
+      <abbr>Ap.</abbr>
+      <short>Apocalipsis</short>
+      <long>Ri xuqꞌalajisaj ri Dios che ri Juan</long>
+    </name>
+  </names>
+  <manifest>
+    <container uri="release">
+      <container uri="USX_1">
+        <resource checksum="33f753e1d628c6c35f6dfd8ca23eed7c" mimeType="application/xml" size="113950" uri="1CO.usx"/>
+        <resource checksum="986c0f4ef11e6d38765a1189a3257697" mimeType="application/xml" size="26626" uri="1JN.usx"/>
+        <resource checksum="ac3540acd60bbbfd8a6aa512ef29254f" mimeType="application/xml" size="30524" uri="1PE.usx"/>
+        <resource checksum="3a847fd6d7450f3b07c086ea8c3b50ab" mimeType="application/xml" size="21099" uri="1TH.usx"/>
+        <resource checksum="1ca54b9b7f6f2eefffe9bc33859613e9" mimeType="application/xml" size="31026" uri="1TI.usx"/>
+        <resource checksum="84b205d5578e728236d6232e89167a71" mimeType="application/xml" size="66372" uri="2CO.usx"/>
+        <resource checksum="8f733e6955da3bc5b611dd1ad916e9db" mimeType="application/xml" size="4353" uri="2JN.usx"/>
+        <resource checksum="d321a9ebe79321736026c608ad078c90" mimeType="application/xml" size="17418" uri="2PE.usx"/>
+        <resource checksum="f286f12b5c9979354ba184c333ec39e7" mimeType="application/xml" size="11327" uri="2TH.usx"/>
+        <resource checksum="d896cf67699799a03a95af5d5550ac92" mimeType="application/xml" size="20561" uri="2TI.usx"/>
+        <resource checksum="66ad1061548f4fd81da0a70d20ae75ff" mimeType="application/xml" size="3739" uri="3JN.usx"/>
+        <resource checksum="55a842488c6c8f24bd7d0a3920775951" mimeType="application/xml" size="273934" uri="ACT.usx"/>
+        <resource checksum="645874b526b3d5cc5b3295723a843c96" mimeType="application/xml" size="22757" uri="COL.usx"/>
+        <resource checksum="7b2cfeb254bd5e711c4dcba06dd0ea95" mimeType="application/xml" size="36282" uri="EPH.usx"/>
+        <resource checksum="0fb8538c04ee4ff1ad12605d4928cd3f" mimeType="application/xml" size="38352" uri="GAL.usx"/>
+        <resource checksum="1a5834e2673ad784ece22bd6b6ffb0b8" mimeType="application/xml" size="90713" uri="HEB.usx"/>
+        <resource checksum="5b4d184c0b39d814d67f6172ab995e96" mimeType="application/xml" size="27389" uri="JAS.usx"/>
+        <resource checksum="5b4e3c900a23079de108c8e62664008f" mimeType="application/xml" size="208534" uri="JHN.usx"/>
+        <resource checksum="4c85902ec37cd4a232c5be287bf27868" mimeType="application/xml" size="9848" uri="JUD.usx"/>
+        <resource checksum="2ff8f52509c0fe48eb289300a170ea4f" mimeType="application/xml" size="297682" uri="LUK.usx"/>
+        <resource checksum="1863818b48467d3ab5af38143c42830c" mimeType="application/xml" size="274215" uri="MAT.usx"/>
+        <resource checksum="9ee0355f3fdb205a157342fe1a706e05" mimeType="application/xml" size="170041" uri="MRK.usx"/>
+        <resource checksum="22a3249e6afc3c80ba9902c538f8bfe6" mimeType="application/xml" size="6165" uri="PHM.usx"/>
+        <resource checksum="d84650a45e8312ac23d950fe4ee6c5ce" mimeType="application/xml" size="26583" uri="PHP.usx"/>
+        <resource checksum="81d413dddbeca8056017e6c8e167c8be" mimeType="application/xml" size="121306" uri="REV.usx"/>
+        <resource checksum="41c60810211b33d99262dd521b275681" mimeType="application/xml" size="119290" uri="ROM.usx"/>
+        <resource checksum="a852aa6bd107a77bc6f444721eef2b3b" mimeType="application/xml" size="11858" uri="TIT.usx"/>
+      </container>
+      <resource checksum="6d02a857063a60c88b0207e8a3c70269" mimeType="application/octet-stream" size="7863" uri="acr.ldml"/>
+      <resource checksum="4c126f31c800884c0f08adef07417c15" mimeType="application/octet-stream" size="845" uri="acr.lds"/>
+      <resource checksum="27b1974366379392b632f3256be80ab4" mimeType="application/xml" size="77832" uri="styles.xml"/>
+      <resource checksum="c6547386800588018e6fa19e3461c4e0" mimeType="application/octet-stream" size="13113" uri="versification.vrs"/>
+    </container>
+    <container uri="source">
+      <resource checksum="e7c1e2bdb60ee99a991fa45c7dc472f7-5" mimeType="application/zip" size="40087506" uri="source.zip"/>
+    </container>
+  </manifest>
+  <source>
+    <canonicalContent>
+      <book code="1CO"/>
+      <book code="1JN"/>
+      <book code="1PE"/>
+      <book code="1TH"/>
+      <book code="1TI"/>
+      <book code="2CO"/>
+      <book code="2JN"/>
+      <book code="2PE"/>
+      <book code="2TH"/>
+      <book code="2TI"/>
+      <book code="3JN"/>
+      <book code="ACT"/>
+      <book code="COL"/>
+      <book code="EPH"/>
+      <book code="GAL"/>
+      <book code="HEB"/>
+      <book code="JAS"/>
+      <book code="JHN"/>
+      <book code="JUD"/>
+      <book code="LUK"/>
+      <book code="MAT"/>
+      <book code="MRK"/>
+      <book code="PHM"/>
+      <book code="PHP"/>
+      <book code="REV"/>
+      <book code="ROM"/>
+      <book code="TIT"/>
+    </canonicalContent>
+    <structure>
+      <content src="source/source.zip" role="sourceZip"/>
+    </structure>
+  </source>
+  <publications>
+    <publication id="p1" default="true">
+      <description>New Testament</description>
+      <descriptionLocal>New Testament</descriptionLocal>
+      <canonicalContent>
+        <book code="1CO"/>
+        <book code="1JN"/>
+        <book code="1PE"/>
+        <book code="1TH"/>
+        <book code="1TI"/>
+        <book code="2CO"/>
+        <book code="2JN"/>
+        <book code="2PE"/>
+        <book code="2TH"/>
+        <book code="2TI"/>
+        <book code="3JN"/>
+        <book code="ACT"/>
+        <book code="COL"/>
+        <book code="EPH"/>
+        <book code="GAL"/>
+        <book code="HEB"/>
+        <book code="JAS"/>
+        <book code="JHN"/>
+        <book code="JUD"/>
+        <book code="LUK"/>
+        <book code="MAT"/>
+        <book code="MRK"/>
+        <book code="PHM"/>
+        <book code="PHP"/>
+        <book code="REV"/>
+        <book code="ROM"/>
+        <book code="TIT"/>
+      </canonicalContent>
+      <structure>
+        <content name="book-mat" src="release/USX_1/MAT.usx" role="MAT"/>
+        <content name="book-mrk" src="release/USX_1/MRK.usx" role="MRK"/>
+        <content name="book-luk" src="release/USX_1/LUK.usx" role="LUK"/>
+        <content name="book-jhn" src="release/USX_1/JHN.usx" role="JHN"/>
+        <content name="book-act" src="release/USX_1/ACT.usx" role="ACT"/>
+        <content name="book-rom" src="release/USX_1/ROM.usx" role="ROM"/>
+        <content name="book-1co" src="release/USX_1/1CO.usx" role="1CO"/>
+        <content name="book-2co" src="release/USX_1/2CO.usx" role="2CO"/>
+        <content name="book-gal" src="release/USX_1/GAL.usx" role="GAL"/>
+        <content name="book-eph" src="release/USX_1/EPH.usx" role="EPH"/>
+        <content name="book-php" src="release/USX_1/PHP.usx" role="PHP"/>
+        <content name="book-col" src="release/USX_1/COL.usx" role="COL"/>
+        <content name="book-1th" src="release/USX_1/1TH.usx" role="1TH"/>
+        <content name="book-2th" src="release/USX_1/2TH.usx" role="2TH"/>
+        <content name="book-1ti" src="release/USX_1/1TI.usx" role="1TI"/>
+        <content name="book-2ti" src="release/USX_1/2TI.usx" role="2TI"/>
+        <content name="book-tit" src="release/USX_1/TIT.usx" role="TIT"/>
+        <content name="book-phm" src="release/USX_1/PHM.usx" role="PHM"/>
+        <content name="book-heb" src="release/USX_1/HEB.usx" role="HEB"/>
+        <content name="book-jas" src="release/USX_1/JAS.usx" role="JAS"/>
+        <content name="book-1pe" src="release/USX_1/1PE.usx" role="1PE"/>
+        <content name="book-2pe" src="release/USX_1/2PE.usx" role="2PE"/>
+        <content name="book-1jn" src="release/USX_1/1JN.usx" role="1JN"/>
+        <content name="book-2jn" src="release/USX_1/2JN.usx" role="2JN"/>
+        <content name="book-3jn" src="release/USX_1/3JN.usx" role="3JN"/>
+        <content name="book-jud" src="release/USX_1/JUD.usx" role="JUD"/>
+        <content name="book-rev" src="release/USX_1/REV.usx" role="REV"/>
+      </structure>
+    </publication>
+  </publications>
+  <copyright>
+    <fullStatement>
+      <statementContent type="xhtml">
+        <p>© 2009, Wycliffe Bible Translators, Inc. All rights reserved.</p>
+      </statementContent>
+    </fullStatement>
+  </copyright>
+  <promotion/>
+  <archiveStatus>
+    <archivistName>Lois Gourley</archivistName>
+    <dateArchived>2013-02-14T15:52:24.452179</dateArchived>
+    <dateUpdated>2013-08-02T19:49:47.022236</dateUpdated>
+    <comments>8.2.13 deleted * and fixed ' (Updated to DBL 4.0)</comments>
+  </archiveStatus>
+</DBLMetadata>

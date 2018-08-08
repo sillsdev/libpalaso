@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using Ionic.Zip;
 using NUnit.Framework;
@@ -16,8 +16,10 @@ namespace SIL.DblBundle.Tests.Text
 	[TestFixture]
 	public class TextBundleTests
 	{
-		private TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage> m_bundle;
-		private TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage> m_bundleWithoutLdml;
+		private TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage> _legacyBundle;
+		private TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage> _legacyBundleWithoutLdml;
+		private TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage> _bundle;
+		private TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage> _bundleWithoutLdml;
 
 		/// <summary>
 		/// Setup test fixture.
@@ -25,10 +27,14 @@ namespace SIL.DblBundle.Tests.Text
 		[TestFixtureSetUp]
 		public void TestFixtureSetup()
 		{
+			using (var zippedBundle = CreateZippedTextBundleFromResources(true, false, true))
+				_legacyBundle = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
+			using (var zippedBundle = CreateZippedTextBundleFromResources(false, false, true))
+				_legacyBundleWithoutLdml = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
 			using (var zippedBundle = CreateZippedTextBundleFromResources())
-				m_bundle = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
+				_bundle = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
 			using (var zippedBundle = CreateZippedTextBundleFromResources(false))
-				m_bundleWithoutLdml = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
+				_bundleWithoutLdml = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path);
 		}
 
 		/// <summary>
@@ -37,28 +43,34 @@ namespace SIL.DblBundle.Tests.Text
 		[TestFixtureTearDown]
 		public void TestFixtureTearDown()
 		{
-			m_bundle.Dispose();
-			m_bundleWithoutLdml.Dispose();
+			_legacyBundle.Dispose();
+			_legacyBundleWithoutLdml.Dispose();
+			_bundle.Dispose();
+			_bundleWithoutLdml.Dispose();
 		}
 
 		/// <summary>
 		/// Tests that properties are correctly created in a bundle.
 		/// </summary>
-		[Test]
-		public void CreateBundle_PropertiesReadCorrectly()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void CreateBundle_PropertiesReadCorrectly(bool legacy)
 		{
-			Assert.AreEqual("ce61dd3decd6b8a8", m_bundle.Id);
-			Assert.AreEqual("Test Bundle Publication", m_bundle.Name);
-			Assert.AreEqual("eng", m_bundle.LanguageIso);
+			var bundle = legacy ? _legacyBundle : _bundle;
+			Assert.AreEqual("7881095a69332502", bundle.Id);
+			Assert.AreEqual("Ri utzilaj tzij re ri kanimajawal Jesucristo", bundle.Name);
+			Assert.AreEqual("acr", bundle.LanguageIso);
 		}
 
 		/// <summary>
 		/// Tests that the stylesheet is loaded correctly from a bundle.
 		/// </summary>
-		[Test]
-		public void CreateBundle_ProperlyLoadsStylesheet()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void CreateBundle_ProperlyLoadsStylesheet(bool legacy)
 		{
-			var stylesheet = m_bundle.Stylesheet;
+			var bundle = legacy ? _legacyBundle : _bundle;
+			var stylesheet = bundle.Stylesheet;
 			IStyle style = stylesheet.GetStyle("mt1");
 			Assert.NotNull(style);
 			Assert.AreEqual("Cambria", stylesheet.FontFamily);
@@ -68,10 +80,12 @@ namespace SIL.DblBundle.Tests.Text
 		/// <summary>
 		/// Tests that writing system for a bundle is created correctly.
 		/// </summary>
-		[Test]
-		public void CreateBundle_ProperlyLoadsWritingSystemDefinition()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void CreateBundle_ProperlyLoadsWritingSystemDefinition(bool legacy)
 		{
-			var ws = m_bundle.WritingSystemDefinition;
+			var bundle = legacy ? _legacyBundle : _bundle;
+			var ws = bundle.WritingSystemDefinition;
 			Assert.NotNull(ws);
 
 			Assert.AreEqual(WellKnownSubtags.UnlistedLanguage, ws.LanguageTag);
@@ -90,30 +104,36 @@ namespace SIL.DblBundle.Tests.Text
 		/// <summary>
 		/// Tests that a book is obtained from a bundle.
 		/// </summary>
-		[Test]
-		public void TryGetBook()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void TryGetBook(bool legacy)
 		{
+			var bundle = legacy ? _legacyBundle : _bundle;
 			UsxDocument book;
-			Assert.IsTrue(m_bundle.TryGetBook("MAT", out book));
+			Assert.IsTrue(bundle.TryGetBook("MAT", out book));
 			Assert.AreEqual("MAT", book.BookId);
 		}
 
 		/// <summary>
 		/// Tests that a bundle with an LDML file correctly reports that.
 		/// </summary>
-		[Test]
-		public void ContainsLdmlFile_FileExists_ReturnsTrue()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void ContainsLdmlFile_FileExists_ReturnsTrue(bool legacy)
 		{
-			Assert.IsTrue(m_bundle.ContainsLdmlFile());
+			var bundle = legacy ? _legacyBundle : _bundle;
+			Assert.IsTrue(bundle.ContainsLdmlFile());
 		}
 
 		/// <summary>
 		/// Tests that a bundle without an LDML file correctly reports that.
 		/// </summary>
-		[Test]
-		public void ContainsLdmlFile_FileDoesNotExist_ReturnsFalse()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void ContainsLdmlFile_FileDoesNotExist_ReturnsFalse(bool legacy)
 		{
-			Assert.False(m_bundleWithoutLdml.ContainsLdmlFile());
+			var bundleWithoutLdml = legacy ? _legacyBundleWithoutLdml : _bundleWithoutLdml;
+			Assert.False(bundleWithoutLdml.ContainsLdmlFile());
 		}
 
 		/// <summary>
@@ -135,7 +155,7 @@ namespace SIL.DblBundle.Tests.Text
 		/// <summary>
 		/// Helper method for tests to create a zipped text bundle.
 		/// </summary>
-		public static TempFile CreateZippedTextBundleFromResources(bool includeLdml = true, bool invalidUsxDirectory = false)
+		public static TempFile CreateZippedTextBundleFromResources(bool includeLdml = true, bool invalidUsxDirectory = false, bool legacyFormat = false)
 		{
 			TempFile bundle = TempFile.WithExtension(DblBundleFileUtils.kDblBundleExtension);
 
@@ -143,25 +163,28 @@ namespace SIL.DblBundle.Tests.Text
 			using (var metadataXml = TempFile.WithFilename("metadata.xml"))
 			using (var stylesXml = TempFile.WithFilename("styles.xml"))
 			using (var versificationVrs = TempFile.WithFilename(DblBundleFileUtils.kVersificationFileName))
-			using (var ldmlXml = TempFile.WithFilename(DblBundleFileUtils.kLdmlFileName))
+			using (var ldmlXml = TempFile.WithFilename(DblBundleFileUtils.kLegacyLdmlFileName))
 			using (var matUsx = TempFile.WithFilename("MAT.usx"))
 			using (var zip = new ZipFile())
 			{
-				File.WriteAllBytes(englishLds.Path, Resources.English_lds);
-				zip.AddFile(englishLds.Path, string.Empty);
-				File.WriteAllText(metadataXml.Path, Resources.metadata_xml);
+				File.WriteAllText(metadataXml.Path, legacyFormat ? Resources.metadata_xml : Resources.metadataVersion2_1_xml);
 				zip.AddFile(metadataXml.Path, string.Empty);
+
+				var subdirectory = legacyFormat ? string.Empty : "release";
+
+				File.WriteAllBytes(englishLds.Path, Resources.English_lds);
+				zip.AddFile(englishLds.Path, subdirectory);
 				File.WriteAllText(stylesXml.Path, Resources.styles_xml);
-				zip.AddFile(stylesXml.Path, string.Empty);
+				zip.AddFile(stylesXml.Path, subdirectory);
 				File.WriteAllBytes(versificationVrs.Path, Resources.versification_vrs);
-				zip.AddFile(versificationVrs.Path, string.Empty);
+				zip.AddFile(versificationVrs.Path, subdirectory);
 				if (includeLdml)
 				{
 					File.WriteAllText(ldmlXml.Path, Resources.ldml_xml);
-					zip.AddFile(ldmlXml.Path, string.Empty);
+					zip.AddFile(ldmlXml.Path, subdirectory);
 				}
 				File.WriteAllBytes(matUsx.Path, Resources.MAT_usx);
-				zip.AddFile(matUsx.Path, invalidUsxDirectory ? "USX_1" : "USX_0");
+				zip.AddFile(matUsx.Path, (legacyFormat ? "" : "release/") + (invalidUsxDirectory ? "USX_999" : "USX_1"));
 				zip.Save(bundle.Path);
 			}
 

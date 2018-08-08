@@ -305,6 +305,11 @@
     <Compile Include="DblMetadata.cs" />
     <Compile Include="IProjectInfo.cs" />
     <Compile Include="IStylesheet.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Style.cs" />
     <Compile Include="Stylesheet.cs" />
     <Compile Include="Text\DblTextMetadata.cs" />
@@ -326,6 +331,18 @@
       <Project>{52a93c63-08f4-4527-8e6e-ac2adeba6e2d}</Project>
       <Name>SIL.WritingSystems</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\text_2_1_to_1_5.xsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\text_2_0_to_1_5.xsl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
