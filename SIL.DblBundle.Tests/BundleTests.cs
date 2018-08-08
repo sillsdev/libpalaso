@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.IO;
+using System.Xml.Serialization;
 using Ionic.Zip;
 using NUnit.Framework;
 using SIL.DblBundle.Text;
@@ -22,7 +23,7 @@ namespace SIL.DblBundle.Tests
 		[TestFixtureSetUp]
 		public void TestFixtureSetup()
 		{
-			using (var zippedBundle = CreateZippedTestBundleFromResources())
+			using (var zippedBundle = CreateDummyZippedTestBundle())
 				m_bundle = new TestBundle(zippedBundle.Path);
 		}
 
@@ -62,14 +63,14 @@ namespace SIL.DblBundle.Tests
 			Assert.AreEqual(WellKnownSubtags.UnlistedLanguage, m_bundle.LanguageIso);
 		}
 
-		private static TempFile CreateZippedTestBundleFromResources()
+		private static TempFile CreateDummyZippedTestBundle()
 		{
 			TempFile bundle = TempFile.WithExtension(DblBundleFileUtils.kDblBundleExtension);
 
 			using (var metadataXml = TempFile.WithFilename("metadata.xml"))
 			using (var zip = new ZipFile())
 			{
-				File.WriteAllText(metadataXml.Path, @"<TestMetadata type=""text""/>");
+				File.WriteAllText(metadataXml.Path, @"<?xml version=""1.0"" encoding=""utf-8""?><DBLMetadata type=""text"" typeVersion=""1.5""></DBLMetadata>");
 				zip.AddFile(metadataXml.Path, string.Empty);
 				zip.Save(bundle.Path);
 			}
@@ -81,6 +82,7 @@ namespace SIL.DblBundle.Tests
 	/// <summary>
 	/// Version that thwarts normal initialization of metadata
 	/// </summary>
+	[XmlRoot("DBLMetadata")]
 	public class TestMetadata : DblMetadataBase<DblMetadataLanguage>
 	{
 		/// <summary>

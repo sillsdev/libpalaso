@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Xml.Serialization;
 using SIL.DblBundle.Text;
 using SIL.Xml;
@@ -24,8 +24,19 @@ namespace SIL.DblBundle
 		public string TypeVersion { get; set; }
 
 		/// <summary>Revision of the data for the entry contained within this bundle</summary>
-		[XmlAttribute("revision")]
+		[XmlIgnore]
 		public int Revision { get; set; }
+
+		[XmlAttribute("revision")]
+		public string Revision_Surrogate {
+			get { return Revision.ToString(); }
+			set
+			{
+				var revision = 0;
+				Int32.TryParse(value, out revision);
+				Revision = revision;
+			}
+		}
 
 		/// <summary>Gets whether bundle is for text</summary>
 		public bool IsTextReleaseBundle { get { return Type == "text"; } }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -93,22 +93,35 @@ namespace SIL.DblBundle.Text
 		#endregion
 
 		#region Private methods/properties
+		private string _ldmlFilePath;
 		private string LdmlFilePath
 		{
-			get { return Path.Combine(PathToUnzippedDirectory, DblBundleFileUtils.kLdmlFileName); }
+			get
+			{
+				if (_ldmlFilePath != null)
+					return _ldmlFilePath;
+
+				_ldmlFilePath = Directory.GetFiles(PathToUnzippedBundleInnards, "*.ldml").FirstOrDefault();
+
+				if (_ldmlFilePath == null)
+					_ldmlFilePath = Path.Combine(PathToUnzippedBundleInnards, DblBundleFileUtils.kLegacyLdmlFileName);
+				return _ldmlFilePath;
+			}
 		}
 
 		private Stylesheet LoadStylesheet()
 		{
 			const string filename = "styles.xml";
-			string stylesheetPath = Path.Combine(PathToUnzippedDirectory, filename);
+			string stylesheetPath = Path.Combine(PathToUnzippedBundleInnards, filename);
 
 			if (!File.Exists(stylesheetPath))
 			{
-				throw new ApplicationException(
-					string.Format(LocalizationManager.GetString("DblBundle.FileMissingFromBundle",
-						"Required {0} file not found. File is not a valid Text Release Bundle:"), filename) +
-					Environment.NewLine + m_pathToZippedBundle);
+				//stylesheetPath = GetAlternativePathForNewerBundles(stylesheetPath);
+				//if (!File.Exists(stylesheetPath))
+					throw new ApplicationException(
+						string.Format(LocalizationManager.GetString("DblBundle.FileMissingFromBundle",
+							"Required {0} file not found. File is not a valid Text Release Bundle:"), filename) +
+						Environment.NewLine + m_pathToZippedBundle);
 			}
 
 			Exception exception;
@@ -142,15 +155,11 @@ namespace SIL.DblBundle.Text
 			DblMetadataCanon defaultCanon = Metadata.Canons.FirstOrDefault(c => c.Default);
 			if (defaultCanon != null)
 			{
-				string canonDirectory = GetPathToCanon(defaultCanon.CanonId);
-				if (Directory.Exists(canonDirectory))
-					ExtractBooksInCanon(canonDirectory);
+				ExtractBooksInCanon(defaultCanon.CanonId);
 			}
 			foreach (DblMetadataCanon canon in Metadata.Canons.Where(c => !c.Default).OrderBy(c => c.CanonId))
 			{
-				string canonDirectory = GetPathToCanon(canon.CanonId);
-				if (Directory.Exists(canonDirectory))
-					ExtractBooksInCanon(canonDirectory);
+				ExtractBooksInCanon(canon.CanonId);
 			}
 			if (!m_books.Any())
 			{
@@ -161,8 +170,12 @@ namespace SIL.DblBundle.Text
 			}
 		}
 
-		private void ExtractBooksInCanon(string pathToCanon)
+		private void ExtractBooksInCanon(string canonId)
 		{
+			string pathToCanon = GetPathToCanon(canonId);
+			if (!Directory.Exists(pathToCanon))
+				return;
+
 			foreach (string filePath in Directory.GetFiles(pathToCanon, "*.usx"))
 			{
 				var fi = new FileInfo(filePath);
@@ -174,7 +187,7 @@ namespace SIL.DblBundle.Text
 
 		private string GetPathToCanon(string canonId)
 		{
-			return Path.Combine(PathToUnzippedDirectory, "USX_" + canonId);
+			return Path.Combine(PathToUnzippedBundleInnards, "USX_" + canonId);
 		}
 		#endregion
 
@@ -184,7 +197,7 @@ namespace SIL.DblBundle.Text
 		/// </summary>
 		public void CopyVersificationFile(string destinationPath)
 		{
-			string versificationPath = Path.Combine(PathToUnzippedDirectory, DblBundleFileUtils.kVersificationFileName);
+			string versificationPath = Path.Combine(PathToUnzippedBundleInnards, DblBundleFileUtils.kVersificationFileName);
 
 			if (!File.Exists(versificationPath))
 				throw new ApplicationException(
@@ -198,7 +211,7 @@ namespace SIL.DblBundle.Text
 		/// </summary>
 		public void CopyFontFiles(string destinationDir)
 		{
-			foreach (var ttfFile in Directory.GetFiles(PathToUnzippedDirectory, "*.ttf"))
+			foreach (var ttfFile in Directory.GetFiles(PathToUnzippedBundleInnards, "*.ttf"))
 			{
 				string newPath = Path.Combine(destinationDir, Path.GetFileName(ttfFile));
 				try
