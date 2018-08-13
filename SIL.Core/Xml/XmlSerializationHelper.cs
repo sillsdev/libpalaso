@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -293,7 +293,7 @@ namespace SIL.Xml
 		/// Deserializes XML from the specified string to an object of the specified type.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public static T DeserializeFromString<T>(string input) where T : class
+		public static T DeserializeFromString<T>(string input)
 		{
 			Exception e;
 			return (DeserializeFromString<T>(input, out e));
@@ -305,7 +305,6 @@ namespace SIL.Xml
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public static T DeserializeFromString<T>(string input, bool fKeepWhitespaceInElements)
-			where T : class
 		{
 			Exception e;
 			return (DeserializeFromString<T>(input, fKeepWhitespaceInElements, out e));
@@ -316,7 +315,7 @@ namespace SIL.Xml
 		/// Deserializes XML from the specified string to an object of the specified type.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public static T DeserializeFromString<T>(string input, out Exception e) where T : class
+		public static T DeserializeFromString<T>(string input, out Exception e)
 		{
 			return DeserializeFromString<T>(input, false, out e);
 		}
@@ -327,15 +326,15 @@ namespace SIL.Xml
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public static T DeserializeFromString<T>(string input, bool fKeepWhitespaceInElements,
-			out Exception e) where T : class
+			out Exception e)
 		{
-			T data = null;
+			T data = default(T);
 			e = null;
 
 			try
 			{
 				if (string.IsNullOrEmpty(input))
-					return null;
+					return default(T);
 
 				// Whitespace is not allowed before the XML declaration,
 				// so get rid of any that exists.
@@ -362,7 +361,7 @@ namespace SIL.Xml
 		/// <typeparam name="T">The object type</typeparam>
 		/// <param name="filename">The filename from which to load</param>
 		/// ------------------------------------------------------------------------------------
-		public static T DeserializeFromFile<T>(string filename) where T : class
+		public static T DeserializeFromFile<T>(string filename)
 		{
 			Exception e;
 			return DeserializeFromFile<T>(filename, false, out e);
@@ -373,7 +372,7 @@ namespace SIL.Xml
 		/// Deserializes XML from the specified file to an object of the specified type.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-		public static T DeserializeFromFile<T>(string filename, string rootElementName) where T : class
+		public static T DeserializeFromFile<T>(string filename, string rootElementName)
 		{
 			Exception e;
 			return DeserializeFromFile<T>(filename, rootElementName, false, out e);
@@ -390,7 +389,6 @@ namespace SIL.Xml
 		/// these elements will be ignored during a deserialization.</param>
 		/// ------------------------------------------------------------------------------------
 		public static T DeserializeFromFile<T>(string filename, bool fKeepWhitespaceInElements)
-			where T : class
 		{
 			Exception e;
 			return DeserializeFromFile<T>(filename, fKeepWhitespaceInElements, out e);
@@ -409,7 +407,7 @@ namespace SIL.Xml
 		/// these elements will be ignored during a deserialization.</param>
 		/// ------------------------------------------------------------------------------------
 		public static T DeserializeFromFile<T>(string filename, string rootElementName,
-			bool fKeepWhitespaceInElements) where T : class
+			bool fKeepWhitespaceInElements)
 		{
 			Exception e;
 			return DeserializeFromFile<T>(filename, rootElementName, fKeepWhitespaceInElements, out e);
@@ -423,7 +421,7 @@ namespace SIL.Xml
 		/// <param name="filename">The filename from which to load</param>
 		/// <param name="e">The exception generated during the deserialization.</param>
 		/// ------------------------------------------------------------------------------------
-		public static T DeserializeFromFile<T>(string filename, out Exception e) where T : class
+		public static T DeserializeFromFile<T>(string filename, out Exception e)
 		{
 			return DeserializeFromFile<T>(filename, false, out e);
 		}
@@ -440,7 +438,7 @@ namespace SIL.Xml
 		/// <returns></returns>
 		/// ------------------------------------------------------------------------------------
 		public static T DeserializeFromFile<T>(string filename, string rootElementName,
-			out Exception e) where T : class
+			out Exception e)
 		{
 			return DeserializeFromFile<T>(filename, rootElementName, false, out e);
 		}
@@ -457,7 +455,7 @@ namespace SIL.Xml
 		/// <param name="e">The exception generated during the deserialization.</param>
 		/// ------------------------------------------------------------------------------------
 		public static T DeserializeFromFile<T>(string filename, bool fKeepWhitespaceInElements,
-			out Exception e) where T : class
+			out Exception e)
 		{
 			return DeserializeFromFile<T>(filename, null, fKeepWhitespaceInElements, out e);
 		}
@@ -477,15 +475,15 @@ namespace SIL.Xml
 		/// <returns></returns>
 		/// --------------------------------------------------------------------------------
 		public static T DeserializeFromFile<T>(string filename, string rootElementName,
-			bool fKeepWhitespaceInElements, out Exception e) where T : class
+			bool fKeepWhitespaceInElements, out Exception e)
 		{
-			T data = null;
+			T data = default(T);
 			e = null;
 
 			try
 			{
 				if (!File.Exists(filename))
-					return null;
+					return default(T);
 
 				using (InternalXmlReader reader = new InternalXmlReader(
 					filename, fKeepWhitespaceInElements))
