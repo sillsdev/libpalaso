@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Xml.Serialization;
 using SIL.DblBundle.Text;
 using SIL.Xml;
@@ -24,8 +24,24 @@ namespace SIL.DblBundle
 		public string TypeVersion { get; set; }
 
 		/// <summary>Revision of the data for the entry contained within this bundle</summary>
-		[XmlAttribute("revision")]
+		[XmlIgnore]
 		public int Revision { get; set; }
+
+		/// <summary>
+		/// Apparently it is possible to have revision set to "" in the XML. I'm not sure if this is new with version 2+ or if we just never saw it before.
+		/// Anyway, previously, Revision was simply an int as above, but I had to add this surrogate field to be able to handle the case when it is set to ""
+		/// while also not breaking the API.
+		/// </summary>
+		[XmlAttribute("revision")]
+		public string Revision_Surrogate {
+			get { return Revision.ToString(); }
+			set
+			{
+				int revision;
+				Int32.TryParse(value, out revision);
+				Revision = revision;
+			}
+		}
 
 		/// <summary>Gets whether bundle is for text</summary>
 		public bool IsTextReleaseBundle { get { return Type == "text"; } }

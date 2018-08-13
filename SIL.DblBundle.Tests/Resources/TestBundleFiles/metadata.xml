@@ -1,7 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<DBLMetadata type="text" typeVersion="1.4" id="ce61dd3decd6b8a8" revision="0">
+<?xml version="1.0" encoding="utf-8"?>
+<DBLMetadata type="text" typeVersion="1.4" id="7881095a69332502" revision="0">
   <identification>
-    <name>Test Bundle Publication</name>
+    <name>Ri utzilaj tzij re ri kanimajawal Jesucristo</name>
     <nameLocal></nameLocal>
     <abbreviation></abbreviation>
     <abbreviationLocal></abbreviationLocal>
@@ -20,9 +20,9 @@
     <etenPartner></etenPartner>
   </agencies>
   <language>
-    <iso>eng</iso>
-    <name>English</name>
-    <ldml>en</ldml>
+    <iso>acr</iso>
+    <name>Achi</name>
+    <ldml>acr</ldml>
     <rod></rod>
     <script></script>
     <scriptDirection>LTR</scriptDirection>
@@ -45,7 +45,7 @@
     </book>
   </bookNames>
   <contents>
-    <bookList id="0" default="true">
+    <bookList id="1" default="true">
       <name>adhoc generated</name>
       <nameLocal></nameLocal>
       <abbreviation></abbreviation>
