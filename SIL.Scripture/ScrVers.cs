@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Xml.Serialization;
 using System.IO;
 using System.Text;
@@ -106,7 +106,7 @@ namespace SIL.Scripture
 		/// </summary>
 		/// <returns>first verse in the specified book and chapter that is not excluded or
 		/// returns <c>null</c> if no included verse left in book</returns>
-		public VerseRef FirstIncludedVerse(int bookNum, int chapterNum)
+		public VerseRef? FirstIncludedVerse(int bookNum, int chapterNum)
 		{
 			do
 			{
@@ -147,9 +147,9 @@ namespace SIL.Scripture
 		/// </summary>
 		/// <returns>true if successful (i.e. all verses were in the same the same chapter in the new versification),
 		/// false if the changing resulted in the reference spanning chapters (which makes the results undefined)</returns>
-		public bool ChangeVersificationWithRanges(VerseRef vref)
+		public bool ChangeVersificationWithRanges(VerseRef vref, out VerseRef newRef)
 		{
-			return VersInfo.ChangeVersificationWithRanges(vref);
+			return VersInfo.ChangeVersificationWithRanges(vref, out newRef);
 		}
 
 		public int ChangeVersification(int bbbcccvvv, IScrVers otherVersification)
@@ -162,9 +162,9 @@ namespace SIL.Scripture
 		/// <summary>
 		/// Change the passed VerseRef to be this versification.
 		/// </summary>
-		public void ChangeVersification(VerseRef vref)
+		public VerseRef ChangeVersification(VerseRef vref)
 		{
-			VersInfo.ChangeVersification(vref);
+			return VersInfo.ChangeVersification(vref);
 		}
 
 		/// <summary>

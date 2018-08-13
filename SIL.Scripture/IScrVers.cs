@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
 #region // Copyright (c) 2014, SIL International.
 // <copyright from='2008' to='2014' company='SIL International'>
 //		Copyright (c) 2014, SIL International.   
@@ -42,7 +42,7 @@ namespace SIL.Scripture
 		/// </summary>
 		/// <returns>first verse in the specified book and chapter that is not excluded or
 		/// returns <c>null</c> if no included verse left in book</returns>
-		VerseRef FirstIncludedVerse(int bookNum, int chapterNum);
+		VerseRef? FirstIncludedVerse(int bookNum, int chapterNum);
 
 		/// <summary>
 		/// Gets a list of verse segments for the specified reference or null if the specified
@@ -53,7 +53,7 @@ namespace SIL.Scripture
 		/// <summary>
 		/// Change the passed VerseRef to be this versification applying any necessary mappings.
 		/// </summary>
-		void ChangeVersification(VerseRef reference);
+		VerseRef ChangeVersification(VerseRef reference);
 
 		/// <summary>
 		/// Change the versification of an entry with Verse like 1-3 or 1,3a applying any necessary mappings to each part.
@@ -61,6 +61,6 @@ namespace SIL.Scripture
 		/// </summary>
 		/// <returns>true if successful (i.e. all verses were in the same the same chapter in the new versification),
 		/// false if the changing resulted in the reference spanning chapters (which makes the results undefined)</returns>
-		bool ChangeVersificationWithRanges(VerseRef reference);
+		bool ChangeVersificationWithRanges(VerseRef reference, out VerseRef newReference);
 	}
 }

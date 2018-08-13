@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -202,7 +202,7 @@ namespace SIL.Windows.Forms.Scripture
 					return;
 				}
 
-				value.CopyTo(curRef);
+				curRef.CopyFrom(value);
 				if (!allowVerseSegments)
 					curRef.Simplify();
 
@@ -665,7 +665,7 @@ namespace SIL.Windows.Forms.Scripture
 				return;
 			}
 			ScrVers versif = ScrVers.English;
-			if (curRef != null)
+			if (!curRef.IsDefault)
 				versif = curRef.Versification;
 
 			VerseRef = new VerseRef(((BookListItem)uiBook.SelectedItem).Abbreviation + " 1:1", versif);
@@ -780,7 +780,7 @@ namespace SIL.Windows.Forms.Scripture
 			AdvanceToLastSegment(vref);
 			uiChapter.Text = vref.Chapter;
 			uiVerse.Text = vref.Verse;
-			vref.CopyTo(curRef);
+			curRef.CopyFrom(vref);
 		}
 
 		private static void AdvanceToLastSegment(VerseRef vref)
@@ -797,7 +797,7 @@ namespace SIL.Windows.Forms.Scripture
 			vref.VerseNum = vref.LastVerse;
 			AdvanceToLastSegment(vref);
 			uiVerse.Text = vref.Verse;
-			vref.CopyTo(curRef);
+			curRef.CopyFrom(vref);
 		}
 
 		void Revert()

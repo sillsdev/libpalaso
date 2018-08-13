@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -63,14 +63,15 @@ namespace SIL.Scripture.Tests
 			Assert.AreEqual(VerseRef.defaultVersification, vref.Versification);
 
 			vref = new VerseRef();
+			Assert.IsTrue(vref.IsDefault);
 			Assert.IsFalse(vref.Valid);
 			Assert.AreEqual(000000000, vref.BBBCCCVVV);
 			Assert.AreEqual("000000000", vref.BBBCCCVVVS);
 			Assert.AreEqual(0, vref.BookNum);
 			Assert.AreEqual(string.Empty, vref.Book);
-			Assert.AreEqual(-1, vref.ChapterNum);
+			Assert.AreEqual(0, vref.ChapterNum);
 			Assert.AreEqual(string.Empty, vref.Chapter);
-			Assert.AreEqual(-1, vref.VerseNum);
+			Assert.AreEqual(0, vref.VerseNum);
 			Assert.AreEqual(string.Empty, vref.Verse);
 			Assert.AreEqual(VerseRef.defaultVersification, vref.Versification);
 
@@ -192,8 +193,8 @@ namespace SIL.Scripture.Tests
 			Assert.AreEqual(VerseRef.ValidStatusType.OutOfRange, vref.ValidStatus); // 0 not allowed for chapter
 			Assert.AreEqual(013000000, vref.BBBCCCVVV);
 			Assert.AreEqual(13, vref.BookNum);
-			Assert.AreEqual(-1, vref.ChapterNum);
-			Assert.AreEqual(-1, vref.VerseNum);
+			Assert.AreEqual(0, vref.ChapterNum);
+			Assert.AreEqual(0, vref.VerseNum);
 
 			vref.ChapterNum = 1;
 			vref.VerseNum = 0;
@@ -220,7 +221,7 @@ namespace SIL.Scripture.Tests
 			Assert.AreEqual(000016000, vref.BBBCCCVVV);
 			Assert.AreEqual(0, vref.BookNum);
 			Assert.AreEqual(16, vref.ChapterNum);
-			Assert.AreEqual(-1, vref.VerseNum);
+			Assert.AreEqual(0, vref.VerseNum);
 
 			vref = new VerseRef();
 			vref.Versification = ScrVers.English;
@@ -229,7 +230,7 @@ namespace SIL.Scripture.Tests
 			Assert.AreEqual(VerseRef.ValidStatusType.OutOfRange, vref.ValidStatus);
 			Assert.AreEqual(000000017, vref.BBBCCCVVV);
 			Assert.AreEqual(0, vref.BookNum);
-			Assert.AreEqual(-1, vref.ChapterNum);
+			Assert.AreEqual(0, vref.ChapterNum);
 			Assert.AreEqual(17, vref.VerseNum);
 		}
 
@@ -519,7 +520,7 @@ namespace SIL.Scripture.Tests
 		{
 			VerseRef vrefSource = new VerseRef("LUK", "3", "4b-6a", ScrVers.Vulgate);
 			VerseRef vrefDest = new VerseRef();
-			vrefSource.CopyTo(vrefDest);
+			vrefDest.CopyFrom(vrefSource);
 			// Now change the source to ensure that we didn't just make it referentially equal.
 			vrefSource.BookNum = 2;
 			vrefSource.ChapterNum = 6;
@@ -541,7 +542,7 @@ namespace SIL.Scripture.Tests
 		{
 			VerseRef vrefSource = new VerseRef("LUK", "3", "4b-6a", ScrVers.Vulgate);
 			VerseRef vrefDest = new VerseRef(1, 3, 5, ScrVers.RussianOrthodox);
-			vrefSource.CopyVerseTo(vrefDest);
+			vrefDest.CopyVerseFrom(vrefSource);
 			// Now change the source to ensure that we didn't just make it referentially equal.
 			vrefSource.BookNum = 2;
 			vrefSource.ChapterNum = 6;
@@ -555,7 +556,7 @@ namespace SIL.Scripture.Tests
 			Assert.AreEqual(ScrVers.RussianOrthodox, vrefDest.Versification);
 
 			// Now test when the source just has a plain verse number (no bridges or segments)
-			vrefSource.CopyVerseTo(vrefDest);
+			vrefDest.CopyVerseFrom(vrefSource);
 			Assert.AreEqual("GEN", vrefDest.Book);
 			Assert.AreEqual(3, vrefDest.ChapterNum);
 			Assert.AreEqual("9", vrefDest.Verse);

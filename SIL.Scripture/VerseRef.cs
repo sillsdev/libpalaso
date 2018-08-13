@@ -10,7 +10,7 @@ namespace SIL.Scripture
 	/// <summary>
 	/// Stores a reference to a specific verse in Scripture.
 	/// </summary>
-	public sealed class VerseRef : IComparable<VerseRef>, IComparable
+	public struct VerseRef : IComparable<VerseRef>, IComparable
 	{
 		#region Constants
 #if DEBUG
@@ -47,36 +47,31 @@ namespace SIL.Scripture
 
 		#region Member variables
 
-		private int bookNum;
-		private int chapterNum = -1;
-		private int verseNum = -1;
+		private short bookNum;
+		private short chapterNum;
+		private short verseNum;
 		private string verse;
-		private ScrVers versification = defaultVersification;
+		private ScrVers versification;
 
 		#endregion
 
 		#region Constructors
 
-		/// <summary>
-		/// Creates an empty reference
-		/// <para>WARNING: This constructor creates a VerseRef that has no versification. Use with caution!</para>
-		/// </summary>
-		public VerseRef()
-		{
-		}
 
 		/// <summary>
 		/// Creates an empty reference with the specified versification
 		/// </summary>
 		public VerseRef(ScrVers versification)
 		{
+			bookNum = 0;
+			chapterNum = verseNum = -1;
+			verse = null;
 			this.versification = versification;
 		}
 		
-		public VerseRef(string book, string chapter, string verse, ScrVers versification)
+		public VerseRef(string book, string chapter, string verse, ScrVers versification) : this(versification)
 		{
 			UpdateInternal(book, chapter, verse);
-			this.versification = versification;
 		}
 
 		/// <summary>
@@ -100,7 +95,7 @@ namespace SIL.Scripture
 		/// Creates a new reference
 		/// <para>WARNING: This constructor creates a VerseRef that has no versification. Use with caution!</para>
 		/// </summary>
-		public VerseRef(int bookNum, int chapterNum, int verseNum)
+		public VerseRef(int bookNum, int chapterNum, int verseNum) : this(defaultVersification)
 		{
 			BookNum = bookNum;
 			ChapterNum = chapterNum;
@@ -128,7 +123,7 @@ namespace SIL.Scripture
 		/// </summary>
 		/// <param name="verseStr">verse string to parse (e.g. "MAT 3:11")</param>
 		/// <exception cref="VerseRefException"></exception>
-		public VerseRef(string verseStr)
+		public VerseRef(string verseStr) : this(defaultVersification)
 		{
 			Parse(verseStr);
 		}
@@ -154,6 +149,10 @@ namespace SIL.Scripture
 		#endregion
 
 		#region Attribute Properties (access information about the reference)
+		/// <summary>
+		/// Checkes to see if a VerseRef hasn't been set - all values are the default.
+		/// </summary>
+		public bool IsDefault => bookNum == 0 && chapterNum == 0 && verseNum == 0 && versification == null;
 
 		/// <summary>
 		/// Number of first chapter.
@@ -227,11 +226,11 @@ namespace SIL.Scripture
 		[XmlIgnore]
 		public string Chapter
 		{
-			get { return chapterNum < 0 ? string.Empty : chapterNum.ToString(); }
+			get { return IsDefault || chapterNum < 0 ? string.Empty : chapterNum.ToString(); }
 			set
 			{
 				int chapter;
-				chapterNum = int.TryParse(value, out chapter) ? chapter : -1;
+				chapterNum = (short)(int.TryParse(value, out chapter) ? chapter : -1);
 				if (chapterNum < 0)
 					Trace.TraceWarning("Just failed to parse a chapter number: " + value);
 			}
@@ -243,10 +242,10 @@ namespace SIL.Scripture
 		[XmlIgnore]
 		public string Verse
 		{
-			get { return verse ?? (verseNum < 0 ? string.Empty : verseNum.ToString()); }
+			get { return verse ?? (IsDefault || verseNum < 0 ? string.Empty : verseNum.ToString()); }
 			set
 			{
-				int vNum;
+				short vNum;
 				verse = !TryGetVerseNum(value, out vNum) ? value.Replace(rtlMark, "") : null;
 				verseNum = vNum;
 				if (verseNum >= 0)
@@ -289,7 +288,7 @@ namespace SIL.Scripture
 		/// <returns><c>true</c> if the entire string could be parsed as a single,
 		/// simple verse number (1-999); <c>false</c> if the verse string represented
 		/// a verse bridge, contained segment letters, or was invalid</returns>
-		static bool TryGetVerseNum(string verseStr, out int vNum)
+		static bool TryGetVerseNum(string verseStr, out short vNum)
 		{
 			if (string.IsNullOrEmpty(verseStr))
 			{
@@ -308,7 +307,7 @@ namespace SIL.Scripture
 					return false;
 				}
 
-				vNum = vNum * 10 + ch - '0';
+				vNum = (short)(vNum * 10 + ch - '0');
 				if (vNum > bcvMaxValue)
 				{
 					// whoops, we got too big!
@@ -443,11 +442,9 @@ namespace SIL.Scripture
 		/// Simplifies this verse ref so that it has no bridging of verses or 
 		/// verse segments like "1a".
 		/// </summary>
-		/// <returns>this verse reference for inlining purposes.</returns>
-		public VerseRef Simplify()
+		public void Simplify()
 		{
 			verse = null;
-			return this;
 		}
 
 		/// <summary>
@@ -534,10 +531,12 @@ namespace SIL.Scripture
 		/// <param name="newVersification">new versification to use</param>
 		public void ChangeVersification(ScrVers newVersification)
 		{
+			VerseRef result;
 			if (!HasMultiple)
-				newVersification.ChangeVersification(this);
+				result = newVersification.ChangeVersification(this);
 			else
-				newVersification.ChangeVersificationWithRanges(this);
+				newVersification.ChangeVersificationWithRanges(this, out result);
+			CopyFrom(result);
 		}
 		
 		/// <summary>
@@ -546,7 +545,10 @@ namespace SIL.Scripture
 		/// </summary>
 		public bool ChangeVersificationWithRanges(ScrVers newVersification)
 		{
-			return newVersification.ChangeVersificationWithRanges(this);
+			VerseRef temp;
+			bool result = newVersification.ChangeVersificationWithRanges(this, out temp);
+			CopyFrom(temp);
+			return result;
 		}
 
 		#endregion
@@ -559,30 +561,31 @@ namespace SIL.Scripture
 		/// <returns></returns>
 		public VerseRef Clone()
 		{
+			// Leaving this for now to reduce code changes. Isn't really nessary when VerseRef is a struct since a = b is a copy.
 			return new VerseRef(this);
 		}
 
 		/// <summary>
-		/// Copy contents to vref
+		/// Copy contents from vref
 		/// </summary>
-		/// <param name="vref">VerseRef to be updated</param>
-		public void CopyTo(VerseRef vref)
+		/// <param name="vref">VerseRef to be copied from</param>
+		public void CopyFrom(VerseRef vref)
 		{
-			vref.bookNum = bookNum;
-			vref.chapterNum = chapterNum;
-			vref.verseNum = verseNum;
-			vref.verse = verse;
-			vref.versification = versification;
+			bookNum = vref.bookNum;
+			chapterNum = vref.chapterNum;
+			verseNum = vref.verseNum;
+			verse = vref.verse;
+			versification = vref.versification;
 		}
 
 		/// <summary>
-		/// Copies the verse information from this object to vref.
+		/// Copies the verse information to this object from vref.
 		/// </summary>
-		/// <param name="vref">VerseRef to be updated</param>
-		public void CopyVerseTo(VerseRef vref)
+		/// <param name="vref">VerseRef to be copied from</param>
+		public void CopyVerseFrom(VerseRef vref)
 		{
-			vref.verseNum = verseNum;
-			vref.verse = verse;
+			verseNum = vref.verseNum;
+			verse = vref.verse;
 		}
 
 		/// <summary>
@@ -678,7 +681,7 @@ namespace SIL.Scripture
 			{
 				if (value <= 0 || value > Canon.LastBook)
 					throw new VerseRefException("BookNum must be greater than zero and less than or equal to last book");
-				bookNum = value;
+				bookNum = (short)value;
 			}
 		}
 
@@ -694,7 +697,7 @@ namespace SIL.Scripture
 			{
 				if (value < 0)
 					throw new VerseRefException("ChapterNum can not be negative");
-				chapterNum = value;
+				chapterNum = (short)value;
 			}
 		}
 
@@ -710,7 +713,7 @@ namespace SIL.Scripture
 			{
 				if (value < 0)
 					throw new VerseRefException("VerseNum can not be negative");
-				verseNum = value;
+				verseNum = (short)value;
 				verse = null;
 			}
 		}
@@ -735,7 +738,7 @@ namespace SIL.Scripture
 			int newBook = present.NextSelected(curBook);
 			if (newBook == curBook)
 				return false;
-			bookNum = newBook;
+			bookNum = (short)newBook;
 			chapterNum = 1;
 			VerseNum = 0; // Use property to reset verse string
 			return true;
@@ -756,7 +759,7 @@ namespace SIL.Scripture
 			int newBook = present.PreviousSelected(curBook);
 			if (newBook == curBook)
 				return false; //no previous selected book
-			bookNum = newBook;
+			bookNum = (short)newBook;
 			chapterNum = 1;
 			VerseNum = 1; // Use property to reset verse string
 			return true;
@@ -782,13 +785,13 @@ namespace SIL.Scripture
 			{
 				var nextRef = versification.FirstIncludedVerse(bookNum, newPosition);
 				if (nextRef != null)
-					nextRef.CopyTo(this);
+					CopyFrom(nextRef.Value);
 				else
 					return NextBook(present);
 			}
 			else
 			{
-				chapterNum = newPosition;
+				chapterNum = (short)newPosition;
 				VerseNum = 1;
 			}
 
@@ -804,7 +807,7 @@ namespace SIL.Scripture
 		{
 			bool result = PreviousBook(present);
 			if (result)
-				chapterNum = LastChapter != Scripture.Versification.NonCanonicalLastChapterOrVerse ? LastChapter : 1;
+				chapterNum = (short)(LastChapter != Scripture.Versification.NonCanonicalLastChapterOrVerse ? LastChapter : 1);
 			return result;
 		}
 
@@ -817,7 +820,7 @@ namespace SIL.Scripture
 			if (newPosition < FirstChapter)
 				return PreviousBookLastChapter(present);
 			VerseNum = 1; // Use property to reset verse string
-			chapterNum = newPosition;
+			chapterNum = (short)newPosition;
 			return true;
 		}
 
@@ -1001,9 +1004,9 @@ namespace SIL.Scripture
 
 		public override bool Equals(object obj)
 		{
-			VerseRef v = obj as VerseRef;
-			if (v != null)
+			if (obj is VerseRef)
 			{
+				VerseRef v = (VerseRef)obj;
 				return (v.bookNum == bookNum)
 					   && (v.chapterNum == chapterNum)
 					   && (v.verseNum == verseNum)
@@ -1058,7 +1061,6 @@ namespace SIL.Scripture
 		{
 			if (other.Versification != Versification)
 			{
-				other = other.Clone();
 				if (!string.IsNullOrEmpty(other.verse) &&
 					(other.verse.IndexOf(verseRangeSeparator) != -1 || other.verse.IndexOf(verseSequenceIndicator) != -1))
 				{
@@ -1242,6 +1244,9 @@ namespace SIL.Scripture
 		/// </summary>
 		public static bool AreOverlappingVersesRanges(VerseRef verseRef1, VerseRef verseRef2)
 		{
+			if (verseRef1.IsDefault || verseRef1.IsDefault)
+				return false;
+
 			Debug.Assert(verseRef1.Versification == verseRef2.Versification,
 						 "Versification of verse references does not match");
 
@@ -1335,7 +1340,8 @@ namespace SIL.Scripture
 		/// <see cref="AreOverlappingVersesRanges(VerseRef,VerseRef)"/>
 		public bool OverlapsAny(params VerseRef[] compareTo)
 		{
-			return compareTo.Any(vref => vref != null && AreOverlappingVersesRanges(this, vref));
+			VerseRef temp = this;
+			return compareTo.Any(vref => AreOverlappingVersesRanges(temp, vref));
 		}
 
 		/// <summary>
@@ -1484,7 +1490,7 @@ namespace SIL.Scripture
 			}
 			catch (VerseRefException)
 			{
-				vref = null;
+				vref = new VerseRef();
 				return false;
 			}
 		}
