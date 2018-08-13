@@ -20,3 +20,4 @@
 *.xml -whitespace
 changelog -whitespace
 *.lift* -whitespace
+*.xsl -whitespace
