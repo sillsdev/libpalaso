@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using System.IO;
@@ -249,11 +249,11 @@ namespace SIL.Scripture.Tests
 
 			// Get mapping from "NUM 17:1 = NUM 17:16" in the versification
 			VerseRef vref = new VerseRef(4, 17, 1, versification);
-			ScrVers.Original.ChangeVersification(vref);
+			vref = ScrVers.Original.ChangeVersification(vref);
 			Assert.AreEqual(new VerseRef(4, 17, 16, ScrVers.Original), vref);
 
 			vref = new VerseRef(4, 17, 16, ScrVers.Original);
-			versification.ChangeVersification(vref);
+			vref = versification.ChangeVersification(vref);
 			Assert.AreEqual(new VerseRef(4, 17, 1, versification), vref);
 		}
 		
@@ -270,14 +270,14 @@ namespace SIL.Scripture.Tests
 			for (int i = 1; i <= 13; i++)
 			{
 				vref = new VerseRef(4, 17, i, versification);
-				ScrVers.Original.ChangeVersification(vref);
+				vref = ScrVers.Original.ChangeVersification(vref);
 				Assert.AreEqual(new VerseRef(4, 17, i + 15, ScrVers.Original), vref);
 			}
 
 			for (int i = 16; i <= 28; i++)
 			{
 				vref = new VerseRef(4, 17, i, ScrVers.Original);
-				versification.ChangeVersification(vref);
+				vref = versification.ChangeVersification(vref);
 				Assert.AreEqual(new VerseRef(4, 17, i - 15, versification), vref);
 			}
 		}
@@ -305,28 +305,28 @@ namespace SIL.Scripture.Tests
 			versification.ParseRangeToOneMappingLine("&ACT 19:39-41 = ACT 19:40");
 
 			VerseRef vref = new VerseRef("ACT 19:39", versification);
-			ScrVers.Original.ChangeVersification(vref);
+			vref = ScrVers.Original.ChangeVersification(vref);
 			Assert.AreEqual(new VerseRef("ACT 19:40", ScrVers.Original), vref);
 
 			vref = new VerseRef("ACT 19:40", versification);
-			ScrVers.Original.ChangeVersification(vref);
+			vref = ScrVers.Original.ChangeVersification(vref);
 			Assert.AreEqual(new VerseRef("ACT 19:40", ScrVers.Original), vref);
 
 			vref = new VerseRef("ACT 19:41", versification);
-			ScrVers.Original.ChangeVersification(vref);
+			vref = ScrVers.Original.ChangeVersification(vref);
 			Assert.AreEqual(new VerseRef("ACT 19:40", ScrVers.Original), vref);
 
 
 			vref = new VerseRef("ACT 19:39", ScrVers.Original);
-			versification.ChangeVersification(vref);
+			vref = versification.ChangeVersification(vref);
 			Assert.AreEqual(new VerseRef("ACT 19:39", versification), vref);
 
 			vref = new VerseRef("ACT 19:40", ScrVers.Original);
-			versification.ChangeVersification(vref);
+			vref = versification.ChangeVersification(vref);
 			Assert.AreEqual(new VerseRef("ACT 19:39", versification), vref);
 
 			vref = new VerseRef("ACT 19:41", ScrVers.Original);
-			versification.ChangeVersification(vref);
+			vref = versification.ChangeVersification(vref);
 			Assert.AreEqual(new VerseRef("ACT 19:41", versification), vref);
 		}
 
@@ -340,28 +340,28 @@ namespace SIL.Scripture.Tests
 		{
 			versification.ParseRangeToOneMappingLine("&ACT 19:39 = ACT 19:38-40");
 			VerseRef vref = new VerseRef("ACT 19:38", versification);
-			ScrVers.Original.ChangeVersification(vref);
+			vref = ScrVers.Original.ChangeVersification(vref);
 			Assert.AreEqual(new VerseRef("ACT 19:38", ScrVers.Original), vref);
 
 			vref = new VerseRef("ACT 19:39", versification);
-			ScrVers.Original.ChangeVersification(vref);
+			vref = ScrVers.Original.ChangeVersification(vref);
 			Assert.AreEqual(new VerseRef("ACT 19:38", ScrVers.Original), vref);
 
 			vref = new VerseRef("ACT 19:40", versification);
-			ScrVers.Original.ChangeVersification(vref);
+			vref = ScrVers.Original.ChangeVersification(vref);
 			Assert.AreEqual(new VerseRef("ACT 19:40", ScrVers.Original), vref);
 
 
 			vref = new VerseRef("ACT 19:38", ScrVers.Original);
-			versification.ChangeVersification(vref);
+			vref = versification.ChangeVersification(vref);
 			Assert.AreEqual(new VerseRef("ACT 19:39", versification), vref);
 
 			vref = new VerseRef("ACT 19:39", ScrVers.Original);
-			versification.ChangeVersification(vref);
+			vref = versification.ChangeVersification(vref);
 			Assert.AreEqual(new VerseRef("ACT 19:39", versification), vref);
 
 			vref = new VerseRef("ACT 19:40", ScrVers.Original);
-			versification.ChangeVersification(vref);
+			vref = versification.ChangeVersification(vref);
 			Assert.AreEqual(new VerseRef("ACT 19:39", versification), vref);
 		}
 
@@ -650,7 +650,7 @@ namespace SIL.Scripture.Tests
 			for (int i = 1; i <= 16; i++)
 			{
 				vref = new VerseRef(19, 119, i, versification);
-				ScrVers.Original.ChangeVersification(vref);
+				vref = ScrVers.Original.ChangeVersification(vref);
 				if (i == 1)
 				{
 					Assert.AreEqual(new VerseRef(19, 119, 1, ScrVers.Original), vref);
@@ -660,13 +660,13 @@ namespace SIL.Scripture.Tests
 			}
 
 			vref = new VerseRef(19, 119, 1, ScrVers.Original);
-			versification.ChangeVersification(vref);
+			vref = versification.ChangeVersification(vref);
 			Assert.AreEqual(new VerseRef(19, 119, 1, versification), vref);
 
 			for (int i = 20; i <= 34; i++)
 			{
 				vref = new VerseRef(19, 119, i, ScrVers.Original);
-				versification.ChangeVersification(vref);
+				vref = versification.ChangeVersification(vref);
 				Assert.AreEqual(new VerseRef(19, 119, i - 18, versification), vref);
 			}
 		}
@@ -688,20 +688,20 @@ namespace SIL.Scripture.Tests
 
 			// Get mapping from "PSA 78:20-34 = PSA 78:2-16" in the versification
 			VerseRef vref = new VerseRef(19, 78, 1, versification);
-			ScrVers.Original.ChangeVersification(vref);
+			vref = ScrVers.Original.ChangeVersification(vref);
 			Assert.AreEqual(new VerseRef(19, 78, 1, ScrVers.Original), vref);
 
 			for (int i = 20; i <= 34; i++)
 			{
 				vref = new VerseRef(19, 78, i, versification);
-				ScrVers.Original.ChangeVersification(vref);
+				vref = ScrVers.Original.ChangeVersification(vref);
 				Assert.AreEqual(new VerseRef(19, 78, i - 18, ScrVers.Original), vref);
 			}
 
 			for (int i = 1; i <= 16; i++)
 			{
 				vref = new VerseRef(19, 78, i, ScrVers.Original);
-				versification.ChangeVersification(vref);
+				vref = versification.ChangeVersification(vref);
 				if (i == 1)
 				{
 					Assert.AreEqual(new VerseRef(19, 78, 1, versification), vref);
@@ -777,11 +777,11 @@ namespace SIL.Scripture.Tests
 			// based on the same original versification.
 
 			VerseRef vref = new VerseRef("ACT 19:40", versification);
-			versification2.ChangeVersification(vref);
+			vref = versification2.ChangeVersification(vref);
 			Assert.AreEqual(new VerseRef("ACT 19:40", versification2), vref);
 
 			vref = new VerseRef("ACT 19:41", versification);
-			versification2.ChangeVersification(vref);
+			vref = versification2.ChangeVersification(vref);
 			Assert.AreEqual(new VerseRef("ACT 19:41", versification2), vref);
 		}
 		#endregion
@@ -900,7 +900,7 @@ namespace SIL.Scripture.Tests
 		public void FirstIncludedVerse()
 		{
 			versification.ParseChapterVerseLine("GEN 51:0 52:0 53:10");
-			Assert.AreEqual(53, versification.FirstIncludedVerse(1, 51).ChapterNum);
+			Assert.AreEqual(53, ((VerseRef)versification.FirstIncludedVerse(1, 51)).ChapterNum);
 		}
 
 		[Test]

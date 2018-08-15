@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -229,41 +229,39 @@ namespace SIL.Scripture
 		/// </summary>
 		/// <returns>true if successful (i.e. all verses were in the same the same chapter in the new versification),
 		/// false if the changing resulted in the reference spanning chapters (which makes the results undefined)</returns>
-		internal bool ChangeVersificationWithRanges(VerseRef vref)
+		internal bool ChangeVersificationWithRanges(VerseRef vref, out VerseRef newRef)
 		{
-			VerseRef vref2 = vref.Clone();
+			VerseRef vref2 = vref;
 
 			string[] parts = Regex.Split(vref.Verse, @"([,\-])");
 
 			vref.Verse = parts[0];
-			ChangeVersification(vref);
+			vref = ChangeVersification(vref);
 			bool allSameChapter = true;
 
 			for (int i = 2; i < parts.Length; i += 2)
 			{
-				VerseRef vref3 = vref2.Clone();
+				VerseRef vref3 = vref2;
 				vref3.Verse = parts[i];
-				ChangeVersification(vref3);
+				vref3 = ChangeVersification(vref3);
 				allSameChapter &= vref.ChapterNum == vref3.ChapterNum;
 
 				vref.Verse = vref.Verse + parts[i - 1] + vref3.Verse;
 			}
 
+			newRef = vref;
 			return allSameChapter;
 		}
 
 		/// <summary>
 		/// Change the passed VerseRef to be this versification.
 		/// </summary>
-		internal void ChangeVersification(VerseRef vref)
+		internal VerseRef ChangeVersification(VerseRef vref)
 		{
-			if (vref == null)
-				return;
-
-			if (vref.Versification == null || vref.Versification.VersInfo == this)
+			if (vref.IsDefault || vref.Versification == null || vref.Versification.VersInfo == this)
 			{
 				vref.Versification = new ScrVers(this);
-				return;
+				return vref;
 			}
 
 			Debug.Assert(!vref.HasMultiple, "Use ChangeVersificationWithRanges");
@@ -271,7 +269,8 @@ namespace SIL.Scripture
 			Versification origVersification = vref.Versification.VersInfo;
 
 			// Map from existing to standard versification
-			VerseRef origVerse = vref.Clone();
+
+			VerseRef origVerse = vref;
 			origVerse.Versification = null;
 			VerseRef standardVerse;
 			if (origVersification.mappings != null)
@@ -294,7 +293,7 @@ namespace SIL.Scripture
 			if (vref.Book != "ESG" && standardVerse.Equals(standardVerseThisVersification) && BookChapterVerseExists(vref))
 			{
 				vref.Versification = new ScrVers(this);
-				return;
+				return vref;
 			}
 
 			// Map from standard versification to this versification
@@ -306,9 +305,10 @@ namespace SIL.Scripture
 
 			// If verse has changed, parse new value
 			if (!origVerse.Equals(newVerse))
-				newVerse.CopyTo(vref);
+				vref.CopyFrom(newVerse);
 
 			vref.Versification = new ScrVers(this);
+			return vref;
 		}
 
 		private bool BookChapterVerseExists(VerseRef vref)
@@ -1191,11 +1191,10 @@ namespace SIL.Scripture
 			/// </summary>
 			/// <param name="standard">The verse mapping for the standard versification</param>
 			/// <returns>The found verse mapping for the specific versification (null if not found)</returns>
-			public VerseRef GetVers(VerseRef standard)
+			public VerseRef? GetVers(VerseRef standard)
 			{
 				VerseRef vers;
-				standardToVers.TryGetValue(standard, out vers);
-				return vers;
+				return standardToVers.TryGetValue(standard, out vers) ? (VerseRef?)vers : null;
 			}
 
 			/// <summary>
@@ -1203,11 +1202,10 @@ namespace SIL.Scripture
 			/// </summary>
 			/// <param name="vers">The verse mapping for the specific versification</param>
 			/// <returns>The found verse mapping for the standard versification (null if not found)</returns>
-			public VerseRef GetStandard(VerseRef vers)
+			public VerseRef? GetStandard(VerseRef vers)
 			{
 				VerseRef standard;
-				versToStandard.TryGetValue(vers, out standard);
-				return standard;
+				return versToStandard.TryGetValue(vers, out standard) ? (VerseRef?)standard : null;
 			}
 
 			/// <summary>
