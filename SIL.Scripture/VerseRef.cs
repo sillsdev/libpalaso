@@ -270,6 +270,8 @@ namespace SIL.Scripture
 				chapterNum = -1;
 				verseNum = -1;
 				verse = null;
+				if (versification == null)
+					versification = defaultVersification;
 				try
 				{
 					Parse(value);

@@ -73,7 +73,7 @@ namespace SIL.Scripture.Tests
 			Assert.AreEqual(string.Empty, vref.Chapter);
 			Assert.AreEqual(0, vref.VerseNum);
 			Assert.AreEqual(string.Empty, vref.Verse);
-			Assert.AreEqual(VerseRef.defaultVersification, vref.Versification);
+			Assert.AreEqual(null, vref.Versification);
 
 			vref = new VerseRef("LUK", "3", "4b-5a", ScrVers.Vulgate);
 			Assert.IsTrue(vref.Valid);
@@ -1782,11 +1782,24 @@ namespace SIL.Scripture.Tests
 			Console.WriteLine();
 
 			VerseRef restored = XmlSerializationHelper.DeserializeFromString<VerseRef>(serialized);
-			Assert.IsNotNull(restored);
+			Assert.IsFalse(restored.IsDefault);
 			Assert.AreEqual("LEV", restored.Book);
 			Assert.AreEqual("12", restored.Chapter);
 			Assert.AreEqual("6-7a", restored.Verse);
 			Assert.AreEqual(ScrVers.Vulgate, restored.Versification);
+		}
+
+		[Test]
+		public void Deserialize_DefaultVerification()
+		{
+			string serialized = "<VerseRef>LEV 12:6-7a</VerseRef>";
+
+			VerseRef restored = XmlSerializationHelper.DeserializeFromString<VerseRef>(serialized);
+			Assert.IsFalse(restored.IsDefault);
+			Assert.AreEqual("LEV", restored.Book);
+			Assert.AreEqual("12", restored.Chapter);
+			Assert.AreEqual("6-7a", restored.Verse);
+			Assert.AreEqual(VerseRef.defaultVersification, restored.Versification);
 		}
 		#endregion
 
