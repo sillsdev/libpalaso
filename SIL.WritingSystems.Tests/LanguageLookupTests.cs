@@ -353,5 +353,15 @@ namespace SIL.WritingSystems.Tests
 			Assert.AreEqual("etr", lookup.GetLanguageFromCode("etr").LanguageTag);
 			Assert.AreEqual("English", lookup.GetLanguageFromCode("en").DesiredName);
 		}
+
+		[Test]
+		public void SuggestLanguages_HandlesApostrophe()
+		{
+			var lookup = new LanguageLookup();
+			var languages = lookup.SuggestLanguages("K\u2019i").ToArray();
+			Assert.True(languages.Any(l => l.DesiredName == "K\u2019iche\u2019"));
+			languages = lookup.SuggestLanguages("K'i").ToArray();
+			Assert.True(languages.Any(l => l.DesiredName == "K\u2019iche\u2019"));
+		}
 	}
 }
