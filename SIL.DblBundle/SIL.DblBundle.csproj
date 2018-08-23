@@ -13,5 +13,11 @@
     <ProjectReference Include="..\SIL.Scripture\SIL.Scripture.csproj" />
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\text_2_1_to_1_5.xsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\text_2_0_to_1_5.xsl" />
+  </ItemGroup>
 
 </Project>

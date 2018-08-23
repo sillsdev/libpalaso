@@ -19,7 +19,7 @@ namespace SIL.DblBundle.Tests.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -123,6 +123,25 @@ namespace SIL.DblBundle.Tests.Properties {
         internal static string metadata_xml {
             get {
                 return ResourceManager.GetString("metadata_xml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+        ///&lt;DBLMetadata version=&quot;2.1&quot; id=&quot;7881095a69332502&quot; revision=&quot;&quot;&gt;
+        ///  &lt;identification&gt;
+        ///    &lt;name&gt;Ri utzilaj tzij re ri kanimajawal Jesucristo&lt;/name&gt;
+        ///    &lt;description&gt;New Testament in Achi Rabinal; acr (GT:acrN:Achi)&lt;/description&gt;
+        ///    &lt;abbreviation&gt;acrNNT&lt;/abbreviation&gt;
+        ///    &lt;scope&gt;New Testament&lt;/scope&gt;
+        ///    &lt;dateCompleted&gt;2009&lt;/dateCompleted&gt;
+        ///    &lt;bundleProducer&gt;Paratext/7.4.100.9&lt;/bundleProducer&gt;
+        ///    &lt;systemId type=&quot;paratext&quot;&gt;
+        ///      &lt;id&gt;7881095a69332502ec7b3544a7e4e [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string metadataVersion2_1_xml {
+            get {
+                return ResourceManager.GetString("metadataVersion2_1_xml", resourceCulture);
             }
         }
         
