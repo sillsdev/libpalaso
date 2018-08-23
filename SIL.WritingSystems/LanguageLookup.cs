@@ -151,6 +151,18 @@ namespace SIL.WritingSystems
 			{
 				IEnumerable<LanguageInfo> matchOnCode = from x in _codeToLanguageIndex where x.Key.StartsWith(searchString, StringComparison.InvariantCultureIgnoreCase) select x.Value;
 				List<LanguageInfo>[] matchOnName = (from x in _nameToLanguageIndex where x.Key.StartsWith(searchString, StringComparison.InvariantCultureIgnoreCase) select x.Value).ToArray();
+				// Apostrophes can cause trouble in lookup.  Unicode TR-29 inexplicably says to use
+				// u2019 (RIGHT SINGLE QUOTATION MARK) for the English apostrophe when it also defines
+				// u02BC (MODIFIER LETTER APOSTROPHE) as a Letter character.  Users are quite likely to
+				// type the ASCII apostrophe (u0027) which is defined as Punctuation.  The current
+				// data appears to use u2019 in several language names, which means that users might
+				// end up thinking the language isn't in our database.
+				// See https://silbloom.myjetbrains.com/youtrack/issue/BL-6339.
+				if (!matchOnName.Any() && searchString.Contains('\''))
+				{
+					searchString = searchString.Replace('\'','\u2019');
+					matchOnName = (from x in _nameToLanguageIndex where x.Key.StartsWith(searchString, StringComparison.InvariantCultureIgnoreCase) select x.Value).ToArray();
+				}
 				List<LanguageInfo>[] matchOnCountry = (from x in _countryToLanguageIndex where x.Key.StartsWith(searchString, StringComparison.InvariantCultureIgnoreCase) select x.Value).ToArray();
 
 				if (!matchOnName.Any())
