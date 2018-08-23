@@ -32,7 +32,7 @@ namespace SIL.DblBundle
 			string tempPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 			Directory.CreateDirectory(tempPath);
 
-			ZipUtilities.ExtractToDirectory(zipFilePath, tempPath);
+			System.IO.Compression.ZipFile.ExtractToDirectory(zipFilePath, tempPath);
 
 			return tempPath;
 		}
