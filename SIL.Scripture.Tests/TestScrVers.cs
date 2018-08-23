@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
 #region // Copyright (c) 2014, SIL International.
 // <copyright from='2013' to='2014' company='SIL International'>
 //		Copyright (c) 2014, SIL International.   
@@ -69,7 +69,7 @@ namespace SIL.Scripture.Tests
 			throw new System.NotImplementedException();
 		}
 
-		public VerseRef FirstIncludedVerse(int bookNum, int chapterNum)
+		public VerseRef? FirstIncludedVerse(int bookNum, int chapterNum)
 		{
 			throw new System.NotImplementedException();
 		}
@@ -79,12 +79,12 @@ namespace SIL.Scripture.Tests
 			throw new System.NotImplementedException();
 		}
 
-		public void ChangeVersification(VerseRef reference)
+		public void ChangeVersification(ref VerseRef reference)
 		{
 			throw new System.NotImplementedException();
 		}
 
-		public bool ChangeVersificationWithRanges(VerseRef reference)
+		public bool ChangeVersificationWithRanges(VerseRef reference, out VerseRef newReference)
 		{
 			throw new System.NotImplementedException();
 		}

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -63,16 +63,17 @@ namespace SIL.Scripture.Tests
 			Assert.AreEqual(VerseRef.defaultVersification, vref.Versification);
 
 			vref = new VerseRef();
+			Assert.IsTrue(vref.IsDefault);
 			Assert.IsFalse(vref.Valid);
 			Assert.AreEqual(000000000, vref.BBBCCCVVV);
 			Assert.AreEqual("000000000", vref.BBBCCCVVVS);
 			Assert.AreEqual(0, vref.BookNum);
 			Assert.AreEqual(string.Empty, vref.Book);
-			Assert.AreEqual(-1, vref.ChapterNum);
+			Assert.AreEqual(0, vref.ChapterNum);
 			Assert.AreEqual(string.Empty, vref.Chapter);
-			Assert.AreEqual(-1, vref.VerseNum);
+			Assert.AreEqual(0, vref.VerseNum);
 			Assert.AreEqual(string.Empty, vref.Verse);
-			Assert.AreEqual(VerseRef.defaultVersification, vref.Versification);
+			Assert.AreEqual(null, vref.Versification);
 
 			vref = new VerseRef("LUK", "3", "4b-5a", ScrVers.Vulgate);
 			Assert.IsTrue(vref.Valid);
@@ -192,8 +193,8 @@ namespace SIL.Scripture.Tests
 			Assert.AreEqual(VerseRef.ValidStatusType.OutOfRange, vref.ValidStatus); // 0 not allowed for chapter
 			Assert.AreEqual(013000000, vref.BBBCCCVVV);
 			Assert.AreEqual(13, vref.BookNum);
-			Assert.AreEqual(-1, vref.ChapterNum);
-			Assert.AreEqual(-1, vref.VerseNum);
+			Assert.AreEqual(0, vref.ChapterNum);
+			Assert.AreEqual(0, vref.VerseNum);
 
 			vref.ChapterNum = 1;
 			vref.VerseNum = 0;
@@ -220,7 +221,7 @@ namespace SIL.Scripture.Tests
 			Assert.AreEqual(000016000, vref.BBBCCCVVV);
 			Assert.AreEqual(0, vref.BookNum);
 			Assert.AreEqual(16, vref.ChapterNum);
-			Assert.AreEqual(-1, vref.VerseNum);
+			Assert.AreEqual(0, vref.VerseNum);
 
 			vref = new VerseRef();
 			vref.Versification = ScrVers.English;
@@ -229,7 +230,7 @@ namespace SIL.Scripture.Tests
 			Assert.AreEqual(VerseRef.ValidStatusType.OutOfRange, vref.ValidStatus);
 			Assert.AreEqual(000000017, vref.BBBCCCVVV);
 			Assert.AreEqual(0, vref.BookNum);
-			Assert.AreEqual(-1, vref.ChapterNum);
+			Assert.AreEqual(0, vref.ChapterNum);
 			Assert.AreEqual(17, vref.VerseNum);
 		}
 
@@ -510,16 +511,16 @@ namespace SIL.Scripture.Tests
 		}
 		#endregion
 
-		#region CopyTo and CopyVerseTo tests
+		#region CopyFrom and CopyVerseFrom tests
 		/// <summary>
-		/// Test the CopyTo method
+		/// Test the CopyFrom method
 		/// </summary>
 		[Test]
-		public void CopyTo()
+		public void CopyFrom()
 		{
 			VerseRef vrefSource = new VerseRef("LUK", "3", "4b-6a", ScrVers.Vulgate);
 			VerseRef vrefDest = new VerseRef();
-			vrefSource.CopyTo(vrefDest);
+			vrefDest.CopyFrom(vrefSource);
 			// Now change the source to ensure that we didn't just make it referentially equal.
 			vrefSource.BookNum = 2;
 			vrefSource.ChapterNum = 6;
@@ -534,14 +535,14 @@ namespace SIL.Scripture.Tests
 		}
 
 		/// <summary>
-		/// Test the CopyVerseTo method
+		/// Test the CopyVerseFrom method
 		/// </summary>
 		[Test]
-		public void CopyVerseTo()
+		public void CopyVerseFrom()
 		{
 			VerseRef vrefSource = new VerseRef("LUK", "3", "4b-6a", ScrVers.Vulgate);
 			VerseRef vrefDest = new VerseRef(1, 3, 5, ScrVers.RussianOrthodox);
-			vrefSource.CopyVerseTo(vrefDest);
+			vrefDest.CopyVerseFrom(vrefSource);
 			// Now change the source to ensure that we didn't just make it referentially equal.
 			vrefSource.BookNum = 2;
 			vrefSource.ChapterNum = 6;
@@ -555,7 +556,7 @@ namespace SIL.Scripture.Tests
 			Assert.AreEqual(ScrVers.RussianOrthodox, vrefDest.Versification);
 
 			// Now test when the source just has a plain verse number (no bridges or segments)
-			vrefSource.CopyVerseTo(vrefDest);
+			vrefDest.CopyVerseFrom(vrefSource);
 			Assert.AreEqual("GEN", vrefDest.Book);
 			Assert.AreEqual(3, vrefDest.ChapterNum);
 			Assert.AreEqual("9", vrefDest.Verse);
@@ -1781,11 +1782,24 @@ namespace SIL.Scripture.Tests
 			Console.WriteLine();
 
 			VerseRef restored = XmlSerializationHelper.DeserializeFromString<VerseRef>(serialized);
-			Assert.IsNotNull(restored);
+			Assert.IsFalse(restored.IsDefault);
 			Assert.AreEqual("LEV", restored.Book);
 			Assert.AreEqual("12", restored.Chapter);
 			Assert.AreEqual("6-7a", restored.Verse);
 			Assert.AreEqual(ScrVers.Vulgate, restored.Versification);
+		}
+
+		[Test]
+		public void Deserialize_DefaultVerification()
+		{
+			string serialized = "<VerseRef>LEV 12:6-7a</VerseRef>";
+
+			VerseRef restored = XmlSerializationHelper.DeserializeFromString<VerseRef>(serialized);
+			Assert.IsFalse(restored.IsDefault);
+			Assert.AreEqual("LEV", restored.Book);
+			Assert.AreEqual("12", restored.Chapter);
+			Assert.AreEqual("6-7a", restored.Verse);
+			Assert.AreEqual(VerseRef.defaultVersification, restored.Versification);
 		}
 		#endregion
 
@@ -1928,6 +1942,27 @@ namespace SIL.Scripture.Tests
 		#endregion
 
 		#region Other Methods tests
+		/// <summary>
+		/// Make sure IsDefault is true for default constructor and false when any value is set
+		/// </summary>
+		[Test]
+		public void IsDefault()
+		{
+			VerseRef testRef = new VerseRef();
+			Assert.IsTrue(testRef.IsDefault, "IsDefault not true for default VerseRef");
+			testRef.BookNum = 1;
+			Assert.IsFalse(testRef.IsDefault, "IsDefault not false for VerseRef with value set");
+			testRef = new VerseRef();
+			testRef.ChapterNum = 1;
+			Assert.IsFalse(testRef.IsDefault, "IsDefault not false for VerseRef with value set");
+			testRef = new VerseRef();
+			testRef.VerseNum = 1;
+			Assert.IsFalse(testRef.IsDefault, "IsDefault not false for VerseRef with value set");
+			testRef = new VerseRef();
+			testRef.Versification = ScrVers.Vulgate;
+			Assert.IsFalse(testRef.IsDefault, "IsDefault not false for VerseRef with value set");
+		}
+
 		/// <summary>
 		/// Tests the ToString method
 		/// </summary>
