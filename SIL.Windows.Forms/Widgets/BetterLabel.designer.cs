@@ -1,4 +1,4 @@
-﻿namespace SIL.Windows.Forms.Widgets
+namespace SIL.Windows.Forms.Widgets
 {
 	partial class BetterLabel
 	{
@@ -16,11 +16,6 @@
 			if (disposing && (components != null))
 			{
 				components.Dispose();
-				if (_textBrush != null)
-				{
-					_textBrush.Dispose();
-					_textBrush = null;
-				}
 				if(_backgroundBrush!=null)
 				{
 					_backgroundBrush.Dispose();
