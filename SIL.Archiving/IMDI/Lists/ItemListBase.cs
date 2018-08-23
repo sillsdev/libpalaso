@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -211,7 +211,7 @@ namespace SIL.Archiving.IMDI.Lists
 		{
 			var listFileName = CheckFile(listName);
 
-			// if the file was not found, thrwo an exception
+			// if the file was not found, throw an exception
 			if (string.IsNullOrEmpty(listFileName))
 				throw new FileNotFoundException(string.Format("The list {0} was not found.", listName));
 
