@@ -4,7 +4,7 @@
 		<RootDir Condition="'$(teamcity_build_checkoutDir)' != ''">$(teamcity_build_checkoutDir)</RootDir>
 		<BUILD_COUNTER Condition="'$(BUILD_COUNTER)'==''">1</BUILD_COUNTER>
 		<!-- Note, after some thought, we've decided this is the best place to keep the version number (not on TeamCity, not in the assemblies). -->
-		<Version>4.2.0</Version>
+		<Version>5.0.0</Version>
 	</PropertyGroup>
 
 	<UsingTask TaskName="StampAssemblies" AssemblyFile="$(RootDir)/packages/SIL.BuildTasks.1.0.0/tools/SIL.BuildTasks.dll" />
