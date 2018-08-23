@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SIL.Acknowledgements;
@@ -19,9 +19,9 @@ using SIL.Acknowledgements;
 [assembly: Guid("2edd981c-375e-4461-8412-2f62884ce827")]
 [assembly: InternalsVisibleTo("SIL.Archiving.Tests")]
 
-[assembly: Acknowledgement("Ionic.Zip", Copyright = "Dino Chiesa", Url = "http://www.codeplex.com/DotNetZip",
-	LicenseUrl = "https://opensource.org/licenses/MS-PL", Location = "./Ionic.Zip.dll",
-	Html = "<li><a href='http://www.codeplex.com/DotNetZip'>Ionic.Zip</a> © Dino Chiesa 2006-2011 (<a href='https://opensource.org/licenses/MS-PL'>MS-PL</a>) - a library for handling zip archives (Flavor=Retail)</li>")]
+[assembly: Acknowledgement("DotNetZip", Copyright = "Henrik Feldt/Dino Chiesa", Url = "https://github.com/haf/DotNetZip.Semverd",
+	LicenseUrl = "https://raw.githubusercontent.com/haf/DotNetZip.Semverd/master/LICENSE", Location = "./DotNetZip.dll",
+	Html = "<li><a href='https://github.com/haf/DotNetZip.Semverd'>DotNetZip</a> © Henrik Feldt/Dino Chiesa 2006-2018 (<a href='https://raw.githubusercontent.com/haf/DotNetZip.Semverd/master/LICENSE'>Multiple</a>) - a library for handling zip archives</li>")]
 [assembly: Acknowledgement("L10NSharp", Url = "https://github.com/sillsdev/l10nsharp/",
-	Copyright = "Copyright © SIL International 2010-2014", LicenseUrl = "https://opensource.org/licenses/MIT",
+	Copyright = "Copyright © SIL International 2010-2017", LicenseUrl = "https://opensource.org/licenses/MIT",
 	Location = "./L10NSharp.dll")]

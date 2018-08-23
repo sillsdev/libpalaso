@@ -296,8 +296,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Ionic.Zip">
-      <HintPath>..\lib\Ionic.Zip.dll</HintPath>
+    <Reference Include="DotNetZip, Version=1.11.0.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetZip.1.11.0\lib\net20\DotNetZip.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -399,6 +399,7 @@
     <None Include="IMDI\xsd\IMDI_3.0.xsd">
       <SubType>Designer</SubType>
     </None>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
