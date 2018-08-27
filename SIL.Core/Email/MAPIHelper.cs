@@ -92,7 +92,7 @@ namespace SIL.Email
 			int size = Marshal.SizeOf(typeof(MapiRecipDesc));
 			IntPtr intPtr = Marshal.AllocHGlobal(m_recipients.Count * size);
 
-			int ptr = (int)intPtr;
+			IntPtr ptr = intPtr;
 			foreach (MapiRecipDesc mapiDesc in m_recipients)
 			{
 				Marshal.StructureToPtr(mapiDesc, (IntPtr)ptr, false);
@@ -134,14 +134,14 @@ namespace SIL.Email
 		void Cleanup(ref MapiMessage msg)
 		{
 			int size = Marshal.SizeOf(typeof(MapiRecipDesc));
-			int ptr;
+			IntPtr ptr;
 
 			if (msg.recips != IntPtr.Zero)
 			{
-				ptr = (int)msg.recips;
+				ptr = msg.recips;
 				for (int i = 0; i < msg.recipCount; i++)
 				{
-					Marshal.DestroyStructure((IntPtr)ptr, typeof(MapiRecipDesc));
+					Marshal.DestroyStructure(ptr, typeof(MapiRecipDesc));
 					ptr += size;
 				}
 				Marshal.FreeHGlobal(msg.recips);
@@ -151,10 +151,10 @@ namespace SIL.Email
 			{
 				size = Marshal.SizeOf(typeof(MapiFileDesc));
 
-				ptr = (int)msg.files;
+				ptr = msg.files;
 				for (int i = 0; i < msg.fileCount; i++)
 				{
-					Marshal.DestroyStructure((IntPtr)ptr, typeof(MapiFileDesc));
+					Marshal.DestroyStructure(ptr, typeof(MapiFileDesc));
 					ptr += size;
 				}
 				Marshal.FreeHGlobal(msg.files);
