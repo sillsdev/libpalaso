@@ -100,7 +100,7 @@ namespace SIL.Windows.Forms.Widgets
 		{
 			base.OnPaint(e);
 			e.Graphics.FillRectangle(_backgroundBrush,DisplayRectangle);
-			TextRenderer.DrawText(e.Graphics, Text, Font, DisplayRectangle, ForeColor);
+			TextRenderer.DrawText(e.Graphics, Text, Font, DisplayRectangle, ForeColor, TextFormatFlags.WordBreak);
 		}
 
 		//make it transparent
@@ -148,7 +148,7 @@ namespace SIL.Windows.Forms.Widgets
 			{
 				// Use this rather than MeasureString, which uses the obsolete GDI+ and can crash on some
 				// non-Roman strings (e.g., ones containing ZWJ).
-				Height = TextRenderer.MeasureText(g, Text, this.Font, new Size(Width, int.MaxValue)).Height;
+				Height = TextRenderer.MeasureText(g, Text, this.Font, new Size(Width, int.MaxValue), TextFormatFlags.WordBreak).Height;
 			}
 		}
 
