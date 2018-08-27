@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 using SIL.PlatformUtilities;
@@ -12,7 +12,6 @@ namespace SIL.Windows.Forms.Widgets
 	/// </summary>
 	public partial class BetterLabel : TextBox
 	{
-		private Brush _textBrush;
 		private Brush _backgroundBrush;
 		private bool _isTextSelectable;
 
@@ -24,7 +23,6 @@ namespace SIL.Windows.Forms.Widgets
 			ForeColor = SystemColors.ControlText;
 			SetStyle(ControlStyles.UserPaint,true);
 			_backgroundBrush = new SolidBrush(BackColor);
-			_textBrush = new SolidBrush(ForeColor);
 		}
 
 		/// <summary>
@@ -102,7 +100,7 @@ namespace SIL.Windows.Forms.Widgets
 		{
 			base.OnPaint(e);
 			e.Graphics.FillRectangle(_backgroundBrush,DisplayRectangle);
-			e.Graphics.DrawString(this.Text, this.Font, _textBrush,this.DisplayRectangle);
+			TextRenderer.DrawText(e.Graphics, Text, Font, DisplayRectangle, ForeColor, TextFormatFlags.WordBreak);
 		}
 
 		//make it transparent
@@ -148,20 +146,10 @@ namespace SIL.Windows.Forms.Widgets
 		{
 			using (var g = this.CreateGraphics())
 			{
-				// This may require the use of mono-sil which fixes MeasureString to calculate the correct value to be tall enough.
-				var sz = g.MeasureString(Text, this.Font, Width).ToSize();
-				//leave as fixed width
-				Height = sz.Height;
+				// Use this rather than MeasureString, which uses the obsolete GDI+ and can crash on some
+				// non-Roman strings (e.g., ones containing ZWJ).
+				Height = TextRenderer.MeasureText(g, Text, this.Font, new Size(Width, int.MaxValue), TextFormatFlags.WordBreak).Height;
 			}
-		}
-
-		protected override void OnForeColorChanged(EventArgs e)
-		{
-			if (_textBrush != null)
-				_textBrush.Dispose();
-
-			_textBrush = new SolidBrush(ForeColor);
-			base.OnForeColorChanged(e);
 		}
 
 		protected override void OnBackColorChanged(EventArgs e)
