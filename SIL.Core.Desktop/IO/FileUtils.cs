@@ -294,7 +294,7 @@ namespace SIL.IO
 		/// When calling external exe's on Windows any non-ascii characters can get converted to '?'. This
 		/// will convert them to 8.3 format which is all ascii (and do nothing on Linux).
 		/// </summary>
-		[Obsolete("Use PathHelpers.MakePathSafeFromEncodingProblems()")]
+		[Obsolete("Use PathHelper.MakePathSafeFromEncodingProblems()")]
 		public static string MakePathSafeFromEncodingProblems(string path)
 		{
 			return PathHelper.MakePathSafeFromEncodingProblems(path);
@@ -305,7 +305,7 @@ namespace SIL.IO
 		/// useful when a path gets read from a file that gets shared between Windows and Linux -
 		/// if the path contains backslashes it can't be found on Linux.
 		/// </summary>
-		[Obsolete("Use PathHelpers.NormalizePath()")]
+		[Obsolete("Use PathHelper.NormalizePath()")]
 		public static string NormalizePath(string path)
 		{
 			return PathHelper.NormalizePath(path);
@@ -324,7 +324,7 @@ namespace SIL.IO
 		/// See uri.LocalPath, http://en.wikipedia.org/wiki/File_URI , and
 		/// http://blogs.msdn.com/b/ie/archive/2006/12/06/file-uris-in-windows.aspx .
 		/// </summary>
-		[Obsolete("Use PathHelpers.StripFilePrefix()")]
+		[Obsolete("Use PathHelper.StripFilePrefix()")]
 		public static string StripFilePrefix(string fileString)
 		{
 			return PathHelper.StripFilePrefix(fileString);
