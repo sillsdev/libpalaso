@@ -1789,6 +1789,25 @@ namespace SIL.Scripture.Tests
 			Assert.AreEqual(ScrVers.Vulgate, restored.Versification);
 		}
 
+		/// <summary>
+		/// Tests serialization and deserialization when the VerseRef is default
+		/// </summary>
+		[Test]
+		public void SerializeDeserialize_DefaultVerseRef()
+		{
+			string serialized = XmlSerializationHelper.SerializeToString(new VerseRef());
+			Console.WriteLine("Serialized reference string: ");
+			Console.WriteLine("***" + serialized + "***");
+			Console.WriteLine();
+
+			VerseRef restored = XmlSerializationHelper.DeserializeFromString<VerseRef>(serialized);
+			Assert.IsTrue(restored.IsDefault);
+			Assert.AreEqual("", restored.Book);
+			Assert.AreEqual(0, restored.ChapterNum);
+			Assert.AreEqual(0, restored.VerseNum);
+			Assert.AreEqual(null, restored.Versification);
+		}
+
 		[Test]
 		public void Deserialize_DefaultVerification()
 		{
