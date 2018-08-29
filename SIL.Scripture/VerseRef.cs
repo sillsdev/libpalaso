@@ -465,8 +465,8 @@ namespace SIL.Scripture
 		[XmlAttribute("Versification")]
 		public string VersificationStr
 		{
-			get { return versification.Name; }
-			set { versification = new ScrVers(value); }
+			get { return versification?.Name; }
+			set { versification = value != null ? new ScrVers(value) : null; }
 		}
 
 		/// <summary>
