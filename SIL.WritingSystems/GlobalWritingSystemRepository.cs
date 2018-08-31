@@ -123,7 +123,10 @@ namespace SIL.WritingSystems
 					catch (XmlException)
 					{
 						// ldml file is not valid, rename it so it is no longer used
-						RobustFile.Move(file, file + ".bad");
+						string badFile = file + ".bad";
+						if (RobustFile.Exists(badFile))
+							RobustFile.Delete(badFile);
+						RobustFile.Move(file, badFile);
 					}
 				}
 			}
