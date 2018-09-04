@@ -318,7 +318,8 @@ namespace SIL.Windows.Forms.ImageToolbox.Cropping
 			catch (Exception error)
 			{
 				Debug.Fail(error.Message);
-				e.Graphics.DrawString("Error in OnPaint()", SystemFonts.DefaultFont, Brushes.Red, 20, 20);
+				// UserControl does not have UseCompatibleTextRendering.
+				TextRenderer.DrawText(e.Graphics, "Error in OnPaint()", SystemFonts.DefaultFont, new Point(20,20), Color.Red);
 				//swallow in release build
 			}
 		}
