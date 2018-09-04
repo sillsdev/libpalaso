@@ -94,7 +94,8 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			using (var g = this.CreateGraphics())
 			{
 				var w = this.Width - 10;
-				var h = g.MeasureString(label, this.Font, w).Height;
+				// UserControl does not have UseCompatibleTextRendering.
+				var h = TextRenderer.MeasureText(g, label, this.Font, new System.Drawing.Size(w, Int32.MaxValue), TextFormatFlags.WordBreak).Height;
 				var linkLabel = new LinkLabel() {Text = label, Width = this.Width - 10, Height = (int) (h + 5)};
 
 				linkLabel.Click += new EventHandler((x, y) => SIL.Program.Process.SafeStart(url));

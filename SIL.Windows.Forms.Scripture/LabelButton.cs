@@ -85,7 +85,8 @@ namespace SIL.Windows.Forms.Scripture
 		#region Properties
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Gets or sets the StringFormat object used to draw the text on the PanelButton.
+		/// Gets or sets the StringFormat object used to draw the text on the PanelButton when
+		/// UseCompatibleTextRendering is true.
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		public StringFormat TextFormat
@@ -94,9 +95,21 @@ namespace SIL.Windows.Forms.Scripture
 			set
 			{
 				if (value != null)
+				{
 					m_stringFormat = value;
+					// Allow this old property to work with new rendering approach.
+					FormatFlags = ConvertStringFormatToTextFormatFlags();
+				}
 			}
 		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Gets or sets the TextFormatFlags enum used to draw the text on the PanelButton when
+		/// UseCompatibleTextRendering is false.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public TextFormatFlags FormatFlags { get; set; }
 		
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
@@ -265,13 +278,87 @@ namespace SIL.Windows.Forms.Scripture
 				
 				// Now we'll draw the text.
 				e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-				e.Graphics.DrawString(Text, Font, brush, rc, TextFormat);
-				
+				Size sz;
+				if (UseCompatibleTextRendering)
+				{
+					e.Graphics.DrawString(Text, Font, brush, rc, TextFormat);
+					sz = e.Graphics.MeasureString(Text, Font, new Point(rc.X, rc.Y), TextFormat).ToSize();
+				}
+				else
+				{
+					TextRenderer.DrawText(e.Graphics, Text, Font, new Point(rc.X, rc.Y), Enabled ? ForeColor : SystemColors.GrayText, FormatFlags);
+					sz = TextRenderer.MeasureText(e.Graphics, Text, Font, rc.Size, FormatFlags);
+				}
 				// Check if the text was clipped.
-				var sz = e.Graphics.MeasureString(Text, Font, new Point(rc.X, rc.Y), TextFormat).ToSize();
-				
 				m_textIsClipped = (sz.Width > rc.Width || sz.Height > rc.Height);
 			}
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Convert the information stored in the TextFormat (System.Drawing.StringFormat) object
+		/// into a TextFormatFlags bitfield enum as much as possible.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		private TextFormatFlags ConvertStringFormatToTextFormatFlags()
+		{
+			var flags = TextFormatFlags.Default;
+			bool rtl = (TextFormat.FormatFlags & StringFormatFlags.DirectionRightToLeft) == StringFormatFlags.DirectionRightToLeft;
+			if (!rtl)
+				rtl = IsRightToLeft(this);
+			if (rtl)
+				flags |= TextFormatFlags.RightToLeft;
+			switch (TextFormat.Alignment)	// horizontal alignment
+			{
+			case StringAlignment.Center:	flags |= TextFormatFlags.HorizontalCenter;						break;
+			case StringAlignment.Far:		flags |= (rtl ? TextFormatFlags.Left : TextFormatFlags.Right);	break;
+			case StringAlignment.Near:		flags |= (rtl ? TextFormatFlags.Right : TextFormatFlags.Left);	break;
+			}
+			switch (TextFormat.LineAlignment)	// vertical alignment (assume top-to-bottom)
+			{
+			case StringAlignment.Center:	flags |= TextFormatFlags.VerticalCenter;	break;
+			case StringAlignment.Far:		flags |= TextFormatFlags.Bottom;			break;
+			case StringAlignment.Near:		flags |= TextFormatFlags.Top;				break;
+			}
+			switch (TextFormat.Trimming)
+			{
+			case StringTrimming.Character:			/* default operation? */				break;
+			case StringTrimming.Word:				flags |= TextFormatFlags.WordBreak;		break;
+			case StringTrimming.EllipsisCharacter:	flags |= TextFormatFlags.EndEllipsis;	break;
+			case StringTrimming.EllipsisWord:		flags |= TextFormatFlags.WordEllipsis;	break;
+			case StringTrimming.EllipsisPath:		flags |= TextFormatFlags.PathEllipsis;	break;
+			case StringTrimming.None:				flags |= TextFormatFlags.NoClipping;	break;
+			}
+			if ((TextFormat.FormatFlags & StringFormatFlags.FitBlackBox) == StringFormatFlags.FitBlackBox)
+				flags |= TextFormatFlags.NoPadding;	/* nearest equivalent? */
+			if ((TextFormat.FormatFlags & StringFormatFlags.NoClip) == StringFormatFlags.NoClip)
+				flags |= TextFormatFlags.NoClipping;
+			if ((TextFormat.FormatFlags & StringFormatFlags.NoWrap) == StringFormatFlags.NoWrap)
+			{
+				flags |= TextFormatFlags.SingleLine;	/* nearest equivalent? */
+				flags &= ~TextFormatFlags.WordBreak;
+			}
+			// No equivalent for these as far as I can tell:
+			// StringFormatFlags.DirectionVertical
+			// StringFormatFlags.DisplayFormatControl
+			// StringFormatFlags.NoFontFallback
+			// StringFormatFlags.MeasureTrailingSpaces
+			// StringFormatFlags.LineLimit
+
+			return flags;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Try to figure out if we're supposed to display the text right-to-left
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		private bool IsRightToLeft(Control c)
+		{
+			if (c.RightToLeft == RightToLeft.Inherit)
+				return (c.Parent != null) ? IsRightToLeft(c.Parent) : false;
+			else
+				return c.RightToLeft == RightToLeft.Yes;
 		}
 
 		/// ------------------------------------------------------------------------------------

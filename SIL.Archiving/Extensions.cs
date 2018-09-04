@@ -31,7 +31,7 @@ namespace SIL.Archiving
 					{
 						var thisSegment = segment.Trim();
 
-						while (g.MeasureString(thisSegment, linkLabel.Font).Width > w)
+						while (MeasureText(linkLabel, g, thisSegment, linkLabel.Font).Width > w)
 						{
 							var line = string.Empty;
 							var lastSpace = 0;
@@ -40,7 +40,7 @@ namespace SIL.Archiving
 							{
 								if (char.IsWhiteSpace(thisSegment[i]))
 								{
-									if (g.MeasureString(line, linkLabel.Font).Width > w)
+									if (MeasureText(linkLabel, g, line, linkLabel.Font).Width > w)
 									{
 										newText.AppendLine(thisSegment.Substring(0, lastSpace));
 										thisSegment = thisSegment.Substring(lastSpace + 1);
@@ -61,9 +61,23 @@ namespace SIL.Archiving
 					linkLabel.Text = newText.ToString();
 				}
 
-				var size = g.MeasureString(linkLabel.Text, linkLabel.Font, w);
-				linkLabel.Height = (int)Math.Ceiling(size.Height);
+				var size = MeasureText(linkLabel, g, linkLabel.Text, linkLabel.Font, new System.Drawing.Size(w, Int32.MaxValue));
+				linkLabel.Height = size.Height;
 			}
+		}
+		private static System.Drawing.Size MeasureText(this LinkLabel linkLabel, System.Drawing.Graphics g, string text, System.Drawing.Font font)
+		{
+			if (linkLabel.UseCompatibleTextRendering)
+				return g.MeasureString(text, font).ToSize();
+			else
+				return TextRenderer.MeasureText(g, text, font);
+		}
+		private static System.Drawing.Size MeasureText(this LinkLabel linkLabel, System.Drawing.Graphics g, string text, System.Drawing.Font font, System.Drawing.Size proposedSize)
+		{
+			if (linkLabel.UseCompatibleTextRendering)
+				return g.MeasureString(text, font, proposedSize.Width).ToSize();
+			else
+				return TextRenderer.MeasureText(g, text, font, proposedSize, TextFormatFlags.WordBreak);
 		}
 
 		/// ------------------------------------------------------------------------------------

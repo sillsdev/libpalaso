@@ -658,27 +658,37 @@ namespace SIL.Windows.Forms.Widgets
 			//
 			// calculate bounding rectangle for the text
 			//
-			System.Drawing.SizeF size = txt_Size(e.Graphics,this.Text,this.Font);
-			if (TextWordWrap && !TextDropShadow && size.Width > (float)this.Width)
+			var size = CalculateTextSize(e.Graphics,this.Text,this.Font);
+			if (TextWordWrap && !TextDropShadow && size.Width > this.Width)
 				size = CalculateBestWrappingSize(e.Graphics);
 			//
 			// calculate the starting location to paint the text
 			//
-			System.Drawing.Point pt = Calculate_LeftEdgeTopEdge(this.TextAlign, rect, (int) size.Width, (int) size.Height);
+			var pt = Calculate_LeftEdgeTopEdge(this.TextAlign, rect, size.Width, size.Height);
 			//
 			// If button state is inactive, paint the inactive text
 			//
 			if(State == BtnState.Inactive)
 			{
-				using(var solidBrush = new SolidBrush(DisabledTextColor))
+				if (UseCompatibleTextRendering)
+				{
+					using (var solidBrush = new SolidBrush(DisabledTextColor))
+					{
+						if (TextWordWrap && !TextDropShadow)
+							e.Graphics.DrawString(this.Text, this.Font, solidBrush, new RectangleF(pt.X+1, pt.Y+1, size.Width, size.Height));
+						else
+							e.Graphics.DrawString(this.Text,this.Font, solidBrush, pt.X + 1, pt.Y + 1);
+					}
+				}
+				else
 				{
 					if (TextWordWrap && !TextDropShadow)
-						e.Graphics.DrawString(this.Text, this.Font, solidBrush, new RectangleF(pt.X+1, pt.Y+1, size.Width, size.Height));
+						TextRenderer.DrawText(e.Graphics, this.Text, this.Font, new Rectangle(pt.X+1, pt.Y+1, size.Width, size.Height), DisabledTextColor, TextFormatFlags.WordBreak);
 					else
-						e.Graphics.DrawString(this.Text,this.Font, solidBrush, pt.X + 1, pt.Y + 1);
+						TextRenderer.DrawText(e.Graphics, this.Text, this.Font, new Point(pt.X+1, pt.Y+1), DisabledTextColor);
 				}
 			}
-				//
+			//
 			// else, paint the text and text shadow
 			//
 			else
@@ -688,28 +698,45 @@ namespace SIL.Windows.Forms.Widgets
 				//
 				if(TextDropShadow)
 				{
+					// TextRenderer.DrawText (GDI) does not support transparency.  So we'll stick with Graphics.DrawString (GDI+) here and hope for the best.
+					// The calculated size is not used in this part of the code, so it should be okay, just look a bit different than non-TextDropShadow.
+					// Since we're displaying text on a button, it's most likely a major localization language, so it should be okay.
 					System.Drawing.Brush TransparentBrush0 = new System.Drawing.SolidBrush( System.Drawing.Color.FromArgb(50, System.Drawing.Color.Black  ) ) ;
 					System.Drawing.Brush TransparentBrush1 = new System.Drawing.SolidBrush( System.Drawing.Color.FromArgb(20, System.Drawing.Color.Black  ) ) ;
+					try
+					{
+						e.Graphics.DrawString(this.Text,this.Font, TransparentBrush0,pt.X,pt.Y+1);
+						e.Graphics.DrawString(this.Text,this.Font, TransparentBrush0,pt.X+1,pt.Y);
 
-					e.Graphics.DrawString(this.Text,this.Font, TransparentBrush0,pt.X,pt.Y+1);
-					e.Graphics.DrawString(this.Text,this.Font, TransparentBrush0,pt.X+1,pt.Y);
-
-					e.Graphics.DrawString(this.Text,this.Font, TransparentBrush1,pt.X+1,pt.Y+1);
-					e.Graphics.DrawString(this.Text,this.Font, TransparentBrush1,pt.X,pt.Y+2);
-					e.Graphics.DrawString(this.Text,this.Font, TransparentBrush1,pt.X+2,pt.Y);
-
-					TransparentBrush0.Dispose();
-					TransparentBrush1.Dispose();
+						e.Graphics.DrawString(this.Text,this.Font, TransparentBrush1,pt.X+1,pt.Y+1);
+						e.Graphics.DrawString(this.Text,this.Font, TransparentBrush1,pt.X,pt.Y+2);
+						e.Graphics.DrawString(this.Text,this.Font, TransparentBrush1,pt.X+2,pt.Y);
+					}
+					finally
+					{
+						TransparentBrush0.Dispose();
+						TransparentBrush1.Dispose();
+					}
 				}
 				//
 				// paint text
 				//
-				using(var solidBrush = new SolidBrush(this.ForeColor))
+				if (UseCompatibleTextRendering || TextDropShadow)
+				{
+					using (var solidBrush = new SolidBrush(this.ForeColor))
+					{
+						if (TextWordWrap && !TextDropShadow)
+							e.Graphics.DrawString(this.Text, this.Font, solidBrush, new RectangleF(pt.X, pt.Y, size.Width, size.Height));
+						else
+							e.Graphics.DrawString(this.Text,this.Font, solidBrush,pt.X,pt.Y);
+					}
+				}
+				else
 				{
 					if (TextWordWrap && !TextDropShadow)
-						e.Graphics.DrawString(this.Text, this.Font, solidBrush, new RectangleF(pt.X, pt.Y, size.Width, size.Height));
+						TextRenderer.DrawText(e.Graphics, this.Text, this.Font, new Rectangle(pt.X+1, pt.Y+1, size.Width, size.Height), this.ForeColor, TextFormatFlags.WordBreak);
 					else
-						e.Graphics.DrawString(this.Text,this.Font, solidBrush,pt.X,pt.Y);
+						TextRenderer.DrawText(e.Graphics, this.Text, this.Font, new Point(pt.X+1, pt.Y+1), this.ForeColor);
 				}
 			}
 		}
@@ -842,20 +869,25 @@ namespace SIL.Windows.Forms.Widgets
 		/// <param name="strText">string to calculate text region</param>
 		/// <param name="font">font to use for the string</param>
 		/// <returns>returns the size required to draw a text string</returns>
-		private System.Drawing.SizeF txt_Size(Graphics g,string strText,Font font)
+		private System.Drawing.Size CalculateTextSize(Graphics g, string strText, Font font)
 		{
-			System.Drawing.SizeF size = g.MeasureString(strText,font);
-			return (size);
+			if (UseCompatibleTextRendering)
+				return g.MeasureString(strText, font).ToSize();
+			else
+				return TextRenderer.MeasureText(g, strText, font);
 		}
 		/// <summary>
 		/// Calculate the size that is best for wrapping text to fit the available width.
 		/// </summary>
-		private System.Drawing.SizeF CalculateBestWrappingSize(Graphics g)
+		private System.Drawing.Size CalculateBestWrappingSize(Graphics g)
 		{
 			// Try to wrap with the maximum available width.  This may cause words to split in the
 			// middle, or more than two lines to be displayed.  But that's still better than showing
 			// partial data in one line.
-			return g.MeasureString(this.Text, this.Font, this.Width);
+			if (UseCompatibleTextRendering)
+				return g.MeasureString(this.Text, this.Font, this.Width).ToSize();
+			else
+				return TextRenderer.MeasureText(g, this.Text, this.Font, new Size(this.Width, Int32.MaxValue), TextFormatFlags.WordBreak);
 		}
 
 		/// <summary>

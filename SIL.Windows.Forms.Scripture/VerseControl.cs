@@ -449,18 +449,11 @@ namespace SIL.Windows.Forms.Scripture
 			CalcFieldWidths(e.Graphics);
 
 			// Draw ListBox Item
-			Brush theBrush = new SolidBrush(theColor);
-			Font searchFont = new Font(theFont, searchTextStyle);
-			try
+			using (Font searchFont = new Font(theFont, searchTextStyle))
 			{
 				e.DrawBackground();
 				e.DrawFocusRectangle();
-				DrawBookParts(parts, e.Graphics, e.Bounds, theBrush, searchFont, theFont);
-			}
-			finally
-			{
-				theBrush.Dispose();
-				searchFont.Dispose();
+				DrawBookParts(parts, e.Graphics, e.Bounds, theColor, searchFont, theFont);
 			}
 		}
 
@@ -474,26 +467,27 @@ namespace SIL.Windows.Forms.Scripture
 			const string measureText = "GEN";
 			if (abbreviationWidth >= 1f)
 				return;
-			float normalWidth = g.MeasureString(measureText, Font).Width;
-			float notPresentWidth = g.MeasureString(measureText, emptyBooksFont).Width;
+			// UserControl does not have UseCompatibleTextRendering.
+			var normalWidth = TextRenderer.MeasureText(g, measureText, Font).Width;
+			var notPresentWidth = TextRenderer.MeasureText(g, measureText, emptyBooksFont).Width;
 			abbreviationWidth = Math.Max(normalWidth, notPresentWidth) * 2.2f;
 		}
 
-		void DrawBookParts(string[] parts, Graphics gr, RectangleF bounds, Brush brush, Font font1, Font font2)
+		void DrawBookParts(string[] parts, Graphics gr, Rectangle bounds, Color theColor, Font font1, Font font2)
 		{
 			Font theFont = font1;
 			for (int i = 0; i < parts.Length; i++)
 			{
 				string theText = parts[i];
 				if (i == 2)
-					bounds.X = abbreviationWidth; // tab over to name column
+					bounds.X = (int)abbreviationWidth; // tab over to name column
 				if (theText != "")
 				{
-					SizeF size = gr.MeasureString(theText, theFont);
-					// This is the right way, but doesn't work any better.
-					//size = TextRenderer.MeasureText(theText, theFont, bounds.Size.ToSize(), TextFormatFlags.NoPadding);
-					gr.DrawString(theText, theFont, brush, bounds);
-					float width = size.Width - (Platform.IsWindows ? 3f : 0f); //Nudge factor: width seems to come off too big (Not on Linux)
+					// UserControl does not have UseCompatibleTextRendering.
+					var size = TextRenderer.MeasureText(gr, theText, theFont, bounds.Size, TextFormatFlags.NoPadding|TextFormatFlags.WordBreak);
+					TextRenderer.DrawText(gr, theText, theFont, bounds, theColor, TextFormatFlags.NoPadding|TextFormatFlags.WordBreak);
+					// REVIEW/TEST: does using TextRenderer instead of Graphics remove the need for this fudge factor?
+					int width = size.Width - (Platform.IsWindows ? 3 : 0); //Nudge factor: width seems to come off too big (Not on Linux)
 					bounds.X += width;
 					bounds.Width -= width;
 				}
