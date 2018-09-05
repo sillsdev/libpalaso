@@ -6,7 +6,8 @@ namespace SIL.Windows.Forms.Extensions
 	{
 		public static void SizeTextRectangleToText(this ToolStripItemTextRenderEventArgs args)
 		{
-			var textSize = args.Graphics.MeasureString(args.Text, args.TextFont);
+			// ToolStrip does not have UseCompatibleTextRendering.
+			var textSize = TextRenderer.MeasureText(args.Graphics, args.Text, args.TextFont, args.TextRectangle.Size, TextFormatFlags.WordBreak);
 			const int padding = 2;
 
 			var rc = args.TextRectangle;
@@ -15,7 +16,7 @@ namespace SIL.Windows.Forms.Extensions
 			// adjust the rectangle to fit the calculated text size
 			if (rc.Width < textSize.Width + padding)
 			{
-				var diffX = (int)System.Math.Ceiling(textSize.Width + padding - rc.Width);
+				var diffX = textSize.Width + padding - rc.Width;
 				rc.X -= diffX / 2;
 				rc.Width += diffX;
 				changed = true;
@@ -23,7 +24,7 @@ namespace SIL.Windows.Forms.Extensions
 
 			if (rc.Height < textSize.Height + padding)
 			{
-				var diffY = (int)System.Math.Ceiling(textSize.Height + padding - rc.Height);
+				var diffY = textSize.Height + padding - rc.Height;
 				rc.Y -= diffY / 2;
 				rc.Height += diffY;
 				changed = true;
