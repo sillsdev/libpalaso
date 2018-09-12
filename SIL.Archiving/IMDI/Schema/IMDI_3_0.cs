@@ -1837,7 +1837,8 @@ namespace SIL.Archiving.IMDI.Schema
 		{
 			MDGroup.Content.Languages.Language.Add(new LanguageType
 			{
-				Id = language.Iso3Code,
+				// IMDI standard requires IDs with this prefix, as in MPI-Languages.xml.
+				Id = "ISO639-3:" + language.Iso3Code,
 				Name = new []{new LanguageNameType
 				{
 					Link = "http://www.mpi.nl/IMDI/Schema/MPI-Languages.xml",
