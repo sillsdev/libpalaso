@@ -392,6 +392,10 @@
       <Project>{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}</Project>
       <Name>SIL.Windows.Forms</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj">
+      <Project>{A61CC666-1FAA-4A92-BB3B-AA36BD66BDDA}</Project>
+      <Name>SIL.WritingSystems</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

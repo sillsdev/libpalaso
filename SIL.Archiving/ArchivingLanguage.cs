@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using SIL.WritingSystems;
 
 namespace SIL.Archiving
 {
@@ -70,6 +71,16 @@ namespace SIL.Archiving
 					}
 
 					_englishName = returnVal;
+				}
+
+				if (string.IsNullOrEmpty(_englishName))
+				{
+					// Not very efficient, but this is not very performance-critical.
+					// And it's undesirable to crash if someone uses a language that's not windows-standard.
+					// It's not guaranteed that DesiredName is an English name, but it's the best we can do AFAIK.
+					var lookup = new LanguageLookup();
+					var lang = lookup.GetLanguageFromCode(_iso3Code);
+					_englishName = lang?.DesiredName;
 				}
 
 				// throw an exception if no name is found
