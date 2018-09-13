@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using SIL.Archiving.Generic;
@@ -10,9 +10,19 @@ namespace SIL.Archiving.IMDI.Schema
 	{
 		private DescriptionTypeCollection _descriptionField;
 
-		/// <remarks/>
-		[XmlElement("Description")]
-		public DescriptionTypeCollection Description
+		/// <summary>
+		/// Every subclass of Description should have a Description property implemented as 
+		/// 		[XmlElement("Description")]
+		///	public DescriptionTypeCollection Description
+		///	{
+		///		get { return DescriptionInternal; }
+		///		set { DescriptionInternal = value; }
+		///	}
+		/// 
+		/// The reason it is not defined here is that order of serialization is important for IMDI.
+		/// Subclasses should use Order, or define properties in the right order, for correct serialization.
+		/// </summary>
+		internal DescriptionTypeCollection DescriptionInternal
 		{
 			get { return _descriptionField ?? (_descriptionField = new DescriptionTypeCollection()); }
 			set { _descriptionField = value; }
@@ -21,7 +31,7 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <summary>Adds a description (in a particular language)</summary>
 		public void AddDescription(LanguageString description)
 		{
-			Description.Add(description.ToIMDIDescriptionType());
+			DescriptionInternal.Add(description.ToIMDIDescriptionType());
 		}
 	}
 
