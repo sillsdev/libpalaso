@@ -617,11 +617,19 @@ namespace SIL.Archiving.IMDI.Schema
 	}
 
 	/// <remarks/>
+	/// I think this is the DocumentLanguages subelement of a Catalogue element
 	[SerializableAttribute]
 	[DebuggerStepThroughAttribute]
 	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public class CatalogueDocumentLanguages : IMDIDescription
 	{
+		[XmlElement("Description")]
+		public DescriptionTypeCollection Description
+		{
+			get { return DescriptionInternal; }
+			set { DescriptionInternal = value; }
+		}
+
 		/// <remarks/>
 		[XmlElement("Language")]
 		public List<SimpleLanguageType> Language { get; set; }
@@ -639,6 +647,13 @@ namespace SIL.Archiving.IMDI.Schema
 	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public class CatalogueSubjectLanguages : IMDIDescription
 	{
+		[XmlElement("Description")]
+		public DescriptionTypeCollection Description
+		{
+			get { return DescriptionInternal; }
+			set { DescriptionInternal = value; }
+		}
+
 		/// <remarks/>
 		[XmlElement("Language")]
 		public List<SubjectLanguageType> Language { get; set; }
@@ -874,6 +889,13 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		public ContactType Contact { get; set; }
+
+		[XmlElement("Description")]
+		public DescriptionTypeCollection Description
+		{
+			get { return DescriptionInternal; }
+			set { DescriptionInternal = value; }
+		}
 	}
 
 	/// <remarks/>
@@ -1157,6 +1179,13 @@ namespace SIL.Archiving.IMDI.Schema
 	{
 		private List<LanguageType> _languageField;
 
+		[XmlElement("Description")]
+		public DescriptionTypeCollection Description
+		{
+			get { return DescriptionInternal; }
+			set { DescriptionInternal = value; }
+		}
+
 		/// <remarks/>
 		[XmlElementAttribute("Language")]
 		public List<LanguageType> Language {
@@ -1200,6 +1229,13 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		public BooleanType TargetLanguage { get; set; }
 
+		[XmlElement("Description")]
+		public DescriptionTypeCollection Description
+		{
+			get { return DescriptionInternal; }
+			set { DescriptionInternal = value; }
+		}
+
 		/// <remarks/>
 		[XmlAttribute]
 		public string ResourceRef { get; set; }
@@ -1212,6 +1248,13 @@ namespace SIL.Archiving.IMDI.Schema
 	public class ActorsType : IMDIDescription
 	{
 		private List<ActorType> _actorField;
+
+		[XmlElement("Description")]
+		public DescriptionTypeCollection Description
+		{
+			get { return DescriptionInternal; }
+			set { DescriptionInternal = value; }
+		}
 
 		/// <remarks/>
 		[XmlElementAttribute("Actor")]
@@ -1514,6 +1557,13 @@ namespace SIL.Archiving.IMDI.Schema
 
 		/// <remarks/>
 		public AccessType Access { get; set; }
+
+		[XmlElement("Description")]
+		public DescriptionTypeCollection Description
+		{
+			get { return DescriptionInternal; }
+			set { DescriptionInternal = value; }
+		}
 
 		/// <remarks/>
 		public KeysType Keys { get; set; }
@@ -2153,6 +2203,12 @@ namespace SIL.Archiving.IMDI.Schema
 	[XmlTypeAttribute(AnonymousType=true, Namespace="http://www.mpi.nl/IMDI/Schema/IMDI")]
 	public class SessionReferences : IMDIDescription
 	{
+		[XmlElement("Description")]
+		public DescriptionTypeCollection Description
+		{
+			get { return DescriptionInternal; }
+			set { DescriptionInternal = value; }
+		}
 	}
 
 	/// <remarks/>
