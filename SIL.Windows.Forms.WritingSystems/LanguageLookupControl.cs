@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using L10NSharp;
 using SIL.Extensions;
@@ -239,8 +240,23 @@ namespace SIL.Windows.Forms.WritingSystems
 			// Select the first language if one wasn't already selected.
 			if (!itemSelected && toShow.Count > 0)
 			{
-				toShow[0].Selected = true;
-				itemSelected = true;
+				if (_model.SearchText.ToLowerInvariant() == "en")
+				{
+					// search will typically locate "En", code enc, a Vietnamese language;
+					// but much more likely the user wants English
+					var english = toShow.First(x => ((LanguageInfo) x.Tag).LanguageTag == "en");
+					if (english != null)
+					{
+						english.Selected = true;
+						itemSelected = true;
+					}
+				}
+
+				if (!itemSelected)
+				{
+					toShow[0].Selected = true;
+					itemSelected = true;
+				}
 			}
 			if (!itemSelected)
 				_model.SelectedLanguage = null;
