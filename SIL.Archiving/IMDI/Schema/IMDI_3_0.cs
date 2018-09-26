@@ -819,11 +819,11 @@ namespace SIL.Archiving.IMDI.Schema
 		public List<string> Id { get; set; }
 
 		/// <remarks/>
-		[XmlElement("Description")]
-		public DescriptionTypeCollection Description { get; set; }
+		public ContactType Contact { get; set; }
 
 		/// <remarks/>
-		public ContactType Contact { get; set; }
+		[XmlElement("Description")]
+		public DescriptionTypeCollection Description { get; set; }
 	}
 
 	/// <remarks/>
