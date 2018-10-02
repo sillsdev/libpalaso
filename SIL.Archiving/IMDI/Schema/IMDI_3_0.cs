@@ -806,6 +806,21 @@ namespace SIL.Archiving.IMDI.Schema
 				Contact.Name = project.Author;
 		}
 
+		public Project(IMDIPackage package)
+		{
+			Name = package.Title;
+			Title = package.Title;
+			Id = new List<string> {string.Empty};	// schema requires Id even if empty
+			Contact = new ContactType
+			{
+				Name = package.Author,
+				Address = package?.Location?.Address,
+				Organisation = package.Publisher,
+			};
+			Description = new DescriptionTypeCollection();
+			// If wanted, Description information would need to be passed in as a separate (optional?) parameter.
+		}
+
 		/// <summary>Name of object</summary>
 		[XmlElement("Name")]
 		public string Name { get; set; }
@@ -925,6 +940,7 @@ namespace SIL.Archiving.IMDI.Schema
 		public Corpus()
 		{
 			Description = new DescriptionTypeCollection();
+			MDGroup = new MDGroupType();
 			CorpusLink = new List<CorpusLinkType>();
 		}
 
@@ -939,6 +955,10 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		[XmlElement("Description")]
 		public DescriptionTypeCollection Description { get; set; }
+
+		/// <summary>Contains Project information, which is wanted in the corpus file on export</summary>
+		[XmlElement("MDGroup")]
+		public MDGroupType MDGroup { get; set; }
 
 		/// <remarks/>
 		[XmlElement("CorpusLink")]
@@ -1012,6 +1032,7 @@ namespace SIL.Archiving.IMDI.Schema
 			Languages = new LanguagesType();
 			Keys = new KeysType();
 			Description = new DescriptionTypeCollection();
+			Genre = new VocabularyType();	// schema requires Genre even if empty
 		}
 
 		/// <remarks>Open vocabulary, Content-Genre.xml</remarks>
@@ -1411,8 +1432,15 @@ namespace SIL.Archiving.IMDI.Schema
 			var imdiLanguage = LanguageList.Find(language).ToLanguageType();
 			if (imdiLanguage == null) return;
 
-			imdiLanguage.PrimaryLanguage = new BooleanType { Value = primaryLanguage, Link = ListType.Link(ListType.Boolean) };
-			imdiLanguage.MotherTongue = new BooleanType { Value = motherTongue, Link = ListType.Link(ListType.Boolean) };
+			if (primaryLanguage == BooleanEnum.Unspecified)
+				imdiLanguage.PrimaryLanguage = null;
+			else
+				imdiLanguage.PrimaryLanguage = new BooleanType { Value = primaryLanguage, Link = ListType.Link(ListType.Boolean) };
+			if (motherTongue == BooleanEnum.Unspecified)
+				imdiLanguage.MotherTongue = null;
+			else
+				imdiLanguage.MotherTongue = new BooleanType { Value = motherTongue, Link = ListType.Link(ListType.Boolean) };
+
 			Languages.Language.Add(imdiLanguage);
 		}
 
