@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -94,11 +94,14 @@ namespace SIL.Archiving.IMDI
 
 			var corpus = (Corpus) BaseMajorObject;
 
+			// add the Project information
+			corpus.MDGroup.Project.Add(new Project(this));
+
 			// add the session file links
 			foreach (var fileName in sessionFiles)
 				corpus.CorpusLink.Add(new CorpusLinkType { Value = fileName.Replace("\\", "/"), Name = string.Empty });
 
-			// crate the catalogue
+			// create the catalogue
 			corpus.CatalogueLink = CreateCorpusCatalogue();
 
 			//  Create the corpus imdi file
@@ -132,9 +135,8 @@ namespace SIL.Archiving.IMDI
 					catalogue.SubjectLanguages.Language.Add(imdiLanguage);
 			}
 
-			// funding project
-			if (FundingProject != null)
-				catalogue.Project.Add(new Project(FundingProject));
+			// project
+			catalogue.Project.Add(new Project(this));
 
 			// location
 			if (Location != null)
@@ -166,6 +168,19 @@ namespace SIL.Archiving.IMDI
 
 			if (!string.IsNullOrEmpty(Access.Owner))
 				catalogue.Access.Owner = Access.Owner;
+
+			// description
+			foreach (var item in BaseMajorObject.Description)
+			{
+				catalogue.Description.Add(new DescriptionType
+				{
+					ArchiveHandle = item.ArchiveHandle,
+					LanguageId = item.LanguageId,
+					Link = item.Link,
+					Name = item.Name,
+					Value = item.Value
+				});
+			}
 
 			// write the xml file
 			var catImdi = new MetaTranscript { Items = new object[] { catalogue }, Type = MetatranscriptValueType.CATALOGUE };

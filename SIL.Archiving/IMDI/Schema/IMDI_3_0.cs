@@ -806,6 +806,20 @@ namespace SIL.Archiving.IMDI.Schema
 				Contact.Name = project.Author;
 		}
 
+		public Project(IMDIPackage package)
+		{
+			Name = package.FundingProject.Name;
+			Title = package.Title;
+			Contact = new ContactType
+			{
+				Name = package.Author,
+				Address = package?.Location?.Address,
+				Organisation = package.Publisher,
+			};
+			Description = new DescriptionTypeCollection();
+			// If wanted, Description information would need to be passed in as a separate (optional?) parameter.
+		}
+
 		/// <summary>Name of object</summary>
 		[XmlElement("Name")]
 		public string Name { get; set; }
@@ -925,6 +939,7 @@ namespace SIL.Archiving.IMDI.Schema
 		public Corpus()
 		{
 			Description = new DescriptionTypeCollection();
+			MDGroup = new MDGroupType();
 			CorpusLink = new List<CorpusLinkType>();
 		}
 
@@ -939,6 +954,10 @@ namespace SIL.Archiving.IMDI.Schema
 		/// <remarks/>
 		[XmlElement("Description")]
 		public DescriptionTypeCollection Description { get; set; }
+
+		/// <summary>Contains Project information, which is wanted in the corpus file on export</summary>
+		[XmlElement("MDGroup")]
+		public MDGroupType MDGroup { get; set; }
 
 		/// <remarks/>
 		[XmlElement("CorpusLink")]
