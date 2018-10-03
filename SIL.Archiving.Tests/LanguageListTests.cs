@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using SIL.Archiving.IMDI.Lists;
 
 namespace SIL.Archiving.Tests
@@ -15,16 +15,24 @@ namespace SIL.Archiving.Tests
 			Assert.AreEqual("fra", result.Iso3Code);
 			Assert.IsNullOrEmpty(result.OtherName);
 			Assert.AreEqual("ISO639-3:fra", result.Id);
+
+			result = LanguageList.FindByISO3Code("tru");
+			Assert.AreEqual("Turoyo", result.EnglishName);
+			Assert.AreEqual("tru", result.Iso3Code);
+			Assert.IsNullOrEmpty(result.OtherName);
+			Assert.AreEqual("ISO639-3:tru", result.Id);
 		}
 
 		[Test]
 		public void FindByISO3Code_CodeNotFoundTest()
 		{
-			var result = LanguageList.FindByISO3Code("tru");
+			// This works until zzz is assigned as an ISO639-3 language code, and
+			// our data is updated...
+			var result = LanguageList.FindByISO3Code("zzz");
 			Assert.IsNullOrEmpty(result.EnglishName);
-			Assert.AreEqual("tru", result.Iso3Code);
+			Assert.AreEqual("zzz", result.Iso3Code);
 			Assert.IsNullOrEmpty(result.OtherName);
-			Assert.AreEqual("ISO639-3:tru", result.Id);
+			Assert.AreEqual("ISO639-3:zzz", result.Id);
 		}
 
 		[Test]
@@ -35,15 +43,22 @@ namespace SIL.Archiving.Tests
 			Assert.AreEqual("fra", result.Iso3Code);
 			Assert.IsNullOrEmpty(result.OtherName);
 			Assert.AreEqual("ISO639-3:fra", result.Id);
+
+			result = LanguageList.FindByEnglishName("Turoyo");
+			Assert.AreEqual("Turoyo", result.EnglishName);
+			Assert.AreEqual("tru", result.Iso3Code);
+			Assert.IsNullOrEmpty(result.OtherName);
+			Assert.AreEqual("ISO639-3:tru", result.Id);
+
 		}
 
 		[Test]
 		public void FindByEnglishName_NameNotFoundTest()
 		{
-			var result = LanguageList.FindByEnglishName("Turoyo");
-			Assert.AreEqual("Turoyo", result.EnglishName);
+			var result = LanguageList.FindByEnglishName("Fake Language");
+			Assert.AreEqual("Fake Language", result.EnglishName);
 			Assert.AreEqual("und", result.Iso3Code);
-			Assert.AreEqual("Turoyo", result.OtherName);
+			Assert.AreEqual("Fake Language", result.OtherName);
 			Assert.AreEqual("ISO639-3:und", result.Id);
 		}
 	}

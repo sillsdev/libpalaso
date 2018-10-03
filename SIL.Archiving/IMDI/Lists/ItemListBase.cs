@@ -186,7 +186,32 @@ namespace SIL.Archiving.IMDI.Lists
 
 			PopulateList(GetNodeList(listName), uppercaseFirstCharacter, removeUnknown);
 
+			if (listName == "MPI-Languages.xml")
+			{
+				// We know this file is woefully incomplete (only ~345 languages, less than 5% of the total).  A comment inside it even says
+				// "When a language name and identifier that you need is not in this list, please look it up under www.ethnologue.com/web.asp.".
+				// So after populating the list initially, we add the information from SIL.WritingSystems, which is based on Ethnologue data.
+				AddLanguagesFromEthnologue();
+			}
 			InitializeThis();
+		}
+
+		private void AddLanguagesFromEthnologue()
+		{
+			// Avoid quadratic behavior by storing IMDI languages in a lookup hash that doesn't change.
+			// (This still takes a second or two.  It would be faster if we ignored the MPI-Languages.xml
+			// data altogether, but I'm hesitant to do that unilaterally.)
+			// We won't worry about how slow list lookup is with thousands of languages because we'll only
+			// be looking up a few languages in all likelihood.
+			var imdiLangs = new HashSet<string>();
+			foreach (var item in this)
+				imdiLangs.Add(item.Value);
+			var langLookup = new WritingSystems.LanguageLookup();
+			foreach (var lang in langLookup.SuggestLanguages("*"))
+			{
+				if (!imdiLangs.Contains(lang.DesiredName))
+					AddItem(lang.DesiredName, "ISO639-3:" + lang.ThreeLetterTag);
+			}
 		}
 
 		private void InitializeThis()
