@@ -8,6 +8,7 @@ using System.Xml;
 using SIL.Archiving.Generic;
 using SIL.Archiving.IMDI.Schema;
 using SIL.Extensions;
+using SIL.WritingSystems;
 
 namespace SIL.Archiving.IMDI.Lists
 {
@@ -184,9 +185,65 @@ namespace SIL.Archiving.IMDI.Lists
 			Debug.Assert(listName.EndsWith(".xml"));
 			_listname = listName.Substring(0, listName.Length - 4);
 
-			PopulateList(GetNodeList(listName), uppercaseFirstCharacter, removeUnknown);
-
+			if (listName == "MPI-Languages.xml")
+			{
+				// This file is woefully incomplete (only ~345 languages, less than 5% of the total).  A comment inside it even says
+				// "When a language name and identifier that you need is not in this list, please look it up under www.ethnologue.com/web.asp.".
+				// So we use the information from SIL.WritingSystems, which is based on the complete Ethnologue data.
+				AddLanguagesFromEthnologue();
+			}
+			else
+			{
+				PopulateList(GetNodeList(listName), uppercaseFirstCharacter, removeUnknown);
+			}
 			InitializeThis();
+		}
+
+		private void AddLanguagesFromEthnologue()
+		{
+			// We won't worry about how slow list lookup is with thousands of languages because we'll only
+			// be looking up a few languages in all likelihood.  Storing the names in a list that is searched
+			// linearly does ensure matching on the major name of a language which happens to match an alias
+			// for another language.  It also ensures returning the major (English) name of the language when
+			// looked up by ISO code.
+			var langLookup = new LanguageLookup();
+			var languages = langLookup.SuggestLanguages("*").ToList();
+			foreach (var lang in languages)
+			{
+				if (lang.ThreeLetterTag.Length != 3)
+					continue;	// Data includes codes like "pt-PT" and "zh-Hans": ignore those for now.
+				AddItem(GetEnglishName(lang), "ISO639-3:" + lang.ThreeLetterTag);
+			}
+			foreach (var lang in languages)
+			{
+				if (lang.ThreeLetterTag.Length != 3)
+					continue;	// Data includes codes like "pt-PT" and "zh-Hans": ignore those for now.
+				foreach (var name in lang.Names)
+				{
+					if (name != GetEnglishName(lang))
+						AddItem(name, "ISO639-3:" + lang.ThreeLetterTag);
+				}
+			}
+		}
+
+		private static string GetEnglishName(LanguageInfo lang)
+		{
+			// For these languages, the data gives the language name in its own language and script first,
+			// which is great for UI choosers. For IMDI, we prefer the English name as the default.
+			switch (lang.ThreeLetterTag)
+			{
+				case "ara": return "Arabic";
+				case "ben": return "Bengali";
+				case "fra": return "French";
+				case "spa": return "Spanish";
+				case "tam": return "Tamil";
+				case "tel": return "Telegu";
+				case "tha": return "Thai";
+				case "urd": return "Urdu";
+				case "zho": return "Chinese";
+				// DesiredName is either the name the user prefers, or the first (and possibly only) name in the Names list.
+				default: return lang.DesiredName;
+			}
 		}
 
 		private void InitializeThis()
