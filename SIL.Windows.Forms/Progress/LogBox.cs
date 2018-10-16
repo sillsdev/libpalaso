@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
@@ -25,6 +26,7 @@ namespace SIL.Windows.Forms.Progress
 		private Action<IProgress> _getDiagnosticsMethod;
 		private readonly ToolStripLabel _reportLink;
 		private SynchronizationContext _synchronizationContext;
+		private StringBuilder _stringBuilderPendingVerboseMessages = new StringBuilder();
 
 		public LogBox()
 		{
@@ -108,6 +110,34 @@ namespace SIL.Windows.Forms.Progress
 		public void AddMenuItem(string label, Image image, EventHandler onClick)
 		{
 			_menu.DropDownItems.Add(label, image, onClick);
+		}
+
+		private void ScrollVisibleBoxToEnd(object sender, EventArgs e)
+		{
+			SafeInvoke(this, () =>
+			{
+				// Technically, we would only *have* to do this if the verbose box is the visible one,
+				// but it would complicate the logic in WriteVerbose because we would have to ensure
+				// that we didn't write anything to the box if we had anything in the buffer.
+				FlushPendingVerboseMessageBuffer();
+
+				// There will always only be one of the two boxes visible, but we must check which one
+				// inside the SafeInvoke so it can't change between the time we check and the time the
+				// code is actually invoked.
+				var rtfBox = _box.Visible ? _box : _verboseBox;
+				rtfBox.SelectionStart = rtfBox.TextLength;
+				rtfBox.ScrollToCaret();
+				_scrollToEndTimer.Enabled = false;
+			});
+		}
+
+		private void FlushPendingVerboseMessageBuffer()
+		{
+			if (_stringBuilderPendingVerboseMessages.Length > 0)
+			{
+				AppendVerboseText(_stringBuilderPendingVerboseMessages.ToString());
+				_stringBuilderPendingVerboseMessages.Clear();
+			}
 		}
 
 		public bool ShowMenu
@@ -242,20 +272,26 @@ namespace SIL.Windows.Forms.Progress
 				var styleForDelegate = style;
 				SafeInvoke(rtfBox, (() =>
 				{
+					// Since "normal" messages get written out immediately, we need to flush any batched up
+					// messages that may be waiting in the verbose box's buffer. Note that this has to be done
+					// inside this loop because it needs to be inside the same call to "SafeInvoke" to prevent
+					// the possibility of additional verbose messages getting added to the buffer before the
+					// normal message gets written out to the verbose log box itself.
+					if (rtfBox == _verboseBox)
+						FlushPendingVerboseMessageBuffer();
+
 					if (Platform.IsWindows)
 					{
 						if (!rtfBoxForDelegate.Font.FontFamily.IsStyleAvailable(styleForDelegate))
-							style = rtfBoxForDelegate.Font.Style;
+							styleForDelegate = rtfBoxForDelegate.Font.Style;
 
 						using (var fnt = new Font(rtfBoxForDelegate.Font, styleForDelegate))
 						{
-							rtfBoxForDelegate.SelectionStart = rtfBoxForDelegate.Text.Length;
+							rtfBoxForDelegate.SelectionStart = rtfBoxForDelegate.TextLength;
 							rtfBoxForDelegate.SelectionColor = color;
 							rtfBoxForDelegate.SelectionFont = fnt;
 							rtfBoxForDelegate.AppendText(msg.FormatWithErrorStringInsteadOfException(args) +
 								Environment.NewLine);
-							rtfBoxForDelegate.SelectionStart = rtfBoxForDelegate.Text.Length;
-							rtfBoxForDelegate.ScrollToCaret();
 						}
 					}
 					else
@@ -264,9 +300,9 @@ namespace SIL.Windows.Forms.Progress
 						// so just append plain text
 						rtfBoxForDelegate.AppendText(msg.FormatWithErrorStringInsteadOfException(args) +
 							Environment.NewLine);
-						rtfBoxForDelegate.SelectionStart = rtfBoxForDelegate.Text.Length;
-						rtfBoxForDelegate.ScrollToCaret();
 					}
+					_scrollToEndTimer.Interval = 100;
+					_scrollToEndTimer.Enabled = true;
 				}));
 			}
 #if !DEBUG
@@ -336,19 +372,44 @@ namespace SIL.Windows.Forms.Progress
 
 		public void WriteVerbose(string message, params object[] args)
 		{
-			if (!Platform.IsWindows)
+			SafeInvoke(_verboseBox, () =>
 			{
-				_verboseBox.AppendText(SafeFormat(message + Environment.NewLine, args));
-			}
-			else
-			{
-				SafeInvoke(_verboseBox, (() =>
+				var textToAppend = SafeFormat(message + Environment.NewLine, args);
+				if (_scrollToEndTimer.Enabled)
 				{
-					_verboseBox.SelectionStart = _verboseBox.Text.Length;
-					_verboseBox.SelectionColor = Color.DarkGray;
-					_verboseBox.AppendText(SafeFormat(message + Environment.NewLine, args));
-				}));
+					// We're getting behind. We haven't managed to scroll the previously written content yet.
+					// To avoid locking up the UI, we need to start batching up the messages
+					// If we're here because we're just writing a bunch of verbose messages and we're not even
+					// showing the vebose view, we can safely just keep throwing them into the string builder
+					// until either the user switches to look at verbose view OR we get a normal message (which
+					// gets formatted differently, so we can no longer store the text as a plain string).
+					_stringBuilderPendingVerboseMessages.Append(textToAppend);
+				}
+				else
+				{
+					AppendVerboseText(textToAppend);
+					// At some (somewhat arbitrary) point, we need to slow things down because it starts to take
+					// a really long time to add new text and scroll it into view, and this leads to an unresponsive
+					// UI and ultimately to hangs and internal errors.
+					// ENHANCE: If necessary, we could try to gradually decrease the frequency of scrolling as the size
+					// gets bigger, rather than doing a single jump from 100 to 1000 milliseconds.
+					if (_verboseBox.TextLength > 5000)
+						_scrollToEndTimer.Interval = 1000;
+					if (_verboseBox.Visible)
+						_scrollToEndTimer.Enabled = true;
+				}
+			});
+		}
+
+		// This method MUST be called from code that has been safely invoked on the UI thread!
+		private void AppendVerboseText(string textToAppend)
+		{
+			if (Platform.IsWindows)
+			{
+				_verboseBox.SelectionStart = _verboseBox.TextLength;
+				_verboseBox.SelectionColor = Color.DarkGray;
 			}
+			_verboseBox.AppendText(textToAppend);
 		}
 
 		public static string SafeFormat(string format, params object[] args)
@@ -381,6 +442,8 @@ namespace SIL.Windows.Forms.Progress
 				_verboseBox.Dock = DockStyle.None;
 				_box.Dock = DockStyle.Fill;
 			}
+
+			ScrollVisibleBoxToEnd(null, null);
 		}
 
 		private void _copyToClipboardLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
