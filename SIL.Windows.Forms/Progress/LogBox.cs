@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Text;
@@ -134,6 +134,7 @@ namespace SIL.Windows.Forms.Progress
 			});
 		}
 
+		// This method MUST be called from code that has been safely invoked on the UI thread!
 		private void FlushPendingVerboseMessageBuffer()
 		{
 			if (_stringBuilderPendingVerboseMessages.Length > 0)
