@@ -116,17 +116,20 @@ namespace SIL.Windows.Forms.Progress
 		{
 			SafeInvoke(this, () =>
 			{
-				// Technically, we would only *have* to do this if the verbose box is the visible one,
-				// but it would complicate the logic in WriteVerbose because we would have to ensure
-				// that we didn't write anything to the box if we had anything in the buffer.
-				FlushPendingVerboseMessageBuffer();
-
 				// There will always only be one of the two boxes visible, but we must check which one
 				// inside the SafeInvoke so it can't change between the time we check and the time the
 				// code is actually invoked.
-				var rtfBox = _box.Visible ? _box : _verboseBox;
-				rtfBox.SelectionStart = rtfBox.TextLength;
-				rtfBox.ScrollToCaret();
+				RichTextBox visibleBox;
+				if (_verboseBox.Visible)
+				{
+					visibleBox = _verboseBox;
+					FlushPendingVerboseMessageBuffer();
+				}
+				else
+					visibleBox = _box;
+
+				visibleBox.SelectionStart = visibleBox.TextLength;
+				visibleBox.ScrollToCaret();
 				_scrollToEndTimer.Enabled = false;
 			});
 		}
@@ -301,8 +304,7 @@ namespace SIL.Windows.Forms.Progress
 						rtfBoxForDelegate.AppendText(msg.FormatWithErrorStringInsteadOfException(args) +
 							Environment.NewLine);
 					}
-					_scrollToEndTimer.Interval = 100;
-					_scrollToEndTimer.Enabled = true;
+					EnableScrollTimer();
 				}));
 			}
 #if !DEBUG
@@ -314,6 +316,12 @@ namespace SIL.Windows.Forms.Progress
 				//stack trace didn't actually go into this method, but the build date was after I wrote this.  So this exception may never actually happen.
 			}
 #endif
+		}
+
+		private void EnableScrollTimer()
+		{
+			_scrollToEndTimer.Interval = 100;
+			_scrollToEndTimer.Enabled = true;
 		}
 
 		public void WriteWarning(string message, params object[] args)
@@ -375,7 +383,7 @@ namespace SIL.Windows.Forms.Progress
 			SafeInvoke(_verboseBox, () =>
 			{
 				var textToAppend = SafeFormat(message + Environment.NewLine, args);
-				if (_scrollToEndTimer.Enabled)
+				if (_scrollToEndTimer.Enabled || _stringBuilderPendingVerboseMessages.Length > 0)
 				{
 					// We're getting behind. We haven't managed to scroll the previously written content yet.
 					// To avoid locking up the UI, we need to start batching up the messages
@@ -384,19 +392,14 @@ namespace SIL.Windows.Forms.Progress
 					// until either the user switches to look at verbose view OR we get a normal message (which
 					// gets formatted differently, so we can no longer store the text as a plain string).
 					_stringBuilderPendingVerboseMessages.Append(textToAppend);
+					if (_verboseBox.Visible && _scrollToEndTimer.Interval < 700)
+						_scrollToEndTimer.Interval += 100;
 				}
 				else
 				{
 					AppendVerboseText(textToAppend);
-					// At some (somewhat arbitrary) point, we need to slow things down because it starts to take
-					// a really long time to add new text and scroll it into view, and this leads to an unresponsive
-					// UI and ultimately to hangs and internal errors.
-					// ENHANCE: If necessary, we could try to gradually decrease the frequency of scrolling as the size
-					// gets bigger, rather than doing a single jump from 100 to 1000 milliseconds.
-					if (_verboseBox.TextLength > 5000)
-						_scrollToEndTimer.Interval = 1000;
 					if (_verboseBox.Visible)
-						_scrollToEndTimer.Enabled = true;
+						EnableScrollTimer();
 				}
 			});
 		}
