@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this._box = new System.Windows.Forms.RichTextBox();
 			this._verboseBox = new System.Windows.Forms.RichTextBox();
 			this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -38,6 +39,7 @@
 			this._chooseFontMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this._tableLayout = new System.Windows.Forms.TableLayoutPanel();
 			this._panelBox = new System.Windows.Forms.Panel();
+			this._scrollToEndTimer = new System.Windows.Forms.Timer(this.components);
 			this.menuStrip1.SuspendLayout();
 			this._tableLayout.SuspendLayout();
 			this._panelBox.SuspendLayout();
@@ -165,7 +167,11 @@
 			this._panelBox.Name = "_panelBox";
 			this._panelBox.Size = new System.Drawing.Size(288, 321);
 			this._panelBox.TabIndex = 8;
-			//
+			// 
+			// _scrollToEndTimer
+			// 
+			this._scrollToEndTimer.Tick += new System.EventHandler(this.ScrollVisibleBoxToEnd);
+			// 
 			// LogBox
 			//
 			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -198,5 +204,6 @@
 		private System.Windows.Forms.ToolStripMenuItem _chooseFontMenuItem;
 		private System.Windows.Forms.TableLayoutPanel _tableLayout;
 		private System.Windows.Forms.Panel _panelBox;
+		private System.Windows.Forms.Timer _scrollToEndTimer;
 	}
 }
