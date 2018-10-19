@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2016-2017 SIL International
+// Copyright (c) 2016-2017 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
@@ -146,6 +146,16 @@ namespace SIL.WritingSystems
 				var all_languages = new HashSet<LanguageInfo>(_codeToLanguageIndex.Select(l => l.Value));
 				foreach (LanguageInfo languageInfo in all_languages.OrderBy(l => l, new ResultComparer(searchString)))
 					yield return languageInfo;
+			}
+			// if the search string exactly matches a hard-coded way to say "sign", show all the sign languages
+			else if (new []{"sign", "sign language","signes", "langage des signes", "señas","lenguaje de señas"}.Contains(searchString.ToLowerInvariant()))
+			{
+				var parallelSearch = _codeToLanguageIndex.AsParallel().Select(li => li.Value).Where(l =>
+					l.Names.AsQueryable().Any(n => n.ToLowerInvariant().Contains("sign")));
+				foreach (var languageInfo in parallelSearch)
+				{
+					yield return languageInfo;
+				}
 			}
 			else
 			{
