@@ -144,4 +144,8 @@
   <data name="AllTagsTime" xml:space="preserve">
     <value>2015-11-12T06:04:38Z</value>
   </data>
+  <data name="alltags_json" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\alltags.json.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+    <comment>JSON alltags language data</comment>
+  </data>
 </root>
