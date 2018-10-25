@@ -999,7 +999,7 @@ namespace SIL.WritingSystems
 				langTag += "-" + regionCode;
 
 			SldrLanguageTagInfo langTagInfo;
-			if (Sldr.LanguageTags.TryGet(langTag, out langTagInfo))
+			if (Sldr.LanguageTags.TryGet(langTag, out langTagInfo) || Sldr.LanguageTags.TryGet(languageCode, out langTagInfo))
 				return langTagInfo.ImplicitScriptCode;
 			return null;
 		}
