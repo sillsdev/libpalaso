@@ -1,9 +1,10 @@
-﻿// Copyright (c) 2016-2017 SIL International
+// Copyright (c) 2016-2017 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using SIL.Code;
 using SIL.Text;
 
@@ -34,36 +35,44 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public LanguageLookup()
 		{
-			// Load from file into the data structures instead of creating it from scratch
-			var entries = LanguageRegistryResources.LanguageDataIndex.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
+			// TODO: modify to load from json instead of LanguageDataIndex
 
-			foreach (string entry in entries)
+			var allTagsContent = LanguageRegistryResources.alltags_json;
+
+			List<AllTagEntry> rootObject = JsonConvert.DeserializeObject<List<AllTagEntry>>(allTagsContent);
+
+			foreach (AllTagEntry entry in rootObject)
 			{
-				// Fields in LanguageDataIndex
-				// Code ThreeLetterCode DesiredName Names Countries PrimaryCountry
-				string[] items = entry.Split('\t');
-				if (items.Length != 7) // This needs to be changed if the number of fields changes
-					continue;
-				string code = items[0];
-				string threelettercode = items[1];
-				string desiredname = items[2];
-				bool macrolanguage = String.Equals("M", items[3]);
-				string[] names = items[4].Split(';');
-				string[] countries = items[5].Split(';');
-				string primarycountry = items[6];
-				LanguageInfo language = new LanguageInfo { LanguageTag = code, ThreeLetterTag = threelettercode, DesiredName = desiredname,
-					IsMacroLanguage = macrolanguage, PrimaryCountry = primarycountry };
-				foreach (string country in countries)
-				{
-					language.Countries.Add(country);
-				}
-				foreach (string langname in names)
-				{
-					language.Names.Add(langname.Trim());
-				}
+				string code = entry.tag;
+				string threelettercode = entry.iso639_3;
 
-				// Do not add anything to LanguageInfo manually here if it would be useful in LanguageDataIndex.txt/json
-
+				string desiredname = entry.name;
+				if (desiredname == null)
+				{
+					desiredname = code; // temp workaround for data missing names
+				}
+				//bool macrolanguage = String.Equals("M", items[3]); // TODO macrolanguages? are the ones we don't want in the data?
+				//tmp List<string> names = entry.names;
+				//string[] countries = items[5].Split(';');
+				string primarycountry = entry.region; // convert to full region name
+				LanguageInfo language = new LanguageInfo
+				{
+					LanguageTag = code,
+					ThreeLetterTag = threelettercode,
+					DesiredName = desiredname,
+					//IsMacroLanguage = macrolanguage,
+					PrimaryCountry = primarycountry
+				};
+				//foreach (string country in countries)
+				//{
+				//	language.Countries.Add(country);
+				//}
+				language.Countries.Add(primarycountry);
+				language.Names.Add(desiredname.Trim());
+				//foreach (string langname in names) //tmpcomment
+				//{
+				//	language.Names.Add(langname.Trim());
+				//}
 				// add language to _codeToLanguageIndex and _nameToLanguageIndex
 				// if 2 letter code then add both 2 and 3 letter codes to _codeToLanguageIndex
 
@@ -88,7 +97,67 @@ namespace SIL.WritingSystems
 						list.Add(language);
 					}
 				}
+
+
 			}
+
+
+
+			//// Load from file into the data structures instead of creating it from scratch
+			//var entries = LanguageRegistryResources.LanguageDataIndex.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
+
+			//foreach (string entry in entries)
+			//{
+			//	// Fields in LanguageDataIndex
+			//	// Code ThreeLetterCode DesiredName Names Countries PrimaryCountry
+			//	string[] items = entry.Split('\t');
+			//	if (items.Length != 7) // This needs to be changed if the number of fields changes
+			//		continue;
+			//	string code = items[0];
+			//	string threelettercode = items[1];
+			//	string desiredname = items[2];
+			//	bool macrolanguage = String.Equals("M", items[3]);
+			//	string[] names = items[4].Split(';');
+			//	string[] countries = items[5].Split(';');
+			//	string primarycountry = items[6];
+			//	LanguageInfo language = new LanguageInfo { LanguageTag = code, ThreeLetterTag = threelettercode, DesiredName = desiredname,
+			//		IsMacroLanguage = macrolanguage, PrimaryCountry = primarycountry };
+			//	foreach (string country in countries)
+			//	{
+			//		language.Countries.Add(country);
+			//	}
+			//	foreach (string langname in names)
+			//	{
+			//		language.Names.Add(langname.Trim());
+			//	}
+
+			//	// Do not add anything to LanguageInfo manually here if it would be useful in LanguageDataIndex.txt/json
+
+			//	// add language to _codeToLanguageIndex and _nameToLanguageIndex
+			//	// if 2 letter code then add both 2 and 3 letter codes to _codeToLanguageIndex
+
+			//	_codeToLanguageIndex[code] = language;
+			//	if (!String.Equals(code, threelettercode))
+			//	{
+			//		_codeToLanguageIndex[threelettercode] = language;
+			//	}
+			//	foreach (string langname in language.Names)
+			//		GetOrCreateListFromName(langname).Add(language);
+			//	// add to _countryToLanguageIndex
+			//	foreach (var country in language.Countries)
+			//	{
+			//		if (!string.IsNullOrEmpty(country))
+			//		{
+			//			List<LanguageInfo> list;
+			//			if (!_countryToLanguageIndex.TryGetValue(country, out list))
+			//			{
+			//				list = new List<LanguageInfo>();
+			//				_countryToLanguageIndex[country] = list;
+			//			}
+			//			list.Add(language);
+			//		}
+			//	}
+			//}
 		}
 
 		/// <summary>

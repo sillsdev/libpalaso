@@ -42,6 +42,19 @@ namespace SIL.WritingSystems
 		FromCache
 	};
 
+	// TODO Decide where these go because LanguageLookup will want them as well
+	public class AllTagEntry
+	{
+		public string full { get; set; }
+		public string iso639_3 { get; set; }
+		public string name { get; set; }
+		public List<string> names { get; set; }
+		public string region { get; set; }
+		public bool sldr { get; set; }
+		public string tag { get; set; }
+		public List<string> tags { get; set; }
+	}
+
 	/// <summary>
 	/// This class provides methods for retrieving LDML files and tag data from the SIL Locale Data Repository (SLDR) web service.
 	/// </summary>
@@ -343,106 +356,90 @@ namespace SIL.WritingSystems
 
 			string allTagsContent;
 
-			// TODO refactor this to get alltags.json once it has a defined location
-			// for now only use the included version in the resource
 
-			//using (_sldrCacheMutex.Lock())
-			//{
-			//	CreateSldrCacheDirectory();
+			using (_sldrCacheMutex.Lock())
+			{
+				CreateSldrCacheDirectory();
 
-			//	string cachedAllTagsPath = Path.Combine(SldrCachePath, "alltags.txt");
-			//	DateTime latestCommitTime = DateTime.MinValue;
-			//	DateTime sinceTime = _embeddedAllTagsTime;
-			//	if (File.Exists(cachedAllTagsPath))
-			//	{
-			//		DateTime fileTime = File.GetLastWriteTime(cachedAllTagsPath);
-			//		if (sinceTime > fileTime)
-			//			// delete the old alltags.txt file if a newer embedded one is available.
-			//			// this can happen if the application is upgraded to use a newer version of SIL.WritingySystems
-			//			// that has an updated embedded alltags.txt file.
-			//			File.Delete(cachedAllTagsPath);
-			//		else
-			//			sinceTime = fileTime;
-			//	}
-			//	sinceTime += TimeSpan.FromSeconds(1);
-			//	try
-			//	{
-			//		if (_offlineMode)
-			//			throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
+				// TODO refactor this to get alltags.json once it has a defined location
+				// for now only use the included version in the resource
 
-			//		// query the SLDR Git repo to see if there is an updated version of alltags.txt
-			//		string commitUrl = string.Format("{0}commits?path=extras/alltags.txt&since={1:O}",
-			//			SldrGitHubRepo, sinceTime);
-			//		var webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(commitUrl));
-			//		webRequest.UserAgent = UserAgent;
-			//		webRequest.Timeout = 10000;
-			//		using (var webResponse = (HttpWebResponse) webRequest.GetResponse())
-			//		{
-			//			Stream stream = webResponse.GetResponseStream();
-			//			if (stream != null)
-			//			{
-			//				using (StreamReader responseReader = new StreamReader(stream))
-			//				{
-			//					// get the timestamp of the most recent commit
-			//					JArray commits = JArray.Load(new JsonTextReader(responseReader));
-			//					foreach (JObject commit in commits.Children<JObject>())
-			//					{
-			//						var time = commit["commit"]["author"]["date"].ToObject<DateTime>();
-			//						if (time > latestCommitTime)
-			//							latestCommitTime = time;
-			//					}
-			//				}
-			//			}
-			//		}
 
-			//		if (latestCommitTime > DateTime.MinValue)
-			//		{
-			//			// there is an updated version of the alltags.txt file in the SLDR Git repo, so get it
-			//			string contentsUrl = string.Format("{0}contents/extras/alltags.txt", SldrGitHubRepo);
-			//			webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(contentsUrl));
-			//			webRequest.UserAgent = UserAgent;
-			//			webRequest.Timeout = 10000;
-			//			using (var webResponse = (HttpWebResponse) webRequest.GetResponse())
-			//			{
-			//				Stream stream = webResponse.GetResponseStream();
-			//				if (stream != null)
-			//				{
-			//					using (StreamReader responseReader = new StreamReader(stream))
-			//					{
-			//						JObject blob = JObject.Load(new JsonTextReader(responseReader));
-			//						File.WriteAllBytes(cachedAllTagsPath, Convert.FromBase64String((string) blob["content"]));
-			//						File.SetLastWriteTime(cachedAllTagsPath, latestCommitTime);
-			//					}
-			//				}
-			//			}
-			//		}
-			//	}
-			//	catch (WebException)
-			//	{
-			//	}
+				//	string cachedAllTagsPath = Path.Combine(SldrCachePath, "alltags.txt");
+				//	DateTime latestCommitTime = DateTime.MinValue;
+				//	DateTime sinceTime = _embeddedAllTagsTime;
+				//	if (File.Exists(cachedAllTagsPath))
+				//	{
+				//		DateTime fileTime = File.GetLastWriteTime(cachedAllTagsPath);
+				//		if (sinceTime > fileTime)
+				//			// delete the old alltags.txt file if a newer embedded one is available.
+				//			// this can happen if the application is upgraded to use a newer version of SIL.WritingySystems
+				//			// that has an updated embedded alltags.txt file.
+				//			File.Delete(cachedAllTagsPath);
+				//		else
+				//			sinceTime = fileTime;
+				//	}
+				//	sinceTime += TimeSpan.FromSeconds(1);
+				//	try
+				//	{
+				//		if (_offlineMode)
+				//			throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
 
-			//	allTagsContent = File.Exists(cachedAllTagsPath) ? File.ReadAllText(cachedAllTagsPath) : LanguageRegistryResources.alltags;
-			//}
+				//		// query the SLDR Git repo to see if there is an updated version of alltags.txt
+				//		string commitUrl = string.Format("{0}commits?path=extras/alltags.txt&since={1:O}",
+				//			SldrGitHubRepo, sinceTime);
+				//		var webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(commitUrl));
+				//		webRequest.UserAgent = UserAgent;
+				//		webRequest.Timeout = 10000;
+				//		using (var webResponse = (HttpWebResponse) webRequest.GetResponse())
+				//		{
+				//			Stream stream = webResponse.GetResponseStream();
+				//			if (stream != null)
+				//			{
+				//				using (StreamReader responseReader = new StreamReader(stream))
+				//				{
+				//					// get the timestamp of the most recent commit
+				//					JArray commits = JArray.Load(new JsonTextReader(responseReader));
+				//					foreach (JObject commit in commits.Children<JObject>())
+				//					{
+				//						var time = commit["commit"]["author"]["date"].ToObject<DateTime>();
+				//						if (time > latestCommitTime)
+				//							latestCommitTime = time;
+				//					}
+				//				}
+				//			}
+				//		}
 
-			allTagsContent = LanguageRegistryResources.alltags_json;
+				//		if (latestCommitTime > DateTime.MinValue)
+				//		{
+				//			// there is an updated version of the alltags.txt file in the SLDR Git repo, so get it
+				//			string contentsUrl = string.Format("{0}contents/extras/alltags.txt", SldrGitHubRepo);
+				//			webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(contentsUrl));
+				//			webRequest.UserAgent = UserAgent;
+				//			webRequest.Timeout = 10000;
+				//			using (var webResponse = (HttpWebResponse) webRequest.GetResponse())
+				//			{
+				//				Stream stream = webResponse.GetResponseStream();
+				//				if (stream != null)
+				//				{
+				//					using (StreamReader responseReader = new StreamReader(stream))
+				//					{
+				//						JObject blob = JObject.Load(new JsonTextReader(responseReader));
+				//						File.WriteAllBytes(cachedAllTagsPath, Convert.FromBase64String((string) blob["content"]));
+				//						File.SetLastWriteTime(cachedAllTagsPath, latestCommitTime);
+				//					}
+				//				}
+				//			}
+				//		}
+				//	}
+				//	catch (WebException)
+				//	{
+				//	}
 
+				//	allTagsContent = File.Exists(cachedAllTagsPath) ? File.ReadAllText(cachedAllTagsPath) : LanguageRegistryResources.alltags;
+				allTagsContent = LanguageRegistryResources.alltags_json;
+			}
 			_languageTags = new ReadOnlyKeyedCollection<string, SldrLanguageTagInfo>(ParseAllTagsJson(allTagsContent));
-		}
-
-		// TODO Decide where these go because LanguageLookup will want them as well
-		internal class AllTagEntry
-		{
-			public string full { get; set; }
-			public string name { get; set; }
-			public List<string> names { get; set; }
-			public bool sldr { get; set; }
-			public string tag { get; set; }
-			public List<string> tags { get; set; }
-		}
-
-		internal class AllTagRootObject
-		{
-			public List<AllTagEntry> Entries { get; set; }
 		}
 
 		internal static IKeyedCollection<string, SldrLanguageTagInfo> ParseAllTagsJson(string allTagsContent)
@@ -469,26 +466,44 @@ namespace SIL.WritingSystems
 
 			var tags = new KeyedList<string, SldrLanguageTagInfo>(info => info.LanguageTag, StringComparer.InvariantCultureIgnoreCase);
 
-			AllTagRootObject rootObject = JsonConvert.DeserializeObject<AllTagRootObject>(allTagsContent);
+			List<AllTagEntry> rootObject = JsonConvert.DeserializeObject<List<AllTagEntry>>(allTagsContent);
 
-			foreach (AllTagEntry entry in rootObject.Entries)
+			foreach (AllTagEntry entry in rootObject)
 			{
 				string langTag = entry.tag;
 				string sldrLangTag = entry.tag;
 				bool isAvailable = entry.sldr;
 				string implicitStringCode = null;
 
-				var minTag = entry.tags.Select(t => new { Tag = t, Components = t.Split('-') }).MinBy(t => t.Components.Length);
-				// only look for an implicit script code if the minimal tag has no script code
-				if (minTag.Components.Length < 2 || minTag.Components[1].Length != 4)
+				List<string> entryTags = entry.tags;
+
+				if (entryTags != null)
 				{
-					foreach (string tagStr in entry.tags)
+					entryTags.Add(langTag);
+					entryTags.Add(entry.full);
+					/*     {
+        "full": "zh-Hant-TW",
+        "tag": "zh-TW",
+            "zh-Hant",
+            "cmn-Hant",
+            "cmn-Hant-TW"
+    },*/
+					var minTag = entryTags.Select(t => new {Tag = t, Components = t.Split('-')})
+						.MinBy(t => t.Components.Length);
+					// only look for an implicit script code if the minimal tag has no script code
+					// TODO try more examples like zsm which also has ms in tags but which is not the primary tag
+					if (minTag.Components.Length < 2 || minTag.Components[1].Length != 4) // minTag zh-TW
 					{
-						string[] components = tagStr.Split('-');
-						if (components.Length == minTag.Components.Length + 1 && components[1].Length == 4)
-							implicitStringCode = components[1];
+						foreach (string tagStr in entryTags)
+						{
+							string[] components = tagStr.Split('-'); // zh-Hant-TW ought to hit this?
+							if (components.Length == minTag.Components.Length + 1 && // 3
+							    components[1].Length == 4) 
+								implicitStringCode = components[1];
+						}
 					}
 				}
+
 				tags.Add(new SldrLanguageTagInfo(langTag, implicitStringCode, sldrLangTag, isAvailable));
 			}
 			return tags;
