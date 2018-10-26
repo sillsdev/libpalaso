@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 using SIL.Code;
@@ -43,64 +44,12 @@ namespace SIL.WritingSystems
 
 			foreach (AllTagEntry entry in rootObject)
 			{
-				string code = entry.tag;
-				string threelettercode = entry.iso639_3;
-
-				string desiredname = entry.name;
-				if (desiredname == null)
+				if (!entry.deprecated)
 				{
-					desiredname = code; // temp workaround for data missing names
+					AddLanguage(entry.tag, entry.iso639_3, entry.full, entry.name, entry.region, entry.names, entry.tags);
 				}
-				//bool macrolanguage = String.Equals("M", items[3]); // TODO macrolanguages? are the ones we don't want in the data?
-				//tmp List<string> names = entry.names;
-				//string[] countries = items[5].Split(';');
-				string primarycountry = entry.region; // convert to full region name
-				LanguageInfo language = new LanguageInfo
-				{
-					LanguageTag = code,
-					ThreeLetterTag = threelettercode,
-					DesiredName = desiredname,
-					//IsMacroLanguage = macrolanguage,
-					PrimaryCountry = primarycountry
-				};
-				//foreach (string country in countries)
-				//{
-				//	language.Countries.Add(country);
-				//}
-				language.Countries.Add(primarycountry);
-				language.Names.Add(desiredname.Trim());
-				//foreach (string langname in names) //tmpcomment
-				//{
-				//	language.Names.Add(langname.Trim());
-				//}
-				// add language to _codeToLanguageIndex and _nameToLanguageIndex
-				// if 2 letter code then add both 2 and 3 letter codes to _codeToLanguageIndex
-
-				_codeToLanguageIndex[code] = language;
-				if (!String.Equals(code, threelettercode))
-				{
-					_codeToLanguageIndex[threelettercode] = language;
-				}
-				foreach (string langname in language.Names)
-					GetOrCreateListFromName(langname).Add(language);
-				// add to _countryToLanguageIndex
-				foreach (var country in language.Countries)
-				{
-					if (!string.IsNullOrEmpty(country))
-					{
-						List<LanguageInfo> list;
-						if (!_countryToLanguageIndex.TryGetValue(country, out list))
-						{
-							list = new List<LanguageInfo>();
-							_countryToLanguageIndex[country] = list;
-						}
-						list.Add(language);
-					}
-				}
-
-
 			}
-
+			AddLanguage("qaa", "qaa", "qaa", "Unlisted Language");
 
 
 			//// Load from file into the data structures instead of creating it from scratch
@@ -159,6 +108,148 @@ namespace SIL.WritingSystems
 			//	}
 			//}
 		}
+
+		private bool AddLanguage(string code, string threelettercode, string full = null,
+			string desiredname = null, string region = null, List<string> names = null, List<string> tags = null)
+		{
+			if (desiredname == null)
+			{
+				desiredname = code; // temp workaround for data missing names
+			}
+			//bool macrolanguage = String.Equals("M", items[3]); // TODO macrolanguages? are the ones we don't want in the data?
+			//string[] countries = items[5].Split(';');
+			string primarycountry;
+			if (region == null)
+			{
+				primarycountry = "";
+			}
+			else if (StandardSubtags.IsValidIso3166RegionCode(region))
+			{
+				if (StandardSubtags.IsPrivateUseRegionCode(region))
+				{
+					if (region == "XK")
+					{
+						primarycountry = "Kosovo";
+					}
+					else
+					{
+						primarycountry = "Unknown private use";
+					}
+				}
+				else
+				{
+					primarycountry = StandardSubtags.RegisteredRegions[region].Name; // convert to full region name
+				}
+			}
+			else
+			{
+				primarycountry = "Invalid region";
+			}
+			LanguageInfo language = new LanguageInfo
+			{
+				LanguageTag = code,
+				ThreeLetterTag = threelettercode,
+				DesiredName = desiredname,
+				//IsMacroLanguage = macrolanguage,
+				PrimaryCountry = primarycountry
+			};
+			//foreach (string country in countries)
+			//{
+			//	language.Countries.Add(country);
+			//}
+			language.Countries.Add(primarycountry);
+			//Why just this small set? Only out of convenience. Ideally we'd have a db of all languages as they write it in their literature.
+			string localName = null;
+			switch (desiredname)
+			{
+				case "French":
+					localName = "français";
+					break;
+				case "Spanish":
+					localName = "español";
+					break;
+				case "Chinese":
+					localName = "中文";
+					break;
+				case "Hindi":
+					localName = "हिन्दी";
+					break;
+				case "Bengali":
+					localName = "বাংলা";
+					break;
+				case "Telugu":
+					localName = "తెలుగు";
+					break;
+				case "Tamil":
+					localName = "தமிழ்";
+					break;
+				case "Urdu":
+					localName = "اُردُو";
+					break;
+				case "Arabic":
+					localName = "العربية/عربي";
+					break;
+				case "Thai":
+					localName = "ภาษาไทย";
+					break;
+				case "Indonesian":
+					localName = "Bahasa Indonesia";
+					break;
+			}
+			if (localName != null)
+			{
+				language.Names.Add(localName);
+			}
+			language.Names.Add(desiredname.Trim());
+			if (names != null)
+			{
+				foreach (string langname in names)
+				{
+					language.Names.Add(langname.Trim());
+				}
+			}
+			// add language to _codeToLanguageIndex and _nameToLanguageIndex
+			// if 2 letter code then add both 2 and 3 letter codes to _codeToLanguageIndex
+
+			_codeToLanguageIndex[code] = language;
+			if (full != null)
+			{
+				_codeToLanguageIndex[full] = language; // add the full expanded tag
+			}
+
+			if (threelettercode != null && !String.Equals(code, threelettercode))
+			{
+				_codeToLanguageIndex[threelettercode] = language;
+			}
+
+			if (tags != null)
+			{
+				foreach (string langtag in tags)
+				{
+					_codeToLanguageIndex[langtag] = language;
+				}
+			}
+
+			foreach (string langname in language.Names)
+				GetOrCreateListFromName(langname).Add(language);
+			// add to _countryToLanguageIndex
+			foreach (var country in language.Countries)
+			{
+				if (!string.IsNullOrEmpty(country))
+				{
+					List<LanguageInfo> list;
+					if (!_countryToLanguageIndex.TryGetValue(country, out list))
+					{
+						list = new List<LanguageInfo>();
+						_countryToLanguageIndex[country] = list;
+					}
+					list.Add(language);
+				}
+			}
+
+			return true;
+		}
+
 
 		/// <summary>
 		///  For testing; used to detect if we need more special cases where LanguageDataIndex()
@@ -289,9 +380,10 @@ namespace SIL.WritingSystems
 				if (y.LanguageTag.Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
 					return 1;
 
-				if (IetfLanguageTag.GetLanguagePart(x.LanguageTag).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
+				// TODO This part does tag validation which is unhelpful. Any simpler way to get the language part?
+				if (IetfLanguageTag.GetLanguagePart(x.LanguageTag, false).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
 					return -1;
-				if (IetfLanguageTag.GetLanguagePart(y.LanguageTag).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
+				if (IetfLanguageTag.GetLanguagePart(y.LanguageTag, false).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
 					return 1;
 
 				// Use the "editing distance" relative to the search string to sort by the primary name.

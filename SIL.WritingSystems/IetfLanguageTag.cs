@@ -15,7 +15,7 @@ namespace SIL.WritingSystems
 	public static class IetfLanguageTag
 	{
 		private const string PrivateUseExpr = "[xX](-" + PrivateUseSubExpr + ")+";
-		private const string PrivateUseSubExpr = "[a-zA-Z0-9]{1,8}";
+		private const string PrivateUseSubExpr = "[a-zA-Z0-9]{1,15}";
 		// according to RFC-5646, a primary language subtag can be anywhere from 2 to 8 characters in length,
 		// at this point only ISO 639 codes are allowed, which are all 2 to 3 characters in length, so we
 		// use the more practical constraint of 2 to 3 characters, which allows private use ICU locales with
@@ -763,8 +763,8 @@ namespace SIL.WritingSystems
 			Group languageGroup = match.Groups["language"];
 			if (languageGroup.Success)
 			{
-				if (!StandardSubtags.IsValidIso639LanguageCode(languageGroup.Value))
-					return false;
+				//if (!StandardSubtags.IsValidIso639LanguageCode(languageGroup.Value))
+				//	return false;
 				language = languageGroup.Value;
 			}
 
@@ -1063,8 +1063,12 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Gets the language part of the specified language tag.
 		/// </summary>
-		public static string GetLanguagePart(string langTag)
+		public static string GetLanguagePart(string langTag, bool validate = true)
 		{
+			if (!validate)
+			{
+				return langTag.Split('-')[0];
+			}
 			string language, script, region, variant;
 			if (!TryGetParts(langTag, out language, out script, out region, out variant))
 				throw new ArgumentException("The IETF language tag is invalid.", "langTag");

@@ -638,8 +638,8 @@ namespace SIL.WritingSystems.Tests
 		public void IsValidPrivateUseCode_InvalidPrivateUseCode_ReturnsFalse()
 		{
 			Assert.That(IetfLanguageTag.IsValidPrivateUseCode(""), Is.False);
-			Assert.That(IetfLanguageTag.IsValidPrivateUseCode("abcdefghi"), Is.False);
-			Assert.That(IetfLanguageTag.IsValidPrivateUseCode("123456789"), Is.False);
+			Assert.That(IetfLanguageTag.IsValidPrivateUseCode("abcdefghijklmnop"), Is.False); // temporarily not conforming to standard in the data
+			Assert.That(IetfLanguageTag.IsValidPrivateUseCode("1234567890123456"), Is.False);
 
 		}
 

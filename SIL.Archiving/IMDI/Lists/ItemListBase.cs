@@ -210,13 +210,13 @@ namespace SIL.Archiving.IMDI.Lists
 			var languages = langLookup.SuggestLanguages("*").ToList();
 			foreach (var lang in languages)
 			{
-				if (lang.ThreeLetterTag.Length != 3)
+				if (lang.ThreeLetterTag == null || lang.ThreeLetterTag.Length != 3)
 					continue;	// Data includes codes like "pt-PT" and "zh-Hans": ignore those for now.
 				AddItem(GetEnglishName(lang), "ISO639-3:" + lang.ThreeLetterTag);
 			}
 			foreach (var lang in languages)
 			{
-				if (lang.ThreeLetterTag.Length != 3)
+				if (lang.ThreeLetterTag == null || lang.ThreeLetterTag.Length != 3)
 					continue;	// Data includes codes like "pt-PT" and "zh-Hans": ignore those for now.
 				foreach (var name in lang.Names)
 				{

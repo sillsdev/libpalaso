@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using NUnit.Framework;
 
 namespace SIL.Windows.Forms.WritingSystems.Tests
@@ -24,7 +24,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 			model.IncludeRegionalDialects = false;
 			model.SearchText = "chinese";
 			string[] codes = model.MatchingLanguages.Select(li => li.LanguageTag).ToArray();
-			Assert.That(codes, Contains.Item("zh-CN"));
+			Assert.That(codes, Contains.Item("zh"));
 			Assert.That(codes, Contains.Item("zh-TW"));
 		}
 
@@ -35,7 +35,8 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 			model.LoadLanguages();
 			model.IncludeRegionalDialects = true;
 			model.SearchText = "english";
-			Assert.That(model.MatchingLanguages.Select(li => li.LanguageTag), Contains.Item("en-US"));
+			string[] codes = model.MatchingLanguages.Select(li => li.LanguageTag).ToArray();
+			Assert.That(codes, Contains.Item("en-GB"));
 		}
 	}
 }
