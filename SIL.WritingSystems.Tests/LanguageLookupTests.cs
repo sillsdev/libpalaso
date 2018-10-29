@@ -1,4 +1,6 @@
-﻿using System.Linq;
+using System;
+using System.Diagnostics;
+using System.Linq;
 using NUnit.Framework;
 using SIL.Extensions;
 
@@ -362,6 +364,25 @@ namespace SIL.WritingSystems.Tests
 			Assert.True(languages.Any(l => l.DesiredName == "K\u2019iche\u2019"));
 			languages = lookup.SuggestLanguages("K'i").ToArray();
 			Assert.True(languages.Any(l => l.DesiredName == "K\u2019iche\u2019"));
+		}
+
+		/// <summary>
+		/// We have a special case where we want to return all sign languages when you type "sign", or something like that.
+		/// </summary>
+		[Test]
+		public void SuggestLanguages_SearchingForSign_ReturnsSignLanguages()
+		{
+			var lookup = new LanguageLookup();
+
+			foreach (var wayToSaySign in new[] {"SiGn", "SIGNES   ", "señas", "sign language " })
+			{
+				var languages = lookup.SuggestLanguages(wayToSaySign).ToArray();
+				var countOfPossibleSignLangsYouWouldGetWithThatSearchTerm = languages.Select(li =>
+					li.Names.AsQueryable().Any(n => n.ToLowerInvariant().Contains("sign"))
+				).Count();
+				Assert.GreaterOrEqual(countOfPossibleSignLangsYouWouldGetWithThatSearchTerm,
+					140); // was 145 in October 2018. So if it's giving us at least 140, it's probably doing the right thing
+			}
 		}
 	}
 }
