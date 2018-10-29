@@ -1941,6 +1941,7 @@
     {
         "full": "aes-Zyyy-US", 
         "iso639_3": "aes", 
+        "name": "Alsea", 
         "region": "US", 
         "sldr": false, 
         "tag": "aes", 
@@ -2095,6 +2096,7 @@
     {
         "full": "afh-Latn-GH", 
         "iso639_3": "afh", 
+        "name": "Afrihili", 
         "region": "GH", 
         "sldr": false, 
         "tag": "afh", 
@@ -3633,6 +3635,7 @@
     {
         "full": "akk-Xsux-IQ", 
         "iso639_3": "akk", 
+        "name": "Akkadian", 
         "region": "IQ", 
         "sldr": false, 
         "tag": "akk", 
@@ -4059,6 +4062,7 @@
     {
         "full": "aln-Latn-XK", 
         "iso639_3": "aln", 
+        "name": "Gheg Albanian", 
         "region": "XK", 
         "sldr": false, 
         "tag": "aln", 
@@ -4913,6 +4917,7 @@
     {
         "full": "ang-Latn-GB", 
         "iso639_3": "ang", 
+        "name": "Old English (ca. 450-1100)", 
         "region": "GB", 
         "sldr": false, 
         "tag": "ang", 
@@ -5587,6 +5592,7 @@
     {
         "full": "apd-Arab-TG", 
         "iso639_3": "apd", 
+        "name": "Sudanese Arabic", 
         "region": "TG", 
         "sldr": false, 
         "tag": "apd", 
@@ -5890,6 +5896,7 @@
     {
         "full": "apv-Latn-BR", 
         "iso639_3": "apv", 
+        "name": "Alapmunte", 
         "region": "BR", 
         "sldr": false, 
         "tag": "apv", 
@@ -6056,6 +6063,7 @@
     {
         "full": "aqp-Zyyy-US", 
         "iso639_3": "aqp", 
+        "name": "Atakapa", 
         "region": "US", 
         "sldr": false, 
         "tag": "aqp", 
@@ -6117,6 +6125,7 @@
     {
         "full": "ar-Arab-EG", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "EG", 
         "sldr": true, 
         "tag": "ar", 
@@ -6128,6 +6137,7 @@
     {
         "full": "ar-001", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "001", 
         "sldr": true, 
         "tag": "ar-001"
@@ -6135,6 +6145,7 @@
     {
         "full": "ar-Arab-AE", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "AE", 
         "sldr": true, 
         "tag": "ar-AE"
@@ -6142,6 +6153,7 @@
     {
         "full": "ar-Arab-BH", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "BH", 
         "sldr": true, 
         "tag": "ar-BH"
@@ -6166,6 +6178,7 @@
     {
         "full": "ar-Arab-DJ", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "DJ", 
         "sldr": true, 
         "tag": "ar-DJ"
@@ -6173,6 +6186,7 @@
     {
         "full": "ar-Arab-DZ", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "DZ", 
         "sldr": true, 
         "tag": "ar-DZ"
@@ -6180,6 +6194,7 @@
     {
         "full": "ar-Arab-EH", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "EH", 
         "sldr": true, 
         "tag": "ar-EH"
@@ -6187,6 +6202,7 @@
     {
         "full": "ar-Arab-ER", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "ER", 
         "sldr": true, 
         "tag": "ar-ER"
@@ -6194,6 +6210,7 @@
     {
         "full": "ar-Arab-IL", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "IL", 
         "sldr": true, 
         "tag": "ar-IL"
@@ -6201,6 +6218,7 @@
     {
         "full": "ar-Arab-IQ", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "IQ", 
         "sldr": true, 
         "tag": "ar-IQ"
@@ -6208,6 +6226,7 @@
     {
         "full": "ar-Arab-JO", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "JO", 
         "sldr": true, 
         "tag": "ar-JO"
@@ -6215,6 +6234,7 @@
     {
         "full": "ar-Arab-KM", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "KM", 
         "sldr": true, 
         "tag": "ar-KM"
@@ -6222,6 +6242,7 @@
     {
         "full": "ar-Arab-KW", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "KW", 
         "sldr": true, 
         "tag": "ar-KW"
@@ -6229,6 +6250,7 @@
     {
         "full": "ar-Arab-LB", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "LB", 
         "sldr": true, 
         "tag": "ar-LB"
@@ -6236,6 +6258,7 @@
     {
         "full": "ar-Arab-LY", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "LY", 
         "sldr": true, 
         "tag": "ar-LY"
@@ -6267,6 +6290,7 @@
     {
         "full": "ar-Arab-MR", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "MR", 
         "sldr": true, 
         "tag": "ar-MR"
@@ -6274,6 +6298,7 @@
     {
         "full": "ar-Arab-OM", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "OM", 
         "sldr": true, 
         "tag": "ar-OM"
@@ -6281,6 +6306,7 @@
     {
         "full": "ar-Arab-PS", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "PS", 
         "sldr": true, 
         "tag": "ar-PS"
@@ -6288,6 +6314,7 @@
     {
         "full": "ar-Arab-QA", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "QA", 
         "sldr": true, 
         "tag": "ar-QA"
@@ -6314,6 +6341,7 @@
     {
         "full": "ar-Arab-SD", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "SD", 
         "sldr": true, 
         "tag": "ar-SD"
@@ -6321,6 +6349,7 @@
     {
         "full": "ar-Arab-SO", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "SO", 
         "sldr": true, 
         "tag": "ar-SO"
@@ -6328,6 +6357,7 @@
     {
         "full": "ar-SS", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "SS", 
         "sldr": true, 
         "tag": "ar-SS"
@@ -6335,6 +6365,7 @@
     {
         "full": "ar-Arab-SY", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "SY", 
         "sldr": true, 
         "tag": "ar-SY"
@@ -6350,6 +6381,7 @@
     {
         "full": "ar-Arab-TD", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "TD", 
         "sldr": true, 
         "tag": "ar-TD"
@@ -6357,6 +6389,7 @@
     {
         "full": "ar-Arab-TN", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "TN", 
         "sldr": true, 
         "tag": "ar-TN"
@@ -6364,6 +6397,7 @@
     {
         "full": "ar-Arab-YE", 
         "iso639_3": "ara", 
+        "name": "Arabic", 
         "region": "YE", 
         "sldr": true, 
         "tag": "ar-YE"
@@ -6371,6 +6405,10 @@
     {
         "full": "arc-Armi-IR", 
         "iso639_3": "arc", 
+        "name": "Official Aramaic (700-300 BCE)", 
+        "names": [
+            "Imperial Aramaic (700-300 BCE)"
+        ], 
         "region": "IR", 
         "sldr": false, 
         "tag": "arc", 
@@ -6382,6 +6420,10 @@
     {
         "full": "arc-Nbat-JO", 
         "iso639_3": "arc", 
+        "name": "Official Aramaic (700-300 BCE)", 
+        "names": [
+            "Imperial Aramaic (700-300 BCE)"
+        ], 
         "region": "JO", 
         "sldr": false, 
         "tag": "arc-Nbat"
@@ -6389,6 +6431,10 @@
     {
         "full": "arc-Palm-SY", 
         "iso639_3": "arc", 
+        "name": "Official Aramaic (700-300 BCE)", 
+        "names": [
+            "Imperial Aramaic (700-300 BCE)"
+        ], 
         "region": "SY", 
         "sldr": false, 
         "tag": "arc-Palm"
@@ -6396,6 +6442,10 @@
     {
         "full": "arc-Syrc-??", 
         "iso639_3": "arc", 
+        "name": "Official Aramaic (700-300 BCE)", 
+        "names": [
+            "Imperial Aramaic (700-300 BCE)"
+        ], 
         "region": "??", 
         "sldr": false, 
         "tag": "arc-Syrc"
@@ -6642,6 +6692,10 @@
     {
         "full": "aru-Latn-BR", 
         "iso639_3": "aru", 
+        "name": "Aruá (Amazonas State)", 
+        "names": [
+            "Arawá"
+        ], 
         "region": "BR", 
         "sldr": false, 
         "tag": "aru", 
@@ -7259,6 +7313,7 @@
     {
         "full": "atc-Latn-PE", 
         "iso639_3": "atc", 
+        "name": "Atsahuaca", 
         "region": "PE", 
         "sldr": false, 
         "tag": "atc", 
@@ -7822,6 +7877,7 @@
     {
         "full": "auo-Zyyy", 
         "iso639_3": "auo", 
+        "name": "Auyokawa", 
         "region": null, 
         "sldr": false, 
         "tag": "auo"
@@ -8037,6 +8093,7 @@
     {
         "full": "avk-Latn-001", 
         "iso639_3": "avk", 
+        "name": "Kotava", 
         "region": "001", 
         "sldr": false, 
         "tag": "avk-Latn"
@@ -8514,6 +8571,7 @@
     {
         "full": "axb-Latn-AR", 
         "iso639_3": "axb", 
+        "name": "Abipon", 
         "region": "AR", 
         "sldr": false, 
         "tag": "axb", 
@@ -8626,6 +8684,7 @@
     {
         "full": "axm-Zyyy-AM", 
         "iso639_3": "axm", 
+        "name": "Middle Armenian", 
         "region": "AM", 
         "sldr": false, 
         "tag": "axm", 
@@ -9009,6 +9068,7 @@
     {
         "full": "az-Cyrl-AZ", 
         "iso639_3": "aze", 
+        "name": "Azerbaijani", 
         "region": "AZ", 
         "sldr": true, 
         "tag": "az-Cyrl-AZ"
@@ -9016,6 +9076,7 @@
     {
         "full": "az-Arab-IQ", 
         "iso639_3": "aze", 
+        "name": "Azerbaijani", 
         "region": "IQ", 
         "sldr": false, 
         "tag": "az-IQ"
@@ -11954,6 +12015,7 @@
     {
         "full": "bft-x-baltia-pk", 
         "iso639_3": "bft", 
+        "name": "Balti", 
         "region": null, 
         "sldr": false, 
         "tag": "bft-x-baltia-pk"
@@ -12770,6 +12832,7 @@
         "deprecated": true, 
         "full": "bhk-Latn-PH", 
         "iso639_3": "bhk", 
+        "name": "Albay Bicolano", 
         "region": "PH", 
         "sldr": false, 
         "tag": "bhk", 
@@ -14035,6 +14098,7 @@
     {
         "full": "bkk-x-baltia-in", 
         "iso639_3": "bkk", 
+        "name": "Brokskat", 
         "region": null, 
         "sldr": false, 
         "tag": "bkk-x-baltia-in"
@@ -14535,6 +14599,7 @@
     {
         "full": "bll-Zyyy-US", 
         "iso639_3": "bll", 
+        "name": "Biloxi", 
         "region": "US", 
         "sldr": false, 
         "tag": "bll", 
@@ -16881,6 +16946,10 @@
     {
         "full": "bqv-Latn-CI", 
         "iso639_3": "bqv", 
+        "name": "Koro Wachi", 
+        "names": [
+            "Begbere-Ejar"
+        ], 
         "region": "CI", 
         "sldr": false, 
         "tag": "bqv", 
@@ -17372,6 +17441,7 @@
     {
         "full": "brv-Laoo-LA", 
         "iso639_3": "brv", 
+        "name": "Western Bru", 
         "region": "LA", 
         "sldr": false, 
         "tag": "brv-Laoo"
@@ -18493,6 +18563,7 @@
     {
         "full": "bue-Latn-CA", 
         "iso639_3": "bue", 
+        "name": "Beothuk", 
         "region": "CA", 
         "sldr": false, 
         "tag": "bue", 
@@ -20823,6 +20894,7 @@
     {
         "full": "bzt-Zyyy", 
         "iso639_3": "bzt", 
+        "name": "Brithenig", 
         "region": null, 
         "sldr": false, 
         "tag": "bzt"
@@ -21149,6 +21221,7 @@
     {
         "full": "caj-Latn-AR", 
         "iso639_3": "caj", 
+        "name": "Chané", 
         "region": "AR", 
         "sldr": false, 
         "tag": "caj", 
@@ -22730,6 +22803,7 @@
     {
         "full": "chb-Latn-CO", 
         "iso639_3": "chb", 
+        "name": "Chibcha", 
         "region": "CO", 
         "sldr": false, 
         "tag": "chb", 
@@ -24135,6 +24209,7 @@
     {
         "full": "cmg-Soyo-MN", 
         "iso639_3": "cmg", 
+        "name": "Classical Mongolian", 
         "region": "MN", 
         "sldr": false, 
         "tag": "cmg-Soyo"
@@ -24179,6 +24254,7 @@
     {
         "full": "cmm-Zyyy-US", 
         "iso639_3": "cmm", 
+        "name": "Michigamea", 
         "region": "US", 
         "sldr": false, 
         "tag": "cmm", 
@@ -24240,6 +24316,7 @@
     {
         "full": "cms-Zyyy", 
         "iso639_3": "cms", 
+        "name": "Messapic", 
         "region": null, 
         "sldr": false, 
         "tag": "cms"
@@ -24506,6 +24583,7 @@
     {
         "full": "cnx-Latn-GB", 
         "iso639_3": "cnx", 
+        "name": "Middle Cornish", 
         "region": "GB", 
         "sldr": false, 
         "tag": "cnx", 
@@ -24535,6 +24613,7 @@
     {
         "full": "coa-Latn-AU", 
         "iso639_3": "coa", 
+        "name": "Cocos Islands Malay", 
         "region": "AU", 
         "sldr": false, 
         "tag": "coa", 
@@ -25184,6 +25263,7 @@
     {
         "full": "crb-Zyyy", 
         "iso639_3": "crb", 
+        "name": "Island Carib", 
         "region": null, 
         "sldr": false, 
         "tag": "crb"
@@ -25464,6 +25544,7 @@
     {
         "full": "crr-Zyyy-US", 
         "iso639_3": "crr", 
+        "name": "Carolina Algonquian", 
         "region": "US", 
         "sldr": false, 
         "tag": "crr", 
@@ -26340,6 +26421,13 @@
     {
         "full": "cu-Glag-BG", 
         "iso639_3": "chu", 
+        "name": "Church Slavic", 
+        "names": [
+            "Church Slavonic", 
+            "Old Bulgarian", 
+            "Old Church Slavonic", 
+            "Old Slavonic"
+        ], 
         "region": "BG", 
         "sldr": false, 
         "tag": "cu-Glag"
@@ -26665,6 +26753,7 @@
     {
         "full": "cuy-Qaax-??", 
         "iso639_3": "cuy", 
+        "name": "Cuitlatec", 
         "region": "??", 
         "sldr": false, 
         "tag": "cuy", 
@@ -26904,6 +26993,7 @@
     {
         "full": "czk-Zyyy-CZ", 
         "iso639_3": "czk", 
+        "name": "Knaanic", 
         "region": "CZ", 
         "sldr": false, 
         "tag": "czk", 
@@ -27913,6 +28003,7 @@
     {
         "full": "ddr-Latn-AU", 
         "iso639_3": "ddr", 
+        "name": "Dhudhuroa", 
         "region": "AU", 
         "sldr": false, 
         "tag": "ddr", 
@@ -29795,6 +29886,7 @@
     {
         "full": "dlm-Zyyy-HR", 
         "iso639_3": "dlm", 
+        "name": "Dalmatian", 
         "region": "HR", 
         "sldr": false, 
         "tag": "dlm", 
@@ -31626,6 +31718,7 @@
     {
         "full": "dum-Zyyy", 
         "iso639_3": "dum", 
+        "name": "Middle Dutch (ca. 1050-1350)", 
         "region": null, 
         "sldr": false, 
         "tag": "dum"
@@ -31910,6 +32003,7 @@
     {
         "full": "dws-Zyyy", 
         "iso639_3": "dws", 
+        "name": "Dutton World Speedwords", 
         "region": null, 
         "sldr": false, 
         "tag": "dws"
@@ -32428,6 +32522,7 @@
     {
         "full": "ecr-Zyyy", 
         "iso639_3": "ecr", 
+        "name": "Eteocretan", 
         "region": null, 
         "sldr": false, 
         "tag": "ecr"
@@ -32451,6 +32546,7 @@
     {
         "full": "ecy-Zyyy-CY", 
         "iso639_3": "ecy", 
+        "name": "Eteocypriot", 
         "region": "CY", 
         "sldr": false, 
         "tag": "ecy", 
@@ -32633,6 +32729,7 @@
     {
         "full": "egy-Egyp-EG", 
         "iso639_3": "egy", 
+        "name": "Egyptian (Ancient)", 
         "region": "EG", 
         "sldr": false, 
         "tag": "egy", 
@@ -33066,6 +33163,7 @@
     {
         "full": "elx-Zyyy", 
         "iso639_3": "elx", 
+        "name": "Elamite", 
         "region": null, 
         "sldr": false, 
         "tag": "elx"
@@ -33163,6 +33261,7 @@
     {
         "full": "emm-Zyyy", 
         "iso639_3": "emm", 
+        "name": "Mamulique", 
         "region": null, 
         "sldr": false, 
         "tag": "emm"
@@ -33294,6 +33393,7 @@
     {
         "full": "emy-Zyyy-MX", 
         "iso639_3": "emy", 
+        "name": "Epigraphic Mayan", 
         "region": "MX", 
         "sldr": false, 
         "tag": "emy", 
@@ -33317,6 +33417,7 @@
     {
         "full": "en-001", 
         "iso639_3": "eng", 
+        "name": "English", 
         "region": "001", 
         "sldr": true, 
         "tag": "en-001"
@@ -33324,6 +33425,7 @@
     {
         "full": "en-150", 
         "iso639_3": "eng", 
+        "name": "English", 
         "region": "150", 
         "sldr": true, 
         "tag": "en-150"
@@ -33379,6 +33481,7 @@
     {
         "full": "en-Latn-BE", 
         "iso639_3": "eng", 
+        "name": "English", 
         "region": "BE", 
         "sldr": true, 
         "tag": "en-BE"
@@ -33386,6 +33489,7 @@
     {
         "full": "en-BI", 
         "iso639_3": "eng", 
+        "name": "English", 
         "region": "BI", 
         "sldr": true, 
         "tag": "en-BI"
@@ -33452,6 +33556,7 @@
     {
         "full": "en-Latn-CH", 
         "iso639_3": "eng", 
+        "name": "English", 
         "region": "CH", 
         "sldr": true, 
         "tag": "en-CH"
@@ -33486,6 +33591,7 @@
     {
         "full": "en-Latn-CY", 
         "iso639_3": "eng", 
+        "name": "English", 
         "region": "CY", 
         "sldr": true, 
         "tag": "en-CY"
@@ -33504,6 +33610,7 @@
     {
         "full": "en-DG", 
         "iso639_3": "eng", 
+        "name": "English", 
         "region": "DG", 
         "sldr": true, 
         "tag": "en-DG"
@@ -33784,6 +33891,7 @@
     {
         "full": "en-Latn-MO", 
         "iso639_3": "eng", 
+        "name": "English", 
         "region": "MO", 
         "sldr": true, 
         "tag": "en-MO"
@@ -34011,6 +34119,7 @@
     {
         "full": "en-Latn-SI", 
         "iso639_3": "eng", 
+        "name": "English", 
         "region": "SI", 
         "sldr": true, 
         "tag": "en-SI"
@@ -34120,6 +34229,7 @@
     {
         "full": "en-UM", 
         "iso639_3": "eng", 
+        "name": "English", 
         "region": "UM", 
         "sldr": true, 
         "tag": "en-UM"
@@ -34308,6 +34418,7 @@
     {
         "full": "enm-Zyyy", 
         "iso639_3": "enm", 
+        "name": "Middle English (1100-1500)", 
         "region": null, 
         "sldr": false, 
         "tag": "enm"
@@ -34434,6 +34545,7 @@
     {
         "full": "eo-Latn-001", 
         "iso639_3": "epo", 
+        "name": "Esperanto", 
         "region": "001", 
         "sldr": true, 
         "tag": "eo", 
@@ -34689,6 +34801,10 @@
     {
         "full": "es-419", 
         "iso639_3": "spa", 
+        "name": "Spanish", 
+        "names": [
+            "Castilian"
+        ], 
         "region": "419", 
         "sldr": true, 
         "tag": "es-419"
@@ -34715,6 +34831,10 @@
     {
         "full": "es-Latn-BR", 
         "iso639_3": "spa", 
+        "name": "Spanish", 
+        "names": [
+            "Castilian"
+        ], 
         "region": "BR", 
         "sldr": true, 
         "tag": "es-BR"
@@ -34804,6 +34924,10 @@
     {
         "full": "es-EA", 
         "iso639_3": "spa", 
+        "name": "Spanish", 
+        "names": [
+            "Castilian"
+        ], 
         "region": "EA", 
         "sldr": true, 
         "tag": "es-EA"
@@ -34858,6 +34982,10 @@
     {
         "full": "es-IC", 
         "iso639_3": "spa", 
+        "name": "Spanish", 
+        "names": [
+            "Castilian"
+        ], 
         "region": "IC", 
         "sldr": true, 
         "tag": "es-IC"
@@ -35075,6 +35203,7 @@
     {
         "full": "esm-Zyyy-CI", 
         "iso639_3": "esm", 
+        "name": "Esuma", 
         "region": "CI", 
         "sldr": false, 
         "tag": "esm", 
@@ -35243,6 +35372,7 @@
     {
         "full": "etc-Zyyy-US", 
         "iso639_3": "etc", 
+        "name": "Etchemin", 
         "region": "US", 
         "sldr": false, 
         "tag": "etc", 
@@ -35331,6 +35461,7 @@
     {
         "full": "ett-Ital-IT", 
         "iso639_3": "ett", 
+        "name": "Etruscan", 
         "region": "IT", 
         "sldr": false, 
         "tag": "ett", 
@@ -35342,6 +35473,7 @@
     {
         "full": "ett-Latn-IT", 
         "iso639_3": "ett", 
+        "name": "Etruscan", 
         "region": "IT", 
         "sldr": false, 
         "tag": "ett-Latn"
@@ -35597,6 +35729,7 @@
     {
         "full": "fa-AF", 
         "iso639_3": "fas", 
+        "name": "Persian", 
         "region": "AF", 
         "sldr": true, 
         "tag": "fa-AF"
@@ -35952,6 +36085,7 @@
     {
         "full": "ff-Adlm-GN", 
         "iso639_3": "ful", 
+        "name": "Fulah", 
         "region": "GN", 
         "sldr": false, 
         "tag": "ff-Adlm"
@@ -35978,6 +36112,7 @@
     {
         "full": "ff-Latn-CM", 
         "iso639_3": "ful", 
+        "name": "Fulah", 
         "region": "CM", 
         "sldr": true, 
         "tag": "ff-CM"
@@ -35985,6 +36120,7 @@
     {
         "full": "ff-Latn-GN", 
         "iso639_3": "ful", 
+        "name": "Fulah", 
         "region": "GN", 
         "sldr": true, 
         "tag": "ff-GN"
@@ -35992,6 +36128,7 @@
     {
         "full": "ff-MR", 
         "iso639_3": "ful", 
+        "name": "Fulah", 
         "region": "MR", 
         "sldr": true, 
         "tag": "ff-MR"
@@ -36524,6 +36661,7 @@
     {
         "full": "fo-Latn-DK", 
         "iso639_3": "fao", 
+        "name": "Faroese", 
         "region": "DK", 
         "sldr": true, 
         "tag": "fo-DK"
@@ -37113,6 +37251,7 @@
     {
         "full": "fr-SY", 
         "iso639_3": "fra", 
+        "name": "French", 
         "region": "SY", 
         "sldr": true, 
         "tag": "fr-SY"
@@ -37224,6 +37363,7 @@
     {
         "full": "frk-Latn-DE", 
         "iso639_3": "frk", 
+        "name": "Frankish", 
         "region": "DE", 
         "sldr": false, 
         "tag": "frk-Latn"
@@ -37231,6 +37371,7 @@
     {
         "full": "frm-Latn-FR", 
         "iso639_3": "frm", 
+        "name": "Middle French (ca. 1400-1600)", 
         "region": "FR", 
         "sldr": false, 
         "tag": "frm", 
@@ -37242,6 +37383,7 @@
     {
         "full": "fro-Latn-FR", 
         "iso639_3": "fro", 
+        "name": "Old French (842-ca. 1400)", 
         "region": "FR", 
         "sldr": false, 
         "tag": "fro", 
@@ -39656,6 +39798,7 @@
     {
         "full": "gft-Zyyy", 
         "iso639_3": "gft", 
+        "name": "Gafat", 
         "region": null, 
         "sldr": false, 
         "tag": "gft"
@@ -39771,6 +39914,7 @@
         "deprecated": true, 
         "full": "ggn-Deva-NP", 
         "iso639_3": "ggn", 
+        "name": "Eastern Gurung", 
         "region": "NP", 
         "sldr": false, 
         "tag": "ggn", 
@@ -39839,6 +39983,7 @@
     {
         "full": "ghc-Latn-GB", 
         "iso639_3": "ghc", 
+        "name": "Hiberno-Scottish Gaelic", 
         "region": "GB", 
         "sldr": false, 
         "tag": "ghc-Latn"
@@ -40880,6 +41025,7 @@
     {
         "full": "gmh-Latn-DE", 
         "iso639_3": "gmh", 
+        "name": "Middle High German (ca. 1050-1500)", 
         "region": "DE", 
         "sldr": false, 
         "tag": "gmh", 
@@ -40891,6 +41037,7 @@
     {
         "full": "gml-Latf-GE", 
         "iso639_3": "gml", 
+        "name": "Middle Low German", 
         "region": "GE", 
         "sldr": false, 
         "tag": "gml", 
@@ -40988,6 +41135,7 @@
     {
         "full": "gmy-Zyyy-GR", 
         "iso639_3": "gmy", 
+        "name": "Mycenaean Greek", 
         "region": "GR", 
         "sldr": false, 
         "tag": "gmy", 
@@ -41061,6 +41209,7 @@
     {
         "full": "gnc-Zyyy-ES", 
         "iso639_3": "gnc", 
+        "name": "Guanche", 
         "region": "ES", 
         "sldr": false, 
         "tag": "gnc", 
@@ -41457,6 +41606,7 @@
     {
         "full": "goh-Latn", 
         "iso639_3": "goh", 
+        "name": "Old High German (ca. 750-1050)", 
         "region": null, 
         "sldr": false, 
         "tag": "goh-Latn"
@@ -41677,6 +41827,7 @@
     {
         "full": "got-Goth-UA", 
         "iso639_3": "got", 
+        "name": "Gothic", 
         "region": "UA", 
         "sldr": false, 
         "tag": "got", 
@@ -41957,6 +42108,7 @@
     {
         "full": "grc-Cprt-CY", 
         "iso639_3": "grc", 
+        "name": "Ancient Greek (to 1453)", 
         "region": "CY", 
         "sldr": false, 
         "tag": "grc", 
@@ -44906,6 +45058,7 @@
     {
         "full": "hit-Zyyy", 
         "iso639_3": "hit", 
+        "name": "Hittite", 
         "region": null, 
         "sldr": false, 
         "tag": "hit"
@@ -45125,6 +45278,7 @@
     {
         "full": "hlu-Hluw-TR", 
         "iso639_3": "hlu", 
+        "name": "Hieroglyphic Luwian", 
         "region": "TR", 
         "sldr": false, 
         "tag": "hlu", 
@@ -45358,6 +45512,7 @@
     {
         "full": "hmk-Zyyy-KR", 
         "iso639_3": "hmk", 
+        "name": "Maek", 
         "region": "KR", 
         "sldr": false, 
         "tag": "hmk", 
@@ -46763,6 +46918,7 @@
     {
         "full": "htx-Zyyy", 
         "iso639_3": "htx", 
+        "name": "Middle Hittite", 
         "region": null, 
         "sldr": false, 
         "tag": "htx"
@@ -47412,6 +47568,7 @@
     {
         "full": "ia-Latn-FR", 
         "iso639_3": "ina", 
+        "name": "Interlingua (International Auxiliary Language", 
         "region": "FR", 
         "sldr": true, 
         "tag": "ia", 
@@ -47888,6 +48045,10 @@
     {
         "full": "ie-Latn-001", 
         "iso639_3": "ile", 
+        "name": "Interlingue", 
+        "names": [
+            "Occidental"
+        ], 
         "region": "001", 
         "sldr": false, 
         "tag": "ie-Latn"
@@ -48128,6 +48289,7 @@
     {
         "full": "igs-Zyyy", 
         "iso639_3": "igs", 
+        "name": "Interglossa", 
         "region": null, 
         "sldr": false, 
         "tag": "igs"
@@ -48186,6 +48348,7 @@
     {
         "full": "ihw-Zyyy-AU", 
         "iso639_3": "ihw", 
+        "name": "Bidhawal", 
         "region": "AU", 
         "sldr": false, 
         "tag": "ihw", 
@@ -48783,6 +48946,7 @@
     {
         "full": "iml-Zyyy-US", 
         "iso639_3": "iml", 
+        "name": "Miluk", 
         "region": "US", 
         "sldr": false, 
         "tag": "iml", 
@@ -48842,6 +49006,7 @@
     {
         "full": "ims-Zyyy", 
         "iso639_3": "ims", 
+        "name": "Marsian", 
         "region": null, 
         "sldr": false, 
         "tag": "ims"
@@ -48849,6 +49014,7 @@
     {
         "full": "imy-Zyyy", 
         "iso639_3": "imy", 
+        "name": "Milyan", 
         "region": null, 
         "sldr": false, 
         "tag": "imy"
@@ -48857,6 +49023,7 @@
         "deprecated": true, 
         "full": "in-Latn-ID", 
         "iso639_3": "ind?", 
+        "name": "Indonesian", 
         "region": "ID", 
         "sldr": false, 
         "tag": "in", 
@@ -48980,6 +49147,7 @@
     {
         "full": "inm-Zyyy", 
         "iso639_3": "inm", 
+        "name": "Minaean", 
         "region": null, 
         "sldr": false, 
         "tag": "inm"
@@ -49088,6 +49256,7 @@
     {
         "full": "io-Latn-001", 
         "iso639_3": "ido", 
+        "name": "Ido", 
         "region": "001", 
         "sldr": false, 
         "tag": "io", 
@@ -50091,6 +50260,7 @@
         "deprecated": true, 
         "full": "iw-Hebr-IL", 
         "iso639_3": "heb?", 
+        "name": "Hebrew", 
         "region": "IL", 
         "sldr": false, 
         "tag": "iw", 
@@ -50755,6 +50925,7 @@
     {
         "full": "jbo-Zyyy-001", 
         "iso639_3": "jbo", 
+        "name": "Lojban", 
         "region": "001", 
         "sldr": false, 
         "tag": "jbo", 
@@ -51013,6 +51184,7 @@
         "deprecated": true, 
         "full": "jeg-Qaax-LA", 
         "iso639_3": "jeg", 
+        "name": "Jeng", 
         "region": "LA", 
         "sldr": false, 
         "tag": "jeg", 
@@ -51272,6 +51444,7 @@
         "deprecated": true, 
         "full": "ji-Hebr-UA", 
         "iso639_3": "yid?", 
+        "name": "Yiddish", 
         "region": "UA", 
         "sldr": false, 
         "tag": "ji", 
@@ -52140,6 +52313,7 @@
     {
         "full": "jpa-Zyyy", 
         "iso639_3": "jpa", 
+        "name": "Jewish Palestinian Aramaic", 
         "region": null, 
         "sldr": false, 
         "tag": "jpa"
@@ -52342,6 +52516,7 @@
     {
         "full": "juc-Jurc-CN", 
         "iso639_3": "juc", 
+        "name": "Jurchen", 
         "region": "CN", 
         "sldr": false, 
         "tag": "juc-Jurc"
@@ -52558,6 +52733,7 @@
     {
         "full": "jut-Latn-DK", 
         "iso639_3": "jut", 
+        "name": "Jutish", 
         "region": "DK", 
         "sldr": false, 
         "tag": "jut", 
@@ -52667,6 +52843,7 @@
         "deprecated": true, 
         "full": "jw-Latn-ID", 
         "iso639_3": "jav?", 
+        "name": "Javanese", 
         "region": "ID", 
         "sldr": false, 
         "tag": "jw", 
@@ -53100,6 +53277,7 @@
     {
         "full": "kaw-Bali-MY", 
         "iso639_3": "kaw", 
+        "name": "Kawi", 
         "region": "MY", 
         "sldr": false, 
         "tag": "kaw-Bali"
@@ -55619,6 +55797,7 @@
         "deprecated": true, 
         "full": "kgd-Laoo-LA", 
         "iso639_3": "kgd", 
+        "name": "Kataang", 
         "region": "LA", 
         "sldr": false, 
         "tag": "kgd-Laoo"
@@ -55627,6 +55806,7 @@
         "deprecated": true, 
         "full": "kgd-Thai-LA", 
         "iso639_3": "kgd", 
+        "name": "Kataang", 
         "region": "LA", 
         "sldr": false, 
         "tag": "kgd-Thai"
@@ -56199,6 +56379,10 @@
     {
         "full": "kho-Zyyy-IR", 
         "iso639_3": "kho", 
+        "name": "Khotanese", 
+        "names": [
+            "Sakan"
+        ], 
         "region": "IR", 
         "sldr": false, 
         "tag": "kho", 
@@ -57334,6 +57518,7 @@
     {
         "full": "kjv-Latn-001", 
         "iso639_3": "kjv", 
+        "name": "Kaikavian Literary Language", 
         "region": "001", 
         "sldr": false, 
         "tag": "kjv-Latn"
@@ -57408,6 +57593,7 @@
     {
         "full": "kk-Arab-AF", 
         "iso639_3": "kaz", 
+        "name": "Kazakh", 
         "region": "AF", 
         "sldr": false, 
         "tag": "kk-AF"
@@ -60667,6 +60853,7 @@
     {
         "full": "krb-Zyyy-US", 
         "iso639_3": "krb", 
+        "name": "Karkin", 
         "region": "US", 
         "sldr": false, 
         "tag": "krb", 
@@ -60858,6 +61045,7 @@
         "deprecated": true, 
         "full": "krm-Zyyy-SL", 
         "iso639_3": "krm", 
+        "name": "Krim", 
         "region": "SL", 
         "sldr": false, 
         "tag": "krm", 
@@ -62130,6 +62318,7 @@
     {
         "full": "ku-Arab-LB", 
         "iso639_3": "kaz", 
+        "name": "Kurdish", 
         "region": "LB", 
         "sldr": false, 
         "tag": "ku-LB"
@@ -64942,6 +65131,7 @@
     {
         "full": "lab-Lina-GR", 
         "iso639_3": "lab", 
+        "name": "Linear A", 
         "region": "GR", 
         "sldr": false, 
         "tag": "lab", 
@@ -65983,6 +66173,7 @@
     {
         "full": "lcp-Thai-CN", 
         "iso639_3": "lcp", 
+        "name": "Western Lawa", 
         "region": "CN", 
         "sldr": false, 
         "tag": "lcp", 
@@ -66189,6 +66380,7 @@
     {
         "full": "ldn-Zyyy", 
         "iso639_3": "ldn", 
+        "name": "Láadan", 
         "region": null, 
         "sldr": false, 
         "tag": "ldn"
@@ -66721,6 +66913,7 @@
     {
         "full": "lfn-Latn-001", 
         "iso639_3": "lfn", 
+        "name": "Lingua Franca Nova", 
         "region": "001", 
         "sldr": false, 
         "tag": "lfn-Latn"
@@ -68833,6 +69026,7 @@
     {
         "full": "ln-AO", 
         "iso639_3": "lin", 
+        "name": "Lingala", 
         "region": "AO", 
         "sldr": true, 
         "tag": "ln-AO"
@@ -68840,6 +69034,7 @@
     {
         "full": "ln-Latn-CF", 
         "iso639_3": "lin", 
+        "name": "Lingala", 
         "region": "CF", 
         "sldr": true, 
         "tag": "ln-CF"
@@ -68916,6 +69111,7 @@
     {
         "full": "lng-Zyyy", 
         "iso639_3": "lng", 
+        "name": "Langobardic", 
         "region": null, 
         "sldr": false, 
         "tag": "lng"
@@ -69688,6 +69884,7 @@
     {
         "full": "lrc-IQ", 
         "iso639_3": "lrc", 
+        "name": "Northern Luri", 
         "region": "IQ", 
         "sldr": true, 
         "tag": "lrc-IQ"
@@ -69695,6 +69892,7 @@
     {
         "full": "lre-Zyyy-US", 
         "iso639_3": "lre", 
+        "name": "Laurentian", 
         "region": "US", 
         "sldr": false, 
         "tag": "lre", 
@@ -69927,6 +70125,7 @@
         "deprecated": true, 
         "full": "lsg-Zyyy-FR", 
         "iso639_3": "lsg", 
+        "name": "Lyons Sign Language", 
         "region": "FR", 
         "sldr": false, 
         "tag": "lsg", 
@@ -70147,6 +70346,7 @@
     {
         "full": "ltc-Zyyy", 
         "iso639_3": "ltc", 
+        "name": "Late Middle Chinese", 
         "region": null, 
         "sldr": false, 
         "tag": "ltc"
@@ -71004,6 +71204,7 @@
     {
         "full": "lzh-Hans-CN", 
         "iso639_3": "lzh", 
+        "name": "Literary Chinese", 
         "region": "CN", 
         "sldr": false, 
         "tag": "lzh", 
@@ -71015,6 +71216,7 @@
     {
         "full": "lzh-Hant-CN", 
         "iso639_3": "lzh", 
+        "name": "Literary Chinese", 
         "region": "CN", 
         "sldr": false, 
         "tag": "lzh-Hant"
@@ -73964,6 +74166,7 @@
     {
         "full": "mga-Latg-IE", 
         "iso639_3": "mga", 
+        "name": "Middle Irish (900-1200)", 
         "region": "IE", 
         "sldr": false, 
         "tag": "mga", 
@@ -75163,6 +75366,7 @@
     {
         "full": "mis-Hatr-IQ", 
         "iso639_3": "mis", 
+        "name": "Uncoded languages", 
         "region": "IQ", 
         "sldr": false, 
         "tag": "mis", 
@@ -75665,6 +75869,7 @@
     {
         "full": "mjy-Zyyy-US", 
         "iso639_3": "mjy", 
+        "name": "Mahican", 
         "region": "US", 
         "sldr": false, 
         "tag": "mjy", 
@@ -75960,6 +76165,7 @@
     {
         "full": "mkq-Zyyy-US", 
         "iso639_3": "mkq", 
+        "name": "Bay Miwok", 
         "region": "US", 
         "sldr": false, 
         "tag": "mkq", 
@@ -77034,6 +77240,7 @@
     {
         "full": "mn-Mong-CN", 
         "iso639_3": "mon", 
+        "name": "Mongolian", 
         "region": "CN", 
         "sldr": false, 
         "tag": "mn-CN"
@@ -77041,6 +77248,7 @@
     {
         "full": "mn-Mong", 
         "iso639_3": "mon", 
+        "name": "Mongolian", 
         "region": null, 
         "sldr": true, 
         "tag": "mn-Mong"
@@ -77094,6 +77302,7 @@
     {
         "full": "mn-Tibt-CN", 
         "iso639_3": "khk", 
+        "name": "Mongolian", 
         "region": "CN", 
         "sldr": false, 
         "tag": "mn-Tibt", 
@@ -77548,6 +77757,7 @@
     {
         "full": "mod-Zyyy-US", 
         "iso639_3": "mod", 
+        "name": "Mobilian", 
         "region": "US", 
         "sldr": false, 
         "tag": "mod", 
@@ -78825,6 +79035,7 @@
     {
         "full": "mre-Zyyy-US", 
         "iso639_3": "mre", 
+        "name": "Martha's Vineyard Sign Language", 
         "region": "US", 
         "sldr": false, 
         "tag": "mre", 
@@ -79244,6 +79455,7 @@
     {
         "full": "ms-BN", 
         "iso639_3": "msa", 
+        "name": "Malay (macrolanguage)", 
         "region": "BN", 
         "sldr": true, 
         "tag": "ms-BN"
@@ -79280,6 +79492,7 @@
     {
         "full": "ms-Arab-CC", 
         "iso639_3": "msa", 
+        "name": "Malay (macrolanguage)", 
         "region": "CC", 
         "sldr": false, 
         "tag": "ms-CC"
@@ -79287,6 +79500,7 @@
     {
         "full": "ms-Arab-ID", 
         "iso639_3": "msa", 
+        "name": "Malay (macrolanguage)", 
         "region": "ID", 
         "sldr": false, 
         "tag": "ms-ID"
@@ -79294,6 +79508,7 @@
     {
         "full": "ms-Latn-BN", 
         "iso639_3": "msa", 
+        "name": "Malay (macrolanguage)", 
         "region": "BN", 
         "sldr": true, 
         "tag": "ms-Latn-BN"
@@ -79301,6 +79516,7 @@
     {
         "full": "ms-Latn-SG", 
         "iso639_3": "msa", 
+        "name": "Malay (macrolanguage)", 
         "region": "SG", 
         "sldr": true, 
         "tag": "ms-Latn-SG"
@@ -79308,6 +79524,7 @@
     {
         "full": "ms-SG", 
         "iso639_3": "msa", 
+        "name": "Malay (macrolanguage)", 
         "region": "SG", 
         "sldr": true, 
         "tag": "ms-SG"
@@ -79898,6 +80115,7 @@
     {
         "full": "mtm-Zyyy", 
         "iso639_3": "mtm", 
+        "name": "Mator", 
         "region": null, 
         "sldr": false, 
         "tag": "mtm"
@@ -80270,6 +80488,7 @@
     {
         "full": "mul-Zyyy", 
         "iso639_3": "mul", 
+        "name": "Multiple languages", 
         "region": null, 
         "sldr": false, 
         "tag": "mul"
@@ -81353,6 +81572,7 @@
         "deprecated": true, 
         "full": "mwx-Qaax-TZ", 
         "iso639_3": "mwx", 
+        "name": "Mediak", 
         "region": "TZ", 
         "sldr": false, 
         "tag": "mwx", 
@@ -81365,6 +81585,7 @@
         "deprecated": true, 
         "full": "mwy-Qaax-TZ", 
         "iso639_3": "mwy", 
+        "name": "Mosiro", 
         "region": "TZ", 
         "sldr": false, 
         "tag": "mwy", 
@@ -81522,6 +81743,7 @@
     {
         "full": "mxi-Zyyy", 
         "iso639_3": "mxi", 
+        "name": "Mozarabic", 
         "region": null, 
         "sldr": false, 
         "tag": "mxi"
@@ -82343,6 +82565,7 @@
     {
         "full": "mzg-Zyyy", 
         "iso639_3": "mzg", 
+        "name": "Monastic Sign Language", 
         "region": null, 
         "sldr": false, 
         "tag": "mzg"
@@ -83054,6 +83277,7 @@
     {
         "full": "nb-Latn-NO", 
         "iso639_3": "nob", 
+        "name": "Norwegian Bokmål", 
         "region": "NO", 
         "sldr": true, 
         "tag": "nb", 
@@ -83065,6 +83289,7 @@
     {
         "full": "nb-SJ", 
         "iso639_3": "nob", 
+        "name": "Norwegian Bokmål", 
         "region": "SJ", 
         "sldr": true, 
         "tag": "nb-SJ"
@@ -83576,6 +83801,7 @@
     {
         "full": "nci-Latn-MX", 
         "iso639_3": "nci", 
+        "name": "Classical Nahuatl", 
         "region": "MX", 
         "sldr": false, 
         "tag": "nci", 
@@ -83690,6 +83916,7 @@
         "deprecated": true, 
         "full": "ncp-Qaax-CM", 
         "iso639_3": "ncp", 
+        "name": "Ndaktup", 
         "region": "CM", 
         "sldr": false, 
         "tag": "ncp", 
@@ -83917,6 +84144,7 @@
     {
         "full": "ndf-Zyyy-RU", 
         "iso639_3": "ndf", 
+        "name": "Nadruvian", 
         "region": "RU", 
         "sldr": false, 
         "tag": "ndf", 
@@ -84136,6 +84364,10 @@
     {
         "full": "nds-NL", 
         "iso639_3": "nds", 
+        "name": "Low German", 
+        "names": [
+            "Low Saxon"
+        ], 
         "region": "NL", 
         "sldr": true, 
         "tag": "nds-NL"
@@ -84308,6 +84540,7 @@
     {
         "full": "ne-IN", 
         "iso639_3": "nep", 
+        "name": "Nepali (macrolanguage)", 
         "region": "IN", 
         "sldr": true, 
         "tag": "ne-IN"
@@ -84453,6 +84686,7 @@
     {
         "full": "nei-Zyyy-TR", 
         "iso639_3": "nei", 
+        "name": "Neo-Hittite", 
         "region": "TR", 
         "sldr": false, 
         "tag": "nei", 
@@ -84607,6 +84841,7 @@
     {
         "full": "neu-Latn-01", 
         "iso639_3": "neu", 
+        "name": "Neo", 
         "region": "01", 
         "sldr": false, 
         "tag": "neu-Latn"
@@ -86681,6 +86916,7 @@
     {
         "full": "nkp-Zyyy", 
         "iso639_3": "nkp", 
+        "name": "Niuatoputapu", 
         "region": null, 
         "sldr": false, 
         "tag": "nkp"
@@ -87664,6 +87900,7 @@
     {
         "full": "nn-Latn-NO", 
         "iso639_3": "nno", 
+        "name": "Norwegian Nynorsk", 
         "region": "NO", 
         "sldr": true, 
         "tag": "nn", 
@@ -88356,6 +88593,7 @@
     {
         "full": "nom-Zyyy-PE", 
         "iso639_3": "nom", 
+        "name": "Nocamán", 
         "region": "PE", 
         "sldr": false, 
         "tag": "nom", 
@@ -88367,6 +88605,7 @@
     {
         "full": "non-Runr-SE", 
         "iso639_3": "non", 
+        "name": "Old Norse", 
         "region": "SE", 
         "sldr": false, 
         "tag": "non", 
@@ -88457,6 +88696,7 @@
     {
         "full": "nov-Zyyy", 
         "iso639_3": "nov", 
+        "name": "Novial", 
         "region": null, 
         "sldr": false, 
         "tag": "nov"
@@ -88849,6 +89089,7 @@
     {
         "full": "nrc-Zyyy", 
         "iso639_3": "nrc", 
+        "name": "Noric", 
         "region": null, 
         "sldr": false, 
         "tag": "nrc"
@@ -88974,6 +89215,7 @@
     {
         "full": "nrn-Zyyy", 
         "iso639_3": "nrn", 
+        "name": "Norn", 
         "region": null, 
         "sldr": false, 
         "tag": "nrn"
@@ -88981,6 +89223,7 @@
     {
         "full": "nrp-Zyyy", 
         "iso639_3": "nrp", 
+        "name": "North Picene", 
         "region": null, 
         "sldr": false, 
         "tag": "nrp"
@@ -89005,6 +89248,7 @@
     {
         "full": "nrt-Zyyy-US", 
         "iso639_3": "nrt", 
+        "name": "Northern Kalapuya", 
         "region": "US", 
         "sldr": false, 
         "tag": "nrt", 
@@ -90032,6 +90276,7 @@
     {
         "full": "nus-SD", 
         "iso639_3": "nus", 
+        "name": "Nuer", 
         "region": "SD", 
         "sldr": true, 
         "tag": "nus-SD"
@@ -90210,6 +90455,7 @@
     {
         "full": "nwa-Zyyy-US", 
         "iso639_3": "nwa", 
+        "name": "Nawathinehena", 
         "region": "US", 
         "sldr": false, 
         "tag": "nwa", 
@@ -90236,6 +90482,11 @@
     {
         "full": "nwc-Zyyy", 
         "iso639_3": "nwc", 
+        "name": "Classical Newari", 
+        "names": [
+            "Classical Nepal Bhasa", 
+            "Old Newari"
+        ], 
         "region": null, 
         "sldr": false, 
         "tag": "nwc"
@@ -90343,6 +90594,7 @@
     {
         "full": "nwx-Zyyy", 
         "iso639_3": "nwx", 
+        "name": "Middle Newar", 
         "region": null, 
         "sldr": false, 
         "tag": "nwx"
@@ -90350,6 +90602,7 @@
     {
         "full": "nwy-Zyyy-US", 
         "iso639_3": "nwy", 
+        "name": "Nottoway-Meherrin", 
         "region": "US", 
         "sldr": false, 
         "tag": "nwy", 
@@ -90486,6 +90739,7 @@
     {
         "full": "nxm-Zyyy", 
         "iso639_3": "nxm", 
+        "name": "Numidian", 
         "region": null, 
         "sldr": false, 
         "tag": "nxm"
@@ -90592,6 +90846,7 @@
     {
         "full": "nxu-Zyyy", 
         "iso639_3": "nxu", 
+        "name": "Narau", 
         "region": null, 
         "sldr": false, 
         "tag": "nxu"
@@ -91289,6 +91544,10 @@
     {
         "full": "oar-Syrc-SY", 
         "iso639_3": "oar", 
+        "name": "Old Aramaic (up to 700 BCE)", 
+        "names": [
+            "Ancient Aramaic (up to 700 BCE)"
+        ], 
         "region": "SY", 
         "sldr": false, 
         "tag": "oar", 
@@ -91300,6 +91559,7 @@
     {
         "full": "oav-Geor-GE", 
         "iso639_3": "oav", 
+        "name": "Old Avar", 
         "region": "GE", 
         "sldr": false, 
         "tag": "oav-Geor"
@@ -91347,6 +91607,7 @@
     {
         "full": "obm-Phnx-JO", 
         "iso639_3": "obm", 
+        "name": "Moabite", 
         "region": "JO", 
         "sldr": false, 
         "tag": "obm-Phnx"
@@ -91368,6 +91629,7 @@
     {
         "full": "obr-Mymr-MM", 
         "iso639_3": "obr", 
+        "name": "Old Burmese", 
         "region": "MM", 
         "sldr": false, 
         "tag": "obr", 
@@ -91379,6 +91641,7 @@
     {
         "full": "obt-Latn-FR", 
         "iso639_3": "obt", 
+        "name": "Old Breton", 
         "region": "FR", 
         "sldr": false, 
         "tag": "obt", 
@@ -91435,6 +91698,7 @@
     {
         "full": "och-Zyyy-CN", 
         "iso639_3": "och", 
+        "name": "Old Chinese", 
         "region": "CN", 
         "sldr": false, 
         "tag": "och", 
@@ -91446,6 +91710,7 @@
     {
         "full": "oco-Latn-GB", 
         "iso639_3": "oco", 
+        "name": "Old Cornish", 
         "region": "GB", 
         "sldr": false, 
         "tag": "oco", 
@@ -91503,6 +91768,7 @@
     {
         "full": "odt-Latn-NL", 
         "iso639_3": "odt", 
+        "name": "Old Dutch", 
         "region": "NL", 
         "sldr": false, 
         "tag": "odt", 
@@ -91526,6 +91792,7 @@
     {
         "full": "ofo-Zyyy-US", 
         "iso639_3": "ofo", 
+        "name": "Ofo", 
         "region": "US", 
         "sldr": false, 
         "tag": "ofo", 
@@ -91537,6 +91804,7 @@
     {
         "full": "ofs-Zyyy-NL", 
         "iso639_3": "ofs", 
+        "name": "Old Frisian", 
         "region": "NL", 
         "sldr": false, 
         "tag": "ofs", 
@@ -91592,6 +91860,7 @@
     {
         "full": "oge-Geok-GE", 
         "iso639_3": "oge", 
+        "name": "Old Georgian", 
         "region": "GE", 
         "sldr": false, 
         "tag": "oge-Geok"
@@ -91642,6 +91911,7 @@
     {
         "full": "oht-Zyyy", 
         "iso639_3": "oht", 
+        "name": "Old Hittite", 
         "region": null, 
         "sldr": false, 
         "tag": "oht"
@@ -91649,6 +91919,7 @@
     {
         "full": "ohu-Hung-HU", 
         "iso639_3": "ohu", 
+        "name": "Old Hungarian", 
         "region": "HU", 
         "sldr": false, 
         "tag": "ohu-Hung"
@@ -91656,6 +91927,7 @@
     {
         "full": "ohu-Latn-HU", 
         "iso639_3": "ohu", 
+        "name": "Old Hungarian", 
         "region": "HU", 
         "sldr": false, 
         "tag": "ohu-Latn"
@@ -91781,6 +92053,7 @@
     {
         "full": "ojp-Zyyy", 
         "iso639_3": "ojp", 
+        "name": "Old Japanese", 
         "region": null, 
         "sldr": false, 
         "tag": "ojp"
@@ -92007,6 +92280,7 @@
     {
         "full": "okl-Zyyy", 
         "iso639_3": "okl", 
+        "name": "Old Kentish Sign Language", 
         "region": null, 
         "sldr": false, 
         "tag": "okl"
@@ -92014,6 +92288,7 @@
     {
         "full": "okm-Zyyy", 
         "iso639_3": "okm", 
+        "name": "Middle Korean (10th-16th cent.)", 
         "region": null, 
         "sldr": false, 
         "tag": "okm"
@@ -92033,6 +92308,7 @@
     {
         "full": "oko-Zyyy", 
         "iso639_3": "oko", 
+        "name": "Old Korean (3rd-9th cent.)", 
         "region": null, 
         "sldr": false, 
         "tag": "oko"
@@ -92239,6 +92515,7 @@
     {
         "full": "olt-Latn-LT", 
         "iso639_3": "olt", 
+        "name": "Old Lithuanian", 
         "region": "LT", 
         "sldr": false, 
         "tag": "olt-Latn"
@@ -92304,6 +92581,7 @@
     {
         "full": "om-KE", 
         "iso639_3": "orm", 
+        "name": "Oromo", 
         "region": "KE", 
         "sldr": true, 
         "tag": "om-KE"
@@ -92351,6 +92629,7 @@
     {
         "full": "omc-Zyyy-PE", 
         "iso639_3": "omc", 
+        "name": "Mochica", 
         "region": "PE", 
         "sldr": false, 
         "tag": "omc", 
@@ -92406,6 +92685,7 @@
     {
         "full": "omk-Zyyy", 
         "iso639_3": "omk", 
+        "name": "Omok", 
         "region": null, 
         "sldr": false, 
         "tag": "omk"
@@ -92430,6 +92710,7 @@
     {
         "full": "omn-Lina", 
         "iso639_3": "omn", 
+        "name": "Minoan", 
         "region": null, 
         "sldr": false, 
         "tag": "omn-Lina"
@@ -92452,6 +92733,7 @@
     {
         "full": "omp-Mtei-IN", 
         "iso639_3": "omp", 
+        "name": "Old Manipuri", 
         "region": "IN", 
         "sldr": false, 
         "tag": "omp-Mtei"
@@ -92459,6 +92741,7 @@
     {
         "full": "omr-Modi-IN", 
         "iso639_3": "omr", 
+        "name": "Old Marathi", 
         "region": "IN", 
         "sldr": false, 
         "tag": "omr-Modi"
@@ -92516,6 +92799,7 @@
     {
         "full": "omx-Zyyy", 
         "iso639_3": "omx", 
+        "name": "Old Mon", 
         "region": null, 
         "sldr": false, 
         "tag": "omx"
@@ -92756,6 +93040,7 @@
     {
         "full": "onw-Copt-SD-x-oldnubian", 
         "iso639_3": "onw", 
+        "name": "Old Nubian", 
         "region": "SD", 
         "sldr": false, 
         "tag": "onw-x-oldnubian", 
@@ -92843,6 +93128,7 @@
     {
         "full": "oos-Zyyy", 
         "iso639_3": "oos", 
+        "name": "Old Ossetic", 
         "region": null, 
         "sldr": false, 
         "tag": "oos"
@@ -93174,6 +93460,7 @@
     {
         "full": "orv-Zyyy", 
         "iso639_3": "orv", 
+        "name": "Old Russian", 
         "region": null, 
         "sldr": false, 
         "tag": "orv"
@@ -93295,6 +93582,7 @@
     {
         "full": "osc-Ital-IT", 
         "iso639_3": "osc", 
+        "name": "Oscan", 
         "region": "IT", 
         "sldr": false, 
         "tag": "osc-Ital"
@@ -93302,6 +93590,7 @@
     {
         "full": "osc-Latn-IT", 
         "iso639_3": "osc", 
+        "name": "Oscan", 
         "region": "IT", 
         "sldr": false, 
         "tag": "osc-Latn"
@@ -93332,6 +93621,7 @@
     {
         "full": "osp-Latn-ES", 
         "iso639_3": "osp", 
+        "name": "Old Spanish", 
         "region": "ES", 
         "sldr": false, 
         "tag": "osp", 
@@ -93376,6 +93666,7 @@
     {
         "full": "osx-Latn-DE", 
         "iso639_3": "osx", 
+        "name": "Old Saxon", 
         "region": "DE", 
         "sldr": false, 
         "tag": "osx", 
@@ -93387,6 +93678,7 @@
     {
         "full": "ota-Arab-TR", 
         "iso639_3": "ota", 
+        "name": "Ottoman Turkish (1500-1928)", 
         "region": "TR", 
         "sldr": true, 
         "tag": "ota-Arab"
@@ -93394,6 +93686,7 @@
     {
         "full": "otb-Tibt-CN", 
         "iso639_3": "otb", 
+        "name": "Old Tibetan", 
         "region": "CN", 
         "sldr": false, 
         "tag": "otb-Tibt"
@@ -93451,6 +93744,7 @@
     {
         "full": "otk-Orkh-MN", 
         "iso639_3": "otk", 
+        "name": "Old Turkish", 
         "region": "MN", 
         "sldr": false, 
         "tag": "otk", 
@@ -93634,6 +93928,7 @@
     {
         "full": "oty-Gran-IN", 
         "iso639_3": "oty", 
+        "name": "Old Tamil", 
         "region": "IN", 
         "sldr": false, 
         "tag": "oty-Gran"
@@ -93709,6 +94004,7 @@
     {
         "full": "oui-Zyyy", 
         "iso639_3": "oui", 
+        "name": "Old Uighur", 
         "region": null, 
         "sldr": false, 
         "tag": "oui"
@@ -93716,6 +94012,7 @@
     {
         "full": "oui-Mong", 
         "iso639_3": "oui", 
+        "name": "Old Uighur", 
         "region": null, 
         "sldr": false, 
         "tag": "oui-Mong"
@@ -93773,6 +94070,7 @@
     {
         "full": "owl-Latn-GB", 
         "iso639_3": "owl", 
+        "name": "Old Welsh", 
         "region": "GB", 
         "sldr": false, 
         "tag": "owl", 
@@ -93912,6 +94210,10 @@
     {
         "full": "pa-Arab-PK", 
         "iso639_3": "pan", 
+        "name": "Panjabi", 
+        "names": [
+            "Punjabi"
+        ], 
         "region": "PK", 
         "sldr": true, 
         "tag": "pa-PK", 
@@ -94119,6 +94421,7 @@
     {
         "full": "pal-Phli-IR", 
         "iso639_3": "pal", 
+        "name": "Pahlavi", 
         "region": "IR", 
         "sldr": false, 
         "tag": "pal", 
@@ -94130,6 +94433,7 @@
     {
         "full": "pal-Phlp-CN", 
         "iso639_3": "pal", 
+        "name": "Pahlavi", 
         "region": "CN", 
         "sldr": false, 
         "tag": "pal-Phlp"
@@ -95327,6 +95631,7 @@
     {
         "full": "peo-Xpeo-IR", 
         "iso639_3": "peo", 
+        "name": "Old Persian (ca. 600-400 B.C.)", 
         "region": "IR", 
         "sldr": false, 
         "tag": "peo", 
@@ -95494,6 +95799,7 @@
     {
         "full": "pgd-Khar-PK", 
         "iso639_3": "pgd", 
+        "name": "Gāndhārī", 
         "region": "PK", 
         "sldr": false, 
         "tag": "pgd-Khar"
@@ -95547,6 +95853,7 @@
     {
         "full": "pgl-Ogam-IE", 
         "iso639_3": "pgl", 
+        "name": "Primitive Irish", 
         "region": "IE", 
         "sldr": false, 
         "tag": "pgl", 
@@ -95558,6 +95865,7 @@
     {
         "full": "pgn-Ital-IT", 
         "iso639_3": "pgn", 
+        "name": "Paelignian", 
         "region": "IT", 
         "sldr": false, 
         "tag": "pgn-Ital"
@@ -95724,6 +96032,7 @@
     {
         "full": "phn-Phnx-LB", 
         "iso639_3": "phn", 
+        "name": "Phoenician", 
         "region": "LB", 
         "sldr": false, 
         "tag": "phn", 
@@ -95976,6 +96285,7 @@
     {
         "full": "pie-Zyyy-US", 
         "iso639_3": "pie", 
+        "name": "Piro", 
         "region": "US", 
         "sldr": false, 
         "tag": "pie", 
@@ -96320,6 +96630,7 @@
     {
         "full": "pka-Brah-IN", 
         "iso639_3": "pka", 
+        "name": "Ardhamāgadhī Prākrit", 
         "region": "IN", 
         "sldr": false, 
         "tag": "pka", 
@@ -96351,6 +96662,7 @@
     {
         "full": "pkc-Zyyy-KR", 
         "iso639_3": "pkc", 
+        "name": "Paekche", 
         "region": "KR", 
         "sldr": false, 
         "tag": "pkc", 
@@ -96736,6 +97048,7 @@
     {
         "full": "plq-Zyyy-TR", 
         "iso639_3": "plq", 
+        "name": "Palaic", 
         "region": "TR", 
         "sldr": false, 
         "tag": "plq", 
@@ -96960,6 +97273,7 @@
     {
         "full": "pmh-Zyyy-IN", 
         "iso639_3": "pmh", 
+        "name": "Māhārāṣṭri Prākrit", 
         "region": "IN", 
         "sldr": false, 
         "tag": "pmh", 
@@ -97012,6 +97326,7 @@
     {
         "full": "pmk-Zyyy-US", 
         "iso639_3": "pmk", 
+        "name": "Pamlico", 
         "region": "US", 
         "sldr": false, 
         "tag": "pmk", 
@@ -97899,6 +98214,7 @@
     {
         "full": "pox-Zyyy-DE", 
         "iso639_3": "pox", 
+        "name": "Polabian", 
         "region": "DE", 
         "sldr": false, 
         "tag": "pox", 
@@ -98154,6 +98470,7 @@
     {
         "full": "pra-Khar-PK", 
         "iso639_3": "pra", 
+        "name": "Prakrit languages", 
         "region": "PK", 
         "sldr": false, 
         "tag": "pra", 
@@ -98166,6 +98483,7 @@
         "deprecated": true, 
         "full": "prb-Zyyy", 
         "iso639_3": "prb", 
+        "name": "Lua'", 
         "region": null, 
         "sldr": false, 
         "tag": "prb"
@@ -98229,6 +98547,7 @@
     {
         "full": "prg-Latn-001", 
         "iso639_3": "prg", 
+        "name": "Prussian", 
         "region": "001", 
         "sldr": true, 
         "tag": "prg", 
@@ -98347,6 +98666,10 @@
     {
         "full": "pro-Zyyy", 
         "iso639_3": "pro", 
+        "name": "Old Provençal (to 1500)", 
+        "names": [
+            "Old Occitan (to 1500)"
+        ], 
         "region": null, 
         "sldr": false, 
         "tag": "pro"
@@ -98792,6 +99115,7 @@
     {
         "full": "psu-Brah-IN", 
         "iso639_3": "psu", 
+        "name": "Sauraseni Prākrit", 
         "region": "IN", 
         "sldr": false, 
         "tag": "psu-Brah"
@@ -98799,6 +99123,7 @@
     {
         "full": "psu-Deva-IN", 
         "iso639_3": "psu", 
+        "name": "Sauraseni Prākrit", 
         "region": "IN", 
         "sldr": false, 
         "tag": "psu-Deva"
@@ -98873,6 +99198,7 @@
     {
         "full": "pt-Latn-CH", 
         "iso639_3": "por", 
+        "name": "Portuguese", 
         "region": "CH", 
         "sldr": true, 
         "tag": "pt-CH"
@@ -98891,6 +99217,7 @@
     {
         "full": "pt-GQ", 
         "iso639_3": "por", 
+        "name": "Portuguese", 
         "region": "GQ", 
         "sldr": true, 
         "tag": "pt-GQ"
@@ -99157,6 +99484,7 @@
     {
         "full": "ptw-Zyyy-CA", 
         "iso639_3": "ptw", 
+        "name": "Pentlatch", 
         "region": "CA", 
         "sldr": false, 
         "tag": "ptw", 
@@ -99320,6 +99648,7 @@
         "deprecated": true, 
         "full": "puk-Zyyy-LA", 
         "iso639_3": "puk", 
+        "name": "Pu Ko", 
         "region": "LA", 
         "sldr": false, 
         "tag": "puk", 
@@ -99381,6 +99710,7 @@
     {
         "full": "puq-Zyyy-PE", 
         "iso639_3": "puq", 
+        "name": "Puquina", 
         "region": "PE", 
         "sldr": false, 
         "tag": "puq", 
@@ -99691,7 +100021,7 @@
             "Pyem"
         ], 
         "region": "NG", 
-        "sldr": false, 
+        "sldr": true, 
         "tag": "pym", 
         "tags": [
             "pym-NG", 
@@ -99770,6 +100100,7 @@
     {
         "full": "pyx-Zyyy", 
         "iso639_3": "pyx", 
+        "name": "Pyu (Myanmar)", 
         "region": null, 
         "sldr": false, 
         "tag": "pyx"
@@ -99841,6 +100172,7 @@
     {
         "full": "qu-Latn-BO", 
         "iso639_3": "que", 
+        "name": "Quechua", 
         "region": "BO", 
         "sldr": true, 
         "tag": "qu-BO"
@@ -99848,6 +100180,7 @@
     {
         "full": "qu-Latn-EC", 
         "iso639_3": "que", 
+        "name": "Quechua", 
         "region": "EC", 
         "sldr": true, 
         "tag": "qu-EC"
@@ -100484,6 +100817,7 @@
     {
         "full": "qwc-Latn-PE", 
         "iso639_3": "qwc", 
+        "name": "Classical Quechua", 
         "region": "PE", 
         "sldr": false, 
         "tag": "qwc", 
@@ -100511,6 +100845,7 @@
     {
         "full": "qwm-Zyyy", 
         "iso639_3": "qwm", 
+        "name": "Kuman (Russia)", 
         "region": null, 
         "sldr": false, 
         "tag": "qwm"
@@ -100530,6 +100865,7 @@
     {
         "full": "qwt-Zyyy-US", 
         "iso639_3": "qwt", 
+        "name": "Kwalhioqua-Tlatskanai", 
         "region": "US", 
         "sldr": false, 
         "tag": "qwt", 
@@ -100757,6 +101093,7 @@
     {
         "full": "qya-Zyyy", 
         "iso639_3": "qya", 
+        "name": "Quenya", 
         "region": null, 
         "sldr": false, 
         "tag": "qya"
@@ -100764,6 +101101,7 @@
     {
         "full": "qyp-Zyyy-US", 
         "iso639_3": "qyp", 
+        "name": "Quiripi", 
         "region": "US", 
         "sldr": false, 
         "tag": "qyp", 
@@ -100936,6 +101274,7 @@
     {
         "full": "raj-Latn", 
         "iso639_3": "raj", 
+        "name": "Rajasthani", 
         "region": null, 
         "sldr": false, 
         "tag": "raj-Latn"
@@ -101833,6 +102172,7 @@
         "deprecated": true, 
         "full": "rie-Zyyy", 
         "iso639_3": "rie", 
+        "name": "Rien", 
         "region": null, 
         "sldr": false, 
         "tag": "rie"
@@ -101922,6 +102262,7 @@
     {
         "full": "rif-Latn-NL", 
         "iso639_3": "rif", 
+        "name": "Tarifit", 
         "region": "NL", 
         "sldr": false, 
         "tag": "rif-NL"
@@ -102555,6 +102896,7 @@
     {
         "full": "rmt-Arab-IR", 
         "iso639_3": "rmt", 
+        "name": "Domari", 
         "region": "IR", 
         "sldr": false, 
         "tag": "rmt", 
@@ -102587,6 +102929,7 @@
     {
         "full": "rmv-Zyyy", 
         "iso639_3": "rmv", 
+        "name": "Romanova", 
         "region": null, 
         "sldr": false, 
         "tag": "rmv"
@@ -103162,6 +103505,7 @@
     {
         "full": "rrt-Zyyy-AU", 
         "iso639_3": "rrt", 
+        "name": "Arritinngithigh", 
         "region": "AU", 
         "sldr": false, 
         "tag": "rrt", 
@@ -103189,6 +103533,7 @@
         "deprecated": true, 
         "full": "rsi-Zyyy-SB", 
         "iso639_3": "rsi", 
+        "name": "Rennellese Sign Language", 
         "region": "SB", 
         "sldr": false, 
         "tag": "rsi", 
@@ -103277,6 +103622,7 @@
     {
         "full": "rts-Zyyy", 
         "iso639_3": "rts", 
+        "name": "Yurats", 
         "region": null, 
         "sldr": false, 
         "tag": "rts"
@@ -104859,6 +105205,7 @@
     {
         "full": "sbv-Zyyy", 
         "iso639_3": "sbv", 
+        "name": "Sabine", 
         "region": null, 
         "sldr": false, 
         "tag": "sbv"
@@ -105287,6 +105634,7 @@
     {
         "full": "scx-Zyyy", 
         "iso639_3": "scx", 
+        "name": "Sicel", 
         "region": null, 
         "sldr": false, 
         "tag": "scx"
@@ -106244,6 +106592,7 @@
     {
         "full": "sga-Ogam-IE", 
         "iso639_3": "sga", 
+        "name": "Old Irish (to 900)", 
         "region": "IE", 
         "sldr": false, 
         "tag": "sga", 
@@ -106255,6 +106604,7 @@
     {
         "full": "sga-Latn-IE", 
         "iso639_3": "sga", 
+        "name": "Old Irish (to 900)", 
         "region": "IE", 
         "sldr": false, 
         "tag": "sga-Latn"
@@ -106453,11 +106803,12 @@
         ]
     }, 
     {
-        "full": "sgn-MY-mm", 
+        "full": "sgn-MY-zyyy-mm", 
         "iso639_3": "sgn", 
+        "name": "Sign languages", 
         "region": "MY", 
         "sldr": false, 
-        "tag": "sgn-MY-mm"
+        "tag": "sgn-MY-zyyy-mm"
     }, 
     {
         "full": "sgp-Latn-IN", 
@@ -106914,6 +107265,7 @@
     {
         "full": "shn-Tale-MM-x-taimauold", 
         "iso639_3": "", 
+        "name": "Shan", 
         "region": "MM", 
         "sldr": false, 
         "tag": "shn-Tale-x-taimauold"
@@ -107720,6 +108072,7 @@
     {
         "full": "sjk-Zyyy", 
         "iso639_3": "sjk", 
+        "name": "Kemi Sami", 
         "region": null, 
         "sldr": false, 
         "tag": "sjk"
@@ -107762,6 +108115,7 @@
     {
         "full": "sjn-Zyyy", 
         "iso639_3": "sjn", 
+        "name": "Sindarin", 
         "region": null, 
         "sldr": false, 
         "tag": "sjn"
@@ -108136,6 +108490,7 @@
         "deprecated": true, 
         "full": "skk-Qaax-LA", 
         "iso639_3": "skk", 
+        "name": "Sok", 
         "region": "LA", 
         "sldr": false, 
         "tag": "skk", 
@@ -109291,6 +109646,7 @@
         "deprecated": true, 
         "full": "snh-Zyyy", 
         "iso639_3": "snh", 
+        "name": "Shinabo", 
         "region": null, 
         "sldr": false, 
         "tag": "snh"
@@ -109803,6 +110159,7 @@
     {
         "full": "sog-Mani", 
         "iso639_3": "sog", 
+        "name": "Sogdian", 
         "region": null, 
         "sldr": false, 
         "tag": "sog-Mani"
@@ -109810,6 +110167,7 @@
     {
         "full": "sog-Sogd", 
         "iso639_3": "sog", 
+        "name": "Sogdian", 
         "region": null, 
         "sldr": false, 
         "tag": "sog-Sogd"
@@ -109817,6 +110175,7 @@
     {
         "full": "sog-Sogo", 
         "iso639_3": "sog", 
+        "name": "Sogdian", 
         "region": null, 
         "sldr": false, 
         "tag": "sog-Sogo"
@@ -109824,6 +110183,7 @@
     {
         "full": "sog-Syrc", 
         "iso639_3": "sog", 
+        "name": "Sogdian", 
         "region": null, 
         "sldr": false, 
         "tag": "sog-Syrc"
@@ -110376,6 +110736,7 @@
     {
         "full": "spx-Zyyy", 
         "iso639_3": "spx", 
+        "name": "South Picene", 
         "region": null, 
         "sldr": false, 
         "tag": "spx"
@@ -110462,6 +110823,7 @@
     {
         "full": "sq-Latn-MK", 
         "iso639_3": "sqi", 
+        "name": "Albanian", 
         "region": "MK", 
         "sldr": true, 
         "tag": "sq-MK"
@@ -110469,6 +110831,7 @@
     {
         "full": "sq-XK", 
         "iso639_3": "sqi", 
+        "name": "Albanian", 
         "region": "XK", 
         "sldr": true, 
         "tag": "sq-XK"
@@ -110541,6 +110904,7 @@
     {
         "full": "sqn-Zyyy", 
         "iso639_3": "sqn", 
+        "name": "Susquehannock", 
         "region": null, 
         "sldr": false, 
         "tag": "sqn"
@@ -110579,6 +110943,7 @@
     {
         "full": "sqr-Zyyy", 
         "iso639_3": "sqr", 
+        "name": "Siculo Arabic", 
         "region": null, 
         "sldr": false, 
         "tag": "sqr"
@@ -110692,6 +111057,7 @@
     {
         "full": "sr-Cyrl-XK", 
         "iso639_3": "srp", 
+        "name": "Serbian", 
         "region": "XK", 
         "sldr": true, 
         "tag": "sr-Cyrl-XK"
@@ -110722,6 +111088,7 @@
     {
         "full": "sr-Latn-XK", 
         "iso639_3": "srp", 
+        "name": "Serbian", 
         "region": "XK", 
         "sldr": true, 
         "tag": "sr-Latn-XK"
@@ -112455,6 +112822,7 @@
     {
         "full": "sux-Zyyy", 
         "iso639_3": "sux", 
+        "name": "Sumerian", 
         "region": null, 
         "sldr": false, 
         "tag": "sux"
@@ -112675,6 +113043,7 @@
     {
         "full": "svx-Zyyy", 
         "iso639_3": "svx", 
+        "name": "Skalvian", 
         "region": null, 
         "sldr": false, 
         "tag": "svx"
@@ -112711,6 +113080,7 @@
     {
         "full": "sw-CD", 
         "iso639_3": "swa", 
+        "name": "Swahili (macrolanguage)", 
         "region": "CD", 
         "sldr": true, 
         "tag": "sw-CD"
@@ -112718,6 +113088,7 @@
     {
         "full": "sw-Latn-KE", 
         "iso639_3": "swa", 
+        "name": "Swahili (macrolanguage)", 
         "region": "KE", 
         "sldr": true, 
         "tag": "sw-KE"
@@ -112725,6 +113096,7 @@
     {
         "full": "sw-Latn-UG", 
         "iso639_3": "swa", 
+        "name": "Swahili (macrolanguage)", 
         "region": "UG", 
         "sldr": true, 
         "tag": "sw-UG"
@@ -113121,6 +113493,7 @@
     {
         "full": "sxc-Zyyy", 
         "iso639_3": "sxc", 
+        "name": "Sicanian", 
         "region": null, 
         "sldr": false, 
         "tag": "sxc"
@@ -113163,6 +113536,7 @@
     {
         "full": "sxk-Zyyy", 
         "iso639_3": "sxk", 
+        "name": "Southern Kalapuya", 
         "region": null, 
         "sldr": false, 
         "tag": "sxk"
@@ -113170,6 +113544,7 @@
     {
         "full": "sxl-Zyyy", 
         "iso639_3": "sxl", 
+        "name": "Selian", 
         "region": null, 
         "sldr": false, 
         "tag": "sxl"
@@ -113207,6 +113582,7 @@
     {
         "full": "sxo-Zyyy", 
         "iso639_3": "sxo", 
+        "name": "Sorothaptic", 
         "region": null, 
         "sldr": false, 
         "tag": "sxo"
@@ -113935,6 +114311,7 @@
     {
         "full": "taj-Tibt-BT-x-tamhig", 
         "iso639_3": "taj", 
+        "name": "Eastern Tamang", 
         "region": "BT", 
         "sldr": false, 
         "tag": "taj-Tibt-x-tamhig"
@@ -115032,6 +115409,7 @@
     {
         "full": "tcy-x-in-tulu", 
         "iso639_3": "tcy", 
+        "name": "Tulu", 
         "region": null, 
         "sldr": false, 
         "tag": "tcy-x-in-tulu"
@@ -116103,6 +116481,7 @@
     {
         "full": "tg-Arab-PK", 
         "iso639_3": "tgk", 
+        "name": "Tajik", 
         "region": "PK", 
         "sldr": false, 
         "tag": "tg-Arab"
@@ -116951,6 +117330,7 @@
     {
         "full": "tig-Qaax-SD", 
         "iso639_3": "", 
+        "name": "Tigre", 
         "region": "SD", 
         "sldr": false, 
         "tag": "tig-SD"
@@ -117273,6 +117653,7 @@
     {
         "full": "tjm-Zyyy", 
         "iso639_3": "tjm", 
+        "name": "Timucua", 
         "region": null, 
         "sldr": false, 
         "tag": "tjm"
@@ -117537,6 +117918,7 @@
     {
         "full": "tkm-Zyyy", 
         "iso639_3": "tkm", 
+        "name": "Takelma", 
         "region": null, 
         "sldr": false, 
         "tag": "tkm"
@@ -117846,6 +118228,10 @@
     {
         "full": "tlh-Zyyy", 
         "iso639_3": "tlh", 
+        "name": "Klingon", 
+        "names": [
+            "tlhIngan Hol"
+        ], 
         "region": null, 
         "sldr": false, 
         "tag": "tlh"
@@ -119614,6 +120000,7 @@
     {
         "full": "tpn-Zyyy-BR", 
         "iso639_3": "tpn", 
+        "name": "Tupinambá", 
         "region": "BR", 
         "sldr": false, 
         "tag": "tpn", 
@@ -119723,6 +120110,7 @@
     {
         "full": "tpw-Zyyy", 
         "iso639_3": "tpw", 
+        "name": "Tupí", 
         "region": null, 
         "sldr": false, 
         "tag": "tpw"
@@ -120615,6 +121003,7 @@
         "deprecated": true, 
         "full": "tsf-Deva-NP", 
         "iso639_3": "tsf", 
+        "name": "Southwestern Tamang", 
         "region": "NP", 
         "sldr": false, 
         "tag": "tsf", 
@@ -120989,6 +121378,7 @@
     {
         "full": "tta-Zyyy", 
         "iso639_3": "tta", 
+        "name": "Tutelo", 
         "region": null, 
         "sldr": false, 
         "tag": "tta"
@@ -121973,6 +122363,7 @@
     {
         "full": "twc-Zyyy", 
         "iso639_3": "twc", 
+        "name": "Teshenawa", 
         "region": null, 
         "sldr": false, 
         "tag": "twc"
@@ -122286,6 +122677,7 @@
     {
         "full": "txb-Zyyy", 
         "iso639_3": "txb", 
+        "name": "Tokharian B", 
         "region": null, 
         "sldr": false, 
         "tag": "txb"
@@ -122293,6 +122685,7 @@
     {
         "full": "txc-Zyyy", 
         "iso639_3": "txc", 
+        "name": "Tsetsaut", 
         "region": null, 
         "sldr": false, 
         "tag": "txc"
@@ -122317,6 +122710,7 @@
     {
         "full": "txg-Tang-CN", 
         "iso639_3": "txg", 
+        "name": "Tangut", 
         "region": "CN", 
         "sldr": false, 
         "tag": "txg-Tang"
@@ -122324,6 +122718,7 @@
     {
         "full": "txh-Zyyy", 
         "iso639_3": "txh", 
+        "name": "Thracian", 
         "region": null, 
         "sldr": false, 
         "tag": "txh"
@@ -122437,6 +122832,7 @@
     {
         "full": "txr-Zyyy", 
         "iso639_3": "txr", 
+        "name": "Tartessian", 
         "region": null, 
         "sldr": false, 
         "tag": "txr"
@@ -122886,6 +123282,7 @@
     {
         "full": "tzl-Zyyy", 
         "iso639_3": "tzl", 
+        "name": "Talossan", 
         "region": null, 
         "sldr": false, 
         "tag": "tzl"
@@ -123381,6 +123778,7 @@
     {
         "full": "uga-Ugar-SY", 
         "iso639_3": "uga", 
+        "name": "Ugaritic", 
         "region": "SY", 
         "sldr": false, 
         "tag": "uga", 
@@ -123778,6 +124176,7 @@
     {
         "full": "ule-Latn-AR", 
         "iso639_3": "ule", 
+        "name": "Lule", 
         "region": "AR", 
         "sldr": false, 
         "tag": "ule", 
@@ -123964,6 +124363,7 @@
     {
         "full": "umc-Zyyy", 
         "iso639_3": "umc", 
+        "name": "Marrucinian", 
         "region": null, 
         "sldr": false, 
         "tag": "umc"
@@ -124126,6 +124526,7 @@
     {
         "full": "und-Zyyy", 
         "iso639_3": "und", 
+        "name": "Undetermined", 
         "region": null, 
         "sldr": false, 
         "tag": "und"
@@ -125135,6 +125536,7 @@
     {
         "full": "uz-Arab-AF", 
         "iso639_3": "uzb", 
+        "name": "Uzbek", 
         "region": "AF", 
         "sldr": true, 
         "tag": "uz-AF", 
@@ -125162,6 +125564,7 @@
     {
         "full": "uz-Cyrl-CN", 
         "iso639_3": "uzb", 
+        "name": "Uzbek", 
         "region": "CN", 
         "sldr": false, 
         "tag": "uz-CN"
@@ -125789,6 +126192,7 @@
     {
         "full": "vic-Latn-SX", 
         "iso639_3": "vic", 
+        "name": "Virgin Islands Creole English", 
         "region": "SX", 
         "sldr": false, 
         "tag": "vic", 
@@ -126580,6 +126984,7 @@
     {
         "full": "vo-Latn-001", 
         "iso639_3": "vol", 
+        "name": "Volapük", 
         "region": "001", 
         "sldr": true, 
         "tag": "vo", 
@@ -128725,6 +129130,7 @@
     {
         "full": "wlm-Latn-GB", 
         "iso639_3": "wlm", 
+        "name": "Middle Welsh", 
         "region": "GB", 
         "sldr": false, 
         "tag": "wlm", 
@@ -130766,6 +131172,7 @@
     {
         "full": "xaa-Qaax-ES", 
         "iso639_3": "xaa", 
+        "name": "Andalusian Arabic", 
         "region": "ES", 
         "sldr": false, 
         "tag": "xaa", 
@@ -130805,6 +131212,7 @@
     {
         "full": "xad-Zyyy", 
         "iso639_3": "xad", 
+        "name": "Adai", 
         "region": null, 
         "sldr": false, 
         "tag": "xad"
@@ -130812,6 +131220,7 @@
     {
         "full": "xae-Zyyy", 
         "iso639_3": "xae", 
+        "name": "Aequian", 
         "region": null, 
         "sldr": false, 
         "tag": "xae"
@@ -130819,6 +131228,7 @@
     {
         "full": "xag-Zyyy", 
         "iso639_3": "xag", 
+        "name": "Aghwan", 
         "region": null, 
         "sldr": false, 
         "tag": "xag"
@@ -130949,6 +131359,7 @@
     {
         "full": "xap-Zyyy", 
         "iso639_3": "xap", 
+        "name": "Apalachee", 
         "region": null, 
         "sldr": false, 
         "tag": "xap"
@@ -130956,6 +131367,7 @@
     {
         "full": "xaq-Zyyy", 
         "iso639_3": "xaq", 
+        "name": "Aquitanian", 
         "region": null, 
         "sldr": false, 
         "tag": "xaq"
@@ -131079,6 +131491,7 @@
     {
         "full": "xbb-Zyyy-AU", 
         "iso639_3": "xbb", 
+        "name": "Lower Burdekin", 
         "region": "AU", 
         "sldr": false, 
         "tag": "xbb", 
@@ -131090,6 +131503,7 @@
     {
         "full": "xbc-Zyyy", 
         "iso639_3": "xbc", 
+        "name": "Bactrian", 
         "region": null, 
         "sldr": false, 
         "tag": "xbc"
@@ -131217,6 +131631,7 @@
     {
         "full": "xbm-Latn-FR", 
         "iso639_3": "xbm", 
+        "name": "Middle Breton", 
         "region": "FR", 
         "sldr": false, 
         "tag": "xbm", 
@@ -131228,6 +131643,7 @@
     {
         "full": "xbn-Zyyy-MY", 
         "iso639_3": "xbn", 
+        "name": "Kenaboi", 
         "region": "MY", 
         "sldr": false, 
         "tag": "xbn", 
@@ -131239,6 +131655,7 @@
     {
         "full": "xbo-Zyyy", 
         "iso639_3": "xbo", 
+        "name": "Bolgarian", 
         "region": null, 
         "sldr": false, 
         "tag": "xbo"
@@ -131337,6 +131754,7 @@
     {
         "full": "xcb-Zyyy", 
         "iso639_3": "xcb", 
+        "name": "Cumbric", 
         "region": null, 
         "sldr": false, 
         "tag": "xcb"
@@ -131344,6 +131762,7 @@
     {
         "full": "xcc-Zyyy", 
         "iso639_3": "xcc", 
+        "name": "Camunic", 
         "region": null, 
         "sldr": false, 
         "tag": "xcc"
@@ -131351,6 +131770,7 @@
     {
         "full": "xce-Zyyy", 
         "iso639_3": "xce", 
+        "name": "Celtiberian", 
         "region": null, 
         "sldr": false, 
         "tag": "xce"
@@ -131358,6 +131778,7 @@
     {
         "full": "xcg-Zyyy", 
         "iso639_3": "xcg", 
+        "name": "Cisalpine Gaulish", 
         "region": null, 
         "sldr": false, 
         "tag": "xcg"
@@ -131365,6 +131786,10 @@
     {
         "full": "xch-Zyyy", 
         "iso639_3": "xch", 
+        "name": "Chemakum", 
+        "names": [
+            "Chimakum"
+        ], 
         "region": null, 
         "sldr": false, 
         "tag": "xch"
@@ -131372,6 +131797,7 @@
     {
         "full": "xcl-Zyyy", 
         "iso639_3": "xcl", 
+        "name": "Classical Armenian", 
         "region": null, 
         "sldr": false, 
         "tag": "xcl"
@@ -131379,6 +131805,7 @@
     {
         "full": "xcm-Zyyy", 
         "iso639_3": "xcm", 
+        "name": "Comecrudo", 
         "region": null, 
         "sldr": false, 
         "tag": "xcm"
@@ -131386,6 +131813,7 @@
     {
         "full": "xcn-Zyyy", 
         "iso639_3": "xcn", 
+        "name": "Cotoname", 
         "region": null, 
         "sldr": false, 
         "tag": "xcn"
@@ -131393,6 +131821,7 @@
     {
         "full": "xco-Zyyy", 
         "iso639_3": "xco", 
+        "name": "Chorasmian", 
         "region": null, 
         "sldr": false, 
         "tag": "xco"
@@ -131400,6 +131829,7 @@
     {
         "full": "xcr-Cari-TR", 
         "iso639_3": "xcr", 
+        "name": "Carian", 
         "region": "TR", 
         "sldr": false, 
         "tag": "xcr", 
@@ -131411,6 +131841,7 @@
     {
         "full": "xct-Zyyy", 
         "iso639_3": "xct", 
+        "name": "Classical Tibetan", 
         "region": null, 
         "sldr": false, 
         "tag": "xct"
@@ -131418,6 +131849,7 @@
     {
         "full": "xcu-Zyyy", 
         "iso639_3": "xcu", 
+        "name": "Curonian", 
         "region": null, 
         "sldr": false, 
         "tag": "xcu"
@@ -131425,6 +131857,7 @@
     {
         "full": "xcv-Zyyy", 
         "iso639_3": "xcv", 
+        "name": "Chuvantsy", 
         "region": null, 
         "sldr": false, 
         "tag": "xcv"
@@ -131432,6 +131865,7 @@
     {
         "full": "xcw-Zyyy", 
         "iso639_3": "xcw", 
+        "name": "Coahuilteco", 
         "region": null, 
         "sldr": false, 
         "tag": "xcw"
@@ -131439,6 +131873,7 @@
     {
         "full": "xcy-Zyyy", 
         "iso639_3": "xcy", 
+        "name": "Cayuse", 
         "region": null, 
         "sldr": false, 
         "tag": "xcy"
@@ -131466,6 +131901,7 @@
     {
         "full": "xdc-Zyyy", 
         "iso639_3": "xdc", 
+        "name": "Dacian", 
         "region": null, 
         "sldr": false, 
         "tag": "xdc"
@@ -131492,6 +131928,7 @@
     {
         "full": "xdm-Zyyy", 
         "iso639_3": "xdm", 
+        "name": "Edomite", 
         "region": null, 
         "sldr": false, 
         "tag": "xdm"
@@ -131532,6 +131969,7 @@
     {
         "full": "xeb-Zyyy", 
         "iso639_3": "xeb", 
+        "name": "Eblan", 
         "region": null, 
         "sldr": false, 
         "tag": "xeb"
@@ -131619,6 +132057,7 @@
     {
         "full": "xep-Zyyy", 
         "iso639_3": "xep", 
+        "name": "Epi-Olmec", 
         "region": null, 
         "sldr": false, 
         "tag": "xep"
@@ -131713,6 +132152,7 @@
     {
         "full": "xfa-Zyyy", 
         "iso639_3": "xfa", 
+        "name": "Faliscan", 
         "region": null, 
         "sldr": false, 
         "tag": "xfa"
@@ -131720,6 +132160,7 @@
     {
         "full": "xga-Zyyy", 
         "iso639_3": "xga", 
+        "name": "Galatian", 
         "region": null, 
         "sldr": false, 
         "tag": "xga"
@@ -131727,6 +132168,7 @@
     {
         "full": "xgb-Zyyy-CI", 
         "iso639_3": "xgb", 
+        "name": "Gbin", 
         "region": "CI", 
         "sldr": false, 
         "tag": "xgb", 
@@ -131755,6 +132197,7 @@
     {
         "full": "xgf-Zyyy", 
         "iso639_3": "xgf", 
+        "name": "Gabrielino-Fernandeño", 
         "region": null, 
         "sldr": false, 
         "tag": "xgf"
@@ -131806,6 +132249,7 @@
     {
         "full": "xgl-Zyyy", 
         "iso639_3": "xgl", 
+        "name": "Galindan", 
         "region": null, 
         "sldr": false, 
         "tag": "xgl"
@@ -131839,6 +132283,7 @@
     {
         "full": "xgr-Zyyy", 
         "iso639_3": "xgr", 
+        "name": "Garza", 
         "region": null, 
         "sldr": false, 
         "tag": "xgr"
@@ -131916,6 +132361,7 @@
     {
         "full": "xha-Zyyy", 
         "iso639_3": "xha", 
+        "name": "Harami", 
         "region": null, 
         "sldr": false, 
         "tag": "xha"
@@ -131923,6 +132369,7 @@
     {
         "full": "xhc-Zyyy", 
         "iso639_3": "xhc", 
+        "name": "Hunnic", 
         "region": null, 
         "sldr": false, 
         "tag": "xhc"
@@ -131930,6 +132377,7 @@
     {
         "full": "xhd-Zyyy", 
         "iso639_3": "xhd", 
+        "name": "Hadrami", 
         "region": null, 
         "sldr": false, 
         "tag": "xhd"
@@ -131949,6 +132397,7 @@
     {
         "full": "xhr-Zyyy", 
         "iso639_3": "xhr", 
+        "name": "Hernican", 
         "region": null, 
         "sldr": false, 
         "tag": "xhr"
@@ -131956,6 +132405,7 @@
     {
         "full": "xht-Zyyy", 
         "iso639_3": "xht", 
+        "name": "Hattic", 
         "region": null, 
         "sldr": false, 
         "tag": "xht"
@@ -131963,6 +132413,7 @@
     {
         "full": "xhu-Zyyy", 
         "iso639_3": "xhu", 
+        "name": "Hurrian", 
         "region": null, 
         "sldr": false, 
         "tag": "xhu"
@@ -131982,6 +132433,7 @@
     {
         "full": "xib-Zyyy", 
         "iso639_3": "xib", 
+        "name": "Iberian", 
         "region": null, 
         "sldr": false, 
         "tag": "xib"
@@ -132010,6 +132462,7 @@
     {
         "full": "xil-Zyyy", 
         "iso639_3": "xil", 
+        "name": "Illyrian", 
         "region": null, 
         "sldr": false, 
         "tag": "xil"
@@ -132068,6 +132521,7 @@
     {
         "full": "xiv-Zyyy", 
         "iso639_3": "xiv", 
+        "name": "Indus Valley Language", 
         "region": null, 
         "sldr": false, 
         "tag": "xiv"
@@ -132540,6 +132994,7 @@
     {
         "full": "xlb-Zyyy", 
         "iso639_3": "xlb", 
+        "name": "Loup B", 
         "region": null, 
         "sldr": false, 
         "tag": "xlb"
@@ -132547,6 +133002,7 @@
     {
         "full": "xlc-Lyci-TR", 
         "iso639_3": "xlc", 
+        "name": "Lycian", 
         "region": "TR", 
         "sldr": false, 
         "tag": "xlc", 
@@ -132558,6 +133014,7 @@
     {
         "full": "xld-Lydi-TR", 
         "iso639_3": "xld", 
+        "name": "Lydian", 
         "region": "TR", 
         "sldr": false, 
         "tag": "xld", 
@@ -132569,6 +133026,7 @@
     {
         "full": "xle-Zyyy", 
         "iso639_3": "xle", 
+        "name": "Lemnian", 
         "region": null, 
         "sldr": false, 
         "tag": "xle"
@@ -132576,6 +133034,7 @@
     {
         "full": "xlg-Zyyy", 
         "iso639_3": "xlg", 
+        "name": "Ligurian (Ancient)", 
         "region": null, 
         "sldr": false, 
         "tag": "xlg"
@@ -132583,6 +133042,7 @@
     {
         "full": "xli-Zyyy", 
         "iso639_3": "xli", 
+        "name": "Liburnian", 
         "region": null, 
         "sldr": false, 
         "tag": "xli"
@@ -132590,6 +133050,7 @@
     {
         "full": "xln-Zyyy", 
         "iso639_3": "xln", 
+        "name": "Alanic", 
         "region": null, 
         "sldr": false, 
         "tag": "xln"
@@ -132597,6 +133058,7 @@
     {
         "full": "xlo-Zyyy", 
         "iso639_3": "xlo", 
+        "name": "Loup A", 
         "region": null, 
         "sldr": false, 
         "tag": "xlo"
@@ -132604,6 +133066,7 @@
     {
         "full": "xlp-Zyyy", 
         "iso639_3": "xlp", 
+        "name": "Lepontic", 
         "region": null, 
         "sldr": false, 
         "tag": "xlp"
@@ -132611,6 +133074,7 @@
     {
         "full": "xls-Zyyy", 
         "iso639_3": "xls", 
+        "name": "Lusitanian", 
         "region": null, 
         "sldr": false, 
         "tag": "xls"
@@ -132618,6 +133082,7 @@
     {
         "full": "xlu-Zyyy", 
         "iso639_3": "xlu", 
+        "name": "Cuneiform Luwian", 
         "region": null, 
         "sldr": false, 
         "tag": "xlu"
@@ -132625,6 +133090,7 @@
     {
         "full": "xly-Elym-IR", 
         "iso639_3": "xly", 
+        "name": "Elymian", 
         "region": "IR", 
         "sldr": false, 
         "tag": "xly", 
@@ -132703,6 +133169,7 @@
     {
         "full": "xme-Zyyy", 
         "iso639_3": "xme", 
+        "name": "Median", 
         "region": null, 
         "sldr": false, 
         "tag": "xme"
@@ -132777,6 +133244,7 @@
     {
         "full": "xmk-Zyyy", 
         "iso639_3": "xmk", 
+        "name": "Ancient Macedonian", 
         "region": null, 
         "sldr": false, 
         "tag": "xmk"
@@ -132818,6 +133286,7 @@
     {
         "full": "xmn-Mani-CN", 
         "iso639_3": "xmn", 
+        "name": "Manichaean Middle Persian", 
         "region": "CN", 
         "sldr": false, 
         "tag": "xmn", 
@@ -132871,6 +133340,7 @@
     {
         "full": "xmr-Merc-SD", 
         "iso639_3": "xmr", 
+        "name": "Meroitic", 
         "region": "SD", 
         "sldr": false, 
         "tag": "xmr", 
@@ -133018,6 +133488,7 @@
     {
         "full": "xna-Narb-SA", 
         "iso639_3": "xna", 
+        "name": "Ancient North Arabian", 
         "region": "SA", 
         "sldr": false, 
         "tag": "xna", 
@@ -133045,6 +133516,7 @@
     {
         "full": "xng-Zyyy", 
         "iso639_3": "xng", 
+        "name": "Middle Mongolian", 
         "region": null, 
         "sldr": false, 
         "tag": "xng"
@@ -133131,6 +133603,7 @@
     {
         "full": "xno-Zyyy", 
         "iso639_3": "xno", 
+        "name": "Anglo-Norman", 
         "region": null, 
         "sldr": false, 
         "tag": "xno"
@@ -133489,6 +133962,7 @@
     {
         "full": "xpc-Zyyy", 
         "iso639_3": "xpc", 
+        "name": "Pecheneg", 
         "region": null, 
         "sldr": false, 
         "tag": "xpc"
@@ -133496,6 +133970,7 @@
     {
         "full": "xpg-Grek-TR", 
         "iso639_3": "xpg", 
+        "name": "Phrygian", 
         "region": "TR", 
         "sldr": false, 
         "tag": "xpg-Grek"
@@ -133503,6 +133978,7 @@
     {
         "full": "xpi-Zyyy-GB", 
         "iso639_3": "xpi", 
+        "name": "Pictish", 
         "region": "GB", 
         "sldr": false, 
         "tag": "xpi", 
@@ -133548,6 +134024,7 @@
     {
         "full": "xpm-Zyyy-RU", 
         "iso639_3": "xpm", 
+        "name": "Pumpokol", 
         "region": "RU", 
         "sldr": false, 
         "tag": "xpm", 
@@ -133574,6 +134051,7 @@
     {
         "full": "xpo-Zyyy-MX", 
         "iso639_3": "xpo", 
+        "name": "Pochutec", 
         "region": "MX", 
         "sldr": false, 
         "tag": "xpo", 
@@ -133585,6 +134063,7 @@
     {
         "full": "xpp-Zyyy", 
         "iso639_3": "xpp", 
+        "name": "Puyo-Paekche", 
         "region": null, 
         "sldr": false, 
         "tag": "xpp"
@@ -133604,6 +134083,7 @@
     {
         "full": "xpr-Prti-IR", 
         "iso639_3": "xpr", 
+        "name": "Parthian", 
         "region": "IR", 
         "sldr": false, 
         "tag": "xpr", 
@@ -133615,6 +134095,7 @@
     {
         "full": "xps-Zyyy-TR", 
         "iso639_3": "xps", 
+        "name": "Pisidian", 
         "region": "TR", 
         "sldr": false, 
         "tag": "xps", 
@@ -133641,6 +134122,7 @@
     {
         "full": "xpu-Zyyy", 
         "iso639_3": "xpu", 
+        "name": "Punic", 
         "region": null, 
         "sldr": false, 
         "tag": "xpu"
@@ -133648,6 +134130,7 @@
     {
         "full": "xpy-Zyyy-CN", 
         "iso639_3": "xpy", 
+        "name": "Puyo", 
         "region": "CN", 
         "sldr": false, 
         "tag": "xpy", 
@@ -133659,6 +134142,7 @@
     {
         "full": "xqa-Zyyy-TR", 
         "iso639_3": "xqa", 
+        "name": "Karakhanid", 
         "region": "TR", 
         "sldr": false, 
         "tag": "xqa", 
@@ -133670,6 +134154,7 @@
     {
         "full": "xqt-Zyyy-YE", 
         "iso639_3": "xqt", 
+        "name": "Qatabanian", 
         "region": "YE", 
         "sldr": false, 
         "tag": "xqt", 
@@ -133797,6 +134282,7 @@
     {
         "full": "xrm-Zyyy-RU", 
         "iso639_3": "xrm", 
+        "name": "Armazic", 
         "region": "RU", 
         "sldr": false, 
         "tag": "xrm", 
@@ -133808,6 +134294,7 @@
     {
         "full": "xrn-Zyyy-RU", 
         "iso639_3": "xrn", 
+        "name": "Arin", 
         "region": "RU", 
         "sldr": false, 
         "tag": "xrn", 
@@ -133836,6 +134323,7 @@
     {
         "full": "xrr-Zyyy-IT", 
         "iso639_3": "xrr", 
+        "name": "Raetic", 
         "region": "IT", 
         "sldr": false, 
         "tag": "xrr", 
@@ -133847,6 +134335,7 @@
     {
         "full": "xrt-Zyyy-US", 
         "iso639_3": "xrt", 
+        "name": "Aranama-Tamique", 
         "region": "US", 
         "sldr": false, 
         "tag": "xrt", 
@@ -133892,6 +134381,7 @@
     {
         "full": "xsa-Sarb-YE", 
         "iso639_3": "xsa", 
+        "name": "Sabaean", 
         "region": "YE", 
         "sldr": false, 
         "tag": "xsa", 
@@ -133919,6 +134409,7 @@
     {
         "full": "xsc-Zyyy", 
         "iso639_3": "xsc", 
+        "name": "Scythian", 
         "region": null, 
         "sldr": false, 
         "tag": "xsc"
@@ -133926,6 +134417,7 @@
     {
         "full": "xsd-Zyyy-TR", 
         "iso639_3": "xsd", 
+        "name": "Sidetic", 
         "region": "TR", 
         "sldr": false, 
         "tag": "xsd", 
@@ -134016,6 +134508,7 @@
     {
         "full": "xso-Zyyy-US", 
         "iso639_3": "xso", 
+        "name": "Solano", 
         "region": "US", 
         "sldr": false, 
         "tag": "xso", 
@@ -134094,6 +134587,7 @@
     {
         "full": "xss-Zyyy-RU", 
         "iso639_3": "xss", 
+        "name": "Assan", 
         "region": "RU", 
         "sldr": false, 
         "tag": "xss", 
@@ -134133,6 +134627,7 @@
     {
         "full": "xsv-Zyyy", 
         "iso639_3": "xsv", 
+        "name": "Sudovian", 
         "region": null, 
         "sldr": false, 
         "tag": "xsv"
@@ -134240,6 +134735,7 @@
     {
         "full": "xtg-Zyyy", 
         "iso639_3": "xtg", 
+        "name": "Transalpine Gaulish", 
         "region": null, 
         "sldr": false, 
         "tag": "xtg"
@@ -134356,6 +134852,7 @@
     {
         "full": "xto-Zyyy-CN", 
         "iso639_3": "xto", 
+        "name": "Tokharian A", 
         "region": "CN", 
         "sldr": false, 
         "tag": "xto", 
@@ -134383,6 +134880,7 @@
     {
         "full": "xtq-Zyyy-IR", 
         "iso639_3": "xtq", 
+        "name": "Tumshuqese", 
         "region": "IR", 
         "sldr": false, 
         "tag": "xtq", 
@@ -134394,6 +134892,7 @@
     {
         "full": "xtr-Zyyy-IN", 
         "iso639_3": "xtr", 
+        "name": "Early Tripuri", 
         "region": "IN", 
         "sldr": false, 
         "tag": "xtr", 
@@ -134507,6 +135006,7 @@
     {
         "full": "xtz-Zyyy-AU", 
         "iso639_3": "xtz", 
+        "name": "Tasmanian", 
         "region": "AU", 
         "sldr": false, 
         "tag": "xtz", 
@@ -134652,6 +135152,7 @@
     {
         "full": "xum-Ital-IT", 
         "iso639_3": "xum", 
+        "name": "Umbrian", 
         "region": "IT", 
         "sldr": false, 
         "tag": "xum-Ital"
@@ -134659,6 +135160,7 @@
     {
         "full": "xum-Latn-IT", 
         "iso639_3": "xum", 
+        "name": "Umbrian", 
         "region": "IT", 
         "sldr": false, 
         "tag": "xum-Latn"
@@ -134702,6 +135204,7 @@
     {
         "full": "xup-Zyyy-US", 
         "iso639_3": "xup", 
+        "name": "Upper Umpqua", 
         "region": "US", 
         "sldr": false, 
         "tag": "xup", 
@@ -134713,6 +135216,7 @@
     {
         "full": "xur-Zyyy-TR", 
         "iso639_3": "xur", 
+        "name": "Urartian", 
         "region": "TR", 
         "sldr": false, 
         "tag": "xur", 
@@ -134756,6 +135260,7 @@
     {
         "full": "xve-Ital-IT", 
         "iso639_3": "xve", 
+        "name": "Venetic", 
         "region": "IT", 
         "sldr": false, 
         "tag": "xve-Ital-IT"
@@ -134781,6 +135286,7 @@
     {
         "full": "xvn-Zyyy-ES", 
         "iso639_3": "xvn", 
+        "name": "Vandalic", 
         "region": "ES", 
         "sldr": false, 
         "tag": "xvn", 
@@ -134792,6 +135298,7 @@
     {
         "full": "xvo-Latn-IT", 
         "iso639_3": "xvo", 
+        "name": "Volscian", 
         "region": "IT", 
         "sldr": false, 
         "tag": "xvo", 
@@ -134803,6 +135310,7 @@
     {
         "full": "xvs-Zyyy-IT", 
         "iso639_3": "xvs", 
+        "name": "Vestinian", 
         "region": "IT", 
         "sldr": false, 
         "tag": "xvs", 
@@ -134832,6 +135340,7 @@
     {
         "full": "xwc-Zyyy-US", 
         "iso639_3": "xwc", 
+        "name": "Woccon", 
         "region": "US", 
         "sldr": false, 
         "tag": "xwc", 
@@ -134976,6 +135485,7 @@
     {
         "full": "xwo-Zyyy-RU", 
         "iso639_3": "xwo", 
+        "name": "Written Oirat", 
         "region": "RU", 
         "sldr": false, 
         "tag": "xwo", 
@@ -135075,6 +135585,7 @@
     {
         "full": "xxb-Latn-GH", 
         "iso639_3": "xxb", 
+        "name": "Boro (Ghana)", 
         "region": "GH", 
         "sldr": false, 
         "tag": "xxb", 
@@ -135101,6 +135612,7 @@
     {
         "full": "xxm-Zyyy-AU", 
         "iso639_3": "xxm", 
+        "name": "Minkin", 
         "region": "AU", 
         "sldr": false, 
         "tag": "xxm", 
@@ -135124,6 +135636,7 @@
     {
         "full": "xxt-Zyyy-ID", 
         "iso639_3": "xxt", 
+        "name": "Tambora", 
         "region": "ID", 
         "sldr": false, 
         "tag": "xxt", 
@@ -135224,6 +135737,7 @@
     {
         "full": "xyl-Latn-BR", 
         "iso639_3": "xyl", 
+        "name": "Yalakalore", 
         "region": "BR", 
         "sldr": false, 
         "tag": "xyl", 
@@ -135298,6 +135812,7 @@
     {
         "full": "xzh-Zyyy-CN", 
         "iso639_3": "xzh", 
+        "name": "Zhang-Zhung", 
         "region": "CN", 
         "sldr": false, 
         "tag": "xzh", 
@@ -135309,6 +135824,7 @@
     {
         "full": "xzm-Zyyy", 
         "iso639_3": "xzm", 
+        "name": "Zemgalian", 
         "region": null, 
         "sldr": false, 
         "tag": "xzm"
@@ -135316,6 +135832,7 @@
     {
         "full": "xzp-Zyyy-MX", 
         "iso639_3": "xzp", 
+        "name": "Ancient Zapotec", 
         "region": "MX", 
         "sldr": false, 
         "tag": "xzp", 
@@ -136616,6 +137133,7 @@
     {
         "full": "yi-Hebr-001", 
         "iso639_3": "yid", 
+        "name": "Yiddish", 
         "region": "001", 
         "sldr": true, 
         "tag": "yi", 
@@ -137609,6 +138127,7 @@
     {
         "full": "yms-Zyyy-TR", 
         "iso639_3": "yms", 
+        "name": "Mysian", 
         "region": "TR", 
         "sldr": false, 
         "tag": "yms", 
@@ -137742,6 +138261,7 @@
     {
         "full": "ynn-Zyyy-US", 
         "iso639_3": "ynn", 
+        "name": "Yana", 
         "region": "US", 
         "sldr": false, 
         "tag": "ynn", 
@@ -137930,6 +138450,7 @@
     {
         "full": "yol-Zyyy-GB", 
         "iso639_3": "yol", 
+        "name": "Yola", 
         "region": "GB", 
         "sldr": false, 
         "tag": "yol", 
@@ -138405,6 +138926,7 @@
     {
         "full": "ysc-Zyyy-HU", 
         "iso639_3": "ysc", 
+        "name": "Yassic", 
         "region": "HU", 
         "sldr": false, 
         "tag": "ysc", 
@@ -139678,6 +140200,7 @@
     {
         "full": "zag-beria-sd", 
         "iso639_3": "zag", 
+        "name": "Zaghawa", 
         "region": null, 
         "sldr": false, 
         "tag": "zag-beria-sd"
@@ -140032,6 +140555,11 @@
     {
         "full": "zbl-Blis-001", 
         "iso639_3": "zbl", 
+        "name": "Blissymbols", 
+        "names": [
+            "Bliss", 
+            "Blissymbolics"
+        ], 
         "region": "001", 
         "sldr": false, 
         "tag": "zbl", 
@@ -140279,6 +140807,7 @@
     {
         "full": "zh-Hant-AU", 
         "iso639_3": "zho", 
+        "name": "Chinese", 
         "region": "AU", 
         "sldr": false, 
         "tag": "zh-AU"
@@ -140286,6 +140815,7 @@
     {
         "full": "zh-Hant-BN", 
         "iso639_3": "zho", 
+        "name": "Chinese", 
         "region": "BN", 
         "sldr": false, 
         "tag": "zh-BN"
@@ -140335,6 +140865,7 @@
     {
         "full": "zh-Hant-GB", 
         "iso639_3": "zho", 
+        "name": "Chinese", 
         "region": "GB", 
         "sldr": false, 
         "tag": "zh-GB"
@@ -140342,6 +140873,7 @@
     {
         "full": "zh-Hant-GF", 
         "iso639_3": "zho", 
+        "name": "Chinese", 
         "region": "GF", 
         "sldr": false, 
         "tag": "zh-GF"
@@ -140349,6 +140881,7 @@
     {
         "full": "zh-Hant-HK", 
         "iso639_3": "zho", 
+        "name": "Chinese", 
         "region": "HK", 
         "sldr": true, 
         "tag": "zh-HK"
@@ -140356,6 +140889,7 @@
     {
         "full": "zh-Hanb-TW", 
         "iso639_3": "zho", 
+        "name": "Chinese", 
         "region": "TW", 
         "sldr": false, 
         "tag": "zh-Hanb"
@@ -140363,6 +140897,7 @@
     {
         "full": "zh-Hans-HK", 
         "iso639_3": "zho", 
+        "name": "Chinese", 
         "region": "HK", 
         "sldr": true, 
         "tag": "zh-Hans-HK"
@@ -140370,6 +140905,7 @@
     {
         "full": "zh-Hans-MO", 
         "iso639_3": "zho", 
+        "name": "Chinese", 
         "region": "MO", 
         "sldr": true, 
         "tag": "zh-Hans-MO"
@@ -140377,6 +140913,7 @@
     {
         "full": "zh-Hans-SG", 
         "iso639_3": "zho", 
+        "name": "Chinese", 
         "region": "SG", 
         "sldr": true, 
         "tag": "zh-Hans-SG"
@@ -140384,6 +140921,7 @@
     {
         "full": "zh-Hant-ID", 
         "iso639_3": "zho", 
+        "name": "Chinese", 
         "region": "ID", 
         "sldr": false, 
         "tag": "zh-ID"
@@ -140412,6 +140950,7 @@
     {
         "full": "zh-Hant-MO", 
         "iso639_3": "zho", 
+        "name": "Chinese", 
         "region": "MO", 
         "sldr": true, 
         "tag": "zh-MO"
@@ -140419,6 +140958,7 @@
     {
         "full": "zh-Hant-MY", 
         "iso639_3": "zho", 
+        "name": "Chinese", 
         "region": "MY", 
         "sldr": false, 
         "tag": "zh-MY"
@@ -140426,6 +140966,7 @@
     {
         "full": "zh-Hant-PA", 
         "iso639_3": "zho", 
+        "name": "Chinese", 
         "region": "PA", 
         "sldr": false, 
         "tag": "zh-PA"
@@ -140433,6 +140974,7 @@
     {
         "full": "zh-Hant-PF", 
         "iso639_3": "zho", 
+        "name": "Chinese", 
         "region": "PF", 
         "sldr": false, 
         "tag": "zh-PF"
@@ -140440,6 +140982,7 @@
     {
         "full": "zh-Hant-PH", 
         "iso639_3": "zho", 
+        "name": "Chinese", 
         "region": "PH", 
         "sldr": false, 
         "tag": "zh-PH"
@@ -140455,6 +140998,7 @@
     {
         "full": "zh-Hant-SR", 
         "iso639_3": "zho", 
+        "name": "Chinese", 
         "region": "SR", 
         "sldr": false, 
         "tag": "zh-SR"
@@ -140462,6 +141006,7 @@
     {
         "full": "zh-Hant-TH", 
         "iso639_3": "zho", 
+        "name": "Chinese", 
         "region": "TH", 
         "sldr": false, 
         "tag": "zh-TH"
@@ -140485,6 +141030,7 @@
     {
         "full": "zh-Hant-US", 
         "iso639_3": "zho", 
+        "name": "Chinese", 
         "region": "US", 
         "sldr": false, 
         "tag": "zh-US"
@@ -140492,6 +141038,7 @@
     {
         "full": "zh-Hant-VN", 
         "iso639_3": "zho", 
+        "name": "Chinese", 
         "region": "VN", 
         "sldr": false, 
         "tag": "zh-VN"
@@ -140621,6 +141168,7 @@
     {
         "full": "zhx-Nshu-CN", 
         "iso639_3": "zhx", 
+        "name": "Chinese (family)", 
         "region": "CN", 
         "sldr": false, 
         "tag": "zhx", 
@@ -140818,6 +141366,7 @@
     {
         "full": "zkb-Zyyy-RU", 
         "iso639_3": "zkb", 
+        "name": "Koibal", 
         "region": "RU", 
         "sldr": false, 
         "tag": "zkb", 
@@ -140850,6 +141399,7 @@
     {
         "full": "zkg-Zyyy-CN", 
         "iso639_3": "zkg", 
+        "name": "Koguryo", 
         "region": "CN", 
         "sldr": false, 
         "tag": "zkg", 
@@ -140861,6 +141411,7 @@
     {
         "full": "zkh-Zyyy-TR", 
         "iso639_3": "zkh", 
+        "name": "Khorezmian", 
         "region": "TR", 
         "sldr": false, 
         "tag": "zkh", 
@@ -140872,6 +141423,7 @@
     {
         "full": "zkk-Zyyy-US", 
         "iso639_3": "zkk", 
+        "name": "Karankawa", 
         "region": "US", 
         "sldr": false, 
         "tag": "zkk", 
@@ -140902,6 +141454,7 @@
     {
         "full": "zko-Zyyy-RU", 
         "iso639_3": "zko", 
+        "name": "Kott", 
         "region": "RU", 
         "sldr": false, 
         "tag": "zko", 
@@ -140942,6 +141495,7 @@
     {
         "full": "zkt-Kitl-CN", 
         "iso639_3": "zkt", 
+        "name": "Kitan", 
         "region": "CN", 
         "sldr": false, 
         "tag": "zkt-Kitl-CN"
@@ -140949,6 +141503,7 @@
     {
         "full": "zkt-Kits-CN", 
         "iso639_3": "zkt", 
+        "name": "Kitan", 
         "region": "CN", 
         "sldr": false, 
         "tag": "zkt-Kits-CN"
@@ -140997,6 +141552,7 @@
     {
         "full": "zkv-Zyyy-LV", 
         "iso639_3": "zkv", 
+        "name": "Krevinian", 
         "region": "LV", 
         "sldr": false, 
         "tag": "zkv", 
@@ -141008,6 +141564,7 @@
     {
         "full": "zkz-Zyyy-RU", 
         "iso639_3": "zkz", 
+        "name": "Khazar", 
         "region": "RU", 
         "sldr": false, 
         "tag": "zkz", 
@@ -141035,6 +141592,7 @@
     {
         "full": "zlm-Latn-TG", 
         "iso639_3": "zlm", 
+        "name": "Malay (individual language)", 
         "region": "TG", 
         "sldr": false, 
         "tag": "zlm", 
@@ -142180,6 +142738,7 @@
     {
         "full": "zra-Zyyy-KR", 
         "iso639_3": "zra", 
+        "name": "Kara (Korea)", 
         "region": "KR", 
         "sldr": false, 
         "tag": "zra", 
@@ -142299,6 +142858,7 @@
     {
         "full": "zsk-Zyyy-TR", 
         "iso639_3": "zsk", 
+        "name": "Kaskean", 
         "region": "TR", 
         "sldr": false, 
         "tag": "zsk", 
@@ -142670,6 +143230,10 @@
     {
         "full": "zxx-Zyyy", 
         "iso639_3": "zxx", 
+        "name": "No linguistic content", 
+        "names": [
+            "Not applicable"
+        ], 
         "region": null, 
         "sldr": false, 
         "tag": "zxx"
