@@ -142,8 +142,8 @@ namespace SIL.WritingSystems
 
 			IEnumerable<LanguageSubtag> sortedLanguages = languages.OrderBy(l => Regex.Replace(l.Name, @"[^\w]", ""))
 				.Concat(new[] {new LanguageSubtag(WellKnownSubtags.UnlistedLanguage, "Language Not Listed", true, string.Empty)});
-			RegisteredLanguages = new ReadOnlyKeyedCollection<string, LanguageSubtag>(new KeyedList<string, LanguageSubtag>(sortedLanguages, l => l.Code, StringComparer.InvariantCultureIgnoreCase));
-			RegisteredScripts = new ReadOnlyKeyedCollection<string, ScriptSubtag>(new KeyedList<string, ScriptSubtag>(scripts.OrderBy(s => s.Name), s => s.Code, StringComparer.InvariantCultureIgnoreCase));
+			RegisteredLanguages = new KeyedList<string, LanguageSubtag>(sortedLanguages, l => l.Code, StringComparer.InvariantCultureIgnoreCase);
+			RegisteredScripts = new KeyedList<string, ScriptSubtag>(scripts.OrderBy(s => s.Name), s => s.Code, StringComparer.InvariantCultureIgnoreCase);
 			RegisteredRegions = new ReadOnlyKeyedCollection<string, RegionSubtag>(new KeyedList<string, RegionSubtag>(regions.OrderBy(r => r.Name), r => r.Code, StringComparer.InvariantCultureIgnoreCase));
 			RegisteredVariants = new ReadOnlyKeyedCollection<string, VariantSubtag>(new KeyedList<string, VariantSubtag>(variants.OrderBy(v => v.Name), v => v.Code, StringComparer.InvariantCultureIgnoreCase));
 			CommonPrivateUseVariants = new ReadOnlyKeyedCollection<string, VariantSubtag>(new KeyedList<string, VariantSubtag>(new[]
@@ -156,9 +156,9 @@ namespace SIL.WritingSystems
 
 		private static readonly Dictionary<string, LanguageSubtag> Iso3Languages; 
 
-		public static IReadOnlyKeyedCollection<string, ScriptSubtag> RegisteredScripts { get; private set; }
+		public static IKeyedCollection<string, ScriptSubtag> RegisteredScripts { get; private set; }
 
-		public static IReadOnlyKeyedCollection<string, LanguageSubtag> RegisteredLanguages { get; private set; }
+		public static IKeyedCollection<string, LanguageSubtag> RegisteredLanguages { get; private set; }
 
 		public static IReadOnlyKeyedCollection<string, RegionSubtag> RegisteredRegions { get; private set; }
 
@@ -173,6 +173,18 @@ namespace SIL.WritingSystems
 				if (line.StartsWith("Prefix: "))
 					yield return line.Substring("Prefix: ".Length).Trim();
 			}
+		}
+
+		public static void AddScript(string script, string description)
+		{
+			var scriptTag = new ScriptSubtag(script, description, false, false);
+			RegisteredScripts.Add(scriptTag);
+		}
+
+		public static void AddLanguage(string code, string name, bool isPrivateUse, string iso3Code)
+		{
+			var languageTag = new LanguageSubtag(code, name, isPrivateUse, iso3Code);
+			RegisteredLanguages.Add(languageTag);
 		}
 
 		internal static string SubTagComponentDescription(string component)

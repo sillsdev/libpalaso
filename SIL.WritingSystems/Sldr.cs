@@ -471,57 +471,34 @@ namespace SIL.WritingSystems
 
 			foreach (AllTagEntry entry in rootObject)
 			{
-				string langTag = entry.tag;
-				if (!langTag.StartsWith("x-")) // tags starting with x- have undefined structure so ignoring them
+				if (!entry.tag.StartsWith("x-")) // tags starting with x- have undefined structure so ignoring them
 				{
-					string sldrLangTag = entry.tag;
-					bool isAvailable = entry.sldr;
+					LanguageSubtag languageTag;
+					if (!entry.deprecated && (entry.iso639_3 != null) && !StandardSubtags.RegisteredLanguages.TryGet(entry.tag, out languageTag) && !StandardSubtags.RegisteredLanguages.TryGet(entry.iso639_3, out languageTag))
+					{
+						StandardSubtags.AddLanguage(entry.iso639_3, entry.name, false, entry.iso639_3);
+					}
 					string implicitStringCode = null;
 
-					List<string> entryTags = entry.tags;
-
-					if (entryTags != null)
+					// the script is always in the full tag
+					string scriptCode = entry.full.Split('-')[1];
+					if (scriptCode.Length == 4)
 					{
-						// the script is always in the full tag
-						string scriptCode = entry.full.Split('-')[1];
 						var tagComponents = entry.tag.Split('-');
-						// if the script is also in the tag then it is explicit not implicit
-						if (tagComponents.Length > 1 && tagComponents[1] == scriptCode)
+
+						ScriptSubtag scriptTag;
+						if (!StandardSubtags.RegisteredScripts.TryGet(scriptCode, out scriptTag))
 						{
-							implicitStringCode = null;
+							StandardSubtags.AddScript(scriptCode, scriptCode);
 						}
-						else
+
+						// if the script is also in the tag then it is explicit not implicit
+						if (tagComponents.Length == 1 || tagComponents[1] != scriptCode)
 						{
 							implicitStringCode = scriptCode;
 						}
-
-					//	entryTags.Add(langTag);
-					//	entryTags.Add(entry.full);
-					//	/*     {
-	    //    "full": "zh-Hant-TW",
-	    //    "tag": "zh-TW",
-	    //        "zh-Hant",
-	    //        "cmn-Hant",
-	    //        "cmn-Hant-TW"
-	    //},*/
-
-					//	var minTag = entryTags.Select(t => new {Tag = t, Components = t.Split('-')})
-					//		.MinBy(t => t.Components.Length);
-					//	// only look for an implicit script code if the minimal tag has no script code
-					//	// TODO try more examples like zsm which also has ms in tags but which is not the primary tag
-					//	if (minTag.Components.Length < 2 || minTag.Components[1].Length != 4) // minTag zh-TW
-					//	{
-					//		foreach (string tagStr in entryTags)
-					//		{
-					//			string[] components = tagStr.Split('-'); // zh-Hant-TW ought to hit this?
-					//			if (components.Length == minTag.Components.Length + 1 && // 3
-					//			    components[1].Length == 4) 
-					//				implicitStringCode = components[1];
-					//		}
-					//	}
 					}
-
-					tags.Add(new SldrLanguageTagInfo(langTag, implicitStringCode, sldrLangTag, isAvailable));
+					tags.Add(new SldrLanguageTagInfo(entry.tag, implicitStringCode, entry.tag, entry.sldr));
 				}
 			}
 			return tags;

@@ -36,8 +36,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public LanguageLookup()
 		{
-			// TODO: modify to load from json instead of LanguageDataIndex
-
+			var _languageTags = Sldr.LanguageTags; // initialise SLDR language tags for implicit script codes
 			var allTagsContent = LanguageRegistryResources.alltags_json;
 
 			List<AllTagEntry> rootObject = JsonConvert.DeserializeObject<List<AllTagEntry>>(allTagsContent);
@@ -50,63 +49,6 @@ namespace SIL.WritingSystems
 				}
 			}
 			AddLanguage("qaa", "qaa", "qaa", "Unlisted Language");
-
-
-			//// Load from file into the data structures instead of creating it from scratch
-			//var entries = LanguageRegistryResources.LanguageDataIndex.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
-
-			//foreach (string entry in entries)
-			//{
-			//	// Fields in LanguageDataIndex
-			//	// Code ThreeLetterCode DesiredName Names Countries PrimaryCountry
-			//	string[] items = entry.Split('\t');
-			//	if (items.Length != 7) // This needs to be changed if the number of fields changes
-			//		continue;
-			//	string code = items[0];
-			//	string threelettercode = items[1];
-			//	string desiredname = items[2];
-			//	bool macrolanguage = String.Equals("M", items[3]);
-			//	string[] names = items[4].Split(';');
-			//	string[] countries = items[5].Split(';');
-			//	string primarycountry = items[6];
-			//	LanguageInfo language = new LanguageInfo { LanguageTag = code, ThreeLetterTag = threelettercode, DesiredName = desiredname,
-			//		IsMacroLanguage = macrolanguage, PrimaryCountry = primarycountry };
-			//	foreach (string country in countries)
-			//	{
-			//		language.Countries.Add(country);
-			//	}
-			//	foreach (string langname in names)
-			//	{
-			//		language.Names.Add(langname.Trim());
-			//	}
-
-			//	// Do not add anything to LanguageInfo manually here if it would be useful in LanguageDataIndex.txt/json
-
-			//	// add language to _codeToLanguageIndex and _nameToLanguageIndex
-			//	// if 2 letter code then add both 2 and 3 letter codes to _codeToLanguageIndex
-
-			//	_codeToLanguageIndex[code] = language;
-			//	if (!String.Equals(code, threelettercode))
-			//	{
-			//		_codeToLanguageIndex[threelettercode] = language;
-			//	}
-			//	foreach (string langname in language.Names)
-			//		GetOrCreateListFromName(langname).Add(language);
-			//	// add to _countryToLanguageIndex
-			//	foreach (var country in language.Countries)
-			//	{
-			//		if (!string.IsNullOrEmpty(country))
-			//		{
-			//			List<LanguageInfo> list;
-			//			if (!_countryToLanguageIndex.TryGetValue(country, out list))
-			//			{
-			//				list = new List<LanguageInfo>();
-			//				_countryToLanguageIndex[country] = list;
-			//			}
-			//			list.Add(language);
-			//		}
-			//	}
-			//}
 		}
 
 		private bool AddLanguage(string code, string threelettercode, string full = null,
@@ -381,9 +323,9 @@ namespace SIL.WritingSystems
 					return 1;
 
 				// TODO This part does tag validation which is unhelpful. Any simpler way to get the language part?
-				if (IetfLanguageTag.GetLanguagePart(x.LanguageTag, false).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
+				if ((IetfLanguageTag.GetLanguagePart(x.LanguageTag).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase)))
 					return -1;
-				if (IetfLanguageTag.GetLanguagePart(y.LanguageTag, false).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
+				if ((IetfLanguageTag.GetLanguagePart(y.LanguageTag).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase)))
 					return 1;
 
 				// Use the "editing distance" relative to the search string to sort by the primary name.

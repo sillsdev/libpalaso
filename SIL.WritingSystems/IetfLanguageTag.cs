@@ -763,8 +763,8 @@ namespace SIL.WritingSystems
 			Group languageGroup = match.Groups["language"];
 			if (languageGroup.Success)
 			{
-				//if (!StandardSubtags.IsValidIso639LanguageCode(languageGroup.Value))
-				//	return false;
+				if (!StandardSubtags.IsValidIso639LanguageCode(languageGroup.Value))
+					return false;
 				language = languageGroup.Value;
 			}
 
@@ -1063,12 +1063,8 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Gets the language part of the specified language tag.
 		/// </summary>
-		public static string GetLanguagePart(string langTag, bool validate = true)
+		public static string GetLanguagePart(string langTag)
 		{
-			if (!validate)
-			{
-				return langTag.Split('-')[0];
-			}
 			string language, script, region, variant;
 			if (!TryGetParts(langTag, out language, out script, out region, out variant))
 				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
