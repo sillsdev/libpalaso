@@ -76,7 +76,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._L10NSharpExtender.SetLocalizationComment(this.PrimaryNameHeader, null);
 			this._L10NSharpExtender.SetLocalizingId(this.PrimaryNameHeader, "LanguageLookup.PrimaryNameHeader");
 			this.PrimaryNameHeader.Text = "Name";
-			this.PrimaryNameHeader.Width = 194;
+			this.PrimaryNameHeader.Width = 358;
 			// 
 			// codeHeader
 			// 
@@ -84,7 +84,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._L10NSharpExtender.SetLocalizationComment(this.codeHeader, null);
 			this._L10NSharpExtender.SetLocalizingId(this.codeHeader, "LanguageLookup.CodeHeader");
 			this.codeHeader.Text = "Code";
-			this.codeHeader.Width = 72;
+			this.codeHeader.Width = 95;
 			// 
 			// countryHeader
 			// 
@@ -92,7 +92,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._L10NSharpExtender.SetLocalizationComment(this.countryHeader, null);
 			this._L10NSharpExtender.SetLocalizingId(this.countryHeader, "LanguageLookup.CountryHeader");
 			this.countryHeader.Text = "Country";
-			this.countryHeader.Width = 305;
+			this.countryHeader.Width = 119;
 			// 
 			// _searchText
 			// 
@@ -197,7 +197,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._L10NSharpExtender.SetLocalizingId(this._scriptsAndVariantsLink, "LanguageLookup._scriptsAndVariantsLink");
 			this._scriptsAndVariantsLink.Location = new System.Drawing.Point(3, 0);
 			this._scriptsAndVariantsLink.Name = "_scriptsAndVariantsLink";
-			this._scriptsAndVariantsLink.Size = new System.Drawing.Size(101, 13);
+			this._scriptsAndVariantsLink.Size = new System.Drawing.Size(91, 13);
 			this._scriptsAndVariantsLink.TabIndex = 17;
 			this._scriptsAndVariantsLink.TabStop = true;
 			this._scriptsAndVariantsLink.Text = "Script and Variant";
@@ -210,7 +210,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			this._L10NSharpExtender.SetLocalizableToolTip(this._scriptsAndVariantsLabel, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._scriptsAndVariantsLabel, null);
 			this._L10NSharpExtender.SetLocalizingId(this._scriptsAndVariantsLabel, "LanguageLookup._scriptsAndVariantsLabel");
-			this._scriptsAndVariantsLabel.Location = new System.Drawing.Point(110, 0);
+			this._scriptsAndVariantsLabel.Location = new System.Drawing.Point(100, 0);
 			this._scriptsAndVariantsLabel.Name = "_scriptsAndVariantsLabel";
 			this._scriptsAndVariantsLabel.Size = new System.Drawing.Size(108, 13);
 			this._scriptsAndVariantsLabel.TabIndex = 18;
