@@ -21,6 +21,7 @@ namespace SIL.WritingSystems
 		// use the more practical constraint of 2 to 3 characters, which allows private use ICU locales with
 		// only a language defined (i.e. "xkal") to not match the regex.
 		private const string LanguageExpr = "[a-zA-Z]{2,8}(-[a-zA-Z]{3}){0,3}";
+		private const string SignLanguageExpr = "sgn-[a-zA-Z]{2,8}";
 		private const string ScriptExpr = "[a-zA-Z]{4}";
 		private const string RegionExpr = "[a-zA-Z]{2}|[0-9]{3}";
 		private const string VariantSubExpr = "[0-9][a-zA-Z0-9]{3}|[a-zA-Z0-9]{5,8}";
@@ -36,7 +37,8 @@ namespace SIL.WritingSystems
 			+ "(-(?'privateuse'" + PrivateUseExpr + "))?\\z)";
 
 		private const string LangTagExpr = "(\\A(?'privateuse'" + PrivateUseExpr + ")\\z)"
-			+ "|(\\A(?'language'" + LanguageExpr + ")"
+			+ "|((\\A(?'signlanguage'" + SignLanguageExpr + ")"
+			+ "|(\\A(?'language'" + LanguageExpr + ")))"
 			+ "(-(?'script'" + ScriptExpr + "))?"
 			+ "(-(?'region'" + RegionExpr + "))?"
 			+ "(-(?'variant'" + VariantExpr + "))?"
@@ -46,6 +48,7 @@ namespace SIL.WritingSystems
 		private static readonly Regex IcuTagPattern;
 		private static readonly Regex LangTagPattern;
 		private static readonly Regex LangPattern;
+		private static readonly Regex SignLangPattern;
 		private static readonly Regex ScriptPattern;
 		private static readonly Regex RegionPattern;
 		private static readonly Regex PrivateUsePattern;
@@ -55,6 +58,7 @@ namespace SIL.WritingSystems
 			IcuTagPattern = new Regex(IcuTagExpr, RegexOptions.ExplicitCapture);
 			LangTagPattern = new Regex(LangTagExpr, RegexOptions.ExplicitCapture);
 			LangPattern = new Regex("\\A(" + LanguageExpr + ")\\z", RegexOptions.ExplicitCapture);
+			SignLangPattern = new Regex("\\A(" + SignLanguageExpr + ")\\z", RegexOptions.ExplicitCapture);
 			ScriptPattern = new Regex("\\A(" + ScriptExpr + ")\\z", RegexOptions.ExplicitCapture);
 			RegionPattern = new Regex("\\A(" + RegionExpr + ")\\z", RegexOptions.ExplicitCapture);
 			PrivateUsePattern = new Regex("\\A(" + PrivateUseSubExpr + ")\\z", RegexOptions.ExplicitCapture);
@@ -125,7 +129,7 @@ namespace SIL.WritingSystems
 
 		public static bool IsValidLanguageCode(string code)
 		{
-			return LangPattern.IsMatch(code);
+			return LangPattern.IsMatch(code) || SignLangPattern.IsMatch(code);
 		}
 
 		public static bool IsValidScriptCode(string code)
@@ -410,7 +414,7 @@ namespace SIL.WritingSystems
 				// Insert non-custom language, script, region into main part of code.
 				if (languageSubtag.IsPrivateUse && languageSubtag.Code != WellKnownSubtags.UnlistedLanguage)
 				{
-					if (!LangPattern.IsMatch(languageSubtag.Code))
+					if (!LangPattern.IsMatch(languageSubtag.Code) && !SignLangPattern.IsMatch((languageSubtag.Code)))
 					{
 						message = "The private use language code is invalid.";
 						paramName = "languageSubtag";
@@ -760,12 +764,20 @@ namespace SIL.WritingSystems
 			if (!match.Success)
 				return false;
 
-			Group languageGroup = match.Groups["language"];
-			if (languageGroup.Success)
+			Group signlanguageGroup = match.Groups["signlanguage"];
+			if (signlanguageGroup.Success)
 			{
-				if (!StandardSubtags.IsValidIso639LanguageCode(languageGroup.Value))
-					return false;
-				language = languageGroup.Value;
+				language = signlanguageGroup.Value;
+			}
+			else
+			{
+				Group languageGroup = match.Groups["language"];
+				if (languageGroup.Success)
+				{
+					if (!StandardSubtags.IsValidIso639LanguageCode(languageGroup.Value))
+						return false;
+					language = languageGroup.Value;
+				}
 			}
 
 			Group scriptGroup = match.Groups["script"];

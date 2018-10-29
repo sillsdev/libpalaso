@@ -43,7 +43,7 @@ namespace SIL.WritingSystems
 
 			foreach (AllTagEntry entry in rootObject)
 			{
-				if (!entry.deprecated)
+				if (!entry.deprecated && !entry.tag.StartsWith("x-")) // tags starting with x- have undefined structure so ignoring them as well as deprecated tags
 				{
 					AddLanguage(entry.tag, entry.iso639_3, entry.full, entry.name, entry.region, entry.names, entry.tags);
 				}

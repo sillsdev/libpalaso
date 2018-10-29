@@ -9,12 +9,15 @@ namespace SIL.WritingSystems
 	/// <summary>
 	/// This class parses the IANA subtag registry in order to provide a list of valid language, script, region and variant subtags
 	/// for use by the IetfLanguageTagHelper and other classes.
+	///
+	/// Languages and scripts that are newer than the subtag registry may be added with AddScript and AddLanguage
 	/// </summary>
 	public static class StandardSubtags
 	{
 		static StandardSubtags()
 		{	
 			InitialiseIanaSubtags(LanguageRegistryResources.TwoToThreeCodes, LanguageRegistryResources.ianaSubtagRegistry);
+			// Iso3Languages will not include added languages
 			Iso3Languages = RegisteredLanguages.Where(l => !string.IsNullOrEmpty(l.Iso3Code)).ToDictionary(l => l.Iso3Code, StringComparer.InvariantCultureIgnoreCase);
 		}
 
