@@ -52,7 +52,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		[Ignore("This test is not longer valid because language tags are only linked to primary region Thailand")] // 2018-10-26
+		[Ignore("This test is not longer valid because language tags are only linked to primary region - Thailand")] // 2018-10-26
 		public void SuggestLanguages_Thai_TwoCountries()
 		{
 			/*	tha	KH 	D	Thai Koh Kong
@@ -185,29 +185,29 @@ namespace SIL.WritingSystems.Tests
 		{
 			var lookup = new LanguageLookup();
 			LanguageInfo[] languages = lookup.SuggestLanguages("a").ToArray();
-			Assert.True(languages.Any(l => l.LanguageTag == "ak" && l.IsMacroLanguage));
-			Assert.True(languages.Any(l => l.LanguageTag == "akq" && !l.IsMacroLanguage));
-			Assert.True(languages.Any(l => l.Names.Contains("Akuapem") && l.IsMacroLanguage));
-			Assert.True(languages.Any(l => l.Names.Contains("Ak") && !l.IsMacroLanguage));
-			Assert.True(languages.Any(l => l.Names.Contains("Akan") && l.IsMacroLanguage));
-			Assert.True(languages.Any(l => l.Names.Contains("Fanti") && l.IsMacroLanguage));
+			Assert.True(languages.Any(l => l.LanguageTag == "ak"));
+			Assert.True(languages.Any(l => l.LanguageTag == "akq"));
+			//Assert.True(languages.Any(l => l.Names.Contains("Akuapem"))); // 2018-10-26 Dialect name so not found any more
+			Assert.True(languages.Any(l => l.Names.Contains("Ak")));
+			Assert.True(languages.Any(l => l.Names.Contains("Akan")));
+			// Assert.True(languages.Any(l => l.Names.Contains("Fanti"))); // 2018-10-26 Dialect name so not found any more
 			languages = lookup.SuggestLanguages("ak").ToArray();
-			Assert.True(languages.Any(l => l.LanguageTag == "ak" && l.IsMacroLanguage));
-			Assert.True(languages.Any(l => l.LanguageTag == "akq" && !l.IsMacroLanguage));
-			Assert.True(languages.Any(l => l.Names.Contains("Asante") && l.IsMacroLanguage));
-			Assert.True(languages.Any(l => l.Names.Contains("Ak") && !l.IsMacroLanguage));
-			Assert.True(languages.Any(l => l.Names.Contains("Akan") && l.IsMacroLanguage));
-			Assert.True(languages.Any(l => l.Names.Contains("Fanti") && l.IsMacroLanguage));
+			Assert.True(languages.Any(l => l.LanguageTag == "ak"));
+			Assert.True(languages.Any(l => l.LanguageTag == "akq"));
+			//Assert.True(languages.Any(l => l.Names.Contains("Asante"))); // 2018-10-26 Dialect name so not found any more
+			Assert.True(languages.Any(l => l.Names.Contains("Ak")));
+			Assert.True(languages.Any(l => l.Names.Contains("Akan")));
+			//Assert.True(languages.Any(l => l.Names.Contains("Fanti"))); // 2018-10-26 Dialect name so not found any more
 		}
 
 		[Test]
+		//[Ignore("TODO:FIX:Should search for country en and find code 'es'?")] // 2018-10-26
 		public void SuggestLanguages_ByCountry_Matches()
-		[Ignore("TODO:FIX:Should search for country en fine code 'es'?")] // 2018-10-26
 		{
 			var lookup = new LanguageLookup();
 			var languages = lookup.SuggestLanguages("United States");
 			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("en")));
-			// Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("es"))); // not true in this data?
+			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("es-US")));
 
 			languages = lookup.SuggestLanguages("Fran"); // prefix of 'France'
 			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("fr")));
