@@ -40218,6 +40218,21 @@
         ]
     }, 
     {
+        "full": "gie-Qaax-CI", 
+        "iso639_3": "gie", 
+        "name": "Guébie", 
+        "names": [
+            ""
+        ], 
+        "region": "CI", 
+        "sldr": false, 
+        "tag": "gie", 
+        "tags": [
+            "gie-CI", 
+            "gie-Qaax"
+        ]
+    }, 
+    {
         "full": "gig-Arab-PK", 
         "iso639_3": "gig", 
         "name": "Goaria", 
@@ -88886,6 +88901,21 @@
         "tag": "npu-Latn"
     }, 
     {
+        "full": "npx-Latn-SB", 
+        "iso639_3": "npx", 
+        "name": "Noipä", 
+        "names": [
+            "Noipx"
+        ], 
+        "region": "SB", 
+        "sldr": false, 
+        "tag": "npx", 
+        "tags": [
+            "npx-SB", 
+            "npx-Latn"
+        ]
+    }, 
+    {
         "full": "npy-Latn-ID", 
         "iso639_3": "npy", 
         "name": "Napu", 
@@ -94820,6 +94850,22 @@
         "tags": [
             "pbl-NG", 
             "pbl-Zyyy"
+        ]
+    }, 
+    {
+        "full": "pbm-Latn-MX", 
+        "iso639_3": "pbm", 
+        "name": "Mazatec, Puebla and Northeastern", 
+        "names": [
+            "Mazateco de Puebla y del Noroeste", 
+            "’an Xo’boó"
+        ], 
+        "region": "MX", 
+        "sldr": false, 
+        "tag": "pbm", 
+        "tags": [
+            "pbm-MX", 
+            "pbm-Latn"
         ]
     }, 
     {
@@ -110789,19 +110835,11 @@
         ], 
         "region": "AL", 
         "sldr": false, 
-        "tag": "sq-Elba-AL", 
+        "tag": "sq-Elba", 
         "tags": [
             "als-Elba", 
             "als-Elba-AL"
         ]
-    }, 
-    {
-        "full": "sq-Elsa-AL", 
-        "iso639_3": "sqi", 
-        "name": "Albanian", 
-        "region": "AL", 
-        "sldr": false, 
-        "tag": "sq-Elsa"
     }, 
     {
         "full": "sq-Grek-GR", 
@@ -114079,6 +114117,21 @@
         "tags": [
             "szp-ID", 
             "szp-Zyyy"
+        ]
+    }, 
+    {
+        "full": "szs-Latn-SB", 
+        "iso639_3": "szs", 
+        "name": "Solomon Islands Sign Language", 
+        "names": [
+            "SISL"
+        ], 
+        "region": "SB", 
+        "sldr": false, 
+        "tag": "szs", 
+        "tags": [
+            "szs-SB", 
+            "szs-Latn"
         ]
     }, 
     {
@@ -127992,6 +128045,18 @@
         ]
     }, 
     {
+        "full": "wbs-Zyyy-IN", 
+        "iso639_3": "", 
+        "name": "West Bengal Sign Language", 
+        "region": "IN", 
+        "sldr": false, 
+        "tag": "wbs", 
+        "tags": [
+            "wbs-IN", 
+            "wbs-Zyyy"
+        ]
+    }, 
+    {
         "full": "wbt-Latn-AU", 
         "iso639_3": "wbt", 
         "name": "Wanman", 
@@ -140198,12 +140263,29 @@
         ]
     }, 
     {
-        "full": "zag-Qaaz-SD", 
+        "full": "zag-Qaaz-SD-x-beria", 
         "iso639_3": "zag", 
         "name": "Zaghawa", 
+        "names": [
+            "Beri", 
+            "Beri-Aa", 
+            "Beria", 
+            "Berri", 
+            "Bideyat", 
+            "Kebadi", 
+            "Kuyuk", 
+            "Merida", 
+            "Soghaua", 
+            "Zagaoua", 
+            "Zagawa", 
+            "Zauge", 
+            "Zeggaoua", 
+            "Zeghawa", 
+            "Zorhaua"
+        ], 
         "region": "SD", 
         "sldr": false, 
-        "tag": "zag-Qaaz-SD"
+        "tag": "zag-Qaaz-x-beria"
     }, 
     {
         "full": "zah-Zyyy-NG", 
