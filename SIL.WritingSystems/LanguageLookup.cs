@@ -249,6 +249,16 @@ namespace SIL.WritingSystems
 				foreach (LanguageInfo languageInfo in all_languages.OrderBy(l => l, new ResultComparer(searchString)))
 					yield return languageInfo;
 			}
+			// if the search string exactly matches a hard-coded way to say "sign", show all the sign languages
+			else if (new []{"sign", "sign language","signes", "langage des signes", "señas","lenguaje de señas"}.Contains(searchString.ToLowerInvariant()))
+			{
+				var parallelSearch = _codeToLanguageIndex.AsParallel().Select(li => li.Value).Where(l =>
+					l.Names.AsQueryable().Any(n => n.ToLowerInvariant().Contains("sign")));
+				foreach (var languageInfo in parallelSearch)
+				{
+					yield return languageInfo;
+				}
+			}
 			else
 			{
 				IEnumerable<LanguageInfo> matchOnCode = from x in _codeToLanguageIndex where x.Key.StartsWith(searchString, StringComparison.InvariantCultureIgnoreCase) select x.Value;
