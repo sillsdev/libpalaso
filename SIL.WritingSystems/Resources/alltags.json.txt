@@ -140198,12 +140198,12 @@
         ]
     }, 
     {
-        "full": "zag-beria-sd", 
+        "full": "zag-Qaaz-SD", 
         "iso639_3": "zag", 
         "name": "Zaghawa", 
-        "region": null, 
+        "region": "SD", 
         "sldr": false, 
-        "tag": "zag-beria-sd"
+        "tag": "zag-Qaaz-SD"
     }, 
     {
         "full": "zah-Zyyy-NG", 
