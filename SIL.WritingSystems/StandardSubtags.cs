@@ -17,7 +17,6 @@ namespace SIL.WritingSystems
 		static StandardSubtags()
 		{	
 			InitialiseIanaSubtags(LanguageRegistryResources.TwoToThreeCodes, LanguageRegistryResources.ianaSubtagRegistry);
-			// Iso3Languages will not include added languages
 			Iso3Languages = RegisteredLanguages.Where(l => !string.IsNullOrEmpty(l.Iso3Code)).ToDictionary(l => l.Iso3Code, StringComparer.InvariantCultureIgnoreCase);
 		}
 
@@ -157,7 +156,7 @@ namespace SIL.WritingSystems
 			}, v => v.Code, StringComparer.InvariantCultureIgnoreCase));
 		}
 
-		private static readonly Dictionary<string, LanguageSubtag> Iso3Languages; 
+		private static Dictionary<string, LanguageSubtag> Iso3Languages;
 
 		public static IKeyedCollection<string, ScriptSubtag> RegisteredScripts { get; private set; }
 
@@ -188,6 +187,7 @@ namespace SIL.WritingSystems
 		{
 			var languageTag = new LanguageSubtag(code, name, isPrivateUse, iso3Code);
 			RegisteredLanguages.Add(languageTag);
+			Iso3Languages = RegisteredLanguages.Where(l => !string.IsNullOrEmpty(l.Iso3Code)).ToDictionary(l => l.Iso3Code, StringComparer.InvariantCultureIgnoreCase);
 		}
 
 		internal static string SubTagComponentDescription(string component)

@@ -332,10 +332,9 @@ namespace SIL.WritingSystems
 				if (y.LanguageTag.Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
 					return 1;
 
-				// TODO This part does tag validation which is unhelpful. Any simpler way to get the language part?
-				if ((IetfLanguageTag.GetLanguagePart(x.LanguageTag).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase)))
+				if (IetfLanguageTag.GetLanguagePart(x.LanguageTag).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
 					return -1;
-				if ((IetfLanguageTag.GetLanguagePart(y.LanguageTag).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase)))
+				if (IetfLanguageTag.GetLanguagePart(y.LanguageTag).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
 					return 1;
 
 				// Use the "editing distance" relative to the search string to sort by the primary name.
