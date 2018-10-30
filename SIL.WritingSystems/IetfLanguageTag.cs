@@ -15,6 +15,8 @@ namespace SIL.WritingSystems
 	public static class IetfLanguageTag
 	{
 		private const string PrivateUseExpr = "[xX](-" + PrivateUseSubExpr + ")+";
+		// according to RFC-5646 the private use subtag can be up to 8 characters
+		// some data in alltags uses longer ones so relaxing this requirement
 		private const string PrivateUseSubExpr = "[a-zA-Z0-9]{1,15}";
 		// according to RFC-5646, a primary language subtag can be anywhere from 2 to 8 characters in length,
 		// at this point only ISO 639 codes are allowed, which are all 2 to 3 characters in length, so we

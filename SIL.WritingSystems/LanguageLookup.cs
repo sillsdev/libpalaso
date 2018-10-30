@@ -58,8 +58,6 @@ namespace SIL.WritingSystems
 			{
 				desiredname = code; // temp workaround for data missing names
 			}
-			//bool macrolanguage = String.Equals("M", items[3]); // TODO macrolanguages? are the ones we don't want in the data?
-			//string[] countries = items[5].Split(';');
 			string primarycountry;
 			if (region == null)
 			{
@@ -92,13 +90,8 @@ namespace SIL.WritingSystems
 				LanguageTag = code,
 				ThreeLetterTag = threelettercode,
 				DesiredName = desiredname,
-				//IsMacroLanguage = macrolanguage,
 				PrimaryCountry = primarycountry
 			};
-			//foreach (string country in countries)
-			//{
-			//	language.Countries.Add(country);
-			//}
 			language.Countries.Add(primarycountry);
 			//Why just this small set? Only out of convenience. Ideally we'd have a db of all languages as they write it in their literature.
 			string localName = null;
@@ -154,7 +147,7 @@ namespace SIL.WritingSystems
 			// if 2 letter code then add both 2 and 3 letter codes to _codeToLanguageIndex
 
 			_codeToLanguageIndex[code] = language;
-			if (full != null && !string.Equals(full ,code))
+			if (full != null && !string.Equals(full, code))
 			{
 				_codeToLanguageIndex[full] = language; // add the full expanded tag
 			}
