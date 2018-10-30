@@ -154,12 +154,12 @@ namespace SIL.WritingSystems
 			// if 2 letter code then add both 2 and 3 letter codes to _codeToLanguageIndex
 
 			_codeToLanguageIndex[code] = language;
-			if (full != null)
+			if (full != null && !string.Equals(full ,code))
 			{
 				_codeToLanguageIndex[full] = language; // add the full expanded tag
 			}
 
-			if (threelettercode != null && !String.Equals(code, threelettercode))
+			if (threelettercode != null && !string.Equals(code, threelettercode))
 			{
 				_codeToLanguageIndex[threelettercode] = language;
 			}
@@ -244,17 +244,18 @@ namespace SIL.WritingSystems
 
 			if (searchString == "*")
 			{
-				// there will be duplicate LanguageInfo entries for 2 and 3 letter codes
+				// there will be duplicate LanguageInfo entries for 2 and 3 letter codes and equivalent tags
 				var all_languages = new HashSet<LanguageInfo>(_codeToLanguageIndex.Select(l => l.Value));
 				foreach (LanguageInfo languageInfo in all_languages.OrderBy(l => l, new ResultComparer(searchString)))
 					yield return languageInfo;
 			}
 			// if the search string exactly matches a hard-coded way to say "sign", show all the sign languages
+			// there will be duplicate LanguageInfo entries for equivalent tags
 			else if (new []{"sign", "sign language","signes", "langage des signes", "señas","lenguaje de señas"}.Contains(searchString.ToLowerInvariant()))
 			{
-				var parallelSearch = _codeToLanguageIndex.AsParallel().Select(li => li.Value).Where(l =>
-					l.Names.AsQueryable().Any(n => n.ToLowerInvariant().Contains("sign")));
-				foreach (var languageInfo in parallelSearch)
+				var parallelSearch = new HashSet<LanguageInfo>(_codeToLanguageIndex.AsParallel().Select(li => li.Value).Where(l =>
+					l.Names.AsQueryable().Any(n => n.ToLowerInvariant().Contains("sign"))));
+				foreach (LanguageInfo languageInfo in parallelSearch)
 				{
 					yield return languageInfo;
 				}

@@ -386,7 +386,7 @@ namespace SIL.WritingSystems.Tests
 					li.Names.AsQueryable().Any(n => n.ToLowerInvariant().Contains("sign"))
 				).Count();
 				Assert.GreaterOrEqual(countOfPossibleSignLangsYouWouldGetWithThatSearchTerm,
-					570); // was 572 in October 2018. So if it's giving us at least 570, it's probably doing the right thing
+					140); // was 145 in October 2018. So if it's giving us at least 140, it's probably doing the right thing
 			}
 		}
 	}
