@@ -138,14 +138,10 @@
     <value>Resources\TwoToThreeCodes.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
     <comment>This is the mapping between 2 and 3 letter language codes</comment>
   </data>
-  <data name="alltags" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\alltags.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
   <data name="AllTagsTime" xml:space="preserve">
     <value>2015-11-12T06:04:38Z</value>
   </data>
-  <data name="alltags_json" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\alltags.json.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-    <comment>JSON alltags language data</comment>
+  <data name="alltags" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\alltags.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
 </root>

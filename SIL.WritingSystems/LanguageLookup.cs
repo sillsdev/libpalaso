@@ -36,8 +36,8 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public LanguageLookup()
 		{
-			var _languageTags = Sldr.LanguageTags; // initialise SLDR language tags for implicit script codes
-			var allTagsContent = LanguageRegistryResources.alltags_json;
+			Sldr.InitializeLanguageTags(); // initialise SLDR language tags for implicit script codes
+			string allTagsContent = LanguageRegistryResources.alltags;
 
 			List<AllTagEntry> rootObject = JsonConvert.DeserializeObject<List<AllTagEntry>>(allTagsContent);
 

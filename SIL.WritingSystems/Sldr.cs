@@ -347,6 +347,11 @@ namespace SIL.WritingSystems
 			}
 		}
 
+		public static void InitializeLanguageTags()
+		{
+			LoadLanguageTagsIfNecessary();
+		}
+
 		/// <summary>
 		/// Gets the language tags of the available LDML files in the SLDR.
 		/// </summary>
@@ -438,7 +443,7 @@ namespace SIL.WritingSystems
 				//	}
 
 				//	allTagsContent = File.Exists(cachedAllTagsPath) ? File.ReadAllText(cachedAllTagsPath) : LanguageRegistryResources.alltags;
-				allTagsContent = LanguageRegistryResources.alltags_json;
+				allTagsContent = LanguageRegistryResources.alltags;
 			}
 			_languageTags = new ReadOnlyKeyedCollection<string, SldrLanguageTagInfo>(ParseAllTagsJson(allTagsContent));
 		}
