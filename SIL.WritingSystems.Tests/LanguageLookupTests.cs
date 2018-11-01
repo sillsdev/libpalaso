@@ -47,7 +47,7 @@ namespace SIL.WritingSystems.Tests
 			*/
 			var lookup = new LanguageLookup();
 			LanguageInfo thai = lookup.SuggestLanguages("thai").First();
-			Assert.That(thai.Names[0], Is.EqualTo("ภาษาไทย"));
+			Assert.That(thai.Names[0], Is.EqualTo("ไทย"));
 			Assert.That(thai.Names[1], Is.EqualTo("Thai"));
 		}
 
@@ -82,7 +82,8 @@ namespace SIL.WritingSystems.Tests
 		public void SuggestLanguages_Thai_CodeIsJustTwoLetters()
 		{
 			var lookup = new LanguageLookup();
-			LanguageInfo languageInfo = lookup.SuggestLanguages("thai").First();
+			var selection = lookup.SuggestLanguages("thai");
+			LanguageInfo languageInfo = selection.First();
 			Assert.That(languageInfo.LanguageTag, Is.EqualTo("th"));
 		}
 
@@ -94,7 +95,8 @@ namespace SIL.WritingSystems.Tests
 		{
 			var lookup = new LanguageLookup();
 			//messed up case is intentional
-			Assert.That(lookup.SuggestLanguages("english").First().Names.Count(s => s == "English"), Is.EqualTo(1));
+			var search = lookup.SuggestLanguages("english");
+			Assert.That(search.First().Names.Count(s => s == "English"), Is.EqualTo(1));
 		}
 
 		[TestCase("en", "United States")] // a typical result
@@ -207,7 +209,7 @@ namespace SIL.WritingSystems.Tests
 			var lookup = new LanguageLookup();
 			var languages = lookup.SuggestLanguages("United States");
 			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("en")));
-			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("es-US")));
+			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("es")));
 
 			languages = lookup.SuggestLanguages("Fran"); // prefix of 'France'
 			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("fr")));

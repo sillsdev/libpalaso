@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using Newtonsoft.Json;
 using SIL.Code;
 using SIL.Text;
@@ -45,14 +46,14 @@ namespace SIL.WritingSystems
 			{
 				if (!entry.deprecated && !entry.tag.StartsWith("x-")) // tags starting with x- have undefined structure so ignoring them as well as deprecated tags
 				{
-					AddLanguage(entry.tag, entry.iso639_3, entry.full, entry.name, entry.region, entry.names, entry.tags);
+					AddLanguage(entry.tag, entry.iso639_3, entry.full, entry.name, entry.localname, entry.region, entry.names, entry.regions, entry.tags);
 				}
 			}
-			AddLanguage("qaa", "qaa", "qaa", "Unlisted Language");
+			AddLanguage("qaa", "qaa", "qaa", "Unlisted Language", region : "001");
 		}
 
 		private bool AddLanguage(string code, string threelettercode, string full = null,
-			string desiredname = null, string region = null, List<string> names = null, List<string> tags = null)
+			string desiredname = null, string localName = null, string region = null, List<string> names = null, string regions = null, List<string> tags = null)
 		{
 			if (desiredname == null)
 			{
@@ -93,54 +94,35 @@ namespace SIL.WritingSystems
 				PrimaryCountry = primarycountry
 			};
 			language.Countries.Add(primarycountry);
-			//Why just this small set? Only out of convenience. Ideally we'd have a db of all languages as they write it in their literature.
-			string localName = null;
-			switch (desiredname)
+
+			if (regions != null)
 			{
-				case "French":
-					localName = "français";
-					break;
-				case "Spanish":
-					localName = "español";
-					break;
-				case "Chinese":
-					localName = "中文";
-					break;
-				case "Hindi":
-					localName = "हिन्दी";
-					break;
-				case "Bengali":
-					localName = "বাংলা";
-					break;
-				case "Telugu":
-					localName = "తెలుగు";
-					break;
-				case "Tamil":
-					localName = "தமிழ்";
-					break;
-				case "Urdu":
-					localName = "اُردُو";
-					break;
-				case "Arabic":
-					localName = "العربية/عربي";
-					break;
-				case "Thai":
-					localName = "ภาษาไทย";
-					break;
-				case "Indonesian":
-					localName = "Bahasa Indonesia";
-					break;
+				string[] countries = regions.Split();
+				foreach (string country in countries)
+				{
+					if (!country.Contains('?'))
+					{
+						language.Countries.Add(StandardSubtags.RegisteredRegions[country].Name);
+					}
+				}
 			}
+
 			if (localName != null)
 			{
-				language.Names.Add(localName);
+				language.Names.Add(localName.Trim());
 			}
-			language.Names.Add(desiredname.Trim());
+			if (localName != desiredname)
+			{
+				language.Names.Add(desiredname.Trim());
+			}
 			if (names != null)
 			{
 				foreach (string langname in names)
 				{
-					language.Names.Add(langname.Trim());
+					if (!language.Names.Contains(langname))
+					{
+						language.Names.Add(langname.Trim());
+					}
 				}
 			}
 			// add language to _codeToLanguageIndex and _nameToLanguageIndex
@@ -196,7 +178,7 @@ namespace SIL.WritingSystems
 			var result = new List<LanguageInfo>();
 			foreach (var lang in _codeToLanguageIndex.Values)
 			{
-				if (String.IsNullOrEmpty(lang.PrimaryCountry))
+				if (String.IsNullOrEmpty(lang.PrimaryCountry) && !result.Contains(lang))
 					result.Add(lang);
 			}
 			return result;
@@ -288,7 +270,8 @@ namespace SIL.WritingSystems
 					combined.UnionWith(l);
 				foreach (List<LanguageInfo> l in matchOnCountry)
 					combined.UnionWith(l);
-				foreach (LanguageInfo languageInfo in combined.OrderBy(l => l, new ResultComparer(searchString)))
+				var ordered = combined.OrderBy(l => l, new ResultComparer(searchString));
+				foreach (LanguageInfo languageInfo in ordered)
 					yield return languageInfo;
 			}
 		}
@@ -308,7 +291,7 @@ namespace SIL.WritingSystems
 			{
 				if (x.LanguageTag == y.LanguageTag)
 					return 0;
-				if (!x.Names[0].Equals(y.Names[0], StringComparison.InvariantCultureIgnoreCase))
+				if (!x.DesiredName.Equals(y.DesiredName, StringComparison.InvariantCultureIgnoreCase))
 				{
 					// Favor ones where some language matches to solve BL-1141
 					if (x.Names[0].Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
@@ -329,6 +312,12 @@ namespace SIL.WritingSystems
 				if (IetfLanguageTag.GetLanguagePart(x.LanguageTag).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
 					return -1;
 				if (IetfLanguageTag.GetLanguagePart(y.LanguageTag).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
+					return 1;
+
+				// shortest simplest tag is most likely to be what is being looked for
+				if (x.LanguageTag.Length < y.LanguageTag.Length)
+					return -1;
+				if (y.LanguageTag.Length < x.LanguageTag.Length)
 					return 1;
 
 				// Use the "editing distance" relative to the search string to sort by the primary name.

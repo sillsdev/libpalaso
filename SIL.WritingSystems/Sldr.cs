@@ -48,9 +48,11 @@ namespace SIL.WritingSystems
 		public bool deprecated { get; set; }
 		public string full { get; set; }
 		public string iso639_3 { get; set; }
+		public string localname { get; set; }
 		public string name { get; set; }
 		public List<string> names { get; set; }
 		public string region { get; set; }
+		public string regions { get; set; }
 		public bool sldr { get; set; }
 		public string tag { get; set; }
 		public List<string> tags { get; set; }
