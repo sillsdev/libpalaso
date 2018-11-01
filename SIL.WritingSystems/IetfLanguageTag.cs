@@ -39,8 +39,9 @@ namespace SIL.WritingSystems
 			+ "(-(?'privateuse'" + PrivateUseExpr + "))?\\z)";
 
 		private const string LangTagExpr = "(\\A(?'privateuse'" + PrivateUseExpr + ")\\z)"
-			+ "|((\\A(?'signlanguage'" + SignLanguageExpr + ")"
-			+ "|(\\A(?'language'" + LanguageExpr + ")))"
+			+ "|((\\A"
+		    + "((?'signlanguage'" + SignLanguageExpr + ")"
+			+ "|(?'language'" + LanguageExpr + ")))"
 			+ "(-(?'script'" + ScriptExpr + "))?"
 			+ "(-(?'region'" + RegionExpr + "))?"
 			+ "(-(?'variant'" + VariantExpr + "))?"

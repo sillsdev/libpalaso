@@ -12387,7 +12387,7 @@
         "tag": "bft-Tibt"
     }, 
     {
-        "full": "bft-x-baltia-pk", 
+        "full": "bft-Qaab-PK-x-baltia", 
         "iso639_3": "bft", 
         "name": "Balti", 
         "names": [
@@ -12398,10 +12398,14 @@
             "Sbalt", 
             "Sbalti"
         ], 
-        "region": null, 
-        "regions": "IN PK", 
+        "region": "PK", 
+        "regions": "IN", 
         "sldr": false, 
-        "tag": "bft-x-baltia-pk"
+        "tag": "bft-x-baltia", 
+        "tags": [
+            "bft-PK-x-baltia", 
+            "bft-Qaab-x-baltia"
+        ]
     }, 
     {
         "full": "bfu-Takr-IN", 
@@ -13776,7 +13780,6 @@
         "iso639_3": "bip", 
         "name": "Bila", 
         "names": [
-            "", 
             "Ebila", 
             "Forest Bira", 
             "KiBila", 
@@ -14533,7 +14536,7 @@
         ]
     }, 
     {
-        "full": "bkk-x-baltia-in", 
+        "full": "bkk-Qaab-IN-x-baltia", 
         "iso639_3": "bkk", 
         "name": "Brokskat", 
         "names": [
@@ -14543,10 +14546,13 @@
             "Kyango", 
             "Minaro"
         ], 
-        "region": null, 
-        "regions": "IN", 
+        "region": "IN", 
         "sldr": false, 
-        "tag": "bkk-x-baltia-in"
+        "tag": "bkk-x-baltia", 
+        "tags": [
+            "bkk-IN-x-baltia", 
+            "bkk-Qaab-x-baltia"
+        ]
     }, 
     {
         "full": "bkl-Latn-ID", 
@@ -18671,7 +18677,6 @@
         "iso639_3": "bsx", 
         "name": "Yangkam", 
         "names": [
-            "", 
             "Bashar", 
             "Basharawa", 
             "Bashiri", 
@@ -31277,6 +31282,18 @@
         "tag": "dnn-Latn"
     }, 
     {
+        "full": "dno-Latn-CD", 
+        "iso639_3": "dno", 
+        "name": "Ndrulo, Northern Lendu", 
+        "region": "CD", 
+        "sldr": false, 
+        "tag": "dno", 
+        "tags": [
+            "dno-CD", 
+            "dno-Latn"
+        ]
+    }, 
+    {
         "full": "dnr-Latn-PG", 
         "iso639_3": "dnr", 
         "name": "Danaru", 
@@ -33043,6 +33060,18 @@
         "tags": [
             "dwy-AU", 
             "dwy-Latn"
+        ]
+    }, 
+    {
+        "full": "dwz-Qaax-NP", 
+        "iso639_3": "dwz", 
+        "name": "Dewas Rai", 
+        "region": "NP", 
+        "sldr": false, 
+        "tag": "dwz", 
+        "tags": [
+            "dwz-NP", 
+            "dwz-Qaax"
         ]
     }, 
     {
@@ -41458,9 +41487,6 @@
         "full": "gie-Qaax-CI", 
         "iso639_3": "gie", 
         "name": "Guébie", 
-        "names": [
-            ""
-        ], 
         "region": "CI", 
         "sldr": false, 
         "tag": "gie", 
@@ -42898,11 +42924,11 @@
         ]
     }, 
     {
-        "full": "goh-Latn", 
+        "full": "goh-Latn-DE", 
         "iso639_3": "goh", 
         "name": "Old High German (ca. 750-1050)", 
-        "region": null, 
-        "regions": "AT CH DE", 
+        "region": "DE", 
+        "regions": "AT CH", 
         "sldr": false, 
         "tag": "goh-Latn"
     }, 
@@ -59054,6 +59080,19 @@
         ]
     }, 
     {
+        "full": "kjf-Zyyy-AZ", 
+        "iso639_3": "kjf", 
+        "name": "Khalaj", 
+        "region": "AZ", 
+        "regions": "IR", 
+        "sldr": false, 
+        "tag": "kjf", 
+        "tags": [
+            "kjf-AZ", 
+            "kjf-Zyyy"
+        ]
+    }, 
+    {
         "full": "kjg-Laoo-LA", 
         "iso639_3": "kjg", 
         "name": "Khmu", 
@@ -59134,20 +59173,6 @@
         "regions": "CN TH US VN", 
         "sldr": false, 
         "tag": "kjg-Latn"
-    }, 
-    {
-        "full": "kjg-Qaaf", 
-        "name": "Khalaj", 
-        "region": null, 
-        "regions": "AZ IR", 
-        "sldr": false, 
-        "tag": "kjg-Qaaf", 
-        "tags": [
-            "kjf", 
-            "kjf-AZ", 
-            "kjf-Zyyy", 
-            "kjf-Zyyy-AZ"
-        ]
     }, 
     {
         "full": "kjg-Thai-TH", 
@@ -64498,7 +64523,7 @@
             "Êzdîkî"
         ], 
         "region": "TR", 
-        "regions": "AM AZ BE BH CA CH DE DK FI GE GR IQ IR IT KG KW KZ LB NL NO RU SE SY TM US", 
+        "regions": "AM AZ BE BH CA CH DE DK FI GE GR IQ IR IT KG KW KZ LB NL NO RU SE SY TM US", 
         "sldr": true, 
         "tag": "ku-Arab-TR", 
         "tags": [
@@ -69629,7 +69654,11 @@
         "region": "CN", 
         "regions": "LA MM TH US", 
         "sldr": false, 
-        "tag": "lhi-Latn"
+        "tag": "lhi", 
+        "tags": [
+            "lhi-CN", 
+            "lhi-Latn"
+        ]
     }, 
     {
         "full": "lhl-Zyyy-IN", 
@@ -79989,10 +80018,7 @@
         "name": "Mongolian", 
         "region": "CN", 
         "sldr": true, 
-        "tag": "mn-CN", 
-        "tags": [
-            "mn-Mong"
-        ]
+        "tag": "mn-Mong"
     }, 
     {
         "full": "mn-Mong-MN", 
@@ -80017,9 +80043,17 @@
         ]
     }, 
     {
-        "full": "mn-Phag-MN", 
+        "full": "mn-Phag-CN", 
         "iso639_3": "mon", 
         "name": "Mongolian", 
+        "region": "CN", 
+        "regions": "MN", 
+        "sldr": false, 
+        "tag": "mn-Phag"
+    }, 
+    {
+        "full": "mn-Phag-MN", 
+        "name": "Mongolian, Halh", 
         "names": [
             "Central Mongolian", 
             "Halh", 
@@ -80028,12 +80062,12 @@
             "Khalkha", 
             "Khalkha Mongolian", 
             "Mongol", 
-            "Mongolian, Halh"
+            "Mongolian"
         ], 
         "region": "MN", 
         "regions": "CZ KG RU TW US", 
         "sldr": false, 
-        "tag": "mn-Phag", 
+        "tag": "mn-Phag-MN", 
         "tags": [
             "khk-Phag", 
             "khk-Phag-MN"
@@ -86901,6 +86935,18 @@
             "ncq-LA", 
             "ncq-Laoo"
         ]
+    }, 
+    {
+        "full": "ncq-Thai-LA", 
+        "iso639_3": "ncq", 
+        "name": "Katang, Northern", 
+        "names": [
+            "Kataang", 
+            "Katang"
+        ], 
+        "region": "LA", 
+        "sldr": false, 
+        "tag": "ncq-Thai"
     }, 
     {
         "full": "ncr-Latn-CM", 
@@ -104864,11 +104910,10 @@
         ]
     }, 
     {
-        "full": "raj-Latn", 
+        "full": "raj-Latn-IN", 
         "iso639_3": "raj", 
         "name": "Rajasthani", 
-        "region": null, 
-        "regions": "IN", 
+        "region": "IN", 
         "sldr": false, 
         "tag": "raj-Latn"
     }, 
@@ -109454,7 +109499,7 @@
         "tag": "scs-Cans"
     }, 
     {
-        "full": "sct-Zyyy-LA", 
+        "full": "sct-Laoo-LA", 
         "iso639_3": "sct", 
         "name": "Katang, Southern", 
         "names": [
@@ -109467,7 +109512,7 @@
         "tag": "sct", 
         "tags": [
             "sct-LA", 
-            "sct-Zyyy"
+            "sct-Laoo"
         ]
     }, 
     {
@@ -111222,7 +111267,7 @@
     }, 
     {
         "full": "shn-Tale-MM-x-taimauold", 
-        "iso639_3": "", 
+        "iso639_3": "shn", 
         "name": "Shan", 
         "region": "MM", 
         "regions": "CN", 
@@ -112321,7 +112366,7 @@
             "Slovenčina"
         ], 
         "region": "SK", 
-        "regions": "AT CA CZ DE HR HU RO RS RU UA US", 
+        "regions": "AT CA CZ DE  HR HU RO RS RU UA US", 
         "sldr": false, 
         "tag": "sk-Brai"
     }, 
@@ -116072,7 +116117,6 @@
         "iso639_3": "sss", 
         "name": "So", 
         "names": [
-            "", 
             "Bru", 
             "Makong", 
             "Mang Cong", 
@@ -116093,7 +116137,6 @@
         "iso639_3": "sss", 
         "name": "So", 
         "names": [
-            "", 
             "Bru", 
             "Makong", 
             "Mang Cong", 
@@ -117034,7 +117077,7 @@
         ]
     }, 
     {
-        "full": "sv-Latn-AX", 
+        "full": "sv-AX", 
         "iso639_3": "swe", 
         "name": "Swedish", 
         "region": "AX", 
@@ -117228,10 +117271,10 @@
         ]
     }, 
     {
-        "full": "sw-Arab-TZ", 
+        "full": "sw-Arab", 
         "iso639_3": "swa", 
-        "name": "Swahili", 
-        "region": "TZ", 
+        "name": "Swahili (macrolanguage)", 
+        "region": null, 
         "sldr": true, 
         "tag": "sw-Arab"
     }, 
@@ -117244,7 +117287,7 @@
         "tag": "sw-CD"
     }, 
     {
-        "full": "sw-KE", 
+        "full": "sw-Latn-KE", 
         "iso639_3": "swa", 
         "name": "Swahili (macrolanguage)", 
         "region": "KE", 
@@ -117252,7 +117295,7 @@
         "tag": "sw-KE"
     }, 
     {
-        "full": "sw-UG", 
+        "full": "sw-Latn-UG", 
         "iso639_3": "swa", 
         "name": "Swahili (macrolanguage)", 
         "region": "UG", 
@@ -119659,7 +119702,7 @@
         ]
     }, 
     {
-        "full": "tcy-x-in-tulu", 
+        "full": "tcy-Qaau-IN-x-tulu", 
         "iso639_3": "tcy", 
         "name": "Tulu", 
         "names": [
@@ -119671,10 +119714,13 @@
             "Tullu", 
             "Tuluva Bhasa"
         ], 
-        "region": null, 
-        "regions": "IN", 
+        "region": "IN", 
         "sldr": false, 
-        "tag": "tcy-x-in-tulu"
+        "tag": "tcy-x-tulu", 
+        "tags": [
+            "tcy-IN-x-tulu", 
+            "tcy-Qaau-x-tulu"
+        ]
     }, 
     {
         "full": "tcz-Latn-IN", 
@@ -121589,7 +121635,7 @@
             "Tigrinya"
         ], 
         "region": "ET", 
-        "regions": "CA DE DJ ER IL SE", 
+        "regions": "CA DE DJ ER ET  IL SE", 
         "sldr": true, 
         "tag": "ti", 
         "tags": [
@@ -135975,18 +136021,6 @@
         ]
     }, 
     {
-        "full": "x-mru-Cyrl-RU-x-wrong", 
-        "iso639_3": "", 
-        "name": "Mono (wrong)", 
-        "region": "RU", 
-        "sldr": false, 
-        "tag": "x-mru-x-wrong", 
-        "tags": [
-            "x-mru-RU-x-wrong", 
-            "x-mru-Cyrl-x-wrong"
-        ]
-    }, 
-    {
         "full": "xaa-Qaax-ES", 
         "iso639_3": "xaa", 
         "name": "Andalusian Arabic", 
@@ -141789,9 +141823,6 @@
         "full": "ycp-Zyyy-LA", 
         "iso639_3": "ycp", 
         "name": "Chepya", 
-        "names": [
-            ""
-        ], 
         "region": "LA", 
         "sldr": false, 
         "tag": "ycp", 

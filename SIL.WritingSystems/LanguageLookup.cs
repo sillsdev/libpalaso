@@ -49,7 +49,7 @@ namespace SIL.WritingSystems
 					AddLanguage(entry.tag, entry.iso639_3, entry.full, entry.name, entry.localname, entry.region, entry.names, entry.regions, entry.tags);
 				}
 			}
-			AddLanguage("qaa", "qaa", "qaa", "Unlisted Language", region : "001");
+			AddLanguage("qaa", "qaa", "qaa", "Unlisted Language");
 		}
 
 		private bool AddLanguage(string code, string threelettercode, string full = null,
@@ -100,7 +100,7 @@ namespace SIL.WritingSystems
 				string[] countries = regions.Split();
 				foreach (string country in countries)
 				{
-					if (!country.Contains('?'))
+					if (!country.Contains('?') && country != "")
 					{
 						language.Countries.Add(StandardSubtags.RegisteredRegions[country].Name);
 					}

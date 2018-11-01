@@ -52,7 +52,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		[Ignore("This test is not longer valid because language tags are only linked to primary region - Thailand")] // 2018-10-26
+		[Ignore("This test is not longer valid because additional regions come from CLDR and there are many for Thailand")] // 2018-11-01
 		public void SuggestLanguages_Thai_TwoCountries()
 		{
 			/*	tha	KH 	D	Thai Koh Kong
@@ -181,7 +181,6 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		[Ignore("TODO:FIX:Change this back to pre-macrolanguages")] // 2018-10-26
 		// Akan is a macrolanguage so make sure we know that
 		public void SuggestLanguages_Akan_DoesnotCrash()
 		{
