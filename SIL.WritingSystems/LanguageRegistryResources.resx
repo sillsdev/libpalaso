@@ -122,18 +122,6 @@
     <value>Resources\ianaSubtagRegistry.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
     <comment>This is the iana subtag registry which is the primary resource for language tags</comment>
   </data>
-  <data name="LanguageCodes" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\LanguageCodes.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-    <comment>This is language codes and countries from the ethnologue</comment>
-  </data>
-  <data name="LanguageDataIndex" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\LanguageDataIndex.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-    <comment>This is the data used by SIL.WritingSystems.LanguageLookup, compiled from LanguageCodes, LanguageIndex and ianaSubtagRegistry</comment>
-  </data>
-  <data name="LanguageIndex" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\LanguageIndex.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-    <comment>This is the main ethnologue data</comment>
-  </data>
   <data name="TwoToThreeCodes" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\TwoToThreeCodes.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
     <comment>This is the mapping between 2 and 3 letter language codes</comment>

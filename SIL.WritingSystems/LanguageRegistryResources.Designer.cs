@@ -65,6 +65,7 @@ namespace SIL.WritingSystems {
         ///    {
         ///        &quot;full&quot;: &quot;aa-Latn-ET&quot;, 
         ///        &quot;iso639_3&quot;: &quot;aar&quot;, 
+        ///        &quot;localname&quot;: &quot;Qafar&quot;, 
         ///        &quot;name&quot;: &quot;Afar&quot;, 
         ///        &quot;names&quot;: [
         ///            &quot;Adal&quot;, 
@@ -76,6 +77,7 @@ namespace SIL.WritingSystems {
         ///            &quot;ʿAfár af&quot;
         ///        ], 
         ///        &quot;region&quot;: &quot;ET&quot;, 
+        ///        &quot;regions&quot;: &quot;DJ ER&quot;, 
         ///        &quot;sldr&quot;: true, 
         ///        &quot;tag&quot;: &quot;aa&quot;, 
         ///        &quot;tags&quot;: [
@@ -84,9 +86,7 @@ namespace SIL.WritingSystems {
         ///        ]
         ///    }, 
         ///    {
-        ///        &quot;full&quot;: &quot;aa-Latn-DJ&quot;, 
-        ///        &quot;iso639_3&quot;: &quot;aar&quot;, 
-        ///        &quot;nam [rest of string was truncated]&quot;;.
+        ///        &quot;fu [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string alltags {
             get {
@@ -142,86 +142,6 @@ namespace SIL.WritingSystems {
         internal static string ianaSubtagRegistry {
             get {
                 return ResourceManager.GetString("ianaSubtagRegistry", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to LangID	CountryID	LangStatus	Name
-        ///aaa	NG	L	Ghotuo
-        ///aab	NG	L	Alumu-Tesu
-        ///aac	PG	L	Ari
-        ///aad	PG	L	Amal
-        ///aae	IT	L	Albanian, Arbëreshë
-        ///aaf	IN	L	Aranadan
-        ///aag	PG	L	Ambrak
-        ///aah	PG	L	Arapesh, Abu’
-        ///aai	PG	L	Miniafia Oyan
-        ///aak	PG	L	Ankave
-        ///aal	CM	L	Afade
-        ///aan	BR	L	Anambé
-        ///aao	DZ	L	Arabic, Algerian Saharan Spoken
-        ///aap	BR	L	Arára, Pará
-        ///aaq	US	L	Abenaki, Eastern
-        ///aar	ET	L	Afar
-        ///aas	TZ	L	Aasáx
-        ///aat	GR	L	Albanian, Arvanitika
-        ///aau	PG	L	Abau
-        ///aaw	PG	L	Solong
-        ///aax	ID	L	Mandobo Atas
-        ///aaz	ID	L	Amarasi
-        ///aba	CI	L	Abé
-        ///abb	CM	 [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string LanguageCodes {
-            get {
-                return ResourceManager.GetString("LanguageCodes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to qaa	qaa	Language Not Listed	.	Unlisted Language		
-        ///aaa	aaa	Ghotuo	.	Ghotuo	Nigeria	Nigeria
-        ///aab	aab	Alumu-Tesu	.	Alumu-Tesu;Alumu;Tesu;Arum;Arum-Cesu;Arum-Chessu;Arum-Tesu	Nigeria	Nigeria
-        ///aac	aac	Ari	.	Ari;Serea	Papua New Guinea	Papua New Guinea
-        ///aad	aad	Amal	.	Amal;Alai	Papua New Guinea	Papua New Guinea
-        ///aae	aae	Arbëreshë Albanian	.	Albanian, Arbëreshë;Calabrian Albanian;Campo Marino Albanian;Central Mountain Albanian;Molise Albanian;Sicilian Albanian;Arbëreshë;Arbëreshë Albanian	Italy	Italy
-        ///aaf	aaf	Aran [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string LanguageDataIndex {
-            get {
-                return ResourceManager.GetString("LanguageDataIndex", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to LangID	CountryID	NameType	Name
-        ///aaa	NG	L	Ghotuo
-        ///aab	NG	D	Alumu
-        ///aab	NG	D	Tesu
-        ///aab	NG	DA	Arum
-        ///aab	NG	L	Alumu-Tesu
-        ///aab	NG	LA	Alumu
-        ///aab	NG	LA	Arum-Cesu
-        ///aab	NG	LA	Arum-Chessu
-        ///aab	NG	LA	Arum-Tesu
-        ///aac	PG	D	Serea
-        ///aac	PG	L	Ari
-        ///aad	PG	L	Amal
-        ///aad	PG	LA	Alai
-        ///aae	IT	D	Calabrian Albanian
-        ///aae	IT	D	Campo Marino Albanian
-        ///aae	IT	D	Central Mountain Albanian
-        ///aae	IT	D	Molise Albanian
-        ///aae	IT	D	Sicilian Albanian
-        ///aae	IT	L	Albanian, Arbëreshë
-        ///aae	IT	LA	Arbëreshë
-        ///aaf	IN	L	Aranadan
-        ///aaf	IN	LA	Aranatan
-        ///aaf	IN	LA	A [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string LanguageIndex {
-            get {
-                return ResourceManager.GetString("LanguageIndex", resourceCulture);
             }
         }
         
