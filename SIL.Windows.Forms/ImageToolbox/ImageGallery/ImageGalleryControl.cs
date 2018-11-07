@@ -107,8 +107,10 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 						_thumbnailViewer.LoadItems(results);
 						var fmt = "Found {0} images".Localize("ImageToolbox.MatchingImages", "The {0} will be replaced by the number of matching images");
 						if (!foundExactMatches)
-							fmt = "Found {0} images with names close to {1}".Localize("ImageToolbox.AlmostMatchingImages", "The {0} will be replaced by the number of images found.  The {1} will be replaced with the search string.");
+							fmt = "Found {0} images with names close to \u201C{1}\u201D".Localize("ImageToolbox.AlmostMatchingImages", "The {0} will be replaced by the number of images found.  The {1} will be replaced with the search string.");
 						_searchResultStats.Text = string.Format(fmt, results.Count, _searchTermsBox.Text);
+						_searchResultStats.ForeColor = foundExactMatches ? Color.Black : Color.FromArgb(0x34, 0x65, 0xA4); //#3465A4
+						_searchResultStats.Font = new Font("Segoe UI", 9F, foundExactMatches ? FontStyle.Regular : FontStyle.Bold);
 					}
 					else
 					{
@@ -116,6 +118,8 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 						if (!_searchLanguageMenu.Visible)
 							_downloadInstallerLink.Visible = true;
 						_searchResultStats.Text = "Found no matching images".Localize("ImageToolbox.NoMatchingImages");
+						_searchResultStats.ForeColor = Color.Black;
+						_searchResultStats.Font = new Font("Segoe UI", 9F, FontStyle.Regular);
 					}
 				}
 			}
