@@ -3,9 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Mail;
 using Newtonsoft.Json;
 using SIL.Code;
 using SIL.Text;
