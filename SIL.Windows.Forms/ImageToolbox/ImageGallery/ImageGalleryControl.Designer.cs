@@ -60,9 +60,9 @@
 			// 
 			// _searchResultStats
 			// 
-			this._searchResultStats.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this._searchResultStats.Font = new System.Drawing.Font("Segoe UI", 9F);
-			this._searchResultStats.Location = new System.Drawing.Point(9, 303);
+			this._searchResultStats.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+			this._searchResultStats.Font = new System.Drawing.Font("Segoe UI", 10F);
+			this._searchResultStats.Location = new System.Drawing.Point(9, 70);
 			this._searchResultStats.Name = "_searchResultStats";
 			this._searchResultStats.Size = new System.Drawing.Size(375, 22);
 			this._searchResultStats.TabIndex = 12;
@@ -113,7 +113,7 @@
 			this._downloadInstallerLink.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Underline);
 			this._downloadInstallerLink.ForeColor = System.Drawing.Color.Blue;
 			this._downloadInstallerLink.IsTextSelectable = true;
-			this._downloadInstallerLink.Location = new System.Drawing.Point(24, 244);
+			this._downloadInstallerLink.Location = new System.Drawing.Point(24, 269);
 			this._downloadInstallerLink.Multiline = true;
 			this._downloadInstallerLink.Name = "_downloadInstallerLink";
 			this._downloadInstallerLink.ReadOnly = true;
@@ -134,7 +134,7 @@
 			this._messageLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this._messageLabel.ForeColor = System.Drawing.Color.Gray;
 			this._messageLabel.IsTextSelectable = false;
-			this._messageLabel.Location = new System.Drawing.Point(24, 99);
+			this._messageLabel.Location = new System.Drawing.Point(24, 124);
 			this._messageLabel.Multiline = true;
 			this._messageLabel.Name = "_messageLabel";
 			this._messageLabel.ReadOnly = true;
@@ -159,9 +159,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
 			this._thumbnailViewer.CaptionMethod = null;
-			this._thumbnailViewer.Location = new System.Drawing.Point(12, 70);
+			this._thumbnailViewer.Location = new System.Drawing.Point(12, 95);
 			this._thumbnailViewer.Name = "_thumbnailViewer";
-			this._thumbnailViewer.Size = new System.Drawing.Size(494, 230);
+			this._thumbnailViewer.Size = new System.Drawing.Size(494, 228);
 			this._thumbnailViewer.TabIndex = 2;
 			this._thumbnailViewer.ThumbBorderColor = System.Drawing.Color.Wheat;
 			this._thumbnailViewer.ThumbNailSize = 95;
