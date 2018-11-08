@@ -314,6 +314,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			_scriptsAndVariantsLink.Enabled = _model.HaveSufficientInformation;
 			if (!_model.HaveSufficientInformation)
 			{
+				_scriptsAndVariantsLabel.Text = "";
 				_scriptsAndVariantsLabel.Visible = false;
 			}
 			else
@@ -325,6 +326,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				}
 				else
 				{
+					_scriptsAndVariantsLabel.Text = "";
 					_scriptsAndVariantsLabel.Visible = false;
 				}
 			}

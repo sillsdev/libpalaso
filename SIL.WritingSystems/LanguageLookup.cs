@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using SIL.Code;
 using SIL.Text;
 
@@ -34,62 +35,136 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public LanguageLookup()
 		{
-			// Load from file into the data structures instead of creating it from scratch
-			var entries = LanguageRegistryResources.LanguageDataIndex.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
+			Sldr.InitializeLanguageTags(); // initialise SLDR language tags for implicit script codes
+			string allTagsContent = LanguageRegistryResources.alltags;
 
-			foreach (string entry in entries)
+			List<AllTagEntry> rootObject = JsonConvert.DeserializeObject<List<AllTagEntry>>(allTagsContent);
+
+			foreach (AllTagEntry entry in rootObject)
 			{
-				// Fields in LanguageDataIndex
-				// Code ThreeLetterCode DesiredName Names Countries PrimaryCountry
-				string[] items = entry.Split('\t');
-				if (items.Length != 7) // This needs to be changed if the number of fields changes
-					continue;
-				string code = items[0];
-				string threelettercode = items[1];
-				string desiredname = items[2];
-				bool macrolanguage = String.Equals("M", items[3]);
-				string[] names = items[4].Split(';');
-				string[] countries = items[5].Split(';');
-				string primarycountry = items[6];
-				LanguageInfo language = new LanguageInfo { LanguageTag = code, ThreeLetterTag = threelettercode, DesiredName = desiredname,
-					IsMacroLanguage = macrolanguage, PrimaryCountry = primarycountry };
+				if (!entry.deprecated && !entry.tag.StartsWith("x-")) // tags starting with x- have undefined structure so ignoring them as well as deprecated tags
+				{
+					AddLanguage(entry.tag, entry.iso639_3, entry.full, entry.name, entry.localname, entry.region, entry.names, entry.regions, entry.tags);
+				}
+			}
+			AddLanguage("qaa", "qaa", "qaa", "Unlisted Language");
+		}
+
+		private bool AddLanguage(string code, string threelettercode, string full = null,
+			string desiredname = null, string localName = null, string region = null, List<string> names = null, string regions = null, List<string> tags = null)
+		{
+			if (desiredname == null)
+			{
+				desiredname = code; // temp workaround for data missing names
+			}
+			string primarycountry;
+			if (region == null)
+			{
+				primarycountry = "";
+			}
+			else if (StandardSubtags.IsValidIso3166RegionCode(region))
+			{
+				if (StandardSubtags.IsPrivateUseRegionCode(region))
+				{
+					if (region == "XK")
+					{
+						primarycountry = "Kosovo";
+					}
+					else
+					{
+						primarycountry = "Unknown private use";
+					}
+				}
+				else
+				{
+					primarycountry = StandardSubtags.RegisteredRegions[region].Name; // convert to full region name
+				}
+			}
+			else
+			{
+				primarycountry = "Invalid region";
+			}
+			LanguageInfo language = new LanguageInfo
+			{
+				LanguageTag = code,
+				ThreeLetterTag = threelettercode,
+				DesiredName = desiredname,
+				PrimaryCountry = primarycountry
+			};
+			language.Countries.Add(primarycountry);
+
+			if (regions != null)
+			{
+				string[] countries = regions.Split();
 				foreach (string country in countries)
 				{
-					language.Countries.Add(country);
-				}
-				foreach (string langname in names)
-				{
-					language.Names.Add(langname.Trim());
-				}
-
-				// Do not add anything to LanguageInfo manually here if it would be useful in LanguageDataIndex.txt/json
-
-				// add language to _codeToLanguageIndex and _nameToLanguageIndex
-				// if 2 letter code then add both 2 and 3 letter codes to _codeToLanguageIndex
-
-				_codeToLanguageIndex[code] = language;
-				if (!String.Equals(code, threelettercode))
-				{
-					_codeToLanguageIndex[threelettercode] = language;
-				}
-				foreach (string langname in language.Names)
-					GetOrCreateListFromName(langname).Add(language);
-				// add to _countryToLanguageIndex
-				foreach (var country in language.Countries)
-				{
-					if (!string.IsNullOrEmpty(country))
+					if (!country.Contains('?') && country != "")
 					{
-						List<LanguageInfo> list;
-						if (!_countryToLanguageIndex.TryGetValue(country, out list))
-						{
-							list = new List<LanguageInfo>();
-							_countryToLanguageIndex[country] = list;
-						}
-						list.Add(language);
+						language.Countries.Add(StandardSubtags.RegisteredRegions[country].Name);
 					}
 				}
 			}
+
+			if (localName != null)
+			{
+				language.Names.Add(localName.Trim());
+			}
+			if (localName != desiredname)
+			{
+				language.Names.Add(desiredname.Trim());
+			}
+			if (names != null)
+			{
+				foreach (string langname in names)
+				{
+					if (!language.Names.Contains(langname))
+					{
+						language.Names.Add(langname.Trim());
+					}
+				}
+			}
+			// add language to _codeToLanguageIndex and _nameToLanguageIndex
+			// if 2 letter code then add both 2 and 3 letter codes to _codeToLanguageIndex
+
+			_codeToLanguageIndex[code] = language;
+			if (full != null && !string.Equals(full, code))
+			{
+				_codeToLanguageIndex[full] = language; // add the full expanded tag
+			}
+
+			if (threelettercode != null && !string.Equals(code, threelettercode))
+			{
+				_codeToLanguageIndex[threelettercode] = language;
+			}
+
+			if (tags != null)
+			{
+				foreach (string langtag in tags)
+				{
+					_codeToLanguageIndex[langtag] = language;
+				}
+			}
+
+			foreach (string langname in language.Names)
+				GetOrCreateListFromName(langname).Add(language);
+			// add to _countryToLanguageIndex
+			foreach (var country in language.Countries)
+			{
+				if (!string.IsNullOrEmpty(country))
+				{
+					List<LanguageInfo> list;
+					if (!_countryToLanguageIndex.TryGetValue(country, out list))
+					{
+						list = new List<LanguageInfo>();
+						_countryToLanguageIndex[country] = list;
+					}
+					list.Add(language);
+				}
+			}
+
+			return true;
 		}
+
 
 		/// <summary>
 		///  For testing; used to detect if we need more special cases where LanguageDataIndex()
@@ -101,7 +176,7 @@ namespace SIL.WritingSystems
 			var result = new List<LanguageInfo>();
 			foreach (var lang in _codeToLanguageIndex.Values)
 			{
-				if (String.IsNullOrEmpty(lang.PrimaryCountry))
+				if (String.IsNullOrEmpty(lang.PrimaryCountry) && !result.Contains(lang))
 					result.Add(lang);
 			}
 			return result;
@@ -142,17 +217,18 @@ namespace SIL.WritingSystems
 
 			if (searchString == "*")
 			{
-				// there will be duplicate LanguageInfo entries for 2 and 3 letter codes
+				// there will be duplicate LanguageInfo entries for 2 and 3 letter codes and equivalent tags
 				var all_languages = new HashSet<LanguageInfo>(_codeToLanguageIndex.Select(l => l.Value));
 				foreach (LanguageInfo languageInfo in all_languages.OrderBy(l => l, new ResultComparer(searchString)))
 					yield return languageInfo;
 			}
 			// if the search string exactly matches a hard-coded way to say "sign", show all the sign languages
+			// there will be duplicate LanguageInfo entries for equivalent tags
 			else if (new []{"sign", "sign language","signes", "langage des signes", "señas","lenguaje de señas"}.Contains(searchString.ToLowerInvariant()))
 			{
-				var parallelSearch = _codeToLanguageIndex.AsParallel().Select(li => li.Value).Where(l =>
-					l.Names.AsQueryable().Any(n => n.ToLowerInvariant().Contains("sign")));
-				foreach (var languageInfo in parallelSearch)
+				var parallelSearch = new HashSet<LanguageInfo>(_codeToLanguageIndex.AsParallel().Select(li => li.Value).Where(l =>
+					l.Names.AsQueryable().Any(n => n.ToLowerInvariant().Contains("sign"))));
+				foreach (LanguageInfo languageInfo in parallelSearch)
 				{
 					yield return languageInfo;
 				}
@@ -192,7 +268,8 @@ namespace SIL.WritingSystems
 					combined.UnionWith(l);
 				foreach (List<LanguageInfo> l in matchOnCountry)
 					combined.UnionWith(l);
-				foreach (LanguageInfo languageInfo in combined.OrderBy(l => l, new ResultComparer(searchString)))
+				var ordered = combined.OrderBy(l => l, new ResultComparer(searchString));
+				foreach (LanguageInfo languageInfo in ordered)
 					yield return languageInfo;
 			}
 		}
@@ -212,7 +289,7 @@ namespace SIL.WritingSystems
 			{
 				if (x.LanguageTag == y.LanguageTag)
 					return 0;
-				if (!x.Names[0].Equals(y.Names[0], StringComparison.InvariantCultureIgnoreCase))
+				if (!x.DesiredName.Equals(y.DesiredName, StringComparison.InvariantCultureIgnoreCase))
 				{
 					// Favor ones where some language matches to solve BL-1141
 					if (x.Names[0].Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
@@ -233,6 +310,12 @@ namespace SIL.WritingSystems
 				if (IetfLanguageTag.GetLanguagePart(x.LanguageTag).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
 					return -1;
 				if (IetfLanguageTag.GetLanguagePart(y.LanguageTag).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
+					return 1;
+
+				// shortest simplest tag is most likely to be what is being looked for
+				if (x.LanguageTag.Length < y.LanguageTag.Length)
+					return -1;
+				if (y.LanguageTag.Length < x.LanguageTag.Length)
 					return 1;
 
 				// Use the "editing distance" relative to the search string to sort by the primary name.

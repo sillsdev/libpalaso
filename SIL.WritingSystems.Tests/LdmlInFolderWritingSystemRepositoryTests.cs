@@ -581,7 +581,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		//This is not really a problem, but it would be nice if the file were made consistant. So make we will make them run it through the migrator, which they should be using anyway.
+		//This is not really a problem, but it would be nice if the file were made consistent. So make we will make them run it through the migrator, which they should be using anyway.
 		public void Constructor_LdmlFolderStoreContainsInconsistentlyNamedFile_HasExpectedProblem()
 		{
 			using (var environment = new TestEnvironment())

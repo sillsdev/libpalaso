@@ -54,11 +54,24 @@ namespace SIL.Windows.Forms.WritingSystems
 			// to avoid this?  Do we need an
 			try
 			{
-				//REVIEW: if we changed the "none" to "Replacement", that would presumably get us past the KanKani crash, but is that the right
-				//thing to do, or a hack which would mean we lose region information on other languages?
-				var b = new CultureAndRegionInfoBuilder(language.Culture.ThreeLetterISOLanguageName, CultureAndRegionModifiers.None);
-				b.LoadDataFromCultureInfo(language.Culture);
-				return b.TwoLetterISORegionName ?? String.Empty;
+				if (language.Culture.ThreeLetterISOLanguageName == "und") // SIL IPA keyboard is language "und" which causes an exception
+				{
+					return string.Empty;
+				}
+				try
+				{
+					// If the region is in the input language name then just use that
+					var r = new RegionInfo(language.Culture.Name);
+					return r.TwoLetterISORegionName ?? String.Empty;
+				}
+				catch (Exception)
+				{
+					//REVIEW: if we changed the "none" to "Replacement", that would presumably get us past the KanKani crash, but is that the right
+					//thing to do, or a hack which would mean we lose region information on other languages?
+					var b = new CultureAndRegionInfoBuilder(language.Culture.Name, CultureAndRegionModifiers.None);
+					b.LoadDataFromCultureInfo(language.Culture);
+					return b.TwoLetterISORegionName ?? String.Empty;
+				}
 			}
 			catch (Exception)
 			{

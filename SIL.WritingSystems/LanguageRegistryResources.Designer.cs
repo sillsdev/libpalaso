@@ -61,36 +61,32 @@ namespace SIL.WritingSystems {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to *aa = aa-Latn | *aa-ET = aa-Latn-ET
-        ///*aa-DJ = aa-Latn-DJ
-        ///*aa-ER = aa-Latn-ER
-        ///*aai-Latn
-        ///*aak-Latn
-        ///*aau-Latn
-        ///ab = ab-Cyrl
-        ///ab-GE = ab-Cyrl-GE
-        ///ab-TR = ab-Cyrl-TR
-        ///*abi-Latn
-        ///*abq-Latn
-        ///abr-Latn = abr
-        ///abr-Latn-GH = abr-GH
-        ///*abt-Latn
-        ///*aby-Latn
-        ///*acd-Latn
-        ///ace-Latn = ace
-        ///ace-Latn-ID = ace-ID
-        ///*ada-Latn = ada
-        ///ada-Latn-GH = ada-GH
-        ///*ade-Latn
-        ///*adj-Latn
-        ///ady-Cyrl = ady
-        ///ady-Cyrl-RU = ady-RU
-        ///ady-Cyrl-TR = ady-TR
-        ///*adz-Latn
-        ///*aey-Latn
-        ///*af = af-BW = af-Latn-BW
-        ///*af = af-Latn | *af-ZA = af-Latn-ZA
-        ///*af-NA =  [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to [
+        ///    {
+        ///        &quot;full&quot;: &quot;aa-Latn-ET&quot;, 
+        ///        &quot;iso639_3&quot;: &quot;aar&quot;, 
+        ///        &quot;localname&quot;: &quot;Qafar&quot;, 
+        ///        &quot;name&quot;: &quot;Afar&quot;, 
+        ///        &quot;names&quot;: [
+        ///            &quot;Adal&quot;, 
+        ///            &quot;Afaraf&quot;, 
+        ///            &quot;Affar&quot;, 
+        ///            &quot;Affarigna&quot;, 
+        ///            &quot;Qafar&quot;, 
+        ///            &quot;Qafar af&quot;, 
+        ///            &quot;ʿAfár af&quot;
+        ///        ], 
+        ///        &quot;region&quot;: &quot;ET&quot;, 
+        ///        &quot;regions&quot;: &quot;DJ ER&quot;, 
+        ///        &quot;sldr&quot;: true, 
+        ///        &quot;tag&quot;: &quot;aa&quot;, 
+        ///        &quot;tags&quot;: [
+        ///            &quot;aa-ET&quot;, 
+        ///            &quot;aa-Latn&quot;
+        ///        ]
+        ///    }, 
+        ///    {
+        ///        &quot;fu [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string alltags {
             get {
@@ -108,7 +104,7 @@ namespace SIL.WritingSystems {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File-Date: 2018-01-25
+        ///   Looks up a localized string similar to File-Date: 2018-08-08
         ///%%
         ///Type: language
         ///Subtag: aa
@@ -146,86 +142,6 @@ namespace SIL.WritingSystems {
         internal static string ianaSubtagRegistry {
             get {
                 return ResourceManager.GetString("ianaSubtagRegistry", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to LangID	CountryID	LangStatus	Name
-        ///aaa	NG	L	Ghotuo
-        ///aab	NG	L	Alumu-Tesu
-        ///aac	PG	L	Ari
-        ///aad	PG	L	Amal
-        ///aae	IT	L	Albanian, Arbëreshë
-        ///aaf	IN	L	Aranadan
-        ///aag	PG	L	Ambrak
-        ///aah	PG	L	Arapesh, Abu’
-        ///aai	PG	L	Miniafia Oyan
-        ///aak	PG	L	Ankave
-        ///aal	CM	L	Afade
-        ///aan	BR	L	Anambé
-        ///aao	DZ	L	Arabic, Algerian Saharan Spoken
-        ///aap	BR	L	Arára, Pará
-        ///aaq	US	L	Abenaki, Eastern
-        ///aar	ET	L	Afar
-        ///aas	TZ	L	Aasáx
-        ///aat	GR	L	Albanian, Arvanitika
-        ///aau	PG	L	Abau
-        ///aaw	PG	L	Solong
-        ///aax	ID	L	Mandobo Atas
-        ///aaz	ID	L	Amarasi
-        ///aba	CI	L	Abé
-        ///abb	CM	 [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string LanguageCodes {
-            get {
-                return ResourceManager.GetString("LanguageCodes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to qaa	qaa	Language Not Listed	.	Unlisted Language		
-        ///aaa	aaa	Ghotuo	.	Ghotuo	Nigeria	Nigeria
-        ///aab	aab	Alumu-Tesu	.	Alumu-Tesu;Alumu;Tesu;Arum;Arum-Cesu;Arum-Chessu;Arum-Tesu	Nigeria	Nigeria
-        ///aac	aac	Ari	.	Ari;Serea	Papua New Guinea	Papua New Guinea
-        ///aad	aad	Amal	.	Amal;Alai	Papua New Guinea	Papua New Guinea
-        ///aae	aae	Arbëreshë Albanian	.	Albanian, Arbëreshë;Calabrian Albanian;Campo Marino Albanian;Central Mountain Albanian;Molise Albanian;Sicilian Albanian;Arbëreshë;Arbëreshë Albanian	Italy	Italy
-        ///aaf	aaf	Aran [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string LanguageDataIndex {
-            get {
-                return ResourceManager.GetString("LanguageDataIndex", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to LangID	CountryID	NameType	Name
-        ///aaa	NG	L	Ghotuo
-        ///aab	NG	D	Alumu
-        ///aab	NG	D	Tesu
-        ///aab	NG	DA	Arum
-        ///aab	NG	L	Alumu-Tesu
-        ///aab	NG	LA	Alumu
-        ///aab	NG	LA	Arum-Cesu
-        ///aab	NG	LA	Arum-Chessu
-        ///aab	NG	LA	Arum-Tesu
-        ///aac	PG	D	Serea
-        ///aac	PG	L	Ari
-        ///aad	PG	L	Amal
-        ///aad	PG	LA	Alai
-        ///aae	IT	D	Calabrian Albanian
-        ///aae	IT	D	Campo Marino Albanian
-        ///aae	IT	D	Central Mountain Albanian
-        ///aae	IT	D	Molise Albanian
-        ///aae	IT	D	Sicilian Albanian
-        ///aae	IT	L	Albanian, Arbëreshë
-        ///aae	IT	LA	Arbëreshë
-        ///aaf	IN	L	Aranadan
-        ///aaf	IN	LA	Aranatan
-        ///aaf	IN	LA	A [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string LanguageIndex {
-            get {
-                return ResourceManager.GetString("LanguageIndex", resourceCulture);
             }
         }
         

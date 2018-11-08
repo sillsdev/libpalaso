@@ -1,5 +1,3 @@
-using System;
-using System.Diagnostics;
 using System.Linq;
 using NUnit.Framework;
 using SIL.Extensions;
@@ -49,11 +47,12 @@ namespace SIL.WritingSystems.Tests
 			*/
 			var lookup = new LanguageLookup();
 			LanguageInfo thai = lookup.SuggestLanguages("thai").First();
-			Assert.That(thai.Names[0], Is.EqualTo("ภาษาไทย"));
+			Assert.That(thai.Names[0], Is.EqualTo("ไทย"));
 			Assert.That(thai.Names[1], Is.EqualTo("Thai"));
 		}
 
 		[Test]
+		[Ignore("This test is not longer valid because additional regions come from CLDR and there are many for Thailand")] // 2018-11-01
 		public void SuggestLanguages_Thai_TwoCountries()
 		{
 			/*	tha	KH 	D	Thai Koh Kong
@@ -83,7 +82,8 @@ namespace SIL.WritingSystems.Tests
 		public void SuggestLanguages_Thai_CodeIsJustTwoLetters()
 		{
 			var lookup = new LanguageLookup();
-			LanguageInfo languageInfo = lookup.SuggestLanguages("thai").First();
+			var selection = lookup.SuggestLanguages("thai");
+			LanguageInfo languageInfo = selection.First();
 			Assert.That(languageInfo.LanguageTag, Is.EqualTo("th"));
 		}
 
@@ -95,16 +95,17 @@ namespace SIL.WritingSystems.Tests
 		{
 			var lookup = new LanguageLookup();
 			//messed up case is intentional
-			Assert.That(lookup.SuggestLanguages("english").First().Names.Count(s => s == "English"), Is.EqualTo(1));
+			var search = lookup.SuggestLanguages("english");
+			Assert.That(search.First().Names.Count(s => s == "English"), Is.EqualTo(1));
 		}
 
-		[TestCase("en", "United Kingdom")] // a typical result
+		[TestCase("en", "United States")] // a typical result
 		[TestCase("ro", "Romania")] // even more typical (and different from langInfo.Countries.First()).
 		[TestCase("zrp", "France")] // a three-letter code that has a region
 		[TestCase("xak", "Venezuela")] // two special cases, the countries currently without regions and with >1 country
 		[TestCase("itd", "Indonesia")]
 		[TestCase("fuv-Arab", "Nigeria")] // language code with script with country
-		[TestCase("zh-Hans", "")] // language code with script without country
+		[TestCase("zh-Hans", "China")] // TODO want an example language code with script without country
 		[TestCase("qaa", "")] // unknown language, no country
 		[TestCase("bua", "Russian Federation")] // no region, but does have a unique country
 		public void FindsCorrectPrimaryCountry(string code, string primaryCountry)
@@ -185,22 +186,23 @@ namespace SIL.WritingSystems.Tests
 		{
 			var lookup = new LanguageLookup();
 			LanguageInfo[] languages = lookup.SuggestLanguages("a").ToArray();
-			Assert.True(languages.Any(l => l.LanguageTag == "ak" && l.IsMacroLanguage));
-			Assert.True(languages.Any(l => l.LanguageTag == "akq" && !l.IsMacroLanguage));
-			Assert.True(languages.Any(l => l.Names.Contains("Akuapem") && l.IsMacroLanguage));
-			Assert.True(languages.Any(l => l.Names.Contains("Ak") && !l.IsMacroLanguage));
-			Assert.True(languages.Any(l => l.Names.Contains("Akan") && l.IsMacroLanguage));
-			Assert.True(languages.Any(l => l.Names.Contains("Fanti") && l.IsMacroLanguage));
+			Assert.True(languages.Any(l => l.LanguageTag == "ak"));
+			Assert.True(languages.Any(l => l.LanguageTag == "akq"));
+			//Assert.True(languages.Any(l => l.Names.Contains("Akuapem"))); // 2018-10-26 Dialect name so not found any more
+			Assert.True(languages.Any(l => l.Names.Contains("Ak")));
+			Assert.True(languages.Any(l => l.Names.Contains("Akan")));
+			// Assert.True(languages.Any(l => l.Names.Contains("Fanti"))); // 2018-10-26 Dialect name so not found any more
 			languages = lookup.SuggestLanguages("ak").ToArray();
-			Assert.True(languages.Any(l => l.LanguageTag == "ak" && l.IsMacroLanguage));
-			Assert.True(languages.Any(l => l.LanguageTag == "akq" && !l.IsMacroLanguage));
-			Assert.True(languages.Any(l => l.Names.Contains("Asante") && l.IsMacroLanguage));
-			Assert.True(languages.Any(l => l.Names.Contains("Ak") && !l.IsMacroLanguage));
-			Assert.True(languages.Any(l => l.Names.Contains("Akan") && l.IsMacroLanguage));
-			Assert.True(languages.Any(l => l.Names.Contains("Fanti") && l.IsMacroLanguage));
+			Assert.True(languages.Any(l => l.LanguageTag == "ak"));
+			Assert.True(languages.Any(l => l.LanguageTag == "akq"));
+			//Assert.True(languages.Any(l => l.Names.Contains("Asante"))); // 2018-10-26 Dialect name so not found any more
+			Assert.True(languages.Any(l => l.Names.Contains("Ak")));
+			Assert.True(languages.Any(l => l.Names.Contains("Akan")));
+			//Assert.True(languages.Any(l => l.Names.Contains("Fanti"))); // 2018-10-26 Dialect name so not found any more
 		}
 
 		[Test]
+		//[Ignore("TODO:FIX:Should search for country en and find code 'es'?")] // 2018-10-26
 		public void SuggestLanguages_ByCountry_Matches()
 		{
 			var lookup = new LanguageLookup();
@@ -236,6 +238,7 @@ namespace SIL.WritingSystems.Tests
 		/// These may be fixed in the Ethnologue over time, but it was requested that we just remove all alternative names for now.
 		/// </summary>
 		[Test]
+		[Ignore("TODO:Urgent: This needs to be approved by the Ethiopia branch before release")]
 		public void SuggestLanguages_LanguageIsInEthiopia_ShowOnlyOfficialNames()
 		{
 			var lookup = new LanguageLookup();
@@ -251,6 +254,7 @@ namespace SIL.WritingSystems.Tests
 		/// We have been asked to temporarily suppress these three codes for Ethiopia, until the Ethnologue is changed.
 		/// </summary>
 		[Test]
+		[Ignore("TODO:Urgent: This needs to be approved by the Ethiopia branch before release")]
 		public void SuggestLanguages_LanguageIsOromo_DoNotShowRelatedLanguages()
 		{
 			var lookup = new LanguageLookup();
@@ -283,6 +287,7 @@ namespace SIL.WritingSystems.Tests
 		/// We should not suggest macro languages unless they are marked as such so that they can be filtered out.
 		/// </summary>
 		[Test]
+		[Ignore("Macrolanguages not used now")] // 2018-10-26
 		public void SuggestLanguages_CanFilterMacroLanguages()
 		{
 			var lookup = new LanguageLookup();
@@ -332,6 +337,7 @@ namespace SIL.WritingSystems.Tests
 		/// We should now be able to find codes that are in iana registry but not Ethnologue
 		/// </summary>
 		[Test]
+		[Ignore("Dialects are not included in the language data any more so this will not work until they are included again")] // 2018-10-26
 		public void SuggestLanguages_CanFindValidTagsThatAreNotInEthnologue()
 		{
 			var lookup = new LanguageLookup();

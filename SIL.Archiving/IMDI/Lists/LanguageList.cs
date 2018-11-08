@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using System.Linq;
 using L10NSharp;
@@ -152,6 +152,7 @@ namespace SIL.Archiving.IMDI.Lists
 		}
 
 		/// -------------------------------------------------------------------------------------------
+		///  This finds either English name or localised name
 		public static LanguageItem FindByEnglishName(string englishName)
 		{
 			if (string.IsNullOrEmpty(englishName))

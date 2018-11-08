@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Moq;
@@ -160,7 +160,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 				}
 				if(names.Count()!=total)
 					PrintExpectationsVsActual(names, items);
-				Assert.AreEqual(names.Count(), total,"the actual nodes exceded the number of expected ones");
+				Assert.AreEqual(names.Count(), total,"the actual nodes exceeded the number of expected ones");
 			}
 		}
 
@@ -218,7 +218,8 @@ namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 				var latin = new WritingSystemDefinition("bzi", "Latn", string.Empty, string.Empty, "bl", false);
 				e.SetDefinitionsInStore(new[] {thai, my, latin});
 				var model = e.CreateModel();
-				AssertTreeNodeLabels(model, "Bisu", "+Bisu (Thai)", "+Bisu (Mymr)", "+Bisu (Latn)", "", "Add Language");
+				// 2018-10-26 Thai is implicit script for bzi so +Bisu (Thai) will not appear separately
+				AssertTreeNodeLabels(model, "Bisu", "+Bisu", "+Bisu (Mymr)", "+Bisu (Latn)", "", "Add Language");
 			}
 		}
 
