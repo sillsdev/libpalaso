@@ -75,7 +75,6 @@ namespace SIL.WritingSystems
 #endif
 
 		private const string SldrGitHubRepo = "https://api.github.com/repos/silnrsi/sldr/";
-
 		private const string TmpExtension = "tmp";
 
 		// Default parameters for querying the SLDR
@@ -364,7 +363,6 @@ namespace SIL.WritingSystems
 
 			string allTagsContent;
 
-
 			using (_sldrCacheMutex.Lock())
 			{
 				CreateSldrCacheDirectory();
@@ -372,80 +370,77 @@ namespace SIL.WritingSystems
 				// TODO refactor this to get alltags.json once it has a defined location
 				// for now only use the included version in the resource
 
+				string cachedAllTagsPath = Path.Combine(SldrCachePath, "alltags.json");
+				DateTime latestCommitTime = DateTime.MinValue;
+				DateTime sinceTime = _embeddedAllTagsTime;
+				if (File.Exists(cachedAllTagsPath))
+				{
+					DateTime fileTime = File.GetLastWriteTime(cachedAllTagsPath);
+					if (sinceTime > fileTime)
+						// delete the old alltags.json file if a newer embedded one is available.
+						// this can happen if the application is upgraded to use a newer version of SIL.WritingSystems
+						// that has an updated embedded alltags.json file.
+						File.Delete(cachedAllTagsPath);
+					else
+						sinceTime = fileTime;
+				}
+				sinceTime += TimeSpan.FromSeconds(1);
+				try
+				{
+					if (_offlineMode)
+						throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
 
-				//	string cachedAllTagsPath = Path.Combine(SldrCachePath, "alltags.txt");
-				//	DateTime latestCommitTime = DateTime.MinValue;
-				//	DateTime sinceTime = _embeddedAllTagsTime;
-				//	if (File.Exists(cachedAllTagsPath))
-				//	{
-				//		DateTime fileTime = File.GetLastWriteTime(cachedAllTagsPath);
-				//		if (sinceTime > fileTime)
-				//			// delete the old alltags.txt file if a newer embedded one is available.
-				//			// this can happen if the application is upgraded to use a newer version of SIL.WritingySystems
-				//			// that has an updated embedded alltags.txt file.
-				//			File.Delete(cachedAllTagsPath);
-				//		else
-				//			sinceTime = fileTime;
-				//	}
-				//	sinceTime += TimeSpan.FromSeconds(1);
-				//	try
-				//	{
-				//		if (_offlineMode)
-				//			throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
+					// there is no way to check if SLDR api alltags has change so:
+					// query the SLDR GitHub repo to see if there is an updated version of alltags.json
+					string commitUrl = string.Format("{0}commits?path=alltags.json&since={1:O}",
+						SldrGitHubRepo, sinceTime);
+					var webRequest = (HttpWebRequest)WebRequest.Create(Uri.EscapeUriString(commitUrl));
+					webRequest.UserAgent = UserAgent;
+					webRequest.Timeout = 10000;
+					using (var webResponse = (HttpWebResponse)webRequest.GetResponse())
+					{
+						Stream stream = webResponse.GetResponseStream();
+						if (stream != null)
+						{
+							using (StreamReader responseReader = new StreamReader(stream))
+							{
+								// get the timestamp of the most recent commit
+								JArray commits = JArray.Load(new JsonTextReader(responseReader));
+								foreach (JObject commit in commits.Children<JObject>())
+								{
+									var time = commit["commit"]["author"]["date"].ToObject<DateTime>();
+									if (time > latestCommitTime)
+										latestCommitTime = time;
+								}
+							}
+						}
+					}
 
-				//		// query the SLDR Git repo to see if there is an updated version of alltags.txt
-				//		string commitUrl = string.Format("{0}commits?path=extras/alltags.txt&since={1:O}",
-				//			SldrGitHubRepo, sinceTime);
-				//		var webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(commitUrl));
-				//		webRequest.UserAgent = UserAgent;
-				//		webRequest.Timeout = 10000;
-				//		using (var webResponse = (HttpWebResponse) webRequest.GetResponse())
-				//		{
-				//			Stream stream = webResponse.GetResponseStream();
-				//			if (stream != null)
-				//			{
-				//				using (StreamReader responseReader = new StreamReader(stream))
-				//				{
-				//					// get the timestamp of the most recent commit
-				//					JArray commits = JArray.Load(new JsonTextReader(responseReader));
-				//					foreach (JObject commit in commits.Children<JObject>())
-				//					{
-				//						var time = commit["commit"]["author"]["date"].ToObject<DateTime>();
-				//						if (time > latestCommitTime)
-				//							latestCommitTime = time;
-				//					}
-				//				}
-				//			}
-				//		}
-
-				//		if (latestCommitTime > DateTime.MinValue)
-				//		{
-				//			// there is an updated version of the alltags.txt file in the SLDR Git repo, so get it
-				//			string contentsUrl = string.Format("{0}contents/extras/alltags.txt", SldrGitHubRepo);
-				//			webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(contentsUrl));
-				//			webRequest.UserAgent = UserAgent;
-				//			webRequest.Timeout = 10000;
-				//			using (var webResponse = (HttpWebResponse) webRequest.GetResponse())
-				//			{
-				//				Stream stream = webResponse.GetResponseStream();
-				//				if (stream != null)
-				//				{
-				//					using (StreamReader responseReader = new StreamReader(stream))
-				//					{
-				//						JObject blob = JObject.Load(new JsonTextReader(responseReader));
-				//						File.WriteAllBytes(cachedAllTagsPath, Convert.FromBase64String((string) blob["content"]));
-				//						File.SetLastWriteTime(cachedAllTagsPath, latestCommitTime);
-				//					}
-				//				}
-				//			}
-				//		}
-				//	}
-				//	catch (WebException)
-				//	{
-				//	}
-
-				//	allTagsContent = File.Exists(cachedAllTagsPath) ? File.ReadAllText(cachedAllTagsPath) : LanguageRegistryResources.alltags;
-				allTagsContent = LanguageRegistryResources.alltags;
+					// SLDR alltags.json has changed so get it from the SLDR api compressed
+					if (latestCommitTime > DateTime.MinValue)
+					{
+						// there is an updated version of the alltags.json file in the SLDR API, so get it
+						string alltagsUrl = string.Format("{0}index.html?query=alltags&ext=json", SldrRepository);
+						webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(alltagsUrl));
+						webRequest.UserAgent = UserAgent;
+						webRequest.Timeout = 10000;
+						webRequest.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+						using (var webResponse = (HttpWebResponse) webRequest.GetResponse())
+						{
+							using (Stream output = File.OpenWrite(cachedAllTagsPath))
+							{
+								using (Stream input = webResponse.GetResponseStream())
+								{
+									input.CopyTo(output);
+								}
+							}
+						}
+					}
+				}
+				catch (WebException)
+				{
+				}
+				allTagsContent = File.Exists(cachedAllTagsPath) ? File.ReadAllText(cachedAllTagsPath) : LanguageRegistryResources.alltags;
 			}
 			_languageTags = new ReadOnlyKeyedCollection<string, SldrLanguageTagInfo>(ParseAllTagsJson(allTagsContent));
 		}

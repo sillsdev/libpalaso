@@ -458,13 +458,12 @@ namespace SIL.WritingSystems.Tests
 
 		// TODO rework when have alltag.json in stable location
 		[Test]
-		[Ignore("TODO rework when have alltag.json in stable location")]
 		[Category("SkipOnTeamCity")]
 		public void LanguageTags_OlderEmbeddedAllTags_DownloadsNewAllTags()
 		{
 			using (new TestEnvironment(false, new DateTime(2000, 1, 1, 12, 0, 0)))
 			{
-				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.txt");
+				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.json");
 				Assert.That(File.Exists(allTagsPath), Is.False);
 				Assert.That(Sldr.LanguageTags, Is.Not.Empty);
 				Assert.That(File.Exists(allTagsPath), Is.True);
@@ -472,14 +471,13 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		[Ignore("TODO rework when have alltag.json in stable location")]
 		public void LanguageTags_OlderCachedAllTagsSldrOffline_UseEmbeddedAllTags()
 		{
 			using (new TestEnvironment())
 			{
-				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.txt");
+				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.json");
 
-				File.WriteAllText(allTagsPath, "*en-US");
+				File.WriteAllText(allTagsPath, "[ { \"full\": \"en-Latn-GB\", \"iso639_3\": \"eng\", \"name\": \"English\", \"region\": \"GB\", \"sldr\": true, \"tag\": \"en-GB\" } ]");
 				File.SetLastWriteTime(allTagsPath, new DateTime(2000, 1, 1, 12, 0, 0));
 
 				Assert.That(Sldr.LanguageTags.Count, Is.GreaterThan(1));
@@ -488,14 +486,13 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		[Ignore("TODO rework when have alltag.json in stable location")]
 		public void LanguageTags_NewerCachedAllTagsSldrOffline_UseCachedAllTags()
 		{
 			using (new TestEnvironment())
 			{
-				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.txt");
+				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.json");
 
-				File.WriteAllText(allTagsPath, "*en-US");
+				File.WriteAllText(allTagsPath, "[ { \"full\": \"en-Latn-GB\", \"iso639_3\": \"eng\", \"name\": \"English\", \"region\": \"GB\", \"sldr\": true, \"tag\": \"en-GB\" } ]");
 				DateTime time = DateTime.Parse(LanguageRegistryResources.AllTagsTime, CultureInfo.InvariantCulture);
 				time += TimeSpan.FromSeconds(1);
 				File.SetLastWriteTime(allTagsPath, time);
@@ -506,12 +503,11 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		[Ignore("TODO rework when have alltag.json in stable location")]
 		public void LanguageTags_NoCachedAllTagsSldrOffline_UseEmbeddedAllTags()
 		{
 			using (new TestEnvironment())
 			{
-				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.txt");
+				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.json");
 				Assert.That(File.Exists(allTagsPath), Is.False);
 
 				Assert.That(Sldr.LanguageTags, Is.Not.Empty);
