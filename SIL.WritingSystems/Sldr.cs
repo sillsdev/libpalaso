@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
@@ -74,9 +74,7 @@ namespace SIL.WritingSystems
 		private const string SldrRepository = "https://ldml.api.sil.org/";
 #endif
 
-#if STAGING_ALLTAGS_GITHUB
 		private const string SldrGitHubRepo = "https://api.github.com/repos/silnrsi/sldr/";
-#endif
 		private const string TmpExtension = "tmp";
 
 		// Default parameters for querying the SLDR
@@ -373,7 +371,6 @@ namespace SIL.WritingSystems
 				// TODO refactor this to get alltags.json once it has a defined location
 				// for now only use the included version in the resource
 
-#if STAGING_ALLTAGS_GITHUB
 					string cachedAllTagsPath = Path.Combine(SldrCachePath, "alltags.json");
 					DateTime latestCommitTime = DateTime.MinValue;
 					DateTime sinceTime = _embeddedAllTagsTime;
@@ -421,11 +418,12 @@ namespace SIL.WritingSystems
 
 						if (latestCommitTime > DateTime.MinValue)
 						{
-							// there is an updated version of the alltags.txt file in the SLDR Git repo, so get it
-							string contentsUrl = string.Format("{0}contents/alltags.json", SldrGitHubRepo);
+							// there is an updated version of the alltags.txt file in the SLDR Git repo, so find the blob and get it
+							string contentsUrl = string.Format("{0}contents/", SldrGitHubRepo);
 							webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(contentsUrl));
 							webRequest.UserAgent = UserAgent;
 							webRequest.Timeout = 10000;
+							string blobSha = null;
 							using (var webResponse = (HttpWebResponse) webRequest.GetResponse())
 							{
 								Stream stream = webResponse.GetResponseStream();
@@ -433,9 +431,44 @@ namespace SIL.WritingSystems
 								{
 									using (StreamReader responseReader = new StreamReader(stream))
 									{
-										JObject blob = JObject.Load(new JsonTextReader(responseReader));
-										File.WriteAllBytes(cachedAllTagsPath, Convert.FromBase64String((string) blob["content"]));
-										File.SetLastWriteTime(cachedAllTagsPath, latestCommitTime);
+										JArray alltags_files = JArray.Load(new JsonTextReader(responseReader));
+										foreach (JObject file in alltags_files.Children<JObject>())
+										{
+											if (file["name"].ToObject<String>() == "alltags.json")
+											{
+												blobSha = file["sha"].ToObject<String>();
+											}
+										}
+									}
+								}
+							}
+
+							if (blobSha != null)
+							{
+								string blobUrl = string.Format("{0}git/blobs/{1}", SldrGitHubRepo,
+									blobSha);
+								webRequest =
+									(HttpWebRequest) WebRequest.Create(
+										Uri.EscapeUriString(blobUrl));
+								webRequest.UserAgent = UserAgent;
+								webRequest.Timeout = 10000;
+								using (var webResponse =
+									(HttpWebResponse) webRequest.GetResponse())
+								{
+									Stream stream = webResponse.GetResponseStream();
+									if (stream != null)
+									{
+										using (StreamReader responseReader =
+											new StreamReader(stream))
+										{
+											JObject blob =
+												JObject.Load(new JsonTextReader(responseReader));
+											File.WriteAllBytes(cachedAllTagsPath,
+												Convert.FromBase64String(
+													(string) blob["content"]));
+											File.SetLastWriteTime(cachedAllTagsPath,
+												latestCommitTime);
+										}
 									}
 								}
 							}
@@ -445,9 +478,7 @@ namespace SIL.WritingSystems
 					{
 					}
 				allTagsContent = File.Exists(cachedAllTagsPath) ? File.ReadAllText(cachedAllTagsPath) : LanguageRegistryResources.alltags;
-				#else
-				allTagsContent = LanguageRegistryResources.alltags;
-				#endif
+				//allTagsContent = LanguageRegistryResources.alltags;
 			}
 			_languageTags = new ReadOnlyKeyedCollection<string, SldrLanguageTagInfo>(ParseAllTagsJson(allTagsContent));
 		}
