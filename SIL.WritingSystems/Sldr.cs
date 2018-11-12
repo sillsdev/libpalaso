@@ -371,10 +371,10 @@ namespace SIL.WritingSystems
 				// for now only use the included version in the resource
 
 				string cachedAllTagsPath = Path.Combine(SldrCachePath, "alltags.json");
-				DateTime sinceTime = _embeddedAllTagsTime;
+				DateTime sinceTime = _embeddedAllTagsTime.ToUniversalTime();
 				if (File.Exists(cachedAllTagsPath))
 				{
-					DateTime fileTime = File.GetLastWriteTime(cachedAllTagsPath);
+					DateTime fileTime = File.GetLastWriteTime(cachedAllTagsPath).ToUniversalTime();
 					if (sinceTime > fileTime)
 						// delete the old alltags.json file if a newer embedded one is available.
 						// this can happen if the application is upgraded to use a newer version of SIL.WritingSystems
@@ -391,7 +391,7 @@ namespace SIL.WritingSystems
 
 
 					// get SLDR alltags.json from the SLDR api compressed
-					// it will throw WebException or have statys HttpStatusCode.NotModified if file is unchanged or not get it
+					// it will throw WebException or have status HttpStatusCode.NotModified if file is unchanged or not get it
 					string alltagsUrl = string.Format("{0}index.html?query=alltags&ext=json", SldrRepository);
 					var webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(alltagsUrl));
 					webRequest.UserAgent = UserAgent;
