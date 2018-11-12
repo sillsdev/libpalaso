@@ -374,7 +374,7 @@ namespace SIL.WritingSystems
 				DateTime sinceTime = _embeddedAllTagsTime.ToUniversalTime();
 				if (File.Exists(cachedAllTagsPath))
 				{
-					DateTime fileTime = File.GetLastWriteTime(cachedAllTagsPath).ToUniversalTime();
+					DateTime fileTime = File.GetLastWriteTimeUtc(cachedAllTagsPath);
 					if (sinceTime > fileTime)
 						// delete the old alltags.json file if a newer embedded one is available.
 						// this can happen if the application is upgraded to use a newer version of SIL.WritingSystems
