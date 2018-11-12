@@ -371,7 +371,6 @@ namespace SIL.WritingSystems
 				// for now only use the included version in the resource
 
 				string cachedAllTagsPath = Path.Combine(SldrCachePath, "alltags.json");
-				DateTime latestCommitTime = DateTime.MinValue;
 				DateTime sinceTime = _embeddedAllTagsTime;
 				if (File.Exists(cachedAllTagsPath))
 				{
@@ -390,42 +389,18 @@ namespace SIL.WritingSystems
 					if (_offlineMode)
 						throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
 
-					// there is no way to check if SLDR api alltags has change so:
-					// query the SLDR GitHub repo to see if there is an updated version of alltags.json
-					string commitUrl = string.Format("{0}commits?path=alltags.json&since={1:O}",
-						SldrGitHubRepo, sinceTime);
-					var webRequest = (HttpWebRequest)WebRequest.Create(Uri.EscapeUriString(commitUrl));
-					webRequest.UserAgent = UserAgent;
-					webRequest.Timeout = 10000;
-					using (var webResponse = (HttpWebResponse)webRequest.GetResponse())
-					{
-						Stream stream = webResponse.GetResponseStream();
-						if (stream != null)
-						{
-							using (StreamReader responseReader = new StreamReader(stream))
-							{
-								// get the timestamp of the most recent commit
-								JArray commits = JArray.Load(new JsonTextReader(responseReader));
-								foreach (JObject commit in commits.Children<JObject>())
-								{
-									var time = commit["commit"]["author"]["date"].ToObject<DateTime>();
-									if (time > latestCommitTime)
-										latestCommitTime = time;
-								}
-							}
-						}
-					}
 
-					// SLDR alltags.json has changed so get it from the SLDR api compressed
-					if (latestCommitTime > DateTime.MinValue)
+					// get SLDR alltags.json from the SLDR api compressed
+					// it will throw WebException or have statys HttpStatusCode.NotModified if file is unchanged or not get it
+					string alltagsUrl = string.Format("{0}index.html?query=alltags&ext=json", SldrRepository);
+					var webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(alltagsUrl));
+					webRequest.UserAgent = UserAgent;
+					webRequest.IfModifiedSince = sinceTime;
+					webRequest.Timeout = 10000;
+					webRequest.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+					using (var webResponse = (HttpWebResponse) webRequest.GetResponse())
 					{
-						// there is an updated version of the alltags.json file in the SLDR API, so get it
-						string alltagsUrl = string.Format("{0}index.html?query=alltags&ext=json", SldrRepository);
-						webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(alltagsUrl));
-						webRequest.UserAgent = UserAgent;
-						webRequest.Timeout = 10000;
-						webRequest.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-						using (var webResponse = (HttpWebResponse) webRequest.GetResponse())
+						if (webResponse.StatusCode != HttpStatusCode.NotModified)
 						{
 							using (Stream output = File.OpenWrite(cachedAllTagsPath))
 							{
