@@ -202,7 +202,6 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		//[Ignore("TODO:FIX:Should search for country en and find code 'es'?")] // 2018-10-26
 		public void SuggestLanguages_ByCountry_Matches()
 		{
 			var lookup = new LanguageLookup();
@@ -238,7 +237,6 @@ namespace SIL.WritingSystems.Tests
 		/// These may be fixed in the Ethnologue over time, but it was requested that we just remove all alternative names for now.
 		/// </summary>
 		[Test]
-		[Ignore("TODO:Urgent: This needs to be approved by the Ethiopia branch before release")]
 		public void SuggestLanguages_LanguageIsInEthiopia_ShowOnlyOfficialNames()
 		{
 			var lookup = new LanguageLookup();
@@ -254,7 +252,6 @@ namespace SIL.WritingSystems.Tests
 		/// We have been asked to temporarily suppress these three codes for Ethiopia, until the Ethnologue is changed.
 		/// </summary>
 		[Test]
-		[Ignore("TODO:Urgent: This needs to be approved by the Ethiopia branch before release")]
 		public void SuggestLanguages_LanguageIsOromo_DoNotShowRelatedLanguages()
 		{
 			var lookup = new LanguageLookup();
