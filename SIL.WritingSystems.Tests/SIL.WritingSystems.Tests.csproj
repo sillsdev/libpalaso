@@ -349,6 +349,10 @@
       <Project>{53cb36d9-2f66-4823-b1f0-4523e8565200}</Project>
       <Name>SIL.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SIL.Lexicon\SIL.Lexicon.csproj">
+      <Project>{fad20de2-d5bb-4d9d-aeef-61f02663105f}</Project>
+      <Name>SIL.Lexicon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj">
       <Project>{d74ce910-d44a-44f5-8c0f-f5e50b26f85d}</Project>
       <Name>SIL.TestUtilities</Name>

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using NUnit.Framework;
+using SIL.Lexicon;
 using SIL.TestUtilities;
 using SIL.WritingSystems.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
@@ -1663,5 +1664,89 @@ namespace SIL.WritingSystems.Tests.Migration
 
 		#endregion
 
+		/// <summary>
+		/// Test the migration of ldml file if we have user settings (from the new version)
+		/// but an old ldml file - this can happen if the writing systems get manually restored
+		/// to an older version but the SharedSettings folder doesn't get deleted.
+		/// </summary>
+		[Test]
+		public void ResetRemovedProperties_HasUserKnownKeyboards_DoesNotCrash()
+		{
+			string ldmlFileContent = @"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+	<identity>
+		<version number='' />
+		<generation date='2017-01-19T14:42:08' />
+		<language type='ar' />
+		<territory type='IQ' />
+	</identity>
+	<layout>
+		<orientation characters='right-to-left' />
+	</layout>
+	<collations>
+		<collation>
+			<base>
+				<alias source='ar-IQ' />
+			</base>
+			<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
+				<palaso:sortRulesType value='OtherLanguage' />
+			</special>
+		</collation>
+	</collations>
+	<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
+		<palaso:abbreviation value='Ara' />
+		<palaso:defaultFontFamily value='Times New Roman' />
+		<palaso:languageName value='Arabic' />
+		<palaso:spellCheckingId value='ar_IQ' />
+		<palaso:version value='2' />
+	</special>
+	<special xmlns:palaso2='urn://palaso.org/ldmlExtensions/v2'>
+		<palaso2:knownKeyboards>
+			<palaso2:keyboard layout='US' locale='en-US' os='Win32NT' />
+			<palaso2:keyboard layout='us' locale='en-US' os='Unix' />
+			<palaso2:keyboard layout='English' locale='en-US' os='Unix' />
+		</palaso2:knownKeyboards>
+		<palaso2:version value='2' />
+	</special>
+	<special xmlns:fw='urn://fieldworks.sil.org/ldmlExtensions/v1'>
+		<fw:graphiteEnabled value='False' />
+		<fw:regionName value='Iraq' />
+		<fw:windowsLCID value='2049' />
+	</special>
+</ldml>".Replace("'", "\"");
+
+			var userSettingsFileContent = @"<?xml version='1.0' encoding='utf-8'?>
+<UserLexiconSettings>
+	<WritingSystems>
+		<WritingSystem id='ar-IQ'>
+			<KnownKeyboards>
+				<KnownKeyboard>en-US_US</KnownKeyboard>
+				<KnownKeyboard>en-US_us</KnownKeyboard>
+				<KnownKeyboard>en-US_English</KnownKeyboard>
+			</KnownKeyboards>
+		</WritingSystem>
+	</WritingSystems>
+</UserLexiconSettings>".Replace("'", "\"");
+
+			using (var environment = new TestEnvironment())
+			{
+				// Setup
+				environment.WriteLdmlFile("ar-IQ.ldml", ldmlFileContent);
+				var userSettingsFile = Path.Combine(environment.LdmlPath, "test.ulsx");
+				File.WriteAllText(userSettingsFile, userSettingsFileContent);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+
+				var dataMappers = new ICustomDataMapper<WritingSystemDefinition>[]
+				{
+					new UserLexiconSettingsWritingSystemDataMapper<WritingSystemDefinition>(new FileSettingsStore(userSettingsFile))
+				};
+				var repo = new TestLdmlInFolderWritingSystemRepository(environment.LdmlPath,
+					dataMappers);
+
+				// Execute
+				Assert.That(() => migrator.ResetRemovedProperties(repo), Throws.Nothing);
+			}
+		}
 	}
 }
