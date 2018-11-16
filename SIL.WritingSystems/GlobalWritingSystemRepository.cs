@@ -67,6 +67,8 @@ namespace SIL.WritingSystems
 		private readonly GlobalMutex _mutex;
 		private readonly Dictionary<string, Tuple<DateTime, long>> _lastFileStats; 
 
+		private static string _defaultBasePath;
+
 		protected internal GlobalWritingSystemRepository(string basePath)
 		{
 			_lastFileStats = new Dictionary<string, Tuple<DateTime, long>>();
@@ -148,9 +150,16 @@ namespace SIL.WritingSystems
 		{
 			get
 			{
-				string basePath = Platform.IsLinux ? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
-					: Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-				return Path.Combine(basePath, "SIL", "WritingSystemRepository");
+				// This allows unit tests to set the _defaultBasePath (through reflection)
+				if (string.IsNullOrEmpty(_defaultBasePath))
+				{
+					string basePath = Platform.IsLinux
+						? Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
+						: Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+					_defaultBasePath = Path.Combine(basePath, "SIL", "WritingSystemRepository");
+				}
+
+				return _defaultBasePath;
 			}
 		}
 
