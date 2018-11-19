@@ -7,6 +7,7 @@ using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using NUnit.Framework;
+using SIL.Extensions;
 using SIL.Keyboarding;
 using SIL.TestUtilities;
 
@@ -119,6 +120,16 @@ namespace SIL.WritingSystems.Tests
 			{
 				Assert.IsTrue(File.Exists(GetPathForLocalWSId(id)));
 			}
+
+			public WritingSystemDefinition GetWsFromFileInGlobalWS(string wsId)
+			{
+				var filePath = GetPathForGlobalWSId(wsId);
+				var wsFromFile = GlobalRepository.WritingSystemFactory.Create();
+				var ldmlDataMapper = new LdmlDataMapper(GlobalRepository.WritingSystemFactory);
+				ldmlDataMapper.Read(filePath, wsFromFile);
+				return wsFromFile;
+			}
+
 		}
 
 		[Test]
@@ -1053,15 +1064,66 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			using (var testFolder2 = new TemporaryFolder("LdmlInFolderWritingSystemRepositoryTests2"))
 			{
+				// Create and save a new WS in the local store - this will copy the WS into the
+				// global store since it doesn't exist yet
 				var enUsTag = "en-US";
 				var ws = new WritingSystemDefinition(enUsTag);
 				environment.LocalRepository.Set(ws);
 				ws.RightToLeftScript = true;
 				ws.DefaultCollation = new SystemCollationDefinition {LanguageTag = enUsTag};
 				environment.LocalRepository.Save();
-				Assert.IsTrue(File.Exists(environment.GetPathForLocalWSId(enUsTag)));
-				Assert.IsTrue(File.Exists(environment.GetPathForGlobalWSId(enUsTag)));
+				Assert.That(File.Exists(environment.GetPathForLocalWSId(enUsTag)), Is.True);
+				Assert.That(File.Exists(environment.GetPathForGlobalWSId(enUsTag)), Is.True);
+				Assert.That(environment.GlobalRepository.Get(enUsTag).DateModified,
+					Is.EqualTo(environment.LocalRepository.Get(enUsTag).DateModified),
+					"Copying to global repo shouldn't update the timestamp");
+
+				// ensure that the date modified actually changes
+				Thread.Sleep(1000);
+
+				// Create and save the same WS (although slightly different) in a different local
+				// store - this should update the global store
+				var lastModified = File.GetLastWriteTime(environment.GetPathForGlobalWSId(enUsTag));
+				var lastModifiedInWs = environment.GlobalRepository.Get(enUsTag).DateModified;
+				var localRepo2 = new LdmlInFolderWritingSystemRepository(testFolder2.Path, environment.GlobalRepository);
+				ws = new WritingSystemDefinition(enUsTag);
+				localRepo2.Set(ws);
+				ws.RightToLeftScript = false;
+				localRepo2.Save();
+				Assert.That(File.GetLastWriteTime(environment.GetPathForGlobalWSId(enUsTag)),
+					Is.GreaterThan(lastModified), "WS file in global store didn't get updated");
+				Assert.That(environment.GlobalRepository.Get(enUsTag).DateModified,
+					Is.GreaterThan(lastModifiedInWs), "WS in memory didn't get updated");
+				Assert.That(environment.GlobalRepository.Get(enUsTag).DateModified.ToISO8601TimeFormatWithUTCString(),
+					Is.EqualTo(environment.GetWsFromFileInGlobalWS(enUsTag).DateModified.ToISO8601TimeFormatWithUTCString()),
+					"WS in memory and in global store are different");
+				Assert.That(environment.GetWsFromFileInGlobalWS(enUsTag).DateModified,
+					Is.GreaterThan(lastModifiedInWs), "WS in global store didn't get updated");
+			}
+		}
+
+		[Test]
+		public void Save_UpdatesGlobalStore_KeepsExtraContent()
+		{
+			using (var environment = new TestEnvironment())
+			using (var testFolder2 = new TemporaryFolder("LdmlInFolderWritingSystemRepositoryTests2"))
+			{
+				// Create and save a new WS in the local store - this will copy the WS into the
+				// global store since it doesn't exist yet
+				var enUsTag = "en-US";
+				var ws = new WritingSystemDefinition(enUsTag);
+				environment.LocalRepository.Set(ws);
+				ws.RightToLeftScript = true;
+				ws.DefaultCollation = new SystemCollationDefinition {LanguageTag = enUsTag};
+				environment.LocalRepository.Save();
+				Assert.That(File.Exists(environment.GetPathForLocalWSId(enUsTag)), Is.True);
+				Assert.That(File.Exists(environment.GetPathForGlobalWSId(enUsTag)), Is.True);
+				Assert.That(environment.GlobalRepository.Get(enUsTag).DateModified,
+					Is.EqualTo(environment.LocalRepository.Get(enUsTag).DateModified),
+					"Copying to global repo shouldn't update the timestamp");
+
 				// Add some extra content to make sure we round trip it
+				// This simulates that the global store gets updated by a different app
 				var document = XDocument.Load(environment.GetPathForGlobalWSId(enUsTag));
 				var root = document.Root;
 				root.Add(XElement.Parse("<mysteryTag><languages><language type='aa'>Ingles</language></languages></mysteryTag>"));
@@ -1070,29 +1132,48 @@ namespace SIL.WritingSystems.Tests
 				// ensure that the date modified actually changes
 				Thread.Sleep(1000);
 
-				DateTime lastModified = File.GetLastWriteTime(environment.GetPathForGlobalWSId(enUsTag));
+				// Create and save the same WS (although slightly different) in a different local
+				// store - this should update the global store
+				var lastModified = File.GetLastWriteTime(environment.GetPathForGlobalWSId(enUsTag));
+				var lastModifiedInWs = environment.GlobalRepository.Get(enUsTag).DateModified;
 				var localRepo2 = new LdmlInFolderWritingSystemRepository(testFolder2.Path, environment.GlobalRepository);
 				ws = new WritingSystemDefinition(enUsTag);
 				localRepo2.Set(ws);
 				ws.RightToLeftScript = false;
 				localRepo2.Save();
-				Assert.Less(lastModified, File.GetLastWriteTime(environment.GetPathForGlobalWSId(enUsTag)));
+				Assert.That(File.GetLastWriteTime(environment.GetPathForGlobalWSId(enUsTag)),
+					Is.GreaterThan(lastModified));
+				Assert.That(environment.GlobalRepository.Get(enUsTag).DateModified,
+					Is.GreaterThan(lastModifiedInWs));
+				Assert.That(environment.GetWsFromFileInGlobalWS(enUsTag).DateModified,
+					Is.GreaterThan(lastModifiedInWs));
 
+				// Simulate a restart of the application - local repo should detect that there
+				// is an updated WS in the global store
 				lastModified = File.GetLastWriteTime(environment.GetPathForLocalWSId(enUsTag));
+				lastModifiedInWs = environment.LocalRepository.Get(enUsTag).DateModified;
 				environment.ResetRepositories();
 				ws = environment.LocalRepository.Get(enUsTag);
 				Assert.That(ws.RightToLeftScript, Is.True);
-				WritingSystemDefinition[] sharedWSs = environment.LocalRepository.CheckForNewerGlobalWritingSystems().ToArray();
+				var sharedWSs = environment.LocalRepository.CheckForNewerGlobalWritingSystems().ToArray();
 				Assert.That(sharedWSs.Select(sharedWS => sharedWS.LanguageTag), Is.EqualTo(new[] {enUsTag}));
+
+				// Get updated WS from global store
 				environment.LocalRepository.Remove(sharedWSs[0].LanguageTag);
 				environment.LocalRepository.Set(sharedWSs[0]);
 				environment.LocalRepository.Save();
-
 				ws = environment.LocalRepository.Get(enUsTag);
 				Assert.That(ws.RightToLeftScript, Is.False);
+
 				// ensure that application-specific settings are preserved
 				Assert.That(ws.DefaultCollation.ValueEquals(new SystemCollationDefinition {LanguageTag = enUsTag}), Is.True);
-				Assert.Less(lastModified, File.GetLastWriteTime(environment.GetPathForLocalWSId(enUsTag)));
+				Assert.That(File.GetLastWriteTime(environment.GetPathForGlobalWSId(enUsTag)),
+					Is.GreaterThan(lastModified));
+				Assert.That(environment.LocalRepository.Get(enUsTag).DateModified,
+					Is.GreaterThan(lastModifiedInWs));
+				Assert.That(environment.GlobalRepository.Get(enUsTag).DateModified,
+					Is.EqualTo(environment.LocalRepository.Get(enUsTag).DateModified),
+					"Copying to global repo shouldn't update the timestamp");
 				// verify that we round tripped the extra content
 				AssertThatXmlIn.File(environment.GetPathForGlobalWSId(enUsTag)).HasSpecifiedNumberOfMatchesForXpath("/ldml/mysteryTag/languages/language[@type='aa']", 1);
 			}

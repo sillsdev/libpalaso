@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using SIL.Keyboarding;
+using SIL.ObjectModel;
 using SIL.TestUtilities;
 
 namespace SIL.WritingSystems.Tests
@@ -124,8 +125,8 @@ namespace SIL.WritingSystems.Tests
 		public void CloneCopiesQuotationMarks()
 		{
 			var original = new WritingSystemDefinition();
-			var qm1 = new QuotationMark("«", "»", null, 1, QuotationMarkingSystemType.Narrative);
-			var qm2 = new QuotationMark("‹", "›", null, 3, QuotationMarkingSystemType.Normal);
+			var qm1 = new QuotationMark("\u00AB", "\u00BB", null, 1, QuotationMarkingSystemType.Narrative); // Â«, Â»
+			var qm2 = new QuotationMark("\u2039", "\u203A", null, 3, QuotationMarkingSystemType.Normal); // â€¹â€¯â€º
 			original.QuotationMarks.Add(qm1);
 			original.QuotationMarks.Add(qm2);
 			WritingSystemDefinition copy = original.Clone();
@@ -302,8 +303,8 @@ namespace SIL.WritingSystems.Tests
 		public void ValueEqualsComparesQuotationMarks()
 		{
 			var first = new WritingSystemDefinition();
-			var qm1 = new QuotationMark("«", "»", null, 3, QuotationMarkingSystemType.Narrative);
-			var qm2 = new QuotationMark("‹", "›", null, 1, QuotationMarkingSystemType.Normal);
+			var qm1 = new QuotationMark("\u00AB", "\u00BB", null, 3, QuotationMarkingSystemType.Narrative); // Â«, Â»
+			var qm2 = new QuotationMark("\u2039", "\u203A", null, 1, QuotationMarkingSystemType.Normal); // â€¹â€¯â€º
 			first.QuotationMarks.Add(qm1);
 			first.QuotationMarks.Add(qm2);
 			var second = new WritingSystemDefinition();
@@ -1354,6 +1355,24 @@ namespace SIL.WritingSystems.Tests
 		{
 			var writingSystem = new WritingSystemDefinition(new WritingSystemDefinition("x-bogus"));
 			Assert.AreEqual("x-bogus", writingSystem.LanguageTag);
+		}
+
+		[Test]
+		public void CloneConstructor_DoesNotCopyIdByDefault()
+		{
+			var original = new WritingSystemDefinition();
+			original.Id = "foo";
+			var writingSystem = new WritingSystemDefinition(original);
+			Assert.That(writingSystem.Id, Is.Not.EqualTo(original.Id));
+		}
+
+		[Test]
+		public void CloneConstructor_CopyId()
+		{
+			var original = new WritingSystemDefinition();
+			original.Id = "foo";
+			var writingSystem = new WritingSystemDefinition(original, true);
+			Assert.That(writingSystem.Id, Is.EqualTo(original.Id));
 		}
 
 		[Test]

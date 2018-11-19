@@ -65,13 +65,15 @@ namespace SIL.WritingSystems
 
 		private readonly string _path;
 		private readonly GlobalMutex _mutex;
-		private readonly Dictionary<string, Tuple<DateTime, long>> _lastFileStats; 
+		private readonly Dictionary<string, Tuple<DateTime, long>> _lastFileStats;
+		private readonly List<string> _addedWritingSystems;
 
 		private static string _defaultBasePath;
 
 		protected internal GlobalWritingSystemRepository(string basePath)
 		{
 			_lastFileStats = new Dictionary<string, Tuple<DateTime, long>>();
+			_addedWritingSystems = new List<string>();
 			_path = CurrentVersionPath(basePath);
 			if (!Directory.Exists(_path))
 				CreateGlobalWritingSystemRepositoryDirectory(_path);
@@ -101,10 +103,14 @@ namespace SIL.WritingSystems
 						if (_lastFileStats[id].Item1 != fi.LastWriteTime || _lastFileStats[id].Item2 != fi.Length)
 						{
 							// modified writing system
-							ldmlDataMapper.Read(file, ws);
-							if(string.IsNullOrEmpty(ws.Id))
-								ws.Id = ws.LanguageTag;
-							ws.AcceptChanges();
+							if (!_addedWritingSystems.Contains(id))
+							{
+								ldmlDataMapper.Read(file, ws);
+								if (string.IsNullOrEmpty(ws.Id))
+									ws.Id = ws.LanguageTag;
+								ws.AcceptChanges();
+							}
+
 							_lastFileStats[id] = Tuple.Create(fi.LastWriteTime, fi.Length);
 						}
 					}
@@ -136,7 +142,7 @@ namespace SIL.WritingSystems
 			foreach (string id in removedIds)
 			{
 				// preserve this repo's changes
-				if (!WritingSystems[id].IsChanged)
+				if (!WritingSystems[id].IsChanged && !_addedWritingSystems.Contains(id))
 					base.Remove(id);
 			}
 		}
@@ -206,6 +212,8 @@ namespace SIL.WritingSystems
 				UpdateDefinitions();
 
 				string oldStoreId = ws.Id;
+				var isNewWs = WritingSystems.Count(kvp => kvp.Value.Id == ws.Id) == 0;
+
 				base.Set(ws);
 
 				//Renaming the file here is a bit ugly as the content has not yet been updated. Thus there
@@ -215,6 +223,8 @@ namespace SIL.WritingSystems
 				//The inconsistency is resolved on Save()
 				if (oldStoreId != ws.Id && File.Exists(GetFilePathFromLanguageTag(oldStoreId)))
 					File.Move(GetFilePathFromLanguageTag(oldStoreId), GetFilePathFromLanguageTag(ws.Id));
+				else if (isNewWs && !ws.IsChanged && !_addedWritingSystems.Contains(ws.Id))
+					_addedWritingSystems.Add(ws.Id);
 			}
 		}
 
@@ -293,6 +303,8 @@ namespace SIL.WritingSystems
 			{
 				UpdateDefinitions();
 				base.Remove(id);
+				if (_addedWritingSystems.Contains(id))
+					_addedWritingSystems.Remove(id);
 			}
 		}
 
@@ -336,6 +348,8 @@ namespace SIL.WritingSystems
 			if (File.Exists(file))
 				File.Delete(file);
 			base.RemoveDefinition(ws);
+			if (_addedWritingSystems.Contains(ws.Id))
+				_addedWritingSystems.Remove(ws.Id);
 		}
 
 		private void SaveDefinition(T ws)
@@ -350,10 +364,12 @@ namespace SIL.WritingSystems
 				ws.Template = null;
 			}
 
-			if (!ws.IsChanged && File.Exists(writingSystemFilePath))
+			if (!ws.IsChanged && File.Exists(writingSystemFilePath) && !_addedWritingSystems.Contains(ws.Id))
 				return; // no need to save (better to preserve the modified date)
 
-			ws.DateModified = DateTime.UtcNow;
+			if (ws.IsChanged)
+				ws.DateModified = DateTime.UtcNow;
+
 			MemoryStream oldData = null;
 			if (File.Exists(writingSystemFilePath))
 			{
@@ -409,6 +425,8 @@ namespace SIL.WritingSystems
 				// and not be allowed in a foreach loop
 				foreach (T ws in AllWritingSystems.Where(CanSet).ToArray())
 					SaveDefinition(ws);
+
+				_addedWritingSystems.Clear();
 			}
 		}
 
