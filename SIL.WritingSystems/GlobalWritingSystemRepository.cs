@@ -85,7 +85,7 @@ namespace SIL.WritingSystems
 		{
 			var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
 			var removedIds = new HashSet<string>(WritingSystems.Keys);
-			foreach (string file in Directory.GetFiles(_path, "*.ldml"))
+			foreach (string file in Directory.GetFiles(PathToWritingSystems, $"*{Extension}"))
 			{
 				var fi = new FileInfo(file);
 				string id = Path.GetFileNameWithoutExtension(file);
@@ -219,7 +219,7 @@ namespace SIL.WritingSystems
 				//Renaming the file here is a bit ugly as the content has not yet been updated. Thus there
 				//may be a mismatch between the filename and the contained rfc5646 tag. Doing it here however
 				//helps us avoid having to deal with situations where a writing system id is changed to be
-				//identical with the old id of another writing sytsem. This could otherwise lead to dataloss.
+				//identical with the old id of another writing system. This could otherwise lead to dataloss.
 				//The inconsistency is resolved on Save()
 				if (oldStoreId != ws.Id && File.Exists(GetFilePathFromLanguageTag(oldStoreId)))
 					File.Move(GetFilePathFromLanguageTag(oldStoreId), GetFilePathFromLanguageTag(ws.Id));
@@ -247,7 +247,7 @@ namespace SIL.WritingSystems
 		/// </summary>
 		public override void Replace(string languageTag, T newWs)
 		{
-			using (new WsStasher(Path.Combine(_path, languageTag + Extension)))
+			using (new WsStasher(Path.Combine(PathToWritingSystems, languageTag + Extension)))
 			{
 				base.Replace(languageTag, newWs);
 			}
