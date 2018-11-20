@@ -20,13 +20,15 @@ namespace SIL.Media.AlsaAudio
 		// variables copied from SIL.Media.Naudio implementation.
 		protected readonly int _maxMinutes;
 		protected SIL.Media.Naudio.RecordingState _recordingState = SIL.Media.Naudio.RecordingState.NotYetStarted;
-		private DateTime _recordingStartTime;
-		private DateTime _recordingStopTime;
+		//private DateTime _recordingStartTime;
+		//private DateTime _recordingStopTime;
 		public TimeSpan RecordedTime { get; set; }
+#pragma warning disable CS0067
 		public event EventHandler<SIL.Media.Naudio.PeakLevelEventArgs> PeakLevelChanged;				// IGNORED, not used anyway
 		public event EventHandler<SIL.Media.Naudio.RecordingProgressEventArgs> RecordingProgress;	// IGNORED, not used anyway
 		public event EventHandler RecordingStarted;									// IGNORED, not used anyway
 		public event EventHandler SelectedDeviceChanged;							// IGNORED, not used anyway
+#pragma warning restore CS0067
 		/// <summary>Fired when the transition from recording to monitoring is complete</summary>
 		public event Action<SIL.Media.Naudio.IAudioRecorder, ErrorEventArgs> Stopped;
 
@@ -117,7 +119,7 @@ namespace SIL.Media.AlsaAudio
 			{
 				if (_recordingState == SIL.Media.Naudio.RecordingState.Recording)
 				{
-					_recordingStopTime = DateTime.Now;
+					// _recordingStopTime = DateTime.Now;
 					RecordingState = SIL.Media.Naudio.RecordingState.RequestedStop;
 					Debug.WriteLine("Setting RequestedStop");
 					_session.StopRecordingAndSaveAsWav();
