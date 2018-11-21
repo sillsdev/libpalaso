@@ -137,7 +137,8 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 							IKeyboardDefinition kd;
 							if (!Keyboard.Controller.TryGetKeyboard(keyboardId, out kd))
 								kd = Keyboard.Controller.CreateKeyboard(keyboardId, KeyboardFormat.Unknown, Enumerable.Empty<string>());
-							ws.KnownKeyboards.Add(kd);
+							if (!ws.KnownKeyboards.Contains(kd))
+								ws.KnownKeyboards.Add(kd);
 						}
 					}
 				};
