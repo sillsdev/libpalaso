@@ -241,8 +241,9 @@ namespace SIL.WritingSystems.Tests
 		{
 			var lookup = new LanguageLookup();
 			var languages = lookup.SuggestLanguages("Wolaytta").ToArray();
+			Assert.True(languages.Any(l => l.Names.Contains("ወላይታቱ")));
 			Assert.True(languages.Any(l => l.Names.Contains("Wolaytta")));
-			Assert.AreEqual(1, languages[0].Names.Count, "Should only list the first name in the IANA subtag registry for Ethiopian languages.");
+			Assert.AreEqual(2, languages[0].Names.Count, "Should list only the first name in the IANA subtag registry for Ethiopian languages, plus local name.");
 			languages = lookup.SuggestLanguages("Qimant").ToArray();
 			Assert.True(languages.Any(l => l.Names.Contains("Qimant")));
 			Assert.AreEqual(1, languages[0].Names.Count, "Should only list the first name in the IANA subtag registry for Ethiopian languages.");

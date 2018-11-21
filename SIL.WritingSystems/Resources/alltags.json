@@ -5,10 +5,7 @@
         "localname": "Qafar", 
         "name": "Afar", 
         "names": [
-            "Adal", 
             "Afaraf", 
-            "Affar", 
-            "Affarigna", 
             "Qafar", 
             "Qafar af", 
             "ʿAfár af"
@@ -43,10 +40,7 @@
         "iso639_3": "aar", 
         "name": "Afar", 
         "names": [
-            "Adal", 
             "Afaraf", 
-            "Affar", 
-            "Affarigna", 
             "Qafar", 
             "Qafar af", 
             "ʿAfár af"
@@ -2478,9 +2472,6 @@
         "full": "agj-Ethi-ET", 
         "iso639_3": "agj", 
         "name": "Argobba", 
-        "names": [
-            "Argoba"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "agj", 
@@ -2772,14 +2763,6 @@
         "full": "ahg-Ethi-ET", 
         "iso639_3": "ahg", 
         "name": "Qimant", 
-        "names": [
-            "Agaw", 
-            "Kemant", 
-            "Kemantney", 
-            "Kimanteney", 
-            "Qemant", 
-            "Western Agaw"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "ahg-Ethi"
@@ -3370,12 +3353,6 @@
         "full": "aiw-Ethi-ET", 
         "iso639_3": "aiw", 
         "name": "Aari", 
-        "names": [
-            "Aarai", 
-            "Ara", 
-            "Ari", 
-            "Aro"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "aiw-Ethi"
@@ -3384,12 +3361,6 @@
         "full": "aiw-Latn-ET", 
         "iso639_3": "aiw", 
         "name": "Aari", 
-        "names": [
-            "Aarai", 
-            "Ara", 
-            "Ari", 
-            "Aro"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "aiw-Latn"
@@ -4333,15 +4304,6 @@
         "full": "alw-Ethi-ET", 
         "iso639_3": "alw", 
         "name": "Alaba-K’abeena", 
-        "names": [
-            "Alaaba", 
-            "Allaaba", 
-            "Halaba", 
-            "K’abeena", 
-            "K’abena", 
-            "Qebena", 
-            "Wanbasana"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "alw-Ethi"
@@ -4413,12 +4375,7 @@
         "localname": "አማርኛ", 
         "name": "Amharic", 
         "names": [
-            "Abyssinian", 
-            "Amarigna", 
-            "Amarinya", 
-            "Amhara", 
-            "Beta Israel", 
-            "Ethiopian"
+            "Beta Israel"
         ], 
         "region": "ET", 
         "regions": "CA DJ EG ER GB IL US", 
@@ -4434,12 +4391,7 @@
         "iso639_3": "amh", 
         "name": "Amharic", 
         "names": [
-            "Abyssinian", 
-            "Amarigna", 
-            "Amarinya", 
-            "Amhara", 
-            "Beta Israel", 
-            "Ethiopian"
+            "Beta Israel"
         ], 
         "region": "ET", 
         "regions": "CA DJ EG ER GB IL US", 
@@ -4547,23 +4499,6 @@
         "full": "amf-Ethi-ET", 
         "iso639_3": "amf", 
         "name": "Hamer-Banna", 
-        "names": [
-            "Amar", 
-            "Amarcocche", 
-            "Amer", 
-            "Ammar", 
-            "Bana", 
-            "Banna", 
-            "Bena", 
-            "Beshada", 
-            "Cocche", 
-            "Hamar", 
-            "Hamar-Koke", 
-            "Hamer", 
-            "Hammer", 
-            "Hammercoche", 
-            "Kara Kerre"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "amf-Ethi"
@@ -4572,23 +4507,6 @@
         "full": "amf-Latn-ET", 
         "iso639_3": "amf", 
         "name": "Hamer-Banna", 
-        "names": [
-            "Amar", 
-            "Amarcocche", 
-            "Amer", 
-            "Ammar", 
-            "Bana", 
-            "Banna", 
-            "Bena", 
-            "Beshada", 
-            "Cocche", 
-            "Hamar", 
-            "Hamar-Koke", 
-            "Hamer", 
-            "Hammer", 
-            "Hammercoche", 
-            "Kara Kerre"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "amf-Latn"
@@ -5275,22 +5193,15 @@
         "iso639_3": "anu", 
         "name": "Anuak", 
         "names": [
-            "Anyiwak", 
             "Anyuak", 
             "Anywa", 
             "Anywaa", 
             "Anywak", 
-            "Bar", 
-            "Burjin", 
             "Dha Anywaa", 
             "Dha Anywak", 
             "Dho Anywaa", 
             "Jambo", 
-            "Miroy", 
-            "Moojanga", 
             "Nuro", 
-            "Yambo", 
-            "Yembo", 
             "dho-Anywaa"
         ], 
         "region": "ET", 
@@ -5303,22 +5214,15 @@
         "iso639_3": "anu", 
         "name": "Anuak", 
         "names": [
-            "Anyiwak", 
             "Anyuak", 
             "Anywa", 
             "Anywaa", 
             "Anywak", 
-            "Bar", 
-            "Burjin", 
             "Dha Anywaa", 
             "Dha Anywak", 
             "Dho Anywaa", 
             "Jambo", 
-            "Miroy", 
-            "Moojanga", 
             "Nuro", 
-            "Yambo", 
-            "Yembo", 
             "dho-Anywaa"
         ], 
         "region": "SS", 
@@ -6900,12 +6804,6 @@
         "full": "arv-Qaax-ET", 
         "iso639_3": "arv", 
         "name": "Arbore", 
-        "names": [
-            "Arbora", 
-            "Arborie", 
-            "Erbore", 
-            "Irbore"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "arv", 
@@ -8656,20 +8554,6 @@
         "full": "awn-Ethi-ET", 
         "iso639_3": "awn", 
         "name": "Awngi", 
-        "names": [
-            "Agau", 
-            "Agaw", 
-            "Agew", 
-            "Agew-Awi", 
-            "Agow", 
-            "Awawar", 
-            "Awi", 
-            "Awija", 
-            "Awiya", 
-            "Awŋi", 
-            "Damot", 
-            "Kwollanyoch"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "awn-Ethi"
@@ -10795,10 +10679,6 @@
         "full": "bcq-Ethi-ET", 
         "iso639_3": "bcq", 
         "name": "Bench", 
-        "names": [
-            "Bencnon", 
-            "Dizu"
-        ], 
         "region": "ET", 
         "sldr": true, 
         "tag": "bcq", 
@@ -10811,10 +10691,6 @@
         "full": "bcq-Latn-ET", 
         "iso639_3": "bcq", 
         "name": "Bench", 
-        "names": [
-            "Bencnon", 
-            "Dizu"
-        ], 
         "region": "ET", 
         "sldr": true, 
         "tag": "bcq-Latn"
@@ -14086,9 +13962,7 @@
         "iso639_3": "bji", 
         "name": "Burji", 
         "names": [
-            "Bambala", 
-            "Bembala", 
-            "Daashi"
+            "Bambala"
         ], 
         "region": "ET", 
         "regions": "KE", 
@@ -18610,13 +18484,6 @@
         "full": "bst-Ethi-ET", 
         "iso639_3": "bst", 
         "name": "Basketo", 
-        "names": [
-            "Baskatta", 
-            "Basketo-Dokka", 
-            "Basketto", 
-            "Mesketo", 
-            "Misketto"
-        ], 
         "region": "ET", 
         "sldr": true, 
         "tag": "bst-Ethi"
@@ -18658,12 +18525,6 @@
         "full": "bsw-Qaax-ET", 
         "iso639_3": "bsw", 
         "name": "Baiso", 
-        "names": [
-            "Alkali", 
-            "Bayso", 
-            "Gedicho", 
-            "Gidicho"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "bsw", 
@@ -20205,21 +20066,6 @@
         "full": "bwo-Ethi-ET", 
         "iso639_3": "bwo", 
         "name": "Borna", 
-        "names": [
-            "Bora", 
-            "Bori Noona", 
-            "Borí noonə", 
-            "Boro", 
-            "Borəni noon", 
-            "Bworo", 
-            "Dangabo", 
-            "Gonga", 
-            "Scinacia", 
-            "Shinasha", 
-            "Shinassha", 
-            "Shinicho", 
-            "Šinaša"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "bwo-Ethi"
@@ -20228,21 +20074,6 @@
         "full": "bwo-Latn-ET", 
         "iso639_3": "bwo", 
         "name": "Borna", 
-        "names": [
-            "Bora", 
-            "Bori Noona", 
-            "Borí noonə", 
-            "Boro", 
-            "Borəni noon", 
-            "Bworo", 
-            "Dangabo", 
-            "Gonga", 
-            "Scinacia", 
-            "Shinasha", 
-            "Shinassha", 
-            "Shinicho", 
-            "Šinaša"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "bwo-Latn"
@@ -20490,9 +20321,6 @@
         "full": "bxe-Qaax-ET", 
         "iso639_3": "bxe", 
         "name": "Ongota", 
-        "names": [
-            "Ifa"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "bxe", 
@@ -26063,10 +25891,6 @@
         "full": "cra-Qaax-ET", 
         "iso639_3": "cra", 
         "name": "Chara", 
-        "names": [
-            "Ciara", 
-            "Gimiri Nona"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "cra", 
@@ -30170,11 +29994,6 @@
         "full": "dim-Qaax-ET", 
         "iso639_3": "dim", 
         "name": "Dime", 
-        "names": [
-            "Dim-af", 
-            "Dim-ap", 
-            "Dima"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "dim", 
@@ -31729,25 +31548,6 @@
         "full": "dox-Qaax-ET", 
         "iso639_3": "dox", 
         "name": "Bussa", 
-        "names": [
-            "Buusa", 
-            "Dobase", 
-            "D’oopace", 
-            "D’opaasunte", 
-            "Gobeze", 
-            "Goraze", 
-            "Gowase", 
-            "Lohu", 
-            "Mashelle", 
-            "Mashile", 
-            "Masholle", 
-            "Mosittacha", 
-            "Mosittata", 
-            "Mosiye", 
-            "Mossiye", 
-            "Musiye", 
-            "Orase"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "dox", 
@@ -31988,9 +31788,6 @@
         "full": "drs-Ethi-ET", 
         "iso639_3": "drs", 
         "name": "Gedeo", 
-        "names": [
-            "Geddeo"
-        ], 
         "region": "ET", 
         "sldr": true, 
         "tag": "drs", 
@@ -32094,30 +31891,16 @@
         "iso639_3": "dsh", 
         "name": "Daasanach", 
         "names": [
-            "Af Daasanach", 
-            "Af ’Daasanach", 
             "Daasanech", 
             "Dama", 
             "Dasenech", 
-            "Dathanaic", 
             "Dathanaik", 
-            "Dathanik", 
             "Dhaasanac", 
-            "Gallab", 
-            "Galuba", 
-            "Gelab", 
             "Geleb", 
             "Geleba", 
-            "Gelebinya", 
-            "Gelubba", 
             "Gheleba", 
             "Marille", 
-            "Merile", 
-            "Merille", 
-            "Morille", 
-            "Reshiat", 
-            "Russia", 
-            "af’Daasanach"
+            "Reshiat"
         ], 
         "region": "ET", 
         "regions": "KE", 
@@ -32384,9 +32167,6 @@
         "full": "dtn-Qaax-ET", 
         "iso639_3": "dtn", 
         "name": "Daatsʼíin", 
-        "names": [
-            "Sa-Daatsʼíin"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "dtn", 
@@ -32974,12 +32754,6 @@
         "full": "dwr-Latn-ET", 
         "iso639_3": "dwr", 
         "name": "Dawro", 
-        "names": [
-            "Dauro", 
-            "Dawrogna", 
-            "Dawuro", 
-            "Ometay"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "dwr", 
@@ -32992,12 +32766,6 @@
         "full": "dwr-Ethi-ET", 
         "iso639_3": "dwr", 
         "name": "Dawro", 
-        "names": [
-            "Dauro", 
-            "Dawrogna", 
-            "Dawuro", 
-            "Ometay"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "dwr-Ethi"
@@ -36524,9 +36292,6 @@
         "full": "eth-Zyyy-ET", 
         "iso639_3": "eth", 
         "name": "Ethiopian Sign Language", 
-        "names": [
-            "EthSL"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "eth", 
@@ -39666,18 +39431,13 @@
         "iso639_3": "gax", 
         "name": "Oromo, Borana-Arsi-Guji", 
         "names": [
-            "Afaan Oromoo", 
             "Afaani Borana", 
-            "Afan Oromo", 
             "Booran", 
-            "Booranaa", 
             "Boraan", 
             "Boraana", 
             "Boran", 
             "Borana", 
-            "Oromiffa", 
             "Oromo", 
-            "Oromoo", 
             "Southern Oromo"
         ], 
         "region": "ET", 
@@ -39694,18 +39454,13 @@
         "iso639_3": "gax", 
         "name": "Oromo, Borana-Arsi-Guji", 
         "names": [
-            "Afaan Oromoo", 
             "Afaani Borana", 
-            "Afan Oromo", 
             "Booran", 
-            "Booranaa", 
             "Boraan", 
             "Boraana", 
             "Boran", 
             "Borana", 
-            "Oromiffa", 
             "Oromo", 
-            "Oromoo", 
             "Southern Oromo"
         ], 
         "region": "ET", 
@@ -40566,17 +40321,6 @@
         "full": "gdl-Latn-ET", 
         "iso639_3": "gdl", 
         "name": "Dirasha", 
-        "names": [
-            "Derashe", 
-            "Dhirasha", 
-            "Diraasha", 
-            "Dirayta", 
-            "Diraytta", 
-            "Gardulla", 
-            "Gedoligna", 
-            "Ghidole", 
-            "Gidole"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "gdl", 
@@ -40589,17 +40333,6 @@
         "full": "gdl-Ethi-ET", 
         "iso639_3": "gdl", 
         "name": "Dirasha", 
-        "names": [
-            "Derashe", 
-            "Dhirasha", 
-            "Diraasha", 
-            "Dirayta", 
-            "Diraytta", 
-            "Gardulla", 
-            "Gedoligna", 
-            "Ghidole", 
-            "Gidole"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "gdl-Ethi"
@@ -42413,10 +42146,6 @@
         "full": "gmv-Ethi-ET", 
         "iso639_3": "gmv", 
         "name": "Gamo", 
-        "names": [
-            "Gamotso", 
-            "Gemu"
-        ], 
         "region": "ET", 
         "sldr": true, 
         "tag": "gmv-Ethi"
@@ -42425,10 +42154,6 @@
         "full": "gmv-Latn-ET", 
         "iso639_3": "gmv", 
         "name": "Gamo", 
-        "names": [
-            "Gamotso", 
-            "Gemu"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "gmv-Latn"
@@ -42879,11 +42604,6 @@
         "full": "gof-Ethi-ET", 
         "iso639_3": "gof", 
         "name": "Gofa", 
-        "names": [
-            "Goffa", 
-            "Goofa", 
-            "Goofatho"
-        ], 
         "region": "ET", 
         "sldr": true, 
         "tag": "gof", 
@@ -42896,11 +42616,6 @@
         "full": "gof-Latn-ET", 
         "iso639_3": "gof", 
         "name": "Gofa", 
-        "names": [
-            "Goffa", 
-            "Goofa", 
-            "Goofatho"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "gof-Latn"
@@ -43668,11 +43383,6 @@
         "full": "gru-Ethi-ET", 
         "iso639_3": "gru", 
         "name": "Kistane", 
-        "names": [
-            "North Gurage", 
-            "Soddo", 
-            "Soddo Gurage"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "gru-Ethi"
@@ -44160,22 +43870,15 @@
         "iso639_3": "guk", 
         "name": "Gumuz", 
         "names": [
-            "Bega-Tse", 
-            "B’ega", 
             "Debatsa", 
-            "Debuga", 
             "Deguba", 
             "Dehenda", 
             "Gombo", 
             "Gumis", 
-            "Gumz", 
             "Kadallu", 
             "Mendeya", 
-            "Sa-B’aga", 
-            "Sa-Gumuz", 
             "Shankillinya", 
-            "Shanqilla", 
-            "Sigumza"
+            "Shanqilla"
         ], 
         "region": "ET", 
         "regions": "SD", 
@@ -44191,22 +43894,15 @@
         "iso639_3": "guk", 
         "name": "Gumuz", 
         "names": [
-            "Bega-Tse", 
-            "B’ega", 
             "Debatsa", 
-            "Debuga", 
             "Deguba", 
             "Dehenda", 
             "Gombo", 
             "Gumis", 
-            "Gumz", 
             "Kadallu", 
             "Mendeya", 
-            "Sa-B’aga", 
-            "Sa-Gumuz", 
             "Shankillinya", 
-            "Shanqilla", 
-            "Sigumza"
+            "Shanqilla"
         ], 
         "region": "ET", 
         "regions": "SD", 
@@ -44797,15 +44493,6 @@
         "full": "gwd-Latn-ET", 
         "iso639_3": "gwd", 
         "name": "Ale", 
-        "names": [
-            "Dabosse", 
-            "Debase", 
-            "Dobase", 
-            "Dullay", 
-            "Gobeze", 
-            "Qawko", 
-            "Werizoid"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "gwd", 
@@ -45153,13 +44840,6 @@
         "full": "gyl-Qaax-ET", 
         "iso639_3": "gyl", 
         "name": "Gayil", 
-        "names": [
-            "Galila", 
-            "Gayi", 
-            "Gayl", 
-            "Gelila", 
-            "Northern Ari"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "gyl", 
@@ -45478,16 +45158,6 @@
         "full": "hae-Latn-ET", 
         "iso639_3": "hae", 
         "name": "Oromo, Eastern", 
-        "names": [
-            "Afaan Oromoo", 
-            "Afan Oromo", 
-            "Harar", 
-            "Harar Oromo", 
-            "Harer", 
-            "Ittu", 
-            "Oromiffa", 
-            "Oromoo"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "hae-Latn"
@@ -45750,14 +45420,6 @@
         "full": "har-Ethi-ET", 
         "iso639_3": "har", 
         "name": "Harari", 
-        "names": [
-            "Adare", 
-            "Adarinnya", 
-            "Adere", 
-            "Aderinya", 
-            "Hararri", 
-            "Hareri"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "har-Ethi"
@@ -45994,15 +45656,6 @@
         "full": "hdy-Ethi-ET", 
         "iso639_3": "hdy", 
         "name": "Hadiyya", 
-        "names": [
-            "Adea", 
-            "Adiya", 
-            "Adiye", 
-            "Hadia", 
-            "Hadiya", 
-            "Hadiyyisa", 
-            "Hadya"
-        ], 
         "region": "ET", 
         "sldr": true, 
         "tag": "hdy", 
@@ -46015,15 +45668,6 @@
         "full": "hdy-Latn-ET", 
         "iso639_3": "hdy", 
         "name": "Hadiyya", 
-        "names": [
-            "Adea", 
-            "Adiya", 
-            "Adiye", 
-            "Hadia", 
-            "Hadiya", 
-            "Hadiyyisa", 
-            "Hadya"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "hdy-Latn"
@@ -47938,15 +47582,6 @@
         "full": "hoz-Qaax-ET", 
         "iso639_3": "hoz", 
         "name": "Hozo", 
-        "names": [
-            "Agmo Wandi", 
-            "Begi-Mao", 
-            "Hoozo", 
-            "Mo Wandi", 
-            "Nu Wandi", 
-            "Shuluyo", 
-            "Shulyo"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "hoz", 
@@ -50908,9 +50543,6 @@
         "full": "ior-Qaax-ET", 
         "iso639_3": "ior", 
         "name": "Inor", 
-        "names": [
-            "Ennemor"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "ior", 
@@ -53902,9 +53534,6 @@
         "full": "jnj-Latn-ET", 
         "iso639_3": "jnj", 
         "name": "Yemsa", 
-        "names": [
-            "Yem"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "jnj-Latn"
@@ -55439,17 +55068,6 @@
         "full": "kbr-Ethi-ET", 
         "iso639_3": "kbr", 
         "name": "Kafa", 
-        "names": [
-            "Caafiti", 
-            "Caffino", 
-            "Kaffa", 
-            "Kafi noono", 
-            "Kaficho", 
-            "Kefa", 
-            "Keffa", 
-            "Kefficho", 
-            "Manjo"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "kbr-Ethi"
@@ -55458,17 +55076,6 @@
         "full": "kbr-Latn-ET", 
         "iso639_3": "kbr", 
         "name": "Kafa", 
-        "names": [
-            "Caafiti", 
-            "Caffino", 
-            "Kaffa", 
-            "Kafi noono", 
-            "Kaficho", 
-            "Kefa", 
-            "Keffa", 
-            "Kefficho", 
-            "Manjo"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "kbr-Latn"
@@ -56019,9 +55626,6 @@
         "full": "kcx-Qaax-ET", 
         "iso639_3": "kcx", 
         "name": "Kachama-Ganjule", 
-        "names": [
-            "Qechem"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "kcx", 
@@ -60939,23 +60543,6 @@
         "full": "kmq-Latn-ET", 
         "iso639_3": "kmq", 
         "name": "Gwama", 
-        "names": [
-            "Afan Mao", 
-            "Amam", 
-            "Gogwama", 
-            "Goma", 
-            "Guwama", 
-            "Kewama", 
-            "Kuro", 
-            "Kuwama", 
-            "Kwama", 
-            "Kwoma", 
-            "Nokanoka", 
-            "North Koma", 
-            "Qewama", 
-            "Takwama", 
-            "Ttwa Gwama"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "kmq", 
@@ -61736,15 +61323,7 @@
         "name": "Kacipo-Balesi", 
         "names": [
             "Baale", 
-            "Kacipo", 
-            "Silmamo", 
-            "Suri", 
-            "Suri-Baale", 
-            "Tsilmano", 
-            "Zelmam", 
-            "Zelmamu", 
-            "Zilmamu", 
-            "Zulmamu"
+            "Kacipo"
         ], 
         "region": "SS", 
         "regions": "ET", 
@@ -62913,19 +62492,6 @@
         "full": "kqy-Ethi-ET", 
         "iso639_3": "kqy", 
         "name": "Koorete", 
-        "names": [
-            "Amaarro", 
-            "Amarro", 
-            "Badittu", 
-            "Haro", 
-            "Harro", 
-            "Koore", 
-            "Koori Nuuna", 
-            "Kore", 
-            "Koyra", 
-            "Kwera", 
-            "Nuna"
-        ], 
         "region": "ET", 
         "sldr": true, 
         "tag": "kqy", 
@@ -62938,19 +62504,6 @@
         "full": "kqy-Latn-ET", 
         "iso639_3": "kqy", 
         "name": "Koorete", 
-        "names": [
-            "Amaarro", 
-            "Amarro", 
-            "Badittu", 
-            "Haro", 
-            "Harro", 
-            "Koore", 
-            "Koori Nuuna", 
-            "Kore", 
-            "Koyra", 
-            "Kwera", 
-            "Nuna"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "kqy-Latn"
@@ -64022,15 +63575,6 @@
         "full": "ktb-Ethi-ET", 
         "iso639_3": "ktb", 
         "name": "Kambaata", 
-        "names": [
-            "Donga", 
-            "Kambaatissata", 
-            "Kambara", 
-            "Kambata", 
-            "Kambatta", 
-            "Kemata", 
-            "Kembata"
-        ], 
         "region": "ET", 
         "sldr": true, 
         "tag": "ktb", 
@@ -64043,15 +63587,6 @@
         "full": "ktb-Latn-ET", 
         "iso639_3": "ktb", 
         "name": "Kambaata", 
-        "names": [
-            "Donga", 
-            "Kambaatissata", 
-            "Kambara", 
-            "Kambata", 
-            "Kambatta", 
-            "Kemata", 
-            "Kembata"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "ktb-Latn"
@@ -66012,16 +65547,6 @@
         "full": "kxc-Ethi-ET", 
         "iso639_3": "kxc", 
         "name": "Konso", 
-        "names": [
-            "Af Kareti", 
-            "Afa Karatti", 
-            "Conso", 
-            "Gato", 
-            "Karate", 
-            "Kareti", 
-            "Khonso", 
-            "Komso"
-        ], 
         "region": "ET", 
         "regions": "KE", 
         "sldr": true, 
@@ -66035,16 +65560,6 @@
         "full": "kxc-Latn-ET", 
         "iso639_3": "kxc", 
         "name": "Konso", 
-        "names": [
-            "Af Kareti", 
-            "Afa Karatti", 
-            "Conso", 
-            "Gato", 
-            "Karate", 
-            "Kareti", 
-            "Khonso", 
-            "Komso"
-        ], 
         "region": "ET", 
         "regions": "KE", 
         "sldr": false, 
@@ -66138,11 +65653,6 @@
         "full": "kxh-Qaax-ET", 
         "iso639_3": "kxh", 
         "name": "Karo", 
-        "names": [
-            "Cherre", 
-            "Kere", 
-            "Kerre"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "kxh", 
@@ -69492,12 +69002,8 @@
             "Opuuo", 
             "Po", 
             "Pur", 
-            "Shiita", 
             "Shita", 
-            "Shitta", 
-            "Tʼashita", 
-            "T’ap’o", 
-            "Upo"
+            "Shitta"
         ], 
         "region": "ET", 
         "regions": "SS", 
@@ -70065,10 +69571,6 @@
         "full": "liq-Latn-ET", 
         "iso639_3": "liq", 
         "name": "Libido", 
-        "names": [
-            "Mareko", 
-            "Mareqo"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "liq-Latn"
@@ -75750,19 +75252,6 @@
         "full": "mdx-Ethi-ET", 
         "iso639_3": "mdx", 
         "name": "Dizin", 
-        "names": [
-            "Diizi-Noog", 
-            "Diizin", 
-            "Diizinuog", 
-            "Dizi", 
-            "Dizi-Maji", 
-            "Dizinog", 
-            "Dizinya", 
-            "Maji", 
-            "Majinya", 
-            "Sizi", 
-            "Twoyu"
-        ], 
         "region": "ET", 
         "sldr": true, 
         "tag": "mdx", 
@@ -75775,19 +75264,6 @@
         "full": "mdx-Latn-ET", 
         "iso639_3": "mdx", 
         "name": "Dizin", 
-        "names": [
-            "Diizi-Noog", 
-            "Diizin", 
-            "Diizinuog", 
-            "Dizi", 
-            "Dizi-Maji", 
-            "Dizinog", 
-            "Dizinya", 
-            "Maji", 
-            "Majinya", 
-            "Sizi", 
-            "Twoyu"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "mdx-Latn"
@@ -75796,10 +75272,6 @@
         "full": "mdy-Ethi-ET", 
         "iso639_3": "mdy", 
         "name": "Male", 
-        "names": [
-            "Maale", 
-            "Malie"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "mdy-Ethi"
@@ -76729,9 +76201,6 @@
         "full": "mfx-Qaax-ET", 
         "iso639_3": "mfx", 
         "name": "Melo", 
-        "names": [
-            "Malo"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "mfx", 
@@ -80878,17 +80347,6 @@
         "full": "moy-Latn-ET", 
         "iso639_3": "moy", 
         "name": "Shekkacho", 
-        "names": [
-            "Mocha", 
-            "Shakacho", 
-            "Shekacho", 
-            "Shekecho", 
-            "Shekicho", 
-            "Shekka", 
-            "Shekki-noone", 
-            "Šakačo", 
-            "Šekki noono"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "moy-Latn"
@@ -81001,21 +80459,6 @@
         "full": "mpe-Latn-ET", 
         "iso639_3": "mpe", 
         "name": "Majang", 
-        "names": [
-            "Ajo", 
-            "Ato Majang", 
-            "Ato Majanger-Onk", 
-            "Ato Majangerongk", 
-            "Majanjiro", 
-            "Masango", 
-            "Masongo", 
-            "Mejenger", 
-            "Mesengo", 
-            "Messengo", 
-            "Mezhenger", 
-            "Ojanjur", 
-            "Tama"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "mpe", 
@@ -81028,21 +80471,6 @@
         "full": "mpe-Ethi-ET", 
         "iso639_3": "mpe", 
         "name": "Majang", 
-        "names": [
-            "Ajo", 
-            "Ato Majang", 
-            "Ato Majanger-Onk", 
-            "Ato Majangerongk", 
-            "Majanjiro", 
-            "Masango", 
-            "Masongo", 
-            "Mejenger", 
-            "Mesengo", 
-            "Messengo", 
-            "Mezhenger", 
-            "Ojanjur", 
-            "Tama"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "mpe-Ethi"
@@ -83550,16 +82978,6 @@
         "full": "muz-Ethi-ET", 
         "iso639_3": "muz", 
         "name": "Mursi", 
-        "names": [
-            "Dama", 
-            "Merdu", 
-            "Meritu", 
-            "Munɛn", 
-            "Mursinya", 
-            "Murzi", 
-            "Murzu", 
-            "Nyikalabong"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "muz", 
@@ -83945,10 +83363,6 @@
         "full": "mvz-Qaax-ET", 
         "iso639_3": "mvz", 
         "name": "Mesqan", 
-        "names": [
-            "Masqan", 
-            "Meskan"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "mvz", 
@@ -85067,15 +84481,6 @@
         "full": "myf-Latn-ET", 
         "iso639_3": "myf", 
         "name": "Màwés Aasʼè", 
-        "names": [
-            "Amam", 
-            "Bambassi", 
-            "Bambeshi", 
-            "Didessa", 
-            "Fadiro", 
-            "Northern Mao", 
-            "Siggoyo"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "myf-Latn"
@@ -85185,16 +84590,6 @@
         "full": "mym-Ethi-ET", 
         "iso639_3": "mym", 
         "name": "Me’en", 
-        "names": [
-            "Mekan", 
-            "Mela", 
-            "Men", 
-            "Meqan", 
-            "Me’enite", 
-            "Mieken", 
-            "Mie’en", 
-            "Suro"
-        ], 
         "region": "ET", 
         "sldr": true, 
         "tag": "mym", 
@@ -85207,16 +84602,6 @@
         "full": "mym-Latn-ET", 
         "iso639_3": "mym", 
         "name": "Me’en", 
-        "names": [
-            "Mekan", 
-            "Mela", 
-            "Men", 
-            "Meqan", 
-            "Me’enite", 
-            "Mieken", 
-            "Mie’en", 
-            "Suro"
-        ], 
         "region": "ET", 
         "sldr": true, 
         "tag": "mym-Latn"
@@ -85225,9 +84610,6 @@
         "full": "myo-Qaax-ET", 
         "iso639_3": "myo", 
         "name": "Anfillo", 
-        "names": [
-            "Southern Mao"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "myo", 
@@ -91168,12 +90550,6 @@
         "full": "nnj-Latn-ET", 
         "iso639_3": "nnj", 
         "name": "Nyangatom", 
-        "names": [
-            "Dongiro", 
-            "Donyiro", 
-            "Idongiro", 
-            "Inyangatom"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "nnj-Latn"
@@ -91852,10 +91228,6 @@
         "full": "noz-Qaax-ET", 
         "iso639_3": "noz", 
         "name": "Nayi", 
-        "names": [
-            "Nao", 
-            "Na’o"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "noz", 
@@ -93441,8 +92813,7 @@
         "name": "Nuer", 
         "names": [
             "Naadh", 
-            "Naath", 
-            "Nuwer"
+            "Naath"
         ], 
         "region": "SS", 
         "regions": "ET", 
@@ -95819,11 +95190,7 @@
         "localname": "Oromoo", 
         "name": "Oromo", 
         "names": [
-            "Afaan Oromoo", 
-            "Afan Oromo", 
-            "Oromiffa", 
-            "Oromo, West Central", 
-            "Oromoo"
+            "Oromo, West Central"
         ], 
         "region": "ET", 
         "sldr": true, 
@@ -95842,11 +95209,7 @@
         "iso639_3": "orm", 
         "name": "Oromo", 
         "names": [
-            "Afaan Oromoo", 
-            "Afan Oromo", 
-            "Oromiffa", 
-            "Oromo, West Central", 
-            "Oromoo"
+            "Oromo, West Central"
         ], 
         "region": "ET", 
         "sldr": true, 
@@ -97423,9 +96786,6 @@
         "full": "oyd-Latn-ET", 
         "iso639_3": "oyd", 
         "name": "Oyda", 
-        "names": [
-            "Oida"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "oyd-Latn"
@@ -105567,10 +104927,6 @@
         "full": "rer-Zyyy-ET", 
         "iso639_3": "rer", 
         "name": "Rer Bare", 
-        "names": [
-            "Adona", 
-            "Rerebere"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "rer", 
@@ -108839,10 +108195,6 @@
         "full": "sbf-Qaax-ET", 
         "iso639_3": "sbf", 
         "name": "Shabo", 
-        "names": [
-            "Chabu", 
-            "Sabu"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "sbf", 
@@ -110893,14 +110245,6 @@
         "full": "sgw-Ethi-ET", 
         "iso639_3": "sgw", 
         "name": "Sebat Bet Gurage", 
-        "names": [
-            "Central West Gurage", 
-            "Gouraghie", 
-            "Gurage", 
-            "Guragie", 
-            "Gurague", 
-            "West Gurage"
-        ], 
         "region": "ET", 
         "sldr": true, 
         "tag": "sgw", 
@@ -111024,14 +110368,6 @@
         "full": "she-Latn-ET", 
         "iso639_3": "she", 
         "name": "Sheko", 
-        "names": [
-            "Shak", 
-            "Shako", 
-            "Shekka", 
-            "Shekko", 
-            "S’oku noogu", 
-            "Tschako"
-        ], 
         "region": "ET", 
         "sldr": true, 
         "tag": "she-Latn"
@@ -111267,7 +110603,6 @@
     }, 
     {
         "full": "shn-Tale-MM-x-taimauold", 
-        "iso639_3": "shn", 
         "name": "Shan", 
         "region": "MM", 
         "regions": "CN", 
@@ -111646,14 +110981,6 @@
         "iso639_3": "sid", 
         "localname": "Sidaamu Afo", 
         "name": "Sidamo", 
-        "names": [
-            "Sidaama", 
-            "Sidaamu Afoo", 
-            "Sidaamu afii", 
-            "Sidama", 
-            "Sidaminya", 
-            "Sidámo ’Afó"
-        ], 
         "region": "ET", 
         "sldr": true, 
         "tag": "sid", 
@@ -111666,14 +110993,6 @@
         "full": "sid-Ethi-ET", 
         "iso639_3": "sid", 
         "name": "Sidamo", 
-        "names": [
-            "Sidaama", 
-            "Sidaamu Afoo", 
-            "Sidaamu afii", 
-            "Sidama", 
-            "Sidaminya", 
-            "Sidámo ’Afó"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "sid-Ethi"
@@ -114111,7 +113430,6 @@
         "names": [
             "Af-Maxaad Tiri", 
             "Common Somali", 
-            "Somalie", 
             "Soomaaliga", 
             "Standard Somali"
         ], 
@@ -114131,7 +113449,6 @@
         "names": [
             "Af-Maxaad Tiri", 
             "Common Somali", 
-            "Somalie", 
             "Soomaaliga", 
             "Standard Somali"
         ], 
@@ -114171,7 +113488,6 @@
         "names": [
             "Af-Maxaad Tiri", 
             "Common Somali", 
-            "Somalie", 
             "Soomaaliga", 
             "Standard Somali"
         ], 
@@ -116645,12 +115961,6 @@
         "full": "stv-Ethi-ET", 
         "iso639_3": "stv", 
         "name": "Silt’e", 
-        "names": [
-            "East Gurage", 
-            "Selti", 
-            "Silte", 
-            "Silti"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "stv", 
@@ -116870,16 +116180,6 @@
         "full": "suq-Latn-ET", 
         "iso639_3": "suq", 
         "name": "Suri", 
-        "names": [
-            "Churi", 
-            "Dama", 
-            "Dhuri", 
-            "Eastern Suri", 
-            "Shuri", 
-            "Shuro", 
-            "Surichɛn", 
-            "Surma"
-        ], 
         "region": "ET", 
         "sldr": true, 
         "tag": "suq", 
@@ -116892,16 +116192,6 @@
         "full": "suq-Ethi-ET", 
         "iso639_3": "suq", 
         "name": "Suri", 
-        "names": [
-            "Churi", 
-            "Dama", 
-            "Dhuri", 
-            "Eastern Suri", 
-            "Shuri", 
-            "Shuro", 
-            "Surichɛn", 
-            "Surma"
-        ], 
         "region": "ET", 
         "sldr": true, 
         "tag": "suq-Ethi"
@@ -118248,13 +117538,6 @@
         "full": "sze-Qaax-ET", 
         "iso639_3": "sze", 
         "name": "Seze", 
-        "names": [
-            "Begi Mao", 
-            "Seez waani", 
-            "Seezi", 
-            "Seze Wani", 
-            "Sezo"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "sze", 
@@ -121631,7 +120914,6 @@
             "Beta Israel", 
             "Habashi", 
             "Tigray", 
-            "Tigrie", 
             "Tigrinya"
         ], 
         "region": "ET", 
@@ -125429,19 +124711,6 @@
         "full": "tsb-Latn-ET", 
         "iso639_3": "tsb", 
         "name": "Tsamai", 
-        "names": [
-            "Bago S’aamakk-Ulo", 
-            "Bago Ts’amakkilo", 
-            "Cule", 
-            "Kuile", 
-            "Kule", 
-            "S’amai", 
-            "Tamaha", 
-            "Tsamakko", 
-            "Tsamako", 
-            "Tsemay", 
-            "Ts’amay"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "tsb", 
@@ -132206,16 +131475,6 @@
         "iso639_3": "wal", 
         "localname": "ወላይታቱ", 
         "name": "Wolaytta", 
-        "names": [
-            "Borodda", 
-            "Ometo", 
-            "Uba", 
-            "Welaita", 
-            "Wolaita", 
-            "Wolaitta", 
-            "Wolataita", 
-            "Wolayta"
-        ], 
         "region": "ET", 
         "sldr": true, 
         "tag": "wal", 
@@ -132228,16 +131487,6 @@
         "full": "wal-Latn-ET", 
         "iso639_3": "wal", 
         "name": "Wolaytta", 
-        "names": [
-            "Borodda", 
-            "Ometo", 
-            "Uba", 
-            "Welaita", 
-            "Wolaita", 
-            "Wolaitta", 
-            "Wolataita", 
-            "Wolayta"
-        ], 
         "region": "ET", 
         "sldr": true, 
         "tag": "wal-Latn"
@@ -133884,12 +133133,6 @@
         "full": "wle-Qaax-ET", 
         "iso639_3": "wle", 
         "name": "Wolane", 
-        "names": [
-            "Olane", 
-            "Walane", 
-            "Welene", 
-            "Wäläne"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "wle", 
@@ -134869,10 +134112,6 @@
         "full": "woy-Zyyy-ET", 
         "iso639_3": "woy", 
         "name": "Weyto", 
-        "names": [
-            "Wayto", 
-            "Weyt’o"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "woy", 
@@ -135466,14 +134705,8 @@
         "name": "Berta", 
         "names": [
             "Barta", 
-            "Bela-Shangul", 
-            "Bela-Shanguru", 
-            "Beni-Shangul", 
-            "Bertha", 
             "Burta", 
-            "Funj", 
             "Gwami", 
-            "Jebelawi", 
             "Rotana", 
             "Wetawit"
         ], 
@@ -136212,14 +135445,6 @@
         "full": "xan-Ethi-ET", 
         "iso639_3": "xan", 
         "name": "Xamtanga", 
-        "names": [
-            "Agaw", 
-            "Agawinya", 
-            "Khamtanga", 
-            "Simt’anga", 
-            "Xamir", 
-            "Xamta"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "xan-Ethi"
@@ -138944,12 +138169,10 @@
             "Central Koma", 
             "Como", 
             "Gokwom", 
-            "Gʊ̀ Kɔ̀mɔ̀", 
             "Hayahaya", 
             "Koma", 
             "Koma of Daga", 
             "Madiin", 
-            "South Koma", 
             "Tta Komo"
         ], 
         "region": "SD", 
@@ -140560,14 +139783,6 @@
         "full": "xwg-Qaax-ET", 
         "iso639_3": "xwg", 
         "name": "Kwegu", 
-        "names": [
-            "Bacha", 
-            "Koegu", 
-            "Koyego", 
-            "Kwegi", 
-            "Menja", 
-            "Nidi"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "xwg", 
@@ -145840,18 +145055,6 @@
         "full": "zay-Latn-ET", 
         "iso639_3": "zay", 
         "name": "Zaysete", 
-        "names": [
-            "Korisadam", 
-            "Zagisite", 
-            "Zaisse", 
-            "Zayse", 
-            "Zayse-Zergulla", 
-            "Zaysinya", 
-            "Zaysite", 
-            "Zaysitè", 
-            "Zaysse", 
-            "Zeyese"
-        ], 
         "region": "ET", 
         "sldr": true, 
         "tag": "zay", 
@@ -145864,18 +145067,6 @@
         "full": "zay-Ethi-ET", 
         "iso639_3": "zay", 
         "name": "Zaysete", 
-        "names": [
-            "Korisadam", 
-            "Zagisite", 
-            "Zaisse", 
-            "Zayse", 
-            "Zayse-Zergulla", 
-            "Zaysinya", 
-            "Zaysite", 
-            "Zaysitè", 
-            "Zaysse", 
-            "Zeyese"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "zay-Ethi"
@@ -148695,12 +147886,6 @@
         "full": "zwa-Qaax-ET", 
         "iso639_3": "zwa", 
         "name": "Zay", 
-        "names": [
-            "Gelilla", 
-            "Lak’i", 
-            "Laqi", 
-            "Zway"
-        ], 
         "region": "ET", 
         "sldr": false, 
         "tag": "zwa", 
