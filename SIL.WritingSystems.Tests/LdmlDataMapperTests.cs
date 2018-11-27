@@ -339,9 +339,9 @@ namespace SIL.WritingSystems.Tests
 
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
-				Assert.That(wsFromLdml.CharacterSets["index"].ValueEquals(index), Is.True);
-				Assert.That(wsFromLdml.CharacterSets["main"].ValueEquals(main), Is.True);
-				Assert.That(wsFromLdml.CharacterSets["footnotes"].ValueEquals(footnotes), Is.True);
+				Assert.That(wsFromLdml.CharacterSets["index"], Is.ValueEqualTo(index));
+				Assert.That(wsFromLdml.CharacterSets["main"], Is.ValueEqualTo(main));
+				Assert.That(wsFromLdml.CharacterSets["footnotes"], Is.ValueEqualTo(footnotes));
 			}
 		}
 
@@ -364,7 +364,7 @@ namespace SIL.WritingSystems.Tests
 
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
-				Assert.That(wsFromLdml.NumberingSystem.ValueEquals(numeric));
+				Assert.That(wsFromLdml.NumberingSystem, Is.ValueEqualTo(numeric));
 			}
 		}
 
@@ -387,7 +387,7 @@ namespace SIL.WritingSystems.Tests
 
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
-				Assert.That(wsFromLdml.NumberingSystem.ValueEquals(numeric));
+				Assert.That(wsFromLdml.NumberingSystem, Is.ValueEqualTo(numeric));
 			}
 		}
 
@@ -417,7 +417,7 @@ namespace SIL.WritingSystems.Tests
 
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
-				Assert.That(wsFromLdml.NumberingSystem.ValueEquals(numeric));
+				Assert.That(wsFromLdml.NumberingSystem, Is.ValueEqualTo(numeric));
 			}
 		}
 
@@ -454,7 +454,7 @@ namespace SIL.WritingSystems.Tests
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
 				Assert.That(wsFromLdml.CharacterSets.Count, Is.EqualTo(1));
-				Assert.That(wsFromLdml.CharacterSets["main"].ValueEquals(main));
+				Assert.That(wsFromLdml.CharacterSets["main"], Is.ValueEqualTo(main));
 
 				var wsToLdml = new WritingSystemDefinition("en", "Latn", "", "");
 				wsToLdml.CharacterSets.Add(main);
@@ -583,10 +583,10 @@ namespace SIL.WritingSystems.Tests
 				Assert.That((string)defaultCollationElem, Is.EqualTo("standard"));
 				Assert.That((string) collationElem.Attribute("type"), Is.EqualTo("standard"));
 				Assert.That((string) collationElem, Is.EqualTo(icuRules.Replace("\r\n", "\n")));
-				
+
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
-				Assert.That(wsFromLdml.Collations.First().ValueEquals(cd));
+				Assert.That(wsFromLdml.Collations.First(), Is.ValueEqualTo(cd));
 			}
 		}
 
@@ -623,7 +623,7 @@ namespace SIL.WritingSystems.Tests
 
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
-				Assert.That(wsFromLdml.Collations.First().ValueEquals(cd));
+				Assert.That(wsFromLdml.Collations.First(), Is.ValueEqualTo(cd));
 			}
 		}
 
@@ -661,8 +661,8 @@ namespace SIL.WritingSystems.Tests
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
 
-				Assert.That(wsFromLdml.Collations.First().ValueEquals(cd));
-				Assert.That(wsFromLdml.DefaultCollation.ValueEquals(cd));
+				Assert.That(wsFromLdml.Collations.First(), Is.ValueEqualTo(cd));
+				Assert.That(wsFromLdml.DefaultCollation, Is.ValueEqualTo(cd));
 			}
 		}
 
@@ -701,8 +701,8 @@ namespace SIL.WritingSystems.Tests
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
 
-				Assert.That(wsFromLdml.Collations.First().ValueEquals(validatedCd));
-				Assert.That(wsFromLdml.DefaultCollation.ValueEquals(validatedCd));
+				Assert.That(wsFromLdml.Collations.First(), Is.ValueEqualTo(validatedCd));
+				Assert.That(wsFromLdml.DefaultCollation, Is.ValueEqualTo(validatedCd));
 			}
 		}
 
@@ -747,8 +747,8 @@ namespace SIL.WritingSystems.Tests
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
 
-				Assert.That(wsFromLdml.Collations.First().ValueEquals(cd));
-				Assert.That(wsFromLdml.DefaultCollation.ValueEquals(cd));
+				Assert.That(wsFromLdml.Collations.First(), Is.ValueEqualTo(cd));
+				Assert.That(wsFromLdml.DefaultCollation, Is.ValueEqualTo(cd));
 			}
 		}
 
@@ -785,7 +785,7 @@ namespace SIL.WritingSystems.Tests
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
 
-				Assert.That(wsFromLdml.Fonts.First().ValueEquals(fd));
+				Assert.That(wsFromLdml.Fonts.First(), Is.ValueEqualTo(fd));
 			}
 		}
 
@@ -855,7 +855,7 @@ namespace SIL.WritingSystems.Tests
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
 
-				Assert.That(wsFromLdml.SpellCheckDictionaries.First().ValueEquals(scd));
+				Assert.That(wsFromLdml.SpellCheckDictionaries.First(), Is.ValueEqualTo(scd));
 			}
 		}
 

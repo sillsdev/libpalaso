@@ -1110,11 +1110,11 @@ namespace SIL.WritingSystems.Tests.Migration
 
 				WritingSystemDefinition ws = repo.Get("en-Qaaa-QM-1996-x-Kala-AP-myOwnVar");
 
-				Assert.That(ws.DefaultFont.ValueEquals(other));
+				Assert.That(ws.DefaultFont, Is.ValueEqualTo(other));
 				Assert.That(ws.WindowsLcid, Is.EqualTo("4321"));
-				Assert.That(ws.CharacterSets["main"].ValueEquals(main));
-				Assert.That(ws.NumberingSystem.ValueEquals(new NumberingSystemDefinition("thai")));
-				Assert.That(ws.CharacterSets["punctuation"].ValueEquals(punctuation));
+				Assert.That(ws.CharacterSets["main"], Is.ValueEqualTo(main));
+				Assert.That(ws.NumberingSystem, Is.ValueEqualTo(new NumberingSystemDefinition("thai")));
+				Assert.That(ws.CharacterSets["punctuation"], Is.ValueEqualTo(punctuation));
 
 				// ScriptName, RegionName, VariantName, LegacyMapping, IsGraphiteEnabled
 				Assert.That(ws.LegacyMapping, Is.EqualTo("SomeMapper"));
