@@ -10,6 +10,7 @@ using NUnit.Framework;
 using SIL.Extensions;
 using SIL.Keyboarding;
 using SIL.TestUtilities;
+using Is = SIL.TestUtilities.Extensions.Is;
 
 namespace SIL.WritingSystems.Tests
 {

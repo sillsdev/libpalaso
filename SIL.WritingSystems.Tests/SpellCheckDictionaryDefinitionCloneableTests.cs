@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
 using SIL.TestUtilities;
+using Is = SIL.TestUtilities.Extensions.Is;
 
 namespace SIL.WritingSystems.Tests
 {

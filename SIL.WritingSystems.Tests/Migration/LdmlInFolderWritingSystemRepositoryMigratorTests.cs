@@ -8,6 +8,7 @@ using SIL.Lexicon;
 using SIL.TestUtilities;
 using SIL.WritingSystems.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using Is = SIL.TestUtilities.Extensions.Is;
 
 namespace SIL.WritingSystems.Tests.Migration
 {

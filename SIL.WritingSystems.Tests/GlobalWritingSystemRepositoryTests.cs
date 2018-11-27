@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using NUnit.Framework;
 using SIL.TestUtilities;
+using Is = SIL.TestUtilities.Extensions.Is;
 
 namespace SIL.WritingSystems.Tests
 {

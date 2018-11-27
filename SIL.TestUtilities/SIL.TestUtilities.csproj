@@ -311,6 +311,7 @@
     <Compile Include="FluentAssertXml.cs" />
     <Compile Include="FluentAssertXmlTests.cs" />
     <Compile Include="CloneableTests.cs" />
+    <Compile Include="Is.cs" />
     <Compile Include="LiftContentForTests.cs" />
     <Compile Include="OfflineSldr.cs" />
     <Compile Include="OfflineSldrAttribute.cs" />
@@ -320,6 +321,7 @@
     <Compile Include="TemporaryFolder.cs" />
     <Compile Include="TemporaryFolderTests.cs" />
     <Compile Include="TestUtilities.cs" />
+    <Compile Include="ValueEquatableConstraint.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">

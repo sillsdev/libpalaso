@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
 using SIL.TestUtilities;
+using Is = SIL.TestUtilities.Extensions.Is;
 
 namespace SIL.WritingSystems.Tests
 {
@@ -8,7 +9,7 @@ namespace SIL.WritingSystems.Tests
 	{
 		public override FontDefinition CreateNewCloneable()
 		{
-			return new FontDefinition("font1"); 
+			return new FontDefinition("font1");
 		}
 
 		protected override bool Equals(FontDefinition x, FontDefinition y)

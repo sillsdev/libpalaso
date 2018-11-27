@@ -3,6 +3,7 @@ using System.IO;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.TestUtilities;
+using Is = SIL.TestUtilities.Extensions.Is;
 
 namespace SIL.WritingSystems.Tests
 {
@@ -24,7 +25,7 @@ namespace SIL.WritingSystems.Tests
 			using (var e = new TestEnvironment())
 			{
 				var log = new WritingSystemChangeLog(new WritingSystemChangeLogDataMapper(e.GetSampleLogFilePath()));
-				Assert.That(log.HasChangeFor("aaa"));
+				Assert.That(log.HasChangeFor("aaa"), Is.True);
 				Assert.That(log.GetChangeFor("aaa"), Is.EqualTo("ddd"));
 			}
 		}
