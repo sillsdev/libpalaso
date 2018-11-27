@@ -1081,19 +1081,22 @@ namespace SIL.WritingSystems.Tests.Migration
 		{
 			using (var environment = new TestEnvironment())
 			{
+				// Setup
 				environment.WriteLdmlFile(
 					"test.ldml",
 					LdmlContentForTests.Version0WithFw("en", "x-Kala", "x-AP", "1996-x-myOwnVariant"));
 
+				// SUT
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
+				// Verify
 				var repo = new TestLdmlInFolderWritingSystemRepository(environment.LdmlPath);
 				migrator.ResetRemovedProperties(repo);
 
-				var other = new FontDefinition("Arial") {Features = "order=3 children=2 color=red createDate=1996", Roles = FontRoles.Default};
+				var expectedFont = new FontDefinition("Arial") {Features = "order=3 children=2 color=red createDate=1996", Roles = FontRoles.Default};
 
-				var main = new CharacterSetDefinition("main")
+				var expectedCharacterSet = new CharacterSetDefinition("main")
 				{
 					Characters = {
 						"α", "Α", "ά", "ὰ", "ᾷ", "ἀ", "Ἀ", "ἁ", "Ἁ", "ἄ", "Ἄ", "ἂ", "ἅ", "Ἅ", "ἃ", "Ἃ", "ᾶ", "ᾳ", "ᾴ", "ἆ", "Ἆ", "ᾄ", "ᾅ", "β", "Β", "γ",
@@ -1106,15 +1109,15 @@ namespace SIL.WritingSystems.Tests.Migration
 					}
 				};
 
-				var punctuation = new CharacterSetDefinition("punctuation") {Characters = {" ", "-", ",", ".", "’", "«", "»", "(", ")", "[", "]"}};
+				var expectedPunctuation = new CharacterSetDefinition("punctuation") {Characters = {" ", "-", ",", ".", "’", "«", "»", "(", ")", "[", "]"}};
 
 				WritingSystemDefinition ws = repo.Get("en-Qaaa-QM-1996-x-Kala-AP-myOwnVar");
 
-				Assert.That(ws.DefaultFont, Is.ValueEqualTo(other));
+				Assert.That(ws.DefaultFont, Is.ValueEqualTo(expectedFont));
 				Assert.That(ws.WindowsLcid, Is.EqualTo("4321"));
-				Assert.That(ws.CharacterSets["main"], Is.ValueEqualTo(main));
+				Assert.That(ws.CharacterSets["main"], Is.ValueEqualTo(expectedCharacterSet));
 				Assert.That(ws.NumberingSystem, Is.ValueEqualTo(new NumberingSystemDefinition("thai")));
-				Assert.That(ws.CharacterSets["punctuation"], Is.ValueEqualTo(punctuation));
+				Assert.That(ws.CharacterSets["punctuation"], Is.ValueEqualTo(expectedPunctuation));
 
 				// ScriptName, RegionName, VariantName, LegacyMapping, IsGraphiteEnabled
 				Assert.That(ws.LegacyMapping, Is.EqualTo("SomeMapper"));
