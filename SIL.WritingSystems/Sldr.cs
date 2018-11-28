@@ -134,8 +134,13 @@ namespace SIL.WritingSystems
 		/// </summary>
 		internal static void Initialize(bool offlineMode, string sldrCachePath, DateTime embeddedAllTagsTime)
 		{
+			// Things are much simpler for clients if it's OK to initialize repeatedly. E.g., Glyssen wants to
+			// initialize it, but so does the ParaTExtShared dll which it uses; various unit tests may want
+			// to initialize it and not have easy control over who does it first.
+			// Of course, there could still be trouble if one of them does cleanup before the other is
+			// finished, but this makes things at least somewhat more robust.
 			if (IsInitialized)
-				throw new InvalidOperationException("The SLDR has already been initialized.");
+				return;
 
 			_sldrCacheMutex = new GlobalMutex("SldrCache");
 			_sldrCacheMutex.Initialize();
@@ -156,7 +161,8 @@ namespace SIL.WritingSystems
 		{
 			CheckInitialized();
 
-			_sldrCacheMutex.Dispose();
+			if (_sldrCacheMutex != null)
+				_sldrCacheMutex.Dispose();
 			_sldrCacheMutex = null;
 			_languageTags = null;
 		}
