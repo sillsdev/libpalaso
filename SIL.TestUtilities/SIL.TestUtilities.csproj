@@ -306,10 +306,8 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CanonicalXml.cs" />
-    <Compile Include="CanonicalXmlTests.cs" />
     <Compile Include="ConstrainStringByLine.cs" />
     <Compile Include="FluentAssertXml.cs" />
-    <Compile Include="FluentAssertXmlTests.cs" />
     <Compile Include="CloneableTests.cs" />
     <Compile Include="LiftContentForTests.cs" />
     <Compile Include="NUnitExtensions\Is.cs" />
@@ -320,7 +318,6 @@
     <Compile Include="Providers\ReproducibleDateTimeProvider.cs" />
     <Compile Include="Providers\ReproducibleGuidProvider.cs" />
     <Compile Include="TemporaryFolder.cs" />
-    <Compile Include="TemporaryFolderTests.cs" />
     <Compile Include="TestUtilities.cs" />
   </ItemGroup>
   <ItemGroup>

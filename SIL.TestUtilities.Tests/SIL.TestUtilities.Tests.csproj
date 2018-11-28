@@ -259,6 +259,8 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="CanonicalXmlTests.cs" />
+    <Compile Include="FluentAssertXmlTests.cs" />
     <Compile Include="NUnitExtensions\IsTests.cs" />
     <Compile Include="NUnitExtensions\ValueEquatableConstraintTests.cs" />
     <Compile Include="TemporaryFolderTests.cs" />
