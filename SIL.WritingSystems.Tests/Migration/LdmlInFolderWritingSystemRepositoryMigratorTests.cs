@@ -8,7 +8,7 @@ using SIL.Lexicon;
 using SIL.TestUtilities;
 using SIL.WritingSystems.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
-using Is = SIL.TestUtilities.Extensions.Is;
+using Is = SIL.TestUtilities.NUnitExtensions.Is;
 
 namespace SIL.WritingSystems.Tests.Migration
 {
@@ -45,17 +45,17 @@ namespace SIL.WritingSystems.Tests.Migration
 			/// <summary>
 			/// Dictionary to map original filename the final post-migrated IETF language tag.
 			/// </summary>
-			private readonly Dictionary<string, string> _oldNameToLanguageTag = new Dictionary<string, string>(); 
+			private readonly Dictionary<string, string> _oldNameToLanguageTag = new Dictionary<string, string>();
 
 			public void OnMigrateCallback(int toVersion, IEnumerable<LdmlMigrationInfo> migrationInfo)
-			{			
+			{
 				foreach (LdmlMigrationInfo info in migrationInfo)
 				{
 					KeyValuePair<string, string> entry = _oldNameToLanguageTag.FirstOrDefault(e => e.Value == info.LanguageTagBeforeMigration);
 					_oldNameToLanguageTag[entry.Key ?? info.FileName] = info.LanguageTagAfterMigration;
 				}
 			}
-			
+
 			public string LdmlPath
 			{
 				get { return FolderContainingLdml.Path; }
@@ -241,7 +241,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				AssertLdmlHasNoXpath(environment.MappedFilePath("bogus1.ldml"), "/ldml/identity/script");
 				AssertLdmlHasXpath(environment.MappedFilePath("bogus1.ldml"), "/ldml/identity/variant[@type='x-dupl0']");
 			}
-			
+
 		}
 
 		private static void AssertMigrationInfoContains(IEnumerable<LdmlMigrationInfo> migrationInfo, string tagBefore, string tagAfter)

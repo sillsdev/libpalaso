@@ -13,7 +13,7 @@ using SIL.TestUtilities;
 using SIL.WritingSystems.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 using SIL.Xml;
-using Is = SIL.TestUtilities.Extensions.Is;
+using Is = SIL.TestUtilities.NUnitExtensions.Is;
 
 namespace SIL.WritingSystems.Tests
 {
@@ -492,7 +492,7 @@ namespace SIL.WritingSystems.Tests
 				wsToLdml.QuotationMarks.Add(qm3);
 				wsToLdml.QuotationMarks.Add(qm4);
 				wsToLdml.QuotationParagraphContinueType = QuotationParagraphContinueType.Outermost;
-	
+
 				var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsToLdml, null);
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
@@ -525,8 +525,8 @@ namespace SIL.WritingSystems.Tests
 				Assert.That(wsFromLdml.QuotationMarks[1], Is.EqualTo(qm2));
 				Assert.That(wsFromLdml.QuotationMarks[2], Is.EqualTo(qm3));
 				Assert.That(wsFromLdml.QuotationMarks[3], Is.EqualTo(qm4));
-			
-				// Test rewriting the loaded file while using the original version as a base to make sure 
+
+				// Test rewriting the loaded file while using the original version as a base to make sure
 				// no duplicate elements are created
 				ldmlAdaptor.Write(environment.FilePath("test.ldml"), wsFromLdml, new MemoryStream(File.ReadAllBytes(environment.FilePath("test.ldml"))));
 				AssertThatXmlIn.File(environment.FilePath("test.ldml"))
@@ -1070,7 +1070,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		#endregion
-		
+
 		[Test]
 		public void WriteRoundTrip_LdmlIsValidLanguageStartingWithX_LdmlIsUnchanged()
 		{

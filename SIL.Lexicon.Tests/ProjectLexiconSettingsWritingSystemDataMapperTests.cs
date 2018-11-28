@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Linq;
 using NUnit.Framework;
-using Is = SIL.TestUtilities.Extensions.Is;
+using Is = SIL.TestUtilities.NUnitExtensions.Is;
 using SIL.WritingSystems;
 
 namespace SIL.Lexicon.Tests
