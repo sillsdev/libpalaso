@@ -4,7 +4,7 @@
 using NUnit.Framework.Constraints;
 using SIL.ObjectModel;
 
-namespace SIL.TestUtilities
+namespace SIL.TestUtilities.NUnitExtensions
 {
 	public class ValueEquatableConstraint<T>: Constraint where T: class
 	{
@@ -26,4 +26,16 @@ namespace SIL.TestUtilities
 			writer.WriteExpectedValue(_expected);
 		}
 	}
+
+	public static class ValueEquatableConstraintExtensionMethods
+	{
+		public static ValueEquatableConstraint<T> ValueEqualTo<T>(
+			this ConstraintExpression expression, IValueEquatable<T> expected) where T: class
+		{
+			var constraint = new ValueEquatableConstraint<T>(expected);
+			expression.Append(constraint);
+			return constraint;
+		}
+	}
+
 }

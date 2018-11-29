@@ -3,7 +3,7 @@ using System.IO;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.TestUtilities;
-using Is = SIL.TestUtilities.Extensions.Is;
+using Is = SIL.TestUtilities.NUnitExtensions.Is;
 
 namespace SIL.WritingSystems.Tests
 {

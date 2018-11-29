@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="icu.net" Version="2.5.0" />
+    <PackageReference Include="icu.net" Version="2.5.1" />
     <PackageReference Include="Spart" Version="1.0.0" />
     <PackageReference Include="System.IO.FileSystem.AccessControl" Version="4.4.0" />
   </ItemGroup>
