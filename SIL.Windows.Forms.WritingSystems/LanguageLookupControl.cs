@@ -184,17 +184,10 @@ namespace SIL.Windows.Forms.WritingSystems
 		/// </summary>
 		public void UseSimplifiedChinese()
 		{
-			// per BL-4780 we don't offer these codes.
-			// The first two are too generic to be useful.
-			// The difference between zh-CN and zh-Hans, and between zh-TW and zh-Hant, is
-			// too subtle for the sorts of contexts where this mode is used; zh-CN is the
-			// region code for the main region where zh-Hans is used, and is the commonly used
-			// code for data so encoded.
-			MatchingLanguageFilter = info => info.LanguageTag != "zh" && info.LanguageTag != "cmn"
-				&& info.LanguageTag!= "zh-Hans" && info.LanguageTag != "zh-Hant";
+			// BL-4780 codes removal deprecated by alltags.json
 			// per BL-4780 we prefer these names for the common Chinese codes.
 			// One reason is to that they sort alphabetically as Chinese.
-			SetLanguageAlias("zh-CN", "Chinese, Simplified (简体中文)");
+			SetLanguageAlias("zh", "Chinese, Simplified (简体中文)");
 			SetLanguageAlias("zh-TW", "Chinese, Traditional (繁体中文)");
 		}
 
