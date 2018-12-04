@@ -8,9 +8,9 @@
 			return false;
 		}
 
-		public virtual T Create(T ws)
+		public virtual T Create(T ws, bool cloneId = false)
 		{
-			return ConstructDefinition(ws);
+			return ConstructDefinition(ws, cloneId);
 		}
 
 		public virtual T Create()
@@ -34,7 +34,7 @@
 		/// Clones the specified writing system. This is implemented by subclasses to allow the
 		/// use subclasses of WritingSystemDefinition.
 		/// </summary>
-		protected abstract T ConstructDefinition(T ws);
+		protected abstract T ConstructDefinition(T ws, bool cloneId = false);
 
 		bool IWritingSystemFactory.Create(string ietfLanguageTag, out WritingSystemDefinition ws)
 		{
@@ -49,9 +49,9 @@
 			return Create();
 		}
 
-		WritingSystemDefinition IWritingSystemFactory.Create(WritingSystemDefinition ws)
+		WritingSystemDefinition IWritingSystemFactory.Create(WritingSystemDefinition ws, bool cloneId)
 		{
-			return Create((T) ws);
+			return Create((T) ws, cloneId);
 		}
 	}
 }

@@ -141,8 +141,11 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Copy constructor.
 		/// </summary>
-		public WritingSystemDefinition(WritingSystemDefinition ws)
+		public WritingSystemDefinition(WritingSystemDefinition ws, bool cloneId = false)
 		{
+			if (cloneId)
+				Id = ws.Id;
+
 			_language = ws._language;
 			_script = ws._script;
 			_region = ws._region;

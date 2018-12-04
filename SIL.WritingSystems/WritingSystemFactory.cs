@@ -14,9 +14,9 @@ namespace SIL.WritingSystems
 			return new WritingSystemDefinition(ietfLanguageTag);
 		}
 
-		protected override WritingSystemDefinition ConstructDefinition(WritingSystemDefinition ws)
+		protected override WritingSystemDefinition ConstructDefinition(WritingSystemDefinition ws, bool cloneId = false)
 		{
-			return new WritingSystemDefinition(ws);
+			return new WritingSystemDefinition(ws, cloneId);
 		}
 	}
 

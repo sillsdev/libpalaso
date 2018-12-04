@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 using System.Linq;
 using SIL.Extensions;
 using SIL.ObjectModel;
@@ -62,6 +63,14 @@ namespace SIL.WritingSystems
 		public override CharacterSetDefinition Clone()
 		{
 			return new CharacterSetDefinition(this);
+		}
+
+		public override string ToString()
+		{
+			var bldr = new System.Text.StringBuilder();
+			foreach (var c in Characters)
+				bldr.Append($" {c}");
+			return $"{nameof(CharacterSetDefinition)}[{_type}]: ({Characters.Count}) {bldr}";
 		}
 	}
 }

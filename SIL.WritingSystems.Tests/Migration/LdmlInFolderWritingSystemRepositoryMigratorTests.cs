@@ -8,6 +8,7 @@ using SIL.Lexicon;
 using SIL.TestUtilities;
 using SIL.WritingSystems.Migration;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
+using Is = SIL.TestUtilities.NUnitExtensions.Is;
 
 namespace SIL.WritingSystems.Tests.Migration
 {
@@ -44,17 +45,17 @@ namespace SIL.WritingSystems.Tests.Migration
 			/// <summary>
 			/// Dictionary to map original filename the final post-migrated IETF language tag.
 			/// </summary>
-			private readonly Dictionary<string, string> _oldNameToLanguageTag = new Dictionary<string, string>(); 
+			private readonly Dictionary<string, string> _oldNameToLanguageTag = new Dictionary<string, string>();
 
 			public void OnMigrateCallback(int toVersion, IEnumerable<LdmlMigrationInfo> migrationInfo)
-			{			
+			{
 				foreach (LdmlMigrationInfo info in migrationInfo)
 				{
 					KeyValuePair<string, string> entry = _oldNameToLanguageTag.FirstOrDefault(e => e.Value == info.LanguageTagBeforeMigration);
 					_oldNameToLanguageTag[entry.Key ?? info.FileName] = info.LanguageTagAfterMigration;
 				}
 			}
-			
+
 			public string LdmlPath
 			{
 				get { return FolderContainingLdml.Path; }
@@ -240,7 +241,7 @@ namespace SIL.WritingSystems.Tests.Migration
 				AssertLdmlHasNoXpath(environment.MappedFilePath("bogus1.ldml"), "/ldml/identity/script");
 				AssertLdmlHasXpath(environment.MappedFilePath("bogus1.ldml"), "/ldml/identity/variant[@type='x-dupl0']");
 			}
-			
+
 		}
 
 		private static void AssertMigrationInfoContains(IEnumerable<LdmlMigrationInfo> migrationInfo, string tagBefore, string tagAfter)
@@ -1080,19 +1081,22 @@ namespace SIL.WritingSystems.Tests.Migration
 		{
 			using (var environment = new TestEnvironment())
 			{
+				// Setup
 				environment.WriteLdmlFile(
 					"test.ldml",
 					LdmlContentForTests.Version0WithFw("en", "x-Kala", "x-AP", "1996-x-myOwnVariant"));
 
+				// SUT
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
+				// Verify
 				var repo = new TestLdmlInFolderWritingSystemRepository(environment.LdmlPath);
 				migrator.ResetRemovedProperties(repo);
 
-				var other = new FontDefinition("Arial") {Features = "order=3 children=2 color=red createDate=1996", Roles = FontRoles.Default};
+				var expectedFont = new FontDefinition("Arial") {Features = "order=3 children=2 color=red createDate=1996", Roles = FontRoles.Default};
 
-				var main = new CharacterSetDefinition("main")
+				var expectedCharacterSet = new CharacterSetDefinition("main")
 				{
 					Characters = {
 						"α", "Α", "ά", "ὰ", "ᾷ", "ἀ", "Ἀ", "ἁ", "Ἁ", "ἄ", "Ἄ", "ἂ", "ἅ", "Ἅ", "ἃ", "Ἃ", "ᾶ", "ᾳ", "ᾴ", "ἆ", "Ἆ", "ᾄ", "ᾅ", "β", "Β", "γ",
@@ -1105,15 +1109,15 @@ namespace SIL.WritingSystems.Tests.Migration
 					}
 				};
 
-				var punctuation = new CharacterSetDefinition("punctuation") {Characters = {" ", "-", ",", ".", "’", "«", "»", "(", ")", "[", "]"}};
+				var expectedPunctuation = new CharacterSetDefinition("punctuation") {Characters = {" ", "-", ",", ".", "’", "«", "»", "(", ")", "[", "]"}};
 
 				WritingSystemDefinition ws = repo.Get("en-Qaaa-QM-1996-x-Kala-AP-myOwnVar");
 
-				Assert.That(ws.DefaultFont.ValueEquals(other));
+				Assert.That(ws.DefaultFont, Is.ValueEqualTo(expectedFont));
 				Assert.That(ws.WindowsLcid, Is.EqualTo("4321"));
-				Assert.That(ws.CharacterSets["main"].ValueEquals(main));
-				Assert.That(ws.NumberingSystem.ValueEquals(new NumberingSystemDefinition("thai")));
-				Assert.That(ws.CharacterSets["punctuation"].ValueEquals(punctuation));
+				Assert.That(ws.CharacterSets["main"], Is.ValueEqualTo(expectedCharacterSet));
+				Assert.That(ws.NumberingSystem, Is.ValueEqualTo(new NumberingSystemDefinition("thai")));
+				Assert.That(ws.CharacterSets["punctuation"], Is.ValueEqualTo(expectedPunctuation));
 
 				// ScriptName, RegionName, VariantName, LegacyMapping, IsGraphiteEnabled
 				Assert.That(ws.LegacyMapping, Is.EqualTo("SomeMapper"));

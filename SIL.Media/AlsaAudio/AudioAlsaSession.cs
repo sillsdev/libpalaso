@@ -130,6 +130,8 @@ namespace SIL.Media.AlsaAudio
 				throw new ApplicationException("AlsaAudioSession: Already recording or playing on the ALSA sound device");
 			if (!File.Exists(FilePath))
 				throw new FileNotFoundException(string.Format("AlsaAudioSession: {0} does not exist", FilePath));
+			if (new FileInfo(FilePath).Length == 0)
+				throw new FileLoadException("Trying to play empty file");
 			if(!_device.StartPlaying(FilePath))
 			{
 				// If the Alsa device can't play the file, it's probably a format we don't recognize. See if the OS knows how to play it.

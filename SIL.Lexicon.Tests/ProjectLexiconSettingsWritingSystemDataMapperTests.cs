@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Linq;
 using NUnit.Framework;
+using Is = SIL.TestUtilities.NUnitExtensions.Is;
 using SIL.WritingSystems;
 
 namespace SIL.Lexicon.Tests
@@ -42,7 +43,7 @@ namespace SIL.Lexicon.Tests
 			Assert.That(ws1.LegacyMapping, Is.EqualTo(string.Empty));
 			Assert.That(ws1.Keyboard, Is.EqualTo(string.Empty));
 			var scd = new SystemCollationDefinition {LanguageTag = "snarf"};
-			Assert.That(ws1.DefaultCollation.ValueEquals(scd), Is.True);
+			Assert.That(ws1.DefaultCollation, Is.ValueEqualTo(scd));
 
 			var ws2 = new WritingSystemDefinition("fr-FR");
 			projectSettingsDataMapper.Read(ws2);
