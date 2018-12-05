@@ -2,6 +2,8 @@
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
@@ -12,17 +14,37 @@ namespace SIL.WritingSystems
 {
 	public class IcuRulesCollator : ICollator
 	{
-		private readonly RuleBasedCollator _collator;
+		private static readonly Dictionary<RuleBasedCollator, IcuRulesCollator> _createdCollators = new Dictionary<RuleBasedCollator, IcuRulesCollator>();
+
+		private RuleBasedCollator _collator;
 
 		public IcuRulesCollator(string rules)
 		{
 			try
 			{
-				_collator = new RuleBasedCollator(LdmlCollationParser.ReplaceUnicodeEscapesForIcu(rules));
+				lock (((ICollection)_createdCollators).SyncRoot)
+				{
+					_collator = new RuleBasedCollator(LdmlCollationParser.ReplaceUnicodeEscapesForIcu(rules));
+					_createdCollators.Add(_collator, this);
+				}
 			}
 			catch (DllNotFoundException e)
 			{
 				throw new DllNotFoundException("IcuRulesCollator requires the ICU dlls to be present", e);
+			}
+		}
+
+		internal static void DisposeCollators()
+		{
+			lock (((ICollection) _createdCollators).SyncRoot)
+			{
+				foreach (var collator in _createdCollators.Keys)
+				{
+					_createdCollators[collator]._collator = null;
+					collator.Dispose();
+				}
+
+				_createdCollators.Clear();
 			}
 		}
 
