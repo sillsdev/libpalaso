@@ -159,6 +159,8 @@ namespace SIL.WritingSystems
 			_sldrCacheMutex.Dispose();
 			_sldrCacheMutex = null;
 			_languageTags = null;
+
+			IcuRulesCollator.DisposeCollators();
 		}
 
 		private static void CheckInitialized()
