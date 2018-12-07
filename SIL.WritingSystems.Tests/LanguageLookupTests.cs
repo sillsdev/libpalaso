@@ -305,6 +305,8 @@ namespace SIL.WritingSystems.Tests
 			Assert.False(languages.Any(l => l.LanguageTag == "dzd"));
 			languages = lookup.SuggestLanguages("yiy").ToArray();
 			Assert.False(languages.Any(l => l.LanguageTag == "yiy"));
+			languages = lookup.SuggestLanguages("jeg").ToArray();
+			Assert.False(languages.Any(l => l.LanguageTag == "jeg"));
 		}
 
 		/// <summary>
