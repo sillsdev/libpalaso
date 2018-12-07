@@ -127,7 +127,7 @@
     <comment>This is the mapping between 2 and 3 letter language codes</comment>
   </data>
   <data name="AllTagsTime" xml:space="preserve">
-    <value>2018-11-01T10:23:24Z</value>
+    <value>2018-12-07T09:35:24Z</value>
   </data>
   <data name="alltags" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\alltags.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>

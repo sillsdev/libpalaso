@@ -202,7 +202,6 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		//[Ignore("TODO:FIX:Should search for country en and find code 'es'?")] // 2018-10-26
 		public void SuggestLanguages_ByCountry_Matches()
 		{
 			var lookup = new LanguageLookup();
@@ -238,13 +237,13 @@ namespace SIL.WritingSystems.Tests
 		/// These may be fixed in the Ethnologue over time, but it was requested that we just remove all alternative names for now.
 		/// </summary>
 		[Test]
-		[Ignore("TODO:Urgent: This needs to be approved by the Ethiopia branch before release")]
 		public void SuggestLanguages_LanguageIsInEthiopia_ShowOnlyOfficialNames()
 		{
 			var lookup = new LanguageLookup();
 			var languages = lookup.SuggestLanguages("Wolaytta").ToArray();
+			Assert.True(languages.Any(l => l.Names.Contains("ወላይታቱ")));
 			Assert.True(languages.Any(l => l.Names.Contains("Wolaytta")));
-			Assert.AreEqual(1, languages[0].Names.Count, "Should only list the first name in the IANA subtag registry for Ethiopian languages.");
+			Assert.AreEqual(2, languages[0].Names.Count, "Should list only the first name in the IANA subtag registry for Ethiopian languages, plus local name.");
 			languages = lookup.SuggestLanguages("Qimant").ToArray();
 			Assert.True(languages.Any(l => l.Names.Contains("Qimant")));
 			Assert.AreEqual(1, languages[0].Names.Count, "Should only list the first name in the IANA subtag registry for Ethiopian languages.");
@@ -254,7 +253,6 @@ namespace SIL.WritingSystems.Tests
 		/// We have been asked to temporarily suppress these three codes for Ethiopia, until the Ethnologue is changed.
 		/// </summary>
 		[Test]
-		[Ignore("TODO:Urgent: This needs to be approved by the Ethiopia branch before release")]
 		public void SuggestLanguages_LanguageIsOromo_DoNotShowRelatedLanguages()
 		{
 			var lookup = new LanguageLookup();
@@ -307,6 +305,8 @@ namespace SIL.WritingSystems.Tests
 			Assert.False(languages.Any(l => l.LanguageTag == "dzd"));
 			languages = lookup.SuggestLanguages("yiy").ToArray();
 			Assert.False(languages.Any(l => l.LanguageTag == "yiy"));
+			languages = lookup.SuggestLanguages("jeg").ToArray();
+			Assert.False(languages.Any(l => l.LanguageTag == "jeg"));
 		}
 
 		/// <summary>
