@@ -7288,7 +7288,6 @@
         "name": "Arabic", 
         "region": "SA", 
         "regionname": "Saudi Arabia", 
-        "regions": "??", 
         "sldr": false, 
         "tag": "ar-Syrc"
     }, 
@@ -7375,7 +7374,7 @@
         "tag": "arc-Palm"
     }, 
     {
-        "full": "arc-Syrc-??", 
+        "full": "arc-Syrc-XX", 
         "iana": [
             "Official Aramaic (700-300 BCE)", 
             "Imperial Aramaic (700-300 BCE)"
@@ -7385,7 +7384,7 @@
         "names": [
             "Imperial Aramaic (700-300 BCE)"
         ], 
-        "region": "??", 
+        "region": "XX", 
         "sldr": false, 
         "tag": "arc-Syrc"
     }, 
@@ -10404,7 +10403,7 @@
         ], 
         "region": "IR", 
         "regionname": "Islamic Republic of Iran", 
-        "regions": "?? AM AZ DE EE GE KG KZ RU TM UA UZ", 
+        "regions": "AM AZ DE EE GE KG KZ RU TM UA UZ", 
         "sldr": false, 
         "tag": "az-Brai", 
         "tags": [
@@ -13715,7 +13714,7 @@
         "tag": "bfq-Latn"
     }, 
     {
-        "full": "bfq-Qabq-IN", 
+        "full": "bfq-Qabq-IN-x-badaga", 
         "iana": "Badaga", 
         "iso639_3": "bfq", 
         "name": "Badaga", 
@@ -13729,7 +13728,7 @@
         "region": "IN", 
         "regionname": "India", 
         "sldr": false, 
-        "tag": "bfq-Qabq"
+        "tag": "bfq-Qabq-x-badaga"
     }, 
     {
         "full": "bfr-Qaax-IN", 
@@ -16985,6 +16984,31 @@
         "regions": "MM TH", 
         "sldr": false, 
         "tag": "blr-Tale"
+    }, 
+    {
+        "full": "blr-Thai-TH", 
+        "iana": "Blang", 
+        "iso639_3": "blr", 
+        "name": "Blang", 
+        "names": [
+            "Bulang", 
+            "Hkawa", 
+            "Kawa", 
+            "Khon Doi", 
+            "Kontoi", 
+            "K’ala", 
+            "K’wa", 
+            "Plang", 
+            "Pula", 
+            "Pulang", 
+            "Sen Chun", 
+            "Wa"
+        ], 
+        "region": "TH", 
+        "regionname": "Thailand", 
+        "regions": "CN MM", 
+        "sldr": false, 
+        "tag": "blr-Thai"
     }, 
     {
         "full": "bls-Zyyy-ID", 
@@ -29361,6 +29385,22 @@
         ]
     }, 
     {
+        "full": "crk-Latn-CA", 
+        "iana": "Plains Cree", 
+        "iso639_3": "crk", 
+        "name": "Cree, Plains", 
+        "names": [
+            "Nehiyaw", 
+            "Nēhiyawēwin", 
+            "Western Cree"
+        ], 
+        "region": "CA", 
+        "regionname": "Canada", 
+        "regions": "US", 
+        "sldr": false, 
+        "tag": "crk-Latn"
+    }, 
+    {
         "full": "crl-Cans-CA", 
         "iana": "Northern East Cree", 
         "iso639_3": "crl", 
@@ -29378,6 +29418,21 @@
             "crl-CA", 
             "crl-Cans"
         ]
+    }, 
+    {
+        "full": "crl-Latn-CA", 
+        "iana": "Northern East Cree", 
+        "iso639_3": "crl", 
+        "name": "Cree, Northern East", 
+        "names": [
+            "Eastern James Bay Cree Northern Dialect", 
+            "Iyiyiw-Ayimiwin", 
+            "James Bay Cree Northern"
+        ], 
+        "region": "CA", 
+        "regionname": "Canada", 
+        "sldr": false, 
+        "tag": "crl-Latn"
     }, 
     {
         "full": "crm-Cans-CA", 
@@ -30889,16 +30944,16 @@
         ]
     }, 
     {
-        "full": "cuy-Qaax-??", 
+        "full": "cuy-Qaax-XX", 
         "iana": "Cuitlatec", 
         "iso639_3": "cuy", 
         "name": "Cuitlatec", 
-        "region": "??", 
+        "region": "XX", 
         "regions": "MX", 
         "sldr": false, 
         "tag": "cuy", 
         "tags": [
-            "cuy-??", 
+            "cuy-XX", 
             "cuy-Qaax"
         ]
     }, 
@@ -40983,7 +41038,7 @@
         ]
     }, 
     {
-        "full": "esy-Qabr-PH", 
+        "full": "esy-Qabr-PH-x-eskaya", 
         "iana": "Eskayan", 
         "iso639_3": "esy", 
         "name": "Eskayan", 
@@ -40999,7 +41054,7 @@
         "region": "PH", 
         "regionname": "Philippines", 
         "sldr": false, 
-        "tag": "esy-Qabr"
+        "tag": "esy-Qabr-x-eskaya"
     }, 
     {
         "full": "et-Latn-EE", 
@@ -58363,6 +58418,42 @@
         "tag": "ium-Laoo"
     }, 
     {
+        "full": "ium-Thai-TH", 
+        "iana": "Iu Mien", 
+        "iso639_3": "ium", 
+        "name": "Iu Mien", 
+        "names": [
+            "Ban Yao", 
+            "Dao Do", 
+            "Dao Thanh Phan", 
+            "Dìu", 
+            "Ewmien", 
+            "Highland Yao", 
+            "Iu Mienh", 
+            "Kim Mien", 
+            "Man", 
+            "Mian", 
+            "Mien", 
+            "Mienh", 
+            "Mjen", 
+            "Myen", 
+            "Pan Yao", 
+            "Red Dao", 
+            "Yao", 
+            "Yao Kimmien", 
+            "Yao Mienh", 
+            "Yao Ogang", 
+            "Yiu Mien", 
+            "Youmian", 
+            "Yu Mien"
+        ], 
+        "region": "TH", 
+        "regionname": "Thailand", 
+        "regions": "CN DK LA US VN", 
+        "sldr": false, 
+        "tag": "ium-Thai"
+    }, 
+    {
         "full": "ium-Latn-CN-x-1954", 
         "iana": "Iu Mien", 
         "iso639_3": "ium", 
@@ -72302,14 +72393,35 @@
         "iso639_3": "kur", 
         "localname": "kurdî", 
         "name": "Kurdish", 
+        "names": [
+            "Badinani", 
+            "Bahdini", 
+            "Behdini", 
+            "Eastern Kurmanji", 
+            "Kermancî", 
+            "Khorasani", 
+            "Khorasani Kurmanji", 
+            "Kirmanciya Jori", 
+            "Kirmancî", 
+            "Kordi", 
+            "Kordi Kormanji", 
+            "Kurdi", 
+            "Kurdish, Northern", 
+            "Kurdî", 
+            "Kurmancî", 
+            "Kurmanji", 
+            "Êzdîkî"
+        ], 
         "region": "TR", 
         "regionname": "Turkey", 
-        "regions": "IQ IR", 
+        "regions": "AM AZ BE BH CA CH DE DK FI GE GR IQ IR IT KG KW KZ LB NL NO RU SE SY TM US", 
         "sldr": true, 
         "tag": "ku", 
         "tags": [
             "ku-TR", 
-            "ku-Latn"
+            "ku-Latn", 
+            "kmr-Latn", 
+            "kmr-Latn-TR"
         ]
     }, 
     {
@@ -86482,7 +86594,7 @@
         ]
     }, 
     {
-        "full": "mgp-Qabl-NP", 
+        "full": "mgp-Qabl-NP-x-akkha", 
         "iana": "Eastern Magar", 
         "iso639_3": "mgp", 
         "name": "Magar, Eastern", 
@@ -86497,7 +86609,7 @@
         "regionname": "Nepal", 
         "regions": "BT IN", 
         "sldr": false, 
-        "tag": "mgp-Qabl"
+        "tag": "mgp-Qabl-x-akkha"
     }, 
     {
         "full": "mgq-Latn-TZ", 
@@ -87245,7 +87357,7 @@
         ]
     }, 
     {
-        "full": "mic-Qabg-CA", 
+        "full": "mic-Qabg-CA-x-kauder", 
         "iana": [
             "Mi'kmaq", 
             "Micmac"
@@ -87267,7 +87379,7 @@
         "regionname": "Canada", 
         "regions": "US", 
         "sldr": false, 
-        "tag": "mic-Qabg"
+        "tag": "mic-Qabg-x-kauder"
     }, 
     {
         "full": "mid-Mand-IQ", 
@@ -98587,7 +98699,7 @@
         "tag": "new-Newa"
     }, 
     {
-        "full": "new-Qabb-NP", 
+        "full": "new-Qabb-NP-x-ranjana", 
         "iana": [
             "Newari", 
             "Nepal Bhasa"
@@ -98604,7 +98716,7 @@
         "regionname": "Nepal", 
         "regions": "IN", 
         "sldr": false, 
-        "tag": "new-Qabb"
+        "tag": "new-Qabb-x-ranjana"
     }, 
     {
         "full": "nex-Latn-PG", 
@@ -129062,16 +129174,6 @@
         ]
     }, 
     {
-        "full": "sq-Elsa-AL", 
-        "iana": "Albanian", 
-        "iso639_3": "sqi", 
-        "name": "Albanian", 
-        "region": "AL", 
-        "regionname": "Albania", 
-        "sldr": false, 
-        "tag": "sq-Elsa"
-    }, 
-    {
         "full": "sq-Grek-GR", 
         "iana": "Albanian", 
         "iso639_3": "sqi", 
@@ -129106,6 +129208,16 @@
         "regionname": "The Former Yugoslav Republic of Macedonia", 
         "sldr": true, 
         "tag": "sq-MK"
+    }, 
+    {
+        "full": "sq-Qabw-AL-x-elsa", 
+        "iana": "Albanian", 
+        "iso639_3": "sqi", 
+        "name": "Albanian", 
+        "region": "AL", 
+        "regionname": "Albania", 
+        "sldr": false, 
+        "tag": "sq-Qabw-x-elsa"
     }, 
     {
         "full": "sq-XK", 
@@ -134695,6 +134807,26 @@
         "tags": [
             "tdf-LA", 
             "tdf-Qaax"
+        ]
+    }, 
+    {
+        "full": "tdg-Deva-NP", 
+        "iana": "Western Tamang", 
+        "iso639_3": "tdg", 
+        "name": "Tamang, Western", 
+        "names": [
+            "Murmi", 
+            "Sain", 
+            "Tamang Gyot", 
+            "Tamang Tam"
+        ], 
+        "region": "NP", 
+        "regionname": "Nepal", 
+        "sldr": false, 
+        "tag": "tdg", 
+        "tags": [
+            "tdg-NP", 
+            "tdg-Deva"
         ]
     }, 
     {
@@ -154905,7 +155037,7 @@
         "tag": "xkz-Latn"
     }, 
     {
-        "full": "xkz-Tibt-BT", 
+        "full": "xkz-Tibt-BT-x-uchen", 
         "iana": "Kurtokha", 
         "iso639_3": "xkz", 
         "name": "Kurtokha", 
@@ -154922,7 +155054,7 @@
         "region": "BT", 
         "regionname": "Bhutan", 
         "sldr": false, 
-        "tag": "xkz-Tibt"
+        "tag": "xkz-Tibt-x-uchen"
     }, 
     {
         "full": "xla-Latn-PG", 
@@ -155211,7 +155343,7 @@
         ]
     }, 
     {
-        "full": "xmg-Qabh-CM", 
+        "full": "xmg-Qabh-CM-x-bagam", 
         "iana": "Mengaka", 
         "iso639_3": "xmg", 
         "name": "Mengaka", 
@@ -155225,7 +155357,7 @@
         "region": "CM", 
         "regionname": "Cameroon", 
         "sldr": false, 
-        "tag": "xmg-Qabh"
+        "tag": "xmg-Qabh-x-bagam"
     }, 
     {
         "full": "xmh-Latn-AU", 
@@ -164504,6 +164636,28 @@
         "tag": "zhn-Hani"
     }, 
     {
+        "full": "zhn-Latn-CN", 
+        "iana": "Nong Zhuang", 
+        "iso639_3": "zhn", 
+        "name": "Zhuang, Nong", 
+        "names": [
+            "Daez", 
+            "Kau Nong", 
+            "Khaau Nong", 
+            "Noangx", 
+            "Nong hua", 
+            "Phu Nong", 
+            "Phu Tei", 
+            "Tei Nong", 
+            "Yan-Guang Southern Zhuang", 
+            "Zhuangyu Nanbu fanyan Yan-Guang tuyu"
+        ], 
+        "region": "CN", 
+        "regionname": "China", 
+        "sldr": false, 
+        "tag": "zhn-Latn"
+    }, 
+    {
         "full": "zhw-Qaax-CM", 
         "iana": "Zhoa", 
         "iso639_3": "zhw", 
@@ -167060,10 +167214,21 @@
         ], 
         "iso639_3": "zza", 
         "name": "Zaza", 
+        "names": [
+            "Dimili", 
+            "Dimli", 
+            "Southern Zaza", 
+            "Zazaca", 
+            "Zazaki, Southern"
+        ], 
         "region": "TR", 
         "regionname": "Turkey", 
         "sldr": false, 
-        "tag": "zza-Arab"
+        "tag": "zza-Arab", 
+        "tags": [
+            "diq-Arab", 
+            "diq-Arab-TR"
+        ]
     }, 
     {
         "full": "zzj-Hani-CN", 
