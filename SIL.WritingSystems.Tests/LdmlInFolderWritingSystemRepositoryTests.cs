@@ -56,6 +56,33 @@ namespace SIL.WritingSystems.Tests
 	[TestFixture]
 	public class LdmlInFolderWritingSystemRepositoryTests
 	{
+		/// <inheritdoc />
+		/// <summary>
+		/// A WritingSystemDefinition that allows us to control the IsChanged property
+		/// </summary>
+		private class TestableWritingSystemDefinition: WritingSystemDefinition
+		{
+			private bool _simulatedIsChanged;
+
+			public TestableWritingSystemDefinition(string languageTag): base(languageTag)
+			{
+			}
+
+			public void SetIsChanged(bool isChanged)
+			{
+				_simulatedIsChanged = isChanged;
+				IsChanged = isChanged;
+			}
+
+			public bool SimulateIsChanged { get; set; }
+
+			public override bool IsChanged
+			{
+				get { return SimulateIsChanged ? _simulatedIsChanged : base.IsChanged; }
+				protected set { base.IsChanged = value; }
+			}
+		}
+
 		private class TestEnvironment : IDisposable
 		{
 			private readonly TemporaryFolder _localRepoFolder;
@@ -1060,39 +1087,107 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Save_UpdatesGlobalStore()
+		public void Save_UpdatesGlobalStore_CopyToGlobalKeepsTimestamp()
 		{
 			using (var environment = new TestEnvironment())
-			using (var testFolder2 = new TemporaryFolder("LdmlInFolderWritingSystemRepositoryTests2"))
 			{
+				// Setup
 				// Create and save a new WS in the local store - this will copy the WS into the
 				// global store since it doesn't exist yet
 				var enUsTag = "en-US";
-				var ws = new WritingSystemDefinition(enUsTag);
+				var ws = new TestableWritingSystemDefinition(enUsTag);
+				var expectedDateTime = new DateTime(2018, 12, 01, 8, 7, 6, DateTimeKind.Utc);
+				ws.DateModified = expectedDateTime;
 				environment.LocalRepository.Set(ws);
 				ws.RightToLeftScript = true;
 				ws.DefaultCollation = new SystemCollationDefinition {LanguageTag = enUsTag};
+				ws.SimulateIsChanged = true;
+				ws.SetIsChanged(false);
+
+				// SUT
 				environment.LocalRepository.Save();
+
+				// Verify
 				Assert.That(File.Exists(environment.GetPathForLocalWSId(enUsTag)), Is.True);
 				Assert.That(File.Exists(environment.GetPathForGlobalWSId(enUsTag)), Is.True);
 				Assert.That(environment.GlobalRepository.Get(enUsTag).DateModified,
 					Is.EqualTo(environment.LocalRepository.Get(enUsTag).DateModified),
 					"Copying to global repo shouldn't update the timestamp");
+				Assert.That(environment.GlobalRepository.Get(enUsTag).DateModified,
+					Is.EqualTo(expectedDateTime), "Copying to global repo shouldn't update the timestamp");
+			}
+		}
 
-				// ensure that the date modified actually changes
-				Thread.Sleep(1000);
+		[Test]
+		public void Save_UpdatesGlobalStore_ModificationsUpdateTimestamp()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				// Setup
+				// Create and save a new WS in the local store - this will copy the WS into the
+				// global store since it doesn't exist yet
+				var enUsTag = "en-US";
+				var ws = new TestableWritingSystemDefinition(enUsTag);
+				var expectedDateTime = new DateTime(2018, 12, 01, 8, 7, 6, DateTimeKind.Utc);
+				ws.DateModified = expectedDateTime;
+				environment.LocalRepository.Set(ws);
+				ws.RightToLeftScript = true;
+				ws.DefaultCollation = new SystemCollationDefinition {LanguageTag = enUsTag};
+				ws.SimulateIsChanged = true;
+				ws.SetIsChanged(false);
+				environment.LocalRepository.Save();
+				ws.SimulateIsChanged = false;
+
+				var lastModifiedInWs = environment.GlobalRepository.Get(enUsTag).DateModified;
+
+				// SUT
+				ws.RightToLeftScript = false;
+				environment.LocalRepository.Save();
+
+				// Verify
+				Assert.That(environment.GlobalRepository.Get(enUsTag).DateModified,
+					Is.GreaterThan(lastModifiedInWs), "WS in memory didn't get updated");
+				Assert.That(environment.GlobalRepository.Get(enUsTag).DateModified.ToISO8601TimeFormatWithUTCString(),
+					Is.EqualTo(environment.GetWsFromFileInGlobalWS(enUsTag).DateModified.ToISO8601TimeFormatWithUTCString()),
+					"WS in memory and in global store are different");
+				Assert.That(environment.GetWsFromFileInGlobalWS(enUsTag).DateModified,
+					Is.GreaterThan(lastModifiedInWs), "WS in global store didn't get updated");
+			}
+		}
+
+		[Test]
+		public void Save_UpdatesGlobalStore_FromDifferentRepos()
+		{
+			using (var environment = new TestEnvironment())
+			using (var testFolder2 = new TemporaryFolder("LdmlInFolderWritingSystemRepositoryTests2"))
+			{
+				// Setup
+				// Create and save a new WS in the local store - this will copy the WS into the
+				// global store since it doesn't exist yet
+				var enUsTag = "en-US";
+				var ws = new TestableWritingSystemDefinition(enUsTag);
+				environment.LocalRepository.Set(ws);
+				ws.RightToLeftScript = true;
+				ws.DefaultCollation = new SystemCollationDefinition {LanguageTag = enUsTag};
+				var expectedDateTime = new DateTime(2018, 12, 01, 8, 7, 6, DateTimeKind.Utc);
+				ws.DateModified = expectedDateTime;
+				ws.SimulateIsChanged = true;
+				ws.SetIsChanged(false);
+				environment.LocalRepository.Save();
+				ws.SimulateIsChanged = false;
 
 				// Create and save the same WS (although slightly different) in a different local
 				// store - this should update the global store
-				var lastModified = File.GetLastWriteTime(environment.GetPathForGlobalWSId(enUsTag));
 				var lastModifiedInWs = environment.GlobalRepository.Get(enUsTag).DateModified;
 				var localRepo2 = new LdmlInFolderWritingSystemRepository(testFolder2.Path, environment.GlobalRepository);
-				ws = new WritingSystemDefinition(enUsTag);
+				ws = new TestableWritingSystemDefinition (enUsTag);
 				localRepo2.Set(ws);
 				ws.RightToLeftScript = false;
+
+				// SUT
 				localRepo2.Save();
-				Assert.That(File.GetLastWriteTime(environment.GetPathForGlobalWSId(enUsTag)),
-					Is.GreaterThan(lastModified), "WS file in global store didn't get updated");
+
+				// Verify
 				Assert.That(environment.GlobalRepository.Get(enUsTag).DateModified,
 					Is.GreaterThan(lastModifiedInWs), "WS in memory didn't get updated");
 				Assert.That(environment.GlobalRepository.Get(enUsTag).DateModified.ToISO8601TimeFormatWithUTCString(),
