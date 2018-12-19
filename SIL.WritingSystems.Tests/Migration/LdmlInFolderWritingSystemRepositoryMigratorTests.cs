@@ -1025,12 +1025,36 @@ namespace SIL.WritingSystems.Tests.Migration
 				migrator.ResetRemovedProperties(repo);
 
 				WritingSystemDefinition ws = repo.Get("de");
-				var scd = new SystemCollationDefinition {LanguageTag = "de"};
+				var scd = new SystemCollationDefinition {LanguageTag = "en"};
 				Assert.That(ws.DefaultCollation.ValueEquals(scd), Is.True);
 
 				var fromFile = new WritingSystemDefinition();
 				new LdmlDataMapper(new TestWritingSystemFactory()).Read(environment.MappedFilePath("test.ldml"), fromFile);
 				Assert.NotNull(fromFile.DefaultCollation);
+			}
+		}
+
+		[Test]
+		public void Migrate_OriginalFileContainsBogusSystemCollationInfo_DefaultCollationIsUsed()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				environment.WriteLdmlFile(
+					"test.ldml",
+					LdmlContentForTests.Version0WithBogusSystemCollationInfo());
+				var wsV0 = new WritingSystemDefinitionV0();
+				new LdmlAdaptorV0().Read(environment.FilePath("test.ldml"), wsV0);
+
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+				var repo = new TestLdmlInFolderWritingSystemRepository(environment.LdmlPath);
+				migrator.ResetRemovedProperties(repo);
+
+
+				var fromFile = new WritingSystemDefinition();
+				new LdmlDataMapper(new TestWritingSystemFactory()).Read(environment.MappedFilePath("test.ldml"), fromFile);
+				Assert.NotNull(fromFile.DefaultCollation);
+				Assert.That(fromFile.DefaultCollation.IsValid, Is.True);
 			}
 		}
 
