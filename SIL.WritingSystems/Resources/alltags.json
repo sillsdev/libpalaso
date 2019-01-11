@@ -125129,10 +125129,7 @@
     }, 
     {
         "full": "shn-Tale-MM-x-taimauold", 
-<<<<<<< HEAD
-=======
         "iana": "Shan", 
->>>>>>> d39abf6ea16d8246a311bcf424d121cb56d9c074
         "name": "Shan", 
         "region": "MM", 
         "regionname": "Myanmar", 
@@ -163944,13 +163941,10 @@
     }, 
     {
         "full": "zay-Latn-ET", 
-<<<<<<< HEAD
-=======
         "iana": [
             "Zayse-Zergulla", 
             "Zaysete"
         ], 
->>>>>>> d39abf6ea16d8246a311bcf424d121cb56d9c074
         "iso639_3": "zay", 
         "name": "Zaysete", 
         "region": "ET", 
@@ -163964,13 +163958,10 @@
     }, 
     {
         "full": "zay-Ethi-ET", 
-<<<<<<< HEAD
-=======
         "iana": [
             "Zayse-Zergulla", 
             "Zaysete"
         ], 
->>>>>>> d39abf6ea16d8246a311bcf424d121cb56d9c074
         "iso639_3": "zay", 
         "name": "Zaysete", 
         "region": "ET", 
