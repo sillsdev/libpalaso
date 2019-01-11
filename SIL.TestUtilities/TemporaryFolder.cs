@@ -51,7 +51,7 @@ namespace SIL.TestUtilities
 		/// <summary>
 		/// Create a TempLiftFile based on a pre-existing file, which will be deleted when this is disposed.
 		/// </summary>
-		public static TempLiftFile TrackExisting(string path)
+		public new static TempLiftFile TrackExisting(string path)
 		{
 			Debug.Assert(File.Exists(path));
 			TempLiftFile t = new TempLiftFile();

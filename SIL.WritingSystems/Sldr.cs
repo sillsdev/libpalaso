@@ -159,6 +159,8 @@ namespace SIL.WritingSystems
 			_sldrCacheMutex.Dispose();
 			_sldrCacheMutex = null;
 			_languageTags = null;
+
+			IcuRulesCollator.DisposeCollators();
 		}
 
 		private static void CheckInitialized()
@@ -451,9 +453,16 @@ namespace SIL.WritingSystems
 				if (!entry.tag.StartsWith("x-")) // tags starting with x- have undefined structure so ignoring them
 				{
 					LanguageSubtag languageTag;
-					if (!entry.deprecated && (entry.iso639_3 != null) && !StandardSubtags.RegisteredLanguages.TryGet(entry.iso639_3, out languageTag) && !StandardSubtags.RegisteredLanguages.TryGet(entry.tag.Split('-')[0], out languageTag))
+					if (!entry.deprecated && !StandardSubtags.RegisteredLanguages.TryGet(entry.tag.Split('-')[0], out languageTag))
 					{
-						StandardSubtags.AddLanguage(entry.iso639_3, entry.name, false, entry.iso639_3);
+						if (entry.iso639_3 == null)
+						{
+							StandardSubtags.AddLanguage(entry.tag.Split('-')[0], entry.name, false, entry.tag.Split('-')[0]);
+						}
+						else if (!StandardSubtags.RegisteredLanguages.TryGet(entry.iso639_3, out languageTag))
+						{
+							StandardSubtags.AddLanguage(entry.iso639_3, entry.name, false, entry.iso639_3);
+						}
 					}
 					string implicitStringCode = null;
 

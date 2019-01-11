@@ -120,7 +120,7 @@ namespace SIL.Media
 			if (!File.Exists(FilePath))
 				throw new FileNotFoundException("Could not find sound file");
 			if (new FileInfo(FilePath).Length == 0)
-				throw new Exception("Trying to play empty file");
+				throw new FileLoadException("Trying to play empty file");
 
 			// Current version doesn't use IrrKlang for playback.
 			// Recently we've had all kinds of problems with IrrKlang playback,

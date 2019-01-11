@@ -47,7 +47,7 @@ namespace SIL.WritingSystems
 				{
 					if (ws.DateModified > globalWs.DateModified)
 					{
-						T newWs = WritingSystemFactory.Create(ws);
+						T newWs = WritingSystemFactory.Create(ws, cloneId: true);
 						try
 						{
 							_globalRepository.Replace(ws.LanguageTag, newWs);
@@ -61,7 +61,7 @@ namespace SIL.WritingSystems
 				}
 				else
 				{
-					_globalRepository.Set(WritingSystemFactory.Create(ws));
+					_globalRepository.Set(WritingSystemFactory.Create(ws, cloneId: true));
 				}
 			}
 		}

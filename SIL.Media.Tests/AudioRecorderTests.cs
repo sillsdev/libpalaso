@@ -128,7 +128,7 @@ namespace SIL.Media.Tests
 			{
 				using (var x = AudioFactory.CreateAudioSession(f.Path))
 				{
-					Assert.Throws<Exception>(() => x.Play());
+					Assert.Throws<FileLoadException>(() => x.Play());
 				}
 			}
 		}
@@ -191,6 +191,7 @@ namespace SIL.Media.Tests
 		}
 
 		[Test]
+		[Platform(Exclude = "Linux", Reason = "AudioAlsaSession doesn't implement ISimpleAudioWithEvents")]
 		public void RecordThenPlay_SmokeTest()
 		{
 			using (var f = new TempFile())

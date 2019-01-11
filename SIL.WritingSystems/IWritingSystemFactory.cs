@@ -21,7 +21,7 @@
 		/// Creates a duplicate writing system.  Set will need to be called once identifying information
 		/// has been changed in order to save it in the store.
 		/// </summary>
-		WritingSystemDefinition Create(WritingSystemDefinition ws);
+		WritingSystemDefinition Create(WritingSystemDefinition ws, bool cloneId = false);
 	}
 
 	/// <summary>
@@ -31,6 +31,6 @@
 	{
 		new T Create();
 		bool Create(string ietfLanguageTag, out T ws);
-		T Create(T ws);
+		T Create(T ws, bool cloneId = false);
 	}
 }

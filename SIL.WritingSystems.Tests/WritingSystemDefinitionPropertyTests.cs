@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using SIL.Keyboarding;
+using SIL.ObjectModel;
 using SIL.TestUtilities;
 
 namespace SIL.WritingSystems.Tests
@@ -26,7 +27,7 @@ namespace SIL.WritingSystems.Tests
 		public override string ExceptionList
 		{
 			// We do want to clone KnownKeyboards, but I don't think the automatic cloneable test for it can handle a list.
-			get { return "|MarkedForDeletion|Id|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionaries|IsChanged|_matchedPairs|_punctuationPatterns|_quotationMarks|_defaultCollation|_collations|_characterSets|_variants|_language|_script|_region|_ignoreVariantChanges|PropertyChanged|PropertyChanging|Template|"; }
+			get { return "|MarkedForDeletion|Id|_knownKeyboards|_localKeyboard|_defaultFont|_fonts|_spellCheckDictionaries|IsChanged|_matchedPairs|_punctuationPatterns|_quotationMarks|_defaultCollation|_collations|_characterSets|_language|_script|_region|_ignoreVariantChanges|PropertyChanged|PropertyChanging|Template|"; }
 		}
 
 		protected override List<ValuesToSet> DefaultValuesForTypes
@@ -34,14 +35,16 @@ namespace SIL.WritingSystems.Tests
 			get
 			{
 				return new List<ValuesToSet>
-							 {
-								 new ValuesToSet(3.14f, 2.72f),
-								 new ValuesToSet(true, false),
-								 new ValuesToSet("to be", "!(to be)"),
-								 new ValuesToSet(DateTime.Now, DateTime.MinValue),
-								 new ValuesToSet(QuotationParagraphContinueType.All, QuotationParagraphContinueType.None),
-								 new ValuesToSet(NumberingSystemDefinition.Default, NumberingSystemDefinition.CreateCustomSystem("9876543210"))
-							 };
+					{
+						new ValuesToSet(3.14f, 2.72f),
+						new ValuesToSet(true, false),
+						new ValuesToSet("to be", "!(to be)"),
+						new ValuesToSet(DateTime.Now, DateTime.MinValue),
+						new ValuesToSet(QuotationParagraphContinueType.All, QuotationParagraphContinueType.None),
+						new ValuesToSet(NumberingSystemDefinition.Default, NumberingSystemDefinition.CreateCustomSystem("9876543210")),
+						new ValuesToSet(new BulkObservableList<VariantSubtag>(new VariantSubtag[] {"1901", "biske"}),
+							new BulkObservableList<VariantSubtag>(new VariantSubtag[] {"foo", "bar"}))
+					};
 			}
 		}
 
@@ -124,8 +127,8 @@ namespace SIL.WritingSystems.Tests
 		public void CloneCopiesQuotationMarks()
 		{
 			var original = new WritingSystemDefinition();
-			var qm1 = new QuotationMark("«", "»", null, 1, QuotationMarkingSystemType.Narrative);
-			var qm2 = new QuotationMark("‹", "›", null, 3, QuotationMarkingSystemType.Normal);
+			var qm1 = new QuotationMark("\u00AB", "\u00BB", null, 1, QuotationMarkingSystemType.Narrative); // Â«, Â»
+			var qm2 = new QuotationMark("\u2039", "\u203A", null, 3, QuotationMarkingSystemType.Normal); // â€¹â€¯â€º
 			original.QuotationMarks.Add(qm1);
 			original.QuotationMarks.Add(qm2);
 			WritingSystemDefinition copy = original.Clone();
@@ -302,8 +305,8 @@ namespace SIL.WritingSystems.Tests
 		public void ValueEqualsComparesQuotationMarks()
 		{
 			var first = new WritingSystemDefinition();
-			var qm1 = new QuotationMark("«", "»", null, 3, QuotationMarkingSystemType.Narrative);
-			var qm2 = new QuotationMark("‹", "›", null, 1, QuotationMarkingSystemType.Normal);
+			var qm1 = new QuotationMark("\u00AB", "\u00BB", null, 3, QuotationMarkingSystemType.Narrative); // Â«, Â»
+			var qm2 = new QuotationMark("\u2039", "\u203A", null, 1, QuotationMarkingSystemType.Normal); // â€¹â€¯â€º
 			first.QuotationMarks.Add(qm1);
 			first.QuotationMarks.Add(qm2);
 			var second = new WritingSystemDefinition();
@@ -1350,10 +1353,28 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void CloneContructor_VariantStartsWithxDash_VariantIsCopied()
+		public void CloneConstructor_VariantStartsWithxDash_VariantIsCopied()
 		{
 			var writingSystem = new WritingSystemDefinition(new WritingSystemDefinition("x-bogus"));
 			Assert.AreEqual("x-bogus", writingSystem.LanguageTag);
+		}
+
+		[Test]
+		public void CloneConstructor_DoesNotCopyIdByDefault()
+		{
+			var original = new WritingSystemDefinition();
+			original.Id = "foo";
+			var writingSystem = new WritingSystemDefinition(original);
+			Assert.That(writingSystem.Id, Is.Not.EqualTo(original.Id));
+		}
+
+		[Test]
+		public void CloneConstructor_CopyId()
+		{
+			var original = new WritingSystemDefinition();
+			original.Id = "foo";
+			var writingSystem = new WritingSystemDefinition(original, true);
+			Assert.That(writingSystem.Id, Is.EqualTo(original.Id));
 		}
 
 		[Test]
@@ -1365,7 +1386,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void Script_Set_LanguageTagchanged()
+		public void Script_Set_LanguageTagChanged()
 		{
 			var writingSystem = new WritingSystemDefinition("en", "Zxxx", "", "1901-x-bogus");
 			writingSystem.Script = "Armi";
