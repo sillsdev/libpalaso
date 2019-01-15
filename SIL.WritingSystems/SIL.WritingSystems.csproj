@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="icu.net" Version="2.5.1" />
+    <PackageReference Include="icu.net" Version="2.5.2" />
     <PackageReference Include="Spart" Version="1.0.0" />
     <PackageReference Include="System.IO.FileSystem.AccessControl" Version="4.4.0" />
   </ItemGroup>

@@ -288,9 +288,15 @@ namespace SIL.WritingSystems
 				ws.Template = null;
 			}
 
-			if (!ws.IsChanged && File.Exists(writingSystemFilePath))
-				return; // no need to save (better to preserve the modified date)
-			ws.DateModified = DateTime.UtcNow;
+			if (ws.IsChanged)
+				ws.DateModified = DateTime.UtcNow;
+			else
+			{
+				// no need to save (better to preserve the modified date)
+				if (File.Exists(writingSystemFilePath))
+					return;
+			}
+
 			MemoryStream oldData = null;
 			if (File.Exists(writingSystemFilePath))
 			{
