@@ -62,8 +62,8 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 			WaitForControl();
 			_control.SearchText = "ak";
 			WaitForControl();
-			Assert.AreEqual("akq", _control.SelectedLanguage.LanguageTag);
-			Assert.AreEqual("Ak", _control.DesiredLanguageName);
+			Assert.AreEqual("ak", _control.SelectedLanguage.LanguageTag);
+			Assert.AreEqual("Akan", _control.DesiredLanguageName);
 			_control.SearchText = "akq";
 			WaitForControl();
 			Assert.AreEqual("akq", _control.SelectedLanguage.LanguageTag);
