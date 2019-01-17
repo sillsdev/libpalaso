@@ -81,7 +81,14 @@ namespace SIL.Windows.Forms.WritingSystems
 			if (li.LanguageTag.IsOneOf("zh-CN", "zh-TW"))
 				return true;
 
-			return string.IsNullOrEmpty(IetfLanguageTag.GetRegionPart(li.LanguageTag));
+			// written this way to avoid having to catch predictable exceptions as the user is typing
+			string language;
+			string script;
+			string region;
+			string variant;
+			if (IetfLanguageTag.TryGetParts(li.LanguageTag, out language, out script, out region, out variant))
+				return string.IsNullOrEmpty(region);
+			return true;
 		}
 
 		public LanguageInfo SelectedLanguage

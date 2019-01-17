@@ -307,9 +307,16 @@ namespace SIL.WritingSystems
 				if (y.LanguageTag.Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
 					return 1;
 
-				if (IetfLanguageTag.GetLanguagePart(x.LanguageTag).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
+				// written this way to avoid having to catch predictable exceptions as the user is typing
+				string language;
+				string script;
+				string region;
+				string variant;
+				if (IetfLanguageTag.TryGetParts(x.LanguageTag, out language, out script, out region, out variant) &&
+					_searchString.Equals(language, StringComparison.InvariantCultureIgnoreCase))
 					return -1;
-				if (IetfLanguageTag.GetLanguagePart(y.LanguageTag).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
+				if (IetfLanguageTag.TryGetParts(y.LanguageTag, out language, out script, out region, out variant) &&
+					_searchString.Equals(language, StringComparison.InvariantCultureIgnoreCase))
 					return 1;
 
 				// shortest simplest tag is most likely to be what is being looked for
