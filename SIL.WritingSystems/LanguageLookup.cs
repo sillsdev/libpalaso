@@ -285,13 +285,21 @@ namespace SIL.WritingSystems
 				_lowerSearch = searchString.ToLowerInvariant();
 			}
 
+			/// <summary>
+			/// Sorting the languages for display is tricky: we want the most relevant languages at the
+			/// top of the list, so we can't simply sort alphabetically by language name or by language tag,
+			/// but need to take both items into account together with the current search string.  Ordering
+			/// by relevance is clearly impossible since we'd have to read the user's mind and apply that
+			/// knowledge to the data.  But the heuristics we use here may be better than nothing...
+			/// </summary>
 			public int Compare(LanguageInfo x, LanguageInfo y)
 			{
 				if (x.LanguageTag == y.LanguageTag)
 					return 0;
 				if (!x.DesiredName.Equals(y.DesiredName, StringComparison.InvariantCultureIgnoreCase))
 				{
-					// Favor ones where some language matches to solve BL-1141
+					// Favor ones where some language name matches the search string to solve BL-1141
+					// We restrict this to the top 2 names of each language.
 					if (x.Names[0].Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
 						return -1;
 					if (y.Names[0].Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
@@ -303,14 +311,33 @@ namespace SIL.WritingSystems
 				}
 
 				if (x.LanguageTag.Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
-					return -1;
+					return -1;  // x.Tag matches search string exactly, so sort it earlier in the list.
 				if (y.LanguageTag.Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
-					return 1;
+					return 1;   // y.Tag matches search string exactly, so sort it earlier in the list.
 
-				if (IetfLanguageTag.GetLanguagePart(x.LanguageTag).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
-					return -1;
-				if (IetfLanguageTag.GetLanguagePart(y.LanguageTag).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
-					return 1;
+				// written this way to avoid having to catch predictable exceptions as the user is typing
+				string xlanguage;
+				string ylanguage;
+				string script;
+				string region;
+				string variant;
+				var xtagParses = IetfLanguageTag.TryGetParts(x.LanguageTag, out xlanguage, out script, out region, out variant);
+				var ytagParses = IetfLanguageTag.TryGetParts(y.LanguageTag, out ylanguage, out script, out region, out variant);
+				if (xtagParses && ytagParses && xlanguage == ylanguage)
+				{
+					// These tag comparisons are needed to get reasonable results for variants of Chinese
+					// and possibly other languages.
+					int tagCompare = x.LanguageTag.Length - y.LanguageTag.Length;
+					if (tagCompare != 0)
+						return tagCompare;	// sort region tag (2 chars) only before script tag (4 chars) only
+					tagCompare = string.Compare(x.LanguageTag, y.LanguageTag, StringComparison.InvariantCulture);
+					if (tagCompare != 0)
+						return tagCompare;
+				}
+				else if (xtagParses && _searchString.Equals(xlanguage, StringComparison.InvariantCultureIgnoreCase))
+					return -1;  // x.Tag's language part matches search string exactly, so sort it earlier in the list.
+				else if (ytagParses && _searchString.Equals(xlanguage, StringComparison.InvariantCultureIgnoreCase))
+					return 1;	// y.Tag's language part matches search string exactly, so sort it earlier in the list.
 
 				// shortest simplest tag is most likely to be what is being looked for
 				if (x.LanguageTag.Length < y.LanguageTag.Length)

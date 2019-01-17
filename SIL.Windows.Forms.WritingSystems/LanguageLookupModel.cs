@@ -72,6 +72,13 @@ namespace SIL.Windows.Forms.WritingSystems
 			}
 		}
 
+		/// <summary>
+		/// Filter out tags that contain a region marker unless the caller has already specified that region
+		/// markers are allowed in language tags.  Note that li.LanguageTag can be just a search string the
+		/// user has typed, which might be a (partial) language tag or might be (part of) a language name.
+		/// If the tag doesn't actually parse as a language tag, we assume the user is typing something other
+		/// than a language tag and consider it not to be something we'd filter out as specifying a region.
+		/// </summary>
 		private bool RegionalDialectsFilter(LanguageInfo li)
 		{
 			if (IncludeRegionalDialects)
@@ -81,7 +88,14 @@ namespace SIL.Windows.Forms.WritingSystems
 			if (li.LanguageTag.IsOneOf("zh-CN", "zh-TW"))
 				return true;
 
-			return string.IsNullOrEmpty(IetfLanguageTag.GetRegionPart(li.LanguageTag));
+			// written this way to avoid having to catch predictable exceptions as the user is typing
+			string language;
+			string script;
+			string region;
+			string variant;
+			if (IetfLanguageTag.TryGetParts(li.LanguageTag, out language, out script, out region, out variant))
+				return string.IsNullOrEmpty(region);	// OK only if no region.
+			return true;	// Not a tag?  Don't filter it out.
 		}
 
 		public LanguageInfo SelectedLanguage
