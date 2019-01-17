@@ -285,13 +285,21 @@ namespace SIL.WritingSystems
 				_lowerSearch = searchString.ToLowerInvariant();
 			}
 
+			/// <summary>
+			/// Sorting the languages for display is tricky: we want the most relevant languages at the
+			/// top of the list, so we can't simply sort alphabetically by language name or by language tag,
+			/// but need to take both items into account together with the current search string.  Ordering
+			/// by relevance is clearly impossible since we'd have to read the user's mind and apply that
+			/// knowledge to the data.  But the heuristics we use here may be better than nothing...
+			/// </summary>
 			public int Compare(LanguageInfo x, LanguageInfo y)
 			{
 				if (x.LanguageTag == y.LanguageTag)
 					return 0;
 				if (!x.DesiredName.Equals(y.DesiredName, StringComparison.InvariantCultureIgnoreCase))
 				{
-					// Favor ones where some language matches to solve BL-1141
+					// Favor ones where some language name matches the search string to solve BL-1141
+					// We restrict this to the top 2 names of each language.
 					if (x.Names[0].Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
 						return -1;
 					if (y.Names[0].Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
@@ -303,37 +311,52 @@ namespace SIL.WritingSystems
 				}
 
 				if (x.LanguageTag.Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
-					return -1;
+					return -1;  // x.Tag matches search string exactly, so sort it earlier in the list.
 				if (y.LanguageTag.Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
-					return 1;
+					return 1;   // y.Tag matches search string exactly, so sort it earlier in the list.
 
-				if (IetfLanguageTag.GetLanguagePart(x.LanguageTag).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
-					return -1;
-				if (IetfLanguageTag.GetLanguagePart(y.LanguageTag).Equals(_searchString, StringComparison.InvariantCultureIgnoreCase))
-					return 1;
-
+				// written this way to avoid having to catch predictable exceptions as the user is typing
+				string xlanguage;
+				string ylanguage;
+				string script;
+				string region;
+				string variant;
+				var xtagParses = IetfLanguageTag.TryGetParts(x.LanguageTag, out xlanguage, out script, out region, out variant);
+				var ytagParses = IetfLanguageTag.TryGetParts(y.LanguageTag, out ylanguage, out script, out region, out variant);
+				var bothTagLanguagesMatchSearch = xtagParses && ytagParses && xlanguage == ylanguage &&
+					_searchString.Equals(xlanguage, StringComparison.InvariantCultureIgnoreCase);
+				if (!bothTagLanguagesMatchSearch)
+				{
+					// One of the tag language pieces may match the search string even though not both match.
+					if (xtagParses && _searchString.Equals(xlanguage, StringComparison.InvariantCultureIgnoreCase))
+						return -1;  // x.Tag's language part matches search string exactly, so sort it earlier in the list.
+					else if (ytagParses && _searchString.Equals(ylanguage, StringComparison.InvariantCultureIgnoreCase))
+						return 1;   // y.Tag's language part matches search string exactly, so sort it earlier in the list.
+				}
 				// shortest simplest tag is most likely to be what is being looked for
 				if (x.LanguageTag.Length < y.LanguageTag.Length)
 					return -1;
 				if (y.LanguageTag.Length < x.LanguageTag.Length)
 					return 1;
 
-				// Use the "editing distance" relative to the search string to sort by the primary name.
-				// (But we don't really care once the editing distance gets very large.)
-				// See https://silbloom.myjetbrains.com/youtrack/issue/BL-5847 for motivation.
-				// Timing tests indicate that 1) calculating these distances doesn't slow down the sorting noticeably
-				// and 2) caching these distances in a dictionary also doesn't speed up the sorting noticeably.
-				var xDistance = ApproximateMatcher.EditDistance(_lowerSearch, x.Names[0].ToLowerInvariant(), 25, false);
-				var yDistance = ApproximateMatcher.EditDistance(_lowerSearch, y.Names[0].ToLowerInvariant(), 25, false);
-				var distanceDiff = xDistance - yDistance;
-				if (distanceDiff != 0)
-					return distanceDiff;
+				if (!bothTagLanguagesMatchSearch)
+				{
+					// Use the "editing distance" relative to the search string to sort by the primary name.
+					// (But we don't really care once the editing distance gets very large.)
+					// See https://silbloom.myjetbrains.com/youtrack/issue/BL-5847 for motivation.
+					// Timing tests indicate that 1) calculating these distances doesn't slow down the sorting noticeably
+					// and 2) caching these distances in a dictionary also doesn't speed up the sorting noticeably.
+					var xDistance = ApproximateMatcher.EditDistance(_lowerSearch, x.Names[0].ToLowerInvariant(), 25, false);
+					var yDistance = ApproximateMatcher.EditDistance(_lowerSearch, y.Names[0].ToLowerInvariant(), 25, false);
+					var distanceDiff = xDistance - yDistance;
+					if (distanceDiff != 0)
+						return distanceDiff;
 
-				// If the editing distances for the primary names are the same, sort by the primary name.
-				int res = string.Compare(x.Names[0], y.Names[0], StringComparison.InvariantCultureIgnoreCase);
-				if (res != 0)
-					return res;
-
+					// If the editing distances for the primary names are the same, sort by the primary name.
+					int res = string.Compare(x.Names[0], y.Names[0], StringComparison.InvariantCultureIgnoreCase);
+					if (res != 0)
+						return res;
+				}
 				return string.Compare(x.LanguageTag, y.LanguageTag, StringComparison.InvariantCultureIgnoreCase);
 			}
 		}
