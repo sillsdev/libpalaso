@@ -336,7 +336,8 @@ namespace SIL.WritingSystems
 			else
 			{
 				ws.DefaultCollationType = "standard";
-				ws.DefaultCollation = new SystemCollationDefinition { LanguageTag = ws.LanguageTag };
+				var systemDefinition = new SystemCollationDefinition { LanguageTag = ws.LanguageTag };
+				ws.DefaultCollation = systemDefinition.IsValid ? systemDefinition : new SystemCollationDefinition();
 			}
 
 			foreach (XElement specialElem in element.NonAltElements("special"))
@@ -754,7 +755,8 @@ namespace SIL.WritingSystems
 			}
 			if (defaultCollationElem == null)
 			{
-				ws.DefaultCollation = new SystemCollationDefinition { LanguageTag = ws.LanguageTag };
+				var sysColDef = new SystemCollationDefinition { LanguageTag = ws.LanguageTag };
+				ws.DefaultCollation = sysColDef.IsValid ? sysColDef : new SystemCollationDefinition();
 			}
 		}
 
