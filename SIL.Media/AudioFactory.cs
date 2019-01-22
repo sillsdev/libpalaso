@@ -7,12 +7,12 @@ namespace SIL.Media
 {
 	public class AudioFactory
 	{
-		public static ISimpleAudioSession CreateAudioSession(string filePath)
+		public static ISimpleAudioSession CreateAudioSession(string filePath, IProcessStarter processStarter = null)
 		{
 #if MONO
 			return new AudioAlsaSession(filePath);
 #else
-			return new AudioIrrKlangSession(filePath);
+			return new AudioIrrKlangSession(filePath, processStarter);
 #endif
 		}
 
