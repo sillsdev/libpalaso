@@ -1,8 +1,10 @@
-﻿// Copyright (c) 2015 SIL International
+// Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using SIL.Reporting;
 
@@ -157,6 +159,15 @@ namespace SIL.Media
 		{
 			if(File.Exists(_path))
 			{
+				if (_recorder.CanStop)
+				{
+					Task task = Task.Factory.StartNew(() =>
+					{
+						_recorder.StopPlaying();
+						Thread.Sleep(1000);
+					});
+					task.Wait();
+				}
 				File.Delete(_path);
 				UpdateScreen();
 				if (SoundDeleted != null)
