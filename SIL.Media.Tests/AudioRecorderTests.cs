@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -227,8 +227,8 @@ namespace SIL.Media.Tests
 							Assert.Fail("stop event not received");
 						}
 					}
-					Assert.That(isPlayingInEventHandler, Is.False);
-					Assert.That(x.IsPlaying, Is.False);
+					Assert.That(isPlayingInEventHandler, Is.True);
+					Assert.That(x.IsPlaying, Is.True);
 				}
 			}
 		}
@@ -426,6 +426,22 @@ namespace SIL.Media.Tests
 				{
 					Assert.DoesNotThrow(() => x.Play());
 					Assert.DoesNotThrow(() => x.StopPlaying());
+				}
+			}
+		}
+
+		[Test]
+		public void Play_DoesPlayMp3_SmokeTest()
+		{
+			using (var file = TempFile.FromResource(Resources.finished, ".mp3"))
+			{
+				using (var x = AudioFactory.CreateAudioSession(file.Path))
+				{
+					Assert.That(x.IsPlaying, Is.False);
+					Assert.DoesNotThrow(() => x.Play());
+					Assert.That(x.IsPlaying, Is.True);
+					Assert.DoesNotThrow(() => x.StopPlaying());
+					Assert.That(x.IsPlaying, Is.False);
 				}
 			}
 		}

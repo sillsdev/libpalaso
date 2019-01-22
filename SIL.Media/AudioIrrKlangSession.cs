@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015-2017 SIL International
+// Copyright (c) 2015-2017 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 #if !MONO
@@ -7,7 +7,11 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Media;
+using System.Threading;
+using System.Threading.Tasks;
 using IrrKlang;
+using NAudio.Wave;
+using IAudioRecorder = IrrKlang.IAudioRecorder;
 
 namespace SIL.Media
 {
@@ -21,14 +25,17 @@ namespace SIL.Media
 		private DateTime _stopRecordingTime;
 		private readonly string _path;
 		private readonly SoundFile _soundFile;
-		//private readonly ISoundStopEventReceiver _irrklangEventProxy;
-
+		private WaveOutEvent _outputDevice;
+		private AudioFileReader _audioFile;
 		/// <summary>
 		/// Will be raised when playing is over
 		/// </summary>
 		public event EventHandler PlaybackStopped;
 
-
+		/// <summary>
+		/// Constructor for an AudioSession using the IrrKlang library
+		/// </summary>
+		/// <param name="filePath"></param>
 		public AudioIrrKlangSession(string filePath)
 		{
 			_soundFile = new SoundFile(filePath);
@@ -111,7 +118,20 @@ namespace SIL.Media
 			get { return !IsPlaying && !IsRecording && File.Exists(_path); }
 		}
 
-		SoundPlayer _player = new SoundPlayer();
+		private void OnPlaybackStopped(object sender = null, StoppedEventArgs args = null)
+		{
+			if (_outputDevice != null)
+			{
+				_outputDevice.Dispose();
+				_outputDevice = null;
+				if (_audioFile != null)
+				{
+					_audioFile.Dispose();
+					_audioFile = null;
+				}
+				IsPlaying = false;
+			}
+		}
 
 		public void Play()
 		{
@@ -121,7 +141,6 @@ namespace SIL.Media
 				throw new FileNotFoundException("Could not find sound file");
 			if (new FileInfo(FilePath).Length == 0)
 				throw new FileLoadException("Trying to play empty file");
-
 			// Current version doesn't use IrrKlang for playback.
 			// Recently we've had all kinds of problems with IrrKlang playback,
 			// mainly connected with the sound completed event.
@@ -130,16 +149,24 @@ namespace SIL.Media
 			// Another version crahsed at the end of the sound, even in a real app.
 			// The current version, according to my tests, never generates the sound completed event.
 			// So, just use the built-in system sound player.
-			_player.Stop();
-			_player.SoundLocation = FilePath;
+
 			var worker = new BackgroundWorker();
 			IsPlaying = true;
 			worker.DoWork += (sender, args) =>
 			{
 				try
 				{
-					_player.PlaySync();
-					IsPlaying = false; // BEFORE we raise the event! State should be valid while handling it.
+					if (_outputDevice == null)
+					{
+						_outputDevice = new WaveOutEvent();
+						_outputDevice.PlaybackStopped += OnPlaybackStopped;
+					}
+					if (_audioFile == null)
+					{
+						_audioFile = new AudioFileReader(FilePath);
+						_outputDevice.Init(_audioFile);
+					}
+					_outputDevice.Play();
 					PlaybackStopped?.Invoke(this, new EventArgs());
 				}
 				catch (Exception e)
@@ -303,7 +330,14 @@ namespace SIL.Media
 			if (_sound != null && !_sound.Finished)
 				_sound.Stop();
 			if (IsPlaying)
-				_player.Stop();
+			{
+				Task task = Task.Factory.StartNew(() =>
+				{
+					OnPlaybackStopped();
+					Thread.Sleep(1000);
+				});
+				task.Wait();
+			}
 			try
 			{
 				_engine.RemoveAllSoundSources();
