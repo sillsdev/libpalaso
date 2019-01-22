@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015-2017 SIL International
+// Copyright (c) 2015-2017 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 #if !MONO
@@ -21,21 +21,29 @@ namespace SIL.Media
 		private DateTime _stopRecordingTime;
 		private readonly string _path;
 		private readonly SoundFile _soundFile;
-		//private readonly ISoundStopEventReceiver _irrklangEventProxy;
+		// .Net audio player (only supports .wav files)
+		SoundPlayer _player = new SoundPlayer();
 
 		/// <summary>
 		/// Will be raised when playing is over
 		/// </summary>
 		public event EventHandler PlaybackStopped;
 
+		internal IProcessStarter _processStarter;
 
-		public AudioIrrKlangSession(string filePath)
+		/// <summary>
+		/// Constructor for an AudioSession using the IrrKlang library
+		/// </summary>
+		/// <param name="filePath"></param>
+		/// <param name="processStarter"> optional alternative to calling Process.Start (for unit testing) </param>
+		public AudioIrrKlangSession(string filePath, IProcessStarter processStarter = null)
 		{
 			_soundFile = new SoundFile(filePath);
 			_engine.AddFileFactory(_soundFile);
 			_recorder = new IAudioRecorder(_engine);
 			_path = filePath;
 			//_irrklangEventProxy = new ProxyForIrrklangEvents(this);
+			_processStarter = processStarter ?? new AudioFactory.ProcessStarter();
 		}
 
 		public void Test()
@@ -111,8 +119,6 @@ namespace SIL.Media
 			get { return !IsPlaying && !IsRecording && File.Exists(_path); }
 		}
 
-		SoundPlayer _player = new SoundPlayer();
-
 		public void Play()
 		{
 			if (IsRecording)
@@ -138,7 +144,11 @@ namespace SIL.Media
 			{
 				try
 				{
-					_player.PlaySync();
+					if (Path.GetExtension(FilePath) != ".wav")
+						_processStarter.Start(FilePath);
+					else
+						_player.PlaySync();
+
 					IsPlaying = false; // BEFORE we raise the event! State should be valid while handling it.
 					PlaybackStopped?.Invoke(this, new EventArgs());
 				}
