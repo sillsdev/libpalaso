@@ -24,7 +24,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 			model.IncludeRegionalDialects = false;
 			model.SearchText = "chinese";
 			string[] codes = model.MatchingLanguages.Select(li => li.LanguageTag).ToArray();
-			Assert.That(codes, Contains.Item("zh"));
+			Assert.That(codes, Contains.Item("zh-CN"));
 			Assert.That(codes, Contains.Item("zh-TW"));
 		}
 

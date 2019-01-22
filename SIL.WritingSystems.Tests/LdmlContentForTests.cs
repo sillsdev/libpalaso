@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using SIL.WritingSystems.Migration.WritingSystemsLdmlV0To1Migration;
 
 namespace SIL.WritingSystems.Tests
@@ -104,7 +104,42 @@ namespace SIL.WritingSystems.Tests
 <collations>
 	<collation>
 		<base>
-			<alias source='de'/>
+			<alias source='en'/>
+		</base>
+		<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
+			<palaso:sortRulesType value='OtherLanguage' />
+		</special>
+	</collation>
+</collations>
+<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
+	<palaso:abbreviation value='la' />
+	<palaso:defaultFontFamily value='Arial' />
+	<palaso:defaultFontSize value='12' />
+	<palaso:defaultKeyboard value='bogusKeyboard' />
+	<palaso:isLegacyEncoded value='true' />
+	<palaso:languageName value='language' />
+	<palaso:spellCheckingId value='ol-GB-1996' />
+</special>
+</ldml>".Replace('\'', '"');
+		}
+
+		internal static string Version0WithBogusSystemCollationInfo()
+		{
+			return
+				@"<?xml version='1.0' encoding='utf-8'?>
+<ldml>
+<identity>
+	<version number='' />
+	<generation date='0001-01-01T00:00:00' />
+	<language type='mvp' />
+</identity>
+<layout>
+	<orientation characters='left-to-right'/>
+</layout>
+<collations>
+	<collation>
+		<base>
+			<alias source='mvp'/>
 		</base>
 		<special xmlns:palaso='urn://palaso.org/ldmlExtensions/v1'>
 			<palaso:sortRulesType value='OtherLanguage' />
