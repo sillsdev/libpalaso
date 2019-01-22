@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Media;
 using System.Threading;
 using System.Windows.Forms;
+using NSubstitute;
 using NUnit.Framework;
 using SIL.IO;
 using SIL.Media.Tests.Properties;
@@ -427,6 +428,22 @@ namespace SIL.Media.Tests
 					Assert.DoesNotThrow(() => x.Play());
 					Assert.DoesNotThrow(() => x.StopPlaying());
 				}
+			}
+		}
+
+		[Test]
+		public void Play_DoesPlayMp3()
+		{
+			using (var file = TempFile.FromResource(Resources.finished, ".mp3"))
+			{
+				var ProcessStarterMock = Substitute.For<IProcessStarter>();
+				using (var x = AudioFactory.CreateAudioSession(file.Path, ProcessStarterMock))
+				{
+					Assert.DoesNotThrow(() => x.Play());
+					Assert.DoesNotThrow(() => x.StopPlaying());
+					Assert.That(x.IsPlaying, Is.True);
+				}
+				ProcessStarterMock.Received().Start(Arg.Is(file.Path));
 			}
 		}
 

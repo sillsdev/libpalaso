@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2015-2017 SIL International
+// Copyright (c) 2015-2017 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 #if !MONO
@@ -28,14 +28,16 @@ namespace SIL.Media
 		/// </summary>
 		public event EventHandler PlaybackStopped;
 
+		internal IProcessStarter _processStarter;
 
-		public AudioIrrKlangSession(string filePath)
+		public AudioIrrKlangSession(string filePath, IProcessStarter  processStarter = null)
 		{
 			_soundFile = new SoundFile(filePath);
 			_engine.AddFileFactory(_soundFile);
 			_recorder = new IAudioRecorder(_engine);
 			_path = filePath;
 			//_irrklangEventProxy = new ProxyForIrrklangEvents(this);
+			_processStarter = processStarter;
 		}
 
 		public void Test()
@@ -138,7 +140,11 @@ namespace SIL.Media
 			{
 				try
 				{
-					_player.PlaySync();
+					if (Path.GetExtension(FilePath) != ".wav")
+						_processStarter.Start(FilePath);
+					else
+						_player.PlaySync();
+
 					IsPlaying = false; // BEFORE we raise the event! State should be valid while handling it.
 					PlaybackStopped?.Invoke(this, new EventArgs());
 				}
