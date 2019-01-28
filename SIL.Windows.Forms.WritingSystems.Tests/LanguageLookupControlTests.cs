@@ -55,7 +55,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		}
 
 		[Test]
-		public void AkanSearchDoesNotCrash()
+		public void AkSearchDoesNotCrash()
 		{
 			_control.SearchText = "a";
 			_testForm.Show();
