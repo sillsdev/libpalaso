@@ -47,8 +47,8 @@ namespace SIL.WritingSystems.Tests
 			*/
 			var lookup = new LanguageLookup();
 			LanguageInfo thai = lookup.SuggestLanguages("thai").First();
-			Assert.That(thai.Names[0], Is.EqualTo("ไทย"));
-			Assert.That(thai.Names[1], Is.EqualTo("Thai"));
+			Assert.That(thai.Names[0], Is.EqualTo("Thai"));
+			Assert.That(thai.Names[1], Is.EqualTo("ไทย"));
 		}
 
 		[Test]
