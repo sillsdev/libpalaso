@@ -21,3 +21,4 @@
 changelog -whitespace
 *.lift* -whitespace
 *.xsl -whitespace
+*.yml -whitespace
