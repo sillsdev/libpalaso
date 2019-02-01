@@ -5,6 +5,7 @@
 @Library('lsdev-pipeline-library') _
 
 xplatformBuildAndRunTests {
+	buildFileName = 'build/Palaso.proj'
 	winNodeSpec = 'windows && supported && vs2017'
 	linuxNodeSpec = 'linux64 && !packager && ubuntu && mono5'
 	winTool = 'msbuild15'
