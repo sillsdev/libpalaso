@@ -7,7 +7,6 @@
 		<Version>6.0.0</Version>
 	</PropertyGroup>
 
-	<UsingTask TaskName="StampAssemblies" AssemblyFile="$(RootDir)/packages/SIL.BuildTasks.1.0.0/tools/SIL.BuildTasks.dll" />
 	<UsingTask TaskName="Archive" AssemblyFile="$(RootDir)/packages/SIL.BuildTasks.1.0.0/tools/SIL.BuildTasks.dll" />
 	<UsingTask TaskName="FileUpdate" AssemblyFile="$(RootDir)/packages/SIL.BuildTasks.1.0.0/tools/SIL.BuildTasks.dll" />
 	<UsingTask TaskName="NUnit" AssemblyFile="$(RootDir)/packages/SIL.BuildTasks.1.0.0/tools/SIL.BuildTasks.dll" />
@@ -52,21 +51,12 @@
 		<Message Text="Package Version: $(PackageVersion)" Importance="high"/>
 	</Target>
 
-	<ItemGroup>
-		<AssemblyInfoFiles Include="$(RootDir)/GlobalAssemblyInfo.*"/>
-	</ItemGroup>
-
-	<Target Name="SetAssemblyVersion" DependsOnTargets="VersionNumbers">
-	  <StampAssemblies Version="$(AssemblyVersion)" FileVersion="$(FileVersion)" PackageVersion="$(PackageVersion)" InputAssemblyPaths="@(AssemblyInfoFiles)" />
-	</Target>
-
 	<PropertyGroup>
 		<OutputDir>$(RootDir)/output/$(Configuration)</OutputDir>
 	</PropertyGroup>
 
 	<Target Name="Build">
 		<CallTarget Targets="Clean"/>
-		<CallTarget Targets="SetAssemblyVersion"/>
 		<CallTarget Targets="Compile"/>
 		<Message Text="Build Complete"/>
 	</Target>
@@ -141,7 +131,7 @@
 		<Source Include="$(RootDir)/**/*" Exclude="$(RootDir)/output/**/*;$(RootDir)/.hg/**/*;$(RootDir)/.git/**/*;$(RootDir)/lib/Debug/**/*;$(RootDir)/lib/Release/**/*;$(RootDir)/lib/*Configuration*/**/*;$(RootDir)/**/*~" />
 	</ItemGroup>
 
-	<Target Name="SourcePackage" DependsOnTargets="Clean;PackageClean;SetAssemblyVersion"
+	<Target Name="SourcePackage" DependsOnTargets="Clean;PackageClean"
 		Condition="'$(OS)'!='Windows_NT'">
 		<CreateProperty Value="$(OutputDir)/$(ApplicationNameLC)-$(Version).tar.gz">
 			<Output TaskParameter="Value" PropertyName="SourcePackageFileName" />
@@ -175,7 +165,7 @@
 		<PackProjects Include="$(RootDir)/SIL.WritingSystems/SIL.WritingSystems.csproj" />
 	</ItemGroup>
 
-	<Target Name="Pack" DependsOnTargets="SetAssemblyVersion;RestorePackages">
+	<Target Name="Pack" DependsOnTargets="RestorePackages">
 		<MSBuild
 			Projects="@(PackProjects)"
 			Targets="pack"
