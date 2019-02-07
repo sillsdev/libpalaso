@@ -1,9 +1,7 @@
 // Copyright (c) 2013-2018 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
-#if !MONO
 using Keyman7Interop;
-#endif
 using SIL.Reporting;
 
 namespace SIL.Windows.Forms.Keyboarding.Windows
@@ -15,7 +13,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 	{
 		public bool ActivateKeyboard(KeyboardDescription keyboard)
 		{
-#if !MONO
 			var keymanKbdDesc = (KeymanKeyboardDescription)keyboard;
 			if (keymanKbdDesc.IsKeyman6)
 			{
@@ -55,7 +52,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					return false;
 				}
 			}
-#endif
 
 			KeyboardController.Instance.ActiveKeyboard = keyboard;
 			return true;
@@ -63,7 +59,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 		public void DeactivateKeyboard(KeyboardDescription keyboard)
 		{
-#if !MONO
 			try
 			{
 				if (((KeymanKeyboardDescription)keyboard).IsKeyman6)
@@ -82,7 +77,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			{
 				// Keyman not installed?
 			}
-#endif
 		}
 
 		/// <summary>

@@ -17,8 +17,10 @@ namespace X11.XKlavier
 	{
 		private struct XklState
 		{
+#pragma warning disable 649
 			public int Group;
 			public int Indicators;
+#pragma warning restore 649
 		}
 
 		private string[] m_GroupNames;

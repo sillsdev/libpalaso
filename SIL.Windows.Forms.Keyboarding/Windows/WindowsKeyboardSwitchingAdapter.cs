@@ -64,7 +64,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				}
 
 				_expectedKeyboard = keyboard;
-#if !MONO
 				foreach (InputLanguage lang in InputLanguage.InstalledInputLanguages)
 				{
 					if (keyboard.InputLanguage.Culture.Name == lang.Culture.Name)
@@ -80,7 +79,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 						return true;
 					}
 				}
-#endif
 			}
 			finally
 			{

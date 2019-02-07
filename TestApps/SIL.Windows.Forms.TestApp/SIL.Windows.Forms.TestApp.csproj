@@ -269,8 +269,8 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="L10NSharp, Version=3.1.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\L10NSharp.3.1.0-nuget0007\lib\net461\L10NSharp.dll</HintPath>
+    <Reference Include="L10NSharp, Version=3.1.0.0, Culture=neutral, PublicKeyToken=fd0b3e309a5b7c28">
+      <HintPath>..\..\packages\L10NSharp.3.1.0-nuget0010\lib\net461\L10NSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

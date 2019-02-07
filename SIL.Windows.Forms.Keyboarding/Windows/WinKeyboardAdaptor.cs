@@ -37,7 +37,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			ProfileManager = ProcessorProfiles as ITfInputProcessorProfileMgr;
 			SwitchingAdaptor = new WindowsKeyboardSwitchingAdapter();
 		}
-		
+
 		private static string GetDisplayName(string layout, string locale)
 		{
 			return $"{layout} - {locale}";
@@ -152,7 +152,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					}
 				}
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
 				Debug.WriteLine($"Error looking up keyboards for language {inputLanguage.Culture.Name} - {(short)inputLanguage.Culture.KeyboardLayoutId}");
 			}

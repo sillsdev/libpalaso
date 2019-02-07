@@ -8,7 +8,6 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// <summary>
 	/// Class for dealing with ibus keyboards on Unity (as found in Trusty >= 13.10)
 	/// </summary>
-	[CLSCompliant(false)]
 	public class UnityIbusKeyboardSwitchingAdaptor : IbusKeyboardSwitchingAdaptor
 	{
 		public UnityIbusKeyboardSwitchingAdaptor(IIbusCommunicator ibusCommunicator) :

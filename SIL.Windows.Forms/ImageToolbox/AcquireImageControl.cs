@@ -6,11 +6,9 @@ using System.Windows.Forms;
 using L10NSharp;
 using SIL.PlatformUtilities;
 using SIL.Reporting;
-#if !MONO
 using System.Drawing.Imaging;
 using SIL.IO;
 using WIA;
-#endif
 
 namespace SIL.Windows.Forms.ImageToolbox
 {
@@ -192,25 +190,20 @@ namespace SIL.Windows.Forms.ImageToolbox
 
 		private void OnScannerClick(object sender, EventArgs e)
 		{
-#if !MONO
 			_scannerButton.Checked = true;
 			SetImage(null);
 			UsageReporter.SendNavigationNotice("ImageToolbox:GetFromScanner");
 			GetFromDevice(ImageAcquisitionService.DeviceKind.Scanner);
-#endif
 		}
 
 		private void OnCameraClick(object sender, EventArgs e)
 		{
-#if !MONO
 			SetImage(null);
 			_cameraButton.Checked = true;
 			UsageReporter.SendNavigationNotice("ImageToolbox:GetFromCamera");
 			GetFromDevice(ImageAcquisitionService.DeviceKind.Camera);
-#endif
 		}
 
-#if !MONO
 		private void GetFromDevice(ImageAcquisitionService.DeviceKind deviceKind)
 		{
 			//_pictureBox.Image = SampleImages.sampleScan;
@@ -245,7 +238,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 				ErrorReport.NotifyUserOfProblem(error, "Problem Getting Image".Localize("ImageToolbox.ProblemGettingImageFromDevice"));
 			}
 		}
-#endif
 
 		/// <summary>
 		/// use if the calling app already has some notion of what the user might be looking for (e.g. the definition in a dictionary program)
@@ -307,7 +299,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 		}
 		*/
 
-#if !MONO
 		private string ConvertToPngOrJpegIfNotAlready(ImageFile wiaImageFile)
 		{
 			Image acquiredImage;//with my scanner, always a .bmp
@@ -355,7 +346,6 @@ namespace SIL.Windows.Forms.ImageToolbox
 				}
 			}
 		}
-#endif
 
 		private enum Modes { Gallery, SingleImage }
 		private void SetMode(Modes mode)

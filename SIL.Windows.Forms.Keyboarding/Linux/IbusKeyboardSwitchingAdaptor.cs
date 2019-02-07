@@ -11,7 +11,6 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// <summary>
 	/// Class for handling ibus keyboards on Linux.
 	/// </summary>
-	[CLSCompliant(false)]
 	public class IbusKeyboardSwitchingAdaptor : IKeyboardSwitchingAdaptor
 	{
 		private readonly IIbusCommunicator _ibusComm;
