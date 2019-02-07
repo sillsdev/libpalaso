@@ -150,7 +150,7 @@ namespace SIL.Lift.Validation
 			using (XmlTextReader documentReader = new XmlTextReader(path))
 			{
 				progress.Status = "Checking for Schema errors...";
-				var resourceStream = typeof (LiftMultiText).Assembly.GetManifestResourceStream("Palaso.Lift.Validation.lift.rng");
+				var resourceStream = typeof (LiftMultiText).Assembly.GetManifestResourceStream("SIL.Lift.Validation.lift.rng");
 				if (resourceStream == null)
 					throw new Exception();
 				RelaxngValidatingReader reader = new RelaxngValidatingReader(

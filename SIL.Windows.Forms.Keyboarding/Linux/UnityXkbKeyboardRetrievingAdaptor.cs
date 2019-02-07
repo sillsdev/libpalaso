@@ -14,7 +14,6 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 	/// a different dconf key (/org/gnome/desktop/input-sources/sources). This retriever reads
 	/// the list of keyboards and registers the xkb keyboards.
 	/// </summary>
-	[CLSCompliant(false)]
 	public class UnityXkbKeyboardRetrievingAdaptor : XkbKeyboardRetrievingAdaptor
 	{
 		private readonly UnityKeyboardRetrievingHelper _helper = new UnityKeyboardRetrievingHelper();

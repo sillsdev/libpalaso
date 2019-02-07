@@ -6,10 +6,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-#if !MONO
 using Keyman7Interop;
 using Keyman10Interop;
-#endif
 using Microsoft.Win32;
 using SIL.Keyboarding;
 
@@ -53,7 +51,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		{
 			get
 			{
-#if !MONO
 				switch (InstalledKeymanVersion)
 				{
 					case KeymanVersion.Keyman10:
@@ -86,7 +83,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 						throw new NotSupportedException($"{InstalledKeymanVersion} not yet supported in IsApplicable");
 
 				}
-#endif
 				return false;
 			}
 		}
@@ -115,7 +111,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 		private KeymanVersion GetInstalledKeymanVersion()
 		{
-#if !MONO
 			// limit the COMException catching by determining the current version once and assuming it for the
 			// rest of the adaptor's lifetime
 			try
@@ -144,7 +139,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			catch (COMException)
 			{
 			}
-#endif
 			return KeymanVersion.NotInstalled;
 		}
 
