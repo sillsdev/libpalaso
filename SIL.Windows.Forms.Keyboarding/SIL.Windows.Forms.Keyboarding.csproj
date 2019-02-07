@@ -284,18 +284,6 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'DebugMono' Or '$(Configuration)' == 'DebugMonoStrongName'">
-    <Reference Include="L10NSharp.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\DebugMono\L10NSharp.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)' == 'ReleaseMono' Or '$(Configuration)' == 'ReleaseMonoStrongName'">
-    <Reference Include="L10NSharp.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\ReleaseMono\L10NSharp.dll</HintPath>
-    </Reference>
-  </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'DebugStrongName'">
     <Reference Include="Keyman7Interop.dll">
       <SpecificVersion>False</SpecificVersion>
@@ -309,10 +297,6 @@
     <Reference Include="KeymanLink.dll">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Debug\KeymanLink.dll</HintPath>
-    </Reference>
-    <Reference Include="L10NSharp.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Debug\L10NSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseStrongName'">
@@ -329,14 +313,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Release\KeymanLink.dll</HintPath>
     </Reference>
-    <Reference Include="L10NSharp.dll">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Release\L10NSharp.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="icu.net, Version=2.5.0.0, Culture=neutral, PublicKeyToken=416fdd914afa6b66">
       <HintPath>..\packages\icu.net.2.5.2\lib\net451\icu.net.dll</HintPath>
+    </Reference>
+    <Reference Include="L10NSharp, Version=3.1.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\L10NSharp.3.1.0-nuget0007\lib\net461\L10NSharp.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.DotNet.PlatformAbstractions, Version=2.0.4.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.DotNet.PlatformAbstractions.2.0.4\lib\net45\Microsoft.DotNet.PlatformAbstractions.dll</HintPath>
@@ -350,6 +334,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
