@@ -1,4 +1,4 @@
-﻿using SIL.Windows.Forms.Widgets;
+using SIL.Windows.Forms.Widgets;
 
 namespace SIL.Windows.Forms.SettingProtection
 {
@@ -100,7 +100,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			this._passwordNotice.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this._passwordNotice.ForeColor = System.Drawing.Color.DimGray;
 			this.l10NSharpExtender1.SetLocalizableToolTip(this._passwordNotice, null);
-			this.l10NSharpExtender1.SetLocalizationComment(this._passwordNotice, "Don\'t forget to have the {0} and {1} in your translated string!");
+			this.l10NSharpExtender1.SetLocalizationComment(this._passwordNotice, "Param 0: Factory password; Param 1: product name; 2: English words \"factory password\"");
 			this.l10NSharpExtender1.SetLocalizingId(this._passwordNotice, "SettingsProtection.PasswordNotice");
 			this._passwordNotice.Location = new System.Drawing.Point(59, 156);
 			this._passwordNotice.Multiline = true;
