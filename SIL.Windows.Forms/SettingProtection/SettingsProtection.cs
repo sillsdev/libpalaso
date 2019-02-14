@@ -1,4 +1,4 @@
-﻿using System.Configuration;
+using System.Configuration;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -94,10 +94,10 @@ namespace SIL.Windows.Forms.SettingProtection
 		{
 			get
 			{
-				var productName = CoreProductName;
-				return productName.Insert(1, "7").ToLower();
+				var overridePassword = ConfigurationManager.AppSettings["SettingsPassword"];
+				return string.IsNullOrEmpty(overridePassword) ? CoreProductName.Insert(1, "7").ToLower() :
+					overridePassword;
 			}
-
 		}
 
 		/// <summary>
@@ -108,10 +108,19 @@ namespace SIL.Windows.Forms.SettingProtection
 			get
 			{
 				var productName = ConfigurationManager.AppSettings["CoreProductName"];
-				if (string.IsNullOrEmpty(productName))
-					productName = Application.ProductName;
+				return string.IsNullOrEmpty(productName) ? Application.ProductName : productName;
+			}
+		}
 
-				return productName;
+		/// <summary>
+		/// Use the ProductSupportSite value from the AppSettings in the application config file, if present. Otherwise null.
+		/// </summary>
+		internal static string ProductSupportUrl
+		{
+			get
+			{
+				var productSupportUrl = ConfigurationManager.AppSettings["ProductSupportUrl"];
+				return string.IsNullOrWhiteSpace(productSupportUrl) ? null : productSupportUrl;
 			}
 		}
 	}

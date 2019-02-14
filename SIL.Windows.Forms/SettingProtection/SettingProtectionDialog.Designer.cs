@@ -100,7 +100,8 @@ namespace SIL.Windows.Forms.SettingProtection
 			this._passwordNotice.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this._passwordNotice.ForeColor = System.Drawing.Color.DimGray;
 			this.l10NSharpExtender1.SetLocalizableToolTip(this._passwordNotice, null);
-			this.l10NSharpExtender1.SetLocalizationComment(this._passwordNotice, "Param 0: Factory password; Param 1: product name; 2: English words \"factory password\"");
+			this.l10NSharpExtender1.SetLocalizationComment(this._passwordNotice, "The localization for this should be kept " +
+				"in sync with \"SettingsProtection.PasswordNoticeWithSupportUrl\". Param 0: Factory password; Param 1: product name");
 			this.l10NSharpExtender1.SetLocalizingId(this._passwordNotice, "SettingsProtection.PasswordNotice");
 			this._passwordNotice.Location = new System.Drawing.Point(59, 156);
 			this._passwordNotice.Multiline = true;
@@ -109,8 +110,8 @@ namespace SIL.Windows.Forms.SettingProtection
 			this._passwordNotice.Size = new System.Drawing.Size(407, 33);
 			this._passwordNotice.TabIndex = 5;
 			this._passwordNotice.TabStop = false;
-			this._passwordNotice.Text = "Factory password for these settings is \"{0}\".  If you forget it, you can always g" +
-    "oogle for \"{1}\" and \"{2}\"";
+			this._passwordNotice.Text = "Factory password for these settings is \"{0}\". If you forget it, you can always v" +
+    "isit the {1} support page.";
 			// 
 			// betterLabel1
 			//

@@ -523,15 +523,24 @@
         <seg>Afficher caractères</seg>
       </tuv>
     </tu>
-    <tu tuid="SettingsProtection.PasswordNotice">
-      <note>Don't forget to have the {0}, {1} and {2} in your translated string!</note>
-      <tuv xml:lang="en">
-        <seg>Factory password for these settings is "{0}".  If you forget it, you can always google for "{1}" and "{2}"</seg>
-      </tuv>
+	<tu tuid="SettingsProtection.PasswordNotice">
+	  <note>The localization for this should be kept in sync with "SettingsProtection.PasswordNoticeWithSupportUrl". Param 0: Factory password; Param 1: product name</note>
+	  <tuv xml:lang="en">
+		<seg>Factory password for these settings is \"{0}\". If you forget it, you can always visit the {1} support page."</seg>
+	  </tuv>
       <tuv xml:lang="fr">
-        <seg>Le mot de passe d'usine pour cette configuration est "{0}". Pour le retrouver, vous pouvez toujours googler "{1}" et "{2}"</seg>
+        <seg>Le mot de passe par défaut pour ces paramètres est « {0} ». Si vous l'oubliez, vous pouvez visiter la page de support {1}.</seg>
       </tuv>
     </tu>
+	<tu tuid="SettingsProtection.PasswordNoticeWithSupportUrl">
+	  <note>The localization for this should be kept in sync with "SettingsProtection.PasswordNotice". Param 0: Factory password; Param 1: product name; Param 2: URL of support page</note>
+	  <tuv xml:lang="en">
+		<seg>Factory password for these settings is \"{0}\". If you forget it, you can always visit the {1} support page: {2}"</seg>
+	  </tuv>
+	  <tuv xml:lang="fr">
+		<seg>Le mot de passe par défaut pour ces paramètres est « {0} ». Si vous l'oubliez, vous pouvez visiter la page de support {1}: {2}</seg>
+	  </tuv>
+	</tu>
     <tu tuid="SettingsProtection.RequirePasswordCheckBox">
       <tuv xml:lang="en">
         <seg>Require the factory password to get into settings.</seg>
