@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using NUnit.Framework;
 using SIL.WritingSystems;
@@ -10,6 +11,18 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 	[TestFixture]
 	public class WritingSystemFromWindowsLocaleProviderTests
 	{
+		private class WritingSystemFromWindowsLocaleProviderAccessor: WritingSystemFromWindowsLocaleProvider
+		{
+			public WritingSystemFromWindowsLocaleProviderAccessor(
+				IWritingSystemFactory writingSystemFactory) : base(writingSystemFactory)
+			{
+			}
+
+			public static string CallGetRegion(string cultureName)
+			{
+				return GetRegion(cultureName);
+			}
+		}
 
 		[Test]
 		[Category("DesktopRequired")] // Fails on Jenkins because InputLanguage.InstalledInputLanguages returns an empty list.
@@ -49,6 +62,24 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 ////                }
 //            }
 //        }
+
+		[TestCase("aa", ExpectedResult = "ET")] // returns default region
+		[TestCase("chr", ExpectedResult = "US")] // previously ArgumentException
+		[TestCase("chr-Cher", ExpectedResult = "US")] // previously ArgumentException
+		[TestCase("chr-Cher-US", ExpectedResult = "US")]
+		[TestCase("en", ExpectedResult = "US")] // previously ArgumentException
+		[TestCase("en-US", ExpectedResult = "US")]
+		[TestCase("en-001", ExpectedResult = "001")]
+		[TestCase("jv-Latn", ExpectedResult = "ID")]
+		[TestCase("jv-Latn-ID", ExpectedResult = "ID")]
+		[TestCase("kok", ExpectedResult = "IN")] // previously ArgumentException
+		[TestCase("kok-IN", ExpectedResult = "IN")]
+		[TestCase("und", ExpectedResult = "")]
+		[TestCase("und-001", ExpectedResult = "001")]
+		public string GetRegion(string cultureName)
+		{
+			return WritingSystemFromWindowsLocaleProviderAccessor.CallGetRegion(cultureName);
+		}
 	}
 
 }
