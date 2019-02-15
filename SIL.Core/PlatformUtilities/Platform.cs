@@ -319,5 +319,11 @@ namespace SIL.PlatformUtilities
 			return output.Trim();
 		}
 
+		public const string x64 = nameof(x64);
+		public const string x86 = nameof(x86);
+
+		public static string ProcessArchitecture => Environment.Is64BitProcess ? x64 : x86;
+
+		public static bool IsRunning64Bit => Environment.Is64BitProcess;
 	}
 }
