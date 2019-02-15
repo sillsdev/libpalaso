@@ -7,6 +7,7 @@ namespace SIL.Windows.Forms.SettingProtection
 	public class SettingsProtectionSingleton
 	{
 		private SettingsProtectionSettings config;
+		private string productSupportUrl;
 		private static SettingsProtectionSingleton _singleton;
 
 		private SettingsProtectionSingleton()
@@ -90,15 +91,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			}
 		}
 
-		public static string FactoryPassword
-		{
-			get
-			{
-				var overridePassword = ConfigurationManager.AppSettings["SettingsPassword"];
-				return string.IsNullOrEmpty(overridePassword) ? CoreProductName.Insert(1, "7").ToLower() :
-					overridePassword;
-			}
-		}
+		public static string FactoryPassword => CoreProductName.Insert(1, "7").ToLower();
 
 		/// <summary>
 		/// Use the CoreProductName value from the AppSettings in the application config file, if present
@@ -112,15 +105,19 @@ namespace SIL.Windows.Forms.SettingProtection
 			}
 		}
 
-		/// <summary>
-		/// Use the ProductSupportSite value from the AppSettings in the application config file, if present. Otherwise null.
-		/// </summary>
-		internal static string ProductSupportUrl
+		public static string ProductSupportUrl
 		{
-			get
+			get { return _singleton?.productSupportUrl; }
+			set
 			{
-				var productSupportUrl = ConfigurationManager.AppSettings["ProductSupportUrl"];
-				return string.IsNullOrWhiteSpace(productSupportUrl) ? null : productSupportUrl;
+				if (!string.IsNullOrEmpty(value))
+				{
+					if (_singleton == null)
+					{
+						_singleton = new SettingsProtectionSingleton();
+					}
+					_singleton.productSupportUrl = value;
+				}
 			}
 		}
 	}
