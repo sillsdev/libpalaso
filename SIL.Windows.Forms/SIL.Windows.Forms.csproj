@@ -27,7 +27,6 @@
     </PackageReference>
     <PackageReference Include="L10NSharp" Version="3.1.0-nuget0010" />
     <PackageReference Include="MarkdownDeep.NET.Patched" Version="1.5.0.1" />
-    <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
     <PackageReference Include="NAudio" Version="1.8.4" />
     <PackageReference Include="SIL.BuildTasks" Version="[2.2.0,)">
       <PrivateAssets>all</PrivateAssets>
@@ -45,6 +44,20 @@
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(OS)'=='Windows_NT'">
+    <!--These references are required to compile on Windows -->
+    <PackageReference Include="GtkSharp" Version="3.22.24.37" />
+    <PackageReference Include="Mono.Posix" Version="5.4.0.201" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(OS)'!='Windows_NT'">
+    <Reference Include="gtk-sharp" />
+    <Reference Include="gdk-sharp" />
+    <Reference Include="glib-sharp" />
+    <Reference Include="glade-sharp" />
+    <Reference Include="Mono.Posix" />
+  </ItemGroup>
+
   <ItemGroup>
     <Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\lib\Release\Interop.WIA.dll</HintPath>
@@ -52,5 +65,10 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Security" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <!-- See https://github.com/dotnet/sdk/issues/987#issuecomment-286307697 why that is needed -->
+    <AssemblySearchPaths>$(AssemblySearchPaths);{GAC}</AssemblySearchPaths>
+  </PropertyGroup>
 
 </Project>

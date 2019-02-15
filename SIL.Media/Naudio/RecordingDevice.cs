@@ -1,4 +1,3 @@
-#if !MONO
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +10,7 @@ namespace SIL.Media.Naudio
 	/// A RecordingDevice is used to select and get information about the
 	/// hardware which the record is listening to.
 	/// </summary>
-	public class RecordingDevice
+	public class RecordingDevice : IRecordingDevice
 	{
 		public string Id { get; private set; }
 		public int DeviceNumber { get; set; }
@@ -108,4 +107,3 @@ namespace SIL.Media.Naudio
 		}
 	}
 }
-#endif

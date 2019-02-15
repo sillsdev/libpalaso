@@ -4,7 +4,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
-#if MONO
 namespace SIL.Media.AlsaAudio
 {
 	/// <summary>
@@ -191,4 +190,3 @@ namespace SIL.Media.AlsaAudio
 		}
 	}
 }
-#endif

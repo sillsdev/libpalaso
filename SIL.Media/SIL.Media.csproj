@@ -327,6 +327,7 @@
     <Compile Include="Naudio\AudioRecorder.cs" />
     <Compile Include="Naudio\FileWriterThread.cs" />
     <Compile Include="Naudio\IAudioPlayer.cs" />
+    <Compile Include="Naudio\IRecordingDevice.cs" />
     <Compile Include="Naudio\RecordingDevice.cs" />
     <Compile Include="Naudio\TrimWaveStream.cs" />
     <Compile Include="Naudio\UI\AudioDeviceIcons.Designer.cs">
@@ -356,7 +357,6 @@
     <Compile Include="AlsaAudio\AudioAlsaSession.cs" />
     <Compile Include="AlsaAudio\AudioRecorder.cs" />
     <Compile Include="AlsaAudio\RecordingDevice.cs" />
-    <Compile Include="AlsaAudio\WaveFormat.cs" />
     <Compile Include="AudioFactory.cs" />
     <Compile Include="AudioNullSession.cs" />
     <Compile Include="FFmpegRunner.cs" />

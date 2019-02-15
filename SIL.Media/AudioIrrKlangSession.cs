@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2015-2017 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
-#if !MONO
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -340,4 +339,3 @@ I use an option on the constructor of the soundEngine(SoundOutputDriver.WinMM);
 
 And I set "nostreaming" and "preload" true - now it works like a charm!
  */
-#endif

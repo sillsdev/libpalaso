@@ -3,9 +3,7 @@
 using System;
 using System.Runtime.InteropServices;
 using X11;
-#if MONO
 using Mono.Unix;
-#endif
 
 namespace X11.XKlavier
 {
@@ -33,9 +31,7 @@ namespace X11.XKlavier
 		public XklEngine(IntPtr display)
 		{
 			Engine = xkl_engine_get_instance(display);
-#if MONO
 			Catalog.Init("xkeyboard-config", string.Empty);
-#endif
 		}
 
 		public void Close()
@@ -94,9 +90,7 @@ namespace X11.XKlavier
 					m_LocalizedGroupNames = new string[count];
 					for (int i = 0; i < count; i++)
 					{
-#if MONO
 						m_LocalizedGroupNames[i] = Catalog.GetString(GroupNames[i]);
-#endif
 					}
 				}
 				return m_LocalizedGroupNames;

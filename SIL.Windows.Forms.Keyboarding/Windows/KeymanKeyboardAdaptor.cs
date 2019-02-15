@@ -146,7 +146,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		{
 			CheckDisposed();
 			Dictionary<string, KeymanKeyboardDescription> curKeyboards = KeyboardController.Instance.Keyboards.OfType<KeymanKeyboardDescription>().ToDictionary(kd => kd.Id);
-#if !MONO
 			switch (InstalledKeymanVersion)
 			{
 				case KeymanVersion.Keyman10:
@@ -164,7 +163,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					}
 					break;
 			}
-#endif
 		}
 
 		private void UpdateKeyboards(Dictionary<string, KeymanKeyboardDescription> curKeyboards, IEnumerable<string> availableKeyboardNames, bool isKeyman6)
@@ -274,7 +272,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		{
 			switch (InstalledKeymanVersion)
 			{
-#if !MONO
 				case KeymanVersion.Keyman10:
 					return () =>
 					{
@@ -289,7 +286,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					var setupApp = GetKeyboardSetupApplication(out args);
 					Process.Start(setupApp, args);
 				};
-#endif
 				default:
 					throw new NotSupportedException($"No keyboard setup action defined for keyman version {InstalledKeymanVersion}");
 			}

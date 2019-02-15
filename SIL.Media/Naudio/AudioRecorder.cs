@@ -1,4 +1,3 @@
-﻿#if !MONO
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -38,7 +37,7 @@ namespace SIL.Media.Naudio
 		public SampleAggregator SampleAggregator { get; protected set; }
 		private RecordingDevice _selectedDevice;
 
-		public RecordingDevice SelectedDevice
+		public IRecordingDevice SelectedDevice
 		{
 			get
 			{
@@ -63,7 +62,7 @@ namespace SIL.Media.Naudio
 						// See the implementation of RecordingDeviceIndicator.checkNewMicTimer_Tick.
 						CloseWaveIn();
 					}
-					_selectedDevice = value;
+					_selectedDevice = value as RecordingDevice;
 					if (RecordingState != RecordingState.NotYetStarted && _selectedDevice != null)
 						BeginMonitoring();
 					if (SelectedDeviceChanged != null)
@@ -620,4 +619,3 @@ namespace SIL.Media.Naudio
 		}
 	}
 }
-#endif

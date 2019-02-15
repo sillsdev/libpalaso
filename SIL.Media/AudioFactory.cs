@@ -1,7 +1,6 @@
 using System;
-#if MONO
 using SIL.Media.AlsaAudio;
-#endif
+using SIL.PlatformUtilities;
 
 namespace SIL.Media
 {
@@ -9,11 +8,9 @@ namespace SIL.Media
 	{
 		public static ISimpleAudioSession CreateAudioSession(string filePath)
 		{
-#if MONO
-			return new AudioAlsaSession(filePath);
-#else
+			if (Platform.IsLinux)
+				return new AudioAlsaSession(filePath);
 			return new AudioIrrKlangSession(filePath);
-#endif
 		}
 
 		[Obsolete("This was a unfortunate method name. Use CreateAudioSession Instead.")]
