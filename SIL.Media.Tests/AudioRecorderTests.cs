@@ -19,6 +19,7 @@ namespace SIL.Media.Tests
 	/// I have not tried to verify that all of these tests would actually have problems on TeamCity, but it seemed
 	/// helpful to document in the usual way that they are not, in fact, run there.
 	/// </summary>
+	/// <remarks>Some of these tests will fail if a microphone isn't available.</remarks>
 	[NUnit.Framework.Category("SkipOnTeamCity")]
 	[TestFixture]
 	[NUnit.Framework.Category("AudioTests")]
