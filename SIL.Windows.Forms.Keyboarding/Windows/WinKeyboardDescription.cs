@@ -1,12 +1,8 @@
 // Copyright (c) 2013-2018 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
-using System.Linq;
-#if !MONO
 using Keyman10Interop;
 using System.Runtime.InteropServices;
-#endif
-using Microsoft.Win32;
 using SIL.Keyboarding;
 
 namespace SIL.Windows.Forms.Keyboarding.Windows

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2015-2017 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
-#if !MONO
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -142,7 +141,7 @@ namespace SIL.Media
 					IsPlaying = false; // BEFORE we raise the event! State should be valid while handling it.
 					PlaybackStopped?.Invoke(this, new EventArgs());
 				}
-				catch (Exception e)
+				catch (Exception)
 				{
 					// Try to clean things up as best we can...no easy way to test this, though.
 					// We don't want to be permanently in the playing state.
@@ -340,4 +339,3 @@ I use an option on the constructor of the soundEngine(SoundOutputDriver.WinMM);
 
 And I set "nostreaming" and "preload" true - now it works like a charm!
  */
-#endif

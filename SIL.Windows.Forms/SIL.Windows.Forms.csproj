@@ -5,7 +5,7 @@
     <RootNamespace>SIL.Windows.Forms</RootNamespace>
     <AssemblyTitle>SIL.Windows.Forms</AssemblyTitle>
     <Configurations>Debug;Release</Configurations>
-    <Description>SIL.Windows.Forms provides general UI related utilities for language software.</Description>
+    <Description>SIL.Windows.Forms contains Windows Forms classes for UI elements (controls and dialogs) that are commonly used across various SIL applications. SIL.Windows.Forms is similar to SIL.Core in that it does not contain classes that are specific to any domain.</Description>
     <Company>SIL International</Company>
     <Authors>SIL International</Authors>
     <Product>libpalaso</Product>
@@ -17,6 +17,7 @@
     <PackageOutputPath>../output</PackageOutputPath>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>../palaso.snk</AssemblyOriginatorKeyFile>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,7 +28,6 @@
     </PackageReference>
     <PackageReference Include="L10NSharp" Version="3.1.0-nuget0010" />
     <PackageReference Include="MarkdownDeep.NET.Patched" Version="1.5.0.1" />
-    <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
     <PackageReference Include="NAudio" Version="1.8.4" />
     <PackageReference Include="SIL.BuildTasks" Version="[2.2.0,)">
       <PrivateAssets>all</PrivateAssets>
@@ -35,7 +35,9 @@
     <PackageReference Include="SIL.ReleaseTasks" Version="[2.2.0,)">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="StrongNamer" Version="0.0.8" />
+    <PackageReference Include="StrongNamer" Version="0.0.8">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="TagLibSharp-patched" Version="2.2.0-beta.1" />
   </ItemGroup>
 
@@ -45,6 +47,20 @@
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(OS)'=='Windows_NT'">
+    <!--These references are required to compile on Windows -->
+    <PackageReference Include="GtkSharp" Version="3.22.24.37" />
+    <PackageReference Include="Mono.Posix" Version="5.4.0.201" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(OS)'!='Windows_NT'">
+    <Reference Include="gtk-sharp" />
+    <Reference Include="gdk-sharp" />
+    <Reference Include="glib-sharp" />
+    <Reference Include="glade-sharp" />
+    <Reference Include="Mono.Posix" />
+  </ItemGroup>
+
   <ItemGroup>
     <Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\lib\Release\Interop.WIA.dll</HintPath>
@@ -52,5 +68,10 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Security" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <!-- See https://github.com/dotnet/sdk/issues/987#issuecomment-286307697 why that is needed -->
+    <AssemblySearchPaths>$(AssemblySearchPaths);{GAC}</AssemblySearchPaths>
+  </PropertyGroup>
 
 </Project>

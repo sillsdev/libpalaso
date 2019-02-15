@@ -6,8 +6,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
+using NAudio.Wave;
+using SIL.Media.Naudio;
 
-#if MONO
 namespace SIL.Media.AlsaAudio
 {
 	/// <summary>
@@ -83,7 +84,7 @@ namespace SIL.Media.AlsaAudio
 			}
 		}
 
-		public RecordingDevice SelectedDevice { get; set; }
+		public IRecordingDevice SelectedDevice { get; set; }
 
 		public void BeginMonitoring()
 		{
@@ -142,4 +143,3 @@ namespace SIL.Media.AlsaAudio
 		public virtual WaveFormat RecordingFormat { get; set; }
 	}
 }
-#endif

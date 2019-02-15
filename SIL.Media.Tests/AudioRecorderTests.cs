@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -403,7 +403,7 @@ namespace SIL.Media.Tests
 				{
 					x.Play();
 					Thread.Sleep(100);
-				   x.StopPlaying();
+					x.StopPlaying();
 				}
 			}
 		}

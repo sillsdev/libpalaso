@@ -1,12 +1,8 @@
-﻿// Copyright (c) 2017 SIL International
+// Copyright (c) 2017 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.IO;
-#if MONO
-using SIL.Media.AlsaAudio;
-#else
 using NAudio.Wave;
-#endif
 
 namespace SIL.Media.Naudio
 {
@@ -28,7 +24,7 @@ namespace SIL.Media.Naudio
 		void BeginMonitoring();
 		void BeginRecording(string path);
 		void Stop();
-		RecordingDevice SelectedDevice { get; set; }
+		IRecordingDevice SelectedDevice { get; set; }
 		event EventHandler SelectedDeviceChanged;
 		double MicrophoneLevel { get; set; }
 		RecordingState RecordingState { get; }

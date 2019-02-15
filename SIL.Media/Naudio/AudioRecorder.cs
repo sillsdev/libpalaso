@@ -1,4 +1,3 @@
-﻿#if !MONO
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -36,9 +35,9 @@ namespace SIL.Media.Naudio
 		protected double _prevRecordedTime;
 
 		public SampleAggregator SampleAggregator { get; protected set; }
-		private RecordingDevice _selectedDevice;
+		private IRecordingDevice _selectedDevice;
 
-		public RecordingDevice SelectedDevice
+		public IRecordingDevice SelectedDevice
 		{
 			get
 			{
@@ -620,4 +619,3 @@ namespace SIL.Media.Naudio
 		}
 	}
 }
-#endif

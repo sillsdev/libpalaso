@@ -1,4 +1,3 @@
-#if !MONO
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,15 +10,15 @@ namespace SIL.Media.Naudio
 	/// A RecordingDevice is used to select and get information about the
 	/// hardware which the record is listening to.
 	/// </summary>
-	public class RecordingDevice
+	public class RecordingDevice : IRecordingDevice
 	{
-		public string Id { get; private set; }
+		public string Id { get; }
 		public int DeviceNumber { get; set; }
 		public string GenericName { get; set; }
-		public string ProductName { get { return Capabilities.ProductName; } }
+		public string ProductName => Capabilities.ProductName;
 		public WaveInCapabilities Capabilities { get; set; }
 
-		RecordingDevice(string id, int deviceNumber, string name, WaveInCapabilities capabilities)
+		private RecordingDevice(string id, int deviceNumber, string name, WaveInCapabilities capabilities)
 		{
 			Id = id;
 			DeviceNumber = deviceNumber;
@@ -27,7 +26,7 @@ namespace SIL.Media.Naudio
 			Capabilities = capabilities;
 		}
 
-		public static IEnumerable<RecordingDevice> Devices
+		public static IEnumerable<IRecordingDevice> Devices
 		{
 			get
 			{
@@ -108,4 +107,3 @@ namespace SIL.Media.Naudio
 		}
 	}
 }
-#endif
