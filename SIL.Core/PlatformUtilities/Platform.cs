@@ -319,5 +319,23 @@ namespace SIL.PlatformUtilities
 			return output.Trim();
 		}
 
+		public const string x64 = nameof(x64);
+		public const string x86 = nameof(x86);
+
+		public static string ProcessArchitecture
+		{
+			get
+			{
+#if NETSTANDARD1_6
+				// Workaround described here since the API does not exist:
+				// https://github.com/dotnet/corefx/issues/999#issuecomment-75907756
+				return IntPtr.Size == 4 ? x86 : x64;
+#else
+				return Environment.Is64BitProcess ? x64 : x86;
+#endif
+			}
+		}
+
+		public static bool IsRunning64Bit => Platform.ProcessArchitecture == Platform.x64;
 	}
 }

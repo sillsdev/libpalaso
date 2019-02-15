@@ -306,11 +306,13 @@
   <ItemGroup Condition="'$(Platform)' == 'x86' Or '$(Platform)' == 'AnyCPU'">
     <Reference Include="irrKlang.NET4">
       <HintPath>..\lib\x86\irrKlang.NET4.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(Platform)' == 'x64'">
     <Reference Include="irrKlang.NET4">
       <HintPath>..\lib\x64\irrKlang.NET4.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -484,5 +486,7 @@
   -->
   <Target Name="AfterBuild">
     <Copy SourceFiles="..\lib\$(Platform)\ikpMP3.dll;..\lib\$(Platform)\ikpFlac.dll" DestinationFolder="$(OutputPath)" Condition="'$(Platform)' == 'x64'" />
+    <Copy SourceFiles="..\lib\x64\irrKlang.NET4.dll" DestinationFolder="$(OutputPath)/lib/win-x64" />
+    <Copy SourceFiles="..\lib\x86\irrKlang.NET4.dll" DestinationFolder="$(OutputPath)/lib/win-x86" />
   </Target>
 </Project>
