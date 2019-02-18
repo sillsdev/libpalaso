@@ -8,7 +8,7 @@ Short instructions (to just make it work)
 -----------------------------------------
 To use the CrossPlatformSettings provider add the following content to a new class in the project
 for your assembly where settings are defined. All of your current settings should be modified in
-the designer to include "Palaso.Settings.CrossPlatformSettingsProvider" in the Provider property.
+the designer to include "SIL.Settings.CrossPlatformSettingsProvider" in the Provider property.
 Place the file next to the Settings.Designer.cs file and replacing the place-holders [{}] with
 appropriate info:
 
@@ -33,7 +33,7 @@ namespace [{Namespace to match your Settings.Designer.cs file}].Properties
 			foreach (SettingsProperty property in Properties)
 			{
 				Debug.Assert(property.Provider is CrossPlatformSettingsProvider,
-					"Palaso.Settings.CrossPlatformSettingsProvider should be used for " + property.Name);
+					"SIL.Settings.CrossPlatformSettingsProvider should be used for " + property.Name);
 			}
 		}
 	}
