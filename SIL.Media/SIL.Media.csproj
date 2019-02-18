@@ -4,7 +4,7 @@
     <RootNamespace>SIL.Media</RootNamespace>
     <AssemblyTitle>SIL.Media</AssemblyTitle>
     <Configurations>Debug;Release</Configurations>
-    <Description>A cross-platform audio/media library</Description>
+    <Description>SIL.Media contains Windows Forms UI elements and classes for processing audio on Windows and Linux.</Description>
     <Company>SIL International</Company>
     <Authors>SIL International</Authors>
     <Product>libpalaso</Product>
@@ -20,6 +20,7 @@
     mixed-mode assembly (contains both managed code and native code for a particular
     processor architecture) -->
     <SignAssembly>false</SignAssembly>
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GitVersionTask.alt" Version="[4.0.2-alpha-0004,)">
@@ -35,14 +36,25 @@
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="irrKlang.NET4, Version=1.0.5235.17346, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\lib\x86\irrKlang.NET4.dll</HintPath>
+    <Reference Include="irrKlang.NET4">
       <Private>false</Private>
     </Reference>
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
-<Target Name="AfterBuild" AfterTargets="Build">
-  <Copy SourceFiles="../lib/x64/irrKlang.NET4.dll;../lib/x64/ikpMP3.dll;../lib/x64/ikpFlac.dll" DestinationFolder="$(OutputPath)/net461/lib/win-x64" />
-  <Copy SourceFiles="../lib/x86/irrKlang.NET4.dll;../lib/x86/ikpMP3.dll;../lib/x86/ikpFlac.dll" DestinationFolder="$(OutputPath)/net461/lib/win-x86" />
-</Target>
+  <ItemGroup>
+    <None Include="lib/win-x64/*.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build/lib/win-x64</PackagePath>
+    </None>
+    <None Include="lib/win-x86/*.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>build/lib/win-x86</PackagePath>
+    </None>
+    <Content Include="SIL.Media.targets">
+      <Pack>true</Pack>
+      <PackagePath>build</PackagePath>
+    </Content>
+  </ItemGroup>
 </Project>
