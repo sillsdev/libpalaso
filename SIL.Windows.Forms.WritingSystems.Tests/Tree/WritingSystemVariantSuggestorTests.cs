@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using SIL.TestUtilities;
 using SIL.Windows.Forms.WritingSystems.WSTree;
 using SIL.WritingSystems;
 using SIL.WritingSystems.Tests;
@@ -8,6 +9,7 @@ using SIL.WritingSystems.Tests;
 namespace SIL.Windows.Forms.WritingSystems.Tests.Tree
 {
 	[TestFixture]
+	[OfflineSldr]
 	public class WritingSystemVariantSuggestorTests
 	{
 		[Test, Ignore("Only works if there is an ipa keyboard installed")]

@@ -23,7 +23,7 @@ namespace SIL.Linux.Logging.Tests
 			errorThread.Start();
 			IEnumerable<string> data = watcher.WaitForData();
 			Assert.That(data, Is.Not.Empty);
-			Assert.That(data.First(), Is.StringContaining("Division by zero"));
+			Assert.That(data.First(), Is.StringContaining("Division by zero").Or.StringContaining("divide by zero"));
 		}
 
 		private void DivideByZero()

@@ -45,9 +45,4 @@ namespace SIL.DictionaryServices.Tests.Model
 			}
 		}
 	}
-
-	[TestFixture]
-	public class LexEtymologyTests
-	{
-	}
 }

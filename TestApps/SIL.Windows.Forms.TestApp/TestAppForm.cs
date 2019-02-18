@@ -54,7 +54,6 @@ namespace SIL.Windows.Forms.TestApp
 				return;
 			}
 
-#if !MONO
 			using (var form = new Form())
 			{
 				var browser = new FolderBrowserControl.FolderBrowserControl();
@@ -68,7 +67,6 @@ namespace SIL.Windows.Forms.TestApp
 				form.Controls.Add(browser);
 				form.ShowDialog();
 			}
-#endif
 		}
 
 		private void OnLanguageLookupDialogClicked(object sender, EventArgs e)
@@ -324,10 +322,14 @@ and displays it as HTML.
 					Application.DoEvents();
 				}
 				session.StopRecordingAndSaveAsWav();
-				(session as ISimpleAudioWithEvents).PlaybackStopped += (o, args) =>
+				if (session is ISimpleAudioWithEvents)
 				{
-					this.Invoke((Action)(()=> MessageBox.Show("play stopped")));
-				};
+					(session as ISimpleAudioWithEvents).PlaybackStopped += (o, args) =>
+					{
+						this.Invoke((Action) (() => MessageBox.Show("play stopped")));
+					};
+				}
+
 				session.Play();
 				MessageBox.Show("play started");
 			}

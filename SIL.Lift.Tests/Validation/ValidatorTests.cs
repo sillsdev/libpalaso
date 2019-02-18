@@ -15,7 +15,7 @@ namespace SIL.Lift.Tests.Validation
 		public void LiftVersion_MatchesEmbeddedSchemaVersion()
 		{
 			XmlDocument doc = new XmlDocument();
-			doc.Load(typeof (LiftMultiText).Assembly.GetManifestResourceStream("Palaso.Lift.Validation.lift.rng"));
+			doc.Load(typeof (LiftMultiText).Assembly.GetManifestResourceStream("SIL.Lift.Validation.lift.rng"));
 			string query = String.Format("//x:attribute/x:value[.='{0}']", Validator.LiftVersion);
 			XmlNamespaceManager m = new XmlNamespaceManager(doc.NameTable);
 			m.AddNamespace("x", "http://relaxng.org/ns/structure/1.0");

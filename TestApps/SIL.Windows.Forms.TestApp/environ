@@ -5,8 +5,8 @@
 
 # the sourcing script should cd/pushd to the directory containing this script
 BASE="$(pwd)"
-[ -z "$BUILD" ] && BUILD=DebugMono
-[ -z "$MONO_PREFIX" ] && MONO_PREFIX=/opt/mono-sil
+[ -z "$BUILD" ] && BUILD=Debug
+[ -z "$MONO_PREFIX" ] && MONO_PREFIX=/opt/mono5-sil
 
 # Dependency locations
 # Search for xulrunner and geckofx, select the best, and add its location to LD_LIBRARY_PATH.
