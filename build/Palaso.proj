@@ -1,66 +1,43 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build;Pack">
 	<PropertyGroup>
 		<RootDir Condition="'$(teamcity_build_checkoutDir)' == '' And '$(RootDir)'==''">$(MSBuildProjectDirectory)/..</RootDir>
 		<RootDir Condition="'$(teamcity_build_checkoutDir)' != ''">$(teamcity_build_checkoutDir)</RootDir>
-		<BUILD_COUNTER Condition="'$(BUILD_COUNTER)'==''">1</BUILD_COUNTER>
-		<!-- Note, after some thought, we've decided this is the best place to keep the version number (not on TeamCity, not in the assemblies). -->
-		<Version>6.0.0</Version>
+		<Solution>Palaso.sln</Solution>
+		<SolutionPath>$(RootDir)/$(Solution)</SolutionPath>
+		<Configuration Condition="'$(Configuration)'==''">Release</Configuration>
+		<ExtraExcludeCategories Condition="'$(OS)'!='Windows_NT'">KnownMonoIssue,</ExtraExcludeCategories>
+		<ExtraExcludeCategories Condition="'$(teamcity_version)' != '' Or '$(JENKINS_URL)' != ''">SkipOnTeamCity,$(ExtraExcludeCategories)</ExtraExcludeCategories>
+		<useNUnit-x86 Condition="'$(OS)'=='Windows_NT'">true</useNUnit-x86>
+		<useNUnit-x86 Condition="'$(OS)'!='Windows_NT'">false</useNUnit-x86>
+		<Platform Condition="'$(Platform)'==''">Any CPU</Platform>
+		<RestartBuild Condition="!Exists('$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll')">true</RestartBuild>
+		<RestartBuild Condition="Exists('$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll')">false</RestartBuild>
 	</PropertyGroup>
 
-	<UsingTask TaskName="Archive" AssemblyFile="$(RootDir)/packages/SIL.BuildTasks.1.0.0/tools/SIL.BuildTasks.dll" />
-	<UsingTask TaskName="FileUpdate" AssemblyFile="$(RootDir)/packages/SIL.BuildTasks.1.0.0/tools/SIL.BuildTasks.dll" />
-	<UsingTask TaskName="NUnit" AssemblyFile="$(RootDir)/packages/SIL.BuildTasks.1.0.0/tools/SIL.BuildTasks.dll" />
+	<UsingTask TaskName="NUnit" AssemblyFile="$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll"
+		Condition="Exists('$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll')"/>
 
 	<Import Project="NuGet.targets"/>
 
-	<PropertyGroup>
-		<LargeFilesDir Condition="'$(OS)'=='Windows_NT' And '$(LargeFilesDir)'==''">c:\builddownloads</LargeFilesDir>
-		<Solution>Palaso.sln</Solution>
-		<SolutionPath>$(RootDir)/$(Solution)</SolutionPath>
-		<ApplicationName>PalasoLibrary</ApplicationName>
-		<ApplicationNameLC>libpalaso</ApplicationNameLC>
-		<Configuration Condition="'$(OS)'!='Windows_NT' And '$(Configuration)'==''">ReleaseMonoStrongName</Configuration>
-		<Configuration Condition="'$(OS)'=='Windows_NT' And '$(Configuration)'==''">ReleaseStrongName</Configuration>
-		<ExtraExcludeCategories Condition="'$(OS)'!='Windows_NT'">KnownMonoIssue,</ExtraExcludeCategories>
-		<ExtraExcludeCategories Condition="'$(teamcity_version)' != ''">SkipOnTeamCity,$(ExtraExcludeCategories)</ExtraExcludeCategories>
-		<useNUnit-x86 Condition="'$(OS)'=='Windows_NT'">true</useNUnit-x86>
-		<useNUnit-x86 Condition="'$(OS)'!='Windows_NT'">false</useNUnit-x86>
-		<Platform Condition="'$(OS)'!='Windows_NT' And '$(Platform)'==''">Any CPU</Platform>
-		<Platform Condition="'$(OS)'=='Windows_NT' And '$(Platform)'==''">Mixed Platforms</Platform>
-	</PropertyGroup>
-
-	<Target Name="VersionNumbers">
-		<CreateProperty Value="$(Version.Substring(0, $(Version.LastIndexOf('.')))).0.0">
-			<Output PropertyName="AssemblyVersion" TaskParameter="Value"/>
-		</CreateProperty>
-
-		<Message Text="Assembly Version: $(AssemblyVersion)" Importance="high"/>
-
-		<Message Text="BUILD_COUNTER: $(BUILD_COUNTER)" Importance="high"/>
-
-		<CreateProperty Value="$(Version).$(BUILD_COUNTER)">
-			<Output PropertyName="FileVersion" TaskParameter="Value"/>
-		</CreateProperty>
-
-		<Message Text="File Version: $(FileVersion)" Importance="high"/>
-
-		<CreateProperty Value="$(Version)-$(BUILD_COUNTER)">
-			<Output PropertyName="PackageVersion" TaskParameter="Value"/>
-		</CreateProperty>
-
-		<Message Text="Package Version: $(PackageVersion)" Importance="high"/>
+	<Target Name="Build">
+		<CallTarget Targets="RestoreBuildTasks" />
+		<CallTarget Targets="BuildInternal" Condition="!$(RestartBuild)" />
+		<MSBuild Projects="$(MSBuildProjectFullPath)" Targets="BuildInternal"
+			Properties="Configuration=$(Configuration);RootDir=$(RootDir);Platform=$(Platform)"
+			Condition="$(RestartBuild)" />
 	</Target>
 
-	<PropertyGroup>
-		<OutputDir>$(RootDir)/output/$(Configuration)</OutputDir>
-	</PropertyGroup>
-
-	<Target Name="Build">
+	<Target Name="BuildInternal">
 		<CallTarget Targets="Clean"/>
 		<CallTarget Targets="Compile"/>
 		<Message Text="Build Complete"/>
 	</Target>
 
+	<Target Name="RestoreBuildTasks" DependsOnTargets="CheckPrerequisites">
+		<Message Text="RestartBuild=$(RestartBuild)" />
+		<Exec Command='$(NuGetCommand) install NUnit.Runners.Net4 -version 2.6.4 -solutionDirectory "$(RootDir)"' />
+		<Exec Command='$(NuGetCommand) install SIL.BuildTasks -excludeVersion -version 2.2.0 -solutionDirectory "$(RootDir)"' />
+	</Target>
 
 	<ItemGroup>
 		<ExistingObjectFiles
@@ -86,7 +63,10 @@
 	</Target>
 
 	<Target Name="Test" DependsOnTargets="Build">
-		<CallTarget Targets="TestOnly"/>
+		<CallTarget Targets="TestOnly" Condition="!$(RestartBuild)" />
+		<MSBuild Projects="$(MSBuildProjectFullPath)" Targets="TestOnly"
+			Properties="Configuration=$(Configuration);RootDir=$(RootDir);Platform=$(Platform)"
+			Condition="$(RestartBuild)" />
 	</Target>
 
 	<Target Name="TestOnly">
@@ -95,7 +75,7 @@
 			<NUnitRunnerPackage>$(RootDir)/packages/NUnit.Runners.Net4.$(NUnitVersion)</NUnitRunnerPackage>
 		</PropertyGroup>
 		<ItemGroup>
-			<TestAssemblies Include="$(RootDir)/output/$(Configuration)/*.Tests.dll"/>
+			<TestAssemblies Include="$(RootDir)/output/$(Configuration)/net4*/*.Tests.dll;$(RootDir)/output/$(Configuration)/net4*/*.Tests.exe"/>
 			<NUnitAddinFiles Include="$(teamcity_dotnet_nunitaddin)-$(NUnitVersion).*" />
 		</ItemGroup>
 
@@ -115,59 +95,9 @@
 			Condition="'$(teamcity_version)' != '' and '$(OS)'!='Windows_NT'"/>
 	</Target>
 
-	<!-- Source Package - used by wesay -->
-	<ItemGroup>
-		<ExistingPackageFiles Include="$(OutputDir)/$(ApplicationNameLC)*.tar.gz" />
-		<ExistingPackageFiles Include="$(OutputDir)/$(ApplicationNameLC)-*" />
-		<ExistingPackageBuildFiles Include="$(OutputDir)/Package/**/*" />
-		<ExistingPackageBuildFiles Include="$(OutputDir)/Package/**" />
-	</ItemGroup>
-	<Target Name="PackageClean">
-		<Delete Files="@(ExistingPackageFiles)" />
-		<Delete Files="@(ExistingPackageBuildFiles)" />
-	</Target>
-
-	<ItemGroup>
-		<Source Include="$(RootDir)/**/*" Exclude="$(RootDir)/output/**/*;$(RootDir)/.hg/**/*;$(RootDir)/.git/**/*;$(RootDir)/lib/Debug/**/*;$(RootDir)/lib/Release/**/*;$(RootDir)/lib/*Configuration*/**/*;$(RootDir)/**/*~" />
-	</ItemGroup>
-
-	<Target Name="SourcePackage" DependsOnTargets="Clean;PackageClean"
-		Condition="'$(OS)'!='Windows_NT'">
-		<CreateProperty Value="$(OutputDir)/$(ApplicationNameLC)-$(Version).tar.gz">
-			<Output TaskParameter="Value" PropertyName="SourcePackageFileName" />
-		</CreateProperty>
-		<CreateProperty Value="$(OutputDir)/$(ApplicationNameLC)-$(Version)">
-			<Output TaskParameter="Value" PropertyName="TarBaseDir" />
-		</CreateProperty>
-		<Message Text="Archive source to '$(SourcePackageFileName)'" />
-		<Archive
-			Command="Tar"
-			InputFilePaths="@(Source)"
-			OutputFileName="$(SourcePackageFileName)"
-			BasePath="$(RootDir)"
-			WorkingDir="$(RootDir)"
-		/>
-		<MakeDir Directories="$(TarBaseDir)" />
-		<Exec
-			Command="tar -xzf $(SourcePackageFileName)"
-			WorkingDirectory="$(TarBaseDir)"
-		/>
-		<Exec
-			Command="tar -czf $(SourcePackageFileName) $(ApplicationNameLC)-$(Version)"
-			WorkingDirectory="$(OutputDir)"
-		/>
-	</Target>
-
-	<ItemGroup>
-		<PackProjects Include="$(RootDir)/SIL.Core/SIL.Core.csproj" />
-		<PackProjects Include="$(RootDir)/SIL.DblBundle/SIL.DblBundle.csproj" />
-		<PackProjects Include="$(RootDir)/SIL.Scripture/SIL.Scripture.csproj" />
-		<PackProjects Include="$(RootDir)/SIL.WritingSystems/SIL.WritingSystems.csproj" />
-	</ItemGroup>
-
 	<Target Name="Pack" DependsOnTargets="RestorePackages">
 		<MSBuild
-			Projects="@(PackProjects)"
+			Projects="$(SolutionPath)"
 			Targets="pack"
 			Properties="Configuration=$(Configuration)" />
 	</Target>
