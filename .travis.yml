@@ -1,0 +1,8 @@
+language: csharp
+os: linux
+dist: xenial
+
+jobs:
+  include:
+    - stage: test
+      script: msbuild /t:Test build/Palaso.proj
