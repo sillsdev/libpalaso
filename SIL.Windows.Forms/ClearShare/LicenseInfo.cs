@@ -25,7 +25,7 @@ namespace SIL.Windows.Forms.ClearShare
 
 		/// <summary>
 		/// A compact form of of this license that doesn't introduce any new text (though the license may itself have text)
-		/// E.g. CC-BY-NC
+		/// E.g. "CC BY-NC"
 		/// </summary>
 		public abstract string GetMinimalFormForCredits(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed);
 
