@@ -38,7 +38,8 @@ namespace SIL.WritingSystems
 			var variants = new List<VariantSubtag>();
 			foreach (string ianaSubtagAsString in ianaSubtagsAsStrings)
 			{
-				string[] subTagComponents = ianaSubtagAsString.Replace("\r\n", "\n").Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
+				string[] subTagComponents = ianaSubtagAsString.Replace("\r\n", "\n").Split(new[] { "\n" },
+					StringSplitOptions.RemoveEmptyEntries);
 
 				if (subTagComponents[0].Contains("File-Date"))
 				{
@@ -79,7 +80,8 @@ namespace SIL.WritingSystems
 							subtag = value;
 							break;
 						case "Description":
-							description = SubTagComponentDescription(component); ; // so that the description spread over 2 lines can be appended to
+							// so that the description spread over 2 lines can be appended to
+							description = SubTagComponentDescription(component);
 							descriptions.Add(description);
 							break;
 						case "Deprecated":
@@ -179,7 +181,7 @@ namespace SIL.WritingSystems
 
 		public static void AddScript(string script, string description)
 		{
-			var scriptTag = new ScriptSubtag(script, description, false, false);
+			var scriptTag = new ScriptSubtag(script, description, IsPrivateUseScriptCode(script), false);
 			RegisteredScripts.Add(scriptTag);
 		}
 

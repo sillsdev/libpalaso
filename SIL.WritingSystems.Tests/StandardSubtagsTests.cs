@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using NUnit.Framework;
 
 namespace SIL.WritingSystems.Tests
@@ -243,6 +243,18 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(pinyinPrefixes, Has.Length.EqualTo(2));
 			Assert.That(pinyinPrefixes, Has.Member("zh-Latn"));
 			Assert.That(pinyinPrefixes, Has.Member("bo-Latn"));
+		}
+
+		[TestCase("Qaaa", true)]
+		[TestCase("Qabx", true)]
+		[TestCase("Qaby", false)] // Valid script code that will is unlikely to be registered
+		[TestCase("A1B2", false)] // Valid script code that will is unlikely to be registered
+		public void VerifyAddedPrivateUseScriptsMarkedProperly(string scriptCode, bool expectedValue)
+		{
+			StandardSubtags.RegisteredScripts.Remove(scriptCode);
+			StandardSubtags.AddScript(scriptCode, "description");
+			Assert.AreEqual(StandardSubtags.RegisteredScripts[scriptCode].IsPrivateUse, expectedValue);
+			StandardSubtags.RegisteredScripts.Remove(scriptCode);
 		}
 	}
 }
