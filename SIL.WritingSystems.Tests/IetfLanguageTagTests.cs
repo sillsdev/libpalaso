@@ -462,7 +462,6 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(variantSubtags, Is.Empty);
 		}
 
-
 		[Test]
 		public void TryGetSubtags_XKalFake_ReturnsKalFake()
 		{
@@ -477,6 +476,40 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(scriptSubtag, Is.EqualTo((ScriptSubtag) "Fake"));
 			Assert.That(regionSubtag, Is.Null);
 			Assert.That(variantSubtags, Is.Empty);
+		}
+
+		[Test]
+		public void TryGetSubtags_FullPUAConventionWithVariantAndPUAVariant_ReturnsAllParts()
+		{
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			Assert.That(IetfLanguageTag.TryGetSubtags("qaa-Qaaa-QM-fonipa-x-kal-Fake-RG-extravar",
+				out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags), Is.True);
+			// SUT
+			Assert.That(languageSubtag, Is.EqualTo((LanguageSubtag) "kal"));
+			Assert.That(scriptSubtag, Is.EqualTo((ScriptSubtag) "Fake"));
+			Assert.That(regionSubtag, Is.EqualTo((RegionSubtag) "RG"));
+			CollectionAssert.IsNotEmpty(variantSubtags);
+			CollectionAssert.AreEquivalent(new[] {"International Phonetic Alphabet", "extravar"},
+				variantSubtags.Select(x => x.ToString()));
+		}
+
+		[Test]
+		public void TryGetSubtags_InvalidConventionForScript_ReturnsPrivateUseScript()
+		{
+			LanguageSubtag languageSubtag;
+			ScriptSubtag scriptSubtag;
+			RegionSubtag regionSubtag;
+			IEnumerable<VariantSubtag> variantSubtags;
+			Assert.That(IetfLanguageTag.TryGetSubtags("en-Qaaa-x-toolong",
+				out languageSubtag, out scriptSubtag, out regionSubtag, out variantSubtags), Is.True);
+			Assert.That(languageSubtag, Is.EqualTo((LanguageSubtag) "en"));
+			Assert.IsNull(regionSubtag);
+			// SUT
+			Assert.That(scriptSubtag, Is.EqualTo((ScriptSubtag) "Qaaa"));
+			Assert.IsTrue(scriptSubtag.IsPrivateUse);
 		}
 
 		[Test]
