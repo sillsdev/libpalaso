@@ -990,7 +990,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				{
 					return SelectionsForSpecialCombo.UnlistedLanguageDetails;
 				}
-				if (_currentWritingSystem.Script != null
+				if ((_currentWritingSystem.Script != null && !IetfLanguageTag.IsScriptImplied(_currentWritingSystem.LanguageTag))
 					|| _currentWritingSystem.Region != null
 					|| _currentWritingSystem.Variants.Count > 0
 				)
