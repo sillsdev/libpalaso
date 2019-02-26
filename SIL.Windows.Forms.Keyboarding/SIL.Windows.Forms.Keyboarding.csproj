@@ -20,14 +20,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitVersionTask.alt" Version="[4.0.2-alpha-0004,)">
+    <PackageReference Include="GitVersionTask.alt" Version="4.0.2-alpha-0006">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="ibusdotnet" Version="2.0.0.20771" />
     <PackageReference Include="icu.net" Version="2.5.4" />
     <PackageReference Include="L10NSharp" Version="3.1.0-nuget0010" />
-    <PackageReference Include="Mono.Posix" Version="5.4.0.201"
-                      Condition="'$(OS)' == 'Windows_NT'" />
+    <PackageReference Include="Mono.Posix" Version="5.4.0.201" Condition="'$(OS)' == 'Windows_NT'" />
     <PackageReference Include="SIL.ReleaseTasks" Version="[2.2.0,)">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
