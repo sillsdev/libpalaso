@@ -779,6 +779,15 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		}
 
 		[Test]
+		public void SelectionForSpecialCombo_HasImplicitScript_GivesNone()
+		{
+			_model.AddNew();
+			_model.CurrentIso = "en";
+			_model.CurrentScriptCode = "Latn";
+			Assert.AreEqual(WritingSystemSetupModel.SelectionsForSpecialCombo.None, _model.SelectionForSpecialCombo);
+		}
+
+		[Test]
 		public void VerboseDescriptionWhenNoSubtagsSet()
 		{
 			_model.CurrentDefinition = new WritingSystemDefinition();
