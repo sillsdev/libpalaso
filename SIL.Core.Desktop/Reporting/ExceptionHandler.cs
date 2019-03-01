@@ -17,6 +17,8 @@ namespace SIL.Reporting
 
 		private static ExceptionHandler _singleton;
 
+		protected static bool _showCloseBox;
+
 		// ------------------------------------------------------------------------------------
 		//We removed all references to Winforms from Palaso.dll but our error reporting relied heavily on it.
 		//Not wanting to break existing applications we have now added this class initializer which will
@@ -27,12 +29,14 @@ namespace SIL.Reporting
 		/// Initialize the ExceptionHandler. By default, the exceptionhandler will be initialized with a ConsoleExceptionHandler
 		/// unless he entry assembly uses a dependency on SIL.Windows.Forms.dll. In that case we default to the WinFormsExceptionHandler
 		/// </summary>
-		public static void Init()
+		/// <param name="showCloseBox">Error dialogs will show the close X in the upper right corner.</param>
+		public static void Init(bool showCloseBox = false)
 		{
 			if (_singleton == null)
 			{
 				//If we can't find the WinFormsExceptionHandler we'll use the Console
 				_singleton = GetObjectFromSilWindowsForms<ExceptionHandler>() ?? new ConsoleExceptionHandler();
+				_showCloseBox = showCloseBox;
 			}
 			else { throw new InvalidOperationException("An ExceptionHandler has already been set."); }
 		}

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Configuration;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -130,7 +130,7 @@ namespace SIL.Windows.Forms.Reporting
 					&& (uint)(((ExternalException)exception).ErrorCode) == 0x8007000E) // E_OUTOFMEMORY
 				{
 					if (showUI)
-						ExceptionReportingDialog.ReportException(exception);//, parent);
+						ExceptionReportingDialog.ReportException(exception, _showCloseBox);//, parent);
 					else
 					{
 						Trace.Fail("Out of memory");
@@ -147,7 +147,7 @@ namespace SIL.Windows.Forms.Reporting
 					{
 						// bool fIsLethal = !(exception is Reporting.ConfigurationException);
 						//ErrorReporter.ReportException(exception, parent, fIsLethal);
-						ExceptionReportingDialog.ReportException(exception);
+						ExceptionReportingDialog.ReportException(exception, _showCloseBox);
 						return false;
 					}
 					else

@@ -50,6 +50,7 @@ namespace SIL.Windows.Forms.Reporting
 		private TextBox m_reproduce;
 
 		private bool _isLethal;
+		private bool _showCloseBox;
 
 		private Button _sendAndCloseButton;
 		private TextBox _notificationText;
@@ -78,9 +79,10 @@ namespace SIL.Windows.Forms.Reporting
 
 		#endregion
 
-		protected ExceptionReportingDialog(bool isLethal)
+		protected ExceptionReportingDialog(bool isLethal, bool showCloseBox = false)
 		{
 			_isLethal = isLethal;
+			_showCloseBox = showCloseBox;
 		}
 
 		#region IDisposable override
@@ -257,6 +259,7 @@ namespace SIL.Windows.Forms.Reporting
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "ExceptionReportingDialog";
+			this.ShowIcon = false;
 			this.TopMost = true;
 			this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ExceptionReportingDialog_KeyPress);
 			this.ResumeLayout(false);
@@ -298,9 +301,9 @@ namespace SIL.Windows.Forms.Reporting
 		/// </summary>
 		/// <param name="error">the exception you want to report</param>
 		/// ------------------------------------------------------------------------------------
-		internal static void ReportException(Exception error)
+		internal static void ReportException(Exception error, bool showCloseBox = false)
 		{
-			ReportException(error, null);
+			ReportException(error, null, showCloseBox);
 		}
 
 		/// <summary>
@@ -308,9 +311,9 @@ namespace SIL.Windows.Forms.Reporting
 		/// </summary>
 		/// <param name="error"></param>
 		/// <param name="parent"></param>
-		internal static void ReportException(Exception error, Form parent)
+		internal static void ReportException(Exception error, Form parent, bool showCloseBox = false)
 		{
-			ReportException(error, null, true);
+			ReportException(error, null, true, showCloseBox);
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -322,7 +325,8 @@ namespace SIL.Windows.Forms.Reporting
 		/// show modally on)</param>
 		/// ------------------------------------------------------------------------------------
 		/// <param name="isLethal"></param>
-		internal static void ReportException(Exception error, Form parent, bool isLethal)
+		/// <param name="showCloseBox">Includes the Close X icon in the top-right corner.</param>
+		internal static void ReportException(Exception error, Form parent, bool isLethal, bool showCloseBox = false)
 		{
 			if (s_doIgnoreReport)
 			{
@@ -334,13 +338,13 @@ namespace SIL.Windows.Forms.Reporting
 				return;            // ignore message if we are showing from a previous error
 			}
 
-			using (ExceptionReportingDialog dlg = new ExceptionReportingDialog(isLethal))
+			using (ExceptionReportingDialog dlg = new ExceptionReportingDialog(isLethal, showCloseBox))
 			{
 				dlg.Report(error, parent);
 			}
 		}
 
-		internal static void ReportMessage(string message, StackTrace stack, bool isLethal)
+		internal static void ReportMessage(string message, StackTrace stack, bool isLethal, bool showCloseBox = false)
 		{
 			if (s_doIgnoreReport)
 			{
@@ -352,13 +356,13 @@ namespace SIL.Windows.Forms.Reporting
 				return;            // ignore message if we are showing from a previous error
 			}
 
-			using (ExceptionReportingDialog dlg = new ExceptionReportingDialog(isLethal))
+			using (ExceptionReportingDialog dlg = new ExceptionReportingDialog(isLethal, showCloseBox))
 			{
 				dlg.Report(message, string.Empty, stack, null);
 			}
 		}
 
-		internal static void ReportMessage(string message, Exception error, bool isLethal)
+		internal static void ReportMessage(string message, Exception error, bool isLethal, bool showCloseBox = false)
 		{
 			if (s_doIgnoreReport)
 			{
@@ -370,7 +374,7 @@ namespace SIL.Windows.Forms.Reporting
 				return;            // ignore message if we are showing from a previous error
 			}
 
-			using (ExceptionReportingDialog dlg = new ExceptionReportingDialog(isLethal))
+			using (ExceptionReportingDialog dlg = new ExceptionReportingDialog(isLethal, showCloseBox))
 			{
 				dlg.Report(message, null, error,null);
 			}
@@ -609,6 +613,8 @@ namespace SIL.Windows.Forms.Reporting
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
+			ControlBox = _showCloseBox;
+			ShowIcon = false; // Showing the Control box ("X") also shows a default icon.
 			_emailAddress.Text = ErrorReport.EmailAddress;
 			SetupMethodCombo();
 
