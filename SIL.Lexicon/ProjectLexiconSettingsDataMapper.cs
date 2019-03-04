@@ -1,4 +1,4 @@
-﻿using System.Xml.Linq;
+using System.Xml.Linq;
 
 namespace SIL.Lexicon
 {
@@ -19,7 +19,10 @@ namespace SIL.Lexicon
 
 			XElement wssElem = settingsElem.Element("WritingSystems");
 			if (wssElem != null)
+			{
 				settings.AddWritingSystemsToSldr = (bool?) wssElem.Attribute("addToSldr") ?? false;
+				settings.AddEnableProjectSharing = (bool?)wssElem.Attribute("addEnableProjectSharing") ?? false;
+			}
 
 			settings.AcceptChanges();
 		}
@@ -38,6 +41,7 @@ namespace SIL.Lexicon
 				settingsElem.Add(wssElem);
 			}
 			wssElem.SetAttributeValue("addToSldr", settings.AddWritingSystemsToSldr);
+			wssElem.SetAttributeValue("addEnableProjectSharing", settings.AddEnableProjectSharing);
 			_settingsStore.SaveSettings(settingsElem);
 			settings.AcceptChanges();
 		}

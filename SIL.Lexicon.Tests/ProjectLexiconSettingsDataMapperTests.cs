@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Xml.Linq;
 using NUnit.Framework;
 
@@ -12,7 +12,7 @@ namespace SIL.Lexicon.Tests
 		{
 			const string projectSettingsXml =
 @"<ProjectLexiconSettings>
-  <WritingSystems addToSldr=""true"">
+  <WritingSystems addToSldr=""true"" addEnableProjectSharing=""true"">
     <WritingSystem id=""fr-FR"">
       <SpellCheckingId>fr_FR</SpellCheckingId>
       <LegacyMapping>converter</LegacyMapping>
@@ -26,6 +26,7 @@ namespace SIL.Lexicon.Tests
 			var settings = new ProjectLexiconSettings();
 			projectSettingsDataMapper.Read(settings);
 			Assert.That(settings.AddWritingSystemsToSldr, Is.True);
+			Assert.That(settings.AddEnableProjectSharing, Is.True);
 		}
 
 		[Test]
@@ -45,12 +46,12 @@ namespace SIL.Lexicon.Tests
 			var settingsStore = new MemorySettingsStore();
 			var projectSettingsDataMapper = new ProjectLexiconSettingsDataMapper(settingsStore);
 
-			var settings = new ProjectLexiconSettings {AddWritingSystemsToSldr = true};
+			var settings = new ProjectLexiconSettings {AddWritingSystemsToSldr = true, AddEnableProjectSharing = true};
 			projectSettingsDataMapper.Write(settings);
 
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
 @"<ProjectLexiconSettings>
-  <WritingSystems addToSldr=""true"" />
+  <WritingSystems addToSldr=""true"" addEnableProjectSharing=""true"" />
 </ProjectLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 		}
 
@@ -59,7 +60,7 @@ namespace SIL.Lexicon.Tests
 		{
 			const string projectSettingsXml =
 @"<ProjectLexiconSettings>
-  <WritingSystems addToSldr=""false"">
+  <WritingSystems addToSldr=""false"" addEnableProjectSharing=""false"">
     <WritingSystem id=""fr-FR"">
       <SpellCheckingId>fr_FR</SpellCheckingId>
       <LegacyMapping>converter</LegacyMapping>
@@ -70,12 +71,12 @@ namespace SIL.Lexicon.Tests
 
 			var settingsStore = new MemorySettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
 			var projectSettingsDataMapper = new ProjectLexiconSettingsDataMapper(settingsStore);
-			var settings = new ProjectLexiconSettings {AddWritingSystemsToSldr = true};
+			var settings = new ProjectLexiconSettings {AddWritingSystemsToSldr = true, AddEnableProjectSharing = true };
 			projectSettingsDataMapper.Write(settings);
 
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
 @"<ProjectLexiconSettings>
-  <WritingSystems addToSldr=""true"">
+  <WritingSystems addToSldr=""true"" addEnableProjectSharing=""true"">
     <WritingSystem id=""fr-FR"">
       <SpellCheckingId>fr_FR</SpellCheckingId>
       <LegacyMapping>converter</LegacyMapping>
