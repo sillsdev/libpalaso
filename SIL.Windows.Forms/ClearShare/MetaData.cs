@@ -780,6 +780,15 @@ namespace SIL.Windows.Forms.ClearShare
 
 		public void SetCopyrightNotice(string year, string by)
 		{
+			if ((License is CreativeCommonsLicense) && !((CreativeCommonsLicense) License).AttributionRequired)
+			{
+				// Public Domain, no copyright as such.
+				if (!string.IsNullOrEmpty(year))
+					CopyrightNotice = by + ", " + year;
+				else
+					CopyrightNotice = by;
+				return;
+			}
 			if(!string.IsNullOrEmpty(year))
 				CopyrightNotice = "Copyright © " + year + ", " + by;
 			else
