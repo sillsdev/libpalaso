@@ -152,6 +152,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			_usingRepository = false;
 			LockedSpecialCombo = lockedSpecialComboSelection;
 			DisplayScriptRegionVariantWarningLabel = displayScriptRegionVariantWarningLabel;
+			SetCurrentCollationRulesTypeFromDefinition();
 		}
 
 		public IEnumerable<IKeyboardDefinition> KnownKeyboards
