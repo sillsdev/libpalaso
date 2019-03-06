@@ -1196,10 +1196,9 @@
         "full": "acn-Latn-CN", 
         "iana": "Achang", 
         "iso639_3": "acn", 
-        "name": "Ngochang", 
+        "name": "Achang", 
         "names": [
             "Acang", 
-            "Achang", 
             "Achung", 
             "Ach’ang", 
             "Ahchan", 
@@ -1214,6 +1213,7 @@
             "Ngac’ang", 
             "Ngatsang", 
             "Ngo Chang", 
+            "Ngochang", 
             "Tai Sa’", 
             "Xiandao"
         ], 
@@ -1618,11 +1618,10 @@
         "full": "adi-Latn-IN", 
         "iana": "Adi", 
         "iso639_3": "adi", 
-        "name": "Luoba, Boga’er", 
+        "name": "Adi", 
         "names": [
             "Abhor", 
             "Abor", 
-            "Adi", 
             "Adi-Bokar", 
             "Bengni-Boga’er", 
             "Boga’er", 
@@ -1630,7 +1629,8 @@
             "Bokar", 
             "Lho-Pa", 
             "Lhoba", 
-            "Luoba"
+            "Luoba", 
+            "Luoba, Boga’er"
         ], 
         "region": "IN", 
         "regionname": "India", 
@@ -1791,6 +1791,19 @@
             "ads-GH", 
             "ads-Latn"
         ]
+    }, 
+    {
+        "full": "ads-Zxxx-GH", 
+        "iana": "Adamorobe Sign Language", 
+        "iso639_3": "ads", 
+        "name": "Adamorobe Sign Language", 
+        "names": [
+            "AdaSL"
+        ], 
+        "region": "GH", 
+        "regionname": "Ghana", 
+        "sldr": false, 
+        "tag": "ads-Zxxx"
     }, 
     {
         "full": "adt-Latn-AU", 
@@ -3520,10 +3533,9 @@
         "full": "aig-Latn-AG", 
         "iana": "Antigua and Barbuda Creole English", 
         "iso639_3": "aig", 
-        "name": "Simaatn Creole English", 
+        "name": "Antigua and Barbuda Creole English", 
         "names": [
             "Anguillan Creole English", 
-            "Antigua and Barbuda Creole English", 
             "Broken English", 
             "Creole", 
             "Dialect", 
@@ -3534,6 +3546,7 @@
             "Montserrat Creole English", 
             "Patwa", 
             "Saint Kitts Creole English", 
+            "Simaatn Creole English", 
             "Sint Maarten Creole English"
         ], 
         "region": "AG", 
@@ -4078,16 +4091,16 @@
         "full": "ake-Latn-GY", 
         "iana": "Akawaio", 
         "iso639_3": "ake", 
-        "name": "Ingarikó", 
+        "name": "Akawaio", 
         "names": [
             "Acahuayo", 
             "Acawayo", 
             "Acewaio", 
             "Akawai", 
-            "Akawaio", 
             "Akawayo", 
             "Akwaio", 
             "Ingariko", 
+            "Ingarikó", 
             "Kapon", 
             "Kapóng", 
             "Patamona", 
@@ -7288,7 +7301,6 @@
         "name": "Arabic", 
         "region": "SA", 
         "regionname": "Saudi Arabia", 
-        "regions": "??", 
         "sldr": false, 
         "tag": "ar-Syrc"
     }, 
@@ -7375,7 +7387,7 @@
         "tag": "arc-Palm"
     }, 
     {
-        "full": "arc-Syrc-??", 
+        "full": "arc-Syrc-XX", 
         "iana": [
             "Official Aramaic (700-300 BCE)", 
             "Imperial Aramaic (700-300 BCE)"
@@ -7385,7 +7397,7 @@
         "names": [
             "Imperial Aramaic (700-300 BCE)"
         ], 
-        "region": "??", 
+        "region": "XX", 
         "sldr": false, 
         "tag": "arc-Syrc"
     }, 
@@ -7948,6 +7960,38 @@
             "ase-US", 
             "ase-Sgnw"
         ]
+    }, 
+    {
+        "full": "ase-Zxxx-US", 
+        "iana": "American Sign Language", 
+        "iso639_3": "ase", 
+        "name": "American Sign Language", 
+        "names": [
+            "ASL", 
+            "Ameslan", 
+            "Benin Sign Language", 
+            "Francophone ASL", 
+            "Gabonese Sign Language", 
+            "Haitian Sign Language", 
+            "LSAF", 
+            "LSAF Ivoirienne", 
+            "LSCI", 
+            "LSH", 
+            "Langue des signes américaine", 
+            "Langue des signes congolaise", 
+            "Langue des signes de Côte d’Ivoire", 
+            "Langue des signes de l’Afrique francophone", 
+            "Langue des signes du Congo", 
+            "Langue des signes d’Afrique francophone", 
+            "Langue des signes haïtienne", 
+            "SIGN AMERICA", 
+            "Togo Sign Language"
+        ], 
+        "region": "US", 
+        "regionname": "United States", 
+        "regions": "AG BB BF BJ BM BO BS BZ CA CF CG CI DM GA GD GY HT JM KN LC ML NG PH PR SV TD TG TT VC VI ZA ZM", 
+        "sldr": false, 
+        "tag": "ase-Zxxx"
     }, 
     {
         "full": "asf-Zxxx-AU", 
@@ -9312,9 +9356,9 @@
         "full": "avl-Arab-EG", 
         "iana": "Eastern Egyptian Bedawi Arabic", 
         "iso639_3": "avl", 
-        "name": "Arabic, Levantine Bedawi Spoken", 
+        "name": "Arabic, Eastern Egyptian Bedawi Spoken", 
         "names": [
-            "Arabic, Eastern Egyptian Bedawi Spoken", 
+            "Arabic, Levantine Bedawi Spoken", 
             "Levantine Bedawi Arabic", 
             "Levantine Bedawi Spoken Arabic"
         ], 
@@ -9471,13 +9515,13 @@
         "full": "awa-Deva-IN", 
         "iana": "Awadhi", 
         "iso639_3": "awa", 
-        "name": "Avadhi", 
+        "name": "Awadhi", 
         "names": [
             "Abadhi", 
             "Abadi", 
             "Abohi", 
             "Ambodhi", 
-            "Awadhi", 
+            "Avadhi", 
             "Baiswari", 
             "Dehati", 
             "Deshi", 
@@ -9896,8 +9940,9 @@
         "full": "axk-Latn-CF", 
         "iana": "Yaka (Central African Republic)", 
         "iso639_3": "axk", 
-        "name": "Aka", 
+        "name": "Yaka", 
         "names": [
+            "Aka", 
             "Babinga", 
             "Beka", 
             "Beká", 
@@ -9906,8 +9951,7 @@
             "Nyoyaka", 
             "Pygmée de Mongoumba", 
             "Pygmée de la Lobaye", 
-            "Pygmées de la Sanghas", 
-            "Yaka"
+            "Pygmées de la Sanghas"
         ], 
         "region": "CF", 
         "regionname": "Central African Republic", 
@@ -10176,9 +10220,9 @@
         "full": "ayl-Arab-LY", 
         "iana": "Libyan Arabic", 
         "iso639_3": "ayl", 
-        "name": "Arabic, Western Egyptian Bedawi Spoken", 
+        "name": "Arabic, Libyan Spoken", 
         "names": [
-            "Arabic, Libyan Spoken", 
+            "Arabic, Western Egyptian Bedawi Spoken", 
             "Libyan Arabic", 
             "Libyan Spoken Arabic", 
             "Libyan Vernacular Arabic", 
@@ -10404,7 +10448,7 @@
         ], 
         "region": "IR", 
         "regionname": "Islamic Republic of Iran", 
-        "regions": "?? AM AZ DE EE GE KG KZ RU TM UA UZ", 
+        "regions": "AM AZ DE EE GE KG KZ RU TM UA UZ", 
         "sldr": false, 
         "tag": "az-Brai", 
         "tags": [
@@ -13530,7 +13574,7 @@
         ]
     }, 
     {
-        "full": "bfk-Zyyy-TH", 
+        "full": "bfk-Zxxx-TH", 
         "iana": "Ban Khor Sign Language", 
         "iso639_3": "bfk", 
         "name": "Ban Khor Sign Language", 
@@ -13544,7 +13588,7 @@
         "tag": "bfk", 
         "tags": [
             "bfk-TH", 
-            "bfk-Zyyy"
+            "bfk-Zxxx"
         ]
     }, 
     {
@@ -13715,7 +13759,7 @@
         "tag": "bfq-Latn"
     }, 
     {
-        "full": "bfq-Qabq-IN", 
+        "full": "bfq-Qabq-IN-x-badaga", 
         "iana": "Badaga", 
         "iso639_3": "bfq", 
         "name": "Badaga", 
@@ -13729,7 +13773,7 @@
         "region": "IN", 
         "regionname": "India", 
         "sldr": false, 
-        "tag": "bfq-Qabq"
+        "tag": "bfq-Qabq-x-badaga"
     }, 
     {
         "full": "bfr-Qaax-IN", 
@@ -14176,12 +14220,12 @@
             "Buxinhua"
         ], 
         "iso639_3": "bgk", 
-        "name": "Buxinhua", 
+        "name": "Bit", 
         "names": [
-            "Bit", 
             "Boxing", 
             "Buxing", 
             "Buxing Khmu", 
+            "Buxinhua", 
             "Kha Bet", 
             "Khabit", 
             "Khbit", 
@@ -14380,14 +14424,14 @@
         "full": "bgu-Qaax-NG", 
         "iana": "Mbongno", 
         "iso639_3": "bgu", 
-        "name": "Kamkam", 
+        "name": "Mbongno", 
         "names": [
             "Bungnu", 
             "Bungun", 
             "Bunu", 
             "Gbunhu", 
             "Kakaba", 
-            "Mbongno"
+            "Kamkam"
         ], 
         "region": "NG", 
         "regionname": "Nigeria", 
@@ -15129,9 +15173,9 @@
             "Bisa"
         ], 
         "iso639_3": "bib", 
-        "name": "Bissa", 
+        "name": "Bisa", 
         "names": [
-            "Bisa", 
+            "Bissa", 
             "Boussanse", 
             "Busansi", 
             "Bɩsa"
@@ -16987,6 +17031,31 @@
         "tag": "blr-Tale"
     }, 
     {
+        "full": "blr-Thai-TH", 
+        "iana": "Blang", 
+        "iso639_3": "blr", 
+        "name": "Blang", 
+        "names": [
+            "Bulang", 
+            "Hkawa", 
+            "Kawa", 
+            "Khon Doi", 
+            "Kontoi", 
+            "K’ala", 
+            "K’wa", 
+            "Plang", 
+            "Pula", 
+            "Pulang", 
+            "Sen Chun", 
+            "Wa"
+        ], 
+        "region": "TH", 
+        "regionname": "Thailand", 
+        "regions": "CN MM", 
+        "sldr": false, 
+        "tag": "blr-Thai"
+    }, 
+    {
         "full": "bls-Zyyy-ID", 
         "iana": "Balaesang", 
         "iso639_3": "bls", 
@@ -17879,9 +17948,9 @@
         "full": "bni-Latn-CD", 
         "iana": "Bangi", 
         "iso639_3": "bni", 
-        "name": "Bobangi", 
+        "name": "Bangi", 
         "names": [
-            "Bangi", 
+            "Bobangi", 
             "Bubangi", 
             "Bungi", 
             "Dzamba", 
@@ -19391,7 +19460,7 @@
         ]
     }, 
     {
-        "full": "bqn-Zyyy-BG", 
+        "full": "bqn-Zxxx-BG", 
         "iana": "Bulgarian Sign Language", 
         "iso639_3": "bqn", 
         "name": "Bulgarian Sign Language", 
@@ -19405,7 +19474,7 @@
         "tag": "bqn", 
         "tags": [
             "bqn-BG", 
-            "bqn-Zyyy"
+            "bqn-Zxxx"
         ]
     }, 
     {
@@ -19601,7 +19670,7 @@
         ]
     }, 
     {
-        "full": "bqy-Zyyy-ID", 
+        "full": "bqy-Zxxx-ID", 
         "iana": "Bengkala Sign Language", 
         "iso639_3": "bqy", 
         "name": "Kata Kolok", 
@@ -19615,7 +19684,7 @@
         "tag": "bqy", 
         "tags": [
             "bqy-ID", 
-            "bqy-Zyyy"
+            "bqy-Zxxx"
         ]
     }, 
     {
@@ -19709,12 +19778,12 @@
         "full": "brb-Laoo-LA", 
         "iana": "Lave", 
         "iso639_3": "brb", 
-        "name": "Brao", 
+        "name": "Lave", 
         "names": [
+            "Brao", 
             "Braou", 
             "Brau", 
             "Brou", 
-            "Lave", 
             "Laveh", 
             "Love", 
             "Proue", 
@@ -20213,16 +20282,16 @@
         "iana": "Bodo (India)", 
         "iso639_3": "brx", 
         "localname": "बड़ो", 
-        "name": "Meche", 
+        "name": "Boro", 
         "names": [
             "Bara", 
             "Bodi", 
             "Bodo", 
-            "Boro", 
             "Boroni", 
             "Kachari", 
             "Mache", 
             "Mech", 
+            "Meche", 
             "Mechi", 
             "Meci"
         ], 
@@ -20240,16 +20309,16 @@
         "full": "brx-Beng-IN", 
         "iana": "Bodo (India)", 
         "iso639_3": "brx", 
-        "name": "Meche", 
+        "name": "Boro", 
         "names": [
             "Bara", 
             "Bodi", 
             "Bodo", 
-            "Boro", 
             "Boroni", 
             "Kachari", 
             "Mache", 
             "Mech", 
+            "Meche", 
             "Mechi", 
             "Meci"
         ], 
@@ -20263,16 +20332,16 @@
         "full": "brx-Latn-IN", 
         "iana": "Bodo (India)", 
         "iso639_3": "brx", 
-        "name": "Meche", 
+        "name": "Boro", 
         "names": [
             "Bara", 
             "Bodi", 
             "Bodo", 
-            "Boro", 
             "Boroni", 
             "Kachari", 
             "Mache", 
             "Mech", 
+            "Meche", 
             "Mechi", 
             "Meci"
         ], 
@@ -20401,14 +20470,14 @@
             "Oniyan"
         ], 
         "iso639_3": "bsc", 
-        "name": "Bassari", 
+        "name": "Oniyan", 
         "names": [
             "Ayan", 
             "Basari", 
+            "Bassari", 
             "Biyan", 
             "Oneyan", 
             "Onian", 
-            "Oniyan", 
             "Onëyan", 
             "Tenda Basari", 
             "Wo"
@@ -22034,7 +22103,7 @@
         ]
     }, 
     {
-        "full": "bvl-Zyyy-BO", 
+        "full": "bvl-Zxxx-BO", 
         "iana": "Bolivian Sign Language", 
         "iso639_3": "bvl", 
         "name": "Bolivian Sign Language", 
@@ -22044,7 +22113,7 @@
         "tag": "bvl", 
         "tags": [
             "bvl-BO", 
-            "bvl-Zyyy"
+            "bvl-Zxxx"
         ]
     }, 
     {
@@ -24018,7 +24087,7 @@
         ]
     }, 
     {
-        "full": "bzs-Zyyy-BR", 
+        "full": "bzs-Zxxx-BR", 
         "iana": "Brazilian Sign Language", 
         "iso639_3": "bzs", 
         "name": "Brazilian Sign Language", 
@@ -24037,7 +24106,7 @@
         "tag": "bzs", 
         "tags": [
             "bzs-BR", 
-            "bzs-Zyyy"
+            "bzs-Zxxx"
         ]
     }, 
     {
@@ -25010,8 +25079,9 @@
         "full": "cbs-Latn-PE", 
         "iana": "Cashinahua", 
         "iso639_3": "cbs", 
-        "name": "Cashinahua", 
+        "name": "Kashinawa", 
         "names": [
+            "Cashinahua", 
             "Cashinahuá", 
             "Caxinahua", 
             "Caxinauá", 
@@ -25021,7 +25091,6 @@
             "Huni Kuin", 
             "Juni Kuin", 
             "Kashinahua", 
-            "Kashinawa", 
             "Kaxinauá", 
             "Kaxinawá", 
             "Kaxynawa"
@@ -25705,7 +25774,7 @@
         ]
     }, 
     {
-        "full": "cds-Zyyy-TD", 
+        "full": "cds-Zxxx-TD", 
         "iana": "Chadian Sign Language", 
         "iso639_3": "cds", 
         "name": "Chadian Sign Language", 
@@ -25715,7 +25784,7 @@
         "tag": "cds", 
         "tags": [
             "cds-TD", 
-            "cds-Zyyy"
+            "cds-Zxxx"
         ]
     }, 
     {
@@ -27111,10 +27180,10 @@
         "full": "cjk-Latn-AO", 
         "iana": "Chokwe", 
         "iso639_3": "cjk", 
-        "name": "Chokwe", 
+        "name": "Cokwe", 
         "names": [
+            "Chokwe", 
             "Ciokwe", 
-            "Cokwe", 
             "Djok", 
             "Imo", 
             "Kioko", 
@@ -28472,16 +28541,16 @@
         "full": "cod-Latn-PE", 
         "iana": "Cocama-Cocamilla", 
         "iso639_3": "cod", 
-        "name": "Cocama-Cocamilla", 
+        "name": "Kukama-Kukamiria", 
         "names": [
             "Cocama", 
+            "Cocama-Cocamilla", 
             "Huallaga", 
             "Inikana", 
             "Kocama", 
             "Kokama", 
             "Kokama-Kokamilya", 
             "Kukama", 
-            "Kukama-Kukamiria", 
             "Pampadeque", 
             "Pandequebo", 
             "Ucayali", 
@@ -29361,6 +29430,22 @@
         ]
     }, 
     {
+        "full": "crk-Latn-CA", 
+        "iana": "Plains Cree", 
+        "iso639_3": "crk", 
+        "name": "Cree, Plains", 
+        "names": [
+            "Nehiyaw", 
+            "Nēhiyawēwin", 
+            "Western Cree"
+        ], 
+        "region": "CA", 
+        "regionname": "Canada", 
+        "regions": "US", 
+        "sldr": false, 
+        "tag": "crk-Latn"
+    }, 
+    {
         "full": "crl-Cans-CA", 
         "iana": "Northern East Cree", 
         "iso639_3": "crl", 
@@ -29378,6 +29463,21 @@
             "crl-CA", 
             "crl-Cans"
         ]
+    }, 
+    {
+        "full": "crl-Latn-CA", 
+        "iana": "Northern East Cree", 
+        "iso639_3": "crl", 
+        "name": "Cree, Northern East", 
+        "names": [
+            "Eastern James Bay Cree Northern Dialect", 
+            "Iyiyiw-Ayimiwin", 
+            "James Bay Cree Northern"
+        ], 
+        "region": "CA", 
+        "regionname": "Canada", 
+        "sldr": false, 
+        "tag": "crl-Latn"
     }, 
     {
         "full": "crm-Cans-CA", 
@@ -29713,7 +29813,7 @@
         ]
     }, 
     {
-        "full": "csc-Zyyy-ES", 
+        "full": "csc-Zxxx-ES", 
         "iana": [
             "Catalan Sign Language", 
             "Lengua de señas catalana", 
@@ -29734,11 +29834,11 @@
         "tag": "csc", 
         "tags": [
             "csc-ES", 
-            "csc-Zyyy"
+            "csc-Zxxx"
         ]
     }, 
     {
-        "full": "csd-Zyyy-TH", 
+        "full": "csd-Zxxx-TH", 
         "iana": "Chiangmai Sign Language", 
         "iso639_3": "csd", 
         "name": "Chiangmai Sign Language", 
@@ -29756,11 +29856,11 @@
         "tag": "csd", 
         "tags": [
             "csd-TH", 
-            "csd-Zyyy"
+            "csd-Zxxx"
         ]
     }, 
     {
-        "full": "cse-Zyyy-CZ", 
+        "full": "cse-Zxxx-CZ", 
         "iana": "Czech Sign Language", 
         "iso639_3": "cse", 
         "name": "Czech Sign Language", 
@@ -29774,11 +29874,11 @@
         "tag": "cse", 
         "tags": [
             "cse-CZ", 
-            "cse-Zyyy"
+            "cse-Zxxx"
         ]
     }, 
     {
-        "full": "csf-Zyyy-CU", 
+        "full": "csf-Zxxx-CU", 
         "iana": "Cuba Sign Language", 
         "iso639_3": "csf", 
         "name": "Cuba Sign Language", 
@@ -29788,11 +29888,11 @@
         "tag": "csf", 
         "tags": [
             "csf-CU", 
-            "csf-Zyyy"
+            "csf-Zxxx"
         ]
     }, 
     {
-        "full": "csg-Zyyy-CL", 
+        "full": "csg-Zxxx-CL", 
         "iana": "Chilean Sign Language", 
         "iso639_3": "csg", 
         "name": "Chilean Sign Language", 
@@ -29809,7 +29909,7 @@
         "tag": "csg", 
         "tags": [
             "csg-CL", 
-            "csg-Zyyy"
+            "csg-Zxxx"
         ]
     }, 
     {
@@ -29917,7 +30017,7 @@
         "tag": "csk-Latn"
     }, 
     {
-        "full": "csl-Zyyy-CN", 
+        "full": "csl-Zxxx-CN", 
         "iana": "Chinese Sign Language", 
         "iso639_3": "csl", 
         "name": "Chinese Sign Language", 
@@ -29930,7 +30030,7 @@
         "tag": "csl", 
         "tags": [
             "csl-CN", 
-            "csl-Zyyy"
+            "csl-Zxxx"
         ]
     }, 
     {
@@ -29948,7 +30048,7 @@
         ]
     }, 
     {
-        "full": "csn-Zyyy-CO", 
+        "full": "csn-Zxxx-CO", 
         "iana": "Colombian Sign Language", 
         "iso639_3": "csn", 
         "name": "Colombian Sign Language", 
@@ -29963,7 +30063,7 @@
         "tag": "csn", 
         "tags": [
             "csn-CO", 
-            "csn-Zyyy"
+            "csn-Zxxx"
         ]
     }, 
     {
@@ -29990,7 +30090,7 @@
         ]
     }, 
     {
-        "full": "csq-Zyyy-HR", 
+        "full": "csq-Zxxx-HR", 
         "iana": "Croatia Sign Language", 
         "iso639_3": "csq", 
         "name": "Croatia Sign Language", 
@@ -30005,11 +30105,11 @@
         "tag": "csq", 
         "tags": [
             "csq-HR", 
-            "csq-Zyyy"
+            "csq-Zxxx"
         ]
     }, 
     {
-        "full": "csr-Zyyy-CR", 
+        "full": "csr-Zxxx-CR", 
         "iana": "Costa Rican Sign Language", 
         "iso639_3": "csr", 
         "name": "Costa Rican Sign Language", 
@@ -30026,7 +30126,7 @@
         "tag": "csr", 
         "tags": [
             "csr-CR", 
-            "csr-Zyyy"
+            "csr-Zxxx"
         ]
     }, 
     {
@@ -30889,16 +30989,16 @@
         ]
     }, 
     {
-        "full": "cuy-Qaax-??", 
+        "full": "cuy-Qaax-XX", 
         "iana": "Cuitlatec", 
         "iso639_3": "cuy", 
         "name": "Cuitlatec", 
-        "region": "??", 
+        "region": "XX", 
         "regions": "MX", 
         "sldr": false, 
         "tag": "cuy", 
         "tags": [
-            "cuy-??", 
+            "cuy-XX", 
             "cuy-Qaax"
         ]
     }, 
@@ -33365,10 +33465,9 @@
         "full": "dhm-Latn-AO", 
         "iana": "Zemba", 
         "iso639_3": "dhm", 
-        "name": "Zemba", 
+        "name": "Dhimba", 
         "names": [
             "Chimba", 
-            "Dhimba", 
             "Dimba", 
             "Himba", 
             "Luzimba", 
@@ -33378,7 +33477,8 @@
             "Otjidhimba", 
             "Ovazimba", 
             "Simba", 
-            "Tjimba"
+            "Tjimba", 
+            "Zemba"
         ], 
         "region": "AO", 
         "regionname": "Angola", 
@@ -33660,9 +33760,9 @@
             "Chidigo"
         ], 
         "iso639_3": "dig", 
-        "name": "Digo", 
+        "name": "Chidigo", 
         "names": [
-            "Chidigo", 
+            "Digo", 
             "Kidigo"
         ], 
         "region": "KE", 
@@ -34094,7 +34194,7 @@
         "iana": "Zarma", 
         "iso639_3": "dje", 
         "localname": "Zarmaciine", 
-        "name": "Zarmaci", 
+        "name": "Zarma", 
         "names": [
             "Adzerma", 
             "Djerma", 
@@ -34103,7 +34203,7 @@
             "Dyerma", 
             "Zabarma", 
             "Zarbarma", 
-            "Zarma", 
+            "Zarmaci", 
             "Zarmaciine", 
             "Zerma"
         ], 
@@ -34121,7 +34221,7 @@
         "full": "dje-Arab-NE", 
         "iana": "Zarma", 
         "iso639_3": "dje", 
-        "name": "Zarmaci", 
+        "name": "Zarma", 
         "names": [
             "Adzerma", 
             "Djerma", 
@@ -34130,7 +34230,7 @@
             "Dyerma", 
             "Zabarma", 
             "Zarbarma", 
-            "Zarma", 
+            "Zarmaci", 
             "Zarmaciine", 
             "Zerma"
         ], 
@@ -34144,7 +34244,7 @@
         "full": "dje-Brai-NE", 
         "iana": "Zarma", 
         "iso639_3": "dje", 
-        "name": "Zarmaci", 
+        "name": "Zarma", 
         "names": [
             "Adzerma", 
             "Djerma", 
@@ -34153,7 +34253,7 @@
             "Dyerma", 
             "Zabarma", 
             "Zarbarma", 
-            "Zarma", 
+            "Zarmaci", 
             "Zarmaciine", 
             "Zerma"
         ], 
@@ -35031,8 +35131,15 @@
     }, 
     {
         "full": "dno-Latn-CD", 
+        "iana": [
+            "Ndrulo", 
+            "Northern Lendu"
+        ], 
         "iso639_3": "dno", 
-        "name": "Ndrulo, Northern Lendu", 
+        "name": "Ndrulo", 
+        "names": [
+            "Northern Lendu"
+        ], 
         "region": "CD", 
         "regionname": "The Democratic Republic of the Congo", 
         "sldr": false, 
@@ -35409,7 +35516,7 @@
         "tag": "dop-Latn"
     }, 
     {
-        "full": "doq-Zyyy-DO", 
+        "full": "doq-Zxxx-DO", 
         "iana": "Dominican Sign Language", 
         "iso639_3": "doq", 
         "name": "Dominican Sign Language", 
@@ -35419,7 +35526,7 @@
         "tag": "doq", 
         "tags": [
             "doq-DO", 
-            "doq-Zyyy"
+            "doq-Zxxx"
         ]
     }, 
     {
@@ -35890,7 +35997,7 @@
         ]
     }, 
     {
-        "full": "dse-Zyyy-NL", 
+        "full": "dse-Zxxx-NL", 
         "iana": "Dutch Sign Language", 
         "iso639_3": "dse", 
         "name": "Sign Language of the Netherlands", 
@@ -35907,7 +36014,7 @@
         "tag": "dse", 
         "tags": [
             "dse-NL", 
-            "dse-Zyyy"
+            "dse-Zxxx"
         ]
     }, 
     {
@@ -35948,7 +36055,7 @@
         ]
     }, 
     {
-        "full": "dsl-Zyyy-DK", 
+        "full": "dsl-Zxxx-DK", 
         "iana": "Danish Sign Language", 
         "iso639_3": "dsl", 
         "name": "Danish Sign Language", 
@@ -35963,7 +36070,7 @@
         "tag": "dsl", 
         "tags": [
             "dsl-DK", 
-            "dsl-Zyyy"
+            "dsl-Zxxx"
         ]
     }, 
     {
@@ -36987,6 +37094,7 @@
     }, 
     {
         "full": "dwz-Qaax-NP", 
+        "iana": "Dewas Rai", 
         "iso639_3": "dwz", 
         "name": "Dewas Rai", 
         "region": "NP", 
@@ -37552,7 +37660,7 @@
         ]
     }, 
     {
-        "full": "ecs-Zyyy-EC", 
+        "full": "ecs-Zxxx-EC", 
         "iana": "Ecuadorian Sign Language", 
         "iso639_3": "ecs", 
         "name": "Ecuadorian Sign Language", 
@@ -37566,7 +37674,7 @@
         "tag": "ecs", 
         "tags": [
             "ecs-EC", 
-            "ecs-Zyyy"
+            "ecs-Zxxx"
         ]
     }, 
     {
@@ -38588,7 +38696,7 @@
         "full": "en-Latn-US", 
         "iana": "English", 
         "iso639_3": "eng", 
-        "localname": "English", 
+        "localname": "US English", 
         "name": "English", 
         "names": [
             "Anglais", 
@@ -40271,7 +40379,7 @@
             "Castilian"
         ], 
         "iso639_3": "spa", 
-        "localname": "español", 
+        "localname": "español de España", 
         "name": "Spanish", 
         "names": [
             "Castellano", 
@@ -40802,13 +40910,13 @@
         "full": "esi-Latn-US", 
         "iana": "North Alaskan Inupiatun", 
         "iso639_3": "esi", 
-        "name": "Inuktitut, North Alaskan", 
+        "name": "Inupiatun, North Alaskan", 
         "names": [
             "Eskimo", 
+            "Inuktitut, North Alaskan", 
             "Inupiak", 
             "Inupiaq", 
             "Inupiat", 
-            "Inupiatun, North Alaskan", 
             "North Alaskan Inuktitut", 
             "North Alaskan Inupiaq", 
             "North Alaskan Inupiat", 
@@ -40825,7 +40933,7 @@
         ]
     }, 
     {
-        "full": "esl-Zyyy-EG", 
+        "full": "esl-Zxxx-EG", 
         "iana": "Egypt Sign Language", 
         "iso639_3": "esl", 
         "name": "Egyptian Sign Language", 
@@ -40842,7 +40950,7 @@
         "tag": "esl", 
         "tags": [
             "esl-EG", 
-            "esl-Zyyy"
+            "esl-Zxxx"
         ]
     }, 
     {
@@ -40860,7 +40968,7 @@
         ]
     }, 
     {
-        "full": "esn-Zyyy-SV", 
+        "full": "esn-Zxxx-SV", 
         "iana": "Salvadoran Sign Language", 
         "iso639_3": "esn", 
         "name": "Salvadoran Sign Language", 
@@ -40876,11 +40984,11 @@
         "tag": "esn", 
         "tags": [
             "esn-SV", 
-            "esn-Zyyy"
+            "esn-Zxxx"
         ]
     }, 
     {
-        "full": "eso-Zyyy-EE", 
+        "full": "eso-Zxxx-EE", 
         "iana": "Estonian Sign Language", 
         "iso639_3": "eso", 
         "name": "Estonian Sign Language", 
@@ -40895,7 +41003,7 @@
         "tag": "eso", 
         "tags": [
             "eso-EE", 
-            "eso-Zyyy"
+            "eso-Zxxx"
         ]
     }, 
     {
@@ -40983,7 +41091,7 @@
         ]
     }, 
     {
-        "full": "esy-Qabr-PH", 
+        "full": "esy-Qabr-PH-x-eskaya", 
         "iana": "Eskayan", 
         "iso639_3": "esy", 
         "name": "Eskayan", 
@@ -40999,7 +41107,7 @@
         "region": "PH", 
         "regionname": "Philippines", 
         "sldr": false, 
-        "tag": "esy-Qabr"
+        "tag": "esy-Qabr-x-eskaya"
     }, 
     {
         "full": "et-Latn-EE", 
@@ -41065,7 +41173,7 @@
         ]
     }, 
     {
-        "full": "eth-Zyyy-ET", 
+        "full": "eth-Zxxx-ET", 
         "iana": "Ethiopian Sign Language", 
         "iso639_3": "eth", 
         "name": "Ethiopian Sign Language", 
@@ -41075,7 +41183,7 @@
         "tag": "eth", 
         "tags": [
             "eth-ET", 
-            "eth-Zyyy"
+            "eth-Zxxx"
         ]
     }, 
     {
@@ -41371,14 +41479,14 @@
         "full": "ext-Latn-ES", 
         "iana": "Extremaduran", 
         "iso639_3": "ext", 
-        "name": "Barranquian", 
+        "name": "Extremaduran", 
         "names": [
             "Barranquenho", 
+            "Barranquian", 
             "Barranquênhu", 
             "Cahtúo", 
             "Cahtúö", 
             "Ehtremeñu", 
-            "Extremaduran", 
             "Extremeño"
         ], 
         "region": "ES", 
@@ -41817,7 +41925,7 @@
         "tag": "fbl-Latn"
     }, 
     {
-        "full": "fcs-Zyyy-CA", 
+        "full": "fcs-Zxxx-CA", 
         "iana": "Quebec Sign Language", 
         "iso639_3": "fcs", 
         "name": "Quebec Sign Language", 
@@ -41836,7 +41944,7 @@
         "tag": "fcs", 
         "tags": [
             "fcs-CA", 
-            "fcs-Zyyy"
+            "fcs-Zxxx"
         ]
     }, 
     {
@@ -43443,7 +43551,7 @@
         ]
     }, 
     {
-        "full": "fse-Zyyy-FI", 
+        "full": "fse-Zxxx-FI", 
         "iana": "Finnish Sign Language", 
         "iso639_3": "fse", 
         "name": "Finnish Sign Language", 
@@ -43459,11 +43567,11 @@
         "tag": "fse", 
         "tags": [
             "fse-FI", 
-            "fse-Zyyy"
+            "fse-Zxxx"
         ]
     }, 
     {
-        "full": "fsl-Zyyy-FR", 
+        "full": "fsl-Zxxx-FR", 
         "iana": "French Sign Language", 
         "iso639_3": "fsl", 
         "name": "French Sign Language", 
@@ -43478,11 +43586,11 @@
         "tag": "fsl", 
         "tags": [
             "fsl-FR", 
-            "fsl-Zyyy"
+            "fsl-Zxxx"
         ]
     }, 
     {
-        "full": "fss-Zyyy-FI", 
+        "full": "fss-Zxxx-FI", 
         "iana": [
             "Finland-Swedish Sign Language", 
             "finlandssvenskt teckenspråk", 
@@ -43503,7 +43611,7 @@
         "tag": "fss", 
         "tags": [
             "fss-FI", 
-            "fss-Zyyy"
+            "fss-Zxxx"
         ]
     }, 
     {
@@ -43728,14 +43836,14 @@
         "full": "fuh-Arab-NE", 
         "iana": "Western Niger Fulfulde", 
         "iso639_3": "fuh", 
-        "name": "Fulfulde, Northeastern Burkina Faso", 
+        "name": "Fulfulde, Western Niger", 
         "names": [
             "Fula", 
             "Fulani", 
             "Fulbe", 
             "Fulfulde", 
             "Fulfulde, Gorgal", 
-            "Fulfulde, Western Niger", 
+            "Fulfulde, Northeastern Burkina Faso", 
             "Gorgal Fulfulde", 
             "Northeastern Burkina Faso Fulfulde", 
             "Peul", 
@@ -43776,14 +43884,14 @@
         "full": "fuh-Latn-NE", 
         "iana": "Western Niger Fulfulde", 
         "iso639_3": "fuh", 
-        "name": "Fulfulde, Northeastern Burkina Faso", 
+        "name": "Fulfulde, Western Niger", 
         "names": [
             "Fula", 
             "Fulani", 
             "Fulbe", 
             "Fulfulde", 
             "Fulfulde, Gorgal", 
-            "Fulfulde, Western Niger", 
+            "Fulfulde, Northeastern Burkina Faso", 
             "Gorgal Fulfulde", 
             "Northeastern Burkina Faso Fulfulde", 
             "Peul", 
@@ -45271,15 +45379,15 @@
         "full": "gcf-Latn-GP", 
         "iana": "Guadeloupean Creole French", 
         "iso639_3": "gcf", 
-        "name": "Saint Barthélemy Creole French", 
+        "name": "Guadeloupean Creole French", 
         "names": [
             "Guadeloupean Creole", 
-            "Guadeloupean Creole French", 
             "Kreyol", 
             "Martinican Creole", 
             "Martiniquan Creole French", 
             "Patois", 
-            "Patwa"
+            "Patwa", 
+            "Saint Barthélemy Creole French"
         ], 
         "region": "GP", 
         "regionname": "Guadeloupe", 
@@ -45752,7 +45860,7 @@
         ]
     }, 
     {
-        "full": "gds-Zyyy-NP", 
+        "full": "gds-Zxxx-NP", 
         "iana": "Ghandruk Sign Language", 
         "iso639_3": "gds", 
         "name": "Ghandruk Sign Language", 
@@ -45762,7 +45870,7 @@
         "tag": "gds", 
         "tags": [
             "gds-NP", 
-            "gds-Zyyy"
+            "gds-Zxxx"
         ]
     }, 
     {
@@ -46790,10 +46898,10 @@
         "full": "giq-Zyyy-VN", 
         "iana": "Green Gelao", 
         "iso639_3": "giq", 
-        "name": "Hagei", 
+        "name": "Gelao, Green", 
         "names": [
             "Cape Draping Gelao", 
-            "Gelao, Green", 
+            "Hagei", 
             "Hakei", 
             "Hakhi", 
             "Hoki Gelao", 
@@ -47267,10 +47375,7 @@
     }, 
     {
         "full": "gku-Latn-ZA", 
-        "iana": [
-            "ǂUngkue", 
-            "=/Ungkue"
-        ], 
+        "iana": "ǂUngkue", 
         "iso639_3": "gku", 
         "name": "‡Ungkue", 
         "names": [
@@ -47960,10 +48065,7 @@
     }, 
     {
         "full": "gnk-Latn-BW", 
-        "iana": [
-            "//Gana", 
-            "ǁGana"
-        ], 
+        "iana": "ǁGana", 
         "iso639_3": "gnk", 
         "name": "||Gana", 
         "names": [
@@ -48581,11 +48683,11 @@
         "full": "gox-Qaax-CD", 
         "iana": "Gobu", 
         "iso639_3": "gox", 
-        "name": "Gubu", 
+        "name": "Gobu", 
         "names": [
             "Gabou", 
             "Gabu", 
-            "Gobu", 
+            "Gubu", 
             "Ngobo", 
             "Ngobu"
         ], 
@@ -49189,7 +49291,7 @@
         ]
     }, 
     {
-        "full": "gse-Zyyy-GH", 
+        "full": "gse-Zxxx-GH", 
         "iana": "Ghanaian Sign Language", 
         "iso639_3": "gse", 
         "name": "Ghanaian Sign Language", 
@@ -49202,11 +49304,11 @@
         "tag": "gse", 
         "tags": [
             "gse-GH", 
-            "gse-Zyyy"
+            "gse-Zxxx"
         ]
     }, 
     {
-        "full": "gsg-Zyyy-DE", 
+        "full": "gsg-Zxxx-DE", 
         "iana": "German Sign Language", 
         "iso639_3": "gsg", 
         "name": "German Sign Language", 
@@ -49220,7 +49322,7 @@
         "tag": "gsg", 
         "tags": [
             "gsg-DE", 
-            "gsg-Zyyy"
+            "gsg-Zxxx"
         ]
     }, 
     {
@@ -49241,7 +49343,7 @@
         "tag": "gsl-Latn"
     }, 
     {
-        "full": "gsm-Zyyy-GT", 
+        "full": "gsm-Zxxx-GT", 
         "iana": "Guatemalan Sign Language", 
         "iso639_3": "gsm", 
         "name": "Guatemalan Sign Language", 
@@ -49256,7 +49358,7 @@
         "tag": "gsm", 
         "tags": [
             "gsm-GT", 
-            "gsm-Zyyy"
+            "gsm-Zxxx"
         ]
     }, 
     {
@@ -49317,7 +49419,7 @@
         ]
     }, 
     {
-        "full": "gss-Zyyy-GR", 
+        "full": "gss-Zxxx-GR", 
         "iana": "Greek Sign Language", 
         "iso639_3": "gss", 
         "name": "Greek Sign Language", 
@@ -49331,7 +49433,7 @@
         "tag": "gss", 
         "tags": [
             "gss-GR", 
-            "gss-Zyyy"
+            "gss-Zxxx"
         ]
     }, 
     {
@@ -49343,14 +49445,14 @@
         ], 
         "iso639_3": "gsw", 
         "localname": "Schwiizertüütsch", 
-        "name": "Alsatian", 
+        "name": "German, Swiss", 
         "names": [
             "Alemanic", 
             "Alemannic", 
             "Alemannisch", 
             "Alsacien", 
+            "Alsatian", 
             "Elsaessisch", 
-            "German, Swiss", 
             "Schwytzertuetsch", 
             "Schwyzerdütsch"
         ], 
@@ -49837,9 +49939,8 @@
         "full": "gur-Latn-GH", 
         "iana": "Farefare", 
         "iso639_3": "gur", 
-        "name": "Ninkare", 
+        "name": "Farefare", 
         "names": [
-            "Farefare", 
             "Frafra", 
             "Gurene", 
             "Gurenne", 
@@ -49847,6 +49948,7 @@
             "Gurne", 
             "Gurune", 
             "Nankani", 
+            "Ninkare", 
             "Ninkarsé", 
             "fãrfãrɛ", 
             "gʋrnɛ Ninkãrɛ", 
@@ -49865,7 +49967,7 @@
         ]
     }, 
     {
-        "full": "gus-Zyyy-GN", 
+        "full": "gus-Zxxx-GN", 
         "iana": "Guinean Sign Language", 
         "iso639_3": "gus", 
         "name": "Guinean Sign Language", 
@@ -49875,7 +49977,7 @@
         "tag": "gus", 
         "tags": [
             "gus-GN", 
-            "gus-Zyyy"
+            "gus-Zxxx"
         ]
     }, 
     {
@@ -49982,10 +50084,10 @@
         ], 
         "iso639_3": "guz", 
         "localname": "Ekegusii", 
-        "name": "Gusii", 
+        "name": "Ekegusii", 
         "names": [
             "EkeGusii", 
-            "Ekegusii", 
+            "Gusii", 
             "Guzii", 
             "Kisii", 
             "Kosova"
@@ -50443,10 +50545,7 @@
     }, 
     {
         "full": "gwj-Latn-BW", 
-        "iana": [
-            "/Gwi", 
-            "ǀGwi"
-        ], 
+        "iana": "ǀGwi", 
         "iso639_3": "gwj", 
         "name": "|Gwi", 
         "names": [
@@ -51038,7 +51137,7 @@
         ]
     }, 
     {
-        "full": "hab-Zyyy-VN", 
+        "full": "hab-Zxxx-VN", 
         "iana": "Hanoi Sign Language", 
         "iso639_3": "hab", 
         "name": "Hanoi Sign Language", 
@@ -51048,25 +51147,25 @@
         "tag": "hab", 
         "tags": [
             "hab-VN", 
-            "hab-Zyyy"
+            "hab-Zxxx"
         ]
     }, 
     {
         "full": "hac-Arab-IR", 
         "iana": "Gurani", 
         "iso639_3": "hac", 
-        "name": "Macho", 
+        "name": "Gurani", 
         "names": [
             "Avromani", 
             "Awroman", 
             "Awromani", 
             "Gorani", 
-            "Gurani", 
             "Hawramani", 
             "Hawrami", 
             "Hewrami", 
             "Hourami", 
             "Howrami", 
+            "Macho", 
             "Macho-Zwani", 
             "Ourami"
         ], 
@@ -51113,7 +51212,7 @@
         "tag": "hae-Latn"
     }, 
     {
-        "full": "haf-Zyyy-VN", 
+        "full": "haf-Zxxx-VN", 
         "iana": "Haiphong Sign Language", 
         "iso639_3": "haf", 
         "name": "Haiphong Sign Language", 
@@ -51123,7 +51222,7 @@
         "tag": "haf", 
         "tags": [
             "haf-VN", 
-            "haf-Zyyy"
+            "haf-Zxxx"
         ]
     }, 
     {
@@ -51648,7 +51747,7 @@
         ]
     }, 
     {
-        "full": "hds-Zyyy-HN", 
+        "full": "hds-Zxxx-HN", 
         "iana": "Honduras Sign Language", 
         "iso639_3": "hds", 
         "name": "Honduras Sign Language", 
@@ -51663,7 +51762,7 @@
         "tag": "hds", 
         "tags": [
             "hds-HN", 
-            "hds-Zyyy"
+            "hds-Zxxx"
         ]
     }, 
     {
@@ -51822,10 +51921,7 @@
     }, 
     {
         "full": "hgm-Qaax-NA", 
-        "iana": [
-            "Hai//om", 
-            "Haiǁom"
-        ], 
+        "iana": "Haiǁom", 
         "iso639_3": "hgm", 
         "name": "Hai||om", 
         "names": [
@@ -52382,7 +52478,7 @@
         ]
     }, 
     {
-        "full": "hks-Zyyy-HK", 
+        "full": "hks-Zxxx-HK", 
         "iana": [
             "Hong Kong Sign Language", 
             "Heung Kong Sau Yue"
@@ -52403,7 +52499,7 @@
         "tag": "hks", 
         "tags": [
             "hks-HK", 
-            "hks-Zyyy"
+            "hks-Zxxx"
         ]
     }, 
     {
@@ -53201,10 +53297,7 @@
     }, 
     {
         "full": "hnh-Latn-BW", 
-        "iana": [
-            "//Ani", 
-            "ǁAni"
-        ], 
+        "iana": "ǁAni", 
         "iso639_3": "hnh", 
         "name": "||Ani", 
         "names": [
@@ -53812,7 +53905,7 @@
         ]
     }, 
     {
-        "full": "hos-Zyyy-VN", 
+        "full": "hos-Zxxx-VN", 
         "iana": "Ho Chi Minh City Sign Language", 
         "iso639_3": "hos", 
         "name": "Ho Chi Minh City Sign Language", 
@@ -53822,7 +53915,7 @@
         "tag": "hos", 
         "tags": [
             "hos-VN", 
-            "hos-Zyyy"
+            "hos-Zxxx"
         ]
     }, 
     {
@@ -53945,7 +54038,7 @@
         ]
     }, 
     {
-        "full": "hps-Zyyy-US", 
+        "full": "hps-Zxxx-US", 
         "iana": [
             "Hawai'i Sign Language (HSL)", 
             "Hawai'i Pidgin Sign Language"
@@ -53964,7 +54057,7 @@
         "tag": "hps", 
         "tags": [
             "hps-US", 
-            "hps-Zyyy"
+            "hps-Zxxx"
         ]
     }, 
     {
@@ -54279,7 +54372,7 @@
         ]
     }, 
     {
-        "full": "hsh-Zyyy-HU", 
+        "full": "hsh-Zxxx-HU", 
         "iana": "Hungarian Sign Language", 
         "iso639_3": "hsh", 
         "name": "Hungarian Sign Language", 
@@ -54294,11 +54387,11 @@
         "tag": "hsh", 
         "tags": [
             "hsh-HU", 
-            "hsh-Zyyy"
+            "hsh-Zxxx"
         ]
     }, 
     {
-        "full": "hsl-Zyyy-NG", 
+        "full": "hsl-Zxxx-NG", 
         "iana": "Hausa Sign Language", 
         "iso639_3": "hsl", 
         "name": "Hausa Sign Language", 
@@ -54312,7 +54405,7 @@
         "tag": "hsl", 
         "tags": [
             "hsl-NG", 
-            "hsl-Zyyy"
+            "hsl-Zxxx"
         ]
     }, 
     {
@@ -54563,10 +54656,7 @@
     }, 
     {
         "full": "huc-Latn-BW", 
-        "iana": [
-            "=/Hua", 
-            "ǂHua"
-        ], 
+        "iana": "ǂHua", 
         "iso639_3": "huc", 
         "name": "‡Hua", 
         "names": [
@@ -54939,12 +55029,12 @@
         "full": "hux-Latn-PE", 
         "iana": "Nüpode Huitoto", 
         "iso639_3": "hux", 
-        "name": "Witoto, Nipode", 
+        "name": "Witoto, Muinani", 
         "names": [
             "Muinane Huitoto", 
             "Nipode Witoto", 
             "Nüpode Huitoto", 
-            "Witoto, Muinani"
+            "Witoto, Nipode"
         ], 
         "region": "PE", 
         "regionname": "Peru", 
@@ -55594,7 +55684,7 @@
         "tag": "ich-Latn"
     }, 
     {
-        "full": "icl-Zyyy-IS", 
+        "full": "icl-Zxxx-IS", 
         "iana": "Icelandic Sign Language", 
         "iso639_3": "icl", 
         "name": "Icelandic Sign Language", 
@@ -55608,7 +55698,7 @@
         "tag": "icl", 
         "tags": [
             "icl-IS", 
-            "icl-Zyyy"
+            "icl-Zxxx"
         ]
     }, 
     {
@@ -56486,7 +56576,7 @@
         ]
     }, 
     {
-        "full": "iks-Zyyy-CA", 
+        "full": "iks-Zxxx-CA", 
         "iana": "Inuit Sign Language", 
         "iso639_3": "iks", 
         "name": "Inuit Sign Language", 
@@ -56502,7 +56592,7 @@
         "tag": "iks", 
         "tags": [
             "iks-CA", 
-            "iks-Zyyy"
+            "iks-Zxxx"
         ]
     }, 
     {
@@ -56796,7 +56886,7 @@
         "tag": "ilp-Latn"
     }, 
     {
-        "full": "ils-Zyyy-IT", 
+        "full": "ils-Zxxx-IT", 
         "iana": "International Sign", 
         "iso639_3": "ils", 
         "name": "International Sign", 
@@ -56811,7 +56901,7 @@
         "tag": "ils", 
         "tags": [
             "ils-IT", 
-            "ils-Zyyy"
+            "ils-Zxxx"
         ]
     }, 
     {
@@ -57116,7 +57206,7 @@
         ]
     }, 
     {
-        "full": "inl-Zyyy-ID", 
+        "full": "inl-Zxxx-ID", 
         "iana": "Indonesian Sign Language", 
         "iso639_3": "inl", 
         "name": "Indonesian Sign Language", 
@@ -57129,7 +57219,7 @@
         "tag": "inl", 
         "tags": [
             "inl-ID", 
-            "inl-Zyyy"
+            "inl-Zxxx"
         ]
     }, 
     {
@@ -57203,18 +57293,18 @@
         ]
     }, 
     {
-        "full": "ins-Zyyy-IN", 
+        "full": "ins-Zxxx-IN", 
         "iana": "Indian Sign Language", 
         "iso639_3": "ins", 
-        "name": "Bangla Sign Language", 
+        "name": "Indian Sign Language", 
         "names": [
             "Bangla Ishara Vasha", 
+            "Bangla Sign Language", 
             "Bangladesh Sign Language", 
             "Bangladeshi Sign Language", 
             "Bengali Sign Language", 
             "IPSL", 
             "ISL", 
-            "Indian Sign Language", 
             "Indo-Pakistani Sign Language", 
             "Urban Indian Sign Language"
         ], 
@@ -57225,7 +57315,7 @@
         "tag": "ins", 
         "tags": [
             "ins-IN", 
-            "ins-Zyyy"
+            "ins-Zxxx"
         ]
     }, 
     {
@@ -57674,7 +57764,7 @@
         "tag": "isd-Latn"
     }, 
     {
-        "full": "ise-Zyyy-IT", 
+        "full": "ise-Zxxx-IT", 
         "iana": "Italian Sign Language", 
         "iso639_3": "ise", 
         "name": "Italian Sign Language", 
@@ -57688,17 +57778,17 @@
         "tag": "ise", 
         "tags": [
             "ise-IT", 
-            "ise-Zyyy"
+            "ise-Zxxx"
         ]
     }, 
     {
-        "full": "isg-Zyyy-IE", 
+        "full": "isg-Zxxx-IE", 
         "iana": "Irish Sign Language", 
         "iso639_3": "isg", 
-        "name": "Australian Irish Sign Language", 
+        "name": "Irish Sign Language", 
         "names": [
             "AISL", 
-            "Irish Sign Language", 
+            "Australian Irish Sign Language", 
             "Teanga Chomharthaíochta na hÉireann"
         ], 
         "region": "IE", 
@@ -57708,7 +57798,7 @@
         "tag": "isg", 
         "tags": [
             "isg-IE", 
-            "isg-Zyyy"
+            "isg-Zxxx"
         ]
     }, 
     {
@@ -57803,7 +57893,7 @@
         "tag": "iso-Latn"
     }, 
     {
-        "full": "isr-Zyyy-IL", 
+        "full": "isr-Zxxx-IL", 
         "iana": "Israeli Sign Language", 
         "iso639_3": "isr", 
         "name": "Israeli Sign Language", 
@@ -57816,7 +57906,7 @@
         "tag": "isr", 
         "tags": [
             "isr-IL", 
-            "isr-Zyyy"
+            "isr-Zxxx"
         ]
     }, 
     {
@@ -58361,6 +58451,42 @@
         "regions": "CN DK TH US VN", 
         "sldr": false, 
         "tag": "ium-Laoo"
+    }, 
+    {
+        "full": "ium-Thai-TH", 
+        "iana": "Iu Mien", 
+        "iso639_3": "ium", 
+        "name": "Iu Mien", 
+        "names": [
+            "Ban Yao", 
+            "Dao Do", 
+            "Dao Thanh Phan", 
+            "Dìu", 
+            "Ewmien", 
+            "Highland Yao", 
+            "Iu Mienh", 
+            "Kim Mien", 
+            "Man", 
+            "Mian", 
+            "Mien", 
+            "Mienh", 
+            "Mjen", 
+            "Myen", 
+            "Pan Yao", 
+            "Red Dao", 
+            "Yao", 
+            "Yao Kimmien", 
+            "Yao Mienh", 
+            "Yao Ogang", 
+            "Yiu Mien", 
+            "Youmian", 
+            "Yu Mien"
+        ], 
+        "region": "TH", 
+        "regionname": "Thailand", 
+        "regions": "CN DK LA US VN", 
+        "sldr": false, 
+        "tag": "ium-Thai"
     }, 
     {
         "full": "ium-Latn-CN-x-1954", 
@@ -59180,14 +59306,14 @@
         "full": "jbn-Arab-LY", 
         "iana": "Nafusi", 
         "iso639_3": "jbn", 
-        "name": "Shilha", 
+        "name": "Nafusi", 
         "names": [
             "Djerbi", 
             "Jabal Nafusi", 
             "Jbel Nafusi", 
             "Jebel Nefusi", 
-            "Nafusi", 
             "Nefusi", 
+            "Shilha", 
             "Tunisian Berber"
         ], 
         "region": "LY", 
@@ -59299,7 +59425,7 @@
         ]
     }, 
     {
-        "full": "jcs-Zyyy-JM", 
+        "full": "jcs-Zxxx-JM", 
         "iana": "Jamaican Country Sign Language", 
         "iso639_3": "jcs", 
         "name": "Konchri Sain", 
@@ -59314,7 +59440,7 @@
         "tag": "jcs", 
         "tags": [
             "jcs-JM", 
-            "jcs-Zyyy"
+            "jcs-Zxxx"
         ]
     }, 
     {
@@ -59782,7 +59908,7 @@
         ]
     }, 
     {
-        "full": "jhs-Zyyy-NP", 
+        "full": "jhs-Zxxx-NP", 
         "iana": "Jhankot Sign Language", 
         "iso639_3": "jhs", 
         "name": "Jhankot Sign Language", 
@@ -59792,7 +59918,7 @@
         "tag": "jhs", 
         "tags": [
             "jhs-NP", 
-            "jhs-Zyyy"
+            "jhs-Zxxx"
         ]
     }, 
     {
@@ -60299,7 +60425,7 @@
         ]
     }, 
     {
-        "full": "jls-Zyyy-JM", 
+        "full": "jls-Zxxx-JM", 
         "iana": "Jamaican Sign Language", 
         "iso639_3": "jls", 
         "name": "Jamaican Sign Language", 
@@ -60312,7 +60438,7 @@
         "tag": "jls", 
         "tags": [
             "jls-JM", 
-            "jls-Zyyy"
+            "jls-Zxxx"
         ]
     }, 
     {
@@ -60744,7 +60870,7 @@
         ]
     }, 
     {
-        "full": "jos-Zyyy-JO", 
+        "full": "jos-Zxxx-JO", 
         "iana": "Jordanian Sign Language", 
         "iso639_3": "jos", 
         "name": "Jordanian Sign Language", 
@@ -60758,7 +60884,7 @@
         "tag": "jos", 
         "tags": [
             "jos-JO", 
-            "jos-Zyyy"
+            "jos-Zxxx"
         ]
     }, 
     {
@@ -60957,7 +61083,7 @@
         ]
     }, 
     {
-        "full": "jsl-Zyyy-JP", 
+        "full": "jsl-Zxxx-JP", 
         "iana": "Japanese Sign Language", 
         "iso639_3": "jsl", 
         "name": "Japanese Sign Language", 
@@ -60974,7 +61100,7 @@
         "tag": "jsl", 
         "tags": [
             "jsl-JP", 
-            "jsl-Zyyy"
+            "jsl-Zxxx"
         ]
     }, 
     {
@@ -61252,7 +61378,7 @@
         ]
     }, 
     {
-        "full": "jus-Zyyy-NP", 
+        "full": "jus-Zxxx-NP", 
         "iana": "Jumla Sign Language", 
         "iso639_3": "jus", 
         "name": "Jumla Sign Language", 
@@ -61262,7 +61388,7 @@
         "tag": "jus", 
         "tags": [
             "jus-NP", 
-            "jus-Zyyy"
+            "jus-Zxxx"
         ]
     }, 
     {
@@ -64844,7 +64970,7 @@
         ]
     }, 
     {
-        "full": "kgi-Zyyy-MY", 
+        "full": "kgi-Zxxx-MY", 
         "iana": "Selangor Sign Language", 
         "iso639_3": "kgi", 
         "name": "Selangor Sign Language", 
@@ -64858,7 +64984,7 @@
         "tag": "kgi", 
         "tags": [
             "kgi-MY", 
-            "kgi-Zyyy"
+            "kgi-Zxxx"
         ]
     }, 
     {
@@ -65160,11 +65286,11 @@
         "full": "kgy-Qaax-CN", 
         "iana": "Kyerung", 
         "iso639_3": "kgy", 
-        "name": "Kyirong", 
+        "name": "Kyerung", 
         "names": [
             "Gyirong", 
             "Kyerong", 
-            "Kyerung", 
+            "Kyirong", 
             "Kyirong kai", 
             "Kyirong-nga", 
             "Kyirung"
@@ -66233,7 +66359,7 @@
             "Kwanyama"
         ], 
         "iso639_3": "kua", 
-        "name": "Kwanyama", 
+        "name": "Oshiwambo", 
         "names": [
             "Cuanhama", 
             "Humba", 
@@ -66241,10 +66367,10 @@
             "Kuanyama", 
             "Kwancama", 
             "Kwanjama", 
+            "Kwanyama", 
             "Ochikwanyama", 
             "Oshikuanjama", 
             "Oshikwanyama", 
-            "Oshiwambo", 
             "Otjiwambo", 
             "Ovambo", 
             "Owambo", 
@@ -66751,9 +66877,9 @@
         "full": "kjp-Thai-TH", 
         "iana": "Pwo Eastern Karen", 
         "iso639_3": "kjp", 
-        "name": "Karen, Pwo Eastern", 
+        "name": "Karen, Pwo West-Central Thailand", 
         "names": [
-            "Karen, Pwo West-Central Thailand", 
+            "Karen, Pwo Eastern", 
             "Moulmein Pwo Karen", 
             "Phlong", 
             "Phlou", 
@@ -69115,16 +69241,16 @@
             "Salako"
         ], 
         "iso639_3": "knx", 
-        "name": "Salako", 
+        "name": "Kendayan", 
         "names": [
             "Baicit", 
             "Damea", 
             "Kanayatn", 
             "Kenayatn", 
-            "Kendayan", 
             "Kendayan Dayak", 
             "Kendayan-Ambawang", 
             "Salakau", 
+            "Salako", 
             "Selakau", 
             "Selako", 
             "Silakau"
@@ -69161,11 +69287,11 @@
         "full": "knz-Latn-BF", 
         "iana": "Kalamsé", 
         "iso639_3": "knz", 
-        "name": "Sàmòmá", 
+        "name": "Kalamsé", 
         "names": [
-            "Kalamsé", 
             "Kalemsé", 
             "Kalenga", 
+            "Sàmòmá", 
             "Sàmó"
         ], 
         "region": "BF", 
@@ -70554,13 +70680,13 @@
         "full": "kqv-Qaax-ID", 
         "iana": "Okolod", 
         "iso639_3": "kqv", 
-        "name": "Murut, Kolod", 
+        "name": "Okolod", 
         "names": [
             "Kolod", 
             "Kolor", 
             "Kolour", 
             "Kolur", 
-            "Okolod", 
+            "Murut, Kolod", 
             "Okolod Murut"
         ], 
         "region": "ID", 
@@ -71552,12 +71678,12 @@
         "full": "ksp-Latn-CF", 
         "iana": "Kaba", 
         "iso639_3": "ksp", 
-        "name": "Kaba", 
+        "name": "Kabba", 
         "names": [
+            "Kaba", 
             "Kaba de Baibokoum", 
             "Kaba de Goré", 
             "Kaba de Paoua", 
-            "Kabba", 
             "Sara", 
             "Western Kaba"
         ], 
@@ -72265,7 +72391,6 @@
     {
         "full": "ktz-Latn-NA", 
         "iana": [
-            "Ju/'hoan", 
             "Juǀʼhoan", 
             "Juǀʼhoansi"
         ], 
@@ -72302,14 +72427,35 @@
         "iso639_3": "kur", 
         "localname": "kurdî", 
         "name": "Kurdish", 
+        "names": [
+            "Badinani", 
+            "Bahdini", 
+            "Behdini", 
+            "Eastern Kurmanji", 
+            "Kermancî", 
+            "Khorasani", 
+            "Khorasani Kurmanji", 
+            "Kirmanciya Jori", 
+            "Kirmancî", 
+            "Kordi", 
+            "Kordi Kormanji", 
+            "Kurdi", 
+            "Kurdish, Northern", 
+            "Kurdî", 
+            "Kurmancî", 
+            "Kurmanji", 
+            "Êzdîkî"
+        ], 
         "region": "TR", 
         "regionname": "Turkey", 
-        "regions": "IQ IR", 
+        "regions": "AM AZ BE BH CA CH DE DK FI GE GR IQ IR IT KG KW KZ LB NL NO RU SE SY TM US", 
         "sldr": true, 
         "tag": "ku", 
         "tags": [
             "ku-TR", 
-            "ku-Latn"
+            "ku-Latn", 
+            "kmr-Latn", 
+            "kmr-Latn-TR"
         ]
     }, 
     {
@@ -73171,7 +73317,7 @@
         ]
     }, 
     {
-        "full": "kvk-Zyyy-KR", 
+        "full": "kvk-Zxxx-KR", 
         "iana": "Korean Sign Language", 
         "iso639_3": "kvk", 
         "name": "Korean Sign Language", 
@@ -73181,7 +73327,7 @@
         "tag": "kvk", 
         "tags": [
             "kvk-KR", 
-            "kvk-Zyyy"
+            "kvk-Zxxx"
         ]
     }, 
     {
@@ -76605,7 +76751,7 @@
         "tag": "lbr-Deva"
     }, 
     {
-        "full": "lbs-Zyyy-LY", 
+        "full": "lbs-Zxxx-LY", 
         "iana": "Libyan Sign Language", 
         "iso639_3": "lbs", 
         "name": "Libyan Sign Language", 
@@ -76615,7 +76761,7 @@
         "tag": "lbs", 
         "tags": [
             "lbs-LY", 
-            "lbs-Zyyy"
+            "lbs-Zxxx"
         ]
     }, 
     {
@@ -77291,7 +77437,7 @@
         "full": "led-Latn-CD", 
         "iana": "Lendu", 
         "iso639_3": "led", 
-        "name": "Ndrulo", 
+        "name": "Lendu", 
         "names": [
             "Bale", 
             "Baledha", 
@@ -77303,7 +77449,7 @@
             "Hema-Nord", 
             "Kihema-Nord", 
             "Kilendu", 
-            "Lendu"
+            "Ndrulo"
         ], 
         "region": "CD", 
         "regionname": "The Democratic Republic of the Congo", 
@@ -77777,7 +77923,10 @@
     }, 
     {
         "full": "lg-Latn-UG", 
-        "iana": "Ganda", 
+        "iana": [
+            "Ganda", 
+            "Luganda"
+        ], 
         "iso639_3": "lug", 
         "localname": "Luganda", 
         "name": "Ganda", 
@@ -79597,7 +79746,7 @@
         ]
     }, 
     {
-        "full": "lls-Zyyy-LT", 
+        "full": "lls-Zxxx-LT", 
         "iana": "Lithuanian Sign Language", 
         "iso639_3": "lls", 
         "name": "Lithuanian Sign Language", 
@@ -79612,7 +79761,7 @@
         "tag": "lls", 
         "tags": [
             "lls-LT", 
-            "lls-Zyyy"
+            "lls-Zxxx"
         ]
     }, 
     {
@@ -81466,7 +81615,7 @@
     }, 
     {
         "deprecated": true, 
-        "full": "lsg-Zyyy-FR", 
+        "full": "lsg-Zxxx-FR", 
         "iana": "Lyons Sign Language", 
         "iso639_3": "lsg", 
         "name": "Lyons Sign Language", 
@@ -81476,7 +81625,7 @@
         "tag": "lsg", 
         "tags": [
             "lsg-FR", 
-            "lsg-Zyyy"
+            "lsg-Zxxx"
         ]
     }, 
     {
@@ -81535,7 +81684,7 @@
         ]
     }, 
     {
-        "full": "lsl-Zyyy-LV", 
+        "full": "lsl-Zxxx-LV", 
         "iana": "Latvian Sign Language", 
         "iso639_3": "lsl", 
         "name": "Latvian Sign Language", 
@@ -81549,7 +81698,7 @@
         "tag": "lsl", 
         "tags": [
             "lsl-LV", 
-            "lsl-Zyyy"
+            "lsl-Zxxx"
         ]
     }, 
     {
@@ -81580,7 +81729,20 @@
         ]
     }, 
     {
-        "full": "lso-Zyyy-LA", 
+        "full": "lsn-Zxxx-CN", 
+        "iso639_3": "lsn", 
+        "name": "Tibetan Sign Language", 
+        "region": "CN", 
+        "regionname": "China", 
+        "sldr": false, 
+        "tag": "lsn", 
+        "tags": [
+            "lsn-CN", 
+            "lsn-Zxxx"
+        ]
+    }, 
+    {
+        "full": "lso-Zxxx-LA", 
         "iana": "Laos Sign Language", 
         "iso639_3": "lso", 
         "name": "Laos Sign Language", 
@@ -81590,11 +81752,11 @@
         "tag": "lso", 
         "tags": [
             "lso-LA", 
-            "lso-Zyyy"
+            "lso-Zxxx"
         ]
     }, 
     {
-        "full": "lsp-Zyyy-PA", 
+        "full": "lsp-Zxxx-PA", 
         "iana": [
             "Panamanian Sign Language", 
             "Lengua de Señas Panameñas"
@@ -81610,7 +81772,7 @@
         "tag": "lsp", 
         "tags": [
             "lsp-PA", 
-            "lsp-Zyyy"
+            "lsp-Zxxx"
         ]
     }, 
     {
@@ -81651,7 +81813,7 @@
         ]
     }, 
     {
-        "full": "lst-Zyyy-TT", 
+        "full": "lst-Zxxx-TT", 
         "iana": "Trinidad and Tobago Sign Language", 
         "iso639_3": "lst", 
         "name": "Trinidad and Tobago Sign Language", 
@@ -81667,11 +81829,24 @@
         "tag": "lst", 
         "tags": [
             "lst-TT", 
-            "lst-Zyyy"
+            "lst-Zxxx"
         ]
     }, 
     {
-        "full": "lsy-Zyyy-MU", 
+        "full": "lsv-Zxxx-PE", 
+        "iso639_3": "lsv", 
+        "name": "Sivia Sign Language", 
+        "region": "PE", 
+        "regionname": "Peru", 
+        "sldr": false, 
+        "tag": "lsv", 
+        "tags": [
+            "lsv-PE", 
+            "lsv-Zxxx"
+        ]
+    }, 
+    {
+        "full": "lsy-Zxxx-MU", 
         "iana": "Mauritian Sign Language", 
         "iso639_3": "lsy", 
         "name": "Mauritian Sign Language", 
@@ -81684,7 +81859,7 @@
         "tag": "lsy", 
         "tags": [
             "lsy-MU", 
-            "lsy-Zyyy"
+            "lsy-Zxxx"
         ]
     }, 
     {
@@ -82109,12 +82284,12 @@
         ], 
         "iso639_3": "luo", 
         "localname": "Dholuo", 
-        "name": "Luo", 
+        "name": "Dholuo", 
         "names": [
-            "Dholuo", 
             "Doluo", 
             "Kavirondo", 
-            "Kidjaluo"
+            "Kidjaluo", 
+            "Luo"
         ], 
         "region": "KE", 
         "regionname": "Kenya", 
@@ -82453,6 +82628,18 @@
         ]
     }, 
     {
+        "full": "lvi-Zyyy-LA", 
+        "name": "Lavi", 
+        "region": "LA", 
+        "regionname": "Lao People's Democratic Republic", 
+        "sldr": false, 
+        "tag": "lvi", 
+        "tags": [
+            "lvi-LA", 
+            "lvi-Zyyy"
+        ]
+    }, 
+    {
         "full": "lvk-Latn-SB", 
         "iana": "Lavukaleve", 
         "iso639_3": "lvk", 
@@ -82495,9 +82682,9 @@
         "full": "lwa-Zyyy-CD", 
         "iana": "Lwalu", 
         "iso639_3": "lwa", 
-        "name": "Khongo", 
+        "name": "Lwalu", 
         "names": [
-            "Lwalu", 
+            "Khongo", 
             "Lwalwa"
         ], 
         "region": "CD", 
@@ -82635,7 +82822,7 @@
         ]
     }, 
     {
-        "full": "lws-Zyyy-MW", 
+        "full": "lws-Zxxx-MW", 
         "iana": "Malawian Sign Language", 
         "iso639_3": "lws", 
         "name": "Malawian Sign Language", 
@@ -82648,7 +82835,7 @@
         "tag": "lws", 
         "tags": [
             "lws-MW", 
-            "lws-Zyyy"
+            "lws-Zxxx"
         ]
     }, 
     {
@@ -84081,14 +84268,14 @@
         "full": "mcf-Latn-PE", 
         "iana": "Matsés", 
         "iso639_3": "mcf", 
-        "name": "Matsés", 
+        "name": "Matses", 
         "names": [
             "Magirona", 
             "Majoruna-Matsés", 
             "Majuruna", 
             "Matse", 
-            "Matses", 
             "Matses-Mayoruna", 
+            "Matsés", 
             "Maxirona", 
             "Maxuruna", 
             "Mayiruna", 
@@ -84461,14 +84648,14 @@
         "full": "mcx-Latn-CF", 
         "iana": "Mpiemo", 
         "iso639_3": "mcx", 
-        "name": "Mpyemo", 
+        "name": "Mpiemo", 
         "names": [
             "Bimu", 
             "Mbimou", 
             "Mbimu", 
             "Mbyemo", 
-            "Mpiemo", 
-            "Mpo"
+            "Mpo", 
+            "Mpyemo"
         ], 
         "region": "CF", 
         "regionname": "Central African Republic", 
@@ -84757,7 +84944,7 @@
         ]
     }, 
     {
-        "full": "mdl-Zyyy-MT", 
+        "full": "mdl-Zxxx-MT", 
         "iana": "Maltese Sign Language", 
         "iso639_3": "mdl", 
         "name": "Maltese Sign Language", 
@@ -84772,7 +84959,7 @@
         "tag": "mdl", 
         "tags": [
             "mdl-MT", 
-            "mdl-Zyyy"
+            "mdl-Zxxx"
         ]
     }, 
     {
@@ -85465,12 +85652,12 @@
         "full": "mev-Latn-LR", 
         "iana": "Mano", 
         "iso639_3": "mev", 
-        "name": "Mano", 
+        "name": "Maan", 
         "names": [
             "Maa", 
-            "Maan", 
             "Mah", 
             "Mann", 
+            "Mano", 
             "Manon", 
             "Mawe", 
             "Mã́ã́"
@@ -85509,16 +85696,16 @@
         "full": "mey-Arab-MR", 
         "iana": "Hassaniyya", 
         "iso639_3": "mey", 
-        "name": "Arabic, Hassaniyya", 
+        "name": "Hassaniyya", 
         "names": [
             "Arabic, Hasanya", 
+            "Arabic, Hassaniyya", 
             "Hasaniya", 
             "Hasanya", 
             "Hasanya Arabic", 
             "Hassani", 
             "Hassania", 
             "Hassaniya", 
-            "Hassaniyya", 
             "Hassaniyya Arabic", 
             "Klem El Bithan", 
             "Maure", 
@@ -85539,16 +85726,16 @@
         "full": "mey-Latn-MR", 
         "iana": "Hassaniyya", 
         "iso639_3": "mey", 
-        "name": "Arabic, Hassaniyya", 
+        "name": "Hassaniyya", 
         "names": [
             "Arabic, Hasanya", 
+            "Arabic, Hassaniyya", 
             "Hasaniya", 
             "Hasanya", 
             "Hasanya Arabic", 
             "Hassani", 
             "Hassania", 
             "Hassaniya", 
-            "Hassaniyya", 
             "Hassaniyya Arabic", 
             "Klem El Bithan", 
             "Maure", 
@@ -85943,7 +86130,7 @@
         ]
     }, 
     {
-        "full": "mfs-Zyyy-MX", 
+        "full": "mfs-Zxxx-MX", 
         "iana": "Mexican Sign Language", 
         "iso639_3": "mfs", 
         "name": "Mexican Sign Language", 
@@ -85962,7 +86149,7 @@
         "tag": "mfs", 
         "tags": [
             "mfs-MX", 
-            "mfs-Zyyy"
+            "mfs-Zxxx"
         ]
     }, 
     {
@@ -86482,7 +86669,7 @@
         ]
     }, 
     {
-        "full": "mgp-Qabl-NP", 
+        "full": "mgp-Qabl-NP-x-akkha", 
         "iana": "Eastern Magar", 
         "iso639_3": "mgp", 
         "name": "Magar, Eastern", 
@@ -86497,7 +86684,7 @@
         "regionname": "Nepal", 
         "regions": "BT IN", 
         "sldr": false, 
-        "tag": "mgp-Qabl"
+        "tag": "mgp-Qabl-x-akkha"
     }, 
     {
         "full": "mgq-Latn-TZ", 
@@ -87030,12 +87217,12 @@
             "Darang Deng"
         ], 
         "iso639_3": "mhu", 
-        "name": "Darang Deng", 
+        "name": "Digaro-Mishmi", 
         "names": [
             "Darang", 
+            "Darang Deng", 
             "Darang Dengyu", 
             "Digaro", 
-            "Digaro-Mishmi", 
             "Digaru", 
             "Mishmi", 
             "Taaon", 
@@ -87245,7 +87432,7 @@
         ]
     }, 
     {
-        "full": "mic-Qabg-CA", 
+        "full": "mic-Qabg-CA-x-kauder", 
         "iana": [
             "Mi'kmaq", 
             "Micmac"
@@ -87267,7 +87454,7 @@
         "regionname": "Canada", 
         "regions": "US", 
         "sldr": false, 
-        "tag": "mic-Qabg"
+        "tag": "mic-Qabg-x-kauder"
     }, 
     {
         "full": "mid-Mand-IQ", 
@@ -91759,7 +91946,7 @@
         ]
     }, 
     {
-        "full": "mre-Zyyy-US", 
+        "full": "mre-Zxxx-US", 
         "iana": "Martha's Vineyard Sign Language", 
         "iso639_3": "mre", 
         "name": "Martha's Vineyard Sign Language", 
@@ -91770,7 +91957,7 @@
         "tag": "mre", 
         "tags": [
             "mre-US", 
-            "mre-Zyyy"
+            "mre-Zxxx"
         ]
     }, 
     {
@@ -92374,7 +92561,7 @@
         "tag": "msc-Latn"
     }, 
     {
-        "full": "msd-Zyyy-MX", 
+        "full": "msd-Zxxx-MX", 
         "iana": "Yucatec Maya Sign Language", 
         "iso639_3": "msd", 
         "name": "Yucatec Maya Sign Language", 
@@ -92394,7 +92581,7 @@
         "tag": "msd", 
         "tags": [
             "msd-MX", 
-            "msd-Zyyy"
+            "msd-Zxxx"
         ]
     }, 
     {
@@ -92640,7 +92827,7 @@
         ]
     }, 
     {
-        "full": "msr-Zyyy-MN", 
+        "full": "msr-Zxxx-MN", 
         "iana": "Mongolian Sign Language", 
         "iso639_3": "msr", 
         "name": "Mongolian Sign Language", 
@@ -92650,7 +92837,7 @@
         "tag": "msr", 
         "tags": [
             "msr-MN", 
-            "msr-Zyyy"
+            "msr-Zxxx"
         ]
     }, 
     {
@@ -94950,16 +95137,16 @@
             "Geman Deng"
         ], 
         "iso639_3": "mxj", 
-        "name": "Geman Deng", 
+        "name": "Miju-Mishmi", 
         "names": [
             "Eastern Mishmi", 
             "Geman Dend", 
+            "Geman Deng", 
             "Kaman", 
             "Keman", 
             "Kman", 
             "Miji", 
             "Miju", 
-            "Miju-Mishmi", 
             "Mishmi"
         ], 
         "region": "IN", 
@@ -95794,7 +95981,7 @@
         "tag": "mzb-Tfng"
     }, 
     {
-        "full": "mzc-Zyyy-MG", 
+        "full": "mzc-Zxxx-MG", 
         "iana": "Madagascar Sign Language", 
         "iso639_3": "mzc", 
         "name": "Madagascar Sign Language", 
@@ -95807,7 +95994,7 @@
         "tag": "mzc", 
         "tags": [
             "mzc-MG", 
-            "mzc-Zyyy"
+            "mzc-Zxxx"
         ]
     }, 
     {
@@ -95845,7 +96032,7 @@
         ]
     }, 
     {
-        "full": "mzg-Zyyy-VA", 
+        "full": "mzg-Zxxx-VA", 
         "iana": "Monastic Sign Language", 
         "iso639_3": "mzg", 
         "name": "Monastic Sign Language", 
@@ -95855,7 +96042,7 @@
         "tag": "mzg", 
         "tags": [
             "mzg-VA", 
-            "mzg-Zyyy"
+            "mzg-Zxxx"
         ]
     }, 
     {
@@ -96179,7 +96366,7 @@
         ]
     }, 
     {
-        "full": "mzy-Zyyy-MZ", 
+        "full": "mzy-Zxxx-MZ", 
         "iana": "Mozambican Sign Language", 
         "iso639_3": "mzy", 
         "name": "Mozambican Sign Language", 
@@ -96189,7 +96376,7 @@
         "tag": "mzy", 
         "tags": [
             "mzy-MZ", 
-            "mzy-Zyyy"
+            "mzy-Zxxx"
         ]
     }, 
     {
@@ -97003,7 +97190,7 @@
         ]
     }, 
     {
-        "full": "nbs-Zyyy-NA", 
+        "full": "nbs-Zxxx-NA", 
         "iana": "Namibian Sign Language", 
         "iso639_3": "nbs", 
         "name": "Namibian Sign Language", 
@@ -97013,7 +97200,7 @@
         "tag": "nbs", 
         "tags": [
             "nbs-NA", 
-            "nbs-Zyyy"
+            "nbs-Zxxx"
         ]
     }, 
     {
@@ -97475,7 +97662,7 @@
         "tag": "ncr-Latn"
     }, 
     {
-        "full": "ncs-Zyyy-NI", 
+        "full": "ncs-Zxxx-NI", 
         "iana": "Nicaraguan Sign Language", 
         "iso639_3": "ncs", 
         "name": "Nicaraguan Sign Language", 
@@ -97490,7 +97677,7 @@
         "tag": "ncs", 
         "tags": [
             "ncs-NI", 
-            "ncs-Zyyy"
+            "ncs-Zxxx"
         ]
     }, 
     {
@@ -98587,7 +98774,7 @@
         "tag": "new-Newa"
     }, 
     {
-        "full": "new-Qabb-NP", 
+        "full": "new-Qabb-NP-x-ranjana", 
         "iana": [
             "Newari", 
             "Nepal Bhasa"
@@ -98604,7 +98791,7 @@
         "regionname": "Nepal", 
         "regions": "IN", 
         "sldr": false, 
-        "tag": "new-Qabb"
+        "tag": "new-Qabb-x-ranjana"
     }, 
     {
         "full": "nex-Latn-PG", 
@@ -98897,10 +99084,7 @@
     }, 
     {
         "full": "ngh-Latn-ZA", 
-        "iana": [
-            "N/u", 
-            "Nǀu"
-        ], 
+        "iana": "Nǀu", 
         "iso639_3": "ngh", 
         "name": "N|u", 
         "names": [
@@ -99872,12 +100056,12 @@
         "full": "nih-Latn-TZ", 
         "iana": "Nyiha (Tanzania)", 
         "iso639_3": "nih", 
-        "name": "Nyiha", 
+        "name": "Nyiha, Tanzania", 
         "names": [
             "Ishinyiha", 
             "Isinyixa", 
             "Kinyiha", 
-            "Nyiha, Tanzania", 
+            "Nyiha", 
             "Nyika", 
             "Nyixa", 
             "Shinyiha"
@@ -101785,10 +101969,7 @@
     }, 
     {
         "full": "nmn-Latn-BW", 
-        "iana": [
-            "!Xóõ", 
-            "ǃXóõ"
-        ], 
+        "iana": "ǃXóõ", 
         "iso639_3": "nmn", 
         "name": "!Xóõ", 
         "names": [
@@ -103454,13 +103635,13 @@
             "Guernésiais"
         ], 
         "iso639_3": "nrf", 
-        "name": "Guernésiais", 
+        "name": "Jèrriais", 
         "names": [
             "Dgernesiais", 
             "Guernsey French", 
+            "Guernésiais", 
             "Jersey French", 
             "Jersey Norman", 
-            "Jèrriais", 
             "Norman French", 
             "Normand", 
             "Normaund"
@@ -103817,7 +103998,7 @@
         ]
     }, 
     {
-        "full": "nsi-Zyyy-NG", 
+        "full": "nsi-Zxxx-NG", 
         "iana": "Nigerian Sign Language", 
         "iso639_3": "nsi", 
         "name": "Nigerian Sign Language", 
@@ -103830,7 +104011,7 @@
         "tag": "nsi", 
         "tags": [
             "nsi-NG", 
-            "nsi-Zyyy"
+            "nsi-Zxxx"
         ]
     }, 
     {
@@ -103870,7 +104051,7 @@
         "tag": "nsk-Latn"
     }, 
     {
-        "full": "nsl-Zyyy-NO", 
+        "full": "nsl-Zxxx-NO", 
         "iana": "Norwegian Sign Language", 
         "iso639_3": "nsl", 
         "name": "Norwegian Sign Language", 
@@ -103884,7 +104065,7 @@
         "tag": "nsl", 
         "tags": [
             "nsl-NO", 
-            "nsl-Zyyy"
+            "nsl-Zxxx"
         ]
     }, 
     {
@@ -103969,7 +104150,7 @@
         "tag": "nso-Brai"
     }, 
     {
-        "full": "nsp-Zyyy-NP", 
+        "full": "nsp-Zxxx-NP", 
         "iana": "Nepalese Sign Language", 
         "iso639_3": "nsp", 
         "name": "Nepalese Sign Language", 
@@ -103982,7 +104163,7 @@
         "tag": "nsp", 
         "tags": [
             "nsp-NP", 
-            "nsp-Zyyy"
+            "nsp-Zxxx"
         ]
     }, 
     {
@@ -104000,7 +104181,7 @@
         ]
     }, 
     {
-        "full": "nsr-Zyyy-CA", 
+        "full": "nsr-Zxxx-CA", 
         "iana": "Maritime Sign Language", 
         "iso639_3": "nsr", 
         "name": "Maritime Sign Language", 
@@ -104013,7 +104194,7 @@
         "tag": "nsr", 
         "tags": [
             "nsr-CA", 
-            "nsr-Zyyy"
+            "nsr-Zxxx"
         ]
     }, 
     {
@@ -106196,7 +106377,7 @@
         "tag": "nzm-Latn"
     }, 
     {
-        "full": "nzs-Zyyy-NZ", 
+        "full": "nzs-Zxxx-NZ", 
         "iana": "New Zealand Sign Language", 
         "iso639_3": "nzs", 
         "name": "New Zealand Sign Language", 
@@ -106209,7 +106390,7 @@
         "tag": "nzs", 
         "tags": [
             "nzs-NZ", 
-            "nzs-Zyyy"
+            "nzs-Zxxx"
         ]
     }, 
     {
@@ -107122,12 +107303,12 @@
         "full": "oki-Latn-KE", 
         "iana": "Okiek", 
         "iso639_3": "oki", 
-        "name": "Akie", 
+        "name": "Okiek", 
         "names": [
+            "Akie", 
             "Akiek", 
             "Kinare", 
-            "Ogiek", 
-            "Okiek"
+            "Ogiek"
         ], 
         "region": "KE", 
         "regionname": "Kenya", 
@@ -109786,14 +109967,14 @@
         "full": "pap-Latn-AW", 
         "iana": "Papiamento", 
         "iso639_3": "pap", 
-        "name": "Papiamentu", 
+        "name": "Papiamento", 
         "names": [
             "Curassese", 
             "Curaçoleño", 
             "Papiam", 
             "Papiamen", 
-            "Papiamento", 
-            "Papiamentoe"
+            "Papiamentoe", 
+            "Papiamentu"
         ], 
         "region": "AW", 
         "regionname": "Aruba", 
@@ -111324,11 +111505,11 @@
         "full": "pfl-Latn-DE", 
         "iana": "Pfaelzisch", 
         "iso639_3": "pfl", 
-        "name": "Lorraine Franconian", 
+        "name": "Palatinate Franconian", 
         "names": [
             "Francique", 
+            "Lorraine Franconian", 
             "Lottrìnger Plàtt", 
-            "Palatinate Franconian", 
             "Palatine German", 
             "Pfaelzisch", 
             "Pfälzisch", 
@@ -111489,7 +111670,7 @@
         ]
     }, 
     {
-        "full": "pgz-Zyyy-PG", 
+        "full": "pgz-Zxxx-PG", 
         "iana": "Papua New Guinean Sign Language", 
         "iso639_3": "pgz", 
         "name": "Papua New Guinean Sign Language", 
@@ -111503,7 +111684,7 @@
         "tag": "pgz", 
         "tags": [
             "pgz-PG", 
-            "pgz-Zyyy"
+            "pgz-Zxxx"
         ]
     }, 
     {
@@ -111573,13 +111754,13 @@
         "full": "phh-Qaax-VN", 
         "iana": "Phukha", 
         "iso639_3": "phh", 
-        "name": "Phukha", 
+        "name": "Phula", 
         "names": [
             "Fu Khla", 
             "Phu Kha", 
             "Phu Khla", 
             "Phu La", 
-            "Phula", 
+            "Phukha", 
             "Phù Lá", 
             "Phù Lá Hán"
         ], 
@@ -111751,13 +111932,13 @@
         "full": "phu-Qaax-TH", 
         "iana": "Phuan", 
         "iso639_3": "phu", 
-        "name": "Lao Phuon", 
+        "name": "Phuan", 
         "names": [
             "Lao Phuan", 
+            "Lao Phuon", 
             "Phoan", 
             "Phu Un", 
             "Phu-uen", 
-            "Phuan", 
             "Phuon", 
             "Poan", 
             "Puan"
@@ -112542,7 +112723,7 @@
         "tag": "pkr-Mlym"
     }, 
     {
-        "full": "pks-Zyyy-PK", 
+        "full": "pks-Zxxx-PK", 
         "iana": "Pakistan Sign Language", 
         "iso639_3": "pks", 
         "name": "Pakistan Sign Language", 
@@ -112558,7 +112739,7 @@
         "tag": "pks", 
         "tags": [
             "pks-PK", 
-            "pks-Zyyy"
+            "pks-Zxxx"
         ]
     }, 
     {
@@ -113210,10 +113391,10 @@
         "full": "pmm-Qaax-CM", 
         "iana": "Pomo", 
         "iso639_3": "pmm", 
-        "name": "Pomo", 
+        "name": "Pol", 
         "names": [
             "Congo Pol", 
-            "Pol", 
+            "Pomo", 
             "Pori", 
             "Pul", 
             "Pólrì"
@@ -113428,6 +113609,19 @@
         "tags": [
             "pnc-ID", 
             "pnc-Qaax"
+        ]
+    }, 
+    {
+        "full": "pnd-Qaax-AO", 
+        "iso639_3": "pnd", 
+        "name": "Mpinda", 
+        "region": "AO", 
+        "regionname": "Angola", 
+        "sldr": false, 
+        "tag": "pnd", 
+        "tags": [
+            "pnd-AO", 
+            "pnd-Qaax"
         ]
     }, 
     {
@@ -114664,7 +114858,7 @@
         "tag": "prk-Latn"
     }, 
     {
-        "full": "prl-Zyyy-PE", 
+        "full": "prl-Zxxx-PE", 
         "iana": "Peruvian Sign Language", 
         "iso639_3": "prl", 
         "name": "Peruvian Sign Language", 
@@ -114680,7 +114874,7 @@
         "tag": "prl", 
         "tags": [
             "prl-PE", 
-            "prl-Zyyy"
+            "prl-Zxxx"
         ]
     }, 
     {
@@ -114920,7 +115114,7 @@
         "tag": "prx-Tibt"
     }, 
     {
-        "full": "prz-Zyyy-CO", 
+        "full": "prz-Zxxx-CO", 
         "iana": "Providencia Sign Language", 
         "iso639_3": "prz", 
         "name": "Providencia Sign Language", 
@@ -114930,7 +115124,7 @@
         "tag": "prz", 
         "tags": [
             "prz-CO", 
-            "prz-Zyyy"
+            "prz-Zxxx"
         ]
     }, 
     {
@@ -114994,7 +115188,7 @@
         ]
     }, 
     {
-        "full": "psc-Zyyy-IR", 
+        "full": "psc-Zxxx-IR", 
         "iana": "Persian Sign Language", 
         "iso639_3": "psc", 
         "name": "Persian Sign Language", 
@@ -115004,11 +115198,11 @@
         "tag": "psc", 
         "tags": [
             "psc-IR", 
-            "psc-Zyyy"
+            "psc-Zxxx"
         ]
     }, 
     {
-        "full": "psd-Zyyy-US", 
+        "full": "psd-Zxxx-US", 
         "iana": "Plains Indian Sign Language", 
         "iso639_3": "psd", 
         "name": "Plains Indian Sign Language", 
@@ -115032,7 +115226,7 @@
         "tag": "psd", 
         "tags": [
             "psd-US", 
-            "psd-Zyyy"
+            "psd-Zxxx"
         ]
     }, 
     {
@@ -115062,7 +115256,7 @@
         ]
     }, 
     {
-        "full": "psg-Zyyy-MY", 
+        "full": "psg-Zxxx-MY", 
         "iana": "Penang Sign Language", 
         "iso639_3": "psg", 
         "name": "Penang Sign Language", 
@@ -115072,7 +115266,7 @@
         "tag": "psg", 
         "tags": [
             "psg-MY", 
-            "psg-Zyyy"
+            "psg-Zxxx"
         ]
     }, 
     {
@@ -115114,7 +115308,7 @@
         "tag": "psi-Arab"
     }, 
     {
-        "full": "psl-Zyyy-PR", 
+        "full": "psl-Zxxx-PR", 
         "iana": "Puerto Rican Sign Language", 
         "iso639_3": "psl", 
         "name": "Puerto Rican Sign Language", 
@@ -115127,7 +115321,7 @@
         "tag": "psl", 
         "tags": [
             "psl-PR", 
-            "psl-Zyyy"
+            "psl-Zxxx"
         ]
     }, 
     {
@@ -115168,7 +115362,7 @@
         ]
     }, 
     {
-        "full": "pso-Zyyy-PL", 
+        "full": "pso-Zxxx-PL", 
         "iana": "Polish Sign Language", 
         "iso639_3": "pso", 
         "name": "Polish Sign Language", 
@@ -115182,11 +115376,11 @@
         "tag": "pso", 
         "tags": [
             "pso-PL", 
-            "pso-Zyyy"
+            "pso-Zxxx"
         ]
     }, 
     {
-        "full": "psp-Zyyy-PH", 
+        "full": "psp-Zxxx-PH", 
         "iana": "Philippine Sign Language", 
         "iso639_3": "psp", 
         "name": "Filipino Sign Language", 
@@ -115201,7 +115395,7 @@
         "tag": "psp", 
         "tags": [
             "psp-PH", 
-            "psp-Zyyy"
+            "psp-Zxxx"
         ]
     }, 
     {
@@ -115222,7 +115416,7 @@
         ]
     }, 
     {
-        "full": "psr-Zyyy-PT", 
+        "full": "psr-Zxxx-PT", 
         "iana": "Portuguese Sign Language", 
         "iso639_3": "psr", 
         "name": "Portuguese Sign Language", 
@@ -115237,7 +115431,7 @@
         "tag": "psr", 
         "tags": [
             "psr-PT", 
-            "psr-Zyyy"
+            "psr-Zxxx"
         ]
     }, 
     {
@@ -115454,6 +115648,7 @@
         "full": "pt-Latn-PT", 
         "iana": "Portuguese", 
         "iso639_3": "por", 
+        "localname": "português europeu", 
         "name": "Portuguese", 
         "region": "PT", 
         "regionname": "Portugal", 
@@ -116335,7 +116530,7 @@
         ]
     }, 
     {
-        "full": "pys-Zyyy-PY", 
+        "full": "pys-Zxxx-PY", 
         "iana": [
             "Paraguayan Sign Language", 
             "Lengua de Señas del Paraguay"
@@ -116353,7 +116548,7 @@
         "tag": "pys", 
         "tags": [
             "pys-PY", 
-            "pys-Zyyy"
+            "pys-Zxxx"
         ]
     }, 
     {
@@ -117066,7 +117261,7 @@
         "full": "qvo-Latn-PE", 
         "iana": "Napo Lowland Quechua", 
         "iso639_3": "qvo", 
-        "name": "Quichua, Napo Lowland", 
+        "name": "Quichua, Napo", 
         "names": [
             "Ecuador Quichua", 
             "Ingano", 
@@ -117083,7 +117278,7 @@
             "Napo Quichua", 
             "Quichua del Napo", 
             "Quichua del Oriente", 
-            "Quichua, Napo", 
+            "Quichua, Napo Lowland", 
             "Runa Shimi", 
             "Santa Rosa Quechua", 
             "Santarrosino", 
@@ -117656,12 +117851,12 @@
             "Lulogooli"
         ], 
         "iso639_3": "rag", 
-        "name": "Logooli", 
+        "name": "Lulogooli", 
         "names": [
             "Llogole", 
             "Llugule", 
+            "Logooli", 
             "Lugooli", 
-            "Lulogooli", 
             "Luragoli", 
             "Maragoli", 
             "Maragooli", 
@@ -120489,7 +120684,7 @@
     }, 
     {
         "deprecated": true, 
-        "full": "rsi-Zyyy-SB", 
+        "full": "rsi-Zxxx-SB", 
         "iana": "Rennellese Sign Language", 
         "iso639_3": "rsi", 
         "name": "Rennellese Sign Language", 
@@ -120499,11 +120694,11 @@
         "tag": "rsi", 
         "tags": [
             "rsi-SB", 
-            "rsi-Zyyy"
+            "rsi-Zxxx"
         ]
     }, 
     {
-        "full": "rsl-Zyyy-RU", 
+        "full": "rsl-Zxxx-RU", 
         "iana": "Russian Sign Language", 
         "iso639_3": "rsl", 
         "name": "Russian Sign Language", 
@@ -120514,11 +120709,11 @@
         "tag": "rsl", 
         "tags": [
             "rsl-RU", 
-            "rsl-Zyyy"
+            "rsl-Zxxx"
         ]
     }, 
     {
-        "full": "rsm-Zyyy-AU", 
+        "full": "rsm-Zxxx-AU", 
         "iana": "Miriwoong Sign Language", 
         "iso639_3": "rsm", 
         "name": "Miriwoong Sign Language", 
@@ -120532,7 +120727,7 @@
         "tag": "rsm", 
         "tags": [
             "rsm-AU", 
-            "rsm-Zyyy"
+            "rsm-Zxxx"
         ]
     }, 
     {
@@ -120554,7 +120749,7 @@
         ]
     }, 
     {
-        "full": "rth-Zyyy-ID", 
+        "full": "rth-Latn-ID", 
         "iana": "Ratahan", 
         "iso639_3": "rth", 
         "name": "Ratahan", 
@@ -120569,7 +120764,7 @@
         "tag": "rth", 
         "tags": [
             "rth-ID", 
-            "rth-Zyyy"
+            "rth-Latn"
         ]
     }, 
     {
@@ -121104,13 +121299,13 @@
         "iana": "Kinyarwanda", 
         "iso639_3": "kin", 
         "localname": "Kinyarwanda", 
-        "name": "Fumbira", 
+        "name": "Kinyarwanda", 
         "names": [
             "Bafumbira", 
             "Banyarwanda", 
+            "Fumbira", 
             "Hima", 
             "Ikinyarwanda", 
-            "Kinyarwanda", 
             "Orunyarwanda", 
             "Ruanda", 
             "Rufumbira", 
@@ -121133,13 +121328,13 @@
         "full": "rw-Brai-RW", 
         "iana": "Kinyarwanda", 
         "iso639_3": "kin", 
-        "name": "Fumbira", 
+        "name": "Kinyarwanda", 
         "names": [
             "Bafumbira", 
             "Banyarwanda", 
+            "Fumbira", 
             "Hima", 
             "Ikinyarwanda", 
-            "Kinyarwanda", 
             "Orunyarwanda", 
             "Ruanda", 
             "Rufumbira", 
@@ -122765,7 +122960,7 @@
         "full": "sck-Deva-IN", 
         "iana": "Sadri", 
         "iso639_3": "sck", 
-        "name": "Kisan", 
+        "name": "Sadri", 
         "names": [
             "Chota Nagpuri", 
             "Dikku Kaji", 
@@ -122774,6 +122969,7 @@
             "Gawari", 
             "Goari", 
             "Jharkhandhi", 
+            "Kisan", 
             "Nagpuri", 
             "Nagpuria", 
             "Sadan", 
@@ -122784,7 +122980,6 @@
             "Sadhan", 
             "Sadhari", 
             "Sadna", 
-            "Sadri", 
             "Sadrik", 
             "Santri", 
             "Siddri", 
@@ -122804,7 +122999,7 @@
         "full": "sck-Beng-IN", 
         "iana": "Sadri", 
         "iso639_3": "sck", 
-        "name": "Kisan", 
+        "name": "Sadri", 
         "names": [
             "Chota Nagpuri", 
             "Dikku Kaji", 
@@ -122813,6 +123008,7 @@
             "Gawari", 
             "Goari", 
             "Jharkhandhi", 
+            "Kisan", 
             "Nagpuri", 
             "Nagpuria", 
             "Sadan", 
@@ -122823,7 +123019,6 @@
             "Sadhan", 
             "Sadhari", 
             "Sadna", 
-            "Sadri", 
             "Sadrik", 
             "Santri", 
             "Siddri", 
@@ -123287,7 +123482,7 @@
         ]
     }, 
     {
-        "full": "sdl-Zyyy-SA", 
+        "full": "sdl-Zxxx-SA", 
         "iana": "Saudi Arabian Sign Language", 
         "iso639_3": "sdl", 
         "name": "Saudi Arabian Sign Language", 
@@ -123297,7 +123492,7 @@
         "tag": "sdl", 
         "tags": [
             "sdl-SA", 
-            "sdl-Zyyy"
+            "sdl-Zxxx"
         ]
     }, 
     {
@@ -124039,7 +124234,7 @@
         ]
     }, 
     {
-        "full": "sfb-Zyyy-BE", 
+        "full": "sfb-Zxxx-BE", 
         "iana": [
             "Langue des signes de Belgique Francophone", 
             "French Belgian Sign Language"
@@ -124058,7 +124253,7 @@
         "tag": "sfb", 
         "tags": [
             "sfb-BE", 
-            "sfb-Zyyy"
+            "sfb-Zxxx"
         ]
     }, 
     {
@@ -124098,7 +124293,7 @@
         "tag": "sfm-Plrd"
     }, 
     {
-        "full": "sfs-Zyyy-ZA", 
+        "full": "sfs-Zxxx-ZA", 
         "iana": "South African Sign Language", 
         "iso639_3": "sfs", 
         "name": "South African Sign Language", 
@@ -124111,7 +124306,7 @@
         "tag": "sfs", 
         "tags": [
             "sfs-ZA", 
-            "sfs-Zyyy"
+            "sfs-Zxxx"
         ]
     }, 
     {
@@ -124249,7 +124444,7 @@
         ]
     }, 
     {
-        "full": "sgg-Zyyy-CH", 
+        "full": "sgg-Zxxx-CH", 
         "iana": "Swiss-German Sign Language", 
         "iso639_3": "sgg", 
         "name": "Swiss-German Sign Language", 
@@ -124267,7 +124462,7 @@
         "tag": "sgg", 
         "tags": [
             "sgg-CH", 
-            "sgg-Zyyy"
+            "sgg-Zxxx"
         ]
     }, 
     {
@@ -124543,7 +124738,7 @@
         ]
     }, 
     {
-        "full": "sgx-Zyyy-SL", 
+        "full": "sgx-Zxxx-SL", 
         "iana": "Sierra Leone Sign Language", 
         "iso639_3": "sgx", 
         "name": "Sierra Leone Sign Language", 
@@ -124553,7 +124748,7 @@
         "tag": "sgx", 
         "tags": [
             "sgx-SL", 
-            "sgx-Zyyy"
+            "sgx-Zxxx"
         ]
     }, 
     {
@@ -126812,7 +127007,7 @@
         ]
     }, 
     {
-        "full": "slf-Zyyy-CH", 
+        "full": "slf-Zxxx-CH", 
         "iana": "Swiss-Italian Sign Language", 
         "iso639_3": "slf", 
         "name": "Swiss-Italian Sign Language", 
@@ -126828,7 +127023,7 @@
         "tag": "slf", 
         "tags": [
             "slf-CH", 
-            "slf-Zyyy"
+            "slf-Zxxx"
         ]
     }, 
     {
@@ -126996,7 +127191,7 @@
         ]
     }, 
     {
-        "full": "sls-Zyyy-SG", 
+        "full": "sls-Zxxx-SG", 
         "iana": "Singapore Sign Language", 
         "iso639_3": "sls", 
         "name": "Singapore Sign Language", 
@@ -127010,7 +127205,7 @@
         "tag": "sls", 
         "tags": [
             "sls-SG", 
-            "sls-Zyyy"
+            "sls-Zxxx"
         ]
     }, 
     {
@@ -129062,16 +129257,6 @@
         ]
     }, 
     {
-        "full": "sq-Elsa-AL", 
-        "iana": "Albanian", 
-        "iso639_3": "sqi", 
-        "name": "Albanian", 
-        "region": "AL", 
-        "regionname": "Albania", 
-        "sldr": false, 
-        "tag": "sq-Elsa"
-    }, 
-    {
         "full": "sq-Grek-GR", 
         "iana": "Albanian", 
         "iso639_3": "sqi", 
@@ -129106,6 +129291,16 @@
         "regionname": "The Former Yugoslav Republic of Macedonia", 
         "sldr": true, 
         "tag": "sq-MK"
+    }, 
+    {
+        "full": "sq-Qabw-AL-x-elsa", 
+        "iana": "Albanian", 
+        "iso639_3": "sqi", 
+        "name": "Albanian", 
+        "region": "AL", 
+        "regionname": "Albania", 
+        "sldr": false, 
+        "tag": "sq-Qabw-x-elsa"
     }, 
     {
         "full": "sq-XK", 
@@ -129153,7 +129348,7 @@
         ]
     }, 
     {
-        "full": "sqk-Zyyy-AL", 
+        "full": "sqk-Zxxx-AL", 
         "iana": "Albanian Sign Language", 
         "iso639_3": "sqk", 
         "name": "Albanian Sign Language", 
@@ -129169,7 +129364,7 @@
         "tag": "sqk", 
         "tags": [
             "sqk-AL", 
-            "sqk-Zyyy"
+            "sqk-Zxxx"
         ]
     }, 
     {
@@ -129251,7 +129446,7 @@
         ]
     }, 
     {
-        "full": "sqs-Zyyy-LK", 
+        "full": "sqs-Zxxx-LK", 
         "iana": "Sri Lankan Sign Language", 
         "iso639_3": "sqs", 
         "name": "Sri Lankan Sign Language", 
@@ -129261,7 +129456,7 @@
         "tag": "sqs", 
         "tags": [
             "sqs-LK", 
-            "sqs-Zyyy"
+            "sqs-Zxxx"
         ]
     }, 
     {
@@ -130346,7 +130541,7 @@
         ]
     }, 
     {
-        "full": "ssp-Zyyy-ES", 
+        "full": "ssp-Zxxx-ES", 
         "iana": "Spanish Sign Language", 
         "iso639_3": "ssp", 
         "name": "Spanish Sign Language", 
@@ -130362,7 +130557,7 @@
         "tag": "ssp", 
         "tags": [
             "ssp-ES", 
-            "ssp-Zyyy"
+            "ssp-Zxxx"
         ]
     }, 
     {
@@ -130383,7 +130578,7 @@
         ]
     }, 
     {
-        "full": "ssr-Zyyy-CH", 
+        "full": "ssr-Zxxx-CH", 
         "iana": "Swiss-French Sign Language", 
         "iso639_3": "ssr", 
         "name": "Swiss-French Sign Language", 
@@ -130400,7 +130595,7 @@
         "tag": "ssr", 
         "tags": [
             "ssr-CH", 
-            "ssr-Zyyy"
+            "ssr-Zxxx"
         ]
     }, 
     {
@@ -130803,7 +130998,7 @@
         ]
     }, 
     {
-        "full": "stl-Zyyy-NL", 
+        "full": "stl-Latn-NL", 
         "iana": "Stellingwerfs", 
         "iso639_3": "stl", 
         "name": "Stellingwerfs", 
@@ -130817,7 +131012,7 @@
         "tag": "stl", 
         "tags": [
             "stl-NL", 
-            "stl-Zyyy"
+            "stl-Latn"
         ]
     }, 
     {
@@ -131586,7 +131781,7 @@
         ]
     }, 
     {
-        "full": "svk-Zyyy-SK", 
+        "full": "svk-Zxxx-SK", 
         "iana": "Slovakian Sign Language", 
         "iso639_3": "svk", 
         "name": "Slovakian Sign Language", 
@@ -131601,7 +131796,7 @@
         "tag": "svk", 
         "tags": [
             "svk-SK", 
-            "svk-Zyyy"
+            "svk-Zxxx"
         ]
     }, 
     {
@@ -131907,7 +132102,7 @@
         "tag": "swk-Latn"
     }, 
     {
-        "full": "swl-Zyyy-SE", 
+        "full": "swl-Zxxx-SE", 
         "iana": "Swedish Sign Language", 
         "iso639_3": "swl", 
         "name": "Swedish Sign Language", 
@@ -131922,7 +132117,7 @@
         "tag": "swl", 
         "tags": [
             "swl-SE", 
-            "swl-Zyyy"
+            "swl-Zxxx"
         ]
     }, 
     {
@@ -132696,7 +132891,7 @@
         ]
     }, 
     {
-        "full": "syy-Zyyy-IL", 
+        "full": "syy-Zxxx-IL", 
         "iana": "Al-Sayyid Bedouin Sign Language", 
         "iso639_3": "syy", 
         "name": "Al-Sayyid Bedouin Sign Language", 
@@ -132710,7 +132905,7 @@
         "tag": "syy", 
         "tags": [
             "syy-IL", 
-            "syy-Zyyy"
+            "syy-Zxxx"
         ]
     }, 
     {
@@ -132879,6 +133074,19 @@
             "szs-SB", 
             "szs-Latn"
         ]
+    }, 
+    {
+        "full": "szs-Zxxx-SB", 
+        "iana": "Solomon Islands Sign Language", 
+        "iso639_3": "szs", 
+        "name": "Solomon Islands Sign Language", 
+        "names": [
+            "SISL"
+        ], 
+        "region": "SB", 
+        "regionname": "Solomon Islands", 
+        "sldr": false, 
+        "tag": "szs-Zxxx"
     }, 
     {
         "full": "szv-Latn-CM", 
@@ -134698,6 +134906,26 @@
         ]
     }, 
     {
+        "full": "tdg-Deva-NP", 
+        "iana": "Western Tamang", 
+        "iso639_3": "tdg", 
+        "name": "Tamang, Western", 
+        "names": [
+            "Murmi", 
+            "Sain", 
+            "Tamang Gyot", 
+            "Tamang Tam"
+        ], 
+        "region": "NP", 
+        "regionname": "Nepal", 
+        "sldr": false, 
+        "tag": "tdg", 
+        "tags": [
+            "tdg-NP", 
+            "tdg-Deva"
+        ]
+    }, 
+    {
         "full": "tdg-Tibt-NP", 
         "iana": "Western Tamang", 
         "iso639_3": "tdg", 
@@ -135235,13 +135463,13 @@
         "full": "tek-Latn-CD", 
         "iana": "Ibali Teke", 
         "iso639_3": "tek", 
-        "name": "Teke-Ibali", 
+        "name": "Teke, Ibali", 
         "names": [
             "Bali", 
             "Eastern Teke", 
             "Ibali", 
             "Kiteke", 
-            "Teke, Ibali"
+            "Teke-Ibali"
         ], 
         "region": "CD", 
         "regionname": "The Democratic Republic of the Congo", 
@@ -138277,7 +138505,7 @@
         "full": "tmh-Arab-NE", 
         "iana": "Tamashek", 
         "iso639_3": "ttq", 
-        "name": "Tamajaq", 
+        "name": "Tamajaq, Tawallammat", 
         "names": [
             "Amazigh", 
             "Azbinawa", 
@@ -138286,7 +138514,7 @@
             "Tahoua Tamajeq", 
             "Tajag", 
             "Tamachek", 
-            "Tamajaq, Tawallammat", 
+            "Tamajaq", 
             "Tamajeq", 
             "Tamashekin", 
             "Tamasheq", 
@@ -138310,7 +138538,7 @@
         "full": "tmh-Tfng-NE", 
         "iana": "Tamashek", 
         "iso639_3": "ttq", 
-        "name": "Tamajaq", 
+        "name": "Tamajaq, Tawallammat", 
         "names": [
             "Amazigh", 
             "Azbinawa", 
@@ -138319,7 +138547,7 @@
             "Tahoua Tamajeq", 
             "Tajag", 
             "Tamachek", 
-            "Tamajaq, Tawallammat", 
+            "Tamajaq", 
             "Tamajeq", 
             "Tamashekin", 
             "Tamasheq", 
@@ -139620,7 +139848,7 @@
         "full": "tpj-Latn-PY", 
         "iana": "Tapieté", 
         "iso639_3": "tpj", 
-        "name": "Tapieté", 
+        "name": "Ñandeva", 
         "names": [
             "Guarayo", 
             "Guarayú", 
@@ -139628,10 +139856,10 @@
             "Guasurangue", 
             "Nandeva", 
             "Tapiete", 
+            "Tapieté", 
             "Tirumbae", 
             "Yanaigua", 
-            "Ñanagua", 
-            "Ñandeva"
+            "Ñanagua"
         ], 
         "region": "PY", 
         "regionname": "Paraguay", 
@@ -140873,7 +141101,7 @@
         ]
     }, 
     {
-        "full": "tse-Zyyy-TN", 
+        "full": "tse-Zxxx-TN", 
         "iana": "Tunisian Sign Language", 
         "iso639_3": "tse", 
         "name": "Tunisian Sign Language", 
@@ -140883,7 +141111,7 @@
         "tag": "tse", 
         "tags": [
             "tse-TN", 
-            "tse-Zyyy"
+            "tse-Zxxx"
         ]
     }, 
     {
@@ -141079,7 +141307,7 @@
         ]
     }, 
     {
-        "full": "tsm-Zyyy-TR", 
+        "full": "tsm-Zxxx-TR", 
         "iana": [
             "Turkish Sign Language", 
             "Türk İşaret Dili"
@@ -141096,7 +141324,7 @@
         "tag": "tsm", 
         "tags": [
             "tsm-TR", 
-            "tsm-Zyyy"
+            "tsm-Zxxx"
         ]
     }, 
     {
@@ -141155,7 +141383,7 @@
         ]
     }, 
     {
-        "full": "tss-Zyyy-TW", 
+        "full": "tss-Zxxx-TW", 
         "iana": "Taiwan Sign Language", 
         "iso639_3": "tss", 
         "name": "Taiwan Sign Language", 
@@ -141168,7 +141396,7 @@
         "tag": "tss", 
         "tags": [
             "tss-TW", 
-            "tss-Zyyy"
+            "tss-Zxxx"
         ]
     }, 
     {
@@ -141273,7 +141501,7 @@
         ]
     }, 
     {
-        "full": "tsy-Zyyy-ML", 
+        "full": "tsy-Zxxx-ML", 
         "iana": "Tebul Sign Language", 
         "iso639_3": "tsy", 
         "name": "Tebul Sign Language", 
@@ -141283,7 +141511,7 @@
         "tag": "tsy", 
         "tags": [
             "tsy-ML", 
-            "tsy-Zyyy"
+            "tsy-Zxxx"
         ]
     }, 
     {
@@ -142444,6 +142672,19 @@
         ]
     }, 
     {
+        "full": "tvx-Latn-TW", 
+        "iso639_3": "tvx", 
+        "name": "Taivoan", 
+        "region": "TW", 
+        "regionname": "Taiwan, Province of China", 
+        "sldr": false, 
+        "tag": "tvx", 
+        "tags": [
+            "tvx-TW", 
+            "tvx-Latn"
+        ]
+    }, 
+    {
         "full": "tvy-Zyyy-TL", 
         "iana": "Timor Pidgin", 
         "iso639_3": "tvy", 
@@ -142635,7 +142876,7 @@
         "full": "twm-Deva-IN", 
         "iana": "Tawang Monpa", 
         "iso639_3": "twm", 
-        "name": "Monba, Cuona", 
+        "name": "Monpa, Tawang", 
         "names": [
             "Brahmi", 
             "Buruomiba", 
@@ -142650,9 +142891,9 @@
             "Momba", 
             "Mompa", 
             "Monba", 
+            "Monba, Cuona", 
             "Monkit", 
             "Monpa", 
-            "Monpa, Tawang", 
             "Northern Monpa", 
             "Pramipa", 
             "Takpa", 
@@ -143540,7 +143781,7 @@
         ]
     }, 
     {
-        "full": "tza-Zyyy-TZ", 
+        "full": "tza-Zxxx-TZ", 
         "iana": "Tanzanian Sign Language", 
         "iso639_3": "tza", 
         "name": "Tanzanian Sign Language", 
@@ -143553,7 +143794,7 @@
         "tag": "tza", 
         "tags": [
             "tza-TZ", 
-            "tza-Zyyy"
+            "tza-Zxxx"
         ]
     }, 
     {
@@ -144241,7 +144482,7 @@
         ]
     }, 
     {
-        "full": "ugn-Zyyy-UG", 
+        "full": "ugn-Zxxx-UG", 
         "iana": "Ugandan Sign Language", 
         "iso639_3": "ugn", 
         "name": "Ugandan Sign Language", 
@@ -144254,7 +144495,7 @@
         "tag": "ugn", 
         "tags": [
             "ugn-UG", 
-            "ugn-Zyyy"
+            "ugn-Zxxx"
         ]
     }, 
     {
@@ -144278,7 +144519,7 @@
         ]
     }, 
     {
-        "full": "ugy-Zyyy-UY", 
+        "full": "ugy-Zxxx-UY", 
         "iana": "Uruguayan Sign Language", 
         "iso639_3": "ugy", 
         "name": "Uruguayan Sign Language", 
@@ -144292,7 +144533,7 @@
         "tag": "ugy", 
         "tags": [
             "ugy-UY", 
-            "ugy-Zyyy"
+            "ugy-Zxxx"
         ]
     }, 
     {
@@ -144475,7 +144716,7 @@
         ]
     }, 
     {
-        "full": "ukl-Zyyy-UA", 
+        "full": "ukl-Zxxx-UA", 
         "iana": "Ukrainian Sign Language", 
         "iso639_3": "ukl", 
         "name": "Ukrainian Sign Language", 
@@ -144490,7 +144731,7 @@
         "tag": "ukl", 
         "tags": [
             "ukl-UA", 
-            "ukl-Zyyy"
+            "ukl-Zxxx"
         ]
     }, 
     {
@@ -144526,7 +144767,7 @@
         ]
     }, 
     {
-        "full": "uks-Zyyy-BR", 
+        "full": "uks-Zxxx-BR", 
         "iana": [
             "Urubú-Kaapor Sign Language", 
             "Kaapor Sign Language"
@@ -144542,7 +144783,7 @@
         "tag": "uks", 
         "tags": [
             "uks-BR", 
-            "uks-Zyyy"
+            "uks-Zxxx"
         ]
     }, 
     {
@@ -145369,12 +145610,12 @@
         "iana": "Urdu", 
         "iso639_3": "urd", 
         "localname": "اردو", 
-        "name": "Bihari", 
+        "name": "Urdu", 
         "names": [
+            "Bihari", 
             "Islami", 
             "Modern Standard Urdu", 
             "Undri", 
-            "Urdu", 
             "Urudu"
         ], 
         "region": "PK", 
@@ -145391,12 +145632,12 @@
         "full": "ur-Brai-PK", 
         "iana": "Urdu", 
         "iso639_3": "urd", 
-        "name": "Bihari", 
+        "name": "Urdu", 
         "names": [
+            "Bihari", 
             "Islami", 
             "Modern Standard Urdu", 
             "Undri", 
-            "Urdu", 
             "Urudu"
         ], 
         "region": "PK", 
@@ -145995,6 +146236,19 @@
         ]
     }, 
     {
+        "full": "uth-Latn-NG", 
+        "iso639_3": "uth", 
+        "name": "ut-Hun", 
+        "region": "NG", 
+        "regionname": "Nigeria", 
+        "sldr": false, 
+        "tag": "uth", 
+        "tags": [
+            "uth-NG", 
+            "uth-Latn"
+        ]
+    }, 
+    {
         "full": "utp-Latn-SB", 
         "iana": "Amba (Solomon Islands)", 
         "iso639_3": "utp", 
@@ -146484,7 +146738,6 @@
         "full": "vaj-Qaax-NA", 
         "iana": [
             "Sekele", 
-            "Northwestern !Kung", 
             "Northwestern ǃKung", 
             "Vasekele"
         ], 
@@ -146946,7 +147199,7 @@
         ]
     }, 
     {
-        "full": "vgt-Zyyy-BE", 
+        "full": "vgt-Zxxx-BE", 
         "iana": [
             "Vlaamse Gebarentaal", 
             "Flemish Sign Language"
@@ -146963,7 +147216,7 @@
         "tag": "vgt", 
         "tags": [
             "vgt-BE", 
-            "vgt-Zyyy"
+            "vgt-Zxxx"
         ]
     }, 
     {
@@ -147038,9 +147291,9 @@
         "full": "vic-Latn-SX", 
         "iana": "Virgin Islands Creole English", 
         "iso639_3": "vic", 
-        "name": "Virgin Islands Creole English", 
+        "name": "Netherlands Antilles Creole English", 
         "names": [
-            "Netherlands Antilles Creole English"
+            "Virgin Islands Creole English"
         ], 
         "region": "SX", 
         "regionname": "Sint Maarten (Dutch part)", 
@@ -148075,7 +148328,7 @@
         ]
     }, 
     {
-        "full": "vsi-Zyyy-MD", 
+        "full": "vsi-Zxxx-MD", 
         "iana": "Moldova Sign Language", 
         "iso639_3": "vsi", 
         "name": "Moldova Sign Language", 
@@ -148085,11 +148338,11 @@
         "tag": "vsi", 
         "tags": [
             "vsi-MD", 
-            "vsi-Zyyy"
+            "vsi-Zxxx"
         ]
     }, 
     {
-        "full": "vsl-Zyyy-VE", 
+        "full": "vsl-Zxxx-VE", 
         "iana": "Venezuelan Sign Language", 
         "iso639_3": "vsl", 
         "name": "Venezuelan Sign Language", 
@@ -148102,11 +148355,11 @@
         "tag": "vsl", 
         "tags": [
             "vsl-VE", 
-            "vsl-Zyyy"
+            "vsl-Zxxx"
         ]
     }, 
     {
-        "full": "vsv-Zyyy-ES", 
+        "full": "vsv-Zxxx-ES", 
         "iana": [
             "Valencian Sign Language", 
             "Llengua de signes valenciana"
@@ -148126,7 +148379,7 @@
         "tag": "vsv", 
         "tags": [
             "vsv-ES", 
-            "vsv-Zyyy"
+            "vsv-Zxxx"
         ]
     }, 
     {
@@ -149099,7 +149352,7 @@
         ]
     }, 
     {
-        "full": "wbs-Zyyy-IN", 
+        "full": "wbs-Zxxx-IN", 
         "iana": "West Bengal Sign Language", 
         "iso639_3": "wbs", 
         "name": "West Bengal Sign Language", 
@@ -149114,7 +149367,7 @@
         "tag": "wbs", 
         "tags": [
             "wbs-IN", 
-            "wbs-Zyyy"
+            "wbs-Zxxx"
         ]
     }, 
     {
@@ -152902,10 +153155,7 @@
     }, 
     {
         "full": "xam-Latn-ZA", 
-        "iana": [
-            "/Xam", 
-            "ǀXam"
-        ], 
+        "iana": "ǀXam", 
         "iso639_3": "xam", 
         "name": "|Xam", 
         "names": [
@@ -153747,10 +153997,7 @@
     }, 
     {
         "full": "xeg-Latn-ZA", 
-        "iana": [
-            "//Xegwi", 
-            "ǁXegwi"
-        ], 
+        "iana": "ǁXegwi", 
         "iso639_3": "xeg", 
         "name": "||Xegwi", 
         "names": [
@@ -154593,7 +154840,7 @@
         ]
     }, 
     {
-        "full": "xki-Zyyy-KE", 
+        "full": "xki-Zxxx-KE", 
         "iana": "Kenyan Sign Language", 
         "iso639_3": "xki", 
         "name": "Kenyan Sign Language", 
@@ -154606,7 +154853,7 @@
         "tag": "xki", 
         "tags": [
             "xki-KE", 
-            "xki-Zyyy"
+            "xki-Zxxx"
         ]
     }, 
     {
@@ -154905,7 +155152,7 @@
         "tag": "xkz-Latn"
     }, 
     {
-        "full": "xkz-Tibt-BT", 
+        "full": "xkz-Tibt-BT-x-uchen", 
         "iana": "Kurtokha", 
         "iso639_3": "xkz", 
         "name": "Kurtokha", 
@@ -154922,7 +155169,7 @@
         "region": "BT", 
         "regionname": "Bhutan", 
         "sldr": false, 
-        "tag": "xkz-Tibt"
+        "tag": "xkz-Tibt-x-uchen"
     }, 
     {
         "full": "xla-Latn-PG", 
@@ -155211,7 +155458,7 @@
         ]
     }, 
     {
-        "full": "xmg-Qabh-CM", 
+        "full": "xmg-Qabh-CM-x-bagam", 
         "iana": "Mengaka", 
         "iso639_3": "xmg", 
         "name": "Mengaka", 
@@ -155225,7 +155472,7 @@
         "region": "CM", 
         "regionname": "Cameroon", 
         "sldr": false, 
-        "tag": "xmg-Qabh"
+        "tag": "xmg-Qabh-x-bagam"
     }, 
     {
         "full": "xmh-Latn-AU", 
@@ -155282,7 +155529,7 @@
         ]
     }, 
     {
-        "full": "xml-Zyyy-MY", 
+        "full": "xml-Zxxx-MY", 
         "iana": "Malaysian Sign Language", 
         "iso639_3": "xml", 
         "name": "Malaysian Sign Language", 
@@ -155296,7 +155543,7 @@
         "tag": "xml", 
         "tags": [
             "xml-MY", 
-            "xml-Zyyy"
+            "xml-Zxxx"
         ]
     }, 
     {
@@ -155396,7 +155643,7 @@
         ]
     }, 
     {
-        "full": "xms-Zyyy-MA", 
+        "full": "xms-Zxxx-MA", 
         "iana": "Moroccan Sign Language", 
         "iso639_3": "xms", 
         "name": "Moroccan Sign Language", 
@@ -155412,7 +155659,7 @@
         "tag": "xms", 
         "tags": [
             "xms-MA", 
-            "xms-Zyyy"
+            "xms-Zxxx"
         ]
     }, 
     {
@@ -156707,6 +156954,21 @@
         "tags": [
             "xsi-PG", 
             "xsi-Latn"
+        ]
+    }, 
+    {
+        "deprecated": true, 
+        "full": "xsj-Latn-TZ", 
+        "iana": "Subi", 
+        "iso639_3": "xsj", 
+        "name": "Subi", 
+        "region": "TZ", 
+        "regionname": "United Republic of Tanzania", 
+        "sldr": false, 
+        "tag": "xsj", 
+        "tags": [
+            "xsj-TZ", 
+            "xsj-Latn"
         ]
     }, 
     {
@@ -159617,7 +159879,7 @@
         ]
     }, 
     {
-        "full": "ygs-Zyyy-AU", 
+        "full": "ygs-Zxxx-AU", 
         "iana": "Yolŋu Sign Language", 
         "iso639_3": "ygs", 
         "name": "Yolngu Sign Language", 
@@ -159631,7 +159893,7 @@
         "tag": "ygs", 
         "tags": [
             "ygs-AU", 
-            "ygs-Zyyy"
+            "ygs-Zxxx"
         ]
     }, 
     {
@@ -159748,7 +160010,7 @@
         ]
     }, 
     {
-        "full": "yhs-Zyyy-AU", 
+        "full": "yhs-Zxxx-AU", 
         "iana": "Yan-nhaŋu Sign Language", 
         "iso639_3": "yhs", 
         "name": "Yan-nhangu Sign Language", 
@@ -159761,7 +160023,7 @@
         "tag": "yhs", 
         "tags": [
             "yhs-AU", 
-            "yhs-Zyyy"
+            "yhs-Zxxx"
         ]
     }, 
     {
@@ -160747,12 +161009,12 @@
         "full": "ymk-Zyyy-MZ", 
         "iana": "Makwe", 
         "iso639_3": "ymk", 
-        "name": "Maraba", 
+        "name": "Makwe", 
         "names": [
             "Chimaraba", 
             "Kimakwe", 
             "Macue", 
-            "Makwe", 
+            "Maraba", 
             "Palma"
         ], 
         "region": "MZ", 
@@ -161848,15 +162110,15 @@
         ]
     }, 
     {
-        "full": "ysl-Zyyy-RS", 
+        "full": "ysl-Zxxx-RS", 
         "iana": "Yugoslavian Sign Language", 
         "iso639_3": "ysl", 
-        "name": "Slovene Sign Language", 
+        "name": "Yugoslavian Sign Language", 
         "names": [
             "SZJ", 
+            "Slovene Sign Language", 
             "Slovenian Sign Language", 
-            "Slovenski Znakovni Jezik", 
-            "Yugoslavian Sign Language"
+            "Slovenski Znakovni Jezik"
         ], 
         "region": "RS", 
         "regionname": "Serbia", 
@@ -161865,7 +162127,7 @@
         "tag": "ysl", 
         "tags": [
             "ysl-RS", 
-            "ysl-Zyyy"
+            "ysl-Zxxx"
         ]
     }, 
     {
@@ -164031,43 +164293,6 @@
         ]
     }, 
     {
-        "full": "zh-Hans-CN", 
-        "iana": "Chinese", 
-        "iso639_3": "zho", 
-        "localname": "中文", 
-        "name": "Chinese", 
-        "names": [
-            "Beifang Fangyan", 
-            "Beijinghua", 
-            "Chinese, Mandarin", 
-            "Hoton", 
-            "Hui", 
-            "Hui-Zu", 
-            "Hytad", 
-            "Khoton", 
-            "Mandarin", 
-            "Northern Chinese", 
-            "Qotong", 
-            "Standard Chinese", 
-            "Tayok", 
-            "Xui", 
-            "Zhongguohua"
-        ], 
-        "region": "CN", 
-        "regionname": "China", 
-        "regions": "AU BN BS CA GB GQ HK ID KH KR LA LY MM MN MO MY NL NZ PH RU SG TH TW US VN WS ZA ZM", 
-        "sldr": true, 
-        "tag": "zh", 
-        "tags": [
-            "zh-CN", 
-            "zh-Hans", 
-            "cmn", 
-            "cmn-CN", 
-            "cmn-Hans", 
-            "cmn-Hans-CN"
-        ]
-    }, 
-    {
         "full": "zh-Hant-AU", 
         "iana": "Chinese", 
         "iso639_3": "zho", 
@@ -164148,6 +164373,43 @@
         "tags": [
             "cmn-Brai", 
             "cmn-Brai-CN"
+        ]
+    }, 
+    {
+        "full": "zh-Hans-CN", 
+        "iana": "Chinese", 
+        "iso639_3": "zho", 
+        "localname": "简体中文", 
+        "name": "Chinese", 
+        "names": [
+            "Beifang Fangyan", 
+            "Beijinghua", 
+            "Chinese, Mandarin", 
+            "Hoton", 
+            "Hui", 
+            "Hui-Zu", 
+            "Hytad", 
+            "Khoton", 
+            "Mandarin", 
+            "Northern Chinese", 
+            "Qotong", 
+            "Standard Chinese", 
+            "Tayok", 
+            "Xui", 
+            "Zhongguohua"
+        ], 
+        "region": "CN", 
+        "regionname": "China", 
+        "regions": "AU BN BS CA GB GQ HK ID KH KR LA LY MM MN MO MY NL NZ PH RU SG TH TW US VN WS ZA ZM", 
+        "sldr": true, 
+        "tag": "zh-CN", 
+        "tags": [
+            "zh", 
+            "zh-Hans", 
+            "cmn", 
+            "cmn-CN", 
+            "cmn-Hans", 
+            "cmn-Hans-CN"
         ]
     }, 
     {
@@ -164346,7 +164608,7 @@
         "full": "zh-Hant-TW", 
         "iana": "Chinese", 
         "iso639_3": "zho", 
-        "localname": "中文", 
+        "localname": "繁體中文", 
         "name": "Chinese", 
         "names": [
             "Beifang Fangyan", 
@@ -164504,6 +164766,28 @@
         "tag": "zhn-Hani"
     }, 
     {
+        "full": "zhn-Latn-CN", 
+        "iana": "Nong Zhuang", 
+        "iso639_3": "zhn", 
+        "name": "Zhuang, Nong", 
+        "names": [
+            "Daez", 
+            "Kau Nong", 
+            "Khaau Nong", 
+            "Noangx", 
+            "Nong hua", 
+            "Phu Nong", 
+            "Phu Tei", 
+            "Tei Nong", 
+            "Yan-Guang Southern Zhuang", 
+            "Zhuangyu Nanbu fanyan Yan-Guang tuyu"
+        ], 
+        "region": "CN", 
+        "regionname": "China", 
+        "sldr": false, 
+        "tag": "zhn-Latn"
+    }, 
+    {
         "full": "zhw-Qaax-CM", 
         "iana": "Zhoa", 
         "iso639_3": "zhw", 
@@ -164551,7 +164835,7 @@
         ]
     }, 
     {
-        "full": "zib-Zyyy-ZW", 
+        "full": "zib-Zxxx-ZW", 
         "iana": "Zimbabwe Sign Language", 
         "iso639_3": "zib", 
         "name": "Zimbabwe Sign Language", 
@@ -164564,7 +164848,7 @@
         "tag": "zib", 
         "tags": [
             "zib-ZW", 
-            "zib-Zyyy"
+            "zib-Zxxx"
         ]
     }, 
     {
@@ -165701,17 +165985,17 @@
         "full": "zom-Latn-IN", 
         "iana": "Zou", 
         "iso639_3": "zom", 
-        "name": "Zo", 
+        "name": "Zou", 
         "names": [
             "Jou", 
             "Pascuense", 
             "Yo", 
             "Yos", 
+            "Zo", 
             "Zohâm", 
             "Zokam", 
             "Zome", 
             "Zomi", 
-            "Zou", 
             "Zou Chin", 
             "Zoukam"
         ], 
@@ -166464,7 +166748,7 @@
         ]
     }, 
     {
-        "full": "zsl-Zyyy-ZM", 
+        "full": "zsl-Zxxx-ZM", 
         "iana": "Zambian Sign Language", 
         "iso639_3": "zsl", 
         "name": "Zambian Sign Language", 
@@ -166477,7 +166761,7 @@
         "tag": "zsl", 
         "tags": [
             "zsl-ZM", 
-            "zsl-Zyyy"
+            "zsl-Zxxx"
         ]
     }, 
     {
@@ -167060,10 +167344,21 @@
         ], 
         "iso639_3": "zza", 
         "name": "Zaza", 
+        "names": [
+            "Dimili", 
+            "Dimli", 
+            "Southern Zaza", 
+            "Zazaca", 
+            "Zazaki, Southern"
+        ], 
         "region": "TR", 
         "regionname": "Turkey", 
         "sldr": false, 
-        "tag": "zza-Arab"
+        "tag": "zza-Arab", 
+        "tags": [
+            "diq-Arab", 
+            "diq-Arab-TR"
+        ]
     }, 
     {
         "full": "zzj-Hani-CN", 

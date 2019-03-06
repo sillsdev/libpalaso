@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using System.Windows.Forms;
+using L10NSharp;
 
 namespace SIL.Windows.Forms.SettingProtection
 {
 	public partial class SettingProtectionDialog : Form
 	{
 		private bool _didHavePasswordSet;
-		private const string FactoryPassword = "factory password";
 
 		public SettingProtectionDialog()
 		{
@@ -16,8 +16,20 @@ namespace SIL.Windows.Forms.SettingProtection
 
 			_didHavePasswordSet = SettingsProtectionSingleton.Settings.RequirePassword;
 
-			_passwordNotice.Text = string.Format(_passwordNotice.Text, SettingsProtectionSingleton.FactoryPassword,
-												 SettingsProtectionSingleton.CoreProductName, FactoryPassword);
+			if (SettingsProtectionSingleton.ProductSupportUrl == null)
+			{
+				_passwordNotice.Text = string.Format(_passwordNotice.Text, SettingsProtectionSingleton.FactoryPassword,
+					SettingsProtectionSingleton.CoreProductName);
+			}
+			else
+			{
+				// The wording here should be kept essentially in sync with "SettingsProtection.PasswordNotice" in the Designer file.
+				_passwordNotice.Text = string.Format(LocalizationManager.GetString("SettingsProtection.PasswordNoticeWithSupportUrl",
+					"Factory password for these settings is \"{0}\". If you forget it, you can always visit the {1} support page: {2}",
+					"The localization for this should be kept in sync with \"SettingsProtection.PasswordNotice\". Param 0: Factory password; " +
+					"Param 1: product name; Param 2: URL of support page"),
+					SettingsProtectionSingleton.FactoryPassword, SettingsProtectionSingleton.CoreProductName, SettingsProtectionSingleton.ProductSupportUrl);
+			}
 		}
 
 		private void OnNormallHidden_CheckedChanged(object sender, EventArgs e)

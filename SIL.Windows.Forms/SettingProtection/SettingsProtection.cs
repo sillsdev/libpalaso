@@ -1,4 +1,4 @@
-﻿using System.Configuration;
+using System.Configuration;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -7,6 +7,7 @@ namespace SIL.Windows.Forms.SettingProtection
 	public class SettingsProtectionSingleton
 	{
 		private SettingsProtectionSettings config;
+		private string productSupportUrl;
 		private static SettingsProtectionSingleton _singleton;
 
 		private SettingsProtectionSingleton()
@@ -90,15 +91,7 @@ namespace SIL.Windows.Forms.SettingProtection
 			}
 		}
 
-		public static string FactoryPassword
-		{
-			get
-			{
-				var productName = CoreProductName;
-				return productName.Insert(1, "7").ToLower();
-			}
-
-		}
+		public static string FactoryPassword => CoreProductName.Insert(1, "7").ToLower();
 
 		/// <summary>
 		/// Use the CoreProductName value from the AppSettings in the application config file, if present
@@ -108,10 +101,23 @@ namespace SIL.Windows.Forms.SettingProtection
 			get
 			{
 				var productName = ConfigurationManager.AppSettings["CoreProductName"];
-				if (string.IsNullOrEmpty(productName))
-					productName = Application.ProductName;
+				return string.IsNullOrEmpty(productName) ? Application.ProductName : productName;
+			}
+		}
 
-				return productName;
+		public static string ProductSupportUrl
+		{
+			get { return _singleton?.productSupportUrl; }
+			set
+			{
+				if (!string.IsNullOrEmpty(value))
+				{
+					if (_singleton == null)
+					{
+						_singleton = new SettingsProtectionSingleton();
+					}
+					_singleton.productSupportUrl = value;
+				}
 			}
 		}
 	}

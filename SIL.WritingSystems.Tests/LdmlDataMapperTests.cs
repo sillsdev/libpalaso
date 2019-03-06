@@ -145,6 +145,54 @@ namespace SIL.WritingSystems.Tests
 			AssertThatXmlIn.String(sw.ToString()).HasAtLeastOneMatchForXpath("/ldml/special[text()=\"hey\"]");
 		}
 
+		[Test]
+		public void ExistingLdml_UnknownCollation_Write_PreservesData()
+		{
+			var ldmlwithcollation =
+				@"<ldml><collations><collation type=""phonebook""><cr>" +
+				@"<![CDATA[[caseLevel on]& c < k]]>" +
+				@"</cr></collation></collations></ldml>";
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+			var sw = new StringWriter();
+			var ws = new WritingSystemDefinition("en");
+			var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
+			adaptor.Write(writer, ws, XmlReader.Create(new StringReader(ldmlwithcollation)));
+			writer.Close();
+			AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath("/ldml/collations/collation", 1);
+		}
+
+		[Test]
+		public void ExistingLdml_SilReorderCollation_Write_PreservesData()
+		{
+			var ldmlwithcollation =
+				@"<ldml><!--Comment--><dates/><special>hey</special><collations><collation type=""nonsense"">" +
+				@"<special xmlns:sil=""urn://www.sil.org/ldml/0.1""><sil:reordered>junk</sil:reordered></special>" +
+			@"</collation></collations></ldml>";
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+			var sw = new StringWriter();
+			var ws = new WritingSystemDefinition("en");
+			var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
+			adaptor.Write(writer, ws, XmlReader.Create(new StringReader(ldmlwithcollation)));
+			writer.Close();
+			AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath("/ldml/collations/collation", 1);
+		}
+
+		[Test]
+		public void ExistingLdml_NonSILSpecialCollation_Write_PreservesData()
+		{
+			var ldmlwithcollation =
+				@"<ldml><!--Comment--><dates/><special>hey</special><collations><collation type=""nonsense"">" +
+				@"<special xmlns:notsil=""urn://www.notsil.org/ldml/42""><notsil:notsospecial>Hedburg</notsil:notsospecial></special>" +
+				@"</collation></collations></ldml>";
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+			var sw = new StringWriter();
+			var ws = new WritingSystemDefinition("en");
+			var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
+			adaptor.Write(writer, ws, XmlReader.Create(new StringReader(ldmlwithcollation)));
+			writer.Close();
+			AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath("/ldml/collations/collation", 1);
+		}
+
 		#region Roundtrip
 		[Test]
 		public void RoundtripSimpleCustomSortRules_WS33715()

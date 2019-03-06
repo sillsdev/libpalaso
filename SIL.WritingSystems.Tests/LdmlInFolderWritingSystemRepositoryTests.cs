@@ -56,33 +56,6 @@ namespace SIL.WritingSystems.Tests
 	[TestFixture]
 	public class LdmlInFolderWritingSystemRepositoryTests
 	{
-		/// <inheritdoc />
-		/// <summary>
-		/// A WritingSystemDefinition that allows us to control the IsChanged property
-		/// </summary>
-		private class TestableWritingSystemDefinition: WritingSystemDefinition
-		{
-			private bool _simulatedIsChanged;
-
-			public TestableWritingSystemDefinition(string languageTag): base(languageTag)
-			{
-			}
-
-			public void SetIsChanged(bool isChanged)
-			{
-				_simulatedIsChanged = isChanged;
-				IsChanged = isChanged;
-			}
-
-			public bool SimulateIsChanged { get; set; }
-
-			public override bool IsChanged
-			{
-				get { return SimulateIsChanged ? _simulatedIsChanged : base.IsChanged; }
-				protected set { base.IsChanged = value; }
-			}
-		}
-
 		private class TestEnvironment : IDisposable
 		{
 			private readonly TemporaryFolder _localRepoFolder;
@@ -1095,14 +1068,13 @@ namespace SIL.WritingSystems.Tests
 				// Create and save a new WS in the local store - this will copy the WS into the
 				// global store since it doesn't exist yet
 				var enUsTag = "en-US";
-				var ws = new TestableWritingSystemDefinition(enUsTag);
+				var ws = new WritingSystemDefinition(enUsTag);
 				var expectedDateTime = new DateTime(2018, 12, 01, 8, 7, 6, DateTimeKind.Utc);
 				ws.DateModified = expectedDateTime;
 				environment.LocalRepository.Set(ws);
 				ws.RightToLeftScript = true;
 				ws.DefaultCollation = new SystemCollationDefinition {LanguageTag = enUsTag};
-				ws.SimulateIsChanged = true;
-				ws.SetIsChanged(false);
+				ws.AcceptChanges();
 
 				// SUT
 				environment.LocalRepository.Save();
@@ -1127,16 +1099,14 @@ namespace SIL.WritingSystems.Tests
 				// Create and save a new WS in the local store - this will copy the WS into the
 				// global store since it doesn't exist yet
 				var enUsTag = "en-US";
-				var ws = new TestableWritingSystemDefinition(enUsTag);
+				var ws = new WritingSystemDefinition(enUsTag);
 				var expectedDateTime = new DateTime(2018, 12, 01, 8, 7, 6, DateTimeKind.Utc);
 				ws.DateModified = expectedDateTime;
 				environment.LocalRepository.Set(ws);
 				ws.RightToLeftScript = true;
 				ws.DefaultCollation = new SystemCollationDefinition {LanguageTag = enUsTag};
-				ws.SimulateIsChanged = true;
-				ws.SetIsChanged(false);
+				ws.AcceptChanges();
 				environment.LocalRepository.Save();
-				ws.SimulateIsChanged = false;
 
 				var lastModifiedInWs = environment.GlobalRepository.Get(enUsTag).DateModified;
 
@@ -1165,24 +1135,22 @@ namespace SIL.WritingSystems.Tests
 				// Create and save a new WS in the local store - this will copy the WS into the
 				// global store since it doesn't exist yet
 				var enUsTag = "en-US";
-				var ws = new TestableWritingSystemDefinition(enUsTag);
+				var ws = new WritingSystemDefinition(enUsTag);
 				environment.LocalRepository.Set(ws);
 				ws.RightToLeftScript = true;
 				ws.DefaultCollation = new SystemCollationDefinition {LanguageTag = enUsTag};
 				var expectedDateTime = new DateTime(2018, 12, 01, 8, 7, 6, DateTimeKind.Utc);
 				ws.DateModified = expectedDateTime;
-				ws.SimulateIsChanged = true;
-				ws.SetIsChanged(false);
+				ws.AcceptChanges();
 				environment.LocalRepository.Save();
-				ws.SimulateIsChanged = false;
 
 				// Create and save the same WS (although slightly different) in a different local
 				// store - this should update the global store
 				var lastModifiedInWs = environment.GlobalRepository.Get(enUsTag).DateModified;
 				var localRepo2 = new LdmlInFolderWritingSystemRepository(testFolder2.Path, environment.GlobalRepository);
-				ws = new TestableWritingSystemDefinition (enUsTag);
+				ws = new WritingSystemDefinition (enUsTag);
 				localRepo2.Set(ws);
-				ws.RightToLeftScript = false;
+				ws.Keyboard = "foo";
 
 				// SUT
 				localRepo2.Save();

@@ -6,7 +6,7 @@ using System.Xml.XPath;
 namespace SIL.WritingSystems
 {
 	/// <summary>
-	/// A writing system repository where all LDML defintions are stored in a single XML file.
+	/// A writing system repository where all LDML definitions are stored in a single XML file.
 	/// </summary>
 	public class LdmlInXmlWritingSystemRepository : LdmlInXmlWritingSystemRepository<WritingSystemDefinition>
 	{

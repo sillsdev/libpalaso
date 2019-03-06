@@ -55,7 +55,7 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		}
 
 		[Test]
-		public void AkanSearchDoesNotCrash()
+		public void AkSearchDoesNotCrash()
 		{
 			_control.SearchText = "a";
 			_testForm.Show();
@@ -63,10 +63,10 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 			_control.SearchText = "ak";
 			WaitForControl();
 			Assert.AreEqual("akq", _control.SelectedLanguage.LanguageTag);
-			Assert.AreEqual("Ak", _control.DesiredLanguageName);
+			Assert.AreEqual("Ak", _control.DesiredLanguageName);	// name matches by preference to tag (except for "en")
 			_control.SearchText = "akq";
 			WaitForControl();
-			Assert.AreEqual("akq", _control.SelectedLanguage.LanguageTag);
+			Assert.AreEqual("akq", _control.SelectedLanguage.LanguageTag);	// tag can also match
 			Assert.AreEqual("Ak", _control.DesiredLanguageName);
 		}
 

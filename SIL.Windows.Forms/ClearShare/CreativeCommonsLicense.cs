@@ -177,7 +177,7 @@ namespace SIL.Windows.Forms.ClearShare
 			if(token == "cc0")
 			{
 				// this one is weird in a couple ways, including that it doesn't have /licenses/ in the path
-				return "http://creativecommons.org/publicdomain/zero/" + version +"/";
+				return "http://creativecommons.org/publicdomain/zero/1.0/";
 			}
 
 			var url = token + "/";
@@ -233,35 +233,40 @@ namespace SIL.Windows.Forms.ClearShare
 
 		/// <summary>
 		/// A compact form of of this license that doesn't introduce any new text (though the license may itself have text)
-		/// E.g. CC-BY-NC
+		/// E.g. CC BY-NC
 		/// </summary>
 		public override string GetMinimalFormForCredits(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsed)
 		{
 			idOfLanguageUsed = "*";
 
-			var form = "CC-";
+			string form;
 			if (AttributionRequired)
-				form += "BY-";
-			if (!CommercialUseAllowed)
-				form += "NC-";
-			switch (DerivativeRule)
 			{
-				case DerivativeRules.NoDerivatives:
-					form += "ND";
-					break;
-				case DerivativeRules.DerivativesWithShareAndShareAlike:
-					form += "SA";
-					break;
-				case DerivativeRules.Derivatives:
-					break;
-				default:
-					throw new ArgumentOutOfRangeException("derivativeRule");
+				form = "CC BY-";
+				if (!CommercialUseAllowed)
+					form += "NC-";
+				switch (DerivativeRule)
+				{
+					case DerivativeRules.NoDerivatives:
+						form += "ND";
+						break;
+					case DerivativeRules.DerivativesWithShareAndShareAlike:
+						form += "SA";
+						break;
+					case DerivativeRules.Derivatives:
+						break;
+					default:
+						throw new ArgumentOutOfRangeException("derivativeRule");
+				}
+				form = form.TrimEnd(new char[] { '-', ' ' });
 			}
-			form = form.TrimEnd(new char[] { '-' });
+			else
+			{
+				form = "CC0";
+			}
 
 			var additionalRights = (RightsStatement != null ? ". " + RightsStatement : "");
 			return (form + " " + (IntergovernmentalOriganizationQualifier ? "IGO " : "") + Version + additionalRights).Trim();
-			;
 		}
 
 		/// <summary>
