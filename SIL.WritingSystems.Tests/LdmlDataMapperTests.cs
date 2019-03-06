@@ -149,9 +149,9 @@ namespace SIL.WritingSystems.Tests
 		public void ExistingLdml_UnknownCollation_Write_PreservesData()
 		{
 			var ldmlwithcollation =
-				@"<ldml><collations><collation type=""phonebook""><cr>" +
+				@"<ldml><collations><collation><unknown>" +
 				@"<![CDATA[[caseLevel on]& c < k]]>" +
-				@"</cr></collation></collations></ldml>";
+				@"</unknown></collation></collations></ldml>";
 			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 			var sw = new StringWriter();
 			var ws = new WritingSystemDefinition("en");
@@ -795,6 +795,7 @@ namespace SIL.WritingSystems.Tests
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
 
+				Assert.That(wsFromLdml.Collations.Count, Is.EqualTo(1));
 				Assert.That(wsFromLdml.Collations.First(), Is.ValueEqualTo(cd));
 				Assert.That(wsFromLdml.DefaultCollation, Is.ValueEqualTo(cd));
 			}
