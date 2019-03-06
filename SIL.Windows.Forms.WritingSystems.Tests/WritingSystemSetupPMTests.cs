@@ -1160,6 +1160,21 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		}
 
 		[Test]
+		public void SortRules_DefaultCollationType_SetAfterSingleWsConstruction()
+		{
+			var singleWs = new WritingSystemDefinition("auc");
+			singleWs.Collations.Add(new IcuRulesCollationDefinition("standard") { IcuRules = "&b < a" });
+			string junk;
+			Assert.IsTrue(singleWs.DefaultCollation.Validate(out junk));
+			// SUT
+			var model = new WritingSystemSetupModel(singleWs);
+			Assert.That(model.CurrentCollationRulesType, Is.EqualTo("CustomIcu"));
+			Assert.That(((IcuRulesCollationDefinition) singleWs.DefaultCollation).IcuRules,
+				Is.EqualTo("&b < a"));
+			Assert.That(model.CurrentCollationRules, Is.EqualTo("&b < a"));
+		}
+
+		[Test]
 		public void CurrentDefaultFontName_SetSameFontDifferentCase_NotUpdated()
 		{
 			var font = new FontDefinition("Test");
