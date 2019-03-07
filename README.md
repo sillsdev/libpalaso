@@ -1,4 +1,4 @@
-Palaso Library
+Palaso Librare
 ==============
 
 Documentation
