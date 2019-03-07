@@ -1302,6 +1302,16 @@ namespace SIL.WritingSystems
 		private void RemoveIcuCollations(XElement collationsElem)
 		{
 			// Remove any of the icu collations - we handle those and will write them back out
+			// e.g.
+			// <collations>
+			//   <collation type="standard"> <-- removes this element
+			//     <cr><![CDATA[&c< a]]></cr>
+			//   </collation>
+			//   <collation type="weird"/> <-- also removes this element (I don't know what makes these but I saw it in testing. Real data is weird.)
+			//   <collation> <-- does not remove this element
+			//     <anything/>
+			//   </collation>
+			// </collations>
 			collationsElem.Elements("collation").Where(ce => ce.Attribute("type") != null && (!ce.HasElements || ce.Elements("cr").Any())).Remove();
 		}
 

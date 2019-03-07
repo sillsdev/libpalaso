@@ -802,6 +802,44 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void Roundtrip_LdmlMultipleIcuCollations()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var cd = new IcuRulesCollationDefinition("standard")
+				{
+					CollationRules = "&B<t",
+					IsValid = true
+				};
+				var phonebookCd = new IcuRulesCollationDefinition("phonebook")
+				{
+					CollationRules = "&c<f",
+					IsValid = true
+				};
+
+				var wsToLdml = new WritingSystemDefinition("aa", "Latn", "", "");
+				wsToLdml.Collations.Add(cd);
+				wsToLdml.Collations.Add(phonebookCd);
+
+				var wsFactory = new TestWritingSystemFactory();
+				var ldmlAdaptor = new LdmlDataMapper(wsFactory);
+				var testLdmlFile = environment.FilePath("test.ldml");
+				ldmlAdaptor.Write(testLdmlFile, wsToLdml, null);
+				// validate that the data was written to the file correctly
+				AssertThatXmlIn.File(testLdmlFile).HasSpecifiedNumberOfMatchesForXpath("/ldml/collations/collation[@type='standard']", 1);
+				AssertThatXmlIn.File(testLdmlFile).HasSpecifiedNumberOfMatchesForXpath("/ldml/collations/collation[@type='phonebook']", 1);
+				AssertThatXmlIn.File(testLdmlFile).HasSpecifiedNumberOfMatchesForXpath("/ldml/collations/defaultCollation[text()='standard']", 1);
+
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(testLdmlFile, wsFromLdml);
+
+				// verify that both collations came out and that the default is set correctly
+				Assert.That(wsFromLdml.Collations.Count, Is.EqualTo(2));
+				Assert.That(wsFromLdml.DefaultCollation, Is.ValueEqualTo(cd));
+			}
+		}
+
+		[Test]
 		public void Roundtrip_LdmlFont()
 		{
 			using (var environment = new TestEnvironment())
