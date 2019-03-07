@@ -1,4 +1,4 @@
-Palaso Library
+Old Palaso Library
 ==============
 
 Documentation
