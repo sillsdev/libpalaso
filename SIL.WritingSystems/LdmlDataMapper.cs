@@ -1272,6 +1272,7 @@ namespace SIL.WritingSystems
 			// Preserve existing collations since we don't process them all
 			// Remove only the collations we can repopulate from the writing system
 			RemoveSpecialSilCollations(collationsElem);
+			RemoveIcuCollations(collationsElem);
 			// if there will be no collation elements, don't write out defaultCollation element
 			if (!collationsElem.Elements("collation").Any() && ws.Collations.All(c => c is SystemCollationDefinition))
 			{
@@ -1296,6 +1297,22 @@ namespace SIL.WritingSystems
 			//   </collation>
 			// </collations>
 			collationsElem.Elements("collation").Where(ce => ce.NonAltElements("special").Any(se => se.Name.NamespaceName == Sil && se.Name != Sil + "reordered")).Remove();
+		}
+
+		private void RemoveIcuCollations(XElement collationsElem)
+		{
+			// Remove any of the icu collations - we handle those and will write them back out
+			// e.g.
+			// <collations>
+			//   <collation type="standard"> <-- removes this element
+			//     <cr><![CDATA[&c< a]]></cr>
+			//   </collation>
+			//   <collation type="weird"/> <-- also removes this element (I don't know what makes these but I saw it in testing. Real data is weird.)
+			//   <collation> <-- does not remove this element
+			//     <anything/>
+			//   </collation>
+			// </collations>
+			collationsElem.Elements("collation").Where(ce => ce.Attribute("type") != null && (!ce.HasElements || ce.Elements("cr").Any())).Remove();
 		}
 
 		private void WriteCollationElement(XElement collationsElem, CollationDefinition collation)

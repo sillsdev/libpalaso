@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -130,6 +130,24 @@ namespace SIL.WritingSystems.Tests
 				ws.WindowsLcid = "test";
 				repo.Save();
 				Assert.That(File.GetLastWriteTime(repo.GetFilePathFromLanguageTag("en-US")), Is.Not.EqualTo(modified));
+			}
+		}
+
+		[Test]
+		public void Save_ChangingIcuSort_DoesNotDuplicateInLdmlFile()
+		{
+			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			{
+				var repo = new GlobalWritingSystemRepository(e.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				ws.Collations.Add(new IcuRulesCollationDefinition("standard") { IcuRules = "&b < a" });
+				repo.Set(ws);
+				repo.Save();
+				// ensure that last modified timestamp changes
+				Thread.Sleep(1000);
+				ws.WindowsLcid = "test";
+				repo.Save();
+				AssertThatXmlIn.File(repo.GetFilePathFromLanguageTag("en-US")).HasSpecifiedNumberOfMatchesForXpath("/ldml/collations/collation", 1);
 			}
 		}
 
