@@ -25,7 +25,7 @@
     </PackageReference>
     <PackageReference Include="ibusdotnet" Version="2.0.0.20771" />
     <PackageReference Include="icu.net" Version="2.5.4" />
-    <PackageReference Include="L10NSharp" Version="3.1.0-nuget0010" />
+    <PackageReference Include="L10NSharp.tmx" Version="3.1.0-nuget0010" />
     <PackageReference Include="Mono.Posix" Version="5.4.0.201" Condition="'$(OS)' == 'Windows_NT'" />
     <PackageReference Include="SIL.ReleaseTasks" Version="[2.2.0,)">
       <PrivateAssets>all</PrivateAssets>
