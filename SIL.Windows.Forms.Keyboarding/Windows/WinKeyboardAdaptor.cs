@@ -73,18 +73,21 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		{
 			return (ushort)((uint)hkl & 0xffff);
 		}
+
 		public void UpdateAvailableKeyboards()
 		{
 			var curKeyboards = KeyboardController.Instance.Keyboards.OfType<WinKeyboardDescription>().ToDictionary(kd => kd.Id);
 
 			foreach (InputLanguage inputLanguage in InputLanguage.InstalledInputLanguages)
 			{
-				var keyboardId = $"{inputLanguage.Culture.Name}_{inputLanguage.LayoutName}";
-				var keyboardLayoutName = GetBestAvailableKeyboardName(inputLanguage);
+				string keyboardId;
+				LayoutName keyboardLayoutName;
 				CultureInfo culture;
 				string cultureName;
 				try
 				{
+					keyboardId = $"{inputLanguage.Culture.Name}_{inputLanguage.LayoutName}";
+					keyboardLayoutName = GetBestAvailableKeyboardName(inputLanguage);
 					culture = new CultureInfo(inputLanguage.Culture.Name);
 					cultureName = culture.DisplayName;
 				}
@@ -94,6 +97,8 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					// Also see http://stackoverflow.com/a/24820530/4953232
 					culture = new CultureInfo("en-US");
 					cultureName = "[Unknown Language]";
+					keyboardId = $"{inputLanguage.Culture.Name}_{inputLanguage.LayoutName}";
+					keyboardLayoutName = new LayoutName(inputLanguage.LayoutName, inputLanguage.LayoutName);
 				}
 
 				WinKeyboardDescription existingKeyboard;
