@@ -849,11 +849,18 @@ namespace SIL.WritingSystems
 		/// <summary>
 		/// Gets the subtags of the specified language tag.
 		/// </summary>
-		/// <param name="langTag">The language tag.</param>
-		/// <param name="languageSubtag">The language subtag.</param>
-		/// <param name="scriptSubtag">The script subtag.</param>
-		/// <param name="regionSubtag">The region subtag.</param>
-		/// <param name="variantSubtags">The variant and private-use subtags.</param>
+		/// <param name="langTag">The language tag string</param>
+		/// <param name="languageSubtag">Assigned the LanguageSubtag</param>
+		/// <param name="scriptSubtag">Assigned the ScriptSubtag or null</param>
+		/// <param name="regionSubtag">Assigned the RegionSubtag or null</param>
+		/// <param name="variantSubtags">List of the variant and private-use subtags, or an empty list</param>
+		/// <remarks>
+		/// The SIL (FieldWorks) convention for private use subtags is followed:
+		/// qaa for the language expects the first private use code to be a 3 letter language name abbreviation
+		/// Qaaa in the Script expects the first remaining private use code to be a 4 letter script abbreviation
+		/// QM in the Region expects the first remaining private use code to be a 2 letter Region abbreviation
+		/// Any deviation from this will still parse, but it the subtags will not return info from the private use area.
+		/// </remarks>
 		/// <returns></returns>
 		public static bool TryGetSubtags(string langTag, out LanguageSubtag languageSubtag, out ScriptSubtag scriptSubtag,
 			out RegionSubtag regionSubtag, out IEnumerable<VariantSubtag> variantSubtags)
@@ -882,7 +889,7 @@ namespace SIL.WritingSystems
 				if (languageCode.Equals(WellKnownSubtags.UnlistedLanguage, StringComparison.OrdinalIgnoreCase))
 				{
 					// In our own WS dialog, we don't allow no language, but if it isn't a standard one, a language like xkal
-					// produces an identifier like qaa-x-kal, and we interepret the first thing after the x as a private
+					// produces an identifier like qaa-x-kal, and we interpret the first thing after the x as a private
 					// language code (not allowed as the first three characters according to the standard).
 					// If it's NOT a valid language code (e.g., too many characters), probably came from some other
 					// program. Treating it as a language code will fail if we try to create such a writing system,
@@ -912,10 +919,10 @@ namespace SIL.WritingSystems
 			if (scriptGroup.Success)
 			{
 				string scriptCode = scriptGroup.Value;
+				// Qaaa triggers convention looking for a privateUse abbreviation
 				if (scriptCode.Equals("Qaaa", StringComparison.OrdinalIgnoreCase) && privateUseCodes.Count > 0
 					&& ScriptPattern.IsMatch(privateUseCodes[0]))
 				{
-
 					scriptSubtag = new ScriptSubtag(privateUseCodes[0]);
 					privateUseCodes.RemoveAt(0);
 				}
@@ -932,6 +939,7 @@ namespace SIL.WritingSystems
 			if (regionGroup.Success)
 			{
 				string regionCode = regionGroup.Value;
+				// QM triggers convention looking for a privateUse abbreviation
 				if (regionCode.Equals("QM", StringComparison.OrdinalIgnoreCase) && privateUseCodes.Count > 0
 					&& RegionPattern.IsMatch(privateUseCodes[0]))
 				{

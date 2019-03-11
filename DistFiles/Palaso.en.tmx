@@ -510,6 +510,11 @@
             <seg>License</seg>
          </tuv>
       </tu>
+      <tu tuid="MetadataEditor.PublicDomain">
+         <tuv xml:lang="en">
+            <seg>The copyright holder waives all rights</seg>
+         </tuv>
+      </tu>
       <tu tuid="MetadataEditor.TitleNoCredit">
          <tuv xml:lang="en">
             <seg>Copyright and License</seg>
@@ -540,6 +545,12 @@
          <note>The meaning of  "non-commercial" is vague but important. This hyperlink takes you somewhere that defines it.</note>
          <tuv xml:lang="en">
             <seg>more info</seg>
+         </tuv>
+      </tu>
+      <tu tuid="MetadataEditor.linkToPublicDomainCC0">
+         <note>{0} is replaced by an untranslatable abbreviation functioning as an adjective ("CC0")</note>
+         <tuv xml:lang="en">
+            <seg>about {0} Public Domain</seg>
          </tuv>
       </tu>
       <tu tuid="MetadataEditor.linkToWarningAboutRefiningCreativeCommons">

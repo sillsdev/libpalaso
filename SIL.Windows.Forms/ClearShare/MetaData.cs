@@ -690,7 +690,7 @@ namespace SIL.Windows.Forms.ClearShare
 
 		/// <summary>
 		/// Deletes the stored exemplar (if it exists).  This can be useful if a program
-		/// wants to establish CC-BY as the default license for a new product.
+		/// wants to establish "CC BY" as the default license for a new product.
 		/// </summary>
 		static public void DeleteStoredExemplar(FileCategory category)
 		{
@@ -780,6 +780,15 @@ namespace SIL.Windows.Forms.ClearShare
 
 		public void SetCopyrightNotice(string year, string by)
 		{
+			if ((License is CreativeCommonsLicense) && !((CreativeCommonsLicense) License).AttributionRequired)
+			{
+				// Public Domain, no copyright as such.
+				if (!string.IsNullOrEmpty(year))
+					CopyrightNotice = by + ", " + year;
+				else
+					CopyrightNotice = by;
+				return;
+			}
 			if(!string.IsNullOrEmpty(year))
 				CopyrightNotice = "Copyright © " + year + ", " + by;
 			else
@@ -830,8 +839,8 @@ namespace SIL.Windows.Forms.ClearShare
 
 		/// <summary>
 		/// A super compact form of credits that doesn't introduce any English.
-		/// Jane Doe, © 2008 SIL International, CC-BY-NC 3.0
-		/// "International Illustrations: Art Of Reading", © 2009 SIL International, CC-ND
+		/// Jane Doe, © 2008 SIL International, CC BY-NC 3.0
+		/// "International Illustrations: Art Of Reading", © 2009 SIL International, CC ND
 		/// </summary>
 		public string MinimalCredits(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsedForLicense)
 		{

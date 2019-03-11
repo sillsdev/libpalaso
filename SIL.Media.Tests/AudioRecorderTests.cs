@@ -228,6 +228,7 @@ namespace SIL.Media.Tests
 							Assert.Fail("stop event not received");
 						}
 					}
+					// After playback is stopped we shouldn't be reporting that it is playing
 					Assert.That(isPlayingInEventHandler, Is.False);
 					Assert.That(x.IsPlaying, Is.False);
 				}
@@ -428,6 +429,28 @@ namespace SIL.Media.Tests
 					Assert.DoesNotThrow(() => x.Play());
 					Assert.DoesNotThrow(() => x.StopPlaying());
 				}
+			}
+		}
+
+		[Test]
+		[Platform(Exclude = "Linux", Reason = "AudioAlsaSession doesn't implement ISimpleAudioWithEvents")]
+		public void Play_DoesPlayMp3_SmokeTest()
+		{
+			// file disposed after playback stopped
+			var file = TempFile.FromResource(Resources.ShortMp3, ".mp3");
+			using (var x = AudioFactory.CreateAudioSession(file.Path))
+			{
+				(x as ISimpleAudioWithEvents).PlaybackStopped += (e, f) =>
+				{
+					Debug.WriteLine(f);
+					Thread.Sleep(100);
+					file.Dispose();
+				};
+				Assert.That(x.IsPlaying, Is.False);
+				Assert.DoesNotThrow(() => x.Play());
+				Assert.That(x.IsPlaying, Is.True);
+				Assert.DoesNotThrow(() => x.StopPlaying());
+				Assert.That(x.IsPlaying, Is.False);
 			}
 		}
 

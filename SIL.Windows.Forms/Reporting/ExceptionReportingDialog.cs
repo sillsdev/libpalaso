@@ -242,7 +242,6 @@ namespace SIL.Windows.Forms.Reporting
 			resources.ApplyResources(this, "$this");
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-			this.ControlBox = false;
 			this.Controls.Add(this._emailAddress);
 			this.Controls.Add(this._privacyNoticeButton);
 			this.Controls.Add(this._methodCombo);
@@ -257,6 +256,8 @@ namespace SIL.Windows.Forms.Reporting
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "ExceptionReportingDialog";
+			this.ControlBox = true;
+			this.ShowIcon = false; // Showing the Control box ("X") also shows a default icon.
 			this.TopMost = true;
 			this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ExceptionReportingDialog_KeyPress);
 			this.ResumeLayout(false);

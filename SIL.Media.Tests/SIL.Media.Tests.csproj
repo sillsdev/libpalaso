@@ -29,8 +29,4 @@
     <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj" />
     <ProjectReference Include="..\SIL.Windows.Forms\SIL.Windows.Forms.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Resources\2Channel.wav" />
-  </ItemGroup>
 </Project>

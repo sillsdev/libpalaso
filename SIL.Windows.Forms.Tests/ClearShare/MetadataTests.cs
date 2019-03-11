@@ -477,7 +477,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			};
 
 			string idOfLanguageUsedForLicense;
-			Assert.AreEqual("My Collection, © 2014 SIL. CC-BY-SA IGO 3.0", m.MinimalCredits(new[] { "en" }, out idOfLanguageUsedForLicense));
+			Assert.AreEqual("My Collection, © 2014 SIL. CC BY-SA IGO 3.0", m.MinimalCredits(new[] { "en" }, out idOfLanguageUsedForLicense));
 		}
 
 		[Test]
@@ -494,7 +494,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			};
 
 			string idOfLanguageUsedForLicense;
-			Assert.AreEqual("© 2014 SIL. CC-BY-SA IGO 3.0. Only people named Fred can use this.", m.MinimalCredits(new[] { "en" }, out idOfLanguageUsedForLicense));
+			Assert.AreEqual("© 2014 SIL. CC BY-SA IGO 3.0. Only people named Fred can use this.", m.MinimalCredits(new[] { "en" }, out idOfLanguageUsedForLicense));
 		}
 	}
 }
