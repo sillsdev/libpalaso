@@ -6,7 +6,7 @@ using System;
 using System.IO;
 using System.Reflection;
 
-namespace SIL.Tests.IO
+namespace SIL.Core.Desktop.Tests.IO
 {
 	[TestFixture]
 	public class FileUtilTests
