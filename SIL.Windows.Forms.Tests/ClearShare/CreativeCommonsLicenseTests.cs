@@ -73,7 +73,7 @@ namespace SIL.Windows.Forms.Tests.ClearShare
 			// just set all three aspects to be permissive.
 			var original = new CreativeCommonsLicense(false, true, CreativeCommonsLicense.DerivativeRules.Derivatives, "1.0");
 			//notice that the url for cc0 does not follow the conventions of the other licenses.
-			Assert.AreEqual("http://creativecommons.org/publicdomain/zero/1.0/", original.Url);
+			Assert.AreEqual(CreativeCommonsLicense.CC0Url, original.Url);
 		}
 
 		[Test]
