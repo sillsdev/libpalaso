@@ -97,7 +97,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					// Also see http://stackoverflow.com/a/24820530/4953232
 					culture = new CultureInfo("en-US");
 					cultureName = "[Unknown Language]";
-					keyboardId = $"{inputLanguage.Culture.Name}_{inputLanguage.LayoutName}";
+					keyboardId = $"{cultureName}_{inputLanguage.LayoutName}";
 					keyboardLayoutName = new LayoutName(inputLanguage.LayoutName, inputLanguage.LayoutName);
 				}
 
@@ -122,7 +122,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					if (!KeyboardController.Instance.Keyboards.TryGet(keyboardId, out keyboard))
 					{
 						KeyboardController.Instance.Keyboards.Add(
-							new WinKeyboardDescription(keyboardId, GetDisplayName(keyboardLayoutName.LocalizedName, cultureName), keyboardLayoutName.Name, inputLanguage.Culture.Name, true,
+							new WinKeyboardDescription(keyboardId, GetDisplayName(keyboardLayoutName.LocalizedName, cultureName), keyboardLayoutName.Name, cultureName, true,
 								new InputLanguageWrapper(inputLanguage), this));
 					}
 				}
