@@ -7,6 +7,9 @@ namespace SIL.Windows.Forms.ClearShare
 {
 	public class CreativeCommonsLicense : LicenseInfo
 	{
+		// This URL may be checked in code that uses the library, so make it available as a constant.
+		public const string CC0Url = "http://creativecommons.org/publicdomain/zero/1.0/";
+
 		public enum DerivativeRules
 		{
 			NoDerivatives, DerivativesWithShareAndShareAlike, Derivatives
@@ -177,7 +180,7 @@ namespace SIL.Windows.Forms.ClearShare
 			if(token == "cc0")
 			{
 				// this one is weird in a couple ways, including that it doesn't have /licenses/ in the path
-				return "http://creativecommons.org/publicdomain/zero/1.0/";
+				return CC0Url;
 			}
 
 			var url = token + "/";
