@@ -122,7 +122,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					if (!KeyboardController.Instance.Keyboards.TryGet(keyboardId, out keyboard))
 					{
 						KeyboardController.Instance.Keyboards.Add(
-							new WinKeyboardDescription(keyboardId, GetDisplayName(keyboardLayoutName.LocalizedName, cultureName), keyboardLayoutName.Name, cultureName, true,
+							new WinKeyboardDescription(keyboardId, GetDisplayName(keyboardLayoutName.LocalizedName, cultureName), keyboardLayoutName.Name, culture.Name, true,
 								new InputLanguageWrapper(inputLanguage), this));
 					}
 				}
