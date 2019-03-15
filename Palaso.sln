@@ -10,36 +10,36 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Core.Tests", "SIL.Core.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Windows.Forms", "SIL.Windows.Forms\SIL.Windows.Forms.csproj", "{DB44F49C-D8C6-434F-81ED-28EA5C9E8195}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddSortKey", "AddSortKey\AddSortKey.csproj", "{3D4F73A8-DB05-4580-98A0-DEE34C010636}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddSortKey", "AddSortKey\AddSortKey.csproj", "{3D4F73A8-DB05-4580-98A0-DEE34C010636}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Windows.Forms.Tests", "SIL.Windows.Forms.Tests\SIL.Windows.Forms.Tests.csproj", "{6E16866F-FF8D-4136-AD67-36AFE3626432}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Media", "SIL.Media\SIL.Media.csproj", "{66B3504A-3B4E-45CB-903A-A9A75B22EF68}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Media.Tests", "SIL.Media.Tests\SIL.Media.Tests.csproj", "{CD4AF11C-C214-4D90-8F12-6DA97836B800}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Media.Tests", "SIL.Media.Tests\SIL.Media.Tests.csproj", "{CD4AF11C-C214-4D90-8F12-6DA97836B800}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.TestUtilities", "SIL.TestUtilities\SIL.TestUtilities.csproj", "{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reporting.TestApp", "TestApps\ReportingTest\Reporting.TestApp.csproj", "{13B5E313-1B26-4DAE-9E96-133768B62FD2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Reporting.TestApp", "TestApps\ReportingTest\Reporting.TestApp.csproj", "{13B5E313-1B26-4DAE-9E96-133768B62FD2}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DB44F49C-D8C6-434F-81ED-28EA5C9E8195} = {DB44F49C-D8C6-434F-81ED-28EA5C9E8195}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Archiving", "SIL.Archiving\SIL.Archiving.csproj", "{BCE1F124-5479-4B23-90B1-B7A4EBE44FA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Archiving.Tests", "SIL.Archiving.Tests\SIL.Archiving.Tests.csproj", "{892C7F20-FBBB-4AB3-BAC2-E40A135567B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Archiving.Tests", "SIL.Archiving.Tests\SIL.Archiving.Tests.csproj", "{892C7F20-FBBB-4AB3-BAC2-E40A135567B6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Scripture", "SIL.Scripture\SIL.Scripture.csproj", "{F71BA7B9-D9DC-4F8C-A307-87B503D0E05B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Scripture.Tests", "SIL.Scripture.Tests\SIL.Scripture.Tests.csproj", "{4528287F-BA86-49D8-AFBB-1250A60CE7EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Scripture.Tests", "SIL.Scripture.Tests\SIL.Scripture.Tests.csproj", "{4528287F-BA86-49D8-AFBB-1250A60CE7EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppKeyboard", "TestApps\TestAppKeyboard\TestAppKeyboard.csproj", "{776BECCD-102A-4C69-A478-4A4A6F695019}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestAppKeyboard", "TestApps\TestAppKeyboard\TestAppKeyboard.csproj", "{776BECCD-102A-4C69-A478-4A4A6F695019}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Windows.Forms.GeckoBrowserAdapter", "SIL.Windows.Forms.GeckoBrowserAdapter\SIL.Windows.Forms.GeckoBrowserAdapter.csproj", "{D000879E-9AA6-4811-A6F0-80DF6119FB08}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Windows.Forms.Scripture", "SIL.Windows.Forms.Scripture\SIL.Windows.Forms.Scripture.csproj", "{6CA85A3E-4AB3-4BBC-861F-0C68F018868B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.Scripture.Tests", "SIL.Windows.Forms.Scripture.Tests\SIL.Windows.Forms.Scripture.Tests.csproj", "{CCF34218-52D9-4092-ADB8-1893BBE5ED31}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Windows.Forms.Scripture.Tests", "SIL.Windows.Forms.Scripture.Tests\SIL.Windows.Forms.Scripture.Tests.csproj", "{CCF34218-52D9-4092-ADB8-1893BBE5ED31}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.WritingSystems.Tests", "SIL.WritingSystems.Tests\SIL.WritingSystems.Tests.csproj", "{641EB241-BF16-4A5F-89BD-54411F9AC973}"
 EndProject
@@ -48,7 +48,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Windows.Forms.WritingSy
 		{0580ED5F-6274-4928-83EE-175F01AD052D} = {0580ED5F-6274-4928-83EE-175F01AD052D}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.WritingSystems.Tests", "SIL.Windows.Forms.WritingSystems.Tests\SIL.Windows.Forms.WritingSystems.Tests.csproj", "{24E0B3A0-EE71-48CE-82F9-549F1F47322F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Windows.Forms.WritingSystems.Tests", "SIL.Windows.Forms.WritingSystems.Tests\SIL.Windows.Forms.WritingSystems.Tests.csproj", "{24E0B3A0-EE71-48CE-82F9-549F1F47322F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Windows.Forms.Keyboarding", "SIL.Windows.Forms.Keyboarding\SIL.Windows.Forms.Keyboarding.csproj", "{0580ED5F-6274-4928-83EE-175F01AD052D}"
 EndProject
@@ -56,25 +56,25 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Windows.Forms.Keyboardi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.DblBundle", "SIL.DblBundle\SIL.DblBundle.csproj", "{D4F0F320-FAF6-4775-8411-4D03FAE99F84}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.DblBundle.Tests", "SIL.DblBundle.Tests\SIL.DblBundle.Tests.csproj", "{66685009-8F78-4FED-A106-E5BD6E746E1A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.DblBundle.Tests", "SIL.DblBundle.Tests\SIL.DblBundle.Tests.csproj", "{66685009-8F78-4FED-A106-E5BD6E746E1A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Lexicon", "SIL.Lexicon\SIL.Lexicon.csproj", "{FAD20DE2-D5BB-4D9D-AEEF-61F02663105F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Lexicon.Tests", "SIL.Lexicon.Tests\SIL.Lexicon.Tests.csproj", "{67C6AD7F-B1AC-46E1-90C7-E4E2B416AEBD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Lexicon.Tests", "SIL.Lexicon.Tests\SIL.Lexicon.Tests.csproj", "{67C6AD7F-B1AC-46E1-90C7-E4E2B416AEBD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.DictionaryServices.Tests", "SIL.DictionaryServices.Tests\SIL.DictionaryServices.Tests.csproj", "{CC84BDED-CECD-466A-9397-F5D83527B218}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.DictionaryServices.Tests", "SIL.DictionaryServices.Tests\SIL.DictionaryServices.Tests.csproj", "{CC84BDED-CECD-466A-9397-F5D83527B218}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.DictionaryServices", "SIL.DictionaryServices\SIL.DictionaryServices.csproj", "{5FF5CBD8-B75D-4F79-A39D-2D898FBFADBD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Lift", "SIL.Lift\SIL.Lift.csproj", "{60B4A08C-54F3-4BC7-83ED-F84274FABFAC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Lift.Tests", "SIL.Lift.Tests\SIL.Lift.Tests.csproj", "{FE61F837-8EAA-4FD7-824A-9949194430DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Lift.Tests", "SIL.Lift.Tests\SIL.Lift.Tests.csproj", "{FE61F837-8EAA-4FD7-824A-9949194430DC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestApps", "TestApps", "{3C695301-9C39-4715-8EDD-817C63EF81E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Email.TestApp", "TestApps\SIL.Email.TestApp\SIL.Email.TestApp.csproj", "{2A206833-C713-4ACB-ACD3-EB971415119E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Email.TestApp", "TestApps\SIL.Email.TestApp\SIL.Email.TestApp.csproj", "{2A206833-C713-4ACB-ACD3-EB971415119E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.TestApp", "TestApps\SIL.Windows.Forms.TestApp\SIL.Windows.Forms.TestApp.csproj", "{24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Windows.Forms.TestApp", "TestApps\SIL.Windows.Forms.TestApp\SIL.Windows.Forms.TestApp.csproj", "{24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0580ED5F-6274-4928-83EE-175F01AD052D} = {0580ED5F-6274-4928-83EE-175F01AD052D}
 		{D000879E-9AA6-4811-A6F0-80DF6119FB08} = {D000879E-9AA6-4811-A6F0-80DF6119FB08}
@@ -82,21 +82,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.TestApp",
 		{F7DF58E2-5B67-498A-9F64-B5F1584A5AB9} = {F7DF58E2-5B67-498A-9F64-B5F1584A5AB9}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastSplitterTest", "TestApps\FastSplitterTest\FastSplitterTest.csproj", "{CA8F3657-3D85-4C97-81A6-5C212627B2F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastSplitterTest", "TestApps\FastSplitterTest\FastSplitterTest.csproj", "{CA8F3657-3D85-4C97-81A6-5C212627B2F6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Windows.Forms.DblBundle", "SIL.Windows.Forms.DblBundle\SIL.Windows.Forms.DblBundle.csproj", "{A5260B7F-A48B-495C-86C4-73B1419B17F2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Linux.Logging", "SIL.Linux.Logging\SIL.Linux.Logging.csproj", "{D098D062-0B47-4A68-BE0A-5FB597B6896C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Linux.Logging.Tests", "SIL.Linux.Logging.Tests\SIL.Linux.Logging.Tests.csproj", "{D7AD97B3-88DB-400D-B748-0E06914F17FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Linux.Logging.Tests", "SIL.Linux.Logging.Tests\SIL.Linux.Logging.Tests.csproj", "{D7AD97B3-88DB-400D-B748-0E06914F17FC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Core.Desktop", "SIL.Core.Desktop\SIL.Core.Desktop.csproj", "{C48DE000-2086-4CEB-A5A1-3171C272725E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Core.Desktop.Tests", "SIL.Core.Desktop.Tests\SIL.Core.Desktop.Tests.csproj", "{4C21E03C-8A79-4D28-A4A5-A14BA1342BCF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Core.Desktop.Tests", "SIL.Core.Desktop.Tests\SIL.Core.Desktop.Tests.csproj", "{4C21E03C-8A79-4D28-A4A5-A14BA1342BCF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtractCopyright", "ExtractCopyright\ExtractCopyright.csproj", "{EB720294-B74B-47F4-BE43-9B3B4C33C86D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExtractCopyright", "ExtractCopyright\ExtractCopyright.csproj", "{EB720294-B74B-47F4-BE43-9B3B4C33C86D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtractCopyright.Tests", "ExtractCopyright.Tests\ExtractCopyright.Tests.csproj", "{085A7785-C407-4623-80C0-BFFD2B0D2475}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExtractCopyright.Tests", "ExtractCopyright.Tests\ExtractCopyright.Tests.csproj", "{085A7785-C407-4623-80C0-BFFD2B0D2475}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Core", "SIL.Core\SIL.Core.csproj", "{53CB36D9-2F66-4823-B1F0-4523E8565200}"
 EndProject
@@ -111,7 +111,42 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		GitVersion.yml = GitVersion.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.TestUtilities.Tests", "SIL.TestUtilities.Tests\SIL.TestUtilities.Tests.csproj", "{CCB5E6CC-8CC1-4248-924E-D4F36CBEF37D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.TestUtilities.Tests", "SIL.TestUtilities.Tests\SIL.TestUtilities.Tests.csproj", "{CCB5E6CC-8CC1-4248-924E-D4F36CBEF37D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DesignerProjects", "DesignerProjects", "{266192AE-881F-4823-9D25-D124C51C81E3}"
+	ProjectSection(SolutionItems) = preProject
+		ReadmeDesignerProjects.md = ReadmeDesignerProjects.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestApps", "TestApps", "{A3AE611B-C8D6-4EF3-B669-B0A869B012F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastSplitterTest-Designer", "TestApps\FastSplitterTest\FastSplitterTest-Designer.csproj", "{92088975-691B-45E7-A6EB-2B0F02C1AA10}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reporting.TestApp-Designer", "TestApps\ReportingTest\Reporting.TestApp-Designer.csproj", "{61A11571-7E4B-4B35-AB5A-21814C6D44B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Email.TestApp-Designer", "TestApps\SIL.Email.TestApp\SIL.Email.TestApp-Designer.csproj", "{26250929-0BFE-435F-A1CE-6F082EC97D3A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.TestApp-Designer", "TestApps\SIL.Windows.Forms.TestApp\SIL.Windows.Forms.TestApp-Designer.csproj", "{71407727-8774-4871-BF9C-BFFF8DE884DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestAppKeyboard-Designer", "TestApps\TestAppKeyboard\TestAppKeyboard-Designer.csproj", "{5DC731FF-2CEF-4F2D-B153-55F7ABC1085F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Archiving-Designer", "SIL.Archiving\SIL.Archiving-Designer.csproj", "{0D38B613-E5B5-4CFF-AC13-F3D95A9E1ACD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Media-Designer", "SIL.Media\SIL.Media-Designer.csproj", "{D6E7D28F-72F8-48C8-A4AB-452A1431847F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Media.Tests-Designer", "SIL.Media.Tests\SIL.Media.Tests-Designer.csproj", "{800ED1E6-53B2-43C4-AFA6-872625076332}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms-Designer", "SIL.Windows.Forms\SIL.Windows.Forms-Designer.csproj", "{78BFB566-7BC9-460C-8F5D-7333192BDEE6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.DblBundle-Designer", "SIL.Windows.Forms.DblBundle\SIL.Windows.Forms.DblBundle-Designer.csproj", "{0E3547FC-7D04-4D2D-ACD9-5AA821C06CF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.GeckoBrowserAdapter-Designer", "SIL.Windows.Forms.GeckoBrowserAdapter\SIL.Windows.Forms.GeckoBrowserAdapter-Designer.csproj", "{9CD88656-640A-4143-A9E7-6ACA604609A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.Scripture-Designer", "SIL.Windows.Forms.Scripture\SIL.Windows.Forms.Scripture-Designer.csproj", "{0AFF34E8-CA99-4A7F-9244-6EED2D60CBA8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.Tests-Designer", "SIL.Windows.Forms.Tests\SIL.Windows.Forms.Tests-Designer.csproj", "{E7BD6834-F0A2-4966-A459-629D43BA5399}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.WritingSystems-Designer", "SIL.Windows.Forms.WritingSystems\SIL.Windows.Forms.WritingSystems-Designer.csproj", "{7B1638B6-DBB3-4978-B900-5A65F5C93BEA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -287,6 +322,34 @@ Global
 		{CCB5E6CC-8CC1-4248-924E-D4F36CBEF37D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCB5E6CC-8CC1-4248-924E-D4F36CBEF37D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCB5E6CC-8CC1-4248-924E-D4F36CBEF37D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92088975-691B-45E7-A6EB-2B0F02C1AA10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92088975-691B-45E7-A6EB-2B0F02C1AA10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61A11571-7E4B-4B35-AB5A-21814C6D44B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61A11571-7E4B-4B35-AB5A-21814C6D44B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26250929-0BFE-435F-A1CE-6F082EC97D3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26250929-0BFE-435F-A1CE-6F082EC97D3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71407727-8774-4871-BF9C-BFFF8DE884DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71407727-8774-4871-BF9C-BFFF8DE884DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DC731FF-2CEF-4F2D-B153-55F7ABC1085F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DC731FF-2CEF-4F2D-B153-55F7ABC1085F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D38B613-E5B5-4CFF-AC13-F3D95A9E1ACD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D38B613-E5B5-4CFF-AC13-F3D95A9E1ACD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6E7D28F-72F8-48C8-A4AB-452A1431847F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6E7D28F-72F8-48C8-A4AB-452A1431847F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{800ED1E6-53B2-43C4-AFA6-872625076332}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{800ED1E6-53B2-43C4-AFA6-872625076332}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78BFB566-7BC9-460C-8F5D-7333192BDEE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78BFB566-7BC9-460C-8F5D-7333192BDEE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E3547FC-7D04-4D2D-ACD9-5AA821C06CF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E3547FC-7D04-4D2D-ACD9-5AA821C06CF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CD88656-640A-4143-A9E7-6ACA604609A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CD88656-640A-4143-A9E7-6ACA604609A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AFF34E8-CA99-4A7F-9244-6EED2D60CBA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AFF34E8-CA99-4A7F-9244-6EED2D60CBA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7BD6834-F0A2-4966-A459-629D43BA5399}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7BD6834-F0A2-4966-A459-629D43BA5399}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B1638B6-DBB3-4978-B900-5A65F5C93BEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B1638B6-DBB3-4978-B900-5A65F5C93BEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -297,6 +360,21 @@ Global
 		{2A206833-C713-4ACB-ACD3-EB971415119E} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
 		{24FAE6A1-3B6E-4E5A-BAB2-78DCAA1566C4} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
 		{CA8F3657-3D85-4C97-81A6-5C212627B2F6} = {3C695301-9C39-4715-8EDD-817C63EF81E7}
+		{A3AE611B-C8D6-4EF3-B669-B0A869B012F9} = {266192AE-881F-4823-9D25-D124C51C81E3}
+		{92088975-691B-45E7-A6EB-2B0F02C1AA10} = {A3AE611B-C8D6-4EF3-B669-B0A869B012F9}
+		{61A11571-7E4B-4B35-AB5A-21814C6D44B4} = {A3AE611B-C8D6-4EF3-B669-B0A869B012F9}
+		{26250929-0BFE-435F-A1CE-6F082EC97D3A} = {A3AE611B-C8D6-4EF3-B669-B0A869B012F9}
+		{71407727-8774-4871-BF9C-BFFF8DE884DC} = {A3AE611B-C8D6-4EF3-B669-B0A869B012F9}
+		{5DC731FF-2CEF-4F2D-B153-55F7ABC1085F} = {A3AE611B-C8D6-4EF3-B669-B0A869B012F9}
+		{0D38B613-E5B5-4CFF-AC13-F3D95A9E1ACD} = {266192AE-881F-4823-9D25-D124C51C81E3}
+		{D6E7D28F-72F8-48C8-A4AB-452A1431847F} = {266192AE-881F-4823-9D25-D124C51C81E3}
+		{800ED1E6-53B2-43C4-AFA6-872625076332} = {266192AE-881F-4823-9D25-D124C51C81E3}
+		{78BFB566-7BC9-460C-8F5D-7333192BDEE6} = {266192AE-881F-4823-9D25-D124C51C81E3}
+		{0E3547FC-7D04-4D2D-ACD9-5AA821C06CF9} = {266192AE-881F-4823-9D25-D124C51C81E3}
+		{9CD88656-640A-4143-A9E7-6ACA604609A3} = {266192AE-881F-4823-9D25-D124C51C81E3}
+		{0AFF34E8-CA99-4A7F-9244-6EED2D60CBA8} = {266192AE-881F-4823-9D25-D124C51C81E3}
+		{E7BD6834-F0A2-4966-A459-629D43BA5399} = {266192AE-881F-4823-9D25-D124C51C81E3}
+		{7B1638B6-DBB3-4978-B900-5A65F5C93BEA} = {266192AE-881F-4823-9D25-D124C51C81E3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0915B762-D4AE-4892-BF4F-AC428A687B02}
