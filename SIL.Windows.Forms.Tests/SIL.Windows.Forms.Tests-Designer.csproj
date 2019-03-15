@@ -1,0 +1,218 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E7BD6834-F0A2-4966-A459-629D43BA5399}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SIL.Windows.Forms.Tests</RootNamespace>
+    <AssemblyName>SIL.Windows.Forms.Tests</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <LangVersion>6</LangVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <BaseIntermediateOutputPath>obj\Designer</BaseIntermediateOutputPath>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>../palaso.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin-Designer\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin-Designer\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ClearShare\ClearShareUsage.cs" />
+    <Compile Include="ClearShare\ContributionTests.cs" />
+    <Compile Include="ClearShare\ContributorsListControlViewModelTests.cs" />
+    <Compile Include="ClearShare\MetadataEditorControlTests.cs" />
+    <Compile Include="ClearShare\CreativeCommonsLicenseTests.cs" />
+    <Compile Include="ClearShare\LicenseTests.cs" />
+    <Compile Include="ClearShare\MetadataTests.cs" />
+    <Compile Include="ClearShare\OlacSystemTests.cs" />
+    <Compile Include="ClearShare\RoleTests.cs" />
+    <Compile Include="Extensions\ControlExtensionsTests.cs" />
+    <Compile Include="FontTests\FontHelperTests.cs" />
+    <Compile Include="Hotspot\HotSpotProviderTestForms.cs" />
+    <Compile Include="Hotspot\HotSpotProviderTests.cs" />
+    <Compile Include="Hotspot\HotSpotTests.cs" />
+    <Compile Include="ImageToolbox\ImageGallery\ImageCollectionTests.cs" />
+    <Compile Include="ImageToolbox\ImageGallery\ImageIndexLayoutTests.cs" />
+    <Compile Include="ImageToolbox\ImageGallery\ImageCollectionManagerTests.cs" />
+    <Compile Include="ImageToolbox\ImageToolboxTests.cs" />
+    <Compile Include="ClearShare\MetaDataDisplayTests.cs" />
+    <Compile Include="ImageToolbox\PalasoImageTests.cs" />
+    <Compile Include="ImageToolbox\TestImages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TestImages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Miscellaneous\PortableClipboardTests.cs" />
+    <Compile Include="Progress\Commands\ProgressDialogHandlerTests.cs" />
+    <Compile Include="Progress\ProgressDialogTests.cs" />
+    <Compile Include="Progress\ProgressIndicatorTests.cs" />
+    <Compile Include="Progress\TransformWithProgressDialogTests.cs" />
+    <EmbeddedResource Include="ImageToolbox\TestImages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>TestImages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SettingsProtection\DialogWithLinkToSettings.resx">
+      <DependentUpon>DialogWithLinkToSettings.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SettingsProtection\DialogWithSomeSettings.resx">
+      <DependentUpon>DialogWithSomeSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SuperToolTip\SuperToolTipTestForm.resx">
+      <DependentUpon>SuperToolTipTestForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="ScreenHelperTests.cs" />
+    <Compile Include="SettingsProtection\DialogWithLinkToSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SettingsProtection\DialogWithLinkToSettings.Designer.cs">
+      <DependentUpon>DialogWithLinkToSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SettingsProtection\DialogWithSomeSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SettingsProtection\DialogWithSomeSettings.Designer.cs">
+      <DependentUpon>DialogWithSomeSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SettingsProtection\SettingsProtectionUITests.cs" />
+    <Compile Include="SettingsProviderTests.cs" />
+    <Compile Include="SimpleMessageDialogTests.cs" />
+    <Compile Include="SpellChecking\TextBoxSpellChecker.cs" />
+    <Compile Include="SuperToolTip\SuperToolTipTestForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SuperToolTip\SuperToolTipTestForm.Designer.cs">
+      <DependentUpon>SuperToolTipTestForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UniqueToken\UniqueTokenTests.cs" />
+    <Compile Include="Widgets\PromptTests.cs" />
+    <Compile Include="ErrorReporting\ErrorReportingTests.cs" />
+    <Compile Include="Progress\LogBox\LogBoxFormForTest.cs" />
+    <Compile Include="Progress\LogBox\LogBoxTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SIL.Core.Desktop\SIL.Core.Desktop.csproj">
+      <Project>{c48de000-2086-4ceb-a5a1-3171c272725e}</Project>
+      <Name>SIL.Core.Desktop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
+      <Project>{53cb36d9-2f66-4823-b1f0-4523e8565200}</Project>
+      <Name>SIL.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj">
+      <Project>{D74CE910-D44A-44F5-8C0F-F5E50B26F85D}</Project>
+      <Name>SIL.TestUtilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SIL.Windows.Forms\SIL.Windows.Forms.csproj">
+      <Project>{db44f49c-d8c6-434f-81ed-28ea5c9e8195}</Project>
+      <Name>SIL.Windows.Forms</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="ImageToolbox\ImageGallery\ArtOfReadingIndexV3_en.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Resources\logo.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
