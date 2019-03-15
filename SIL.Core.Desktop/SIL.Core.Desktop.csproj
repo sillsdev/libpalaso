@@ -37,4 +37,17 @@
     <Reference Include="System.Management" />
     <Reference Include="System.Security" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Reporting\ErrorReportSettings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ErrorReportSettings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Reporting\ErrorReportSettings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>ErrorReportSettings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
 </Project>
