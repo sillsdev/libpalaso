@@ -31,7 +31,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
-			this.comboBox1 = new System.Windows.Forms.ComboBox();
+			this._specialTypeComboBox = new System.Windows.Forms.ComboBox();
 			this._abbreviation = new System.Windows.Forms.TextBox();
 			this._detailPanel = new System.Windows.Forms.Panel();
 			this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
@@ -39,15 +39,15 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 			this.betterLabel4 = new BetterLabel();
 			this.SuspendLayout();
 			//
-			// comboBox1
+			// _specialTypeComboBox
 			//
-			this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboBox1.FormattingEnabled = true;
-			this.comboBox1.Location = new System.Drawing.Point(102, 56);
-			this.comboBox1.Name = "comboBox1";
-			this.comboBox1.Size = new System.Drawing.Size(263, 21);
-			this.comboBox1.TabIndex = 8;
-			this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+			this._specialTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this._specialTypeComboBox.FormattingEnabled = true;
+			this._specialTypeComboBox.Location = new System.Drawing.Point(102, 56);
+			this._specialTypeComboBox.Name = "_specialTypeComboBox";
+			this._specialTypeComboBox.Size = new System.Drawing.Size(263, 21);
+			this._specialTypeComboBox.TabIndex = 8;
+			this._specialTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.specialTypeComboBox_SelectedIndexChanged);
 			//
 			// _abbreviation
 			//
@@ -101,7 +101,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this._detailPanel);
 			this.Controls.Add(this._abbreviation);
-			this.Controls.Add(this.comboBox1);
+			this.Controls.Add(this._specialTypeComboBox);
 			this.Controls.Add(this.betterLabel5);
 			this.Controls.Add(this.betterLabel4);
 			this.Name = "WSIdentifierView";
@@ -116,7 +116,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 
 		private BetterLabel betterLabel4;
 		private BetterLabel betterLabel5;
-		private System.Windows.Forms.ComboBox comboBox1;
+		private System.Windows.Forms.ComboBox _specialTypeComboBox;
 		private System.Windows.Forms.TextBox _abbreviation;
 		private System.Windows.Forms.Panel _detailPanel;
 		private System.Windows.Forms.ToolTip toolTip1;
