@@ -13,9 +13,9 @@ namespace SIL.WritingSystems
 {
 	/// <summary>
 	/// Lets you find a language using data from the Ethnologue, IANA subtag repository and the SLDR.
-	/// It obtains the data from alltags.json.
+	/// It obtains the data from langtags.json.
 	///
-	/// We want to keep all fields in LanguageInfo corresponding to fields in alltags.json
+	/// We want to keep all fields in LanguageInfo corresponding to fields in langtags.json
 	/// </summary>
 	public class LanguageLookup
 	{
@@ -30,13 +30,15 @@ namespace SIL.WritingSystems
 		public LanguageLookup()
 		{
 			Sldr.InitializeLanguageTags(); // initialise SLDR language tags for implicit script codes
-			string allTagsContent = LanguageRegistryResources.alltags;
+			string langTagsContent = LanguageRegistryResources.langTags;
 
-			List<AllTagEntry> rootObject = JsonConvert.DeserializeObject<List<AllTagEntry>>(allTagsContent);
+			//REVIEW: Shouldn't this use the SLDR cache version?
+			List<AllTagEntry> rootObject = JsonConvert.DeserializeObject<List<AllTagEntry>>(langTagsContent);
 
 			foreach (AllTagEntry entry in rootObject)
 			{
-				if (!entry.deprecated && !entry.tag.StartsWith("x-")) // tags starting with x- have undefined structure so ignoring them as well as deprecated tags
+				// tags starting with x- have undefined structure so ignoring them as well as deprecated tags				if (!entry.deprecated && !entry.tag.StartsWith("x-") && !entry.tag.StartsWith("_"))
+				// tags starting with _ showed up in a buggy version and are useless to us so skip them also
 				{
 					AddLanguage(entry.tag, entry.iso639_3, entry.full, entry.name, entry.localname, entry.region, entry.names, entry.regions, entry.tags);
 				}
@@ -45,7 +47,7 @@ namespace SIL.WritingSystems
 		}
 
 		private bool AddLanguage(string code, string threelettercode, string full = null,
-			string name = null, string localName = null, string region = null, List<string> names = null, string regions = null, List<string> tags = null)
+			string name = null, string localName = null, string region = null, List<string> names = null, List<string> regions = null, List<string> tags = null)
 		{
 			string primarycountry;
 			if (region == null)
@@ -85,8 +87,7 @@ namespace SIL.WritingSystems
 
 			if (regions != null)
 			{
-				string[] countries = regions.Split();
-				foreach (string country in countries)
+				foreach (var country in regions)
 				{
 					if (!country.Contains('?') && country != "")
 					{

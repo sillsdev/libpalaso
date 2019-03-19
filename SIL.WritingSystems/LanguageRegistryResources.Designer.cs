@@ -61,39 +61,6 @@ namespace SIL.WritingSystems {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [
-        ///    {
-        ///        &quot;full&quot;: &quot;aa-Latn-ET&quot;, 
-        ///        &quot;iana&quot;: &quot;Afar&quot;, 
-        ///        &quot;iso639_3&quot;: &quot;aar&quot;, 
-        ///        &quot;localname&quot;: &quot;Qafar&quot;, 
-        ///        &quot;name&quot;: &quot;Afar&quot;, 
-        ///        &quot;names&quot;: [
-        ///            &quot;Afaraf&quot;, 
-        ///            &quot;Qafar&quot;, 
-        ///            &quot;Qafar af&quot;, 
-        ///            &quot;ʿAfár af&quot;
-        ///        ], 
-        ///        &quot;region&quot;: &quot;ET&quot;, 
-        ///        &quot;regionname&quot;: &quot;Ethiopia&quot;, 
-        ///        &quot;regions&quot;: &quot;DJ ER&quot;, 
-        ///        &quot;sldr&quot;: true, 
-        ///        &quot;tag&quot;: &quot;aa&quot;, 
-        ///        &quot;tags&quot;: [
-        ///            &quot;aa-ET&quot;, 
-        ///            &quot;aa-Latn&quot;
-        ///        ]
-        ///    }, 
-        ///    {
-        ///        &quot;full&quot;: &quot;aa- [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string alltags {
-            get {
-                return ResourceManager.GetString("alltags", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to 2018-12-07T09:35:24Z.
         /// </summary>
         internal static string AllTagsTime {
@@ -103,7 +70,7 @@ namespace SIL.WritingSystems {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File-Date: 2018-08-08
+        ///   Looks up a localized string similar to File-Date: 2018-11-30
         ///%%
         ///Type: language
         ///Subtag: aa
@@ -141,6 +108,33 @@ namespace SIL.WritingSystems {
         internal static string ianaSubtagRegistry {
             get {
                 return ResourceManager.GetString("ianaSubtagRegistry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [
+        ///    {
+        ///        &quot;tag&quot;: &quot;_globalvar&quot;, 
+        ///        &quot;variants&quot;: [ &quot;simple&quot; ]
+        ///    }, 
+        ///    {
+        ///        &quot;tag&quot;: &quot;_phonvar&quot;, 
+        ///        &quot;variants&quot;: [ &quot;alalc97&quot;, &quot;fonipa&quot;, &quot;fonkirsh&quot;, &quot;fonnapa&quot;, &quot;fonupa&quot;, &quot;fonxsamp&quot; ]
+        ///    }, 
+        ///    {
+        ///        &quot;full&quot;: &quot;aa-Latn-ET&quot;, 
+        ///        &quot;iana&quot;: &quot;Afar&quot;, 
+        ///        &quot;iso639_3&quot;: &quot;aar&quot;, 
+        ///        &quot;localname&quot;: &quot;Qafar&quot;, 
+        ///        &quot;name&quot;: &quot;Afar&quot;, 
+        ///        &quot;names&quot;: [ &quot;Afaraf&quot;, &quot;Qafar&quot;, &quot;Qafar af&quot;, &quot;ʿAfár af&quot; ], 
+        ///        &quot;region&quot;: &quot;ET&quot;, 
+        ///        &quot;regionname&quot;: &quot;Ethiopia&quot;, 
+        ///        &quot;regions&quot;: [ &quot;DJ&quot;, &quot;ER&quot; [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string langTags {
+            get {
+                return ResourceManager.GetString("langTags", resourceCulture);
             }
         }
         
