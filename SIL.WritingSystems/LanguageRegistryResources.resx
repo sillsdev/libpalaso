@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -129,7 +129,7 @@
   <data name="AllTagsTime" xml:space="preserve">
     <value>2018-12-07T09:35:24Z</value>
   </data>
-  <data name="alltags" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\alltags.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  <data name="langTags" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\langtags.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
 </root>

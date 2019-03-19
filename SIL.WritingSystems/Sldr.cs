@@ -4,6 +4,7 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Net;
 using System.Security.AccessControl;
@@ -16,6 +17,7 @@ using SIL.ObjectModel;
 using SIL.PlatformUtilities;
 using SIL.Threading;
 using SIL.Xml;
+using SIL.IO;
 
 namespace SIL.WritingSystems
 {
@@ -52,7 +54,7 @@ namespace SIL.WritingSystems
 		public string name { get; set; }
 		public List<string> names { get; set; }
 		public string region { get; set; }
-		public string regions { get; set; }
+		public List<string> regions { get; set; }
 		public bool sldr { get; set; }
 		public string tag { get; set; }
 		public List<string> tags { get; set; }
@@ -363,24 +365,20 @@ namespace SIL.WritingSystems
 			if (_languageTags != null)
 				return;
 
-			string allTagsContent;
-
+			string cachedAllTagsPath;
 			using (_sldrCacheMutex.Lock())
 			{
 				CreateSldrCacheDirectory();
 
-				// TODO refactor this to get alltags.json once it has a defined location
-				// for now only use the included version in the resource
-
-				string cachedAllTagsPath = Path.Combine(SldrCachePath, "alltags.json");
+				cachedAllTagsPath = Path.Combine(SldrCachePath, "langtags.json");
 				DateTime sinceTime = _embeddedAllTagsTime.ToUniversalTime();
 				if (File.Exists(cachedAllTagsPath))
 				{
 					DateTime fileTime = File.GetLastWriteTimeUtc(cachedAllTagsPath);
 					if (sinceTime > fileTime)
-						// delete the old alltags.json file if a newer embedded one is available.
+						// delete the old langtags.json file if a newer embedded one is available.
 						// this can happen if the application is upgraded to use a newer version of SIL.WritingSystems
-						// that has an updated embedded alltags.json file.
+						// that has an updated embedded langtags.json file.
 						File.Delete(cachedAllTagsPath);
 					else
 						sinceTime = fileTime;
@@ -392,10 +390,10 @@ namespace SIL.WritingSystems
 						throw new WebException("Test mode: SLDR offline so accessing cache", WebExceptionStatus.ConnectFailure);
 
 
-					// get SLDR alltags.json from the SLDR api compressed
+					// get SLDR langtags.json from the SLDR api compressed
 					// it will throw WebException or have status HttpStatusCode.NotModified if file is unchanged or not get it
-					string alltagsUrl = string.Format("{0}index.html?query=alltags&ext=json", SldrRepository);
-					var webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(alltagsUrl));
+					string langtagsUrl = string.Format("{0}index.html?query=langtags&ext=json", SldrRepository);
+					var webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(langtagsUrl));
 					webRequest.UserAgent = UserAgent;
 					webRequest.IfModifiedSince = sinceTime;
 					webRequest.Timeout = 10000;
@@ -417,12 +415,11 @@ namespace SIL.WritingSystems
 				catch (WebException)
 				{
 				}
-				allTagsContent = File.Exists(cachedAllTagsPath) ? File.ReadAllText(cachedAllTagsPath) : LanguageRegistryResources.alltags;
 			}
-			_languageTags = new ReadOnlyKeyedCollection<string, SldrLanguageTagInfo>(ParseAllTagsJson(allTagsContent));
+			_languageTags = new ReadOnlyKeyedCollection<string, SldrLanguageTagInfo>(ParseAllTagsJson(cachedAllTagsPath));
 		}
 
-		internal static IKeyedCollection<string, SldrLanguageTagInfo> ParseAllTagsJson(string allTagsContent)
+		private static IKeyedCollection<string, SldrLanguageTagInfo> ParseAllTagsJson(string cachedAllTagsPath)
 		{
 			// read in the json file
 			/*		{
@@ -444,13 +441,47 @@ namespace SIL.WritingSystems
 			// sldr -> isAvailable
 			// tags -> process to find implicitScript
 
-			var tags = new KeyedList<string, SldrLanguageTagInfo>(info => info.LanguageTag, StringComparer.InvariantCultureIgnoreCase);
+			List<AllTagEntry> rootObject = null;
+			try
+			{
+				if (cachedAllTagsPath != null && File.Exists(cachedAllTagsPath))
+				{
+					rootObject = JsonConvert.DeserializeObject<List<AllTagEntry>>(File.ReadAllText(cachedAllTagsPath));
+					return DeriveTagsFromJsonEntries(rootObject);
+				}
+			}
+			catch (JsonReaderException)
+			{
+				SaveBadFile(cachedAllTagsPath);
+				Debug.Fail($"Could not parse cached json file: {cachedAllTagsPath}{Environment.NewLine}Did the format change?");
+			}
+			catch (Exception ex)
+			{
+				SaveBadFile(cachedAllTagsPath);
+				Debug.Fail($"Invalid data in cached json file {cachedAllTagsPath}{Environment.NewLine}{ex.Message}");
+			}
+			// Either we couldn't get the data from the network or it came back invalid.
+			rootObject = JsonConvert.DeserializeObject<List<AllTagEntry>>(LanguageRegistryResources.langTags);
+			return DeriveTagsFromJsonEntries(rootObject);
+		}
 
-			List<AllTagEntry> rootObject = JsonConvert.DeserializeObject<List<AllTagEntry>>(allTagsContent);
+		private static void SaveBadFile(string filepath)
+		{
+			var savedBadFile = filepath + "-BAD";
+			if (RobustFile.Exists(savedBadFile))
+				RobustFile.Delete(savedBadFile);
+			RobustFile.Move(filepath, savedBadFile);
+		}
+
+		private static IKeyedCollection<string, SldrLanguageTagInfo> DeriveTagsFromJsonEntries(List<AllTagEntry> rootObject)
+		{
+			var tags = new KeyedList<string, SldrLanguageTagInfo>(info => info.LanguageTag, StringComparer.InvariantCultureIgnoreCase);
 
 			foreach (AllTagEntry entry in rootObject)
 			{
-				if (!entry.tag.StartsWith("x-")) // tags starting with x- have undefined structure so ignoring them
+				// tags starting with x- have undefined structure so ignoring them
+				// tags starting with _ showed up in buggy data so we'll drop them also
+				if (!entry.tag.StartsWith("x-") && !entry.tag.StartsWith("_"))
 				{
 					LanguageSubtag languageTag;
 					if (!entry.deprecated && !StandardSubtags.RegisteredLanguages.TryGet(entry.tag.Split('-')[0], out languageTag))
