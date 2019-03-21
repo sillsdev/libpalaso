@@ -1261,15 +1261,24 @@ namespace SIL.WritingSystems.Tests.Migration
 		{
 			using (var environment = new TestEnvironment())
 			{
+				var projectSettingsfile = Path.Combine(environment.LdmlPath, "test.ulsx");
+
+				var dataMappers = new ICustomDataMapper<WritingSystemDefinition>[]
+				{
+					new ProjectLexiconSettingsWritingSystemDataMapper<WritingSystemDefinition>(new FileSettingsStore(projectSettingsfile))
+				};
+
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0WithLanguageSubtagAndName("en", "German"));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				var repo = new TestLdmlInFolderWritingSystemRepository(environment.LdmlPath);
+				var repo = new TestLdmlInFolderWritingSystemRepository(environment.LdmlPath, dataMappers);
 				migrator.ResetRemovedProperties(repo);
+				repo.Save();
 
 				WritingSystemDefinition ws = repo.Get("en");
 				Assert.That(ws.Language.Name, Is.EqualTo("German"));
+				AssertThatXmlIn.File(Path.Combine(environment.LdmlPath, projectSettingsfile)).HasSpecifiedNumberOfMatchesForXpath("/ProjectLexiconSettings/WritingSystems/WritingSystem/LanguageName", 1, true);
 			}
 		}
 
