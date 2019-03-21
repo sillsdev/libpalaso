@@ -254,7 +254,7 @@
         "regionname": "United Republic of Tanzania", 
         "sldr": false, 
         "tag": "aas", 
-        "tags": [ "aas-TZ", "aas-Latn" ]
+        "tags": [ "aas-TZ", "aas-Latn", "aam", "aam-TZ", "aam-Latn", "aam-Latn-TZ" ]
     }, 
     {
         "full": "aat-Grek-GR", 
@@ -1258,7 +1258,8 @@
         "region": "CN", 
         "regionname": "China", 
         "sldr": false, 
-        "tag": "adx-Tibt"
+        "tag": "adx-Tibt", 
+        "tags": [ "pcr", "pcr-CN", "pcr-Tibt", "pcr-Tibt-CN" ]
     }, 
     {
         "full": "ady-Cyrl-RU", 
@@ -2683,7 +2684,7 @@
         "regions": [ "CA", "GB", "LR" ], 
         "sldr": true, 
         "tag": "ak", 
-        "tags": [ "ak-GH", "ak-Latn", "tw", "tw-GH", "tw-Latn", "tw-Latn-GH", "fat", "fat-GH", "fat-Latn", "fat-Latn-GH" ]
+        "tags": [ "ak-GH", "ak-Latn", "fat", "fat-GH", "fat-Latn", "fat-Latn-GH", "tw", "tw-GH", "tw-Latn", "tw-Latn-GH" ]
     }, 
     {
         "full": "akb-Latn-ID", 
@@ -7743,7 +7744,7 @@
         "regionname": "Guinea", 
         "sldr": false, 
         "tag": "bcg", 
-        "tags": [ "bcg-GN", "bcg-Qaax" ]
+        "tags": [ "bcg-GN", "bcg-Qaax", "bgm", "bgm-GN", "bgm-Qaax", "bgm-Qaax-GN" ]
     }, 
     {
         "full": "bch-Latn-PG", 
@@ -8485,7 +8486,7 @@
         "regions": [ "CD" ], 
         "sldr": true, 
         "tag": "bem", 
-        "tags": [ "bem-ZM", "bem-Latn" ]
+        "tags": [ "bem-ZM", "bem-Latn", "bmy", "bmy-ZM", "bmy-Latn", "bmy-Latn-ZM" ]
     }, 
     {
         "full": "bem-Brai-ZM", 
@@ -9044,7 +9045,7 @@
         "regions": [ "NP" ], 
         "sldr": false, 
         "tag": "bfy", 
-        "tags": [ "bfy-IN", "bfy-Deva" ]
+        "tags": [ "bfy-IN", "bfy-Deva", "ppa", "ppa-IN", "ppa-Deva", "ppa-Deva-IN" ]
     }, 
     {
         "full": "bfz-Deva-IN", 
@@ -9572,17 +9573,6 @@
         "tag": "bhj-Deva"
     }, 
     {
-        "full": "bhk-Latn-PH", 
-        "iana": "Albay Bicolano", 
-        "iso639_3": "bhk", 
-        "name": "Albay Bicolano", 
-        "region": "PH", 
-        "regionname": "Philippines", 
-        "sldr": false, 
-        "tag": "bhk", 
-        "tags": [ "bhk-PH", "bhk-Latn" ]
-    }, 
-    {
         "full": "bhl-Latn-PG", 
         "iana": "Bimin", 
         "iso639_3": "bhl", 
@@ -9892,7 +9882,7 @@
         "regionname": "Philippines", 
         "sldr": false, 
         "tag": "bik", 
-        "tags": [ "bik-PH", "bik-Latn", "bcl", "bcl-PH", "bcl-Latn", "bcl-Latn-PH" ]
+        "tags": [ "bik-PH", "bik-Latn", "bhk", "bhk-PH", "bhk-Latn", "bhk-Latn-PH", "bcl", "bcl-PH", "bcl-Latn", "bcl-Latn-PH" ]
     }, 
     {
         "full": "bik-Brai-PH", 
@@ -11171,7 +11161,7 @@
         "regionname": "Sierra Leone", 
         "sldr": false, 
         "tag": "bmf", 
-        "tags": [ "bmf-SL", "bmf-Zyyy" ]
+        "tags": [ "bmf-SL", "bmf-Zyyy", "krm", "krm-SL", "krm-Zyyy", "krm-Zyyy-SL" ]
     }, 
     {
         "full": "bmg-Qaax-CD", 
@@ -11484,7 +11474,7 @@
         "regionname": "Philippines", 
         "sldr": false, 
         "tag": "bnc", 
-        "tags": [ "bnc-PH", "bnc-Latn", "lbk", "lbk-PH", "lbk-Latn", "lbk-Latn-PH" ]
+        "tags": [ "bnc-PH", "bnc-Latn", "lbk", "lbk-PH", "lbk-Latn", "lbk-Latn-PH", "bkb", "bkb-PH", "bkb-Latn", "bkb-Latn-PH" ]
     }, 
     {
         "full": "bnd-Qaax-ID", 
@@ -13441,6 +13431,16 @@
         "sldr": false, 
         "tag": "bta", 
         "tags": [ "bta-NG", "bta-Qaax" ]
+    }, 
+    {
+        "full": "btb-Latn-CM", 
+        "iana": "Beti (Cameroon)", 
+        "name": "Beti (Cameroon)", 
+        "region": "CM", 
+        "regionname": "Cameroon", 
+        "sldr": false, 
+        "tag": "btb", 
+        "tags": [ "btb-CM", "btb-Latn" ]
     }, 
     {
         "full": "btc-Qaax-CM", 
@@ -15859,7 +15859,7 @@
         "regions": [ "BR" ], 
         "sldr": false, 
         "tag": "cax", 
-        "tags": [ "cax-BO", "cax-Latn" ]
+        "tags": [ "cax-BO", "cax-Latn", "xba", "xba-BO", "xba-Latn", "xba-Latn-BO" ]
     }, 
     {
         "full": "cay-Latn-CA", 
@@ -17328,7 +17328,7 @@
         "regionname": "New Caledonia", 
         "sldr": false, 
         "tag": "cir", 
-        "tags": [ "cir-NC", "cir-Latn" ]
+        "tags": [ "cir-NC", "cir-Latn", "meg", "meg-NC", "meg-Latn", "meg-Latn-NC" ]
     }, 
     {
         "full": "ciw-Cans-US", 
@@ -18050,7 +18050,7 @@
         "regionname": "Myanmar", 
         "sldr": false, 
         "tag": "cmr", 
-        "tags": [ "cmr-MM", "cmr-Latn" ]
+        "tags": [ "cmr-MM", "cmr-Latn", "cka", "cka-MM", "cka-Latn", "cka-Latn-MM" ]
     }, 
     {
         "full": "cms-Zyyy-IT", 
@@ -21196,7 +21196,7 @@
         "regionname": "Papua New Guinea", 
         "sldr": false, 
         "tag": "dev", 
-        "tags": [ "dev-PG", "dev-Latn" ]
+        "tags": [ "dev-PG", "dev-Latn", "gav", "gav-PG", "gav-Latn", "gav-Latn-PG" ]
     }, 
     {
         "full": "dez-Latn-CD", 
@@ -22491,7 +22491,8 @@
         "regionname": "Liberia", 
         "regions": [ "CI", "GN" ], 
         "sldr": false, 
-        "tag": "dnj-LR"
+        "tag": "dnj-LR", 
+        "tags": [ "daf", "daf-LR", "daf-Latn", "daf-Latn-LR" ]
     }, 
     {
         "full": "dnk-Latn-ID", 
@@ -22966,7 +22967,7 @@
         "regionname": "Australia", 
         "sldr": false, 
         "tag": "drl", 
-        "tags": [ "drl-AU", "drl-Latn" ]
+        "tags": [ "drl-AU", "drl-Latn", "bjd", "bjd-AU", "bjd-Latn", "bjd-Latn-AU" ]
     }, 
     {
         "full": "drn-Qaax-ID", 
@@ -23326,7 +23327,7 @@
         "regionname": "Malaysia", 
         "sldr": false, 
         "tag": "dtp", 
-        "tags": [ "dtp-MY", "dtp-Latn" ]
+        "tags": [ "dtp-MY", "dtp-Latn", "kzt", "kzt-MY", "kzt-Latn", "kzt-Latn-MY", "kzj", "kzj-MY", "kzj-Latn", "kzj-Latn-MY", "tdu", "tdu-MY", "tdu-Latn", "tdu-Latn-MY", "ktr", "ktr-MY", "ktr-Latn", "ktr-Latn-MY" ]
     }, 
     {
         "full": "dtr-Latn-MY", 
@@ -23687,7 +23688,7 @@
         "regionname": "Cameroon", 
         "sldr": false, 
         "tag": "duz", 
-        "tags": [ "duz-CM", "duz-Zyyy" ]
+        "tags": [ "duz-CM", "duz-Zyyy", "guv", "guv-CM", "guv-Zyyy", "guv-Zyyy-CM" ]
     }, 
     {
         "full": "dv-Thaa-MV", 
@@ -23793,7 +23794,7 @@
         "regionname": "Australia", 
         "sldr": false, 
         "tag": "dwy", 
-        "tags": [ "dwy-AU", "dwy-Latn" ]
+        "tags": [ "dwy-AU", "dwy-Latn", "duj", "duj-AU", "duj-Latn", "duj-Latn-AU" ]
     }, 
     {
         "full": "dwz-Qaax-NP", 
@@ -23980,7 +23981,7 @@
         "regions": [ "IN", "NP" ], 
         "sldr": true, 
         "tag": "dz", 
-        "tags": [ "dz-BT", "dz-Tibt" ]
+        "tags": [ "dz-BT", "dz-Tibt", "adp", "adp-BT", "adp-Tibt", "adp-Tibt-BT" ]
     }, 
     {
         "full": "dza-Zyyy-NG", 
@@ -24004,7 +24005,7 @@
         "regionname": "Australia", 
         "sldr": false, 
         "tag": "dze", 
-        "tags": [ "dze-AU", "dze-Latn" ]
+        "tags": [ "dze-AU", "dze-Latn", "djl", "djl-AU", "djl-Latn", "djl-Latn-AU" ]
     }, 
     {
         "full": "dzg-Latn-TD", 
@@ -24640,7 +24641,7 @@
         "regionname": "Nigeria", 
         "sldr": true, 
         "tag": "ema", 
-        "tags": [ "ema-NG", "ema-Latn" ]
+        "tags": [ "ema-NG", "ema-Latn", "uok", "uok-NG", "uok-Latn", "uok-Latn-NG" ]
     }, 
     {
         "full": "emb-Latn-ID", 
@@ -25962,7 +25963,7 @@
         "regionname": "Paraguay", 
         "sldr": false, 
         "tag": "enl", 
-        "tags": [ "enl-PY", "enl-Latn" ]
+        "tags": [ "enl-PY", "enl-Latn", "leg", "leg-PY", "leg-Latn", "leg-Latn-PY" ]
     }, 
     {
         "full": "enm-Latn-GB", 
@@ -29105,7 +29106,7 @@
         "regions": [ "ID" ], 
         "sldr": false, 
         "tag": "gal", 
-        "tags": [ "gal-TL", "gal-Latn" ]
+        "tags": [ "gal-TL", "gal-Latn", "ime", "ime-TL", "ime-Latn", "ime-Latn-TL" ]
     }, 
     {
         "full": "gam-Latn-PG", 
@@ -29851,7 +29852,7 @@
         "regionname": "Australia", 
         "sldr": false, 
         "tag": "gdj", 
-        "tags": [ "gdj-AU", "gdj-Latn" ]
+        "tags": [ "gdj-AU", "gdj-Latn", "kvs", "kvs-AU", "kvs-Latn", "kvs-Latn-AU" ]
     }, 
     {
         "full": "gdk-Zyyy-TD", 
@@ -30306,17 +30307,6 @@
         "sldr": false, 
         "tag": "ggl", 
         "tags": [ "ggl-PG", "ggl-Latn" ]
-    }, 
-    {
-        "full": "ggn-Deva-NP", 
-        "iana": "Eastern Gurung", 
-        "iso639_3": "ggn", 
-        "name": "Eastern Gurung", 
-        "region": "NP", 
-        "regionname": "Nepal", 
-        "sldr": false, 
-        "tag": "ggn", 
-        "tags": [ "ggn-NP", "ggn-Deva" ]
     }, 
     {
         "full": "ggt-Latn-PG", 
@@ -31901,7 +31891,7 @@
         "regionname": "China", 
         "sldr": false, 
         "tag": "gqu", 
-        "tags": [ "gqu-CN", "gqu-Qaax" ]
+        "tags": [ "gqu-CN", "gqu-Qaax", "gio", "gio-CN", "gio-Qaax", "gio-Qaax-CN" ]
     }, 
     {
         "full": "gra-Deva-IN", 
@@ -32354,7 +32344,7 @@
         "regionname": "Australia", 
         "sldr": false, 
         "tag": "gtu", 
-        "tags": [ "gtu-AU", "gtu-Zyyy" ]
+        "tags": [ "gtu-AU", "gtu-Zyyy", "ggr", "ggr-AU", "ggr-Zyyy", "ggr-Zyyy-AU" ]
     }, 
     {
         "full": "gu-Gujr-IN", 
@@ -32827,7 +32817,7 @@
         "regions": [ "BT", "IN" ], 
         "sldr": false, 
         "tag": "gvr", 
-        "tags": [ "gvr-NP", "gvr-Deva" ]
+        "tags": [ "gvr-NP", "gvr-Deva", "ggn", "ggn-NP", "ggn-Deva", "ggn-Deva-NP" ]
     }, 
     {
         "full": "gvs-Latn-PG", 
@@ -33785,7 +33775,7 @@
         "regions": [ "AO", "CA", "DE", "PA", "PS", "RU", "US" ], 
         "sldr": true, 
         "tag": "he", 
-        "tags": [ "he-IL", "he-Hebr" ]
+        "tags": [ "he-IL", "he-Hebr", "iw", "iw-IL", "iw-Hebr", "iw-Hebr-IL" ]
     }, 
     {
         "full": "he-Brai-IL", 
@@ -34285,7 +34275,7 @@
         "regionname": "China", 
         "sldr": false, 
         "tag": "hle", 
-        "tags": [ "hle-CN", "hle-Qaax" ]
+        "tags": [ "hle-CN", "hle-Qaax", "sca", "sca-CN", "sca-Qaax", "sca-Qaax-CN" ]
     }, 
     {
         "full": "hlt-Latn-MM", 
@@ -36248,7 +36238,7 @@
         "regions": [ "AU", "HK", "NL", "PH", "SG", "SR", "SX", "US" ], 
         "sldr": true, 
         "tag": "id", 
-        "tags": [ "id-ID", "id-Latn" ]
+        "tags": [ "id-ID", "id-Latn", "in", "in-ID", "in-Latn", "in-Latn-ID" ]
     }, 
     {
         "full": "id-Arab-ID", 
@@ -36993,7 +36983,7 @@
         "regionname": "Malaysia", 
         "sldr": false, 
         "tag": "ilm", 
-        "tags": [ "ilm-MY", "ilm-Latn" ]
+        "tags": [ "ilm-MY", "ilm-Latn", "ill", "ill-MY", "ill-Latn", "ill-Latn-MY" ]
     }, 
     {
         "full": "ilo-Latn-PH", 
@@ -37173,17 +37163,6 @@
         "sldr": false, 
         "tag": "imy", 
         "tags": [ "imy-TR", "imy-Zyyy" ]
-    }, 
-    {
-        "full": "in-Latn-ID", 
-        "iana": "Indonesian", 
-        "iso639_3": "ind?", 
-        "name": "Indonesian", 
-        "region": "ID", 
-        "regionname": "Indonesia", 
-        "sldr": false, 
-        "tag": "in", 
-        "tags": [ "in-ID", "in-Latn" ]
     }, 
     {
         "full": "inb-Latn-CO", 
@@ -38113,17 +38092,6 @@
         "tags": [ "ivv-PH", "ivv-Latn" ]
     }, 
     {
-        "full": "iw-Hebr-IL", 
-        "iana": "Hebrew", 
-        "iso639_3": "heb?", 
-        "name": "Hebrew", 
-        "region": "IL", 
-        "regionname": "Israel", 
-        "sldr": false, 
-        "tag": "iw", 
-        "tags": [ "iw-IL", "iw-Hebr" ]
-    }, 
-    {
         "full": "iwk-Zyyy-PH", 
         "iana": "I-Wak", 
         "iso639_3": "iwk", 
@@ -38264,7 +38232,7 @@
         "regionname": "Nigeria", 
         "sldr": true, 
         "tag": "izz", 
-        "tags": [ "izz-NG", "izz-Latn" ]
+        "tags": [ "izz-NG", "izz-Latn", "izi", "izi-NG", "izi-Latn", "izi-Latn-NG" ]
     }, 
     {
         "full": "ja-Jpan-JP", 
@@ -38421,7 +38389,7 @@
         "regionname": "Indonesia", 
         "sldr": false, 
         "tag": "jal", 
-        "tags": [ "jal-ID", "jal-Latn" ]
+        "tags": [ "jal-ID", "jal-Latn", "hrr", "hrr-ID", "hrr-Latn", "hrr-Latn-ID" ]
     }, 
     {
         "full": "jam-Latn-JM", 
@@ -38786,17 +38754,6 @@
         "tag": "jee-Deva"
     }, 
     {
-        "full": "jeg-Qaax-LA", 
-        "iana": "Jeng", 
-        "iso639_3": "jeg", 
-        "name": "Jeng", 
-        "region": "LA", 
-        "regionname": "Lao People's Democratic Republic", 
-        "sldr": false, 
-        "tag": "jeg", 
-        "tags": [ "jeg-LA", "jeg-Qaax" ]
-    }, 
-    {
         "full": "jeh-Latn-VN", 
         "iana": "Jeh", 
         "iso639_3": "jeh", 
@@ -38941,7 +38898,7 @@
         "regionname": "Nigeria", 
         "sldr": true, 
         "tag": "jgk", 
-        "tags": [ "jgk-NG", "jgk-Latn" ]
+        "tags": [ "jgk-NG", "jgk-Latn", "jar", "jar-NG", "jar-Latn", "jar-Latn-NG" ]
     }, 
     {
         "full": "jgo-Latn-CM", 
@@ -38979,17 +38936,6 @@
         "sldr": false, 
         "tag": "jhs", 
         "tags": [ "jhs-NP", "jhs-Zxxx" ]
-    }, 
-    {
-        "full": "ji-Hebr-UA", 
-        "iana": "Yiddish", 
-        "iso639_3": "yid?", 
-        "name": "Yiddish", 
-        "region": "UA", 
-        "regionname": "Ukraine", 
-        "sldr": false, 
-        "tag": "ji", 
-        "tags": [ "ji-UA", "ji-Hebr" ]
     }, 
     {
         "full": "jia-Zyyy-CM", 
@@ -39249,7 +39195,7 @@
         "regionname": "Myanmar", 
         "sldr": false, 
         "tag": "jkp", 
-        "tags": [ "jkp-MM", "jkp-Qaax" ]
+        "tags": [ "jkp-MM", "jkp-Qaax", "kpp", "kpp-MM", "kpp-Qaax", "kpp-Qaax-MM" ]
     }, 
     {
         "full": "jkr-Qaax-IN", 
@@ -39955,7 +39901,7 @@
         "regions": [ "MY", "NL", "SG", "US" ], 
         "sldr": true, 
         "tag": "jv", 
-        "tags": [ "jv-ID", "jv-Latn" ]
+        "tags": [ "jv-ID", "jv-Latn", "jw", "jw-ID", "jw-Latn", "jw-Latn-ID" ]
     }, 
     {
         "full": "jv-Java-ID", 
@@ -39993,17 +39939,6 @@
         "sldr": false, 
         "tag": "jvn", 
         "tags": [ "jvn-SR", "jvn-Latn" ]
-    }, 
-    {
-        "full": "jw-Latn-ID", 
-        "iana": "Javanese", 
-        "iso639_3": "jav?", 
-        "name": "Javanese", 
-        "region": "ID", 
-        "regionname": "Indonesia", 
-        "sldr": false, 
-        "tag": "jw", 
-        "tags": [ "jw-ID", "jw-Latn" ]
     }, 
     {
         "full": "jwi-Latn-GH", 
@@ -40252,7 +40187,7 @@
         "regionname": "Philippines", 
         "sldr": false, 
         "tag": "kak", 
-        "tags": [ "kak-PH", "kak-Latn" ]
+        "tags": [ "kak-PH", "kak-Latn", "tne", "tne-PH", "tne-Latn", "tne-Latn-PH" ]
     }, 
     {
         "full": "kam-Latn-KE", 
@@ -41323,7 +41258,7 @@
         "regionname": "Cameroon", 
         "sldr": false, 
         "tag": "kdz", 
-        "tags": [ "kdz-CM", "kdz-Qaax" ]
+        "tags": [ "kdz-CM", "kdz-Qaax", "ncp", "ncp-CM", "ncp-Qaax", "ncp-Qaax-CM" ]
     }, 
     {
         "full": "kea-Latn-CV", 
@@ -44240,7 +44175,7 @@
         "regionname": "Philippines", 
         "sldr": false, 
         "tag": "kml", 
-        "tags": [ "kml-PH", "kml-Latn" ]
+        "tags": [ "kml-PH", "kml-Latn", "kgh", "kgh-PH", "kgh-Latn", "kgh-Latn-PH" ]
     }, 
     {
         "full": "kmm-Latn-IN", 
@@ -45863,17 +45798,6 @@
         "tag": "krl-Cyrl"
     }, 
     {
-        "full": "krm-Zyyy-SL", 
-        "iana": "Krim", 
-        "iso639_3": "krm", 
-        "name": "Krim", 
-        "region": "SL", 
-        "regionname": "Sierra Leone", 
-        "sldr": false, 
-        "tag": "krm", 
-        "tags": [ "krm-SL", "krm-Zyyy" ]
-    }, 
-    {
         "full": "krn-Latn-LR", 
         "iana": "Sapo", 
         "iso639_3": "krn", 
@@ -46696,7 +46620,7 @@
         "regions": [ "BW" ], 
         "sldr": false, 
         "tag": "ktz", 
-        "tags": [ "ktz-NA", "ktz-Latn" ]
+        "tags": [ "ktz-NA", "ktz-Latn", "aue", "aue-NA", "aue-Latn", "aue-Latn-NA" ]
     }, 
     {
         "full": "ku-Latn-TR", 
@@ -47719,7 +47643,7 @@
         "regions": [ "CF" ], 
         "sldr": false, 
         "tag": "kwv", 
-        "tags": [ "kwv-TD", "kwv-Latn" ]
+        "tags": [ "kwv-TD", "kwv-Latn", "koj", "koj-TD", "koj-Latn", "koj-Latn-TD" ]
     }, 
     {
         "full": "kww-Latn-SR", 
@@ -49605,7 +49529,7 @@
         "regionname": "Indonesia", 
         "sldr": false, 
         "tag": "lcq", 
-        "tags": [ "lcq-ID", "lcq-Zyyy" ]
+        "tags": [ "lcq-ID", "lcq-Zyyy", "ppr", "ppr-ID", "ppr-Zyyy", "ppr-Zyyy-ID" ]
     }, 
     {
         "full": "lcs-Zyyy-ID", 
@@ -52340,7 +52264,7 @@
         "regionname": "Nepal", 
         "sldr": false, 
         "tag": "lrr", 
-        "tags": [ "lrr-NP", "lrr-Qaax" ]
+        "tags": [ "lrr-NP", "lrr-Qaax", "yma", "yma-NP", "yma-Qaax", "yma-Qaax-NP" ]
     }, 
     {
         "full": "lrt-Latn-ID", 
@@ -53498,7 +53422,7 @@
         "regions": [ "GN", "GW", "SN" ], 
         "sldr": true, 
         "tag": "man", 
-        "tags": [ "man-GM", "man-Latn", "mnk", "mnk-GM", "mnk-Latn", "mnk-Latn-GM" ]
+        "tags": [ "man-GM", "man-Latn", "mnk", "mnk-GM", "mnk-Latn", "mnk-Latn-GM", "myq", "myq-GM", "myq-Latn", "myq-Latn-GM" ]
     }, 
     {
         "full": "man-Arab-GN", 
@@ -55281,6 +55205,17 @@
         "sldr": false, 
         "tag": "mg-Brai", 
         "tags": [ "plt-Brai", "plt-Brai-MG" ]
+    }, 
+    {
+        "full": "mg-Zyyy-MG", 
+        "iana": "Malagasy", 
+        "name": "Malagasy, Southern Betsimisaraka", 
+        "names": [ "Antatsimo", "Betsimisaraka" ], 
+        "region": "MG", 
+        "regionname": "Madagascar", 
+        "sldr": false, 
+        "tag": "mg-Zyyy-MG", 
+        "tags": [ "bjq", "bjq-MG", "bjq-Zyyy", "bjq-Zyyy-MG" ]
     }, 
     {
         "full": "mga-Latg-IE", 
@@ -57504,7 +57439,7 @@
         "regions": [ "CZ", "KG", "RU", "TW", "US" ], 
         "sldr": true, 
         "tag": "mn", 
-        "tags": [ "mn-MN", "mn-Cyrl", "khk", "khk-MN", "khk-Cyrl", "khk-Cyrl-MN" ]
+        "tags": [ "mn-MN", "mn-Cyrl", "drh", "drh-MN", "drh-Cyrl", "drh-Cyrl-MN", "khk", "khk-MN", "khk-Cyrl", "khk-Cyrl-MN" ]
     }, 
     {
         "full": "mn-Brai-MN", 
@@ -58012,7 +57947,7 @@
         "regionname": "Nicaragua", 
         "sldr": false, 
         "tag": "mom", 
-        "tags": [ "mom-NI", "mom-Zyyy" ]
+        "tags": [ "mom-NI", "mom-Zyyy", "cjr", "cjr-NI", "cjr-Zyyy", "cjr-Zyyy-NI" ]
     }, 
     {
         "full": "moo-Latn-VN", 
@@ -59128,7 +59063,7 @@
         "regionname": "Philippines", 
         "sldr": false, 
         "tag": "mry", 
-        "tags": [ "mry-PH", "mry-Qaax" ]
+        "tags": [ "mry-PH", "mry-Qaax", "mst", "mst-PH", "mst-Qaax", "mst-Qaax-PH", "myt", "myt-PH", "myt-Qaax", "myt-Qaax-PH" ]
     }, 
     {
         "full": "mrz-Latn-ID", 
@@ -59722,7 +59657,7 @@
         "regionname": "Russian Federation", 
         "sldr": false, 
         "tag": "mtm", 
-        "tags": [ "mtm-RU", "mtm-Zyyy" ]
+        "tags": [ "mtm-RU", "mtm-Zyyy", "ymt", "ymt-RU", "ymt-Zyyy", "ymt-Zyyy-RU" ]
     }, 
     {
         "full": "mtn-Zyyy-NI", 
@@ -62505,17 +62440,6 @@
         "tags": [ "nco-PG", "nco-Latn" ]
     }, 
     {
-        "full": "ncp-Qaax-CM", 
-        "iana": "Ndaktup", 
-        "iso639_3": "ncp", 
-        "name": "Ndaktup", 
-        "region": "CM", 
-        "regionname": "Cameroon", 
-        "sldr": false, 
-        "tag": "ncp", 
-        "tags": [ "ncp-CM", "ncp-Qaax" ]
-    }, 
-    {
         "full": "ncq-Laoo-LA", 
         "iana": "Northern Katang", 
         "iso639_3": "ncq", 
@@ -63637,7 +63561,7 @@
         "regionname": "Cameroon", 
         "sldr": false, 
         "tag": "ngv", 
-        "tags": [ "ngv-CM", "ngv-Zyyy" ]
+        "tags": [ "ngv-CM", "ngv-Zyyy", "nnx", "nnx-CM", "nnx-Zyyy", "nnx-Zyyy-CM" ]
     }, 
     {
         "full": "ngw-Zyyy-NG", 
@@ -64459,7 +64383,8 @@
         "region": "IN", 
         "regionname": "India", 
         "sldr": false, 
-        "tag": "njz-Beng"
+        "tag": "njz-Beng", 
+        "tags": [ "dap-Beng", "dap-Beng-IN" ]
     }, 
     {
         "full": "njz-Latn-IN", 
@@ -64470,7 +64395,8 @@
         "region": "IN", 
         "regionname": "India", 
         "sldr": false, 
-        "tag": "njz-Latn"
+        "tag": "njz-Latn", 
+        "tags": [ "dap-Latn", "dap-Latn-IN" ]
     }, 
     {
         "full": "nka-Latn-ZM", 
@@ -67104,7 +67030,7 @@
         "regions": [ "CN" ], 
         "sldr": false, 
         "tag": "nun", 
-        "tags": [ "nun-MM", "nun-Latn" ]
+        "tags": [ "nun-MM", "nun-Latn", "ayx", "ayx-MM", "ayx-Latn", "ayx-Latn-MM" ]
     }, 
     {
         "full": "nuo-Qaax-VN", 
@@ -67562,7 +67488,7 @@
         "regionname": "China", 
         "sldr": false, 
         "tag": "nxq", 
-        "tags": [ "nxq-CN", "nxq-Latn" ]
+        "tags": [ "nxq-CN", "nxq-Latn", "nbf", "nbf-CN", "nbf-Latn", "nbf-Latn-CN" ]
     }, 
     {
         "full": "nxq-Lisu-CN", 
@@ -69385,7 +69311,7 @@
         "regionname": "Nigeria", 
         "sldr": false, 
         "tag": "opa", 
-        "tags": [ "opa-NG", "opa-Zyyy" ]
+        "tags": [ "opa-NG", "opa-Zyyy", "ibi", "ibi-NG", "ibi-Zyyy", "ibi-Zyyy-NG" ]
     }, 
     {
         "full": "opk-Zyyy-ID", 
@@ -70128,7 +70054,18 @@
         "regionname": "Lao People's Democratic Republic", 
         "sldr": false, 
         "tag": "oyb", 
-        "tags": [ "oyb-LA", "oyb-Zyyy" ]
+        "tags": [ "oyb-LA", "oyb-Zyyy", "thx", "thx-LA", "thx-Zyyy", "thx-Zyyy-LA" ]
+    }, 
+    {
+        "full": "oyb-Qaax-LA", 
+        "iana": "Oy", 
+        "name": "Oy", 
+        "names": [ "Huei", "Oey", "Oi", "Oi-Sok", "Thae", "The" ], 
+        "region": "LA", 
+        "regionname": "Lao People's Democratic Republic", 
+        "sldr": false, 
+        "tag": "oyb-Qaax-LA", 
+        "tags": [ "skk", "skk-LA", "skk-Qaax", "skk-Qaax-LA", "jeg", "jeg-LA", "jeg-Qaax", "jeg-Qaax-LA" ]
     }, 
     {
         "full": "oyd-Latn-ET", 
@@ -71604,7 +71541,7 @@
         "regions": [ "GB", "IN" ], 
         "sldr": false, 
         "tag": "phr", 
-        "tags": [ "phr-PK", "phr-Arab" ]
+        "tags": [ "phr-PK", "phr-Arab", "pmu", "pmu-PK", "pmu-Arab", "pmu-Arab-PK" ]
     }, 
     {
         "full": "pht-Qaax-TH", 
@@ -71823,7 +71760,7 @@
         "regionname": "Colombia", 
         "sldr": false, 
         "tag": "pij", 
-        "tags": [ "pij-CO", "pij-Latn" ]
+        "tags": [ "pij-CO", "pij-Latn", "nts", "nts-CO", "nts-Latn", "nts-Latn-CO", "coy", "coy-CO", "coy-Latn", "coy-Latn-CO" ]
     }, 
     {
         "full": "pil-Latn-BJ", 
@@ -73453,7 +73390,7 @@
         "regionname": "Philippines", 
         "sldr": false, 
         "tag": "prf", 
-        "tags": [ "prf-PH", "prf-Latn" ]
+        "tags": [ "prf-PH", "prf-Latn", "agp", "agp-PH", "agp-Latn", "agp-Latn-PH" ]
     }, 
     {
         "full": "prg-Latn-001", 
@@ -73601,7 +73538,8 @@
         "regionname": "Afghanistan", 
         "regions": [ "AU", "IR", "PK" ], 
         "sldr": false, 
-        "tag": "prs-Arab"
+        "tag": "prs-Arab", 
+        "tags": [ "drw", "drw-AF", "drw-Arab", "drw-Arab-AF" ]
     }, 
     {
         "full": "prt-Thai-TH", 
@@ -73614,7 +73552,7 @@
         "regions": [ "LA" ], 
         "sldr": false, 
         "tag": "prt", 
-        "tags": [ "prt-TH", "prt-Thai" ]
+        "tags": [ "prt-TH", "prt-Thai", "pry", "pry-TH", "pry-Thai", "pry-Thai-TH" ]
     }, 
     {
         "full": "pru-Zyyy-ID", 
@@ -74240,7 +74178,8 @@
         "region": "IN", 
         "regionname": "India", 
         "sldr": false, 
-        "tag": "pub-Latn"
+        "tag": "pub-Latn", 
+        "tags": [ "puz", "puz-IN", "puz-Latn", "puz-Latn-IN" ]
     }, 
     {
         "full": "puc-Zyyy-ID", 
@@ -74698,12 +74637,14 @@
     {
         "full": "qu-Latn-BO", 
         "iana": "Quechua", 
-        "iso639_3": "que", 
-        "name": "Quechua", 
+        "name": "Quechua, South Bolivian", 
+        "names": [ "Central Bolivian Quechua", "Cochabamba Quechua", "Quechua", "Quechua Boliviano", "Runasimi" ], 
         "region": "BO", 
         "regionname": "Bolivia", 
+        "regions": [ "AR", "CL" ], 
         "sldr": true, 
-        "tag": "qu-BO"
+        "tag": "qu-BO", 
+        "tags": [ "quh", "quh-BO", "quh-Latn", "quh-Latn-BO", "cqu", "cqu-BO", "cqu-Latn", "cqu-Latn-BO" ]
     }, 
     {
         "full": "qu-Latn-EC", 
@@ -74786,19 +74727,6 @@
         "sldr": false, 
         "tag": "qug", 
         "tags": [ "qug-EC", "qug-Latn" ]
-    }, 
-    {
-        "full": "quh-Latn-BO", 
-        "iana": "South Bolivian Quechua", 
-        "iso639_3": "quh", 
-        "name": "Quechua, South Bolivian", 
-        "names": [ "Central Bolivian Quechua", "Cochabamba Quechua", "Quechua", "Quechua Boliviano", "Runasimi" ], 
-        "region": "BO", 
-        "regionname": "Bolivia", 
-        "regions": [ "AR", "CL" ], 
-        "sldr": false, 
-        "tag": "quh", 
-        "tags": [ "quh-BO", "quh-Latn" ]
     }, 
     {
         "full": "qui-Latn-US", 
@@ -75590,7 +75518,7 @@
         "regionname": "Nepal", 
         "sldr": false, 
         "tag": "raq", 
-        "tags": [ "raq-NP", "raq-Qaax" ]
+        "tags": [ "raq-NP", "raq-Qaax", "lii", "lii-NP", "lii-Qaax", "lii-Qaax-NP" ]
     }, 
     {
         "full": "rar-Latn-CK", 
@@ -75615,7 +75543,7 @@
         "regionname": "Sudan", 
         "sldr": false, 
         "tag": "ras", 
-        "tags": [ "ras-SD", "ras-Qaax" ]
+        "tags": [ "ras-SD", "ras-Qaax", "tie", "tie-SD", "tie-Qaax", "tie-Qaax-SD" ]
     }, 
     {
         "full": "rat-Zyyy-IR", 
@@ -76363,7 +76291,8 @@
         "regionname": "Myanmar", 
         "regions": [ "BD" ], 
         "sldr": false, 
-        "tag": "rki-Mymr"
+        "tag": "rki-Mymr", 
+        "tags": [ "ybd", "ybd-MM", "ybd-Mymr", "ybd-Mymr-MM", "ccq", "ccq-MM", "ccq-Mymr", "ccq-Mymr-MM" ]
     }, 
     {
         "full": "rkm-Latn-BF", 
@@ -76724,7 +76653,7 @@
         "regionname": "Viet Nam", 
         "sldr": false, 
         "tag": "rmx", 
-        "tags": [ "rmx-VN", "rmx-Zyyy" ]
+        "tags": [ "rmx-VN", "rmx-Zyyy", "lmm", "lmm-VN", "lmm-Zyyy", "lmm-Zyyy-VN" ]
     }, 
     {
         "full": "rmz-Mymr-IN", 
@@ -76863,7 +76792,7 @@
         "regions": [ "HU", "IL", "MD", "RS" ], 
         "sldr": true, 
         "tag": "ro", 
-        "tags": [ "ro-RO", "ro-Latn" ]
+        "tags": [ "ro-RO", "ro-Latn", "mo", "mo-RO", "mo-Latn", "mo-Latn-RO" ]
     }, 
     {
         "full": "ro-Brai-RO", 
@@ -78722,7 +78651,7 @@
         "regionname": "Lao People's Democratic Republic", 
         "sldr": false, 
         "tag": "sct", 
-        "tags": [ "sct-LA", "sct-Laoo" ]
+        "tags": [ "sct-LA", "sct-Laoo", "kgd", "kgd-LA", "kgd-Laoo", "kgd-Laoo-LA" ]
     }, 
     {
         "full": "scu-Qaax-IN", 
@@ -79562,7 +79491,7 @@
         "regionname": "Philippines", 
         "sldr": false, 
         "tag": "sgd", 
-        "tags": [ "sgd-PH", "sgd-Latn" ]
+        "tags": [ "sgd-PH", "sgd-Latn", "sul", "sul-PH", "sul-Latn", "sul-Latn-PH" ]
     }, 
     {
         "full": "sge-Zyyy-ID", 
@@ -79775,7 +79704,7 @@
         "regionname": "Afghanistan", 
         "sldr": false, 
         "tag": "sgy", 
-        "tags": [ "sgy-AF", "sgy-Qaax" ]
+        "tags": [ "sgy-AF", "sgy-Qaax", "sgl", "sgl-AF", "sgl-Qaax", "sgl-Qaax-AF" ]
     }, 
     {
         "full": "sgz-Latn-PG", 
@@ -80875,17 +80804,6 @@
         "sldr": false, 
         "tag": "skj", 
         "tags": [ "skj-NP", "skj-Qaax" ]
-    }, 
-    {
-        "full": "skk-Qaax-LA", 
-        "iana": "Sok", 
-        "iso639_3": "skk", 
-        "name": "Sok", 
-        "region": "LA", 
-        "regionname": "Lao People's Democratic Republic", 
-        "sldr": false, 
-        "tag": "skk", 
-        "tags": [ "skk-LA", "skk-Qaax" ]
     }, 
     {
         "full": "skm-Latn-PG", 
@@ -82505,7 +82423,7 @@
         "regionname": "Paraguay", 
         "sldr": false, 
         "tag": "spn", 
-        "tags": [ "spn-PY", "spn-Latn" ]
+        "tags": [ "spn-PY", "spn-Latn", "sap", "sap-PY", "sap-Latn", "sap-Latn-PY" ]
     }, 
     {
         "full": "spo-Latn-US", 
@@ -84078,12 +83996,12 @@
         "iana": "Shubi", 
         "iso639_3": "suj", 
         "name": "Shubi", 
-        "names": [ "Kishubi", "Shuwi", "Sinja", "Sinya", "Urushubi" ], 
+        "names": [ "Kishubi", "Kisubi", "Shuwi", "Sinja", "Sinya", "Subi", "Urushubi" ], 
         "region": "TZ", 
         "regionname": "United Republic of Tanzania", 
         "sldr": false, 
         "tag": "suj", 
-        "tags": [ "suj-TZ", "suj-Latn" ]
+        "tags": [ "suj-TZ", "suj-Latn", "xsj", "xsj-TZ", "xsj-Latn", "xsj-Latn-TZ" ]
     }, 
     {
         "full": "suk-Latn-TZ", 
@@ -85409,7 +85327,7 @@
         "regions": [ "BT", "IN" ], 
         "sldr": false, 
         "tag": "taj", 
-        "tags": [ "taj-NP", "taj-Deva" ]
+        "tags": [ "taj-NP", "taj-Deva", "tsf", "tsf-NP", "tsf-Deva", "tsf-Deva-NP" ]
     }, 
     {
         "full": "taj-Tibt-BT-x-tamhig", 
@@ -86363,7 +86281,7 @@
         "regionname": "Lao People's Democratic Republic", 
         "sldr": false, 
         "tag": "tdf", 
-        "tags": [ "tdf-LA", "tdf-Qaax" ]
+        "tags": [ "tdf-LA", "tdf-Qaax", "kgc", "kgc-LA", "kgc-Qaax", "kgc-Qaax-LA" ]
     }, 
     {
         "full": "tdg-Deva-NP", 
@@ -87911,8 +87829,9 @@
     }, 
     {
         "full": "tjj-Latn-AU", 
-        "iso639_3": "LE", 
+        "iso639_3": "tjj", 
         "name": "Tjungundji", 
+        "names": [ "Yangathimri" ], 
         "region": "AU", 
         "regionname": "Australia", 
         "sldr": false, 
@@ -89031,6 +88950,19 @@
         "tags": [ "tnd-CO", "tnd-Latn" ]
     }, 
     {
+        "full": "tnf-Arab-AF", 
+        "iana": "Tangshewi", 
+        "iso639_3": "prs", 
+        "name": "Dari", 
+        "names": [ "Afghan Persian", "Badakhshi", "Eastern Farsi", "Madaglashti", "Parsi", "Persian" ], 
+        "region": "AF", 
+        "regionname": "Afghanistan", 
+        "regions": [ "AU", "IR", "PK" ], 
+        "sldr": false, 
+        "tag": "tnf", 
+        "tags": [ "tnf-AF", "tnf-Arab" ]
+    }, 
+    {
         "full": "tng-Latn-TD", 
         "iana": "Tobanga", 
         "iso639_3": "tng", 
@@ -89677,7 +89609,7 @@
         "regions": [ "VN" ], 
         "sldr": false, 
         "tag": "tpo", 
-        "tags": [ "tpo-LA", "tpo-Zyyy" ]
+        "tags": [ "tpo-LA", "tpo-Zyyy", "thc", "thc-LA", "thc-Zyyy", "thc-Zyyy-LA" ]
     }, 
     {
         "full": "tpp-Latn-MX", 
@@ -90410,17 +90342,6 @@
         "sldr": false, 
         "tag": "tse", 
         "tags": [ "tse-TN", "tse-Zxxx" ]
-    }, 
-    {
-        "full": "tsf-Deva-NP", 
-        "iana": "Southwestern Tamang", 
-        "iso639_3": "tsf", 
-        "name": "Southwestern Tamang", 
-        "region": "NP", 
-        "regionname": "Nepal", 
-        "sldr": false, 
-        "tag": "tsf", 
-        "tags": [ "tsf-NP", "tsf-Deva" ]
     }, 
     {
         "full": "tsg-Latn-PH", 
@@ -91285,7 +91206,7 @@
         "regionname": "Nigeria", 
         "sldr": true, 
         "tag": "tvd", 
-        "tags": [ "tvd-NG", "tvd-Latn" ]
+        "tags": [ "tvd-NG", "tvd-Latn", "kxe", "kxe-NG", "kxe-Latn", "kxe-Latn-NG" ]
     }, 
     {
         "full": "tve-Zyyy-ID", 
@@ -91391,7 +91312,7 @@
         "regionname": "Cameroon", 
         "sldr": true, 
         "tag": "tvu", 
-        "tags": [ "tvu-CM", "tvu-Latn" ]
+        "tags": [ "tvu-CM", "tvu-Latn", "baz", "baz-CM", "baz-Latn", "baz-Latn-CM" ]
     }, 
     {
         "full": "tvw-Latn-ID", 
@@ -91557,7 +91478,8 @@
         "regionname": "India", 
         "regions": [ "CN" ], 
         "sldr": false, 
-        "tag": "twm-Deva"
+        "tag": "twm-Deva", 
+        "tags": [ "tkk", "tkk-IN", "tkk-Deva", "tkk-Deva-IN" ]
     }, 
     {
         "full": "twn-Qaax-CM", 
@@ -91968,7 +91890,8 @@
         "regionname": "Viet Nam", 
         "regions": [ "LA" ], 
         "sldr": false, 
-        "tag": "tyj-Latn"
+        "tag": "tyj-Latn", 
+        "tags": [ "tmp", "tmp-VN", "tmp-Latn", "tmp-Latn-VN" ]
     }, 
     {
         "full": "tyj-Qaaw-VN-x-taiyo", 
@@ -94130,7 +94053,7 @@
         "regions": [ "AO", "ZA" ], 
         "sldr": false, 
         "tag": "vaj", 
-        "tags": [ "vaj-NA", "vaj-Qaax" ]
+        "tags": [ "vaj-NA", "vaj-Qaax", "mwj", "mwj-NA", "mwj-Qaax", "mwj-Qaax-NA", "gfx", "gfx-NA", "gfx-Qaax", "gfx-Qaax-NA", "oun", "oun-NA", "oun-Qaax", "oun-Qaax-NA" ]
     }, 
     {
         "full": "val-Latn-PG", 
@@ -95524,7 +95447,7 @@
         "regions": [ "GY", "SR" ], 
         "sldr": false, 
         "tag": "waw", 
-        "tags": [ "waw-BR", "waw-Latn" ]
+        "tags": [ "waw-BR", "waw-Latn", "xkh", "xkh-BR", "xkh-Latn", "xkh-Latn-BR" ]
     }, 
     {
         "full": "wax-Latn-PG", 
@@ -95984,7 +95907,7 @@
         "regionname": "Indonesia", 
         "sldr": false, 
         "tag": "weo", 
-        "tags": [ "weo-ID", "weo-Latn" ]
+        "tags": [ "weo-ID", "weo-Latn", "tlw", "tlw-ID", "tlw-Latn", "tlw-Latn-ID" ]
     }, 
     {
         "full": "wep-Latn-DE", 
@@ -96091,7 +96014,7 @@
         "regionname": "Papua New Guinea", 
         "sldr": false, 
         "tag": "wgb", 
-        "tags": [ "wgb-PG", "wgb-Latn" ]
+        "tags": [ "wgb-PG", "wgb-Latn", "wgw", "wgw-PG", "wgw-Latn", "wgw-Latn-PG" ]
     }, 
     {
         "full": "wgg-Zyyy-AU", 
@@ -97372,7 +97295,7 @@
         "regionname": "Australia", 
         "sldr": false, 
         "tag": "wrk", 
-        "tags": [ "wrk-AU", "wrk-Latn" ]
+        "tags": [ "wrk-AU", "wrk-Latn", "gbc", "gbc-AU", "gbc-Latn", "gbc-Latn-AU" ]
     }, 
     {
         "full": "wrl-Latn-AU", 
@@ -97420,7 +97343,7 @@
         "regionname": "Australia", 
         "sldr": false, 
         "tag": "wro", 
-        "tags": [ "wro-AU", "wro-Latn" ]
+        "tags": [ "wro-AU", "wro-Latn", "unp", "unp-AU", "unp-Latn", "unp-Latn-AU" ]
     }, 
     {
         "full": "wrp-Qaax-ID", 
@@ -97552,7 +97475,8 @@
         "region": "IN", 
         "regionname": "India", 
         "sldr": false, 
-        "tag": "wsg-Telu"
+        "tag": "wsg-Telu", 
+        "tags": [ "ggo", "ggo-IN", "ggo-Telu", "ggo-Telu-IN" ]
     }, 
     {
         "full": "wsi-Latn-VU", 
@@ -98515,7 +98439,7 @@
         "region": "XX", 
         "sldr": false, 
         "tag": "xch", 
-        "tags": [ "xch-XX", "xch-Zyyy" ]
+        "tags": [ "xch-XX", "xch-Zyyy", "cmk", "cmk-XX", "cmk-Zyyy", "cmk-Zyyy-XX" ]
     }, 
     {
         "full": "xcl-Zyyy-XX", 
@@ -99046,6 +98970,19 @@
         "sldr": false, 
         "tag": "xhv", 
         "tags": [ "xhv-VN", "xhv-Zyyy" ]
+    }, 
+    {
+        "full": "xia-Latn-CN", 
+        "iana": "Xiandao", 
+        "iso639_3": "acn", 
+        "name": "Achang", 
+        "names": [ "Acang", "Achung", "Ach’ang", "Ahchan", "Anchan", "Atsang", "Chung", "Maingtha", "Manmaw", "Mönghsa", "Ngacang", "Ngachang", "Ngac’ang", "Ngatsang", "Ngo Chang", "Ngochang", "Tai Sa’", "Xiandao" ], 
+        "region": "CN", 
+        "regionname": "China", 
+        "regions": [ "MM" ], 
+        "sldr": false, 
+        "tag": "xia", 
+        "tags": [ "xia-CN", "xia-Latn" ]
     }, 
     {
         "full": "xib-Zyyy-XX", 
@@ -100037,7 +99974,7 @@
         "regionname": "Australia", 
         "sldr": false, 
         "tag": "xny", 
-        "tags": [ "xny-AU", "xny-Latn" ]
+        "tags": [ "xny-AU", "xny-Latn", "nad", "nad-AU", "nad-Latn", "nad-Latn-AU" ]
     }, 
     {
         "full": "xnz-Arab-EG", 
@@ -100667,18 +100604,6 @@
         "sldr": true, 
         "tag": "xsi", 
         "tags": [ "xsi-PG", "xsi-Latn" ]
-    }, 
-    {
-        "full": "xsj-Latn-TZ", 
-        "iana": "Subi", 
-        "iso639_3": "xsj", 
-        "name": "Subi", 
-        "names": [ "Kisubi" ], 
-        "region": "TZ", 
-        "regionname": "United Republic of Tanzania", 
-        "sldr": false, 
-        "tag": "xsj", 
-        "tags": [ "xsj-TZ", "xsj-Latn" ]
     }, 
     {
         "full": "xsm-Latn-GH", 
@@ -101824,7 +101749,7 @@
         "regions": [ "NG" ], 
         "sldr": true, 
         "tag": "yam", 
-        "tags": [ "yam-CM", "yam-Latn" ]
+        "tags": [ "yam-CM", "yam-Latn", "kwq", "kwq-CM", "kwq-Latn", "kwq-Latn-CM" ]
     }, 
     {
         "full": "yan-Latn-NI", 
@@ -101837,7 +101762,7 @@
         "regions": [ "HN" ], 
         "sldr": false, 
         "tag": "yan", 
-        "tags": [ "yan-NI", "yan-Latn" ]
+        "tags": [ "yan-NI", "yan-Latn", "sum", "sum-NI", "sum-Latn", "sum-Latn-NI" ]
     }, 
     {
         "full": "yao-Latn-MZ", 
@@ -102558,6 +102483,16 @@
         "sldr": true, 
         "tag": "yi", 
         "tags": [ "yi-001", "yi-Hebr", "ydd", "ydd-001", "ydd-Hebr", "ydd-Hebr-001" ]
+    }, 
+    {
+        "full": "yi-Hebr-UA", 
+        "iana": "Yiddish", 
+        "name": "Yiddish", 
+        "region": "UA", 
+        "regionname": "Ukraine", 
+        "sldr": false, 
+        "tag": "yi-Hebr-UA", 
+        "tags": [ "ji", "ji-UA", "ji-Hebr", "ji-Hebr-UA" ]
     }, 
     {
         "full": "yia-Latn-AU", 
@@ -103399,7 +103334,7 @@
         "regionname": "Nigeria", 
         "sldr": false, 
         "tag": "ynq", 
-        "tags": [ "ynq-NG", "ynq-Qaax" ]
+        "tags": [ "ynq-NG", "ynq-Qaax", "yen", "yen-NG", "yen-Qaax", "yen-Qaax-NG" ]
     }, 
     {
         "full": "yns-Latn-CD", 
@@ -104135,7 +104070,7 @@
         "regionname": "Russian Federation", 
         "sldr": false, 
         "tag": "yug", 
-        "tags": [ "yug-RU", "yug-Zyyy" ]
+        "tags": [ "yug-RU", "yug-Zyyy", "yuu", "yuu-RU", "yuu-Zyyy", "yuu-Zyyy-RU" ]
     }, 
     {
         "full": "yui-Latn-CO", 
@@ -104532,7 +104467,7 @@
         "regionname": "Australia", 
         "sldr": false, 
         "tag": "yyr", 
-        "tags": [ "yyr-AU", "yyr-Zyyy" ]
+        "tags": [ "yyr-AU", "yyr-Zyyy", "yiy", "yiy-AU", "yiy-Zyyy", "yiy-Zyyy-AU" ]
     }, 
     {
         "full": "yyu-Latn-PG", 
@@ -105664,7 +105599,7 @@
         "regionname": "Myanmar", 
         "sldr": false, 
         "tag": "zkd", 
-        "tags": [ "zkd-MM", "zkd-Latn" ]
+        "tags": [ "zkd-MM", "zkd-Latn", "kdv", "kdv-MM", "kdv-Latn", "kdv-Latn-MM" ]
     }, 
     {
         "full": "zkg-Zyyy-CN", 
@@ -106282,7 +106217,8 @@
         "regionname": "India", 
         "regions": [ "MM" ], 
         "sldr": false, 
-        "tag": "zom-Latn"
+        "tag": "zom-Latn", 
+        "tags": [ "yos", "yos-IN", "yos-Latn", "yos-Latn-IN" ]
     }, 
     {
         "full": "zoo-Latn-MX", 

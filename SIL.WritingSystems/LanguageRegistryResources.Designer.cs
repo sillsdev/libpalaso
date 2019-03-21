@@ -61,7 +61,7 @@ namespace SIL.WritingSystems {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 2018-12-07T09:35:24Z.
+        ///   Looks up a localized string similar to 2019-03-20T04:30:59Z.
         /// </summary>
         internal static string AllTagsTime {
             get {

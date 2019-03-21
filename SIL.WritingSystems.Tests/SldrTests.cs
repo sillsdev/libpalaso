@@ -387,79 +387,14 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		// TODO rewrite this test for langtags.json
-		//		[Test]
-		//		public void ParseAllTags_ReturnsCorrectLangTagInfos()
-		//		{
-		//			IKeyedCollection<string, SldrLanguageTagInfo> tags = Sldr.ParseAllTags(@"*agq = agq-Latn | *agq-CM = agq-Latn-CM
-		//amo-Latn = amo
-		//*ar = ar-Arab
-		//*ar = ar-CM = ar-Arab-CM
-		//*ar = ar-CY = ar-Arab-CY
-		//*ar-EG = ar-Arab-EG > *ar
-		//*oro-Latn
-		//*sr | *sr-Cyrl | *sr-Cyrl-RS = sr-RS
-		//*sr-Latn = sr-Latn-RO");
-
-		//			Assert.That(tags.Count, Is.EqualTo(10));
-
-		//			SldrLanguageTagInfo langTagInfo;
-		//			Assert.That(tags.TryGet("agq", out langTagInfo), Is.True);
-		//			Assert.That(langTagInfo.IsAvailable, Is.True);
-		//			Assert.That(langTagInfo.ImplicitScriptCode, Is.EqualTo("Latn"));
-		//			Assert.That(langTagInfo.SldrLanguageTag, Is.EqualTo("agq"));
-
-		//			Assert.That(tags.TryGet("agq-CM", out langTagInfo), Is.True);
-		//			Assert.That(langTagInfo.IsAvailable, Is.True);
-		//			Assert.That(langTagInfo.ImplicitScriptCode, Is.EqualTo("Latn"));
-		//			Assert.That(langTagInfo.SldrLanguageTag, Is.EqualTo("agq-CM"));
-
-		//			Assert.That(tags.TryGet("amo", out langTagInfo), Is.True);
-		//			Assert.That(langTagInfo.IsAvailable, Is.False);
-		//			Assert.That(langTagInfo.ImplicitScriptCode, Is.EqualTo("Latn"));
-		//			Assert.That(langTagInfo.SldrLanguageTag, Is.EqualTo("amo-Latn"));
-
-		//			Assert.That(tags.TryGet("ar", out langTagInfo), Is.True);
-		//			Assert.That(langTagInfo.IsAvailable, Is.True);
-		//			Assert.That(langTagInfo.ImplicitScriptCode, Is.EqualTo("Arab"));
-		//			Assert.That(langTagInfo.SldrLanguageTag, Is.EqualTo("ar"));
-
-		//			Assert.That(tags.TryGet("ar-EG", out langTagInfo), Is.True);
-		//			Assert.That(langTagInfo.IsAvailable, Is.True);
-		//			Assert.That(langTagInfo.ImplicitScriptCode, Is.EqualTo("Arab"));
-		//			Assert.That(langTagInfo.SldrLanguageTag, Is.EqualTo("ar-EG"));
-
-		//			Assert.That(tags.TryGet("oro", out langTagInfo), Is.True);
-		//			Assert.That(langTagInfo.IsAvailable, Is.True);
-		//			Assert.That(langTagInfo.ImplicitScriptCode, Is.EqualTo("Latn"));
-		//			Assert.That(langTagInfo.SldrLanguageTag, Is.EqualTo("oro-Latn"));
-
-		//			Assert.That(tags.TryGet("sr", out langTagInfo), Is.True);
-		//			Assert.That(langTagInfo.IsAvailable, Is.True);
-		//			Assert.That(langTagInfo.ImplicitScriptCode, Is.Null);
-		//			Assert.That(langTagInfo.SldrLanguageTag, Is.EqualTo("sr"));
-
-		//			Assert.That(tags.TryGet("sr-Cyrl", out langTagInfo), Is.True);
-		//			Assert.That(langTagInfo.IsAvailable, Is.True);
-		//			Assert.That(langTagInfo.ImplicitScriptCode, Is.Null);
-		//			Assert.That(langTagInfo.SldrLanguageTag, Is.EqualTo("sr-Cyrl"));
-
-		//			Assert.That(tags.TryGet("sr-RS", out langTagInfo), Is.True);
-		//			Assert.That(langTagInfo.IsAvailable, Is.True);
-		//			Assert.That(langTagInfo.ImplicitScriptCode, Is.EqualTo("Cyrl"));
-		//			Assert.That(langTagInfo.SldrLanguageTag, Is.EqualTo("sr-Cyrl-RS"));
-
-		//			Assert.That(tags.TryGet("sr-Latn", out langTagInfo), Is.True);
-		//			Assert.That(langTagInfo.IsAvailable, Is.True);
-		//			Assert.That(langTagInfo.ImplicitScriptCode, Is.Null);
-		//			Assert.That(langTagInfo.SldrLanguageTag, Is.EqualTo("sr-Latn"));
-		//		}
-
 		#endregion
 
-		// TODO rework when have langtags.json in stable location
+		/// <summary>
+		/// This test is only valid when run by its self. If other tests are running they can affect the file that
+		/// this is trying to verify.
+		/// </summary>
 		[Test]
-		[Category("SkipOnTeamCity")]
+		[Category("ByHand")]
 		public void LanguageTags_OlderEmbeddedLangTags_DownloadsNewLangTags()
 		{
 			using (new TestEnvironment(false, new DateTime(2000, 1, 1, 12, 0, 0)))

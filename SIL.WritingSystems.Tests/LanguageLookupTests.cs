@@ -250,21 +250,27 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		/// <summary>
-		/// We have been asked to temporarily suppress these three codes for Ethiopia, until the Ethnologue is changed.
+		/// The Ethnologue online reports these as pejoratives, but they were still not marked as pejorative in the data. WSTech is suppressing
+		/// them but we still want to verify none of them are appearing.
 		/// </summary>
 		[Test]
-		public void SuggestLanguages_LanguageIsOromo_DoNotShowRelatedLanguages()
+		public void SuggestLanguages_LanguageIsOromo_HasNoPejorativeLanguageNames()
 		{
 			var lookup = new LanguageLookup();
 			var languages = lookup.SuggestLanguages("Oromo").ToArray();
-			Assert.True(languages.All(l => l.DesiredName == "Oromo"));
-			Assert.True(languages.All(l => l.LanguageTag.StartsWith("om")), "We should be suppressing gax, hae, gaz");
-			languages = lookup.SuggestLanguages("gax").ToArray();
-			Assert.False(languages.Any(l => l.LanguageTag == "gax"));
-			languages = lookup.SuggestLanguages("gaz").ToArray();
-			Assert.False(languages.Any(l => l.LanguageTag == "gaz"));
+			// Verify that no related languages for "Oromo" list known pejorative names
+			Assert.False(languages.Any(l => l.Names.Contains("Gall")));
+			Assert.False(languages.Any(l => l.Names.Contains("ottu")));
+			Assert.False(languages.Any(l => l.Names.Contains("Qotu")));
+			// Specifically check three codes that historically returned pejorative names
+			languages = lookup.SuggestLanguages("gax").Union(lookup.SuggestLanguages("gaz")).ToArray();
+			// “Galla” (pej.), “Galligna” (pej.), “Gallinya” (pej.)
+			Assert.False(languages.Any(l => l.Names.Contains("Gall")));
 			languages = lookup.SuggestLanguages("hae").ToArray();
-			Assert.False(languages.Any(l => l.LanguageTag == "hae"));
+			// “Kwottu” (pej.), “Qottu” (pej.), “Quottu” (pej.), “Qwottu” (pej.)
+			Assert.False(languages.Any(l => l.Names.Contains("ottu")));
+			// “Qotu Oromo” (pej.), 
+			Assert.False(languages.Any(l => l.Names.Contains("Qotu")));
 		}
 
 		/// <summary>
