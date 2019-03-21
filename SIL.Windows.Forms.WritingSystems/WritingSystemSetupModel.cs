@@ -895,6 +895,8 @@ namespace SIL.Windows.Forms.WritingSystems
 								CurrentDefinition.DefaultCollation = new SystemCollationDefinition();
 								break;
 						}
+
+						CurrentDefinition.DefaultCollationType = value;
 						_currentCollationRulesType = type;
 						OnCurrentItemUpdated();
 					}

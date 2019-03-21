@@ -886,6 +886,23 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 		}
 
 		[Test]
+		public void SetAllPossibleAndRemoveOthers_DefaultCollationType_SetsToRepo()
+		{
+			Assert.That(_writingSystemRepository.Count, Is.EqualTo(0));
+			// initialize the model with english as the single defined language
+			_writingSystemRepository.Set(new WritingSystemDefinition("en"));
+			_model = new WritingSystemSetupModel(_writingSystemRepository);
+			// set english as the current definition
+			_model.SetCurrentDefinition(_writingSystemRepository.Get("en"));
+			// SUT
+			_model.CurrentCollationRulesType = "CustomSimple";
+			_model.SetAllPossibleAndRemoveOthers();
+			Assert.That(_writingSystemRepository.Contains("en"));
+			var enWs = _writingSystemRepository.Get("en");
+			Assert.That(enWs.DefaultCollationType == "CustomSimple");
+		}
+
+		[Test]
 		public void SetAllPossibleAndRemoveOthers_DuplicateIsCreatedFromWsAlreadyInRepo_OriginalWsIsUpdated()
 		{
 			Assert.That(_writingSystemRepository.Count, Is.EqualTo(0));
