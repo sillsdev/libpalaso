@@ -4,18 +4,20 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 using SIL.Code;
+using SIL.IO;
 using SIL.Text;
 
 namespace SIL.WritingSystems
 {
 	/// <summary>
 	/// Lets you find a language using data from the Ethnologue, IANA subtag repository and the SLDR.
-	/// It obtains the data from alltags.json.
+	/// It obtains the data from langtags.json.
 	///
-	/// We want to keep all fields in LanguageInfo corresponding to fields in alltags.json
+	/// We want to keep all fields in LanguageInfo corresponding to fields in langtags.json
 	/// </summary>
 	public class LanguageLookup
 	{
@@ -30,13 +32,19 @@ namespace SIL.WritingSystems
 		public LanguageLookup()
 		{
 			Sldr.InitializeLanguageTags(); // initialise SLDR language tags for implicit script codes
-			string allTagsContent = LanguageRegistryResources.alltags;
 
-			List<AllTagEntry> rootObject = JsonConvert.DeserializeObject<List<AllTagEntry>>(allTagsContent);
+			string langTagsContent = LanguageRegistryResources.langTags;
+			// The cached file is renamed if it's invalid during Sldr.InitializeLanguageTags().
+			var cachedAllTagsPath = Path.Combine(Sldr.SldrCachePath, "langtags.json");
+			if (File.Exists(cachedAllTagsPath))
+				langTagsContent = RobustFile.ReadAllText(cachedAllTagsPath);
+			List<AllTagEntry> rootObject = JsonConvert.DeserializeObject<List<AllTagEntry>>(langTagsContent);
 
 			foreach (AllTagEntry entry in rootObject)
 			{
-				if (!entry.deprecated && !entry.tag.StartsWith("x-")) // tags starting with x- have undefined structure so ignoring them as well as deprecated tags
+				// tags starting with x- have undefined structure so ignoring them as well as deprecated tags
+				// tags starting with _ may provide some sort of undefined variant information, but we ignore them as well
+				if (!entry.deprecated && !entry.tag.StartsWith("x-", StringComparison.Ordinal) && !entry.tag.StartsWith("_", StringComparison.Ordinal))
 				{
 					AddLanguage(entry.tag, entry.iso639_3, entry.full, entry.name, entry.localname, entry.region, entry.names, entry.regions, entry.tags);
 				}
@@ -45,7 +53,7 @@ namespace SIL.WritingSystems
 		}
 
 		private bool AddLanguage(string code, string threelettercode, string full = null,
-			string name = null, string localName = null, string region = null, List<string> names = null, string regions = null, List<string> tags = null)
+			string name = null, string localName = null, string region = null, List<string> names = null, List<string> regions = null, List<string> tags = null)
 		{
 			string primarycountry;
 			if (region == null)
@@ -85,8 +93,7 @@ namespace SIL.WritingSystems
 
 			if (regions != null)
 			{
-				string[] countries = regions.Split();
-				foreach (string country in countries)
+				foreach (var country in regions)
 				{
 					if (!country.Contains('?') && country != "")
 					{

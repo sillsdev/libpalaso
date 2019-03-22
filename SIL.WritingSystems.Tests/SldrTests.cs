@@ -387,132 +387,67 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		// TODO rewrite this test for alltags.json
-		//		[Test]
-		//		public void ParseAllTags_ReturnsCorrectLangTagInfos()
-		//		{
-		//			IKeyedCollection<string, SldrLanguageTagInfo> tags = Sldr.ParseAllTags(@"*agq = agq-Latn | *agq-CM = agq-Latn-CM
-		//amo-Latn = amo
-		//*ar = ar-Arab
-		//*ar = ar-CM = ar-Arab-CM
-		//*ar = ar-CY = ar-Arab-CY
-		//*ar-EG = ar-Arab-EG > *ar
-		//*oro-Latn
-		//*sr | *sr-Cyrl | *sr-Cyrl-RS = sr-RS
-		//*sr-Latn = sr-Latn-RO");
-
-		//			Assert.That(tags.Count, Is.EqualTo(10));
-
-		//			SldrLanguageTagInfo langTagInfo;
-		//			Assert.That(tags.TryGet("agq", out langTagInfo), Is.True);
-		//			Assert.That(langTagInfo.IsAvailable, Is.True);
-		//			Assert.That(langTagInfo.ImplicitScriptCode, Is.EqualTo("Latn"));
-		//			Assert.That(langTagInfo.SldrLanguageTag, Is.EqualTo("agq"));
-
-		//			Assert.That(tags.TryGet("agq-CM", out langTagInfo), Is.True);
-		//			Assert.That(langTagInfo.IsAvailable, Is.True);
-		//			Assert.That(langTagInfo.ImplicitScriptCode, Is.EqualTo("Latn"));
-		//			Assert.That(langTagInfo.SldrLanguageTag, Is.EqualTo("agq-CM"));
-
-		//			Assert.That(tags.TryGet("amo", out langTagInfo), Is.True);
-		//			Assert.That(langTagInfo.IsAvailable, Is.False);
-		//			Assert.That(langTagInfo.ImplicitScriptCode, Is.EqualTo("Latn"));
-		//			Assert.That(langTagInfo.SldrLanguageTag, Is.EqualTo("amo-Latn"));
-
-		//			Assert.That(tags.TryGet("ar", out langTagInfo), Is.True);
-		//			Assert.That(langTagInfo.IsAvailable, Is.True);
-		//			Assert.That(langTagInfo.ImplicitScriptCode, Is.EqualTo("Arab"));
-		//			Assert.That(langTagInfo.SldrLanguageTag, Is.EqualTo("ar"));
-
-		//			Assert.That(tags.TryGet("ar-EG", out langTagInfo), Is.True);
-		//			Assert.That(langTagInfo.IsAvailable, Is.True);
-		//			Assert.That(langTagInfo.ImplicitScriptCode, Is.EqualTo("Arab"));
-		//			Assert.That(langTagInfo.SldrLanguageTag, Is.EqualTo("ar-EG"));
-
-		//			Assert.That(tags.TryGet("oro", out langTagInfo), Is.True);
-		//			Assert.That(langTagInfo.IsAvailable, Is.True);
-		//			Assert.That(langTagInfo.ImplicitScriptCode, Is.EqualTo("Latn"));
-		//			Assert.That(langTagInfo.SldrLanguageTag, Is.EqualTo("oro-Latn"));
-
-		//			Assert.That(tags.TryGet("sr", out langTagInfo), Is.True);
-		//			Assert.That(langTagInfo.IsAvailable, Is.True);
-		//			Assert.That(langTagInfo.ImplicitScriptCode, Is.Null);
-		//			Assert.That(langTagInfo.SldrLanguageTag, Is.EqualTo("sr"));
-
-		//			Assert.That(tags.TryGet("sr-Cyrl", out langTagInfo), Is.True);
-		//			Assert.That(langTagInfo.IsAvailable, Is.True);
-		//			Assert.That(langTagInfo.ImplicitScriptCode, Is.Null);
-		//			Assert.That(langTagInfo.SldrLanguageTag, Is.EqualTo("sr-Cyrl"));
-
-		//			Assert.That(tags.TryGet("sr-RS", out langTagInfo), Is.True);
-		//			Assert.That(langTagInfo.IsAvailable, Is.True);
-		//			Assert.That(langTagInfo.ImplicitScriptCode, Is.EqualTo("Cyrl"));
-		//			Assert.That(langTagInfo.SldrLanguageTag, Is.EqualTo("sr-Cyrl-RS"));
-
-		//			Assert.That(tags.TryGet("sr-Latn", out langTagInfo), Is.True);
-		//			Assert.That(langTagInfo.IsAvailable, Is.True);
-		//			Assert.That(langTagInfo.ImplicitScriptCode, Is.Null);
-		//			Assert.That(langTagInfo.SldrLanguageTag, Is.EqualTo("sr-Latn"));
-		//		}
-
 		#endregion
 
-		// TODO rework when have alltag.json in stable location
+		/// <summary>
+		/// This test is only valid when run by its self. If other tests are running they can affect the file that
+		/// this is trying to verify.
+		/// </summary>
 		[Test]
-		[Category("SkipOnTeamCity")]
-		public void LanguageTags_OlderEmbeddedAllTags_DownloadsNewAllTags()
+		[Category("ByHand")]
+		public void LanguageTags_OlderEmbeddedLangTags_DownloadsNewLangTags()
 		{
 			using (new TestEnvironment(false, new DateTime(2000, 1, 1, 12, 0, 0)))
 			{
-				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.json");
-				Assert.That(File.Exists(allTagsPath), Is.False);
+				string langTagsPath = Path.Combine(Sldr.SldrCachePath, "langtags.json");
+				Assert.That(File.Exists(langTagsPath), Is.False);
 				Assert.That(Sldr.LanguageTags, Is.Not.Empty);
-				Assert.That(File.Exists(allTagsPath), Is.True);
+				Assert.That(File.Exists(langTagsPath), Is.True);
 			}
 		}
 
 		[Test]
-		public void LanguageTags_OlderCachedAllTagsSldrOffline_UseEmbeddedAllTags()
+		public void LanguageTags_OlderCachedLangTagsSldrOffline_UseEmbeddedLangTags()
 		{
 			using (new TestEnvironment())
 			{
-				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.json");
+				string langTagsPath = Path.Combine(Sldr.SldrCachePath, "langtags.json");
 
-				File.WriteAllText(allTagsPath, "[ { \"full\": \"en-Latn-GB\", \"iso639_3\": \"eng\", \"name\": \"English\", \"region\": \"GB\", \"sldr\": true, \"tag\": \"en-GB\" } ]");
-				File.SetLastWriteTime(allTagsPath, new DateTime(2000, 1, 1, 12, 0, 0));
+				File.WriteAllText(langTagsPath, "[ { \"full\": \"en-Latn-GB\", \"iso639_3\": \"eng\", \"name\": \"English\", \"region\": \"GB\", \"sldr\": true, \"tag\": \"en-GB\" } ]");
+				File.SetLastWriteTime(langTagsPath, new DateTime(2000, 1, 1, 12, 0, 0));
 
 				Assert.That(Sldr.LanguageTags.Count, Is.GreaterThan(1));
-				Assert.That(File.Exists(allTagsPath), Is.False);
+				Assert.That(File.Exists(langTagsPath), Is.False);
 			}
 		}
 
 		[Test]
-		public void LanguageTags_NewerCachedAllTagsSldrOffline_UseCachedAllTags()
+		public void LanguageTags_NewerCachedLangTagsSldrOffline_UseCachedLangTags()
 		{
 			using (new TestEnvironment())
 			{
-				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.json");
+				string langTagsPath = Path.Combine(Sldr.SldrCachePath, "langtags.json");
 
-				File.WriteAllText(allTagsPath, "[ { \"full\": \"en-Latn-GB\", \"iso639_3\": \"eng\", \"name\": \"English\", \"region\": \"GB\", \"sldr\": true, \"tag\": \"en-GB\" } ]");
+				File.WriteAllText(langTagsPath, "[ { \"full\": \"en-Latn-GB\", \"iso639_3\": \"eng\", \"name\": \"English\", \"region\": \"GB\", \"sldr\": true, \"tag\": \"en-GB\" } ]");
 				DateTime time = DateTime.Parse(LanguageRegistryResources.AllTagsTime, CultureInfo.InvariantCulture);
 				time += TimeSpan.FromSeconds(1);
-				File.SetLastWriteTime(allTagsPath, time);
+				File.SetLastWriteTime(langTagsPath, time);
 
 				Assert.That(Sldr.LanguageTags.Count, Is.EqualTo(1));
-				Assert.That(File.Exists(allTagsPath), Is.True);
+				Assert.That(File.Exists(langTagsPath), Is.True);
 			}
 		}
 
 		[Test]
-		public void LanguageTags_NoCachedAllTagsSldrOffline_UseEmbeddedAllTags()
+		public void LanguageTags_NoCachedLangTagsSldrOffline_UseEmbeddedLangTags()
 		{
 			using (new TestEnvironment())
 			{
-				string allTagsPath = Path.Combine(Sldr.SldrCachePath, "alltags.json");
-				Assert.That(File.Exists(allTagsPath), Is.False);
+				string langTagsPath = Path.Combine(Sldr.SldrCachePath, "langtags.json");
+				Assert.That(File.Exists(langTagsPath), Is.False);
 
 				Assert.That(Sldr.LanguageTags, Is.Not.Empty);
-				Assert.That(File.Exists(allTagsPath), Is.False);
+				Assert.That(File.Exists(langTagsPath), Is.False);
 			}
 		}
 	}
