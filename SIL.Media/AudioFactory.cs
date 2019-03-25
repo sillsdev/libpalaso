@@ -20,7 +20,7 @@ namespace SIL.Media
 
 		private static ISimpleAudioSession CreateIrrKlangSession(string filePath)
 		{
-			return new AudioIrrKlangSession(filePath);
+			return new WindowsAudioSession(filePath);
 		}
 
 		[Obsolete("This was a unfortunate method name. Use CreateAudioSession Instead.")]

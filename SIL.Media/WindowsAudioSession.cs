@@ -5,8 +5,6 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using IrrKlang;
 using NAudio.Wave;
 using SIL.Code;
@@ -18,8 +16,7 @@ namespace SIL.Media
 	/// A Windows implementation of an ISimpleAudioSession.
 	/// Uses IrrKlang for recording and NAudio for playback.
 	/// </summary>
-	/// <remarks>This class should really be named WindowsAudioSession, and be internal.</remarks>
-	public class AudioIrrKlangSession : ISimpleAudioSession, ISimpleAudioWithEvents
+	internal class WindowsAudioSession : ISimpleAudioSession, ISimpleAudioWithEvents
 	{
 		private readonly IAudioRecorder _recorder;
 		private readonly ISoundEngine _engine = new ISoundEngine();
@@ -38,7 +35,7 @@ namespace SIL.Media
 		/// <summary>
 		/// Constructor for an AudioSession using the IrrKlang library
 		/// </summary>
-		public AudioIrrKlangSession(string filePath)
+		public WindowsAudioSession(string filePath)
 		{
 			Guard.AgainstNull(filePath, "filePath");
 			_soundFile = new SoundFile(filePath);
