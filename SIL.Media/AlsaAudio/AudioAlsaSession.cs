@@ -10,7 +10,7 @@ namespace SIL.Media.AlsaAudio
 	/// Implementation of ISimpleAudioSession that uses the standard ALSA sound
 	/// library on Linux.
 	/// </summary>
-	public class AudioAlsaSession : ISimpleAudioSession
+	internal class AudioAlsaSession : ISimpleAudioSession
 	{
 		DateTime _startRecordingTime = DateTime.MinValue;
 		DateTime _stopRecordingTime = DateTime.MinValue;
