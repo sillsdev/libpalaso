@@ -1,4 +1,4 @@
-﻿namespace SIL.Media.Naudio
+﻿namespace SIL.Media
 {
 	public enum RecordingState
 	{

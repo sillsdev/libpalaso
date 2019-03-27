@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using NAudio.Wave;
-using SIL.Media.Naudio;
 
 namespace SIL.Media.AlsaAudio
 {
