@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SIL.Media.Naudio
+namespace SIL.Media
 {
 	public class PlaybackProgressEventArgs : EventArgs
 	{

@@ -3,12 +3,10 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using IrrKlang;
 using NAudio.Wave;
 using SIL.Code;
-using IAudioRecorder = IrrKlang.IAudioRecorder;
 
 namespace SIL.Media
 {
@@ -18,7 +16,7 @@ namespace SIL.Media
 	/// </summary>
 	internal class WindowsAudioSession : ISimpleAudioSession, ISimpleAudioWithEvents
 	{
-		private readonly IAudioRecorder _recorder;
+		private readonly IrrKlang.IAudioRecorder _recorder;
 		private readonly ISoundEngine _engine = new ISoundEngine();
 		private bool _thinkWeAreRecording;
 		private DateTime _startRecordingTime;
@@ -40,7 +38,7 @@ namespace SIL.Media
 			Guard.AgainstNull(filePath, "filePath");
 			_soundFile = new SoundFile(filePath);
 			_engine.AddFileFactory(_soundFile);
-			_recorder = new IAudioRecorder(_engine);
+			_recorder = new IrrKlang.IAudioRecorder(_engine);
 			_path = filePath;
 		}
 		public string FilePath

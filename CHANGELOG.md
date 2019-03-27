@@ -20,9 +20,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Create nuget packages
 - [SIL.Media] `IAudioRecorder.SelectedDevice` now returns a `IRecordingDevice` which both the
-  NAudio and AlsaAudio `RecordingDevice` implement. This allows to use to use the same assembly
+  NAudio and AlsaAudio `RecordingDevice` implement. This allows to use the same assembly
   on both Windows and Linux (although the limitations what works and what doesn't work remain the
   same)
+- [SIL.Media] cleanup of `AudioSession` API: rename `AudioIrrKlangSession` to `WindowsAudioSession`.
+  `AudioAlsaSession` and `WindowsAudioSession` are now  internal (they were never intended to
+  be used directly)
+- [SIL.Media] move some interfaces around so that they live in `SIL.Media` instead of
+  `SIL.Media.Naudio`: `IAudioRecorder`, `RecordingState`, `IAudioPlayer`
 
 ### Added
 
