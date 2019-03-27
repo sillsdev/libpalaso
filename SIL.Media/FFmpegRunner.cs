@@ -58,16 +58,10 @@ namespace SIL.Media
 			if (!string.IsNullOrEmpty(withApplicationDirectory) && File.Exists(withApplicationDirectory))
 				return withApplicationDirectory;
 
-			//nb: this is sensitive to whether we are compiled against win32 or not,
-			//not just the host OS, as you might guess.
-			var pf = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
-
-
-			var progFileDirs = new List<string>()
-									{
-										pf.Replace(" (x86)", ""),			//native (win32 or 64, depending)
-										pf.Replace(" (x86)", "")+" (x86)"	//win32
-									};
+			var progFileDirs = new List<string> {
+				Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+				Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)
+			};
 
 			/* We DON't SUPPORT THIS ONE (it lacks some information on the output, at least as of
 			 * Julu 2010)
