@@ -19,4 +19,5 @@ branches:
     regex: feature[/-]
     mode: ContinuousDeployment
     tag: alpha
+# Tell gitversion to use a version number >= next-version
 next-version: 6.1.0
