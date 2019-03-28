@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using SIL.WritingSystems.Migration;
 
 namespace SIL.WritingSystems.Tests.Migration
@@ -312,6 +312,22 @@ namespace SIL.WritingSystems.Tests.Migration
 			var cleaner = new IetfLanguageTagCleaner("zh-Phnx-CN-fonipa-x-emic");
 			cleaner.Clean();
 			VerifyRfcCleaner(cleaner, "zh", "Phnx", "CN", "fonipa", "zh-Phnx-CN-fonipa-x-emic");
+		}
+
+		[Test]
+		public void GetFullCode_CaseCleaning_Lang_Script_Region_Works()
+		{
+			var cleaner = new IetfLanguageTagCleaner("EN-latn-us-x-NotCHang");
+			cleaner.Clean();
+			VerifyRfcCleaner(cleaner, "en", "Latn", "US", "", "en-Latn-US-x-NotCHang");
+		}
+
+		[Test]
+		public void GetFullCode_CaseCleaning_AudioWs_PrivateUseIsChanged()
+		{
+			var cleaner = new IetfLanguageTagCleaner("EN-Zxxx-x-AudIO");
+			cleaner.Clean();
+			VerifyRfcCleaner(cleaner, "en", "Zxxx", "", "", "en-Zxxx-x-audio");
 		}
 
 		void VerifyRfcCleaner(IetfLanguageTagCleaner cleaner, string language, string script, string region, string variant, string completeTag)

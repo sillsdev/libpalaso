@@ -743,5 +743,14 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(ws.LanguageTag, Is.EqualTo("en-Zxxx-x-dupl0-audio-dupl1"));
 		}
 		#endregion
+
+		[TestCase("en", true)]
+		[TestCase("en-Latn", true)]
+		[TestCase("en-Arab", false)]
+		[TestCase("en-Latn-US", true)]
+		public void IsScriptImplied_ReturnsExpectedResults(string tag, bool expectedResult)
+		{
+			Assert.That(IetfLanguageTag.IsScriptImplied(tag), Is.EqualTo(expectedResult));
+		}
 	}
 }

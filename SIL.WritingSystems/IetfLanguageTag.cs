@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using Icu;
+using SIL.Code;
 using SIL.Extensions;
 
 namespace SIL.WritingSystems
@@ -999,7 +1000,7 @@ namespace SIL.WritingSystems
 			if (!TryParse(langTag, out language, out script, out region, out variant))
 				throw new ArgumentException("The IETF language tag is invalid.", "langTag");
 
-			return string.IsNullOrEmpty(script) && !string.IsNullOrEmpty(GetImplicitScriptCode(language, region));
+			return string.IsNullOrEmpty(script) || script.Equals(GetImplicitScriptCode(language, region));
 		}
 
 		private static string GetImplicitScriptCode(LanguageSubtag languageSubtag, RegionSubtag regionSubtag)
@@ -1187,6 +1188,18 @@ namespace SIL.WritingSystems
 				ietfLanguageTag = Create(languageSubtag, scriptSubtag, regionSubtag, variants);
 			}
 			return ietfLanguageTag;
+		}
+
+		public static bool AreTagsEquivalent(string firstTag, string secondTag)
+		{
+			Guard.AgainstNullOrEmptyString(firstTag, "firstTag");
+			Guard.AgainstNullOrEmptyString(secondTag, "secondTag");
+			if (IsValid(firstTag) && IsValid(secondTag))
+			{
+				return Canonicalize(firstTag).Equals(Canonicalize(secondTag));
+			}
+			// If the tags aren't valid the only way they can be equivalent is if they are equal
+			return firstTag.Equals(secondTag, StringComparison.InvariantCultureIgnoreCase);
 		}
 	}
 }

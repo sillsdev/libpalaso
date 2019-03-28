@@ -120,7 +120,8 @@ namespace SIL.WritingSystems
 			if (!IetfLanguageTag.IsValid(languageTag))
 				throw new ArgumentException("The language tag is invalid.", languageTag);
 			_numberingSystem = NumberingSystemDefinition.Default;
-			_languageTag = IetfLanguageTag.Canonicalize(languageTag);
+			// If we canonicalize the tag when we read it in it will cause ldml files to move unexpectedly when we save.
+			_languageTag = languageTag;
 			IEnumerable<VariantSubtag> variantSubtags;
 			IetfLanguageTag.TryGetSubtags(_languageTag, out _language, out _script, out _region, out variantSubtags);
 			_variants = new BulkObservableList<VariantSubtag>(variantSubtags);

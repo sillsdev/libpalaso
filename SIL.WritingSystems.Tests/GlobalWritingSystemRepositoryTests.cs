@@ -322,7 +322,7 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void AllWritingSystems_LdmlCheckingSetEmptyandGetWSId()
+		public void AllWritingSystems_LdmlCheckingSetEmptyCanNotSave()
 		{
 			using (var tf = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
 			{
@@ -337,12 +337,12 @@ namespace SIL.WritingSystems.Tests
 				Thread.Sleep(1000);
 				ws = repo2.Get("en-US");
 				ws.WindowsLcid = "test";
-				// Make an arbitrary change to force a save of the ldml file.
+				// a ws with an empty Id is assumed to be new, we can't save it if the LanguageTag is already found
+				// in the repo.
 				ws.Id = string.Empty;
+				Assert.That(repo2.CanSet(ws), Is.False, "A ws with an empty ID will not save if the LanguageTag matches an existing ws");
 				repo2.Save();
-				Assert.That(repo1.Get("en-US").WindowsLcid, Is.EqualTo("test"));
-				Assert.That(ws.IsChanged, Is.False);
-				Assert.AreEqual(ws.Id, "en-US");
+				Assert.That(repo1.Get("en-US").WindowsLcid, Is.Not.EqualTo("test"), "Changes should not have been saved.");
 			}
 		}
 	}
