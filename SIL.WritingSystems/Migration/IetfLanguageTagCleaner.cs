@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SIL.Extensions;
@@ -46,7 +46,7 @@ namespace SIL.WritingSystems.Migration
 		/// </summary>
 		public string Language
 		{
-			get { return _languageSubTag.CompleteTag; }
+			get { return _languageSubTag.CompleteTag.ToLower(); }
 			private set { _languageSubTag = new SubTag(value); }
 		}
 
@@ -55,7 +55,7 @@ namespace SIL.WritingSystems.Migration
 		/// </summary>
 		public string Script
 		{
-			get { return _scriptSubTag.CompleteTag; }
+			get { return _scriptSubTag.CompleteTag.ToUpperFirstLetter(); }
 			private set { _scriptSubTag = new SubTag(value); }
 		}
 
@@ -64,7 +64,7 @@ namespace SIL.WritingSystems.Migration
 		/// </summary>
 		public string Region
 		{
-			get { return _regionSubTag.CompleteTag; }
+			get { return _regionSubTag.CompleteTag.ToUpper(); }
 			private set { _regionSubTag = new SubTag(value); }
 		}
 
@@ -134,13 +134,19 @@ namespace SIL.WritingSystems.Migration
 						return String.Empty;
 					}
 					string subtagAsString = "";
-					foreach (string part in _subTagParts)
+					for(var i = 0; i < _subTagParts.Count; ++i)
 					{
-						if (!String.IsNullOrEmpty(subtagAsString))
+						var cleanedPart = _subTagParts[i];
+						// force audio case to lower for audio writing systems.
+						if (i == 0 && cleanedPart.Equals(WellKnownSubtags.AudioPrivateUse, StringComparison.InvariantCultureIgnoreCase))
+						{
+							cleanedPart = WellKnownSubtags.AudioPrivateUse;
+						}
+						if (!string.IsNullOrEmpty(subtagAsString))
 						{
 							subtagAsString = subtagAsString + "-";
 						}
-						subtagAsString = subtagAsString + part;
+						subtagAsString = subtagAsString + cleanedPart;
 					}
 					return subtagAsString;
 				}

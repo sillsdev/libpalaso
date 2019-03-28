@@ -344,7 +344,7 @@ namespace SIL.WritingSystems
 
 		protected override void RemoveDefinition(T ws)
 		{
-			string file = GetFilePathFromLanguageTag(ws.LanguageTag);
+			string file = GetFilePathFromLanguageTag(ws.Id);
 			if (File.Exists(file))
 				File.Delete(file);
 			base.RemoveDefinition(ws);
@@ -356,7 +356,7 @@ namespace SIL.WritingSystems
 		{
 			base.Set(ws);
 
-			string writingSystemFilePath = GetFilePathFromLanguageTag(ws.LanguageTag);
+			string writingSystemFilePath = GetFilePathFromLanguageTag(ws.Id);
 			if (!File.Exists(writingSystemFilePath) && !string.IsNullOrEmpty(ws.Template))
 			{
 				// this is a new writing system that was generated from a template, so copy the template over before saving

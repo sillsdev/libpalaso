@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace SIL.WritingSystems.Migration
 {
@@ -19,8 +19,14 @@ namespace SIL.WritingSystems.Migration
 			get { return _fileName; }
 		}
 
+		/// <summary>
+		/// Should really be FilenameBeforeMigration
+		/// </summary>
 		public string LanguageTagBeforeMigration { get; set; }
 
+		/// <summary>
+		/// Should really be FilenameAfterMigration
+		/// </summary>
 		public string LanguageTagAfterMigration { get; set; }
 
 		internal Action<WritingSystemDefinition> RemovedPropertiesSetter { get; set; } 

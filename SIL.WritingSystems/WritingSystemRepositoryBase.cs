@@ -131,8 +131,22 @@ namespace SIL.WritingSystems
 			{
 				return false;
 			}
-			return !(_writingSystems.Keys.Any(id => id.Equals(ws.LanguageTag, StringComparison.OrdinalIgnoreCase)) &&
-				ws.Id != _writingSystems[ws.LanguageTag].Id);
+
+			if (string.IsNullOrEmpty(ws.Id))
+			{
+				return !_writingSystems.ContainsKey(ws.LanguageTag);
+			}
+
+			if (IsLanguageIdChanging(ws, ws.Id))
+			{
+				// we are going to be changing the Id, check if we can set with
+				// the new Id
+				return !_writingSystems.ContainsKey(ws.LanguageTag);
+			}
+			// If the _writingSystems contains a writing system with this Id it is a duplicate,
+			// but if the writing system is reference equal to the one in _writingSystems we are either
+			// updating it or in the process of creating it for the first time. So return true.
+			return !_writingSystems.ContainsKey(ws.Id) || _writingSystems[ws.Id].Equals(ws);
 		}
 
 		public virtual void Set(T ws)
@@ -142,29 +156,46 @@ namespace SIL.WritingSystems
 				throw new ArgumentNullException("ws");
 			}
 
+			string oldId = _writingSystems.Where(kvp => kvp.Value.Id == ws.Id).Select(kvp => kvp.Key).FirstOrDefault();
+
 			//Check if this is a new writing system with a conflicting id
 			if (!CanSet(ws))
 				throw new ArgumentException(String.Format("Unable to set writing system '{0}' because this id already exists. Please change this writing system id before setting it.", ws.LanguageTag));
 
-			string oldId = _writingSystems.Where(kvp => kvp.Value.Id == ws.Id).Select(kvp => kvp.Key).FirstOrDefault();
+			// if there is no Id set, this is new, so mark it as changed
+			if (string.IsNullOrEmpty(ws.Id))
+			{
+				ws.ForceChanged();
+				ws.Id = ws.LanguageTag;
+			}
 			//??? How do we update
 			//??? Is it sufficient to just set it, or can we not change the reference in case someone else has it too
 			//??? i.e. Do we need a ws.Copy(WritingSystemDefinition)?
 			if (!string.IsNullOrEmpty(oldId) && _writingSystems.ContainsKey(oldId))
+			{
 				_writingSystems.Remove(oldId);
-			_writingSystems[ws.LanguageTag] = ws;
+			}
 
-			if (!string.IsNullOrEmpty(oldId) && (oldId != ws.LanguageTag))
+			string newId = ws.Id;
+			if (IsLanguageIdChanging(ws, ws.Id))
+			{
+				newId = ws.LanguageTag;
+			}
+			_writingSystems[newId] = ws;
+
+			if (!string.IsNullOrEmpty(oldId) && IsLanguageIdChanging(ws, oldId))
 			{
 				UpdateChangedIds(oldId, ws.LanguageTag);
 				if (WritingSystemIdChanged != null)
 					WritingSystemIdChanged(this, new WritingSystemIdChangedEventArgs(oldId, ws.LanguageTag));
 			}
 
-			// if there is no Id set, this is new, so mark it as changed
-			if (string.IsNullOrEmpty(ws.Id))
-				ws.ForceChanged();
-			ws.Id = ws.LanguageTag;
+			ws.Id = newId;
+		}
+
+		private static bool IsLanguageIdChanging(T ws, string oldId)
+		{
+			return !IetfLanguageTag.AreTagsEquivalent(oldId, ws.LanguageTag);
 		}
 
 		/// <summary>
