@@ -870,6 +870,19 @@ namespace SIL.Windows.Forms.WritingSystems
 			}
 		}
 
+		public NumberingSystemDefinition CurrentNumberingSystemDefinition
+		{
+			get { return CurrentDefinition.NumberingSystem; }
+			set
+			{
+				if (!CurrentDefinition.NumberingSystem.Equals(value))
+				{
+					CurrentDefinition.NumberingSystem = value;
+					OnCurrentItemUpdated();
+				}
+			}
+		}
+
 		public string CurrentCollationRulesType
 		{
 			get { return _currentCollationRulesType.ToString(); }

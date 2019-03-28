@@ -40,7 +40,19 @@ namespace SIL.WritingSystems
 			_digits = CLDRNumberingSystems.GetDigitsForID(id);
 		}
 
+		/// <summary/>
 		public bool IsCustom => _id == CUSTOM;
+
+		/// <summary>
+		/// returns a string containing the 10 digits used by this numbering system 0-9
+		/// </summary>
+		public string Digits
+		{
+			get
+			{
+				return _digits;
+			}
+		}
 
 		/// <summary>
 		/// Returns the CLDR numbering system id or 'other(0123456789)' for a custom set
