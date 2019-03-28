@@ -58,7 +58,8 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			var langTagCleaner = new IetfLanguageTagCleaner(writingSystemDefinitionV1.Language, writingSystemDefinitionV1.Script, writingSystemDefinitionV1.Region,
 				variant, privateUse);
 			langTagCleaner.Clean();
-			string langTag = IetfLanguageTag.Canonicalize(langTagCleaner.GetCompleteTag());
+			// just cleaning and not canonicalizing - This is used only for the filename which becomes the WritingSystemDefinition.Id
+			string writingSystemId = langTagCleaner.GetCompleteTag();
 			List<string> knownKeyboards = writingSystemDefinitionV1.KnownKeyboards.Select(k => string.IsNullOrEmpty(k.Locale) ? k.Layout : string.Format("{0}_{1}", k.Locale, k.Layout)).ToList();
 			bool isGraphiteEnabled = false;
 			string legacyMapping = string.Empty;
@@ -108,7 +109,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 			var migrationInfo = new LdmlMigrationInfo(sourceFileName)
 				{
 					LanguageTagBeforeMigration = writingSystemDefinitionV1.Bcp47Tag,
-					LanguageTagAfterMigration = langTag,
+					LanguageTagAfterMigration = writingSystemId,
 					RemovedPropertiesSetter = ws =>
 					{
 						if (!string.IsNullOrEmpty(abbreviation))
@@ -417,7 +418,7 @@ namespace SIL.WritingSystems.Migration.WritingSystemsLdmlV2To3Migration
 
 				// Write out the elements.
 				XElement identityElem = ldmlElem.Element("identity");
-				WriteIdentityElement(identityElem, staging, migrationInfo.LanguageTagAfterMigration);
+				WriteIdentityElement(identityElem, staging, IetfLanguageTag.Canonicalize(migrationInfo.LanguageTagAfterMigration));
 
 				var layoutElement = ldmlElem.Element("layout");
 				WriteLayoutElement(layoutElement);
