@@ -99,7 +99,10 @@ namespace SIL.WritingSystems.Tests
 			{
 				string filename;
 				const string ietfLanguageTag = "en-US";
-				Assert.That(Sldr.GetLdmlFile(environment.FilePath, ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FromSldr));
+				var sldrStatus = Sldr.GetLdmlFile(environment.FilePath, ietfLanguageTag, out filename);
+				if(sldrStatus == SldrStatus.UnableToConnectToSldr)
+					Assert.Ignore("Ignored becuase SLDR is offline.");
+				Assert.That(sldrStatus, Is.EqualTo(SldrStatus.FromSldr));
 				AssertThatXmlIn.File(Path.Combine(environment.FilePath, filename)).HasAtLeastOneMatchForXpath("/ldml[identity]", environment.NamespaceManager);
 				AssertThatXmlIn.File(Path.Combine(environment.FilePath, filename)).HasAtLeastOneMatchForXpath("/ldml[localeDisplayNames]", environment.NamespaceManager);
 				AssertThatXmlIn.File(Path.Combine(environment.FilePath, filename)).HasAtLeastOneMatchForXpath("/ldml[layout]", environment.NamespaceManager);
@@ -126,7 +129,10 @@ namespace SIL.WritingSystems.Tests
 				string filename;
 				const string ietfLanguageTag = "qaa";
 
-				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.NotFound));
+				var sldrStatus = environment.GetLdmlFile(ietfLanguageTag, out filename);
+				if (sldrStatus == SldrStatus.UnableToConnectToSldr)
+					Assert.Ignore("Ignored becuase SLDR is offline.");
+				Assert.That(sldrStatus, Is.EqualTo(SldrStatus.NotFound));
 			}
 		}
 
@@ -150,8 +156,11 @@ namespace SIL.WritingSystems.Tests
 			{
 				string filename;
 				const string ietfLanguageTag = "oro";
+				var sldrStatus = environment.GetLdmlFile(ietfLanguageTag, out filename);
+				if (sldrStatus == SldrStatus.UnableToConnectToSldr)
+					Assert.Ignore("Ignored becuase SLDR is offline.");
 
-				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FromSldr));
+				Assert.That(sldrStatus, Is.EqualTo(SldrStatus.FromSldr));
 				Assert.That(File.Exists(Path.Combine(environment.FilePath, filename)), Is.True);
 			}
 		}
@@ -229,8 +238,11 @@ namespace SIL.WritingSystems.Tests
 			{
 				string filename;
 				const string ietfLanguageTag = "en-GB";
+				var sldrStatus = environment.GetLdmlFile(ietfLanguageTag, out filename);
+				if (sldrStatus == SldrStatus.UnableToConnectToSldr)
+					Assert.Ignore("Ignored becuase SLDR is offline.");
 
-				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FromSldr));
+				Assert.That(sldrStatus, Is.EqualTo(SldrStatus.FromSldr));
 
 				string filePath = Path.Combine(environment.FilePath, filename);
 				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']", environment.NamespaceManager);
@@ -252,7 +264,11 @@ namespace SIL.WritingSystems.Tests
 				string filename;
 				const string ietfLanguageTag = "en-GB";
 
-				Assert.That(Sldr.GetLdmlFile(Sldr.SldrCachePath, ietfLanguageTag, new[] {"characters"}, out filename), Is.EqualTo(SldrStatus.FromSldr));
+				var sldrStatus = Sldr.GetLdmlFile(Sldr.SldrCachePath, ietfLanguageTag, new[] { "characters" }, out filename);
+				if (sldrStatus == SldrStatus.UnableToConnectToSldr)
+					Assert.Ignore("Ignored becuase SLDR is offline.");
+
+				Assert.That(sldrStatus, Is.EqualTo(SldrStatus.FromSldr));
 
 				string filePath = Path.Combine(Sldr.SldrCachePath, filename);
 				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']", environment.NamespaceManager);
@@ -265,7 +281,8 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
-		[Test, Ignore("SkipOnTeamCity")]
+		[Test]
+		[Category("SkipOnTeamCity")]
 		// This depends on when SLDR updates "en-US.ldml" with the revid 
 		public void GetLdmlFile_NotModified_DoesntDownloadNewFile()
 		{
@@ -280,7 +297,10 @@ namespace SIL.WritingSystems.Tests
 				File.WriteAllText(Path.Combine(Sldr.SldrCachePath, ietfLanguageTag + ".ldml"), content);
 
 				string filename;
-				Assert.That(environment.GetLdmlFile(ietfLanguageTag, out filename), Is.EqualTo(SldrStatus.FromSldr));
+				var sldrStatus = environment.GetLdmlFile(ietfLanguageTag, out filename);
+				if (sldrStatus == SldrStatus.UnableToConnectToSldr)
+					Assert.Ignore("Ignored becuase SLDR is offline.");
+				Assert.That(sldrStatus, Is.EqualTo(SldrStatus.FromCache));
 				string filePath = Path.Combine(environment.FilePath, filename);
 				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[@windowsLCID='12345']", environment.NamespaceManager);
 			}
@@ -394,11 +414,17 @@ namespace SIL.WritingSystems.Tests
 		/// this is trying to verify.
 		/// </summary>
 		[Test]
+		[Category("SkipOnTeamCity")]
 		[Category("ByHand")]
 		public void LanguageTags_OlderEmbeddedLangTags_DownloadsNewLangTags()
 		{
-			using (new TestEnvironment(false, new DateTime(2000, 1, 1, 12, 0, 0)))
+			using (var testEnv = new TestEnvironment(false, new DateTime(2000, 1, 1, 12, 0, 0)))
 			{
+				string enLdml;
+				if (testEnv.GetLdmlFile("en", out enLdml) == SldrStatus.UnableToConnectToSldr)
+				{
+					Assert.Ignore();
+				}
 				string langTagsPath = Path.Combine(Sldr.SldrCachePath, "langtags.json");
 				Assert.That(File.Exists(langTagsPath), Is.False);
 				Assert.That(Sldr.LanguageTags, Is.Not.Empty);
