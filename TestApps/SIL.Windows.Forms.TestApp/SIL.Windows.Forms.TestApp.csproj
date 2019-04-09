@@ -20,7 +20,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Icu4c.Win.Min" Version="56.1.82" />
-    <PackageReference Include="L10NSharp.tmx" Version="3.1.0-nuget0010" />
+    <PackageReference Include="L10NSharp" Version="4.0.0" />
   </ItemGroup>
 
   <ItemGroup>

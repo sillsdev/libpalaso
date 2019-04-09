@@ -68,8 +68,9 @@
     <Reference Include="Enchant.Net">
       <HintPath>..\packages\Enchant.Net.1.4.2\lib\net461\Enchant.Net.dll</HintPath>
     </Reference>
-    <Reference Include="L10NSharp">
-      <HintPath>..\packages\L10NSharp.tmx.3.1.0-nuget0010\lib\net461\L10NSharp.dll</HintPath>
+    <Reference Include="L10NSharp, Version=4.0.0.0, Culture=neutral, PublicKeyToken=fd0b3e309a5b7c28">
+      <HintPath>..\packages\L10NSharp.4.0.0\lib\net461\L10NSharp.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="NAudio">
       <HintPath>..\packages\NAudio.1.8.4\lib\net35\NAudio.dll</HintPath>
@@ -134,6 +135,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
