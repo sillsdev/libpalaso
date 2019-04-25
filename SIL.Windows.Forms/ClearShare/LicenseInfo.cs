@@ -67,14 +67,14 @@ namespace SIL.Windows.Forms.ClearShare
 		public bool HasChanges { get; set; }
 
 		/// <summary>
-		/// custom or extra rights. Note that accoring to Creative Commons, "extra" rights are expressly dissallowed by section 7 a:
+		/// custom or extra rights. Note that according to Creative Commons, "extra" rights are expressly disallowed by section 7 a:
 		///     http://creativecommons.org/licenses/by-nc/4.0/legalcode#s7a
 		///     "The Licensor shall not be bound by any additional or different terms or conditions communicated by You unless expressly agreed."
 		///
 		/// However, consider the case of one application that uses this library, Bloom. A significant portion of the material it is trying to
-		/// help people license is restricted to the country of origin. Niether CC nor anyone else is going to allow for that, so we're
+		/// help people license is restricted to the country of origin. Neither CC nor anyone else is going to allow for that, so we're
 		/// allowing people to express that restriction in this field, but the UI also makes it clear that these are
-		/// not legally enforceable if they are choosing a CC license. While not legally enforcable, they are not worthless, as they define
+		/// not legally enforceable if they are choosing a CC license. While not legally enforceable, they are not worthless, as they define
 		/// what is ethical. We expect that the vast majority of people are going to abide by them.
 		/// </summary>
 		public string RightsStatement {get; set; }
