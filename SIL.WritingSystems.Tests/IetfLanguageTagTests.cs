@@ -206,10 +206,24 @@ namespace SIL.WritingSystems.Tests
 
 		#region Create
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
-		public void Create_InvalidTag_Throws()
+		[ExpectedException(typeof(ArgumentException), ExpectedMessage = "code [a] is invalid", MatchType = MessageMatch.Contains)]
+		public void Create_InvalidLanguageTag_Throws()
 		{
 			IetfLanguageTag.Create("a", "", "", string.Empty);
+		}
+
+		[Test]
+		[ExpectedException(typeof(ArgumentException), ExpectedMessage = "code [scripty] is invalid", MatchType = MessageMatch.Contains)]
+		public void Create_InvalidScriptTag_Throws()
+		{
+			IetfLanguageTag.Create("aa", "scripty", "", string.Empty);
+		}
+
+		[Test]
+		[ExpectedException(typeof(ArgumentException), ExpectedMessage = "code [region] is invalid", MatchType = MessageMatch.Contains)]
+		public void Create_InvalidRegionTag_Throws()
+		{
+			IetfLanguageTag.Create("aa", "latn", "region", string.Empty);
 		}
 
 		[Test]

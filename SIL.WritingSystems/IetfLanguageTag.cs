@@ -605,7 +605,7 @@ namespace SIL.WritingSystems
 			{
 				if (!StandardSubtags.IsValidIso639LanguageCode(languageCode))
 				{
-					message = "The language code is invalid.";
+					message = $"The language code [{languageCode}] is invalid.";
 					paramName = "languageCode";
 				}
 				sb.Append(languageCode);
@@ -615,7 +615,7 @@ namespace SIL.WritingSystems
 			{
 				if (message == null && !StandardSubtags.IsValidIso15924ScriptCode(scriptCode))
 				{
-					message = "The script code is invalid.";
+					message = $"The script code [{scriptCode}] is invalid.";
 					paramName = "scriptCode";
 				}
 				// do not include implicit script codes in the language tag
@@ -631,7 +631,7 @@ namespace SIL.WritingSystems
 			{
 				if (message == null && !StandardSubtags.IsValidIso3166RegionCode(regionCode))
 				{
-					message = "The region code is invaild.";
+					message = $"The region code [{regionCode}] is invalid.";
 					paramName = "regionCode";
 				}
 				if (sb.Length > 0)
@@ -649,7 +649,7 @@ namespace SIL.WritingSystems
 					{
 						if (variants.Contains(variantCode))
 						{
-							message = "Duplicate private use codes are not allowed.";
+							message = $"Duplicate private use codes [{variantCode}] are not allowed.";
 							paramName = "variantCodes";
 							break;
 						}
@@ -667,13 +667,13 @@ namespace SIL.WritingSystems
 						}
 						if (!inPrivateUse && !StandardSubtags.IsValidRegisteredVariantCode(variantCode))
 						{
-							message = "A variant code is invalid.";
+							message = $"A variant code [{variantCode}] is invalid.";
 							paramName = "variantCodes";
 							break;
 						}
 						if (inPrivateUse && !PrivateUsePattern.IsMatch(variantCode))
 						{
-							message = "A private use code is invalid.";
+							message = $"A private use code [{variantCode}] is invalid.";
 							paramName = "variantCodes";
 						}
 						variants.Add(variantCode);
