@@ -787,7 +787,15 @@ namespace SIL.WritingSystems
 
 				// Only add collation definition if it's been set
 				if (cd != null)
-					ws.Collations.Add(cd);
+				{
+					// If there are duplicate collations of a type in the ldml file drop all but the first
+					// Enhance: Log this somehow
+					CollationDefinition existing;
+					if (!ws.Collations.TryGet(cd.Type, out existing))
+					{
+						ws.Collations.Add(cd);
+					}
+				}
 			}
 		}
 

@@ -1220,6 +1220,29 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void Read_LdmlWithDuplicateCollations_DropsExtraAndDoesNotCrash()
+		{
+			using (var file = new TempFile())
+			{
+				WriteCurrentVersionLdml("en", "", "", "", file);
+				var doc = XDocument.Load(file.Path);
+				var collationsNode = doc.Root.Descendants("collations").FirstOrDefault();
+				if (collationsNode == null)
+				{
+					collationsNode = XElement.Parse("<collations/>");
+					doc.Root.Add(collationsNode);
+				}
+				collationsNode.Add(XElement.Parse("<collation type='standard'/>"));
+				collationsNode.Add(XElement.Parse("<collation type='standard'/>"));
+				doc.Save(file.Path);
+				var ws = new WritingSystemDefinition();
+				var dataMapper = new LdmlDataMapper(new TestWritingSystemFactory());
+				Assert.DoesNotThrow(() => dataMapper.Read(file.Path, ws));
+				Assert.That(ws.Collations.Count(cd => cd.Type == "standard"), Is.EqualTo(1));
+			}
+		}
+
+		[Test]
 		public void RoundTrippingLdmlDoesNotDuplicateSections()
 		{
 			using (var roundTripOut2 = new TempFile())
