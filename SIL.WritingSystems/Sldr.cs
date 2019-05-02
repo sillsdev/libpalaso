@@ -299,17 +299,30 @@ namespace SIL.WritingSystems
 						if ((we.Status == WebExceptionStatus.ProtocolError) && (errorResponse.StatusCode == HttpStatusCode.NotFound))
 							return SldrStatus.NotFound;
 
-						string sldrCacheFilename;
 						// Download failed so check SLDR cache
-						if (!string.IsNullOrEmpty(uid) && (uid != DefaultUserId))
-							sldrCacheFilename = string.Format("{0}-{1}.{2}", sldrLanguageTag, uid, LdmlExtension);
-						else
-							sldrCacheFilename = string.Format("{0}.{1}", sldrLanguageTag, LdmlExtension);
-						sldrCacheFilePath = Path.Combine(SldrCachePath, sldrCacheFilename);
+						sldrCacheFilePath = GetSldrCacheFilePath(uid, sldrLanguageTag);
 						if (File.Exists(sldrCacheFilePath))
+						{
 							status = SldrStatus.FromCache;
+						}
 						else
+						{
 							return SldrStatus.UnableToConnectToSldr;
+						}
+						redirected = false;
+					}
+					catch (XmlException xe)
+					{
+						// Download failed so check SLDR cache
+						sldrCacheFilePath = GetSldrCacheFilePath(uid, sldrLanguageTag);
+						if (File.Exists(sldrCacheFilePath))
+						{
+							status = SldrStatus.FromCache;
+						}
+						else
+						{
+							return SldrStatus.UnableToConnectToSldr;
+						}
 						redirected = false;
 					}
 					finally
@@ -327,6 +340,18 @@ namespace SIL.WritingSystems
 
 				return status;
 			}
+		}
+
+		private static string GetSldrCacheFilePath(string uid, string sldrLanguageTag)
+		{
+			string sldrCacheFilename;
+			if (!string.IsNullOrEmpty(uid) && (uid != DefaultUserId))
+				sldrCacheFilename = string.Format("{0}-{1}.{2}", sldrLanguageTag, uid,
+					LdmlExtension);
+			else
+				sldrCacheFilename = string.Format("{0}.{1}", sldrLanguageTag,
+					LdmlExtension);
+			return Path.Combine(SldrCachePath, sldrCacheFilename);
 		}
 
 		/// <summary>
