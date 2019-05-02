@@ -1,6 +1,6 @@
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using SIL.Extensions;
 
 namespace SIL.WritingSystems.Tests
 {
@@ -108,7 +108,7 @@ namespace SIL.WritingSystems.Tests
 		[TestCase("zh-Hans", "China")] // TODO want an example language code with script without country
 		[TestCase("qaa", "")] // unknown language, no country
 		[TestCase("bua", "Russian Federation")] // no region, but does have a unique country
-		public void FindsCorrectPrimaryCountry(string code, string primaryCountry)
+		public void GetLanguageFromCode_FindsCorrectPrimaryCountry(string code, string primaryCountry)
 		{
 			var lookup = new LanguageLookup();
 			var lang = lookup.GetLanguageFromCode(code);
@@ -207,6 +207,7 @@ namespace SIL.WritingSystems.Tests
 			var lookup = new LanguageLookup();
 			var languages = lookup.SuggestLanguages("United States");
 			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("en")));
+			Assert.True(languages.Take(50).All(l => l.PrimaryCountry == "United States"));
 			Assert.That(languages, Has.Member(lookup.GetLanguageFromCode("es")));
 
 			languages = lookup.SuggestLanguages("Fran"); // prefix of 'France'
@@ -218,6 +219,46 @@ namespace SIL.WritingSystems.Tests
 			languages = lookup.SuggestLanguages("?");
 			Assert.That(languages, Has.No.Member(lookup.GetLanguageFromCode("qaa")));
 			Assert.That(languages, Has.No.Member(lookup.GetLanguageFromCode("mn-Mong")));
+
+			languages = lookup.SuggestLanguages("China");
+			Assert.True(languages.Take(50).All(l => l.PrimaryCountry == "China"));
+		}
+
+		[Test]
+		public void SuggestLanguages_ExactCountryMatch_SortsAboveFuzzyNames()
+		{
+			List<AllTagEntry> entries = new List<AllTagEntry>
+			{
+				new AllTagEntry { name = "Crimean Tatar", tag="crh-Cyrl-UA", region = "UA", regions = new List<string> {"BG", "KG", "US"}},
+				new AllTagEntry { name = "English", tag = "en", region = "US"},
+				new AllTagEntry {name = "French", tag = "fr", region = "FR", regions = new List<string> {"FR", "US"}} 
+			};
+			var lookup = new LanguageLookup(entries);
+			var languages = lookup.SuggestLanguages("United States");
+			Assert.That(languages.First(), Is.EqualTo(lookup.GetLanguageFromCode("en")));
+		}
+
+		/// <summary>
+		/// With this data we were seeing that German sorted Greek and Georgian above German.
+		/// </summary>
+		[Test]
+		public void SuggestLanguages_ExactIanaNameMatch_SortsAboveOther()
+		{
+			List<AllTagEntry> entries = new List<AllTagEntry>
+			{
+				new AllTagEntry
+				{ iana = new List<string> { "German" }, name = "German, Standard", full="de-Latn-DE", tag="de", region = "DE",
+					regions = new List<string> {"AE", "AR", "AT", "AU", "BA", "BE", "BG", "BO", "BR", "CA", "CH", "CL", "CY", "CZ", "DK", "EC", "EE", "FI", "FR", "GR", "HR", "HU", "IE", "IL", "IT", "KG", "KZ", "LI", "LT", "LU", "MT", "MZ", "NA", "NL", "NZ", "PH", "PL", "PR", "PT", "PY", "RO", "RU", "SE", "SI", "SK", "TJ", "UA", "US", "UY", "ZA"}},
+				new AllTagEntry
+				{ iana = new List<string> { "Georgian" }, name = "Georgian", names = new List<string>{ "Common Kartvelian", "Gorji", "Grunzinski yazyk", "Gruzin" }, tag = "ka", region = "GE",
+					regions = new List<string> {"AM", "AZ", "DE", "IR", "KG", "KZ", "RU", "TJ", "TM", "TR", "UA", "UZ"}},
+				new AllTagEntry
+				{ iana = new List<string> { "Korean" }, name = "Korean", names = new List<string> {"Chaoxian", "Chaoxianyu", "Chaoyu", "Goryeomal", "Hangouyu", "Hanguohua", "Hanyu", "Koryomal", "Zanichi Korean"}, tag = "ko", region = "KR",
+					regions = new List<string> {"AS", "AU", "AZ", "BH", "BN", "BR", "BY", "CA", "CN", "DE", "GU", "JP", "KG", "KP", "KZ", "LY", "MN", "MP", "MZ", "NZ", "PA", "PH", "PY", "RU", "SG", "SR", "TJ", "TM", "UA", "US", "UZ"}}
+			};
+			var lookup = new LanguageLookup(entries);
+			var languages = lookup.SuggestLanguages("German");
+			Assert.That(languages.First(), Is.EqualTo(lookup.GetLanguageFromCode("de")));
 		}
 
 		[Test]
@@ -229,7 +270,8 @@ namespace SIL.WritingSystems.Tests
 			Assert.True(languages.Any(l => l.Names.Contains("Degexit’an")));
 			Assert.True(languages.Any(l => l.Names.Contains("Deg Xinag")));
 			Assert.True(languages.Any(l => l.Names.Contains("Deg Xit’an")));
-			Assert.AreEqual(3, languages[0].Names.Count, "2 of the 5 names are pejorative and should not be listed");
+			Assert.True(languages.Any(l => l.Names.Contains("Degexit'an")));
+			Assert.AreEqual(4, languages[0].Names.Count, "2 of the 6 names are pejorative and should not be listed");
 		}
 
 		/// <summary>
@@ -242,11 +284,12 @@ namespace SIL.WritingSystems.Tests
 			var lookup = new LanguageLookup();
 			var languages = lookup.SuggestLanguages("Wolaytta").ToArray();
 			Assert.True(languages.Any(l => l.Names.Contains("ወላይታቱ")));
-			Assert.True(languages.Any(l => l.Names.Contains("Wolaytta")));
-			Assert.AreEqual(2, languages[0].Names.Count, "Should list only the first name in the IANA subtag registry for Ethiopian languages, plus local name.");
+			Assert.True(languages.Any(l => l.Names.Contains("Wolaytta"))); // Ethnologue name, and first ianna name (2019/05/02)
+			Assert.True(languages.Any(l => l.Names.Contains("Wolaitta"))); // ianna second official name
+			Assert.AreEqual(3, languages[0].Names.Count, "Should list only the ethnologue name, the official IANA names, and the local name.");
 			languages = lookup.SuggestLanguages("Qimant").ToArray();
 			Assert.True(languages.Any(l => l.Names.Contains("Qimant")));
-			Assert.AreEqual(1, languages[0].Names.Count, "Should only list the first name in the IANA subtag registry for Ethiopian languages.");
+			Assert.AreEqual(1, languages[0].Names.Count, "Should list only the ethnologue name, the official IANA names, and the local name.");
 		}
 
 		/// <summary>
@@ -388,12 +431,9 @@ namespace SIL.WritingSystems.Tests
 
 			foreach (var wayToSaySign in new[] {"SiGn", "SIGNES   ", "señas", "sign language " })
 			{
-				var languages = lookup.SuggestLanguages(wayToSaySign).ToArray();
-				var countOfPossibleSignLangsYouWouldGetWithThatSearchTerm = languages.Select(li =>
-					li.Names.AsQueryable().Any(n => n.ToLowerInvariant().Contains("sign"))
-				).Count();
-				Assert.GreaterOrEqual(countOfPossibleSignLangsYouWouldGetWithThatSearchTerm,
-					140); // was 145 in October 2018. So if it's giving us at least 140, it's probably doing the right thing
+				var languages = lookup.SuggestLanguages(wayToSaySign);
+				Assert.True(languages.Take(20).All(l => l.Names.Any(n => n.ToLowerInvariant().Contains("sign"))),
+					"At least the top 20 results for each way of typing 'sign' should have 'sign' in one of the language names");
 			}
 		}
 	}
