@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace SIL.WritingSystems
@@ -17,6 +18,7 @@ namespace SIL.WritingSystems
 	/// LanguageLookup() needs to read and add the new field from LanguageDataIndex to the LanguageInfo
 	/// change the check for number of items in a record from LanguageDataIndex
 	/// </summary>
+	[DebuggerDisplay("{LanguageTag}")]
 	public class LanguageInfo
 	{
 		private readonly List<string> _names = new List<string>();

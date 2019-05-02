@@ -58,6 +58,9 @@ namespace SIL.WritingSystems
 		public bool sldr { get; set; }
 		public string tag { get; set; }
 		public List<string> tags { get; set; }
+		[JsonConverter(typeof(SingleStringToListOfStringConverter))]
+		public List<string> iana { get; set; }
+		public string regionName { get; set; }
 	}
 
 	/// <summary>
