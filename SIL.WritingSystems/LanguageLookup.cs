@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 using SIL.Code;
+using SIL.Extensions;
 using SIL.IO;
 using SIL.Text;
 
@@ -24,6 +25,15 @@ namespace SIL.WritingSystems
 		private readonly Dictionary<string, LanguageInfo> _codeToLanguageIndex = new Dictionary<string, LanguageInfo>();
 		private readonly Dictionary<string, List<LanguageInfo>> _nameToLanguageIndex = new Dictionary<string, List<LanguageInfo>>();
 		private readonly Dictionary<string, List<LanguageInfo>> _countryToLanguageIndex = new Dictionary<string, List<LanguageInfo>>();
+
+		/// <summary>For unit testing the sort order</summary>
+		internal LanguageLookup(List<AllTagEntry> languageTagEntries)
+		{
+			foreach (AllTagEntry entry in languageTagEntries)
+			{
+				AddLanguage(entry.tag, entry.iso639_3, entry.full, entry.name, entry.localname, entry.region, entry.names, entry.regions, entry.tags, entry.iana, entry.regionName);
+			}
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="LanguageLookup"/> class.
@@ -46,14 +56,14 @@ namespace SIL.WritingSystems
 				// tags starting with _ may provide some sort of undefined variant information, but we ignore them as well
 				if (!entry.deprecated && !entry.tag.StartsWith("x-", StringComparison.Ordinal) && !entry.tag.StartsWith("_", StringComparison.Ordinal))
 				{
-					AddLanguage(entry.tag, entry.iso639_3, entry.full, entry.name, entry.localname, entry.region, entry.names, entry.regions, entry.tags);
+					AddLanguage(entry.tag, entry.iso639_3, entry.full, entry.name, entry.localname, entry.region, entry.names, entry.regions, entry.tags, entry.iana, entry.regionName);
 				}
 			}
 			AddLanguage("qaa", "qaa", "qaa", "Unlisted Language");
 		}
 
 		private bool AddLanguage(string code, string threelettercode, string full = null,
-			string name = null, string localName = null, string region = null, List<string> names = null, List<string> regions = null, List<string> tags = null)
+			string name = null, string localName = null, string region = null, List<string> names = null, List<string> regions = null, List<string> tags = null, List<string> ianaNames = null, string regionName = null)
 		{
 			string primarycountry;
 			if (region == null)
@@ -108,26 +118,24 @@ namespace SIL.WritingSystems
 			// "typing distance" of Names[0] from what the user typed, and 3) order by comparing the Names[0]
 			// value of the two languages if neither matches the search string and their typing distances from
 			// the search string are the same.
-			// Names[1] (if it exists) is used to move the language toward the top of the list if it exactly
-			// matches the search string.  It is not used otherwise in the sorting heuristics.  No other
-			// values in the Names list are involved in the sorting process.
-			if (name != null)
+			// All other names in the collection are used in the case of exact match to sort the language closer to the top.
+			if (name != null && !language.Names.Contains(name))
 			{
 				language.Names.Add(name.Trim());
 			}
-			if (localName != null  && localName != name)
+			if (ianaNames != null)
+			{
+				// add each name that is not already in language.Names
+				language.Names.AddRange(ianaNames.Select(n => n.Trim()).Where(n => !language.Names.Contains(n)));
+			}
+			if (localName != null && localName != name)
 			{
 				language.Names.Add(localName.Trim());
 			}
 			if (names != null)
 			{
-				foreach (string langname in names)
-				{
-					if (!language.Names.Contains(langname))
-					{
-						language.Names.Add(langname.Trim());
-					}
-				}
+				// add each name that is not already in language.Names
+				language.Names.AddRange(names.Select(n => n.Trim()).Where(n => !language.Names.Contains(n)));
 			}
 			// If we end up needing to add the language code, that reflects a deficiency in the data.  But
 			// having a bogus name value probably hurts less that not having any name at all.  The sort
@@ -171,7 +179,7 @@ namespace SIL.WritingSystems
 						list = new List<LanguageInfo>();
 						_countryToLanguageIndex[country] = list;
 					}
-					list.Add(language);
+						list.Add(language);
 				}
 			}
 
@@ -355,14 +363,38 @@ namespace SIL.WritingSystems
 					// sort the matching language earlier in the list.
 					if (xtagParses && _searchString.Equals(xlanguage, StringComparison.InvariantCultureIgnoreCase))
 						return -1;  // x.Tag's language part matches search string exactly, so sort it earlier in the list.
-					else if (ytagParses && _searchString.Equals(ylanguage, StringComparison.InvariantCultureIgnoreCase))
+					if (ytagParses && _searchString.Equals(ylanguage, StringComparison.InvariantCultureIgnoreCase))
 						return 1;   // y.Tag's language part matches search string exactly, so sort it earlier in the list.
 				}
-				// shortest simplest tag is most likely to be what is being looked for
-				if (x.LanguageTag.Length < y.LanguageTag.Length)
+
+				// If only one language has a name that is an exact match prefer that language
+				var xMatchingNameLoc = x.Names.IndexOf(l => _searchString.Equals(l, StringComparison.InvariantCultureIgnoreCase));
+				var yMatchingNameLoc = y.Names.IndexOf(l => _searchString.Equals(l, StringComparison.InvariantCultureIgnoreCase));
+				if (xMatchingNameLoc > 0 && yMatchingNameLoc < 0)
+				{
 					return -1;
-				if (y.LanguageTag.Length < x.LanguageTag.Length)
+				}
+				if (yMatchingNameLoc > 0 && xMatchingNameLoc < 0)
+				{
 					return 1;
+				}
+
+				// Order the by country information for exact matches before dropping to editing distance
+				if (x.PrimaryCountry.ToLowerInvariant() == _lowerSearch || y.PrimaryCountry.ToLowerInvariant() == _lowerSearch)
+				{
+					if (x.PrimaryCountry.ToLowerInvariant() == _lowerSearch &&
+						y.PrimaryCountry.ToLowerInvariant() != _lowerSearch)
+					{
+						return -1;
+					}
+					if (y.PrimaryCountry.ToLowerInvariant() == _lowerSearch &&
+						x.PrimaryCountry.ToLowerInvariant() != _lowerSearch)
+					{
+						return 1;
+					}
+					// Both match the country exactly sort by language name
+					return string.Compare(x.Names[0], y.Names[0], StringComparison.InvariantCultureIgnoreCase);
+				}
 
 				// Editing distance to a language name is not useful when we've detected that the user appears to be
 				// typing a language tag in that both language tags match what the user has typed.  (For example,
@@ -387,7 +419,16 @@ namespace SIL.WritingSystems
 					if (res != 0)
 						return res;
 				}
-				return string.Compare(x.LanguageTag, y.LanguageTag, StringComparison.InvariantCultureIgnoreCase);
+
+				// Alphabetize by Language tag if 3 characters or less or if there is a hyphen after the first 2 or 3 chars
+				if (_lowerSearch.Length <= 3 || _lowerSearch.IndexOf('-') == 3 || _lowerSearch.IndexOf('-') == 4)
+				{
+					return string.Compare(x.LanguageTag, y.LanguageTag, StringComparison.InvariantCultureIgnoreCase);
+				}
+				// Otherwise alphabetize by the language name
+				// (tags often have a completely different alphabetical order from the name e.g. 'auc' -> "Waoroni")
+				return string.Compare(x.Names[0], y.Names[0], StringComparison.InvariantCultureIgnoreCase);
+
 			}
 		}
 	}
