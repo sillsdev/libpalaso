@@ -839,30 +839,39 @@ namespace SIL.Windows.Forms.ClearShare
 
 		/// <summary>
 		/// A super compact form of credits that doesn't introduce any English.
-		/// Jane Doe, © 2008 SIL International, CC BY-NC 3.0
-		/// "International Illustrations: Art Of Reading", © 2009 SIL International, CC ND
+		/// Jane Doe, © 2008 SIL International. CC BY-NC 3.0
+		/// International Illustrations: Art Of Reading, © 2009 SIL International. CC ND 4.0
+		/// Sam Smith, Free Pictures by Sam. CC0 1.0
+		/// CC0 1.0
 		/// </summary>
 		public string MinimalCredits(IEnumerable<string> languagePriorityIds, out string idOfLanguageUsedForLicense)
 		{
 			var notice = "";
+			var isCC0 = License?.Token == "cc0";
 			if (!string.IsNullOrWhiteSpace(Creator))
 			{
-				notice += string.Format("{0},", Creator);
+				notice += string.Format("{0}", Creator);
 			}
 			if (!string.IsNullOrWhiteSpace(CollectionName))
 			{
-				notice += string.Format(" {0},", CollectionName);
+				if (notice.Length > 0)
+					notice += ", ";
+				notice += CollectionName;
 			}
-			if (!string.IsNullOrWhiteSpace(CopyrightNotice))
+			if (!isCC0 && !string.IsNullOrWhiteSpace(CopyrightNotice))
 			{
-				notice += string.Format(" © {0} {1}", GetCopyrightYear(), GetCopyrightBy());
+				if (notice.Length > 0)
+					notice += ", ";
+				notice += string.Format("© {0} {1}", GetCopyrightYear(), GetCopyrightBy());
 			}
 			if (License != null)
 			{
 				var minimalFormForCredits = License.GetMinimalFormForCredits(languagePriorityIds, out idOfLanguageUsedForLicense);
 				if (!string.IsNullOrWhiteSpace(minimalFormForCredits))
 				{
-					notice += string.Format(". {0}", minimalFormForCredits);
+					if (notice.Length > 0)
+						notice += ". ";
+					notice += minimalFormForCredits;
 				}
 			}
 			else
