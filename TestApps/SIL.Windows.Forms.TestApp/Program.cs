@@ -20,7 +20,7 @@ namespace SIL.Windows.Forms.TestApp
 			Application.SetCompatibleTextRenderingDefault(false);
 			Sldr.Initialize();
 			var localizationFolder = Path.GetDirectoryName(FileLocationUtilities.GetFileDistributedWithApplication("Palaso.en.tmx"));
-			LocalizationManager.Create("fr", "Palaso", "Palaso", "1.0.0", localizationFolder, "SIL/Palaso",
+			LocalizationManager.Create(TranslationMemory.Tmx, "fr", "Palaso", "Palaso", "1.0.0", localizationFolder, "SIL/Palaso",
 				null, "");
 			if(args.Length>0) //for testing commandlinerunner
 			{
