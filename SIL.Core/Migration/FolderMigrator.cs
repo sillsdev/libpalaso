@@ -166,7 +166,7 @@ namespace SIL.Migration
 						{
 							// Put the unmigrated file where the migrated files will end up
 							string unmigratedFile = Path.Combine(SourcePath, Path.GetFileName(sourceFilePath) + ".bad");
-							File.Copy(sourceFilePath, unmigratedFile);
+							File.Copy(sourceFilePath, unmigratedFile, true);
 							problems.Add(new FolderMigratorProblem { Exception = e, FilePath = sourceFilePath });
 						}
 					}
