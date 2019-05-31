@@ -1466,6 +1466,9 @@ namespace SIL.Scripture
 		/// <returns>true if parsable</returns>
 		public static bool IsParseable(string str)
 		{
+			if (string.IsNullOrEmpty(str))
+				return false;
+
 			VerseRef dummy;
 			return TryParse(str, out dummy);
 		}
