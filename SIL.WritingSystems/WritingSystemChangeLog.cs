@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 namespace SIL.WritingSystems
 {
 	/// <summary>
-	/// This class is used by tthe LdmlInFolderWritingsystemRepository to log any changes that an application makes to the repository.
+	/// This class is used by the LdmlInFolderWritingSystemRepository to log any changes that an application makes to the repository.
 	/// The idea is that consumers can query this class to learn of any changes made to contained writing systems by another program
 	/// and update its other files accordingly.
 	/// </summary>
