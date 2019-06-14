@@ -88,7 +88,7 @@ namespace SIL.IO
 			}
 			catch (Exception e)
 			{
-				//Review: generally, it's better if Palaso doesn't undertake to make these kind of UI decisions.
+				//Review: generally, it's better if SIL.Core doesn't undertake to make these kind of UI decisions.
 				//I've extracted CopyDirectoryWithException, so as not to mess up whatever client is using this version
 				ReportFailedCopyAndCleanUp(e, sourcePath, destinationPath);
 				return false;

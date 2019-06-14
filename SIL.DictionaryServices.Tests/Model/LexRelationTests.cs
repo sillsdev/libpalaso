@@ -1,4 +1,4 @@
-// TODO Can this be moved up to Palaso.Lift.Tests?
+// TODO Can this be moved up to SIL.Lift.Tests?
 using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;

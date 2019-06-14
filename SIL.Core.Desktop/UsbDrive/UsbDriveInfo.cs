@@ -111,7 +111,7 @@ namespace SIL.UsbDrive
 			if (Platform.IsWindows)
 				return UsbDriveInfoWindows.GetDrives();
 
-			// Using Palaso.UsbDrive on Linux/Mono results in NDesk spinning up a thread that
+			// Using SIL.UsbDrive on Linux/Mono results in NDesk spinning up a thread that
 			// continues until NDesk Bus is closed.  Failure to close the thread results in a
 			// program hang when closing.  Closing the system bus allows the thread to close,
 			// and thus the program to close.

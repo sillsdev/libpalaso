@@ -8,7 +8,7 @@
 #endregion
 // 
 // This class originated in FieldWorks (under the GNU Lesser General Public License), but we
-// have decided to make it avaialble in SIL.ScriptureUtils as part of Palaso so it will be more
+// have decided to make it avaialble in SIL.Scripture as part of Palaso so it will be more
 // readily available to other projects.
 // --------------------------------------------------------------------------------------------
 using System;

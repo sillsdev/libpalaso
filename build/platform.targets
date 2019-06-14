@@ -3,7 +3,7 @@
 Include this file at the end of a csproj file (just before the
 include of Microsoft.CSharp.targets) to add system-specific defines
 for conditional compilation.
-Example: libpalaso/Palaso.Tests/Palaso.Tests.csproj
+Example: libpalaso/SIL.Core.Tests/SIL.Core.Tests.csproj
 
 These constants will be defined:
 SYSTEM_UNIX - should be compiled on Linux and Mac

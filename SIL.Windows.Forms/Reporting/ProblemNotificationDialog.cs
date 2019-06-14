@@ -7,7 +7,7 @@ namespace SIL.Windows.Forms.Reporting
 {
 	/// <summary>
 	/// Display problem notification dialog.
-	/// NOTE: It is recommended to call Palaso.Reporting.ErrorReport.NotifyUserOfProblem
+	/// NOTE: It is recommended to call SIL.Reporting.ErrorReport.NotifyUserOfProblem
 	/// instead of instantiating this class.
 	/// </summary>
 	public partial class ProblemNotificationDialog : Form
