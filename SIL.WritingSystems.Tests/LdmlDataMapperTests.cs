@@ -1277,6 +1277,25 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+		[Test]
+		public void DuplicatedFontInLdml_ReportsBadData()
+		{
+			using (var roundTripOut = new TempFile())
+			using (var tempFile = new TempFile())
+			{
+
+				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
+				{
+					writer.Write(LdmlContentForTests.Version3("qaa", "", "", "", LdmlContentForTests.FontElem + LdmlContentForTests.FontElem));
+				}
+				var ws = new WritingSystemDefinition();
+				var dataMapper = new LdmlDataMapper(new TestWritingSystemFactory());
+
+				var message = Assert.Throws<ArgumentException>(() => dataMapper.Read(tempFile.Path, ws)).Message;
+				StringAssert.IsMatch("The font .* is defined twice in .*\\.ldml", message);
+			}
+		}
+
 		private static void WriteVersion0Ldml(string language, string script, string territory, string variant, TempFile file)
 		{
 			//using a writing system V0 here because the real writing system can't cope with the way

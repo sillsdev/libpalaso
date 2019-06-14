@@ -464,7 +464,15 @@ namespace SIL.WritingSystems
 					foreach (XElement urlElem in fontElem.NonAltElements(Sil + "url"))
 						fd.Urls.Add(urlElem.Value);
 
-					ws.Fonts.Add(fd);
+					FontDefinition existingFont;
+					if (!ws.Fonts.TryGet(fontName, out existingFont))
+					{
+						ws.Fonts.Add(fd);
+					}
+					else
+					{
+						throw new ArgumentException($"The font {fontName} is defined twice in {ws.LanguageTag}.ldml");
+					}
 				}
 			}
 		}
