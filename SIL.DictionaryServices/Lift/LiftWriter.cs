@@ -676,7 +676,7 @@ namespace SIL.DictionaryServices.Lift
 
 		private void WriteEmbeddedXmlCollection(MultiText text)
 		{
-			foreach (string rawXml in text.EmbeddedXmlElements) // todo cp Promote roundtripping to Palaso.Lift / Palaso.Data also then can use MultiTextBase here (or a better interface).
+			foreach (string rawXml in text.EmbeddedXmlElements) // todo cp Promote roundtripping to SIL.Lift / SIL.Data also then can use MultiTextBase here (or a better interface).
 			{
 				Writer.WriteRaw(rawXml);
 			}

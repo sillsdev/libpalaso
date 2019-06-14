@@ -17,7 +17,7 @@ namespace SIL.Lift.Validation
 	/// <summary>
 	/// Provide progress reporting for validation.
 	/// </summary>
-	/// <remarks>TODO: provide a single IProgressReport interface for Palaso.Lift (or Palaso?).</remarks>
+	/// <remarks>TODO: provide a single IProgressReport interface for SIL.Lift (or SIL.Core?).</remarks>
 	public interface IValidationProgress
 	{
 		///<summary>
@@ -38,7 +38,7 @@ namespace SIL.Lift.Validation
 	/// Trivial, nonfunctional implementation of IValidationProgress.
 	/// </summary>
 	/// <remarks>
-	/// TODO: provide a single IProgressReport interface for Palaso.Lift (or Palaso?), and a single trivial
+	/// TODO: provide a single IProgressReport interface for SIL.Lift (or SIL.Core?), and a single trivial
 	/// implementation thereof.
 	/// </remarks>
 	public class NullValidationProgress : IValidationProgress
