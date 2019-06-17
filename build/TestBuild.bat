@@ -21,7 +21,7 @@ if "%INCLUDE%%LIB%" == "" (
 )
 :build
 if "%~1" == "" (
-	SET BUILD=DebugStrongName
+	SET BUILD=Debug
 ) else (
 	SET BUILD=%~1
 )
