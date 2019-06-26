@@ -1,3 +1,4 @@
+using System;
 using System.Xml.Linq;
 
 namespace SIL.Lexicon
@@ -5,10 +6,20 @@ namespace SIL.Lexicon
 	public class ProjectLexiconSettingsDataMapper
 	{
 		private readonly ISettingsStore _settingsStore;
+		private readonly bool _isRealUserNotTester;
 
 		public ProjectLexiconSettingsDataMapper(ISettingsStore settingsStore)
 		{
 			_settingsStore = settingsStore;
+			var feedbackEnvVar = Environment.GetEnvironmentVariable("FEEDBACK");
+			if (feedbackEnvVar != null)
+			{
+				_isRealUserNotTester = feedbackEnvVar.ToLower().Equals("true") || feedbackEnvVar.ToLower().Equals("yes");
+			}
+			else
+			{
+				_isRealUserNotTester = true;
+			}
 		}
 
 		public void Read(ProjectLexiconSettings settings)
@@ -21,10 +32,7 @@ namespace SIL.Lexicon
 				settings.ProjectSharing = (bool?)settingsElem.Attribute("projectSharing") ?? false;
 
 			XElement wssElem = settingsElem.Element("WritingSystems");
-			if (wssElem != null)
-			{
-				settings.AddWritingSystemsToSldr = (bool?) wssElem.Attribute("addToSldr") ?? false;
-			}
+			settings.AddWritingSystemsToSldr = (bool?) wssElem?.Attribute("addToSldr") ?? _isRealUserNotTester;
 
 			settings.AcceptChanges();
 		}
