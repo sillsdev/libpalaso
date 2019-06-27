@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Linq;
 using System.Xml.Linq;
 using SIL.WritingSystems;
@@ -124,7 +124,7 @@ namespace SIL.Lexicon
 			if (wsElem != null)
 			{
 				wsElem.Remove();
-				if (!wssElem.HasElements)
+				if (!wssElem.HasElements && !wssElem.HasAttributes)
 					wssElem.Remove();
 
 				_settingsStore.SaveSettings(projectSettingsElem);
