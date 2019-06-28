@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using NUnit.Framework;
+using Is = SIL.TestUtilities.NUnitExtensions.Is;
 using SIL.Keyboarding;
 using SIL.WritingSystems;
 
@@ -83,7 +83,7 @@ namespace SIL.Lexicon.Tests
 			ws1.DefaultFont = new FontDefinition("Times New Roman");
 			userSettingsDataMapper.Write(ws1);
 
-			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
+			Assert.That(settingsStore.SettingsElement, Is.XmlEqualTo(
 @"<UserLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""en-US"">
@@ -94,7 +94,7 @@ namespace SIL.Lexicon.Tests
       <DefaultFontName>Times New Roman</DefaultFontName>
     </WritingSystem>
   </WritingSystems>
-</UserLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+</UserLexiconSettings>"));
 		}
 
 		[Test]
@@ -122,7 +122,7 @@ namespace SIL.Lexicon.Tests
 			ws1.IsGraphiteEnabled = false;
 			userSettingsDataMapper.Write(ws1);
 
-			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
+			Assert.That(settingsStore.SettingsElement, Is.XmlEqualTo(
 @"<UserLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""en-US"">
@@ -134,7 +134,7 @@ namespace SIL.Lexicon.Tests
       <IsGraphiteEnabled>false</IsGraphiteEnabled>
     </WritingSystem>
   </WritingSystems>
-</UserLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+</UserLexiconSettings>"));
 		}
 
 		[Test]
@@ -157,7 +157,7 @@ namespace SIL.Lexicon.Tests
 			var settingsStore = new MemorySettingsStore {SettingsElement = XElement.Parse(userSettingsXml)};
 			var userSettingsDataMapper = new UserLexiconSettingsWritingSystemDataMapper(settingsStore);
 			userSettingsDataMapper.Remove("fr-FR");
-			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
+			Assert.That(settingsStore.SettingsElement, Is.XmlEqualTo(
 @"<UserLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""en-US"">
@@ -165,10 +165,10 @@ namespace SIL.Lexicon.Tests
       <DefaultFontName>Times New Roman</DefaultFontName>
     </WritingSystem>
   </WritingSystems>
-</UserLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+</UserLexiconSettings>"));
 
 			userSettingsDataMapper.Remove("en-US");
-			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse("<UserLexiconSettings />")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+			Assert.That(settingsStore.SettingsElement, Is.XmlEqualTo("<UserLexiconSettings />"));
 		}
 
 		[Test]
@@ -187,7 +187,7 @@ namespace SIL.Lexicon.Tests
 			var settingsStore = new MemorySettingsStore {SettingsElement = XElement.Parse(userSettingsXml)};
 			var userSettingsDataMapper = new UserLexiconSettingsWritingSystemDataMapper(settingsStore);
 			userSettingsDataMapper.Remove("fr-FR");
-			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
+			Assert.That(settingsStore.SettingsElement, Is.XmlEqualTo(
 @"<UserLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""en-US"">
@@ -195,7 +195,7 @@ namespace SIL.Lexicon.Tests
       <DefaultFontName>Times New Roman</DefaultFontName>
     </WritingSystem>
   </WritingSystems>
-</UserLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+</UserLexiconSettings>"));
 		}
 	}
 }
