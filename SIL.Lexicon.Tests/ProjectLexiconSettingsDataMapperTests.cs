@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Xml.Linq;
 using NUnit.Framework;
+using Is = SIL.TestUtilities.NUnitExtensions.Is;
 
 namespace SIL.Lexicon.Tests
 {
@@ -49,10 +50,10 @@ namespace SIL.Lexicon.Tests
 			var settings = new ProjectLexiconSettings {AddWritingSystemsToSldr = true, ProjectSharing = true};
 			projectSettingsDataMapper.Write(settings);
 
-			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
+			Assert.That(settingsStore.SettingsElement, Is.XmlEqualTo(
 @"<ProjectLexiconSettings projectSharing=""true"">
   <WritingSystems addToSldr=""true"" />
-</ProjectLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+</ProjectLexiconSettings>"));
 		}
 
 		[Test]
@@ -74,7 +75,7 @@ namespace SIL.Lexicon.Tests
 			var settings = new ProjectLexiconSettings {AddWritingSystemsToSldr = true, ProjectSharing = true };
 			projectSettingsDataMapper.Write(settings);
 
-			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
+			Assert.That(settingsStore.SettingsElement, Is.XmlEqualTo(
 @"<ProjectLexiconSettings projectSharing=""true"">
   <WritingSystems addToSldr=""true"">
     <WritingSystem id=""fr-FR"">
@@ -83,7 +84,7 @@ namespace SIL.Lexicon.Tests
       <Keyboard>Old Keyboard</Keyboard>
     </WritingSystem>
   </WritingSystems>
-</ProjectLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+</ProjectLexiconSettings>"));
 		}
 
 		[Test]
