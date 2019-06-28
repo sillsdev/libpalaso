@@ -254,6 +254,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\GlobalAssemblyInfo.cs">
@@ -263,6 +264,7 @@
     <Compile Include="FluentAssertXmlTests.cs" />
     <Compile Include="NUnitExtensions\IsTests.cs" />
     <Compile Include="NUnitExtensions\ValueEquatableConstraintTests.cs" />
+    <Compile Include="NUnitExtensions\XmlEquatableConstraintTests.cs" />
     <Compile Include="TemporaryFolderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

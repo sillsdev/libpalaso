@@ -312,6 +312,7 @@
     <Compile Include="LiftContentForTests.cs" />
     <Compile Include="NUnitExtensions\Is.cs" />
     <Compile Include="NUnitExtensions\ValueEquatableConstraint.cs" />
+    <Compile Include="NUnitExtensions\XmlEquatableConstraint.cs" />
     <Compile Include="OfflineSldr.cs" />
     <Compile Include="OfflineSldrAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
