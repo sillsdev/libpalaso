@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Xml.Linq;
 using NUnit.Framework;
 using Is = SIL.TestUtilities.NUnitExtensions.Is;
@@ -200,6 +200,29 @@ namespace SIL.Lexicon.Tests
 
 			projectSettingsDataMapper.Remove("qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2");
 			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse("<ProjectLexiconSettings />")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+		}
+
+		[Test]
+		public void Remove_FinalWritingSystem_PreservesSettings()
+		{
+			const string projectSettingsXml =
+@"<ProjectLexiconSettings>
+  <WritingSystems addToSldr=""true"">
+    <WritingSystem id=""fr-FR"">
+      <SpellCheckingId>fr_FR</SpellCheckingId>
+      <LegacyMapping>converter</LegacyMapping>
+      <Keyboard>Old Keyboard</Keyboard>
+    </WritingSystem>
+  </WritingSystems>
+</ProjectLexiconSettings>";
+
+			var settingsStore = new MemorySettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
+			var projectSettingsDataMapper = new ProjectLexiconSettingsWritingSystemDataMapper(settingsStore);
+			projectSettingsDataMapper.Remove("fr-FR");
+			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
+@"<ProjectLexiconSettings>
+  <WritingSystems addToSldr=""true""/>
+</ProjectLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
 		}
 
 		[Test]
