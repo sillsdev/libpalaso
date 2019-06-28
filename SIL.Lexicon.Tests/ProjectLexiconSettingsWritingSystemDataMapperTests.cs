@@ -102,7 +102,7 @@ namespace SIL.Lexicon.Tests
 			ws1.Variants[1] = new VariantSubtag(ws1.Variants[1], "Custom 2");
 			projectSettingsDataMapper.Write(ws1);
 
-			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
+			Assert.That(settingsStore.SettingsElement, Is.XmlEqualTo(
 @"<ProjectLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2"">
@@ -112,7 +112,7 @@ namespace SIL.Lexicon.Tests
       <RegionName>Zolrog</RegionName>
     </WritingSystem>
   </WritingSystems>
-</ProjectLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+</ProjectLexiconSettings>"));
 		}
 
 		[Test]
@@ -141,7 +141,7 @@ namespace SIL.Lexicon.Tests
 			ws1.DefaultCollation = scd;
 			projectSettingsDataMapper.Write(ws1);
 
-			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
+			Assert.That(settingsStore.SettingsElement, Is.XmlEqualTo(
 @"<ProjectLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2-var3"">
@@ -152,7 +152,7 @@ namespace SIL.Lexicon.Tests
       <SystemCollation>snarf</SystemCollation>
     </WritingSystem>
   </WritingSystems>
-</ProjectLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+</ProjectLexiconSettings>"));
 		}
 
 		[Test]
@@ -182,7 +182,7 @@ namespace SIL.Lexicon.Tests
 			var settingsStore = new MemorySettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
 			var projectSettingsDataMapper = new ProjectLexiconSettingsWritingSystemDataMapper(settingsStore);
 			projectSettingsDataMapper.Remove("fr-FR");
-			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
+			Assert.That(settingsStore.SettingsElement, Is.XmlEqualTo(
 @"<ProjectLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2"">
@@ -196,10 +196,10 @@ namespace SIL.Lexicon.Tests
       </VariantNames>
     </WritingSystem>
   </WritingSystems>
-</ProjectLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+</ProjectLexiconSettings>"));
 
 			projectSettingsDataMapper.Remove("qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2");
-			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse("<ProjectLexiconSettings />")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+			Assert.That(settingsStore.SettingsElement, Is.XmlEqualTo("<ProjectLexiconSettings />"));
 		}
 
 		[Test]
@@ -247,7 +247,7 @@ namespace SIL.Lexicon.Tests
 			var settingsStore = new MemorySettingsStore {SettingsElement = XElement.Parse(projectSettingsXml)};
 			var projectSettingsDataMapper = new ProjectLexiconSettingsWritingSystemDataMapper(settingsStore);
 			projectSettingsDataMapper.Remove("fr-FR");
-			Assert.That(settingsStore.SettingsElement, Is.EqualTo(XElement.Parse(
+			Assert.That(settingsStore.SettingsElement, Is.XmlEqualTo(
 @"<ProjectLexiconSettings>
   <WritingSystems>
     <WritingSystem id=""qaa-Qaaa-QM-x-kal-Fake-ZG-var1-var2"">
@@ -261,7 +261,7 @@ namespace SIL.Lexicon.Tests
       </VariantNames>
     </WritingSystem>
   </WritingSystems>
-</ProjectLexiconSettings>")).Using((IEqualityComparer<XNode>) new XNodeEqualityComparer()));
+</ProjectLexiconSettings>"));
 		}
 	}
 }
