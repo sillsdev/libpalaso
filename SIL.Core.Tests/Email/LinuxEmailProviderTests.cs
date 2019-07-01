@@ -29,28 +29,28 @@ namespace SIL.Tests.Email
 		}
 
 		// Does not change most things.
-		[TestCase(@"hello1234 hello", Result = @"hello1234 hello")]
-		[TestCase("hello\"hello", Result = "hello\"hello")]
-		[TestCase(@"hello`~!@#$%^&*)(][}{/?=+-_|", Result = @"hello`~!@#$%^&*)(][}{/?=+-_|")]
+		[TestCase(@"hello1234 hello", ExpectedResult = @"hello1234 hello")]
+		[TestCase("hello\"hello", ExpectedResult = "hello\"hello")]
+		[TestCase(@"hello`~!@#$%^&*)(][}{/?=+-_|", ExpectedResult = @"hello`~!@#$%^&*)(][}{/?=+-_|")]
 		// Escapes quote and backslash characters.
-		[TestCase(@"\", Result = @"\\\\\\\\")]
-		[TestCase(@"hello\hello", Result = @"hello\\\\\\\\hello")]
-		[TestCase(@"hello\t\n\a\r\0end", Result = @"hello\\\\\\\\t\\\\\\\\n\\\\\\\\a\\\\\\\\r\\\\\\\\0end")]
-		[TestCase(@"hello'hello", Result = @"hello\'hello")]
-		[TestCase(@"hello'hello'", Result = @"hello\'hello\'")]
-		[TestCase("hello'\"hello", Result = "hello\\'\"hello")]
-		[TestCase(@"C:\'Data\0end", Result = @"C:\\\\\\\\\'Data\\\\\\\\0end")]
+		[TestCase(@"\", ExpectedResult = @"\\\\\\\\")]
+		[TestCase(@"hello\hello", ExpectedResult = @"hello\\\\\\\\hello")]
+		[TestCase(@"hello\t\n\a\r\0end", ExpectedResult = @"hello\\\\\\\\t\\\\\\\\n\\\\\\\\a\\\\\\\\r\\\\\\\\0end")]
+		[TestCase(@"hello'hello", ExpectedResult = @"hello\'hello")]
+		[TestCase(@"hello'hello'", ExpectedResult = @"hello\'hello\'")]
+		[TestCase("hello'\"hello", ExpectedResult = "hello\\'\"hello")]
+		[TestCase(@"C:\'Data\0end", ExpectedResult = @"C:\\\\\\\\\'Data\\\\\\\\0end")]
 		public string EscapeString(string input)
 		{
 			return LinuxEmailProvider.EscapeString(input);
 		}
 
 		[TestCase("foo@example.com",
-			Result = "--subject 'Testing' --body 'Hi there!' 'foo@example.com'")]
+			ExpectedResult = "--subject 'Testing' --body 'Hi there!' 'foo@example.com'")]
 		[TestCase("Foo <foo@example.com>",
-			Result = "--subject 'Testing' --body 'Hi there!' 'Foo <foo@example.com>'")]
+			ExpectedResult = "--subject 'Testing' --body 'Hi there!' 'Foo <foo@example.com>'")]
 		[TestCase("foo@example.com;someone@example.com",
-			Result = "--subject 'Testing' --body 'Hi there!' 'foo@example.com' 'someone@example.com'")]
+			ExpectedResult = "--subject 'Testing' --body 'Hi there!' 'foo@example.com' 'someone@example.com'")]
 		public string SendMessage_ToOnly(string to)
 		{
 			// Setup
@@ -68,15 +68,15 @@ namespace SIL.Tests.Email
 		}
 
 		[TestCase("foo@example.com", null,
-			Result = "--subject 'Testing' --body 'Hi there!' --cc 'foo@example.com' 'bar@example.com'")]
+			ExpectedResult = "--subject 'Testing' --body 'Hi there!' --cc 'foo@example.com' 'bar@example.com'")]
 		[TestCase("foo@example.com;someone@example.com", null,
-			Result = "--subject 'Testing' --body 'Hi there!' --cc 'foo@example.com' --cc 'someone@example.com' 'bar@example.com'")]
+			ExpectedResult = "--subject 'Testing' --body 'Hi there!' --cc 'foo@example.com' --cc 'someone@example.com' 'bar@example.com'")]
 		[TestCase(null, "foo@example.com",
-			Result = "--subject 'Testing' --body 'Hi there!' --bcc 'foo@example.com' 'bar@example.com'")]
+			ExpectedResult = "--subject 'Testing' --body 'Hi there!' --bcc 'foo@example.com' 'bar@example.com'")]
 		[TestCase(null, "foo@example.com;someone@example.com",
-			Result = "--subject 'Testing' --body 'Hi there!' --bcc 'foo@example.com' --bcc 'someone@example.com' 'bar@example.com'")]
+			ExpectedResult = "--subject 'Testing' --body 'Hi there!' --bcc 'foo@example.com' --bcc 'someone@example.com' 'bar@example.com'")]
 		[TestCase("a@example.com", "foo@example.com;someone@example.com",
-			Result = "--subject 'Testing' --body 'Hi there!' --cc 'a@example.com' --bcc 'foo@example.com' --bcc 'someone@example.com' 'bar@example.com'")]
+			ExpectedResult = "--subject 'Testing' --body 'Hi there!' --cc 'a@example.com' --bcc 'foo@example.com' --bcc 'someone@example.com' 'bar@example.com'")]
 		public string SendMessage_CcAndBcc(string cc, string bcc)
 		{
 			// Setup
