@@ -29,11 +29,11 @@ namespace SIL.Tests.Email
 		}
 
 		[TestCase("foo@example.com",
-			Result = "mailto:foo@example.com?subject=Testing&body=Hi%20there")]
+			ExpectedResult = "mailto:foo@example.com?subject=Testing&body=Hi%20there")]
 		[TestCase("Foo <foo@example.com>",
-			Result = "mailto:Foo <foo@example.com>?subject=Testing&body=Hi%20there")]
+			ExpectedResult = "mailto:Foo <foo@example.com>?subject=Testing&body=Hi%20there")]
 		[TestCase("foo@example.com;someone@example.com",
-			Result = "mailto:foo@example.com,someone@example.com?subject=Testing&body=Hi%20there")]
+			ExpectedResult = "mailto:foo@example.com,someone@example.com?subject=Testing&body=Hi%20there")]
 		public string SendMessage_ToOnly(string to)
 		{
 			// Setup
@@ -51,15 +51,15 @@ namespace SIL.Tests.Email
 		}
 
 		[TestCase("foo@example.com", null,
-			Result = "mailto:bar@example.com?subject=Testing&cc=foo@example.com&body=Hi%20there")]
+			ExpectedResult = "mailto:bar@example.com?subject=Testing&cc=foo@example.com&body=Hi%20there")]
 		[TestCase("foo@example.com;someone@example.com", null,
-			Result = "mailto:bar@example.com?subject=Testing&cc=foo@example.com,someone@example.com&body=Hi%20there")]
+			ExpectedResult = "mailto:bar@example.com?subject=Testing&cc=foo@example.com,someone@example.com&body=Hi%20there")]
 		[TestCase(null, "foo@example.com",
-			Result = "mailto:bar@example.com?subject=Testing&bcc=foo@example.com&body=Hi%20there")]
+			ExpectedResult = "mailto:bar@example.com?subject=Testing&bcc=foo@example.com&body=Hi%20there")]
 		[TestCase(null, "foo@example.com;someone@example.com",
-			Result = "mailto:bar@example.com?subject=Testing&bcc=foo@example.com,someone@example.com&body=Hi%20there")]
+			ExpectedResult = "mailto:bar@example.com?subject=Testing&bcc=foo@example.com,someone@example.com&body=Hi%20there")]
 		[TestCase("a@example.com", "foo@example.com;someone@example.com",
-			Result = "mailto:bar@example.com?subject=Testing&cc=a@example.com&bcc=foo@example.com,someone@example.com&body=Hi%20there")]
+			ExpectedResult = "mailto:bar@example.com?subject=Testing&cc=a@example.com&bcc=foo@example.com,someone@example.com&body=Hi%20there")]
 		public string SendMessage_CcAndBcc(string cc, string bcc)
 		{
 			// Setup

@@ -135,23 +135,23 @@ namespace SIL.Tests.PlatformUtilities
 		}
 
 		[Platform(Include = "Linux", Reason = "Linux specific test")]
-		[TestCase("Unity", null, "ubuntu", Result = "unity", TestName = "Unity")]
+		[TestCase("Unity", null, "ubuntu", ExpectedResult = "unity", TestName = "Unity")]
 		[TestCase("Unity", "/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/",
-			"ubuntu", Result = "unity", TestName = "Unity with dataDir")]
-		[TestCase("GNOME", null, "gnome-shell", Result = "gnome",
+			"ubuntu", ExpectedResult = "unity", TestName = "Unity with dataDir")]
+		[TestCase("GNOME", null, "gnome-shell", ExpectedResult = "gnome",
 			TestName = "Gnome shell")]
-		[TestCase("GNOME", null, "cinnamon", Result = "cinnamon",
+		[TestCase("GNOME", null, "cinnamon", ExpectedResult = "cinnamon",
 			TestName = "Wasta 12")]
-		[TestCase("x-cinnamon", null, "cinnamon", Result = "x-cinnamon",
+		[TestCase("x-cinnamon", null, "cinnamon", ExpectedResult = "x-cinnamon",
 			TestName = "Wasta 14")]
 		[TestCase(null, "/usr/share/ubuntu:/usr/share/kde:/usr/local/share/:/usr/share/",
-			"kde-plasma", Result = "kde", TestName = "KDE on Ubuntu 12_04")]
-		[TestCase("XFCE", null, "xubuntu", Result = "xfce", TestName = "XFCE")]
-		[TestCase("foo", null, null, Result = "foo", TestName = "Only XDG_CURRENT_DESKTOP set")]
+			"kde-plasma", ExpectedResult = "kde", TestName = "KDE on Ubuntu 12_04")]
+		[TestCase("XFCE", null, "xubuntu", ExpectedResult = "xfce", TestName = "XFCE")]
+		[TestCase("foo", null, null, ExpectedResult = "foo", TestName = "Only XDG_CURRENT_DESKTOP set")]
 		[TestCase(null, "/usr/share/ubuntu:/usr/share/kde:/usr/local/share/:/usr/share/", null,
-			Result = "kde", TestName = "Only XDG_DATA_DIRS set")]
-		[TestCase(null, null, "something", Result = "something", TestName = "Only GDMSESSION set")]
-		[TestCase(null, null, null, Result = "", TestName = "Nothing set")]
+			ExpectedResult = "kde", TestName = "Only XDG_DATA_DIRS set")]
+		[TestCase(null, null, "something", ExpectedResult = "something", TestName = "Only GDMSESSION set")]
+		[TestCase(null, null, null, ExpectedResult = "", TestName = "Nothing set")]
 		public string DesktopEnvironment_SimulateDesktops(string currDesktop,
 			string dataDirs, string gdmSession)
 		{
@@ -175,20 +175,20 @@ namespace SIL.Tests.PlatformUtilities
 		}
 
 		[Platform(Include = "Linux", Reason = "Linux specific test")]
-		[TestCase("Unity", null, "ubuntu", null, Result = "unity (ubuntu)", TestName = "Unity")]
+		[TestCase("Unity", null, "ubuntu", null, ExpectedResult = "unity (ubuntu)", TestName = "Unity")]
 		[TestCase("Unity", "/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/",
-			"ubuntu", null, Result = "unity (ubuntu)", TestName = "Unity with dataDir")]
+			"ubuntu", null, ExpectedResult = "unity (ubuntu)", TestName = "Unity with dataDir")]
 		[TestCase("Unity", null, "ubuntu", "session-1",
-			Result = "unity (ubuntu [display server: Mir])", TestName = "Unity with Mir")]
-		[TestCase("GNOME", null, "gnome-shell", null, Result = "gnome (gnome-shell)",
+			ExpectedResult = "unity (ubuntu [display server: Mir])", TestName = "Unity with Mir")]
+		[TestCase("GNOME", null, "gnome-shell", null, ExpectedResult = "gnome (gnome-shell)",
 			TestName = "Gnome shell")]
-		[TestCase("GNOME", null, "cinnamon", null, Result = "cinnamon (cinnamon)",
+		[TestCase("GNOME", null, "cinnamon", null, ExpectedResult = "cinnamon (cinnamon)",
 			TestName = "Wasta 12")]
-		[TestCase("x-cinnamon", null, "cinnamon", null, Result = "x-cinnamon (cinnamon)",
+		[TestCase("x-cinnamon", null, "cinnamon", null, ExpectedResult = "x-cinnamon (cinnamon)",
 			TestName = "Wasta 14")]
 		[TestCase(null, "/usr/share/ubuntu:/usr/share/kde:/usr/local/share/:/usr/share/",
-			"kde-plasma", null, Result = "kde (kde-plasma)", TestName = "KDE on Ubuntu 12_04")]
-		[TestCase(null, null, null, null, Result = " (not set)", TestName = "Nothing set")]
+			"kde-plasma", null, ExpectedResult = "kde (kde-plasma)", TestName = "KDE on Ubuntu 12_04")]
+		[TestCase(null, null, null, null, ExpectedResult = " (not set)", TestName = "Nothing set")]
 		public string DesktopEnvironmentInfoString_SimulateDesktopEnvironments(string currDesktop,
 			string dataDirs, string gdmSession, string mirServerName)
 		{

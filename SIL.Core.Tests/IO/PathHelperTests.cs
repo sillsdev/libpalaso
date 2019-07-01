@@ -17,7 +17,7 @@ namespace SIL.Tests.IO
 	{
 		private bool TmpAndRootOnDifferentPartitions;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetUp()
 		{
 			if (Platform.IsUnix)
@@ -182,12 +182,12 @@ namespace SIL.Tests.IO
 			}
 		}
 
-		[TestCase(null, Result = false)]
-		[TestCase("", Result = false)]
-		[TestCase("rect", Result = false)]
-		[TestCase("none", Result = false)]
-		[TestCase("directory", Result = true)]
-		[TestCase("subdir", Result = true)]
+		[TestCase(null, ExpectedResult = false)]
+		[TestCase("", ExpectedResult = false)]
+		[TestCase("rect", ExpectedResult = false)]
+		[TestCase("none", ExpectedResult = false)]
+		[TestCase("directory", ExpectedResult = true)]
+		[TestCase("subdir", ExpectedResult = true)]
 		public bool ContainsDirectory(string directory)
 		{
 			var path = Path.Combine(Path.GetTempPath(), "some", "directory", "and", "other", "subdir");

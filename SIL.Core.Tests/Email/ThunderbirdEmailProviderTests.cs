@@ -30,11 +30,11 @@ namespace SIL.Tests.Email
 		}
 
 		[TestCase("foo@example.com",
-			Result = "-compose \"to='foo@example.com',subject='Testing',body='Hi there!'\"")]
+			ExpectedResult = "-compose \"to='foo@example.com',subject='Testing',body='Hi there!'\"")]
 		[TestCase("Foo <foo@example.com>",
-			Result = "-compose \"to='Foo <foo@example.com>',subject='Testing',body='Hi there!'\"")]
+			ExpectedResult = "-compose \"to='Foo <foo@example.com>',subject='Testing',body='Hi there!'\"")]
 		[TestCase("foo@example.com;someone@example.com",
-			Result = "-compose \"to='foo@example.com,someone@example.com',subject='Testing',body='Hi there!'\"")]
+			ExpectedResult = "-compose \"to='foo@example.com,someone@example.com',subject='Testing',body='Hi there!'\"")]
 		public string SendMessage_ToOnly(string to)
 		{
 			// Setup
@@ -52,15 +52,15 @@ namespace SIL.Tests.Email
 		}
 
 		[TestCase("foo@example.com", null,
-			Result = "-compose \"to='bar@example.com',subject='Testing',body='Hi there!',cc='foo@example.com'\"")]
+			ExpectedResult = "-compose \"to='bar@example.com',subject='Testing',body='Hi there!',cc='foo@example.com'\"")]
 		[TestCase("foo@example.com;someone@example.com", null,
-			Result = "-compose \"to='bar@example.com',subject='Testing',body='Hi there!',cc='foo@example.com,someone@example.com'\"")]
+			ExpectedResult = "-compose \"to='bar@example.com',subject='Testing',body='Hi there!',cc='foo@example.com,someone@example.com'\"")]
 		[TestCase(null, "foo@example.com",
-			Result = "-compose \"to='bar@example.com',subject='Testing',body='Hi there!',bcc='foo@example.com'\"")]
+			ExpectedResult = "-compose \"to='bar@example.com',subject='Testing',body='Hi there!',bcc='foo@example.com'\"")]
 		[TestCase(null, "foo@example.com;someone@example.com",
-			Result = "-compose \"to='bar@example.com',subject='Testing',body='Hi there!',bcc='foo@example.com,someone@example.com'\"")]
+			ExpectedResult = "-compose \"to='bar@example.com',subject='Testing',body='Hi there!',bcc='foo@example.com,someone@example.com'\"")]
 		[TestCase("a@example.com", "foo@example.com;someone@example.com",
-			Result = "-compose \"to='bar@example.com',subject='Testing',body='Hi there!',cc='a@example.com',bcc='foo@example.com,someone@example.com'\"")]
+			ExpectedResult = "-compose \"to='bar@example.com',subject='Testing',body='Hi there!',cc='a@example.com',bcc='foo@example.com,someone@example.com'\"")]
 		public string SendMessage_CcAndBcc(string cc, string bcc)
 		{
 			// Setup
