@@ -1,13 +1,9 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)**\*.dll">
+    <None Include="$(MSBuildThisFileDirectory)**\*.dll"
+          Exclude="$(MSBuildThisFileDirectory)**\irrKlang.NET4.dll">
       <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <Target Name="DeleteIrrKlangFromOutput" AfterTargets="_CopyFilesMarkedCopyLocal">
-    <!--we don't want irrKlang.NET4 in the output directory, we want to use the version in lib/*/ -->
-    <Delete Files="$(OutputPath)/irrKlang.NET4.dll" />
-  </Target>
 </Project>
