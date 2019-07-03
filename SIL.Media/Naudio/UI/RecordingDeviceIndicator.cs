@@ -1,4 +1,4 @@
-﻿#if !MONO
+#if !MONO
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -87,7 +87,7 @@ namespace SIL.Media.Naudio.UI
 				{
 					_recorder.SelectedDeviceChanged += RecorderOnSelectedDeviceChanged;
 					_checkNewMicTimer.Start();
-					SetKnownRecordingDevices();
+					SetKnownRecordingDevices(RecordingDevice.Devices);
 				}
 				else
 				{
@@ -98,10 +98,9 @@ namespace SIL.Media.Naudio.UI
 			}
 		}
 
-		private void SetKnownRecordingDevices()
+		private void SetKnownRecordingDevices(IEnumerable<RecordingDevice> devices)
 		{
-			_knownRecordingDevices =
-				new HashSet<string>(from d in RecordingDevice.Devices select d.ProductName);
+			_knownRecordingDevices = new HashSet<string>(devices.Select(d => d.ProductName));
 		}
 
 		/// <summary>
@@ -166,7 +165,7 @@ namespace SIL.Media.Naudio.UI
 				}
 			}
 			// Update the list so one that was never active can be made active by unplugging and replugging
-			SetKnownRecordingDevices();
+			SetKnownRecordingDevices(devices);
 		}
 
 		protected override void OnHandleDestroyed(EventArgs e)
