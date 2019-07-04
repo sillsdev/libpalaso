@@ -21,6 +21,8 @@
     processor architecture) -->
     <SignAssembly>false</SignAssembly>
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GitVersionTask.alt" Version="4.0.2-alpha-0006">
