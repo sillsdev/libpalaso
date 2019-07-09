@@ -18,7 +18,7 @@ namespace SIL.Reporting
 		private static ExceptionHandler _singleton;
 
 		// ------------------------------------------------------------------------------------
-		//We removed all references to Winforms from Palaso.dll but our error reporting relied heavily on it.
+		//We removed all references to Winforms from SIL.Core.dll but our error reporting relied heavily on it.
 		//Not wanting to break existing applications we have now added this class initializer which will
 		//look for a reference to SIL.Windows.Forms in the consuming app and if it exists instantiate the
 		//ExceptionHandler from there through Reflection. Otherwise we will simply use a console

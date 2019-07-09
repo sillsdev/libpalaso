@@ -86,7 +86,7 @@ namespace SIL.DictionaryServices.Lift
 
 		public static string ProducerString
 		{
-			get { return "Palaso.DictionaryServices.LiftWriter " + Assembly.GetExecutingAssembly().GetName().Version; }
+			get { return "SIL.DictionaryServices.LiftWriter " + Assembly.GetExecutingAssembly().GetName().Version; }
 		}
 
 		protected XmlWriter Writer
@@ -95,14 +95,14 @@ namespace SIL.DictionaryServices.Lift
 		}
 
 		#if DEBUG
-	    protected StackTrace ConstructionStack
-	    {
-	        get { return _constructionStack; }
-	        set { _constructionStack = value; }
-	    }
+		protected StackTrace ConstructionStack
+		{
+			get { return _constructionStack; }
+			set { _constructionStack = value; }
+		}
 		#endif
 
-	    public void End()
+		public void End()
 		{
 			if (Writer.Settings.ConformanceLevel != ConformanceLevel.Fragment)
 			{
@@ -676,7 +676,7 @@ namespace SIL.DictionaryServices.Lift
 
 		private void WriteEmbeddedXmlCollection(MultiText text)
 		{
-			foreach (string rawXml in text.EmbeddedXmlElements) // todo cp Promote roundtripping to Palaso.Lift / Palaso.Data also then can use MultiTextBase here (or a better interface).
+			foreach (string rawXml in text.EmbeddedXmlElements) // todo cp Promote roundtripping to SIL.Lift / SIL.Data also then can use MultiTextBase here (or a better interface).
 			{
 				Writer.WriteRaw(rawXml);
 			}

@@ -1,0 +1,23 @@
+assembly-versioning-scheme: MajorMinor
+mode: ContinuousDeployment
+branches:
+  master:
+    tag: beta
+    regex: (origin/)?master
+  hotfix:
+    tag: beta
+    regex: (origin/)?hotfix[/-]
+    increment: Patch
+    prevent-increment-of-merged-branch-version: false
+    track-merge-target: false
+    tracks-release-branches: false
+    is-release-branch: false
+  pull-request:
+    mode: ContinuousDeployment
+    tag: PR
+  feature:
+    regex: feature[/-]
+    mode: ContinuousDeployment
+    tag: alpha
+# Tell gitversion to use a version number >= next-version
+next-version: 6.1.0

@@ -27,7 +27,6 @@ namespace SIL.ExtractCopyright
 				case "-h":
 				case "--help":
 					return ShowUsage(CopyrightFile.ExitValue.Okay);
-					break;
 				case "-p":
 				case "--prefix":
 					if (++i < args.Length)

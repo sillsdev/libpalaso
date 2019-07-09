@@ -22,7 +22,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			_writingSystemFactory = writingSystemFactory;
 		}
 
-		//        public static Palaso.WritingSystems.WritingSystemDefinition Get(string rfc4646)
+		//        public static SIL.WritingSystems.WritingSystemDefinition Get(string rfc4646)
 		//        {
 		//            foreach (InputLanguage language in InputLanguage.InstalledInputLanguages)
 		//            {
@@ -42,43 +42,39 @@ namespace SIL.Windows.Forms.WritingSystems
 		//            return null;
 		//        }
 
+		private static LanguageLookup _languageLookup;
+		private static LanguageLookup LanguageLookup => _languageLookup ?? (_languageLookup = new LanguageLookup());
 
-		private static string GetRegion(InputLanguage language)
+		protected static string GetRegion(string cultureName)
 		{
-#if MONO // CultureAndRegionInfoBuilder not supported by Mono
-			return string.Empty;
-#else
-			//  http://jira.palaso.org/issues/browse/WS-34216 has KonKani, which is a "macro language", as causing a crash here, on computers
-			// with that locale installed (India). It dies when it looks like we're trying to make a new version of it, because the
-			// CultureAndRegionModifiers flag here is "none". Someone in ChiangMai please review: should this be changed to "Replacement"
-			// to avoid this?  Do we need an
 			try
 			{
-				if (language.Culture.ThreeLetterISOLanguageName == "und") // SIL IPA keyboard is language "und" which causes an exception
+				if (cultureName == "und") // SIL IPA keyboard is language "und" (undetermined) which causes an exception
 				{
 					return string.Empty;
 				}
 				try
 				{
 					// If the region is in the input language name then just use that
-					var r = new RegionInfo(language.Culture.Name);
-					return r.TwoLetterISORegionName ?? String.Empty;
+					var r = new RegionInfo(cultureName);
+					return r.TwoLetterISORegionName;
 				}
 				catch (Exception)
 				{
-					//REVIEW: if we changed the "none" to "Replacement", that would presumably get us past the KanKani crash, but is that the right
-					//thing to do, or a hack which would mean we lose region information on other languages?
-					var b = new CultureAndRegionInfoBuilder(language.Culture.Name, CultureAndRegionModifiers.None);
-					b.LoadDataFromCultureInfo(language.Culture);
-					return b.TwoLetterISORegionName ?? String.Empty;
+					// Otherwise return primary country for that language
+					// ENHANCE: This would be more efficient if LanguageLookup would store the country code
+					// instead of the country name
+					var language = LanguageLookup.GetLanguageFromCode(cultureName);
+					var regionName = language?.PrimaryCountry;
+					return StandardSubtags.RegisteredRegions.FirstOrDefault(subtag =>
+						subtag.Name == regionName)?.Code ?? string.Empty;
 				}
 			}
 			catch (Exception)
 			{
-				Debug.Fail("This is a bug (http://jira.palaso.org/issues/browse/WS-34216 ) we would like to look into on a developer machine");
+				Debug.Fail($"This is a bug (http://jira.palaso.org/issues/browse/WS-34216) we would like to look into on a developer machine (culture {cultureName})");
 				return string.Empty;
 			}
-#endif
 		}
 
 		#region Implementation of IEnumerable
@@ -115,7 +111,7 @@ namespace SIL.Windows.Forms.WritingSystems
 				string region = string.Empty;
 				if (Environment.OSVersion.Platform != PlatformID.Unix)
 				{
-					region = GetRegion(language);
+					region = GetRegion(language.Culture.Name);
 				}
 
 				var cleaner = new IetfLanguageTagCleaner(culture.TwoLetterISOLanguageName, "", region, "", "");

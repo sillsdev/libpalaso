@@ -9,7 +9,7 @@ using SIL.Keyboarding;
 namespace SIL.Windows.Forms.Keyboarding
 {
 	/// <summary>
-	/// We define an interface IInputLanguage in Palaso.dll (which does not reference Windows.Forms) which contains
+	/// We define an interface IInputLanguage in SIL.Core.dll (which does not reference Windows.Forms) which contains
 	/// the properties of InputLanguage (a Windows.Forms class) that interest us. InputLanguageWrapper allows us to pretend
 	/// that InputLanguage implements the interface. In particular the implicit operator allows us to simply
 	/// pass an InputLanguage as an argument to any method expecting IInputLanguage...a wrapper is automatically

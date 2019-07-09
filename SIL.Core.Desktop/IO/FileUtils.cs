@@ -110,7 +110,7 @@ namespace SIL.IO
 		}
 
 		/// <summary>
-		/// NB: This will show a dialog if the file writing can't be done (subject to Palaso.Reporting settings).
+		/// NB: This will show a dialog if the file writing can't be done (subject to SIL.Reporting settings).
 		/// It will throw whatever exception was encountered, if the user can't resolve it.
 		/// </summary>
 		/// <param name="inputPath"></param>

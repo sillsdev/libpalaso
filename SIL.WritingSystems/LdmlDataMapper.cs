@@ -30,7 +30,7 @@ namespace SIL.WritingSystems
 	/// in the repository will not be changed including no marking with "version 1".
 	/// </summary>
 	/// <remarks>
-	/// LDML reference: http://www.unicode.org/reports/tr35/
+	/// LDML reference: https://www.unicode.org/reports/tr35/tr35-37/
 	/// </remarks>
 	public class LdmlDataMapper
 	{
@@ -1269,16 +1269,15 @@ namespace SIL.WritingSystems
 
 		private void WriteCollationsElement(XElement collationsElem, WritingSystemDefinition ws)
 		{
-			// Preserve exisiting collations since we don't process them all
+			// Preserve existing collations since we don't process them all
 			// Remove only the collations we can repopulate from the writing system
-			collationsElem.NonAltElements("collation").Where(ce => ce.NonAltElements("special").Elements().All(se => se.Name != (Sil + "reordered"))).Remove();
-
+			RemoveSpecialSilCollations(collationsElem);
+			RemoveIcuCollations(collationsElem);
 			// if there will be no collation elements, don't write out defaultCollation element
 			if (!collationsElem.Elements("collation").Any() && ws.Collations.All(c => c is SystemCollationDefinition))
 			{
 				return;
 			}
-
 			var defaultCollationElem = collationsElem.GetOrCreateElement("defaultCollation");
 			defaultCollationElem.SetValue(ws.DefaultCollationType);
 
@@ -1286,6 +1285,34 @@ namespace SIL.WritingSystems
 			{
 				WriteCollationElement(collationsElem, collation);
 			}
+		}
+
+		private void RemoveSpecialSilCollations(XElement collationsElem)
+		{
+			// Remove any of the special SIL sorts skipping the unsupported "reordered" so it will round trip
+			// e.g.
+			// <collations>
+			//   <collation> <-- removes this element
+			//     <special xmlns:sil="urn://www.sil.org/ldml/0.1"><sil:simple>...</sil:simple></special>
+			//   </collation>
+			// </collations>
+			collationsElem.Elements("collation").Where(ce => ce.NonAltElements("special").Any(se => se.Name.NamespaceName == Sil && se.Name != Sil + "reordered")).Remove();
+		}
+
+		private void RemoveIcuCollations(XElement collationsElem)
+		{
+			// Remove any of the icu collations - we handle those and will write them back out
+			// e.g.
+			// <collations>
+			//   <collation type="standard"> <-- removes this element
+			//     <cr><![CDATA[&c< a]]></cr>
+			//   </collation>
+			//   <collation type="weird"/> <-- also removes this element (I don't know what makes these but I saw it in testing. Real data is weird.)
+			//   <collation> <-- does not remove this element
+			//     <anything/>
+			//   </collation>
+			// </collations>
+			collationsElem.Elements("collation").Where(ce => ce.Attribute("type") != null && (!ce.HasElements || ce.Elements("cr").Any())).Remove();
 		}
 
 		private void WriteCollationElement(XElement collationsElem, CollationDefinition collation)

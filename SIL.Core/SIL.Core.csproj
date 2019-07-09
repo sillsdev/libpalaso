@@ -1,21 +1,30 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
     <RootNamespace>SIL</RootNamespace>
-    <Configurations>Debug;Release;DebugStrongName;ReleaseStrongName</Configurations>
+    <Configurations>Debug;Release</Configurations>
     <Description>SIL.Core provides general utilities for language software. It is the base library for all Palaso libraries.</Description>
-  </PropertyGroup>
-
-  <Import Project="..\GlobalAssemblyInfo.props" />
-
-  <PropertyGroup Condition="$(Configuration.Contains('StrongName'))">
+    <Company>SIL International</Company>
+    <Authors>SIL International</Authors>
+    <Product>libpalaso</Product>
+    <Copyright>Copyright © 2010-2019 SIL International</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/sillsdev/libpalaso</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <OutputPath>../output/$(Configuration)</OutputPath>
+    <PackageOutputPath>../output</PackageOutputPath>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
-    <DefineConstants>$(DefineConstants);STRONG_NAME</DefineConstants>
+    <AssemblyOriginatorKeyFile>../palaso.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="GitVersionTask.alt" Version="4.0.2-alpha-0006">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="SIL.ReleaseTasks" Version="[2.2.0,)">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
   </ItemGroup>

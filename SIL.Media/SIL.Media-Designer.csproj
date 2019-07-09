@@ -1,0 +1,248 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D6E7D28F-72F8-48C8-A4AB-452A1431847F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SIL.Media</RootNamespace>
+    <AssemblyName>SIL.Media</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <LangVersion>6</LangVersion>
+    <TargetFrameworkProfile />
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <BaseIntermediateOutputPath>obj\Designer</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>bin-Designer\Debug</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin-Designer\Debug\SIL.Media.xml</DocumentationFile>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <NoWarn>1591</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin-Designer\Release</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="irrKlang.NET4">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="NAudio">
+      <HintPath>..\packages\NAudio.1.8.4\lib\net35\NAudio.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lib/win-x64/*.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="lib/win-x86/*.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AudioIrrKlangSession.cs" />
+    <Compile Include="Naudio\AudioPlayer.cs" />
+    <Compile Include="Naudio\AudioRecorder.cs" />
+    <Compile Include="Naudio\FileWriterThread.cs" />
+    <Compile Include="Naudio\IAudioPlayer.cs" />
+    <Compile Include="Naudio\IRecordingDevice.cs" />
+    <Compile Include="Naudio\RecordingDevice.cs" />
+    <Compile Include="Naudio\TrimWaveStream.cs" />
+    <Compile Include="Naudio\UI\AudioDeviceIcons.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AudioDeviceIcons.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Naudio\UI\PeakMeterCtrl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Naudio\UI\PeakMeterCtrl.designer.cs">
+      <DependentUpon>PeakMeterCtrl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Naudio\UI\RecordingDeviceIndicator.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Naudio\UI\RecordingDeviceIndicator.designer.cs">
+      <DependentUpon>RecordingDeviceIndicator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Naudio\SampleAggregator.cs" />
+    <Compile Include="Naudio\IAudioRecorder.cs" />
+    <Compile Include="Naudio\RecordingState.cs" />
+    <Compile Include="AlsaAudio\AlsaAudioDevice.cs" />
+    <Compile Include="AlsaAudio\AudioAlsaSession.cs" />
+    <Compile Include="AlsaAudio\AudioRecorder.cs" />
+    <Compile Include="AlsaAudio\RecordingDevice.cs" />
+    <Compile Include="AudioFactory.cs" />
+    <Compile Include="AudioNullSession.cs" />
+    <Compile Include="FFmpegRunner.cs" />
+    <Compile Include="ISimpleAudioSession.cs" />
+    <Compile Include="MediaInfo.cs" />
+    <Compile Include="ShortSoundFieldControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ShortSoundFieldControl.Designer.cs">
+      <DependentUpon>ShortSoundFieldControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="SoundFieldControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SoundFieldControl.Designer.cs">
+      <DependentUpon>SoundFieldControl.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Naudio\UI\AudioDeviceIcons.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>AudioDeviceIcons.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Naudio\UI\RecordingDeviceIndicator.resx">
+      <DependentUpon>RecordingDeviceIndicator.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ShortSoundFieldControl.resx">
+      <DependentUpon>ShortSoundFieldControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SoundFieldControl.resx">
+      <DependentUpon>SoundFieldControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="artwork\stop15x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="artwork\record16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="artwork\play14x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="Resources\DeleteHS.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="artwork\recordDisabled16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="artwork\playDisabled14x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Headset.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Line.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Microphone.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\NoAudioDevice.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Recorder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Computer.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Webcam.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SIL.Core.Desktop\SIL.Core.Desktop.csproj">
+      <Project>{c48de000-2086-4ceb-a5a1-3171c272725e}</Project>
+      <Name>SIL.Core.Desktop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SIL.Core\SIL.Core.csproj">
+      <Project>{53cb36d9-2f66-4823-b1f0-4523e8565200}</Project>
+      <Name>SIL.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+	   Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  -->
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="..\lib\$(Platform)\ikpMP3.dll;..\lib\$(Platform)\ikpFlac.dll" DestinationFolder="$(OutputPath)" Condition="'$(Platform)' == 'x64'" />
+  </Target>
+</Project>

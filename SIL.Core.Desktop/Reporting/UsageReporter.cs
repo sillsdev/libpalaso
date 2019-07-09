@@ -45,7 +45,7 @@ namespace SIL.Reporting
 		/// <param name="domain"></param>
 		/// <param name="googleAnalyticsAccountCode"></param>
 		/// <param name="reportAsDeveloper">Normally this is true for DEBUG builds. It is separated out here because sometimes a developer
-		/// uses a Release build of Palaso.dll, but would still want his/her activities logged as a developer.</param>
+		/// uses a Release build of SIL.Core.Desktop.dll, but would still want his/her activities logged as a developer.</param>
 		public static void Init(ReportingSettings settings, string domain, string googleAnalyticsAccountCode, bool reportAsDeveloper)
 		{
 			s_singleton = new UsageReporter();
@@ -154,9 +154,9 @@ namespace SIL.Reporting
 		///
 		///     [UserScopedSetting()]
 		///		[DebuggerNonUserCode()]
-		///		public Palaso.Reporting.ReportingSettings Reporting
+		///		public SIL.Reporting.ReportingSettings Reporting
 		///		{
-		///			get { return ((Palaso.Reporting.ReportingSettings)(this["Reporting"])); }
+		///			get { return ((SIL.Reporting.ReportingSettings)(this["Reporting"])); }
 		///			set { this["Reporting"] = value; }
 		///		}
 		/// </summary>

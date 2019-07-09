@@ -145,6 +145,54 @@ namespace SIL.WritingSystems.Tests
 			AssertThatXmlIn.String(sw.ToString()).HasAtLeastOneMatchForXpath("/ldml/special[text()=\"hey\"]");
 		}
 
+		[Test]
+		public void ExistingLdml_UnknownCollation_Write_PreservesData()
+		{
+			var ldmlwithcollation =
+				@"<ldml><collations><collation><unknown>" +
+				@"<![CDATA[[caseLevel on]& c < k]]>" +
+				@"</unknown></collation></collations></ldml>";
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+			var sw = new StringWriter();
+			var ws = new WritingSystemDefinition("en");
+			var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
+			adaptor.Write(writer, ws, XmlReader.Create(new StringReader(ldmlwithcollation)));
+			writer.Close();
+			AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath("/ldml/collations/collation", 1);
+		}
+
+		[Test]
+		public void ExistingLdml_SilReorderCollation_Write_PreservesData()
+		{
+			var ldmlwithcollation =
+				@"<ldml><!--Comment--><dates/><special>hey</special><collations><collation type=""nonsense"">" +
+				@"<special xmlns:sil=""urn://www.sil.org/ldml/0.1""><sil:reordered>junk</sil:reordered></special>" +
+			@"</collation></collations></ldml>";
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+			var sw = new StringWriter();
+			var ws = new WritingSystemDefinition("en");
+			var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
+			adaptor.Write(writer, ws, XmlReader.Create(new StringReader(ldmlwithcollation)));
+			writer.Close();
+			AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath("/ldml/collations/collation", 1);
+		}
+
+		[Test]
+		public void ExistingLdml_NonSILSpecialCollation_Write_PreservesData()
+		{
+			var ldmlwithcollation =
+				@"<ldml><!--Comment--><dates/><special>hey</special><collations><collation type=""nonsense"">" +
+				@"<special xmlns:notsil=""urn://www.notsil.org/ldml/42""><notsil:notsospecial>Hedburg</notsil:notsospecial></special>" +
+				@"</collation></collations></ldml>";
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+			var sw = new StringWriter();
+			var ws = new WritingSystemDefinition("en");
+			var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
+			adaptor.Write(writer, ws, XmlReader.Create(new StringReader(ldmlwithcollation)));
+			writer.Close();
+			AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath("/ldml/collations/collation", 1);
+		}
+
 		#region Roundtrip
 		[Test]
 		public void RoundtripSimpleCustomSortRules_WS33715()
@@ -747,7 +795,46 @@ namespace SIL.WritingSystems.Tests
 				var wsFromLdml = new WritingSystemDefinition();
 				ldmlAdaptor.Read(environment.FilePath("test.ldml"), wsFromLdml);
 
+				Assert.That(wsFromLdml.Collations.Count, Is.EqualTo(1));
 				Assert.That(wsFromLdml.Collations.First(), Is.ValueEqualTo(cd));
+				Assert.That(wsFromLdml.DefaultCollation, Is.ValueEqualTo(cd));
+			}
+		}
+
+		[Test]
+		public void Roundtrip_LdmlMultipleIcuCollations()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var cd = new IcuRulesCollationDefinition("standard")
+				{
+					CollationRules = "&B<t",
+					IsValid = true
+				};
+				var phonebookCd = new IcuRulesCollationDefinition("phonebook")
+				{
+					CollationRules = "&c<f",
+					IsValid = true
+				};
+
+				var wsToLdml = new WritingSystemDefinition("aa", "Latn", "", "");
+				wsToLdml.Collations.Add(cd);
+				wsToLdml.Collations.Add(phonebookCd);
+
+				var wsFactory = new TestWritingSystemFactory();
+				var ldmlAdaptor = new LdmlDataMapper(wsFactory);
+				var testLdmlFile = environment.FilePath("test.ldml");
+				ldmlAdaptor.Write(testLdmlFile, wsToLdml, null);
+				// validate that the data was written to the file correctly
+				AssertThatXmlIn.File(testLdmlFile).HasSpecifiedNumberOfMatchesForXpath("/ldml/collations/collation[@type='standard']", 1);
+				AssertThatXmlIn.File(testLdmlFile).HasSpecifiedNumberOfMatchesForXpath("/ldml/collations/collation[@type='phonebook']", 1);
+				AssertThatXmlIn.File(testLdmlFile).HasSpecifiedNumberOfMatchesForXpath("/ldml/collations/defaultCollation[text()='standard']", 1);
+
+				var wsFromLdml = new WritingSystemDefinition();
+				ldmlAdaptor.Read(testLdmlFile, wsFromLdml);
+
+				// verify that both collations came out and that the default is set correctly
+				Assert.That(wsFromLdml.Collations.Count, Is.EqualTo(2));
 				Assert.That(wsFromLdml.DefaultCollation, Is.ValueEqualTo(cd));
 			}
 		}

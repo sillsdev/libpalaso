@@ -2,20 +2,29 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
-    <Configurations>Debug;Release;DebugStrongName;ReleaseStrongName</Configurations>
-    <Description>SIL.WritingSystems provides classes for generating BCP 47 language tags and reading/writing LDML.</Description>
-  </PropertyGroup>
-
-  <Import Project="..\GlobalAssemblyInfo.props" />
-
-  <PropertyGroup Condition="$(Configuration.Contains('StrongName'))">
+    <Configurations>Debug;Release</Configurations>
+    <Description>SIL.WritingSystems contains classes for managing and persisting writing systems using the Locale Data Markup Language (LDML) format. This library also contains classes for processing IETF (BCP-47) language tags and accessing the SIL Locale Data Repository (SLDR).</Description>
+    <Company>SIL International</Company>
+    <Authors>SIL International</Authors>
+    <Product>libpalaso</Product>
+    <Copyright>Copyright © 2010-2019 SIL International</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/sillsdev/libpalaso</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <OutputPath>../output/$(Configuration)</OutputPath>
+    <PackageOutputPath>../output</PackageOutputPath>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\palaso.snk</AssemblyOriginatorKeyFile>
-    <DefineConstants>$(DefineConstants);STRONG_NAME</DefineConstants>
+    <AssemblyOriginatorKeyFile>../palaso.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="icu.net" Version="2.5.2" />
+    <PackageReference Include="GitVersionTask.alt" Version="4.0.2-alpha-0006">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="SIL.ReleaseTasks" Version="[2.2.0,)">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="icu.net" Version="2.5.4" />
     <PackageReference Include="Spart" Version="1.0.0" />
     <PackageReference Include="System.IO.FileSystem.AccessControl" Version="4.4.0" />
   </ItemGroup>

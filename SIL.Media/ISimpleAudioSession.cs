@@ -21,5 +21,5 @@ namespace SIL.Media
 	public interface ISimpleAudioWithEvents
 	{
 		event EventHandler PlaybackStopped;
-}
+	}
 }

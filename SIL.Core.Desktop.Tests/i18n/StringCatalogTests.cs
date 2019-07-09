@@ -99,7 +99,7 @@ msgstr 'translated'
 		{
 			StringCatalog catalog = new StringCatalog(_poFile, null, 9);
 			//todo: when palaso is upgraded to the other branch, we can add something like this
-			//using(new Palaso.Reporting.NonFatalErrorDialog())
+			//using(new SIL.Reporting.NonFatalErrorDialog())
 			var answer = StringCatalog.GetFormatted("noParams", "blah blah","one");
 			Assert.AreEqual("!!first", answer);
 		}

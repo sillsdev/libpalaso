@@ -14,7 +14,7 @@ namespace SIL.Windows.Forms.Reporting
 {
 	/// <summary>
 	/// Display exception reporting dialog.
-	/// NOTE: It is recommended to call one of Palaso.Reporting.ErrorReport.Report(Non)Fatal*
+	/// NOTE: It is recommended to call one of SIL.Reporting.ErrorReport.Report(Non)Fatal*
 	/// methods instead of instantiating this class.
 	/// </summary>
 	public class ExceptionReportingDialog : Form
@@ -242,7 +242,6 @@ namespace SIL.Windows.Forms.Reporting
 			resources.ApplyResources(this, "$this");
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
 			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-			this.ControlBox = false;
 			this.Controls.Add(this._emailAddress);
 			this.Controls.Add(this._privacyNoticeButton);
 			this.Controls.Add(this._methodCombo);
@@ -257,6 +256,8 @@ namespace SIL.Windows.Forms.Reporting
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "ExceptionReportingDialog";
+			this.ControlBox = true;
+			this.ShowIcon = false; // Showing the Control box ("X") also shows a default icon.
 			this.TopMost = true;
 			this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ExceptionReportingDialog_KeyPress);
 			this.ResumeLayout(false);
@@ -867,7 +868,7 @@ namespace SIL.Windows.Forms.Reporting
 
 		public static string PrivacyNotice = @"If you don't care who reads your bug report, you can skip this notice.
 
-When you submit a crash report or other issue, the contents of your email go in our issue tracking system, ""jira"", which is available via the web at http://jira.palaso.org/issues. This is the normal way to handle issues in an open-source project.
+When you submit a crash report or other issue, the contents of your email go in our issue tracking system, ""jira"", which is available via the web at https://jira.sil.org/issues. This is the normal way to handle issues in an open-source project.
 
 Our issue-tracking system is not searchable by those without an account. Therefore, someone searching via Google will not find your bug reports.
 

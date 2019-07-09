@@ -1,9 +1,11 @@
 using NUnit.Framework;
 using SIL.Archiving.IMDI.Lists;
+using SIL.TestUtilities;
 
 namespace SIL.Archiving.Tests
 {
 	[TestFixture]
+	[OfflineSldr]
 	[Category("Archiving")]
 	public class LanguageListTests
 	{

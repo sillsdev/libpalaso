@@ -33,11 +33,6 @@ namespace SIL.DictionaryServices.Tests.Model
 	}
 
 	[TestFixture]
-	class LexTraitTests
-	{
-	}
-
-	[TestFixture]
 	public class LexFieldCloneableTests : CloneableTests<IPalasoDataObjectProperty>
 	{
 		public override IPalasoDataObjectProperty CreateNewCloneable()
@@ -68,10 +63,5 @@ namespace SIL.DictionaryServices.Tests.Model
 						   };
 			}
 		}
-	}
-
-	[TestFixture]
-	class LexFieldTests
-	{
 	}
 }

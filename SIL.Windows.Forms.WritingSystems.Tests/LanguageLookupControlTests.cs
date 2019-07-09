@@ -2,11 +2,13 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using NUnit.Framework;
+using SIL.TestUtilities;
 using SIL.WritingSystems;
 
 namespace SIL.Windows.Forms.WritingSystems.Tests
 {
 	[TestFixture]
+	[OfflineSldr]
 	public class LanguageLookupControlTests
 	{
 		private LanguageLookupControl _control;

@@ -1,12 +1,8 @@
 // Copyright (c) 2013-2018 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
-using System.Linq;
-#if !MONO
 using Keyman10Interop;
 using System.Runtime.InteropServices;
-#endif
-using Microsoft.Win32;
 using SIL.Keyboarding;
 
 namespace SIL.Windows.Forms.Keyboarding.Windows
@@ -26,7 +22,11 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		private string _localizedName;
 		private readonly bool _useNfcContext;
 
-		internal WinKeyboardDescription(string keyboardId, string localizedKeyboardName, string inputLanguageLayoutName, string cultureName, bool isAvailable, IInputLanguage inputLanguage, WinKeyboardAdaptor engine) : base(keyboardId, localizedKeyboardName, inputLanguageLayoutName, cultureName, isAvailable, engine.SwitchingAdaptor)
+		internal WinKeyboardDescription(string keyboardId, string localizedKeyboardName,
+			string inputLanguageLayoutName, string cultureName, bool isAvailable,
+			IInputLanguage inputLanguage, WinKeyboardAdaptor engine)
+			: base(keyboardId, localizedKeyboardName, inputLanguageLayoutName, cultureName,
+				isAvailable, engine.SwitchingAdaptor)
 		{
 			InputLanguage = inputLanguage;
 			_localizedName = localizedKeyboardName;
@@ -36,7 +36,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 		private static bool IsKeymanKeyboard(string cultureName)
 		{
-#if !MONO
 			try
 			{
 				var kmn = new KeymanClass();
@@ -55,7 +54,6 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			{
 				// Not a keyman keyboard
 			}
-#endif
 			return false;
 		}
 
