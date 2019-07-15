@@ -243,6 +243,53 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+		// LF-297
+		[TestCase("en-US")]
+		[TestCase("en-us")]
+		[Platform(Include = "Linux", Reason = "Requires a case-sensitive file system")]
+		public void Get_CaseDifferingWritingSystems_DoesNotThrow(string id)
+		{
+			using (var temporaryFolder = CreateTemporaryFolder("Get_CaseDifferingWritingSystems_DoesNotThrow"))
+			{
+				// Setup
+				var repo = new GlobalWritingSystemRepository(temporaryFolder.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo.Set(ws);
+				repo.Save();
+				// Now we simulate that the user did a S/R which added a WS that differs by case
+				File.Copy(Path.Combine(temporaryFolder.Path, "3", ws.Id + ".ldml"),
+					Path.Combine(temporaryFolder.Path, "3", ws.Id.ToLower() + ".ldml"));
+
+				// SUT/Verify
+				Assert.That(() => repo.Get(id), Throws.Nothing);
+			}
+		}
+
+		[TestCase("en-US")]
+		[TestCase("en-us")]
+		public void Remove_CaseDifferingWritingSystems_DoesNotThrow(string id)
+		{
+			using (var temporaryFolder = CreateTemporaryFolder("Remove_CaseDifferingWritingSystems_DoesNotThrow"))
+			{
+				// Setup
+				var repo = new GlobalWritingSystemRepository(temporaryFolder.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo.Set(ws);
+				repo.Save();
+
+				// SUT
+				Assert.That(() => repo.Remove(id), Throws.Nothing);
+
+				// Verify
+				Assert.That(repo.Contains("en-US"), Is.False);
+				Assert.That(repo.Contains("en-us"), Is.False);
+				Assert.That(File.Exists(Path.Combine(temporaryFolder.Path, "3", "en-US.ldml")),
+					Is.False);
+				Assert.That(File.Exists(Path.Combine(temporaryFolder.Path, "3", "en-us.ldml")),
+					Is.False);
+			}
+		}
+
 		[Test]
 		public void AllWritingSystems_LdmlAddedByAnotherRepo_ReturnsDefinition()
 		{

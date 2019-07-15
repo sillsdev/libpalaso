@@ -66,14 +66,14 @@ namespace SIL.WritingSystems
 		private readonly string _path;
 		private readonly GlobalMutex _mutex;
 		private readonly Dictionary<string, Tuple<DateTime, long>> _lastFileStats;
-		private readonly List<string> _addedWritingSystems;
+		private readonly HashSet<string> _addedWritingSystems;
 
 		private static string _defaultBasePath;
 
 		protected internal GlobalWritingSystemRepository(string basePath)
 		{
-			_lastFileStats = new Dictionary<string, Tuple<DateTime, long>>();
-			_addedWritingSystems = new List<string>();
+			_lastFileStats = new Dictionary<string, Tuple<DateTime, long>>(StringComparer.OrdinalIgnoreCase);
+			_addedWritingSystems = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			_path = CurrentVersionPath(basePath);
 			if (!Directory.Exists(_path))
 				CreateGlobalWritingSystemRepositoryDirectory(_path);
