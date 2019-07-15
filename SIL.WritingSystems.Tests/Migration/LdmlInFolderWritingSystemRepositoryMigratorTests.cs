@@ -1001,8 +1001,8 @@ namespace SIL.WritingSystems.Tests.Migration
 				var wsV3 = new WritingSystemDefinition();
 				new LdmlDataMapper(null).Read(environment.MappedFilePath("test.ldml"), wsV3);
 				var cdV3 = (IcuRulesCollationDefinition) wsV3.Collations.First();
-				Assert.IsNullOrEmpty(wsV0.SortRules);
-				Assert.IsNullOrEmpty(cdV3.CollationRules);
+				Assert.That(wsV0.SortRules, Is.Null.Or.Empty);
+				Assert.That(cdV3.CollationRules, Is.Null.Or.Empty);
 				Assert.That(cdV3.Type, Is.EqualTo("standard"));
 			}
 		}

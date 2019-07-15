@@ -11,12 +11,17 @@ namespace SIL.WritingSystems.Tests
 	[TestFixture]
 	public class GlobalWritingSystemRepositoryTests
 	{
+		private static TemporaryFolder CreateTemporaryFolder(string testName)
+		{
+			return new TemporaryFolder($"{testName}_{Path.GetRandomFileName()}");
+		}
+
 		[Test]
 		[Platform(Exclude = "Linux", Reason="Test tries to create directory under /var/lib where user doesn't have write permissions by default")]
 		public void DefaultInitializer_HasCorrectPath()
 		{
 			GlobalWritingSystemRepository repo = GlobalWritingSystemRepository.Initialize();
-			string expectedPath = string.Format(".*SIL.WritingSystemRepository.{0}", 
+			string expectedPath = string.Format(".*SIL.WritingSystemRepository.{0}",
 				LdmlDataMapper.CurrentLdmlLibraryVersion);
 			Assert.That(repo.PathToWritingSystems, Is.StringMatching(expectedPath));
 		}
@@ -24,7 +29,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Initialize_SkipsBadFile()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				string versionPath = Path.Combine(e.Path, LdmlDataMapper.CurrentLdmlLibraryVersion.ToString());
 				Directory.CreateDirectory(versionPath);
@@ -42,19 +47,18 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void PathConstructor_HasCorrectPath()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo = new GlobalWritingSystemRepository(e.Path);
-				string expectedPath = string.Format(".*GlobalWritingSystemRepositoryTests.{0}",
-					LdmlDataMapper.CurrentLdmlLibraryVersion);
-				Assert.That(repo.PathToWritingSystems, Is.StringMatching(expectedPath));
+				Assert.That(repo.PathToWritingSystems,
+					Is.StringMatching($".*PathConstructor_HasCorrectPath.*{LdmlDataMapper.CurrentLdmlLibraryVersion}"));
 			}
 		}
 
 		[Test]
 		public void Constructor_CreatesFolders()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo = new GlobalWritingSystemRepository(e.Path);
 				Assert.That(Directory.Exists(repo.PathToWritingSystems), Is.True);
@@ -64,7 +68,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Constructor_WithExistingFolders_NoThrow()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -75,7 +79,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Set_NewWritingSystem_SetsId()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo = new GlobalWritingSystemRepository(e.Path);
 				var ws = new WritingSystemDefinition("en-US");
@@ -88,7 +92,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Save_NewWritingSystem_CreatesLdmlFile()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo = new GlobalWritingSystemRepository(e.Path);
 				var ws = new WritingSystemDefinition("en-US");
@@ -101,7 +105,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Save_DeletedWritingSystem_RemovesLdmlFile()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo = new GlobalWritingSystemRepository(e.Path);
 				var ws = new WritingSystemDefinition("en-US");
@@ -118,7 +122,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Save_UpdatedWritingSystem_UpdatesLdmlFile()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo = new GlobalWritingSystemRepository(e.Path);
 				var ws = new WritingSystemDefinition("en-US");
@@ -136,7 +140,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Save_ChangingIcuSort_DoesNotDuplicateInLdmlFile()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo = new GlobalWritingSystemRepository(e.Path);
 				var ws = new WritingSystemDefinition("en-US");
@@ -154,7 +158,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Get_LdmlAddedByAnotherRepo_ReturnsDefinition()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -170,7 +174,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Get_LdmlRemovedByAnotherRepo_Throws()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -186,7 +190,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Get_LdmlUpdatedByAnotherRepo_ReturnsUpdatedDefinition()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -206,7 +210,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Get_UpdatedLdmlRemovedByAnotherRepo_ReturnUpdatedDefinition()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -223,7 +227,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Get_UpdatedLdmlUpdatedByAnotherRepo_ReturnLastUpdatedDefinition()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -242,7 +246,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void AllWritingSystems_LdmlAddedByAnotherRepo_ReturnsDefinition()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -258,7 +262,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void AllWritingSystems_LdmlRemovedByAnotherRepo_ReturnsEmpty()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -274,7 +278,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void AllWritingSystems_LdmlUpdatedByAnotherRepo_ReturnsUpdatedDefinition()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -292,7 +296,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Count_LdmlAddedByAnotherRepo_ReturnsOne()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -308,7 +312,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Count_LdmlRemovedByAnotherRepo_ReturnsZero()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -324,7 +328,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void AllWritingSystems_LdmlCheckingSetEmptyCanNotSave()
 		{
-			using (var tf = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var tf = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(tf.Path);
 				var repo2 = new GlobalWritingSystemRepository(tf.Path);
