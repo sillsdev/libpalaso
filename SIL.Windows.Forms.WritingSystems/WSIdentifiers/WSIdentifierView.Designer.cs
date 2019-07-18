@@ -44,14 +44,15 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 			// 
 			// _specialTypeComboBox
 			// 
-			this._specialTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this._specialTypeComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this._specialTypeComboBox.FormattingEnabled = true;
 			this._localizationHelper.SetLocalizableToolTip(this._specialTypeComboBox, null);
 			this._localizationHelper.SetLocalizationComment(this._specialTypeComboBox, null);
 			this._localizationHelper.SetLocalizingId(this._specialTypeComboBox, "WSIdentifierView._specialTypeComboBox");
-			this._specialTypeComboBox.Location = new System.Drawing.Point(102, 56);
+			this._specialTypeComboBox.Location = new System.Drawing.Point(114, 56);
 			this._specialTypeComboBox.Name = "_specialTypeComboBox";
-			this._specialTypeComboBox.Size = new System.Drawing.Size(278, 21);
+			this._specialTypeComboBox.Size = new System.Drawing.Size(273, 21);
 			this._specialTypeComboBox.TabIndex = 8;
 			this._specialTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.specialTypeComboBox_SelectedIndexChanged);
 			// 
@@ -60,7 +61,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 			this._localizationHelper.SetLocalizableToolTip(this._abbreviation, null);
 			this._localizationHelper.SetLocalizationComment(this._abbreviation, null);
 			this._localizationHelper.SetLocalizingId(this._abbreviation, "WSIdentifierView._abbreviation");
-			this._abbreviation.Location = new System.Drawing.Point(102, 22);
+			this._abbreviation.Location = new System.Drawing.Point(114, 30);
 			this._abbreviation.Name = "_abbreviation";
 			this._abbreviation.Size = new System.Drawing.Size(46, 20);
 			this._abbreviation.TabIndex = 12;
@@ -69,9 +70,11 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 			// 
 			// _detailPanel
 			// 
-			this._detailPanel.Location = new System.Drawing.Point(102, 80);
+			this._detailPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this._detailPanel.Location = new System.Drawing.Point(110, 80);
 			this._detailPanel.Name = "_detailPanel";
-			this._detailPanel.Size = new System.Drawing.Size(278, 140);
+			this._detailPanel.Size = new System.Drawing.Size(279, 140);
 			this._detailPanel.TabIndex = 13;
 			// 
 			// betterLabel5
@@ -108,14 +111,14 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 			this._localizationHelper.SetLocalizableToolTip(this.betterLabel4, null);
 			this._localizationHelper.SetLocalizationComment(this.betterLabel4, "In writing system setup general tab: label before abbreviation text box");
 			this._localizationHelper.SetLocalizingId(this.betterLabel4, "WSIdentifierView.betterLabel4");
-			this.betterLabel4.Location = new System.Drawing.Point(13, 24);
+			this.betterLabel4.Location = new System.Drawing.Point(13, 34);
 			this.betterLabel4.Multiline = true;
 			this.betterLabel4.Name = "betterLabel4";
 			this.betterLabel4.ReadOnly = true;
-			this.betterLabel4.Size = new System.Drawing.Size(89, 15);
+			this.betterLabel4.Size = new System.Drawing.Size(100, 15);
 			this.betterLabel4.TabIndex = 6;
 			this.betterLabel4.TabStop = false;
-			this.betterLabel4.Text = "Abbreviation";
+			this.betterLabel4.Text = "Abbreviation:";
 			// 
 			// _localizationHelper
 			// 
