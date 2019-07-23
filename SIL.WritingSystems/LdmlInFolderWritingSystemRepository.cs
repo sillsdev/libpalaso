@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using SIL.Extensions;
 using SIL.WritingSystems.Migration;
 
 namespace SIL.WritingSystems
@@ -166,7 +167,7 @@ namespace SIL.WritingSystems
 			_loadProblems.Clear();
 			ChangedIds.Clear();
 			Clear();
-			foreach (string filePath in Directory.GetFiles(_path, "*.ldml"))
+			foreach (var filePath in Directory.GetFiles(_path, "*.ldml").OrderBy(filename => filename))
 				LoadDefinition(filePath);
 
 			LoadChangedIdsFromExistingWritingSystems();

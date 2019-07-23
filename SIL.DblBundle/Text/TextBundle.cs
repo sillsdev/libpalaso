@@ -99,7 +99,8 @@ namespace SIL.DblBundle.Text
 				if (_ldmlFilePath != null)
 					return _ldmlFilePath;
 
-				_ldmlFilePath = Directory.GetFiles(PathToUnzippedBundleInnards, "*.ldml").FirstOrDefault();
+				_ldmlFilePath = Directory.GetFiles(PathToUnzippedBundleInnards, "*.ldml")
+					.OrderBy(filename => filename).FirstOrDefault();
 
 				if (_ldmlFilePath == null)
 					_ldmlFilePath = Path.Combine(PathToUnzippedBundleInnards, DblBundleFileUtils.kLegacyLdmlFileName);

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using SIL.Extensions;
 using SIL.PlatformUtilities;
 using SIL.Reflection;
 
@@ -300,7 +301,8 @@ namespace SIL.IO
 		{
 			try
 			{
-				return Directory.GetFiles(subDir, exeName, srcOption).FirstOrDefault();
+				return Directory.GetFiles(subDir, exeName, srcOption)
+					.OrderBy(filename => filename).FirstOrDefault();
 			}
 			catch (Exception e)
 			{

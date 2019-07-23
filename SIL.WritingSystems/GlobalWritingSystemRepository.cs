@@ -85,7 +85,7 @@ namespace SIL.WritingSystems
 		{
 			var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
 			var removedIds = new HashSet<string>(WritingSystems.Keys);
-			foreach (string file in Directory.GetFiles(PathToWritingSystems, $"*{Extension}"))
+			foreach (var file in Directory.GetFiles(PathToWritingSystems, $"*{Extension}").OrderBy(filename => filename))
 			{
 				var fi = new FileInfo(file);
 				string id = Path.GetFileNameWithoutExtension(file);
