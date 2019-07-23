@@ -141,20 +141,10 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		private void OnSelectedIndexChanged(object sender, EventArgs e)
 		{
-			if(_listView.SelectedIndices != null && _listView.SelectedIndices.Count > 0)
+			if (_listView.SelectedIndices != null && _listView.SelectedIndices.Count > 0)
 			{
 				ListViewItem item = _listView.Items[_listView.SelectedIndices[0]];
-				var oldLangInfo = SelectedLanguage;
-				var newLangInfo = (LanguageInfo) item.Tag;
-				// If the user has already set some Script/Region/Variant info, we don't want
-				// to undo that just because the listview is set to that main language in the search.
-				if (_model.LanguageTagContainsScriptRegionVariantInfo &&
-				    newLangInfo.LanguageTag == _model.LanguageTagWithoutScriptRegionVariant)
-				{
-					newLangInfo.DesiredName = oldLangInfo.DesiredName;
-					newLangInfo.LanguageTag = oldLangInfo.LanguageTag;
-				}
-				SelectedLanguage = newLangInfo;
+				SelectedLanguage = (LanguageInfo)item.Tag;
 			}
 		}
 
