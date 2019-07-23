@@ -114,7 +114,7 @@ namespace SIL.Lift
 			Guard.Against(Path.GetExtension(liftRangesPathname).ToLowerInvariant() != ".lift-ranges", "Unexpected file extension");
 			var projectDir = Path.GetDirectoryName(liftRangesPathname);
 
-			foreach (var liftRangesFile in Directory.GetFiles(projectDir, @"*.lift-ranges"))
+			foreach (var liftRangesFile in Directory.GetFiles(projectDir, @"*.lift-ranges").OrderBy(filename => filename))
 			{
 				using (var tempFile = new TempFile(File.ReadAllText(liftRangesFile), Utf8))
 				{

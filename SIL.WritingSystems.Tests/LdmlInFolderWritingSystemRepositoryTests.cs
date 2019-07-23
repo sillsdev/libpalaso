@@ -286,12 +286,14 @@ namespace SIL.WritingSystems.Tests
 			using (var environment = new TestEnvironment())
 			{
 				environment.WritingSystem.Language = "en";
-				Assert.AreNotEqual(0, Directory.GetFiles(environment.LocalRepositoryPath, "*.ldml"));
+				Assert.That(Directory.GetFiles(environment.LocalRepositoryPath,
+					"*.ldml"), Is.Empty);
 				environment.LocalRepository.SaveDefinition(environment.WritingSystem);
 				environment.ResetRepositories();
 				WritingSystemDefinition ws2 = environment.LocalRepository.Get("en");
-				Assert.AreEqual(
-					Path.GetFileNameWithoutExtension(Directory.GetFiles(environment.LocalRepositoryPath, "*.ldml")[0]), ws2.Id);
+				Assert.That(Path.GetFileNameWithoutExtension(
+					Directory.GetFiles(environment.LocalRepositoryPath, "*.ldml")
+						.OrderBy(filename => filename).FirstOrDefault()), Is.EqualTo(ws2.Id));
 			}
 		}
 

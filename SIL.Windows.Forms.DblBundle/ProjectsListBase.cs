@@ -146,14 +146,15 @@ namespace SIL.Windows.Forms.DblBundle
 		protected abstract IEnumerable<string> AllProjectFolders { get; }
 
 		protected abstract string ProjectFileExtension { get; }
-	
+
 		protected virtual IEnumerable<Tuple<string, IProjectInfo>> Projects
 		{
 			get
 			{
 				foreach (var recordingProjectFolder in AllProjectFolders)
 				{
-					var path = Directory.GetFiles(recordingProjectFolder, "*" + ProjectFileExtension).FirstOrDefault();
+					var path = Directory.GetFiles(recordingProjectFolder, "*" + ProjectFileExtension)
+						.OrderBy(filename => filename).FirstOrDefault();
 					if (path != null)
 					{
 						var projectInfo = GetProjectInfo(path);

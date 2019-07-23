@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Xml;
@@ -60,7 +61,8 @@ namespace SIL.Lift.Tests.Merging
 		private FileInfo GetBaseFileInfo()
 		{
 			DirectoryInfo di = new DirectoryInfo(_directory);
-			return di.GetFiles(_baseLiftFileName, SearchOption.TopDirectoryOnly)[0];
+			return di.GetFiles(_baseLiftFileName, SearchOption.TopDirectoryOnly)
+				.OrderBy(filename => filename).FirstOrDefault();
 		}
 
 		//private FileInfo[] GetFileInfos()
@@ -479,6 +481,7 @@ namespace SIL.Lift.Tests.Merging
 		}
 
 		[Test]
+		[Platform(Exclude = "Linux", Reason = "Locked files can still be moved on Linux")]
 		public void LockedBackupFile_StillMakesBackup()
 		{
 			string backupFilePath = Path.Combine(this._directory, _baseLiftFileName + ".bak");
