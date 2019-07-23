@@ -59,6 +59,11 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 			_specialTypeComboBox.SelectedIndex = 0;
 			UpdateFromModel();
 			_specialTypeComboBox.SelectedIndexChanged += specialTypeComboBox_SelectedIndexChanged;
+			if (_model.IsSpecialComboLocked)
+			{
+				// Update the display to reflect the only combobox selection available.
+				specialTypeComboBox_SelectedIndexChanged(null, null);
+			}
 		}
 
 		private void AddDetailsControl(Control view)
