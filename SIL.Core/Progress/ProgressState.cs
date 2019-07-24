@@ -9,6 +9,7 @@ namespace SIL.Progress
 	/// <summary>
 	/// Long-running tasks can be written to take one of these as an argument, and use it to notify others of their progress
 	/// </summary>
+	// Should be deprecated - [Obsolete("Use the extensive SIL.Progress.IProgress classes instead, possibly along with `SIL.Windows.Forms.Progress.LogBox`.")]
 	public class ProgressState : IDisposable
 	{
 		private object _arguments;
