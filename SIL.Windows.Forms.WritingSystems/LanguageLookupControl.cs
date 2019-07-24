@@ -146,9 +146,10 @@ namespace SIL.Windows.Forms.WritingSystems
 				ListViewItem item = _listView.Items[_listView.SelectedIndices[0]];
 				var oldLangInfo = SelectedLanguage;
 				var newLangInfo = (LanguageInfo) item.Tag;
-				// If the user has already set some Script/Region/Variant info, we don't want
-				// to undo that just because the listview is set to that main language in the search.
-				if (_model.LanguageTagContainsScriptRegionVariantInfo &&
+				// If the user has already set some Script/Region/Variant info, and the link to the
+				// Script/Region/Variant dialog isn't available, we don't want to undo that just because
+				// the listview is set to that main language in the search.
+				if (!_scriptsAndVariantsLink.Visible && _model.LanguageTagContainsScriptRegionVariantInfo &&
 				    newLangInfo.LanguageTag == _model.LanguageTagWithoutScriptRegionVariant)
 				{
 					newLangInfo.DesiredName = oldLangInfo.DesiredName;
