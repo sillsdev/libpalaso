@@ -5,8 +5,6 @@ using NUnit.Framework.Constraints;
 
 namespace NUnit.Framework
 {
-	// TODO: Remove this class when we start using NUnit 3
-
 	public static class Does
 	{
 		#region Not

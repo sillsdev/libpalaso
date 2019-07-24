@@ -148,6 +148,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.Tests-Des
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.WritingSystems-Designer", "SIL.Windows.Forms.WritingSystems\SIL.Windows.Forms.WritingSystems-Designer.csproj", "{7B1638B6-DBB3-4978-B900-5A65F5C93BEA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.NUnit3Compatibility", "SIL.NUnit3Compatibility\SIL.NUnit3Compatibility.csproj", "{934A4A8C-23CD-48A6-93C7-A40B47C7BE23}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -350,6 +352,10 @@ Global
 		{E7BD6834-F0A2-4966-A459-629D43BA5399}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B1638B6-DBB3-4978-B900-5A65F5C93BEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7B1638B6-DBB3-4978-B900-5A65F5C93BEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{934A4A8C-23CD-48A6-93C7-A40B47C7BE23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{934A4A8C-23CD-48A6-93C7-A40B47C7BE23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{934A4A8C-23CD-48A6-93C7-A40B47C7BE23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{934A4A8C-23CD-48A6-93C7-A40B47C7BE23}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

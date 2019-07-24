@@ -33,3 +33,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - [SIL.Core] new properties for processor architecture: `Platform.ProcessArchitecture` and
   `Platform.IsRunning64Bit`
+- [SIL.NUnit3Compatibility] new project/package that allows to use NUnit3 syntax with NUnit2
+  projects

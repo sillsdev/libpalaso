@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
+    <ProjectReference Include="..\SIL.NUnit3Compatibility\SIL.NUnit3Compatibility.csproj" />
     <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj" />
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj" />
   </ItemGroup>

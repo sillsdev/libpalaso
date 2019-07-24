@@ -5,14 +5,11 @@ using System;
 
 namespace NUnit.Framework
 {
-	// TODO: Remove this class when we start using NUnit 3
-
 	/// <summary>
 	/// This attribute allows to use the NUnit 3 name while we still use NUnit 2.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
 	public class OneTimeSetUpAttribute: TestFixtureSetUpAttribute
 	{
-
 	}
 }
