@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using SIL.WritingSystems;
@@ -26,7 +25,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 			_scriptCombo.DisplayMember = "Name";
 			_regionCombo.Items.Add(new RegionSubtag("blank"));  // add a blank item at the top of the list
 			_regionCombo.Items.AddRange(StandardSubtags.RegisteredRegions.Cast<object>().ToArray());
-			_regionCombo.DisplayMember = "Name";
+			_regionCombo.DisplayMember = "DisplayLabel";
 		}
 
 		private void UpdateDisplayFromModel(object sender, EventArgs e)
