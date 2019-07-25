@@ -310,6 +310,7 @@
     <Compile Include="Migration\Rfc5646TagTests.cs" />
     <Compile Include="Migration\SilLdmlVerisonTests.cs" />
     <Compile Include="Migration\SubtagTests.cs" />
+    <Compile Include="RegionSubtagTests.cs" />
     <Compile Include="SimpleRulesCollationDefinitionCloneableTests.cs" />
     <Compile Include="SimpleCollationRulesParserTests.cs" />
     <Compile Include="SldrTests.cs" />
