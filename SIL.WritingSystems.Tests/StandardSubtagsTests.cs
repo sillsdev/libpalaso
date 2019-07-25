@@ -35,7 +35,17 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void RegisteredScripts_HasLatn_True()
 		{
-			Assert.That(StandardSubtags.RegisteredScripts.Contains("Latn"), Is.True);
+			ScriptSubtag scriptTag;
+			Assert.True(StandardSubtags.RegisteredScripts.TryGet("Latn", out scriptTag), "should contain Latn");
+			Assert.False(scriptTag.IsPrivateUse, "'Latn' script should not be private use");
+		}
+
+		[Test]
+		public void RegisteredScripts_NoPrivateUseScripts()
+		{
+			var privateUseScriptSubtag = StandardSubtags.RegisteredScripts.FirstOrDefault(sst => sst.IsPrivateUse);
+			Assert.Null(privateUseScriptSubtag, "Please update this test if we intend to ship the Private Use script {0} ({1})",
+				privateUseScriptSubtag?.Name, privateUseScriptSubtag?.Code);
 		}
 
 		[Test]
@@ -108,13 +118,23 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void RegisteredRegions_HasUS_True()
 		{
-			Assert.That(StandardSubtags.RegisteredRegions.Contains("US"), Is.True);
+			RegionSubtag regionTag;
+			Assert.True(StandardSubtags.RegisteredRegions.TryGet("US", out regionTag), "unable to retrieve the region");
+			Assert.False(regionTag.IsPrivateUse, "'US' region should not be private use");
 		}
 
 		[Test]
 		public void RegisteredRegions_HasFonipa_False()
 		{
 			Assert.That(StandardSubtags.RegisteredRegions.Contains("fonipa"), Is.False);
+		}
+
+		[Test]
+		public void RegisteredRegions_PrivateUse([Values("AA", "ZZ")] string code)
+		{
+			RegionSubtag regionTag;
+			Assert.True(StandardSubtags.RegisteredRegions.TryGet(code, out regionTag), "unable to retrieve the region");
+			Assert.True(regionTag.IsPrivateUse, "'Private use' region should be private use!");
 		}
 
 		[Test]
