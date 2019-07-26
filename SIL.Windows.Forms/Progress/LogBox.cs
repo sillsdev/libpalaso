@@ -87,6 +87,11 @@ namespace SIL.Windows.Forms.Progress
 			_box.LinkClicked += _box_LinkClicked;
 			_verboseBox.LinkClicked += _box_LinkClicked;
 			_synchronizationContext = SynchronizationContext.Current;
+			// The default is defnitely too big. If client pushes enough messages, there will be memory problems.
+			// Based on testing, cutting it down to a third of that size seems to get us into a "safe" zone. Can't
+			// guarantee that this will be safe on all systems or in all circumstances. And it might still be safe
+			// to go a little bigger. (Just cutting it in half still caused the test to red-bar with an access violation.)
+			MaxLength /= 3;
 		}
 
 		public int MaxLength

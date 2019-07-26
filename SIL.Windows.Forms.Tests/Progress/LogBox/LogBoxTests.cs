@@ -38,14 +38,14 @@ namespace SIL.Windows.Forms.Tests.Progress.LogBox
 			Console.WriteLine("Showing LogBox");
 			using (var e = new LogBoxFormForTest())
 			{
-				var sb = new StringBuilder();
-				sb.Append('a', Int32.MaxValue / 1000 - 1);
-				var hugestr = sb.ToString();
 				progress = e.progress;
+				var sb = new StringBuilder();
+				sb.Append('a', progress.MaxLength / 1000 - 1);
+				var hugestr = sb.ToString();
 				for (int i = 0; i < 999; i++)
 					progress.WriteVerbose(hugestr);
 				sb.Clear();
-				sb.Append('a', Int32.MaxValue - (hugestr.Length + 1) * 999 - 1);
+				sb.Append('a', progress.MaxLength - (hugestr.Length + 1) * 999 - 1);
 				progress.WriteVerbose(sb.ToString());
 				progress.WriteVerbose(".");
 				Assert.IsTrue(progress.ErrorEncountered);
