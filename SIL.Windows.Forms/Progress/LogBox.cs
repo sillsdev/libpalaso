@@ -229,13 +229,13 @@ namespace SIL.Windows.Forms.Progress
 				// empty string in that case. This works around a crash
 				// in WeSay.
 				if (_box == null || _verboseBox == null) return String.Empty;
-				return "Box:" + _box.Text + "Verbose:" + _verboseBox.Text;
+				return _verboseBox.Text;
 			}
 		}
 
 		public string Rtf
 		{
-			get { return "Box:" + _box.Rtf + "Verbose:" + _verboseBox.Rtf; }
+			get { return _verboseBox.Rtf; }
 		}
 
 		public void ScrollToTop()
@@ -295,11 +295,11 @@ namespace SIL.Windows.Forms.Progress
 			try
 			{
 #endif
-			foreach (var rtfBox in new[] {_box, _verboseBox})
+			foreach (var rtfBox in new[] { _verboseBox, _box })
 			{
 				var rtfBoxForDelegate = rtfBox; //no really, this assignment is needed. Took hours to track down this bug.
 				var styleForDelegate = style;
-				SafeInvoke(rtfBox, (() =>
+				SafeInvoke(rtfBox, () =>
 				{
 					// Since "normal" messages get written out immediately, we need to flush any batched up
 					// messages that may be waiting in the verbose box's buffer. Note that this has to be done
@@ -319,19 +319,19 @@ namespace SIL.Windows.Forms.Progress
 							rtfBoxForDelegate.SelectionStart = rtfBoxForDelegate.TextLength;
 							rtfBoxForDelegate.SelectionColor = color;
 							rtfBoxForDelegate.SelectionFont = fnt;
-							AppendTextOrDisplayMaxLengthError(rtfBoxForDelegate, msg.FormatWithErrorStringInsteadOfException(args) +
-								kNewlineInRTF);
+							AppendTextOrDisplayMaxLengthError(rtfBoxForDelegate, msg.FormatWithErrorStringInsteadOfException(args),
+								m => rtfBoxForDelegate.AppendText(m));
 						}
 					}
 					else
 					{
 						// changing the text colour throws exceptions with mono 2011-12-09
 						// so just append plain text
-						AppendTextOrDisplayMaxLengthError(rtfBoxForDelegate, msg.FormatWithErrorStringInsteadOfException(args) +
-							kNewlineInRTF);
+						AppendTextOrDisplayMaxLengthError(rtfBoxForDelegate, msg.FormatWithErrorStringInsteadOfException(args),
+							m => rtfBoxForDelegate.AppendText(m));
 					}
 					EnableScrollTimer();
-				}));
+				});
 			}
 #if !DEBUG
 			}
@@ -344,33 +344,25 @@ namespace SIL.Windows.Forms.Progress
 #endif
 		}
 
-		private void AppendTextOrDisplayMaxLengthError(RichTextBox rtfBox, string message)
+		private void AppendTextOrDisplayMaxLengthError(RichTextBox rtfBox, string message, Action<string> append)
 		{
-			var remainingCharactersThatWillFit =
-				rtfBox.MaxLength - rtfBox.TextLength - _maxLengthError.Length;
-			if (remainingCharactersThatWillFit >= message.Length)
-				rtfBox.AppendText(message);
+			var remainingCharactersThatWillFit = rtfBox.MaxLength - rtfBox.TextLength - _maxLengthError.Length;
+			if (remainingCharactersThatWillFit >= message.Length + 1) // kNewlineInRTF.Length == 1
+				append(message + kNewlineInRTF);
+			else if (message == _maxLengthError)
+			{
+				if (remainingCharactersThatWillFit >= 0) // If not, we've already reported it in response to the verbose box going over.
+					append(message);
+			}
 			else
 			{
 				if (remainingCharactersThatWillFit > kNewlineInRTF.Length)
 				{
 					message = message.Substring(0, remainingCharactersThatWillFit - kNewlineInRTF.Length) + kNewlineInRTF;
-					rtfBox.AppendText(message);
-				}
-				if (Platform.IsWindows)
-				{
-					rtfBox.SelectionStart = rtfBox.TextLength;
-					rtfBox.SelectionColor = Color.Red;
-					rtfBox.AppendText(_maxLengthError);
-				}
-				else
-				{
-					// changing the text colour throws exceptions with mono 2011-12-09
-					// so just append plain text
-					rtfBox.AppendText(_maxLengthError);
+					append(message);
 				}
 
-				ErrorEncountered = true;
+				WriteErrorInternal(_maxLengthError);
 			}
 		}
 
@@ -412,7 +404,12 @@ namespace SIL.Windows.Forms.Progress
 
 		public void WriteError(string message, params object[] args)
 		{
-			Write(Color.Red, _box.Font.Style, Environment.NewLine + "Error: " + message, args);
+			WriteErrorInternal(message, args);
+		}
+
+		private void WriteErrorInternal(string message, params object[] args)
+		{
+			Write(Color.Red, _box.Font.Style, message, args);
 
 			// There is no Invoke method on ToolStripItems (which the _reportLink is)
 			// and setting it to visible from another thread seems to work okay.
@@ -438,25 +435,28 @@ namespace SIL.Windows.Forms.Progress
 		{
 			SafeInvoke(_verboseBox, () =>
 			{
-				var textToAppend = SafeFormat(message + Environment.NewLine, args);
-				if (_scrollToEndTimer.Enabled || _stringBuilderPendingVerboseMessages.Length > 0)
+				var textToAppend = SafeFormat(message, args);
+				AppendTextOrDisplayMaxLengthError(_verboseBox, textToAppend, msg =>
 				{
-					// We're getting behind. We haven't managed to scroll the previously written content yet.
-					// To avoid locking up the UI, we need to start batching up the messages
-					// If we're here because we're just writing a bunch of verbose messages and we're not even
-					// showing the vebose view, we can safely just keep throwing them into the string builder
-					// until either the user switches to look at verbose view OR we get a normal message (which
-					// gets formatted differently, so we can no longer store the text as a plain string).
-					_stringBuilderPendingVerboseMessages.Append(textToAppend);
-					if (_verboseBox.Visible && _scrollToEndTimer.Interval < 700)
-						_scrollToEndTimer.Interval += 100;
-				}
-				else
-				{
-					AppendVerboseText(textToAppend);
-					if (_verboseBox.Visible)
-						EnableScrollTimer();
-				}
+					if (_scrollToEndTimer.Enabled || _stringBuilderPendingVerboseMessages.Length > 0)
+					{
+						// We're getting behind. We haven't managed to scroll the previously written content yet.
+						// To avoid locking up the UI, we need to start batching up the messages
+						// If we're here because we're just writing a bunch of verbose messages and we're not even
+						// showing the verbose view, we can safely just keep throwing them into the string builder
+						// until either the user switches to look at verbose view OR we get a normal message (which
+						// gets formatted differently, so we can no longer store the text as a plain string).
+						_stringBuilderPendingVerboseMessages.Append(msg);
+						if (_verboseBox.Visible && _scrollToEndTimer.Interval < 700)
+							_scrollToEndTimer.Interval += 100;
+					}
+					else
+					{
+						AppendVerboseText(msg);
+						if (_verboseBox.Visible)
+							EnableScrollTimer();
+					}
+				});
 			});
 		}
 
@@ -468,7 +468,8 @@ namespace SIL.Windows.Forms.Progress
 				_verboseBox.SelectionStart = _verboseBox.TextLength;
 				_verboseBox.SelectionColor = Color.DarkGray;
 			}
-			AppendTextOrDisplayMaxLengthError(_verboseBox, textToAppend);
+			// We've already ensured that there is room for it.
+			_verboseBox.AppendText(textToAppend);
 		}
 
 		public static string SafeFormat(string format, params object[] args)

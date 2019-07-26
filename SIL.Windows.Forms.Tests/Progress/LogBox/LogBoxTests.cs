@@ -63,14 +63,13 @@ namespace SIL.Windows.Forms.Tests.Progress.LogBox
 			{
 				var sb = new StringBuilder();
 				progress = e.progress;
-				var lengthOfBoxLabels = progress.Text.Length;
 				sb.Append('a', 83 - progress.MaxLengthErrorMessage.Length);
 				progress.MaxLength = 100;
 				progress.WriteVerbose(sb.ToString());
 				const string partThatWillFit = "Only this much.";
 				progress.WriteVerbose($"{partThatWillFit}~will fit!");
 				Assert.IsTrue(progress.ErrorEncountered);
-				Assert.AreEqual(progress.MaxLength + lengthOfBoxLabels, progress.Text.Length);
+				Assert.AreEqual(progress.MaxLength, progress.Text.Length);
 				var iTruncatedMessage = progress.Rtf.IndexOf(partThatWillFit);
 				Assert.IsTrue(iTruncatedMessage > 83);
 				Assert.AreNotEqual("~", progress.Rtf[iTruncatedMessage + partThatWillFit.Length]);
@@ -87,7 +86,6 @@ namespace SIL.Windows.Forms.Tests.Progress.LogBox
 			{
 				var sb = new StringBuilder();
 				progress = e.progress;
-				var lengthOfBoxLabels = progress.Text.Length;
 				sb.Append('a', 83 - progress.MaxLengthErrorMessage.Length);
 				progress.MaxLength = 100;
 				progress.WriteMessage(sb.ToString());
@@ -95,7 +93,7 @@ namespace SIL.Windows.Forms.Tests.Progress.LogBox
 				progress.WriteMessage($"{partThatWillFit}~will fit!");
 				// Turns out that the Text property returns the text twice, once labeled "Box:" and once labeled "Verbose:"
 				Assert.IsTrue(progress.ErrorEncountered);
-				Assert.AreEqual(progress.MaxLength * 2 + lengthOfBoxLabels, progress.Text.Length);
+				Assert.AreEqual(progress.MaxLength, progress.Text.Length);
 				var iTruncatedMessage = progress.Rtf.IndexOf(partThatWillFit);
 				Assert.IsTrue(iTruncatedMessage > 83);
 				Assert.AreNotEqual("~", progress.Rtf[iTruncatedMessage + partThatWillFit.Length]);
