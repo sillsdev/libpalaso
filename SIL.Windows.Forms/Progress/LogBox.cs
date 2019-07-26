@@ -27,6 +27,9 @@ namespace SIL.Windows.Forms.Progress
 		private readonly ToolStripLabel _reportLink;
 		private SynchronizationContext _synchronizationContext;
 		private StringBuilder _stringBuilderPendingVerboseMessages = new StringBuilder();
+		private const string kNewlineInRTF = "\n"; // In RTF, even if you insert \r\n (Environment.Newlin in Windows), the \r is not retained.
+		private const string kMaxLengthError = "Maximum length exceeded!";
+		private string _maxLengthError = kMaxLengthError;
 
 		public LogBox()
 		{
@@ -84,6 +87,23 @@ namespace SIL.Windows.Forms.Progress
 			_box.LinkClicked += _box_LinkClicked;
 			_verboseBox.LinkClicked += _box_LinkClicked;
 			_synchronizationContext = SynchronizationContext.Current;
+		}
+
+		public int MaxLength
+		{
+			get { return _verboseBox.MaxLength; }
+			set { _verboseBox.MaxLength = _box.MaxLength = value; }
+		}
+
+		public string MaxLengthErrorMessage
+		{
+			get { return _maxLengthError; }
+			set
+			{
+				if (String.IsNullOrWhiteSpace(value))
+					return;
+				_maxLengthError = value.Replace("\r", "").Replace(kNewlineInRTF, "");
+			}
 		}
 
 		void _box_LinkClicked(object sender, LinkClickedEventArgs e)
@@ -200,8 +220,8 @@ namespace SIL.Windows.Forms.Progress
 		public override string Text
 		{
 			get {
-				// The Text property get called during ctor so return an
-				// empty string in that case.  This works around a crash
+				// The Text property gets called during ctor so return an
+				// empty string in that case. This works around a crash
 				// in WeSay.
 				if (_box == null || _verboseBox == null) return String.Empty;
 				return "Box:" + _box.Text + "Verbose:" + _verboseBox.Text;
@@ -294,16 +314,16 @@ namespace SIL.Windows.Forms.Progress
 							rtfBoxForDelegate.SelectionStart = rtfBoxForDelegate.TextLength;
 							rtfBoxForDelegate.SelectionColor = color;
 							rtfBoxForDelegate.SelectionFont = fnt;
-							rtfBoxForDelegate.AppendText(msg.FormatWithErrorStringInsteadOfException(args) +
-								Environment.NewLine);
+							AppendTextOrDisplayMaxLengthError(rtfBoxForDelegate, msg.FormatWithErrorStringInsteadOfException(args) +
+								kNewlineInRTF);
 						}
 					}
 					else
 					{
 						// changing the text colour throws exceptions with mono 2011-12-09
 						// so just append plain text
-						rtfBoxForDelegate.AppendText(msg.FormatWithErrorStringInsteadOfException(args) +
-							Environment.NewLine);
+						AppendTextOrDisplayMaxLengthError(rtfBoxForDelegate, msg.FormatWithErrorStringInsteadOfException(args) +
+							kNewlineInRTF);
 					}
 					EnableScrollTimer();
 				}));
@@ -317,6 +337,36 @@ namespace SIL.Windows.Forms.Progress
 				//stack trace didn't actually go into this method, but the build date was after I wrote this.  So this exception may never actually happen.
 			}
 #endif
+		}
+
+		private void AppendTextOrDisplayMaxLengthError(RichTextBox rtfBox, string message)
+		{
+			var remainingCharactersThatWillFit =
+				rtfBox.MaxLength - rtfBox.TextLength - _maxLengthError.Length;
+			if (remainingCharactersThatWillFit >= message.Length)
+				rtfBox.AppendText(message);
+			else
+			{
+				if (remainingCharactersThatWillFit > kNewlineInRTF.Length)
+				{
+					message = message.Substring(0, remainingCharactersThatWillFit - kNewlineInRTF.Length) + kNewlineInRTF;
+					rtfBox.AppendText(message);
+				}
+				if (Platform.IsWindows)
+				{
+					rtfBox.SelectionStart = rtfBox.TextLength;
+					rtfBox.SelectionColor = Color.Red;
+					rtfBox.AppendText(_maxLengthError);
+				}
+				else
+				{
+					// changing the text colour throws exceptions with mono 2011-12-09
+					// so just append plain text
+					rtfBox.AppendText(_maxLengthError);
+				}
+
+				ErrorEncountered = true;
+			}
 		}
 
 		private void EnableScrollTimer()
@@ -413,7 +463,7 @@ namespace SIL.Windows.Forms.Progress
 				_verboseBox.SelectionStart = _verboseBox.TextLength;
 				_verboseBox.SelectionColor = Color.DarkGray;
 			}
-			_verboseBox.AppendText(textToAppend);
+			AppendTextOrDisplayMaxLengthError(_verboseBox, textToAppend);
 		}
 
 		public static string SafeFormat(string format, params object[] args)
