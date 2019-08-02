@@ -305,9 +305,33 @@ namespace SIL.Windows.Forms.WritingSystems
 				dlg.BindToModel(wsSetupModel);
 				if (dlg.ShowDialog() != DialogResult.OK)
 					return;
-				_model.SelectedLanguage.LanguageTag = wsSetupModel.CurrentDefinition.LanguageTag;
+				// Allow the user to think of the the Script and Variant's Abbreviation as the primary language tag
+				// for unlisted languages.  Otherwise, why show it or allow it to be edited?
+				var tag = wsSetupModel.CurrentDefinition.LanguageTag;
+				var abbr = wsSetupModel.CurrentDefinition.Abbreviation;
+				if (tag.Length >= 3 && IsUnlistedCode(tag.Substring(0,3)) &&
+					abbr.Length == 3 && IsUnlistedCode(abbr) &&
+					abbr != tag.Substring(0,3))
+				{
+					tag = abbr + tag.Substring(3);
+				}
+				_model.SelectedLanguage.LanguageTag = tag;
 				UpdateReadiness();
 			}
+		}
+
+		/// <summary>
+		/// Test whether the given ISO 639-3 code is one reserved for unlisted languages ("qaa" - "qtz").
+		/// </summary>
+		private bool IsUnlistedCode(string code)
+		{
+			if (String.IsNullOrEmpty(code) || code.Length != 3)
+				return false;
+			if (code[0] != 'q')
+				return false;
+			if (code[1] < 'a' || code[1] > 't')
+				return false;
+			return code[2] >= 'a' && code[2] <= 'z';
 		}
 
 		private void SetScriptsAndVariantsLabel()
