@@ -306,7 +306,7 @@ namespace SIL.Windows.Forms.Progress
 					// inside this loop because it needs to be inside the same call to "SafeInvoke" to prevent
 					// the possibility of additional verbose messages getting added to the buffer before the
 					// normal message gets written out to the verbose log box itself.
-					if (rtfBox == _verboseBox)
+					if (rtfBoxForDelegate == _verboseBox)
 						FlushPendingVerboseMessageBuffer();
 
 					if (Platform.IsWindows)
