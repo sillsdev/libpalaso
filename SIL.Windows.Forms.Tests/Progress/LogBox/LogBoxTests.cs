@@ -56,6 +56,37 @@ namespace SIL.Windows.Forms.Tests.Progress.LogBox
 
 		[Test]
 		[Category("KnownMonoIssue")] // this test hangs on TeamCity for Linux
+		public void WriteVerbose_MessagesExceedMaximumLength_ErrorMessageOnlyWrittenOnceToTerseLogBox()
+		{
+			Console.WriteLine("Showing LogBox");
+			using (var e = new LogBoxFormForTest())
+			{
+				var sb = new StringBuilder();
+				progress = e.progress;
+				sb.Append('a', 22);
+				progress.MaxLength = 200;
+				for (int i = 0; i < 13; i++)
+				{
+					progress.WriteVerbose(sb.ToString());
+					if (i % 5 == 0)
+						progress.WriteMessage("No problem.");
+				}
+
+				Assert.IsTrue(progress.ErrorEncountered);
+				var textTerse = progress.Text;
+				progress.ShowVerbose = true;
+				var textVerbose = progress.Text;
+				Assert.AreEqual(progress.MaxLength, textVerbose.Length);
+				Assert.IsTrue(textTerse.Length < textVerbose.Length);
+				var iFirst = textTerse.IndexOf(progress.MaxLengthErrorMessage);
+				int iEndOfErrorMessageInTerseBox = iFirst + progress.MaxLengthErrorMessage.Length;
+				Assert.IsTrue(textTerse.Length > iEndOfErrorMessageInTerseBox);
+				Assert.AreEqual(-1, textTerse.IndexOf(progress.MaxLengthErrorMessage, iEndOfErrorMessageInTerseBox));
+			}
+		}
+
+		[Test]
+		[Category("KnownMonoIssue")] // this test hangs on TeamCity for Linux
 		public void WriteVerbose_PartOfMessageExceedsMaximumLength_PartialMessageWrittenFollowedByMaximumLengthExceeded()
 		{
 			Console.WriteLine("Showing LogBox");
@@ -63,6 +94,7 @@ namespace SIL.Windows.Forms.Tests.Progress.LogBox
 			{
 				var sb = new StringBuilder();
 				progress = e.progress;
+				progress.ShowVerbose = true;
 				sb.Append('a', 83 - progress.MaxLengthErrorMessage.Length);
 				progress.MaxLength = 100;
 				progress.WriteVerbose(sb.ToString());
@@ -91,8 +123,9 @@ namespace SIL.Windows.Forms.Tests.Progress.LogBox
 				progress.WriteMessage(sb.ToString());
 				const string partThatWillFit = "Only this much.";
 				progress.WriteMessage($"{partThatWillFit}~will fit!");
-				// Turns out that the Text property returns the text twice, once labeled "Box:" and once labeled "Verbose:"
 				Assert.IsTrue(progress.ErrorEncountered);
+				Assert.IsTrue(progress.Text.EndsWith(progress.MaxLengthErrorMessage));
+				progress.ShowVerbose = true;
 				Assert.AreEqual(progress.MaxLength, progress.Text.Length);
 				var iTruncatedMessage = progress.Rtf.IndexOf(partThatWillFit);
 				Assert.IsTrue(iTruncatedMessage > 83);

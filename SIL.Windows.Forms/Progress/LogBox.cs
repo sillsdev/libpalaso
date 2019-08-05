@@ -229,13 +229,13 @@ namespace SIL.Windows.Forms.Progress
 				// empty string in that case. This works around a crash
 				// in WeSay.
 				if (_box == null || _verboseBox == null) return String.Empty;
-				return _verboseBox.Text;
+				return _showDetailsMenu.Checked ? _verboseBox.Text : _box.Text;
 			}
 		}
 
 		public string Rtf
 		{
-			get { return _verboseBox.Rtf; }
+			get { return _showDetailsMenu.Checked ? _verboseBox.Rtf : _box.Rtf; }
 		}
 
 		public void ScrollToTop()
@@ -362,7 +362,8 @@ namespace SIL.Windows.Forms.Progress
 					append(message);
 				}
 
-				WriteErrorInternal(_maxLengthError);
+				if (remainingCharactersThatWillFit >= 0)
+					WriteErrorInternal(_maxLengthError);
 			}
 		}
 
