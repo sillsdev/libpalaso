@@ -27,6 +27,9 @@ namespace SIL.Windows.Forms.Progress
 		private readonly ToolStripLabel _reportLink;
 		private SynchronizationContext _synchronizationContext;
 		private StringBuilder _stringBuilderPendingVerboseMessages = new StringBuilder();
+		private const string kNewlineInRTF = "\n"; // In RTF, even if you insert \r\n (Environment.Newlin in Windows), the \r is not retained.
+		private const string kMaxLengthError = "Maximum length exceeded!";
+		private string _maxLengthError = kMaxLengthError;
 
 		public LogBox()
 		{
@@ -84,6 +87,28 @@ namespace SIL.Windows.Forms.Progress
 			_box.LinkClicked += _box_LinkClicked;
 			_verboseBox.LinkClicked += _box_LinkClicked;
 			_synchronizationContext = SynchronizationContext.Current;
+			// The default is defnitely too big. If client pushes enough messages, there will be memory problems.
+			// Based on testing, cutting it down to a third of that size seems to get us into a "safe" zone. Can't
+			// guarantee that this will be safe on all systems or in all circumstances. And it might still be safe
+			// to go a little bigger. (Just cutting it in half still caused the test to red-bar with an access violation.)
+			MaxLength /= 3;
+		}
+
+		public int MaxLength
+		{
+			get { return _verboseBox.MaxLength; }
+			set { _verboseBox.MaxLength = _box.MaxLength = value; }
+		}
+
+		public string MaxLengthErrorMessage
+		{
+			get { return _maxLengthError; }
+			set
+			{
+				if (String.IsNullOrWhiteSpace(value))
+					return;
+				_maxLengthError = value.Replace("\r", "").Replace(kNewlineInRTF, "");
+			}
 		}
 
 		void _box_LinkClicked(object sender, LinkClickedEventArgs e)
@@ -200,17 +225,17 @@ namespace SIL.Windows.Forms.Progress
 		public override string Text
 		{
 			get {
-				// The Text property get called during ctor so return an
-				// empty string in that case.  This works around a crash
+				// The Text property gets called during ctor so return an
+				// empty string in that case. This works around a crash
 				// in WeSay.
 				if (_box == null || _verboseBox == null) return String.Empty;
-				return "Box:" + _box.Text + "Verbose:" + _verboseBox.Text;
+				return _showDetailsMenu.Checked ? _verboseBox.Text : _box.Text;
 			}
 		}
 
 		public string Rtf
 		{
-			get { return "Box:" + _box.Rtf + "Verbose:" + _verboseBox.Rtf; }
+			get { return _showDetailsMenu.Checked ? _verboseBox.Rtf : _box.Rtf; }
 		}
 
 		public void ScrollToTop()
@@ -270,18 +295,18 @@ namespace SIL.Windows.Forms.Progress
 			try
 			{
 #endif
-			foreach (var rtfBox in new[] {_box, _verboseBox})
+			foreach (var rtfBox in new[] { _verboseBox, _box })
 			{
 				var rtfBoxForDelegate = rtfBox; //no really, this assignment is needed. Took hours to track down this bug.
 				var styleForDelegate = style;
-				SafeInvoke(rtfBox, (() =>
+				SafeInvoke(rtfBox, () =>
 				{
 					// Since "normal" messages get written out immediately, we need to flush any batched up
 					// messages that may be waiting in the verbose box's buffer. Note that this has to be done
 					// inside this loop because it needs to be inside the same call to "SafeInvoke" to prevent
 					// the possibility of additional verbose messages getting added to the buffer before the
 					// normal message gets written out to the verbose log box itself.
-					if (rtfBox == _verboseBox)
+					if (rtfBoxForDelegate == _verboseBox)
 						FlushPendingVerboseMessageBuffer();
 
 					if (Platform.IsWindows)
@@ -294,19 +319,19 @@ namespace SIL.Windows.Forms.Progress
 							rtfBoxForDelegate.SelectionStart = rtfBoxForDelegate.TextLength;
 							rtfBoxForDelegate.SelectionColor = color;
 							rtfBoxForDelegate.SelectionFont = fnt;
-							rtfBoxForDelegate.AppendText(msg.FormatWithErrorStringInsteadOfException(args) +
-								Environment.NewLine);
+							AppendTextOrDisplayMaxLengthError(rtfBoxForDelegate, msg.FormatWithErrorStringInsteadOfException(args),
+								m => rtfBoxForDelegate.AppendText(m));
 						}
 					}
 					else
 					{
 						// changing the text colour throws exceptions with mono 2011-12-09
 						// so just append plain text
-						rtfBoxForDelegate.AppendText(msg.FormatWithErrorStringInsteadOfException(args) +
-							Environment.NewLine);
+						AppendTextOrDisplayMaxLengthError(rtfBoxForDelegate, msg.FormatWithErrorStringInsteadOfException(args),
+							m => rtfBoxForDelegate.AppendText(m));
 					}
 					EnableScrollTimer();
-				}));
+				});
 			}
 #if !DEBUG
 			}
@@ -317,6 +342,35 @@ namespace SIL.Windows.Forms.Progress
 				//stack trace didn't actually go into this method, but the build date was after I wrote this.  So this exception may never actually happen.
 			}
 #endif
+		}
+
+		private void AppendTextOrDisplayMaxLengthError(RichTextBox rtfBox, string message, Action<string> append)
+		{
+			var remainingCharactersThatWillFit = rtfBox.MaxLength - rtfBox.TextLength - _maxLengthError.Length;
+			if (remainingCharactersThatWillFit >= message.Length + 1) // kNewlineInRTF.Length == 1
+				append(message + kNewlineInRTF);
+			else if (message == _maxLengthError)
+			{
+				if (remainingCharactersThatWillFit >= 0) // If not, we've already reported it in response to the verbose box going over.
+					append(message);
+			}
+			else
+			{
+				if (remainingCharactersThatWillFit > kNewlineInRTF.Length)
+				{
+					message = message.Substring(0, remainingCharactersThatWillFit - kNewlineInRTF.Length) + kNewlineInRTF;
+					append(message);
+				}
+
+				// The first time we attempt to write a message that would overflow the verbose stream,
+				// WriteErrorInternal gets called, and we notify the user in both message streams. The
+				// above logic will prevent subsequent writes to a box which is already full. The
+				// following check will keep us from re-reporting the problem (in either box). If we
+				// later fill up the terse box, it will display the warning message a second time for its
+				// own overlfow (so that will then be the last message in both boxes).
+				if (remainingCharactersThatWillFit >= 0)
+					WriteErrorInternal(_maxLengthError);
+			}
 		}
 
 		private void EnableScrollTimer()
@@ -357,7 +411,12 @@ namespace SIL.Windows.Forms.Progress
 
 		public void WriteError(string message, params object[] args)
 		{
-			Write(Color.Red, _box.Font.Style, Environment.NewLine + "Error: " + message, args);
+			WriteErrorInternal(message, args);
+		}
+
+		private void WriteErrorInternal(string message, params object[] args)
+		{
+			Write(Color.Red, _box.Font.Style, message, args);
 
 			// There is no Invoke method on ToolStripItems (which the _reportLink is)
 			// and setting it to visible from another thread seems to work okay.
@@ -383,25 +442,28 @@ namespace SIL.Windows.Forms.Progress
 		{
 			SafeInvoke(_verboseBox, () =>
 			{
-				var textToAppend = SafeFormat(message + Environment.NewLine, args);
-				if (_scrollToEndTimer.Enabled || _stringBuilderPendingVerboseMessages.Length > 0)
+				var textToAppend = SafeFormat(message, args);
+				AppendTextOrDisplayMaxLengthError(_verboseBox, textToAppend, msg =>
 				{
-					// We're getting behind. We haven't managed to scroll the previously written content yet.
-					// To avoid locking up the UI, we need to start batching up the messages
-					// If we're here because we're just writing a bunch of verbose messages and we're not even
-					// showing the vebose view, we can safely just keep throwing them into the string builder
-					// until either the user switches to look at verbose view OR we get a normal message (which
-					// gets formatted differently, so we can no longer store the text as a plain string).
-					_stringBuilderPendingVerboseMessages.Append(textToAppend);
-					if (_verboseBox.Visible && _scrollToEndTimer.Interval < 700)
-						_scrollToEndTimer.Interval += 100;
-				}
-				else
-				{
-					AppendVerboseText(textToAppend);
-					if (_verboseBox.Visible)
-						EnableScrollTimer();
-				}
+					if (_scrollToEndTimer.Enabled || _stringBuilderPendingVerboseMessages.Length > 0)
+					{
+						// We're getting behind. We haven't managed to scroll the previously written content yet.
+						// To avoid locking up the UI, we need to start batching up the messages
+						// If we're here because we're just writing a bunch of verbose messages and we're not even
+						// showing the verbose view, we can safely just keep throwing them into the string builder
+						// until either the user switches to look at verbose view OR we get a normal message (which
+						// gets formatted differently, so we can no longer store the text as a plain string).
+						_stringBuilderPendingVerboseMessages.Append(msg);
+						if (_verboseBox.Visible && _scrollToEndTimer.Interval < 700)
+							_scrollToEndTimer.Interval += 100;
+					}
+					else
+					{
+						AppendVerboseText(msg);
+						if (_verboseBox.Visible)
+							EnableScrollTimer();
+					}
+				});
 			});
 		}
 
@@ -413,6 +475,7 @@ namespace SIL.Windows.Forms.Progress
 				_verboseBox.SelectionStart = _verboseBox.TextLength;
 				_verboseBox.SelectionColor = Color.DarkGray;
 			}
+			// We've already ensured that there is room for it.
 			_verboseBox.AppendText(textToAppend);
 		}
 
