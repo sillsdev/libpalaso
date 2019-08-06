@@ -362,6 +362,12 @@ namespace SIL.Windows.Forms.Progress
 					append(message);
 				}
 
+				// The first time we attempt to write a message that would overflow the verbose stream,
+				// WriteErrorInternal gets called, and we notify the user in both message streams. The
+				// above logic will prevent subsequent writes to a box which is already full. The
+				// following check will keep us from re-reporting the problem (in either box). If we
+				// later fill up the terse box, it will display the warning message a second time for its
+				// own overlfow (so that will then be the last message in both boxes).
 				if (remainingCharactersThatWillFit >= 0)
 					WriteErrorInternal(_maxLengthError);
 			}
