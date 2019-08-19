@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2013-2018 SIL International
+// Copyright (c) 2013-2018 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Globalization;
@@ -32,7 +32,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			// - Look up extended layout in HKLM\\SYSTEM\\CurrentControlSet\\Control\\Keyboard Layouts
 			// - Look up basic (non-extended) layout in HKLM\\SYSTEM\\CurrentControlSet\\Control\\Keyboard Layouts
 			// -Scan for ID of extended layout in HKLM\\SYSTEM\\CurrentControlSet\\Control\\Keyboard Layouts
-			var hkl = string.Format("{0:X8}", (long)handle);
+			var hkl = string.Format("{0:X8}", (ulong)handle & 0x000000000fffffffUL);
 
 			// Get substitute first
 			var substituteHkl = (string)Registry.GetValue(@"HKEY_CURRENT_USER\Keyboard Layout\Substitutes", hkl, null);
