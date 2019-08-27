@@ -9,19 +9,23 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		{
 			Name = string.Empty;
 			LocalizedName = string.Empty;
+			Profile = default(TfInputProcessorProfile);
 		}
 
 		public LayoutName(string layout) : this(layout, layout)
 		{
 		}
 
-		public LayoutName(string layout, string localizedLayout)
+		public LayoutName(string layout, string localizedLayout, TfInputProcessorProfile profile = default(TfInputProcessorProfile))
 		{
 			Name = layout;
 			LocalizedName = localizedLayout;
+			Profile = profile;
 		}
 
 		public string Name;
 		public string LocalizedName;
+		public TfInputProcessorProfile Profile;
+
 	}
 }
