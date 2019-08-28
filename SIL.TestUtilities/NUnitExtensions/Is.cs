@@ -19,6 +19,16 @@ namespace SIL.TestUtilities.NUnitExtensions
 		{
 			return new ValueEquatableConstraint<T>(expected);
 		}
+
+		/// <summary>
+		/// Checks if the actual XML node is equal to the expected
+		/// XML string.
+		/// </summary>
+		/// <example>Assert.That(actual, Is.XmlEqualTo("<root/>"));</example>
+		public static XmlEquatableConstraint XmlEqualTo(string expected)
+		{
+			return new XmlEquatableConstraint(expected);
+		}
 	}
 
 }

@@ -162,6 +162,21 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		{
 			var webBrowserType = GeckoWinAssembly.GetType(GeckoBrowserType);
 			var browserEvent = webBrowserType.GetEvent(eventName);
+			if (browserEvent == null)
+			{
+				switch (eventName)
+				{
+					// CreateWindow2 is marked obsolete as far back as Geckofx29: [Obsolete("Merged to CreateWindow event, just use it")]
+					// It no longer exists at all in Geckofx60.
+					// But it is needed/used in Geckofx14 which we supposedly still support in this flexible code...
+					case "CreateWindow2":
+						browserEvent = webBrowserType.GetEvent("CreateWindow");
+						break;
+					default:
+						// let events take their course, so to speak... (crash upcoming)
+						break;
+				}
+			}
 			var eventArgsType = browserEvent.EventHandlerType;
 			var methodInfo = GetType().GetMethod(handlerName, BindingFlags.NonPublic | BindingFlags.Instance);
 			var docCompletedDelegate = Delegate.CreateDelegate(eventArgsType, this, methodInfo);

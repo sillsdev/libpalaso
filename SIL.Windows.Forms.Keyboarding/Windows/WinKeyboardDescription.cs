@@ -24,7 +24,8 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 		internal WinKeyboardDescription(string keyboardId, string localizedKeyboardName,
 			string inputLanguageLayoutName, string cultureName, bool isAvailable,
-			IInputLanguage inputLanguage, WinKeyboardAdaptor engine)
+			IInputLanguage inputLanguage, WinKeyboardAdaptor engine,
+			TfInputProcessorProfile profile)
 			: base(keyboardId, localizedKeyboardName, inputLanguageLayoutName, cultureName,
 				isAvailable, engine.SwitchingAdaptor)
 		{
@@ -32,6 +33,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			_localizedName = localizedKeyboardName;
 			ConversionMode = (int)(Win32.IME_CMODE.NATIVE | Win32.IME_CMODE.SYMBOL);
 			_useNfcContext = IsKeymanKeyboard(cultureName);
+			InputProcessorProfile = profile;
 		}
 
 		private static bool IsKeymanKeyboard(string cultureName)

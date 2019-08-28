@@ -35,7 +35,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 			// ProfileMgr will be null on Windows XP - the interface got introduced in Vista
 			ProfileManager = ProcessorProfiles as ITfInputProcessorProfileMgr;
-			SwitchingAdaptor = new WindowsKeyboardSwitchingAdapter();
+			SwitchingAdaptor = new WindowsKeyboardSwitchingAdapter(this);
 		}
 
 		private static string GetDisplayName(string layout, string locale)
@@ -73,52 +73,66 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		{
 			return (ushort)((uint)hkl & 0xffff);
 		}
+
 		public void UpdateAvailableKeyboards()
 		{
 			var curKeyboards = KeyboardController.Instance.Keyboards.OfType<WinKeyboardDescription>().ToDictionary(kd => kd.Id);
+			HashSet<int> processedLanguages = new HashSet<int>();
 
 			foreach (InputLanguage inputLanguage in InputLanguage.InstalledInputLanguages)
 			{
-				var keyboardId = $"{inputLanguage.Culture.Name}_{inputLanguage.LayoutName}";
-				var keyboardLayoutName = GetBestAvailableKeyboardName(inputLanguage);
-				CultureInfo culture;
-				string cultureName;
-				try
-				{
-					culture = new CultureInfo(inputLanguage.Culture.Name);
-					cultureName = culture.DisplayName;
-				}
-				catch (CultureNotFoundException)
-				{
-					// This can happen for old versions of Keyman that created a custom culture that is invalid to .Net.
-					// Also see http://stackoverflow.com/a/24820530/4953232
-					culture = new CultureInfo("en-US");
-					cultureName = "[Unknown Language]";
-				}
+				int langCode = (int)((ulong) inputLanguage.Handle & 0x000000000000ffffUL);
+				if (!processedLanguages.Add(langCode))
+					continue;
 
-				WinKeyboardDescription existingKeyboard;
-				if (curKeyboards.TryGetValue(keyboardId, out existingKeyboard))
+				foreach (LayoutName keyboardLayoutName in GetAvailableKeyboardNames(inputLanguage))
 				{
-					if (!existingKeyboard.IsAvailable)
+					string keyboardId;
+					CultureInfo culture;
+					string cultureName;
+					try
 					{
-						existingKeyboard.SetIsAvailable(true);
-						existingKeyboard.SetLocalizedName(keyboardLayoutName.LocalizedName);
+						culture = new CultureInfo(inputLanguage.Culture.Name);
+						cultureName = culture.DisplayName;
+						keyboardId = $"{culture.Name}_{inputLanguage.LayoutName}_{keyboardLayoutName.LocalizedName}";
 					}
-					curKeyboards.Remove(keyboardId);
-				}
-				else
-				{
-					// Prevent a keyboard with this id from being registered again.
-					// Potentially, id's are duplicated. e.g. A Keyman keyboard linked to a windows one.
-					// For now we simply ignore this second registration.
-					// A future enhancement would be to include knowledge of the driver in the Keyboard definition so
-					// we could choose the best one to register.
-					KeyboardDescription keyboard;
-					if (!KeyboardController.Instance.Keyboards.TryGet(keyboardId, out keyboard))
+					catch (CultureNotFoundException)
 					{
-						KeyboardController.Instance.Keyboards.Add(
-							new WinKeyboardDescription(keyboardId, GetDisplayName(keyboardLayoutName.LocalizedName, cultureName), keyboardLayoutName.Name, inputLanguage.Culture.Name, true,
-								new InputLanguageWrapper(inputLanguage), this));
+						// This can happen for old versions of Keyman that created a custom culture that is invalid to .Net.
+						// Also see http://stackoverflow.com/a/24820530/4953232
+						culture = new CultureInfo("en-US");
+						cultureName = "[Unknown Language]";
+						keyboardId = $"{cultureName}_{inputLanguage.LayoutName}_{keyboardLayoutName.LocalizedName}";
+					}
+
+					WinKeyboardDescription existingKeyboard;
+					if (curKeyboards.TryGetValue(keyboardId, out existingKeyboard))
+					{
+						if (!existingKeyboard.IsAvailable)
+						{
+							existingKeyboard.SetIsAvailable(true);
+							existingKeyboard.SetLocalizedName(keyboardLayoutName.LocalizedName);
+						}
+
+						curKeyboards.Remove(keyboardId);
+					}
+					else
+					{
+						// Prevent a keyboard with this id from being registered again.
+						// Potentially, id's are duplicated. e.g. A Keyman keyboard linked to a windows one.
+						// For now we simply ignore this second registration.
+						// A future enhancement would be to include knowledge of the driver in the Keyboard definition so
+						// we could choose the best one to register.
+						KeyboardDescription keyboard;
+						if (!KeyboardController.Instance.Keyboards.TryGet(keyboardId,
+							out keyboard))
+						{
+							KeyboardController.Instance.Keyboards.Add(
+								new WinKeyboardDescription(keyboardId,
+									GetDisplayName(keyboardLayoutName.LocalizedName, cultureName),
+									keyboardLayoutName.Name, culture.Name, true,
+									new InputLanguageWrapper(inputLanguage), this, keyboardLayoutName.Profile));
+						}
 					}
 				}
 			}
@@ -130,33 +144,55 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			}
 		}
 
-		private LayoutName GetBestAvailableKeyboardName(InputLanguage inputLanguage)
+		private IEnumerable<LayoutName> GetAvailableKeyboardNames(InputLanguage inputLanguage)
 		{
+			IEnumTfInputProcessorProfiles profilesEnumerator;
 			try
 			{
-				var profilesEnumerator = ProfileManager.EnumProfiles((short)inputLanguage.Culture.KeyboardLayoutId);
-				TfInputProcessorProfile[] profiles = new TfInputProcessorProfile[1];
-				while (profilesEnumerator.Next(1, profiles) == 1)
-				{
-					// We only deal with keyboards; skip other input methods
-					if (profiles[0].CatId != Guids.Consts.TfcatTipKeyboard)
-						continue;
-
-					if ((profiles[0].Flags & TfIppFlags.Enabled) == 0)
-						continue;
-					if (profiles[0].Hkl == IntPtr.Zero && profiles[0].ProfileType != TfProfileType.Illegal)
-					{
-						return new LayoutName(inputLanguage.LayoutName,
-							ProcessorProfiles.GetLanguageProfileDescription(ref profiles[0].ClsId, profiles[0].LangId,
-								ref profiles[0].GuidProfile));
-					}
-				}
+				profilesEnumerator = ProfileManager.EnumProfiles((short)inputLanguage.Culture.KeyboardLayoutId);
 			}
 			catch (Exception)
 			{
 				Debug.WriteLine($"Error looking up keyboards for language {inputLanguage.Culture.Name} - {(short)inputLanguage.Culture.KeyboardLayoutId}");
+				yield break;
 			}
-			return new LayoutName(inputLanguage.LayoutName, inputLanguage.Culture.DisplayName);
+
+			TfInputProcessorProfile[] profiles = new TfInputProcessorProfile[1];
+			bool returnedLanguage = false;
+			while (profilesEnumerator.Next(1, profiles) == 1)
+			{
+				// We only deal with keyboards; skip other input methods
+				if (profiles[0].CatId != Guids.Consts.TfcatTipKeyboard)
+					continue;
+
+				if ((profiles[0].Flags & TfIppFlags.Enabled) == 0)
+					continue;
+
+				if (profiles[0].ProfileType == TfProfileType.Illegal)
+					continue;
+
+				LayoutName layoutName;
+				if (profiles[0].Hkl == IntPtr.Zero)
+				{
+					returnedLanguage = true;
+					layoutName = new LayoutName(inputLanguage.LayoutName,
+						ProcessorProfiles.GetLanguageProfileDescription(ref profiles[0].ClsId, profiles[0].LangId,
+							ref profiles[0].GuidProfile), profiles[0]);
+					yield return layoutName;
+				}
+				else
+				{
+					layoutName = WinKeyboardUtils.GetLayoutNameEx(profiles[0].Hkl);
+					if (layoutName.Name != string.Empty)
+					{
+						layoutName.Profile = profiles[0];
+						returnedLanguage = true;
+						yield return layoutName;
+					}
+				}
+			}
+			if (!returnedLanguage)
+				yield return new LayoutName(inputLanguage.LayoutName, inputLanguage.Culture.DisplayName);
 		}
 
 		public ITfInputProcessorProfiles ProcessorProfiles { get; set; }
@@ -188,7 +224,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			string cultureName;
 			var inputLanguage = WinKeyboardUtils.GetInputLanguage(locale, layout, out cultureName);
 
-			return new WinKeyboardDescription(id, GetDisplayName(layout, cultureName), layout, cultureName, false, inputLanguage, this);
+			return new WinKeyboardDescription(id, GetDisplayName(layout, cultureName), layout, cultureName, false, inputLanguage, this, default(TfInputProcessorProfile));
 		}
 
 		public bool CanHandleFormat(KeyboardFormat format)

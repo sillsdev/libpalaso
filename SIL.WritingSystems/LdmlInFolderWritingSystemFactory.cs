@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 
 namespace SIL.WritingSystems
 {
@@ -41,7 +41,7 @@ namespace SIL.WritingSystems
 			if (_writingSystemRepository.TryGet(ietfLanguageTag, out existingWS))
 			{
 				ws = ConstructDefinition(existingWS);
-				string templatePath = _writingSystemRepository.GetFilePathFromLanguageTag(existingWS.LanguageTag);
+				string templatePath = _writingSystemRepository.GetFilePathFromLanguageTag(existingWS.Id);
 				if (File.Exists(templatePath))
 					ws.Template = templatePath;
 				return true;

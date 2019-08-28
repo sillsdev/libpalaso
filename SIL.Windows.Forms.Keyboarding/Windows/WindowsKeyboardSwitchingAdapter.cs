@@ -19,12 +19,14 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		#region Variables used for windows IME Mode switching hack
 		public Timer Timer { get; private set; }
 		private KeyboardDescription _expectedKeyboard;
+		private WinKeyboardAdaptor _adaptor;
 		private bool HasSwitchedLanguages { get; set; }
 		public bool IsSwitchingKeyboards { get; set; }
 		#endregion
 
-		public WindowsKeyboardSwitchingAdapter()
+		public WindowsKeyboardSwitchingAdapter(WinKeyboardAdaptor adaptor)
 		{
+			_adaptor = adaptor;
 			Timer = new Timer { Interval = 500 };
 			Timer.Tick += OnTimerTick;
 			Timer.Enabled = true;
@@ -64,28 +66,31 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				}
 
 				_expectedKeyboard = keyboard;
-				foreach (InputLanguage lang in InputLanguage.InstalledInputLanguages)
-				{
-					if (keyboard.InputLanguage.Culture.Name == lang.Culture.Name)
-					{
-						if (!InputLanguage.CurrentInputLanguage.Equals(lang))
-						{
-							// Switch the language which will activate the associated keyboard (Both windows and Keyman 10)
-							InputLanguage.CurrentInputLanguage = lang;
-						}
-						RestoreImeConversionStatus(keyboard); // Restore it even though sometimes windows will ignore us
-						Timer.Stop();
-						Timer.Start(); // Start the timer for restoring IME status for when windows ignores us.
-						return true;
-					}
-				}
+				return SwitchByProfile(keyboard);
 			}
 			finally
 			{
 				IsSwitchingKeyboards = false;
 			}
+		}
+
+		private bool SwitchByProfile(WinKeyboardDescription keyboard)
+		{
+			_adaptor.ProcessorProfiles.ChangeCurrentLanguage(keyboard.InputProcessorProfile.LangId);
+
+			Guid classId = keyboard.InputProcessorProfile.ClsId;
+			Guid guidProfile = keyboard.InputProcessorProfile.GuidProfile;
+			_adaptor.ProfileManager.ActivateProfile(keyboard.InputProcessorProfile.ProfileType, keyboard.InputProcessorProfile.LangId, ref classId, ref guidProfile,
+				keyboard.InputProcessorProfile.Hkl, TfIppMf.ForProcess);
+
+			RestoreImeConversionStatus(
+				keyboard); // Restore it even though sometimes windows will ignore us
+			Timer.Stop();
+			Timer.Start(); // Start the timer for restoring IME status for when windows ignores us.
+
 			return true;
 		}
+
 
 		public void DeactivateKeyboard(KeyboardDescription keyboard)
 		{

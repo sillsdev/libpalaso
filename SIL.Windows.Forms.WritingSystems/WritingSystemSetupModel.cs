@@ -152,6 +152,7 @@ namespace SIL.Windows.Forms.WritingSystems
 			_usingRepository = false;
 			LockedSpecialCombo = lockedSpecialComboSelection;
 			DisplayScriptRegionVariantWarningLabel = displayScriptRegionVariantWarningLabel;
+			SetCurrentCollationRulesTypeFromDefinition();
 		}
 
 		public IEnumerable<IKeyboardDefinition> KnownKeyboards
@@ -864,6 +865,19 @@ namespace SIL.Windows.Forms.WritingSystems
 				if (CurrentDefinition.VersionNumber != value)
 				{
 					CurrentDefinition.VersionNumber = value;
+					OnCurrentItemUpdated();
+				}
+			}
+		}
+
+		public NumberingSystemDefinition CurrentNumberingSystemDefinition
+		{
+			get { return CurrentDefinition.NumberingSystem; }
+			set
+			{
+				if (!CurrentDefinition.NumberingSystem.Equals(value))
+				{
+					CurrentDefinition.NumberingSystem = value;
 					OnCurrentItemUpdated();
 				}
 			}

@@ -206,10 +206,24 @@ namespace SIL.WritingSystems.Tests
 
 		#region Create
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
-		public void Create_InvalidTag_Throws()
+		public void Create_InvalidLanguageTag_Throws()
 		{
-			IetfLanguageTag.Create("a", "", "", string.Empty);
+			Assert.That(()=>IetfLanguageTag.Create("a", "", "", string.Empty),
+				Throws.ArgumentException.With.Message.Contains("code [a] is invalid"));
+		}
+
+		[Test]
+		public void Create_InvalidScriptTag_Throws()
+		{
+			Assert.That(() => IetfLanguageTag.Create("aa", "scripty", "", string.Empty),
+				Throws.ArgumentException.With.Message.Contains("code [scripty] is invalid"));
+		}
+
+		[Test]
+		public void Create_InvalidRegionTag_Throws()
+		{
+			Assert.That(() => IetfLanguageTag.Create("aa", "latn", "region", string.Empty),
+				Throws.ArgumentException.With.Message.Contains("code [region] is invalid"));
 		}
 
 		[Test]
@@ -347,10 +361,9 @@ namespace SIL.WritingSystems.Tests
 		/// Tests the ToIcuLocale method with an invalid language tag.
 		/// </summary>
 		[Test]
-		[ExpectedException(typeof(ArgumentException))]
 		public void ToIcuLocale_InvalidLangTag_Throws()
 		{
-			IetfLanguageTag.ToIcuLocale("en_Latn_US_X_ETIC");
+			Assert.Throws<ArgumentException>(()=>IetfLanguageTag.ToIcuLocale("en_Latn_US_X_ETIC"));
 		}
 		#endregion
 
@@ -743,5 +756,14 @@ namespace SIL.WritingSystems.Tests
 			Assert.That(ws.LanguageTag, Is.EqualTo("en-Zxxx-x-dupl0-audio-dupl1"));
 		}
 		#endregion
+
+		[TestCase("en", true)]
+		[TestCase("en-Latn", true)]
+		[TestCase("en-Arab", false)]
+		[TestCase("en-Latn-US", true)]
+		public void IsScriptImplied_ReturnsExpectedResults(string tag, bool expectedResult)
+		{
+			Assert.That(IetfLanguageTag.IsScriptImplied(tag), Is.EqualTo(expectedResult));
+		}
 	}
 }

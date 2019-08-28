@@ -464,7 +464,15 @@ namespace SIL.WritingSystems
 					foreach (XElement urlElem in fontElem.NonAltElements(Sil + "url"))
 						fd.Urls.Add(urlElem.Value);
 
-					ws.Fonts.Add(fd);
+					FontDefinition existingFont;
+					if (!ws.Fonts.TryGet(fontName, out existingFont))
+					{
+						ws.Fonts.Add(fd);
+					}
+					else
+					{
+						throw new ArgumentException($"The font {fontName} is defined twice in {ws.LanguageTag}.ldml");
+					}
 				}
 			}
 		}
@@ -787,7 +795,15 @@ namespace SIL.WritingSystems
 
 				// Only add collation definition if it's been set
 				if (cd != null)
-					ws.Collations.Add(cd);
+				{
+					// If there are duplicate collations of a type in the ldml file drop all but the first
+					// Enhance: Log this somehow
+					CollationDefinition existing;
+					if (!ws.Collations.TryGet(cd.Type, out existing))
+					{
+						ws.Collations.Add(cd);
+					}
+				}
 			}
 		}
 

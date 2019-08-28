@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using SIL.Extensions;
 using SIL.WritingSystems.Migration;
 
 namespace SIL.WritingSystems
@@ -145,9 +146,9 @@ namespace SIL.WritingSystems
 		///<summary>
 		/// Returns the full path to the underlying store for this writing system.
 		///</summary>
-		public string GetFilePathFromLanguageTag(string langTag)
+		public string GetFilePathFromLanguageTag(string wsId)
 		{
-			return Path.Combine(PathToWritingSystems, GetFileNameFromLanguageTag(langTag));
+			return Path.Combine(PathToWritingSystems, GetFileNameFromLanguageTag(wsId));
 		}
 
 		/// <summary>
@@ -166,7 +167,7 @@ namespace SIL.WritingSystems
 			_loadProblems.Clear();
 			ChangedIds.Clear();
 			Clear();
-			foreach (string filePath in Directory.GetFiles(_path, "*.ldml"))
+			foreach (var filePath in Directory.GetFiles(_path, "*.ldml").OrderBy(filename => filename))
 				LoadDefinition(filePath);
 
 			LoadChangedIdsFromExistingWritingSystems();
@@ -280,7 +281,7 @@ namespace SIL.WritingSystems
 		{
 			Set(ws);
 
-			string writingSystemFilePath = GetFilePathFromLanguageTag(ws.LanguageTag);
+			string writingSystemFilePath = GetFilePathFromLanguageTag(ws.Id);
 			if (!File.Exists(writingSystemFilePath) && !string.IsNullOrEmpty(ws.Template) && File.Exists(ws.Template))
 			{
 				// this is a new writing system that was generated from a template, so copy the template over before saving
@@ -466,7 +467,7 @@ namespace SIL.WritingSystems
 			//helps us avoid having to deal with situations where a writing system id is changed to be
 			//identical with the old id of another writing sytsem. This could otherwise lead to dataloss.
 			//The inconsistency is resolved on Save()
-			if (oldStoreId != ws.Id && File.Exists(GetFilePathFromLanguageTag(oldStoreId)))
+			if (oldStoreId != ws.Id && File.Exists(GetFilePathFromLanguageTag(oldStoreId)) && !IetfLanguageTag.AreTagsEquivalent(oldStoreId, ws.Id))
 				File.Move(GetFilePathFromLanguageTag(oldStoreId), GetFilePathFromLanguageTag(ws.Id));
 		}
 

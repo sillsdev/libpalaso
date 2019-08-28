@@ -11,12 +11,17 @@ namespace SIL.WritingSystems.Tests
 	[TestFixture]
 	public class GlobalWritingSystemRepositoryTests
 	{
+		private static TemporaryFolder CreateTemporaryFolder(string testName)
+		{
+			return new TemporaryFolder($"{testName}_{Path.GetRandomFileName()}");
+		}
+
 		[Test]
 		[Platform(Exclude = "Linux", Reason="Test tries to create directory under /var/lib where user doesn't have write permissions by default")]
 		public void DefaultInitializer_HasCorrectPath()
 		{
 			GlobalWritingSystemRepository repo = GlobalWritingSystemRepository.Initialize();
-			string expectedPath = string.Format(".*SIL.WritingSystemRepository.{0}", 
+			string expectedPath = string.Format(".*SIL.WritingSystemRepository.{0}",
 				LdmlDataMapper.CurrentLdmlLibraryVersion);
 			Assert.That(repo.PathToWritingSystems, Is.StringMatching(expectedPath));
 		}
@@ -24,7 +29,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Initialize_SkipsBadFile()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				string versionPath = Path.Combine(e.Path, LdmlDataMapper.CurrentLdmlLibraryVersion.ToString());
 				Directory.CreateDirectory(versionPath);
@@ -42,19 +47,18 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void PathConstructor_HasCorrectPath()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo = new GlobalWritingSystemRepository(e.Path);
-				string expectedPath = string.Format(".*GlobalWritingSystemRepositoryTests.{0}",
-					LdmlDataMapper.CurrentLdmlLibraryVersion);
-				Assert.That(repo.PathToWritingSystems, Is.StringMatching(expectedPath));
+				Assert.That(repo.PathToWritingSystems,
+					Is.StringMatching($".*PathConstructor_HasCorrectPath.*{LdmlDataMapper.CurrentLdmlLibraryVersion}"));
 			}
 		}
 
 		[Test]
 		public void Constructor_CreatesFolders()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo = new GlobalWritingSystemRepository(e.Path);
 				Assert.That(Directory.Exists(repo.PathToWritingSystems), Is.True);
@@ -64,7 +68,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Constructor_WithExistingFolders_NoThrow()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -75,7 +79,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Set_NewWritingSystem_SetsId()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo = new GlobalWritingSystemRepository(e.Path);
 				var ws = new WritingSystemDefinition("en-US");
@@ -88,7 +92,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Save_NewWritingSystem_CreatesLdmlFile()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo = new GlobalWritingSystemRepository(e.Path);
 				var ws = new WritingSystemDefinition("en-US");
@@ -101,7 +105,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Save_DeletedWritingSystem_RemovesLdmlFile()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo = new GlobalWritingSystemRepository(e.Path);
 				var ws = new WritingSystemDefinition("en-US");
@@ -118,7 +122,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Save_UpdatedWritingSystem_UpdatesLdmlFile()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo = new GlobalWritingSystemRepository(e.Path);
 				var ws = new WritingSystemDefinition("en-US");
@@ -136,7 +140,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Save_ChangingIcuSort_DoesNotDuplicateInLdmlFile()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo = new GlobalWritingSystemRepository(e.Path);
 				var ws = new WritingSystemDefinition("en-US");
@@ -154,7 +158,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Get_LdmlAddedByAnotherRepo_ReturnsDefinition()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -170,7 +174,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Get_LdmlRemovedByAnotherRepo_Throws()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -186,7 +190,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Get_LdmlUpdatedByAnotherRepo_ReturnsUpdatedDefinition()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -206,7 +210,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Get_UpdatedLdmlRemovedByAnotherRepo_ReturnUpdatedDefinition()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -223,7 +227,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Get_UpdatedLdmlUpdatedByAnotherRepo_ReturnLastUpdatedDefinition()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -239,10 +243,57 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+		// LF-297
+		[TestCase("en-US")]
+		[TestCase("en-us")]
+		[Platform(Include = "Linux", Reason = "Requires a case-sensitive file system")]
+		public void Get_CaseDifferingWritingSystems_DoesNotThrow(string id)
+		{
+			using (var temporaryFolder = CreateTemporaryFolder("Get_CaseDifferingWritingSystems_DoesNotThrow"))
+			{
+				// Setup
+				var repo = new GlobalWritingSystemRepository(temporaryFolder.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo.Set(ws);
+				repo.Save();
+				// Now we simulate that the user did a S/R which added a WS that differs by case
+				File.Copy(Path.Combine(temporaryFolder.Path, "3", ws.Id + ".ldml"),
+					Path.Combine(temporaryFolder.Path, "3", ws.Id.ToLower() + ".ldml"));
+
+				// SUT/Verify
+				Assert.That(() => repo.Get(id), Throws.Nothing);
+			}
+		}
+
+		[TestCase("en-US")]
+		[TestCase("en-us")]
+		public void Remove_CaseDifferingWritingSystems_DoesNotThrow(string id)
+		{
+			using (var temporaryFolder = CreateTemporaryFolder("Remove_CaseDifferingWritingSystems_DoesNotThrow"))
+			{
+				// Setup
+				var repo = new GlobalWritingSystemRepository(temporaryFolder.Path);
+				var ws = new WritingSystemDefinition("en-US");
+				repo.Set(ws);
+				repo.Save();
+
+				// SUT
+				Assert.That(() => repo.Remove(id), Throws.Nothing);
+
+				// Verify
+				Assert.That(repo.Contains("en-US"), Is.False);
+				Assert.That(repo.Contains("en-us"), Is.False);
+				Assert.That(File.Exists(Path.Combine(temporaryFolder.Path, "3", "en-US.ldml")),
+					Is.False);
+				Assert.That(File.Exists(Path.Combine(temporaryFolder.Path, "3", "en-us.ldml")),
+					Is.False);
+			}
+		}
+
 		[Test]
 		public void AllWritingSystems_LdmlAddedByAnotherRepo_ReturnsDefinition()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -258,7 +309,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void AllWritingSystems_LdmlRemovedByAnotherRepo_ReturnsEmpty()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -274,7 +325,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void AllWritingSystems_LdmlUpdatedByAnotherRepo_ReturnsUpdatedDefinition()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -292,7 +343,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Count_LdmlAddedByAnotherRepo_ReturnsOne()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -308,7 +359,7 @@ namespace SIL.WritingSystems.Tests
 		[Test]
 		public void Count_LdmlRemovedByAnotherRepo_ReturnsZero()
 		{
-			using (var e = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(e.Path);
 				var repo2 = new GlobalWritingSystemRepository(e.Path);
@@ -322,9 +373,9 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
-		public void AllWritingSystems_LdmlCheckingSetEmptyandGetWSId()
+		public void AllWritingSystems_LdmlCheckingSetEmptyCanNotSave()
 		{
-			using (var tf = new TemporaryFolder("GlobalWritingSystemRepositoryTests"))
+			using (var tf = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
 			{
 				var repo1 = new GlobalWritingSystemRepository(tf.Path);
 				var repo2 = new GlobalWritingSystemRepository(tf.Path);
@@ -337,12 +388,12 @@ namespace SIL.WritingSystems.Tests
 				Thread.Sleep(1000);
 				ws = repo2.Get("en-US");
 				ws.WindowsLcid = "test";
-				// Make an arbitrary change to force a save of the ldml file.
+				// a ws with an empty Id is assumed to be new, we can't save it if the LanguageTag is already found
+				// in the repo.
 				ws.Id = string.Empty;
+				Assert.That(repo2.CanSet(ws), Is.False, "A ws with an empty ID will not save if the LanguageTag matches an existing ws");
 				repo2.Save();
-				Assert.That(repo1.Get("en-US").WindowsLcid, Is.EqualTo("test"));
-				Assert.That(ws.IsChanged, Is.False);
-				Assert.AreEqual(ws.Id, "en-US");
+				Assert.That(repo1.Get("en-US").WindowsLcid, Is.Not.EqualTo("test"), "Changes should not have been saved.");
 			}
 		}
 	}

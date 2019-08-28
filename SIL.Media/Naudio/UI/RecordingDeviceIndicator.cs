@@ -86,7 +86,7 @@ namespace SIL.Media.Naudio.UI
 				{
 					_recorder.SelectedDeviceChanged += RecorderOnSelectedDeviceChanged;
 					_checkNewMicTimer.Start();
-					SetKnownRecordingDevices();
+					SetKnownRecordingDevices(RecordingDevice.Devices);
 				}
 				else
 				{
@@ -97,10 +97,9 @@ namespace SIL.Media.Naudio.UI
 			}
 		}
 
-		private void SetKnownRecordingDevices()
+		private void SetKnownRecordingDevices(IEnumerable<IRecordingDevice> devices)
 		{
-			_knownRecordingDevices =
-				new HashSet<string>(from d in RecordingDevice.Devices select d.ProductName);
+			_knownRecordingDevices = new HashSet<string>(devices.Select(d => d.ProductName));
 		}
 
 		/// <summary>
@@ -165,7 +164,7 @@ namespace SIL.Media.Naudio.UI
 				}
 			}
 			// Update the list so one that was never active can be made active by unplugging and replugging
-			SetKnownRecordingDevices();
+			SetKnownRecordingDevices(devices);
 		}
 
 		protected override void OnHandleDestroyed(EventArgs e)
@@ -195,11 +194,7 @@ namespace SIL.Media.Naudio.UI
 
 		public void UpdateDisplay()
 		{
-			if(_recorder?.SelectedDevice != null)
-			{
-				toolTip1.SetToolTip(_recordingDeviceImage, _recorder.SelectedDevice.Capabilities.ProductName);
-			}
-			else
+			if(_recorder?.SelectedDevice == null)
 			{
 				toolTip1.SetToolTip(_recordingDeviceImage, "no input device");
 			}
@@ -248,6 +243,7 @@ namespace SIL.Media.Naudio.UI
 			//NB order is important here, as these are used in a substring match, so put the more specific ones (e.g. Webcam) before more general ones (e.g. Microphone)
 			AddDeviceMatch("Webcam", () => WebcamImage);
 			AddDeviceMatch("Internal", () => ComputerInternalImage);
+			AddDeviceMatch("Headset", () => KnownHeadsetImage); // Technically not necessarily a "known" headset...
 			AddDeviceMatch("USB Audio Device", () => UsbAudioDeviceImage);
 			AddDeviceMatch("Microphone", () => MicrophoneImage);
 			AddDeviceMatch("Line", () => LineImage);

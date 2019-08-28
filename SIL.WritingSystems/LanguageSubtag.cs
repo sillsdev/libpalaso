@@ -94,5 +94,19 @@ namespace SIL.WritingSystems
 				subtag = new LanguageSubtag(code);
 			return subtag;
 		}
+
+		/// <summary>
+		/// Test whether the given ISO 639-3 code is one reserved for unlisted languages ("qaa" - "qtz").
+		/// </summary>
+		public static bool IsUnlistedCode(string code)
+		{
+			if (string.IsNullOrEmpty(code) || code.Length != 3)
+				return false;
+			if (code[0] != 'q')
+				return false;
+			if (code[1] < 'a' || code[1] > 't')
+				return false;
+			return code[2] >= 'a' && code[2] <= 'z';
+		}
 	}
 }

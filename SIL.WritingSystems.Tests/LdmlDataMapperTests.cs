@@ -1220,6 +1220,29 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void Read_LdmlWithDuplicateCollations_DropsExtraAndDoesNotCrash()
+		{
+			using (var file = new TempFile())
+			{
+				WriteCurrentVersionLdml("en", "", "", "", file);
+				var doc = XDocument.Load(file.Path);
+				var collationsNode = doc.Root.Descendants("collations").FirstOrDefault();
+				if (collationsNode == null)
+				{
+					collationsNode = XElement.Parse("<collations/>");
+					doc.Root.Add(collationsNode);
+				}
+				collationsNode.Add(XElement.Parse("<collation type='standard'/>"));
+				collationsNode.Add(XElement.Parse("<collation type='standard'/>"));
+				doc.Save(file.Path);
+				var ws = new WritingSystemDefinition();
+				var dataMapper = new LdmlDataMapper(new TestWritingSystemFactory());
+				Assert.DoesNotThrow(() => dataMapper.Read(file.Path, ws));
+				Assert.That(ws.Collations.Count(cd => cd.Type == "standard"), Is.EqualTo(1));
+			}
+		}
+
+		[Test]
 		public void RoundTrippingLdmlDoesNotDuplicateSections()
 		{
 			using (var roundTripOut2 = new TempFile())
@@ -1251,6 +1274,25 @@ namespace SIL.WritingSystems.Tests
 					secondTripMapper.Write(roundTripOut2.Path, secondTripWs, fileStream);
 				}
 				AssertThatXmlIn.File(roundTripOut2.Path).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/*[local-name()='external-resources']", 1);
+			}
+		}
+
+		[Test]
+		public void DuplicatedFontInLdml_ReportsBadData()
+		{
+			using (var roundTripOut = new TempFile())
+			using (var tempFile = new TempFile())
+			{
+
+				using (var writer = new StreamWriter(tempFile.Path, false, Encoding.UTF8))
+				{
+					writer.Write(LdmlContentForTests.Version3("qaa", "", "", "", LdmlContentForTests.FontElem + LdmlContentForTests.FontElem));
+				}
+				var ws = new WritingSystemDefinition();
+				var dataMapper = new LdmlDataMapper(new TestWritingSystemFactory());
+
+				var message = Assert.Throws<ArgumentException>(() => dataMapper.Read(tempFile.Path, ws)).Message;
+				StringAssert.IsMatch("The font .* is defined twice in .*\\.ldml", message);
 			}
 		}
 

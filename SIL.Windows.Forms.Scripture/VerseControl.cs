@@ -486,10 +486,8 @@ namespace SIL.Windows.Forms.Scripture
 					// UserControl does not have UseCompatibleTextRendering.
 					var size = TextRenderer.MeasureText(gr, theText, theFont, bounds.Size, TextFormatFlags.NoPadding|TextFormatFlags.WordBreak);
 					TextRenderer.DrawText(gr, theText, theFont, bounds, theColor, TextFormatFlags.NoPadding|TextFormatFlags.WordBreak);
-					// REVIEW/TEST: does using TextRenderer instead of Graphics remove the need for this fudge factor?
-					int width = size.Width - (Platform.IsWindows ? 3 : 0); //Nudge factor: width seems to come off too big (Not on Linux)
-					bounds.X += width;
-					bounds.Width -= width;
+					bounds.X += size.Width;
+					bounds.Width -= size.Width;
 				}
 				theFont = Equals(theFont, font1) ? font2 : font1; // flip-flop font
 			}

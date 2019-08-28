@@ -66,14 +66,14 @@ namespace SIL.WritingSystems
 		private readonly string _path;
 		private readonly GlobalMutex _mutex;
 		private readonly Dictionary<string, Tuple<DateTime, long>> _lastFileStats;
-		private readonly List<string> _addedWritingSystems;
+		private readonly HashSet<string> _addedWritingSystems;
 
 		private static string _defaultBasePath;
 
 		protected internal GlobalWritingSystemRepository(string basePath)
 		{
-			_lastFileStats = new Dictionary<string, Tuple<DateTime, long>>();
-			_addedWritingSystems = new List<string>();
+			_lastFileStats = new Dictionary<string, Tuple<DateTime, long>>(StringComparer.OrdinalIgnoreCase);
+			_addedWritingSystems = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			_path = CurrentVersionPath(basePath);
 			if (!Directory.Exists(_path))
 				CreateGlobalWritingSystemRepositoryDirectory(_path);
@@ -85,7 +85,7 @@ namespace SIL.WritingSystems
 		{
 			var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
 			var removedIds = new HashSet<string>(WritingSystems.Keys);
-			foreach (string file in Directory.GetFiles(PathToWritingSystems, $"*{Extension}"))
+			foreach (var file in Directory.GetFiles(PathToWritingSystems, $"*{Extension}").OrderBy(filename => filename))
 			{
 				var fi = new FileInfo(file);
 				string id = Path.GetFileNameWithoutExtension(file);
@@ -344,7 +344,7 @@ namespace SIL.WritingSystems
 
 		protected override void RemoveDefinition(T ws)
 		{
-			string file = GetFilePathFromLanguageTag(ws.LanguageTag);
+			string file = GetFilePathFromLanguageTag(ws.Id);
 			if (File.Exists(file))
 				File.Delete(file);
 			base.RemoveDefinition(ws);
@@ -356,7 +356,7 @@ namespace SIL.WritingSystems
 		{
 			base.Set(ws);
 
-			string writingSystemFilePath = GetFilePathFromLanguageTag(ws.LanguageTag);
+			string writingSystemFilePath = GetFilePathFromLanguageTag(ws.Id);
 			if (!File.Exists(writingSystemFilePath) && !string.IsNullOrEmpty(ws.Template))
 			{
 				// this is a new writing system that was generated from a template, so copy the template over before saving

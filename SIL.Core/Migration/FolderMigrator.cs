@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using SIL.Extensions;
 using SIL.IO;
 
 namespace SIL.Migration
@@ -149,7 +150,8 @@ namespace SIL.Migration
 				);
 				Directory.CreateDirectory(destinationPath);
 				// Migrate all the files of the current version
-				foreach (var filePath in Directory.GetFiles(currentPath, SearchPattern))
+				foreach (var filePath in Directory.GetFiles(currentPath, SearchPattern)
+					.OrderBy(filename => filename))
 				{
 					string fileName = Path.GetFileName(filePath);
 					if (fileName == null)
@@ -166,7 +168,7 @@ namespace SIL.Migration
 						{
 							// Put the unmigrated file where the migrated files will end up
 							string unmigratedFile = Path.Combine(SourcePath, Path.GetFileName(sourceFilePath) + ".bad");
-							File.Copy(sourceFilePath, unmigratedFile);
+							File.Copy(sourceFilePath, unmigratedFile, true);
 							problems.Add(new FolderMigratorProblem { Exception = e, FilePath = sourceFilePath });
 						}
 					}
@@ -232,7 +234,7 @@ namespace SIL.Migration
 			}
 
 			_versionCache.Clear();
-			foreach (var fileName in Directory.GetFiles(path, SearchPattern))
+			foreach (var fileName in Directory.GetFiles(path, SearchPattern).OrderBy(filename => filename))
 			{
 				int fileVersion = GetFileVersion(fileName);
 				_versionCache.Add(new FileVersionInfo(fileName, fileVersion));

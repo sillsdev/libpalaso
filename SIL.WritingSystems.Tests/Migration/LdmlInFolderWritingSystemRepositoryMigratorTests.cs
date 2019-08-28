@@ -239,7 +239,6 @@ namespace SIL.WritingSystems.Tests.Migration
 				AssertLdmlHasXpath(environment.MappedFilePath("bogus.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasXpath(environment.MappedFilePath("bogus1.ldml"), "/ldml/identity/language[@type='en']");
 				AssertLdmlHasNoXpath(environment.MappedFilePath("bogus1.ldml"), "/ldml/identity/script");
-				AssertLdmlHasXpath(environment.MappedFilePath("bogus1.ldml"), "/ldml/identity/variant[@type='x-dupl0']");
 			}
 
 		}
@@ -1002,8 +1001,8 @@ namespace SIL.WritingSystems.Tests.Migration
 				var wsV3 = new WritingSystemDefinition();
 				new LdmlDataMapper(null).Read(environment.MappedFilePath("test.ldml"), wsV3);
 				var cdV3 = (IcuRulesCollationDefinition) wsV3.Collations.First();
-				Assert.IsNullOrEmpty(wsV0.SortRules);
-				Assert.IsNullOrEmpty(cdV3.CollationRules);
+				Assert.That(wsV0.SortRules, Is.Null.Or.Empty);
+				Assert.That(cdV3.CollationRules, Is.Null.Or.Empty);
 				Assert.That(cdV3.Type, Is.EqualTo("standard"));
 			}
 		}
@@ -1261,15 +1260,24 @@ namespace SIL.WritingSystems.Tests.Migration
 		{
 			using (var environment = new TestEnvironment())
 			{
+				var projectSettingsfile = Path.Combine(environment.LdmlPath, "test.ulsx");
+
+				var dataMappers = new ICustomDataMapper<WritingSystemDefinition>[]
+				{
+					new ProjectLexiconSettingsWritingSystemDataMapper<WritingSystemDefinition>(new FileSettingsStore(projectSettingsfile))
+				};
+
 				environment.WriteLdmlFile("test.ldml", LdmlContentForTests.Version0WithLanguageSubtagAndName("en", "German"));
 				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
 				migrator.Migrate();
 
-				var repo = new TestLdmlInFolderWritingSystemRepository(environment.LdmlPath);
+				var repo = new TestLdmlInFolderWritingSystemRepository(environment.LdmlPath, dataMappers);
 				migrator.ResetRemovedProperties(repo);
+				repo.Save();
 
 				WritingSystemDefinition ws = repo.Get("en");
 				Assert.That(ws.Language.Name, Is.EqualTo("German"));
+				AssertThatXmlIn.File(Path.Combine(environment.LdmlPath, projectSettingsfile)).HasSpecifiedNumberOfMatchesForXpath("/ProjectLexiconSettings/WritingSystems/WritingSystem/LanguageName", 1, true);
 			}
 		}
 
@@ -1639,6 +1647,29 @@ namespace SIL.WritingSystems.Tests.Migration
 
 				Assert.AreEqual(1, Directory.GetFiles(environment.LdmlPath).Length);
 				Assert.AreEqual(0, Directory.GetDirectories(environment.LdmlPath).Length);
+			}
+		}
+
+		/// <summary>
+		/// Test that a writing system file with a valid but non-canonical identifier does not move after migration.
+		/// </summary>
+		[Test]
+		public void Migrate_ValidNonCanonicalLdmlFile_FileNameDoesNotChange()
+		{
+			string ldmlFileContent = LdmlContentForTests.Version2("en", "Latn", "US", "");
+
+			using (var environment = new TestEnvironment())
+			{
+				// Setup
+				environment.WriteLdmlFile("en-Latn-US.ldml", ldmlFileContent);
+				var migrator = new LdmlInFolderWritingSystemRepositoryMigrator(environment.LdmlPath, environment.OnMigrateCallback);
+				migrator.Migrate();
+
+				// Execute
+				var migratedEnglishFile = environment.FilePath("en-Latn-US.ldml");
+				Assert.True(File.Exists(migratedEnglishFile));
+				AssertLdmlHasXpath(migratedEnglishFile, "/ldml/identity/language[@type='en']");
+				AssertLdmlHasNoXpath(migratedEnglishFile, "/ldml/identity/script");
 			}
 		}
 

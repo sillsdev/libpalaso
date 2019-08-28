@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Linq;
 using System.Xml.Linq;
 using SIL.WritingSystems;
@@ -37,7 +37,7 @@ namespace SIL.Lexicon
 				ws.Abbreviation = abbreviation;
 
 			var languageName = (string) wsElem.Element("LanguageName");
-			if (!string.IsNullOrEmpty(languageName) && ws.Language != null && ws.Language.IsPrivateUse)
+			if (!string.IsNullOrEmpty(languageName) && ws.Language != null)
 				ws.Language = new LanguageSubtag(ws.Language, languageName);
 
 			var scriptName = (string) wsElem.Element("ScriptName");
@@ -89,7 +89,7 @@ namespace SIL.Lexicon
 
 			if (!string.IsNullOrEmpty(ws.Abbreviation))
 				wsElem.Add(new XElement("Abbreviation", ws.Abbreviation));
-			if (ws.Language != null && ws.Language.IsPrivateUse && !string.IsNullOrEmpty(ws.Language.Name))
+			if (ws.Language != null && !string.IsNullOrEmpty(ws.Language.Name))
 				wsElem.Add(new XElement("LanguageName", ws.Language.Name));
 			if (ws.Script != null && ws.Script.IsPrivateUse && !string.IsNullOrEmpty(ws.Script.Name))
 				wsElem.Add(new XElement("ScriptName", ws.Script.Name));
@@ -124,7 +124,7 @@ namespace SIL.Lexicon
 			if (wsElem != null)
 			{
 				wsElem.Remove();
-				if (!wssElem.HasElements)
+				if (!wssElem.HasElements && !wssElem.HasAttributes)
 					wssElem.Remove();
 
 				_settingsStore.SaveSettings(projectSettingsElem);

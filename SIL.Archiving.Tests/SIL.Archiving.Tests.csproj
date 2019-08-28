@@ -17,7 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetZip" Version="1.13.2" />
+    <PackageReference Include="DotNetZip" Version="1.13.3" />
     <PackageReference Include="GitVersionTask.alt" Version="4.0.2-alpha-0006">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

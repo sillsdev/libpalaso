@@ -15,9 +15,15 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 
 		public void BindToModel(WritingSystemSetupModel model)
 		{
+			_specialTypeComboBox.SelectedIndexChanged -= specialTypeComboBox_SelectedIndexChanged;
 			if (_model != null)
 			{
 				_model.SelectionChanged -= ModelSelectionChanged;
+				foreach (var item in _specialTypeComboBox.Items)
+				{
+					(item as IDisposable)?.Dispose();
+				}
+				_specialTypeComboBox.Items.Clear();
 			}
 			_model = model;
 			if (_model != null)
@@ -49,16 +55,22 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 				AddDetailsControl(new VoiceIdentifierView(model));
 				AddDetailsControl(new ScriptRegionVariantView(model));
 			}
-			comboBox1.DisplayMember = "ChoiceName";
-			comboBox1.SelectedIndex = 0;
+			_specialTypeComboBox.DisplayMember = "ChoiceName";
+			_specialTypeComboBox.SelectedIndex = 0;
 			UpdateFromModel();
+			_specialTypeComboBox.SelectedIndexChanged += specialTypeComboBox_SelectedIndexChanged;
+			if (_model.IsSpecialComboLocked)
+			{
+				// Update the display to reflect the only combobox selection available.
+				specialTypeComboBox_SelectedIndexChanged(null, null);
+			}
 		}
 
 		private void AddDetailsControl(Control view)
 		{
 			view.Dock = DockStyle.Fill;
 			//leave invisible for now
-			comboBox1.Items.Add(view);
+			_specialTypeComboBox.Items.Add(view);
 		}
 
 		private void UpdateFromModel()
@@ -72,7 +84,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 				if (!_model.IsSpecialComboLocked)
 				{
 					UpdateSpecialComboBox();
-					comboBox1.SelectedIndex = (int)_model.SelectionForSpecialCombo;
+					_specialTypeComboBox.SelectedIndex = (int)_model.SelectionForSpecialCombo;
 				}
 			}
 			else
@@ -82,7 +94,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 				_detailPanel.Controls.Clear();
   //              _name.Text = string.Empty;
 			   // _code.Text = string.Empty;
-				comboBox1.SelectedIndex = 0;
+				_specialTypeComboBox.SelectedIndex = 0;
 			}
 		}
 
@@ -90,16 +102,16 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 		{
 			if (_model.CurrentIso == WellKnownSubtags.UnlistedLanguage)
 			{
-				if (comboBox1.Items.Count == 4)
+				if (_specialTypeComboBox.Items.Count == 4)
 				{
 					AddDetailsControl(new UnlistedLanguageView(_model));
 				}
 			}
 			else
 			{
-				if (comboBox1.Items.Count == 5)
+				if (_specialTypeComboBox.Items.Count == 5)
 				{
-					comboBox1.Items.RemoveAt(4);
+					_specialTypeComboBox.Items.RemoveAt(4);
 				}
 			}
 		}
@@ -115,14 +127,14 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 				_model.SelectionChanged -= ModelSelectionChanged;
 		}
 
-		private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+		private void specialTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			if (comboBox1.SelectedItem == null || _model.CurrentDefinition==null)
+			if (_specialTypeComboBox.SelectedItem == null || _model.CurrentDefinition==null)
 				return;
 
 			_detailPanel.Controls.Clear();
-			_detailPanel.Controls.Add((Control)comboBox1.SelectedItem);
-			((ISelectableIdentifierOptions)comboBox1.SelectedItem).Selected();
+			_detailPanel.Controls.Add((Control)_specialTypeComboBox.SelectedItem);
+			((ISelectableIdentifierOptions)_specialTypeComboBox.SelectedItem).Selected();
 		}
 
 		private void OnVisibleChanged(object sender, EventArgs e)
@@ -133,7 +145,7 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 
 		public void Selected()
 		{
-			comboBox1_SelectedIndexChanged(null, null);
+			specialTypeComboBox_SelectedIndexChanged(null, null);
 		}
 
 		private void _abbreviation_TextChanged(object sender, EventArgs e)
@@ -147,12 +159,12 @@ namespace SIL.Windows.Forms.WritingSystems.WSIdentifiers
 
 		public void MoveDataFromViewToModel()
 		{
-			((ISelectableIdentifierOptions)comboBox1.SelectedItem).MoveDataFromViewToModel();
+			((ISelectableIdentifierOptions)_specialTypeComboBox.SelectedItem).MoveDataFromViewToModel();
 		}
 
 		public void UnwireBeforeClosing()
 		{
-			((ISelectableIdentifierOptions)comboBox1.SelectedItem).UnwireBeforeClosing();
+			((ISelectableIdentifierOptions)_specialTypeComboBox?.SelectedItem)?.UnwireBeforeClosing();
 		}
 	}
 
