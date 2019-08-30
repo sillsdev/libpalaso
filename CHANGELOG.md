@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Add build number to AssemblyFileVersion
+
 ## [7.0.0] - 2019-08-29
 
 ### Changed
