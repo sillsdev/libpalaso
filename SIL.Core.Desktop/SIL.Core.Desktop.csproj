@@ -21,6 +21,9 @@
     <AssemblyOriginatorKeyFile>../palaso.snk</AssemblyOriginatorKeyFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <AppendToReleaseNotesProperty><![CDATA[
+See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/CHANGELOG.md]]>
+    </AppendToReleaseNotesProperty>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GitVersionTask" Version="5.0.1">
