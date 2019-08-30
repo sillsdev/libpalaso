@@ -32,6 +32,7 @@ namespace SIL.Windows.Forms.Tests.Progress.LogBox
 		}
 
 		[Test]
+		[Explicit]
 		[Category("LongRunning")]
 		[Category("SkipOnTeamCity")]
 		public void WriteVerbose_AtMaximumLength_RtfContainsMaximumLengthExceeded()
