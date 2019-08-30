@@ -40,7 +40,7 @@
     <PackageReference Include="StrongNamer" Version="0.0.8">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="TagLibSharp-patched" Version="2.2.0-beta.1" />
+    <PackageReference Include="TagLibSharp" Version="2.2.0" />
   </ItemGroup>
 
   <ItemGroup>
