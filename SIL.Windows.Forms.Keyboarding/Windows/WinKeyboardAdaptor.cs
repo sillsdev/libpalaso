@@ -81,6 +81,9 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 
 			foreach (InputLanguage inputLanguage in InputLanguage.InstalledInputLanguages)
 			{
+				if (HasInvalidLanguageName(inputLanguage))
+					continue;
+
 				int langCode = (int)((ulong) inputLanguage.Handle & 0x000000000000ffffUL);
 				if (!processedLanguages.Add(langCode))
 					continue;
@@ -141,6 +144,20 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			foreach (var existingKeyboard in curKeyboards.Values)
 			{
 				existingKeyboard.SetIsAvailable(false);
+			}
+		}
+
+		private bool HasInvalidLanguageName(InputLanguage inputLanguage)
+		{
+			// We have had some input languages get errors when trying to get the layout name, so just want to skip those
+			try
+			{
+				string test = inputLanguage.LayoutName;
+				return false;
+			}
+			catch (Exception)
+			{
+				return true;
 			}
 		}
 
