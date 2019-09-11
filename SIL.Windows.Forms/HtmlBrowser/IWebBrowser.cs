@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace SIL.Windows.Forms.HtmlBrowser
 {
-	public interface IWebBrowser
+	public interface IWebBrowser : IDisposable
 	{
 		bool AllowWebBrowserDrop { get; set; }
 		bool CanGoBack { get; }

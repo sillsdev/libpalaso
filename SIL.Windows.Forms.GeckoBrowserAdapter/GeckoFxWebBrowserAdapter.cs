@@ -403,6 +403,14 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 			get { return AllowNavigation && GetBrowserProperty<bool>(_webBrowser, "CanGoForward"); }
 		}
 
+		public void Dispose()
+		{
+			CallBrowserMethod(_webBrowser, "Dispose", null);
+			// Call GC.SupressFinalize to take this object off the finalization queue
+			// and prevent finalization code for this object from executing a second time.
+			GC.SuppressFinalize(this);
+		}
+
 		public string DocumentText
 		{
 			set
