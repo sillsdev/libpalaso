@@ -79,6 +79,11 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 		}
 		public void Clear() { _thumbnailViewer.Clear();}
 		public void Closing() { _thumbnailViewer.Closing();}
+		public new void Dispose()
+		{
+			_thumbnailViewer.Dispose();
+			base.Dispose();
+		}
 		public void LoadItems(IEnumerable<string> pathList) { _thumbnailViewer.LoadItems(pathList);}
 		public bool HasSelection {
 			get { return _thumbnailViewer.HasSelection; }
@@ -108,6 +113,7 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 		Func<string, string> CaptionMethod { get; set; }
 		void Clear();
 		void Closing();
+		void Dispose();
 		void LoadItems(IEnumerable<string> pathList);
 		bool HasSelection { get; }
 		string SelectedPath { get; }

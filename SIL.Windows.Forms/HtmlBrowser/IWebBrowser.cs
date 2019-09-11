@@ -11,6 +11,7 @@ namespace SIL.Windows.Forms.HtmlBrowser
 		bool AllowWebBrowserDrop { get; set; }
 		bool CanGoBack { get; }
 		bool CanGoForward { get; }
+		void Dispose();
 		/// <summary>
 		/// Set of the DocumentText will load the given string content into the browser.
 		/// If a get for DocumentText proves necessary Jason promises to write the reflective

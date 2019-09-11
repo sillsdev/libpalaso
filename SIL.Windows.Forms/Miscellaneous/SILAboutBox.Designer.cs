@@ -15,10 +15,14 @@ namespace SIL.Windows.Forms.Miscellaneous
 		/// </summary>
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && (components != null))
+			if (disposing)
 			{
-				components.Dispose();
+				if (components != null)
+					components.Dispose();
+				if (_browser != null)
+					_browser.Dispose();
 			}
+			_browser = null;
 			base.Dispose(disposing);
 		}
 

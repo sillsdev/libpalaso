@@ -46,6 +46,11 @@ namespace SIL.Windows.Forms.HtmlBrowser
 			get { return m_WebBrowser.CanGoForward; }
 		}
 
+		public void Dispose()
+		{
+			m_WebBrowser.Dispose();
+		}
+
 		public string DocumentText
 		{
 			get { return m_WebBrowser.DocumentText; }

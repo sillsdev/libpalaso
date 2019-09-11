@@ -32,8 +32,11 @@ namespace SIL.Windows.Forms.ReleaseNotes
 						Debug.Fail(error.Message);
 					}
 				}
+				if (_browser != null)
+					_browser.Dispose();
 			}
 			_temp = null;
+			_browser = null;
 			base.Dispose(disposing);
 		}
 
