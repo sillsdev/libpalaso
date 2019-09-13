@@ -79,6 +79,24 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 		}
 		public void Clear() { _thumbnailViewer.Clear();}
 		public void Closing() { _thumbnailViewer.Closing();}
+
+		private bool disposed = false;
+		protected override void Dispose(bool disposing)
+		{
+			if (disposed)
+				return;
+			disposed = true;
+			if (disposing)
+			{
+				if (_thumbnailViewer != null)
+				{
+					_thumbnailViewer.Dispose();
+					_thumbnailViewer = null;
+				}
+			}
+			base.Dispose(disposing);
+		}
+
 		public void LoadItems(IEnumerable<string> pathList) { _thumbnailViewer.LoadItems(pathList);}
 		public bool HasSelection {
 			get { return _thumbnailViewer.HasSelection; }
@@ -102,7 +120,7 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 		public event EventHandler LoadComplete;
 	}
 
-	public interface IThumbnailViewer
+	public interface IThumbnailViewer : IDisposable
 	{
 		Control TheControl { get; }
 		Func<string, string> CaptionMethod { get; set; }

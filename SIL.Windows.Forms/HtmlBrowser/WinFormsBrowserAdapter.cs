@@ -46,6 +46,14 @@ namespace SIL.Windows.Forms.HtmlBrowser
 			get { return m_WebBrowser.CanGoForward; }
 		}
 
+		public void Dispose()
+		{
+			m_WebBrowser.Dispose();
+			// Call GC.SupressFinalize to take this object off the finalization queue
+			// and prevent finalization code for this object from executing a second time.
+			GC.SuppressFinalize(this);
+		}
+
 		public string DocumentText
 		{
 			get { return m_WebBrowser.DocumentText; }
