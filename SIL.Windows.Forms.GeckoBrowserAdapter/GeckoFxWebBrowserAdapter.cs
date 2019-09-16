@@ -334,14 +334,11 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		/// the type of the parameters given and then call that on the given webbrowser
 		/// instance.
 		/// </summary>
-		/// <param name="webBrowser"></param>
-		/// <param name="methodName"></param>
-		/// <param name="parameters"></param>
 		private bool CallBrowserMethod(object webBrowser, string methodName, object[] parameters)
 		{
 			var webBrowserType = GeckoWinAssembly.GetType(GeckoBrowserType);
-			var types = new Type[parameters.Length];
-			for(var i = 0; i < parameters.Length; ++i)
+			var types = new Type[parameters == null ? 0 : parameters.Length];
+			for (var i = 0; parameters != null && i < parameters.Length; ++i)
 			{
 				types[i] = parameters[i].GetType();
 			}
