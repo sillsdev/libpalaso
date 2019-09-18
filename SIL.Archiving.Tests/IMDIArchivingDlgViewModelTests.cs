@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Xml;
 using NUnit.Framework;
@@ -58,6 +57,23 @@ namespace SIL.Archiving.Tests
 
 			Assert.AreEqual(21, dirName.Length);
 			Assert.AreEqual("T_st_Title_", dirName.Substring(0, 11));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void PathIsAccessible_WritablePath_True()
+		{
+			var dir = _tmpFolder.Path;
+			var writable = _model.PathIsAccessible(dir);
+			Assert.True(writable);
+		}
+
+		[Test]
+		public void PathIsAccessible_NonexistentPath_False()
+		{
+			const string dir = "/one/two";
+			var writable = _model.PathIsAccessible(dir);
+			Assert.False(writable);
 		}
 
 		#endregion

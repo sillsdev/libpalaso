@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -546,6 +546,29 @@ namespace SIL.Archiving
 
 		/// <remarks/>
 		public Dictionary<string, MessageType> AdditionalMessages { get; private set; }
+
+		public bool PathIsAccessible(string directory)
+		{
+			try
+			{
+				var file = Path.Combine(directory, "Export.imdi");
+
+				if (File.Exists(file))
+					File.Delete(file);
+
+				File.WriteAllText(file, @"Export.imdi");
+
+				if (File.Exists(file))
+					File.Delete(file);
+			}
+			catch (Exception e)
+			{
+				DisplayMessage(e.Message, MessageType.Warning);
+				return false;
+			}
+
+			return true;
+		}
 	}
 
 	public interface ISupportMetadataOnly
