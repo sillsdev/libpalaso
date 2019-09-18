@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using L10NSharp;
 using SIL.Archiving.Generic;
+using SIL.IO;
 
 namespace SIL.Archiving
 {
@@ -551,23 +552,24 @@ namespace SIL.Archiving
 		{
 			try
 			{
-				var file = Path.Combine(directory, "Export.imdi");
+				var isWritable = DirectoryUtilities.IsDirectoryWritable(directory);
 
-				if (File.Exists(file))
-					File.Delete(file);
+				if (isWritable)
+					return true;
 
-				File.WriteAllText(file, @"Export.imdi");
+				var msg = LocalizationManager.GetString(
+					"DialogBoxes.ArchivingDlg.DirectoryNotWritableMsg",
+					"The path is not accessible: {0}");
 
-				if (File.Exists(file))
-					File.Delete(file);
+				DisplayMessage(string.Format(msg, directory), MessageType.Normal);
+
+				return false;
 			}
 			catch (Exception e)
 			{
 				DisplayMessage(e.Message, MessageType.Warning);
 				return false;
 			}
-
-			return true;
 		}
 	}
 

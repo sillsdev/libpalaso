@@ -249,5 +249,40 @@ namespace SIL.IO
 		{
 			return DirectoryHelper.IsEmpty(path, onlyCheckForFiles);
 		}
+
+		public static bool IsDirectoryWritable(string folderPath)
+		{
+			// if the directory doesn't exist, it isn't writable
+			if (!Directory.Exists(folderPath))
+				return false;
+
+			// get a random name for a temporary directory in folderPath
+			var tempPath = Path.Combine(folderPath, Path.GetRandomFileName());
+
+			try
+			{
+				if (Directory.Exists(tempPath))
+					Directory.Delete(tempPath, true);
+
+				Directory.CreateDirectory(tempPath);
+				return Directory.Exists(folderPath);
+			}
+			catch
+			{
+				return false;
+			}
+			finally
+			{
+				try
+				{
+					if (Directory.Exists(tempPath))
+						Directory.Delete(tempPath, true);
+				}
+				catch
+				{
+					// ignored
+				}
+			}
+		}
 	}
 }

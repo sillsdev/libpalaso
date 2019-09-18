@@ -11,6 +11,7 @@ namespace SIL.Tests.IO
 	[TestFixture]
 	public class DirectoryUtilitiesTests
 	{
+		private string _tempFolder;
 		private string _srcFolder;
 		private string _dstFolder;
 
@@ -19,9 +20,9 @@ namespace SIL.Tests.IO
 		public void TestSetup()
 		{
 			ErrorReport.IsOkToInteractWithUser = false;
-			string tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-			_srcFolder = Path.Combine(tempDir, "~!source");
-			_dstFolder = Path.Combine(tempDir, "~!destination");
+			_tempFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+			_srcFolder = Path.Combine(_tempFolder, "~!source");
+			_dstFolder = Path.Combine(_tempFolder, "~!destination");
 			Directory.CreateDirectory(_srcFolder);
 		}
 
@@ -31,17 +32,13 @@ namespace SIL.Tests.IO
 		{
 			try
 			{
-				if (Directory.Exists(_srcFolder))
-					Directory.Delete(_srcFolder, true);
+				if (Directory.Exists(_tempFolder))
+					Directory.Delete(_tempFolder, true);
 			}
-			catch { }
-
-			try
+			catch
 			{
-				if (Directory.Exists(_dstFolder))
-					Directory.Delete(_dstFolder, true);
+				// ignored
 			}
-			catch { }
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -135,8 +132,8 @@ namespace SIL.Tests.IO
 				var returnPath = DirectoryUtilities.CopyDirectoryToTempDirectory(srcFolder2);
 				Assert.IsNotNull(returnPath);
 				Assert.IsTrue(Directory.Exists(returnPath));
-				var foldername = Path.GetFileName(srcFolder2);
-				Assert.AreEqual(Path.Combine(Path.GetTempPath(), foldername), returnPath);
+				var folderName = Path.GetFileName(srcFolder2);
+				Assert.AreEqual(Path.Combine(Path.GetTempPath(), folderName), returnPath);
 			}
 			finally
 			{
@@ -179,8 +176,37 @@ namespace SIL.Tests.IO
 		{
 			Directory.CreateDirectory(_dstFolder);
 			Assert.IsTrue(DirectoryUtilities.CopyDirectory(_srcFolder, _dstFolder));
-			var foldername = Path.GetFileName(_srcFolder);
-			Assert.IsTrue(Directory.Exists(Path.Combine(_dstFolder, foldername)));
+			var folderName = Path.GetFileName(_srcFolder);
+			Assert.IsNotNull(folderName);
+			Assert.IsTrue(Directory.Exists(Path.Combine(_dstFolder, folderName)));
+		}
+
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void IsDirectoryWritable_WritablePath_True()
+		{
+			var tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+			try
+			{
+				Directory.CreateDirectory(tempDir);
+
+				var writable = DirectoryUtilities.IsDirectoryWritable(tempDir);
+				Assert.True(writable);
+			}
+			finally
+			{
+				if (Directory.Exists(tempDir))
+					Directory.Delete(tempDir, true);
+			}
+		}
+
+		[Test]
+		public void IsDirectoryWritable_NonexistentPath_False()
+		{
+			const string dir = "/one/two/three";
+			var writable = DirectoryUtilities.IsDirectoryWritable(dir);
+			Assert.False(writable);
 		}
 	}
 }
