@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Add build number to AssemblyFileVersion
 
+### Added
+
+- [SIL.NUnit3Compatibility] Add `ITest` class/interface
+
 ## [7.0.0] - 2019-08-29
 
 ### Changed
