@@ -114,7 +114,7 @@ namespace SIL.Archiving.IMDI
 				var dir = chooseFolder.SelectedPath;
 
 				// check if the selected path is currently writable by the current user
-				if (!_viewModel.PathIsAccessible(dir))
+				if (!_viewModel.IsPathWritable(dir))
 					return;
 
 				((IMDIArchivingDlgViewModel)_viewModel).OutputFolder = dir;

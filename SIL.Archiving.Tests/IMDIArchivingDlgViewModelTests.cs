@@ -11,8 +11,21 @@ namespace SIL.Archiving.Tests
 	[Category("Archiving")]
 	internal class IMDIArchivingDlgViewModelTests
 	{
+		private class MessageData
+		{
+			public string MsgText;
+			public ArchivingDlgViewModel.MessageType MsgType;
+
+			public MessageData(string msg, ArchivingDlgViewModel.MessageType type)
+			{
+				MsgText = msg;
+				MsgType = type;
+			}
+		}
+
 		private IMDIArchivingDlgViewModel _model;
 		private TemporaryFolder _tmpFolder;
+		private List<MessageData> _messages;
 		private const string kAppName = "Tèst App Náme";
 		private const string kTitle = "Tèst Title";
 		private const string kArchiveId = "Tèst Corpus Náme"; // include some invalid characters for testing
@@ -26,6 +39,8 @@ namespace SIL.Archiving.Tests
 			ErrorReport.IsOkToInteractWithUser = false;
 			_tmpFolder = new TemporaryFolder("IMDIArchiveHelperTestFolder");
 			_model = new IMDIArchivingDlgViewModel(kAppName, kTitle, kArchiveId, null, true, dummyAction => { }, _tmpFolder.Path);
+			_messages = new List<MessageData>();
+			_model.OnDisplayMessage += (msg, type) => { _messages.Add(new MessageData(msg, type)); };
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -64,16 +79,31 @@ namespace SIL.Archiving.Tests
 		public void PathIsAccessible_WritablePath_True()
 		{
 			var dir = _tmpFolder.Path;
-			var writable = _model.PathIsAccessible(dir);
+			var writable = _model.IsPathWritable(dir);
 			Assert.True(writable);
+			Assert.IsEmpty(_messages);
 		}
 
 		[Test]
 		public void PathIsAccessible_NonexistentPath_False()
 		{
 			const string dir = "/one/two";
-			var writable = _model.PathIsAccessible(dir);
+			var writable = _model.IsPathWritable(dir);
 			Assert.False(writable);
+			Assert.IsNotEmpty(_messages);
+			Assert.AreEqual("The path is not writable: /one/two", _messages[0].MsgText);
+			Assert.AreEqual(ArchivingDlgViewModel.MessageType.Warning, _messages[0].MsgType);
+		}
+
+		[Test]
+		public void PathIsAccessible_InvalidPath_False()
+		{
+			const string dir = ":?";
+			var writable = _model.IsPathWritable(dir);
+			Assert.False(writable);
+			Assert.IsNotEmpty(_messages);
+			Assert.AreEqual("The path is not of a legal form.", _messages[0].MsgText);
+			Assert.AreEqual(ArchivingDlgViewModel.MessageType.Warning, _messages[0].MsgType);
 		}
 
 		#endregion

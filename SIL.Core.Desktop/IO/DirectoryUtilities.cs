@@ -252,36 +252,39 @@ namespace SIL.IO
 
 		public static bool IsDirectoryWritable(string folderPath)
 		{
-			// if the directory doesn't exist, it isn't writable
-			if (!Directory.Exists(folderPath))
+			/*
+			 * Using DirectoryInfo.Exists instead of Directory.Exists() because
+			 * Directory.Exists() ignores all IO and Security exceptions.
+			 */
+			var parent = new DirectoryInfo(folderPath);
+			if (!parent.Exists)
 				return false;
 
 			// get a random name for a temporary directory in folderPath
 			var tempPath = Path.Combine(folderPath, Path.GetRandomFileName());
 
+			// if the random directory already exists, pick another
+			while (Directory.Exists(tempPath))
+				tempPath = Path.Combine(folderPath, Path.GetRandomFileName());
+
 			try
 			{
-				if (Directory.Exists(tempPath))
-					Directory.Delete(tempPath, true);
-
 				Directory.CreateDirectory(tempPath);
-				return Directory.Exists(folderPath);
+
+				if (!Directory.Exists(tempPath))
+					return false;
+
+				Directory.Delete(tempPath, true);
+
+				return true;
 			}
-			catch
+			catch(IOException)
 			{
 				return false;
 			}
-			finally
+			catch(UnauthorizedAccessException)
 			{
-				try
-				{
-					if (Directory.Exists(tempPath))
-						Directory.Delete(tempPath, true);
-				}
-				catch
-				{
-					// ignored
-				}
+				return false;
 			}
 		}
 	}

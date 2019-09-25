@@ -548,28 +548,26 @@ namespace SIL.Archiving
 		/// <remarks/>
 		public Dictionary<string, MessageType> AdditionalMessages { get; private set; }
 
-		public bool PathIsAccessible(string directory)
+		public bool IsPathWritable(string directory)
 		{
 			try
 			{
-				var isWritable = DirectoryUtilities.IsDirectoryWritable(directory);
-
-				if (isWritable)
+				if (DirectoryUtilities.IsDirectoryWritable(directory))
 					return true;
-
-				var msg = LocalizationManager.GetString(
-					"DialogBoxes.ArchivingDlg.DirectoryNotWritableMsg",
-					"The path is not accessible: {0}");
-
-				DisplayMessage(string.Format(msg, directory), MessageType.Normal);
-
-				return false;
 			}
 			catch (Exception e)
 			{
 				DisplayMessage(e.Message, MessageType.Warning);
 				return false;
 			}
+
+			var msg = LocalizationManager.GetString(
+				"DialogBoxes.ArchivingDlg.PathNotWritableMsg",
+				"The path is not writable: {0}");
+
+			DisplayMessage(string.Format(msg, directory), MessageType.Warning);
+
+			return false;
 		}
 	}
 
