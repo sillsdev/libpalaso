@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>net461</TargetFrameworks>
-    <RootNamespace>SIL.Windows.Forms.Keyboarding</RootNamespace>
-    <AssemblyTitle>SIL.Windows.Forms.Keyboarding</AssemblyTitle>
     <Configurations>Debug;Release</Configurations>
     <Description>The SIL.Windows.Forms.Keyboarding library provides cross-platform functionality for keyboard selection and switching in Windows Forms applications. Currently, this library supports system and Keyman keyboards on Windows, and X keyboard extension (XKB) and Intelligent Input Bus (IBus) keyboards on Linux.</Description>
     <Company>SIL International</Company>
@@ -38,6 +36,9 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
     <PackageReference Include="StrongNamer" Version="0.0.8">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -55,8 +56,14 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
     <Reference Include="KeymanLink, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\lib\common\KeymanLink.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Mono.Posix" Condition="'$(OS)' != 'Windows_NT'" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <!-- See https://github.com/dotnet/sdk/issues/987#issuecomment-286307697 why that is needed -->
+    <AssemblySearchPaths>$(AssemblySearchPaths);{GAC}</AssemblySearchPaths>
+  </PropertyGroup>
 
 </Project>

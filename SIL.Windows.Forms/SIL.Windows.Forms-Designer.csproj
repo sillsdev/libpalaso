@@ -72,9 +72,6 @@
       <HintPath>..\packages\L10NSharp.4.0.0\lib\net461\L10NSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NAudio">
-      <HintPath>..\packages\NAudio.1.8.4\lib\net35\NAudio.dll</HintPath>
-    </Reference>
     <!-- this is the Microsoft WIndows Image Acquisition COM library, for scanner and camera control-->
     <Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
