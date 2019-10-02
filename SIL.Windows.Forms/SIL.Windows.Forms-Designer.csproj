@@ -139,9 +139,6 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="taglib-sharp">
-      <HintPath>..\packages\TagLibSharp-patched.2.2.0-beta.1\lib\netstandard2.0\taglib-sharp.dll</HintPath>
-    </Reference>
     <Reference Include="TagLibSharp, Version=2.2.0.0, Culture=neutral, PublicKeyToken=db62eba44689b5b0">
       <HintPath>..\packages\TagLibSharp.2.2.0\lib\net45\TagLibSharp.dll</HintPath>
       <Private>True</Private>
