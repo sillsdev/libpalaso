@@ -90,19 +90,31 @@ namespace SIL.Archiving.Tests
 			const string dir = "/one/two";
 			var writable = _model.IsPathWritable(dir);
 			Assert.False(writable);
-			Assert.IsNotEmpty(_messages);
+			Assert.AreEqual(1, _messages.Count);
 			Assert.AreEqual("The path is not writable: /one/two", _messages[0].MsgText);
 			Assert.AreEqual(ArchivingDlgViewModel.MessageType.Warning, _messages[0].MsgType);
 		}
 
 		[Test]
-		public void PathIsAccessible_InvalidPath_False()
+		[Platform(Exclude = "Linux", Reason = "This test won't fail as expected on Linux - the only invalid character is NULL, and it produces a different message")]
+		public void IsPathWritable_WindowsInvalidPath_False()
 		{
 			const string dir = ":?";
 			var writable = _model.IsPathWritable(dir);
 			Assert.False(writable);
-			Assert.IsNotEmpty(_messages);
+			Assert.AreEqual(1, _messages.Count);
 			Assert.AreEqual("The path is not of a legal form.", _messages[0].MsgText);
+			Assert.AreEqual(ArchivingDlgViewModel.MessageType.Warning, _messages[0].MsgType);
+		}
+
+		[Test]
+		public void IsPathWritable_IllegalCharacterInPath_False()
+		{
+			const string dir = "/\0";
+			var writable = _model.IsPathWritable(dir);
+			Assert.False(writable);
+			Assert.AreEqual(1, _messages.Count);
+			Assert.AreEqual("Illegal characters in path.", _messages[0].MsgText);
 			Assert.AreEqual(ArchivingDlgViewModel.MessageType.Warning, _messages[0].MsgType);
 		}
 
