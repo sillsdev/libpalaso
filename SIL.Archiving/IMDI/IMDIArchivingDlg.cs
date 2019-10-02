@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -111,7 +111,13 @@ namespace SIL.Archiving.IMDI
 				if (chooseFolder.ShowDialog() == DialogResult.Cancel)
 					return;
 
-				((IMDIArchivingDlgViewModel)_viewModel).OutputFolder = chooseFolder.SelectedPath;
+				var dir = chooseFolder.SelectedPath;
+
+				// check if the selected path is currently writable by the current user
+				if (!_viewModel.IsPathWritable(dir))
+					return;
+
+				((IMDIArchivingDlgViewModel)_viewModel).OutputFolder = dir;
 
 				SetDestinationLabelText();
 				SetControlProperties();

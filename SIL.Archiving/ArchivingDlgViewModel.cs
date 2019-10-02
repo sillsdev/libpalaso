@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using L10NSharp;
 using SIL.Archiving.Generic;
+using SIL.IO;
 
 namespace SIL.Archiving
 {
@@ -546,6 +547,28 @@ namespace SIL.Archiving
 
 		/// <remarks/>
 		public Dictionary<string, MessageType> AdditionalMessages { get; private set; }
+
+		public bool IsPathWritable(string directory)
+		{
+			try
+			{
+				if (DirectoryUtilities.IsDirectoryWritable(directory))
+					return true;
+			}
+			catch (Exception e)
+			{
+				DisplayMessage(e.Message, MessageType.Warning);
+				return false;
+			}
+
+			var msg = LocalizationManager.GetString(
+				"DialogBoxes.ArchivingDlg.PathNotWritableMsg",
+				"The path is not writable: {0}");
+
+			DisplayMessage(string.Format(msg, directory), MessageType.Warning);
+
+			return false;
+		}
 	}
 
 	public interface ISupportMetadataOnly
