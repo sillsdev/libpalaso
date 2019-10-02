@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="ILRepacker" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
+
+    <ItemGroup>
+      <InputAssemblies Include="$(OutputPath)$(TargetName)$(TargetExt)"/>
+      <InputAssemblies Include="$(OutputPath)Keyman10Interop.dll"/>
+      <InputAssemblies Include="$(OutputPath)Keyman7Interop.dll"/>
+      <InputAssemblies Include="$(OutputPath)KeymanLink.dll"/>
+    </ItemGroup>
+
+    <ILRepack
+      Verbose="true"
+      Parallel="true"
+      KeyFile="../palaso.snk"
+      Internalize="true"
+      DebugInfo="true"
+      InputAssemblies="@(InputAssemblies)"
+      LibraryPath="$(OutputPath);$(FrameworkPathOverride)"
+      AttributeFile="$(OutputPath)$(TargetName)$(TargetExt)"
+      TargetKind="SameAsPrimaryAssembly"
+      OutputFile="$(OutputPath)$(AssemblyName)$(TargetExt)"
+    />
+
+  </Target>
+</Project>
