@@ -4,7 +4,7 @@ mode: ContinuousDeployment
 branches:
   master:
     tag: beta
-    regex: (origin/)?master
+    regex: (origin/)?(master|feature/nuget)
   hotfix:
     tag: beta
     regex: (origin/)?hotfix[/-]
