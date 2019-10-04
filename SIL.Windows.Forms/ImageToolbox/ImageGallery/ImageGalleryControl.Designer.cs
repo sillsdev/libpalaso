@@ -7,15 +7,25 @@
 		/// </summary>
 		private System.ComponentModel.IContainer components = null;
 
+		private bool disposed = false;
 		/// <summary>
 		/// Clean up any resources being used.
 		/// </summary>
 		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && (components != null))
+			if (disposed)
+				return;
+			disposed = true;
+			if (disposing)
 			{
-				components.Dispose();
+				if (components != null)
+					components.Dispose();
+				if (_thumbnailViewer != null)
+				{
+					_thumbnailViewer.Dispose();
+					_thumbnailViewer = null;
+				}
 			}
 			base.Dispose(disposing);
 		}

@@ -259,21 +259,27 @@ namespace SIL.Windows.Forms.GeckoBrowserAdapter
 		{
 		}
 
+		private bool disposed = false;
 		/// <summary>
 		/// Clean up any resources being used.
 		/// </summary>
 		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
 		protected override void Dispose(bool disposing)
 		{
-			if (_htmlFile != null)
+			if (disposed)
+				return;
+			disposed = true;
+			if (disposing)
 			{
-				_htmlFile.Dispose();
-				_htmlFile = null;
-			}
-
-			if (disposing && (components != null))
-			{
-				components.Dispose();
+				if (components != null)
+					components.Dispose();
+				if (_browser != null)
+					_browser.Dispose();
+				if (_htmlFile != null)
+				{
+					_htmlFile.Dispose();
+					_htmlFile = null;
+				}
 			}
 			base.Dispose(disposing);
 		}

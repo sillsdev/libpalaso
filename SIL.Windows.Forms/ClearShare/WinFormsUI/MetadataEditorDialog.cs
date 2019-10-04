@@ -54,10 +54,21 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 			Close();
 		}
 
+		// allow subclass to access these methods/properties.
 
-		private void _minimallyCompleteCheckTimer_Tick(object sender, EventArgs e)
+		protected virtual void _minimallyCompleteCheckTimer_Tick(object sender, EventArgs e)
 		{
 			_okButton.Enabled = _metadataEditorControl.Metadata.IsMinimallyComplete;
+		}
+
+		protected MetadataEditorControl MetadataControl
+		{
+			get { return _metadataEditorControl; }
+		}
+
+		protected Button OkButton
+		{
+			get { return _okButton; }
 		}
 	}
 }

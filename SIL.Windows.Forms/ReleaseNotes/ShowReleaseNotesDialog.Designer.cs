@@ -11,12 +11,16 @@ namespace SIL.Windows.Forms.ReleaseNotes
 		/// </summary>
 		private System.ComponentModel.IContainer components = null;
 
+		private bool disposed = false;
 		/// <summary>
 		/// Clean up any resources being used.
 		/// </summary>
 		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
 		protected override void Dispose(bool disposing)
 		{
+			if (disposed)
+				return;
+			disposed = true;
 			if (disposing)
 			{
 				if (components != null)
@@ -32,8 +36,11 @@ namespace SIL.Windows.Forms.ReleaseNotes
 						Debug.Fail(error.Message);
 					}
 				}
+				if (_browser != null)
+					_browser.Dispose();
 			}
 			_temp = null;
+			_browser = null;
 			base.Dispose(disposing);
 		}
 
