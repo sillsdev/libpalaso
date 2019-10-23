@@ -20,7 +20,7 @@
     <PackageReference Include="GitVersionTask" Version="5.0.1">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="ibusdotnet" Version="2.0.0.20771" />
+    <PackageReference Include="ibusdotnet" Version="2.0.1" />
     <PackageReference Include="Moq" Version="4.0.10827" />
     <PackageReference Include="NDesk.DBus" Version="0.15.0" />
     <PackageReference Include="NUnit" Version="2.6.4" />

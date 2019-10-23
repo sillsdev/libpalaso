@@ -23,8 +23,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-- [SIL.Windows.Forms.Keyboarding] Merge missing `Keyman*Interop.dll` into the assembly (#865). On Linux there's
-  still a similar issue outstanding with `ibusdotnet.dll`.
+- [SIL.Windows.Forms.Keyboarding] Merge missing `Keyman*Interop.dll` into the assembly (#865)
+- [SIL.Windows.Forms] Use signed version of `ibusdotnet.dll` (#865)
 - [SIL.Windows.Forms] Merge `Interop.WIA.dll`, `DialogAdapters.dll`, and `MarkdownDeep.dll` into the assembly
 
 ## [7.0.0] - 2019-08-29

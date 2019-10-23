@@ -26,7 +26,7 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
     <PackageReference Include="GitVersionTask" Version="5.0.1">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="ibusdotnet" Version="2.0.0.20771" />
+    <PackageReference Include="ibusdotnet" Version="2.0.1" />
     <PackageReference Include="icu.net" Version="2.5.4" />
     <PackageReference Include="L10NSharp" Version="4.0.0" />
     <PackageReference Include="Mono.Posix" Version="5.4.0.201" Condition="'$(OS)' == 'Windows_NT'" />
