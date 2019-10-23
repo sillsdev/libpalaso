@@ -65,7 +65,6 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
     <Reference Include="gtk-sharp" />
     <Reference Include="gdk-sharp" />
     <Reference Include="glib-sharp" />
-    <Reference Include="glade-sharp" />
     <Reference Include="Mono.Posix" />
   </ItemGroup>
 
