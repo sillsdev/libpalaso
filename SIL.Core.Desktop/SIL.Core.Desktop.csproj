@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -302,9 +302,7 @@
     <Compile Include="IO\DirectoryUtilities.cs" />
     <Compile Include="IO\FileLocator.cs" />
     <Compile Include="IO\FileUtils.cs" />
-    <Compile Include="IO\PathUtilities.cs" />
     <Compile Include="IO\RobustImageIO.cs" />
-    <Compile Include="IO\TempFileForSafeWriting.cs" />
     <Compile Include="Network\ProxyCredentialSettings.Designer.cs" />
     <Compile Include="Network\RobustNetworkOperation.cs" />
     <Compile Include="Progress\Commands\AsyncCommand.cs" />
@@ -315,26 +313,16 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Reporting\AnalyticsEventSender.cs" />
-    <Compile Include="Reporting\ConfigurationException.cs" />
-    <Compile Include="Reporting\ConsoleErrorReporter.cs" />
-    <Compile Include="Reporting\ConsoleExceptionHandler.cs" />
-    <Compile Include="Reporting\ErrorReport.cs" />
     <Compile Include="Reporting\ErrorReportSettings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ErrorReportSettings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Reporting\ExceptionHandler.cs" />
-    <Compile Include="Reporting\ExceptionHelper.cs" />
-    <Compile Include="Reporting\Logger.cs" />
-    <Compile Include="Reporting\ReportingSettings.cs" />
     <Compile Include="Reporting\ReportingStrings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ReportingStrings.resx</DependentUpon>
     </Compile>
-    <Compile Include="Reporting\UsageReporter.cs" />
     <Compile Include="Settings\CrossPlatformSettingsProvider.cs" />
     <Compile Include="UiBindings\IBindableControl.cs" />
     <Compile Include="UiBindings\ICountGiver.cs" />
