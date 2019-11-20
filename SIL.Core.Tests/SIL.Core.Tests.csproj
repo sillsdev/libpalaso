@@ -329,14 +329,9 @@
     <Compile Include="IO\FileHelperTests.cs" />
     <Compile Include="IO\FileTestEnvironment.cs" />
     <Compile Include="IO\PathHelperTests.cs" />
-    <Compile Include="IO\PathUtilitiesTests.cs" />
     <Compile Include="IO\RobustFileTests.cs" />
     <Compile Include="IO\RobustIOTests.cs" />
-    <Compile Include="IO\TempFileForSafeWritingTests.cs" />
     <Compile Include="IO\TempFileTests.cs" />
-    <Compile Include="Reporting\AnalyticsEventSenderTests.cs" />
-    <Compile Include="Reporting\ErrorReportTests.cs" />
-    <Compile Include="Reporting\UsageReporter.Tests.cs" />
     <Compile Include="Migration\DefaultVersionTests.cs" />
     <Compile Include="Migration\FileMigratorTests.cs" />
     <Compile Include="Migration\XmlReaderWriterMigratorTests.cs" />
@@ -419,5 +414,4 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
 </Project>

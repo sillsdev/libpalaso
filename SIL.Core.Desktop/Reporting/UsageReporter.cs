@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -310,7 +310,7 @@ namespace SIL.Reporting
 		private void SaveCookie(Cookie cookie)
 		{
 			//ErrorReportSettings.Default.AnalyticsCookie = cookie; /*TODO: how to serialize the cookie?*/
-			//ErrorReportSettings.Default.Save();
+			ErrorReportSettings.Default.Save();
 		}
 
 		/// <summary>

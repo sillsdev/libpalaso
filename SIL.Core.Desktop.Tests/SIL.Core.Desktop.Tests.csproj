@@ -275,8 +275,13 @@
     <Compile Include="IO\DirectoryUtilitiesTests.cs" />
     <Compile Include="IO\FileLocatorTests.cs" />
     <Compile Include="IO\FileUtilsTests.cs" />
+    <Compile Include="IO\PathUtilitiesTests.cs" />
+    <Compile Include="IO\TempFileForSafeWritingTests.cs" />
     <Compile Include="Network\RobustNetworkOperation.Tests.cs" />
     <Compile Include="Progress\Commands\CommandTests.cs" />
+    <Compile Include="Reporting\AnalyticsEventSenderTests.cs" />
+    <Compile Include="Reporting\ErrorReportTests.cs" />
+    <Compile Include="Reporting\UsageReporter.Tests.cs" />
     <Compile Include="SetupFixture.cs" />
     <Compile Include="ValidateReferencesTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
