@@ -18,6 +18,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
+- [SIL.Core] and [SIL.Core.Desktop] Moved several classes back to SIL.Core from SIL.Core.Desktop to make them available to .NET Standard clients.
+  - IO/PathUtilities
+  - IO/TempFileForSafeWriting
+  - Reporting/AnalyticsEventSender
+  - Reporting/ConfigurationException
+  - Reporting/ConsoleErrorReporter
+  - Reporting/ConsoleExceptionHandler
+  - Reporting/ErrorReport
+  - Reporting/ExceptionHandler
+  - Reporting/ExceptionHelper
+  - Reporting/Logger
+  - Reporting/ReportingSettings
+  - Reporting/UsageReporter
 - Add build number to AssemblyFileVersion
 - [SIL.Windows.Forms] Removed unnecessary dependency on NAudio
 
