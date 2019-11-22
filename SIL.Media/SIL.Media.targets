@@ -1,7 +1,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)**\*.dll"
-          Exclude="$(MSBuildThisFileDirectory)**\irrKlang.NET4.dll">
+    <None Include="$(MSBuildThisFileDirectory)**\*.dll">
       <Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

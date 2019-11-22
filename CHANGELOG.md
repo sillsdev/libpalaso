@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Windows.Forms.Keyboarding] Merge missing `Keyman*Interop.dll` into the assembly (#865)
 - [SIL.Windows.Forms] Use signed version of `ibusdotnet.dll` (#865)
 - [SIL.Windows.Forms] Merge `Interop.WIA.dll`, `DialogAdapters.dll`, and `MarkdownDeep.dll` into the assembly
+- [SIL.Media] Fix missing `irrKlang.NET4.dll` exception by copying it to lib folder in output
 
 ## [7.0.0] - 2019-08-29
 
