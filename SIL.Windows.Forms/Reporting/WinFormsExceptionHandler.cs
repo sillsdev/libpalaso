@@ -67,24 +67,6 @@ namespace SIL.Windows.Forms.Reporting
 			}
 		}
 
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Catches and displays otherwise unhandled exception, especially those that happen
-		/// during startup of the application before we show our main window.
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		protected void HandleUnhandledException(object sender, UnhandledExceptionEventArgs e)
-		{
-			var exception = e.ExceptionObject as Exception;
-			if (!GetShouldHandleException(sender, exception))
-				return;
-
-			if (exception != null)
-				DisplayError(exception);
-			else
-				DisplayError(new ApplicationException("Got unknown exception"));
-		}
-
 		protected override bool ShowUI
 		{
 			get

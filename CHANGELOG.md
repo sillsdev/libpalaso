@@ -18,7 +18,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- [SIL.Core] and [SIL.Core.Desktop] Moved several classes back to SIL.Core from SIL.Core.Desktop to make them available to .NET Standard clients.
+- Add build number to AssemblyFileVersion
+- [SIL.Core] and [SIL.Core.Desktop] Move several classes back to SIL.Core from SIL.Core.Desktop to make
+  them available to .NET Standard clients.
   - IO/PathUtilities
   - IO/TempFileForSafeWriting
   - Reporting/AnalyticsEventSender
@@ -31,8 +33,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   - Reporting/Logger
   - Reporting/ReportingSettings
   - Reporting/UsageReporter
-- Add build number to AssemblyFileVersion
-- [SIL.Windows.Forms] Removed unnecessary dependency on NAudio
+- [SIL.Windows.Forms] Remove unnecessary dependency on NAudio
+- [SIL.Core] Deprecate `ExceptionHandler.Init()` method in favor of more explicit version
+  `ExceptionHandler.Init(ExceptionHandler)`, e.g. `ExceptionHandler.Init(new WinFormsExceptionHandler())`
+- [SIL.Core] Move `HandleUnhandledException()` method from derived classes to base class
 
 ### Fixed
 
