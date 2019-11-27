@@ -17,23 +17,6 @@ namespace SIL.Reporting
 			AppDomain.CurrentDomain.UnhandledException += HandleUnhandledException;
 		}
 
-		/// ------------------------------------------------------------------------------------
-		/// <summary>
-		/// Catches and displays otherwise unhandled exception, especially those that happen
-		/// during startup of the application before we show our main window.
-		/// </summary>
-		/// ------------------------------------------------------------------------------------
-		protected void HandleUnhandledException(object sender, UnhandledExceptionEventArgs e)
-		{
-			if (!GetShouldHandleException(sender, e.ExceptionObject as Exception))
-				return;
-
-			if (e.ExceptionObject is Exception)
-				DisplayError(e.ExceptionObject as Exception);
-			else
-				DisplayError(new ApplicationException("Got unknown exception"));
-		}
-
 		protected override bool ShowUI
 		{
 			get { return false; }
