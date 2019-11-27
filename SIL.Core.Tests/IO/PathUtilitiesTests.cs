@@ -78,9 +78,9 @@ namespace SIL.Tests.IO
 					var lines = metaFileContent.Split('\n');
 					Assert.That(lines.Length, Is.GreaterThanOrEqualTo(3));
 					Assert.That(lines[0], Is.EqualTo("[Trash Info]"));
-					Assert.That(lines[1], Is.StringStarting("Path="));
-					Assert.That(lines[1], Is.StringEnding(file));
-					Assert.That(lines[2], Is.StringMatching(@"DeletionDate=\d\d\d\d\d\d\d\dT\d\d:\d\d:\d\d"));
+					Assert.That(lines[1], Does.StartWith("Path="));
+					Assert.That(lines[1], Does.EndWith(file));
+					Assert.That(lines[2], Does.Match(@"DeletionDate=\d\d\d\d\d\d\d\dT\d\d:\d\d:\d\d"));
 				}
 			}
 		}
@@ -145,7 +145,7 @@ namespace SIL.Tests.IO
 		[Test, Ignore("By Hand")]
 		public void OpenDirectoryInExplorer_PathIsADirectoryHasCombiningCharacters_StillOpens()
 		{
-			//as of May 27 2015, this is expected to fail on Windows. See enhancment note 
+			//as of May 27 2015, this is expected to fail on Windows. See enhancement note
 			//in the OpenDirectoryInExplorer() code.
 			var path = Path.Combine(Path.GetTempPath(), "ปู should select this directory");
 			if(!Directory.Exists(path))
