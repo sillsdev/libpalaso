@@ -27,7 +27,7 @@ namespace SIL.Reporting
 		/// Initialize the ExceptionHandler. By default, the exception handler will be initialized with a ConsoleExceptionHandler
 		/// unless the entry assembly uses a dependency on SIL.Windows.Forms.dll. In that case we default to the WinFormsExceptionHandler
 		/// </summary>
-		[Obsolete("Use Init<T>() instead, e.g. Init<ConsoleExceptionHandler>() or Init<WinFormsExceptionHandler>()")]
+		[Obsolete("Use Init(ExceptionHandler) instead, e.g. Init(new ConsoleExceptionHandler()) or Init(new WinFormsExceptionHandler())")]
 		public static void Init()
 		{
 			if (_singleton != null)
@@ -35,19 +35,6 @@ namespace SIL.Reporting
 
 			//If we can't find the WinFormsExceptionHandler we'll use the Console
 			_singleton = GetObjectFromSilWindowsForms<ExceptionHandler>() ?? new ConsoleExceptionHandler();
-		}
-
-		/// <summary>
-		/// Initialize the ExceptionHandler.
-		/// </summary>
-		/// <typeparam name="T">Type of exception handler</typeparam>
-		/// <exception cref="InvalidOperationException">If ExceptionHandler.Init has been called before</exception>
-		public static void Init<T>() where T: ExceptionHandler, new()
-		{
-			if (_singleton != null)
-				throw new InvalidOperationException($"An ExceptionHandler (of type ${_singleton.GetType()}) has already been set.");
-
-			_singleton = new T();
 		}
 
 		/// <summary>

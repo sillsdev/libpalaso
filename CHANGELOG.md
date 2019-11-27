@@ -34,8 +34,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   - Reporting/ReportingSettings
   - Reporting/UsageReporter
 - [SIL.Windows.Forms] Remove unnecessary dependency on NAudio
-- [SIL.Core] Deprecate `ExceptionHandler.Init()` method in favor of more explicit template version
-  `ExceptionHandler.Init<T>()`, e.g. `ExceptionHandler.Init<WinFormsExceptionHandler>()`
+- [SIL.Core] Deprecate `ExceptionHandler.Init()` method in favor of more explicit version
+  `ExceptionHandler.Init(ExceptionHandler)`, e.g. `ExceptionHandler.Init(new WinFormsExceptionHandler())`
 - [SIL.Core] Move `HandleUnhandledException()` method from derived classes to base class
 
 ### Fixed

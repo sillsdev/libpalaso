@@ -48,10 +48,10 @@ namespace SIL.Tests
 		}
 
 		[Test]
-		public void InitWithTemplate()
+		public void Init()
 		{
 			// Execute
-			ExceptionHandler.Init<TestExceptionHandler>();
+			ExceptionHandler.Init(new TestExceptionHandler());
 
 			// Verify
 			var exception = new ArgumentOutOfRangeException();
@@ -60,13 +60,13 @@ namespace SIL.Tests
 		}
 
 		[Test]
-		public void InitWithTemplate_ThrowsIfAlreadyInitialized()
+		public void Init_ThrowsIfAlreadyInitialized()
 		{
 			// Setup
 			ExceptionHandler.Init(new ConsoleExceptionHandler());
 
 			// Execute
-			Assert.That(() => ExceptionHandler.Init<TestExceptionHandler>(),
+			Assert.That(() => ExceptionHandler.Init(new TestExceptionHandler()),
 				Throws.InvalidOperationException.With.Message.Contains(nameof(ConsoleExceptionHandler)));
 		}
 	}
