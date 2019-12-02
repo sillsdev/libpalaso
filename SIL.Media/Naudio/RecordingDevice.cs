@@ -51,7 +51,7 @@ namespace SIL.Media.Naudio
 								.FirstOrDefault(d => d.DeviceFriendlyName == capabilities.ProductName);
 							if (x == null)
 							{
-								// Seems quite often the capabilities ProductName is a trunctaion of the endPoint FriendlyName.
+								// Seems quite often the capabilities ProductName is a truncation of the endPoint FriendlyName.
 								// See if we can match it that way.
 								x = devicEnumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active)
 									.FirstOrDefault(d => d.FriendlyName.StartsWith(capabilities.ProductName));
