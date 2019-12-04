@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -129,6 +128,7 @@ namespace SIL.Reporting
 			new Dictionary<string, string>();
 
 		private static bool s_isOkToInteractWithUser = true;
+		private static Action<Exception, string> s_onShowDetails;
 		private static bool s_justRecordNonFatalMessagesForTesting=false;
 		private static string s_previousNonFatalMessage;
 		private static Exception s_previousNonFatalException;
@@ -309,6 +309,23 @@ namespace SIL.Reporting
 			}
 		}
 
+		/// <summary>
+		/// Software using ErrorReport's NotifyUserOfProblem methods can set this to their own method
+		/// for handling when the user clicks the "Details" button.
+		/// </summary>
+		public static Action<Exception, string> OnShowDetails
+		{
+			get
+			{
+				return s_onShowDetails ??
+				       (s_onShowDetails = ErrorReport.ReportNonFatalExceptionWithMessage);
+			}
+			set
+			{
+				s_onShowDetails = value;
+			}
+		}
+
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		///	add a property that he would like included in any bug reports created by this application.
@@ -477,7 +494,7 @@ namespace SIL.Reporting
 			var result = NotifyUserOfProblem(policy, "Details", ErrorResult.Yes, messageFmt, args);
 			if (result == ErrorResult.Yes)
 			{
-				ErrorReport.ReportNonFatalExceptionWithMessage(error, string.Format(messageFmt, args));
+				OnShowDetails(error, string.Format(messageFmt, args));
 			}
 
 			UsageReporter.ReportException(false, null, error, String.Format(messageFmt, args));
@@ -496,6 +513,17 @@ namespace SIL.Reporting
 				return ErrorResult.OK;
 			}
 			return _errorReporter.NotifyUserOfProblem(policy, alternateButton1Label, resultIfAlternateButtonPressed, message);
+		}
+
+		/// <summary>
+		/// Bring up a "yellow box" that let's them send in a report, then return to the program.
+		/// This version assumes the message has already been formatted with any arguments.
+		/// </summary>
+		public static void ReportNonFatalExceptionWithMessage(Exception error, string message)
+		{
+			s_previousNonFatalMessage = message;
+			s_previousNonFatalException = error;
+			_errorReporter.ReportNonFatalExceptionWithMessage(error, message);
 		}
 
 		/// <summary>
