@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 
 namespace SIL.WritingSystems.Tests
 {
@@ -436,5 +437,209 @@ namespace SIL.WritingSystems.Tests
 					"At least the top 20 results for each way of typing 'sign' should have 'sign' in one of the language names");
 			}
 		}
+
+		[Test]
+		public void EnsureDefaultTags_WorksAsExpected()
+		{
+			var entries = new List<AllTagEntry>
+			{
+				new AllTagEntry { full="abq-Cyrl-RU", iana=new List<string>{"Abaza"}, iso639_3="abq",
+					name="Abaza", names=new List<string> { "Abazin", "Abazintsy", "Ahuwa", "Ashuwa" },
+					region="RU", regionName="Russian Federation", regions=new List<string> { "TR" },
+					tag="abq-Cyrl", tags=new List<string> { "abq", "abq-RU" }
+					},
+				new AllTagEntry { full="abq-Latn-TR", iana=new List<string>{"Abaza"}, iso639_3="abq",
+					name="Abaza", names=new List<string> { "Abazin", "Abazintsy", "Ahuwa", "Ashuwa" },
+					region="TR", regionName="Turkey", regions=new List<string> { "RU" },
+					tag="abq-Latn", tags=new List<string> { "abq-TR" }
+					},
+				new AllTagEntry { full="aii-Cyrl-RU", iana=new List<string>{"Assyrian Neo-Aramaic"}, iso639_3="aii",
+					name="Assyrian Neo-Aramaic",
+					region="RU", regionName="Russian Federation",
+					tag="aii-Cyrl", tags=new List<string> { "aii-RU" }
+					},
+				new AllTagEntry { full="aii-Syrc-IQ", iana=new List<string>{"Assyrian Neo-Aramaic"}, iso639_3="aii",
+					localname="ܠܫܢܐ ܣܘܪܝܝܐ", name="Assyrian Neo-Aramaic", names=new List<string> { "Aisorski", "Assyrian", "Assyrianci", "Assyriski", "Aturaya Swadaya", "Lishana Aturaya", "Neo-Syriac", "Sooreth", "Suret", "Sureth", "Suryaya Swadaya", "Swadai", "Swadaya" },
+					region="IQ", regionName="Iraq", regions=new List<string> { "AM", "AT", "AU", "AZ", "BE", "BR", "CA", "CH", "CY", "DE", "GB", "GE", "GR", "IR", "IT", "LB", "NL", "NZ", "RU", "SE", "SY", "TR", "US" },
+					tag="aii-Syrc", tags=new List<string> { "aii-IQ" }
+					},
+				new AllTagEntry { full="aij-Hebr-IL", iana=new List<string>{"Lishanid Noshan"}, iso639_3="aij",
+					name="Inter-Zab Jewish Neo-Aramaic", names=new List<string> { "Hulani", "Jbeli", "Kurdit", "Lishana Didán", "Lishanid Noshan" },
+					region="IL", regionName="Israel",
+					tag="aij", tags=new List<string> { "aij-Hebr", "aij-IL" }
+					},
+				new AllTagEntry { full="cmg-Soyo-MN", iana=new List<string>{"Classical Mongolian"}, iso639_3="cmg",
+					name="Classical Mongolian",
+					region="MN", regionName="Mongolia",
+					tag="cmg-Soyo", tags=new List<string> { "cmg-MN" }
+					},
+				new AllTagEntry { full="crh-Cyrl-UA", iana=new List<string> { "Crimean Tatar", "Crimean Turkish" }, iso639_3="crh",
+					name="Crimean Tatar", names=new List<string> { "Crimean", "Crimean Turkish", "Qirim", "Qirimtatar", "Qırımtatar tili", "Qırımtatarca" },
+					region="UA", regionName="Ukraine", regions=new List<string> { "BG", "KG", "MD", "RO", "RU", "TR", "US", "UZ" },
+					tag="crh", tags=new List<string> { "crh-Cyrl", "crh-UA" }
+					},
+				new AllTagEntry { full="crh-Arab-UZ", iana=new List<string> { "Crimean Tatar", "Crimean Turkish" }, iso639_3="crh",
+					name="Crimean Tatar", names=new List<string> { "Crimean", "Crimean Turkish", "Qirim", "Qirimtatar", "Qırımtatar tili", "Qırımtatarca" },
+					region="UZ", regionName="Uzbekistan", regions=new List<string> { "BG", "KG", "MD", "RO", "RU", "TR", "UA", "US" },
+					tag="crh-Arab", tags=new List<string> { "crh-UZ" }
+					},
+				new AllTagEntry { full="crh-Latn-UA", iana=new List<string> { "Crimean Tatar", "Crimean Turkish" }, iso639_3="crh",
+					name="Crimean Tatar", names=new List<string> { "Crimean", "Crimean Turkish", "Qirim", "Qirimtatar", "Qırımtatar tili", "Qırımtatarca" },
+					region="UA", regionName="Ukraine", regions=new List<string> { "BG", "KG", "MD", "RO", "RU", "TR", "US", "UZ" },
+					tag="crh-Latn",
+					},
+				new AllTagEntry { full="de-Latn-DE", iana=new List<string>{"German"}, iso639_3="deu",
+					localname="Deutsch", name="German, Standard", names=new List<string> { "Alemán", "Alemão", "Allemand", "Deutsch", "Duits", "Däitsch", "German", "Germană", "Nemec", "Nemetskiy", "Niemiec", "Német", "Němec", "Tedesco", "Tudestg", "Tysk" },
+					region="DE", regionName="Germany", regions=new List<string> { "AE", "AR", "AU", "BA", "BE", "BG", "BO", "BR", "CA", "CL", "CY", "CZ", "DK", "EC", "EE", "FI", "FR", "GR", "HR", "HU", "IE", "IL", "KG", "KZ", "LT", "MT", "MZ", "NA", "NL", "NZ", "PH", "PL", "PR", "PT", "PY", "RO", "RU", "SE", "SI", "SK", "TJ", "UA", "US", "UY", "ZA" },
+					tag="de", tags=new List<string> { "de-DE", "de-Latn" },
+				},
+				new AllTagEntry { full="en-Latn-US", iana=new List<string>{"English"}, iso639_3="eng",
+					localname="American English", name="English", names=new List<string> { "Anglais", "Angleščina", "Anglisy", "Angličtina", "Anglų", "Angol", "Angļu", "Engels", "Engelsk", "Engelska", "Engelski", "Englaisa", "Englanti", "Engleză", "Englisch", "Ingilizce", "Inglese", "Ingliż", "Inglés", "Inglês", "Język angielski", "Kiingereza" },
+					region="US", regionName="United States", regions=new List<string> { "AD", "AR", "AS", "AW", "BD", "BG", "BH", "BL", "BN", "BQ", "BT", "CL", "CN", "CO", "CW", "CY", "CZ", "DO", "EC", "EE", "ES", "ET", "FM", "FR", "GQ", "GR", "HN", "HR", "HU", "ID", "IT", "JP", "KH", "KR", "LB", "LK", "LT", "LU", "LV", "LY", "MC", "MF", "MV", "MX", "NO", "NP", "OM", "PL", "PM", "PR", "PT", "RO", "RU", "SA", "SK", "SO", "SR", "ST", "TC", "TH", "UM", "VE", "VG", "VI" },
+					tag="en", tags=new List<string> { "en-Latn", "en-US" },
+					},
+				new AllTagEntry {full="en-Brai-GB", iana=new List<string>{"English"}, iso639_3="eng",
+					name="English", names=new List<string> { "Anglais", "Angleščina", "Anglisy", "Angličtina", "Anglų", "Angol", "Angļu", "Engels", "Engelsk", "Engelska", "Englaisa", "Englanti", "Engleză", "Englisch", "Ingilizce", "Inglese", "Ingliż", "Inglés", "Inglês", "Język angielski", "Kiingereza" },
+					region="GB", regionName="United Kingdom", regions=new List<string> { "AD", "AE", "AG", "AI", "AS", "AT", "AU", "AW", "BB", "BD", "BE", "BG", "BH", "BL", "BM", "BN", "BQ", "BS", "BT", "BW", "BZ", "CA", "CH", "CK", "CL", "CM", "CW", "CY", "CZ", "DE", "DK", "DM", "DO", "EC", "EE", "ER", "ES", "ET", "FI", "FJ", "FM", "FR", "GD", "GG", "GH", "GI", "GM", "GQ", "GR", "GU", "GY", "HK", "HN", "HU", "ID", "IE", "IL", "IM", "IN", "IO", "IT", "JE", "JM", "JP", "KE", "KH", "KI", "KR", "KY", "LB", "LC", "LK", "LR", "LS", "LT", "LU", "LV", "LY", "MF", "MG", "MH", "MO", "MP", "MS", "MT", "MU", "MV", "MW", "MX", "MY", "NA", "NF", "NG", "NL", "NO", "NP", "NR", "NU", "NZ", "OM", "PG", "PH", "PK", "PL", "PM", "PN", "PR", "PT", "PW", "RO", "RW", "SA", "SB", "SC", "SD", "SE", "SG", "SI", "SK", "SL", "SO", "SR", "SS", "ST", "SX", "SZ", "TC", "TH", "TK", "TO", "TT", "TV", "TZ", "UG", "US", "VC", "VE", "VG", "VI", "VU", "WS", "ZA", "ZM", "ZW" },
+					tag="en-Brai"
+				},
+				new AllTagEntry {full="en-Dsrt-US", iana=new List<string>{"English"}, iso639_3="eng",
+					name="English", names=new List<string> { "Anglais", "Angleščina", "Anglisy", "Angličtina", "Anglų", "Angol", "Angļu", "Engels", "Engelsk", "Engelska", "Engelski", "Englaisa", "Englanti", "Engleză", "Englisch", "Ingilizce", "Inglese", "Ingliż", "Inglés", "Inglês", "Język angielski", "Kiingereza" },
+					region="US", regionName="United States", regions=new List<string> { "AC", "AD", "AE", "AG", "AI", "AR", "AS", "AT", "AU", "AW", "BA", "BB", "BD", "BE", "BG", "BH", "BL", "BM", "BN", "BQ", "BR", "BS", "BT", "BW", "BZ", "CA", "CH", "CK", "CL", "CM", "CW", "CY", "CZ", "DE", "DK", "DM", "DO", "DZ", "EC", "EE", "EG", "ER", "ES", "ET", "FI", "FJ", "FM", "FR", "GB", "GD", "GG", "GH", "GI", "GM", "GQ", "GR", "GU", "GY", "HK", "HN", "HR", "HU", "ID", "IE", "IL", "IM", "IN", "IO", "IQ", "IT", "JE", "JM", "JO", "JP", "KE", "KH", "KI", "KR", "KY", "KZ", "LB", "LC", "LK", "LR", "LS", "LT", "LU", "LV", "LY", "MA", "MF", "MG", "MH", "MO", "MP", "MS", "MT", "MU", "MV", "MW", "MX", "MY", "NA", "NF", "NG", "NL", "NO", "NP", "NR", "NU", "NZ", "OM", "PG", "PH", "PK", "PL", "PM", "PN", "PR", "PT", "PW", "RO", "RW", "SA", "SB", "SC", "SD", "SE", "SG", "SI", "SK", "SL", "SO", "SR", "SS", "ST", "SX", "SZ", "TA", "TC", "TH", "TK", "TO", "TR", "TT", "TV", "TZ", "UG", "VC", "VE", "VG", "VI", "VU", "WS", "YE", "ZA", "ZM", "ZW" },
+					tag="en-Dsrt"
+				},
+				new AllTagEntry {full="en-Dupl-US", iana=new List<string>{"English"}, iso639_3="eng",
+					name="English",
+					region="US", regionName="United States",
+					tag="en-Dupl"
+				},
+				new AllTagEntry {full="en-Shaw-GB", iana=new List<string>{"English"}, iso639_3="eng",
+					name="English", names=new List<string> { "Anglais", "Angleščina", "Anglisy", "Angličtina", "Anglų", "Angol", "Angļu", "Engels", "Engelsk", "Engelska", "Engelski", "Englaisa", "Englanti", "Engleză", "Englisch", "Ingilizce", "Inglese", "Ingliż", "Inglés", "Inglês", "Język angielski", "Kiingereza" },
+					region="GB", regionName="United Kingdom", regions=new List<string> { "AC", "AD", "AE", "AG", "AI", "AR", "AS", "AT", "AU", "AW", "BA", "BB", "BD", "BE", "BG", "BH", "BL", "BM", "BN", "BQ", "BR", "BS", "BT", "BW", "BZ", "CA", "CH", "CK", "CL", "CM", "CW", "CY", "CZ", "DE", "DK", "DM", "DO", "DZ", "EC", "EE", "EG", "ER", "ES", "ET", "FI", "FJ", "FM", "FR", "GD", "GG", "GH", "GI", "GM", "GQ", "GR", "GU", "GY", "HK", "HN", "HR", "HU", "ID", "IE", "IL", "IM", "IN", "IO", "IQ", "IT", "JE", "JM", "JO", "JP", "KE", "KH", "KI", "KR", "KY", "KZ", "LB", "LC", "LK", "LR", "LS", "LT", "LU", "LV", "LY", "MA", "MF", "MG", "MH", "MO", "MP", "MS", "MT", "MU", "MV", "MW", "MX", "MY", "NA", "NF", "NG", "NL", "NO", "NP", "NR", "NU", "NZ", "OM", "PG", "PH", "PK", "PL", "PM", "PN", "PR", "PT", "PW", "RO", "RW", "SA", "SB", "SC", "SD", "SE", "SG", "SI", "SK", "SL", "SO", "SR", "SS", "ST", "SX", "SZ", "TA", "TC", "TH", "TK", "TO", "TR", "TT", "TV", "TZ", "UG", "US", "VC", "VE", "VG", "VI", "VU", "WS", "YE", "ZA", "ZM", "ZW" },
+					tag="en-Shaw"
+				},
+				new AllTagEntry { full="pi-Deva-IN", iana=new List<string>{"Pali"}, iso639_3="pli",
+					name="Pali",
+					region="IN", regionName="India", regions=new List<string> { "MM" },
+					tag="pi-Deva"
+					},
+				new AllTagEntry { full="pi-Mymr-IN", iana=new List<string>{"Pali"}, iso639_3="pli",
+					name="Pali",
+					region="IN", regionName="India", regions=new List<string> { "MM" },
+					tag="pi-Mymr"
+					},
+				new AllTagEntry { full="pi-Sinh-IN", iana=new List<string>{"Pali"}, iso639_3="pli",
+					name="Pali",
+					region="IN", regionName="India", regions=new List<string> { "MM" },
+					tag="pi-Sinh"
+					},
+				new AllTagEntry { full="pi-Thai-IN", iana=new List<string>{"Pali"}, iso639_3="pli",
+					name="Pali",
+					region="IN", regionName="India", regions=new List<string> { "MM" },
+					tag="pi-Thai"
+					},
+				new AllTagEntry { full="pia-Latn-MX", iana=new List<string>{"Pima Bajo"}, iso639_3="pia",
+					name="Pima Bajo", names=new List<string> { "Lower Piman", "Mountain Pima", "Névome", "Oob No’ok" },
+					region="MX", regionName="Mexico",
+					tag="pia", tags=new List<string> { "pia-Latn", "pia-MX" }
+					},
+				new AllTagEntry { full="zrg-Orya-IN", iana=new List<string>{"Mirgan"}, iso639_3="zrg",
+					name="Mirgan", names=new List<string> { "Mirgami", "Mirkan", "Panika", "Panka" },
+					region="IN", regionName="India",
+					tag="zrg-Orya"
+					},
+				new AllTagEntry { full="zrg-Telu-IN", iana=new List<string>{"Mirgan"}, iso639_3="zrg",
+					name="Mirgan", names=new List<string> { "Mirgami", "Mirkan", "Panika", "Panka" },
+					region="IN", regionName="India",
+					tag="zrg-Telu"
+					}
+			};
+
+			var lookup1 = new LanguageLookup(entries, false);
+			//SUT
+			var lookup2 = new LanguageLookup(entries, true);
+
+			CheckLanguageTagCounts(lookup1, "abq", 2, 2, 0, 0);
+			CheckLanguageTagCounts(lookup2, "abq", 2, 1, 1, 1);	// has one entry changed from original
+			CheckModifiedEntry(lookup2, "abq", "abq", "Abaza", 5, "Russian Federation", 2);	// first possibility
+			CheckUnmodifiedEntries(lookup2, "abq", new[] {"abq-Latn"});
+
+			CheckLanguageTagCounts(lookup1, "aii", 2, 2, 0, 0);
+			CheckLanguageTagCounts(lookup2, "aii", 2, 1, 1, 1);	// has one entry changed from original
+			CheckModifiedEntry(lookup2, "aii", "aii", "Assyrian Neo-Aramaic", 15, "Iraq", 24);	// second possibility
+			CheckUnmodifiedEntries(lookup2, "aii", new [] {"aii-Cyrl"});
+
+			CheckLanguageTagCounts(lookup1, "crh", 3, 2, 1, 1);
+			CheckLanguageTagCounts(lookup2, "crh", 3, 2, 1, 1);	// same as original
+
+			CheckLanguageTagCounts(lookup1, "cmg", 1, 1, 0, 0);
+			CheckLanguageTagCounts(lookup2, "cmg", 1, 0, 1, 1);	// has one and only entry changed from original
+			CheckModifiedEntry(lookup2, "cmg", "cmg", "Classical Mongolian", 1, "Mongolia", 1);
+			CheckUnmodifiedEntries(lookup2, "cmg", new string[0]);
+
+			CheckLanguageTagCounts(lookup1, "de", 1, 0, 1, 1);
+			CheckLanguageTagCounts(lookup2, "de", 1, 0, 1, 1);	// same as original
+
+			CheckLanguageTagCounts(lookup1, "en", 5, 4, 1, 1);
+			CheckLanguageTagCounts(lookup2, "en", 5, 4, 1, 1);	// same as original
+
+			CheckLanguageTagCounts(lookup1, "pi", 5, 4, 0, 1);
+			CheckLanguageTagCounts(lookup2, "pi", 5, 3, 1, 2);	// has one entry changed from original
+			CheckModifiedEntry(lookup2, "pi", "pli", "Pali", 1, "India", 2);	// should be first possibility
+			CheckUnmodifiedEntries(lookup2, "pi", new []{"pi-Mymr","pi-Sinh","pi-Thai"});
+			var languages = lookup1.SuggestLanguages("pi").Where(li => li.LanguageTag == "pia").ToList();
+			Assert.AreEqual(1, languages.Count);
+			languages = lookup2.SuggestLanguages("pi").Where(li => li.LanguageTag == "pia").ToList();
+			Assert.AreEqual(1, languages.Count);	// same as original
+
+			CheckLanguageTagCounts(lookup1, "zrg", 2, 2, 0, 0);
+			CheckLanguageTagCounts(lookup2, "zrg", 2, 1, 1, 1);
+			CheckModifiedEntry(lookup2, "zrg", "zrg", "Mirgan", 5, "India", 1);	// should be first possibility
+			CheckUnmodifiedEntries(lookup2, "zrg", new []{"zrg-Telu"});
+		}
+
+		private void CheckLanguageTagCounts(LanguageLookup lookup, string tag, int startWith, int startWithPlusHyphen,
+			int equal, int startWithFiltered)
+		{
+			var languages = lookup.SuggestLanguages(tag).Where(li => li.LanguageTag.StartsWith(tag)).ToArray();
+			Assert.AreEqual(startWith, languages.Length);
+			languages = lookup.SuggestLanguages(tag).Where(li => li.LanguageTag.StartsWith(tag + "-")).ToArray();
+			Assert.AreEqual(startWithPlusHyphen, languages.Length);
+			languages = lookup.SuggestLanguages(tag).Where(li => li.LanguageTag == tag).ToArray();
+			Assert.AreEqual(equal, languages.Length);
+			languages = lookup.SuggestLanguages(tag).Where(li => li.LanguageTag.StartsWith(tag) && ScriptMarkerFilter(li)).ToArray();
+			Assert.AreEqual(startWithFiltered, languages.Length);
+		}
+
+		private void CheckModifiedEntry(LanguageLookup lookup, string tag, string isoTag, string name, int nameCount, string country, int regionCount)
+		{
+			var languages = lookup.SuggestLanguages(tag).Where(li => li.LanguageTag == tag).ToArray();
+			Assert.AreEqual(1, languages.Length);
+			Assert.AreEqual(isoTag, languages[0].ThreeLetterTag);
+			Assert.AreEqual(name, languages[0].DesiredName);
+			Assert.AreEqual(nameCount, languages[0].Names.Count);
+			Assert.AreEqual(country, languages[0].PrimaryCountry);
+			Assert.AreEqual(regionCount, languages[0].Countries.Count);
+		}
+
+		private void CheckUnmodifiedEntries(LanguageLookup lookup, string tag, string[] unchangedTags)
+		{
+			var languages = lookup.SuggestLanguages(tag).Where(li => li.LanguageTag.StartsWith(tag + "-")).ToList();
+			Assert.AreEqual(unchangedTags.Length, languages.Count);
+			foreach (var unchanged in unchangedTags)
+				Assert.IsTrue(languages.Count(li => li.LanguageTag == unchanged) == 1);
+		}
+
+		private bool ScriptMarkerFilter(LanguageInfo li)
+		{
+			string language;
+			string script;
+			string region;
+			string variant;
+			if (IetfLanguageTag.TryGetParts(li.LanguageTag, out language, out script, out region, out variant))
+				return string.IsNullOrEmpty(script);	// OK only if no script.
+			return true;	// Not a tag?  Don't filter it out.
+		}
+
 	}
 }
