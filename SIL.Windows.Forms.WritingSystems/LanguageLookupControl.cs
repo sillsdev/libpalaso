@@ -34,6 +34,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		{
 			InitializeComponent();
 			_model = new LanguageLookupModel();
+			_model.IncludeScriptMarkers = true;
 		}
 
 		public void LoadLanguages()
@@ -54,6 +55,12 @@ namespace SIL.Windows.Forms.WritingSystems
 		public bool IsShowRegionalDialectsCheckBoxVisible
 		{
 			set { _showRegionalDialectsCheckBox.Visible = value; }
+		}
+
+		public bool IncludeScriptMarkers
+		{
+			get { return _model.IncludeScriptMarkers; }
+			set { _model.IncludeScriptMarkers = value; }
 		}
 
 		public bool IsScriptAndVariantLinkVisible

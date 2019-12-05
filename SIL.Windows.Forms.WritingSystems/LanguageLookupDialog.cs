@@ -26,6 +26,12 @@ namespace SIL.Windows.Forms.WritingSystems
 			set { _languageLookupControl.IsShowRegionalDialectsCheckBoxVisible = value; }
 		}
 
+		public bool IncludeScriptMarkers
+		{
+			get { return _languageLookupControl.IncludeScriptMarkers; }
+			set { _languageLookupControl.IncludeScriptMarkers = value; }
+		}
+
 		public bool IsScriptAndVariantLinkVisible
 		{
 			set { _languageLookupControl.IsScriptAndVariantLinkVisible = value; }

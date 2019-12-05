@@ -39,7 +39,7 @@ namespace SIL.WritingSystems
 		/// Initializes a new instance of the <see cref="LanguageLookup"/> class.
 		/// It gets its data from the LanguageDataIndex resource
 		/// </summary>
-		public LanguageLookup()
+		public LanguageLookup(bool ensureDefaultTags = false)
 		{
 			Sldr.InitializeLanguageTags(); // initialise SLDR language tags for implicit script codes
 
@@ -60,6 +60,93 @@ namespace SIL.WritingSystems
 				}
 			}
 			AddLanguage("qaa", "qaa", "qaa", "Unlisted Language");
+			if (ensureDefaultTags)
+			{
+				EnsureDefaultTags();
+			}
+		}
+
+		/// <summary>
+		/// Some languages in langtags.json have not been normalized to have a default tag without a script marker
+		/// in one of its entries.  For some uses of the data, we really want to see only the default tags but we
+		/// also don't want to not see any languages.  So scan through the data for cases where every tag associated
+		/// with a language contains a script marker and choose one as the default to receive a minimal tag that is
+		/// equal to the language code alone.  (The one found in the most countries is chosen by default.)
+		/// </summary>
+		private void EnsureDefaultTags()
+		{
+			HashSet<string> tagSet = new HashSet<string>();
+			foreach (var langInfo in _codeToLanguageIndex.Values)
+				tagSet.Add(langInfo.LanguageTag);
+			var tagList = tagSet.ToList();
+			tagList.Sort(CompareTags);
+			var prevLang = string.Empty;
+			var countChanged = 0;
+			for (var i = 0; i < tagList.Count; ++i)
+			{
+				var tag = tagList[i];
+				string language;
+				string script;
+				string region;
+				string variant;
+				if (!IetfLanguageTag.TryGetParts(tag, out language, out script, out region, out variant))
+				{
+					prevLang = tag;	// shouldn't happen, but if it does...
+					continue;
+				}
+				// Check for a language without a simple tag that has a tag with a script.
+				// (not quite foolproof in theory since a tag with region or variant might sort
+				// in front of a tag with a script, but good enough in practice)
+				if (language == prevLang || string.IsNullOrEmpty(script))
+				{
+					prevLang = language;
+					continue;
+				}
+				// Go through all the entries for this language so we can pretend to choose
+				// the "best" for being the default;
+				var langInfo = _codeToLanguageIndex[tag];
+				while (i + 1 < tagList.Count)
+				{
+					var tagNext = tagList[i + 1];
+					if (tagNext.StartsWith(language + "-"))
+					{
+						++i;
+						var li = _codeToLanguageIndex[tagNext];
+						// choose the one that's more widespread unless the name information
+						// indicates a possibly less widespread region of origin.
+						if (li.Names.Count >= langInfo.Names.Count &&
+							li.Countries.Count > langInfo.Countries.Count)
+						{
+							langInfo = li;
+						}
+					}
+					else
+					{
+						break;
+					}
+				}
+				langInfo.LanguageTag = language;		// force tag to default form arbitrarily for now.
+				++countChanged;
+				prevLang = language;
+			}
+			Debug.WriteLine($"LanguageLookup.EnsureDefaultTags() changed {countChanged} language tags");
+		}
+
+		private int CompareTags(string tag1, string tag2)
+		{
+			// if the language parts differ, compare just the language part.
+			string language1, language2;
+			string script1, script2;
+			string region1, region2;
+			string variant1, variant2;
+			if (IetfLanguageTag.TryGetParts(tag1, out language1, out script1, out region1, out variant1) &&
+				IetfLanguageTag.TryGetParts(tag2, out language2, out script2, out region2, out variant2))
+			{
+				if (language1 != language2)
+					return String.Compare(language1, language2, StringComparison.Ordinal);
+			}
+			// if the language parts are the same, compare the entire tag.
+			return String.Compare(tag1, tag2, StringComparison.Ordinal);
 		}
 
 		private bool AddLanguage(string code, string threelettercode, string full = null,
