@@ -30,6 +30,9 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
     </PackageReference>
     <PackageReference Include="NUnit" Version="2.6.4" />
     <PackageReference Include="RhinoMocks" Version="3.6.1" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="[2.2.0,)">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
