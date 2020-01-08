@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace SIL.Keyboarding
 {
@@ -27,7 +27,11 @@ namespace SIL.Keyboarding
 		/// <summary>
 		/// Mac keyboard layout file
 		/// </summary>
-		Keylayout
+		Keylayout,
+		/// <summary>
+		/// Keyman package file (zipped resources)
+		/// </summary>
+		KeymanPackage
 	}
 
 	/// <summary>

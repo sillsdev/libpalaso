@@ -193,6 +193,25 @@ namespace SIL.WritingSystems.Tests
 			AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath("/ldml/collations/collation", 1);
 		}
 
+		[Test]
+		public void ExistingLdml_UnknownKeyboardType_Write_PreservesData()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var kbElem = LdmlContentForTests.KeyboardElem.Replace("kmx", "fakekeyboardtype");
+				var ldmlWithFakeKbType = LdmlContentForTests.CurrentVersion("so", "", "", "", kbElem);
+				StringAssert.Contains("type=\"fakekeyboardtype\"", ldmlWithFakeKbType, "The test data is not valid for this unit test anymore.");
+				var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+				var sw = new StringWriter();
+				var ws = new WritingSystemDefinition("en");
+				var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
+				adaptor.Write(writer, ws, XmlReader.Create(new StringReader(ldmlWithFakeKbType)));
+				writer.Close();
+				AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:kbd",
+					1, environment.NamespaceManager);
+			}
+		}
+
 		#region Roundtrip
 		[Test]
 		public void RoundtripSimpleCustomSortRules_WS33715()
