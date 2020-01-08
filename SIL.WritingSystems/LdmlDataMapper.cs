@@ -118,7 +118,8 @@ namespace SIL.WritingSystems
 			{"kmx", KeyboardFormat.CompiledKeyman},
 			{"msklc", KeyboardFormat.Msklc},
 			{"ldml", KeyboardFormat.Ldml},
-			{"keylayout", KeyboardFormat.Keylayout}
+			{"keylayout", KeyboardFormat.Keylayout},
+			{"kmp", KeyboardFormat.KeymanPackage }
 		}; 
 
 		/// <summary>
@@ -130,8 +131,9 @@ namespace SIL.WritingSystems
 			{KeyboardFormat.CompiledKeyman, "kmx"},
 			{KeyboardFormat.Msklc, "msklc"},
 			{KeyboardFormat.Ldml, "ldml"},
-			{KeyboardFormat.Keylayout, "keylayout"}
-		}; 
+			{KeyboardFormat.Keylayout, "keylayout"},
+			{KeyboardFormat.KeymanPackage, "kmp" }
+		};
 
 		/// <summary>
 		/// Mapping of context attribute to PunctuationPatternContext enumeration
@@ -501,7 +503,11 @@ namespace SIL.WritingSystems
 				var id = (string) kbdElem.Attribute("id");
 				if (!string.IsNullOrEmpty(id))
 				{
-					KeyboardFormat format = KeyboardToKeyboardFormat[(string) kbdElem.Attribute("type") ?? string.Empty];
+					KeyboardFormat format;
+					if (!KeyboardToKeyboardFormat.TryGetValue((string) kbdElem.Attribute("type") ?? string.Empty, out format))
+					{
+						format = KeyboardFormat.Unknown;
+					}
 					IKeyboardDefinition keyboard = Keyboard.Controller.CreateKeyboard(id, format, kbdElem.NonAltElements(Sil + "url").Select(u => (string) u));
 					ws.KnownKeyboards.Add(keyboard);
 				}
@@ -1475,8 +1481,11 @@ namespace SIL.WritingSystems
 			Debug.Assert(externalResourcesElem != null);
 			Debug.Assert(ws != null);
 			
-			// Remove sil:kbd elements to repopulate later
-			externalResourcesElem.NonAltElements(Sil + "kbd").Remove();
+			// Remove sil:kbd elements to repopulate later if they are 'known' keyboard types
+			externalResourcesElem.NonAltElements(Sil + "kbd")
+				.Where(elem => !elem.HasAttributes
+					|| elem.Attribute("type") == null
+					|| KeyboardToKeyboardFormat.ContainsKey(elem.Attribute("type").Value)).Remove();
 
 			// Don't include unknown system keyboard definitions
 			foreach (IKeyboardDefinition keyboard in ws.KnownKeyboards.Where(kbd=>kbd.Format != KeyboardFormat.Unknown))

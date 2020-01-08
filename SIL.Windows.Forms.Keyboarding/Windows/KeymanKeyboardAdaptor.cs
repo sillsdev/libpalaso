@@ -310,6 +310,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 			{
 				case KeyboardFormat.CompiledKeyman:
 				case KeyboardFormat.Keyman:
+				case KeyboardFormat.KeymanPackage:
 					return true;
 			}
 			return false;
