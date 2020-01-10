@@ -18,6 +18,11 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		public Func<LanguageInfo, bool> MatchingLanguageFilter { get; set; }
 
+		public LanguageLookup LanguageLookup
+		{
+			get { return _languageLookup; }
+		}
+
 		public string SearchText
 		{
 			get { return _searchText; }
