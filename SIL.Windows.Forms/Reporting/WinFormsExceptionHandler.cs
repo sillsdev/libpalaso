@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Configuration;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -11,7 +11,22 @@ namespace SIL.Windows.Forms.Reporting
 	public class WinFormsExceptionHandler: ExceptionHandler
 	{
 		// see comment on ExceptionReportingDialog.s_reportDataStack
-		internal static Control ControlOnUIThread { get; private set; }
+		private static Control _controlOnUiThread;
+		internal static Control ControlOnUIThread
+		{
+			get
+			{
+				if (_controlOnUiThread == null)
+				{
+					// We need to create a control on the UI thread so that we have a control that we
+					// can use to invoke the error reporting dialog on the correct thread.
+					_controlOnUiThread = new Control();
+					_controlOnUiThread.CreateControl();
+				}
+				return _controlOnUiThread;
+			}
+			private set { _controlOnUiThread = value; }
+		}
 
 		internal static bool InvokeRequired
 		{
@@ -29,8 +44,6 @@ namespace SIL.Windows.Forms.Reporting
 		/// ------------------------------------------------------------------------------------
 		public WinFormsExceptionHandler()
 		{
-			// We need to create a control on the UI thread so that we have a control that we
-			// can use to invoke the error reporting dialog on the correct thread.
 			ControlOnUIThread = new Control();
 			ControlOnUIThread.CreateControl();
 
