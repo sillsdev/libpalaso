@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Configuration;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -11,7 +11,24 @@ namespace SIL.Windows.Forms.Reporting
 	public class WinFormsExceptionHandler: ExceptionHandler
 	{
 		// see comment on ExceptionReportingDialog.s_reportDataStack
-		internal static Control ControlOnUIThread { get; private set; }
+		private static Control _controlOnUiThread;
+
+		internal static Control ControlOnUIThread
+		{
+			get
+			{
+				if (_controlOnUiThread == null)
+				{
+					// We need to create a control so that we can use it to determine whether we
+					// need to "invoke" the error reporting dialog or just call it.
+					// That means the name of this variable is a bit off, but other dlls access it,
+					// so I don't want to change it now.
+					_controlOnUiThread = new Control();
+					_controlOnUiThread.CreateControl(); // actually create the control
+				}
+				return _controlOnUiThread;
+			}
+		}
 
 		internal static bool InvokeRequired
 		{
@@ -29,11 +46,6 @@ namespace SIL.Windows.Forms.Reporting
 		/// ------------------------------------------------------------------------------------
 		public WinFormsExceptionHandler()
 		{
-			// We need to create a control on the UI thread so that we have a control that we
-			// can use to invoke the error reporting dialog on the correct thread.
-			ControlOnUIThread = new Control();
-			ControlOnUIThread.CreateControl();
-
 			// Using Application.ThreadException rather than
 			// AppDomain.CurrentDomain.UnhandledException has the advantage that the
 			// program doesn't necessarily end - we can ignore the exception and continue.
