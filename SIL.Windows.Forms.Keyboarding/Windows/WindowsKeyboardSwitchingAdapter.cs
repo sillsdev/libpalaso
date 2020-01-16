@@ -176,7 +176,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 				var currentLanguage = InputLanguage.CurrentInputLanguage;
 				var availableWinKeyboards = Keyboard.Controller.AvailableKeyboards.OfType<WinKeyboardDescription>();
 				return availableWinKeyboards.FirstOrDefault(winKeybd => winKeybd.InputLanguage.Culture.Name == currentLanguage.Culture.Name)
-					?? KeyboardController.NullKeyboard;
+					?? KeyboardDescription.NullDescription;
 			}
 		}
 

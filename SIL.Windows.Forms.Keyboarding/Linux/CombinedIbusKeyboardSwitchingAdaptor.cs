@@ -1,10 +1,11 @@
-﻿// Copyright (c) 2015 SIL International
+// Copyright (c) 2015 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using SIL.Extensions;
+using SIL.Keyboarding;
 
 namespace SIL.Windows.Forms.Keyboarding.Linux
 {
@@ -205,7 +206,7 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 						}
 					}
 					if (_defaultKeyboard == null)
-						_defaultKeyboard = first ?? KeyboardController.NullKeyboard;
+						_defaultKeyboard = first ?? KeyboardDescription.NullDescription;
 				}
 				return _defaultKeyboard;
 			}

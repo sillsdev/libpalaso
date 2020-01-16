@@ -14,6 +14,8 @@ namespace SIL.Windows.Forms.Keyboarding
 	/// </summary>
 	public class KeyboardDescription : DefaultKeyboardDefinition
 	{
+		internal static KeyboardDescription NullDescription = new KeyboardDescription(string.Empty, "(default)", "(default)", string.Empty, false, null);
+
 		private readonly IKeyboardSwitchingAdaptor _engine;
 
 		/// <summary>
@@ -65,7 +67,7 @@ namespace SIL.Windows.Forms.Keyboarding
 			if (activeKeyboard != null && activeKeyboard.DeactivatePreviousKeyboard(this))
 				activeKeyboard.Deactivate();
 
-			Keyboard.Controller.ActiveKeyboard = KeyboardController.NullKeyboard;
+			Keyboard.Controller.ActiveKeyboard = new NullKeyboardDefinition();
 			if (Engine == null)
 				return;
 

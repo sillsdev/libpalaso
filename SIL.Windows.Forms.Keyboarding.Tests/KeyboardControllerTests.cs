@@ -70,7 +70,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		[Test]
 		public void GetKeyboard_FromNewPalasoId_NonExistingKeyboard()
 		{
-			Assert.That(Keyboard.Controller.GetKeyboard("en-US_glop"), Is.EqualTo(KeyboardController.NullKeyboard));
+			Assert.That(Keyboard.Controller.GetKeyboard("en-US_glop"), Is.EqualTo(new NullKeyboardDefinition("en-US_glop")));
 		}
 
 		[Test]
@@ -87,7 +87,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		[Test]
 		public void GetKeyboard_FromOldParatextId_NonExistingKeyboard()
 		{
-			Assert.That(Keyboard.Controller.GetKeyboard("glop|en-US"), Is.EqualTo(KeyboardController.NullKeyboard));
+			Assert.That(Keyboard.Controller.GetKeyboard("glop|en-US"), Is.EqualTo(new NullKeyboardDefinition("glop|en-US")));
 		}
 
 		[Test]
@@ -107,14 +107,14 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		[Test]
 		public void GetKeyboard_FromOldPalasoId_NonExistingKeyboard()
 		{
-			Assert.That(Keyboard.Controller.GetKeyboard("glop-en-US"), Is.EqualTo(KeyboardController.NullKeyboard));
+			Assert.That(Keyboard.Controller.GetKeyboard("glop-en-US"), Is.EqualTo(new NullKeyboardDefinition("glop-en-US")));
 		}
 
 		[Test]
 		public void GetKeyboard_FromInputLanguage_NonExistingKeyboard()
 		{
 			var inputLanguage = new InputLanguageWrapper(new CultureInfo("en-US"), IntPtr.Zero, "foo");
-			Assert.That(Keyboard.Controller.GetKeyboard(inputLanguage), Is.EqualTo(KeyboardController.NullKeyboard));
+			Assert.That(Keyboard.Controller.GetKeyboard(inputLanguage), Is.EqualTo(new NullKeyboardDefinition()));
 		}
 
 		/// <summary>

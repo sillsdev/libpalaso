@@ -385,7 +385,6 @@
     <Compile Include="Linux\UnityXkbKeyboardSwitchingAdaptor.cs" />
     <Compile Include="Linux\Unmanaged.cs" />
     <Compile Include="Linux\XkbKeyboardSwitchingAdaptor.cs" />
-    <Compile Include="NullKeyboardDescription.cs" />
     <Compile Include="Linux\GlobalCachedInputContext.cs" />
     <Compile Include="Linux\IbusCommunicator.cs" />
     <Compile Include="Linux\IbusDefaultEventHandler.cs" />
