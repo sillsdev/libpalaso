@@ -509,7 +509,10 @@ namespace SIL.WritingSystems
 						format = KeyboardFormat.Unknown;
 					}
 					IKeyboardDefinition keyboard = Keyboard.Controller.CreateKeyboard(id, format, kbdElem.NonAltElements(Sil + "url").Select(u => (string) u));
-					ws.KnownKeyboards.Add(keyboard);
+					if (!ws.KnownKeyboards.Contains(keyboard))
+					{
+						ws.KnownKeyboards.Add(keyboard);
+					}
 				}
 			}
 		}
@@ -1480,12 +1483,15 @@ namespace SIL.WritingSystems
 		{
 			Debug.Assert(externalResourcesElem != null);
 			Debug.Assert(ws != null);
-			
+
+			var unsupportedKeyboards =
+				ws.KnownKeyboards.Where(kb => kb is UnsupportedKeyboardDefinition).Select(k => k.Id).ToArray();
 			// Remove sil:kbd elements to repopulate later if they are 'known' keyboard types
 			externalResourcesElem.NonAltElements(Sil + "kbd")
-				.Where(elem => !elem.HasAttributes
+				.Where(elem => (!elem.HasAttributes
 					|| elem.Attribute("type") == null
-					|| KeyboardToKeyboardFormat.ContainsKey(elem.Attribute("type").Value)).Remove();
+					|| KeyboardToKeyboardFormat.ContainsKey(elem.Attribute("type").Value))
+					&& !unsupportedKeyboards.Contains(elem.Attribute("id")?.Value)).Remove();
 
 			// Don't include unknown system keyboard definitions
 			foreach (IKeyboardDefinition keyboard in ws.KnownKeyboards.Where(kbd=>kbd.Format != KeyboardFormat.Unknown))
