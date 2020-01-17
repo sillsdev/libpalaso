@@ -48,18 +48,18 @@ namespace SIL.Windows.Forms.Keyboarding.Linux
 			for (uint iGroup = 0; iGroup < _engine.GroupNames.Length; iGroup++)
 			{
 				// a group in a xkb keyboard is a keyboard layout. This can be used with
-				// multiple languages - which language is ambigious. Here we just add all
+				// multiple languages - which language is ambiguous. Here we just add all
 				// of them.
-				// m_engine.GroupNames are not localized, but the layouts are. Before we try
+				// _engine.GroupNames are not localized, but the layouts are. Before we try
 				// to compare them we better localize the group name as well, or we won't find
 				// much (FWNX-1388)
-				string groupName = _engine.LocalizedGroupNames[iGroup];
+				var groupName = _engine.LocalizedGroupNames[iGroup];
 				List<XklConfigRegistry.LayoutDescription> layoutList;
 				if (!layouts.TryGetValue(groupName, out layoutList))
 				{
 					// No language in layouts uses the groupName keyboard layout.
-					Console.WriteLine("WARNING: Couldn't find layout for {0}.", groupName);
-					Logger.WriteEvent("WARNING: Couldn't find layout for {0}.", groupName);
+					Console.WriteLine("WARNING: Couldn't find layout for '{0}'.", groupName);
+					Logger.WriteEvent("WARNING: Couldn't find layout for '{0}'.", groupName);
 					continue;
 				}
 

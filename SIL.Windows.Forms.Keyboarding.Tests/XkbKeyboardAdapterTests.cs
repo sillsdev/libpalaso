@@ -31,8 +31,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		{
 			public static string[] SetGroupNames { set; private get; }
 
-			public override string[] GroupNames { get { return SetGroupNames; } }
-
+			public override string[] GroupNames => SetGroupNames;
 		}
 
 		#region Helper class/method to set the LANGUAGE environment variable
@@ -51,8 +50,8 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 				// set the LANGUAGE environment variable.
 
 				OldLanguage = Environment.GetEnvironmentVariable("LANGUAGE");
-				Environment.SetEnvironmentVariable("LANGUAGE", string.Format("{0}:{1}",
-					language.Replace('-', '_'), OldLanguage));
+				Environment.SetEnvironmentVariable("LANGUAGE",
+					$"{language.Replace('-', '_')}:{OldLanguage}");
 			}
 
 			#region Disposable stuff
@@ -136,37 +135,60 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		[return: MarshalAs(UnmanagedType.I4)]
 		private static extern bool gtk_init_check(ref int argc, ref IntPtr argv) ;
 
-		private string KeyboardUSA { get { return KeyboardNames[0]; } }
-		private string KeyboardGermany { get { return KeyboardNames[1]; } }
-		private string KeyboardFranceEliminateDeadKeys { get { return KeyboardNames[2]; } }
-		private string KeyboardUK { get { return KeyboardNames[3]; } }
-		private string KeyboardBelgium { get { return KeyboardNames[4]; } }
-		private string KeyboardFinlandNorthernSaami { get { return KeyboardNames[5]; } }
+		private string KeyboardUSA => KeyboardNames[0];
+		private string KeyboardGermany => KeyboardNames[1];
+		private string KeyboardFranceEliminateDeadKeys => KeyboardNames[2];
+		private string KeyboardUK => KeyboardNames[3];
+		private string KeyboardBelgium => KeyboardNames[4];
+		private string KeyboardFinlandNorthernSaami => KeyboardNames[5];
 
 		private string[] KeyboardNames;
-		private string[] OldKeyboardNames = new[] { "USA", "Germany",
+		private static readonly string[] KeyboardNamesOfUbuntu1404 = { "USA", "Germany",
 			"France - Eliminate dead keys", "United Kingdom", "Belgium",
 			"Finland - Northern Saami" };
-		private string[] NewKeyboardNames = new[] { "English (US)", "German",
+		private static readonly string[] KeyboardNamesOfUbuntu1604 = { "English (US)", "German",
 			"French (eliminate dead keys)", "English (UK)", "Belgian",
 			"Northern Saami (Finland)" };
+		private static readonly string[] KeyboardNamesOfUbuntu1804 = { "English (US)", "German",
+			"French (no dead keys)", "English (UK)", "Belgian",
+			"Northern Saami (Finland)" };
 
-		private string ExpectedKeyboardUSA { get { return ExpectedKeyboardNames[0]; } }
-		private string ExpectedKeyboardGermany { get { return ExpectedKeyboardNames[1]; } }
-		private string ExpectedKeyboardFranceEliminateDeadKeys { get { return ExpectedKeyboardNames[2]; } }
-		private string ExpectedKeyboardUK { get { return ExpectedKeyboardNames[3]; } }
-		//private string ExpectedKeyboardBelgium { get { return ExpectedKeyboardNames[4]; } }
-		private string ExpectedKeyboardFinlandNorthernSaami { get { return ExpectedKeyboardNames[5]; } }
+		private static readonly string[][] AllKeyboardNames = {
+			KeyboardNamesOfUbuntu1404,
+			KeyboardNamesOfUbuntu1604,
+			KeyboardNamesOfUbuntu1804
+		};
+
+		private string ExpectedKeyboardUSA => ExpectedKeyboardNames[0];
+		private string ExpectedKeyboardGermany => ExpectedKeyboardNames[1];
+		private string ExpectedKeyboardFranceEliminateDeadKeys => ExpectedKeyboardNames[2];
+
+		private string ExpectedKeyboardUK => ExpectedKeyboardNames[3];
+
+		//private string ExpectedKeyboardBelgium => ExpectedKeyboardNames[4];
+		private string ExpectedKeyboardFinlandNorthernSaami => ExpectedKeyboardNames[5];
 
 		private string[] ExpectedKeyboardNames;
-		private string[] OldExpectedKeyboardNames = new[] { "English (US) - English (United States)",
+		private static readonly string[] ExpectedKeyboardNamesOfUbuntu1404 = {
+			"English (US) - English (United States)",
 			"German - German (Germany)", "Eliminate dead keys - French (France)",
 			"English (UK) - English (United Kingdom)", "", "Northern Saami - Northern Sami (Finland)" };
-		private string[] NewExpectedKeyboardNames = new[] { "English (US) - English (United States)",
+		private static readonly string[] ExpectedKeyboardNamesOfUbuntu1604 = {
+			"English (US) - English (United States)",
 			"German - German (Germany)", "French (eliminate dead keys) - French (France)",
 			"English (UK) - English (United Kingdom)", "", "Northern Saami (Finland) - Northern Sami (Finland)" };
+		private static readonly string[] ExpectedKeyboardNamesOfUbuntu1804 = {
+			"English (US) - English (United States)",
+			"German - German (Germany)", "French (no dead keys) - French (France)",
+			"English (UK) - English (United Kingdom)", "", "Northern Saami (Finland) - Northern Sami (Finland)" };
 
-		private static bool IsNewEvdevNames
+		private static readonly string[][] AllExpectedKeyboardNames = {
+			ExpectedKeyboardNamesOfUbuntu1404,
+			ExpectedKeyboardNamesOfUbuntu1604,
+			ExpectedKeyboardNamesOfUbuntu1804
+		};
+
+		private static int KeyboardNamesIndex
 		{
 			get
 			{
@@ -177,34 +199,43 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 				using (var process = new Process())
 				{
 					process.StartInfo.FileName = "/bin/grep";
-					process.StartInfo.Arguments = "Belgian /usr/share/X11/xkb/rules/evdev.xml";
+					process.StartInfo.Arguments = "-q Belgian /usr/share/X11/xkb/rules/evdev.xml";
 					process.Start();
 					process.WaitForExit();
-					return process.ExitCode == 0;
+					if (process.ExitCode != 0)
+						return 0; // Ubuntu <= 14.04
 				}
+
+				// Ubuntu 18.04 changed the naming for layouts without dead keys: "no dead keys"
+				// instead of "eliminate dead keys"
+				using (var process = new Process())
+				{
+					process.StartInfo.FileName = "/bin/grep";
+					process.StartInfo.Arguments = "-q 'French (no dead keys)' /usr/share/X11/xkb/rules/evdev.xml";
+					process.Start();
+					process.WaitForExit();
+					if (process.ExitCode != 0)
+						return 1; // Ubuntu 16.04
+				}
+
+				return 2; // Ubuntu >= 18.04
 			}
 		}
 
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
-			// We're using GTK functions, so we need to intialize when we run in
+			// We're using GTK functions, so we need to initialize when we run in
 			// nunit-console. I'm doing it through p/invoke rather than gtk-sharp (Application.Init())
 			// so that we don't need to reference gtk-sharp (which might cause
 			// problems on Windows)
-			int argc = 0;
-			IntPtr argv = IntPtr.Zero;
+			var argc = 0;
+			var argv = IntPtr.Zero;
 			Assert.IsTrue(gtk_init_check(ref argc, ref argv));
-			if (IsNewEvdevNames)
-			{
-				KeyboardNames = NewKeyboardNames;
-				ExpectedKeyboardNames = NewExpectedKeyboardNames;
-			}
-			else
-			{
-				KeyboardNames = OldKeyboardNames;
-				ExpectedKeyboardNames = OldExpectedKeyboardNames;
-			}
+
+			var index = KeyboardNamesIndex;
+			KeyboardNames = AllKeyboardNames[index];
+			ExpectedKeyboardNames = AllExpectedKeyboardNames[index];
 		}
 
 		[TearDown]
