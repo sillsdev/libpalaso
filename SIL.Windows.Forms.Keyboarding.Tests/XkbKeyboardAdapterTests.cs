@@ -143,12 +143,22 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		private string KeyboardFinlandNorthernSaami => KeyboardNames[5];
 
 		private string[] KeyboardNames;
-		private string[] OldKeyboardNames = new[] { "USA", "Germany",
+		private static readonly string[] KeyboardNamesOfUbuntu1404 = { "USA", "Germany",
 			"France - Eliminate dead keys", "United Kingdom", "Belgium",
 			"Finland - Northern Saami" };
-		private string[] NewKeyboardNames = new[] { "English (US)", "German",
+		private static readonly string[] KeyboardNamesOfUbuntu1604 = { "English (US)", "German",
 			"French (eliminate dead keys)", "English (UK)", "Belgian",
 			"Northern Saami (Finland)" };
+		private static readonly string[] KeyboardNamesOfUbuntu1804 = { "English (US)", "German",
+			"French (no dead keys)", "English (UK)", "Belgian",
+			"Northern Saami (Finland)" };
+
+		private static readonly string[][] AllKeyboardNames = {
+			KeyboardNamesOfUbuntu1404,
+			KeyboardNamesOfUbuntu1604,
+			KeyboardNamesOfUbuntu1804
+		};
+
 		private string ExpectedKeyboardUSA => ExpectedKeyboardNames[0];
 		private string ExpectedKeyboardGermany => ExpectedKeyboardNames[1];
 		private string ExpectedKeyboardFranceEliminateDeadKeys => ExpectedKeyboardNames[2];
@@ -159,14 +169,26 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		private string ExpectedKeyboardFinlandNorthernSaami => ExpectedKeyboardNames[5];
 
 		private string[] ExpectedKeyboardNames;
-		private string[] OldExpectedKeyboardNames = new[] { "English (US) - English (United States)",
+		private static readonly string[] ExpectedKeyboardNamesOfUbuntu1404 = {
+			"English (US) - English (United States)",
 			"German - German (Germany)", "Eliminate dead keys - French (France)",
 			"English (UK) - English (United Kingdom)", "", "Northern Saami - Northern Sami (Finland)" };
-		private string[] NewExpectedKeyboardNames = new[] { "English (US) - English (United States)",
+		private static readonly string[] ExpectedKeyboardNamesOfUbuntu1604 = {
+			"English (US) - English (United States)",
 			"German - German (Germany)", "French (eliminate dead keys) - French (France)",
 			"English (UK) - English (United Kingdom)", "", "Northern Saami (Finland) - Northern Sami (Finland)" };
+		private static readonly string[] ExpectedKeyboardNamesOfUbuntu1804 = {
+			"English (US) - English (United States)",
+			"German - German (Germany)", "French (no dead keys) - French (France)",
+			"English (UK) - English (United Kingdom)", "", "Northern Saami (Finland) - Northern Sami (Finland)" };
 
-		private static bool IsNewEvdevNames
+		private static readonly string[][] AllExpectedKeyboardNames = {
+			ExpectedKeyboardNamesOfUbuntu1404,
+			ExpectedKeyboardNamesOfUbuntu1604,
+			ExpectedKeyboardNamesOfUbuntu1804
+		};
+
+		private static int KeyboardNamesIndex
 		{
 			get
 			{
@@ -177,11 +199,26 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 				using (var process = new Process())
 				{
 					process.StartInfo.FileName = "/bin/grep";
-					process.StartInfo.Arguments = "Belgian /usr/share/X11/xkb/rules/evdev.xml";
+					process.StartInfo.Arguments = "-q Belgian /usr/share/X11/xkb/rules/evdev.xml";
 					process.Start();
 					process.WaitForExit();
-					return process.ExitCode == 0;
+					if (process.ExitCode != 0)
+						return 0; // Ubuntu <= 14.04
 				}
+
+				// Ubuntu 18.04 changed the naming for layouts without dead keys: "no dead keys"
+				// instead of "eliminate dead keys"
+				using (var process = new Process())
+				{
+					process.StartInfo.FileName = "/bin/grep";
+					process.StartInfo.Arguments = "-q 'French (no dead keys)' /usr/share/X11/xkb/rules/evdev.xml";
+					process.Start();
+					process.WaitForExit();
+					if (process.ExitCode != 0)
+						return 1; // Ubuntu 16.04
+				}
+
+				return 2; // Ubuntu >= 18.04
 			}
 		}
 
@@ -195,16 +232,10 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			var argc = 0;
 			var argv = IntPtr.Zero;
 			Assert.IsTrue(gtk_init_check(ref argc, ref argv));
-			if (IsNewEvdevNames)
-			{
-				KeyboardNames = NewKeyboardNames;
-				ExpectedKeyboardNames = NewExpectedKeyboardNames;
-			}
-			else
-			{
-				KeyboardNames = OldKeyboardNames;
-				ExpectedKeyboardNames = OldExpectedKeyboardNames;
-			}
+
+			var index = KeyboardNamesIndex;
+			KeyboardNames = AllKeyboardNames[index];
+			ExpectedKeyboardNames = AllExpectedKeyboardNames[index];
 		}
 
 		[TearDown]
