@@ -31,8 +31,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		{
 			public static string[] SetGroupNames { set; private get; }
 
-			public override string[] GroupNames { get { return SetGroupNames; } }
-
+			public override string[] GroupNames => SetGroupNames;
 		}
 
 		#region Helper class/method to set the LANGUAGE environment variable
@@ -51,8 +50,8 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 				// set the LANGUAGE environment variable.
 
 				OldLanguage = Environment.GetEnvironmentVariable("LANGUAGE");
-				Environment.SetEnvironmentVariable("LANGUAGE", string.Format("{0}:{1}",
-					language.Replace('-', '_'), OldLanguage));
+				Environment.SetEnvironmentVariable("LANGUAGE",
+					$"{language.Replace('-', '_')}:{OldLanguage}");
 			}
 
 			#region Disposable stuff
@@ -136,12 +135,12 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		[return: MarshalAs(UnmanagedType.I4)]
 		private static extern bool gtk_init_check(ref int argc, ref IntPtr argv) ;
 
-		private string KeyboardUSA { get { return KeyboardNames[0]; } }
-		private string KeyboardGermany { get { return KeyboardNames[1]; } }
-		private string KeyboardFranceEliminateDeadKeys { get { return KeyboardNames[2]; } }
-		private string KeyboardUK { get { return KeyboardNames[3]; } }
-		private string KeyboardBelgium { get { return KeyboardNames[4]; } }
-		private string KeyboardFinlandNorthernSaami { get { return KeyboardNames[5]; } }
+		private string KeyboardUSA => KeyboardNames[0];
+		private string KeyboardGermany => KeyboardNames[1];
+		private string KeyboardFranceEliminateDeadKeys => KeyboardNames[2];
+		private string KeyboardUK => KeyboardNames[3];
+		private string KeyboardBelgium => KeyboardNames[4];
+		private string KeyboardFinlandNorthernSaami => KeyboardNames[5];
 
 		private string[] KeyboardNames;
 		private string[] OldKeyboardNames = new[] { "USA", "Germany",
@@ -150,13 +149,14 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		private string[] NewKeyboardNames = new[] { "English (US)", "German",
 			"French (eliminate dead keys)", "English (UK)", "Belgian",
 			"Northern Saami (Finland)" };
+		private string ExpectedKeyboardUSA => ExpectedKeyboardNames[0];
+		private string ExpectedKeyboardGermany => ExpectedKeyboardNames[1];
+		private string ExpectedKeyboardFranceEliminateDeadKeys => ExpectedKeyboardNames[2];
 
-		private string ExpectedKeyboardUSA { get { return ExpectedKeyboardNames[0]; } }
-		private string ExpectedKeyboardGermany { get { return ExpectedKeyboardNames[1]; } }
-		private string ExpectedKeyboardFranceEliminateDeadKeys { get { return ExpectedKeyboardNames[2]; } }
-		private string ExpectedKeyboardUK { get { return ExpectedKeyboardNames[3]; } }
-		//private string ExpectedKeyboardBelgium { get { return ExpectedKeyboardNames[4]; } }
-		private string ExpectedKeyboardFinlandNorthernSaami { get { return ExpectedKeyboardNames[5]; } }
+		private string ExpectedKeyboardUK => ExpectedKeyboardNames[3];
+
+		//private string ExpectedKeyboardBelgium => ExpectedKeyboardNames[4];
+		private string ExpectedKeyboardFinlandNorthernSaami => ExpectedKeyboardNames[5];
 
 		private string[] ExpectedKeyboardNames;
 		private string[] OldExpectedKeyboardNames = new[] { "English (US) - English (United States)",
@@ -188,12 +188,12 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
-			// We're using GTK functions, so we need to intialize when we run in
+			// We're using GTK functions, so we need to initialize when we run in
 			// nunit-console. I'm doing it through p/invoke rather than gtk-sharp (Application.Init())
 			// so that we don't need to reference gtk-sharp (which might cause
 			// problems on Windows)
-			int argc = 0;
-			IntPtr argv = IntPtr.Zero;
+			var argc = 0;
+			var argv = IntPtr.Zero;
 			Assert.IsTrue(gtk_init_check(ref argc, ref argv));
 			if (IsNewEvdevNames)
 			{

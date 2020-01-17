@@ -473,7 +473,7 @@ namespace SIL.Windows.Forms.Keyboarding
 				var firstCompatibleAdapter = _adaptors.Values.FirstOrDefault(adaptor => adaptor.CanHandleFormat(format));
 				if (firstCompatibleAdapter == null)
 				{
-					Debug.Fail(string.Format("Could not load keyboard for {0}. Did not find {1} in {2} adapters", id, format, _adaptors.Count));
+					Debug.Fail($"Could not load keyboard for {id}. Did not find {format} in {_adaptors.Count} adapters");
 					return NullKeyboard;
 				}
 				keyboard = firstCompatibleAdapter.CreateKeyboardDefinition(id);

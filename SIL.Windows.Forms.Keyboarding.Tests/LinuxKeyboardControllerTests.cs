@@ -206,7 +206,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		public void CreateKeyboardDefinition_NewKeyboard_ReturnsNewObject()
 		{
 			// REVIEW: adjust this test
-			IKeyboardDefinition keyboard = Keyboard.Controller.CreateKeyboard("en-US_foo", KeyboardFormat.Unknown, Enumerable.Empty<string>());
+			var keyboard = Keyboard.Controller.CreateKeyboard("en-US_foo", KeyboardFormat.Unknown, Enumerable.Empty<string>());
 			Assert.That(keyboard, Is.Not.Null);
 			Assert.That(keyboard, Is.TypeOf<XkbKeyboardDescription>());
 		}
