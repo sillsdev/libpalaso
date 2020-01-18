@@ -101,8 +101,8 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 		/// </summary>
 		internal static KeyboardDescription GetKeyboardDescription(IInputLanguage inputLanguage)
 		{
-			KeyboardDescription sameLayout = KeyboardController.NullKeyboard;
-			KeyboardDescription sameCulture = KeyboardController.NullKeyboard;
+			KeyboardDescription sameLayout = null;
+			KeyboardDescription sameCulture = null;
 			// TODO: write some tests
 			string requestedLayout = GetLayoutNameEx(inputLanguage.Handle).Name;
 			foreach (WinKeyboardDescription keyboardDescription in KeyboardController.Instance.AvailableKeyboards.OfType<WinKeyboardDescription>())
@@ -126,7 +126,7 @@ namespace SIL.Windows.Forms.Keyboarding.Windows
 					// http://www.ironspeed.com/Designer/3.2.4/WebHelp/Part_VI/Culture_ID__XXX__is_not_a_supported_culture.htm and others
 				}
 			}
-			return sameLayout ?? sameCulture;
+			return sameLayout ?? sameCulture ?? KeyboardController.NullKeyboard;
 		}
 
 		/// <summary>
