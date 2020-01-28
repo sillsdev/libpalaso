@@ -60,8 +60,10 @@ namespace SIL.Windows.Forms.Reporting
 		/// <param name="sender">sender</param>
 		/// <param name="e">Exception</param>
 		/// <remarks>previously <c>AfApp::HandleTopLevelError</c></remarks>
+		/// <remarks>Public so that a program with its own handler can also use this one, when
+		/// necessary.</remarks>
 		/// ------------------------------------------------------------------------------------
-		protected void HandleTopLevelError(object sender, ThreadExceptionEventArgs e)
+		public void HandleTopLevelError(object sender, ThreadExceptionEventArgs e)
 		{
 			if (!GetShouldHandleException(sender, e.Exception))
 				return;
@@ -81,8 +83,10 @@ namespace SIL.Windows.Forms.Reporting
 		/// Catches and displays otherwise unhandled exception, especially those that happen
 		/// during startup of the application before we show our main window.
 		/// </summary>
+		/// <remarks>Public so that a program with its own handler can also use this one, when
+		/// necessary.</remarks>
 		/// ------------------------------------------------------------------------------------
-		protected void HandleUnhandledException(object sender, UnhandledExceptionEventArgs e)
+		public void HandleUnhandledException(object sender, UnhandledExceptionEventArgs e)
 		{
 			var exception = e.ExceptionObject as Exception;
 			if (!GetShouldHandleException(sender, exception))
