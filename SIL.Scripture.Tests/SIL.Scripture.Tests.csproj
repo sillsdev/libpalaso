@@ -9,7 +9,7 @@
     <Company>SIL International</Company>
     <Authors>SIL International</Authors>
     <Product>libpalaso</Product>
-    <Copyright>Copyright © 2010-2019 SIL International</Copyright>
+    <Copyright>Copyright © 2010-2020 SIL International</Copyright>
     <OutputPath>../output/$(Configuration)</OutputPath>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>../palaso.snk</AssemblyOriginatorKeyFile>
@@ -19,6 +19,8 @@
     <PackageOutputPath>../output</PackageOutputPath>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <AppendToReleaseNotesProperty><![CDATA[
 See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/CHANGELOG.md]]>
     </AppendToReleaseNotesProperty>
@@ -28,11 +30,10 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
     <PackageReference Include="GitVersionTask" Version="5.0.1">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="NUnit" Version="2.6.4" />
     <PackageReference Include="RhinoMocks" Version="3.6.1" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="[2.2.0,)">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="SIL.ReleaseTasks" Version="[2.2.0,)" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>

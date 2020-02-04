@@ -9,7 +9,7 @@
     <Company>SIL International</Company>
     <Authors>SIL International</Authors>
     <Product>libpalaso</Product>
-    <Copyright>Copyright © 2010-2019 SIL International</Copyright>
+    <Copyright>Copyright © 2010-2020 SIL International</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/sillsdev/libpalaso</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
@@ -19,6 +19,8 @@
     <AssemblyOriginatorKeyFile>../palaso.snk</AssemblyOriginatorKeyFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <AppendToReleaseNotesProperty><![CDATA[
 See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/CHANGELOG.md]]>
     </AppendToReleaseNotesProperty>
@@ -29,9 +31,8 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="L10NSharp" Version="4.0.0" />
-    <PackageReference Include="SIL.ReleaseTasks" Version="[2.2.0,)">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="SIL.ReleaseTasks" Version="[2.2.0,)" PrivateAssets="All" />
     <PackageReference Include="System.Globalization" Version="4.3.0" />
   </ItemGroup>
 

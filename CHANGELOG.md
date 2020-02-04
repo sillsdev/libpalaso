@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   `ExceptionHandler.Init(ExceptionHandler)`, e.g. `ExceptionHandler.Init(new WinFormsExceptionHandler())`
 - [SIL.Core] Move `HandleUnhandledException()` method from derived classes to base class
 - [SIL.DblBundle.Tests] Create nuget package
+- Improve nuget symbol packages
 
 ### Fixed
 

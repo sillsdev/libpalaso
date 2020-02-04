@@ -12,6 +12,9 @@
 		<Platform Condition="'$(Platform)'==''">Any CPU</Platform>
 		<RestartBuild Condition="!Exists('$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll')">true</RestartBuild>
 		<RestartBuild Condition="Exists('$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll')">false</RestartBuild>
+		<ContinuousIntegrationBuild Condition="'$(teamcity_version)' != '' Or '$(JENKINS_URL)' != '' Or '$(CI)' != '' ">true</ContinuousIntegrationBuild>
+		<ContinuousIntegrationBuild Condition="'$(teamcity_version)' == '' And '$(JENKINS_URL)' == '' And '$(CI)' == '' ">false</ContinuousIntegrationBuild>
+		<DeterministicSourcePaths>$(ContinuousIntegrationBuild)</DeterministicSourcePaths>
 	</PropertyGroup>
 
 	<UsingTask TaskName="NUnit" AssemblyFile="$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll"
@@ -59,7 +62,7 @@
 		<MSBuild
 			Projects="$(SolutionPath)"
 			Targets="Build"
-			Properties="Configuration=$(Configuration);Platform=$(Platform)" />
+			Properties="Configuration=$(Configuration);Platform=$(Platform);ContinuousIntegrationBuild=$(ContinuousIntegrationBuild);DeterministicSourcePaths=$(DeterministicSourcePaths)" />
 	</Target>
 
 	<Target Name="Test" DependsOnTargets="Build">
@@ -99,6 +102,6 @@
 		<MSBuild
 			Projects="$(SolutionPath)"
 			Targets="pack"
-			Properties="Configuration=$(Configuration)" />
+			Properties="Configuration=$(Configuration);ContinuousIntegrationBuild=$(ContinuousIntegrationBuild);DeterministicSourcePaths=$(DeterministicSourcePaths)" />
 	</Target>
 </Project>
