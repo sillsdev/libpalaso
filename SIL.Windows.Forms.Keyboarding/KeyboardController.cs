@@ -32,13 +32,7 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// The null keyboard description
 		/// </summary>
 		public static readonly KeyboardDescription NullKeyboard = new NullKeyboardDescription();
-
-		private static KeyboardController _instance;
-
-		internal static KeyboardController Instance
-		{
-			get { return _instance; }
-		}
+		internal static KeyboardController Instance { get; private set; }
 
 		/// <summary>
 		/// Enables keyboarding. This should be called during application startup.
@@ -52,14 +46,14 @@ namespace SIL.Windows.Forms.Keyboarding
 			// global.
 			try
 			{
-				if (_instance != null)
+				if (Instance != null)
 					Shutdown();
-				_instance = new KeyboardController();
-				Keyboard.Controller = _instance;
+				Instance = new KeyboardController();
+				Keyboard.Controller = Instance;
 				if (adaptors.Length == 0)
-					_instance.SetDefaultKeyboardAdaptors();
+					Instance.SetDefaultKeyboardAdaptors();
 				else
-					_instance.SetKeyboardAdaptors(adaptors);
+					Instance.SetKeyboardAdaptors(adaptors);
 			}
 			catch (Exception e)
 			{
@@ -80,17 +74,17 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// </summary>
 		public static void Shutdown()
 		{
-			if (_instance == null)
+			if (Instance == null)
 				return;
 
-			_instance.Dispose();
+			Instance.Dispose();
 			Keyboard.Controller = null;
 		}
 
 		/// <summary>
 		/// Returns <c>true</c> if KeyboardController.Initialize() got called before.
 		/// </summary>
-		public static bool IsInitialized { get { return _instance != null; } }
+		public static bool IsInitialized { get { return Instance != null; } }
 
 		/// <summary>
 		/// Register the control for keyboarding, optionally providing an event handler for
@@ -101,9 +95,9 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// </summary>
 		public static void RegisterControl(Control control, object eventHandler = null)
 		{
-			_instance._eventHandlers[control] = eventHandler;
-			if (_instance.ControlAdded != null)
-				_instance.ControlAdded(_instance, new RegisterEventArgs(control, eventHandler));
+			Instance._eventHandlers[control] = eventHandler;
+			if (Instance.ControlAdded != null)
+				Instance.ControlAdded(Instance, new RegisterEventArgs(control, eventHandler));
 		}
 
 		/// <summary>
@@ -113,20 +107,20 @@ namespace SIL.Windows.Forms.Keyboarding
 		/// </summary>
 		public static void UnregisterControl(Control control)
 		{
-			if (_instance.ControlRemoving != null)
-				_instance.ControlRemoving(_instance, new ControlEventArgs(control));
-			_instance._eventHandlers.Remove(control);
+			if (Instance.ControlRemoving != null)
+				Instance.ControlRemoving(Instance, new ControlEventArgs(control));
+			Instance._eventHandlers.Remove(control);
 		}
 		/// <summary/>
 		/// <returns>An action that will bring up the keyboard setup application dialog</returns>
 		public static Action GetKeyboardSetupApplication()
 		{
 			Action program = null;
-			if (!HasSecondaryKeyboardSetupApplication && _instance.Adaptors.ContainsKey(KeyboardAdaptorType.OtherIm))
-				program = _instance.Adaptors[KeyboardAdaptorType.OtherIm].GetKeyboardSetupAction();
+			if (!HasSecondaryKeyboardSetupApplication && Instance.Adaptors.ContainsKey(KeyboardAdaptorType.OtherIm))
+				program = Instance.Adaptors[KeyboardAdaptorType.OtherIm].GetKeyboardSetupAction();
 
 			if (program == null)
-				program = _instance.Adaptors[KeyboardAdaptorType.System].GetKeyboardSetupAction();
+				program = Instance.Adaptors[KeyboardAdaptorType.System].GetKeyboardSetupAction();
 
 			return program;
 		}
@@ -134,8 +128,8 @@ namespace SIL.Windows.Forms.Keyboarding
 		public static Action GetSecondaryKeyboardSetupApplication()
 		{
 			Action program = null;
-			if (HasSecondaryKeyboardSetupApplication && _instance.Adaptors.ContainsKey(KeyboardAdaptorType.OtherIm))
-				program = _instance.Adaptors[KeyboardAdaptorType.OtherIm].GetKeyboardSetupAction();
+			if (HasSecondaryKeyboardSetupApplication && Instance.Adaptors.ContainsKey(KeyboardAdaptorType.OtherIm))
+				program = Instance.Adaptors[KeyboardAdaptorType.OtherIm].GetKeyboardSetupAction();
 
 			return program;
 		}
@@ -148,8 +142,8 @@ namespace SIL.Windows.Forms.Keyboarding
 		{
 			get
 			{
-				return _instance.Adaptors.ContainsKey(KeyboardAdaptorType.OtherIm) &&
-					_instance.Adaptors[KeyboardAdaptorType.OtherIm].IsSecondaryKeyboardSetupApplication;
+				return Instance.Adaptors.ContainsKey(KeyboardAdaptorType.OtherIm) &&
+					Instance.Adaptors[KeyboardAdaptorType.OtherIm].IsSecondaryKeyboardSetupApplication;
 			}
 		}
 
@@ -473,8 +467,8 @@ namespace SIL.Windows.Forms.Keyboarding
 				var firstCompatibleAdapter = _adaptors.Values.FirstOrDefault(adaptor => adaptor.CanHandleFormat(format));
 				if (firstCompatibleAdapter == null)
 				{
-					Debug.Fail(string.Format("Could not load keyboard for {0}. Did not find {1} in {2} adapters", id, format, _adaptors.Count));
-					return NullKeyboard;
+					Debug.Fail($"Could not load keyboard for {id}. Did not find {format} in {_adaptors.Count} adapters");
+					return new UnsupportedKeyboardDefinition(id);
 				}
 				keyboard = firstCompatibleAdapter.CreateKeyboardDefinition(id);
 				_keyboards.Add(keyboard);

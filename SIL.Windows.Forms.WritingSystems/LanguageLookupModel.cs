@@ -18,6 +18,11 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		public Func<LanguageInfo, bool> MatchingLanguageFilter { get; set; }
 
+		public LanguageLookup LanguageLookup
+		{
+			get { return _languageLookup; }
+		}
+
 		public string SearchText
 		{
 			get { return _searchText; }
@@ -49,7 +54,7 @@ namespace SIL.Windows.Forms.WritingSystems
 
 		public void LoadLanguages()
 		{
-			_languageLookup = new LanguageLookup();
+			_languageLookup = new LanguageLookup(!_includeScriptMarkers);
 		}
 
 		public bool AreLanguagesLoaded
@@ -67,9 +72,35 @@ namespace SIL.Windows.Forms.WritingSystems
 					yield break;
 				}
 
-				foreach (LanguageInfo li in _languageLookup.SuggestLanguages(_searchText).Where(li => (MatchingLanguageFilter == null || MatchingLanguageFilter(li)) && RegionalDialectsFilter(li)))
+				foreach (LanguageInfo li in _languageLookup.SuggestLanguages(_searchText).Where(
+					li =>
+						(MatchingLanguageFilter == null || MatchingLanguageFilter(li)) &&
+						RegionalDialectsFilter(li) && ScriptMarkerFilter(li)))
+				{
 					yield return li;
+				}
 			}
+		}
+
+		/// <summary>
+		/// If so desired, filter out any language whose tags contain a Script value.  Except that there are 90+
+		/// languages in the data whose tags all contain a Script value.  Since we don't want to lose access to
+		/// those languages, we detect when that happens and pass the first occurrence with the tag adjusted to
+		/// the bare language code.
+		/// </summary>
+		private bool ScriptMarkerFilter(LanguageInfo li)
+		{
+			if (IncludeScriptMarkers)
+				return true;
+
+			// written this way to avoid having to catch predictable exceptions as the user is typing
+			string language;
+			string script;
+			string region;
+			string variant;
+			if (IetfLanguageTag.TryGetParts(li.LanguageTag, out language, out script, out region, out variant))
+				return string.IsNullOrEmpty(script);	// OK only if no script.
+			return true;	// Not a tag?  Don't filter it out.
 		}
 
 		/// <summary>
@@ -154,6 +185,17 @@ namespace SIL.Windows.Forms.WritingSystems
 		}
 
 		public bool IncludeRegionalDialects { get; set; }
+
+		private bool _includeScriptMarkers = true;	// preserve old default behavior
+		public bool IncludeScriptMarkers
+		{
+			get { return _includeScriptMarkers;}
+			set
+			{
+				_includeScriptMarkers = value;
+				_languageLookup = new LanguageLookup(!_includeScriptMarkers);
+			}
+		}
 
 		/// <summary>
 		/// This would be simpler if there weren't some 2 letter tags out there...

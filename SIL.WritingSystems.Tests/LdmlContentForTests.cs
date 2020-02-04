@@ -658,6 +658,18 @@ namespace SIL.WritingSystems.Tests
 		</sil:external-resources>
 	</special>".Replace("'", "\"");
 
+		public static string TwoKeyboardElems = @"
+	<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
+		<sil:external-resources>
+			<sil:kbd id='basic_kbdgr' type='kmp'>
+				<sil:url draft='generated'>https://keyman.com/go/keyboard/basic_kbdgr/download/kmp</sil:url>
+			</sil:kbd>
+			<sil:kbd id='sil_euro_latin' type='kmp'>
+				<sil:url draft='generated'>https://keyman.com/go/keyboard/sil_euro_latin/download/kmp</sil:url>
+			</sil:kbd>
+		</sil:external-resources>
+	</special>".Replace("'", "\"");
+
 		/// <summary>
 		/// Minimal LDML for version 3
 		/// </summary>

@@ -193,8 +193,72 @@ namespace SIL.WritingSystems.Tests
 			AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath("/ldml/collations/collation", 1);
 		}
 
-		#region Roundtrip
 		[Test]
+		public void ExistingLdml_UnknownKeyboardType_Write_PreservesData()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var kbElem = LdmlContentForTests.KeyboardElem.Replace("kmx", "fakekeyboardtype");
+				var ldmlWithFakeKbType = LdmlContentForTests.CurrentVersion("so", "", "", "", kbElem);
+				Assert.That(ldmlWithFakeKbType, Is.StringContaining("type=\"fakekeyboardtype\""),
+					"The test data is not valid for this unit test anymore.");
+				var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+				var sw = new StringWriter();
+				var ws = new WritingSystemDefinition("en");
+				var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
+				adaptor.Write(writer, ws, XmlReader.Create(new StringReader(ldmlWithFakeKbType)));
+				writer.Close();
+				AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:kbd",
+					1, environment.NamespaceManager);
+			}
+		}
+
+		[Test]
+		public void ExistingLdml_UnhandledKeyboards_Write_PreservesData()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var ldmlWith2Keyboards = LdmlContentForTests.CurrentVersion("so", "", "", "",
+					LdmlContentForTests.TwoKeyboardElems);
+				Assert.That(ldmlWith2Keyboards, Is.StringContaining("id=\"basic_kbdgr\""),
+					"The test data is not valid for this unit test anymore.");
+				Assert.That(ldmlWith2Keyboards, Is.StringContaining("id=\"sil_euro_latin\""),
+					"The test data is not valid for this unit test anymore.");
+				var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+				var sw = new StringWriter();
+				var ws = new WritingSystemDefinition("en");
+				// Adding UnsupportedKeyboardDefinition files simulates keyboards that can't be handled by any KeyboardAdapter
+				ws.KnownKeyboards.Add(new UnsupportedKeyboardDefinition("basic_kbdgr"));
+				ws.KnownKeyboards.Add(new UnsupportedKeyboardDefinition("sil_euro_latin"));
+				var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
+				adaptor.Write(writer, ws, XmlReader.Create(new StringReader(ldmlWith2Keyboards)));
+				writer.Close();
+				AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath(
+					"/ldml/special/sil:external-resources/sil:kbd",
+					2, true, environment.NamespaceManager);
+			}
+		}
+
+		[Test]
+		public void ExistingLdml_UnsupportedKeyboardType_Write_PreservesData()
+		{
+			using (var environment = new TestEnvironment())
+			{
+				var kbElem = LdmlContentForTests.KeyboardElem;
+				var ldmlWithFakeKbType = LdmlContentForTests.CurrentVersion("so", "", "", "", kbElem).Replace("kmx", "unknown");
+				var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+				var sw = new StringWriter();
+				var ws = new WritingSystemDefinition("en");
+				var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
+				adaptor.Write(writer, ws, XmlReader.Create(new StringReader(ldmlWithFakeKbType)));
+				writer.Close();
+				AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath("/ldml/special/sil:external-resources/sil:kbd",
+					1, environment.NamespaceManager);
+			}
+		}
+
+	  #region Roundtrip
+	  [Test]
 		public void RoundtripSimpleCustomSortRules_WS33715()
 		{
 			var ldmlAdaptor = new LdmlDataMapper(new TestWritingSystemFactory());

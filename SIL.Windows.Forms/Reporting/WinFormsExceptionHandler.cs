@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Configuration;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -26,13 +26,22 @@ namespace SIL.Windows.Forms.Reporting
 		/// Set exception handler. Needs to be done before we create splash screen (don't
 		/// understand why, but otherwise some exceptions don't get caught).
 		/// </summary>
+		/// <param name="addExceptionHandlers">if false, does not listen for exceptions</param>
 		/// ------------------------------------------------------------------------------------
-		public WinFormsExceptionHandler()
+		public WinFormsExceptionHandler(bool addExceptionHandlers = true)
 		{
 			// We need to create a control on the UI thread so that we have a control that we
 			// can use to invoke the error reporting dialog on the correct thread.
 			ControlOnUIThread = new Control();
 			ControlOnUIThread.CreateControl();
+
+			// This seems like an odd thing to do, given that this is an ExceptionHandler,
+			// but if a program has its own exception handler, it might want to still create this one
+			// so that it can show the ExceptionReportingDialog by invoking on ControlOnUIThread.
+			// Setting addExceptionHandlers to false assumes that the application will use another
+			// ExceptionHandler to respond to exceptions.
+			if (!addExceptionHandlers)
+				return;
 
 			// Using Application.ThreadException rather than
 			// AppDomain.CurrentDomain.UnhandledException has the advantage that the
@@ -51,8 +60,10 @@ namespace SIL.Windows.Forms.Reporting
 		/// <param name="sender">sender</param>
 		/// <param name="e">Exception</param>
 		/// <remarks>previously <c>AfApp::HandleTopLevelError</c></remarks>
+		/// <remarks>Public so that a program with its own handler can also use this one, when
+		/// necessary.</remarks>
 		/// ------------------------------------------------------------------------------------
-		protected void HandleTopLevelError(object sender, ThreadExceptionEventArgs e)
+		public void HandleTopLevelError(object sender, ThreadExceptionEventArgs e)
 		{
 			if (!GetShouldHandleException(sender, e.Exception))
 				return;

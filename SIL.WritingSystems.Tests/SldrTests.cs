@@ -432,6 +432,9 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+		/// <remarks>
+		/// REVIEW (Hasso) 2019.11: this test loads Private Use script subtags and doesn't clean them up, but no other tests seem to care
+		/// </remarks>
 		[Test]
 		public void LanguageTags_OlderCachedLangTagsSldrOffline_UseEmbeddedLangTags()
 		{
@@ -464,6 +467,9 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+		/// <remarks>
+		/// REVIEW (Hasso) 2019.11: this test loads Private Use script subtags and doesn't clean them up, but no other tests seem to care
+		/// </remarks>
 		[Test]
 		public void LanguageTags_NoCachedLangTagsSldrOffline_UseEmbeddedLangTags()
 		{

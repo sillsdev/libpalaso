@@ -205,8 +205,11 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 		[Test]
 		public void CreateKeyboardDefinition_NewKeyboard_ReturnsNewObject()
 		{
+			// This test fails on Ubuntu 18.04. This might be related to keyboard switching
+			// working differently in 18.04 (#887).
+
 			// REVIEW: adjust this test
-			IKeyboardDefinition keyboard = Keyboard.Controller.CreateKeyboard("en-US_foo", KeyboardFormat.Unknown, Enumerable.Empty<string>());
+			var keyboard = Keyboard.Controller.CreateKeyboard("en-US_foo", KeyboardFormat.Unknown, Enumerable.Empty<string>());
 			Assert.That(keyboard, Is.Not.Null);
 			Assert.That(keyboard, Is.TypeOf<XkbKeyboardDescription>());
 		}
