@@ -95,25 +95,32 @@ namespace SIL.Windows.Forms.WritingSystems.Tests
 
 		[Test, Ignore("By Hand")]
 		[Category("SkipOnTeamCity")]
-		public void TestLanguageLookupDialog_manualTest()
+		public void TestLanguageLookupDialog_manualTest_Ojicree()
 		{
-			const string testLangCode = "sok-x-easy";
-			const string testLangThreeLetterCode = "sok";
-			const string testLangName = "Sokoro";
+			const string testLangCode = "ojs-Latn-CA";
+			const string testLangThreeLetterCode = "ojs";
+			const string testLangName = "Ojibwa, Severn";
 			using (var dlg = new LanguageLookupDialog())
 			{
 				dlg.IsDesiredLanguageNameFieldVisible = true;
 				dlg.IsShowRegionalDialectsCheckBoxVisible = true;
 				dlg.IsScriptAndVariantLinkVisible = true;
 
-				var language = new LanguageInfo() { LanguageTag = testLangCode };
-				language.DesiredName = testLangName;
+				var language = new LanguageInfo
+				{
+					LanguageTag = testLangCode,
+					ThreeLetterTag = testLangThreeLetterCode,
+					DesiredName = testLangName
+				};
 				dlg.SelectedLanguage = language;
 				dlg.SearchText = testLangThreeLetterCode;
 				dlg.UseSimplifiedChinese();
 
 				dlg.ShowDialog();
-				MessageBox.Show("Got LanguageTag='" + dlg.SelectedLanguage.LanguageTag + "'.");
+				// I want to be able to change DesiredName, but keep the original Script tag.
+				var msg =
+					$"Got LanguageTag='{dlg.SelectedLanguage.LanguageTag}' Desired Name is='{dlg.DesiredLanguageName}'.";
+				MessageBox.Show(msg);
 			}
 		}
 	}
