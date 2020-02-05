@@ -38,7 +38,7 @@
 
   <ItemGroup>
     <Reference Include="NMock2, Version=1.0.2313.18049, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\lib\common\NMock2.dll</HintPath>
+      <HintPath>..\lib\NMock2.dll</HintPath>
     </Reference>
   </ItemGroup>
 

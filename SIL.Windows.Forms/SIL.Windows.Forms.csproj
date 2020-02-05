@@ -71,7 +71,7 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
 
   <ItemGroup>
     <Reference Include="Interop.WIA, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\lib\Release\Interop.WIA.dll</HintPath>
+      <HintPath>..\lib\Interop.WIA.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Security" />
