@@ -74,5 +74,14 @@ namespace SIL.WritingSystems
 			}
 			set { _desiredName = value; }
 		}
+
+		/// <summary>
+		/// Create a shallow copy of a LanguageInfo object to avoid messing with any "official" version.
+		/// </summary>
+		/// <returns></returns>
+		public LanguageInfo ShallowCopy()
+		{
+			return this.MemberwiseClone() as LanguageInfo;
+		}
 	}
 }
