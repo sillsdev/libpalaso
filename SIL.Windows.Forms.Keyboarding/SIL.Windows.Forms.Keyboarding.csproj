@@ -50,13 +50,13 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
 
   <ItemGroup>
     <Reference Include="Keyman10Interop, Version=10.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\lib\common\Keyman10Interop.dll</HintPath>
+      <HintPath>..\lib\Keyman10Interop.dll</HintPath>
     </Reference>
     <Reference Include="Keyman7Interop, Version=1.4.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\lib\common\Keyman7Interop.dll</HintPath>
+      <HintPath>..\lib\Keyman7Interop.dll</HintPath>
     </Reference>
     <Reference Include="KeymanLink, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\lib\common\KeymanLink.dll</HintPath>
+      <HintPath>..\lib\KeymanLink.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Mono.Posix" Condition="'$(OS)' != 'Windows_NT'" />
