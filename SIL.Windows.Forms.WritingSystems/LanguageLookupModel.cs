@@ -14,6 +14,7 @@ namespace SIL.Windows.Forms.WritingSystems
 		private LanguageLookup _languageLookup;
 		private string _searchText;
 		private LanguageInfo _selectedLanguage;
+		private LanguageInfo _originalLanguageInfo;
 		private string _desiredLanguageName;
 
 		public Func<LanguageInfo, bool> MatchingLanguageFilter { get; set; }
@@ -136,6 +137,13 @@ namespace SIL.Windows.Forms.WritingSystems
 			{
 				var oldValue = _selectedLanguage;
 				_selectedLanguage = value;
+				if (oldValue == null)
+				{
+					// We're setting up the model prior to using it (as opposed to changing the language later)
+					// We'll use ShallowCopy() to avoid changing any "official" version of a language somewhere.
+					_originalLanguageInfo = _selectedLanguage.ShallowCopy();
+				}
+
 				if (_selectedLanguage == null)
 					return;
 
@@ -197,27 +205,34 @@ namespace SIL.Windows.Forms.WritingSystems
 			}
 		}
 
+		private static bool LanguageTagContainsScrRegVarInfo(LanguageInfo languageInfo)
+		{
+			if (string.IsNullOrEmpty(languageInfo?.LanguageTag))
+				return false;
+
+			// Review: Someone tell me if this isn't sufficient!?
+			return languageInfo.LanguageTag.Contains("-");
+		}
+
 		/// <summary>
-		/// This would be simpler if there weren't some 2 letter tags out there...
+		/// Does the Selected Language Tag include extra Script/Region/Variant subtags?
 		/// </summary>
-		public bool LanguageTagContainsScriptRegionVariantInfo
-		{
-			get
-			{
-				if (SelectedLanguage == null)
-					return false;
+		public bool LanguageTagContainsScriptRegionVariantInfo => LanguageTagContainsScrRegVarInfo(SelectedLanguage);
 
-				var threeLetter = SelectedLanguage.ThreeLetterTag;
-				return LanguageTag.Length >= 3 && (LanguageTag != threeLetter || threeLetter.Contains("-"));
-			}
+		private static string LanguageTagWithoutSubtags(LanguageInfo languageInfo)
+		{
+			return LanguageTagContainsScrRegVarInfo(languageInfo)
+				? languageInfo.LanguageTag.Split('-')[0]
+				: languageInfo.LanguageTag;
 		}
 
-		public string LanguageTagWithoutScriptRegionVariant
-		{
-			get
-			{
-				return LanguageTagContainsScriptRegionVariantInfo ? LanguageTag.Split('-')[0] : LanguageTag;
-			}
-		}
+		public string LanguageTagWithoutScriptRegionVariant => LanguageTagWithoutSubtags(SelectedLanguage);
+
+		public string OriginalLanguageTagWithoutSubtags => LanguageTagWithoutSubtags(_originalLanguageInfo);
+
+		public bool OriginalLanguageTagContainsSubtags =>
+			LanguageTagContainsScrRegVarInfo(_originalLanguageInfo);
+
+		public LanguageInfo OriginalLanguageInfo => _originalLanguageInfo;
 	}
 }
