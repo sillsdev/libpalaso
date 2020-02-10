@@ -137,6 +137,9 @@ namespace SIL.Windows.Forms.WritingSystems
 			{
 				var oldValue = _selectedLanguage;
 				_selectedLanguage = value;
+				if (_selectedLanguage == null)
+					return;
+
 				if (oldValue == null)
 				{
 					// We're setting up the model prior to using it (as opposed to changing the language later)
@@ -144,17 +147,13 @@ namespace SIL.Windows.Forms.WritingSystems
 					_originalLanguageInfo = _selectedLanguage.ShallowCopy();
 				}
 
-				if (_selectedLanguage == null)
-					return;
-
 				if (LanguageTag == "qaa")
 				{
-					if (_searchText != "?")
-					{
-						string failedSearchText = _searchText.ToUpperFirstLetter();
-						_desiredLanguageName = failedSearchText;
-						_selectedLanguage.Names.Insert(0, failedSearchText);
-					}
+					if (_searchText == "?")
+						return;
+					string failedSearchText = _searchText.ToUpperFirstLetter();
+					_desiredLanguageName = failedSearchText;
+					_selectedLanguage.Names.Insert(0, failedSearchText);
 				}
 				else
 				{
