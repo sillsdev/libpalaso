@@ -1,4 +1,5 @@
-﻿using SIL.IO;
+using System.Threading;
+using SIL.IO;
 using SIL.Windows.Forms.ImageToolbox;
 using SIL.Windows.Forms.Miscellaneous;
 using NUnit.Framework;
@@ -6,7 +7,7 @@ using NUnit.Framework;
 namespace SIL.Windows.Forms.Tests.Miscellaneous
 {
 	[TestFixture]
-	[RequiresSTA] // or you get a ThreadStateException
+	[Apartment(ApartmentState.STA)] // or you get a ThreadStateException
 	class PortableClipboardTests
 	{
 		private const string TestImageDir = "SIL.Windows.Forms.Tests/Miscellaneous/PortableClipboardTestImages";

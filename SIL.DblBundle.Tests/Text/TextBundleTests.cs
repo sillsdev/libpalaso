@@ -24,7 +24,7 @@ namespace SIL.DblBundle.Tests.Text
 		/// <summary>
 		/// Setup test fixture.
 		/// </summary>
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void TestFixtureSetup()
 		{
 			using (var zippedBundle = CreateZippedTextBundleFromResources(true, false, true))
@@ -40,7 +40,7 @@ namespace SIL.DblBundle.Tests.Text
 		/// <summary>
 		/// Tear down test fixture.
 		/// </summary>
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void TestFixtureTearDown()
 		{
 			_legacyBundle.Dispose();

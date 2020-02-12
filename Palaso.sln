@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29409.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SIL.Core.Tests", "SIL.Core.Tests\SIL.Core.Tests.csproj", "{5DE33CD7-60CB-4B9F-A123-A83C1C686E47}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -147,8 +147,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.Tests-Designer", "SIL.Windows.Forms.Tests\SIL.Windows.Forms.Tests-Designer.csproj", "{E7BD6834-F0A2-4966-A459-629D43BA5399}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.Windows.Forms.WritingSystems-Designer", "SIL.Windows.Forms.WritingSystems\SIL.Windows.Forms.WritingSystems-Designer.csproj", "{7B1638B6-DBB3-4978-B900-5A65F5C93BEA}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIL.NUnit3Compatibility", "SIL.NUnit3Compatibility\SIL.NUnit3Compatibility.csproj", "{934A4A8C-23CD-48A6-93C7-A40B47C7BE23}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -352,10 +350,6 @@ Global
 		{E7BD6834-F0A2-4966-A459-629D43BA5399}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B1638B6-DBB3-4978-B900-5A65F5C93BEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7B1638B6-DBB3-4978-B900-5A65F5C93BEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{934A4A8C-23CD-48A6-93C7-A40B47C7BE23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{934A4A8C-23CD-48A6-93C7-A40B47C7BE23}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{934A4A8C-23CD-48A6-93C7-A40B47C7BE23}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{934A4A8C-23CD-48A6-93C7-A40B47C7BE23}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

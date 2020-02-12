@@ -439,7 +439,7 @@ namespace SIL.Lift
 		public override bool Equals(Object obj)
 		{
 			if (!(obj is PalasoDataObject)) return false;
-			return Equals((PalasoDataObject)obj);
+				return Equals((PalasoDataObject)obj);
 		}
 
 		public bool Equals(PalasoDataObject other)

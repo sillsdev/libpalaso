@@ -1,14 +1,14 @@
 // --------------------------------------------------------------------------------------------
-#region // Copyright (c) 2014, SIL International.
-// <copyright from='2003' to='2014' company='SIL International'>
-//		Copyright (c) 2014, SIL International.   
+#region // Copyright (c) 2020, SIL International.
+// <copyright from='2003' to='2020' company='SIL International'>
+//		Copyright (c) 2020, SIL International.   
 //    
 //		Distributable under the terms of the MIT License (http://sil.mit-license.org/)
 // </copyright> 
 #endregion
 // 
 // This class originated in FieldWorks (under the GNU Lesser General Public License), but we
-// have decided to make it avaialble in SIL.Scripture as part of Palaso so it will be more
+// have decided to make it available in SIL.Scripture as part of Palaso so it will be more
 // readily available to other projects.
 // --------------------------------------------------------------------------------------------
 using System;
@@ -39,40 +39,60 @@ namespace SIL.Scripture.Tests
 
 		/// ------------------------------------------------------------------------------------
 		/// <summary>
-		/// Test the constructors of BCVRef
+		/// Test the constructor of BCVRef that takes a book, chapter, verse and segment
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[TestCase(1, 2, 3, 0, ExpectedResult = 1002003)]
+		[TestCase(66, 21, 20, 2, ExpectedResult = 66021020)]
+		public int Constructor_FromBookChapterVerseAndSegment_Valid(int book, int chapter, int verse, int segment)
+		{
+			BCVRef bcvRef = new BCVRef(book, chapter, verse, segment);
+			Assert.IsTrue(bcvRef.Valid);
+			Assert.AreEqual(book, bcvRef.Book);
+			Assert.AreEqual(chapter, bcvRef.Chapter);
+			Assert.AreEqual(verse, bcvRef.Verse);
+			Assert.AreEqual(segment, bcvRef.Segment);
+			return bcvRef.BBCCCVVV;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Test the constructor of BCVRef that takes an integer in the form BBCCCVVV
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
 		[Test]
-		public void ValidBCVRefs()
+		public void Constructor_FromBBCCCVVV_ValidBCVRef()
 		{
-			BCVRef bcvRef = new BCVRef(1, 2, 3, 0);
+			var bcvRef = new BCVRef(4005006);
 			Assert.IsTrue(bcvRef.Valid);
-			Assert.AreEqual(1002003, bcvRef);
-			Assert.AreEqual(1, bcvRef.Book);
-			Assert.AreEqual(2, bcvRef.Chapter);
-			Assert.AreEqual(3, bcvRef.Verse);
-
-			bcvRef = new BCVRef(4005006);
-			Assert.IsTrue(bcvRef.Valid);
-			Assert.AreEqual(4005006, bcvRef);
+			Assert.AreEqual(4005006, bcvRef.BBCCCVVV);
 			Assert.AreEqual(4, bcvRef.Book);
 			Assert.AreEqual(5, bcvRef.Chapter);
 			Assert.AreEqual(6, bcvRef.Verse);
+		}
 
-			bcvRef = new BCVRef();
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Test the default constructor of BCVRef
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		[Test]
+		public void DefaultConstructor_Invalid()
+		{
+			var bcvRef = new BCVRef();
 			Assert.IsFalse(bcvRef.Valid);
-			Assert.AreEqual(0, bcvRef);
+			Assert.AreEqual(0, bcvRef.BBCCCVVV);
 			Assert.AreEqual(0, bcvRef.Book);
 			Assert.AreEqual(0, bcvRef.Chapter);
 			Assert.AreEqual(0, bcvRef.Verse);
 		}
 
-        /// ------------------------------------------------------------------------------------
+		/// ------------------------------------------------------------------------------------
 		/// <summary>
 		/// Test IsValidInVersification
 		/// </summary>
 		/// ------------------------------------------------------------------------------------
-        [Test]
+		[Test]
         public void IsValidInVersification()
         {
             var versification = MockRepository.GenerateMock<IScrVers>();
@@ -454,7 +474,7 @@ namespace SIL.Scripture.Tests
 		{
 			BCVRef scrRef = new BCVRef(6542, 1023, 5051);
 			Assert.IsFalse(scrRef.Valid);
-			Assert.AreEqual(42023051, scrRef);
+			Assert.AreEqual(42023051, scrRef.BBCCCVVV);
 		}
 
 		/// ------------------------------------------------------------------------------------

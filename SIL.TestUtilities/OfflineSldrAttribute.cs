@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace SIL.TestUtilities
 {
@@ -13,14 +14,14 @@ namespace SIL.TestUtilities
 		private OfflineSldr _offlineSldr;
 		private int _refCount;
 
-		public void BeforeTest(TestDetails testDetails)
+		public void BeforeTest(ITest test)
 		{
 			if (_refCount == 0)
 				_offlineSldr = new OfflineSldr();
 			_refCount++;
 		}
 
-		public void AfterTest(TestDetails testDetails)
+		public void AfterTest(ITest test)
 		{
 			_refCount--;
 			if (_refCount == 0)
@@ -33,9 +34,6 @@ namespace SIL.TestUtilities
 		/// <summary>
 		/// Provides the target for the action attribute. This action will be run on all tests and suites (fixtures/assemblies).
 		/// </summary>
-		public ActionTargets Targets
-		{
-			get { return ActionTargets.Test | ActionTargets.Suite; }
-		}
+		public ActionTargets Targets => ActionTargets.Test | ActionTargets.Suite;
 	}
 }

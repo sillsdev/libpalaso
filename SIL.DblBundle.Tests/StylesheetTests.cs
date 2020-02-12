@@ -32,7 +32,7 @@ namespace SIL.DblBundle.Tests
   </style>
 </stylesheet>";
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void TestFixtureSetUp()
 		{
 			using (var stylesheetFile = TempFile.WithExtension(".xml"))

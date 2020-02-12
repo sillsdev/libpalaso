@@ -17,7 +17,7 @@ namespace SIL.Windows.Forms.Tests.ErrorReporting
 		private bool Is64BitProcess;
 		private bool HasLargePhysicalMemory;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetUp()
 		{
 			Is64BitProcess = IntPtr.Size == 8;
@@ -121,7 +121,7 @@ namespace SIL.Windows.Forms.Tests.ErrorReporting
 			var dummy = Logger.LogText; // counter-intuitive, but the only way I can find to clear out minor events, in case anything else used logger
 			MemoryManagement.CheckMemory(true, "this is a test", false); // since not doing GC we really can't predict the return value
 			var result = Logger.MinorEventsLog;
-			Assert.That(result, Is.StringContaining("this is a test"));
+			Assert.That(result, Does.Contain("this is a test"));
 			var re = new Regex(@"\d+,\d+K");
 			var matches = re.Matches(result).Cast<Match>().ToArray();
 			// This is a pretty weak test; just proves we're outputting at least 3 numbers over 1000K. (Heap memory is sometimes <1M; virtual is unknown on Linux)
@@ -130,7 +130,7 @@ namespace SIL.Windows.Forms.Tests.ErrorReporting
 			Logger.Init();
 			MemoryManagement.CheckMemory(false, "this is a test", false); // since not doing GC we really can't predict the return value
 			result = Logger.LogText;
-			Assert.That(result, Is.StringContaining("this is a test"));
+			Assert.That(result, Does.Contain("this is a test"));
 			matches = re.Matches(result).Cast<Match>().ToArray();
 			// Using WriteEvent means out data is in the eventual output twice.
 			Assert.That(matches, Has.Length.AtLeast(6));

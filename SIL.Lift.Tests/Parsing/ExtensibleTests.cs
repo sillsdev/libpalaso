@@ -42,7 +42,7 @@ namespace SIL.Lift.Tests.Parsing
 
 
 		[Test]
-		public void ParseDateOnly()
+		public void ParseDateTimeCorrectly_DateOnly()
 		{
 			DateTime parsedDateTime = Extensible.ParseDateTimeCorrectly("2007-02-03");
 			Assert.IsTrue(parsedDateTime.Kind == DateTimeKind.Utc);
@@ -50,7 +50,7 @@ namespace SIL.Lift.Tests.Parsing
 		}
 
 		[Test]
-		public void ParseDateTimeWithTimeZone()
+		public void ParseDateTimeCorrectly_WithTimeZone()
 		{
 			DateTime parsedDateTime = Extensible.ParseDateTimeCorrectly("2007-02-03T03:01:39+07:00");
 			Assert.IsTrue(parsedDateTime.Kind == DateTimeKind.Utc);
@@ -58,7 +58,7 @@ namespace SIL.Lift.Tests.Parsing
 		}
 
 		[Test]
-		public void ParseDateTimeWithTimeZoneAtBeginningOfYear()
+		public void ParseDateTimeCorrectly_WithTimeZoneAtBeginningOfYear()
 		{
 			DateTime parsedDateTime = Extensible.ParseDateTimeCorrectly("2005-01-01T01:11:11+8:00");
 			Assert.IsTrue(parsedDateTime.Kind == DateTimeKind.Utc);
@@ -66,7 +66,7 @@ namespace SIL.Lift.Tests.Parsing
 		}
 
 		[Test]
-		public void ParseDateTimeNoTimeZone()
+		public void ParseDateTimeCorrectly_NoTimeZone()
 		{
 			DateTime parsedDateTime = Extensible.ParseDateTimeCorrectly("2007-02-03T03:01:39Z");
 			Assert.IsTrue(parsedDateTime.Kind == DateTimeKind.Utc);
@@ -74,12 +74,9 @@ namespace SIL.Lift.Tests.Parsing
 		}
 
 		[Test]
-		[ExpectedException(typeof(LiftFormatException))]
-		public void ParseDate_Bad_Throws()
+		public void ParseDateTimeCorrectly_Bad_ThrowsLiftFormatException()
 		{
-			Extensible.ParseDateTimeCorrectly("2007-02-03T03:01:39");
+			Assert.Throws<LiftFormatException>(() => Extensible.ParseDateTimeCorrectly("2007-02-03T03:01:39"));
 		}
-
-
 	}
 }

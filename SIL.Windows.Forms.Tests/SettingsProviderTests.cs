@@ -98,7 +98,7 @@ namespace SIL.Windows.Forms.Tests
 				var settingsProvider = new TestCrossPlatformSettingsProvider();
 				settingsProvider.Initialize(null, null); // Seems to be what .NET does, despite warnings
 				string dirPath = settingsProvider.UserConfigLocation;
-				Assert.That(dirPath, Is.StringContaining("SettingsProviderTests"));
+				Assert.That(dirPath, Does.Contain("SettingsProviderTests"));
 				Directory.CreateDirectory(dirPath);
 				string filePath = Path.Combine(dirPath, TestCrossPlatformSettingsProvider.UserConfigFileName);
 				using (new TempFile(filePath, true))
@@ -148,8 +148,8 @@ namespace SIL.Windows.Forms.Tests
 
 			// Somehow a Reload() at this point does NOT detect that the registration settings are missing (if they are).
 			string fileContent = File.ReadAllText(settingsFilePath);
-			Assert.That(fileContent, Is.StringContaining("Registration"));
-			Assert.That(fileContent, Is.StringContaining("John"));
+			Assert.That(fileContent, Does.Contain("Registration"));
+			Assert.That(fileContent, Does.Contain("John"));
 		}
 
 		/// <summary>

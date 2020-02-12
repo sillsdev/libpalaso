@@ -17,7 +17,7 @@ namespace SIL.Media.Tests
 	[TestFixture]
 	public class FFmpegRunnerTests
 	{
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void CheckRequirements()
 		{
 			if (!MediaInfo.HaveNecessaryComponents)

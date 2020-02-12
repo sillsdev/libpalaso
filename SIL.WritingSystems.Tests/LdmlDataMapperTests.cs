@@ -200,7 +200,7 @@ namespace SIL.WritingSystems.Tests
 			{
 				var kbElem = LdmlContentForTests.KeyboardElem.Replace("kmx", "fakekeyboardtype");
 				var ldmlWithFakeKbType = LdmlContentForTests.CurrentVersion("so", "", "", "", kbElem);
-				Assert.That(ldmlWithFakeKbType, Is.StringContaining("type=\"fakekeyboardtype\""),
+				Assert.That(ldmlWithFakeKbType, Does.Contain("type=\"fakekeyboardtype\""),
 					"The test data is not valid for this unit test anymore.");
 				var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				var sw = new StringWriter();
@@ -220,9 +220,9 @@ namespace SIL.WritingSystems.Tests
 			{
 				var ldmlWith2Keyboards = LdmlContentForTests.CurrentVersion("so", "", "", "",
 					LdmlContentForTests.TwoKeyboardElems);
-				Assert.That(ldmlWith2Keyboards, Is.StringContaining("id=\"basic_kbdgr\""),
+				Assert.That(ldmlWith2Keyboards, Does.Contain("id=\"basic_kbdgr\""),
 					"The test data is not valid for this unit test anymore.");
-				Assert.That(ldmlWith2Keyboards, Is.StringContaining("id=\"sil_euro_latin\""),
+				Assert.That(ldmlWith2Keyboards, Does.Contain("id=\"sil_euro_latin\""),
 					"The test data is not valid for this unit test anymore.");
 				var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
 				var sw = new StringWriter();
