@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
@@ -87,7 +87,7 @@ namespace SIL.Windows.Forms.Tests.ImageToolbox
 		}
 
 		[Test]
-		[Platform(Exclude="Windows", Reason="applies only to Mono")]
+		[Platform(Exclude="Win", Reason="applies only to Mono")]
 		public void CheckMonoForSelectLargeIconView()
 		{
 			using (var dlg = new OpenFileDialog ())

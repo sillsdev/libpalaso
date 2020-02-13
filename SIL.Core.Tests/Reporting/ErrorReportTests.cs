@@ -19,7 +19,7 @@ namespace SIL.Tests.Reporting
 		}
 
 		[Test]
-		[Platform(Include = "Windows", Reason = "Windows specific test")]
+		[Platform(Include = "Win", Reason = "Windows specific test")]
 		public void Properties_WindowsDoesNotContainDesktopEnvironment()
 		{
 			// SUT
@@ -31,7 +31,7 @@ namespace SIL.Tests.Reporting
 		}
 
 		[Test]
-		[Platform(Include = "Windows", Reason = "Windows specific test")]
+		[Platform(Include = "Win", Reason = "Windows specific test")]
 		public void GetStandardProperties_WindowsDoesNotContainDesktopEnvironment()
 		{
 			// SUT
