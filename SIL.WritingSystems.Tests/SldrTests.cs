@@ -248,10 +248,6 @@ namespace SIL.WritingSystems.Tests
 				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']", environment.NamespaceManager);
 				AssertThatXmlIn.File(filePath).HasNoMatchForXpath("/ldml/identity/script", environment.NamespaceManager);
 				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/territory[@type='GB']", environment.NamespaceManager);
-
-				// Verify draft is approved and uid doesn't exist
-				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[@draft='approved']", environment.NamespaceManager);
-				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[not(@uid)]", environment.NamespaceManager);
 			}
 		}
 
@@ -274,11 +270,16 @@ namespace SIL.WritingSystems.Tests
 				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/language[@type='en']", environment.NamespaceManager);
 				AssertThatXmlIn.File(filePath).HasNoMatchForXpath("/ldml/identity/script", environment.NamespaceManager);
 				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/territory[@type='GB']", environment.NamespaceManager);
-
-				// Verify draft is approved and uid doesn't exist
-				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[@draft='approved']", environment.NamespaceManager);
-				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[not(@uid)]", environment.NamespaceManager);
 			}
+		}
+
+		[Test]
+		public void GetLdmlFile_SldrStagingEnvironmentVariable_UsesStagingUrl()
+		{
+			var originalStagingValue = Environment.GetEnvironmentVariable(Sldr.SldrStaging);
+			Environment.SetEnvironmentVariable(Sldr.SldrStaging, "true");
+			StringAssert.Contains("&staging=1", Sldr.BuildLdmlRequestUrl("en", "", "", ""));
+			Environment.SetEnvironmentVariable(Sldr.SldrStaging, originalStagingValue);
 		}
 
 		[Test]
@@ -300,9 +301,11 @@ namespace SIL.WritingSystems.Tests
 				var sldrStatus = environment.GetLdmlFile(ietfLanguageTag, out filename);
 				if (sldrStatus == SldrStatus.UnableToConnectToSldr)
 					Assert.Ignore("Ignored becuase SLDR is offline.");
+				// Call a second time, this should use the Cache now
+				sldrStatus = environment.GetLdmlFile(ietfLanguageTag, out filename);
 				Assert.That(sldrStatus, Is.EqualTo(SldrStatus.FromCache));
 				string filePath = Path.Combine(environment.FilePath, filename);
-				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[@windowsLCID='12345']", environment.NamespaceManager);
+				AssertThatXmlIn.File(filePath).HasAtLeastOneMatchForXpath("/ldml/identity/special/sil:identity[@source='cldr']", environment.NamespaceManager);
 			}
 		}
 
@@ -421,12 +424,15 @@ namespace SIL.WritingSystems.Tests
 			using (var testEnv = new TestEnvironment(false, new DateTime(2000, 1, 1, 12, 0, 0)))
 			{
 				string enLdml;
+				string langTagsPath = Path.Combine(Sldr.SldrCachePath, "langtags.json");
+				if (File.Exists(langTagsPath))
+				{
+					Assert.Ignore($"Delete the langtags.json from {langTagsPath} and run this test solo");
+				}
 				if (testEnv.GetLdmlFile("en", out enLdml) == SldrStatus.UnableToConnectToSldr)
 				{
-					Assert.Ignore();
+					Assert.Ignore("SLDR is offline");
 				}
-				string langTagsPath = Path.Combine(Sldr.SldrCachePath, "langtags.json");
-				Assert.That(File.Exists(langTagsPath), Is.False);
 				Assert.That(Sldr.LanguageTags, Is.Not.Empty);
 				Assert.That(File.Exists(langTagsPath), Is.True);
 			}

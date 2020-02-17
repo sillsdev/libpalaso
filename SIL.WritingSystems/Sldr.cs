@@ -70,16 +70,9 @@ namespace SIL.WritingSystems
 	{
 		public static XNamespace Sil = "urn://www.sil.org/ldml/0.1";
 
-		// SLDR is hosted on two sites.
-#if STAGING_SLDR
-		// Staging site listed here for developmental testing
-		private const string SldrRepository = "http://staging.scriptsource.org/ldml/";
-#else
-		// Generally we will use the production (public) site.
+		// public api for the SLDR
 		private const string SldrRepository = "https://ldml.api.sil.org/";
-#endif
 
-		private const string SldrGitHubRepo = "https://api.github.com/repos/silnrsi/sldr/";
 		private const string TmpExtension = "tmp";
 
 		// Default parameters for querying the SLDR
@@ -92,6 +85,9 @@ namespace SIL.WritingSystems
 
 		// If the user wants to request a new UID, you use "uid=unknown" and that will create a new random identifier
 		public const string DefaultUserId = "unknown";
+
+		// Name of the environment variable that controls using WSTech's SLDR staging site
+		public const string SldrStaging = "SLDR_USE_STAGING";
 
 		// in order to avoid deadlocks, SyncRoot should always be acquired first and then SldrCacheMutex
 		private static readonly object SyncRoot = new object();
@@ -238,9 +234,7 @@ namespace SIL.WritingSystems
 						requestedElements = string.Format("&inc[]={0}", string.Join("&inc[]=", topLevelElementsArray));
 					string requestedUserId = !string.IsNullOrEmpty(uid) ? string.Format("&uid={0}", uid) : string.Empty;
 					string requestedRevid = !string.IsNullOrEmpty(revid) ? string.Format("&revid={0}", revid) : string.Empty;
-					string url = string.Format("{0}{1}?ext={2}&flatten=1{3}{4}{5}",
-						SldrRepository, sldrLanguageTag, LdmlExtension,
-						requestedElements, requestedUserId, requestedRevid);
+					string url = BuildLdmlRequestUrl(sldrLanguageTag, requestedElements, requestedUserId, requestedRevid);
 
 					string tempFilePath = sldrCacheFilePath + "." + TmpExtension;
 
@@ -342,6 +336,29 @@ namespace SIL.WritingSystems
 			}
 		}
 
+
+		private static string StagingParameter
+		{
+			get
+			{
+				string stagingParam = string.Empty;
+				var useStaging = Environment.GetEnvironmentVariable(SldrStaging) ?? "false";
+				if (useStaging.ToLower().Equals("true") || useStaging.ToLower().Equals("yes"))
+				{
+					stagingParam = "&staging=1";
+				}
+
+				return stagingParam;
+			}
+		}
+
+		internal static string BuildLdmlRequestUrl(string sldrLanguageTag, string requestedElements, string requestedUserId, string requestedRevid)
+		{
+			return string.Format("{0}{1}?ext={2}&flatten=1{3}{4}{5}{6}",
+				SldrRepository, sldrLanguageTag, LdmlExtension,
+				requestedElements, requestedUserId, requestedRevid, StagingParameter);
+		}
+
 		private static string GetSldrCacheFilePath(string uid, string sldrLanguageTag)
 		{
 			string sldrCacheFilename;
@@ -420,7 +437,7 @@ namespace SIL.WritingSystems
 
 					// get SLDR langtags.json from the SLDR api compressed
 					// it will throw WebException or have status HttpStatusCode.NotModified if file is unchanged or not get it
-					string langtagsUrl = string.Format("{0}index.html?query=langtags&ext=json", SldrRepository);
+					string langtagsUrl = string.Format("{0}index.html?query=langtags&ext=json{1}", SldrRepository, StagingParameter);
 					var webRequest = (HttpWebRequest) WebRequest.Create(Uri.EscapeUriString(langtagsUrl));
 					webRequest.UserAgent = UserAgent;
 					webRequest.IfModifiedSince = sinceTime;
