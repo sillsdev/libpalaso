@@ -17,8 +17,9 @@
 		<DeterministicSourcePaths>$(ContinuousIntegrationBuild)</DeterministicSourcePaths>
 	</PropertyGroup>
 
-	<UsingTask TaskName="NUnit" AssemblyFile="$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll"
-		Condition="Exists('$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll')"/>
+	<UsingTask TaskName="NUnit3"
+		AssemblyFile="$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll"
+		Condition="Exists('$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll')" />
 
 	<Import Project="NuGet.targets"/>
 
@@ -86,14 +87,24 @@
 			Condition="'$(teamcity_version)' != ''"/>
 		<Copy SourceFiles="@(NUnitAddinFiles)" DestinationFolder="$(NUnitRunnerPackage)/tools/addins"
 			Condition="'$(teamcity_version)' != ''"/>
-		<NUnit Assemblies="@(TestAssemblies)"
-			ToolPath="$(NUnitRunnerPackage)/tools"
-			TestInNewThread="false"
+		<NUnit3 Condition="'$(teamcity_version)' == ''"
+			Assemblies="@(TestAssemblies)"
+			ToolPath="$(RootDir)/packages/NUnit.ConsoleRunner.3.10.0/tools"
 			ExcludeCategory="$(ExtraExcludeCategories)$(excludedCategories)"
 			WorkingDirectory="$(RootDir)/output/$(Configuration)"
 			Force32Bit="$(useNUnit-x86)"
 			Verbose="true"
-			OutputXmlFile="$(RootDir)/output/$(Configuration)/TestResults.xml"/>
+			OutputXmlFile="$(RootDir)/output/$(Configuration)/TestResults.xml"
+      UseNUnit3Xml = "true"
+			TeamCity="false"/>
+		<NUnit3 Condition="'$(teamcity_version)' != ''"
+			Assemblies="@(TestAssemblies)"
+			ToolPath="$(RootDir)/packages/NUnit.ConsoleRunner.3.10.0/tools"
+			ExcludeCategory="SkipOnTeamCity,$(ExtraExcludeCategories)$(excludedCategories)"
+			WorkingDirectory="$(RootDir)/output/$(Configuration)"
+			Force32Bit="$(useNUnit-x86)"
+			Verbose="true"
+			TeamCity="true"/>
 		<Message Text="##teamcity[importData type='nunit' path='$(RootDir)/output/$(Configuration)/TestResults.xml']"
 			Condition="'$(teamcity_version)' != '' and '$(OS)'!='Windows_NT'"/>
 	</Target>

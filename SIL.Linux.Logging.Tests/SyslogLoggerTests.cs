@@ -33,7 +33,7 @@ namespace SIL.Linux.Logging.Tests
 			logger.Error("This string should be in the results");
 			IEnumerable<string> data = watcher.WaitForData();
 			watcher.StopWatching();
-			Assert.That(data, Has.Some.StringContaining("This string should be in the results"));
+			Assert.That(data, Has.Some.Contains("This string should be in the results"));
 		}
 
 		[Test]
