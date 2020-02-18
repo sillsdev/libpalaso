@@ -39,7 +39,6 @@
 
 	<Target Name="RestoreBuildTasks" DependsOnTargets="CheckPrerequisites">
 		<Message Text="RestartBuild=$(RestartBuild)" />
-		<Exec Command='$(NuGetCommand) install NUnit.Runners.Net4 -version 2.6.4 -solutionDirectory "$(RootDir)"' />
 		<Exec Command='$(NuGetCommand) install SIL.BuildTasks -excludeVersion -version 2.2.0 -solutionDirectory "$(RootDir)"' />
 	</Target>
 
@@ -74,22 +73,13 @@
 	</Target>
 
 	<Target Name="TestOnly">
-		<PropertyGroup>
-			<NUnitVersion>2.6.4</NUnitVersion>
-			<NUnitRunnerPackage>$(RootDir)/packages/NUnit.Runners.Net4.$(NUnitVersion)</NUnitRunnerPackage>
-		</PropertyGroup>
 		<ItemGroup>
 			<TestAssemblies Include="$(RootDir)/output/$(Configuration)/net4*/*.Tests.dll;$(RootDir)/output/$(Configuration)/net4*/*.Tests.exe"/>
-			<NUnitAddinFiles Include="$(teamcity_dotnet_nunitaddin)-$(NUnitVersion).*" />
 		</ItemGroup>
 
-		<MakeDir Directories="$(NUnitRunnerPackage)/tools/addins"
-			Condition="'$(teamcity_version)' != ''"/>
-		<Copy SourceFiles="@(NUnitAddinFiles)" DestinationFolder="$(NUnitRunnerPackage)/tools/addins"
-			Condition="'$(teamcity_version)' != ''"/>
 		<NUnit3 Condition="'$(teamcity_version)' == ''"
 			Assemblies="@(TestAssemblies)"
-			ToolPath="$(RootDir)/packages/NUnit.ConsoleRunner.3.10.0/tools"
+			ToolPath="$(RootDir)/packages/NUnit.ConsoleRunner.3.11.1/tools"
 			ExcludeCategory="$(ExtraExcludeCategories)$(excludedCategories)"
 			WorkingDirectory="$(RootDir)/output/$(Configuration)"
 			Force32Bit="$(useNUnit-x86)"
@@ -99,7 +89,7 @@
 			TeamCity="false"/>
 		<NUnit3 Condition="'$(teamcity_version)' != ''"
 			Assemblies="@(TestAssemblies)"
-			ToolPath="$(RootDir)/packages/NUnit.ConsoleRunner.3.10.0/tools"
+			ToolPath="$(RootDir)/packages/NUnit.ConsoleRunner.3.11.1/tools"
 			ExcludeCategory="SkipOnTeamCity,$(ExtraExcludeCategories)$(excludedCategories)"
 			WorkingDirectory="$(RootDir)/output/$(Configuration)"
 			Force32Bit="$(useNUnit-x86)"
