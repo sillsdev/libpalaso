@@ -34,6 +34,6 @@ if "%~2" == "" (
 @echo on
 @pushd "%~dp0"
 
-msbuild "/target:%TARGET%" /property:Configuration="%BUILD%" /property:RootDir=.. Palaso.proj
+msbuild "/target:%TARGET%" /property:Configuration="%BUILD%" Palaso.proj
 
 @popd
