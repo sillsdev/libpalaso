@@ -14,6 +14,9 @@
 		<RestartBuild Condition="Exists('$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll')">false</RestartBuild>
 		<ContinuousIntegrationBuild Condition="'$(teamcity_version)' != '' Or '$(JENKINS_URL)' != '' Or '$(CI)' != '' ">true</ContinuousIntegrationBuild>
 		<ContinuousIntegrationBuild Condition="'$(teamcity_version)' == '' And '$(JENKINS_URL)' == '' And '$(CI)' == '' ">false</ContinuousIntegrationBuild>
+		<TeamCity Condition="'$(teamcity_version)' != ''">true</TeamCity>
+		<TeamCity Condition="'$(teamcity_version)' == ''">false</TeamCity>
+		<TestOutputXmlFile Condition="'$(teamcity_version)' == ''">$(RootDir)/output/$(Configuration)/TestResults.xml</TestOutputXmlFile>
 		<DeterministicSourcePaths>$(ContinuousIntegrationBuild)</DeterministicSourcePaths>
 	</PropertyGroup>
 
@@ -77,24 +80,16 @@
 			<TestAssemblies Include="$(RootDir)/output/$(Configuration)/net4*/*.Tests.dll;$(RootDir)/output/$(Configuration)/net4*/*.Tests.exe"/>
 		</ItemGroup>
 
-		<NUnit3 Condition="'$(teamcity_version)' == ''"
+		<NUnit3
 			Assemblies="@(TestAssemblies)"
 			ToolPath="$(RootDir)/packages/NUnit.ConsoleRunner.3.11.1/tools"
 			ExcludeCategory="$(ExtraExcludeCategories)$(excludedCategories)"
 			WorkingDirectory="$(RootDir)/output/$(Configuration)"
 			Force32Bit="$(useNUnit-x86)"
 			Verbose="true"
-			OutputXmlFile="$(RootDir)/output/$(Configuration)/TestResults.xml"
-      UseNUnit3Xml = "true"
-			TeamCity="false"/>
-		<NUnit3 Condition="'$(teamcity_version)' != ''"
-			Assemblies="@(TestAssemblies)"
-			ToolPath="$(RootDir)/packages/NUnit.ConsoleRunner.3.11.1/tools"
-			ExcludeCategory="$(ExtraExcludeCategories)$(excludedCategories)"
-			WorkingDirectory="$(RootDir)/output/$(Configuration)"
-			Force32Bit="$(useNUnit-x86)"
-			Verbose="true"
-			TeamCity="true"/>
+			OutputXmlFile="$(TestOutputXmlFile)"
+			UseNUnit3Xml = "true"
+			TeamCity="$(TeamCity)"/>
 		<Message Text="##teamcity[importData type='nunit' path='$(RootDir)/output/$(Configuration)/TestResults.xml']"
 			Condition="'$(teamcity_version)' != '' and '$(OS)'!='Windows_NT'"/>
 	</Target>
