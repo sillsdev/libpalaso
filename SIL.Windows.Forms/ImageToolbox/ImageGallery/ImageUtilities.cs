@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using SIL.PlatformUtilities;
 
@@ -68,7 +68,7 @@ namespace SIL.Windows.Forms.ImageToolbox.ImageGallery
 			// This uses black as the default background color in order to avoid changing the behavior. Previously
 			// the method created an image without setting the background color which resulted in the image having
 			// a black background.
-			return GetThumbNail(imagePath, destinationWidth, destinationHeight, borderColor, Color.Black);
+			return GetThumbNail(imagePath, destinationWidth, destinationHeight, borderColor, Color.White);
 		}
 	}
 }
