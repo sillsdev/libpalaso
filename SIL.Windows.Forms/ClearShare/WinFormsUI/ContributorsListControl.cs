@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -234,6 +234,7 @@ namespace SIL.Windows.Forms.ClearShare.WinFormsUI
 					_msgWindow.Show(kvp.Value, _grid.PointToScreen(pt));
 
 					// Invoking here because of "reentrant call to the SetCurrentCellAddressCore" exception.
+					// Setting the CurrentCell can trigger validation again.
 					BeginInvoke((Action)(() =>_grid.CurrentCell = _grid[col, e.RowIndex]));
 				}
 			}
