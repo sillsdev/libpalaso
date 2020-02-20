@@ -14,13 +14,13 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 	{
 		private Form _window;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			KeyboardController.Initialize();
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void FixtureTearDown()
 		{
 			KeyboardController.Shutdown();

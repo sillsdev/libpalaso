@@ -10,7 +10,7 @@ namespace SIL.Tests.Email
 	{
 		[Test]
 		[Ignore("by hand only")]
-		[Platform(Include = "Windows", Reason = "Windows specific test")]
+		[Platform(Include = "Win", Reason = "Windows specific test")]
 		public void TestSendEmail()
 		{
 			MAPI x = new MAPI();

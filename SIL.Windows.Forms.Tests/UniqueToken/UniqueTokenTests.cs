@@ -1,8 +1,9 @@
-﻿using NUnit.Framework;
+using System.Threading;
+using NUnit.Framework;
 
 namespace SIL.Windows.Forms.Tests.UniqueToken
 {
-	[TestFixture, RequiresSTA]
+	[TestFixture, Apartment(ApartmentState.STA)]
 	class UniqueTokenTests
 	{
 		[Test]

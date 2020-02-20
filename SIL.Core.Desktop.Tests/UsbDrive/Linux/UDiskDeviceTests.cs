@@ -48,8 +48,8 @@ namespace SIL.Tests.UsbDrive.Linux
 			{
 				var uDiskDevice = e.GetUSBDevice();
 				string[] mountPaths = uDiskDevice.MountPaths;
-				Assert.That(mountPaths.Count(), Is.GreaterThan(0));
-				Assert.That(mountPaths[0], Is.StringContaining("/media/"));
+				Assert.That(mountPaths.Count, Is.GreaterThan(0));
+				Assert.That(mountPaths[0], Does.Contain("/media/"));
 			}
 		}
 

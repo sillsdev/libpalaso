@@ -613,7 +613,7 @@ namespace SIL.Windows.Forms.Reporting
 			_emailAddress.Text = ErrorReport.EmailAddress;
 			SetupMethodCombo();
 
-			foreach (ReportingMethod  method in _methodCombo.Items)
+			foreach (ReportingMethod method in _methodCombo.Items)
 			{
 				if (ErrorReportSettings.Default.ReportingMethod == method.Id)
 				{

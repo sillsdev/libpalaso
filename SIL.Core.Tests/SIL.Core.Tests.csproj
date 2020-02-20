@@ -24,14 +24,16 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
 
   <ItemGroup>
     <ProjectReference Include="..\SIL.Core\SIL.Core.csproj" />
-    <ProjectReference Include="..\SIL.NUnit3Compatibility\SIL.NUnit3Compatibility.csproj" />
     <ProjectReference Include="..\SIL.TestUtilities\SIL.TestUtilities.csproj" />
     <ProjectReference Include="..\SIL.WritingSystems\SIL.WritingSystems.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="NUnit" Version="2.6.4" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="NUnit" Version="3.12.0" />
   </ItemGroup>
 
 </Project>

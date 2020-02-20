@@ -49,7 +49,7 @@ namespace SIL.DblBundle.Tests
 	</archiveStatus>
 </DBLMetadata>";
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void TestFixtureSetup()
 		{
 			var xs = new XmlSerializer(typeof(DblTextMetadata<DblMetadataLanguage>));

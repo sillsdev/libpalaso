@@ -113,7 +113,7 @@ namespace SIL.Lift.Tests.Validation
 					{
 						Console.WriteLine(errors);
 					}
-					Assert.IsNullOrEmpty(errors);
+					Assert.That(errors, Is.Null.Or.Empty);
 				}
 				else
 				{

@@ -10,8 +10,6 @@ using System.Net;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using SIL.Extensions;
 using SIL.Network;
 using SIL.ObjectModel;
 using SIL.PlatformUtilities;
@@ -311,7 +309,7 @@ namespace SIL.WritingSystems
 						}
 						redirected = false;
 					}
-					catch (XmlException xe)
+					catch (XmlException)
 					{
 						// Download failed so check SLDR cache
 						sldrCacheFilePath = GetSldrCacheFilePath(uid, sldrLanguageTag);

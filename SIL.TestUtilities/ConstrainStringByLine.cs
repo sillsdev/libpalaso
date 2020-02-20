@@ -1,40 +1,48 @@
-﻿using System.IO;
+// Copyright (c) 2020 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+
+// This file is a copy (with different namespace and minus the public class Is) of SIL.BuildTasks.Tests\ConstrainStringByLine.cs
+// These two files should be kept in synch (to the extent that their assemblies are using compatible
+// versions of NUnit.
+
+using System.IO;
 using NUnit.Framework.Constraints;
 
 namespace SIL.TestUtilities
 {
+	public static class ConstrainStringByLineExtensions
+	{
+		public static ConstrainStringByLine MultilineString(this ConstraintExpression expression, string expected)
+		{
+			var constraint = new ConstrainStringByLine(expected);
+			expression.Append(constraint);
+			return constraint;
+		}
+	}
 
-	///<summary>
-	/// Matches the text under test with the given text to match. Evaluating it line by line (including
-	/// regular expressions).
-	///</summary>
+	/// <inheritdoc />
+	/// <summary>
+	///  Matches the text under test with the given text to match. Evaluating it line by line (including
+	///  regular expressions).
+	/// </summary>
 	public class ConstrainStringByLine : Constraint
 	{
 		private string _actualLine;
 		private string _expectedLine;
 
-		///<summary>
-		///</summary>
-		///<param name="expectedString"></param>
-		public static ConstrainStringByLine Matches(string expectedString)
-		{
-			return new ConstrainStringByLine(expectedString);
-		}
-
-		private ConstrainStringByLine(string expectedString)
+		public ConstrainStringByLine(string expectedString)
 		{
 			ExpectedString = expectedString;
 		}
 
-		private string ExpectedString { get; set; }
+		private string ExpectedString { get; }
 
-		public override bool Matches(object actualObject)
+		public override ConstraintResult ApplyTo<TActual>(TActual actual)
 		{
-			bool result = true;
-			string actualString = actualObject as string;
-			if (actualString == null)
+			var actualString = actual as string;
+			if (string.IsNullOrEmpty(actualString) || string.IsNullOrEmpty(ExpectedString))
 			{
-				return false;
+				return new ConstraintResult(this, actual, ConstraintStatus.Failure);
 			}
 			using (var actualReader = new StringReader(actualString))
 			{
@@ -44,32 +52,37 @@ namespace SIL.TestUtilities
 					{
 						_expectedLine = expectedReader.ReadLine();
 						if (_expectedLine == null)
+							return new ConstraintResult(this, _actualLine, ConstraintStatus.Failure);
+
+						if (_actualLine == _expectedLine)
+							continue;
+
+						if (_expectedLine.Contains("*"))
 						{
-							result = false;
-						}
-						else if (_actualLine != _expectedLine)
-						{
-							if (_expectedLine.Contains("*"))
-							{
-								var regEx = new System.Text.RegularExpressions.Regex(_expectedLine);
-								result = regEx.IsMatch(_actualLine);
-							}
-							else
-							{
-								result = false;
-							}
-						}
-						if (!result)
-						{
-							break;
+							var regEx = new System.Text.RegularExpressions.Regex(_expectedLine);
+							if (regEx.IsMatch(_actualLine))
+								continue;
 						}
 
+						return new ConstraintResult(this, _actualLine, ConstraintStatus.Failure);
 					}
+
+					_expectedLine = expectedReader.ReadLine();
+					if (_expectedLine != null)
+						return new ConstraintResult(this, _actualLine, ConstraintStatus.Failure);
 				}
 			}
-			return result;
+			return new ConstraintResult(this, GetStringRepresentation(actualString), ConstraintStatus.Success);
 		}
 
+		private static string GetStringRepresentation(string value)
+		{
+			return string.Join("\\n", value?.Split('\n'));
+		}
+
+		public override string Description => _expectedLine != null ? $"\"{_expectedLine}\"" : "end of string (null)";
+
+		/*
 		public override void WriteDescriptionTo(MessageWriter writer)
 		{
 		}
@@ -88,5 +101,6 @@ namespace SIL.TestUtilities
 			}
 			writer.DisplayStringDifferences(_expectedLine, _actualLine, 0, false, true);
 		}
+		*/
 	}
 }

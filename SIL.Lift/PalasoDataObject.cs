@@ -438,16 +438,14 @@ namespace SIL.Lift
 
 		public override bool Equals(Object obj)
 		{
-			if (!(obj is PalasoDataObject)) return false;
-			return Equals((PalasoDataObject)obj);
+			return obj is PalasoDataObject palasoDataObject && Equals(palasoDataObject);
 		}
 
 		public bool Equals(PalasoDataObject other)
 		{
-			if (ReferenceEquals(null, other)) return false;
-			if (ReferenceEquals(this, other)) return true;
-			if (!_properties.SequenceEqual(other._properties)) return false;
-			return true;
+			if (ReferenceEquals(null, other))
+				return false;
+			return ReferenceEquals(this, other) || _properties.SequenceEqual(other._properties);
 		}
 	}
 

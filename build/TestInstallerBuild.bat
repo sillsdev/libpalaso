@@ -28,6 +28,6 @@ if "%~1" == "" (
 @echo on
 @pushd "%~dp0"
 
-msbuild Palaso.proj /target:build /property:Configuration="%BUILD%" /property:RootDir=.. /property:teamcity_dotnet_nunitlauncher_msbuild_task="notthere" /property:Minor="1"
+msbuild Palaso.proj /target:build /property:Configuration="%BUILD%" /property:Minor="1"
 
 @popd

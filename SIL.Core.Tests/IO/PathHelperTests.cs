@@ -318,7 +318,7 @@ namespace SIL.Tests.IO
 		}
 
 		[Test]
-		[Platform(Include = "Windows")]
+		[Platform(Include = "Win")]
 		public void StripFilePrefix_EnsureFilePrefixIsRemoved_Windows()
 		{
 			var prefix = Uri.UriSchemeFile + ":";

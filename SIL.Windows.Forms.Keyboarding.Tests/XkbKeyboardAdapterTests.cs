@@ -222,7 +222,7 @@ namespace SIL.Windows.Forms.Keyboarding.Tests
 			}
 		}
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			// We're using GTK functions, so we need to initialize when we run in
