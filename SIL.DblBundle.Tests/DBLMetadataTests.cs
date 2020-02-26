@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -113,23 +113,46 @@ namespace SIL.DblBundle.Tests
 		}
 
 		[Test]
-		public void Load_Successful()
+		public void Load_FromValidFile_Successful()
 		{
 			using (var metadataFile = new TempFile())
 			{
 				File.WriteAllText(metadataFile.Path, Resources.metadata_xml);
-				Exception exception;
-				DblTextMetadata<DblMetadataLanguage>.Load<DblTextMetadata<DblMetadataLanguage>>(metadataFile.Path, out exception);
+				DblTextMetadata<DblMetadataLanguage>.Load<DblTextMetadata<DblMetadataLanguage>>(metadataFile.Path, out var exception);
 				Assert.Null(exception);
+			}
+		}
+
+		[Test]
+		public void Load_FromTextReader_Successful()
+		{
+			using (var textReader = new StringReader(Resources.metadata_xml))
+			{
+				var data = DblTextMetadata<DblMetadataLanguage>.Load<DblTextMetadata<DblMetadataLanguage>>(textReader, "Resources.metadata_xml", out var exception);
+				Assert.Null(exception);
+				Assert.IsNotNull(data);
 			}
 		}
 
 		[Test]
 		public void Load_FileDoesNotExist_HandlesException()
 		{
-			Exception exception;
-			DblTextMetadata<DblMetadataLanguage>.Load<DblTextMetadata<DblMetadataLanguage>>("", out exception);
+			var data = DblTextMetadata<DblMetadataLanguage>.Load<DblTextMetadata<DblMetadataLanguage>>("", out var exception);
 			Assert.NotNull(exception);
+			Assert.IsNotNull(data);
+		}
+
+		[Test]
+		public void Load_FromTextReaderNotPositionedAtStartOfMetadata_SetsException()
+		{
+			using (var textReader = new StringReader(Resources.metadata_xml))
+			{
+				textReader.ReadLine(); // Skip past XML header - not required by deserializer
+				textReader.ReadLine(); // Skip past next line - root element!
+				var data = DblTextMetadata<DblMetadataLanguage>.Load<DblTextMetadata<DblMetadataLanguage>>(textReader, "Resources.metadata_xml", out var exception);
+				Assert.True(exception is InvalidOperationException);
+				Assert.Null(data);
+			}
 		}
 
 		[Test]
