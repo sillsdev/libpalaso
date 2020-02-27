@@ -39,3 +39,4 @@ lib/xulrunner/
 icu4c.readme.txt
 
 .vs/
+/SIL.Windows.Forms/bin-Designer/**
