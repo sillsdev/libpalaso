@@ -903,7 +903,7 @@
     <None Include="Resources\SILInBlueNoTagLineWithTrademark100x50.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\SILLogoBlue132x184.png" />
+    <None Include="Resources\SILLogoBlue101x113.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\cc0.png" />
