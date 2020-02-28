@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -113,23 +113,69 @@ namespace SIL.DblBundle.Tests
 		}
 
 		[Test]
-		public void Load_Successful()
+		public void Load_FromValidFile_Successful()
 		{
 			using (var metadataFile = new TempFile())
 			{
 				File.WriteAllText(metadataFile.Path, Resources.metadata_xml);
-				Exception exception;
-				DblTextMetadata<DblMetadataLanguage>.Load<DblTextMetadata<DblMetadataLanguage>>(metadataFile.Path, out exception);
-				Assert.Null(exception);
+				var metadata = DblTextMetadata<DblMetadataLanguage>
+					.Load<DblTextMetadata<DblMetadataLanguage>>(metadataFile.Path,
+						out var exception);
+				Assert.IsTrue(metadata is DblTextMetadata<DblMetadataLanguage>);
+				Assert.IsNull(exception);
+			}
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void Load_FromTextReader_Successful(bool skipXmlElement)
+		{
+			using (var textReader = new StringReader(Resources.metadata_xml))
+			{
+				if (skipXmlElement)
+					textReader.ReadLine(); // Skip past XML header - not required by deserializer
+				Assert.IsNotNull(DblTextMetadata<DblMetadataLanguage>
+					.Load<DblTextMetadata<DblMetadataLanguage>>(textReader,
+						"Resources.metadata_xml", out var exception));
+				Assert.IsNull(exception);
+			}
+		}
+
+		[TestCase("", ExpectedResult = typeof(ArgumentException))]
+		[TestCase("doNot-ExpectThis~FileToExist", ExpectedResult = typeof(FileNotFoundException))]
+		public Type Load_FileDoesNotExist_HandlesException(string nonExistentFilename)
+		{
+			Assert.IsNull(
+				DblTextMetadata<DblMetadataLanguage>.Load<DblTextMetadata<DblMetadataLanguage>>(
+					nonExistentFilename, out var exception));
+			return exception.GetType();
+		}
+
+		[Test]
+		public void Load_FromTextReaderNotPositionedAtStartOfMetadata_SetsException()
+		{
+			using (var textReader = new StringReader(Resources.metadata_xml))
+			{
+				textReader.ReadLine(); // Skip past XML header - not required by deserializer
+				textReader.ReadLine(); // Skip past next line - root element!
+				Assert.IsNull(DblTextMetadata<DblMetadataLanguage>
+					.Load<DblTextMetadata<DblMetadataLanguage>>(textReader,
+						"Resources.metadata_xml", out var exception));
+				Assert.IsTrue(exception is InvalidOperationException);
 			}
 		}
 
 		[Test]
-		public void Load_FileDoesNotExist_HandlesException()
+		public void Load_FromValidFileWithSubclassThatHasInitializer_InitializeMetadataIsCalled()
 		{
-			Exception exception;
-			DblTextMetadata<DblMetadataLanguage>.Load<DblTextMetadata<DblMetadataLanguage>>("", out exception);
-			Assert.NotNull(exception);
+			using (var metadataFile = new TempFile())
+			{
+				File.WriteAllText(metadataFile.Path, Resources.metadata_xml);
+				var metadata = DblTextMetadata<DblMetadataLanguage>
+					.Load<ExtendedDblTextMetadata>(metadataFile.Path, out var exception);
+				Assert.IsNull(exception);
+				Assert.IsTrue(metadata.IsInitialized);
+			}
 		}
 
 		[Test]
@@ -181,6 +227,18 @@ namespace SIL.DblBundle.Tests
 </DBLMetadata>";
 
 			AssertThatXmlIn.String(expectedResult).EqualsIgnoreWhitespace(metadata.GetAsXml());
+		}
+	}
+
+	[XmlRoot("DBLMetadata")]
+	public class ExtendedDblTextMetadata : DblTextMetadata<DblMetadataLanguage>
+	{
+		[XmlIgnore]
+		public bool IsInitialized { get; private set; }
+		protected override void InitializeMetadata()
+		{
+			base.InitializeMetadata();
+			IsInitialized = true;
 		}
 	}
 }

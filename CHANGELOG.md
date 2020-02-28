@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- [SIL.DblBundle] DblMetadata.Load overload to allow deserialization from a TextReader.
+
 ### Changed
 
 - Add build number to AssemblyFileVersion
