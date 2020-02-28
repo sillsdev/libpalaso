@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.Core] Move `HandleUnhandledException()` method from derived classes to base class
 - [SIL.DblBundle.Tests] Create nuget package
 - Improve nuget symbol packages
+- Changed to use the new Registered trademark logo (in About Box). Removed 132x148 logo.
 
 ### Fixed
 

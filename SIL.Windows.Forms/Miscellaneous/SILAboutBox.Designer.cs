@@ -1,4 +1,4 @@
-﻿using System.Windows.Forms;
+using System.Windows.Forms;
 using SIL.Windows.Forms.HtmlBrowser;
 
 namespace SIL.Windows.Forms.Miscellaneous
@@ -53,9 +53,9 @@ namespace SIL.Windows.Forms.Miscellaneous
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
 			this.tableLayoutPanelMain.SuspendLayout();
 			this.SuspendLayout();
-			//
+			// 
 			// _buildDate
-			//
+			// 
 			this._buildDate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this._buildDate.AutoSize = true;
 			this._buildDate.Font = new System.Drawing.Font("Segoe UI", 8F);
@@ -68,14 +68,14 @@ namespace SIL.Windows.Forms.Miscellaneous
 			this._buildDate.Size = new System.Drawing.Size(60, 13);
 			this._buildDate.TabIndex = 1;
 			this._buildDate.Text = "build date";
-			//
+			// 
 			// _L10NSharpExtender
-			//
+			// 
 			this._L10NSharpExtender.LocalizationManagerId = "Palaso";
 			this._L10NSharpExtender.PrefixForNewItems = "AboutDialog";
-			//
+			// 
 			// _versionNumber
-			//
+			// 
 			this._versionNumber.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this._versionNumber.AutoSize = true;
 			this._versionNumber.Font = new System.Drawing.Font("Segoe UI", 8F);
@@ -89,23 +89,23 @@ namespace SIL.Windows.Forms.Miscellaneous
 			this._versionNumber.Size = new System.Drawing.Size(44, 13);
 			this._versionNumber.TabIndex = 6;
 			this._versionNumber.Text = "version";
-			//
+			// 
 			// pictureBox1
-			//
-			this.pictureBox1.Image = global::SIL.Windows.Forms.Properties.Resources.SILLogoBlue132x184;
+			// 
+			this.pictureBox1.Image = global::SIL.Windows.Forms.Properties.Resources.SILLogoBlue101x113;
 			this._L10NSharpExtender.SetLocalizableToolTip(this.pictureBox1, null);
 			this._L10NSharpExtender.SetLocalizationComment(this.pictureBox1, null);
 			this._L10NSharpExtender.SetLocalizingId(this.pictureBox1, "AboutDialog.pictureBox1");
 			this.pictureBox1.Location = new System.Drawing.Point(0, 0);
 			this.pictureBox1.Margin = new System.Windows.Forms.Padding(0, 0, 0, 20);
 			this.pictureBox1.Name = "pictureBox1";
-			this.pictureBox1.Size = new System.Drawing.Size(101, 144);
+			this.pictureBox1.Size = new System.Drawing.Size(101, 114);
 			this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
 			this.pictureBox1.TabIndex = 8;
 			this.pictureBox1.TabStop = false;
-			//
+			// 
 			// _browser
-			//
+			// 
 			this._browser.Dock = System.Windows.Forms.DockStyle.Fill;
 			this._L10NSharpExtender.SetLocalizableToolTip(this._browser, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._browser, null);
@@ -119,37 +119,37 @@ namespace SIL.Windows.Forms.Miscellaneous
 			this._browser.TabIndex = 9;
 			this._browser.Url = new System.Uri("about:blank", System.UriKind.Absolute);
 			this._browser.AllowNavigation = false;
-			//
+			// 
 			// _checkForUpdates
-			//
+			// 
 			this._L10NSharpExtender.SetLocalizableToolTip(this._checkForUpdates, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._checkForUpdates, null);
 			this._L10NSharpExtender.SetLocalizingId(this._checkForUpdates, "AboutDialog._checkForUpdates");
-			this._checkForUpdates.Location = new System.Drawing.Point(3, 261);
+			this._checkForUpdates.Location = new System.Drawing.Point(3, 246);
 			this._checkForUpdates.Margin = new System.Windows.Forms.Padding(3, 3, 3, 10);
 			this._checkForUpdates.Name = "_checkForUpdates";
 			this._checkForUpdates.Size = new System.Drawing.Size(128, 23);
 			this._checkForUpdates.TabIndex = 10;
 			this._checkForUpdates.Text = "Check For Updates";
 			this._checkForUpdates.UseVisualStyleBackColor = true;
-			//
+			// 
 			// _releaseNotesLabel
-			//
+			// 
 			this._releaseNotesLabel.AutoSize = true;
 			this._releaseNotesLabel.Font = new System.Drawing.Font("Segoe UI", 9F);
 			this._releaseNotesLabel.ImeMode = System.Windows.Forms.ImeMode.NoControl;
 			this._L10NSharpExtender.SetLocalizableToolTip(this._releaseNotesLabel, null);
 			this._L10NSharpExtender.SetLocalizationComment(this._releaseNotesLabel, null);
 			this._L10NSharpExtender.SetLocalizingId(this._releaseNotesLabel, "AboutDialog._releaseNotesLabel");
-			this._releaseNotesLabel.Location = new System.Drawing.Point(3, 294);
+			this._releaseNotesLabel.Location = new System.Drawing.Point(3, 279);
 			this._releaseNotesLabel.Name = "_releaseNotesLabel";
 			this._releaseNotesLabel.Size = new System.Drawing.Size(80, 15);
 			this._releaseNotesLabel.TabIndex = 11;
 			this._releaseNotesLabel.TabStop = true;
 			this._releaseNotesLabel.Text = "Release Notes";
-			//
+			// 
 			// tableLayoutPanelMain
-			//
+			// 
 			this.tableLayoutPanelMain.ColumnCount = 3;
 			this.tableLayoutPanelMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
 			this.tableLayoutPanelMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 26F));
@@ -174,9 +174,9 @@ namespace SIL.Windows.Forms.Miscellaneous
 			this.tableLayoutPanelMain.RowStyles.Add(new System.Windows.Forms.RowStyle());
 			this.tableLayoutPanelMain.Size = new System.Drawing.Size(555, 435);
 			this.tableLayoutPanelMain.TabIndex = 9;
-			//
+			// 
 			// SILAboutBox
-			//
+			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.BackColor = System.Drawing.Color.WhiteSmoke;

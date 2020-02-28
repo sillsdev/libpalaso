@@ -160,7 +160,7 @@
   <data name="spy16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
 	<value>..\Resources\spy16x16.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="SILLogoBlue132x184" type="System.Resources.ResXFileRef, System.Windows.Forms">
-	<value>..\Resources\SILLogoBlue132x184.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="SILLogoBlue101x113" type="System.Resources.ResXFileRef, System.Windows.Forms">
+	<value>..\Resources\SILLogoBlue101x113.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
