@@ -72,7 +72,7 @@ namespace SIL.DblBundle.Tests.Text
 			var bundle = legacy ? _legacyBundle : _bundle;
 			var stylesheet = bundle.Stylesheet;
 			IStyle style = stylesheet.GetStyle("mt1");
-			Assert.NotNull(style);
+			Assert.IsNotNull(style);
 			Assert.AreEqual("Cambria", stylesheet.FontFamily);
 			Assert.AreEqual(14, stylesheet.FontSizeInPoints);
 		}
@@ -86,7 +86,7 @@ namespace SIL.DblBundle.Tests.Text
 		{
 			var bundle = legacy ? _legacyBundle : _bundle;
 			var ws = bundle.WritingSystemDefinition;
-			Assert.NotNull(ws);
+			Assert.IsNotNull(ws);
 
 			Assert.AreEqual(WellKnownSubtags.UnlistedLanguage, ws.LanguageTag);
 
@@ -133,7 +133,7 @@ namespace SIL.DblBundle.Tests.Text
 		public void ContainsLdmlFile_FileDoesNotExist_ReturnsFalse(bool legacy)
 		{
 			var bundleWithoutLdml = legacy ? _legacyBundleWithoutLdml : _bundleWithoutLdml;
-			Assert.False(bundleWithoutLdml.ContainsLdmlFile());
+			Assert.IsFalse(bundleWithoutLdml.ContainsLdmlFile());
 		}
 
 		/// <summary>

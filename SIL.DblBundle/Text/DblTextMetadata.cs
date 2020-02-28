@@ -12,7 +12,7 @@ using SIL.Xml;
 namespace SIL.DblBundle.Text
 {
 	/// <summary>
-	/// Information about a Digitial Bible Library bundle
+	/// Information about a Digital Bible Library bundle
 	/// </summary>
 	[XmlRoot("DBLMetadata")]
 	public class DblTextMetadata<TL> : DblMetadataBase<TL> where TL : DblMetadataLanguage, new()
