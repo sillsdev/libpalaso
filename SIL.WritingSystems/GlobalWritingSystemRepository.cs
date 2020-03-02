@@ -6,9 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
-using System.Xml;
 using SIL.IO;
 using SIL.PlatformUtilities;
+using SIL.Reporting;
 using SIL.Threading;
 using SIL.WritingSystems.Migration;
 
@@ -75,6 +75,7 @@ namespace SIL.WritingSystems
 			_lastFileStats = new Dictionary<string, Tuple<DateTime, long>>(StringComparer.OrdinalIgnoreCase);
 			_addedWritingSystems = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 			_path = CurrentVersionPath(basePath);
+			Logger.Init();
 			if (!Directory.Exists(_path))
 				CreateGlobalWritingSystemRepositoryDirectory(_path);
 			_mutex = new GlobalMutex(_path.Replace('\\', '_').Replace('/', '_'));
@@ -128,13 +129,14 @@ namespace SIL.WritingSystems
 						WritingSystems[id] = ws;
 						_lastFileStats[id] = Tuple.Create(fi.LastWriteTime, fi.Length);
 					}
-					catch (XmlException)
+					catch (Exception exc)
 					{
 						// ldml file is not valid, rename it so it is no longer used
 						string badFile = file + ".bad";
 						if (RobustFile.Exists(badFile))
 							RobustFile.Delete(badFile);
 						RobustFile.Move(file, badFile);
+						Logger.WriteError("Encountered bad LDML file in Global repository. Moved to '" + badFile + "'", exc);
 					}
 				}
 			}
