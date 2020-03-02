@@ -35,12 +35,6 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Mono.Posix" Version="5.4.0.201" Condition="'$(OS)' == 'Windows_NT'" />
     <PackageReference Include="SIL.ReleaseTasks" Version="[2.2.0,)" PrivateAssets="All" />
-    <PackageReference Include="StrongNamer" Version="0.0.8">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.18">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -49,13 +43,13 @@ See full changelog at https://github.com/sillsdev/libpalaso/blob/feature/nuget/C
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Keyman10Interop, Version=10.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="Keyman10Interop">
       <HintPath>..\lib\Keyman10Interop.dll</HintPath>
     </Reference>
-    <Reference Include="Keyman7Interop, Version=1.4.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="Keyman7Interop">
       <HintPath>..\lib\Keyman7Interop.dll</HintPath>
     </Reference>
-    <Reference Include="KeymanLink, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <Reference Include="KeymanLink">
       <HintPath>..\lib\KeymanLink.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
