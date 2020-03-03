@@ -45,6 +45,71 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void Initialize_SkipsBadFile_DataProblemInLDMLIdentity()
+		{
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			{
+				var versionPath = Path.Combine(e.Path, LdmlDataMapper.CurrentLdmlLibraryVersion.ToString());
+				Directory.CreateDirectory(versionPath);
+				var badFile = Path.Combine(versionPath, "en.ldml");
+				const string ldmlData = @"<?xml version='1.0' encoding='utf-8'?>
+					<ldml>
+						<identity>
+							<version number=''/>
+							<generation date='2020-02-28T18:43:36Z'/>
+							<language type=''/>
+							<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
+								<sil:identity windowsLCID='1033'/>
+							</special>
+						</identity>
+					</ldml>";
+				File.WriteAllText(badFile, ldmlData);
+				var repo = GlobalWritingSystemRepository.InitializeWithBasePath(e.Path, null);
+				// main part of test is that we don't get any exception.
+				Assert.That(repo.Count, Is.EqualTo(0));
+				// original .ldml file should have been renamed
+				Assert.That(File.Exists(badFile), Is.False);
+				Assert.That(File.Exists(badFile + ".bad"), Is.True);
+				Assert.That(File.Exists(Path.Combine(versionPath, "badldml.log")), Is.True);
+			}
+		}
+
+		[Test]
+		public void Initialize_SkipsBadFile_DataProblemInLDMLFont()
+		{
+			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
+			{
+				var versionPath = Path.Combine(e.Path, LdmlDataMapper.CurrentLdmlLibraryVersion.ToString());
+				Directory.CreateDirectory(versionPath);
+				var badFile = Path.Combine(versionPath, "en.ldml");
+				const string ldmlData = @"<?xml version='1.0' encoding='utf-8'?>
+					<ldml>
+						<identity>
+							<version number=''/>
+							<generation date='2020-02-28T18:43:36Z'/>
+							<language type='en'/>
+							<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
+								<sil:identity windowsLCID='1033'/>
+							</special>
+						</identity>
+						<special xmlns:sil='urn://www.sil.org/ldml/0.1'>
+							<sil:external-resources>
+								<sil:font name='Amdo Classic 1' types='kaboom' />
+							</sil:external-resources>
+						</special>	 
+					</ldml>";
+				File.WriteAllText(badFile, ldmlData);
+				var repo = GlobalWritingSystemRepository.InitializeWithBasePath(e.Path, null);
+				// main part of test is that we don't get any exception.
+				Assert.That(repo.Count, Is.EqualTo(0));
+				// original .ldml file should have been renamed
+				Assert.That(File.Exists(badFile), Is.False);
+				Assert.That(File.Exists(badFile + ".bad"), Is.True);
+				Assert.That(File.Exists(Path.Combine(versionPath, "badldml.log")), Is.True);
+			}
+		}
+
+		[Test]
 		public void PathConstructor_HasCorrectPath()
 		{
 			using (var e = CreateTemporaryFolder(TestContext.CurrentContext.Test.Name))
