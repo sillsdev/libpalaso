@@ -88,10 +88,7 @@
 			Force32Bit="$(useNUnit-x86)"
 			Verbose="true"
 			OutputXmlFile="$(TestOutputXmlFile)"
-			UseNUnit3Xml="true"
 			TeamCity="$(TeamCity)"/>
-		<Message Text="##teamcity[importData type='nunit' path='$(RootDir)/output/$(Configuration)/TestResults.xml']"
-			Condition="'$(teamcity_version)' != '' and '$(OS)'!='Windows_NT'"/>
 	</Target>
 
 	<Target Name="Pack" DependsOnTargets="RestorePackages">
