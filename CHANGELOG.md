@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - [SIL.DblBundle] DblMetadata.Load overload to allow deserialization from a TextReader.
+- [SIL.Scripture] Versification.Table.Load overload to allow deserialization from a TextReader.
 
 ### Changed
 
