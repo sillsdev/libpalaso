@@ -531,31 +531,46 @@ namespace SIL.Scripture
 			}
 
 			/// <summary>
-			/// Reload all non-standard versifications used so far.
+			/// Reload all non-standard, non-ad-hoc versifications used so far.
 			/// This is necessary after a versification file has changed.
 			/// </summary>
 			public void ReloadVersifications()
 			{
-				foreach (Versification versificationReadonly in versifications.Values)
+				lock (versifications)
 				{
-					Versification versification = versificationReadonly;
-					// REVIEW: This version doesn't seem to support customized versifications.
-					if (string.IsNullOrEmpty(versification.FullPath) || !File.Exists(versification.FullPath))
-						continue; // Don't reload versifications that don't have backing files
+					foreach (Versification versificationReadonly in versifications.Values)
+					{
+						Versification versification = versificationReadonly;
+						// REVIEW: This version doesn't seem to support customized versifications (i.e., it reloads them without the base).
+						if (string.IsNullOrEmpty(versification.FullPath) ||
+							!File.Exists(versification.FullPath))
+							continue; // Don't reload versifications that don't have backing files
 
-					versification.Clear();
-					Load(versification.FullPath, versification.Type, ref versification);
+						versification.Clear();
+						Load(versification.FullPath, versification.Type, ref versification);
+					}
 				}
 			}
 
 			/// <summary>
-			/// Loads the specified versification file and returns the results. The versification is loaded into
-			/// the versification map so any calls to get a versification of that name will return the same versification.
+			/// Loads the specified versification file and returns the results. The
+			/// versification is ad-hoc (not loaded into the versification map).
 			/// </summary>
 			public ScrVers Load(string fullPath, string fallbackName = null)
 			{
 				Versification versification = null;
 				Load(fullPath, ScrVersType.Unknown, ref versification, fallbackName);
+				return new ScrVers(versification);
+			}
+
+			/// <summary>
+			/// Loads a versification from the specified stream (with no base versification). The
+			/// versification is ad-hoc (not loaded into the versification map).
+			/// </summary>
+			public ScrVers Load(TextReader stream, string fullPath, string fallbackName = null)
+			{
+				Versification versification = null;
+				Load(stream, fullPath, ScrVersType.Unknown, ref versification, fallbackName);
 				return new ScrVers(versification);
 			}
 
