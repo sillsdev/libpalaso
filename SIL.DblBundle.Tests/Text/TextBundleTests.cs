@@ -133,7 +133,7 @@ namespace SIL.DblBundle.Tests.Text
 				{
 					var fontInfo = bundle.GetFonts().Single();
 					Assert.AreEqual("AppSILI.ttf", fontInfo.Item1);
-					Assert.IsTrue(fontInfo.Item2.ReadToEnd().Length > 0);
+					Assert.IsTrue(fontInfo.Item2.ReadByte() >= 0);
 			}
 		}
 
