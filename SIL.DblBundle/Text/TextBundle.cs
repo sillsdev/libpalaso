@@ -251,13 +251,13 @@ namespace SIL.DblBundle.Text
 		/// they represent that can be used to access the contents of the font files in the
 		/// text bundle.
 		/// </summary>
-		public IEnumerable<Tuple<string, TextReader>> GetFonts()
+		public IEnumerable<Tuple<string, Stream>> GetFonts()
 		{
 			foreach (var ttfFile in Directory.GetFiles(PathToUnzippedBundleInnards, "*.ttf"))
 			{
 				var fileName = Path.GetFileName(ttfFile);
-				yield return new Tuple<string, TextReader>(fileName,
-					new StreamReader(new FileStream(ttfFile, FileMode.Open)));
+				yield return new Tuple<string, Stream>(fileName,
+					new FileStream(ttfFile, FileMode.Open));
 			}
 		}
 
