@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - [SIL.DblBundle] DblMetadata.Load overload to allow deserialization from a TextReader.
 - [SIL.Scripture] Versification.Table.Load overload to allow deserialization from a TextReader.
+- [SIL.DblBundle] TextBundle<TM, TL>.GetVersification (to replace deprecated CopyVersificationFile)
+- [SIL.DblBundle] TextBundle<TM, TL>.GetFonts (to replace deprecated CopyFontFiles)
+- [SIL.DblBundle] TextBundle<TM, TL>.GetLdml (to replace deprecated CopyLdmlFile)
 
 ### Changed
 
@@ -44,6 +47,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DblBundle.Tests] Create nuget package
 - Improve nuget symbol packages
 - Changed to use the new Registered trademark logo (in About Box). Removed 132x148 logo.
+- [SIL.DblBundle] Deprecated CopyVersificationFile, CopyFontFiles and CopyLdmlFile in favor of Get...
 
 ### Fixed
 

@@ -1,5 +1,7 @@
 using System;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using Ionic.Zip;
 using NUnit.Framework;
 using SIL.DblBundle.Tests.Properties;
@@ -114,6 +116,33 @@ namespace SIL.DblBundle.Tests.Text
 			Assert.AreEqual("MAT", book.BookId);
 		}
 
+		[Test]
+		public void GetVersification_ValidBundle_ReturnsValidReader()
+		{
+			using (var reader = _bundle.GetVersification())
+			{
+				Assert.IsTrue(reader.ReadLine().StartsWith("#"));
+			}
+		}
+
+		[Test]
+		public void GetFonts_BundleWithFont_ReturnsEnumerationWithFont()
+		{
+			using (var zippedBundle = CreateZippedTextBundleFromResources(false, false, false, true))
+				using (var bundle = new TextBundle<DblTextMetadata<DblMetadataLanguage>, DblMetadataLanguage>(zippedBundle.Path))
+				{
+					var fontInfo = bundle.GetFonts().Single();
+					Assert.AreEqual("AppSILI.ttf", fontInfo.Item1);
+					Assert.IsTrue(fontInfo.Item2.ReadToEnd().Length > 0);
+			}
+		}
+
+		[Test]
+		public void GetFonts_BundleWithNoFonts_ReturnsEmptyEnumeration()
+		{
+			Assert.IsFalse(_bundle.GetFonts().Any());
+		}
+
 		/// <summary>
 		/// Tests that a bundle with an LDML file correctly reports that.
 		/// </summary>
@@ -123,6 +152,22 @@ namespace SIL.DblBundle.Tests.Text
 		{
 			var bundle = legacy ? _legacyBundle : _bundle;
 			Assert.IsTrue(bundle.ContainsLdmlFile());
+		}
+
+		[Test]
+		public void GetLdml_BundleContainsLdmlFile_ReturnsValidReader()
+		{
+			using (var reader = _bundle.GetLdml())
+			{
+				reader.ReadLine(); // Skip past ?xml element
+				Assert.IsTrue(reader.ReadLine().StartsWith("<ldml"));
+			}
+		}
+
+		[Test]
+		public void GetLdml_BundleDoesNotContainsLdmlFile_ReturnsNull()
+		{
+			Assert.IsNull(_bundleWithoutLdml.GetLdml());
 		}
 
 		/// <summary>
@@ -155,7 +200,7 @@ namespace SIL.DblBundle.Tests.Text
 		/// <summary>
 		/// Helper method for tests to create a zipped text bundle.
 		/// </summary>
-		public static TempFile CreateZippedTextBundleFromResources(bool includeLdml = true, bool invalidUsxDirectory = false, bool legacyFormat = false)
+		public static TempFile CreateZippedTextBundleFromResources(bool includeLdml = true, bool invalidUsxDirectory = false, bool legacyFormat = false, bool includeFont = false)
 		{
 			TempFile bundle = TempFile.WithExtension(DblBundleFileUtils.kDblBundleExtension);
 
@@ -164,6 +209,7 @@ namespace SIL.DblBundle.Tests.Text
 			using (var stylesXml = TempFile.WithFilename("styles.xml"))
 			using (var versificationVrs = TempFile.WithFilename(DblBundleFileUtils.kVersificationFileName))
 			using (var ldmlXml = TempFile.WithFilename(DblBundleFileUtils.kLegacyLdmlFileName))
+			using (var ttf = TempFile.WithFilename("AppSILI.ttf"))
 			using (var matUsx = TempFile.WithFilename("MAT.usx"))
 			using (var zip = new ZipFile())
 			{
@@ -182,6 +228,12 @@ namespace SIL.DblBundle.Tests.Text
 				{
 					File.WriteAllText(ldmlXml.Path, Resources.ldml_xml);
 					zip.AddFile(ldmlXml.Path, subdirectory);
+				}
+				if (includeFont)
+				{
+					File.WriteAllBytes(ttf.Path,
+						(byte[])Resources.ResourceManager.GetObject("AppSILI", CultureInfo.InvariantCulture));
+					zip.AddFile(ttf.Path, subdirectory);
 				}
 				File.WriteAllBytes(matUsx.Path, Resources.MAT_usx);
 				zip.AddFile(matUsx.Path, (legacyFormat ? "" : "release/") + (invalidUsxDirectory ? "USX_999" : "USX_1"));
