@@ -180,30 +180,52 @@ namespace SIL.DblBundle.Text
 			}
 		}
 
-		private string GetPathToCanon(string canonId)
+		private string GetPathToCanon(string canonId) => Path.Combine(PathToUnzippedBundleInnards, "USX_" + canonId);
+		private string VersificationPath
 		{
-			return Path.Combine(PathToUnzippedBundleInnards, "USX_" + canonId);
+			get
+			{
+				var versificationPath =  Path.Combine(PathToUnzippedBundleInnards,
+					DblBundleFileUtils.kVersificationFileName);
+
+				if (!File.Exists(versificationPath))
+				{
+					throw new ApplicationException($"{DblBundleFileUtils.kVersificationFileName}" +
+						" does not exist in this bundle.");
+				}
+
+				return versificationPath;
+			}
 		}
+
 		#endregion
 
 		#region Public methods
 		/// <summary>
 		/// Copy the versification file from the text bundle to destinationPath
 		/// </summary>
+		/// <exception cref="ApplicationException">Bundle does not contain a versification file
+		/// (required for valid bundles)</exception>
+		[Obsolete("Use GetVersification instead.")]
 		public void CopyVersificationFile(string destinationPath)
 		{
-			string versificationPath = Path.Combine(PathToUnzippedBundleInnards, DblBundleFileUtils.kVersificationFileName);
-
-			if (!File.Exists(versificationPath))
-				throw new ApplicationException(
-					string.Format("Attempted to copy {0} from the bundle but {0} does not exist in this bundle.", DblBundleFileUtils.kVersificationFileName));
-
-			RobustFile.Copy(versificationPath, destinationPath, true);
+			RobustFile.Copy(VersificationPath, destinationPath, true);
 		}
+
+		/// <summary>
+		/// Gets a TextReader object that can be used to access the contents of the versification
+		/// file in the text bundle.
+		/// </summary>
+		/// <remarks>Caller is responsible for disposing the returned reader.</remarks>
+		/// <exception cref="ApplicationException">Bundle does not contain a versification file
+		/// (required for valid bundles)</exception>
+		public TextReader GetVersification() =>
+			new StreamReader(new FileStream(VersificationPath, FileMode.Open));
 
 		/// <summary>
 		/// Copies any font files (*.ttf) in the bundle to the given destination directory
 		/// </summary>
+		[Obsolete("Use GetFonts instead.")]
 		public bool CopyFontFiles(string destinationDir, out ISet<string> filesWhichFailedToCopy)
 		{
 			filesWhichFailedToCopy = new HashSet<string>();
@@ -225,16 +247,29 @@ namespace SIL.DblBundle.Text
 		}
 
 		/// <summary>
+		/// Gets a collection of TextReader objects identified by the file names whose contents
+		/// they represent that can be used to access the contents of the font files in the
+		/// text bundle.
+		/// </summary>
+		public IEnumerable<Tuple<string, TextReader>> GetFonts()
+		{
+			foreach (var ttfFile in Directory.GetFiles(PathToUnzippedBundleInnards, "*.ttf"))
+			{
+				var fileName = Path.GetFileName(ttfFile);
+				yield return new Tuple<string, TextReader>(fileName,
+					new StreamReader(new FileStream(ttfFile, FileMode.Open)));
+			}
+		}
+
+		/// <summary>
 		/// <returns>true if an LDML file exists in the bundle, false otherwise</returns>
 		/// </summary>
-		public bool ContainsLdmlFile()
-		{
-			return File.Exists(LdmlFilePath);
-		}
+		public bool ContainsLdmlFile() => File.Exists(LdmlFilePath);
 
 		/// <summary>
 		/// Copies ldml.xml from the text bundle to the destinationPath (if it exists)
 		/// </summary>
+		[Obsolete("Use GetLdml instead.")]
 		public bool CopyLdmlFile(string destinationDir)
 		{
 			if (ContainsLdmlFile())
@@ -245,6 +280,13 @@ namespace SIL.DblBundle.Text
 			}
 			return false;
 		}
+
+		/// <summary>
+		/// Gets a TextReader object that can be used to access the contents of the LDML
+		/// file in the text bundle, or null if the bundle does not contain an LDML file.
+		/// </summary>
+		public TextReader GetLdml() => !ContainsLdmlFile() ? null :
+			new StreamReader(new FileStream(LdmlFilePath, FileMode.Open));
 
 		/// <summary>
 		/// Try to get the book as a UsxDocument
