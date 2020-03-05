@@ -53,7 +53,7 @@ namespace SIL.Archiving.IMDI.Lists
 		}
 
 		/// <summary>
-		/// Localize the Text and Defnition using the given localize function
+		/// Localize the Text and Definition using the given localize function
 		/// </summary>
 		/// <param name="listName">The name of the list containing this item</param>
 		/// <param name="localize">Delegate to use for getting localized versions of the Text and
@@ -202,9 +202,9 @@ namespace SIL.Archiving.IMDI.Lists
 		private void AddLanguagesFromEthnologue()
 		{
 			// We won't worry about how slow list lookup is with thousands of languages because we'll only
-			// be looking up a few languages in all likelihood.  Storing the names in a list that is searched
+			// be looking up a few languages in all likelihood. Storing the names in a list that is searched
 			// linearly does ensure matching on the major name of a language which happens to match an alias
-			// for another language.  It also ensures returning the major (English) name of the language when
+			// for another language. It also ensures returning the major (English) name of the language when
 			// looked up by ISO code.
 			var langLookup = new LanguageLookup();
 			var languages = langLookup.SuggestLanguages("*").ToList();
@@ -237,7 +237,7 @@ namespace SIL.Archiving.IMDI.Lists
 				case "fra": return "French";
 				case "spa": return "Spanish";
 				case "tam": return "Tamil";
-				case "tel": return "Telegu";
+				case "tel": return "Telugu";
 				case "tha": return "Thai";
 				case "urd": return "Urdu";
 				case "zho": return "Chinese";
@@ -270,7 +270,7 @@ namespace SIL.Archiving.IMDI.Lists
 
 			// if the file was not found, throw an exception
 			if (string.IsNullOrEmpty(listFileName))
-				throw new FileNotFoundException(string.Format("The list {0} was not found.", listName));
+				throw new FileNotFoundException($"The list {listName} was not found.");
 
 			XmlDocument doc = new XmlDocument();
 			doc.Load(listFileName);
@@ -280,13 +280,13 @@ namespace SIL.Archiving.IMDI.Lists
 
 			// if not a valid XML file, throw an exception
 			if (doc.DocumentElement == null)
-				throw new XmlException(string.Format("The file {0} was not a valid XML file.", listFileName));
+				throw new XmlException($"The file {listFileName} was not a valid XML file.");
 
 			var nodes = doc.DocumentElement.SelectNodes("//imdi:VocabularyDef/imdi:Entry", nsmgr);
 
 			// if no entries were found, throw an exception
-			if (nodes == null)
-				throw new XmlException(string.Format("The file {0} does not contain any list entries.", listFileName));
+			if (nodes == null || nodes.Count == 0)
+				throw new XmlException(string.Format($"The file {listFileName} does not contain any list entries. There might be a problem with the content at {ListType.Link(listName)}"));
 
 			return nodes;
 		}
