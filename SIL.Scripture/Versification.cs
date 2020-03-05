@@ -320,7 +320,7 @@ namespace SIL.Scripture
 		/// <summary>
 		/// Write out versification information to the specified stream.
 		/// </summary>
-		internal void WriteToStream(StringWriter stream)
+		internal void WriteToStream(TextWriter stream)
 		{
 			// Write out the list of books, chapters, verses
 			stream.WriteLine("# List of books, chapters, verses");
