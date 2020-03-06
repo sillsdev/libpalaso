@@ -107,13 +107,20 @@ namespace SIL.WritingSystems
 				VariantSubtag variantSubtag;
 				if (!StandardSubtags.CommonPrivateUseVariants.TryGet(privateUseCode, out variantSubtag))
 				{
+					if (!PrivateUsePattern.IsMatch(privateUseCode))
+					{
+						variantSubtags = null;
+						return false;
+					}
 					if (!string.IsNullOrEmpty(variantNames) && index < variantName.Length)
 					{
 						variantSubtag = new VariantSubtag(privateUseCode, variantName[index]);
 						index++;
 					}
 					else
+					{
 						variantSubtag = new VariantSubtag(privateUseCode);
+					}
 				}
 				variantSubtagsList.Add(variantSubtag);
 			}

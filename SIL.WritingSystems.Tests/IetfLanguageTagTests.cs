@@ -443,6 +443,16 @@ namespace SIL.WritingSystems.Tests
 			}
 		}
 
+		[TestCase("x-a#b")] // non alpha numeric
+		[TestCase("x-thisiswaytoolong")] // > 15 characters (should be 8 but langtags.json has up to 15)
+		public void TryGetVariantSubtags_PrivateUseRulesHonored(string privateUseVariantTag)
+		{
+			IEnumerable<VariantSubtag> variantSubtags;
+			// Test both with and without custom name
+			Assert.That(IetfLanguageTag.TryGetVariantSubtags(privateUseVariantTag, out variantSubtags, "Bad Variant"), Is.False);
+			Assert.That(IetfLanguageTag.TryGetVariantSubtags(privateUseVariantTag, out variantSubtags), Is.False);
+		}
+
 		[Test]
 		public void TryGetSubtags_FonipaXEtic_ReturnsFonipaEtic()
 		{
