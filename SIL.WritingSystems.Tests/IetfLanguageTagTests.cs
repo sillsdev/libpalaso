@@ -426,7 +426,7 @@ namespace SIL.WritingSystems.Tests
 			IEnumerable<VariantSubtag> variantSubtags;
 			IetfLanguageTag.TryGetVariantSubtags("x-code1-code2", out variantSubtags, "x-name1,name2");
 			Assert.AreEqual(2, variantSubtags.Count());
-			int index = 0;
+			var index = 0;
 			foreach (VariantSubtag variantSubtag in variantSubtags)
 			{
 				if (index == 0) //For first VariantSubTag
