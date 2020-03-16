@@ -1321,7 +1321,14 @@ namespace SIL.WritingSystems
 			//     <special xmlns:sil="urn://www.sil.org/ldml/0.1"><sil:simple>...</sil:simple></special>
 			//   </collation>
 			// </collations>
-			collationsElem.Elements("collation").Where(ce => ce.NonAltElements("special").Any(se => se.Name.NamespaceName == Sil && se.Name != Sil + "reordered")).Remove();
+			// That is, we're looking for collations to remove that have at least one child that
+			//  - has the tag "special", and
+			//	- has a nested child that
+			//		- is in the SIL namespace, and
+			//		- is not called 'reordered'
+			collationsElem.Elements("collation").Where(ce => ce.NonAltElements("special")
+				.Any(specialElt => specialElt.Elements()
+					.Any(childElement => childElement.Name.NamespaceName == Sil && childElement.Name.LocalName != "reordered"))).Remove();
 		}
 
 		private void RemoveIcuCollations(XElement collationsElem)

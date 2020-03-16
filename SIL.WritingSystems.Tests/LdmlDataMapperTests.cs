@@ -194,6 +194,22 @@ namespace SIL.WritingSystems.Tests
 		}
 
 		[Test]
+		public void ExistingLdml_CustomSimple_Write_RemovesData()
+		{
+			var ldmlwithcollation =
+				@"<ldml><!--Comment--><dates/><special>hey</special><collations><collation type=""standard"">" +
+				@"<special xmlns:sil=""urn://www.sil.org/ldml/0.1""><sil:simple><![CDATA[]]></sil:simple></special>" +
+				@"</collation></collations></ldml>";
+			var adaptor = new LdmlDataMapper(new TestWritingSystemFactory());
+			var sw = new StringWriter();
+			var ws = new WritingSystemDefinition("en");
+			var writer = XmlWriter.Create(sw, CanonicalXmlSettings.CreateXmlWriterSettings());
+			adaptor.Write(writer, ws, XmlReader.Create(new StringReader(ldmlwithcollation)));
+			writer.Close();
+			AssertThatXmlIn.String(sw.ToString()).HasSpecifiedNumberOfMatchesForXpath("/ldml/collations/collation", 0);
+		}
+
+		[Test]
 		public void ExistingLdml_UnknownKeyboardType_Write_PreservesData()
 		{
 			using (var environment = new TestEnvironment())
