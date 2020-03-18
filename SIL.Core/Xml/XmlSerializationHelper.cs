@@ -184,7 +184,6 @@ namespace SIL.Xml
 
 			return null;
 		}
-
 		/// ------------------------------------------------------------------------------------
 		public static bool SerializeToFile<T>(string filename, T data)
 		{
@@ -216,34 +215,10 @@ namespace SIL.Xml
 		public static bool SerializeToFile<T>(string filename, T data, string rootElementName,
 			out Exception e)
 		{
-			e = null;
-
 			try
 			{
-				using (TextWriter writer = new StreamWriter(filename))
-				{
-					XmlSerializerNamespaces nameSpace = new XmlSerializerNamespaces();
-					nameSpace.Add(string.Empty, string.Empty);
-
-					XmlSerializer serializer;
-					if (string.IsNullOrEmpty(rootElementName))
-						serializer = new XmlSerializer(typeof(T));
-					else
-					{
-						var rootAttrib = new XmlRootAttribute();
-						rootAttrib.ElementName = rootElementName;
-						rootAttrib.IsNullable = true;
-						serializer = new XmlSerializer(typeof(T), rootAttrib);
-					}
-
-					serializer.Serialize(writer, data, nameSpace);
-					writer.Close();
-				}
-
-				//var xe = XElement.Load(filename);
-				//xe.SetAttributeValue("version", "2.0");
-				//xe.Save(filename);
-				return true;
+				TextWriter writer = new StreamWriter(filename);
+				return Serialize(writer, data, out e, rootElementName);
 			}
 			catch (Exception ex)
 			{
@@ -252,6 +227,49 @@ namespace SIL.Xml
 			}
 
 			return false;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Serializes an object to a TextWriter. Note: This method will take care of disposing
+		/// the textWriter if so requested.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public static bool Serialize<T>(TextWriter textWriter, T data,
+			out Exception error, string rootElementName = null, bool dispose = true)
+		{
+			error = null;
+			try
+			{
+				XmlSerializerNamespaces namespaces = new XmlSerializerNamespaces();
+				namespaces.Add(string.Empty, string.Empty);
+				XmlSerializer serializer;
+				if (string.IsNullOrEmpty(rootElementName))
+					serializer = new XmlSerializer(typeof(T));
+				else
+				{
+					var rootAttrib = new XmlRootAttribute
+					{
+						ElementName = rootElementName,
+						IsNullable = true
+					};
+					serializer = new XmlSerializer(typeof(T), rootAttrib);
+				}
+
+				serializer.Serialize(textWriter, data, namespaces);
+				textWriter.Close();
+				return true;
+			}
+			catch (Exception ex)
+			{
+				error = ex;
+				return false;
+			}
+			finally
+			{
+				if (dispose)
+					textWriter?.Dispose();
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------
@@ -497,6 +515,28 @@ namespace SIL.Xml
 			}
 
 			return data;
+		}
+
+		/// ------------------------------------------------------------------------------------
+		/// <summary>
+		/// Note: This method will take care of disposing the textWriter, if so requested.
+		/// </summary>
+		/// ------------------------------------------------------------------------------------
+		public static T Deserialize<T>(TextReader reader, bool dispose = true) where T : class
+		{
+			if (reader == null)
+				return default;
+			try
+			{
+				var xmlSerializer = new XmlSerializer(typeof(T));
+				xmlSerializer.UnknownAttribute += deserializer_UnknownAttribute;
+				return (T)xmlSerializer.Deserialize(reader);
+			}
+			finally
+			{
+				if (dispose)
+					reader.Dispose();
+			}
 		}
 
 		/// ------------------------------------------------------------------------------------
