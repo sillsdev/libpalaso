@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace SIL.WritingSystems
@@ -324,6 +325,50 @@ namespace SIL.WritingSystems
 		IWritingSystemFactory IWritingSystemRepository.WritingSystemFactory
 		{
 			get { return WritingSystemFactory; }
+		}
+
+		/// <summary>
+		/// Used in writing a WS definition, either to the project or global writing system.
+		/// writingSystemPath is where we are going to write it.
+		/// If there is already a file there, read its contents into a memory stream.
+		/// (The old contents will be merged with the saved data,
+		/// thus preserving any information we don't know or care about.)
+		/// If there is NOT a file there, look in the LDML, and if we have one, read
+		/// that and use it as the merge source.
+		/// </summary>
+		/// <param name="writingSystemFilePath"></param>
+		/// <remarks>Arguably it would be good to use the SLDR method that will download
+		/// an LDML if not already loaded locally. However, the paths that make use of
+		/// this method are to do with adding new writing systems to projects, and they
+		/// always check the SLDR first. So if there's data about this language in the
+		/// SLDR, it WILL already be cached locally. If there's not, we'd just waste
+		/// another web query rediscovering this.</remarks>
+		/// <returns></returns>
+		protected static MemoryStream GetDataToMergeWithInSave(string writingSystemFilePath)
+		{
+			MemoryStream oldData = null;
+			if (File.Exists(writingSystemFilePath))
+			{
+				// load old data to preserve stuff in LDML that we don't use, but don't throw up an error if it fails
+				try
+				{
+					oldData = new MemoryStream(File.ReadAllBytes(writingSystemFilePath), false);
+				}
+				catch
+				{
+				}
+			}
+			else
+			{
+				var source = Path.Combine(Sldr.SldrCachePath,
+					Path.GetFileName(writingSystemFilePath));
+				if (File.Exists(source))
+				{
+					oldData = new MemoryStream(File.ReadAllBytes(source), false);
+				}
+			}
+
+			return oldData;
 		}
 	}
 }
