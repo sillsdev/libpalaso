@@ -10,8 +10,8 @@
 		<useNUnit-x86 Condition="'$(OS)'=='Windows_NT'">true</useNUnit-x86>
 		<useNUnit-x86 Condition="'$(OS)'!='Windows_NT'">false</useNUnit-x86>
 		<Platform Condition="'$(Platform)'==''">Any CPU</Platform>
-		<RestartBuild Condition="!Exists('$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll')">true</RestartBuild>
-		<RestartBuild Condition="Exists('$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll')">false</RestartBuild>
+		<RestartBuild Condition="!Exists('$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll') Or !Exists('$(RootDir)/packages/NUnit.ConsoleRunner/tools/nunit3-console.exe') Or !Exists('$(RootDir)/NUnit.Extension.NUnitProjectLoader/tools/nunit-project-loader.dll') Or !Exists('$(RootDir)/NUnit.Extension.TeamCityEventListener/tools/teamcity-event-listener.dll')">true</RestartBuild>
+		<RestartBuild Condition="Exists('$(RootDir)/packages/SIL.BuildTasks/tools/SIL.BuildTasks.dll') And Exists('$(RootDir)/packages/NUnit.ConsoleRunner/tools/nunit3-console.exe') And Exists('$(RootDir)/NUnit.Extension.NUnitProjectLoader/tools/nunit-project-loader.dll') And Exists('$(RootDir)/NUnit.Extension.TeamCityEventListener/tools/teamcity-event-listener.dll')">false</RestartBuild>
 		<ContinuousIntegrationBuild Condition="'$(teamcity_version)' != '' Or '$(JENKINS_URL)' != '' Or '$(CI)' != '' ">true</ContinuousIntegrationBuild>
 		<ContinuousIntegrationBuild Condition="'$(teamcity_version)' == '' And '$(JENKINS_URL)' == '' And '$(CI)' == '' ">false</ContinuousIntegrationBuild>
 		<TeamCity Condition="'$(teamcity_version)' != ''">true</TeamCity>
@@ -40,9 +40,20 @@
 		<Message Text="Build Complete"/>
 	</Target>
 
+	<ItemGroup>
+		<PackageDirs Include="$([System.IO.Directory]::GetDirectories(&quot;$(RootDir)/packages/&quot;, &quot;SIL.BuildTasks*&quot;, SearchOption.TopDirectoryOnly))" Condition="Exists('$(RootDir)/packages/')" />
+		<PackageDirs Include="$([System.IO.Directory]::GetDirectories(&quot;$(RootDir)/packages/&quot;, &quot;NUnit.*&quot;, SearchOption.TopDirectoryOnly))" Condition="Exists('$(RootDir)/packages/')" />
+	</ItemGroup>
+
 	<Target Name="RestoreBuildTasks" DependsOnTargets="CheckPrerequisites">
 		<Message Text="RestartBuild=$(RestartBuild)" />
+		<!-- first remove any existing packages - if they were installed with appended version numbers nuget refuses to install it again, messing up things -->
+		<RemoveDir Directories="@(PackageDirs)" />
 		<Exec Command='$(NuGetCommand) install SIL.BuildTasks -excludeVersion -version 2.2.0 -solutionDirectory "$(RootDir)"' />
+		<Exec Command='$(NuGetCommand) install NUnit.ConsoleRunner -excludeVersion -version 3.11.1 -solutionDirectory "$(RootDir)"' />
+		<!-- The two extensions are required to show the tests on TC -->
+		<Exec Command='$(NuGetCommand) install NUnit.Extension.NUnitProjectLoader -excludeVersion -version 3.6.0 -solutionDirectory "$(RootDir)"' />
+		<Exec Command='$(NuGetCommand) install NUnit.Extension.TeamCityEventListener -excludeVersion -version 1.0.7 -solutionDirectory "$(RootDir)"' />
 	</Target>
 
 	<ItemGroup>
@@ -82,7 +93,7 @@
 
 		<NUnit3
 			Assemblies="@(TestAssemblies)"
-			ToolPath="$(RootDir)/packages/NUnit.ConsoleRunner.3.11.1/tools"
+			ToolPath="$(RootDir)/packages/NUnit.ConsoleRunner/tools"
 			ExcludeCategory="$(ExtraExcludeCategories)$(excludedCategories)"
 			WorkingDirectory="$(RootDir)/output/$(Configuration)"
 			Force32Bit="$(useNUnit-x86)"
