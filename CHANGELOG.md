@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - [SIL.DblBundle] TextBundle<TM, TL>.GetVersification (to replace deprecated CopyVersificationFile)
 - [SIL.DblBundle] TextBundle<TM, TL>.GetFonts (to replace deprecated CopyFontFiles)
 - [SIL.DblBundle] TextBundle<TM, TL>.GetLdml (to replace deprecated CopyLdmlFile)
+- [SIL.Scripture] ScrVers.Save overload to allow serialization to a TextWriter.
+- [SIL.Core] XmlSerializationHelper.Serialize<T> to allow serialization to a TextWriter.
+- [SIL.Core] XmlSerializationHelper.Deserialize<T> to allow deserialization from a TextReader.
 
 ### Changed
 
