@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace SIL.WritingSystems
@@ -324,6 +325,38 @@ namespace SIL.WritingSystems
 		IWritingSystemFactory IWritingSystemRepository.WritingSystemFactory
 		{
 			get { return WritingSystemFactory; }
+		}
+
+		/// <summary>
+		/// Used whenever writing a WS definition to disk. Reads contents of any existing data in the folder,
+		/// falling back to any data in the SLDR Cache.
+		/// </summary>
+		/// <remarks>Does not attempt to pull the writing system into the SLDR Cache.</remarks>
+		protected static MemoryStream GetDataToMergeWithInSave(string writingSystemFilePath)
+		{
+			MemoryStream oldData = null;
+			if (File.Exists(writingSystemFilePath))
+			{
+				// load old data to preserve stuff in LDML that we don't use, but don't throw up an error if it fails
+				try
+				{
+					oldData = new MemoryStream(File.ReadAllBytes(writingSystemFilePath), false);
+				}
+				catch
+				{
+				}
+			}
+			else
+			{
+				var source = Path.Combine(Sldr.SldrCachePath,
+					Path.GetFileName(writingSystemFilePath));
+				if (File.Exists(source))
+				{
+					oldData = new MemoryStream(File.ReadAllBytes(source), false);
+				}
+			}
+
+			return oldData;
 		}
 	}
 }
