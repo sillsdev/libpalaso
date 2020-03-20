@@ -399,18 +399,12 @@ namespace SIL.WritingSystems
 			if (ws.IsChanged)
 				ws.DateModified = DateTime.UtcNow;
 
-			MemoryStream oldData = null;
+			MemoryStream oldData = GetDataToMergeWithInSave(writingSystemFilePath);
 			if (File.Exists(writingSystemFilePath))
 			{
-				// load old data to preserve stuff in LDML that we don't use, but don't throw up an error if it fails
-				try
-				{
-					oldData = new MemoryStream(File.ReadAllBytes(writingSystemFilePath), false);
-				}
-				catch {}
-				// What to do?  Assume that the UI has already checked for existing, asked, and allowed the overwrite.
-				File.Delete(writingSystemFilePath); //!!! Should this be move to trash?
+				File.Delete(writingSystemFilePath);
 			}
+
 			var ldmlDataMapper = new LdmlDataMapper(WritingSystemFactory);
 			try
 			{
