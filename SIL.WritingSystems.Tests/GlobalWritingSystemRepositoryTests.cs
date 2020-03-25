@@ -37,7 +37,7 @@ namespace SIL.WritingSystems.Tests
 				File.WriteAllBytes(badFile, new byte[100]); // 100 nulls
 				var repo = GlobalWritingSystemRepository.InitializeWithBasePath(e.Path, null);
 				// main part of test is that we don't get any exception.
-				Assert.That(repo.Count, Is.EqualTo(0));
+				Assert.That(repo.Count, Is.EqualTo(1));
 				// original .ldml file should have been renamed
 				Assert.That(File.Exists(badFile), Is.False);
 				Assert.That(File.Exists(badFile + ".bad"), Is.True);
@@ -66,7 +66,7 @@ namespace SIL.WritingSystems.Tests
 				File.WriteAllText(badFile, ldmlData);
 				var repo = GlobalWritingSystemRepository.InitializeWithBasePath(e.Path, null);
 				// main part of test is that we don't get any exception.
-				Assert.That(repo.Count, Is.EqualTo(0));
+				Assert.That(repo.Count, Is.EqualTo(1));
 				// original .ldml file should have been renamed
 				Assert.That(File.Exists(badFile), Is.False);
 				Assert.That(File.Exists(badFile + ".bad"), Is.True);

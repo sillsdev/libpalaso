@@ -1,4 +1,5 @@
-﻿using System.IO;
+using System;
+using System.IO;
 
 namespace SIL.WritingSystems
 {
@@ -46,7 +47,7 @@ namespace SIL.WritingSystems
 			{
 				ws = ConstructDefinition();
 				var loader = new LdmlDataMapper(this);
-				loader.Read(templatePath, ws);
+				loader.Read(templatePath, ws, e => { sldrStatus = SldrStatus.NotFound; });
 				ws.Template = templatePath;
 				return sldrStatus == SldrStatus.FromSldr;
 			}
